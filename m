@@ -1,54 +1,50 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial patches for 3.17-rc5
-Date: Fri, 12 Sep 2014 11:21:00 -0700
-Message-ID: <20140912182100.GA2015@kroah.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 00/16 v9] omap 8250 based uart + DMA
+Date: Fri, 12 Sep 2014 15:43:25 -0700
+Message-ID: <20140912224324.GK18849@atomide.com>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:53604 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750925AbaILSVA (ORCPT
+Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:13503 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751764AbaILWn0 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Sep 2014 14:21:00 -0400
+	Fri, 12 Sep 2014 18:43:26 -0400
 Content-Disposition: inline
+In-Reply-To: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, gregkh@linuxfoundation.org
 
-The following changes since commit 69e273c0b0a3c337a521d083374c918dc52c666f:
+* Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140910 12:30]:
+> the diff of v8=E2=80=A6v9 is small:
+> - rebased on top's of Greg's tty-next branch
+> - fixed #10 where we might have THRE interrupt enabled for longer tha=
+n
+>   needed
+> - re-did register setup in #10. Before this "less file" could freeze =
+the
+>   am335x-evm.
 
-  Linux 3.17-rc3 (2014-08-31 18:23:04 -0700)
+=46YI, looks like merging in your uart_v9 branch for testing
+with my hwmod changes now fails to produce RX characters on omap3.
 
-are available in the git repository at:
+The device wakes up just fine to the wake-up interrupt, and then
+serial8250_handle_irq() gets called, but I'm not seeing anything
+in the console getting printed out. It's like all the RX characters
+are getting lost instead of just the first one. The RX characters
+work fine when the system is running.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.17-rc5
+So it seems there's been some kind of regression since v8?
 
-for you to fetch changes up to 6731af573ac28de2297002992f38caa760e3dadf:
+Regards,
 
-  tty: xuartps: Fix tx_emtpy() callback (2014-09-08 16:33:56 -0700)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 3.17-rc5
-
-Here are 3 patches for 3.17-rc5.  Two serial driver fixes that resolve
-some reported issues, and one new device id.
-
-All have been in linux-next just fine.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Alan Cox (1):
-      serial: 8250_dw: Add ACPI ID for Intel Braswell
-
-Lars-Peter Clausen (1):
-      tty: xuartps: Fix tx_emtpy() callback
-
-Richard Genoud (1):
-      tty/serial: at91: BUG: disable interrupts when !UART_ENABLE_MS()
-
- drivers/tty/serial/8250/8250_dw.c  |  1 +
- drivers/tty/serial/atmel_serial.c  | 43 +++++++++++++++++++++++++++++++++++++-
- drivers/tty/serial/xilinx_uartps.c |  2 +-
- 3 files changed, 44 insertions(+), 2 deletions(-)
+Tony
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
