@@ -1,46 +1,39 @@
-From: Carlo Caione <carlo@caione.org>
-Subject: Re: [PATCH v2 3/9] ARM: meson: serial: add MesonX SoC on-chip uart driver
-Date: Fri, 12 Sep 2014 08:59:07 +0200
-Message-ID: <CAOQ7t2a6ngA3CUWTAgwn=imJTQwfJK4_b=ig89tafky8fj7T_w@mail.gmail.com>
-References: <1410466300-19168-1-git-send-email-carlo@caione.org>
-	<1410466300-19168-4-git-send-email-carlo@caione.org>
-	<20140911212534.GA17251@kroah.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
+ for AM33xx
+Date: Fri, 12 Sep 2014 09:23:24 +0200
+Message-ID: <54129F6C.7040508@linutronix.de>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de> <1410377411-26656-10-git-send-email-bigeasy@linutronix.de> <20140911111721.GB17476@xps8300> <54118AAB.2010205@linutronix.de> <5411967A.6090406@hurleysoftware.com> <54119AAA.9080907@linutronix.de> <20140911151114.GD28458@ci00147.xsens-tech.local> <5411C810.7070906@linutronix.de> <2cf997d9-e7de-465b-915d-3a0a5e7b95f7@email.android.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oa0-f50.google.com ([209.85.219.50]:34591 "EHLO
-	mail-oa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752223AbaILG7H (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Sep 2014 02:59:07 -0400
-In-Reply-To: <20140911212534.GA17251@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <2cf997d9-e7de-465b-915d-3a0a5e7b95f7@email.android.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Frans Klaver <fransklaver@gmail.com>, Frans Klaver <frans.klaver@xsens.com>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Carlo Caione <carlo@caione.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, "jslaby@suse.cz" <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Beniamino Galvani <b.galvani@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, afaerber@suse.de, Matthias Brugger <matthias.bgg@gmail.com>
 
-On Thu, Sep 11, 2014 at 11:25 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Thu, Sep 11, 2014 at 10:11:34PM +0200, Carlo Caione wrote:
->> The SoC has four fully functional UARTs which use the same programming
->> model. They are named UART_A, UART_B, UART_C and UART_AO (Always-On)
->> which cannot be powered off.
+On 09/11/2014 07:04 PM, Frans Klaver wrote:
+> On 11 September 2014 18:04:32 CEST, Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
+>> On 09/11/2014 05:11 PM, Frans Klaver wrote:
 >>
->> Signed-off-by: Carlo Caione <carlo@caione.org>
->> ---
->>  drivers/tty/serial/Kconfig       |  18 ++
->>  drivers/tty/serial/Makefile      |   1 +
->>  drivers/tty/serial/meson_uart.c  | 634 +++++++++++++++++++++++++++++++++++++++
->>  include/uapi/linux/serial_core.h |   3 +
->>  4 files changed, 656 insertions(+)
->>  create mode 100644 drivers/tty/serial/meson_uart.c
->
-> I've already taken this patch, why resend it?
+>>> I can still reproduce it on am335x. I can get out of it as soon as
+>>> something else gets written to the console though.
+>>>
+>>> # echo "<3>something" >/dev/kmsg
+>>
+>> Is this to stall it or to get out of it?
+> 
+> This is to get out of it. I do this from an ssh connection after the console got stuck. The 3 kind of ensures the message is actually sent to ttyS0.
 
-Just for completeness' sake since there is also the documentation in
-the patchset.
-In the cover I specified that it was already taken.
+Interesting. This shouldn't do anything. If there is a TX operation in
+progress then ->start_tx() will simply return and the xmit buffer will
+be send once the current TX operation completes.
 
-I'll leave it out in v3 (if any).
+Is there anything I can do to reproduce this behavior?
+This problem only pops-up if you use DMA. With disabled DMA you don't
+see this, right?
 
--- 
-Carlo Caione
+Sebastian
+
