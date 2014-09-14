@@ -1,50 +1,72 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 00/16 v9] omap 8250 based uart + DMA
-Date: Fri, 12 Sep 2014 15:43:25 -0700
-Message-ID: <20140912224324.GK18849@atomide.com>
-References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:13503 "EHLO
-	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751764AbaILWn0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 12 Sep 2014 18:43:26 -0400
-Content-Disposition: inline
-In-Reply-To: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] m68k: AMIGA_BUILTIN_SERIAL should depend on TTY
+Date: Sun, 14 Sep 2014 11:42:11 +0200
+Message-ID: <1410687731-10697-1-git-send-email-geert@linux-m68k.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+Sender: linux-m68k-owner@vger.kernel.org
+To: linux-m68k@lists.linux-m68k.org
+Cc: linux-serial@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, gregkh@linuxfoundation.org
 
-* Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140910 12:30]:
-> the diff of v8=E2=80=A6v9 is small:
-> - rebased on top's of Greg's tty-next branch
-> - fixed #10 where we might have THRE interrupt enabled for longer tha=
-n
->   needed
-> - re-did register setup in #10. Before this "less file" could freeze =
-the
->   am335x-evm.
+If CONFIG_TTY=n:
 
-=46YI, looks like merging in your uart_v9 branch for testing
-with my hwmod changes now fails to produce RX characters on omap3.
+drivers/built-in.o: In function `rs_flush_buffer':
+amiserial.c:(.text+0x1f626): undefined reference to `tty_wakeup'
+drivers/built-in.o: In function `transmit_chars':
+amiserial.c:(.text+0x1f6c8): undefined reference to `tty_wakeup'
+drivers/built-in.o: In function `change_speed':
+amiserial.c:(.text+0x1f80a): undefined reference to `tty_termios_baud_rate'
+amiserial.c:(.text+0x1f88c): undefined reference to `tty_termios_baud_rate'
+drivers/built-in.o: In function `check_modem_status':
+amiserial.c:(.text+0x1faa6): undefined reference to `tty_hangup'
+amiserial.c:(.text+0x1faec): undefined reference to `tty_wakeup'
+drivers/built-in.o: In function `get_serial_info':
+amiserial.c:(.text+0x1fb88): undefined reference to `tty_lock'
+amiserial.c:(.text+0x1fbc0): undefined reference to `tty_unlock'
+drivers/built-in.o: In function `rs_open':
+amiserial.c:(.text+0x1fdc6): undefined reference to `tty_port_block_til_ready'
+drivers/built-in.o: In function `set_serial_info':
+amiserial.c:(.text+0x1fe0c): undefined reference to `tty_lock'
+amiserial.c:(.text+0x1fea0): undefined reference to `tty_unlock'
+amiserial.c:(.text+0x1fed0): undefined reference to `tty_unlock'
+amiserial.c:(.text+0x1ffaa): undefined reference to `tty_unlock'
+drivers/built-in.o: In function `receive_chars':
+amiserial.c:(.text+0x2005c): undefined reference to `do_SAK'
+amiserial.c:(.text+0x200e0): undefined reference to `tty_insert_flip_string_flags'
+amiserial.c:(.text+0x2013c): undefined reference to `tty_insert_flip_string_flags'
+amiserial.c:(.text+0x20148): undefined reference to `tty_flip_buffer_push'
+drivers/built-in.o: In function `rs_close':
+amiserial.c:(.text+0x20744): undefined reference to `tty_port_close_start'
+amiserial.c:(.text+0x2078a): undefined reference to `tty_ldisc_flush'
+amiserial.c:(.text+0x20798): undefined reference to `tty_port_close_end'
+drivers/built-in.o: In function `amiga_serial_probe':
+amiserial.c:(.init.text+0x96a): undefined reference to `__tty_alloc_driver'
+amiserial.c:(.init.text+0x9c0): undefined reference to `tty_std_termios'
+amiserial.c:(.init.text+0x9e6): undefined reference to `tty_set_operations'
+amiserial.c:(.init.text+0xa3e): undefined reference to `tty_port_init'
+amiserial.c:(.init.text+0xa5c): undefined reference to `tty_port_link_device'
+amiserial.c:(.init.text+0xa6c): undefined reference to `tty_register_driver'
+amiserial.c:(.init.text+0xb4a): undefined reference to `tty_unregister_driver'
+amiserial.c:(.init.text+0xb58): undefined reference to `tty_port_destroy'
+amiserial.c:(.init.text+0xb64): undefined reference to `put_tty_driver'
 
-The device wakes up just fine to the wake-up interrupt, and then
-serial8250_handle_irq() gets called, but I'm not seeing anything
-in the console getting printed out. It's like all the RX characters
-are getting lost instead of just the first one. The RX characters
-work fine when the system is running.
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ arch/m68k/Kconfig.devices | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-So it seems there's been some kind of regression since v8?
-
-Regards,
-
-Tony
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/arch/m68k/Kconfig.devices b/arch/m68k/Kconfig.devices
+index 5e38bc25fc09..1154bb24ca84 100644
+--- a/arch/m68k/Kconfig.devices
++++ b/arch/m68k/Kconfig.devices
+@@ -95,7 +95,7 @@ config ATARI_DSP56K
+ 
+ config AMIGA_BUILTIN_SERIAL
+ 	tristate "Amiga builtin serial support"
+-	depends on AMIGA
++	depends on AMIGA && TTY
+ 	help
+ 	  If you want to use your Amiga's built-in serial port in Linux,
+ 	  answer Y.
+-- 
+1.9.1
