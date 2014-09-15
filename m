@@ -1,123 +1,508 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH 3/4] tty: omap-serial: use threaded interrupt handler
-Date: Mon, 15 Sep 2014 13:31:56 -0400
-Message-ID: <5417228C.5070503@hurleysoftware.com>
-References: <1410789610-23059-1-git-send-email-frans.klaver@xsens.com> <1410789610-23059-4-git-send-email-frans.klaver@xsens.com> <54170823.7040801@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <54170823.7040801-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Frans Klaver <frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Cc: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alexey Pelykh <alexey.pelykh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: [PATCH 1/2] serial: mxs-auart: use mctrl_gpio helpers for handling modem signals (v2.1)
+Date: Mon, 15 Sep 2014 19:37:37 +0200
+Message-ID: <1410802657-14084-1-git-send-email-j.uzycki@elproma.com.pl>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from v032797.home.net.pl ([89.161.177.31]:64000 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1752861AbaIORfG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 15 Sep 2014 13:35:06 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
 
-On 09/15/2014 11:39 AM, Peter Hurley wrote:
-> On 09/15/2014 10:00 AM, Frans Klaver wrote:
->> At 3.6Mbaud, with slightly over 2Mbit/s data coming in, we see 1600 uart
->> rx buffer overflows within 30 seconds. Threading the interrupt handling reduces
->> this to about 170 overflows in 10 minutes.
-> 
-> Why is the threadirqs kernel boot option not sufficient?
-> Or conversely, shouldn't this be selectable?
+Dedicated CTS and RTS pins are unusable together with a lot of other
+peripherals because they share the same line. Pinctrl is limited.
 
-Also, do you see the same performance differential when you implement this
-in the 8250 driver (that is, on top of Sebastian's omap->8250 conversion)?
+Moreover, the AUART controller doesn't handle DTR/DSR/DCD/RI signals,
+so we have to control them via GPIO.
+
+This patch permits to use GPIOs to control the CTS/RTS/DTR/DSR/DCD/RI
+signals.
+
+Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+---
+ .../devicetree/bindings/serial/fsl-mxs-auart.txt   | 10 ++-
+ drivers/tty/serial/Kconfig           |  1 +
+ drivers/tty/serial/mxs-auart.c       | 79 +++++++++++++++++++++-
+ 3 files changed, 86 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt b/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt
+index 59a40f1..7c408c8 100644
+--- a/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt
++++ b/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt
+@@ -11,8 +11,13 @@ Required properties:
+ - dma-names: "rx" for RX channel, "tx" for TX channel.
+ 
+ Optional properties:
+-- fsl,uart-has-rtscts : Indicate the UART has RTS and CTS lines,
++- fsl,uart-has-rtscts : Indicate the UART has RTS and CTS lines
++  for hardware flow control,
+ 	it also means you enable the DMA support for this UART.
++- {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
++  line respectively. It will use specified PIO instead of the peripheral
++  function pin for the USART feature.
++  If unsure, don't specify this property.
+ 
+ Example:
+ auart0: serial@8006a000 {
+@@ -21,6 +26,9 @@ auart0: serial@8006a000 {
+ 	interrupts = <112>;
+ 	dmas = <&dma_apbx 8>, <&dma_apbx 9>;
+ 	dma-names = "rx", "tx";
++	cts-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
++	dsr-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
++	dcd-gpios = <&gpio1 17 GPIO_ACTIVE_LOW>;
+ };
+ 
+ Note: Each auart port should have an alias correctly numbered in "aliases"
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 4fe8ca1..90e8516 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1357,6 +1357,7 @@ config SERIAL_MXS_AUART
+ 	depends on ARCH_MXS
+ 	tristate "MXS AUART support"
+ 	select SERIAL_CORE
++	select SERIAL_MCTRL_GPIO if GPIOLIB
+ 	help
+ 	  This driver supports the MXS Application UART (AUART) port.
+ 
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 52d14e3..78cd7d1 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -38,6 +38,18 @@
+ 
+ #include <asm/cacheflush.h>
+ 
++/* based on clps711x.c from linux-next:
++ *  serial: clps711x: Use mctrl_gpio helpers for handling modem signals
++ *  serial: clps711x: Fix COMPILE_TEST build for target without GPIOLIB support
++ * based on Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt from linux-next:
++ *  serial: clps711x: Use mctrl_gpio helpers for handling modem signals
++ * based on atmel_serial.c from linux-next:
++ *  tty/serial: at91: use mctrl_gpio helpers
++ *  TODO: tty/serial: at91: add interrupts for modem control lines
++ */
++#include <linux/err.h>
++#include "serial_mctrl_gpio.h"
++
+ #define MXS_AUART_MAJOR 242
+ #define MXS_AUART_PORTS 5
+ #define MXS_AUART_FIFO_SIZE		16
+@@ -156,6 +168,8 @@ struct mxs_auart_port {
+ 	struct scatterlist rx_sgl;
+ 	struct dma_chan	*rx_dma_chan;
+ 	void *rx_dma_buf;
++
++	struct mctrl_gpios	*gpios;
+ };
+ 
+ static struct platform_device_id mxs_auart_devtype[] = {
+@@ -417,6 +431,34 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
+ 
+ 	s->ctrl = mctrl;
+ 	writel(ctrl, u->membase + AUART_CTRL2);
++
++	mctrl_gpio_set(s->gpios, mctrl);
++}
++
++/* mxs_auart_modem_status() based on 8250.c,
++ * similar function could be as serial's helper... */
++#define MCTRL_ANY_DELTA        (TIOCM_RI | TIOCM_DSR | TIOCM_CD | TIOCM_CTS)
++static u32 mxs_auart_modem_status(struct mxs_auart_port *s, u32 mctrl)
++{
++	u32 mctrl_diff;
++
++	mctrl_diff = mctrl ^ s->ctrl;
++	s->ctrl = mctrl;
++	if (mctrl_diff & MCTRL_ANY_DELTA &&
++			/*interrupt_enabled &&*/
++			s->port.state != NULL) {
++		if (mctrl_diff & TIOCM_RI)
++			s->port.icount.rng++;
++		if (mctrl_diff & TIOCM_DSR)
++			s->port.icount.dsr++;
++		if (mctrl_diff & TIOCM_CD)
++			uart_handle_dcd_change(&s->port, mctrl & TIOCM_CD);
++		if (mctrl_diff & TIOCM_CTS)
++			uart_handle_cts_change(&s->port, mctrl & TIOCM_CTS);
++
++		wake_up_interruptible(&s->port.state->port.delta_msr_wait);
++	}
++	return mctrl;
+ }
+ 
+ static u32 mxs_auart_get_mctrl(struct uart_port *u)
+@@ -433,7 +475,9 @@ static u32 mxs_auart_get_mctrl(struct uart_port *u)
+ 	if (ctrl2 & AUART_CTRL2_RTS)
+ 		mctrl |= TIOCM_RTS;
+ 
+-	return mctrl;
++	/* should mxs_auart_modem_status() be in interrupt only? */
++	return mxs_auart_modem_status(s,
++			mctrl_gpio_get(s->gpios, &mctrl));
+ }
+ 
+ static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s);
+@@ -637,7 +681,12 @@ static void mxs_auart_settermios(struct uart_port *u,
+ 		ctrl |= AUART_LINECTRL_STP2;
+ 
+ 	/* figure out the hardware flow control settings */
+-	if (cflag & CRTSCTS) {
++	/*FIXME: DMA for hardware flow control only? */
++	if (cflag & CRTSCTS &&
++			(IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,
++					 UART_GPIO_RTS)) ||
++			 IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,
++					 UART_GPIO_CTS)))) {
+ 		/*
+ 		 * The DMA has a bug(see errata:2836) in mx23.
+ 		 * So we can not implement the DMA for auart in mx23,
+@@ -696,8 +745,14 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+ 		| AUART_INTR_CTSMIS),
+ 			s->port.membase + AUART_INTR_CLR);
+ 
++	mxs_auart_modem_status(s,
++			mctrl_gpio_get(s->gpios, &s->ctrl));
++
+ 	if (istat & AUART_INTR_CTSMIS) {
+-		uart_handle_cts_change(&s->port, stat & AUART_STAT_CTS);
++		if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,
++						UART_GPIO_CTS)))
++			uart_handle_cts_change(&s->port,
++					stat & AUART_STAT_CTS);
+ 		writel(AUART_INTR_CTSMIS,
+ 				s->port.membase + AUART_INTR_CLR);
+ 		istat &= ~AUART_INTR_CTSMIS;
+@@ -758,6 +813,8 @@ static int mxs_auart_startup(struct uart_port *u)
+ 	 */
+ 	writel(AUART_LINECTRL_FEN, u->membase + AUART_LINECTRL_SET);
+ 
++	/* get initial status of modem lines */
++	mctrl_gpio_get(s->gpios, &s->ctrl);
+ 	return 0;
+ }
+ 
+@@ -1021,6 +1078,14 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
+ 	return 0;
+ }
+ 
++static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
++{
++	s->gpios = mctrl_gpio_init(dev, 0);
++	if (IS_ERR_OR_NULL(s->gpios))
++		return -1;
++	return 0;
++}
++
+ static int mxs_auart_probe(struct platform_device *pdev)
+ {
+ 	const struct of_device_id *of_id =
+@@ -1078,6 +1143,11 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, s);
+ 
++	ret = mxs_auart_init_gpios(s, &pdev->dev);
++	if (ret < 0)
++		dev_err(&pdev->dev, "%s",
++			"Failed to initialize GPIOs. The serial port may not work as expected");
++
+ 	auart_port[s->port.line] = s;
+ 
+ 	mxs_auart_reset(&s->port);
+@@ -1094,6 +1164,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ out_free_irq:
++	mctrl_gpio_free(&pdev->dev, s->gpios);	/*useless?*/
+ 	auart_port[pdev->id] = NULL;
+ 	free_irq(s->irq, s);
+ out_free_clk:
+@@ -1112,6 +1183,8 @@ static int mxs_auart_remove(struct platform_device *pdev)
+ 
+ 	auart_port[pdev->id] = NULL;
+ 
++	mctrl_gpio_free(&pdev->dev, s->gpios);	/*useless?*/
++
+ 	clk_put(s->clk);
+ 	free_irq(s->irq, s);
+ 	kfree(s);
+-- 
+1.7.11.3
 
 
-> Regards,
-> Peter Hurley
-> 
-> PS - To overflow the 64 byte RX FIFO at those data rates means interrupt
-> latency in excess of 250us?
-> 
->> In practice this therefore reduces the need for hardware flow control,
->> meaning the sending side doesn't have to buffer as much either.
->>
->> Signed-off-by: Frans Klaver <frans.klaver-MHHw4NDrbWwAvxtiuMwx3w@public.gmane.org>
->> ---
->>  drivers/tty/serial/omap-serial.c | 30 +++++++++++++++++++++++-------
->>  1 file changed, 23 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
->> index 7d3f557..398139a 100644
->> --- a/drivers/tty/serial/omap-serial.c
->> +++ b/drivers/tty/serial/omap-serial.c
->> @@ -575,6 +575,20 @@ static void serial_omap_rdi(struct uart_omap_port *up, unsigned int lsr)
->>  }
->>  
->>  /**
->> + * serial_omap_fast_irq() - schedule interrupt handling
->> + */
->> +static irqreturn_t serial_omap_fast_irq(int irq, void *dev_id)
->> +{
->> +	struct uart_omap_port *up = dev_id;
->> +	unsigned int iir = serial_in(up, UART_IIR);
->> +
->> +	if (iir & UART_IIR_NO_INT)
->> +		return IRQ_NONE;
->> +
->> +	return IRQ_WAKE_THREAD;
->> +}
->> +
->> +/**
->>   * serial_omap_irq() - This handles the interrupt from one port
->>   * @irq: uart port irq number
->>   * @dev_id: uart port info
->> @@ -584,7 +598,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
->>  	struct uart_omap_port *up = dev_id;
->>  	unsigned int iir, lsr;
->>  	unsigned int type;
->> -	irqreturn_t ret = IRQ_NONE;
->>  	int max_count = 256;
->>  
->>  	spin_lock(&up->port.lock);
->> @@ -595,7 +608,6 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
->>  		if (iir & UART_IIR_NO_INT)
->>  			break;
->>  
->> -		ret = IRQ_HANDLED;
->>  		lsr = serial_in(up, UART_LSR);
->>  
->>  		/* extract IRQ type from IIR register */
->> @@ -634,7 +646,7 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
->>  	pm_runtime_put_autosuspend(up->dev);
->>  	up->port_activity = jiffies;
->>  
->> -	return ret;
->> +	return IRQ_HANDLED;
->>  }
->>  
->>  static unsigned int serial_omap_tx_empty(struct uart_port *port)
->> @@ -731,15 +743,19 @@ static int serial_omap_startup(struct uart_port *port)
->>  	/*
->>  	 * Allocate the IRQ
->>  	 */
->> -	retval = request_irq(up->port.irq, serial_omap_irq, up->port.irqflags,
->> -				up->name, up);
->> +	retval = request_threaded_irq(up->port.irq, serial_omap_fast_irq,
->> +						serial_omap_irq,
->> +						IRQF_ONESHOT | up->port.irqflags,
->> +						up->name, up);
->>  	if (retval)
->>  		return retval;
->>  
->>  	/* Optional wake-up IRQ */
->>  	if (up->wakeirq) {
->> -		retval = request_irq(up->wakeirq, serial_omap_irq,
->> -				     up->port.irqflags, up->name, up);
->> +		retval = request_threaded_irq(up->wakeirq, serial_omap_fast_irq,
->> +						serial_omap_irq,
->> +						IRQF_ONESHOT | up->port.irqflags,
->> +						up->name, up);
->>  		if (retval) {
->>  			free_irq(up->port.irq, up);
->>  			return retval;
->>
+>From 6477f8f5a2ead95147e208bf8fc506d093c2d0d9 Mon Sep 17 00:00:00 2001
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Date: Mon, 15 Sep 2014 19:28:01 +0200
+Subject: [PATCH 2/2] serial: mxs-auart: add interrupts for modem control
+ lines
 
+Handle CTS/DSR/RI/DCD GPIO interrupts in mxs-auart.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+---
+ drivers/tty/serial/mxs-auart.c | 153 ++++++++++++++++++++++++++-
+ 1 file changed, 149 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 78cd7d1..091be08 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -45,9 +45,17 @@
+  *  serial: clps711x: Use mctrl_gpio helpers for handling modem signals
+  * based on atmel_serial.c from linux-next:
+  *  tty/serial: at91: use mctrl_gpio helpers
+- *  TODO: tty/serial: at91: add interrupts for modem control lines
++ *  tty/serial: at91: add interrupts for modem control lines
++ *  TODO: tty/serial: at91: BUG: disable interrupts when !UART_ENABLE_MS()
++ * based on arm-kernel:
++ *  [PATCH v6 0/3] tty/serial: Add helpers to use GPIOs to control modem lines and implement atmel_serial.c
++ * based on linux-arm-kernel:
++ *  TODO: tty: serial: omap: use mctrl_gpio helpers
+  */
++#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/err.h>
++#include <linux/irq.h>
+ #include "serial_mctrl_gpio.h"
+ 
+ #define MXS_AUART_MAJOR 242
+@@ -170,6 +178,8 @@ struct mxs_auart_port {
+ 	void *rx_dma_buf;
+ 
+ 	struct mctrl_gpios	*gpios;
++	int			gpio_irq[UART_GPIO_MAX];
++	bool			ms_irq_enabled;
+ };
+ 
+ static struct platform_device_id mxs_auart_devtype[] = {
+@@ -480,6 +490,64 @@ static u32 mxs_auart_get_mctrl(struct uart_port *u)
+ 			mctrl_gpio_get(s->gpios, &mctrl));
+ }
+ 
++/*
++ * Enable modem status interrupts
++ */
++static void mxs_auart_enable_ms(struct uart_port *port)
++{
++	struct mxs_auart_port *s = to_auart_port(port);
++
++	/*
++	 * Interrupt should not be enabled twice
++	 */
++	if (s->ms_irq_enabled)
++		return;
++
++	s->ms_irq_enabled = true;
++
++	if (s->gpio_irq[UART_GPIO_CTS] >= 0)
++		enable_irq(s->gpio_irq[UART_GPIO_CTS]);
++	/* otherwise: shouldn't be AUART_INTR_CTSMIEN enabled here? (FIXME) */
++
++	if (s->gpio_irq[UART_GPIO_DSR] >= 0)
++		enable_irq(s->gpio_irq[UART_GPIO_DSR]);
++
++	if (s->gpio_irq[UART_GPIO_RI] >= 0)
++		enable_irq(s->gpio_irq[UART_GPIO_RI]);
++
++	if (s->gpio_irq[UART_GPIO_DCD] >= 0)
++		enable_irq(s->gpio_irq[UART_GPIO_DCD]);
++}
++
++/*
++ * Disable modem status interrupts
++ */
++static void mxs_auart_disable_ms(struct uart_port *port)
++{
++	struct mxs_auart_port *s = to_auart_port(port);
++
++	/*
++	 * Interrupt should not be disabled twice
++	 */
++	if (!s->ms_irq_enabled)
++		return;
++
++	s->ms_irq_enabled = false;
++
++	if (s->gpio_irq[UART_GPIO_CTS] >= 0)
++		disable_irq(s->gpio_irq[UART_GPIO_CTS]);
++	/* otherwise: shouldn't be AUART_INTR_CTSMIEN disabled here? (FIXME) */
++
++	if (s->gpio_irq[UART_GPIO_DSR] >= 0)
++		disable_irq(s->gpio_irq[UART_GPIO_DSR]);
++
++	if (s->gpio_irq[UART_GPIO_RI] >= 0)
++		disable_irq(s->gpio_irq[UART_GPIO_RI]);
++
++	if (s->gpio_irq[UART_GPIO_DCD] >= 0)
++		disable_irq(s->gpio_irq[UART_GPIO_DCD]);
++}
++
+ static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s);
+ static void dma_rx_callback(void *arg)
+ {
+@@ -728,6 +796,12 @@ static void mxs_auart_settermios(struct uart_port *u,
+ 			dev_err(s->dev, "We can not start up the DMA.\n");
+ 		}
+ 	}
++
++	/* CTS flow-control and modem-status interrupts */
++	if (UART_ENABLE_MS(u, termios->c_cflag))
++		mxs_auart_enable_ms(u);
++	else
++		mxs_auart_disable_ms(u);
+ }
+ 
+ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+@@ -745,8 +819,15 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+ 		| AUART_INTR_CTSMIS),
+ 			s->port.membase + AUART_INTR_CLR);
+ 
+-	mxs_auart_modem_status(s,
+-			mctrl_gpio_get(s->gpios, &s->ctrl));
++	/*
++	 * Dealing with GPIO interrupt
++	 */
++	if (irq == s->gpio_irq[UART_GPIO_CTS] ||
++	    irq == s->gpio_irq[UART_GPIO_DCD] ||
++	    irq == s->gpio_irq[UART_GPIO_DSR] ||
++	    irq == s->gpio_irq[UART_GPIO_RI])
++		mxs_auart_modem_status(s,
++				mctrl_gpio_get(s->gpios, &s->ctrl));
+ 
+ 	if (istat & AUART_INTR_CTSMIS) {
+ 		if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,
+@@ -815,6 +896,8 @@ static int mxs_auart_startup(struct uart_port *u)
+ 
+ 	/* get initial status of modem lines */
+ 	mctrl_gpio_get(s->gpios, &s->ctrl);
++
++	s->ms_irq_enabled = false;
+ 	return 0;
+ }
+ 
+@@ -822,6 +905,8 @@ static void mxs_auart_shutdown(struct uart_port *u)
+ {
+ 	struct mxs_auart_port *s = to_auart_port(u);
+ 
++	mxs_auart_disable_ms(u);
++
+ 	if (auart_dma_enabled(s))
+ 		mxs_auart_dma_exit(s);
+ 
+@@ -878,6 +963,7 @@ static struct uart_ops mxs_auart_ops = {
+ 	.start_tx       = mxs_auart_start_tx,
+ 	.stop_tx	= mxs_auart_stop_tx,
+ 	.stop_rx	= mxs_auart_stop_rx,
++	.enable_ms      = mxs_auart_enable_ms,
+ 	.break_ctl      = mxs_auart_break_ctl,
+ 	.set_mctrl	= mxs_auart_set_mctrl,
+ 	.get_mctrl      = mxs_auart_get_mctrl,
+@@ -1080,12 +1166,61 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
+ 
+ static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
+ {
++	enum mctrl_gpio_idx i;
++	struct gpio_desc *gpiod;
++
+ 	s->gpios = mctrl_gpio_init(dev, 0);
+ 	if (IS_ERR_OR_NULL(s->gpios))
+ 		return -1;
++
++	for (i = 0; i < UART_GPIO_MAX; i++) {
++		gpiod = mctrl_gpio_to_gpiod(s->gpios, i);
++		if (gpiod && (gpiod_get_direction(gpiod) == GPIOF_DIR_IN))
++			s->gpio_irq[i] = gpiod_to_irq(gpiod);
++		else
++			s->gpio_irq[i] = -EINVAL;
++	}
++
+ 	return 0;
+ }
+ 
++static void mxs_auart_free_gpio_irq(struct mxs_auart_port *s)
++{
++	enum mctrl_gpio_idx i;
++
++	for (i = 0; i < UART_GPIO_MAX; i++)
++		if (s->gpio_irq[i] >= 0)
++			free_irq(s->gpio_irq[i], s);
++}
++
++static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
++{
++	int *irq = s->gpio_irq;
++	enum mctrl_gpio_idx i;
++	int err = 0;
++
++	for (i = 0; (i < UART_GPIO_MAX) && !err; i++) {
++		if (irq[i] < 0)
++			continue;
++
++		irq_set_status_flags(irq[i], IRQ_NOAUTOEN);
++		err = request_irq(irq[i], mxs_auart_irq_handle, IRQ_TYPE_EDGE_BOTH,
++				dev_name(s->dev), s);
++		if (err)
++			dev_err(s->dev, "%s - Can't get %d irq\n",
++				__FUNCTION__, irq[i]);
++	}
++
++	/*
++	 * If something went wrong, rollback.
++	 */
++	while (err && (--i >= 0))
++		if (irq[i] >= 0)
++			free_irq(irq[i], s);
++
++	return err;
++}
++
+ static int mxs_auart_probe(struct platform_device *pdev)
+ {
+ 	const struct of_device_id *of_id =
+@@ -1148,13 +1283,20 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "%s",
+ 			"Failed to initialize GPIOs. The serial port may not work as expected");
+ 
++	/*
++	 * Get the GPIO lines IRQ
++	 */
++	ret = mxs_auart_request_gpio_irq(s);
++	if (ret)
++		goto out_free_irq;
++
+ 	auart_port[s->port.line] = s;
+ 
+ 	mxs_auart_reset(&s->port);
+ 
+ 	ret = uart_add_one_port(&auart_driver, &s->port);
+ 	if (ret)
+-		goto out_free_irq;
++		goto out_free_gpio_irq;
+ 
+ 	version = readl(s->port.membase + AUART_VERSION);
+ 	dev_info(&pdev->dev, "Found APPUART %d.%d.%d\n",
+@@ -1163,6 +1305,8 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 
+ 	return 0;
+ 
++out_free_gpio_irq:
++	mxs_auart_free_gpio_irq(s);
+ out_free_irq:
+ 	mctrl_gpio_free(&pdev->dev, s->gpios);	/*useless?*/
+ 	auart_port[pdev->id] = NULL;
+@@ -1183,6 +1327,7 @@ static int mxs_auart_remove(struct platform_device *pdev)
+ 
+ 	auart_port[pdev->id] = NULL;
+ 
++	mxs_auart_free_gpio_irq(s);
+ 	mctrl_gpio_free(&pdev->dev, s->gpios);	/*useless?*/
+ 
+ 	clk_put(s->clk);
+-- 
+1.7.11.3
+
