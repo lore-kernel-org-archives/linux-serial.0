@@ -1,42 +1,41 @@
-From: Frans Klaver <frans.klaver@xsens.com>
-Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
- for AM33xx
-Date: Tue, 16 Sep 2014 16:23:11 +0200
-Message-ID: <20140916142311.GL28458@ci00147.xsens-tech.local>
-References: <20140911151114.GD28458@ci00147.xsens-tech.local>
- <5411C810.7070906@linutronix.de>
- <2cf997d9-e7de-465b-915d-3a0a5e7b95f7@email.android.com>
- <54129F6C.7040508@linutronix.de>
- <20140912094010.GE28458@ci00147.xsens-tech.local>
- <5412C21A.8020203@linutronix.de>
- <20140912102816.GF28458@ci00147.xsens-tech.local>
- <541716DC.9020904@linutronix.de>
- <20140916090540.GJ28458@ci00147.xsens-tech.local>
- <20140916124200.GK28458@ci00147.xsens-tech.local>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 00/16 v9] omap 8250 based uart + DMA
+Date: Tue, 16 Sep 2014 09:48:59 -0700
+Message-ID: <20140916164858.GA1580@atomide.com>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
+ <20140912224324.GK18849@atomide.com>
+ <5416D2A0.5020407@linutronix.de>
+ <541833C0.5020106@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from filter1.ibarracuda.nl ([83.247.7.10]:33553 "EHLO
-	filter1.ibarracuda.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753784AbaIPO0p (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 16 Sep 2014 10:26:45 -0400
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20140916124200.GK28458@ci00147.xsens-tech.local>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+In-Reply-To: <541833C0.5020106@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, gregkh@linuxfoundation.org
+List-Id: linux-serial@vger.kernel.org
 
-On Tue, Sep 16, 2014 at 02:42:00PM +0200, Frans Klaver wrote:
-> On Tue, Sep 16, 2014 at 11:05:40AM +0200, Frans Klaver wrote:
-> > On Mon, Sep 15, 2014 at 06:42:04PM +0200, Sebastian Andrzej Siewior wrote:
-> > > If there is nothing specific to the file you do less on I have no idea
-> > > what else it could if it is not the config.
-> > 
-> > I'll test your config and go through the differences.
-> 
-> So far it looks like it isn't in the config. I've tested both your and
-> my config on debian wheezy on a boneblack. No lock ups.
+* Sebastian Andrzej Siewior <bigeasy@linutronix.de> [140916 05:58]:
+> On 09/15/2014 01:50 PM, Sebastian Andrzej Siewior wrote:
+> > I changed the restore function the fix the am335x-evm + less "freez=
+e".
+> > And now we have this. So let me search=E2=80=A6
+>=20
+> IER was 0 by accident. It fixed in TX path.
+> I pushed uart_v10_pre1 which should have it fixed aport from other
+> things=E2=80=A6
 
-No, skip that. It is in the config. I'll hunt it down.
+Just verified that works for my off-idle test case thanks.
+
+> I am going to address the review comments, to split the DMA callbacks
+> as requested and if nobody comes up with something fancy we will have=
+ a
+> v10 :)
+
+OK
+
+Regards,
+
+Tony
