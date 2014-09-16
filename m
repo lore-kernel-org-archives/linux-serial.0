@@ -1,47 +1,54 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v2 5/9] ARM: meson6: clocksource: add Meson6 timer support
-Date: Tue, 16 Sep 2014 11:06:37 +0200
-Message-ID: <CABuKBeKSkT6k-EaqN17Exf5Qhd6cWJg_qESskrADtRU+_t4-tQ@mail.gmail.com>
-References: <1410466300-19168-1-git-send-email-carlo@caione.org>
-	<1410466300-19168-6-git-send-email-carlo@caione.org>
-	<3053926.qBD36ymAOD@wuerfel>
+From: Frans Klaver <frans.klaver@xsens.com>
+Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
+ for AM33xx
+Date: Tue, 16 Sep 2014 11:05:40 +0200
+Message-ID: <20140916090540.GJ28458@ci00147.xsens-tech.local>
+References: <5411967A.6090406@hurleysoftware.com>
+ <54119AAA.9080907@linutronix.de>
+ <20140911151114.GD28458@ci00147.xsens-tech.local>
+ <5411C810.7070906@linutronix.de>
+ <2cf997d9-e7de-465b-915d-3a0a5e7b95f7@email.android.com>
+ <54129F6C.7040508@linutronix.de>
+ <20140912094010.GE28458@ci00147.xsens-tech.local>
+ <5412C21A.8020203@linutronix.de>
+ <20140912102816.GF28458@ci00147.xsens-tech.local>
+ <541716DC.9020904@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="utf-8"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f42.google.com ([209.85.215.42]:56857 "EHLO
-	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753364AbaIPJGj (ORCPT
+Received: from filter1.ibarracuda.nl ([83.247.7.10]:48790 "EHLO
+	filter1.ibarracuda.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752699AbaIPJTP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 16 Sep 2014 05:06:39 -0400
-In-Reply-To: <3053926.qBD36ymAOD@wuerfel>
+	Tue, 16 Sep 2014 05:19:15 -0400
+Content-Disposition: inline
+In-Reply-To: <541716DC.9020904@linutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Carlo Caione <carlo@caione.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.cz, Grant Likely <grant.likely@linaro.org>, Beniamino Galvani <b.galvani@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, =?ISO-8859-1?Q?Andreas_F=E4rber?= <afaerber@suse.de>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 
-2014-09-11 22:57 GMT+02:00 Arnd Bergmann <arnd@arndb.de>:
-> On Thursday 11 September 2014 22:11:36 Carlo Caione wrote:
->> Meson6 SoCs are equipped with 5 32-bit timers, called TIMER_A, TIMER_B,
->> TIMER_C, TIMER_D and TIMER_E.
->>
->> The driver is providing clocksource support for the 32-bit counter using
->> TIMER_E. Clockevents are also supported using TIMER_A.
->>
->> Signed-off-by: Carlo Caione <carlo@caione.org>
->>
+On Mon, Sep 15, 2014 at 06:42:04PM +0200, Sebastian Andrzej Siewior wrote:
+> On 09/12/2014 12:28 PM, Frans Klaver wrote:
+> > port config is 115200 8N1. I don't recall doing anything special. I
+> > boot, login, less file and get a lock.
+> 
+> So I booted my mini Debian 7.6 (basic system + openssh) on my beagle
+> bone black which is:
+> 
+> [    0.000000] AM335X ES2.0 (neon )
+> 
+> configured a console, login, invoked "less file". The file was shown, I
+> hit on the space key so less shows me more of the file. No lock-up.
+> I tried booting via NFS and MMC. I tried various files with less.
+> 
+> My dot config is here
+> 	https://breakpoint.cc/config-am335x-bb.txt.xz
+> 
+> If there is nothing specific to the file you do less on I have no idea
+> what else it could if it is not the config.
 
-This version addresses all the comments I had:
+I'll test your config and go through the differences.
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-
->
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
->
-> We should take all the platform code through the arm-soc tree, this one
-> along with the DT binding document should go through the clocksource
-> tree.
-
-
-
--- 
-motzblog.wordpress.com
+Thanks,
+Frans
