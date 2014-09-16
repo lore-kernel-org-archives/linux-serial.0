@@ -1,232 +1,55 @@
-From: Johannes Thumshirn <johannes.thumshirn@men.de>
-Subject: [PATCH v3] tty: serial: men_z135_uart: Fix driver for changes in hardware
-Date: Tue, 16 Sep 2014 07:24:28 +0200
-Message-ID: <1410845068-2954-1-git-send-email-johannes.thumshirn@men.de>
+From: Frans Klaver <frans.klaver@xsens.com>
+Subject: Re: [PATCH 3/4] tty: omap-serial: use threaded interrupt handler
+Date: Tue, 16 Sep 2014 10:50:37 +0200
+Message-ID: <20140916085037.GI28458@ci00147.xsens-tech.local>
+References: <1410789610-23059-1-git-send-email-frans.klaver@xsens.com>
+ <1410789610-23059-4-git-send-email-frans.klaver@xsens.com>
+ <54170823.7040801@hurleysoftware.com>
+ <5417228C.5070503@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail1.bemta5.messagelabs.com ([195.245.231.150]:59276 "EHLO
-	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750812AbaIPFYg (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 16 Sep 2014 01:24:36 -0400
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5417228C.5070503@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexey Pelykh <alexey.pelykh@gmail.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johannes Thumshirn <johannes.thumshirn@men.de>
 
-16z135 IP Core has changed so the driver needs to be updated to respect
-these changes. The following changes have been made:
+On Mon, Sep 15, 2014 at 01:31:56PM -0400, Peter Hurley wrote:
+> On 09/15/2014 11:39 AM, Peter Hurley wrote:
+> > On 09/15/2014 10:00 AM, Frans Klaver wrote:
+> >> At 3.6Mbaud, with slightly over 2Mbit/s data coming in, we see 1600 uart
+> >> rx buffer overflows within 30 seconds. Threading the interrupt handling reduces
+> >> this to about 170 overflows in 10 minutes.
+> > 
+> > Why is the threadirqs kernel boot option not sufficient?
+> > Or conversely, shouldn't this be selectable?
+> 
 
-* Don't invert the 16z135 modem status register when reading.
-* Add module parameter to configure the (baud rate dependent) RX timeout.
-  Character timeout in seconds = (timeout_reg * baud_reg * 4)/freq_reg.
-* Enable the handling of UART core's automatic flow control feature.
-  When AFE is active disable generation of modem status IRQs.
-* Rework the handling of IRQs to be conform with newer FPGA versions and
-  take precautions not to miss an interrupt because of the destructive read
-  of the IIR register.
-* Correct men_z135_handle_modem_status(), MSR is stat_reg[15:8] not
-  stat_reg[7:0]
+I wasn't aware of the threadirqs boot option. I also wouldn't know if
+this should be selectable. What would be a reason to favor the
+non-threaded irq over the threaded irq?
 
-Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
----
-Changes to v1:
-Incorporated comments of Jiri Slaby:
+> Also, do you see the same performance differential when you implement this
+> in the 8250 driver (that is, on top of Sebastian's omap->8250 conversion)?
+> 
 
-* Timeout value is documented in module parameter description
-* rx_timeout variable is uint
-* Changed IRQ handled variable to bool
-* Changed if statement for RDA or CTI IRQ
+I haven't gotten Sebastian's driver to work properly yet on the console.
+There was no reason for me yet to throw my omap changes on top of
+Sebastian's queue.
 
-Changes to v2:
-Correct men_z135_handle_modem_status(), MSR is stat_reg[15:8] not stat_reg[7:0]
+> > PS - To overflow the 64 byte RX FIFO at those data rates means interrupt
+> > latency in excess of 250us?
 
+At 3686400 baud it should take about 174 us to fill a 64 byte buffer. I
+haven't done any measurements on the interrupt latency though. If you
+consider that we're sending about 1kB of data, 240 times a second, we're
+spending a lot of time reading data from the uart. I can imagine the
+system has other work to do as well.
 
- drivers/tty/serial/men_z135_uart.c | 98 +++++++++++++++++++++++---------------
- 1 file changed, 60 insertions(+), 38 deletions(-)
+This doesn't mean that we're not interested in Sebastian's driver
+anymore though. We really want that dma support.
 
-diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-index 30e9e60..29fee69 100644
---- a/drivers/tty/serial/men_z135_uart.c
-+++ b/drivers/tty/serial/men_z135_uart.c
-@@ -34,12 +34,11 @@
- #define MEN_Z135_CONF_REG		0x808
- #define MEN_Z135_UART_FREQ		0x80c
- #define MEN_Z135_BAUD_REG		0x810
--#define MENZ135_TIMEOUT			0x814
-+#define MEN_Z135_TIMEOUT		0x814
-
- #define MEN_Z135_MEM_SIZE		0x818
-
--#define IS_IRQ(x) ((x) & 1)
--#define IRQ_ID(x) (((x) >> 1) & 7)
-+#define IRQ_ID(x) ((x) & 0x1f)
-
- #define MEN_Z135_IER_RXCIEN BIT(0)		/* RX Space IRQ */
- #define MEN_Z135_IER_TXCIEN BIT(1)		/* TX Space IRQ */
-@@ -94,11 +93,11 @@
- #define MEN_Z135_LSR_TEXP BIT(6)
- #define MEN_Z135_LSR_RXFIFOERR BIT(7)
-
--#define MEN_Z135_IRQ_ID_MST 0
--#define MEN_Z135_IRQ_ID_TSA 1
--#define MEN_Z135_IRQ_ID_RDA 2
--#define MEN_Z135_IRQ_ID_RLS 3
--#define MEN_Z135_IRQ_ID_CTI 6
-+#define MEN_Z135_IRQ_ID_RLS BIT(0)
-+#define MEN_Z135_IRQ_ID_RDA BIT(1)
-+#define MEN_Z135_IRQ_ID_CTI BIT(2)
-+#define MEN_Z135_IRQ_ID_TSA BIT(3)
-+#define MEN_Z135_IRQ_ID_MST BIT(4)
-
- #define LCR(x) (((x) >> MEN_Z135_LCR_SHIFT) & 0xff)
-
-@@ -118,6 +117,11 @@ static int align;
- module_param(align, int, S_IRUGO);
- MODULE_PARM_DESC(align, "Keep hardware FIFO write pointer aligned, default 0");
-
-+static uint rx_timeout;
-+module_param(rx_timeout, uint, S_IRUGO);
-+MODULE_PARM_DESC(rx_timeout, "RX timeout. "
-+		"Timeout in seconds = (timeout_reg * baud_reg * 4) / freq_reg");
-+
- struct men_z135_port {
- 	struct uart_port port;
- 	struct mcb_device *mdev;
-@@ -180,12 +184,14 @@ static inline void men_z135_reg_clr(struct men_z135_port *uart,
-  */
- static void men_z135_handle_modem_status(struct men_z135_port *uart)
- {
--	if (uart->stat_reg & MEN_Z135_MSR_DDCD)
-+	u8 msr = (uart->stat_reg >> 8) & 0xff;
-+
-+	if (msr & MEN_Z135_MSR_DDCD)
- 		uart_handle_dcd_change(&uart->port,
--				uart->stat_reg & ~MEN_Z135_MSR_DCD);
--	if (uart->stat_reg & MEN_Z135_MSR_DCTS)
-+				msr & ~MEN_Z135_MSR_DCD);
-+	if (msr & MEN_Z135_MSR_DCTS)
- 		uart_handle_cts_change(&uart->port,
--				uart->stat_reg & ~MEN_Z135_MSR_CTS);
-+				msr & ~MEN_Z135_MSR_CTS);
- }
-
- static void men_z135_handle_lsr(struct men_z135_port *uart)
-@@ -373,43 +379,47 @@ out:
-  * @irq: The IRQ number
-  * @data: Pointer to UART port
-  *
-- * Check IIR register to see which tasklet to start.
-+ * Check IIR register to find the cause of the interrupt and handle it.
-+ * It is possible that multiple interrupts reason bits are set and reading
-+ * the IIR is a destructive read, so we always need to check for all possible
-+ * interrupts and handle them.
-  */
- static irqreturn_t men_z135_intr(int irq, void *data)
- {
- 	struct men_z135_port *uart = (struct men_z135_port *)data;
- 	struct uart_port *port = &uart->port;
-+	bool handled = false;
- 	int irq_id;
-
- 	uart->stat_reg = ioread32(port->membase + MEN_Z135_STAT_REG);
--	/* IRQ pending is low active */
--	if (IS_IRQ(uart->stat_reg))
--		return IRQ_NONE;
--
- 	irq_id = IRQ_ID(uart->stat_reg);
--	switch (irq_id) {
--	case MEN_Z135_IRQ_ID_MST:
--		men_z135_handle_modem_status(uart);
--		break;
--	case MEN_Z135_IRQ_ID_TSA:
--		men_z135_handle_tx(uart);
--		break;
--	case MEN_Z135_IRQ_ID_CTI:
--		dev_dbg(&uart->mdev->dev, "Character Timeout Indication\n");
--		/* Fallthrough */
--	case MEN_Z135_IRQ_ID_RDA:
--		/* Reading data clears RX IRQ */
--		men_z135_handle_rx(uart);
--		break;
--	case MEN_Z135_IRQ_ID_RLS:
-+
-+	if (!irq_id)
-+		goto out;
-+
-+	if (irq_id & MEN_Z135_IRQ_ID_RLS) {
- 		men_z135_handle_lsr(uart);
--		break;
--	default:
--		dev_warn(&uart->mdev->dev, "Unknown IRQ id %d\n", irq_id);
--		return IRQ_NONE;
-+		handled = true;
- 	}
-
--	return IRQ_HANDLED;
-+	if (irq_id & (MEN_Z135_IRQ_ID_RDA | MEN_Z135_IRQ_ID_CTI)) {
-+		if (irq_id & MEN_Z135_IRQ_ID_CTI)
-+			dev_dbg(&uart->mdev->dev, "Character Timeout Indication\n");
-+		men_z135_handle_rx(uart);
-+		handled = true;
-+	}
-+
-+	if (irq_id & MEN_Z135_IRQ_ID_TSA) {
-+		men_z135_handle_tx(uart);
-+		handled = true;
-+	}
-+
-+	if (irq_id & MEN_Z135_IRQ_ID_MST) {
-+		men_z135_handle_modem_status(uart);
-+		handled = true;
-+	}
-+out:
-+	return IRQ_RETVAL(handled);
- }
-
- /**
-@@ -495,7 +505,7 @@ static unsigned int men_z135_get_mctrl(struct uart_port *port)
-
- 	stat_reg = ioread32(port->membase + MEN_Z135_STAT_REG);
-
--	msr = ~((stat_reg >> 8) & 0xff);
-+	msr = (stat_reg >> 8) & 0xff;
-
- 	if (msr & MEN_Z135_MSR_CTS)
- 		mctrl |= TIOCM_CTS;
-@@ -584,6 +594,9 @@ static int men_z135_startup(struct uart_port *port)
-
- 	iowrite32(conf_reg, port->membase + MEN_Z135_CONF_REG);
-
-+	if (rx_timeout)
-+		iowrite32(rx_timeout, port->membase + MEN_Z135_TIMEOUT);
-+
- 	return 0;
- }
-
-@@ -603,6 +616,7 @@ static void men_z135_set_termios(struct uart_port *port,
- 				struct ktermios *termios,
- 				struct ktermios *old)
- {
-+	struct men_z135_port *uart = to_men_z135(port);
- 	unsigned int baud;
- 	u32 conf_reg;
- 	u32 bd_reg;
-@@ -643,6 +657,14 @@ static void men_z135_set_termios(struct uart_port *port,
- 	} else
- 		lcr |= MEN_Z135_PAR_DIS << MEN_Z135_PEN_SHIFT;
-
-+	if (termios->c_cflag & CRTSCTS) {
-+		conf_reg |= MEN_Z135_MCR_RCFC;
-+		men_z135_reg_clr(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_MSIEN);
-+	} else {
-+		conf_reg &= ~MEN_Z135_MCR_RCFC;
-+		men_z135_reg_set(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_MSIEN);
-+	}
-+
- 	termios->c_cflag &= ~CMSPAR; /* Mark/Space parity is not supported */
-
- 	conf_reg |= lcr << MEN_Z135_LCR_SHIFT;
---
-1.9.1
+Thanks,
+Frans
