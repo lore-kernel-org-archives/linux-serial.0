@@ -1,50 +1,52 @@
-From: Kris Modrak <krismodrak@hotmail.com>
-Subject: [PATCH 1/1] Xilinx uartlite serial driver: Add lock in isr to avoid SMP race condition
-Date: Wed, 17 Sep 2014 02:18:54 +0200
-Message-ID: <BLU437-SMTP67D906D4C290ABD3B6CC31D2B60@phx.gbl>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 00/16 v9] omap 8250 based uart + DMA
+Date: Wed, 17 Sep 2014 10:38:52 +0200
+Message-ID: <5419489C.9090607@linutronix.de>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de> <20140912224324.GK18849@atomide.com> <5416D2A0.5020407@linutronix.de> <541833C0.5020106@linutronix.de> <20140916164858.GA1580@atomide.com> <20140916213043.GB6672@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from blu004-omc2s19.hotmail.com ([65.55.111.94]:54589 "EHLO
-	BLU004-OMC2S19.hotmail.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752512AbaIQAYt (ORCPT
+Received: from www.linutronix.de ([62.245.132.108]:47369 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751842AbaIQIjC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 16 Sep 2014 20:24:49 -0400
+	Wed, 17 Sep 2014 04:39:02 -0400
+In-Reply-To: <20140916213043.GB6672@atomide.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Korsgaard <jacmet@sunsite.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, Kris Modrak <krismodrak@hotmail.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, gregkh@linuxfoundation.org
 
-Trasmitted characters could be lost or written twice due to a missing lock
-in the critical section of the isr. The missing lock causes a race condition
-on SMP systems between ulite_transmit when called from the isr and
-ulite_start_tx as they can execute simultaneously on separate cores. The call
-from ulite_start_tx is made from serial_core.c with the lock taken.
+On 09/16/2014 11:30 PM, Tony Lindgren wrote:
+> Found one more issue when booting on 2420 n8x0, maybe something to do
+> with runtime PM?
+To some degree, yes.
 
-Signed-off-by: Kris Modrak <krismodrak@hotmail.com>
----
- drivers/tty/serial/uartlite.c |    6 +++++-
- 1 files changed, 5 insertions(+), 1 deletions(-)
+> [    4.770507] Internal error: Oops - undefined instruction: 0 [#1]
+SMP ARM
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 9fc22f4..ee151a2 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -196,9 +196,13 @@ static irqreturn_t ulite_isr(int irq, void *dev_id)
- 	int busy, n = 0;
- 
- 	do {
--		int stat = uart_in32(ULITE_STATUS, port);
-+		int stat;
-+
-+		spin_lock(&port->lock);
-+		stat = uart_in32(ULITE_STATUS, port);
- 		busy  = ulite_receive(port, stat);
- 		busy |= ulite_transmit(port, stat);
-+		spin_unlock(&port->lock);
- 		n++;
- 	} while (busy);
- 
--- 
-1.7.5.4
+  e3a02000        mov     r2, #0
+  ee072fba        mcr     15, 0, r2, cr7, cr10, {5}
+  e3a01001        mov     r1, #1
+  f5d3f000        pld     [r3]
+=>e1d30f9f        ldrexb  r0, [r3]
 
+That ldrexb is part of the xchg() function in serial8250_rpm_get_tx().
+So it looks like 2420 n8x0 does not understand ldrexb but the inline
+assembly decided that it should.
+
+This OMAP2420 should be ARM1136 / ARMv6. The ARM1136J(F)-S TRM says for
+ldrexb: "This command is only available from the rev1 (r1p0) release of
+the ARM1136JF-S processor."
+
+So it looks like the CPU should know what to do when this opcode comes
+around.
+
+> 
+> Regards,
+> 
+> Tony
+> 
+
+Sebastian
