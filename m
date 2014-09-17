@@ -1,50 +1,66 @@
-From: Johannes Thumshirn <johannes.thumshirn@men.de>
-Subject: Re: [PATCH v3] tty: serial: men_z135_uart: Fix driver for changes in
- hardware
-Date: Wed, 17 Sep 2014 12:54:33 +0200
-Message-ID: <20140917105432.GA17369@jtlinux>
-References: <1410845068-2954-1-git-send-email-johannes.thumshirn@men.de>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 1/1] Xilinx uartlite serial driver: Add lock in isr to
+ avoid SMP race condition
+Date: Wed, 17 Sep 2014 07:29:17 -0400
+Message-ID: <5419708D.9030403@hurleysoftware.com>
+References: <BLU437-SMTP67D906D4C290ABD3B6CC31D2B60@phx.gbl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1410845068-2954-1-git-send-email-johannes.thumshirn@men.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johannes Thumshirn <johannes.thumshirn@men.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:34647 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753107AbaIQL32 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 17 Sep 2014 07:29:28 -0400
+In-Reply-To: <BLU437-SMTP67D906D4C290ABD3B6CC31D2B60@phx.gbl>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kris Modrak <krismodrak@hotmail.com>, Peter Korsgaard <jacmet@sunsite.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
 
-On Tue, Sep 16, 2014 at 07:24:28AM +0200, Johannes Thumshirn wrote:
-> 16z135 IP Core has changed so the driver needs to be updated to respect
-> these changes. The following changes have been made:
->
-> * Don't invert the 16z135 modem status register when reading.
-> * Add module parameter to configure the (baud rate dependent) RX timeout.
->   Character timeout in seconds = (timeout_reg * baud_reg * 4)/freq_reg.
-> * Enable the handling of UART core's automatic flow control feature.
->   When AFE is active disable generation of modem status IRQs.
-> * Rework the handling of IRQs to be conform with newer FPGA versions and
->   take precautions not to miss an interrupt because of the destructive read
->   of the IIR register.
-> * Correct men_z135_handle_modem_status(), MSR is stat_reg[15:8] not
->   stat_reg[7:0]
->
-> Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+Hi Kris,
+
+On 09/16/2014 08:18 PM, Kris Modrak wrote:
+> Trasmitted characters could be lost or written twice due to a missing lock
+> in the critical section of the isr. The missing lock causes a race condition
+> on SMP systems between ulite_transmit when called from the isr and
+> ulite_start_tx as they can execute simultaneously on separate cores. The call
+> from ulite_start_tx is made from serial_core.c with the lock taken.
+> 
+> Signed-off-by: Kris Modrak <krismodrak@hotmail.com>
 > ---
-> Changes to v1:
-> Incorporated comments of Jiri Slaby:
->
-> * Timeout value is documented in module parameter description
-> * rx_timeout variable is uint
-> * Changed IRQ handled variable to bool
-> * Changed if statement for RDA or CTI IRQ
->
-> Changes to v2:
-> Correct men_z135_handle_modem_status(), MSR is stat_reg[15:8] not stat_reg[7:0]
+>  drivers/tty/serial/uartlite.c |    6 +++++-
+>  1 files changed, 5 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+> index 9fc22f4..ee151a2 100644
+> --- a/drivers/tty/serial/uartlite.c
+> +++ b/drivers/tty/serial/uartlite.c
+> @@ -196,9 +196,13 @@ static irqreturn_t ulite_isr(int irq, void *dev_id)
+>  	int busy, n = 0;
+>  
+>  	do {
+> -		int stat = uart_in32(ULITE_STATUS, port);
+> +		int stat;
+> +
+> +		spin_lock(&port->lock);
+> +		stat = uart_in32(ULITE_STATUS, port);
+>  		busy  = ulite_receive(port, stat);
+>  		busy |= ulite_transmit(port, stat);
+> +		spin_unlock(&port->lock);
+>  		n++;
+>  	} while (busy);
 
-We've found a bug in this patch during our tests so please do not en-queue it yet.
+Might as well take the spinlock for the entire loop.
+A nice upgrade here would be to limit the loop to a fixed number of
+iterations as well (in a separate patch).
 
-Sorry for the inconvenience.
+Regards,
+Peter Hurley
 
-Thanks,
-Johannes
+PS - That ISR has some odd logic; if data was only transmitted but not
+     received, it still submits input work even though there is no work
+     to perform (ie., tty_flip_buffer_push() should only be called if
+     ulite_receive() returned non-zero).
+
