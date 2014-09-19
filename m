@@ -1,81 +1,110 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [RFC PATCH 00/10] drivers: PL011: add SBSA subset support
-Date: Fri, 19 Sep 2014 13:21:13 +0100
-Message-ID: <1411129283-17219-1-git-send-email-andre.przywara@arm.com>
+Subject: [RFC PATCH 02/10] drivers: PL011: refactor pl011_startup()
+Date: Fri, 19 Sep 2014 13:21:15 +0100
+Message-ID: <1411129283-17219-3-git-send-email-andre.przywara@arm.com>
+References: <1411129283-17219-1-git-send-email-andre.przywara@arm.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:36066 "EHLO
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:36074 "EHLO
 	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755548AbaISMWG (ORCPT
+	by vger.kernel.org with ESMTP id S1756113AbaISMWH (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Sep 2014 08:22:06 -0400
+	Fri, 19 Sep 2014 08:22:07 -0400
+In-Reply-To: <1411129283-17219-1-git-send-email-andre.przywara@arm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: rob.herring@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>
 
-(This version has still issues, but I'd like to have feedback on
-the general feasibility of this approach before wasting even more
-time on debugging).
+Split the pl011_startup() function into smaller chunks to allow
+easier reuse later when adding SBSA support.
 
-The ARM Server Base System Architecture[1] document describes a
-generic UART which is a subset of the PL011 UART.
-It lacks DMA support, baud rate control and modem status line
-control, among other things.
-The idea is to move the UART initialization and setup into the
-firmware (which does this job today already) and let the kernel just
-use the UART for sending and receiving characters.
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ drivers/tty/serial/amba-pl011.c |   51 +++++++++++++++++++++++----------------
+ 1 file changed, 30 insertions(+), 21 deletions(-)
 
-This patchset is an attempt to integrate support for this UART subset
-into the existing PL011 driver - basically by refactoring some
-functions and providing a new uart_ops structure for it. It also has
-a separate probe function to be not dependent on AMBA/PrimeCell.
-Beside the obvious effect of code sharing it has the advantage of not
-introducing another serial device prefix, so it can go with ttyAMA,
-which seems to be pretty common.
-
-There is still one issue in bringing up the UART. On the PL011 we
-send a dummy character via the loopback facility with the FIFOs
-disabled to get things going, but both FIFO control and loopback are
-outside of the SBSA spec. I consider this loopback approach a kludge
-anyway, but am struggling to find a better way of fixing this due to
-my lack of understanding of the TTY/serial layer.
-If someone with more wisdom could enlighten me, I would be grateful.
-
-
-Patch 1/10 contains a bug fix which applies to the PL011 part also,
-it should be considered regardless of the rest of the series.
-Patch 2-7 refactor some PL011 functions by splitting them up into
-smaller pieces, so that most the code can be reused later by the SBSA
-part.
-Patch 8 and 9 introduce two new properties for the vendor structure,
-this is for SBSA functionality which cannot be controlled by
-separate uart_ops members only.
-Patch 10 then finally drops in the SBSA specific code, by providing
-a new uart_ops, vendor struct and probe function for it.
-
-Please have a look and tell me whether this SBSA driver approach has
-any future.
-
-Regards,
-Andre
-
-Andre Przywara (10):
-  drivers: PL011: avoid potential unregister_driver call
-  drivers: PL011: refactor pl011_startup()
-  drivers: PL011: refactor pl011_shutdown()
-  drivers: PL011: refactor pl011_set_termios()
-  drivers: PL011: refactor pl011_probe()
-  drivers: PL011: replace UART_MIS reading with _RIS & _IMSC
-  drivers: PL011: move cts_event workaround into separate function
-  drivers: PL011: allow avoiding UART enabling/disabling
-  drivers: PL011: allow to supply fixed option string
-  drivers: PL011: add support for the ARM SBSA generic UART
-
- .../devicetree/bindings/serial/arm_sbsa_uart.txt   |    9 +
- drivers/tty/serial/amba-pl011.c                    |  509 ++++++++++++++------
- 2 files changed, 380 insertions(+), 138 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
-
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 8fab985..22f113c 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1524,6 +1524,32 @@ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
+ 	}
+ }
+ 
++static int pl011_allocate_irq(struct uart_amba_port *uap)
++{
++	writew(uap->im, uap->port.membase + UART011_IMSC);
++
++	return request_irq(uap->port.irq, pl011_int, 0, "uart-pl011", uap);
++}
++
++/*
++ * Enable interrupts, only timeouts when using DMA
++ * if initial RX DMA job failed, start in interrupt mode
++ * as well.
++ */
++static void pl011_enable_interrupts(struct uart_amba_port *uap)
++{
++	spin_lock_irq(&uap->port.lock);
++
++	/* Clear out any spuriously appearing RX interrupts */
++	writew(UART011_RTIS | UART011_RXIS,
++		uap->port.membase + UART011_ICR);
++	uap->im = UART011_RTIM;
++	if (!pl011_dma_rx_running(uap))
++		uap->im |= UART011_RXIM;
++	writew(uap->im, uap->port.membase + UART011_IMSC);
++	spin_unlock_irq(&uap->port.lock);
++}
++
+ static int pl011_startup(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
+@@ -1534,19 +1560,15 @@ static int pl011_startup(struct uart_port *port)
+ 	if (retval)
+ 		goto clk_dis;
+ 
+-	writew(uap->im, uap->port.membase + UART011_IMSC);
+-
+-	/*
+-	 * Allocate the IRQ
+-	 */
+-	retval = request_irq(uap->port.irq, pl011_int, 0, "uart-pl011", uap);
++	retval = pl011_allocate_irq(uap);
+ 	if (retval)
+ 		goto clk_dis;
+ 
+ 	writew(uap->vendor->ifls, uap->port.membase + UART011_IFLS);
+ 
+ 	/*
+-	 * Provoke TX FIFO interrupt into asserting. Taking care to preserve
++	 * Provoke TX FIFO interrupt into asserting by enabling loopback and
++	 * sending a dummy character. Taking care to preserve
+ 	 * baud rate and data format specified by FBRD, IBRD and LCRH as the
+ 	 * UART may already be in use as a console.
+ 	 */
+@@ -1584,20 +1606,7 @@ static int pl011_startup(struct uart_port *port)
+ 	/* Startup DMA */
+ 	pl011_dma_startup(uap);
+ 
+-	/*
+-	 * Finally, enable interrupts, only timeouts when using DMA
+-	 * if initial RX DMA job failed, start in interrupt mode
+-	 * as well.
+-	 */
+-	spin_lock_irq(&uap->port.lock);
+-	/* Clear out any spuriously appearing RX interrupts */
+-	 writew(UART011_RTIS | UART011_RXIS,
+-		uap->port.membase + UART011_ICR);
+-	uap->im = UART011_RTIM;
+-	if (!pl011_dma_rx_running(uap))
+-		uap->im |= UART011_RXIM;
+-	writew(uap->im, uap->port.membase + UART011_IMSC);
+-	spin_unlock_irq(&uap->port.lock);
++	pl011_enable_interrupts(uap);
+ 
+ 	return 0;
+ 
 -- 
 1.7.9.5
 
