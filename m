@@ -1,43 +1,46 @@
-From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Subject: Re: [PATCHv2] serial: 8250: Add Quark X1000 to 8250 PCI driver
-Date: Fri, 19 Sep 2014 16:38:16 +0100
-Message-ID: <541C4DE8.3010307@nexus-software.ie>
-References: <1411112629-3238-1-git-send-email-pure.logic@nexus-software.ie> <20140919105833.GB31784@xps8300> <541C14E7.8020208@nexus-software.ie> <1E478852902BF549B22CC4F16C2AE67C0F472359@PGSMSX108.gar.corp.intel.com> <541C295A.6020101@nexus-software.ie> <1E478852902BF549B22CC4F16C2AE67C0F47241C@PGSMSX108.gar.corp.intel.com> <541C2ED3.7080206@nexus-software.ie> <1E478852902BF549B22CC4F16C2AE67C0F4724D1@PGSMSX108.gar.corp.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1E478852902BF549B22CC4F16C2AE67C0F4724D1@PGSMSX108.gar.corp.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Chew, Kean Ho" <kean.ho.chew@intel.com>, "heikki.krogerus@linux.intel.com" <heikki.krogerus@linux.intel.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: [PATCH 4/4] serial: mxs-auart: add sysrq support
+Date: Fri, 19 Sep 2014 20:06:19 +0200
+Message-ID: <1411149979-30710-4-git-send-email-j.uzycki@elproma.com.pl>
+References: <1411149979-30710-1-git-send-email-j.uzycki@elproma.com.pl>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from v032797.home.net.pl ([89.161.177.31]:57545 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1757413AbaISSEH (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 19 Sep 2014 14:04:07 -0400
+In-Reply-To: <1411149979-30710-1-git-send-email-j.uzycki@elproma.com.pl>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@vger.kernel.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
 
-On 19/09/14 15:31, Chew, Kean Ho wrote:
->> Hi Ho.
->>
->> Do you have an idea when ?
->>
->> I guess if we're saying the simple patch which works right now - should be
->> rejected in favour of alternative code coming - then at a minimum could you
->> please give an indication of when that alternative code will be available ?
->>
->> Otherwise I think it makes sense to enable the hardware now - using the
->> bog-standard means of doing that - just like BYT and others :)
->
-> Make sense. I go with Hekki's direction.
->
+When using mxs-auart based console, sometime we need the sysrq function
+to help debugging kernel. The sysrq code is basically there,
+this patch just simply enable it.
 
-Great.
+Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+---
+ drivers/tty/serial/mxs-auart.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-So Hekki, are OK with the suggested path here then ? I think myself and 
-Ho are pretty much in agreement.
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 9381732..b144382 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -14,6 +14,12 @@
+  * http://www.gnu.org/copyleft/gpl.html
+  */
+ 
++#if defined(CONFIG_SERIAL_MXS_AUART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
++#include <linux/sysrq.h>
++/* define before linux/serial_core.h */
++#define SUPPORT_SYSRQ
++#endif
++
+ #include <linux/kernel.h>
+ #include <linux/errno.h>
+ #include <linux/init.h>
+-- 
+1.7.11.3
 
-Apply the patch I've submitted to 8250_pci.c - and then do whatever mods 
-are appropriate later to enable whatever you're doing quark_8250.c.
-
-I think, it'd be a win from a Galileo enabling point of view.
-
-
-Best,
-Bryan
