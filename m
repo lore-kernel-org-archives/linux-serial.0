@@ -1,83 +1,120 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
- for AM33xx
-Date: Fri, 19 Sep 2014 13:22:12 +0300
-Message-ID: <20140919102212.GA31784@xps8300>
-References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
- <1410377411-26656-10-git-send-email-bigeasy@linutronix.de>
- <20140911111721.GB17476@xps8300>
- <54118AAB.2010205@linutronix.de>
- <5419B825.5000201@linutronix.de>
+Subject: Re: [PATCHv2] serial: 8250: Add Quark X1000 to 8250 PCI driver
+Date: Fri, 19 Sep 2014 13:58:33 +0300
+Message-ID: <20140919105833.GB31784@xps8300>
+References: <1411112629-3238-1-git-send-email-pure.logic@nexus-software.ie>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:34407 "EHLO mga02.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:16440 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755437AbaISKWg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Sep 2014 06:22:36 -0400
+	id S1753944AbaISK6i (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 19 Sep 2014 06:58:38 -0400
 Content-Disposition: inline
-In-Reply-To: <5419B825.5000201@linutronix.de>
+In-Reply-To: <1411112629-3238-1-git-send-email-pure.logic@nexus-software.ie>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, Alan Cox <alan@linux.intel.com>
+To: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, "Chew, Kean Ho" <kean.ho.chew@intel.com>
 
-On Wed, Sep 17, 2014 at 06:34:45PM +0200, Sebastian Andrzej Siewior wro=
-te:
-> On 09/11/2014 01:42 PM, Sebastian Andrzej Siewior wrote:
-> >> We should add hooks like tx_dma and rx_dma to struct uart_8250_dma=
- so
-> >> that the probe drivers can replace serial8250_tx_dma and
-> >> seria8250_rx_dma, like I think Alan already suggested.
-> >=20
-> > Okay. Wasn't aware that Alan already suggested that.
-> > I also need a watchdog timer for TX since it seems that on omap3 th=
-e
-> > DMA engine suddenly forgets to continue with DMA=E2=80=A6
-> >=20
-> > If this is really what we want, I would need to refactor a few thin=
-gs=E2=80=A6
-> >=20
-> >> Let's keep serial8250_tx_dma/rx_dma as the default, and not add an=
-y
-> >> quirks to them. Only if there is a very common case should it be
-> >> handled in those. The case of RX req needing to be sent before dat=
-a in
-> >> FIFO maybe one of those, but I'm no sure.
-> >=20
-> > keep in mind that both (RX & TX bugs/hacks) need also a bit of hand=
-ling
-> > in the 8250-core so it works together (like the tx_err member so we
-> > fall back to manual xmit)
->=20
-> Done. I've kept the RX workarounds in the 8250_dma and moved the TX
-> part into the omap driver.
-> I needed to add the 8250_core pieces of patch #10 [0]. Now If you say=
-,
-> couldn't this done in an other way then I could move the RX workaroun=
-ds
-> pieces to the omap driver as well as the interrupt routine. Any
-> preferences?
->=20
-> [0] [PATCH 10/16] tty: serial: 8250_dma: optimize the xmit path due t=
-o
->     UART_BUG_DMA_TX
+On Fri, Sep 19, 2014 at 08:43:49AM +0100, Bryan O'Donoghue wrote:
+> Adds PCI identifier for the X1000
+> Adds clocking and register size and register shift
+> 
+> Signed-off-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+> ---
+>  drivers/tty/serial/8250/8250_pci.c | 33 +++++++++++++++++++++++++++++++++
+>  1 file changed, 33 insertions(+)
 
-Couldn't you just replace the handle_irq with a custom irq routine in
-the omap driver like you did with set_termios? Where you would do
-those tricks and/or call serial8250_handle_irq()?
+The UART on Quark SoC has an integrated DMA engine and Kean Ho (CC'd)
+is working with support for it. The plan is to add completely separate
+probe driver for the Quark UART. Dealing with the integrated DMA
+engine is too much for a quirk in 8250_pci.c.
 
-The 8250_core changes in that patch #10 only modify
-serial8250_handle_irg right?
+So we can take this now and when Kean Ho is ready he needs to
+basically revert it, or you could already introduce the new probe
+driver, 8250_quark.c, and Kean Ho can then add the DMA engine handling
+later to it.
 
+IMO we should add the 8250_quark.c already now.
+
+
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 61830b1..5e72959 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1481,6 +1481,19 @@ byt_serial_setup(struct serial_private *priv,
+>  	return ret;
+>  }
+>  
+> +#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
+> +
+> +static int
+> +pci_intel_qrk_setup(struct serial_private *priv,
+> +		const struct pciserial_board *board,
+> +		struct uart_8250_port *port, int idx)
+> +{
+> +	unsigned int bar, offset = board->first_offset;
+> +
+> +	bar = FL_GET_BASE(board->flags);
+> +
+> +	return setup_port(priv, port, bar, offset, board->reg_shift);
+> +}
+>  static int
+>  pci_omegapci_setup(struct serial_private *priv,
+>  		      const struct pciserial_board *board,
+> @@ -1898,6 +1911,13 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+>  		.subdevice	= PCI_ANY_ID,
+>  		.setup		= byt_serial_setup,
+>  	},
+> +	{
+> +		.vendor		= PCI_VENDOR_ID_INTEL,
+> +		.device		= PCI_DEVICE_ID_INTEL_QRK_UART,
+> +		.subvendor	= PCI_ANY_ID,
+> +		.subdevice	= PCI_ANY_ID,
+> +		.setup		= pci_intel_qrk_setup,
+> +	},
+>  	/*
+>  	 * ITE
+>  	 */
+> @@ -2740,6 +2760,7 @@ enum pci_board_num_t {
+>  	pbn_ADDIDATA_PCIe_8_3906250,
+>  	pbn_ce4100_1_115200,
+>  	pbn_byt,
+> +	pbn_qrk,
+>  	pbn_omegapci,
+>  	pbn_NETMOS9900_2s_115200,
+>  	pbn_brcm_trumanage,
+> @@ -3490,6 +3511,12 @@ static struct pciserial_board pci_boards[] = {
+>  		.uart_offset	= 0x80,
+>  		.reg_shift      = 2,
+>  	},
+> +	[pbn_qrk] = {
+> +		.flags		= FL_BASE0,
+> +		.num_ports	= 1,
+> +		.base_baud	= 2764800,
+> +		.reg_shift	= 2,
+> +	},
+>  	[pbn_omegapci] = {
+>  		.flags		= FL_BASE0,
+>  		.num_ports	= 8,
+> @@ -5192,6 +5219,12 @@ static struct pci_device_id serial_pci_tbl[] = {
+>  		pbn_byt },
+>  
+>  	/*
+> +	 * Intel Quark x1000
+> +	 */
+> +	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
+> +		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+> +		pbn_qrk },
+> +	/*
+>  	 * Cronyx Omega PCI
+>  	 */
+>  	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
+> -- 
+> 1.9.1
 
 Cheers,
 
---=20
+-- 
 heikki
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
