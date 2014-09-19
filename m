@@ -1,248 +1,71 @@
-From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH 1/4] serial: mxs-auart: use mctrl_gpio helpers for handling
- modem signals (v2.2c)
-Date: Fri, 19 Sep 2014 20:13:30 +0200
-Message-ID: <541C724A.8030207@elproma.com.pl>
-References: <1411150136-30791-1-git-send-email-j.uzycki@elproma.com.pl>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: linux-next: Tree for Sep 19
+Date: Fri, 19 Sep 2014 12:04:36 -0700
+Message-ID: <20140919190436.GA24045@roeck-us.net>
+References: <20140919165817.225eb8b8@canb.auug.org.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:52464 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1756771AbaISSN0 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Sep 2014 14:13:26 -0400
-In-Reply-To: <1411150136-30791-1-git-send-email-j.uzycki@elproma.com.pl>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-next-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140919165817.225eb8b8@canb.auug.org.au>
+Sender: linux-next-owner@vger.kernel.org
+To: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-Please discard this and before resend. Sorry.
-I've used bad domain for linux-arm-kernel list...
-The next one is ok.
+On Fri, Sep 19, 2014 at 04:58:17PM +1000, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Changes since 20140917:
+> 
+> The fsl tree still had its build failure so I used the version from
+> next-20140917.
+> 
+> The v4l-dvb tree lost its build failure.
+> 
+> The security tree gained a conflict against the file-locks tree.
+> 
+> Non-merge commits (relative to Linus' tree): 6014
+>  5488 files changed, 217522 insertions(+), 129375 deletions(-)
+> 
 
-best regards
-Janusz
+m68k-allyesconfig, m68k:allmodconfig:
 
-W dniu 2014-09-19 20:08, Janusz Uzycki pisze:
-> Dedicated CTS and RTS pins are unusable together with a lot of other
-> peripherals because they share the same line. Pinctrl is limited.
->
-> Moreover, the AUART controller doesn't handle DTR/DSR/DCD/RI signals,
-> so we have to control them via GPIO.
->
-> This patch permits to use GPIOs to control the CTS/RTS/DTR/DSR/DCD/RI
-> signals.
->
-> Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
-> ---
->   .../devicetree/bindings/serial/fsl-mxs-auart.txt   | 10 ++-
->   drivers/tty/serial/Kconfig           |  1 +
->   drivers/tty/serial/mxs-auart.c       | 77 +++++++++++++++++++++-
->   3 files changed, 84 insertions(+), 4 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt b/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt
-> index 59a40f1..7c408c8 100644
-> --- a/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt
-> +++ b/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt
-> @@ -11,8 +11,13 @@ Required properties:
->   - dma-names: "rx" for RX channel, "tx" for TX channel.
->   
->   Optional properties:
-> -- fsl,uart-has-rtscts : Indicate the UART has RTS and CTS lines,
-> +- fsl,uart-has-rtscts : Indicate the UART has RTS and CTS lines
-> +  for hardware flow control,
->   	it also means you enable the DMA support for this UART.
-> +- {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
-> +  line respectively. It will use specified PIO instead of the peripheral
-> +  function pin for the USART feature.
-> +  If unsure, don't specify this property.
->   
->   Example:
->   auart0: serial@8006a000 {
-> @@ -21,6 +26,9 @@ auart0: serial@8006a000 {
->   	interrupts = <112>;
->   	dmas = <&dma_apbx 8>, <&dma_apbx 9>;
->   	dma-names = "rx", "tx";
-> +	cts-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
-> +	dsr-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
-> +	dcd-gpios = <&gpio1 17 GPIO_ACTIVE_LOW>;
->   };
->   
->   Note: Each auart port should have an alias correctly numbered in "aliases"
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 4fe8ca1..90e8516 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1357,6 +1357,7 @@ config SERIAL_MXS_AUART
->   	depends on ARCH_MXS
->   	tristate "MXS AUART support"
->   	select SERIAL_CORE
-> +	select SERIAL_MCTRL_GPIO if GPIOLIB
->   	help
->   	  This driver supports the MXS Application UART (AUART) port.
->   
-> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-> index 52d14e3..4690200 100644
-> --- a/drivers/tty/serial/mxs-auart.c
-> +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -38,6 +38,9 @@
->   
->   #include <asm/cacheflush.h>
->   
-> +#include <linux/err.h>
-> +#include "serial_mctrl_gpio.h"
-> +
->   #define MXS_AUART_MAJOR 242
->   #define MXS_AUART_PORTS 5
->   #define MXS_AUART_FIFO_SIZE		16
-> @@ -156,6 +159,8 @@ struct mxs_auart_port {
->   	struct scatterlist rx_sgl;
->   	struct dma_chan	*rx_dma_chan;
->   	void *rx_dma_buf;
-> +
-> +	struct mctrl_gpios	*gpios;
->   };
->   
->   static struct platform_device_id mxs_auart_devtype[] = {
-> @@ -415,8 +420,43 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
->   			ctrl |= AUART_CTRL2_RTS;
->   	}
->   
-> +	/* Does tty layer modify mctrl for input lines
-> +	 * and the code below is required? */
-> +#if 0
->   	s->ctrl = mctrl;
-> +#else
-> +	s->ctrl &= ~(TIOCM_RTS | TIOCM_DTR);
-> +	s->ctrl |= mctrl & (TIOCM_RTS | TIOCM_DTR);
-> +#endif
->   	writel(ctrl, u->membase + AUART_CTRL2);
-> +
-> +	mctrl_gpio_set(s->gpios, mctrl);
-> +}
-> +
-> +/* mxs_auart_modem_status() based on 8250.c,
-> + * similar function could be as serial's helper... */
-> +#define MCTRL_ANY_DELTA        (TIOCM_RI | TIOCM_DSR | TIOCM_CD | TIOCM_CTS)
-> +static u32 mxs_auart_modem_status(struct mxs_auart_port *s, u32 mctrl)
-> +{
-> +	u32 mctrl_diff;
-> +
-> +	mctrl_diff = mctrl ^ s->ctrl;
-> +	s->ctrl = mctrl;
-> +	if (mctrl_diff & MCTRL_ANY_DELTA &&
-> +			/*interrupt_enabled &&*/
-> +			s->port.state != NULL) {
-> +		if (mctrl_diff & TIOCM_RI)
-> +			s->port.icount.rng++;
-> +		if (mctrl_diff & TIOCM_DSR)
-> +			s->port.icount.dsr++;
-> +		if (mctrl_diff & TIOCM_CD)
-> +			uart_handle_dcd_change(&s->port, mctrl & TIOCM_CD);
-> +		if (mctrl_diff & TIOCM_CTS)
-> +			uart_handle_cts_change(&s->port, mctrl & TIOCM_CTS);
-> +
-> +		wake_up_interruptible(&s->port.state->port.delta_msr_wait);
-> +	}
-> +	return mctrl;
->   }
->   
->   static u32 mxs_auart_get_mctrl(struct uart_port *u)
-> @@ -433,7 +473,9 @@ static u32 mxs_auart_get_mctrl(struct uart_port *u)
->   	if (ctrl2 & AUART_CTRL2_RTS)
->   		mctrl |= TIOCM_RTS;
->   
-> -	return mctrl;
-> +	/* should mxs_auart_modem_status() be in interrupt only? */
-> +	return mxs_auart_modem_status(s,
-> +			mctrl_gpio_get(s->gpios, &mctrl));
->   }
->   
->   static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s);
-> @@ -637,7 +679,12 @@ static void mxs_auart_settermios(struct uart_port *u,
->   		ctrl |= AUART_LINECTRL_STP2;
->   
->   	/* figure out the hardware flow control settings */
-> -	if (cflag & CRTSCTS) {
-> +	/*FIXME: DMA for hardware flow control only? */
-> +	if (cflag & CRTSCTS &&
-> +			(IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,
-> +					 UART_GPIO_RTS)) ||
-> +			 IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,
-> +					 UART_GPIO_CTS)))) {
->   		/*
->   		 * The DMA has a bug(see errata:2836) in mx23.
->   		 * So we can not implement the DMA for auart in mx23,
-> @@ -696,8 +743,14 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
->   		| AUART_INTR_CTSMIS),
->   			s->port.membase + AUART_INTR_CLR);
->   
-> +	mxs_auart_modem_status(s,
-> +			mctrl_gpio_get(s->gpios, &s->ctrl));
-> +
->   	if (istat & AUART_INTR_CTSMIS) {
-> -		uart_handle_cts_change(&s->port, stat & AUART_STAT_CTS);
-> +		if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,
-> +						UART_GPIO_CTS)))
-> +			uart_handle_cts_change(&s->port,
-> +					stat & AUART_STAT_CTS);
->   		writel(AUART_INTR_CTSMIS,
->   				s->port.membase + AUART_INTR_CLR);
->   		istat &= ~AUART_INTR_CTSMIS;
-> @@ -758,6 +811,8 @@ static int mxs_auart_startup(struct uart_port *u)
->   	 */
->   	writel(AUART_LINECTRL_FEN, u->membase + AUART_LINECTRL_SET);
->   
-> +	/* get initial status of modem lines */
-> +	mctrl_gpio_get(s->gpios, &s->ctrl);
->   	return 0;
->   }
->   
-> @@ -1021,6 +1076,14 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
->   	return 0;
->   }
->   
-> +static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
-> +{
-> +	s->gpios = mctrl_gpio_init(dev, 0);
-> +	if (IS_ERR_OR_NULL(s->gpios))
-> +		return -1;
-> +	return 0;
-> +}
-> +
->   static int mxs_auart_probe(struct platform_device *pdev)
->   {
->   	const struct of_device_id *of_id =
-> @@ -1078,6 +1141,11 @@ static int mxs_auart_probe(struct platform_device *pdev)
->   
->   	platform_set_drvdata(pdev, s);
->   
-> +	ret = mxs_auart_init_gpios(s, &pdev->dev);
-> +	if (ret < 0)
-> +		dev_err(&pdev->dev, "%s",
-> +			"Failed to initialize GPIOs. The serial port may not work as expected");
-> +
->   	auart_port[s->port.line] = s;
->   
->   	mxs_auart_reset(&s->port);
-> @@ -1094,6 +1162,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
->   	return 0;
->   
->   out_free_irq:
-> +	mctrl_gpio_free(&pdev->dev, s->gpios);	/*useless?*/
->   	auart_port[pdev->id] = NULL;
->   	free_irq(s->irq, s);
->   out_free_clk:
-> @@ -1112,6 +1181,8 @@ static int mxs_auart_remove(struct platform_device *pdev)
->   
->   	auart_port[pdev->id] = NULL;
->   
-> +	mctrl_gpio_free(&pdev->dev, s->gpios);	/*useless?*/
-> +
->   	clk_put(s->clk);
->   	free_irq(s->irq, s);
->   	kfree(s);
+drivers/tty/serial/st-asc.c: In function 'asc_in':
+drivers/tty/serial/st-asc.c:154:2: error:
+		implicit declaration of function 'readl_relaxed' [-Werror=implicit-function-declaration]
 
+Caused by commit 08177ece596c ('serial: asc: Adopt readl_/writel_relaxed()').
+
+Bisect result:
+
+# bad: [6a10bca9b608df445baa23c3bfafc510d93d425b] Add linux-next specific files for 20140919
+# good: [9e82bf014195d6f0054982c463575cdce24292be] Linux 3.17-rc5
+git bisect start 'HEAD' 'v3.17-rc5'
+# good: [fde058e2322b9098251d7cf798cac4327a29c004] Merge remote-tracking branch 'drm/drm-next'
+git bisect good fde058e2322b9098251d7cf798cac4327a29c004
+# bad: [8a258c1a0f82f4d152a3b06966a4d28dac2c8bcb] Merge remote-tracking branch 'usb-serial/usb-next'
+git bisect bad 8a258c1a0f82f4d152a3b06966a4d28dac2c8bcb
+# good: [5a571cebb73888024182de09063db35341e61beb] Merge remote-tracking branch 'spi/for-next'
+git bisect good 5a571cebb73888024182de09063db35341e61beb
+# good: [249a58bd0f355bc12549d00296684103326ac38f] Merge remote-tracking branch 'rcu/rcu/next'
+git bisect good 249a58bd0f355bc12549d00296684103326ac38f
+# good: [2154c4598a10e4dfeaf8061cd7b7511c3d4cf32b] Merge remote-tracking branch 'regmap/for-next'
+git bisect good 2154c4598a10e4dfeaf8061cd7b7511c3d4cf32b
+# good: [72a65a0d19c16de36e970ca6981732b5e8f7f4c4] Revert "usb: gadget: composite: dequeue cdev->req before free its buffer"
+git bisect good 72a65a0d19c16de36e970ca6981732b5e8f7f4c4
+# good: [ae14a7954f5124208e6e93cafb3099f83acd43f5] tty: serial: 8250_core: provide a function to export uart_8250_port
+git bisect good ae14a7954f5124208e6e93cafb3099f83acd43f5
+# bad: [424f7d585835549d8875825c7cea9e73506eff8c] Merge remote-tracking branch 'tty/tty-next'
+git bisect bad 424f7d585835549d8875825c7cea9e73506eff8c
+# good: [f20431c51f565a7a3edd9b139742d7a71f3111b3] Merge remote-tracking branch 'ipmi/for-next'
+git bisect good f20431c51f565a7a3edd9b139742d7a71f3111b3
+# good: [999156ada570cb4a2eaee42e47c9e659b5c577fb] sparc/uapi: Add definition of TIOC[SG]RS485
+git bisect good 999156ada570cb4a2eaee42e47c9e659b5c577fb
+# bad: [b4756f4f0d773c31e59f203e7f19fd3d5c490193] tty: serial: 8250: Add Mediatek UART driver
+git bisect bad b4756f4f0d773c31e59f203e7f19fd3d5c490193
+# bad: [08177ece596ccc9b9c194542c095c863c101fd11] serial: asc: Adopt readl_/writel_relaxed()
+git bisect bad 08177ece596ccc9b9c194542c095c863c101fd11
+# good: [efb089517d2f34a58aceb600ab58b0ca3db1fa07] serial: clps711x: Fix COMPILE_TEST build for target without GPIOLIB support
+git bisect good efb089517d2f34a58aceb600ab58b0ca3db1fa07
+# first bad commit: [08177ece596ccc9b9c194542c095c863c101fd11] serial: asc: Adopt readl_/writel_relaxed()
