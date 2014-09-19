@@ -1,101 +1,56 @@
-From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Subject: [PATCHv2] serial: 8250: Add Quark X1000 to 8250 PCI driver
-Date: Fri, 19 Sep 2014 08:43:49 +0100
-Message-ID: <1411112629-3238-1-git-send-email-pure.logic@nexus-software.ie>
+From: Fugang Duan <b38611@freescale.com>
+Subject: [PATCH] serial: imx: fix throttle/unthrottle callbacks for hardware assisted flow control
+Date: Fri, 19 Sep 2014 15:26:40 +0800
+Message-ID: <1411111600-24752-1-git-send-email-b38611@freescale.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outbound-smtp05.blacknight.com ([81.17.249.38]:52310 "EHLO
-	outbound-smtp05.blacknight.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750865AbaISHo3 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Sep 2014 03:44:29 -0400
-Received: from mail.blacknight.com (pemlinmail03.blacknight.ie [81.17.254.16])
-	by outbound-smtp05.blacknight.com (Postfix) with ESMTP id DC36A98A13
-	for <linux-serial@vger.kernel.org>; Fri, 19 Sep 2014 07:42:47 +0000 (UTC)
+Received: from mail-bn1bon0132.outbound.protection.outlook.com ([157.56.111.132]:37792
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750815AbaISIIG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 19 Sep 2014 04:08:06 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, heikki.krogerus@linux.intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, b38611@freescale.com, shijie8@gmail.com
 
-Adds PCI identifier for the X1000
-Adds clocking and register size and register shift
+From: Fugang Duan <B38611@freescale.com>
 
-Signed-off-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+>From datasheet, UCR2[CTS] bit controls the 'CTS' bit and takes effort only
+when the 'CTSC' bit is negated. 'CTS' has no function when 'CTSC' is asserted.
+0: The CTS pin is high (inactive)
+1: The CTS pin is low (active)
+
+For throttle, it needs to clear 'CTS' and 'CTSC' bits.
+For unthrottle, it needs to enable 'CTS' and 'CTSC' bits.
+
+The patch just fix the issue.
+
+Signed-off-by: Fugang Duan <B38611@freescale.com>
+Signed-off-by: Huang Shijie <shijie8@gmail.com>
 ---
- drivers/tty/serial/8250/8250_pci.c | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ drivers/tty/serial/imx.c |    6 ++----
+ 1 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 61830b1..5e72959 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1481,6 +1481,19 @@ byt_serial_setup(struct serial_private *priv,
- 	return ret;
- }
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 044e86d..070a37e 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -823,11 +823,9 @@ static void imx_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 	struct imx_port *sport = (struct imx_port *)port;
+ 	unsigned long temp;
  
-+#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
-+
-+static int
-+pci_intel_qrk_setup(struct serial_private *priv,
-+		const struct pciserial_board *board,
-+		struct uart_8250_port *port, int idx)
-+{
-+	unsigned int bar, offset = board->first_offset;
-+
-+	bar = FL_GET_BASE(board->flags);
-+
-+	return setup_port(priv, port, bar, offset, board->reg_shift);
-+}
- static int
- pci_omegapci_setup(struct serial_private *priv,
- 		      const struct pciserial_board *board,
-@@ -1898,6 +1911,13 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= byt_serial_setup,
- 	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTEL,
-+		.device		= PCI_DEVICE_ID_INTEL_QRK_UART,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= pci_intel_qrk_setup,
-+	},
- 	/*
- 	 * ITE
- 	 */
-@@ -2740,6 +2760,7 @@ enum pci_board_num_t {
- 	pbn_ADDIDATA_PCIe_8_3906250,
- 	pbn_ce4100_1_115200,
- 	pbn_byt,
-+	pbn_qrk,
- 	pbn_omegapci,
- 	pbn_NETMOS9900_2s_115200,
- 	pbn_brcm_trumanage,
-@@ -3490,6 +3511,12 @@ static struct pciserial_board pci_boards[] = {
- 		.uart_offset	= 0x80,
- 		.reg_shift      = 2,
- 	},
-+	[pbn_qrk] = {
-+		.flags		= FL_BASE0,
-+		.num_ports	= 1,
-+		.base_baud	= 2764800,
-+		.reg_shift	= 2,
-+	},
- 	[pbn_omegapci] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 8,
-@@ -5192,6 +5219,12 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		pbn_byt },
+-	temp = readl(sport->port.membase + UCR2) & ~UCR2_CTS;
+-
++	temp = readl(sport->port.membase + UCR2) & ~(UCR2_CTS | UCR2_CTSC);
+ 	if (mctrl & TIOCM_RTS)
+-		if (!sport->dma_is_enabled)
+-			temp |= UCR2_CTS;
++		temp |= UCR2_CTS | UCR2_CTSC;
  
- 	/*
-+	 * Intel Quark x1000
-+	 */
-+	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_qrk },
-+	/*
- 	 * Cronyx Omega PCI
- 	 */
- 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
+ 	writel(temp, sport->port.membase + UCR2);
+ 
 -- 
-1.9.1
+1.7.8
 
