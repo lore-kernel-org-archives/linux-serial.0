@@ -1,94 +1,41 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: [RFC PATCH 08/10] drivers: PL011: allow avoiding UART enabling/disabling
-Date: Fri, 19 Sep 2014 13:21:21 +0100
-Message-ID: <1411129283-17219-9-git-send-email-andre.przywara@arm.com>
-References: <1411129283-17219-1-git-send-email-andre.przywara@arm.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [RFC PATCH 05/10] drivers: PL011: refactor pl011_probe()
+Date: Fri, 19 Sep 2014 13:40:04 +0100
+Message-ID: <20140919124004.GI5182@n2100.arm.linux.org.uk>
+References: <1411129283-17219-1-git-send-email-andre.przywara@arm.com> <1411129283-17219-6-git-send-email-andre.przywara@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:36067 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755678AbaISMWG (ORCPT
+Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:34526 "EHLO
+	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1750924AbaISMkd (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 19 Sep 2014 08:22:06 -0400
-In-Reply-To: <1411129283-17219-1-git-send-email-andre.przywara@arm.com>
+	Fri, 19 Sep 2014 08:40:33 -0400
+Content-Disposition: inline
+In-Reply-To: <1411129283-17219-6-git-send-email-andre.przywara@arm.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: rob.herring@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, rob.herring@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>
 
-The SBSA UART should not be enabled or disabled (it is always on),
-and consequently the spec lacks the UART_CR register.
-Add a vendor specific property to skip disabling or enabling of the
-UART. This will be used later by the SBSA UART support.
+On Fri, Sep 19, 2014 at 01:21:18PM +0100, Andre Przywara wrote:
+> Currently the pl011_probe() function is relying on some AMBA IDs
+> and a device tree node to initialize the driver and a port.
+> Both features are not necessarily required for the driver:
+> - we lack AMBA IDs in the ARM SBSA generic UART and
+> - we lack a DT node in ACPI systems.
+> So lets refactor the function to ease later reuse.
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
- drivers/tty/serial/amba-pl011.c |   18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+Both features are not "necessary" for any driver, but that doesn't mean
+we work around it by throwing a platform driver at it.  We already have
+this same problem with PL010 UARTs, and the DT support for AMBA has the
+ability to specify the AMBA ID.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 65a0411..70af210 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -78,6 +78,7 @@ struct vendor_data {
- 	bool			oversampling;
- 	bool			dma_threshold;
- 	bool			cts_event_workaround;
-+	bool			always_enabled;
- 
- 	unsigned int (*get_fifosize)(struct amba_device *dev);
- };
-@@ -94,6 +95,7 @@ static struct vendor_data vendor_arm = {
- 	.oversampling		= false,
- 	.dma_threshold		= false,
- 	.cts_event_workaround	= false,
-+	.always_enabled		= false,
- 	.get_fifosize		= get_fifosize_arm,
- };
- 
-@@ -109,6 +111,7 @@ static struct vendor_data vendor_st = {
- 	.oversampling		= true,
- 	.dma_threshold		= true,
- 	.cts_event_workaround	= true,
-+	.always_enabled		= false,
- 	.get_fifosize		= get_fifosize_st,
- };
- 
-@@ -1944,7 +1947,7 @@ static void
- pl011_console_write(struct console *co, const char *s, unsigned int count)
- {
- 	struct uart_amba_port *uap = amba_ports[co->index];
--	unsigned int status, old_cr, new_cr;
-+	unsigned int status, old_cr = 0, new_cr;
- 	unsigned long flags;
- 	int locked = 1;
- 
-@@ -1961,10 +1964,12 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
- 	/*
- 	 *	First save the CR then disable the interrupts
- 	 */
--	old_cr = readw(uap->port.membase + UART011_CR);
--	new_cr = old_cr & ~UART011_CR_CTSEN;
--	new_cr |= UART01x_CR_UARTEN | UART011_CR_TXE;
--	writew(new_cr, uap->port.membase + UART011_CR);
-+	if (!uap->vendor->always_enabled) {
-+		old_cr = readw(uap->port.membase + UART011_CR);
-+		new_cr = old_cr & ~UART011_CR_CTSEN;
-+		new_cr |= UART01x_CR_UARTEN | UART011_CR_TXE;
-+		writew(new_cr, uap->port.membase + UART011_CR);
-+	}
- 
- 	uart_console_write(&uap->port, s, count, pl011_console_putchar);
- 
-@@ -1975,7 +1980,8 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
- 	do {
- 		status = readw(uap->port.membase + UART01x_FR);
- 	} while (status & UART01x_FR_BUSY);
--	writew(old_cr, uap->port.membase + UART011_CR);
-+	if (!uap->vendor->always_enabled)
-+		writew(old_cr, uap->port.membase + UART011_CR);
- 
- 	if (locked)
- 		spin_unlock(&uap->port.lock);
+Moreover, there is nothing which prevents you from declaring an AMBA
+device with an appropriate AMBA ID for the driver to bind to - which is
+presumably something very similar to what you're already doing with a
+platform device.
+
 -- 
-1.7.9.5
-
+FTTC broadband for 0.8mile line: currently at 9.5Mbps down 400kbps up
+according to speedtest.net.
