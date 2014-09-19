@@ -1,37 +1,92 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH] asm/uapi: Add definition of TIOC[SG]RS485
-Date: Thu, 18 Sep 2014 08:45:45 +0200
-Message-ID: <1411022745-6198-1-git-send-email-ricardo.ribalda@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Greg KH <greg@kroah.com>, linux-serial@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+Subject: [PATCH] Add-Quark-X1000-PCI-desc-clock-and-register-data
+Date: Fri, 19 Sep 2014 01:55:56 +0100
+Message-ID: <1411088156-19500-1-git-send-email-pure.logic@nexus-software.ie>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.cz, heikki.krogerus@linux.intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Bryan O'Donoghue <pure.logic@nexus-software.ie>
 List-Id: linux-serial@vger.kernel.org
 
-Commit: e676253b19b2d269cccf67fdb1592120a0cd0676 (serial/8250: Add
-support for RS485 IOCTLs), adds support for RS485 ioctls for 825_core on
-all the archs. Unfortunaltely the definition of TIOCSRS485 and
-TIOCGRS485 was missing on the ioctls.h file
+Adds PCI identifier for the X1000
+Adds clocking and register size and register shift
 
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Signed-off-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
 ---
- arch/alpha/include/uapi/asm/ioctls.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/8250/8250_pci.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/uapi/asm/ioctls.h
-index 92c557b..f30c94a 100644
---- a/arch/alpha/include/uapi/asm/ioctls.h
-+++ b/arch/alpha/include/uapi/asm/ioctls.h
-@@ -90,6 +90,8 @@
- #define TIOCSBRK	0x5427  /* BSD compatibility */
- #define TIOCCBRK	0x5428  /* BSD compatibility */
- #define TIOCGSID	0x5429  /* Return the session ID of FD */
-+#define TIOCGRS485	_IOR('T', 0x2E, struct serial_rs485)
-+#define TIOCSRS485	_IOWR('T', 0x2F, struct serial_rs485)
- #define TIOCGPTN	_IOR('T',0x30, unsigned int) /* Get Pty Number (of pty-mux device) */
- #define TIOCSPTLCK	_IOW('T',0x31, int)  /* Lock/unlock Pty */
- #define TIOCGDEV	_IOR('T',0x32, unsigned int) /* Get primary device node of /dev/console */
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 61830b1..5e72959 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1481,6 +1481,19 @@ byt_serial_setup(struct serial_private *priv,
+ 	return ret;
+ }
+ 
++#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
++
++static int
++pci_intel_qrk_setup(struct serial_private *priv,
++		const struct pciserial_board *board,
++		struct uart_8250_port *port, int idx)
++{
++	unsigned int bar, offset = board->first_offset;
++
++	bar = FL_GET_BASE(board->flags);
++
++	return setup_port(priv, port, bar, offset, board->reg_shift);
++}
+ static int
+ pci_omegapci_setup(struct serial_private *priv,
+ 		      const struct pciserial_board *board,
+@@ -1898,6 +1911,13 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= byt_serial_setup,
+ 	},
++	{
++		.vendor		= PCI_VENDOR_ID_INTEL,
++		.device		= PCI_DEVICE_ID_INTEL_QRK_UART,
++		.subvendor	= PCI_ANY_ID,
++		.subdevice	= PCI_ANY_ID,
++		.setup		= pci_intel_qrk_setup,
++	},
+ 	/*
+ 	 * ITE
+ 	 */
+@@ -2740,6 +2760,7 @@ enum pci_board_num_t {
+ 	pbn_ADDIDATA_PCIe_8_3906250,
+ 	pbn_ce4100_1_115200,
+ 	pbn_byt,
++	pbn_qrk,
+ 	pbn_omegapci,
+ 	pbn_NETMOS9900_2s_115200,
+ 	pbn_brcm_trumanage,
+@@ -3490,6 +3511,12 @@ static struct pciserial_board pci_boards[] = {
+ 		.uart_offset	= 0x80,
+ 		.reg_shift      = 2,
+ 	},
++	[pbn_qrk] = {
++		.flags		= FL_BASE0,
++		.num_ports	= 1,
++		.base_baud	= 2764800,
++		.reg_shift	= 2,
++	},
+ 	[pbn_omegapci] = {
+ 		.flags		= FL_BASE0,
+ 		.num_ports	= 8,
+@@ -5192,6 +5219,12 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 		pbn_byt },
+ 
+ 	/*
++	 * Intel Quark x1000
++	 */
++	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_qrk },
++	/*
+ 	 * Cronyx Omega PCI
+ 	 */
+ 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
 -- 
-2.1.0
-
+1.9.1
