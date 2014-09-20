@@ -1,71 +1,47 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: linux-next: Tree for Sep 19
-Date: Fri, 19 Sep 2014 12:04:36 -0700
-Message-ID: <20140919190436.GA24045@roeck-us.net>
-References: <20140919165817.225eb8b8@canb.auug.org.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-next-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140919165817.225eb8b8@canb.auug.org.au>
-Sender: linux-next-owner@vger.kernel.org
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, linux-serial@vger.kernel.org
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] tty: serial_mctrl_gpio: Fix COMPILE_TEST build for architectures with custom termios.h
+Date: Sat, 20 Sep 2014 09:34:45 +0400
+Message-ID: <1411191285-29764-1-git-send-email-shc_work@mail.ru>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from fallback1.mail.ru ([94.100.181.184]:47225 "EHLO
+	fallback1.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755821AbaITFf3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 20 Sep 2014 01:35:29 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Guenter Roeck <linux@roeck-us.net>, Stephen Rothwell <sfr@canb.auug.org.au>, Alexander Shiyan <shc_work@mail.ru>
 
-On Fri, Sep 19, 2014 at 04:58:17PM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Changes since 20140917:
-> 
-> The fsl tree still had its build failure so I used the version from
-> next-20140917.
-> 
-> The v4l-dvb tree lost its build failure.
-> 
-> The security tree gained a conflict against the file-locks tree.
-> 
-> Non-merge commits (relative to Linus' tree): 6014
->  5488 files changed, 217522 insertions(+), 129375 deletions(-)
-> 
+This patch fixes COMPILE_TEST build of serial_mctrl_gpio module for
+architectures with custom termios.h header.
 
-m68k-allyesconfig, m68k:allmodconfig:
+sparc64:allmodconfig:
 
-drivers/tty/serial/st-asc.c: In function 'asc_in':
-drivers/tty/serial/st-asc.c:154:2: error:
-		implicit declaration of function 'readl_relaxed' [-Werror=implicit-function-declaration]
+In file included from drivers/tty/serial/serial_mctrl_gpio.c:21:0:
+include/uapi/asm-generic/termios.h:22:8: error: redefinition of 'struct termio'
+./arch/sparc/include/uapi/asm/termbits.h:16:8: note: originally defined here
+make[3]: *** [drivers/tty/serial/serial_mctrl_gpio.o] Error 1
 
-Caused by commit 08177ece596c ('serial: asc: Adopt readl_/writel_relaxed()').
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+---
+ drivers/tty/serial/serial_mctrl_gpio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Bisect result:
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+index bf9560f..a3035f9 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.c
++++ b/drivers/tty/serial/serial_mctrl_gpio.c
+@@ -18,7 +18,7 @@
+ #include <linux/err.h>
+ #include <linux/device.h>
+ #include <linux/gpio/consumer.h>
+-#include <uapi/asm-generic/termios.h>
++#include <linux/termios.h>
+ 
+ #include "serial_mctrl_gpio.h"
+ 
+-- 
+1.8.5.5
 
-# bad: [6a10bca9b608df445baa23c3bfafc510d93d425b] Add linux-next specific files for 20140919
-# good: [9e82bf014195d6f0054982c463575cdce24292be] Linux 3.17-rc5
-git bisect start 'HEAD' 'v3.17-rc5'
-# good: [fde058e2322b9098251d7cf798cac4327a29c004] Merge remote-tracking branch 'drm/drm-next'
-git bisect good fde058e2322b9098251d7cf798cac4327a29c004
-# bad: [8a258c1a0f82f4d152a3b06966a4d28dac2c8bcb] Merge remote-tracking branch 'usb-serial/usb-next'
-git bisect bad 8a258c1a0f82f4d152a3b06966a4d28dac2c8bcb
-# good: [5a571cebb73888024182de09063db35341e61beb] Merge remote-tracking branch 'spi/for-next'
-git bisect good 5a571cebb73888024182de09063db35341e61beb
-# good: [249a58bd0f355bc12549d00296684103326ac38f] Merge remote-tracking branch 'rcu/rcu/next'
-git bisect good 249a58bd0f355bc12549d00296684103326ac38f
-# good: [2154c4598a10e4dfeaf8061cd7b7511c3d4cf32b] Merge remote-tracking branch 'regmap/for-next'
-git bisect good 2154c4598a10e4dfeaf8061cd7b7511c3d4cf32b
-# good: [72a65a0d19c16de36e970ca6981732b5e8f7f4c4] Revert "usb: gadget: composite: dequeue cdev->req before free its buffer"
-git bisect good 72a65a0d19c16de36e970ca6981732b5e8f7f4c4
-# good: [ae14a7954f5124208e6e93cafb3099f83acd43f5] tty: serial: 8250_core: provide a function to export uart_8250_port
-git bisect good ae14a7954f5124208e6e93cafb3099f83acd43f5
-# bad: [424f7d585835549d8875825c7cea9e73506eff8c] Merge remote-tracking branch 'tty/tty-next'
-git bisect bad 424f7d585835549d8875825c7cea9e73506eff8c
-# good: [f20431c51f565a7a3edd9b139742d7a71f3111b3] Merge remote-tracking branch 'ipmi/for-next'
-git bisect good f20431c51f565a7a3edd9b139742d7a71f3111b3
-# good: [999156ada570cb4a2eaee42e47c9e659b5c577fb] sparc/uapi: Add definition of TIOC[SG]RS485
-git bisect good 999156ada570cb4a2eaee42e47c9e659b5c577fb
-# bad: [b4756f4f0d773c31e59f203e7f19fd3d5c490193] tty: serial: 8250: Add Mediatek UART driver
-git bisect bad b4756f4f0d773c31e59f203e7f19fd3d5c490193
-# bad: [08177ece596ccc9b9c194542c095c863c101fd11] serial: asc: Adopt readl_/writel_relaxed()
-git bisect bad 08177ece596ccc9b9c194542c095c863c101fd11
-# good: [efb089517d2f34a58aceb600ab58b0ca3db1fa07] serial: clps711x: Fix COMPILE_TEST build for target without GPIOLIB support
-git bisect good efb089517d2f34a58aceb600ab58b0ca3db1fa07
-# first bad commit: [08177ece596ccc9b9c194542c095c863c101fd11] serial: asc: Adopt readl_/writel_relaxed()
