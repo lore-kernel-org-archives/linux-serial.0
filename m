@@ -1,60 +1,54 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCHv2] serial: 8250: Add Quark X1000 to 8250 PCI driver
-Date: Mon, 22 Sep 2014 10:12:11 +0300
-Message-ID: <20140922071211.GA26114@xps8300>
-References: <1411112629-3238-1-git-send-email-pure.logic@nexus-software.ie>
+Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
+ for AM33xx
+Date: Mon, 22 Sep 2014 10:46:05 +0300
+Message-ID: <20140922074605.GB26114@xps8300>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
+ <1410377411-26656-10-git-send-email-bigeasy@linutronix.de>
+ <20140911111721.GB17476@xps8300>
+ <54118AAB.2010205@linutronix.de>
+ <5419B825.5000201@linutronix.de>
+ <20140919102212.GA31784@xps8300>
+ <541C0C64.5010206@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:46321 "EHLO mga09.intel.com"
+Received: from mga11.intel.com ([192.55.52.93]:45627 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751068AbaIVHMQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 22 Sep 2014 03:12:16 -0400
+	id S1752723AbaIVHqS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 22 Sep 2014 03:46:18 -0400
 Content-Disposition: inline
-In-Reply-To: <1411112629-3238-1-git-send-email-pure.logic@nexus-software.ie>
+In-Reply-To: <541C0C64.5010206@linutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, Alan Cox <alan@linux.intel.com>
 
-
-On Fri, Sep 19, 2014 at 08:43:49AM +0100, Bryan O'Donoghue wrote:
-> Adds PCI identifier for the X1000
-> Adds clocking and register size and register shift
-
-I would be more interested in the details about the Quart UART, like
-how many ports you got, maybe the clock frequency etc. then about the
-actual steps the you are taking in the patch.
-
-
-> Signed-off-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 33 +++++++++++++++++++++++++++++++++
->  1 file changed, 33 insertions(+)
+On Fri, Sep 19, 2014 at 12:58:44PM +0200, Sebastian Andrzej Siewior wrote:
+> On 09/19/2014 12:22 PM, Heikki Krogerus wrote:
+> > Couldn't you just replace the handle_irq with a custom irq routine in
+> > the omap driver like you did with set_termios? Where you would do
+> > those tricks and/or call serial8250_handle_irq()?
 > 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 61830b1..5e72959 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1481,6 +1481,19 @@ byt_serial_setup(struct serial_private *priv,
->  	return ret;
->  }
->  
-> +#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
-> +
-> +static int
-> +pci_intel_qrk_setup(struct serial_private *priv,
-> +		const struct pciserial_board *board,
-> +		struct uart_8250_port *port, int idx)
-> +{
-> +	unsigned int bar, offset = board->first_offset;
-> +
-> +	bar = FL_GET_BASE(board->flags);
-> +
-> +	return setup_port(priv, port, bar, offset, board->reg_shift);
-> +}
+> Tricks within serial8250_handle_irq(), see [0]. It is not a lot but
+> still. I could provide my own handle irq, just asking what you would
+> prefer.
+> 
+> [0]
+> http://git.breakpoint.cc/cgit/bigeasy/linux.git/commit/?h=uart_v10_pre2&id=f26f161d998ee4a84a0aa6ddff69a435c25f204d
+> 
+> > The 8250_core changes in that patch #10 only modify
+> > serial8250_handle_irg right?
+> 
+> Correct. However there is another change due to the RX_DMA_BUG. A while
+> ago you said that this RX_DMA_BUG thing might be something that other
+> SoC could use, too.
+> If you ask me now for my own irq routine it would make sense to move RX
+> bug handling into omap specific code as well.
 
-You don't need to add this. Just use pci_default_setup.
+Well, there are no other SoCs at the moment that would need it, and
+it's actually possible that there never will be. So yes, just handle
+that also in the omap specific code.
 
 
 Thanks,
