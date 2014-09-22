@@ -1,35 +1,63 @@
-From: Sudhir Sreedharan <ssreedharan@mvista.com>
-Subject: [PATCH] serial/core: Initialize the console pm state
-Date: Mon, 22 Sep 2014 12:00:22 +0530
-Message-ID: <1411367422-2095-1-git-send-email-ssreedharan@mvista.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, Sudhir Sreedharan <ssreedharan@mvista.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCHv2] serial: 8250: Add Quark X1000 to 8250 PCI driver
+Date: Mon, 22 Sep 2014 10:12:11 +0300
+Message-ID: <20140922071211.GA26114@xps8300>
+References: <1411112629-3238-1-git-send-email-pure.logic@nexus-software.ie>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:46321 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751068AbaIVHMQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 22 Sep 2014 03:12:16 -0400
+Content-Disposition: inline
+In-Reply-To: <1411112629-3238-1-git-send-email-pure.logic@nexus-software.ie>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-For console devices having UART_CAP_SLEEP capability, the uart_pm_state has
-to be initialized to UART_PM_STATE_ON. Otherwise the LCR regiser values
-are reinitialized when uart_change_pm is called from uart_configure_port.
 
-Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
----
- drivers/tty/serial/serial_core.c |    3 +++
- 1 files changed, 3 insertions(+), 0 deletions(-)
+On Fri, Sep 19, 2014 at 08:43:49AM +0100, Bryan O'Donoghue wrote:
+> Adds PCI identifier for the X1000
+> Adds clocking and register size and register shift
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 29a7be4..91bfd52 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2615,6 +2615,9 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	if (uport->cons && uport->dev)
- 		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
- 
-+	if (uart_console(uport))
-+		state->pm_state = UART_PM_STATE_ON;
-+
- 	uart_configure_port(drv, state, uport);
- 
- 	num_groups = 2;
+I would be more interested in the details about the Quart UART, like
+how many ports you got, maybe the clock frequency etc. then about the
+actual steps the you are taking in the patch.
+
+
+> Signed-off-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+> ---
+>  drivers/tty/serial/8250/8250_pci.c | 33 +++++++++++++++++++++++++++++++++
+>  1 file changed, 33 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 61830b1..5e72959 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1481,6 +1481,19 @@ byt_serial_setup(struct serial_private *priv,
+>  	return ret;
+>  }
+>  
+> +#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
+> +
+> +static int
+> +pci_intel_qrk_setup(struct serial_private *priv,
+> +		const struct pciserial_board *board,
+> +		struct uart_8250_port *port, int idx)
+> +{
+> +	unsigned int bar, offset = board->first_offset;
+> +
+> +	bar = FL_GET_BASE(board->flags);
+> +
+> +	return setup_port(priv, port, bar, offset, board->reg_shift);
+> +}
+
+You don't need to add this. Just use pci_default_setup.
+
+
+Thanks,
+
 -- 
-1.7.0.1
+heikki
