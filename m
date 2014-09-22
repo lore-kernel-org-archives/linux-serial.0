@@ -1,42 +1,35 @@
-From: "Benjamin Siaka" <siajaka@gmail.com>
-Subject: HOW ARE YOU?
-Date: Mon, 22 Sep 2014 01:13:50 +0000
-Message-ID: <20140922011401.454233AE8195@studentsvm0.itb.ac.id>
-Reply-To: bensiaka@she.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx2.itb.ac.id ([167.205.23.7]:29599 "EHLO mx2.itb.ac.id"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752861AbaIVBWw convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Sun, 21 Sep 2014 21:22:52 -0400
-Received: from av1.itb.ac.id (av1.itb.ac.id [167.205.1.71])
-	by mx2.itb.ac.id (Postfix) with ESMTP id 3j1SNH75FWz4fcZf
-	for <linux-serial@vger.kernel.org>; Mon, 22 Sep 2014 08:14:07 +0700 (WIT)
-Received: from mx2.itb.ac.id ([167.205.1.67])
-	by av1.itb.ac.id (av1.itb.ac.id [167.205.1.73]) (amavisd-new, port 10002)
-	with ESMTP id nU-LjIAxGvjJ for <linux-serial@vger.kernel.org>;
-	Mon, 22 Sep 2014 08:17:01 +0700 (WIT)
-Received: from studentsvm0.itb.ac.id (unknown [167.205.50.87])
-	by mx2.itb.ac.id (Postfix) with ESMTP id 3j1SNB3Fdqz4fc1D
-	for <linux-serial@vger.kernel.org>; Mon, 22 Sep 2014 08:14:02 +0700 (WIT)
-Received: from [10.200.21.4] (unknown [79.142.73.220])
-	by studentsvm0.itb.ac.id (Postfix) with ESMTPSA id 454233AE8195
-	for <linux-serial@vger.kernel.org>; Mon, 22 Sep 2014 08:14:00 +0700 (WIB)
-Content-Description: Mail message body
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+From: Sudhir Sreedharan <ssreedharan@mvista.com>
+Subject: [PATCH] serial/core: Initialize the console pm state
+Date: Mon, 22 Sep 2014 12:00:22 +0530
+Message-ID: <1411367422-2095-1-git-send-email-ssreedharan@mvista.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, Sudhir Sreedharan <ssreedharan@mvista.com>
+List-Id: linux-serial@vger.kernel.org
 
-Hello my Dear,
+For console devices having UART_CAP_SLEEP capability, the uart_pm_state has
+to be initialized to UART_PM_STATE_ON. Otherwise the LCR regiser values
+are reinitialized when uart_change_pm is called from uart_configure_port.
 
-I will greatly appreciate my correspondence meets you in good health condition.
+Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
+---
+ drivers/tty/serial/serial_core.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-My name is Mr. Benjamin Siaka. I am seeking for your co-operation for investment partnership in your Country. I shall provide the FUND for the investment. When you acknowledged the receipt of this correspondence, thereafter I will give you the Full Details of my investment proposal.
-
-I await your response in earliest.
-
-My regards,
-Mr. Benjamin Siaka.
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 29a7be4..91bfd52 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2615,6 +2615,9 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	if (uport->cons && uport->dev)
+ 		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
+ 
++	if (uart_console(uport))
++		state->pm_state = UART_PM_STATE_ON;
++
+ 	uart_configure_port(drv, state, uport);
+ 
+ 	num_groups = 2;
+-- 
+1.7.0.1
