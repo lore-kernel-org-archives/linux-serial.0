@@ -1,63 +1,28 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: serial console broken in v3.17-rc6 ?
-Date: Tue, 23 Sep 2014 17:08:54 -0400
-Message-ID: <5421E166.7060206@hurleysoftware.com>
-References: <5421D3E3.6080805@gmx.de>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 0/2] Fix a division by zero
+Date: Tue, 23 Sep 2014 14:58:31 -0700
+Message-ID: <20140923215831.GB651@kroah.com>
+References: <1411502080-19769-1-git-send-email-frans.klaver@xsens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:56279 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1756935AbaIWVI4 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Sep 2014 17:08:56 -0400
-In-Reply-To: <5421D3E3.6080805@gmx.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1411502080-19769-1-git-send-email-frans.klaver@xsens.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Frans Klaver <frans.klaver@xsens.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-parisc <linux-parisc@vger.kernel.org>
 
-Hi Helge,
-
-On 09/23/2014 04:11 PM, Helge Deller wrote:
-> During the release cycle of v3.17 I've seen sometimes a broken serial console output
-> on the parisc platform. Interestingly all kernel messages printed by the kernel via printk() show
-> up correctly, but output from userspace (e.g. by the init process during boot) show
-> up as random bytes.
-> Since the printk() output is correct the serial port itself and setup is probably correct.
-> Is parisc the only arch which has this problem, or are other architectures affected as well?
-> Maybe someone has an idea what could be wrong?
-> I did not try to bisect it yet.
+On Tue, Sep 23, 2014 at 09:54:38PM +0200, Frans Klaver wrote:
+> Hi Greg,
 > 
-> Thanks,
-> Helge
-> 
-> Here is a sample output during bootup:
-> 
-> <lots of standard kernel printk output>...
-> usb 1-2: Manufacturer: SILITEK
-> rs
->      og
->  ]f"
-> s l
-> random: nonblocking pool is initialized
-> net eth0: Setting full-duplex based on MII#1 link partner capability of 45e1
-> tpdsystemd-udevd[744]: starting version 215
-> .
->  eg..
->      vp..
->          ..Adding 1350652k swap on /dev/sdb6.  Priority:-1 extents:1 across:1350652k
-> .
->  EXT4-fs (sdb5): re-mounted. Opts: (null)
+> Here's a couple of patches that fix a divison by zero in omap-serial.c. One's a
+> cleanup, the other the actual fix.
 
-Thanks for the bug report.
+So both would be needed to be backported to stable kernels?  Why not
+just do the fix first, then the cleanup afterward, to make backporting
+easier?
 
-1. What serial driver is this?
-2. Regression since when?
-3. Full dmesg please
-4. Output of setserial -a [serial device]
-5. Output of stty -a [serial device]
+thanks,
 
-Regards,
-Peter Hurley
-
+greg k-h
