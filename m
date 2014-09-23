@@ -1,48 +1,70 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 3/4] tty: omap-serial: use threaded interrupt handler
-Date: Tue, 23 Sep 2014 11:38:38 -0700
-Message-ID: <20140923183838.GA3122@atomide.com>
-References: <1410789610-23059-1-git-send-email-frans.klaver@xsens.com>
- <1410789610-23059-4-git-send-email-frans.klaver@xsens.com>
- <54170823.7040801@hurleysoftware.com>
- <5417228C.5070503@hurleysoftware.com>
- <20140916085037.GI28458@ci00147.xsens-tech.local>
- <54197804.3020302@hurleysoftware.com>
- <20140917121303.GB20438@ci00147.xsens-tech.local>
- <20140923082445.GA16218@ci00147.xsens-tech.local>
- <5421AB20.8040606@hurleysoftware.com>
- <88924386-79bc-44c7-9a07-249900cbd359@email.android.com>
+From: Frans Klaver <frans.klaver@xsens.com>
+Subject: [PATCH 1/2] tty: omap-serial: pull out calculation from baud_is_mode16
+Date: Tue, 23 Sep 2014 21:54:39 +0200
+Message-ID: <1411502080-19769-2-git-send-email-frans.klaver@xsens.com>
+References: <1411502080-19769-1-git-send-email-frans.klaver@xsens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-03-ewr.mailhop.org ([204.13.248.66]:51645 "EHLO
-	mho-01-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751568AbaIWSjJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Sep 2014 14:39:09 -0400
-Content-Disposition: inline
-In-Reply-To: <88924386-79bc-44c7-9a07-249900cbd359@email.android.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1411502080-19769-1-git-send-email-frans.klaver@xsens.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Frans Klaver <frans.klaver@xsens.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Frans Klaver <fransklaver@gmail.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Frans Klaver <frans.klaver@xsens.com>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Alexey Pelykh <alexey.pelykh@gmail.com>, Kumar Gala <galak@codeaurora.org>, linux-kernel@vger.kernel.org, Felipe Balbi <balbi@ti.com>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 
-* Frans Klaver <fransklaver@gmail.com> [140923 11:12]:
-> On 23 September 2014 19:17:20 CEST, Peter Hurley <peter@hurleysoftware.com> wrote:
-> >
-> >I would've thought the first 2 patches had already been picked up
-> >because
-> >they fix div-by-zero faults.
-> 
-> I've had no confirmation of that happening so far. I also don't
-> know if I should expect one. Who'd take these patches? Tony? 
+To determine the correct divisor, we need to know the difference between
+the desired baud rate and the actual baud rate. The calculation for this
+difference is implemented twice within omap_serial_baud_is_mode16().
+Pull out the calculation for easier maintenance.
 
-$ scripts/get_maintainer.pl -f drivers/tty/serial/omap-serial.c
+Signed-off-by: Frans Klaver <frans.klaver@xsens.com>
+---
+ drivers/tty/serial/omap-serial.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-Shows they should be sent to Greg and linux-serial. Please also Cc
-linux-omap. And if it's a fix, please make sure the subject has the
-magic word fix :)
-
-Regards,
-
-Tony
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index d017cec..ae935ce 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -239,6 +239,22 @@ static void serial_omap_enable_wakeup(struct uart_omap_port *up, bool enable)
+ }
+ 
+ /*
++ * Calculate the absolute difference between the desired and actual baud
++ * rate for the given mode.
++ */
++static inline int calculate_baud_abs_diff(struct uart_port *port,
++				unsigned int baud, unsigned int mode)
++{
++	unsigned int n = port->uartclk / (mode * baud);
++	int abs_diff = baud - (port->uartclk / (mode * n));
++
++	if (abs_diff < 0)
++		abs_diff = -abs_diff;
++
++	return abs_diff;
++}
++
++/*
+  * serial_omap_baud_is_mode16 - check if baud rate is MODE16X
+  * @port: uart port info
+  * @baud: baudrate for which mode needs to be determined
+@@ -252,14 +268,8 @@ static void serial_omap_enable_wakeup(struct uart_omap_port *up, bool enable)
+ static bool
+ serial_omap_baud_is_mode16(struct uart_port *port, unsigned int baud)
+ {
+-	unsigned int n13 = port->uartclk / (13 * baud);
+-	unsigned int n16 = port->uartclk / (16 * baud);
+-	int baudAbsDiff13 = baud - (port->uartclk / (13 * n13));
+-	int baudAbsDiff16 = baud - (port->uartclk / (16 * n16));
+-	if (baudAbsDiff13 < 0)
+-		baudAbsDiff13 = -baudAbsDiff13;
+-	if (baudAbsDiff16 < 0)
+-		baudAbsDiff16 = -baudAbsDiff16;
++	int baudAbsDiff13 = calculate_baud_abs_diff(port, baud, 13);
++	int baudAbsDiff16 = calculate_baud_abs_diff(port, baud, 16);
+ 
+ 	return (baudAbsDiff13 >= baudAbsDiff16);
+ }
+-- 
+2.1.0
