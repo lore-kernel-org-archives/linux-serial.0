@@ -1,96 +1,88 @@
-From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Subject: [PATCH v3] serial: 8250: Add Quark X1000 to 8250_pci.c
-Date: Tue, 23 Sep 2014 01:21:11 +0100
-Message-ID: <1411431671-26540-1-git-send-email-pure.logic@nexus-software.ie>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from outbound-smtp02.blacknight.com ([81.17.249.8]:46070 "EHLO
-	outbound-smtp02.blacknight.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752349AbaIWAW6 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 22 Sep 2014 20:22:58 -0400
-Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
-	by outbound-smtp02.blacknight.com (Postfix) with ESMTP id 64D4C9987D
-	for <linux-serial@vger.kernel.org>; Tue, 23 Sep 2014 00:21:06 +0000 (UTC)
-Sender: linux-serial-owner@vger.kernel.org
+From: Abhilash Kesavan <kesavan.abhilash@gmail.com>
+Subject: Re: [PATCH] tty/serial: fix config dependencies for samsung serial
+Date: Tue, 23 Sep 2014 12:34:26 +0530
+Message-ID: <CAM4voaky-zin8ikdkLBwpTKy13hz3iON8tmNsd55-kr8po8Qaw@mail.gmail.com>
+References: <1409671320-7604-1-git-send-email-ch.naveen@samsung.com>
+	<3749760.naNt3fHoTI@wuerfel>
+	<CAHfPSqAn5gHjDA75Zf1W5=GH9_W+X6+4oc9rDK7CqeSoF3DURw@mail.gmail.com>
+	<10202237.9vbtDF9MIQ@wuerfel>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <10202237.9vbtDF9MIQ@wuerfel>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Naveen Krishna Chatradhi <ch.naveen@samsung.com>, linux-serial@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Pankaj Dubey <pankaj.dubey@samsung.com>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, heikki.krogerus@linux.intel.com, andriy.shevchenko@linux.intel.com, kean.ho.chew@intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Bryan O'Donoghue <pure.logic@nexus-software.ie>
 
-Quark X1000 contains two designware derived 8250 serial ports.
-Each port has a unique PCI configuration space consisting of
-BAR0:UART BAR1:DMA respectively.
+Hi Arnd,
 
-Unlike the standard 8250 the register width is 32 bits for RHR,IER etc
-The Quark UART has a fundamental clock @ 44.2368 MHz allowing for a
-bitrate of up to about 2.76 megabits per second.
+I will be taking this forward as Naveen is no longer with Samsung.
 
-This patch enables standard 8250 mode
+On Wed, Sep 3, 2014 at 4:26 PM, Arnd Bergmann <arnd@arndb.de> wrote:
+> On Wednesday 03 September 2014 13:51:56 Naveen Krishna Ch wrote:
+>> On 2 September 2014 21:16, Arnd Bergmann <arnd@arndb.de> wrote:
+>> > On Tuesday 02 September 2014 20:52:00 Naveen Krishna Chatradhi wrote:
+>> >> Make the config symbols SERIAL_SAMSUNG_UARTS_4 and
+>> >> SERIAL_SAMSUNG_UARTS depend on SERIAL_SAMSUNG rather than
+>> >> PLAT_SAMSUNG.
+>> >
+>> > Please always describe why you are doing a change. This patch
+>> > seems really pointless.
 
-Signed-off-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
----
- drivers/tty/serial/8250/8250_pci.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+I will re-post the patch with a better commit message once we sort the
+below issue.
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 61830b1..14d3e6b 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1788,6 +1788,7 @@ pci_wch_ch353_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
- #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
- #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
-+#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
- 
- #define PCI_VENDOR_ID_SUNIX		0x1fd4
- #define PCI_DEVICE_ID_SUNIX_1999	0x1999
-@@ -1898,6 +1899,13 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= byt_serial_setup,
- 	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTEL,
-+		.device		= PCI_DEVICE_ID_INTEL_QRK_UART,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= pci_default_setup,
-+	},
- 	/*
- 	 * ITE
- 	 */
-@@ -2740,6 +2748,7 @@ enum pci_board_num_t {
- 	pbn_ADDIDATA_PCIe_8_3906250,
- 	pbn_ce4100_1_115200,
- 	pbn_byt,
-+	pbn_qrk,
- 	pbn_omegapci,
- 	pbn_NETMOS9900_2s_115200,
- 	pbn_brcm_trumanage,
-@@ -3490,6 +3499,12 @@ static struct pciserial_board pci_boards[] = {
- 		.uart_offset	= 0x80,
- 		.reg_shift      = 2,
- 	},
-+	[pbn_qrk] = {
-+		.flags		= FL_BASE0,
-+		.num_ports	= 1,
-+		.base_baud	= 2764800,
-+		.reg_shift	= 2,
-+	},
- 	[pbn_omegapci] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 8,
-@@ -5192,6 +5207,12 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		pbn_byt },
- 
- 	/*
-+	 * Intel Quark x1000
-+	 */
-+	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
-+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-+		pbn_qrk },
-+	/*
- 	 * Cronyx Omega PCI
- 	 */
- 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
--- 
-1.9.1
+>>
+>> The SERIAL_SAMSUNG_UARTS_4 and SERIAL_SAMSUNG_UARTS config options are
+>> meaningful only if SERIAL_SAMSUNG is enabled. Hence the dependency
+>> rules were changed. I will repost this patch with better description.
+>
+> My point is that the options are used by both the uart driver and
+> the platform code, e.g. for the purpose of PM debugging which can
+> be enabled even when the serial-samsung driver is turned off.
 
+I looked through the code and could find two references to these
+symbols in the platform-specific code: arch/arm/plat-samsung/init.c
+and arch/arm/mach-s3c64xx/irq-pm.c. The first one is being used to
+initialize the uart platform device in non-dt way while the second one
+saves and restores the uart irq masks for all channels across a
+suspend/resume cycle. Also, the save/restore will get bypassed in case
+CONFIG_SERIAL_SAMSUNG_UARTS is not defined. It does not look like
+either of these cases would cause any issue with the current patch,
+can you please help me understand the problem ?
+
+Regards,
+Abhilash
+>
+>> >>  config SERIAL_SAMSUNG_UARTS_4
+>> >>         bool
+>> >> -       depends on PLAT_SAMSUNG
+>> >> +       depends on SERIAL_SAMSUNG
+>> >>         default y if !(CPU_S3C2410 || CPU_S3C2412 || CPU_S3C2440 || CPU_S3C2442)
+>> >>         help
+>> >>           Internal node for the common case of 4 Samsung compatible UARTs
+>> >>
+>> >>  config SERIAL_SAMSUNG_UARTS
+>> >>         int
+>> >> -       depends on PLAT_SAMSUNG
+>> >> +       depends on SERIAL_SAMSUNG
+>> >>         default 4 if SERIAL_SAMSUNG_UARTS_4 || CPU_S3C2416
+>> >>         default 3
+>> >>         help
+>> >>
+>> >
+>> > Have you checked that it still builds on all samsung platforms when
+>> > SERIAL_SAMSUNG is disabled? We have had build errors in this area
+>> > in the past.
+>>
+>> Yes, it builds for other Samsung platforms.
+>
+> Ok.
+>
+>         Arnd
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
