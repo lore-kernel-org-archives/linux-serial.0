@@ -1,40 +1,46 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH v3] serial: 8250: Add Quark X1000 to 8250_pci.c
-Date: Tue, 23 Sep 2014 10:58:17 +0300
-Message-ID: <20140923075817.GA18814@xps8300>
-References: <1411431671-26540-1-git-send-email-pure.logic@nexus-software.ie>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] tty/serial: fix config dependencies for samsung serial
+Date: Tue, 23 Sep 2014 10:07:31 +0200
+Message-ID: <5903767.VzDJhUfQDI@wuerfel>
+References: <1409671320-7604-1-git-send-email-ch.naveen@samsung.com> <10202237.9vbtDF9MIQ@wuerfel> <CAM4voaky-zin8ikdkLBwpTKy13hz3iON8tmNsd55-kr8po8Qaw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:40338 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750828AbaIWH6s (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 23 Sep 2014 03:58:48 -0400
-Content-Disposition: inline
-In-Reply-To: <1411431671-26540-1-git-send-email-pure.logic@nexus-software.ie>
+Received: from mout.kundenserver.de ([212.227.17.13]:57846 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751070AbaIWIIL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 23 Sep 2014 04:08:11 -0400
+In-Reply-To: <CAM4voaky-zin8ikdkLBwpTKy13hz3iON8tmNsd55-kr8po8Qaw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, andriy.shevchenko@linux.intel.com, kean.ho.chew@intel.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Abhilash Kesavan <kesavan.abhilash@gmail.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Pankaj Dubey <pankaj.dubey@samsung.com>, Naveen Krishna Ch <naveenkrishna.ch@gmail.com>, Naveen Krishna Chatradhi <ch.naveen@samsung.com>
 
-On Tue, Sep 23, 2014 at 01:21:11AM +0100, Bryan O'Donoghue wrote:
-> Quark X1000 contains two designware derived 8250 serial ports.
-> Each port has a unique PCI configuration space consisting of
-> BAR0:UART BAR1:DMA respectively.
+On Tuesday 23 September 2014 12:34:26 Abhilash Kesavan wrote:
+> >>
+> >> The SERIAL_SAMSUNG_UARTS_4 and SERIAL_SAMSUNG_UARTS config options are
+> >> meaningful only if SERIAL_SAMSUNG is enabled. Hence the dependency
+> >> rules were changed. I will repost this patch with better description.
+> >
+> > My point is that the options are used by both the uart driver and
+> > the platform code, e.g. for the purpose of PM debugging which can
+> > be enabled even when the serial-samsung driver is turned off.
 > 
-> Unlike the standard 8250 the register width is 32 bits for RHR,IER etc
-> The Quark UART has a fundamental clock @ 44.2368 MHz allowing for a
-> bitrate of up to about 2.76 megabits per second.
-> 
-> This patch enables standard 8250 mode
-> 
-> Signed-off-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+> I looked through the code and could find two references to these
+> symbols in the platform-specific code: arch/arm/plat-samsung/init.c
+> and arch/arm/mach-s3c64xx/irq-pm.c. The first one is being used to
+> initialize the uart platform device in non-dt way while the second one
+> saves and restores the uart irq masks for all channels across a
+> suspend/resume cycle. Also, the save/restore will get bypassed in case
+> CONFIG_SERIAL_SAMSUNG_UARTS is not defined. It does not look like
+> either of these cases would cause any issue with the current patch,
+> can you please help me understand the problem ?
 
-Looks good to me. FWIW..
+It's possible that it works fine now, I just pointed out that we
+had bugs in this area in the past, so it would be good if you can
+add to the changelog a statement that you have checked that the
+new patch does not cause problems here.
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-
-Thanks,
-
--- 
-heikki
+	Arnd
