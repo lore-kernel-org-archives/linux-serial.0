@@ -1,43 +1,48 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
- for AM33xx
-Date: Wed, 24 Sep 2014 09:56:51 +0200
-Message-ID: <20140924075651.GC19565@linutronix.de>
-References: <5411C810.7070906@linutronix.de>
- <2cf997d9-e7de-465b-915d-3a0a5e7b95f7@email.android.com>
- <54129F6C.7040508@linutronix.de>
- <20140912094010.GE28458@ci00147.xsens-tech.local>
- <5412C21A.8020203@linutronix.de>
- <20140912102816.GF28458@ci00147.xsens-tech.local>
- <541716DC.9020904@linutronix.de>
- <20140917102812.GA20438@ci00147.xsens-tech.local>
- <20140921204100.GA10111@linutronix.de>
- <20140922092853.GH20438@ci00147.xsens-tech.local>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/2] tty: omap-serial: fix division by zero
+Date: Wed, 24 Sep 2014 01:08:52 -0700
+Message-ID: <20140924080852.GA28215@kroah.com>
+References: <1411545322-22940-1-git-send-email-frans.klaver@xsens.com>
+ <1411545322-22940-2-git-send-email-frans.klaver@xsens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20140922092853.GH20438@ci00147.xsens-tech.local>
+In-Reply-To: <1411545322-22940-2-git-send-email-frans.klaver@xsens.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Frans Klaver <frans.klaver@xsens.com>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-* Frans Klaver | 2014-09-22 11:28:54 [+0200]:
+On Wed, Sep 24, 2014 at 09:55:21AM +0200, Frans Klaver wrote:
+> If the chosen baud rate is large enough (e.g. 3.5 megabaud), the
+> calculated n values in serial_omap_is_baud_mode16() may become 0. This
+> causes a division by zero when calculating the difference between
+> calculated and desired baud rates. To prevent this, cap the n13 and n16
+> values on 1.
+> 
+> Division by zero in kernel.
+> [<c00132e0>] (unwind_backtrace) from [<c00112ec>] (show_stack+0x10/0x14)
+> [<c00112ec>] (show_stack) from [<c01ed7bc>] (Ldiv0+0x8/0x10)
+> [<c01ed7bc>] (Ldiv0) from [<c023805c>] (serial_omap_baud_is_mode16+0x4c/0x68)
+> [<c023805c>] (serial_omap_baud_is_mode16) from [<c02396b4>] (serial_omap_set_termios+0x90/0x8d8)
+> [<c02396b4>] (serial_omap_set_termios) from [<c0230a0c>] (uart_change_speed+0xa4/0xa8)
+> [<c0230a0c>] (uart_change_speed) from [<c0231798>] (uart_set_termios+0xa0/0x1fc)
+> [<c0231798>] (uart_set_termios) from [<c022bb44>] (tty_set_termios+0x248/0x2c0)
+> [<c022bb44>] (tty_set_termios) from [<c022c17c>] (set_termios+0x248/0x29c)
+> [<c022c17c>] (set_termios) from [<c022c3e4>] (tty_mode_ioctl+0x1c8/0x4e8)
+> [<c022c3e4>] (tty_mode_ioctl) from [<c0227e70>] (tty_ioctl+0xa94/0xb18)
+> [<c0227e70>] (tty_ioctl) from [<c00cf45c>] (do_vfs_ioctl+0x4a0/0x560)
+> [<c00cf45c>] (do_vfs_ioctl) from [<c00cf568>] (SyS_ioctl+0x4c/0x74)
+> [<c00cf568>] (SyS_ioctl) from [<c000e480>] (ret_fast_syscall+0x0/0x30)
+> 
+> Signed-off-by: Frans Klaver <frans.klaver@xsens.com>
+> ---
+>  drivers/tty/serial/omap-serial.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
 
->
->Wow, thanks for your work here. This does indeed sound hard to trap.
->
->I guess then we'd still have to answer the question why the yocto build
->calls set_termios() so often, but that's not on you then. Did you notice
->it even changing settings? We might want to fix this even if the kernel
->should be able to cope.
+Should this go to the stable kernel trees as well?
 
-Yeah. I don't care if this is yocto's fault or not. If it is possible to
-stop the DMA transfer from userland with whatever method then it needs to
-be fixed in kernel so that this does happen.
+thanks,
 
->Thanks again,
->Frans
-
-Sebastian
+greg k-h
