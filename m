@@ -1,107 +1,226 @@
 From: Vinod Koul <vinod.koul@intel.com>
-Subject: [PATCH 00/27] add
-	pm_runtime_last_busy_and_autosuspend() helper
-Date: Wed, 24 Sep 2014 21:44:50 +0530
-Message-ID: <1411575342-31048-1-git-send-email-vinod.koul@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+Subject: [PATCH 25/27] tty: serial: omap: use pm_runtime_last_busy_and_autosuspend helper
+Date: Wed, 24 Sep 2014 21:45:15 +0530
+Message-ID: <1411575342-31048-26-git-send-email-vinod.koul@intel.com>
+References: <1411575342-31048-1-git-send-email-vinod.koul@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1411575342-31048-1-git-send-email-vinod.koul@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
-Cc: linux-wireless@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>, patches@opensource.wolfsonmicro.com, linux-doc@vger.kernel.org, Seungwon Jeon <tgih.jun@samsung.com>, Daniel Vetter <daniel.vetter@ffwll.ch>, Chris Ball <chris@printf.net>, dri-devel@lists.freedesktop.org, Marcin Wojtas <mw@semihalf.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, David Herrmann <dh.herrmann@gmail.com>, Shinya Kuribayashi <skuribay@pobox.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, vinod.koul@intel.com, Jingoo Han <jg1.han@samsung.com>, Jaehoon Chung <jh80.chung@samsung.com>, Jani Nikula <jani.nikula@intel.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Alan Stern <stern@rowland.harvard.edu>, Ben Skeggs <bskeggs@redhat.com>, Bjorn Andersson <bjorn.andersson@sonymobile.com>, Wolfram Sang <wsa@the-dreams.de>
+Cc: subhransu.s.prusty@intel.com, vinod.koul@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch series adds a simple macro pm_runtime_last_busy_and_autosuspend()
-which invokes pm_runtime_mark_last_busy() and pm_runtime_put_autosuspend()
-sequentially. Then we do a tree wide update of current patterns which are
-present. As evident from log below this pattern is frequent in the
-kernel.
+Use the new pm_runtime_last_busy_and_autosuspend helper instead of open
+coding the same code
 
-This series can be found at
-git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/slave-dma.git
-topic/pm_runtime_last_busy_and_autosuspend
+Signed-off-by: Vinod Koul <vinod.koul@intel.com>
+---
+ drivers/tty/serial/omap-serial.c |   60 ++++++++++++-------------------------
+ 1 files changed, 20 insertions(+), 40 deletions(-)
 
-Fengguang's kbuild has tested it so it shouldn't break things for anyone.
-Barring one patch (explictyly mentioned in its changelog) rest are simple
-replacements.
-
-If all are okay, this should be merged thru PM tree as it depends on macro
-addition.
-
-Subhransu S. Prusty (1):
-  PM: Add helper pm_runtime_last_busy_and_autosuspend()
-
-Vinod Koul (26):
-  dmaengine: ste_dma: use pm_runtime_last_busy_and_autosuspend helper
-  extcon: arizona: use pm_runtime_last_busy_and_autosuspend helper
-  drm/i915: use pm_runtime_last_busy_and_autosuspend helper
-  drm/nouveau: use pm_runtime_last_busy_and_autosuspend helper
-  drm/radeon: use pm_runtime_last_busy_and_autosuspend helper
-  vga_switcheroo: use pm_runtime_last_busy_and_autosuspend helper
-  i2c: designware: use pm_runtime_last_busy_and_autosuspend helper
-  i2c: omap: use pm_runtime_last_busy_and_autosuspend helper
-  i2c: qup: use pm_runtime_last_busy_and_autosuspend helper
-  mfd: ab8500-gpadc: use pm_runtime_last_busy_and_autosuspend helper
-  mfd: arizona: use pm_runtime_last_busy_and_autosuspend helper
-  mei: use pm_runtime_last_busy_and_autosuspend helper
-  mmc: use pm_runtime_last_busy_and_autosuspend helper
-  mmc: mmci: use pm_runtime_last_busy_and_autosuspend helper
-  mmc: omap_hsmmc: use pm_runtime_last_busy_and_autosuspend helper
-  mmc: sdhci-pxav3: use pm_runtime_last_busy_and_autosuspend helper
-  mmc: sdhci: use pm_runtime_last_busy_and_autosuspend helper
-  NFC: trf7970a: use pm_runtime_last_busy_and_autosuspend helper
-  pm2301-charger: use pm_runtime_last_busy_and_autosuspend helper
-  spi: omap2-mcspi: use pm_runtime_last_busy_and_autosuspend helper
-  spi: orion: use pm_runtime_last_busy_and_autosuspend helper
-  spi: ti-qspi: use pm_runtime_last_busy_and_autosuspend helper
-  spi: core: use pm_runtime_last_busy_and_autosuspend helper
-  tty: serial: omap: use pm_runtime_last_busy_and_autosuspend helper
-  usb: musb: omap2430: use pm_runtime_last_busy_and_autosuspend helper
-  video: fbdev: use pm_runtime_last_busy_and_autosuspend helper
-
- Documentation/power/runtime_pm.txt          |    4 ++
- drivers/dma/ste_dma40.c                     |   30 ++++---------
- drivers/extcon/extcon-arizona.c             |    6 +--
- drivers/gpu/drm/i915/intel_pm.c             |    3 +-
- drivers/gpu/drm/nouveau/nouveau_connector.c |    3 +-
- drivers/gpu/drm/nouveau/nouveau_drm.c       |    9 +---
- drivers/gpu/drm/radeon/radeon_connectors.c  |   15 ++----
- drivers/gpu/drm/radeon/radeon_drv.c         |    5 +-
- drivers/gpu/drm/radeon/radeon_kms.c         |    6 +--
- drivers/gpu/vga/vga_switcheroo.c            |    7 +--
- drivers/i2c/busses/i2c-designware-core.c    |    3 +-
- drivers/i2c/busses/i2c-omap.c               |    6 +--
- drivers/i2c/busses/i2c-qup.c                |    3 +-
- drivers/mfd/ab8500-gpadc.c                  |    6 +--
- drivers/mfd/arizona-irq.c                   |    3 +-
- drivers/misc/mei/client.c                   |   12 ++----
- drivers/mmc/core/core.c                     |    3 +-
- drivers/mmc/host/mmci.c                     |   12 ++----
- drivers/mmc/host/omap_hsmmc.c               |   19 ++-------
- drivers/mmc/host/sdhci-pxav3.c              |    6 +--
- drivers/mmc/host/sdhci.c                    |    3 +-
- drivers/nfc/trf7970a.c                      |    3 +-
- drivers/power/pm2301_charger.c              |    3 +-
- drivers/spi/spi-omap2-mcspi.c               |    9 +---
- drivers/spi/spi-orion.c                     |    3 +-
- drivers/spi/spi-ti-qspi.c                   |    5 +-
- drivers/spi/spi.c                           |    6 +--
- drivers/tty/serial/omap-serial.c            |   60 +++++++++------------------
- drivers/usb/musb/omap2430.c                 |    6 +--
- drivers/video/fbdev/auo_k190x.c             |    9 +---
- include/linux/pm_runtime.h                  |    6 +++
- 31 files changed, 97 insertions(+), 177 deletions(-)
-
-
-Thanks
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index d017cec..83a50ca 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -290,8 +290,7 @@ static void serial_omap_enable_ms(struct uart_port *port)
+ 	pm_runtime_get_sync(up->dev);
+ 	up->ier |= UART_IER_MSI;
+ 	serial_out(up, UART_IER, up->ier);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static void serial_omap_stop_tx(struct uart_port *port)
+@@ -352,8 +351,7 @@ static void serial_omap_stop_tx(struct uart_port *port)
+ 		serial_out(up, UART_IER, up->ier);
+ 	}
+ 
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static void serial_omap_stop_rx(struct uart_port *port)
+@@ -364,8 +362,7 @@ static void serial_omap_stop_rx(struct uart_port *port)
+ 	up->ier &= ~(UART_IER_RLSI | UART_IER_RDI);
+ 	up->port.read_status_mask &= ~UART_LSR_DR;
+ 	serial_out(up, UART_IER, up->ier);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
+@@ -434,8 +431,7 @@ static void serial_omap_start_tx(struct uart_port *port)
+ 		serial_omap_stop_rx(port);
+ 
+ 	serial_omap_enable_ier_thri(up);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static void serial_omap_throttle(struct uart_port *port)
+@@ -448,8 +444,7 @@ static void serial_omap_throttle(struct uart_port *port)
+ 	up->ier &= ~(UART_IER_RLSI | UART_IER_RDI);
+ 	serial_out(up, UART_IER, up->ier);
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static void serial_omap_unthrottle(struct uart_port *port)
+@@ -462,8 +457,7 @@ static void serial_omap_unthrottle(struct uart_port *port)
+ 	up->ier |= UART_IER_RLSI | UART_IER_RDI;
+ 	serial_out(up, UART_IER, up->ier);
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static unsigned int check_modem_status(struct uart_omap_port *up)
+@@ -616,8 +610,7 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_id)
+ 
+ 	tty_flip_buffer_push(&up->port.state->port);
+ 
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ 	up->port_activity = jiffies;
+ 
+ 	return ret;
+@@ -634,8 +627,7 @@ static unsigned int serial_omap_tx_empty(struct uart_port *port)
+ 	spin_lock_irqsave(&up->port.lock, flags);
+ 	ret = serial_in(up, UART_LSR) & UART_LSR_TEMT ? TIOCSER_TEMT : 0;
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ 	return ret;
+ }
+ 
+@@ -647,8 +639,7 @@ static unsigned int serial_omap_get_mctrl(struct uart_port *port)
+ 
+ 	pm_runtime_get_sync(up->dev);
+ 	status = check_modem_status(up);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ 
+ 	dev_dbg(up->port.dev, "serial_omap_get_mctrl+%d\n", up->port.line);
+ 
+@@ -686,8 +677,7 @@ static void serial_omap_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 		     UART_MCR_DTR | UART_MCR_RTS);
+ 	up->mcr = old_mcr | mcr;
+ 	serial_out(up, UART_MCR, up->mcr);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static void serial_omap_break_ctl(struct uart_port *port, int break_state)
+@@ -704,8 +694,7 @@ static void serial_omap_break_ctl(struct uart_port *port, int break_state)
+ 		up->lcr &= ~UART_LCR_SBC;
+ 	serial_out(up, UART_LCR, up->lcr);
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static int serial_omap_startup(struct uart_port *port)
+@@ -781,8 +770,7 @@ static int serial_omap_startup(struct uart_port *port)
+ 
+ 	serial_out(up, UART_OMAP_WER, up->wer);
+ 
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ 	up->port_activity = jiffies;
+ 	return 0;
+ }
+@@ -818,8 +806,7 @@ static void serial_omap_shutdown(struct uart_port *port)
+ 	if (serial_in(up, UART_LSR) & UART_LSR_DR)
+ 		(void) serial_in(up, UART_RX);
+ 
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ 	free_irq(up->port.irq, up);
+ 	if (up->wakeirq)
+ 		free_irq(up->wakeirq, up);
+@@ -1088,8 +1075,7 @@ serial_omap_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	serial_omap_set_mctrl(&up->port, up->port.mctrl);
+ 
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ 	dev_dbg(up->port.dev, "serial_omap_set_termios+%d\n", up->port.line);
+ }
+ 
+@@ -1120,8 +1106,7 @@ serial_omap_pm(struct uart_port *port, unsigned int state,
+ 			pm_runtime_allow(up->dev);
+ 	}
+ 
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static void serial_omap_release_port(struct uart_port *port)
+@@ -1204,8 +1189,7 @@ static void serial_omap_poll_put_char(struct uart_port *port, unsigned char ch)
+ 	pm_runtime_get_sync(up->dev);
+ 	wait_for_xmitr(up);
+ 	serial_out(up, UART_TX, ch);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static int serial_omap_poll_get_char(struct uart_port *port)
+@@ -1223,8 +1207,7 @@ static int serial_omap_poll_get_char(struct uart_port *port)
+ 	status = serial_in(up, UART_RX);
+ 
+ out:
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ 
+ 	return status;
+ }
+@@ -1288,8 +1271,7 @@ serial_omap_console_write(struct console *co, const char *s,
+ 	if (up->msr_saved_flags)
+ 		check_modem_status(up);
+ 
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ 	if (locked)
+ 		spin_unlock(&up->port.lock);
+ 	local_irq_restore(flags);
+@@ -1387,8 +1369,7 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ 	}
+ 
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ }
+ 
+ static int
+@@ -1724,8 +1705,7 @@ static int serial_omap_probe(struct platform_device *pdev)
+ 	if (ret != 0)
+ 		goto err_add_port;
+ 
+-	pm_runtime_mark_last_busy(up->dev);
+-	pm_runtime_put_autosuspend(up->dev);
++	pm_runtime_last_busy_and_autosuspend(up->dev);
+ 	return 0;
+ 
+ err_add_port:
 -- 
-~Vinod
+1.7.0.4
