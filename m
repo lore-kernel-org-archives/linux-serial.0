@@ -1,56 +1,54 @@
-From: Frans Klaver <frans.klaver@xsens.com>
-Subject: Re: [PATCH 1/2] tty: omap-serial: fix division by zero
-Date: Wed, 24 Sep 2014 11:09:50 +0200
-Message-ID: <20140924090950.GB22872@ci00147.xsens-tech.local>
-References: <1411545322-22940-1-git-send-email-frans.klaver@xsens.com>
- <1411545322-22940-2-git-send-email-frans.klaver@xsens.com>
- <20140924080852.GA28215@kroah.com>
- <20140924084111.GA22872@ci00147.xsens-tech.local>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140924084111.GA22872@ci00147.xsens-tech.local>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] tty: Fix width of unsigned long bitfield padding
+Date: Wed, 24 Sep 2014 06:26:21 -0400
+Message-ID: <1411554381-1097-1-git-send-email-peter@hurleysoftware.com>
+References: <54227c9a.lXFXllIgMyBnEIGZ%fengguang.wu@intel.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:36149 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753820AbaIXK0t (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 24 Sep 2014 06:26:49 -0400
+In-Reply-To: <54227c9a.lXFXllIgMyBnEIGZ%fengguang.wu@intel.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Fengguang Wu <fengguang.wu@intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 
-On Wed, Sep 24, 2014 at 10:41:11AM +0200, Frans Klaver wrote:
-> On Wed, Sep 24, 2014 at 01:08:52AM -0700, Greg Kroah-Hartman wrote:
-> > On Wed, Sep 24, 2014 at 09:55:21AM +0200, Frans Klaver wrote:
-> > > If the chosen baud rate is large enough (e.g. 3.5 megabaud), the
-> > > calculated n values in serial_omap_is_baud_mode16() may become 0. This
-> > > causes a division by zero when calculating the difference between
-> > > calculated and desired baud rates. To prevent this, cap the n13 and n16
-> > > values on 1.
-> > > 
-> > > Division by zero in kernel.
-> > > [<c00132e0>] (unwind_backtrace) from [<c00112ec>] (show_stack+0x10/0x14)
-> > > [<c00112ec>] (show_stack) from [<c01ed7bc>] (Ldiv0+0x8/0x10)
-> > > [<c01ed7bc>] (Ldiv0) from [<c023805c>] (serial_omap_baud_is_mode16+0x4c/0x68)
-> > > [<c023805c>] (serial_omap_baud_is_mode16) from [<c02396b4>] (serial_omap_set_termios+0x90/0x8d8)
-> > > [<c02396b4>] (serial_omap_set_termios) from [<c0230a0c>] (uart_change_speed+0xa4/0xa8)
-> > > [<c0230a0c>] (uart_change_speed) from [<c0231798>] (uart_set_termios+0xa0/0x1fc)
-> > > [<c0231798>] (uart_set_termios) from [<c022bb44>] (tty_set_termios+0x248/0x2c0)
-> > > [<c022bb44>] (tty_set_termios) from [<c022c17c>] (set_termios+0x248/0x29c)
-> > > [<c022c17c>] (set_termios) from [<c022c3e4>] (tty_mode_ioctl+0x1c8/0x4e8)
-> > > [<c022c3e4>] (tty_mode_ioctl) from [<c0227e70>] (tty_ioctl+0xa94/0xb18)
-> > > [<c0227e70>] (tty_ioctl) from [<c00cf45c>] (do_vfs_ioctl+0x4a0/0x560)
-> > > [<c00cf45c>] (do_vfs_ioctl) from [<c00cf568>] (SyS_ioctl+0x4c/0x74)
-> > > [<c00cf568>] (SyS_ioctl) from [<c000e480>] (ret_fast_syscall+0x0/0x30)
-> > > 
-> > > Signed-off-by: Frans Klaver <frans.klaver@xsens.com>
-> > > ---
-> > >  drivers/tty/serial/omap-serial.c | 12 ++++++++++--
-> > >  1 file changed, 10 insertions(+), 2 deletions(-)
-> > 
-> > Should this go to the stable kernel trees as well?
-> 
-> It's been there for a while. Introduced in 5fe2123647c1508 "OMAP/serial:
-> Support 1Mbaud and similar baudrates that require Mode16 instead of
-> Mode13" (v3.9). It's probably a good idea to do so. stable@... needs a
-> cc?
+Commit c545b66c6922b002b5fe224a6eaec58c913650b5,
+'tty: Serialize tcflow() with other tty flow control changes' and
+commit 99416322dd16b810ba74098cc50ef2a844091d35,
+'tty: Workaround Alpha non-atomic byte storage in tty_struct' work around
+compiler bugs and non-atomic storage on multiple arches by padding
+bitfields out to the declared type which is unsigned long. However, the
+width varies by arch.
 
-And would it be enough to just resend this particular patch in that
-case?
+Pad bitfields to actual width of unsigned long (which is BITS_PER_LONG).
+
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ include/linux/tty.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 7a0a796..6b6a449 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -264,11 +264,11 @@ struct tty_struct {
+ 	struct winsize winsize;		/* winsize_mutex */
+ 	unsigned long stopped:1,	/* flow_lock */
+ 		      flow_stopped:1,
+-		      unused:62;
++		      unused:BITS_PER_LONG - 2;
+ 	int hw_stopped;
+ 	unsigned long ctrl_status:8,	/* ctrl_lock */
+ 		      packet:1,
+-		      unused_ctrl:55;
++		      unused_ctrl:BITS_PER_LONG - 9;
+ 	unsigned int receive_room;	/* Bytes free for queue */
+ 	int flow_change;
+ 
+-- 
+2.1.0
+
