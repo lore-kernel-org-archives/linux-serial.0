@@ -1,27 +1,43 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v4 0/8] asm-generic/io.h overhaul
-Date: Thu, 25 Sep 2014 16:56:53 +0200
-Message-ID: <3399763.VZ83zCGta1@wuerfel>
-References: <1407925738-26170-1-git-send-email-thierry.reding@gmail.com> <20140825112630.GA4163@ulmo.nvidia.com> <20140924060419.GA20253@ulmo>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
+ for AM33xx
+Date: Thu, 25 Sep 2014 17:14:03 +0200
+Message-ID: <20140925151403.GH19396@linutronix.de>
+References: <5411C810.7070906@linutronix.de>
+ <2cf997d9-e7de-465b-915d-3a0a5e7b95f7@email.android.com>
+ <54129F6C.7040508@linutronix.de>
+ <20140912094010.GE28458@ci00147.xsens-tech.local>
+ <5412C21A.8020203@linutronix.de>
+ <20140912102816.GF28458@ci00147.xsens-tech.local>
+ <541716DC.9020904@linutronix.de>
+ <20140917102812.GA20438@ci00147.xsens-tech.local>
+ <20140921204100.GA10111@linutronix.de>
+ <20140922092853.GH20438@ci00147.xsens-tech.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140924060419.GA20253@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, x86@kernel.org, Stephen Boyd <sboyd@codeaurora.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, sparclinux@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Sam Ravnborg <sam@ravnborg.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140922092853.GH20438@ci00147.xsens-tech.local>
+Sender: linux-omap-owner@vger.kernel.org
+To: Frans Klaver <frans.klaver@xsens.com>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday 24 September 2014 08:04:21 Thierry Reding wrote:
-> > 
-> > Arnd, do you think this looks good to take for test-driving in
-> > linux-next?
-> 
-> Ping?
-> 
+* Frans Klaver | 2014-09-22 11:28:54 [+0200]:
 
-I've put it all into the asm-generic tree, and Will's patches on top.
-Unless I get complaints, I plan to submit them all for 3.18.
+>I guess then we'd still have to answer the question why the yocto build
+>calls set_termios() so often, but that's not on you then. Did you notice
+>it even changing settings? We might want to fix this even if the kernel
+>should be able to cope.
 
-	Arnd
+could you please test uart_v10_pre3? I dropped a few register sets and
+delayed the register update until TX-DMA is complete. I am traveling
+currently and have only my boneblack and it passes my limited testing.
+If it solves your problems, too then I would address Heikki's latest
+comments and prepare the final v10 (and I hope I didn't break beagle
+board in between).
+
+>Thanks again,
+>Frans
+
+Sebastian
