@@ -1,80 +1,27 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
- for AM33xx
-Date: Thu, 25 Sep 2014 15:11:37 +0200
-Message-ID: <20140925131137.GG19396@linutronix.de>
-References: <20140912094010.GE28458@ci00147.xsens-tech.local>
- <5412C21A.8020203@linutronix.de>
- <20140912102816.GF28458@ci00147.xsens-tech.local>
- <541716DC.9020904@linutronix.de>
- <20140917102812.GA20438@ci00147.xsens-tech.local>
- <20140921204100.GA10111@linutronix.de>
- <5421A7F7.3070109@hurleysoftware.com>
- <20140924075346.GB19565@linutronix.de>
- <20140925104208.GE19396@linutronix.de>
- <5423FD14.9060604@hurleysoftware.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v4 0/8] asm-generic/io.h overhaul
+Date: Thu, 25 Sep 2014 16:56:53 +0200
+Message-ID: <3399763.VZ83zCGta1@wuerfel>
+References: <1407925738-26170-1-git-send-email-thierry.reding@gmail.com> <20140825112630.GA4163@ulmo.nvidia.com> <20140924060419.GA20253@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:33495 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751574AbaIYNLn convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 25 Sep 2014 09:11:43 -0400
-Content-Disposition: inline
-In-Reply-To: <5423FD14.9060604@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140924060419.GA20253@ulmo>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, x86@kernel.org, Stephen Boyd <sboyd@codeaurora.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, sparclinux@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Sam Ravnborg <sam@ravnborg.org>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Frans Klaver <frans.klaver@xsens.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 
-* Peter Hurley | 2014-09-25 07:31:32 [-0400]:
+On Wednesday 24 September 2014 08:04:21 Thierry Reding wrote:
+> > 
+> > Arnd, do you think this looks good to take for test-driving in
+> > linux-next?
+> 
+> Ping?
+> 
 
->I just verified that GNU readline6 uses ioctl(TCSETSW, ...) to do the =
-set_termios
->(which is the ioctl that libc should use for tcsetattr(TCSADRAIN)).
->
->Maybe this userspace is using a readline()-alike that has a bug by not=
- using the
->correct tcsetattr() action?
+I've put it all into the asm-generic tree, and Will's patches on top.
+Unless I get complaints, I plan to submit them all for 3.18.
 
-set_termios() has an opt argument. While doing ":n" in vi I see two inv=
-ocations
-with "opt =3D=3D 8" which stands for TCSETS.
-browsing through vi's code I stumbled upon=20
-
-|static void rawmode(void)
-|{
-=E2=80=A6
-|    tcsetattr_stdin_TCSANOW(&term_vi);
-|}
-|int FAST_FUNC tcsetattr_stdin_TCSANOW(const struct termios *tp)
-|{
-|    return tcsetattr(STDIN_FILENO, TCSANOW, tp);
-|}
-
-and this is probably what you meant. There is also
-| static void cookmode(void)
-| {
-|     fflush_all();
-|     tcsetattr_stdin_TCSANOW(&term_orig);
-| }
-
-However I don't see __tty_perform_flush() in kernel invoked.
-
->Or maybe the glibc-equivalent has the bug, and tcsetattr(TCSADRAIN) is=
- not using
->ioctl(TCSETSW)?
-
-libc is "GNU C Library 2.20".=20
-
->Regards,
->Peter Hurley
-
-Sebastian
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	Arnd
