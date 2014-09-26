@@ -1,90 +1,82 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH 00/27] add
-	pm_runtime_last_busy_and_autosuspend() helper
-Date: Thu, 25 Sep 2014 21:54:36 +0200
-Message-ID: <32849712.0gtj7BlKY3@vostro.rjw.lan>
-References: <1411575342-31048-1-git-send-email-vinod.koul@intel.com>
- <20140925142201.GD28045@saruman> <20140925142758.GB1316@katana>
+From: =?utf-8?B?5bCP5pu5?= <zhaopin@sanfu.com>
+Subject: =?utf-8?B?55So5LqG5LiA5qyh5L2g5bCx5Lya6KeJ5b6X5piv5pyA5aW955qE55+t5L+h5Y+R6YCB5bmz5Y+wIA==?=
+	=?utf-8?B?ICAgICAgICAgICAgICAgICAgICA=?=
+	=?utf-8?B?ICAgICAgICAgICAgICAgICAgICA=?=
+	=?utf-8?B?ICAgICAgICAgICAgICAgICAgICA=?=
+	=?utf-8?B?ICAgICAgICBwbWE1cQ==?=
+Date: Fri, 26 Sep 2014 13:56:41 +0800
+Message-ID: <20140926135651446504@sanfu.com>
+Reply-To: <dingxj8@aliyun.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <20140925142758.GB1316@katana>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Wolfram Sang <wsa@the-dreams.de>, Vinod Koul <vinod.koul@intel.com>
-Cc: linux-wireless@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>, patches@opensource.wolfsonmicro.com, linux-doc@vger.kernel.org, Seungwon Jeon <tgih.jun@samsung.com>, Daniel Vetter <daniel.vetter@ffwll.ch>, Chris Ball <chris@printf.net>, dri-devel@lists.freedesktop.org, Marcin Wojtas <mw@semihalf.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, David Herrmann <dh.herrmann@gmail.com>, Shinya Kuribayashi <skuribay@pobox.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Jingoo Han <jg1.han@samsung.com>, Jaehoon Chung <jh80.chung@samsung.com>, Jani Nikula <jani.nikula@intel.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Alan Stern <stern@rowland.harvard.edu>, Ben Skeggs <bskeggs@redhat.com>, Bjorn Andersson <bjorn.andersson@sonymobile.com>, Dave Airlie <airlied@redhat.com>, Ulf Hansson <ulf.hanss>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.sanfu.co ([222.77.189.194]:9635 "EHLO mail.sanfu.com.cn"
+	rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org with ESMTP
+	id S1751202AbaIZGEN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 26 Sep 2014 02:04:13 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-s390@vger.kernel.org, linux-securitymodule@vger.kernel.org, linux-serial@vger.kernel.org, linux-shop@263.net
 
-On Thursday, September 25, 2014 04:27:58 PM Wolfram Sang wrote:
-> 
-> --Bn2rw/3z4jIqBvZU
-> Content-Type: text/plain; charset=us-ascii
-> Content-Disposition: inline
-> Content-Transfer-Encoding: quoted-printable
-> 
-> On Thu, Sep 25, 2014 at 09:22:01AM -0500, Felipe Balbi wrote:
-> > On Thu, Sep 25, 2014 at 01:27:18PM +0530, Vinod Koul wrote:
-> > > On Wed, Sep 24, 2014 at 03:32:19PM -0500, Felipe Balbi wrote:
-> > > > > > > OK, I guess this is as good as it gets.
-> > > > > > >=20
-> > > > > > > What tree would you like it go through?
-> > > > > >=20
-> > > > > > Do we really need this new helper ? I mean, the very moment when =
-> we
-> > > > > > decide to implement ->runtime_idle() we will need to get rid of t=
-> his
-> > > > > > change. I wonder if it's really valid...
-> > > > >=20
-> > > > > I'm not sure I'm following?  This seems to simply implement what dr=
-> ivers
-> > > > > have been doing already as one function.  Why would it be invalid t=
-> o reduce
-> > > > > code duplication?
-> > > >=20
-> > > > For two reasons:
-> > > >=20
-> > > > 1) the helper has no inteligence whatsoever. It just calls the same
-> > > > functions.
-> > > >=20
-> > > > 2) the duplication will vanish whenever someone implements
-> > > > ->runtime_idle() and have that call pm_runtime_autosuspend() (like PCI
-> > > > and USB buses are doing today). This will just be yet another line th=
-> at
-> > > > needs to change.
-> > > >=20
-> > > > Frankly though, no strong feelings, I just think it's a commit that
-> > > > doesn't bring that any benefits other than looking like one line was
-> > > > removed.
-> > > and yes that is what it tries to do nothing more nothing less. If in fu=
-> ture
-> > > there are no users (today we have quite a few), then we can remove the =
-> dead
-> > > macro, no harm. But that is not the situation today.
-> >=20
-> > as I said, a commit that's bound to be useless. It's not like you're
-> > saving 10 lines of code, it's only one. Replacing two simple lines with
-> > a function which takes <joke> almost as many characters to type </joke>.
-> >=20
-> > IMO, this is pretty useless and I'd rather not see them in the drivers I
-> > maintain, sorry.
-> 
-> It is not a NACK from me; yet from a high-level perspective I agree with
-> Felipe.
+DQogIOi/meS4quefreS/oeWPkemAgeW5s+WPsOWunuWcqOaYr+WkquWlveeUqOS6hu+8jOWGjeS5
+n+S4jeaEgeaJvuS4jeWIsOWlveeahOW5s+WPsOS6hu+8jOWPquimgeaYr+S9oOWPkeeahOWGheWu
+ueaYr+ato+inhOeahO+8jOi9u+advuWwseWPr+S7peWPkemAgeWHuuWOu+OAguWKoFFRMTkzOTg5
+NzI15YW35L2T5ZKo6K+i77yM5Y+v5Lul5byA6LSm5Y+35rWL5pWI5p6c44CCDQoNCg0KDQoNCg0K
+IA0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0K
+DQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoN
+Cg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0K
+DQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCueahOiAgeW4iOaYr+S4gOS9
+jeeYpumrmOeahOS4reW5tOeUt+iAgeW4iO+8jOmdkuiJsueahOiDoeiMrOWtkOWvguWvnuWcsOWU
+j+WYmOedgO+8jOS4gOWktOiTrOS5seeahOmVv+WPke+8jOacieeCueWDj+eIseWboOaWr+Wdpuea
+hOeJm+WPiemAoOWei++8jOepv+edgOS4gOS4quiEj+WFruWFrueahOeZveiJsuihrOiho++8jOii
+luWPo+mDveejqOW+l+WPkeavm+S6hu+8jOS7luacieeCueWCu+WRhuWRhueci+edgOS4i+S4jeem
+geaCsueXm+mavuaKke+8jOecvOWciOe6ouS6hu+8jOi1jOawlOmBk++8muKAnOWmiO+8jOS9oOWG
+jeS4jeWQg++8jOaIkeS5n+S4jeWQg+S6huOAguKAnSAgICDorrjlsI/mm7zov5nmiY3lkIPkuobl
+h6DlnZfjgIIgICAg6aWt5q+V77yM6K645bCP5pu85Y675rSX56KX5LqG77yM5aSP5bCP5rSb5oOz
+552A5Lul5ZCO55qE576O5aW955Sf5rS777yM5b+D5Lit5aSn54i977yM5oGw5aW955yL6KeB5qGM
+5a2Q5LiK5pS+552A5Liq5p2R5Yqe5bCP5Y6C77yM5bey57uP5oWi5oWi5a+M6KOV6LW35p2l5LqG
+77yM5b6I5aSa5a625bqt5re7572u5LqG5pGp5omY6L2m44CB55S16KeG5py6562J5Lic6KW/77yM
+5pyJ55qE5YiZ57+75paw5LqG5oi/5a2Q44CCICAgIOiAjOS6uue+pOS4reeahOafs+aciOWImei/
+nOi/nOWcsOeci+edgOS7lu+8jOecvOedm+mHjOWGmea7oeW0h+aLnO+8jOWlueaYr+efpemBk+eU
+n+aEj+WFqOaYr+Wkj+Wwj+a0m+WcqOaOjOaPoei/meS4veeahOiEuOW6nu+8jOiuqueskeS4gOS4
+i++8jOaMoOaMoOWktO+8jOaOpei/h+avm+W3vuaKiuWktOS4iueahOeijuegluWxkeaTpuW5suWH
+gO+8jOmBk++8muKAnOmDveaYr+S5oemHjOS5oeS6sueahO+8jOWIq+WuouawlOOAguKAnSAgICDk
+u5booqvkurrku6znp7DpooLnnYDvvIzmnInngrnlrrPnvp7kuI3oh6rnhLbjgIIgICAg5aSP5pOO
+5aSp6aKG552A5LiA576k5bCR5bm06LWw5LqG77yM5aSP5LqM54uX6LaB5aSP5q+b5pe25YCZ77yM
+5Lmh6ZWH5LyB5Lia5Y+X5Zyw5pa56aKG5a+86JqV6aOf5Lil6YeN77yM5Zug5Li65a+55Lmh6ZWH
+5LyB5Lia55qE55So5Zyw44CB5rC055S144CB56iO6LS5562J5pa56Z2i55qE566h55CG77yM5Lmh
+5pS/5bqc5pyJ5b6I5aSn55qE6Ieq55Sx6KOB6YeP5p2D77yM5oOz5aSa5pS255qE6K+d5bCx6IO9
+5ben56uL5ZCN55uu77yM5oOz5bCR5pS25Lmf5Y+v5Lul5ZCN5q2j6KiA6aG677yM5Zug5q2k5b6I
+5aSa5LyB5Lia5bCx5p2o6ICB5biI77yM5pyJ56eN5ZKx5L+p5q+U6LWb5omO6ams5q2l77yB4oCd
+ICAgIOW8gOWtpueahOWJjeS4pOWkqeS4i+WNiO+8jOWkj+Wwj+a0m+WSjOadqOaZr+WIneato+Wc
+qOWSjOWkj+Wwj+a0m+aJk+evrueQg++8jOS4gOS9jeS4ieWNgeWHuuWktOeahOe+juWmmeWwkeWm
+h+i1sOS6hui/h+adpeOAggkNCuaEj+WRs+a3semVv+WcsOeci+S6huabuea1qeaahOS4gOecvO+8
+jOmBk++8muKAnOWwj+aahO+8jOi/meS4quecn+aYr+S4gOS4qumrmOS4reeUn+WGmeeahO+8n+KA
+nSAgICDmm7nmtanmmoTpgZPvvJrigJzpqpfkvaDlubLku4DkuYjvvJ/ku5bljp/mnaXov5jlhpno
+v4flh6Dpppbor5flkaLigKbigKblhbbkuK3kuIDpppblj6vjgIroh6rlmLLjgIvigKbigKbigJ3o
+r7TnnYDvvIzku5bmiorlpI/lsI/mtJvlv7XluqbmlL7mnb7nmoTouqvkvZPlv73nhLbnu7fnm7Tv
+vIznjJ3kuI3lj4rpmLLlnLDmjaHotbflnLDkuIrnmoTkuIDlnZfnoJblpLTvvIzku6Xov4Xpm7fk
+uI3lj4rmjqnogLPnm5fpk4PkuYvlir/lkJHkuLrpppbnmoTpgqPlpLTnm67nmoTpnaLpl6jnoLjl
+jrvvvIEgICAg5p2/56CW5q2j5Lit6Z2i6Zeo77yM5Zyo5beo5aSn55qE5Y+N5L2c55So5Yqb5LiL
+77yM5Zub5YiG5LqU6KOC44CCICAgIOWvueaWueeahOiEuOS5n+WPmOW+l+mil+m4oeibi+eahOWR
+s+mBk++8jOacquW/heS4gOWumuimgeS6suiHqueUn+WHuuS4gOmil+m4oeibi+aJjeaciei1hOag
+vOWQp++8n+KAnSAgICDov5nkuKrmr5Tllrvorqnlhq/kupHlsbHml6Dms5Xlj43pqbPjgIIgICAg
+5LuK5aSp5Y+v5piv6KaB6KeB5Liq55yf56ug77yM5piv6aqh5a2Q5piv6ams54m15Ye65p2l5rqc
+5rqc5LqG44CCICAgIOalmuengOiPoeiZveeEtuihqOmdoua3oeWumu+8jOWFtuWunuWvueiHquW3
+seS6uuWkp+WPkeWOpeivjeOAgiAgICDml6DlkI3ojbfmnqrlrp7lvLnnmoTorablr5/lnKjmpbzk
+uIvmjIHmnqrku6XlvoXvvIzkuIDkuKrkuInljYHlpJrlsoHnmoTorablrpjmi7/nnYDor53nrZLk
+uI3kvY/lnLDlloror53vvJrigJznjovkv4rkvJ/vvIzor7fkvaDlhrfpnZnkuIvmnaXvvIzkvaDo
+v5nmmK/mgKfotKjkuKXph43nmoTosIvmnYDvvIzluIzmnJvkvaDkuI3opoHotbDplJnot6/vvIzk
+uIDlpLHotrPmiJDljYPlj6TmgajlpI/kuIDkupvlhpzmnZHlnLDljLrnvLrljLvlsJHoja/nmoTn
+h4PnnInkuYvmgKXlgZrlh7rkuobnp6/mnoHnmoTotKHnjK7jgIIgICAg5LuW5Lus6L+Z576k5Lq6
+5ZKM5Yac5p2R55S15b2x5pS+5pig5ZGY5LiA5qC35piv54m55q6K5pe25pyf55qE5Lqn54mp77yM
+5Zyo54mp6LSo5paH5YyW5p2h5Lu25p6B56uv6JC95ZCO55qE5oOF5Ya15LiL77yM5LuW5Lus5rex
+5YWl5Yac5p2R56ys5LiA57q/5YGa5Ye65LqG5beo5aSn55qE6LSh5a2Q77yM6Zeu77ya4oCc5ZKL
+5qC377yf6ICD5b6X5aW95LiN5aW977yf4oCdICAgIOKAnOi/mOihjOWQp+OAguKAnSAgICDlpI/l
+sI/mtJvov5jmmK/pgqPlj6Xor53vvIzku5bkuI3mg7Pov4fml6nlvKDmiazvvIzop4nlvpfnrYnm
+iJDnu6nkuIvmnaXvvIzkuIDliIfmnInlrprorrrkuoblho3or7TvvIzopoHmmK/lnKjliY3kuJbl
+jYHkupTlsoHnmoTml7blgJnvvIzogq/lrprkuI3pnaDosLHliLDlpITlkLnlmJjkuobvvIzlj68J
+DQo=
 
-OK
 
-I'd rather not merge something that driver people don't want to use.
-
-Vinod?
-
--- 
-I speak only for myself.
-Rafael J. Wysocki, Intel Open Source Technology Center.
