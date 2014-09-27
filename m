@@ -1,55 +1,37 @@
-From: Janusz Uzycki <j.uzycki@elproma.com.pl>
-Subject: [PATCH 4/4] serial: mxs-auart: enable PPS support
-Date: Sat, 27 Sep 2014 11:46:37 +0200
-Message-ID: <1411811197-12638-5-git-send-email-j.uzycki@elproma.com.pl>
-References: <1411811197-12638-1-git-send-email-j.uzycki@elproma.com.pl>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 1/4] serial: mxs-auart: ctrl removed from mxs_auart_port
+Date: Sat, 27 Sep 2014 11:03:46 +0100
+Message-ID: <20140927100345.GB5182@n2100.arm.linux.org.uk>
+References: <1411811197-12638-1-git-send-email-j.uzycki@elproma.com.pl> <1411811197-12638-2-git-send-email-j.uzycki@elproma.com.pl>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:54359 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1752632AbaI0JoT (ORCPT
+Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:44749 "EHLO
+	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752031AbaI0KEB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 27 Sep 2014 05:44:19 -0400
-In-Reply-To: <1411811197-12638-1-git-send-email-j.uzycki@elproma.com.pl>
+	Sat, 27 Sep 2014 06:04:01 -0400
+Content-Disposition: inline
+In-Reply-To: <1411811197-12638-2-git-send-email-j.uzycki@elproma.com.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree@vger.kernel.org, Richard Genoud <richard.genoud@gmail.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
 
-Enables PPS support in mxs-auart serial driver to make PPS API working.
+On Sat, Sep 27, 2014 at 11:46:34AM +0200, Janusz Uzycki wrote:
+> The ctrl variable duplicated mctrl, member of uart_port structure
+> in serial_core.h.
+> The code duplicated uart_update_mctrl() and uart_tiocmget()
+> in serial_core.c.
+> mxs_auart_get_mctrl() reads back RTS line. It could be removed too
+> but not sure.
 
-Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
----
- drivers/tty/serial/mxs-auart.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+The only thing which the .get_mctrl method is supposed to do is to return
+the state of the /input/ lines, which are CTS, DCD, DSR, RI.  The output
+line state is stored in port->mctrl, and is added to the returned value
+by serial_core when it's required.  RTS output state should not be
+returned from the .get_mctrl method.
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index ab127a2..4f1ab98 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -787,6 +787,15 @@ static void mxs_auart_settermios(struct uart_port *u,
- 		mxs_auart_disable_ms(u);
- }
- 
-+static void mxs_auart_set_ldisc(struct uart_port *port, int new)
-+{
-+	if (new == N_PPS) {
-+		port->flags |= UPF_HARDPPS_CD;
-+		mxs_auart_enable_ms(port);
-+	} else
-+		port->flags &= ~UPF_HARDPPS_CD;
-+}
-+
- static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
- {
- 	u32 istat;
-@@ -954,6 +963,7 @@ static struct uart_ops mxs_auart_ops = {
- 	.startup	= mxs_auart_startup,
- 	.shutdown       = mxs_auart_shutdown,
- 	.set_termios    = mxs_auart_settermios,
-+	.set_ldisc      = mxs_auart_set_ldisc,
- 	.type	   	= mxs_auart_type,
- 	.release_port   = mxs_auart_release_port,
- 	.request_port   = mxs_auart_request_port,
 -- 
-1.7.11.3
-
+FTTC broadband for 0.8mile line: currently at 9.5Mbps down 400kbps up
+according to speedtest.net.
