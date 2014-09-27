@@ -1,98 +1,56 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 2/4] serial: mxs-auart: use mctrl_gpio helpers for
-	handling modem signals
-Date: Sat, 27 Sep 2014 13:18:14 +0100
-Message-ID: <20140927121814.GE5182@n2100.arm.linux.org.uk>
-References: <1411811197-12638-1-git-send-email-j.uzycki@elproma.com.pl> <1411811197-12638-3-git-send-email-j.uzycki@elproma.com.pl> <5426926C.60402@elproma.com.pl> <20140927105408.GD5182@n2100.arm.linux.org.uk> <54269C34.8040702@elproma.com.pl>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: Re: [PATCH 4/4] serial: mxs-auart: enable PPS support
+Date: Sat, 27 Sep 2014 16:47:44 +0400
+Message-ID: <5426B1F0.9050006@cogentembedded.com>
+References: <1411811197-12638-1-git-send-email-j.uzycki@elproma.com.pl> <1411811197-12638-5-git-send-email-j.uzycki@elproma.com.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:44808 "EHLO
-	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752130AbaI0MS1 (ORCPT
+Received: from mail-lb0-f182.google.com ([209.85.217.182]:44850 "EHLO
+	mail-lb0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751335AbaI0Mrr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 27 Sep 2014 08:18:27 -0400
-Content-Disposition: inline
-In-Reply-To: <54269C34.8040702@elproma.com.pl>
+	Sat, 27 Sep 2014 08:47:47 -0400
+Received: by mail-lb0-f182.google.com with SMTP id z11so4126057lbi.27
+        for <linux-serial@vger.kernel.org>; Sat, 27 Sep 2014 05:47:45 -0700 (PDT)
+In-Reply-To: <1411811197-12638-5-git-send-email-j.uzycki@elproma.com.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Janusz =?utf-8?Q?U=C5=BCycki?= <j.uzycki@elproma.com.pl>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Marek Vasut <marex@denx.de>
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, Richard Genoud <richard.genoud@gmail.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
 
-On Sat, Sep 27, 2014 at 01:15:00PM +0200, Janusz U=C5=BCycki wrote:
-> It means it is possible but not in Linux today?
+Hello.
 
-It depends on your maximum interrupt latency.
+On 9/27/2014 1:46 PM, Janusz Uzycki wrote:
 
-> I think the problem is not interrupt delay, which is often much below=
- 100us
-> (we get ~10us delay on DCD).
+> Enables PPS support in mxs-auart serial driver to make PPS API working.
 
-http://archive.arm.linux.org.uk/lurker/message/20130724.145238.44ad37b5=
-=2Een.html
+> Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+> ---
+>   drivers/tty/serial/mxs-auart.c | 10 ++++++++++
+>   1 file changed, 10 insertions(+)
 
-   I can believe why this all happens, when you see USB interrupts taki=
-ng
-   upwards of 3ms to complete:
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+> index ab127a2..4f1ab98 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -787,6 +787,15 @@ static void mxs_auart_settermios(struct uart_port *u,
+>   		mxs_auart_disable_ms(u);
+>   }
+>
+> +static void mxs_auart_set_ldisc(struct uart_port *port, int new)
+> +{
+> +	if (new == N_PPS) {
+> +		port->flags |= UPF_HARDPPS_CD;
+> +		mxs_auart_enable_ms(port);
+> +	} else
+> +		port->flags &= ~UPF_HARDPPS_CD;
 
-   Longest time: 3247506ns
-   Longest irq: 24
-   Longest handler: usb_hcd_irq+0x0/0x68
+    The kernel coding style dictates that {} should be in both arms of the 
+*if* statement.
 
-This no longer seems to be the case - the maximum interrupt time I'm se=
-eing
-on recent kernels is:
+[...]
 
-   Longest time: 382236ns
-   Longest irq: 62
-   Longest handler: mv_interrupt+0x0/0x948
+WBR, Sergei
 
-My Dove kernel runs permanently with my own maximum interrupt latency
-tracking enabled.
-
-> Isn't the problem rather how to break DMA transmission fast?
-
-There are two factors there.  The first is being able to tell the DMA
-engine to stop, the second is the UART hardware FIFO draining.
-
-> Hardware flow control not always requires to stop transmission
-> immediately.
-
-No.  Hardware flow control is normally implemented at the UART, and
-CTS is normally implemented to prevent the transmitter starting a new
-character.  Any in-progress character is completed before the transmitt=
-er
-stops, so that there are no errors.
-
-At least, this is the behaviour found on the UARTs which I've seen
-implementing hardware flow control, and it is the only sane way to do
-it.
-
-> Usually delay of some chars is acceptable if remote receiver
-> implements low/high water mark (overflow trigger lower than RX FIFO s=
-ize).
-
-The receiver you may be communicating with may have a receive FIFO of
-only 16 characters.  It may deassert CTS when it reaches half-full stat=
-e.
-That leaves you with only 8 characters to send before it overflows.  At
-115200 baud, you will have started to send the 9th characters by 700us.
-
-However, that isn't the full picture.  The full picture is that CTS is
-normally controlled by software as well, and depends on the availabilit=
-y
-of buffers to store characters.  There's latency at the remote end to
-deassert CTS in software when the software buffers reach their high
-watermark, and there's the hope that there is sufficient room in those
-buffers to take the excess characters that the remote end may continue
-to send.
-
---=20
-=46TTC broadband for 0.8mile line: currently at 9.5Mbps down 400kbps up
-according to speedtest.net.
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
