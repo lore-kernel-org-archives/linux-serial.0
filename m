@@ -1,87 +1,97 @@
-From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH 2/4] serial: mxs-auart: use mctrl_gpio helpers for handling
- modem signals
-Date: Sat, 27 Sep 2014 13:15:00 +0200
-Message-ID: <54269C34.8040702@elproma.com.pl>
-References: <1411811197-12638-1-git-send-email-j.uzycki@elproma.com.pl> <1411811197-12638-3-git-send-email-j.uzycki@elproma.com.pl> <5426926C.60402@elproma.com.pl> <20140927105408.GD5182@n2100.arm.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: [PATCH] serial: mxs-auart: clean get_mctrl and set_mctrl
+Date: Sat, 27 Sep 2014 13:44:11 +0200
+Message-ID: <1411818251-21884-1-git-send-email-j.uzycki@elproma.com.pl>
+References: <20140927100345.GB5182@n2100.arm.linux.org.uk>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:58291 "HELO
+Received: from v032797.home.net.pl ([89.161.177.31]:65150 "HELO
 	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1751335AbaI0LOt (ORCPT
+	with SMTP id S1751537AbaI0LmD (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 27 Sep 2014 07:14:49 -0400
-In-Reply-To: <20140927105408.GD5182@n2100.arm.linux.org.uk>
+	Sat, 27 Sep 2014 07:42:03 -0400
+In-Reply-To: <20140927100345.GB5182@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Marek Vasut <marex@denx.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
 
+Russell King:
+The only thing which the .get_mctrl method is supposed to do is
+to return the state of the /input/ lines, which are CTS, DCD, DSR, RI.
+The output line state is stored in port->mctrl, and is added to
+the returned value by serial_core when it's required.
+RTS output state should not be returned from the .get_mctrl method.
 
-W dniu 2014-09-27 12:54, Russell King - ARM Linux pisze:
-> On Sat, Sep 27, 2014 at 12:33:16PM +0200, Janusz U=C5=BCycki wrote:
->> Could somebody comment if DMA could be enabled also
->> if CTS/RTS is supported by GPIOs? Is it safe?
->> It would allow me to avoid ugly code in mxs_auart_settermios(),
->> as commented Russel King.
-> Russel*L* please, otherwise you are giving me implicit permission to
-> mis-spell your name.
+This patch removes ctrl variable from mxs_auart_port
+and removes useless reading back RTS line.
 
-Sorry. I will care about.
-Many people change my name also from Janusz to Januzs.
+The ctrl variable in mxs_auart_port duplicated mctrl,
+member of uart_port structure in serial_core.h.
+The removed code from mxs_auart_set_mctrl() and mxs_auart_get_mctrl
+duplicated uart_update_mctrl() and uart_tiocmget()
+in serial_core.c.
 
->> Otherwise I have to keep backward compatibility on DMA
->> and HW flow control, and fix the ugly code.
->>
->> Marek Vasut:
->> "Why do you think DMA would do any good on long transfers without
->> flowcontrol."
-> The problem with DMA without hardware flow control is that the UART
-> transmission will run at full speed, with characters back to back.
->
-> You will have a variable amount of latency when dealing with the CTS
-> signal - interrupt handling latency in Linux can be quite variable.
-> (I'm not sure whether this has improved recently, USB used to be
-> particularly bad, causing 3+ ms latencies.)
->
-> When CTS is deasserted, you have to pause the transmission as soon as
-> possible to avoid overflowing the remote end.  At 115200 baud, each
-> character takes around 90us to be transmitted.  If you are delayed in
-> handling the CTS interrupt for 3ms, then you will have transmitted
-> around 35 characters in that time, which could be enough to cause an
-> overflow at the remote end.
->
-> Since the idea of flow control is to prevent overruns/overflow at the
-> receiver, this is far from ideal.
->
-> If Linux had a way to handle flow control interrupts as a higher
-> priority than other interrupts (especially interrupting an already
-> in-progress interrupt handler) then having GPIOs as flow control
-> signals would be a much saner proposition.
->
-> Unfortunately, lockdep completely gets in the way of that.
-It means it is possible but not in Linux today?
-I think the problem is not interrupt delay, which is often much below 1=
-00us
-(we get ~10us delay on DCD).
-USB or PCIe are exceptions  - interrupt is packed to frame by serialize=
-d
-and even polled by USB controller.
-Isn't the problem rather how to break DMA transmission fast?
-Hardware flow control not always requires to stop transmission
-immediately. Usually delay of some chars is acceptable if remote receiv=
-er
-implements low/high water mark (overflow trigger lower than RX FIFO siz=
-e).
+Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+---
+ drivers/tty/serial/mxs-auart.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-best regards
-Janusz
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index e838e84..2d49901 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -143,7 +143,6 @@ struct mxs_auart_port {
+ #define MXS_AUART_DMA_RX_READY	3  /* bit 3 */
+ #define MXS_AUART_RTSCTS	4  /* bit 4 */
+ 	unsigned long flags;
+-	unsigned int ctrl;
+ 	enum mxs_auart_type devtype;
+ 
+ 	unsigned int irq;
+@@ -406,8 +405,6 @@ static void mxs_auart_release_port(struct uart_port *u)
+ 
+ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
+ {
+-	struct mxs_auart_port *s = to_auart_port(u);
+-
+ 	u32 ctrl = readl(u->membase + AUART_CTRL2);
+ 
+ 	ctrl &= ~(AUART_CTRL2_RTSEN | AUART_CTRL2_RTS);
+@@ -418,24 +415,17 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
+ 			ctrl |= AUART_CTRL2_RTS;
+ 	}
+ 
+-	s->ctrl = mctrl;
+ 	writel(ctrl, u->membase + AUART_CTRL2);
+ }
+ 
+ static u32 mxs_auart_get_mctrl(struct uart_port *u)
+ {
+-	struct mxs_auart_port *s = to_auart_port(u);
+ 	u32 stat = readl(u->membase + AUART_STAT);
+-	int ctrl2 = readl(u->membase + AUART_CTRL2);
+-	u32 mctrl = s->ctrl;
++	u32 mctrl = 0;
+ 
+-	mctrl &= ~TIOCM_CTS;
+ 	if (stat & AUART_STAT_CTS)
+ 		mctrl |= TIOCM_CTS;
+ 
+-	if (ctrl2 & AUART_CTRL2_RTS)
+-		mctrl |= TIOCM_RTS;
+-
+ 	return mctrl;
+ }
+ 
+@@ -1071,8 +1061,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	s->port.type = PORT_IMX;
+ 	s->port.dev = s->dev = &pdev->dev;
+ 
+-	s->ctrl = 0;
+-
+ 	s->irq = platform_get_irq(pdev, 0);
+ 	s->port.irq = s->irq;
+ 	ret = request_irq(s->irq, mxs_auart_irq_handle, 0, dev_name(&pdev->dev), s);
+-- 
+1.7.11.3
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
