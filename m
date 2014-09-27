@@ -1,56 +1,43 @@
 From: Janusz Uzycki <j.uzycki@elproma.com.pl>
-Subject: [PATCH] serial: mxs-auart: enable PPS support
-Date: Sat, 27 Sep 2014 15:36:38 +0200
-Message-ID: <1411824998-24050-1-git-send-email-j.uzycki@elproma.com.pl>
-References: <5426B1F0.9050006@cogentembedded.com>
+Subject: Re: serial: mxs-auart: gpios as modem signals (dirty)
+Date: Sat, 27 Sep 2014 22:32:47 +0200
+Message-ID: <1411849969-12543-1-git-send-email-j.uzycki@elproma.com.pl>
+References: <20140927100737.GC5182@n2100.arm.linux.org.uk>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:53082 "HELO
+Received: from v032797.home.net.pl ([89.161.177.31]:54484 "HELO
 	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1751890AbaI0NeK (ORCPT
+	with SMTP id S1751651AbaI0Uau (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 27 Sep 2014 09:34:10 -0400
-In-Reply-To: <5426B1F0.9050006@cogentembedded.com>
+	Sat, 27 Sep 2014 16:30:50 -0400
+In-Reply-To: <20140927100737.GC5182@n2100.arm.linux.org.uk>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Enables PPS support in mxs-auart serial driver to make PPS API working.
+Is it better in mxs_auart_init_gpios():
+a) to block DMA by disabling MXS_AUART_RTSCTS (misleading name problem)
+b) or just warn (depends on DT) if MXS_AUART_RTSCTS is set and CTS or RTS
+   is defined as GPIO line? Then MXS_AUART_RTSCTS could be used
+   instead of CTS_AT_AUART() in the interrupt and mxs_auart_settermios().
 
-Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
----
- drivers/tty/serial/mxs-auart.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+What do you think about RTSEN? It is set in mxs_auart_settermios()
+and mxs_auart_set_mctrl().
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 4c238bf..fc262ba 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -782,6 +782,16 @@ static void mxs_auart_settermios(struct uart_port *u,
- 		mxs_auart_disable_ms(u);
- }
- 
-+static void mxs_auart_set_ldisc(struct uart_port *port, int new)
-+{
-+	if (new == N_PPS) {
-+		port->flags |= UPF_HARDPPS_CD;
-+		mxs_auart_enable_ms(port);
-+	} else {
-+		port->flags &= ~UPF_HARDPPS_CD;
-+	}
-+}
-+
- static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
- {
- 	u32 istat;
-@@ -949,6 +959,7 @@ static struct uart_ops mxs_auart_ops = {
- 	.startup	= mxs_auart_startup,
- 	.shutdown       = mxs_auart_shutdown,
- 	.set_termios    = mxs_auart_settermios,
-+	.set_ldisc      = mxs_auart_set_ldisc,
- 	.type	   	= mxs_auart_type,
- 	.release_port   = mxs_auart_release_port,
- 	.request_port   = mxs_auart_request_port,
--- 
-1.7.11.3
+[PATCH 1/2] serial: mxs-auart: use mctrl_gpio helpers for handling
+* RTS_AT_AUART() and CTS_AT_AUART() macro defined
+* DMA engine disabled if RTS or CTS is GPIO line
+* CTSEN can't be enabled for hardware flow control block
+  if CTS is defined as GPIO line
+* RTSEN can be enabled for hardware flow control block
+  even if RTS is defined as GPIO line.
+  RTS pin depends on pinctrl configuration which
+  selects RTS output from hardware flow control block or GPIO line.
+* mxs_auart_settermios(): RTS_AT_AUART() and CTS_AT_AUART() used
+* mxs_auart_irq_handle(): CTS_AT_AUART() used
+* mxs_auart_init_gpios() returns true(success)/false(failure)
+* dev_err() message fixed in mxs_auart_probe()
+
+[PATCH 2/2] serial: mxs-auart: add interrupts for modem control
+* rebased
 
