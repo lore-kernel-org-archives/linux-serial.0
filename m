@@ -1,97 +1,98 @@
-From: Janusz Uzycki <j.uzycki@elproma.com.pl>
-Subject: [PATCH] serial: mxs-auart: clean get_mctrl and set_mctrl
-Date: Sat, 27 Sep 2014 13:44:11 +0200
-Message-ID: <1411818251-21884-1-git-send-email-j.uzycki@elproma.com.pl>
-References: <20140927100345.GB5182@n2100.arm.linux.org.uk>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 2/4] serial: mxs-auart: use mctrl_gpio helpers for
+	handling modem signals
+Date: Sat, 27 Sep 2014 13:18:14 +0100
+Message-ID: <20140927121814.GE5182@n2100.arm.linux.org.uk>
+References: <1411811197-12638-1-git-send-email-j.uzycki@elproma.com.pl> <1411811197-12638-3-git-send-email-j.uzycki@elproma.com.pl> <5426926C.60402@elproma.com.pl> <20140927105408.GD5182@n2100.arm.linux.org.uk> <54269C34.8040702@elproma.com.pl>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:65150 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1751537AbaI0LmD (ORCPT
+Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:44808 "EHLO
+	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752130AbaI0MS1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 27 Sep 2014 07:42:03 -0400
-In-Reply-To: <20140927100345.GB5182@n2100.arm.linux.org.uk>
+	Sat, 27 Sep 2014 08:18:27 -0400
+Content-Disposition: inline
+In-Reply-To: <54269C34.8040702@elproma.com.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
+To: Janusz =?utf-8?Q?U=C5=BCycki?= <j.uzycki@elproma.com.pl>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Marek Vasut <marex@denx.de>
 
-Russell King:
-The only thing which the .get_mctrl method is supposed to do is
-to return the state of the /input/ lines, which are CTS, DCD, DSR, RI.
-The output line state is stored in port->mctrl, and is added to
-the returned value by serial_core when it's required.
-RTS output state should not be returned from the .get_mctrl method.
+On Sat, Sep 27, 2014 at 01:15:00PM +0200, Janusz U=C5=BCycki wrote:
+> It means it is possible but not in Linux today?
 
-This patch removes ctrl variable from mxs_auart_port
-and removes useless reading back RTS line.
+It depends on your maximum interrupt latency.
 
-The ctrl variable in mxs_auart_port duplicated mctrl,
-member of uart_port structure in serial_core.h.
-The removed code from mxs_auart_set_mctrl() and mxs_auart_get_mctrl
-duplicated uart_update_mctrl() and uart_tiocmget()
-in serial_core.c.
+> I think the problem is not interrupt delay, which is often much below=
+ 100us
+> (we get ~10us delay on DCD).
 
-Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
----
- drivers/tty/serial/mxs-auart.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
+http://archive.arm.linux.org.uk/lurker/message/20130724.145238.44ad37b5=
+=2Een.html
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index e838e84..2d49901 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -143,7 +143,6 @@ struct mxs_auart_port {
- #define MXS_AUART_DMA_RX_READY	3  /* bit 3 */
- #define MXS_AUART_RTSCTS	4  /* bit 4 */
- 	unsigned long flags;
--	unsigned int ctrl;
- 	enum mxs_auart_type devtype;
- 
- 	unsigned int irq;
-@@ -406,8 +405,6 @@ static void mxs_auart_release_port(struct uart_port *u)
- 
- static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
- {
--	struct mxs_auart_port *s = to_auart_port(u);
--
- 	u32 ctrl = readl(u->membase + AUART_CTRL2);
- 
- 	ctrl &= ~(AUART_CTRL2_RTSEN | AUART_CTRL2_RTS);
-@@ -418,24 +415,17 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
- 			ctrl |= AUART_CTRL2_RTS;
- 	}
- 
--	s->ctrl = mctrl;
- 	writel(ctrl, u->membase + AUART_CTRL2);
- }
- 
- static u32 mxs_auart_get_mctrl(struct uart_port *u)
- {
--	struct mxs_auart_port *s = to_auart_port(u);
- 	u32 stat = readl(u->membase + AUART_STAT);
--	int ctrl2 = readl(u->membase + AUART_CTRL2);
--	u32 mctrl = s->ctrl;
-+	u32 mctrl = 0;
- 
--	mctrl &= ~TIOCM_CTS;
- 	if (stat & AUART_STAT_CTS)
- 		mctrl |= TIOCM_CTS;
- 
--	if (ctrl2 & AUART_CTRL2_RTS)
--		mctrl |= TIOCM_RTS;
--
- 	return mctrl;
- }
- 
-@@ -1071,8 +1061,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	s->port.type = PORT_IMX;
- 	s->port.dev = s->dev = &pdev->dev;
- 
--	s->ctrl = 0;
--
- 	s->irq = platform_get_irq(pdev, 0);
- 	s->port.irq = s->irq;
- 	ret = request_irq(s->irq, mxs_auart_irq_handle, 0, dev_name(&pdev->dev), s);
--- 
-1.7.11.3
+   I can believe why this all happens, when you see USB interrupts taki=
+ng
+   upwards of 3ms to complete:
 
+   Longest time: 3247506ns
+   Longest irq: 24
+   Longest handler: usb_hcd_irq+0x0/0x68
+
+This no longer seems to be the case - the maximum interrupt time I'm se=
+eing
+on recent kernels is:
+
+   Longest time: 382236ns
+   Longest irq: 62
+   Longest handler: mv_interrupt+0x0/0x948
+
+My Dove kernel runs permanently with my own maximum interrupt latency
+tracking enabled.
+
+> Isn't the problem rather how to break DMA transmission fast?
+
+There are two factors there.  The first is being able to tell the DMA
+engine to stop, the second is the UART hardware FIFO draining.
+
+> Hardware flow control not always requires to stop transmission
+> immediately.
+
+No.  Hardware flow control is normally implemented at the UART, and
+CTS is normally implemented to prevent the transmitter starting a new
+character.  Any in-progress character is completed before the transmitt=
+er
+stops, so that there are no errors.
+
+At least, this is the behaviour found on the UARTs which I've seen
+implementing hardware flow control, and it is the only sane way to do
+it.
+
+> Usually delay of some chars is acceptable if remote receiver
+> implements low/high water mark (overflow trigger lower than RX FIFO s=
+ize).
+
+The receiver you may be communicating with may have a receive FIFO of
+only 16 characters.  It may deassert CTS when it reaches half-full stat=
+e.
+That leaves you with only 8 characters to send before it overflows.  At
+115200 baud, you will have started to send the 9th characters by 700us.
+
+However, that isn't the full picture.  The full picture is that CTS is
+normally controlled by software as well, and depends on the availabilit=
+y
+of buffers to store characters.  There's latency at the remote end to
+deassert CTS in software when the software buffers reach their high
+watermark, and there's the hope that there is sufficient room in those
+buffers to take the excess characters that the remote end may continue
+to send.
+
+--=20
+=46TTC broadband for 0.8mile line: currently at 9.5Mbps down 400kbps up
+according to speedtest.net.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
