@@ -1,50 +1,38 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] max310x: max3109_detect should use indirect addressing
- in SPI mode for REVID register
-Date: Sun, 28 Sep 2014 21:32:24 -0400
-Message-ID: <20140929013224.GA22319@kroah.com>
-References: <1409933256-32071-1-git-send-email-gregory.hermant@calao-systems.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: mxs-auart: add sysrq support
+Date: Sun, 28 Sep 2014 21:41:29 -0400
+Message-ID: <20140929014129.GA8687@kroah.com>
+References: <1411740486-21687-1-git-send-email-j.uzycki@elproma.com.pl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:33820 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:33834 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751118AbaI2GQt (ORCPT
+	with ESMTP id S1750851AbaI2GQ7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Sep 2014 02:16:49 -0400
+	Mon, 29 Sep 2014 02:16:59 -0400
 Content-Disposition: inline
-In-Reply-To: <1409933256-32071-1-git-send-email-gregory.hermant@calao-systems.com>
+In-Reply-To: <1411740486-21687-1-git-send-email-j.uzycki@elproma.com.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Gregory Hermant <gregory.hermant@calao-systems.com>
-Cc: linux-serial@vger.kernel.org, shc_work@mail.ru
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Fri, Sep 05, 2014 at 06:07:36PM +0200, Gregory Hermant wrote:
-> This patch allows to read the REV_ID register in SPI mode and consequently
-> to properly detect the max3109. Indeed in SPI mode, this register is only
-> accessible by using indirect addressing.
+On Fri, Sep 26, 2014 at 04:08:05PM +0200, Janusz Uzycki wrote:
+> This is rather obvious patch now.
+> The patch is resent as cleaned independent from the patchset:
+> "Re: [PATCH 1/4] serial: mxs-auart: use mctrl_gpio helpers for handling modem signals (v2.2c)"
 > 
-> Signed-off-by: Gregory Hermant <gregory.hermant@calao-systems.com>
-> ---
->  drivers/tty/serial/max310x.c |    7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index 5183643..2d911f6 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-> @@ -369,10 +369,13 @@ static int max3109_detect(struct device *dev)
->  	unsigned int val = 0;
->  	int ret;
->  
-> -	ret = regmap_read(s->regmap, MAX310X_REVID_REG, &val);
-> +	ret = regmap_write(s->regmap, MAX310X_GLOBALCMD_REG,
-> +			   MAX310X_EXTREG_ENBL);
->  	if (ret)
->  		return ret;
-> -
-> +	
+> Who could apply the patch?
 
-Always run your patches through checkpatch.pl and never add new problems
-to the existing codebase :(
+I have so many patches from you for this driver in my inbox, yet almost
+no idea which to apply.  Please always properly label which series
+obsoletes previous ones, and what order the patches need to be applied
+in (your latest patches lack this entirely.)
 
+So I'm deleting all of these now, please resend the latest versions you
+have, with properly versioning and order information.
+
+thanks,
+
+greg k-h
