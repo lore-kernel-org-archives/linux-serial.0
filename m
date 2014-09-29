@@ -1,54 +1,53 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH] tty: serial: 8250: use 32bit variable for rpm_tx_active
-Date: Mon, 29 Sep 2014 10:21:03 +0200
-Message-ID: <20140929082103.GA13142@linutronix.de>
-References: <54259528.VllWqQU+5yiNGda3%fengguang.wu@intel.com>
+From: Frans Klaver <frans.klaver@xsens.com>
+Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
+ for AM33xx
+Date: Mon, 29 Sep 2014 10:50:42 +0200
+Message-ID: <20140929085042.GA13952@ci00147.xsens-tech.local>
+References: <2cf997d9-e7de-465b-915d-3a0a5e7b95f7@email.android.com>
+ <54129F6C.7040508@linutronix.de>
+ <20140912094010.GE28458@ci00147.xsens-tech.local>
+ <5412C21A.8020203@linutronix.de>
+ <20140912102816.GF28458@ci00147.xsens-tech.local>
+ <541716DC.9020904@linutronix.de>
+ <20140917102812.GA20438@ci00147.xsens-tech.local>
+ <20140921204100.GA10111@linutronix.de>
+ <20140922092853.GH20438@ci00147.xsens-tech.local>
+ <20140925151403.GH19396@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:49075 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751786AbaI2IVJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Sep 2014 04:21:09 -0400
+Content-Type: text/plain; charset="utf-8"
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <54259528.VllWqQU+5yiNGda3%fengguang.wu@intel.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20140925151403.GH19396@linutronix.de>
+Sender: linux-omap-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
-To: kbuild test robot <fengguang.wu@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: kbuild-all@01.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The kbuild test robot wrote me:
-|  make.cross ARCH=powerpc
-|>> ERROR: ".__xchg_called_with_bad_pointer" [drivers/tty/serial/8250/8250.ko] undefined!
+On Thu, Sep 25, 2014 at 05:14:03PM +0200, Sebastian Andrzej Siewior wrote:
+> * Frans Klaver | 2014-09-22 11:28:54 [+0200]:
+> 
+> >I guess then we'd still have to answer the question why the yocto build
+> >calls set_termios() so often, but that's not on you then. Did you notice
+> >it even changing settings? We might want to fix this even if the kernel
+> >should be able to cope.
+> 
+> could you please test uart_v10_pre3? I dropped a few register sets and
+> delayed the register update until TX-DMA is complete. I am traveling
+> currently and have only my boneblack and it passes my limited testing.
+> If it solves your problems, too then I would address Heikki's latest
+> comments and prepare the final v10 (and I hope I didn't break beagle
+> board in between).
 
-The generic implementation of xchg() on arm and x86 works for variables of
-size one bye (char). According to the report powerpc does not support
-xchg() for one byte sized variables and looking further it seems also to
-be the same case for sparc and tile (or for 10 out of 26 architectures
-which provide a custom implementation).
-For that reason I increase the size of the variable from one to four
-bytes to get it work on powerpc (and the others).
+This version fixes the console things for us. It also increases the
+amount of data we can push over the serial port. If I push the data
+towards our requirements, we're not there yet. I get the "too much work
+for irq" notice still. However, I don't think you'd need to be fixing
+that in this series (or at all). We had similar issues there with
+omap-serial as well.
 
-Reported-By: kbuild test robot <fengguang.wu@intel.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- include/linux/serial_8250.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+As far as I'm concerned, this is
 
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index c267412a3ef4..3df10d5f154b 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -84,7 +84,7 @@ struct uart_8250_port {
- 	unsigned char		mcr_mask;	/* mask of user bits */
- 	unsigned char		mcr_force;	/* mask of forced bits */
- 	unsigned char		cur_iotype;	/* Running I/O type */
--	unsigned char		rpm_tx_active;
-+	unsigned int		rpm_tx_active;
- 
- 	/*
- 	 * Some bits in registers are cleared on a read, so they must
--- 
-2.1.0
+Tested-by: Frans Klaver <frans.klaver@xsens.com>
 
+Thanks,
+Frans
