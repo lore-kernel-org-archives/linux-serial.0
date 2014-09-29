@@ -1,38 +1,53 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: mxs-auart: add sysrq support
-Date: Sun, 28 Sep 2014 21:41:29 -0400
-Message-ID: <20140929014129.GA8687@kroah.com>
-References: <1411740486-21687-1-git-send-email-j.uzycki@elproma.com.pl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Markus Pargmann <mpa@pengutronix.de>
+Subject: [PATCH RESEND] tty: serial: omap: Remove probe error message
+Date: Mon, 29 Sep 2014 09:29:42 +0200
+Message-ID: <1411975782-23709-1-git-send-email-mpa@pengutronix.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:33834 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750851AbaI2GQ7 (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:50926 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751439AbaI2HaX (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Sep 2014 02:16:59 -0400
-Content-Disposition: inline
-In-Reply-To: <1411740486-21687-1-git-send-email-j.uzycki@elproma.com.pl>
+	Mon, 29 Sep 2014 03:30:23 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Janusz Uzycki <j.uzycki@elproma.com.pl>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Felipe Balbi <balbi@ti.com>, Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Markus Pargmann <mpa@pengutronix.de>
 
-On Fri, Sep 26, 2014 at 04:08:05PM +0200, Janusz Uzycki wrote:
-> This is rather obvious patch now.
-> The patch is resent as cleaned independent from the patchset:
-> "Re: [PATCH 1/4] serial: mxs-auart: use mctrl_gpio helpers for handling modem signals (v2.2c)"
-> 
-> Who could apply the patch?
+This error message is not necessary. The driver core code will print all
+probe error messages. It also resolves some error codes to proper error
+messages. For example -EPROBE_DEFER will only be printed as an info message.
 
-I have so many patches from you for this driver in my inbox, yet almost
-no idea which to apply.  Please always properly label which series
-obsoletes previous ones, and what order the patches need to be applied
-in (your latest patches lack this entirely.)
+This patch removes the error message as the core prints the same
+information.
 
-So I'm deleting all of these now, please resend the latest versions you
-have, with properly versioning and order information.
+Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+---
 
-thanks,
+Hi,
 
-greg k-h
+I am not sure if this patch got lost, so I resend it. I rebased the patch onto
+v3.17-rc1 without conflicts.
+
+Best regards,
+
+Markus
+
+ drivers/tty/serial/omap-serial.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index d017cec8a34a..a153bad142c8 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1733,8 +1733,6 @@ err_add_port:
+ 	pm_runtime_disable(&pdev->dev);
+ err_rs485:
+ err_port_line:
+-	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
+-				pdev->id, __func__, ret);
+ 	return ret;
+ }
+ 
+-- 
+2.1.0
+
