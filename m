@@ -1,38 +1,29 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 02/16] tty: serial: 8250_core: add run time pm
-Date: Mon, 29 Sep 2014 15:39:18 +0200
-Message-ID: <20140929133918.GE13142@linutronix.de>
-References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
- <1410377411-26656-3-git-send-email-bigeasy@linutronix.de>
- <20140929094620.GE13952@ci00147.xsens-tech.local>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140929094620.GE13952@ci00147.xsens-tech.local>
-Sender: linux-omap-owner@vger.kernel.org
-To: Frans Klaver <frans.klaver@xsens.com>
-Cc: linux-serial@vger.kernel.org, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, mika.westerberg@linux.intel.com, linux-arm-kernel@lists.infradead.org
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: <20140929014129.GA8687@kroah.com>
+Date: Mon, 29 Sep 2014 15:59:19 +0200
+Message-ID: <1411999160-26804-1-git-send-email-j.uzycki@elproma.com.pl>
+References: <Re: [PATCH] serial: mxs-auart: add sysrq support>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from v032797.home.net.pl ([89.161.177.31]:49745 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751913AbaI2N5F (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 29 Sep 2014 09:57:05 -0400
+In-Reply-To: <Re: [PATCH] serial: mxs-auart: add sysrq support>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-* Frans Klaver | 2014-09-29 11:46:20 [+0200]:
+> So I'm deleting all of these now, please resend the latest
+> versions you have, with properly versioning
+> and order information.
 
->On Wed, Sep 10, 2014 at 09:29:57PM +0200, Sebastian Andrzej Siewior wrote:
->> +/*
->> + * This two wrapper ensure, that enable_runtime_pm_tx() can be called more than
->
->These two wrappers ensure that enable_runtime_pm_tx() ...
-fixed
+Sure. If you don't want to comment dirty patches
+I will not send you them.
+I can send you only the final version, commented before.
 
->> @@ -1469,7 +1531,12 @@ void serial8250_tx_chars(struct uart_8250_port *up)
->>  
->>  	DEBUG_INTR("THRE...");
->>  
->> -	if (uart_circ_empty(xmit))
->> +	/*
->> +	 * With RPM enabled, we have to wait once the FIFO is empty before the
->
->s,once,until,? Or do I not understand the sentence correctly?
-No, you understand it correct. "until" is the better word here.
+On the moment this patch is ready to apply.
 
-Sebastian
+[PATCH RESEND] serial: mxs-auart: add sysrq support
+The patch is resent to apply.
