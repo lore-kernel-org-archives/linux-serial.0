@@ -1,84 +1,80 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 6/8] asm-generic/io.h: Implement generic
- {read,write}s*()
-Date: Mon, 29 Sep 2014 10:59:09 +0200
-Message-ID: <20140929085908.GI12506@ulmo>
-References: <1407925738-26170-1-git-send-email-thierry.reding@gmail.com>
- <1407925738-26170-7-git-send-email-thierry.reding@gmail.com>
- <CAMuHMdW4emoma3nRUGna985tE17yPh5pNjMb-jxe5yc5UVr=cw@mail.gmail.com>
+From: Frans Klaver <frans.klaver@xsens.com>
+Subject: Re: [PATCH 12/16] tty: serial: 8250_dma: handle the UART RDI event
+ while DMA remains idle
+Date: Mon, 29 Sep 2014 11:23:40 +0200
+Message-ID: <20140929092340.GB13952@ci00147.xsens-tech.local>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
+ <1410377411-26656-13-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="j+MD90OnwjQyWNYt"
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f173.google.com ([209.85.212.173]:45308 "EHLO
-	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750970AbaI2I7N (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Sep 2014 04:59:13 -0400
+Content-Type: text/plain; charset="utf-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdW4emoma3nRUGna985tE17yPh5pNjMb-jxe5yc5UVr=cw@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <1410377411-26656-13-git-send-email-bigeasy@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Linux-Arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, the arch/x86 maintainers <x86@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Sam Ravnborg <sam@ravnborg.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
+On Wed, Sep 10, 2014 at 09:30:07PM +0200, Sebastian Andrzej Siewior wrote:
+> Sometimes the OMAP UART does not signal the DMA engine to unload the FIFO.
+> Usually this happens when we have >threshold bytes in the FIFO
+> and start the DMA transfer. It seems that in those cases the UART won't
+> trigger the transfer once the requested threshold is reached. In some
+> rare cases the UART does not trigger the DMA transfer even if programmed
+> while the FIFO was empty.
+> In those cases the UART drops an RDI event and we have to empty the FIFO
+> manually. If we ignore it because the DMA transfer is programmed then we
+> will enter the function a few times until we receive the RX_TIMEOUT
+> event. At that point the FIFO is usually full and we risk to overflow
+> the FIFO.
+> 
+> Reviewed-by: Tony Lindgren <tony@atomide.com>
+> Tested-by: Tony Lindgren <tony@atomide.com>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  drivers/tty/serial/8250/8250_dma.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+> index fa1dc966f394..898a6781d0b3 100644
+> --- a/drivers/tty/serial/8250/8250_dma.c
+> +++ b/drivers/tty/serial/8250/8250_dma.c
+> @@ -193,6 +193,24 @@ int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+>  			__dma_rx_do_complete(p, true);
+>  		}
+>  		return -ETIMEDOUT;
+> +	case UART_IIR_RDI:
+> +		if (p->bugs & UART_BUG_DMA_RX)
+> +			break;
+> +		/*
+> +		 * The OMAP UART is a special BEAST. If we receive RDI we _have_
+> +		 * a DMA transfer programmed but it didn't worked. One reason is
 
---j+MD90OnwjQyWNYt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+didn't work
 
-On Mon, Sep 29, 2014 at 10:54:34AM +0200, Geert Uytterhoeven wrote:
-> On Wed, Aug 13, 2014 at 12:28 PM, Thierry Reding
-> <thierry.reding@gmail.com> wrote:
-> > #ifndef memset_io
-> > -#define memset_io(a, b, c)     memset(__io_virt(a), (b), (c))
-> > +#define memset_io memset_io
-> > +static inline void memset_io(void __iomem *addr, int value, size_t siz=
-e)
-> > +{
-> > +       memset(__io_virt(addr), value, size);
-> > +}
-> >  #endif
->=20
-> xtensa/allmodconfig:
->=20
-> include/asm-generic/io.h:820:2: error: implicit declaration of
-> function 'memset' [-Werror=3Dimplicit-function-declaration]
-> include/asm-generic/io.h:829:2: error: implicit declaration of
-> function 'memcpy' [-Werror=3Dimplicit-function-declaration]
-> arch/xtensa/include/asm/string.h:110:14: error: conflicting types for 'me=
-mset'
-> arch/xtensa/include/asm/string.h:113:14: error: conflicting types for 'me=
-mcpy'
->=20
-> http://kisskb.ellerman.id.au/kisskb/buildresult/12028900/
+> +		 * that we were too slow and there were too many bytes in the
+> +		 * FIFO, the UART counted wrong and never kicked the DMA engine
+> +		 * to do anything. That means once we receive RDI on OMAP than
 
-I think this can be fixed by including linux/string.h for memset() and
-memcpy() in include/asm-generic/io.h.
+then
 
-Thanks,
-Thierry
-
---j+MD90OnwjQyWNYt
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUKR9cAAoJEN0jrNd/PrOhASUP/RvBIHM071cnw1PJ7yxsJ3L9
-Ye2u9bLq3ieMzN64dyKlZ0WDnlL0Zqian8oSeGFdff3yRUHaL54OA/U7AuOFX6D5
-PWltAOtP0gdrxIllmD+5mAORzTq+/4nE90FsKYKaF00CLdHe03PrrNCSoQL8AjKM
-LOLlyM7FK0zSpu8fX888PxFSbmWRrtvN5pRgW6FuDg7CFB6ngMguZ8Ez8vGlQBJp
-a/9c4FKxzJSxnmyKsV9jXSfLMTGNach+gtU99i86nTiDCoJvmx8C8nLOr9eCYmet
-YgpAiyZY0lDR5TZu9PmDum5UwQWD/0GUU5nSa98GrevvLk+TRVIbKCXVpxeos7Pb
-d872N+plfgUX4Pyy3RotpRvvwdNckKiPS+T6uYL/7oAlu/zuuOQ+XFNs7UGw9a0Z
-rVOkIUdud+hVuS//oqzu3z2SRPItcT00d7TZDcGcQdFNx8uIYi1df0elBVYYrgGN
-EWe+AWDuBvwBRFWz6w8TQpsRjzs44OP3FfEKtOAqzhyjVNuVZaH7yBNiVILdpzop
-/iLGFJ4mQk0wV3w/Sszf+LFV7RRq7cjbwbp4fqKRCKQmcSpJ5xnA71ONHiACQ61h
-H0jJjja1A2/0lTM2N27vWT70y2lUay60FG2Y6k5uD9LfsQB0GamL90u4wgpiH8zm
-nDA3G2WCAde4Al0seiYx
-=bajY
------END PGP SIGNATURE-----
-
---j+MD90OnwjQyWNYt--
+> +		 * the DMA won't do anything soon so we have to cancel the DMA
+> +		 * transfer and purge the FIFO manually.
+> +		 */
+> +		if (dma->rx_running) {
+> +			dmaengine_pause(dma->rxchan);
+> +			__dma_rx_do_complete(p, true);
+> +		}
+> +		return -ETIMEDOUT;
+> +
+>  	default:
+>  		break;
+>  	}
+> -- 
+> 2.1.0
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
