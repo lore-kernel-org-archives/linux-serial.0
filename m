@@ -1,53 +1,47 @@
-From: Frans Klaver <frans.klaver@xsens.com>
-Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
- for AM33xx
-Date: Mon, 29 Sep 2014 10:50:42 +0200
-Message-ID: <20140929085042.GA13952@ci00147.xsens-tech.local>
-References: <2cf997d9-e7de-465b-915d-3a0a5e7b95f7@email.android.com>
- <54129F6C.7040508@linutronix.de>
- <20140912094010.GE28458@ci00147.xsens-tech.local>
- <5412C21A.8020203@linutronix.de>
- <20140912102816.GF28458@ci00147.xsens-tech.local>
- <541716DC.9020904@linutronix.de>
- <20140917102812.GA20438@ci00147.xsens-tech.local>
- <20140921204100.GA10111@linutronix.de>
- <20140922092853.GH20438@ci00147.xsens-tech.local>
- <20140925151403.GH19396@linutronix.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v4 6/8] asm-generic/io.h: Implement generic {read,write}s*()
+Date: Mon, 29 Sep 2014 10:54:34 +0200
+Message-ID: <CAMuHMdW4emoma3nRUGna985tE17yPh5pNjMb-jxe5yc5UVr=cw@mail.gmail.com>
+References: <1407925738-26170-1-git-send-email-thierry.reding@gmail.com>
+	<1407925738-26170-7-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140925151403.GH19396@linutronix.de>
-Sender: linux-omap-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <sparclinux-owner@vger.kernel.org>
+In-Reply-To: <1407925738-26170-7-git-send-email-thierry.reding@gmail.com>
+Sender: sparclinux-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Linux-Arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, the arch/x86 maintainers <x86@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Sam Ravnborg <sam@ravnborg.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Sep 25, 2014 at 05:14:03PM +0200, Sebastian Andrzej Siewior wrote:
-> * Frans Klaver | 2014-09-22 11:28:54 [+0200]:
-> 
-> >I guess then we'd still have to answer the question why the yocto build
-> >calls set_termios() so often, but that's not on you then. Did you notice
-> >it even changing settings? We might want to fix this even if the kernel
-> >should be able to cope.
-> 
-> could you please test uart_v10_pre3? I dropped a few register sets and
-> delayed the register update until TX-DMA is complete. I am traveling
-> currently and have only my boneblack and it passes my limited testing.
-> If it solves your problems, too then I would address Heikki's latest
-> comments and prepare the final v10 (and I hope I didn't break beagle
-> board in between).
+On Wed, Aug 13, 2014 at 12:28 PM, Thierry Reding
+<thierry.reding@gmail.com> wrote:
+> #ifndef memset_io
+> -#define memset_io(a, b, c)     memset(__io_virt(a), (b), (c))
+> +#define memset_io memset_io
+> +static inline void memset_io(void __iomem *addr, int value, size_t size)
+> +{
+> +       memset(__io_virt(addr), value, size);
+> +}
+>  #endif
 
-This version fixes the console things for us. It also increases the
-amount of data we can push over the serial port. If I push the data
-towards our requirements, we're not there yet. I get the "too much work
-for irq" notice still. However, I don't think you'd need to be fixing
-that in this series (or at all). We had similar issues there with
-omap-serial as well.
+xtensa/allmodconfig:
 
-As far as I'm concerned, this is
+include/asm-generic/io.h:820:2: error: implicit declaration of
+function 'memset' [-Werror=implicit-function-declaration]
+include/asm-generic/io.h:829:2: error: implicit declaration of
+function 'memcpy' [-Werror=implicit-function-declaration]
+arch/xtensa/include/asm/string.h:110:14: error: conflicting types for 'memset'
+arch/xtensa/include/asm/string.h:113:14: error: conflicting types for 'memcpy'
 
-Tested-by: Frans Klaver <frans.klaver@xsens.com>
+http://kisskb.ellerman.id.au/kisskb/buildresult/12028900/
 
-Thanks,
-Frans
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
