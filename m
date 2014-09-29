@@ -1,53 +1,54 @@
-From: Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH RESEND] tty: serial: omap: Remove probe error message
-Date: Mon, 29 Sep 2014 09:29:42 +0200
-Message-ID: <1411975782-23709-1-git-send-email-mpa@pengutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] tty: serial: 8250: use 32bit variable for rpm_tx_active
+Date: Mon, 29 Sep 2014 10:21:03 +0200
+Message-ID: <20140929082103.GA13142@linutronix.de>
+References: <54259528.VllWqQU+5yiNGda3%fengguang.wu@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:50926 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751439AbaI2HaX (ORCPT
+Received: from www.linutronix.de ([62.245.132.108]:49075 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751786AbaI2IVJ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Sep 2014 03:30:23 -0400
+	Mon, 29 Sep 2014 04:21:09 -0400
+Content-Disposition: inline
+In-Reply-To: <54259528.VllWqQU+5yiNGda3%fengguang.wu@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Felipe Balbi <balbi@ti.com>, Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Markus Pargmann <mpa@pengutronix.de>
+To: kbuild test robot <fengguang.wu@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: kbuild-all@01.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This error message is not necessary. The driver core code will print all
-probe error messages. It also resolves some error codes to proper error
-messages. For example -EPROBE_DEFER will only be printed as an info message.
+The kbuild test robot wrote me:
+|  make.cross ARCH=powerpc
+|>> ERROR: ".__xchg_called_with_bad_pointer" [drivers/tty/serial/8250/8250.ko] undefined!
 
-This patch removes the error message as the core prints the same
-information.
+The generic implementation of xchg() on arm and x86 works for variables of
+size one bye (char). According to the report powerpc does not support
+xchg() for one byte sized variables and looking further it seems also to
+be the same case for sparc and tile (or for 10 out of 26 architectures
+which provide a custom implementation).
+For that reason I increase the size of the variable from one to four
+bytes to get it work on powerpc (and the others).
 
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+Reported-By: kbuild test robot <fengguang.wu@intel.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
+ include/linux/serial_8250.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hi,
-
-I am not sure if this patch got lost, so I resend it. I rebased the patch onto
-v3.17-rc1 without conflicts.
-
-Best regards,
-
-Markus
-
- drivers/tty/serial/omap-serial.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index d017cec8a34a..a153bad142c8 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1733,8 +1733,6 @@ err_add_port:
- 	pm_runtime_disable(&pdev->dev);
- err_rs485:
- err_port_line:
--	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
--				pdev->id, __func__, ret);
- 	return ret;
- }
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index c267412a3ef4..3df10d5f154b 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -84,7 +84,7 @@ struct uart_8250_port {
+ 	unsigned char		mcr_mask;	/* mask of user bits */
+ 	unsigned char		mcr_force;	/* mask of forced bits */
+ 	unsigned char		cur_iotype;	/* Running I/O type */
+-	unsigned char		rpm_tx_active;
++	unsigned int		rpm_tx_active;
  
+ 	/*
+ 	 * Some bits in registers are cleared on a read, so they must
 -- 
 2.1.0
 
