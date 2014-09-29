@@ -1,52 +1,86 @@
-From: Frans Klaver <frans.klaver@xsens.com>
-Subject: Re: [PATCH 09/16] tty: serial: 8250_dma: Add a TX trigger workaround
- for AM33xx
-Date: Mon, 29 Sep 2014 12:30:43 +0200
-Message-ID: <20140929103042.GA31111@ci00147.xsens-tech.local>
-References: <20140912094010.GE28458@ci00147.xsens-tech.local>
- <5412C21A.8020203@linutronix.de>
- <20140912102816.GF28458@ci00147.xsens-tech.local>
- <541716DC.9020904@linutronix.de>
- <20140917102812.GA20438@ci00147.xsens-tech.local>
- <20140921204100.GA10111@linutronix.de>
- <20140922092853.GH20438@ci00147.xsens-tech.local>
- <20140925151403.GH19396@linutronix.de>
- <20140929085042.GA13952@ci00147.xsens-tech.local>
- <20140929095440.GB13142@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 06/16] tty: serial: Add 8250-core based omap driver
+Date: Mon, 29 Sep 2014 15:27:12 +0200
+Message-ID: <20140929132712.GD13142@linutronix.de>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de>
+ <1410377411-26656-7-git-send-email-bigeasy@linutronix.de>
+ <20140929093823.GD13952@ci00147.xsens-tech.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from filter1.ibarracuda.nl ([83.247.7.10]:45425 "EHLO
-	filter1.ibarracuda.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751932AbaI2Kar (ORCPT
+Received: from www.linutronix.de ([62.245.132.108]:51442 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751913AbaI2N1R (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 29 Sep 2014 06:30:47 -0400
+	Mon, 29 Sep 2014 09:27:17 -0400
 Content-Disposition: inline
-In-Reply-To: <20140929095440.GB13142@linutronix.de>
+In-Reply-To: <20140929093823.GD13952@ci00147.xsens-tech.local>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+To: Frans Klaver <frans.klaver@xsens.com>
+Cc: linux-serial@vger.kernel.org, tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Mon, Sep 29, 2014 at 11:54:40AM +0200, Sebastian Andrzej Siewior wrote:
-> There is a patch named "ARM: edma: unconditionally ack the error
-> interrupt". I have the feeling that this is not really required once we
-> delay set_termios. I couldn't reproduce the bug with beagleblack with my
-> usual test case.
+* Frans Klaver | 2014-09-29 11:38:23 [+0200]:
 
-I think so too. I didn't need it either.
+>threshold
+fixed
 
+>> +	/*
+>> +	 * It claims to be 16C750 compatible however it is a little different.
+>> +	 * It has EFR and has no FCR7_64byte bit. The AFE (which it claims to
+>> +	 * have) is enabled via EFR instead of MCR. The type is set here 8250
+>> +	 * just to get things going. UNKNOWN does not work for a few reasons and
+>> +	 * we don't need our own type since we don't use 8250's set_termios()
+>> +	 * and our "bugs" are handeld via the bug member.
+>
+>handled
+replaced that last line with 
+    or pm callback.
 
-> For your "too much work for irq" problem: Could you add trace_printk()
-> in tx/rx dma start/complete, and irq routine? The interresting part is
-> what is the irq routine doing once entered. It might be a condition that
-> is ignored at first and "acked" later while serving another event. Or it
-> is really doing something and this is more or less "legal".
+since there no bugs member anymore.
 
-I'll have a look at that.
+>
+>> +	 */
+>> +	up.port.type = PORT_8250;
+>> +	up.port.iotype = UPIO_MEM;
+>> +	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SOFT_FLOW |
+>> +		UPF_HARD_FLOW;
+>> +	up.port.private_data = priv;
+>> +
+>> +	up.port.regshift = 2;
+>> +	up.port.fifosize = 64;
+>> +	up.tx_loadsz = 64;
+>> +	up.capabilities = UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP;
+>> +#ifdef CONFIG_PM_RUNTIME
+>> +	/*
+>> +	 * PM_RUNTIME is mostly transparent. However to do it right we need to a
+>
+>need to _do_ a ...?
+I think dropping that 'to' should fix it.
 
-> 
-> >Thanks,
-> >Frans
-> 
-> Sebastian
+>> +	 * TX empty interrupt before we can put the device to auto idle. So if
+>> +	 * PM_RUNTIME is not enabled we don't add that flag and can spare that
+>> +	 * one extra interrupt in the TX path.
+>> +	 */
+>
+><snip>
+>
+>> +config SERIAL_8250_OMAP
+>> +	tristate "Support for OMAP internal UART (8250 based driver)"
+>> +	depends on SERIAL_8250 && ARCH_OMAP2PLUS
+>> +	help
+>> +	  If you have a machine based on an Texas Instruments OMAP CPU you
+>> +	  can enable its onboard serial ports by enabling this option.
+>> +
+>> +	  This driver is in early stage and uses ttyS instead of ttyO.
+>> +
+>
+>I just wondered if this driver should be marked experimental?
+What did you have in mind? CONFIG_EXPERIMENTAL is gone. After all that
+debuging that I had in the meantime I was thinking about dropping that
+"early stage".
+
+>Thanks,
+>Frans
+
+Sebastian
