@@ -1,54 +1,46 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 10/13] arm: dts: am33xx: add DMA properties for UART
-Date: Mon, 29 Sep 2014 20:06:46 +0200
-Message-ID: <1412014009-13315-11-git-send-email-bigeasy@linutronix.de>
-References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de>
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de>
-Sender: linux-omap-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, devicetree@vger.kernel.org
+From: Gregory Hermant <gregory.hermant@calao-systems.com>
+Subject: [PATCH v2] max310x: max3109_detect should use indirect addressing in SPI mode for REVID register
+Date: Tue, 30 Sep 2014 08:59:17 +0200
+Message-ID: <1412060357-4627-1-git-send-email-gregory.hermant@calao-systems.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.163]:11865 "EHLO
+	mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751929AbaI3G7l (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Sep 2014 02:59:41 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: shc_work@mail.ru, Gregory Hermant <gregory.hermant@calao-systems.com>
 
-Cc: devicetree@vger.kernel.org
-Reviewed-by: Tony Lindgren <tony@atomide.com>
-Tested-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+This patch allows to read the REV_ID register in SPI mode and consequently
+to properly detect the max3109. Indeed in SPI mode, this register is only
+accessible by using indirect addressing.
+
+Signed-off-by: Gregory Hermant <gregory.hermant@calao-systems.com>
 ---
- arch/arm/boot/dts/am33xx.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/tty/serial/max310x.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
-index 3a0a161342ba..078a760a4a21 100644
---- a/arch/arm/boot/dts/am33xx.dtsi
-+++ b/arch/arm/boot/dts/am33xx.dtsi
-@@ -200,6 +200,8 @@
- 			reg = <0x44e09000 0x2000>;
- 			interrupts = <72>;
- 			status = "disabled";
-+			dmas = <&edma 26>, <&edma 27>;
-+			dma-names = "tx", "rx";
- 		};
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 82573dc..e7cb897 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -346,10 +346,13 @@ static int max3109_detect(struct device *dev)
+ 	unsigned int val = 0;
+ 	int ret;
  
- 		uart1: serial@48022000 {
-@@ -209,6 +211,8 @@
- 			reg = <0x48022000 0x2000>;
- 			interrupts = <73>;
- 			status = "disabled";
-+			dmas = <&edma 28>, <&edma 29>;
-+			dma-names = "tx", "rx";
- 		};
+-	ret = regmap_read(s->regmap, MAX310X_REVID_REG, &val);
++	ret = regmap_write(s->regmap, MAX310X_GLOBALCMD_REG,
++			   MAX310X_EXTREG_ENBL);
+ 	if (ret)
+ 		return ret;
  
- 		uart2: serial@48024000 {
-@@ -218,6 +222,8 @@
- 			reg = <0x48024000 0x2000>;
- 			interrupts = <74>;
- 			status = "disabled";
-+			dmas = <&edma 30>, <&edma 31>;
-+			dma-names = "tx", "rx";
- 		};
- 
- 		uart3: serial@481a6000 {
++	regmap_read(s->regmap, MAX310X_REVID_EXTREG, &val);
++	regmap_write(s->regmap, MAX310X_GLOBALCMD_REG, MAX310X_EXTREG_DSBL);
+ 	if (((val & MAX310x_REV_MASK) != MAX3109_REV_ID)) {
+ 		dev_err(dev,
+ 			"%s ID 0x%02x does not match\n", s->devtype->name, val);
 -- 
-2.1.0
+1.7.9.5
 
