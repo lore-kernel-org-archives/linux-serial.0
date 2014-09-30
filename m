@@ -1,106 +1,52 @@
-From: Graeme Gregory <gg@slimlogic.co.uk>
-Subject: Re: [RFC PATCH 00/10] drivers: PL011: add SBSA subset support
-Date: Tue, 30 Sep 2014 11:11:12 +0100
-Message-ID: <20140930101112.GH3293@xora-haswell.xora.org.uk>
-References: <1411129283-17219-1-git-send-email-andre.przywara@arm.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
+Subject: Re: [PATCH v4 6/8] asm-generic/io.h: Implement generic {read,write}s*()
+Date: Tue, 30 Sep 2014 14:22:18 +0400
+Message-ID: <CAMo8BfJ9VJ24zsn_6VwNrAntmDqdJu11O79OyMd8eThv3UaaUw@mail.gmail.com>
+References: <1407925738-26170-1-git-send-email-thierry.reding@gmail.com>
+	<1407925738-26170-7-git-send-email-thierry.reding@gmail.com>
+	<CAMuHMdW4emoma3nRUGna985tE17yPh5pNjMb-jxe5yc5UVr=cw@mail.gmail.com>
+	<20140929085908.GI12506@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1411129283-17219-1-git-send-email-andre.przywara@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: rob.herring@linaro.org, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20140929085908.GI12506@ulmo>
+Sender: linux-ia64-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Linux-Arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, the arch/x86 maintainers <x86@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Sam Ravnborg <sam@ravnborg.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 19, 2014 at 01:21:13PM +0100, Andre Przywara wrote:
-> (This version has still issues, but I'd like to have feedback on
-> the general feasibility of this approach before wasting even more
-> time on debugging).
-> 
-> The ARM Server Base System Architecture[1] document describes a
-> generic UART which is a subset of the PL011 UART.
-> It lacks DMA support, baud rate control and modem status line
-> control, among other things.
-> The idea is to move the UART initialization and setup into the
-> firmware (which does this job today already) and let the kernel just
-> use the UART for sending and receiving characters.
-> 
-> This patchset is an attempt to integrate support for this UART subset
-> into the existing PL011 driver - basically by refactoring some
-> functions and providing a new uart_ops structure for it. It also has
-> a separate probe function to be not dependent on AMBA/PrimeCell.
-> Beside the obvious effect of code sharing it has the advantage of not
-> introducing another serial device prefix, so it can go with ttyAMA,
-> which seems to be pretty common.
-> 
-> There is still one issue in bringing up the UART. On the PL011 we
-> send a dummy character via the loopback facility with the FIFOs
-> disabled to get things going, but both FIFO control and loopback are
-> outside of the SBSA spec. I consider this loopback approach a kludge
-> anyway, but am struggling to find a better way of fixing this due to
-> my lack of understanding of the TTY/serial layer.
-> If someone with more wisdom could enlighten me, I would be grateful.
-> 
-This is the killer issue at the moment it seems, once we get to usespace
-the tty does not work.
+Hi Thierry,
 
-> 
-> Patch 1/10 contains a bug fix which applies to the PL011 part also,
-> it should be considered regardless of the rest of the series.
-> Patch 2-7 refactor some PL011 functions by splitting them up into
-> smaller pieces, so that most the code can be reused later by the SBSA
-> part.
-> Patch 8 and 9 introduce two new properties for the vendor structure,
-> this is for SBSA functionality which cannot be controlled by
-> separate uart_ops members only.
-> Patch 10 then finally drops in the SBSA specific code, by providing
-> a new uart_ops, vendor struct and probe function for it.
-> 
-> Please have a look and tell me whether this SBSA driver approach has
-> any future.
-> 
+On Mon, Sep 29, 2014 at 12:59 PM, Thierry Reding
+<thierry.reding@gmail.com> wrote:
+> On Mon, Sep 29, 2014 at 10:54:34AM +0200, Geert Uytterhoeven wrote:
+>> On Wed, Aug 13, 2014 at 12:28 PM, Thierry Reding
+>> <thierry.reding@gmail.com> wrote:
+>> > #ifndef memset_io
+>> > -#define memset_io(a, b, c)     memset(__io_virt(a), (b), (c))
+>> > +#define memset_io memset_io
+>> > +static inline void memset_io(void __iomem *addr, int value, size_t size)
+>> > +{
+>> > +       memset(__io_virt(addr), value, size);
+>> > +}
+>> >  #endif
+>>
+>> xtensa/allmodconfig:
+>>
+>> include/asm-generic/io.h:820:2: error: implicit declaration of
+>> function 'memset' [-Werror=implicit-function-declaration]
+>> include/asm-generic/io.h:829:2: error: implicit declaration of
+>> function 'memcpy' [-Werror=implicit-function-declaration]
+>> arch/xtensa/include/asm/string.h:110:14: error: conflicting types for 'memset'
+>> arch/xtensa/include/asm/string.h:113:14: error: conflicting types for 'memcpy'
+>>
+>> http://kisskb.ellerman.id.au/kisskb/buildresult/12028900/
+>
+> I think this can be fixed by including linux/string.h for memset() and
+> memcpy() in include/asm-generic/io.h.
 
-The patch series looks reasonable to me based on my very limited
-knowledge of the tty layer and the pl011 UART.
+Will you send that fix or do I need to do it?
 
-Graeme
-
-
-> Regards,
-> Andre
-> 
-> Andre Przywara (10):
->   drivers: PL011: avoid potential unregister_driver call
->   drivers: PL011: refactor pl011_startup()
->   drivers: PL011: refactor pl011_shutdown()
->   drivers: PL011: refactor pl011_set_termios()
->   drivers: PL011: refactor pl011_probe()
->   drivers: PL011: replace UART_MIS reading with _RIS & _IMSC
->   drivers: PL011: move cts_event workaround into separate function
->   drivers: PL011: allow avoiding UART enabling/disabling
->   drivers: PL011: allow to supply fixed option string
->   drivers: PL011: add support for the ARM SBSA generic UART
-> 
->  .../devicetree/bindings/serial/arm_sbsa_uart.txt   |    9 +
->  drivers/tty/serial/amba-pl011.c                    |  509 ++++++++++++++------
->  2 files changed, 380 insertions(+), 138 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
-> 
-> -- 
-> 1.7.9.5
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+-- 
+Thanks.
+-- Max
