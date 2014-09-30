@@ -1,73 +1,108 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 6/8] asm-generic/io.h: Implement generic
- {read,write}s*()
-Date: Tue, 30 Sep 2014 12:51:19 +0200
-Message-ID: <20140930105118.GA27560@ulmo>
-References: <1407925738-26170-1-git-send-email-thierry.reding@gmail.com>
- <CAMo8BfJ9VJ24zsn_6VwNrAntmDqdJu11O79OyMd8eThv3UaaUw@mail.gmail.com>
- <CAMo8Bf+u8er_KF4nJPSPNf9OmKZHu4y0x3Pcb7DU17y5ocBJqw@mail.gmail.com>
- <1799506.5Clfp6gmMu@wuerfel>
+From: Prasad Koya <prasad.koya@gmail.com>
+Subject: process receive fifo while xmitting in 8250.
+Date: Tue, 30 Sep 2014 10:30:20 -0700
+Message-ID: <CAGXD9OeZ8n9oMXdTRVLVnz7kB=UEUvuCFjJszg81bRs+9E0fbw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ew6BAiZeqk4r7MaW"
-Return-path: <sparclinux-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1799506.5Clfp6gmMu@wuerfel>
-Sender: sparclinux-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Max Filippov <jcmvbkbc@gmail.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux-Arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, the arch/x86 maintainers <x86@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Sam Ravnborg <sam@ravnborg.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-qa0-f53.google.com ([209.85.216.53]:57209 "EHLO
+	mail-qa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751999AbaI3RaV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 30 Sep 2014 13:30:21 -0400
+Received: by mail-qa0-f53.google.com with SMTP id v10so1594230qac.40
+        for <linux-serial@vger.kernel.org>; Tue, 30 Sep 2014 10:30:20 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Theodore Ts'o <tytso@mit.edu>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
 
+Hi Ted
 
---ew6BAiZeqk4r7MaW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+At 9600 baud, we are seeing buffer overruns on our 16550A UARTs. If a
+command, say 40 chars long, is sent to console and if printk to
+console happens at same time, we running into receive buffer overrun.
+Thats because, at 9600 baud, it takes about a millisecond to xmit 1
+char and with receive FIFO only 16 chars deep, it is very easy to
+cause receive buffer overrun.
 
-On Tue, Sep 30, 2014 at 12:39:37PM +0200, Arnd Bergmann wrote:
-> On Tuesday 30 September 2014 14:26:20 Max Filippov wrote:
-> > On Tue, Sep 30, 2014 at 2:22 PM, Max Filippov <jcmvbkbc@gmail.com> wrot=
-e:
-> > > Hi Thierry,
-> > >
-> > >> I think this can be fixed by including linux/string.h for memset() a=
-nd
-> > >> memcpy() in include/asm-generic/io.h.
-> > >
-> > > Will you send that fix or do I need to do it?
-> >=20
-> > Never mind, found that it's fixed in today's next.
-> >=20
-> >=20
->=20
->=20
-> Actually I just backed out the original patches, the problem is still
-> there in my tree.
+To get around that, I am trying below patch on 3.17 kernel. This is
+tested and working on 3.4 kernel. I wanted to get some comments from
+linux-serial mailing list.
 
-I'll integrate the fix for this in my series, so this should be gone
-with v5.
+If UART_IER_RDI is enabled, for every quarter of fifo size bytes sent,
+console_write() checks to see if there is data in receive fifo. If so,
+it lets serial8250_rx_chars() pick those bytes and buffer them in tty
+layer.
 
-Thierry
+Thank you.
 
---ew6BAiZeqk4r7MaW
-Content-Type: application/pgp-signature
+--- linux-3.17rc6-orig/linux-3.17-rc6/drivers/tty/serial/8250/8250_core.c
+      2014-09-21 15:43:02.000000000 -0700
++++ linux-3.17-rc6/drivers/tty/serial/8250/8250_core.c  2014-09-30
+10:08:06.401242782 -0700
+@@ -3004,6 +3004,7 @@
+        unsigned long flags;
+        unsigned int ier;
+        int locked = 1;
++       int to_send, offset, fifo = count;
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+        touch_nmi_watchdog();
 
-iQIcBAEBAgAGBQJUKosmAAoJEN0jrNd/PrOhrE8QAK/BmvywtJzQDgITRXV6OmlR
-zGytBnkrGNB6GPzrir+o11WlOAira8bcr17OWn0JasMkvH8rN1tS0uC91XPt3IPL
-EHxFZl2I7AkNvdv2/Iwi/UntwkPBBbBNNeIl+b9ueKeNAEMB7BvzUiYZ00q7plqg
-Kkmy09cqoOAOGxaMY5r57/bhitoy8+OM72mamqU/JKApmuJ08jIkRHSWZkWlPq2F
-aPd8E0lD/E/skDQ9RDUYPDUl58pSsfiM4YFYZvsaLgJyDua/8dFwVg8QehbegrOh
-+hBfs7Kzk5ZMwzfyv+pj/64+Ub3l7i8hVb5h1LIS91xPdCBSr74FeYLp6qgEc/Mp
-ina5Oh7+Cv34Us0hvBX1NJRsAA3bgmUnt1XeEGbm2V2p+tq+I5XtYIJTkg7R39YR
-51u1oJGL9zjpFk0p5QtnIWl75t/po9TPoxyhW1HXr4XyWRicPE46Si4gA2/y/FWI
-PmCy5HLR38yOGNNQFB02lSRdPSGKRoggpMeu2cQEOTFf37D2OphxmSR1LMsCbLml
-fqrIbqJqXah4S8wmbaAT81LOBB+/5g/r7BLbYn+tvw2ckxroY9Jyd+UjaiByJ/aZ
-6fOGyBc6/jy36Ox6QZCI75pZf+XSgsuva5yBbkdSqKQCrWsKYHrhcaAc3w6fxJAt
-NZQ3rK42O9a/3d6wyzTx
-=yVff
------END PGP SIGNATURE-----
+@@ -3022,8 +3023,27 @@
+        else
+                serial_port_out(port, UART_IER, 0);
 
---ew6BAiZeqk4r7MaW--
+-       uart_console_write(port, s, count, serial8250_console_putchar);
++       offset = 0;
++       if (uart_config[up->port.type].fcr & UART_FCR_ENABLE_FIFO) {
++               if (!oops_in_progress && ((ier & UART_IER_RDI) == UART_IER_RDI))
++                       fifo = port->fifosize >> 2;
++       }
++
++send_rest:
++       to_send = count > fifo ? fifo : count;
+
++       uart_console_write(port, s + offset, to_send,
+serial8250_console_putchar);
++
++       count -= to_send;
++       if (count > 0) {
++               unsigned int status;
++               status = serial_in(up, UART_LSR);
++               if (status & (UART_LSR_DR | UART_LSR_BI))
++                       serial8250_rx_chars(up, status);
++                offset += to_send;
++               goto send_rest;
++       }
++
+        /*
+         *      Finally, wait for transmitter to become empty
+         *      and restore the IER
+
+On Wed, May 28, 2014 at 11:18 PM, Theodore Ts'o <tytso@mit.edu> wrote:
+> On Tue, May 27, 2014 at 10:47:05PM -0700, Prasad Koya wrote:
+>>
+>> if char received is garbage then as you hinted it must be that
+>> transmit ready interrupt that is not getting set.
+>
+> This was typo on my part.  What I meant to say was that it is the
+> "receive ready interrupt" (not transmit) getting set when it shouldn't
+> be.
+>
+> That is, the fact that DR bit was clear was indeed correct --- the
+> receive FIFO really was empty, but for some reason some other part of
+> the UART was convinced that it should be trying to trigger a receive
+> interrupt, hence the value in IIR.
+>
+> In that case, if you force the DR bit to be set, then you'll be
+> looping forever loading garbage into the tty flip buffer until it
+> overflows.  This is why I said you should put in a counter that only
+> does this workaround a limited number of times, and which point you
+> send a printk of the saying "Buggy Intel UART, abandon all hope", and
+> then submit a patch to the kernel cc'ing someone from Intel, in the
+> hopes that they will fix the bug....
+>
+> Cheers,
+>
+>                                                 - Ted
