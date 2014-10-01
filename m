@@ -1,77 +1,111 @@
-From: Peter Ujfalusi <peter.ujfalusi@ti.com>
-Subject: Re: [PATCH 09/13] dmaengine: edma: check for echan->edesc => NULL
- in edma_dma_pause()
-Date: Wed, 1 Oct 2014 15:00:53 +0300
-Message-ID: <542BECF5.2090700@ti.com>
-References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de> <1412014009-13315-10-git-send-email-bigeasy@linutronix.de>
+From: "Helge Deller" <deller@gmx.de>
+Subject: Aw: Re: serial console broken in v3.17-rc6 ?
+Date: Wed, 1 Oct 2014 16:46:01 +0200
+Message-ID: <trinity-e77efb94-335b-4ae1-9311-beec43297b07-1412174761195@3capp-gmx-bs15>
+References: <5421D3E3.6080805@gmx.de> <5421E166.7060206@hurleysoftware.com>
+ <5423120E.8060204@gmx.de>, <542B0B98.1040407@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:51261 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751053AbaJAMBd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 1 Oct 2014 08:01:33 -0400
-In-Reply-To: <1412014009-13315-10-git-send-email-bigeasy@linutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <542B0B98.1040407@hurleysoftware.com>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-parisc <linux-parisc@vger.kernel.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, vinod.koul@intel.com
 
-On 09/29/2014 09:06 PM, Sebastian Andrzej Siewior wrote:
-> I added book keeping of whether or not the 8250-dma driver has an RX
-> transfer pending or not so we don't BUG here if it calls
-> dmaengine_pause() on a channel which has not a pending transfer. Gues=
-s
-> what, this is not enough.
-> The following can be triggered with a busy RX channel and hackbench i=
-n
-> background:
-> - DMA transfer completes. The callback is delayed via
->   vchan_cookie_complete() into a tasklet so it das not happen asap.
-> - hackbench keeps the system busy so the tasklet does not run "soon".
-> - the UART collected enough data and generates an "timeout"-interrupt=
-=2E
->   Since 8250-dma *thinks* the DMA-transfer is still pending it tries =
-to
->   cancel it via invoking dmaengine_pause() first. This causes the seg=
-fault
->   because echan->edesc is NULL now that the transfer completed (howev=
-er
->   the callback did not run yet).
->=20
-> With this patch we don't BUG in the scenario described.
+Hi Peter,
 
-Acked-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> > Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+> > serial8250: ttyS0 at I/O 0x3f8 (irq = 3, base_baud = 115200) is a 16550A
+> > 
+> > The source code for this driver is in drivers/parisc/superio.c,
+> > see e.g. function superio_serial_init().
+> > Maybe something is missing in here which was done to the other serial drivers?
+> 
+> Ok. So still the 8250 driver.
+> 
+> What are the remote line settings? (speed/parity/bits/stop)
 
->=20
-> Cc: vinod.koul@intel.com
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  drivers/dma/edma.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/dma/edma.c b/drivers/dma/edma.c
-> index 7b65633f495e..123f578d6dd3 100644
-> --- a/drivers/dma/edma.c
-> +++ b/drivers/dma/edma.c
-> @@ -288,7 +288,7 @@ static int edma_slave_config(struct edma_chan *ec=
-han,
->  static int edma_dma_pause(struct edma_chan *echan)
->  {
->  	/* Pause/Resume only allowed with cyclic mode */
-> -	if (!echan->edesc->cyclic)
-> +	if (!echan->edesc || !echan->edesc->cyclic)
->  		return -EINVAL;
-> =20
->  	edma_pause(echan->ch_num);
->=20
+9600,8,N,1
 
+> See if reverting commit ae84db9661cafc63d179e1d985a2c5b841ff0ac4,
+> 'serial: core: Preserve termios c_cflag for console resume', has some effect.
+> I'm not seeing how this commit would affect your setup, but if it does, I can
+> provide a debug patch to find out what userspace is doing.
 
---=20
-P=E9ter
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+No, this did not fixed it.
+
+> If not, then I think you'll need to bisect drivers/tty/serial. I tried to
+> analyze if the new generic earlycon was somehow triggering but I got lost
+> multiple times in the static analysis.
+> 
+> BTW, since superio_serial_init() assigns the port type as PORT_16550A,
+> superio_serial_init() should be doing:
+> 
+> diff --git a/drivers/parisc/superio.c b/drivers/parisc/superio.c
+> index a042d06..36b3adb 100644
+> --- a/drivers/parisc/superio.c
+> +++ b/drivers/parisc/superio.c
+> @@ -395,7 +395,7 @@ static void __init superio_serial_init(void)
+>  	serial_port.iotype	= UPIO_PORT;
+>  	serial_port.type	= PORT_16550A;
+>  	serial_port.uartclk	= 115200*16;
+> -	serial_port.fifosize	= 16;
+> +	serial_port.flags	= UPF_FIXED_TYPE;
+>  
+>  	/* serial port #1 */
+>  	serial_port.iobase	= sio_dev.sp1_base;
+> 
+> to properly initialize the 8250 port definition. Right now, the fifosize
+> has no effect because the fifo capabilities is not on.
+> 
+> Also, consider adding
+> 
+> -	serial_port.flags	= UPF_FIXED_TYPE;
+> +	serial_port.flags	= UPF_FIXED_PORT | UPF_FIXED_TYPE;
+> 
+> to disable reprogramming the irq and ioport from setserial.
+
+That was partly solving the problem!
+By looking at the other drivers, I found that they set the UPF_BOOT_AUTOCONF flag too.
+So, changing it to 
+-       serial_port.fifosize    = 16;
++       serial_port.flags       = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_BOOT_AUTOCONF;
+solved the problem :-)
+
+Might this be the right fix? If yes, I can push it upstream.
+All those flags like UPF_BOOT_AUTOCONF seem to be poorly documented btw.
+
+> > Interestingly the *same* kernel don't show this problem on another (older) parisc
+> > machine, but this older machine uses another serial driver:
+> > This (working) machine is using the drivers/tty/serial/8250/8250_gsc.c driver.
+> > Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+> > 2:0:4: ttyS0 at MMIO 0xf0105800 (irq = 18, base_baud = 454545) is a 16550A
+> > 5:0:2: ttyS1 at MMIO 0xf0202800 (irq = 25, base_baud = 454545) is a 16550A
+> 
+> PS - Unrelated note. This base_baud is junk ---------------^
+
+Is it?
+The base_baud value is calculated as "port->uartclk / 16" in drivers/tty/serial/serial_core.c.
+
+Looking at the machine specific driver code we have:
++++ b/drivers/tty/serial/8250/8250_gsc.c
+@@ -56,12 +56,12 @@ static int __init serial_init_chip(struct parisc_device *dev)
+        /* 7.272727MHz on Lasi.  Assumed the same for Dino, Wax and Timi. */
+        uart.port.uartclk       = (dev->id.sversion != 0xad) ?  /* XX */
+                                        7272727 : 1843200;
+
+which comes from the description of this chip which can be found in section 7.4 in this PDF file:
+https://parisc.wiki.kernel.org/images-parisc/7/79/Lasi_ers.pdf (page "64 of 111" or 76):
+7.4 Differences from NS16550A
+The Lasi serial port is intended to function just like the real National NS16550A. This includes
+behavior that often seems rather stupid. The National NS16550A was chosen over the WD16C552
+because the National part came first, and the WD part is supposed to be compatible. There are a few
+minor differences, however, between the NS16550A and this implementation.
+Baud clock generation is an area of slight differences from the NS16550A. The baudrate reference
+frequency is taken from the 40 MHz IO system clock. The frequency 7.2727 MHz is generated by
+dividing 40 MHz by 5.5. 
+
+So, probably the calculation of "port->uartclk / 16" is wrong for this chip?
+
+Helge
