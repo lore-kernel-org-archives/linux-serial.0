@@ -1,61 +1,105 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 02/13] tty: serial: 8250: make serial8250_console_setup()
- non _init
-Date: Tue, 30 Sep 2014 16:27:46 -0400
-Message-ID: <542B1242.1010609@hurleysoftware.com>
-References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de> <1412014009-13315-3-git-send-email-bigeasy@linutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:39509 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750901AbaI3U16 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 30 Sep 2014 16:27:58 -0400
-In-Reply-To: <1412014009-13315-3-git-send-email-bigeasy@linutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+From: Pramod Gurav <pramod.gurav@smartplayin.com>
+Subject: [PATCH] serial: remove use of gpiochip_remove() retval
+Date: Wed,  1 Oct 2014 11:27:49 +0530
+Message-ID: <1412143069-18562-1-git-send-email-pramod.gurav@smartplayin.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Pramod Gurav <pramod.gurav@smartplayin.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org
 
-On 09/29/2014 02:06 PM, Sebastian Andrzej Siewior wrote:
-> if I boot with console=3DttyS0 and the omap driver is module I end up=
- with
->=20
-> | console [ttyS0] disabled
+Get rid of using return value from gpiochip_remove() as it returns
+void with a new change in kernel.
 
-Note to self: make ISA config optional.
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-gpio@vger.kernel.org
+Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
+---
+ drivers/tty/serial/max310x.c   |   10 ++++------
+ drivers/tty/serial/sc16is7xx.c |   13 +++++--------
+ 2 files changed, 9 insertions(+), 14 deletions(-)
 
-> | omap8250 44e09000.serial: ttyS0 at MMIO 0x44e09000 (irq =3D 88, bas=
-e_baud =3D 3000000) is a 8250
-> | Unable to handle kernel paging request at virtual address c07a9de0
-> | Modules linked in: 8250_omap(+)
-> | CPU: 0 PID: 908 Comm: modprobe Not tainted 3.17.0-rc5+ #1593
-> | PC is at serial8250_console_setup+0x0/0xc8
-> | LR is at register_console+0x13c/0x3a4
-> | [<c0078788>] (register_console) from [<c02d0340>] (uart_add_one_por=
-t+0x3cc/0x420)
-> | [<c02d0340>] (uart_add_one_port) from [<c02d38a4>] (serial8250_regi=
-ster_8250_port+0x298/0x39c)
-> | [<c02d38a4>] (serial8250_register_8250_port) from [<bf006274>] (oma=
-p8250_probe+0x218/0x3dc [8250_omap])
-> | [<bf006274>] (omap8250_probe [8250_omap]) from [<c02e3424>] (platfo=
-rm_drv_probe+0x2c/0x5c)
-> | [<c02e3424>] (platform_drv_probe) from [<c02e1eac>] (driver_probe_d=
-evice+0x104/0x228)
-> =E2=80=A6
-> | [<c009fa48>] (SyS_init_module) from [<c000e6e0>] (ret_fast_syscall+=
-0x0/0x30)
-> | Code: 7823603b f8314620 051b3013 491ed416 (44792204)
->=20
-> because serial8250_console_setup() is already gone.
->=20
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 82573dc..0041a64 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1248,7 +1248,7 @@ static int max310x_probe(struct device *dev, struct max310x_devtype *devtype,
+ 	mutex_destroy(&s->mutex);
+ 
+ #ifdef CONFIG_GPIOLIB
+-	WARN_ON(gpiochip_remove(&s->gpio));
++	gpiochip_remove(&s->gpio);
+ 
+ out_uart:
+ #endif
+@@ -1263,12 +1263,10 @@ out_clk:
+ static int max310x_remove(struct device *dev)
+ {
+ 	struct max310x_port *s = dev_get_drvdata(dev);
+-	int i, ret = 0;
++	int i;
+ 
+ #ifdef CONFIG_GPIOLIB
+-	ret = gpiochip_remove(&s->gpio);
+-	if (ret)
+-		return ret;
++	gpiochip_remove(&s->gpio);
+ #endif
+ 
+ 	for (i = 0; i < s->uart.nr; i++) {
+@@ -1282,7 +1280,7 @@ static int max310x_remove(struct device *dev)
+ 	uart_unregister_driver(&s->uart);
+ 	clk_disable_unprepare(s->clk);
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static const struct of_device_id __maybe_unused max310x_dt_ids[] = {
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 3284c31..6246820 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1157,7 +1157,7 @@ static int sc16is7xx_probe(struct device *dev,
+ 
+ #ifdef CONFIG_GPIOLIB
+ 	if (devtype->nr_gpio)
+-		WARN_ON(gpiochip_remove(&s->gpio));
++		gpiochip_remove(&s->gpio);
+ 
+ out_uart:
+ #endif
+@@ -1173,14 +1173,11 @@ out_clk:
+ static int sc16is7xx_remove(struct device *dev)
+ {
+ 	struct sc16is7xx_port *s = dev_get_drvdata(dev);
+-	int i, ret = 0;
++	int i;
+ 
+ #ifdef CONFIG_GPIOLIB
+-	if (s->devtype->nr_gpio) {
+-		ret = gpiochip_remove(&s->gpio);
+-		if (ret)
+-			return ret;
+-	}
++	if (s->devtype->nr_gpio)
++		gpiochip_remove(&s->gpio);
+ #endif
+ 
+ 	for (i = 0; i < s->uart.nr; i++) {
+@@ -1195,7 +1192,7 @@ static int sc16is7xx_remove(struct device *dev)
+ 	if (!IS_ERR(s->clk))
+ 		clk_disable_unprepare(s->clk);
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static const struct of_device_id __maybe_unused sc16is7xx_dt_ids[] = {
+-- 
+1.7.9.5
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
