@@ -1,35 +1,41 @@
-From: Kevin Hilman <khilman@kernel.org>
-Subject: Re: [PATCH] serial/core: Initialize the console pm state
-Date: Wed, 1 Oct 2014 10:27:20 -0700
-Message-ID: <CAMAWPa9R5HtGKkV=Ya-ekynY5maespZ0Q6BjwJcX3LN3857ZjQ@mail.gmail.com>
-References: <1411367422-2095-1-git-send-email-ssreedharan@mvista.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] serial: remove use of gpiochip_remove() retval
+Date: Thu, 2 Oct 2014 09:21:52 +0200
+Message-ID: <CACRpkdZkXjTNo6koF3wn9q-tsBQkOu8+5Q7A+qku0Od_YWULjw@mail.gmail.com>
+References: <1412143069-18562-1-git-send-email-pramod.gurav@smartplayin.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1411367422-2095-1-git-send-email-ssreedharan@mvista.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sudhir Sreedharan <ssreedharan@mvista.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.cz, lkml <linux-kernel@vger.kernel.org>, olof@lixom.net, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ie0-f179.google.com ([209.85.223.179]:56044 "EHLO
+	mail-ie0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751991AbaJBHVx (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 2 Oct 2014 03:21:53 -0400
+Received: by mail-ie0-f179.google.com with SMTP id ar1so1929985iec.24
+        for <linux-serial@vger.kernel.org>; Thu, 02 Oct 2014 00:21:52 -0700 (PDT)
+In-Reply-To: <1412143069-18562-1-git-send-email-pramod.gurav@smartplayin.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Pramod Gurav <pramod.gurav@smartplayin.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
 
-On Sun, Sep 21, 2014 at 11:30 PM, Sudhir Sreedharan
-<ssreedharan@mvista.com> wrote:
-> For console devices having UART_CAP_SLEEP capability, the uart_pm_state has
-> to be initialized to UART_PM_STATE_ON. Otherwise the LCR regiser values
-> are reinitialized when uart_change_pm is called from uart_configure_port.
+On Wed, Oct 1, 2014 at 7:57 AM, Pramod Gurav
+<pramod.gurav@smartplayin.com> wrote:
+
+> Get rid of using return value from gpiochip_remove() as it returns
+> void with a new change in kernel.
 >
-> Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Alexandre Courbot <gnurou@gmail.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.cz>
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-gpio@vger.kernel.org
+> Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
 
-Multiple boot failures on ARM[1] were bisected down to this patch.
+NACK.
 
-How was this patch tested, and on which platforms?
+Already fixed through the GPIO tree.
 
-Also, the changelog states that this should be done only for
-UART_CAP_SLEEP, but the patch does it for every UART.
-
-Greg, I suggest this patch be dropped from tty-next until it has been
-better described and tested.
-
-Kevin
-
-[1] http://lists.linaro.org/pipermail/kernel-build-reports/2014-October/005550.html
+Yours,
+Linus Walleij
