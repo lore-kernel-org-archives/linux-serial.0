@@ -1,40 +1,44 @@
-From: Janusz Uzycki <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH RESEND] serial: mxs-auart: add sysrq support
-Date: Thu,  2 Oct 2014 20:11:35 +0200
-Message-ID: <1412273496-10610-1-git-send-email-j.uzycki@elproma.com.pl>
+From: Janusz Uzycki <j.uzycki-9tnw74Q4ehaHKKo6LODCOg@public.gmane.org>
+Subject: [PATCH RESEND] serial: mxs-auart: add sysrq support
+Date: Thu,  2 Oct 2014 20:11:36 +0200
+Message-ID: <1412273496-10610-2-git-send-email-j.uzycki@elproma.com.pl>
 References: <20140929014129.GA8687@kroah.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:62434 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1751346AbaJBSJN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 2 Oct 2014 14:09:13 -0400
-In-Reply-To: <20140929014129.GA8687@kroah.com>
-In-Reply-To: <20140929014129.GA8687@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+ <1412273496-10610-1-git-send-email-j.uzycki@elproma.com.pl>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1412273496-10610-1-git-send-email-j.uzycki-9tnw74Q4ehaHKKo6LODCOg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Janusz Uzycki <j.uzycki-9tnw74Q4ehaHKKo6LODCOg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
 
-> So I'm deleting all of these now, please resend the latest
-> versions you have, with properly versioning
-> and order information.
-Sure. I've just learnt about RFC header.
+When using mxs-auart based console, sometime we need the sysrq function
+to help debugging kernel. The sysrq code is basically there,
+this patch just simply enable it.
 
-[PATCH RESEND] serial: mxs-auart: add sysrq support
-It is extracted from my previous patchset
-as independent from others.
-The patch is resent as ready to apply.
-
-I resend it again because last time
-in conver letter I swapped subject with
-in-reply-to and the patch could be omited.
-
-Janusz Uzycki (1):
-  serial: mxs-auart: add sysrq support
-
+Signed-off-by: Janusz Uzycki <j.uzycki-9tnw74Q4ehaHKKo6LODCOg@public.gmane.org>
+---
  drivers/tty/serial/mxs-auart.c | 4 ++++
  1 file changed, 4 insertions(+)
 
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index eafce41..e838e84 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -14,6 +14,10 @@
+  * http://www.gnu.org/copyleft/gpl.html
+  */
+ 
++#if defined(CONFIG_SERIAL_MXS_AUART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
++#define SUPPORT_SYSRQ
++#endif
++
+ #include <linux/kernel.h>
+ #include <linux/errno.h>
+ #include <linux/init.h>
 -- 
 1.7.11.3
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
