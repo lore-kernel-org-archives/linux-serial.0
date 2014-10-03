@@ -1,88 +1,56 @@
-From: Joseph Lo <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] serial: of-serial: add PM suspend/resume support
-Date: Fri, 3 Oct 2014 15:45:37 +0800
-Message-ID: <542E5421.5070708@nvidia.com>
-References: <1411461252-8730-1-git-send-email-jingchang.lu@freescale.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] serial/core: Initialize the console pm state
+Date: Fri, 3 Oct 2014 14:22:47 +0200
+Message-ID: <CAMuHMdWwEoK__-qTdUmzx6vJJSQ1+XdvL3nZukUX_RjM1tDVGA@mail.gmail.com>
+References: <1411367422-2095-1-git-send-email-ssreedharan@mvista.com>
+	<CAMAWPa9R5HtGKkV=Ya-ekynY5maespZ0Q6BjwJcX3LN3857ZjQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1411461252-8730-1-git-send-email-jingchang.lu-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jingchang Lu <jingchang.lu-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAMAWPa9R5HtGKkV=Ya-ekynY5maespZ0Q6BjwJcX3LN3857ZjQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kevin Hilman <khilman@kernel.org>
+Cc: Sudhir Sreedharan <ssreedharan@mvista.com>, linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, lkml <linux-kernel@vger.kernel.org>, Olof Johansson <olof@lixom.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
-
-This patch might have a potential issue that cause system hard hung 
-immediately when it accesses to registers with no clock. This could 
-happen on many chips that mainline kernel supporting with the setting 
-"no_console_suspend=1" during suspend time.
-
-On 09/23/2014 04:34 PM, Jingchang Lu wrote:
-> This adds PM suspend/resume support for the of-serial driver
-> to provide power management support on devices attatched to it.
+On Wed, Oct 1, 2014 at 7:27 PM, Kevin Hilman <khilman@kernel.org> wrote:
+> On Sun, Sep 21, 2014 at 11:30 PM, Sudhir Sreedharan
+> <ssreedharan@mvista.com> wrote:
+>> For console devices having UART_CAP_SLEEP capability, the uart_pm_state has
+>> to be initialized to UART_PM_STATE_ON. Otherwise the LCR regiser values
+>> are reinitialized when uart_change_pm is called from uart_configure_port.
+>>
+>> Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
 >
-> Signed-off-by: Jingchang Lu <jingchang.lu-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> ---
->   drivers/tty/serial/of_serial.c | 27 +++++++++++++++++++++++++++
->   1 file changed, 27 insertions(+)
+> Multiple boot failures on ARM[1] were bisected down to this patch.
 >
-> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-> index 27981e2..8bc2563 100644
-> --- a/drivers/tty/serial/of_serial.c
-> +++ b/drivers/tty/serial/of_serial.c
-> @@ -240,6 +240,32 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
->   	return 0;
->   }
+> How was this patch tested, and on which platforms?
 >
-> +#ifdef CONFIG_PM_SLEEP
-> +static int of_serial_suspend(struct device *dev)
-> +{
-> +	struct of_serial_info *info = dev_get_drvdata(dev);
-> +
-> +	serial8250_suspend_port(info->line);
-> +	if (info->clk)
-The fix would be something like this.
-	if (info->clk && console_suspend_enabled)
+> Also, the changelog states that this should be done only for
+> UART_CAP_SLEEP, but the patch does it for every UART.
+>
+> Greg, I suggest this patch be dropped from tty-next until it has been
+> better described and tested.
+>
+> Kevin
+>
+> [1] http://lists.linaro.org/pipermail/kernel-build-reports/2014-October/005550.html
 
-> +		clk_disable_unprepare(info->clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static int of_serial_resume(struct device *dev)
-> +{
-> +	struct of_serial_info *info = dev_get_drvdata(dev);
-> +
-> +	if (info->clk)
-Ditto.
+Perhaps it should call "uart_change_pm(state, UART_PM_STATE_ON)"
+instead, so the driver's .pm() method is called?
 
-Thanks,
--Joseph
-> +		clk_prepare_enable(info->clk);
-> +
-> +	serial8250_resume_port(info->line);
-> +
-> +	return 0;
-> +}
-> +#endif
-> +static SIMPLE_DEV_PM_OPS(of_serial_pm_ops, of_serial_suspend, of_serial_resume);
-> +
->   /*
->    * A few common types, add more as needed.
->    */
-> @@ -271,6 +297,7 @@ static struct platform_driver of_platform_serial_driver = {
->   		.name = "of_serial",
->   		.owner = THIS_MODULE,
->   		.of_match_table = of_platform_serial_table,
-> +		.pm = &of_serial_pm_ops,
->   	},
->   	.probe = of_platform_serial_probe,
->   	.remove = of_platform_serial_remove,
->
+UART_CAP_SLEEP seems to be an 8250-only flag.
+
+BTW, this was the first commit I reverted when I had an issue with a serial
+console yesterday, but it didn't seem to have any influence (for me).
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
