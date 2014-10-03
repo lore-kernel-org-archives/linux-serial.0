@@ -1,41 +1,43 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 00/13 v10] omap 8250 based UART + DMA
-Date: Fri, 3 Oct 2014 01:19:38 +0200
-Message-ID: <20141002231938.GA17422@linutronix.de>
-References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de>
- <20141002164339.GL3122@atomide.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial/core: Initialize the console pm state
+Date: Thu, 2 Oct 2014 21:35:13 -0700
+Message-ID: <20141003043513.GA21327@kroah.com>
+References: <1411367422-2095-1-git-send-email-ssreedharan@mvista.com>
+ <CAMAWPa9R5HtGKkV=Ya-ekynY5maespZ0Q6BjwJcX3LN3857ZjQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:45350 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752093AbaJBXTl (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:33726 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751117AbaJCEgK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 2 Oct 2014 19:19:41 -0400
+	Fri, 3 Oct 2014 00:36:10 -0400
 Content-Disposition: inline
-In-Reply-To: <20141002164339.GL3122@atomide.com>
+In-Reply-To: <CAMAWPa9R5HtGKkV=Ya-ekynY5maespZ0Q6BjwJcX3LN3857ZjQ@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com, gregkh@linuxfoundation.org
+To: Kevin Hilman <khilman@kernel.org>
+Cc: Sudhir Sreedharan <ssreedharan@mvista.com>, linux-serial@vger.kernel.org, jslaby@suse.cz, lkml <linux-kernel@vger.kernel.org>, olof@lixom.net, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-* Tony Lindgren | 2014-10-02 09:43:39 [-0700]:
+On Wed, Oct 01, 2014 at 10:27:20AM -0700, Kevin Hilman wrote:
+> On Sun, Sep 21, 2014 at 11:30 PM, Sudhir Sreedharan
+> <ssreedharan@mvista.com> wrote:
+> > For console devices having UART_CAP_SLEEP capability, the uart_pm_state has
+> > to be initialized to UART_PM_STATE_ON. Otherwise the LCR regiser values
+> > are reinitialized when uart_change_pm is called from uart_configure_port.
+> >
+> > Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
+> 
+> Multiple boot failures on ARM[1] were bisected down to this patch.
+> 
+> How was this patch tested, and on which platforms?
+> 
+> Also, the changelog states that this should be done only for
+> UART_CAP_SLEEP, but the patch does it for every UART.
+> 
+> Greg, I suggest this patch be dropped from tty-next until it has been
+> better described and tested.
 
->Looks good to me. For the patches that do not yet have my acks, please
->feel free to add:
->
->Reviewed-by: Tony Lindgren <tony@atomide.com>
->Tested-by: Tony Lindgren <tony@atomide.com>
-Thanks.
+Now reverted, thanks for letting me know.
 
->It's probably best that I queue the .dts changes separately though
->to avoid pointless merge conflicts.
-
-Yeah. There is no real dependency on them except that you need them at
-some point :)
-
->Regards,
->
->Tony
-
-Sebastian
+greg k-h
