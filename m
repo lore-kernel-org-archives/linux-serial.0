@@ -1,40 +1,46 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 00/13 v10] omap 8250 based UART + DMA
-Date: Fri, 03 Oct 2014 09:08:08 -0400
-Message-ID: <542E9FB8.3080201@hurleysoftware.com>
-References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH] serial: mxs-auart: add sysrq support
+Date: Sat, 4 Oct 2014 13:19:03 -0300
+Message-ID: <CAOMZO5Cctk4UNvK2=MC9tf2Fzi1r0+qdn-SXfC-=W9n3T=a+VA@mail.gmail.com>
+References: <20140929014129.GA8687@kroah.com>
+	<1411999905-27044-1-git-send-email-j.uzycki@elproma.com.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:54787 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751885AbaJCNIP (ORCPT
+Received: from mail-la0-f46.google.com ([209.85.215.46]:34587 "EHLO
+	mail-la0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751017AbaJDQTG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 3 Oct 2014 09:08:15 -0400
-In-Reply-To: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de>
+	Sat, 4 Oct 2014 12:19:06 -0400
+In-Reply-To: <1411999905-27044-1-git-send-email-j.uzycki@elproma.com.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On 09/29/2014 02:06 PM, Sebastian Andrzej Siewior wrote:
-> The queue is getting smaller. The highlights of v9=E2=80=A6v10
-> - the DMA stall Frans Klaver reported which popped up in yocto is gon=
-e. It
->   also seems that the "ack the err-irq even if nothing happened" in E=
-DMA
->   can be dropped.
-> - the RX- and TX-DMA callbacks are now OMAP-only and no "bugs" flags =
-are
->   introduced into the generic DMA code. This also means that there is
->   custom IRQ routine in case of DMA.
+Janusz,
 
-=46or the series:
+On Mon, Sep 29, 2014 at 11:11 AM, Janusz Uzycki <j.uzycki@elproma.com.pl> wrote:
+>> So I'm deleting all of these now, please resend the latest
+>> versions you have, with properly versioning
+>> and order information.
+>
+> Sure. If you don't want to comment dirty patches
+> I will not send you them.
+> I can send you only the final version, commented before.
+>
+> On the moment this patch is ready to apply.
+>
+> [PATCH RESEND] serial: mxs-auart: add sysrq support
+> The patch is resent to apply.
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+What Greg is asking you to do is to provide a proper version
+annotation in your patches.
+
+For example: [PATCH v2] serial: mxs-auart: add ...
+
+Then if you need to submit it again you should do:
+
+[PATCH v3] serial: mxs-auart: add ...
+
+Also, always explain below the --- line what changed from one version to another
