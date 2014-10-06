@@ -1,99 +1,66 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: [PATCH] serial: samsung: Remove checks for CONFIG_SAMSUNG_CLOCK
-Date: Mon, 06 Oct 2014 12:07:23 +0200
-Message-ID: <1412590043.4054.61.camel@x220>
+From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
+Subject: Re: [PATCH] serial: mxs-auart: add sysrq support
+Date: Mon, 06 Oct 2014 13:34:25 +0200
+Message-ID: <54327E41.9070607@elproma.com.pl>
+References: <20140929014129.GA8687@kroah.com>	<1411999905-27044-1-git-send-email-j.uzycki@elproma.com.pl> <CAOMZO5Cctk4UNvK2=MC9tf2Fzi1r0+qdn-SXfC-=W9n3T=a+VA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cpsmtpb-ews10.kpnxchange.com ([213.75.39.15]:63765 "EHLO
-	cpsmtpb-ews10.kpnxchange.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751564AbaJFKH0 (ORCPT
+Received: from v032797.home.net.pl ([89.161.177.31]:57205 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751488AbaJFLe2 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 6 Oct 2014 06:07:26 -0400
+	Mon, 6 Oct 2014 07:34:28 -0400
+In-Reply-To: <CAOMZO5Cctk4UNvK2=MC9tf2Fzi1r0+qdn-SXfC-=W9n3T=a+VA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Valentin Rothberg <valentinrothberg@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Fabio Estevam <festevam@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Commit 32726d2d5502 ("ARM: SAMSUNG: Remove legacy clock code") removed
-the Kconfig symbol SAMSUNG_CLOCK. Remove the last checks for its macro,
-and the dead code they hide, too.
+Hi,
 
-Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
----
-This trivial fix has been discussed for some time now in the thread
-starting at http://lkml.kernel.org/r/1405502840.4408.2.camel@x220 It
-seems it's time to submit it.
+W dniu 2014-10-04 18:19, Fabio Estevam pisze:
+> Janusz,
+>
+> On Mon, Sep 29, 2014 at 11:11 AM, Janusz Uzycki <j.uzycki@elproma.com.pl> wrote:
+>>> So I'm deleting all of these now, please resend the latest
+>>> versions you have, with properly versioning
+>>> and order information.
+>> Sure. If you don't want to comment dirty patches
+>> I will not send you them.
+>> I can send you only the final version, commented before.
+>>
+>> On the moment this patch is ready to apply.
+>>
+>> [PATCH RESEND] serial: mxs-auart: add sysrq support
+>> The patch is resent to apply.
+> What Greg is asking you to do is to provide a proper version
+> annotation in your patches.
+>
+> For example: [PATCH v2] serial: mxs-auart: add ...
+>
+> Then if you need to submit it again you should do:
+>
+> [PATCH v3] serial: mxs-auart: add ...
 
-Build tested on top of next-20141003, on x86_64 (!), with these horrific
-commands:
-    make EXTRA_CFLAGS=-DCONFIG_SERIAL_SAMSUNG_UARTS=3 drivers/tty/serial/samsung.o
-    make EXTRA_CFLAGS=-DCONFIG_SERIAL_SAMSUNG_UARTS=4 drivers/tty/serial/samsung.o
+I will resend the rest of patches (as v4) this week.
+This simple patch is independent from the previous patchset so
+I decided to resubmit it alone ([PATCH RESEND] header used)
+to apply.
 
-Please note that
-    make EXTRA_CFLAGS=-DCONFIG_SERIAL_SAMSUNG_UARTS=0 drivers/tty/serial/samsung.o
+I rather shouldn't resend the patch again I guess.
+I sent the same initial version of the patch twice
+after Greg's email so I did mess enough I think.
 
-doesn't build. Perhaps some "range" should be added to config
-SERIAL_SAMSUNG_UARTS. And I also wonder whether SERIAL_SAMSUNG_UARTS
-should be a dependency (somehow) of config SERIAL_SAMSUNG. I have not
-looked into those questions.
+> Also, always explain below the --- line what changed from one version to another
+I thought composing cover letter is the only solution for resent patch 
+or series.
+As I understood this way is appropriate for single patch only (not patch 
+set).
+"Below" - it means between the line and diffstat?
+Should I add new/second '---' line before diffstat?
 
- drivers/tty/serial/samsung.c | 27 ---------------------------
- 1 file changed, 27 deletions(-)
-
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index c78f43a481ce..796c04c77dc1 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1226,24 +1226,6 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 	return 0;
- }
- 
--#ifdef CONFIG_SAMSUNG_CLOCK
--static ssize_t s3c24xx_serial_show_clksrc(struct device *dev,
--					  struct device_attribute *attr,
--					  char *buf)
--{
--	struct uart_port *port = s3c24xx_dev_to_port(dev);
--	struct s3c24xx_uart_port *ourport = to_ourport(port);
--
--	if (IS_ERR(ourport->baudclk))
--		return -EINVAL;
--
--	return snprintf(buf, PAGE_SIZE, "* %s\n",
--			ourport->baudclk->name ?: "(null)");
--}
--
--static DEVICE_ATTR(clock_source, S_IRUGO, s3c24xx_serial_show_clksrc, NULL);
--#endif
--
- /* Device driver serial port probe */
- 
- static const struct of_device_id s3c24xx_uart_dt_match[];
-@@ -1329,12 +1311,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 	 */
- 	clk_disable_unprepare(ourport->clk);
- 
--#ifdef CONFIG_SAMSUNG_CLOCK
--	ret = device_create_file(&pdev->dev, &dev_attr_clock_source);
--	if (ret < 0)
--		dev_err(&pdev->dev, "failed to add clock source attr.\n");
--#endif
--
- 	ret = s3c24xx_serial_cpufreq_register(ourport);
- 	if (ret < 0)
- 		dev_err(&pdev->dev, "failed to add cpufreq notifier\n");
-@@ -1348,9 +1324,6 @@ static int s3c24xx_serial_remove(struct platform_device *dev)
- 
- 	if (port) {
- 		s3c24xx_serial_cpufreq_deregister(to_ourport(port));
--#ifdef CONFIG_SAMSUNG_CLOCK
--		device_remove_file(&dev->dev, &dev_attr_clock_source);
--#endif
- 		uart_remove_one_port(&s3c24xx_uart_drv, port);
- 	}
- 
--- 
-1.9.3
+best regards
+Janusz
 
