@@ -1,690 +1,291 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH 6/9] asm-generic/io.h: Reconcile I/O accessor overrides
-Date: Mon,  6 Oct 2014 15:52:38 +0200
-Message-ID: <1412603561-27653-7-git-send-email-thierry.reding@gmail.com>
-References: <1412603561-27653-1-git-send-email-thierry.reding@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial patches for 3.18-rc1
+Date: Tue, 7 Oct 2014 15:32:28 -0700
+Message-ID: <20141007223228.GA5490@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1412603561-27653-1-git-send-email-thierry.reding@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Fengguang Wu <fengguang.wu@intel.com>
-Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, x86@kernel.org, Stephen Boyd <sboyd@codeaurora.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, sparclinux@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Sam Ravnborg <sam@ravnborg.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:39143 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750895AbaJGWc3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 7 Oct 2014 18:32:29 -0400
+Content-Disposition: inline
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+The following changes since commit 9e82bf014195d6f0054982c463575cdce24292be:
 
-Overriding I/O accessors and helpers is currently very inconsistent.
-This commit introduces a homogeneous way to override functions by
-checking for the existence of a macro with the same of the function.
-Architectures can provide their own implementations and communicate this
-to the generic header by defining the appropriate macro. Doing this will
-also help prevent the implementations from being subsequently
-overridden.
+  Linux 3.17-rc5 (2014-09-14 17:50:12 -0700)
 
-While at it, also turn a lot of macros into static inline functions for
-better type checking and to provide a canonical signature for overriding
-architectures to copy. Also reorder functions by logical groups.
+are available in the git repository at:
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
-Changes in v5:
-- include string.h for memset()/memcpy() (fixes xtensa/allmodconfig)
-- split off from reads*()/writes*() patch
-- allow more functions to be overridden
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.18-rc1
 
-Changes in v4:
-- reorder functions to form logical groups (Sam Ravnborg)
-- convert functions to static inlines for type checking
-- provide {,un}xlate_dev{kmem,mem}_ptr()
+for you to fetch changes up to 69784fa539efa477f39b5a849c27d5e630e0db27:
 
-Changes in v3:
-- allow architectures to override io{read,write}{16,32}be()
+  Revert "serial/core: Initialize the console pm state" (2014-10-02 21:33:50 -0700)
 
-Changes in v2:
-- respect IO_SPACE_LIMIT in ioport_map()
+----------------------------------------------------------------
+TTY/Serial driver patches for 3.18-rc1
 
- include/asm-generic/io.h | 445 +++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 350 insertions(+), 95 deletions(-)
+Here's the big tty/serial driver patchset for 3.18-rc1.
 
-diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-index b8fdc57a7335..fb62c621acf9 100644
---- a/include/asm-generic/io.h
-+++ b/include/asm-generic/io.h
-@@ -12,6 +12,7 @@
- #define __ASM_GENERIC_IO_H
- 
- #include <asm/page.h> /* I/O is all done through memory accesses */
-+#include <linux/string.h> /* for memset() and memcpy() */
- #include <linux/types.h>
- 
- #ifdef CONFIG_GENERIC_IOMAP
-@@ -24,142 +25,154 @@
- #define mmiowb() do {} while (0)
- #endif
- 
--/*****************************************************************************/
- /*
-- * readX/writeX() are used to access memory mapped devices. On some
-- * architectures the memory mapped IO stuff needs to be accessed
-- * differently. On the simple architectures, we just read/write the
-- * memory location directly.
-+ * __raw_{read,write}{b,w,l,q}() access memory in native endianness.
-+ *
-+ * On some architectures memory mapped IO needs to be accessed differently.
-+ * On the simple architectures, we just read/write the memory location
-+ * directly.
-  */
-+
- #ifndef __raw_readb
-+#define __raw_readb __raw_readb
- static inline u8 __raw_readb(const volatile void __iomem *addr)
- {
--	return *(const volatile u8 __force *) addr;
-+	return *(const volatile u8 __force *)addr;
- }
- #endif
- 
- #ifndef __raw_readw
-+#define __raw_readw __raw_readw
- static inline u16 __raw_readw(const volatile void __iomem *addr)
- {
--	return *(const volatile u16 __force *) addr;
-+	return *(const volatile u16 __force *)addr;
- }
- #endif
- 
- #ifndef __raw_readl
-+#define __raw_readl __raw_readl
- static inline u32 __raw_readl(const volatile void __iomem *addr)
- {
--	return *(const volatile u32 __force *) addr;
-+	return *(const volatile u32 __force *)addr;
- }
- #endif
- 
--#define readb __raw_readb
--
--#define readw readw
--static inline u16 readw(const volatile void __iomem *addr)
--{
--	return __le16_to_cpu(__raw_readw(addr));
--}
--
--#define readl readl
--static inline u32 readl(const volatile void __iomem *addr)
-+#ifdef CONFIG_64BIT
-+#ifndef __raw_readq
-+#define __raw_readq __raw_readq
-+static inline u64 __raw_readq(const volatile void __iomem *addr)
- {
--	return __le32_to_cpu(__raw_readl(addr));
-+	return *(const volatile u64 __force *)addr;
- }
-+#endif
-+#endif /* CONFIG_64BIT */
- 
- #ifndef __raw_writeb
--static inline void __raw_writeb(u8 b, volatile void __iomem *addr)
-+#define __raw_writeb __raw_writeb
-+static inline void __raw_writeb(u8 value, volatile void __iomem *addr)
- {
--	*(volatile u8 __force *) addr = b;
-+	*(volatile u8 __force *)addr = value;
- }
- #endif
- 
- #ifndef __raw_writew
--static inline void __raw_writew(u16 b, volatile void __iomem *addr)
-+#define __raw_writew __raw_writew
-+static inline void __raw_writew(u16 value, volatile void __iomem *addr)
- {
--	*(volatile u16 __force *) addr = b;
-+	*(volatile u16 __force *)addr = value;
- }
- #endif
- 
- #ifndef __raw_writel
--static inline void __raw_writel(u32 b, volatile void __iomem *addr)
-+#define __raw_writel __raw_writel
-+static inline void __raw_writel(u32 value, volatile void __iomem *addr)
- {
--	*(volatile u32 __force *) addr = b;
-+	*(volatile u32 __force *)addr = value;
- }
- #endif
- 
--#define writeb __raw_writeb
--#define writew(b,addr) __raw_writew(__cpu_to_le16(b),addr)
--#define writel(b,addr) __raw_writel(__cpu_to_le32(b),addr)
--
- #ifdef CONFIG_64BIT
--#ifndef __raw_readq
--static inline u64 __raw_readq(const volatile void __iomem *addr)
-+#ifndef __raw_writeq
-+#define __raw_writeq __raw_writeq
-+static inline void __raw_writeq(u64 value, volatile void __iomem *addr)
- {
--	return *(const volatile u64 __force *) addr;
-+	*(volatile u64 __force *)addr = value;
- }
- #endif
-+#endif /* CONFIG_64BIT */
- 
--#define readq readq
--static inline u64 readq(const volatile void __iomem *addr)
--{
--	return __le64_to_cpu(__raw_readq(addr));
--}
-+/*
-+ * {read,write}{b,w,l,q}() access little endian memory and return result in
-+ * native endianness.
-+ */
- 
--#ifndef __raw_writeq
--static inline void __raw_writeq(u64 b, volatile void __iomem *addr)
-+#ifndef readb
-+#define readb readb
-+static inline u8 readb(const volatile void __iomem *addr)
- {
--	*(volatile u64 __force *) addr = b;
-+	return __raw_readb(addr);
- }
- #endif
- 
--#define writeq(b, addr) __raw_writeq(__cpu_to_le64(b), addr)
--#endif /* CONFIG_64BIT */
--
--#ifndef PCI_IOBASE
--#define PCI_IOBASE ((void __iomem *) 0)
-+#ifndef readw
-+#define readw readw
-+static inline u16 readw(const volatile void __iomem *addr)
-+{
-+	return __le16_to_cpu(__raw_readw(addr));
-+}
- #endif
- 
--/*****************************************************************************/
--/*
-- * traditional input/output functions
-- */
--
--static inline u8 inb(unsigned long addr)
-+#ifndef readl
-+#define readl readl
-+static inline u32 readl(const volatile void __iomem *addr)
- {
--	return readb(addr + PCI_IOBASE);
-+	return __le32_to_cpu(__raw_readl(addr));
- }
-+#endif
- 
--static inline u16 inw(unsigned long addr)
-+#ifdef CONFIG_64BIT
-+#ifndef readq
-+#define readq readq
-+static inline u64 readq(const volatile void __iomem *addr)
- {
--	return readw(addr + PCI_IOBASE);
-+	return __le64_to_cpu(__raw_readq(addr));
- }
-+#endif
-+#endif /* CONFIG_64BIT */
- 
--static inline u32 inl(unsigned long addr)
-+#ifndef writeb
-+#define writeb writeb
-+static inline void writeb(u8 value, volatile void __iomem *addr)
- {
--	return readl(addr + PCI_IOBASE);
-+	__raw_writeb(value, addr);
- }
-+#endif
- 
--static inline void outb(u8 b, unsigned long addr)
-+#ifndef writew
-+#define writew writew
-+static inline void writew(u16 value, volatile void __iomem *addr)
- {
--	writeb(b, addr + PCI_IOBASE);
-+	__raw_writew(cpu_to_le16(value), addr);
- }
-+#endif
- 
--static inline void outw(u16 b, unsigned long addr)
-+#ifndef writel
-+#define writel writel
-+static inline void writel(u32 value, volatile void __iomem *addr)
- {
--	writew(b, addr + PCI_IOBASE);
-+	__raw_writel(__cpu_to_le32(value), addr);
- }
-+#endif
- 
--static inline void outl(u32 b, unsigned long addr)
-+#ifdef CONFIG_64BIT
-+#ifndef writeq
-+#define writeq writeq
-+static inline void writeq(u64 value, volatile void __iomem *addr)
- {
--	writel(b, addr + PCI_IOBASE);
-+	__raw_writeq(__cpu_to_le64(value), addr);
- }
--
--#define inb_p(addr)	inb(addr)
--#define inw_p(addr)	inw(addr)
--#define inl_p(addr)	inl(addr)
--#define outb_p(x, addr)	outb((x), (addr))
--#define outw_p(x, addr)	outw((x), (addr))
--#define outl_p(x, addr)	outl((x), (addr))
-+#endif
-+#endif /* CONFIG_64BIT */
- 
- #ifndef insb
- static inline void insb(unsigned long addr, void *buffer, int count)
-@@ -237,18 +250,6 @@ static inline void outsl(unsigned long addr, const void *buffer, int count)
- #endif
- 
- #ifndef CONFIG_GENERIC_IOMAP
--#define ioread8(addr)		readb(addr)
--#define ioread16(addr)		readw(addr)
--#define ioread16be(addr)	__be16_to_cpu(__raw_readw(addr))
--#define ioread32(addr)		readl(addr)
--#define ioread32be(addr)	__be32_to_cpu(__raw_readl(addr))
--
--#define iowrite8(v, addr)	writeb((v), (addr))
--#define iowrite16(v, addr)	writew((v), (addr))
--#define iowrite16be(v, addr)	__raw_writew(__cpu_to_be16(v), addr)
--#define iowrite32(v, addr)	writel((v), (addr))
--#define iowrite32be(v, addr)	__raw_writel(__cpu_to_be32(v), addr)
--
- #define ioread8_rep(p, dst, count) \
- 	insb((unsigned long) (p), (dst), (count))
- #define ioread16_rep(p, dst, count) \
-@@ -264,20 +265,209 @@ static inline void outsl(unsigned long addr, const void *buffer, int count)
- 	outsl((unsigned long) (p), (src), (count))
- #endif /* CONFIG_GENERIC_IOMAP */
- 
-+#ifndef PCI_IOBASE
-+#define PCI_IOBASE ((void __iomem *)0)
-+#endif
-+
- #ifndef IO_SPACE_LIMIT
- #define IO_SPACE_LIMIT 0xffff
- #endif
- 
-+/*
-+ * {in,out}{b,w,l}() access little endian I/O. {in,out}{b,w,l}_p() can be
-+ * implemented on hardware that needs an additional delay for I/O accesses to
-+ * take effect.
-+ */
-+
-+#ifndef inb
-+#define inb inb
-+static inline u8 inb(unsigned long addr)
-+{
-+	return readb(PCI_IOBASE + addr);
-+}
-+#endif
-+
-+#ifndef inw
-+#define inw inw
-+static inline u16 inw(unsigned long addr)
-+{
-+	return readw(PCI_IOBASE + addr);
-+}
-+#endif
-+
-+#ifndef inl
-+#define inl inl
-+static inline u32 inl(unsigned long addr)
-+{
-+	return readl(PCI_IOBASE + addr);
-+}
-+#endif
-+
-+#ifndef outb
-+#define outb outb
-+static inline void outb(u8 value, unsigned long addr)
-+{
-+	writeb(value, PCI_IOBASE + addr);
-+}
-+#endif
-+
-+#ifndef outw
-+#define outw outw
-+static inline void outw(u16 value, unsigned long addr)
-+{
-+	writew(value, PCI_IOBASE + addr);
-+}
-+#endif
-+
-+#ifndef outl
-+#define outl outl
-+static inline void outl(u32 value, unsigned long addr)
-+{
-+	writel(value, PCI_IOBASE + addr);
-+}
-+#endif
-+
-+#ifndef inb_p
-+#define inb_p inb_p
-+static inline u8 inb_p(unsigned long addr)
-+{
-+	return inb(addr);
-+}
-+#endif
-+
-+#ifndef inw_p
-+#define inw_p inw_p
-+static inline u16 inw_p(unsigned long addr)
-+{
-+	return inw(addr);
-+}
-+#endif
-+
-+#ifndef inl_p
-+#define inl_p inl_p
-+static inline u32 inl_p(unsigned long addr)
-+{
-+	return inl(addr);
-+}
-+#endif
-+
-+#ifndef outb_p
-+#define outb_p outb_p
-+static inline void outb_p(u8 value, unsigned long addr)
-+{
-+	outb(value, addr);
-+}
-+#endif
-+
-+#ifndef outw_p
-+#define outw_p outw_p
-+static inline void outw_p(u16 value, unsigned long addr)
-+{
-+	outw(value, addr);
-+}
-+#endif
-+
-+#ifndef outl_p
-+#define outl_p outl_p
-+static inline void outl_p(u32 value, unsigned long addr)
-+{
-+	outl(value, addr);
-+}
-+#endif
-+
-+#ifndef CONFIG_GENERIC_IOMAP
-+#ifndef ioread8
-+#define ioread8 ioread8
-+static inline u8 ioread8(const volatile void __iomem *addr)
-+{
-+	return readb(addr);
-+}
-+#endif
-+
-+#ifndef ioread16
-+#define ioread16 ioread16
-+static inline u16 ioread16(const volatile void __iomem *addr)
-+{
-+	return readw(addr);
-+}
-+#endif
-+
-+#ifndef ioread32
-+#define ioread32 ioread32
-+static inline u32 ioread32(const volatile void __iomem *addr)
-+{
-+	return readl(addr);
-+}
-+#endif
-+
-+#ifndef iowrite8
-+#define iowrite8 iowrite8
-+static inline void iowrite8(u8 value, volatile void __iomem *addr)
-+{
-+	writeb(value, addr);
-+}
-+#endif
-+
-+#ifndef iowrite16
-+#define iowrite16 iowrite16
-+static inline void iowrite16(u16 value, volatile void __iomem *addr)
-+{
-+	writew(value, addr);
-+}
-+#endif
-+
-+#ifndef iowrite32
-+#define iowrite32 iowrite32
-+static inline void iowrite32(u32 value, volatile void __iomem *addr)
-+{
-+	writel(value, addr);
-+}
-+#endif
-+
-+#ifndef ioread16be
-+#define ioread16be ioread16be
-+static inline u16 ioread16be(const volatile void __iomem *addr)
-+{
-+	return __be16_to_cpu(__raw_readw(addr));
-+}
-+#endif
-+
-+#ifndef ioread32be
-+#define ioread32be ioread32be
-+static inline u32 ioread32be(const volatile void __iomem *addr)
-+{
-+	return __be32_to_cpu(__raw_readl(addr));
-+}
-+#endif
-+
-+#ifndef iowrite16be
-+#define iowrite16be iowrite16be
-+static inline void iowrite16be(u16 value, void volatile __iomem *addr)
-+{
-+	__raw_writew(__cpu_to_be16(value), addr);
-+}
-+#endif
-+
-+#ifndef iowrite32be
-+#define iowrite32be iowrite32be
-+static inline void iowrite32be(u32 value, volatile void __iomem *addr)
-+{
-+	__raw_writel(__cpu_to_be32(value), addr);
-+}
-+#endif
-+#endif /* CONFIG_GENERIC_IOMAP */
-+
- #ifdef __KERNEL__
- 
- #include <linux/vmalloc.h>
--#define __io_virt(x) ((void __force *) (x))
-+#define __io_virt(x) ((void __force *)(x))
- 
- #ifndef CONFIG_GENERIC_IOMAP
- struct pci_dev;
- extern void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max);
- 
- #ifndef pci_iounmap
-+#define pci_iounmap pci_iounmap
- static inline void pci_iounmap(struct pci_dev *dev, void __iomem *p)
- {
- }
-@@ -289,11 +479,15 @@ static inline void pci_iounmap(struct pci_dev *dev, void __iomem *p)
-  * These are pretty trivial
-  */
- #ifndef virt_to_phys
-+#define virt_to_phys virt_to_phys
- static inline unsigned long virt_to_phys(volatile void *address)
- {
- 	return __pa((unsigned long)address);
- }
-+#endif
- 
-+#ifndef phys_to_virt
-+#define phys_to_virt phys_to_virt
- static inline void *phys_to_virt(unsigned long address)
- {
- 	return __va(address);
-@@ -306,37 +500,65 @@ static inline void *phys_to_virt(unsigned long address)
-  * This implementation is for the no-MMU case only... if you have an MMU
-  * you'll need to provide your own definitions.
-  */
-+
- #ifndef CONFIG_MMU
--static inline void __iomem *ioremap(phys_addr_t offset, unsigned long size)
-+#ifndef ioremap
-+#define ioremap ioremap
-+static inline void __iomem *ioremap(phys_addr_t offset, size_t size)
- {
--	return (void __iomem*) (unsigned long)offset;
-+	return (void __iomem *)(unsigned long)offset;
- }
-+#endif
- 
--#define __ioremap(offset, size, flags)	ioremap(offset, size)
-+#ifndef __ioremap
-+#define __ioremap __ioremap
-+static inline void __iomem *__ioremap(phys_addr_t offset, size_t size,
-+				      unsigned long flags)
-+{
-+	return ioremap(offset, size);
-+}
-+#endif
- 
- #ifndef ioremap_nocache
--#define ioremap_nocache ioremap
-+#define ioremap_nocache ioremap_nocache
-+static inline void __iomem *ioremap_nocache(phys_addr_t offset, size_t size)
-+{
-+	return ioremap(offset, size);
-+}
- #endif
- 
- #ifndef ioremap_wc
--#define ioremap_wc ioremap_nocache
-+#define ioremap_wc ioremap_wc
-+static inline void __iomem *ioremap_wc(phys_addr_t offset, size_t size)
-+{
-+	return ioremap_nocache(offset, size);
-+}
- #endif
- 
-+#ifndef iounmap
-+#define iounmap iounmap
- static inline void iounmap(void __iomem *addr)
- {
- }
-+#endif
- #endif /* CONFIG_MMU */
- 
- #ifdef CONFIG_HAS_IOPORT_MAP
- #ifndef CONFIG_GENERIC_IOMAP
-+#ifndef ioport_map
-+#define ioport_map ioport_map
- static inline void __iomem *ioport_map(unsigned long port, unsigned int nr)
- {
- 	return PCI_IOBASE + (port & IO_SPACE_LIMIT);
- }
-+#endif
- 
-+#ifndef ioport_unmap
-+#define ioport_unmap ioport_unmap
- static inline void ioport_unmap(void __iomem *p)
- {
- }
-+#endif
- #else /* CONFIG_GENERIC_IOMAP */
- extern void __iomem *ioport_map(unsigned long port, unsigned int nr);
- extern void ioport_unmap(void __iomem *p);
-@@ -344,35 +566,68 @@ extern void ioport_unmap(void __iomem *p);
- #endif /* CONFIG_HAS_IOPORT_MAP */
- 
- #ifndef xlate_dev_kmem_ptr
--#define xlate_dev_kmem_ptr(p)	p
-+#define xlate_dev_kmem_ptr xlate_dev_kmem_ptr
-+static inline void *xlate_dev_kmem_ptr(void *addr)
-+{
-+	return addr;
-+}
- #endif
-+
- #ifndef xlate_dev_mem_ptr
--#define xlate_dev_mem_ptr(p)	__va(p)
-+#define xlate_dev_mem_ptr xlate_dev_mem_ptr
-+static inline void *xlate_dev_mem_ptr(phys_addr_t addr)
-+{
-+	return __va(addr);
-+}
-+#endif
-+
-+#ifndef unxlate_dev_mem_ptr
-+#define unxlate_dev_mem_ptr unxlate_dev_mem_ptr
-+static inline void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr)
-+{
-+}
- #endif
- 
- #ifdef CONFIG_VIRT_TO_BUS
- #ifndef virt_to_bus
--static inline unsigned long virt_to_bus(volatile void *address)
-+static inline unsigned long virt_to_bus(void *address)
- {
--	return ((unsigned long) address);
-+	return (unsigned long)address;
- }
- 
- static inline void *bus_to_virt(unsigned long address)
- {
--	return (void *) address;
-+	return (void *)address;
- }
- #endif
- #endif
- 
- #ifndef memset_io
--#define memset_io(a, b, c)	memset(__io_virt(a), (b), (c))
-+#define memset_io memset_io
-+static inline void memset_io(volatile void __iomem *addr, int value,
-+			     size_t size)
-+{
-+	memset(__io_virt(addr), value, size);
-+}
- #endif
- 
- #ifndef memcpy_fromio
--#define memcpy_fromio(a, b, c)	memcpy((a), __io_virt(b), (c))
-+#define memcpy_fromio memcpy_fromio
-+static inline void memcpy_fromio(void *buffer,
-+				 const volatile void __iomem *addr,
-+				 size_t size)
-+{
-+	memcpy(buffer, __io_virt(addr), size);
-+}
- #endif
-+
- #ifndef memcpy_toio
--#define memcpy_toio(a, b, c)	memcpy(__io_virt(a), (b), (c))
-+#define memcpy_toio memcpy_toio
-+static inline void memcpy_toio(volatile void __iomem *addr, const void *buffer,
-+			       size_t size)
-+{
-+	memcpy(__io_virt(addr), buffer, size);
-+}
- #endif
- 
- #endif /* __KERNEL__ */
--- 
-2.1.0
+Lots of little things in here, some good work from Peter Hurley on the
+tty core, and in lots of drivers.  There are also lots of other driver
+updates in here as well, full details in the changelog below.
+
+All have been in the linux-next tree for a while.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Alexander Shiyan (3):
+      serial: clps711x: Use mctrl_gpio helpers for handling modem signals
+      serial: clps711x: Fix COMPILE_TEST build for target without GPIOLIB support
+      tty: serial_mctrl_gpio: Fix COMPILE_TEST build for architectures with custom termios.h
+
+Alexey Charkov (4):
+      tty: vt8500_serial: add support for UART in WM8880 chips
+      tty: vt8500_serial: add missing support for RTS setting
+      tty: vt8500_serial: add polled console functions
+      tty: vt8500_serial: explicitly calculate base baud rate
+
+Bill Pemberton (2):
+      jsm: add support for additional Neo cards
+      staging: dgnc: remove Neo card ids from device table
+
+Bryan O'Donoghue (1):
+      serial: 8250: Add Quark X1000 to 8250_pci.c
+
+Carlo Caione (1):
+      ARM: meson: serial: add MesonX SoC on-chip uart driver
+
+Chen Gang (1):
+      drivers/tty/nozomi.c: Use 'nozomi_setup_memory' instead of 'setup_memory'
+
+Cyrill Gorcunov (1):
+      tty: Fix potential use after free in release_one_tty
+
+Daniel Thompson (4):
+      serial: amba-pl011: Use container_of() to get uart_amba_port
+      serial: kgdb_nmi: No CON_ENABLED by default
+      serial: asc: Adopt readl_/writel_relaxed()
+      serial: asc: Conditionally use readl_relaxed (COMPILE_TEST)
+
+Daniele Forsi (1):
+      serial: 8250_hp300: trivial: fix symbol name in #warning message
+
+Dirk Behme (1):
+      serial: imx: clean up imx_poll_get_char()
+
+Frans Klaver (2):
+      tty: omap-serial: fix division by zero
+      tty: omap-serial: pull out calculation from baud_is_mode16
+
+Fugang Duan (1):
+      serial: imx: fix throttle/unthrottle callbacks for hardware assisted flow control
+
+Geert Uytterhoeven (1):
+      m68k: AMIGA_BUILTIN_SERIAL should depend on TTY
+
+Greg Kroah-Hartman (2):
+      Merge 3.17-rc5 into tty-next
+      Revert "serial/core: Initialize the console pm state"
+
+Hans Wennborg (1):
+      TTY: fix decimal printf format specifiers prefixed with 0x
+
+Heikki Krogerus (1):
+      serial: 8250_pci: remove rts_n override from Baytrail quirk
+
+Huang Shijie (2):
+      serial: imx: terminate the RX DMA when the UART is suspending
+      serial: imx: change the wait even to interruptiable
+
+James Hogan (1):
+      tty/metag_da: Add console_poll module parameter
+
+Jingchang Lu (2):
+      doc: dt-binding: of-serial: add Freescale 64-byte FIFO mode uart binding
+      serial: of-serial: add PM suspend/resume support
+
+Julia Lawall (1):
+      serial: vr41xx_siu: delete double assignment
+
+Kiran Padwal (5):
+      tty: serial: msm: remove braces {} in msm_serial.c
+      tty: serial: msm: Fix 'Missing a blank line after declarations' warning
+      tty: serial: msm: Fix style warnings relating to printk()
+      tty: serial: msm: Fix 'else is not generally useful after a break or return' warning
+      tty: serial: msm: Fix 'void function return statements are not generally useful' warning
+
+Mark Rustad (1):
+      tty/vt/keyboard: Resolve many shadow warnings
+
+Matthias Brugger (3):
+      tty: fix typo in comment of tty_termios_encode_baud_rate
+      tty: serial: 8250: Add Mediatek UART driver
+      DTS: serial: Add bindings documention for the Mediatek UARTs
+
+Michal Simek (3):
+      tty: serial: xuartps: Remove .owner field for driver
+      tty: serial: uartlite: Remove .owner field for driver
+      serial: cadence: Add generic earlycon support
+
+Naveen Krishna Chatradhi (1):
+      tty/serial: samsung: enable usage for 64-bit Exynos platforms
+
+Peter Hurley (29):
+      tty: Fix spurious poll() wakeups
+      Revert "serial: uart: add hw flow control support configuration"
+      serial: Style fix
+      serial: imx: Fix x_char handling and tx flow control
+      serial: core: Fix x_char race
+      serial: core: Remove unsafe x_char optimization
+      serial: Fix send_xchar() handlers
+      serial: mpc52xx: Use default serial core x_char handler
+      serial: sunsab: Don't enable tx if tx stopped
+      serial: blackfin: Fix missing gpio.h
+      serial: core: Document lock requirement for UPF_* flags updates
+      serial: 8250: Document serial8250_modem_status() locking
+      serial: core: Unwrap tertiary assignment in uart_handle_dcd_change()
+      locking: Add WARN_ON_ONCE lock assertion
+      serial: core: Document and assert lock requirements for irq helpers
+      serial: core: Privatize modem status enable flags
+      isdn: i4l: Remove ASYNC_CTS_FLOW
+      serial: core: Privatize tty->hw_stopped
+      usb: serial: Remove unused tty->hw_stopped
+      serial: bfin-uart: Fix auto CTS
+      serial: core: Use spin_lock_irq() in uart_set_termios()
+      tty: Convert tty_struct bitfield to ints
+      tty: Serialize tty flow control changes with flow_lock
+      tty: Move packet mode flow control notifications to pty driver
+      tty: Serialize tcflow() with other tty flow control changes
+      tty: Move and rename send_prio_char() as tty_send_xchar()
+      tty: Hold termios_rwsem for tcflow(TCIxxx)
+      tty: Workaround Alpha non-atomic byte storage in tty_struct
+      tty: Fix width of unsigned long bitfield padding
+
+Pranith Kumar (1):
+      serial: Fix build failure caused by missing header file
+
+Ricardo Ribalda Delgado (9):
+      serial/8250: Add support for RS485 IOCTLs
+      serial: Add support for Fintek F81216A LPC to 4 UART
+      serial/8250_core: Add reference to uacess.h
+      xtensa/uapi: Add definition of TIOC[SG]RS485
+      parisc/uapi: Add definition of TIOC[SG]RS485
+      sh/uapi: Add definition of TIOC[SG]RS485
+      sparc/uapi: Add definition of TIOC[SG]RS485
+      mips/uapi: Add definition of TIOC[SG]RS485
+      asm/uapi: Add definition of TIOC[SG]RS485
+
+Sebastian Andrzej Siewior (8):
+      tty: serial: 8250_core: provide a function to export uart_8250_port
+      tty: serial: 8250_core: allow to overwrite & export serial8250_startup()
+      tty: serial: 8250_core: allow to set ->throttle / ->unthrottle callbacks
+      tty: serial: 8250_core: add run time pm
+      tty: serial: 8250_core: read only RX if there is something in the FIFO
+      tty: serial: 8250_core: use the ->line argument as a hint in serial8250_find_match_or_unused()
+      tty: serial: 8250_core: remove UART_IER_RDI in serial8250_stop_rx()
+      tty: serial: 8250: use 32bit variable for rpm_tx_active
+
+Stefano Stabellini (1):
+      xen_hvc: no reason to write the type key on xenstore
+
+Stephen Boyd (2):
+      serial: msm_serial: Fix kgdb continue
+      tty: serial: msm: Add earlycon support
+
+Sudhir Sreedharan (1):
+      serial/core: Initialize the console pm state
+
+Sudip Mukherjee (1):
+      serial: serial_core.c: printk replacement
+
+Tobias Klauser (1):
+      serial: altera: Make of_device_id arrays const
+
+Yegor Yefremov (1):
+      Documentation: serial: fix header path
+
+ .../bindings/serial/cirrus,clps711x-uart.txt       |   7 +-
+ .../devicetree/bindings/serial/mtk-uart.txt        |  22 +
+ .../devicetree/bindings/serial/of-serial.txt       |   2 +-
+ .../devicetree/bindings/serial/via,vt8500-uart.txt |  17 -
+ .../devicetree/bindings/serial/vt8500-uart.txt     |   3 +-
+ Documentation/kernel-parameters.txt                |  18 +
+ Documentation/serial/driver                        |   2 +
+ Documentation/serial/serial-rs485.txt              |   2 +-
+ arch/alpha/include/uapi/asm/ioctls.h               |   2 +
+ arch/m68k/Kconfig.devices                          |   2 +-
+ arch/mips/include/uapi/asm/ioctls.h                |   2 +
+ arch/parisc/include/uapi/asm/ioctls.h              |   2 +
+ arch/sh/include/uapi/asm/ioctls.h                  |   2 +
+ arch/sparc/include/uapi/asm/ioctls.h               |   2 +
+ arch/xtensa/include/uapi/asm/ioctls.h              |   2 +
+ drivers/isdn/i4l/isdn_tty.c                        |   5 -
+ drivers/staging/dgnc/dgnc_driver.c                 |  13 -
+ drivers/tty/hvc/hvc_xen.c                          |   3 -
+ drivers/tty/metag_da.c                             |  14 +-
+ drivers/tty/moxa.c                                 |   2 +-
+ drivers/tty/n_tty.c                                |   8 +-
+ drivers/tty/nozomi.c                               |   6 +-
+ drivers/tty/pty.c                                  |  41 ++
+ drivers/tty/serial/8250/8250.h                     |   3 +
+ drivers/tty/serial/8250/8250_core.c                | 253 +++++++-
+ drivers/tty/serial/8250/8250_fintek.c              | 249 ++++++++
+ drivers/tty/serial/8250/8250_hp300.c               |   2 +-
+ drivers/tty/serial/8250/8250_mtk.c                 | 294 ++++++++++
+ drivers/tty/serial/8250/8250_pci.c                 |  34 +-
+ drivers/tty/serial/8250/Kconfig                    |  15 +
+ drivers/tty/serial/8250/Makefile                   |   2 +
+ drivers/tty/serial/Kconfig                         |  23 +-
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/altera_jtaguart.c               |   2 +-
+ drivers/tty/serial/altera_uart.c                   |   2 +-
+ drivers/tty/serial/amba-pl011.c                    |  54 +-
+ drivers/tty/serial/bfin_sport_uart.c               |   1 +
+ drivers/tty/serial/bfin_uart.c                     |  15 +-
+ drivers/tty/serial/clps711x.c                      |  32 +-
+ drivers/tty/serial/imx.c                           |  99 ++--
+ drivers/tty/serial/jsm/jsm.h                       |  10 +
+ drivers/tty/serial/jsm/jsm_driver.c                |  38 +-
+ drivers/tty/serial/kgdb_nmi.c                      |   5 +-
+ drivers/tty/serial/meson_uart.c                    | 634 +++++++++++++++++++++
+ drivers/tty/serial/mpc52xx_uart.c                  |  17 -
+ drivers/tty/serial/msm_serial.c                    | 122 ++--
+ drivers/tty/serial/mxs-auart.c                     |   2 +-
+ drivers/tty/serial/nwpserial.c                     |   1 +
+ drivers/tty/serial/of_serial.c                     |  31 +-
+ drivers/tty/serial/omap-serial.c                   |  34 +-
+ drivers/tty/serial/serial_core.c                   | 135 +++--
+ drivers/tty/serial/serial_mctrl_gpio.c             |   2 +-
+ drivers/tty/serial/st-asc.c                        |   8 +
+ drivers/tty/serial/sunhv.c                         |   3 +
+ drivers/tty/serial/sunsab.c                        |   5 +-
+ drivers/tty/serial/uartlite.c                      |   1 -
+ drivers/tty/serial/vr41xx_siu.c                    |   1 -
+ drivers/tty/serial/vt8500_serial.c                 | 136 ++++-
+ drivers/tty/serial/xilinx_uartps.c                 |  20 +-
+ drivers/tty/tty_io.c                               |  96 ++--
+ drivers/tty/tty_ioctl.c                            |  49 +-
+ drivers/tty/vt/keyboard.c                          | 166 +++---
+ drivers/usb/serial/digi_acceleport.c               |   7 +-
+ drivers/usb/serial/io_ti.c                         |   7 +-
+ drivers/usb/serial/ti_usb_3410_5052.c              |   7 +-
+ include/linux/lockdep.h                            |   5 +
+ include/linux/serial_8250.h                        |   6 +
+ include/linux/serial_core.h                        |  20 +-
+ include/linux/tty.h                                |  15 +-
+ include/linux/tty_driver.h                         |   4 +
+ include/uapi/linux/serial_core.h                   |   3 +
+ 71 files changed, 2298 insertions(+), 552 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
+ delete mode 100644 Documentation/devicetree/bindings/serial/via,vt8500-uart.txt
+ create mode 100644 drivers/tty/serial/8250/8250_fintek.c
+ create mode 100644 drivers/tty/serial/8250/8250_mtk.c
+ create mode 100644 drivers/tty/serial/meson_uart.c
