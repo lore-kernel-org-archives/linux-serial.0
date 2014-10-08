@@ -1,35 +1,73 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH 2/2 v2] serial: Add support for Fintek F81216A LPC to 4
- UART
-Date: Wed, 08 Oct 2014 19:07:04 +0100
-Message-ID: <1412791624.28467.64.camel@acox1-desk.ger.corp.intel.com>
-References: <CAPybu_1Ma+7nGaS0e17HpPcM1vk6ANSFN3C8MNR=JxWrBBmMOA@mail.gmail.com>
-	 <1406834546-23033-1-git-send-email-ricardo.ribalda@gmail.com>
-	 <20140801132343.45153300@alan.etchedpixels.co.uk>
-	 <CAPybu_2U2jjyY_9gji41mUc5F4N+idDVNO=LAr3F5PpJ0JzYSg@mail.gmail.com>
-	 <20140805103409.33afef2a@alan.etchedpixels.co.uk>
-	 <CAPybu_3xUeYQ=3t-wvdH_b+45e5bNzw4hvc=Fu5y1g=gaOsLTA@mail.gmail.com>
+From: fruggeri@aristanetworks.com (Francesco Ruggeri)
+Subject: [PATCH 1/1] tty: Fix pty master poll() after slave closes
+Date: Wed, 08 Oct 2014 12:27:46 -0700
+Message-ID: <20141008192746.5F9C8485A77@fruggeri-Arora18.sjc.aristanetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:30667 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752654AbaJHSKQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Oct 2014 14:10:16 -0400
-In-Reply-To: <CAPybu_3xUeYQ=3t-wvdH_b+45e5bNzw4hvc=Fu5y1g=gaOsLTA@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: peter@hurleysoftware.com, jslaby@suse.cz, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: fruggeri@arista.com
 List-Id: linux-serial@vger.kernel.org
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 
-> Shall I send it to the list, or you are almost done with your patch?
-> Of course as a next iteration I can move it to the tty layer, but I
-> think it looks more elegant this way.
+Commit f95499c3030f ("n_tty: Don't wait for buffer work in read() loop")
+introduces a race window where a pty master can be signalled that the pty
+slave was closed before all the data that the slave wrote is delivered.
+Commit f8747d4a466a ("tty: Fix pty master read() after slave closes") fixed the
+problem in case of n_tty_read, but the problem still exists for n_tty_poll.
+This can be seen by running 'for ((i=0; i<100;i++));do ./test.py ;done'
+where test.py is:
 
-I have a set of patches but haven't had time to test them properly - if
-your patches are ready submit them.
+import os, select, pty
 
-Alan
+(pid, pty_fd) = pty.fork()
 
+if pid == 0:
+   os.write(1, 'This string should be received by parent')
+else:
+   poller = select.epoll()
+   poller.register( pty_fd, select.EPOLLIN )
+   ready = poller.poll( 1 * 1000 )
+   for fd, events in ready:
+      if not events & select.EPOLLIN:
+         print 'missed POLLIN event'
+      else:
+         print os.read(fd, 100)
+   poller.close()
 
+The string from the slave is missed several times.
+This patch takes the same approach as the fix for read and special cases
+this condition for poll.
+Tested on 3.16.
+
+Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+---
+ drivers/tty/n_tty.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index f44f1ba..cf16aeb 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -2413,14 +2413,16 @@ static unsigned int n_tty_poll(struct tty_struct *tty, struct file *file,
+ 
+ 	poll_wait(file, &tty->read_wait, wait);
+ 	poll_wait(file, &tty->write_wait, wait);
+-	if (input_available_p(tty, 1))
+-		mask |= POLLIN | POLLRDNORM;
+ 	if (tty->packet && tty->link->ctrl_status)
+ 		mask |= POLLPRI | POLLIN | POLLRDNORM;
+ 	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
+ 		mask |= POLLHUP;
+ 	if (tty_hung_up_p(file))
+ 		mask |= POLLHUP;
++	if (mask & POLLHUP)
++		tty_flush_to_ldisc(tty);
++	if (input_available_p(tty, 1))
++		mask |= POLLIN | POLLRDNORM;
+ 	if (!(mask & (POLLHUP | POLLIN | POLLRDNORM))) {
+ 		if (MIN_CHAR(tty) && !TIME_CHAR(tty))
+ 			ldata->minimum_to_wake = MIN_CHAR(tty);
+-- 
+1.8.1.4
