@@ -1,68 +1,65 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH 05/12] 8250/fintek: Use rs485 handler from serial_core
-Date: Wed,  8 Oct 2014 21:57:31 +0200
-Message-ID: <1412798258-23655-6-git-send-email-ricardo.ribalda@gmail.com>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH 03/12] serial_core: Handle TIOC[GS]RS485 ioctls.
+Date: Wed, 08 Oct 2014 21:11:41 +0100
+Message-ID: <1412799101.28467.68.camel@acox1-desk.ger.corp.intel.com>
 References: <1412798258-23655-1-git-send-email-ricardo.ribalda@gmail.com>
+	 <1412798258-23655-4-git-send-email-ricardo.ribalda@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f43.google.com ([209.85.215.43]:45671 "EHLO
-	mail-la0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754121AbaJHT6T (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Oct 2014 15:58:19 -0400
-In-Reply-To: <1412798258-23655-1-git-send-email-ricardo.ribalda@gmail.com>
+Received: from mga03.intel.com ([134.134.136.65]:6407 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753218AbaJHULy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Oct 2014 16:11:54 -0400
+In-Reply-To: <1412798258-23655-4-git-send-email-ricardo.ribalda@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
 
-In order to remove the handler for rs485 ioctls on serial_8250, all the
-drivers must use the implementation on serial_core.
+On Wed, 2014-10-08 at 21:57 +0200, Ricardo Ribalda Delgado wrote:
+> The following drivers: 8250_core, atmel_serial, max310x, mcf, omap-serial
+> and sci16is7xx implement code to handle RS485 ioctls.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
----
- drivers/tty/serial/8250/8250_fintek.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+>  
+> +static int uart_get_rs485_config(struct uart_port *port,
+> +			 struct serial_rs485 __user *rs485)
+> +{
+> +	if (!port->rs485_config)
+> +		return -ENOIOCTLCMD;
+> +
+> +	if (copy_to_user(rs485, &port->rs485, sizeof(port->rs485)))
+> +		return -EFAULT;
+> +	return 0;
+> +}
+> +
+> +static int uart_set_rs485_config(struct uart_port *port,
+> +			 struct serial_rs485 __user *rs485_user)
+> +{
+> +	struct serial_rs485 rs485;
+> +	int ret;
+> +
+> +	if (!port->rs485_config)
+> +		return -ENOIOCTLCMD;
+> +
+> +	if (copy_from_user(&rs485, rs485_user, sizeof(rs485_user)))
+> +		return -EFAULT;
+> +
+> +	ret = port->rs485_config(port, &rs485);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (copy_to_user(rs485_user, &port->rs485, sizeof(port->rs485)))
+> +		return -EFAULT;
+> +
+> +	return 0;
+> +
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 1bb28cb..1e6899bc 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -89,11 +89,11 @@ static int fintek_8250_check_id(void)
- 	return 0;
- }
- 
--static int fintek_8250_rs4850_config(struct uart_8250_port *uart,
-+static int fintek_8250_rs485_config(struct uart_port *port,
- 			      struct serial_rs485 *rs485)
- {
- 	uint8_t config = 0;
--	int index = fintek_8250_get_index(uart->port.iobase);
-+	int index = fintek_8250_get_index(port->iobase);
- 
- 	if (index < 0)
- 		return -EINVAL;
-@@ -134,6 +134,8 @@ static int fintek_8250_rs4850_config(struct uart_8250_port *uart,
- 	outb(config, DATA_PORT);
- 	fintek_8250_exit_key();
- 
-+	port->rs485 = *rs485;
-+
- 	return 0;
- }
- 
-@@ -166,7 +168,7 @@ fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 	uart.port.irq = pnp_irq(dev, 0);
- 	uart.port.iobase = pnp_port_start(dev, 0);
- 	uart.port.iotype = UPIO_PORT;
--	uart.rs485_config = fintek_8250_rs4850_config;
-+	uart.port.rs485_config = fintek_8250_rs485_config;
- 
- 	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
- 	if (pnp_irq_flags(dev, 0) & IORESOURCE_IRQ_SHAREABLE)
--- 
-2.1.1
+What is the locking between setting/getting/driver use of the config ?
+This really needs a lock (termios sem I think is perhaps appropriate
+given when the values are normally referenced).
+
+Alan
+
 
