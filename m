@@ -1,73 +1,51 @@
-From: fruggeri@aristanetworks.com (Francesco Ruggeri)
-Subject: [PATCH 1/1] tty: Fix pty master poll() after slave closes
-Date: Wed, 08 Oct 2014 12:27:46 -0700
-Message-ID: <20141008192746.5F9C8485A77@fruggeri-Arora18.sjc.aristanetworks.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: peter@hurleysoftware.com, jslaby@suse.cz, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: fruggeri@arista.com
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: [PATCH 00/12] Handle TIOC[GS]RS485 iocts on serial_core
+Date: Wed,  8 Oct 2014 21:57:26 +0200
+Message-ID: <1412798258-23655-1-git-send-email-ricardo.ribalda@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-lb0-f173.google.com ([209.85.217.173]:42109 "EHLO
+	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753049AbaJHT5w (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 8 Oct 2014 15:57:52 -0400
+Received: by mail-lb0-f173.google.com with SMTP id 10so8892797lbg.32
+        for <linux-serial@vger.kernel.org>; Wed, 08 Oct 2014 12:57:51 -0700 (PDT)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 
-Commit f95499c3030f ("n_tty: Don't wait for buffer work in read() loop")
-introduces a race window where a pty master can be signalled that the pty
-slave was closed before all the data that the slave wrote is delivered.
-Commit f8747d4a466a ("tty: Fix pty master read() after slave closes") fixed the
-problem in case of n_tty_read, but the problem still exists for n_tty_poll.
-This can be seen by running 'for ((i=0; i<100;i++));do ./test.py ;done'
-where test.py is:
+Right now there are six serial drivers doing RS485 ioctl handling. 
 
-import os, select, pty
+Replace all the duplicated implementations with a single ioclt handler and a
+callback function.
 
-(pid, pty_fd) = pty.fork()
+Ricardo Ribalda Delgado (12):
+  serial/max310x: Remove obsolete #ifset TIOC[SG]RS485
+  serial/sc16is7xx: Remove obsolete #ifset TIOC[SG]RS485
+  serial_core: Handle TIOC[GS]RS485 ioctls.
+  serial/8250: Copy RS485 fields to serial_core
+  8250/fintek: Use rs485 handler from serial_core
+  serial/8250: Remove obsolete handling of rs485 ioctls
+  serial/sc16is7xx: Use the rs485 functions on serial_core
+  serial/mcf: Use the rs485 functions on serial_core
+  serial/atmel: Use the rs485 functions on serial_core
+  serial/omap: Use the rs485 functions on serial_core
+  drivers/max310: Use the rs485 functions on serial_core
+  serial_core: Remove call to driver-specific TIO[GS]RS485]
 
-if pid == 0:
-   os.write(1, 'This string should be received by parent')
-else:
-   poller = select.epoll()
-   poller.register( pty_fd, select.EPOLLIN )
-   ready = poller.poll( 1 * 1000 )
-   for fd, events in ready:
-      if not events & select.EPOLLIN:
-         print 'missed POLLIN event'
-      else:
-         print os.read(fd, 100)
-   poller.close()
+ drivers/tty/serial/8250/8250_core.c   | 41 +-----------------
+ drivers/tty/serial/8250/8250_fintek.c |  8 ++--
+ drivers/tty/serial/atmel_serial.c     | 79 +++++++++++------------------------
+ drivers/tty/serial/max310x.c          | 72 ++++++++++++-------------------
+ drivers/tty/serial/mcf.c              | 37 ++++------------
+ drivers/tty/serial/omap-serial.c      | 71 ++++++++++---------------------
+ drivers/tty/serial/sc16is7xx.c        | 57 ++++++-------------------
+ drivers/tty/serial/serial_core.c      | 38 +++++++++++++++++
+ include/linux/serial_8250.h           |  3 --
+ include/linux/serial_core.h           |  3 ++
+ 10 files changed, 141 insertions(+), 268 deletions(-)
 
-The string from the slave is missed several times.
-This patch takes the same approach as the fix for read and special cases
-this condition for poll.
-Tested on 3.16.
-
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
----
- drivers/tty/n_tty.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index f44f1ba..cf16aeb 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -2413,14 +2413,16 @@ static unsigned int n_tty_poll(struct tty_struct *tty, struct file *file,
- 
- 	poll_wait(file, &tty->read_wait, wait);
- 	poll_wait(file, &tty->write_wait, wait);
--	if (input_available_p(tty, 1))
--		mask |= POLLIN | POLLRDNORM;
- 	if (tty->packet && tty->link->ctrl_status)
- 		mask |= POLLPRI | POLLIN | POLLRDNORM;
- 	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
- 		mask |= POLLHUP;
- 	if (tty_hung_up_p(file))
- 		mask |= POLLHUP;
-+	if (mask & POLLHUP)
-+		tty_flush_to_ldisc(tty);
-+	if (input_available_p(tty, 1))
-+		mask |= POLLIN | POLLRDNORM;
- 	if (!(mask & (POLLHUP | POLLIN | POLLRDNORM))) {
- 		if (MIN_CHAR(tty) && !TIME_CHAR(tty))
- 			ldata->minimum_to_wake = MIN_CHAR(tty);
 -- 
-1.8.1.4
+2.1.1
+
