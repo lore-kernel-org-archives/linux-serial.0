@@ -1,51 +1,55 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH 00/12] Handle TIOC[GS]RS485 iocts on serial_core
-Date: Wed,  8 Oct 2014 21:57:26 +0200
-Message-ID: <1412798258-23655-1-git-send-email-ricardo.ribalda@gmail.com>
+Subject: [PATCH 01/12] serial/max310x: Remove obsolete #ifset TIOC[SG]RS485
+Date: Wed,  8 Oct 2014 21:57:27 +0200
+Message-ID: <1412798258-23655-2-git-send-email-ricardo.ribalda@gmail.com>
+References: <1412798258-23655-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f173.google.com ([209.85.217.173]:42109 "EHLO
-	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753049AbaJHT5w (ORCPT
+Received: from mail-la0-f41.google.com ([209.85.215.41]:56215 "EHLO
+	mail-la0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754037AbaJHT6K (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Oct 2014 15:57:52 -0400
-Received: by mail-lb0-f173.google.com with SMTP id 10so8892797lbg.32
-        for <linux-serial@vger.kernel.org>; Wed, 08 Oct 2014 12:57:51 -0700 (PDT)
+	Wed, 8 Oct 2014 15:58:10 -0400
+In-Reply-To: <1412798258-23655-1-git-send-email-ricardo.ribalda@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
 
-Right now there are six serial drivers doing RS485 ioctl handling. 
+Commit e676253b19b2 ("serial/8250: Add support for RS485 IOCTLs") added
+references to TIOC[SG]RS48 on 8250_core.c. This change triggered the
+need to define them in all the arches that uses tty/serial.
 
-Replace all the duplicated implementations with a single ioclt handler and a
-callback function.
+This made #ifdef TIOC[SG]RS48 obsolete.
 
-Ricardo Ribalda Delgado (12):
-  serial/max310x: Remove obsolete #ifset TIOC[SG]RS485
-  serial/sc16is7xx: Remove obsolete #ifset TIOC[SG]RS485
-  serial_core: Handle TIOC[GS]RS485 ioctls.
-  serial/8250: Copy RS485 fields to serial_core
-  8250/fintek: Use rs485 handler from serial_core
-  serial/8250: Remove obsolete handling of rs485 ioctls
-  serial/sc16is7xx: Use the rs485 functions on serial_core
-  serial/mcf: Use the rs485 functions on serial_core
-  serial/atmel: Use the rs485 functions on serial_core
-  serial/omap: Use the rs485 functions on serial_core
-  drivers/max310: Use the rs485 functions on serial_core
-  serial_core: Remove call to driver-specific TIO[GS]RS485]
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+---
+ drivers/tty/serial/max310x.c | 2 --
+ 1 file changed, 2 deletions(-)
 
- drivers/tty/serial/8250/8250_core.c   | 41 +-----------------
- drivers/tty/serial/8250/8250_fintek.c |  8 ++--
- drivers/tty/serial/atmel_serial.c     | 79 +++++++++++------------------------
- drivers/tty/serial/max310x.c          | 72 ++++++++++++-------------------
- drivers/tty/serial/mcf.c              | 37 ++++------------
- drivers/tty/serial/omap-serial.c      | 71 ++++++++++---------------------
- drivers/tty/serial/sc16is7xx.c        | 57 ++++++-------------------
- drivers/tty/serial/serial_core.c      | 38 +++++++++++++++++
- include/linux/serial_8250.h           |  3 --
- include/linux/serial_core.h           |  3 ++
- 10 files changed, 141 insertions(+), 268 deletions(-)
-
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 82573dc..670aba4 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -877,7 +877,6 @@ static void max310x_set_termios(struct uart_port *port,
+ static int max310x_ioctl(struct uart_port *port, unsigned int cmd,
+ 			 unsigned long arg)
+ {
+-#if defined(TIOCSRS485) && defined(TIOCGRS485)
+ 	struct serial_rs485 rs485;
+ 	unsigned int val;
+ 
+@@ -920,7 +919,6 @@ static int max310x_ioctl(struct uart_port *port, unsigned int cmd,
+ 	default:
+ 		break;
+ 	}
+-#endif
+ 
+ 	return -ENOIOCTLCMD;
+ }
 -- 
 2.1.1
 
