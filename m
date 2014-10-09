@@ -1,96 +1,53 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH] u_serial.c - Force destroy tty_port in gserial_free_port
-Date: Wed, 8 Oct 2014 20:06:42 -0500
-Message-ID: <20141009010642.GB4178@saruman>
-References: <5435D59F.3050704@analog.com>
-Reply-To: <balbi@ti.com>
+From: Jingchang Lu <jingchang.lu@freescale.com>
+Subject: RE: [PATCH] serial: of-serial: add PM suspend/resume support
+Date: Thu, 9 Oct 2014 07:53:47 +0000
+Message-ID: <b315028a386e46dca9abd70b65210bb1@BL2PR03MB467.namprd03.prod.outlook.com>
+References: <1411461252-8730-1-git-send-email-jingchang.lu@freescale.com>
+ <542E5421.5070708@nvidia.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="0eh6TmSyL6TZE2Uz"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:45353 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752036AbaJIBGr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 8 Oct 2014 21:06:47 -0400
-Content-Disposition: inline
-In-Reply-To: <5435D59F.3050704@analog.com>
+Received: from mail-by2on0107.outbound.protection.outlook.com ([207.46.100.107]:47712
+	"EHLO na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750873AbaJIHxv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 9 Oct 2014 03:53:51 -0400
+In-Reply-To: <542E5421.5070708@nvidia.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Andre Wolokita <Andre.Wolokita@analog.com>
-Cc: linux-usb@vger.kernel.org, balbi@ti.com, stern@rowland.harvard.edu, alan@linux.intel.com, linux-serial@vger.kernel.org
+To: Joseph Lo <josephl@nvidia.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
---0eh6TmSyL6TZE2Uz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Thu, Oct 09, 2014 at 11:23:59AM +1100, Andre Wolokita wrote:
-> Issuing a modprobe -r g_serial command to the target
-> over the gadget serial communications line causes
-> modprobe to enter uninterruptable sleep, leaving the
-> system in an unstable state.
-
-does anybody know if this is a valid usecase ? I'd expect us to return
--EBUSY in such a case, no ? In any case, using g_serial to rmmod
-g_serial is, from what I can tell, not supported.
-
-Let's wait to hear from Alan Cox or somebody else.
-
-> The associated tty_port.count won't drop to 0 because
-> the command is issued over the very line being removed.
->=20
-> Destroying the tty_port will ensure that resources are
-> freed and modprobe will not hang.
->=20
-> Signed-off-by: Andre Wolokita <Andre.Wolokita@analog.com>
-> ---
->  drivers/usb/gadget/function/u_serial.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/=
-function/u_serial.c
-> index ad0aca8..db631c4 100644
-> --- a/drivers/usb/gadget/function/u_serial.c
-> +++ b/drivers/usb/gadget/function/u_serial.c
-> @@ -1074,10 +1074,10 @@ static int gs_closed(struct gs_port *port)
->  static void gserial_free_port(struct gs_port *port)
->  {
->         tasklet_kill(&port->push);
-> +       tty_port_destroy(&port->port);
->         /* wait for old opens to finish */
->         wait_event(port->port.close_wait, gs_closed(port));
->         WARN_ON(port->port_usb !=3D NULL);
-> -       tty_port_destroy(&port->port);
->         kfree(port);
->  }
->=20
-> --=20
-
---=20
-balbi
-
---0eh6TmSyL6TZE2Uz
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJUNd+iAAoJEIaOsuA1yqREw8MP/j+v0sOHNIhkL5HdqMSN0XEv
-EXTZ8gIXDjp1wX64BRxLvBbolCjzb25bqvWEpQ19vM69fZ8iXPc3K2FQoza99pHZ
-7wOYsSQgxYyn3bYi7Acv/c9C8LmfE0knSzfvI5lDywJDLaXxwE+pGbGph7zFunTt
-BpxHSbnpfFa8B55zUmzTZ4WDO1yjPkogDSvVPD1k+nKBErW6rKgQZmqRtcFK4itZ
-WvCy7o+0Ykd7d07xjynF4m7drtkeDLdm31E88kktS26gToThVTkX/VM1Kn2Wq2na
-o+ZTZd2Hg5kFqI3LTgQMfhF/rLxP5zwsyVo7J6o/bJzNNwXRNJ6brx3FsnXmfWLh
-PxYrcpjovnHoR4w3CnW3j7PU7h1qbaXirtLIy5yZibemPCi9HAXkZBSB9Nd0jbmY
-38I3mD01MrvdtVXTDTa73h3jaFV/QF/Shjp3CrqK9YXrxG+Cq/PKLNywH/Kc8bBP
-ME+6K4/hL82fp4qR7572Ds5b9GHwz4YvHoJndyEChPKy5/4AXNuc6hsvfvxcI+SC
-R6ydJ09efyBk4V8cNyXQ3vEL/87RS+3hlcIUW5IiX0dfSoyG1DWLZUJ+DMlv6Avs
-Xe5S42wEzwU5JngDoT8cK456qNxZNXTHjwCHHegQbA8rYnBFNSxso6Wguzdx4U+f
-L9UtKbi8l91G3eauu4MB
-=AVf8
------END PGP SIGNATURE-----
-
---0eh6TmSyL6TZE2Uz--
+Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSm9zZXBoIExvIFttYWlsdG86am9z
+ZXBobEBudmlkaWEuY29tXQ0KPlNlbnQ6IEZyaWRheSwgT2N0b2JlciAwMywgMjAxNCAzOjQ2IFBN
+DQo+VG86IEx1IEppbmdjaGFuZy1CMzUwODM7IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnDQo+
+Q2M6IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBhcm5kQGFybmRiLmRlOyBsaW51eC0NCj5r
+ZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBsaW51
+eC1hcm0tDQo+a2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENI
+XSBzZXJpYWw6IG9mLXNlcmlhbDogYWRkIFBNIHN1c3BlbmQvcmVzdW1lIHN1cHBvcnQNCj4NCj5I
+aSwNCj4NCj5UaGlzIHBhdGNoIG1pZ2h0IGhhdmUgYSBwb3RlbnRpYWwgaXNzdWUgdGhhdCBjYXVz
+ZSBzeXN0ZW0gaGFyZCBodW5nDQo+aW1tZWRpYXRlbHkgd2hlbiBpdCBhY2Nlc3NlcyB0byByZWdp
+c3RlcnMgd2l0aCBubyBjbG9jay4gVGhpcyBjb3VsZCBoYXBwZW4NCj5vbiBtYW55IGNoaXBzIHRo
+YXQgbWFpbmxpbmUga2VybmVsIHN1cHBvcnRpbmcgd2l0aCB0aGUgc2V0dGluZw0KPiJub19jb25z
+b2xlX3N1c3BlbmQ9MSIgZHVyaW5nIHN1c3BlbmQgdGltZS4NCj4NCj5PbiAwOS8yMy8yMDE0IDA0
+OjM0IFBNLCBKaW5nY2hhbmcgTHUgd3JvdGU6DQo+PiBUaGlzIGFkZHMgUE0gc3VzcGVuZC9yZXN1
+bWUgc3VwcG9ydCBmb3IgdGhlIG9mLXNlcmlhbCBkcml2ZXIgdG8NCj4+IHByb3ZpZGUgcG93ZXIg
+bWFuYWdlbWVudCBzdXBwb3J0IG9uIGRldmljZXMgYXR0YXRjaGVkIHRvIGl0Lg0KPj4NCj4+IFNp
+Z25lZC1vZmYtYnk6IEppbmdjaGFuZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5jb20+DQo+
+PiAtLS0NCj4+ICAgZHJpdmVycy90dHkvc2VyaWFsL29mX3NlcmlhbC5jIHwgMjcgKysrKysrKysr
+KysrKysrKysrKysrKysrKysrDQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAyNyBpbnNlcnRpb25zKCsp
+DQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwuYw0KPj4g
+Yi9kcml2ZXJzL3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMgaW5kZXggMjc5ODFlMi4uOGJjMjU2MyAx
+MDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwuYw0KPj4gKysrIGIv
+ZHJpdmVycy90dHkvc2VyaWFsL29mX3NlcmlhbC5jDQo+PiBAQCAtMjQwLDYgKzI0MCwzMiBAQCBz
+dGF0aWMgaW50IG9mX3BsYXRmb3JtX3NlcmlhbF9yZW1vdmUoc3RydWN0DQo+cGxhdGZvcm1fZGV2
+aWNlICpvZmRldikNCj4+ICAgCXJldHVybiAwOw0KPj4gICB9DQo+Pg0KPj4gKyNpZmRlZiBDT05G
+SUdfUE1fU0xFRVANCj4+ICtzdGF0aWMgaW50IG9mX3NlcmlhbF9zdXNwZW5kKHN0cnVjdCBkZXZp
+Y2UgKmRldikgew0KPj4gKwlzdHJ1Y3Qgb2Zfc2VyaWFsX2luZm8gKmluZm8gPSBkZXZfZ2V0X2Ry
+dmRhdGEoZGV2KTsNCj4+ICsNCj4+ICsJc2VyaWFsODI1MF9zdXNwZW5kX3BvcnQoaW5mby0+bGlu
+ZSk7DQo+PiArCWlmIChpbmZvLT5jbGspDQo+VGhlIGZpeCB3b3VsZCBiZSBzb21ldGhpbmcgbGlr
+ZSB0aGlzLg0KPglpZiAoaW5mby0+Y2xrICYmIGNvbnNvbGVfc3VzcGVuZF9lbmFibGVkKQ0KPg0K
+WWVzLCB0aGVyZSB3aWxsIGJlLCBJIHdpbGwgc2VuZCBhIGZpeCBvbiB0aGlzLCB0aGFua3MhDQoN
+CkJlc3QgUmVnYXJkcywNCkppbmdjaGFuZw0K
