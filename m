@@ -1,61 +1,113 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty: serial: 8250_core: Do not call set_sleep for console
- port
-Date: Thu, 09 Oct 2014 10:45:11 -0400
-Message-ID: <54369F77.5000906@hurleysoftware.com>
-References: <CAJJ77WtZKtDqxRQv4+zH6DDnBKq9RmsKT7DYe7d+H-ztjKNQ7A@mail.gmail.com> <1412862326-6147-1-git-send-email-ssreedharan@mvista.com>
+Subject: Re: [PATCH 1/1] tty: Fix pty master poll() after slave closes
+Date: Thu, 09 Oct 2014 12:08:55 -0400
+Message-ID: <5436B317.3060208@hurleysoftware.com>
+References: <20141008192746.5F9C8485A77@fruggeri-Arora18.sjc.aristanetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:35658 "EHLO
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:52665 "EHLO
 	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755848AbaJIOpU (ORCPT
+	with ESMTP id S1751197AbaJIQI7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Oct 2014 10:45:20 -0400
-In-Reply-To: <1412862326-6147-1-git-send-email-ssreedharan@mvista.com>
+	Thu, 9 Oct 2014 12:08:59 -0400
+In-Reply-To: <20141008192746.5F9C8485A77@fruggeri-Arora18.sjc.aristanetworks.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Sudhir Sreedharan <ssreedharan@mvista.com>, gregkh@linuxfoundation.org, khilman@kernel.org
-Cc: linux-serial@vger.kernel.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, olof@lixom.net, linux-arm-kernel@lists.infradead.org, geert@linux-m68k.org
+To: Francesco Ruggeri <fruggeri@aristanetworks.com>, jslaby@suse.cz, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: fruggeri@arista.com
 
-Hi Sudhir,
+On 10/08/2014 03:27 PM, Francesco Ruggeri wrote:
+> Commit f95499c3030f ("n_tty: Don't wait for buffer work in read() loop")
+> introduces a race window where a pty master can be signalled that the pty
+> slave was closed before all the data that the slave wrote is delivered.
+> Commit f8747d4a466a ("tty: Fix pty master read() after slave closes") fixed the
+> problem in case of n_tty_read, but the problem still exists for n_tty_poll.
 
-On 10/09/2014 09:45 AM, Sudhir Sreedharan wrote:
-> In ST16650V2 based serial uarts, while initalizing the PM state,
-> LCR registers are being initialized to 0 in serial8250_set_sleep().
-> If console port is already initialized and being used, this will
-> throws garbage in the console.
+Hi Francesco,
+
+Thanks for the report and the patch.
+
+I've been testing a different approach for about week now which waits in
+pty_close() for input processing to complete before setting TTY_OTHER_CLOSED.
+This change also gets rid of the nested sleep problem in n_tty_read().
+
+But this required some extensive changes, including inverting an existing
+lock order (which needed to be done anyway), so won't be appropriate for stable.
+In which case, something like this patch might be.
+
+Comments below.
+
+> This can be seen by running 'for ((i=0; i<100;i++));do ./test.py ;done'
+> where test.py is:
 > 
-> Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
+> import os, select, pty
+> 
+> (pid, pty_fd) = pty.fork()
+> 
+> if pid == 0:
+>    os.write(1, 'This string should be received by parent')
+> else:
+>    poller = select.epoll()
+>    poller.register( pty_fd, select.EPOLLIN )
+>    ready = poller.poll( 1 * 1000 )
+>    for fd, events in ready:
+>       if not events & select.EPOLLIN:
+>          print 'missed POLLIN event'
+>       else:
+>          print os.read(fd, 100)
+>    poller.close()
+> 
+> The string from the slave is missed several times.
+> This patch takes the same approach as the fix for read and special cases
+> this condition for poll.
+> Tested on 3.16.
+> 
+> Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
 > ---
->  drivers/tty/serial/8250/8250_core.c |    3 +++
->  1 files changed, 3 insertions(+), 0 deletions(-)
+>  drivers/tty/n_tty.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index ca5cfdc..994aa25 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -2618,6 +2618,9 @@ void serial8250_do_pm(struct uart_port *port, unsigned int state,
->  {
->  	struct uart_8250_port *p = up_to_u8250p(port);
+> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> index f44f1ba..cf16aeb 100644
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+> @@ -2413,14 +2413,16 @@ static unsigned int n_tty_poll(struct tty_struct *tty, struct file *file,
 >  
-> +	if (port->cons && (port->cons->flags & CON_ENABLED) && (state == 0))
-> +		return;
-> +
->  	serial8250_set_sleep(p, state != 0);
->  }
->  EXPORT_SYMBOL(serial8250_do_pm);
+>  	poll_wait(file, &tty->read_wait, wait);
+>  	poll_wait(file, &tty->write_wait, wait);
+> -	if (input_available_p(tty, 1))
+> -		mask |= POLLIN | POLLRDNORM;
+>  	if (tty->packet && tty->link->ctrl_status)
+>  		mask |= POLLPRI | POLLIN | POLLRDNORM;
+>  	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
+>  		mask |= POLLHUP;
+>  	if (tty_hung_up_p(file))
+>  		mask |= POLLHUP;
+> +	if (mask & POLLHUP)
+> +		tty_flush_to_ldisc(tty);
 
-Please just fix serial8250_set_sleep() register programming to save and restore the
-LCR.
+This isn't necessary for the tty_hung_up_p() case because, when the
+poll() is woken from hangup, the read buffer has already been flushed (ie.,
+cleared).
 
-You could also fix:
-1. preserving the other EFR bits
-2. acquiring the port lock around the register programming. Not entirely sure it's
-absolutely necessary because the serial core serializes most heavy duty register
-programming with port mutex, but it's probably wise anyway.
+Plus, this waits even if input_available_p() would already return true.
+
+So, I think either
+1. setting both POLLIN and POLLHUP when TTY_OTHER_CLOSED is set (which would
+at least prompt a subsequent read() which would wait for input processing to
+complete), or,
+2. performing the tty_flush_to_ldisc() only if TTY_OTHER_CLOSED is set, and
+then re-checking input_available_p(), just as n_tty_read() does
 
 Regards,
 Peter Hurley
+
+> +	if (input_available_p(tty, 1))
+> +		mask |= POLLIN | POLLRDNORM;
+>  	if (!(mask & (POLLHUP | POLLIN | POLLRDNORM))) {
+>  		if (MIN_CHAR(tty) && !TIME_CHAR(tty))
+>  			ldata->minimum_to_wake = MIN_CHAR(tty);
+> 
 
