@@ -1,55 +1,40 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: [PATCH] serial: of-serial: fix up PM ops on no_console_suspend
-Date: Thu, 9 Oct 2014 17:10:52 +0800
-Message-ID: <1412845852-26157-1-git-send-email-jingchang.lu@freescale.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH 12/13] tty: serial: 8250: omap: add custom irq handling
+Date: Thu, 9 Oct 2014 16:19:09 +0300
+Message-ID: <20141009131909.GB9108@kuha.fi.intel.com>
+References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de>
+ <1412014009-13315-13-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org
-Cc: arnd@arndb.de, Joseph Lo <josephl@nvidia.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jingchang Lu <jingchang.lu@freescale.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1412014009-13315-13-git-send-email-bigeasy@linutronix.de>
+Sender: linux-omap-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Mandatorily disabling the uart clock will cause register access
-hung on "no_console_suspend". This patch add condition check on
-it and only disable the clock with console_suspend_enabled true.
+On Mon, Sep 29, 2014 at 08:06:48PM +0200, Sebastian Andrzej Siewior wrote:
+> We have (or will have) custom DMA callbacks in the omap driver due to
+> the different behaviour in the RX and TX case. To make this work
+> we need a few changes in the IRQ handler to invoke the rx_handler again
+> after the "manual" mode or retry the tx_handler again before falling
+> back to the manual mode.
+> 
+> Heikki didn't want to see the extra hacks in the generic / default irq
+> handler and Peter wasn't too happy about an OMAP-only IRQ handler. The
+> way I planned it is to use this extra IRQ routine only in DMA case. If
+> Peter dislike this approach then I hope Heikki doesn't block changes in
+> the default IRQ handler :)
+> 
+> Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Cc: Peter Hurley <peter@hurleysoftware.com>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Signed-off-by: Joseph Lo <josephl@nvidia.com>
-Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
----
- drivers/tty/serial/of_serial.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Looks good to me.
 
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 8bc2563..a765399 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -246,7 +246,7 @@ static int of_serial_suspend(struct device *dev)
- 	struct of_serial_info *info = dev_get_drvdata(dev);
- 
- 	serial8250_suspend_port(info->line);
--	if (info->clk)
-+	if (info->clk && console_suspend_enabled)
- 		clk_disable_unprepare(info->clk);
- 
- 	return 0;
-@@ -256,7 +256,7 @@ static int of_serial_resume(struct device *dev)
- {
- 	struct of_serial_info *info = dev_get_drvdata(dev);
- 
--	if (info->clk)
-+	if (info->clk && console_suspend_enabled)
- 		clk_prepare_enable(info->clk);
- 
- 	serial8250_resume_port(info->line);
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+
+
 -- 
-1.8.0
+heikki
