@@ -1,53 +1,44 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: RE: [PATCH] serial: of-serial: add PM suspend/resume support
-Date: Thu, 9 Oct 2014 07:53:47 +0000
-Message-ID: <b315028a386e46dca9abd70b65210bb1@BL2PR03MB467.namprd03.prod.outlook.com>
-References: <1411461252-8730-1-git-send-email-jingchang.lu@freescale.com>
- <542E5421.5070708@nvidia.com>
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH 03/12] serial_core: Handle TIOC[GS]RS485 ioctls.
+Date: Thu, 9 Oct 2014 10:07:38 +0200
+Message-ID: <CAPybu_3b6epYcQ1c0L0E1so7BNJ7DndA4E2nHDfj8OYjR3u0Zw@mail.gmail.com>
+References: <1412798258-23655-1-git-send-email-ricardo.ribalda@gmail.com>
+ <1412798258-23655-4-git-send-email-ricardo.ribalda@gmail.com> <1412799101.28467.68.camel@acox1-desk.ger.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-by2on0107.outbound.protection.outlook.com ([207.46.100.107]:47712
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750873AbaJIHxv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Oct 2014 03:53:51 -0400
-In-Reply-To: <542E5421.5070708@nvidia.com>
-Content-Language: en-US
+Received: from mail-qg0-f51.google.com ([209.85.192.51]:56421 "EHLO
+	mail-qg0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751147AbaJIIH7 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 9 Oct 2014 04:07:59 -0400
+In-Reply-To: <1412799101.28467.68.camel@acox1-desk.ger.corp.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Joseph Lo <josephl@nvidia.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Alan Cox <alan@linux.intel.com>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, LKML <linux-kernel@vger.kernel.org>
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSm9zZXBoIExvIFttYWlsdG86am9z
-ZXBobEBudmlkaWEuY29tXQ0KPlNlbnQ6IEZyaWRheSwgT2N0b2JlciAwMywgMjAxNCAzOjQ2IFBN
-DQo+VG86IEx1IEppbmdjaGFuZy1CMzUwODM7IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnDQo+
-Q2M6IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBhcm5kQGFybmRiLmRlOyBsaW51eC0NCj5r
-ZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBsaW51
-eC1hcm0tDQo+a2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENI
-XSBzZXJpYWw6IG9mLXNlcmlhbDogYWRkIFBNIHN1c3BlbmQvcmVzdW1lIHN1cHBvcnQNCj4NCj5I
-aSwNCj4NCj5UaGlzIHBhdGNoIG1pZ2h0IGhhdmUgYSBwb3RlbnRpYWwgaXNzdWUgdGhhdCBjYXVz
-ZSBzeXN0ZW0gaGFyZCBodW5nDQo+aW1tZWRpYXRlbHkgd2hlbiBpdCBhY2Nlc3NlcyB0byByZWdp
-c3RlcnMgd2l0aCBubyBjbG9jay4gVGhpcyBjb3VsZCBoYXBwZW4NCj5vbiBtYW55IGNoaXBzIHRo
-YXQgbWFpbmxpbmUga2VybmVsIHN1cHBvcnRpbmcgd2l0aCB0aGUgc2V0dGluZw0KPiJub19jb25z
-b2xlX3N1c3BlbmQ9MSIgZHVyaW5nIHN1c3BlbmQgdGltZS4NCj4NCj5PbiAwOS8yMy8yMDE0IDA0
-OjM0IFBNLCBKaW5nY2hhbmcgTHUgd3JvdGU6DQo+PiBUaGlzIGFkZHMgUE0gc3VzcGVuZC9yZXN1
-bWUgc3VwcG9ydCBmb3IgdGhlIG9mLXNlcmlhbCBkcml2ZXIgdG8NCj4+IHByb3ZpZGUgcG93ZXIg
-bWFuYWdlbWVudCBzdXBwb3J0IG9uIGRldmljZXMgYXR0YXRjaGVkIHRvIGl0Lg0KPj4NCj4+IFNp
-Z25lZC1vZmYtYnk6IEppbmdjaGFuZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5jb20+DQo+
-PiAtLS0NCj4+ICAgZHJpdmVycy90dHkvc2VyaWFsL29mX3NlcmlhbC5jIHwgMjcgKysrKysrKysr
-KysrKysrKysrKysrKysrKysrDQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAyNyBpbnNlcnRpb25zKCsp
-DQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwuYw0KPj4g
-Yi9kcml2ZXJzL3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMgaW5kZXggMjc5ODFlMi4uOGJjMjU2MyAx
-MDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwuYw0KPj4gKysrIGIv
-ZHJpdmVycy90dHkvc2VyaWFsL29mX3NlcmlhbC5jDQo+PiBAQCAtMjQwLDYgKzI0MCwzMiBAQCBz
-dGF0aWMgaW50IG9mX3BsYXRmb3JtX3NlcmlhbF9yZW1vdmUoc3RydWN0DQo+cGxhdGZvcm1fZGV2
-aWNlICpvZmRldikNCj4+ICAgCXJldHVybiAwOw0KPj4gICB9DQo+Pg0KPj4gKyNpZmRlZiBDT05G
-SUdfUE1fU0xFRVANCj4+ICtzdGF0aWMgaW50IG9mX3NlcmlhbF9zdXNwZW5kKHN0cnVjdCBkZXZp
-Y2UgKmRldikgew0KPj4gKwlzdHJ1Y3Qgb2Zfc2VyaWFsX2luZm8gKmluZm8gPSBkZXZfZ2V0X2Ry
-dmRhdGEoZGV2KTsNCj4+ICsNCj4+ICsJc2VyaWFsODI1MF9zdXNwZW5kX3BvcnQoaW5mby0+bGlu
-ZSk7DQo+PiArCWlmIChpbmZvLT5jbGspDQo+VGhlIGZpeCB3b3VsZCBiZSBzb21ldGhpbmcgbGlr
-ZSB0aGlzLg0KPglpZiAoaW5mby0+Y2xrICYmIGNvbnNvbGVfc3VzcGVuZF9lbmFibGVkKQ0KPg0K
-WWVzLCB0aGVyZSB3aWxsIGJlLCBJIHdpbGwgc2VuZCBhIGZpeCBvbiB0aGlzLCB0aGFua3MhDQoN
-CkJlc3QgUmVnYXJkcywNCkppbmdjaGFuZw0K
+Hello Alan
+
+>
+> What is the locking between setting/getting/driver use of the config ?
+> This really needs a lock (termios sem I think is perhaps appropriate
+> given when the values are normally referenced).
+
+I tried implementing it with the sermios sem
+((&(uart_port)->state->port.tty->termios_rwsem)), but some drivers
+access the rs485 structure inside their irq handler. So I have see
+options here
+
+1) Protect the structure with uart_port->lock spinlock
+2) Assume that an assignment is atomic on critical sections where I
+cannot hold the rwsem.
+
+I think 1) is more correct. Any issues that I continue in this
+direction? Any better idea?
+
+
+Thanks!
+
+-- 
+Ricardo Ribalda
