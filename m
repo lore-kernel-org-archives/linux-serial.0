@@ -1,41 +1,60 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250_dw: Add DMA support for non-ACPI platforms
-Date: Thu, 9 Oct 2014 16:20:42 +0300
-Message-ID: <20141009132042.GC9108@kuha.fi.intel.com>
-References: <rjui@broadcom.com>
- <1412728547-4126-1-git-send-email-rjui@broadcom.com>
+From: Sudhir Sreedharan <ssreedharan@mvista.com>
+Subject: Re: [PATCH] serial/core: Initialize the console pm state
+Date: Thu, 9 Oct 2014 19:12:47 +0530
+Message-ID: <CAJJ77WtZKtDqxRQv4+zH6DDnBKq9RmsKT7DYe7d+H-ztjKNQ7A@mail.gmail.com>
+References: <1411367422-2095-1-git-send-email-ssreedharan@mvista.com>
+	<CAMAWPa9R5HtGKkV=Ya-ekynY5maespZ0Q6BjwJcX3LN3857ZjQ@mail.gmail.com>
+	<CAJJ77WvDaM2MmC_r9Wop68++L0FfaRmq6oiXTp+GdqcaKKwSBw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:50133 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751195AbaJINUs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Oct 2014 09:20:48 -0400
-Content-Disposition: inline
-In-Reply-To: <1412728547-4126-1-git-send-email-rjui@broadcom.com>
+Received: from mail-oi0-f42.google.com ([209.85.218.42]:52578 "EHLO
+	mail-oi0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751372AbaJINmt (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 9 Oct 2014 09:42:49 -0400
+Received: by mail-oi0-f42.google.com with SMTP id a141so2867358oig.29
+        for <linux-serial@vger.kernel.org>; Thu, 09 Oct 2014 06:42:48 -0700 (PDT)
+In-Reply-To: <CAJJ77WvDaM2MmC_r9Wop68++L0FfaRmq6oiXTp+GdqcaKKwSBw@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ray Jui <rjui@broadcom.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Chen-Yu Tsai <wens@csie.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Loic Poulain <loic.poulain@intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, JD Zheng <jdzheng@broadcom.com>, Scott Branden <sbranden@broadcom.com>
+To: Kevin Hilman <khilman@kernel.org>, Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, lkml <linux-kernel@vger.kernel.org>, Olof Johansson <olof@lixom.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Tue, Oct 07, 2014 at 05:35:47PM -0700, Ray Jui wrote:
-> The dma pointer under struct uart_8250_port is currently left
-> unassigned for non-ACPI platforms. It should be pointing to the dma
-> member in struct dw8250_data like how it was done for ACPI, so the core
-> 8250 code will try to request for DMA when registering the port
-> 
-> If DMA is not enabled in device tree, request DMA will fail and the
-> driver will fall back to PIO
-> 
-> Signed-off-by: Ray Jui <rjui@broadcom.com>
-> Reviewed-by: JD (Jiandong) Zheng <jdzheng@broadcom.com>
-> Reviewed-by: Scott Branden <sbranden@broadcom.com>
-> Tested-by: Scott Branden <sbranden@broadcom.com>
+Hi,
 
-OK by me. FWIW..
+On Mon, Oct 6, 2014 at 2:57 PM, Sudhir Sreedharan
+<ssreedharan@mvista.com> wrote:
+>>
+>> Multiple boot failures on ARM[1] were bisected down to this patch.
+>>
+>> How was this patch tested, and on which platforms?
+>
+>
+>
+> This patch was tested on x86-64(haswell) board, which uses ST16650V2
+> uart(which has UART_CAP_SLEEP).
+> While serial driver gets initialized, console port LCR register is
+> getting reinitalized to 0.
+> Then boot logs will be seen as garbage characters.
+>
+> I will re-check why this failed on the boards/archs you mentioned.
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
+The issue is, in the boot logs, once the serial driver gets
+initialized, it throws garbage in the console. The serial device being
+used is ST16550V2 which is having SLEEP functionality. So when
+uart_configure_port is called, it calls the serial8250_set_sleep and
+set the LCR register to 0.
 
--- 
-heikki
+The previous patch got failed because those are not based on 8250 and
+the do_pm functionality is different. Eg. for arndale board, in
+s3c24xx_serial_pm it uses the clock enable and disable functionality.
+
+I have created a new patch which will be confined only to 8250 based
+serial devices. I have tested it on x86-64 based haswell board, ARM64
+based, P5040 powerpc which all uses 8250 based serial device.
+
+>
+> Thanks,
+> Sudhir
