@@ -1,48 +1,45 @@
-From: Francesco Ruggeri <fruggeri@arista.com>
-Subject: Re: [PATCH 1/1] tty: Fix pty master poll() after slave closes
-Date: Thu, 9 Oct 2014 10:39:39 -0700
-Message-ID: <CA+HUmGh_wVpVkvDuS-T8A+HdAC946XWuP7-CxrK+H+JEcJ2cyw@mail.gmail.com>
-References: <20141008192746.5F9C8485A77@fruggeri-Arora18.sjc.aristanetworks.com>
-	<5436B317.3060208@hurleysoftware.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: serial: 8250_mtk: Fix quot calculation
+Date: Thu, 9 Oct 2014 14:52:28 -0700
+Message-ID: <20141009215228.GA23507@kroah.com>
+References: <1412871811-5986-1-git-send-email-matthias.bgg@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-oi0-f51.google.com ([209.85.218.51]:43046 "EHLO
-	mail-oi0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751241AbaJIRjk (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 9 Oct 2014 13:39:40 -0400
-Received: by mail-oi0-f51.google.com with SMTP id h136so3760649oig.38
-        for <linux-serial@vger.kernel.org>; Thu, 09 Oct 2014 10:39:39 -0700 (PDT)
-In-Reply-To: <5436B317.3060208@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1412871811-5986-1-git-send-email-matthias.bgg@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: linux-kernel@vger.kernel.org, jslaby@suse.cz, heiko@sntech.de, yingjoe.chen@gmail.com, ibanezchen@gmail.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Francesco Ruggeri <fruggeri@aristanetworks.com>, jslaby@suse.cz, Greg Kroah-Hartmann <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-Hi Peter,
-thanks for your reply.
+On Thu, Oct 09, 2014 at 06:23:31PM +0200, Matthias Brugger wrote:
+> The calculation of value quot for highspeed register set to three
+> was wrong. This patch fixes the calculation so that the serial port
+> for baudrates bigger then 576000 baud is working correctly.
+> 
+> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_mtk.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index 1c4b4bf..4376c48 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -81,7 +81,7 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
+>  		/* Set to highest baudrate supported */
+>  		if (baud >= 1152000)
+>  			baud = 921600;
+> -		quot = DIV_ROUND_CLOSEST(port->uartclk, 256 * baud);
+> +		quot = (port->uartclk / (256 * baud)) + 1;
+>  	}
+>  
+>  	/*
 
->>       poll_wait(file, &tty->read_wait, wait);
->>       poll_wait(file, &tty->write_wait, wait);
->> -     if (input_available_p(tty, 1))
->> -             mask |= POLLIN | POLLRDNORM;
->>       if (tty->packet && tty->link->ctrl_status)
->>               mask |= POLLPRI | POLLIN | POLLRDNORM;
->>       if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
->>               mask |= POLLHUP;
->>       if (tty_hung_up_p(file))
->>               mask |= POLLHUP;
->> +     if (mask & POLLHUP)
->> +             tty_flush_to_ldisc(tty);
->
-> This isn't necessary for the tty_hung_up_p() case because, when the
-> poll() is woken from hangup, the read buffer has already been flushed (ie.,
-> cleared).
->
-> Plus, this waits even if input_available_p() would already return true.
->
+Has this always been incorrect, or was it caused by a specific patch?
+Should it go to the stable kernels?  If so, how far back?
 
-Let me work on a patch for stable along the lines you suggest.
+thanks,
 
-Francesco
+greg k-h
