@@ -1,90 +1,196 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: of-serial: fix up PM ops on no_console_suspend
-Date: Fri, 10 Oct 2014 07:39:21 -0400
-Message-ID: <5437C569.3030404@hurleysoftware.com>
-References: <1412845852-26157-1-git-send-email-jingchang.lu@freescale.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: [PATCH] tty/serial_core: Introduce lock mechanism for RS485
+Date: Fri, 10 Oct 2014 15:38:00 +0200
+Message-ID: <1412948280-30993-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:53751 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751069AbaJJLj1 (ORCPT
+Received: from mail-la0-f52.google.com ([209.85.215.52]:47607 "EHLO
+	mail-la0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751905AbaJJNiP (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2014 07:39:27 -0400
-In-Reply-To: <1412845852-26157-1-git-send-email-jingchang.lu@freescale.com>
+	Fri, 10 Oct 2014 09:38:15 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jingchang Lu <jingchang.lu@freescale.com>, gregkh@linuxfoundation.org
-Cc: arnd@arndb.de, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Joseph Lo <josephl@nvidia.com>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-Hi Jingchang,
+Introduce an homogeneous lock system between setting and using the rs485
+data of the uart_port.
 
-On 10/09/2014 05:10 AM, Jingchang Lu wrote:
-> Mandatorily disabling the uart clock will cause register access
-> hung on "no_console_suspend". This patch add condition check on
-> it and only disable the clock with console_suspend_enabled true.
-> 
-> Signed-off-by: Joseph Lo <josephl@nvidia.com>
-> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
-> ---
->  drivers/tty/serial/of_serial.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-> index 8bc2563..a765399 100644
-> --- a/drivers/tty/serial/of_serial.c
-> +++ b/drivers/tty/serial/of_serial.c
-> @@ -246,7 +246,7 @@ static int of_serial_suspend(struct device *dev)
->  	struct of_serial_info *info = dev_get_drvdata(dev);
->  
->  	serial8250_suspend_port(info->line);
-> -	if (info->clk)
-> +	if (info->clk && console_suspend_enabled)
->  		clk_disable_unprepare(info->clk);
+This patch should not be split into multiple ones in order to avoid
+leaving the tree in an unstable state.
 
-This needs to check that _this_ port is the console port, like:
-
-	if (info->clk && uart_console(port) && and console_suspend_enabled)
-		clk_disable_unprepare(info->clk);
-
-which means you need something like:
-
-	struct uart_8250_port *uart = serial8250_get_port(info->line);
-	struct uart_port *port = &uart->port;
-
-Also, there's another problem with your original patch:
-not every of_serial device is an 8250, right?
-serial8250_suspend_port() on a port that's not registered with 8250 core
-is probably going to blow up.
-
-Which means the body of of_platform_suspend() and of_platform_resume()
-should probably look like
-
-	switch (info->type) {
-#ifdef CONFIG_SERIAL_8250
-	case PORT_8250 ... PORT_MAX_8250:
-	{
-		/* current body of function */
-	}
-#endif
-	default:
-	}
-
-Regards,
-Peter Hurley
+Suggested-by: Alan Cox <alan@linux.intel.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+---
 
 
->  
->  	return 0;
-> @@ -256,7 +256,7 @@ static int of_serial_resume(struct device *dev)
->  {
->  	struct of_serial_info *info = dev_get_drvdata(dev);
->  
-> -	if (info->clk)
-> +	if (info->clk && console_suspend_enabled)
->  		clk_prepare_enable(info->clk);
->  
->  	serial8250_resume_port(info->line);
-> 
+This patch sits on top of the series: "[PATCH 00/12] Handle TIOC[GS]RS485
+iocts on serial_core"
+
+If there are major changes on the other patches I will resend the whole
+patchset with this patch as part of it
+
+ drivers/tty/serial/atmel_serial.c | 10 ++++------
+ drivers/tty/serial/mcf.c          |  5 +----
+ drivers/tty/serial/omap-serial.c  |  3 ---
+ drivers/tty/serial/serial_core.c  | 13 ++++++++++++-
+ 4 files changed, 17 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index e8df8e4..32b2a8d 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -293,9 +293,6 @@ static int atmel_config_rs485(struct uart_port *port,
+ {
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+ 	unsigned int mode;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	/* Disable interrupts */
+ 	UART_PUT_IDR(port, atmel_port->tx_done_mask);
+@@ -326,8 +323,6 @@ static int atmel_config_rs485(struct uart_port *port,
+ 	/* Enable interrupts */
+ 	UART_PUT_IER(port, atmel_port->tx_done_mask);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
+-
+ 	return 0;
+ }
+ 
+@@ -2509,6 +2504,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
+ 	struct atmel_uart_data *pdata = dev_get_platdata(&pdev->dev);
+ 	void *data;
+ 	int ret = -ENODEV;
++	bool rs485_enabled;
+ 
+ 	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
+ 
+@@ -2556,6 +2552,8 @@ static int atmel_serial_probe(struct platform_device *pdev)
+ 		port->rx_ring.buf = data;
+ 	}
+ 
++	rs485_enabled = port->uart.rs485.flags & SER_RS485_ENABLED;
++
+ 	ret = uart_add_one_port(&atmel_uart, &port->uart);
+ 	if (ret)
+ 		goto err_add_port;
+@@ -2574,7 +2572,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
+ 	device_init_wakeup(&pdev->dev, 1);
+ 	platform_set_drvdata(pdev, port);
+ 
+-	if (port->uart.rs485.flags & SER_RS485_ENABLED) {
++	if (rs485_enabled) {
+ 		UART_PUT_MR(&port->uart, ATMEL_US_USMODE_NORMAL);
+ 		UART_PUT_CR(&port->uart, ATMEL_US_RTSEN);
+ 	}
+diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+index d7be1f1..fdd5c7b 100644
+--- a/drivers/tty/serial/mcf.c
++++ b/drivers/tty/serial/mcf.c
+@@ -257,12 +257,12 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		mr2 |= MCFUART_MR2_TXCTS;
+ 	}
+ 
++	spin_lock_irqsave(&port->lock, flags);
+ 	if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		dev_dbg(port->dev, "Setting UART to RS485\n");
+ 		mr2 |= MCFUART_MR2_TXRTS;
+ 	}
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 	writeb(MCFUART_UCR_CMDRESETRX, port->membase + MCFUART_UCR);
+ 	writeb(MCFUART_UCR_CMDRESETTX, port->membase + MCFUART_UCR);
+@@ -442,10 +442,8 @@ static int mcf_verify_port(struct uart_port *port, struct serial_struct *ser)
+ static int mcf_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
+ {
+ 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+-	unsigned long flags;
+ 	unsigned char mr1, mr2;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+ 	/* Get mode registers */
+ 	mr1 = readb(port->membase + MCFUART_UMR);
+ 	mr2 = readb(port->membase + MCFUART_UMR);
+@@ -460,7 +458,6 @@ static int mcf_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
+ 	writeb(mr1, port->membase + MCFUART_UMR);
+ 	writeb(mr2, port->membase + MCFUART_UMR);
+ 	port->rs485 = *rs485;
+-	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 9d4726f..6675dbf 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1360,12 +1360,10 @@ static int
+ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ {
+ 	struct uart_omap_port *up = to_uart_omap_port(port);
+-	unsigned long flags;
+ 	unsigned int mode;
+ 	int val;
+ 
+ 	pm_runtime_get_sync(up->dev);
+-	spin_lock_irqsave(&up->port.lock, flags);
+ 
+ 	/* Disable interrupts from this port */
+ 	mode = up->ier;
+@@ -1401,7 +1399,6 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ 		serial_out(up, UART_OMAP_SCR, up->scr);
+ 	}
+ 
+-	spin_unlock_irqrestore(&up->port.lock, flags);
+ 	pm_runtime_mark_last_busy(up->dev);
+ 	pm_runtime_put_autosuspend(up->dev);
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index b59c925..b574dcd 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1154,8 +1154,16 @@ static int uart_get_icount(struct tty_struct *tty,
+ static int uart_get_rs485_config(struct uart_port *port,
+ 			 struct serial_rs485 __user *rs485)
+ {
+-	if (copy_to_user(rs485, &port->rs485, sizeof(port->rs485)))
++	unsigned long flags;
++	int ret;
++
++	spin_lock_irqsave(&port->lock, flags);
++	ret = copy_to_user(rs485, &port->rs485, sizeof(port->rs485));
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	if (ret)
+ 		return -EFAULT;
++
+ 	return 0;
+ }
+ 
+@@ -1164,6 +1172,7 @@ static int uart_set_rs485_config(struct uart_port *port,
+ {
+ 	struct serial_rs485 rs485;
+ 	int ret;
++	unsigned long flags;
+ 
+ 	if (!port->rs485_config)
+ 		return -ENOIOCTLCMD;
+@@ -1171,7 +1180,9 @@ static int uart_set_rs485_config(struct uart_port *port,
+ 	if (copy_from_user(&rs485, rs485_user, sizeof(rs485_user)))
+ 		return -EFAULT;
+ 
++	spin_lock_irqsave(&port->lock, flags);
+ 	ret = port->rs485_config(port, &rs485);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+2.1.1
 
