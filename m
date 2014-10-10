@@ -1,60 +1,43 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH] tty: serial: 8250_mtk: Fix quot calculation
-Date: Fri, 10 Oct 2014 10:10:45 +0200
-Message-ID: <CABuKBeL1v=E4ZSM2iq+zC2G=a1g4RT3DmJ16ra_RwQ_9ARZkZg@mail.gmail.com>
-References: <1412871811-5986-1-git-send-email-matthias.bgg@gmail.com>
-	<20141009215228.GA23507@kroah.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH tty-next 14/22] tty: Remove
+ tty_wait_until_sent_from_close()
+Date: Fri, 10 Oct 2014 09:58:28 +0100
+Message-ID: <20141010095828.1f0de28b@alan.etchedpixels.co.uk>
+References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com>
+	<1402924639-5164-15-git-send-email-peter@hurleysoftware.com>
+	<4575870.N9RCpZ4UMg@wuerfel>
+	<53A01F02.7000202@hurleysoftware.com>
+	<063D6719AE5E284EB5DD2968C1650D6D1725DAF6@AcuExch.aculab.com>
+	<5434B5D3.4060308@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20141009215228.GA23507@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, jslaby@suse.cz, =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>, Yingjoe Chen <yingjoe.chen@gmail.com>, Howard Chen <ibanezchen@gmail.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:50737 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751916AbaJJI7E (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 10 Oct 2014 04:59:04 -0400
+In-Reply-To: <5434B5D3.4060308@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: David Laight <David.Laight@ACULAB.COM>, Arnd Bergmann <arnd@arndb.de>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Karsten Keil <isdn@linux-pingi.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-2014-10-09 23:52 GMT+02:00 Greg KH <gregkh@linuxfoundation.org>:
-> On Thu, Oct 09, 2014 at 06:23:31PM +0200, Matthias Brugger wrote:
->> The calculation of value quot for highspeed register set to three
->> was wrong. This patch fixes the calculation so that the serial port
->> for baudrates bigger then 576000 baud is working correctly.
->>
->> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
->> ---
->>  drivers/tty/serial/8250/8250_mtk.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
->> index 1c4b4bf..4376c48 100644
->> --- a/drivers/tty/serial/8250/8250_mtk.c
->> +++ b/drivers/tty/serial/8250/8250_mtk.c
->> @@ -81,7 +81,7 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
->>               /* Set to highest baudrate supported */
->>               if (baud >= 1152000)
->>                       baud = 921600;
->> -             quot = DIV_ROUND_CLOSEST(port->uartclk, 256 * baud);
->> +             quot = (port->uartclk / (256 * baud)) + 1;
->>       }
->>
->>       /*
->
-> Has this always been incorrect, or was it caused by a specific patch?
+> The point being that holding the tty lock across the _entire_ close
+> is equivalent to the current outcome, regardless of O_NONBLOCK.
+> 
+> I'm reluctant to start returning EGAIN for non-blocking tty opens
+> because no tty driver does that now, and I don't think userspace will
+> deal well with new return codes from tty opens.
 
-It has always been incorrect :o
+I do not know about the non blocking case mattering. The blocking open
+does need to wait, when I broke that case before I broke the console
+login drivers (mingetty).
 
-> Should it go to the stable kernels?  If so, how far back?
+Returning EAGAIN would also only work if poll/select did the right thing.
+Currently Linux can't support a System5 style ttymon process because of
+this limitation, which means, for example, that systemd can't implement a
+single thread to manage all console prompts/setup
 
-No need to go to the stable kernels. The driver is only in linux-next.
-
-Cheers,
-Matthias Brugger
-
->
-> thanks,
->
-> greg k-h
-
-
-
--- 
-motzblog.wordpress.com
+Alan
