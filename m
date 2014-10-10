@@ -1,337 +1,221 @@
-From: Janusz Uzycki <j.uzycki@elproma.com.pl>
-Subject: [PATCH v4 3/4] serial: mxs-auart: add interrupts for modem control lines
-Date: Fri, 10 Oct 2014 18:53:26 +0200
-Message-ID: <1412960007-28159-4-git-send-email-j.uzycki@elproma.com.pl>
-References: <1412960007-28159-1-git-send-email-j.uzycki@elproma.com.pl>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:61606 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1752039AbaJJQvI (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2014 12:51:08 -0400
-In-Reply-To: <1412960007-28159-1-git-send-email-j.uzycki@elproma.com.pl>
-Sender: linux-serial-owner@vger.kernel.org
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [PATCH 1/3] qe-uart: modify qe-uart to adapt both powerpc and arm
+Date: Fri, 10 Oct 2014 13:05:07 -0500
+Message-ID: <1412964307.13320.603.camel@snotra.buserror.net>
+References: <1412923663-4374-1-git-send-email-B45475@freescale.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1412923663-4374-1-git-send-email-B45475@freescale.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Zhao Qiang <B45475@freescale.com>
+Cc: B07421@freescale.com, timur@tabi.org, linux-serial@vger.kernel.org, R63061@freescale.com, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
 
-Handle CTS/DSR/RI/DCD GPIO interrupts in mxs-auart.
+On Fri, 2014-10-10 at 14:47 +0800, Zhao Qiang wrote:
+> qe has been supported by arm board ls1021, qe-uart need
+> to be supported by ls1021.
+> modify the code to make qe-uart can work on both powerpc
+> and ls1021.
+> 
+> Signed-off-by: Zhao Qiang <B45475@freescale.com>
+> ---
+>  arch/arm/include/asm/delay.h  |  16 ++++
+>  arch/arm/include/asm/io.h     |  28 +++++++
+>  arch/arm/include/asm/irq.h    |   2 +
+>  arch/arm/kernel/irq.c         |   7 ++
+>  drivers/soc/qe/Kconfig        |   1 -
+>  drivers/soc/qe/qe.c           |  63 ++++++++-------
+>  drivers/soc/qe/qe_common.c    |   2 +-
+>  drivers/soc/qe/qe_ic.c        |   7 +-
+>  drivers/soc/qe/qe_io.c        |  53 ++++++-------
+>  drivers/soc/qe/ucc_slow.c     |  40 +++++-----
+>  drivers/tty/serial/ucc_uart.c | 176 +++++++++++++++++++++---------------------
+>  include/linux/fsl/qe.h        |  21 +++++
+>  12 files changed, 245 insertions(+), 171 deletions(-)
 
-Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
----
-v3 -> v4 changelog:
-* rebased
+This patch obviously depends on the patches to relocate QE support, but
+there's no mention of that dependency above.
 
-v2 -> v3 changelog:
-* introduces mctrl_prev instead of removed ctrl
-* mxs_auart_modem_status() moved from [3/4]
-* mxs_auart_modem_status() interrupt_enabled meant s->ms_irq_enabled
+There are many changes in here that ought to be separate patches with
+separate justification.
 
----
- drivers/tty/serial/mxs-auart.c | 174 ++++++++++++++++++++++++++-
- 1 file changed, 172 insertions(+), 2 deletions(-)
+Also, some of the QE changes seem to be reasonable cleanup, but not
+related to making the code work on ARM.
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 8bbcfd1..5ce4a50 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -42,7 +42,10 @@
- 
- #include <asm/cacheflush.h>
- 
-+#include <linux/gpio.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/err.h>
-+#include <linux/irq.h>
- #include "serial_mctrl_gpio.h"
- 
- #define MXS_AUART_PORTS 5
-@@ -146,6 +149,7 @@ struct mxs_auart_port {
- #define MXS_AUART_DMA_RX_READY	3  /* bit 3 */
- #define MXS_AUART_RTSCTS	4  /* bit 4 */
- 	unsigned long flags;
-+	unsigned int mctrl_prev;
- 	enum mxs_auart_type devtype;
- 
- 	unsigned int irq;
-@@ -163,6 +167,8 @@ struct mxs_auart_port {
- 	void *rx_dma_buf;
- 
- 	struct mctrl_gpios	*gpios;
-+	int			gpio_irq[UART_GPIO_MAX];
-+	bool			ms_irq_enabled;
- };
- 
- static struct platform_device_id mxs_auart_devtype[] = {
-@@ -427,6 +433,29 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
- 	mctrl_gpio_set(s->gpios, mctrl);
- }
- 
-+#define MCTRL_ANY_DELTA        (TIOCM_RI | TIOCM_DSR | TIOCM_CD | TIOCM_CTS)
-+static u32 mxs_auart_modem_status(struct mxs_auart_port *s, u32 mctrl)
-+{
-+	u32 mctrl_diff;
-+
-+	mctrl_diff = mctrl ^ s->mctrl_prev;
-+	s->mctrl_prev = mctrl;
-+	if (mctrl_diff & MCTRL_ANY_DELTA && s->ms_irq_enabled &&
-+						s->port.state != NULL) {
-+		if (mctrl_diff & TIOCM_RI)
-+			s->port.icount.rng++;
-+		if (mctrl_diff & TIOCM_DSR)
-+			s->port.icount.dsr++;
-+		if (mctrl_diff & TIOCM_CD)
-+			uart_handle_dcd_change(&s->port, mctrl & TIOCM_CD);
-+		if (mctrl_diff & TIOCM_CTS)
-+			uart_handle_cts_change(&s->port, mctrl & TIOCM_CTS);
-+
-+		wake_up_interruptible(&s->port.state->port.delta_msr_wait);
-+	}
-+	return mctrl;
-+}
-+
- static u32 mxs_auart_get_mctrl(struct uart_port *u)
- {
- 	struct mxs_auart_port *s = to_auart_port(u);
-@@ -439,6 +468,64 @@ static u32 mxs_auart_get_mctrl(struct uart_port *u)
- 	return mctrl_gpio_get(s->gpios, &mctrl);
- }
- 
-+/*
-+ * Enable modem status interrupts
-+ */
-+static void mxs_auart_enable_ms(struct uart_port *port)
-+{
-+	struct mxs_auart_port *s = to_auart_port(port);
-+
-+	/*
-+	 * Interrupt should not be enabled twice
-+	 */
-+	if (s->ms_irq_enabled)
-+		return;
-+
-+	s->ms_irq_enabled = true;
-+
-+	if (s->gpio_irq[UART_GPIO_CTS] >= 0)
-+		enable_irq(s->gpio_irq[UART_GPIO_CTS]);
-+	/* TODO: enable AUART_INTR_CTSMIEN otherwise */
-+
-+	if (s->gpio_irq[UART_GPIO_DSR] >= 0)
-+		enable_irq(s->gpio_irq[UART_GPIO_DSR]);
-+
-+	if (s->gpio_irq[UART_GPIO_RI] >= 0)
-+		enable_irq(s->gpio_irq[UART_GPIO_RI]);
-+
-+	if (s->gpio_irq[UART_GPIO_DCD] >= 0)
-+		enable_irq(s->gpio_irq[UART_GPIO_DCD]);
-+}
-+
-+/*
-+ * Disable modem status interrupts
-+ */
-+static void mxs_auart_disable_ms(struct uart_port *port)
-+{
-+	struct mxs_auart_port *s = to_auart_port(port);
-+
-+	/*
-+	 * Interrupt should not be disabled twice
-+	 */
-+	if (!s->ms_irq_enabled)
-+		return;
-+
-+	s->ms_irq_enabled = false;
-+
-+	if (s->gpio_irq[UART_GPIO_CTS] >= 0)
-+		disable_irq(s->gpio_irq[UART_GPIO_CTS]);
-+	/* TODO: disable AUART_INTR_CTSMIEN otherwise */
-+
-+	if (s->gpio_irq[UART_GPIO_DSR] >= 0)
-+		disable_irq(s->gpio_irq[UART_GPIO_DSR]);
-+
-+	if (s->gpio_irq[UART_GPIO_RI] >= 0)
-+		disable_irq(s->gpio_irq[UART_GPIO_RI]);
-+
-+	if (s->gpio_irq[UART_GPIO_DCD] >= 0)
-+		disable_irq(s->gpio_irq[UART_GPIO_DCD]);
-+}
-+
- static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s);
- static void dma_rx_callback(void *arg)
- {
-@@ -689,6 +776,12 @@ static void mxs_auart_settermios(struct uart_port *u,
- 			dev_err(s->dev, "We can not start up the DMA.\n");
- 		}
- 	}
-+
-+	/* CTS flow-control and modem-status interrupts */
-+	if (UART_ENABLE_MS(u, termios->c_cflag))
-+		mxs_auart_enable_ms(u);
-+	else
-+		mxs_auart_disable_ms(u);
- }
- 
- static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
-@@ -706,8 +799,18 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
- 		| AUART_INTR_CTSMIS),
- 			s->port.membase + AUART_INTR_CLR);
- 
-+	/*
-+	 * Dealing with GPIO interrupt
-+	 */
-+	if (irq == s->gpio_irq[UART_GPIO_CTS] ||
-+	    irq == s->gpio_irq[UART_GPIO_DCD] ||
-+	    irq == s->gpio_irq[UART_GPIO_DSR] ||
-+	    irq == s->gpio_irq[UART_GPIO_RI])
-+		mxs_auart_modem_status(s,
-+				mctrl_gpio_get(s->gpios, &s->mctrl_prev));
-+
- 	if (istat & AUART_INTR_CTSMIS) {
--		if (CTS_AT_AUART())
-+		if (CTS_AT_AUART() && s->ms_irq_enabled)
- 			uart_handle_cts_change(&s->port,
- 					stat & AUART_STAT_CTS);
- 		writel(AUART_INTR_CTSMIS,
-@@ -770,6 +873,10 @@ static int mxs_auart_startup(struct uart_port *u)
- 	 */
- 	writel(AUART_LINECTRL_FEN, u->membase + AUART_LINECTRL_SET);
- 
-+	/* get initial status of modem lines */
-+	mctrl_gpio_get(s->gpios, &s->mctrl_prev);
-+
-+	s->ms_irq_enabled = false;
- 	return 0;
- }
- 
-@@ -777,6 +884,8 @@ static void mxs_auart_shutdown(struct uart_port *u)
- {
- 	struct mxs_auart_port *s = to_auart_port(u);
- 
-+	mxs_auart_disable_ms(u);
-+
- 	if (auart_dma_enabled(s))
- 		mxs_auart_dma_exit(s);
- 
-@@ -833,6 +942,7 @@ static struct uart_ops mxs_auart_ops = {
- 	.start_tx       = mxs_auart_start_tx,
- 	.stop_tx	= mxs_auart_stop_tx,
- 	.stop_rx	= mxs_auart_stop_rx,
-+	.enable_ms      = mxs_auart_enable_ms,
- 	.break_ctl      = mxs_auart_break_ctl,
- 	.set_mctrl	= mxs_auart_set_mctrl,
- 	.get_mctrl      = mxs_auart_get_mctrl,
-@@ -1035,6 +1145,9 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
- 
- static bool mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
- {
-+	enum mctrl_gpio_idx i;
-+	struct gpio_desc *gpiod;
-+
- 	s->gpios = mctrl_gpio_init(dev, 0);
- 	if (IS_ERR_OR_NULL(s->gpios))
- 		return false;
-@@ -1047,9 +1160,54 @@ static bool mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
- 		clear_bit(MXS_AUART_RTSCTS, &s->flags);
- 	}
- 
-+	for (i = 0; i < UART_GPIO_MAX; i++) {
-+		gpiod = mctrl_gpio_to_gpiod(s->gpios, i);
-+		if (gpiod && (gpiod_get_direction(gpiod) == GPIOF_DIR_IN))
-+			s->gpio_irq[i] = gpiod_to_irq(gpiod);
-+		else
-+			s->gpio_irq[i] = -EINVAL;
-+	}
-+
- 	return true;
- }
- 
-+static void mxs_auart_free_gpio_irq(struct mxs_auart_port *s)
-+{
-+	enum mctrl_gpio_idx i;
-+
-+	for (i = 0; i < UART_GPIO_MAX; i++)
-+		if (s->gpio_irq[i] >= 0)
-+			free_irq(s->gpio_irq[i], s);
-+}
-+
-+static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
-+{
-+	int *irq = s->gpio_irq;
-+	enum mctrl_gpio_idx i;
-+	int err = 0;
-+
-+	for (i = 0; (i < UART_GPIO_MAX) && !err; i++) {
-+		if (irq[i] < 0)
-+			continue;
-+
-+		irq_set_status_flags(irq[i], IRQ_NOAUTOEN);
-+		err = request_irq(irq[i], mxs_auart_irq_handle,
-+				IRQ_TYPE_EDGE_BOTH, dev_name(s->dev), s);
-+		if (err)
-+			dev_err(s->dev, "%s - Can't get %d irq\n",
-+				__func__, irq[i]);
-+	}
-+
-+	/*
-+	 * If something went wrong, rollback.
-+	 */
-+	while (err && (--i >= 0))
-+		if (irq[i] >= 0)
-+			free_irq(irq[i], s);
-+
-+	return err;
-+}
-+
- static int mxs_auart_probe(struct platform_device *pdev)
- {
- 	const struct of_device_id *of_id =
-@@ -1097,6 +1255,8 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	s->port.type = PORT_IMX;
- 	s->port.dev = s->dev = &pdev->dev;
- 
-+	s->mctrl_prev = 0;
-+
- 	s->irq = platform_get_irq(pdev, 0);
- 	s->port.irq = s->irq;
- 	ret = request_irq(s->irq, mxs_auart_irq_handle, 0, dev_name(&pdev->dev), s);
-@@ -1109,13 +1269,20 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev,
- 			"Failed to initialize GPIOs. The serial port may not work as expected\n");
- 
-+	/*
-+	 * Get the GPIO lines IRQ
-+	 */
-+	ret = mxs_auart_request_gpio_irq(s);
-+	if (ret)
-+		goto out_free_irq;
-+
- 	auart_port[s->port.line] = s;
- 
- 	mxs_auart_reset(&s->port);
- 
- 	ret = uart_add_one_port(&auart_driver, &s->port);
- 	if (ret)
--		goto out_free_irq;
-+		goto out_free_gpio_irq;
- 
- 	version = readl(s->port.membase + AUART_VERSION);
- 	dev_info(&pdev->dev, "Found APPUART %d.%d.%d\n",
-@@ -1124,6 +1291,8 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
-+out_free_gpio_irq:
-+	mxs_auart_free_gpio_irq(s);
- out_free_irq:
- 	auart_port[pdev->id] = NULL;
- 	free_irq(s->irq, s);
-@@ -1143,6 +1312,7 @@ static int mxs_auart_remove(struct platform_device *pdev)
- 
- 	auart_port[pdev->id] = NULL;
- 
-+	mxs_auart_free_gpio_irq(s);
- 	clk_put(s->clk);
- 	free_irq(s->irq, s);
- 	kfree(s);
--- 
-1.7.11.3
+> diff --git a/arch/arm/include/asm/delay.h b/arch/arm/include/asm/delay.h
+> index dff714d..a932f99 100644
+> --- a/arch/arm/include/asm/delay.h
+> +++ b/arch/arm/include/asm/delay.h
+> @@ -57,6 +57,22 @@ extern void __bad_udelay(void);
+>  			__const_udelay((n) * UDELAY_MULT)) :		\
+>  	  __udelay(n))
+>  
+> +#define spin_event_timeout(condition, timeout, delay)                          \
+> +({                                                                             \
+> +	typeof(condition) __ret;                                               \
+> +	int i = 0;							       \
+> +	while (!(__ret = (condition)) && (i++ < timeout)) {		       \
+> +		if (delay)                                                     \
+> +			udelay(delay);                                         \
+> +		else                                                           \
+> +			cpu_relax();					       \
+> +		udelay(1);						       \
+> +	}								       \
 
+This will delay too long if "delay" is used.
+
+How about:
+
+	delay = delay ? delay : 1;			\
+	while (!(__ret = (condition))) {		\
+		if (i < timeout)			\
+			break;				\
+		i += delay;				\
+		udelay(delay);				\
+	}						\
+
+Also, once the dependency on timebase is removed, how about making this
+generic rather than just PPC+ARM?
+
+> +	if (!__ret)                                                            \
+> +		__ret = (condition);                                           \
+> +	__ret;		                                                       \
+
+Timur, do you remember why that final "if (!__ret) __ret = (condition);"
+is needed?
+
+> +})
+> +
+>  /* Loop-based definitions for assembly code. */
+>  extern void __loop_delay(unsigned long loops);
+>  extern void __loop_udelay(unsigned long usecs);
+> diff --git a/arch/arm/include/asm/io.h b/arch/arm/include/asm/io.h
+> index d070741..4bec694 100644
+> --- a/arch/arm/include/asm/io.h
+> +++ b/arch/arm/include/asm/io.h
+> @@ -206,6 +206,34 @@ extern int pci_ioremap_io(unsigned int offset, phys_addr_t phys_addr);
+>  #endif
+>  #endif
+>  
+> +/* access ports */
+> +#define setbits32(_addr, _v) iowrite32be(ioread32be(_addr) |  (_v), (_addr))
+> +#define clrbits32(_addr, _v) iowrite32be(ioread32be(_addr) & ~(_v), (_addr))
+> +
+> +#define setbits16(_addr, _v) iowrite16be(ioread16be(_addr) |  (_v), (_addr))
+> +#define clrbits16(_addr, _v) iowrite16be(ioread16be(_addr) & ~(_v), (_addr))
+> +
+> +#define setbits8(_addr, _v) iowrite8(ioread8(_addr) |  (_v), (_addr))
+> +#define clrbits8(_addr, _v) iowrite8(ioread8(_addr) & ~(_v), (_addr))
+
+This should also be a separate patch, though I don't think implicit big
+endian is going to fly in arch/arm (it was a mistake in arch/powerpc).
+Rename to setbits_be32 etc as is used in U-Boot.
+
+> +/* Clear and set bits in one shot.  These macros can be used to clear and
+> + * set multiple bits in a register using a single read-modify-write.  These
+> + * macros can also be used to set a multiple-bit bit pattern using a mask,
+> + * by specifying the mask in the 'clear' parameter and the new bit pattern
+> + * in the 'set' parameter.
+> + */
+> +
+> +#define clrsetbits_be32(addr, clear, set) \
+> +	iowrite32be((ioread32be(addr) & ~(clear)) | (set), (addr))
+> +#define clrsetbits_le32(addr, clear, set) \
+> +	iowrite32le((ioread32le(addr) & ~(clear)) | (set), (addr))
+> +#define clrsetbits_be16(addr, clear, set) \
+> +	iowrite16be((ioread16be(addr) & ~(clear)) | (set), (addr))
+> +#define clrsetbits_le16(addr, clear, set) \
+> +	iowrite16le((ioread16le(addr) & ~(clear)) | (set), (addr))
+> +#define clrsetbits_8(addr, clear, set) \
+> +	iowrite8((ioread8(addr) & ~(clear)) | (set), (addr))
+> +
+>  /*
+>   *  IO port access primitives
+>   *  -------------------------
+> diff --git a/arch/arm/include/asm/irq.h b/arch/arm/include/asm/irq.h
+> index 53c15de..4358904 100644
+> --- a/arch/arm/include/asm/irq.h
+> +++ b/arch/arm/include/asm/irq.h
+> @@ -30,6 +30,8 @@ extern void asm_do_IRQ(unsigned int, struct pt_regs *);
+>  void handle_IRQ(unsigned int, struct pt_regs *);
+>  void init_IRQ(void);
+>  
+> +extern irq_hw_number_t virq_to_hw(unsigned int virq);
+> +
+>  #ifdef CONFIG_MULTI_IRQ_HANDLER
+>  extern void (*handle_arch_irq)(struct pt_regs *);
+>  extern void set_handle_irq(void (*handle_irq)(struct pt_regs *));
+> diff --git a/arch/arm/kernel/irq.c b/arch/arm/kernel/irq.c
+> index 9723d17..afa204a 100644
+> --- a/arch/arm/kernel/irq.c
+> +++ b/arch/arm/kernel/irq.c
+> @@ -121,6 +121,13 @@ void __init init_IRQ(void)
+>  		machine_desc->init_irq();
+>  }
+>  
+> +irq_hw_number_t virq_to_hw(unsigned int virq)
+> +{
+> +	struct irq_data *irq_data = irq_get_irq_data(virq);
+> +	return WARN_ON(!irq_data) ? 0 : irq_data->hwirq;
+> +}
+> +EXPORT_SYMBOL_GPL(virq_to_hw);
+
+Can this be moved to generic code?  Or just open-coded in the caller?
+
+>  #ifdef CONFIG_MULTI_IRQ_HANDLER
+>  void __init set_handle_irq(void (*handle_irq)(struct pt_regs *))
+>  {
+> diff --git a/drivers/soc/qe/Kconfig b/drivers/soc/qe/Kconfig
+> index 49118e1..43b984b 100644
+> --- a/drivers/soc/qe/Kconfig
+> +++ b/drivers/soc/qe/Kconfig
+> @@ -4,7 +4,6 @@
+>  
+>  config QUICC_ENGINE
+>  	bool "Freescale QUICC Engine (QE) Support"
+> -	depends on FSL_SOC && (PPC32 || PPC64)
+
+Are you sure there are no build dependencies?  What about OF?
+
+> diff --git a/include/linux/fsl/qe.h b/include/linux/fsl/qe.h
+> index 5a6a647..ef4422c 100644
+> --- a/include/linux/fsl/qe.h
+> +++ b/include/linux/fsl/qe.h
+> @@ -306,6 +306,27 @@ struct qe_bd {
+>  #define BD_STATUS_MASK	0xffff0000
+>  #define BD_LENGTH_MASK	0x0000ffff
+>  
+> +/* Buffer descriptor control/status used by serial
+> + */
+> +
+> +#define BD_SC_EMPTY	(0x8000)	/* Receive is empty */
+> +#define BD_SC_READY	(0x8000)	/* Transmit is ready */
+> +#define BD_SC_WRAP	(0x2000)	/* Last buffer descriptor */
+> +#define BD_SC_INTRPT	(0x1000)	/* Interrupt on change */
+> +#define BD_SC_LAST	(0x0800)	/* Last buffer in frame */
+> +#define BD_SC_TC	(0x0400)	/* Transmit CRC */
+> +#define BD_SC_CM	(0x0200)	/* Continuous mode */
+> +#define BD_SC_ID	(0x0100)	/* Rec'd too many idles */
+> +#define BD_SC_P		(0x0100)	/* xmt preamble */
+> +#define BD_SC_BR	(0x0020)	/* Break received */
+> +#define BD_SC_FR	(0x0010)	/* Framing error */
+> +#define BD_SC_PR	(0x0008)	/* Parity error */
+> +#define BD_SC_NAK	(0x0004)	/* NAK - did not respond */
+> +#define BD_SC_OV	(0x0002)	/* Overrun */
+> +#define BD_SC_UN	(0x0002)	/* Underrun */
+> +#define BD_SC_CD	(0x0001)	/* */
+> +#define BD_SC_CL	(0x0001)	/* Collision */
+
+Please move this rather than copying it.
+
+-Scott
