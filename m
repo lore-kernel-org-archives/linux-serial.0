@@ -1,196 +1,97 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH] tty/serial_core: Introduce lock mechanism for RS485
-Date: Fri, 10 Oct 2014 15:38:00 +0200
-Message-ID: <1412948280-30993-1-git-send-email-ricardo.ribalda@gmail.com>
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: [PATCH v4 0/4] serial: mxs-auart: gpios as modem signals
+Date: Fri, 10 Oct 2014 18:53:23 +0200
+Message-ID: <1412960007-28159-1-git-send-email-j.uzycki@elproma.com.pl>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f52.google.com ([209.85.215.52]:47607 "EHLO
-	mail-la0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751905AbaJJNiP (ORCPT
+Received: from v032797.home.net.pl ([89.161.177.31]:57678 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751918AbaJJQvI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2014 09:38:15 -0400
+	Fri, 10 Oct 2014 12:51:08 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
 
-Introduce an homogeneous lock system between setting and using the rs485
-data of the uart_port.
+It contains improved version of the old v3 patchset
+"[PATCH v3] serial: mxs-auart: gpios as modem signals (dirty)"
 
-This patch should not be split into multiple ones in order to avoid
-leaving the tree in an unstable state.
+v3 -> v4 changelog:
+[PATCH 1/4] serial: mxs-auart: clean get_mctrl and set_mctrl
+* renamed from "serial: mxs-auart: ctrl removed from mxs_auart_port"
+* mxs_auart_get_mctrl() read back RTS line. It is removed too.
 
-Suggested-by: Alan Cox <alan@linux.intel.com>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
----
+[PATCH 2/4] serial: mxs-auart: use mctrl_gpio helpers for handling
+ modem signals
+* RTS_AT_AUART() and CTS_AT_AUART() macro defined
+* DMA engine disabled if RTS or CTS is GPIO line
+* warn if fsl,uart-has-rtscts and RTS/CTS via GPIO are mixed
+* CTSEN can't be enabled for hardware flow control block
+  if CTS is defined as GPIO line
+* RTSEN can be enabled for hardware flow control block
+  even if RTS is defined as GPIO line.
+  RTS pin depends on pinctrl configuration which
+  selects RTS output from hardware flow control block or GPIO line.
+* mxs_auart_settermios(): RTS_AT_AUART() and CTS_AT_AUART() used
+* mxs_auart_irq_handle(): CTS_AT_AUART() used
+* mxs_auart_init_gpios() returns true(success)/false(failure)
+* dev_err() message fixed in mxs_auart_probe()
+
+[PATCH 3/4] serial: mxs-auart: add interrupts for modem control lines
+* rebased
+
+[PATCH 4/4] serial: mxs-auart: enable PPS support
+* coding style: braces in both branches of condition
 
 
-This patch sits on top of the series: "[PATCH 00/12] Handle TIOC[GS]RS485
-iocts on serial_core"
+v2 -> v3 changelog:
+* own patches reordered to apply mainline
+* patch "serial: mxs-auart: add sysrq support"
+  removed from the patchset and resent as independent
 
-If there are major changes on the other patches I will resend the whole
-patchset with this patch as part of it
+new [PATCH 1/4] serial: mxs-auart: ctrl removed from mxs_auart_port
+* the ctrl variable duplicated mctrl, member of uart_port structure
+  in serial_core.h
+* the code duplicated uart_update_mctrl() and uart_tiocmget()
+  in serial_core.c
+* mxs_auart_get_mctrl() reads back RTS line. It could be removed too
+  but not sure.
 
- drivers/tty/serial/atmel_serial.c | 10 ++++------
- drivers/tty/serial/mcf.c          |  5 +----
- drivers/tty/serial/omap-serial.c  |  3 ---
- drivers/tty/serial/serial_core.c  | 13 ++++++++++++-
- 4 files changed, 17 insertions(+), 14 deletions(-)
+[PATCH 2/4] serial: mxs-auart: use mctrl_gpio helpers for handling
+ modem signals
+* mctrl_gpio_free() removed to simplify:
+  mctrl_gpio_free() is not necessary in mxs_auart_probe() and
+  mxs_auart_remove() because mctrl_gpio_init() does all
+  allocations with devm_* functions.
+  (see Documentation/serial/driver since kernel 3.16)
+* DMA on HW flow control comment updated, still not sure about the comment
+* mxs_auart_modem_status() removed from mxs_auart_get_mctrl():
+  mctrl_gpio_get() does not clear gpio interrupt pendings like
+  8250_core.c does with MSR.
+* mxs_auart_modem_status() moved to [3/4]
+  If enable_ms() is not called, uart_handle_cts_change()
+  shouldn't be called.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index e8df8e4..32b2a8d 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -293,9 +293,6 @@ static int atmel_config_rs485(struct uart_port *port,
- {
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 	unsigned int mode;
--	unsigned long flags;
--
--	spin_lock_irqsave(&port->lock, flags);
- 
- 	/* Disable interrupts */
- 	UART_PUT_IDR(port, atmel_port->tx_done_mask);
-@@ -326,8 +323,6 @@ static int atmel_config_rs485(struct uart_port *port,
- 	/* Enable interrupts */
- 	UART_PUT_IER(port, atmel_port->tx_done_mask);
- 
--	spin_unlock_irqrestore(&port->lock, flags);
--
- 	return 0;
- }
- 
-@@ -2509,6 +2504,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 	struct atmel_uart_data *pdata = dev_get_platdata(&pdev->dev);
- 	void *data;
- 	int ret = -ENODEV;
-+	bool rs485_enabled;
- 
- 	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
- 
-@@ -2556,6 +2552,8 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 		port->rx_ring.buf = data;
- 	}
- 
-+	rs485_enabled = port->uart.rs485.flags & SER_RS485_ENABLED;
-+
- 	ret = uart_add_one_port(&atmel_uart, &port->uart);
- 	if (ret)
- 		goto err_add_port;
-@@ -2574,7 +2572,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 	device_init_wakeup(&pdev->dev, 1);
- 	platform_set_drvdata(pdev, port);
- 
--	if (port->uart.rs485.flags & SER_RS485_ENABLED) {
-+	if (rs485_enabled) {
- 		UART_PUT_MR(&port->uart, ATMEL_US_USMODE_NORMAL);
- 		UART_PUT_CR(&port->uart, ATMEL_US_RTSEN);
- 	}
-diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-index d7be1f1..fdd5c7b 100644
---- a/drivers/tty/serial/mcf.c
-+++ b/drivers/tty/serial/mcf.c
-@@ -257,12 +257,12 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
- 		mr2 |= MCFUART_MR2_TXCTS;
- 	}
- 
-+	spin_lock_irqsave(&port->lock, flags);
- 	if (port->rs485.flags & SER_RS485_ENABLED) {
- 		dev_dbg(port->dev, "Setting UART to RS485\n");
- 		mr2 |= MCFUART_MR2_TXRTS;
- 	}
- 
--	spin_lock_irqsave(&port->lock, flags);
- 	uart_update_timeout(port, termios->c_cflag, baud);
- 	writeb(MCFUART_UCR_CMDRESETRX, port->membase + MCFUART_UCR);
- 	writeb(MCFUART_UCR_CMDRESETTX, port->membase + MCFUART_UCR);
-@@ -442,10 +442,8 @@ static int mcf_verify_port(struct uart_port *port, struct serial_struct *ser)
- static int mcf_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
- {
- 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
--	unsigned long flags;
- 	unsigned char mr1, mr2;
- 
--	spin_lock_irqsave(&port->lock, flags);
- 	/* Get mode registers */
- 	mr1 = readb(port->membase + MCFUART_UMR);
- 	mr2 = readb(port->membase + MCFUART_UMR);
-@@ -460,7 +458,6 @@ static int mcf_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
- 	writeb(mr1, port->membase + MCFUART_UMR);
- 	writeb(mr2, port->membase + MCFUART_UMR);
- 	port->rs485 = *rs485;
--	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	return 0;
- }
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 9d4726f..6675dbf 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1360,12 +1360,10 @@ static int
- serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
- {
- 	struct uart_omap_port *up = to_uart_omap_port(port);
--	unsigned long flags;
- 	unsigned int mode;
- 	int val;
- 
- 	pm_runtime_get_sync(up->dev);
--	spin_lock_irqsave(&up->port.lock, flags);
- 
- 	/* Disable interrupts from this port */
- 	mode = up->ier;
-@@ -1401,7 +1399,6 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
- 		serial_out(up, UART_OMAP_SCR, up->scr);
- 	}
- 
--	spin_unlock_irqrestore(&up->port.lock, flags);
- 	pm_runtime_mark_last_busy(up->dev);
- 	pm_runtime_put_autosuspend(up->dev);
- 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index b59c925..b574dcd 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1154,8 +1154,16 @@ static int uart_get_icount(struct tty_struct *tty,
- static int uart_get_rs485_config(struct uart_port *port,
- 			 struct serial_rs485 __user *rs485)
- {
--	if (copy_to_user(rs485, &port->rs485, sizeof(port->rs485)))
-+	unsigned long flags;
-+	int ret;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	ret = copy_to_user(rs485, &port->rs485, sizeof(port->rs485));
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	if (ret)
- 		return -EFAULT;
-+
- 	return 0;
- }
- 
-@@ -1164,6 +1172,7 @@ static int uart_set_rs485_config(struct uart_port *port,
- {
- 	struct serial_rs485 rs485;
- 	int ret;
-+	unsigned long flags;
- 
- 	if (!port->rs485_config)
- 		return -ENOIOCTLCMD;
-@@ -1171,7 +1180,9 @@ static int uart_set_rs485_config(struct uart_port *port,
- 	if (copy_from_user(&rs485, rs485_user, sizeof(rs485_user)))
- 		return -EFAULT;
- 
-+	spin_lock_irqsave(&port->lock, flags);
- 	ret = port->rs485_config(port, &rs485);
-+	spin_unlock_irqrestore(&port->lock, flags);
- 	if (ret)
- 		return ret;
- 
+[PATCH 3/4] serial: mxs-auart: add interrupts for modem control lines
+* introduces mctrl_prev instead of removed ctrl
+* mxs_auart_modem_status() moved from [3/4]
+* mxs_auart_modem_status() interrupt_enabled meant s->ms_irq_enabled
+
+[PATCH 4/4] serial: mxs-auart: enable PPS support
+* no changes
+
+
+Janusz Uzycki (4):
+  serial: mxs-auart: clean get_mctrl and set_mctrl
+  serial: mxs-auart: use mctrl_gpio helpers for handling modem signals
+  serial: mxs-auart: add interrupts for modem control lines
+  serial: mxs-auart: enable PPS support
+
+ .../devicetree/bindings/serial/fsl-mxs-auart.txt   |  10 +-
+ drivers/tty/serial/Kconfig           |   1 +
+ drivers/tty/serial/mxs-auart.c       | 237 +++++++++++++++++++--
+ 3 files changed, 233 insertions(+), 15 deletions(-)
+
 -- 
-2.1.1
+1.7.11.3
 
