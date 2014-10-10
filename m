@@ -1,43 +1,44 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH tty-next 14/22] tty: Remove
- tty_wait_until_sent_from_close()
-Date: Fri, 10 Oct 2014 09:58:28 +0100
-Message-ID: <20141010095828.1f0de28b@alan.etchedpixels.co.uk>
-References: <1402924639-5164-1-git-send-email-peter@hurleysoftware.com>
-	<1402924639-5164-15-git-send-email-peter@hurleysoftware.com>
-	<4575870.N9RCpZ4UMg@wuerfel>
-	<53A01F02.7000202@hurleysoftware.com>
-	<063D6719AE5E284EB5DD2968C1650D6D1725DAF6@AcuExch.aculab.com>
-	<5434B5D3.4060308@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] serial: of-serial: fix up PM ops on no_console_suspend
+Date: Fri, 10 Oct 2014 06:25:26 -0400
+Message-ID: <5437B416.2080606@hurleysoftware.com>
+References: <1412845852-26157-1-git-send-email-jingchang.lu@freescale.com> <543768F3.6090703@wwwdotorg.org> <01583b7f252b4f81a5655009f6f73aba@BL2PR03MB467.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:50737 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751916AbaJJI7E (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:34040 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751069AbaJJKZh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2014 04:59:04 -0400
-In-Reply-To: <5434B5D3.4060308@hurleysoftware.com>
+	Fri, 10 Oct 2014 06:25:37 -0400
+In-Reply-To: <01583b7f252b4f81a5655009f6f73aba@BL2PR03MB467.namprd03.prod.outlook.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: David Laight <David.Laight@ACULAB.COM>, Arnd Bergmann <arnd@arndb.de>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Karsten Keil <isdn@linux-pingi.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Jingchang Lu <jingchang.lu@freescale.com>, Stephen Warren <swarren@wwwdotorg.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "arnd@arndb.de" <arnd@arndb.de>, Joseph Lo <josephl@nvidia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-> The point being that holding the tty lock across the _entire_ close
-> is equivalent to the current outcome, regardless of O_NONBLOCK.
-> 
-> I'm reluctant to start returning EGAIN for non-blocking tty opens
-> because no tty driver does that now, and I don't think userspace will
-> deal well with new return codes from tty opens.
+On 10/10/2014 02:16 AM, Jingchang Lu wrote:
+>> From: Stephen Warren [mailto:swarren@wwwdotorg.org]
+>> On 10/09/2014 02:10 AM, Jingchang Lu wrote:
+>>> Mandatorily disabling the uart clock will cause register access hung
+>>> on "no_console_suspend". This patch add condition check on it and only
+>>> disable the clock with console_suspend_enabled true.
+>>
+>> It would be useful if the email/patch subject line said "V2", and there
+>> was a changelog below.
+> This is not a v2, patch "serial: of-serial: add PM suspend/resume support
+> (commit 2dea53bf57783f243c892e99c10c6921e956aa7e)" has been merged into
+> linux-next tree, this is a fixup on that PM ops.
 
-I do not know about the non blocking case mattering. The blocking open
-does need to wait, when I broke that case before I broke the console
-login drivers (mingetty).
+Then please say so in the commit log. Something like,
 
-Returning EAGAIN would also only work if poll/select did the right thing.
-Currently Linux can't support a System5 style ttymon process because of
-this limitation, which means, for example, that systemd can't implement a
-single thread to manage all console prompts/setup
+Fix commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
+"serial: of-serial: add PM suspend/resume support", which
+disables the uart clock on suspend, but also causes a hardware
+hang on register access if no_console_suspend command line option
+is used.
 
-Alan
+Regards,
+Peter Hurley
+
