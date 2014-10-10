@@ -1,27 +1,90 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v2 RESEND] serial: mxs-auart: add sysrq support
-Date: Fri, 10 Oct 2014 08:37:12 -0300
-Message-ID: <CAOMZO5BxR4X69LP8HKHRsVFgmaqwQUv328L6fbu4ZvU-Jp61Uw@mail.gmail.com>
-References: <1412939608-19933-1-git-send-email-j.uzycki@elproma.com.pl>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] serial: of-serial: fix up PM ops on no_console_suspend
+Date: Fri, 10 Oct 2014 07:39:21 -0400
+Message-ID: <5437C569.3030404@hurleysoftware.com>
+References: <1412845852-26157-1-git-send-email-jingchang.lu@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f179.google.com ([209.85.217.179]:56817 "EHLO
-	mail-lb0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753565AbaJJLhO (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:53751 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751069AbaJJLj1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2014 07:37:14 -0400
-In-Reply-To: <1412939608-19933-1-git-send-email-j.uzycki@elproma.com.pl>
+	Fri, 10 Oct 2014 07:39:27 -0400
+In-Reply-To: <1412845852-26157-1-git-send-email-jingchang.lu@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Janusz Uzycki <j.uzycki@elproma.com.pl>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Richard Genoud <richard.genoud@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Jingchang Lu <jingchang.lu@freescale.com>, gregkh@linuxfoundation.org
+Cc: arnd@arndb.de, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Joseph Lo <josephl@nvidia.com>
 
-On Fri, Oct 10, 2014 at 8:13 AM, Janusz Uzycki <j.uzycki@elproma.com.pl> wrote:
-> When using mxs-auart based console, sometime we need the sysrq function
-> to help debugging kernel. The sysrq code is basically there,
-> this patch just simply enable it.
->
-> Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Hi Jingchang,
 
-Reviewed-by: Fabio Estevam <fabio.estevam@freescale.com>
+On 10/09/2014 05:10 AM, Jingchang Lu wrote:
+> Mandatorily disabling the uart clock will cause register access
+> hung on "no_console_suspend". This patch add condition check on
+> it and only disable the clock with console_suspend_enabled true.
+> 
+> Signed-off-by: Joseph Lo <josephl@nvidia.com>
+> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
+> ---
+>  drivers/tty/serial/of_serial.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+> index 8bc2563..a765399 100644
+> --- a/drivers/tty/serial/of_serial.c
+> +++ b/drivers/tty/serial/of_serial.c
+> @@ -246,7 +246,7 @@ static int of_serial_suspend(struct device *dev)
+>  	struct of_serial_info *info = dev_get_drvdata(dev);
+>  
+>  	serial8250_suspend_port(info->line);
+> -	if (info->clk)
+> +	if (info->clk && console_suspend_enabled)
+>  		clk_disable_unprepare(info->clk);
+
+This needs to check that _this_ port is the console port, like:
+
+	if (info->clk && uart_console(port) && and console_suspend_enabled)
+		clk_disable_unprepare(info->clk);
+
+which means you need something like:
+
+	struct uart_8250_port *uart = serial8250_get_port(info->line);
+	struct uart_port *port = &uart->port;
+
+Also, there's another problem with your original patch:
+not every of_serial device is an 8250, right?
+serial8250_suspend_port() on a port that's not registered with 8250 core
+is probably going to blow up.
+
+Which means the body of of_platform_suspend() and of_platform_resume()
+should probably look like
+
+	switch (info->type) {
+#ifdef CONFIG_SERIAL_8250
+	case PORT_8250 ... PORT_MAX_8250:
+	{
+		/* current body of function */
+	}
+#endif
+	default:
+	}
+
+Regards,
+Peter Hurley
+
+
+>  
+>  	return 0;
+> @@ -256,7 +256,7 @@ static int of_serial_resume(struct device *dev)
+>  {
+>  	struct of_serial_info *info = dev_get_drvdata(dev);
+>  
+> -	if (info->clk)
+> +	if (info->clk && console_suspend_enabled)
+>  		clk_prepare_enable(info->clk);
+>  
+>  	serial8250_resume_port(info->line);
+> 
+
