@@ -1,80 +1,70 @@
-From: fruggeri@aristanetworks.com (Francesco Ruggeri)
-Subject: [PATCH 1/1] tty: Fix pty master poll() after slave closes v2
-Date: Fri, 10 Oct 2014 13:09:53 -0700
-Message-ID: <20141010200953.4C0BC48235B@fruggeri-Arora18.sjc.aristanetworks.com>
+From: Jingchang Lu <jingchang.lu@freescale.com>
+Subject: RE: [PATCH] serial: of-serial: fix up PM ops on no_console_suspend
+Date: Sat, 11 Oct 2014 03:37:26 +0000
+Message-ID: <cc12558a8c7747e08267544fcba16227@BL2PR03MB467.namprd03.prod.outlook.com>
+References: <1412845852-26157-1-git-send-email-jingchang.lu@freescale.com>
+ <5437C569.3030404@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mx.aristanetworks.com ([162.210.130.12]:33151 "EHLO
-	prod-mx.aristanetworks.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1755318AbaJJUJy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2014 16:09:54 -0400
+Received: from mail-bn1bn0103.outbound.protection.outlook.com ([157.56.110.103]:54528
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750795AbaJKDh3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 10 Oct 2014 23:37:29 -0400
+In-Reply-To: <5437C569.3030404@hurleysoftware.com>
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: peter@hurleysoftware.com, linux-kernel@vger.kernel.org, jslaby@suse.cz, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
-Cc: fruggeri@arista.com
+To: Peter Hurley <peter@hurleysoftware.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "arnd@arndb.de" <arnd@arndb.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Joseph Lo <josephl@nvidia.com>
 
-Commit f95499c3030f ("n_tty: Don't wait for buffer work in read() loop")
-introduces a race window where a pty master can be signalled that the pty
-slave was closed before all the data that the slave wrote is delivered.
-Commit f8747d4a466a ("tty: Fix pty master read() after slave closes") fixed the
-problem in case of n_tty_read, but the problem still exists for n_tty_poll.
-This can be seen by running 'for ((i=0; i<100;i++));do ./test.py ;done'
-where test.py is:
-
-import os, select, pty
-
-(pid, pty_fd) = pty.fork()
-
-if pid == 0:
-   os.write(1, 'This string should be received by parent')
-else:
-   poller = select.epoll()
-   poller.register( pty_fd, select.EPOLLIN )
-   ready = poller.poll( 1 * 1000 )
-   for fd, events in ready:
-      if not events & select.EPOLLIN:
-         print 'missed POLLIN event'
-      else:
-         print os.read(fd, 100)
-   poller.close()
-
-The string from the slave is missed several times.
-This patch takes the same approach as the fix for read and special cases
-this condition for poll.
-Tested on 3.16.
-
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
----
- drivers/tty/n_tty.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index f44f1ba..cf16aeb 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -2413,12 +2413,17 @@ static unsigned int n_tty_poll(struct tty_struct *tty, struct file *file,
- 
- 	poll_wait(file, &tty->read_wait, wait);
- 	poll_wait(file, &tty->write_wait, wait);
-+	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
-+		mask |= POLLHUP;
- 	if (input_available_p(tty, 1))
- 		mask |= POLLIN | POLLRDNORM;
-+	else if (mask & POLLHUP) {
-+		tty_flush_to_ldisc(tty);
-+		if (input_available_p(tty, 1))
-+			mask |= POLLIN | POLLRDNORM;
-+	}
- 	if (tty->packet && tty->link->ctrl_status)
- 		mask |= POLLPRI | POLLIN | POLLRDNORM;
--	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
--		mask |= POLLHUP;
- 	if (tty_hung_up_p(file))
- 		mask |= POLLHUP;
- 	if (!(mask & (POLLHUP | POLLIN | POLLRDNORM))) {
--- 
-1.8.1.4
-
+Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogUGV0ZXIgSHVybGV5IFttYWlsdG86
+cGV0ZXJAaHVybGV5c29mdHdhcmUuY29tXQ0KPlNlbnQ6IEZyaWRheSwgT2N0b2JlciAxMCwgMjAx
+NCA3OjM5IFBNDQo+VG86IEx1IEppbmdjaGFuZy1CMzUwODM7IGdyZWdraEBsaW51eGZvdW5kYXRp
+b24ub3JnDQo+Q2M6IGFybmRAYXJuZGIuZGU7IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7
+IGxpbnV4LWFybS0NCj5rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgbGludXgta2VybmVsQHZn
+ZXIua2VybmVsLm9yZzsgSm9zZXBoIExvDQo+U3ViamVjdDogUmU6IFtQQVRDSF0gc2VyaWFsOiBv
+Zi1zZXJpYWw6IGZpeCB1cCBQTSBvcHMgb24NCj5ub19jb25zb2xlX3N1c3BlbmQNCj4NCj5IaSBK
+aW5nY2hhbmcsDQo+DQo+T24gMTAvMDkvMjAxNCAwNToxMCBBTSwgSmluZ2NoYW5nIEx1IHdyb3Rl
+Og0KPj4gTWFuZGF0b3JpbHkgZGlzYWJsaW5nIHRoZSB1YXJ0IGNsb2NrIHdpbGwgY2F1c2UgcmVn
+aXN0ZXIgYWNjZXNzIGh1bmcNCj4+IG9uICJub19jb25zb2xlX3N1c3BlbmQiLiBUaGlzIHBhdGNo
+IGFkZCBjb25kaXRpb24gY2hlY2sgb24gaXQgYW5kIG9ubHkNCj4+IGRpc2FibGUgdGhlIGNsb2Nr
+IHdpdGggY29uc29sZV9zdXNwZW5kX2VuYWJsZWQgdHJ1ZS4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5
+OiBKb3NlcGggTG8gPGpvc2VwaGxAbnZpZGlhLmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IEppbmdj
+aGFuZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5jb20+DQo+PiAtLS0NCj4+ICBkcml2ZXJz
+L3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMgfCA0ICsrLS0NCj4+ICAxIGZpbGUgY2hhbmdlZCwgMiBp
+bnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJz
+L3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMNCj4+IGIvZHJpdmVycy90dHkvc2VyaWFsL29mX3Nlcmlh
+bC5jIGluZGV4IDhiYzI1NjMuLmE3NjUzOTkgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL3R0eS9z
+ZXJpYWwvb2Zfc2VyaWFsLmMNCj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwu
+Yw0KPj4gQEAgLTI0Niw3ICsyNDYsNyBAQCBzdGF0aWMgaW50IG9mX3NlcmlhbF9zdXNwZW5kKHN0
+cnVjdCBkZXZpY2UgKmRldikNCj4+ICAJc3RydWN0IG9mX3NlcmlhbF9pbmZvICppbmZvID0gZGV2
+X2dldF9kcnZkYXRhKGRldik7DQo+Pg0KPj4gIAlzZXJpYWw4MjUwX3N1c3BlbmRfcG9ydChpbmZv
+LT5saW5lKTsNCj4+IC0JaWYgKGluZm8tPmNsaykNCj4+ICsJaWYgKGluZm8tPmNsayAmJiBjb25z
+b2xlX3N1c3BlbmRfZW5hYmxlZCkNCj4+ICAJCWNsa19kaXNhYmxlX3VucHJlcGFyZShpbmZvLT5j
+bGspOw0KPg0KPlRoaXMgbmVlZHMgdG8gY2hlY2sgdGhhdCBfdGhpc18gcG9ydCBpcyB0aGUgY29u
+c29sZSBwb3J0LCBsaWtlOg0KPg0KPglpZiAoaW5mby0+Y2xrICYmIHVhcnRfY29uc29sZShwb3J0
+KSAmJiBhbmQgY29uc29sZV9zdXNwZW5kX2VuYWJsZWQpDQo+CQljbGtfZGlzYWJsZV91bnByZXBh
+cmUoaW5mby0+Y2xrKTsNCj4NCj53aGljaCBtZWFucyB5b3UgbmVlZCBzb21ldGhpbmcgbGlrZToN
+Cj4NCj4Jc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1YXJ0ID0gc2VyaWFsODI1MF9nZXRfcG9ydChp
+bmZvLT5saW5lKTsNCj4Jc3RydWN0IHVhcnRfcG9ydCAqcG9ydCA9ICZ1YXJ0LT5wb3J0Ow0KPg0K
+PkFsc28sIHRoZXJlJ3MgYW5vdGhlciBwcm9ibGVtIHdpdGggeW91ciBvcmlnaW5hbCBwYXRjaDoN
+Cj5ub3QgZXZlcnkgb2Zfc2VyaWFsIGRldmljZSBpcyBhbiA4MjUwLCByaWdodD8NCj5zZXJpYWw4
+MjUwX3N1c3BlbmRfcG9ydCgpIG9uIGEgcG9ydCB0aGF0J3Mgbm90IHJlZ2lzdGVyZWQgd2l0aCA4
+MjUwIGNvcmUNCj5pcyBwcm9iYWJseSBnb2luZyB0byBibG93IHVwLg0KPg0KPldoaWNoIG1lYW5z
+IHRoZSBib2R5IG9mIG9mX3BsYXRmb3JtX3N1c3BlbmQoKSBhbmQgb2ZfcGxhdGZvcm1fcmVzdW1l
+KCkNCj5zaG91bGQgcHJvYmFibHkgbG9vayBsaWtlDQo+DQo+CXN3aXRjaCAoaW5mby0+dHlwZSkg
+ew0KPiNpZmRlZiBDT05GSUdfU0VSSUFMXzgyNTANCj4JY2FzZSBQT1JUXzgyNTAgLi4uIFBPUlRf
+TUFYXzgyNTA6DQo+CXsNCj4JCS8qIGN1cnJlbnQgYm9keSBvZiBmdW5jdGlvbiAqLw0KPgl9DQo+
+I2VuZGlmDQo+CWRlZmF1bHQ6DQo+CX0NCj4NClllcywgdGhpcyBzaG91bGQgYmUgY29uc2lkZXJl
+ZCwgdGhlbiBzZXJpYWw4MjUwX2dldF9wb3J0KGluZm8tPmxpbmUpIGZvciB1YXJ0X2NvbnNvbGUo
+KSBhbHNvDQpzaG91bGQgYmUgcHV0IGluIHRoaXMgdHlwZSBzd2l0Y2gsICBUaGFua3MuDQoNCkJl
+c3QgUmVnYXJkcywNCkppbmdjaGFuZw0KDQo+UmVnYXJkcywNCj5QZXRlciBIdXJsZXkNCj4NCj4N
+Cj4+DQo+PiAgCXJldHVybiAwOw0KPj4gQEAgLTI1Niw3ICsyNTYsNyBAQCBzdGF0aWMgaW50IG9m
+X3NlcmlhbF9yZXN1bWUoc3RydWN0IGRldmljZSAqZGV2KSAgew0KPj4gIAlzdHJ1Y3Qgb2Zfc2Vy
+aWFsX2luZm8gKmluZm8gPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsNCj4+DQo+PiAtCWlmIChpbmZv
+LT5jbGspDQo+PiArCWlmIChpbmZvLT5jbGsgJiYgY29uc29sZV9zdXNwZW5kX2VuYWJsZWQpDQo+
+PiAgCQljbGtfcHJlcGFyZV9lbmFibGUoaW5mby0+Y2xrKTsNCj4+DQo+PiAgCXNlcmlhbDgyNTBf
+cmVzdW1lX3BvcnQoaW5mby0+bGluZSk7DQo+Pg0KDQo=
