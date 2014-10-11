@@ -1,70 +1,53 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: RE: [PATCH] serial: of-serial: fix up PM ops on no_console_suspend
-Date: Sat, 11 Oct 2014 03:37:26 +0000
-Message-ID: <cc12558a8c7747e08267544fcba16227@BL2PR03MB467.namprd03.prod.outlook.com>
-References: <1412845852-26157-1-git-send-email-jingchang.lu@freescale.com>
- <5437C569.3030404@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bn1bn0103.outbound.protection.outlook.com ([157.56.110.103]:54528
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750795AbaJKDh3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 10 Oct 2014 23:37:29 -0400
-In-Reply-To: <5437C569.3030404@hurleysoftware.com>
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: [PATCH 00/12] dmaengine: remove users of device_control
+Date: Sat, 11 Oct 2014 21:09:33 +0530
+Message-ID: <1413041973-28146-1-git-send-email-vinod.koul@intel.com>
+Return-path: <linux-ide-owner@vger.kernel.org>
+Sender: linux-ide-owner@vger.kernel.org
+To: dmaengine@vger.kernel.org
+Cc: Vinod Koul <vinod.koul@intel.com>, Viresh Kumar <viresh.linux@gmail.com>, Tejun Heo <tj@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Dan Williams <dan.j.williams@intel.com>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, Mauro Carvalho Chehab <m.chehab@samsung.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Felipe Balbi <balbi@ti.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Liam Girdwood <lgirdwood@gmail.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>, Jingoo Han <jg1.han@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Laurent Pinchart <laurent.pinchart+renesas@ideaso>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "arnd@arndb.de" <arnd@arndb.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Joseph Lo <josephl@nvidia.com>
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogUGV0ZXIgSHVybGV5IFttYWlsdG86
-cGV0ZXJAaHVybGV5c29mdHdhcmUuY29tXQ0KPlNlbnQ6IEZyaWRheSwgT2N0b2JlciAxMCwgMjAx
-NCA3OjM5IFBNDQo+VG86IEx1IEppbmdjaGFuZy1CMzUwODM7IGdyZWdraEBsaW51eGZvdW5kYXRp
-b24ub3JnDQo+Q2M6IGFybmRAYXJuZGIuZGU7IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7
-IGxpbnV4LWFybS0NCj5rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgbGludXgta2VybmVsQHZn
-ZXIua2VybmVsLm9yZzsgSm9zZXBoIExvDQo+U3ViamVjdDogUmU6IFtQQVRDSF0gc2VyaWFsOiBv
-Zi1zZXJpYWw6IGZpeCB1cCBQTSBvcHMgb24NCj5ub19jb25zb2xlX3N1c3BlbmQNCj4NCj5IaSBK
-aW5nY2hhbmcsDQo+DQo+T24gMTAvMDkvMjAxNCAwNToxMCBBTSwgSmluZ2NoYW5nIEx1IHdyb3Rl
-Og0KPj4gTWFuZGF0b3JpbHkgZGlzYWJsaW5nIHRoZSB1YXJ0IGNsb2NrIHdpbGwgY2F1c2UgcmVn
-aXN0ZXIgYWNjZXNzIGh1bmcNCj4+IG9uICJub19jb25zb2xlX3N1c3BlbmQiLiBUaGlzIHBhdGNo
-IGFkZCBjb25kaXRpb24gY2hlY2sgb24gaXQgYW5kIG9ubHkNCj4+IGRpc2FibGUgdGhlIGNsb2Nr
-IHdpdGggY29uc29sZV9zdXNwZW5kX2VuYWJsZWQgdHJ1ZS4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5
-OiBKb3NlcGggTG8gPGpvc2VwaGxAbnZpZGlhLmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IEppbmdj
-aGFuZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5jb20+DQo+PiAtLS0NCj4+ICBkcml2ZXJz
-L3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMgfCA0ICsrLS0NCj4+ICAxIGZpbGUgY2hhbmdlZCwgMiBp
-bnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJz
-L3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMNCj4+IGIvZHJpdmVycy90dHkvc2VyaWFsL29mX3Nlcmlh
-bC5jIGluZGV4IDhiYzI1NjMuLmE3NjUzOTkgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL3R0eS9z
-ZXJpYWwvb2Zfc2VyaWFsLmMNCj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwu
-Yw0KPj4gQEAgLTI0Niw3ICsyNDYsNyBAQCBzdGF0aWMgaW50IG9mX3NlcmlhbF9zdXNwZW5kKHN0
-cnVjdCBkZXZpY2UgKmRldikNCj4+ICAJc3RydWN0IG9mX3NlcmlhbF9pbmZvICppbmZvID0gZGV2
-X2dldF9kcnZkYXRhKGRldik7DQo+Pg0KPj4gIAlzZXJpYWw4MjUwX3N1c3BlbmRfcG9ydChpbmZv
-LT5saW5lKTsNCj4+IC0JaWYgKGluZm8tPmNsaykNCj4+ICsJaWYgKGluZm8tPmNsayAmJiBjb25z
-b2xlX3N1c3BlbmRfZW5hYmxlZCkNCj4+ICAJCWNsa19kaXNhYmxlX3VucHJlcGFyZShpbmZvLT5j
-bGspOw0KPg0KPlRoaXMgbmVlZHMgdG8gY2hlY2sgdGhhdCBfdGhpc18gcG9ydCBpcyB0aGUgY29u
-c29sZSBwb3J0LCBsaWtlOg0KPg0KPglpZiAoaW5mby0+Y2xrICYmIHVhcnRfY29uc29sZShwb3J0
-KSAmJiBhbmQgY29uc29sZV9zdXNwZW5kX2VuYWJsZWQpDQo+CQljbGtfZGlzYWJsZV91bnByZXBh
-cmUoaW5mby0+Y2xrKTsNCj4NCj53aGljaCBtZWFucyB5b3UgbmVlZCBzb21ldGhpbmcgbGlrZToN
-Cj4NCj4Jc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1YXJ0ID0gc2VyaWFsODI1MF9nZXRfcG9ydChp
-bmZvLT5saW5lKTsNCj4Jc3RydWN0IHVhcnRfcG9ydCAqcG9ydCA9ICZ1YXJ0LT5wb3J0Ow0KPg0K
-PkFsc28sIHRoZXJlJ3MgYW5vdGhlciBwcm9ibGVtIHdpdGggeW91ciBvcmlnaW5hbCBwYXRjaDoN
-Cj5ub3QgZXZlcnkgb2Zfc2VyaWFsIGRldmljZSBpcyBhbiA4MjUwLCByaWdodD8NCj5zZXJpYWw4
-MjUwX3N1c3BlbmRfcG9ydCgpIG9uIGEgcG9ydCB0aGF0J3Mgbm90IHJlZ2lzdGVyZWQgd2l0aCA4
-MjUwIGNvcmUNCj5pcyBwcm9iYWJseSBnb2luZyB0byBibG93IHVwLg0KPg0KPldoaWNoIG1lYW5z
-IHRoZSBib2R5IG9mIG9mX3BsYXRmb3JtX3N1c3BlbmQoKSBhbmQgb2ZfcGxhdGZvcm1fcmVzdW1l
-KCkNCj5zaG91bGQgcHJvYmFibHkgbG9vayBsaWtlDQo+DQo+CXN3aXRjaCAoaW5mby0+dHlwZSkg
-ew0KPiNpZmRlZiBDT05GSUdfU0VSSUFMXzgyNTANCj4JY2FzZSBQT1JUXzgyNTAgLi4uIFBPUlRf
-TUFYXzgyNTA6DQo+CXsNCj4JCS8qIGN1cnJlbnQgYm9keSBvZiBmdW5jdGlvbiAqLw0KPgl9DQo+
-I2VuZGlmDQo+CWRlZmF1bHQ6DQo+CX0NCj4NClllcywgdGhpcyBzaG91bGQgYmUgY29uc2lkZXJl
-ZCwgdGhlbiBzZXJpYWw4MjUwX2dldF9wb3J0KGluZm8tPmxpbmUpIGZvciB1YXJ0X2NvbnNvbGUo
-KSBhbHNvDQpzaG91bGQgYmUgcHV0IGluIHRoaXMgdHlwZSBzd2l0Y2gsICBUaGFua3MuDQoNCkJl
-c3QgUmVnYXJkcywNCkppbmdjaGFuZw0KDQo+UmVnYXJkcywNCj5QZXRlciBIdXJsZXkNCj4NCj4N
-Cj4+DQo+PiAgCXJldHVybiAwOw0KPj4gQEAgLTI1Niw3ICsyNTYsNyBAQCBzdGF0aWMgaW50IG9m
-X3NlcmlhbF9yZXN1bWUoc3RydWN0IGRldmljZSAqZGV2KSAgew0KPj4gIAlzdHJ1Y3Qgb2Zfc2Vy
-aWFsX2luZm8gKmluZm8gPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsNCj4+DQo+PiAtCWlmIChpbmZv
-LT5jbGspDQo+PiArCWlmIChpbmZvLT5jbGsgJiYgY29uc29sZV9zdXNwZW5kX2VuYWJsZWQpDQo+
-PiAgCQljbGtfcHJlcGFyZV9lbmFibGUoaW5mby0+Y2xrKTsNCj4+DQo+PiAgCXNlcmlhbDgyNTBf
-cmVzdW1lX3BvcnQoaW5mby0+bGluZSk7DQo+Pg0KDQo=
+The recent discussion [1] on the API have resulted in moving away from
+device_control ioctl method to proper channel APIs.
+There are still few users on the device_control which should use the wrappers
+existing rather than access device_control.
+This will aid us in deprecating and removing device_control, possibly after
+the merge window.
+
+These can be merged thru respective subsystem tree or dmaengine tree. Either
+way please just let me know.
+
+Feng's kbuild has tested these as well [2]
+
+[1]: http://www.spinics.net/lists/dmaengine/msg02212.html
+[2]: http://git.infradead.org/users/vkoul/slave-dma.git/shortlog/refs/heads/topic/dma_control_cleanup
+
+Vinod Koul (12):
+  pata_arasan_cf: use dmaengine_terminate_all() API
+  dmaengine: coh901318: use dmaengine_terminate_all() API
+  [media] V4L2: mx3_camer: use dmaengine_pause() API
+  mtd: fsmc_nand: use dmaengine_terminate_all() API
+  mtd: sh_flctl: use dmaengine_terminate_all() API
+  net: ks8842: use dmaengine_terminate_all() API
+  spi/atmel: use dmaengine_terminate_all() API
+  spi/spi-dw-mid.c: use dmaengine_slave_config() API
+  serial: sh-sci: use dmaengine_terminate_all() API
+  usb: musb: ux500_dma: use dmaengine_xxx() APIs
+  ASoC: txx9: use dmaengine_terminate_all() API
+  video: mx3fb: use dmaengine_terminate_all() API
+
+ drivers/ata/pata_arasan_cf.c                   |    5 ++---
+ drivers/dma/coh901318.c                        |    2 +-
+ drivers/media/platform/soc_camera/mx3_camera.c |    6 ++----
+ drivers/mtd/nand/fsmc_nand.c                   |    2 +-
+ drivers/mtd/nand/sh_flctl.c                    |    2 +-
+ drivers/net/ethernet/micrel/ks8842.c           |    6 ++----
+ drivers/spi/spi-atmel.c                        |    6 ++----
+ drivers/spi/spi-dw-mid.c                       |    6 ++----
+ drivers/tty/serial/sh-sci.c                    |    2 +-
+ drivers/usb/musb/ux500_dma.c                   |    7 ++-----
+ drivers/video/fbdev/mx3fb.c                    |    3 +--
+ sound/soc/txx9/txx9aclc.c                      |    7 +++----
+ 12 files changed, 20 insertions(+), 34 deletions(-)
+
