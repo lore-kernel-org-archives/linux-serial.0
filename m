@@ -1,37 +1,39 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] tty/serial_core: Introduce lock mechanism for RS485
-Date: Mon, 13 Oct 2014 14:52:29 +0100
-Message-ID: <20141013145229.4849f07a@alan.etchedpixels.co.uk>
-References: <1412948280-30993-1-git-send-email-ricardo.ribalda@gmail.com>
+From: Johannes Thumshirn <johannes.thumshirn@men.de>
+Subject: Handling of automatic flow control in UART drivers
+Date: Mon, 13 Oct 2014 16:48:39 +0200
+Message-ID: <20141013144831.GA8409@jtlinux>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:55622 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754992AbaJMNwp (ORCPT
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.153]:16239 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752869AbaJMOuC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Oct 2014 09:52:45 -0400
-In-Reply-To: <1412948280-30993-1-git-send-email-ricardo.ribalda@gmail.com>
+	Mon, 13 Oct 2014 10:50:02 -0400
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+To: linux-serial@vger.kernel.org
+Cc: =?iso-8859-1?Q?Gei=DFler?= Andreas <Andreas.Geissler@men.de>, Johannes Thumshirn <Johannes.Thumshirn@men.de>
 
-> @@ -1154,8 +1154,16 @@ static int uart_get_icount(struct tty_struct *tty,
->  static int uart_get_rs485_config(struct uart_port *port,
->  			 struct serial_rs485 __user *rs485)
->  {
-> -	if (copy_to_user(rs485, &port->rs485, sizeof(port->rs485)))
-> +	unsigned long flags;
-> +	int ret;
-> +
-> +	spin_lock_irqsave(&port->lock, flags);
-> +	ret = copy_to_user(rs485, &port->rs485, sizeof(port->rs485));
-> +	spin_unlock_irqrestore(&port->lock, flags);
+Hi,
 
-Looks good apart from this bit.. The copy needs to go to a temporary
-before the lock is taken otherwise we may sleep on a pagefault with irqs
-off
+We have problem with automatic flow control (i.e. auto RTS/CTS handshaking) in
+our uart driver (men_z135_uart.c). It's probably less a technical but a problem
+with me understanding the API.
 
-Alan
+I active the hardware auto flow control feature on the CRTSCTS flag in my
+uart_ops->set_termios() function. But then the RTS flag is set on every call of
+the uart_ops->set_mctrl() function, this seems to confuse the hardware. Is there
+a way to tell the tty layer that flow control is handled solely by hardware?
+I.e. is there a way of telling serial core to leave out the calls to
+uart_set_mctrl()/uart_clear_mctrl() in uart_throttle()/uart_unthrottle(), or is
+setting UPF_FLOW_HARD and then implementing a dummy port->ops->{un}throttle()
+the correct way?
+
+Are there any drivers that use a hardware's automatic flow control feature I can
+use as an example? A fast grep on AFE reveals some spots, but I can't really
+find a difference to my implementation.
+
+Thanks in advance,
+	Johannes
