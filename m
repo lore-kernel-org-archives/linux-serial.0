@@ -1,147 +1,37 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCHv3] serial: of-serial: fix up PM ops on no_console_suspend
- and port type
-Date: Mon, 13 Oct 2014 08:01:06 -0400
-Message-ID: <543BBF02.20302@hurleysoftware.com>
-References: <1413191667-10949-1-git-send-email-jingchang.lu@freescale.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] tty/serial_core: Introduce lock mechanism for RS485
+Date: Mon, 13 Oct 2014 14:52:29 +0100
+Message-ID: <20141013145229.4849f07a@alan.etchedpixels.co.uk>
+References: <1412948280-30993-1-git-send-email-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:49319 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753341AbaJMMBO (ORCPT
+Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:55622 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754992AbaJMNwp (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 13 Oct 2014 08:01:14 -0400
-In-Reply-To: <1413191667-10949-1-git-send-email-jingchang.lu@freescale.com>
+	Mon, 13 Oct 2014 09:52:45 -0400
+In-Reply-To: <1412948280-30993-1-git-send-email-ricardo.ribalda@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jingchang Lu <jingchang.lu@freescale.com>, gregkh@linuxfoundation.org
-Cc: josephl@nvidia.com, arnd@arndb.de, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
-On 10/13/2014 05:14 AM, Jingchang Lu wrote:
-> This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
-> "serial: of-serial: add PM suspend/resume support", which disables
-> the uart clock on suspend, but also causes a hardware hang on register
-> access if no_console_suspend command line option is used.
-> 
-> Also, not every of_serial device is an 8250 port, so the serial8250
-> suspend/resume functions should only be applied to a real 8250 port.
-> 
-> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
-> ---
-> changes in v3:
->  fix up point reference and deference.
-> 
-> changes in v2:
->  add switch selection on uart type.
-> 
->  drivers/tty/serial/of_serial.c | 42 ++++++++++++++++++++++++++++++++++++------
->  1 file changed, 36 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-> index 8bc2563..9d747a7 100644
-> --- a/drivers/tty/serial/of_serial.c
-> +++ b/drivers/tty/serial/of_serial.c
-> @@ -245,9 +245,24 @@ static int of_serial_suspend(struct device *dev)
+> @@ -1154,8 +1154,16 @@ static int uart_get_icount(struct tty_struct *tty,
+>  static int uart_get_rs485_config(struct uart_port *port,
+>  			 struct serial_rs485 __user *rs485)
 >  {
->  	struct of_serial_info *info = dev_get_drvdata(dev);
->  
-> -	serial8250_suspend_port(info->line);
-> -	if (info->clk)
-> -		clk_disable_unprepare(info->clk);
-> +	switch(info->type) {
-> +#ifdef CONFIG_SERIAL_8250
-> +	case PORT_8250 ... PORT_MAX_8250:
-> +	{
-> +		struct uart_8250_port *port8250;
-> +		port8250 = serial8250_get_port(info->line);
+> -	if (copy_to_user(rs485, &port->rs485, sizeof(port->rs485)))
+> +	unsigned long flags;
+> +	int ret;
 > +
-> +		serial8250_suspend_port(info->line);
-> +		if (info->clk &&
-> +		    (!uart_console(&port8250->port) ||
-> +		    (uart_console(&port8250->port) && console_suspend_enabled)))
+> +	spin_lock_irqsave(&port->lock, flags);
+> +	ret = copy_to_user(rs485, &port->rs485, sizeof(port->rs485));
+> +	spin_unlock_irqrestore(&port->lock, flags);
 
-This conditional is the same as
+Looks good apart from this bit.. The copy needs to go to a temporary
+before the lock is taken otherwise we may sleep on a pagefault with irqs
+off
 
-		if (info->clk && (!uart_console(&port8250->port) || console_suspend_enabled))
-
-> +			clk_disable_unprepare(info->clk);
-> +		break;
-> +	}
-> +#endif
-> +	default:
-> +		break;
-> +	}
-
-I suggest you separate this into a separate function like:
-
-#ifdef CONFIG_SERIAL_8250
-static void of_serial_suspend_8250(struct of_serial_info *info)
-{
-	struct uart_8250_port *uart = serial_8250_get_port(info->line);
-	struct uart_port *port = &uart->port;
-
-	serial8250_suspend_port(info->line);
-	if (info->clk && (!uart_console(port) || console_suspend_enabled))
-		clk_disable_unprepare(info->clk);
-}
-#else
-static inline void of_serial_suspend_8250(struct of_serial_info *info)
-{ }
-#endif
-
-and call it like:
-
-static int of_serial_suspend(struct device *dev)
-{
-	struct of_serial_info *info = dev_get_drvdata(dev);
-
-	switch (info->type) {
-	case PORT_8250 ... PORT_MAX_8250:
-		of_serial_suspend_8250(info);
-		break;
-	}
-
-	return 0;
-}
-
-I did not build-test this, so you should.
-
-Regards,
-Peter Hurley
-
->  
->  	return 0;
->  }
-> @@ -256,10 +271,25 @@ static int of_serial_resume(struct device *dev)
->  {
->  	struct of_serial_info *info = dev_get_drvdata(dev);
->  
-> -	if (info->clk)
-> -		clk_prepare_enable(info->clk);
-> +	switch(info->type) {
-> +#ifdef CONFIG_SERIAL_8250
-> +	case PORT_8250 ... PORT_MAX_8250:
-> +	{
-> +		struct uart_8250_port *port8250;
-> +		port8250 = serial8250_get_port(info->line);
-> +
-> +		if (info->clk &&
-> +		    (!uart_console(&port8250->port) ||
-> +		    (uart_console(&port8250->port) && console_suspend_enabled)))
-> +			clk_prepare_enable(info->clk);
->  
-> -	serial8250_resume_port(info->line);
-> +		serial8250_resume_port(info->line);
-> +		break;
-> +	}
-> +#endif
-> +	default:
-> +		break;
-> +	}
->  
->  	return 0;
->  }
-> 
-
+Alan
