@@ -1,82 +1,40 @@
-From: Timur Tabi <timur@tabi.org>
-Subject: Re: [PATCH 1/3] qe-uart: modify qe-uart to adapt both powerpc and arm
-Date: Mon, 13 Oct 2014 11:30:22 -0500
-Message-ID: <CAOZdJXUvqzex6oFTEoFRAXUCMfYHZ4GzSESQOvhx_9-vCC_C3Q@mail.gmail.com>
-References: <1412923663-4374-1-git-send-email-B45475@freescale.com>
- <1412964307.13320.603.camel@snotra.buserror.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <1412964307.13320.603.camel@snotra.buserror.net>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Scott Wood <scottwood@freescale.com>
-Cc: Scott Wood <B07421@freescale.com>, Zhao Qiang <B45475@freescale.com>, Timur Tabi <timur@tabi.org>, linux-serial@vger.kernel.org, R63061@freescale.com, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: Handling of automatic flow control in UART drivers
+Date: Mon, 13 Oct 2014 17:09:21 +0000 (UTC)
+Message-ID: <m1h101$tr5$1@ger.gmane.org>
+References: <20141013144831.GA8409@jtlinux>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from plane.gmane.org ([80.91.229.3]:51224 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751710AbaJMRJe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Oct 2014 13:09:34 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <lnx-linux-serial@m.gmane.org>)
+	id 1Xdj7k-0002Dj-Lr
+	for linux-serial@vger.kernel.org; Mon, 13 Oct 2014 19:09:32 +0200
+Received: from dsl.comtrol.com ([64.122.56.22])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Mon, 13 Oct 2014 19:09:32 +0200
+Received: from grant.b.edwards by dsl.comtrol.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-serial@vger.kernel.org>; Mon, 13 Oct 2014 19:09:32 +0200
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-T24gRnJpLCBPY3QgMTAsIDIwMTQgYXQgMTowNSBQTSwgU2NvdHQgV29vZCA8c2NvdHR3b29kQGZy
-ZWVzY2FsZS5jb20+IHdyb3RlOgo+IFRoZXJlIGFyZSBtYW55IGNoYW5nZXMgaW4gaGVyZSB0aGF0
-IG91Z2h0IHRvIGJlIHNlcGFyYXRlIHBhdGNoZXMgd2l0aAo+IHNlcGFyYXRlIGp1c3RpZmljYXRp
-b24uCj4KPiBBbHNvLCBzb21lIG9mIHRoZSBRRSBjaGFuZ2VzIHNlZW0gdG8gYmUgcmVhc29uYWJs
-ZSBjbGVhbnVwLCBidXQgbm90Cj4gcmVsYXRlZCB0byBtYWtpbmcgdGhlIGNvZGUgd29yayBvbiBB
-Uk0uCgpJIGFncmVlIHdpdGggU2NvdHQuICBUaGlzIHBhdGNoIGFscmVhZHkgbWFrZXMgc2lnbmlm
-aWNhbnQgY29kZQpjaGFuZ2VzLCBzbyB5b3Ugc2hvdWxkIGhhdmUgb25lIHBhdGNoIHRoYXQganVz
-dCBtYWtlcyB0aGUKb3V0X2JlMzItPmlvd3JpdGUzMmJlIGNoYW5nZXMuICBDaGFuZ2VzIHRvIHRo
-ZSBRRSBsaWJyYXJ5IHNob3VsZCBOT1QKYmUgaW4gdGhlIHNhbWUgcGF0Y2ggYXMgY2hhbmdlcyB0
-byB1Y2NfdWFydC5jLgoKSW4gYWRkaXRpb24sIGNoYW5nZXMgbGlrZSB0aGlzOgoKLSAgICAgICBp
-cHJvcCA9IG9mX2dldF9wcm9wZXJ0eShucCwgInBvcnQtbnVtYmVyIiwgTlVMTCk7Ci0gICAgICAg
-aWYgKCFpcHJvcCkgeworICAgICAgIHJldCA9IG9mX3Byb3BlcnR5X3JlYWRfdTMyX2luZGV4KG5w
-LCAicG9ydC1udW1iZXIiLCAwLCAmdmFsKTsKKyAgICAgICBpZiAocmV0KSB7CgpzaG91bGQgYmUg
-Y2hhbmdlZCB0byByZW1vdmUgdGhlIE9GIGRlcGVuZGVuY3kuICBJZiB5b3UncmUgZ29pbmcgdG8K
-cmVwbGFjZSBvZl9nZXRfcHJvcGVydHksIHJlcGxhY2UgaXQgd2l0aCBkZXZpY2VfcHJvcGVydHlf
-cmVhZF91MzIoKSwKdG8gcmVtb3ZlIHRoZSBPRiBkZXBlbmRlbmN5LgoKPj4gZGlmZiAtLWdpdCBh
-L2FyY2gvYXJtL2luY2x1ZGUvYXNtL2RlbGF5LmggYi9hcmNoL2FybS9pbmNsdWRlL2FzbS9kZWxh
-eS5oCj4+IGluZGV4IGRmZjcxNGQuLmE5MzJmOTkgMTAwNjQ0Cj4+IC0tLSBhL2FyY2gvYXJtL2lu
-Y2x1ZGUvYXNtL2RlbGF5LmgKPj4gKysrIGIvYXJjaC9hcm0vaW5jbHVkZS9hc20vZGVsYXkuaAo+
-PiBAQCAtNTcsNiArNTcsMjIgQEAgZXh0ZXJuIHZvaWQgX19iYWRfdWRlbGF5KHZvaWQpOwo+PiAg
-ICAgICAgICAgICAgICAgICAgICAgX19jb25zdF91ZGVsYXkoKG4pICogVURFTEFZX01VTFQpKSA6
-ICAgICAgICAgICAgXAo+PiAgICAgICAgIF9fdWRlbGF5KG4pKQo+Pgo+PiArI2RlZmluZSBzcGlu
-X2V2ZW50X3RpbWVvdXQoY29uZGl0aW9uLCB0aW1lb3V0LCBkZWxheSkgICAgICAgICAgICAgICAg
-ICAgICAgICAgIFwKPj4gKyh7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcCj4+ICsgICAgIHR5cGVvZihj
-b25kaXRpb24pIF9fcmV0OyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgXAo+PiArICAgICBpbnQgaSA9IDA7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKPj4gKyAgICAgd2hpbGUgKCEoX19yZXQg
-PSAoY29uZGl0aW9uKSkgJiYgKGkrKyA8IHRpbWVvdXQpKSB7ICAgICAgICAgICAgICAgICAgICBc
-Cj4+ICsgICAgICAgICAgICAgaWYgKGRlbGF5KSAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgXAo+PiArICAgICAgICAgICAgICAgICAgICAgdWRlbGF5
-KGRlbGF5KTsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKPj4gKyAg
-ICAgICAgICAgICBlbHNlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICBcCj4+ICsgICAgICAgICAgICAgICAgICAgICBjcHVfcmVsYXgoKTsg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXAo+PiArICAgICAgICAg
-ICAgIHVkZWxheSgxKTsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIFwKPj4gKyAgICAgfSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcCj4KPiBUaGlzIHdpbGwgZGVsYXkg
-dG9vIGxvbmcgaWYgImRlbGF5IiBpcyB1c2VkLgoKU2hvdWxkbid0IEFSTSBoYXZlIGEgdmVyc2lv
-biBvZiB0Yl90aWNrc19zaW5jZSgpIGJ5IG5vdz8KCj4+ICsgICAgIGlmICghX19yZXQpICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXAo+
-PiArICAgICAgICAgICAgIF9fcmV0ID0gKGNvbmRpdGlvbik7ICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIFwKPj4gKyAgICAgX19yZXQ7ICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcCj4KPiBUaW11
-ciwgZG8geW91IHJlbWVtYmVyIHdoeSB0aGF0IGZpbmFsICJpZiAoIV9fcmV0KSBfX3JldCA9IChj
-b25kaXRpb24pOyIKPiBpcyBuZWVkZWQ/CgogICAgcG93ZXJwYzogRml4IHNwaW5fZXZlbnRfdGlt
-ZW91dCgpIHRvIGJlIHJvYnVzdCBvdmVyIGNvbnRleHQgc3dpdGNoZXMKCiAgICBDdXJyZW50IGlt
-cGxlbWVudGF0aW9uIG9mIHNwaW5fZXZlbnRfdGltZW91dCBjYW4gYmUgaW50ZXJydXB0ZWQgYnkg
-YW4KICAgIElSUSBvciBjb250ZXh0IHN3aXRjaCBhZnRlciB0ZXN0aW5nIHRoZSBjb25kaXRpb24s
-IGJ1dCBiZWZvcmUgY2hlY2tpbmcKICAgIHRoZSB0aW1lb3V0LiAgVGhpcyBjYW4gY2F1c2UgdGhl
-IGxvb3AgdG8gcmVwb3J0IGEgdGltZW91dCB3aGVuIHRoZQogICAgY29uZGl0aW9uIGFjdHVhbGx5
-IGJlY2FtZSB0cnVlIGluIHRoZSBtaWRkbGUuCgogICAgVGhpcyBwYXRjaCBhZGRzIG9uZSBmaW5h
-bCBjaGVjayBvZiB0aGUgY29uZGl0aW9uIHVwb24gZXhpdCBvZiB0aGUgbG9vcAogICAgaWYgdGhl
-IGxhc3QgdGVzdCBvZiB0aGUgY29uZGl0aW9uIHdhcyBzdGlsbCBmYWxzZS4KX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTGludXhwcGMtZGV2IG1haWxpbmcg
-bGlzdApMaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpodHRwczovL2xpc3RzLm96bGFicy5v
-cmcvbGlzdGluZm8vbGludXhwcGMtZGV2
+On 2014-10-13, Johannes Thumshirn <johannes.thumshirn@men.de> wrote:
+
+> I active the hardware auto flow control feature on the CRTSCTS flag
+> in my uart_ops->set_termios() function. But then the RTS flag is set
+> on every call of the uart_ops->set_mctrl() function, this seems to
+> confuse the hardware.
+
+Perhaps in that situation you should ignore the RTS setting in
+set_mctrl() if CRTSCTS is enabled.
+
+-- 
+Grant Edwards               grant.b.edwards        Yow! Zippy's brain cells
+                                  at               are straining to bridge
+                              gmail.com            synapses ...
+
