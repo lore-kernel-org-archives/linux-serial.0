@@ -1,112 +1,100 @@
-From: Jingchang Lu <jingchang.lu-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCHv2] serial: of-serial: fix up PM ops on no_console_suspend
- and port type
-Date: Mon, 13 Oct 2014 09:49:36 +0000
-Message-ID: <32093fd7578143668ceb84feccecd21d@BL2PR03MB467.namprd03.prod.outlook.com>
-References: <1413185820-5920-1-git-send-email-jingchang.lu@freescale.com>
- <543B9E44.109@nvidia.com>
+From: Jingchang Lu <jingchang.lu@freescale.com>
+Subject: [PATCHv3] serial: of-serial: fix up PM ops on no_console_suspend and port type
+Date: Mon, 13 Oct 2014 17:14:27 +0800
+Message-ID: <1413191667-10949-1-git-send-email-jingchang.lu@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <543B9E44.109-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joseph Lo <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org" <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from [157.56.110.106] ([157.56.110.106]:2567 "EHLO
+	na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752937AbaJMKBQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 13 Oct 2014 06:01:16 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: josephl@nvidia.com, arnd@arndb.de, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Jingchang Lu <jingchang.lu@freescale.com>
 
-TXkgbWlzdGFrZSwgSSB3aWxsIGZpeCBpdCwgbWFueSB0aGFua3MuDQoNCkJlc3QgUmVnYXJkcywN
-CkppbmdjaGFuZw0KDQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBKb3NlcGgg
-TG8gW21haWx0bzpqb3NlcGhsQG52aWRpYS5jb21dDQo+U2VudDogTW9uZGF5LCBPY3RvYmVyIDEz
-LCAyMDE0IDU6NDEgUE0NCj5UbzogTHUgSmluZ2NoYW5nLUIzNTA4MzsgZ3JlZ2toQGxpbnV4Zm91
-bmRhdGlvbi5vcmcNCj5DYzogZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7IHBldGVyQGh1cmxl
-eXNvZnR3YXJlLmNvbTsgYXJuZEBhcm5kYi5kZTsNCj5saW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
-b3JnOyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0tDQo+a2VybmVsQGxp
-c3RzLmluZnJhZGVhZC5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIdjJdIHNlcmlhbDogb2Ytc2Vy
-aWFsOiBmaXggdXAgUE0gb3BzIG9uDQo+bm9fY29uc29sZV9zdXNwZW5kIGFuZCBwb3J0IHR5cGUN
-Cj4NCj5IaSwNCj4NCj5PbiAxMC8xMy8yMDE0IDAzOjM3IFBNLCBKaW5nY2hhbmcgTHUgd3JvdGU6
-DQo+PiBUaGlzIHBhdGNoIGZpeGVzIGNvbW1pdCAyZGVhNTNiZjU3NzgzZjI0M2M4OTJlOTljMTBj
-NjkyMWU5NTZhYTdlLA0KPj4gInNlcmlhbDogb2Ytc2VyaWFsOiBhZGQgUE0gc3VzcGVuZC9yZXN1
-bWUgc3VwcG9ydCIsIHdoaWNoIGRpc2FibGVzDQo+PiB0aGUgdWFydCBjbG9jayBvbiBzdXNwZW5k
-LCBidXQgYWxzbyBjYXVzZXMgYSBoYXJkd2FyZSBoYW5nIG9uIHJlZ2lzdGVyDQo+PiBhY2Nlc3Mg
-aWYgbm9fY29uc29sZV9zdXNwZW5kIGNvbW1hbmQgbGluZSBvcHRpb24gaXMgdXNlZC4NCj4+DQo+
-PiBBbHNvLCBub3QgZXZlcnkgb2Zfc2VyaWFsIGRldmljZSBpcyBhbiA4MjUwIHBvcnQsIHNvIHRo
-ZSBzZXJpYWw4MjUwDQo+PiBzdXNwZW5kL3Jlc3VtZSBmdW5jdGlvbnMgc2hvdWxkIG9ubHkgYmUg
-YXBwbGllZCB0byBhIHJlYWwgODI1MCBwb3J0Lg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IEppbmdj
-aGFuZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5jb20+DQo+PiAtLS0NCj4+IGNoYW5nZXMg
-aW4gdjI6DQo+PiAgIGFkZCBzd2l0Y2ggc2VsZWN0aW9uIG9uIHVhcnQgdHlwZS4NCj4NCj5BZnRl
-ciBhcHBseSB0aGlzLCBpdCBjYW4ndCBidWlsZCBmb3IgbWUuIEkgc3RpbGwgbmVlZCB0byBhcHBs
-eSB0aGUgZml4DQo+bGlrZSBzb21ldGhpbmcgYmVsb3cuDQo+DQo+ZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwuYw0KPmIvZHJpdmVycy90dHkvc2VyaWFsL29mX3Nlcmlh
-bC5jDQo+aW5kZXggZTUzNWY5YzE1NjNkLi4xNGMxZmY0ZTc4MTYgMTAwNjQ0DQo+LS0tIGEvZHJp
-dmVycy90dHkvc2VyaWFsL29mX3NlcmlhbC5jDQo+KysrIGIvZHJpdmVycy90dHkvc2VyaWFsL29m
-X3NlcmlhbC5jDQo+QEAgLTksNiArOSw3IEBADQo+ICAgKiAgMiBvZiB0aGUgTGljZW5zZSwgb3Ig
-KGF0IHlvdXIgb3B0aW9uKSBhbnkgbGF0ZXIgdmVyc2lvbi4NCj4gICAqDQo+ICAgKi8NCj4rI2lu
-Y2x1ZGUgPGxpbnV4L2NvbnNvbGUuaD4NCj4gICNpbmNsdWRlIDxsaW51eC9tb2R1bGUuaD4NCj4g
-ICNpbmNsdWRlIDxsaW51eC9zbGFiLmg+DQo+ICAjaW5jbHVkZSA8bGludXgvZGVsYXkuaD4NCj5A
-QCAtMjQ4LDEzICsyNDksMTMgQEAgc3RhdGljIGludCBvZl9zZXJpYWxfc3VzcGVuZChzdHJ1Y3Qg
-ZGV2aWNlICpkZXYpDQo+ICAjaWZkZWYgQ09ORklHX1NFUklBTF84MjUwDQo+ICAgICAgICAgY2Fz
-ZSBQT1JUXzgyNTAgLi4uIFBPUlRfTUFYXzgyNTA6DQo+ICAgICAgICAgew0KPi0gICAgICAgICAg
-ICAgICBzdHJ1Y3QgdWFydF84MjUwX3BvcnQgcG9ydDgyNTA7DQo+KyAgICAgICAgICAgICAgIHN0
-cnVjdCB1YXJ0XzgyNTBfcG9ydCAqcG9ydDgyNTA7DQo+ICAgICAgICAgICAgICAgICBwb3J0ODI1
-MCA9IHNlcmlhbDgyNTBfZ2V0X3BvcnQoaW5mby0+bGluZSk7DQo+DQo+ICAgICAgICAgICAgICAg
-ICBzZXJpYWw4MjUwX3N1c3BlbmRfcG9ydChpbmZvLT5saW5lKTsNCj4gICAgICAgICAgICAgICAg
-IGlmIChpbmZvLT5jbGsgJiYNCj4tICAgICAgICAgICAgICAgICAgICghdWFydF9jb25zb2xlKHBv
-cnQ4MjUwKSB8fA0KPi0gICAgICAgICAgICAgICAgICAgICh1YXJ0X2NvbnNvbGUocG9ydDgyNTAp
-ICYmIGNvbnNvbGVfc3VzcGVuZF9lbmFibGVkKSkpDQo+KyAgICAgICAgICAgICAgICAgICAoIXVh
-cnRfY29uc29sZSgmcG9ydDgyNTAtPnBvcnQpIHx8DQo+KyAgICAgICAgICAgICAgICAgICAgKHVh
-cnRfY29uc29sZSgmcG9ydDgyNTAtPnBvcnQpICYmDQo+Y29uc29sZV9zdXNwZW5kX2VuYWJsZWQp
-KSkNCj4gICAgICAgICAgICAgICAgICAgICAgICAgY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGluZm8t
-PmNsayk7DQo+ICAgICAgICAgICAgICAgICBicmVhazsNCj4gICAgICAgICB9DQo+QEAgLTI3NCwx
-MiArMjc1LDEyIEBAIHN0YXRpYyBpbnQgb2Zfc2VyaWFsX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpk
-ZXYpDQo+ICAjaWZkZWYgQ09ORklHX1NFUklBTF84MjUwDQo+ICAgICAgICAgY2FzZSBQT1JUXzgy
-NTAgLi4uIFBPUlRfTUFYXzgyNTA6DQo+ICAgICAgICAgew0KPi0gICAgICAgICAgICAgICBzdHJ1
-Y3QgdWFydF84MjUwX3BvcnQgcG9ydDgyNTA7DQo+KyAgICAgICAgICAgICAgIHN0cnVjdCB1YXJ0
-XzgyNTBfcG9ydCAqcG9ydDgyNTA7DQo+ICAgICAgICAgICAgICAgICBwb3J0ODI1MCA9IHNlcmlh
-bDgyNTBfZ2V0X3BvcnQoaW5mby0+bGluZSk7DQo+DQo+ICAgICAgICAgICAgICAgICBpZiAoaW5m
-by0+Y2xrICYmDQo+LSAgICAgICAgICAgICAgICAgICAoIXVhcnRfY29uc29sZShwb3J0ODI1MCkg
-fHwNCj4tICAgICAgICAgICAgICAgICAgICAodWFydF9jb25zb2xlKHBvcnQ4MjUwKSAmJiBjb25z
-b2xlX3N1c3BlbmRfZW5hYmxlZCkpKQ0KPisgICAgICAgICAgICAgICAgICAgKCF1YXJ0X2NvbnNv
-bGUoJnBvcnQ4MjUwLT5wb3J0KSB8fA0KPisgICAgICAgICAgICAgICAgICAgICh1YXJ0X2NvbnNv
-bGUoJnBvcnQ4MjUwLT5wb3J0KSAmJg0KPmNvbnNvbGVfc3VzcGVuZF9lbmFibGVkKSkpDQo+ICAg
-ICAgICAgICAgICAgICAgICAgICAgIGNsa19wcmVwYXJlX2VuYWJsZShpbmZvLT5jbGspOw0KPg0K
-PiAgICAgICAgICAgICAgICAgc2VyaWFsODI1MF9yZXN1bWVfcG9ydChpbmZvLT5saW5lKTsNCj4N
-Cj4tSm9zZXBoDQo+DQo+Pg0KPj4gICBkcml2ZXJzL3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMgfCA0
-Mg0KPisrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLQ0KPj4gICAxIGZp
-bGUgY2hhbmdlZCwgMzYgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlvbnMoLSkNCj4+DQo+PiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL29mX3NlcmlhbC5jDQo+Yi9kcml2ZXJzL3R0eS9z
-ZXJpYWwvb2Zfc2VyaWFsLmMNCj4+IGluZGV4IDhiYzI1NjMuLmI1MjUzODMgMTAwNjQ0DQo+PiAt
-LS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMNCj4+ICsrKyBiL2RyaXZlcnMvdHR5
-L3NlcmlhbC9vZl9zZXJpYWwuYw0KPj4gQEAgLTI0NSw5ICsyNDUsMjQgQEAgc3RhdGljIGludCBv
-Zl9zZXJpYWxfc3VzcGVuZChzdHJ1Y3QgZGV2aWNlICpkZXYpDQo+PiAgIHsNCj4+ICAgCXN0cnVj
-dCBvZl9zZXJpYWxfaW5mbyAqaW5mbyA9IGRldl9nZXRfZHJ2ZGF0YShkZXYpOw0KPj4NCj4+IC0J
-c2VyaWFsODI1MF9zdXNwZW5kX3BvcnQoaW5mby0+bGluZSk7DQo+PiAtCWlmIChpbmZvLT5jbGsp
-DQo+PiAtCQljbGtfZGlzYWJsZV91bnByZXBhcmUoaW5mby0+Y2xrKTsNCj4+ICsJc3dpdGNoKGlu
-Zm8tPnR5cGUpIHsNCj4+ICsjaWZkZWYgQ09ORklHX1NFUklBTF84MjUwDQo+PiArCWNhc2UgUE9S
-VF84MjUwIC4uLiBQT1JUX01BWF84MjUwOg0KPj4gKwl7DQo+PiArCQlzdHJ1Y3QgdWFydF84MjUw
-X3BvcnQgcG9ydDgyNTA7DQo+PiArCQlwb3J0ODI1MCA9IHNlcmlhbDgyNTBfZ2V0X3BvcnQoaW5m
-by0+bGluZSk7DQo+PiArDQo+PiArCQlzZXJpYWw4MjUwX3N1c3BlbmRfcG9ydChpbmZvLT5saW5l
-KTsNCj4+ICsJCWlmIChpbmZvLT5jbGsgJiYNCj4+ICsJCSAgICAoIXVhcnRfY29uc29sZShwb3J0
-ODI1MCkgfHwNCj4+ICsJCSAgICAgKHVhcnRfY29uc29sZShwb3J0ODI1MCkgJiYgY29uc29sZV9z
-dXNwZW5kX2VuYWJsZWQpKSkNCj4+ICsJCQljbGtfZGlzYWJsZV91bnByZXBhcmUoaW5mby0+Y2xr
-KTsNCj4+ICsJCWJyZWFrOw0KPj4gKwl9DQo+PiArI2VuZGlmDQo+PiArCWRlZmF1bHQ6DQo+PiAr
-CQlicmVhazsNCj4+ICsJfQ0KPj4NCj4+ICAgCXJldHVybiAwOw0KPj4gICB9DQo+PiBAQCAtMjU2
-LDEwICsyNzEsMjUgQEAgc3RhdGljIGludCBvZl9zZXJpYWxfcmVzdW1lKHN0cnVjdCBkZXZpY2Ug
-KmRldikNCj4+ICAgew0KPj4gICAJc3RydWN0IG9mX3NlcmlhbF9pbmZvICppbmZvID0gZGV2X2dl
-dF9kcnZkYXRhKGRldik7DQo+Pg0KPj4gLQlpZiAoaW5mby0+Y2xrKQ0KPj4gLQkJY2xrX3ByZXBh
-cmVfZW5hYmxlKGluZm8tPmNsayk7DQo+PiArCXN3aXRjaChpbmZvLT50eXBlKSB7DQo+PiArI2lm
-ZGVmIENPTkZJR19TRVJJQUxfODI1MA0KPj4gKwljYXNlIFBPUlRfODI1MCAuLi4gUE9SVF9NQVhf
-ODI1MDoNCj4+ICsJew0KPj4gKwkJc3RydWN0IHVhcnRfODI1MF9wb3J0IHBvcnQ4MjUwOw0KPj4g
-KwkJcG9ydDgyNTAgPSBzZXJpYWw4MjUwX2dldF9wb3J0KGluZm8tPmxpbmUpOw0KPj4gKw0KPj4g
-KwkJaWYgKGluZm8tPmNsayAmJg0KPj4gKwkJICAgICghdWFydF9jb25zb2xlKHBvcnQ4MjUwKSB8
-fA0KPj4gKwkJICAgICAodWFydF9jb25zb2xlKHBvcnQ4MjUwKSAmJiBjb25zb2xlX3N1c3BlbmRf
-ZW5hYmxlZCkpKQ0KPj4gKwkJCWNsa19wcmVwYXJlX2VuYWJsZShpbmZvLT5jbGspOw0KPj4NCj4+
-IC0Jc2VyaWFsODI1MF9yZXN1bWVfcG9ydChpbmZvLT5saW5lKTsNCj4+ICsJCXNlcmlhbDgyNTBf
-cmVzdW1lX3BvcnQoaW5mby0+bGluZSk7DQo+PiArCQlicmVhazsNCj4+ICsJfQ0KPj4gKyNlbmRp
-Zg0KPj4gKwlkZWZhdWx0Og0KPj4gKwkJYnJlYWs7DQo+PiArCX0NCj4+DQo+PiAgIAlyZXR1cm4g
-MDsNCj4+ICAgfQ0KPj4NCg==
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
+"serial: of-serial: add PM suspend/resume support", which disables
+the uart clock on suspend, but also causes a hardware hang on register
+access if no_console_suspend command line option is used.
+
+Also, not every of_serial device is an 8250 port, so the serial8250
+suspend/resume functions should only be applied to a real 8250 port.
+
+Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
+---
+changes in v3:
+ fix up point reference and deference.
+
+changes in v2:
+ add switch selection on uart type.
+
+ drivers/tty/serial/of_serial.c | 42 ++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 36 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 8bc2563..9d747a7 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -245,9 +245,24 @@ static int of_serial_suspend(struct device *dev)
+ {
+ 	struct of_serial_info *info = dev_get_drvdata(dev);
+ 
+-	serial8250_suspend_port(info->line);
+-	if (info->clk)
+-		clk_disable_unprepare(info->clk);
++	switch(info->type) {
++#ifdef CONFIG_SERIAL_8250
++	case PORT_8250 ... PORT_MAX_8250:
++	{
++		struct uart_8250_port *port8250;
++		port8250 = serial8250_get_port(info->line);
++
++		serial8250_suspend_port(info->line);
++		if (info->clk &&
++		    (!uart_console(&port8250->port) ||
++		    (uart_console(&port8250->port) && console_suspend_enabled)))
++			clk_disable_unprepare(info->clk);
++		break;
++	}
++#endif
++	default:
++		break;
++	}
+ 
+ 	return 0;
+ }
+@@ -256,10 +271,25 @@ static int of_serial_resume(struct device *dev)
+ {
+ 	struct of_serial_info *info = dev_get_drvdata(dev);
+ 
+-	if (info->clk)
+-		clk_prepare_enable(info->clk);
++	switch(info->type) {
++#ifdef CONFIG_SERIAL_8250
++	case PORT_8250 ... PORT_MAX_8250:
++	{
++		struct uart_8250_port *port8250;
++		port8250 = serial8250_get_port(info->line);
++
++		if (info->clk &&
++		    (!uart_console(&port8250->port) ||
++		    (uart_console(&port8250->port) && console_suspend_enabled)))
++			clk_prepare_enable(info->clk);
+ 
+-	serial8250_resume_port(info->line);
++		serial8250_resume_port(info->line);
++		break;
++	}
++#endif
++	default:
++		break;
++	}
+ 
+ 	return 0;
+ }
+-- 
+1.8.0
+
