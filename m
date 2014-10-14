@@ -1,34 +1,89 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCHv4] serial: of-serial: fix up PM ops on no_console_suspend
- and port type
-Date: Tue, 14 Oct 2014 06:31:05 -0400
-Message-ID: <543CFB69.50300@hurleysoftware.com>
-References: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com>
+Subject: Re: Handling of automatic flow control in UART drivers
+Date: Tue, 14 Oct 2014 07:18:58 -0400
+Message-ID: <543D06A2.2080709@hurleysoftware.com>
+References: <20141013144831.GA8409@jtlinux> <543C0831.8000101@hurleysoftware.com> <20141014092245.GA9412@jtlinux>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:48902 "EHLO
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:51095 "EHLO
 	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752778AbaJNKbM (ORCPT
+	with ESMTP id S1755061AbaJNLTC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Oct 2014 06:31:12 -0400
-In-Reply-To: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com>
+	Tue, 14 Oct 2014 07:19:02 -0400
+In-Reply-To: <20141014092245.GA9412@jtlinux>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jingchang Lu <jingchang.lu@freescale.com>, gregkh@linuxfoundation.org
-Cc: arnd@arndb.de, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Johannes Thumshirn <johannes.thumshirn@men.de>
+Cc: linux-serial@vger.kernel.org, =?UTF-8?B?R2Vpw59sZXIgQW5kcmVhcw==?= <Andreas.Geissler@men.de>
 
-On 10/14/2014 04:42 AM, Jingchang Lu wrote:
-> This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
-> "serial: of-serial: add PM suspend/resume support", which disables
-> the uart clock on suspend, but also causes a hardware hang on register
-> access if no_console_suspend command line option is used.
+On 10/14/2014 05:22 AM, Johannes Thumshirn wrote:
+> On Mon, Oct 13, 2014 at 01:13:21PM -0400, Peter Hurley wrote:
+>> On 10/13/2014 10:48 AM, Johannes Thumshirn wrote:
+>>> Hi,
+>>>
+>>> We have problem with automatic flow control (i.e. auto RTS/CTS handshaking) in
+>>> our uart driver (men_z135_uart.c). It's probably less a technical but a problem
+>>> with me understanding the API.
+>>>
+>>> I active the hardware auto flow control feature on the CRTSCTS flag in my
+>>> uart_ops->set_termios() function. But then the RTS flag is set on every call of
+>>> the uart_ops->set_mctrl() function, this seems to confuse the hardware. Is there
+>>> a way to tell the tty layer that flow control is handled solely by hardware?
+>>> I.e. is there a way of telling serial core to leave out the calls to
+>>> uart_set_mctrl()/uart_clear_mctrl() in uart_throttle()/uart_unthrottle(), or is
+>>> setting UPF_FLOW_HARD and then implementing a dummy port->ops->{un}throttle()
+>>> the correct way?
+>>>
+>>> Are there any drivers that use a hardware's automatic flow control feature I can
+>>> use as an example? A fast grep on AFE reveals some spots, but I can't really
+>>> find a difference to my implementation.
+>>
+>> uart_throttle()/uart_unthrottle() is essentially broken.
+>>
+>> If the RTS pin is driveable, then the UART driver must respond to TIOCM_RTS
+>> set and clear in the ->set_mctrl() handler, regardless of any mode selected
+>> in termios or other mode such as autoRTS.
+>>
+>> This requirement exists because both userspace and other kernel drivers may
+>> want to drive RTS for their own purposes.
+>>
+>> For example, a bluetooth UART HCI may allow the bluetooth module to sleep
+>> and wakes up the module by driving RTS low for a certain length of time;
+>> if autoRTS prevents MCR writes from driving RTS, then the wake up never
+>> happens. (see drivers/bluetooth/hci_ath.c : ath_wakeup_ar3k() for the
+>> equally broken workaround of turning off CRTSCTS via an internal
+>> tty core function which is going away soon).
+>>
+>> The reason why TI 16c750-based AFE doesn't have to bother with this is
+>> because, on that hardware, the MCR RTS bit overrides the autoRTS state;
+>> ie., RTS = MCR_RTS & autoRTS.
+>>
+>> If your hardware treats the two states orthogonally then you'll need
+>> to turn off autoRTS mode if TIOCM_RTS is being cleared.
+>> The amba-pl011.c driver does this; see drivers/tty/serial/amba-pl011.c:
+>> pl011_set_mctrl().
 > 
-> Also, not every of_serial device is an 8250 port, so the serial8250
-> suspend/resume functions should only be applied to a real 8250 port.
+> Thanks for the info.
+> 
+> We've actually found the problem. When using auto flow control we need to
+> disable the modem status IRQs, in order to work.
 
-Thanks.
+So the UART still raises modem status interrupts for DCTS when autoCTS is on?
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> The only problem that arises here is, when the modem status IRQs are disabled
+> the uart_ops->start_tx() isn't called anymore. But there should be work arounds
+> available.
+
+Almost certainly this is because ->hw_stopped has been set. The serial core
+does this in two places (besides uart_handle_cts_change()):
+uart_port_startup() after initializing the port and, in
+uart_set_termios(), which, if you set UPF_HARD_FLOW, the serial core will skip.
+
+Regards,
+Peter Hurley
+
+[Note: there's been some changes to flow control for 3.18; hw_stopped was moved
+to uart_port].
 
