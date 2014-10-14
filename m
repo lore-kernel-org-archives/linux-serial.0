@@ -1,89 +1,26 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: Handling of automatic flow control in UART drivers
-Date: Tue, 14 Oct 2014 07:18:58 -0400
-Message-ID: <543D06A2.2080709@hurleysoftware.com>
-References: <20141013144831.GA8409@jtlinux> <543C0831.8000101@hurleysoftware.com> <20141014092245.GA9412@jtlinux>
+From: Frans Klaver <frans.klaver@xsens.com>
+Subject: Re: [PATCH] serial: 8250_core: use pre-decrement for iteration limit
+Date: Tue, 14 Oct 2014 13:52:34 +0200
+Message-ID: <20141014115234.GB15616@ci00147.xsens-tech.local>
+References: <1413212951-20901-1-git-send-email-frans.klaver@xsens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:51095 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755061AbaJNLTC (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Oct 2014 07:19:02 -0400
-In-Reply-To: <20141014092245.GA9412@jtlinux>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1413212951-20901-1-git-send-email-frans.klaver@xsens.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Johannes Thumshirn <johannes.thumshirn@men.de>
-Cc: linux-serial@vger.kernel.org, =?UTF-8?B?R2Vpw59sZXIgQW5kcmVhcw==?= <Andreas.Geissler@men.de>
 
-On 10/14/2014 05:22 AM, Johannes Thumshirn wrote:
-> On Mon, Oct 13, 2014 at 01:13:21PM -0400, Peter Hurley wrote:
->> On 10/13/2014 10:48 AM, Johannes Thumshirn wrote:
->>> Hi,
->>>
->>> We have problem with automatic flow control (i.e. auto RTS/CTS handshaking) in
->>> our uart driver (men_z135_uart.c). It's probably less a technical but a problem
->>> with me understanding the API.
->>>
->>> I active the hardware auto flow control feature on the CRTSCTS flag in my
->>> uart_ops->set_termios() function. But then the RTS flag is set on every call of
->>> the uart_ops->set_mctrl() function, this seems to confuse the hardware. Is there
->>> a way to tell the tty layer that flow control is handled solely by hardware?
->>> I.e. is there a way of telling serial core to leave out the calls to
->>> uart_set_mctrl()/uart_clear_mctrl() in uart_throttle()/uart_unthrottle(), or is
->>> setting UPF_FLOW_HARD and then implementing a dummy port->ops->{un}throttle()
->>> the correct way?
->>>
->>> Are there any drivers that use a hardware's automatic flow control feature I can
->>> use as an example? A fast grep on AFE reveals some spots, but I can't really
->>> find a difference to my implementation.
->>
->> uart_throttle()/uart_unthrottle() is essentially broken.
->>
->> If the RTS pin is driveable, then the UART driver must respond to TIOCM_RTS
->> set and clear in the ->set_mctrl() handler, regardless of any mode selected
->> in termios or other mode such as autoRTS.
->>
->> This requirement exists because both userspace and other kernel drivers may
->> want to drive RTS for their own purposes.
->>
->> For example, a bluetooth UART HCI may allow the bluetooth module to sleep
->> and wakes up the module by driving RTS low for a certain length of time;
->> if autoRTS prevents MCR writes from driving RTS, then the wake up never
->> happens. (see drivers/bluetooth/hci_ath.c : ath_wakeup_ar3k() for the
->> equally broken workaround of turning off CRTSCTS via an internal
->> tty core function which is going away soon).
->>
->> The reason why TI 16c750-based AFE doesn't have to bother with this is
->> because, on that hardware, the MCR RTS bit overrides the autoRTS state;
->> ie., RTS = MCR_RTS & autoRTS.
->>
->> If your hardware treats the two states orthogonally then you'll need
->> to turn off autoRTS mode if TIOCM_RTS is being cleared.
->> The amba-pl011.c driver does this; see drivers/tty/serial/amba-pl011.c:
->> pl011_set_mctrl().
-> 
-> Thanks for the info.
-> 
-> We've actually found the problem. When using auto flow control we need to
-> disable the modem status IRQs, in order to work.
+On Mon, Oct 13, 2014 at 05:09:11PM +0200, Frans Klaver wrote:
+> In serial8250_rx_chars(), max_count is set to 256. Due to the
+> post-decrement operator used in the while() condition, the maximum
+> number of iterations actually 257. This is not a problem, but it is
+> mildly surprising if you're debugging. Use pre-decrement instead.
 
-So the UART still raises modem status interrupts for DCTS when autoCTS is on?
+I'm somewhat inclined to changing the title to something like:
 
-> The only problem that arises here is, when the modem status IRQs are disabled
-> the uart_ops->start_tx() isn't called anymore. But there should be work arounds
-> available.
+serial: 8250_core: actually limit char reads to max_count
 
-Almost certainly this is because ->hw_stopped has been set. The serial core
-does this in two places (besides uart_handle_cts_change()):
-uart_port_startup() after initializing the port and, in
-uart_set_termios(), which, if you set UPF_HARD_FLOW, the serial core will skip.
-
-Regards,
-Peter Hurley
-
-[Note: there's been some changes to flow control for 3.18; hw_stopped was moved
-to uart_port].
-
+Frans
