@@ -1,71 +1,130 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: RE: [PATCHv4] serial: of-serial: fix up PM ops on no_console_suspend
+From: Joseph Lo <josephl@nvidia.com>
+Subject: Re: [PATCHv5] serial: of-serial: fix up PM ops on no_console_suspend
  and port type
-Date: Wed, 15 Oct 2014 07:16:33 +0000
-Message-ID: <b7caa34e784a47dfa585cea66ebfbb69@BL2PR03MB467.namprd03.prod.outlook.com>
-References: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com>
- <543DC753.4070304@nvidia.com>
- <67564f37252242079bcd4c65827b8352@BL2PR03MB467.namprd03.prod.outlook.com>
- <543E1730.2040108@nvidia.com> <543E19C5.3040200@nvidia.com>
+Date: Wed, 15 Oct 2014 17:02:44 +0800
+Message-ID: <543E3834.7070308@nvidia.com>
+References: <1413353967-27866-1-git-send-email-jingchang.lu@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bn1bbn0101.outbound.protection.outlook.com ([157.56.111.101]:46912
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750775AbaJOHQg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Oct 2014 03:16:36 -0400
-In-Reply-To: <543E19C5.3040200@nvidia.com>
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1413353967-27866-1-git-send-email-jingchang.lu@freescale.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jingchang Lu <jingchang.lu@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
-To: Joseph Lo <josephl@nvidia.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSm9zZXBoIExvIFttYWlsdG86am9z
-ZXBobEBudmlkaWEuY29tXQ0KPlNlbnQ6IFdlZG5lc2RheSwgT2N0b2JlciAxNSwgMjAxNCAyOjUz
-IFBNDQo+VG86IEx1IEppbmdjaGFuZy1CMzUwODM7IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3Jn
-DQo+Q2M6IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgbGludXgtc2VyaWFs
-QHZnZXIua2VybmVsLm9yZzsNCj5wZXRlckBodXJsZXlzb2Z0d2FyZS5jb207IGFybmRAYXJuZGIu
-ZGU7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIdjRd
-IHNlcmlhbDogb2Ytc2VyaWFsOiBmaXggdXAgUE0gb3BzIG9uDQo+bm9fY29uc29sZV9zdXNwZW5k
-IGFuZCBwb3J0IHR5cGUNCj4NCj5PbiAxMC8xNS8yMDE0IDAyOjQxIFBNLCBKb3NlcGggTG8gd3Jv
-dGU6DQo+PiBPbiAxMC8xNS8yMDE0IDAyOjMyIFBNLCBKaW5nY2hhbmcgTHUgd3JvdGU6DQo+Pj4+
-IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+Pj4+IEZyb206IEpvc2VwaCBMbyBbbWFpbHRv
-Ompvc2VwaGxAbnZpZGlhLmNvbV0NCj4+Pj4gU2VudDogV2VkbmVzZGF5LCBPY3RvYmVyIDE1LCAy
-MDE0IDk6MDEgQU0NCj4+Pj4gVG86IEx1IEppbmdjaGFuZy1CMzUwODM7IGdyZWdraEBsaW51eGZv
-dW5kYXRpb24ub3JnDQo+Pj4+IENjOiBwZXRlckBodXJsZXlzb2Z0d2FyZS5jb207IGFybmRAYXJu
-ZGIuZGU7DQo+Pj4+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LXNlcmlhbEB2
-Z2VyLmtlcm5lbC5vcmc7DQo+Pj4+IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
-Zw0KPj4+PiBTdWJqZWN0OiBSZTogW1BBVENIdjRdIHNlcmlhbDogb2Ytc2VyaWFsOiBmaXggdXAg
-UE0gb3BzIG9uDQo+Pj4+IG5vX2NvbnNvbGVfc3VzcGVuZCBhbmQgcG9ydCB0eXBlDQo+Pj4+DQo+
-Pj4+IE9uIDEwLzE0LzIwMTQgMDQ6NDIgUE0sIEppbmdjaGFuZyBMdSB3cm90ZToNCj4+Pj4+IFRo
-aXMgcGF0Y2ggZml4ZXMgY29tbWl0IDJkZWE1M2JmNTc3ODNmMjQzYzg5MmU5OWMxMGM2OTIxZTk1
-NmFhN2UsDQo+Pj4+PiAic2VyaWFsOiBvZi1zZXJpYWw6IGFkZCBQTSBzdXNwZW5kL3Jlc3VtZSBz
-dXBwb3J0Iiwgd2hpY2ggZGlzYWJsZXMNCj4+Pj4+IHRoZSB1YXJ0IGNsb2NrIG9uIHN1c3BlbmQs
-IGJ1dCBhbHNvIGNhdXNlcyBhIGhhcmR3YXJlIGhhbmcgb24NCj4+Pj4+IHJlZ2lzdGVyIGFjY2Vz
-cyBpZiBub19jb25zb2xlX3N1c3BlbmQgY29tbWFuZCBsaW5lIG9wdGlvbiBpcyB1c2VkLg0KPj4+
-Pj4NCj4+Pj4+IEFsc28sIG5vdCBldmVyeSBvZl9zZXJpYWwgZGV2aWNlIGlzIGFuIDgyNTAgcG9y
-dCwgc28gdGhlIHNlcmlhbDgyNTANCj4+Pj4+IHN1c3BlbmQvcmVzdW1lIGZ1bmN0aW9ucyBzaG91
-bGQgb25seSBiZSBhcHBsaWVkIHRvIGEgcmVhbCA4MjUwIHBvcnQuDQo+Pj4+Pg0KPj4+Pj4gU2ln
-bmVkLW9mZi1ieTogSmluZ2NoYW5nIEx1IDxqaW5nY2hhbmcubHVAZnJlZXNjYWxlLmNvbT4NCj4+
-Pj4NCj4+Pj4gSWYgeW91IGNhbiBtYWtlIHN1cmUgdGhpcyBwYXRjaCBjYW4gYnVpbGQgd2l0aG91
-dCBpbmNsdWRlDQo+Pj4+IDxsaW51eC9jb25zb2xlLmg+LCB0aGVuIHRoaXMgcGF0Y2gNCj4+PiBU
-aGUgYnVpbGQgcGFzc2VzIG9uIG15IGNsb25lZCBsaW51eC1uZXh0IHRyZWUsIGluY2x1ZGUgbmV4
-dC0yMDE0MTAxNCwNCj4+PiBidXQgaXMgcmVxdWlyZWQgb24gbXkgYW5vdGhlciBrZXJuZWwtMy4x
-MisgYmFzZWQgdHJlZSwgdGhlbiBJIGRpZG4ndA0KPj4+IGFkZCB0aGlzIGhlYWRlciBmaWxlIHdo
-ZW4gdXBzdHJlYW0uDQo+Pj4gSXMgdGhlIGJ1aWxkIGJyb2tlbiBvbiB5b3VyIHNvdXJjZSB0cmVl
-LCBhbmQgaXMgdGhlIHRyZWUgbGF0ZXN0Pw0KPj4+IElmIHRoZSBoZWFkZXIgaXMgbmVlZGVkLCBJ
-IHdpbGwgYWRkIGl0Lg0KPj4gSSB0ZXN0ZWQgaXQgb24gbmV4dC0yMDE0MTAxMyBhbmQgazMuMTQs
-IGJvdGggb2YgdGhlbSBuZWVkIHRoZSBmaXguIEkNCj4+IGNhbiBjaGVjayBpdCBhZ2FpbiBhZ2Fp
-bnN0IHRoZSBsYXRlc3QgbGludXgtbmV4dCB0cmVlIGxhdGVyLiBUaGFua3MuDQo+Pg0KPk9LLCBJ
-IGNvbmZpcm1lZCBpdC4gWW91IHNob3VsZCBhZGQgdGhlIGhlYWRlciBmaWxlLiBJdCBhbHNvIGRv
-ZXNuJ3QgYnVpbGQNCj5mb3IgbWUgd2l0aCB0aGUgbGF0ZXN0IGxpbnV4LW5leHQgdHJlZS4gTWF5
-YmUgeW91IG1pc3NlZCB0byBlbmFibGUNCj5DT05GSUdfUE1fU0xFRVAgb3IgQ09ORklHX1NFUklB
-TF84MjUwIHdoZW4gZG9pbmcgdGhlIGJ1aWxkIHRlc3QgaW4gbGludXgtDQo+bmV4dCB0cmVlLg0K
-SSBoYXZlIHNlbnQgb3V0IHRoZSB2NSBwYXRjaCB3aXRoIGxhc3QgZ2l0LXNlbmQtZW1haWwgY29t
-bWFuZCBsaW5lLA0KZGlkbid0IHJlYWxpemVkIHRoZSBtaXNzaW5nIG9mIHlvdXIgZW1haWwgYWRk
-cmVzcyBpbiB0aGUgY2MgbGlzdCB3aGVuIHNlbmRpbmcuDQpQbGVhc2UgaGVscCByZXZpZXcgdGhl
-IHY1IHBhdGNoLiBUaGFua3MuDQoNCkJlc3QgUmVnYXJkcywNCkppbmdjaGFuZw0KPg0KPi1Kb3Nl
-cGgNCg==
+On 10/15/2014 02:19 PM, Jingchang Lu wrote:
+> This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
+> "serial: of-serial: add PM suspend/resume support", which disables
+> the uart clock on suspend, but also causes a hardware hang on register
+> access if no_console_suspend command line option is used.
+>
+> Also, not every of_serial device is an 8250 port, so the serial8250
+> suspend/resume functions should only be applied to a real 8250 port.
+>
+> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
+> ---
+> changes in v5:
+>   add missing <linux/console.h> include.
+>
+> changes in v4:
+>   separate 8250 port suspend/resume from of_serial_suspend/resume.
+>
+> changes in v3:
+>   fix up point reference and deference.
+>
+> changes in v2:
+>   add switch selection on uart type.
+>
+Hi Jingchang,
+
+Thanks for the fix. This patch
+Tested-by: Joseph Lo <josephl@nvidia.com>
+
+>   drivers/tty/serial/of_serial.c | 53 ++++++++++++++++++++++++++++++++++++------
+>   1 file changed, 46 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+> index 8bc2563..9c64ad2 100644
+> --- a/drivers/tty/serial/of_serial.c
+> +++ b/drivers/tty/serial/of_serial.c
+> @@ -9,6 +9,7 @@
+>    *  2 of the License, or (at your option) any later version.
+>    *
+>    */
+> +#include <linux/console.h>
+>   #include <linux/module.h>
+>   #include <linux/slab.h>
+>   #include <linux/delay.h>
+> @@ -241,13 +242,48 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
+>   }
+>
+>   #ifdef CONFIG_PM_SLEEP
+> -static int of_serial_suspend(struct device *dev)
+> +#ifdef CONFIG_SERIAL_8250
+> +static void of_serial_suspend_8250(struct of_serial_info *info)
+>   {
+> -	struct of_serial_info *info = dev_get_drvdata(dev);
+> +	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
+> +	struct uart_port *port = &port8250->port;
+>
+>   	serial8250_suspend_port(info->line);
+> -	if (info->clk)
+> +	if (info->clk && (!uart_console(port) || console_suspend_enabled))
+>   		clk_disable_unprepare(info->clk);
+> +}
+> +
+> +static void of_serial_resume_8250(struct of_serial_info *info)
+> +{
+> +	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
+> +	struct uart_port *port = &port8250->port;
+> +
+> +	if (info->clk && (!uart_console(port) || console_suspend_enabled))
+> +		clk_prepare_enable(info->clk);
+> +
+> +	serial8250_resume_port(info->line);
+> +}
+> +#else
+> +static inline void of_serial_suspend_8250(struct of_serial_info *info)
+> +{
+> +}
+> +
+> +static inline void of_serial_resume_8250(struct of_serial_info *info)
+> +{
+> +}
+> +#endif
+> +
+> +static int of_serial_suspend(struct device *dev)
+> +{
+> +	struct of_serial_info *info = dev_get_drvdata(dev);
+> +
+> +	switch(info->type) {
+> +	case PORT_8250 ... PORT_MAX_8250:
+> +		of_serial_suspend_8250(info);
+> +		break;
+> +	default:
+> +		break;
+> +	}
+>
+>   	return 0;
+>   }
+> @@ -256,10 +292,13 @@ static int of_serial_resume(struct device *dev)
+>   {
+>   	struct of_serial_info *info = dev_get_drvdata(dev);
+>
+> -	if (info->clk)
+> -		clk_prepare_enable(info->clk);
+> -
+> -	serial8250_resume_port(info->line);
+> +	switch(info->type) {
+> +	case PORT_8250 ... PORT_MAX_8250:
+> +		of_serial_resume_8250(info);
+> +		break;
+> +	default:
+> +		break;
+> +	}
+>
+>   	return 0;
+>   }
+>
