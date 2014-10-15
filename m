@@ -1,89 +1,148 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: RE: [PATCHv4] serial: of-serial: fix up PM ops on no_console_suspend
+From: Joseph Lo <josephl@nvidia.com>
+Subject: Re: [PATCHv4] serial: of-serial: fix up PM ops on no_console_suspend
  and port type
-Date: Wed, 15 Oct 2014 06:32:57 +0000
-Message-ID: <67564f37252242079bcd4c65827b8352@BL2PR03MB467.namprd03.prod.outlook.com>
-References: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com>
- <543DC753.4070304@nvidia.com>
+Date: Wed, 15 Oct 2014 14:41:52 +0800
+Message-ID: <543E1730.2040108@nvidia.com>
+References: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com> <543DC753.4070304@nvidia.com> <67564f37252242079bcd4c65827b8352@BL2PR03MB467.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <543DC753.4070304@nvidia.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joseph Lo <josephl@nvidia.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:5052 "EHLO
+	hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751183AbaJOGl4 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 15 Oct 2014 02:41:56 -0400
+In-Reply-To: <67564f37252242079bcd4c65827b8352@BL2PR03MB467.namprd03.prod.outlook.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Jingchang Lu <jingchang.lu@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSm9zZXBoIExvIFttYWlsdG86am9z
-ZXBobEBudmlkaWEuY29tXQ0KPlNlbnQ6IFdlZG5lc2RheSwgT2N0b2JlciAxNSwgMjAxNCA5OjAx
-IEFNDQo+VG86IEx1IEppbmdjaGFuZy1CMzUwODM7IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3Jn
-DQo+Q2M6IHBldGVyQGh1cmxleXNvZnR3YXJlLmNvbTsgYXJuZEBhcm5kYi5kZTsgbGludXgta2Vy
-bmVsQHZnZXIua2VybmVsLm9yZzsNCj5saW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBsaW51
-eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIdjRd
-IHNlcmlhbDogb2Ytc2VyaWFsOiBmaXggdXAgUE0gb3BzIG9uDQo+bm9fY29uc29sZV9zdXNwZW5k
-IGFuZCBwb3J0IHR5cGUNCj4NCj5PbiAxMC8xNC8yMDE0IDA0OjQyIFBNLCBKaW5nY2hhbmcgTHUg
-d3JvdGU6DQo+PiBUaGlzIHBhdGNoIGZpeGVzIGNvbW1pdCAyZGVhNTNiZjU3NzgzZjI0M2M4OTJl
-OTljMTBjNjkyMWU5NTZhYTdlLA0KPj4gInNlcmlhbDogb2Ytc2VyaWFsOiBhZGQgUE0gc3VzcGVu
-ZC9yZXN1bWUgc3VwcG9ydCIsIHdoaWNoIGRpc2FibGVzIHRoZQ0KPj4gdWFydCBjbG9jayBvbiBz
-dXNwZW5kLCBidXQgYWxzbyBjYXVzZXMgYSBoYXJkd2FyZSBoYW5nIG9uIHJlZ2lzdGVyDQo+PiBh
-Y2Nlc3MgaWYgbm9fY29uc29sZV9zdXNwZW5kIGNvbW1hbmQgbGluZSBvcHRpb24gaXMgdXNlZC4N
-Cj4+DQo+PiBBbHNvLCBub3QgZXZlcnkgb2Zfc2VyaWFsIGRldmljZSBpcyBhbiA4MjUwIHBvcnQs
-IHNvIHRoZSBzZXJpYWw4MjUwDQo+PiBzdXNwZW5kL3Jlc3VtZSBmdW5jdGlvbnMgc2hvdWxkIG9u
-bHkgYmUgYXBwbGllZCB0byBhIHJlYWwgODI1MCBwb3J0Lg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6
-IEppbmdjaGFuZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5jb20+DQo+DQo+SWYgeW91IGNh
-biBtYWtlIHN1cmUgdGhpcyBwYXRjaCBjYW4gYnVpbGQgd2l0aG91dCBpbmNsdWRlDQo+PGxpbnV4
-L2NvbnNvbGUuaD4sIHRoZW4gdGhpcyBwYXRjaA0KVGhlIGJ1aWxkIHBhc3NlcyBvbiBteSBjbG9u
-ZWQgbGludXgtbmV4dCB0cmVlLCBpbmNsdWRlIG5leHQtMjAxNDEwMTQsDQpidXQgaXMgcmVxdWly
-ZWQgb24gbXkgYW5vdGhlciBrZXJuZWwtMy4xMisgYmFzZWQgdHJlZSwgdGhlbiBJIGRpZG4ndA0K
-YWRkIHRoaXMgaGVhZGVyIGZpbGUgd2hlbiB1cHN0cmVhbS4gDQpJcyB0aGUgYnVpbGQgYnJva2Vu
-IG9uIHlvdXIgc291cmNlIHRyZWUsIGFuZCBpcyB0aGUgdHJlZSBsYXRlc3Q/DQpJZiB0aGUgaGVh
-ZGVyIGlzIG5lZWRlZCwgSSB3aWxsIGFkZCBpdC4NClRoYW5rcy4NCg0KQmVzdCBSZWdhcmRzLA0K
-SmluZ2NoYW5nDQo+DQo+VGVzdGVkLWJ5OiBKb3NlcGggTG8gPGpvc2VwaGxAbnZpZGlhLmNvbT4N
-Cj4NCj5BbmQgdGhhbmtzIGZvciB5b3VyIGZpeC4NCj4NCj4+IC0tLQ0KPj4gY2hhbmdlcyBpbiB2
-NDoNCj4+ICAgc2VwYXJhdGUgODI1MCBwb3J0IHN1c3BlbmQvcmVzdW1lIGZyb20gb2Zfc2VyaWFs
-X3N1c3BlbmQvcmVzdW1lLg0KPj4NCj4+IGNoYW5nZXMgaW4gdjM6DQo+PiAgIGZpeCB1cCBwb2lu
-dCByZWZlcmVuY2UgYW5kIGRlZmVyZW5jZS4NCj4+DQo+PiBjaGFuZ2VzIGluIHYyOg0KPj4gICBh
-ZGQgc3dpdGNoIHNlbGVjdGlvbiBvbiB1YXJ0IHR5cGUuDQo+Pg0KPj4gICBkcml2ZXJzL3R0eS9z
-ZXJpYWwvb2Zfc2VyaWFsLmMgfCA1Mg0KPisrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKy0tLS0tLQ0KPj4gICAxIGZpbGUgY2hhbmdlZCwgNDUgaW5zZXJ0aW9ucygrKSwgNyBkZWxl
-dGlvbnMoLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL29mX3Nlcmlh
-bC5jDQo+PiBiL2RyaXZlcnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwuYyBpbmRleCA4YmMyNTYzLi41
-MjgxZjhmIDEwMDY0NA0KPj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL29mX3NlcmlhbC5jDQo+
-PiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMNCj4+IEBAIC0yNDEsMTMgKzI0
-MSw0OCBAQCBzdGF0aWMgaW50IG9mX3BsYXRmb3JtX3NlcmlhbF9yZW1vdmUoc3RydWN0DQo+cGxh
-dGZvcm1fZGV2aWNlICpvZmRldikNCj4+ICAgfQ0KPj4NCj4+ICAgI2lmZGVmIENPTkZJR19QTV9T
-TEVFUA0KPj4gLXN0YXRpYyBpbnQgb2Zfc2VyaWFsX3N1c3BlbmQoc3RydWN0IGRldmljZSAqZGV2
-KQ0KPj4gKyNpZmRlZiBDT05GSUdfU0VSSUFMXzgyNTANCj4+ICtzdGF0aWMgdm9pZCBvZl9zZXJp
-YWxfc3VzcGVuZF84MjUwKHN0cnVjdCBvZl9zZXJpYWxfaW5mbyAqaW5mbykNCj4+ICAgew0KPj4g
-LQlzdHJ1Y3Qgb2Zfc2VyaWFsX2luZm8gKmluZm8gPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsNCj4+
-ICsJc3RydWN0IHVhcnRfODI1MF9wb3J0ICpwb3J0ODI1MCA9IHNlcmlhbDgyNTBfZ2V0X3BvcnQo
-aW5mby0+bGluZSk7DQo+PiArCXN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQgPSAmcG9ydDgyNTAtPnBv
-cnQ7DQo+Pg0KPj4gICAJc2VyaWFsODI1MF9zdXNwZW5kX3BvcnQoaW5mby0+bGluZSk7DQo+PiAt
-CWlmIChpbmZvLT5jbGspDQo+PiArCWlmIChpbmZvLT5jbGsgJiYgKCF1YXJ0X2NvbnNvbGUocG9y
-dCkgfHwgY29uc29sZV9zdXNwZW5kX2VuYWJsZWQpKQ0KPj4gICAJCWNsa19kaXNhYmxlX3VucHJl
-cGFyZShpbmZvLT5jbGspOw0KPj4gK30NCj4+ICsNCj4+ICtzdGF0aWMgdm9pZCBvZl9zZXJpYWxf
-cmVzdW1lXzgyNTAoc3RydWN0IG9mX3NlcmlhbF9pbmZvICppbmZvKSB7DQo+PiArCXN0cnVjdCB1
-YXJ0XzgyNTBfcG9ydCAqcG9ydDgyNTAgPSBzZXJpYWw4MjUwX2dldF9wb3J0KGluZm8tPmxpbmUp
-Ow0KPj4gKwlzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0ID0gJnBvcnQ4MjUwLT5wb3J0Ow0KPj4gKw0K
-Pj4gKwlpZiAoaW5mby0+Y2xrICYmICghdWFydF9jb25zb2xlKHBvcnQpIHx8IGNvbnNvbGVfc3Vz
-cGVuZF9lbmFibGVkKSkNCj4+ICsJCWNsa19wcmVwYXJlX2VuYWJsZShpbmZvLT5jbGspOw0KPj4g
-Kw0KPj4gKwlzZXJpYWw4MjUwX3Jlc3VtZV9wb3J0KGluZm8tPmxpbmUpOw0KPj4gK30NCj4+ICsj
-ZWxzZQ0KPj4gK3N0YXRpYyBpbmxpbmUgdm9pZCBvZl9zZXJpYWxfc3VzcGVuZF84MjUwKHN0cnVj
-dCBvZl9zZXJpYWxfaW5mbw0KPj4gKyppbmZvKSB7IH0NCj4+ICsNCj4+ICtzdGF0aWMgaW5saW5l
-IHZvaWQgb2Zfc2VyaWFsX3Jlc3VtZV84MjUwKHN0cnVjdCBvZl9zZXJpYWxfaW5mbyAqaW5mbykN
-Cj4+ICt7IH0gI2VuZGlmDQo+PiArDQo+PiArc3RhdGljIGludCBvZl9zZXJpYWxfc3VzcGVuZChz
-dHJ1Y3QgZGV2aWNlICpkZXYpIHsNCj4+ICsJc3RydWN0IG9mX3NlcmlhbF9pbmZvICppbmZvID0g
-ZGV2X2dldF9kcnZkYXRhKGRldik7DQo+PiArDQo+PiArCXN3aXRjaChpbmZvLT50eXBlKSB7DQo+
-PiArCWNhc2UgUE9SVF84MjUwIC4uLiBQT1JUX01BWF84MjUwOg0KPj4gKwkJb2Zfc2VyaWFsX3N1
-c3BlbmRfODI1MChpbmZvKTsNCj4+ICsJCWJyZWFrOw0KPj4gKwlkZWZhdWx0Og0KPj4gKwkJYnJl
-YWs7DQo+PiArCX0NCj4+DQo+PiAgIAlyZXR1cm4gMDsNCj4+ICAgfQ0KPj4gQEAgLTI1NiwxMCAr
-MjkxLDEzIEBAIHN0YXRpYyBpbnQgb2Zfc2VyaWFsX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYp
-DQo+PiAgIHsNCj4+ICAgCXN0cnVjdCBvZl9zZXJpYWxfaW5mbyAqaW5mbyA9IGRldl9nZXRfZHJ2
-ZGF0YShkZXYpOw0KPj4NCj4+IC0JaWYgKGluZm8tPmNsaykNCj4+IC0JCWNsa19wcmVwYXJlX2Vu
-YWJsZShpbmZvLT5jbGspOw0KPj4gLQ0KPj4gLQlzZXJpYWw4MjUwX3Jlc3VtZV9wb3J0KGluZm8t
-PmxpbmUpOw0KPj4gKwlzd2l0Y2goaW5mby0+dHlwZSkgew0KPj4gKwljYXNlIFBPUlRfODI1MCAu
-Li4gUE9SVF9NQVhfODI1MDoNCj4+ICsJCW9mX3NlcmlhbF9yZXN1bWVfODI1MChpbmZvKTsNCj4+
-ICsJCWJyZWFrOw0KPj4gKwlkZWZhdWx0Og0KPj4gKwkJYnJlYWs7DQo+PiArCX0NCj4+DQo+PiAg
-IAlyZXR1cm4gMDsNCj4+ICAgfQ0KPj4NCg==
+On 10/15/2014 02:32 PM, Jingchang Lu wrote:
+>> -----Original Message-----
+>> From: Joseph Lo [mailto:josephl@nvidia.com]
+>> Sent: Wednesday, October 15, 2014 9:01 AM
+>> To: Lu Jingchang-B35083; gregkh@linuxfoundation.org
+>> Cc: peter@hurleysoftware.com; arnd@arndb.de; linux-kernel@vger.kernel.org;
+>> linux-serial@vger.kernel.org; linux-arm-kernel@lists.infradead.org
+>> Subject: Re: [PATCHv4] serial: of-serial: fix up PM ops on
+>> no_console_suspend and port type
+>>
+>> On 10/14/2014 04:42 PM, Jingchang Lu wrote:
+>>> This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
+>>> "serial: of-serial: add PM suspend/resume support", which disables the
+>>> uart clock on suspend, but also causes a hardware hang on register
+>>> access if no_console_suspend command line option is used.
+>>>
+>>> Also, not every of_serial device is an 8250 port, so the serial8250
+>>> suspend/resume functions should only be applied to a real 8250 port.
+>>>
+>>> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
+>>
+>> If you can make sure this patch can build without include
+>> <linux/console.h>, then this patch
+> The build passes on my cloned linux-next tree, include next-20141014,
+> but is required on my another kernel-3.12+ based tree, then I didn't
+> add this header file when upstream.
+> Is the build broken on your source tree, and is the tree latest?
+> If the header is needed, I will add it.
+I tested it on next-20141013 and k3.14, both of them need the fix. I can 
+check it again against the latest linux-next tree later. Thanks.
+
+-Joseph
+
+> Thanks.
+>
+> Best Regards,
+> Jingchang
+>>
+>> Tested-by: Joseph Lo <josephl@nvidia.com>
+>>
+>> And thanks for your fix.
+>>
+>>> ---
+>>> changes in v4:
+>>>    separate 8250 port suspend/resume from of_serial_suspend/resume.
+>>>
+>>> changes in v3:
+>>>    fix up point reference and deference.
+>>>
+>>> changes in v2:
+>>>    add switch selection on uart type.
+>>>
+>>>    drivers/tty/serial/of_serial.c | 52
+>> ++++++++++++++++++++++++++++++++++++------
+>>>    1 file changed, 45 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/of_serial.c
+>>> b/drivers/tty/serial/of_serial.c index 8bc2563..5281f8f 100644
+>>> --- a/drivers/tty/serial/of_serial.c
+>>> +++ b/drivers/tty/serial/of_serial.c
+>>> @@ -241,13 +241,48 @@ static int of_platform_serial_remove(struct
+>> platform_device *ofdev)
+>>>    }
+>>>
+>>>    #ifdef CONFIG_PM_SLEEP
+>>> -static int of_serial_suspend(struct device *dev)
+>>> +#ifdef CONFIG_SERIAL_8250
+>>> +static void of_serial_suspend_8250(struct of_serial_info *info)
+>>>    {
+>>> -	struct of_serial_info *info = dev_get_drvdata(dev);
+>>> +	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
+>>> +	struct uart_port *port = &port8250->port;
+>>>
+>>>    	serial8250_suspend_port(info->line);
+>>> -	if (info->clk)
+>>> +	if (info->clk && (!uart_console(port) || console_suspend_enabled))
+>>>    		clk_disable_unprepare(info->clk);
+>>> +}
+>>> +
+>>> +static void of_serial_resume_8250(struct of_serial_info *info) {
+>>> +	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
+>>> +	struct uart_port *port = &port8250->port;
+>>> +
+>>> +	if (info->clk && (!uart_console(port) || console_suspend_enabled))
+>>> +		clk_prepare_enable(info->clk);
+>>> +
+>>> +	serial8250_resume_port(info->line);
+>>> +}
+>>> +#else
+>>> +static inline void of_serial_suspend_8250(struct of_serial_info
+>>> +*info) { }
+>>> +
+>>> +static inline void of_serial_resume_8250(struct of_serial_info *info)
+>>> +{ } #endif
+>>> +
+>>> +static int of_serial_suspend(struct device *dev) {
+>>> +	struct of_serial_info *info = dev_get_drvdata(dev);
+>>> +
+>>> +	switch(info->type) {
+>>> +	case PORT_8250 ... PORT_MAX_8250:
+>>> +		of_serial_suspend_8250(info);
+>>> +		break;
+>>> +	default:
+>>> +		break;
+>>> +	}
+>>>
+>>>    	return 0;
+>>>    }
+>>> @@ -256,10 +291,13 @@ static int of_serial_resume(struct device *dev)
+>>>    {
+>>>    	struct of_serial_info *info = dev_get_drvdata(dev);
+>>>
+>>> -	if (info->clk)
+>>> -		clk_prepare_enable(info->clk);
+>>> -
+>>> -	serial8250_resume_port(info->line);
+>>> +	switch(info->type) {
+>>> +	case PORT_8250 ... PORT_MAX_8250:
+>>> +		of_serial_resume_8250(info);
+>>> +		break;
+>>> +	default:
+>>> +		break;
+>>> +	}
+>>>
+>>>    	return 0;
+>>>    }
+>>>
