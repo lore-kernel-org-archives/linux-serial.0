@@ -1,148 +1,64 @@
-From: Joseph Lo <josephl@nvidia.com>
-Subject: Re: [PATCHv4] serial: of-serial: fix up PM ops on no_console_suspend
- and port type
-Date: Wed, 15 Oct 2014 14:41:52 +0800
-Message-ID: <543E1730.2040108@nvidia.com>
-References: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com> <543DC753.4070304@nvidia.com> <67564f37252242079bcd4c65827b8352@BL2PR03MB467.namprd03.prod.outlook.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Sudhir Sreedharan <ssreedharan@mvista.com>
+Subject: [PATCH] tty: serial: 8250_core: restore the LCR register in set_sleep
+Date: Wed, 15 Oct 2014 12:13:15 +0530
+Message-ID: <1413355395-5871-1-git-send-email-ssreedharan@mvista.com>
+References: <54369F77.5000906@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:5052 "EHLO
-	hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751183AbaJOGl4 (ORCPT
+Received: from mail-pd0-f177.google.com ([209.85.192.177]:57349 "EHLO
+	mail-pd0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751183AbaJOGoZ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Oct 2014 02:41:56 -0400
-In-Reply-To: <67564f37252242079bcd4c65827b8352@BL2PR03MB467.namprd03.prod.outlook.com>
+	Wed, 15 Oct 2014 02:44:25 -0400
+Received: by mail-pd0-f177.google.com with SMTP id v10so696238pde.36
+        for <linux-serial@vger.kernel.org>; Tue, 14 Oct 2014 23:44:24 -0700 (PDT)
+In-Reply-To: <54369F77.5000906@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jingchang Lu <jingchang.lu@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: peter@hurleysoftware.com, gregkh@linuxfoundation.org, khilman@kernel.org
+Cc: linux-serial@vger.kernel.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, olof@lixom.net, linux-arm-kernel@lists.infradead.org, geert@linux-m68k.org, Sudhir Sreedharan <ssreedharan@mvista.com>
 
-On 10/15/2014 02:32 PM, Jingchang Lu wrote:
->> -----Original Message-----
->> From: Joseph Lo [mailto:josephl@nvidia.com]
->> Sent: Wednesday, October 15, 2014 9:01 AM
->> To: Lu Jingchang-B35083; gregkh@linuxfoundation.org
->> Cc: peter@hurleysoftware.com; arnd@arndb.de; linux-kernel@vger.kernel.org;
->> linux-serial@vger.kernel.org; linux-arm-kernel@lists.infradead.org
->> Subject: Re: [PATCHv4] serial: of-serial: fix up PM ops on
->> no_console_suspend and port type
->>
->> On 10/14/2014 04:42 PM, Jingchang Lu wrote:
->>> This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
->>> "serial: of-serial: add PM suspend/resume support", which disables the
->>> uart clock on suspend, but also causes a hardware hang on register
->>> access if no_console_suspend command line option is used.
->>>
->>> Also, not every of_serial device is an 8250 port, so the serial8250
->>> suspend/resume functions should only be applied to a real 8250 port.
->>>
->>> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
->>
->> If you can make sure this patch can build without include
->> <linux/console.h>, then this patch
-> The build passes on my cloned linux-next tree, include next-20141014,
-> but is required on my another kernel-3.12+ based tree, then I didn't
-> add this header file when upstream.
-> Is the build broken on your source tree, and is the tree latest?
-> If the header is needed, I will add it.
-I tested it on next-20141013 and k3.14, both of them need the fix. I can 
-check it again against the latest linux-next tree later. Thanks.
+In ST16650V2 based serial uarts, while initalizing the PM state,
+LCR registers are being initialized to 0 in serial8250_set_sleep().
+If console port is already initialized and being used, this will
+throws garbage in the console.
 
--Joseph
+Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
+---
+ drivers/tty/serial/8250/8250_core.c |    7 +++++--
+ 1 files changed, 5 insertions(+), 2 deletions(-)
 
-> Thanks.
->
-> Best Regards,
-> Jingchang
->>
->> Tested-by: Joseph Lo <josephl@nvidia.com>
->>
->> And thanks for your fix.
->>
->>> ---
->>> changes in v4:
->>>    separate 8250 port suspend/resume from of_serial_suspend/resume.
->>>
->>> changes in v3:
->>>    fix up point reference and deference.
->>>
->>> changes in v2:
->>>    add switch selection on uart type.
->>>
->>>    drivers/tty/serial/of_serial.c | 52
->> ++++++++++++++++++++++++++++++++++++------
->>>    1 file changed, 45 insertions(+), 7 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/of_serial.c
->>> b/drivers/tty/serial/of_serial.c index 8bc2563..5281f8f 100644
->>> --- a/drivers/tty/serial/of_serial.c
->>> +++ b/drivers/tty/serial/of_serial.c
->>> @@ -241,13 +241,48 @@ static int of_platform_serial_remove(struct
->> platform_device *ofdev)
->>>    }
->>>
->>>    #ifdef CONFIG_PM_SLEEP
->>> -static int of_serial_suspend(struct device *dev)
->>> +#ifdef CONFIG_SERIAL_8250
->>> +static void of_serial_suspend_8250(struct of_serial_info *info)
->>>    {
->>> -	struct of_serial_info *info = dev_get_drvdata(dev);
->>> +	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
->>> +	struct uart_port *port = &port8250->port;
->>>
->>>    	serial8250_suspend_port(info->line);
->>> -	if (info->clk)
->>> +	if (info->clk && (!uart_console(port) || console_suspend_enabled))
->>>    		clk_disable_unprepare(info->clk);
->>> +}
->>> +
->>> +static void of_serial_resume_8250(struct of_serial_info *info) {
->>> +	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
->>> +	struct uart_port *port = &port8250->port;
->>> +
->>> +	if (info->clk && (!uart_console(port) || console_suspend_enabled))
->>> +		clk_prepare_enable(info->clk);
->>> +
->>> +	serial8250_resume_port(info->line);
->>> +}
->>> +#else
->>> +static inline void of_serial_suspend_8250(struct of_serial_info
->>> +*info) { }
->>> +
->>> +static inline void of_serial_resume_8250(struct of_serial_info *info)
->>> +{ } #endif
->>> +
->>> +static int of_serial_suspend(struct device *dev) {
->>> +	struct of_serial_info *info = dev_get_drvdata(dev);
->>> +
->>> +	switch(info->type) {
->>> +	case PORT_8250 ... PORT_MAX_8250:
->>> +		of_serial_suspend_8250(info);
->>> +		break;
->>> +	default:
->>> +		break;
->>> +	}
->>>
->>>    	return 0;
->>>    }
->>> @@ -256,10 +291,13 @@ static int of_serial_resume(struct device *dev)
->>>    {
->>>    	struct of_serial_info *info = dev_get_drvdata(dev);
->>>
->>> -	if (info->clk)
->>> -		clk_prepare_enable(info->clk);
->>> -
->>> -	serial8250_resume_port(info->line);
->>> +	switch(info->type) {
->>> +	case PORT_8250 ... PORT_MAX_8250:
->>> +		of_serial_resume_8250(info);
->>> +		break;
->>> +	default:
->>> +		break;
->>> +	}
->>>
->>>    	return 0;
->>>    }
->>>
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index ca5cfdc..e054482 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -595,6 +595,7 @@ static void serial8250_rpm_put_tx(struct uart_8250_port *p)
+  */
+ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
+ {
++	unsigned char lcr, efr;
+ 	/*
+ 	 * Exar UARTs have a SLEEP register that enables or disables
+ 	 * each UART to enter sleep mode separately.  On the XR17V35x the
+@@ -611,6 +612,8 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
+ 
+ 	if (p->capabilities & UART_CAP_SLEEP) {
+ 		if (p->capabilities & UART_CAP_EFR) {
++			lcr = serial_in(p, UART_LCR);
++			efr = serial_in(p, UART_EFR);
+ 			serial_out(p, UART_LCR, UART_LCR_CONF_MODE_B);
+ 			serial_out(p, UART_EFR, UART_EFR_ECB);
+ 			serial_out(p, UART_LCR, 0);
+@@ -618,8 +621,8 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
+ 		serial_out(p, UART_IER, sleep ? UART_IERX_SLEEP : 0);
+ 		if (p->capabilities & UART_CAP_EFR) {
+ 			serial_out(p, UART_LCR, UART_LCR_CONF_MODE_B);
+-			serial_out(p, UART_EFR, 0);
+-			serial_out(p, UART_LCR, 0);
++			serial_out(p, UART_EFR, sleep ? 0 : efr);
++			serial_out(p, UART_LCR, sleep ? 0 : lcr);
+ 		}
+ 	}
+ out:
+-- 
+1.7.0.1
+
