@@ -1,121 +1,127 @@
-From: Sergej Pupykin <ml@sergej.pp.ru>
-Subject: [PATCH] parport: Add support for the WCH382 2S/1P multi-IO card
-Date: Wed, 15 Oct 2014 01:16:59 +0400
-Message-ID: <1413321419-21043-2-git-send-email-ml@sergej.pp.ru>
-References: <1413321419-21043-1-git-send-email-ml@sergej.pp.ru>
+From: Joseph Lo <josephl@nvidia.com>
+Subject: Re: [PATCHv4] serial: of-serial: fix up PM ops on no_console_suspend
+ and port type
+Date: Wed, 15 Oct 2014 09:01:07 +0800
+Message-ID: <543DC753.4070304@nvidia.com>
+References: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from home.sergej.pp.ru ([217.25.226.33]:41861 "EHLO router.p5n.pp.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755694AbaJNVUX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 14 Oct 2014 17:20:23 -0400
-In-Reply-To: <1413321419-21043-1-git-send-email-ml@sergej.pp.ru>
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:13147 "EHLO
+	hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755691AbaJOBBf (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 14 Oct 2014 21:01:35 -0400
+In-Reply-To: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, Sergej Pupykin <ml@sergej.pp.ru>
+To: Jingchang Lu <jingchang.lu@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-WCH382 is a PCI-E card with 1 LPT and 2 DB9 COM ports detected as
-Serial controller: Device 1c00:3250 (rev 10) (prog-if 05 [16850])
----
- drivers/parport/parport_serial.c   | 10 ++++++++++
- drivers/tty/serial/8250/8250_pci.c | 21 +++++++++++++++++++++
- 2 files changed, 31 insertions(+)
+On 10/14/2014 04:42 PM, Jingchang Lu wrote:
+> This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
+> "serial: of-serial: add PM suspend/resume support", which disables
+> the uart clock on suspend, but also causes a hardware hang on register
+> access if no_console_suspend command line option is used.
+>
+> Also, not every of_serial device is an 8250 port, so the serial8250
+> suspend/resume functions should only be applied to a real 8250 port.
+>
+> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
 
-diff --git a/drivers/parport/parport_serial.c b/drivers/parport/parport_serial.c
-index ee93200..e15b484 100644
---- a/drivers/parport/parport_serial.c
-+++ b/drivers/parport/parport_serial.c
-@@ -64,6 +64,7 @@ enum parport_pc_pci_cards {
- 	timedia_9079c,
- 	wch_ch353_1s1p,
- 	wch_ch353_2s1p,
-+	wch_ch382_2s1p,
- 	sunix_2s1p,
- };
- 
-@@ -151,6 +152,7 @@ static struct parport_pc_pci cards[] = {
- 	/* timedia_9079c */             { 1, { { 2, 3 }, } },
- 	/* wch_ch353_1s1p*/             { 1, { { 1, -1}, } },
- 	/* wch_ch353_2s1p*/             { 1, { { 2, -1}, } },
-+	/* wch_ch382_2s1p*/             { 1, { { 2, -1}, } },
- 	/* sunix_2s1p */                { 1, { { 3, -1 }, } },
- };
- 
-@@ -257,6 +259,7 @@ static struct pci_device_id parport_serial_pci_tbl[] = {
- 	/* WCH CARDS */
- 	{ 0x4348, 0x5053, PCI_ANY_ID, PCI_ANY_ID, 0, 0, wch_ch353_1s1p},
- 	{ 0x4348, 0x7053, 0x4348, 0x3253, 0, 0, wch_ch353_2s1p},
-+	{ 0x1c00, 0x3250, 0x1c00, 0x3250, 0, 0, wch_ch382_2s1p},
- 
- 	/*
- 	 * More SUNIX variations. At least one of these has part number
-@@ -494,6 +497,13 @@ static struct pciserial_board pci_parport_serial_boards[] = {
- 		.base_baud      = 115200,
- 		.uart_offset    = 8,
- 	},
-+	[wch_ch382_2s1p] = {
-+		.flags          = FL_BASE0,
-+		.num_ports      = 2,
-+		.base_baud      = 115200,
-+		.uart_offset    = 8,
-+		.first_offset   = 0xC0,
-+	},
- 	[sunix_2s1p] = {
- 		.flags		= FL_BASE0|FL_BASE_BARS,
- 		.num_ports	= 2,
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 61830b1..8623533 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1739,6 +1739,16 @@ pci_wch_ch353_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
- }
- 
-+static int
-+pci_wch_ch382_setup(struct serial_private *priv,
-+                    const struct pciserial_board *board,
-+                    struct uart_8250_port *port, int idx)
-+{
-+	port->port.flags |= UPF_FIXED_TYPE;
-+	port->port.type = PORT_16850;
-+	return pci_default_setup(priv, board, port, idx);
-+}
-+
- #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_DEVICE_ID_OCTPRO		0x0001
-@@ -1792,6 +1802,8 @@ pci_wch_ch353_setup(struct serial_private *priv,
- #define PCI_VENDOR_ID_SUNIX		0x1fd4
- #define PCI_DEVICE_ID_SUNIX_1999	0x1999
- 
-+#define PCIE_VENDOR_ID_WCH		0x1c00
-+#define PCIE_DEVICE_ID_WCH_CH382_2S1P	0x3250
- 
- /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
-@@ -2451,6 +2463,14 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= pci_wch_ch353_setup,
- 	},
-+	/* WCH CH382 2S1P card (16750 clone) */
-+	{
-+		.vendor         = PCIE_VENDOR_ID_WCH,
-+		.device         = PCIE_DEVICE_ID_WCH_CH382_2S1P,
-+		.subvendor      = PCI_ANY_ID,
-+		.subdevice      = PCI_ANY_ID,
-+		.setup          = pci_wch_ch382_setup,
-+	},
- 	/*
- 	 * ASIX devices with FIFO bug
- 	 */
-@@ -3536,6 +3556,7 @@ static const struct pci_device_id blacklist[] = {
- 	/* multi-io cards handled by parport_serial */
- 	{ PCI_DEVICE(0x4348, 0x7053), }, /* WCH CH353 2S1P */
- 	{ PCI_DEVICE(0x4348, 0x5053), }, /* WCH CH353 1S1P */
-+	{ PCI_DEVICE(0x1c00, 0x3250), }, /* WCH CH382 2S1P */
- };
- 
- /*
--- 
-2.1.2
+If you can make sure this patch can build without include 
+<linux/console.h>, then this patch
 
+Tested-by: Joseph Lo <josephl@nvidia.com>
+
+And thanks for your fix.
+
+> ---
+> changes in v4:
+>   separate 8250 port suspend/resume from of_serial_suspend/resume.
+>
+> changes in v3:
+>   fix up point reference and deference.
+>
+> changes in v2:
+>   add switch selection on uart type.
+>
+>   drivers/tty/serial/of_serial.c | 52 ++++++++++++++++++++++++++++++++++++------
+>   1 file changed, 45 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+> index 8bc2563..5281f8f 100644
+> --- a/drivers/tty/serial/of_serial.c
+> +++ b/drivers/tty/serial/of_serial.c
+> @@ -241,13 +241,48 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
+>   }
+>
+>   #ifdef CONFIG_PM_SLEEP
+> -static int of_serial_suspend(struct device *dev)
+> +#ifdef CONFIG_SERIAL_8250
+> +static void of_serial_suspend_8250(struct of_serial_info *info)
+>   {
+> -	struct of_serial_info *info = dev_get_drvdata(dev);
+> +	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
+> +	struct uart_port *port = &port8250->port;
+>
+>   	serial8250_suspend_port(info->line);
+> -	if (info->clk)
+> +	if (info->clk && (!uart_console(port) || console_suspend_enabled))
+>   		clk_disable_unprepare(info->clk);
+> +}
+> +
+> +static void of_serial_resume_8250(struct of_serial_info *info)
+> +{
+> +	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
+> +	struct uart_port *port = &port8250->port;
+> +
+> +	if (info->clk && (!uart_console(port) || console_suspend_enabled))
+> +		clk_prepare_enable(info->clk);
+> +
+> +	serial8250_resume_port(info->line);
+> +}
+> +#else
+> +static inline void of_serial_suspend_8250(struct of_serial_info *info)
+> +{
+> +}
+> +
+> +static inline void of_serial_resume_8250(struct of_serial_info *info)
+> +{
+> +}
+> +#endif
+> +
+> +static int of_serial_suspend(struct device *dev)
+> +{
+> +	struct of_serial_info *info = dev_get_drvdata(dev);
+> +
+> +	switch(info->type) {
+> +	case PORT_8250 ... PORT_MAX_8250:
+> +		of_serial_suspend_8250(info);
+> +		break;
+> +	default:
+> +		break;
+> +	}
+>
+>   	return 0;
+>   }
+> @@ -256,10 +291,13 @@ static int of_serial_resume(struct device *dev)
+>   {
+>   	struct of_serial_info *info = dev_get_drvdata(dev);
+>
+> -	if (info->clk)
+> -		clk_prepare_enable(info->clk);
+> -
+> -	serial8250_resume_port(info->line);
+> +	switch(info->type) {
+> +	case PORT_8250 ... PORT_MAX_8250:
+> +		of_serial_resume_8250(info);
+> +		break;
+> +	default:
+> +		break;
+> +	}
+>
+>   	return 0;
+>   }
+>
