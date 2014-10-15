@@ -1,59 +1,111 @@
-From: Joseph Lo <josephl@nvidia.com>
-Subject: Re: [PATCHv4] serial: of-serial: fix up PM ops on no_console_suspend
+From: Jingchang Lu <jingchang.lu@freescale.com>
+Subject: RE: [PATCHv4] serial: of-serial: fix up PM ops on no_console_suspend
  and port type
-Date: Wed, 15 Oct 2014 14:52:53 +0800
-Message-ID: <543E19C5.3040200@nvidia.com>
-References: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com> <543DC753.4070304@nvidia.com> <67564f37252242079bcd4c65827b8352@BL2PR03MB467.namprd03.prod.outlook.com> <543E1730.2040108@nvidia.com>
+Date: Wed, 15 Oct 2014 06:53:03 +0000
+Message-ID: <90749a1246fc4a84bcb7b76994d066e0@BL2PR03MB467.namprd03.prod.outlook.com>
+References: <1413276146-20388-1-git-send-email-jingchang.lu@freescale.com>
+ <543DC753.4070304@nvidia.com>
+ <67564f37252242079bcd4c65827b8352@BL2PR03MB467.namprd03.prod.outlook.com>
+ <543E1730.2040108@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:5742 "EHLO
-	hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751183AbaJOGxD (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 15 Oct 2014 02:53:03 -0400
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <543E1730.2040108@nvidia.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joseph Lo <josephl@nvidia.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
-To: Jingchang Lu <jingchang.lu@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On 10/15/2014 02:41 PM, Joseph Lo wrote:
-> On 10/15/2014 02:32 PM, Jingchang Lu wrote:
->>> -----Original Message-----
->>> From: Joseph Lo [mailto:josephl@nvidia.com]
->>> Sent: Wednesday, October 15, 2014 9:01 AM
->>> To: Lu Jingchang-B35083; gregkh@linuxfoundation.org
->>> Cc: peter@hurleysoftware.com; arnd@arndb.de; linux-kernel@vger.kernel.org;
->>> linux-serial@vger.kernel.org; linux-arm-kernel@lists.infradead.org
->>> Subject: Re: [PATCHv4] serial: of-serial: fix up PM ops on
->>> no_console_suspend and port type
->>>
->>> On 10/14/2014 04:42 PM, Jingchang Lu wrote:
->>>> This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
->>>> "serial: of-serial: add PM suspend/resume support", which disables the
->>>> uart clock on suspend, but also causes a hardware hang on register
->>>> access if no_console_suspend command line option is used.
->>>>
->>>> Also, not every of_serial device is an 8250 port, so the serial8250
->>>> suspend/resume functions should only be applied to a real 8250 port.
->>>>
->>>> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
->>>
->>> If you can make sure this patch can build without include
->>> <linux/console.h>, then this patch
->> The build passes on my cloned linux-next tree, include next-20141014,
->> but is required on my another kernel-3.12+ based tree, then I didn't
->> add this header file when upstream.
->> Is the build broken on your source tree, and is the tree latest?
->> If the header is needed, I will add it.
-> I tested it on next-20141013 and k3.14, both of them need the fix. I can
-> check it again against the latest linux-next tree later. Thanks.
->
-OK, I confirmed it. You should add the header file. It also doesn't 
-build for me with the latest linux-next tree. Maybe you missed to enable 
-CONFIG_PM_SLEEP or CONFIG_SERIAL_8250 when doing the build test in 
-linux-next tree.
-
--Joseph
+Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSm9zZXBoIExvIFttYWlsdG86am9z
+ZXBobEBudmlkaWEuY29tXQ0KPlNlbnQ6IFdlZG5lc2RheSwgT2N0b2JlciAxNSwgMjAxNCAyOjQy
+IFBNDQo+VG86IEx1IEppbmdjaGFuZy1CMzUwODM7IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3Jn
+DQo+Q2M6IHBldGVyQGh1cmxleXNvZnR3YXJlLmNvbTsgYXJuZEBhcm5kYi5kZTsgbGludXgta2Vy
+bmVsQHZnZXIua2VybmVsLm9yZzsNCj5saW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBsaW51
+eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj5TdWJqZWN0OiBSZTogW1BBVENIdjRd
+IHNlcmlhbDogb2Ytc2VyaWFsOiBmaXggdXAgUE0gb3BzIG9uDQo+bm9fY29uc29sZV9zdXNwZW5k
+IGFuZCBwb3J0IHR5cGUNCj4NCj5PbiAxMC8xNS8yMDE0IDAyOjMyIFBNLCBKaW5nY2hhbmcgTHUg
+d3JvdGU6DQo+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+PiBGcm9tOiBKb3NlcGgg
+TG8gW21haWx0bzpqb3NlcGhsQG52aWRpYS5jb21dDQo+Pj4gU2VudDogV2VkbmVzZGF5LCBPY3Rv
+YmVyIDE1LCAyMDE0IDk6MDEgQU0NCj4+PiBUbzogTHUgSmluZ2NoYW5nLUIzNTA4MzsgZ3JlZ2to
+QGxpbnV4Zm91bmRhdGlvbi5vcmcNCj4+PiBDYzogcGV0ZXJAaHVybGV5c29mdHdhcmUuY29tOyBh
+cm5kQGFybmRiLmRlOw0KPj4+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LXNl
+cmlhbEB2Z2VyLmtlcm5lbC5vcmc7DQo+Pj4gbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRl
+YWQub3JnDQo+Pj4gU3ViamVjdDogUmU6IFtQQVRDSHY0XSBzZXJpYWw6IG9mLXNlcmlhbDogZml4
+IHVwIFBNIG9wcyBvbg0KPj4+IG5vX2NvbnNvbGVfc3VzcGVuZCBhbmQgcG9ydCB0eXBlDQo+Pj4N
+Cj4+PiBPbiAxMC8xNC8yMDE0IDA0OjQyIFBNLCBKaW5nY2hhbmcgTHUgd3JvdGU6DQo+Pj4+IFRo
+aXMgcGF0Y2ggZml4ZXMgY29tbWl0IDJkZWE1M2JmNTc3ODNmMjQzYzg5MmU5OWMxMGM2OTIxZTk1
+NmFhN2UsDQo+Pj4+ICJzZXJpYWw6IG9mLXNlcmlhbDogYWRkIFBNIHN1c3BlbmQvcmVzdW1lIHN1
+cHBvcnQiLCB3aGljaCBkaXNhYmxlcw0KPj4+PiB0aGUgdWFydCBjbG9jayBvbiBzdXNwZW5kLCBi
+dXQgYWxzbyBjYXVzZXMgYSBoYXJkd2FyZSBoYW5nIG9uDQo+Pj4+IHJlZ2lzdGVyIGFjY2VzcyBp
+ZiBub19jb25zb2xlX3N1c3BlbmQgY29tbWFuZCBsaW5lIG9wdGlvbiBpcyB1c2VkLg0KPj4+Pg0K
+Pj4+PiBBbHNvLCBub3QgZXZlcnkgb2Zfc2VyaWFsIGRldmljZSBpcyBhbiA4MjUwIHBvcnQsIHNv
+IHRoZSBzZXJpYWw4MjUwDQo+Pj4+IHN1c3BlbmQvcmVzdW1lIGZ1bmN0aW9ucyBzaG91bGQgb25s
+eSBiZSBhcHBsaWVkIHRvIGEgcmVhbCA4MjUwIHBvcnQuDQo+Pj4+DQo+Pj4+IFNpZ25lZC1vZmYt
+Ynk6IEppbmdjaGFuZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5jb20+DQo+Pj4NCj4+PiBJ
+ZiB5b3UgY2FuIG1ha2Ugc3VyZSB0aGlzIHBhdGNoIGNhbiBidWlsZCB3aXRob3V0IGluY2x1ZGUN
+Cj4+PiA8bGludXgvY29uc29sZS5oPiwgdGhlbiB0aGlzIHBhdGNoDQo+PiBUaGUgYnVpbGQgcGFz
+c2VzIG9uIG15IGNsb25lZCBsaW51eC1uZXh0IHRyZWUsIGluY2x1ZGUgbmV4dC0yMDE0MTAxNCwN
+Cj4+IGJ1dCBpcyByZXF1aXJlZCBvbiBteSBhbm90aGVyIGtlcm5lbC0zLjEyKyBiYXNlZCB0cmVl
+LCB0aGVuIEkgZGlkbid0DQo+PiBhZGQgdGhpcyBoZWFkZXIgZmlsZSB3aGVuIHVwc3RyZWFtLg0K
+Pj4gSXMgdGhlIGJ1aWxkIGJyb2tlbiBvbiB5b3VyIHNvdXJjZSB0cmVlLCBhbmQgaXMgdGhlIHRy
+ZWUgbGF0ZXN0Pw0KPj4gSWYgdGhlIGhlYWRlciBpcyBuZWVkZWQsIEkgd2lsbCBhZGQgaXQuDQo+
+SSB0ZXN0ZWQgaXQgb24gbmV4dC0yMDE0MTAxMyBhbmQgazMuMTQsIGJvdGggb2YgdGhlbSBuZWVk
+IHRoZSBmaXguIEkgY2FuDQo+Y2hlY2sgaXQgYWdhaW4gYWdhaW5zdCB0aGUgbGF0ZXN0IGxpbnV4
+LW5leHQgdHJlZSBsYXRlci4gVGhhbmtzLg0KU29ycnksIGl0IGlzIG5lZWRlZCBpbmRlZWQsIEkg
+aGF2ZSBmb3Jnb3R0ZW4gZW5hYmxlIHRoZSBQTSBpbiB0aGUgbmV4dCB0cmVlDQpkdWUgdGhlIGxh
+Y2sgb2YgUE0gc3VwcG9ydGluZyBvZiBteSBib2FyZCwgSSB0ZXN0IHRoZSBmdW5jdGlvbiBvbiBt
+eSAzLjEyIHRyZWUuDQpJIHdpbGwgYWRkIGl0IHJpZ2h0IG5vdy4NCg0KQmVzdCBSZWdhcmRzLA0K
+SmluZ2NoYW5nDQo+DQo+LUpvc2VwaA0KPg0KPj4gVGhhbmtzLg0KPj4NCj4+IEJlc3QgUmVnYXJk
+cywNCj4+IEppbmdjaGFuZw0KPj4+DQo+Pj4gVGVzdGVkLWJ5OiBKb3NlcGggTG8gPGpvc2VwaGxA
+bnZpZGlhLmNvbT4NCj4+Pg0KPj4+IEFuZCB0aGFua3MgZm9yIHlvdXIgZml4Lg0KPj4+DQo+Pj4+
+IC0tLQ0KPj4+PiBjaGFuZ2VzIGluIHY0Og0KPj4+PiAgICBzZXBhcmF0ZSA4MjUwIHBvcnQgc3Vz
+cGVuZC9yZXN1bWUgZnJvbSBvZl9zZXJpYWxfc3VzcGVuZC9yZXN1bWUuDQo+Pj4+DQo+Pj4+IGNo
+YW5nZXMgaW4gdjM6DQo+Pj4+ICAgIGZpeCB1cCBwb2ludCByZWZlcmVuY2UgYW5kIGRlZmVyZW5j
+ZS4NCj4+Pj4NCj4+Pj4gY2hhbmdlcyBpbiB2MjoNCj4+Pj4gICAgYWRkIHN3aXRjaCBzZWxlY3Rp
+b24gb24gdWFydCB0eXBlLg0KPj4+Pg0KPj4+PiAgICBkcml2ZXJzL3R0eS9zZXJpYWwvb2Zfc2Vy
+aWFsLmMgfCA1Mg0KPj4+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0t
+LQ0KPj4+PiAgICAxIGZpbGUgY2hhbmdlZCwgNDUgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMo
+LSkNCj4+Pj4NCj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwu
+Yw0KPj4+PiBiL2RyaXZlcnMvdHR5L3NlcmlhbC9vZl9zZXJpYWwuYyBpbmRleCA4YmMyNTYzLi41
+MjgxZjhmIDEwMDY0NA0KPj4+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvb2Zfc2VyaWFsLmMN
+Cj4+Pj4gKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL29mX3NlcmlhbC5jDQo+Pj4+IEBAIC0yNDEs
+MTMgKzI0MSw0OCBAQCBzdGF0aWMgaW50IG9mX3BsYXRmb3JtX3NlcmlhbF9yZW1vdmUoc3RydWN0
+DQo+Pj4gcGxhdGZvcm1fZGV2aWNlICpvZmRldikNCj4+Pj4gICAgfQ0KPj4+Pg0KPj4+PiAgICAj
+aWZkZWYgQ09ORklHX1BNX1NMRUVQDQo+Pj4+IC1zdGF0aWMgaW50IG9mX3NlcmlhbF9zdXNwZW5k
+KHN0cnVjdCBkZXZpY2UgKmRldikNCj4+Pj4gKyNpZmRlZiBDT05GSUdfU0VSSUFMXzgyNTANCj4+
+Pj4gK3N0YXRpYyB2b2lkIG9mX3NlcmlhbF9zdXNwZW5kXzgyNTAoc3RydWN0IG9mX3NlcmlhbF9p
+bmZvICppbmZvKQ0KPj4+PiAgICB7DQo+Pj4+IC0Jc3RydWN0IG9mX3NlcmlhbF9pbmZvICppbmZv
+ID0gZGV2X2dldF9kcnZkYXRhKGRldik7DQo+Pj4+ICsJc3RydWN0IHVhcnRfODI1MF9wb3J0ICpw
+b3J0ODI1MCA9IHNlcmlhbDgyNTBfZ2V0X3BvcnQoaW5mby0+bGluZSk7DQo+Pj4+ICsJc3RydWN0
+IHVhcnRfcG9ydCAqcG9ydCA9ICZwb3J0ODI1MC0+cG9ydDsNCj4+Pj4NCj4+Pj4gICAgCXNlcmlh
+bDgyNTBfc3VzcGVuZF9wb3J0KGluZm8tPmxpbmUpOw0KPj4+PiAtCWlmIChpbmZvLT5jbGspDQo+
+Pj4+ICsJaWYgKGluZm8tPmNsayAmJiAoIXVhcnRfY29uc29sZShwb3J0KSB8fCBjb25zb2xlX3N1
+c3BlbmRfZW5hYmxlZCkpDQo+Pj4+ICAgIAkJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGluZm8tPmNs
+ayk7DQo+Pj4+ICt9DQo+Pj4+ICsNCj4+Pj4gK3N0YXRpYyB2b2lkIG9mX3NlcmlhbF9yZXN1bWVf
+ODI1MChzdHJ1Y3Qgb2Zfc2VyaWFsX2luZm8gKmluZm8pIHsNCj4+Pj4gKwlzdHJ1Y3QgdWFydF84
+MjUwX3BvcnQgKnBvcnQ4MjUwID0gc2VyaWFsODI1MF9nZXRfcG9ydChpbmZvLT5saW5lKTsNCj4+
+Pj4gKwlzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0ID0gJnBvcnQ4MjUwLT5wb3J0Ow0KPj4+PiArDQo+
+Pj4+ICsJaWYgKGluZm8tPmNsayAmJiAoIXVhcnRfY29uc29sZShwb3J0KSB8fCBjb25zb2xlX3N1
+c3BlbmRfZW5hYmxlZCkpDQo+Pj4+ICsJCWNsa19wcmVwYXJlX2VuYWJsZShpbmZvLT5jbGspOw0K
+Pj4+PiArDQo+Pj4+ICsJc2VyaWFsODI1MF9yZXN1bWVfcG9ydChpbmZvLT5saW5lKTsNCj4+Pj4g
+K30NCj4+Pj4gKyNlbHNlDQo+Pj4+ICtzdGF0aWMgaW5saW5lIHZvaWQgb2Zfc2VyaWFsX3N1c3Bl
+bmRfODI1MChzdHJ1Y3Qgb2Zfc2VyaWFsX2luZm8NCj4+Pj4gKyppbmZvKSB7IH0NCj4+Pj4gKw0K
+Pj4+PiArc3RhdGljIGlubGluZSB2b2lkIG9mX3NlcmlhbF9yZXN1bWVfODI1MChzdHJ1Y3Qgb2Zf
+c2VyaWFsX2luZm8NCj4+Pj4gKyppbmZvKSB7IH0gI2VuZGlmDQo+Pj4+ICsNCj4+Pj4gK3N0YXRp
+YyBpbnQgb2Zfc2VyaWFsX3N1c3BlbmQoc3RydWN0IGRldmljZSAqZGV2KSB7DQo+Pj4+ICsJc3Ry
+dWN0IG9mX3NlcmlhbF9pbmZvICppbmZvID0gZGV2X2dldF9kcnZkYXRhKGRldik7DQo+Pj4+ICsN
+Cj4+Pj4gKwlzd2l0Y2goaW5mby0+dHlwZSkgew0KPj4+PiArCWNhc2UgUE9SVF84MjUwIC4uLiBQ
+T1JUX01BWF84MjUwOg0KPj4+PiArCQlvZl9zZXJpYWxfc3VzcGVuZF84MjUwKGluZm8pOw0KPj4+
+PiArCQlicmVhazsNCj4+Pj4gKwlkZWZhdWx0Og0KPj4+PiArCQlicmVhazsNCj4+Pj4gKwl9DQo+
+Pj4+DQo+Pj4+ICAgIAlyZXR1cm4gMDsNCj4+Pj4gICAgfQ0KPj4+PiBAQCAtMjU2LDEwICsyOTEs
+MTMgQEAgc3RhdGljIGludCBvZl9zZXJpYWxfcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikNCj4+
+Pj4gICAgew0KPj4+PiAgICAJc3RydWN0IG9mX3NlcmlhbF9pbmZvICppbmZvID0gZGV2X2dldF9k
+cnZkYXRhKGRldik7DQo+Pj4+DQo+Pj4+IC0JaWYgKGluZm8tPmNsaykNCj4+Pj4gLQkJY2xrX3By
+ZXBhcmVfZW5hYmxlKGluZm8tPmNsayk7DQo+Pj4+IC0NCj4+Pj4gLQlzZXJpYWw4MjUwX3Jlc3Vt
+ZV9wb3J0KGluZm8tPmxpbmUpOw0KPj4+PiArCXN3aXRjaChpbmZvLT50eXBlKSB7DQo+Pj4+ICsJ
+Y2FzZSBQT1JUXzgyNTAgLi4uIFBPUlRfTUFYXzgyNTA6DQo+Pj4+ICsJCW9mX3NlcmlhbF9yZXN1
+bWVfODI1MChpbmZvKTsNCj4+Pj4gKwkJYnJlYWs7DQo+Pj4+ICsJZGVmYXVsdDoNCj4+Pj4gKwkJ
+YnJlYWs7DQo+Pj4+ICsJfQ0KPj4+Pg0KPj4+PiAgICAJcmV0dXJuIDA7DQo+Pj4+ICAgIH0NCj4+
+Pj4NCg==
