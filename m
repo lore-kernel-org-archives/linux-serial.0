@@ -1,83 +1,49 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 00/27] tty locking changes
-Date: Thu, 16 Oct 2014 16:24:58 -0400
-Message-ID: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:41295 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752479AbaJPUZq (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Oct 2014 16:25:46 -0400
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+Subject: [PATCH -next 01/27] tty: Don't hold tty_lock for ldisc release
+Date: Thu, 16 Oct 2014 16:24:59 -0400
+Message-ID: <1413491125-20134-2-git-send-email-peter@hurleysoftware.com>
+References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
+List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+The tty->ldisc_sem write lock is sufficient for serializing changes
+to tty->ldisc; holding the tty lock is not required.
 
-This patch series has 3 major changes to how tty locking behaves:
-1. the lock order of tty_lock() and tty->ldisc_sem is reversed;
-   this eliminates a bunch of lock drop/reacquire which, in turn,
-   eliminates tty state tracking that can no longer be observed.
-   This also allows the pty driver to wait for input processing to
-   complete while closing before setting TTY_OTHER_CLOSED (which
-   eliminates the ugliness of checking input twice in n_tty_read() and
-   n_tty_poll()).
-2. the footprint of tty_mutex is reduced to only adding and removing
-   ttys and is no longer held to acquire the tty_lock() in tty_open();
-   this allows for multiple ttys to be opened concurrently, even if
-   one open stalls waiting for its tty_lock().
-3. pty pair locking is reordered to master first, then slave, rather
-   than by address. This works because, while releasing the master pty,
-   the slave tty count needs to be changed, whereas, when releasing the
-   slave, the master pty does not need to be accessed.
-   This furthur eliminates more lock drop/reacquire.
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/tty_ldisc.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-The longer-term goals, which this series builds towards, is:
-1. simplifying the tty open/close behavior
-2. eliminating the ASYNC_CLOSING code without breaking existing userspace
-3. eliminating returning -EIO from tty_open(). Not sure if this is possible yet.
-
-Regards,
-
-Peter Hurley (27):
-  tty: Don't hold tty_lock for ldisc release
-  tty: Invert tty_lock/ldisc_sem lock order
-  tty: Remove TTY_HUPPING
-  tty: Clarify re-open behavior of master ptys
-  tty: Check tty->count instead of TTY_CLOSING in tty_reopen()
-  pty: Always return -EIO if slave BSD pty opened first
-  tty: Re-open /dev/tty without tty_mutex
-  tty: Drop tty_mutex before tty reopen
-  tty: Remove TTY_CLOSING
-  tty: Don't take tty_mutex for tty count changes
-  tty: Don't release tty locks for wait queue sanity check
-  tty: Document check_tty_count() requires tty_lock held
-  tty: Simplify pty pair teardown logic
-  tty: Fold pty pair handling into tty_flush_works()
-  tty: Simplify tty_ldisc_release() interface
-  tty: Simplify tty_release_checks() interface
-  tty: Simplify tty_release() state checks
-  tty: Change tty lock order to master->slave
-  tty: Remove tty_unhangup() declaration
-  tty: Refactor __tty_hangup to enable lockdep annotation
-  pty: Don't drop pty master tty lock to hangup slave
-  tty: Document hangup call tree
-  pty, n_tty: Simplify input processing on final close
-  tty: Prefix tty_ldisc_{lock,lock_nested,unlock} functions
-  tty: Fix hung task on pty hangup
-  tty: Fix timeout on pty set ldisc
-  tty: Flush ldisc buffer atomically with tty flip buffers
-
- drivers/tty/n_tty.c      |  46 ++++----
- drivers/tty/pty.c        |  12 +-
- drivers/tty/tty_buffer.c |  10 +-
- drivers/tty/tty_io.c     | 279 ++++++++++++++++++++++++-----------------------
- drivers/tty/tty_ldisc.c  | 106 +++++++++---------
- drivers/tty/tty_mutex.c  |  32 +++---
- include/linux/tty.h      |  15 +--
- 7 files changed, 250 insertions(+), 250 deletions(-)
-
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 2d822aa..332a622 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -764,6 +764,8 @@ static void tty_ldisc_kill(struct tty_struct *tty)
+  *	Called during the final close of a tty/pty pair in order to shut down
+  *	the line discpline layer. On exit the ldisc assigned is N_TTY and the
+  *	ldisc has not been opened.
++ *
++ *	Holding ldisc_sem write lock serializes tty->ldisc changes.
+  */
+ 
+ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
+@@ -776,13 +778,9 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
+ 	tty_ldisc_debug(tty, "closing ldisc: %p\n", tty->ldisc);
+ 
+ 	tty_ldisc_lock_pair(tty, o_tty);
+-	tty_lock_pair(tty, o_tty);
+-
+ 	tty_ldisc_kill(tty);
+ 	if (o_tty)
+ 		tty_ldisc_kill(o_tty);
+-
+-	tty_unlock_pair(tty, o_tty);
+ 	tty_ldisc_unlock_pair(tty, o_tty);
+ 
+ 	/* And the memory resources remaining (buffers, termios) will be
 -- 
 2.1.1
-
