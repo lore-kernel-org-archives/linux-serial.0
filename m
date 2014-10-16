@@ -1,53 +1,65 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH] serial: atmel: add missing dmaengine header
-Date: Thu, 16 Oct 2014 15:48:18 +0200
-Message-ID: <543FCCA2.20003@atmel.com>
-References: <1413445197-22304-1-git-send-email-vinod.koul@intel.com> <20141016091059.GA24374@kroah.com> <20141016085635.GD1638@intel.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] serial: Fix divide-by-zero fault in uart_get_divisor()
+Date: Thu, 16 Oct 2014 13:46:38 -0400
+Message-ID: <1413481598-20416-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:35600 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752351AbaJPNsX (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:50170 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752032AbaJPRrI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Oct 2014 09:48:23 -0400
-In-Reply-To: <20141016085635.GD1638@intel.com>
+	Thu, 16 Oct 2014 13:47:08 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.jf.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, robert@swiecki.net, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, stable@vger.kernel.org
 
-On 16/10/2014 10:56, Vinod Koul :
-> On Thu, Oct 16, 2014 at 11:10:59AM +0200, Greg Kroah-Hartman wrote:
->> On Thu, Oct 16, 2014 at 01:09:57PM +0530, Vinod Koul wrote:
->>> The atmel serial driver uses dmaengine APIs but never included the dmaengine
->>> header as it was getting inculded thru one of driver headers.
->>>
->>> commit 3d588f83e4d6a5230d9094b97d38621cbaa9a972 - "dmaengine: dw: split
->>> dma-dw.h to platform and private parts" broke this as it moved headers
->>> around.  Fix this by doing the right thing to include the dmaengine header
->>>
->>> Reported-by: kbuild test robot <fengguang.wu@intel.com>
->>> Signed-off-by: Vinod Koul <vinod.koul@intel.com>
->>> ---
->>> Greg, since this is path which broke this is sitting in my next, would it be
->>> okay to carry this thru dmaengine tree as get it merged in current window.
->>> Planning to send pull request in day or so to Linus
->>
->> Sure, that's fine with me:
->>
->> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Thanks :)
-> 
-> Applied, and pushed now
+uart_get_baud_rate() will return baud =3D=3D 0 if the max rate is set
+to the "magic" 38400 rate and the SPD_* flags are also specified.
+On the first iteration, if the current baud rate is higher than the
+max, the baud rate is clamped at the max (which in the degenerate
+case is 38400). On the second iteration, the now-"magic" 38400 baud
+rate selects the possibly higher alternate baud rate indicated by
+the SPD_* flag. Since only two loop iterations are performed, the
+loop is exited, a kernel WARNING is generated and a baud rate of
+0 is returned.
 
-Vinod, thanks a lot for having handled this issue.
+Reproducible with:
+ setserial /dev/ttyS0 spd_hi base_baud 38400
 
-For the record even if it's too late:
+Only perform the "magic" 38400 -> SPD_* baud transform on the first
+loop iteration, which prevents the degenerate case from recognizing
+the clamped baud rate as the "magic" 38400 value.
 
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Reported-by: Robert =C5=9Awi=C4=99cki <robert@swiecki.net>
+Cc: <stable@vger.kernel.org> # all
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/serial/serial_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Bye,
--- 
-Nicolas Ferre
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+index de74621..c4cc2f2 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -363,7 +363,7 @@ uart_get_baud_rate(struct uart_port *port, struct k=
+termios *termios,
+ 		 * The spd_hi, spd_vhi, spd_shi, spd_warp kludge...
+ 		 * Die! Die! Die!
+ 		 */
+-		if (baud =3D=3D 38400)
++		if (try =3D=3D 0 && baud =3D=3D 38400)
+ 			baud =3D altbaud;
+=20
+ 		/*
+--=20
+2.1.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
