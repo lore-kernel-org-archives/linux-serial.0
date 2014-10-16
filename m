@@ -1,67 +1,125 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 8/9] tty: Fix missed wakeup from packet mode status update
-Date: Thu, 16 Oct 2014 15:33:29 -0400
-Message-ID: <1413488010-16885-9-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 2/9] tty: Move pty-specific set_termios() handling to pty driver
+Date: Thu, 16 Oct 2014 15:33:23 -0400
+Message-ID: <1413488010-16885-3-git-send-email-peter@hurleysoftware.com>
 References: <1413488010-16885-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:33193 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751854AbaJPTdv (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 16 Oct 2014 15:33:51 -0400
 In-Reply-To: <1413488010-16885-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-The pty master read() can miss the wake up for a packet mode
-status change. For example,
-
-CPU 0                                   | CPU 1
-n_tty_read()                            | n_tty_packet_mode_flush()
-  ...                                   |   .
-  if (packet & link->ctrl_status) {     |   .
-    /* no new ctrl_status ATM */        |   .
-                                        |   spin_lock
-                                        |     ctrl_status |= TIOCPKT_FLUSHREAD
-                                        |   spin_unlock
-                                        |   wake_up(link->read_wait)
-  }                                     |
-  set_current_state(TASK_INTERRUPTIBLE) |
-  ...                                   |
-
-The pty master read() will now sleep (assuming there is no input) having
-missed the read_wait wakeup.
-
-Set the task state before the condition test.
+Packet mode is unique to the pty driver; move the packet mode state
+change code from the generic tty ioctl handler to the pty driver.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/pty.c       | 28 ++++++++++++++++++++++++++++
+ drivers/tty/tty_ioctl.c | 32 +-------------------------------
+ 2 files changed, 29 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 6a42204..602dbc2 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -2168,6 +2168,11 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 
- 	add_wait_queue(&tty->read_wait, &wait);
- 	while (nr) {
-+		/* This statement must be first before checking for input
-+		   so that any interrupt will set the state back to
-+		   TASK_RUNNING. */
-+		set_current_state(TASK_INTERRUPTIBLE);
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 6c76025..7f612c5 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -259,6 +259,34 @@ out:
+ static void pty_set_termios(struct tty_struct *tty,
+ 					struct ktermios *old_termios)
+ {
++	unsigned long flags;
 +
- 		/* First test for status change. */
- 		if (packet && tty->link->ctrl_status) {
- 			unsigned char cs;
-@@ -2185,10 +2190,6 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 			nr--;
- 			break;
- 		}
--		/* This statement must be first before checking for input
--		   so that any interrupt will set the state back to
--		   TASK_RUNNING. */
--		set_current_state(TASK_INTERRUPTIBLE);
++	/* See if packet mode change of state. */
++	if (tty->link && tty->link->packet) {
++		int extproc = (old_termios->c_lflag & EXTPROC) |
++				(tty->termios.c_lflag & EXTPROC);
++		int old_flow = ((old_termios->c_iflag & IXON) &&
++				(old_termios->c_cc[VSTOP] == '\023') &&
++				(old_termios->c_cc[VSTART] == '\021'));
++		int new_flow = (I_IXON(tty) &&
++				STOP_CHAR(tty) == '\023' &&
++				START_CHAR(tty) == '\021');
++		if ((old_flow != new_flow) || extproc) {
++			spin_lock_irqsave(&tty->ctrl_lock, flags);
++			if (old_flow != new_flow) {
++				tty->ctrl_status &= ~(TIOCPKT_DOSTOP | TIOCPKT_NOSTOP);
++				if (new_flow)
++					tty->ctrl_status |= TIOCPKT_DOSTOP;
++				else
++					tty->ctrl_status |= TIOCPKT_NOSTOP;
++			}
++			if (extproc)
++				tty->ctrl_status |= TIOCPKT_IOCTL;
++			spin_unlock_irqrestore(&tty->ctrl_lock, flags);
++			wake_up_interruptible(&tty->link->read_wait);
++		}
++	}
++
+ 	tty->termios.c_cflag &= ~(CSIZE | PARENB);
+ 	tty->termios.c_cflag |= (CS8 | CREAD);
+ }
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index f29e3d1..e2484e4 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -524,10 +524,7 @@ EXPORT_SYMBOL(tty_termios_hw_change);
+  *	@tty: tty to update
+  *	@new_termios: desired new value
+  *
+- *	Perform updates to the termios values set on this terminal. There
+- *	is a bit of layering violation here with n_tty in terms of the
+- *	internal knowledge of this function.
+- *
++ *	Perform updates to the termios values set on this terminal.
+  *	A master pty's termios should never be set.
+  *
+  *	Locking: termios_rwsem
+@@ -537,7 +534,6 @@ int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
+ {
+ 	struct ktermios old_termios;
+ 	struct tty_ldisc *ld;
+-	unsigned long flags;
  
- 		if (((minimum - (b - buf)) < ldata->minimum_to_wake) &&
- 		    ((minimum - (b - buf)) >= 1))
+ 	WARN_ON(tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+ 		tty->driver->subtype == PTY_TYPE_MASTER);
+@@ -553,32 +549,6 @@ int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
+ 	tty->termios = *new_termios;
+ 	unset_locked_termios(&tty->termios, &old_termios, &tty->termios_locked);
+ 
+-	/* See if packet mode change of state. */
+-	if (tty->link && tty->link->packet) {
+-		int extproc = (old_termios.c_lflag & EXTPROC) |
+-				(tty->termios.c_lflag & EXTPROC);
+-		int old_flow = ((old_termios.c_iflag & IXON) &&
+-				(old_termios.c_cc[VSTOP] == '\023') &&
+-				(old_termios.c_cc[VSTART] == '\021'));
+-		int new_flow = (I_IXON(tty) &&
+-				STOP_CHAR(tty) == '\023' &&
+-				START_CHAR(tty) == '\021');
+-		if ((old_flow != new_flow) || extproc) {
+-			spin_lock_irqsave(&tty->ctrl_lock, flags);
+-			if (old_flow != new_flow) {
+-				tty->ctrl_status &= ~(TIOCPKT_DOSTOP | TIOCPKT_NOSTOP);
+-				if (new_flow)
+-					tty->ctrl_status |= TIOCPKT_DOSTOP;
+-				else
+-					tty->ctrl_status |= TIOCPKT_NOSTOP;
+-			}
+-			if (extproc)
+-				tty->ctrl_status |= TIOCPKT_IOCTL;
+-			spin_unlock_irqrestore(&tty->ctrl_lock, flags);
+-			wake_up_interruptible(&tty->link->read_wait);
+-		}
+-	}
+-
+ 	if (tty->ops->set_termios)
+ 		(*tty->ops->set_termios)(tty, &old_termios);
+ 	else
 -- 
 2.1.1
+
