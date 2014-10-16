@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 05/27] tty: Check tty->count instead of TTY_CLOSING in tty_reopen()
-Date: Thu, 16 Oct 2014 16:25:03 -0400
-Message-ID: <1413491125-20134-6-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 04/27] tty: Clarify re-open behavior of master ptys
+Date: Thu, 16 Oct 2014 16:25:02 -0400
+Message-ID: <1413491125-20134-5-git-send-email-peter@hurleysoftware.com>
 References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
@@ -10,32 +10,76 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Although perhaps not obvious, the TTY_CLOSING bit is set when the
-tty count has been decremented to 0 (which occurs while holding
-tty_lock). The only other case when tty count is 0 during a re-open
-is when a legacy BSD pty master has been opened in parallel but
-after the pty slave, which is unsupported and returns an error.
+Re-opening master ptys is not allowed. Once opened and for the remaining
+lifetime of the master pty, its tty count is 1. If its tty count has
+dropped to 0, then the master pty was closed and TTY_CLOSING was set,
+and destruction may begin imminently.
 
-Thus !tty->count contains the complete set of degenerate conditions
-under which a tty open fails.
+Besides the normal case of a legacy BSD pty master being re-opened
+(which always returns -EIO), this code is only reachable in 2 degenerate
+cases:
+1. The pty master is the controlling terminal (this is possible through
+   the TIOCSCTTY ioctl). pty masters are not designed to be controlling
+   terminals and it's an oversight that tiocsctty() ever let that happen.
+   The attempted open of /dev/tty will always fail. No known program does
+   this.
+2. The legacy BSD pty slave was opened first. The slave open will fail
+   in pty_open() and tty_release() will commence. But before tty_release()
+   claims the tty_mutex, there is a very small window where a parallel
+   master open might succeed. In a test of racing legacy BSD slave and
+   master parallel opens, where:
+      slave open attempts:  10000   success:4527  failure:5473
+      master open attempts: 11728   success:5789  failure:5939
+   only 8 master open attempts would have succeeded reaching this code and
+   successfully opened the master pty. This case is not possible with
+   SysV ptys.
+
+Always return -EIO if a master pty is re-opened or the slave is opened
+first and the master opened in parallel (for legacy BSD ptys).
+
+Furthermore, now that changing the slave's count is not required,
+the tty_lock is sufficient for preventing concurrent changes to the
+tty being re-opened (or failing re-opening).
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_io.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/tty_io.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 5b6253f..52bcdd3 100644
+index fd06512..5b6253f 100644
 --- a/drivers/tty/tty_io.c
 +++ b/drivers/tty/tty_io.c
-@@ -1452,7 +1452,7 @@ static int tty_reopen(struct tty_struct *tty)
+@@ -1444,9 +1444,9 @@ void tty_driver_remove_tty(struct tty_driver *driver, struct tty_struct *tty)
+  * 	@tty	- the tty to open
+  *
+  *	Return 0 on success, -errno on error.
++ *	Re-opens on master ptys are not allowed and return -EIO.
+  *
+- *	Locking: tty_mutex must be held from the time the tty was found
+- *		 till this open completes.
++ *	Locking: Caller must hold tty_lock
+  */
+ static int tty_reopen(struct tty_struct *tty)
  {
- 	struct tty_driver *driver = tty->driver;
- 
--	if (test_bit(TTY_CLOSING, &tty->flags))
-+	if (!tty->count)
+@@ -1456,16 +1456,9 @@ static int tty_reopen(struct tty_struct *tty)
  		return -EIO;
  
  	if (driver->type == TTY_DRIVER_TYPE_PTY &&
+-	    driver->subtype == PTY_TYPE_MASTER) {
+-		/*
+-		 * special case for PTY masters: only one open permitted,
+-		 * and the slave side open count is incremented as well.
+-		 */
+-		if (tty->count)
+-			return -EIO;
++	    driver->subtype == PTY_TYPE_MASTER)
++		return -EIO;
+ 
+-		tty->link->count++;
+-	}
+ 	tty->count++;
+ 
+ 	WARN_ON(!tty->ldisc);
 -- 
 2.1.1
