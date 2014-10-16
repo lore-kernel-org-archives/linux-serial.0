@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 3/9] pty: Use spin_lock_irq() for pty_set_termios()
-Date: Thu, 16 Oct 2014 15:33:24 -0400
-Message-ID: <1413488010-16885-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 6/9] pty: Fix packet mode setting race
+Date: Thu, 16 Oct 2014 15:33:27 -0400
+Message-ID: <1413488010-16885-7-git-send-email-peter@hurleysoftware.com>
 References: <1413488010-16885-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1413488010-16885-1-git-send-email-peter@hurleysoftware.com>
@@ -10,44 +10,42 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-The tty driver's set_termios() method is called with interrupts
-enabled; there is no need to save and restore the local interrupt state.
+Because pty_set_pktmode() does not claim the slave's ctrl_lock
+to clear ->ctrl_status (to avoid unnecessary lock nesting),
+pty_set_pktmode() may accidentally erase new ->ctrl_status updates.
+For example,
+
+CPU 0                             | CPU 1
+pty_set_pktmode()                 | pty_start()
+  spin_lock(master's ctrl_lock)   |
+  tty->packet = 1                 |
+                                  |   if (tty->link->packet)
+                                  |     spin_lock(slave's ctrl_lock)
+                                  |     tty->ctrl_status = TIOCPKT_START
+  tty->link->ctrl_status = 0      |
+
+Ensure the clear of ->ctrl_status occurs before packet mode is set
+(and observable on another cpu).
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/pty.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/pty.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 7f612c5..3943747 100644
+index e554393..bcec4c7 100644
 --- a/drivers/tty/pty.c
 +++ b/drivers/tty/pty.c
-@@ -259,8 +259,6 @@ out:
- static void pty_set_termios(struct tty_struct *tty,
- 					struct ktermios *old_termios)
- {
--	unsigned long flags;
--
- 	/* See if packet mode change of state. */
- 	if (tty->link && tty->link->packet) {
- 		int extproc = (old_termios->c_lflag & EXTPROC) |
-@@ -272,7 +270,7 @@ static void pty_set_termios(struct tty_struct *tty,
- 				STOP_CHAR(tty) == '\023' &&
- 				START_CHAR(tty) == '\021');
- 		if ((old_flow != new_flow) || extproc) {
--			spin_lock_irqsave(&tty->ctrl_lock, flags);
-+			spin_lock_irq(&tty->ctrl_lock);
- 			if (old_flow != new_flow) {
- 				tty->ctrl_status &= ~(TIOCPKT_DOSTOP | TIOCPKT_NOSTOP);
- 				if (new_flow)
-@@ -282,7 +280,7 @@ static void pty_set_termios(struct tty_struct *tty,
- 			}
- 			if (extproc)
- 				tty->ctrl_status |= TIOCPKT_IOCTL;
--			spin_unlock_irqrestore(&tty->ctrl_lock, flags);
-+			spin_unlock_irq(&tty->ctrl_lock);
- 			wake_up_interruptible(&tty->link->read_wait);
+@@ -186,8 +186,9 @@ static int pty_set_pktmode(struct tty_struct *tty, int __user *arg)
+ 	spin_lock_irq(&tty->ctrl_lock);
+ 	if (pktmode) {
+ 		if (!tty->packet) {
+-			tty->packet = 1;
+ 			tty->link->ctrl_status = 0;
++			smp_mb();
++			tty->packet = 1;
  		}
- 	}
+ 	} else
+ 		tty->packet = 0;
 -- 
 2.1.1
