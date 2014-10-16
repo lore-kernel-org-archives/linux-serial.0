@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 01/27] tty: Don't hold tty_lock for ldisc release
-Date: Thu, 16 Oct 2014 16:24:59 -0400
-Message-ID: <1413491125-20134-2-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 09/27] tty: Remove TTY_CLOSING
+Date: Thu, 16 Oct 2014 16:25:07 -0400
+Message-ID: <1413491125-20134-10-git-send-email-peter@hurleysoftware.com>
 References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
@@ -10,40 +10,66 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-The tty->ldisc_sem write lock is sufficient for serializing changes
-to tty->ldisc; holding the tty lock is not required.
+Now that re-open is not permitted for a legacy BSD pty master,
+using TTY_CLOSING to indicate when a tty can be torn-down is
+no longer necessary.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/tty_io.c | 14 ++------------
+ include/linux/tty.h  |  1 -
+ 2 files changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 2d822aa..332a622 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -764,6 +764,8 @@ static void tty_ldisc_kill(struct tty_struct *tty)
-  *	Called during the final close of a tty/pty pair in order to shut down
-  *	the line discpline layer. On exit the ldisc assigned is N_TTY and the
-  *	ldisc has not been opened.
-+ *
-+ *	Holding ldisc_sem write lock serializes tty->ldisc changes.
-  */
- 
- void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
-@@ -776,13 +778,9 @@ void tty_ldisc_release(struct tty_struct *tty, struct tty_struct *o_tty)
- 	tty_ldisc_debug(tty, "closing ldisc: %p\n", tty->ldisc);
- 
- 	tty_ldisc_lock_pair(tty, o_tty);
--	tty_lock_pair(tty, o_tty);
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index ded0445..55f9931 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1197,7 +1197,7 @@ void tty_write_message(struct tty_struct *tty, char *msg)
+ 	if (tty) {
+ 		mutex_lock(&tty->atomic_write_lock);
+ 		tty_lock(tty);
+-		if (tty->ops->write && !test_bit(TTY_CLOSING, &tty->flags)) {
++		if (tty->ops->write && tty->count > 0) {
+ 			tty_unlock(tty);
+ 			tty->ops->write(tty, msg, strlen(msg));
+ 		} else
+@@ -1887,16 +1887,6 @@ int tty_release(struct inode *inode, struct file *filp)
+ 	/*
+ 	 * Perform some housekeeping before deciding whether to return.
+ 	 *
+-	 * Set the TTY_CLOSING flag if this was the last open.  In the
+-	 * case of a pty we may have to wait around for the other side
+-	 * to close, and TTY_CLOSING makes sure we can't be reopened.
+-	 */
+-	if (tty_closing)
+-		set_bit(TTY_CLOSING, &tty->flags);
+-	if (o_tty_closing)
+-		set_bit(TTY_CLOSING, &o_tty->flags);
 -
- 	tty_ldisc_kill(tty);
- 	if (o_tty)
- 		tty_ldisc_kill(o_tty);
--
--	tty_unlock_pair(tty, o_tty);
- 	tty_ldisc_unlock_pair(tty, o_tty);
+-	/*
+ 	 * If _either_ side is closing, make sure there aren't any
+ 	 * processes that still think tty or o_tty is their controlling
+ 	 * tty.
+@@ -1911,7 +1901,7 @@ int tty_release(struct inode *inode, struct file *filp)
  
- 	/* And the memory resources remaining (buffers, termios) will be
+ 	mutex_unlock(&tty_mutex);
+ 	tty_unlock_pair(tty, o_tty);
+-	/* At this point the TTY_CLOSING flag should ensure a dead tty
++	/* At this point, the tty->count == 0 should ensure a dead tty
+ 	   cannot be re-opened by a racing opener */
+ 
+ 	/* check whether both sides are closing ... */
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index ff0dd7a..35b29f0 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -316,7 +316,6 @@ struct tty_file_private {
+ #define TTY_EXCLUSIVE 		3	/* Exclusive open mode */
+ #define TTY_DEBUG 		4	/* Debugging */
+ #define TTY_DO_WRITE_WAKEUP 	5	/* Call write_wakeup after queuing new */
+-#define TTY_CLOSING 		7	/* ->close() in progress */
+ #define TTY_LDISC_OPEN	 	11	/* Line discipline is open */
+ #define TTY_PTY_LOCK 		16	/* pty private */
+ #define TTY_NO_WRITE_SPLIT 	17	/* Preserve write boundaries to driver */
 -- 
 2.1.1
