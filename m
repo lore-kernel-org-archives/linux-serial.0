@@ -1,54 +1,58 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 04/10] uml: Fix unsafe pid reference to foreground process group
-Date: Thu, 16 Oct 2014 14:59:44 -0400
-Message-ID: <1413485990-16855-5-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 06/10] tty: Remove !tty condition from __proc_set_tty()
+Date: Thu, 16 Oct 2014 14:59:46 -0400
+Message-ID: <1413485990-16855-7-git-send-email-peter@hurleysoftware.com>
 References: <1413485990-16855-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1413485990-16855-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>, user-mode-linux-devel@lists.sourceforge.net
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Although the tty core maintains a pid reference for the foreground
-process group, if the foreground process group is changed that
-pid reference is dropped. Thus, the pid reference used for signalling
-could become stale.
+The tty parameter to __proc_set_tty() cannot be NULL; all
+call sites have already dereferenced tty.
 
-Safely obtain a pid reference to the foreground process group and
-release the reference after signalling is complete.
-
-cc: Jeff Dike <jdike@addtoit.com>
-cc: Richard Weinberger <richard@nod.at>
-cc: user-mode-linux-devel@lists.sourceforge.net
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- arch/um/drivers/line.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/tty_io.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/arch/um/drivers/line.c b/arch/um/drivers/line.c
-index 8035145..6208702 100644
---- a/arch/um/drivers/line.c
-+++ b/arch/um/drivers/line.c
-@@ -632,6 +632,7 @@ static irqreturn_t winch_interrupt(int irq, void *data)
- 	int fd = winch->fd;
- 	int err;
- 	char c;
-+	struct pid *pgrp;
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index c224488..e33edfa 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -506,19 +506,18 @@ void proc_clear_tty(struct task_struct *p)
  
- 	if (fd != -1) {
- 		err = generic_read(fd, &c, NULL);
-@@ -657,7 +658,10 @@ static irqreturn_t winch_interrupt(int irq, void *data)
- 		if (line != NULL) {
- 			chan_window_size(line, &tty->winsize.ws_row,
- 					 &tty->winsize.ws_col);
--			kill_pgrp(tty->pgrp, SIGWINCH, 1);
-+			pgrp = tty_get_pgrp(tty);
-+			if (pgrp)
-+				kill_pgrp(pgrp, SIGWINCH, 1);
-+			put_pid(pgrp);
- 		}
- 		tty_kref_put(tty);
+ static void __proc_set_tty(struct tty_struct *tty)
+ {
+-	if (tty) {
+-		unsigned long flags;
+-		/* We should not have a session or pgrp to put here but.... */
+-		spin_lock_irqsave(&tty->ctrl_lock, flags);
+-		put_pid(tty->session);
+-		put_pid(tty->pgrp);
+-		tty->pgrp = get_pid(task_pgrp(current));
+-		spin_unlock_irqrestore(&tty->ctrl_lock, flags);
+-		tty->session = get_pid(task_session(current));
+-		if (current->signal->tty) {
+-			printk(KERN_DEBUG "tty not NULL!!\n");
+-			tty_kref_put(current->signal->tty);
+-		}
++	unsigned long flags;
++
++	/* We should not have a session or pgrp to put here but.... */
++	spin_lock_irqsave(&tty->ctrl_lock, flags);
++	put_pid(tty->session);
++	put_pid(tty->pgrp);
++	tty->pgrp = get_pid(task_pgrp(current));
++	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
++	tty->session = get_pid(task_session(current));
++	if (current->signal->tty) {
++		printk(KERN_DEBUG "tty not NULL!!\n");
++		tty_kref_put(current->signal->tty);
  	}
+ 	put_pid(current->signal->tty_old_pgrp);
+ 	current->signal->tty = tty_kref_get(tty);
 -- 
 2.1.1
