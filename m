@@ -1,65 +1,59 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] serial: Fix divide-by-zero fault in uart_get_divisor()
-Date: Thu, 16 Oct 2014 13:46:38 -0400
-Message-ID: <1413481598-20416-1-git-send-email-peter@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Subject: [PATCH] tty: Fix high cpu load if tty is unreleaseable
+Date: Thu, 16 Oct 2014 13:51:30 -0400
+Message-ID: <1413481890-14248-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:50170 "EHLO
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:57107 "EHLO
 	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752032AbaJPRrI (ORCPT
+	with ESMTP id S1751334AbaJPRv7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Oct 2014 13:47:08 -0400
+	Thu, 16 Oct 2014 13:51:59 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, robert@swiecki.net, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, stable@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, stable@vger.kernel.org
 
-uart_get_baud_rate() will return baud =3D=3D 0 if the max rate is set
-to the "magic" 38400 rate and the SPD_* flags are also specified.
-On the first iteration, if the current baud rate is higher than the
-max, the baud rate is clamped at the max (which in the degenerate
-case is 38400). On the second iteration, the now-"magic" 38400 baud
-rate selects the possibly higher alternate baud rate indicated by
-the SPD_* flag. Since only two loop iterations are performed, the
-loop is exited, a kernel WARNING is generated and a baud rate of
-0 is returned.
+Kernel oops can cause the tty to be unreleaseable (for example, if
+n_tty_read() crashes while on the read_wait queue). This will cause
+tty_release() to endlessly loop without sleeping.
 
-Reproducible with:
- setserial /dev/ttyS0 spd_hi base_baud 38400
+Use a killable sleep timeout which grows by 2n+1 jiffies over the interval
+[0, 120 secs.) and then jumps to forever (but still killable).
 
-Only perform the "magic" 38400 -> SPD_* baud transform on the first
-loop iteration, which prevents the degenerate case from recognizing
-the clamped baud rate as the "magic" 38400 value.
+NB: killable just allows for the task to be rewoken manually, not
+to be terminated.
 
-Reported-by: Robert =C5=9Awi=C4=99cki <robert@swiecki.net>
-Cc: <stable@vger.kernel.org> # all
+Cc: <stable@vger.kernel.org> # since before 2.6.32
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/serial_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/tty_io.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
-al_core.c
-index de74621..c4cc2f2 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -363,7 +363,7 @@ uart_get_baud_rate(struct uart_port *port, struct k=
-termios *termios,
- 		 * The spd_hi, spd_vhi, spd_shi, spd_warp kludge...
- 		 * Die! Die! Die!
- 		 */
--		if (baud =3D=3D 38400)
-+		if (try =3D=3D 0 && baud =3D=3D 38400)
- 			baud =3D altbaud;
-=20
- 		/*
---=20
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 5e93d6c..1019025 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1708,6 +1708,7 @@ int tty_release(struct inode *inode, struct file *filp)
+ 	int	pty_master, tty_closing, o_tty_closing, do_sleep;
+ 	int	idx;
+ 	char	buf[64];
++	long	timeout = 0;
+ 
+ 	if (tty_paranoia_check(tty, inode, __func__))
+ 		return 0;
+@@ -1792,7 +1793,11 @@ int tty_release(struct inode *inode, struct file *filp)
+ 				__func__, tty_name(tty, buf));
+ 		tty_unlock_pair(tty, o_tty);
+ 		mutex_unlock(&tty_mutex);
+-		schedule();
++		schedule_timeout_killable(timeout);
++		if (timeout < 120 * HZ)
++			timeout = 2 * timeout + 1;
++		else
++			timeout = MAX_SCHEDULE_TIMEOUT;
+ 	}
+ 
+ 	/*
+-- 
 2.1.1
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
