@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 5/9] pty: Don't claim slave's ctrl_lock for master's packet mode
-Date: Thu, 16 Oct 2014 15:33:26 -0400
-Message-ID: <1413488010-16885-6-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 9/9] n_tty: Only process packet mode data in raw mode
+Date: Thu, 16 Oct 2014 15:33:30 -0400
+Message-ID: <1413488010-16885-10-git-send-email-peter@hurleysoftware.com>
 References: <1413488010-16885-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1413488010-16885-1-git-send-email-peter@hurleysoftware.com>
@@ -10,74 +10,52 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-The slave's ctrl_lock serializes updates to the ctrl_status field
-only, whereas the master's ctrl_lock serializes updates to the
-packet mode enable (ie., the master does not have ctrl_status and
-the slave does not have packet mode). Thus, claiming the slave's
-ctrl_lock to access ->packet is useless.
-
-Unlocked reads of ->packet are already smp-safe.
+Packet mode can only be set for a pty master, and a pty master is
+always in raw mode since its termios cannot be changed.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 4 ++--
- drivers/tty/pty.c   | 8 ++++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/tty/n_tty.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 53cdfbe..6a42204 100644
+index 602dbc2..379f60c 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -351,13 +351,13 @@ static void n_tty_packet_mode_flush(struct tty_struct *tty)
- {
- 	unsigned long flags;
+@@ -2228,16 +2228,6 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 		}
+ 		__set_current_state(TASK_RUNNING);
  
--	spin_lock_irqsave(&tty->ctrl_lock, flags);
- 	if (tty->link->packet) {
-+		spin_lock_irqsave(&tty->ctrl_lock, flags);
- 		tty->ctrl_status |= TIOCPKT_FLUSHREAD;
-+		spin_unlock_irqrestore(&tty->ctrl_lock, flags);
- 		if (waitqueue_active(&tty->link->read_wait))
- 			wake_up_interruptible(&tty->link->read_wait);
- 	}
--	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
- }
- 
- /**
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 29b5eeb..e554393 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -339,26 +339,26 @@ static void pty_start(struct tty_struct *tty)
- {
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&tty->ctrl_lock, flags);
- 	if (tty->link && tty->link->packet) {
-+		spin_lock_irqsave(&tty->ctrl_lock, flags);
- 		tty->ctrl_status &= ~TIOCPKT_STOP;
- 		tty->ctrl_status |= TIOCPKT_START;
-+		spin_unlock_irqrestore(&tty->ctrl_lock, flags);
- 		wake_up_interruptible_poll(&tty->link->read_wait, POLLIN);
- 	}
--	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
- }
- 
- static void pty_stop(struct tty_struct *tty)
- {
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&tty->ctrl_lock, flags);
- 	if (tty->link && tty->link->packet) {
-+		spin_lock_irqsave(&tty->ctrl_lock, flags);
- 		tty->ctrl_status &= ~TIOCPKT_START;
- 		tty->ctrl_status |= TIOCPKT_STOP;
-+		spin_unlock_irqrestore(&tty->ctrl_lock, flags);
- 		wake_up_interruptible_poll(&tty->link->read_wait, POLLIN);
- 	}
--	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
- }
- 
- /**
+-		/* Deal with packet mode. */
+-		if (packet && b == buf) {
+-			if (tty_put_user(tty, TIOCPKT_DATA, b++)) {
+-				retval = -EFAULT;
+-				b--;
+-				break;
+-			}
+-			nr--;
+-		}
+-
+ 		if (ldata->icanon && !L_EXTPROC(tty)) {
+ 			retval = canon_copy_from_read_buf(tty, &b, &nr);
+ 			if (retval == -EAGAIN) {
+@@ -2247,6 +2237,17 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 				break;
+ 		} else {
+ 			int uncopied;
++
++			/* Deal with packet mode. */
++			if (packet && b == buf) {
++				if (tty_put_user(tty, TIOCPKT_DATA, b++)) {
++					retval = -EFAULT;
++					b--;
++					break;
++				}
++				nr--;
++			}
++
+ 			/* The copy function takes the read lock and handles
+ 			   locking internally for this case */
+ 			uncopied = copy_from_read_buf(tty, &b, &nr);
 -- 
 2.1.1
