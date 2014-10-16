@@ -1,184 +1,100 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 01/10] serial: Refactor uart_flush_buffer() from uart_close()
-Date: Thu, 16 Oct 2014 16:54:18 -0400
-Message-ID: <1413492867-20679-2-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 03/10] serial: Fix locking for uart driver set_termios() method
+Date: Thu, 16 Oct 2014 16:54:20 -0400
+Message-ID: <1413492867-20679-4-git-send-email-peter@hurleysoftware.com>
 References: <1413492867-20679-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1413492867-20679-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Russell King <linux@arm.linux.org.uk>, Laxman Dewangan <ldewangan@nvidia.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-In the context of the final tty & port close, flushing the tx
-ring buffer after the hardware has already been shutdown and
-the ring buffer freed is neither required nor desirable.
+The low-level uart driver may modify termios settings to override
+settings that are not compatible with the uart, such as CRTSCTS.
+Thus, callers of the low-level uart driver's set_termios() method must
+hold termios_rwsem write lock to prevent concurrent access to termios,
+in case such override occurs.
 
-uart_flush_buffer() performs 3 operations:
-1. Resets tx ring buffer indices, but the tx ring buffer has
-   already been freed and the indices are reset if the port is
-   re-opened.
-2. Calls uart driver's flush_buffer() method
-   5 in-tree uart drivers define flush_buffer() methods:
-     amba-pl011, atmel-serial, imx, serial-tegra, timbuart
-   These have been refactored into the shutdown() method, if
-   required.
-3. Kicks the ldisc for more writing, but this is undesirable.
-   The file handle is being released; any waiting writer will
-   will be kicked out by tty_release() with a warning. Further,
-   the N_TTY ldisc may generate SIGIO for a file handle which
-   is no longer valid.
+The termios_rwsem lock requirement does not extend to console setup
+(ie., uart_set_options), as console setup cannot race with tty
+operations. Nor does this lock requirement extend to functions which
+cannot be concurrent with tty ioctls (ie., uart_port_startup() and
+uart_resume_port()).
 
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Russell King <linux@arm.linux.org.uk>
-Cc: Laxman Dewangan <ldewangan@nvidia.com>
+Further, always claim the port mutex to protect hardware
+re-reprogramming in the set_termios() uart driver method. Note this
+is unnecessary for console initialization in uart_set_options()
+which cannot be concurrent with other uart operations.
+
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/amba-pl011.c   |  1 +
- drivers/tty/serial/atmel_serial.c | 28 +++++++++++++++-------------
- drivers/tty/serial/serial-tegra.c | 30 ++++++++++++++++--------------
- drivers/tty/serial/serial_core.c  |  1 -
- drivers/tty/serial/timbuart.c     |  2 ++
- 5 files changed, 34 insertions(+), 28 deletions(-)
+ Documentation/serial/driver      | 6 ++++--
+ drivers/tty/serial/serial_core.c | 8 +++++++-
+ 2 files changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 8572f2a..5b82d7a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1674,6 +1674,7 @@ static void pl011_shutdown(struct uart_port *port)
- 			plat->exit();
- 	}
+diff --git a/Documentation/serial/driver b/Documentation/serial/driver
+index ba64e4b..c415b0e 100644
+--- a/Documentation/serial/driver
++++ b/Documentation/serial/driver
+@@ -59,7 +59,9 @@ The core driver uses the info->tmpbuf_sem lock to prevent multi-threaded
+ access to the info->tmpbuf bouncebuffer used for port writes.
  
-+	pl011_dma_flush_buffer(port);
- }
+ The port_sem semaphore is used to protect against ports being added/
+-removed or reconfigured at inappropriate times.
++removed or reconfigured at inappropriate times. Since v2.6.27, this
++semaphore has been the 'mutex' member of the tty_port struct, and
++commonly referred to as the port mutex (or port->mutex).
  
- static void
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index d7d4584..8b13d4d 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1801,6 +1801,20 @@ free_irq:
- }
  
- /*
-+ * Flush any TX data submitted for DMA. Called when the TX circular
-+ * buffer is reset.
-+ */
-+static void atmel_flush_buffer(struct uart_port *port)
-+{
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+
-+	if (atmel_use_pdc_tx(port)) {
-+		UART_PUT_TCR(port, 0);
-+		atmel_port->pdc_tx.ofs = 0;
-+	}
-+}
-+
-+/*
-  * Disable the port
-  */
- static void atmel_shutdown(struct uart_port *port)
-@@ -1851,20 +1865,8 @@ static void atmel_shutdown(struct uart_port *port)
- 	atmel_free_gpio_irq(port);
+ uart_ops
+@@ -248,7 +250,7 @@ hardware.
+ 	Other flags may be used (eg, xon/xoff characters) if your
+ 	hardware supports hardware "soft" flow control.
  
- 	atmel_port->ms_irq_enabled = false;
--}
+-	Locking: none.
++	Locking: caller holds port->mutex
+ 	Interrupts: caller dependent.
+ 	This call must not sleep
  
--/*
-- * Flush any TX data submitted for DMA. Called when the TX circular
-- * buffer is reset.
-- */
--static void atmel_flush_buffer(struct uart_port *port)
--{
--	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
--
--	if (atmel_use_pdc_tx(port)) {
--		UART_PUT_TCR(port, 0);
--		atmel_port->pdc_tx.ofs = 0;
--	}
-+	atmel_flush_buffer(port);
- }
- 
- /*
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 53d7c31..78a5cf6 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -1034,6 +1034,20 @@ fail_rx_dma:
- 	return ret;
- }
- 
-+/*
-+ * Flush any TX data submitted for DMA and PIO. Called when the
-+ * TX circular buffer is reset.
-+ */
-+static void tegra_uart_flush_buffer(struct uart_port *u)
-+{
-+	struct tegra_uart_port *tup = to_tegra_uport(u);
-+
-+	tup->tx_bytes = 0;
-+	if (tup->tx_dma_chan)
-+		dmaengine_terminate_all(tup->tx_dma_chan);
-+	return;
-+}
-+
- static void tegra_uart_shutdown(struct uart_port *u)
- {
- 	struct tegra_uart_port *tup = to_tegra_uport(u);
-@@ -1046,6 +1060,8 @@ static void tegra_uart_shutdown(struct uart_port *u)
- 	tegra_uart_dma_channel_free(tup, true);
- 	tegra_uart_dma_channel_free(tup, false);
- 	free_irq(u->irq, tup);
-+
-+	tegra_uart_flush_buffer(u);
- }
- 
- static void tegra_uart_enable_ms(struct uart_port *u)
-@@ -1174,20 +1190,6 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	return;
- }
- 
--/*
-- * Flush any TX data submitted for DMA and PIO. Called when the
-- * TX circular buffer is reset.
-- */
--static void tegra_uart_flush_buffer(struct uart_port *u)
--{
--	struct tegra_uart_port *tup = to_tegra_uport(u);
--
--	tup->tx_bytes = 0;
--	if (tup->tx_dma_chan)
--		dmaengine_terminate_all(tup->tx_dma_chan);
--	return;
--}
--
- static const char *tegra_uart_type(struct uart_port *u)
- {
- 	return TEGRA_UART_TYPE;
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 221ca6f..ce0e762 100644
+index 6203c6c..6ebe78c 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -1360,7 +1360,6 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+@@ -436,7 +436,7 @@ uart_get_divisor(struct uart_port *port, unsigned int baud)
  
- 	mutex_lock(&port->mutex);
- 	uart_shutdown(tty, state);
--	uart_flush_buffer(tty);
+ EXPORT_SYMBOL(uart_get_divisor);
  
- 	tty_ldisc_flush(tty);
+-/* FIXME: Consistent locking policy */
++/* Caller holds port mutex */
+ static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
+ 					struct ktermios *old_termios)
+ {
+@@ -1172,11 +1172,15 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 		break;
  
-diff --git a/drivers/tty/serial/timbuart.c b/drivers/tty/serial/timbuart.c
-index 0d11d50..e9e2523 100644
---- a/drivers/tty/serial/timbuart.c
-+++ b/drivers/tty/serial/timbuart.c
-@@ -273,6 +273,8 @@ static void timbuart_shutdown(struct uart_port *port)
- 	dev_dbg(port->dev, "%s\n", __func__);
- 	free_irq(port->irq, uart);
- 	iowrite32(0, port->membase + TIMBUART_IER);
-+
-+	timbuart_flush_buffer(port);
- }
+ 	case TIOCSSERIAL:
++		down_write(&tty->termios_rwsem);
+ 		ret = uart_set_info_user(tty, state, uarg);
++		up_write(&tty->termios_rwsem);
+ 		break;
  
- static int get_bindex(int baud)
+ 	case TIOCSERCONFIG:
++		down_write(&tty->termios_rwsem);
+ 		ret = uart_do_autoconfig(tty, state);
++		up_write(&tty->termios_rwsem);
+ 		break;
+ 
+ 	case TIOCSERGWILD: /* obsolete */
+@@ -1277,7 +1281,9 @@ static void uart_set_termios(struct tty_struct *tty,
+ 		return;
+ 	}
+ 
++	mutex_lock(&state->port.mutex);
+ 	uart_change_speed(tty, state, old_termios);
++	mutex_unlock(&state->port.mutex);
+ 	/* reload cflag from termios; port driver may have overriden flags */
+ 	cflag = tty->termios.c_cflag;
+ 
 -- 
 2.1.1
