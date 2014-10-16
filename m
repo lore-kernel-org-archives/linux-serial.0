@@ -1,72 +1,38 @@
-From: Vinod Koul <vinod.koul@intel.com>
-Subject: Re: [PATCH 00/12] dmaengine: remove users of device_control
-Date: Wed, 15 Oct 2014 21:28:00 +0530
-Message-ID: <20141015155800.GA1638@intel.com>
-References: <1413041973-28146-1-git-send-email-vinod.koul@intel.com>
+From: Kevin Hilman <khilman@kernel.org>
+Subject: Re: [PATCH] tty: serial: 8250_core: restore the LCR register in set_sleep
+Date: Thu, 16 Oct 2014 00:21:17 -0700
+Message-ID: <7hwq80h442.fsf@deeprootsystems.com>
+References: <54369F77.5000906@hurleysoftware.com>
+	<1413355395-5871-1-git-send-email-ssreedharan@mvista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-media-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1413041973-28146-1-git-send-email-vinod.koul@intel.com>
-Sender: linux-media-owner@vger.kernel.org
-To: dmaengine@vger.kernel.org
-Cc: Viresh Kumar <viresh.linux@gmail.com>, Tejun Heo <tj@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Dan Williams <dan.j.williams@intel.com>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, Mauro Carvalho Chehab <m.chehab@samsung.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Felipe Balbi <balbi@ti.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Liam Girdwood <lgirdwood@gmail.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>, Jingoo Han <jg1.han@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>"Rafael J. Wysocki" <ra>
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pa0-f54.google.com ([209.85.220.54]:50057 "EHLO
+	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750870AbaJPHVV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 16 Oct 2014 03:21:21 -0400
+Received: by mail-pa0-f54.google.com with SMTP id ey11so2924023pad.27
+        for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2014 00:21:21 -0700 (PDT)
+In-Reply-To: <1413355395-5871-1-git-send-email-ssreedharan@mvista.com> (Sudhir
+	Sreedharan's message of "Wed, 15 Oct 2014 12:13:15 +0530")
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sudhir Sreedharan <ssreedharan@mvista.com>
+Cc: peter@hurleysoftware.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, olof@lixom.net, linux-arm-kernel@lists.infradead.org, geert@linux-m68k.org
 
-On Sat, Oct 11, 2014 at 09:09:33PM +0530, Vinod Koul wrote:
-> The recent discussion [1] on the API have resulted in moving away from
-> device_control ioctl method to proper channel APIs.
-> There are still few users on the device_control which should use the wrappers
-> existing rather than access device_control.
-> This will aid us in deprecating and removing device_control, possibly after
-> the merge window.
-> 
-> These can be merged thru respective subsystem tree or dmaengine tree. Either
-> way please just let me know.
+Sudhir Sreedharan <ssreedharan@mvista.com> writes:
 
-Applying to dmaengine-next with acks recived, dropping the ones which are
-applied by respective folks
+> In ST16650V2 based serial uarts, while initalizing the PM state,
+> LCR registers are being initialized to 0 in serial8250_set_sleep().
+> If console port is already initialized and being used, this will
+> throws garbage in the console.
+>
+> Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
 
--- 
-~Vinod
+Since this caused regressions in -next last time, could you describe how
+this was tested, and on what platforms?
 
-> 
-> Feng's kbuild has tested these as well [2]
-> 
-> [1]: http://www.spinics.net/lists/dmaengine/msg02212.html
-> [2]: http://git.infradead.org/users/vkoul/slave-dma.git/shortlog/refs/heads/topic/dma_control_cleanup
-> 
-> Vinod Koul (12):
->   pata_arasan_cf: use dmaengine_terminate_all() API
->   dmaengine: coh901318: use dmaengine_terminate_all() API
->   [media] V4L2: mx3_camer: use dmaengine_pause() API
->   mtd: fsmc_nand: use dmaengine_terminate_all() API
->   mtd: sh_flctl: use dmaengine_terminate_all() API
->   net: ks8842: use dmaengine_terminate_all() API
->   spi/atmel: use dmaengine_terminate_all() API
->   spi/spi-dw-mid.c: use dmaengine_slave_config() API
->   serial: sh-sci: use dmaengine_terminate_all() API
->   usb: musb: ux500_dma: use dmaengine_xxx() APIs
->   ASoC: txx9: use dmaengine_terminate_all() API
->   video: mx3fb: use dmaengine_terminate_all() API
-> 
->  drivers/ata/pata_arasan_cf.c                   |    5 ++---
->  drivers/dma/coh901318.c                        |    2 +-
->  drivers/media/platform/soc_camera/mx3_camera.c |    6 ++----
->  drivers/mtd/nand/fsmc_nand.c                   |    2 +-
->  drivers/mtd/nand/sh_flctl.c                    |    2 +-
->  drivers/net/ethernet/micrel/ks8842.c           |    6 ++----
->  drivers/spi/spi-atmel.c                        |    6 ++----
->  drivers/spi/spi-dw-mid.c                       |    6 ++----
->  drivers/tty/serial/sh-sci.c                    |    2 +-
->  drivers/usb/musb/ux500_dma.c                   |    7 ++-----
->  drivers/video/fbdev/mx3fb.c                    |    3 +--
->  sound/soc/txx9/txx9aclc.c                      |    7 +++----
->  12 files changed, 20 insertions(+), 34 deletions(-)
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe dmaengine" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks,
 
--- 
+Kevin
