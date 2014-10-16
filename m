@@ -1,45 +1,44 @@
-From: Vinod Koul <vinod.koul@intel.com>
-Subject: Re: [PATCH] serial: atmel: add missing dmaengine header
-Date: Thu, 16 Oct 2014 14:26:35 +0530
-Message-ID: <20141016085635.GD1638@intel.com>
-References: <1413445197-22304-1-git-send-email-vinod.koul@intel.com>
- <20141016091059.GA24374@kroah.com>
+From: Sudhir Sreedharan <ssreedharan@mvista.com>
+Subject: Re: [PATCH] tty: serial: 8250_core: restore the LCR register in set_sleep
+Date: Thu, 16 Oct 2014 15:45:20 +0530
+Message-ID: <CAJJ77Wuqu1NWjQQSS+BhPB74YA+4N5zjWot_KZFWtGLUu7+RYg@mail.gmail.com>
+References: <54369F77.5000906@hurleysoftware.com>
+	<1413355395-5871-1-git-send-email-ssreedharan@mvista.com>
+	<7hwq80h442.fsf@deeprootsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:61376 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751386AbaJPJcY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Oct 2014 05:32:24 -0400
-Content-Disposition: inline
-In-Reply-To: <20141016091059.GA24374@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <7hwq80h442.fsf@deeprootsystems.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kevin Hilman <khilman@kernel.org>
+Cc: peter@hurleysoftware.com, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, lkml <linux-kernel@vger.kernel.org>, Olof Johansson <olof@lixom.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.jf.intel.com>
 
-On Thu, Oct 16, 2014 at 11:10:59AM +0200, Greg Kroah-Hartman wrote:
-> On Thu, Oct 16, 2014 at 01:09:57PM +0530, Vinod Koul wrote:
-> > The atmel serial driver uses dmaengine APIs but never included the dmaengine
-> > header as it was getting inculded thru one of driver headers.
-> > 
-> > commit 3d588f83e4d6a5230d9094b97d38621cbaa9a972 - "dmaengine: dw: split
-> > dma-dw.h to platform and private parts" broke this as it moved headers
-> > around.  Fix this by doing the right thing to include the dmaengine header
-> > 
-> > Reported-by: kbuild test robot <fengguang.wu@intel.com>
-> > Signed-off-by: Vinod Koul <vinod.koul@intel.com>
-> > ---
-> > Greg, since this is path which broke this is sitting in my next, would it be
-> > okay to carry this thru dmaengine tree as get it merged in current window.
-> > Planning to send pull request in day or so to Linus
-> 
-> Sure, that's fine with me:
-> 
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Thanks :)
+Hi Kevin,
 
-Applied, and pushed now
+On Thu, Oct 16, 2014 at 12:51 PM, Kevin Hilman <khilman@kernel.org> wrote:
+> Sudhir Sreedharan <ssreedharan@mvista.com> writes:
+>
+>> In ST16650V2 based serial uarts, while initalizing the PM state,
+>> LCR registers are being initialized to 0 in serial8250_set_sleep().
+>> If console port is already initialized and being used, this will
+>> throws garbage in the console.
+>>
+>> Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
+>
+> Since this caused regressions in -next last time, could you describe how
+> this was tested, and on what platforms?
 
--- 
-~Vinod
+I have tested this on arm64 board((U6_16550A)),PowerPC P5040
+board(16550A)), x86-64 (haswell(ST16650V2),  Rangeley(16550A)) board.
+This patch will modify only for the 8250 based serial devices.
+
+Test Case : Booting Multiple times, suspend-resume.
+
+Thanks,
+Sudhir
+
+>
+> Thanks,
+>
+> Kevin
