@@ -1,71 +1,58 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 1/3] serial: Fix upstat_t sparse warnings
-Date: Thu, 16 Oct 2014 14:19:47 -0400
-Message-ID: <1413483589-6490-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 3/3] tty: Remove sparse lock annotations from tty_write_lock()/_unlock()
+Date: Thu, 16 Oct 2014 14:19:49 -0400
+Message-ID: <1413483589-6490-3-git-send-email-peter@hurleysoftware.com>
+References: <1413483589-6490-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:36176 "EHLO
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:57058 "EHLO
 	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751309AbaJPSUP (ORCPT
+	with ESMTP id S1751309AbaJPSUR (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 16 Oct 2014 14:20:15 -0400
+	Thu, 16 Oct 2014 14:20:17 -0400
+In-Reply-To: <1413483589-6490-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-Commit 299245a145b2ad4cfb4c5432eb1264299f55e7e0,
-serial: core: Privatize modem status enable flags, introduced
-the upstat_t type and matching bit definitions. The purpose is to
-produce sparse warnings if the wrong bit definitions are used
-(by warning of implicit integer conversions).
+sparse lock annotations cannot represent conditional acquire, such
+as mutex_lock_interruptible() or mutex_trylock(), and produce sparse
+warnings at _every_ correct call site.
 
-Fix implicit conversion to integer return type from uart_cts_enabled()
-and uart_dcd_enabled().
+Remove lock annotations from tty_write_lock() and tty_write_unlock().
 
-Fixes the following sparse warnings:
-drivers/tty/serial/serial_core.c:63:30: warning: incorrect type in return expression (different base types)
-drivers/tty/serial/serial_core.c:63:30:    expected int
-drivers/tty/serial/serial_core.c:63:30:    got restricted upstat_t
-include/linux/serial_core.h:364:30: warning: incorrect type in return expression (different base types)
-include/linux/serial_core.h:364:30:    expected bool
-include/linux/serial_core.h:364:30:    got restricted upstat_t
-include/linux/serial_core.h:364:30: warning: incorrect type in return expression (different base types)
-include/linux/serial_core.h:364:30:    expected bool
-include/linux/serial_core.h:364:30:    got restricted upstat_t
+Fixes sparse warnings:
+drivers/tty/tty_io.c:1083:13: warning: context imbalance in 'tty_write_unlock' - wrong count at exit
+drivers/tty/tty_io.c:1090:12: warning: context imbalance in 'tty_write_lock' - wrong count at exit
+drivers/tty/tty_io.c:1211:17: warning: context imbalance in 'tty_write_message' - unexpected unlock
+drivers/tty/tty_io.c:1233:16: warning: context imbalance in 'tty_write' - different lock contexts for basic block
+drivers/tty/tty_io.c:1285:5: warning: context imbalance in 'tty_send_xchar' - different lock contexts for basic block
+drivers/tty/tty_io.c:2653:12: warning: context imbalance in 'send_break' - different lock contexts for basic block
 
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/serial_core.c | 2 +-
- include/linux/serial_core.h      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/tty_io.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index c4cc2f2..d777579 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -61,7 +61,7 @@ static void uart_port_shutdown(struct tty_port *port);
- 
- static int uart_dcd_enabled(struct uart_port *uport)
- {
--	return uport->status & UPSTAT_DCD_ENABLE;
-+	return !!(uport->status & UPSTAT_DCD_ENABLE);
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index cf7c9b8..8cce5ab 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1024,14 +1024,12 @@ static ssize_t tty_read(struct file *file, char __user *buf, size_t count,
  }
  
- /*
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 222d2e0..bb828a5 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -363,7 +363,7 @@ static inline int uart_tx_stopped(struct uart_port *port)
- 
- static inline bool uart_cts_enabled(struct uart_port *uport)
+ static void tty_write_unlock(struct tty_struct *tty)
+-	__releases(&tty->atomic_write_lock)
  {
--	return uport->status & UPSTAT_CTS_ENABLE;
-+	return !!(uport->status & UPSTAT_CTS_ENABLE);
+ 	mutex_unlock(&tty->atomic_write_lock);
+ 	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
  }
  
- /*
+ static int tty_write_lock(struct tty_struct *tty, int ndelay)
+-	__acquires(&tty->atomic_write_lock)
+ {
+ 	if (!mutex_trylock(&tty->atomic_write_lock)) {
+ 		if (ndelay)
 -- 
 2.1.1
 
