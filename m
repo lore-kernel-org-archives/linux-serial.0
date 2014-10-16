@@ -1,113 +1,64 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 13/27] tty: Simplify pty pair teardown logic
-Date: Thu, 16 Oct 2014 16:25:11 -0400
-Message-ID: <1413491125-20134-14-git-send-email-peter@hurleysoftware.com>
-References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH -next 00/10] serial core fixes
+Date: Thu, 16 Oct 2014 16:54:17 -0400
+Message-ID: <1413492867-20679-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:43585 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752578AbaJPUyj (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 16 Oct 2014 16:54:39 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
 
-When the slave side closes and its tty count is 0, the pty
-pair can be destroyed; the master side must have already
-closed for the slave side tty count to be 0. Thus, only the
-pty master close must check if the slave side has closed by
-checking the slave tty count.
+Hi Greg,
 
-Remove the pre-computed closing flags and check the actual count(s).
-Regular ttys are unaffected by this change.
+The first 3 patches are picked out from the closing series that was
+split up; the first 2 patches lay the groundwork for the fixing
+the locking for the ->set_termios() method.
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/tty_io.c | 29 ++++++++++-------------------
- 1 file changed, 10 insertions(+), 19 deletions(-)
+The 2 UPF_*/ASYNC* patches are to bind the definitions together
+since userspace only gets one set of definitions, but the code
+operates as if the definitions are synch'd.
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 5c09cc4..978896d 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1754,7 +1754,7 @@ int tty_release(struct inode *inode, struct file *filp)
- {
- 	struct tty_struct *tty = file_tty(filp);
- 	struct tty_struct *o_tty;
--	int	pty_master, tty_closing, o_tty_closing, do_sleep;
-+	int	pty_master, do_sleep, final;
- 	int	idx;
- 	char	buf[64];
- 	long	timeout = 0;
-@@ -1798,18 +1798,15 @@ int tty_release(struct inode *inode, struct file *filp)
- 	 * The test for the o_tty closing is necessary, since the master and
- 	 * slave sides may close in any order.  If the slave side closes out
- 	 * first, its count will be one, since the master side holds an open.
--	 * Thus this test wouldn't be triggered at the time the slave closes,
-+	 * Thus this test wouldn't be triggered at the time the slave closed,
- 	 * so we do it now.
- 	 */
- 	tty_lock_pair(tty, o_tty);
- 
- 	while (1) {
--		tty_closing = tty->count <= 1;
--		o_tty_closing = o_tty &&
--			(o_tty->count <= (pty_master ? 1 : 0));
- 		do_sleep = 0;
- 
--		if (tty_closing) {
-+		if (tty->count <= 1) {
- 			if (waitqueue_active(&tty->read_wait)) {
- 				wake_up_poll(&tty->read_wait, POLLIN);
- 				do_sleep++;
-@@ -1819,7 +1816,7 @@ int tty_release(struct inode *inode, struct file *filp)
- 				do_sleep++;
- 			}
- 		}
--		if (o_tty_closing) {
-+		if (pty_master && o_tty->count <= 1) {
- 			if (waitqueue_active(&o_tty->read_wait)) {
- 				wake_up_poll(&o_tty->read_wait, POLLIN);
- 				do_sleep++;
-@@ -1844,14 +1841,6 @@ int tty_release(struct inode *inode, struct file *filp)
- 			timeout = MAX_SCHEDULE_TIMEOUT;
- 	}
- 
--	/*
--	 * The closing flags are now consistent with the open counts on
--	 * both sides, and we've completed the last operation that could
--	 * block, so it's safe to proceed with closing.
--	 *
--	 * We must *not* drop the tty_mutex until we ensure that a further
--	 * entry into tty_open can not pick up this tty.
--	 */
- 	if (pty_master) {
- 		if (--o_tty->count < 0) {
- 			printk(KERN_WARNING "%s: bad pty slave count (%d) for %s\n",
-@@ -1883,20 +1872,22 @@ int tty_release(struct inode *inode, struct file *filp)
- 	 * processes that still think tty or o_tty is their controlling
- 	 * tty.
- 	 */
--	if (tty_closing || o_tty_closing) {
-+	if (!tty->count) {
- 		read_lock(&tasklist_lock);
- 		session_clear_tty(tty->session);
--		if (o_tty)
-+		if (pty_master)
- 			session_clear_tty(o_tty->session);
- 		read_unlock(&tasklist_lock);
- 	}
- 
-+	/* check whether both sides are closing ... */
-+	final = !tty->count && !(pty_master && o_tty->count);
-+
- 	tty_unlock_pair(tty, o_tty);
- 	/* At this point, the tty->count == 0 should ensure a dead tty
- 	   cannot be re-opened by a racing opener */
- 
--	/* check whether both sides are closing ... */
--	if (!tty_closing || (o_tty && !o_tty_closing))
-+	if (!final)
- 		return 0;
- 
- #ifdef TTY_DEBUG_HANGUP
+The remainder except the last patch are cleanups; the last patch
+fixes port count mismatch in uart_open()/uart_close(), which
+Geert and I discussed a while back. So one less thing on my todo
+list.
+
+Still on the todo list:
+1. Some tty_port flags usage is non-atomic.
+2. uart_remove_one_port will happily remove an in-use port since
+   there's no reference counting.
+3. fixing autoRTS for omap (so it clears RTS when tiocmset drops
+   RTS)
+
+Regards,
+
+Peter Hurley (10):
+  serial: Refactor uart_flush_buffer() from uart_close()
+  serial: core: Flush ldisc after dropping port mutex in uart_close()
+  serial: Fix locking for uart driver set_termios() method
+  tty,serial: Unify UPF_* and ASYNC_* flag definitions
+  tty: Document defunct ASYNC_* bits in uapi header
+  serial: core: Unwrap >80 char line in uart_close()
+  serial: core: Remove redundant timeout assignments
+  serial: core: Colocate crucial structure linkage
+  serial: core: Remove extra locking in uart_write()
+  serial: core: Fix port count when uart_open() errors
+
+ Documentation/serial/driver       |  6 +++--
+ drivers/tty/serial/amba-pl011.c   |  1 +
+ drivers/tty/serial/atmel_serial.c | 28 +++++++++++----------
+ drivers/tty/serial/serial-tegra.c | 30 +++++++++++-----------
+ drivers/tty/serial/serial_core.c  | 52 ++++++++++++++++++++++-----------------
+ drivers/tty/serial/timbuart.c     |  2 ++
+ include/linux/serial_core.h       | 47 ++++++++++++++++++++++++-----------
+ include/uapi/linux/tty_flags.h    | 15 +++++++----
+ 8 files changed, 110 insertions(+), 71 deletions(-)
+
 -- 
 2.1.1
+
