@@ -1,99 +1,77 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 05/10] tty: Replace open-coded tty_get_pgrp()
-Date: Thu, 16 Oct 2014 14:59:45 -0400
-Message-ID: <1413485990-16855-6-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 01/10] tty: Remove tty_pair_get_tty()/tty_pair_get_pty() api
+Date: Thu, 16 Oct 2014 14:59:41 -0400
+Message-ID: <1413485990-16855-2-git-send-email-peter@hurleysoftware.com>
 References: <1413485990-16855-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:41299 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751854AbaJPTAB (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 16 Oct 2014 15:00:01 -0400
 In-Reply-To: <1413485990-16855-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-serial-owner@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
-List-Id: linux-serial@vger.kernel.org
 
-Replace open-coded instances of tty_get_pgrp().
+tty_pair_get_pty() has no in-tree users and tty_pair_get_tty()
+has only one file-local user. Remove the external declarations,
+the export declarations, and declare tty_pair_get_tty() static.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/pty.c    | 24 ++++++------------------
- drivers/tty/tty_io.c |  8 ++------
- 2 files changed, 8 insertions(+), 24 deletions(-)
+ drivers/tty/tty_io.c | 16 +++++-----------
+ include/linux/tty.h  |  3 ---
+ 2 files changed, 5 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 7c4447a..4c0218d 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -207,15 +207,12 @@ static int pty_get_pktmode(struct tty_struct *tty, int __user *arg)
- /* Send a signal to the slave */
- static int pty_signal(struct tty_struct *tty, int sig)
- {
--	unsigned long flags;
- 	struct pid *pgrp;
- 
- 	if (tty->link) {
--		spin_lock_irqsave(&tty->link->ctrl_lock, flags);
--		pgrp = get_pid(tty->link->pgrp);
--		spin_unlock_irqrestore(&tty->link->ctrl_lock, flags);
--
--		kill_pgrp(pgrp, sig, 1);
-+		pgrp = tty_get_pgrp(tty->link);
-+		if (pgrp)
-+			kill_pgrp(pgrp, sig, 1);
- 		put_pid(pgrp);
- 	}
- 	return 0;
-@@ -278,7 +275,6 @@ static void pty_set_termios(struct tty_struct *tty,
- static int pty_resize(struct tty_struct *tty,  struct winsize *ws)
- {
- 	struct pid *pgrp, *rpgrp;
--	unsigned long flags;
- 	struct tty_struct *pty = tty->link;
- 
- 	/* For a PTY we need to lock the tty side */
-@@ -286,17 +282,9 @@ static int pty_resize(struct tty_struct *tty,  struct winsize *ws)
- 	if (!memcmp(ws, &tty->winsize, sizeof(*ws)))
- 		goto done;
- 
--	/* Get the PID values and reference them so we can
--	   avoid holding the tty ctrl lock while sending signals.
--	   We need to lock these individually however. */
--
--	spin_lock_irqsave(&tty->ctrl_lock, flags);
--	pgrp = get_pid(tty->pgrp);
--	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
--
--	spin_lock_irqsave(&pty->ctrl_lock, flags);
--	rpgrp = get_pid(pty->pgrp);
--	spin_unlock_irqrestore(&pty->ctrl_lock, flags);
-+	/* Signal the foreground process group of both ptys */
-+	pgrp = tty_get_pgrp(tty);
-+	rpgrp = tty_get_pgrp(pty);
- 
- 	if (pgrp)
- 		kill_pgrp(pgrp, SIGWINCH, 1);
 diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 272d977..c224488 100644
+index 8cce5ab..274e386 100644
 --- a/drivers/tty/tty_io.c
 +++ b/drivers/tty/tty_io.c
-@@ -2331,18 +2331,14 @@ static int tiocgwinsz(struct tty_struct *tty, struct winsize __user *arg)
- int tty_do_resize(struct tty_struct *tty, struct winsize *ws)
+@@ -2710,23 +2710,17 @@ static int tty_tiocgicount(struct tty_struct *tty, void __user *arg)
+ 	return 0;
+ }
+ 
+-struct tty_struct *tty_pair_get_tty(struct tty_struct *tty)
++/*
++ * if pty, return the slave side (real_tty)
++ * otherwise, return self
++ */
++static struct tty_struct *tty_pair_get_tty(struct tty_struct *tty)
  {
- 	struct pid *pgrp;
--	unsigned long flags;
+ 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+ 	    tty->driver->subtype == PTY_TYPE_MASTER)
+ 		tty = tty->link;
+ 	return tty;
+ }
+-EXPORT_SYMBOL(tty_pair_get_tty);
+-
+-struct tty_struct *tty_pair_get_pty(struct tty_struct *tty)
+-{
+-	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+-	    tty->driver->subtype == PTY_TYPE_MASTER)
+-	    return tty;
+-	return tty->link;
+-}
+-EXPORT_SYMBOL(tty_pair_get_pty);
  
- 	/* Lock the tty */
- 	mutex_lock(&tty->winsize_mutex);
- 	if (!memcmp(ws, &tty->winsize, sizeof(*ws)))
- 		goto done;
--	/* Get the PID values and reference them so we can
--	   avoid holding the tty ctrl lock while sending signals */
--	spin_lock_irqsave(&tty->ctrl_lock, flags);
--	pgrp = get_pid(tty->pgrp);
--	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
+ /*
+  * Split this up, as gcc can choke on it otherwise..
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 5171ef8..b36b0b4 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -498,9 +498,6 @@ extern int tty_init_termios(struct tty_struct *tty);
+ extern int tty_standard_install(struct tty_driver *driver,
+ 		struct tty_struct *tty);
  
-+	/* Signal the foreground process group */
-+	pgrp = tty_get_pgrp(tty);
- 	if (pgrp)
- 		kill_pgrp(pgrp, SIGWINCH, 1);
- 	put_pid(pgrp);
+-extern struct tty_struct *tty_pair_get_tty(struct tty_struct *tty);
+-extern struct tty_struct *tty_pair_get_pty(struct tty_struct *tty);
+-
+ extern struct mutex tty_mutex;
+ extern spinlock_t tty_files_lock;
+ 
 -- 
 2.1.1
+
