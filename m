@@ -1,99 +1,65 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: Re: [PATCH 1/3] qe-uart: modify qe-uart to adapt both powerpc and
- arm
-Date: Fri, 17 Oct 2014 06:01:04 +0200
-Message-ID: <1413518464.7417.23.camel@aoeu.buserror.net>
-References: <1412923663-4374-1-git-send-email-B45475@freescale.com>
-	 <1412964307.13320.603.camel@snotra.buserror.net>
-	 <CAOZdJXUvqzex6oFTEoFRAXUCMfYHZ4GzSESQOvhx_9-vCC_C3Q@mail.gmail.com>
+From: Richard Weinberger <richard@nod.at>
+Subject: Re: [PATCH -next 04/10] uml: Fix unsafe pid reference to foreground
+ process group
+Date: Fri, 17 Oct 2014 09:57:59 +0200
+Message-ID: <5440CC07.3000205@nod.at>
+References: <1413485990-16855-1-git-send-email-peter@hurleysoftware.com> <1413485990-16855-5-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bl2on0109.outbound.protection.outlook.com ([65.55.169.109]:11632
-	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750704AbaJQEBR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 17 Oct 2014 00:01:17 -0400
-In-Reply-To: <CAOZdJXUvqzex6oFTEoFRAXUCMfYHZ4GzSESQOvhx_9-vCC_C3Q@mail.gmail.com>
+Received: from a.ns.miles-group.at ([95.130.255.143]:65275 "EHLO radon.swed.at"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751037AbaJQH6G (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 17 Oct 2014 03:58:06 -0400
+In-Reply-To: <1413485990-16855-5-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Timur Tabi <timur@tabi.org>
-Cc: Zhao Qiang <B45475@freescale.com>, Scott Wood <B07421@freescale.com>, linux-serial@vger.kernel.org, R63061@freescale.com, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jeff Dike <jdike@addtoit.com>, user-mode-linux-devel@lists.sourceforge.net
 
-On Mon, 2014-10-13 at 11:30 -0500, Timur Tabi wrote:
-> On Fri, Oct 10, 2014 at 1:05 PM, Scott Wood <scottwood@freescale.com> wrote:
-> > There are many changes in here that ought to be separate patches with
-> > separate justification.
-> >
-> > Also, some of the QE changes seem to be reasonable cleanup, but not
-> > related to making the code work on ARM.
+Am 16.10.2014 um 20:59 schrieb Peter Hurley:
+> Although the tty core maintains a pid reference for the foreground
+> process group, if the foreground process group is changed that
+> pid reference is dropped. Thus, the pid reference used for signalling
+> could become stale.
 > 
-> I agree with Scott.  This patch already makes significant code
-> changes, so you should have one patch that just makes the
-> out_be32->iowrite32be changes.  Changes to the QE library should NOT
-> be in the same patch as changes to ucc_uart.c.
+> Safely obtain a pid reference to the foreground process group and
+> release the reference after signalling is complete.
 > 
-> In addition, changes like this:
-> 
-> -       iprop = of_get_property(np, "port-number", NULL);
-> -       if (!iprop) {
-> +       ret = of_property_read_u32_index(np, "port-number", 0, &val);
-> +       if (ret) {
-> 
-> should be changed to remove the OF dependency.  If you're going to
-> replace of_get_property, replace it with device_property_read_u32(),
-> to remove the OF dependency.
-> 
-> >> diff --git a/arch/arm/include/asm/delay.h b/arch/arm/include/asm/delay.h
-> >> index dff714d..a932f99 100644
-> >> --- a/arch/arm/include/asm/delay.h
-> >> +++ b/arch/arm/include/asm/delay.h
-> >> @@ -57,6 +57,22 @@ extern void __bad_udelay(void);
-> >>                       __const_udelay((n) * UDELAY_MULT)) :            \
-> >>         __udelay(n))
-> >>
-> >> +#define spin_event_timeout(condition, timeout, delay)                          \
-> >> +({                                                                             \
-> >> +     typeof(condition) __ret;                                               \
-> >> +     int i = 0;                                                             \
-> >> +     while (!(__ret = (condition)) && (i++ < timeout)) {                    \
-> >> +             if (delay)                                                     \
-> >> +                     udelay(delay);                                         \
-> >> +             else                                                           \
-> >> +                     cpu_relax();                                           \
-> >> +             udelay(1);                                                     \
-> >> +     }                                                                      \
-> >
-> > This will delay too long if "delay" is used.
-> 
-> Shouldn't ARM have a version of tb_ticks_since() by now?
+> cc: Jeff Dike <jdike@addtoit.com>
+> cc: Richard Weinberger <richard@nod.at>
+> cc: user-mode-linux-devel@lists.sourceforge.net
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 
-There's get_cycles(), but it's not clear to me whether loops_per_jiffy
-is OK to use with get_cycles() on 32-bit ARM.  Is avoiding the udelay
-worth making this non-generic?
+Acked-by: Richard Weinberger <richard@nod.at>
 
+> ---
+>  arch/um/drivers/line.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> >> +     if (!__ret)                                                            \
-> >> +             __ret = (condition);                                           \
-> >> +     __ret;                                                                 \
-> >
-> > Timur, do you remember why that final "if (!__ret) __ret = (condition);"
-> > is needed?
+> diff --git a/arch/um/drivers/line.c b/arch/um/drivers/line.c
+> index 8035145..6208702 100644
+> --- a/arch/um/drivers/line.c
+> +++ b/arch/um/drivers/line.c
+> @@ -632,6 +632,7 @@ static irqreturn_t winch_interrupt(int irq, void *data)
+>  	int fd = winch->fd;
+>  	int err;
+>  	char c;
+> +	struct pid *pgrp;
+>  
+>  	if (fd != -1) {
+>  		err = generic_read(fd, &c, NULL);
+> @@ -657,7 +658,10 @@ static irqreturn_t winch_interrupt(int irq, void *data)
+>  		if (line != NULL) {
+>  			chan_window_size(line, &tty->winsize.ws_row,
+>  					 &tty->winsize.ws_col);
+> -			kill_pgrp(tty->pgrp, SIGWINCH, 1);
+> +			pgrp = tty_get_pgrp(tty);
+> +			if (pgrp)
+> +				kill_pgrp(pgrp, SIGWINCH, 1);
+> +			put_pid(pgrp);
+>  		}
+>  		tty_kref_put(tty);
+>  	}
 > 
->     powerpc: Fix spin_event_timeout() to be robust over context switches
-> 
->     Current implementation of spin_event_timeout can be interrupted by an
->     IRQ or context switch after testing the condition, but before checking
->     the timeout.  This can cause the loop to report a timeout when the
->     condition actually became true in the middle.
-> 
->     This patch adds one final check of the condition upon exit of the loop
->     if the last test of the condition was still false.
-
-OK, so this shouldn't be needed in the udelay version, since an
-interrupt shouldn't cause a significant difference in the timeout count.
-
--Scott
-
-
