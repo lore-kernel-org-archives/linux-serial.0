@@ -1,36 +1,86 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH -next 05/10] tty: Document defunct ASYNC_* bits in uapi
- header
-Date: Fri, 17 Oct 2014 10:46:57 +0200
-Message-ID: <5440D781.1080308@suse.cz>
-References: <1413492867-20679-1-git-send-email-peter@hurleysoftware.com> <1413492867-20679-6-git-send-email-peter@hurleysoftware.com>
+From: Sudhir Sreedharan <ssreedharan@mvista.com>
+Subject: Re: [PATCH] tty: serial: 8250_core: restore the LCR register in set_sleep
+Date: Fri, 17 Oct 2014 15:55:41 +0530
+Message-ID: <CAJJ77WsAi5jmnDxY45ipu3a94D6+yoHJNHgExhFsVoirV3NoyQ@mail.gmail.com>
+References: <54369F77.5000906@hurleysoftware.com>
+	<1413355395-5871-1-git-send-email-ssreedharan@mvista.com>
+	<543FBB97.9010006@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f173.google.com ([209.85.212.173]:41546 "EHLO
-	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753360AbaJQIrH (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 17 Oct 2014 04:47:07 -0400
-In-Reply-To: <1413492867-20679-6-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <543FBB97.9010006@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Kevin Hilman <khilman@kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, lkml <linux-kernel@vger.kernel.org>, Olof Johansson <olof@lixom.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-On 10/16/2014, 10:54 PM, Peter Hurley wrote:
-> Note the serial_struct flags for which the kernel ignores and performs
-> no action. The flags cannot be removed since they form part of the
-> userspace interface via the TIOCSSERIAL/TIOCGSERIAL ioctls.
+Hi Peter,
 
-Hello,
+On Thu, Oct 16, 2014 at 6:05 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> On 10/15/2014 02:43 AM, Sudhir Sreedharan wrote:
+>> In ST16650V2 based serial uarts, while initalizing the PM state,
+>> LCR registers are being initialized to 0 in serial8250_set_sleep().
+>> If console port is already initialized and being used, this will
+>> throws garbage in the console.
+>>
+>> Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
+>> ---
+>>  drivers/tty/serial/8250/8250_core.c |    7 +++++--
+>>  1 files changed, 5 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+>> index ca5cfdc..e054482 100644
+>> --- a/drivers/tty/serial/8250/8250_core.c
+>> +++ b/drivers/tty/serial/8250/8250_core.c
+>> @@ -595,6 +595,7 @@ static void serial8250_rpm_put_tx(struct uart_8250_port *p)
+>>   */
+>>  static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
+>>  {
+>> +     unsigned char lcr, efr;
+>>       /*
+>>        * Exar UARTs have a SLEEP register that enables or disables
+>>        * each UART to enter sleep mode separately.  On the XR17V35x the
+>> @@ -611,6 +612,8 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
+>>
+>>       if (p->capabilities & UART_CAP_SLEEP) {
+>>               if (p->capabilities & UART_CAP_EFR) {
+>> +                     lcr = serial_in(p, UART_LCR);
+>> +                     efr = serial_in(p, UART_EFR);
+>>                       serial_out(p, UART_LCR, UART_LCR_CONF_MODE_B);
+>>                       serial_out(p, UART_EFR, UART_EFR_ECB);
+>>                       serial_out(p, UART_LCR, 0);
+>> @@ -618,8 +621,8 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
+>>               serial_out(p, UART_IER, sleep ? UART_IERX_SLEEP : 0);
+>>               if (p->capabilities & UART_CAP_EFR) {
+>>                       serial_out(p, UART_LCR, UART_LCR_CONF_MODE_B);
+>> -                     serial_out(p, UART_EFR, 0);
+>> -                     serial_out(p, UART_LCR, 0);
+>> +                     serial_out(p, UART_EFR, sleep ? 0 : efr);
+>> +                     serial_out(p, UART_LCR, sleep ? 0 : lcr);
+>
+> Why is it necessary to clear EFR and LCR here? Does the UART not
+> power down?
+>
+> UARTs with CAP_SLEEP but not CAP_EFR don't clear LCR before sleep.
+>
+> However, if there is some kind of intentional side-effect here,
+> then a comment should note that.
 
-would it make sense to mark them deprecated somehow? At build time, or
-at least warn in the serial core that "current->comm is using a
-deprecated flag"_ratelimited()?
+Yes, we can restore the LCR and EFR with the saved values.
+                     serial_out(p, UART_EFR, efr);
+                     serial_out(p, UART_LCR, lcr);
 
-thanks,
--- 
-js
-suse labs
+I will send a new patch with the changes.
+
+Thanks,
+Sudhir
+
+>
+> Regards,
+> Peter Hurley
+>
+>>               }
+>>       }
+>>  out:
+>>
+>
