@@ -1,92 +1,99 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 10/10] serial: core: Fix port count when uart_open() errors
-Date: Thu, 16 Oct 2014 16:54:27 -0400
-Message-ID: <1413492867-20679-11-git-send-email-peter@hurleysoftware.com>
-References: <1413492867-20679-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1413492867-20679-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [PATCH 1/3] qe-uart: modify qe-uart to adapt both powerpc and
+ arm
+Date: Fri, 17 Oct 2014 06:01:04 +0200
+Message-ID: <1413518464.7417.23.camel@aoeu.buserror.net>
+References: <1412923663-4374-1-git-send-email-B45475@freescale.com>
+	 <1412964307.13320.603.camel@snotra.buserror.net>
+	 <CAOZdJXUvqzex6oFTEoFRAXUCMfYHZ4GzSESQOvhx_9-vCC_C3Q@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bl2on0109.outbound.protection.outlook.com ([65.55.169.109]:11632
+	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750704AbaJQEBR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 17 Oct 2014 00:01:17 -0400
+In-Reply-To: <CAOZdJXUvqzex6oFTEoFRAXUCMfYHZ4GzSESQOvhx_9-vCC_C3Q@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Timur Tabi <timur@tabi.org>
+Cc: Zhao Qiang <B45475@freescale.com>, Scott Wood <B07421@freescale.com>, linux-serial@vger.kernel.org, R63061@freescale.com, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-A port count mismatch occurs if mutex_lock_interruptible()
-exits uart_open() and the port has already been opened. This may
-prematurely close a port on an open tty. Since uart_close() is _always_
-called if uart_open() fails, the port count must be corrected if errors
-occur.
+On Mon, 2014-10-13 at 11:30 -0500, Timur Tabi wrote:
+> On Fri, Oct 10, 2014 at 1:05 PM, Scott Wood <scottwood@freescale.com> wrote:
+> > There are many changes in here that ought to be separate patches with
+> > separate justification.
+> >
+> > Also, some of the QE changes seem to be reasonable cleanup, but not
+> > related to making the code work on ARM.
+> 
+> I agree with Scott.  This patch already makes significant code
+> changes, so you should have one patch that just makes the
+> out_be32->iowrite32be changes.  Changes to the QE library should NOT
+> be in the same patch as changes to ucc_uart.c.
+> 
+> In addition, changes like this:
+> 
+> -       iprop = of_get_property(np, "port-number", NULL);
+> -       if (!iprop) {
+> +       ret = of_property_read_u32_index(np, "port-number", 0, &val);
+> +       if (ret) {
+> 
+> should be changed to remove the OF dependency.  If you're going to
+> replace of_get_property, replace it with device_property_read_u32(),
+> to remove the OF dependency.
+> 
+> >> diff --git a/arch/arm/include/asm/delay.h b/arch/arm/include/asm/delay.h
+> >> index dff714d..a932f99 100644
+> >> --- a/arch/arm/include/asm/delay.h
+> >> +++ b/arch/arm/include/asm/delay.h
+> >> @@ -57,6 +57,22 @@ extern void __bad_udelay(void);
+> >>                       __const_udelay((n) * UDELAY_MULT)) :            \
+> >>         __udelay(n))
+> >>
+> >> +#define spin_event_timeout(condition, timeout, delay)                          \
+> >> +({                                                                             \
+> >> +     typeof(condition) __ret;                                               \
+> >> +     int i = 0;                                                             \
+> >> +     while (!(__ret = (condition)) && (i++ < timeout)) {                    \
+> >> +             if (delay)                                                     \
+> >> +                     udelay(delay);                                         \
+> >> +             else                                                           \
+> >> +                     cpu_relax();                                           \
+> >> +             udelay(1);                                                     \
+> >> +     }                                                                      \
+> >
+> > This will delay too long if "delay" is used.
+> 
+> Shouldn't ARM have a version of tb_ticks_since() by now?
 
-Always increment the port count in uart_open(), regardless of errors;
-always decrement the port count in uart_close(). Note that
-tty_port_close_start() decrements the port count when uart_open()
-was successful.
+There's get_cycles(), but it's not clear to me whether loops_per_jiffy
+is OK to use with get_cycles() on 32-bit ARM.  Is avoiding the udelay
+worth making this non-generic?
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/serial_core.c | 25 +++++++++++++++----------
- 1 file changed, 15 insertions(+), 10 deletions(-)
+> 
+> >> +     if (!__ret)                                                            \
+> >> +             __ret = (condition);                                           \
+> >> +     __ret;                                                                 \
+> >
+> > Timur, do you remember why that final "if (!__ret) __ret = (condition);"
+> > is needed?
+> 
+>     powerpc: Fix spin_event_timeout() to be robust over context switches
+> 
+>     Current implementation of spin_event_timeout can be interrupted by an
+>     IRQ or context switch after testing the condition, but before checking
+>     the timeout.  This can cause the loop to report a timeout when the
+>     condition actually became true in the middle.
+> 
+>     This patch adds one final check of the condition upon exit of the loop
+>     if the last test of the condition was still false.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 6a3571e..3f02c2b 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1337,8 +1337,16 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	struct uart_port *uport;
- 	unsigned long flags;
- 
--	if (!state)
-+	if (!state) {
-+		struct uart_driver *drv = tty->driver->driver_state;
-+
-+		state = drv->state + tty->index;
-+		port = &state->port;
-+		spin_lock_irq(&port->lock);
-+		--port->count;
-+		spin_unlock_irq(&port->lock);
- 		return;
-+	}
- 
- 	uport = state->uart_port;
- 	port = &state->port;
-@@ -1555,6 +1563,10 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
- 
- 	pr_debug("uart_open(%d) called\n", line);
- 
-+	spin_lock_irq(&port->lock);
-+	++port->count;
-+	spin_unlock_irq(&port->lock);
-+
- 	/*
- 	 * We take the semaphore here to guarantee that we won't be re-entered
- 	 * while allocating the state structure, or while we request any IRQs
-@@ -1567,17 +1579,11 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
- 		goto end;
- 	}
- 
--	port->count++;
- 	if (!state->uart_port || state->uart_port->flags & UPF_DEAD) {
- 		retval = -ENXIO;
--		goto err_dec_count;
-+		goto err_unlock;
- 	}
- 
--	/*
--	 * Once we set tty->driver_data here, we are guaranteed that
--	 * uart_close() will decrement the driver module use count.
--	 * Any failures from here onwards should not touch the count.
--	 */
- 	tty->driver_data = state;
- 	state->uart_port->state = state;
- 	state->port.low_latency =
-@@ -1598,8 +1604,7 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
- 
- end:
- 	return retval;
--err_dec_count:
--	port->count--;
-+err_unlock:
- 	mutex_unlock(&port->mutex);
- 	goto end;
- }
--- 
-2.1.1
+OK, so this shouldn't be needed in the udelay version, since an
+interrupt shouldn't cause a significant difference in the timeout count.
+
+-Scott
+
+
