@@ -1,75 +1,111 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V2 8/9] tty: serial: of-serial: Allow OF earlycon to default to "on"
-Date: Mon, 20 Oct 2014 13:54:07 -0700
-Message-ID: <1413838448-29464-9-git-send-email-cernekee@gmail.com>
+Subject: [PATCH V2 6/9] tty: serial: bcm63xx: Eliminate unnecessary request/release functions
+Date: Mon, 20 Oct 2014 13:54:05 -0700
+Message-ID: <1413838448-29464-7-git-send-email-cernekee@gmail.com>
 References: <1413838448-29464-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:47468 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753385AbaJTUzI (ORCPT
+Received: from mail-pa0-f54.google.com ([209.85.220.54]:41856 "EHLO
+	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753108AbaJTUzE (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Oct 2014 16:55:08 -0400
+	Mon, 20 Oct 2014 16:55:04 -0400
 In-Reply-To: <1413838448-29464-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org, grant.likely@linaro.org
 Cc: geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-On many development systems it is very common to see failures during the
-early stages of the boot process, e.g. SMP boot or PCIe initialization.
-This is one likely reason why some existing earlyprintk implementations,
-such as arch/mips/kernel/early_printk.c, are enabled unconditionally
-at compile time.
-
-Now that earlycon's operating parameters can be passed into the kernel
-via DT, it is helpful to be able to configure the kernel to turn it on
-automatically.  Introduce a new CONFIG_SERIAL_EARLYCON_FORCE option for
-this purpose.
+We don't really need to perform the ioremap "on demand" so it's simpler
+just to do it from the probe function.  This also lets us eliminate the
+UART_REG_SIZE constant and rely on the resource information passed in
+from the DT or platform code.
 
 Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
 ---
- drivers/of/fdt.c           |  5 +++++
- drivers/tty/serial/Kconfig | 11 +++++++++++
- 2 files changed, 16 insertions(+)
+ drivers/tty/serial/bcm63xx_uart.c | 30 ++++++++++--------------------
+ include/linux/serial_bcm63xx.h    |  2 --
+ 2 files changed, 10 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 20193cc..3e2ea1e 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -1013,6 +1013,11 @@ bool __init early_init_dt_verify(void *params)
- 
- void __init early_init_dt_scan_nodes(void)
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index 2015284..999bb6fa 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -588,20 +588,7 @@ static void bcm_uart_set_termios(struct uart_port *port,
+  */
+ static int bcm_uart_request_port(struct uart_port *port)
  {
-+#ifdef CONFIG_SERIAL_EARLYCON_FORCE
-+	if (early_init_dt_scan_chosen_serial() < 0)
-+		pr_warn("Unable to set up earlycon from stdout-path\n");
-+#endif
+-	unsigned int size;
+-
+-	size = UART_REG_SIZE;
+-	if (!request_mem_region(port->mapbase, size, "bcm63xx")) {
+-		dev_err(port->dev, "Memory region busy\n");
+-		return -EBUSY;
+-	}
+-
+-	port->membase = ioremap(port->mapbase, size);
+-	if (!port->membase) {
+-		dev_err(port->dev, "Unable to map registers\n");
+-		release_mem_region(port->mapbase, size);
+-		return -EBUSY;
+-	}
++	/* UARTs always present */
+ 	return 0;
+ }
+ 
+@@ -610,8 +597,7 @@ static int bcm_uart_request_port(struct uart_port *port)
+  */
+ static void bcm_uart_release_port(struct uart_port *port)
+ {
+-	release_mem_region(port->mapbase, UART_REG_SIZE);
+-	iounmap(port->membase);
++	/* Nothing to release ... */
+ }
+ 
+ /*
+@@ -833,13 +819,20 @@ static int bcm_uart_probe(struct platform_device *pdev)
+ 	if (pdev->id < 0 || pdev->id >= BCM63XX_NR_UARTS)
+ 		return -EINVAL;
+ 
+-	if (ports[pdev->id].membase)
++	port = &ports[pdev->id];
++	if (port->membase)
+ 		return -EBUSY;
++	memset(port, 0, sizeof(*port));
+ 
+ 	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res_mem)
+ 		return -ENODEV;
+ 
++	port->mapbase = res_mem->start;
++	port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
++	if (IS_ERR(port->membase))
++		return PTR_ERR(port->membase);
 +
- 	/* Retrieve various information from the /chosen node */
- 	of_scan_flat_dt(early_init_dt_scan_chosen, boot_command_line);
+ 	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+ 	if (!res_irq)
+ 		return -ENODEV;
+@@ -848,10 +841,7 @@ static int bcm_uart_probe(struct platform_device *pdev)
+ 	if (IS_ERR(clk))
+ 		return -ENODEV;
  
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index fdd851e..bc4ebcc 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -14,6 +14,17 @@ config SERIAL_EARLYCON
- 	  the console before standard serial driver is probed. The console is
- 	  enabled when early_param is processed.
+-	port = &ports[pdev->id];
+-	memset(port, 0, sizeof(*port));
+ 	port->iotype = UPIO_MEM;
+-	port->mapbase = res_mem->start;
+ 	port->irq = res_irq->start;
+ 	port->ops = &bcm_uart_ops;
+ 	port->flags = UPF_BOOT_AUTOCONF;
+diff --git a/include/linux/serial_bcm63xx.h b/include/linux/serial_bcm63xx.h
+index a80aa1a..570e964 100644
+--- a/include/linux/serial_bcm63xx.h
++++ b/include/linux/serial_bcm63xx.h
+@@ -116,6 +116,4 @@
+ 					UART_FIFO_PARERR_MASK |		\
+ 					UART_FIFO_BRKDET_MASK)
  
-+config SERIAL_EARLYCON_FORCE
-+	bool "Always enable early console"
-+	depends on SERIAL_EARLYCON
-+	help
-+	  Traditionally, enabling the early console has required passing in
-+	  the "earlycon" parameter on the kernel command line.  On systems
-+	  under development it may be desirable to enable earlycon
-+	  unconditionally rather than to force the user to manually add it
-+	  to the boot argument string, as boot failures often occur before
-+	  the standard serial driver is probed.
-+
- source "drivers/tty/serial/8250/Kconfig"
- 
- comment "Non-8250 serial port support"
+-#define UART_REG_SIZE			24
+-
+ #endif /* _LINUX_SERIAL_BCM63XX_H */
 -- 
 2.1.1
 
