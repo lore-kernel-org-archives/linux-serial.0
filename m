@@ -1,75 +1,38 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH] tty: serial: 8250_mtk: Fix quot calculation
-Date: Mon, 20 Oct 2014 13:30:38 +0200
-Message-ID: <CABuKBeKUdzZ0oxiHyo8q82qTg+fGbnJuPz1uhWQaZbou=LQg0Q@mail.gmail.com>
-References: <1412871811-5986-1-git-send-email-matthias.bgg@gmail.com>
-	<20141009215228.GA23507@kroah.com>
-	<CABuKBeL1v=E4ZSM2iq+zC2G=a1g4RT3DmJ16ra_RwQ_9ARZkZg@mail.gmail.com>
+From: Kevin Hilman <khilman@kernel.org>
+Subject: Re: [PATCH v1] tty: serial: 8250_core: restore the LCR register in set_sleep
+Date: Mon, 20 Oct 2014 08:01:27 -0700
+Message-ID: <7hppdmg4zc.fsf@deeprootsystems.com>
+References: <CAJJ77WsAi5jmnDxY45ipu3a94D6+yoHJNHgExhFsVoirV3NoyQ@mail.gmail.com>
+	<1413549558-24227-1-git-send-email-ssreedharan@mvista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CABuKBeL1v=E4ZSM2iq+zC2G=a1g4RT3DmJ16ra_RwQ_9ARZkZg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, jslaby@suse.cz, =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>, Yingjoe Chen <yingjoe.chen@gmail.com>, Howard Chen <ibanezchen@gmail.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pd0-f179.google.com ([209.85.192.179]:57583 "EHLO
+	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752619AbaJTPBb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 20 Oct 2014 11:01:31 -0400
+Received: by mail-pd0-f179.google.com with SMTP id r10so5186597pdi.10
+        for <linux-serial@vger.kernel.org>; Mon, 20 Oct 2014 08:01:31 -0700 (PDT)
+In-Reply-To: <1413549558-24227-1-git-send-email-ssreedharan@mvista.com>
+	(Sudhir Sreedharan's message of "Fri, 17 Oct 2014 18:09:18 +0530")
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Sudhir Sreedharan <ssreedharan@mvista.com>
+Cc: peter@hurleysoftware.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, olof@lixom.net, linux-arm-kernel@lists.infradead.org, geert@linux-m68k.org
 
-Hi Greg,
+Sudhir Sreedharan <ssreedharan@mvista.com> writes:
 
-2014-10-10 10:10 GMT+02:00 Matthias Brugger <matthias.bgg@gmail.com>:
-> 2014-10-09 23:52 GMT+02:00 Greg KH <gregkh@linuxfoundation.org>:
->> On Thu, Oct 09, 2014 at 06:23:31PM +0200, Matthias Brugger wrote:
->>> The calculation of value quot for highspeed register set to three
->>> was wrong. This patch fixes the calculation so that the serial port
->>> for baudrates bigger then 576000 baud is working correctly.
->>>
->>> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
->>> ---
->>>  drivers/tty/serial/8250/8250_mtk.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
->>> index 1c4b4bf..4376c48 100644
->>> --- a/drivers/tty/serial/8250/8250_mtk.c
->>> +++ b/drivers/tty/serial/8250/8250_mtk.c
->>> @@ -81,7 +81,7 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
->>>               /* Set to highest baudrate supported */
->>>               if (baud >= 1152000)
->>>                       baud = 921600;
->>> -             quot = DIV_ROUND_CLOSEST(port->uartclk, 256 * baud);
->>> +             quot = (port->uartclk / (256 * baud)) + 1;
->>>       }
->>>
->>>       /*
->>
->> Has this always been incorrect, or was it caused by a specific patch?
+> In ST16650V2 based serial uarts, while initalizing the PM state,
+> LCR registers are being initialized to 0 in serial8250_set_sleep().
+> If console port is already initialized and being used, this will
+> throws garbage in the console.
 >
-> It has always been incorrect :o
->
->> Should it go to the stable kernels?  If so, how far back?
->
-> No need to go to the stable kernels. The driver is only in linux-next.
+> Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
 
-Any comments on that?
+Tested-by: Kevin Hilman <khilman@linaro.org>
 
-Thanks,
-Matthias
+I boot tested this on a bunch of ARM boards and don't see any
+more failures/regressions.
 
->
-> Cheers,
-> Matthias Brugger
->
->>
->> thanks,
->>
->> greg k-h
->
->
->
-> --
-> motzblog.wordpress.com
-
-
-
--- 
-motzblog.wordpress.com
+Kevin
