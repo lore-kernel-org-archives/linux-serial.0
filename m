@@ -1,74 +1,75 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V2 5/9] tty: serial: bcm63xx: Enable DT earlycon support
-Date: Mon, 20 Oct 2014 13:54:04 -0700
-Message-ID: <1413838448-29464-6-git-send-email-cernekee@gmail.com>
+Subject: [PATCH V2 8/9] tty: serial: of-serial: Allow OF earlycon to default to "on"
+Date: Mon, 20 Oct 2014 13:54:07 -0700
+Message-ID: <1413838448-29464-9-git-send-email-cernekee@gmail.com>
 References: <1413838448-29464-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f179.google.com ([209.85.192.179]:57963 "EHLO
-	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752835AbaJTUzC (ORCPT
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:47468 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753385AbaJTUzI (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Oct 2014 16:55:02 -0400
+	Mon, 20 Oct 2014 16:55:08 -0400
 In-Reply-To: <1413838448-29464-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org, grant.likely@linaro.org
 Cc: geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-This enables early console output if there is a chosen/stdout-path
-property referencing a UART node with the "brcm,bcm6345-uart" compatible
-string.  The bootloader sets up the pinmux and baud/parity/etc.
-Tested on bcm3384 (MIPS, DT).
+On many development systems it is very common to see failures during the
+early stages of the boot process, e.g. SMP boot or PCIe initialization.
+This is one likely reason why some existing earlyprintk implementations,
+such as arch/mips/kernel/early_printk.c, are enabled unconditionally
+at compile time.
+
+Now that earlycon's operating parameters can be passed into the kernel
+via DT, it is helpful to be able to configure the kernel to turn it on
+automatically.  Introduce a new CONFIG_SERIAL_EARLYCON_FORCE option for
+this purpose.
 
 Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
 ---
- drivers/tty/serial/Kconfig        |  1 +
- drivers/tty/serial/bcm63xx_uart.c | 20 ++++++++++++++++++++
- 2 files changed, 21 insertions(+)
+ drivers/of/fdt.c           |  5 +++++
+ drivers/tty/serial/Kconfig | 11 +++++++++++
+ 2 files changed, 16 insertions(+)
 
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 20193cc..3e2ea1e 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -1013,6 +1013,11 @@ bool __init early_init_dt_verify(void *params)
+ 
+ void __init early_init_dt_scan_nodes(void)
+ {
++#ifdef CONFIG_SERIAL_EARLYCON_FORCE
++	if (early_init_dt_scan_chosen_serial() < 0)
++		pr_warn("Unable to set up earlycon from stdout-path\n");
++#endif
++
+ 	/* Retrieve various information from the /chosen node */
+ 	of_scan_flat_dt(early_init_dt_scan_chosen, boot_command_line);
+ 
 diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 815b652..fdd851e 100644
+index fdd851e..bc4ebcc 100644
 --- a/drivers/tty/serial/Kconfig
 +++ b/drivers/tty/serial/Kconfig
-@@ -1297,6 +1297,7 @@ config SERIAL_BCM63XX_CONSOLE
- 	bool "Console on BCM63xx serial port"
- 	depends on SERIAL_BCM63XX=y
- 	select SERIAL_CORE_CONSOLE
-+	select SERIAL_EARLYCON
- 	help
- 	  If you have enabled the serial port on the BCM63xx CPU
- 	  you can make it the console by answering Y to this option.
-diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
-index a70910e..2015284 100644
---- a/drivers/tty/serial/bcm63xx_uart.c
-+++ b/drivers/tty/serial/bcm63xx_uart.c
-@@ -782,6 +782,26 @@ static int __init bcm63xx_console_init(void)
+@@ -14,6 +14,17 @@ config SERIAL_EARLYCON
+ 	  the console before standard serial driver is probed. The console is
+ 	  enabled when early_param is processed.
  
- console_initcall(bcm63xx_console_init);
++config SERIAL_EARLYCON_FORCE
++	bool "Always enable early console"
++	depends on SERIAL_EARLYCON
++	help
++	  Traditionally, enabling the early console has required passing in
++	  the "earlycon" parameter on the kernel command line.  On systems
++	  under development it may be desirable to enable earlycon
++	  unconditionally rather than to force the user to manually add it
++	  to the boot argument string, as boot failures often occur before
++	  the standard serial driver is probed.
++
+ source "drivers/tty/serial/8250/Kconfig"
  
-+static void bcm_early_write(struct console *con, const char *s, unsigned n)
-+{
-+	struct earlycon_device *dev = con->data;
-+
-+	uart_console_write(&dev->port, s, n, bcm_console_putchar);
-+	wait_for_xmitr(&dev->port);
-+}
-+
-+static int __init bcm_early_console_setup(struct earlycon_device *device,
-+					  const char *opt)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->con->write = bcm_early_write;
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(bcm63xx_uart, "brcm,bcm6345-uart", bcm_early_console_setup);
-+
- #define BCM63XX_CONSOLE	(&bcm63xx_console)
- #else
- #define BCM63XX_CONSOLE	NULL
+ comment "Non-8250 serial port support"
 -- 
 2.1.1
 
