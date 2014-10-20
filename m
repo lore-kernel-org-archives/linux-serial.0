@@ -1,46 +1,57 @@
-From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V2 9/9] MAINTAINERS: Add entry for rp2 (Rocketport Express/Infinity) driver
-Date: Mon, 20 Oct 2014 13:54:08 -0700
-Message-ID: <1413838448-29464-10-git-send-email-cernekee@gmail.com>
-References: <1413838448-29464-1-git-send-email-cernekee@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:34990 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753388AbaJTUzJ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Oct 2014 16:55:09 -0400
-In-Reply-To: <1413838448-29464-1-git-send-email-cernekee@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH V2 4/9] Documentation: DT: Add entries for bcm63xx UART
+Date: Mon, 20 Oct 2014 23:20:08 +0200
+Message-ID: <6216923.cK1phqtEXn@wuerfel>
+References: <1413838448-29464-1-git-send-email-cernekee@gmail.com> <1413838448-29464-5-git-send-email-cernekee@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <1413838448-29464-5-git-send-email-cernekee@gmail.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Kevin Cernekee <cernekee@gmail.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org, grant.likely@linaro.org, geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org, grant.likely@linaro.org
-Cc: geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-I wrote this driver and use it daily on several machines for work, so
-why not.
+On Monday 20 October 2014 13:54:03 Kevin Cernekee wrote:
+> +- clock-names: The appropriate output name in the referenced clock node.
+> +
+> +       uart0: serial@14e00520 {
+> +               compatible = "brcm,bcm6345-uart";
+> +               reg = <0x14e00520 0x18>;
+> +               interrupt-parent = <&periph_intc>;
+> +               interrupts = <2>;
+> +               clocks = <&periph_clk>;
+> +               clock-names = "periph";
+> +       };
+> +
+> +       clocks {
+> +               periph_clk: periph_clk@0 {
+> +                       compatible = "fixed-clock";
+> +                       #clock-cells = <0>;
+> +                       clock-frequency = <54000000>;
+> +                       clock-output-names = "periph";
+> +               };
+> +       };
 
-Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
----
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+In this example, the clock output name of the clock provider is
+the same as the clock input of the consumer, that is almost always
+a bug and would not be a good example at all.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a20df9b..d483627 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7787,6 +7787,12 @@ S:	Maintained
- F:	Documentation/serial/rocket.txt
- F:	drivers/tty/rocket*
- 
-+ROCKETPORT EXPRESS/INFINITY DRIVER
-+M:	Kevin Cernekee <cernekee@gmail.com>
-+L:	linux-serial@vger.kernel.org
-+S:	Odd Fixes
-+F:	drivers/tty/serial/rp2.*
-+
- ROSE NETWORK LAYER
- M:	Ralf Baechle <ralf@linux-mips.org>
- L:	linux-hams@vger.kernel.org
--- 
-2.1.1
+I assume the output name is correct and the input is not. If you
+have access to the HDL source of the bcm6345-uart, please check
+if the input has a proper name, otherwise just call it "uart"
+or remove the clock-names property completely.
 
+In the documentation enough, you must document the specific name
+of the clock that is supposed to be used by the uart driver.
+
+	Arnd
