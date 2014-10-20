@@ -1,68 +1,74 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V2 4/9] Documentation: DT: Add entries for bcm63xx UART
-Date: Mon, 20 Oct 2014 13:54:03 -0700
-Message-ID: <1413838448-29464-5-git-send-email-cernekee@gmail.com>
+Subject: [PATCH V2 5/9] tty: serial: bcm63xx: Enable DT earlycon support
+Date: Mon, 20 Oct 2014 13:54:04 -0700
+Message-ID: <1413838448-29464-6-git-send-email-cernekee@gmail.com>
 References: <1413838448-29464-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:47298 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753108AbaJTUzB (ORCPT
+Received: from mail-pd0-f179.google.com ([209.85.192.179]:57963 "EHLO
+	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752835AbaJTUzC (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 20 Oct 2014 16:55:01 -0400
+	Mon, 20 Oct 2014 16:55:02 -0400
 In-Reply-To: <1413838448-29464-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org, grant.likely@linaro.org
 Cc: geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-This squashes a checkpatch warning on my new bcm3384 dts submission.
+This enables early console output if there is a chosen/stdout-path
+property referencing a UART node with the "brcm,bcm6345-uart" compatible
+string.  The bootloader sets up the pinmux and baud/parity/etc.
+Tested on bcm3384 (MIPS, DT).
 
 Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
 ---
- .../devicetree/bindings/serial/bcm63xx-uart.txt    | 34 ++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
+ drivers/tty/serial/Kconfig        |  1 +
+ drivers/tty/serial/bcm63xx_uart.c | 20 ++++++++++++++++++++
+ 2 files changed, 21 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/bcm63xx-uart.txt b/Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
-new file mode 100644
-index 0000000..b01c76a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
-@@ -0,0 +1,34 @@
-+* BCM63xx UART
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 815b652..fdd851e 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1297,6 +1297,7 @@ config SERIAL_BCM63XX_CONSOLE
+ 	bool "Console on BCM63xx serial port"
+ 	depends on SERIAL_BCM63XX=y
+ 	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
+ 	help
+ 	  If you have enabled the serial port on the BCM63xx CPU
+ 	  you can make it the console by answering Y to this option.
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index a70910e..2015284 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -782,6 +782,26 @@ static int __init bcm63xx_console_init(void)
+ 
+ console_initcall(bcm63xx_console_init);
+ 
++static void bcm_early_write(struct console *con, const char *s, unsigned n)
++{
++	struct earlycon_device *dev = con->data;
 +
-+Required properties:
++	uart_console_write(&dev->port, s, n, bcm_console_putchar);
++	wait_for_xmitr(&dev->port);
++}
 +
-+- compatible: "brcm,bcm6345-uart"
++static int __init bcm_early_console_setup(struct earlycon_device *device,
++					  const char *opt)
++{
++	if (!device->port.membase)
++		return -ENODEV;
 +
-+- reg: The base address of the UART register bank.
++	device->con->write = bcm_early_write;
++	return 0;
++}
 +
-+- interrupts: A single interrupt specifier.
++OF_EARLYCON_DECLARE(bcm63xx_uart, "brcm,bcm6345-uart", bcm_early_console_setup);
 +
-+- clocks: Clock driving the hardware; used to figure out the baud rate
-+  divisor.
-+
-+- clock-names: The appropriate output name in the referenced clock node.
-+
-+Example:
-+
-+	uart0: serial@14e00520 {
-+		compatible = "brcm,bcm6345-uart";
-+		reg = <0x14e00520 0x18>;
-+		interrupt-parent = <&periph_intc>;
-+		interrupts = <2>;
-+		clocks = <&periph_clk>;
-+		clock-names = "periph";
-+	};
-+
-+	clocks {
-+		periph_clk: periph_clk@0 {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <54000000>;
-+			clock-output-names = "periph";
-+		};
-+	};
+ #define BCM63XX_CONSOLE	(&bcm63xx_console)
+ #else
+ #define BCM63XX_CONSOLE	NULL
 -- 
 2.1.1
 
