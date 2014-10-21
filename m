@@ -1,75 +1,46 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V3 09/10] tty: serial: of-serial: Allow OF earlycon to default to "on"
-Date: Tue, 21 Oct 2014 15:23:05 -0700
-Message-ID: <1413930186-23168-10-git-send-email-cernekee@gmail.com>
+Subject: [PATCH V3 10/10] MAINTAINERS: Add entry for rp2 (Rocketport Express/Infinity) driver
+Date: Tue, 21 Oct 2014 15:23:06 -0700
+Message-ID: <1413930186-23168-11-git-send-email-cernekee@gmail.com>
 References: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f176.google.com ([209.85.192.176]:53861 "EHLO
-	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933828AbaJUWXi (ORCPT
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:35788 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933851AbaJUWXj (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Oct 2014 18:23:38 -0400
+	Tue, 21 Oct 2014 18:23:39 -0400
 In-Reply-To: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz
 Cc: robh@kernel.org, grant.likely@linaro.org, arnd@arndb.de, geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-On many development systems it is very common to see failures during the
-early stages of the boot process, e.g. SMP boot or PCIe initialization.
-This is one likely reason why some existing earlyprintk implementations,
-such as arch/mips/kernel/early_printk.c, are enabled unconditionally
-at compile time.
-
-Now that earlycon's operating parameters can be passed into the kernel
-via DT, it is helpful to be able to configure the kernel to turn it on
-automatically.  Introduce a new CONFIG_SERIAL_EARLYCON_FORCE option for
-this purpose.
+I wrote this driver and use it daily on several machines for work, so
+why not.
 
 Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/of/fdt.c           |  5 +++++
- drivers/tty/serial/Kconfig | 11 +++++++++++
- 2 files changed, 16 insertions(+)
+ MAINTAINERS | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 20193cc..3e2ea1e 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -1013,6 +1013,11 @@ bool __init early_init_dt_verify(void *params)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a20df9b..d483627 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7787,6 +7787,12 @@ S:	Maintained
+ F:	Documentation/serial/rocket.txt
+ F:	drivers/tty/rocket*
  
- void __init early_init_dt_scan_nodes(void)
- {
-+#ifdef CONFIG_SERIAL_EARLYCON_FORCE
-+	if (early_init_dt_scan_chosen_serial() < 0)
-+		pr_warn("Unable to set up earlycon from stdout-path\n");
-+#endif
++ROCKETPORT EXPRESS/INFINITY DRIVER
++M:	Kevin Cernekee <cernekee@gmail.com>
++L:	linux-serial@vger.kernel.org
++S:	Odd Fixes
++F:	drivers/tty/serial/rp2.*
 +
- 	/* Retrieve various information from the /chosen node */
- 	of_scan_flat_dt(early_init_dt_scan_chosen, boot_command_line);
- 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index fdd851e..bc4ebcc 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -14,6 +14,17 @@ config SERIAL_EARLYCON
- 	  the console before standard serial driver is probed. The console is
- 	  enabled when early_param is processed.
- 
-+config SERIAL_EARLYCON_FORCE
-+	bool "Always enable early console"
-+	depends on SERIAL_EARLYCON
-+	help
-+	  Traditionally, enabling the early console has required passing in
-+	  the "earlycon" parameter on the kernel command line.  On systems
-+	  under development it may be desirable to enable earlycon
-+	  unconditionally rather than to force the user to manually add it
-+	  to the boot argument string, as boot failures often occur before
-+	  the standard serial driver is probed.
-+
- source "drivers/tty/serial/8250/Kconfig"
- 
- comment "Non-8250 serial port support"
+ ROSE NETWORK LAYER
+ M:	Ralf Baechle <ralf@linux-mips.org>
+ L:	linux-hams@vger.kernel.org
 -- 
 2.1.1
 
