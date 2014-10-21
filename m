@@ -1,43 +1,30 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: [PATCH] serial: of-serial: fix uninitialized kmalloc variable
-Date: Tue, 21 Oct 2014 16:50:21 +0800
-Message-ID: <1413881421-9554-1-git-send-email-jingchang.lu@freescale.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] serial: of-serial: fix uninitialized kmalloc variable
+Date: Tue, 21 Oct 2014 12:11:08 +0200
+Message-ID: <2601201.5ptAsr65zc@wuerfel>
+References: <1413881421-9554-1-git-send-email-jingchang.lu@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-by2on0124.outbound.protection.outlook.com ([207.46.100.124]:2784
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751688AbaJUJiI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Oct 2014 05:38:08 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:63812 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753120AbaJUKLN (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 21 Oct 2014 06:11:13 -0400
+In-Reply-To: <1413881421-9554-1-git-send-email-jingchang.lu@freescale.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: josephl@nvidia.com, peter@hurleysoftware.com, arnd@arndb.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jingchang Lu <jingchang.lu@freescale.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Jingchang Lu <jingchang.lu@freescale.com>, gregkh@linuxfoundation.org, peter@hurleysoftware.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, josephl@nvidia.com
 
-The info pointer points to an uninitialized kmalloced space.
-If a device doesn't have clk property, then info->clk may
-have unpredicated value and cause call trace. So use kzalloc
-to make sure it is NULL initialized.
+On Tuesday 21 October 2014 16:50:21 Jingchang Lu wrote:
+> The info pointer points to an uninitialized kmalloced space.
+> If a device doesn't have clk property, then info->clk may
+> have unpredicated value and cause call trace. So use kzalloc
+> to make sure it is NULL initialized.
+> 
+> Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
+> 
 
-Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
----
- drivers/tty/serial/of_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 8bc2563..56982da4 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -158,7 +158,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 	if (of_find_property(ofdev->dev.of_node, "used-by-rtas", NULL))
- 		return -EBUSY;
- 
--	info = kmalloc(sizeof(*info), GFP_KERNEL);
-+	info = kzalloc(sizeof(*info), GFP_KERNEL);
- 	if (info == NULL)
- 		return -ENOMEM;
- 
--- 
-1.8.0
-
+Acked-by: Arnd Bergmann <arnd@arndb.de
