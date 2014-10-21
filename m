@@ -1,47 +1,39 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V2 4/9] Documentation: DT: Add entries for bcm63xx UART
-Date: Tue, 21 Oct 2014 07:49:51 +0200
-Message-ID: <3370097.yeNWMGbi8v@wuerfel>
-References: <1413838448-29464-1-git-send-email-cernekee@gmail.com> <2100909.UrHPDWWSai@wuerfel> <54459281.7050004@gmail.com>
+From: Sudhir Sreedharan <ssreedharan@mvista.com>
+Subject: Re: [PATCH v1] tty: serial: 8250_core: restore the LCR register in set_sleep
+Date: Tue, 21 Oct 2014 12:15:24 +0530
+Message-ID: <CAJJ77WthYSoA745Nbcqf_dVfN+ydO1LpCVTRDS6xaZMm0zLSmw@mail.gmail.com>
+References: <CAJJ77WsAi5jmnDxY45ipu3a94D6+yoHJNHgExhFsVoirV3NoyQ@mail.gmail.com>
+	<1413549558-24227-1-git-send-email-ssreedharan@mvista.com>
+	<7hppdmg4zc.fsf@deeprootsystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.131]:61597 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752725AbaJUFuJ (ORCPT
+Received: from mail-ob0-f180.google.com ([209.85.214.180]:36768 "EHLO
+	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753162AbaJUGpY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Oct 2014 01:50:09 -0400
-In-Reply-To: <54459281.7050004@gmail.com>
+	Tue, 21 Oct 2014 02:45:24 -0400
+Received: by mail-ob0-f180.google.com with SMTP id va2so443836obc.39
+        for <linux-serial@vger.kernel.org>; Mon, 20 Oct 2014 23:45:24 -0700 (PDT)
+In-Reply-To: <7hppdmg4zc.fsf@deeprootsystems.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Kevin Cernekee <cernekee@gmail.com>, gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org, grant.likely@linaro.org, geert@linux-m68k.org, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+To: Kevin Hilman <khilman@kernel.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, lkml <linux-kernel@vger.kernel.org>, Olof Johansson <olof@lixom.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Monday 20 October 2014 15:53:53 Florian Fainelli wrote:
-> 
-> For now, I suppose that s simple fix could be to use an anonymous clock
-> request when probed via DT. This code you quote dates from 2008 when
-> there was no clkdev in the kernel at all. So something like this would
-> probably do it for now:
-> 
-> diff --git a/drivers/tty/serial/bcm63xx_uart.c
-> b/drivers/tty/serial/bcm63xx_uart.c
-> index e0b87d507670..1b914b85dd31 100644
-> --- a/drivers/tty/serial/bcm63xx_uart.c
-> +++ b/drivers/tty/serial/bcm63xx_uart.c
-> @@ -819,7 +819,7 @@ static int bcm_uart_probe(struct platform_device *pdev)
->         if (!res_irq)
->                 return -ENODEV;
-> 
-> -       clk = clk_get(&pdev->dev, "periph");
-> +       clk = clk_get(&pdev->dev, pdev->dev.of_node ? NULL : "periph");
->         if (IS_ERR(clk))
->                 return -ENODEV;
-> 
-> 
+On Mon, Oct 20, 2014 at 8:31 PM, Kevin Hilman <khilman@kernel.org> wrote:
+> Sudhir Sreedharan <ssreedharan@mvista.com> writes:
+>
+>> In ST16650V2 based serial uarts, while initalizing the PM state,
+>> LCR registers are being initialized to 0 in serial8250_set_sleep().
+>> If console port is already initialized and being used, this will
+>> throws garbage in the console.
+>>
+>> Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
+>
+> Tested-by: Kevin Hilman <khilman@linaro.org>
+>
+> I boot tested this on a bunch of ARM boards and don't see any
+> more failures/regressions.
 
-Yes, that would work. Just make sure the same bug doesn't creep in
-for other drivers you are converting.
-
-	Arnd
+Thanks Kevin
