@@ -1,64 +1,111 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V3 05/10] Documentation: DT: Add entries for bcm63xx UART
-Date: Tue, 21 Oct 2014 15:23:01 -0700
-Message-ID: <1413930186-23168-6-git-send-email-cernekee@gmail.com>
+Subject: [PATCH V3 07/10] tty: serial: bcm63xx: Eliminate unnecessary request/release functions
+Date: Tue, 21 Oct 2014 15:23:03 -0700
+Message-ID: <1413930186-23168-8-git-send-email-cernekee@gmail.com>
 References: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f54.google.com ([209.85.220.54]:59252 "EHLO
-	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933804AbaJUWXb (ORCPT
+Received: from mail-pa0-f41.google.com ([209.85.220.41]:48681 "EHLO
+	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933828AbaJUWXe (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Oct 2014 18:23:31 -0400
+	Tue, 21 Oct 2014 18:23:34 -0400
 In-Reply-To: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz
 Cc: robh@kernel.org, grant.likely@linaro.org, arnd@arndb.de, geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-This squashes a checkpatch warning on my new bcm3384 dts submission.
+We don't really need to perform the ioremap "on demand" so it's simpler
+just to do it from the probe function.  This also lets us eliminate the
+UART_REG_SIZE constant and rely on the resource information passed in
+from the DT or platform code.
 
 Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
 ---
- .../devicetree/bindings/serial/bcm63xx-uart.txt    | 30 ++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
+ drivers/tty/serial/bcm63xx_uart.c | 30 ++++++++++--------------------
+ include/linux/serial_bcm63xx.h    |  2 --
+ 2 files changed, 10 insertions(+), 22 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/bcm63xx-uart.txt b/Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
-new file mode 100644
-index 0000000..5c52e5e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
-@@ -0,0 +1,30 @@
-+* BCM63xx UART
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index 109dea7..e04e580 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -588,20 +588,7 @@ static void bcm_uart_set_termios(struct uart_port *port,
+  */
+ static int bcm_uart_request_port(struct uart_port *port)
+ {
+-	unsigned int size;
+-
+-	size = UART_REG_SIZE;
+-	if (!request_mem_region(port->mapbase, size, "bcm63xx")) {
+-		dev_err(port->dev, "Memory region busy\n");
+-		return -EBUSY;
+-	}
+-
+-	port->membase = ioremap(port->mapbase, size);
+-	if (!port->membase) {
+-		dev_err(port->dev, "Unable to map registers\n");
+-		release_mem_region(port->mapbase, size);
+-		return -EBUSY;
+-	}
++	/* UARTs always present */
+ 	return 0;
+ }
+ 
+@@ -610,8 +597,7 @@ static int bcm_uart_request_port(struct uart_port *port)
+  */
+ static void bcm_uart_release_port(struct uart_port *port)
+ {
+-	release_mem_region(port->mapbase, UART_REG_SIZE);
+-	iounmap(port->membase);
++	/* Nothing to release ... */
+ }
+ 
+ /*
+@@ -833,13 +819,20 @@ static int bcm_uart_probe(struct platform_device *pdev)
+ 	if (pdev->id < 0 || pdev->id >= BCM63XX_NR_UARTS)
+ 		return -EINVAL;
+ 
+-	if (ports[pdev->id].membase)
++	port = &ports[pdev->id];
++	if (port->membase)
+ 		return -EBUSY;
++	memset(port, 0, sizeof(*port));
+ 
+ 	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res_mem)
+ 		return -ENODEV;
+ 
++	port->mapbase = res_mem->start;
++	port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
++	if (IS_ERR(port->membase))
++		return PTR_ERR(port->membase);
 +
-+Required properties:
-+
-+- compatible: "brcm,bcm6345-uart"
-+
-+- reg: The base address of the UART register bank.
-+
-+- interrupts: A single interrupt specifier.
-+
-+- clocks: Clock driving the hardware; used to figure out the baud rate
-+  divisor.
-+
-+Example:
-+
-+	uart0: serial@14e00520 {
-+		compatible = "brcm,bcm6345-uart";
-+		reg = <0x14e00520 0x18>;
-+		interrupt-parent = <&periph_intc>;
-+		interrupts = <2>;
-+		clocks = <&periph_clk>;
-+	};
-+
-+	clocks {
-+		periph_clk: periph_clk@0 {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <54000000>;
-+		};
-+	};
+ 	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+ 	if (!res_irq)
+ 		return -ENODEV;
+@@ -849,10 +842,7 @@ static int bcm_uart_probe(struct platform_device *pdev)
+ 	if (IS_ERR(clk))
+ 		return -ENODEV;
+ 
+-	port = &ports[pdev->id];
+-	memset(port, 0, sizeof(*port));
+ 	port->iotype = UPIO_MEM;
+-	port->mapbase = res_mem->start;
+ 	port->irq = res_irq->start;
+ 	port->ops = &bcm_uart_ops;
+ 	port->flags = UPF_BOOT_AUTOCONF;
+diff --git a/include/linux/serial_bcm63xx.h b/include/linux/serial_bcm63xx.h
+index a80aa1a..570e964 100644
+--- a/include/linux/serial_bcm63xx.h
++++ b/include/linux/serial_bcm63xx.h
+@@ -116,6 +116,4 @@
+ 					UART_FIFO_PARERR_MASK |		\
+ 					UART_FIFO_BRKDET_MASK)
+ 
+-#define UART_REG_SIZE			24
+-
+ #endif /* _LINUX_SERIAL_BCM63XX_H */
 -- 
 2.1.1
 
