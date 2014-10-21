@@ -1,48 +1,47 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V3 00/10] bcm63xx_uart and of-serial updates
-Date: Tue, 21 Oct 2014 15:22:56 -0700
-Message-ID: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
+Subject: [PATCH V3 01/10] tty: serial: bcm63xx: Allow bcm63xx_uart to be built on other platforms
+Date: Tue, 21 Oct 2014 15:22:57 -0700
+Message-ID: <1413930186-23168-2-git-send-email-cernekee@gmail.com>
+References: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f176.google.com ([209.85.192.176]:63869 "EHLO
-	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933387AbaJUWXX (ORCPT
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:65233 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933387AbaJUWXY (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Oct 2014 18:23:23 -0400
+	Tue, 21 Oct 2014 18:23:24 -0400
+In-Reply-To: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz
 Cc: robh@kernel.org, grant.likely@linaro.org, arnd@arndb.de, geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-V2->V3:
+This device was originally supported on bcm63xx only, but it shows up on
+a wide variety of MIPS and ARM chipsets spanning multiple product lines.
+Now that the driver has eliminated dependencies on bcm63xx-specific
+header files, we can build it on any non-bcm63xx kernel.
 
-Change DT clock node based on review feedback (thanks Arnd!)
+Compile-tested on x86, both statically and as a module.  Tested for
+functionality on bcm3384 (a new MIPS platform under active development).
 
-Rebase on Linus' master branch
+Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-Kevin Cernekee (10):
-  tty: serial: bcm63xx: Allow bcm63xx_uart to be built on other
-    platforms
-  tty: serial: bcm63xx: Add support for unnamed clock outputs from DT
-  tty: serial: bcm63xx: Update the Kconfig help text
-  tty: serial: bcm63xx: Fix typo in MODULE_DESCRIPTION
-  Documentation: DT: Add entries for bcm63xx UART
-  tty: serial: bcm63xx: Enable DT earlycon support
-  tty: serial: bcm63xx: Eliminate unnecessary request/release functions
-  tty: serial: of-serial: Suppress warnings if OF earlycon is invoked
-    twice
-  tty: serial: of-serial: Allow OF earlycon to default to "on"
-  MAINTAINERS: Add entry for rp2 (Rocketport Express/Infinity) driver
-
- .../devicetree/bindings/serial/bcm63xx-uart.txt    | 30 ++++++++++++
- MAINTAINERS                                        |  6 +++
- drivers/of/fdt.c                                   | 17 +++++--
- drivers/tty/serial/Kconfig                         | 30 ++++++++----
- drivers/tty/serial/bcm63xx_uart.c                  | 55 +++++++++++++---------
- include/linux/serial_bcm63xx.h                     |  2 -
- 6 files changed, 104 insertions(+), 36 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
-
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 649b784..4a5c0c8 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1283,7 +1283,7 @@ config SERIAL_TIMBERDALE
+ config SERIAL_BCM63XX
+ 	tristate "bcm63xx serial port support"
+ 	select SERIAL_CORE
+-	depends on BCM63XX
++	depends on MIPS || ARM || COMPILE_TEST
+ 	help
+ 	  If you have a bcm63xx CPU, you can enable its onboard
+ 	  serial port by enabling this options.
 -- 
 2.1.1
 
