@@ -1,39 +1,43 @@
-From: Sudhir Sreedharan <ssreedharan@mvista.com>
-Subject: Re: [PATCH v1] tty: serial: 8250_core: restore the LCR register in set_sleep
-Date: Tue, 21 Oct 2014 12:15:24 +0530
-Message-ID: <CAJJ77WthYSoA745Nbcqf_dVfN+ydO1LpCVTRDS6xaZMm0zLSmw@mail.gmail.com>
-References: <CAJJ77WsAi5jmnDxY45ipu3a94D6+yoHJNHgExhFsVoirV3NoyQ@mail.gmail.com>
-	<1413549558-24227-1-git-send-email-ssreedharan@mvista.com>
-	<7hppdmg4zc.fsf@deeprootsystems.com>
+From: Jingchang Lu <jingchang.lu@freescale.com>
+Subject: [PATCH] serial: of-serial: fix uninitialized kmalloc variable
+Date: Tue, 21 Oct 2014 16:50:21 +0800
+Message-ID: <1413881421-9554-1-git-send-email-jingchang.lu@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ob0-f180.google.com ([209.85.214.180]:36768 "EHLO
-	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753162AbaJUGpY (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Oct 2014 02:45:24 -0400
-Received: by mail-ob0-f180.google.com with SMTP id va2so443836obc.39
-        for <linux-serial@vger.kernel.org>; Mon, 20 Oct 2014 23:45:24 -0700 (PDT)
-In-Reply-To: <7hppdmg4zc.fsf@deeprootsystems.com>
+Received: from mail-by2on0124.outbound.protection.outlook.com ([207.46.100.124]:2784
+	"EHLO na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751688AbaJUJiI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 21 Oct 2014 05:38:08 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Hilman <khilman@kernel.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, lkml <linux-kernel@vger.kernel.org>, Olof Johansson <olof@lixom.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Geert Uytterhoeven <geert@linux-m68k.org>
+To: gregkh@linuxfoundation.org
+Cc: josephl@nvidia.com, peter@hurleysoftware.com, arnd@arndb.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jingchang Lu <jingchang.lu@freescale.com>
 
-On Mon, Oct 20, 2014 at 8:31 PM, Kevin Hilman <khilman@kernel.org> wrote:
-> Sudhir Sreedharan <ssreedharan@mvista.com> writes:
->
->> In ST16650V2 based serial uarts, while initalizing the PM state,
->> LCR registers are being initialized to 0 in serial8250_set_sleep().
->> If console port is already initialized and being used, this will
->> throws garbage in the console.
->>
->> Signed-off-by: Sudhir Sreedharan <ssreedharan@mvista.com>
->
-> Tested-by: Kevin Hilman <khilman@linaro.org>
->
-> I boot tested this on a bunch of ARM boards and don't see any
-> more failures/regressions.
+The info pointer points to an uninitialized kmalloced space.
+If a device doesn't have clk property, then info->clk may
+have unpredicated value and cause call trace. So use kzalloc
+to make sure it is NULL initialized.
 
-Thanks Kevin
+Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
+---
+ drivers/tty/serial/of_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 8bc2563..56982da4 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -158,7 +158,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	if (of_find_property(ofdev->dev.of_node, "used-by-rtas", NULL))
+ 		return -EBUSY;
+ 
+-	info = kmalloc(sizeof(*info), GFP_KERNEL);
++	info = kzalloc(sizeof(*info), GFP_KERNEL);
+ 	if (info == NULL)
+ 		return -ENOMEM;
+ 
+-- 
+1.8.0
+
