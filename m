@@ -1,44 +1,50 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH -next 0/9] pty fixes
-Date: Wed, 22 Oct 2014 16:37:24 +0100
-Message-ID: <20141022163724.065ab3b1@alan.etchedpixels.co.uk>
-References: <1413488010-16885-1-git-send-email-peter@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCH v3 02/59] serial: at91: Use dmaengine_slave_config API
+Date: Wed, 22 Oct 2014 17:43:16 +0200
+Message-ID: <1413992653-21963-3-git-send-email-maxime.ripard@free-electrons.com>
+References: <1413992653-21963-1-git-send-email-maxime.ripard@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1413488010-16885-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1413992653-21963-1-git-send-email-maxime.ripard@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: dmaengine@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, =?UTF-8?q?Antoine=20T=C3=A9nart?= <antoine@free-electrons.com>, lars@metafoo.de, Russell King <linux@arm.linux.org.uk>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 16 Oct 2014 15:33:21 -0400
-Peter Hurley <peter@hurleysoftware.com> wrote:
+We are removing the dmaengine_device_control API, that shouldn't even have been
+exposed in the first place. Change the callers to use the proper API.
 
-> Hi Greg,
-> 
-> This series addresses some pecularities of the pty driver, especially
-> set_termios() handling, which is moved into the pty driver proper, and
-> packet mode/ctrl_lock behavior.
-> 
-> Regards,
-> 
-> Peter Hurley (9):
->   tty: WARN for attempted set_termios() of pty master
->   tty: Move pty-specific set_termios() handling to pty driver
->   pty: Use spin_lock_irq() for pty_set_termios()
->   tty: Use spin_lock_irq() for ctrl_lock when interrupts enabled
->   pty: Don't claim slave's ctrl_lock for master's packet mode
->   pty: Fix packet mode setting race
->   pty: Hold ctrl_lock for packet mode updates
->   tty: Fix missed wakeup from packet mode status update
->   n_tty: Only process packet mode data in raw mode
-> 
->  drivers/tty/n_tty.c     | 39 +++++++++++++++++++------------------
->  drivers/tty/pty.c       | 51 ++++++++++++++++++++++++++++++++++++-------------
->  drivers/tty/tty_ioctl.c | 34 ++++-----------------------------
->  3 files changed, 62 insertions(+), 62 deletions(-)
-> 
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+ drivers/tty/serial/atmel_serial.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-Reviewed-by: Alan Cox <alan@linux.intel.com>
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index edde3eca055d..10e6b382d68f 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -862,9 +862,8 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
+ 	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+ 	config.dst_addr = port->mapbase + ATMEL_US_THR;
+ 
+-	ret = dmaengine_device_control(atmel_port->chan_tx,
+-					DMA_SLAVE_CONFIG,
+-					(unsigned long)&config);
++	ret = dmaengine_slave_config(atmel_port->chan_tx,
++				     &config);
+ 	if (ret) {
+ 		dev_err(port->dev, "DMA tx slave configuration failed\n");
+ 		goto chan_err;
+@@ -1026,9 +1025,8 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 	config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+ 	config.src_addr = port->mapbase + ATMEL_US_RHR;
+ 
+-	ret = dmaengine_device_control(atmel_port->chan_rx,
+-					DMA_SLAVE_CONFIG,
+-					(unsigned long)&config);
++	ret = dmaengine_slave_config(atmel_port->chan_rx,
++				     &config);
+ 	if (ret) {
+ 		dev_err(port->dev, "DMA rx slave configuration failed\n");
+ 		goto chan_err;
+-- 
+2.1.1
