@@ -1,41 +1,51 @@
 From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH -next 11/27] tty: Don't release tty locks for wait queue
- sanity check
-Date: Wed, 22 Oct 2014 16:29:11 +0100
-Message-ID: <20141022162911.432c9bcc@alan.etchedpixels.co.uk>
+Subject: Re: [PATCH -next 00/27] tty locking changes
+Date: Wed, 22 Oct 2014 16:31:46 +0100
+Message-ID: <20141022163146.73967b1e@alan.etchedpixels.co.uk>
 References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
-	<1413491125-20134-12-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:37791 "EHLO
+Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:37804 "EHLO
 	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752613AbaJVP30 (ORCPT
+	with ESMTP id S1753356AbaJVPcA (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 22 Oct 2014 11:29:26 -0400
-In-Reply-To: <1413491125-20134-12-git-send-email-peter@hurleysoftware.com>
+	Wed, 22 Oct 2014 11:32:00 -0400
+In-Reply-To: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Peter Hurley <peter@hurleysoftware.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-> However, without needing the global tty_mutex held, the tty locks for
-> the releasing tty can now be held through the sleep. The sanity check
-> is for abnormal conditions caused by kernel bugs, not for recoverable
-> errors caused by misbehaving userspace; dropping the tty locks only
-> allows the tty state to get more sideways.
+On Thu, 16 Oct 2014 16:24:58 -0400
+Peter Hurley <peter@hurleysoftware.com> wrote:
 
-An open with O_NDELAY on the closing port now appears to be able to jam
-for 2 minutes ? Peviously it would at least be released by a signal.
+> Hi Greg,
+> 
+> This patch series has 3 major changes to how tty locking behaves:
+> 1. the lock order of tty_lock() and tty->ldisc_sem is reversed;
+>    this eliminates a bunch of lock drop/reacquire which, in turn,
+>    eliminates tty state tracking that can no longer be observed.
+>    This also allows the pty driver to wait for input processing to
+>    complete while closing before setting TTY_OTHER_CLOSED (which
+>    eliminates the ugliness of checking input twice in n_tty_read() and
+>    n_tty_poll()).
+> 2. the footprint of tty_mutex is reduced to only adding and removing
+>    ttys and is no longer held to acquire the tty_lock() in tty_open();
+>    this allows for multiple ttys to be opened concurrently, even if
+>    one open stalls waiting for its tty_lock().
+> 3. pty pair locking is reordered to master first, then slave, rather
+>    than by address. This works because, while releasing the master pty,
+>    the slave tty count needs to be changed, whereas, when releasing the
+>    slave, the master pty does not need to be accessed.
+>    This furthur eliminates more lock drop/reacquire.
+> 
+> The longer-term goals, which this series builds towards, is:
+> 1. simplifying the tty open/close behavior
+> 2. eliminating the ASYNC_CLOSING code without breaking existing userspace
+> 3. eliminating returning -EIO from tty_open(). Not sure if this is possible yet.
 
-That seems like a regression (and given the timeout is long) a bug.
 
-Given that some code handles multiple tty devices using select and
-nonblocking opens on physical ports this one bothers me a little. The old
-behaviour wasn't right either (and actually stops Linux running some
-modem manager type tools), but the new behaviour looks worse.
+Reviewed-by: Alan Cox <alan@linux.intel.com>
 
-Probably though the right way to fix it is in the open path ?
-
-Alan
