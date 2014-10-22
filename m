@@ -1,50 +1,77 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH v3 02/59] serial: at91: Use dmaengine_slave_config API
-Date: Wed, 22 Oct 2014 17:43:16 +0200
-Message-ID: <1413992653-21963-3-git-send-email-maxime.ripard@free-electrons.com>
-References: <1413992653-21963-1-git-send-email-maxime.ripard@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1413992653-21963-1-git-send-email-maxime.ripard@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: dmaengine@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, =?UTF-8?q?Antoine=20T=C3=A9nart?= <antoine@free-electrons.com>, lars@metafoo.de, Russell King <linux@arm.linux.org.uk>, Maxime Ripard <maxime.ripard@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH -next 11/27] tty: Don't release tty locks for wait queue
+ sanity check
+Date: Wed, 22 Oct 2014 13:34:23 -0400
+Message-ID: <5447EA9F.1070401@hurleysoftware.com>
+References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>	<1413491125-20134-12-git-send-email-peter@hurleysoftware.com> <20141022162911.432c9bcc@alan.etchedpixels.co.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:49264 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751031AbaJVRe1 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 22 Oct 2014 13:34:27 -0400
+In-Reply-To: <20141022162911.432c9bcc@alan.etchedpixels.co.uk>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-We are removing the dmaengine_device_control API, that shouldn't even have been
-exposed in the first place. Change the callers to use the proper API.
+On 10/22/2014 11:29 AM, One Thousand Gnomes wrote:
+>> However, without needing the global tty_mutex held, the tty locks for
+>> the releasing tty can now be held through the sleep. The sanity check
+>> is for abnormal conditions caused by kernel bugs, not for recoverable
+>> errors caused by misbehaving userspace; dropping the tty locks only
+>> allows the tty state to get more sideways.
+> 
+> An open with O_NDELAY on the closing port now appears to be able to jam
+> for 2 minutes ? Peviously it would at least be released by a signal.
+> 
+> That seems like a regression (and given the timeout is long) a bug.
 
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
----
- drivers/tty/serial/atmel_serial.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+This patch should only affect _really abnormal_ situations.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index edde3eca055d..10e6b382d68f 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -862,9 +862,8 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
- 	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
- 	config.dst_addr = port->mapbase + ATMEL_US_THR;
- 
--	ret = dmaengine_device_control(atmel_port->chan_tx,
--					DMA_SLAVE_CONFIG,
--					(unsigned long)&config);
-+	ret = dmaengine_slave_config(atmel_port->chan_tx,
-+				     &config);
- 	if (ret) {
- 		dev_err(port->dev, "DMA tx slave configuration failed\n");
- 		goto chan_err;
-@@ -1026,9 +1025,8 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
- 	config.src_addr = port->mapbase + ATMEL_US_RHR;
- 
--	ret = dmaengine_device_control(atmel_port->chan_rx,
--					DMA_SLAVE_CONFIG,
--					(unsigned long)&config);
-+	ret = dmaengine_slave_config(atmel_port->chan_rx,
-+				     &config);
- 	if (ret) {
- 		dev_err(port->dev, "DMA rx slave configuration failed\n");
- 		goto chan_err;
--- 
-2.1.1
+The only way that a tty is spinning in this loop and not getting released
+is if the tty count is going to zero but some other thread is still on one
+of the wait queues, but that's only possible if either:
+1. the other thread never removed itself from the wait queue because it
+crashed while on the wait queue, or
+2. if somehow a thread is sleeping on one of the wait queues without having
+passed through vfs.
+
+IOW, since the tty count is going zero, the release in progress must be
+for the last file descriptor for this tty, so how can some other thread
+be on one of the wait queues without an in-use descriptor.
+
+Both are serious errors, and the failed sanity test shows that the tty state
+is corrupted; an open should not succeed as long as this is true.
+
+It'll take some experimentation to see if the first situation is identifiable
+and remediable; I'll put it on my todo list.
+
+> Given that some code handles multiple tty devices using select and
+> nonblocking opens on physical ports this one bothers me a little. The old
+> behaviour wasn't right either (and actually stops Linux running some
+> modem manager type tools), but the new behaviour looks worse.
+> 
+> Probably though the right way to fix it is in the open path ?
+
+Yes, the tty lock in tty_open() should be interruptible. I've built a matrix
+of how open() races with the previous release behavior at different locking
+points so that the existing outcome can be replicated (or more easily analyzed
+to decide if that's the behavior we want and how/whether to change that
+behavior). The sticking point right now is dealing with how ASYNC_HUP_NOTIFY
+modifies the outcome of the open. This also entails significant code archaeology.
+
+I'm also exploring making the tty count atomic so that a racing open
+can prevent a concurrent release from going to final close, which will
+help to minimize the time window that an open will fail with EIO.
+
+But first, I need to push out some more patches that have been unit-tested
+(and -- don't laugh -- explore why printk disables interrupts and prevents
+cpu migration while calling the console drivers. Seems ok to me...)
+
+Regards,
+Peter Hurley
