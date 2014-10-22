@@ -1,46 +1,41 @@
-From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V3 10/10] MAINTAINERS: Add entry for rp2 (Rocketport Express/Infinity) driver
-Date: Tue, 21 Oct 2014 15:23:06 -0700
-Message-ID: <1413930186-23168-11-git-send-email-cernekee@gmail.com>
-References: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f43.google.com ([209.85.220.43]:35788 "EHLO
-	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933851AbaJUWXj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 21 Oct 2014 18:23:39 -0400
-In-Reply-To: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH] tty: serial: omap: increase max consoles to 10
+Date: Wed, 22 Oct 2014 10:03:36 +0200
+Message-ID: <544764D8.8050804@linutronix.de>
+References: <1413908616-843-1-git-send-email-nm@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1413908616-843-1-git-send-email-nm@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nishanth Menon <nm@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "Franklin Cooper Jr." <fcooper@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: robh@kernel.org, grant.likely@linaro.org, arnd@arndb.de, geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-I wrote this driver and use it daily on several machines for work, so
-why not.
+On 10/21/2014 06:23 PM, Nishanth Menon wrote:
+> 
+> The final solution is to transition off to use 8250 driver and no
+> dependency on console structures and move away from omap-serial driver,
+> hence no major cleanups are done for this driver.
 
-Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
----
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+So the shiny new driver works for you, is this what you are saying?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a20df9b..d483627 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7787,6 +7787,12 @@ S:	Maintained
- F:	Documentation/serial/rocket.txt
- F:	drivers/tty/rocket*
- 
-+ROCKETPORT EXPRESS/INFINITY DRIVER
-+M:	Kevin Cernekee <cernekee@gmail.com>
-+L:	linux-serial@vger.kernel.org
-+S:	Odd Fixes
-+F:	drivers/tty/serial/rp2.*
-+
- ROSE NETWORK LAYER
- M:	Ralf Baechle <ralf@linux-mips.org>
- L:	linux-hams@vger.kernel.org
--- 
-2.1.1
+> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+> index 18c30ca..4f9cbb6 100644
+> --- a/drivers/tty/serial/omap-serial.c
+> +++ b/drivers/tty/serial/omap-serial.c
+> @@ -46,7 +46,7 @@
+>  
+>  #include <dt-bindings/gpio/gpio.h>
+>  
+> -#define OMAP_MAX_HSUART_PORTS	6
+> +#define OMAP_MAX_HSUART_PORTS	10
+>  
+>  #define UART_BUILD_REVISION(x, y)	(((x) << 8) | (y))
 
+Please also add a check in the probe code that "up->port.line" does not
+exceed OMAP_MAX_HSUART_PORTS again. So we leave the probe function with
+an error code instead.
+
+Sebastian
