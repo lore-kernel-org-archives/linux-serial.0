@@ -1,56 +1,49 @@
-From: Eddie Huang <eddie.huang@mediatek.com>
-Subject: [PATCH 1/3] tty: serial: Fix mediatek UART driver setting baudrate
- issue
-Date: Wed, 22 Oct 2014 21:12:07 +0800
-Message-ID: <1413983529-21887-2-git-send-email-eddie.huang@mediatek.com>
-References: <1413983529-21887-1-git-send-email-eddie.huang@mediatek.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH -next 00/10] Fixes to controlling tty handling
+Date: Wed, 22 Oct 2014 16:00:04 +0100
+Message-ID: <20141022160004.11be0850@alan.etchedpixels.co.uk>
+References: <1413485990-16855-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1413983529-21887-1-git-send-email-eddie.huang@mediatek.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, srv_heupstream@mediatek.com, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, hc.yen@mediatek.com, yh.chen@mediatek.com, linux-kernel@vger.kernel.org, nathan.chung@mediatek.com, linux-serial@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Eddie Huang <eddie.huang@mediatek.com>, Jiri Slaby <jslaby@suse.cz>, Sascha Hauer <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1413485990-16855-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-In mtk8250_set_termios function, calculating quot value can not be zero,
-otherwise, using DIV_ROUND_CLOSEST(port->uartclk, quot * baud) will fail due to
-divisor is zero.
+On Thu, 16 Oct 2014 14:59:40 -0400
+Peter Hurley <peter@hurleysoftware.com> wrote:
 
-Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
----
- drivers/tty/serial/8250/8250_mtk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> Hi Greg,
+> 
+> This patch series:
+> 1. removes stale code from the controlling tty handling functions
+> 2. relocates the ctty functions to eliminate forward declarations
+> 3. fixes several unsafe races when setting the controlling tty
+> 4. eliminates holding tty_mutex as a necessary condition of
+>    setting the controlling terminal
+> 
+> #4 is part of an overall effort to reduce the tty_mutex footprint.
+> 
+> Unfortunately, this series does not fix two other race conditions:
+> 1. disassociate_ctty()/no_tty() does not teardown the tty<->process
+> associations atomically wrt job control, so it is possible to
+> observe spurious error conditions from job control (tty_check_change()
+> and job_control()). I'm looking into inverting the lock order of
+> tty->ctrl_lock and tsk->sighand->siglock() to see if holding ctrl_lock
+> is a suitable solution for atomic teardown. Especially now that
+> ctrl_lock is not used for flow control anymore :)
+> 2. task_pgrp() and task_session() are used unsafely. These fixes
+> will be clearer after #1 is fixed.
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index 8f37d57..6f93123 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -74,14 +74,14 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
- 		/* Set to next lower baudrate supported */
- 		if ((baud == 500000) || (baud == 576000))
- 			baud = 460800;
--		quot = DIV_ROUND_CLOSEST(port->uartclk, 4 * baud);
-+		quot = DIV_ROUND_UP(port->uartclk, 4 * baud);
- 	} else {
- 		serial_port_out(port, UART_MTK_HIGHS, 0x3);
- 
- 		/* Set to highest baudrate supported */
- 		if (baud >= 1152000)
- 			baud = 921600;
--		quot = DIV_ROUND_CLOSEST(port->uartclk, 256 * baud);
-+		quot = DIV_ROUND_UP(port->uartclk, 256 * baud);
- 	}
- 
- 	/*
--- 
-1.8.1.1.dirty
+
+Reviewed-by: Alan Cox <alan@linux.intel.com>
+
+I can't prove entirely to my satisfaction that the claim in #9 is true in
+the presence of simultaenous hangups opens and setsid but the locking
+appears to be correct for the cases I was trying to figure out anyway.
+
+Makes my head hurt just reviewing bits of this so thanks for doing all
+this work !
