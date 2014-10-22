@@ -1,49 +1,41 @@
 From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH -next 00/10] Fixes to controlling tty handling
-Date: Wed, 22 Oct 2014 16:00:04 +0100
-Message-ID: <20141022160004.11be0850@alan.etchedpixels.co.uk>
-References: <1413485990-16855-1-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH -next 11/27] tty: Don't release tty locks for wait queue
+ sanity check
+Date: Wed, 22 Oct 2014 16:29:11 +0100
+Message-ID: <20141022162911.432c9bcc@alan.etchedpixels.co.uk>
+References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
+	<1413491125-20134-12-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1413485990-16855-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:37791 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752613AbaJVP30 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 22 Oct 2014 11:29:26 -0400
+In-Reply-To: <1413491125-20134-12-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 
-On Thu, 16 Oct 2014 14:59:40 -0400
-Peter Hurley <peter@hurleysoftware.com> wrote:
+> However, without needing the global tty_mutex held, the tty locks for
+> the releasing tty can now be held through the sleep. The sanity check
+> is for abnormal conditions caused by kernel bugs, not for recoverable
+> errors caused by misbehaving userspace; dropping the tty locks only
+> allows the tty state to get more sideways.
 
-> Hi Greg,
-> 
-> This patch series:
-> 1. removes stale code from the controlling tty handling functions
-> 2. relocates the ctty functions to eliminate forward declarations
-> 3. fixes several unsafe races when setting the controlling tty
-> 4. eliminates holding tty_mutex as a necessary condition of
->    setting the controlling terminal
-> 
-> #4 is part of an overall effort to reduce the tty_mutex footprint.
-> 
-> Unfortunately, this series does not fix two other race conditions:
-> 1. disassociate_ctty()/no_tty() does not teardown the tty<->process
-> associations atomically wrt job control, so it is possible to
-> observe spurious error conditions from job control (tty_check_change()
-> and job_control()). I'm looking into inverting the lock order of
-> tty->ctrl_lock and tsk->sighand->siglock() to see if holding ctrl_lock
-> is a suitable solution for atomic teardown. Especially now that
-> ctrl_lock is not used for flow control anymore :)
-> 2. task_pgrp() and task_session() are used unsafely. These fixes
-> will be clearer after #1 is fixed.
+An open with O_NDELAY on the closing port now appears to be able to jam
+for 2 minutes ? Peviously it would at least be released by a signal.
 
+That seems like a regression (and given the timeout is long) a bug.
 
-Reviewed-by: Alan Cox <alan@linux.intel.com>
+Given that some code handles multiple tty devices using select and
+nonblocking opens on physical ports this one bothers me a little. The old
+behaviour wasn't right either (and actually stops Linux running some
+modem manager type tools), but the new behaviour looks worse.
 
-I can't prove entirely to my satisfaction that the claim in #9 is true in
-the presence of simultaenous hangups opens and setsid but the locking
-appears to be correct for the cases I was trying to figure out anyway.
+Probably though the right way to fix it is in the open path ?
 
-Makes my head hurt just reviewing bits of this so thanks for doing all
-this work !
+Alan
