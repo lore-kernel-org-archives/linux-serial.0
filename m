@@ -1,26 +1,30 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH V2] tty: serial: omap: Increase max consoles and add check
- to prevent crash
-Date: Thu, 23 Oct 2014 12:16:52 +0200
-Message-ID: <5448D594.4090300@linutronix.de>
-References: <1413908616-843-1-git-send-email-nm@ti.com> <1413982010-11599-1-git-send-email-nm@ti.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH -next 11/27] tty: Don't release tty locks for wait queue
+ sanity check
+Date: Thu, 23 Oct 2014 12:30:36 +0100
+Message-ID: <20141023123036.659e8478@alan.etchedpixels.co.uk>
+References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
+	<1413491125-20134-12-git-send-email-peter@hurleysoftware.com>
+	<20141022162911.432c9bcc@alan.etchedpixels.co.uk>
+	<5447EA9F.1070401@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1413982010-11599-1-git-send-email-nm@ti.com>
+In-Reply-To: <5447EA9F.1070401@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nishanth Menon <nm@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "Franklin Cooper Jr." <fcooper@ti.com>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 10/22/2014 02:46 PM, Nishanth Menon wrote:
-> Increase the maximum number of consoles possible to 10 since DRA7 now
-> has the maximum number of consoles possible. without doing this, for
-> example, enabling DRA7 UART10 results in internal data structures and
-> console cannot match up and we endup with a crash as follows:
+> (and -- don't laugh -- explore why printk disables interrupts and prevents
+> cpu migration while calling the console drivers. Seems ok to me...)
 
-good, Thanks.
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+It disables interrupts so that the chance of the oops getting out is
+maximised, it locks down some of the other bits to try and stop
+interleaved oopses producing garbage when say a 16 way server goes pop and
+all the cpus oops at once.
 
-Sebastian
+Not sure about the migration 8)
+
+Alan
