@@ -1,146 +1,118 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 2/3] ARM: mediatek: add UART dts for mt8127 and mt8135
-Date: Fri, 24 Oct 2014 17:04:00 +0200
-Message-ID: <CABuKBe+EY4nJSFKgaBe4dtd1iFj_iyPBMxZgosmuTQ2V2NzTAQ@mail.gmail.com>
-References: <1413983529-21887-1-git-send-email-eddie.huang@mediatek.com>
-	<1413983529-21887-3-git-send-email-eddie.huang@mediatek.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH v4 1/4] serial: mxs-auart: clean get_mctrl and set_mctrl
+Date: Fri, 24 Oct 2014 17:31:36 +0200
+Message-ID: <544A70D8.5040500@gmail.com>
+References: <1412960007-28159-1-git-send-email-j.uzycki@elproma.com.pl> <1412960007-28159-2-git-send-email-j.uzycki@elproma.com.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f173.google.com ([209.85.217.173]:54439 "EHLO
-	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755955AbaJXPED (ORCPT
+Received: from mail-wi0-f177.google.com ([209.85.212.177]:43823 "EHLO
+	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756077AbaJXPbl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Oct 2014 11:04:03 -0400
-In-Reply-To: <1413983529-21887-3-git-send-email-eddie.huang@mediatek.com>
+	Fri, 24 Oct 2014 11:31:41 -0400
+In-Reply-To: <1412960007-28159-2-git-send-email-j.uzycki@elproma.com.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Eddie Huang <eddie.huang@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Yuhau Chen <yh.chen@mediatek.com>, Hsien-Chun Yen <hc.yen@mediatek.com>, Nathan Chung <nathan.chung@mediatek.com>, srv_heupstream <srv_heupstream@mediatek.com>, Sascha Hauer <kernel@pengutronix.de>
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-2014-10-22 15:12 GMT+02:00 Eddie Huang <eddie.huang@mediatek.com>:
-> This add dts support for mt8127 and mt8135 SOC UART
->
-> Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
+On 10/10/2014 18:53, Janusz Uzycki wrote:
+> Russell King:
+> The only thing which the .get_mctrl method is supposed to do is
+> to return the state of the /input/ lines, which are CTS, DCD, DSR, RI.
+> The output line state is stored in port->mctrl, and is added to
+> the returned value by serial_core when it's required.
+> RTS output state should not be returned from the .get_mctrl method.
+> 
+> This patch removes ctrl variable from mxs_auart_port
+> and removes useless reading back RTS line.
+> 
+> The ctrl variable in mxs_auart_port duplicated mctrl,
+> member of uart_port structure in serial_core.h.
+> The removed code from mxs_auart_set_mctrl() and mxs_auart_get_mctrl
+> duplicated uart_update_mctrl() and uart_tiocmget()
+> in serial_core.c.
+> 
+> Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
 > ---
->  arch/arm/boot/dts/mt8127.dtsi | 34 ++++++++++++++++++++++++++++++++++
->  arch/arm/boot/dts/mt8135.dtsi | 36 ++++++++++++++++++++++++++++++++++++
->  2 files changed, 70 insertions(+)
->
-> diff --git a/arch/arm/boot/dts/mt8127.dtsi b/arch/arm/boot/dts/mt8127.dtsi
-> index 25c9f69..249c218 100644
-> --- a/arch/arm/boot/dts/mt8127.dtsi
-> +++ b/arch/arm/boot/dts/mt8127.dtsi
-> @@ -64,6 +64,12 @@
->                         clock-frequency = <32000>;
->                         #clock-cells = <0>;
->                 };
-> +
-> +               uart_clk: dummy26m {
-> +                       compatible = "fixed-clock";
-> +                       clock-frequency = <26000000>;
-> +                       #clock-cells = <0>;
-> +                };
->         };
->
->         soc {
-> @@ -89,5 +95,33 @@
->                               <0 0x10214000 0 0x2000>,
->                               <0 0x10216000 0 0x2000>;
->                 };
-> +
-> +               uart0: serial@11006000 {
-> +                       compatible = "mediatek,mt8127-uart","mediatek,mt6577-uart";
-> +                       reg = <0 0x11002000 0 0x400>;
-> +                       interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
+> v3 -> v4 changelog:
+> [PATCH 1/4] serial: mxs-auart: clean get_mctrl and set_mctrl
+> * renamed from "serial: mxs-auart: ctrl removed from mxs_auart_port"
+> * mxs_auart_get_mctrl() read back RTS line. It is removed too.
+> 
+> v2 -> v3 changelog:
+> The patch was introduced:
+> new [PATCH 1/4] serial: mxs-auart: ctrl removed from mxs_auart_port
+> * the ctrl variable duplicated mctrl, member of uart_port structure
+>   in serial_core.h
+> * the code duplicated uart_update_mctrl() and uart_tiocmget()
+>   in serial_core.c
+> * mxs_auart_get_mctrl() reads back RTS line. It could be removed too
+>   but not sure.
+> 
+> ---
+>  drivers/tty/serial/mxs-auart.c | 14 +-------------
+>  1 file changed, 1 insertion(+), 13 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+> index e838e84..2d49901 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -143,7 +143,6 @@ struct mxs_auart_port {
+>  #define MXS_AUART_DMA_RX_READY	3  /* bit 3 */
+>  #define MXS_AUART_RTSCTS	4  /* bit 4 */
+>  	unsigned long flags;
+> -	unsigned int ctrl;
+>  	enum mxs_auart_type devtype;
+>  
+>  	unsigned int irq;
+> @@ -406,8 +405,6 @@ static void mxs_auart_release_port(struct uart_port *u)
+>  
+>  static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
+>  {
+> -	struct mxs_auart_port *s = to_auart_port(u);
+> -
+>  	u32 ctrl = readl(u->membase + AUART_CTRL2);
+>  
+>  	ctrl &= ~(AUART_CTRL2_RTSEN | AUART_CTRL2_RTS);
+> @@ -418,24 +415,17 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
+>  			ctrl |= AUART_CTRL2_RTS;
+>  	}
+>  
+> -	s->ctrl = mctrl;
+>  	writel(ctrl, u->membase + AUART_CTRL2);
+>  }
+>  
+>  static u32 mxs_auart_get_mctrl(struct uart_port *u)
+>  {
+> -	struct mxs_auart_port *s = to_auart_port(u);
+>  	u32 stat = readl(u->membase + AUART_STAT);
+> -	int ctrl2 = readl(u->membase + AUART_CTRL2);
+> -	u32 mctrl = s->ctrl;
+> +	u32 mctrl = 0;
+>  
+> -	mctrl &= ~TIOCM_CTS;
+>  	if (stat & AUART_STAT_CTS)
+>  		mctrl |= TIOCM_CTS;
+>  
+> -	if (ctrl2 & AUART_CTRL2_RTS)
+> -		mctrl |= TIOCM_RTS;
+> -
+>  	return mctrl;
+>  }
+>  
+> @@ -1071,8 +1061,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
+>  	s->port.type = PORT_IMX;
+>  	s->port.dev = s->dev = &pdev->dev;
+>  
+> -	s->ctrl = 0;
+> -
+>  	s->irq = platform_get_irq(pdev, 0);
+>  	s->port.irq = s->irq;
+>  	ret = request_irq(s->irq, mxs_auart_irq_handle, 0, dev_name(&pdev->dev), s);
+> 
+Seems good to me.
 
-As long as the interrupt polarity patches from Joe are not
-merged,IRQ_TYPE_LEVEL_LOW triggers won't work as the GIC does not
-support them.
-
-> +                       clocks = <&uart_clk>;
-> +               };
-> +
-> +               uart1: serial@11007000 {
-> +                       compatible = "mediatek,mt8127-uart","mediatek,mt6577-uart";
-> +                       reg = <0 0x11003000 0 0x400>;
-> +                       interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_LOW>;
-> +                       clocks = <&uart_clk>;
-> +               };
-> +
-> +               uart2: serial@11008000 {
-> +                       compatible = "mediatek,mt8127-uart","mediatek,mt6577-uart";
-> +                       reg = <0 0x11004000 0 0x400>;
-> +                       interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
-> +                       clocks = <&uart_clk>;
-> +               };
-> +
-> +               uart3: serial@11009000 {
-> +                       compatible = "mediatek,mt8127-uart","mediatek,mt6577-uart";
-> +                       reg = <0 0x11005000 0 0x400>;
-> +                       interrupts = <GIC_SPI 54 IRQ_TYPE_LEVEL_LOW>;
-> +                       clocks = <&uart_clk>;
-> +               };
->         };
->  };
-> diff --git a/arch/arm/boot/dts/mt8135.dtsi b/arch/arm/boot/dts/mt8135.dtsi
-> index 90a56ad..683b761 100644
-> --- a/arch/arm/boot/dts/mt8135.dtsi
-> +++ b/arch/arm/boot/dts/mt8135.dtsi
-> @@ -86,6 +86,13 @@
->                         clock-frequency = <32000>;
->                         #clock-cells = <0>;
->                 };
-> +
-> +               uart_clk: dummy26m {
-> +                       compatible = "fixed-clock";
-> +                       clock-frequency = <26000000>;
-> +                       #clock-cells = <0>;
-> +               };
-> +
->         };
->
->         soc {
-> @@ -111,5 +118,34 @@
->                               <0 0x10214000 0 0x2000>,
->                               <0 0x10216000 0 0x2000>;
->                 };
-> +
-> +               uart0: serial@11006000 {
-> +                       compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
-> +                       reg = <0 0x11006000 0 0x400>;
-> +                       interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
-> +                       clocks = <&uart_clk>;
-> +               };
-> +
-> +               uart1: serial@11007000 {
-> +                       compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
-> +                       reg = <0 0x11007000 0 0x400>;
-> +                       interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_LOW>;
-> +                       clocks = <&uart_clk>;
-> +               };
-> +
-> +               uart2: serial@11008000 {
-> +                       compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
-> +                       reg = <0 0x11008000 0 0x400>;
-> +                       interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
-> +                       clocks = <&uart_clk>;
-> +               };
-> +
-> +               uart3: serial@11009000 {
-> +                       compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
-> +                       reg = <0 0x11009000 0 0x400>;
-> +                       interrupts = <GIC_SPI 54 IRQ_TYPE_LEVEL_LOW>;
-> +                       clocks = <&uart_clk>;
-> +               };
-> +
->         };
->  };
-> --
-> 1.8.1.1.dirty
->
-
-
-
--- 
-motzblog.wordpress.com
+Reviewed-by: Richard Genoud <richard.genoud@gmail.com>
