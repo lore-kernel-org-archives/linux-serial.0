@@ -1,76 +1,52 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH 2/2] usb: gadget serial: Honour termios CLOCAL on disconnect
-Date: Mon, 27 Oct 2014 13:11:14 -0400
-Message-ID: <544E7CB2.2020200@hurleysoftware.com>
-References: <1414346490-19307-1-git-send-email-kyosti.malkki@gmail.com> <1414346490-19307-3-git-send-email-kyosti.malkki@gmail.com> <20141027133837.GC8537@saruman>
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Subject: [PATCH 4/4] serial: imx: Remove unneeded registration message
+Date: Mon, 27 Oct 2014 14:49:40 -0200
+Message-ID: <1414428580-29534-4-git-send-email-fabio.estevam@freescale.com>
+References: <1414428580-29534-1-git-send-email-fabio.estevam@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20141027133837.GC8537@saruman>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: balbi-l0cyMroinI0@public.gmane.org, =?UTF-8?B?S3nDtnN0aSBNw6Rsa2tp?= <kyosti.malkki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bn1bon0142.outbound.protection.outlook.com ([157.56.111.142]:44160
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750873AbaJ0RXZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 27 Oct 2014 13:23:25 -0400
+In-Reply-To: <1414428580-29534-1-git-send-email-fabio.estevam@freescale.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: shawn.guo@linaro.org, kernel@pengutronix.de, fugang.duan@freescale.com, festevam@gmail.com, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-On 10/27/2014 09:38 AM, Felipe Balbi wrote:
-> Hi,
->=20
-> On Sun, Oct 26, 2014 at 08:01:30PM +0200, Ky=C3=B6sti M=C3=A4lkki wro=
-te:
->> There are applications where it is desirable to not hangup ttyGS* wh=
-en
->> USB disconnect is detected. USB host side of communication may
->> power-cycle periodically or there may be the actual need to physical=
-ly
->> disconnect and reconnect USB cable temporarily.
->>
->> USB disconnects on serial gadget are comparable to loss of Carrier D=
-etect
->> of conventional UARTs. With the change, if ttyGS* has termios CLOCAL=
- flag
->> set, disconnect on USB does not hangup the TTY.
->>
->> Signed-off-by: Ky=C3=B6sti M=C3=A4lkki <kyosti.malkki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> ---
->>  drivers/usb/gadget/function/u_serial.c | 9 +++++++--
->>  1 file changed, 7 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/ga=
-dget/function/u_serial.c
->> index 491082a..e68ffd7 100644
->> --- a/drivers/usb/gadget/function/u_serial.c
->> +++ b/drivers/usb/gadget/function/u_serial.c
->> @@ -1254,8 +1254,13 @@ void gserial_disconnect(struct gserial *gser)
->>  	gser->ioport =3D NULL;
->>  	if (port->port.count > 0 || port->openclose) {
->>  		wake_up_interruptible(&port->drain_wait);
->> -		if (port->port.tty)
->> -			tty_hangup(port->port.tty);
->> +		struct tty_struct *tty =3D port->port.tty;
->=20
-> declare above as Sergei said.
->=20
->> +		if (tty) {
->=20
-> is there any situation where tty would be NULL here ?
->=20
->> +			if (tty->termios.c_cflag & CLOCAL)
->> +				stop_tty(tty);
->> +			else
->> +				tty_hangup(tty);
->=20
-> this I'll defer to Greg who also maintains tty.
+There is no real value in displaying "Serial: IMX driver" in every boot.
 
-I'm curious what happens without stop_tty().
+The uart_register_driver() can fail and even so the "Serial: IMX driver" will
+be displayed, which is not really helpful.
 
-The tty is restartable from userspace with
-    tcflow(fd, TCOOFF);
-    tcflow(fd, TCOON);
+This is particularly annoying when booting multi_v7_defconfig kernel on a SoC
+that is not a i.MX and even though this message gets displayed.
 
-Regards,
-Peter Hurley
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/tty/serial/imx.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 9e8685e..d2e6cf5 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1937,11 +1937,8 @@ static struct platform_driver serial_imx_driver = {
+ 
+ static int __init imx_serial_init(void)
+ {
+-	int ret;
+-
+-	pr_info("Serial: IMX driver\n");
++	int ret = uart_register_driver(&imx_reg);
+ 
+-	ret = uart_register_driver(&imx_reg);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+1.9.1
+
