@@ -1,44 +1,37 @@
-From: Fabio Estevam <fabio.estevam@freescale.com>
-Subject: [PATCH 3/4] serial: imx: Remove unneeded OOM error message
-Date: Mon, 27 Oct 2014 14:49:39 -0200
-Message-ID: <1414428580-29534-3-git-send-email-fabio.estevam@freescale.com>
-References: <1414428580-29534-1-git-send-email-fabio.estevam@freescale.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH -next 20/27] tty: Refactor __tty_hangup to enable lockdep
+ annotation
+Date: Mon, 27 Oct 2014 18:13:48 -0400
+Message-ID: <544EC39C.3010703@hurleysoftware.com>
+References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com> <1413491125-20134-21-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bn1bon0112.outbound.protection.outlook.com ([157.56.111.112]:55028
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751015AbaJ0RYs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 27 Oct 2014 13:24:48 -0400
-In-Reply-To: <1414428580-29534-1-git-send-email-fabio.estevam@freescale.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1413491125-20134-21-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: shawn.guo@linaro.org, kernel@pengutronix.de, fugang.duan@freescale.com, festevam@gmail.com, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-When kzalloc() fails the core MM will already complain about it, so there is
-no need to have the error message locally.
+On 10/16/2014 04:25 PM, Peter Hurley wrote:
+> Refactor __tty_hangup() into:
+> 1. __tty_hangup_common(), the portion requiring the tty lock
+> 2. __tty_hangup(), which performs the pre- and post-lock processing
+>    (TIOCCONS redirect undo) and calls through a function ptr parameter
+>    to lock/hangup/unlock
+> 3. __tty_hangup_standard(), which performs the lock/hangup/unlock
+> 
+> Allows an alternate function to lock/hangup/unlock with the
+> nested tty lock.
 
-Remove the unneeded error message.
+I just discovered that lockdep provides an interface for setting the
+lock subclass after lock initialization. Which means that the lock
+subclass can be changed just for slave ptys, which allows lock nesting
+without specifying the subclass at lock time. Which eliminates the need
+for this patch and the follow-on.
 
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
- drivers/tty/serial/imx.c | 1 -
- 1 file changed, 1 deletion(-)
+I'll respin this series.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index e7dc210..9e8685e 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -991,7 +991,6 @@ static int imx_uart_dma_init(struct imx_port *sport)
- 
- 	sport->rx_buf = kzalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!sport->rx_buf) {
--		dev_err(dev, "cannot alloc DMA buffer.\n");
- 		ret = -ENOMEM;
- 		goto err;
- 	}
--- 
-1.9.1
-
+Regards,
+Peter Hurley
