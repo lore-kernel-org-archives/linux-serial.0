@@ -1,37 +1,57 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH -next 20/27] tty: Refactor __tty_hangup to enable lockdep
- annotation
-Date: Mon, 27 Oct 2014 18:13:48 -0400
-Message-ID: <544EC39C.3010703@hurleysoftware.com>
-References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com> <1413491125-20134-21-git-send-email-peter@hurleysoftware.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: amba-pl011 complains about DMA for bcm2835 where it is not
+ supported
+Date: Mon, 27 Oct 2014 23:59:42 +0000
+Message-ID: <20141027235942.GY27405@n2100.arm.linux.org.uk>
+References: <20141027234430.GA1788@haysend>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1413491125-20134-21-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:46221 "EHLO
+	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752752AbaJ0X7t (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 27 Oct 2014 19:59:49 -0400
+Content-Disposition: inline
+In-Reply-To: <20141027234430.GA1788@haysend>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Piotr =?iso-8859-1?Q?Kr=F3l?= <piotr.krol@3mdeb.com>
+Cc: linux-serial@vger.kernel.org, jslaby@suse.cz, gregkh@linuxfoundation.org
 
-On 10/16/2014 04:25 PM, Peter Hurley wrote:
-> Refactor __tty_hangup() into:
-> 1. __tty_hangup_common(), the portion requiring the tty lock
-> 2. __tty_hangup(), which performs the pre- and post-lock processing
->    (TIOCCONS redirect undo) and calls through a function ptr parameter
->    to lock/hangup/unlock
-> 3. __tty_hangup_standard(), which performs the lock/hangup/unlock
-> 
-> Allows an alternate function to lock/hangup/unlock with the
-> nested tty lock.
+On Tue, Oct 28, 2014 at 12:44:31AM +0100, Piotr Kr=F3l wrote:
+> Hi all,
+> according to BCM2835 ARM Peripherals spec DMA is optional functionali=
+ty
+> for ARM PL011 UART and it is not supported on this SoC. It looks like
+> amba-pl011 search for device tree property (dma-names) unconditionall=
+y,
+> what leads to error message:
+>=20
+> of_dma_request_slave_channel: dma-names property of node '/soc/uart@7=
+e201000' missing or empty
+> uart-pl011 20201000.uart: no DMA platform data
+>=20
+> I assume that if it is possible that amba-pl011 can be without DMA we
+> should check if DMA is supported and then try to read properties. Is
+> there any known method for checking dma support ? If yes that I would=
+ be
+> glad for any pointers.
+>=20
+> Let me know if I should ignore/accept this error message or there is
+> some code fix needed.
 
-I just discovered that lockdep provides an interface for setting the
-lock subclass after lock initialization. Which means that the lock
-subclass can be changed just for slave ptys, which allows lock nesting
-without specifying the subclass at lock time. Which eliminates the need
-for this patch and the follow-on.
+A great many implementations of PL011 do not have DMA support (some hav=
+e
+DMA support but its well broken.)  The driver has always supported PIO
+mode, and continues to do so.
 
-I'll respin this series.
-
-Regards,
-Peter Hurley
+--=20
+=46TTC broadband for 0.8mile line: currently at 9.5Mbps down 400kbps up
+according to speedtest.net.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
