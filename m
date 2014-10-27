@@ -1,8 +1,8 @@
 From: Jingchang Lu <jingchang.lu@freescale.com>
 Subject: [RESENDv5] serial: of-serial: fix up PM ops on no_console_suspend and
  port type
-Date: Mon, 27 Oct 2014 17:24:17 +0800
-Message-ID: <1414401857-21121-1-git-send-email-jingchang.lu@freescale.com>
+Date: Mon, 27 Oct 2014 17:27:01 +0800
+Message-ID: <1414402021-21182-1-git-send-email-jingchang.lu@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -28,9 +28,9 @@ access if no_console_suspend command line option is used.
 Also, not every of_serial device is an 8250 port, so the serial8250
 suspend/resume functions should only be applied to a real 8250 port.
 
-Reported-By: Joseph Lo <josephl@nvidia.com>
+Reported-by: Joseph Lo <josephl@nvidia.com>
 Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
-Tested-By: Joseph Lo <josephl@nvidia.com>
+Tested-by: Joseph Lo <josephl@nvidia.com>
 Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 ---
 changes in v5: 
