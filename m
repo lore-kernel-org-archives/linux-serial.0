@@ -1,134 +1,97 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: [RESENDv5] serial: of-serial: fix up PM ops on no_console_suspend and
- port type
-Date: Mon, 27 Oct 2014 17:27:01 +0800
-Message-ID: <1414402021-21182-1-git-send-email-jingchang.lu@freescale.com>
+From: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH 2/2] usb: gadget serial: Honour termios CLOCAL on
+ disconnect
+Date: Mon, 27 Oct 2014 08:38:37 -0500
+Message-ID: <20141027133837.GC8537@saruman>
+References: <1414346490-19307-1-git-send-email-kyosti.malkki@gmail.com>
+ <1414346490-19307-3-git-send-email-kyosti.malkki@gmail.com>
+Reply-To: <balbi-l0cyMroinI0@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jingchang Lu <jingchang.lu@freescale.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ZwgA9U+XZDXt4+m+"
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1414346490-19307-3-git-send-email-kyosti.malkki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?iso-8859-1?Q?Ky=F6sti_M=E4lkki?= <kyosti.malkki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
-"serial: of-serial: add PM suspend/resume support", which disables
-the uart clock on suspend, but also causes a hardware hang on register
-access if no_console_suspend command line option is used.
+--ZwgA9U+XZDXt4+m+
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Also, not every of_serial device is an 8250 port, so the serial8250
-suspend/resume functions should only be applied to a real 8250 port.
+Hi,
 
-Reported-by: Joseph Lo <josephl@nvidia.com>
-Signed-off-by: Jingchang Lu <jingchang.lu@freescale.com>
-Tested-by: Joseph Lo <josephl@nvidia.com>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
----
-changes in v5: 
- add missing <linux/console.h> include.
+On Sun, Oct 26, 2014 at 08:01:30PM +0200, Ky=F6sti M=E4lkki wrote:
+> There are applications where it is desirable to not hangup ttyGS* when
+> USB disconnect is detected. USB host side of communication may
+> power-cycle periodically or there may be the actual need to physically
+> disconnect and reconnect USB cable temporarily.
+>=20
+> USB disconnects on serial gadget are comparable to loss of Carrier Detect
+> of conventional UARTs. With the change, if ttyGS* has termios CLOCAL flag
+> set, disconnect on USB does not hangup the TTY.
+>=20
+> Signed-off-by: Ky=F6sti M=E4lkki <kyosti.malkki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/usb/gadget/function/u_serial.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/=
+function/u_serial.c
+> index 491082a..e68ffd7 100644
+> --- a/drivers/usb/gadget/function/u_serial.c
+> +++ b/drivers/usb/gadget/function/u_serial.c
+> @@ -1254,8 +1254,13 @@ void gserial_disconnect(struct gserial *gser)
+>  	gser->ioport =3D NULL;
+>  	if (port->port.count > 0 || port->openclose) {
+>  		wake_up_interruptible(&port->drain_wait);
+> -		if (port->port.tty)
+> -			tty_hangup(port->port.tty);
+> +		struct tty_struct *tty =3D port->port.tty;
 
-changes in v4:
- separate 8250 port suspend/resume from of_serial_suspend/resume.
+declare above as Sergei said.
 
-changes in v3:
- fix up point reference and deference.
+> +		if (tty) {
 
-changes in v2:
- add switch selection on uart type.
+is there any situation where tty would be NULL here ?
 
- drivers/tty/serial/of_serial.c | 53 ++++++++++++++++++++++++++++++++++++------
- 1 file changed, 46 insertions(+), 7 deletions(-)
+> +			if (tty->termios.c_cflag & CLOCAL)
+> +				stop_tty(tty);
+> +			else
+> +				tty_hangup(tty);
 
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 8bc2563..9c64ad2 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -9,6 +9,7 @@
-  *  2 of the License, or (at your option) any later version.
-  *
-  */
-+#include <linux/console.h>
- #include <linux/module.h>
- #include <linux/slab.h>
- #include <linux/delay.h>
-@@ -241,13 +242,48 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
- }
- 
- #ifdef CONFIG_PM_SLEEP
--static int of_serial_suspend(struct device *dev)
-+#ifdef CONFIG_SERIAL_8250
-+static void of_serial_suspend_8250(struct of_serial_info *info)
- {
--	struct of_serial_info *info = dev_get_drvdata(dev);
-+	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
-+	struct uart_port *port = &port8250->port;
- 
- 	serial8250_suspend_port(info->line);
--	if (info->clk)
-+	if (info->clk && (!uart_console(port) || console_suspend_enabled))
- 		clk_disable_unprepare(info->clk);
-+}
-+
-+static void of_serial_resume_8250(struct of_serial_info *info)
-+{
-+	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
-+	struct uart_port *port = &port8250->port;
-+
-+	if (info->clk && (!uart_console(port) || console_suspend_enabled))
-+		clk_prepare_enable(info->clk);
-+
-+	serial8250_resume_port(info->line);
-+}
-+#else
-+static inline void of_serial_suspend_8250(struct of_serial_info *info)
-+{
-+}
-+
-+static inline void of_serial_resume_8250(struct of_serial_info *info)
-+{
-+}
-+#endif
-+
-+static int of_serial_suspend(struct device *dev)
-+{
-+	struct of_serial_info *info = dev_get_drvdata(dev);
-+
-+	switch(info->type) {
-+	case PORT_8250 ... PORT_MAX_8250:
-+		of_serial_suspend_8250(info);
-+		break;
-+	default:
-+		break;
-+	}
- 
- 	return 0;
- }
-@@ -256,10 +292,13 @@ static int of_serial_resume(struct device *dev)
- {
- 	struct of_serial_info *info = dev_get_drvdata(dev);
- 
--	if (info->clk)
--		clk_prepare_enable(info->clk);
--
--	serial8250_resume_port(info->line);
-+	switch(info->type) {
-+	case PORT_8250 ... PORT_MAX_8250:
-+		of_serial_resume_8250(info);
-+		break;
-+	default:
-+		break;
-+	}
- 
- 	return 0;
- }
--- 
-1.8.0
+this I'll defer to Greg who also maintains tty.
+
+--=20
+balbi
+
+--ZwgA9U+XZDXt4+m+
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJUTkrdAAoJEIaOsuA1yqREN4AQAISqF4byHstBv/3gHMfjnjRb
+DzLfdz+uZLGugydubjkvtuTUul+fFz3OO3od88tEDEL0PGwyqAzQP+fYjlvabXwt
+hQhuV7trKlA2jaMCd2xuuLQTdqtAYHLwF+2SxqQlOMytGkwVKWTUZlX669MUbv79
+7s2zLPPut6UvyaLObKaMLy4vkwdBUg3wuNkZv+Zsqd+X5H+um9Y1rfuCXNmXj0Ei
+r2s4IvRdIT2UfbfDMyS/SwCkgvnPzdlSQw1/HbKNXqXxHlHv/3gtBmir6hmo4MLI
+Q02knZ5oh3ClEGwaLR+fYuPHenlanjE8T1pciU9lJX7LfFvw7zwbOSdQzr22e37l
+Ete2fQLaJ3S6Xc0PVeZhVU49zae8q7ZS6Suprzat4eIcmt8W7VLV3UR+/5C4+iWJ
+l8f2IEyakPFcucYyeO+PDMgx5jLAJ5hCtLjn/H5+JUhChJKOcXsYrqdiMQNlWrBK
+R+ShT1FkJcpl0kFMHrzm6N03jZ1/nQdKyokn5veZaeGbAOvwuyEbingZGn05zbXm
+z0BrPBF7c3bzYruAqy0COysyOUhcqht5Er1NY6MyU46UcUg8SWBYXcfY6h9aJnN2
+AtGjGxsNGzHjYKJuWB9Kv4mWbxHd8BC04oaWFuKcTyA/JUJZGemZXkRB4lYO50rt
+Jxg6ukQmbSJ8D6cnQIMt
+=ma+p
+-----END PGP SIGNATURE-----
+
+--ZwgA9U+XZDXt4+m+--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
