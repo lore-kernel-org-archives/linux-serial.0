@@ -1,113 +1,180 @@
-From: Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 2/2] usb: gadget serial: Honour termios CLOCAL on
- disconnect
-Date: Mon, 27 Oct 2014 10:46:18 -0500
-Message-ID: <20141027154618.GC10814@saruman>
-References: <1414346490-19307-1-git-send-email-kyosti.malkki@gmail.com>
- <1414346490-19307-3-git-send-email-kyosti.malkki@gmail.com>
- <20141027133837.GC8537@saruman>
- <544E680A.9010700@gmail.com>
-Reply-To: <balbi-l0cyMroinI0@public.gmane.org>
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Subject: [PATCH 1/4] serial: imx: Fix the reporting of interrupts
+Date: Mon, 27 Oct 2014 14:49:37 -0200
+Message-ID: <1414428580-29534-1-git-send-email-fabio.estevam@freescale.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="XMCwj5IQnwKtuyBG"
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <544E680A.9010700-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?iso-8859-1?Q?Ky=F6sti_M=E4lkki?= <kyosti.malkki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: balbi-l0cyMroinI0@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bl2on0102.outbound.protection.outlook.com ([65.55.169.102]:23912
+	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751180AbaJ0REj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 27 Oct 2014 13:04:39 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: shawn.guo@linaro.org, kernel@pengutronix.de, fugang.duan@freescale.com, festevam@gmail.com, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
---XMCwj5IQnwKtuyBG
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On a imx system with ttymxc0, ttymxc1 and ttymxc4 registered we see the 
+following output from 'cat /proc/interrupts':
 
-On Mon, Oct 27, 2014 at 05:43:06PM +0200, Ky=F6sti M=E4lkki wrote:
-> On 10/27/2014 03:38 PM, Felipe Balbi wrote:
-> >Hi,
-> >
-> >On Sun, Oct 26, 2014 at 08:01:30PM +0200, Ky=F6sti M=E4lkki wrote:
-> >>There are applications where it is desirable to not hangup ttyGS* when
-> >>USB disconnect is detected. USB host side of communication may
-> >>power-cycle periodically or there may be the actual need to physically
-> >>disconnect and reconnect USB cable temporarily.
-> >>
-> >>USB disconnects on serial gadget are comparable to loss of Carrier Dete=
-ct
-> >>of conventional UARTs. With the change, if ttyGS* has termios CLOCAL fl=
-ag
-> >>set, disconnect on USB does not hangup the TTY.
-> >>
-> >>Signed-off-by: Ky=F6sti M=E4lkki <kyosti.malkki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >>---
-> >>  drivers/usb/gadget/function/u_serial.c | 9 +++++++--
-> >>  1 file changed, 7 insertions(+), 2 deletions(-)
-> >>
-> >>diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadge=
-t/function/u_serial.c
-> >>index 491082a..e68ffd7 100644
-> >>--- a/drivers/usb/gadget/function/u_serial.c
-> >>+++ b/drivers/usb/gadget/function/u_serial.c
-> >>@@ -1254,8 +1254,13 @@ void gserial_disconnect(struct gserial *gser)
-> >>  	gser->ioport =3D NULL;
-> >>  	if (port->port.count > 0 || port->openclose) {
-> >>  		wake_up_interruptible(&port->drain_wait);
-> >>-		if (port->port.tty)
-> >>-			tty_hangup(port->port.tty);
-> >>+		struct tty_struct *tty =3D port->port.tty;
-> >
-> >declare above as Sergei said.
-> >
-> >>+		if (tty) {
-> >
-> >is there any situation where tty would be NULL here ?
-> >
-> >>+			if (tty->termios.c_cflag & CLOCAL)
-> >>+				stop_tty(tty);
-> >>+			else
-> >>+				tty_hangup(tty);
-> >
-> >this I'll defer to Greg who also maintains tty.
-> >
->=20
-> My main concern is if someone runs getty on ttyACM without explicitly
-> clearing CLOCAL. With the patch here login session would no longer get
-> SIGHUP if cable is disconnected. And it is not possible to tell if it is =
-the
-> same cable that is plugged back in.
+$ cat /proc/interrupts                                          
+           CPU0                                                                 
+...                                            
+ 58:         39       GIC  58  2020000.serial                                   
+ 67:        115       GIC  67  21f8000.i2c  
 
-true, but woudln't the same thing happen with a real UART port using
-8250.ko ?
+The only uart irq that appears is ttymxc0, which is the console.
 
---=20
-balbi
+As ttymxc1 and ttymxc4 will only have their irq registered at imx_startup(),
+they are not shown right after probe.
 
---XMCwj5IQnwKtuyBG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Transmitting to ttymxc1 and ttymxc4 will cause their irqs to be registered, but
+the output shows:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+$ echo "111111" > /dev/ttymxc1                                  
+$ echo "444444" > /dev/ttymxc4                                  
+$ cat /proc/interrupts                                          
+           CPU0                                                                 
+...                                           
+ 58:        150       GIC  58  2020000.serial                                   
+ 59:          1       GIC  59                                                   
+ 62:          1       GIC  62                                                   
+ 67:        115       GIC  67  21f8000.i2c   
 
-iQIcBAEBAgAGBQJUTmjKAAoJEIaOsuA1yqREBIgP/1VkYGtQ8D8h97rQROAG6A46
-lMwOD1w8hzmJHIt3aMMOzUcAYWD9cqnDs+J2KLPvnzlBPQwF/D7rO5n1fOt2y8VE
-bBRi/+Hg8c9j4a/5NxQTSSTicwcl/HvT+VzMA6TBE0TBPlNJHNcLChoN4dNtgTYZ
-Jhgzatkoym9iGPzMAGGaljds2Ficb/GfYxqB5K4Oxh4Sp4Thu8d1B7JUVvPR5lnT
-wpZNALuIWx6rsFpxsHZh9oqTpLFH2dm0d8SPOrhWQqXA3sbmVvC//F6vmVWYP8jX
-gQnaeT/vMjweDNVnqxOzESvRmKg1cFzD3yUPoR9O9BhrdfAOrWqvDU15D/sXRdZG
-0hPEig5Xbvbx4dmUvQALUTYWWrqPiVoYAd2K+ORKZZ2CpscMdp1nu5rblb8XPnfz
-qf3w8UZh+R1MTQWrOU51v95gwAMKraPa8p7Yn4dba8rWVzGnrQh8Ol1CySjkngzq
-mMLmUgVTatqNuuNvwG5LozqRr3E4stvbj/qRdU3mBV3vVXr6JewYIZjOR/mr7APl
-OTemSEn3uaHC/5uBwhcYADHeoJlkxltzQtAaDKF2/5pTtyZGclCEBZRGAUhEeHzj
-6UJ8gDHMF8tRPpIqYdLx3Wr88mPiZunKOTNcEK0WySwnIeJE0AU1kJzGhHhtOkbx
-CaUGjs5CyTWbBCW2mXN+
-=ur1F
------END PGP SIGNATURE-----
+,which misses printing the associated device address.
 
---XMCwj5IQnwKtuyBG--
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+In order to fix this, register all the irqs inside the probe function via
+devm_request_irq(), which will correctly report the serial interrupts associated
+with their correspondent serial device and also helps simplyfing the code by
+avoiding the calls to free_irq().
+                             
+$ echo "111111" > /dev/ttymxc1                                  
+$ echo "444444" > /dev/ttymxc4                                  
+$ cat /proc/interrupts
+
+	   CPU0                                                                 
+....                                             
+ 58:        202       GIC  58  2020000.serial                                   
+ 59:          1       GIC  59  21e8000.serial                                   
+ 62:          1       GIC  62  21f4000.serial
+ 67:        115       GIC  67  21f8000.i2c
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/tty/serial/imx.c | 78 +++++++++++++++++++-----------------------------
+ 1 file changed, 30 insertions(+), 48 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8f62a3c..e4a2846 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1109,37 +1109,6 @@ static int imx_startup(struct uart_port *port)
+ 	while (!(readl(sport->port.membase + UCR2) & UCR2_SRST) && (--i > 0))
+ 		udelay(1);
+ 
+-	/*
+-	 * Allocate the IRQ(s) i.MX1 has three interrupts whereas later
+-	 * chips only have one interrupt.
+-	 */
+-	if (sport->txirq > 0) {
+-		retval = request_irq(sport->rxirq, imx_rxint, 0,
+-				     dev_name(port->dev), sport);
+-		if (retval)
+-			goto error_out1;
+-
+-		retval = request_irq(sport->txirq, imx_txint, 0,
+-				     dev_name(port->dev), sport);
+-		if (retval)
+-			goto error_out2;
+-
+-		/* do not use RTS IRQ on IrDA */
+-		if (!USE_IRDA(sport)) {
+-			retval = request_irq(sport->rtsirq, imx_rtsint, 0,
+-					     dev_name(port->dev), sport);
+-			if (retval)
+-				goto error_out3;
+-		}
+-	} else {
+-		retval = request_irq(sport->port.irq, imx_int, 0,
+-				     dev_name(port->dev), sport);
+-		if (retval) {
+-			free_irq(sport->port.irq, sport);
+-			goto error_out1;
+-		}
+-	}
+-
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 	/*
+ 	 * Finally, clear and enable interrupts
+@@ -1202,12 +1171,6 @@ static int imx_startup(struct uart_port *port)
+ 
+ 	return 0;
+ 
+-error_out3:
+-	if (sport->txirq)
+-		free_irq(sport->txirq, sport);
+-error_out2:
+-	if (sport->rxirq)
+-		free_irq(sport->rxirq, sport);
+ error_out1:
+ 	return retval;
+ }
+@@ -1255,17 +1218,6 @@ static void imx_shutdown(struct uart_port *port)
+ 	del_timer_sync(&sport->timer);
+ 
+ 	/*
+-	 * Free the interrupts
+-	 */
+-	if (sport->txirq > 0) {
+-		if (!USE_IRDA(sport))
+-			free_irq(sport->rtsirq, sport);
+-		free_irq(sport->txirq, sport);
+-		free_irq(sport->rxirq, sport);
+-	} else
+-		free_irq(sport->port.irq, sport);
+-
+-	/*
+ 	 * Disable all interrupts, port and break condition.
+ 	 */
+ 
+@@ -1929,6 +1881,36 @@ static int serial_imx_probe(struct platform_device *pdev)
+ 
+ 	sport->port.uartclk = clk_get_rate(sport->clk_per);
+ 
++	/*
++	 * Allocate the IRQ(s) i.MX1 has three interrupts whereas later
++	 * chips only have one interrupt.
++	 */
++	if (sport->txirq > 0) {
++		ret = devm_request_irq(&pdev->dev, sport->rxirq, imx_rxint, 0,
++				       dev_name(&pdev->dev), sport);
++		if (ret)
++			return ret;
++
++		ret = devm_request_irq(&pdev->dev, sport->txirq, imx_txint, 0,
++				       dev_name(&pdev->dev), sport);
++		if (ret)
++			return ret;
++
++		/* do not use RTS IRQ on IrDA */
++		if (!USE_IRDA(sport)) {
++			ret = devm_request_irq(&pdev->dev, sport->rtsirq,
++					       imx_rtsint, 0,
++					       dev_name(&pdev->dev), sport);
++			if (ret)
++				return ret;
++		}
++	} else {
++		ret = devm_request_irq(&pdev->dev, sport->port.irq, imx_int, 0,
++				       dev_name(&pdev->dev), sport);
++		if (ret)
++			return ret;
++	}
++
+ 	imx_ports[sport->port.line] = sport;
+ 
+ 	platform_set_drvdata(pdev, sport);
+-- 
+1.9.1
+
