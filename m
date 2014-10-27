@@ -1,35 +1,68 @@
-From: Sifan Naeem <Sifan.Naeem@imgtec.com>
-Subject: Synopsys DesignWare 8250 serial port driver, DMA issue
-Date: Fri, 24 Oct 2014 15:53:00 +0000
-Message-ID: <A0E307549471DA4DBAF2DE2DE6CBFB7E494E9C19@hhmail02.hh.imgtec.org>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH 2/2] Documentation: devicetree: Add bindings for Wi2Wi
+ w2sg0004 gps
+Date: Mon, 27 Oct 2014 10:31:26 +0100
+Message-ID: <20141027093126.GC9807@amd>
+References: <1413491183-15018-1-git-send-email-marek@goldelico.com>
+ <1413491183-15018-2-git-send-email-marek@goldelico.com>
+ <20141017093714.GB4202@leverpostej>
+ <D65FF64A-856F-47EC-B3DE-7F2FCE505087@goldelico.com>
+ <20141017110043.GA5335@leverpostej>
+ <27AD2801-6410-44E3-9E0C-911D73E6A457@goldelico.com>
+ <20141020093536.GA25360@leverpostej>
+ <7A9F8C73-6CBD-435A-934C-14A80FFE452F@goldelico.com>
+ <FDDD1C99-81F9-4933-815A-CC686A19115E@goldelico.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:29029 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756615AbaJXPxG convert rfc822-to-8bit (ORCPT
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:48146 "EHLO
+	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751632AbaJ0Jbr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 24 Oct 2014 11:53:06 -0400
-Received: from KLMAIL01.kl.imgtec.org (unknown [192.168.5.35])
-	by Websense Email Security Gateway with ESMTPS id 675FBBB2CBE0
-	for <linux-serial@vger.kernel.org>; Fri, 24 Oct 2014 16:52:59 +0100 (IST)
-Content-Language: en-US
+	Mon, 27 Oct 2014 05:31:47 -0400
+Content-Disposition: inline
+In-Reply-To: <FDDD1C99-81F9-4933-815A-CC686A19115E@goldelico.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: "Dr. H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Marek Belisko <marek@goldelico.com>, "arnd@arndb.de" <arnd@arndb.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, NeilBrown <neilb@suse.de>, linux-serial@vger.kernel.org
 
-Hi,
 
-I'm trying to test the DMA capability of the UART Linux driver which was 
-written by Synopsys (DesignWare 8250 driver) drivers/tty/serial/8250/
+> > I think we just disagree about implementing a version that =E2=80=9C=
+works=E2=80=9D in a quite specific
+> > setup (there are necessary assumptions about OMAP pinmux and omap-s=
+erial) with
+> > existing APIs versus a general one that might need a lot of changes=
+ outside the driver
+> > and introduce new APIs.
+>=20
+> After re-thinking what we have discussed so far (and considering othe=
+r recommendations
+> I have received off-list) I currently see these options/questions:
+>=20
+> * who could modify the serial drivers and APIs so that this driver ca=
+n become
+>   a subnode (=E2=80=9Cbus client=E2=80=9D) of an UART? How long does =
+it take to
+> become available?
 
-As it is even when the DMA capability for the UART driver is enabled by 
-the Kernel, the driver does not initialize or try to use 
-DMA mode. 
+I believe that is called "tty line discipline".
 
-Did I miss something? do I have to enable something else?
+> * would it be an option to simply rename the driver to =E2=80=9Cw2sg0=
+004-power=E2=80=9D
+>   to make clear that it is not at all related to the UART data commun=
+ication
+>   channel but only controlling the power of the w2sg0004 chip?
 
-Thanks,
-Sifan
-
+Sounds sane.
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses=
+/blog.html
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
