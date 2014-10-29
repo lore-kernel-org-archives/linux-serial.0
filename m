@@ -1,73 +1,35 @@
-From: "fugang.duan@freescale.com" <fugang.duan@freescale.com>
-Subject: RE: [PATCH 1/4] serial: imx: Fix the reporting of interrupts
-Date: Wed, 29 Oct 2014 01:33:52 +0000
-Message-ID: <77b6c2f96de043f79840fed8fcfe254d@BLUPR03MB373.namprd03.prod.outlook.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH 1/4] serial: imx: Fix the reporting of interrupts
+Date: Tue, 28 Oct 2014 23:58:10 -0200
+Message-ID: <CAOMZO5B=C0LVKoGuA8=xzNTpp8X8p5PdZy0h_1nCOq-Wt-C7Ww@mail.gmail.com>
 References: <1414428580-29534-1-git-send-email-fabio.estevam@freescale.com>
 	<8e4a991e46474daa8bc40b96e8042ef2@BLUPR03MB373.namprd03.prod.outlook.com>
- <CAOMZO5CvM6V9LCUEuDshVzRQoELcQPQVC40dm0Pzw7DQYiJbFQ@mail.gmail.com>
+	<CAOMZO5CvM6V9LCUEuDshVzRQoELcQPQVC40dm0Pzw7DQYiJbFQ@mail.gmail.com>
+	<77b6c2f96de043f79840fed8fcfe254d@BLUPR03MB373.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-by2on0115.outbound.protection.outlook.com ([207.46.100.115]:58688
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1753180AbaJ2Bsh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 28 Oct 2014 21:48:37 -0400
-In-Reply-To: <CAOMZO5CvM6V9LCUEuDshVzRQoELcQPQVC40dm0Pzw7DQYiJbFQ@mail.gmail.com>
-Content-Language: en-US
+Received: from mail-lb0-f172.google.com ([209.85.217.172]:40252 "EHLO
+	mail-lb0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751056AbaJ2B6M (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 28 Oct 2014 21:58:12 -0400
+Received: by mail-lb0-f172.google.com with SMTP id n15so1686639lbi.17
+        for <linux-serial@vger.kernel.org>; Tue, 28 Oct 2014 18:58:10 -0700 (PDT)
+In-Reply-To: <77b6c2f96de043f79840fed8fcfe254d@BLUPR03MB373.namprd03.prod.outlook.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
+To: "fugang.duan@freescale.com" <fugang.duan@freescale.com>
 Cc: "Fabio.Estevam@freescale.com" <Fabio.Estevam@freescale.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-RnJvbTogRmFiaW8gRXN0ZXZhbSA8ZmVzdGV2YW1AZ21haWwuY29tPiBTZW50OiBUdWVzZGF5LCBP
-Y3RvYmVyIDI4LCAyMDE0IDc6MjggUE0NCj5UbzogRHVhbiBGdWdhbmctQjM4NjExDQo+Q2M6IEVz
-dGV2YW0gRmFiaW8tUjQ5NDk2OyBncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZzsgc2hhd24uZ3Vv
-QGxpbmFyby5vcmc7DQo+a2VybmVsQHBlbmd1dHJvbml4LmRlOyBsaW51eC1zZXJpYWxAdmdlci5r
-ZXJuZWwub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCAxLzRdIHNlcmlhbDogaW14OiBGaXggdGhl
-IHJlcG9ydGluZyBvZiBpbnRlcnJ1cHRzDQo+DQo+SGkgQW5keSwNCj4NCj5PbiBUdWUsIE9jdCAy
-OCwgMjAxNCBhdCAxMjoxMCBBTSwgZnVnYW5nLmR1YW5AZnJlZXNjYWxlLmNvbQ0KPjxmdWdhbmcu
-ZHVhbkBmcmVlc2NhbGUuY29tPiB3cm90ZToNCj4NCj4+IEhpLCBGYWJpbywNCj4+DQo+PiBBZnRl
-ciB0aGUgcGF0Y2gsIHVhcnQgd2FrZSB1cCBmZWF0dXJlIG1heSBiZSBicmVhay4gKFNvIEkgYWx3
-YXlzIGRvbid0DQo+PiBkbyBsaWtlIHRoaXMuKQ0KPj4NCj4+IFNpbmNlIHRoZSBjdXJyZW50IGRy
-aXZlciBlbmFibGUgQVdBS0UgYmVmb3JlIHN5c3RlbSBzdXNwZW5kIGluDQo+PiBkZWZhdWx0LCBh
-ZnRlciBzdXNwZW5kLCBpZiB1c2VyIGNsaWNrIGNvbnNvbGUga2V5cywgaXQgZ2VuZXJhdGVzIEFX
-QUtFDQo+aW50ZXJydXB0LCBpbiB0aGUgaXJxIGhhbmRsZXIsIHRoZXJlIGhhdmUgcmVnaXN0ZXIg
-YWNjZXNzIHRoYXQgY2F1c2UNCj5zeXN0ZW0gaGFuZyBzaW5jZSB1YXJ0IG1vZHVsZS9pcGcgY2xv
-Y2tzIGFyZSBkaXNhYmxlZCwgYW5kIHN5c3RlbSBjYW5ub3QNCj5yZXN1bWUgYmFjay4NCj4NCj5J
-IGhhdmUgdGVzdGVkIHN1c3BlbmQvcmVzdW1lIG9uIGEgbXg2cXNhYnJlc2Qgd2l0aCB0aGlzIHBh
-dGNoIGFwcGxpZWQ6DQo+DQo+cm9vdEBmcmVlc2NhbGUgLyQgZWNobyBlbmFibGVkID4gL3N5cy9j
-bGFzcy90dHkvdHR5bXhjMC9wb3dlci93YWtldXANCj5yb290QGZyZWVzY2FsZSAvJCBlY2hvIG1l
-bSA+IC9zeXMvcG93ZXIvc3RhdGUNCj5bICAgNjEuMzIyNjQ4XSBQTTogU3luY2luZyBmaWxlc3lz
-dGVtcyAuLi4gZG9uZS4NCj5bICAgNjEuMzQyMjYzXSBGcmVlemluZyB1c2VyIHNwYWNlIHByb2Nl
-c3NlcyAuLi4gKGVsYXBzZWQgMC4wMDEgc2Vjb25kcykNCj5kb25lLg0KPlsgICA2MS4zNTExNTld
-IEZyZWV6aW5nIHJlbWFpbmluZyBmcmVlemFibGUgdGFza3MgLi4uIChlbGFwc2VkIDAuMDAyDQo+
-c2Vjb25kcykgZC4NCj5bICAgNjEuMzYwODc1XSBTdXNwZW5kaW5nIGNvbnNvbGUocykgKHVzZSBu
-b19jb25zb2xlX3N1c3BlbmQgdG8gZGVidWcpDQo+DQo+KHRoZW4gc2VudCBhIGNoYXIgaW4gY29u
-c29sZSkNCj4NCj5bICAgNjEuNDE2MzI5XSBQTTogc3VzcGVuZCBvZiBkZXZpY2VzIGNvbXBsZXRl
-IGFmdGVyIDQ1Ljc3OCBtc2Vjcw0KPlsgICA2MS40MTYzMzddIFBNOiBzdXNwZW5kIGRldmljZXMg
-dG9vayAwLjA1MCBzZWNvbmRzDQo+WyAgIDYxLjQyMDc0NV0gUE06IGxhdGUgc3VzcGVuZCBvZiBk
-ZXZpY2VzIGNvbXBsZXRlIGFmdGVyIDQuMzkzIG1zZWNzDQo+WyAgIDYxLjQyNTU0N10gUE06IG5v
-aXJxIHN1c3BlbmQgb2YgZGV2aWNlcyBjb21wbGV0ZSBhZnRlciA0Ljc4NyBtc2Vjcw0KPlsgICA2
-MS40MjU1NTVdIERpc2FibGluZyBub24tYm9vdCBDUFVzIC4uLg0KPlsgICA2MS40MjY5NzFdIENQ
-VTE6IHNodXRkb3duDQo+WyAgIDYxLjQyOTA5NV0gQ1BVMjogc2h1dGRvd24NCj5bICAgNjEuNDMx
-MTkwXSBDUFUzOiBzaHV0ZG93bg0KPlsgICA2MS40MzE5OTJdIEVuYWJsaW5nIG5vbi1ib290IENQ
-VXMgLi4uDQo+WyAgIDYxLjQzMjYzNV0gQ1BVMTogQm9vdGVkIHNlY29uZGFyeSBwcm9jZXNzb3IN
-Cj5bICAgNjEuNDMzMDA2XSBDUFUxIGlzIHVwDQo+WyAgIDYxLjQzMzYyN10gQ1BVMjogQm9vdGVk
-IHNlY29uZGFyeSBwcm9jZXNzb3INCj5bICAgNjEuNDMzOTk4XSBDUFUyIGlzIHVwDQo+WyAgIDYx
-LjQzNDYyMl0gQ1BVMzogQm9vdGVkIHNlY29uZGFyeSBwcm9jZXNzb3INCj5bICAgNjEuNDM1MDIx
-XSBDUFUzIGlzIHVwDQo+WyAgIDYxLjQzNzUxMV0gUE06IG5vaXJxIHJlc3VtZSBvZiBkZXZpY2Vz
-IGNvbXBsZXRlIGFmdGVyIDIuNDcyIG1zZWNzDQo+WyAgIDYxLjQ0MTI4OF0gUE06IGVhcmx5IHJl
-c3VtZSBvZiBkZXZpY2VzIGNvbXBsZXRlIGFmdGVyIDIuOTA5IG1zZWNzDQo+WyAgIDYxLjYwMjI1
-MV0gUE06IHJlc3VtZSBvZiBkZXZpY2VzIGNvbXBsZXRlIGFmdGVyIDE2MC45NDYgbXNlY3MNCj5b
-ICAgNjEuNjA2ODYwXSBQTTogcmVzdW1lIGRldmljZXMgdG9vayAwLjE3MCBzZWNvbmRzDQo+WyAg
-IDYxLjY4ODY3Nl0gUmVzdGFydGluZyB0YXNrcyAuLi4gZG9uZS4NCj5bICAgNjEuNzk1MTU1XSBh
-dGExOiBTQVRBIGxpbmsgZG93biAoU1N0YXR1cyAwIFNDb250cm9sIDMwMCkNCj4NCj5hbmQgdGhl
-IHN5c3RlbSB3YWtlcyB1cCBub3JtYWxseS4NCg0KT2ssIGlmIHdha2UgdXAgZnVuY3Rpb24gc3Rp
-bGwgd29yaywgdGhlIHBhdGNoIGlzIGZpbmUgZm9yIG1lLg0KQnV0IEkgc3VnZ2VzdCB5b3UgZG8g
-b25lIHRlc3QgbGlrZSB0aGlzOg0KMS4gZWNobyBlbmFibGVkID4gL3N5cy9jbGFzcy90dHkvdHR5
-bXhjMC9wb3dlci93YWtldXANCjIuIGVjaG8gbWVtID4gL3N5cy9wb3dlci9zdGF0ZQ0KMy4gLi5x
-dWlja2x5IGNsaWNrIGNvbnNvbGUga2V5IGluIGNvbnRpbnVvdXNseS4NCihNYWtlIHN1cmUgdGhl
-IGRlbGF5IGJldHdlZW4gc3RlcDIgYW5kIHN0ZXAzIGlzIGxpdHRsZSkNCg0KUmVnYXJkcywNCkFu
-ZHkNCg==
+On Tue, Oct 28, 2014 at 11:33 PM, fugang.duan@freescale.com
+<fugang.duan@freescale.com> wrote:
+
+> Ok, if wake up function still work, the patch is fine for me.
+> But I suggest you do one test like this:
+> 1. echo enabled > /sys/class/tty/ttymxc0/power/wakeup
+> 2. echo mem > /sys/power/state
+> 3. ..quickly click console key in continuously.
+> (Make sure the delay between step2 and step3 is little)
+
+Tested this and it worked fine on a mx6qsabresd.
