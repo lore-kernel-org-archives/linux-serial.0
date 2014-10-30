@@ -1,92 +1,92 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH] USB: kobil_sct: Remove unused transfer buffer allocs
-Date: Thu, 30 Oct 2014 09:08:07 -0400
-Message-ID: <54523837.8050700@hurleysoftware.com>
-References: <1413482362-14368-1-git-send-email-peter@hurleysoftware.com> <544009D9.3090701@hurleysoftware.com> <20141019171252.GB1992@localhost> <544797A4.5070402@hurleysoftware.com> <20141030120806.GF13062@localhost>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 1/2] tty: serial: msm: Fix sysrq spinlock recursion on
+ non-DM
+Date: Thu, 30 Oct 2014 09:29:00 -0400
+Message-ID: <54523D1C.6080803@hurleysoftware.com>
+References: <1414606478-13709-1-git-send-email-sboyd@codeaurora.org> <1414606478-13709-2-git-send-email-sboyd@codeaurora.org> <5452204F.9090800@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20141030120806.GF13062@localhost>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <5452204F.9090800@linaro.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Daniel Thompson <daniel.thompson@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Frank Rowand <frank.rowand@sonymobile.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/30/2014 08:08 AM, Johan Hovold wrote:
-> Hi Peter,
-> 
-> Forgot to reply to this one.
-> 
-> On Wed, Oct 22, 2014 at 07:40:20AM -0400, Peter Hurley wrote:
->> On 10/19/2014 01:12 PM, Johan Hovold wrote:
->>> [ +CC: Jiri, Alan, linux-serial ]
->>>
->>> On Thu, Oct 16, 2014 at 02:09:29PM -0400, Peter Hurley wrote:
->>>> On 10/16/2014 01:59 PM, Peter Hurley wrote:
-> 
->>>>> @@ -541,10 +531,6 @@ static int kobil_ioctl(struct tty_struct *tty,
->>>>>  
->>>>>  	switch (cmd) {
->>>>>  	case TCFLSH:
->>>>> -		transfer_buffer = kmalloc(transfer_buffer_length, GFP_KERNEL);
->>>>> -		if (!transfer_buffer)
->>>>> -			return -ENOBUFS;
->>>>> -
->>>>>  		result = usb_control_msg(port->serial->dev,
->>>>>  			  usb_sndctrlpipe(port->serial->dev, 0),
->>>>>  			  SUSBCRequest_Misc,
->>>>> @@ -559,7 +545,6 @@ static int kobil_ioctl(struct tty_struct *tty,
->>>>>  		dev_dbg(&port->dev,
->>>>>  			"%s - Send reset_all_queues (FLUSH) URB returns: %i\n",
->>>>>  			__func__, result);
->>>>> -		kfree(transfer_buffer);
->>>>>  		return (result < 0) ? -EIO: 0;
->>>>                                            ^^^
->>>> Returning 0 is almost certainly wrong; no further processing for
->>>> TCFLSH is performed.
->>>
->>> Indeed.
->>>
->>>> Only this driver returns 0 (of all the tty drivers in mainline).
->>>>
->>>> Returning -ENOIOCTLCMD allows further processing to continue;
->>>> especially the line discipline's input flushing, if TCIFLUSH/TCIOFLUSH.
->>>
->>> That doesn't seem like a very good idea, and only two *staging* drivers
->>> try to play such games (i.e. pretending not to implement the ioctl) as
->>> far as I can see.
+On 10/30/2014 07:26 AM, Daniel Thompson wrote:
+> On 29/10/14 18:14, Stephen Boyd wrote:
+>> The handle_rx() path calls uart_handle_sysrq_char() with the port
+>> lock held. This causes a spinlock recursion. Release and
+>> reacquire the lock here to avoid this.
 >>
->> Well, returning EIONOCTLCMD is the standard method of ioctl passthrough
->> from driver to line discipline.
+>> BUG: spinlock recursion on CPU#0, swapper/0
+>>  lock: msm_uart_ports+0x1e0/0x2d0, .magic: dead4ead, .owner: swapper/0, .owner_cpu: 0
+>> CPU: 0 PID: 0 Comm: swapper Not tainted 3.17.0-rc7-00012-gb38ee8265941 #69
+>> [<c0013964>] (unwind_backtrace) from [<c0011f74>] (show_stack+0x10/0x14)
+>> [<c0011f74>] (show_stack) from [<c004ed1c>] (do_raw_spin_lock+0x11c/0x13c)
+>> [<c004ed1c>] (do_raw_spin_lock) from [<c02d44c0>] (msm_console_write+0x78/0x188)
+>> [<c02d44c0>] (msm_console_write) from [<c0052880>] (call_console_drivers.constprop.22+0xb4/0x144)
+>> [<c0052880>] (call_console_drivers.constprop.22) from [<c0053570>] (console_unlock+0x27c/0x4ac)
+>> [<c0053570>] (console_unlock) from [<c0053bb4>] (vprintk_emit+0x1f4/0x5a8)
+>> [<c0053bb4>] (vprintk_emit) from [<c04ad0ac>] (printk+0x30/0x40)
+>> [<c04ad0ac>] (printk) from [<c02c2990>] (__handle_sysrq+0x58/0x1b8)
+>> [<c02c2990>] (__handle_sysrq) from [<c02d41b0>] (msm_irq+0x694/0x6f8)
+>> [<c02d41b0>] (msm_irq) from [<c0055740>] (handle_irq_event_percpu+0x58/0x270)
+>> [<c0055740>] (handle_irq_event_percpu) from [<c0055994>] (handle_irq_event+0x3c/0x5c)
+>> [<c0055994>] (handle_irq_event) from [<c0057e84>] (handle_level_irq+0x9c/0x138)
+>> [<c0057e84>] (handle_level_irq) from [<c005509c>] (generic_handle_irq+0x24/0x38)
+>> [<c005509c>] (generic_handle_irq) from [<c000f730>] (handle_IRQ+0x44/0xb0)
+>> [<c000f730>] (handle_IRQ) from [<c0008518>] (msm_vic_handle_irq+0x44/0x64)
+>> [<c0008518>] (msm_vic_handle_irq) from [<c04b5ac4>] (__irq_svc+0x44/0x7c)
+>> Exception stack(0xc0719f68 to 0xc0719fb0)
+>> 9f60:                   00000001 00000001 00000000 c0722938 c0718000 c0769acc
+>> 9f80: 00000000 c0720098 c0769305 4117b362 c0769acc 00000000 01000000 c0719fb0
+>> 9fa0: c004cab0 c000f880 20000013 ffffffff
+>> [<c04b5ac4>] (__irq_svc) from [<c000f880>] (arch_cpu_idle+0x20/0x30)
+>> [<c000f880>] (arch_cpu_idle) from [<c004691c>] (cpu_startup_entry+0xf4/0x23c)
+>> [<c004691c>] (cpu_startup_entry) from [<c06d8b70>] (start_kernel+0x32c/0x394)
+>>
+>> Cc: Frank Rowand <frank.rowand@sonymobile.com>
+>> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+>> Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+>> ---
+>>  drivers/tty/serial/msm_serial.c | 6 +++++-
+>>  1 file changed, 5 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+>> index 4b6c78331a64..cedcc36762a2 100644
+>> --- a/drivers/tty/serial/msm_serial.c
+>> +++ b/drivers/tty/serial/msm_serial.c
+>> @@ -174,6 +174,7 @@ static void handle_rx(struct uart_port *port)
+>>  	while ((sr = msm_read(port, UART_SR)) & UART_SR_RX_READY) {
+>>  		unsigned int c;
+>>  		char flag = TTY_NORMAL;
+>> +		int sysrq;
+>>  
+>>  		c = msm_read(port, UART_RF);
+>>  
+>> @@ -195,7 +196,10 @@ static void handle_rx(struct uart_port *port)
+>>  		else if (sr & UART_SR_PAR_FRAME_ERR)
+>>  			flag = TTY_FRAME;
+>>  
+>> -		if (!uart_handle_sysrq_char(port, c))
+>> +		spin_unlock(&port->lock);
+>> +		sysrq = uart_handle_sysrq_char(port, c);
+>> +		spin_lock(&port->lock);
+>> +		if (!sysrq)
+>>  			tty_insert_flip_char(tport, c, flag);
 > 
-> I disagree with you there. AFAICS only these two staging drivers are
-> abusing the meaning of EIONOCTLCMD (unrecognised ioctl) to have the
-> line discipline also act on the ioctl.
+> Does tty_insert_flip_char() need the port to be locked?
 
-Sorry, I wasn't as clear as I should have been here.
 
-My point was that every driver gets ioctl(TCFLSH) and returns ENOIOCTLCMD
-so that the line discipline will handle it. You're absolutely correct, in
-that, only these drivers (and ipwireless) doing anything with TCFLSH
+No.
 
->> Since driver 'input buffer' flushing is not currently supported by the
->> core, this seems the only available workaround.
-> 
-> That is true. But I doubt we should use these two staging drivers as a
-> model for how this should be handled, if it's at all needed.
+It does not serialize internally, so concurrent use will blow up, but
+that doesn't look possible here.
 
-Right. My comments implied approval of the design, which I don't.
-
-The main problem with the existing design is that it allows for a
-significant variation in how ioctl(WHATEVER) is handled by various
-driver/ldisc combinations. That's a bad thing because it makes
-audit/review really time-consuming and makes changes prone to userspace
-regressions.
+Can bad things happen if a well-timed set_termios() happens while the
+lock is dropped?
 
 Regards,
 Peter Hurley
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
