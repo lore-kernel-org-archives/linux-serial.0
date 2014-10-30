@@ -1,88 +1,116 @@
 From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH 1/2] tty: serial: msm: Fix sysrq spinlock recursion on non-DM
-Date: Wed, 29 Oct 2014 11:14:37 -0700
-Message-ID: <1414606478-13709-2-git-send-email-sboyd@codeaurora.org>
-References: <1414606478-13709-1-git-send-email-sboyd@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1414606478-13709-1-git-send-email-sboyd@codeaurora.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, Frank Rowand <frank.rowand@sonymobile.com>, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] tty: serial: msm: Reset uartdm after baud rate change
+Date: Wed, 29 Oct 2014 18:47:01 -0700
+Message-ID: <1414633621-8225-1-git-send-email-sboyd@codeaurora.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.codeaurora.org ([198.145.11.231]:35292 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756754AbaJ3BrF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 29 Oct 2014 21:47:05 -0400
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-The handle_rx() path calls uart_handle_sysrq_char() with the port
-lock held. This causes a spinlock recursion. Release and
-reacquire the lock here to avoid this.
+We need to issue a reset if we ever change the value of the IPR
+register on DM hardware. If we don't reset the hardware the RX
+stale interrupt never triggers and the only way to trigger an RX
+handling event is by filling up the fifo. This causes things like
+getty to not work so well considering it might change the baud
+rate a few times. Fix this by moving the reset on startup and any
+reprogramming required after the reset to be after we change the
+baud rate.
 
-BUG: spinlock recursion on CPU#0, swapper/0
- lock: msm_uart_ports+0x1e0/0x2d0, .magic: dead4ead, .owner: swapper/0, .owner_cpu: 0
-CPU: 0 PID: 0 Comm: swapper Not tainted 3.17.0-rc7-00012-gb38ee8265941 #69
-[<c0013964>] (unwind_backtrace) from [<c0011f74>] (show_stack+0x10/0x14)
-[<c0011f74>] (show_stack) from [<c004ed1c>] (do_raw_spin_lock+0x11c/0x13c)
-[<c004ed1c>] (do_raw_spin_lock) from [<c02d44c0>] (msm_console_write+0x78/0x188)
-[<c02d44c0>] (msm_console_write) from [<c0052880>] (call_console_drivers.constprop.22+0xb4/0x144)
-[<c0052880>] (call_console_drivers.constprop.22) from [<c0053570>] (console_unlock+0x27c/0x4ac)
-[<c0053570>] (console_unlock) from [<c0053bb4>] (vprintk_emit+0x1f4/0x5a8)
-[<c0053bb4>] (vprintk_emit) from [<c04ad0ac>] (printk+0x30/0x40)
-[<c04ad0ac>] (printk) from [<c02c2990>] (__handle_sysrq+0x58/0x1b8)
-[<c02c2990>] (__handle_sysrq) from [<c02d41b0>] (msm_irq+0x694/0x6f8)
-[<c02d41b0>] (msm_irq) from [<c0055740>] (handle_irq_event_percpu+0x58/0x270)
-[<c0055740>] (handle_irq_event_percpu) from [<c0055994>] (handle_irq_event+0x3c/0x5c)
-[<c0055994>] (handle_irq_event) from [<c0057e84>] (handle_level_irq+0x9c/0x138)
-[<c0057e84>] (handle_level_irq) from [<c005509c>] (generic_handle_irq+0x24/0x38)
-[<c005509c>] (generic_handle_irq) from [<c000f730>] (handle_IRQ+0x44/0xb0)
-[<c000f730>] (handle_IRQ) from [<c0008518>] (msm_vic_handle_irq+0x44/0x64)
-[<c0008518>] (msm_vic_handle_irq) from [<c04b5ac4>] (__irq_svc+0x44/0x7c)
-Exception stack(0xc0719f68 to 0xc0719fb0)
-9f60:                   00000001 00000001 00000000 c0722938 c0718000 c0769acc
-9f80: 00000000 c0720098 c0769305 4117b362 c0769acc 00000000 01000000 c0719fb0
-9fa0: c004cab0 c000f880 20000013 ffffffff
-[<c04b5ac4>] (__irq_svc) from [<c000f880>] (arch_cpu_idle+0x20/0x30)
-[<c000f880>] (arch_cpu_idle) from [<c004691c>] (cpu_startup_entry+0xf4/0x23c)
-[<c004691c>] (cpu_startup_entry) from [<c06d8b70>] (start_kernel+0x32c/0x394)
-
-Cc: Frank Rowand <frank.rowand@sonymobile.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
 ---
- drivers/tty/serial/msm_serial.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+
+This is based on my latest two patches to fix the break handling in this
+driver[1]. The only conflict is the break start interrupt bit so it could
+be moved off that patch if desired. This doesn't seem to affect non-DM
+hardware one way or the other, but I also can't get a getty to work on
+non-DM hardware right now. I need to debug that more some time.
+
+[1] http://lkml.kernel.org/r/1414606478-13709-1-git-send-email-sboyd@codeaurora.org
+
+ drivers/tty/serial/msm_serial.c | 49 ++++++++++-------------------------------
+ 1 file changed, 12 insertions(+), 37 deletions(-)
 
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 4b6c78331a64..cedcc36762a2 100644
+index d44c04976f7a..b507f5a16c1c 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -174,6 +174,7 @@ static void handle_rx(struct uart_port *port)
- 	while ((sr = msm_read(port, UART_SR)) & UART_SR_RX_READY) {
- 		unsigned int c;
- 		char flag = TTY_NORMAL;
-+		int sysrq;
+@@ -427,9 +427,6 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud)
  
- 		c = msm_read(port, UART_RF);
+ 	entry = msm_find_best_baud(port, baud);
  
-@@ -195,7 +196,10 @@ static void handle_rx(struct uart_port *port)
- 		else if (sr & UART_SR_PAR_FRAME_ERR)
- 			flag = TTY_FRAME;
+-	if (msm_port->is_uartdm)
+-		msm_write(port, UART_CR_CMD_RESET_RX, UART_CR);
+-
+ 	msm_write(port, entry->code, UART_CSR);
  
--		if (!uart_handle_sysrq_char(port, c))
-+		spin_unlock(&port->lock);
-+		sysrq = uart_handle_sysrq_char(port, c);
-+		spin_lock(&port->lock);
-+		if (!sysrq)
- 			tty_insert_flip_char(tport, c, flag);
- 	}
+ 	/* RX stale watermark */
+@@ -446,6 +443,18 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud)
+ 	/* set TX watermark */
+ 	msm_write(port, 10, UART_TFWR);
+ 
++	msm_write(port, UART_CR_CMD_PROTECTION_EN, UART_CR);
++	msm_reset(port);
++
++	/* Enable RX and TX */
++	msm_write(port, UART_CR_TX_ENABLE | UART_CR_RX_ENABLE, UART_CR);
++
++	/* turn on RX and CTS interrupts */
++	msm_port->imr = UART_IMR_RXLEV | UART_IMR_RXSTALE |
++			UART_IMR_CURRENT_CTS | UART_IMR_RXBREAK_START;
++
++	msm_write(port, msm_port->imr, UART_IMR);
++
+ 	if (msm_port->is_uartdm) {
+ 		msm_write(port, UART_CR_CMD_RESET_STALE_INT, UART_CR);
+ 		msm_write(port, 0xFFFFFF, UARTDM_DMRX);
+@@ -492,40 +501,6 @@ static int msm_startup(struct uart_port *port)
+ 	data |= UART_MR1_AUTO_RFR_LEVEL1 & (rfr_level << 2);
+ 	data |= UART_MR1_AUTO_RFR_LEVEL0 & rfr_level;
+ 	msm_write(port, data, UART_MR1);
+-
+-	/* make sure that RXSTALE count is non-zero */
+-	data = msm_read(port, UART_IPR);
+-	if (unlikely(!data)) {
+-		data |= UART_IPR_RXSTALE_LAST;
+-		data |= UART_IPR_STALE_LSB;
+-		msm_write(port, data, UART_IPR);
+-	}
+-
+-	data = 0;
+-	if (!port->cons || (port->cons && !(port->cons->flags & CON_ENABLED))) {
+-		msm_write(port, UART_CR_CMD_PROTECTION_EN, UART_CR);
+-		msm_reset(port);
+-		data = UART_CR_TX_ENABLE;
+-	}
+-
+-	data |= UART_CR_RX_ENABLE;
+-	msm_write(port, data, UART_CR);	/* enable TX & RX */
+-
+-	/* Make sure IPR is not 0 to start with*/
+-	if (msm_port->is_uartdm)
+-		msm_write(port, UART_IPR_STALE_LSB, UART_IPR);
+-
+-	/* turn on RX and CTS interrupts */
+-	msm_port->imr = UART_IMR_RXLEV | UART_IMR_RXSTALE |
+-			UART_IMR_CURRENT_CTS | UART_IMR_RXBREAK_START;
+-
+-	if (msm_port->is_uartdm) {
+-		msm_write(port, 0xFFFFFF, UARTDM_DMRX);
+-		msm_write(port, UART_CR_CMD_RESET_STALE_INT, UART_CR);
+-		msm_write(port, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
+-	}
+-
+-	msm_write(port, msm_port->imr, UART_IMR);
+ 	return 0;
+ }
  
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
+
