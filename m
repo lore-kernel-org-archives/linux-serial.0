@@ -1,57 +1,112 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] serial: msm: Add magic SysRq support in dmmode
-Date: Thu, 30 Oct 2014 12:00:52 +0000
-Message-ID: <54522874.6040901@linaro.org>
-References: <1414600712-20721-1-git-send-email-daniel.thompson@linaro.org> <54512B7B.905@codeaurora.org>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH] USB: kobil_sct: Remove unused transfer buffer allocs
+Date: Thu, 30 Oct 2014 13:08:06 +0100
+Message-ID: <20141030120806.GF13062@localhost>
+References: <1413482362-14368-1-git-send-email-peter@hurleysoftware.com>
+ <544009D9.3090701@hurleysoftware.com>
+ <20141019171252.GB1992@localhost>
+ <544797A4.5070402@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f174.google.com ([209.85.212.174]:46259 "EHLO
-	mail-wi0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933129AbaJ3MBC (ORCPT
+Received: from mail-lb0-f180.google.com ([209.85.217.180]:39464 "EHLO
+	mail-lb0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759338AbaJ3MLO (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 30 Oct 2014 08:01:02 -0400
-Received: by mail-wi0-f174.google.com with SMTP id d1so4289316wiv.1
-        for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2014 05:01:01 -0700 (PDT)
-In-Reply-To: <54512B7B.905@codeaurora.org>
+	Thu, 30 Oct 2014 08:11:14 -0400
+Content-Disposition: inline
+In-Reply-To: <544797A4.5070402@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org, linaro-kernel@lists.linaro.org, John Stultz <john.stultz@linaro.org>, Sumit Semwal <sumit.semwal@linaro.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Johan Hovold <johan@kernel.org>, Johan Hovold <jhovold@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 
-On 29/10/14 18:01, Stephen Boyd wrote:
-> On 10/29/2014 09:38 AM, Daniel Thompson wrote:
->> Currently the _dm RX handler detects breaks but does not pass any
->> characters to uart_handle_sysrq_char().
->>
->> The _dm optimizations combined with the port's spin lock make if
->> difficult to pass all characters to the sysrq logic because we cannot
->> safely call uart_handle_sysrq_char() when the lock is held without
->> deadlock (the console handler also takes the lock).
->>
->> Rather than passing all characters via uart_handle_sysrq_char() this patch
->> only passes the last few characters in the FIFO. This should include all
->> characters typed as a slow (human) rate. This makes the problem much
->> simpler and allows us to move the handling of these characters outside
->> of the port lock. This makes magic SysRq work if there is a human at
->> the keyboard (or a short delay in a script).
->>
->> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
->> ---
+Hi Peter,
+
+Forgot to reply to this one.
+
+On Wed, Oct 22, 2014 at 07:40:20AM -0400, Peter Hurley wrote:
+> On 10/19/2014 01:12 PM, Johan Hovold wrote:
+> > [ +CC: Jiri, Alan, linux-serial ]
+> > 
+> > On Thu, Oct 16, 2014 at 02:09:29PM -0400, Peter Hurley wrote:
+> >> On 10/16/2014 01:59 PM, Peter Hurley wrote:
+
+> >>> @@ -541,10 +531,6 @@ static int kobil_ioctl(struct tty_struct *tty,
+> >>>  
+> >>>  	switch (cmd) {
+> >>>  	case TCFLSH:
+> >>> -		transfer_buffer = kmalloc(transfer_buffer_length, GFP_KERNEL);
+> >>> -		if (!transfer_buffer)
+> >>> -			return -ENOBUFS;
+> >>> -
+> >>>  		result = usb_control_msg(port->serial->dev,
+> >>>  			  usb_sndctrlpipe(port->serial->dev, 0),
+> >>>  			  SUSBCRequest_Misc,
+> >>> @@ -559,7 +545,6 @@ static int kobil_ioctl(struct tty_struct *tty,
+> >>>  		dev_dbg(&port->dev,
+> >>>  			"%s - Send reset_all_queues (FLUSH) URB returns: %i\n",
+> >>>  			__func__, result);
+> >>> -		kfree(transfer_buffer);
+> >>>  		return (result < 0) ? -EIO: 0;
+> >>                                            ^^^
+> >> Returning 0 is almost certainly wrong; no further processing for
+> >> TCFLSH is performed.
+> > 
+> > Indeed.
+> > 
+> >> Only this driver returns 0 (of all the tty drivers in mainline).
+> >>
+> >> Returning -ENOIOCTLCMD allows further processing to continue;
+> >> especially the line discipline's input flushing, if TCIFLUSH/TCIOFLUSH.
+> > 
+> > That doesn't seem like a very good idea, and only two *staging* drivers
+> > try to play such games (i.e. pretending not to implement the ioctl) as
+> > far as I can see.
 > 
-> I have a patch that I was going to send for this (Frank R. and I have
-> been looking at it since a month or two ago). This patch doesn't look
-> correct given that the SR register is not actually accurate and doesn't
-> indicate that a break is there in the fifo. I'll Cc you on the patch,
-> please test it.
+> Well, returning EIONOCTLCMD is the standard method of ioctl passthrough
+> from driver to line discipline.
 
-Testing on IFC6410 is mostly OK.
+I disagree with you there. AFAICS only these two staging drivers are
+abusing the meaning of EIONOCTLCMD (unrecognised ioctl) to have the
+line discipline also act on the ioctl.
 
-Most sysrq actions work fine but resume from kdb is extremely
-unreliable; in most cases is kills the serial RX ('echo g >
-/proc/sysrq-trigger' shows that characters are still going into the FIFO
-but never get to the interrupt handler).
+> Since driver 'input buffer' flushing is not currently supported by the
+> core, this seems the only available workaround.
 
-However, this is not a regression versus my patch, resume was not
-reliable with my patch either.
+That is true. But I doubt we should use these two staging drivers as a
+model for how this should be handled, if it's at all needed.
+
+> > The only non-staging tty driver which appears to implement TCFLSH,
+> > ipwireless, calls tty_perform_flush directly to flush the ldisc buffers.
+> > That doesn't seem right either.
+> 
+> I'm not sure why ipwireless does this; I can only guess that it's a
+> workaround for some line discipline that doesn't use n_tty_ioctl_helper().
+> 
+> > Shouldn't this be fixed by removing TCFLSH from these tty drivers'
+> > ioctl callbacks and implementing flush_buffer()?
+> >
+> > The staging drivers also flush a device input buffer, which could be
+> > done in a new callback if at all needed.
+> 
+> Yeah, that's why the Digi staging drivers are trapping TCFLSH; so they
+> can clear input buffers on TCIFLUSH/TCIOFLUSH.
+> 
+> I'd like to better understand the hardware and driver before extending
+> the core interface; this driver may not even run.
+
+Agreed.
+
+> For example, this driver clears its 'input buffer' for
+> tcsetattr(TCSADRAIN or TCSAFLUSH). But that doesn't make sense considering
+> that the flip buffers could have data in them that isn't flushed; the tty
+> core doesn't dump the flip buffers because 'input processing' has not
+> happened on that data.
+> 
+> I think when/if these drivers are promoted is when/if the core interface
+> should address this. Just my opinion, though :)
+
+I agree.
+
+Johan
