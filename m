@@ -1,36 +1,37 @@
-From: Julien CHAUVEAU <julien.chauveau@neo-technologies.fr>
-Subject: [PATCH] serial: 8250_dw: get index of serial line from DT aliases
-Date: Thu, 30 Oct 2014 15:58:49 +0100
-Message-ID: <1414681129-10578-1-git-send-email-julien.chauveau@neo-technologies.fr>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] serial: of-serial: zero-out struct of_serial_info
+Date: Thu, 30 Oct 2014 22:55 +0100
+Message-ID: <5481851.EJfv4DSzbT@wuerfel>
+References: <1414703913-1343-1-git-send-email-f.fainelli@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1414703913-1343-1-git-send-email-f.fainelli@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, Julien CHAUVEAU <julien.chauveau@neo-technologies.fr>
+To: Florian Fainelli <f.fainelli@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jslaby@suse.cz, gregkh@linuxfoundation.org, devicetree@vger.kernel.org, jingchang.lu@freescale.com, gregory.0xf0@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-Get index of serial line from device tree using function of_alias_get_id().
-If no alias is found, the 8250 core takes care of incrementing the line number.
+On Thursday 30 October 2014 14:18:33 Florian Fainelli wrote:
+> of_platform_serial_probe() invokes of_platform_serial_setup() with a
+> kmalloc'd struct of_serial_info cookie, which is not much of a problem
+> for most of the struct of_serial_info fields we access but info->clk.
+> 
+> On platforms which do not provide a clock phandle for their UART nodes
+> but do provide a 'clock-frequency' property, we basically leave the
+> info->clk variable uninitialized, and this craps out during
+> suspend/resume with oopses, crashes or warnings in the clock code.
+> 
+> Fix this by using kzalloc() which also zeroes-out the structure and
+> provides an initialized info->clk member set to NULL.
+> 
+> Fixes: 2dea53bf57783 ("serial: of-serial: add PM suspend/resume support")
+> Fixes: e34b9c94b6e8d ("[POWERPC] of_serial: add port type checking")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
 
-Signed-off-by: Julien CHAUVEAU <julien.chauveau@neo-technologies.fr>
----
- drivers/tty/serial/8250/8250_dw.c | 5 +++++
- 1 file changed, 5 insertions(+)
+I thought I'd acked this patch before, maybe someone else sent the same
+one. This is definitely required, so
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index beea6ca..5416355 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -293,6 +293,11 @@ static int dw8250_probe_of(struct uart_port *p,
- 	if (!of_property_read_u32(np, "reg-shift", &val))
- 		p->regshift = val;
- 
-+	/* get index of serial line, if found in DT aliases */
-+	val = of_alias_get_id(np, "serial");
-+	if (val >= 0)
-+		p->line = val;
-+
- 	/* clock got configured through clk api, all done */
- 	if (p->uartclk)
- 		return 0;
--- 
-2.1.0
+Acked-by: Arnd Bergmann <arnd@arndb.de>
