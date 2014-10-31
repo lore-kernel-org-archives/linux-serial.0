@@ -1,100 +1,70 @@
-From: Frank Rowand <frowand.list@gmail.com>
-Subject: Re: [PATCH 2/2] tty: serial: msm: Support sysrq on uartDM devices
-Date: Fri, 31 Oct 2014 11:08:15 -0700
-Message-ID: <5453D00F.5000906@gmail.com>
-References: <1414606478-13709-1-git-send-email-sboyd@codeaurora.org> <1414606478-13709-3-git-send-email-sboyd@codeaurora.org> <54522163.8030408@linaro.org> <20141031064130.GG12469@codeaurora.org> <545359AB.8070503@linaro.org>
-Reply-To: frowand.list@gmail.com
+From: Shreyas Bethur <shreyas.bethur@ni.com>
+Subject: [PATCH 1/1] tty: Do not set modem lines when reopening ports
+Date: Fri, 31 Oct 2014 15:33:17 -0500
+Message-ID: <OF6C85CA04.9FBB77C4-ON86257D82.007014C2-86257D82.0070E996@ni.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="US-ASCII"
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:39670 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751323AbaJaSIR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 31 Oct 2014 14:08:17 -0400
-In-Reply-To: <545359AB.8070503@linaro.org>
+Received: from skprod3.natinst.com ([130.164.80.24]:52791 "EHLO ni.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751981AbaJaVFz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 31 Oct 2014 17:05:55 -0400
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Stephen Boyd <sboyd@codeaurora.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Frank Rowand <frank.rowand@sonymobile.com>, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.cz
 
-On 10/31/2014 2:43 AM, Daniel Thompson wrote:
-> On 31/10/14 06:41, Stephen Boyd wrote:
->> On 10/30, Daniel Thompson wrote:
->>> On 29/10/14 18:14, Stephen Boyd wrote:
->>>> +		r_count = min_t(int, count, sizeof(buf));
->>>> +
->>>> +		for (i = 0; i < r_count; i++) {
->>>> +			char flag = TTY_NORMAL;
->>>>  
->>>> -		/* TODO: handle sysrq */
->>>> -		tty_insert_flip_string(tport, buf, min(count, 4));
->>>> -		count -= 4;
->>>> +			if (msm_port->break_detected && buf[i] == 0) {
->>>> +				port->icount.brk++;
->>>> +				flag = TTY_BREAK;
->>>> +				msm_port->break_detected = false;
->>>> +				if (uart_handle_break(port))
->>>> +					continue;
->>>> +			}
->>>> +
->>>> +			if (!(port->read_status_mask & UART_SR_RX_BREAK))
->>>> +				flag = TTY_NORMAL;
->>>
->>> flag is already known to be TTY_NORMAL.
->>
->> Huh? If we detected a break we would set the flag to TTY_BREAK
->> and if uart_handle_break() returned 0 (perhaps sysrq config is
->> diasbled) then we would get down here, and then we want to reset
->> the flag to TTY_NORMAL if the read_status_mask bits indicate that
->> we want to skip checking for breaks. Otherwise we want to
->> indicate to the tty layer that it's a break character.
-> 
-> Agreed. Sorry for noise.
-> 
-> It now reaches the level of silly quibble (meaning I won't bother to
-> raise the issue again if there is a v2 patch) but perhaps updating the
-> flag after the continue would be easier to read.
-> 
-> 
->>>> +
->>>> +			spin_unlock(&port->lock);
->>>
->>> Is it safe to unlock at this point? count may no longer be valid when we
->>> return.
->>
->> Can you explain further? If it actually isn't valid something
->> needs to be done. I believe other serial drivers are doing this
->> sort of thing though so it doesn't seem that uncommon (of course
->> those drivers could also be broken I suppose).
-> 
-> Calling spin_unlock() means we are allow code to alter the state of the
-> UART. In particular the subsequent call to uart_handle_sysrq_char() can
-> make significant changes to the FIFO state (by calling the poll_char
-> functions). Given count is shadowing the FIFO state, when we retake the
-> lock I think it is possible for count to no longer be valid.
+When tty port is opened, we will raise the DTR and RTS lines. But for
+second and subsequent opens, we should not modify these lines because the
+first session might be actively using these lines. We don't want a second
+open to interfere with the first session.
 
-uart_handle_sysrq_char() will not _read_ from the serial port.  So it will
-not directly modify the FIFO state.
- 
-> 
->>
->>>
->>>
->>>> +			sysrq = uart_handle_sysrq_char(port, buf[i]);
->>>> +			spin_lock(&port->lock);
->>>> +			if (!sysrq)
->>>> +				tty_insert_flip_char(tport, buf[i], flag);
->>>
->>> flag has a constant value here.
->>>
->>
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+Signed-off-by: Shreyas Bethur <shreyas.bethur@ni.com>
+---
+To give some background for this patch, we have a product that uses the
+DTR line on the serial port for synchronization with other devices. While
+the synchronization application is using the DTR line, if another process
+opens the same port, then DTR line is raised, and thus interferes with the
+synchronization application. So, if a port is open, subsequent opens
+should not modify any modem lines.
 
+This patch is my attempt to fix this issue. Please review my fix, and let
+me know what you folks think.
+---
+ drivers/tty/tty_port.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 1b93357..8a6c80a 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -363,6 +363,7 @@ int tty_port_block_til_ready(struct tty_port *port,
+        int do_clocal = 0, retval;
+        unsigned long flags;
+        DEFINE_WAIT(wait);
++       bool port_first_open = true;
+
+        /* block if port is in the process of being closed */
+        if (port->flags & ASYNC_CLOSING) {
+@@ -381,8 +382,15 @@ int tty_port_block_til_ready(struct tty_port *port,
+                return 0;
+        }
+        if (filp->f_flags & O_NONBLOCK) {
+-               /* Indicate we are open */
+-               if (tty->termios.c_cflag & CBAUD)
++               /* The port lock protects the port counts */
++               spin_lock_irqsave(&port->lock, flags);
++               if (port->count > 1)
++                       port_first_open = false;
++               spin_unlock_irqrestore(&port->lock, flags);
++
++               /* Indicate we are open. Raise DTR and RTS only if opening 
+the
++                  port for the first time */
++               if ((tty->termios.c_cflag & CBAUD) && port_first_open)
+                        tty_port_raise_dtr_rts(port);
+                port->flags |= ASYNC_NORMAL_ACTIVE;
+                return 0;
+-- 
+1.9.1
+
+--
