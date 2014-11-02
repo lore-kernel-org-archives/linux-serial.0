@@ -1,634 +1,677 @@
-From: "Dr. H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: Re: [PATCH 2/2] Documentation: devicetree: Add bindings for Wi2Wi w2sg0004 gps
-Date: Sun, 2 Nov 2014 11:15:05 +0100
-Message-ID: <F5FA9432-99FD-47CE-97BD-9B615AF72361@goldelico.com>
-References: <1413491183-15018-1-git-send-email-marek@goldelico.com> <1413491183-15018-2-git-send-email-marek@goldelico.com> <20141017093714.GB4202@leverpostej> <D65FF64A-856F-47EC-B3DE-7F2FCE505087@goldelico.com> <20141017110043.GA5335@leverpostej> <27AD2801-6410-44E3-9E0C-911D73E6A457@goldelico.com> <20141020093536.GA25360@leverpostej> <7A9F8C73-6CBD-435A-934C-14A80FFE452F@goldelico.com> <FDDD1C99-81F9-4933-815A-CC686A19115E@goldelico.com>
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <FDDD1C99-81F9-4933-815A-CC686A19115E@goldelico.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: Marek Belisko <marek@goldelico.com>, "arnd@arndb.de" <arnd@arndb.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, NeilBrown <neilb@suse.de>, linux-serial@vger.kernel.org
+From: MRS GRACE MANDA <mrsgracem692@gmail.com>
+Subject: (unknown)
+Date: Sun, 2 Nov 2014 19:54:23 +0000 (UTC)
+Message-ID: <114123003.144460.1414958063497.JavaMail.yahoo__43076.2470736683$1414958510$gmane$org@jws10093.mail.ne1.yahoo.com>
+References: <1570038211.167595.1414613146892.JavaMail.yahoo@jws10056.mail.ne1.yahoo.com> <1835234304.171617.1414613165674.JavaMail.yahoo@jws10089.mail.ne1.yahoo.com> <1938862685.172387.1414613200459.JavaMail.yahoo@jws100180.mail.ne1.yahoo.com> <705402329.170339.1414613213653.JavaMail.yahoo@jws10087.mail.ne1.yahoo.com> <760168749.169371.1414613227586.JavaMail.yahoo@jws10082.mail.ne1.yahoo.com> <1233923671.167957.1414613439879.JavaMail.yahoo@jws10091.mail.ne1.yahoo.com> <925985882.172122.1414613520734.JavaMail.yahoo@jws100207.mail.ne1.yahoo.com> <1216694778.172990.1414613570775.JavaMail.yahoo@jws100152.mail.ne1.yahoo.com> <1213035306.169838.1414613612716.JavaMail.yahoo@jws10097.mail.ne1.yahoo.com> <2058591563.172973.1414613668636.JavaMail.yahoo@jws10089.mail.ne1.yahoo.com> <1202030640.175493
+ .1414613712352.JavaMail.yahoo@jws10036.mail.ne1.yahoo.com> <1111049042.175610.1414613739099.JavaMail.yahoo@jws100165.mail.ne1.yahoo.com> <574125160.175950.1414613784216.JavaMail.yahoo@jws100158.mail.ne1.yahoo.com> <1726966600.175552.1414613846198.JavaMail.yahoo@jws100190.mail.ne1.yahoo.com> <976499752.219775.1414613888129.JavaMail.yahoo@jws100101.mail.ne1.yahoo.com> <1400960529.171566.1414613936238.JavaMail.yahoo@jws10059.mail.ne1.yahoo.com> <1333619289.175040.1414613999304.JavaMail.yahoo@jws100196.mail.ne1.yahoo.com> <1038759122.176173.1414614054070.JavaMail.yahoo@jws100138.mail.ne1.yahoo.com> <1109995533.176150.1414614101940.JavaMail.yahoo@jws100140.mail.ne1.yahoo.com> <809474730.174920.1414614143971.JavaMail.yahoo@jws100154.mail.ne1.yahoo.com> <1234226428.170349.1414614189490.JavaMail
+ .yahoo@jws10056.mail.ne1.yahoo.com> <1122464611.177103.1414614228916.JavaMail.yahoo@jws100161.mail.ne1.yahoo.com> <1350859260.174219.1414614279095.JavaMail.yahoo@jws100176.mail.ne1.yahoo.com> <1730751880.171557.1414614322033.JavaMail.yahoo@jws10060.mail.ne1.yahoo.com> <642429550.177328.1414614367628.JavaMail.yahoo@jws100165.mail.ne1.yahoo.com> <1400780243.20511.1414614418178.JavaMail.yahoo@jws100162.mail.ne1.yahoo.com> <2025652090.173204.1414614462119.JavaMail.yahoo@jws10087.mail.ne1.yahoo.com> <859211720.180077.1414614521867.JavaMail.yahoo@jws100147.mail.ne1.yahoo.com> <258705675.173585.1414614563057.JavaMail.yahoo@jws10078.mail.ne1.yahoo.com> <1773234186.173687.1414614613736.JavaMail.yahoo@jws10078.mail.ne1.yahoo.com> <1132079010.173033.1414614645153.JavaMail.yahoo@jws10066.mail.ne1.ya
+ hoo.com> <1972302405.176488.1414614708676.JavaMail.yahoo@jws100166.mail.ne1.yahoo.com> <1713123000.176308.1414614771694.JavaMail.yahoo@jws10045.mail.ne1.yahoo.com> <299800233.173413.1414614817575.JavaMail.yahoo@jws10066.mail.ne1.yahoo.com> <494469968.179875.1414614903152.JavaMail.yahoo@jws100144.mail.ne1.yahoo.com> <2136945987.171995.1414614942776.JavaMail.yahoo@jws10091.mail.ne1.yahoo.com> <257674219.177708.1414615022592.JavaMail.yahoo@jws100181.mail.ne1.yahoo.com> <716927833.181664.1414615075308.JavaMail.yahoo@jws100145.mail.ne1.yahoo.com> <874940984.178797.1414615132802.JavaMail.yahoo@jws100157.mail.ne1.yahoo.com> <1283488887.176736.1414615187657.JavaMail.yahoo@jws100183.mail.ne1.yahoo.com> <777665713.175887.1414615236293.JavaMail.yahoo@jws10083.mail.ne1.yahoo.com> <585395776.176325.1
+ 414615298260.JavaMail.yahoo@jws10033.mail.ne1.yahoo.com> <178352191.221832.1414615355071.JavaMail.yahoo@jws100104.mail.ne1.yahoo.com> <108454213.176606.1414615522058.JavaMail.yahoo@jws10053.mail.ne1.yahoo.com> <1617229176.177502.1414615563724.JavaMail.yahoo@jws10030.mail.ne1.yahoo.com> <324334617.178254.1414615625247.JavaMail.yahoo@jws10089.mail.ne1.yahoo.com> <567135865.82376.1414615664442.JavaMail.yahoo@jws100136.mail.ne1.yahoo.com> <764758300.179669.1414615711821.JavaMail.yahoo@jws100107.mail.ne1.yahoo.com> <1072855470.183388.1414615775798.JavaMail.yahoo@jws100147.mail.ne1.yahoo.com> <2134283632.173314.1414615831322.JavaMail.yahoo@jws10094.mail.ne1.yahoo.com> <1454491902.178612.1414615875076.JavaMail.yahoo@jws100209.mail.ne1.yahoo.com> <588138985.181218.1414615927765.JavaMail.yahoo@jw
+ s100140Subject: : This is Mrs Grace Manda (  Please I need your Help is Urgent).
+Reply-To: MRS GRACE MANDA <mrsgracemanda29@gmail.com>
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_Part_144459_638505723.1414958063497"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from nm11.bullet.mail.ne1.yahoo.com ([98.138.90.74]:51732 "EHLO
+	nm11.bullet.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752538AbaKBUBW (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sun, 2 Nov 2014 15:01:22 -0500
+In-Reply-To: <1881200547.147301.1414958000634.JavaMail.yahoo@jws100209.mail.ne1.yahoo.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-ping (questions for directions at the end of the mail).
+------=_Part_144459_638505723.1414958063497
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Am 24.10.2014 um 11:32 schrieb Dr. H. Nikolaus Schaller <hns@goldelico.=
-com>:
 
->=20
-> Am 20.10.2014 um 19:26 schrieb Dr. H. Nikolaus Schaller <hns@goldelic=
-o.com>:
->=20
->> Hi,
->>=20
->> Am 20.10.2014 um 11:35 schrieb Mark Rutland <mark.rutland@arm.com>:
->>=20
->>> Hi,
->>>=20
->>> On Fri, Oct 17, 2014 at 08:55:50PM +0100, Dr. H. Nikolaus Schaller =
-wrote:
->>>>=20
->>>> Am 17.10.2014 um 13:00 schrieb Mark Rutland <mark.rutland@arm.com>=
-:
->>>>=20
->>>>> On Fri, Oct 17, 2014 at 11:16:42AM +0100, Dr. H. Nikolaus Schalle=
-r wrote:
->>>>>>=20
->>>>>> Am 17.10.2014 um 11:37 schrieb Mark Rutland <mark.rutland@arm.co=
-m>:
->>>>>>=20
->>>>>>> On Thu, Oct 16, 2014 at 09:26:23PM +0100, Marek Belisko wrote:
->>>>>>>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
->>>>>>>> Signed-off-by: Marek Belisko <marek@goldelico.com>
->>>>>>>> ---
->>>>>>>> .../devicetree/bindings/misc/wi2wi,w2sg0004.txt    | 44 ++++++=
-++++++++++++++++
->>>>>>>> 1 file changed, 44 insertions(+)
->>>>>>>> create mode 100644 Documentation/devicetree/bindings/misc/wi2w=
-i,w2sg0004.txt
->>>>>>>>=20
->>>>>>>> diff --git a/Documentation/devicetree/bindings/misc/wi2wi,w2sg=
-0004.txt b/Documentation/devicetree/bindings/misc/wi2wi,w2sg0004.txt
->>>>>>>> new file mode 100644
->>>>>>>> index 0000000..e144441
->>>>>>>> --- /dev/null
->>>>>>>> +++ b/Documentation/devicetree/bindings/misc/wi2wi,w2sg0004.tx=
-t
->>>>>>>> @@ -0,0 +1,44 @@
->>>>>>>> +Wi2Wi GPS module connected through UART
->>>>>>>> +
->>>>>>>> +Required properties:
->>>>>>>> +- compatible: wi2wi,w2sg0004 or wi2wi,w2sg0084
->>>>>>>> +- pinctrl: specify two states (default and monitor). One is t=
-he default (UART) mode
->>>>>>>> +  and the other is for monitoring the RX line by an interrupt
->>>>>>>> +- on-off-gpio: the GPIO that controls the module's on-off tog=
-gle input
->>>>>>>> +
->>>>>>>> +Optional properties:
->>>>>>>> +- lna-suppy: an (optional) LNA regulator that is enabled toge=
-ther with the GPS receiver
->>>>>>>> +
->>>>>>>> +example:
->>>>>>>> +
->>>>>>>> +        gps_receiver: w2sg0004 {
->>>>>>>> +                compatible =3D "wi2wi,w2sg0004";
->>>>>>>=20
->>>>>>> I couldn't spot "wi2wi" in
->>>>>>> Documentation/devicetree/bindings/vendor-prefixes.txt (in mainl=
-ine).
->>>>>>>=20
->>>>>>> Could you please add it?
->>>>>>>=20
->>>>>>>> +                gpio-controller;
->>>>>>>> +                #gpio-cells =3D <2>;
->>>>>>>=20
->>>>>>> As far as I can see, these properties aren't necessary. This on=
-ly
->>>>>>> consumes a GPIO, it doesn't provide any.
->>>>>>=20
->>>>>> Well, it provides one GPIO. Sort of a "virtual=93 GPIO. It is ne=
-eded so that=20
->>>>>> it can be wired up to the DTR gpio of the UART driver (unfortuna=
-tely this
->>>>>> patch was reverted some months ago from mainline and we will rei=
-ntroduce
->>>>>> it soon).
->>>>>=20
->>>>> If this GPIO doesn't really exist, then it's a Linux internal
->>>>> implementation detail rather than a description of the hardware, =
-and
->>>>> doesn't really belong in the DT.
->>>>=20
->>>> Hm.=20
->>>>=20
->>>> Let=92s describe it differently.
->>>>=20
->>>> I can see the Linux driver module as a simple software simulation =
-for a
->>>> piece of hardware that could have been connected between the UART
->>>> and the GPS chip.
->>>>=20
->>>> Basically it is a pulse-generator and a flip-flop to detect data f=
-low on the RX
->>>> wire. This could be implemented by an external FPGA or uController=
-=2E Or as
->>>> it is done on our board for saving hardware by a mix of the main C=
-PU hardware
->>>> (Pinmux + GPIO + IRQ) and a kernel driver.
->>>>=20
->>>> The best of course would have been if the w2sg0004 would have a ph=
-ysical
->>>> =84enable=93 GPIO (instead of that on-off control input).
->>>>=20
->>>> Then we would hook up that enable to some physical GPIO of the CPU
->>>> and simply refer to it as e.g. <&gpio4 12>. And would not even nee=
-d a driver
->>>> for it (unless we want to make rfkill gps work).
->>>>=20
->>>> Therefore the driver we suggest provides an additional gpio contro=
-ller with a
->>>> single GPIO so that we can write <&w2sg 0> to refer to this virtua=
-l gpio.
->>>>=20
->>>> So in fact we try to wrap a non-optimal chip design by the driver =
-and make it
->>>> appear as a standard GPIO interface to the DT and user space and w=
-hoever
->>>> needs simply to enable/disable the GPS chip.
->>>=20
->>> The fact remains that this does not accurately represent the hardwa=
-re,
->>> and is unnecessarily strongly tied to a particular UART design (whe=
-re
->>> the DTR line is a separate UART).
->>=20
->> I don=92t get that it is tied to a particular UART design (except th=
-at our DTR
->> patch affects to omap-serial only).
->>=20
->> Let=92s describe the facts:
->>=20
->> The chip has this interface:
->>=20
->> GPS-TX (output)
->> GPS-RX (input)
->> ON/OFF (input) - to toggle the power state of the chip
->>=20
->> They are connected to an OMAP3 UART2 as
->>=20
->> UART2-TX > GPS-RX
->> UART2-RX <- GPS-TX
->> GPIO145 -> ON/OFF
->>=20
->> That=92s it.
->>=20
->> If the chip (or any other serial GPS receiver like a Garmin) were co=
-nnected
->> through real RS232 we would have
->>=20
->> UART2-TX -> level shifter -> cable -> level shifter -> GPS-RX
->> UART2-RX <- level shifter <- cable <- level shifter <- GPS-TX
->> DTR-GPIO -> level shifter (DTR line) -> cable -> level shifter -> po=
-wer-management logic -> ON/OFF
->>=20
->> But because it is connected directly, we need to implement the power=
--management
->> logic between the DTR-GPIO and GPIO145:
->>=20
->> DTR-GPIO -> driver -> GPIO145 -> ON/OFF
->>=20
->> To correctly determine the state we need to tap the RX signal before
->> it enters the UART2-RX (it is pinmuxed with GPIO147):
->>=20
->> UART2-RX <=97=97+
->>                              OMAP3 pinmux <- OMAP3 pad <- GPS-TX
->>  GPIO147 <=97=97+
->>=20
->> So if we describe the driver as a box we have
->>=20
->> inputs from user space:
->> * rfkill for GPS
->> * a control that is activated by opening /dev/tty
->>=20
->> outputs to system:
->> * a control to switch the pinmux between RX and GPIO (interrupt)
->> * a control to external hardware
->>=20
->>>=20
->>>>> It sounds like what we actually need is the ability to describe d=
-evices
->>>>> attached to UARTs.
->>>>=20
->>>> Hm. The purpose of the driver is power control of the chip. Not th=
-e serial
->>>> interface.
->>>=20
->>> I'm not sure I follow your point. By describing the device as attac=
-hed
->>> to the UART, the kernel can figure out that when said UART is acces=
-sed
->>> the attached device needs to be on (and must be poked as necessary)=
-=2E
->>=20
->> Why do we need to describe this? It is all about controlling the GPI=
-O145,
->> GPIO147 and pinmux. But not RX or TX.
->>=20
->> So the driver does not need to know anything about UARTs (and if we
->> connect it to UART3 we only have to specify different GPIOs).
->>=20
->> Only our board specific dtb connects the UART to the =93virtual=94 G=
-PIO
->> provided by the driver.
->>=20
->> This also brings up a minor problem: on OMAP3 some UART RX lines can
->> be pinmuxed with different GPIOs. So putting the driver under some U=
-ART2
->> node doesn=92t uniquely define the GPIO number to monitor RX and mig=
-ht
->> become a mess.
->>=20
->>>=20
->>> The power management logic for the device can stay in the device dr=
-iver,
->>> and the power management logic for the UART can stay in the UART dr=
-iver.
->>=20
->> Here I can=92t follow you. What power management does an UART driver=
- provide?
->>=20
->>> Neither would need to know about each other's internal details
->>> (e.g.GPIOs, for DTR or otherwise).
->>=20
->> Yes, that is our goal and in our solution they don=92t need to make =
-assumptions
->> about each other. We just define in the DT: this GTA04 board has UAR=
-T2-DTR
->> connected to the W2SG-GPIO# - instead of OMAP3-GPIO145.
->>=20
->> In our solution the UART driver knows that there could be a DTR GPIO=
- (similar to
->> a RTS GPIO which is already provided by the omap-serial RS484 bindin=
-gs). Which
->> could be connected to some GPIO which drives the real DTR wire of a =
-RS232 level
->> shifter.
->>=20
->>>=20
->>>>> Then you could have a mechanism whereby the UART
->>>>> driver can notify the other device driver regarding events (e.g. =
-the
->>>>> UART being opened for access), or the other driver could claim ow=
-nership
->>>>> of the UART and expose its own interface to userspace.
->>>>>=20
->>>>> That would be independent of the particular UART or other device,=
- and
->>>>> the only description necessary in the DT would be an accurate
->>>>> representation of the way the hardware is wired.
->>>>>=20
->>>>> There are a few ways that could be done, but I suspect the simple=
-st is
->>>>> to just have the device as a sub-node of the UART, like we do for=
- SPI or
->>>>> I2C buses:
->>>>>=20
->>>>> 	serial@f00 {
->>>>> 		compatible =3D "vendor,uart";
->>>>> 		reg =3D <0xf00 0x100>;
->>>>> 		...
->>>>>=20
->>>>> 		gps {
->>>>> 			compatible =3D "wi2wi,w2sg0004";
->>>>> 			...
->>>>> 		};
->>>>> 	};
->>>>>=20
->>>>> That wouldn't work for devices with multiple UART connections. Do=
- those
->>>>> exist, and are they common in configurations where out-of-band
->>>>> management is necessary (e.g. regulators, clocks)?
->>>>=20
->>>> UARTs are usually point to point interfaces and not busses. So the=
-re is
->>>> no need to describe the interface.
->>>=20
->>> I don't follow. You have a device which seems to require management
->>> kernel-side.
->>=20
->> Yes, power on/off.
->>=20
->>> Rather than describing the interface, you've described a
->>> fictitious relationship between the GPS device and the UART's DTR G=
-PIO,
->>> and you=92ve described a fictitious GPIO to hand to the UART driver=
-=2E
->>=20
->> Yes. Because the UART driver would generally expect a GPIO (if a GPI=
-O driven
->> DTR hardware line is available on the connector).
->>=20
->>> This
->>> is how you have linked the two in order to get the behaviour you wa=
-nt.
->>=20
->> Exactly.
->>=20
->>>=20
->>> So it _is_ necessary to describe the interface. Rather than describ=
-ing
->>> that interface at a high level you've chosen to hack together a set=
- of
->>> fake relationships to work around the lack of ability to describe s=
-aid
->>> interface.
->>=20
->> The power control interface is a single GPIO from UART to the driver=
-=2E
->> The other end is an interface from the driver to the pinmux of the O=
-MAP
->> and the chip. So it is a =93middleman=94. But I think this is alread=
-y clear.
->>=20
->>>=20
->>>> And I would speculate that in most cases they simply go to some
->>>> connector and therefore no connected chip that needs to be describ=
-ed
->>>> in the DT at all. Because it has a user-space driver (e.g. AT
->>>> commands) and no kernel driver.
->>>=20
->>> In the case where no driver is necessary I agree that no descriptio=
-n is
->>> necessary, though the description could be exposed in a helpful way=
- to
->>> userspace to describe what=92s attached to which UARTs.
->>=20
->> That is usually done by configuring the gpsd process.
->>=20
->>>=20
->>> However, in this case you do have a kernel driver (even if basic), =
-and
->>> it requires some knowledge of the relationship between the device a=
-nd
->>> the UART in order to function.
->>=20
->> Yes. And that is what we want to provide by the dtb file. That one s=
-hould describe
->> the relationship.
->>=20
->>>=20
->>>> But we have no idea how such a solution could be implemented or te=
-sted.
->>>=20
->>> I would disagree on that point, given I provided a high level
->>> description of how this could be implemented.
->>=20
->> We do understand how you suggest the bindings should look like, but =
-we have
->> no idea how that translates into code.
->>=20
->> And we do not want to touch the general serial drivers, just the oma=
-p-serial
->> (because the solutions does not work without an UART behind a pinmux=
- with a
->> GPIO with interrupt capabilities).
->>=20
->> We simply have no experience modifying serial drivers (Linux is too =
-big that anyone
->> can know all areas).
->>=20
->> Our experience is limited to re-submitting the DTR-GPIO-control patc=
-h by Neil Brown
->> and making it read DT properties instead of board file.
->>=20
->> So your approach needs a lot of help to really implement it. The que=
-stion is who
->> will be doing it.
->>=20
->>>=20
->>>> If someone adds that to the serial drivers, we would be happy to u=
-se it,
->>>> but unless such a thing exists, I think our solution is quite simp=
-le and isolated
->>>> into this single driver and also uses existing standard interfaces=
- (gpios, pinmux).
->>>=20
->>> I would argue that this _abuses_ standard interfaces, as you have o=
-ne
->>> device driver fiddling with resources logically owned by another.
->>>=20
->>>>>> The reason to solve it that way is that we did not want to have =
-a direct link
->>>>>> between this driver and any serial drivers or other mechanisms h=
-ow drivers
->>>>>> can detect that their serial port (/dev/tty*) is opened.
->>>>>>=20
->>>>>> It is used to power down the w2sg GPS chip if no user space proc=
-ess is
->>>>>> accessing its serial port (or de-asserts DTR through tcsetattr/i=
-octl).
->>>>>>=20
->>>>>>>=20
->>>>>>>> +
->>>>>>>> +                pinctrl-names =3D "default", "monitor";
->>>>>>>> +                pinctrl-0 =3D <&uart2_pins>;
->>>>>>>> +                pinctrl-1 =3D <&uart2_rx_irq_pins>;
->>>>>>>> +
->>>>>>>> +                interrupt-parent =3D <&gpio5>;
->>>>>>>> +                interrupts =3D <19 IRQ_TYPE_EDGE_FALLING>;  /=
-* GPIO_147: RX - trigger on arrival of start bit */
->>>>>>>=20
->>>>>>> While interrupts is a standard property, please describe above =
-how many
->>>>>>> you expect and what their logical function is.
->>>>>>>=20
->>>>>>> The only part I'm confused about is how the link to the UART is
->>>>>>> described. I assume I'm just ignorant of some existing pattern.
->>>>>>=20
->>>>>> The serial link itself is not described at all because it is ass=
-umed to be a =84must have=93.
->>>>>=20
->>>>> Huh? So it's a "must have" that you "don't have" in the DT?
->>>>=20
->>>> Yes. The DT does not describe everything. Only those things that n=
-eed
->>>> a kernel driver. And UARTs usually have user-space drivers (e.g. g=
-psd,
->>>> gsmd, pppd) and ioctl/tcsetattr.
->>>=20
->>> The DT should describe the static portions of the hardware. Typical=
-ly we
->>> only have devices with kernelspace drivers described simply because
->>> that's the way people have built DTs. Whether or not you have a
->>> kernelspace driver can change over time, the organisation of the
->>> hardware cannot.
->>=20
->> So far none of the DT I have seen describe what is connected to the =
-UART.
->> Even for boards which use HCI to communicate with a Bluetooth module=
-=2E
->>=20
->>>=20
->>>>> I think that the relationship is being described incorrectly in t=
-he DT,
->>>>> and I think that there is a more general problem that needs to be
->>>>> addressed in order to make this case work.
->>>>>=20
->>>>>> The driver only needs to monitor the RX line and needs to switch=
- it between UART and
->>>>>> GPIO/IRQ mode. So this monitoring switch is described (with two =
-different pinctrl states).
->>>>>=20
->>>>> While this particular driver only needs that at this point in tim=
-e,
->>>>> that's not necessarily true of drivers for similar devices, nor i=
-s it
->>>>> necessarily true if we need to add additional features to this dr=
-iver.
->>>>=20
->>>> Which features are you thinking of to add to this driver? And do
->>>> similar devices exist at all? Since we have not found any, we have
->>>> declared it as a "misc=93 driver.
->>>=20
->>> I don't have any particular feature in mind.
->>>=20
->>> I am not immediately aware of other serial devices which require
->>> out-of-band management in the same way, though we have a vaguely si=
-milar
->>> case with SDIO devices which must be powered up before they appear =
-on
->>> the bus.
->>=20
->> AFAIK, they are usually descibed by a regulator that is enabled/disa=
-bled by
->> the SDIO driver. And the regulator is usually defined as a gpio-regu=
-lator to
->> drive an GPIO.
->>=20
->> And I think the SDIO driver has a reset-gpio (which can also be inte=
-rpreted
->> as a disable/power-down).
->>=20
->> So such interface drivers simply expect that they can power-control =
-dependent
->> devices through a regulator or a simple gpio.
->>=20
->>> In that case I believe the intent is to describe them in the DT
->>> under the bus.
->>=20
->> Or would it be ok to allow a regulator property for the serial inter=
-face? Then
->> our driver would become a w2sg0004-regulator driver similar to a gpi=
-o-regulator
->> but with a state machine that knows how to pulse the gpio until powe=
-r is applied
->> to the GPS receiver internals.
->>=20
->>>=20
->>>>> Describing the relationship leaves a lot more freedom to improve =
-things
->>>>> without having to update every DTB.
->>>>>=20
->>>>>> We know that it is a little tricky to control this chip correctl=
-y - and we think this solution
->>>>>> is the most general (no direct dependency on the serial line, an=
-d just to pinmux states
->>>>>> and an interrupt).
->>>>>=20
->>>>> I think that the rough approach I sketched out above is more gene=
-ral,
->>>>> and I think that you must describe the relationship with the seri=
-al
->>>>> line.
->>>>>=20
->>>>> It's not clear to me whether the interrupt you describe is attach=
-ed to
->>>>> the GPS, or if this is logically part of the UART.
->>>>=20
->>>> The interrupt is needed to simulate the glue logic connected betwe=
-en
->>>> UART and GPS.
->>>>=20
->>>> The output signal comes from the GPS module and goes to some pad
->>>> of the OMAP3 SoC. This pad can be either multiplexed into the UART=
- RX
->>>> input or into a GPIO bank of the OMAP. That GPIO controller can ge=
-nerate
->>>> the interrupt on incoming data (when none is expected).
->>>>=20
->>>> Therefore it is a GPS-generated interrupt and has nothing to do wi=
-th
->>>> the UART.
->>>=20
->>> Ok. When does the GPS device raise this interrupt?
->>=20
->> If the driver assumes the GPS receiver is turned off, it disconnedts=
- the RX
->> wire from the UART to a GPIO by using two different pinmux states.
->>=20
->> If the GPIO raises an interrupt, the driver knows that the GPS modul=
-e is not
->> turned off, because the driver has lost knowledge about its state. T=
-his is not
->> an UART related function but OMAP pinmux and GPIO.
->>=20
->> I am not sure if that could even be implemented at all by a UART dep=
-endent
->> driver (since the UART is shut down and does not interrupt).
->>=20
->>>=20
->>> Thanks,
->>> Mark.
->>=20
->> Thanks as well - it is a fruitful discussion (even if it becomes len=
-gthy because
->> I might have repeated a lot of things that are already clear. Please=
- accept an apology).
->>=20
->> I think we just disagree about implementing a version that =93works=94=
- in a quite specific
->> setup (there are necessary assumptions about OMAP pinmux and omap-se=
-rial) with
->> existing APIs versus a general one that might need a lot of changes =
-outside the driver
->> and introduce new APIs.
->>=20
->> BR,
->> Nikolaus
->>=20
->=20
-> After re-thinking what we have discussed so far (and considering othe=
-r recommendations
-> I have received off-list) I currently see these options/questions:
->=20
-> * who could modify the serial drivers and APIs so that this driver ca=
-n become
->  a subnode (=93bus client=94) of an UART? How long does it take to be=
-come available?
->=20
-> * would it be an option to rename it to =93gpio-w2sg0004=94 to better=
- describe that it
->  provides a (virtual) gpio?
->=20
-> * would it be an option to simply rename the driver to =93w2sg0004-po=
-wer=94
->  to make clear that it is not at all related to the UART data communi=
-cation
->  channel but only controlling the power of the w2sg0004 chip?
->=20
-> * both?
->=20
-> * or would it be acceptable if this is a regulator driver that contro=
-ls the LDO
->  inside this chip? I.e. describe it as a =93w2sg0004-regulator=94?
->=20
-> This would be very similar to the function of a =93gpio-regulator=94:=
- convert
-> =93regulator state=94 into a gpio state. But here convert =93on/off=94=
- into some impulses.
->=20
-> And to resolve uncertainty about the real LDO state it would be able =
-to monitor
-> some feedback interrupt and handle an (optional) pinmux toggle.
->=20
-> This would mean that we do not even need to mention anything about UA=
-RTs
-> in the driver bindings.
->=20
-> Rather it would just say: the driver can monitor a (gpio) interrupt l=
-ine to
-> know if the attached device is active (when it is not expected, e.g. =
-after boot).
->=20
-> Since this monitor gpio is sometimes multiplexed with other features =
-of the SoC,
-> the driver can also switch between two pinctrl states (default and mo=
-nitor).
->=20
-> BR,
-> Nikolaus
->=20
+
+
+
+
+This is Mrs Grace Manda (  Please I need your Help is Urgent).
+
+
+
+
+
+
+This is Mrs Grace Manda (  Please I need your Help is Urgent). 
+------=_Part_144459_638505723.1414958063497
+Content-Type: application/rtf
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="Mrs Grace Manda.rtf"
+Content-ID: <a694848b-a372-b37f-7b1f-7487bb17f8a1@yahoo.com>
+
+e1xydGYxXGFkZWZsYW5nMTAyNVxhbnNpXGFuc2ljcGcxMjUyXHVjMVxhZGVmZjMxNTA3XGRlZmYw
+XHN0c2hmZGJjaDMxNTA1XHN0c2hmbG9jaDMxNTA2XHN0c2hmaGljaDMxNTA2XHN0c2hmYmkwXGRl
+ZmxhbmcxMDMzXGRlZmxhbmdmZTEwMzNcdGhlbWVsYW5nMTAzM1x0aGVtZWxhbmdmZTBcdGhlbWVs
+YW5nY3Mwe1xmb250dGJse1xmMFxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MFxmcHJxMntcKlxwYW5v
+c2UgMDIwMjA2MDMwNTA0MDUwMjAzMDR9VGltZXMgTmV3IFJvbWFuO317XGYxXGZiaWRpIFxmc3dp
+c3NcZmNoYXJzZXQwXGZwcnEye1wqXHBhbm9zZSAwMjBiMDYwNDAyMDIwMjAyMDIwNH1BcmlhbDt9
+DQp7XGYzNFxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MFxmcHJxMntcKlxwYW5vc2UgMDIwNDA1MDMw
+NTA0MDYwMzAyMDR9Q2FtYnJpYSBNYXRoO317XGYzN1xmYmlkaSBcZnN3aXNzXGZjaGFyc2V0MFxm
+cHJxMntcKlxwYW5vc2UgMDIwZjA1MDIwMjAyMDQwMzAyMDR9Q2FsaWJyaTt9e1xmbG9tYWpvclxm
+MzE1MDBcZmJpZGkgXGZyb21hblxmY2hhcnNldDBcZnBycTJ7XCpccGFub3NlIDAyMDIwNjAzMDUw
+NDA1MDIwMzA0fVRpbWVzIE5ldyBSb21hbjt9DQp7XGZkYm1ham9yXGYzMTUwMVxmYmlkaSBcZnJv
+bWFuXGZjaGFyc2V0MFxmcHJxMntcKlxwYW5vc2UgMDIwMjA2MDMwNTA0MDUwMjAzMDR9VGltZXMg
+TmV3IFJvbWFuO317XGZoaW1ham9yXGYzMTUwMlxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MFxmcHJx
+MntcKlxwYW5vc2UgMDIwNDA1MDMwNTA0MDYwMzAyMDR9Q2FtYnJpYTt9DQp7XGZiaW1ham9yXGYz
+MTUwM1xmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MFxmcHJxMntcKlxwYW5vc2UgMDIwMjA2MDMwNTA0
+MDUwMjAzMDR9VGltZXMgTmV3IFJvbWFuO317XGZsb21pbm9yXGYzMTUwNFxmYmlkaSBcZnJvbWFu
+XGZjaGFyc2V0MFxmcHJxMntcKlxwYW5vc2UgMDIwMjA2MDMwNTA0MDUwMjAzMDR9VGltZXMgTmV3
+IFJvbWFuO30NCntcZmRibWlub3JcZjMxNTA1XGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQwXGZwcnEy
+e1wqXHBhbm9zZSAwMjAyMDYwMzA1MDQwNTAyMDMwNH1UaW1lcyBOZXcgUm9tYW47fXtcZmhpbWlu
+b3JcZjMxNTA2XGZiaWRpIFxmc3dpc3NcZmNoYXJzZXQwXGZwcnEye1wqXHBhbm9zZSAwMjBmMDUw
+MjAyMDIwNDAzMDIwNH1DYWxpYnJpO30NCntcZmJpbWlub3JcZjMxNTA3XGZiaWRpIFxmcm9tYW5c
+ZmNoYXJzZXQwXGZwcnEye1wqXHBhbm9zZSAwMjAyMDYwMzA1MDQwNTAyMDMwNH1UaW1lcyBOZXcg
+Um9tYW47fXtcZjM5XGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQyMzhcZnBycTIgVGltZXMgTmV3IFJv
+bWFuIENFO317XGY0MFxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MjA0XGZwcnEyIFRpbWVzIE5ldyBS
+b21hbiBDeXI7fQ0Ke1xmNDJcZmJpZGkgXGZyb21hblxmY2hhcnNldDE2MVxmcHJxMiBUaW1lcyBO
+ZXcgUm9tYW4gR3JlZWs7fXtcZjQzXGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQxNjJcZnBycTIgVGlt
+ZXMgTmV3IFJvbWFuIFR1cjt9e1xmNDRcZmJpZGkgXGZyb21hblxmY2hhcnNldDE3N1xmcHJxMiBU
+aW1lcyBOZXcgUm9tYW4gKEhlYnJldyk7fXtcZjQ1XGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQxNzhc
+ZnBycTIgVGltZXMgTmV3IFJvbWFuIChBcmFiaWMpO30NCntcZjQ2XGZiaWRpIFxmcm9tYW5cZmNo
+YXJzZXQxODZcZnBycTIgVGltZXMgTmV3IFJvbWFuIEJhbHRpYzt9e1xmNDdcZmJpZGkgXGZyb21h
+blxmY2hhcnNldDE2M1xmcHJxMiBUaW1lcyBOZXcgUm9tYW4gKFZpZXRuYW1lc2UpO317XGY0OVxm
+YmlkaSBcZnN3aXNzXGZjaGFyc2V0MjM4XGZwcnEyIEFyaWFsIENFO317XGY1MFxmYmlkaSBcZnN3
+aXNzXGZjaGFyc2V0MjA0XGZwcnEyIEFyaWFsIEN5cjt9DQp7XGY1MlxmYmlkaSBcZnN3aXNzXGZj
+aGFyc2V0MTYxXGZwcnEyIEFyaWFsIEdyZWVrO317XGY1M1xmYmlkaSBcZnN3aXNzXGZjaGFyc2V0
+MTYyXGZwcnEyIEFyaWFsIFR1cjt9e1xmNTRcZmJpZGkgXGZzd2lzc1xmY2hhcnNldDE3N1xmcHJx
+MiBBcmlhbCAoSGVicmV3KTt9e1xmNTVcZmJpZGkgXGZzd2lzc1xmY2hhcnNldDE3OFxmcHJxMiBB
+cmlhbCAoQXJhYmljKTt9DQp7XGY1NlxmYmlkaSBcZnN3aXNzXGZjaGFyc2V0MTg2XGZwcnEyIEFy
+aWFsIEJhbHRpYzt9e1xmNTdcZmJpZGkgXGZzd2lzc1xmY2hhcnNldDE2M1xmcHJxMiBBcmlhbCAo
+VmlldG5hbWVzZSk7fXtcZjM3OVxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MjM4XGZwcnEyIENhbWJy
+aWEgTWF0aCBDRTt9e1xmMzgwXGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQyMDRcZnBycTIgQ2FtYnJp
+YSBNYXRoIEN5cjt9DQp7XGYzODJcZmJpZGkgXGZyb21hblxmY2hhcnNldDE2MVxmcHJxMiBDYW1i
+cmlhIE1hdGggR3JlZWs7fXtcZjM4M1xmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTYyXGZwcnEyIENh
+bWJyaWEgTWF0aCBUdXI7fXtcZjM4NlxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTg2XGZwcnEyIENh
+bWJyaWEgTWF0aCBCYWx0aWM7fXtcZjQwOVxmYmlkaSBcZnN3aXNzXGZjaGFyc2V0MjM4XGZwcnEy
+IENhbGlicmkgQ0U7fQ0Ke1xmNDEwXGZiaWRpIFxmc3dpc3NcZmNoYXJzZXQyMDRcZnBycTIgQ2Fs
+aWJyaSBDeXI7fXtcZjQxMlxmYmlkaSBcZnN3aXNzXGZjaGFyc2V0MTYxXGZwcnEyIENhbGlicmkg
+R3JlZWs7fXtcZjQxM1xmYmlkaSBcZnN3aXNzXGZjaGFyc2V0MTYyXGZwcnEyIENhbGlicmkgVHVy
+O317XGY0MTZcZmJpZGkgXGZzd2lzc1xmY2hhcnNldDE4NlxmcHJxMiBDYWxpYnJpIEJhbHRpYzt9
+DQp7XGZsb21ham9yXGYzMTUwOFxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MjM4XGZwcnEyIFRpbWVz
+IE5ldyBSb21hbiBDRTt9e1xmbG9tYWpvclxmMzE1MDlcZmJpZGkgXGZyb21hblxmY2hhcnNldDIw
+NFxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gQ3lyO317XGZsb21ham9yXGYzMTUxMVxmYmlkaSBcZnJv
+bWFuXGZjaGFyc2V0MTYxXGZwcnEyIFRpbWVzIE5ldyBSb21hbiBHcmVlazt9DQp7XGZsb21ham9y
+XGYzMTUxMlxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTYyXGZwcnEyIFRpbWVzIE5ldyBSb21hbiBU
+dXI7fXtcZmxvbWFqb3JcZjMxNTEzXGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQxNzdcZnBycTIgVGlt
+ZXMgTmV3IFJvbWFuIChIZWJyZXcpO317XGZsb21ham9yXGYzMTUxNFxmYmlkaSBcZnJvbWFuXGZj
+aGFyc2V0MTc4XGZwcnEyIFRpbWVzIE5ldyBSb21hbiAoQXJhYmljKTt9DQp7XGZsb21ham9yXGYz
+MTUxNVxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTg2XGZwcnEyIFRpbWVzIE5ldyBSb21hbiBCYWx0
+aWM7fXtcZmxvbWFqb3JcZjMxNTE2XGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQxNjNcZnBycTIgVGlt
+ZXMgTmV3IFJvbWFuIChWaWV0bmFtZXNlKTt9e1xmZGJtYWpvclxmMzE1MThcZmJpZGkgXGZyb21h
+blxmY2hhcnNldDIzOFxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gQ0U7fQ0Ke1xmZGJtYWpvclxmMzE1
+MTlcZmJpZGkgXGZyb21hblxmY2hhcnNldDIwNFxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gQ3lyO317
+XGZkYm1ham9yXGYzMTUyMVxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTYxXGZwcnEyIFRpbWVzIE5l
+dyBSb21hbiBHcmVlazt9e1xmZGJtYWpvclxmMzE1MjJcZmJpZGkgXGZyb21hblxmY2hhcnNldDE2
+MlxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gVHVyO30NCntcZmRibWFqb3JcZjMxNTIzXGZiaWRpIFxm
+cm9tYW5cZmNoYXJzZXQxNzdcZnBycTIgVGltZXMgTmV3IFJvbWFuIChIZWJyZXcpO317XGZkYm1h
+am9yXGYzMTUyNFxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTc4XGZwcnEyIFRpbWVzIE5ldyBSb21h
+biAoQXJhYmljKTt9e1xmZGJtYWpvclxmMzE1MjVcZmJpZGkgXGZyb21hblxmY2hhcnNldDE4Nlxm
+cHJxMiBUaW1lcyBOZXcgUm9tYW4gQmFsdGljO30NCntcZmRibWFqb3JcZjMxNTI2XGZiaWRpIFxm
+cm9tYW5cZmNoYXJzZXQxNjNcZnBycTIgVGltZXMgTmV3IFJvbWFuIChWaWV0bmFtZXNlKTt9e1xm
+aGltYWpvclxmMzE1MjhcZmJpZGkgXGZyb21hblxmY2hhcnNldDIzOFxmcHJxMiBDYW1icmlhIENF
+O317XGZoaW1ham9yXGYzMTUyOVxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MjA0XGZwcnEyIENhbWJy
+aWEgQ3lyO30NCntcZmhpbWFqb3JcZjMxNTMxXGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQxNjFcZnBy
+cTIgQ2FtYnJpYSBHcmVlazt9e1xmaGltYWpvclxmMzE1MzJcZmJpZGkgXGZyb21hblxmY2hhcnNl
+dDE2MlxmcHJxMiBDYW1icmlhIFR1cjt9e1xmaGltYWpvclxmMzE1MzVcZmJpZGkgXGZyb21hblxm
+Y2hhcnNldDE4NlxmcHJxMiBDYW1icmlhIEJhbHRpYzt9DQp7XGZiaW1ham9yXGYzMTUzOFxmYmlk
+aSBcZnJvbWFuXGZjaGFyc2V0MjM4XGZwcnEyIFRpbWVzIE5ldyBSb21hbiBDRTt9e1xmYmltYWpv
+clxmMzE1MzlcZmJpZGkgXGZyb21hblxmY2hhcnNldDIwNFxmcHJxMiBUaW1lcyBOZXcgUm9tYW4g
+Q3lyO317XGZiaW1ham9yXGYzMTU0MVxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTYxXGZwcnEyIFRp
+bWVzIE5ldyBSb21hbiBHcmVlazt9DQp7XGZiaW1ham9yXGYzMTU0MlxmYmlkaSBcZnJvbWFuXGZj
+aGFyc2V0MTYyXGZwcnEyIFRpbWVzIE5ldyBSb21hbiBUdXI7fXtcZmJpbWFqb3JcZjMxNTQzXGZi
+aWRpIFxmcm9tYW5cZmNoYXJzZXQxNzdcZnBycTIgVGltZXMgTmV3IFJvbWFuIChIZWJyZXcpO317
+XGZiaW1ham9yXGYzMTU0NFxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTc4XGZwcnEyIFRpbWVzIE5l
+dyBSb21hbiAoQXJhYmljKTt9DQp7XGZiaW1ham9yXGYzMTU0NVxmYmlkaSBcZnJvbWFuXGZjaGFy
+c2V0MTg2XGZwcnEyIFRpbWVzIE5ldyBSb21hbiBCYWx0aWM7fXtcZmJpbWFqb3JcZjMxNTQ2XGZi
+aWRpIFxmcm9tYW5cZmNoYXJzZXQxNjNcZnBycTIgVGltZXMgTmV3IFJvbWFuIChWaWV0bmFtZXNl
+KTt9e1xmbG9taW5vclxmMzE1NDhcZmJpZGkgXGZyb21hblxmY2hhcnNldDIzOFxmcHJxMiBUaW1l
+cyBOZXcgUm9tYW4gQ0U7fQ0Ke1xmbG9taW5vclxmMzE1NDlcZmJpZGkgXGZyb21hblxmY2hhcnNl
+dDIwNFxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gQ3lyO317XGZsb21pbm9yXGYzMTU1MVxmYmlkaSBc
+ZnJvbWFuXGZjaGFyc2V0MTYxXGZwcnEyIFRpbWVzIE5ldyBSb21hbiBHcmVlazt9e1xmbG9taW5v
+clxmMzE1NTJcZmJpZGkgXGZyb21hblxmY2hhcnNldDE2MlxmcHJxMiBUaW1lcyBOZXcgUm9tYW4g
+VHVyO30NCntcZmxvbWlub3JcZjMxNTUzXGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQxNzdcZnBycTIg
+VGltZXMgTmV3IFJvbWFuIChIZWJyZXcpO317XGZsb21pbm9yXGYzMTU1NFxmYmlkaSBcZnJvbWFu
+XGZjaGFyc2V0MTc4XGZwcnEyIFRpbWVzIE5ldyBSb21hbiAoQXJhYmljKTt9e1xmbG9taW5vclxm
+MzE1NTVcZmJpZGkgXGZyb21hblxmY2hhcnNldDE4NlxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gQmFs
+dGljO30NCntcZmxvbWlub3JcZjMxNTU2XGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQxNjNcZnBycTIg
+VGltZXMgTmV3IFJvbWFuIChWaWV0bmFtZXNlKTt9e1xmZGJtaW5vclxmMzE1NThcZmJpZGkgXGZy
+b21hblxmY2hhcnNldDIzOFxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gQ0U7fXtcZmRibWlub3JcZjMx
+NTU5XGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQyMDRcZnBycTIgVGltZXMgTmV3IFJvbWFuIEN5cjt9
+DQp7XGZkYm1pbm9yXGYzMTU2MVxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTYxXGZwcnEyIFRpbWVz
+IE5ldyBSb21hbiBHcmVlazt9e1xmZGJtaW5vclxmMzE1NjJcZmJpZGkgXGZyb21hblxmY2hhcnNl
+dDE2MlxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gVHVyO317XGZkYm1pbm9yXGYzMTU2M1xmYmlkaSBc
+ZnJvbWFuXGZjaGFyc2V0MTc3XGZwcnEyIFRpbWVzIE5ldyBSb21hbiAoSGVicmV3KTt9DQp7XGZk
+Ym1pbm9yXGYzMTU2NFxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTc4XGZwcnEyIFRpbWVzIE5ldyBS
+b21hbiAoQXJhYmljKTt9e1xmZGJtaW5vclxmMzE1NjVcZmJpZGkgXGZyb21hblxmY2hhcnNldDE4
+NlxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gQmFsdGljO317XGZkYm1pbm9yXGYzMTU2NlxmYmlkaSBc
+ZnJvbWFuXGZjaGFyc2V0MTYzXGZwcnEyIFRpbWVzIE5ldyBSb21hbiAoVmlldG5hbWVzZSk7fQ0K
+e1xmaGltaW5vclxmMzE1NjhcZmJpZGkgXGZzd2lzc1xmY2hhcnNldDIzOFxmcHJxMiBDYWxpYnJp
+IENFO317XGZoaW1pbm9yXGYzMTU2OVxmYmlkaSBcZnN3aXNzXGZjaGFyc2V0MjA0XGZwcnEyIENh
+bGlicmkgQ3lyO317XGZoaW1pbm9yXGYzMTU3MVxmYmlkaSBcZnN3aXNzXGZjaGFyc2V0MTYxXGZw
+cnEyIENhbGlicmkgR3JlZWs7fXtcZmhpbWlub3JcZjMxNTcyXGZiaWRpIFxmc3dpc3NcZmNoYXJz
+ZXQxNjJcZnBycTIgQ2FsaWJyaSBUdXI7fQ0Ke1xmaGltaW5vclxmMzE1NzVcZmJpZGkgXGZzd2lz
+c1xmY2hhcnNldDE4NlxmcHJxMiBDYWxpYnJpIEJhbHRpYzt9e1xmYmltaW5vclxmMzE1NzhcZmJp
+ZGkgXGZyb21hblxmY2hhcnNldDIzOFxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gQ0U7fXtcZmJpbWlu
+b3JcZjMxNTc5XGZiaWRpIFxmcm9tYW5cZmNoYXJzZXQyMDRcZnBycTIgVGltZXMgTmV3IFJvbWFu
+IEN5cjt9DQp7XGZiaW1pbm9yXGYzMTU4MVxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTYxXGZwcnEy
+IFRpbWVzIE5ldyBSb21hbiBHcmVlazt9e1xmYmltaW5vclxmMzE1ODJcZmJpZGkgXGZyb21hblxm
+Y2hhcnNldDE2MlxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gVHVyO317XGZiaW1pbm9yXGYzMTU4M1xm
+YmlkaSBcZnJvbWFuXGZjaGFyc2V0MTc3XGZwcnEyIFRpbWVzIE5ldyBSb21hbiAoSGVicmV3KTt9
+DQp7XGZiaW1pbm9yXGYzMTU4NFxmYmlkaSBcZnJvbWFuXGZjaGFyc2V0MTc4XGZwcnEyIFRpbWVz
+IE5ldyBSb21hbiAoQXJhYmljKTt9e1xmYmltaW5vclxmMzE1ODVcZmJpZGkgXGZyb21hblxmY2hh
+cnNldDE4NlxmcHJxMiBUaW1lcyBOZXcgUm9tYW4gQmFsdGljO317XGZiaW1pbm9yXGYzMTU4Nlxm
+YmlkaSBcZnJvbWFuXGZjaGFyc2V0MTYzXGZwcnEyIFRpbWVzIE5ldyBSb21hbiAoVmlldG5hbWVz
+ZSk7fX0NCntcY29sb3J0Ymw7XHJlZDBcZ3JlZW4wXGJsdWUwO1xyZWQwXGdyZWVuMFxibHVlMjU1
+O1xyZWQwXGdyZWVuMjU1XGJsdWUyNTU7XHJlZDBcZ3JlZW4yNTVcYmx1ZTA7XHJlZDI1NVxncmVl
+bjBcYmx1ZTI1NTtccmVkMjU1XGdyZWVuMFxibHVlMDtccmVkMjU1XGdyZWVuMjU1XGJsdWUwO1xy
+ZWQyNTVcZ3JlZW4yNTVcYmx1ZTI1NTtccmVkMFxncmVlbjBcYmx1ZTEyODtccmVkMFxncmVlbjEy
+OFxibHVlMTI4O1xyZWQwXGdyZWVuMTI4XGJsdWUwOw0KXHJlZDEyOFxncmVlbjBcYmx1ZTEyODtc
+cmVkMTI4XGdyZWVuMFxibHVlMDtccmVkMTI4XGdyZWVuMTI4XGJsdWUwO1xyZWQxMjhcZ3JlZW4x
+MjhcYmx1ZTEyODtccmVkMTkyXGdyZWVuMTkyXGJsdWUxOTI7fXtcKlxkZWZjaHAgXGZzMjJcbG9j
+aFxhZjMxNTA2XGhpY2hcYWYzMTUwNlxkYmNoXGFmMzE1MDUgfXtcKlxkZWZwYXAgXHFsIFxsaTBc
+cmkwXHNhMjAwXHNsMjc2XHNsbXVsdDENClx3aWRjdGxwYXJcd3JhcGRlZmF1bHRcYXNwYWxwaGFc
+YXNwbnVtXGZhYXV0b1xhZGp1c3RyaWdodFxyaW4wXGxpbjBcaXRhcDAgfVxub3FmcHJvbW90ZSB7
+XHN0eWxlc2hlZXR7XHFsIFxsaTBccmkwXHNhMjAwXHNsMjc2XHNsbXVsdDFcd2lkY3RscGFyXHdy
+YXBkZWZhdWx0XGFzcGFscGhhXGFzcG51bVxmYWF1dG9cYWRqdXN0cmlnaHRccmluMFxsaW4wXGl0
+YXAwIFxydGxjaFxmY3MxIFxhZjMxNTA3XGFmczIyXGFsYW5nMTAyNSANClxsdHJjaFxmY3MwIFxm
+czIyXGxhbmcxMDMzXGxhbmdmZTEwMzNcbG9jaFxmMzE1MDZcaGljaFxhZjMxNTA2XGRiY2hcYWYz
+MTUwNVxjZ3JpZFxsYW5nbnAxMDMzXGxhbmdmZW5wMTAzMyBcc25leHQwIFxzcWZvcm1hdCBcc3By
+aW9yaXR5MCBOb3JtYWw7fXtcKlxjczEwIFxhZGRpdGl2ZSBcc3NlbWloaWRkZW4gXHN1bmhpZGV1
+c2VkIFxzcHJpb3JpdHkxIERlZmF1bHQgUGFyYWdyYXBoIEZvbnQ7fXtcKg0KXHRzMTFcdHNyb3dk
+XHRyZnRzV2lkdGhCM1x0cnBhZGRsMTA4XHRycGFkZHIxMDhcdHJwYWRkZmwzXHRycGFkZGZ0M1x0
+cnBhZGRmYjNcdHJwYWRkZnIzXHRyY2JwYXQxXHRyY2ZwYXQxXHRibGluZDBcdGJsaW5kdHlwZTNc
+dHNjZWxsd2lkdGhmdHMwXHRzdmVydGFsdFx0c2JyZHJ0XHRzYnJkcmxcdHNicmRyYlx0c2JyZHJy
+XHRzYnJkcmRnbFx0c2JyZHJkZ3JcdHNicmRyaFx0c2JyZHJ2IFxxbCBcbGkwXHJpMFxzYTIwMFxz
+bDI3NlxzbG11bHQxDQpcd2lkY3RscGFyXHdyYXBkZWZhdWx0XGFzcGFscGhhXGFzcG51bVxmYWF1
+dG9cYWRqdXN0cmlnaHRccmluMFxsaW4wXGl0YXAwIFxydGxjaFxmY3MxIFxhZjBcYWZzMjJcYWxh
+bmcxMDI1IFxsdHJjaFxmY3MwIFxmczIyXGxhbmcxMDMzXGxhbmdmZTEwMzNcbG9jaFxmMzE1MDZc
+aGljaFxhZjMxNTA2XGRiY2hcYWYzMTUwNVxjZ3JpZFxsYW5nbnAxMDMzXGxhbmdmZW5wMTAzMyAN
+ClxzbmV4dDExIFxzc2VtaWhpZGRlbiBcc3VuaGlkZXVzZWQgXHNxZm9ybWF0IE5vcm1hbCBUYWJs
+ZTt9fXtcKlxyc2lkdGJsIFxyc2lkMjk2NTk5OFxyc2lkODUzNTU3OFxyc2lkMTQ2NDYzMDN9e1xt
+bWF0aFByXG1tYXRoRm9udDM0XG1icmtCaW4wXG1icmtCaW5TdWIwXG1zbWFsbEZyYWMwXG1kaXNw
+RGVmMVxtbE1hcmdpbjBcbXJNYXJnaW4wXG1kZWZKYzFcbXdyYXBJbmRlbnQxNDQwXG1pbnRMaW0w
+XG1uYXJ5TGltMX17XGluZm8NCntcYXV0aG9yIFVzZXJ9e1xvcGVyYXRvciBVc2VyfXtcY3JlYXRp
+bVx5cjIwMTRcbW8xMFxkeTlcaHIyMVxtaW4zfXtccmV2dGltXHlyMjAxNFxtbzEwXGR5MThcaHIy
+MVxtaW4xfXtcdmVyc2lvbjN9e1xlZG1pbnMxfXtcbm9mcGFnZXMxfXtcbm9md29yZHM1OTV9e1xu
+b2ZjaGFyczI2NjF9e1xub2ZjaGFyc3dzMzI1MH17XHZlcm4zMjg1OX19e1wqXHhtbG5zdGJsIHtc
+eG1sbnMxIGh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vb2ZmaWNlL3dvcg0KZC8yMDAzL3dv
+cmRtbH19XHBhcGVydzEyMjQwXHBhcGVyaDE1ODQwXG1hcmdsMTQ0MFxtYXJncjE0NDBcbWFyZ3Qx
+NDQwXG1hcmdiMTQ0MFxndXR0ZXIwXGx0cnNlY3QgDQpcd2lkb3djdHJsXGZ0bmJqXGFlbmRkb2Nc
+dHJhY2ttb3ZlczFcdHJhY2tmb3JtYXR0aW5nMVxkb25vdGVtYmVkc3lzZm9udDBccmVseW9udm1s
+MFxkb25vdGVtYmVkbGluZ2RhdGExXGdyZmRvY2V2ZW50czBcdmFsaWRhdGV4bWwwXHNob3dwbGFj
+ZWhvbGR0ZXh0MFxpZ25vcmVtaXhlZGNvbnRlbnQwXHNhdmVpbnZhbGlkeG1sMFxzaG93eG1sZXJy
+b3JzMFxob3J6ZG9jXGRnaHNwYWNlMTIwXGRndnNwYWNlMTIwXGRnaG9yaWdpbjE3MDENClxkZ3Zv
+cmlnaW4xOTg0XGRnaHNob3cwXGRndnNob3czXGpjb21wcmVzc1x2aWV3a2luZDFcdmlld3NjYWxl
+MTAwXHJzaWRyb290MTQ2NDYzMDMgXGZldDB7XCpcd2dyZmZtdGZpbHRlciAyNDUwfVxpbGZvbWFj
+YXRjbG51cDBcbHRycGFyIFxzZWN0ZCBcbHRyc2VjdFxsaW5leDBcc2VjdGRlZmF1bHRjbFxzZnRu
+Ymoge1wqXHBuc2VjbHZsMVxwbnVjcm1ccG5zdGFydDFccG5pbmRlbnQ3MjBccG5oYW5nIHtccG50
+eHRhIC59fXtcKlxwbnNlY2x2bDINClxwbnVjbHRyXHBuc3RhcnQxXHBuaW5kZW50NzIwXHBuaGFu
+ZyB7XHBudHh0YSAufX17XCpccG5zZWNsdmwzXHBuZGVjXHBuc3RhcnQxXHBuaW5kZW50NzIwXHBu
+aGFuZyB7XHBudHh0YSAufX17XCpccG5zZWNsdmw0XHBubGNsdHJccG5zdGFydDFccG5pbmRlbnQ3
+MjBccG5oYW5nIHtccG50eHRhICl9fXtcKlxwbnNlY2x2bDVccG5kZWNccG5zdGFydDFccG5pbmRl
+bnQ3MjBccG5oYW5nIHtccG50eHRiICh9e1xwbnR4dGEgKX19e1wqXHBuc2VjbHZsNg0KXHBubGNs
+dHJccG5zdGFydDFccG5pbmRlbnQ3MjBccG5oYW5nIHtccG50eHRiICh9e1xwbnR4dGEgKX19e1wq
+XHBuc2VjbHZsN1xwbmxjcm1ccG5zdGFydDFccG5pbmRlbnQ3MjBccG5oYW5nIHtccG50eHRiICh9
+e1xwbnR4dGEgKX19e1wqXHBuc2VjbHZsOFxwbmxjbHRyXHBuc3RhcnQxXHBuaW5kZW50NzIwXHBu
+aGFuZyB7XHBudHh0YiAofXtccG50eHRhICl9fXtcKlxwbnNlY2x2bDlccG5sY3JtXHBuc3RhcnQx
+XHBuaW5kZW50NzIwXHBuaGFuZyANCntccG50eHRiICh9e1xwbnR4dGEgKX19XHBhcmRccGxhaW4g
+XGx0cnBhclxxbCBcbGkwXHJpMFxub3dpZGN0bHBhclx3cmFwZGVmYXVsdFxmYWF1dG9ccmluMFxs
+aW4wXGl0YXAwIFxydGxjaFxmY3MxIFxhZjMxNTA3XGFmczIyXGFsYW5nMTAyNSBcbHRyY2hcZmNz
+MCBcZnMyMlxsYW5nMTAzM1xsYW5nZmUxMDMzXGxvY2hcYWYzMTUwNlxoaWNoXGFmMzE1MDZcZGJj
+aFxhZjMxNTA1XGNncmlkXGxhbmducDEwMzNcbGFuZ2ZlbnAxMDMzIHsNClxydGxjaFxmY3MxIFxh
+YlxhZjFcYWZzMjAgXGx0cmNoXGZjczAgXGJcZjFcZnMyMFxpbnNyc2lkMTQ2NDYzMDMgXGhpY2hc
+YWYxXGRiY2hcYWYzMTUwNVxsb2NoXGYxIEZyb20gTXJzLiBHcmFjZSBNYW5kYQ0KXHBhciBcaGlj
+aFxhZjFcZGJjaFxhZjMxNTA1XGxvY2hcZjEgRm9ybWFsIHdvcmtlciBpbiBTb3V0aCBBZnJpY2EN
+ClxwYXIgXGhpY2hcYWYxXGRiY2hcYWYzMTUwNVxsb2NoXGYxIEdvbGQgcGFubmluZyBhc3NvY2lh
+dGlvbg0KXHBhciANClxwYXIgXGhpY2hcYWYxXGRiY2hcYWYzMTUwNVxsb2NoXGYxIE15IERlYXJl
+c3QgaW4gY2hyaXN0LA0KXHBhciANClxwYXIgXGhpY2hcYWYxXGRiY2hcYWYzMTUwNVxsb2NoXGYx
+IA0KRmlyc3QsIGxldCBtZSBzdGFydCBieSBpbnRyb2R1Y2luZyBteXNlbGYgTXkgbmFtZSBpcyBN
+cnMuIEdyYWNlIE1hbmRhIGEgbmF0aW9uYWxpdHkgb2Ygc291dGggQWZyaWNhICxJIHdhcyB3b3Jr
+aW5nIHdpdGggU291dGggQWZyaWNhIGdvbGQgcGFubmluZyBhc3NvY2lhdGlvbi4gWW91IGNhbiB2
+aWV3IHRoZSBwcm9maWxlIG9mIFNvdXRoIEFmcmljYSBnb2xkIHBhbm5pbmcgYXNzb2NpYXRpb24g
+YXQgKGh0dHA6Ly93d3cuc2Fnb2xkcGFubmluZy5jDQpcaGljaFxhZjFcZGJjaFxhZjMxNTA1XGxv
+Y2hcZjEgb1xoaWNoXGFmMVxkYmNoXGFmMzE1MDVcbG9jaFxmMSAuemEvaGlzdG9yeS5odG0pIGFu
+ZCByZWFkIGFib3V0IHVzLiAgSSBhbSBtYXJyaWVkIHRvIGxhdGUgTXIuQm9uZ2FuaSBNYW5kYTsg
+d2Ugd2VyZQ0KXHBhciBcaGljaFxhZjFcZGJjaFxhZjMxNTA1XGxvY2hcZjEgbWFycmllZCBmb3Ig
+dHdlbnR5IHllYXJzIHdpdGggYSBjaGlsZC4gSGUgZGllZCBhZnRlciBhbiBpbGxuZXNzIHRoYXQg
+bGFzdGVkIGZvciBmb3VyIHdlZWtzLiBQbGVhc2UgSSBrbm93IHRoaXMgbWF5IGNvbWUgdG8geW91
+IGJ5IHN1cnByaXNlLCBiZWNhdXNlIHlvdSBkaWQgbm90IGtub3cgbWUsIEkgblxoaWNoXGFmMVxk
+YmNoXGFmMzE1MDVcbG9jaFxmMSANCmVlZGVkIHlvdXIgYXNzaXN0YW5jZSB0aGF0IHdhcyB3aHkg
+SSB3cml0ZSB5b3UgdGhyb3VnaCBkaXZpbmUgZGlyZWN0aW9uLCBpdCBpcyBteSBkZXNpcmUgb2Yg
+Z29pbmcgaW50bw0KXHBhciBcaGljaFxhZjFcZGJjaFxhZjMxNTA1XGxvY2hcZjEgcmVsYXRpb25z
+aGlwIHdpdGggeW91Lg0KXHBhciANClxwYXIgXGhpY2hcYWYxXGRiY2hcYWYzMTUwNVxsb2NoXGYx
+IEJlZm9yZSBoaXMgZGVhdGggd2Ugd2VyZSBib3RoIGJvcm4gYWdhaW4gQ2hyaXN0aWFucy4gV2hl
+biBteSBsYXRlIGh1c2JhbmQgd2FzIGFsaXZlIHdlIGRlcG9zaXRlZCB0aGUgc3VtIG9mIFVTRCQz
+MC41TSAoVGhpcnR5IE1pbFxoaWNoXGFmMVxkYmNoXGFmMzE1MDVcbG9jaFxmMSANCmxpb24gRml2
+ZSBIdW5kcmVkIFRob3VzYW5kIFUuUy5Eb2xsYXJzKSB3aXRoIEZpbmFuY2UvYmFuayBQcmVzZW50
+bHksIFRoaXMgZnVuZCBlbWFuYXRlZCBhcyBhIHJlc3VsdCBvZiBhbiBvdmVyLWludm9pY2VkIGNv
+bnRyYWN0IHdoaWNoIGhlIGV4ZWN1dGVkIHdpdGggdGhlIFNvdXRoIEFmcmljYSBnb2xkIHBhbm5p
+bmcgYXNzb2NpYXRpb24uIFRob3VnaCBJIHNzaXN0ZWQgaGltIGluIGdldHRpbmcgdGhpcyBjb250
+cmFjdCBidXQgSSBuZXZlciBrbg0KXGhpY2hcYWYxXGRiY2hcYWYzMTUwNVxsb2NoXGYxIGVcaGlj
+aFxhZjFcZGJjaFxhZjMxNTA1XGxvY2hcZjEgDQp3IHRoYXQgaXQgd2FzIG92ZXItaW52b2ljZWQg
+YnkgaGltLiBJIGFtIGFmcmFpZCB0aGF0IHRoZSBnb3Zlcm5tZW50IG9mIFNvdXRoIEFmcmljYSBt
+aWdodCBzdGFydCB0byBpbnZlc3RpZ2F0ZSBvbiBjb250cmFjdHMgYXdhcmRlZCBmcm9tIFNvdXRo
+IEFmcmljYSBnb2xkIHBhbm5pbmcgYXNzb2NpYXRpb24uIFRoaXMgbW9uZXkgaXMgc3RpbGwgd2l0
+aCB0aGUgYmFuay4gUmVjZW50bHkgbXkgRG9jdG9yIHRvbGQgbWUgdGhhdCBJIHdvdWxkIG5vdCAN
+ClxoaWNoXGFmMVxkYmNoXGFmMzE1MDVcbG9jaFxmMSBsXGhpY2hcYWYxXGRiY2hcYWYzMTUwNVxs
+b2NoXGYxIA0KYXN0IGZvciB0aGUgbmV4dCB0aHJlZSBtb250aHMgZHVlIHRvIG15IGNhbmNlciBw
+cm9ibGVtLCB0aG91Z2ggd2hhdCBkaXN0dXJicyBtZSBtb3N0IGlzIG15IHN0cm9rZS4gSGF2aW5n
+IGtub3duIG15IGNvbmRpdGlvbiBJIGRlY2lkZWQgdG8gZG9uYXRlIHRoaXMgZnVuZCB0byBjaHVy
+Y2ggb3IgYmV0dGVyIHN0aWxsIGEgQ2hyaXN0aWFuIGluZGl2aWR1YWwgdGhhdCB3aWxsIHV0aWxp
+emUgdGhpcyBtb25leSB0aGUgd2F5IEkgYW0gZ29pbmcgdG8gDQpcaGljaFxhZjFcZGJjaFxhZjMx
+NTA1XGxvY2hcZjEgaVxoaWNoXGFmMVxkYmNoXGFmMzE1MDVcbG9jaFxmMSBuc3RydWN0IGhlcmUg
+aW4uIEkgd2FudCBhIHBlcnNvbiBvciBjaHVyY2ggdGhhdCB3aWxsIHVzZSB0aGlzIGZ1bmQgdG8g
+Y2h1cmNoZXMsIG9ycGhhbmFnZXMsIHJlc2VhcmNoIGNlbnRyZXMgYW5kIHdpZG93cw0KXHBhciBc
+aGljaFxhZjFcZGJjaFxhZjMxNTA1XGxvY2hcZjEgcHJvcGFnYXRpbmcgdGhlIHdvcmQgb2YgR29k
+IGFuZCB0byBlbnN1cmUgdGhhdCB0aGUgaG91c2Ugb2YgR29kIGlzIG1haW50YWluZWQuDQpccGFy
+IA0KXHBhciANClxwYXIgXGhpY2hcYWYxXGRiY2hcYWYzMTUwNVxsb2NoXGYxIFRoZSBCaWJsZSBt
+YWRlIHVzIHRvIHVuZGVyc3RhbmQgdGhhdCBibGVzc2VkIGlzIHRoZSBoYW5caGljaFxhZjFcZGJj
+aFxhZjMxNTA1XGxvY2hcZjEgDQpkIHRoYXQgZ3JpdmV0LiBJIHRvb2sgdGhpcyBkZWNpc2lvbiBi
+ZWNhdXNlIEkgaGF2ZSBhIGNoaWxkIHRoYXQgd2lsbCBpbmhlcml0IHRoaXMgbW9uZXkgYnV0IG15
+IHNvbiBjYW4gbm90IGNhcnJ5IG91dCB0aGlzIHdvcmsgb25seSBiZWNhdXNlIEkgYW5kIG15IGxh
+dGUgaHVzYmFuZCBkZWNpZGUgdG8gdXNlIHNvbWUgb2YgdGhlIG1vbmV5IHRvIHdvcmsgZm9yIEdv
+ZCBhbmQgbGl2ZSBzb21lIGZvciBvdXIgc29uIHRvIGhhdmUgYSBiZXR0ZXIgbGkNClxoaWNoXGFm
+MVxkYmNoXGFmMzE1MDVcbG9jaFxmMSB2XGhpY2hcYWYxXGRiY2hcYWYzMTUwNVxsb2NoXGYxIGUu
+IE91ciBzb24gaXMganVzdCAxN3llYXIgb2xkIG5vdyBhbmQNClxwYXIgXGhpY2hcYWYxXGRiY2hc
+YWYzMTUwNVxsb2NoXGYxIGJlZW4gZ3JvdyB1cCBpbiBBZnJpY2EsIGhlIGhhdmUgbG93IG1hdHVy
+aXR5IEhlbmNlIHRoZSByZWFzb24gZm9yIHRha2luZyB0aGlzIGJvbGQgZGVjaXNpb24uIEkgYW0g
+bm90IGFmcmFpZCBvZiBkZWF0aCBoZW5jZSBJIGtub3cgdGhhdCBJIGFtIGdvaW5nIHRvIGJlIGlu
+IHRoZSBib3NvbSBvZiB0aGUgTG9yZC4gRXhvZHVzIDE0IFZTIDE0IHNheXMgdGhhdCB0aGUgbG9y
+ZCB3aWxsDQpcaGljaFxhZjFcZGJjaFxhZjMxNTA1XGxvY2hcZjEgIGZpZ2h0IG15IGNhc2UgYW5k
+IEkgc2hhbGwgaG9sZCBteSBwZWFjZS4NClxwYXIgDQpccGFyIFxoaWNoXGFmMVxkYmNoXGFmMzE1
+MDVcbG9jaFxmMSBJIHdpbGwgbGlrZSB5b3UgdG8gdW5kZXJzdGFuZCB0aGF0IG15IGNvbnRhY3Qg
+dG8geW91IGlzIGEgZGl2aW5lIGRpcmVjdGlvbiBmcm9tIEdvZDsgQXMgc29vbiBhcyBJIHJlY2Vp
+dmUgeW91ciByZXBseSBJIHNoYWxsIGdpdmUgeW91IHRoZSBjb250YWN0IG9mIHRoZSBGaW5hbmNl
+L2JhbmsuIEkgd2lsbCBhbHNvIGlzc3VlIHlvdSBhIGxldHRlciBvZiBhdXRob3JpdHkgdGgNClxo
+aWNoXGFmMVxkYmNoXGFmMzE1MDVcbG9jaFxmMSBhdCB3aWxsIGVtcG93ZXIgeW91IGFzIHRoZSBu
+ZXcgYmVuZWZpY2lhcnkgb2YgdGhpcyBmdW5kLg0KXHBhciBcaGljaFxhZjFcZGJjaFxhZjMxNTA1
+XGxvY2hcZjEgTXkgaGFwcGluZXNzIGlzIHRoYXQgSSBsaXZlIGEgbGlmZSBvZiBhIHdvcnRoeSBD
+aHJpc3RpYW4uIEFueSBkZWxheSBpbiB5b3VyIHJlcGx5IHdpbGwgZ2l2ZSBtZSByb29tIGluIHNv
+dXJjaW5nIGZvciBhIGNodXJjaCBvciBDaHJpc3RpYW4gaW5kaXZpZHVhbCBmb3IgdGhpcyBzYW1l
+IHB1cnBvc2UuDQpccGFyIA0KXHBhciBcaGljaFxhZjFcZGJjaFxhZjMxNTA1XGxvY2hcZjEgUGxl
+YXNlIGFzc3VyZSBtZSB0aGF0IHlvdSBcaGljaFxhZjFcZGJjaFxhZjMxNTA1XGxvY2hcZjEgDQp3
+aWxsIGFjdCBhY2NvcmRpbmdseSBhcyBJIHN0YXRlZCBoZXJlIGFuZCBQbGVhc2UgSSB3aWxsIGxp
+a2UgeW91IHRvIGNvbnRhY3QgbWUgaW1tZWRpYXRlbHkgeW91IHJlY2VpdmUgdGhpcyBtYWlsIHNv
+IHRoYXQgSSB3aWxsIGluc3RydWN0IHRoZSBGaW5hbmNlL2JhbmsgdG8hIFRyYW5zZmVyIHRoaXMg
+ZnVuZCBpbnRvDQpccGFyIFxoaWNoXGFmMVxkYmNoXGFmMzE1MDVcbG9jaFxmMSB5b3VyIGFjY291
+bnQufXtccnRsY2hcZmNzMSBcYWJcYWYxXGFmczIwIFxsdHJjaFxmY3MwIFxiXGYxXGZzMjBcaW5z
+cnNpZDg1MzU1NzggXGhpY2hcYWYxXGRiY2hcYWYzMTUwNVxsb2NoXGYxICBcaGljaFxhZjFcZGJj
+aFxhZjMxNTA1XGxvY2hcZjEgTXlcaGljaFxhZjFcZGJjaFxhZjMxNTA1XGxvY2hcZjEgIFxoaWNo
+XGFmMVxkYmNoXGFmMzE1MDVcbG9jaFxmMSBQcml2YXRlIE51bWJlcjogfQ0Ke1xydGxjaFxmY3Mx
+IFxhZjMxNTA3IFxsdHJjaFxmY3MwIFxiXGluc3JzaWQ4NTM1NTc4XGNoYXJyc2lkODUzNTU3OCBc
+aGljaFxhZjMxNTA2XGRiY2hcYWYzMTUwNVxsb2NoXGYzMTUwNiBUZWw6ICsyNzYxNzY1MzM5Mn17
+XHJ0bGNoXGZjczEgXGFiXGFmMVxhZnMyMCBcbHRyY2hcZmNzMCBcYlxmMVxmczIwXGluc3JzaWQx
+NDY0NjMwMyANClxwYXIgDQpccGFyIFxoaWNoXGFmMVxkYmNoXGFmMzE1MDVcbG9jaFxmMSBSZW1h
+aW4gYmxlc3NlZCBpbiB0aGUgbmFtZSBvZiB0aGUgTG9yZC4NClxwYXIgDQpccGFyIFxoaWNoXGFm
+MVxkYmNoXGFmMzE1MDVcbG9jaFxmMSBNcnMuIEdyYWNlIE1hbmRhIGFcaGljaFxhZjFcZGJjaFxh
+ZjMxNTA1XGxvY2hcZjEgbmQgU29uIEJyaWFuDQpccGFyIFxoaWNoXGFmMVxkYmNoXGFmMzE1MDVc
+bG9jaFxmMSBHb2RcaGljaFxmMSBccnF1b3RlIFxsb2NoXGYxIHMgZ3JhY2UgaXMgc3VmZmljaWVu
+dCBmb3IgbWUNClxwYXIgfXtcKlx0aGVtZWRhdGEgNTA0YjAzMDQxNDAwMDYwMDA4MDAwMDAwMjEw
+MDgyOGFiYzEzZmEwMDAwMDAxYzAyMDAwMDEzMDAwMDAwNWI0MzZmNmU3NDY1NmU3NDVmNTQ3OTcw
+NjU3MzVkMmU3ODZkNmNhYzkxY2I2YWMzMzAxMDQ1Zjc4NWZlODNkMGI2ZDgNCjcyYmEyOGE1ZDhj
+ZWEyNDk3NzdkMmNkMjBmMThlNGIxMmQ2YThmODQzNDA5YzlkZjc3ZWNiODUwYmEwODJkNzQyMzEw
+NjJjZTk5N2I1NWFlOGZlM2EwMGUxODkzZjM1NGU5NTU1ZTY4ODU2NDdkZTNhOGFiZjRmYmVlMjli
+YmQ3DQoyYTMxNTAwMzgzMjdhY2Y0MDk5MzVlZDdkNzU3ZTVlZTE0MzAyOTk5YTY1NGU5OWUzOTNj
+MTg5MzZjOGYyM2E0ZGMwNzI0Nzk2OTdkMWM4MWU1MWEzYjEzYzA3ZTQwODdlNmI2MjhlZThjZjVj
+NDQ4OWNmMWM0ZDA3NWY5MmEwYg0KNDRkN2EwN2E4M2M4MmYzMDhhYzdiMGEwZjBmYmY5MGMyNDgw
+OTgwYjU4YWJjNzMzNjE1YWEyZDIxMGMyZTAyY2IwNDQzMDA3NmE3ZWU4MzNkZmI2Y2U2MmUzZWQ3
+ZTE0NjkzZTgzMTdkOGNkMDQzM2JmNWM2MGY1M2ZlYTJmZTcNCjA2NWJkODBmYWNiNjQ3ZTllMjVj
+N2ZjNDIxZmQyZGRiNTI2YjJlOTM3M2ZlZDRiYjkwMmUxODJlOTdiN2I0NjFlNmJmYWQzZjAxMDAw
+MGZmZmYwMzAwNTA0YjAzMDQxNDAwMDYwMDA4MDAwMDAwMjEwMGE1ZDZhN2U3YzAwMDAwDQowMDM2
+MDEwMDAwMGIwMDAwMDA1ZjcyNjU2YzczMmYyZTcyNjU2YzczODQ4ZmNmNmFjMzMwMGM4N2VmODVi
+ZDgzZDE3ZDUxZDJjMzE4MjU3NjJmYTU5MDQzMmZhMzdkMDBlMTI4N2Y2ODIyMWJkYjFiZWJkYjRm
+YzcwNjBhYmIwOA0KODRhNGVmZjdhOTNkZmVhZThiZjllMTk0ZTcyMDE2OWFhYTA2YzNlMjQzM2Zj
+YjY4ZTE3NjNkYmY3ZjgyYzk4NWE0YTcyNTA4NWI3ODcwODZhMzdiZGJiNTVmYmM1MGQxYTMzY2Nk
+MzExYmE1NDhiNjMwOTUxMjBmODhkOTRmYmMNCjUyYWU0MjY0ZDFjOTEwZDI0YTQ1ZGIzNDYyMjQ3
+ZmE3OTE3MTVmZDcxZjk4OWUxOWUwMzY0Y2QzZjUxNjUyZDczNzYwYWU4ZmE4YzlmZmIzYzMzMGNj
+OWU0ZmMxN2ZhZjJjZTU0NTA0NmUzNzk0NGM2OWU0NjJhMWE4MmZlMzUzDQpiZDkwYTg2NWFhZDQx
+ZWQwYjViOGY5ZDZmZDAxMDAwMGZmZmYwMzAwNTA0YjAzMDQxNDAwMDYwMDA4MDAwMDAwMjEwMDZi
+Nzk5NjE2ODMwMDAwMDA4YTAwMDAwMDFjMDAwMDAwNzQ2ODY1NmQ2NTJmNzQ2ODY1NmQ2NTJmNzQ2
+OA0KNjU2ZDY1NGQ2MTZlNjE2NzY1NzIyZTc4NmQ2YzBjY2M0ZDBhYzMyMDEwNDBlMTdkYTE3Nzkw
+ZDkzNzYzYmIyODQ1NjJiMmNiYWViYmY2MDA0MzljMWE0MWM3YTBkMjlmZGJkN2U1ZTM4MzM3Y2Vk
+ZjE0ZDU5YjRiMGQ1OTJjOWMNCjA3MGQ4YTY1Y2QyZTg4YjdmMDdjMmNhNzFiYThkYTQ4MWNjNTJj
+NmNlMWM3MTVlNmU5NzgxOGM5YjQ4ZDEzZGY0OWM4NzM1MTdkMjNkNTkwODVhZGI1ZGQyMGQ2YjUy
+YmQ1MjFlZjJjZGQ1ZWI5MjQ2YTNkOGI0NzU3ZThkM2Y3DQoyOWUyNDVlYjJiMjYwYTAyMzhmZDAx
+MDAwMGZmZmYwMzAwNTA0YjAzMDQxNDAwMDYwMDA4MDAwMDAwMjEwMDk2YjVhZGUyOTYwNjAwMDA1
+MDFiMDAwMDE2MDAwMDAwNzQ2ODY1NmQ2NTJmNzQ2ODY1NmQ2NTJmNzQ2ODY1NmQ2NQ0KMzEyZTc4
+NmQ2Y2VjNTk0ZjZmZGIzNjE0YmYwZmQ4NzcyMDc0NmY2MzI3NzYxYTA3NzU4YWQ4YjE5YjJkNGQx
+YmM0NmU4NzFlNjk4OTk2ZDg1MGEyNDBkMjQ5N2QxYmRhZTM4MDAxYzNiYTYxODcxNWQ4NmQ4NzYx
+NWI4MTE2ZDgNCmE1ZmIzNGQ5M2E2YzFkZDBhZmIwNDc1MjkyYzU1ODVlOTIzNmQ4OGFhZDNlMjQx
+MmY5ZTNmYmZmMWUxZmE5YWJkN2VlYzcwYzFkMTIyMTI5NGZkYTVlZmQ3MmNkNDMyNGYxNzk0MDkz
+YjBlZGRkMWVmNjJmYWQ3OTQ4MmE5YzA0DQo5OGYxODRiNGJkMjk5MWRlYjU4ZGY3ZGZiYjhhZDc1
+NTQ0NjI4MjYwN2QyMmQ3NzFkYjhiOTQ0YWQ3OTc5NmE0MGZjMzU4NWVlNjI5NDk2MDZlY2M0NThj
+MTViYzhhNzAyOTEwZjgwOGU4YzY2YzY5Yjk1NjViNWQ4YTMxNGQzYw0KOTRlMDE4YzhkZTFhOGZh
+OTRmZDA1MDkzZjQzNjcyZTIzZDA2YWY4OTkyN2FjMDY3NjJhMDQ5MTM2Nzg1YzEwNjA3NzU4ZDkw
+NTNkOTY1MDIxZDYyZDZmNjgwNGZjMDhmODZlNGJlZjIxMGMzNTJjMTQ0ZGJhYjk5OWZiN2I0NzEN
+Cjc1MDlhZjY3OGI5ODVhYjBiNmI0YWU2ZjdlZDliYTZjNDE3MGIwNmM3ODhhNzA1NDMwYWRmNzFi
+YWQyYjViMDU3ZDAzNjA2YTFlZDdlYmY1YmFiZDdhNDFjZjAwYjBlZjgzYTY1Njk2MzJjZDQ2N2Zh
+ZGRlYzk2OTk2NDBmNjcxDQo5ZTc2YjdkNmFjMzU1YzdjODlmZWNhOWNjY2FkNGVhN2QzNmM2NWIy
+NThhMjA2NjQxZjFiNzNmOGI1ZGE2YTYzNzNkOWMxMWI5MGM1MzdlN2YwOGRjZTY2YjdiYmVhZTAw
+ZGM4ZTI1N2U3ZjBmZDJiYWRkNTg2OGIzN2EwODhkMQ0KZTQ2MDBlYWQxZGRhZWY2N2Q0MGJjODk4
+YjNlZDRhZjgxYWMwZDc2YTE5N2M4NjgyNjgyOGEyNGJiMzE4ZjM0NDJkOGFiNTE4ZGZlM2EyMGYw
+MDBkNjQ1OGQxMDRhOTY5NGFjNmQ4ODcyOGVlZTI3ODI0MjhkNjBjZjAzYWMxYTUNCjE5M2JlNGNi
+YjkyMWNkMGI0OTVmZDA1NGI1YmQwZjUzMGMxOTMxYTNmN2VhZjlmN2FmOWUzZjQ1YzcwZjllMWQz
+ZmY4ZTlmOGUxYzNlMzA3M2Y1YTQyY2VhYTZkOWM4NGU1NTUyZmJmZmRlY2NmYzcxZmEzM2Y5ZTdl
+ZjNmMmQxDQoxN2Q1Nzg1OWM2ZmZmYWMzMjdiZmZjZmM3OTM1MTBkMjY3MjZjZThiMmY5ZmZjZjZl
+Y2M5OGJhZjNlZmRmZGJiNDcxNWYwNGQ4MTQ3NjVmODkwYzY0NGEyOWJlNDA4ZWRmMzE4MTQzMzU2
+NzEyNTI3MjM3MWJlMTVjMzA4ZDNmMg0KOGFjZDI0OTQzOGMxOWE0YjA1ZmQ5ZThhMWNmNGNkMjk2
+Njk5NzcxYzM5M2FjNGI1ZTAxZDAxZTVhMzBhNzg3ZDcyY2YxMTc4MTA4OTg5YTIxNTljNzdhMmQ4
+MDFlZTcyY2UzYTVjNTQ1YTYxNDdmMzJhOTk3OTM4NDljMjZhZTYNCjYyNTJjNmVkNjM3YzU4YzVi
+YjhiMTNjN2JmYmQ0OTBhNzUzMzBmNGI0N2YxNmU0NDFjMzFmNzE4NGUxNDBlNDk0MjE0ZDI3M2Zj
+ODA5MDBhZWRlZTUyZWFkODc1OTdmYTgyNGIzZTU2ZTgyZTQ1MWQ0YzJiNGQzMmE0MjMyNzlhDQo2
+NjhiYjY2OTBjN2U5OTU2ZTkwY2ZlNzY2Y2IzN2IwNzc1MzhhYmQyN2E4YjFjYmE0OGM4MGFjYzJh
+ODQxZjEyZTY5OGYxM2E5ZTI4MWM1NzkxMWNlMjk4OTUwZDdlMDNhYmE4NGFjOGMxNTRmODY1NWM0
+ZjJhZjA3NDQ4MTg0Nw0KYmQ4MDQ4NTliNWU2OTYwMDdkNGI0ZWRmYzE1MGIxMmFkZGJlY2JhNmIx
+OGIxNDhhMWU1NGQxYmM4MTM5MmYyM2I3Zjg0MTM3YzI3MTVhODUxZGQwMjQyYTYzM2Y5MDA3MTBh
+MjE4ZWQ3MTU1MDVkZmU1NmU4NmU4NzdmMDAzNGUNCjE2YmFmYjBlMjU4ZWJiNGZhZjA2Yjc2OWU4
+ODgzNDBiMTAzZDMzMTFkYTk3NTBhYTlkMGExY2QzZTRlZmNhMzFhMzUwOGY2ZDBjNWM1YzM5ODYw
+MmY4ZTJlYmM3MTU5MWY1YjYxNmUyNGRkODkzYWEzMjYxZmI0NGY5NWQ4NDNiDQo1OTc0YmI1YzA0
+ZjRlZGFmYjk1Yjc4OTJlYzExMDhmM2Y5OGRlNzVkYzk3ZDU3NzJiZGZmN2NjOTVkOTRjZjY3MmRi
+NGIzZGEwYTY1NTdmNzBkYjYyOTM2MmQ3MmJjYjA0MzFlNTNjNjA2NmFjYWM4MGQ2OTlhNjQwOWZi
+NDRkMA0KODc0MWJkY2U5YzBlNDk3MTYyNGEyMzc4Y2NlYWJhODMwYjA1MzY2YjkwZTBlYTIzYWFh
+MjQxODQ1MzY4YjBlYjllMjYxMmNhOGM3NDI4NTFjYTI1MWNlY2NjNzAyNTZkOGQ4NzI2NWRkOTYz
+NjE1MzFmMTg2YzNkOTA1OGVkZjINCmMwMGVhZmU4ZTFmYzVjNTA5MDMxYmI0ZDY4MGU5ZjM5YTMx
+NTRkZTBhY2NjNTZhZTY0NDQ0MWVkZDc2MTU2ZDc0MjlkOTk1YmRkODg2NjRhOWRjM2FkNTAxOTdj
+MzhhZjFhMGMxNmQ2ODQwNjA0NDFkYjAyNTY1ZTg1ZjNiOTY2DQowZDA3MTNjYzQ4YTBlZDZlZjdk
+ZWRjMmRjNjBiMTdlOTIyMTllMTgwNjQzZWQyN2FjZmZiYTg2ZTljOTRjNzhhYjkwOTgwZDhhOWYw
+OTEzZWU0OWQ2MmI1MTJiNzk2MjZmYjA2ZGNjZWUyYTQzMmJiYzYwMjc2YjlmN2RlYzQ0Yg0KNzkw
+NGNmYmNhNGYzZjY0NDNhYjJhNDljOWMyYzQxNDc2ZGFmZDU1YzZlN2FjOGM3NjlkYjFiYzM5OTE2
+MWVlMzE0YmMyZTc1Y2Y4NzU5MDgxNzQzYmUxMjM2ZWM0ZjRkNjY5M2U1MzM2ZmI2NzJjNWRjMjRh
+OGMzMzU4NWI1ZmINCjljYzI0ZTFkNDg4NTU0NWI1ODQ2MzYzNGNjNTQxNjAyMmNkMTljYWNmY2Ni
+NGQzMGViNDUyOTYwMjNmZDM1YTQ1ODU5ODM2MGY4ZDdhNDAwM2JiYWFlMjVlMzMxZjE1NWQ5ZDlh
+NTExNmQzYmZiOWE5NTUyM2U1MTQ0MGNhMmUwDQowODhkZDg0NGVjNjM3MGJmMGU1NWQwMjdhMDEy
+YWUyNjRjNDVkMDJmNzA4ZmE2YWQ2ZGE2ZGNlMjljMjU1ZGY5ZjZjYWUwZWMzODY2Njk4NGIzNzJh
+YjUzMzRjZjY0MGIzNzc5NWNjODYwZGU0YWUyODE2ZTk1YjIxYmU1Y2VhZg0KOGE0OWY5MGI1MmE1
+MWNjNmZmMzM1NWY0N2UwMjM3MDUyYjgxZjY4MDBmZDdiODAyMjM5ZGFmNmQ4ZjBiMTU3MWE4NDI2
+OTQ0ZmRiZTgwYzZjMWQ0MGU4ODE2Yjg4Yjg1NjkwODJhYjg0YzM2ZmYwNTM5ZDRmZjZkY2U1OTFh
+MjYNCmFkZTFjMGE3ZjY2OTg4MDQ4NWZkNDg0NTgyOTAzZDI4NGIyNmZhNGUyMTU2Y2ZmNjJlNGI5
+MjY1ODQ0YzQ0OTVjNDk1YTkxNTdiNDQwZTA5MWJlYTFhYjhhYWY3NzYwZjQ1MTBlYWE2OWE2NDY1
+YzBlMDRlYzY5ZmZiOWU2NWQwDQoyOGQ0NGQ0ZTM5ZGY5YzFhNTJlY2JkMzYwN2ZlZTljZWM3MjYz
+MzI4ZTVkNjYxZDNkMGU0ZjYyZjQ0YWNkODU1ZWQ3YWIzM2NkZjdiY2I4YWU4ODk1OTliZDVjOGIz
+MDI5ODk1YjY4MjU2OTZmNmFmMjljMjM5Yjc1YTViYjFlNg0KMzQ1ZTZlZTZjMjgxMTdlNzM1ODZj
+MWEyMjE0YWUxYmUwN2U5M2ZiMGZmNTFlMTMzZmI2NTQyNmZhODQzYmUwZmI1MTVjMTg3MDY0ZDBj
+YzIwNmEyZmE5MjZkM2M5MDJlOTA3NjcwMDQ4ZDkzMWRiNGMxYTQ0OTU5ZDM2NmFkOTMNCmI2NWFi
+ZTU5NWY3MGE3NWJmMDNkNjE2YzJkZDk1OWZjN2Q0ZTYzMTdjZDk5Y2JjZWM5YzU4YjM0NzY2NjYx
+YzdkNjc2NmNhMWE5YzFiMzI3NTMxNDg2YzZmOTQxYzYzOGM2N2NkMjJhN2Y3NWUyYTM3YmUwZTgy
+ZGI4ZGY5ZjMwDQoyNTRkMzBjMTM3MjU4MWExZjUxYzk4M2M4MGU0YjcxY2NkZDI4ZGJmMDAwMDAw
+ZmZmZjAzMDA1MDRiMDMwNDE0MDAwNjAwMDgwMDAwMDAyMTAwMGRkMTkwOWZiNjAwMDAwMDFiMDEw
+MDAwMjcwMDAwMDA3NDY4NjU2ZDY1MmY3NA0KNjg2NTZkNjUyZjVmNzI2NTZjNzMyZjc0Njg2NTZk
+NjU0ZDYxNmU2MTY3NjU3MjJlNzg2ZDZjMmU3MjY1NmM3Mzg0OGY0ZDBhYzIzMDE0ODRmNzgyNzcw
+ODZmNmZkM2JhMTA5MTI2ZGQ4OGQwYWRkNDAzODRlNDM1MGQzNjNmMjQNCjUxZWNlZDBkYWUyYzA4
+MmU4NzYxYmU5OTY5YmI5NzlkYzkxMzYzMzJkZTMxNjhhYTFhMDgzYWU5OTU3MTlhYzE2ZGI4ZWM4
+ZTQwNTIxNjRlODlkOTNiNjRiMDYwODI4ZTZmMzdlZDE1Njc5MTRiMjg0ZDI2MjQ1MjI4MmUzMTk4
+DQo3MjBlMjc0YTkzOWNkMDhhNTRmOTgwYWUzOGEzOGY1NmU0MjJhM2E2NDFjOGJiZDA0OGY3NzU3
+ZGEwZjE5YjAxN2NjNTI0YmQ2MjEwN2JkNTAwMTk5NjUwOWFmZmIzZmQzODFhODk2NzJmMWYxNjVk
+ZmU1MTQxNzNkOTg1MDUyOA0KYTJjNmNjZTAyMzliYWE0YzA0Y2E1YmJhYmFjNGRmMDAwMDAwZmZm
+ZjAzMDA1MDRiMDEwMjJkMDAxNDAwMDYwMDA4MDAwMDAwMjEwMDgyOGFiYzEzZmEwMDAwMDAxYzAy
+MDAwMDEzMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDANCjAwMDAwMDAwNWI0MzZmNmU3NDY1NmU3
+NDVmNTQ3OTcwNjU3MzVkMmU3ODZkNmM1MDRiMDEwMjJkMDAxNDAwMDYwMDA4MDAwMDAwMjEwMGE1
+ZDZhN2U3YzAwMDAwMDAzNjAxMDAwMDBiMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwDQowMDJiMDEw
+MDAwNWY3MjY1NmM3MzJmMmU3MjY1NmM3MzUwNGIwMTAyMmQwMDE0MDAwNjAwMDgwMDAwMDAyMTAw
+NmI3OTk2MTY4MzAwMDAwMDhhMDAwMDAwMWMwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDE0MDIw
+MDAwNzQ2OA0KNjU2ZDY1MmY3NDY4NjU2ZDY1MmY3NDY4NjU2ZDY1NGQ2MTZlNjE2NzY1NzIyZTc4
+NmQ2YzUwNGIwMTAyMmQwMDE0MDAwNjAwMDgwMDAwMDAyMTAwOTZiNWFkZTI5NjA2MDAwMDUwMWIw
+MDAwMTYwMDAwMDAwMDAwMDAwMDAwMDANCjAwMDAwMDAwZDEwMjAwMDA3NDY4NjU2ZDY1MmY3NDY4
+NjU2ZDY1MmY3NDY4NjU2ZDY1MzEyZTc4NmQ2YzUwNGIwMTAyMmQwMDE0MDAwNjAwMDgwMDAwMDAy
+MTAwMGRkMTkwOWZiNjAwMDAwMDFiMDEwMDAwMjcwMDAwMDAwMDAwDQowMDAwMDAwMDAwMDAwMDAw
+OWIwOTAwMDA3NDY4NjU2ZDY1MmY3NDY4NjU2ZDY1MmY1ZjcyNjU2YzczMmY3NDY4NjU2ZDY1NGQ2
+MTZlNjE2NzY1NzIyZTc4NmQ2YzJlNzI2NTZjNzM1MDRiMDUwNjAwMDAwMDAwMDUwMDA1MDA1ZDAx
+MDAwMDk2MGEwMDAwMDAwMH0NCntcKlxjb2xvcnNjaGVtZW1hcHBpbmcgM2MzZjc4NmQ2YzIwNzY2
+NTcyNzM2OTZmNmUzZDIyMzEyZTMwMjIyMDY1NmU2MzZmNjQ2OTZlNjczZDIyNTU1NDQ2MmQzODIy
+MjA3Mzc0NjE2ZTY0NjE2YzZmNmU2NTNkMjI3OTY1NzMyMjNmM2UwZDBhM2M2MTNhNjM2YzcyNGQN
+CjYxNzAyMDc4NmQ2YzZlNzMzYTYxM2QyMjY4NzQ3NDcwM2EyZjJmNzM2MzY4NjU2ZDYxNzMyZTZm
+NzA2NTZlNzg2ZDZjNjY2ZjcyNmQ2MTc0NzMyZTZmNzI2NzJmNjQ3MjYxNzc2OTZlNjc2ZDZjMmYz
+MjMwMzAzNjJmNmQ2MTY5DQo2ZTIyMjA2MjY3MzEzZDIyNmM3NDMxMjIyMDc0NzgzMTNkMjI2NDZi
+MzEyMjIwNjI2NzMyM2QyMjZjNzQzMjIyMjA3NDc4MzIzZDIyNjQ2YjMyMjIyMDYxNjM2MzY1NmU3
+NDMxM2QyMjYxNjM2MzY1NmU3NDMxMjIyMDYxNjM2Mw0KNjU2ZTc0MzIzZDIyNjE2MzYzNjU2ZTc0
+MzIyMjIwNjE2MzYzNjU2ZTc0MzMzZDIyNjE2MzYzNjU2ZTc0MzMyMjIwNjE2MzYzNjU2ZTc0MzQz
+ZDIyNjE2MzYzNjU2ZTc0MzQyMjIwNjE2MzYzNjU2ZTc0MzUzZDIyNjE2MzYzNjU2ZTc0MzUyMjIw
+NjE2MzYzNjU2ZTc0MzYzZDIyNjE2MzYzNjU2ZTc0MzYyMjIwNjg2YzY5NmU2YjNkMjI2ODZjNjk2
+ZTZiMjIyMDY2NmY2YzQ4NmM2OTZlNmIzZDIyNjY2ZjZjNDg2YzY5NmU2YjIyMmYzZX0NCntcKlxs
+YXRlbnRzdHlsZXNcbHNkc3RpbWF4MjY3XGxzZGxvY2tlZGRlZjBcbHNkc2VtaWhpZGRlbmRlZjFc
+bHNkdW5oaWRldXNlZGRlZjFcbHNkcWZvcm1hdGRlZjBcbHNkcHJpb3JpdHlkZWY5OXtcbHNkbG9j
+a2VkZXhjZXB0IFxsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHFmb3JtYXQxIFxs
+c2Rwcmlvcml0eTAgXGxzZGxvY2tlZDAgTm9ybWFsOw0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhp
+ZGV1c2VkMCBcbHNkcWZvcm1hdDEgXGxzZHByaW9yaXR5OSBcbHNkbG9ja2VkMCBoZWFkaW5nIDE7
+XGxzZHFmb3JtYXQxIFxsc2Rwcmlvcml0eTkgXGxzZGxvY2tlZDAgaGVhZGluZyAyO1xsc2RxZm9y
+bWF0MSBcbHNkcHJpb3JpdHk5IFxsc2Rsb2NrZWQwIGhlYWRpbmcgMztcbHNkcWZvcm1hdDEgXGxz
+ZHByaW9yaXR5OSBcbHNkbG9ja2VkMCBoZWFkaW5nIDQ7DQpcbHNkcWZvcm1hdDEgXGxzZHByaW9y
+aXR5OSBcbHNkbG9ja2VkMCBoZWFkaW5nIDU7XGxzZHFmb3JtYXQxIFxsc2Rwcmlvcml0eTkgXGxz
+ZGxvY2tlZDAgaGVhZGluZyA2O1xsc2RxZm9ybWF0MSBcbHNkcHJpb3JpdHk5IFxsc2Rsb2NrZWQw
+IGhlYWRpbmcgNztcbHNkcWZvcm1hdDEgXGxzZHByaW9yaXR5OSBcbHNkbG9ja2VkMCBoZWFkaW5n
+IDg7XGxzZHFmb3JtYXQxIFxsc2Rwcmlvcml0eTkgXGxzZGxvY2tlZDAgaGVhZGluZyA5Ow0KXGxz
+ZHByaW9yaXR5MzkgXGxzZGxvY2tlZDAgdG9jIDE7XGxzZHByaW9yaXR5MzkgXGxzZGxvY2tlZDAg
+dG9jIDI7XGxzZHByaW9yaXR5MzkgXGxzZGxvY2tlZDAgdG9jIDM7XGxzZHByaW9yaXR5MzkgXGxz
+ZGxvY2tlZDAgdG9jIDQ7XGxzZHByaW9yaXR5MzkgXGxzZGxvY2tlZDAgdG9jIDU7XGxzZHByaW9y
+aXR5MzkgXGxzZGxvY2tlZDAgdG9jIDY7XGxzZHByaW9yaXR5MzkgXGxzZGxvY2tlZDAgdG9jIDc7
+DQpcbHNkcHJpb3JpdHkzOSBcbHNkbG9ja2VkMCB0b2MgODtcbHNkcHJpb3JpdHkzOSBcbHNkbG9j
+a2VkMCB0b2MgOTtcbHNkcWZvcm1hdDEgXGxzZHByaW9yaXR5MzUgXGxzZGxvY2tlZDAgY2FwdGlv
+bjtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2RxZm9ybWF0MSBcbHNkcHJpb3Jp
+dHkxMCBcbHNkbG9ja2VkMCBUaXRsZTtcbHNkcHJpb3JpdHkxIFxsc2Rsb2NrZWQwIERlZmF1bHQg
+UGFyYWdyYXBoIEZvbnQ7DQpcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2RxZm9y
+bWF0MSBcbHNkcHJpb3JpdHkxMSBcbHNkbG9ja2VkMCBTdWJ0aXRsZTtcbHNkc2VtaWhpZGRlbjAg
+XGxzZHVuaGlkZXVzZWQwIFxsc2RxZm9ybWF0MSBcbHNkcHJpb3JpdHkyMiBcbHNkbG9ja2VkMCBT
+dHJvbmc7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcWZvcm1hdDEgXGxzZHBy
+aW9yaXR5MjAgXGxzZGxvY2tlZDAgRW1waGFzaXM7DQpcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlk
+ZXVzZWQwIFxsc2Rwcmlvcml0eTU5IFxsc2Rsb2NrZWQwIFRhYmxlIEdyaWQ7XGxzZHVuaGlkZXVz
+ZWQwIFxsc2Rsb2NrZWQwIFBsYWNlaG9sZGVyIFRleHQ7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhp
+ZGV1c2VkMCBcbHNkcWZvcm1hdDEgXGxzZHByaW9yaXR5MSBcbHNkbG9ja2VkMCBObyBTcGFjaW5n
+Ow0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2MCBcbHNkbG9j
+a2VkMCBMaWdodCBTaGFkaW5nO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHBy
+aW9yaXR5NjEgXGxzZGxvY2tlZDAgTGlnaHQgTGlzdDtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlk
+ZXVzZWQwIFxsc2Rwcmlvcml0eTYyIFxsc2Rsb2NrZWQwIExpZ2h0IEdyaWQ7DQpcbHNkc2VtaWhp
+ZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTYzIFxsc2Rsb2NrZWQwIE1lZGl1bSBT
+aGFkaW5nIDE7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2NCBc
+bHNkbG9ja2VkMCBNZWRpdW0gU2hhZGluZyAyO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNl
+ZDAgXGxzZHByaW9yaXR5NjUgXGxzZGxvY2tlZDAgTWVkaXVtIExpc3QgMTsNClxsc2RzZW1paGlk
+ZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjYgXGxzZGxvY2tlZDAgTWVkaXVtIExp
+c3QgMjtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY3IFxsc2Rs
+b2NrZWQwIE1lZGl1bSBHcmlkIDE7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNk
+cHJpb3JpdHk2OCBcbHNkbG9ja2VkMCBNZWRpdW0gR3JpZCAyOw0KXGxzZHNlbWloaWRkZW4wIFxs
+c2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2OSBcbHNkbG9ja2VkMCBNZWRpdW0gR3JpZCAzO1xs
+c2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NzAgXGxzZGxvY2tlZDAg
+RGFyayBMaXN0O1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NzEg
+XGxzZGxvY2tlZDAgQ29sb3JmdWwgU2hhZGluZzsNClxsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRl
+dXNlZDAgXGxzZHByaW9yaXR5NzIgXGxzZGxvY2tlZDAgQ29sb3JmdWwgTGlzdDtcbHNkc2VtaWhp
+ZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTczIFxsc2Rsb2NrZWQwIENvbG9yZnVs
+IEdyaWQ7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2MCBcbHNk
+bG9ja2VkMCBMaWdodCBTaGFkaW5nIEFjY2VudCAxOw0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhp
+ZGV1c2VkMCBcbHNkcHJpb3JpdHk2MSBcbHNkbG9ja2VkMCBMaWdodCBMaXN0IEFjY2VudCAxO1xs
+c2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjIgXGxzZGxvY2tlZDAg
+TGlnaHQgR3JpZCBBY2NlbnQgMTtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rw
+cmlvcml0eTYzIFxsc2Rsb2NrZWQwIE1lZGl1bSBTaGFkaW5nIDEgQWNjZW50IDE7DQpcbHNkc2Vt
+aWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY0IFxsc2Rsb2NrZWQwIE1lZGl1
+bSBTaGFkaW5nIDIgQWNjZW50IDE7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNk
+cHJpb3JpdHk2NSBcbHNkbG9ja2VkMCBNZWRpdW0gTGlzdCAxIEFjY2VudCAxO1xsc2R1bmhpZGV1
+c2VkMCBcbHNkbG9ja2VkMCBSZXZpc2lvbjsNClxsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNl
+ZDAgXGxzZHFmb3JtYXQxIFxsc2Rwcmlvcml0eTM0IFxsc2Rsb2NrZWQwIExpc3QgUGFyYWdyYXBo
+O1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHFmb3JtYXQxIFxsc2Rwcmlvcml0
+eTI5IFxsc2Rsb2NrZWQwIFF1b3RlO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxz
+ZHFmb3JtYXQxIFxsc2Rwcmlvcml0eTMwIFxsc2Rsb2NrZWQwIEludGVuc2UgUXVvdGU7DQpcbHNk
+c2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY2IFxsc2Rsb2NrZWQwIE1l
+ZGl1bSBMaXN0IDIgQWNjZW50IDE7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNk
+cHJpb3JpdHk2NyBcbHNkbG9ja2VkMCBNZWRpdW0gR3JpZCAxIEFjY2VudCAxO1xsc2RzZW1paGlk
+ZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjggXGxzZGxvY2tlZDAgTWVkaXVtIEdy
+aWQgMiBBY2NlbnQgMTsNClxsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9y
+aXR5NjkgXGxzZGxvY2tlZDAgTWVkaXVtIEdyaWQgMyBBY2NlbnQgMTtcbHNkc2VtaWhpZGRlbjAg
+XGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTcwIFxsc2Rsb2NrZWQwIERhcmsgTGlzdCBBY2Nl
+bnQgMTtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTcxIFxsc2Rs
+b2NrZWQwIENvbG9yZnVsIFNoYWRpbmcgQWNjZW50IDE7DQpcbHNkc2VtaWhpZGRlbjAgXGxzZHVu
+aGlkZXVzZWQwIFxsc2Rwcmlvcml0eTcyIFxsc2Rsb2NrZWQwIENvbG9yZnVsIExpc3QgQWNjZW50
+IDE7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk3MyBcbHNkbG9j
+a2VkMCBDb2xvcmZ1bCBHcmlkIEFjY2VudCAxO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNl
+ZDAgXGxzZHByaW9yaXR5NjAgXGxzZGxvY2tlZDAgTGlnaHQgU2hhZGluZyBBY2NlbnQgMjsNClxs
+c2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjEgXGxzZGxvY2tlZDAg
+TGlnaHQgTGlzdCBBY2NlbnQgMjtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rw
+cmlvcml0eTYyIFxsc2Rsb2NrZWQwIExpZ2h0IEdyaWQgQWNjZW50IDI7XGxzZHNlbWloaWRkZW4w
+IFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2MyBcbHNkbG9ja2VkMCBNZWRpdW0gU2hhZGlu
+ZyAxIEFjY2VudCAyOw0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3Jp
+dHk2NCBcbHNkbG9ja2VkMCBNZWRpdW0gU2hhZGluZyAyIEFjY2VudCAyO1xsc2RzZW1paGlkZGVu
+MCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjUgXGxzZGxvY2tlZDAgTWVkaXVtIExpc3Qg
+MSBBY2NlbnQgMjtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY2
+IFxsc2Rsb2NrZWQwIE1lZGl1bSBMaXN0IDIgQWNjZW50IDI7DQpcbHNkc2VtaWhpZGRlbjAgXGxz
+ZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY3IFxsc2Rsb2NrZWQwIE1lZGl1bSBHcmlkIDEgQWNj
+ZW50IDI7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2OCBcbHNk
+bG9ja2VkMCBNZWRpdW0gR3JpZCAyIEFjY2VudCAyO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRl
+dXNlZDAgXGxzZHByaW9yaXR5NjkgXGxzZGxvY2tlZDAgTWVkaXVtIEdyaWQgMyBBY2NlbnQgMjsN
+Clxsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NzAgXGxzZGxvY2tl
+ZDAgRGFyayBMaXN0IEFjY2VudCAyO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxz
+ZHByaW9yaXR5NzEgXGxzZGxvY2tlZDAgQ29sb3JmdWwgU2hhZGluZyBBY2NlbnQgMjtcbHNkc2Vt
+aWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTcyIFxsc2Rsb2NrZWQwIENvbG9y
+ZnVsIExpc3QgQWNjZW50IDI7DQpcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rw
+cmlvcml0eTczIFxsc2Rsb2NrZWQwIENvbG9yZnVsIEdyaWQgQWNjZW50IDI7XGxzZHNlbWloaWRk
+ZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2MCBcbHNkbG9ja2VkMCBMaWdodCBTaGFk
+aW5nIEFjY2VudCAzO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5
+NjEgXGxzZGxvY2tlZDAgTGlnaHQgTGlzdCBBY2NlbnQgMzsNClxsc2RzZW1paGlkZGVuMCBcbHNk
+dW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjIgXGxzZGxvY2tlZDAgTGlnaHQgR3JpZCBBY2NlbnQg
+MztcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTYzIFxsc2Rsb2Nr
+ZWQwIE1lZGl1bSBTaGFkaW5nIDEgQWNjZW50IDM7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1
+c2VkMCBcbHNkcHJpb3JpdHk2NCBcbHNkbG9ja2VkMCBNZWRpdW0gU2hhZGluZyAyIEFjY2VudCAz
+Ow0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2NSBcbHNkbG9j
+a2VkMCBNZWRpdW0gTGlzdCAxIEFjY2VudCAzO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNl
+ZDAgXGxzZHByaW9yaXR5NjYgXGxzZGxvY2tlZDAgTWVkaXVtIExpc3QgMiBBY2NlbnQgMztcbHNk
+c2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY3IFxsc2Rsb2NrZWQwIE1l
+ZGl1bSBHcmlkIDEgQWNjZW50IDM7DQpcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxs
+c2Rwcmlvcml0eTY4IFxsc2Rsb2NrZWQwIE1lZGl1bSBHcmlkIDIgQWNjZW50IDM7XGxzZHNlbWlo
+aWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2OSBcbHNkbG9ja2VkMCBNZWRpdW0g
+R3JpZCAzIEFjY2VudCAzO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9y
+aXR5NzAgXGxzZGxvY2tlZDAgRGFyayBMaXN0IEFjY2VudCAzOw0KXGxzZHNlbWloaWRkZW4wIFxs
+c2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk3MSBcbHNkbG9ja2VkMCBDb2xvcmZ1bCBTaGFkaW5n
+IEFjY2VudCAzO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NzIg
+XGxzZGxvY2tlZDAgQ29sb3JmdWwgTGlzdCBBY2NlbnQgMztcbHNkc2VtaWhpZGRlbjAgXGxzZHVu
+aGlkZXVzZWQwIFxsc2Rwcmlvcml0eTczIFxsc2Rsb2NrZWQwIENvbG9yZnVsIEdyaWQgQWNjZW50
+IDM7DQpcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTYwIFxsc2Rs
+b2NrZWQwIExpZ2h0IFNoYWRpbmcgQWNjZW50IDQ7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1
+c2VkMCBcbHNkcHJpb3JpdHk2MSBcbHNkbG9ja2VkMCBMaWdodCBMaXN0IEFjY2VudCA0O1xsc2Rz
+ZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjIgXGxzZGxvY2tlZDAgTGln
+aHQgR3JpZCBBY2NlbnQgNDsNClxsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHBy
+aW9yaXR5NjMgXGxzZGxvY2tlZDAgTWVkaXVtIFNoYWRpbmcgMSBBY2NlbnQgNDtcbHNkc2VtaWhp
+ZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY0IFxsc2Rsb2NrZWQwIE1lZGl1bSBT
+aGFkaW5nIDIgQWNjZW50IDQ7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJp
+b3JpdHk2NSBcbHNkbG9ja2VkMCBNZWRpdW0gTGlzdCAxIEFjY2VudCA0Ow0KXGxzZHNlbWloaWRk
+ZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2NiBcbHNkbG9ja2VkMCBNZWRpdW0gTGlz
+dCAyIEFjY2VudCA0O1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5
+NjcgXGxzZGxvY2tlZDAgTWVkaXVtIEdyaWQgMSBBY2NlbnQgNDtcbHNkc2VtaWhpZGRlbjAgXGxz
+ZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY4IFxsc2Rsb2NrZWQwIE1lZGl1bSBHcmlkIDIgQWNj
+ZW50IDQ7DQpcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY5IFxs
+c2Rsb2NrZWQwIE1lZGl1bSBHcmlkIDMgQWNjZW50IDQ7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhp
+ZGV1c2VkMCBcbHNkcHJpb3JpdHk3MCBcbHNkbG9ja2VkMCBEYXJrIExpc3QgQWNjZW50IDQ7XGxz
+ZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk3MSBcbHNkbG9ja2VkMCBD
+b2xvcmZ1bCBTaGFkaW5nIEFjY2VudCA0Ow0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2Vk
+MCBcbHNkcHJpb3JpdHk3MiBcbHNkbG9ja2VkMCBDb2xvcmZ1bCBMaXN0IEFjY2VudCA0O1xsc2Rz
+ZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NzMgXGxzZGxvY2tlZDAgQ29s
+b3JmdWwgR3JpZCBBY2NlbnQgNDtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rw
+cmlvcml0eTYwIFxsc2Rsb2NrZWQwIExpZ2h0IFNoYWRpbmcgQWNjZW50IDU7DQpcbHNkc2VtaWhp
+ZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTYxIFxsc2Rsb2NrZWQwIExpZ2h0IExp
+c3QgQWNjZW50IDU7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2
+MiBcbHNkbG9ja2VkMCBMaWdodCBHcmlkIEFjY2VudCA1O1xsc2RzZW1paGlkZGVuMCBcbHNkdW5o
+aWRldXNlZDAgXGxzZHByaW9yaXR5NjMgXGxzZGxvY2tlZDAgTWVkaXVtIFNoYWRpbmcgMSBBY2Nl
+bnQgNTsNClxsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjQgXGxz
+ZGxvY2tlZDAgTWVkaXVtIFNoYWRpbmcgMiBBY2NlbnQgNTtcbHNkc2VtaWhpZGRlbjAgXGxzZHVu
+aGlkZXVzZWQwIFxsc2Rwcmlvcml0eTY1IFxsc2Rsb2NrZWQwIE1lZGl1bSBMaXN0IDEgQWNjZW50
+IDU7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2NiBcbHNkbG9j
+a2VkMCBNZWRpdW0gTGlzdCAyIEFjY2VudCA1Ow0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1
+c2VkMCBcbHNkcHJpb3JpdHk2NyBcbHNkbG9ja2VkMCBNZWRpdW0gR3JpZCAxIEFjY2VudCA1O1xs
+c2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjggXGxzZGxvY2tlZDAg
+TWVkaXVtIEdyaWQgMiBBY2NlbnQgNTtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxs
+c2Rwcmlvcml0eTY5IFxsc2Rsb2NrZWQwIE1lZGl1bSBHcmlkIDMgQWNjZW50IDU7DQpcbHNkc2Vt
+aWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTcwIFxsc2Rsb2NrZWQwIERhcmsg
+TGlzdCBBY2NlbnQgNTtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0
+eTcxIFxsc2Rsb2NrZWQwIENvbG9yZnVsIFNoYWRpbmcgQWNjZW50IDU7XGxzZHNlbWloaWRkZW4w
+IFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk3MiBcbHNkbG9ja2VkMCBDb2xvcmZ1bCBMaXN0
+IEFjY2VudCA1Ow0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk3
+MyBcbHNkbG9ja2VkMCBDb2xvcmZ1bCBHcmlkIEFjY2VudCA1O1xsc2RzZW1paGlkZGVuMCBcbHNk
+dW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjAgXGxzZGxvY2tlZDAgTGlnaHQgU2hhZGluZyBBY2Nl
+bnQgNjtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTYxIFxsc2Rs
+b2NrZWQwIExpZ2h0IExpc3QgQWNjZW50IDY7DQpcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVz
+ZWQwIFxsc2Rwcmlvcml0eTYyIFxsc2Rsb2NrZWQwIExpZ2h0IEdyaWQgQWNjZW50IDY7XGxzZHNl
+bWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2MyBcbHNkbG9ja2VkMCBNZWRp
+dW0gU2hhZGluZyAxIEFjY2VudCA2O1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxz
+ZHByaW9yaXR5NjQgXGxzZGxvY2tlZDAgTWVkaXVtIFNoYWRpbmcgMiBBY2NlbnQgNjsNClxsc2Rz
+ZW1paGlkZGVuMCBcbHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjUgXGxzZGxvY2tlZDAgTWVk
+aXVtIExpc3QgMSBBY2NlbnQgNjtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rw
+cmlvcml0eTY2IFxsc2Rsb2NrZWQwIE1lZGl1bSBMaXN0IDIgQWNjZW50IDY7XGxzZHNlbWloaWRk
+ZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3JpdHk2NyBcbHNkbG9ja2VkMCBNZWRpdW0gR3Jp
+ZCAxIEFjY2VudCA2Ow0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcHJpb3Jp
+dHk2OCBcbHNkbG9ja2VkMCBNZWRpdW0gR3JpZCAyIEFjY2VudCA2O1xsc2RzZW1paGlkZGVuMCBc
+bHNkdW5oaWRldXNlZDAgXGxzZHByaW9yaXR5NjkgXGxzZGxvY2tlZDAgTWVkaXVtIEdyaWQgMyBB
+Y2NlbnQgNjtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTcwIFxs
+c2Rsb2NrZWQwIERhcmsgTGlzdCBBY2NlbnQgNjsNClxsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRl
+dXNlZDAgXGxzZHByaW9yaXR5NzEgXGxzZGxvY2tlZDAgQ29sb3JmdWwgU2hhZGluZyBBY2NlbnQg
+NjtcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2Rwcmlvcml0eTcyIFxsc2Rsb2Nr
+ZWQwIENvbG9yZnVsIExpc3QgQWNjZW50IDY7XGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2Vk
+MCBcbHNkcHJpb3JpdHk3MyBcbHNkbG9ja2VkMCBDb2xvcmZ1bCBHcmlkIEFjY2VudCA2Ow0KXGxz
+ZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcWZvcm1hdDEgXGxzZHByaW9yaXR5MTkg
+XGxzZGxvY2tlZDAgU3VidGxlIEVtcGhhc2lzO1xsc2RzZW1paGlkZGVuMCBcbHNkdW5oaWRldXNl
+ZDAgXGxzZHFmb3JtYXQxIFxsc2Rwcmlvcml0eTIxIFxsc2Rsb2NrZWQwIEludGVuc2UgRW1waGFz
+aXM7DQpcbHNkc2VtaWhpZGRlbjAgXGxzZHVuaGlkZXVzZWQwIFxsc2RxZm9ybWF0MSBcbHNkcHJp
+b3JpdHkzMSBcbHNkbG9ja2VkMCBTdWJ0bGUgUmVmZXJlbmNlO1xsc2RzZW1paGlkZGVuMCBcbHNk
+dW5oaWRldXNlZDAgXGxzZHFmb3JtYXQxIFxsc2Rwcmlvcml0eTMyIFxsc2Rsb2NrZWQwIEludGVu
+c2UgUmVmZXJlbmNlOw0KXGxzZHNlbWloaWRkZW4wIFxsc2R1bmhpZGV1c2VkMCBcbHNkcWZvcm1h
+dDEgXGxzZHByaW9yaXR5MzMgXGxzZGxvY2tlZDAgQm9vayBUaXRsZTtcbHNkcHJpb3JpdHkzNyBc
+bHNkbG9ja2VkMCBCaWJsaW9ncmFwaHk7XGxzZHFmb3JtYXQxIFxsc2Rwcmlvcml0eTM5IFxsc2Rs
+b2NrZWQwIFRPQyBIZWFkaW5nO319e1wqXGRhdGFzdG9yZSAwMTA1MDAwMDAyMDAwMDAwMTgwMDAw
+MDANCjRkNzM3ODZkNmMzMjJlNTM0MTU4NTg0ZDRjNTI2NTYxNjQ2NTcyMmUzNTJlMzAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDA2MDAwMA0KZDBjZjExZTBhMWIxMWFlMTAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwM2UwMDAzMDBmZWZmMDkwMDA2MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAxMDAw
+MDAwMDEwMDAwMDAwMDAwMDAwMDAwMTAwMDAwZmVmZmZmZmYwMDAwMDAwMGZlZmZmZmZmMDAwMDAw
+MDAwMDAwMDAwMGZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmDQpmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmYNCmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZg0KZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmDQpmZmZmZmZmZmZmZmZmZmZmZmRmZmZmZmZmZWZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmYNCmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZg0KZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmDQpmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmYN
+CmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmNTIwMDZmMDA2ZjAwNzQwMDIwMDA0NTAw
+NmUwMDc0MDA3MjAwNzkwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAxNjAwMDUwMGZm
+ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmVjNjlkOTg4OGI4YjNkNGM4NTllYWY2Y2QxNThiZTBmMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMjAwYQ0KMTE0ZjBlZWJjZjAxZmVmZmZmZmYwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZjAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwDQowMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MGZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZjAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDANCjAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZjAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMA0KMDAwMDAwMDAw
+MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDEwNTAwMDAwMDAwMDAwMH19
+
+------=_Part_144459_638505723.1414958063497--
