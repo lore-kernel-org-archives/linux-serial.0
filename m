@@ -1,88 +1,108 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH 2/2] tty: serial: msm: Support sysrq on uartDM devices
-Date: Mon, 03 Nov 2014 10:05:21 +0000
-Message-ID: <54575361.1080400@linaro.org>
-References: <1414606478-13709-1-git-send-email-sboyd@codeaurora.org> <1414606478-13709-3-git-send-email-sboyd@codeaurora.org> <54522163.8030408@linaro.org> <20141031064130.GG12469@codeaurora.org> <545359AB.8070503@linaro.org> <5453D00F.5000906@gmail.com>
+From: Paul Bolle <pebolle@tiscali.nl>
+Subject: Re: [PATCH] serial: samsung: Remove checks for CONFIG_SAMSUNG_CLOCK
+Date: Mon, 03 Nov 2014 12:55:45 +0100
+Message-ID: <1415015745.20372.52.camel@x220>
+References: <1412590043.4054.61.camel@x220>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f176.google.com ([209.85.212.176]:35288 "EHLO
-	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751134AbaKCKFb (ORCPT
+Received: from cpsmtpb-ews01.kpnxchange.com ([213.75.39.4]:61599 "EHLO
+	cpsmtpb-ews01.kpnxchange.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751820AbaKCLzs (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Nov 2014 05:05:31 -0500
-Received: by mail-wi0-f176.google.com with SMTP id h11so5934141wiw.15
-        for <linux-serial@vger.kernel.org>; Mon, 03 Nov 2014 02:05:30 -0800 (PST)
-In-Reply-To: <5453D00F.5000906@gmail.com>
+	Mon, 3 Nov 2014 06:55:48 -0500
+In-Reply-To: <1412590043.4054.61.camel@x220>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: frowand.list@gmail.com
-Cc: Stephen Boyd <sboyd@codeaurora.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Frank Rowand <frank.rowand@sonymobile.com>, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Valentin Rothberg <valentinrothberg@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 31/10/14 18:08, Frank Rowand wrote:
-> On 10/31/2014 2:43 AM, Daniel Thompson wrote:
->> On 31/10/14 06:41, Stephen Boyd wrote:
->>> On 10/30, Daniel Thompson wrote:
->>>> On 29/10/14 18:14, Stephen Boyd wrote:
->>>>> +		r_count = min_t(int, count, sizeof(buf));
->>>>> +
->>>>> +		for (i = 0; i < r_count; i++) {
->>>>> +			char flag = TTY_NORMAL;
->>>>>  
->>>>> -		/* TODO: handle sysrq */
->>>>> -		tty_insert_flip_string(tport, buf, min(count, 4));
->>>>> -		count -= 4;
->>>>> +			if (msm_port->break_detected && buf[i] == 0) {
->>>>> +				port->icount.brk++;
->>>>> +				flag = TTY_BREAK;
->>>>> +				msm_port->break_detected = false;
->>>>> +				if (uart_handle_break(port))
->>>>> +					continue;
->>>>> +			}
->>>>> +
->>>>> +			if (!(port->read_status_mask & UART_SR_RX_BREAK))
->>>>> +				flag = TTY_NORMAL;
->>>>
->>>> flag is already known to be TTY_NORMAL.
->>>
->>> Huh? If we detected a break we would set the flag to TTY_BREAK
->>> and if uart_handle_break() returned 0 (perhaps sysrq config is
->>> diasbled) then we would get down here, and then we want to reset
->>> the flag to TTY_NORMAL if the read_status_mask bits indicate that
->>> we want to skip checking for breaks. Otherwise we want to
->>> indicate to the tty layer that it's a break character.
->>
->> Agreed. Sorry for noise.
->>
->> It now reaches the level of silly quibble (meaning I won't bother to
->> raise the issue again if there is a v2 patch) but perhaps updating the
->> flag after the continue would be easier to read.
->>
->>
->>>>> +
->>>>> +			spin_unlock(&port->lock);
->>>>
->>>> Is it safe to unlock at this point? count may no longer be valid when we
->>>> return.
->>>
->>> Can you explain further? If it actually isn't valid something
->>> needs to be done. I believe other serial drivers are doing this
->>> sort of thing though so it doesn't seem that uncommon (of course
->>> those drivers could also be broken I suppose).
->>
->> Calling spin_unlock() means we are allow code to alter the state of the
->> UART. In particular the subsequent call to uart_handle_sysrq_char() can
->> make significant changes to the FIFO state (by calling the poll_char
->> functions). Given count is shadowing the FIFO state, when we retake the
->> lock I think it is possible for count to no longer be valid.
+Hi Greg, Hi Jiri,
+
+On Mon, 2014-10-06 at 12:07 +0200, Paul Bolle wrote:
+> Commit 32726d2d5502 ("ARM: SAMSUNG: Remove legacy clock code") removed
+> the Kconfig symbol SAMSUNG_CLOCK. Remove the last checks for its macro,
+> and the dead code they hide, too.
 > 
-> uart_handle_sysrq_char() will not _read_ from the serial port.  So it will
-> not directly modify the FIFO state.
+> Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
+> ---
+> This trivial fix has been discussed for some time now in the thread
+> starting at http://lkml.kernel.org/r/1405502840.4408.2.camel@x220 It
+> seems it's time to submit it.
+> 
+> Build tested on top of next-20141003, on x86_64 (!), with these horrific
+> commands:
+>     make EXTRA_CFLAGS=-DCONFIG_SERIAL_SAMSUNG_UARTS=3 drivers/tty/serial/samsung.o
+>     make EXTRA_CFLAGS=-DCONFIG_SERIAL_SAMSUNG_UARTS=4 drivers/tty/serial/samsung.o
+> 
+> Please note that
+>     make EXTRA_CFLAGS=-DCONFIG_SERIAL_SAMSUNG_UARTS=0 drivers/tty/serial/samsung.o
+> 
+> doesn't build. Perhaps some "range" should be added to config
+> SERIAL_SAMSUNG_UARTS. And I also wonder whether SERIAL_SAMSUNG_UARTS
+> should be a dependency (somehow) of config SERIAL_SAMSUNG. I have not
+> looked into those questions.
 
-poll_char does not read from the FIFO? Since when?
+I noticed this still applies on top of next-20141103. Have you had time
+to look at this yet?
 
-SysRq-g will enter cause the system to enter kdb/kgdb from within
-uart_handle_sysrq_char().
+>  drivers/tty/serial/samsung.c | 27 ---------------------------
+>  1 file changed, 27 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index c78f43a481ce..796c04c77dc1 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -1226,24 +1226,6 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+>  	return 0;
+>  }
+>  
+> -#ifdef CONFIG_SAMSUNG_CLOCK
+> -static ssize_t s3c24xx_serial_show_clksrc(struct device *dev,
+> -					  struct device_attribute *attr,
+> -					  char *buf)
+> -{
+> -	struct uart_port *port = s3c24xx_dev_to_port(dev);
+> -	struct s3c24xx_uart_port *ourport = to_ourport(port);
+> -
+> -	if (IS_ERR(ourport->baudclk))
+> -		return -EINVAL;
+> -
+> -	return snprintf(buf, PAGE_SIZE, "* %s\n",
+> -			ourport->baudclk->name ?: "(null)");
+> -}
+> -
+> -static DEVICE_ATTR(clock_source, S_IRUGO, s3c24xx_serial_show_clksrc, NULL);
+> -#endif
+> -
+>  /* Device driver serial port probe */
+>  
+>  static const struct of_device_id s3c24xx_uart_dt_match[];
+> @@ -1329,12 +1311,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  	 */
+>  	clk_disable_unprepare(ourport->clk);
+>  
+> -#ifdef CONFIG_SAMSUNG_CLOCK
+> -	ret = device_create_file(&pdev->dev, &dev_attr_clock_source);
+> -	if (ret < 0)
+> -		dev_err(&pdev->dev, "failed to add clock source attr.\n");
+> -#endif
+> -
+>  	ret = s3c24xx_serial_cpufreq_register(ourport);
+>  	if (ret < 0)
+>  		dev_err(&pdev->dev, "failed to add cpufreq notifier\n");
+> @@ -1348,9 +1324,6 @@ static int s3c24xx_serial_remove(struct platform_device *dev)
+>  
+>  	if (port) {
+>  		s3c24xx_serial_cpufreq_deregister(to_ourport(port));
+> -#ifdef CONFIG_SAMSUNG_CLOCK
+> -		device_remove_file(&dev->dev, &dev_attr_clock_source);
+> -#endif
+>  		uart_remove_one_port(&s3c24xx_uart_drv, port);
+>  	}
+>  
 
+
+Paul Bolle
 
