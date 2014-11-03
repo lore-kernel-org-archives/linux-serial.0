@@ -1,7 +1,7 @@
 From: =?UTF-8?q?Ky=C3=B6sti=20M=C3=A4lkki?= <kyosti.malkki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 1/2] usb: gadget dbgp: Fix endpoint config after USB disconnect
-Date: Mon,  3 Nov 2014 17:18:04 +0200
-Message-ID: <1415027885-2181-2-git-send-email-kyosti.malkki@gmail.com>
+Subject: [PATCH v2 2/2] usb: gadget serial: Honour termios CLOCAL on disconnect
+Date: Mon,  3 Nov 2014 17:18:05 +0200
+Message-ID: <1415027885-2181-3-git-send-email-kyosti.malkki@gmail.com>
 References: <1414346490-19307-1-git-send-email-kyosti.malkki@gmail.com>
  <1415027885-2181-1-git-send-email-kyosti.malkki@gmail.com>
 Mime-Version: 1.0
@@ -14,94 +14,46 @@ To: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, balbi-l0cyMroinI0@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-SET_FEATURE request with DEBUG_MODE only worked the first time after mo=
-dule
-initialisation. Per the USB 2.0 debug device specification, said reques=
-t
-is to be treated as if it were a SET_CONFIGURATION request, i.e. endpoi=
-nt
-must be re-configured.
+There are applications where it is desirable to not hangup ttyGS* when
+USB disconnect is detected. USB host side of communication may
+power-cycle periodically or there may be the actual need to physically
+disconnect and reconnect USB cable temporarily.
 
-As configure_endpoints() may now get called multiple times, move it out=
-side
-__init and move serial_alloc_tty() call into __init.
-
-Code has assumption that endpoint mapping remains unchanged with consec=
-utive
-calls of configure_endpoints().
+USB disconnects on serial gadget are comparable to loss of Carrier Dete=
+ct
+of conventional UARTs. With the change, if ttyGS* has termios CLOCAL fl=
+ag
+set, disconnect on USB does not hangup the TTY.
 
 Signed-off-by: Ky=C3=B6sti M=C3=A4lkki <kyosti.malkki-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/usb/gadget/legacy/dbgp.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+ drivers/usb/gadget/function/u_serial.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/gadget/legacy/dbgp.c b/drivers/usb/gadget/lega=
-cy/dbgp.c
-index 1b07513..633683a 100644
---- a/drivers/usb/gadget/legacy/dbgp.c
-+++ b/drivers/usb/gadget/legacy/dbgp.c
-@@ -237,7 +237,7 @@ static void dbgp_unbind(struct usb_gadget *gadget)
- static unsigned char tty_line;
- #endif
-=20
--static int __init dbgp_configure_endpoints(struct usb_gadget *gadget)
-+static int dbgp_configure_endpoints(struct usb_gadget *gadget)
- {
- 	int stp;
-=20
-@@ -273,19 +273,10 @@ static int __init dbgp_configure_endpoints(struct=
- usb_gadget *gadget)
-=20
- 	dbgp.serial->in->desc =3D &i_desc;
- 	dbgp.serial->out->desc =3D &o_desc;
--
--	if (gserial_alloc_line(&tty_line)) {
--		stp =3D 3;
--		goto fail_3;
--	}
-+#endif
-=20
- 	return 0;
-=20
--fail_3:
--	dbgp.o_ep->driver_data =3D NULL;
--#else
--	return 0;
--#endif
- fail_2:
- 	dbgp.i_ep->driver_data =3D NULL;
- fail_1:
-@@ -324,10 +315,17 @@ static int __init dbgp_bind(struct usb_gadget *ga=
-dget,
- 		err =3D -ENOMEM;
- 		goto fail;
- 	}
+diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadge=
+t/function/u_serial.c
+index 491082a..dabc165 100644
+--- a/drivers/usb/gadget/function/u_serial.c
++++ b/drivers/usb/gadget/function/u_serial.c
+@@ -1253,9 +1253,16 @@ void gserial_disconnect(struct gserial *gser)
+ 	port->port_usb =3D NULL;
+ 	gser->ioport =3D NULL;
+ 	if (port->port.count > 0 || port->openclose) {
++		struct tty_struct *tty;
 +
-+	if (gserial_alloc_line(&tty_line)) {
-+		stp =3D 4;
-+		err =3D -ENODEV;
-+		goto fail;
-+	}
- #endif
-+
- 	err =3D dbgp_configure_endpoints(gadget);
- 	if (err < 0) {
--		stp =3D 4;
-+		stp =3D 5;
- 		goto fail;
- 	}
-=20
-@@ -383,6 +381,10 @@ static int dbgp_setup(struct usb_gadget *gadget,
- #ifdef CONFIG_USB_G_DBGP_PRINTK
- 		err =3D dbgp_enable_ep();
- #else
-+		err =3D dbgp_configure_endpoints(gadget);
-+		if (err < 0) {
-+			goto fail;
+ 		wake_up_interruptible(&port->drain_wait);
+-		if (port->port.tty)
+-			tty_hangup(port->port.tty);
++		tty =3D port->port.tty;
++		if (tty) {
++			if (tty->termios.c_cflag & CLOCAL)
++				stop_tty(tty);
++			else
++				tty_hangup(tty);
 +		}
- 		err =3D gserial_connect(dbgp.serial, tty_line);
- #endif
- 		if (err < 0)
+ 	}
+ 	spin_unlock_irqrestore(&port->port_lock, flags);
+=20
 --=20
 1.8.1.1
 
