@@ -1,108 +1,47 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: Re: [PATCH] serial: samsung: Remove checks for CONFIG_SAMSUNG_CLOCK
-Date: Mon, 03 Nov 2014 12:55:45 +0100
-Message-ID: <1415015745.20372.52.camel@x220>
-References: <1412590043.4054.61.camel@x220>
+From: =?UTF-8?q?Ky=C3=B6sti=20M=C3=A4lkki?= <kyosti.malkki@gmail.com>
+Subject: usb: gadget: Fixes to receive from USB EHCI Debug
+Date: Mon,  3 Nov 2014 17:18:03 +0200
+Message-ID: <1415027885-2181-1-git-send-email-kyosti.malkki@gmail.com>
+References: <1414346490-19307-1-git-send-email-kyosti.malkki@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cpsmtpb-ews01.kpnxchange.com ([213.75.39.4]:61599 "EHLO
-	cpsmtpb-ews01.kpnxchange.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751820AbaKCLzs (ORCPT
+Received: from mail-lb0-f182.google.com ([209.85.217.182]:51099 "EHLO
+	mail-lb0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751764AbaKCPSl (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Nov 2014 06:55:48 -0500
-In-Reply-To: <1412590043.4054.61.camel@x220>
+	Mon, 3 Nov 2014 10:18:41 -0500
+In-Reply-To: <1414346490-19307-1-git-send-email-kyosti.malkki@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Valentin Rothberg <valentinrothberg@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-usb@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, balbi@ti.com, gregkh@linuxfoundation.org
 
-Hi Greg, Hi Jiri,
-
-On Mon, 2014-10-06 at 12:07 +0200, Paul Bolle wrote:
-> Commit 32726d2d5502 ("ARM: SAMSUNG: Remove legacy clock code") removed
-> the Kconfig symbol SAMSUNG_CLOCK. Remove the last checks for its macro,
-> and the dead code they hide, too.
-> 
-> Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
-> ---
-> This trivial fix has been discussed for some time now in the thread
-> starting at http://lkml.kernel.org/r/1405502840.4408.2.camel@x220 It
-> seems it's time to submit it.
-> 
-> Build tested on top of next-20141003, on x86_64 (!), with these horrific
-> commands:
->     make EXTRA_CFLAGS=-DCONFIG_SERIAL_SAMSUNG_UARTS=3 drivers/tty/serial/samsung.o
->     make EXTRA_CFLAGS=-DCONFIG_SERIAL_SAMSUNG_UARTS=4 drivers/tty/serial/samsung.o
-> 
-> Please note that
->     make EXTRA_CFLAGS=-DCONFIG_SERIAL_SAMSUNG_UARTS=0 drivers/tty/serial/samsung.o
-> 
-> doesn't build. Perhaps some "range" should be added to config
-> SERIAL_SAMSUNG_UARTS. And I also wonder whether SERIAL_SAMSUNG_UARTS
-> should be a dependency (somehow) of config SERIAL_SAMSUNG. I have not
-> looked into those questions.
-
-I noticed this still applies on top of next-20141103. Have you had time
-to look at this yet?
-
->  drivers/tty/serial/samsung.c | 27 ---------------------------
->  1 file changed, 27 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> index c78f43a481ce..796c04c77dc1 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -1226,24 +1226,6 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
->  	return 0;
->  }
->  
-> -#ifdef CONFIG_SAMSUNG_CLOCK
-> -static ssize_t s3c24xx_serial_show_clksrc(struct device *dev,
-> -					  struct device_attribute *attr,
-> -					  char *buf)
-> -{
-> -	struct uart_port *port = s3c24xx_dev_to_port(dev);
-> -	struct s3c24xx_uart_port *ourport = to_ourport(port);
-> -
-> -	if (IS_ERR(ourport->baudclk))
-> -		return -EINVAL;
-> -
-> -	return snprintf(buf, PAGE_SIZE, "* %s\n",
-> -			ourport->baudclk->name ?: "(null)");
-> -}
-> -
-> -static DEVICE_ATTR(clock_source, S_IRUGO, s3c24xx_serial_show_clksrc, NULL);
-> -#endif
-> -
->  /* Device driver serial port probe */
->  
->  static const struct of_device_id s3c24xx_uart_dt_match[];
-> @@ -1329,12 +1311,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
->  	 */
->  	clk_disable_unprepare(ourport->clk);
->  
-> -#ifdef CONFIG_SAMSUNG_CLOCK
-> -	ret = device_create_file(&pdev->dev, &dev_attr_clock_source);
-> -	if (ret < 0)
-> -		dev_err(&pdev->dev, "failed to add clock source attr.\n");
-> -#endif
-> -
->  	ret = s3c24xx_serial_cpufreq_register(ourport);
->  	if (ret < 0)
->  		dev_err(&pdev->dev, "failed to add cpufreq notifier\n");
-> @@ -1348,9 +1324,6 @@ static int s3c24xx_serial_remove(struct platform_device *dev)
->  
->  	if (port) {
->  		s3c24xx_serial_cpufreq_deregister(to_ourport(port));
-> -#ifdef CONFIG_SAMSUNG_CLOCK
-> -		device_remove_file(&dev->dev, &dev_attr_clock_source);
-> -#endif
->  		uart_remove_one_port(&s3c24xx_uart_drv, port);
->  	}
->  
+USB gadget driver dbgp can be used as an EHCI debug dongle in replaceme=
+nt
+for product like Net20DC. With it one can receive early kernel messages
+from remote targets over USB. See parameter earlyprintk=3Ddbgp for targ=
+et
+kernel requirements and configuration.
+=20
+The two patches are required for dbgp gadget driver to work. Longterm
+plan: I think G_DBGP_PRINTK is an odd hack and could be removed.
+Exposing the debug descriptor can be implemented in cdc_acm so that we
+could seemlessly reconfigure endpoint from the 8 byte payload limitatio=
+n
+EHCI Debug Port has, to 512 bytes, once ehci-hcd with DMA is available.
 
 
-Paul Bolle
+Handling of the termios CLOCAL flag calls for some discussion and I am
+not that familiar with the tty infra u_serial uses. See the previous
+change around gserial_disconnect():
+  http://permalink.gmane.org/gmane.linux.usb.general/4260
 
+Regards,
+  Ky=C3=B6sti
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
