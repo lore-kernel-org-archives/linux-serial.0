@@ -1,42 +1,80 @@
-From: Lucas Stach <dev@lynxeye.de>
-Subject: [PATCH] serial: of-serial: fetch line number from DT
-Date: Mon,  3 Nov 2014 23:16:54 +0100
-Message-ID: <1415053014-29778-1-git-send-email-dev@lynxeye.de>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 1/1] tty: Do not set modem lines when reopening ports
+Date: Mon, 03 Nov 2014 18:13:13 -0500
+Message-ID: <54580C09.7080901@hurleysoftware.com>
+References: <OF6C85CA04.9FBB77C4-ON86257D82.007014C2-86257D82.0070E996@ni.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ns.lynxeye.de ([87.118.118.114]:50495 "EHLO lynxeye.de"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750810AbaKCWPv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Nov 2014 17:15:51 -0500
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:37073 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751243AbaKCXNP (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 3 Nov 2014 18:13:15 -0500
+In-Reply-To: <OF6C85CA04.9FBB77C4-ON86257D82.007014C2-86257D82.0070E996@ni.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Shreyas Bethur <shreyas.bethur@ni.com>, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.cz
 
-The general agreed way to specify a fixed line number
-for a serial console is to provide a "serial" alias
-in the devicetree. Start parsing this property in
-of_serial.
+Hi Shreyas,
 
-Signed-off-by: Lucas Stach <dev@lynxeye.de>
----
- drivers/tty/serial/of_serial.c | 4 ++++
- 1 file changed, 4 insertions(+)
+On 10/31/2014 04:33 PM, Shreyas Bethur wrote:
+> When tty port is opened, we will raise the DTR and RTS lines. But for
+> second and subsequent opens, we should not modify these lines because the
+> first session might be actively using these lines. We don't want a second
+> open to interfere with the first session.
+> 
+> Signed-off-by: Shreyas Bethur <shreyas.bethur@ni.com>
+> ---
+> To give some background for this patch, we have a product that uses the
+> DTR line on the serial port for synchronization with other devices. While
+> the synchronization application is using the DTR line, if another process
+> opens the same port, then DTR line is raised, and thus interferes with the
+> synchronization application. So, if a port is open, subsequent opens
+> should not modify any modem lines.
 
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 8bc2563..920a831 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -101,6 +101,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 	if (of_property_read_u32(np, "fifo-size", &prop) == 0)
- 		port->fifosize = prop;
- 
-+	/* Check for a fixed line number */
-+	if ((ret = of_alias_get_id(np, "serial")) >= 0)
-+		port->line = ret;
-+
- 	port->irq = irq_of_parse_and_map(np, 0);
- 	port->iotype = UPIO_MEM;
- 	if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
--- 
-1.9.3
+Would you please expand on your use-case?
+
+Regards,
+Peter Hurley
+
+> This patch is my attempt to fix this issue. Please review my fix, and let
+> me know what you folks think.
+> ---
+>  drivers/tty/tty_port.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> index 1b93357..8a6c80a 100644
+> --- a/drivers/tty/tty_port.c
+> +++ b/drivers/tty/tty_port.c
+> @@ -363,6 +363,7 @@ int tty_port_block_til_ready(struct tty_port *port,
+>         int do_clocal = 0, retval;
+>         unsigned long flags;
+>         DEFINE_WAIT(wait);
+> +       bool port_first_open = true;
+> 
+>         /* block if port is in the process of being closed */
+>         if (port->flags & ASYNC_CLOSING) {
+> @@ -381,8 +382,15 @@ int tty_port_block_til_ready(struct tty_port *port,
+>                 return 0;
+>         }
+>         if (filp->f_flags & O_NONBLOCK) {
+> -               /* Indicate we are open */
+> -               if (tty->termios.c_cflag & CBAUD)
+> +               /* The port lock protects the port counts */
+> +               spin_lock_irqsave(&port->lock, flags);
+> +               if (port->count > 1)
+> +                       port_first_open = false;
+> +               spin_unlock_irqrestore(&port->lock, flags);
+> +
+> +               /* Indicate we are open. Raise DTR and RTS only if opening 
+> the
+> +                  port for the first time */
+> +               if ((tty->termios.c_cflag & CBAUD) && port_first_open)
+>                         tty_port_raise_dtr_rts(port);
+>                 port->flags |= ASYNC_NORMAL_ACTIVE;
+>                 return 0;
+> 
 
