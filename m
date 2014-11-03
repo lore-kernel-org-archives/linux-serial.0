@@ -1,125 +1,88 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH 0/5] serial: jsm: Add support for the Digi Classic adapters
-Date: Mon, 3 Nov 2014 12:38:00 +0300
-Message-ID: <20141103093800.GK6879@mwanda>
-References: <1414973190-10153-1-git-send-email-bergo.torino@gmail.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH 2/2] tty: serial: msm: Support sysrq on uartDM devices
+Date: Mon, 03 Nov 2014 10:05:21 +0000
+Message-ID: <54575361.1080400@linaro.org>
+References: <1414606478-13709-1-git-send-email-sboyd@codeaurora.org> <1414606478-13709-3-git-send-email-sboyd@codeaurora.org> <54522163.8030408@linaro.org> <20141031064130.GG12469@codeaurora.org> <545359AB.8070503@linaro.org> <5453D00F.5000906@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-Content-Disposition: inline
-In-Reply-To: <1414973190-10153-1-git-send-email-bergo.torino@gmail.com>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Konrad Zapalowicz <bergo.torino@gmail.com>, Mark Hounschell <markh@compro.net>
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, cascardo@linux.vnet.ibm.com, linux-serial@vger.kernel.org, lidza.louina@gmail.com, jslaby@suse.cz
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:35288 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751134AbaKCKFb (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 3 Nov 2014 05:05:31 -0500
+Received: by mail-wi0-f176.google.com with SMTP id h11so5934141wiw.15
+        for <linux-serial@vger.kernel.org>; Mon, 03 Nov 2014 02:05:30 -0800 (PST)
+In-Reply-To: <5453D00F.5000906@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: frowand.list@gmail.com
+Cc: Stephen Boyd <sboyd@codeaurora.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Frank Rowand <frank.rowand@sonymobile.com>, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Adding Mark to the CC list.  He might be able to test this, and also he
-is the dgnc maintainer.  Could you resend him the patches privately so
-he doesn't have to download corrupted versions from the list archive?
+On 31/10/14 18:08, Frank Rowand wrote:
+> On 10/31/2014 2:43 AM, Daniel Thompson wrote:
+>> On 31/10/14 06:41, Stephen Boyd wrote:
+>>> On 10/30, Daniel Thompson wrote:
+>>>> On 29/10/14 18:14, Stephen Boyd wrote:
+>>>>> +		r_count = min_t(int, count, sizeof(buf));
+>>>>> +
+>>>>> +		for (i = 0; i < r_count; i++) {
+>>>>> +			char flag = TTY_NORMAL;
+>>>>>  
+>>>>> -		/* TODO: handle sysrq */
+>>>>> -		tty_insert_flip_string(tport, buf, min(count, 4));
+>>>>> -		count -= 4;
+>>>>> +			if (msm_port->break_detected && buf[i] == 0) {
+>>>>> +				port->icount.brk++;
+>>>>> +				flag = TTY_BREAK;
+>>>>> +				msm_port->break_detected = false;
+>>>>> +				if (uart_handle_break(port))
+>>>>> +					continue;
+>>>>> +			}
+>>>>> +
+>>>>> +			if (!(port->read_status_mask & UART_SR_RX_BREAK))
+>>>>> +				flag = TTY_NORMAL;
+>>>>
+>>>> flag is already known to be TTY_NORMAL.
+>>>
+>>> Huh? If we detected a break we would set the flag to TTY_BREAK
+>>> and if uart_handle_break() returned 0 (perhaps sysrq config is
+>>> diasbled) then we would get down here, and then we want to reset
+>>> the flag to TTY_NORMAL if the read_status_mask bits indicate that
+>>> we want to skip checking for breaks. Otherwise we want to
+>>> indicate to the tty layer that it's a break character.
+>>
+>> Agreed. Sorry for noise.
+>>
+>> It now reaches the level of silly quibble (meaning I won't bother to
+>> raise the issue again if there is a v2 patch) but perhaps updating the
+>> flag after the continue would be easier to read.
+>>
+>>
+>>>>> +
+>>>>> +			spin_unlock(&port->lock);
+>>>>
+>>>> Is it safe to unlock at this point? count may no longer be valid when we
+>>>> return.
+>>>
+>>> Can you explain further? If it actually isn't valid something
+>>> needs to be done. I believe other serial drivers are doing this
+>>> sort of thing though so it doesn't seem that uncommon (of course
+>>> those drivers could also be broken I suppose).
+>>
+>> Calling spin_unlock() means we are allow code to alter the state of the
+>> UART. In particular the subsequent call to uart_handle_sysrq_char() can
+>> make significant changes to the FIFO state (by calling the poll_char
+>> functions). Given count is shadowing the FIFO state, when we retake the
+>> lock I think it is possible for count to no longer be valid.
+> 
+> uart_handle_sysrq_char() will not _read_ from the serial port.  So it will
+> not directly modify the FIFO state.
 
-regards,
-dan carpenter
+poll_char does not read from the FIFO? Since when?
 
-On Mon, Nov 03, 2014 at 01:06:25AM +0100, Konrad Zapalowicz wrote:
-> The staging/dgnc and the serial/jsm drivers have the same origin. They
-> come from the same codebase however the jsm is the community adopted
-> version where the dgnc is kind of a direct submission from the Digi
-> company.
-> 
-> The recent commits to the jsm driver moved in the support for some of
-> the Neo cards from the dgnc driver. This series of patches continues
-> this trend by moving the support for the remaining Digi adapters (the
-> Classic line) from dgnc to the jsm driver.
-> 
-> This code is heavily based on the changes that were applied to the
-> jsm/dgnc code when the support for the Neo adapters was moved to the
-> mainline (git diff and LKML archives).
-> 
-> Since after this change is applied the staging/dgnc driver is obsolete
-> (no devices supported) it has been removed.
-> 
-> I do not own the Classic card therefore I was unable to test it. I did
-> my best being super-carefull during the implementation however it is
-> highly recommended that someone tests it.
-> 
-> Konrad Zapalowicz (5):
->   drivers: serial: jsm: Add Classic board UART structure
->   drivers: serial: jsm: Add the Classic board implementation
->   drivers: serial: jsm: Enable support for Digi Classic adapters
->   staging: dgnc: Remove driver in favor of serial/jsm driver
->   drivers: serial: jsm: Remove FSF address from the file
->     documentation/header
-> 
->  MAINTAINERS                         |    7 -
->  drivers/staging/Kconfig             |    2 -
->  drivers/staging/Makefile            |    1 -
->  drivers/staging/dgnc/Kconfig        |    6 -
->  drivers/staging/dgnc/Makefile       |    8 -
->  drivers/staging/dgnc/TODO           |   10 -
->  drivers/staging/dgnc/dgnc_cls.c     | 1389 ---------------
->  drivers/staging/dgnc/dgnc_cls.h     |   89 -
->  drivers/staging/dgnc/dgnc_driver.c  |  757 ---------
->  drivers/staging/dgnc/dgnc_driver.h  |  465 -----
->  drivers/staging/dgnc/dgnc_kcompat.h |   64 -
->  drivers/staging/dgnc/dgnc_mgmt.c    |  281 ---
->  drivers/staging/dgnc/dgnc_mgmt.h    |   31 -
->  drivers/staging/dgnc/dgnc_neo.c     | 1878 --------------------
->  drivers/staging/dgnc/dgnc_neo.h     |  157 --
->  drivers/staging/dgnc/dgnc_pci.h     |   75 -
->  drivers/staging/dgnc/dgnc_sysfs.c   |  750 --------
->  drivers/staging/dgnc/dgnc_sysfs.h   |   49 -
->  drivers/staging/dgnc/dgnc_tty.c     | 3201 -----------------------------------
->  drivers/staging/dgnc/dgnc_tty.h     |   42 -
->  drivers/staging/dgnc/dgnc_types.h   |   33 -
->  drivers/staging/dgnc/dgnc_utils.c   |   70 -
->  drivers/staging/dgnc/dgnc_utils.h   |    7 -
->  drivers/staging/dgnc/digi.h         |  415 -----
->  drivers/staging/dgnc/dpacompat.h    |  115 --
->  drivers/tty/serial/Kconfig          |    4 +-
->  drivers/tty/serial/jsm/Makefile     |    2 +-
->  drivers/tty/serial/jsm/jsm.h        |   71 +-
->  drivers/tty/serial/jsm/jsm_cls.c    |  985 +++++++++++
->  drivers/tty/serial/jsm/jsm_driver.c |  156 +-
->  drivers/tty/serial/jsm/jsm_neo.c    |    5 -
->  drivers/tty/serial/jsm/jsm_tty.c    |    7 +-
->  32 files changed, 1174 insertions(+), 9958 deletions(-)
->  delete mode 100644 drivers/staging/dgnc/Kconfig
->  delete mode 100644 drivers/staging/dgnc/Makefile
->  delete mode 100644 drivers/staging/dgnc/TODO
->  delete mode 100644 drivers/staging/dgnc/dgnc_cls.c
->  delete mode 100644 drivers/staging/dgnc/dgnc_cls.h
->  delete mode 100644 drivers/staging/dgnc/dgnc_driver.c
->  delete mode 100644 drivers/staging/dgnc/dgnc_driver.h
->  delete mode 100644 drivers/staging/dgnc/dgnc_kcompat.h
->  delete mode 100644 drivers/staging/dgnc/dgnc_mgmt.c
->  delete mode 100644 drivers/staging/dgnc/dgnc_mgmt.h
->  delete mode 100644 drivers/staging/dgnc/dgnc_neo.c
->  delete mode 100644 drivers/staging/dgnc/dgnc_neo.h
->  delete mode 100644 drivers/staging/dgnc/dgnc_pci.h
->  delete mode 100644 drivers/staging/dgnc/dgnc_sysfs.c
->  delete mode 100644 drivers/staging/dgnc/dgnc_sysfs.h
->  delete mode 100644 drivers/staging/dgnc/dgnc_tty.c
->  delete mode 100644 drivers/staging/dgnc/dgnc_tty.h
->  delete mode 100644 drivers/staging/dgnc/dgnc_types.h
->  delete mode 100644 drivers/staging/dgnc/dgnc_utils.c
->  delete mode 100644 drivers/staging/dgnc/dgnc_utils.h
->  delete mode 100644 drivers/staging/dgnc/digi.h
->  delete mode 100644 drivers/staging/dgnc/dpacompat.h
->  create mode 100644 drivers/tty/serial/jsm/jsm_cls.c
-> 
-> -- 
-> 1.9.1
-> 
-> _______________________________________________
-> devel mailing list
-> devel@linuxdriverproject.org
-> http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel
+SysRq-g will enter cause the system to enter kdb/kgdb from within
+uart_handle_sysrq_char().
+
+
