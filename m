@@ -1,93 +1,100 @@
-From: Frank Rowand <frowand.list@gmail.com>
-Subject: Re: [PATCH 2/2] tty: serial: msm: Support sysrq on uartDM devices
-Date: Mon, 03 Nov 2014 19:00:52 -0800
-Message-ID: <54584164.1080209@gmail.com>
-References: <1414606478-13709-1-git-send-email-sboyd@codeaurora.org> <1414606478-13709-3-git-send-email-sboyd@codeaurora.org> <54522163.8030408@linaro.org> <20141031064130.GG12469@codeaurora.org> <545359AB.8070503@linaro.org> <5453D00F.5000906@gmail.com> <54575361.1080400@linaro.org>
-Reply-To: frowand.list@gmail.com
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: usbserial / ftdi_sio (+ others) bug?
+Date: Tue, 4 Nov 2014 09:14:49 +0100
+Message-ID: <20141104081449.GI31358@localhost>
+References: <CAHdUje_wc+-SwUTDsNHg8HkD2ynJDtOE18VXe5616UpFYyAU0Q@mail.gmail.com>
+ <20141029085128.GC7841@localhost>
+ <20141103234609.03842d21@sauron>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f176.google.com ([209.85.192.176]:42987 "EHLO
-	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751079AbaKDDBQ (ORCPT
+Received: from mail-lb0-f178.google.com ([209.85.217.178]:33257 "EHLO
+	mail-lb0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750870AbaKDISB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 3 Nov 2014 22:01:16 -0500
-In-Reply-To: <54575361.1080400@linaro.org>
+	Tue, 4 Nov 2014 03:18:01 -0500
+Content-Disposition: inline
+In-Reply-To: <20141103234609.03842d21@sauron>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Stephen Boyd <sboyd@codeaurora.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Frank Rowand <frank.rowand@sonymobile.com>, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Janne Huttunen <jahuttun@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>, linux-usb@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org
 
-On 11/3/2014 2:05 AM, Daniel Thompson wrote:
-> On 31/10/14 18:08, Frank Rowand wrote:
->> On 10/31/2014 2:43 AM, Daniel Thompson wrote:
->>> On 31/10/14 06:41, Stephen Boyd wrote:
->>>> On 10/30, Daniel Thompson wrote:
->>>>> On 29/10/14 18:14, Stephen Boyd wrote:
->>>>>> +		r_count = min_t(int, count, sizeof(buf));
->>>>>> +
->>>>>> +		for (i = 0; i < r_count; i++) {
->>>>>> +			char flag = TTY_NORMAL;
->>>>>>  
->>>>>> -		/* TODO: handle sysrq */
->>>>>> -		tty_insert_flip_string(tport, buf, min(count, 4));
->>>>>> -		count -= 4;
->>>>>> +			if (msm_port->break_detected && buf[i] == 0) {
->>>>>> +				port->icount.brk++;
->>>>>> +				flag = TTY_BREAK;
->>>>>> +				msm_port->break_detected = false;
->>>>>> +				if (uart_handle_break(port))
->>>>>> +					continue;
->>>>>> +			}
->>>>>> +
->>>>>> +			if (!(port->read_status_mask & UART_SR_RX_BREAK))
->>>>>> +				flag = TTY_NORMAL;
->>>>>
->>>>> flag is already known to be TTY_NORMAL.
->>>>
->>>> Huh? If we detected a break we would set the flag to TTY_BREAK
->>>> and if uart_handle_break() returned 0 (perhaps sysrq config is
->>>> diasbled) then we would get down here, and then we want to reset
->>>> the flag to TTY_NORMAL if the read_status_mask bits indicate that
->>>> we want to skip checking for breaks. Otherwise we want to
->>>> indicate to the tty layer that it's a break character.
->>>
->>> Agreed. Sorry for noise.
->>>
->>> It now reaches the level of silly quibble (meaning I won't bother to
->>> raise the issue again if there is a v2 patch) but perhaps updating the
->>> flag after the continue would be easier to read.
->>>
->>>
->>>>>> +
->>>>>> +			spin_unlock(&port->lock);
->>>>>
->>>>> Is it safe to unlock at this point? count may no longer be valid when we
->>>>> return.
->>>>
->>>> Can you explain further? If it actually isn't valid something
->>>> needs to be done. I believe other serial drivers are doing this
->>>> sort of thing though so it doesn't seem that uncommon (of course
->>>> those drivers could also be broken I suppose).
->>>
->>> Calling spin_unlock() means we are allow code to alter the state of the
->>> UART. In particular the subsequent call to uart_handle_sysrq_char() can
->>> make significant changes to the FIFO state (by calling the poll_char
->>> functions). Given count is shadowing the FIFO state, when we retake the
->>> lock I think it is possible for count to no longer be valid.
->>
->> uart_handle_sysrq_char() will not _read_ from the serial port.  So it will
->> not directly modify the FIFO state.
+On Mon, Nov 03, 2014 at 11:46:09PM +0200, Janne Huttunen wrote:
+> On Wed, 29 Oct 2014 09:51:28 +0100
+> Johan Hovold <johan@kernel.org> wrote:
+> > Having the driver not reporting overrun (and other) errors will
+> > obviously not fix the underlying issue with your device, which is
+> > generating all these errors in the first place.
 > 
-> poll_char does not read from the FIFO? Since when?
+> Ok, I did take a closer look at this (mostly with usbmon) and it seems
+> to be caused by the hardware. When the application does open the device
+> and the driver submits the first bulk reads, there's basically three
+> possibilities what happens next:
 > 
-> SysRq-g will enter cause the system to enter kdb/kgdb from within
-> uart_handle_sysrq_char().
+> 1. The chip responds with correct data and everything works fine from
+>    there until the device is closed.
+> 2. The chip responds with single correct character followed by a few
+>    hundred or so replies containing only the overrun status (no data)
+>    which are then converted to a bunch of binary zeroes by the ldisc
+>    because of the bug I mentioned earlier. After that the chip starts
+>    responding with proper data again and works until closed.
 
-Aarrgh.  You are correct.  I overlooked the obvious SysRq-g.
+Note that the only "bug" is that the application cannot disable the
+overrun reporting, but why would you want that? The data stream is
+already corrupt (missing data) so the extra NULL-byte doesn't do much
+harm, but does provide a hint about what went wrong.
 
-/me searches for paper bag.
+> 3. The chip hangs forever without ever responding anything on the
+>    bulk endpoint.
+> 
+> As a rough estimate I'd say that something like at least one out of
+> ten opens currently exhibits either behavior 2 or 3. Also it doesn't
+> seem to have anything to do with any real buffering inside the chip
+> i.e. if I close a working connection and immediately open it again,
+> it may hang the chip.
 
--Frank
+What's on the other side of the FTDI chip?
 
+> After some poking around, it seems that the chip really doesn't like
+> the latency timer value of 1 when it is reset. After it gets the data
+> going it doesn't seem to mind it i.e. I have not seen the chip to
+> hang or report superfluous overruns during normal operation even with
+> latency timer value of 1. With timer value 2 I did get something like
+> 300 opens before hitting the issue and with value 3 I have not seen
+> the device misbehave (yet) in like a thousand or so opens. I do think
+> that more testing is still needed before saying anything definite,
+> but larger timer at least seems to mitigate the issue significantly.
+
+That's interesting, and does indeed point to the FTDI chip.
+
+> BTW, in case nobody else is ever experiencing this issue, please note
+> that I cannot guarantee in any way that the FT232RL in my device is
+> actually authentic. If it is counterfeit, it is a different one than
+> the one that was having the issue with the Windows driver lately. My
+> device doesn't seem to have that bug, but that is no guarantee that
+> it is the real deal. And obviously, real or not, it *does* have some
+> bug that causes it to now misbehave during open().
+> 
+> So, tentatively seems that in order to get rid of the issue with at
+> least this FT232 variant (whatever it may happen to be), either the
+> minimum latency timer value should be increased or possibly
+> alternatively the chip could be reset with higher value and the actual
+> value set later when the chip has started properly. Although I don't
+> yet know for sure which latency value would work 100% of the time or
+> if the alternative idea would actually work at all (I just thought
+> about trying something like that).
+
+You know that you can change the latency-timer setting from user space?
+
+	setserial /dev/ttyUSBx ^low_latency
+	echo 16 >/sys/class/tty/ttyUSBx/device/latency_timer
+
+It still sounds like your hardware is broken, but at least you seem to
+have found a work-around. Perhaps you can report it to the
+logging-device (?) manufacturer or FTDI.
+
+What is the "lsusb -v" output for your device by the way.
+
+Thanks,
+Johan
