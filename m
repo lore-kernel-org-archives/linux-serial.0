@@ -1,49 +1,96 @@
-From: Julien CHAUVEAU <julien.chauveau@neo-technologies.fr>
-Subject: [PATCH v2] serial: 8250_dw: get index of serial line from DT aliases
-Date: Tue,  4 Nov 2014 11:45:55 +0100
-Message-ID: <1415097955-31966-1-git-send-email-julien.chauveau@neo-technologies.fr>
-References: <1414681129-10578-1-git-send-email-julien.chauveau@neo-technologies.fr>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Subject: Re: [PATCH 11/13] arm: dts: dra7: add DMA properties for UART
+Date: Tue, 4 Nov 2014 12:02:33 -0500
+Message-ID: <20141104170233.GB24112@csclub.uwaterloo.ca>
+References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de>
+ <1412014009-13315-12-git-send-email-bigeasy@linutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1414681129-10578-1-git-send-email-julien.chauveau@neo-technologies.fr>
+Content-Disposition: inline
+In-Reply-To: <1412014009-13315-12-git-send-email-bigeasy@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, Julien CHAUVEAU <julien.chauveau@neo-technologies.fr>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Get index of serial line from device tree using function of_alias_get_id().
-If no alias is found, the 8250 core takes care of incrementing the line number.
+On Mon, Sep 29, 2014 at 08:06:47PM +0200, Sebastian Andrzej Siewior wrote:
+> Cc: devicetree@vger.kernel.org
+> Reviewed-by: Tony Lindgren <tony@atomide.com>
+> Tested-by: Tony Lindgren <tony@atomide.com>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  arch/arm/boot/dts/dra7.dtsi | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/dra7.dtsi b/arch/arm/boot/dts/dra7.dtsi
+> index d678152db4cb..f273e3811f75 100644
+> --- a/arch/arm/boot/dts/dra7.dtsi
+> +++ b/arch/arm/boot/dts/dra7.dtsi
+> @@ -332,6 +332,8 @@
+>  			ti,hwmods = "uart1";
+>  			clock-frequency = <48000000>;
+>  			status = "disabled";
+> +			dmas = <&sdma 49>, <&sdma 50>;
+> +			dma-names = "tx", "rx";
+>  		};
+>  
+>  		uart2: serial@4806c000 {
+> @@ -341,6 +343,8 @@
+>  			ti,hwmods = "uart2";
+>  			clock-frequency = <48000000>;
+>  			status = "disabled";
+> +			dmas = <&sdma 51>, <&sdma 52>;
+> +			dma-names = "tx", "rx";
+>  		};
+>  
+>  		uart3: serial@48020000 {
+> @@ -350,6 +354,8 @@
+>  			ti,hwmods = "uart3";
+>  			clock-frequency = <48000000>;
+>  			status = "disabled";
+> +			dmas = <&sdma 53>, <&sdma 54>;
+> +			dma-names = "tx", "rx";
+>  		};
+>  
+>  		uart4: serial@4806e000 {
+> @@ -359,6 +365,8 @@
+>  			ti,hwmods = "uart4";
+>  			clock-frequency = <48000000>;
+>                          status = "disabled";
+> +			dmas = <&sdma 55>, <&sdma 56>;
+> +			dma-names = "tx", "rx";
+>  		};
+>  
+>  		uart5: serial@48066000 {
+> @@ -368,6 +376,8 @@
+>  			ti,hwmods = "uart5";
+>  			clock-frequency = <48000000>;
+>  			status = "disabled";
+> +			dmas = <&sdma 63>, <&sdma 64>;
+> +			dma-names = "tx", "rx";
+>  		};
+>  
+>  		uart6: serial@48068000 {
+> @@ -377,6 +387,8 @@
+>  			ti,hwmods = "uart6";
+>  			clock-frequency = <48000000>;
+>  			status = "disabled";
+> +			dmas = <&sdma 79>, <&sdma 80>;
+> +			dma-names = "tx", "rx";
+>  		};
+>  
+>  		uart7: serial@48420000 {
 
-Signed-off-by: Julien CHAUVEAU <julien.chauveau@neo-technologies.fr>
----
-Changes since v1:
-- use int type to get the value from of_alias_get_id (fix always true condition)
+According to the manual the DMA channels for UART7 to 10 are:
 
- drivers/tty/serial/8250/8250_dw.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+uart7:  144 145
+uart8:  146 147
+uart9:  148 149
+uart10: 150 151
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index beea6ca..d96fc78 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -258,6 +258,7 @@ static int dw8250_probe_of(struct uart_port *p,
- 	struct uart_8250_port *up = up_to_u8250p(p);
- 	u32			val;
- 	bool has_ucv = true;
-+	int id;
- 
- 	if (of_device_is_compatible(np, "cavium,octeon-3860-uart")) {
- #ifdef __BIG_ENDIAN
-@@ -293,6 +294,11 @@ static int dw8250_probe_of(struct uart_port *p,
- 	if (!of_property_read_u32(np, "reg-shift", &val))
- 		p->regshift = val;
- 
-+	/* get index of serial line, if found in DT aliases */
-+	id = of_alias_get_id(np, "serial");
-+	if (id >= 0)
-+		p->line = id;
-+
- 	/* clock got configured through clk api, all done */
- 	if (p->uartclk)
- 		return 0;
+Might as well add those too.  We have uart 7 and 8 in use on our board
+so I am about to go test it.
+
 -- 
-2.1.0
+Len Sorensen
