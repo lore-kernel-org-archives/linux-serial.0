@@ -1,72 +1,49 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next v2 02/26] tty: Invert tty_lock/ldisc_sem lock order
-Date: Wed,  5 Nov 2014 12:12:45 -0500
-Message-ID: <1415207589-15967-3-git-send-email-peter@hurleysoftware.com>
-References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
- <1415207589-15967-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 8/9] vt: Remove vt_get_kmsg_redirect() from uapi header
+Date: Wed,  5 Nov 2014 12:26:31 -0500
+Message-ID: <1415208392-16189-9-git-send-email-peter@hurleysoftware.com>
+References: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1415207589-15967-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Dropping the tty lock to acquire the tty->ldisc_sem allows several
-race conditions (such as hangup while changing the ldisc) which requires
-extra states and testing. The ldisc_sem->tty_lock lock order has
-not been required since tty buffer ownership was moved to tty_port.
+vt_get_kmsg_redirect() only has meaning to the console driver as
+an alias for calling vt_kmsg_redirect(). Move the macro definition
+to the only source file which uses it; remove from uapi/linux/vt.h
 
-Reviewed-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_ldisc.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/tty/vt/vt.c     | 2 ++
+ include/uapi/linux/vt.h | 3 ---
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 332a622..28858eb 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -523,9 +523,11 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 	if (IS_ERR(new_ldisc))
- 		return PTR_ERR(new_ldisc);
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index b33b00b..3dc5d56 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -2509,6 +2509,8 @@ int vt_kmsg_redirect(int new)
+ 		return kmsg_con;
+ }
  
-+	tty_lock(tty);
- 	retval = tty_ldisc_lock_pair_timeout(tty, o_tty, 5 * HZ);
- 	if (retval) {
- 		tty_ldisc_put(new_ldisc);
-+		tty_unlock(tty);
- 		return retval;
- 	}
++#define vt_get_kmsg_redirect() vt_kmsg_redirect(-1)
++
+ /*
+  *	Console on virtual terminal
+  *
+diff --git a/include/uapi/linux/vt.h b/include/uapi/linux/vt.h
+index 4b59a26..978578b 100644
+--- a/include/uapi/linux/vt.h
++++ b/include/uapi/linux/vt.h
+@@ -84,7 +84,4 @@ struct vt_setactivate {
  
-@@ -536,11 +538,11 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 	if (tty->ldisc->ops->num == ldisc) {
- 		tty_ldisc_enable_pair(tty, o_tty);
- 		tty_ldisc_put(new_ldisc);
-+		tty_unlock(tty);
- 		return 0;
- 	}
+ #define VT_SETACTIVATE	0x560F	/* Activate and set the mode of a console */
  
- 	old_ldisc = tty->ldisc;
--	tty_lock(tty);
- 
- 	if (test_bit(TTY_HUPPING, &tty->flags) ||
- 	    test_bit(TTY_HUPPED, &tty->flags)) {
-@@ -675,8 +677,6 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
- 	wake_up_interruptible_poll(&tty->read_wait, POLLIN);
- 
--	tty_unlock(tty);
 -
- 	/*
- 	 * Shutdown the current line discipline, and reset it to
- 	 * N_TTY if need be.
-@@ -684,7 +684,6 @@ void tty_ldisc_hangup(struct tty_struct *tty)
- 	 * Avoid racing set_ldisc or tty_ldisc_release
- 	 */
- 	tty_ldisc_lock_pair(tty, tty->link);
--	tty_lock(tty);
- 
- 	if (tty->ldisc) {
- 
+-#define vt_get_kmsg_redirect() vt_kmsg_redirect(-1)
+-
+ #endif /* _UAPI_LINUX_VT_H */
 -- 
 2.1.3
