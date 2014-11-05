@@ -1,41 +1,56 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH -next 5/9] serial: hp300: Remove obsolete comments
-Date: Wed, 5 Nov 2014 19:36:07 +0100
-Message-ID: <CAMuHMdWcWHg=VmxU7jjVXZAX2_=zEBaxsyHNwZQ+Rrxodc4OQQ@mail.gmail.com>
-References: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
-	<1415208392-16189-6-git-send-email-peter@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH 0/4] fix serial console suspend on PNP
+Date: Wed,  5 Nov 2014 13:40:50 -0500
+Message-ID: <1415212854-16944-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f175.google.com ([209.85.217.175]:65495 "EHLO
-	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750891AbaKESgK (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:47356 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750994AbaKESlS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 13:36:10 -0500
-In-Reply-To: <1415208392-16189-6-git-send-email-peter@hurleysoftware.com>
+	Wed, 5 Nov 2014 13:41:18 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-On Wed, Nov 5, 2014 at 6:26 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> setup_serial_console() is obsolete and has been superseded by
-> early_serial_setup() which is called at the end of the function.
->
-> The IA64 arch does not call this function; only the m68k arch setup
-> calls this function.
->
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Hi Greg,
 
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+The kernel command line parameter, no_console_suspend, enables the serial
+console to continue to output kernel message during system suspend/resume.
 
-Gr{oetje,eeting}s,
+However, the PNP bus will disable and power-down pnp devices on system
+suspend, which defeats the purpose of no_console_suspend; namely to continue
+to output messages in case those are the last messages before crashing.
 
-                        Geert
+The first patch is a cleanup of the baroque logic of uart_suspend_port().
+The second patch overrides the PNP bus disabling the console device if
+no_console_suspend is set. This patch uses existing PNP bus logic but
+perhaps in a way not originally intended.
+The third patch requires Rafael's ack, as it adds a capability to allow
+the device to override the power-down function.
+The fourth patch actually performs the power-down override enabled by
+patch 3.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+With these patches, the PNP0501 device (16550A uart) will continue to
+output messages while system suspend finishes, as intended by the
+no_console_suspend parameter. [System resume is another problem, which
+I'm working on].
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Regards,
+
+Peter Hurley (4):
+  serial: core: Simplify console suspend logic in uart_suspend_port()
+  serial: 8250_pnp: Override pnp disable for no_console_suspend
+  PNP: Allow device to override ACPI device sleep
+  serial: 8250_pnp: Override pnp suspend for no_console_suspend
+
+ drivers/pnp/driver.c               |  2 +-
+ drivers/pnp/pnpacpi/core.c         |  2 +-
+ drivers/tty/serial/8250/8250_pnp.c | 61 +++++++++++++++++++++++++++++++-------
+ drivers/tty/serial/serial_core.c   | 35 +++++++++++-----------
+ include/linux/pnp.h                |  3 ++
+ 5 files changed, 72 insertions(+), 31 deletions(-)
+
+-- 
+2.1.3
+
