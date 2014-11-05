@@ -1,136 +1,104 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 2/4] serial: 8250_pnp: Override pnp disable for no_console_suspend
-Date: Wed,  5 Nov 2014 13:40:52 -0500
-Message-ID: <1415212854-16944-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 1/4] serial: core: Simplify console suspend logic in uart_suspend_port()
+Date: Wed,  5 Nov 2014 13:40:51 -0500
+Message-ID: <1415212854-16944-2-git-send-email-peter@hurleysoftware.com>
 References: <1415212854-16944-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:49821 "EHLO
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:35393 "EHLO
 	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751167AbaKESlV (ORCPT
+	with ESMTP id S1751037AbaKESlT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 13:41:21 -0500
+	Wed, 5 Nov 2014 13:41:19 -0500
 In-Reply-To: <1415212854-16944-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
 
-When the kernel command line parameter, no_console_suspend, is used,
-the console should continue to output console messages. For a serial
-console, the serial core ensures that the device is not shutdown when
-no_console_suspend is specified. However, the pnp bus subsequently
-disables the device and no further output occurs.
+When the uart port being suspended is a console and consoles are
+not suspending (kernel command line contains no_console_suspend),
+then no action is performed for that port, and the function can
+return early.
 
-When registering the 8250 port, override PNP_DISABLE if the serial
-device is a console and consoles are not suspending. Restore the
-PNP_DISABLE capability (if overriden) on device removal.
+If the function has not returned early, then one of the conditions
+is not true, so the expression
+   (console_suspend_enabled || !uart_console(uport))
+must be true and can be eliminated.
+
+Similarly, the expression
+   (console_suspend_enabled && uart_console(uport))
+simplifies to just uart_console(uport).
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250_pnp.c | 45 ++++++++++++++++++++++++++++----------
- 1 file changed, 34 insertions(+), 11 deletions(-)
+ drivers/tty/serial/serial_core.c | 35 +++++++++++++++++------------------
+ 1 file changed, 17 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 682a2fb..50b7c89 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -18,11 +18,17 @@
- #include <linux/kernel.h>
- #include <linux/serial_core.h>
- #include <linux/bitops.h>
-+#include <linux/console.h>
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index c5fb08c..158e667 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1959,23 +1959,24 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 	}
+ 	put_device(tty_dev);
  
- #include <asm/byteorder.h>
- 
- #include "8250.h"
- 
-+struct serial_pnp_info {
-+	int line;
-+	bool override_disable;
-+};
+-	if (console_suspend_enabled || !uart_console(uport))
+-		uport->suspended = 1;
++	/* Nothing to do if the console is not suspending */
++	if (!console_suspend_enabled && uart_console(uport))
++		goto unlock;
 +
- #define UNKNOWN_DEV 0x3000
- #define CIR_PORT	0x0800
++	uport->suspended = 1;
  
-@@ -426,7 +432,8 @@ static int serial_pnp_guess_board(struct pnp_dev *dev)
- static int
- serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- {
--	struct uart_8250_port uart;
-+	struct uart_8250_port uart, *port8250;
-+	struct serial_pnp_info *info;
- 	int ret, line, flags = dev_id->driver_data;
+ 	if (port->flags & ASYNC_INITIALIZED) {
+ 		const struct uart_ops *ops = uport->ops;
+ 		int tries;
  
- 	if (flags & UNKNOWN_DEV) {
-@@ -435,6 +442,10 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 			return ret;
+-		if (console_suspend_enabled || !uart_console(uport)) {
+-			set_bit(ASYNCB_SUSPENDED, &port->flags);
+-			clear_bit(ASYNCB_INITIALIZED, &port->flags);
+-
+-			spin_lock_irq(&uport->lock);
+-			ops->stop_tx(uport);
+-			ops->set_mctrl(uport, 0);
+-			ops->stop_rx(uport);
+-			spin_unlock_irq(&uport->lock);
+-		}
++		set_bit(ASYNCB_SUSPENDED, &port->flags);
++		clear_bit(ASYNCB_INITIALIZED, &port->flags);
++
++		spin_lock_irq(&uport->lock);
++		ops->stop_tx(uport);
++		ops->set_mctrl(uport, 0);
++		ops->stop_rx(uport);
++		spin_unlock_irq(&uport->lock);
+ 
+ 		/*
+ 		 * Wait for the transmitter to empty.
+@@ -1987,19 +1988,17 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 				drv->dev_name,
+ 				drv->tty_driver->name_base + uport->line);
+ 
+-		if (console_suspend_enabled || !uart_console(uport))
+-			ops->shutdown(uport);
++		ops->shutdown(uport);
  	}
  
-+	info = devm_kzalloc(&dev->dev, sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return -ENOMEM;
-+
- 	memset(&uart, 0, sizeof(uart));
- 	if (pnp_irq_valid(dev, 0))
- 		uart.port.irq = pnp_irq(dev, 0);
-@@ -471,35 +482,47 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 	if (line < 0 || (flags & CIR_PORT))
- 		return -ENODEV;
+ 	/*
+ 	 * Disable the console device before suspending.
+ 	 */
+-	if (console_suspend_enabled && uart_console(uport))
++	if (uart_console(uport))
+ 		console_stop(uport->cons);
  
--	pnp_set_drvdata(dev, (void *)((long)line + 1));
-+	info->line = line;
-+	port8250 = serial8250_get_port(line);
-+
-+	if (uart_console(&port8250->port) && !console_suspend_enabled) {
-+		info->override_disable = !!(dev->capabilities & PNP_DISABLE);
-+		dev->capabilities &= ~PNP_DISABLE;
-+	}
-+
-+	pnp_set_drvdata(dev, info);
+-	if (console_suspend_enabled || !uart_console(uport))
+-		uart_change_pm(state, UART_PM_STATE_OFF);
+-
++	uart_change_pm(state, UART_PM_STATE_OFF);
++unlock:
+ 	mutex_unlock(&port->mutex);
+ 
  	return 0;
- }
- 
- static void serial_pnp_remove(struct pnp_dev *dev)
- {
--	long line = (long)pnp_get_drvdata(dev);
--	if (line)
--		serial8250_unregister_port(line - 1);
-+	struct serial_pnp_info *info = pnp_get_drvdata(dev);
-+
-+	if (info) {
-+		serial8250_unregister_port(info->line);
-+		if (info->override_disable)
-+			dev->capabilities |= PNP_DISABLE;
-+	}
- }
- 
- #ifdef CONFIG_PM
- static int serial_pnp_suspend(struct pnp_dev *dev, pm_message_t state)
- {
--	long line = (long)pnp_get_drvdata(dev);
-+	struct serial_pnp_info *info = pnp_get_drvdata(dev);
- 
--	if (!line)
-+	if (!info)
- 		return -ENODEV;
--	serial8250_suspend_port(line - 1);
-+	serial8250_suspend_port(info->line);
- 	return 0;
- }
- 
- static int serial_pnp_resume(struct pnp_dev *dev)
- {
--	long line = (long)pnp_get_drvdata(dev);
-+	struct serial_pnp_info *info = pnp_get_drvdata(dev);
- 
--	if (!line)
-+	if (!info)
- 		return -ENODEV;
--	serial8250_resume_port(line - 1);
-+	serial8250_resume_port(info->line);
- 	return 0;
- }
- #else
 -- 
 2.1.3
 
