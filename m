@@ -1,61 +1,69 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH 03/12] serial_core: Handle TIOC[GS]RS485 ioctls.
-Date: Wed, 5 Nov 2014 20:37:53 +0100
-Message-ID: <CAPybu_1wg5wSmJxofC1oGVr-w8OEVFChcoHRSSq5RpFGDKE69g@mail.gmail.com>
-References: <1412798258-23655-1-git-send-email-ricardo.ribalda@gmail.com>
- <1412798258-23655-4-git-send-email-ricardo.ribalda@gmail.com>
- <1412799101.28467.68.camel@acox1-desk.ger.corp.intel.com> <CAPybu_3b6epYcQ1c0L0E1so7BNJ7DndA4E2nHDfj8OYjR3u0Zw@mail.gmail.com>
- <1412864192.28467.72.camel@acox1-desk.ger.corp.intel.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Subject: Re: [PATCH 11/13] arm: dts: dra7: add DMA properties for UART
+Date: Wed, 5 Nov 2014 14:43:23 -0500
+Message-ID: <20141105194323.GI24112@csclub.uwaterloo.ca>
+References: <20141104170233.GB24112@csclub.uwaterloo.ca>
+ <5459079D.7080703@linutronix.de>
+ <20141104172117.GC24112@csclub.uwaterloo.ca>
+ <20141104183315.GD24112@csclub.uwaterloo.ca>
+ <20141104210315.GF24112@csclub.uwaterloo.ca>
+ <20141105011506.GG24112@csclub.uwaterloo.ca>
+ <5459DBB7.1090702@linutronix.de>
+ <20141105153307.GN24110@csclub.uwaterloo.ca>
+ <20141105162024.GH24112@csclub.uwaterloo.ca>
+ <545A50BB.2020307@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qg0-f48.google.com ([209.85.192.48]:34362 "EHLO
-	mail-qg0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751833AbaKETiO (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 14:38:14 -0500
-In-Reply-To: <1412864192.28467.72.camel@acox1-desk.ger.corp.intel.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <545A50BB.2020307@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, LKML <linux-kernel@vger.kernel.org>
 
-Hello Alan
+On Wed, Nov 05, 2014 at 05:30:51PM +0100, Sebastian Andrzej Siewior wro=
+te:
+> On 11/05/2014 05:20 PM, Lennart Sorensen wrote:
+> > On Wed, Nov 05, 2014 at 10:33:15AM -0500, Lennart Sorensen wrote:
+> >> Two systems ran 16 hours each so far with no issues.  Pushed 170MB=
+ of
+> >> data through the pair of serial ports on one system at 230400.
+> >=20
+> > The console on uart3 doesn't appear to be using the dma assuming th=
+e
+> > values in /sys for the dma controller and bytes transferred mean an=
+ything.
+> > It does mention in dmesg that it allocated dma channels for uart3 t=
+hough.
+>=20
+> Then it should use it :)
 
-After almost one month with no other comments I am planning to resend
-the patchset including the lock patch. May I add your Reviewed or
-Acked by to any of the patches?
+I managed to get something dma related on uart3.  But it isn't happy:
 
-Thanks :)
+[   95.577401] DMA misaligned error with device 53
+repeated many times.
 
-On Thu, Oct 9, 2014 at 4:16 PM, Alan Cox <alan@linux.intel.com> wrote:
-> On Thu, 2014-10-09 at 10:07 +0200, Ricardo Ribalda Delgado wrote:
->> Hello Alan
->>
->> >
->> > What is the locking between setting/getting/driver use of the config ?
->> > This really needs a lock (termios sem I think is perhaps appropriate
->> > given when the values are normally referenced).
->>
->> I tried implementing it with the sermios sem
->> ((&(uart_port)->state->port.tty->termios_rwsem)), but some drivers
->> access the rs485 structure inside their irq handler. So I have see
->> options here
->>
->> 1) Protect the structure with uart_port->lock spinlock
->> 2) Assume that an assignment is atomic on critical sections where I
->> cannot hold the rwsem.
->>
->> I think 1) is more correct. Any issues that I continue in this
->> direction? Any better idea?
->
-> For uart #1 sounds right to me too.
->
-> Alan
->
->
+I wonder if the dma support isn't quite working for the omap572x yet in
+this tree (ti's 3.12.y tree), or maybe it is picky and the driver still
+needs a bit of work.
 
+I have had no issues on uart7 and 8 without dma.
 
+> There is omap_8250_tx_dma() and omap_8250_rx_dma(). Both setup
+> callbacks (the rx+tx _complete). Upon successful DMA transfer you
+> should see them invoked with bytes transfered (>0).
+> For RX transfer you need at least trigger bytes in the FIFO within a
+> given time frame (I think it was 46 bytes and the delay may be up to =
+2
+> bytes). If you miss this then DMA for RX won't wire and you purge the
+> FIFO manually via "timeout-interrupt" (the callback will be invoked
+> with an error condition and 0 bytes).
+>=20
+> Assuming this works for you then one should figure out why the counte=
+rs
+> in /sys are not updated=E2=80=A6
 
--- 
-Ricardo Ribalda
+--=20
+Len Sorensen
