@@ -1,69 +1,131 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Subject: Re: [PATCH 11/13] arm: dts: dra7: add DMA properties for UART
-Date: Wed, 5 Nov 2014 14:43:23 -0500
-Message-ID: <20141105194323.GI24112@csclub.uwaterloo.ca>
-References: <20141104170233.GB24112@csclub.uwaterloo.ca>
- <5459079D.7080703@linutronix.de>
- <20141104172117.GC24112@csclub.uwaterloo.ca>
- <20141104183315.GD24112@csclub.uwaterloo.ca>
- <20141104210315.GF24112@csclub.uwaterloo.ca>
- <20141105011506.GG24112@csclub.uwaterloo.ca>
- <5459DBB7.1090702@linutronix.de>
- <20141105153307.GN24110@csclub.uwaterloo.ca>
- <20141105162024.GH24112@csclub.uwaterloo.ca>
- <545A50BB.2020307@linutronix.de>
+From: Shreyas Bethur <shreyas.bethur@ni.com>
+Subject: Re: [PATCH 1/1] tty: Do not set modem lines when reopening ports
+Date: Wed, 5 Nov 2014 16:01:21 -0600
+Message-ID: <OFC3DBEDDF.98889C80-ON86257D87.006F9538-86257D87.0078F95B@ni.com>
+References: <OF6C85CA04.9FBB77C4-ON86257D82.007014C2-86257D82.0070E996@ni.com> <54580C09.7080901@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <545A50BB.2020307@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com, gregkh@linuxfoundation.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="US-ASCII"
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from skprod3.natinst.com ([130.164.80.24]:34912 "EHLO ni.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751219AbaKEWB1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Nov 2014 17:01:27 -0500
+In-Reply-To: <54580C09.7080901@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org
 
-On Wed, Nov 05, 2014 at 05:30:51PM +0100, Sebastian Andrzej Siewior wro=
-te:
-> On 11/05/2014 05:20 PM, Lennart Sorensen wrote:
-> > On Wed, Nov 05, 2014 at 10:33:15AM -0500, Lennart Sorensen wrote:
-> >> Two systems ran 16 hours each so far with no issues.  Pushed 170MB=
- of
-> >> data through the pair of serial ports on one system at 230400.
-> >=20
-> > The console on uart3 doesn't appear to be using the dma assuming th=
-e
-> > values in /sys for the dma controller and bytes transferred mean an=
-ything.
-> > It does mention in dmesg that it allocated dma channels for uart3 t=
-hough.
->=20
-> Then it should use it :)
+Hi Peter,
 
-I managed to get something dma related on uart3.  But it isn't happy:
+Thanks for your response. You can find my reply in-line below.
 
-[   95.577401] DMA misaligned error with device 53
-repeated many times.
+> From: Peter Hurley <peter@hurleysoftware.com>
+> To: Shreyas Bethur <shreyas.bethur@ni.com>, linux-
+> serial@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.cz, 
+> Date: 11/03/2014 05:13 PM
+> Subject: Re: [PATCH 1/1] tty: Do not set modem lines when reopening 
+ports
+> 
+> Hi Shreyas,
+> 
+> On 10/31/2014 04:33 PM, Shreyas Bethur wrote:
+> > When tty port is opened, we will raise the DTR and RTS lines. But for
+> > second and subsequent opens, we should not modify these lines because 
+the
+> > first session might be actively using these lines. We don't want a 
+second
+> > open to interfere with the first session.
+> > 
+> > Signed-off-by: Shreyas Bethur <shreyas.bethur@ni.com>
+> > ---
+> > To give some background for this patch, we have a product that uses 
+the
+> > DTR line on the serial port for synchronization with other devices. 
+While
+> > the synchronization application is using the DTR line, if another 
+process
+> > opens the same port, then DTR line is raised, and thus interferes with 
+the
+> > synchronization application. So, if a port is open, subsequent opens
+> > should not modify any modem lines.
+> 
+> Would you please expand on your use-case?
+> 
+> Regards,
+> Peter Hurley
+> 
 
-I wonder if the dma support isn't quite working for the omap572x yet in
-this tree (ti's 3.12.y tree), or maybe it is picky and the driver still
-needs a bit of work.
+We have many devices in a real-time test & measurement system, and the 
+clocks on
+all these devices needs to be synchronized for our applications. So we 
+connect
+all the devices to a central hub via serial ports. We open a tty session 
+(in
+exclusive mode and non-admin user) and toggle the DTR lines from all the 
+devices,
+every time cycle. The hub measures the time difference between these 
+signals and
+correct the clock on the devices. We also have a service that the user can 
+use to
+enumerate all the serial ports and check whether they are in use. When 
+this
+service opens the port that is used for synchronization, it gets EBUSY 
+error,
+which is good; But the tty driver raises the DTR line before returning 
+EBUSY.
 
-I have had no issues on uart7 and 8 without dma.
+I would expect that if a tty session is opened in exclusive mode, any 
+subsequent
+opens to not change anything on the port including DTR and RTS lines. 
+Please let
+me know if I'm missing something or if my understanding is incorrect.
 
-> There is omap_8250_tx_dma() and omap_8250_rx_dma(). Both setup
-> callbacks (the rx+tx _complete). Upon successful DMA transfer you
-> should see them invoked with bytes transfered (>0).
-> For RX transfer you need at least trigger bytes in the FIFO within a
-> given time frame (I think it was 46 bytes and the delay may be up to =
-2
-> bytes). If you miss this then DMA for RX won't wire and you purge the
-> FIFO manually via "timeout-interrupt" (the callback will be invoked
-> with an error condition and 0 bytes).
->=20
-> Assuming this works for you then one should figure out why the counte=
-rs
-> in /sys are not updated=E2=80=A6
+Regards,
+Shreyas Bethur
 
---=20
-Len Sorensen
+
+> > This patch is my attempt to fix this issue. Please review my fix, and 
+let
+> > me know what you folks think.
+> > ---
+> >  drivers/tty/tty_port.c | 12 ++++++++++--
+> >  1 file changed, 10 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> > index 1b93357..8a6c80a 100644
+> > --- a/drivers/tty/tty_port.c
+> > +++ b/drivers/tty/tty_port.c
+> > @@ -363,6 +363,7 @@ int tty_port_block_til_ready(struct tty_port 
+*port,
+> >         int do_clocal = 0, retval;
+> >         unsigned long flags;
+> >         DEFINE_WAIT(wait);
+> > +       bool port_first_open = true;
+> > 
+> >         /* block if port is in the process of being closed */
+> >         if (port->flags & ASYNC_CLOSING) {
+> > @@ -381,8 +382,15 @@ int tty_port_block_til_ready(struct tty_port 
+*port,
+> >                 return 0;
+> >         }
+> >         if (filp->f_flags & O_NONBLOCK) {
+> > -               /* Indicate we are open */
+> > -               if (tty->termios.c_cflag & CBAUD)
+> > +               /* The port lock protects the port counts */
+> > +               spin_lock_irqsave(&port->lock, flags);
+> > +               if (port->count > 1)
+> > +                       port_first_open = false;
+> > +               spin_unlock_irqrestore(&port->lock, flags);
+> > +
+> > +               /* Indicate we are open. Raise DTR and RTS only if 
+opening 
+> > the
+> > +                  port for the first time */
+> > +               if ((tty->termios.c_cflag & CBAUD) && port_first_open)
+> >                         tty_port_raise_dtr_rts(port);
+> >                 port->flags |= ASYNC_NORMAL_ACTIVE;
+> >                 return 0;
+> > 
+> 
+
