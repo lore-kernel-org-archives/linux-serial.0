@@ -1,71 +1,37 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: Fwd: Fwd: Re: pl2303 linux driver does not work
-Date: Tue, 4 Nov 2014 20:29:55 -0800
-Message-ID: <20141105042955.GA10613@kroah.com>
-References: <5459A26A.2080204@grapecity.mn>
- <5459A354.2000006@grapecity.mn>
+From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [PATCH 11/13] arm: dts: dra7: add DMA properties for UART
+Date: Wed, 05 Nov 2014 09:11:35 +0100
+Message-ID: <5459DBB7.1090702@linutronix.de>
+References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de> <1412014009-13315-12-git-send-email-bigeasy@linutronix.de> <20141104170233.GB24112@csclub.uwaterloo.ca> <5459079D.7080703@linutronix.de> <20141104172117.GC24112@csclub.uwaterloo.ca> <20141104183315.GD24112@csclub.uwaterloo.ca> <20141104210315.GF24112@csclub.uwaterloo.ca> <20141105011506.GG24112@csclub.uwaterloo.ca>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:47281 "EHLO
-	out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751421AbaKEEbH (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 4 Nov 2014 23:31:07 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-	by mailout.nyi.internal (Postfix) with ESMTP id 6F6BB2072A
-	for <linux-serial@vger.kernel.org>; Tue,  4 Nov 2014 23:31:06 -0500 (EST)
-Content-Disposition: inline
-In-Reply-To: <5459A354.2000006@grapecity.mn>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20141105011506.GG24112-1wCw9BSqJbv44Nm34jS7GywD8/FfD2ys@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lennart Sorensen <lsorense-1wCw9BSqJbv44Nm34jS7GywD8/FfD2ys@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, balbi-l0cyMroinI0@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: "Batdelger.O" <david.batdelger@grapecity.mn>
-Cc: linux-serial@vger.kernel.org
 
-On Wed, Nov 05, 2014 at 12:11:00PM +0800, Batdelger.O wrote:
+On 11/05/2014 02:15 AM, Lennart Sorensen wrote:
+> Well 4 hours running with multiple reboots (our testsuite reboots every
+> 30 minutes to test the watchdog).  So far it has only lost 70 bytes out
+> of 40MB of data sent between uart7 and uart8 (and we are pretty sure
+> the serial test has a small bug that causes a few bytes to be lost right
+> after a reboot sometimes).
 > 
-> Thank you for your quick response.
-> It's  just simple python code. I'm not sure if flow control is correct. I
-> also used gtkterm and tried by every option.  I'm new at usbserial devices.
-> How to know how should it be?
-> 
->    import time
->    import serial
->    import sys
-> 
->    ser = serial.Serial(
->         port='/dev/ttyUSB0',
->         baudrate=4800,
->         parity=serial.PARITY_ODD,
->         stopbits=serial.STOPBITS_ONE,
->         bytesize=serial.EIGHTBITS,
->         # timeout=0
+> The reason I am even trying the new driver today is that we were seeing
+> soft lockups on the CPU whenever the serial ports were being tested,
+> usually in less than 5 minutes, so 4 hours without a lockup is a good
+> sign.  No idea what might be wrong with the old omap serial driver, but
+> it seems something is (unless of course we managed to break it somehow
+> when we tried to solve its habit of dropping characters).
 
-That's a slow baud rate, do you mean that slow?
+Okay. No DMA but the basic part seems to work for you. Thanks for
+testing.
 
->    )
-> 
->    # RTS 0 DTR 1. not sure it's correct one. I tried by reverse.
->    ser.setRTS(False)
->    ser.setDTR(True)
-
-Does your device support hardware flow control?
-
-
-> 
-> 
->    print ser.isOpen()
-> 
->    ON="\x1B\x5D"
->    ser.write(ON)
->    ser.flushOutput()
->    print "after write"
->    # read = ser.read()
->    # sys.stdout.write("RECEIVED:" + read + "\n")
->    ser.close()
-
-Try using minicom to see if you can properly connect to your device
-first, before trying to write your own code from "scratch", to determine
-that the device works.
-
-greg k-h
+Sebastian
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
