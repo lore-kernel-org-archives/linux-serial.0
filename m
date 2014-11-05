@@ -1,43 +1,41 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 1/5] tty: Allow safe access to termios for set_ldisc() handlers
-Date: Wed,  5 Nov 2014 13:11:41 -0500
-Message-ID: <1415211105-16668-2-git-send-email-peter@hurleysoftware.com>
-References: <1415211105-16668-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1415211105-16668-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Peter Hurley <peter@hurleysoftware.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH -next 5/9] serial: hp300: Remove obsolete comments
+Date: Wed, 5 Nov 2014 19:36:07 +0100
+Message-ID: <CAMuHMdWcWHg=VmxU7jjVXZAX2_=zEBaxsyHNwZQ+Rrxodc4OQQ@mail.gmail.com>
+References: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
+	<1415208392-16189-6-git-send-email-peter@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-lb0-f175.google.com ([209.85.217.175]:65495 "EHLO
+	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750891AbaKESgK (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Nov 2014 13:36:10 -0500
+In-Reply-To: <1415208392-16189-6-git-send-email-peter@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-Allow a tty driver to safely access termios settings while handling
-the set_ldisc() notification. UART drivers use the set_ldisc()
-notification to check if the N_PPS line discipline is being enabled;
-if so, modem status interrupts may also need to be enabled. Conversely,
-modem status interrupts may need to be disabled if switching away
-from the N_PPS line discipline.
+On Wed, Nov 5, 2014 at 6:26 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> setup_serial_console() is obsolete and has been superseded by
+> early_serial_setup() which is called at the end of the function.
+>
+> The IA64 arch does not call this function; only the m68k arch setup
+> calls this function.
+>
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/tty_ldisc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index b66a81d..3737f55 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -572,8 +572,11 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
- 		tty_ldisc_restore(tty, old_ldisc);
- 	}
- 
--	if (tty->ldisc->ops->num != old_ldisc->ops->num && tty->ops->set_ldisc)
-+	if (tty->ldisc->ops->num != old_ldisc->ops->num && tty->ops->set_ldisc) {
-+		down_read(&tty->termios_rwsem);
- 		tty->ops->set_ldisc(tty);
-+		up_read(&tty->termios_rwsem);
-+	}
- 
- 	/* At this point we hold a reference to the new ldisc and a
- 	   reference to the old ldisc, or we hold two references to
--- 
-2.1.3
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
