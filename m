@@ -1,125 +1,148 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 5/5] serial: Test/disable MSIs if switching from N_PPS
-Date: Wed,  5 Nov 2014 13:11:45 -0500
-Message-ID: <1415211105-16668-6-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 3/5] serial: core: Pass termios to set_ldisc() notifications
+Date: Wed,  5 Nov 2014 13:11:43 -0500
+Message-ID: <1415211105-16668-4-git-send-email-peter@hurleysoftware.com>
 References: <1415211105-16668-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1415211105-16668-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Peter Hurley <peter@hurleysoftware.com>, Russell King <linux@arm.linux.org.uk>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Switching to the N_PPS line discipline may require enabling
-modem status interrupts; conversely switching from N_PPS may
-require disabling modem status interrupts.
+UART drivers which enable modem status interrupts when switching
+to N_PPS line discipline need to determine if modem status
+interrupts should be disabled when switching from N_PPS.
+Specifically, the set_ldisc() notification needs to evaluate
+UART_ENABLE_MS() which requires termios->c_cflag.
 
-Affected drivers:
-8250
-amba-pl010
-atmel
+Convert in-tree UART drivers to new interface.
 
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Russell King <linux@arm.linux.org.uk>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250_core.c | 21 ++++++++++++++++++++-
- drivers/tty/serial/amba-pl010.c     | 18 +++++++++++++++++-
- drivers/tty/serial/atmel_serial.c   |  5 +++++
- 3 files changed, 42 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 4 ++--
+ drivers/tty/serial/amba-pl010.c     | 4 ++--
+ drivers/tty/serial/atmel_serial.c   | 4 ++--
+ drivers/tty/serial/bfin_uart.c      | 5 +++--
+ drivers/tty/serial/clps711x.c       | 5 +++--
+ drivers/tty/serial/serial_core.c    | 2 +-
+ include/linux/serial_core.h         | 2 +-
+ 7 files changed, 14 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 8eb0654..095319b 100644
+index ca5cfdc..6cfdb7b 100644
 --- a/drivers/tty/serial/8250/8250_core.c
 +++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1397,6 +1397,19 @@ static void serial8250_stop_rx(struct uart_port *port)
- 	serial8250_rpm_put(up);
+@@ -2603,9 +2603,9 @@ serial8250_set_termios(struct uart_port *port, struct ktermios *termios,
  }
  
-+static void serial8250_disable_ms(struct uart_port *port)
-+{
-+	struct uart_8250_port *up =
-+		container_of(port, struct uart_8250_port, port);
-+
-+	/* no MSR capabilities */
-+	if (up->bugs & UART_BUG_NOMSR)
-+		return;
-+
-+	up->ier &= ~UART_IER_MSI;
-+	serial_port_out(port, UART_IER, up->ier);
-+}
-+
- static void serial8250_enable_ms(struct uart_port *port)
+ static void
+-serial8250_set_ldisc(struct uart_port *port, int new)
++serial8250_set_ldisc(struct uart_port *port, struct ktermios *termios)
  {
- 	struct uart_8250_port *up = up_to_u8250p(port);
-@@ -2610,8 +2623,14 @@ serial8250_set_ldisc(struct uart_port *port, struct ktermios *termios)
- 		spin_lock_irq(&port->lock);
+-	if (new == N_PPS) {
++	if (termios->c_line == N_PPS) {
+ 		port->flags |= UPF_HARDPPS_CD;
  		serial8250_enable_ms(port);
- 		spin_unlock_irq(&port->lock);
--	} else
-+	} else {
- 		port->flags &= ~UPF_HARDPPS_CD;
-+		if (!UART_ENABLE_MS(port, termios->c_cflag)) {
-+			spin_lock_irq(&port->lock);
-+			serial8250_disable_ms(port);
-+			spin_unlock_irq(&port->lock);
-+		}
-+	}
- }
- 
- 
+ 	} else
 diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 04b83bf..6f8464e 100644
+index 2064d31..76e40b3 100644
 --- a/drivers/tty/serial/amba-pl010.c
 +++ b/drivers/tty/serial/amba-pl010.c
-@@ -103,6 +103,16 @@ static void pl010_stop_rx(struct uart_port *port)
- 	writel(cr, uap->port.membase + UART010_CR);
+@@ -468,9 +468,9 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	spin_unlock_irqrestore(&uap->port.lock, flags);
  }
  
-+static void pl010_disable_ms(struct uart_port *port)
-+{
-+	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-+	unsigned int cr;
-+
-+	cr = readb(uap->port.membase + UART010_CR);
-+	cr &= ~UART010_CR_MSIE;
-+	writel(cr, uap->port.membase + UART010_CR);
-+}
-+
- static void pl010_enable_ms(struct uart_port *port)
+-static void pl010_set_ldisc(struct uart_port *port, int new)
++static void pl010_set_ldisc(struct uart_port *port, struct ktermios *termios)
  {
- 	struct uart_amba_port *uap = (struct uart_amba_port *)port;
-@@ -475,8 +485,14 @@ static void pl010_set_ldisc(struct uart_port *port, struct ktermios *termios)
- 		spin_lock_irq(&port->lock);
+-	if (new == N_PPS) {
++	if (termios->c_line == N_PPS) {
+ 		port->flags |= UPF_HARDPPS_CD;
  		pl010_enable_ms(port);
- 		spin_unlock_irq(&port->lock);
--	} else
-+	} else {
- 		port->flags &= ~UPF_HARDPPS_CD;
-+		if (!UART_ENABLE_MS(port, termios->c_cflag)) {
-+			spin_lock_irq(&port->lock);
-+			pl010_disable_ms(port);
-+			spin_unlock_irq(&port->lock);
-+		}
-+	}
- }
- 
- static const char *pl010_type(struct uart_port *port)
+ 	} else
 diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index b68dfa5..21380b6 100644
+index 8a84034..a2374d9 100644
 --- a/drivers/tty/serial/atmel_serial.c
 +++ b/drivers/tty/serial/atmel_serial.c
-@@ -2051,6 +2051,11 @@ static void atmel_set_ldisc(struct uart_port *port, struct ktermios *termios)
- 		spin_unlock_irq(&port->lock);
+@@ -2042,9 +2042,9 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+-static void atmel_set_ldisc(struct uart_port *port, int new)
++static void atmel_set_ldisc(struct uart_port *port, struct ktermios *termios)
+ {
+-	if (new == N_PPS) {
++	if (termios->c_line == N_PPS) {
+ 		port->flags |= UPF_HARDPPS_CD;
+ 		atmel_enable_ms(port);
  	} else {
- 		port->flags &= ~UPF_HARDPPS_CD;
-+		if (!UART_ENABLE_MS(port, termios->c_cflag)) {
-+			spin_lock_irq(&port->lock);
-+			atmel_disable_ms(port);
-+			spin_unlock_irq(&port->lock);
-+		}
+diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+index 7da9911..44b27ec 100644
+--- a/drivers/tty/serial/bfin_uart.c
++++ b/drivers/tty/serial/bfin_uart.c
+@@ -944,12 +944,13 @@ bfin_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
+  * Enable the IrDA function if tty->ldisc.num is N_IRDA.
+  * In other cases, disable IrDA function.
+  */
+-static void bfin_serial_set_ldisc(struct uart_port *port, int ld)
++static void bfin_serial_set_ldisc(struct uart_port *port,
++				  struct ktermios *termios)
+ {
+ 	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
+ 	unsigned int val;
+ 
+-	switch (ld) {
++	switch (termios->c_line) {
+ 	case N_IRDA:
+ 		val = UART_GET_GCTL(uart);
+ 		val |= (UMOD_IRDA | RPOLC);
+diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
+index acfe317..f963c4c 100644
+--- a/drivers/tty/serial/clps711x.c
++++ b/drivers/tty/serial/clps711x.c
+@@ -225,13 +225,14 @@ static void uart_clps711x_break_ctl(struct uart_port *port, int break_state)
+ 	writel(ubrlcr, port->membase + UBRLCR_OFFSET);
+ }
+ 
+-static void uart_clps711x_set_ldisc(struct uart_port *port, int ld)
++static void uart_clps711x_set_ldisc(struct uart_port *port,
++				    struct ktermios *termios)
+ {
+ 	if (!port->line) {
+ 		struct clps711x_port *s = dev_get_drvdata(port->dev);
+ 
+ 		regmap_update_bits(s->syscon, SYSCON_OFFSET, SYSCON1_SIREN,
+-				   (ld == N_IRDA) ? SYSCON1_SIREN : 0);
++				   (termios->c_line == N_IRDA) ? SYSCON1_SIREN : 0);
  	}
  }
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 5209eaa..c5fb08c 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1247,7 +1247,7 @@ static void uart_set_ldisc(struct tty_struct *tty)
+ 
+ 	if (uport->ops->set_ldisc) {
+ 		mutex_lock(&state->port.mutex);
+-		uport->ops->set_ldisc(uport, tty->termios.c_line);
++		uport->ops->set_ldisc(uport, &tty->termios);
+ 		mutex_unlock(&state->port.mutex);
+ 	}
+ }
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index ad93296..40b4cc4 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -63,7 +63,7 @@ struct uart_ops {
+ 	void		(*flush_buffer)(struct uart_port *);
+ 	void		(*set_termios)(struct uart_port *, struct ktermios *new,
+ 				       struct ktermios *old);
+-	void		(*set_ldisc)(struct uart_port *, int new);
++	void		(*set_ldisc)(struct uart_port *, struct ktermios *);
+ 	void		(*pm)(struct uart_port *, unsigned int state,
+ 			      unsigned int oldstate);
  
 -- 
 2.1.3
