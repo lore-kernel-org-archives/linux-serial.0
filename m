@@ -1,96 +1,53 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: usbserial / ftdi_sio (+ others) bug?
-Date: Wed, 5 Nov 2014 10:58:39 +0100
-Message-ID: <20141105095839.GO31358@localhost>
-References: <CAHdUje_wc+-SwUTDsNHg8HkD2ynJDtOE18VXe5616UpFYyAU0Q@mail.gmail.com>
- <20141029085128.GC7841@localhost>
- <20141103234609.03842d21@sauron>
- <20141104081449.GI31358@localhost>
- <20141104202913.4b0d6cd2@sauron>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Markus Pargmann <mpa@pengutronix.de>
+Subject: [PATCH RESEND] tty: serial: omap: Remove probe error message
+Date: Wed,  5 Nov 2014 13:20:50 +0100
+Message-ID: <1415190050-31300-1-git-send-email-mpa@pengutronix.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f41.google.com ([209.85.215.41]:50054 "EHLO
-	mail-la0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751198AbaKEKBv (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:40479 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754035AbaKEMVS (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 05:01:51 -0500
-Content-Disposition: inline
-In-Reply-To: <20141104202913.4b0d6cd2@sauron>
+	Wed, 5 Nov 2014 07:21:18 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Janne Huttunen <jahuttun@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>, linux-usb@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>
+Cc: Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Markus Pargmann <mpa@pengutronix.de>
 
-On Tue, Nov 04, 2014 at 08:29:13PM +0200, Janne Huttunen wrote:
-> On Tue, 4 Nov 2014 09:14:49 +0100
-> Johan Hovold <johan@kernel.org> wrote:
-> > > 2. The chip responds with single correct character followed by a few
-> > >    hundred or so replies containing only the overrun status (no
-> > > data) which are then converted to a bunch of binary zeroes by the
-> > > ldisc because of the bug I mentioned earlier. After that the chip
-> > > starts responding with proper data again and works until closed.
-> > 
-> > Note that the only "bug" is that the application cannot disable the
-> > overrun reporting, but why would you want that?
-> 
-> The merits of doing so may be debatable, but if using the quotes
-> around "bug" is supposed to indicate that it isn't one, I have
-> to respectfully disagree. I know it is not the most important
-> thing in the world and without the hardware fault I probably
-> would not have seen it at all, but I would still call it a bug.
+This error message is not necessary. The driver core code will print all
+probe error messages. It also resolves some error codes to proper error
+messages. For example -EPROBE_DEFER will only be printed as an info message.
 
-And so have I. It is a bug, but it's not what causing your problems
-here. In fact, I would argue that you do not even want to disable
-overrun reporting. That was my point.
+This patch removes the error message as the core prints the same
+information.
 
-> > What's on the other side of the FTDI chip?
-> 
-> Some kind of an optical receiver circuit (the link is optically
-> isolated). On the other side of that is then the device that sends
-> periodical data packets (a couple of times per second 17 bytes
-> each) to the computer. The computer doesn't send anything i.e.
-> the tx functionality of the chip is not used at all.
+Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+Acked-by: Felipe Balbi <balbi@ti.com>
+---
 
-What baudrates? Have you verified the RS232 signals?
+Hi,
 
-> > It still sounds like your hardware is broken, but at least you
-> > seem to have found a work-around.
-> 
-> Like I said, the hw is the real culprit here, there's no doubt
-> about it. But I also doubt that it's just the individual chip
-> in my device that has this issue. The device is practically
-> brand new and while that is no guarantee that there won't be any
-> faults, I find it much more likely that what I am seeing here is
-> a quirk of the implementation and there are lots of these chips
-> with the same issue out there.
+this is another resend of this patch. I rebased it onto v3.18-rc3.
 
-Your device behaving this way is the first one I hear of. 
+Regards,
 
-> The real questions that remain are then; 1. is the chip real or
-> counterfeit and how am I supposed to know it,
+Markus
 
-No idea.
+ drivers/tty/serial/omap-serial.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-I have three FT232R plugged in as we speak and they have the same
-descriptors as yours (bcdDevice etc). Haven't had any issues with them.
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 18c30cabe27f..6cda5cd8b513 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1747,8 +1747,6 @@ err_add_port:
+ 	pm_runtime_disable(&pdev->dev);
+ err_rs485:
+ err_port_line:
+-	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
+-				pdev->id, __func__, ret);
+ 	return ret;
+ }
+ 
+-- 
+2.1.1
 
-> 2. how much the driver can or even should try to accommodate the
-> quirks of the hw, and
-
-Without knowing for sure that this is an issue with a class of devices,
-there's not much we can do.
-
-> 3. does the answer to #2 depend on the answer to #1.
-
-Yes.
-
-> > Perhaps you can report it to the logging-device (?) manufacturer
-> > or FTDI.
-> 
-> Sure, if I can find someone that cares, which is doubtful.
-
-If the chip is sold as part of the logging device, I would hope the
-manufacturer would.
-
-Johan
