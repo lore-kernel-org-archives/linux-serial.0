@@ -1,49 +1,61 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 4/4] serial: 8250_pnp: Override pnp suspend for no_console_suspend
-Date: Wed,  5 Nov 2014 14:02:05 -0500
-Message-ID: <1415214125-14751-1-git-send-email-peter@hurleysoftware.com>
-References: <1415212854-16944-5-git-send-email-peter@hurleysoftware.com>
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH 03/12] serial_core: Handle TIOC[GS]RS485 ioctls.
+Date: Wed, 5 Nov 2014 20:37:53 +0100
+Message-ID: <CAPybu_1wg5wSmJxofC1oGVr-w8OEVFChcoHRSSq5RpFGDKE69g@mail.gmail.com>
+References: <1412798258-23655-1-git-send-email-ricardo.ribalda@gmail.com>
+ <1412798258-23655-4-git-send-email-ricardo.ribalda@gmail.com>
+ <1412799101.28467.68.camel@acox1-desk.ger.corp.intel.com> <CAPybu_3b6epYcQ1c0L0E1so7BNJ7DndA4E2nHDfj8OYjR3u0Zw@mail.gmail.com>
+ <1412864192.28467.72.camel@acox1-desk.ger.corp.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:49009 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751208AbaKETCU (ORCPT
+Received: from mail-qg0-f48.google.com ([209.85.192.48]:34362 "EHLO
+	mail-qg0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751833AbaKETiO (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 14:02:20 -0500
-In-Reply-To: <1415212854-16944-5-git-send-email-peter@hurleysoftware.com>
+	Wed, 5 Nov 2014 14:38:14 -0500
+In-Reply-To: <1412864192.28467.72.camel@acox1-desk.ger.corp.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>
+To: Alan Cox <alan@linux.intel.com>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, LKML <linux-kernel@vger.kernel.org>
 
-Prevent PNP bus from powering down the serial console device
-when suspending if the no_console_suspend command line option is set.
+Hello Alan
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/8250/8250_pnp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+After almost one month with no other comments I am planning to resend
+the patchset including the lock patch. May I add your Reviewed or
+Acked by to any of the patches?
 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 50b7c89..4aefaf2 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -487,7 +487,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 
- 	if (uart_console(&port8250->port) && !console_suspend_enabled) {
- 		info->override_disable = !!(dev->capabilities & PNP_DISABLE);
--		dev->capabilities &= ~PNP_DISABLE;
-+		dev->capabilities &= ~(PNP_DISABLE | PNP_SUSPEND);
- 	}
- 
- 	pnp_set_drvdata(dev, info);
-@@ -502,6 +502,7 @@ static void serial_pnp_remove(struct pnp_dev *dev)
- 		serial8250_unregister_port(info->line);
- 		if (info->override_disable)
- 			dev->capabilities |= PNP_DISABLE;
-+		dev->capabilities |= PNP_SUSPEND;
- 	}
- }
- 
+Thanks :)
+
+On Thu, Oct 9, 2014 at 4:16 PM, Alan Cox <alan@linux.intel.com> wrote:
+> On Thu, 2014-10-09 at 10:07 +0200, Ricardo Ribalda Delgado wrote:
+>> Hello Alan
+>>
+>> >
+>> > What is the locking between setting/getting/driver use of the config ?
+>> > This really needs a lock (termios sem I think is perhaps appropriate
+>> > given when the values are normally referenced).
+>>
+>> I tried implementing it with the sermios sem
+>> ((&(uart_port)->state->port.tty->termios_rwsem)), but some drivers
+>> access the rs485 structure inside their irq handler. So I have see
+>> options here
+>>
+>> 1) Protect the structure with uart_port->lock spinlock
+>> 2) Assume that an assignment is atomic on critical sections where I
+>> cannot hold the rwsem.
+>>
+>> I think 1) is more correct. Any issues that I continue in this
+>> direction? Any better idea?
+>
+> For uart #1 sounds right to me too.
+>
+> Alan
+>
+>
+
+
+
 -- 
-2.1.3
-
+Ricardo Ribalda
