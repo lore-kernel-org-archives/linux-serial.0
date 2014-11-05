@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next v2 03/26] tty: Remove TTY_HUPPING
-Date: Wed,  5 Nov 2014 12:12:46 -0500
-Message-ID: <1415207589-15967-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next v2 02/26] tty: Invert tty_lock/ldisc_sem lock order
+Date: Wed,  5 Nov 2014 12:12:45 -0500
+Message-ID: <1415207589-15967-3-git-send-email-peter@hurleysoftware.com>
 References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
  <1415207589-15967-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,89 +11,62 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Now that tty_ldisc_hangup() does not drop the tty lock, it is no
-longer possible to observe TTY_HUPPING while holding the tty lock
-on another cpu.
-
-Remove TTY_HUPPING bit definition.
+Dropping the tty lock to acquire the tty->ldisc_sem allows several
+race conditions (such as hangup while changing the ldisc) which requires
+extra states and testing. The ldisc_sem->tty_lock lock order has
+not been required since tty buffer ownership was moved to tty_port.
 
 Reviewed-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_io.c    | 12 +-----------
- drivers/tty/tty_ldisc.c |  3 +--
- include/linux/tty.h     |  1 -
- 3 files changed, 2 insertions(+), 14 deletions(-)
+ drivers/tty/tty_ldisc.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 45cc09e..bb4d2f2 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -690,9 +690,6 @@ static void __tty_hangup(struct tty_struct *tty, int exit_session)
- 		return;
- 	}
- 
--	/* some functions below drop BTM, so we need this bit */
--	set_bit(TTY_HUPPING, &tty->flags);
--
- 	/* inuse_filps is protected by the single tty lock,
- 	   this really needs to change if we want to flush the
- 	   workqueue with the lock held */
-@@ -717,10 +714,6 @@ static void __tty_hangup(struct tty_struct *tty, int exit_session)
- 	while (refs--)
- 		tty_kref_put(tty);
- 
--	/*
--	 * it drops BTM and thus races with reopen
--	 * we protect the race by TTY_HUPPING
--	 */
- 	tty_ldisc_hangup(tty);
- 
- 	spin_lock_irq(&tty->ctrl_lock);
-@@ -752,8 +745,6 @@ static void __tty_hangup(struct tty_struct *tty, int exit_session)
- 	 * can't yet guarantee all that.
- 	 */
- 	set_bit(TTY_HUPPED, &tty->flags);
--	clear_bit(TTY_HUPPING, &tty->flags);
--
- 	tty_unlock(tty);
- 
- 	if (f)
-@@ -1461,8 +1452,7 @@ static int tty_reopen(struct tty_struct *tty)
- {
- 	struct tty_driver *driver = tty->driver;
- 
--	if (test_bit(TTY_CLOSING, &tty->flags) ||
--			test_bit(TTY_HUPPING, &tty->flags))
-+	if (test_bit(TTY_CLOSING, &tty->flags))
- 		return -EIO;
- 
- 	if (driver->type == TTY_DRIVER_TYPE_PTY &&
 diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 28858eb..49001fa 100644
+index 332a622..28858eb 100644
 --- a/drivers/tty/tty_ldisc.c
 +++ b/drivers/tty/tty_ldisc.c
-@@ -544,8 +544,7 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+@@ -523,9 +523,11 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	if (IS_ERR(new_ldisc))
+ 		return PTR_ERR(new_ldisc);
+ 
++	tty_lock(tty);
+ 	retval = tty_ldisc_lock_pair_timeout(tty, o_tty, 5 * HZ);
+ 	if (retval) {
+ 		tty_ldisc_put(new_ldisc);
++		tty_unlock(tty);
+ 		return retval;
+ 	}
+ 
+@@ -536,11 +538,11 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	if (tty->ldisc->ops->num == ldisc) {
+ 		tty_ldisc_enable_pair(tty, o_tty);
+ 		tty_ldisc_put(new_ldisc);
++		tty_unlock(tty);
+ 		return 0;
+ 	}
  
  	old_ldisc = tty->ldisc;
+-	tty_lock(tty);
  
--	if (test_bit(TTY_HUPPING, &tty->flags) ||
--	    test_bit(TTY_HUPPED, &tty->flags)) {
-+	if (test_bit(TTY_HUPPED, &tty->flags)) {
- 		/* We were raced by the hangup method. It will have stomped
- 		   the ldisc data and closed the ldisc down */
- 		tty_ldisc_enable_pair(tty, o_tty);
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index b36b0b4..ff0dd7a 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -321,7 +321,6 @@ struct tty_file_private {
- #define TTY_PTY_LOCK 		16	/* pty private */
- #define TTY_NO_WRITE_SPLIT 	17	/* Preserve write boundaries to driver */
- #define TTY_HUPPED 		18	/* Post driver->hangup() */
--#define TTY_HUPPING 		21	/* ->hangup() in progress */
- #define TTY_LDISC_HALTED	22	/* Line discipline is halted */
+ 	if (test_bit(TTY_HUPPING, &tty->flags) ||
+ 	    test_bit(TTY_HUPPED, &tty->flags)) {
+@@ -675,8 +677,6 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
+ 	wake_up_interruptible_poll(&tty->read_wait, POLLIN);
  
- #define TTY_WRITE_FLUSH(tty) tty_write_flush((tty))
+-	tty_unlock(tty);
+-
+ 	/*
+ 	 * Shutdown the current line discipline, and reset it to
+ 	 * N_TTY if need be.
+@@ -684,7 +684,6 @@ void tty_ldisc_hangup(struct tty_struct *tty)
+ 	 * Avoid racing set_ldisc or tty_ldisc_release
+ 	 */
+ 	tty_ldisc_lock_pair(tty, tty->link);
+-	tty_lock(tty);
+ 
+ 	if (tty->ldisc) {
+ 
 -- 
 2.1.3
