@@ -1,53 +1,69 @@
-From: Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH RESEND] tty: serial: omap: Remove probe error message
-Date: Wed,  5 Nov 2014 13:20:50 +0100
-Message-ID: <1415190050-31300-1-git-send-email-mpa@pengutronix.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] tty: xuartps: Add support for setting modem control signals
+Date: Wed,  5 Nov 2014 13:35:16 +0100
+Message-ID: <1415190917-14776-1-git-send-email-lars@metafoo.de>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:40479 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754035AbaKEMVS (ORCPT
+Received: from smtp-out-101.synserver.de ([212.40.185.101]:1043 "EHLO
+	smtp-out-098.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754643AbaKEMfW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 07:21:18 -0500
+	Wed, 5 Nov 2014 07:35:22 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>
-Cc: Felipe Balbi <balbi@ti.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Markus Pargmann <mpa@pengutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Michal Simek <michal.simek@xilinx.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
 
-This error message is not necessary. The driver core code will print all
-probe error messages. It also resolves some error codes to proper error
-messages. For example -EPROBE_DEFER will only be printed as an info message.
+Add support for setting the state of the DTR and RTS signals.
 
-This patch removes the error message as the core prints the same
-information.
-
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-Acked-by: Felipe Balbi <balbi@ti.com>
+Acked-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
+Changes since v1:
+	* Change type of 'val' from unsigned int to u32
+---
+ drivers/tty/serial/xilinx_uartps.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
-Hi,
-
-this is another resend of this patch. I rebased it onto v3.18-rc3.
-
-Regards,
-
-Markus
-
- drivers/tty/serial/omap-serial.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 18c30cabe27f..6cda5cd8b513 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1747,8 +1747,6 @@ err_add_port:
- 	pm_runtime_disable(&pdev->dev);
- err_rs485:
- err_port_line:
--	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
--				pdev->id, __func__, ret);
- 	return ret;
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 200c1af..542bab3 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -133,6 +133,15 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
+ #define CDNS_UART_IXR_BRK	0x80000000
+ 
+ /*
++ * Modem Control register:
++ * The read/write Modem Control register controls the interface with the modem
++ * or data set, or a peripheral device emulating a modem.
++ */
++#define CDNS_UART_MODEMCR_FCM	0x00000020 /* Automatic flow control mode */
++#define CDNS_UART_MODEMCR_RTS	0x00000002 /* Request to send output control */
++#define CDNS_UART_MODEMCR_DTR	0x00000001 /* Data Terminal Ready */
++
++/*
+  * Channel Status Register:
+  * The channel status register (CSR) is provided to enable the control logic
+  * to monitor the status of bits in the channel interrupt status register,
+@@ -915,7 +924,18 @@ static unsigned int cdns_uart_get_mctrl(struct uart_port *port)
+ 
+ static void cdns_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+-	/* N/A */
++	u32 val;
++
++	val = cdns_uart_readl(CDNS_UART_MODEMCR_OFFSET);
++
++	val &= ~(CDNS_UART_MODEMCR_RTS | CDNS_UART_MODEMCR_DTR);
++
++	if (mctrl & TIOCM_RTS)
++		val |= CDNS_UART_MODEMCR_RTS;
++	if (mctrl & TIOCM_DTR)
++		val |= CDNS_UART_MODEMCR_DTR;
++
++	cdns_uart_writel(val, CDNS_UART_MODEMCR_OFFSET);
  }
  
+ #ifdef CONFIG_CONSOLE_POLL
 -- 
-2.1.1
+1.8.0
 
