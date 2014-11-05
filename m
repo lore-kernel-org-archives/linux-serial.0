@@ -1,40 +1,44 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 5/9] serial: hp300: Remove obsolete comments
-Date: Wed,  5 Nov 2014 12:26:28 -0500
-Message-ID: <1415208392-16189-6-git-send-email-peter@hurleysoftware.com>
-References: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 0/9] various tty cleanups
+Date: Wed,  5 Nov 2014 12:26:23 -0500
+Message-ID: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-setup_serial_console() is obsolete and has been superseded by
-early_serial_setup() which is called at the end of the function.
+Hi Greg,
 
-The IA64 arch does not call this function; only the m68k arch setup
-calls this function.
+These patches are a mixture of dead declaration removals, uapi cleanup,
+and other miscellany.
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/8250/8250_hp300.c | 4 ----
- 1 file changed, 4 deletions(-)
+This series depends on the 10-patch 'serial core fixes' series.
 
-diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/8250/8250_hp300.c
-index afffe4d..b488208 100644
---- a/drivers/tty/serial/8250/8250_hp300.c
-+++ b/drivers/tty/serial/8250/8250_hp300.c
-@@ -88,10 +88,6 @@ extern int hp300_uart_scode;
- /*
-  * Parse the bootinfo to find descriptions for headless console and
-  * debug serial ports and register them with the 8250 driver.
-- * This function should be called before serial_console_init() is called
-- * to make sure the serial console will be available for use. IA-64 kernel
-- * calls this function from setup_arch() after the EFI and ACPI tables have
-- * been parsed.
-  */
- int __init hp300_setup_serial_console(void)
- {
+Regards,
+
+Peter Hurley (9):
+  tty: Replace open-coded test with tty_hung_up_p()
+  tty: Call methods in modern style
+  tty: Remove defunct pcxe_open() declaration
+  tty: Remove defunct serial_console_init() declaration
+  serial: hp300: Remove obsolete comments
+  cris: Remove obsolete ASYNC_SPLIT_TERMIOS behavior
+  tty: Document defunct ASYNC_SPLIT_TERMIOS flag in uapi header
+  vt: Remove vt_get_kmsg_redirect() from uapi header
+  serial: 8250_em: Remove out-of-memory message
+
+ drivers/tty/serial/8250/8250_em.c    |  4 +---
+ drivers/tty/serial/8250/8250_hp300.c |  4 ----
+ drivers/tty/serial/crisv10.c         | 12 ------------
+ drivers/tty/serial/crisv10.h         |  1 -
+ drivers/tty/tty_io.c                 | 14 +++++++-------
+ drivers/tty/tty_ioctl.c              |  4 ++--
+ drivers/tty/vt/vt.c                  |  2 ++
+ include/linux/tty.h                  |  8 --------
+ include/uapi/linux/tty_flags.h       |  2 +-
+ include/uapi/linux/vt.h              |  3 ---
+ 10 files changed, 13 insertions(+), 41 deletions(-)
+
 -- 
 2.1.3
