@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next v2 12/26] tty: Document check_tty_count() requires tty_lock held
-Date: Wed,  5 Nov 2014 12:12:55 -0500
-Message-ID: <1415207589-15967-13-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next v2 25/26] tty: Fix timeout on pty set ldisc
+Date: Wed,  5 Nov 2014 12:13:08 -0500
+Message-ID: <1415207589-15967-26-git-send-email-peter@hurleysoftware.com>
 References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
  <1415207589-15967-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,31 +11,93 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Holding the tty_lock() is necessary to prevent concurrent changes
-to the tty count that may cause it to differ from the open file
-list count. The tty_lock() is already held at all call sites.
+When changing the ldisc on one end of a pty pair, there may be
+waiting readers/writers on the other end which may not exit from
+the ldisc i/o loop, preventing tty_ldisc_lock_pair_timeout() from
+acquiring the other side's ldisc lock.
 
-NB: Note that the check for the pty master tty count is safe because
-the slave's tty_lock() is held while decrementing the pty master
-tty count.
+Only acquire this side's ldisc lock; although this will no longer
+prevent the other side from writing new input, that input will not
+be processed until after the ldisc change completes. This has no
+effect on normal ttys; new input from the driver was never disabled.
+
+Remove tty_ldisc_enable_pair().
 
 Reviewed-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_io.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/tty_ldisc.c | 21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 276d939..41eeee0 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -275,6 +275,7 @@ int tty_paranoia_check(struct tty_struct *tty, struct inode *inode,
- 	return 0;
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 1dbe278..6368dd9 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -393,16 +393,6 @@ static void __lockfunc tty_ldisc_unlock_pair(struct tty_struct *tty,
+ 		__tty_ldisc_unlock(tty2);
  }
  
-+/* Caller must hold tty_lock */
- static int check_tty_count(struct tty_struct *tty, const char *routine)
+-static void __lockfunc tty_ldisc_enable_pair(struct tty_struct *tty,
+-					     struct tty_struct *tty2)
+-{
+-	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+-	if (tty2)
+-		clear_bit(TTY_LDISC_HALTED, &tty2->flags);
+-
+-	tty_ldisc_unlock_pair(tty, tty2);
+-}
+-
+ /**
+  *	tty_ldisc_flush	-	flush line discipline queue
+  *	@tty: tty
+@@ -535,14 +525,13 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
  {
- #ifdef CHECK_TTY_COUNT
+ 	int retval;
+ 	struct tty_ldisc *old_ldisc, *new_ldisc;
+-	struct tty_struct *o_tty = tty->link;
+ 
+ 	new_ldisc = tty_ldisc_get(tty, ldisc);
+ 	if (IS_ERR(new_ldisc))
+ 		return PTR_ERR(new_ldisc);
+ 
+ 	tty_lock(tty);
+-	retval = tty_ldisc_lock_pair_timeout(tty, o_tty, 5 * HZ);
++	retval = tty_ldisc_lock(tty, 5 * HZ);
+ 	if (retval) {
+ 		tty_ldisc_put(new_ldisc);
+ 		tty_unlock(tty);
+@@ -554,7 +543,7 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	 */
+ 
+ 	if (tty->ldisc->ops->num == ldisc) {
+-		tty_ldisc_enable_pair(tty, o_tty);
++		tty_ldisc_unlock(tty);
+ 		tty_ldisc_put(new_ldisc);
+ 		tty_unlock(tty);
+ 		return 0;
+@@ -565,7 +554,7 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	if (test_bit(TTY_HUPPED, &tty->flags)) {
+ 		/* We were raced by the hangup method. It will have stomped
+ 		   the ldisc data and closed the ldisc down */
+-		tty_ldisc_enable_pair(tty, o_tty);
++		tty_ldisc_unlock(tty);
+ 		tty_ldisc_put(new_ldisc);
+ 		tty_unlock(tty);
+ 		return -EIO;
+@@ -599,13 +588,11 @@ int tty_set_ldisc(struct tty_struct *tty, int ldisc)
+ 	/*
+ 	 *	Allow ldisc referencing to occur again
+ 	 */
+-	tty_ldisc_enable_pair(tty, o_tty);
++	tty_ldisc_unlock(tty);
+ 
+ 	/* Restart the work queue in case no characters kick it off. Safe if
+ 	   already running */
+ 	schedule_work(&tty->port->buf.work);
+-	if (o_tty)
+-		schedule_work(&o_tty->port->buf.work);
+ 
+ 	tty_unlock(tty);
+ 	return retval;
 -- 
 2.1.3
