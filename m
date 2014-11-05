@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next v2 07/26] tty: Re-open /dev/tty without tty_mutex
-Date: Wed,  5 Nov 2014 12:12:50 -0500
-Message-ID: <1415207589-15967-8-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next v2 04/26] tty: Clarify re-open behavior of master ptys
+Date: Wed,  5 Nov 2014 12:12:47 -0500
+Message-ID: <1415207589-15967-5-git-send-email-peter@hurleysoftware.com>
 References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
  <1415207589-15967-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,140 +11,77 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Opening /dev/tty (ie., the controlling tty for the current task)
-is always a re-open of the underlying tty. Because holding the
-tty_lock is sufficient for safely re-opening a tty, and because
-having a tty kref is sufficient for safely acquiring the tty_lock [1],
-tty_open_current_tty() does not require holding tty_mutex.
+Re-opening master ptys is not allowed. Once opened and for the remaining
+lifetime of the master pty, its tty count is 1. If its tty count has
+dropped to 0, then the master pty was closed and TTY_CLOSING was set,
+and destruction may begin imminently.
 
-Repurpose tty_open_current_tty() to perform the re-open itself and
-refactor tty_open().
+Besides the normal case of a legacy BSD pty master being re-opened
+(which always returns -EIO), this code is only reachable in 2 degenerate
+cases:
+1. The pty master is the controlling terminal (this is possible through
+   the TIOCSCTTY ioctl). pty masters are not designed to be controlling
+   terminals and it's an oversight that tiocsctty() ever let that happen.
+   The attempted open of /dev/tty will always fail. No known program does
+   this.
+2. The legacy BSD pty slave was opened first. The slave open will fail
+   in pty_open() and tty_release() will commence. But before tty_release()
+   claims the tty_mutex, there is a very small window where a parallel
+   master open might succeed. In a test of racing legacy BSD slave and
+   master parallel opens, where:
+      slave open attempts:  10000   success:4527  failure:5473
+      master open attempts: 11728   success:5789  failure:5939
+   only 8 master open attempts would have succeeded reaching this code and
+   successfully opened the master pty. This case is not possible with
+   SysV ptys.
 
-[1] Analysis of safely re-opening the current tty w/o tty_mutex
+Always return -EIO if a master pty is re-opened or the slave is opened
+first and the master opened in parallel (for legacy BSD ptys).
 
-get_current_tty() gets a tty kref from the already kref'ed tty value of
-current->signal->tty while holding the sighand lock for the current
-task. This guarantees that the tty pointer returned from
-get_current_tty() points to a tty which remains referenceable
-while holding the kref.
-
-Although release_tty() may run concurrently, and thus the driver
-reference may be removed, release_one_tty() cannot have run, and
-won't while holding the tty kref.
-
-This, in turn, guarantees the tty_lock() can safely be acquired
-(since tty->magic and tty->legacy_mutex are still a valid dereferences).
-The tty_lock() also gets a tty kref to prevent the tty_unlock() from
-dereferencing a released tty. Thus, the kref returned from
-get_current_tty() can be released.
-
-Lastly, the first operation of tty_reopen() is to check the tty count.
-If non-zero, this ensures release_tty() is not running concurrently,
-and the driver references have not been removed.
+Furthermore, now that changing the slave's count is not required,
+the tty_lock is sufficient for preventing concurrent changes to the
+tty being re-opened (or failing re-opening).
 
 Reviewed-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_io.c | 53 ++++++++++++++++++++++++++--------------------------
- 1 file changed, 27 insertions(+), 26 deletions(-)
+ drivers/tty/tty_io.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 97445c2..fb4583c 100644
+index bb4d2f2..6dc3fa0 100644
 --- a/drivers/tty/tty_io.c
 +++ b/drivers/tty/tty_io.c
-@@ -1944,20 +1944,20 @@ int tty_release(struct inode *inode, struct file *filp)
- }
- 
- /**
-- *	tty_open_current_tty - get tty of current task for open
-+ *	tty_open_current_tty - get locked tty of current task
-  *	@device: device number
-  *	@filp: file pointer to tty
-- *	@return: tty of the current task iff @device is /dev/tty
-+ *	@return: locked tty of the current task iff @device is /dev/tty
-+ *
-+ *	Performs a re-open of the current task's controlling tty.
+@@ -1444,9 +1444,9 @@ void tty_driver_remove_tty(struct tty_driver *driver, struct tty_struct *tty)
+  * 	@tty	- the tty to open
   *
-  *	We cannot return driver and index like for the other nodes because
-  *	devpts will not work then. It expects inodes to be from devpts FS.
-- *
-- *	We need to move to returning a refcounted object from all the lookup
-- *	paths including this one.
+  *	Return 0 on success, -errno on error.
++ *	Re-opens on master ptys are not allowed and return -EIO.
+  *
+- *	Locking: tty_mutex must be held from the time the tty was found
+- *		 till this open completes.
++ *	Locking: Caller must hold tty_lock
   */
- static struct tty_struct *tty_open_current_tty(dev_t device, struct file *filp)
+ static int tty_reopen(struct tty_struct *tty)
  {
- 	struct tty_struct *tty;
-+	int retval;
+@@ -1456,16 +1456,9 @@ static int tty_reopen(struct tty_struct *tty)
+ 		return -EIO;
  
- 	if (device != MKDEV(TTYAUX_MAJOR, 0))
- 		return NULL;
-@@ -1968,9 +1968,14 @@ static struct tty_struct *tty_open_current_tty(dev_t device, struct file *filp)
+ 	if (driver->type == TTY_DRIVER_TYPE_PTY &&
+-	    driver->subtype == PTY_TYPE_MASTER) {
+-		/*
+-		 * special case for PTY masters: only one open permitted,
+-		 * and the slave side open count is incremented as well.
+-		 */
+-		if (tty->count)
+-			return -EIO;
++	    driver->subtype == PTY_TYPE_MASTER)
++		return -EIO;
  
- 	filp->f_flags |= O_NONBLOCK; /* Don't let /dev/tty block */
- 	/* noctty = 1; */
--	tty_kref_put(tty);
--	/* FIXME: we put a reference and return a TTY! */
--	/* This is only safe because the caller holds tty_mutex */
-+	tty_lock(tty);
-+	tty_kref_put(tty);	/* safe to drop the kref now */
-+
-+	retval = tty_reopen(tty);
-+	if (retval < 0) {
-+		tty_unlock(tty);
-+		tty = ERR_PTR(retval);
-+	}
- 	return tty;
- }
- 
-@@ -2068,13 +2073,9 @@ retry_open:
- 	index  = -1;
- 	retval = 0;
- 
--	mutex_lock(&tty_mutex);
--	/* This is protected by the tty_mutex */
- 	tty = tty_open_current_tty(device, filp);
--	if (IS_ERR(tty)) {
--		retval = PTR_ERR(tty);
--		goto err_unlock;
--	} else if (!tty) {
-+	if (!tty) {
-+		mutex_lock(&tty_mutex);
- 		driver = tty_lookup_driver(device, filp, &noctty, &index);
- 		if (IS_ERR(driver)) {
- 			retval = PTR_ERR(driver);
-@@ -2087,21 +2088,21 @@ retry_open:
- 			retval = PTR_ERR(tty);
- 			goto err_unlock;
- 		}
+-		tty->link->count++;
 -	}
+ 	tty->count++;
  
--	if (tty) {
--		tty_lock(tty);
--		retval = tty_reopen(tty);
--		if (retval < 0) {
--			tty_unlock(tty);
--			tty = ERR_PTR(retval);
--		}
--	} else	/* Returns with the tty_lock held for now */
--		tty = tty_init_dev(driver, index);
-+		if (tty) {
-+			tty_lock(tty);
-+			retval = tty_reopen(tty);
-+			if (retval < 0) {
-+				tty_unlock(tty);
-+				tty = ERR_PTR(retval);
-+			}
-+		} else	/* Returns with the tty_lock held for now */
-+			tty = tty_init_dev(driver, index);
- 
--	mutex_unlock(&tty_mutex);
--	if (driver)
-+		mutex_unlock(&tty_mutex);
- 		tty_driver_kref_put(driver);
-+	}
-+
- 	if (IS_ERR(tty)) {
- 		retval = PTR_ERR(tty);
- 		goto err_file;
+ 	WARN_ON(!tty->ldisc);
 -- 
 2.1.3
