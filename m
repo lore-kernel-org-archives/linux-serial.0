@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 4/9] tty: Remove defunct serial_console_init() declaration
-Date: Wed,  5 Nov 2014 12:26:27 -0500
-Message-ID: <1415208392-16189-5-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 5/9] serial: hp300: Remove obsolete comments
+Date: Wed,  5 Nov 2014 12:26:28 -0500
+Message-ID: <1415208392-16189-6-git-send-email-peter@hurleysoftware.com>
 References: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
@@ -10,32 +10,31 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-serial_console_init() is not defined by the tty core; remove
-declaration.
+setup_serial_console() is obsolete and has been superseded by
+early_serial_setup() which is called at the end of the function.
 
-Note that the powerpc arch boot code contains a serial_console_init()
-declaration in arch/powerpc/boot/ops.h which is restricted to
-the powerpc arch boot.
+The IA64 arch does not call this function; only the m68k arch setup
+calls this function.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- include/linux/tty.h | 4 ----
+ drivers/tty/serial/8250/8250_hp300.c | 4 ----
  1 file changed, 4 deletions(-)
 
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 97cfb31..c52a689 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -617,10 +617,6 @@ extern int n_tty_ioctl_helper(struct tty_struct *tty, struct file *file,
- extern long n_tty_compat_ioctl_helper(struct tty_struct *tty, struct file *file,
- 		       unsigned int cmd, unsigned long arg);
- 
--/* serial.c */
--
--extern void serial_console_init(void);
--
- /* vt.c */
- 
- extern int vt_ioctl(struct tty_struct *tty,
+diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/8250/8250_hp300.c
+index afffe4d..b488208 100644
+--- a/drivers/tty/serial/8250/8250_hp300.c
++++ b/drivers/tty/serial/8250/8250_hp300.c
+@@ -88,10 +88,6 @@ extern int hp300_uart_scode;
+ /*
+  * Parse the bootinfo to find descriptions for headless console and
+  * debug serial ports and register them with the 8250 driver.
+- * This function should be called before serial_console_init() is called
+- * to make sure the serial console will be available for use. IA-64 kernel
+- * calls this function from setup_arch() after the EFI and ACPI tables have
+- * been parsed.
+  */
+ int __init hp300_setup_serial_console(void)
+ {
 -- 
 2.1.3
