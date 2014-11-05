@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next v2 26/26] tty: Flush ldisc buffer atomically with tty flip buffers
-Date: Wed,  5 Nov 2014 12:13:09 -0500
-Message-ID: <1415207589-15967-27-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next v2 11/26] tty: Don't release tty locks for wait queue sanity check
+Date: Wed,  5 Nov 2014 12:12:54 -0500
+Message-ID: <1415207589-15967-12-git-send-email-peter@hurleysoftware.com>
 References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
  <1415207589-15967-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,118 +11,52 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-tty_ldisc_flush() first clears the line discipline input buffer,
-then clears the tty flip buffers. However, this allows for existing
-data in the tty flip buffers to be added after the ldisc input
-buffer has been cleared, but before the flip buffers have been cleared.
+Releasing the tty locks while waiting for the tty wait queues to
+be empty is no longer necessary nor desirable. Prior to
+"tty: Don't take tty_mutex for tty count changes", dropping the
+tty locks was necessary to reestablish the correct lock order between
+tty_mutex and the tty locks. Dropping the global tty_mutex was necessary;
+otherwise new ttys could not have been opened while waiting.
 
-Add an optional ldisc parameter to tty_buffer_flush() to allow
-tty_ldisc_flush() to pass the ldisc to clear.
-
-NB: Initially, the plan was to do this automatically in
-tty_buffer_flush(). However, an audit of the behavior of existing
-line disciplines showed that performing a ldisc buffer flush on
-ioctl(TCFLSH) was not always the outcome. For example, some line
-disciplines have flush_buffer() methods but not ioctl() methods,
-so a ->flush_buffer() command would be unexpected.
+However, without needing the global tty_mutex held, the tty locks for
+the releasing tty can now be held through the sleep. The sanity check
+is for abnormal conditions caused by kernel bugs, not for recoverable
+errors caused by misbehaving userspace; dropping the tty locks only
+allows the tty state to get more sideways.
 
 Reviewed-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_buffer.c | 10 ++++++++--
- drivers/tty/tty_io.c     |  2 +-
- drivers/tty/tty_ldisc.c  | 12 +++++-------
- include/linux/tty.h      |  2 +-
- 4 files changed, 15 insertions(+), 11 deletions(-)
+ drivers/tty/tty_io.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 143deb6..3605103 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -202,14 +202,16 @@ static void tty_buffer_free(struct tty_port *port, struct tty_buffer *b)
- /**
-  *	tty_buffer_flush		-	flush full tty buffers
-  *	@tty: tty to flush
-+ *	@ld:  optional ldisc ptr (must be referenced)
-  *
-- *	flush all the buffers containing receive data.
-+ *	flush all the buffers containing receive data. If ld != NULL,
-+ *	flush the ldisc input buffer.
-  *
-  *	Locking: takes buffer lock to ensure single-threaded flip buffer
-  *		 'consumer'
-  */
- 
--void tty_buffer_flush(struct tty_struct *tty)
-+void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
- {
- 	struct tty_port *port = tty->port;
- 	struct tty_bufhead *buf = &port->buf;
-@@ -223,6 +225,10 @@ void tty_buffer_flush(struct tty_struct *tty)
- 		buf->head = next;
- 	}
- 	buf->head->read = buf->head->commit;
-+
-+	if (ld && ld->ops->flush_buffer)
-+		ld->ops->flush_buffer(tty);
-+
- 	atomic_dec(&buf->priority);
- 	mutex_unlock(&buf->lock);
- }
 diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index fabf4c0..4bd48f7 100644
+index f1c4b07..276d939 100644
 --- a/drivers/tty/tty_io.c
 +++ b/drivers/tty/tty_io.c
-@@ -2899,7 +2899,7 @@ long tty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- 		case TCIFLUSH:
- 		case TCIOFLUSH:
- 		/* flush tty buffer and allow ldisc to process ioctl */
--			tty_buffer_flush(tty);
-+			tty_buffer_flush(tty, NULL);
- 			break;
- 		}
- 		break;
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 6368dd9..b66a81d 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -397,19 +397,17 @@ static void __lockfunc tty_ldisc_unlock_pair(struct tty_struct *tty,
-  *	tty_ldisc_flush	-	flush line discipline queue
-  *	@tty: tty
-  *
-- *	Flush the line discipline queue (if any) for this tty. If there
-- *	is no line discipline active this is a no-op.
-+ *	Flush the line discipline queue (if any) and the tty flip buffers
-+ *	for this tty.
-  */
- 
- void tty_ldisc_flush(struct tty_struct *tty)
- {
- 	struct tty_ldisc *ld = tty_ldisc_ref(tty);
--	if (ld) {
--		if (ld->ops->flush_buffer)
--			ld->ops->flush_buffer(tty);
+@@ -1800,13 +1800,10 @@ int tty_release(struct inode *inode, struct file *filp)
+ 	 * first, its count will be one, since the master side holds an open.
+ 	 * Thus this test wouldn't be triggered at the time the slave closes,
+ 	 * so we do it now.
+-	 *
+-	 * Note that it's possible for the tty to be opened again while we're
+-	 * flushing out waiters.  By recalculating the closing flags before
+-	 * each iteration we avoid any problems.
+ 	 */
++	tty_lock_pair(tty, o_tty);
 +
-+	tty_buffer_flush(tty, ld);
-+	if (ld)
- 		tty_ldisc_deref(ld);
--	}
--	tty_buffer_flush(tty);
- }
- EXPORT_SYMBOL_GPL(tty_ldisc_flush);
- 
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index e33ea1a..f6835ea 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -441,7 +441,7 @@ extern void __do_SAK(struct tty_struct *tty);
- extern void no_tty(void);
- extern void tty_flush_to_ldisc(struct tty_struct *tty);
- extern void tty_buffer_free_all(struct tty_port *port);
--extern void tty_buffer_flush(struct tty_struct *tty);
-+extern void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld);
- extern void tty_buffer_init(struct tty_port *port);
- extern speed_t tty_termios_baud_rate(struct ktermios *termios);
- extern speed_t tty_termios_input_baud_rate(struct ktermios *termios);
+ 	while (1) {
+-		tty_lock_pair(tty, o_tty);
+ 		tty_closing = tty->count <= 1;
+ 		o_tty_closing = o_tty &&
+ 			(o_tty->count <= (pty_master ? 1 : 0));
+@@ -1840,7 +1837,6 @@ int tty_release(struct inode *inode, struct file *filp)
+ 			printk(KERN_WARNING "%s: %s: read/write wait queue active!\n",
+ 			       __func__, tty_name(tty, buf));
+ 		}
+-		tty_unlock_pair(tty, o_tty);
+ 		schedule_timeout_killable(timeout);
+ 		if (timeout < 120 * HZ)
+ 			timeout = 2 * timeout + 1;
 -- 
 2.1.3
