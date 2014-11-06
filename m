@@ -1,64 +1,57 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/4] fix serial console suspend on PNP
-Date: Thu, 6 Nov 2014 11:06:53 -0800
-Message-ID: <20141106190653.GA17356@kroah.com>
-References: <1415212854-16944-1-git-send-email-peter@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:52895 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750877AbaKFTGy (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 14:06:54 -0500
-Content-Disposition: inline
-In-Reply-To: <1415212854-16944-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] tty: serial: 8250: omap: Add pinctrl support for suspend
+Date: Thu,  6 Nov 2014 20:07:30 +0100
+Message-ID: <1415300850-21452-1-git-send-email-bigeasy@linutronix.de>
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Dave Gerlach <d-gerlach@ti.com>, Nishanth Menon <nm@ti.com>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Wed, Nov 05, 2014 at 01:40:50PM -0500, Peter Hurley wrote:
-> Hi Greg,
-> 
-> The kernel command line parameter, no_console_suspend, enables the serial
-> console to continue to output kernel message during system suspend/resume.
-> 
-> However, the PNP bus will disable and power-down pnp devices on system
-> suspend, which defeats the purpose of no_console_suspend; namely to continue
-> to output messages in case those are the last messages before crashing.
-> 
-> The first patch is a cleanup of the baroque logic of uart_suspend_port().
-> The second patch overrides the PNP bus disabling the console device if
-> no_console_suspend is set. This patch uses existing PNP bus logic but
-> perhaps in a way not originally intended.
-> The third patch requires Rafael's ack, as it adds a capability to allow
-> the device to override the power-down function.
-> The fourth patch actually performs the power-down override enabled by
-> patch 3.
-> 
-> With these patches, the PNP0501 device (16550A uart) will continue to
-> output messages while system suspend finishes, as intended by the
-> no_console_suspend parameter. [System resume is another problem, which
-> I'm working on].
-> 
-> Regards,
-> 
-> Peter Hurley (4):
->   serial: core: Simplify console suspend logic in uart_suspend_port()
->   serial: 8250_pnp: Override pnp disable for no_console_suspend
->   PNP: Allow device to override ACPI device sleep
->   serial: 8250_pnp: Override pnp suspend for no_console_suspend
-> 
->  drivers/pnp/driver.c               |  2 +-
->  drivers/pnp/pnpacpi/core.c         |  2 +-
->  drivers/tty/serial/8250/8250_pnp.c | 61 +++++++++++++++++++++++++++++++-------
->  drivers/tty/serial/serial_core.c   | 35 +++++++++++-----------
->  include/linux/pnp.h                |  3 ++
->  5 files changed, 72 insertions(+), 31 deletions(-)
+This is mostly an equivalent for the 8250-omap driver based on a patch
+of Dave Gerlach for the omap-serial driver (which is not yet merged).
 
-I'll drop these for now and wait for a second round of these patches.
+>From his changelog:
+|By optionally putting the pins into sleep state in the suspend callback
+|we can accomplish two things.
+|- minimize current leakage from pins and thus save power,
+|- prevent the IP from driving pins output in an uncontrolled manner,
+|  which may happen if the power domain drops the domain regulator.
 
-thanks,
+The pinctlr change is put before enable_wakeup logic as per Nishanth
+Menon (slightly reworded):
+|When wakeup is enabled, I/O daisy chain based wakeup is used by
+|reconfiguring the padconfig register. However, this gets overriden by
+|sleep/wakeup configuration. Therefore we need first to allow pinctrl to
+|play with the wakeup bits as needed beyond the sleep configuration.
 
-greg k-h
+Cc: Dave Gerlach <d-gerlach@ti.com>
+Cc: Nishanth Menon <nm@ti.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_omap.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 57a8b1241b85..1681875f2996 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1156,6 +1156,7 @@ static int omap8250_suspend(struct device *dev)
+ 	serial8250_suspend_port(priv->line);
+ 	flush_work(&priv->qos_work);
+ 
++	pinctrl_pm_select_sleep_state(dev);
+ 	if (device_may_wakeup(dev))
+ 		omap8250_enable_wakeup(priv, true);
+ 	else
+@@ -1167,6 +1168,7 @@ static int omap8250_resume(struct device *dev)
+ {
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
+ 
++	pinctrl_pm_select_default_state(dev);
+ 	if (device_may_wakeup(dev))
+ 		omap8250_enable_wakeup(priv, false);
+ 
+-- 
+2.1.1
+
