@@ -1,59 +1,56 @@
-From: Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH] serial: of-serial: zero-out struct of_serial_info
-Date: Thu, 06 Nov 2014 10:40:17 -0800
-Message-ID: <545BC091.9000503@gmail.com>
-References: <1414703913-1343-1-git-send-email-f.fainelli@gmail.com> <5481851.EJfv4DSzbT@wuerfel> <545919B5.9020905@gmail.com> <20141106183334.GB24232@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH V3 00/10] bcm63xx_uart and of-serial updates
+Date: Thu, 6 Nov 2014 10:49:18 -0800
+Message-ID: <20141106184918.GA2279@kroah.com>
+References: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f171.google.com ([209.85.192.171]:47143 "EHLO
-	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750955AbaKFSkx (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:52290 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750955AbaKFStT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 13:40:53 -0500
-In-Reply-To: <20141106183334.GB24232@kroah.com>
+	Thu, 6 Nov 2014 13:49:19 -0500
+Content-Disposition: inline
+In-Reply-To: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jslaby@suse.cz, devicetree@vger.kernel.org, jingchang.lu@freescale.com, gregory.0xf0@gmail.com
+To: Kevin Cernekee <cernekee@gmail.com>
+Cc: jslaby@suse.cz, robh@kernel.org, grant.likely@linaro.org, arnd@arndb.de, geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-On 11/06/2014 10:33 AM, Greg KH wrote:
-> On Tue, Nov 04, 2014 at 10:23:49AM -0800, Florian Fainelli wrote:
->> On 10/30/2014 02:55 PM, Arnd Bergmann wrote:
->>> On Thursday 30 October 2014 14:18:33 Florian Fainelli wrote:
->>>> of_platform_serial_probe() invokes of_platform_serial_setup() with a
->>>> kmalloc'd struct of_serial_info cookie, which is not much of a problem
->>>> for most of the struct of_serial_info fields we access but info->clk.
->>>>
->>>> On platforms which do not provide a clock phandle for their UART nodes
->>>> but do provide a 'clock-frequency' property, we basically leave the
->>>> info->clk variable uninitialized, and this craps out during
->>>> suspend/resume with oopses, crashes or warnings in the clock code.
->>>>
->>>> Fix this by using kzalloc() which also zeroes-out the structure and
->>>> provides an initialized info->clk member set to NULL.
->>>>
->>>> Fixes: 2dea53bf57783 ("serial: of-serial: add PM suspend/resume support")
->>>> Fixes: e34b9c94b6e8d ("[POWERPC] of_serial: add port type checking")
->>>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->>>>
->>>
->>> I thought I'd acked this patch before, maybe someone else sent the same
->>> one. This is definitely required, so
->>>
->>> Acked-by: Arnd Bergmann <arnd@arndb.de>
->>>
->>
->> Thanks, so who's taking that patch? Let me know if I need to resubmit
->> targeting a specific tree.
+On Tue, Oct 21, 2014 at 03:22:56PM -0700, Kevin Cernekee wrote:
+> V2->V3:
 > 
-> Someone else sent this before you did, and I took that version instead,
-> sorry.
+> Change DT clock node based on review feedback (thanks Arnd!)
+> 
+> Rebase on Linus' master branch
+> 
+> 
+> Kevin Cernekee (10):
+>   tty: serial: bcm63xx: Allow bcm63xx_uart to be built on other
+>     platforms
+>   tty: serial: bcm63xx: Add support for unnamed clock outputs from DT
+>   tty: serial: bcm63xx: Update the Kconfig help text
+>   tty: serial: bcm63xx: Fix typo in MODULE_DESCRIPTION
+>   Documentation: DT: Add entries for bcm63xx UART
+>   tty: serial: bcm63xx: Enable DT earlycon support
+>   tty: serial: bcm63xx: Eliminate unnecessary request/release functions
+>   tty: serial: of-serial: Suppress warnings if OF earlycon is invoked
+>     twice
+>   tty: serial: of-serial: Allow OF earlycon to default to "on"
+>   MAINTAINERS: Add entry for rp2 (Rocketport Express/Infinity) driver
+> 
+>  .../devicetree/bindings/serial/bcm63xx-uart.txt    | 30 ++++++++++++
+>  MAINTAINERS                                        |  6 +++
+>  drivers/of/fdt.c                                   | 17 +++++--
+>  drivers/tty/serial/Kconfig                         | 30 ++++++++----
+>  drivers/tty/serial/bcm63xx_uart.c                  | 55 +++++++++++++---------
+>  include/linux/serial_bcm63xx.h                     |  2 -
+>  6 files changed, 104 insertions(+), 36 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
 
-Not a problem, my message contained much more explanations, but the end
-result is the same.
+I've applied 8 of these patches, not patches 08 or 09 at this time.
 
-Thanks!
---
-Florian
+thanks,
+
+greg k-h
