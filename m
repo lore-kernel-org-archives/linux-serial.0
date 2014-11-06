@@ -1,128 +1,69 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 01/11] serial_core: Handle TIOC[GS]RS485 ioctls.
-Date: Thu,  6 Nov 2014 09:22:50 +0100
-Message-ID: <1415262180-2694-2-git-send-email-ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 03/11] 8250/fintek: Use rs485 handler from serial_core
+Date: Thu,  6 Nov 2014 09:22:52 +0100
+Message-ID: <1415262180-2694-4-git-send-email-ricardo.ribalda@gmail.com>
 References: <1415262180-2694-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f182.google.com ([209.85.217.182]:61324 "EHLO
-	mail-lb0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750980AbaKFIXG (ORCPT
+Received: from mail-la0-f50.google.com ([209.85.215.50]:34558 "EHLO
+	mail-la0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750980AbaKFIXK (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 03:23:06 -0500
-Received: by mail-lb0-f182.google.com with SMTP id f15so528248lbj.27
-        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 00:23:05 -0800 (PST)
+	Thu, 6 Nov 2014 03:23:10 -0500
+Received: by mail-la0-f50.google.com with SMTP id hz20so2115789lab.23
+        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 00:23:07 -0800 (PST)
 In-Reply-To: <1415262180-2694-1-git-send-email-ricardo.ribalda@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
-The following drivers: 8250_core, atmel_serial, max310x, mcf, omap-serial
-and sci16is7xx implement code to handle RS485 ioctls.
-
-In order to avoid code duplication, we implement a simple ioctl handler
-on the serial_core layer.
-
-This handler can be used by all the other drivers instead of duplicating
-code.
-
-Until this is the only RS485 ioctl handler, it will try first the
-rs485_config callback and if it is not present it will call the driver
-specific ioctl.
+In order to remove the handler for rs485 ioctls on serial_8250, all the
+drivers must use the implementation on serial_core.
 
 Reviewed-by: Alan Cox <alan@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serial/serial_core.c | 45 ++++++++++++++++++++++++++++++++++++++++
- include/linux/serial_core.h      |  3 +++
- 2 files changed, 48 insertions(+)
+ drivers/tty/serial/8250/8250_fintek.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 1a2d90f..21462a6 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1152,6 +1152,39 @@ static int uart_get_icount(struct tty_struct *tty,
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 1bb28cb..1e6899bc 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -89,11 +89,11 @@ static int fintek_8250_check_id(void)
  	return 0;
  }
  
-+static int uart_get_rs485_config(struct uart_port *port,
-+			 struct serial_rs485 __user *rs485)
-+{
-+	if (!port->rs485_config)
-+		return -ENOIOCTLCMD;
-+
-+	if (copy_to_user(rs485, &port->rs485, sizeof(port->rs485)))
-+		return -EFAULT;
-+	return 0;
-+}
-+
-+static int uart_set_rs485_config(struct uart_port *port,
-+			 struct serial_rs485 __user *rs485_user)
-+{
-+	struct serial_rs485 rs485;
-+	int ret;
-+
-+	if (!port->rs485_config)
-+		return -ENOIOCTLCMD;
-+
-+	if (copy_from_user(&rs485, rs485_user, sizeof(rs485_user)))
-+		return -EFAULT;
-+
-+	ret = port->rs485_config(port, &rs485);
-+	if (ret)
-+		return ret;
-+
-+	if (copy_to_user(rs485_user, &port->rs485, sizeof(port->rs485)))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
- /*
-  * Called via sys_ioctl.  We can use spin_lock_irq() here.
-  */
-@@ -1223,6 +1256,18 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
- 	 * protected against the tty being hung up.
- 	 */
- 	switch (cmd) {
-+	case TIOCGRS485:
-+		ret = uart_get_rs485_config(state->uart_port, uarg);
-+		break;
-+
-+	case TIOCSRS485:
-+		ret = uart_set_rs485_config(state->uart_port, uarg);
-+		break;
-+	}
-+	if (ret != -ENOIOCTLCMD)
-+		goto out;
-+
-+	switch (cmd) {
- 	case TIOCSERGETLSR: /* Get line status register */
- 		ret = uart_get_lsr_info(tty, state, uarg);
- 		break;
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index ad93296..95d3c92 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -131,6 +131,8 @@ struct uart_port {
- 	void			(*pm)(struct uart_port *, unsigned int state,
- 				      unsigned int old);
- 	void			(*handle_break)(struct uart_port *);
-+	int			(*rs485_config)(struct uart_port *,
-+						struct serial_rs485 *rs485);
- 	unsigned int		irq;			/* irq number */
- 	unsigned long		irqflags;		/* irq flags  */
- 	unsigned int		uartclk;		/* base uart clock */
-@@ -231,6 +233,7 @@ struct uart_port {
- 	unsigned char		unused[2];
- 	struct attribute_group	*attr_group;		/* port specific attributes */
- 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
-+	struct serial_rs485     rs485;
- 	void			*private_data;		/* generic platform data pointer */
- };
+-static int fintek_8250_rs4850_config(struct uart_8250_port *uart,
++static int fintek_8250_rs485_config(struct uart_port *port,
+ 			      struct serial_rs485 *rs485)
+ {
+ 	uint8_t config = 0;
+-	int index = fintek_8250_get_index(uart->port.iobase);
++	int index = fintek_8250_get_index(port->iobase);
  
+ 	if (index < 0)
+ 		return -EINVAL;
+@@ -134,6 +134,8 @@ static int fintek_8250_rs4850_config(struct uart_8250_port *uart,
+ 	outb(config, DATA_PORT);
+ 	fintek_8250_exit_key();
+ 
++	port->rs485 = *rs485;
++
+ 	return 0;
+ }
+ 
+@@ -166,7 +168,7 @@ fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+ 	uart.port.irq = pnp_irq(dev, 0);
+ 	uart.port.iobase = pnp_port_start(dev, 0);
+ 	uart.port.iotype = UPIO_PORT;
+-	uart.rs485_config = fintek_8250_rs4850_config;
++	uart.port.rs485_config = fintek_8250_rs485_config;
+ 
+ 	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
+ 	if (pnp_irq_flags(dev, 0) & IORESOURCE_IRQ_SHAREABLE)
 -- 
 2.1.1
 
