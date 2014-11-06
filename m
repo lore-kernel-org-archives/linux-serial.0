@@ -1,48 +1,49 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH] serial: MIPS: lantiq: use devm_iounmap instead of iounmap
-Date: Thu,  6 Nov 2014 19:00:42 +0530
-Message-ID: <1415280642-3761-1-git-send-email-sudipm.mukherjee@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] serial: pl011: Fix build breakage with !CONFIG_DMA_ENGINE
+Date: Thu,  6 Nov 2014 09:06:12 -0500
+Message-ID: <1415282772-26256-1-git-send-email-peter@hurleysoftware.com>
+References: <201411061551.b7jIlJ0U%fengguang.wu@intel.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f52.google.com ([209.85.220.52]:44439 "EHLO
-	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751070AbaKFNav (ORCPT
+Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:58645 "EHLO
+	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750998AbaKFOGf (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 08:30:51 -0500
+	Thu, 6 Nov 2014 09:06:35 -0500
+In-Reply-To: <201411061551.b7jIlJ0U%fengguang.wu@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fengguang Wu <fengguang.wu@intel.com>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Russell King <linux@arm.linux.org.uk>
 
-port->membase was allocated using devm_ioremap_nocache, so ideally
-we should unmap it using devm_iounmap. but it was using iounmap.
+Commit 479e9b94fdce7bc4 ("serial: Refactor uart_flush_buffer() from
+uart_close") refactored the uart_flush_buffer() in uart_close() into
+those drivers that define a flush_buffer() method. However, in the
+amba-pl011 driver configured without CONFIG_DMA_ENGINE, flush_buffer()
+is a NULL method, so the direct call fails to compile.
 
-Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+Check and call the flush_buffer() method through the ops table instead.
+
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+Cc: Russell King <linux@arm.linux.org.uk>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
+ drivers/tty/serial/amba-pl011.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-hi,
-just a small problem here.I could not build test this as I do not have a
-MIPS crosscompiler.I know i should not send without a minimum build test,
-but this change should not break the build (or maybe i am wrong)..
-
- drivers/tty/serial/lantiq.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 4675fe1..18c3844 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -497,8 +497,10 @@ lqasc_type(struct uart_port *port)
- static void
- lqasc_release_port(struct uart_port *port)
- {
-+	struct platform_device *pdev = to_platform_device(port->dev);
-+
- 	if (port->flags & UPF_IOREMAP) {
--		iounmap(port->membase);
-+		devm_iounmap(&pdev->dev, port->membase);
- 		port->membase = NULL;
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 8469b66..83c8f72 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1689,7 +1689,8 @@ static void pl011_shutdown(struct uart_port *port)
+ 			plat->exit();
  	}
+ 
+-	pl011_dma_flush_buffer(port);
++	if (uap->port.ops->flush_buffer)
++		uap->port.ops->flush_buffer(port);
  }
+ 
+ static void
 -- 
-1.8.1.2
+2.1.3
 
