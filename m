@@ -1,114 +1,37 @@
-From: Jesper Nilsson <jesper.nilsson@axis.com>
-Subject: Re: [PATCH -next 6/9] cris: Remove obsolete ASYNC_SPLIT_TERMIOS
- behavior
-Date: Thu, 6 Nov 2014 09:23:34 +0100
-Message-ID: <20141106082334.GL30087@axis.com>
-References: <1415208392-16189-1-git-send-email-peter@hurleysoftware.com>
- <1415208392-16189-7-git-send-email-peter@hurleysoftware.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 00/13 v10] omap 8250 based UART + DMA
+Date: Thu, 06 Nov 2014 11:27:21 +0100
+Message-ID: <545B4D09.6070102@linutronix.de>
+References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de> <20141106031421.GA22185@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1415208392-16189-7-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jespern@axis.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:41786 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751210AbaKFK11 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Nov 2014 05:27:27 -0500
+In-Reply-To: <20141106031421.GA22185@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>, tony@atomide.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, balbi@ti.com
 
-On Wed, Nov 05, 2014 at 06:26:29PM +0100, Peter Hurley wrote:
-> ASYNC_SPLIT_TERMIOS behavior is a remnant of the long-dead /dev/cuaXX
-> callout device. Split termios handling was removed tree-wide in v2.5.71 by:
-> 
-> commit 99a21edebbfd8c29e39ee7fcc8a1ffa423657290
-> Author: Alexander Viro <viro@www.linux.org.uk>
-> Date:   Wed Jun 11 07:41:28 2003 -0700
-> 
->     [PATCH] tty_driver refcounting
-> 
->     killed the last remnants of callout stuff - we don't need to mess with
->     storing termios privately anymore.
-> 
-> which pre-dated the re-introduction into the cris serial driver
-> in v2.6.7 by:
-> 
-> commit 311a5ffeda8ccb3f1f3840069f37234e043092d4
-> Author: Andrew Morton <akpm@osdl.org>
-> Date:   Mon May 31 18:52:29 2004 -0700
-> 
->     [PATCH] CRIS architecture update
-> 
->     From: "Mikael Starvik" <mikael.starvik@axis.com>
-> 
->     - Lots of fixes from 2.4.
-> 
->     - Updated for 2.6.6.
-> 
->     - Added IDE driver
-> 
-> Cc: Mikael Starvik <starvik@axis.com>
+On 11/06/2014 04:14 AM, Greg KH wrote:
+> I've now applied the patches here that I could, if I have missed any,
+> please let me know and resend.
 
-Agreed.
+Thank you Greg. I pulled your tty-testing and it seems to work on
+am335x-evm/dra7-evm.
 
-Acked-by: Jesper Nilsson <jesper.nilsson@axis.com>
+Tony, if you could please take the two .dts files then the series would
+be complete (that one dma patch was applied by Vinod during the merge
+window).
 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/tty/serial/crisv10.c | 12 ------------
->  drivers/tty/serial/crisv10.h |  1 -
->  2 files changed, 13 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
-> index 58e6f61..0c1825b 100644
-> --- a/drivers/tty/serial/crisv10.c
-> +++ b/drivers/tty/serial/crisv10.c
-> @@ -3676,12 +3676,6 @@ rs_close(struct tty_struct *tty, struct file * filp)
->  	}
->  	info->port.flags |= ASYNC_CLOSING;
->  	/*
-> -	 * Save the termios structure, since this port may have
-> -	 * separate termios for callout and dialin.
-> -	 */
-> -	if (info->port.flags & ASYNC_NORMAL_ACTIVE)
-> -		info->normal_termios = tty->termios;
-> -	/*
->  	 * Now we wait for the transmit buffer to clear; and we notify
->  	 * the line discipline to only process XON/XOFF characters.
->  	 */
-> @@ -4076,11 +4070,6 @@ rs_open(struct tty_struct *tty, struct file * filp)
->  		return retval;
->  	}
->  
-> -	if ((info->port.count == 1) && (info->port.flags & ASYNC_SPLIT_TERMIOS)) {
-> -		tty->termios = info->normal_termios;
-> -		change_speed(info);
-> -	}
-> -
->  #ifdef SERIAL_DEBUG_OPEN
->  	printk("rs_open ttyS%d successful...\n", info->line);
->  #endif
-> @@ -4327,7 +4316,6 @@ static int __init rs_init(void)
->  		info->custom_divisor = 0;
->  		info->x_char = 0;
->  		info->event = 0;
-> -		info->normal_termios = driver->init_termios;
->  		info->xmit.buf = NULL;
->  		info->xmit.tail = info->xmit.head = 0;
->  		info->first_recv_buffer = info->last_recv_buffer = NULL;
-> diff --git a/drivers/tty/serial/crisv10.h b/drivers/tty/serial/crisv10.h
-> index 7599014..15a52ee 100644
-> --- a/drivers/tty/serial/crisv10.h
-> +++ b/drivers/tty/serial/crisv10.h
-> @@ -98,7 +98,6 @@ struct e100_serial {
->  
->  	struct work_struct	work;
->  	struct async_icount	icount;   /* error-statistics etc.*/
-> -	struct ktermios		normal_termios;
->  
->  	unsigned long char_time_usec;       /* The time for 1 char, in usecs */
->  	unsigned long flush_time_usec;      /* How often we should flush */
-> -- 
-> 2.1.3
-
-/^JN - Jesper Nilsson
--- 
-               Jesper Nilsson -- jesper.nilsson@axis.com
+> thanks,
+> 
+> greg k-h
+> 
+Sebastian
