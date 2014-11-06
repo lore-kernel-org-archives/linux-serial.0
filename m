@@ -1,55 +1,63 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH V3 00/10] bcm63xx_uart and of-serial updates
-Date: Thu, 6 Nov 2014 10:49:18 -0800
-Message-ID: <20141106184918.GA2279@kroah.com>
-References: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 0/4] fix serial console suspend on PNP
+Date: Thu, 6 Nov 2014 11:06:53 -0800
+Message-ID: <20141106190653.GA17356@kroah.com>
+References: <1415212854-16944-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:52290 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:52895 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750955AbaKFStT (ORCPT
+	with ESMTP id S1750877AbaKFTGy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 13:49:19 -0500
+	Thu, 6 Nov 2014 14:06:54 -0500
 Content-Disposition: inline
-In-Reply-To: <1413930186-23168-1-git-send-email-cernekee@gmail.com>
+In-Reply-To: <1415212854-16944-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Cernekee <cernekee@gmail.com>
-Cc: jslaby@suse.cz, robh@kernel.org, grant.likely@linaro.org, arnd@arndb.de, geert@linux-m68k.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-On Tue, Oct 21, 2014 at 03:22:56PM -0700, Kevin Cernekee wrote:
-> V2->V3:
+On Wed, Nov 05, 2014 at 01:40:50PM -0500, Peter Hurley wrote:
+> Hi Greg,
 > 
-> Change DT clock node based on review feedback (thanks Arnd!)
+> The kernel command line parameter, no_console_suspend, enables the serial
+> console to continue to output kernel message during system suspend/resume.
 > 
-> Rebase on Linus' master branch
+> However, the PNP bus will disable and power-down pnp devices on system
+> suspend, which defeats the purpose of no_console_suspend; namely to continue
+> to output messages in case those are the last messages before crashing.
 > 
+> The first patch is a cleanup of the baroque logic of uart_suspend_port().
+> The second patch overrides the PNP bus disabling the console device if
+> no_console_suspend is set. This patch uses existing PNP bus logic but
+> perhaps in a way not originally intended.
+> The third patch requires Rafael's ack, as it adds a capability to allow
+> the device to override the power-down function.
+> The fourth patch actually performs the power-down override enabled by
+> patch 3.
 > 
-> Kevin Cernekee (10):
->   tty: serial: bcm63xx: Allow bcm63xx_uart to be built on other
->     platforms
->   tty: serial: bcm63xx: Add support for unnamed clock outputs from DT
->   tty: serial: bcm63xx: Update the Kconfig help text
->   tty: serial: bcm63xx: Fix typo in MODULE_DESCRIPTION
->   Documentation: DT: Add entries for bcm63xx UART
->   tty: serial: bcm63xx: Enable DT earlycon support
->   tty: serial: bcm63xx: Eliminate unnecessary request/release functions
->   tty: serial: of-serial: Suppress warnings if OF earlycon is invoked
->     twice
->   tty: serial: of-serial: Allow OF earlycon to default to "on"
->   MAINTAINERS: Add entry for rp2 (Rocketport Express/Infinity) driver
+> With these patches, the PNP0501 device (16550A uart) will continue to
+> output messages while system suspend finishes, as intended by the
+> no_console_suspend parameter. [System resume is another problem, which
+> I'm working on].
 > 
->  .../devicetree/bindings/serial/bcm63xx-uart.txt    | 30 ++++++++++++
->  MAINTAINERS                                        |  6 +++
->  drivers/of/fdt.c                                   | 17 +++++--
->  drivers/tty/serial/Kconfig                         | 30 ++++++++----
->  drivers/tty/serial/bcm63xx_uart.c                  | 55 +++++++++++++---------
->  include/linux/serial_bcm63xx.h                     |  2 -
->  6 files changed, 104 insertions(+), 36 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/bcm63xx-uart.txt
+> Regards,
+> 
+> Peter Hurley (4):
+>   serial: core: Simplify console suspend logic in uart_suspend_port()
+>   serial: 8250_pnp: Override pnp disable for no_console_suspend
+>   PNP: Allow device to override ACPI device sleep
+>   serial: 8250_pnp: Override pnp suspend for no_console_suspend
+> 
+>  drivers/pnp/driver.c               |  2 +-
+>  drivers/pnp/pnpacpi/core.c         |  2 +-
+>  drivers/tty/serial/8250/8250_pnp.c | 61 +++++++++++++++++++++++++++++++-------
+>  drivers/tty/serial/serial_core.c   | 35 +++++++++++-----------
+>  include/linux/pnp.h                |  3 ++
+>  5 files changed, 72 insertions(+), 31 deletions(-)
 
-I've applied 8 of these patches, not patches 08 or 09 at this time.
+I'll drop these for now and wait for a second round of these patches.
 
 thanks,
 
