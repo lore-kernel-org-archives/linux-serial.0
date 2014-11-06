@@ -1,72 +1,99 @@
-From: "Batdelger.O" <david.batdelger@grapecity.mn>
-Subject: Re: Fwd: Fwd: Re: pl2303 linux driver does not work
-Date: Thu, 06 Nov 2014 10:28:40 +0800
-Message-ID: <545ADCD8.3020702@grapecity.mn>
-References: <5459A26A.2080204@grapecity.mn> <5459A354.2000006@grapecity.mn> <20141105042955.GA10613@kroah.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH -next v2 10/26] tty: Don't take tty_mutex for tty count
+ changes
+Date: Wed, 5 Nov 2014 18:33:10 -0800
+Message-ID: <20141106023310.GA5035@kroah.com>
+References: <1413491125-20134-1-git-send-email-peter@hurleysoftware.com>
+ <1415207589-15967-1-git-send-email-peter@hurleysoftware.com>
+ <1415207589-15967-11-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cp.mobinet.mn ([202.131.224.55]:45271 "EHLO cp.mobinet.mn"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750970AbaKFC2p (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 21:28:45 -0500
-In-Reply-To: <20141105042955.GA10613@kroah.com>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:39032 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750905AbaKFCdL (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Nov 2014 21:33:11 -0500
+Content-Disposition: inline
+In-Reply-To: <1415207589-15967-11-git-send-email-peter@hurleysoftware.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+
+On Wed, Nov 05, 2014 at 12:12:53PM -0500, Peter Hurley wrote:
+> Holding tty_mutex is no longer required to serialize changes to
+> the tty_count or to prevent concurrent opens of closing ttys;
+> tty_lock() is sufficient.
+> 
+> Reviewed-by: Alan Cox <alan@linux.intel.com>
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/tty_io.c | 6 ------
+>  1 file changed, 6 deletions(-)
+> 
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index ea8c6cae8d12..e59de81c39a9 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -1804,10 +1804,6 @@ int tty_release(struct inode *inode, struct file *filp)
+>  	 * each iteration we avoid any problems.
+>  	 */
+>  	while (1) {
+> -		/* Guard against races with tty->count changes elsewhere and
+> -		   opens on /dev/tty */
+> -
+> -		mutex_lock(&tty_mutex);
+>  		tty_lock_pair(tty, o_tty);
+>  		tty_closing = tty->count <= 1;
+>  		o_tty_closing = o_tty &&
+> @@ -1840,7 +1836,6 @@ int tty_release(struct inode *inode, struct file *filp)
+>  		printk(KERN_WARNING "%s: %s: read/write wait queue active!\n",
+>  				__func__, tty_name(tty, buf));
+>  		tty_unlock_pair(tty, o_tty);
+> -		mutex_unlock(&tty_mutex);
+>  		schedule();
+>  	}
+>  
+
+The code in my tree in this section of tty_release() looks a bit
+different, so I had to hand-apply this patch.  I've included the version
+I used below, please verify I didn't mess it up.
+
+thanks,
+
+greg k-h
 
 
-> On Wed, Nov 05, 2014 at 12:11:00PM +0800, Batdelger.O wrote:
->> Thank you for your quick response.
->> It's  just simple python code. I'm not sure if flow control is correct. I
->> also used gtkterm and tried by every option.  I'm new at usbserial devices.
->> How to know how should it be?
->>
->>     import time
->>     import serial
->>     import sys
->>
->>     ser = serial.Serial(
->>          port='/dev/ttyUSB0',
->>          baudrate=4800,
->>          parity=serial.PARITY_ODD,
->>          stopbits=serial.STOPBITS_ONE,
->>          bytesize=serial.EIGHTBITS,
->>          # timeout=0
-> That's a slow baud rate, do you mean that slow?
-     Actually, baud rate is 9600. 4800 was one of my attempts.
->>     )
->>
->>     # RTS 0 DTR 1. not sure it's correct one. I tried by reverse.
->>     ser.setRTS(False)
->>     ser.setDTR(True)
-> Does your device support hardware flow control?
-> I think so. The Features section of device doc contains line: "Automatic hardware flow control with CTS/RTS
-> ". But I'm not sure. How to know exactly it does?.
->
->>
->>     print ser.isOpen()
->>
->>     ON="\x1B\x5D"
->>     ser.write(ON)
->>     ser.flushOutput()
->>     print "after write"
->>     # read = ser.read()
->>     # sys.stdout.write("RECEIVED:" + read + "\n")
->>     ser.close()
-> Try using minicom to see if you can properly connect to your device
-> first, before trying to write your own code from "scratch", to determine
-> that the device works.
-     Device is working fine on windows 7. My simple python scripts is 
-working fine without setting any options except port name (on win7).
->
-> greg k-h
->
 
--- 
-Best regards,
-Batdelger.O R&D engineer
-Grapecity Mongolia LLC
-
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index ea8c6cae8d12..e59de81c39a9 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1804,10 +1804,6 @@ int tty_release(struct inode *inode, struct file *filp)
+ 	 * each iteration we avoid any problems.
+ 	 */
+ 	while (1) {
+-		/* Guard against races with tty->count changes elsewhere and
+-		   opens on /dev/tty */
+-
+-		mutex_lock(&tty_mutex);
+ 		tty_lock_pair(tty, o_tty);
+ 		tty_closing = tty->count <= 1;
+ 		o_tty_closing = o_tty &&
+@@ -1840,7 +1836,6 @@ int tty_release(struct inode *inode, struct file *filp)
+ 		printk(KERN_WARNING "%s: %s: read/write wait queue active!\n",
+ 				__func__, tty_name(tty, buf));
+ 		tty_unlock_pair(tty, o_tty);
+-		mutex_unlock(&tty_mutex);
+ 		schedule();
+ 	}
+ 
+@@ -1891,7 +1886,6 @@ int tty_release(struct inode *inode, struct file *filp)
+ 		read_unlock(&tasklist_lock);
+ 	}
+ 
+-	mutex_unlock(&tty_mutex);
+ 	tty_unlock_pair(tty, o_tty);
+ 	/* At this point, the tty->count == 0 should ensure a dead tty
+ 	   cannot be re-opened by a racing opener */
