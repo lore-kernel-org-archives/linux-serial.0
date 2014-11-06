@@ -1,21 +1,124 @@
 From: Sergej Pupykin <ml@sergej.pp.ru>
-Subject: [PATCHv5] parport: Add support for the WCH382 2S/1P multi-IO card
-Date: Thu,  6 Nov 2014 14:36:30 +0300
-Message-ID: <1415273791-15986-1-git-send-email-ml@sergej.pp.ru>
+Subject: [PATCH] parport: Add support for the WCH382 2S/1P multi-IO card
+Date: Thu,  6 Nov 2014 14:36:31 +0300
+Message-ID: <1415273791-15986-2-git-send-email-ml@sergej.pp.ru>
 References: <1413321182-20717-1-git-send-email-ml@sergej.pp.ru>
+ <1415273791-15986-1-git-send-email-ml@sergej.pp.ru>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from home.sergej.pp.ru ([217.25.226.33]:48777 "EHLO router.p5n.pp.ru"
+Received: from home.sergej.pp.ru ([217.25.226.33]:48780 "EHLO router.p5n.pp.ru"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750789AbaKFLgq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 06:36:46 -0500
-In-Reply-To: <1413321182-20717-1-git-send-email-ml@sergej.pp.ru>
+	id S1751096AbaKFLgt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Nov 2014 06:36:49 -0500
+In-Reply-To: <1415273791-15986-1-git-send-email-ml@sergej.pp.ru>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Sergej Pupykin <ml@sergej.pp.ru>
 
+WCH382 is a PCI-E card with 1 LPT and 2 DB9 COM ports detected as
+Serial controller: Device 1c00:3250 (rev 10) (prog-if 05 [16850])
 
-Hello,
+Signed-off-by: Sergej Pupykin <ml@sergej.pp.ru>
+---
+ drivers/parport/parport_serial.c   | 10 ++++++++++
+ drivers/tty/serial/8250/8250_pci.c | 21 +++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
-This patch is the same as v4 but I've added Signed-off-by line.
+diff --git a/drivers/parport/parport_serial.c b/drivers/parport/parport_serial.c
+index ee93200..e15b484 100644
+--- a/drivers/parport/parport_serial.c
++++ b/drivers/parport/parport_serial.c
+@@ -64,6 +64,7 @@ enum parport_pc_pci_cards {
+ 	timedia_9079c,
+ 	wch_ch353_1s1p,
+ 	wch_ch353_2s1p,
++	wch_ch382_2s1p,
+ 	sunix_2s1p,
+ };
+ 
+@@ -151,6 +152,7 @@ static struct parport_pc_pci cards[] = {
+ 	/* timedia_9079c */             { 1, { { 2, 3 }, } },
+ 	/* wch_ch353_1s1p*/             { 1, { { 1, -1}, } },
+ 	/* wch_ch353_2s1p*/             { 1, { { 2, -1}, } },
++	/* wch_ch382_2s1p*/             { 1, { { 2, -1}, } },
+ 	/* sunix_2s1p */                { 1, { { 3, -1 }, } },
+ };
+ 
+@@ -257,6 +259,7 @@ static struct pci_device_id parport_serial_pci_tbl[] = {
+ 	/* WCH CARDS */
+ 	{ 0x4348, 0x5053, PCI_ANY_ID, PCI_ANY_ID, 0, 0, wch_ch353_1s1p},
+ 	{ 0x4348, 0x7053, 0x4348, 0x3253, 0, 0, wch_ch353_2s1p},
++	{ 0x1c00, 0x3250, 0x1c00, 0x3250, 0, 0, wch_ch382_2s1p},
+ 
+ 	/*
+ 	 * More SUNIX variations. At least one of these has part number
+@@ -494,6 +497,13 @@ static struct pciserial_board pci_parport_serial_boards[] = {
+ 		.base_baud      = 115200,
+ 		.uart_offset    = 8,
+ 	},
++	[wch_ch382_2s1p] = {
++		.flags          = FL_BASE0,
++		.num_ports      = 2,
++		.base_baud      = 115200,
++		.uart_offset    = 8,
++		.first_offset   = 0xC0,
++	},
+ 	[sunix_2s1p] = {
+ 		.flags		= FL_BASE0|FL_BASE_BARS,
+ 		.num_ports	= 2,
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index beb9d71..ed5cb67 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1760,6 +1760,16 @@ pci_wch_ch353_setup(struct serial_private *priv,
+ 	return pci_default_setup(priv, board, port, idx);
+ }
+ 
++static int
++pci_wch_ch382_setup(struct serial_private *priv,
++                    const struct pciserial_board *board,
++                    struct uart_8250_port *port, int idx)
++{
++	port->port.flags |= UPF_FIXED_TYPE;
++	port->port.type = PORT_16850;
++	return pci_default_setup(priv, board, port, idx);
++}
++
+ #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
+ #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
+ #define PCI_DEVICE_ID_OCTPRO		0x0001
+@@ -1814,6 +1824,8 @@ pci_wch_ch353_setup(struct serial_private *priv,
+ #define PCI_VENDOR_ID_SUNIX		0x1fd4
+ #define PCI_DEVICE_ID_SUNIX_1999	0x1999
+ 
++#define PCIE_VENDOR_ID_WCH		0x1c00
++#define PCIE_DEVICE_ID_WCH_CH382_2S1P	0x3250
+ 
+ /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
+ #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
+@@ -2494,6 +2506,14 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_wch_ch353_setup,
+ 	},
++	/* WCH CH382 2S1P card (16750 clone) */
++	{
++		.vendor         = PCIE_VENDOR_ID_WCH,
++		.device         = PCIE_DEVICE_ID_WCH_CH382_2S1P,
++		.subvendor      = PCI_ANY_ID,
++		.subdevice      = PCI_ANY_ID,
++		.setup          = pci_wch_ch382_setup,
++	},
+ 	/*
+ 	 * ASIX devices with FIFO bug
+ 	 */
+@@ -3586,6 +3606,7 @@ static const struct pci_device_id blacklist[] = {
+ 	/* multi-io cards handled by parport_serial */
+ 	{ PCI_DEVICE(0x4348, 0x7053), }, /* WCH CH353 2S1P */
+ 	{ PCI_DEVICE(0x4348, 0x5053), }, /* WCH CH353 1S1P */
++	{ PCI_DEVICE(0x1c00, 0x3250), }, /* WCH CH382 2S1P */
+ };
+ 
+ /*
+-- 
+2.1.3
 
