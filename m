@@ -1,56 +1,128 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 00/11] Handle TIOC[GS]RS485 iocts on serial_core
-Date: Thu,  6 Nov 2014 09:22:49 +0100
-Message-ID: <1415262180-2694-1-git-send-email-ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 01/11] serial_core: Handle TIOC[GS]RS485 ioctls.
+Date: Thu,  6 Nov 2014 09:22:50 +0100
+Message-ID: <1415262180-2694-2-git-send-email-ricardo.ribalda@gmail.com>
+References: <1415262180-2694-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f172.google.com ([209.85.217.172]:62466 "EHLO
-	mail-lb0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750955AbaKFIXF (ORCPT
+Received: from mail-lb0-f182.google.com ([209.85.217.182]:61324 "EHLO
+	mail-lb0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750980AbaKFIXG (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 03:23:05 -0500
-Received: by mail-lb0-f172.google.com with SMTP id w7so481494lbi.17
-        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 00:23:03 -0800 (PST)
+	Thu, 6 Nov 2014 03:23:06 -0500
+Received: by mail-lb0-f182.google.com with SMTP id f15so528248lbj.27
+        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 00:23:05 -0800 (PST)
+In-Reply-To: <1415262180-2694-1-git-send-email-ricardo.ribalda@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
-Right now there are six serial drivers doing RS485 ioctl handling.
+The following drivers: 8250_core, atmel_serial, max310x, mcf, omap-serial
+and sci16is7xx implement code to handle RS485 ioctls.
 
-Replace all the duplicated implementations with a single ioclt handler and a
-callback function.
+In order to avoid code duplication, we implement a simple ioctl handler
+on the serial_core layer.
 
-Change log v2:
+This handler can be used by all the other drivers instead of duplicating
+code.
 
--Removed patches already merged on tty-testing
--Rebase to latest tty-next
--Add Reviewed-by
+Until this is the only RS485 ioctl handler, it will try first the
+rs485_config callback and if it is not present it will call the driver
+specific ioctl.
 
-Ricardo Ribalda Delgado (11):
-  serial_core: Handle TIOC[GS]RS485 ioctls.
-  serial/8250: Copy RS485 fields to serial_core
-  8250/fintek: Use rs485 handler from serial_core
-  serial/8250: Remove obsolete handling of rs485 ioctls
-  serial/sc16is7xx: Use the rs485 functions on serial_core
-  serial/mcf: Use the rs485 functions on serial_core
-  serial/atmel: Use the rs485 functions on serial_core
-  serial/omap: Use the rs485 functions on serial_core
-  drivers/max310: Use the rs485 functions on serial_core
-  serial_core: Remove call to driver-specific TIO[GS]RS485]
-  tty/serial_core: Introduce lock mechanism for RS485
+Reviewed-by: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+---
+ drivers/tty/serial/serial_core.c | 45 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/serial_core.h      |  3 +++
+ 2 files changed, 48 insertions(+)
 
- drivers/tty/serial/8250/8250_core.c   | 41 +----------------
- drivers/tty/serial/8250/8250_fintek.c |  8 ++--
- drivers/tty/serial/atmel_serial.c     | 87 +++++++++++------------------------
- drivers/tty/serial/max310x.c          | 70 +++++++++++-----------------
- drivers/tty/serial/mcf.c              | 42 ++++-------------
- drivers/tty/serial/omap-serial.c      | 74 +++++++++--------------------
- drivers/tty/serial/sc16is7xx.c        | 53 +++++----------------
- drivers/tty/serial/serial_core.c      | 49 ++++++++++++++++++++
- include/linux/serial_8250.h           |  3 --
- include/linux/serial_core.h           |  3 ++
- 10 files changed, 156 insertions(+), 274 deletions(-)
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 1a2d90f..21462a6 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1152,6 +1152,39 @@ static int uart_get_icount(struct tty_struct *tty,
+ 	return 0;
+ }
+ 
++static int uart_get_rs485_config(struct uart_port *port,
++			 struct serial_rs485 __user *rs485)
++{
++	if (!port->rs485_config)
++		return -ENOIOCTLCMD;
++
++	if (copy_to_user(rs485, &port->rs485, sizeof(port->rs485)))
++		return -EFAULT;
++	return 0;
++}
++
++static int uart_set_rs485_config(struct uart_port *port,
++			 struct serial_rs485 __user *rs485_user)
++{
++	struct serial_rs485 rs485;
++	int ret;
++
++	if (!port->rs485_config)
++		return -ENOIOCTLCMD;
++
++	if (copy_from_user(&rs485, rs485_user, sizeof(rs485_user)))
++		return -EFAULT;
++
++	ret = port->rs485_config(port, &rs485);
++	if (ret)
++		return ret;
++
++	if (copy_to_user(rs485_user, &port->rs485, sizeof(port->rs485)))
++		return -EFAULT;
++
++	return 0;
++}
++
+ /*
+  * Called via sys_ioctl.  We can use spin_lock_irq() here.
+  */
+@@ -1223,6 +1256,18 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 	 * protected against the tty being hung up.
+ 	 */
+ 	switch (cmd) {
++	case TIOCGRS485:
++		ret = uart_get_rs485_config(state->uart_port, uarg);
++		break;
++
++	case TIOCSRS485:
++		ret = uart_set_rs485_config(state->uart_port, uarg);
++		break;
++	}
++	if (ret != -ENOIOCTLCMD)
++		goto out;
++
++	switch (cmd) {
+ 	case TIOCSERGETLSR: /* Get line status register */
+ 		ret = uart_get_lsr_info(tty, state, uarg);
+ 		break;
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index ad93296..95d3c92 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -131,6 +131,8 @@ struct uart_port {
+ 	void			(*pm)(struct uart_port *, unsigned int state,
+ 				      unsigned int old);
+ 	void			(*handle_break)(struct uart_port *);
++	int			(*rs485_config)(struct uart_port *,
++						struct serial_rs485 *rs485);
+ 	unsigned int		irq;			/* irq number */
+ 	unsigned long		irqflags;		/* irq flags  */
+ 	unsigned int		uartclk;		/* base uart clock */
+@@ -231,6 +233,7 @@ struct uart_port {
+ 	unsigned char		unused[2];
+ 	struct attribute_group	*attr_group;		/* port specific attributes */
+ 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
++	struct serial_rs485     rs485;
+ 	void			*private_data;		/* generic platform data pointer */
+ };
+ 
 -- 
 2.1.1
 
