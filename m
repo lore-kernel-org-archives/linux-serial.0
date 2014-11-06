@@ -1,32 +1,24 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v3 01/11] serial_core: Handle TIOC[GS]RS485 ioctls.
-Date: Thu,  6 Nov 2014 22:46:13 +0100
-Message-ID: <1415310374-11648-1-git-send-email-ricardo.ribalda@gmail.com>
+Subject: [PATCH v3 08/11] serial/omap: Use the rs485 functions on serial_core
+Date: Thu,  6 Nov 2014 22:46:14 +0100
+Message-ID: <1415310374-11648-2-git-send-email-ricardo.ribalda@gmail.com>
+References: <1415310374-11648-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f169.google.com ([209.85.217.169]:49283 "EHLO
-	mail-lb0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750970AbaKFVqT (ORCPT
+Received: from mail-la0-f44.google.com ([209.85.215.44]:41463 "EHLO
+	mail-la0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750998AbaKFVqU (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 16:46:19 -0500
-Received: by mail-lb0-f169.google.com with SMTP id 10so1688771lbg.14
-        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 13:46:18 -0800 (PST)
+	Thu, 6 Nov 2014 16:46:20 -0500
+Received: by mail-la0-f44.google.com with SMTP id gf13so3386348lab.31
+        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 13:46:19 -0800 (PST)
+In-Reply-To: <1415310374-11648-1-git-send-email-ricardo.ribalda@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
-The following drivers: 8250_core, atmel_serial, max310x, mcf, omap-serial
-and sci16is7xx implement code to handle RS485 ioctls.
-
-In order to avoid code duplication, we implement a simple ioctl handler
-on the serial_core layer.
-
-This handler can be used by all the other drivers instead of duplicating
-code.
-
-Until this is the only RS485 ioctl handler, it will try first the
-rs485_config callback and if it is not present it will call the driver
-specific ioctl.
+In order to unify all the rs485 ioctl handling
+Use the implementation of TIOC[GS]RS485 ioctl handling on serial_core.
 
 Reviewed-by: Alan Cox <alan@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -34,96 +26,193 @@ Cc: Jiri Slaby <jslaby@suse.cz>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
 
-v3: Fix invalid length on copy_from_user
+v3: Fix invalid structure reference up->rts_gpio
 
- drivers/tty/serial/serial_core.c | 45 ++++++++++++++++++++++++++++++++++++++++
- include/linux/serial_core.h      |  3 +++
- 2 files changed, 48 insertions(+)
+ drivers/tty/serial/omap-serial.c | 69 +++++++++++++---------------------------
+ 1 file changed, 22 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 1a2d90f..6f6f8dd 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1152,6 +1152,39 @@ static int uart_get_icount(struct tty_struct *tty,
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 6cda5cd..75e5c7b 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -163,7 +163,6 @@ struct uart_omap_port {
+ 	u8			wakeups_enabled;
+ 	u32			features;
+ 
+-	struct serial_rs485	rs485;
+ 	int			rts_gpio;
+ 
+ 	struct pm_qos_request	pm_qos_request;
+@@ -316,7 +315,7 @@ static void serial_omap_stop_tx(struct uart_port *port)
+ 	pm_runtime_get_sync(up->dev);
+ 
+ 	/* Handle RS-485 */
+-	if (up->rs485.flags & SER_RS485_ENABLED) {
++	if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		if (up->scr & OMAP_UART_SCR_TX_EMPTY) {
+ 			/* THR interrupt is fired when both TX FIFO and TX
+ 			 * shift register are empty. This means there's nothing
+@@ -327,10 +326,12 @@ static void serial_omap_stop_tx(struct uart_port *port)
+ 			 */
+ 			up->scr &= ~OMAP_UART_SCR_TX_EMPTY;
+ 			serial_out(up, UART_OMAP_SCR, up->scr);
+-			res = (up->rs485.flags & SER_RS485_RTS_AFTER_SEND) ? 1 : 0;
++			res = (port->rs485.flags & SER_RS485_RTS_AFTER_SEND) ?
++				1 : 0;
+ 			if (gpio_get_value(up->rts_gpio) != res) {
+-				if (up->rs485.delay_rts_after_send > 0)
+-					mdelay(up->rs485.delay_rts_after_send);
++				if (port->rs485.delay_rts_after_send > 0)
++					mdelay(
++					port->rs485.delay_rts_after_send);
+ 				gpio_set_value(up->rts_gpio, res);
+ 			}
+ 		} else {
+@@ -353,8 +354,8 @@ static void serial_omap_stop_tx(struct uart_port *port)
+ 		serial_out(up, UART_IER, up->ier);
+ 	}
+ 
+-	if ((up->rs485.flags & SER_RS485_ENABLED) &&
+-	    !(up->rs485.flags & SER_RS485_RX_DURING_TX)) {
++	if ((port->rs485.flags & SER_RS485_ENABLED) &&
++	    !(port->rs485.flags & SER_RS485_RX_DURING_TX)) {
+ 		/*
+ 		 * Empty the RX FIFO, we are not interested in anything
+ 		 * received during the half-duplex transmission.
+@@ -429,22 +430,22 @@ static void serial_omap_start_tx(struct uart_port *port)
+ 	pm_runtime_get_sync(up->dev);
+ 
+ 	/* Handle RS-485 */
+-	if (up->rs485.flags & SER_RS485_ENABLED) {
++	if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		/* Fire THR interrupts when FIFO is below trigger level */
+ 		up->scr &= ~OMAP_UART_SCR_TX_EMPTY;
+ 		serial_out(up, UART_OMAP_SCR, up->scr);
+ 
+ 		/* if rts not already enabled */
+-		res = (up->rs485.flags & SER_RS485_RTS_ON_SEND) ? 1 : 0;
++		res = (port->rs485.flags & SER_RS485_RTS_ON_SEND) ? 1 : 0;
+ 		if (gpio_get_value(up->rts_gpio) != res) {
+ 			gpio_set_value(up->rts_gpio, res);
+-			if (up->rs485.delay_rts_before_send > 0)
+-				mdelay(up->rs485.delay_rts_before_send);
++			if (port->rs485.delay_rts_before_send > 0)
++				mdelay(port->rs485.delay_rts_before_send);
+ 		}
+ 	}
+ 
+-	if ((up->rs485.flags & SER_RS485_ENABLED) &&
+-	    !(up->rs485.flags & SER_RS485_RX_DURING_TX))
++	if ((port->rs485.flags & SER_RS485_ENABLED) &&
++	    !(port->rs485.flags & SER_RS485_RX_DURING_TX))
+ 		serial_omap_stop_rx(port);
+ 
+ 	serial_omap_enable_ier_thri(up);
+@@ -1355,7 +1356,7 @@ static inline void serial_omap_add_console_port(struct uart_omap_port *up)
+ #endif
+ 
+ /* Enable or disable the rs485 support */
+-static void
++static int
+ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ {
+ 	struct uart_omap_port *up = to_uart_omap_port(port);
+@@ -1372,7 +1373,7 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ 	serial_out(up, UART_IER, 0);
+ 
+ 	/* store new config */
+-	up->rs485 = *rs485conf;
++	port->rs485 = *rs485conf;
+ 
+ 	/*
+ 	 * Just as a precaution, only allow rs485
+@@ -1380,12 +1381,12 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ 	 */
+ 	if (gpio_is_valid(up->rts_gpio)) {
+ 		/* enable / disable rts */
+-		val = (up->rs485.flags & SER_RS485_ENABLED) ?
++		val = (port->rs485.flags & SER_RS485_ENABLED) ?
+ 			SER_RS485_RTS_AFTER_SEND : SER_RS485_RTS_ON_SEND;
+-		val = (up->rs485.flags & val) ? 1 : 0;
++		val = (port->rs485.flags & val) ? 1 : 0;
+ 		gpio_set_value(up->rts_gpio, val);
+ 	} else
+-		up->rs485.flags &= ~SER_RS485_ENABLED;
++		port->rs485.flags &= ~SER_RS485_ENABLED;
+ 
+ 	/* Enable interrupts */
+ 	up->ier = mode;
+@@ -1394,7 +1395,7 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ 	/* If RS-485 is disabled, make sure the THR interrupt is fired when
+ 	 * TX FIFO is below the trigger level.
+ 	 */
+-	if (!(up->rs485.flags & SER_RS485_ENABLED) &&
++	if (!(port->rs485.flags & SER_RS485_ENABLED) &&
+ 	    (up->scr & OMAP_UART_SCR_TX_EMPTY)) {
+ 		up->scr &= ~OMAP_UART_SCR_TX_EMPTY;
+ 		serial_out(up, UART_OMAP_SCR, up->scr);
+@@ -1403,36 +1404,10 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+ 	pm_runtime_mark_last_busy(up->dev);
+ 	pm_runtime_put_autosuspend(up->dev);
+-}
+-
+-static int
+-serial_omap_ioctl(struct uart_port *port, unsigned int cmd, unsigned long arg)
+-{
+-	struct serial_rs485 rs485conf;
+-
+-	switch (cmd) {
+-	case TIOCSRS485:
+-		if (copy_from_user(&rs485conf, (void __user *) arg,
+-					sizeof(rs485conf)))
+-			return -EFAULT;
+ 
+-		serial_omap_config_rs485(port, &rs485conf);
+-		break;
+-
+-	case TIOCGRS485:
+-		if (copy_to_user((void __user *) arg,
+-					&(to_uart_omap_port(port)->rs485),
+-					sizeof(rs485conf)))
+-			return -EFAULT;
+-		break;
+-
+-	default:
+-		return -ENOIOCTLCMD;
+-	}
  	return 0;
  }
  
-+static int uart_get_rs485_config(struct uart_port *port,
-+			 struct serial_rs485 __user *rs485)
-+{
-+	if (!port->rs485_config)
-+		return -ENOIOCTLCMD;
-+
-+	if (copy_to_user(rs485, &port->rs485, sizeof(port->rs485)))
-+		return -EFAULT;
-+	return 0;
-+}
-+
-+static int uart_set_rs485_config(struct uart_port *port,
-+			 struct serial_rs485 __user *rs485_user)
-+{
-+	struct serial_rs485 rs485;
-+	int ret;
-+
-+	if (!port->rs485_config)
-+		return -ENOIOCTLCMD;
-+
-+	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
-+		return -EFAULT;
-+
-+	ret = port->rs485_config(port, &rs485);
-+	if (ret)
-+		return ret;
-+
-+	if (copy_to_user(rs485_user, &port->rs485, sizeof(port->rs485)))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
- /*
-  * Called via sys_ioctl.  We can use spin_lock_irq() here.
-  */
-@@ -1223,6 +1256,18 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
- 	 * protected against the tty being hung up.
- 	 */
- 	switch (cmd) {
-+	case TIOCGRS485:
-+		ret = uart_get_rs485_config(state->uart_port, uarg);
-+		break;
-+
-+	case TIOCSRS485:
-+		ret = uart_set_rs485_config(state->uart_port, uarg);
-+		break;
-+	}
-+	if (ret != -ENOIOCTLCMD)
-+		goto out;
-+
-+	switch (cmd) {
- 	case TIOCSERGETLSR: /* Get line status register */
- 		ret = uart_get_lsr_info(tty, state, uarg);
- 		break;
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index ad93296..95d3c92 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -131,6 +131,8 @@ struct uart_port {
- 	void			(*pm)(struct uart_port *, unsigned int state,
- 				      unsigned int old);
- 	void			(*handle_break)(struct uart_port *);
-+	int			(*rs485_config)(struct uart_port *,
-+						struct serial_rs485 *rs485);
- 	unsigned int		irq;			/* irq number */
- 	unsigned long		irqflags;		/* irq flags  */
- 	unsigned int		uartclk;		/* base uart clock */
-@@ -231,6 +233,7 @@ struct uart_port {
- 	unsigned char		unused[2];
- 	struct attribute_group	*attr_group;		/* port specific attributes */
- 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
-+	struct serial_rs485     rs485;
- 	void			*private_data;		/* generic platform data pointer */
- };
- 
+-
+ static struct uart_ops serial_omap_pops = {
+ 	.tx_empty	= serial_omap_tx_empty,
+ 	.set_mctrl	= serial_omap_set_mctrl,
+@@ -1453,7 +1428,6 @@ static struct uart_ops serial_omap_pops = {
+ 	.request_port	= serial_omap_request_port,
+ 	.config_port	= serial_omap_config_port,
+ 	.verify_port	= serial_omap_verify_port,
+-	.ioctl		= serial_omap_ioctl,
+ #ifdef CONFIG_CONSOLE_POLL
+ 	.poll_put_char  = serial_omap_poll_put_char,
+ 	.poll_get_char  = serial_omap_poll_get_char,
+@@ -1587,7 +1561,7 @@ static struct omap_uart_port_info *of_get_uart_port_info(struct device *dev)
+ static int serial_omap_probe_rs485(struct uart_omap_port *up,
+ 				   struct device_node *np)
+ {
+-	struct serial_rs485 *rs485conf = &up->rs485;
++	struct serial_rs485 *rs485conf = &up->port.rs485;
+ 	u32 rs485_delay[2];
+ 	enum of_gpio_flags flags;
+ 	int ret;
+@@ -1702,6 +1676,7 @@ static int serial_omap_probe(struct platform_device *pdev)
+ 	up->port.membase = base;
+ 	up->port.flags = omap_up_info->flags;
+ 	up->port.uartclk = omap_up_info->uartclk;
++	up->port.rs485_config = serial_omap_config_rs485;
+ 	if (!up->port.uartclk) {
+ 		up->port.uartclk = DEFAULT_CLK_SPEED;
+ 		dev_warn(&pdev->dev,
 -- 
 2.1.1
 
