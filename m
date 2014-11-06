@@ -1,94 +1,56 @@
-From: "Batdelger.O" <david.batdelger@grapecity.mn>
-Subject: RE: Fwd: Fwd: Re: pl2303 linux driver does not work
-Date: Thu, 6 Nov 2014 03:58:15 +0800
-Message-ID: <002101cff932$d6788f60$8369ae20$@grapecity.mn>
-References: <5459A26A.2080204@grapecity.mn> <5459A354.2000006@grapecity.mn> <20141105042955.GA10613@kroah.com> <545ADCD8.3020702@grapecity.mn> <20141106033620.GA16661@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 00/11] Handle TIOC[GS]RS485 iocts on serial_core
+Date: Thu,  6 Nov 2014 09:22:49 +0100
+Message-ID: <1415262180-2694-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from cp.mobinet.mn ([202.131.224.55]:46726 "EHLO cp.mobinet.mn"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750974AbaKFD6U (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 22:58:20 -0500
-In-Reply-To: <20141106033620.GA16661@kroah.com>
-Content-Language: en-us
+Received: from mail-lb0-f172.google.com ([209.85.217.172]:62466 "EHLO
+	mail-lb0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750955AbaKFIXF (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Nov 2014 03:23:05 -0500
+Received: by mail-lb0-f172.google.com with SMTP id w7so481494lbi.17
+        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 00:23:03 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: 'Greg KH' <greg@kroah.com>
-Cc: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 
-I'm sorry. E-mail subject was wrong. I just wanted to find good direction.
-Ok, I'll try by minicom. 
+Right now there are six serial drivers doing RS485 ioctl handling.
+
+Replace all the duplicated implementations with a single ioclt handler and a
+callback function.
+
+Change log v2:
+
+-Removed patches already merged on tty-testing
+-Rebase to latest tty-next
+-Add Reviewed-by
+
+Ricardo Ribalda Delgado (11):
+  serial_core: Handle TIOC[GS]RS485 ioctls.
+  serial/8250: Copy RS485 fields to serial_core
+  8250/fintek: Use rs485 handler from serial_core
+  serial/8250: Remove obsolete handling of rs485 ioctls
+  serial/sc16is7xx: Use the rs485 functions on serial_core
+  serial/mcf: Use the rs485 functions on serial_core
+  serial/atmel: Use the rs485 functions on serial_core
+  serial/omap: Use the rs485 functions on serial_core
+  drivers/max310: Use the rs485 functions on serial_core
+  serial_core: Remove call to driver-specific TIO[GS]RS485]
+  tty/serial_core: Introduce lock mechanism for RS485
+
+ drivers/tty/serial/8250/8250_core.c   | 41 +----------------
+ drivers/tty/serial/8250/8250_fintek.c |  8 ++--
+ drivers/tty/serial/atmel_serial.c     | 87 +++++++++++------------------------
+ drivers/tty/serial/max310x.c          | 70 +++++++++++-----------------
+ drivers/tty/serial/mcf.c              | 42 ++++-------------
+ drivers/tty/serial/omap-serial.c      | 74 +++++++++--------------------
+ drivers/tty/serial/sc16is7xx.c        | 53 +++++----------------
+ drivers/tty/serial/serial_core.c      | 49 ++++++++++++++++++++
+ include/linux/serial_8250.h           |  3 --
+ include/linux/serial_core.h           |  3 ++
+ 10 files changed, 156 insertions(+), 274 deletions(-)
+
 -- 
-Best regards,
-
-Batdelger.O R&D engineer
-Grapecity Mongolia
-
------Original Message-----
-From: Greg KH [mailto:greg@kroah.com] 
-Sent: Thursday, November 6, 2014 11:36 AM
-To: Batdelger.O
-Cc: linux-serial@vger.kernel.org
-Subject: Re: Fwd: Fwd: Re: pl2303 linux driver does not work
-
-On Thu, Nov 06, 2014 at 10:28:40AM +0800, Batdelger.O wrote:
-> 
-> >On Wed, Nov 05, 2014 at 12:11:00PM +0800, Batdelger.O wrote:
-> >>Thank you for your quick response.
-> >>It's  just simple python code. I'm not sure if flow control is 
-> >>correct. I also used gtkterm and tried by every option.  I'm new at
-usbserial devices.
-> >>How to know how should it be?
-> >>
-> >>    import time
-> >>    import serial
-> >>    import sys
-> >>
-> >>    ser = serial.Serial(
-> >>         port='/dev/ttyUSB0',
-> >>         baudrate=4800,
-> >>         parity=serial.PARITY_ODD,
-> >>         stopbits=serial.STOPBITS_ONE,
-> >>         bytesize=serial.EIGHTBITS,
-> >>         # timeout=0
-> >That's a slow baud rate, do you mean that slow?
->     Actually, baud rate is 9600. 4800 was one of my attempts.
-> >>    )
-> >>
-> >>    # RTS 0 DTR 1. not sure it's correct one. I tried by reverse.
-> >>    ser.setRTS(False)
-> >>    ser.setDTR(True)
-> >Does your device support hardware flow control?
-> I think so. The Features section of device doc contains line: 
->"Automatic hardware flow control with CTS/RTS ". But I'm not sure. How to
-know exactly it does?.
-
-You usually need to set this up on the device itself.  The manual for the
-device should say how to do this.
-
-> >>
-> >>    print ser.isOpen()
-> >>
-> >>    ON="\x1B\x5D"
-> >>    ser.write(ON)
-> >>    ser.flushOutput()
-> >>    print "after write"
-> >>    # read = ser.read()
-> >>    # sys.stdout.write("RECEIVED:" + read + "\n")
-> >>    ser.close()
-> >Try using minicom to see if you can properly connect to your device 
-> >first, before trying to write your own code from "scratch", to 
-> >determine that the device works.
->     Device is working fine on windows 7. My simple python scripts is 
-> working fine without setting any options except port name (on win7).
-
-Again, please try running minicom on Linux which sets up the line settings
-in a "known manner" before blaming the kernel driver :)
-
-thanks,
-
-greg k-h
+2.1.1
 
