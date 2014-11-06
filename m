@@ -1,77 +1,45 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH -next 05/10] tty: Document defunct ASYNC_* bits in uapi
- header
-Date: Wed, 5 Nov 2014 18:53:26 -0800
-Message-ID: <20141106025326.GA21796@kroah.com>
-References: <1413492867-20679-1-git-send-email-peter@hurleysoftware.com>
- <1413492867-20679-6-git-send-email-peter@hurleysoftware.com>
- <5440D781.1080308@suse.cz>
- <54410F19.3040607@hurleysoftware.com>
- <54411A30.6070401@suse.cz>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 00/13 v10] omap 8250 based UART + DMA
+Date: Wed, 5 Nov 2014 19:14:21 -0800
+Message-ID: <20141106031421.GA22185@kroah.com>
+References: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:39192 "EHLO
+Received: from mail.linuxfoundation.org ([140.211.169.12]:39590 "EHLO
 	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750883AbaKFCx0 (ORCPT
+	with ESMTP id S1750931AbaKFDOW (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 21:53:26 -0500
+	Wed, 5 Nov 2014 22:14:22 -0500
 Content-Disposition: inline
-In-Reply-To: <54411A30.6070401@suse.cz>
+In-Reply-To: <1412014009-13315-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tony@atomide.com, balbi@ti.com
 
-On Fri, Oct 17, 2014 at 03:31:28PM +0200, Jiri Slaby wrote:
-> On 10/17/2014, 02:44 PM, Peter Hurley wrote:
-> > Hi Jiri,
-> > 
-> > On 10/17/2014 04:46 AM, Jiri Slaby wrote:
-> >> On 10/16/2014, 10:54 PM, Peter Hurley wrote:
-> >>> Note the serial_struct flags for which the kernel ignores and performs
-> >>> no action. The flags cannot be removed since they form part of the
-> >>> userspace interface via the TIOCSSERIAL/TIOCGSERIAL ioctls.
-> >>
-> >> Hello,
-> >>
-> >> would it make sense to mark them deprecated somehow? At build time
-> > 
-> > A build warning when the macro is expanded would be best, but my
-> > c-preprocessor-fu is terrible, so I have no idea how to make that work.
-> 
-> We can define a deprecated type like:
-> 
-> typedef __u32 __attribute__((deprecated)) depr_tty_t
-> 
-> and then do define:
-> 
-> #define ASYNCB_FLAG_1 (depr_tty_t)1
-> #define ASYNCB_FLAG_2 (depr_tty_t)2
-> 
-> Etc.
-> 
-> However, I do not know if it is desirable AND whether all compilers out
-> there used in userspace support that attribute.
-> 
-> >> or
-> >> at least warn in the serial core that "current->comm is using a
-> >> deprecated flag"_ratelimited()?
-> > 
-> > If we just print the message at TIOCSSERIAL if any of the deprecated
-> > bits are set, that would be ok. Probably the only issue would be that
-> > setserial could cause this message at will, so log flooding would be
-> > a concern.
-> 
-> That's why _ratelimited(). So something like the patch attached. But it
-> needs to be put to a separate function, out of the line.
-> 
-> /me currently builds a kernel to see who, if anybody, uses the flags on
-> a up-to-date system...
+On Mon, Sep 29, 2014 at 08:06:36PM +0200, Sebastian Andrzej Siewior wro=
+te:
+> The queue is getting smaller. The highlights of v9=E2=80=A6v10
+> - the DMA stall Frans Klaver reported which popped up in yocto is gon=
+e. It
+>   also seems that the "ack the err-irq even if nothing happened" in E=
+DMA
+>   can be dropped.
+> - the RX- and TX-DMA callbacks are now OMAP-only and no "bugs" flags =
+are
+>   introduced into the generic DMA code. This also means that there is
+>   custom IRQ routine in case of DMA.
 
-What ever happened with this test?  Care to resend it as a "real" patch
-so we can annoy userspace?  :)
+I've now applied the patches here that I could, if I have missed any,
+please let me know and resend.
 
 thanks,
 
 greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
