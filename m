@@ -1,73 +1,129 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH] tty: serial: 8250: omap: Add pinctrl support for suspend
-Date: Thu, 6 Nov 2014 12:35:44 -0800
-Message-ID: <20141106203544.GE31454@atomide.com>
-References: <1415300850-21452-1-git-send-email-bigeasy@linutronix.de>
- <545BC8C1.4070503@ti.com>
- <545BCF3F.8020705@linutronix.de>
- <CAGo_u6qTqp1Wpo8E26gLpStu_EiRw32gstkCiXw+EWNDWSnHbw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: [PATCH v3 01/11] serial_core: Handle TIOC[GS]RS485 ioctls.
+Date: Thu,  6 Nov 2014 22:46:13 +0100
+Message-ID: <1415310374-11648-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:29728 "EHLO
-	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750846AbaKFUgm (ORCPT
+Received: from mail-lb0-f169.google.com ([209.85.217.169]:49283 "EHLO
+	mail-lb0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750970AbaKFVqT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 15:36:42 -0500
-Content-Disposition: inline
-In-Reply-To: <CAGo_u6qTqp1Wpo8E26gLpStu_EiRw32gstkCiXw+EWNDWSnHbw@mail.gmail.com>
+	Thu, 6 Nov 2014 16:46:19 -0500
+Received: by mail-lb0-f169.google.com with SMTP id 10so1688771lbg.14
+        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 13:46:18 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Nishanth Menon <nm@ti.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap <linux-omap@vger.kernel.org>, Dave Gerlach <d-gerlach@ti.com>
+To: linux-serial@vger.kernel.org
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
-* Nishanth Menon <nm@ti.com> [141106 11:59]:
-> On Thu, Nov 6, 2014 at 1:42 PM, Sebastian Andrzej Siewior
-> <bigeasy@linutronix.de> wrote:
-> > On 11/06/2014 08:15 PM, Nishanth Menon wrote:
-> >> sounds good to me *IF* omap8250_enable_wakeup (wakeirq handling) is
-> >> the way we want to continue doing things for daisychain? -> Tony, can
-> >> you comment?
-> >> http://marc.info/?l=linux-omap&m=141222144402707&w=2
-> >>
-> >> I wonder if wakeirq explicit handling is valid anymore and something
-> >> given the potential race and alternate approach proposed?
-> >
-> > The wakeirq logic is already in the driver. So if we go for the
-> > alternate approach, the pinctrl patch is obsolete? Or does it mean we
-> > get rid of the map8250_enable_wakeup() including the second irq we have
-> > now (and keep the pinctl change)?
->
-> based on Thomas's feedback we should probably not carry forward
-> wakeirq as a seperate irq with it's own request_irq instead it psuedo
-> triggers uart's interrupt irq -> I am not clear about the direction
+The following drivers: 8250_core, atmel_serial, max310x, mcf, omap-serial
+and sci16is7xx implement code to handle RS485 ioctls.
 
-The pinctrl change in this patch and the wake-up events are a separate
-issue.
+In order to avoid code duplication, we implement a simple ioctl handler
+on the serial_core layer.
 
-As some omaps need the RX pin remuxed temporarily to GPIO for wake-up
-events, the $subject patch seems just fine to me.
+This handler can be used by all the other drivers instead of duplicating
+code.
 
-For the wake-up interrupts, the issue Thomas was concerned was
-re-entrant interrupts and  handling the wake-up interrupts in various
-different ways. From hardware point of view the wake-up events behave
-like a separate IRQ controller, so the request_irq part is fine.
+Until this is the only RS485 ioctl handler, it will try first the
+rs485_config callback and if it is not present it will call the driver
+specific ioctl.
 
-> Tony wants drivers to take in the approach in the thread above - all I
-> wondered was if it had any conflict of pin_sleep -> if the generic
-> handler retriggers the irq before the suspend_handler, then
-> configuring sleep is gonna break daisychain support. not sure if there
-> is any specific direction drivers should take.
+Reviewed-by: Alan Cox <alan@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+---
 
-The wake-irq is disabled during runtime and should be enabled so
-that should not be an issue.
+v3: Fix invalid length on copy_from_user
+
+ drivers/tty/serial/serial_core.c | 45 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/serial_core.h      |  3 +++
+ 2 files changed, 48 insertions(+)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 1a2d90f..6f6f8dd 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1152,6 +1152,39 @@ static int uart_get_icount(struct tty_struct *tty,
+ 	return 0;
+ }
  
-> Again, Tony is the right guy to comment about this.
++static int uart_get_rs485_config(struct uart_port *port,
++			 struct serial_rs485 __user *rs485)
++{
++	if (!port->rs485_config)
++		return -ENOIOCTLCMD;
++
++	if (copy_to_user(rs485, &port->rs485, sizeof(port->rs485)))
++		return -EFAULT;
++	return 0;
++}
++
++static int uart_set_rs485_config(struct uart_port *port,
++			 struct serial_rs485 __user *rs485_user)
++{
++	struct serial_rs485 rs485;
++	int ret;
++
++	if (!port->rs485_config)
++		return -ENOIOCTLCMD;
++
++	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
++		return -EFAULT;
++
++	ret = port->rs485_config(port, &rs485);
++	if (ret)
++		return ret;
++
++	if (copy_to_user(rs485_user, &port->rs485, sizeof(port->rs485)))
++		return -EFAULT;
++
++	return 0;
++}
++
+ /*
+  * Called via sys_ioctl.  We can use spin_lock_irq() here.
+  */
+@@ -1223,6 +1256,18 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 	 * protected against the tty being hung up.
+ 	 */
+ 	switch (cmd) {
++	case TIOCGRS485:
++		ret = uart_get_rs485_config(state->uart_port, uarg);
++		break;
++
++	case TIOCSRS485:
++		ret = uart_set_rs485_config(state->uart_port, uarg);
++		break;
++	}
++	if (ret != -ENOIOCTLCMD)
++		goto out;
++
++	switch (cmd) {
+ 	case TIOCSERGETLSR: /* Get line status register */
+ 		ret = uart_get_lsr_info(tty, state, uarg);
+ 		break;
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index ad93296..95d3c92 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -131,6 +131,8 @@ struct uart_port {
+ 	void			(*pm)(struct uart_port *, unsigned int state,
+ 				      unsigned int old);
+ 	void			(*handle_break)(struct uart_port *);
++	int			(*rs485_config)(struct uart_port *,
++						struct serial_rs485 *rs485);
+ 	unsigned int		irq;			/* irq number */
+ 	unsigned long		irqflags;		/* irq flags  */
+ 	unsigned int		uartclk;		/* base uart clock */
+@@ -231,6 +233,7 @@ struct uart_port {
+ 	unsigned char		unused[2];
+ 	struct attribute_group	*attr_group;		/* port specific attributes */
+ 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
++	struct serial_rs485     rs485;
+ 	void			*private_data;		/* generic platform data pointer */
+ };
+ 
+-- 
+2.1.1
 
-Yeah I'll repost the patches for the generic wake-irq handling.
-Fixing up the drivers to use that is trivial once we've agreed on
-the generic wake-up event handling.
-
-Regards,
-
-Tony
