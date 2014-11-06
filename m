@@ -1,49 +1,82 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] serial: pl011: Fix build breakage with !CONFIG_DMA_ENGINE
-Date: Thu,  6 Nov 2014 09:06:12 -0500
-Message-ID: <1415282772-26256-1-git-send-email-peter@hurleysoftware.com>
-References: <201411061551.b7jIlJ0U%fengguang.wu@intel.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mailout32.mail01.mtsvc.net ([216.70.64.70]:58645 "EHLO
-	n23.mail01.mtsvc.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750998AbaKFOGf (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 09:06:35 -0500
-In-Reply-To: <201411061551.b7jIlJ0U%fengguang.wu@intel.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 1/1] tty: warn on deprecated serial flags
+Date: Thu,  6 Nov 2014 16:56:33 +0100
+Message-ID: <1415289393-30008-1-git-send-email-jslaby@suse.cz>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fengguang Wu <fengguang.wu@intel.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Russell King <linux@arm.linux.org.uk>
 
-Commit 479e9b94fdce7bc4 ("serial: Refactor uart_flush_buffer() from
-uart_close") refactored the uart_flush_buffer() in uart_close() into
-those drivers that define a flush_buffer() method. However, in the
-amba-pl011 driver configured without CONFIG_DMA_ENGINE, flush_buffer()
-is a NULL method, so the direct call fails to compile.
+When somebody calls TIOCSSERIAL ioctl with serial flags to set one of
+* ASYNC_SESSION_LOCKOUT
+* ASYNC_PGRP_LOCKOUT
+* ASYNC_CALLOUT_NOHUP
+* ASYNC_AUTOPROBE
+nothing happens. We actually ignore the flags for over a decade at
+least (I checked 2.6.0).
 
-Check and call the flush_buffer() method through the ops table instead.
+So start yelling at users who use those flags, that they shouldn't.
 
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Cc: Russell King <linux@arm.linux.org.uk>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
 ---
- drivers/tty/serial/amba-pl011.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/tty_io.c           | 21 +++++++++++++++++++++
+ include/uapi/linux/tty_flags.h |  2 ++
+ 2 files changed, 23 insertions(+)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 8469b66..83c8f72 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1689,7 +1689,8 @@ static void pl011_shutdown(struct uart_port *port)
- 			plat->exit();
- 	}
- 
--	pl011_dma_flush_buffer(port);
-+	if (uap->port.ops->flush_buffer)
-+		uap->port.ops->flush_buffer(port);
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 1107398a545c..95f330282046 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -2728,6 +2728,24 @@ struct tty_struct *tty_pair_get_pty(struct tty_struct *tty)
  }
+ EXPORT_SYMBOL(tty_pair_get_pty);
  
- static void
++static void tty_warn_deprecated_flags(struct serial_struct __user *ss)
++{
++	static DEFINE_RATELIMIT_STATE(depr_flags,
++			DEFAULT_RATELIMIT_INTERVAL,
++			DEFAULT_RATELIMIT_BURST);
++	char comm[TASK_COMM_LEN];
++	int flags;
++
++	if (get_user(flags, &ss->flags))
++		return;
++
++	flags &= ASYNC_DEPRECATED;
++
++	if (flags && __ratelimit(&depr_flags))
++		pr_warning("%s: '%s' is using deprecated serial flags (with no effect): %.8x\n",
++				__func__, get_task_comm(comm, current), flags);
++}
++
+ /*
+  * Split this up, as gcc can choke on it otherwise..
+  */
+@@ -2859,6 +2877,9 @@ long tty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 			break;
+ 		}
+ 		break;
++	case TIOCSSERIAL:
++		tty_warn_deprecated_flags(p);
++		break;
+ 	}
+ 	if (tty->ops->ioctl) {
+ 		retval = (tty->ops->ioctl)(tty, cmd, arg);
+diff --git a/include/uapi/linux/tty_flags.h b/include/uapi/linux/tty_flags.h
+index eefcb483a2c0..879b91713e7c 100644
+--- a/include/uapi/linux/tty_flags.h
++++ b/include/uapi/linux/tty_flags.h
+@@ -59,6 +59,8 @@
+ #define ASYNC_AUTOPROBE		(1U << ASYNCB_AUTOPROBE)
+ 
+ #define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
++#define ASYNC_DEPRECATED	(ASYNC_SESSION_LOCKOUT | ASYNC_PGRP_LOCKOUT | \
++		ASYNC_CALLOUT_NOHUP | ASYNC_AUTOPROBE)
+ #define ASYNC_USR_MASK		(ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
+ 		ASYNC_LOW_LATENCY)
+ #define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
 -- 
-2.1.3
-
+2.1.2
