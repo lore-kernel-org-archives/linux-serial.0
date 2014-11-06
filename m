@@ -1,96 +1,72 @@
-From: Shreyas Bethur <shreyas.bethur@ni.com>
-Subject: Re: [PATCH 1/1] tty: Do not set modem lines when reopening ports
-Date: Wed, 5 Nov 2014 17:56:12 -0600
-Message-ID: <OFCF96456C.F9F3663D-ON86257D87.008358CD-86257D87.00837D35@ni.com>
-References: <OF6C85CA04.9FBB77C4-ON86257D82.007014C2-86257D82.0070E996@ni.com> <54580C09.7080901@hurleysoftware.com> <OFC3DBEDDF.98889C80-ON86257D87.006F9538-86257D87.0078F95B@ni.com> <545AB54C.1000305@hurleysoftware.com>
+From: "Batdelger.O" <david.batdelger@grapecity.mn>
+Subject: Re: Fwd: Fwd: Re: pl2303 linux driver does not work
+Date: Thu, 06 Nov 2014 10:28:40 +0800
+Message-ID: <545ADCD8.3020702@grapecity.mn>
+References: <5459A26A.2080204@grapecity.mn> <5459A354.2000006@grapecity.mn> <20141105042955.GA10613@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from skprod2.natinst.com ([130.164.80.23]:47695 "EHLO ni.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750860AbaKEX4R (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 5 Nov 2014 18:56:17 -0500
-In-Reply-To: <545AB54C.1000305@hurleysoftware.com>
+Received: from cp.mobinet.mn ([202.131.224.55]:45271 "EHLO cp.mobinet.mn"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750970AbaKFC2p (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Nov 2014 21:28:45 -0500
+In-Reply-To: <20141105042955.GA10613@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: linux-serial@vger.kernel.org
 
-> From: Peter Hurley <peter@hurleysoftware.com>
-> To: Shreyas Bethur <shreyas.bethur@ni.com>, 
-> Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, 
-linux-serial@vger.kernel.org
-> Date: 11/05/2014 05:40 PM
-> Subject: Re: [PATCH 1/1] tty: Do not set modem lines when reopening 
-ports
-> 
-> On 11/05/2014 05:01 PM, Shreyas Bethur wrote:
-> >> From: Peter Hurley <peter@hurleysoftware.com>
-> >> On 10/31/2014 04:33 PM, Shreyas Bethur wrote:
-> >>> When tty port is opened, we will raise the DTR and RTS lines. But 
-for
-> >>> second and subsequent opens, we should not modify these lines 
-because the
-> >>> first session might be actively using these lines. We don't want a 
-second
-> >>> open to interfere with the first session.
-> >>>
-> >>> Signed-off-by: Shreyas Bethur <shreyas.bethur@ni.com>
-> >>> ---
-> >>> To give some background for this patch, we have a product that uses 
-the
-> >>> DTR line on the serial port for synchronization with other devices. 
-While
-> >>> the synchronization application is using the DTR line, if another 
-process
-> >>> opens the same port, then DTR line is raised, and thus interferes 
-with the
-> >>> synchronization application. So, if a port is open, subsequent opens
-> >>> should not modify any modem lines.
-> >>
-> >> Would you please expand on your use-case?
-> > 
-> > We have many devices in a real-time test & measurement system, and the 
 
-> > clocks on all these devices needs to be synchronized for our 
-applications.
-> > So we connect all the devices to a central hub via serial ports. We 
-open
-> > a tty session (in exclusive mode and non-admin user) and toggle the 
-DTR
-> > lines from all the devices, every time cycle. The hub measures the 
-time
-> > difference between these signals and correct the clock on the devices.
-> > We also have a service that the user can use to enumerate all the 
-serial
-> > ports and check whether they are in use. When this service opens the 
-port
-> > that is used for synchronization, it gets EBUSY error, which is good; 
-But
-> > the tty driver raises the DTR line before returning EBUSY.
-> > 
-> > I would expect that if a tty session is opened in exclusive mode, any 
-> > subsequent opens to not change anything on the port including DTR and 
-RTS
-> > lines. Please let me know if I'm missing something or if my 
-understanding
-> > is incorrect.
-> 
-> Your understanding is exactly right, and I think your application's use 
-and
-> expectation of TTY_EXCLUSIVE is correct as well.
-> 
-> But I think the appropriate fix for this is elsewhere; I need to do some
-> testing but I think I can get you a test patch in the next couple of 
-days.
-> What kernel version are you using to test (so I can make sure the test 
-patch
-> applies)?
-> 
-> Regards,
-> Peter Hurley
+> On Wed, Nov 05, 2014 at 12:11:00PM +0800, Batdelger.O wrote:
+>> Thank you for your quick response.
+>> It's  just simple python code. I'm not sure if flow control is correct. I
+>> also used gtkterm and tried by every option.  I'm new at usbserial devices.
+>> How to know how should it be?
+>>
+>>     import time
+>>     import serial
+>>     import sys
+>>
+>>     ser = serial.Serial(
+>>          port='/dev/ttyUSB0',
+>>          baudrate=4800,
+>>          parity=serial.PARITY_ODD,
+>>          stopbits=serial.STOPBITS_ONE,
+>>          bytesize=serial.EIGHTBITS,
+>>          # timeout=0
+> That's a slow baud rate, do you mean that slow?
+     Actually, baud rate is 9600. 4800 was one of my attempts.
+>>     )
+>>
+>>     # RTS 0 DTR 1. not sure it's correct one. I tried by reverse.
+>>     ser.setRTS(False)
+>>     ser.setDTR(True)
+> Does your device support hardware flow control?
+> I think so. The Features section of device doc contains line: "Automatic hardware flow control with CTS/RTS
+> ". But I'm not sure. How to know exactly it does?.
+>
+>>
+>>     print ser.isOpen()
+>>
+>>     ON="\x1B\x5D"
+>>     ser.write(ON)
+>>     ser.flushOutput()
+>>     print "after write"
+>>     # read = ser.read()
+>>     # sys.stdout.write("RECEIVED:" + read + "\n")
+>>     ser.close()
+> Try using minicom to see if you can properly connect to your device
+> first, before trying to write your own code from "scratch", to determine
+> that the device works.
+     Device is working fine on windows 7. My simple python scripts is 
+working fine without setting any options except port name (on win7).
+>
+> greg k-h
+>
 
-I'm using 3.10.31
+-- 
+Best regards,
+Batdelger.O R&D engineer
+Grapecity Mongolia LLC
 
-Regards,
-Shreyas Bethur
