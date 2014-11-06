@@ -1,18 +1,19 @@
-From: Konrad Zapalowicz <bergo.torino@gmail.com>
-Subject: Re: [PATCH 2/5] drivers: serial: jsm: Add the Classic board
- implementation
-Date: Fri, 7 Nov 2014 00:11:46 +0100
-Message-ID: <20141106231146.GB29761@t400>
-References: <20141103093800.GK6879@mwanda>
- <1415040760-12172-1-git-send-email-bergo.torino@gmail.com>
- <1415040760-12172-2-git-send-email-bergo.torino@gmail.com>
- <20141106191808.GA32427@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 3/4] staging: dgnc: Remove driver in favor of
+ serial/jsm driver
+Date: Thu, 6 Nov 2014 15:20:12 -0800
+Message-ID: <20141106232012.GA8585@kroah.com>
+References: <20141106191808.GA32427@kroah.com>
+ <1415315135-29716-1-git-send-email-bergo.torino@gmail.com>
+ <1415315135-29716-2-git-send-email-bergo.torino@gmail.com>
+ <1415315135-29716-3-git-send-email-bergo.torino@gmail.com>
+ <1415315135-29716-4-git-send-email-bergo.torino@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
 Content-Disposition: inline
-In-Reply-To: <20141106191808.GA32427@kroah.com>
+In-Reply-To: <1415315135-29716-4-git-send-email-bergo.torino@gmail.com>
 List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
  <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
 List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
@@ -22,65 +23,28 @@ List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driver
  <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
 Errors-To: driverdev-devel-bounces@linuxdriverproject.org
 Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Greg KH <gregkh@linuxfoundation.org>
+To: Konrad Zapalowicz <bergo.torino@gmail.com>
 Cc: devel@driverdev.osuosl.org, lidza.louina@gmail.com, linux-kernel@vger.kernel.org, cascardo@linux.vnet.ibm.com, linux-serial@vger.kernel.org, jslaby@suse.cz
 List-Id: linux-serial@vger.kernel.org
 
-T24gMTEvMDYsIEdyZWcgS0ggd3JvdGU6Cj4gT24gTW9uLCBOb3YgMDMsIDIwMTQgYXQgMDc6NTI6
-MzhQTSArMDEwMCwgS29ucmFkIFphcGFsb3dpY3ogd3JvdGU6Cj4gPiBUaGlzIGNvbW1pdCBhZGRz
-IHRoZSBEaWdpIENsYXNzaWMgYm9hcmQgaW1wbGVtZW50YXRpb24gdG8gdGhlCj4gPiBzdGFnaW5n
-L2pzbSBkcml2ZXIuCj4gPiAKPiA+IFRoZSBjb2RlIGhlcmUgaXMgdGFrZW4gZnJvbSB0aGUgc3Rh
-Z2luZy9kZ25jIGRyaXZlciBhbmQgbW9kaWZpZWQgdG8KPiA+IG1hdGNoIHRoZSBzZXJpYWwvanNt
-IHN0YXRlLiBUaGlzIHdvcmsgaXMgbW9zdGx5IGJhc2VkIG9uIHRoZSBjaGFuZ2VzCj4gPiB0aGF0
-IGhhcyBiZWVuIGRvbmUgdG8gdGhlIGNvZGUgaGFuZGxpbmcgdGhlIERpZ2kgTmVvIGNhcmRzIHdp
-dGggdGhlCj4gPiBpbnNwaXJhdGlvbiBjb21pbmcgZnJvbSB0aGUgZGlmZiBiZXR3ZWVuIHN0YWdp
-bmcvZGduYyBhbmQgc2VyaWFsL2pzbQo+ID4gYXMgd2VsbCBhcyB0aGUgTEtNTCBoaXN0b3J5IGZv
-ciB0aGUganNtX25lby5jCj4gPiAKPiA+IFRoZSBjb2RlIGNvbXBpbGVzIG5vdyBhbmQgaGFzIG5v
-IHNwYXJzZSBhbmQgY2hlY2twYXRjaCBlcnJvcnMgb3IKPiA+IHdhcm5pbmdzLgo+IAo+IFRoZSBj
-b21waWxlciBkb2VzIGdpdmUgbWUgb25lIHdhcm5pbmcgZm9yIHRoaXMgZmlsZToKPiAKPiA+ICsv
-Kgo+ID4gKyAqIGNsc19wYXJhbSgpCj4gPiArICogU2VuZCBhbnkvYWxsIGNoYW5nZXMgdG8gdGhl
-IGxpbmUgdG8gdGhlIFVBUlQuCj4gPiArICovCj4gPiArc3RhdGljIHZvaWQgY2xzX3BhcmFtKHN0
-cnVjdCBqc21fY2hhbm5lbCAqY2gpCj4gPiArewo+ID4gKwl1OCBsY3IgPSAwOwo+ID4gKwl1OCB1
-YXJ0X2xjciA9IDA7Cj4gPiArCXU4IGllciA9IDA7Cj4gPiArCXUzMiBiYXVkID0gOTYwMDsKPiA+
-ICsJaW50IHF1b3QgPSAwOwo+ID4gKwlzdHJ1Y3QganNtX2JvYXJkICpiZDsKPiA+ICsJaW50IGk7
-Cj4gPiArCXVuc2lnbmVkIGludCBjZmxhZzsKPiA+ICsKPiA+ICsJYmQgPSBjaC0+Y2hfYmQ7Cj4g
-PiArCWlmICghYmQpCj4gPiArCQlyZXR1cm47Cj4gPiArCj4gPiArCS8qCj4gPiArCSAqIElmIGJh
-dWQgcmF0ZSBpcyB6ZXJvLCBmbHVzaCBxdWV1ZXMsIGFuZCBzZXQgbXZhbCB0byBkcm9wIERUUi4K
-PiA+ICsJICovCj4gPiArCWlmICgoY2gtPmNoX2NfY2ZsYWcgJiAoQ0JBVUQpKSA9PSAwKSB7Cj4g
-PiArCQljaC0+Y2hfcl9oZWFkID0gMDsKPiA+ICsJCWNoLT5jaF9yX3RhaWwgPSAwOwo+ID4gKwkJ
-Y2gtPmNoX2VfaGVhZCA9IDA7Cj4gPiArCQljaC0+Y2hfZV90YWlsID0gMDsKPiA+ICsKPiA+ICsJ
-CWNsc19mbHVzaF91YXJ0X3dyaXRlKGNoKTsKPiA+ICsJCWNsc19mbHVzaF91YXJ0X3JlYWQoY2gp
-Owo+ID4gKwo+ID4gKwkJLyogVGhlIGJhdWRyYXRlIGlzIEIwIHNvIGFsbCBtb2RlbSBsaW5lcyBh
-cmUgdG8gYmUgZHJvcHBlZC4gKi8KPiA+ICsJCWNoLT5jaF9mbGFncyB8PSAoQ0hfQkFVRDApOwo+
-ID4gKwkJY2gtPmNoX21vc3RhdCAmPSB+KFVBUlRfTUNSX1JUUyB8IFVBUlRfTUNSX0RUUik7Cj4g
-PiArCQljbHNfYXNzZXJ0X21vZGVtX3NpZ25hbHMoY2gpOwo+ID4gKwkJcmV0dXJuOwo+ID4gKwl9
-Cj4gPiArCj4gPiArCXN0YXRpYyBzdHJ1Y3Qgewo+ID4gKwkJdW5zaWduZWQgaW50IHJhdGU7Cj4g
-PiArCQl1bnNpZ25lZCBpbnQgY2ZsYWc7Cj4gPiArCX0gYmF1ZF9yYXRlc1tdID0gewo+ID4gKwkJ
-eyA5MjE2MDAsIEI5MjE2MDAgfSwKPiA+ICsJCXsgNDYwODAwLCBCNDYwODAwIH0sCj4gPiArCQl7
-IDIzMDQwMCwgQjIzMDQwMCB9LAo+ID4gKwkJeyAxMTUyMDAsIEIxMTUyMDAgfSwKPiA+ICsJCXsg
-IDU3NjAwLCBCNTc2MDAgIH0sCj4gPiArCQl7ICAzODQwMCwgQjM4NDAwICB9LAo+ID4gKwkJeyAg
-MTkyMDAsIEIxOTIwMCAgfSwKPiA+ICsJCXsgICA5NjAwLCBCOTYwMCAgIH0sCj4gPiArCQl7ICAg
-NDgwMCwgQjQ4MDAgICB9LAo+ID4gKwkJeyAgIDI0MDAsIEIyNDAwICAgfSwKPiA+ICsJCXsgICAx
-MjAwLCBCMTIwMCAgIH0sCj4gPiArCQl7ICAgIDYwMCwgQjYwMCAgICB9LAo+ID4gKwkJeyAgICAz
-MDAsIEIzMDAgICAgfSwKPiA+ICsJCXsgICAgMjAwLCBCMjAwICAgIH0sCj4gPiArCQl7ICAgIDE1
-MCwgQjE1MCAgICB9LAo+ID4gKwkJeyAgICAxMzQsIEIxMzQgICAgfSwKPiA+ICsJCXsgICAgMTEw
-LCBCMTEwICAgIH0sCj4gPiArCQl7ICAgICA3NSwgQjc1ICAgICB9LAo+ID4gKwkJeyAgICAgNTAs
-IEI1MCAgICAgfSwKPiA+ICsJfTsKPiAKPiBiYXVkX3JhdGVzIG5lZWRzIHRvIGJlIHVwIGFib3Zl
-IHRoZSBjb2RlLCBhcyBnY2MgdGVsbHMgbWU6Cj4gCj4gZHJpdmVycy90dHkvc2VyaWFsL2pzbS9q
-c21fY2xzLmM6IEluIGZ1bmN0aW9uIOKAmGNsc19wYXJhbeKAmToKPiBkcml2ZXJzL3R0eS9zZXJp
-YWwvanNtL2pzbV9jbHMuYzo3MDE6Mjogd2FybmluZzogSVNPIEM5MCBmb3JiaWRzIG1peGVkIGRl
-Y2xhcmF0aW9ucyBhbmQgY29kZSBbLVdkZWNsYXJhdGlvbi1hZnRlci1zdGF0ZW1lbnRdCj4gICBz
-dGF0aWMgc3RydWN0IHsKPiAgIF4KPiAKPiBDYW4geW91IGZpeCB0aGF0IHVwIGFuZCByZXNlbmQg
-dGhlIHNlcmllcz8gIEkndmUgdGFrZW4gdGhlIGZpcnN0IHBhdGNoIGluIHRoaXMKPiBzZXJpZXMs
-IGFzIHRoYXQgaXMgYW4gZWFzeSBvbmUgdG8gYWNjZXB0LCBzbyBubyBuZWVkIHRvIHJlc2VuZCB0
-aGF0IG9uZS4KCkZpeGVkIGFuZCBkZWxpdmVyZWQuIFlvdSBtYXkgbm90aWNlIHRoYXQgdGhlIGpz
-bV9uZW8uYyBjb2RlIGlzIHVzaW5nCnRoZSBzYW1lIHN0cnVjdHVyZSB0byBzdG9yZSB0aGUgYmF1
-ZCByYXRlcy4gSWYgZmVlbHMgbmF0dXJhbCB0byBjaGFuZ2UKaXQgdGhlcmUgdG9vIGhvd2V2ZXIg
-c2luY2UgdGhlIHN1YmplY3Qgb2YgdGhpcyBzZXJpZXMgaXMgdGhlIHN1cHBvcnQgZm9yCkNsYXNz
-aWMgYm9hcmRzIEkgZGVjaWRlZCBub3QgdG8gcmVmYWN0b3IgdGhpcyBub3cuIEknbGwgZG8gaXQg
-cHJvcGVybHkgbGF0ZXIKcGx1cyBJIHdpbGwgZml4IHNvbWUgb3RoZXIgdGhpbmdzIHRoYXQgSSBo
-YXZlIHNwb3R0ZWQgc28gZmFyIGluIHRoaXMKY29kZS4KCmNoZWVycywKa29ucmFkCiAKPiB0aGFu
-a3MsCj4gCj4gZ3JlZyBrLWgKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KZGV2ZWwgbWFpbGluZyBsaXN0CmRldmVsQGxpbnV4ZHJpdmVycHJvamVjdC5vcmcK
-aHR0cDovL2RyaXZlcmRldi5saW51eGRyaXZlcnByb2plY3Qub3JnL21haWxtYW4vbGlzdGluZm8v
-ZHJpdmVyZGV2LWRldmVsCg==
+On Fri, Nov 07, 2014 at 12:05:34AM +0100, Konrad Zapalowicz wrote:
+> This commit removes the staging/dgnc driver in favor of the serial/jsm
+> driver.
+> 
+> This is because the serial/jsm driver now supports all of the hardware
+> that has been supported by the staging/dgnc plus it offers better
+> overall quality.
+> 
+> Given above the staging/dgnc is obsolete now.
+> 
+> Signed-off-by: Konrad Zapalowicz <bergo.torino@gmail.com>
+
+I've applied the other patches in this series, but am going to skip this
+one at the moment until I get some "it works for me" verification from
+someone who has this hardware.
+
+So you will have to resend this later on when that happens.
+
+thanks,
+
+greg k-h
