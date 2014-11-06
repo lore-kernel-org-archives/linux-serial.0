@@ -1,56 +1,80 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: serial: 8250_mtk: Fix quot calculation
-Date: Wed, 5 Nov 2014 19:27:20 -0800
-Message-ID: <20141106032720.GA10803@kroah.com>
-References: <1412871811-5986-1-git-send-email-matthias.bgg@gmail.com>
- <20141009215228.GA23507@kroah.com>
- <CABuKBeL1v=E4ZSM2iq+zC2G=a1g4RT3DmJ16ra_RwQ_9ARZkZg@mail.gmail.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: Fwd: Fwd: Re: pl2303 linux driver does not work
+Date: Wed, 5 Nov 2014 19:36:20 -0800
+Message-ID: <20141106033620.GA16661@kroah.com>
+References: <5459A26A.2080204@grapecity.mn>
+ <5459A354.2000006@grapecity.mn>
+ <20141105042955.GA10613@kroah.com>
+ <545ADCD8.3020702@grapecity.mn>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:51320 "EHLO
+	out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750905AbaKFDgW (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 5 Nov 2014 22:36:22 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+	by mailout.nyi.internal (Postfix) with ESMTP id 9786720B55
+	for <linux-serial@vger.kernel.org>; Wed,  5 Nov 2014 22:36:21 -0500 (EST)
 Content-Disposition: inline
-In-Reply-To: <CABuKBeL1v=E4ZSM2iq+zC2G=a1g4RT3DmJ16ra_RwQ_9ARZkZg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, jslaby@suse.cz, Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Yingjoe Chen <yingjoe.chen@gmail.com>, Howard Chen <ibanezchen@gmail.com>, linux-serial@vger.kernel.org
+In-Reply-To: <545ADCD8.3020702@grapecity.mn>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: "Batdelger.O" <david.batdelger@grapecity.mn>
+Cc: linux-serial@vger.kernel.org
 
-On Fri, Oct 10, 2014 at 10:10:45AM +0200, Matthias Brugger wrote:
-> 2014-10-09 23:52 GMT+02:00 Greg KH <gregkh@linuxfoundation.org>:
-> > On Thu, Oct 09, 2014 at 06:23:31PM +0200, Matthias Brugger wrote:
-> >> The calculation of value quot for highspeed register set to three
-> >> was wrong. This patch fixes the calculation so that the serial port
-> >> for baudrates bigger then 576000 baud is working correctly.
-> >>
-> >> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
-> >> ---
-> >>  drivers/tty/serial/8250/8250_mtk.c | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> >> index 1c4b4bf..4376c48 100644
-> >> --- a/drivers/tty/serial/8250/8250_mtk.c
-> >> +++ b/drivers/tty/serial/8250/8250_mtk.c
-> >> @@ -81,7 +81,7 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
-> >>               /* Set to highest baudrate supported */
-> >>               if (baud >= 1152000)
-> >>                       baud = 921600;
-> >> -             quot = DIV_ROUND_CLOSEST(port->uartclk, 256 * baud);
-> >> +             quot = (port->uartclk / (256 * baud)) + 1;
-> >>       }
-> >>
-> >>       /*
-> >
-> > Has this always been incorrect, or was it caused by a specific patch?
+On Thu, Nov 06, 2014 at 10:28:40AM +0800, Batdelger.O wrote:
 > 
-> It has always been incorrect :o
-> 
-> > Should it go to the stable kernels?  If so, how far back?
-> 
-> No need to go to the stable kernels. The driver is only in linux-next.
+> >On Wed, Nov 05, 2014 at 12:11:00PM +0800, Batdelger.O wrote:
+> >>Thank you for your quick response.
+> >>It's  just simple python code. I'm not sure if flow control is correct. I
+> >>also used gtkterm and tried by every option.  I'm new at usbserial devices.
+> >>How to know how should it be?
+> >>
+> >>    import time
+> >>    import serial
+> >>    import sys
+> >>
+> >>    ser = serial.Serial(
+> >>         port='/dev/ttyUSB0',
+> >>         baudrate=4800,
+> >>         parity=serial.PARITY_ODD,
+> >>         stopbits=serial.STOPBITS_ONE,
+> >>         bytesize=serial.EIGHTBITS,
+> >>         # timeout=0
+> >That's a slow baud rate, do you mean that slow?
+>     Actually, baud rate is 9600. 4800 was one of my attempts.
+> >>    )
+> >>
+> >>    # RTS 0 DTR 1. not sure it's correct one. I tried by reverse.
+> >>    ser.setRTS(False)
+> >>    ser.setDTR(True)
+> >Does your device support hardware flow control?
+> I think so. The Features section of device doc contains line: "Automatic hardware flow control with CTS/RTS
+>". But I'm not sure. How to know exactly it does?.
 
-Well, it's in 3.18-rc1, so it should at least go into 3.18-final.  I'll
-queue it up for that.
+You usually need to set this up on the device itself.  The manual for
+the device should say how to do this.
+
+> >>
+> >>    print ser.isOpen()
+> >>
+> >>    ON="\x1B\x5D"
+> >>    ser.write(ON)
+> >>    ser.flushOutput()
+> >>    print "after write"
+> >>    # read = ser.read()
+> >>    # sys.stdout.write("RECEIVED:" + read + "\n")
+> >>    ser.close()
+> >Try using minicom to see if you can properly connect to your device
+> >first, before trying to write your own code from "scratch", to determine
+> >that the device works.
+>     Device is working fine on windows 7. My simple python scripts is working
+> fine without setting any options except port name (on win7).
+
+Again, please try running minicom on Linux which sets up the line
+settings in a "known manner" before blaming the kernel driver :)
 
 thanks,
 
