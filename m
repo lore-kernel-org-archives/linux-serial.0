@@ -1,69 +1,147 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 03/11] 8250/fintek: Use rs485 handler from serial_core
-Date: Thu,  6 Nov 2014 09:22:52 +0100
-Message-ID: <1415262180-2694-4-git-send-email-ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 05/11] serial/sc16is7xx: Use the rs485 functions on serial_core
+Date: Thu,  6 Nov 2014 09:22:54 +0100
+Message-ID: <1415262180-2694-6-git-send-email-ricardo.ribalda@gmail.com>
 References: <1415262180-2694-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f50.google.com ([209.85.215.50]:34558 "EHLO
-	mail-la0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750980AbaKFIXK (ORCPT
+Received: from mail-lb0-f176.google.com ([209.85.217.176]:54616 "EHLO
+	mail-lb0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750980AbaKFIXL (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 03:23:10 -0500
-Received: by mail-la0-f50.google.com with SMTP id hz20so2115789lab.23
-        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 00:23:07 -0800 (PST)
+	Thu, 6 Nov 2014 03:23:11 -0500
+Received: by mail-lb0-f176.google.com with SMTP id 10so465724lbg.7
+        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 00:23:10 -0800 (PST)
 In-Reply-To: <1415262180-2694-1-git-send-email-ricardo.ribalda@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 
-In order to remove the handler for rs485 ioctls on serial_8250, all the
-drivers must use the implementation on serial_core.
+In order to unify all the rs485 ioctl handling.
+Use the implementation of TIOC[GS]RS485 ioctl handling on serial_core.
 
 Reviewed-by: Alan Cox <alan@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 53 ++++++++++--------------------------------
+ 1 file changed, 12 insertions(+), 41 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 1bb28cb..1e6899bc 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -89,11 +89,11 @@ static int fintek_8250_check_id(void)
- 	return 0;
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 7a79113..df9a384 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -304,8 +304,6 @@ struct sc16is7xx_one {
+ 	struct uart_port		port;
+ 	struct work_struct		tx_work;
+ 	struct work_struct		md_work;
+-
+-	struct serial_rs485		rs485;
+ };
+ 
+ struct sc16is7xx_port {
+@@ -657,15 +655,15 @@ static void sc16is7xx_stop_tx(struct uart_port* port)
+ 	struct circ_buf *xmit = &one->port.state->xmit;
+ 
+ 	/* handle rs485 */
+-	if (one->rs485.flags & SER_RS485_ENABLED) {
++	if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		/* do nothing if current tx not yet completed */
+ 		int lsr = sc16is7xx_port_read(port, SC16IS7XX_LSR_REG);
+ 		if (!(lsr & SC16IS7XX_LSR_TEMT_BIT))
+ 			return;
+ 
+ 		if (uart_circ_empty(xmit) &&
+-		    (one->rs485.delay_rts_after_send > 0))
+-			mdelay(one->rs485.delay_rts_after_send);
++		    (port->rs485.delay_rts_after_send > 0))
++			mdelay(port->rs485.delay_rts_after_send);
+ 	}
+ 
+ 	sc16is7xx_port_update(port, SC16IS7XX_IER_REG,
+@@ -688,9 +686,9 @@ static void sc16is7xx_start_tx(struct uart_port *port)
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+ 
+ 	/* handle rs485 */
+-	if ((one->rs485.flags & SER_RS485_ENABLED) &&
+-	    (one->rs485.delay_rts_before_send > 0)) {
+-		mdelay(one->rs485.delay_rts_before_send);
++	if ((port->rs485.flags & SER_RS485_ENABLED) &&
++	    (port->rs485.delay_rts_before_send > 0)) {
++		mdelay(port->rs485.delay_rts_before_send);
+ 	}
+ 
+ 	if (!work_pending(&one->tx_work))
+@@ -830,47 +828,20 @@ static void sc16is7xx_set_termios(struct uart_port *port,
+ 	uart_update_timeout(port, termios->c_cflag, baud);
  }
  
--static int fintek_8250_rs4850_config(struct uart_8250_port *uart,
-+static int fintek_8250_rs485_config(struct uart_port *port,
- 			      struct serial_rs485 *rs485)
+-static void sc16is7xx_config_rs485(struct uart_port *port,
++static int sc16is7xx_config_rs485(struct uart_port *port,
+ 				   struct serial_rs485 *rs485)
  {
- 	uint8_t config = 0;
--	int index = fintek_8250_get_index(uart->port.iobase);
-+	int index = fintek_8250_get_index(port->iobase);
- 
- 	if (index < 0)
- 		return -EINVAL;
-@@ -134,6 +134,8 @@ static int fintek_8250_rs4850_config(struct uart_8250_port *uart,
- 	outb(config, DATA_PORT);
- 	fintek_8250_exit_key();
- 
+-	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+-
+-	one->rs485 = *rs485;
+-
+-	if (one->rs485.flags & SER_RS485_ENABLED) {
++	if (port->rs485.flags & SER_RS485_ENABLED)
+ 		sc16is7xx_port_update(port, SC16IS7XX_EFCR_REG,
+ 				      SC16IS7XX_EFCR_AUTO_RS485_BIT,
+ 				      SC16IS7XX_EFCR_AUTO_RS485_BIT);
+-	} else {
++	else
+ 		sc16is7xx_port_update(port, SC16IS7XX_EFCR_REG,
+ 				      SC16IS7XX_EFCR_AUTO_RS485_BIT,
+ 				      0);
+-	}
+-}
+-
+-static int sc16is7xx_ioctl(struct uart_port *port, unsigned int cmd,
+-			   unsigned long arg)
+-{
+-	struct serial_rs485 rs485;
 +	port->rs485 = *rs485;
-+
- 	return 0;
+ 
+-	switch (cmd) {
+-	case TIOCSRS485:
+-		if (copy_from_user(&rs485, (void __user *)arg, sizeof(rs485)))
+-			return -EFAULT;
+-
+-		sc16is7xx_config_rs485(port, &rs485);
+-		return 0;
+-	case TIOCGRS485:
+-		if (copy_to_user((void __user *)arg,
+-				 &(to_sc16is7xx_one(port, port)->rs485),
+-				 sizeof(rs485)))
+-			return -EFAULT;
+-		return 0;
+-	default:
+-		break;
+-	}
+-
+-	return -ENOIOCTLCMD;
++	return 0;
  }
  
-@@ -166,7 +168,7 @@ fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 	uart.port.irq = pnp_irq(dev, 0);
- 	uart.port.iobase = pnp_port_start(dev, 0);
- 	uart.port.iotype = UPIO_PORT;
--	uart.rs485_config = fintek_8250_rs4850_config;
-+	uart.port.rs485_config = fintek_8250_rs485_config;
+ static int sc16is7xx_startup(struct uart_port *port)
+@@ -996,7 +967,6 @@ static const struct uart_ops sc16is7xx_ops = {
+ 	.release_port	= sc16is7xx_null_void,
+ 	.config_port	= sc16is7xx_config_port,
+ 	.verify_port	= sc16is7xx_verify_port,
+-	.ioctl		= sc16is7xx_ioctl,
+ 	.pm		= sc16is7xx_pm,
+ };
  
- 	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
- 	if (pnp_irq_flags(dev, 0) & IORESOURCE_IRQ_SHAREABLE)
+@@ -1126,6 +1096,7 @@ static int sc16is7xx_probe(struct device *dev,
+ 		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
+ 		s->p[i].port.iotype	= UPIO_PORT;
+ 		s->p[i].port.uartclk	= freq;
++		s->p[i].port.rs485_config = sc16is7xx_config_rs485;
+ 		s->p[i].port.ops	= &sc16is7xx_ops;
+ 		/* Disable all interrupts */
+ 		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_IER_REG, 0);
 -- 
 2.1.1
 
