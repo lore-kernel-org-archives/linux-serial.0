@@ -1,72 +1,124 @@
-From: Nishanth Menon <nm@ti.com>
-Subject: Re: [PATCH] tty: serial: 8250: omap: Add pinctrl support for suspend
-Date: Thu, 6 Nov 2014 13:15:13 -0600
-Message-ID: <545BC8C1.4070503@ti.com>
-References: <1415300850-21452-1-git-send-email-bigeasy@linutronix.de>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/5] drivers: serial: jsm: Add the Classic board
+ implementation
+Date: Thu, 6 Nov 2014 11:18:08 -0800
+Message-ID: <20141106191808.GA32427@kroah.com>
+References: <20141103093800.GK6879@mwanda>
+ <1415040760-12172-1-git-send-email-bergo.torino@gmail.com>
+ <1415040760-12172-2-git-send-email-bergo.torino@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1415300850-21452-1-git-send-email-bigeasy@linutronix.de>
-Sender: linux-omap-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, "tony@atomide.com" <tony@atomide.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, Dave Gerlach <d-gerlach@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:53602 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751219AbaKFTSJ (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 6 Nov 2014 14:18:09 -0500
+Content-Disposition: inline
+In-Reply-To: <1415040760-12172-2-git-send-email-bergo.torino@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Konrad Zapalowicz <bergo.torino@gmail.com>
+Cc: jslaby@suse.cz, cascardo@linux.vnet.ibm.com, markh@compro.net, devel@driverdev.osuosl.org, lidza.louina@gmail.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 
-On 11/06/2014 01:07 PM, Sebastian Andrzej Siewior wrote:
-> This is mostly an equivalent for the 8250-omap driver based on a patch
-> of Dave Gerlach for the omap-serial driver (which is not yet merged).
-> 
-> From his changelog:
-> |By optionally putting the pins into sleep state in the suspend callback
-> |we can accomplish two things.
-> |- minimize current leakage from pins and thus save power,
-> |- prevent the IP from driving pins output in an uncontrolled manner,
-> |  which may happen if the power domain drops the domain regulator.
-> 
-> The pinctlr change is put before enable_wakeup logic as per Nishanth
-> Menon (slightly reworded):
-> |When wakeup is enabled, I/O daisy chain based wakeup is used by
-> |reconfiguring the padconfig register. However, this gets overriden by
-> |sleep/wakeup configuration. Therefore we need first to allow pinctrl to
-> |play with the wakeup bits as needed beyond the sleep configuration.
-> 
-> Cc: Dave Gerlach <d-gerlach@ti.com>
-> Cc: Nishanth Menon <nm@ti.com>
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  drivers/tty/serial/8250/8250_omap.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 57a8b1241b85..1681875f2996 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -1156,6 +1156,7 @@ static int omap8250_suspend(struct device *dev)
->  	serial8250_suspend_port(priv->line);
->  	flush_work(&priv->qos_work);
->  
-> +	pinctrl_pm_select_sleep_state(dev);
->  	if (device_may_wakeup(dev))
->  		omap8250_enable_wakeup(priv, true);
->  	else
-> @@ -1167,6 +1168,7 @@ static int omap8250_resume(struct device *dev)
->  {
->  	struct omap8250_priv *priv = dev_get_drvdata(dev);
->  
-> +	pinctrl_pm_select_default_state(dev);
->  	if (device_may_wakeup(dev))
->  		omap8250_enable_wakeup(priv, false);
->  
-> 
-sounds good to me *IF* omap8250_enable_wakeup (wakeirq handling) is
-the way we want to continue doing things for daisychain? -> Tony, can
-you comment?
-http://marc.info/?l=linux-omap&m=141222144402707&w=2
+On Mon, Nov 03, 2014 at 07:52:38PM +0100, Konrad Zapalowicz wrote:
+> This commit adds the Digi Classic board implementation to the
+> staging/jsm driver.
+>=20
+> The code here is taken from the staging/dgnc driver and modified to
+> match the serial/jsm state. This work is mostly based on the changes
+> that has been done to the code handling the Digi Neo cards with the
+> inspiration coming from the diff between staging/dgnc and serial/jsm
+> as well as the LKML history for the jsm_neo.c
+>=20
+> The code compiles now and has no sparse and checkpatch errors or
+> warnings.
 
-I wonder if wakeirq explicit handling is valid anymore and something
-given the potential race and alternate approach proposed?
+The compiler does give me one warning for this file:
 
--- 
-Regards,
-Nishanth Menon
+> +/*
+> + * cls_param()
+> + * Send any/all changes to the line to the UART.
+> + */
+> +static void cls_param(struct jsm_channel *ch)
+> +{
+> +	u8 lcr =3D 0;
+> +	u8 uart_lcr =3D 0;
+> +	u8 ier =3D 0;
+> +	u32 baud =3D 9600;
+> +	int quot =3D 0;
+> +	struct jsm_board *bd;
+> +	int i;
+> +	unsigned int cflag;
+> +
+> +	bd =3D ch->ch_bd;
+> +	if (!bd)
+> +		return;
+> +
+> +	/*
+> +	 * If baud rate is zero, flush queues, and set mval to drop DTR.
+> +	 */
+> +	if ((ch->ch_c_cflag & (CBAUD)) =3D=3D 0) {
+> +		ch->ch_r_head =3D 0;
+> +		ch->ch_r_tail =3D 0;
+> +		ch->ch_e_head =3D 0;
+> +		ch->ch_e_tail =3D 0;
+> +
+> +		cls_flush_uart_write(ch);
+> +		cls_flush_uart_read(ch);
+> +
+> +		/* The baudrate is B0 so all modem lines are to be dropped. */
+> +		ch->ch_flags |=3D (CH_BAUD0);
+> +		ch->ch_mostat &=3D ~(UART_MCR_RTS | UART_MCR_DTR);
+> +		cls_assert_modem_signals(ch);
+> +		return;
+> +	}
+> +
+> +	static struct {
+> +		unsigned int rate;
+> +		unsigned int cflag;
+> +	} baud_rates[] =3D {
+> +		{ 921600, B921600 },
+> +		{ 460800, B460800 },
+> +		{ 230400, B230400 },
+> +		{ 115200, B115200 },
+> +		{  57600, B57600  },
+> +		{  38400, B38400  },
+> +		{  19200, B19200  },
+> +		{   9600, B9600   },
+> +		{   4800, B4800   },
+> +		{   2400, B2400   },
+> +		{   1200, B1200   },
+> +		{    600, B600    },
+> +		{    300, B300    },
+> +		{    200, B200    },
+> +		{    150, B150    },
+> +		{    134, B134    },
+> +		{    110, B110    },
+> +		{     75, B75     },
+> +		{     50, B50     },
+> +	};
+
+baud_rates needs to be up above the code, as gcc tells me:
+
+drivers/tty/serial/jsm/jsm_cls.c: In function =E2=80=98cls_param=E2=80=99=
+:
+drivers/tty/serial/jsm/jsm_cls.c:701:2: warning: ISO C90 forbids mixed =
+declarations and code [-Wdeclaration-after-statement]
+  static struct {
+  ^
+
+Can you fix that up and resend the series?  I've taken the first patch =
+in this
+series, as that is an easy one to accept, so no need to resend that one=
+=2E
+
+thanks,
+
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
