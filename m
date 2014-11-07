@@ -1,55 +1,68 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH 2/2] serial: fsl_lpuart: Remove unneeded registration message
-Date: Fri,  7 Nov 2014 00:23:14 -0200
-Message-ID: <1415326994-11666-2-git-send-email-festevam@gmail.com>
-References: <1415326994-11666-1-git-send-email-festevam@gmail.com>
+From: Frank Rowand <frowand.list@gmail.com>
+Subject: Re: [PATCH] tty: serial: msm_serial: Use DT aliases
+Date: Thu, 06 Nov 2014 20:44:15 -0800
+Message-ID: <545C4E1F.4060401@gmail.com>
+References: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org>
+Reply-To: frowand.list@gmail.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f182.google.com ([209.85.216.182]:50869 "EHLO
-	mail-qc0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751051AbaKGCXf (ORCPT
+Received: from mail-lb0-f180.google.com ([209.85.217.180]:34905 "EHLO
+	mail-lb0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751348AbaKGEoV (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 21:23:35 -0500
-Received: by mail-qc0-f182.google.com with SMTP id m20so1918376qcx.13
-        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2014 18:23:34 -0800 (PST)
-In-Reply-To: <1415326994-11666-1-git-send-email-festevam@gmail.com>
+	Thu, 6 Nov 2014 23:44:21 -0500
+In-Reply-To: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: b35083@freescale.com, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
+From: Frank Rowand <frank.rowand@sonymobile.com>
 
-There is no real value in displaying "serial: Freescale lpuart driver" in every
-boot.
+Update devicetree binding for msm_serial to reflect msm_serial_probe()
+getting line id from the serial alias.
 
-The uart_register_driver() can fail and even so the "serial: Freescale lpuart
-driver" will be displayed, which is not really helpful.
-
-This is particularly annoying when booting multi_v7_defconfig kernel on a SoC
-that is not a Vybrid/Layerscape and even though this message gets displayed.
-
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Signed-off-by: Frank Rowand <frank.rowand@sonymobile.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt |   15 +++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 567d0ad..08c8651 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1882,11 +1882,8 @@ static struct platform_driver lpuart_driver = {
+Index: b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+===================================================================
+--- a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
++++ b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+@@ -27,11 +27,18 @@ Optional properties:
+ - dmas: Should contain dma specifiers for transmit and receive channels
+ - dma-names: Should contain "tx" for transmit and "rx" for receive channels
  
- static int __init lpuart_serial_init(void)
- {
--	int ret;
--
--	pr_info("serial: Freescale lpuart driver\n");
-+	int ret = uart_register_driver(&lpuart_reg);
++Additional requirements:
++- Each UART port must have an alias correctly numbered in "aliases" node.
++
+ Examples:
  
--	ret = uart_register_driver(&lpuart_reg);
- 	if (ret)
- 		return ret;
+ A uartdm v1.4 device with dma capabilities.
  
--- 
-1.9.1
-
+-serial@f991e000 {
++aliases {
++	serial0 = &serial0;
++};
++
++serial0: serial@f991e000 {
+ 	compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
+ 	reg = <0xf991e000 0x1000>;
+ 	interrupts = <0 108 0x0>;
+@@ -43,7 +50,11 @@ serial@f991e000 {
+ 
+ A uartdm v1.3 device without dma capabilities and part of a GSBI complex.
+ 
+-serial@19c40000 {
++aliases {
++	serial0 = &serial0;
++};
++
++serial0: serial@19c40000 {
+ 	compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 	reg = <0x19c40000 0x1000>,
+ 	      <0x19c00000 0x1000>;
