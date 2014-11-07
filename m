@@ -1,28 +1,58 @@
 From: Andrew Jackson <Andrew.Jackson@arm.com>
-Subject: [PATCH 0/5] serial: pl011: Fix DMA issues on 64bit PL330 based systems
-Date: Fri, 07 Nov 2014 14:14:30 +0000
-Message-ID: <545CD3C6.9080408@arm.com>
+Subject: [PATCH 4/5] serial: pl011: Don't enable RX DMA if residue processing
+ not supported
+Date: Fri, 07 Nov 2014 14:14:47 +0000
+Message-ID: <545CD3D7.5010300@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from fw-tnat.cambridge.arm.com ([217.140.96.21]:54368 "EHLO
+	cam-smtp0.cambridge.arm.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752926AbaKGOPR (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 7 Nov 2014 09:15:17 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-This patch set fixes a number of issues found when using
-DMA driven UART transfers on the PL011 UART through a
-DMA330 DMA controller on a 64bit system.
 
-Andrew Jackson (5):
-  serial: pl011: Allocate TX DMA buffer from DMA capable memory
-  serial: pl011: Avoid assumptions about buffer size when refilling TX
-    DMA
-  serial: pl011: Set length of DMA transfer
-  serial: pl011: Don't enable RX DMA if residue processing not
-    supported
-  serial: pl011: Add device tree support for RX DMA polling
+If the DMA engine doesn't support residue processing then the RX DMA
+handling won't work terribly well if polling is enabled.  So, disable
+RX DMA if residue handling isn't available.
 
- Documentation/devicetree/bindings/serial/pl011.txt |   19 +++++---
- drivers/tty/serial/amba-pl011.c                    |   46 +++++++++++++++++--
- 2 files changed, 53 insertions(+), 12 deletions(-)
+Signed-off-by: Andrew Jackson <Andrew.Jackson@arm.com>
+---
+ drivers/tty/serial/amba-pl011.c |   17 ++++++++++++++++-
+ 1 files changed, 16 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 7c5e263..79b9c93 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -322,7 +322,22 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
+ 			.src_maxburst = uap->fifosize >> 2,
+ 			.device_fc = false,
+ 		};
++		struct dma_slave_caps caps;
+ 
++		/*
++		 * Some DMA controllers provide information on their capabilities.
++		 * If the controller does, check for suitable residue processing
++		 * otherwise assime all is well.
++		 */
++		if (0 == dma_get_slave_caps(chan, &caps)) {
++			if (caps.residue_granularity ==
++					DMA_RESIDUE_GRANULARITY_DESCRIPTOR) {
++				dma_release_channel(chan);
++				dev_info(uap->port.dev,
++					"RX DMA disabled - no residue processing\n");
++				return;
++			}
++		}
+ 		dmaengine_slave_config(chan, &rx_conf);
+ 		uap->dmarx.chan = chan;
+ 
+-- 
+1.7.1
+
