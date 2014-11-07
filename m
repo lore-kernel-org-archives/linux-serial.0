@@ -1,34 +1,50 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] tty: serial: msm_serial: Use DT aliases
-Date: Fri, 07 Nov 2014 10:47:05 +0100
-Message-ID: <2747100.M77UGx4AmB@wuerfel>
-References: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org> <545C694D.1030204@gmail.com> <545C69E7.6010909@gmail.com>
+From: Jingchang Lu <jingchang.lu@freescale.com>
+Subject: RE: [PATCH 1/2] serial: fsl_lpuart: Remove unneeded check for 'res'
+Date: Fri, 7 Nov 2014 09:58:47 +0000
+Message-ID: <d7d19c81921e4e7fa69e8830c23333ff@BN3PR0301MB1236.namprd03.prod.outlook.com>
+References: <1415326994-11666-1-git-send-email-festevam@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <545C69E7.6010909@gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, frowand.list@gmail.com
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-bn1on0116.outbound.protection.outlook.com ([157.56.110.116]:57543
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751245AbaKGJ6u (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Fri, 7 Nov 2014 04:58:50 -0500
+In-Reply-To: <1415326994-11666-1-git-send-email-festevam@gmail.com>
+Content-Language: en-US
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Fabio Estevam <festevam@gmail.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Fabio.Estevam@freescale.com" <Fabio.Estevam@freescale.com>
 
-On Thursday 06 November 2014 22:42:47 Frank Rowand wrote:
-> This same change is also needed in:
-> 
->   qcom-ipq8064.dtsi
->   qcom-msm8960.dtsi
->   qcom-apq8084.dtsi
->   qcom-apq8064.dtsi
->   qcom-msm8660.dtsi
-> 
-> but I did not want to just blindly apply those changes without testing.
-> 
-
-Is there only one uart on each of these?
-
-If not, it would be better to put the aliases in the board specific file,
-pointing to whichever ports are in use, in the order that makes sense
-for that board.
-
-	Arnd
+Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogRmFiaW8gRXN0ZXZhbSBbbWFpbHRv
+OmZlc3RldmFtQGdtYWlsLmNvbV0NCj5TZW50OiBGcmlkYXksIE5vdmVtYmVyIDA3LCAyMDE0IDEw
+OjIzIEFNDQo+VG86IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnDQo+Q2M6IEx1IEppbmdjaGFu
+Zy1CMzUwODM7IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7IEVzdGV2YW0gRmFiaW8tDQo+
+UjQ5NDk2DQo+U3ViamVjdDogW1BBVENIIDEvMl0gc2VyaWFsOiBmc2xfbHB1YXJ0OiBSZW1vdmUg
+dW5uZWVkZWQgY2hlY2sgZm9yICdyZXMnDQo+DQo+RnJvbTogRmFiaW8gRXN0ZXZhbSA8ZmFiaW8u
+ZXN0ZXZhbUBmcmVlc2NhbGUuY29tPg0KPg0KPidyZXMnIHdpbGwgYmUgYXV0b21hdGljYWxseSBj
+aGVja2VkIGluc2lkZSBkZXZtX2lvcmVtYXBfcmVzb3VyY2UoKSwgc28NCj50aGVyZSBpcw0KPm5v
+IG5lZWQgdG8gZXhwbGljaXRseSBwZXJmb3JtIGEgTlVMTCBjaGVjay4NCj4NCj5TaWduZWQtb2Zm
+LWJ5OiBGYWJpbyBFc3RldmFtIDxmYWJpby5lc3RldmFtQGZyZWVzY2FsZS5jb20+DQoNCkFja2Vk
+LWJ5OiBKaW5nY2hhbmcgTHUgPGppbmdjaGFuZy5sdUBmcmVlc2NhbGUuY29tPg0KDQo+LS0tDQo+
+IGRyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMgfCA2ICsrLS0tLQ0KPiAxIGZpbGUgY2hh
+bmdlZCwgMiBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KPg0KPmRpZmYgLS1naXQgYS9k
+cml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jDQo+Yi9kcml2ZXJzL3R0eS9zZXJpYWwvZnNs
+X2xwdWFydC5jDQo+aW5kZXggNmRkNTNhZi4uNTY3ZDBhZCAxMDA2NDQNCj4tLS0gYS9kcml2ZXJz
+L3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jDQo+KysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2ZzbF9s
+cHVhcnQuYw0KPkBAIC0xNzg2LDE1ICsxNzg2LDEzIEBAIHN0YXRpYyBpbnQgbHB1YXJ0X3Byb2Jl
+KHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UNCj4qcGRldikNCj4gCX0NCj4gCXNwb3J0LT5wb3J0Lmxp
+bmUgPSByZXQ7DQo+IAlzcG9ydC0+bHB1YXJ0MzIgPSBvZl9kZXZpY2VfaXNfY29tcGF0aWJsZShu
+cCwgImZzbCxsczEwMjFhLWxwdWFydCIpOw0KPi0JcmVzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNl
+KHBkZXYsIElPUkVTT1VSQ0VfTUVNLCAwKTsNCj4tCWlmICghcmVzKQ0KPi0JCXJldHVybiAtRU5P
+REVWOw0KPg0KPi0Jc3BvcnQtPnBvcnQubWFwYmFzZSA9IHJlcy0+c3RhcnQ7DQo+KwlyZXMgPSBw
+bGF0Zm9ybV9nZXRfcmVzb3VyY2UocGRldiwgSU9SRVNPVVJDRV9NRU0sIDApOw0KPiAJc3BvcnQt
+PnBvcnQubWVtYmFzZSA9IGRldm1faW9yZW1hcF9yZXNvdXJjZSgmcGRldi0+ZGV2LCByZXMpOw0K
+PiAJaWYgKElTX0VSUihzcG9ydC0+cG9ydC5tZW1iYXNlKSkNCj4gCQlyZXR1cm4gUFRSX0VSUihz
+cG9ydC0+cG9ydC5tZW1iYXNlKTsNCj4NCj4rCXNwb3J0LT5wb3J0Lm1hcGJhc2UgPSByZXMtPnN0
+YXJ0Ow0KPiAJc3BvcnQtPnBvcnQuZGV2ID0gJnBkZXYtPmRldjsNCj4gCXNwb3J0LT5wb3J0LnR5
+cGUgPSBQT1JUX0xQVUFSVDsNCj4gCXNwb3J0LT5wb3J0LmlvdHlwZSA9IFVQSU9fTUVNOw0KPi0t
+DQo+MS45LjENCg0K
