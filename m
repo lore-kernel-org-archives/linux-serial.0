@@ -1,50 +1,135 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: RE: [PATCH 2/2] serial: fsl_lpuart: Remove unneeded registration
- message
-Date: Fri, 7 Nov 2014 09:59:18 +0000
-Message-ID: <45d331205c98452392f079f2f09c73fa@BN3PR0301MB1236.namprd03.prod.outlook.com>
-References: <1415326994-11666-1-git-send-email-festevam@gmail.com>
- <1415326994-11666-2-git-send-email-festevam@gmail.com>
+From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
+Subject: Re: [PATCH v4 2/4] serial: mxs-auart: use mctrl_gpio helpers for
+ handling modem signals
+Date: Fri, 07 Nov 2014 11:04:27 +0100
+Message-ID: <545C992B.1070004@elproma.com.pl>
+References: <1412960007-28159-1-git-send-email-j.uzycki@elproma.com.pl> <545B57D7.4070609@elproma.com.pl> <CAMiH66FKJm8hcgtR=-ZzzpCq+PQ8xkixbUnMzRPVd_cM_6VM1w@mail.gmail.com> <201411070903.11645.marex@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bl2on0148.outbound.protection.outlook.com ([65.55.169.148]:56694
-	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751245AbaKGJ7Y (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Fri, 7 Nov 2014 04:59:24 -0500
-In-Reply-To: <1415326994-11666-2-git-send-email-festevam@gmail.com>
-Content-Language: en-US
+Received: from v032797.home.net.pl ([89.161.177.31]:55001 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1750957AbaKGKE2 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 7 Nov 2014 05:04:28 -0500
+In-Reply-To: <201411070903.11645.marex@denx.de>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Fabio.Estevam@freescale.com" <Fabio.Estevam@freescale.com>
+To: Marek Vasut <marex@denx.de>, Huang Shijie <shijie8@gmail.com>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Fabio Estevam <festevam@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogRmFiaW8gRXN0ZXZhbSBbbWFpbHRv
-OmZlc3RldmFtQGdtYWlsLmNvbV0NCj5TZW50OiBGcmlkYXksIE5vdmVtYmVyIDA3LCAyMDE0IDEw
-OjIzIEFNDQo+VG86IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnDQo+Q2M6IEx1IEppbmdjaGFu
-Zy1CMzUwODM7IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7IEVzdGV2YW0gRmFiaW8tDQo+
-UjQ5NDk2DQo+U3ViamVjdDogW1BBVENIIDIvMl0gc2VyaWFsOiBmc2xfbHB1YXJ0OiBSZW1vdmUg
-dW5uZWVkZWQgcmVnaXN0cmF0aW9uDQo+bWVzc2FnZQ0KPg0KPkZyb206IEZhYmlvIEVzdGV2YW0g
-PGZhYmlvLmVzdGV2YW1AZnJlZXNjYWxlLmNvbT4NCj4NCj5UaGVyZSBpcyBubyByZWFsIHZhbHVl
-IGluIGRpc3BsYXlpbmcgInNlcmlhbDogRnJlZXNjYWxlIGxwdWFydCBkcml2ZXIiIGluDQo+ZXZl
-cnkgYm9vdC4NCj4NCj5UaGUgdWFydF9yZWdpc3Rlcl9kcml2ZXIoKSBjYW4gZmFpbCBhbmQgZXZl
-biBzbyB0aGUgInNlcmlhbDogRnJlZXNjYWxlDQo+bHB1YXJ0IGRyaXZlciIgd2lsbCBiZSBkaXNw
-bGF5ZWQsIHdoaWNoIGlzIG5vdCByZWFsbHkgaGVscGZ1bC4NCj4NCj5UaGlzIGlzIHBhcnRpY3Vs
-YXJseSBhbm5veWluZyB3aGVuIGJvb3RpbmcgbXVsdGlfdjdfZGVmY29uZmlnIGtlcm5lbCBvbiBh
-DQo+U29DIHRoYXQgaXMgbm90IGEgVnlicmlkL0xheWVyc2NhcGUgYW5kIGV2ZW4gdGhvdWdoIHRo
-aXMgbWVzc2FnZSBnZXRzDQo+ZGlzcGxheWVkLg0KPg0KPlNpZ25lZC1vZmYtYnk6IEZhYmlvIEVz
-dGV2YW0gPGZhYmlvLmVzdGV2YW1AZnJlZXNjYWxlLmNvbT4NCg0KQWNrZWQtYnk6IEppbmdjaGFu
-ZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5jb20+DQoNCj4tLS0NCj4gZHJpdmVycy90dHkv
-c2VyaWFsL2ZzbF9scHVhcnQuYyB8IDUgKy0tLS0NCj4gMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0
-aW9uKCspLCA0IGRlbGV0aW9ucygtKQ0KPg0KPmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJp
-YWwvZnNsX2xwdWFydC5jDQo+Yi9kcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jIGluZGV4
-IDU2N2QwYWQuLjA4Yzg2NTEgMTAwNjQ0DQo+LS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2ZzbF9s
-cHVhcnQuYw0KPisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMNCj5AQCAtMTg4
-MiwxMSArMTg4Miw4IEBAIHN0YXRpYyBzdHJ1Y3QgcGxhdGZvcm1fZHJpdmVyIGxwdWFydF9kcml2
-ZXIgPSB7DQo+DQo+IHN0YXRpYyBpbnQgX19pbml0IGxwdWFydF9zZXJpYWxfaW5pdCh2b2lkKSAg
-ew0KPi0JaW50IHJldDsNCj4tDQo+LQlwcl9pbmZvKCJzZXJpYWw6IEZyZWVzY2FsZSBscHVhcnQg
-ZHJpdmVyXG4iKTsNCj4rCWludCByZXQgPSB1YXJ0X3JlZ2lzdGVyX2RyaXZlcigmbHB1YXJ0X3Jl
-Zyk7DQo+DQo+LQlyZXQgPSB1YXJ0X3JlZ2lzdGVyX2RyaXZlcigmbHB1YXJ0X3JlZyk7DQo+IAlp
-ZiAocmV0KQ0KPiAJCXJldHVybiByZXQ7DQo+DQo+LS0NCj4xLjkuMQ0KDQo=
+
+W dniu 2014-11-07 o 09:03, Marek Vasut pisze:
+> On Friday, November 07, 2014 at 02:34:31 AM, Huang Shijie wrote:
+>> why change them to gpio?
+
+Hardware RTS/CTS lines can be occupied by RX/TX of other AUART port
+in order to obtain as much uarts as possible using i.mx283.
+Therefore gpios can be used for "hardware" flow control.
+
+>>    If we change them to gpio.  Could the DMA still
+>> works fine?
+>> did you test the DMA with this patch?
+>>
+>> Add Marek for this patch too.
+> I didn't look too deep into the patch, so here's just my experience:
+>
+> 1) The AUART block signals and GPIO block signals are not sychronised using the
+>     same clock. Therefore, the latency between toggling of the AUART lines and
+>     the GPIO-driven pins will not be deterministic and will vary. There might be
+>     a way to approximate that, but that's definitelly not a reliable solution.
+>
+>     This is very bad for example if you drive RS485 DIR line with the RTS pin as
+>     a GPIO ; the RTS pin will toggle at non-deterministic time compared to the
+>     end of UART transmission. This will trigger bit-loss on the RS485 line and
+>     you just don't want that.
+>
+> 2) Speaking of RS485, there's [1] and [2]. which I believe apply to any combo
+>     of UART+GPIO toggling.
+>
+> So I hate to bring the bad news , but UART+GPIO combo toggling is really a bad
+> bad idea.
+
+Unfortunately if hardware is limited there is no choice and UART+GPIO is 
+necessary.
+
+Your experience confirms the discussion [3] with Russell King. DMA 
+should be disabled and
+the patch disables DMA support in mxs_auart_init_gpios() if RTS or CTS 
+line is set as gpio.
+So I didn't test the patch with the DMA - I've just disabled it.
+
+The question is different. The driver supports the cases for RTS/CTS:
+1)  both RTS/CTS assigned to hardware AUART (pinmux configured by DT,
+      DT sets fsl,uart-has-rtscts)
+     a) settermios() sets CRTSCTS: DMA enabled, auto RTS/CTS is enabled
+     b) settermios() doesn't set CRTSCTS: DMA disabled, RTS/CTS 
+controlled by get/set_mctrl()
+2)  both RTS/CTS assigned to hardware AUART (pinmux configured by DT,
+      DT doesn't set fsl,uart-has-rtscts)
+     a) settermios() sets CRTSCTS: DMA disabled, auto RTS/CTS is enabled
+     b) settermios() doesn't set CRTSCTS: DMA disabled, RTS/CTS 
+controlled by get/set_mctrl()
+
+and after the patch it is more complex (because of mixed cases):
+3) both RTS/CTS assigned to gpios (DT sets or not fsl,uart-has-rtscts):
+     the patch cancels fsl,uart-has-rtscts flag to disable DMA support,
+     settermios() sets or not CRTSCTS: DMA disabled, RTS/CTS controlled 
+by get/set_mctrl(),
+     both lines by gpios. In addition:
+     a) settermios() doesn't set CRTSCTS: RTS of hardware AUART is also 
+controlled but
+         the case assumes it is not selected by pinmux in DT
+     b) settermios() sets CRTSCTS: auto RTS of hardware AUART is also 
+enabled but
+         the case assumes it is not selected by pinmux in DT
+4) RTS assigned to hardware AUART (pinmux configured by DT, 
+fsl,uart-has-rtscts set or not),
+     CTS assigned to gpio: the patch cancels fsl,uart-has-rtscts flag to 
+disable DMA support,
+     a) settermios() doesn't set CRTSCTS: DMA disabled, CTS (as gpio) 
+read by get_mctrl(),
+         RTS of hardware AUART controlled by set_mctrl()
+     b) settermios() sets CRTSCTS: DMA disabled, CTS (as gpio) read by 
+get_mctrl(),
+        auto RTS is enabled
+    So case 4) is exactly 3) case with just different pinmux 
+configuration and the patch
+    threats 3) and 4) as the same case.
+5) CTS assigned to hardware AUART (pinmux configured by DT, 
+fsl,uart-has-rtscts set or not),
+     RTS assigned to gpio: the patch cancels fsl,uart-has-rtscts flag to 
+disable DMA support,
+     a) settermios() doesn't set CRTSCTS: DMA disabled, CTS of hardware 
+AUART read by
+         get_mctrl(), RTS (as gpio) controlled by set_mctrl(), in 
+addition RTS of hardware AUART
+         is also controlled but the case assumes it is not selected by 
+pinmux in DT
+     b) settermios() sets CRTSCTS: DMA disabled, auto RTS/CTS is enabled but
+         RTS is controlled by set_mctrl() as gpio because the case 
+assumes it is not selected
+         by pinmux in DT
+
+It is not nice description but I hadn't idea how to write it more clear.
+The mixed cases 4) and 5) are likely not so useful but possible and not 
+so expensive
+to support.
+Now the question: "fsl,uart-has-rtscts" name seems to be misleading now,
+do you agree? It rather should include "dma" word in the name. Any 
+suggestion?
+
+[3] http://thread.gmane.org/gmane.linux.serial/16069/focus=16077
+
+best regards
+Janusz
+
+> HTH
+>
+> [1] http://comments.gmane.org/gmane.linux.serial/6770
+> [2] http://article.gmane.org/gmane.linux.serial/3619/
+>
+> Best regards,
+> Marek Vasut
+
