@@ -1,18 +1,18 @@
 From: Frank Rowand <frowand.list@gmail.com>
 Subject: Re: [PATCH] tty: serial: msm_serial: Use DT aliases
-Date: Thu, 06 Nov 2014 20:44:15 -0800
-Message-ID: <545C4E1F.4060401@gmail.com>
+Date: Thu, 06 Nov 2014 22:40:13 -0800
+Message-ID: <545C694D.1030204@gmail.com>
 References: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org>
 Reply-To: frowand.list@gmail.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f180.google.com ([209.85.217.180]:34905 "EHLO
-	mail-lb0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751348AbaKGEoV (ORCPT
+Received: from mail-pa0-f53.google.com ([209.85.220.53]:46029 "EHLO
+	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751685AbaKGGkQ (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 6 Nov 2014 23:44:21 -0500
+	Fri, 7 Nov 2014 01:40:16 -0500
 In-Reply-To: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -21,48 +21,35 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.or
 
 From: Frank Rowand <frank.rowand@sonymobile.com>
 
-Update devicetree binding for msm_serial to reflect msm_serial_probe()
+Update msm8974 dtsi for msm_serial to reflect msm_serial_probe()
 getting line id from the serial alias.
 
 Signed-off-by: Frank Rowand <frank.rowand@sonymobile.com>
 ---
- Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt |   15 +++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/qcom-msm8974.dtsi |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Index: b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+Index: b/arch/arm/boot/dts/qcom-msm8974.dtsi
 ===================================================================
---- a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-+++ b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-@@ -27,11 +27,18 @@ Optional properties:
- - dmas: Should contain dma specifiers for transmit and receive channels
- - dma-names: Should contain "tx" for transmit and "rx" for receive channels
+--- a/arch/arm/boot/dts/qcom-msm8974.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
+@@ -9,6 +9,10 @@
+ 	compatible = "qcom,msm8974";
+ 	interrupt-parent = <&intc>;
  
-+Additional requirements:
-+- Each UART port must have an alias correctly numbered in "aliases" node.
++	aliases {
++		serial0 = &serial0;
++	};
 +
- Examples:
+ 	cpus {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+@@ -189,7 +193,7 @@
+ 			reg = <0xfd8c0000 0x6000>;
+ 		};
  
- A uartdm v1.4 device with dma capabilities.
- 
--serial@f991e000 {
-+aliases {
-+	serial0 = &serial0;
-+};
-+
-+serial0: serial@f991e000 {
- 	compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
- 	reg = <0xf991e000 0x1000>;
- 	interrupts = <0 108 0x0>;
-@@ -43,7 +50,11 @@ serial@f991e000 {
- 
- A uartdm v1.3 device without dma capabilities and part of a GSBI complex.
- 
--serial@19c40000 {
-+aliases {
-+	serial0 = &serial0;
-+};
-+
-+serial0: serial@19c40000 {
- 	compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 	reg = <0x19c40000 0x1000>,
- 	      <0x19c00000 0x1000>;
+-		serial@f991e000 {
++		serial0: serial@f991e000 {
+ 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
+ 			reg = <0xf991e000 0x1000>;
+ 			interrupts = <0 108 0x0>;
