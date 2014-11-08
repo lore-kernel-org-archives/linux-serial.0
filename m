@@ -1,58 +1,50 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 3.18-rc3
-Date: Sat, 8 Nov 2014 10:58:12 -0800
-Message-ID: <20141108185812.GA2200@kroah.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] tty: serial: msm_serial: Use DT aliases
+Date: Sat, 08 Nov 2014 20:25:22 +0100
+Message-ID: <1630864.S0zQWJED9T@wuerfel>
+References: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org> <2747100.M77UGx4AmB@wuerfel> <545D3B31.3030309@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.17.13]:49227 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751082AbaKHT0B (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Sat, 8 Nov 2014 14:26:01 -0500
+In-Reply-To: <545D3B31.3030309@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, frowand.list@gmail.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org
 
-The following changes since commit 0df1f2487d2f0d04703f142813d53615d62a1da4:
+On Friday 07 November 2014 13:35:45 Frank Rowand wrote:
+> On 11/7/2014 1:47 AM, Arnd Bergmann wrote:
+> > On Thursday 06 November 2014 22:42:47 Frank Rowand wrote:
+> >> This same change is also needed in:
+> >>
+> >>   qcom-ipq8064.dtsi
+> >>   qcom-msm8960.dtsi
+> >>   qcom-apq8084.dtsi
+> >>   qcom-apq8064.dtsi
+> >>   qcom-msm8660.dtsi
+> >>
+> >> but I did not want to just blindly apply those changes without testing.
+> >>
+> > 
+> > Is there only one uart on each of these?
+> > 
+> > If not, it would be better to put the aliases in the board specific file,
+> > pointing to whichever ports are in use, in the order that makes sense
+> > for that board.
+> 
+> Good point, thanks for bringing it up.
+> 
+> Your comment made me verify that the board dts files can override the
+> aliases from the included .dtsi.  So not a problem to have a default
+> set of aliases in the .dtsi files.
 
-  Linux 3.18-rc3 (2014-11-02 15:01:51 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.18-rc4
-
-for you to fetch changes up to c4dc304677e8d566572c4738d95c48be150c6606:
-
-  tty: Fix pty master poll() after slave closes v2 (2014-11-06 12:23:36 -0800)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 3.18-rc4
-
-Here are some tiny serial/tty fixes for 3.18-rc4 that resolve some
-reported issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Francesco Ruggeri (1):
-      tty: Fix pty master poll() after slave closes v2
-
-Imre Deak (1):
-      tty/vt: don't set font mappings on vc not supporting this
-
-Jingchang Lu (1):
-      serial: of-serial: fix uninitialized kmalloc variable
-
-Matthias Brugger (1):
-      tty: serial: 8250_mtk: Fix quot calculation
-
-Peter Hurley (3):
-      serial: Fix divide-by-zero fault in uart_get_divisor()
-      tty: Fix high cpu load if tty is unreleaseable
-      tty: Prevent "read/write wait queue active!" log flooding
-
- drivers/tty/n_tty.c                |  9 +++++++--
- drivers/tty/serial/8250/8250_mtk.c |  2 +-
- drivers/tty/serial/of_serial.c     |  2 +-
- drivers/tty/serial/serial_core.c   |  2 +-
- drivers/tty/tty_io.c               | 15 ++++++++++++---
- drivers/tty/vt/consolemap.c        |  7 +++++++
- 6 files changed, 29 insertions(+), 8 deletions(-)
+I would think it's better to keep them in the per-board file out of
+principle though.
+	
+	Arnd
