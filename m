@@ -1,50 +1,37 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] tty: serial: msm_serial: Use DT aliases
-Date: Sat, 08 Nov 2014 20:25:22 +0100
-Message-ID: <1630864.S0zQWJED9T@wuerfel>
-References: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org> <2747100.M77UGx4AmB@wuerfel> <545D3B31.3030309@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+From: Konrad Zapalowicz <bergo.torino@gmail.com>
+Subject: [PATCH 0/5] serial: jsm: Provide better code quality
+Date: Sun,  9 Nov 2014 02:22:15 +0100
+Message-ID: <1415496140-14997-1-git-send-email-bergo.torino@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:49227 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751082AbaKHT0B (ORCPT
+Received: from mail-wi0-f180.google.com ([209.85.212.180]:39214 "EHLO
+	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750957AbaKIBW1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Sat, 8 Nov 2014 14:26:01 -0500
-In-Reply-To: <545D3B31.3030309@gmail.com>
+	Sat, 8 Nov 2014 20:22:27 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, frowand.list@gmail.com
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org
+To: cascardo@linux.vnet.ibm.com
+Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Konrad Zapalowicz <bergo.torino@gmail.com>
 
-On Friday 07 November 2014 13:35:45 Frank Rowand wrote:
-> On 11/7/2014 1:47 AM, Arnd Bergmann wrote:
-> > On Thursday 06 November 2014 22:42:47 Frank Rowand wrote:
-> >> This same change is also needed in:
-> >>
-> >>   qcom-ipq8064.dtsi
-> >>   qcom-msm8960.dtsi
-> >>   qcom-apq8084.dtsi
-> >>   qcom-apq8064.dtsi
-> >>   qcom-msm8660.dtsi
-> >>
-> >> but I did not want to just blindly apply those changes without testing.
-> >>
-> > 
-> > Is there only one uart on each of these?
-> > 
-> > If not, it would be better to put the aliases in the board specific file,
-> > pointing to whichever ports are in use, in the order that makes sense
-> > for that board.
-> 
-> Good point, thanks for bringing it up.
-> 
-> Your comment made me verify that the board dts files can override the
-> aliases from the included .dtsi.  So not a problem to have a default
-> set of aliases in the .dtsi files.
+This series of patches fixes a few minor issues in the jsm driver.
+The patches do not only address the coding style issues however none
+of them changes the logic.
 
-I would think it's better to keep them in the per-board file out of
-principle though.
-	
-	Arnd
+These patches are against the current tty-next.
+
+Konrad Zapalowicz (5):
+  serial: jsm: Remove unnecessary parameter from clear_break()
+  serial: jsm: Remove unnecessary if statement
+  serial: jsm: Fix the alignment of the switch satement
+  serial: jsm: Replace magic value with the proper define
+  serial: jsm: Fix unnecessary space before function ptr arguments
+
+ drivers/tty/serial/jsm/jsm.h     | 30 +++++++++++++++---------------
+ drivers/tty/serial/jsm/jsm_cls.c |  5 +----
+ drivers/tty/serial/jsm/jsm_neo.c | 31 ++++++++++++++-----------------
+ drivers/tty/serial/jsm/jsm_tty.c |  2 +-
+ 4 files changed, 31 insertions(+), 37 deletions(-)
+
+-- 
+1.9.1
+
