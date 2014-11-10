@@ -1,69 +1,88 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/2] tty: serial: bcm63xx: Allow device nodes to be
- renamed to /dev/ttyBCM*
-Date: Mon, 10 Nov 2014 13:22:47 -0600
-Message-ID: <CAL_JsqLYoUKr71Q-hfLQhXOVL72Gy7PkO-Zd4rBc0Fn-prOqTw@mail.gmail.com>
-References: <1415523348-4631-1-git-send-email-cernekee@gmail.com>
- <1415523348-4631-2-git-send-email-cernekee@gmail.com> <CAL_JsqLXznpCo3YjN+XqF6cDG38C6dKzO9DHJmzi6=sNnAU=hQ@mail.gmail.com>
- <CAJiQ=7DUV0isdRooz6112Ncx07+9RE5DS5tMBwxr47hTWA8PAw@mail.gmail.com>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH] tty: serial: msm_serial: Use DT aliases
+Date: Mon, 10 Nov 2014 11:42:03 -0800
+Message-ID: <5461150B.2010907@codeaurora.org>
+References: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org> <CAMAWPa_f1K1qUG_UTmM0w8Sz8wed7+CQkK9tc8t1W=CTJvdjyw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <CAJiQ=7DUV0isdRooz6112Ncx07+9RE5DS5tMBwxr47hTWA8PAw@mail.gmail.com>
-Sender: stable-owner@vger.kernel.org
-To: Kevin Cernekee <cernekee@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux-MIPS <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, stable@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from smtp.codeaurora.org ([198.145.11.231]:35269 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751385AbaKJTmG (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 10 Nov 2014 14:42:06 -0500
+In-Reply-To: <CAMAWPa_f1K1qUG_UTmM0w8Sz8wed7+CQkK9tc8t1W=CTJvdjyw@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kevin Hilman <khilman@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, lkml <linux-kernel@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>, Tyler Baker <tyler.baker@linaro.org>, Frank Rowand <frowand.list@gmail.com>
 
-On Mon, Nov 10, 2014 at 9:05 AM, Kevin Cernekee <cernekee@gmail.com> wrote:
-> On Mon, Nov 10, 2014 at 6:25 AM, Rob Herring <robh@kernel.org> wrote:
->> On Sun, Nov 9, 2014 at 2:55 AM, Kevin Cernekee <cernekee@gmail.com> wrote:
->>> By default, bcm63xx_uart.c uses the standard 8250 device naming and
->>> major/minor numbers.  There are at least two situations where this could
->>> be a problem:
->>>
->>> 1) Multiplatform kernels that need to support some chips that have 8250
->>> UARTs and other chips that have bcm63xx UARTs.
->>>
->>> 2) Some older chips like BCM7125 have a mix of both UART types.
->>>
->>> Add a new Kconfig option to tell the driver whether to register itself
->>> as ttyS or ttyBCM.  By default it will retain the existing "ttyS"
->>> behavior to avoid surprises.
+On 11/10/2014 10:54 AM, Kevin Hilman wrote:
+> On Wed, Oct 22, 2014 at 5:33 PM, Stephen Boyd <sboyd@codeaurora.org> wrote:
+>> We rely on probe order of this driver to determine the line number for
+>> the uart port. This makes it impossible to know the line number
+>> when these devices are populated via DT. Use the DT alias
+>> mechanism to assign the line based on the aliases node.
 >>
->> While I understand the desire to have stable names, this is the
->> opposite direction we want to go. Per platform tty names complicates
->> having a generic userspace. It is not so bad since most ARM platforms
->> use ttyS or ttyAMA, but just think what the kernel and userspace side
->> would look like if every single platform did this. We can't change
->> everything to ttyS because the other names are already an ABI.
->>
->> This can be solved with a udev rule to create sym links.
+>> Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+> FYI... this patch hit linux-next and caused multiple boot failures on
+> qcom platforms[1] as of next-20141110.  I'm assuming this is because
+> the corresponding DTS changes have not hit linux-next yet.
 >
-> Is it safe to register two console drivers named "ttyS" with the same
-> major/minor numbers?  Maybe there is a trick to making them coexist?
+> Kevin
+>
+> [1] http://status.armcloud.us/boot/?qcom
 
-No, but I think you can do dynamic minor numbers. I seem to recall
-this coming up with the Samsung UARTs a while back.
+Hmm the intention was to make it optional so that dts changes aren't
+necessary unless you want deterministic numbering. I screwed that up
+badly :/ Thanks for finding this.
 
-Rob
+Greg, can you also apply this patch or squash it into the bad one?
 
-> What I found is that everything worked fine on a system with
-> bcm63xx_uart hardware until I enabled the 8250 driver in .config.  At
-> that point the drivers clashed and I had no serial output
-> post-bootconsole.  It didn't even get to userland before it failed.
-> There are no DT entries mentioning 8250; the mere presence of the 8250
-> driver killed my console.
->
-> If this behavior is unexpected I can keep digging to find out what went wrong.
->
->> Or if you
->> just need to know which dev node is h/w uart X, you can get that from
->> sysfs.
->
-> Right - I use busybox cttyhack in the init scripts to figure out the
-> console name, so the same rootfs image can be used for both ttyS0 and
-> ttyBCM0:
->
-> # Put a shell on the serial port
-> ::respawn:/bin/cttyhack /bin/sh -l
+----8<-----
+
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: [PATCH] tty: serial: msm_serial: Don't required DT aliases
+
+If there isn't a DT alias then of_alias_get_id() will return
+-ENODEV. This will cause the msm_serial driver to fail probe,
+when we want to keep the previous behavior where we generated a
+dynamic line number at probe time. Restore this behavior by
+generating a dynamic id if the line number is still negative
+after checking for an alias or (in the non-DT case) looking at the
+.id field of the platform device.
+
+Reported-by: Kevin Hilman <khilman@kernel.org>
+Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+---
+ drivers/tty/serial/msm_serial.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 09364dd8cf3a..d1bc6b6cbc70 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1046,14 +1046,14 @@ static int msm_serial_probe(struct platform_device *pdev)
+ 	const struct of_device_id *id;
+ 	int irq, line;
+ 
+-	if (pdev->id == -1)
+-		pdev->id = atomic_inc_return(&msm_uart_next_id) - 1;
+-
+ 	if (pdev->dev.of_node)
+ 		line = of_alias_get_id(pdev->dev.of_node, "serial");
+ 	else
+ 		line = pdev->id;
+ 
++	if (line < 0)
++		line = atomic_inc_return(&msm_uart_next_id) - 1;
++
+ 	if (unlikely(line < 0 || line >= UART_NR))
+ 		return -ENXIO;
+ 
+
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
