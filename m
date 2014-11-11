@@ -1,61 +1,74 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/2] tty: serial: bcm63xx: Allow device nodes to be
- renamed to /dev/ttyBCM*
-Date: Tue, 11 Nov 2014 11:35:23 -0600
-Message-ID: <CAL_JsqKE=p_d53A7n4QZpQc_z0tbAp0bhZGerjsUt2BSSvGgtw@mail.gmail.com>
-References: <1415523348-4631-1-git-send-email-cernekee@gmail.com>
- <1415523348-4631-2-git-send-email-cernekee@gmail.com> <CAL_JsqLXznpCo3YjN+XqF6cDG38C6dKzO9DHJmzi6=sNnAU=hQ@mail.gmail.com>
- <CAJiQ=7DUV0isdRooz6112Ncx07+9RE5DS5tMBwxr47hTWA8PAw@mail.gmail.com>
- <CAL_JsqLYoUKr71Q-hfLQhXOVL72Gy7PkO-Zd4rBc0Fn-prOqTw@mail.gmail.com> <CAJiQ=7C5ki+9opnH68Kw9a573PmO=ANeiVutmVROUP2Typn2qw@mail.gmail.com>
+From: Helge Deller <deller@gmx.de>
+Subject: serial console problem with kernel 3.18.0-rc4
+Date: Tue, 11 Nov 2014 20:13:17 +0100
+Message-ID: <54625FCD.3070008@gmx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-la0-f46.google.com ([209.85.215.46]:41388 "EHLO
-	mail-la0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750859AbaKKRfq (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Nov 2014 12:35:46 -0500
-In-Reply-To: <CAJiQ=7C5ki+9opnH68Kw9a573PmO=ANeiVutmVROUP2Typn2qw@mail.gmail.com>
+Received: from mout.gmx.net ([212.227.15.19]:60443 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751567AbaKKTNU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Tue, 11 Nov 2014 14:13:20 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Cernekee <cernekee@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux-MIPS <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, stable@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-parisc <linux-parisc@vger.kernel.org>
 
-On Mon, Nov 10, 2014 at 1:50 PM, Kevin Cernekee <cernekee@gmail.com> wrote:
-> On Mon, Nov 10, 2014 at 11:22 AM, Rob Herring <robh@kernel.org> wrote:
->>>> This can be solved with a udev rule to create sym links.
->>>
->>> Is it safe to register two console drivers named "ttyS" with the same
->>> major/minor numbers?  Maybe there is a trick to making them coexist?
->>
->> No, but I think you can do dynamic minor numbers. I seem to recall
->> this coming up with the Samsung UARTs a while back.
->
-> The other variations I've seen in the tree are:
->
-> nwpserial: ttySQ, major 4 minor 68 (not 64)
->
-> sunhv, sunsab, sunsu, sunzilog: set uart_driver->major to 4 but let
-> uart_driver->minor default to 0
->
-> SERIAL_ATMEL_TTYAT: compile-time selectable between ttySn (4/64) and
-> ttyATn (204/154).  txx9 does something similar using
-> SERIAL_TXX9_STDSERIAL.
->
-> A whole bunch of other SoC serial drivers use major 204 and a custom
-> name like "ttyAL".  Some of these show up in
-> Documentation/devices.txt; others don't.  ~3 drivers use 204/64 from
-> the middle of the Altix assigned range.
->
-> What is the current best practice for new drivers?
+While testing kernel 3.18-rc4 I'm facing a problem with serial console.
 
-I think it would be using dynamic numbering, but would be good to have
-others weigh in here. It looks like a dynamic major would solve your
-problem. See tty_register_driver. Also, there was a patch to make this
-the fallback behavior instead of an error[1], but it was never merged
-(and it's not clear why). This was the Samsung related change I was
-remembering.
+I'm seeing at bootup this message:
+[   17.724000] console [ttyS0] disabled
+after that it's just hanging.
 
-Rob
+It seems as if ttyS0 is somehow being reprogrammed which then disturbs the
+serial ports on the receiver side (in my case a HP PCI Diva Serial [GSP] Multiport UART).
+Any idea what changed between 3.17 and 3.18 which have caused this behavior ?
+Full log below.
 
-[1] http://lists.linaro.org/pipermail/linaro-kernel/2014-January/010383.html
+Helge
+
+serial driver: drivers/tty/serial/8250/8250_pci.c
+
+PCI info:
+00:04.1 Serial controller: Hewlett-Packard Company Diva Serial [GSP] Multiport UART (rev 03) (prog-if 02 [16550])
+         Subsystem: Hewlett-Packard Company Device 1283
+         Flags: medium devsel, IRQ 70
+         Memory at ffffffff80000000 (32-bit, non-prefetchable) [size=4K]
+         I/O ports at 0040 [size=64]
+         Capabilities: [48] Power Management version 2
+         Kernel driver in use: serial
+
+
+dmesg after bootup:
+
+[   17.708000] Serial: 8250/16550 driver, 8 ports, IRQ sharing enabled
+[   17.724000] serial 0000:00:04.1: enabling device (0142 -> 0143)
+[   17.724000] console [ttyS0] disabled
+[   17.880000] serial 0000:00:04.1: ttyS0 at MMIO 0xffffffff80000000 (irq = 70, base_baud = 115200) is a 16550A
+[   17.996000] console [ttyS0] enabled
+[   38.888000] INFO: rcu_sched detected stalls on CPUs/tasks: { 3} (detected by 1, t=5252 jiffies, g=-290, c=-291, q=2)
+[   38.888000] Task dump for CPU 3:
+[   38.888000] swapper/0       R  running task        0     1      0 0x00000004
+[   38.888000] Backtrace:
+[   38.888000]  [<0000000040200848>] vprintk_emit+0x570/0x5f8
+[   38.888000]  [<0000000040200bdc>] printk+0x64/0x78
+[   38.888000]  [<0000000040201fc0>] register_console+0x438/0x550
+[   38.888000]  [<0000000040688bb8>] uart_add_one_port+0x400/0x5d0
+[   38.888000]  [<000000004068e6d4>] serial8250_register_8250_port+0x3e4/0x448
+[   38.888000]  [<0000000040695f44>] pciserial_init_ports+0x22c/0x2c8
+[   38.888000]  [<0000000040696628>] pciserial_init_one+0x250/0x2e0
+[   38.888000]  [<00000000405f3880>] pci_device_probe+0xb0/0x150
+[   38.888000]  [<00000000406a8244>] driver_probe_device+0x204/0x570
+[   38.888000]  [<00000000406a8728>] __driver_attach+0xe0/0x158
+[   38.888000]  [<00000000406a4558>] bus_for_each_dev+0xd0/0x128
+[   38.888000]  [<00000000406a76f8>] driver_attach+0x48/0x60
+[   38.888000]  [<00000000406a6de8>] bus_add_driver+0x268/0x460
+[   38.888000]  [<00000000406a915c>] driver_register+0x124/0x1d0
+[   38.888000]  [<00000000405f336c>] __pci_register_driver+0x64/0x78
+[   38.888000]  [<00000000401375e4>] serial_pci_driver_init+0x44/0x58
+
+[   59.084000] timer_interrupt(CPU 3): delayed! cycles 85EBC4C7D rem 2BAF83  next/now 2765C08677/276594D6F4
+[   59.140000] bootconsole [ttyB0] disabled
+[   59.144000] serial 0000:00:04.1: ttyS1 at MMIO 0xffffffff80000008 (irq = 70, base_baud = 115200) is a 16450
+[   59.164000] serial 0000:00:04.1: ttyS2 at MMIO 0xffffffff80000010 (irq = 70, base_baud = 115200) is a 16550A
