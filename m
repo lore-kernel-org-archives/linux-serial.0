@@ -1,60 +1,70 @@
-From: Jingchang Lu <jingchang.lu@freescale.com>
-Subject: RE: [RESENDv5] serial: of-serial: fix up PM ops on no_console_suspend
+From: Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [RESENDv5] serial: of-serial: fix up PM ops on no_console_suspend
  and port type
-Date: Tue, 11 Nov 2014 05:41:10 +0000
-Message-ID: <bc2787a32b4d41a79acf582433831510@BN3PR0301MB1236.namprd03.prod.outlook.com>
+Date: Mon, 10 Nov 2014 22:15:23 -0800
+Message-ID: <CAGVrzcb__HxFe3z9oM9WS7_ZnvCMkAsNt+FU6N4m-9Som-LJAw@mail.gmail.com>
 References: <1414401857-21121-1-git-send-email-jingchang.lu@freescale.com>
  <CAGVrzcamoYbdPijWtrU=ge+UE+g9zBHAG84PJB7G3EyA09jBWg@mail.gmail.com>
- <20141111052720.GC24727@kroah.com>
+ <20141111052720.GC24727@kroah.com> <bc2787a32b4d41a79acf582433831510@BN3PR0301MB1236.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bl2on0134.outbound.protection.outlook.com ([65.55.169.134]:4640
-	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751421AbaKKFlN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Tue, 11 Nov 2014 00:41:13 -0500
-In-Reply-To: <20141111052720.GC24727@kroah.com>
-Content-Language: en-US
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <bc2787a32b4d41a79acf582433831510@BN3PR0301MB1236.namprd03.prod.outlook.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jingchang Lu <jingchang.lu@freescale.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, Florian Fainelli <f.fainelli@gmail.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEdyZWcgS0ggW21haWx0bzpn
-cmVna2hAbGludXhmb3VuZGF0aW9uLm9yZ10NCj5TZW50OiBUdWVzZGF5LCBOb3ZlbWJlciAxMSwg
-MjAxNCAxOjI3IFBNDQo+VG86IEZsb3JpYW4gRmFpbmVsbGkNCj5DYzogTHUgSmluZ2NoYW5nLUIz
-NTA4MzsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC0NCj5rZXJu
-ZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnDQo+U3ViamVj
-dDogUmU6IFtSRVNFTkR2NV0gc2VyaWFsOiBvZi1zZXJpYWw6IGZpeCB1cCBQTSBvcHMgb24NCj5u
-b19jb25zb2xlX3N1c3BlbmQgYW5kIHBvcnQgdHlwZQ0KPg0KPk9uIE1vbiwgTm92IDEwLCAyMDE0
-IGF0IDA4OjMwOjM2UE0gLTA4MDAsIEZsb3JpYW4gRmFpbmVsbGkgd3JvdGU6DQo+PiAyMDE0LTEw
-LTI3IDI6MjQgR01ULTA3OjAwIEppbmdjaGFuZyBMdSA8amluZ2NoYW5nLmx1QGZyZWVzY2FsZS5j
-b20+Og0KPj4gPiBUaGlzIHBhdGNoIGZpeGVzIGNvbW1pdCAyZGVhNTNiZjU3NzgzZjI0M2M4OTJl
-OTljMTBjNjkyMWU5NTZhYTdlLA0KPj4gPiAic2VyaWFsOiBvZi1zZXJpYWw6IGFkZCBQTSBzdXNw
-ZW5kL3Jlc3VtZSBzdXBwb3J0Iiwgd2hpY2ggZGlzYWJsZXMNCj4+ID4gdGhlIHVhcnQgY2xvY2sg
-b24gc3VzcGVuZCwgYnV0IGFsc28gY2F1c2VzIGEgaGFyZHdhcmUgaGFuZyBvbg0KPj4gPiByZWdp
-c3RlciBhY2Nlc3MgaWYgbm9fY29uc29sZV9zdXNwZW5kIGNvbW1hbmQgbGluZSBvcHRpb24gaXMg
-dXNlZC4NCj4+ID4NCj4+ID4gQWxzbywgbm90IGV2ZXJ5IG9mX3NlcmlhbCBkZXZpY2UgaXMgYW4g
-ODI1MCBwb3J0LCBzbyB0aGUgc2VyaWFsODI1MA0KPj4gPiBzdXNwZW5kL3Jlc3VtZSBmdW5jdGlv
-bnMgc2hvdWxkIG9ubHkgYmUgYXBwbGllZCB0byBhIHJlYWwgODI1MCBwb3J0Lg0KPj4NCj4+IEdy
-ZWcsIGNhbiB5b3UgcGljayB0aGlzIG9uZSBhbmQgc3VibWl0IGl0IGZvciB5b3VyIG5leHQgMy4x
-OC1yYw0KPj4gc3VibWlzc2lvbj8gVGhpcyBmaXhlcyBhIHJlZ3Jlc3Npb24gd2hlbiB1c2luZyAi
-bm9fY29uc29sZV9zdXNwZW5kIg0KPj4gaW50cm9kdWNlZCBieToNCj4+DQo+PiAyZGVhNTNiZjU3
-NzgzZjI0M2M4OTJlOTljMTBjNjkyMWU5NTZhYTdlICgic2VyaWFsOiBvZi1zZXJpYWw6IGFkZCBQ
-TQ0KPj4gc3VzcGVuZC9yZXN1bWUgc3VwcG9ydCIpIHdoaWNoIGhhcyBiZWVuIG1lcmdlZCBkdXJp
-bmcgMy4xOC1yYzENCj4NCj5XaHkgY2FuJ3QgSSBqdXN0IHJldmVydCB0aGF0IHBhdGNoIGluc3Rl
-YWQ/ICBUaGlzIGlzIHJlYWxseSBsYXRlIGluIHRoZSAtDQo+cmMgY3ljbGUgdG8gYmUgZG9pbmcg
-bGFyZ2UgZml4ZXMgbGlrZSB0aGlzLg0KPg0KPkFuZCB0aGlzIHBhdGNoIGlzIGFscmVhZHkgcXVl
-dWVkIHVwIGZvciAzLjE5LXJjMSwgc28gdGhpcyBpcyBhIG1lc3MuLi4NCj4NCj5Bbnkgb2JqZWN0
-aW9uIHRvIG1lIGp1c3QgcmV2ZXJ0aW5nDQo+MmRlYTUzYmY1Nzc4M2YyNDNjODkyZTk5YzEwYzY5
-MjFlOTU2YWE3ZSwgYW5kIHRoZW4gdGhpcyBvbmUgaW4gbXkgdHR5LW5leHQNCj5icmFuY2ggYXMg
-d2VsbCwgYW5kIHRoZW4gc29tZW9uZSByZXNlbmRpbmcgdGhlIG9yaWdpbmFsIHBhdGNoIGluIGEg
-Zm9ybWF0DQo+dGhhdCBhY3R1YWxseSB3b3Jrcz8NCkRvIHlvdSBtZWFuIHJlc2VuZGluZyB0aGUg
-InNlcmlhbDogb2Ytc2VyaWFsOiBhZGQgUE0gc3VzcGVuZC9yZXN1bWUgc3VwcG9ydCINCnBhdGNo
-IHdpdGggInNlcmlhbDogb2Ytc2VyaWFsOiBmaXggdXAgUE0gb3BzIG9uIG5vX2NvbnNvbGVfc3Vz
-cGVuZCBhbmQgcG9ydCB0eXBlIg0KbWVyZ2VkIHRvZ2V0aGVyPyBGb3IgeW91IHdvdWxkIGxpa2Ug
-dG8gcmV2ZXJ0aW5nIHRoZSBwcmV2aW91cyBwYXRjaCBvZg0KIjJkZWE1M2JmNTc3ODNmMjQzYzg5
-MmU5OWMxMGM2OTIxZTk1NmFhN2UiLg0KDQpUaGFua3MgYW5kIEJlc3QgUmVnYXJkcywNCkppbmdj
-aGFuZw0KPg0KPnRoYW5rcywNCj4NCj5ncmVnIGstaA0K
+2014-11-10 21:41 GMT-08:00 Jingchang Lu <jingchang.lu@freescale.com>:
+>
+>
+>>-----Original Message-----
+>>From: Greg KH [mailto:gregkh@linuxfoundation.org]
+>>Sent: Tuesday, November 11, 2014 1:27 PM
+>>To: Florian Fainelli
+>>Cc: Lu Jingchang-B35083; linux-arm-kernel@lists.infradead.org; linux-
+>>kernel@vger.kernel.org; linux-serial@vger.kernel.org
+>>Subject: Re: [RESENDv5] serial: of-serial: fix up PM ops on
+>>no_console_suspend and port type
+>>
+>>On Mon, Nov 10, 2014 at 08:30:36PM -0800, Florian Fainelli wrote:
+>>> 2014-10-27 2:24 GMT-07:00 Jingchang Lu <jingchang.lu@freescale.com>:
+>>> > This patch fixes commit 2dea53bf57783f243c892e99c10c6921e956aa7e,
+>>> > "serial: of-serial: add PM suspend/resume support", which disables
+>>> > the uart clock on suspend, but also causes a hardware hang on
+>>> > register access if no_console_suspend command line option is used.
+>>> >
+>>> > Also, not every of_serial device is an 8250 port, so the serial8250
+>>> > suspend/resume functions should only be applied to a real 8250 port.
+>>>
+>>> Greg, can you pick this one and submit it for your next 3.18-rc
+>>> submission? This fixes a regression when using "no_console_suspend"
+>>> introduced by:
+>>>
+>>> 2dea53bf57783f243c892e99c10c6921e956aa7e ("serial: of-serial: add PM
+>>> suspend/resume support") which has been merged during 3.18-rc1
+>>
+>>Why can't I just revert that patch instead?  This is really late in the -
+>>rc cycle to be doing large fixes like this.
+>>
+>>And this patch is already queued up for 3.19-rc1, so this is a mess...
+>>
+>>Any objection to me just reverting
+>>2dea53bf57783f243c892e99c10c6921e956aa7e, and then this one in my tty-next
+>>branch as well, and then someone resending the original patch in a format
+>>that actually works?
+> Do you mean resending the "serial: of-serial: add PM suspend/resume support"
+> patch with "serial: of-serial: fix up PM ops on no_console_suspend and port type"
+> merged together? For you would like to reverting the previous patch of
+> "2dea53bf57783f243c892e99c10c6921e956aa7e".
+
+That is how I understand Greg's suggestion. While you are at it you
+might want to introduce a space between the 'switch' keyword and the
+open-parenthesis in the two call sites that you added. Feel free to
+add my:
+
+Tested-by: Florina Fainelli <f.fainelli@gmail.com>
+
+since I use your v5 patch locally, thanks!
+--
+Florian
