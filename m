@@ -1,41 +1,67 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH/RFC 3/8] of: Add helper function to check MMIO register
- endianness
-Date: Wed, 12 Nov 2014 10:23:36 +0100
-Message-ID: <54632718.9030603@suse.cz>
-References: <1415781993-7755-1-git-send-email-cernekee@gmail.com> <1415781993-7755-4-git-send-email-cernekee@gmail.com> <54631F64.8080009@suse.cz> <CAJiQ=7ADy1U60R-o1soMyqYWXqw2OqQg7vfB9L5pzeac+Yv=SA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 1/2] tty: serial: 8250: omap: line is unsigned, don't check < 0
+Date: Wed, 12 Nov 2014 10:28:33 +0100
+Message-ID: <1415784514-26649-1-git-send-email-bigeasy@linutronix.de>
+References: <20141112084807.GB13955@mwanda>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f42.google.com ([74.125.82.42]:38311 "EHLO
-	mail-wg0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752373AbaKLJXk (ORCPT
+Received: from www.linutronix.de ([62.245.132.108]:40550 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752525AbaKLJ2q (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 04:23:40 -0500
-In-Reply-To: <CAJiQ=7ADy1U60R-o1soMyqYWXqw2OqQg7vfB9L5pzeac+Yv=SA@mail.gmail.com>
+	Wed, 12 Nov 2014 04:28:46 -0500
+In-Reply-To: <20141112084807.GB13955@mwanda>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Cernekee <cernekee@gmail.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Rob Herring <robh@kernel.org>, tushar.behera@linaro.org, daniel@zonque.org, haojian.zhuang@gmail.com, robert.jarzmik@free.fr, Grant Likely <grant.likely@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+To: linux-serial@vger.kernel.org
+Cc: dan.carpenter@oracle.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-On 11/12/2014, 10:04 AM, Kevin Cernekee wrote:
->> This should actually return bool and use true/false.
-> 
-> Well, the other APIs currently return an int:
-> 
-> extern int of_device_is_compatible(const struct device_node *device,
->                                    const char *);
-> extern int of_device_is_available(const struct device_node *device);
-> [...]
-> extern int of_machine_is_compatible(const char *compat);
-> 
-> Do you think it is best to change all of them at once, or just the
-> newly introduced function?
+Dan Carpenter reported:
+|drivers/tty/serial/8250/8250_omap.c:1025 omap8250_probe()
+|warn: unsigned 'up.port.line' is never less than zero.
+|1025          if (up.port.line < 0) {
 
-Possibly fix all these in a separate patch and then add the new one
-fixed :).
+I (wrongly) assumed that line is an int and compiler didn't complain nor
+did sparse. Since of_alias_get_id() and pdev->id can get negative I
+check for the error via ret variable.
 
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_omap.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 1681875f2996..907100eb8030 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1014,19 +1014,20 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	up.port.unthrottle = omap_8250_unthrottle;
+ 
+ 	if (pdev->dev.of_node) {
+-		up.port.line = of_alias_get_id(pdev->dev.of_node, "serial");
++		ret = of_alias_get_id(pdev->dev.of_node, "serial");
++
+ 		of_property_read_u32(pdev->dev.of_node, "clock-frequency",
+ 				     &up.port.uartclk);
+ 		priv->wakeirq = irq_of_parse_and_map(pdev->dev.of_node, 1);
+ 	} else {
+-		up.port.line = pdev->id;
++		ret = pdev->id;
+ 	}
+-
+-	if (up.port.line < 0) {
+-		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n",
+-			up.port.line);
+-		return -ENODEV;
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed to get alias/pdev id\n");
++		return ret;
+ 	}
++	up.port.line = ret;
++
+ 	if (!up.port.uartclk) {
+ 		up.port.uartclk = DEFAULT_CLK_SPEED;
+ 		dev_warn(&pdev->dev,
 -- 
-js
-suse labs
+2.1.3
+
