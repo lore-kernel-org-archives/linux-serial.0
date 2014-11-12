@@ -1,50 +1,63 @@
-From: Chunhe Lan <Chunhe.Lan@freescale.com>
-Subject: [PATCH] serial: 8250: Fix a compiler warning
-Date: Wed, 12 Nov 2014 17:49:01 +0800
-Message-ID: <1415785741-13009-1-git-send-email-Chunhe.Lan@freescale.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 1/1] tty: bfin, define inlined structures
+Date: Wed, 12 Nov 2014 11:55:25 +0100
+Message-ID: <1415789725-857-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-bn1bn0108.outbound.protection.outlook.com ([157.56.110.108]:61569
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752076AbaKLJne (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 04:43:34 -0500
+Received: from ip4-83-240-67-251.cust.nbox.cz ([83.240.67.251]:43235 "EHLO
+	ip4-83-240-18-248.cust.nbox.cz" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751564AbaKLKz3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 12 Nov 2014 05:55:29 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Chunhe Lan <Chunhe.Lan@freescale.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 
-Spotted by a compile warning:
+struct bfin_serial_port contains structs circ_buf, timer_list, and
+work_struct directly (not pointers). This means that these structures
+have to be defined completely to be inlined in struct
+bfin_serial_port.
 
-drivers/tty/serial/8250/8250_core.c: In function
-  'serial8250_shutdown':
-drivers/tty/serial/8250/8250_core.c:1747:18: warning:
-  'i' may be used uninitialized in this function [-Wuninitialized]
-drivers/tty/serial/8250/8250_core.c:1725:19: note:
-  'i' was declared here
+So instead of struct declarations, define the structures by including
+proper headers. They were pulled in by linux/serial_core.h or others
+until now. But experimenting with circ_buf removal from serial_core,
+struct circ_buf becomes undefined in bfin_serial:
 
-Just because it annoys user.
+In file included from arch/blackfin/kernel/debug-mmrs.c:21:0:
+arch/blackfin/include/asm/bfin_serial.h:44:18: error: field 'rx_dma_buf' has incomplete type
 
-Signed-off-by: Chunhe Lan <Chunhe.Lan@freescale.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/8250/8250_core.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ arch/blackfin/include/asm/bfin_serial.h | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 312a83f..894a357 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1722,7 +1722,7 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+diff --git a/arch/blackfin/include/asm/bfin_serial.h b/arch/blackfin/include/asm/bfin_serial.h
+index 2d90d62edc97..d00d732784b1 100644
+--- a/arch/blackfin/include/asm/bfin_serial.h
++++ b/arch/blackfin/include/asm/bfin_serial.h
+@@ -9,8 +9,11 @@
+ #ifndef __BFIN_ASM_SERIAL_H__
+ #define __BFIN_ASM_SERIAL_H__
  
- static void serial_unlink_irq_chain(struct uart_8250_port *up)
- {
--	struct irq_info *i;
-+	struct irq_info *i = NULL;
- 	struct hlist_node *n;
- 	struct hlist_head *h;
++#include <linux/circ_buf.h>
+ #include <linux/serial_core.h>
+ #include <linux/spinlock.h>
++#include <linux/timer.h>
++#include <linux/workqueue.h>
+ #include <mach/anomaly.h>
+ #include <mach/bfin_serial.h>
  
+@@ -25,10 +28,6 @@
+ # endif
+ #endif
+ 
+-struct circ_buf;
+-struct timer_list;
+-struct work_struct;
+-
+ struct bfin_serial_port {
+ 	struct uart_port port;
+ 	unsigned int old_status;
 -- 
-1.7.6.5
+2.1.3
 
