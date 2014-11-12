@@ -1,48 +1,41 @@
-From: Kevin Cernekee <cernekee@gmail.com>
-Subject: Re: [PATCH/RFC 5/8] serial: pxa: Make the driver buildable for
- BCM7xxx set-top platforms
-Date: Wed, 12 Nov 2014 01:19:24 -0800
-Message-ID: <CAJiQ=7AFr5vR+FEc8B3CAZLb5GYujNxtaz7TU2FU0D3oModZ7w@mail.gmail.com>
-References: <1415781993-7755-1-git-send-email-cernekee@gmail.com>
- <1415781993-7755-6-git-send-email-cernekee@gmail.com> <3356477.HitZEsNa4H@wuerfel>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH/RFC 3/8] of: Add helper function to check MMIO register
+ endianness
+Date: Wed, 12 Nov 2014 10:23:36 +0100
+Message-ID: <54632718.9030603@suse.cz>
+References: <1415781993-7755-1-git-send-email-cernekee@gmail.com> <1415781993-7755-4-git-send-email-cernekee@gmail.com> <54631F64.8080009@suse.cz> <CAJiQ=7ADy1U60R-o1soMyqYWXqw2OqQg7vfB9L5pzeac+Yv=SA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f178.google.com ([209.85.216.178]:45880 "EHLO
-	mail-qc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752298AbaKLJTq (ORCPT
+Received: from mail-wg0-f42.google.com ([74.125.82.42]:38311 "EHLO
+	mail-wg0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752373AbaKLJXk (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 04:19:46 -0500
-In-Reply-To: <3356477.HitZEsNa4H@wuerfel>
+	Wed, 12 Nov 2014 04:23:40 -0500
+In-Reply-To: <CAJiQ=7ADy1U60R-o1soMyqYWXqw2OqQg7vfB9L5pzeac+Yv=SA@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, tushar.behera@linaro.org, daniel@zonque.org, Haojian Zhuang <haojian.zhuang@gmail.com>, robert.jarzmik@free.fr, Grant Likely <grant.likely@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+To: Kevin Cernekee <cernekee@gmail.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Rob Herring <robh@kernel.org>, tushar.behera@linaro.org, daniel@zonque.org, haojian.zhuang@gmail.com, robert.jarzmik@free.fr, Grant Likely <grant.likely@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-On Wed, Nov 12, 2014 at 1:04 AM, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Wednesday 12 November 2014 00:46:30 Kevin Cernekee wrote:
->> Remove the platform dependency in Kconfig and add an appropriate
->> compatible string.  Note that BCM7401 has one 16550A-compatible UART
->> in the UPG uart_clk domain, and two proprietary UARTs in the 27 MHz
->> clock domain.  This driver handles the former one.
->>
->> Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
->
-> Can you explain why you are using the PXA serial driver instead of the
-> 8250 driver, if this is 16550A compatible? I don't know the history
-> why PXA is using a separate driver.
+On 11/12/2014, 10:04 AM, Kevin Cernekee wrote:
+>> This should actually return bool and use true/false.
+> 
+> Well, the other APIs currently return an int:
+> 
+> extern int of_device_is_compatible(const struct device_node *device,
+>                                    const char *);
+> extern int of_device_is_available(const struct device_node *device);
+> [...]
+> extern int of_machine_is_compatible(const char *compat);
+> 
+> Do you think it is best to change all of them at once, or just the
+> newly introduced function?
 
-I wasn't able to get serial8250 to work in any situation where another
-driver tried to claim "ttyS"/4/64.
+Possibly fix all these in a separate patch and then add the new one
+fixed :).
 
-serial8250 calls uart_add_one_port() in its module_init function, even
-if the system doesn't have any ports.  Setting nr_uarts
-(CONFIG_SERIAL_8250_RUNTIME_UARTS) to 0 doesn't help because
-serial8250_find_match_or_unused() will just return NULL.
-
-I guess I could try to rework that logic but several cases would need
-to be retested, going back to PCs with ISA buses and PCI add-in cards.
-And the differences may be visible to userspace.
-
-The PXA driver seemed like a much cleaner starting point, even if it
-was intended for a different SoC.
+-- 
+js
+suse labs
