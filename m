@@ -1,77 +1,56 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH/RFC 1/8] tty: Fallback to use dynamic major number
-Date: Wed, 12 Nov 2014 00:46:26 -0800
-Message-ID: <1415781993-7755-2-git-send-email-cernekee@gmail.com>
+Subject: [PATCH/RFC 5/8] serial: pxa: Make the driver buildable for BCM7xxx set-top platforms
+Date: Wed, 12 Nov 2014 00:46:30 -0800
+Message-ID: <1415781993-7755-6-git-send-email-cernekee@gmail.com>
 References: <1415781993-7755-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f169.google.com ([209.85.192.169]:51401 "EHLO
-	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752032AbaKLIrH (ORCPT
+Received: from mail-pd0-f171.google.com ([209.85.192.171]:33574 "EHLO
+	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752076AbaKLIrN (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 03:47:07 -0500
+	Wed, 12 Nov 2014 03:47:13 -0500
 In-Reply-To: <1415781993-7755-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org
 Cc: tushar.behera@linaro.org, daniel@zonque.org, haojian.zhuang@gmail.com, robert.jarzmik@free.fr, grant.likely@linaro.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-From: Tushar Behera <tushar.behera@linaro.org>
+Remove the platform dependency in Kconfig and add an appropriate
+compatible string.  Note that BCM7401 has one 16550A-compatible UART
+in the UPG uart_clk domain, and two proprietary UARTs in the 27 MHz
+clock domain.  This driver handles the former one.
 
-In a multi-platform scenario, the hard-coded major/minor numbers in
-serial drivers may conflict with each other. A typical scenario is
-observed with amba-pl011 and samsung-uart drivers, both of these
-drivers use same set of major/minor numbers. If both of these drivers
-are enabled, probe of samsung-uart driver fails because the desired
-node is busy.
-
-The issue is fixed by adding a fallback in driver core, so that we can
-use dynamic major number in case device node allocation fails for
-hard-coded major/minor number.
-
-Signed-off-by: Tushar Behera <tushar.behera@linaro.org>
-[cernekee: fix checkpatch warnings]
 Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
 ---
- drivers/tty/tty_io.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ drivers/tty/serial/Kconfig | 2 +-
+ drivers/tty/serial/pxa.c   | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 0508a1d..a6d4d9a 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -3365,6 +3365,22 @@ int tty_register_driver(struct tty_driver *driver)
- 	dev_t dev;
- 	struct device *d;
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index fdd851e..2015057 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -436,7 +436,7 @@ config SERIAL_MPSC_CONSOLE
  
-+	if (driver->major) {
-+		dev = MKDEV(driver->major, driver->minor_start);
-+		error = register_chrdev_region(dev, driver->num, driver->name);
-+		/* In case of error, fall back to dynamic allocation */
-+		if (error < 0) {
-+			pr_warn("Default device node (%d:%d) for %s is busy, using dynamic major number\n",
-+				driver->major, driver->minor_start,
-+				driver->name);
-+			driver->major = 0;
-+		}
-+	}
-+
-+	/*
-+	 * Don't replace the following check with an else to above if statement,
-+	 * as it may also be called as a fallback.
-+	 */
- 	if (!driver->major) {
- 		error = alloc_chrdev_region(&dev, driver->minor_start,
- 						driver->num, driver->name);
-@@ -3372,9 +3388,6 @@ int tty_register_driver(struct tty_driver *driver)
- 			driver->major = MAJOR(dev);
- 			driver->minor_start = MINOR(dev);
- 		}
--	} else {
--		dev = MKDEV(driver->major, driver->minor_start);
--		error = register_chrdev_region(dev, driver->num, driver->name);
- 	}
- 	if (error < 0)
- 		goto err;
+ config SERIAL_PXA
+ 	bool "PXA serial port support"
+-	depends on ARCH_PXA || ARCH_MMP
++	depends on ARM || MIPS
+ 	select SERIAL_CORE
+ 	help
+ 	  If you have a machine based on an Intel XScale PXA2xx CPU you
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index 78ed7ee..f6cc773 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -830,6 +830,7 @@ static const struct dev_pm_ops serial_pxa_pm_ops = {
+ static struct of_device_id serial_pxa_dt_ids[] = {
+ 	{ .compatible = "mrvl,pxa-uart", },
+ 	{ .compatible = "mrvl,mmp-uart", },
++	{ .compatible = "brcm,bcm7401-upg-uart", },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
 -- 
 2.1.1
 
