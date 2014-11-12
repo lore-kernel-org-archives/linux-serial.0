@@ -1,43 +1,84 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH/RFC 2/8] serial: core: Add big_endian flag
-Date: Wed, 12 Nov 2014 00:46:27 -0800
-Message-ID: <1415781993-7755-3-git-send-email-cernekee@gmail.com>
+Subject: [PATCH/RFC 8/8] serial: pxa: Add OF_EARLYCON support
+Date: Wed, 12 Nov 2014 00:46:33 -0800
+Message-ID: <1415781993-7755-9-git-send-email-cernekee@gmail.com>
 References: <1415781993-7755-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:38037 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752063AbaKLIrJ (ORCPT
+Received: from mail-pd0-f171.google.com ([209.85.192.171]:37907 "EHLO
+	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752139AbaKLIrT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 03:47:09 -0500
+	Wed, 12 Nov 2014 03:47:19 -0500
 In-Reply-To: <1415781993-7755-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org
 Cc: tushar.behera@linaro.org, daniel@zonque.org, haojian.zhuang@gmail.com, robert.jarzmik@free.fr, grant.likely@linaro.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-Add a big_endian flag alongside membase, regshift, and iotype.  Most
-drivers currently use readl/writel, but if it is necessary to support
-a BE SoC, the driver can check this field to see which MMIO accessor
-functions to use.
+Implement a bare bones earlycon; this assumes that the bootloader sets
+up the tty parameters.  Matches all three compatible strings.
 
 Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
 ---
- include/linux/serial_core.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/pxa.c | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 21c2e05..ae372f4 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -138,7 +138,7 @@ struct uart_port {
- 	unsigned char		x_char;			/* xon/xoff char */
- 	unsigned char		regshift;		/* reg offset shift */
- 	unsigned char		iotype;			/* io access style */
--	unsigned char		unused1;
-+	unsigned char		big_endian;		/* BE registers */
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index f6cc773..0764cf5 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -761,6 +761,51 @@ static struct console serial_pxa_console = {
+ 	.data		= &serial_pxa_reg,
+ };
  
- #define UPIO_PORT		(0)
- #define UPIO_HUB6		(1)
++static struct uart_pxa_port serial_pxa_early_port;
++
++static void __init early_wait_for_xmitr(struct uart_pxa_port *up)
++{
++	/* it's unsafe to call udelay() in the "early" variant */
++	while ((serial_in(up, UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
++		;
++}
++
++static void __init serial_pxa_early_putchar(struct uart_port *port, int ch)
++{
++	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
++
++	early_wait_for_xmitr(up);
++	serial_out(up, UART_TX, ch);
++}
++
++static void __init serial_pxa_early_write(struct console *con, const char *s,
++					  unsigned n)
++{
++	uart_console_write(&serial_pxa_early_port.port, s, n,
++			   serial_pxa_early_putchar);
++	early_wait_for_xmitr(&serial_pxa_early_port);
++}
++
++static int __init serial_pxa_early_console_setup(struct earlycon_device *device,
++						 const char *opt)
++{
++	if (!device->port.membase)
++		return -ENODEV;
++
++	serial_pxa_early_port.port.membase = device->port.membase;
++	serial_pxa_early_port.port.big_endian = device->port.big_endian;
++
++	device->con->write = serial_pxa_early_write;
++	return 0;
++}
++
++OF_EARLYCON_DECLARE(pxa_uart, "mrvl,pxa-uart",
++		    serial_pxa_early_console_setup);
++OF_EARLYCON_DECLARE(mmp_uart, "mrvl,mmp-uart",
++		    serial_pxa_early_console_setup);
++OF_EARLYCON_DECLARE(bcm7401_upg_uart, "brcm,bcm7401-upg-uart",
++		    serial_pxa_early_console_setup);
++
+ #define PXA_CONSOLE	&serial_pxa_console
+ #else
+ #define PXA_CONSOLE	NULL
 -- 
 2.1.1
 
