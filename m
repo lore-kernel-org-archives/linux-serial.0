@@ -1,52 +1,129 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH] serial: imx: Fix warning when building 'allmodconfig'
-Date: Wed, 12 Nov 2014 15:55:07 -0200
-Message-ID: <1415814907-9913-1-git-send-email-festevam@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qa0-f41.google.com ([209.85.216.41]:50012 "EHLO
-	mail-qa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752957AbaKLRzZ (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 12:55:25 -0500
-Received: by mail-qa0-f41.google.com with SMTP id s7so9066775qap.28
-        for <linux-serial@vger.kernel.org>; Wed, 12 Nov 2014 09:55:24 -0800 (PST)
-Sender: linux-serial-owner@vger.kernel.org
+From: Frank Rowand <frowand.list@gmail.com>
+Subject: Re: [PATCH] tty: serial: msm_serial: Use DT aliases
+Date: Wed, 12 Nov 2014 10:14:25 -0800
+Message-ID: <5463A381.9060305@gmail.com>
+References: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org> <CAMAWPa_f1K1qUG_UTmM0w8Sz8wed7+CQkK9tc8t1W=CTJvdjyw@mail.gmail.com> <5461150B.2010907@codeaurora.org> <54616CB3.5000405@gmail.com> <54616F74.5010408@codeaurora.org> <54618077.9000108@gmail.com>
+Reply-To: frowand.list@gmail.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <54618077.9000108@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Kevin Hilman <khilman@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, lkml <linux-kernel@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>, Tyler Baker <tyler.baker@linaro.org>
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
+On 11/10/2014 7:20 PM, Frank Rowand wrote:
+> On 11/10/2014 6:07 PM, Stephen Boyd wrote:
+>> On 11/10/2014 05:56 PM, Frank Rowand wrote:
+>>> On 11/10/2014 11:42 AM, Stephen Boyd wrote:
+>>>> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+>>>> index 09364dd8cf3a..d1bc6b6cbc70 100644
+>>>> --- a/drivers/tty/serial/msm_serial.c
+>>>> +++ b/drivers/tty/serial/msm_serial.c
+>>>> @@ -1046,14 +1046,14 @@ static int msm_serial_probe(struct platform_device *pdev)
+>>>>  	const struct of_device_id *id;
+>>>>  	int irq, line;
+>>>>  
+>>>> -	if (pdev->id == -1)
+>>>> -		pdev->id = atomic_inc_return(&msm_uart_next_id) - 1;
+>>>> -
+>>>>  	if (pdev->dev.of_node)
+>>>>  		line = of_alias_get_id(pdev->dev.of_node, "serial");
+>>>>  	else
+>>>>  		line = pdev->id;
+>>>>  
+>>>> +	if (line < 0)
+>>>> +		line = atomic_inc_return(&msm_uart_next_id) - 1;
+>>>> +
+>>>>  	if (unlikely(line < 0 || line >= UART_NR))
+>>> Then this original check for "line < 0" can also be removed.
+>>>
+>>>
+>>
+>> Well this matches what was there before. It would do atomic_inc_return
+>> if the line was negative and then still check for a negative value. I
+>> don't mind removing it though. Perhaps we should use an ida?:
+>>
+> 
+> OK, you are right.  If (pdev->id < -1) and (!pdev->dev.of_node) then
+> the check is still needed.
+> 
+> You could use an ida.  Some drivers use a bit map.  I really don't think
+> this should become a complicated algorithm though.  If the rule is that
+> either all UARTS have an alias, or no UART has an alias, then I think
+> the patch could be something like the following.
+> 
+> This combines your original patch, plus your fix patch, plus making
+> the aliases all or nothing.  Not tested, not even compiled.
+> 
+> What do you think?
 
-When CONFIG_SERIAL_IMX_CONSOLE=n and CONFIG_CONSOLE_POLL=y we get the following
-build warning:
+< snip - previous version of patch >
 
-drivers/tty/serial/imx.c:306:13: warning: 'imx_port_ucrs_save' defined but not used [-Wunused-function]
-drivers/tty/serial/imx.c:315:13: warning: 'imx_port_ucrs_restore' defined but not used [-Wunused-function]
+Previous version of the patch did not protect against no alias, followed
+by alias.
 
-imx_port_ucrs_save/restore are only used under CONFIG_SERIAL_IMX_CONSOLE, so 
-their definitions should be also be protected only by CONFIG_SERIAL_IMX_CONSOLE.
 
-This was detected when building 'allmodconfig'.
 
-Reported-by: Olof's autobuilder <build@lixom.net>
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+From: Frank Rowand <frank.rowand@sonymobile.com>
+
+This patch is intended to show roughly what an implementation of an all or
+nothing policy for using serialN aliases would look like.  It is intended
+simply to help determine whether this policy should be used.
+
+Combines Stephen's first patch, Stephen's fix patch (to make the serialN
+alias optional), plus makes use of the serialN alias all or nothing (either
+all ports have an alias or none do).
+
+This is not a correct implementation because the atomic_read(&msm_uart_next_id)
+does not protect against concurrency; instead a lock should be used.
+
+Not tested, not even compiled.
+
+Not-Signed-off-by: Frank Rowand <frank.rowand@sonymobile.com>
 ---
- drivers/tty/serial/imx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index bdafdd9..4c5e909 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -302,7 +302,7 @@ static inline int is_imx6q_uart(struct imx_port *sport)
- /*
-  * Save and restore functions for UCR1, UCR2 and UCR3 registers
-  */
--#if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_IMX_CONSOLE)
-+#if defined(CONFIG_SERIAL_IMX_CONSOLE)
- static void imx_port_ucrs_save(struct uart_port *port,
- 			       struct imx_port_ucrs *ucr)
- {
--- 
-1.9.1
-
+Index: linux/drivers/tty/serial/msm_serial.c
+===================================================================
+--- linux.orig/drivers/tty/serial/msm_serial.c
++++ linux/drivers/tty/serial/msm_serial.c
+@@ -1044,17 +1044,31 @@ static int msm_serial_probe(struct platf
+ 	struct resource *resource;
+ 	struct uart_port *port;
+ 	const struct of_device_id *id;
+-	int irq;
++	int irq, line;
++	static int no_prev_alias = 1;
+ 
+-	if (pdev->id == -1)
+-		pdev->id = atomic_inc_return(&msm_uart_next_id) - 1;
++	if (pdev->dev.of_node) {
++		line = of_alias_get_id(pdev->dev.of_node, "serial");
++		if (line < 0 && no_prev_alias) {
++			line = atomic_inc_return(&msm_uart_next_id) - 1;
++		} else {
++			no_prev_alias = 0;
++			if (atomic_read(&msm_uart_next_id))
++				line = -ENXIO;
++		}
++	} else {
++		if (pdev->id < 0 && no_prev_alias)
++			line = atomic_inc_return(&msm_uart_next_id) - 1;
++		else
++			line = pdev->id;
++	}
+ 
+-	if (unlikely(pdev->id < 0 || pdev->id >= UART_NR))
++	if (unlikely(line < 0 || line >= UART_NR))
+ 		return -ENXIO;
+ 
+-	dev_info(&pdev->dev, "msm_serial: detected port #%d\n", pdev->id);
++	dev_info(&pdev->dev, "msm_serial: detected port #%d\n", line);
+ 
+-	port = get_port_from_line(pdev->id);
++	port = get_port_from_line(line);
+ 	port->dev = &pdev->dev;
+ 	msm_port = UART_TO_MSM(port);
+ 
