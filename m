@@ -1,63 +1,41 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 1/1] tty: bfin, define inlined structures
-Date: Wed, 12 Nov 2014 11:55:25 +0100
-Message-ID: <1415789725-857-1-git-send-email-jslaby@suse.cz>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Incorrect set_ldisc() for mxs-auart
+Date: Wed, 12 Nov 2014 15:26:05 -0200
+Message-ID: <CAOMZO5BzF5t-TFBP-YLrkLO0tj0n9U-ShbdTHNkpGuxOm=DueA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from ip4-83-240-67-251.cust.nbox.cz ([83.240.67.251]:43235 "EHLO
-	ip4-83-240-18-248.cust.nbox.cz" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751564AbaKLKz3 (ORCPT
+Received: from mail-lb0-f182.google.com ([209.85.217.182]:56683 "EHLO
+	mail-lb0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753319AbaKLR0H (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 05:55:29 -0500
+	Wed, 12 Nov 2014 12:26:07 -0500
+Received: by mail-lb0-f182.google.com with SMTP id f15so10749409lbj.13
+        for <linux-serial@vger.kernel.org>; Wed, 12 Nov 2014 09:26:05 -0800 (PST)
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 
-struct bfin_serial_port contains structs circ_buf, timer_list, and
-work_struct directly (not pointers). This means that these structures
-have to be defined completely to be inlined in struct
-bfin_serial_port.
+Janusz,
 
-So instead of struct declarations, define the structures by including
-proper headers. They were pulled in by linux/serial_core.h or others
-until now. But experimenting with circ_buf removal from serial_core,
-struct circ_buf becomes undefined in bfin_serial:
+Since commit 36a262782b04 ("serial: mxs-auart: enable PPS support")
+the following build warning is seen:
 
-In file included from arch/blackfin/kernel/debug-mmrs.c:21:0:
-arch/blackfin/include/asm/bfin_serial.h:44:18: error: field 'rx_dma_buf' has incomplete type
+drivers/tty/serial/mxs-auart.c:962:2: warning: initialization from
+incompatible pointer type
+  .set_ldisc      = mxs_auart_set_ldisc,
+  ^
+drivers/tty/serial/mxs-auart.c:962:2: warning: (near initialization
+for 'mxs_auart_ops.set_ldisc')
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- arch/blackfin/include/asm/bfin_serial.h | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+The mxs_auart_set_ldisc() function should look like this:
 
-diff --git a/arch/blackfin/include/asm/bfin_serial.h b/arch/blackfin/include/asm/bfin_serial.h
-index 2d90d62edc97..d00d732784b1 100644
---- a/arch/blackfin/include/asm/bfin_serial.h
-+++ b/arch/blackfin/include/asm/bfin_serial.h
-@@ -9,8 +9,11 @@
- #ifndef __BFIN_ASM_SERIAL_H__
- #define __BFIN_ASM_SERIAL_H__
- 
-+#include <linux/circ_buf.h>
- #include <linux/serial_core.h>
- #include <linux/spinlock.h>
-+#include <linux/timer.h>
-+#include <linux/workqueue.h>
- #include <mach/anomaly.h>
- #include <mach/bfin_serial.h>
- 
-@@ -25,10 +28,6 @@
- # endif
- #endif
- 
--struct circ_buf;
--struct timer_list;
--struct work_struct;
--
- struct bfin_serial_port {
- 	struct uart_port port;
- 	unsigned int old_status;
--- 
-2.1.3
+static void mxs_auart_set_ldisc(struct uart_port *port, struct
+ktermios *termios)
 
+instead of
+
+static void mxs_auart_set_ldisc(struct uart_port *port, int new)
+
+Please fix it.
