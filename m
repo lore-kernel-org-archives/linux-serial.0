@@ -1,84 +1,52 @@
-From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH/RFC 8/8] serial: pxa: Add OF_EARLYCON support
-Date: Wed, 12 Nov 2014 00:46:33 -0800
-Message-ID: <1415781993-7755-9-git-send-email-cernekee@gmail.com>
-References: <1415781993-7755-1-git-send-email-cernekee@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: re: tty: serial: Add 8250-core based omap driver
+Date: Wed, 12 Nov 2014 11:48:07 +0300
+Message-ID: <20141112084807.GB13955@mwanda>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f171.google.com ([209.85.192.171]:37907 "EHLO
-	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752139AbaKLIrT (ORCPT
+Received: from userp1040.oracle.com ([156.151.31.81]:18102 "EHLO
+	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752385AbaKLIs1 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 03:47:19 -0500
-In-Reply-To: <1415781993-7755-1-git-send-email-cernekee@gmail.com>
+	Wed, 12 Nov 2014 03:48:27 -0500
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org
-Cc: tushar.behera@linaro.org, daniel@zonque.org, haojian.zhuang@gmail.com, robert.jarzmik@free.fr, grant.likely@linaro.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+To: bigeasy@linutronix.de
+Cc: linux-serial@vger.kernel.org
 
-Implement a bare bones earlycon; this assumes that the bootloader sets
-up the tty parameters.  Matches all three compatible strings.
+Hello Sebastian Andrzej Siewior,
 
-Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
----
- drivers/tty/serial/pxa.c | 45 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+The patch 61929cf0169d: "tty: serial: Add 8250-core based omap
+driver" from Sep 29, 2014, leads to the following static checker
+warning:
 
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index f6cc773..0764cf5 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -761,6 +761,51 @@ static struct console serial_pxa_console = {
- 	.data		= &serial_pxa_reg,
- };
- 
-+static struct uart_pxa_port serial_pxa_early_port;
-+
-+static void __init early_wait_for_xmitr(struct uart_pxa_port *up)
-+{
-+	/* it's unsafe to call udelay() in the "early" variant */
-+	while ((serial_in(up, UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
-+		;
-+}
-+
-+static void __init serial_pxa_early_putchar(struct uart_port *port, int ch)
-+{
-+	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
-+
-+	early_wait_for_xmitr(up);
-+	serial_out(up, UART_TX, ch);
-+}
-+
-+static void __init serial_pxa_early_write(struct console *con, const char *s,
-+					  unsigned n)
-+{
-+	uart_console_write(&serial_pxa_early_port.port, s, n,
-+			   serial_pxa_early_putchar);
-+	early_wait_for_xmitr(&serial_pxa_early_port);
-+}
-+
-+static int __init serial_pxa_early_console_setup(struct earlycon_device *device,
-+						 const char *opt)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	serial_pxa_early_port.port.membase = device->port.membase;
-+	serial_pxa_early_port.port.big_endian = device->port.big_endian;
-+
-+	device->con->write = serial_pxa_early_write;
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(pxa_uart, "mrvl,pxa-uart",
-+		    serial_pxa_early_console_setup);
-+OF_EARLYCON_DECLARE(mmp_uart, "mrvl,mmp-uart",
-+		    serial_pxa_early_console_setup);
-+OF_EARLYCON_DECLARE(bcm7401_upg_uart, "brcm,bcm7401-upg-uart",
-+		    serial_pxa_early_console_setup);
-+
- #define PXA_CONSOLE	&serial_pxa_console
- #else
- #define PXA_CONSOLE	NULL
--- 
-2.1.1
+	drivers/tty/serial/8250/8250_omap.c:1025 omap8250_probe()
+	warn: unsigned 'up.port.line' is never less than zero.
 
+drivers/tty/serial/8250/8250_omap.c
+  1015  
+  1016          if (pdev->dev.of_node) {
+  1017                  up.port.line = of_alias_get_id(pdev->dev.of_node, "serial");
+  1018                  of_property_read_u32(pdev->dev.of_node, "clock-frequency",
+  1019                                       &up.port.uartclk);
+  1020                  priv->wakeirq = irq_of_parse_and_map(pdev->dev.of_node, 1);
+  1021          } else {
+  1022                  up.port.line = pdev->id;
+  1023          }
+  1024  
+  1025          if (up.port.line < 0) {
+                    ^^^^^^^^^^^^^^^^
+Impossible.
+
+  1026                  dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n",
+  1027                          up.port.line);
+  1028                  return -ENODEV;
+                        ^^^^^^^^^^^^^^
+It's better to preserve the error code normally.
+
+  1029          }
+
+regards,
+dan carpenter
