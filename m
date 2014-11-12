@@ -1,56 +1,70 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V2 07/10] serial: pxa: Make the driver buildable for BCM7xxx set-top platforms
-Date: Wed, 12 Nov 2014 12:54:04 -0800
-Message-ID: <1415825647-6024-8-git-send-email-cernekee@gmail.com>
+Subject: [PATCH V2 08/10] serial: pxa: Update DT binding documentation
+Date: Wed, 12 Nov 2014 12:54:05 -0800
+Message-ID: <1415825647-6024-9-git-send-email-cernekee@gmail.com>
 References: <1415825647-6024-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f50.google.com ([209.85.220.50]:58193 "EHLO
-	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753411AbaKLUyp (ORCPT
+Received: from mail-pd0-f176.google.com ([209.85.192.176]:46647 "EHLO
+	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753411AbaKLUyr (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 15:54:45 -0500
+	Wed, 12 Nov 2014 15:54:47 -0500
 In-Reply-To: <1415825647-6024-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org
 Cc: arnd@arndb.de, daniel@zonque.org, haojian.zhuang@gmail.com, robert.jarzmik@free.fr, grant.likely@linaro.org, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 
-Remove the platform dependency in Kconfig and add an appropriate
-compatible string.  Note that BCM7401 has one 16550A-compatible UART
-in the UPG uart_clk domain, and two proprietary UARTs in the 27 MHz
-clock domain.  This driver handles the former one.
+Add a couple of missing required properties; add the new optional
+properties and an example.
 
 Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
 ---
- drivers/tty/serial/Kconfig | 2 +-
- drivers/tty/serial/pxa.c   | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/serial/mrvl-serial.txt     | 34 +++++++++++++++++++++-
+ 1 file changed, 33 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index fdd851e..2015057 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -436,7 +436,7 @@ config SERIAL_MPSC_CONSOLE
+diff --git a/Documentation/devicetree/bindings/serial/mrvl-serial.txt b/Documentation/devicetree/bindings/serial/mrvl-serial.txt
+index d744340..5bab455 100644
+--- a/Documentation/devicetree/bindings/serial/mrvl-serial.txt
++++ b/Documentation/devicetree/bindings/serial/mrvl-serial.txt
+@@ -1,4 +1,36 @@
+ PXA UART controller
  
- config SERIAL_PXA
- 	bool "PXA serial port support"
--	depends on ARCH_PXA || ARCH_MMP
-+	depends on ARM || MIPS
- 	select SERIAL_CORE
- 	help
- 	  If you have a machine based on an Intel XScale PXA2xx CPU you
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 21406dc..086b371 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -830,6 +830,7 @@ static const struct dev_pm_ops serial_pxa_pm_ops = {
- static struct of_device_id serial_pxa_dt_ids[] = {
- 	{ .compatible = "mrvl,pxa-uart", },
- 	{ .compatible = "mrvl,mmp-uart", },
-+	{ .compatible = "brcm,bcm7401-upg-uart", },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
+ Required properties:
+-- compatible : should be "mrvl,mmp-uart" or "mrvl,pxa-uart".
++- compatible : should be "mrvl,mmp-uart", "mrvl,pxa-uart", or
++  "brcm,bcm7401-uart".
++- interrupts : a single interrupt specifier.
++- clocks : phandle to a clock; used to compute the baud divisor.
++
++Optional properties:
++- fifo-size : defaults to 64 bytes.
++- big-endian : always use BE register accesses.
++- native-endian : use BE register accesses if the kernel was built for BE,
++  otherwise use LE register accesses.
++
++Example:
++
++	clocks {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		uart_clk: uart_clk@0 {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <81000000>;
++		};
++	};
++
++	uart0: serial@10406900 {
++		compatible = "brcm,bcm7401-upg-uart";
++		reg = <0x10406900 0x20>;
++		native-endian;
++		fifo-size = <32>;
++		interrupt-parent = <&periph_intc>;
++		interrupts = <64>;
++		clocks = <&uart_clk>;
++	};
 -- 
 2.1.1
 
