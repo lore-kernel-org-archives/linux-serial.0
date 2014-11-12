@@ -1,61 +1,50 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 2/2] tty: serial: omap_serial: line is unsigned, don't check < 0
-Date: Wed, 12 Nov 2014 10:28:34 +0100
-Message-ID: <1415784514-26649-2-git-send-email-bigeasy@linutronix.de>
-References: <20141112084807.GB13955@mwanda>
- <1415784514-26649-1-git-send-email-bigeasy@linutronix.de>
+From: Chunhe Lan <Chunhe.Lan@freescale.com>
+Subject: [PATCH] serial: 8250: Fix a compiler warning
+Date: Wed, 12 Nov 2014 17:49:01 +0800
+Message-ID: <1415785741-13009-1-git-send-email-Chunhe.Lan@freescale.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:40551 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752681AbaKLJ2q (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 04:28:46 -0500
-In-Reply-To: <1415784514-26649-1-git-send-email-bigeasy@linutronix.de>
+Received: from mail-bn1bn0108.outbound.protection.outlook.com ([157.56.110.108]:61569
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752076AbaKLJne (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Wed, 12 Nov 2014 04:43:34 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: dan.carpenter@oracle.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Chunhe Lan <Chunhe.Lan@freescale.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Dan Carpenter reported:
-|drivers/tty/serial/8250/8250_omap.c:1025 omap8250_probe()
-|warn: unsigned 'up.port.line' is never less than zero.
-|1025          if (up.port.line < 0) {
+Spotted by a compile warning:
 
-Since of_alias_get_id() and pdev->id can get negative I check for the
-error via ret variable.
+drivers/tty/serial/8250/8250_core.c: In function
+  'serial8250_shutdown':
+drivers/tty/serial/8250/8250_core.c:1747:18: warning:
+  'i' may be used uninitialized in this function [-Wuninitialized]
+drivers/tty/serial/8250/8250_core.c:1725:19: note:
+  'i' was declared here
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Just because it annoys user.
+
+Signed-off-by: Chunhe Lan <Chunhe.Lan@freescale.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/omap-serial.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/8250/8250_core.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 6cda5cd8b513..9401d2f9c119 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1682,16 +1682,16 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	up->port.ops = &serial_omap_pops;
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 312a83f..894a357 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1722,7 +1722,7 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
  
- 	if (pdev->dev.of_node)
--		up->port.line = of_alias_get_id(pdev->dev.of_node, "serial");
-+		ret = of_alias_get_id(pdev->dev.of_node, "serial");
- 	else
--		up->port.line = pdev->id;
-+		ret = pdev->id;
+ static void serial_unlink_irq_chain(struct uart_8250_port *up)
+ {
+-	struct irq_info *i;
++	struct irq_info *i = NULL;
+ 	struct hlist_node *n;
+ 	struct hlist_head *h;
  
--	if (up->port.line < 0) {
-+	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n",
--								up->port.line);
--		ret = -ENODEV;
-+			ret);
- 		goto err_port_line;
- 	}
-+	up->port.line = ret;
- 
- 	ret = serial_omap_probe_rs485(up, pdev->dev.of_node);
- 	if (ret < 0)
 -- 
-2.1.3
+1.7.6.5
 
