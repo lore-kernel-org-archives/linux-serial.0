@@ -1,67 +1,39 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH v2] serial: mxs-auart: Fix mxs_auart_set_ldisc()
-Date: Wed, 12 Nov 2014 20:32:49 -0200
-Message-ID: <1415831569-6904-1-git-send-email-festevam@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f177.google.com ([209.85.216.177]:56676 "EHLO
-	mail-qc0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753390AbaKLWdj (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 12 Nov 2014 17:33:39 -0500
-Received: by mail-qc0-f177.google.com with SMTP id l6so10196021qcy.36
-        for <linux-serial@vger.kernel.org>; Wed, 12 Nov 2014 14:33:38 -0800 (PST)
-Sender: linux-serial-owner@vger.kernel.org
+From: Robert Jarzmik <robert.jarzmik-GANU6spQydw@public.gmane.org>
+Subject: Re: [PATCH V2 00/10] UART driver support for BMIPS multiplatform kernels
+Date: Thu, 13 Nov 2014 08:36:49 +0100
+Message-ID: <87oasbtuum.fsf@free.fr>
+References: <1415825647-6024-1-git-send-email-cernekee@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1415825647-6024-1-git-send-email-cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> (Kevin
+	Cernekee's message of "Wed, 12 Nov 2014 12:53:57 -0800")
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org, haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mbizon-MmRyKUhfbQ9GWvitb5QawA@public.gmane.org, jogo-p3rKhJxN3npAfugRpC6u6w@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: j.uzycki@elproma.com.pl, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
+Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
 
-Commit 732a84a037a4 ("serial: core: Pass termios to set_ldisc() notifications")
-changed the set_ldisc prototype.
+> V1->V2:
+>
+> Add a new UPIO_MEM32BE iotype instead of a separate big_endian flag.
+>
+> Change some of the of_*_is_* APIs to return bool, where appropriate.
+>
+> Fix a few minor comment issues.
 
-At the time of this commit the mxs_auart driver did not implement set_ldisc,
-so that's why it has not been converted.
+Hi Kevin,
 
-Adapt also mxs_auart_set_ldisc() so that the following build warning can be
-fixed:
+I'll review the pxa part tonight or tomorrow, just a simple preliminary question
+: did you test this serie with the triple activation of DEBUG_UART, early
+console, and kernel console, all of them on the same tty ?
 
-drivers/tty/serial/mxs-auart.c:962:2: warning: initialization from
-incompatible pointer type
-  .set_ldisc      = mxs_auart_set_ldisc,
-  ^
-drivers/tty/serial/mxs-auart.c:962:2: warning: (near initialization
-for 'mxs_auart_ops.set_ldisc')
+Cheers.
 
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
-Changes since v1:
-- Fix the explanation for the error
-
-Janusz,
-
-This is build-tested only. Please test it on real hardware, if possible.
-
- drivers/tty/serial/mxs-auart.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 3784920..a6d2bb9f4 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -784,9 +784,10 @@ static void mxs_auart_settermios(struct uart_port *u,
- 		mxs_auart_disable_ms(u);
- }
- 
--static void mxs_auart_set_ldisc(struct uart_port *port, int new)
-+static void mxs_auart_set_ldisc(struct uart_port *port,
-+				struct ktermios *termios)
- {
--	if (new == N_PPS) {
-+	if (termios->c_line == N_PPS) {
- 		port->flags |= UPF_HARDPPS_CD;
- 		mxs_auart_enable_ms(port);
- 	} else {
--- 
-1.9.1
-
+--
+Robert
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
