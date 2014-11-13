@@ -1,70 +1,93 @@
-From: Kevin Cernekee <cernekee@gmail.com>
-Subject: Re: [PATCH/RFC 5/8] serial: pxa: Make the driver buildable for
- BCM7xxx set-top platforms
-Date: Thu, 13 Nov 2014 11:08:08 -0800
-Message-ID: <CAJiQ=7DoFk7ZSjHygaMWHyBTpxJFbQX4onh2xqixaqORQODsVg@mail.gmail.com>
-References: <1415781993-7755-1-git-send-email-cernekee@gmail.com>
- <3356477.HitZEsNa4H@wuerfel> <CAJiQ=7AFr5vR+FEc8B3CAZLb5GYujNxtaz7TU2FU0D3oModZ7w@mail.gmail.com>
- <4606459.kh8mb8TEgZ@wuerfel>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH] tty: serial: msm_serial: Use DT aliases
+Date: Thu, 13 Nov 2014 11:31:59 -0800
+Message-ID: <5465072F.6040509@codeaurora.org>
+References: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org> <CAMAWPa_f1K1qUG_UTmM0w8Sz8wed7+CQkK9tc8t1W=CTJvdjyw@mail.gmail.com> <5461150B.2010907@codeaurora.org> <54616CB3.5000405@gmail.com> <54616F74.5010408@codeaurora.org> <54618077.9000108@gmail.com> <5463A381.9060305@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qa0-f50.google.com ([209.85.216.50]:38399 "EHLO
-	mail-qa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753906AbaKMTIa (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 13 Nov 2014 14:08:30 -0500
-In-Reply-To: <4606459.kh8mb8TEgZ@wuerfel>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5463A381.9060305@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: frowand.list@gmail.com
+Cc: Kevin Hilman <khilman@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, lkml <linux-kernel@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>, Tyler Baker <tyler.baker@linaro.org>
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, daniel@zonque.org, Haojian Zhuang <haojian.zhuang@gmail.com>, robert.jarzmik@free.fr, Grant Likely <grant.likely@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-On Thu, Nov 13, 2014 at 1:42 AM, Arnd Bergmann <arnd@arndb.de> wrote:
-> TTY naming is a mess today, and you seem to be caught in the middle
-> of it trying to work around the inherent problems. Extending the PXA
-> driver is an interesting approach since as you say it's a very nice
-> clean subset of the 8250 driver, but that doesn't mean that it's
-> a good long-term strategy, as we will likely have more chips with
-> 8250 variants.
+On 11/12/2014 10:14 AM, Frank Rowand wrote:
+> On 11/10/2014 7:20 PM, Frank Rowand wrote:
+>> On 11/10/2014 6:07 PM, Stephen Boyd wrote:
+>>> On 11/10/2014 05:56 PM, Frank Rowand wrote:
+>>>> On 11/10/2014 11:42 AM, Stephen Boyd wrote:
+>>>>> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+>>>>> index 09364dd8cf3a..d1bc6b6cbc70 100644
+>>>>> --- a/drivers/tty/serial/msm_serial.c
+>>>>> +++ b/drivers/tty/serial/msm_serial.c
+>>>>> @@ -1046,14 +1046,14 @@ static int msm_serial_probe(struct platform_device *pdev)
+>>>>>  	const struct of_device_id *id;
+>>>>>  	int irq, line;
+>>>>>  
+>>>>> -	if (pdev->id == -1)
+>>>>> -		pdev->id = atomic_inc_return(&msm_uart_next_id) - 1;
+>>>>> -
+>>>>>  	if (pdev->dev.of_node)
+>>>>>  		line = of_alias_get_id(pdev->dev.of_node, "serial");
+>>>>>  	else
+>>>>>  		line = pdev->id;
+>>>>>  
+>>>>> +	if (line < 0)
+>>>>> +		line = atomic_inc_return(&msm_uart_next_id) - 1;
+>>>>> +
+>>>>>  	if (unlikely(line < 0 || line >= UART_NR))
+>>>> Then this original check for "line < 0" can also be removed.
+>>>>
+>>>>
+>>> Well this matches what was there before. It would do atomic_inc_return
+>>> if the line was negative and then still check for a negative value. I
+>>> don't mind removing it though. Perhaps we should use an ida?:
+>>>
+>> OK, you are right.  If (pdev->id < -1) and (!pdev->dev.of_node) then
+>> the check is still needed.
+>>
+>> You could use an ida.  Some drivers use a bit map.  I really don't think
+>> this should become a complicated algorithm though.  If the rule is that
+>> either all UARTS have an alias, or no UART has an alias, then I think
+>> the patch could be something like the following.
+>>
+>> This combines your original patch, plus your fix patch, plus making
+>> the aliases all or nothing.  Not tested, not even compiled.
+>>
+>> What do you think?
+> < snip - previous version of patch >
 >
-> Some of the ways forward that I can see are:
+> Previous version of the patch did not protect against no alias, followed
+> by alias.
 >
-> - (your approach) use and extend the pxa serial driver for new SoCs,
->   possibly migrate some of the existing users of 8250 to use that
->   and leave 8250 alone.
 >
-> - fix the problem you see in a different way, and get the 8250 driver
->   to solve your problem. Possibly integrate the pxa driver back into
->   8250 in eventually, as we did with the omap driver.
+>
+> From: Frank Rowand <frank.rowand@sonymobile.com>
+>
+> This patch is intended to show roughly what an implementation of an all or
+> nothing policy for using serialN aliases would look like.  It is intended
+> simply to help determine whether this policy should be used.
+>
+> Combines Stephen's first patch, Stephen's fix patch (to make the serialN
+> alias optional), plus makes use of the serialN alias all or nothing (either
+> all ports have an alias or none do).
+>
+> This is not a correct implementation because the atomic_read(&msm_uart_next_id)
+> does not protect against concurrency; instead a lock should be used.
+>
+> Not tested, not even compiled.
 
-Do you think it might make sense to come up with a set of guidelines
-that ensure that SoCs using a non-serial8250 driver (like pxa) on
-16550-compatible hardware can be easily moved back to serial8250
-someday?
+Sorry, I'm sort of lost. If there are serial aliases in the dts file,
+then we should alias all of the serial ports. If there aren't aliases
+then we're backwards compatible with the dts we have now and we'll do
+dynamic generation. Putting code into the driver to validate that this
+is true is not the job of the driver. If anything, it should validated
+when the dts file is created. If one day we screw up and have a dts file
+with such a bad configuration we'll have to work around it, but until
+that day comes I'd rather not think about it.
 
-e.g. maybe I should be adding a reg-shift property to my pxa DT entry.
-It isn't necessary for pxa.c, but if we ever move to serial8250 it
-will be necessary.
-
-> - Do a fresh start for a general-purpose soc-type 8250 driver, using
->   tty_port instead of uart_port as the abstraction layer.
-
-Hmm, does that mean we can't use the serial_core.c helpers?
-
->   Use that for
->   all new socs instead of extending the 8250 driver more, possibly
->   migrating some of the existing 8250 users.
-
-One nice thing about a brand new driver is that we can use dynamic
-major/minor numbers unconditionally without breaking existing users.
-If either pxa.c or bcm63xx_uart.c had used dynamic numbers, I could
-drop Tushar's original workaround.
-
-Another advantage is that we can assume all users have DT, simplifying
-the probe function.
-
-Would it be helpful to split parts of pxa.c and/or serial8250 into a
-"lib8250", similar to libahci, that can be called by many different
-implementations (some of which have special features like DMA
-support)?
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
