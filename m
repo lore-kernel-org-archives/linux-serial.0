@@ -1,100 +1,43 @@
-From: =?ISO-8859-2?Q?Janusz_U=BFycki?= <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH v2] serial: mxs-auart: Fix mxs_auart_set_ldisc()
-Date: Fri, 14 Nov 2014 23:53:14 +0100
-Message-ID: <546687DA.6010503@elproma.com.pl>
-References: <1415831569-6904-1-git-send-email-festevam@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] gpio: mxs: implement get_direction callback
+Date: Sat, 15 Nov 2014 00:26:01 +0100
+Message-ID: <20141114232601.GW27002@pengutronix.de>
+References: <1416004026-9667-1-git-send-email-j.uzycki@elproma.com.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1415831569-6904-1-git-send-email-festevam@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1416004026-9667-1-git-send-email-j.uzycki@elproma.com.pl>
 Sender: linux-gpio-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>, linux-gpio@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, fabio.estevam@freescale.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Hello,
 
-Procedure of the test:
-* PPS source connected to a DCD line of the driver (gpio)
-* ldattach PPS /dev/ttyAPPn
-* watch -n 1 cat /sys/class/pps/pps0/assert
-* watch -n 1 cat /sys/class/pps/pps0/clear
+On Fri, Nov 14, 2014 at 11:27:06PM +0100, Janusz Uzycki wrote:
+> Function gpiod_get_direction() of gpiolib calls get_direction()
+> callback. If chip doesn't implement it EINVAL error is returned.
+> The function doesn't use for returned value shadowed FLAG_IS_OUT
+> bit of gpio_desc.flags field so the callback is required.
+This sounds like a bugfix but "required" is wrong as AFAIR this call is
+optional and hardly used. Or did that change? The only drawback is that
+the debug output for (by Linux) uninitialized gpios is wrong.
 
-I just tested and finally it works on my hardware and 
-3.18.0-rc4-next-20141114+.
-Before I applied the your patch-fix and 2 others which were missed (I 
-apologize you here):
-"[PATCH] serial: mxs-auart: fix gpio change detection on interrupt"
-"[PATCH] gpio: mxs: implement get_direction callback"
+Also the grammar of you sentence isn't German enough to sound correct.
 
-I submitted them as separate patches because the first fixes tty-next 
-and the second
-concerns gpio-next (gpiolib in fact).
-I hope they could be picked up for linux-next.
+Best regards
+Uwe
 
-My next step for the mxs-auart driver will be:
-* RFC patch for spinlocks in the driver, I hope it helps here:
-    http://thread.gmane.org/gmane.linux.serial/16795
-    It wasn't continued here:
-    http://www.spinics.net/lists/linux-serial/msg10887.html
-    "By the way, where did the spinlocks go in this driver?"
-* sync the driver to commit d41510ce2f071c9ccb1903d7a5135443a57dbe4e:
-   ( "serial: Take uart port lock for direct *_enable_ms()")
-* sync the driver to commit cab68f89546ba5a04bf28aaeaca841d4ccc2fd52:
-   ( "serial: Test/disable MSIs if switching from N_PPS")
-* tx_empty() fix like here with better explanation:
-   http://comments.gmane.org/gmane.linux.ports.arm.kernel/283882
-
-have a nice weekend
-Janusz
-
-W dniu 2014-11-12 o 23:32, Fabio Estevam pisze:
-> From: Fabio Estevam <fabio.estevam@freescale.com>
->
-> Commit 732a84a037a4 ("serial: core: Pass termios to set_ldisc() notifications")
-> changed the set_ldisc prototype.
->
-> At the time of this commit the mxs_auart driver did not implement set_ldisc,
-> so that's why it has not been converted.
->
-> Adapt also mxs_auart_set_ldisc() so that the following build warning can be
-> fixed:
->
-> drivers/tty/serial/mxs-auart.c:962:2: warning: initialization from
-> incompatible pointer type
->    .set_ldisc      = mxs_auart_set_ldisc,
->    ^
-> drivers/tty/serial/mxs-auart.c:962:2: warning: (near initialization
-> for 'mxs_auart_ops.set_ldisc')
->
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> ---
-> Changes since v1:
-> - Fix the explanation for the error
->
-> Janusz,
->
-> This is build-tested only. Please test it on real hardware, if possible.
->
->   drivers/tty/serial/mxs-auart.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-> index 3784920..a6d2bb9f4 100644
-> --- a/drivers/tty/serial/mxs-auart.c
-> +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -784,9 +784,10 @@ static void mxs_auart_settermios(struct uart_port *u,
->   		mxs_auart_disable_ms(u);
->   }
->   
-> -static void mxs_auart_set_ldisc(struct uart_port *port, int new)
-> +static void mxs_auart_set_ldisc(struct uart_port *port,
-> +				struct ktermios *termios)
->   {
-> -	if (new == N_PPS) {
-> +	if (termios->c_line == N_PPS) {
->   		port->flags |= UPF_HARDPPS_CD;
->   		mxs_auart_enable_ms(port);
->   	} else {
-
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+--
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
