@@ -1,62 +1,163 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH] tty: serial: msm_serial: Use DT aliases
-Date: Thu, 13 Nov 2014 16:59:53 -0800
-Message-ID: <54655409.6030604@codeaurora.org>
-References: <1414024381-12204-1-git-send-email-sboyd@codeaurora.org> <CAMAWPa_f1K1qUG_UTmM0w8Sz8wed7+CQkK9tc8t1W=CTJvdjyw@mail.gmail.com> <5461150B.2010907@codeaurora.org> <54616CB3.5000405@gmail.com> <54616F74.5010408@codeaurora.org> <54618077.9000108@gmail.com> <5463A381.9060305@gmail.com> <5465072F.6040509@codeaurora.org> <546550FF.2080409@gmail.com>
+From: Craig McQueen <craig.mcqueen@beamcommunications.com>
+Subject: i.MX28 AUART driver can break when switching to hardware flow control
+Date: Fri, 14 Nov 2014 12:23:28 +1100
+Message-ID: <54655990.6000104@beamcommunications.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <546550FF.2080409@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: frowand.list@gmail.com
-Cc: Kevin Hilman <khilman@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, lkml <linux-kernel@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>, Tyler Baker <tyler.baker@linaro.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-hk1on0078.outbound.protection.outlook.com ([134.170.140.78]:37959
+	"EHLO APAC01-HK1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S934544AbaKNBje (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 13 Nov 2014 20:39:34 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-On 11/13/2014 04:46 PM, Frank Rowand wrote:
-> On 11/13/2014 11:31 AM, Stephen Boyd wrote:
->> Sorry, I'm sort of lost. If there are serial aliases in the dts file,
->> then we should alias all of the serial ports. If there aren't aliases
->> then we're backwards compatible with the dts we have now and we'll do
->> dynamic generation. Putting code into the driver to validate that
->> this is true is not the job of the driver. If anything, it should
->> validated when the dts file is created. If one day we screw up and
->> have a dts file with such a bad configuration we'll have to work
->> around it, but until that day comes I'd rather not think about it. 
-> Maybe I did not understand when you said "Perhaps we should use an ida".
-> That sentence led me to think the driver should check for misconfiguration.
-> The case I was trying to handle was if there was at least one serialN
-> alias and at least one UART without an alias.  For example, if there
-> are three UARTs (serial_a, serial_b, serial_c, probed in that order)
-> and one alias (serial0 = &serial_c;) then the result would be:
->
->    serial_a  line 0 (from msm_uart_next_id)
->    serial_b  line 1 (from msm_uart_next_id)
->    serial_c  line 0 (from the alias)
->
->    Two UARTs probed with line == 0.  This is an error.
->
-> Most of the serial drivers don't check for this type of bad configuration.
-> Some drivers keep a bit map of which lines have been used.  I'm not sure
-> what they do in case of a conflict (I did not read to that level of detail).
->
-> I thought you were suggesting the driver check for the bad configuration,
-> so I was proposing a somewhat simple way of forcing a boot error for the
-> bad configuration.
->
-> Since you are not suggesting the driver check for the bad configuration,
-> you can ignore my proposal.  I agree that it is ok for the driver to
-> expect the board dts to be correct.  The problem should be detected by
-> the dts author on first boot as part of normal bring up testing, and
-> then corrected.
->
+I've been testing a 3.14.19 kernel on i.MX28 EVK, and subsequently 
+confirmed this with 3.18-rc4.
 
-Ah ok. I was just saying we could use an ida instead of an atomic
-increment so that this driver works properly with driver
-binding/unbinding, otherwise the line number keeps increasing and
-quickly goes beyond the static array of ports (which I still don't
-understand why we have at all btw).
+I've found that the AUART driver seems to work okay with no flow 
+control, but when hardware flow control is turned on, it causes repeated 
+and/or missing characters on RX. E.g. when connected to a modem from 
+picocom:
+
+     picocom v1.6
+
+     port is        : /dev/ttyAPP0
+     flowcontrol    : none
+     baudrate is    : 9600
+     parity is      : none
+     databits are   : 8
+     escape is      : C-a
+     local echo is  : no
+     noinit is      : no
+     noreset is     : no
+     nolock is      : no
+     send_cmd is    : sz -vv
+     receive_cmd is : rz -vv
+     imap is        :
+     omap is        :
+     emap is        : crcrlf,delbs,
+
+     Terminal ready
+     at
+     OK
+     at
+     OK
+
+     *** flow: RTS/CTS ***
+
+     OK
+     OK
+     OK
+     OK
+     OK
+     OK
+     OK
+     OK
+
+     OK
+     OK
+     OK
+     ...
+
+I had pressed Ctrl-A, Ctrl-F in picocom to turn on hardware flow 
+control. Then I typed at[LF] again, and got forever-scrolling OK, with a 
+sample shown above.
+
+
+Then I tried quitting and restarting picocom (with -f h option in this 
+case to select HW flow control), and got a kernel crash:
+
+
+     picocom v1.6
+
+     port is        : /dev/ttyAPP0
+     flowcontrol    : RTS/CTS
+     baudrate is    : 9600
+     parity i[  720.546303] Unable to handle kernel paging request at 
+virtual address c9065e00
+     [  720.555590] pgd = c6a9c000
+     [  720.558318] [c9065e00] *pgd=00000000
+     [  720.561939] Internal error: Oops: 5 [#1] ARM
+     [  720.566235] Modules linked in:
+     [  720.569336] CPU: 0 PID: 307 Comm: picocom Tainted: G W      
+3.18.0-rc4-00204-g206c5f6 #3
+     [  720.578066] task: c685a500 ti: c745c000 task.ti: c745c000
+     [  720.583515] PC is at kmem_cache_free+0x34/0x1a8
+     [  720.588082] LR is at final_putname+0x34/0x44
+     [  720.592377] pc : [<c00d3f90>]    lr : [<c00e73c8>]    psr: a0000013
+     [  720.592377] sp : c745df48  ip : c685a500  fp : 00000000
+     [  720.603876] r10: 00000000  r9 : 00000020  r8 : c6e6c2c8
+     [  720.609119] r7 : 00000003  r6 : c00e73c8  r5 : 4b4f0a0d  r4 : 
+c7401a80
+     [  720.615663] r3 : c7efc000  r2 : 0008b4f0  r1 : 4b4f0a0d  r0 : 
+c7401a80
+     [  720.622209] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  
+Segment user
+     [  720.629363] Control: 0005317f  Table: 46a9c000  DAC: 00000015
+     [  720.635130] Process picocom (pid: 307, stack limit = 0xc745c1c0)
+     [  720.641157] Stack: (0xc745df48 to 0xc745e000)
+     [  720.645551] df40:                   c6955000 c6955000 c7599488 
+00000003 c6e6c2c8 c00e73c8
+     [  720.653765] df60: c7599480 c00d8ebc 00000000 00000000 c00096ac 
+00000802 c0000000 00000026
+     [  720.661977] df80: 00000100 00000001 00009240 0001572c 0001572c 
+00009240 00000005 c00097e4
+     [  720.670186] dfa0: c745c000 c0009620 0001572c 0001572c 00015774 
+00000802 00000005 00000000
+     [  720.678397] dfc0: 0001572c 0001572c 00009240 00000005 00000000 
+00000000 496e7000 00000000
+     [  720.686609] dfe0: 00000000 bef63cb4 00008fd4 497bb66c 60000010 
+00015774 aaaaaaaa aaaaaaaa
+     [  720.694841] [<c00d3f90>] (kmem_cache_free) from [<c00e73c8>] 
+(final_putname+0x34/0x44)
+     [  720.702808] [<c00e73c8>] (final_putname) from [<c00d8ebc>] 
+(do_sys_open+0x168/0x1cc)
+     [  720.710601] [<c00d8ebc>] (do_sys_open) from [<c0009620>] 
+(ret_fast_syscall+0x0/0x44)
+     [  720.718384] Code: e59f3174 e2852101 e5933000 e1a02622 (e7931282)
+     [  720.743734] ---[ end trace 3d747b1a70c92711 ]---
+     s      : none
+     databits are   : [  720.749660] UDP: bad checksum. From 
+192.168.1.3:17500 to 192.168.1.255:17500 ulen 133
+     8
+     escape is      : C-a
+     local echo is  : no
+     noinit is      : no
+     noreset is     : no
+     nolock is      : no
+     send_cmd is    : sz -vv
+     receive_cmd is : rz -vv
+     imap is        :
+     omap is        :
+     emap is        : crcrlf,delbs,
+
+     Segmentation fault
+
+
+This bug doesn't seem to occur if the serial port is switched to 
+hardware flow control before any bytes are received, and then kept in 
+that mode continuously. That means early in boot-up:
+
+     stty -F /dev/ttyAPP0 crtscts
+
+Then whenever starting picocom:
+
+     picocom -f h /dev/ttyAPP0
+
+When picocom exits, it will restore the previous port state, so it stays 
+in hardware flow control mode.
+
+In this scenario, the serial port seems to function normally without the 
+bug in received bytes and without any kernel crash.
+
+So I am guessing that the bug occurs when switching the flow control 
+mode from 'none' to 'hardware', after some bytes have been received, and 
+causes some sort of receive buffer misalignment.
 
 -- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Craig McQueen
+
