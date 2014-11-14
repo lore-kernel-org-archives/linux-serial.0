@@ -1,102 +1,58 @@
-From: Frank Rowand <frowand.list@gmail.com>
-Subject: [PATCH]  tty: serial: msm_serial: document DT alias
-Date: Fri, 14 Nov 2014 14:07:15 -0800
-Message-ID: <54667D13.2070105@gmail.com>
-Reply-To: frowand.list@gmail.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>
-Cc: Linux Kernel list <linux-kernel@vger.kernel.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>, Tyler Baker <tyler.baker@linaro.org>, Kevin Hilman <khilman@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: [PATCH] serial: mxs-auart: fix gpio change detection on interrupt
+Date: Fri, 14 Nov 2014 23:24:33 +0100
+Message-ID: <1416003873-9576-1-git-send-email-j.uzycki@elproma.com.pl>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from v032797.home.net.pl ([89.161.177.31]:52585 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1161920AbaKNWWV (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 14 Nov 2014 17:22:21 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, fabio.estevam@freescale.com, Janusz Uzycki <j.uzycki@elproma.com.pl>
 
-From: Frank Rowand <frank.rowand@sonymobile.com>
+mxs_auart_modem_status() did't detect gpio's state change
+because s->mctrl_prev was modified before by mctrl_gpio_get().
+The patch introduces mctrl_temp variable to fix the bug.
 
-Update devicetree binding for msm_serial to reflect msm_serial_probe()
-getting line id (port number) from the serialN alias.
-
-Signed-off-by: Frank Rowand <frank.rowand@sonymobile.com>
+Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
 ---
- Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt |   15 +++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
 
-Index: linux/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-===================================================================
---- linux.orig/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-+++ linux/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-@@ -27,27 +27,52 @@ Optional properties:
- - dmas: Should contain dma specifiers for transmit and receive channels
- - dma-names: Should contain "tx" for transmit and "rx" for receive channels
+Two patches were missed during movements between our internal repos.
+The 1/2 patch is required against commits:
+  f9e42397d79b ("serial: mxs-auart: add interrupts for modem control lines")
+  36a262782b04 ("serial: mxs-auart: enable PPS support")
+I've done build-test for the next only before.
+I should have done hardware test also for the next, sorry.
+Now it is tested for the next on real hardware too.
+
+---
+ drivers/tty/serial/mxs-auart.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 840c1f7..c556116 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -798,6 +798,7 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+ {
+ 	u32 istat;
+ 	struct mxs_auart_port *s = context;
++	u32 mctrl_temp = s->mctrl_prev;
+ 	u32 stat = readl(s->port.membase + AUART_STAT);
  
-+Note: Aliases may be defined to ensure the correct ordering of the UARTs.
-+The alias serialN will result in the UART being assigned port N.  If any
-+serialN alias exists, then an alias must exist for each enabled UART.  The
-+serialN aliases should be in a .dts file instead of in a .dtsi file.
-+
- Examples:
+ 	istat = readl(s->port.membase + AUART_INTR);
+@@ -817,7 +818,7 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+ 	    irq == s->gpio_irq[UART_GPIO_DSR] ||
+ 	    irq == s->gpio_irq[UART_GPIO_RI])
+ 		mxs_auart_modem_status(s,
+-				mctrl_gpio_get(s->gpios, &s->mctrl_prev));
++				mctrl_gpio_get(s->gpios, &mctrl_temp));
  
--A uartdm v1.4 device with dma capabilities.
-+- A uartdm v1.4 device with dma capabilities.
-+
-+	serial@f991e000 {
-+		compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
-+		reg = <0xf991e000 0x1000>;
-+		interrupts = <0 108 0x0>;
-+		clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
-+		clock-names = "core", "iface";
-+		dmas = <&dma0 0>, <&dma0 1>;
-+		dma-names = "tx", "rx";
-+	};
-+
-+- A uartdm v1.3 device without dma capabilities and part of a GSBI complex.
-+
-+	serial@19c40000 {
-+		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
-+		reg = <0x19c40000 0x1000>,
-+	      	<0x19c00000 0x1000>;
-+		interrupts = <0 195 0x0>;
-+		clocks = <&gsbi5_uart_cxc>, <&gsbi5_ahb_cxc>;
-+		clock-names = "core", "iface";
-+	};
-+
-+- serialN alias.
-+
-+	aliases {
-+		serial0 = &uarta;
-+		serial1 = &uartc;
-+		serial2 = &uartb;
-+	};
-+
-+	uarta: serial@12490000 {
-+		status = "ok";
-+	};
-+
-+	uartb: serial@16340000 {
-+		status = "ok";
-+	};
- 
--serial@f991e000 {
--	compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
--	reg = <0xf991e000 0x1000>;
--	interrupts = <0 108 0x0>;
--	clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
--	clock-names = "core", "iface";
--	dmas = <&dma0 0>, <&dma0 1>;
--	dma-names = "tx", "rx";
--};
--
--A uartdm v1.3 device without dma capabilities and part of a GSBI complex.
--
--serial@19c40000 {
--	compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
--	reg = <0x19c40000 0x1000>,
--	      <0x19c00000 0x1000>;
--	interrupts = <0 195 0x0>;
--	clocks = <&gsbi5_uart_cxc>, <&gsbi5_ahb_cxc>;
--	clock-names = "core", "iface";
--};
-+	uartc: serial@1a240000 {
-+		status = "ok";
-+	};
+ 	if (istat & AUART_INTR_CTSMIS) {
+ 		if (CTS_AT_AUART() && s->ms_irq_enabled)
+-- 
+1.7.11.3
+
