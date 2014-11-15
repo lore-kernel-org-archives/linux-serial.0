@@ -1,43 +1,158 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] gpio: mxs: implement get_direction callback
-Date: Sat, 15 Nov 2014 00:26:01 +0100
-Message-ID: <20141114232601.GW27002@pengutronix.de>
-References: <1416004026-9667-1-git-send-email-j.uzycki@elproma.com.pl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-gpio-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1416004026-9667-1-git-send-email-j.uzycki@elproma.com.pl>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Janusz Uzycki <j.uzycki@elproma.com.pl>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, fabio.estevam@freescale.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
+From: Doug Anderson <dianders@chromium.org>
+Subject: [PATCH] serial: 8250_dw: Handle no_console_suspend when uart loses state
+Date: Fri, 14 Nov 2014 16:32:36 -0800
+Message-ID: <1416011556-23422-1-git-send-email-dianders@chromium.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ie0-f175.google.com ([209.85.223.175]:50027 "EHLO
+	mail-ie0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934338AbaKOAdA (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 14 Nov 2014 19:33:00 -0500
+Received: by mail-ie0-f175.google.com with SMTP id at20so3494100iec.6
+        for <linux-serial@vger.kernel.org>; Fri, 14 Nov 2014 16:33:00 -0800 (PST)
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heiko Stuebner <heiko@sntech.de>, Jiri Slaby <jslaby@suse.cz>
+Cc: Chris Zhong <zyw@rock-chips.com>, linux-rockchip@lists.infradead.org, linux-arm-kernel@lists.infradead.org, Andrew Bresticker <abrestic@chromium.org>, Doug Anderson <dianders@chromium.org>, mika.westerberg@linux.intel.com, heikki.krogerus@linux.intel.com, andriy.shevchenko@linux.intel.com, wens@csie.org, alan@linux.intel.com, loic.poulain@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hello,
+In certain suspend modes on certain boards the 8250 UART may lose
+state when the device goes to suspend.  If we're using
+no_console_suspend this can cause lots of problems during resume.
 
-On Fri, Nov 14, 2014 at 11:27:06PM +0100, Janusz Uzycki wrote:
-> Function gpiod_get_direction() of gpiolib calls get_direction()
-> callback. If chip doesn't implement it EINVAL error is returned.
-> The function doesn't use for returned value shadowed FLAG_IS_OUT
-> bit of gpio_desc.flags field so the callback is required.
-This sounds like a bugfix but "required" is wrong as AFAIR this call is
-optional and hardly used. Or did that change? The only drawback is that
-the debug output for (by Linux) uninitialized gpios is wrong.
+Let's cache the basic UART config registers at suspend time and if we
+notice that the UART loses state (by looking at a canary stored in the
+scratch register) we'll restore it.
 
-Also the grammar of you sentence isn't German enough to sound correct.
+Signed-off-by: Doug Anderson <dianders@chromium.org>
+---
+Note that I don't have a board that properly suspends and resumes from
+the deepest sleep state that runs atop mainline, so this is tested on
+a local tree that is based on 3.14 with backports (specifically on
+rk3288-pinky).  It is compile tested atop mainline.
 
-Best regards
-Uwe
+ drivers/tty/serial/8250/8250_dw.c | 67 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 67 insertions(+)
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
---
-To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 0bfdccc..444ff540 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -38,6 +38,9 @@
+ #define DW_UART_CPR	0xf4 /* Component Parameter Register */
+ #define DW_UART_UCV	0xf8 /* UART Component Version */
+ 
++/* We'll place this canary in SCR while suspending; if gone we've lost state */
++#define DW_UART_SCR_STATE		0x22
++
+ /* Component Parameter Register bits */
+ #define DW_UART_CPR_ABP_DATA_WIDTH	(3 << 0)
+ #define DW_UART_CPR_AFCE_MODE		(1 << 4)
+@@ -63,6 +66,13 @@ struct dw8250_data {
+ 	struct clk		*pclk;
+ 	struct reset_control	*rst;
+ 	struct uart_8250_dma	dma;
++
++	int			suspending;
++	int			saved_lcr;
++	int			saved_dll;
++	int			saved_dlm;
++	int			saved_ier;
++	int			saved_fcr;
+ };
+ 
+ #define BYT_PRV_CLK			0x800
+@@ -92,10 +102,35 @@ static void dw8250_force_idle(struct uart_port *p)
+ 	(void)p->serial_in(p, UART_RX);
+ }
+ 
++static void dw8250_serial_restore(struct uart_port *p)
++{
++	struct dw8250_data *data = p->private_data;
++	struct uart_8250_port *port8250 = serial8250_get_port(data->line);
++
++	data->suspending = 0;
++
++	serial_out(port8250, UART_LCR, data->saved_lcr | UART_LCR_DLAB);
++	serial_out(port8250, UART_DLL, data->saved_dll);
++	serial_out(port8250, UART_DLM, data->saved_dlm);
++	serial_out(port8250, UART_LCR, data->saved_lcr);
++
++	serial_out(port8250, UART_IER, data->saved_ier);
++	serial_out(port8250, UART_FCR, data->saved_fcr);
++	serial_out(port8250, UART_MCR, data->last_mcr);
++}
++
+ static void dw8250_serial_out(struct uart_port *p, int offset, int value)
+ {
+ 	struct dw8250_data *d = p->private_data;
+ 
++	/*
++	 * If we started suspending and we see SCR went back to 0, assume we've
++	 * suspended and resumed and lost state.  Restore it now.
++	 */
++	if (d->suspending &&
++	    readb(p->membase + (UART_SCR << p->regshift)) != DW_UART_SCR_STATE)
++		dw8250_serial_restore(p);
++
+ 	if (offset == UART_MCR)
+ 		d->last_mcr = value;
+ 
+@@ -133,6 +168,14 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+ {
+ 	struct dw8250_data *d = p->private_data;
+ 
++	/*
++	 * If we started suspending and we see SCR went back to 0, assume we've
++	 * suspended and resumed and lost state.  Restore it now.
++	 */
++	if (d->suspending &&
++	    readb(p->membase + (UART_SCR << p->regshift)) != DW_UART_SCR_STATE)
++		dw8250_serial_restore(p);
++
+ 	if (offset == UART_MCR)
+ 		d->last_mcr = value;
+ 
+@@ -487,9 +530,29 @@ static int dw8250_remove(struct platform_device *pdev)
+ static int dw8250_suspend(struct device *dev)
+ {
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
++	struct uart_8250_port *port8250 = serial8250_get_port(data->line);
++	struct uart_port *port = &port8250->port;
+ 
+ 	serial8250_suspend_port(data->line);
+ 
++	/* We only deal with ports that were left on (no_console_suspend) */
++	if (port->suspended)
++		return 0;
++
++	/* We'll save our registers in case we lose state in suspend */
++	data->saved_fcr = serial_in(port8250, UART_FCR);
++	data->saved_ier = serial_in(port8250, UART_IER);
++	data->saved_lcr = serial_in(port8250, UART_LCR);
++
++	serial_out(port8250, UART_LCR, data->saved_lcr | UART_LCR_DLAB);
++	data->saved_dlm = serial_in(port8250, UART_DLM);
++	data->saved_dll = serial_in(port8250, UART_DLL);
++	serial_out(port8250, UART_LCR, data->saved_lcr);
++
++	/* Put a special canary in the scratch so we tell when state is lost */
++	serial_out(port8250, UART_SCR, DW_UART_SCR_STATE);
++	data->suspending = 1;
++
+ 	return 0;
+ }
+ 
+@@ -497,6 +560,10 @@ static int dw8250_resume(struct device *dev)
+ {
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
+ 
++	/* We never lost state; stop checking for canary */
++	if (data->suspending)
++		data->suspending = 0;
++
+ 	serial8250_resume_port(data->line);
+ 
+ 	return 0;
+-- 
+2.1.0.rc2.206.gedb03e5
+
