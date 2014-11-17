@@ -1,63 +1,38 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] gpio: mxs: implement get_direction callback
-Date: Mon, 17 Nov 2014 09:44:10 +0100
-Message-ID: <20141117084410.GD27002@pengutronix.de>
-References: <1416004026-9667-1-git-send-email-j.uzycki@elproma.com.pl>
- <54695654.3070209@elproma.com.pl>
- <20141117082848.GZ27002@pengutronix.de>
- <1416213534.761947189@f70.i.mail.ru>
+From: Loic Poulain <loic.poulain@intel.com>
+Subject: Re: [PATCH] serial: 8250_dw: Handle no_console_suspend when uart
+ loses state
+Date: Mon, 17 Nov 2014 09:56:08 +0100
+Message-ID: <5469B828.90401@intel.com>
+References: <1416011556-23422-1-git-send-email-dianders@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-gpio-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1416213534.761947189@f70.i.mail.ru>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: fabio.estevam@freescale.com, Alexandre Courbot <gnurou@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org, Janusz =?utf-8?Q?U=C5=BCycki?= <j.uzycki@elproma.com.pl>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:53677 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751625AbaKQIx2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Nov 2014 03:53:28 -0500
+In-Reply-To: <1416011556-23422-1-git-send-email-dianders@chromium.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Doug Anderson <dianders@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heiko Stuebner <heiko@sntech.de>, Jiri Slaby <jslaby@suse.cz>, Chris Zhong <zyw@rock-chips.com>, linux-rockchip@lists.infradead.org, linux-arm-kernel@lists.infradead.org, Andrew Bresticker <abrestic@chromium.org>, mika.westerberg@linux.intel.com, heikki.krogerus@linux.intel.com, andriy.shevchenko@linux.intel.com, wens@csie.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hello Alexander,
+> In certain suspend modes on certain boards the 8250 UART may lose
+> state when the device goes to suspend.  If we're using
+> no_console_suspend this can cause lots of problems during resume.
+>
+> Let's cache the basic UART config registers at suspend time and if we
+> notice that the UART loses state (by looking at a canary stored in the
+> scratch register) we'll restore it.
 
-On Mon, Nov 17, 2014 at 11:38:54AM +0300, Alexander Shiyan wrote:
-> Hello.
->=20
-> ...
-> > > struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned =
-int
-> > > idx, int *irqs)
-> > What is idx about? I see it already in the mctrl_gpio API, but ther=
-e is
-> > no documentation about how it's used. Is it always 0?
->=20
-> This could be used for drivers with several UARTs, which registered a=
-t once.
-Then what about:
+If I'm not wrong, it's already done in acpi_lpss suspend/resume (for 
+8250_dw).
+Commit c78b0830667a7e7c1f0ca65b76b33166a84806b3.
 
-	/**
-	 * Document what idx is about here.
-	 */
-	struct mctrl_gpios *mctrl_gpio_init_index(struct uart_port *port, unsi=
-gned int idx);
-	static inline struct mctrl_gpios *mctrl_gpio_init(struct uart_port *po=
-rt)
-	{
-		return mctrl_gpio_init_index(port, 0);
-	}
+Regards,
+Loic
 
-? That matches how gpio and of functions use the indexed variants.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
---
-To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Intel Open Source Technology Center
+http://oss.intel.com/
