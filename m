@@ -1,42 +1,50 @@
-From: Dmitry Eremin-Solenikov <dbaryshkov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH V2 1/5] serial: pxa: prepare/unprepare clocks
-Date: Mon, 17 Nov 2014 18:07:39 +0300
-Message-ID: <1416236863-20898-1-git-send-email-dbaryshkov@gmail.com>
-Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robert Jarzmik <robert.jarzmik-GANU6spQydw@public.gmane.org>, Daniel Mack <daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org>, Haojian Zhuang <haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
-Cc: Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+Subject: [PATCH V2 2/5] i2c: pxa: prepare/unprepare clocks
+Date: Mon, 17 Nov 2014 18:07:40 +0300
+Message-ID: <1416236863-20898-2-git-send-email-dbaryshkov@gmail.com>
+References: <1416236863-20898-1-git-send-email-dbaryshkov@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-pa0-f47.google.com ([209.85.220.47]:33660 "EHLO
+	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752843AbaKQPIE (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Mon, 17 Nov 2014 10:08:04 -0500
+In-Reply-To: <1416236863-20898-1-git-send-email-dbaryshkov@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Robert Jarzmik <robert.jarzmik@free.fr>, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Wolfram Sang <wsa@the-dreams.de>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Felipe Balbi <balbi@ti.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
 Change clk_enable/disable() calls to clk_prepare_enable() and
 clk_disable_unprepare().
 
-Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
 ---
- drivers/tty/serial/pxa.c | 4 ++--
+ drivers/i2c/busses/i2c-pxa.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 21b7d8b8..2f4c329 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -647,7 +647,7 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
- 	unsigned long flags;
- 	int locked = 1;
+diff --git a/drivers/i2c/busses/i2c-pxa.c b/drivers/i2c/busses/i2c-pxa.c
+index be671f7..2e75375 100644
+--- a/drivers/i2c/busses/i2c-pxa.c
++++ b/drivers/i2c/busses/i2c-pxa.c
+@@ -1297,7 +1297,7 @@ static int i2c_pxa_suspend_noirq(struct device *dev)
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct pxa_i2c *i2c = platform_get_drvdata(pdev);
  
--	clk_enable(up->clk);
-+	clk_prepare_enable(up->clk);
- 	local_irq_save(flags);
- 	if (up->port.sysrq)
- 		locked = 0;
-@@ -674,7 +674,7 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
- 	if (locked)
- 		spin_unlock(&up->port.lock);
- 	local_irq_restore(flags);
--	clk_disable(up->clk);
-+	clk_disable_unprepare(up->clk);
+-	clk_disable(i2c->clk);
++	clk_disable_unprepare(i2c->clk);
  
+ 	return 0;
  }
+@@ -1307,7 +1307,7 @@ static int i2c_pxa_resume_noirq(struct device *dev)
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct pxa_i2c *i2c = platform_get_drvdata(pdev);
  
+-	clk_enable(i2c->clk);
++	clk_prepare_enable(i2c->clk);
+ 	i2c_pxa_reset(i2c);
+ 
+ 	return 0;
 -- 
 2.1.1
+
