@@ -1,69 +1,326 @@
-From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH] gpio: mxs: implement get_direction callback
-Date: Mon, 17 Nov 2014 20:02:54 +0100
-Message-ID: <546A465E.5080904@elproma.com.pl>
-References: <1416004026-9667-1-git-send-email-j.uzycki@elproma.com.pl> <20141114232601.GW27002@pengutronix.de> <5467A980.5090204@elproma.com.pl> <20141116214239.GX27002@pengutronix.de> <54693A51.5080907@elproma.com.pl> <54695654.3070209@elproma.com.pl> <20141117082848.GZ27002@pengutronix.de> <546A29B9.5030104@elproma.com.pl> <546A2B69.4010409@elproma.com.pl> <20141117184229.GM27002@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:55117 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1751515AbaKQTCt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Nov 2014 14:02:49 -0500
-In-Reply-To: <20141117184229.GM27002@pengutronix.de>
-Sender: linux-serial-owner@vger.kernel.org
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: [RFC PATCH 1/2] serial: mctrl-gpio: Add irqs helpers for input lines
+Date: Mon, 17 Nov 2014 22:39:26 +0100
+Message-ID: <1416260367-31589-1-git-send-email-j.uzycki@elproma.com.pl>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Cc: fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
 List-Id: linux-serial@vger.kernel.org
-To: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, fabio.estevam@freescale.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
 
-Hello Uwe,
+A driver using mctrl_gpio called gpiod_get_direction() to check if
+gpio is input line. However .get_direction callback is not available
+for all platforms. The patch allows to avoid the function.
+The patch introduces the following helpers:
+- mctrl_gpio_request_irqs
+- mctrl_gpio_free_irqs
+- mctrl_gpio_enable_ms
+- mctrl_gpio_disable_ms
+They allow to:
+- simplify drivers which use mctrl_gpio
+- hide irq table in mctrl_gpio
+- use default irq handler for gpios
+- better separate code for gpio modem lines from uart's code
+In addition mctrl_gpio_init() has been renamed to mctrl_gpio_init_dt()
+to focus DT usage. Also mctrl_gpio_init_dt() initializes irq table for
+gpios now and passes struct uart_port into struct mctrl_gpios.
+This resulted in changed mctrl_gpio_init_dt() parameter.
+It also requires uart->dev is set before the function.
 
-W dniu 2014-11-17 o 19:42, Uwe Kleine-K=C3=B6nig pisze:
-> Hello Janusz,
->
-> On Mon, Nov 17, 2014 at 06:07:53PM +0100, Janusz U=C5=BCycki wrote:
->>> It looks there could be one more helper useful.
->>> Both atmel_serial.c and mxs-auart.c checks if the line is
->>> supported by mctrl_gpio.
->>> One time it is eg.:
->>> (s->gpio_irq[UART_GPIO_DCD] > 0)
->>> another time it is eg.:
->>> IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios, UART_GPIO_RTS))
->>>
->>> The first one is no possible now. The second seems rude.
->>> bool mctrl_gpio_is_gpio((struct mctrl_gpios *gpios, enum
->>> mctrl_gpio_idx gidx);
->>> The name is hard. Moreover the implementation could be very similar
->>> to mctrl_gpio_to_gpiod(). Any ideas?
->> The differences:
->> - faster
->> - not exported
->> - used mainly in uart's interrupt
->> - assumes that struct mctrl_gpios *gpios exists
-> I wonder why you need it at all?!
+There were also fixed:
+- irq = 0 means invalid/unused (-EINVAL no more used)
+- mctrl_gpio_request_irqs() doesn't use negative enum value
+  if request_irq() failed. It just calls mctrl_gpio_free_irqs()
 
-If the line is not supported by gpio it could be supported by native=20
-uart's hardware
-if possible. There are different configurations. One port has the lines=
-,=20
-other
-which uses the same driver doesn't have.
-Let's look at disable/enable_ms() in atmet_serial.c.
-In mxs-auart DMA is not used if CTS or RTS is gpio line (timming).
+The mctrl_gpio_is_gpio() function and IRQ_NOAUTOEN are under discussion.
+The patch applies to next and was tested with mxs-auart.
 
-best regards
-Janusz
+The patch requires to update drivers which use mctrl_gpio:
+- atmel_serial
+- mxs-auart
 
->
-> Best regards
-> Uwe
->
+Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+---
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+The patchset delivers update for mxs-auart but there is missing
+for atmel_serial yet. I've tested it with mxs hardware.
+
+---
+ .../drivers/tty/serial/serial_mctrl_gpio.c         | 109 ++++++++++++++++++++-
+ .../drivers/tty/serial/serial_mctrl_gpio.h         |  59 ++++++++++-
+ 2 files changed, 163 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+index a3035f9..011e78e 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.c
++++ b/drivers/tty/serial/serial_mctrl_gpio.c
+@@ -19,11 +19,15 @@
+ #include <linux/device.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/termios.h>
++#include <linux/irq.h>
+ 
+ #include "serial_mctrl_gpio.h"
+ 
+ struct mctrl_gpios {
++	struct uart_port *port;
+ 	struct gpio_desc *gpio[UART_GPIO_MAX];
++	int irq[UART_GPIO_MAX];
++	unsigned int mctrl_prev;
+ };
+ 
+ static const struct {
+@@ -66,6 +70,12 @@ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+ }
+ EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
+ 
++inline
++bool mctrl_gpio_is_gpio(struct mctrl_gpios *gpios, enum mctrl_gpio_idx gidx)
++{
++	return !IS_ERR_OR_NULL(gpios->gpio[gidx]);
++}
++
+ unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
+ {
+ 	enum mctrl_gpio_idx i;
+@@ -90,8 +100,9 @@ unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
+ }
+ EXPORT_SYMBOL_GPL(mctrl_gpio_get);
+ 
+-struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx)
++struct mctrl_gpios *mctrl_gpio_init_dt(struct uart_port *port, unsigned int idx)
+ {
++	struct device *dev = port->dev;
+ 	struct mctrl_gpios *gpios;
+ 	enum mctrl_gpio_idx i;
+ 	int err;
+@@ -100,6 +111,7 @@ struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx)
+ 	if (!gpios)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	gpios->port = port;
+ 	for (i = 0; i < UART_GPIO_MAX; i++) {
+ 		gpios->gpio[i] = devm_gpiod_get_index(dev,
+ 						      mctrl_gpios_desc[i].name,
+@@ -122,11 +134,13 @@ struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx)
+ 			devm_gpiod_put(dev, gpios->gpio[i]);
+ 			gpios->gpio[i] = NULL;
+ 		}
++		if (gpios->gpio[i] && !mctrl_gpios_desc[i].dir_out)
++			gpios->irq[i] = gpiod_to_irq(gpios->gpio[i]);
+ 	}
+ 
+ 	return gpios;
+ }
+-EXPORT_SYMBOL_GPL(mctrl_gpio_init);
++EXPORT_SYMBOL_GPL(mctrl_gpio_init_dt);
+ 
+ void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios)
+ {
+@@ -141,3 +155,94 @@ void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios)
+ 	devm_kfree(dev, gpios);
+ }
+ EXPORT_SYMBOL_GPL(mctrl_gpio_free);
++
++/*
++ * Dealing with GPIO interrupt
++ */
++#define MCTRL_ANY_DELTA        (TIOCM_RI | TIOCM_DSR | TIOCM_CD | TIOCM_CTS)
++static irqreturn_t mctrl_gpio_irq_handle(int irq, void *context)
++{
++	struct mctrl_gpios *gpios = context;
++	struct uart_port *port = gpios->port;
++	u32 mctrl = gpios->mctrl_prev;
++	u32 mctrl_diff;
++
++	mctrl_gpio_get(gpios, &mctrl);
++
++	mctrl_diff = mctrl ^ gpios->mctrl_prev;
++	gpios->mctrl_prev = mctrl;
++	if (mctrl_diff & MCTRL_ANY_DELTA && port->state != NULL) {
++		if (mctrl_diff & TIOCM_RI)
++			port->icount.rng++;
++		if (mctrl_diff & TIOCM_DSR)
++			port->icount.dsr++;
++		if (mctrl_diff & TIOCM_CD)
++			uart_handle_dcd_change(port, mctrl & TIOCM_CD);
++		if (mctrl_diff & TIOCM_CTS)
++			uart_handle_cts_change(port, mctrl & TIOCM_CTS);
++
++		wake_up_interruptible(&port->state->port.delta_msr_wait);
++	}
++
++	return IRQ_HANDLED;
++}
++
++int mctrl_gpio_request_irqs(struct mctrl_gpios *gpios)
++{
++	struct uart_port *port = gpios->port;
++	int *irq = gpios->irq;
++	enum mctrl_gpio_idx i;
++	int err = 0;
++
++	for (i = 0; i < UART_GPIO_MAX; i++) {
++		if (irq[i] <= 0)
++			continue;
++
++		irq_set_status_flags(irq[i], IRQ_NOAUTOEN);
++		err = request_irq(irq[i], mctrl_gpio_irq_handle,
++				  IRQ_TYPE_EDGE_BOTH,
++				  dev_name(port->dev), gpios);
++		if (err) {
++			mctrl_gpio_free_irqs(gpios);
++			dev_err(port->dev, "%s: Can't get %d irq\n",
++				__func__, irq[i]);
++			break;
++		}
++	}
++
++	return err;
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_request_irqs);
++
++void mctrl_gpio_free_irqs(struct mctrl_gpios *gpios)
++{
++	enum mctrl_gpio_idx i;
++
++	for (i = 0; i < UART_GPIO_MAX; i++)
++		if (gpios->irq[i] > 0)
++			free_irq(gpios->irq[i], gpios);
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_free_irqs);
++
++void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios)
++{
++	enum mctrl_gpio_idx i;
++
++	/* get initial status of modem lines GPIOs */
++	mctrl_gpio_get(gpios, &gpios->mctrl_prev);
++
++	for (i = 0; i < UART_GPIO_MAX; i++)
++		if (gpios->irq[i] > 0)
++			enable_irq(gpios->irq[i]);
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_enable_ms);
++
++void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios)
++{
++	enum mctrl_gpio_idx i;
++
++	for (i = 0; i < UART_GPIO_MAX; i++)
++		if (gpios->irq[i] > 0)
++			disable_irq(gpios->irq[i]);
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms);
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
+index 400ba04..13ba3f4 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.h
++++ b/drivers/tty/serial/serial_mctrl_gpio.h
+@@ -21,6 +21,7 @@
+ #include <linux/err.h>
+ #include <linux/device.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/serial_core.h>
+ 
+ enum mctrl_gpio_idx {
+ 	UART_GPIO_CTS,
+@@ -40,6 +41,13 @@ enum mctrl_gpio_idx {
+  */
+ struct mctrl_gpios;
+ 
++/*
++ * Return true if gidx is GPIO line, otherwise false.
++ * It assumes that gpios is allocated and not NULL.
++ */
++inline
++bool mctrl_gpio_is_gpio(struct mctrl_gpios *gpios, enum mctrl_gpio_idx gidx);
++
+ #ifdef CONFIG_GPIOLIB
+ 
+ /*
+@@ -60,12 +68,13 @@ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+ 				      enum mctrl_gpio_idx gidx);
+ 
+ /*
+- * Request and set direction of modem control lines GPIOs.
++ * Request and set direction of modem control lines GPIOs. DT is used.
++ * Initialize irq table for GPIOs.
+  * devm_* functions are used, so there's no need to call mctrl_gpio_free().
+  * Returns a pointer to the allocated mctrl structure if ok, -ENOMEM on
+  * allocation error.
+  */
+-struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx);
++struct mctrl_gpios *mctrl_gpio_init_dt(struct uart_port *port, unsigned int idx);
+ 
+ /*
+  * Free the mctrl_gpios structure.
+@@ -74,6 +83,28 @@ struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx);
+  */
+ void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios);
+ 
++/*
++ * Request irqs for input lines GPIOs. The irqs are set disabled
++ * and triggered on both edges.
++ * Returns zero if OK, otherwise an error code.
++ */
++int mctrl_gpio_request_irqs(struct mctrl_gpios *gpios);
++
++/*
++ * Free irqs for input lines GPIOs.
++ */
++void mctrl_gpio_free_irqs(struct mctrl_gpios *gpios);
++
++/*
++ * Disable modem status interrupts assigned to GPIOs
++ */
++void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
++
++/*
++ * Enable modem status interrupts assigned to GPIOs
++ */
++void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
++
+ #else /* GPIOLIB */
+ 
+ static inline
+@@ -95,7 +126,7 @@ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+ }
+ 
+ static inline
+-struct mctrl_gpios *mctrl_gpio_init(struct device *dev, unsigned int idx)
++struct mctrl_gpios *mctrl_gpio_init_dt(struct uart_port *port, unsigned int idx)
+ {
+ 	return ERR_PTR(-ENOSYS);
+ }
+@@ -105,6 +136,28 @@ void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios)
+ {
+ }
+ 
++static inline
++int mctrl_gpio_request_irqs(struct mctrl_gpios *gpios)
++{
++	/*return -ENOTSUP;*/
++	return 0;
++}
++
++static inline
++void mctrl_gpio_free_irqs(struct mctrl_gpios *gpios)
++{
++}
++
++static inline
++void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios)
++{
++}
++
++static inline
++void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios)
++{
++}
++
+ #endif /* GPIOLIB */
+ 
+ #endif
+-- 
+1.7.11.3
+
