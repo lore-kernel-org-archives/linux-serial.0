@@ -1,76 +1,42 @@
-From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH] gpio: mxs: implement get_direction callback
-Date: Mon, 17 Nov 2014 15:45:00 +0100
-Message-ID: <546A09EC.8080809@elproma.com.pl>
-References: <1416004026-9667-1-git-send-email-j.uzycki@elproma.com.pl> <20141114232601.GW27002@pengutronix.de> <5467A980.5090204@elproma.com.pl> <20141116214239.GX27002@pengutronix.de> <54693A51.5080907@elproma.com.pl> <CACQ1gAjpXnnUPOj3paMGeB=NeQWR_7p6k8WPdxS9YzLakphBhw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <CACQ1gAjpXnnUPOj3paMGeB=NeQWR_7p6k8WPdxS9YzLakphBhw@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, fabio.estevam@freescale.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Fabio Estevam <festevam@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Dmitry Eremin-Solenikov <dbaryshkov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH V2 1/5] serial: pxa: prepare/unprepare clocks
+Date: Mon, 17 Nov 2014 18:07:39 +0300
+Message-ID: <1416236863-20898-1-git-send-email-dbaryshkov@gmail.com>
+Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robert Jarzmik <robert.jarzmik-GANU6spQydw@public.gmane.org>, Daniel Mack <daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org>, Haojian Zhuang <haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>
+Cc: Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+Change clk_enable/disable() calls to clk_prepare_enable() and
+clk_disable_unprepare().
 
-W dniu 2014-11-17 o 10:26, Richard Genoud pisze:
-> 2014-11-17 0:59 GMT+01:00 Janusz U=C5=BCycki <j.uzycki@elproma.com.pl=
->:
->> W dniu 2014-11-16 o 22:42, Uwe Kleine-K=C3=B6nig pisze:
->>
->> Thanks Uwe. I fully agree with you.
->> a) was just a starter to your suggestion. My options were too conser=
-vative -
->> I just
->> wanted to avoid tests on hardware I don't have.
->> I don't understand why gpiod_get_direction() always requires the cal=
-lback
->> and b) would be broken (I'm not so familiar with gpiolib) but I don'=
-t need
->> it now.
->>
->> So, it looks we can drop the gpio-mxs patch, yes?
->> And, I or Richard should submit a patch for
->> mctrl_gpio/atmel_serial/mxs-auart
->> to introduce the irq helper, yes?
-> You're welcome to do it !
-> At the time the mctrl_helpers were introduced, there was only one use=
-r
-> (atmel_serial), so the line between specific code and factorizable
-> code was not so clear.
-> But clearly, the more we factorize, the better !
->
->> You wrote passing uart_port is enough. Argument "name" for request_i=
-rq() can
->> be
->> recovered from dev_name(dev) or dev_driver_string(dev)  where dev =3D
->> port_uart->dev.
-> And, honestly, I'm not sure dev_name(dev) is a good name.
-> Having something like dev_name(dev)_port_id_CTS may be better.
->
+Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/tty/serial/pxa.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-=46or names other than device's or driver's name I would need to alloca=
-te
-string. Is it so important? You can simple check the interrupt and=20
-corresponding port:
-cat /proc/interrupts
-  50:          0  gpio-mxs  21  80072000.serial
-  80:          0  gpio-mxs  18  8006c000.serial
-  81:          0  gpio-mxs  19  8006c000.serial
-  83:          0  gpio-mxs  21  8006c000.serial
-  84:          0  gpio-mxs  22  8006c000.serial
-
-best regards
-Janusz
-
-> Seems ok !
->
-> Richard.
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index 21b7d8b8..2f4c329 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -647,7 +647,7 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+ 	unsigned long flags;
+ 	int locked = 1;
+ 
+-	clk_enable(up->clk);
++	clk_prepare_enable(up->clk);
+ 	local_irq_save(flags);
+ 	if (up->port.sysrq)
+ 		locked = 0;
+@@ -674,7 +674,7 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
+ 	if (locked)
+ 		spin_unlock(&up->port.lock);
+ 	local_irq_restore(flags);
+-	clk_disable(up->clk);
++	clk_disable_unprepare(up->clk);
+ 
+ }
+ 
+-- 
+2.1.1
