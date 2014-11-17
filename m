@@ -1,64 +1,80 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] gpio: mxs: implement get_direction callback
-Date: Mon, 17 Nov 2014 10:17:06 +0000
-Message-ID: <20141117101706.GO4042@n2100.arm.linux.org.uk>
-References: <1416004026-9667-1-git-send-email-j.uzycki@elproma.com.pl>
- <CACQ1gAha1MuroyB35zN_BuwRNGS_J3Xh1htiHJda_2_19qh31g@mail.gmail.com>
- <20141117095909.GH27002@pengutronix.de>
- <1416218753.520525851@f237.i.mail.ru>
- <CACQ1gAjCK68qB4iQhyAbfWErpbSC2z0B+SiOWChoqUNamDb-3A@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:42713 "EHLO
-	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751863AbaKQKRW (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Nov 2014 05:17:22 -0500
-Content-Disposition: inline
-In-Reply-To: <CACQ1gAjCK68qB4iQhyAbfWErpbSC2z0B+SiOWChoqUNamDb-3A@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: [PATCH v2] gpio: mxs: implement get_direction callback
+Date: Mon, 17 Nov 2014 11:47:36 +0100
+Message-ID: <1416221256-11671-1-git-send-email-j.uzycki@elproma.com.pl>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
 List-Id: linux-serial@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Alexander Shiyan <shc_work@mail.ru>, fabio.estevam@freescale.com, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz =?utf-8?Q?U=C5=BCycki?= <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Mon, Nov 17, 2014 at 11:10:53AM +0100, Richard Genoud wrote:
-> 2014-11-17 11:05 GMT+01:00 Alexander Shiyan <shc_work@mail.ru>:
-> > Mon, 17 Nov 2014 10:59:09 +0100 =D0=BE=D1=82 Uwe Kleine-K=C3=B6nig =
-<u.kleine-koenig@pengutronix.de>:
-> >> Hello Richard,
-> >>
-> >> > >>>> So finally the prototypes would be:
-> >> > >>>> int mctrl_gpio_request_irqs(struct mctrl_gpios*, struct
-> >> > >>>> uart_port*, irqhandler_t);
-> >> > >>>> void mctrl_gpio_free_irqs(struct mctrl_gpios*);
-> >> > >>
-> >> > >> I think:
-> >> > >>
-> >> > >>         struct mctrl_gpios {
-> >> > >>                 struct uart_port *port;
-> >> > >>                 struct {
-> >> > >>                         gpio_desc *gpio;
-> >> > >>                         unsigned int irq;
-> >> > I think it's just "int irq;" there
-> >> irqs are unsigned. Some functions returning an irq use "int", but
-> >> depending on who you ask this only for error reporting or a relict=
-=2E
-> >> Use 0 for invalid/unused in mctrl_gpio*.
-> >
-> > afaik, IRQ 0 is valid irq number.
-> Unfortunately, that's right. For instance on atmel processors, irq 0
-> is often used.
+gpiolib's gpiod_get_direction() function returns the EINVAL error
+if .get_direction callback is not defined.
+The patch implements the callback for mxs chip what is useful
+for debugging.
 
-=2E.. which means Atmel SoCs need fixing not to use IRQ0 as a valid
-interrupt.
+Commit f9e42397d79b
+("serial: mxs-auart: add interrupts for modem control lines")
+as based on commit ab5e4e4108ca
+("tty/serial: at91: add interrupts for modem control lines")
+uses the gpiod_get_direction() function.
 
---=20
-=46TTC broadband for 0.8mile line: currently at 9.5Mbps down 400kbps up
-according to speedtest.net.
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Inspired from arch/arm/mach-at91/gpio.c
+
+Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+---
+
+Changes since v1:
+- Fix the explanation why the patch is needed
+
+Two patches were missed during movements between our internal repos.
+The 2/2 patch is required against commits:
+  f9e42397d79b ("serial: mxs-auart: add interrupts for modem control lines")
+  36a262782b04 ("serial: mxs-auart: enable PPS support")
+I've done build-test for the next only before.
+I should have done hardware test also for the next, sorry.
+Now it is tested for the next on real hardware too.
+
+On the moment the patch is required to get the patch
+"serial: mxs-auart: enable PPS support" working.
+It is planned to introduce new mctrl_gpio helpers to avoid
+gpiod_get_direction() function.
+
+---
+ drivers/gpio/gpio-mxs.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/gpio/gpio-mxs.c b/drivers/gpio/gpio-mxs.c
+index 8ffdd7d..56052c2 100644
+--- a/drivers/gpio/gpio-mxs.c
++++ b/drivers/gpio/gpio-mxs.c
+@@ -227,6 +227,18 @@ static int mxs_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
+ 	return irq_find_mapping(port->domain, offset);
+ }
+ 
++static int mxs_gpio_get_direction(struct gpio_chip *gc, unsigned offset)
++{
++	struct bgpio_chip *bgc = to_bgpio_chip(gc);
++	struct mxs_gpio_port *port =
++		container_of(bgc, struct mxs_gpio_port, bgc);
++	u32 mask = 1 << offset;
++	u32 dir;
++
++	dir = readl(port->base + PINCTRL_DOE(port));
++	return !(dir & mask);
++}
++
+ static struct platform_device_id mxs_gpio_ids[] = {
+ 	{
+ 		.name = "imx23-gpio",
+@@ -320,6 +332,7 @@ static int mxs_gpio_probe(struct platform_device *pdev)
+ 		goto out_irqdesc_free;
+ 
+ 	port->bgc.gc.to_irq = mxs_gpio_to_irq;
++	port->bgc.gc.get_direction = mxs_gpio_get_direction;
+ 	port->bgc.gc.base = port->id * 32;
+ 
+ 	err = gpiochip_add(&port->bgc.gc);
+-- 
+1.7.11.3
+
