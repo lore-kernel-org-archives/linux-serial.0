@@ -1,38 +1,36 @@
-From: Loic Poulain <loic.poulain@intel.com>
-Subject: Re: [PATCH] serial: 8250_dw: Handle no_console_suspend when uart
- loses state
-Date: Mon, 17 Nov 2014 09:56:08 +0100
-Message-ID: <5469B828.90401@intel.com>
-References: <1416011556-23422-1-git-send-email-dianders@chromium.org>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gZ3BpbzogbXhzOiBpbXBsZW1lbnQgZ2V0X2RpcmVjdGlv?=
+ =?UTF-8?B?biBjYWxsYmFjaw==?=
+Date: Mon, 17 Nov 2014 11:53:36 +0300
+Message-ID: <1416214416.941104920@f40.i.mail.ru>
+References: <1416004026-9667-1-git-send-email-j.uzycki@elproma.com.pl>
+ <1416213534.761947189@f70.i.mail.ru>
+ <20141117084410.GD27002@pengutronix.de>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:53677 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751625AbaKQIx2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Mon, 17 Nov 2014 03:53:28 -0500
-In-Reply-To: <1416011556-23422-1-git-send-email-dianders@chromium.org>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20141117084410.GD27002@pengutronix.de>
+Sender: linux-gpio-owner@vger.kernel.org
+To: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: fabio.estevam@freescale.com, =?UTF-8?B?QWxleGFuZHJlIENvdXJib3Q=?= <gnurou@gmail.com>, =?UTF-8?B?UmljaGFyZCBHZW5vdWQ=?= <richard.genoud@gmail.com>, =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, =?UTF-8?B?TGludXMgV2FsbGVpag==?= <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, =?UTF-8?B?RmFiaW8gRXN0ZXZhbQ==?= <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
 List-Id: linux-serial@vger.kernel.org
-To: Doug Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heiko Stuebner <heiko@sntech.de>, Jiri Slaby <jslaby@suse.cz>, Chris Zhong <zyw@rock-chips.com>, linux-rockchip@lists.infradead.org, linux-arm-kernel@lists.infradead.org, Andrew Bresticker <abrestic@chromium.org>, mika.westerberg@linux.intel.com, heikki.krogerus@linux.intel.com, andriy.shevchenko@linux.intel.com, wens@csie.org, alan@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 
-> In certain suspend modes on certain boards the 8250 UART may lose
-> state when the device goes to suspend.  If we're using
-> no_console_suspend this can cause lots of problems during resume.
->
-> Let's cache the basic UART config registers at suspend time and if we
-> notice that the UART loses state (by looking at a canary stored in the
-> scratch register) we'll restore it.
-
-If I'm not wrong, it's already done in acpi_lpss suspend/resume (for 
-8250_dw).
-Commit c78b0830667a7e7c1f0ca65b76b33166a84806b3.
-
-Regards,
-Loic
-
--- 
-Intel Open Source Technology Center
-http://oss.intel.com/
+TW9uLCAxNyBOb3YgMjAxNCAwOTo0NDoxMCArMDEwMCDQvtGCIFV3ZSBLbGVpbmUtS8O2bmlnIDx1
+LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+Ogo+IEhlbGxvIEFsZXhhbmRlciwKPiAKPiBP
+biBNb24sIE5vdiAxNywgMjAxNCBhdCAxMTozODo1NEFNICswMzAwLCBBbGV4YW5kZXIgU2hpeWFu
+IHdyb3RlOgo+ID4gSGVsbG8uCj4gPiAKPiA+IC4uLgo+ID4gPiA+IHN0cnVjdCBtY3RybF9ncGlv
+cyAqbWN0cmxfZ3Bpb19pbml0KHN0cnVjdCBkZXZpY2UgKmRldiwgdW5zaWduZWQgaW50Cj4gPiA+
+ID4gaWR4LCBpbnQgKmlycXMpCj4gPiA+IFdoYXQgaXMgaWR4IGFib3V0PyBJIHNlZSBpdCBhbHJl
+YWR5IGluIHRoZSBtY3RybF9ncGlvIEFQSSwgYnV0IHRoZXJlIGlzCj4gPiA+IG5vIGRvY3VtZW50
+YXRpb24gYWJvdXQgaG93IGl0J3MgdXNlZC4gSXMgaXQgYWx3YXlzIDA/Cj4gPiAKPiA+IFRoaXMg
+Y291bGQgYmUgdXNlZCBmb3IgZHJpdmVycyB3aXRoIHNldmVyYWwgVUFSVHMsIHdoaWNoIHJlZ2lz
+dGVyZWQgYXQgb25jZS4KPiBUaGVuIHdoYXQgYWJvdXQ6Cj4gCj4gCS8qKgo+IAkgKiBEb2N1bWVu
+dCB3aGF0IGlkeCBpcyBhYm91dCBoZXJlLgo+IAkgKi8KPiAJc3RydWN0IG1jdHJsX2dwaW9zICpt
+Y3RybF9ncGlvX2luaXRfaW5kZXgoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgdW5zaWduZWQgaW50
+IGlkeCk7Cj4gCXN0YXRpYyBpbmxpbmUgc3RydWN0IG1jdHJsX2dwaW9zICptY3RybF9ncGlvX2lu
+aXQoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkKPiAJewo+IAkJcmV0dXJuIG1jdHJsX2dwaW9faW5p
+dF9pbmRleChwb3J0LCAwKTsKPiAJfQo+IAo+ID8gVGhhdCBtYXRjaGVzIGhvdyBncGlvIGFuZCBv
+ZiBmdW5jdGlvbnMgdXNlIHRoZSBpbmRleGVkIHZhcmlhbnRzLgoKVGhpcyBpcyBwbGFubmVkIGJ5
+IG1lIGZvciAic2NjbnhwIiBkcml2ZXIgYXQgbGVhc3QuCgotLS0KCg==
