@@ -1,47 +1,145 @@
-From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] serial: tegra: clean up tty-flag assignments
-Date: Tue, 18 Nov 2014 11:18:02 +0100
-Message-ID: <1416305882-8713-1-git-send-email-johan@kernel.org>
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+From: Johan Hovold <johan@kernel.org>
+Subject: [PATCH 1/3] USB: keyspan: fix tty line-status reporting
+Date: Tue, 18 Nov 2014 11:25:19 +0100
+Message-ID: <1416306321-22613-1-git-send-email-johan@kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-la0-f44.google.com ([209.85.215.44]:37085 "EHLO
+	mail-la0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753943AbaKRKZ5 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Nov 2014 05:25:57 -0500
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-usb@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, stable <stable@vger.kernel.org>
 
-The tty break and error flags are not bit masks so do not to use bitwise
-OR when assigning them.
+Fix handling of TTY error flags, which are not bitmasks and must
+specifically not be ORed together as this prevents the line discipline
+from recognising them.
 
-Note that there is no functional change due to the if-else construct and
-flag having been initialised to zero (TTY_NORMAL).
+Also insert null characters when reporting overrun errors as these are
+not associated with the received character.
 
-Signed-off-by: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/tty/serial/serial-tegra.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/usb/serial/keyspan.c | 76 ++++++++++++++++++++++++++++----------------
+ 1 file changed, 48 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 53d7c31ce098..0b615d8b968a 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -319,16 +319,16 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
- 	if (unlikely(lsr & TEGRA_UART_LSR_ANY)) {
- 		if (lsr & UART_LSR_OE) {
- 			/* Overrrun error */
--			flag |= TTY_OVERRUN;
-+			flag = TTY_OVERRUN;
- 			tup->uport.icount.overrun++;
- 			dev_err(tup->uport.dev, "Got overrun errors\n");
- 		} else if (lsr & UART_LSR_PE) {
- 			/* Parity error */
--			flag |= TTY_PARITY;
-+			flag = TTY_PARITY;
- 			tup->uport.icount.parity++;
- 			dev_err(tup->uport.dev, "Got Parity errors\n");
- 		} else if (lsr & UART_LSR_FE) {
--			flag |= TTY_FRAME;
-+			flag = TTY_FRAME;
- 			tup->uport.icount.frame++;
- 			dev_err(tup->uport.dev, "Got frame errors\n");
- 		} else if (lsr & UART_LSR_BI) {
+diff --git a/drivers/usb/serial/keyspan.c b/drivers/usb/serial/keyspan.c
+index 93cb7cebda62..7799d8bc4a63 100644
+--- a/drivers/usb/serial/keyspan.c
++++ b/drivers/usb/serial/keyspan.c
+@@ -321,14 +321,19 @@ static void	usa26_indat_callback(struct urb *urb)
+ 			/* some bytes had errors, every byte has status */
+ 			dev_dbg(&port->dev, "%s - RX error!!!!\n", __func__);
+ 			for (i = 0; i + 1 < urb->actual_length; i += 2) {
+-				int stat = data[i], flag = 0;
+-				if (stat & RXERROR_OVERRUN)
+-					flag |= TTY_OVERRUN;
+-				if (stat & RXERROR_FRAMING)
+-					flag |= TTY_FRAME;
+-				if (stat & RXERROR_PARITY)
+-					flag |= TTY_PARITY;
++				int stat = data[i];
++				int flag = TTY_NORMAL;
++
++				if (stat & RXERROR_OVERRUN) {
++					tty_insert_flip_char(&port->port, 0,
++								TTY_OVERRUN);
++				}
+ 				/* XXX should handle break (0x10) */
++				if (stat & RXERROR_PARITY)
++					flag = TTY_PARITY;
++				else if (stat & RXERROR_FRAMING)
++					flag = TTY_FRAME;
++
+ 				tty_insert_flip_char(&port->port, data[i+1],
+ 						flag);
+ 			}
+@@ -649,14 +654,19 @@ static void	usa49_indat_callback(struct urb *urb)
+ 		} else {
+ 			/* some bytes had errors, every byte has status */
+ 			for (i = 0; i + 1 < urb->actual_length; i += 2) {
+-				int stat = data[i], flag = 0;
+-				if (stat & RXERROR_OVERRUN)
+-					flag |= TTY_OVERRUN;
+-				if (stat & RXERROR_FRAMING)
+-					flag |= TTY_FRAME;
+-				if (stat & RXERROR_PARITY)
+-					flag |= TTY_PARITY;
++				int stat = data[i];
++				int flag = TTY_NORMAL;
++
++				if (stat & RXERROR_OVERRUN) {
++					tty_insert_flip_char(&port->port, 0,
++								TTY_OVERRUN);
++				}
+ 				/* XXX should handle break (0x10) */
++				if (stat & RXERROR_PARITY)
++					flag = TTY_PARITY;
++				else if (stat & RXERROR_FRAMING)
++					flag = TTY_FRAME;
++
+ 				tty_insert_flip_char(&port->port, data[i+1],
+ 						flag);
+ 			}
+@@ -713,15 +723,19 @@ static void usa49wg_indat_callback(struct urb *urb)
+ 			 */
+ 			for (x = 0; x + 1 < len &&
+ 				    i + 1 < urb->actual_length; x += 2) {
+-				int stat = data[i], flag = 0;
++				int stat = data[i];
++				int flag = TTY_NORMAL;
+ 
+-				if (stat & RXERROR_OVERRUN)
+-					flag |= TTY_OVERRUN;
+-				if (stat & RXERROR_FRAMING)
+-					flag |= TTY_FRAME;
+-				if (stat & RXERROR_PARITY)
+-					flag |= TTY_PARITY;
++				if (stat & RXERROR_OVERRUN) {
++					tty_insert_flip_char(&port->port, 0,
++								TTY_OVERRUN);
++				}
+ 				/* XXX should handle break (0x10) */
++				if (stat & RXERROR_PARITY)
++					flag = TTY_PARITY;
++				else if (stat & RXERROR_FRAMING)
++					flag = TTY_FRAME;
++
+ 				tty_insert_flip_char(&port->port, data[i+1],
+ 						     flag);
+ 				i += 2;
+@@ -784,14 +798,20 @@ static void usa90_indat_callback(struct urb *urb)
+ 			/* some bytes had errors, every byte has status */
+ 				dev_dbg(&port->dev, "%s - RX error!!!!\n", __func__);
+ 				for (i = 0; i + 1 < urb->actual_length; i += 2) {
+-					int stat = data[i], flag = 0;
+-					if (stat & RXERROR_OVERRUN)
+-						flag |= TTY_OVERRUN;
+-					if (stat & RXERROR_FRAMING)
+-						flag |= TTY_FRAME;
+-					if (stat & RXERROR_PARITY)
+-						flag |= TTY_PARITY;
++					int stat = data[i];
++					int flag = TTY_NORMAL;
++
++					if (stat & RXERROR_OVERRUN) {
++						tty_insert_flip_char(
++								&port->port, 0,
++								TTY_OVERRUN);
++					}
+ 					/* XXX should handle break (0x10) */
++					if (stat & RXERROR_PARITY)
++						flag = TTY_PARITY;
++					else if (stat & RXERROR_FRAMING)
++						flag = TTY_FRAME;
++
+ 					tty_insert_flip_char(&port->port,
+ 							data[i+1], flag);
+ 				}
 -- 
 2.0.4
+
