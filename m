@@ -1,124 +1,60 @@
-From: Grant Likely <grant.likely@linaro.org>
-Subject: Re: [PATCH V2 04/10] of: Change of_device_is_available() to return
- bool
-Date: Tue, 18 Nov 2014 17:33:03 +0000
-Message-ID: <20141118173303.A0490C40966@trevor.secretlab.ca>
-References: <1415825647-6024-1-git-send-email-cernekee@gmail.com>
-	<1415825647-6024-5-git-send-email-cernekee@gmail.com>
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: [PATCH] serial: mxs-auart: fix tx_empty against shift register
+Date: Tue, 18 Nov 2014 18:37:13 +0100
+Message-ID: <1416332233-4143-1-git-send-email-j.uzycki@elproma.com.pl>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wi0-f180.google.com ([209.85.212.180]:50879 "EHLO
-	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753900AbaKRRdI (ORCPT
+Received: from v032797.home.net.pl ([89.161.177.31]:55517 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1755843AbaKRRfB (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Nov 2014 12:33:08 -0500
-Received: by mail-wi0-f180.google.com with SMTP id n3so6053463wiv.13
-        for <linux-serial@vger.kernel.org>; Tue, 18 Nov 2014 09:33:06 -0800 (PST)
-In-Reply-To: <1415825647-6024-5-git-send-email-cernekee@gmail.com>
+	Tue, 18 Nov 2014 12:35:01 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Cernekee <cernekee@gmail.com>, gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org
-Cc: arnd@arndb.de, daniel@zonque.org, haojian.zhuang@gmail.com, robert.jarzmik@free.fr, f.fainelli@gmail.com, mbizon@freebox.fr, jogo@openwrt.org, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <festevam@gmail.com>, Hector Palacios <hector.palacios@digi.com>
+Cc: fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Viguera Javier <Javier.Viguera@digi.com>, Craig McQueen <craig.mcqueen@beamcommunications.com>, Janusz Uzycki <j.uzycki@elproma.com.pl>
 
-On Wed, 12 Nov 2014 12:54:01 -0800
-, Kevin Cernekee <cernekee@gmail.com>
- wrote:
-> This function can only return true or false; using a bool makes it more
-> obvious to the reader.
-> 
-> Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
+tx_empty() should test whether both the transmitter fifo and shifter
+for the port is empty, ie. the whole last char was transmitted.
+The shift register is empty if AUART_STAT_BUSY is cleared.
+The patch fixes the function against the shift register.
 
-Applied, thanks.
+According to i.MX23 and i.MX28 Reference Manual:
+AUART_STAT_TXFE:
+ TX FIFO or transmit holding register is empty.
 
-g.
+AUART_STAT_BUSY:
+ AUART still transmits bits.
+ The BUSY signal goes HIGH as soon as the data is written to the
+ transmit FIFO (that is, the FIFO is non-empty) and remains asserted
+ HIGH while data is being transmitted.
+ BUSY is negated only when the transmit FIFO is empty, and the last
+ character has been transmitted from the shift register, including
+ the stop bits.
 
-> ---
->  drivers/of/base.c  | 22 +++++++++++-----------
->  include/linux/of.h |  6 +++---
->  2 files changed, 14 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/of/base.c b/drivers/of/base.c
-> index 707395c..81c095f 100644
-> --- a/drivers/of/base.c
-> +++ b/drivers/of/base.c
-> @@ -507,27 +507,27 @@ EXPORT_SYMBOL(of_machine_is_compatible);
->   *
->   *  @device: Node to check for availability, with locks already held
->   *
-> - *  Returns 1 if the status property is absent or set to "okay" or "ok",
-> - *  0 otherwise
-> + *  Returns true if the status property is absent or set to "okay" or "ok",
-> + *  false otherwise
->   */
-> -static int __of_device_is_available(const struct device_node *device)
-> +static bool __of_device_is_available(const struct device_node *device)
->  {
->  	const char *status;
->  	int statlen;
->  
->  	if (!device)
-> -		return 0;
-> +		return false;
->  
->  	status = __of_get_property(device, "status", &statlen);
->  	if (status == NULL)
-> -		return 1;
-> +		return true;
->  
->  	if (statlen > 0) {
->  		if (!strcmp(status, "okay") || !strcmp(status, "ok"))
-> -			return 1;
-> +			return true;
->  	}
->  
-> -	return 0;
-> +	return false;
->  }
->  
->  /**
-> @@ -535,13 +535,13 @@ static int __of_device_is_available(const struct device_node *device)
->   *
->   *  @device: Node to check for availability
->   *
-> - *  Returns 1 if the status property is absent or set to "okay" or "ok",
-> - *  0 otherwise
-> + *  Returns true if the status property is absent or set to "okay" or "ok",
-> + *  false otherwise
->   */
-> -int of_device_is_available(const struct device_node *device)
-> +bool of_device_is_available(const struct device_node *device)
->  {
->  	unsigned long flags;
-> -	int res;
-> +	bool res;
->  
->  	raw_spin_lock_irqsave(&devtree_lock, flags);
->  	res = __of_device_is_available(device);
-> diff --git a/include/linux/of.h b/include/linux/of.h
-> index 29f0adc..7aaaa59 100644
-> --- a/include/linux/of.h
-> +++ b/include/linux/of.h
-> @@ -275,7 +275,7 @@ extern int of_property_read_string_helper(struct device_node *np,
->  					      const char **out_strs, size_t sz, int index);
->  extern int of_device_is_compatible(const struct device_node *device,
->  				   const char *);
-> -extern int of_device_is_available(const struct device_node *device);
-> +extern bool of_device_is_available(const struct device_node *device);
->  extern const void *of_get_property(const struct device_node *node,
->  				const char *name,
->  				int *lenp);
-> @@ -426,9 +426,9 @@ static inline int of_device_is_compatible(const struct device_node *device,
->  	return 0;
->  }
->  
-> -static inline int of_device_is_available(const struct device_node *device)
-> +static inline bool of_device_is_available(const struct device_node *device)
->  {
-> -	return 0;
-> +	return false;
->  }
->  
->  static inline struct property *of_find_property(const struct device_node *np,
-> -- 
-> 2.1.1
-> 
+Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+---
+ drivers/tty/serial/mxs-auart.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 5ad18bd..4422dbb 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -889,10 +889,11 @@ static void mxs_auart_shutdown(struct uart_port *u)
+ 
+ static unsigned int mxs_auart_tx_empty(struct uart_port *u)
+ {
+-	if (readl(u->membase + AUART_STAT) & AUART_STAT_TXFE)
++	if ((readl(u->membase + AUART_STAT) &
++		 (AUART_STAT_TXFE | AUART_STAT_BUSY)) == AUART_STAT_TXFE)
+ 		return TIOCSER_TEMT;
+-	else
+-		return 0;
++
++	return 0;
+ }
+ 
+ static void mxs_auart_start_tx(struct uart_port *u)
+-- 
+1.7.11.3
 
