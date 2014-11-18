@@ -1,90 +1,88 @@
-From: Peter Hung <hpeter@gmail.com>
-Subject: [PATCH] Fix IO address calculation with Multi-Fintek PCI-to-UART Product
-Date: Tue, 18 Nov 2014 17:48:08 +0800
-Message-ID: <1416304088-6049-1-git-send-email-hpeter+linux_kernel@gmail.com>
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f45.google.com ([209.85.220.45]:42710 "EHLO
-	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751699AbaKRJsN (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Nov 2014 04:48:13 -0500
-Sender: linux-serial-owner@vger.kernel.org
+From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
+Subject: Re: [PATCH] gpio: mxs: implement get_direction callback
+Date: Tue, 18 Nov 2014 10:59:03 +0100
+Message-ID: <546B1867.30308@elproma.com.pl>
+References: <20141114232601.GW27002@pengutronix.de> <5467A980.5090204@elproma.com.pl> <20141116214239.GX27002@pengutronix.de> <54693A51.5080907@elproma.com.pl> <54695654.3070209@elproma.com.pl> <20141117082848.GZ27002@pengutronix.de> <546A29B9.5030104@elproma.com.pl> <546A2B69.4010409@elproma.com.pl> <20141117184229.GM27002@pengutronix.de> <546A465E.5080904@elproma.com.pl> <20141117222127.GN27002@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20141117222127.GN27002@pengutronix.de>
+Sender: linux-gpio-owner@vger.kernel.org
+To: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, fabio.estevam@freescale.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hung <hpeter+linux_kernel@gmail.com>
 
-Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
----
- drivers/tty/serial/8250/8250_pci.c | 37 ++++++++++++++++++++++++-------------
- 1 file changed, 24 insertions(+), 13 deletions(-)
+Hello Uwe,
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 0468e15..255bc56 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1551,28 +1551,31 @@ static int pci_fintek_setup(struct serial_private *priv,
- {
- 	struct pci_dev *pdev = priv->dev;
- 	unsigned long base;
--	unsigned long iobase;
-+	unsigned long iobase = 0;
- 	unsigned long ciobase = 0;
- 	u8 config_base;
-+	u32 bar_data[3];
-+	
- 
- 	/*
- 	 * We are supposed to be able to read these from the PCI config space,
- 	 * but the values there don't seem to match what we need to use, so
- 	 * just use these hard-coded values for now, as they are correct.
- 	 */
-+
- 	switch (idx) {
--	case 0: iobase = 0xe000; config_base = 0x40; break;
--	case 1: iobase = 0xe008; config_base = 0x48; break;
--	case 2: iobase = 0xe010; config_base = 0x50; break;
--	case 3: iobase = 0xe018; config_base = 0x58; break;
--	case 4: iobase = 0xe020; config_base = 0x60; break;
--	case 5: iobase = 0xe028; config_base = 0x68; break;
--	case 6: iobase = 0xe030; config_base = 0x70; break;
--	case 7: iobase = 0xe038; config_base = 0x78; break;
--	case 8: iobase = 0xe040; config_base = 0x80; break;
--	case 9: iobase = 0xe048; config_base = 0x88; break;
--	case 10: iobase = 0xe050; config_base = 0x90; break;
--	case 11: iobase = 0xe058; config_base = 0x98; break;
-+	case 0: config_base = 0x40; break;
-+	case 1: config_base = 0x48; break;
-+	case 2: config_base = 0x50; break;
-+	case 3: config_base = 0x58; break;
-+	case 4: config_base = 0x60; break;
-+	case 5: config_base = 0x68; break;
-+	case 6: config_base = 0x70; break;
-+	case 7: config_base = 0x78; break;
-+	case 8: config_base = 0x80; break;
-+	case 9: config_base = 0x88; break;
-+	case 10: config_base = 0x90; break;
-+	case 11: config_base = 0x98; break;
- 	default:
- 		/* Unknown number of ports, get out of here */
- 		return -EINVAL;
-@@ -1583,9 +1586,17 @@ static int pci_fintek_setup(struct serial_private *priv,
- 		ciobase = (int)(base + (0x8 * idx));
- 	}
- 
-+	pci_read_config_dword(pdev, 0x24, &bar_data[0]);
-+	pci_read_config_dword(pdev, 0x20, &bar_data[1]);
-+	pci_read_config_dword(pdev, 0x1c, &bar_data[2]);
-+
-+	/* Calculate Real IO Port */
-+	iobase = (bar_data[idx/4] & 0xffffffE0) + (idx % 4) * 8;
-+
- 	dev_dbg(&pdev->dev, "%s: idx=%d iobase=0x%lx ciobase=0x%lx config_base=0x%2x\n",
- 		__func__, idx, iobase, ciobase, config_base);
- 
-+
- 	/* Enable UART I/O port */
- 	pci_write_config_byte(pdev, config_base + 0x00, 0x01);
- 
--- 
-1.9.1
+W dniu 2014-11-17 o 23:21, Uwe Kleine-K=C3=B6nig pisze:
+> Hello Janusz,
+>
+> On Mon, Nov 17, 2014 at 08:02:54PM +0100, Janusz U=C5=BCycki wrote:
+>> W dniu 2014-11-17 o 19:42, Uwe Kleine-K=C3=B6nig pisze:
+>>> On Mon, Nov 17, 2014 at 06:07:53PM +0100, Janusz U=C5=BCycki wrote:
+>>>>> It looks there could be one more helper useful.
+>>>>> Both atmel_serial.c and mxs-auart.c checks if the line is
+>>>>> supported by mctrl_gpio.
+>>>>> One time it is eg.:
+>>>>> (s->gpio_irq[UART_GPIO_DCD] > 0)
+>>>>> another time it is eg.:
+>>>>> IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios, UART_GPIO_RTS))
+>>>>>
+>>>>> The first one is no possible now. The second seems rude.
+>>>>> bool mctrl_gpio_is_gpio((struct mctrl_gpios *gpios, enum
+>>>>> mctrl_gpio_idx gidx);
+>>>>> The name is hard. Moreover the implementation could be very simil=
+ar
+>>>>> to mctrl_gpio_to_gpiod(). Any ideas?
+>>>> The differences:
+>>>> - faster
+>>>> - not exported
+>>>> - used mainly in uart's interrupt
+>>>> - assumes that struct mctrl_gpios *gpios exists
+>>> I wonder why you need it at all?!
+>> If the line is not supported by gpio it could be supported by native
+>> uart's hardware
+>> if possible. There are different configurations. One port has the
+>> lines, other
+>> which uses the same driver doesn't have.
+>> Let's look at disable/enable_ms() in atmet_serial.c.
+>> In mxs-auart DMA is not used if CTS or RTS is gpio line (timming).
+> For the atmel driver I would expect that it doesn't hurt to set
+> ATMEL_US_CTSIC if CTS is realized using a gpio. But maybe I'm too
+> optimistic here. So atmel_enable_ms could look as follows:
+>
+> 	struct atmel_uart_port *atmel_port =3D to_atmel_uart_port(port);
+>
+> 	/*
+> 	 * Interrupt should not be enabled twice
+> 	 * ukl: is this check really needed?
+> 	 */
+> 	if (atmel_port->ms_irq_enabled)
+> 		return;
+>
+> 	atmel_port->ms_irq_enabled =3D true;
+>
+> 	mctrl_gpio_enable_ms(...);
+> 	UART_PUT_IER(port, ATMEL_US_CTSIC | ATMEL_US_DSRIC | ATMEL_US_RIIC |=
+ ATMEL_US_DCDIC);
 
+It is too optimistic I think. We shouldn't assume that internal lines=20
+are biased if not selected by pinmux.
+They should be but it is not ensured in most datasheets. Moreover today=
+=20
+time to market makes erratas longer
+and too often not complete. Sadly but true.
+
+best regards
+Janusz
+> Best regards
+> Uwe
+>
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
