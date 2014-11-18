@@ -1,7 +1,7 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH 3/3] USB: ssu100: fix overrun-error reporting
-Date: Tue, 18 Nov 2014 11:25:21 +0100
-Message-ID: <1416306321-22613-3-git-send-email-johan@kernel.org>
+Subject: [PATCH 2/3] USB: keyspan: fix overrun-error reporting
+Date: Tue, 18 Nov 2014 11:25:20 +0100
+Message-ID: <1416306321-22613-2-git-send-email-johan@kernel.org>
 References: <1416306321-22613-1-git-send-email-johan@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1416306321-22613-1-git-send-email-johan@kernel.org>
@@ -10,46 +10,57 @@ To: linux-usb@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Fix reporting of overrun errors, which should only be reported once
-using the inserted null character.
+Fix reporting of overrun errors, which are not associated with a
+character. Instead insert a null character and report only once.
 
-Fixes: 6b8f1ca5581b ("USB: ssu100: set tty_flags in ssu100_process_packet")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Cc: stable <stable@vger.kernel.org>
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/usb/serial/ssu100.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/usb/serial/keyspan.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/usb/serial/ssu100.c b/drivers/usb/serial/ssu100.c
-index a7fe664b6b7d..70a098de429f 100644
---- a/drivers/usb/serial/ssu100.c
-+++ b/drivers/usb/serial/ssu100.c
-@@ -490,10 +490,9 @@ static void ssu100_update_lsr(struct usb_serial_port *port, u8 lsr,
- 			if (*tty_flag == TTY_NORMAL)
- 				*tty_flag = TTY_FRAME;
- 		}
--		if (lsr & UART_LSR_OE){
-+		if (lsr & UART_LSR_OE) {
- 			port->icount.overrun++;
--			if (*tty_flag == TTY_NORMAL)
--				*tty_flag = TTY_OVERRUN;
-+			tty_insert_flip_char(&port->port, 0, TTY_OVERRUN);
- 		}
- 	}
- 
-@@ -511,12 +510,8 @@ static void ssu100_process_read_urb(struct urb *urb)
- 	if ((len >= 4) &&
- 	    (packet[0] == 0x1b) && (packet[1] == 0x1b) &&
- 	    ((packet[2] == 0x00) || (packet[2] == 0x01))) {
--		if (packet[2] == 0x00) {
-+		if (packet[2] == 0x00)
- 			ssu100_update_lsr(port, packet[3], &flag);
--			if (flag == TTY_OVERRUN)
--				tty_insert_flip_char(&port->port, 0,
--						TTY_OVERRUN);
--		}
- 		if (packet[2] == 0x01)
- 			ssu100_update_msr(port, packet[3]);
- 
+diff --git a/drivers/usb/serial/keyspan.c b/drivers/usb/serial/keyspan.c
+index 7799d8bc4a63..077c714f1285 100644
+--- a/drivers/usb/serial/keyspan.c
++++ b/drivers/usb/serial/keyspan.c
+@@ -311,12 +311,13 @@ static void	usa26_indat_callback(struct urb *urb)
+ 		if ((data[0] & 0x80) == 0) {
+ 			/* no errors on individual bytes, only
+ 			   possible overrun err */
+-			if (data[0] & RXERROR_OVERRUN)
+-				err = TTY_OVERRUN;
+-			else
+-				err = 0;
++			if (data[0] & RXERROR_OVERRUN) {
++				tty_insert_flip_char(&port->port, 0,
++								TTY_OVERRUN);
++			}
+ 			for (i = 1; i < urb->actual_length ; ++i)
+-				tty_insert_flip_char(&port->port, data[i], err);
++				tty_insert_flip_char(&port->port, data[i],
++								TTY_NORMAL);
+ 		} else {
+ 			/* some bytes had errors, every byte has status */
+ 			dev_dbg(&port->dev, "%s - RX error!!!!\n", __func__);
+@@ -787,13 +788,13 @@ static void usa90_indat_callback(struct urb *urb)
+ 			if ((data[0] & 0x80) == 0) {
+ 				/* no errors on individual bytes, only
+ 				   possible overrun err*/
+-				if (data[0] & RXERROR_OVERRUN)
+-					err = TTY_OVERRUN;
+-				else
+-					err = 0;
++				if (data[0] & RXERROR_OVERRUN) {
++					tty_insert_flip_char(&port->port, 0,
++								TTY_OVERRUN);
++				}
+ 				for (i = 1; i < urb->actual_length ; ++i)
+ 					tty_insert_flip_char(&port->port,
+-							data[i], err);
++							data[i], TTY_NORMAL);
+ 			}  else {
+ 			/* some bytes had errors, every byte has status */
+ 				dev_dbg(&port->dev, "%s - RX error!!!!\n", __func__);
 -- 
 2.0.4
