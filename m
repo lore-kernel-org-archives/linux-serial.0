@@ -1,22 +1,22 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH V2 5/5] mfd: tc6387xb: prepare/unprepare clocks
-Date: Tue, 18 Nov 2014 12:04:29 +0000
-Message-ID: <20141118120429.GZ24004@x1>
+Subject: Re: [PATCH V2 4/5] mfd: t7l66xb: prepare/unprepare clocks
+Date: Tue, 18 Nov 2014 13:14:34 +0000
+Message-ID: <20141118131434.GA24004@x1>
 References: <1416236863-20898-1-git-send-email-dbaryshkov@gmail.com>
- <1416236863-20898-5-git-send-email-dbaryshkov@gmail.com>
+ <1416236863-20898-4-git-send-email-dbaryshkov@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-ie0-f173.google.com ([209.85.223.173]:52966 "EHLO
-	mail-ie0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753381AbaKRMEh (ORCPT
+Received: from mail-ie0-f179.google.com ([209.85.223.179]:48441 "EHLO
+	mail-ie0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754296AbaKRNOm (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Nov 2014 07:04:37 -0500
-Received: by mail-ie0-f173.google.com with SMTP id y20so7067944ier.32
-        for <linux-serial@vger.kernel.org>; Tue, 18 Nov 2014 04:04:36 -0800 (PST)
+	Tue, 18 Nov 2014 08:14:42 -0500
+Received: by mail-ie0-f179.google.com with SMTP id rp18so3763017iec.24
+        for <linux-serial@vger.kernel.org>; Tue, 18 Nov 2014 05:14:41 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <1416236863-20898-5-git-send-email-dbaryshkov@gmail.com>
+In-Reply-To: <1416236863-20898-4-git-send-email-dbaryshkov@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
@@ -29,68 +29,79 @@ On Mon, 17 Nov 2014, Dmitry Eremin-Solenikov wrote:
 >=20
 > Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
 > ---
->  drivers/mfd/tc6387xb.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+>  drivers/mfd/t7l66xb.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
 
-Looks good.  Applied, thanks.
+Applied, thanks.
 
-> diff --git a/drivers/mfd/tc6387xb.c b/drivers/mfd/tc6387xb.c
-> index e71f880..85fab37 100644
-> --- a/drivers/mfd/tc6387xb.c
-> +++ b/drivers/mfd/tc6387xb.c
-> @@ -52,7 +52,7 @@ static int tc6387xb_suspend(struct platform_device =
-*dev, pm_message_t state)
+> diff --git a/drivers/mfd/t7l66xb.c b/drivers/mfd/t7l66xb.c
+> index 9e04a74..439d905 100644
+> --- a/drivers/mfd/t7l66xb.c
+> +++ b/drivers/mfd/t7l66xb.c
+> @@ -87,7 +87,7 @@ static int t7l66xb_mmc_enable(struct platform_devic=
+e *mmc)
+>  	unsigned long flags;
+>  	u8 dev_ctl;
+> =20
+> -	clk_enable(t7l66xb->clk32k);
+> +	clk_prepare_enable(t7l66xb->clk32k);
+> =20
+>  	spin_lock_irqsave(&t7l66xb->lock, flags);
+> =20
+> @@ -118,7 +118,7 @@ static int t7l66xb_mmc_disable(struct platform_de=
+vice *mmc)
+> =20
+>  	spin_unlock_irqrestore(&t7l66xb->lock, flags);
+> =20
+> -	clk_disable(t7l66xb->clk32k);
+> +	clk_disable_unprepare(t7l66xb->clk32k);
+> =20
+>  	return 0;
+>  }
+> @@ -285,7 +285,7 @@ static int t7l66xb_suspend(struct platform_device=
+ *dev, pm_message_t state)
 > =20
 >  	if (pdata && pdata->suspend)
 >  		pdata->suspend(dev);
-> -	clk_disable(tc6387xb->clk32k);
-> +	clk_disable_unprepare(tc6387xb->clk32k);
+> -	clk_disable(t7l66xb->clk48m);
+> +	clk_disable_unprepare(t7l66xb->clk48m);
 > =20
 >  	return 0;
 >  }
-> @@ -62,7 +62,7 @@ static int tc6387xb_resume(struct platform_device *=
-dev)
->  	struct tc6387xb *tc6387xb =3D platform_get_drvdata(dev);
->  	struct tc6387xb_platform_data *pdata =3D dev_get_platdata(&dev->dev=
-);
+> @@ -295,7 +295,7 @@ static int t7l66xb_resume(struct platform_device =
+*dev)
+>  	struct t7l66xb *t7l66xb =3D platform_get_drvdata(dev);
+>  	struct t7l66xb_platform_data *pdata =3D dev_get_platdata(&dev->dev)=
+;
 > =20
-> -	clk_enable(tc6387xb->clk32k);
-> +	clk_prepare_enable(tc6387xb->clk32k);
+> -	clk_enable(t7l66xb->clk48m);
+> +	clk_prepare_enable(t7l66xb->clk48m);
 >  	if (pdata && pdata->resume)
 >  		pdata->resume(dev);
 > =20
-> @@ -100,7 +100,7 @@ static int tc6387xb_mmc_enable(struct platform_de=
-vice *mmc)
->  	struct platform_device *dev      =3D to_platform_device(mmc->dev.pa=
-rent);
->  	struct tc6387xb *tc6387xb =3D platform_get_drvdata(dev);
+> @@ -369,7 +369,7 @@ static int t7l66xb_probe(struct platform_device *=
+dev)
+>  		goto err_ioremap;
+>  	}
 > =20
-> -	clk_enable(tc6387xb->clk32k);
-> +	clk_prepare_enable(tc6387xb->clk32k);
+> -	clk_enable(t7l66xb->clk48m);
+> +	clk_prepare_enable(t7l66xb->clk48m);
 > =20
->  	tmio_core_mmc_enable(tc6387xb->scr + 0x200, 0,
->  		tc6387xb_mmc_resources[0].start & 0xfffe);
-> @@ -113,7 +113,7 @@ static int tc6387xb_mmc_disable(struct platform_d=
-evice *mmc)
->  	struct platform_device *dev      =3D to_platform_device(mmc->dev.pa=
-rent);
->  	struct tc6387xb *tc6387xb =3D platform_get_drvdata(dev);
+>  	if (pdata && pdata->enable)
+>  		pdata->enable(dev);
+> @@ -414,9 +414,9 @@ static int t7l66xb_remove(struct platform_device =
+*dev)
+>  	int ret;
 > =20
-> -	clk_disable(tc6387xb->clk32k);
-> +	clk_disable_unprepare(tc6387xb->clk32k);
-> =20
->  	return 0;
->  }
-> @@ -214,7 +214,7 @@ static int tc6387xb_remove(struct platform_device=
- *dev)
->  	mfd_remove_devices(&dev->dev);
->  	iounmap(tc6387xb->scr);
->  	release_resource(&tc6387xb->rscr);
-> -	clk_disable(tc6387xb->clk32k);
-> +	clk_disable_unprepare(tc6387xb->clk32k);
->  	clk_put(tc6387xb->clk32k);
->  	kfree(tc6387xb);
-> =20
+>  	ret =3D pdata->disable(dev);
+> -	clk_disable(t7l66xb->clk48m);
+> +	clk_disable_unprepare(t7l66xb->clk48m);
+>  	clk_put(t7l66xb->clk48m);
+> -	clk_disable(t7l66xb->clk32k);
+> +	clk_disable_unprepare(t7l66xb->clk32k);
+>  	clk_put(t7l66xb->clk32k);
+>  	t7l66xb_detach_irq(dev);
+>  	iounmap(t7l66xb->scr);
 
 --=20
 Lee Jones
