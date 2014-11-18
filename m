@@ -1,73 +1,60 @@
-From: Kiran Kumar Raparthy <kiran.kumar@linaro.org>
-Subject: [RFC] serial_core: Add wake_peer uart operation
-Date: Tue, 18 Nov 2014 12:20:01 +0530
-Message-ID: <1416293401-7714-1-git-send-email-kiran.kumar@linaro.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2] gpio: mxs: implement get_direction callback
+Date: Tue, 18 Nov 2014 08:55:45 +0100
+Message-ID: <20141118075545.GO27002@pengutronix.de>
+References: <1416221256-11671-1-git-send-email-j.uzycki@elproma.com.pl>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f50.google.com ([209.85.220.50]:64099 "EHLO
-	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751038AbaKRGwd (ORCPT
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:39886 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750971AbaKRHzv (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Nov 2014 01:52:33 -0500
-Received: by mail-pa0-f50.google.com with SMTP id bj1so3693018pad.23
-        for <linux-serial@vger.kernel.org>; Mon, 17 Nov 2014 22:52:32 -0800 (PST)
+	Tue, 18 Nov 2014 02:55:51 -0500
+Content-Disposition: inline
+In-Reply-To: <1416221256-11671-1-git-send-email-j.uzycki@elproma.com.pl>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: San Mehat <san@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Android Kernel Team <kernel-team@android.com>, John Stultz <john.stultz@linaro.org>, Sumit Semwal <sumit.semwal@linaro.org>, Kiran Raparthy <kiran.kumar@linaro.org>
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, linux-arm-kernel@lists.infradead.org
 
-From: San Mehat <san@google.com>
+Hello,
 
-serial_core: Add wake_peer uart operation
+On Mon, Nov 17, 2014 at 11:47:36AM +0100, Janusz Uzycki wrote:
+> gpiolib's gpiod_get_direction() function returns the EINVAL error
+> if .get_direction callback is not defined.
+> The patch implements the callback for mxs chip what is useful
+s/what/which/
 
-Add wake_peer which is called before starting UART TX. The idea here
-is to provide a mechanism where we can wakeup our peer before sending
-data.
+> for debugging.
+>=20
+> Commit f9e42397d79b
+> ("serial: mxs-auart: add interrupts for modem control lines")
+> as based on commit ab5e4e4108ca
+> ("tty/serial: at91: add interrupts for modem control lines")
+> uses the gpiod_get_direction() function.
+This paragraph is obsolete now that we agreed that .get_direction has
+nothing to do with mctrl_gpio, right?
+>=20
+> Inspired from arch/arm/mach-at91/gpio.c
+s/from/by/ I think
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Android Kernel Team <kernel-team@android.com>
-Cc: John Stultz <john.stultz@linaro.org>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>
-Signed-off-by: San Mehat <san@google.com>
-[Kiran: Added context to commit message]
-Signed-off-by: Kiran Raparthy <kiran.kumar@linaro.org>
----
-This is one of the number of patches from the Android AOSP common.git tree,
-which is used on almost all Android devices.  I wanted to submit it for review
-to see if it should go upstream.
+Other than that:
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
- drivers/tty/serial/serial_core.c | 3 +++
- include/linux/serial_core.h      | 1 +
- 2 files changed, 4 insertions(+)
+Thanks
+Uwe
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index df3a8c7..dc45c4b 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -95,6 +95,9 @@ static void __uart_start(struct tty_struct *tty)
- 	struct uart_state *state = tty->driver_data;
- 	struct uart_port *port = state->uart_port;
- 
-+	if (port->ops->wake_peer)
-+		port->ops->wake_peer(port);
-+
- 	if (!uart_tx_stopped(port))
- 		port->ops->start_tx(port);
- }
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 21c2e05..219b6a3 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -66,6 +66,7 @@ struct uart_ops {
- 	void		(*set_ldisc)(struct uart_port *, int new);
- 	void		(*pm)(struct uart_port *, unsigned int state,
- 			      unsigned int oldstate);
-+	void		(*wake_peer)(struct uart_port *);
- 
- 	/*
- 	 * Return a string describing the type of the port
--- 
-1.8.2.1
 
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+--
+To unsubscribe from this list: send the line "unsubscribe linux-serial"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
