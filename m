@@ -1,78 +1,59 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [RFC] serial_core: Add wake_peer uart operation
-Date: Tue, 18 Nov 2014 08:25:44 -0800
-Message-ID: <20141118162544.GB1108@kroah.com>
-References: <1416293401-7714-1-git-send-email-kiran.kumar@linaro.org>
+From: Johan Hovold <johan@kernel.org>
+Subject: USB-serial console and lockdep
+Date: Tue, 18 Nov 2014 17:18:33 +0100
+Message-ID: <20141118161833.GA22786@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wi0-f171.google.com ([209.85.212.171]:58930 "EHLO
+	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932170AbaKRQ00 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 18 Nov 2014 11:26:26 -0500
 Content-Disposition: inline
-In-Reply-To: <1416293401-7714-1-git-send-email-kiran.kumar@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Kiran Kumar Raparthy <kiran.kumar@linaro.org>
-Cc: linux-kernel@vger.kernel.org, San Mehat <san@google.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Android Kernel Team <kernel-team@android.com>, John Stultz <john.stultz@linaro.org>, Sumit Semwal <sumit.semwal@linaro.org>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 
-On Tue, Nov 18, 2014 at 12:20:01PM +0530, Kiran Kumar Raparthy wrote:
-> From: San Mehat <san@google.com>
-> 
-> serial_core: Add wake_peer uart operation
-> 
-> Add wake_peer which is called before starting UART TX. The idea here
-> is to provide a mechanism where we can wakeup our peer before sending
-> data.
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.cz>
-> Cc: linux-serial@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Android Kernel Team <kernel-team@android.com>
-> Cc: John Stultz <john.stultz@linaro.org>
-> Cc: Sumit Semwal <sumit.semwal@linaro.org>
-> Signed-off-by: San Mehat <san@google.com>
-> [Kiran: Added context to commit message]
-> Signed-off-by: Kiran Raparthy <kiran.kumar@linaro.org>
-> ---
-> This is one of the number of patches from the Android AOSP common.git tree,
-> which is used on almost all Android devices.  I wanted to submit it for review
-> to see if it should go upstream.
-> 
->  drivers/tty/serial/serial_core.c | 3 +++
->  include/linux/serial_core.h      | 1 +
->  2 files changed, 4 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index df3a8c7..dc45c4b 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -95,6 +95,9 @@ static void __uart_start(struct tty_struct *tty)
->  	struct uart_state *state = tty->driver_data;
->  	struct uart_port *port = state->uart_port;
->  
-> +	if (port->ops->wake_peer)
-> +		port->ops->wake_peer(port);
-> +
->  	if (!uart_tx_stopped(port))
->  		port->ops->start_tx(port);
->  }
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 21c2e05..219b6a3 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -66,6 +66,7 @@ struct uart_ops {
->  	void		(*set_ldisc)(struct uart_port *, int new);
->  	void		(*pm)(struct uart_port *, unsigned int state,
->  			      unsigned int oldstate);
-> +	void		(*wake_peer)(struct uart_port *);
->  
->  	/*
->  	 * Return a string describing the type of the port
+Hi Peter,
 
-Do you have a driver that uses this callback to submit?  I really don't
-like taking hooks that are not used in the tree, otherwise it usually
-gets removed by someone who says, "look this hook isn't being used,
-let's delete it!"
+I get this missing-lockdep-annotation warning which I haven't seen
+before when booting with a usb-serial console on 3.18-rc5. It's been a
+while since I last tested this, though, and the tty_ldisc_ref wasn't
+introduced until 833efc0ed19c ("USB: serial: invoke dcd_change ldisc's
+handler.").
 
-thanks,
+[   10.575225] usbserial: USB Serial support registered for pl2303
+[   10.575561] pl2303 1-2.1:1.0: pl2303 converter detected
+[   10.627563] usb 1-2.1: pl2303 converter now attached to ttyUSB0
+[   10.650939] INFO: trying to register non-static key.
+[   10.651000] the code is fine but needs lockdep annotation.
+[   10.651000] turning off the locking correctness validator.
+[   10.651031] CPU: 0 PID: 68 Comm: udevd Tainted: G        W      3.18.0-rc5 #10
+[   10.651092] [<c0016f04>] (unwind_backtrace) from [<c0013978>] (show_stack+0x20/0x24)
+[   10.651123] [<c0013978>] (show_stack) from [<c0449794>] (dump_stack+0x24/0x28)
+[   10.651184] [<c0449794>] (dump_stack) from [<c006f730>] (__lock_acquire+0x1e50/0x2004)
+[   10.651214] [<c006f730>] (__lock_acquire) from [<c0070128>] (lock_acquire+0xe4/0x18c)
+[   10.651245] [<c0070128>] (lock_acquire) from [<c027c6f8>] (ldsem_down_read_trylock+0x78/0x90)
+[   10.651275] [<c027c6f8>] (ldsem_down_read_trylock) from [<c027a1cc>] (tty_ldisc_ref+0x24/0x58)
+[   10.651306] [<c027a1cc>] (tty_ldisc_ref) from [<c0340760>] (usb_serial_handle_dcd_change+0x48/0xe8)
+[   10.651367] [<c0340760>] (usb_serial_handle_dcd_change) from [<bf000484>] (pl2303_read_int_callback+0x210/0x220 [pl2303])
+[   10.651428] [<bf000484>] (pl2303_read_int_callback [pl2303]) from [<c031624c>] (__usb_hcd_giveback_urb+0x80/0x140)
+[   10.651458] [<c031624c>] (__usb_hcd_giveback_urb) from [<c0316fc0>] (usb_giveback_urb_bh+0x98/0xd4)
+[   10.651489] [<c0316fc0>] (usb_giveback_urb_bh) from [<c0042e44>] (tasklet_hi_action+0x9c/0x108)
+[   10.651519] [<c0042e44>] (tasklet_hi_action) from [<c0042380>] (__do_softirq+0x148/0x42c)
+[   10.651550] [<c0042380>] (__do_softirq) from [<c00429cc>] (irq_exit+0xd8/0x114)
+[   10.651580] [<c00429cc>] (irq_exit) from [<c007ae58>] (__handle_domain_irq+0x84/0xdc)
+[   10.651611] [<c007ae58>] (__handle_domain_irq) from [<c000879c>] (omap_intc_handle_irq+0xd8/0xe0)
+[   10.651641] [<c000879c>] (omap_intc_handle_irq) from [<c0014544>] (__irq_svc+0x44/0x7c)
+[   10.651641] Exception stack(0xdf4e7f08 to 0xdf4e7f50)
+[   10.651672] 7f00:                   debc0b80 df4e7f5c 00000000 00000000 debc0b80 be8da96c
+[   10.651702] 7f20: 00000000 00000128 c000fc84 df4e6000 00000000 df4e7f94 00000004 df4e7f50
+[   10.651702] 7f40: c038ebc0 c038d74c 600f0013 ffffffff
+[   10.651733] [<c0014544>] (__irq_svc) from [<c038d74c>] (___sys_sendmsg.part.29+0x0/0x2e0)
+[   10.651763] [<c038d74c>] (___sys_sendmsg.part.29) from [<c038ec08>] (SyS_sendmsg+0x18/0x1c)
+[   10.651794] [<c038ec08>] (SyS_sendmsg) from [<c000fa00>] (ret_fast_syscall+0x0/0x48)
+[   10.692871] console [ttyUSB0] enabled
 
-greg k-h
+Johan
