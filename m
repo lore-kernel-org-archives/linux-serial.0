@@ -1,55 +1,107 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: fix io address assign method with Fintek
- PCI-to-UART Product
-Date: Tue, 18 Nov 2014 19:45:18 -0800
-Message-ID: <20141119034518.GB15293@kroah.com>
-References: <1416364553-29982-1-git-send-email-hpeter+linux_kernel@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:40099 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754383AbaKSDqi (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Nov 2014 22:46:38 -0500
-Content-Disposition: inline
-In-Reply-To: <1416364553-29982-1-git-send-email-hpeter+linux_kernel@gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Peter Hung <hpeter@gmail.com>
+Subject: [PATCH] serial: Fix io address assign flow with Fintek PCI-to-UART Product
+Date: Wed, 19 Nov 2014 13:22:27 +0800
+Message-ID: <1416374547-30494-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hung <hpeter@gmail.com>
-Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hung <hpeter+linux_kernel@gmail.com>
 
-On Wed, Nov 19, 2014 at 10:35:53AM +0800, Peter Hung wrote:
-> The original driver fixed the io address with 0xe000+idx*8, but real io address assigned from BIOS
-> is dynamically from read PCI configure space 0x24, 0x20, 0x1c.
-> 
-> The Fintek F81504/F81508/F81512 maybe malfunction without this patch and malfunction surely when
-> more the 1 PCI card.
+The original driver fixed the io address with 0xe000+idx*8,
+but real io address assigned from BIOS is dynamically from
+read PCI configure space 0x24, 0x20, 0x1c.
 
-Please wrap these lines at 72 columns please, like git wants you to.
+The Fintek F81504/F81508/F81512 maybe malfunction without
+this patch and malfunction surely when more then 1 PCI card.
 
-> 
-> Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 63 ++++++++++++++++++++++++++++----------
->  1 file changed, 47 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 0468e15..6dfa227 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1551,28 +1551,51 @@ static int pci_fintek_setup(struct serial_private *priv,
->  {
->  	struct pci_dev *pdev = priv->dev;
->  	unsigned long base;
-> -	unsigned long iobase;
-> +	unsigned long iobase = 0;
+Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 61 ++++++++++++++++++++++++++++----------
+ 1 file changed, 46 insertions(+), 15 deletions(-)
 
-Why initialize this to 0?  That shouldn't be needed as you set it later
-in the function before you use it, right?
-
-Care to try again?
-
-thanks,
-
-greg k-h
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 0468e15..31feeb2 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1554,25 +1554,48 @@ static int pci_fintek_setup(struct serial_private *priv,
+ 	unsigned long iobase;
+ 	unsigned long ciobase = 0;
+ 	u8 config_base;
++	u32 bar_data[3];
+ 
+ 	/*
+-	 * We are supposed to be able to read these from the PCI config space,
+-	 * but the values there don't seem to match what we need to use, so
+-	 * just use these hard-coded values for now, as they are correct.
++	 * Find each UARTs offset in PCI configuraion space
+ 	 */
+ 	switch (idx) {
+-	case 0: iobase = 0xe000; config_base = 0x40; break;
+-	case 1: iobase = 0xe008; config_base = 0x48; break;
+-	case 2: iobase = 0xe010; config_base = 0x50; break;
+-	case 3: iobase = 0xe018; config_base = 0x58; break;
+-	case 4: iobase = 0xe020; config_base = 0x60; break;
+-	case 5: iobase = 0xe028; config_base = 0x68; break;
+-	case 6: iobase = 0xe030; config_base = 0x70; break;
+-	case 7: iobase = 0xe038; config_base = 0x78; break;
+-	case 8: iobase = 0xe040; config_base = 0x80; break;
+-	case 9: iobase = 0xe048; config_base = 0x88; break;
+-	case 10: iobase = 0xe050; config_base = 0x90; break;
+-	case 11: iobase = 0xe058; config_base = 0x98; break;
++	case 0:
++		config_base = 0x40;
++		break;
++	case 1:
++		config_base = 0x48;
++		break;
++	case 2:
++		config_base = 0x50;
++		break;
++	case 3:
++		config_base = 0x58;
++		break;
++	case 4:
++		config_base = 0x60;
++		break;
++	case 5:
++		config_base = 0x68;
++		break;
++	case 6:
++		config_base = 0x70;
++		break;
++	case 7:
++		config_base = 0x78;
++		break;
++	case 8:
++		config_base = 0x80;
++		break;
++	case 9:
++		config_base = 0x88;
++		break;
++	case 10:
++		config_base = 0x90;
++		break;
++	case 11:
++		config_base = 0x98;
++		break;
+ 	default:
+ 		/* Unknown number of ports, get out of here */
+ 		return -EINVAL;
+@@ -1583,6 +1606,14 @@ static int pci_fintek_setup(struct serial_private *priv,
+ 		ciobase = (int)(base + (0x8 * idx));
+ 	}
+ 
++	/* Get the io address dispatch from the BIOS */
++	pci_read_config_dword(pdev, 0x24, &bar_data[0]);
++	pci_read_config_dword(pdev, 0x20, &bar_data[1]);
++	pci_read_config_dword(pdev, 0x1c, &bar_data[2]);
++
++	/* Calculate Real IO Port */
++	iobase = (bar_data[idx/4] & 0xffffffe0) + (idx % 4) * 8;
++
+ 	dev_dbg(&pdev->dev, "%s: idx=%d iobase=0x%lx ciobase=0x%lx config_base=0x%2x\n",
+ 		__func__, idx, iobase, ciobase, config_base);
+ 
+-- 
+1.9.1
