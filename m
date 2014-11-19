@@ -1,40 +1,30 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] Fix IO address calculation with Multi-Fintek PCI-to-UART
- Product
-Date: Wed, 19 Nov 2014 10:47:39 -0800
-Message-ID: <20141119184739.GA28871@kroah.com>
-References: <1416304088-6049-1-git-send-email-hpeter+linux_kernel@gmail.com>
- <20141118165800.GA3708@kroah.com>
- <546C2DCC.4090507@gmail.com>
+From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
+Subject: Re: [PATCH][RESEND] serial_mctrl_gpio: use gpiod_set_array function
+Date: Wed, 19 Nov 2014 23:41:06 +0100
+Message-ID: <546D1C82.4020808@elproma.com.pl>
+References: <8534699.OPo8bzguux@pcimr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:53434 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755731AbaKSSrk (ORCPT
+Received: from v032797.home.net.pl ([89.161.177.31]:62822 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1758360AbaKSWk7 (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Nov 2014 13:47:40 -0500
-Content-Disposition: inline
-In-Reply-To: <546C2DCC.4090507@gmail.com>
+	Wed, 19 Nov 2014 17:40:59 -0500
+In-Reply-To: <8534699.OPo8bzguux@pcimr>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hung <hpeter@gmail.com>
-Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Rojhalat Ibrahim <imr@rtschenk.de>
+Cc: Richard Genoud <richard.genoud@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
 
-On Wed, Nov 19, 2014 at 01:42:36PM +0800, Peter Hung wrote:
-> Dear Greg KH and Senior Linuxers,
-> 
-> I had some some question, If I submited a patch, but it had rejected, how
-> should I do when fix the patch?
-> 
-> 1. send patch by reply original email ?
+Hello.
 
-You can do this, with a [PATCH v2] in the subject.
+Good patch but I'd prefer to introduce separate function for mctrl_gpio.
+I'm not conviced whether it is useful for 2 gpio lines (outputs: RTS, 
+DTR) of mctrl_gpio.
+It adds some overhead for all drivers which use mctrl_gpio but likely 
+they don't require it.
 
-> 2. direct send patch with new email again?
-
-That works as well, but tell us what changed from the first one please.
-
-thanks,
-
-greg k-h
+best regards
+Janusz
