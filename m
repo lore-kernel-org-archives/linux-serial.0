@@ -1,30 +1,45 @@
-From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH][RESEND] serial_mctrl_gpio: use gpiod_set_array function
-Date: Wed, 19 Nov 2014 23:41:06 +0100
-Message-ID: <546D1C82.4020808@elproma.com.pl>
-References: <8534699.OPo8bzguux@pcimr>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:62822 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1758360AbaKSWk7 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 19 Nov 2014 17:40:59 -0500
-In-Reply-To: <8534699.OPo8bzguux@pcimr>
-Sender: linux-serial-owner@vger.kernel.org
+From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+Subject: [PATCH] serial: sh-sci: Change checking for error rate of HSCIF
+Date: Thu, 20 Nov 2014 07:58:27 +0900
+Message-ID: <1416437907-15160-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: horms@verge.net.au, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 List-Id: linux-serial@vger.kernel.org
-To: Rojhalat Ibrahim <imr@rtschenk.de>
-Cc: Richard Genoud <richard.genoud@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
 
-Hello.
+This changes negative values of error rate to be checked, because these
+values are valid as error rate. And this changes in the process of adopting
+a value close to 0.
 
-Good patch but I'd prefer to introduce separate function for mctrl_gpio.
-I'm not conviced whether it is useful for 2 gpio lines (outputs: RTS, 
-DTR) of mctrl_gpio.
-It adds some overhead for all drivers which use mctrl_gpio but likely 
-they don't require it.
+Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+---
+ drivers/tty/serial/sh-sci.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-best regards
-Janusz
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 3081e46..ae7ac07 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1812,9 +1812,6 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
+ 			err = DIV_ROUND_CLOSEST(freq, ((br + 1) * bps * sr *
+ 					       (1 << (2 * c + 1)) / 1000)) -
+ 					       1000;
+-			if (err < 0)
+-				continue;
+-
+ 			/* Calc recv margin
+ 			 * M: Receive margin (%)
+ 			 * N: Ratio of bit rate to clock (N = sampling rate)
+@@ -1829,7 +1826,7 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
+ 			 */
+ 			recv_margin = abs((500 -
+ 					DIV_ROUND_CLOSEST(1000, sr << 1)) / 10);
+-			if (min_err > err) {
++			if (abs(min_err) > abs(err)) {
+ 				min_err = err;
+ 				recv_max_margin = recv_margin;
+ 			} else if ((min_err == err) &&
+-- 
+2.1.1
+
