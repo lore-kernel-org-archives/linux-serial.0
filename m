@@ -1,116 +1,116 @@
-From: Peter Hung <hpeter@gmail.com>
-Subject: [PATCH] serial: fix io address assign method with Fintek PCI-to-UART Product
-Date: Wed, 19 Nov 2014 10:35:53 +0800
-Message-ID: <1416364553-29982-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH V2 09/10] serial: earlycon: Set UPIO_MEM32BE based on DT properties
+Date: Tue, 18 Nov 2014 21:16:08 -0600
+Message-ID: <CAL_JsqJ5+=kp-_bKiNxasB7gm1Pj4C6-FfO_+7DcyhvcgYEaAg@mail.gmail.com>
+References: <1415825647-6024-1-git-send-email-cernekee@gmail.com> <1415825647-6024-10-git-send-email-cernekee@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pa0-f49.google.com ([209.85.220.49]:60005 "EHLO
-	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754105AbaKSCf7 (ORCPT
+Received: from mail-wi0-f178.google.com ([209.85.212.178]:37089 "EHLO
+	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754483AbaKSDQa (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 18 Nov 2014 21:35:59 -0500
+	Tue, 18 Nov 2014 22:16:30 -0500
+In-Reply-To: <1415825647-6024-10-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: Kevin Cernekee <cernekee@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, daniel@zonque.org, haojian.zhuang@gmail.com, robert.jarzmik@free.fr, Grant Likely <grant.likely@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux-MIPS <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-The original driver fixed the io address with 0xe000+idx*8, but real io address assigned from BIOS
-is dynamically from read PCI configure space 0x24, 0x20, 0x1c.
+On Wed, Nov 12, 2014 at 2:54 PM, Kevin Cernekee <cernekee@gmail.com> wrote:
+> If an earlycon (stdout-path) node is being used, check for "big-endian"
+> or "native-endian" properties and pass the appropriate iotype to the
+> driver.
+>
+> Note that LE sets UPIO_MEM (8-bit) but BE sets UPIO_MEM32BE (32-bit).  The
+> big-endian property only really makes sense in the context of 32-bit
+> registers, since 8-bit accesses never require data swapping.
+>
+> At some point, the of_earlycon code may want to pass in the reg-io-width,
+> reg-offset, and reg-shift parameters too.
+>
+> Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
+> ---
+>  drivers/of/fdt.c              | 9 ++++++++-
+>  drivers/tty/serial/earlycon.c | 4 ++--
+>  include/linux/serial_core.h   | 2 +-
+>  3 files changed, 11 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> index 30e97bc..15f80c9 100644
+> --- a/drivers/of/fdt.c
+> +++ b/drivers/of/fdt.c
+> @@ -10,6 +10,7 @@
+>   */
+>
+>  #include <linux/kernel.h>
+> +#include <linux/kconfig.h>
+>  #include <linux/initrd.h>
+>  #include <linux/memblock.h>
+>  #include <linux/of.h>
+> @@ -784,7 +785,13 @@ int __init early_init_dt_scan_chosen_serial(void)
+>                 if (!addr)
+>                         return -ENXIO;
+>
+> -               of_setup_earlycon(addr, match->data);
+> +               if (fdt_getprop(fdt, offset, "big-endian", NULL) ||
+> +                   (fdt_getprop(fdt, offset, "native-endian", NULL) &&
 
-The Fintek F81504/F81508/F81512 maybe malfunction without this patch and malfunction surely when
-more the 1 PCI card.
+Is native-endian documented?
 
-Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
----
- drivers/tty/serial/8250/8250_pci.c | 63 ++++++++++++++++++++++++++++----------
- 1 file changed, 47 insertions(+), 16 deletions(-)
+> +                    IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))) {
+> +                       of_setup_earlycon(addr, UPIO_MEM32BE, match->data);
+> +               } else {
+> +                       of_setup_earlycon(addr, UPIO_MEM, match->data);
+> +               }
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 0468e15..6dfa227 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1551,28 +1551,51 @@ static int pci_fintek_setup(struct serial_private *priv,
- {
- 	struct pci_dev *pdev = priv->dev;
- 	unsigned long base;
--	unsigned long iobase;
-+	unsigned long iobase = 0;
- 	unsigned long ciobase = 0;
- 	u8 config_base;
-+	u32 bar_data[3];
- 
- 	/*
--	 * We are supposed to be able to read these from the PCI config space,
--	 * but the values there don't seem to match what we need to use, so
--	 * just use these hard-coded values for now, as they are correct.
-+	 * Find each UARTs offset in PCI configuraion space
- 	 */
- 	switch (idx) {
--	case 0: iobase = 0xe000; config_base = 0x40; break;
--	case 1: iobase = 0xe008; config_base = 0x48; break;
--	case 2: iobase = 0xe010; config_base = 0x50; break;
--	case 3: iobase = 0xe018; config_base = 0x58; break;
--	case 4: iobase = 0xe020; config_base = 0x60; break;
--	case 5: iobase = 0xe028; config_base = 0x68; break;
--	case 6: iobase = 0xe030; config_base = 0x70; break;
--	case 7: iobase = 0xe038; config_base = 0x78; break;
--	case 8: iobase = 0xe040; config_base = 0x80; break;
--	case 9: iobase = 0xe048; config_base = 0x88; break;
--	case 10: iobase = 0xe050; config_base = 0x90; break;
--	case 11: iobase = 0xe058; config_base = 0x98; break;
-+	case 0:
-+		config_base = 0x40;
-+		break;
-+	case 1:
-+		config_base = 0x48;
-+		break;
-+	case 2:
-+		config_base = 0x50;
-+		break;
-+	case 3:
-+		config_base = 0x58;
-+		break;
-+	case 4:
-+		config_base = 0x60;
-+		break;
-+	case 5:
-+		config_base = 0x68;
-+		break;
-+	case 6:
-+		config_base = 0x70;
-+		break;
-+	case 7:
-+		config_base = 0x78;
-+		break;
-+	case 8:
-+		config_base = 0x80;
-+		break;
-+	case 9:
-+		config_base = 0x88;
-+		break;
-+	case 10:
-+		config_base = 0x90;
-+		break;
-+	case 11:
-+		config_base = 0x98;
-+		break;
- 	default:
- 		/* Unknown number of ports, get out of here */
- 		return -EINVAL;
-@@ -1583,6 +1606,14 @@ static int pci_fintek_setup(struct serial_private *priv,
- 		ciobase = (int)(base + (0x8 * idx));
- 	}
- 
-+	/* Get the io address dispatch from the BIOS */
-+	pci_read_config_dword(pdev, 0x24, &bar_data[0]);
-+	pci_read_config_dword(pdev, 0x20, &bar_data[1]);
-+	pci_read_config_dword(pdev, 0x1c, &bar_data[2]);
-+
-+	/* Calculate Real IO Port */
-+	iobase = (bar_data[idx/4] & 0xffffffe0) + (idx % 4) * 8;
-+
- 	dev_dbg(&pdev->dev, "%s: idx=%d iobase=0x%lx ciobase=0x%lx config_base=0x%2x\n",
- 		__func__, idx, iobase, ciobase, config_base);
- 
--- 
-1.9.1
+I'd rather see something like this, so we can more easily add any
+other properties later:
 
+               iotype = 0;
+               if (fdt_getprop(fdt, offset, "big-endian", NULL) ||
+                   (fdt_getprop(fdt, offset, "native-endian", NULL) &&
+                    IS_ENABLED(CONFIG_CPU_BIG_ENDIAN)))
+                          iotype = UPIO_MEM32BE;
+
+               of_setup_earlycon(addr, iotype ? : UPIO_MEM, match->data);
+
+>                 return 0;
+>         }
+>         return -ENODEV;
+> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> index a514ee6..548f7d7 100644
+> --- a/drivers/tty/serial/earlycon.c
+> +++ b/drivers/tty/serial/earlycon.c
+> @@ -148,13 +148,13 @@ int __init setup_earlycon(char *buf, const char *match,
+>         return 0;
+>  }
+>
+> -int __init of_setup_earlycon(unsigned long addr,
+> +int __init of_setup_earlycon(unsigned long addr, unsigned char iotype,
+>                              int (*setup)(struct earlycon_device *, const char *))
+>  {
+>         int err;
+>         struct uart_port *port = &early_console_dev.port;
+>
+> -       port->iotype = UPIO_MEM;
+> +       port->iotype = iotype;
+>         port->mapbase = addr;
+>         port->uartclk = BASE_BAUD * 16;
+>         port->membase = earlycon_map(addr, SZ_4K);
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index d2d5bf6..0d60c64 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -310,7 +310,7 @@ struct earlycon_device {
+>  int setup_earlycon(char *buf, const char *match,
+>                    int (*setup)(struct earlycon_device *, const char *));
+>
+> -extern int of_setup_earlycon(unsigned long addr,
+> +extern int of_setup_earlycon(unsigned long addr, unsigned char iotype,
+>                              int (*setup)(struct earlycon_device *, const char *));
+>
+>  #define EARLYCON_DECLARE(name, func) \
+> --
+> 2.1.1
+>
