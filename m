@@ -1,33 +1,49 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [RFC PATCH] serial: mxs-auart: Take missing uart port locks
-Date: Thu, 20 Nov 2014 10:17:08 +0100
-Message-ID: <546DB194.40902@i2se.com>
-References: <1416322001-28491-1-git-send-email-j.uzycki@elproma.com.pl>
+From: Kevin Hilman <khilman@kernel.org>
+Subject: Re: [PATCH] tty: serial: msm_serial: Don't require DT aliases
+Date: Thu, 20 Nov 2014 07:10:35 -0800
+Message-ID: <CAMAWPa8m5Ey6ee8tK8n8g7T6XL7=ZfLzrQgbW9-2iPVWnUfigw@mail.gmail.com>
+References: <1415990361-8897-1-git-send-email-sboyd@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.10]:60836 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755905AbaKTJR3 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Nov 2014 04:17:29 -0500
-In-Reply-To: <1416322001-28491-1-git-send-email-j.uzycki@elproma.com.pl>
+Received: from mail.kernel.org ([198.145.19.201]:40167 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752578AbaKTPKk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+	Thu, 20 Nov 2014 10:10:40 -0500
+Received: from mail.kernel.org (localhost [127.0.0.1])
+	by mail.kernel.org (Postfix) with ESMTP id 8A564201EF
+	for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2014 15:10:39 +0000 (UTC)
+Received: from mail-wi0-f174.google.com (mail-wi0-f174.google.com [209.85.212.174])
+	(using TLSv1 with cipher AES128-SHA (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 689D320225
+	for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2014 15:10:37 +0000 (UTC)
+Received: by mail-wi0-f174.google.com with SMTP id h11so9038885wiw.7
+        for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2014 07:10:36 -0800 (PST)
+In-Reply-To: <1415990361-8897-1-git-send-email-sboyd@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Janusz Uzycki <j.uzycki@elproma.com.pl>, Fabio Estevam <festevam@gmail.com>, =?windows-1252?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Hector Palacios <hector.palacios@digi.com>
-Cc: fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Craig McQueen <craig.mcqueen@beamcommunications.com>, linux-serial@vger.kernel.org, Viguera Javier <Javier.Viguera@digi.com>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: lkml <linux-kernel@vger.kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Frank Rowand <frowand.list@gmail.com>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>, Tyler Baker <tyler.baker@linaro.org>, Kevin Hilman <khilman@kernel.org>
 
-Hi Janusz,
+Greg,
 
-Am 18.11.2014 um 15:46 schrieb Janusz Uzycki:
-> The patch adds missing spin-locks and allows to change termios
-> settings during tx.
-> The patch also fixes direct call its enable_ms() according to
-> commit d41510ce2f07
-> ("serial: Take uart port lock for direct *_enable_ms()")
+On Fri, Nov 14, 2014 at 10:39 AM, Stephen Boyd <sboyd@codeaurora.org> wrote:
+> If there isn't a DT alias then of_alias_get_id() will return
+> -ENODEV. This will cause the msm_serial driver to fail probe,
+> when we want to keep the previous behavior where we generated a
+> dynamic line number at probe time. Restore this behavior by
+> generating a dynamic id if the line number is still negative
+> after checking for an alias or in the non-DT case looking at the
+> .id field of the platform device.
+>
+> Reported-by: Kevin Hilman <khilman@kernel.org>
+> Tested-by: Kevin Hilman <khilman@linaro.org>
+> Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
 
-i think it's better to separate it in different patches.
+Can you add this to tty-next.  Without this, all the ARM/qcom boards
+do not boot in linux-next.
 
-Best regards
-Stefan
+Thanks,
+
+Kevin
