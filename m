@@ -1,45 +1,33 @@
-From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
-Subject: [PATCH] serial: sh-sci: Change checking for error rate of HSCIF
-Date: Thu, 20 Nov 2014 07:58:27 +0900
-Message-ID: <1416437907-15160-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: horms@verge.net.au, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [RFC PATCH] serial: mxs-auart: Take missing uart port locks
+Date: Thu, 20 Nov 2014 10:17:08 +0100
+Message-ID: <546DB194.40902@i2se.com>
+References: <1416322001-28491-1-git-send-email-j.uzycki@elproma.com.pl>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.17.10]:60836 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755905AbaKTJR3 (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 20 Nov 2014 04:17:29 -0500
+In-Reply-To: <1416322001-28491-1-git-send-email-j.uzycki@elproma.com.pl>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>, Fabio Estevam <festevam@gmail.com>, =?windows-1252?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Hector Palacios <hector.palacios@digi.com>
+Cc: fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Craig McQueen <craig.mcqueen@beamcommunications.com>, linux-serial@vger.kernel.org, Viguera Javier <Javier.Viguera@digi.com>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 
-This changes negative values of error rate to be checked, because these
-values are valid as error rate. And this changes in the process of adopting
-a value close to 0.
+Hi Janusz,
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
----
- drivers/tty/serial/sh-sci.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Am 18.11.2014 um 15:46 schrieb Janusz Uzycki:
+> The patch adds missing spin-locks and allows to change termios
+> settings during tx.
+> The patch also fixes direct call its enable_ms() according to
+> commit d41510ce2f07
+> ("serial: Take uart port lock for direct *_enable_ms()")
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 3081e46..ae7ac07 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1812,9 +1812,6 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
- 			err = DIV_ROUND_CLOSEST(freq, ((br + 1) * bps * sr *
- 					       (1 << (2 * c + 1)) / 1000)) -
- 					       1000;
--			if (err < 0)
--				continue;
--
- 			/* Calc recv margin
- 			 * M: Receive margin (%)
- 			 * N: Ratio of bit rate to clock (N = sampling rate)
-@@ -1829,7 +1826,7 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
- 			 */
- 			recv_margin = abs((500 -
- 					DIV_ROUND_CLOSEST(1000, sr << 1)) / 10);
--			if (min_err > err) {
-+			if (abs(min_err) > abs(err)) {
- 				min_err = err;
- 				recv_max_margin = recv_margin;
- 			} else if ((min_err == err) &&
--- 
-2.1.1
+i think it's better to separate it in different patches.
 
+Best regards
+Stefan
