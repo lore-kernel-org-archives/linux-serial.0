@@ -1,49 +1,63 @@
-From: Kevin Hilman <khilman@kernel.org>
-Subject: Re: [PATCH] tty: serial: msm_serial: Don't require DT aliases
-Date: Thu, 20 Nov 2014 07:10:35 -0800
-Message-ID: <CAMAWPa8m5Ey6ee8tK8n8g7T6XL7=ZfLzrQgbW9-2iPVWnUfigw@mail.gmail.com>
-References: <1415990361-8897-1-git-send-email-sboyd@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:40167 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752578AbaKTPKk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Nov 2014 10:10:40 -0500
-Received: from mail.kernel.org (localhost [127.0.0.1])
-	by mail.kernel.org (Postfix) with ESMTP id 8A564201EF
-	for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2014 15:10:39 +0000 (UTC)
-Received: from mail-wi0-f174.google.com (mail-wi0-f174.google.com [209.85.212.174])
-	(using TLSv1 with cipher AES128-SHA (128/128 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 689D320225
-	for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2014 15:10:37 +0000 (UTC)
-Received: by mail-wi0-f174.google.com with SMTP id h11so9038885wiw.7
-        for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2014 07:10:36 -0800 (PST)
-In-Reply-To: <1415990361-8897-1-git-send-email-sboyd@codeaurora.org>
-Sender: linux-serial-owner@vger.kernel.org
-List-Id: linux-serial@vger.kernel.org
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+Subject: [PATCH 4/7] serial: icom: fix error return code
+Date: Thu, 20 Nov 2014 18:33:59 +0100
+Message-ID: <1416504842-18548-5-git-send-email-Julia.Lawall@lip6.fr>
+References: <1416504842-18548-1-git-send-email-Julia.Lawall@lip6.fr>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1416504842-18548-1-git-send-email-Julia.Lawall@lip6.fr>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: lkml <linux-kernel@vger.kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Frank Rowand <frowand.list@gmail.com>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>, Tyler Baker <tyler.baker@linaro.org>, Kevin Hilman <khilman@kernel.org>
+Cc: kernel-janitors@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Id: linux-serial@vger.kernel.org
 
-Greg,
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-On Fri, Nov 14, 2014 at 10:39 AM, Stephen Boyd <sboyd@codeaurora.org> wrote:
-> If there isn't a DT alias then of_alias_get_id() will return
-> -ENODEV. This will cause the msm_serial driver to fail probe,
-> when we want to keep the previous behavior where we generated a
-> dynamic line number at probe time. Restore this behavior by
-> generating a dynamic id if the line number is still negative
-> after checking for an alias or in the non-DT case looking at the
-> .id field of the platform device.
->
-> Reported-by: Kevin Hilman <khilman@kernel.org>
-> Tested-by: Kevin Hilman <khilman@linaro.org>
-> Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+Return a negative error code on failure.
 
-Can you add this to tty-next.  Without this, all the ARM/qcom boards
-do not boot in linux-next.
+A simplified version of the semantic match that finds this problem is as
+follows: (http://coccinelle.lip6.fr/)
 
-Thanks,
+// <smpl>
+@@
+identifier ret; expression e1,e2;
+@@
+(
+if (\(ret < 0\|ret != 0\))
+ { ... return ret; }
+|
+ret = 0
+)
+... when != ret = e1
+    when != &ret
+*if(...)
+{
+  ... when != ret = e2
+      when forall
+ return ret;
+}
+// </smpl>
 
-Kevin
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+
+---
+The patches in this series are independent of each other.
+
+ drivers/tty/serial/icom.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index d4620fe..45fc323 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1550,8 +1550,10 @@ static int icom_probe(struct pci_dev *dev,
+ 
+ 	icom_adapter->base_addr = pci_ioremap_bar(dev, 0);
+ 
+-	if (!icom_adapter->base_addr)
++	if (!icom_adapter->base_addr) {
++		retval = -ENOMEM;
+ 		goto probe_exit1;
++	}
+ 
+ 	 /* save off irq and request irq line */
+ 	 if ( (retval = request_irq(dev->irq, icom_interrupt,
