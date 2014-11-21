@@ -1,43 +1,39 @@
-From: Arianna Avanzini <avanzini.arianna@gmail.com>
-Subject: [PATCH RFC] tty, serial, 8250: remove __init from function serial8250_console_setup()
-Date: Thu, 20 Nov 2014 19:00:56 +0100
-Message-ID: <1416506456-2126-1-git-send-email-avanzini.arianna@gmail.com>
+From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
+Subject: Re: [RFC PATCH] serial: mxs-auart: Take missing uart port locks
+Date: Fri, 21 Nov 2014 12:32:43 +0100
+Message-ID: <546F22DB.3060703@elproma.com.pl>
+References: <1416322001-28491-1-git-send-email-j.uzycki@elproma.com.pl> <546DB194.40902@i2se.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f47.google.com ([74.125.82.47]:60093 "EHLO
-	mail-wg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754913AbaKTSBB (ORCPT
+Received: from v032797.home.net.pl ([89.161.177.31]:61042 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751175AbaKULcc (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 20 Nov 2014 13:01:01 -0500
+	Fri, 21 Nov 2014 06:32:32 -0500
+In-Reply-To: <546DB194.40902@i2se.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: avanzini.arianna@gmail.com
+To: Stefan Wahren <stefan.wahren@i2se.com>, Fabio Estevam <festevam@gmail.com>, =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Hector Palacios <hector.palacios@digi.com>
+Cc: fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Craig McQueen <craig.mcqueen@beamcommunications.com>, linux-serial@vger.kernel.org, Viguera Javier <Javier.Viguera@digi.com>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 
-Some RS232 adapters handled by this driver are hotpluggable. The function
-serial8250_console_setup() is called during device init and is defined with
-the __init macro. In case the driver is built-in, hotplugging the device after
-the initialization phase has been completed (and the related memory has been
-freed) results in a kernel crash.
-This commit fixes the issue by removing __init from the function definition.
 
-Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
----
- drivers/tty/serial/8250/8250_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Stefan,
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index ca5cfdc..ca8108d 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -3237,7 +3237,7 @@ serial8250_console_write(struct console *co, const char *s, unsigned int count)
- 	serial8250_rpm_put(up);
- }
- 
--static int __init serial8250_console_setup(struct console *co, char *options)
-+static int serial8250_console_setup(struct console *co, char *options)
- {
- 	struct uart_port *port;
- 	int baud = 9600;
--- 
-2.1.3
+W dniu 2014-11-20 o 10:17, Stefan Wahren pisze:
+>
+> Am 18.11.2014 um 15:46 schrieb Janusz Uzycki:
+>> The patch adds missing spin-locks and allows to change termios
+>> settings during tx.
+>> The patch also fixes direct call its enable_ms() according to
+>> commit d41510ce2f07
+>> ("serial: Take uart port lock for direct *_enable_ms()")
+> i think it's better to separate it in different patches.
+
+OK, I separated them. I will send the patch again in near future but now I'm
+waiting for more comments/tests.
+
+thanks,
+Janusz
 
