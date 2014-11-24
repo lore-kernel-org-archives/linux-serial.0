@@ -1,39 +1,37 @@
-From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
-Subject: Re: [RFC PATCH] serial: mxs-auart: Take missing uart port locks
-Date: Fri, 21 Nov 2014 12:32:43 +0100
-Message-ID: <546F22DB.3060703@elproma.com.pl>
-References: <1416322001-28491-1-git-send-email-j.uzycki@elproma.com.pl> <546DB194.40902@i2se.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Robert Baldyga <r.baldyga@samsung.com>
+Subject: [PATCH 0/4] serial: samsung: fixes for serial driver
+Date: Mon, 24 Nov 2014 07:56:20 +0100
+Message-ID: <1416812184-4496-1-git-send-email-r.baldyga@samsung.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:61042 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1751175AbaKULcc (ORCPT
+Received: from mailout2.samsung.com ([203.254.224.25]:34351 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750881AbaKXG4s (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Fri, 21 Nov 2014 06:32:32 -0500
-In-Reply-To: <546DB194.40902@i2se.com>
+	Mon, 24 Nov 2014 01:56:48 -0500
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Stefan Wahren <stefan.wahren@i2se.com>, Fabio Estevam <festevam@gmail.com>, =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Hector Palacios <hector.palacios@digi.com>
-Cc: fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Craig McQueen <craig.mcqueen@beamcommunications.com>, linux-serial@vger.kernel.org, Viguera Javier <Javier.Viguera@digi.com>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: akpm@linux-foundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, Robert Baldyga <r.baldyga@samsung.com>
 
+Hi,
 
-Hi Stefan,
+This series contains fixes for samsung serial driver. There is one patch
+with important fix, which, I think, should be also applied to stable
+trees, two patches fixing FIFO handling (they are not critical but,
+they can provide better FIFO usage) and one patch with code cleanup.
 
-W dniu 2014-11-20 o 10:17, Stefan Wahren pisze:
->
-> Am 18.11.2014 um 15:46 schrieb Janusz Uzycki:
->> The patch adds missing spin-locks and allows to change termios
->> settings during tx.
->> The patch also fixes direct call its enable_ms() according to
->> commit d41510ce2f07
->> ("serial: Take uart port lock for direct *_enable_ms()")
-> i think it's better to separate it in different patches.
+Best regards,
+Robert Baldyga
 
-OK, I separated them. I will send the patch again in near future but now I'm
-waiting for more comments/tests.
+Robert Baldyga (4):
+  serial: samsung: wait for transfer completion before clock disable
+  serial: samsung: fix style problems
+  serial: samsung: prefer to use fifosize from driver data
+  serial: samsung: use port->fifosize instead of hardcoded values
 
-thanks,
-Janusz
+ drivers/tty/serial/samsung.c | 63 ++++++++++++++++++++++++++------------------
+ 1 file changed, 38 insertions(+), 25 deletions(-)
+
+-- 
+1.9.1
 
