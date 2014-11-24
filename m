@@ -1,74 +1,105 @@
 From: Kevin Cernekee <cernekee@gmail.com>
-Subject: [PATCH V3 4/7] serial: core: Add big-endian iotype
-Date: Mon, 24 Nov 2014 15:36:19 -0800
-Message-ID: <1416872182-6440-5-git-send-email-cernekee@gmail.com>
+Subject: [PATCH V3 1/7] of: Add helper function to check MMIO register endianness
+Date: Mon, 24 Nov 2014 15:36:16 -0800
+Message-ID: <1416872182-6440-2-git-send-email-cernekee@gmail.com>
 References: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-pd0-f169.google.com ([209.85.192.169]:47038 "EHLO
-	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751313AbaKXXge (ORCPT
+Received: from mail-pd0-f172.google.com ([209.85.192.172]:51377 "EHLO
+	mail-pd0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751149AbaKXXga (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Nov 2014 18:36:34 -0500
+	Mon, 24 Nov 2014 18:36:30 -0500
 In-Reply-To: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org, grant.likely@linaro.org
 Cc: arnd@arndb.de, f.fainelli@gmail.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-mips@linux-mips.org
 
-Since most drivers interpret UPIO_MEM32 to mean "little-endian" and use
-readl/writel to access the registers, add a parallel UPIO_MEM32BE to
-request the use of big-endian MMIO accessors (ioread32be/iowrite32be).
+SoC peripherals can come in several different flavors:
+
+ - little-endian: registers always need to be accessed in LE mode (so the
+   kernel should perform a swap if the CPU is running BE)
+
+ - big-endian: registers always need to be accessed in BE mode (so the
+   kernel should perform a swap if the CPU is running LE)
+
+ - native-endian: the bus will automatically swap accesses, so the kernel
+   should never swap
+
+Introduce a function that checks an OF device node to see whether it
+contains a "big-endian" or "native-endian" property.  For the former case,
+always return true.  For the latter case, return true iff the kernel was
+built for BE (implying that the BE MMIO accessors do not perform a swap).
+Otherwise return false, assuming LE registers.
+
+LE registers are assumed by default because most existing drivers (libahci,
+serial8250, usb) always use readl/writel in the absence of instructions
+to the contrary, so that will be our fallback.
 
 Signed-off-by: Kevin Cernekee <cernekee@gmail.com>
 ---
- drivers/tty/serial/serial_core.c |  2 ++
- include/linux/serial_core.h      | 13 +++++++------
- 2 files changed, 9 insertions(+), 6 deletions(-)
+ drivers/of/base.c  | 23 +++++++++++++++++++++++
+ include/linux/of.h |  6 ++++++
+ 2 files changed, 29 insertions(+)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index eaeb9a0..ecc7d6c 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2092,6 +2092,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
- 		break;
- 	case UPIO_MEM:
- 	case UPIO_MEM32:
-+	case UPIO_MEM32BE:
- 	case UPIO_AU:
- 	case UPIO_TSI:
- 		snprintf(address, sizeof(address),
-@@ -2736,6 +2737,7 @@ int uart_match_port(struct uart_port *port1, struct uart_port *port2)
- 		       (port1->hub6   == port2->hub6);
- 	case UPIO_MEM:
- 	case UPIO_MEM32:
-+	case UPIO_MEM32BE:
- 	case UPIO_AU:
- 	case UPIO_TSI:
- 		return (port1->mapbase == port2->mapbase);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 21c2e05..d2d5bf6 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -140,12 +140,13 @@ struct uart_port {
- 	unsigned char		iotype;			/* io access style */
- 	unsigned char		unused1;
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index 81c095f..35d95a1 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -552,6 +552,29 @@ bool of_device_is_available(const struct device_node *device)
+ EXPORT_SYMBOL(of_device_is_available);
  
--#define UPIO_PORT		(0)
--#define UPIO_HUB6		(1)
--#define UPIO_MEM		(2)
--#define UPIO_MEM32		(3)
--#define UPIO_AU			(4)			/* Au1x00 and RT288x type IO */
--#define UPIO_TSI		(5)			/* Tsi108/109 type IO */
-+#define UPIO_PORT		(0)			/* 8b I/O port access */
-+#define UPIO_HUB6		(1)			/* Hub6 ISA card */
-+#define UPIO_MEM		(2)			/* 8b MMIO access */
-+#define UPIO_MEM32		(3)			/* 32b little endian */
-+#define UPIO_MEM32BE		(4)			/* 32b big endian */
-+#define UPIO_AU			(5)			/* Au1x00 and RT288x type IO */
-+#define UPIO_TSI		(6)			/* Tsi108/109 type IO */
+ /**
++ *  of_device_is_big_endian - check if a device has BE registers
++ *
++ *  @device: Node to check for endianness
++ *
++ *  Returns true if the device has a "big-endian" property, or if the kernel
++ *  was compiled for BE *and* the device has a "native-endian" property.
++ *  Returns false otherwise.
++ *
++ *  Callers would nominally use ioread32be/iowrite32be if
++ *  of_device_is_big_endian() == true, or readl/writel otherwise.
++ */
++bool of_device_is_big_endian(const struct device_node *device)
++{
++	if (of_property_read_bool(device, "big-endian"))
++		return true;
++	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN) &&
++	    of_property_read_bool(device, "native-endian"))
++		return true;
++	return false;
++}
++EXPORT_SYMBOL(of_device_is_big_endian);
++
++/**
+  *	of_get_parent - Get a node's parent if any
+  *	@node:	Node to get parent
+  *
+diff --git a/include/linux/of.h b/include/linux/of.h
+index 7aaaa59..fc70b01 100644
+--- a/include/linux/of.h
++++ b/include/linux/of.h
+@@ -276,6 +276,7 @@ extern int of_property_read_string_helper(struct device_node *np,
+ extern int of_device_is_compatible(const struct device_node *device,
+ 				   const char *);
+ extern bool of_device_is_available(const struct device_node *device);
++extern bool of_device_is_big_endian(const struct device_node *device);
+ extern const void *of_get_property(const struct device_node *node,
+ 				const char *name,
+ 				int *lenp);
+@@ -431,6 +432,11 @@ static inline bool of_device_is_available(const struct device_node *device)
+ 	return false;
+ }
  
- 	unsigned int		read_status_mask;	/* driver specific */
- 	unsigned int		ignore_status_mask;	/* driver specific */
++static inline bool of_device_is_big_endian(const struct device_node *device)
++{
++	return false;
++}
++
+ static inline struct property *of_find_property(const struct device_node *np,
+ 						const char *name,
+ 						int *lenp)
 -- 
 2.1.0
 
