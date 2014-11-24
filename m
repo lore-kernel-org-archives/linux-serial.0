@@ -1,72 +1,116 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [RFC] serial_core: Add wake_peer uart operation
-Date: Mon, 24 Nov 2014 09:04:45 +0000
-Message-ID: <20141124090445.4340f747@lxorguk.ukuu.org.uk>
-References: <1416293401-7714-1-git-send-email-kiran.kumar@linaro.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH]  tty: serial: msm_serial: document DT alias
+Date: Mon, 24 Nov 2014 11:36:13 -0800
+Message-ID: <20141124193613.GA10106@kroah.com>
+References: <54667D13.2070105@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:43370 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751062AbaKXJFZ (ORCPT
+Received: from mail.linuxfoundation.org ([140.211.169.12]:54949 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754303AbaKXTgO (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Mon, 24 Nov 2014 04:05:25 -0500
-In-Reply-To: <1416293401-7714-1-git-send-email-kiran.kumar@linaro.org>
+	Mon, 24 Nov 2014 14:36:14 -0500
+Content-Disposition: inline
+In-Reply-To: <54667D13.2070105@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Kiran Kumar Raparthy <kiran.kumar@linaro.org>
-Cc: linux-kernel@vger.kernel.org, San Mehat <san@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Android Kernel Team <kernel-team@android.com>, John Stultz <john.stultz@linaro.org>, Sumit Semwal <sumit.semwal@linaro.org>
+To: Frank Rowand <frowand.list@gmail.com>
+Cc: Stephen Boyd <sboyd@codeaurora.org>, Linux Kernel list <linux-kernel@vger.kernel.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>, Tyler Baker <tyler.baker@linaro.org>, Kevin Hilman <khilman@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-> This is one of the number of patches from the Android AOSP common.git tree,
-> which is used on almost all Android devices.  I wanted to submit it for review
-> to see if it should go upstream.
+On Fri, Nov 14, 2014 at 02:07:15PM -0800, Frank Rowand wrote:
+> From: Frank Rowand <frank.rowand@sonymobile.com>
 > 
->  drivers/tty/serial/serial_core.c | 3 +++
->  include/linux/serial_core.h      | 1 +
->  2 files changed, 4 insertions(+)
+> Update devicetree binding for msm_serial to reflect msm_serial_probe()
+> getting line id (port number) from the serialN alias.
 > 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index df3a8c7..dc45c4b 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -95,6 +95,9 @@ static void __uart_start(struct tty_struct *tty)
->  	struct uart_state *state = tty->driver_data;
->  	struct uart_port *port = state->uart_port;
+> Signed-off-by: Frank Rowand <frank.rowand@sonymobile.com>
+> ---
+>  Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt |   15 +++++++++--
+>  1 file changed, 13 insertions(+), 2 deletions(-)
+> 
+> Index: linux/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+> ===================================================================
+> --- linux.orig/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+> +++ linux/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+> @@ -27,27 +27,52 @@ Optional properties:
+>  - dmas: Should contain dma specifiers for transmit and receive channels
+>  - dma-names: Should contain "tx" for transmit and "rx" for receive channels
 >  
-> +	if (port->ops->wake_peer)
-> +		port->ops->wake_peer(port);
+> +Note: Aliases may be defined to ensure the correct ordering of the UARTs.
+> +The alias serialN will result in the UART being assigned port N.  If any
+> +serialN alias exists, then an alias must exist for each enabled UART.  The
+> +serialN aliases should be in a .dts file instead of in a .dtsi file.
 > +
->  	if (!uart_tx_stopped(port))
->  		port->ops->start_tx(port);
->  }
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 21c2e05..219b6a3 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -66,6 +66,7 @@ struct uart_ops {
->  	void		(*set_ldisc)(struct uart_port *, int new);
->  	void		(*pm)(struct uart_port *, unsigned int state,
->  			      unsigned int oldstate);
-> +	void		(*wake_peer)(struct uart_port *);
+>  Examples:
 >  
->  	/*
->  	 * Return a string describing the type of the port
+> -A uartdm v1.4 device with dma capabilities.
+> +- A uartdm v1.4 device with dma capabilities.
+> +
+> +	serial@f991e000 {
+> +		compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
+> +		reg = <0xf991e000 0x1000>;
+> +		interrupts = <0 108 0x0>;
+> +		clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
+> +		clock-names = "core", "iface";
+> +		dmas = <&dma0 0>, <&dma0 1>;
+> +		dma-names = "tx", "rx";
+> +	};
+> +
+> +- A uartdm v1.3 device without dma capabilities and part of a GSBI complex.
+> +
+> +	serial@19c40000 {
+> +		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+> +		reg = <0x19c40000 0x1000>,
+> +		<0x19c00000 0x1000>;
+> +		interrupts = <0 195 0x0>;
+> +		clocks = <&gsbi5_uart_cxc>, <&gsbi5_ahb_cxc>;
+> +		clock-names = "core", "iface";
+> +	};
+> +
+> +- serialN alias.
+> +
+> +	aliases {
+> +		serial0 = &uarta;
+> +		serial1 = &uartc;
+> +		serial2 = &uartb;
+> +	};
+> +
+> +	uarta: serial@12490000 {
+> +		status = "ok";
+> +	};
+> +
+> +	uartb: serial@16340000 {
+> +		status = "ok";
+> +	};
+>  
+> -serial@f991e000 {
+> -	compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
+> -	reg = <0xf991e000 0x1000>;
+> -	interrupts = <0 108 0x0>;
+> -	clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
+> -	clock-names = "core", "iface";
+> -	dmas = <&dma0 0>, <&dma0 1>;
+> -	dma-names = "tx", "rx";
+> -};
+> -
+> -A uartdm v1.3 device without dma capabilities and part of a GSBI complex.
+> -
+> -serial@19c40000 {
+> -	compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+> -	reg = <0x19c40000 0x1000>,
+> -	      <0x19c00000 0x1000>;
+> -	interrupts = <0 195 0x0>;
+> -	clocks = <&gsbi5_uart_cxc>, <&gsbi5_ahb_cxc>;
+> -	clock-names = "core", "iface";
+> -};
+> +	uartc: serial@1a240000 {
+> +		status = "ok";
+> +	};
 
-Can we please document the locking and call semantics for this - eg what
-stop the peer going back to sleep as this call is made ? when does the
-peer go back to sleep ? how does the peer decide to go back to sleep ?
-Who sets wake_peer, when may it be set, why is it a uart_op when it's
-likely to be per port and really ought to be a bit more dynamic ?
+Git complained about a whitespace issue in this patch, which I fixed up
+by hand.  Please be more careful...
 
-It's probably obvious to Android folks, but the rules are not afaik
-written down anywhere in kernel land.
+thanks,
 
-Also I guess why is the power management framework not appropriate for
-this should also be answered.
-
-I'm less worried about users - there are a lot of GPL out of tree drivers
-using it, and several in tree ones with patches you add for Android use
-which exist solely to fix up wake peer and the old wakelocks.
-
-Alan
+greg k-h
