@@ -1,68 +1,65 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH V3 0/7] serial: Configure {big,native}-endian MMIO
- accesses via DT
-Date: Tue, 25 Nov 2014 13:11:16 -0800
-Message-ID: <20141125211116.GA9997@kroah.com>
-References: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
- <20141125151018.359EAC44343@trevor.secretlab.ca>
- <20141125173859.GA27287@kroah.com>
+From: Arianna Avanzini <avanzini.arianna@gmail.com>
+Subject: Re: [PATCH RFC] tty, serial, 8250: remove __init from function
+ serial8250_console_setup()
+Date: Tue, 25 Nov 2014 23:18:33 +0100
+Message-ID: <20141125221832.GA1464@gmail.com>
+References: <1416506456-2126-1-git-send-email-avanzini.arianna@gmail.com>
+ <20141125175121.GA32573@kroah.com>
+Reply-To: avanzini.arianna@gmail.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:49756 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751303AbaKYVLR (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Nov 2014 16:11:17 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20141125173859.GA27287@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+In-Reply-To: <20141125175121.GA32573@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Likely <grant.likely@linaro.org>
-Cc: Kevin Cernekee <cernekee@gmail.com>, jslaby@suse.cz, robh@kernel.org, arnd@arndb.de, f.fainelli@gmail.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-mips@linux-mips.org
 
-On Tue, Nov 25, 2014 at 09:38:59AM -0800, Greg KH wrote:
-> On Tue, Nov 25, 2014 at 03:10:18PM +0000, Grant Likely wrote:
-> > On Mon, 24 Nov 2014 15:36:15 -0800
-> > , Kevin Cernekee <cernekee@gmail.com>
-> >  wrote:
-> > > My last submission attempted to work around serial driver coexistence
-> > > problems on multiplatform kernels.  Since there are still questions
-> > > surrounding the best way to solve that problem, this patch series
-> > > will focus on the narrower topic of big endian MMIO support on serial.
-> > > 
-> > > 
-> > > V2->V3:
-> > > 
-> > >  - Document the new DT properties.
-> > > 
-> > >  - Add libfdt-based wrapper, to complement the "struct device_node" based
-> > >    version.
-> > > 
-> > >  - Restructure early_init_dt_scan_chosen_serial() changes to use a
-> > >    temporary variable, so it is easy to add more of_setup_earlycon()
-> > >    properties later.
-> > > 
-> > >  - Make of_serial and serial8250 honor the new "big-endian" property.
-> > > 
-> > > 
-> > > This series applies cleanly to:
-> > > 
-> > > git://git.kernel.org/pub/scm/linux/kernel/git/glikely/linux.git devicetree/next-overlay
-> > > 
-> > > but was tested on the mips-for-linux-next branch because my BE platform
-> > > isn't supported in mainline yet.
+On Tue, Nov 25, 2014 at 09:51:21AM -0800, Greg KH wrote:
+> On Thu, Nov 20, 2014 at 07:00:56PM +0100, Arianna Avanzini wrote:
+> > Some RS232 adapters handled by this driver are hotpluggable. The function
+> > serial8250_console_setup() is called during device init and is defined with
+> > the __init macro. In case the driver is built-in, hotplugging the device after
+> > the initialization phase has been completed (and the related memory has been
+> > freed) results in a kernel crash.
+> > This commit fixes the issue by removing __init from the function definition.
 > > 
-> > For the whole series:
-> > Acked-by: Grant Likely <grant.likely@linaro.org>
+> > Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_core.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
 > > 
-> > Greg, which tree do you want to merge this through? My DT tree, or the
-> > tty tree?
+> > diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> > index ca5cfdc..ca8108d 100644
+> > --- a/drivers/tty/serial/8250/8250_core.c
+> > +++ b/drivers/tty/serial/8250/8250_core.c
+> > @@ -3237,7 +3237,7 @@ serial8250_console_write(struct console *co, const char *s, unsigned int count)
+> >  	serial8250_rpm_put(up);
+> >  }
+> >  
+> > -static int __init serial8250_console_setup(struct console *co, char *options)
+> > +static int serial8250_console_setup(struct console *co, char *options)
+> >  {
+> >  	struct uart_port *port;
+> >  	int baud = 9600;
+> > -- 
+> > 2.1.3
 > 
-> I can take these through my tty tree, thanks.
+> I don't apply "RFC" patches as it implies you don't even know if this
+> works or not.
 
-I take that back, it doesn't apply to my tty tree due to changes in the
-of codebase.  So feel free to take all of these through your DT tree
-please:
+I was not aware of the fact that the "RFC" tag had such an implication; thank
+you for pointing that out. As I have already tested the patch and it appears to
+be effective, I'll resend it and drop the "RFC" tag.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Thank you,
+Arianna
+
+
+--
+/*
+ * Arianna Avanzini
+ * avanzini.arianna@gmail.com
+ * http://ava.webhop.me
+ */
