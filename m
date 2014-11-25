@@ -1,45 +1,38 @@
-From: Arianna Avanzini <avanzini.arianna@gmail.com>
-Subject: [PATCH] tty, serial, 8250: remove __init from function serial8250_console_setup()
-Date: Tue, 25 Nov 2014 23:21:22 +0100
-Message-ID: <1416954082-1755-1-git-send-email-avanzini.arianna@gmail.com>
-References: <20141125175121.GA32573@kroah.com>
+From: Kevin Cernekee <cernekee@gmail.com>
+Subject: Re: [PATCH V2 01/10] tty: Fallback to use dynamic major number
+Date: Tue, 25 Nov 2014 15:37:16 -0800
+Message-ID: <CAJiQ=7DOxK2NzmC9gGsnARxGMN8wRQyGX+5u5YC_vt00ADVsDg@mail.gmail.com>
+References: <1415825647-6024-1-git-send-email-cernekee@gmail.com>
+ <1415825647-6024-2-git-send-email-cernekee@gmail.com> <20141125203431.GA9385@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f53.google.com ([74.125.82.53]:34943 "EHLO
-	mail-wg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750869AbaKYWV1 (ORCPT
+Received: from mail-qa0-f43.google.com ([209.85.216.43]:44234 "EHLO
+	mail-qa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751712AbaKYXhh (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Nov 2014 17:21:27 -0500
-In-Reply-To: <20141125175121.GA32573@kroah.com>
+	Tue, 25 Nov 2014 18:37:37 -0500
+In-Reply-To: <20141125203431.GA9385@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: avanzini.arianna@gmail.com
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>, daniel@zonque.org, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Grant Likely <grant.likely@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, tushar.b@samsung.com
 
-Some RS232 adapters handled by this driver are hotpluggable. The function
-serial8250_console_setup() is called during device init and is defined with
-the __init macro. In case the driver is built-in, hotplugging the device after
-the initialization phase has been completed (and the related memory has been
-freed) results in a kernel crash.
-This commit fixes the issue by removing __init from the function definition.
+On Tue, Nov 25, 2014 at 12:34 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> On Wed, Nov 12, 2014 at 12:53:58PM -0800, Kevin Cernekee wrote:
+>> From: Tushar Behera <tushar.behera@linaro.org>
+>
+> This email bounces, so I'm going to have to reject this patch.  I can't
+> accept a patch from a "fake" person, let alone something that touches
+> core code like this.
+>
+> Sorry, I can't accept anything in this series then.
 
-Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
----
- drivers/tty/serial/8250/8250_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Oops, guess I probably should have updated his address after the V1
+emails bounced...
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index ca5cfdc..ca8108d 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -3237,7 +3237,7 @@ serial8250_console_write(struct console *co, const char *s, unsigned int count)
- 	serial8250_rpm_put(up);
- }
- 
--static int __init serial8250_console_setup(struct console *co, char *options)
-+static int serial8250_console_setup(struct console *co, char *options)
- {
- 	struct uart_port *port;
- 	int baud = 9600;
--- 
-2.1.3
-
+Before I send a new version, what do you think about the overall
+approach?  Should we try to make serial8250 coexist with the other
+"ttyS / major 4 / minor 64" drivers (possibly at the expense of
+compatibility) or is it better to start with a simpler, cleaner driver
+like serial/pxa?
