@@ -1,38 +1,87 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v3 0/5] Add Spreadtrum Sharkl64 Platform support
-Date: Tue, 25 Nov 2014 13:59:42 +0100
-Message-ID: <5003189.80rNq67D5Z@wuerfel>
-References: <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
-Cc: grant.likely@linaro.org, robh+dt@kernel.org, catalin.marinas@arm.com, gregkh@linuxfoundation.org, ijc+devicetree@hellion.org.uk, jslaby@suse.cz, galak@codeaurora.org, broonie@linaro.org, mark.rutland@arm.com, m-karicheri2@ti.com, pawel.moll@arm.com, artagnon@gmail.com, rrichter@cavium.com, will.deacon@arm.com, gnomes@lxorguk.ukuu.org.uk, corbet@lwn.net, jason@lakedaemon.net, broonie@kernel.org, heiko@sntech.de, shawn.guo@freescale.com, florian.vaussard@epfl.ch, andrew@lunn.ch, hytszk@gmail.com, orsonzhai@gmail.com, geng.ren@spreadtrum.com, zhizhou.zhang@spreadtrum.com, lanqing.liu@spreadtrum.com, zhang.lyra@gmail.com, wei.qiao@spreadtrum.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, sprdlinux@freelists.org, linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, linux-api@vger.kernel.org
+From: Grant Likely <grant.likely@linaro.org>
+Subject: Re: [PATCH V3 0/7] serial: Configure {big,native}-endian MMIO
+ accesses via DT
+Date: Tue, 25 Nov 2014 15:10:18 +0000
+Message-ID: <20141125151018.359EAC44343@trevor.secretlab.ca>
+References: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:62767 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750809AbaKYPKo (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Tue, 25 Nov 2014 10:10:44 -0500
+Received: by mail-wg0-f44.google.com with SMTP id b13so1128729wgh.17
+        for <linux-serial@vger.kernel.org>; Tue, 25 Nov 2014 07:10:43 -0800 (PST)
+In-Reply-To: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Kevin Cernekee <cernekee@gmail.com>, gregkh@linuxfoundation.org, jslaby@suse.cz, robh@kernel.org
+Cc: arnd@arndb.de, f.fainelli@gmail.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-mips@linux-mips.org
 
-On Tuesday 25 November 2014 20:16:53 Chunyan Zhang wrote:
-> Spreadtrum is a rapid growing chip vendor providing smart phone total solutions.
+On Mon, 24 Nov 2014 15:36:15 -0800
+, Kevin Cernekee <cernekee@gmail.com>
+ wrote:
+> My last submission attempted to work around serial driver coexistence
+> problems on multiplatform kernels.  Since there are still questions
+> surrounding the best way to solve that problem, this patch series
+> will focus on the narrower topic of big endian MMIO support on serial.
 > 
-> Sharkl64 Platform is nominated as a SoC infrastructure that supports 4G/3G/2G
-> standards based on ARMv8 multiple core architecture.Now we have only one
-> SoC(SC9836) based on this Platform in developing.
 > 
-> This patchset adds Sharkl64 support in arm64 device tree and the serial driver
-> of SC9836-UART.
+> V2->V3:
 > 
-> This patchset also has patches which address "sprd" prefix and DT compatible
-> strings for nodes which appear un-documented.
+>  - Document the new DT properties.
 > 
-> This version code was tesed on Fast Mode.
-> We use boot-wrapper-aarch64 as the bootloader.
+>  - Add libfdt-based wrapper, to complement the "struct device_node" based
+>    version.
+> 
+>  - Restructure early_init_dt_scan_chosen_serial() changes to use a
+>    temporary variable, so it is easy to add more of_setup_earlycon()
+>    properties later.
+> 
+>  - Make of_serial and serial8250 honor the new "big-endian" property.
+> 
+> 
+> This series applies cleanly to:
+> 
+> git://git.kernel.org/pub/scm/linux/kernel/git/glikely/linux.git devicetree/next-overlay
+> 
+> but was tested on the mips-for-linux-next branch because my BE platform
+> isn't supported in mainline yet.
 
-Looks very good overall. I have two small comments to individual patches,
-but I think we can still merge them for 3.19. Please send the serial
-driver to Greg for inclusion, unless you get further comments, and send
-the updated version of the other patches to arm@kernel.org and ask
-for including them in the cover letter.
+For the whole series:
+Acked-by: Grant Likely <grant.likely@linaro.org>
 
-	Arnd
+Greg, which tree do you want to merge this through? My DT tree, or the
+tty tree?
+
+g.
+
+> 
+> 
+> Kevin Cernekee (7):
+>   of: Add helper function to check MMIO register endianness
+>   of/fdt: Add endianness helper function for early init code
+>   of: Document {little,big,native}-endian bindings
+>   serial: core: Add big-endian iotype
+>   serial: earlycon: Set UPIO_MEM32BE based on DT properties
+>   serial: of_serial: Support big-endian register accesses
+>   serial: 8250: Add support for big-endian MMIO accesses
+> 
+>  .../devicetree/bindings/common-properties.txt      | 60 ++++++++++++++++++++++
+>  drivers/of/base.c                                  | 23 +++++++++
+>  drivers/of/fdt.c                                   | 26 +++++++++-
+>  drivers/tty/serial/8250/8250_core.c                | 20 ++++++++
+>  drivers/tty/serial/8250/8250_early.c               |  5 ++
+>  drivers/tty/serial/earlycon.c                      |  4 +-
+>  drivers/tty/serial/of_serial.c                     |  3 +-
+>  drivers/tty/serial/serial_core.c                   |  2 +
+>  include/linux/of.h                                 |  6 +++
+>  include/linux/of_fdt.h                             |  2 +
+>  include/linux/serial_core.h                        | 15 +++---
+>  11 files changed, 155 insertions(+), 11 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/common-properties.txt
+> 
+> -- 
+> 2.1.0
+> 
+
