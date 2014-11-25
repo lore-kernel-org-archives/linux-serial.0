@@ -1,47 +1,30 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH RFC] tty, serial, 8250: remove __init from function
- serial8250_console_setup()
-Date: Tue, 25 Nov 2014 09:51:21 -0800
-Message-ID: <20141125175121.GA32573@kroah.com>
-References: <1416506456-2126-1-git-send-email-avanzini.arianna@gmail.com>
+From: Greg Kroah-Hartman <greg@kroah.com>
+Subject: Re: [PATCH][RESEND] serial_mctrl_gpio: use gpiod_set_array function
+Date: Tue, 25 Nov 2014 09:40:30 -0800
+Message-ID: <20141125174030.GA31905@kroah.com>
+References: <8534699.OPo8bzguux@pcimr>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1416506456-2126-1-git-send-email-avanzini.arianna@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arianna Avanzini <avanzini.arianna@gmail.com>
-Cc: jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+In-Reply-To: <8534699.OPo8bzguux@pcimr>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Rojhalat Ibrahim <imr@rtschenk.de>
+Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Grant Likely <grant.likely@linaro.org>, Mark Brown <broonie@kernel.org>, Gerhard Sittig <gsi@denx.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Nov 20, 2014 at 07:00:56PM +0100, Arianna Avanzini wrote:
-> Some RS232 adapters handled by this driver are hotpluggable. The function
-> serial8250_console_setup() is called during device init and is defined with
-> the __init macro. In case the driver is built-in, hotplugging the device after
-> the initialization phase has been completed (and the related memory has been
-> freed) results in a kernel crash.
-> This commit fixes the issue by removing __init from the function definition.
+On Mon, Nov 17, 2014 at 06:31:30PM +0100, Rojhalat Ibrahim wrote:
+> Make the serial_mctrl_gpio driver the first user of the new gpiod_set_array
+> function, which is now available in the linux-gpio devel tree.
+> All modem control output signals are now set simultaneously.
 > 
-> Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
+> Signed-off-by: Rojhalat Ibrahim <imr@rtschenk.de>
+> Reviewed-by: Alexandre Courbot <acourbot@nvidia.com>
 > ---
->  drivers/tty/serial/8250/8250_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Resend: Add Greg Kroah-Hartman and the linux-serial list to the recipients
+>         in hopes of getting an ACK.
 > 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index ca5cfdc..ca8108d 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -3237,7 +3237,7 @@ serial8250_console_write(struct console *co, const char *s, unsigned int count)
->  	serial8250_rpm_put(up);
->  }
->  
-> -static int __init serial8250_console_setup(struct console *co, char *options)
-> +static int serial8250_console_setup(struct console *co, char *options)
->  {
->  	struct uart_port *port;
->  	int baud = 9600;
-> -- 
-> 2.1.3
 
-I don't apply "RFC" patches as it implies you don't even know if this
-works or not.
+
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
