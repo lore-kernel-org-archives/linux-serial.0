@@ -1,110 +1,74 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH v3 5/5] tty/serial: Add Spreadtrum sc9836-uart driver
- support
-Date: Wed, 26 Nov 2014 12:33:13 +0000
-Message-ID: <20141126123313.520ac83f@lxorguk.ukuu.org.uk>
-References: <Sharkl64-v3>
- <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
- <1416917818-10506-6-git-send-email-chunyan.zhang@spreadtrum.com>
+From: Grant Likely <grant.likely@linaro.org>
+Subject: Re: [PATCH V3 0/7] serial: Configure {big,native}-endian MMIO
+ accesses via DT
+Date: Wed, 26 Nov 2014 13:14:52 +0000
+Message-ID: <CACxGe6uifCPz6RM59MVODWo2WGoVBMWSFzmL9Uz3AVJ0C9-hig@mail.gmail.com>
+References: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
+ <20141125151018.359EAC44343@trevor.secretlab.ca> <20141125173859.GA27287@kroah.com>
+ <20141125211116.GA9997@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1416917818-10506-6-git-send-email-chunyan.zhang@spreadtrum.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
-Cc: mark.rutland@arm.com, andrew@lunn.ch, heiko@sntech.de, broonie@linaro.org, catalin.marinas@arm.com, will.deacon@arm.com, linux-api@vger.kernel.org, jslaby@suse.cz, artagnon@gmail.com, lanqing.liu@spreadtrum.com, arnd@arndb.de, corbet@lwn.net, zhang.lyra@gmail.com, zhizhou.zhang@spreadtrum.com, geng.ren@spreadtrum.com, m-karicheri2@ti.com, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, grant.likely@linaro.org, orsonzhai@gmail.com, florian.vaussard@epfl.ch, devicetree@vger.kernel.org, jason@lakedaemon.net, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, hytszk@gmail.com, rrichter@cavium.com, broonie@kernel.org, wei.qiao@spreadtrum.com, sprdlinux@freelists.org, shawn.guo@freescale.com, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, galak@codeaurora.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-ig0-f180.google.com ([209.85.213.180]:48840 "EHLO
+	mail-ig0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750870AbaKZNPN (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Wed, 26 Nov 2014 08:15:13 -0500
+Received: by mail-ig0-f180.google.com with SMTP id h15so2550143igd.7
+        for <linux-serial@vger.kernel.org>; Wed, 26 Nov 2014 05:15:13 -0800 (PST)
+In-Reply-To: <20141125211116.GA9997@kroah.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Florian Fainelli <f.fainelli@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-mips <linux-mips@linux-mips.org>
 
-> +		 213 = /dev/ttySPX0		SPRD serial port 0
-> +		    ...
-> +		 216 = /dev/ttySPX3		SPRD serial port 3
+On Tue, Nov 25, 2014 at 9:11 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> On Tue, Nov 25, 2014 at 09:38:59AM -0800, Greg KH wrote:
+>> On Tue, Nov 25, 2014 at 03:10:18PM +0000, Grant Likely wrote:
+>> > On Mon, 24 Nov 2014 15:36:15 -0800
+>> > , Kevin Cernekee <cernekee@gmail.com>
+>> >  wrote:
+>> > > My last submission attempted to work around serial driver coexistence
+>> > > problems on multiplatform kernels.  Since there are still questions
+>> > > surrounding the best way to solve that problem, this patch series
+>> > > will focus on the narrower topic of big endian MMIO support on serial.
+>> > >
+>> > >
+>> > > V2->V3:
+>> > >
+>> > >  - Document the new DT properties.
+>> > >
+>> > >  - Add libfdt-based wrapper, to complement the "struct device_node" based
+>> > >    version.
+>> > >
+>> > >  - Restructure early_init_dt_scan_chosen_serial() changes to use a
+>> > >    temporary variable, so it is easy to add more of_setup_earlycon()
+>> > >    properties later.
+>> > >
+>> > >  - Make of_serial and serial8250 honor the new "big-endian" property.
+>> > >
+>> > >
+>> > > This series applies cleanly to:
+>> > >
+>> > > git://git.kernel.org/pub/scm/linux/kernel/git/glikely/linux.git devicetree/next-overlay
+>> > >
+>> > > but was tested on the mips-for-linux-next branch because my BE platform
+>> > > isn't supported in mainline yet.
+>> >
+>> > For the whole series:
+>> > Acked-by: Grant Likely <grant.likely@linaro.org>
+>> >
+>> > Greg, which tree do you want to merge this through? My DT tree, or the
+>> > tty tree?
+>>
+>> I can take these through my tty tree, thanks.
+>
+> I take that back, it doesn't apply to my tty tree due to changes in the
+> of codebase.  So feel free to take all of these through your DT tree
+> please:
+>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Please use dynamic allocation or give a very very good reason why you
-can't
+Applied all 7 patches. Thanks.
 
-> +config SERIAL_SPRD_NR
-> +        int "Maximum number of sprd serial ports"
-> +        depends on SERIAL_SPRD
-> +        default "4"
-
-If you are doing dynamic allocation this should pretty much go away
-
-
-> +static int sprd_startup(struct uart_port *port)
-> +{
-> +	int ret = 0;
-> +	unsigned int ien, ctrl1;
-> +	struct sprd_uart_port *sp;
-> +
-> +	serial_out(port, SPRD_CTL2, ((THLD_TX_EMPTY << 8) | THLD_RX_FULL));
-> +
-> +	/* clear rx fifo */
-> +	while (serial_in(port, SPRD_STS1) & 0x00ff)
-> +		serial_in(port, SPRD_RXD);
-> +
-> +	/* clear tx fifo */
-> +	while (serial_in(port, SPRD_STS1) & 0xff00)
-> +		;
-
-Missing a cpu_relax and I would have thought a timeout on both of these.
-
-
-> +static void sprd_set_termios(struct uart_port *port,
-> +				    struct ktermios *termios,
-> +				    struct ktermios *old)
-> +{
-> +	unsigned int baud, quot;
-
-> +	/* calculate parity */
-> +	lcr &= ~SPRD_LCR_PARITY;
-> +	if (termios->c_cflag & PARENB) {
-> +		lcr |= SPRD_LCR_PARITY_EN;
-> +		if (termios->c_cflag & PARODD)
-> +			lcr |= SPRD_LCR_ODD_PAR;
-> +		else
-> +			lcr |= SPRD_LCR_EVEN_PAR;
-> +	}
-
-If you don't support mark/space parity then also clear CMSPAR in
-termios->c_cflag. If you do then it ought to be handled above.
-
-> +
-> +	/* clock divider bit16~bit20 */
-> +	serial_out(port, SPRD_CLKD1, (quot & 0x1f0000) >> 16);
-> +	serial_out(port, SPRD_LCR, lcr);
-> +	fc |= 0x3e00 | THLD_RX_FULL;
-> +	serial_out(port, SPRD_CTL1, fc);
-
-Also set the resulting baud back into the termios (see the 8250 termios
-for an example)
-
-
-> +static int __init sprd_console_setup(struct console *co, char *options)
-> +{
-> +	struct uart_port *port;
-> +	int baud = 115200;
-> +	int bits = 8;
-> +	int parity = 'n';
-> +	int flow = 'n';
-> +
-> +	if (unlikely(co->index >= UART_NR_MAX || co->index < 0))
-> +		co->index = 0;
-> +
-> +	port = (struct uart_port *)sprd_port[co->index];
-> +	if (port == NULL) {
-> +		pr_info("srial port %d not yet initialized\n", co->index);
-
-Typo
-
-Looks basically sound to me
-
-Alan
+g.
