@@ -1,44 +1,66 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH V2 01/10] tty: Fallback to use dynamic major number
-Date: Tue, 25 Nov 2014 15:49:56 -0800
-Message-ID: <20141125234956.GA3138@kroah.com>
-References: <1415825647-6024-1-git-send-email-cernekee@gmail.com>
- <1415825647-6024-2-git-send-email-cernekee@gmail.com>
- <20141125203431.GA9385@kroah.com>
- <CAJiQ=7DOxK2NzmC9gGsnARxGMN8wRQyGX+5u5YC_vt00ADVsDg@mail.gmail.com>
+From: Lyra Zhang <zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 4/5] arm64: Add support for Spreadtrum's Sharkl64
+ Platform in Kconfig and defconfig
+Date: Wed, 26 Nov 2014 11:08:01 +0800
+Message-ID: <CAAfSe-uDk-ih2tqU9a3UEzr=BZgU_=+XJm9=zWbE3J4HMOuiog@mail.gmail.com>
+References: <1416917818-10506-5-git-send-email-chunyan.zhang@spreadtrum.com>
+	<3490516.nCDXzA8J8x@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:52077 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751199AbaKYXt4 (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Tue, 25 Nov 2014 18:49:56 -0500
-Content-Disposition: inline
-In-Reply-To: <CAJiQ=7DOxK2NzmC9gGsnARxGMN8wRQyGX+5u5YC_vt00ADVsDg@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <3490516.nCDXzA8J8x@wuerfel>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org" <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, "jslaby-AlSwsSmVLrQ@public.gmane.org" <jslaby-AlSwsSmVLrQ@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Mark Brown <broonie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "m-karicheri2-l0cyMroinI0@public.gmane.org" <m-karicheri2-l0cyMroinI0@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ramkumar Ramachandra <artagnon-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, shawn.guo-KZfg59tc24xl57MIdRCFDg@public.gmane.org, florian.vaussard-p8DiymsW2f8@public.gmane.org, andrew-g2DYL2Zd6BY@public.gmane.org, hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Orson Zhai <orsonzhai-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, geng.ren@spreadtrum.
 List-Id: linux-serial@vger.kernel.org
-To: Kevin Cernekee <cernekee@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>, daniel@zonque.org, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Grant Likely <grant.likely@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, tushar.b@samsung.com
 
-On Tue, Nov 25, 2014 at 03:37:16PM -0800, Kevin Cernekee wrote:
-> On Tue, Nov 25, 2014 at 12:34 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
-> > On Wed, Nov 12, 2014 at 12:53:58PM -0800, Kevin Cernekee wrote:
-> >> From: Tushar Behera <tushar.behera@linaro.org>
+2014-11-25 20:57 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
+>
+> On Tuesday 25 November 2014 20:16:57 Chunyan Zhang wrote:
 > >
-> > This email bounces, so I'm going to have to reject this patch.  I can't
-> > accept a patch from a "fake" person, let alone something that touches
-> > core code like this.
-> >
-> > Sorry, I can't accept anything in this series then.
-> 
-> Oops, guess I probably should have updated his address after the V1
-> emails bounced...
-> 
-> Before I send a new version, what do you think about the overall
-> approach?  Should we try to make serial8250 coexist with the other
-> "ttyS / major 4 / minor 64" drivers (possibly at the expense of
-> compatibility) or is it better to start with a simpler, cleaner driver
-> like serial/pxa?
+> > +menuconfig ARCH_SPRD
+> > +       bool "Spreadtrum SoC platform"
+> > +       depends on ARM64
+> > +       help
+> > +         Support for Spreadtrum ARM based SoCs
+> > +
+> > +if ARCH_SPRD
+> > +
+> > +config ARCH_SHARKL64
+> > +       bool "Sharkl64 SoC Platform"
+> > +       help
+> > +         Sharkl64 is a Spreadtrum's SoC Platform which is based
+> > +         on ARM 64-bit processor core including
+> > +           sc9836
+> > +
+> > +endif #ARCH_SPRD
+> > +
+>
+> I don't think we need multiple levels here, it should be enough to
+> have either ARCH_SPRD or ARCH_SHARKL64, because all device drivers
+> are going to be optional anyway. Typically a Kconfig symbol covers
+> all SoCs that are related, so if you Spreadtrum are doing both
+> phone and server chips and these are designed independently, you
+> would have two symbols, but if you only expect to see phone chips
+> here that are all derived from the same product line, using ARCH_SPRD
+> to refer to all of them should be enough.
+>
+>         Arnd
 
-We can't do anything "at the expense of compatibility", sorry.
+
+For now, we have only one platform(Sharkl64) based on ARM64 been
+submitted, but we're intending to add support for more our platforms
+based on ARM64 or ARM32 in the future. There are many common devices
+on these platforms, such as serial. Our idea would be that if we had a
+'menuconfig ARCH_SPRD' in the Kconfig, these common devices only need
+to depend on ARCH_SPRD in the respective Kconfig, otherwise they may
+depend on a few Kconfig symbols for every platforms which include
+these common devices.
+
+So, do you think whether we should define a menuconfig(ARCH_SPRD) in
+the Kconfig for this case ?
+
+Thanks!
+
+Best regards,
+Chunyan
