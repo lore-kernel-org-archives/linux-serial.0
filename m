@@ -1,52 +1,85 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH V2 01/10] tty: Fallback to use dynamic major number
-Date: Wed, 26 Nov 2014 09:34:20 -0500
-Message-ID: <5475E4EC.7090309@hurleysoftware.com>
-References: <1415825647-6024-1-git-send-email-cernekee@gmail.com>	<1415825647-6024-2-git-send-email-cernekee@gmail.com>	<20141125203431.GA9385@kroah.com>	<CAJiQ=7DOxK2NzmC9gGsnARxGMN8wRQyGX+5u5YC_vt00ADVsDg@mail.gmail.com> <20141126133306.659E9C4099B@trevor.secretlab.ca>
+From: Robert Jarzmik <robert.jarzmik@free.fr>
+Subject: Re: [PATCH V2] serial: pxa: hold port.lock when reporting modem line changes
+Date: Wed, 26 Nov 2014 18:10:29 +0100
+Message-ID: <87egsp3n22.fsf@free.fr>
+References: <1416993716-21005-1-git-send-email-dbaryshkov@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qa0-f49.google.com ([209.85.216.49]:42144 "EHLO
-	mail-qa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753194AbaKZOeY (ORCPT
+Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:31707 "EHLO
+	smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750881AbaKZRKm (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Nov 2014 09:34:24 -0500
-Received: by mail-qa0-f49.google.com with SMTP id s7so1937982qap.22
-        for <linux-serial@vger.kernel.org>; Wed, 26 Nov 2014 06:34:23 -0800 (PST)
-In-Reply-To: <20141126133306.659E9C4099B@trevor.secretlab.ca>
+	Wed, 26 Nov 2014 12:10:42 -0500
+In-Reply-To: <1416993716-21005-1-git-send-email-dbaryshkov@gmail.com> (Dmitry
+	Eremin-Solenikov's message of "Wed, 26 Nov 2014 12:21:56 +0300")
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Likely <grant.likely@linaro.org>, Kevin Cernekee <cernekee@gmail.com>, Greg KH <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>, daniel@zonque.org, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, tushar.b@samsung.com
+To: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On 11/26/2014 08:33 AM, Grant Likely wrote:
-> On Tue, 25 Nov 2014 15:37:16 -0800
-> , Kevin Cernekee <cernekee@gmail.com>
->  wrote:
->> On Tue, Nov 25, 2014 at 12:34 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
->>> On Wed, Nov 12, 2014 at 12:53:58PM -0800, Kevin Cernekee wrote:
->>>> From: Tushar Behera <tushar.behera@linaro.org>
->>>
->>> This email bounces, so I'm going to have to reject this patch.  I can't
->>> accept a patch from a "fake" person, let alone something that touches
->>> core code like this.
->>>
->>> Sorry, I can't accept anything in this series then.
->>
->> Oops, guess I probably should have updated his address after the V1
->> emails bounced...
->>
->> Before I send a new version, what do you think about the overall
->> approach?  Should we try to make serial8250 coexist with the other
->> "ttyS / major 4 / minor 64" drivers (possibly at the expense of
->> compatibility) or is it better to start with a simpler, cleaner driver
->> like serial/pxa?
-> 
-> Co-existing really needs to be fixed.
+Dmitry Eremin-Solenikov <dbaryshkov@gmail.com> writes:
 
-What are the requirements for co-existence?
-Is it sufficient to provide 1st come-1st served minor allocation?
+> Both uart_handle_dcd_change() and uart_handle_cts_change() require a
+> port lock to be held and will emit a warning when lockdep is enabled.
+> Held corresponding lock.
+>
+> This fixes the following warnings:
+>
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 0 at drivers/tty/serial/serial_core.c:2760 uart_handle_dcd_change+0xc8/0xf8()
+> Modules linked in:
+> CPU: 0 PID: 0 Comm: swapper Not tainted 3.18.0-rc5+ #26
+> [<c000dff8>] (unwind_backtrace) from [<c000bc70>] (show_stack+0x10/0x14)
+> [<c000bc70>] (show_stack) from [<c00192ac>] (warn_slowpath_common+0x6c/0x8c)
+> [<c00192ac>] (warn_slowpath_common) from [<c00192e8>] (warn_slowpath_null+0x1c/0x24)
+> [<c00192e8>] (warn_slowpath_null) from [<c0182984>] (uart_handle_dcd_change+0xc8/0xf8)
+> [<c0182984>] (uart_handle_dcd_change) from [<c018625c>] (serial_pxa_irq+0x268/0x3b0)
+> [<c018625c>] (serial_pxa_irq) from [<c004d0d4>] (handle_irq_event_percpu+0x50/0x16c)
+> [<c004d0d4>] (handle_irq_event_percpu) from [<c004d22c>] (handle_irq_event+0x3c/0x5c)
+> [<c004d22c>] (handle_irq_event) from [<c004f7d0>] (handle_level_irq+0x94/0x118)
+> [<c004f7d0>] (handle_level_irq) from [<c004ca0c>] (generic_handle_irq+0x20/0x30)
+> [<c004ca0c>] (generic_handle_irq) from [<c004cbe0>] (__handle_domain_irq+0x38/0x70)
+> [<c004cbe0>] (__handle_domain_irq) from [<c00085c4>] (ichp_handle_irq+0x24/0x34)
+> [<c00085c4>] (ichp_handle_irq) from [<c000c7e4>] (__irq_svc+0x44/0x54)
+> Exception stack(0xc07c7f58 to 0xc07c7fa0)
+> 7f40:                                                       00000001 00000001
+> 7f60: 00000000 20000013 c07c6000 00000000 00000000 c07ce0a4 c07d7798 00000000
+> 7f80: c07e8fb8 0000004c 00000000 c07c7fa0 c0044798 c0009f20 20000013 ffffffff
+> [<c000c7e4>] (__irq_svc) from [<c0009f20>] (arch_cpu_idle+0x28/0x38)
+> [<c0009f20>] (arch_cpu_idle) from [<c003c974>] (cpu_startup_entry+0x1b8/0x220)
+> [<c003c974>] (cpu_startup_entry) from [<c0338c54>] (start_kernel+0x39c/0x40c)
+> ---[ end trace 4c1b7ae03f6d9d30 ]---
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 0 at drivers/tty/serial/serial_core.c:2791 uart_handle_cts_change+0xa0/0xdc()
+> Modules linked in:
+> CPU: 0 PID: 0 Comm: swapper Tainted: G        W      3.18.0-rc5+ #26
+> [<c000dff8>] (unwind_backtrace) from [<c000bc70>] (show_stack+0x10/0x14)
+> [<c000bc70>] (show_stack) from [<c00192ac>] (warn_slowpath_common+0x6c/0x8c)
+> [<c00192ac>] (warn_slowpath_common) from [<c00192e8>] (warn_slowpath_null+0x1c/0x24)
+> [<c00192e8>] (warn_slowpath_null) from [<c018528c>] (uart_handle_cts_change+0xa0/0xdc)
+> [<c018528c>] (uart_handle_cts_change) from [<c018624c>] (serial_pxa_irq+0x258/0x3b0)
+> [<c018624c>] (serial_pxa_irq) from [<c004d0d4>] (handle_irq_event_percpu+0x50/0x16c)
+> [<c004d0d4>] (handle_irq_event_percpu) from [<c004d22c>] (handle_irq_event+0x3c/0x5c)
+> [<c004d22c>] (handle_irq_event) from [<c004f7d0>] (handle_level_irq+0x94/0x118)
+> [<c004f7d0>] (handle_level_irq) from [<c004ca0c>] (generic_handle_irq+0x20/0x30)
+> [<c004ca0c>] (generic_handle_irq) from [<c004cbe0>] (__handle_domain_irq+0x38/0x70)
+> [<c004cbe0>] (__handle_domain_irq) from [<c00085c4>] (ichp_handle_irq+0x24/0x34)
+> [<c00085c4>] (ichp_handle_irq) from [<c000c7e4>] (__irq_svc+0x44/0x54)
+> Exception stack(0xc07c7f58 to 0xc07c7fa0)
+> 7f40:                                                       00000001 00000001
+> 7f60: 00000000 20000013 c07c6000 00000000 00000000 c07ce0a4 c07d7798 00000000
+> 7f80: c07e8fb8 0000004c 00000000 c07c7fa0 c0044798 c0009f20 20000013 ffffffff
+> [<c000c7e4>] (__irq_svc) from [<c0009f20>] (arch_cpu_idle+0x28/0x38)
+> [<c0009f20>] (arch_cpu_idle) from [<c003c974>] (cpu_startup_entry+0x1b8/0x220)
+> [<c003c974>] (cpu_startup_entry) from [<c0338c54>] (start_kernel+0x39c/0x40c)
+> ---[ end trace 4c1b7ae03f6d9d31 ]---
+>
+> Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+> ---
+> [Changes since v1 - lock whole function, not just check_modem_status().]
 
-Anything done should be designed to solve this name problem forever,
-not some expeditious band-aid.
+Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
+
+-- 
+Robert
