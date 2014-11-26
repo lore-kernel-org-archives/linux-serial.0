@@ -1,46 +1,45 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Uart2 can't work well after the system goto standby and then
- resume at csr primaII platform
-Date: Wed, 26 Nov 2014 10:43:48 -0800
-Message-ID: <20141126184348.GA6958@kroah.com>
-References: <CAMLw+SEMavUKc1-9mZA+-UJ=UJiBhBp=7=srNNqg-W74C=BLSQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:41403 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752077AbaKZSnt (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Nov 2014 13:43:49 -0500
-Content-Disposition: inline
-In-Reply-To: <CAMLw+SEMavUKc1-9mZA+-UJ=UJiBhBp=7=srNNqg-W74C=BLSQ@mail.gmail.com>
-Sender: linux-serial-owner@vger.kernel.org
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] tty: serial: serial-omap: depend on !8250_omap
+Date: Wed, 26 Nov 2014 23:01:46 +0100
+Message-ID: <1417039306-2384-1-git-send-email-bigeasy@linutronix.de>
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>, Felipe Balbi <balbi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
-To: Guoqing Liu <lgqgood@gmail.com>
-Cc: linux-serial@vger.kernel.org
 
-On Wed, Nov 26, 2014 at 02:17:06PM +0800, Guoqing Liu wrote:
-> Daer Sir,
-> =E3=80=80=E3=80=80 I'm very sorry to trouble you.
->      Recently I found the uart2 at csr primaII platform can't work
-> well after the system  goto standby and then resume.
->=20
-> My test environment is as follows=EF=BC=9A
->      kernel:   3.10.16
+Technically speaking this is not required. If both are enabled then the
+Maikefile order says that 8250 one wins, the second is never probed.
 
-That is a very old and obsolete kernel version.  If a vendor is forcing
-you to stick to that version, please ask them for support as there's
-nothing that we can to do help here, sorry.
+If we choose to enable 8250_omap via defconfig then one might get supprised
+that his console isn't working anymore since nothing says use ttySx
+instead ttyOx.
+This patch _tries_ to bring this to the users' attention by not showing
+the serial-omap driver once the 8250 one is enabled. So the user might
+choose to use the help text which says that this driver (8250_omap)
+uses ttySx instead ttyOx.
 
-Now if you can duplicate this on the 3.17 kernel release, that's a
-different story...
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+This is my attempt to warn the defconfig user of the defconfig change
+(which did not yet happen). Any suggestions?
 
-good luck,
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index e71a28b4b94e..1b1bdf946fee 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1125,7 +1125,7 @@ config SERIAL_OF_PLATFORM
+ 
+ config SERIAL_OMAP
+ 	tristate "OMAP serial port support"
+-	depends on ARCH_OMAP2PLUS
++	depends on ARCH_OMAP2PLUS && !SERIAL_8250_OMAP
+ 	select SERIAL_CORE
+ 	help
+ 	  If you have a machine based on an Texas Instruments OMAP CPU you
+-- 
+2.1.3
+
