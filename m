@@ -1,15 +1,17 @@
 From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH 1/4] serial: mxs-auart: Remove unneeded goto label
-Date: Thu, 27 Nov 2014 17:08:30 -0200
-Message-ID: <1417115313-24113-1-git-send-email-festevam@gmail.com>
+Subject: [PATCH 2/4] serial: mxs-auart: Use devm_kzalloc()
+Date: Thu, 27 Nov 2014 17:08:31 -0200
+Message-ID: <1417115313-24113-2-git-send-email-festevam@gmail.com>
+References: <1417115313-24113-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qc0-f178.google.com ([209.85.216.178]:55725 "EHLO
-	mail-qc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750835AbaK0TIw (ORCPT
+Received: from mail-qa0-f54.google.com ([209.85.216.54]:43682 "EHLO
+	mail-qa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750906AbaK0TIy (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Nov 2014 14:08:52 -0500
-Received: by mail-qc0-f178.google.com with SMTP id b13so4325840qcw.37
-        for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2014 11:08:51 -0800 (PST)
+	Thu, 27 Nov 2014 14:08:54 -0500
+Received: by mail-qa0-f54.google.com with SMTP id i13so3593303qae.41
+        for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2014 11:08:54 -0800 (PST)
+In-Reply-To: <1417115313-24113-1-git-send-email-festevam@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 To: gregkh@linuxfoundation.org
@@ -17,39 +19,65 @@ Cc: j.uzycki@elproma.com.pl, linux-serial@vger.kernel.org, Fabio Estevam <fabio.
 
 From: Fabio Estevam <fabio.estevam@freescale.com>
 
-Instead of jumping to the 'out' label, let's return the error immediately, which
-makes the code shorter and cleaner.
+By using devm_kzalloc() we can have a shorter and cleaner code.
 
 Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 ---
- drivers/tty/serial/mxs-auart.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/tty/serial/mxs-auart.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index ec553f8..a9e7fa6 100644
+index a9e7fa6..0b5f0ea 100644
 --- a/drivers/tty/serial/mxs-auart.c
 +++ b/drivers/tty/serial/mxs-auart.c
-@@ -1232,10 +1232,8 @@ static int mxs_auart_probe(struct platform_device *pdev)
+@@ -1231,7 +1231,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	int ret = 0;
  	struct resource *r;
  
- 	s = kzalloc(sizeof(struct mxs_auart_port), GFP_KERNEL);
--	if (!s) {
--		ret = -ENOMEM;
--		goto out;
--	}
-+	if (!s)
-+		return -ENOMEM;
+-	s = kzalloc(sizeof(struct mxs_auart_port), GFP_KERNEL);
++	s = devm_kzalloc(&pdev->dev, sizeof(*s), GFP_KERNEL);
+ 	if (!s)
+ 		return -ENOMEM;
  
- 	ret = serial_mxs_probe_dt(s, pdev);
+@@ -1239,7 +1239,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
  	if (ret > 0)
-@@ -1314,7 +1312,6 @@ out_free_clk:
+ 		s->port.line = pdev->id < 0 ? 0 : pdev->id;
+ 	else if (ret < 0)
+-		goto out_free;
++		return ret;
+ 
+ 	if (of_id) {
+ 		pdev->id_entry = of_id->data;
+@@ -1247,10 +1247,8 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	s->clk = clk_get(&pdev->dev, NULL);
+-	if (IS_ERR(s->clk)) {
+-		ret = PTR_ERR(s->clk);
+-		goto out_free;
+-	}
++	if (IS_ERR(s->clk))
++		return PTR_ERR(s->clk);
+ 
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!r) {
+@@ -1310,8 +1308,6 @@ out_free_irq:
+ 	free_irq(s->irq, s);
+ out_free_clk:
  	clk_put(s->clk);
- out_free:
- 	kfree(s);
--out:
+-out_free:
+-	kfree(s);
  	return ret;
  }
  
+@@ -1326,7 +1322,6 @@ static int mxs_auart_remove(struct platform_device *pdev)
+ 	mxs_auart_free_gpio_irq(s);
+ 	clk_put(s->clk);
+ 	free_irq(s->irq, s);
+-	kfree(s);
+ 
+ 	return 0;
+ }
 -- 
 1.9.1
 
