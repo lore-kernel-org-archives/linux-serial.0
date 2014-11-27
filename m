@@ -1,98 +1,68 @@
-From: Lyra Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH v3 5/5] tty/serial: Add Spreadtrum sc9836-uart driver support
-Date: Thu, 27 Nov 2014 19:05:05 +0800
-Message-ID: <CAAfSe-uToEA0duiuQJWSTAOwnmcuz5npKKE+e3_FXxq6p98GsQ@mail.gmail.com>
-References: <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
-	<1416917818-10506-6-git-send-email-chunyan.zhang@spreadtrum.com>
-	<20141125200353.GA7653@kroah.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH V2 01/10] tty: Fallback to use dynamic major number
+Date: Thu, 27 Nov 2014 12:10:46 +0100
+Message-ID: <CAMuHMdV7Uo7JBAXDa6z8R+9v7HaDYQ=QpKf8FMBqvmt372oSsA@mail.gmail.com>
+References: <1415825647-6024-1-git-send-email-cernekee@gmail.com>
+	<1415825647-6024-2-git-send-email-cernekee@gmail.com>
+	<20141125203431.GA9385@kroah.com>
+	<CAJiQ=7DOxK2NzmC9gGsnARxGMN8wRQyGX+5u5YC_vt00ADVsDg@mail.gmail.com>
+	<20141126133306.659E9C4099B@trevor.secretlab.ca>
+	<5475E4EC.7090309@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20141125200353.GA7653@kroah.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Chunyan Zhang <chunyan.zhang@spreadtrum.com>, Grant Likely <grant.likely@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "jslaby@suse.cz" <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Mark Brown <broonie@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "m-karicheri2@ti.com" <m-karicheri2@ti.com>, Pawel Moll <pawel.moll@arm.com>, Ramkumar Ramachandra <artagnon@gmail.com>, "rrichter@cavium.com" <rrichter@cavium.com>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, gnomes@lxorguk.ukuu.org.uk, Jonathan Corbet <corbet@lwn.net>, jason@lakedaemon.net, Mark Brown <broonie@kernel.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, shawn.guo@freescale.com, florian.vaussard@epfl.ch, andrew@lunn.ch, Hayato Suzuki <hytszk@gmail.com>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail-lb0-f175.google.com ([209.85.217.175]:46311 "EHLO
+	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753251AbaK0LKs (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 27 Nov 2014 06:10:48 -0500
+In-Reply-To: <5475E4EC.7090309@hurleysoftware.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Grant Likely <grant.likely@linaro.org>, Kevin Cernekee <cernekee@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>, daniel@zonque.org, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, tushar.b@samsung.com
 
-2014-11-26 4:03 GMT+08:00 Greg KH <gregkh@linuxfoundation.org>:
-> On Tue, Nov 25, 2014 at 08:16:58PM +0800, Chunyan Zhang wrote:
->> Add a full sc9836-uart driver for SC9836 SoC which is based on the
->> spreadtrum sharkl64 platform.
->> This driver also support earlycon.
+On Wed, Nov 26, 2014 at 3:34 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> On 11/26/2014 08:33 AM, Grant Likely wrote:
+>> On Tue, 25 Nov 2014 15:37:16 -0800
+>> , Kevin Cernekee <cernekee@gmail.com>
+>>  wrote:
+>>> On Tue, Nov 25, 2014 at 12:34 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+>>>> On Wed, Nov 12, 2014 at 12:53:58PM -0800, Kevin Cernekee wrote:
+>>>>> From: Tushar Behera <tushar.behera@linaro.org>
+>>>>
+>>>> This email bounces, so I'm going to have to reject this patch.  I can't
+>>>> accept a patch from a "fake" person, let alone something that touches
+>>>> core code like this.
+>>>>
+>>>> Sorry, I can't accept anything in this series then.
+>>>
+>>> Oops, guess I probably should have updated his address after the V1
+>>> emails bounced...
+>>>
+>>> Before I send a new version, what do you think about the overall
+>>> approach?  Should we try to make serial8250 coexist with the other
+>>> "ttyS / major 4 / minor 64" drivers (possibly at the expense of
+>>> compatibility) or is it better to start with a simpler, cleaner driver
+>>> like serial/pxa?
 >>
->> Signed-off-by: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
->> Signed-off-by: Orson Zhai <orson.zhai@spreadtrum.com>
->> Originally-by: Lanqing Liu <lanqing.liu@spreadtrum.com>
+>> Co-existing really needs to be fixed.
 >
-> Some objections:
+> What are the requirements for co-existence?
+> Is it sufficient to provide 1st come-1st served minor allocation?
 >
->> +static struct platform_driver sprd_platform_driver = {
->> +     .probe = sprd_probe,
->> +     .remove = sprd_remove,
->> +     .suspend = sprd_suspend,
->> +     .resume = sprd_resume,
->> +     .driver = {
->> +                .name = "sprd_serial",
->> +                .owner = THIS_MODULE,
->
-> platform drivers don't need .owner in them anymore, it's handled by the
-> driver core automatically.
->
-OK, will remove it in v4.
->
->> +                .of_match_table = of_match_ptr(serial_ids),
->> +                },
->> +};
->> +
->> +static int __init sprd_serial_init(void)
->> +{
->> +     int ret = 0;
->> +
->> +     ret = uart_register_driver(&sprd_uart_driver);
->> +     if (unlikely(ret != 0))
->> +             return ret;
->
-> NEVER use unlikely unless you can measure the difference without it.
-> And even then, you better be able to justify it.  For something as dumb
-> as this type of check, youare working against the complier and cpu which
-> already knows that 0 is the usual response.
->
-> So please remove all usages of likely/unlikely in this patch series.
->
-OK, will remove it.
->> +
->> +     ret = platform_driver_register(&sprd_platform_driver);
->> +     if (unlikely(ret != 0))
->> +             uart_unregister_driver(&sprd_uart_driver);
->> +
->> +     return ret;
->> +}
->> +
->> +static void __exit sprd_serial_exit(void)
->> +{
->> +     platform_driver_unregister(&sprd_platform_driver);
->> +     uart_unregister_driver(&sprd_uart_driver);
->> +}
->> +
->> +module_init(sprd_serial_init);
->> +module_exit(sprd_serial_exit);
->> +
->> +MODULE_LICENSE("GPL");
->> +MODULE_DESCRIPTION("Spreadtrum SoC serial driver series");
->> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
->> index 16ad852..d9a8c88 100644
->> --- a/include/uapi/linux/serial_core.h
->> +++ b/include/uapi/linux/serial_core.h
->> @@ -247,4 +247,7 @@
->>  /* MESON */
->>  #define PORT_MESON   109
->>
->> +/* SPRD SERIAL  */
->> +#define PORT_SPRD   110
->
-> Please use a tab character here.
-OK.
+> Anything done should be designed to solve this name problem forever,
+> not some expeditious band-aid.
 
++1
 
-Thanks for your comments!
-Chunyan
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
