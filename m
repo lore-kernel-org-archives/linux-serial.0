@@ -1,68 +1,46 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH V2 01/10] tty: Fallback to use dynamic major number
-Date: Thu, 27 Nov 2014 12:10:46 +0100
-Message-ID: <CAMuHMdV7Uo7JBAXDa6z8R+9v7HaDYQ=QpKf8FMBqvmt372oSsA@mail.gmail.com>
-References: <1415825647-6024-1-git-send-email-cernekee@gmail.com>
-	<1415825647-6024-2-git-send-email-cernekee@gmail.com>
-	<20141125203431.GA9385@kroah.com>
-	<CAJiQ=7DOxK2NzmC9gGsnARxGMN8wRQyGX+5u5YC_vt00ADVsDg@mail.gmail.com>
-	<20141126133306.659E9C4099B@trevor.secretlab.ca>
-	<5475E4EC.7090309@hurleysoftware.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 1/5] Documentation: DT: Renamed of-serial.txt to
+ 8250.txt
+Date: Thu, 27 Nov 2014 11:38:20 +0000
+Message-ID: <20141127113819.GD857@leverpostej>
+References: <Sharkl64-v3>
+ <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
+ <1416917818-10506-2-git-send-email-chunyan.zhang@spreadtrum.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-lb0-f175.google.com ([209.85.217.175]:46311 "EHLO
-	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753251AbaK0LKs (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Nov 2014 06:10:48 -0500
-In-Reply-To: <5475E4EC.7090309@hurleysoftware.com>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1416917818-10506-2-git-send-email-chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
+Cc: "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org" <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, "jslaby-AlSwsSmVLrQ@public.gmane.org" <jslaby-AlSwsSmVLrQ@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "broonie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <broonie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "m-karicheri2-l0cyMroinI0@public.gmane.org" <m-karicheri2-l0cyMroinI0@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, "artagnon-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <artagnon-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org" <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, "corbet-T1hC0tSOHrs@public.gmane.org" <corbet-T1hC0tSOHrs@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org" <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "shawn.guo-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <shawn.g>
 List-Id: linux-serial@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Grant Likely <grant.likely@linaro.org>, Kevin Cernekee <cernekee@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>, daniel@zonque.org, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, tushar.b@samsung.com
 
-On Wed, Nov 26, 2014 at 3:34 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 11/26/2014 08:33 AM, Grant Likely wrote:
->> On Tue, 25 Nov 2014 15:37:16 -0800
->> , Kevin Cernekee <cernekee@gmail.com>
->>  wrote:
->>> On Tue, Nov 25, 2014 at 12:34 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
->>>> On Wed, Nov 12, 2014 at 12:53:58PM -0800, Kevin Cernekee wrote:
->>>>> From: Tushar Behera <tushar.behera@linaro.org>
->>>>
->>>> This email bounces, so I'm going to have to reject this patch.  I can't
->>>> accept a patch from a "fake" person, let alone something that touches
->>>> core code like this.
->>>>
->>>> Sorry, I can't accept anything in this series then.
->>>
->>> Oops, guess I probably should have updated his address after the V1
->>> emails bounced...
->>>
->>> Before I send a new version, what do you think about the overall
->>> approach?  Should we try to make serial8250 coexist with the other
->>> "ttyS / major 4 / minor 64" drivers (possibly at the expense of
->>> compatibility) or is it better to start with a simpler, cleaner driver
->>> like serial/pxa?
->>
->> Co-existing really needs to be fixed.
->
-> What are the requirements for co-existence?
-> Is it sufficient to provide 1st come-1st served minor allocation?
->
-> Anything done should be designed to solve this name problem forever,
-> not some expeditious band-aid.
+On Tue, Nov 25, 2014 at 12:16:54PM +0000, Chunyan Zhang wrote:
+> The file of-serial.txt was only for 8250 compatible UART implementations,
+> so renamed it to 8250.txt to avoid confusing other persons.
+> This is recommended by Arnd, see:
+> http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/291455.html
+> 
+> Signed-off-by: Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
 
-+1
+My prior Ack [1] still applies (given you've just changed the way the
+patch was generated, as Arnd and I suggested).
 
-Gr{oetje,eeting}s,
+Mark.
 
-                        Geert
+[1] http://lists.infradead.org/pipermail/linux-arm-kernel/2014-October/295152.html
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> ---
+>  .../bindings/serial/{of-serial.txt => 8250.txt}    |    0
+>  1 file changed, 0 insertions(+), 0 deletions(-)
+>  rename Documentation/devicetree/bindings/serial/{of-serial.txt => 8250.txt} (100%)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/of-serial.txt b/Documentation/devicetree/bindings/serial/8250.txt
+> similarity index 100%
+> rename from Documentation/devicetree/bindings/serial/of-serial.txt
+> rename to Documentation/devicetree/bindings/serial/8250.txt
+> -- 
+> 1.7.9.5
+> 
+> 
