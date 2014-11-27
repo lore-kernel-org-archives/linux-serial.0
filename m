@@ -1,114 +1,98 @@
-From: Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCH 19/19] serial: samsung: Add the support for Exynos5433 SoC
-Date: Thu, 27 Nov 2014 16:35:16 +0900
-Message-ID: <1417073716-22997-20-git-send-email-cw00.choi@samsung.com>
-References: <1417073716-22997-1-git-send-email-cw00.choi@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1417073716-22997-1-git-send-email-cw00.choi@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: kgene.kim@samsung.com, mark.rutland@arm.com, arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com, will.deacon@arm.com, s.nawrocki@samsung.com, tomasz.figa@gmail.com, thomas.abraham@linaro.org, linus.walleij@linaro.org, kyungmin.park@samsung.com, inki.dae@samsung.com, chanho61.park@samsung.com, geunsik.lim@samsung.com, sw0312.kim@samsung.com, jh80.chung@samsung.com, cw00.choi@samsung.com, a.kesavan@samsung.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+From: Lyra Zhang <zhang.lyra@gmail.com>
+Subject: Re: [PATCH v3 5/5] tty/serial: Add Spreadtrum sc9836-uart driver support
+Date: Thu, 27 Nov 2014 19:05:05 +0800
+Message-ID: <CAAfSe-uToEA0duiuQJWSTAOwnmcuz5npKKE+e3_FXxq6p98GsQ@mail.gmail.com>
+References: <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
+	<1416917818-10506-6-git-send-email-chunyan.zhang@spreadtrum.com>
+	<20141125200353.GA7653@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20141125200353.GA7653@kroah.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Chunyan Zhang <chunyan.zhang@spreadtrum.com>, Grant Likely <grant.likely@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "jslaby@suse.cz" <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Mark Brown <broonie@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "m-karicheri2@ti.com" <m-karicheri2@ti.com>, Pawel Moll <pawel.moll@arm.com>, Ramkumar Ramachandra <artagnon@gmail.com>, "rrichter@cavium.com" <rrichter@cavium.com>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, gnomes@lxorguk.ukuu.org.uk, Jonathan Corbet <corbet@lwn.net>, jason@lakedaemon.net, Mark Brown <broonie@kernel.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, shawn.guo@freescale.com, florian.vaussard@epfl.ch, andrew@lunn.ch, Hayato Suzuki <hytszk@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds new s3c24xx_serial_drv_data structure for Exynos5433 SoC
-because Exynos5433 has different fifo size from existing Exynos4 SoC.
+2014-11-26 4:03 GMT+08:00 Greg KH <gregkh@linuxfoundation.org>:
+> On Tue, Nov 25, 2014 at 08:16:58PM +0800, Chunyan Zhang wrote:
+>> Add a full sc9836-uart driver for SC9836 SoC which is based on the
+>> spreadtrum sharkl64 platform.
+>> This driver also support earlycon.
+>>
+>> Signed-off-by: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+>> Signed-off-by: Orson Zhai <orson.zhai@spreadtrum.com>
+>> Originally-by: Lanqing Liu <lanqing.liu@spreadtrum.com>
+>
+> Some objections:
+>
+>> +static struct platform_driver sprd_platform_driver = {
+>> +     .probe = sprd_probe,
+>> +     .remove = sprd_remove,
+>> +     .suspend = sprd_suspend,
+>> +     .resume = sprd_resume,
+>> +     .driver = {
+>> +                .name = "sprd_serial",
+>> +                .owner = THIS_MODULE,
+>
+> platform drivers don't need .owner in them anymore, it's handled by the
+> driver core automatically.
+>
+OK, will remove it in v4.
+>
+>> +                .of_match_table = of_match_ptr(serial_ids),
+>> +                },
+>> +};
+>> +
+>> +static int __init sprd_serial_init(void)
+>> +{
+>> +     int ret = 0;
+>> +
+>> +     ret = uart_register_driver(&sprd_uart_driver);
+>> +     if (unlikely(ret != 0))
+>> +             return ret;
+>
+> NEVER use unlikely unless you can measure the difference without it.
+> And even then, you better be able to justify it.  For something as dumb
+> as this type of check, youare working against the complier and cpu which
+> already knows that 0 is the usual response.
+>
+> So please remove all usages of likely/unlikely in this patch series.
+>
+OK, will remove it.
+>> +
+>> +     ret = platform_driver_register(&sprd_platform_driver);
+>> +     if (unlikely(ret != 0))
+>> +             uart_unregister_driver(&sprd_uart_driver);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static void __exit sprd_serial_exit(void)
+>> +{
+>> +     platform_driver_unregister(&sprd_platform_driver);
+>> +     uart_unregister_driver(&sprd_uart_driver);
+>> +}
+>> +
+>> +module_init(sprd_serial_init);
+>> +module_exit(sprd_serial_exit);
+>> +
+>> +MODULE_LICENSE("GPL");
+>> +MODULE_DESCRIPTION("Spreadtrum SoC serial driver series");
+>> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+>> index 16ad852..d9a8c88 100644
+>> --- a/include/uapi/linux/serial_core.h
+>> +++ b/include/uapi/linux/serial_core.h
+>> @@ -247,4 +247,7 @@
+>>  /* MESON */
+>>  #define PORT_MESON   109
+>>
+>> +/* SPRD SERIAL  */
+>> +#define PORT_SPRD   110
+>
+> Please use a tab character here.
+OK.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-Acked-by: Inki Dae <inki.dae@samsung.com>
-Acked-by: Geunsik Lim <geunsik.lim@samsung.com>
----
- drivers/tty/serial/samsung.c | 56 ++++++++++++++++++++++++++++----------------
- 1 file changed, 36 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 2338ad8..6f1fb9a 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1766,32 +1766,43 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- #endif
- 
- #if defined(CONFIG_ARCH_EXYNOS)
-+#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
-+	.info = &(struct s3c24xx_uart_info) {			\
-+		.name		= "Samsung Exynos UART",	\
-+		.type		= PORT_S3C6400,			\
-+		.has_divslot	= 1,				\
-+		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
-+		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,	\
-+		.rx_fifofull	= S5PV210_UFSTAT_RXFULL,	\
-+		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,	\
-+		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,	\
-+		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,	\
-+		.def_clk_sel	= S3C2410_UCON_CLKSEL0,		\
-+		.num_clks	= 1,				\
-+		.clksel_mask	= 0,				\
-+		.clksel_shift	= 0,				\
-+	},							\
-+	.def_cfg = &(struct s3c2410_uartcfg) {			\
-+		.ucon		= S5PV210_UCON_DEFAULT,		\
-+		.ufcon		= S5PV210_UFCON_DEFAULT,	\
-+		.has_fracval	= 1,				\
-+	}							\
-+
- static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
--	.info = &(struct s3c24xx_uart_info) {
--		.name		= "Samsung Exynos4 UART",
--		.type		= PORT_S3C6400,
--		.has_divslot	= 1,
--		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,
--		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,
--		.rx_fifofull	= S5PV210_UFSTAT_RXFULL,
--		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,
--		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,
--		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,
--		.def_clk_sel	= S3C2410_UCON_CLKSEL0,
--		.num_clks	= 1,
--		.clksel_mask	= 0,
--		.clksel_shift	= 0,
--	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
--		.ucon		= S5PV210_UCON_DEFAULT,
--		.ufcon		= S5PV210_UFCON_DEFAULT,
--		.has_fracval	= 1,
--	},
-+	EXYNOS_COMMON_SERIAL_DRV_DATA,
- 	.fifosize = { 256, 64, 16, 16 },
- };
-+
-+static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
-+	EXYNOS_COMMON_SERIAL_DRV_DATA,
-+	.fifosize = { 64, 256, 16, 256 },
-+};
-+
- #define EXYNOS4210_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos4210_serial_drv_data)
-+#define EXYNOS5433_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos5433_serial_drv_data)
- #else
- #define EXYNOS4210_SERIAL_DRV_DATA (kernel_ulong_t)NULL
-+#define EXYNOS5433_SERIAL_DRV_DATA (kernel_ulong_t)NULL
- #endif
- 
- static struct platform_device_id s3c24xx_serial_driver_ids[] = {
-@@ -1813,6 +1824,9 @@ static struct platform_device_id s3c24xx_serial_driver_ids[] = {
- 	}, {
- 		.name		= "exynos4210-uart",
- 		.driver_data	= EXYNOS4210_SERIAL_DRV_DATA,
-+	}, {
-+		.name		= "exynos5433-uart",
-+		.driver_data	= EXYNOS5433_SERIAL_DRV_DATA,
- 	},
- 	{ },
- };
-@@ -1832,6 +1846,8 @@ static const struct of_device_id s3c24xx_uart_dt_match[] = {
- 		.data = (void *)S5PV210_SERIAL_DRV_DATA },
- 	{ .compatible = "samsung,exynos4210-uart",
- 		.data = (void *)EXYNOS4210_SERIAL_DRV_DATA },
-+	{ .compatible = "samsung,exynos5433-uart",
-+		.data = (void *)EXYNOS5433_SERIAL_DRV_DATA },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
--- 
-1.8.5.5
+Thanks for your comments!
+Chunyan
