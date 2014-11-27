@@ -1,91 +1,107 @@
-From: Lyra Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH v3 5/5] tty/serial: Add Spreadtrum sc9836-uart driver support
-Date: Thu, 27 Nov 2014 19:39:36 +0800
-Message-ID: <CAAfSe-sdMVG-JV9DjQ0YYqe++r3MtgADReQHr1x54Z8xjp8pRA@mail.gmail.com>
-References: <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
-	<1416917818-10506-6-git-send-email-chunyan.zhang@spreadtrum.com>
-	<20141126094838.GB17980@distanz.ch>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v3 3/5] arm64: dts: Add support for Spreadtrum SC9836 SoC
+ in dts and Makefile
+Date: Thu, 27 Nov 2014 11:50:43 +0000
+Message-ID: <20141127115042.GE857@leverpostej>
+References: <Sharkl64-v3>
+ <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
+ <1416917818-10506-4-git-send-email-chunyan.zhang@spreadtrum.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20141126094838.GB17980@distanz.ch>
-Sender: linux-doc-owner@vger.kernel.org
-To: Tobias Klauser <tklauser@distanz.ch>
-Cc: Chunyan Zhang <chunyan.zhang@spreadtrum.com>, Grant Likely <grant.likely@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "jslaby@suse.cz" <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Mark Brown <broonie@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "m-karicheri2@ti.com" <m-karicheri2@ti.com>, Pawel Moll <pawel.moll@arm.com>, Ramkumar Ramachandra <artagnon@gmail.com>, "rrichter@cavium.com" <rrichter@cavium.com>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, gnomes@lxorguk.ukuu.org.uk, Jonathan Corbet <corbet@lwn.net>, jason@lakedaemon.net, Mark Brown <broonie@kernel.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, shawn.guo@freescale.com, florian.vaussard@
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:40752 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753329AbaK0Lvh (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Thu, 27 Nov 2014 06:51:37 -0500
+Content-Disposition: inline
+In-Reply-To: <1416917818-10506-4-git-send-email-chunyan.zhang@spreadtrum.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+Cc: "grant.likely@linaro.org" <grant.likely@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Catalin Marinas <Catalin.Marinas@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "jslaby@suse.cz" <jslaby@suse.cz>, "galak@codeaurora.org" <galak@codeaurora.org>, "broonie@linaro.org" <broonie@linaro.org>, "m-karicheri2@ti.com" <m-karicheri2@ti.com>, Pawel Moll <Pawel.Moll@arm.com>, "artagnon@gmail.com" <artagnon@gmail.com>, "rrichter@cavium.com" <rrichter@cavium.com>, Will Deacon <Will.Deacon@arm.com>, "arnd@arndb.de" <arnd@arndb.de>, "gnomes@lxorguk.ukuu.org.uk" <gnomes@lxorguk.ukuu.org.uk>, "corbet@lwn.net" <corbet@lwn.net>, "jason@lakedaemon.net" <jason@lakedaemon.net>, "broonie@kernel.org" <broonie@kernel.org>, "heiko@sntech.de" <heiko@sntech.de>, "shawn.guo@freescale.com" <shawn.g>
 
-2014-11-26 17:48 GMT+08:00 Tobias Klauser <tklauser@distanz.ch>:
-> On 2014-11-25 at 13:16:58 +0100, Chunyan Zhang <chunyan.zhang@spreadtrum.com> wrote:
-
->> ---
+On Tue, Nov 25, 2014 at 12:16:56PM +0000, Chunyan Zhang wrote:
+> From: Zhizhou Zhang <zhizhou.zhang@spreadtrum.com>
+> 
+> Adds the device tree support for Spreadtrum SC9836 SoC which is based on
+> Sharkl64 platform.
+> 
+> Sharkl64 platform contains the common nodes of Spreadtrum's arm64-based SoCs.
+> 
+> Signed-off-by: Zhizhou Zhang <zhizhou.zhang@spreadtrum.com>
+> Signed-off-by: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+> Signed-off-by: Orson Zhai <orson.zhai@spreadtrum.com>
+> ---
+>  arch/arm64/boot/dts/Makefile                  |    1 +
+>  arch/arm64/boot/dts/sprd-sc9836-openphone.dts |   85 ++++++++++++++++++++
+>  arch/arm64/boot/dts/sprd-sc9836.dtsi          |  103 ++++++++++++++++++++++++
+>  arch/arm64/boot/dts/sprd-sharkl64.dtsi        |  105 +++++++++++++++++++++++++
+>  4 files changed, 294 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/sprd-sc9836-openphone.dts
+>  create mode 100644 arch/arm64/boot/dts/sprd-sc9836.dtsi
+>  create mode 100644 arch/arm64/boot/dts/sprd-sharkl64.dtsi
+> 
+> diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+> index f8001a6..d0aff8a 100644
+> --- a/arch/arm64/boot/dts/Makefile
+> +++ b/arch/arm64/boot/dts/Makefile
+> @@ -1,4 +1,5 @@
+>  dtb-$(CONFIG_ARCH_THUNDER) += thunder-88xx.dtb
+> +dtb-$(CONFIG_ARCH_SHARKL64) += sprd-sc9836-openphone.dtb
+>  dtb-$(CONFIG_ARCH_VEXPRESS) += rtsm_ve-aemv8a.dtb foundation-v8.dtb
+>  dtb-$(CONFIG_ARCH_XGENE) += apm-mustang.dtb
+ 
 [...]
->> +
->> +config SERIAL_SPRD_CONSOLE
->> +        bool "SPRD UART console support"
->> +        depends on SERIAL_SPRD=y
->> +        select SERIAL_CORE_CONSOLE
->> +     select SERIAL_EARLYCON
->> +        help
->> +       Support for early debug console using Spreadtrum's serial. This enables
->> +       the console before standard serial driver is probed. This is enabled
->> +       with "earlycon" on the kernel command line. The console is
->> +       enabled when early_param is processed.
->> +
->>  endmenu
->
-> Please consistently use tabs instead of spaces for indentation. The help
-> text should be indented by one tabe + 2 spaces.
->
 
-OK, I will note it later.
+> +       gic: interrupt-controller@12001000 {
+> +               compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
+> +               #interrupt-cells = <3>;
+> +               interrupt-controller;
+> +               reg = <0 0x12001000 0 0x1000>,
+> +                     <0 0x12002000 0 0x1000>,
+> +                     <0 0x12004000 0 0x2000>,
+> +                     <0 0x12006000 0 0x2000>;
+> +       };
+
+I believe GICC should be 8KiB here.
+
+> +
+> +       psci {
+> +               compatible = "arm,psci-0.2";
+> +               method = "smc";
+> +       };
+
+Do you have a complete PSCI 0.2 implementation (e.g. are all the
+mandatory functions implemented)?
+
+I take it CPUs enter the kernel at EL2?
+
+How have you tested this?
+
+> +
+> +       timer {
+> +               compatible = "arm,armv8-timer";
+> +               interrupts = <1 13 0xff01>,
+> +                            <1 14 0xff01>,
+> +                            <1 11 0xff01>,
+> +                            <1 10 0xff01>;
+> +               clock-frequency = <26000000>;
+
+Please remove the clock-frequency property. Your FW should initialise
+CNTFRQ_EL0 on all CPUs (certainly PSCI 0.2 requires that you do this).
+
 [...]
 
->> +static inline int handle_lsr_errors(struct uart_port *port,
->> +     unsigned int *flag, unsigned int *lsr)
->
-> This line should be aligned with the opening ( above.
->
-OK, will change.
+> +       clocks {
+> +               clk26mhz: clk26mhz {
+> +                       compatible = "fixed-clock";
+> +                       #clock-cells = <0>;
+> +                       clock-frequency = <26000000>;
+> +               };
+> +       };
 
->> +static inline void sprd_rx(int irq, void *dev_id)
->> +{
->> +     struct uart_port *port = (struct uart_port *)dev_id;
->
-> No need to cast a void pointer.
->
+Get rid of the "clocks" container node. There's no need for it.
 
->> +static void sprd_console_write(struct console *co, const char *s,
->> +                                   unsigned int count)
->> +{
->> +     struct uart_port *port = (struct uart_port *)sprd_port[co->index];
->
-> Better explicitly access the .port member of sprd_port[co->index] here
-> instead of casting.
->
-
->> +     port = (struct uart_port *)sprd_port[co->index];
->
-> Same here, use the .port member of struct sprd_port[co->index].
->
->> +     if (port == NULL) {
->> +             pr_info("srial port %d not yet initialized\n", co->index);
->
-> Typo: should be serial instead of srial.
->
-
->> +     up->mapbase = mem->start;
->> +     up->membase = ioremap(mem->start, resource_size(mem));
->
-> Return value of ioremap() should be checked for NULL.
->
->> +static int sprd_resume(struct platform_device *dev)
->> +{
->> +     int id = dev->id;
->> +     struct uart_port *port = (struct uart_port *)sprd_port[id];
->
-> Access the .port member instead of the cast.
->
-OK, will change all of the problems you pointed out in v4.
-Thanks for your review.
-
-Chunyan
+Thanks,
+Mark.
