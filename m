@@ -1,59 +1,79 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V2 01/10] tty: Fallback to use dynamic major number
-Date: Thu, 27 Nov 2014 15:33:58 +0100
-Message-ID: <4316435.J1BtEYnd6C@wuerfel>
-References: <1415825647-6024-1-git-send-email-cernekee@gmail.com> <5475E4EC.7090309@hurleysoftware.com> <CACxGe6uLWZav=AfaK2w17PW6vtxF8S0=OUvCMB-uFSvhs2cLtw@mail.gmail.com>
+From: Lyra Zhang <zhang.lyra@gmail.com>
+Subject: Re: [PATCH v3 5/5] tty/serial: Add Spreadtrum sc9836-uart driver support
+Date: Thu, 27 Nov 2014 23:23:17 +0800
+Message-ID: <CAAfSe-uWvn4MX-+GKuvvd=G2MTfLDCFeLRoUGWp7vvc81wfu0w@mail.gmail.com>
+References: <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
+	<54761BFC.4020705@ti.com>
+	<CAAfSe-uMqy7zwiEK+nDoMPw_oni8L_vq7oW2Me5AY8z8KGpjwQ@mail.gmail.com>
+	<3400511.2SONqVcoEr@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.131]:62033 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750994AbaK0OeM (ORCPT
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:62547 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751360AbaK0PXT (ORCPT
 	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Nov 2014 09:34:12 -0500
-In-Reply-To: <CACxGe6uLWZav=AfaK2w17PW6vtxF8S0=OUvCMB-uFSvhs2cLtw@mail.gmail.com>
+	Thu, 27 Nov 2014 10:23:19 -0500
+In-Reply-To: <3400511.2SONqVcoEr@wuerfel>
 Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-To: Grant Likely <grant.likely@linaro.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Kevin Cernekee <cernekee@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Florian Fainelli <f.fainelli@gmail.com>, Maxime Bizon <mbizon@freebox.fr>, Jonas Gorski <jogo@openwrt.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, tushar.b@samsung.com
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Murali Karicheri <m-karicheri2@ti.com>, Chunyan Zhang <chunyan.zhang@spreadtrum.com>, Grant Likely <grant.likely@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "jslaby@suse.cz" <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Ramkumar Ramachandra <artagnon@gmail.com>, "rrichter@cavium.com" <rrichter@cavium.com>, Will Deacon <will.deacon@arm.com>, "gnomes@lxorguk.ukuu.org.uk" <gnomes@lxorguk.ukuu.org.uk>, Jonathan Corbet <corbet@lwn.net>, "jason@lakedaemon.net" <jason@lakedaemon.net>, Mark Brown <broonie@kernel.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, "florian.vaussard@epfl.ch" <florian.vaussard@epfl.ch>
 
-On Thursday 27 November 2014 13:50:01 Grant Likely wrote:
-> 
-> Should be sufficient. Basically, if the hardware doesn't exist, the
-> driver shouldn't be trying to grab the minor numbers.
-> 
-> Also, on hardware where both exists, there should be some sane
-> fallback so that all UARTs get assigned numbers. On DT systems we can
-> also use /aliases to ensure consistent assignment of numbers.
+2014-11-27 20:57 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
+> On Thursday 27 November 2014 19:59:46 Lyra Zhang wrote:
+>> 2014-11-27 2:29 GMT+08:00 Murali Karicheri <m-karicheri2@ti.com>:
+>> > On 11/25/2014 07:16 AM, Chunyan Zhang wrote:
+>> >>
+>> >> Add a full sc9836-uart driver for SC9836 SoC which is based on the
+>>
+>> >> +#include<linux/clk.h>
+>> >
+>> > How about sorting this includes? asm/irq.h go first followed linux/ in
+>> > alphabatical order?
+>>
+>> >> +static irqreturn_t sprd_handle_irq(int irq, void *dev_id)
+>> >> +{
+>> >> +       struct uart_port *port = (struct uart_port *)dev_id;
+>> >> +       u32 ims;
+>> >> +
+>> >> +       ims = serial_in(port, SPRD_IMSR);
+>> >> +
+>> >> +       serial_out(port, SPRD_ICLR, ~0);
+>> >> +
+>> >> +       if (ims&  (SPRD_IMSR_RX_FIFO_FULL |
+>> >> +               SPRD_IMSR_BREAK_DETECT | SPRD_IMSR_TIMEOUT)) {
+>> >> +               sprd_rx(irq, port);
+>> >> +       }
+>> >> +       if (ims&  SPRD_IMSR_TX_FIFO_EMPTY)
+>> >> +               sprd_tx(irq, port);
+>> >> +
+>> >> +       return IRQ_HANDLED;
+>> >
+>> > You are always returning IRQ_HANDLED and this is registered as a SHARED irq.
+>> > Is there a chance this handler is called and the irq event doesn't
+>> > belong to this device?
+>> >
+>> > Murali
+>>
+>> You are right, this is not a SHARED irq. I'll pass 0 for irqflags when
+>> called 'devm_request_irq' in the next version patch.
+>
+> I think you could also add
+>
+>         if (!ims)
+>                 return IRQ_NONE;
+>
+> which would make it work on shared interrupt lines.
+>
+>         Arnd
 
->From what I can see, this is really the ISA compatibility code
-in the 8250 driver, and we should be able to make that optional
-or even move it into a separate glue driver.
+Yes, I saw this way in other serial drivers.
+But, if then, there are two questions for me:
+1. Why did some serial drivers need an UN_SHARED irq?
+2. How can we choose a right way?
 
-Basically the serial8250_init function tries to do a lot of things
-at once (skipping error handling):
+Thank you!
 
-        serial8250_isa_init_ports();
-        ret = sunserial_register_minors(&serial8250_reg, UART_NR);
-	serial8250_reg.nr = UART_NR;
-        ret = uart_register_driver(&serial8250_reg);
-        ret = serial8250_pnp_init();
-        serial8250_isa_devs = platform_device_alloc("serial8250",
-                                                   PLAT8250_DEV_LEGACY);
-        ret = platform_device_add(serial8250_isa_devs);
-        serial8250_register_ports(&serial8250_reg, &serial8250_isa_devs->dev);
-        ret = platform_driver_register(&serial8250_isa_driver);
-
-The only thing we want from this is the uart_register_driver() call,
-everything else is only needed together with the ISA support. The way
-that uart_register_driver() works unfortunately implies that you know
-the maximum number of ports at driver init time, which would need
-to be changed if you want to share the numbers.
-
-One idea I had a few years ago when we discussed this was to treat
-the major 4 allocation differently so you could share it between all
-sorts of drivers as an opt-in, but could have all unmodified continue
-using their own device names and numbers.
-
-	Arnd
+Best regards,
+Chunyan
