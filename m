@@ -1,62 +1,25 @@
-From: Guoqing Liu <lgqgood@gmail.com>
-Subject: Re: Uart2 can't work well after the system goto standby and then
- resume at csr primaII platform
-Date: Thu, 27 Nov 2014 10:42:58 +0800
-Message-ID: <CAMLw+SGsys1pn4bSVr+Z1Vk7-Y4OquLxFZk_ZsAbeDrQA4+zYw@mail.gmail.com>
-References: <CAMLw+SEMavUKc1-9mZA+-UJ=UJiBhBp=7=srNNqg-W74C=BLSQ@mail.gmail.com>
-	<20141126184348.GA6958@kroah.com>
+From: Alexandre Courbot <gnurou@gmail.com>
+Subject: Re: [PATCH v3] gpio: mxs: implement get_direction callback
+Date: Thu, 27 Nov 2014 16:12:58 +0900
+Message-ID: <CAAVeFuK6Xq-fansQfP_Wknkfw9O84=iCaQyK=i=WXoM50By+yA@mail.gmail.com>
+References: <1416387322-17320-1-git-send-email-j.uzycki@elproma.com.pl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-qg0-f51.google.com ([209.85.192.51]:41050 "EHLO
-	mail-qg0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751882AbaK0Cm6 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Wed, 26 Nov 2014 21:42:58 -0500
-Received: by mail-qg0-f51.google.com with SMTP id l89so2897110qgf.38
-        for <linux-serial@vger.kernel.org>; Wed, 26 Nov 2014 18:42:58 -0800 (PST)
-In-Reply-To: <20141126184348.GA6958@kroah.com>
-Sender: linux-serial-owner@vger.kernel.org
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1416387322-17320-1-git-send-email-j.uzycki@elproma.com.pl>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
 
-On Thu, Nov 27, 2014 at 2:43 AM, Greg KH <gregkh@linuxfoundation.org> w=
-rote:
-> On Wed, Nov 26, 2014 at 02:17:06PM +0800, Guoqing Liu wrote:
->> Daer Sir,
->>=E3=80=80=E3=80=80  I'm very sorry to trouble you.
->>      Recently I found the uart2 at csr primaII platform can't work
->> well after the system  goto standby and then resume.
->>
->> My test environment is as follows=EF=BC=9A
->>      kernel:   3.10.16
+On Wed, Nov 19, 2014 at 5:55 PM, Janusz Uzycki <j.uzycki@elproma.com.pl> wrote:
+> gpiolib's gpiod_get_direction() function returns the EINVAL error
+> if .get_direction callback is not defined.
+> The patch implements the callback for mxs chip which is useful
+> for debugging.
 >
-> That is a very old and obsolete kernel version.  If a vendor is forci=
-ng
-> you to stick to that version, please ask them for support as there's
-> nothing that we can to do help here, sorry.
+> Inspired by arch/arm/mach-at91/gpio.c
 >
-> Now if you can duplicate this on the 3.17 kernel release, that's a
-> different story...
->
-> good luck,
->
-> greg k-h
+> Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
 
-
-Dear Greg
-    Thank you very much for your reply.
-        I am a newbie to lkml. So I hope you do not mind. :)
-=E3=80=80=E3=80=80=E3=80=80=EF=BC=A9 will try it and feedback as soon a=
-s possible.
-
-
---=20
-good life
---
-To unsubscribe from this list: send the line "unsubscribe linux-serial"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Acked-by: Alexandre Courbot <acourbot@nvidia.com>
