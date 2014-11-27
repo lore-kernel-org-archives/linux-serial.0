@@ -1,79 +1,35 @@
-From: Lyra Zhang <zhang.lyra@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH v3 5/5] tty/serial: Add Spreadtrum sc9836-uart driver support
-Date: Thu, 27 Nov 2014 23:23:17 +0800
-Message-ID: <CAAfSe-uWvn4MX-+GKuvvd=G2MTfLDCFeLRoUGWp7vvc81wfu0w@mail.gmail.com>
-References: <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com>
-	<54761BFC.4020705@ti.com>
-	<CAAfSe-uMqy7zwiEK+nDoMPw_oni8L_vq7oW2Me5AY8z8KGpjwQ@mail.gmail.com>
-	<3400511.2SONqVcoEr@wuerfel>
+Date: Thu, 27 Nov 2014 16:36:52 +0100
+Message-ID: <7773522.25QE5ibXJZ@wuerfel>
+References: <1416917818-10506-1-git-send-email-chunyan.zhang@spreadtrum.com> <3400511.2SONqVcoEr@wuerfel> <CAAfSe-uWvn4MX-+GKuvvd=G2MTfLDCFeLRoUGWp7vvc81wfu0w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-serial-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:62547 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751360AbaK0PXT (ORCPT
-	<rfc822;linux-serial@vger.kernel.org>);
-	Thu, 27 Nov 2014 10:23:19 -0500
-In-Reply-To: <3400511.2SONqVcoEr@wuerfel>
-Sender: linux-serial-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAAfSe-uWvn4MX-+GKuvvd=G2MTfLDCFeLRoUGWp7vvc81wfu0w@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lyra Zhang <zhang.lyra@gmail.com>
+Cc: Murali Karicheri <m-karicheri2@ti.com>, Chunyan Zhang <chunyan.zhang@spreadtrum.com>, Grant Likely <grant.likely@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "jslaby@suse.cz" <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Ramkumar Ramachandra <artagnon@gmail.com>, "rrichter@cavium.com" <rrichter@cavium.com>, Will Deacon <will.deacon@arm.com>, "gnomes@lxorguk.ukuu.org.uk" <gnomes@lxorguk.ukuu.org.uk>, Jonathan Corbet <corbet@lwn.net>, "jason@lakedaemon.net" <jason@lakedaemon.net>, Mark Brown <broonie@kernel.org>, Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, "florian.vaussard@epfl.ch" <florian.vaussard@epfl.ch>
 List-Id: linux-serial@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Murali Karicheri <m-karicheri2@ti.com>, Chunyan Zhang <chunyan.zhang@spreadtrum.com>, Grant Likely <grant.likely@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "jslaby@suse.cz" <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Ramkumar Ramachandra <artagnon@gmail.com>, "rrichter@cavium.com" <rrichter@cavium.com>, Will Deacon <will.deacon@arm.com>, "gnomes@lxorguk.ukuu.org.uk" <gnomes@lxorguk.ukuu.org.uk>, Jonathan Corbet <corbet@lwn.net>, "jason@lakedaemon.net" <jason@lakedaemon.net>, Mark Brown <broonie@kernel.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, "florian.vaussard@epfl.ch" <florian.vaussard@epfl.ch>
 
-2014-11-27 20:57 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
-> On Thursday 27 November 2014 19:59:46 Lyra Zhang wrote:
->> 2014-11-27 2:29 GMT+08:00 Murali Karicheri <m-karicheri2@ti.com>:
->> > On 11/25/2014 07:16 AM, Chunyan Zhang wrote:
->> >>
->> >> Add a full sc9836-uart driver for SC9836 SoC which is based on the
->>
->> >> +#include<linux/clk.h>
->> >
->> > How about sorting this includes? asm/irq.h go first followed linux/ in
->> > alphabatical order?
->>
->> >> +static irqreturn_t sprd_handle_irq(int irq, void *dev_id)
->> >> +{
->> >> +       struct uart_port *port = (struct uart_port *)dev_id;
->> >> +       u32 ims;
->> >> +
->> >> +       ims = serial_in(port, SPRD_IMSR);
->> >> +
->> >> +       serial_out(port, SPRD_ICLR, ~0);
->> >> +
->> >> +       if (ims&  (SPRD_IMSR_RX_FIFO_FULL |
->> >> +               SPRD_IMSR_BREAK_DETECT | SPRD_IMSR_TIMEOUT)) {
->> >> +               sprd_rx(irq, port);
->> >> +       }
->> >> +       if (ims&  SPRD_IMSR_TX_FIFO_EMPTY)
->> >> +               sprd_tx(irq, port);
->> >> +
->> >> +       return IRQ_HANDLED;
->> >
->> > You are always returning IRQ_HANDLED and this is registered as a SHARED irq.
->> > Is there a chance this handler is called and the irq event doesn't
->> > belong to this device?
->> >
->> > Murali
->>
->> You are right, this is not a SHARED irq. I'll pass 0 for irqflags when
->> called 'devm_request_irq' in the next version patch.
->
-> I think you could also add
->
->         if (!ims)
->                 return IRQ_NONE;
->
-> which would make it work on shared interrupt lines.
->
->         Arnd
+On Thursday 27 November 2014 23:23:17 Lyra Zhang wrote:
+> 
+> Yes, I saw this way in other serial drivers.
+> But, if then, there are two questions for me:
+> 1. Why did some serial drivers need an UN_SHARED irq?
 
-Yes, I saw this way in other serial drivers.
-But, if then, there are two questions for me:
-1. Why did some serial drivers need an UN_SHARED irq?
-2. How can we choose a right way?
+A lot of drivers were written before we had shared IRQs, or
+were copied from old drivers, or are for hardware that uses
+edge-triggered interrupts instead of level-triggered interrupts.
 
-Thank you!
+Only level-triggered interrupts can be shared.
 
-Best regards,
-Chunyan
+> 2. How can we choose a right way?
+
+It never hurts to implement a shared interrupt handler. Only
+if you have no way to find out whether the device triggered
+the interrupt or not you have to leave out IRQF_SHARED, and then
+you won't be able to return IRQ_NONE.
+
+	Arnd
