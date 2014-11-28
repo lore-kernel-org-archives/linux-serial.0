@@ -1,7 +1,7 @@
 From: Stefan Agner <stefan@agner.ch>
-Subject: [PATCH 1/4] serial: fsl_lpuart: delete timer on shutdown
-Date: Fri, 28 Nov 2014 01:23:22 +0100
-Message-ID: <1417134205-4400-2-git-send-email-stefan@agner.ch>
+Subject: [PATCH 4/4] serial: fsl_lpuart: update RX timer on successful DMA transfer
+Date: Fri, 28 Nov 2014 01:23:25 +0100
+Message-ID: <1417134205-4400-5-git-send-email-stefan@agner.ch>
 References: <1417134205-4400-1-git-send-email-stefan@agner.ch>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1417134205-4400-1-git-send-email-stefan@agner.ch>
@@ -10,48 +10,32 @@ To: gregkh@linuxfoundation.org
 Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, stefan@agner.ch
 List-Id: linux-serial@vger.kernel.org
 
-If the serial port gets closed while a RX transfer is in progress,
-the timer might fire after the serial port shutdown finished.
-Setup the timer on UART startup which allows to delete the timer
-unconditionally on shutdown. This also saves the initialization
-on each transfer too.
+To end a DMA transfer which did not consume a whole buffer (e.g. one
+character only), a RX timer is used. When lots of data are received
+the DMA transfer will complete and setup another DMA transfer, which
+in turn might complete again. In this cases, it is not necessary to
+abort the DMA transfers using the RX timer. This change pushes the
+RX timer timeout into the future each time a DMA transfer completed.
+
+Aborting the DMA was not very harmful, since the next received
+character lead to setup of another RX DMA.
 
 Signed-off-by: Stefan Agner <stefan@agner.ch>
 ---
- drivers/tty/serial/fsl_lpuart.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 6dd53af..b1905a9 100644
+index be9ccdf..b1c1589 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -506,9 +506,6 @@ static inline void lpuart_prepare_rx(struct lpuart_port *sport)
+@@ -462,6 +462,7 @@ static void lpuart_dma_rx_complete(void *arg)
+ 	unsigned long flags;
+ 
+ 	async_tx_ack(sport->dma_rx_desc);
++	mod_timer(&sport->lpuart_timer, jiffies + sport->dma_rx_timeout);
  
  	spin_lock_irqsave(&sport->port.lock, flags);
  
--	init_timer(&sport->lpuart_timer);
--	sport->lpuart_timer.function = lpuart_timer_func;
--	sport->lpuart_timer.data = (unsigned long)sport;
- 	sport->lpuart_timer.expires = jiffies + sport->dma_rx_timeout;
- 	add_timer(&sport->lpuart_timer);
- 
-@@ -1106,6 +1103,8 @@ static int lpuart_startup(struct uart_port *port)
- 		sport->lpuart_dma_use = false;
- 	} else {
- 		sport->lpuart_dma_use = true;
-+		setup_timer(&sport->lpuart_timer, lpuart_timer_func,
-+			    (unsigned long)sport);
- 		temp = readb(port->membase + UARTCR5);
- 		writeb(temp | UARTCR5_TDMAS, port->membase + UARTCR5);
- 	}
-@@ -1180,6 +1179,8 @@ static void lpuart_shutdown(struct uart_port *port)
- 	devm_free_irq(port->dev, port->irq, sport);
- 
- 	if (sport->lpuart_dma_use) {
-+		del_timer_sync(&sport->lpuart_timer);
-+
- 		lpuart_dma_tx_free(port);
- 		lpuart_dma_rx_free(port);
- 	}
 -- 
 2.1.3
