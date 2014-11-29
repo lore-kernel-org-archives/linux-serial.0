@@ -1,41 +1,20 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 3.18-rc7
-Date: Fri, 28 Nov 2014 14:40:45 -0800
-Message-ID: <20141128224045.GA29589@kroah.com>
+From: <luv2charitys@gmail.com>
+Subject: Charity Work
+Date: Fri, 28 Nov 2014 22:54:36 -0600
+Message-ID: <HO-SRV2VHY2dpgjqez1000ac4fd@office.horkans.com>
+Reply-To: <paucharity@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from mail1.vodafone.ie ([213.233.128.43]:2345 "EHLO
+	mail1.vodafone.ie" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751300AbaK2Ezw convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-serial@vger.kernel.org>);
+	Fri, 28 Nov 2014 23:55:52 -0500
+Content-Description: Mail message body
+Sender: linux-serial-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
 
-The following changes since commit 206c5f60a3d902bc4b56dab2de3e88de5eb06108:
-
-  Linux 3.18-rc4 (2014-11-09 14:55:29 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.18-rc7
-
-for you to fetch changes up to a5e9ab291c608c62691b9d565104a30d931998bf:
-
-  Revert "serial: of-serial: add PM suspend/resume support" (2014-11-25 12:46:39 -0800)
-
-----------------------------------------------------------------
-TTY/Serial fix for 3.18-rc7
-
-Here is a single revert for the of-serial driver that resolves a
-reported issue.
-
-This revert has been in linux-next for a while.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Greg Kroah-Hartman (1):
-      Revert "serial: of-serial: add PM suspend/resume support"
-
- drivers/tty/serial/of_serial.c | 27 ---------------------------
- 1 file changed, 27 deletions(-)
+Hello,this is Mr Paul N,i sent you an email on charity work but i am yet to hear fom you,do reply with this code CHA-2015 to my email address paulcharity@qq.com  i Look forward to hearing from you this time,God bless  Brother Paul
