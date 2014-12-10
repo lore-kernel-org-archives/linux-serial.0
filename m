@@ -1,79 +1,47 @@
-From: Robert Baldyga <r.baldyga@samsung.com>
-Subject: [PATCH 3/6] serial: s3c: add missing register definitions
-Date: Wed, 10 Dec 2014 12:49:24 +0100
-Message-ID: <1418212167-28992-4-git-send-email-r.baldyga@samsung.com>
-References: <1418212167-28992-1-git-send-email-r.baldyga@samsung.com>
+From: Tejun Heo <tj@kernel.org>
+Subject: Re: [PATCH wq/for-3.19 3/3] workqueue: dump workqueues on sysrq-t
+Date: Wed, 10 Dec 2014 13:34:50 -0500
+Message-ID: <20141210183450.GG6294@htj.dyndns.org>
+References: <20141208174326.GB12274@htj.dyndns.org>
+ <20141208174406.GC12274@htj.dyndns.org>
+ <20141208174733.GD12274@htj.dyndns.org>
+ <20141208100613.ecc66d89.akpm@linux-foundation.org>
+ <20141208184035.GE12274@htj.dyndns.org>
+ <20141208110515.7860d68baca2b3bd46c9dab7@linux-foundation.org>
+ <20141208192229.GF12274@htj.dyndns.org>
+ <20141210045057.GA11973@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <1418212167-28992-1-git-send-email-r.baldyga@samsung.com>
+Content-Disposition: inline
+In-Reply-To: <20141210045057.GA11973@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.cz, akpm@linux-foundation.org, kgene.kim@samsung.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, kyungmin.park@samsung.com, l.czerwinski@samsung.com, s.nawrocki@samsung.com, Robert Baldyga <r.baldyga@samsung.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, Lai Jiangshan <laijs@cn.fujitsu.com>, Linus Torvalds <torvalds@linux-foundation.org>, Ingo Molnar <mingo@redhat.com>
 List-Id: linux-serial@vger.kernel.org
 
-This macro definitions are necessary to implement DMA transfers
-is samsung serial driver.
+Hello, Greg.
 
-Based on previous work of Sylwester Nawrocki and Lukasz Czerwinski.
+On Tue, Dec 09, 2014 at 11:50:57PM -0500, Greg Kroah-Hartman wrote:
+> Oh wait, I think that might be it, shift is needed for the sysrq key on
+> the keyboard to start with, right?  So there probably isn't a way to
 
-Signed-off-by: Robert Baldyga <r.baldyga@samsung.com>
----
- include/linux/serial_s3c.h | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+On x86, the combo is alt-sysrq, so shift can theoretically be added.
 
-diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
-index e6fc956..a7f004a 100644
---- a/include/linux/serial_s3c.h
-+++ b/include/linux/serial_s3c.h
-@@ -104,6 +104,31 @@
- 				   S3C2410_UCON_RXIRQMODE | \
- 				   S3C2410_UCON_RXFIFO_TOI)
- 
-+#define S3C64XX_UCON_TXBURST_1          (0<<20)
-+#define S3C64XX_UCON_TXBURST_4          (1<<20)
-+#define S3C64XX_UCON_TXBURST_8          (2<<20)
-+#define S3C64XX_UCON_TXBURST_16         (3<<20)
-+#define S3C64XX_UCON_TXBURST_MASK       (0xf<<20)
-+#define S3C64XX_UCON_RXBURST_1          (0<<16)
-+#define S3C64XX_UCON_RXBURST_4          (1<<16)
-+#define S3C64XX_UCON_RXBURST_8          (2<<16)
-+#define S3C64XX_UCON_RXBURST_16         (3<<16)
-+#define S3C64XX_UCON_RXBURST_MASK       (0xf<<16)
-+#define S3C64XX_UCON_TIMEOUT_SHIFT      (12)
-+#define S3C64XX_UCON_TIMEOUT_MASK       (0xf<<12)
-+#define S3C64XX_UCON_EMPTYINT_EN        (1<<11)
-+#define S3C64XX_UCON_DMASUS_EN          (1<<10)
-+#define S3C64XX_UCON_TXINT_LEVEL        (1<<9)
-+#define S3C64XX_UCON_RXINT_LEVEL        (1<<8)
-+#define S3C64XX_UCON_TIMEOUT_EN         (1<<7)
-+#define S3C64XX_UCON_ERRINT_EN          (1<<6)
-+#define S3C64XX_UCON_TXMODE_DMA         (2<<2)
-+#define S3C64XX_UCON_TXMODE_CPU         (1<<2)
-+#define S3C64XX_UCON_TXMODE_MASK        (3<<2)
-+#define S3C64XX_UCON_RXMODE_DMA         (2<<0)
-+#define S3C64XX_UCON_RXMODE_CPU         (1<<0)
-+#define S3C64XX_UCON_RXMODE_MASK        (3<<0)
-+
- #define S3C2410_UFCON_FIFOMODE	  (1<<0)
- #define S3C2410_UFCON_TXTRIG0	  (0<<6)
- #define S3C2410_UFCON_RXTRIG8	  (1<<4)
-@@ -155,6 +180,7 @@
- #define S3C2440_UFSTAT_TXMASK	  (63<<8)
- #define S3C2440_UFSTAT_RXMASK	  (63)
- 
-+#define S3C2410_UTRSTAT_TIMEOUT   (1<<3)
- #define S3C2410_UTRSTAT_TXE	  (1<<2)
- #define S3C2410_UTRSTAT_TXFE	  (1<<1)
- #define S3C2410_UTRSTAT_RXDR	  (1<<0)
-@@ -179,8 +205,10 @@
- #define S3C64XX_UINTM		0x38
- 
- #define S3C64XX_UINTM_RXD	(0)
-+#define S3C64XX_UINTM_ERROR     (1)
- #define S3C64XX_UINTM_TXD	(2)
- #define S3C64XX_UINTM_RXD_MSK	(1 << S3C64XX_UINTM_RXD)
-+#define S3C64XX_UINTM_ERR_MSK   (1 << S3C64XX_UINTM_ERROR)
- #define S3C64XX_UINTM_TXD_MSK	(1 << S3C64XX_UINTM_TXD)
- 
- /* Following are specific to S5PV210 */
+> test the difference of a lower/upper case key here.
+> 
+> I'm traveling this week, and don't have access to a "real" keyboard at
+> the moment, but this should be pretty easy for someone to test who has
+> one and cares about this type of thing {hint}.
+
+Just tested on a PS/2 port attached keyboard and it doesn't go
+through.  I'm not sure where this is getting lost but given that
+people sometimes have to use ctrl too to invoke sysrq, throwing in
+shift makes it a four key combo which is likely to be over the
+rollover capabilities of most keyboards.  It doesn't seem like a good
+path to follow to me.  :(
+
+Thanks.
+
 -- 
-1.9.1
+tejun
