@@ -1,93 +1,52 @@
-From: Cyrille Pitchen <cyrille.pitchen@atmel.com>
-Subject: [PATCH 5/5] tty/serial: at91: fix typo and indentation
-Date: Tue, 9 Dec 2014 14:31:36 +0100
-Message-ID: <faa94cfe2de1047de096b51c780f6e408aced2fb.1418131298.git.cyrille.pitchen@atmel.com>
-References: <cover.1418131298.git.cyrille.pitchen@atmel.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH wq/for-3.19 3/3] workqueue: dump workqueues on sysrq-t
+Date: Tue, 9 Dec 2014 23:50:57 -0500
+Message-ID: <20141210045057.GA11973@kroah.com>
+References: <20141208174326.GB12274@htj.dyndns.org>
+ <20141208174406.GC12274@htj.dyndns.org>
+ <20141208174733.GD12274@htj.dyndns.org>
+ <20141208100613.ecc66d89.akpm@linux-foundation.org>
+ <20141208184035.GE12274@htj.dyndns.org>
+ <20141208110515.7860d68baca2b3bd46c9dab7@linux-foundation.org>
+ <20141208192229.GF12274@htj.dyndns.org>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1418131298.git.cyrille.pitchen@atmel.com>
+Content-Disposition: inline
+In-Reply-To: <20141208192229.GF12274@htj.dyndns.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, wenyou.yang@atmel.com, ludovic.desroches@atmel.com, leilei.zhao@atmel.com, voice.shen@atmel.com, josh.wu@atmel.com, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Cyrille Pitchen <cyrille.pitchen@atmel.com>
+To: Tejun Heo <tj@kernel.org>, linux-serial@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, Lai Jiangshan <laijs@cn.fujitsu.com>, Linus Torvalds <torvalds@linux-foundation.org>, Ingo Molnar <mingo@redhat.com>
 List-Id: linux-serial@vger.kernel.org
 
-Signed-off-by: Cyrille Pitchen <cyrille.pitchen@atmel.com>
----
- drivers/tty/serial/atmel_serial.c | 40 +++++++++++++++++++++------------------
- 1 file changed, 22 insertions(+), 18 deletions(-)
+On Mon, Dec 08, 2014 at 02:22:29PM -0500, Tejun Heo wrote:
+> (cc'ing Greg for tty)
+> 
+> On Mon, Dec 08, 2014 at 11:05:15AM -0800, Andrew Morton wrote:
+> > > Believe it or not, we already used up all alphanumerics if we count in
+> > > the arch-specific ones.  Given that the workqueue information would
+> > > primarily be useful in tracking down hangs and we'd want to see the
+> > > dump of tasks in that case anyway, sysrq-t isn't a bad fit for
+> > > appending workqueue dump.  If anybody has a better idea, I'm all ears.
+> > 
+> > Really.  Upper case?
+> 
+> Greg, would using uppercase chars for sysrq work over the different
+> types of ttys?
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 9e0c636..846552b 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -738,7 +738,11 @@ static void atmel_complete_tx_dma(void *arg)
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
- 
--	/* Do we really need this? */
-+	/*
-+	 * xmit is a circular buffer so, if we have just send data from
-+	 * xmit->tail to the end of xmit->buf, now we have to transmit the
-+	 * remaining data from the beginning of xmit->buf to xmit->head.
-+	 */
- 	if (!uart_circ_empty(xmit))
- 		tasklet_schedule(&atmel_port->tasklet);
- 
-@@ -797,11 +801,11 @@ static void atmel_tx_dma(struct uart_port *port)
- 		BUG_ON(!sg_dma_len(sg));
- 
- 		desc = dmaengine_prep_slave_sg(chan,
--						sg,
--						1,
--						DMA_MEM_TO_DEV,
--						DMA_PREP_INTERRUPT |
--						DMA_CTRL_ACK);
-+					       sg,
-+					       1,
-+					       DMA_MEM_TO_DEV,
-+					       DMA_PREP_INTERRUPT |
-+					       DMA_CTRL_ACK);
- 		if (!desc) {
- 			dev_err(port->dev, "Failed to send via dma!\n");
- 			return;
-@@ -1025,13 +1029,13 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	/* UART circular rx buffer is an aligned page. */
- 	BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
- 	sg_set_page(&atmel_port->sg_rx,
--			virt_to_page(ring->buf),
--			ATMEL_SERIAL_RINGSIZE,
--			(int)ring->buf & ~PAGE_MASK);
--			nent = dma_map_sg(port->dev,
--					&atmel_port->sg_rx,
--					1,
--					DMA_FROM_DEVICE);
-+		    virt_to_page(ring->buf),
-+		    ATMEL_SERIAL_RINGSIZE,
-+		    (int)ring->buf & ~PAGE_MASK);
-+	nent = dma_map_sg(port->dev,
-+			  &atmel_port->sg_rx,
-+			  1,
-+			  DMA_FROM_DEVICE);
- 
- 	if (!nent) {
- 		dev_dbg(port->dev, "need to release resource of dma\n");
-@@ -1060,11 +1064,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	 * each one is half ring buffer size
- 	 */
- 	desc = dmaengine_prep_dma_cyclic(atmel_port->chan_rx,
--				sg_dma_address(&atmel_port->sg_rx),
--				sg_dma_len(&atmel_port->sg_rx),
--				sg_dma_len(&atmel_port->sg_rx)/2,
--				DMA_DEV_TO_MEM,
--				DMA_PREP_INTERRUPT);
-+					 sg_dma_address(&atmel_port->sg_rx),
-+					 sg_dma_len(&atmel_port->sg_rx),
-+					 sg_dma_len(&atmel_port->sg_rx)/2,
-+					 DMA_DEV_TO_MEM,
-+					 DMA_PREP_INTERRUPT);
- 	desc->callback = atmel_complete_rx_dma;
- 	desc->callback_param = port;
- 	atmel_port->desc_rx = desc;
--- 
-1.8.2.2
+I'm dragging in linux-serial@vger here also, but I think uppercase
+characters will work from a tty standpoint.  I don't know about keyboard
+scancodes, if they will do "odd" things wanting a shift with the sysrq
+key at the same time.
+
+Oh wait, I think that might be it, shift is needed for the sysrq key on
+the keyboard to start with, right?  So there probably isn't a way to
+test the difference of a lower/upper case key here.
+
+I'm traveling this week, and don't have access to a "real" keyboard at
+the moment, but this should be pretty easy for someone to test who has
+one and cares about this type of thing {hint}.
+
+thanks,
+
+greg k-h
