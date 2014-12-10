@@ -1,52 +1,53 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH wq/for-3.19 3/3] workqueue: dump workqueues on sysrq-t
-Date: Tue, 9 Dec 2014 23:50:57 -0500
-Message-ID: <20141210045057.GA11973@kroah.com>
-References: <20141208174326.GB12274@htj.dyndns.org>
- <20141208174406.GC12274@htj.dyndns.org>
- <20141208174733.GD12274@htj.dyndns.org>
- <20141208100613.ecc66d89.akpm@linux-foundation.org>
- <20141208184035.GE12274@htj.dyndns.org>
- <20141208110515.7860d68baca2b3bd46c9dab7@linux-foundation.org>
- <20141208192229.GF12274@htj.dyndns.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Robert Baldyga <r.baldyga@samsung.com>
+Subject: [PATCH 0/6] serial: samsung: add DMA support
+Date: Wed, 10 Dec 2014 12:49:21 +0100
+Message-ID: <1418212167-28992-1-git-send-email-r.baldyga@samsung.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20141208192229.GF12274@htj.dyndns.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tejun Heo <tj@kernel.org>, linux-serial@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, Lai Jiangshan <laijs@cn.fujitsu.com>, Linus Torvalds <torvalds@linux-foundation.org>, Ingo Molnar <mingo@redhat.com>
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.cz, akpm@linux-foundation.org, kgene.kim@samsung.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, kyungmin.park@samsung.com, l.czerwinski@samsung.com, s.nawrocki@samsung.com, Robert Baldyga <r.baldyga@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Dec 08, 2014 at 02:22:29PM -0500, Tejun Heo wrote:
-> (cc'ing Greg for tty)
-> 
-> On Mon, Dec 08, 2014 at 11:05:15AM -0800, Andrew Morton wrote:
-> > > Believe it or not, we already used up all alphanumerics if we count in
-> > > the arch-specific ones.  Given that the workqueue information would
-> > > primarily be useful in tracking down hangs and we'd want to see the
-> > > dump of tasks in that case anyway, sysrq-t isn't a bad fit for
-> > > appending workqueue dump.  If anybody has a better idea, I'm all ears.
-> > 
-> > Really.  Upper case?
-> 
-> Greg, would using uppercase chars for sysrq work over the different
-> types of ttys?
+Hi,
 
-I'm dragging in linux-serial@vger here also, but I think uppercase
-characters will work from a tty standpoint.  I don't know about keyboard
-scancodes, if they will do "odd" things wanting a shift with the sysrq
-key at the same time.
+This patch introduces DMA mode in samsung serial driver. It reduces
+number of interrupts and CPU usage while sending large data blocks.
 
-Oh wait, I think that might be it, shift is needed for the sysrq key on
-the keyboard to start with, right?  So there probably isn't a way to
-test the difference of a lower/upper case key here.
+For TX transfers DMA mode is used when number of bytes to send it larger
+than TX FIFO size, for smaller transfers PIO mode is used.
 
-I'm traveling this week, and don't have access to a "real" keyboard at
-the moment, but this should be pretty easy for someone to test who has
-one and cares about this type of thing {hint}.
+For RX transfers DMA mode is used when number of bytes in RX FIFO is
+larger than threshold level. If it's not, we obtain RX timeout interrupt
+and we receive data in PIO mode.
 
-thanks,
+DMA mode is enabled when "dmas" property is defined in device-tree node
+of serial port. Otherwise PIO mode is used.
 
-greg k-h
+To have this working, proper residue handling and DMA_PAUSE support in
+DMAC driver are necessary. At many samsung platforms DMAC is pl330, which
+does not have those features in mainline driver yet, so if you would
+like to test series, my patches for pl330 driver are needed. You can
+find them here:
+https://lkml.org/lkml/2014/12/10/156
+
+Entire series is based on previous work of Sylwester Nawrocki and
+Lukasz Czerwinski.
+
+Best regards,
+Robert Baldyga
+
+Robert Baldyga (6):
+  serial: samsung: add struct s3c24xx_uart_dma
+  serial: samsung: alloc dma stucture in ourport
+  serial: s3c: add missing register definitions
+  serial: samsung: add dma reqest/release functions
+  serial: samsung: add DMA support for TX
+  serial: samsung: add DMA support for RX
+
+ drivers/tty/serial/samsung.c | 582 +++++++++++++++++++++++++++++++++++++++++--
+ drivers/tty/serial/samsung.h |  42 ++++
+ include/linux/serial_s3c.h   |  28 +++
+ 3 files changed, 634 insertions(+), 18 deletions(-)
+
+-- 
+1.9.1
