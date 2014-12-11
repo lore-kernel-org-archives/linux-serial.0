@@ -1,47 +1,60 @@
-From: Tejun Heo <tj@kernel.org>
-Subject: Re: [PATCH wq/for-3.19 3/3] workqueue: dump workqueues on sysrq-t
-Date: Wed, 10 Dec 2014 13:34:50 -0500
-Message-ID: <20141210183450.GG6294@htj.dyndns.org>
-References: <20141208174326.GB12274@htj.dyndns.org>
- <20141208174406.GC12274@htj.dyndns.org>
- <20141208174733.GD12274@htj.dyndns.org>
- <20141208100613.ecc66d89.akpm@linux-foundation.org>
- <20141208184035.GE12274@htj.dyndns.org>
- <20141208110515.7860d68baca2b3bd46c9dab7@linux-foundation.org>
- <20141208192229.GF12274@htj.dyndns.org>
- <20141210045057.GA11973@kroah.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: [PATCH] trivial fixes for omap-serial
+Date: Thu, 11 Dec 2014 22:44:26 +0100
+Message-ID: <20141211214118.GA2285@amd>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20141210045057.GA11973@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, Lai Jiangshan <laijs@cn.fujitsu.com>, Linus Torvalds <torvalds@linux-foundation.org>, Ingo Molnar <mingo@redhat.com>
+To: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Trivial patch monkey <trivial@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello, Greg.
 
-On Tue, Dec 09, 2014 at 11:50:57PM -0500, Greg Kroah-Hartman wrote:
-> Oh wait, I think that might be it, shift is needed for the sysrq key on
-> the keyboard to start with, right?  So there probably isn't a way to
+Trivial fixes for omap-serial.
+    
+Signed-off-by: Pavel Machek <pavel@ucw.cz>
 
-On x86, the combo is alt-sysrq, so shift can theoretically be added.
-
-> test the difference of a lower/upper case key here.
-> 
-> I'm traveling this week, and don't have access to a "real" keyboard at
-> the moment, but this should be pretty easy for someone to test who has
-> one and cares about this type of thing {hint}.
-
-Just tested on a PS/2 port attached keyboard and it doesn't go
-through.  I'm not sure where this is getting lost but given that
-people sometimes have to use ctrl too to invoke sysrq, throwing in
-shift makes it a four key combo which is likely to be over the
-rollover capabilities of most keyboards.  It doesn't seem like a good
-path to follow to me.  :(
-
-Thanks.
+index 18c30ca..f43ed2c 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -63,7 +63,7 @@
+ #define UART_ERRATA_i202_MDR1_ACCESS	BIT(0)
+ #define UART_ERRATA_i291_DMA_FORCEIDLE	BIT(1)
+ 
+-#define DEFAULT_CLK_SPEED 48000000 /* 48Mhz*/
++#define DEFAULT_CLK_SPEED 48000000 /* 48Mhz */
+ 
+ /* SCR register bitmasks */
+ #define OMAP_UART_SCR_RX_TRIG_GRANU1_MASK		(1 << 7)
+@@ -93,7 +93,7 @@
+ /* WER = 0x7F
+  * Enable module level wakeup in WER reg
+  */
+-#define OMAP_UART_WER_MOD_WKUP	0X7F
++#define OMAP_UART_WER_MOD_WKUP	0x7F
+ 
+ /* Enable XON/XOFF flow control on output */
+ #define OMAP_UART_SW_TX		0x08
+@@ -114,7 +114,7 @@ struct uart_omap_dma {
+ 	dma_addr_t		tx_buf_dma_phys;
+ 	unsigned int		uart_base;
+ 	/*
+-	 * Buffer for rx dma.It is not required for tx because the buffer
++	 * Buffer for rx dma. It is not required for tx because the buffer
+ 	 * comes from port structure.
+ 	 */
+ 	unsigned char		*rx_buf;
+@@ -151,7 +151,7 @@ struct uart_omap_port {
+ 	int			use_dma;
+ 	/*
+ 	 * Some bits in registers are cleared on a read, so they must
+-	 * be saved whenever the register is read but the bits will not
++	 * be saved whenever the register is read, but the bits will not
+ 	 * be immediately processed.
+ 	 */
+ 	unsigned int		lsr_break_flag;
 
 -- 
-tejun
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
