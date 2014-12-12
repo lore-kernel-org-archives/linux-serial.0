@@ -1,60 +1,34 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: [PATCH] trivial fixes for omap-serial
-Date: Thu, 11 Dec 2014 22:44:26 +0100
-Message-ID: <20141211214118.GA2285@amd>
+From: Stefan Agner <stefan@agner.ch>
+Subject: Re: [PATCH 0/4] serial: =?UTF-8?Q?fsl=5Flpuart=3A=20fix=20various?=
+ =?UTF-8?Q?=20DMA=20related=20issues?=
+Date: Fri, 12 Dec 2014 14:44:06 +0100
+Message-ID: <677f2c62b6b6c1fe8e16cd38d5f20d47@agner.ch>
+References: <1417134205-4400-1-git-send-email-stefan@agner.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <1417134205-4400-1-git-send-email-stefan@agner.ch>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Trivial patch monkey <trivial@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+Any thoughts on this patchset? Would have hopped that it makes it into
+3.19 as those are mostly fixes.
 
-Trivial fixes for omap-serial.
-    
-Signed-off-by: Pavel Machek <pavel@ucw.cz>
+--
+Stefan
 
-index 18c30ca..f43ed2c 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -63,7 +63,7 @@
- #define UART_ERRATA_i202_MDR1_ACCESS	BIT(0)
- #define UART_ERRATA_i291_DMA_FORCEIDLE	BIT(1)
- 
--#define DEFAULT_CLK_SPEED 48000000 /* 48Mhz*/
-+#define DEFAULT_CLK_SPEED 48000000 /* 48Mhz */
- 
- /* SCR register bitmasks */
- #define OMAP_UART_SCR_RX_TRIG_GRANU1_MASK		(1 << 7)
-@@ -93,7 +93,7 @@
- /* WER = 0x7F
-  * Enable module level wakeup in WER reg
-  */
--#define OMAP_UART_WER_MOD_WKUP	0X7F
-+#define OMAP_UART_WER_MOD_WKUP	0x7F
- 
- /* Enable XON/XOFF flow control on output */
- #define OMAP_UART_SW_TX		0x08
-@@ -114,7 +114,7 @@ struct uart_omap_dma {
- 	dma_addr_t		tx_buf_dma_phys;
- 	unsigned int		uart_base;
- 	/*
--	 * Buffer for rx dma.It is not required for tx because the buffer
-+	 * Buffer for rx dma. It is not required for tx because the buffer
- 	 * comes from port structure.
- 	 */
- 	unsigned char		*rx_buf;
-@@ -151,7 +151,7 @@ struct uart_omap_port {
- 	int			use_dma;
- 	/*
- 	 * Some bits in registers are cleared on a read, so they must
--	 * be saved whenever the register is read but the bits will not
-+	 * be saved whenever the register is read, but the bits will not
- 	 * be immediately processed.
- 	 */
- 	unsigned int		lsr_break_flag;
-
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+On 2014-11-28 01:23, Stefan Agner wrote:
+> Patch 1 and 3 are actual fixes, whereas 2 and 4 don't lead to issues
+> in standard cases but are still worthwhile fixes.
+> 
+> Stefan Agner (4):
+>   serial: fsl_lpuart: delete timer on shutdown
+>   serial: fsl_lpuart: move DMA channel request to probe
+>   serial: fsl_lpuart: avoid new transfer while DMA is running
+>   serial: fsl_lpuart: update RX timer on successful DMA transfer
+> 
+>  drivers/tty/serial/fsl_lpuart.c | 110 +++++++++++++++++++---------------------
+>  1 file changed, 52 insertions(+), 58 deletions(-)
