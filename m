@@ -1,48 +1,54 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: Re: [PATCH 0/4] serial: =?UTF-8?Q?fsl=5Flpuart=3A=20fix=20various?=
- =?UTF-8?Q?=20DMA=20related=20issues?=
-Date: Fri, 12 Dec 2014 17:19:02 +0100
-Message-ID: <f6255321feb06d32f257b7b41d5d58a3@agner.ch>
-References: <1417134205-4400-1-git-send-email-stefan@agner.ch>
- <677f2c62b6b6c1fe8e16cd38d5f20d47@agner.ch>
- <20141212143244.GA2219@kroah.com>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: ch341.c does not work with new ch34x devices
+Date: Sat, 13 Dec 2014 08:23:39 -0500
+Message-ID: <20141213132339.GA21462@kroah.com>
+References: <CAJ23o9j48MmoFuiveWs=kdLnfPu9GZgGD4Ep2VJo6Y0KVx+33g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20141212143244.GA2219@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAJ23o9j48MmoFuiveWs=kdLnfPu9GZgGD4Ep2VJo6Y0KVx+33g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Liangent <liangent-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2014-12-12 15:32, Greg KH wrote:
-> On Fri, Dec 12, 2014 at 02:44:06PM +0100, Stefan Agner wrote:
->> Any thoughts on this patchset? Would have hopped that it makes it into
->> 3.19 as those are mostly fixes.
+On Sat, Dec 13, 2014 at 01:15:07PM +0800, Liangent wrote:
+> Hello,
 > 
-> "mostly"?
+> I bought a new USB-RS232 cable and the system loads ch341.ko for me
+> (Debian with kernel 3.14-2-amd64 and 3.16.0-4-amd64). However this
+> module does not work with my cable (/dev/ttyUSB0 appears but the
+> serial device doesn't work properly) while the driver provided by chip
+> vendor[1] works (this driver doesn't compile on kernel 3.16 anymore
+> but 3.14 is fine).
 > 
+> This is dmesg output with the vendor-provided driver.
+> 
+> [ 1900.070021] usb 2-1.4: new full-speed USB device number 5 using ehci-pci
+> [ 1900.163218] usb 2-1.4: New USB device found, idVendor=1a86, idProduct=7523
+> [ 1900.163227] usb 2-1.4: New USB device strings: Mfr=0, Product=2,
+> SerialNumber=0
+> [ 1900.163232] usb 2-1.4: Product: USB2.0-Ser!
+> [ 1900.163887] ch34x 2-1.4:1.0: ch34x converter detected
+> [ 1900.165052] usb 2-1.4: ch34x converter now attached to ttyUSB0
+> 
+> For the record I've used an old cable which works fine with the
+> built-in ch341.ko driver, but unfortunately that cable is not in my
+> hand anymore.
+> 
+> [1] http://wch.cn/downloads.php?name=pro&proid=177
 
-Well, all of them fix a bug, but PATCH 2/4 does this by also moving DMA
-allocation to probe. I would really have to split up that patch and make
-two incremental steps (split-up of RX/TX DMA allocation to make each
-single action revert-able and move to probe). But this would lead to
-more changed lines in total. The patchset as is already somewhat tested
-since we use it in our 3.18 BSP, whereas a new set would not be tested.
+That device should "just work" with the in-kernel driver.  The fact that
+it is autoloaded is a good sign something is right.
 
-One could also argument, it only affects fsl_lpuart (UART in rather not
-very widespread SoC's Freescale Vybrid and LS1021a).
+So no data flows through the device at all when using it, or are there
+other symptoms of "not working"?
 
+thanks,
 
-> I'll get to these after 3.19-rc1 is out, but it really looks like these
-> will be for 3.20-rc1, unless you break them up into "bugfix only" type
-> patches.
-
-
-PATCH 1/4 fixes a bug which happens on a normal console rather often on
-my setup. So if you decide that patchset is for 3.20-rc1, that one would
-be nice to have in 3.19 as well...
-
+greg k-h
 --
-Stefan
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
