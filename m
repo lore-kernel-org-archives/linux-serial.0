@@ -1,57 +1,61 @@
 From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
 Subject: Re: [PATCH 0/5] ARM: at91: fix irq_pm_install_action WARNING
-Date: Mon, 15 Dec 2014 23:20:17 +0100
-Message-ID: <2662748.NJbkr6jW7r@vostro.rjw.lan>
-References: <1418660152-17185-1-git-send-email-boris.brezillon@free-electrons.com>
+Date: Mon, 15 Dec 2014 23:48:14 +0100
+Message-ID: <3542278.8lcJeXLMFm@vostro.rjw.lan>
+References: <1418660152-17185-1-git-send-email-boris.brezillon@free-electrons.com> <2662748.NJbkr6jW7r@vostro.rjw.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1418660152-17185-1-git-send-email-boris.brezillon@free-electrons.com>
+In-Reply-To: <2662748.NJbkr6jW7r@vostro.rjw.lan>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Boris Brezillon <boris.brezillon@free-electrons.com>
 Cc: Thomas Gleixner <tglx@linutronix.de>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, rtc-linux@googlegroups.com, Mike Turquette <mturquette@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Monday, December 15, 2014 05:15:47 PM Boris Brezillon wrote:
-> Commit cab303be91dc47942bc25de33dc1140123540800 [1] introduced a WARN_ON
-> test which triggers a WARNING backtrace on at91 platforms.
-
-Pretty much as intended.
-
-> While this WARN_ON is absolutely necessary to warn users that they should
-> not mix request with and without IRQF_NO_SUSPEND flags on shared IRQs,
-> there is no easy way to solve this issue on at91 platforms.
+On Monday, December 15, 2014 11:20:17 PM Rafael J. Wysocki wrote:
+> On Monday, December 15, 2014 05:15:47 PM Boris Brezillon wrote:
+> > Commit cab303be91dc47942bc25de33dc1140123540800 [1] introduced a WARN_ON
+> > test which triggers a WARNING backtrace on at91 platforms.
 > 
-> The main reason is that the init timer is often using a shared irq line
-> and thus request this irq with IRQF_NO_SUSPEND flag set, while other
-> peripherals request the same irq line without this flag.
+> Pretty much as intended.
 > 
-> We could deal with that by identifying whether a given peripheral is
-> connected to the init timer shared irq line and add the IRQF_NO_SUSPEND
-> in this case, but this implies adding the logic in all peripheral drivers
-> that could be connected to this shared irq.
+> > While this WARN_ON is absolutely necessary to warn users that they should
+> > not mix request with and without IRQF_NO_SUSPEND flags on shared IRQs,
+> > there is no easy way to solve this issue on at91 platforms.
+> > 
+> > The main reason is that the init timer is often using a shared irq line
+> > and thus request this irq with IRQF_NO_SUSPEND flag set, while other
+> > peripherals request the same irq line without this flag.
+> > 
+> > We could deal with that by identifying whether a given peripheral is
+> > connected to the init timer shared irq line and add the IRQF_NO_SUSPEND
+> > in this case, but this implies adding the logic in all peripheral drivers
+> > that could be connected to this shared irq.
+> > 
+> > This series takes the reverse approach: force IRQ users to specify that
+> > they take care of disabling peripheral interrupts and that IRQ core can
+> > safely leave the handler in a suspended state without having to bother
+> > about spurious interrupts.
+> > This is done by mean of a new IRQF_SUSPEND_NOACTION flag which tells the
+> > core to move the action handler to a suspended list, thus preventing its
+> > execution when we are in suspend mode.
+> > Of course, specifying the IRQF_SUSPEND_NOACTION flag implies taking care
+> > of masking/unmasking the peripheral interrupts in the suspend/resume
+> > implementation.
 > 
-> This series takes the reverse approach: force IRQ users to specify that
-> they take care of disabling peripheral interrupts and that IRQ core can
-> safely leave the handler in a suspended state without having to bother
-> about spurious interrupts.
-> This is done by mean of a new IRQF_SUSPEND_NOACTION flag which tells the
-> core to move the action handler to a suspended list, thus preventing its
-> execution when we are in suspend mode.
-> Of course, specifying the IRQF_SUSPEND_NOACTION flag implies taking care
-> of masking/unmasking the peripheral interrupts in the suspend/resume
-> implementation.
+> Well, I'm not sure how much value is in all that to be honest.  The only
+> thing it helps with is to make the WARN_ON go away in some cases, while
+> the drivers in question need to make sure that they disable their interrupts
+> properly anyway, so what exactly is the purpose of the new irqaction
+> shuffling?
+> 
+> It might just be simpler to add a flag to suppress the WARN_ON that would be
+> set by the user of IRQF_NO_SUSPEND that is broken enough to have to share the
+> interrupt with others ...
 
-Well, I'm not sure how much value is in all that to be honest.  The only
-thing it helps with is to make the WARN_ON go away in some cases, while
-the drivers in question need to make sure that they disable their interrupts
-properly anyway, so what exactly is the purpose of the new irqaction
-shuffling?
-
-It might just be simpler to add a flag to suppress the WARN_ON that would be
-set by the user of IRQF_NO_SUSPEND that is broken enough to have to share the
-interrupt with others ...
+Or even set IRFQ_NO_SUSPEND for all of the users of this interrupt and add
+comments to them explaining why it is set.
 
 
 -- 
