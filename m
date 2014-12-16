@@ -1,113 +1,127 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
+From: Thomas Gleixner <tglx@linutronix.de>
 Subject: Re: [PATCH 0/5] ARM: at91: fix irq_pm_install_action WARNING
-Date: Tue, 16 Dec 2014 10:07:15 +0100
-Message-ID: <20141216100715.57baeb65@bbrezillon>
-References: <1418660152-17185-1-git-send-email-boris.brezillon@free-electrons.com>
-	<2662748.NJbkr6jW7r@vostro.rjw.lan>
-	<3542278.8lcJeXLMFm@vostro.rjw.lan>
+Date: Tue, 16 Dec 2014 11:03:55 +0100 (CET)
+Message-ID: <alpine.DEB.2.11.1412161013570.17382@nanos>
+References: <1418660152-17185-1-git-send-email-boris.brezillon@free-electrons.com> <2662748.NJbkr6jW7r@vostro.rjw.lan> <3542278.8lcJeXLMFm@vostro.rjw.lan> <20141216100715.57baeb65@bbrezillon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3542278.8lcJeXLMFm@vostro.rjw.lan>
+In-Reply-To: <20141216100715.57baeb65@bbrezillon>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Thomas Gleixner <tglx@linutronix.de>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, rtc-linux@googlegroups.com, Mike Turquette <mturquette@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, rtc-linux@googlegroups.com, Mike Turquette <mturquette@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rafael,
-
-On Mon, 15 Dec 2014 23:48:14 +0100
-"Rafael J. Wysocki" <rjw@rjwysocki.net> wrote:
-
-> On Monday, December 15, 2014 11:20:17 PM Rafael J. Wysocki wrote:
-> > On Monday, December 15, 2014 05:15:47 PM Boris Brezillon wrote:
-> > > Commit cab303be91dc47942bc25de33dc1140123540800 [1] introduced a WARN_ON
-> > > test which triggers a WARNING backtrace on at91 platforms.
-> > 
-> > Pretty much as intended.
-
-Yep. BTW did you have other platforms/drivers in mind when proposing
-this patch, or were you just trying to identify the offending ones ?
-
-> > 
-> > > While this WARN_ON is absolutely necessary to warn users that they should
-> > > not mix request with and without IRQF_NO_SUSPEND flags on shared IRQs,
-> > > there is no easy way to solve this issue on at91 platforms.
-> > > 
-> > > The main reason is that the init timer is often using a shared irq line
-> > > and thus request this irq with IRQF_NO_SUSPEND flag set, while other
-> > > peripherals request the same irq line without this flag.
-> > > 
-> > > We could deal with that by identifying whether a given peripheral is
-> > > connected to the init timer shared irq line and add the IRQF_NO_SUSPEND
-> > > in this case, but this implies adding the logic in all peripheral drivers
-> > > that could be connected to this shared irq.
-> > > 
-> > > This series takes the reverse approach: force IRQ users to specify that
-> > > they take care of disabling peripheral interrupts and that IRQ core can
-> > > safely leave the handler in a suspended state without having to bother
-> > > about spurious interrupts.
-> > > This is done by mean of a new IRQF_SUSPEND_NOACTION flag which tells the
-> > > core to move the action handler to a suspended list, thus preventing its
-> > > execution when we are in suspend mode.
-> > > Of course, specifying the IRQF_SUSPEND_NOACTION flag implies taking care
-> > > of masking/unmasking the peripheral interrupts in the suspend/resume
-> > > implementation.
-> > 
-> > Well, I'm not sure how much value is in all that to be honest.  The only
-> > thing it helps with is to make the WARN_ON go away in some cases, while
-> > the drivers in question need to make sure that they disable their interrupts
-> > properly anyway, so what exactly is the purpose of the new irqaction
-> > shuffling?
-> > 
-> > It might just be simpler to add a flag to suppress the WARN_ON that would be
-> > set by the user of IRQF_NO_SUSPEND that is broken enough to have to share the
-> > interrupt with others ...
+On Tue, 16 Dec 2014, Boris Brezillon wrote:
+> On Mon, 15 Dec 2014 23:48:14 +0100
+> "Rafael J. Wysocki" <rjw@rjwysocki.net> wrote:
+> > Or even set IRFQ_NO_SUSPEND for all of the users of this interrupt and add
+> > comments to them explaining why it is set.
+> Actually I thought about adding a new flag (let's call it
+> IRQF_DONT_COMPLAIN for now ;-)) to remove those warnings (or specifying
+> IRFQ_NO_SUSPEND in all peripherals sharing the IRQ with the init
+> timer), but after discussing the problem with Thomas I decided to go
+> for the approach described in my cover letter.
 > 
-> Or even set IRFQ_NO_SUSPEND for all of the users of this interrupt and add
-> comments to them explaining why it is set.
+> Thomas, correct me if I'm wrong, but your concern about the
+> IRQF_DONT_COMPLAIN approach was that it was leaving interrupt handlers
+> of suspended devices in an active state (meaning that they could be
+> called in "suspend" or "early resume" state), and such devices might
+> not properly handle interrupts while being in a suspended state (clocks
+> and regulators disabled).
+> In at91 specific case this should not be an issue thought.
 > 
-> 
+> We have the same problem when setting IRFQ_NO_SUSPEND on all peripherals
+> sharing the IRQ with the init timer.
+> Moreover, I'd like to keep the core automatically disabling the IRQ when
+> the PMC, RTC, watchdog or DBGU (UART) peripherals have their own
+> dedicated IRQ (which is the case on Atmel sama5 SoCs).
+> This implies testing for the SoC version in each of these drivers and
+> adapting the request_irq call accordingly.
 
-Maybe I should have sent this series as a RFC, anyway, I'm not trying
-to make existing code more complicated just for fun, and I'm open to
-any suggestion.
+But still all those drivers must disable the interrupts at the device
+level on suspend, right?
 
-Actually I thought about adding a new flag (let's call it
-IRQF_DONT_COMPLAIN for now ;-)) to remove those warnings (or specifying
-IRFQ_NO_SUSPEND in all peripherals sharing the IRQ with the init
-timer), but after discussing the problem with Thomas I decided to go
-for the approach described in my cover letter.
+> Thomas, Rafael, if both of you think I should either introduce a new
+> flag or specify IRFQ_NO_SUSPEND in all shared IRQ users, then I can go
+> for one of this solution.
 
-Thomas, correct me if I'm wrong, but your concern about the
-IRQF_DONT_COMPLAIN approach was that it was leaving interrupt handlers
-of suspended devices in an active state (meaning that they could be
-called in "suspend" or "early resume" state), and such devices might
-not properly handle interrupts while being in a suspended state (clocks
-and regulators disabled).
-In at91 specific case this should not be an issue thought.
+All of this really sucks. What about the following?
 
-We have the same problem when setting IRFQ_NO_SUSPEND on all peripherals
-sharing the IRQ with the init timer.
-Moreover, I'd like to keep the core automatically disabling the IRQ when
-the PMC, RTC, watchdog or DBGU (UART) peripherals have their own
-dedicated IRQ (which is the case on Atmel sama5 SoCs).
-This implies testing for the SoC version in each of these drivers and
-adapting the request_irq call accordingly.
+Install the timer interrupt as a demultiplexing interrupt.
 
-Thomas, Rafael, if both of you think I should either introduce a new
-flag or specify IRFQ_NO_SUSPEND in all shared IRQ users, then I can go
-for one of this solution.
+Create a pseudo interrupt chip, which essentially does nothing, but
+keeps track of the disabled state. Install handle_simple_irq as
+handler for those "demux" interrupts. Then have:
 
-BTW, have you heard about other platforms/drivers impacted by this
-WARN_ON addition, and if so how did they solve the problem ?
+struct data {
+       u32 unmasked;
+       u32 demuxavail;
+};
 
-Best Regards,
+static struct data demuxdata;
 
-Boris
+At init time you know how many of these demux interrupts are
+available. So you set the demuxdata up, e.g. for 3 interrupts
+connected:
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+	demuxdata.demuxavail = 0x07;
+
+You install a pointer to demuxdata for all demux interrupts as irq
+chip data and the simple handler.
+
+And in the mask/unmask handlers you do:
+
+mask(irqdata) {
+       struct data *d = irq_data_get_irq_chip_data(irqdata);
+
+       d->unmasked &= ~irqdata->mask;
+       if (!d->unmasked)
+       	  mask_demux_irq();
+}
+
+unmask(irqdata) {
+       struct data *d = irq_data_get_irq_chip_data(irqdata);
+
+       if (!d->unmasked)
+       	  unmask_demux_irq();
+       d->mask |= irqdata->mask;
+}
+
+Now the demuxhandler does:
+
+    mask = demuxdata.demuxavail & demuxdata.unmasked;
+
+    for_each_bit(bit, mask)
+    	generic_handle_irq(demuxirq_start + bit);
+
+So the handler wont be invoked for masked bits and handle_simple_irq()
+will not call the device handler if the interrupt is marked disabled.
+
+So in the suspend case all "demux" interrupts except those which are
+marked NOSUSPEND are marked disabled and the handlers wont be invoked.
+
+Locking and other details omitted.
+
+That avoids the whole flag, action, whatever business for the price of
+a really trivial demux mechanism. Everything just works. Even the irq
+storm detector will just disable the parent interrupt once all
+handlers return NONE often enough.
+
+Your device drivers just work fine, as long as they disable the
+interrupt at the device level on suspend, but they have to do that in
+any case. Aside of that detail they are completely oblivous whether
+they are connected to this "demux" chip or to a seperate irq line on
+other devices.
+
+> BTW, have you heard about other platforms/drivers impacted by this
+> WARN_ON addition, and if so how did they solve the problem ?
+
+Nothing so far. Seems not many hardware folks are that crazy.
+
+But I have no objections to make this generic infrastructure as long
+as it can be compiled out.
+
+Thanks,
+
+	tglx
