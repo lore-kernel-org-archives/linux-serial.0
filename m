@@ -1,7 +1,7 @@
 From: Ley Foon Tan <lftan@altera.com>
-Subject: [PATCH] serial: altera-juart: fix NULL device in log message
-Date: Tue, 16 Dec 2014 15:27:46 +0800
-Message-ID: <1418714866-2744-1-git-send-email-lftan@altera.com>
+Subject: [PATCH] serial: altera-uart: fix NULL device in log message
+Date: Tue, 16 Dec 2014 15:28:34 +0800
+Message-ID: <1418714914-2836-1-git-send-email-lftan@altera.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -14,29 +14,29 @@ Add device pointer to port->dev.
 
 Before:
 
-"(NULL device *): ttyJ0 at MMIO 0x1008 (irq = 2, base_baud = 0) is a
-Altera JTAG UART"
+"(NULL device *): ttyAL0 at MMIO 0x2020 (irq = 6, base_baud = 3125000)
+is a Altera UART"
 
 After:
-"altera_jtaguart 1008.serial: ttyJ0 at MMIO 0x1008 (irq = 2, base_baud = 0) is a
-Altera JTAG UART"
+"altera_uart 2020.serial: ttyAL0 at MMIO 0x2020 (irq = 6, base_baud = 3125000)
+is a Altera UART"
 
 Signed-off-by: Ley Foon Tan <lftan@altera.com>
 ---
- drivers/tty/serial/altera_jtaguart.c | 1 +
+ drivers/tty/serial/altera_uart.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-index 192d043..0fefdd8 100644
---- a/drivers/tty/serial/altera_jtaguart.c
-+++ b/drivers/tty/serial/altera_jtaguart.c
-@@ -441,6 +441,7 @@ static int altera_jtaguart_probe(struct platform_device *pdev)
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index eb15a50..b2859fe 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -589,6 +589,7 @@ static int altera_uart_probe(struct platform_device *pdev)
  	port->iotype = SERIAL_IO_MEM;
- 	port->ops = &altera_jtaguart_ops;
+ 	port->ops = &altera_uart_ops;
  	port->flags = UPF_BOOT_AUTOCONF;
 +	port->dev = &pdev->dev;
  
- 	uart_add_one_port(&altera_jtaguart_driver, port);
+ 	platform_set_drvdata(pdev, port);
  
 -- 
 1.8.2.1
