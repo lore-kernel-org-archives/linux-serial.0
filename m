@@ -1,67 +1,42 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Add hardware flow control support of
- R-Car HSCIF
-Date: Tue, 16 Dec 2014 14:42:11 +0900
-Message-ID: <CANqRtoSEGxczvGQAcBBz1bE64xfRd9U7qmmn=9wGTbyb-9-Z_w@mail.gmail.com>
-References: <1418652846-6821-1-git-send-email-ykaneko0929@gmail.com>
+From: Ley Foon Tan <lftan@altera.com>
+Subject: [PATCH] serial: altera-juart: fix NULL device in log message
+Date: Tue, 16 Dec 2014 15:27:46 +0800
+Message-ID: <1418714866-2744-1-git-send-email-lftan@altera.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1418652846-6821-1-git-send-email-ykaneko0929@gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, SH-Linux <linux-sh@vger.kernel.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tobias Klauser <tklauser@distanz.ch>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, Ley Foon Tan <lftan@altera.com>, lftan.linux@gmail.com, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kaneko-san,
+Add device pointer to port->dev.
 
-On Mon, Dec 15, 2014 at 11:14 PM, Yoshihiro Kaneko
-<ykaneko0929@gmail.com> wrote:
-> From: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
->
-> TIOCM_CTS is enabled to use hardware flow control of HSCIF.
-> And hardware flow control of HSCIF is handled by device tree.
->
-> Signed-off-by: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
-> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-> ---
->
-> This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
-> tree.
->
->  drivers/tty/serial/sh-sci.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index bcec10a..6744702 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -1216,7 +1216,11 @@ static unsigned int sci_get_mctrl(struct uart_port *port)
->          * CTS/RTS is handled in hardware when supported, while nothing
->          * else is wired up. Keep it simple and simply assert DSR/CAR.
->          */
-> -       return TIOCM_DSR | TIOCM_CAR;
-> +       unsigned int mctrl = TIOCM_DSR | TIOCM_CAR;
-> +
-> +       if (port->type == PORT_HSCIF)
-> +               mctrl |= TIOCM_CTS;
-> +       return mctrl;
->  }
->
->  #ifdef CONFIG_SERIAL_SH_SCI_DMA
+Before:
 
-Thanks for the patch. I suspect that a bit more work is needed to
-enable CTS handling as expected in this driver...
+"(NULL device *): ttyJ0 at MMIO 0x1008 (irq = 2, base_baud = 0) is a
+Altera JTAG UART"
 
-> @@ -2611,6 +2615,8 @@ sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
->         p->type = info->type;
->         p->regtype = info->regtype;
->         p->scscr = SCSCR_RE | SCSCR_TE;
-> +       if (of_property_read_bool(np, "ctsrts"))
-> +               p->capabilities = SCIx_HAVE_RTSCTS;
+After:
+"altera_jtaguart 1008.serial: ttyJ0 at MMIO 0x1008 (irq = 2, base_baud = 0) is a
+Altera JTAG UART"
 
-Also, for this particular DT property, perhaps we need to document it somehow?
+Signed-off-by: Ley Foon Tan <lftan@altera.com>
+---
+ drivers/tty/serial/altera_jtaguart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-
-/ magnus
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index 192d043..0fefdd8 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -441,6 +441,7 @@ static int altera_jtaguart_probe(struct platform_device *pdev)
+ 	port->iotype = SERIAL_IO_MEM;
+ 	port->ops = &altera_jtaguart_ops;
+ 	port->flags = UPF_BOOT_AUTOCONF;
++	port->dev = &pdev->dev;
+ 
+ 	uart_add_one_port(&altera_jtaguart_driver, port);
+ 
+-- 
+1.8.2.1
