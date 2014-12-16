@@ -1,98 +1,53 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
+From: Thomas Gleixner <tglx@linutronix.de>
 Subject: Re: [PATCH 0/5] ARM: at91: fix irq_pm_install_action WARNING
-Date: Tue, 16 Dec 2014 15:20:41 +0100
-Message-ID: <20141216152041.56ff9b2e@bbrezillon>
-References: <1418660152-17185-1-git-send-email-boris.brezillon@free-electrons.com>
-	<2662748.NJbkr6jW7r@vostro.rjw.lan>
-	<3542278.8lcJeXLMFm@vostro.rjw.lan>
-	<20141216100715.57baeb65@bbrezillon>
-	<alpine.DEB.2.11.1412161013570.17382@nanos>
-	<20141216122503.77c5632f@bbrezillon>
-	<alpine.DEB.2.11.1412161349420.17382@nanos>
+Date: Tue, 16 Dec 2014 15:52:23 +0100 (CET)
+Message-ID: <alpine.DEB.2.11.1412161551290.17382@nanos>
+References: <1418660152-17185-1-git-send-email-boris.brezillon@free-electrons.com> <2662748.NJbkr6jW7r@vostro.rjw.lan> <3542278.8lcJeXLMFm@vostro.rjw.lan> <20141216100715.57baeb65@bbrezillon> <alpine.DEB.2.11.1412161013570.17382@nanos> <20141216122503.77c5632f@bbrezillon>
+ <alpine.DEB.2.11.1412161349420.17382@nanos> <20141216152041.56ff9b2e@bbrezillon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.11.1412161349420.17382@nanos>
+In-Reply-To: <20141216152041.56ff9b2e@bbrezillon>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
 Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, rtc-linux@googlegroups.com, Mike Turquette <mturquette@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 16 Dec 2014 13:56:26 +0100 (CET)
-Thomas Gleixner <tglx@linutronix.de> wrote:
-
-> On Tue, 16 Dec 2014, Boris Brezillon wrote:
-> > Thomas Gleixner <tglx@linutronix.de> wrote:
-> > > Install the timer interrupt as a demultiplexing interrupt.
-> > 
-> > I can try to hack the AIC irqchip driver to implement this demux logic,
-> > but this logic can't be placed in the PIT (Periodic Interval Timer)
-> > driver itself, because the shared IRQ line is used by the at91 clock
-> > controller (PMC) which is providing the clock to the PIT device.
-> > This gives the following dependency graph:
-> > 
-> > PIT =depends-on=> Master Clock =provided-by=> PMC =needs=> PMC IRQ.
+On Tue, 16 Dec 2014, Boris Brezillon wrote:
+> On Tue, 16 Dec 2014 13:56:26 +0100 (CET)
+> Okay, that's what I had in mind, thanks for clarifying this aspect.
 > 
-> It never can be a part of a device driver. This is a property of the
-> interrupt controller which fails to provide a proper demux for this
-> irq line in the first place.
+> Regarding the DT representation, it should look like this, right ?
 > 
-> So you fake the demux in the irq chip driver, where you provide the
-> pseudo chip and the demux logic. None of the device drivers (PIT, PMC,
-> UART ...) even knows about that.
+> aic: interrupt-controller@fffff000 {
+> 	#interrupt-cells = <3>;
+> 	compatible = "atmel,at91rm9200-aic";
+> 	interrupt-controller;
+> 	reg = <0xfffff000 0x200>;
+> 	atmel,external-irqs = <29 30 31>;
 > 
-> |--------|             |--------|
-> | AIC    |-------------| Pseudo |---- PIT
-> |        |             | chip   |---- PMC
-> |        |             |        |---- UART
-> |        |             |--------|
-> |        |--- devX
-> |        |--- devY
-> |        |--- devZ
-> |--------|
+> 	irq1_demux: irq1-demux {
+> 		#interrupt-cells = <1>;
+> 		interrupt-controller;
+> 	}
+> };
 > 
-> So PIT, PMC and UART get interrupt numbers handed out which are
-> outside of the interrupt space of AIC.
+> pit: timer@fffffd30 {
+> 	compatible = "atmel,at91sam9260-pit";
+> 	reg = <0xfffffd30 0xf>;
+> 	/* 0 is the id reserved for the PIT */
+> 	interrupts-extended = <&irq1_demux 0>;
+> 	clocks = <&mck>;
+> };
+> 
+> pmc: pmc@fffffc00 {
+> 	compatible = "atmel,at91sam9260-pmc";
+> 	reg = <0xfffffc00 0x100>;
+> 	/* 1 is the id reserved for the PMC */
+> 	interrupts-extended = <&irq1_demux 1>;
 
-Okay, that's what I had in mind, thanks for clarifying this aspect.
+Not that I'm a DT expert, but that looks about right.
 
-Regarding the DT representation, it should look like this, right ?
+Thanks,
 
-aic: interrupt-controller@fffff000 {
-	#interrupt-cells = <3>;
-	compatible = "atmel,at91rm9200-aic";
-	interrupt-controller;
-	reg = <0xfffff000 0x200>;
-	atmel,external-irqs = <29 30 31>;
-
-	irq1_demux: irq1-demux {
-		#interrupt-cells = <1>;
-		interrupt-controller;
-	}
-};
-
-pit: timer@fffffd30 {
-	compatible = "atmel,at91sam9260-pit";
-	reg = <0xfffffd30 0xf>;
-	/* 0 is the id reserved for the PIT */
-	interrupts-extended = <&irq1_demux 0>;
-	clocks = <&mck>;
-};
-
-pmc: pmc@fffffc00 {
-	compatible = "atmel,at91sam9260-pmc";
-	reg = <0xfffffc00 0x100>;
-	/* 1 is the id reserved for the PMC */
-	interrupts-extended = <&irq1_demux 1>;
-[...]
-};
-
-Regards,
-
-Boris
-
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+	tglx
