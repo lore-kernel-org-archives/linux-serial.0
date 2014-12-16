@@ -1,63 +1,67 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH 0/5] ARM: at91: fix irq_pm_install_action WARNING
-Date: Mon, 15 Dec 2014 23:48:14 +0100
-Message-ID: <3542278.8lcJeXLMFm@vostro.rjw.lan>
-References: <1418660152-17185-1-git-send-email-boris.brezillon@free-electrons.com> <2662748.NJbkr6jW7r@vostro.rjw.lan>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Add hardware flow control support of
+ R-Car HSCIF
+Date: Tue, 16 Dec 2014 14:42:11 +0900
+Message-ID: <CANqRtoSEGxczvGQAcBBz1bE64xfRd9U7qmmn=9wGTbyb-9-Z_w@mail.gmail.com>
+References: <1418652846-6821-1-git-send-email-ykaneko0929@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2662748.NJbkr6jW7r@vostro.rjw.lan>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, rtc-linux@googlegroups.com, Mike Turquette <mturquette@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1418652846-6821-1-git-send-email-ykaneko0929@gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, SH-Linux <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Monday, December 15, 2014 11:20:17 PM Rafael J. Wysocki wrote:
-> On Monday, December 15, 2014 05:15:47 PM Boris Brezillon wrote:
-> > Commit cab303be91dc47942bc25de33dc1140123540800 [1] introduced a WARN_ON
-> > test which triggers a WARNING backtrace on at91 platforms.
-> 
-> Pretty much as intended.
-> 
-> > While this WARN_ON is absolutely necessary to warn users that they should
-> > not mix request with and without IRQF_NO_SUSPEND flags on shared IRQs,
-> > there is no easy way to solve this issue on at91 platforms.
-> > 
-> > The main reason is that the init timer is often using a shared irq line
-> > and thus request this irq with IRQF_NO_SUSPEND flag set, while other
-> > peripherals request the same irq line without this flag.
-> > 
-> > We could deal with that by identifying whether a given peripheral is
-> > connected to the init timer shared irq line and add the IRQF_NO_SUSPEND
-> > in this case, but this implies adding the logic in all peripheral drivers
-> > that could be connected to this shared irq.
-> > 
-> > This series takes the reverse approach: force IRQ users to specify that
-> > they take care of disabling peripheral interrupts and that IRQ core can
-> > safely leave the handler in a suspended state without having to bother
-> > about spurious interrupts.
-> > This is done by mean of a new IRQF_SUSPEND_NOACTION flag which tells the
-> > core to move the action handler to a suspended list, thus preventing its
-> > execution when we are in suspend mode.
-> > Of course, specifying the IRQF_SUSPEND_NOACTION flag implies taking care
-> > of masking/unmasking the peripheral interrupts in the suspend/resume
-> > implementation.
-> 
-> Well, I'm not sure how much value is in all that to be honest.  The only
-> thing it helps with is to make the WARN_ON go away in some cases, while
-> the drivers in question need to make sure that they disable their interrupts
-> properly anyway, so what exactly is the purpose of the new irqaction
-> shuffling?
-> 
-> It might just be simpler to add a flag to suppress the WARN_ON that would be
-> set by the user of IRQF_NO_SUSPEND that is broken enough to have to share the
-> interrupt with others ...
+Hi Kaneko-san,
 
-Or even set IRFQ_NO_SUSPEND for all of the users of this interrupt and add
-comments to them explaining why it is set.
+On Mon, Dec 15, 2014 at 11:14 PM, Yoshihiro Kaneko
+<ykaneko0929@gmail.com> wrote:
+> From: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
+>
+> TIOCM_CTS is enabled to use hardware flow control of HSCIF.
+> And hardware flow control of HSCIF is handled by device tree.
+>
+> Signed-off-by: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
+> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+> ---
+>
+> This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
+> tree.
+>
+>  drivers/tty/serial/sh-sci.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index bcec10a..6744702 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -1216,7 +1216,11 @@ static unsigned int sci_get_mctrl(struct uart_port *port)
+>          * CTS/RTS is handled in hardware when supported, while nothing
+>          * else is wired up. Keep it simple and simply assert DSR/CAR.
+>          */
+> -       return TIOCM_DSR | TIOCM_CAR;
+> +       unsigned int mctrl = TIOCM_DSR | TIOCM_CAR;
+> +
+> +       if (port->type == PORT_HSCIF)
+> +               mctrl |= TIOCM_CTS;
+> +       return mctrl;
+>  }
+>
+>  #ifdef CONFIG_SERIAL_SH_SCI_DMA
 
+Thanks for the patch. I suspect that a bit more work is needed to
+enable CTS handling as expected in this driver...
 
--- 
-I speak only for myself.
-Rafael J. Wysocki, Intel Open Source Technology Center.
+> @@ -2611,6 +2615,8 @@ sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
+>         p->type = info->type;
+>         p->regtype = info->regtype;
+>         p->scscr = SCSCR_RE | SCSCR_TE;
+> +       if (of_property_read_bool(np, "ctsrts"))
+> +               p->capabilities = SCIx_HAVE_RTSCTS;
+
+Also, for this particular DT property, perhaps we need to document it somehow?
+
+Thanks,
+
+/ magnus
