@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH 01/05] serial: sh-sci: Break out default CTS/RTS pin setup
-Date: Wed, 17 Dec 2014 21:52:46 +0900
-Message-ID: <20141217125246.14480.41876.sendpatchset@w520>
+Subject: [PATCH 03/05] serial: sh-sci: Expose default CTS pin
+Date: Wed, 17 Dec 2014 21:53:05 +0900
+Message-ID: <20141217125305.14480.3038.sendpatchset@w520>
 References: <20141217125236.14480.78833.sendpatchset@w520>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20141217125236.14480.78833.sendpatchset@w520>
@@ -12,79 +12,64 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Magnus Damm <damm+renesas@opensource.se>
 
-Break out CTS/RTS pin setup for the default case. We only
-care about those pins in case SCIx_HAVE_RTSCTS is set.
+Expose the CTS pin to the ->get_mctrl() callback for the
+default case. Without this patch the serial core can not
+retrieve the CTS pin state from the SCIF driver.
 
 Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
 
- drivers/tty/serial/sh-sci.c |   45 +++++++++++++++++++++++++++++--------------
- 1 file changed, 31 insertions(+), 14 deletions(-)
+ drivers/tty/serial/sh-sci.c |   20 +++++++++++++++++++-
+ include/linux/serial_sci.h  |    1 +
+ 2 files changed, 20 insertions(+), 1 deletion(-)
 
---- 0001/drivers/tty/serial/sh-sci.c
-+++ work/drivers/tty/serial/sh-sci.c	2014-12-16 14:40:31.000000000 +0900
-@@ -509,10 +509,29 @@ static void sci_poll_put_char(struct uar
+--- 0021/drivers/tty/serial/sh-sci.c
++++ work/drivers/tty/serial/sh-sci.c	2014-12-17 18:44:31.000000000 +0900
+@@ -509,6 +509,17 @@ static void sci_poll_put_char(struct uar
  }
  #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE */
  
--static void sci_init_pins(struct uart_port *port, unsigned int cflag)
-+static void sci_init_pins_default(struct uart_port *port, bool hwflow_enabled)
- {
- 	struct sci_port *s = to_sci_port(port);
- 	struct plat_sci_reg *reg = sci_regmap[s->cfg->regtype] + SCSPTR;
-+	unsigned short status;
-+
-+	/* If no SCSPTR register exists then skip. Same if hardware flow
-+	 * control has been enabled, in such case SCFCR.MCE will be set
-+	 * and the SCSPTR configuration is assumed to be overridden.
-+	 */
-+	if (!reg->size || hwflow_enabled)
-+		return;
-+
-+	status = serial_port_in(port, SCSPTR);
-+	status &= ~SCSPTR_CTSIO;
-+	status |= SCSPTR_RTSIO;
-+	serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
-+}
-+
-+static void sci_init_pins(struct uart_port *port, unsigned int cflag)
++static bool sci_cts_asserted_default(struct uart_port *port)
 +{
 +	struct sci_port *s = to_sci_port(port);
-+	bool hwflow_enabled = cflag & CRTSCTS;
++	struct plat_sci_reg *reg = sci_regmap[s->cfg->regtype] + SCSPTR;
++
++	if (reg->size)
++		return !(serial_port_in(port, SCSPTR) & SCSPTR_CTSDT);
++
++	return false;
++}
++
+ static void sci_init_pins_default(struct uart_port *port, bool hwflow_enabled)
+ {
+ 	struct sci_port *s = to_sci_port(port);
+@@ -1227,11 +1238,18 @@ static void sci_set_mctrl(struct uart_po
  
+ static unsigned int sci_get_mctrl(struct uart_port *port)
+ {
++	struct sci_port *s = to_sci_port(port);
++	bool cts_asserted = false;
++
  	/*
- 	 * Use port-specific handler if provided.
-@@ -522,22 +541,20 @@ static void sci_init_pins(struct uart_po
- 		return;
- 	}
- 
--	/*
--	 * For the generic path SCSPTR is necessary. Bail out if that's
--	 * unavailable, too.
-+	/* SCIF hardware with RTS/CTS support needs special setup below.
-+	 *
-+	 * Please note that if RTS/CTS is available for the hardware
-+	 * platform depends on the particular SCIF channel on a certain
-+	 * SoC, and how this channel has been hooked up on the actual board.
-+	 *
-+	 * If the RTS/CTS signals will be used or not depends on what user
-+	 * space requests. In case RTS/CTS is available but not requested
-+	 * by user space we still need to configure the pins somehow.
+ 	 * CTS/RTS is handled in hardware when supported, while nothing
+ 	 * else is wired up. Keep it simple and simply assert DSR/CAR.
  	 */
--	if (!reg->size)
-+	if (!(s->cfg->capabilities & SCIx_HAVE_RTSCTS))
- 		return;
- 
--	if ((s->cfg->capabilities & SCIx_HAVE_RTSCTS) &&
--	    ((!(cflag & CRTSCTS)))) {
--		unsigned short status;
--
--		status = serial_port_in(port, SCSPTR);
--		status &= ~SCSPTR_CTSIO;
--		status |= SCSPTR_RTSIO;
--		serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
--	}
-+	sci_init_pins_default(port, hwflow_enabled);
+-	return TIOCM_DSR | TIOCM_CAR;
++
++	if (s->cfg->capabilities & SCIx_HAVE_RTSCTS)
++		cts_asserted = sci_cts_asserted_default(port);
++
++	return TIOCM_DSR | TIOCM_CAR | (cts_asserted ? TIOCM_CTS : 0);
  }
  
- static int sci_txfill(struct uart_port *port)
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+--- 0021/include/linux/serial_sci.h
++++ work/include/linux/serial_sci.h	2014-12-17 17:52:55.000000000 +0900
+@@ -59,6 +59,7 @@
+ #define SCSPTR_RTSIO	(1 << 7)	/* Serial Port RTS Pin Input/Output */
+ #define SCSPTR_RTSDT	(1 << 6)	/* Serial Port RTS Pin Data */
+ #define SCSPTR_CTSIO	(1 << 5)	/* Serial Port CTS Pin Input/Output */
++#define SCSPTR_CTSDT	(1 << 4)	/* Serial Port CTS Pin Data */
+ #define SCSPTR_SPB2IO	(1 << 1)	/* Serial Port Break Input/Output */
+ #define SCSPTR_SPB2DT	(1 << 0)	/* Serial Port Break Data */
+ 
