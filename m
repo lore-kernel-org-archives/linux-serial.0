@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH 03/05] serial: sh-sci: Expose default CTS pin
-Date: Wed, 17 Dec 2014 21:53:05 +0900
-Message-ID: <20141217125305.14480.3038.sendpatchset@w520>
+Subject: [PATCH 04/05] serial: sh-sci: Add SCIFA/SCIFB CTS/RTS pin setup
+Date: Wed, 17 Dec 2014 21:53:15 +0900
+Message-ID: <20141217125315.14480.15475.sendpatchset@w520>
 References: <20141217125236.14480.78833.sendpatchset@w520>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20141217125236.14480.78833.sendpatchset@w520>
@@ -12,64 +12,177 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Magnus Damm <damm+renesas@opensource.se>
 
-Expose the CTS pin to the ->get_mctrl() callback for the
-default case. Without this patch the serial core can not
-retrieve the CTS pin state from the SCIF driver.
+Add SCIFA/SCIFB pin setup code for CTS/RTS pins to handle
+both cases of hardware flow control enabled or disabled.
 
 Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
 
- drivers/tty/serial/sh-sci.c |   20 +++++++++++++++++++-
- include/linux/serial_sci.h  |    1 +
- 2 files changed, 20 insertions(+), 1 deletion(-)
+ drivers/tty/serial/sh-sci.c |   60 ++++++++++++++++++++++++++++++++++++++++++-
+ include/linux/serial_sci.h  |    2 +
+ 2 files changed, 61 insertions(+), 1 deletion(-)
 
---- 0021/drivers/tty/serial/sh-sci.c
-+++ work/drivers/tty/serial/sh-sci.c	2014-12-17 18:44:31.000000000 +0900
-@@ -509,6 +509,17 @@ static void sci_poll_put_char(struct uar
- }
- #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE */
+--- 0006/drivers/tty/serial/sh-sci.c
++++ work/drivers/tty/serial/sh-sci.c	2014-12-16 16:10:18.000000000 +0900
+@@ -168,6 +168,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
  
-+static bool sci_cts_asserted_default(struct uart_port *port)
+ 	/*
+@@ -188,6 +190,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -207,6 +211,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= { 0x30, 16 },
++		[SCPDR]		= { 0x34, 16 },
+ 	},
+ 
+ 	/*
+@@ -226,6 +232,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= { 0x30, 16 },
++		[SCPDR]		= { 0x34, 16 },
+ 	},
+ 
+ 	/*
+@@ -246,6 +254,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= { 0x20, 16 },
+ 		[SCLSR]		= { 0x24, 16 },
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -265,6 +275,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -284,6 +296,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= { 0x20, 16 },
+ 		[SCLSR]		= { 0x24, 16 },
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -303,6 +317,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= { 0x20, 16 },
+ 		[SCLSR]		= { 0x24, 16 },
+ 		[HSSRR]		= { 0x40, 16 },
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -323,6 +339,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= { 0x24, 16 },
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -343,6 +361,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= { 0x24, 16 },
+ 		[SCLSR]		= { 0x28, 16 },
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -363,6 +383,8 @@ static struct plat_sci_reg sci_regmap[SC
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ };
+ 
+@@ -542,6 +564,34 @@ static void sci_init_pins_default(struct
+ 	serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
+ }
+ 
++static void sci_init_pins_scifab(struct uart_port *port, bool hwflow_enabled)
 +{
-+	struct sci_port *s = to_sci_port(port);
-+	struct plat_sci_reg *reg = sci_regmap[s->cfg->regtype] + SCSPTR;
++	unsigned short control, data;
 +
-+	if (reg->size)
-+		return !(serial_port_in(port, SCSPTR) & SCSPTR_CTSDT);
++	/* SCIFA/SCIFB CTS/RTS pin configuration depends on user space.
++	 *
++	 * In case of CTS - (SCPDR.CTSD is always accessible):
++	 * - Hardware flow control enabled: "CTS pin function"
++	 * - Hardware flow control disabled: "Input port"
++	 *
++	 * In case of RTS:
++	 * - Hardware flow control enabled: "RTS pin function"
++	 * - Hardware flow control disabled: "Output port" with value 1
++	 */
++	control = serial_port_in(port, SCPCR);
++	data = serial_port_in(port, SCPDR);
 +
-+	return false;
++	if (hwflow_enabled) {
++		control &= ~(BIT(4) | BIT(3));
++	} else {
++		control |= BIT(4) | BIT(3);
++		data |= BIT(4);
++	}
++
++	serial_port_out(port, SCPDR, data);
++	serial_port_out(port, SCPCR, control);
 +}
 +
- static void sci_init_pins_default(struct uart_port *port, bool hwflow_enabled)
+ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
  {
  	struct sci_port *s = to_sci_port(port);
-@@ -1227,11 +1238,18 @@ static void sci_set_mctrl(struct uart_po
+@@ -568,7 +618,15 @@ static void sci_init_pins(struct uart_po
+ 	if (!(s->cfg->capabilities & SCIx_HAVE_RTSCTS))
+ 		return;
  
- static unsigned int sci_get_mctrl(struct uart_port *port)
- {
-+	struct sci_port *s = to_sci_port(port);
-+	bool cts_asserted = false;
+-	sci_init_pins_default(port, hwflow_enabled);
++	switch (s->cfg->type) {
++	case PORT_SCIFA:
++	case PORT_SCIFB:
++		sci_init_pins_scifab(port, hwflow_enabled);
++		break;
++	default:
++		sci_init_pins_default(port, hwflow_enabled);
++	}
 +
- 	/*
- 	 * CTS/RTS is handled in hardware when supported, while nothing
- 	 * else is wired up. Keep it simple and simply assert DSR/CAR.
- 	 */
--	return TIOCM_DSR | TIOCM_CAR;
-+
-+	if (s->cfg->capabilities & SCIx_HAVE_RTSCTS)
-+		cts_asserted = sci_cts_asserted_default(port);
-+
-+	return TIOCM_DSR | TIOCM_CAR | (cts_asserted ? TIOCM_CTS : 0);
  }
  
- #ifdef CONFIG_SERIAL_SH_SCI_DMA
---- 0021/include/linux/serial_sci.h
-+++ work/include/linux/serial_sci.h	2014-12-17 17:52:55.000000000 +0900
-@@ -59,6 +59,7 @@
- #define SCSPTR_RTSIO	(1 << 7)	/* Serial Port RTS Pin Input/Output */
- #define SCSPTR_RTSDT	(1 << 6)	/* Serial Port RTS Pin Data */
- #define SCSPTR_CTSIO	(1 << 5)	/* Serial Port CTS Pin Input/Output */
-+#define SCSPTR_CTSDT	(1 << 4)	/* Serial Port CTS Pin Data */
- #define SCSPTR_SPB2IO	(1 << 1)	/* Serial Port Break Input/Output */
- #define SCSPTR_SPB2DT	(1 << 0)	/* Serial Port Break Data */
+ static int sci_txfill(struct uart_port *port)
+--- 0006/include/linux/serial_sci.h
++++ work/include/linux/serial_sci.h	2014-12-16 16:10:18.000000000 +0900
+@@ -102,6 +102,8 @@ enum {
+ 	SCRFDR,				/* Receive FIFO Data Count Register */
+ 	SCSPTR,				/* Serial Port Register */
+ 	HSSRR,				/* Sampling Rate Register */
++	SCPCR,				/* Serial Port Control Register */
++	SCPDR,				/* Serial Port Data Register */
  
+ 	SCIx_NR_REGS,
+ };
