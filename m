@@ -1,55 +1,41 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH 05/05] serial: sh-sci: Expose SCIFA/SCIFB CTS pin
-Date: Wed, 17 Dec 2014 21:53:25 +0900
-Message-ID: <20141217125325.14480.79285.sendpatchset@w520>
-References: <20141217125236.14480.78833.sendpatchset@w520>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20141217125236.14480.78833.sendpatchset@w520>
-Sender: linux-sh-owner@vger.kernel.org
-To: linux-sh@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, Magnus Damm <magnus.damm@gmail.com>, jslaby@suse.cz, linux-serial@vger.kernel.org
+From: Eddie Huang <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH 2/2] arm64: dts: Add mediatek MT8173 earlycon support
+Date: Thu, 18 Dec 2014 16:33:21 +0800
+Message-ID: <1418891601-53769-3-git-send-email-eddie.huang@mediatek.com>
+References: <1418891601-53769-1-git-send-email-eddie.huang@mediatek.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1418891601-53769-1-git-send-email-eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Eddie Huang <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yh.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Magnus Damm <damm+renesas@opensource.se>
+Add earlycon support to mediatek MT8173 evaluation board dts.
 
-Expose CTS pin to serial core for the SCIFA/SCIFB case.
-
-Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+Signed-off-by: Eddie Huang <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
+ arch/arm64/boot/dts/mt8173-evb.dts | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- drivers/tty/serial/sh-sci.c |   17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+diff --git a/arch/arm64/boot/dts/mt8173-evb.dts b/arch/arm64/boot/dts/mt8173-evb.dts
+index b8b2621..b8802fd 100644
+--- a/arch/arm64/boot/dts/mt8173-evb.dts
++++ b/arch/arm64/boot/dts/mt8173-evb.dts
+@@ -30,5 +30,7 @@
+ 		reg = <0 0x40000000 0 0x80000000>;
+ 	};
+ 
+-	chosen { };
++	chosen {
++		linux,stdout-path = &uart0;
++	};
+ };
+-- 
+1.8.1.1.dirty
 
---- 0023/drivers/tty/serial/sh-sci.c
-+++ work/drivers/tty/serial/sh-sci.c	2014-12-17 18:46:44.000000000 +0900
-@@ -564,6 +564,11 @@ static void sci_init_pins_default(struct
- 	serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
- }
- 
-+static bool sci_cts_asserted_scifab(struct uart_port *port)
-+{
-+	return !(serial_port_in(port, SCPDR) & BIT(3));
-+}
-+
- static void sci_init_pins_scifab(struct uart_port *port, bool hwflow_enabled)
- {
- 	unsigned short control, data;
-@@ -1304,8 +1309,16 @@ static unsigned int sci_get_mctrl(struct
- 	 * else is wired up. Keep it simple and simply assert DSR/CAR.
- 	 */
- 
--	if (s->cfg->capabilities & SCIx_HAVE_RTSCTS)
--		cts_asserted = sci_cts_asserted_default(port);
-+ 	if (s->cfg->capabilities & SCIx_HAVE_RTSCTS) {
-+		switch (s->cfg->type) {
-+		case PORT_SCIFA:
-+		case PORT_SCIFB:
-+			cts_asserted = sci_cts_asserted_scifab(port);
-+			break;
-+		default:
-+			cts_asserted = sci_cts_asserted_default(port);
-+		}
-+ 	}
- 
- 	return TIOCM_DSR | TIOCM_CAR | (cts_asserted ? TIOCM_CTS : 0);
- }
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
