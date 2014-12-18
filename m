@@ -1,11 +1,14 @@
 From: Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH 0/3] UART driver for Conexat Digicolor SoCs
-Date: Thu, 18 Dec 2014 21:45:22 +0200
-Message-ID: <cover.1418930377.git.baruch@tkos.co.il>
+Subject: [PATCH 3/3] serial: add device tree binding documentation for
+ Conexant USART
+Date: Thu, 18 Dec 2014 21:45:25 +0200
+Message-ID: <71eb6f2f64c6965e38b29c7463b7edb4966142ad.1418930377.git.baruch@tkos.co.il>
+References: <cover.1418930377.git.baruch@tkos.co.il>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <cover.1418930377.git.baruch@tkos.co.il>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,30 +22,44 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel
 Cc: devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This set of patches adds a driver for the peripheral known as USART of the
-Conexant CX92755 SoC. The CX92755 is one an ARM based SoC series known as
-Digicolor. USART apparently stands for Universal Synchronous/Asynchronous
-Receiver/Transmitter. Besides plain UART, the USART can also do SPI and
-I2S. Here we only add a UART driver, others may follow later.
-
-CX92755 is based on Cortex-A8. I plan to post ARM basic platform support code
-(along with clocksource and interrupt controller drivers) in the coming few
-days.
-
-Baruch Siach (3):
-  devicetree: bindings: add Conexant vendor prefix
-  serial: driver for Conexant Digicolor USART
-  serial: add device tree binding documentation for Conexant USART
-
- .../devicetree/bindings/serial/digicolor-usart.txt |  27 +
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/tty/serial/Kconfig                         |  15 +
- drivers/tty/serial/Makefile                        |   1 +
- drivers/tty/serial/digicolor-usart.c               | 563 +++++++++++++++++++++
- include/uapi/linux/serial_core.h                   |   3 +
- 6 files changed, 610 insertions(+)
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ .../devicetree/bindings/serial/digicolor-usart.txt | 27 ++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/serial/digicolor-usart.txt
- create mode 100644 drivers/tty/serial/digicolor-usart.c
 
+diff --git a/Documentation/devicetree/bindings/serial/digicolor-usart.txt b/Documentation/devicetree/bindings/serial/digicolor-usart.txt
+new file mode 100644
+index 000000000000..2d3ede66889d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/digicolor-usart.txt
+@@ -0,0 +1,27 @@
++Binding for Conexant Digicolor USART
++
++Note: this binding is only applicable for using the USART peripheral as
++UART. USART also support synchronous serial protocols like SPI and I2S. Use
++the binding that matches the wiring of your system.
++
++Required properties:
++- compatible : should be "cnxt,cx92755-usart".
++- reg: Should contain USART controller registers location and length.
++- interrupts: Should contain a single USART controller interrupt.
++- clocks: Must contain phandles to the USART clock
++  See ../clocks/clock-bindings.txt for details.
++
++Note: Each UART port should have an alias correctly numbered
++in "aliases" node.
++
++Example:
++	aliases {
++		serial0 = &uart0;
++	};
++
++	uart0: uart@f0000740 {
++		compatible = "cnxt,cx92755-usart";
++		reg = <0xf0000740 0x20>;
++		clocks = <&main_clk>;
++		interrupts = <44>;
++	};
 -- 
 2.1.3
