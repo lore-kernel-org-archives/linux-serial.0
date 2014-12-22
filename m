@@ -1,38 +1,36 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: [PATCH 20/28] tty: serial: 8250: drop owner assignment from platform_drivers
-Date: Sun, 21 Dec 2014 22:14:41 +0100
-Message-ID: <1419196495-9626-21-git-send-email-wsa@the-dreams.de>
-References: <1419196495-9626-1-git-send-email-wsa@the-dreams.de>
+From: Pramod Gurav <pramod.gurav@smartplayin.com>
+Subject: [PATCH] tty: serial: msm_serial: Remove duplicate call to msm_set_baud_rate
+Date: Mon, 22 Dec 2014 20:14:20 +0530
+Message-ID: <1419259460-24142-1-git-send-email-pramod.gurav@smartplayin.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1419196495-9626-1-git-send-email-wsa@the-dreams.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Wolfram Sang <wsa@the-dreams.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pramod Gurav <pramod.gurav@smartplayin.com>
 List-Id: linux-serial@vger.kernel.org
 
-This platform_driver does not need to set an owner, it will be populated by the
-driver core.
+The function 'msm_set_baud_rate' is called twice while setting up
+msm console. Once in msm_console_setup and next when uart_set_options
+calls port->ops->set_termios ie. msm_set_termios().
 
-Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+Remove the duplicate call in msm_console_setup. Tested on IFC6410
+console.
+
+Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
 ---
-Generated with coccinelle. SmPL file is in the introductory msg. The big
-cleanup was pulled in this merge window. This series catches the bits fallen
-through. The patches shall go in via the subsystem trees.
-
- drivers/tty/serial/8250/8250_omap.c | 1 -
+ drivers/tty/serial/msm_serial.c |    1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 96b69bfd773f..c59e86654834 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1269,7 +1269,6 @@ static struct platform_driver omap8250_platform_driver = {
- 		.name		= "omap8250",
- 		.pm		= &omap8250_dev_pm_ops,
- 		.of_match_table = omap8250_dt_ids,
--		.owner		= THIS_MODULE,
- 	},
- 	.probe			= omap8250_probe,
- 	.remove			= omap8250_remove,
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index dbc278d..4c4a250 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -945,7 +945,6 @@ static int __init msm_console_setup(struct console *co, char *options)
+ 
+ 	if (baud < 300 || baud > 115200)
+ 		baud = 115200;
+-	msm_set_baud_rate(port, baud);
+ 
+ 	msm_reset(port);
+ 
 -- 
-2.1.3
+1.7.9.5
