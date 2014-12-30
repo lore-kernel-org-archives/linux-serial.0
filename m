@@ -1,42 +1,50 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] tty: Remove warning in tty_lock_slave()
-Date: Tue, 30 Dec 2014 07:11:11 -0500
-Message-ID: <1419941471-5466-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH] Revert "tty: Fix pty master poll() after slave closes v2"
+Date: Tue, 30 Dec 2014 07:17:09 -0500
+Message-ID: <1419941829-6536-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Dan Carpenter <dan.carpenter@oracle.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Francesco Ruggeri <fruggeri@aristanetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Francesco Ruggeri <fruggeri@arista.com>
 List-Id: linux-serial@vger.kernel.org
 
-Commit 2aff5e2bc62db43e05c814461a08aff0fc2b7fe5 ('tty: Change
-tty lock order to master->slave') added a warning which is broken
-and unnecessary now that the tty lock has fixed lock subclasses,
-added in commit 2febdb632bb96235b94b8fccaf882a78f8f4b2bb
-('tty: Preset lock subclass for nested tty locks').
+This reverts commit c4dc304677e8d566572c4738d95c48be150c6606.
+This fix is superseded by commit 52bce7f8d4fc633c9a9d0646eef58ba6ae9a3b73,
+'pty, n_tty: Simplify input processing on final close'.
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+The final close now waits for input processing to complete before
+destroying the pty, so poll() does not need to special case this
+condition.
+
+Cc: Francesco Ruggeri <fruggeri@arista.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_mutex.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/tty/n_tty.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/tty_mutex.c b/drivers/tty/tty_mutex.c
-index 4486741..a872389 100644
---- a/drivers/tty/tty_mutex.c
-+++ b/drivers/tty/tty_mutex.c
-@@ -46,12 +46,8 @@ EXPORT_SYMBOL(tty_unlock);
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index a618b10..d2dc10f 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -2399,17 +2399,12 @@ static unsigned int n_tty_poll(struct tty_struct *tty, struct file *file,
  
- void __lockfunc tty_lock_slave(struct tty_struct *tty)
- {
--	if (tty && tty != tty->link) {
--		WARN_ON(!mutex_is_locked(&tty->link->legacy_mutex) ||
--			!tty->driver->type == TTY_DRIVER_TYPE_PTY ||
--			!tty->driver->type == PTY_TYPE_SLAVE);
-+	if (tty && tty != tty->link)
- 		tty_lock(tty);
+ 	poll_wait(file, &tty->read_wait, wait);
+ 	poll_wait(file, &tty->write_wait, wait);
+-	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
+-		mask |= POLLHUP;
+ 	if (input_available_p(tty, 1))
+ 		mask |= POLLIN | POLLRDNORM;
+-	else if (mask & POLLHUP) {
+-		tty_flush_to_ldisc(tty);
+-		if (input_available_p(tty, 1))
+-			mask |= POLLIN | POLLRDNORM;
 -	}
- }
- 
- void __lockfunc tty_unlock_slave(struct tty_struct *tty)
+ 	if (tty->packet && tty->link->ctrl_status)
+ 		mask |= POLLPRI | POLLIN | POLLRDNORM;
++	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
++		mask |= POLLHUP;
+ 	if (tty_hung_up_p(file))
+ 		mask |= POLLHUP;
+ 	if (!(mask & (POLLHUP | POLLIN | POLLRDNORM))) {
 -- 
 2.2.1
