@@ -1,55 +1,103 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH] tty: serial: msm_serial: Remove duplicate call to msm_set_baud_rate
-Date: Mon, 29 Dec 2014 16:43:31 -0800
-Message-ID: <54A1F533.8040208@codeaurora.org>
-References: <1419259460-24142-1-git-send-email-pramod.gurav@smartplayin.com>
+From: Vijay Rai <vijay.rai@freescale.com>
+Subject: [PATCH] tty: 8250: Add 64byte UART support for FSL platforms
+Date: Tue, 30 Dec 2014 15:08:08 +0530
+Message-ID: <1419932288-17562-1-git-send-email-vijay.rai@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1419259460-24142-1-git-send-email-pramod.gurav@smartplayin.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Pramod Gurav <pramod.gurav@smartplayin.com>
-Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc: Vijay Rai <vijay.rai@freescale.com>, Priyanka Jain <Priyanka.Jain@freescale.com>, Poonam Aggrwal <poonam.aggrwal@freescale.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/22/2014 6:44 AM, Pramod Gurav wrote:
-> The function 'msm_set_baud_rate' is called twice while setting up
-> msm console. Once in msm_console_setup and next when uart_set_options
-> calls port->ops->set_termios ie. msm_set_termios().
->
-> Remove the duplicate call in msm_console_setup. Tested on IFC6410
-> console.
->
-> Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
-> ---
->  drivers/tty/serial/msm_serial.c |    1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index dbc278d..4c4a250 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -945,7 +945,6 @@ static int __init msm_console_setup(struct console *co, char *options)
->  
->  	if (baud < 300 || baud > 115200)
->  		baud = 115200;
-> -	msm_set_baud_rate(port, baud);
->  
->  	msm_reset(port);
->  
+Some of FSL SoCs like T1040 has new version of UART controller which
+can support 64byte FiFo.
+To enable 64 byte support, following needs to be done:
+-FCR[EN64] needs to be programmed to 1 to enable it.
+-Also, when FCR[EN64]==1, RTL bits to be used as below
+to define various Receive Trigger Levels:
+        -FCR[RTL] = 00  1 byte
+        -FCR[RTL] = 01  16 bytes
+        -FCR[RTL] = 10  32 bytes
+        -FCR[RTL] = 11  56 bytes
+-tx_loadsz is set to 32-bytes instead of 64-bytes to implement
+ workaround of errata A-008006 which states that tx_loadsz should
+ be configured less than Maximum supported fifo bytes
 
-There seems to be more stuff done in this console setup path that is
-duplicated by the msm_set_termios() function. Can we clean it all up? I
-would bet that the msm_reset() is there because we changed the buad rate
-and so if we remove the baud rate setting we can remove the reset as
-well (see commit a12f1b406f2d tty: serial: msm: Reset uartdm after baud
-rate change, 2014-10-29). We might as well dump the
-CR_CMD_PROTECTION_EN  and CR_TX_ENABLE thing as well given that we do
-the same in msm_set_baud_rate() already. And maybe we can even get rid
-of the baud rate capping and forced 8N1 setting that goes on here too.
-Just let the user do what they want?
+Signed-off-by: Vijay Rai <vijay.rai@freescale.com>
+Signed-off-by: Priyanka Jain <Priyanka.Jain@freescale.com>
+Signed-off-by: Poonam Aggrwal <poonam.aggrwal@freescale.com>
+---
+ drivers/tty/serial/8250/8250_core.c |   20 +++++++++++++++++++-
+ include/uapi/linux/serial_core.h    |    3 ++-
+ include/uapi/linux/serial_reg.h     |    3 ++-
+ 3 files changed, 23 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 11c6685..565748c 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -329,6 +329,14 @@ static const struct serial8250_config uart_config[] = {
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
+ 	},
++	[PORT_16550A_FSL64] = {
++		.name		= "16550A_FSL64",
++		.fifo_size	= 64,
++		.tx_loadsz	= 32,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
++				  UART_FCR7_64BYTE,
++		.flags		= UART_CAP_FIFO,
++	},
+ };
+ 
+ /* Uart divisor latch read */
+@@ -956,7 +964,17 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+ 			up->port.type = PORT_16650;
+ 			up->capabilities |= UART_CAP_EFR | UART_CAP_SLEEP;
+ 		} else {
+-			DEBUG_AUTOCONF("Motorola 8xxx DUART ");
++			serial_out(up, UART_LCR, 0);
++			serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO |
++				   UART_FCR7_64BYTE);
++			status1 = serial_in(up, UART_IIR) >> 5;
++			serial_out(up, UART_FCR, 0);
++			serial_out(up, UART_LCR, 0);
++
++			if (status1 == 7)
++				up->port.type = PORT_16550A_FSL64;
++			else
++				DEBUG_AUTOCONF("Motorola 8xxx DUART ");
+ 		}
+ 		serial_out(up, UART_EFR, 0);
+ 		return;
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index c172180..a3b4491 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -55,7 +55,8 @@
+ #define PORT_ALTR_16550_F64 27	/* Altera 16550 UART with 64 FIFOs */
+ #define PORT_ALTR_16550_F128 28 /* Altera 16550 UART with 128 FIFOs */
+ #define PORT_RT2880	29	/* Ralink RT2880 internal UART */
+-#define PORT_MAX_8250	29	/* max port ID */
++#define PORT_16550A_FSL64 30	/* Freescale 16550 UART with 64 FIFOs */
++#define PORT_MAX_8250	31	/* max port ID */
+ 
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index 53af3b7..00adb01 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -86,7 +86,8 @@
+ #define UART_FCR6_T_TRIGGER_8	0x10 /* Mask for transmit trigger set at 8 */
+ #define UART_FCR6_T_TRIGGER_24  0x20 /* Mask for transmit trigger set at 24 */
+ #define UART_FCR6_T_TRIGGER_30	0x30 /* Mask for transmit trigger set at 30 */
+-#define UART_FCR7_64BYTE	0x20 /* Go into 64 byte mode (TI16C750) */
++#define UART_FCR7_64BYTE	0x20 /* Go into 64 byte mode (TI16C750 and
++					some Freescale UARTs) */
+ 
+ #define UART_FCR_R_TRIG_SHIFT		6
+ #define UART_FCR_R_TRIG_BITS(x)		\
 -- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+1.7.9.5
