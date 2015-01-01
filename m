@@ -1,84 +1,129 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: USB-serial console and lockdep
-Date: Wed, 31 Dec 2014 21:07:59 -0500
-Message-ID: <54A4ABFF.5000304@hurleysoftware.com>
-References: <20141118161833.GA22786@localhost>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: serial console problem with kernel 3.18.0-rc4
+Date: Wed, 31 Dec 2014 23:56:40 -0500
+Message-ID: <54A4D388.7040008@hurleysoftware.com>
+References: <54625FCD.3070008@gmx.de> <1420076022.2085.12.camel@HansenPartnership.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20141118161833.GA22786@localhost>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <1420076022.2085.12.camel@HansenPartnership.com>
+Sender: linux-parisc-owner@vger.kernel.org
+To: James Bottomley <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>
+Cc: linux-serial@vger.kernel.org, linux-parisc <linux-parisc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Johan,
+On 12/31/2014 08:33 PM, James Bottomley wrote:
+> On Tue, 2014-11-11 at 20:13 +0100, Helge Deller wrote:
+>> While testing kernel 3.18-rc4 I'm facing a problem with serial console.
+>>
+>> I'm seeing at bootup this message:
+>> [   17.724000] console [ttyS0] disabled
+>> after that it's just hanging.
+>>
+>> It seems as if ttyS0 is somehow being reprogrammed which then disturbs the
+>> serial ports on the receiver side (in my case a HP PCI Diva Serial [GSP] Multiport UART).
+>> Any idea what changed between 3.17 and 3.18 which have caused this behavior ?
+>> Full log below.
+>>
+>> Helge
 
-On 11/18/2014 11:18 AM, Johan Hovold wrote:
-> I get this missing-lockdep-annotation warning which I haven't seen
-> before when booting with a usb-serial console on 3.18-rc5. It's been a
-> while since I last tested this, though, and the tty_ldisc_ref wasn't
-> introduced until 833efc0ed19c ("USB: serial: invoke dcd_change ldisc's
-> handler.").
+I apologize that I did not see this email back in November; I was having some
+email trouble at the time.
 
-Sorry it took me so long to finally look at this -- at least I'm looking
-at it in the same year ;)  (in my tzone anyway)
+>> serial driver: drivers/tty/serial/8250/8250_pci.c
+>>
+>> PCI info:
+>> 00:04.1 Serial controller: Hewlett-Packard Company Diva Serial [GSP] Multiport UART (rev 03) (prog-if 02 [16550])
+>>          Subsystem: Hewlett-Packard Company Device 1283
+>>          Flags: medium devsel, IRQ 70
+>>          Memory at ffffffff80000000 (32-bit, non-prefetchable) [size=4K]
+>>          I/O ports at 0040 [size=64]
+>>          Capabilities: [48] Power Management version 2
+>>          Kernel driver in use: serial
+>>
+>>
+>> dmesg after bootup:
+>>
+>> [   17.708000] Serial: 8250/16550 driver, 8 ports, IRQ sharing enabled
+>> [   17.724000] serial 0000:00:04.1: enabling device (0142 -> 0143)
+>> [   17.724000] console [ttyS0] disabled
+>> [   17.880000] serial 0000:00:04.1: ttyS0 at MMIO 0xffffffff80000000 (irq = 70, base_baud = 115200) is a 16550A
+>> [   17.996000] console [ttyS0] enabled
+>> [   38.888000] INFO: rcu_sched detected stalls on CPUs/tasks: { 3} (detected by 1, t=5252 jiffies, g=-290, c=-291, q=2)
+>> [   38.888000] Task dump for CPU 3:
+>> [   38.888000] swapper/0       R  running task        0     1      0 0x00000004
+>> [   38.888000] Backtrace:
+>> [   38.888000]  [<0000000040200848>] vprintk_emit+0x570/0x5f8
+>> [   38.888000]  [<0000000040200bdc>] printk+0x64/0x78
+>> [   38.888000]  [<0000000040201fc0>] register_console+0x438/0x550
+>> [   38.888000]  [<0000000040688bb8>] uart_add_one_port+0x400/0x5d0
+>> [   38.888000]  [<000000004068e6d4>] serial8250_register_8250_port+0x3e4/0x448
+>> [   38.888000]  [<0000000040695f44>] pciserial_init_ports+0x22c/0x2c8
+>> [   38.888000]  [<0000000040696628>] pciserial_init_one+0x250/0x2e0
+>> [   38.888000]  [<00000000405f3880>] pci_device_probe+0xb0/0x150
+>> [   38.888000]  [<00000000406a8244>] driver_probe_device+0x204/0x570
+>> [   38.888000]  [<00000000406a8728>] __driver_attach+0xe0/0x158
+>> [   38.888000]  [<00000000406a4558>] bus_for_each_dev+0xd0/0x128
+>> [   38.888000]  [<00000000406a76f8>] driver_attach+0x48/0x60
+>> [   38.888000]  [<00000000406a6de8>] bus_add_driver+0x268/0x460
+>> [   38.888000]  [<00000000406a915c>] driver_register+0x124/0x1d0
+>> [   38.888000]  [<00000000405f336c>] __pci_register_driver+0x64/0x78
+>> [   38.888000]  [<00000000401375e4>] serial_pci_driver_init+0x44/0x58
+>>
+>> [   59.084000] timer_interrupt(CPU 3): delayed! cycles 85EBC4C7D rem 2BAF83  next/now 2765C08677/276594D6F4
+>> [   59.140000] bootconsole [ttyB0] disabled
+>> [   59.144000] serial 0000:00:04.1: ttyS1 at MMIO 0xffffffff80000008 (irq = 70, base_baud = 115200) is a 16450
+>> [   59.164000] serial 0000:00:04.1: ttyS2 at MMIO 0xffffffff80000010 (irq = 70, base_baud = 115200) is a 16550A
+> 
+> I confirm this behaviour on the Mako system as well.  In my case, 3.18
+> so royally screws up the serial port that even a power cycle won't
+> recover the console connection to the MP (a sort of parisc equivalent of
+> a BMC) and I have to go down to the machine room to physically yank the
+> power from the system to power down the MP and get the console back.
+> I've added a cc to linux-serial.  It looks like there are 20 non merge
+> commits between 3.17 and 3.18.  I'm betting because of the MP problem
+> it's got to be somewhere in the serial driver:
+> 
+> cd92208 tty: serial: 8250_mtk: Fix quot calculation
+> 716e115 serial: 8250_pci: remove rts_n override from Baytrail quirk
+> 1ede7dc serial: 8250: Add Quark X1000 to 8250_pci.c
+> 9137568 tty: serial: 8250_core: remove UART_IER_RDI in
+> serial8250_stop_rx()
 
-Is this easily reproducible?
 
-Because for lockdep to be trying to register the ldsem lock class
-from the tty_ldisc_ref() means that no tty has yet been opened [see 1].
-So how did the call to tty_port_tty_get() in pl2303_update_line_status()
-return a tty?
-
-If you can easily reproduce this, I can supply you with a debug patch
-to find out what's going on.
+> 59b3e89 tty: serial: 8250_core: use the ->line argument as a hint in
+> serial8250_find_match_or_unused()
+^^^^^^^^^
+This commit would be my first guess, but a complete dmesg up to boot
+failure would be helpful in narrowing down the problem. There are about
+50 ways to initialize the 8250 port (which is part of the problem).
 
 Regards,
-Peter Hurley 
-
-> [   10.575225] usbserial: USB Serial support registered for pl2303
-> [   10.575561] pl2303 1-2.1:1.0: pl2303 converter detected
-> [   10.627563] usb 1-2.1: pl2303 converter now attached to ttyUSB0
-> [   10.650939] INFO: trying to register non-static key.
-> [   10.651000] the code is fine but needs lockdep annotation.
-> [   10.651000] turning off the locking correctness validator.
-> [   10.651031] CPU: 0 PID: 68 Comm: udevd Tainted: G        W      3.18.0-rc5 #10
-> [   10.651092] [<c0016f04>] (unwind_backtrace) from [<c0013978>] (show_stack+0x20/0x24)
-> [   10.651123] [<c0013978>] (show_stack) from [<c0449794>] (dump_stack+0x24/0x28)
-> [   10.651184] [<c0449794>] (dump_stack) from [<c006f730>] (__lock_acquire+0x1e50/0x2004)
-> [   10.651214] [<c006f730>] (__lock_acquire) from [<c0070128>] (lock_acquire+0xe4/0x18c)
-> [   10.651245] [<c0070128>] (lock_acquire) from [<c027c6f8>] (ldsem_down_read_trylock+0x78/0x90)
-> [   10.651275] [<c027c6f8>] (ldsem_down_read_trylock) from [<c027a1cc>] (tty_ldisc_ref+0x24/0x58)
-> [   10.651306] [<c027a1cc>] (tty_ldisc_ref) from [<c0340760>] (usb_serial_handle_dcd_change+0x48/0xe8)
-> [   10.651367] [<c0340760>] (usb_serial_handle_dcd_change) from [<bf000484>] (pl2303_read_int_callback+0x210/0x220 [pl2303])
-> [   10.651428] [<bf000484>] (pl2303_read_int_callback [pl2303]) from [<c031624c>] (__usb_hcd_giveback_urb+0x80/0x140)
-> [   10.651458] [<c031624c>] (__usb_hcd_giveback_urb) from [<c0316fc0>] (usb_giveback_urb_bh+0x98/0xd4)
-> [   10.651489] [<c0316fc0>] (usb_giveback_urb_bh) from [<c0042e44>] (tasklet_hi_action+0x9c/0x108)
-> [   10.651519] [<c0042e44>] (tasklet_hi_action) from [<c0042380>] (__do_softirq+0x148/0x42c)
-> [   10.651550] [<c0042380>] (__do_softirq) from [<c00429cc>] (irq_exit+0xd8/0x114)
-> [   10.651580] [<c00429cc>] (irq_exit) from [<c007ae58>] (__handle_domain_irq+0x84/0xdc)
-> [   10.651611] [<c007ae58>] (__handle_domain_irq) from [<c000879c>] (omap_intc_handle_irq+0xd8/0xe0)
-> [   10.651641] [<c000879c>] (omap_intc_handle_irq) from [<c0014544>] (__irq_svc+0x44/0x7c)
-> [   10.651641] Exception stack(0xdf4e7f08 to 0xdf4e7f50)
-> [   10.651672] 7f00:                   debc0b80 df4e7f5c 00000000 00000000 debc0b80 be8da96c
-> [   10.651702] 7f20: 00000000 00000128 c000fc84 df4e6000 00000000 df4e7f94 00000004 df4e7f50
-> [   10.651702] 7f40: c038ebc0 c038d74c 600f0013 ffffffff
-> [   10.651733] [<c0014544>] (__irq_svc) from [<c038d74c>] (___sys_sendmsg.part.29+0x0/0x2e0)
-> [   10.651763] [<c038d74c>] (___sys_sendmsg.part.29) from [<c038ec08>] (SyS_sendmsg+0x18/0x1c)
-> [   10.651794] [<c038ec08>] (SyS_sendmsg) from [<c000fa00>] (ret_fast_syscall+0x0/0x48)
-> [   10.692871] console [ttyUSB0] enabled
+Peter Hurley
 
 
-[1] Call tree for registering the ldsem lock class
+> 0aa525d tty: serial: 8250_core: read only RX if there is something in
+> the FIFO
+> d74d5d1 tty: serial: 8250_core: add run time pm
+> 234abab tty: serial: 8250_core: allow to set ->throttle / ->unthrottle
+> callbacks
+> 2989708 serial: 8250_pci: Add PCI IDs for Intel Braswell
+> 9a1870c serial: 8250: don't use slave_id of dma_slave_config
+> b4756f4 tty: serial: 8250: Add Mediatek UART driver
+> 0b4af1d serial/8250_core: Add reference to uacess.h
+> b99b121 tty: serial: 8250_core: allow to overwrite & export
+> serial8250_startup()
+> ae14a79 tty: serial: 8250_core: provide a function to export
+> uart_8250_port
+> 5435d20 serial: 8250: Document serial8250_modem_status() locking
+> a6eec92 Revert "serial: uart: add hw flow control support configuration"
+> c10b739 serial: 8250_hp300: trivial: fix symbol name in #warning message
+> 28e3fb6 serial: Add support for Fintek F81216A LPC to 4 UART
+> e676253 serial/8250: Add support for RS485 IOCTLs
+> 91f9d33 module: make it possible to have unsafe, tainting module params
+> 
+> Bisecting is going to be a pain because of the physical power cycle
+> problem on a racked system.
 
-tty_open
-  tty_init_dev
-    alloc_tty_struct
-      init_ldsem (macro in include/linux/tty_ldisc.h)
-        * the static lock_class_key is expanded here *
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
