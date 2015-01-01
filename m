@@ -1,136 +1,105 @@
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
-Subject: Re: serial console problem with kernel 3.18.0-rc4
-Date: Thu, 01 Jan 2015 00:52:09 -0800
-Message-ID: <1420102329.2085.15.camel@HansenPartnership.com>
-References: <54625FCD.3070008@gmx.de>
-	 <1420076022.2085.12.camel@HansenPartnership.com>
-	 <54A4D388.7040008@hurleysoftware.com>
+From: Christian Riesch <christian.riesch@omicron.at>
+Subject: Re: [PATCH] n_tty: Fix unordered accesses to lockless read buffer
+Date: Thu, 1 Jan 2015 12:00:58 +0100
+Message-ID: <CABkLObqhqE7Y3eD2gUxmqb0etfvYcDYRnE=-i=-4j=4Ea6=F-w@mail.gmail.com>
+References: <1419941156-5303-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <54A4D388.7040008@hurleysoftware.com>
-Sender: linux-parisc-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1419941156-5303-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Helge Deller <deller@gmx.de>, linux-serial@vger.kernel.org, linux-parisc <linux-parisc@vger.kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2014-12-31 at 23:56 -0500, Peter Hurley wrote:
-> On 12/31/2014 08:33 PM, James Bottomley wrote:
-> > On Tue, 2014-11-11 at 20:13 +0100, Helge Deller wrote:
-> >> While testing kernel 3.18-rc4 I'm facing a problem with serial console.
-> >>
-> >> I'm seeing at bootup this message:
-> >> [   17.724000] console [ttyS0] disabled
-> >> after that it's just hanging.
-> >>
-> >> It seems as if ttyS0 is somehow being reprogrammed which then disturbs the
-> >> serial ports on the receiver side (in my case a HP PCI Diva Serial [GSP] Multiport UART).
-> >> Any idea what changed between 3.17 and 3.18 which have caused this behavior ?
-> >> Full log below.
-> >>
-> >> Helge
-> 
-> I apologize that I did not see this email back in November; I was having some
-> email trouble at the time.
-> 
-> >> serial driver: drivers/tty/serial/8250/8250_pci.c
-> >>
-> >> PCI info:
-> >> 00:04.1 Serial controller: Hewlett-Packard Company Diva Serial [GSP] Multiport UART (rev 03) (prog-if 02 [16550])
-> >>          Subsystem: Hewlett-Packard Company Device 1283
-> >>          Flags: medium devsel, IRQ 70
-> >>          Memory at ffffffff80000000 (32-bit, non-prefetchable) [size=4K]
-> >>          I/O ports at 0040 [size=64]
-> >>          Capabilities: [48] Power Management version 2
-> >>          Kernel driver in use: serial
-> >>
-> >>
-> >> dmesg after bootup:
-> >>
-> >> [   17.708000] Serial: 8250/16550 driver, 8 ports, IRQ sharing enabled
-> >> [   17.724000] serial 0000:00:04.1: enabling device (0142 -> 0143)
-> >> [   17.724000] console [ttyS0] disabled
-> >> [   17.880000] serial 0000:00:04.1: ttyS0 at MMIO 0xffffffff80000000 (irq = 70, base_baud = 115200) is a 16550A
-> >> [   17.996000] console [ttyS0] enabled
-> >> [   38.888000] INFO: rcu_sched detected stalls on CPUs/tasks: { 3} (detected by 1, t=5252 jiffies, g=-290, c=-291, q=2)
-> >> [   38.888000] Task dump for CPU 3:
-> >> [   38.888000] swapper/0       R  running task        0     1      0 0x00000004
-> >> [   38.888000] Backtrace:
-> >> [   38.888000]  [<0000000040200848>] vprintk_emit+0x570/0x5f8
-> >> [   38.888000]  [<0000000040200bdc>] printk+0x64/0x78
-> >> [   38.888000]  [<0000000040201fc0>] register_console+0x438/0x550
-> >> [   38.888000]  [<0000000040688bb8>] uart_add_one_port+0x400/0x5d0
-> >> [   38.888000]  [<000000004068e6d4>] serial8250_register_8250_port+0x3e4/0x448
-> >> [   38.888000]  [<0000000040695f44>] pciserial_init_ports+0x22c/0x2c8
-> >> [   38.888000]  [<0000000040696628>] pciserial_init_one+0x250/0x2e0
-> >> [   38.888000]  [<00000000405f3880>] pci_device_probe+0xb0/0x150
-> >> [   38.888000]  [<00000000406a8244>] driver_probe_device+0x204/0x570
-> >> [   38.888000]  [<00000000406a8728>] __driver_attach+0xe0/0x158
-> >> [   38.888000]  [<00000000406a4558>] bus_for_each_dev+0xd0/0x128
-> >> [   38.888000]  [<00000000406a76f8>] driver_attach+0x48/0x60
-> >> [   38.888000]  [<00000000406a6de8>] bus_add_driver+0x268/0x460
-> >> [   38.888000]  [<00000000406a915c>] driver_register+0x124/0x1d0
-> >> [   38.888000]  [<00000000405f336c>] __pci_register_driver+0x64/0x78
-> >> [   38.888000]  [<00000000401375e4>] serial_pci_driver_init+0x44/0x58
-> >>
-> >> [   59.084000] timer_interrupt(CPU 3): delayed! cycles 85EBC4C7D rem 2BAF83  next/now 2765C08677/276594D6F4
-> >> [   59.140000] bootconsole [ttyB0] disabled
-> >> [   59.144000] serial 0000:00:04.1: ttyS1 at MMIO 0xffffffff80000008 (irq = 70, base_baud = 115200) is a 16450
-> >> [   59.164000] serial 0000:00:04.1: ttyS2 at MMIO 0xffffffff80000010 (irq = 70, base_baud = 115200) is a 16550A
-> > 
-> > I confirm this behaviour on the Mako system as well.  In my case, 3.18
-> > so royally screws up the serial port that even a power cycle won't
-> > recover the console connection to the MP (a sort of parisc equivalent of
-> > a BMC) and I have to go down to the machine room to physically yank the
-> > power from the system to power down the MP and get the console back.
-> > I've added a cc to linux-serial.  It looks like there are 20 non merge
-> > commits between 3.17 and 3.18.  I'm betting because of the MP problem
-> > it's got to be somewhere in the serial driver:
-> > 
-> > cd92208 tty: serial: 8250_mtk: Fix quot calculation
-> > 716e115 serial: 8250_pci: remove rts_n override from Baytrail quirk
-> > 1ede7dc serial: 8250: Add Quark X1000 to 8250_pci.c
-> > 9137568 tty: serial: 8250_core: remove UART_IER_RDI in
-> > serial8250_stop_rx()
-> 
-> 
-> > 59b3e89 tty: serial: 8250_core: use the ->line argument as a hint in
-> > serial8250_find_match_or_unused()
-> ^^^^^^^^^
-> This commit would be my first guess, but a complete dmesg up to boot
-> failure would be helpful in narrowing down the problem. There are about
-> 50 ways to initialize the 8250 port (which is part of the problem).
+Peter,
 
-Well, bisection says it's not this one.  Unfortunately, we crap out at
-this one:
+Thank you for this patch! Unfortunately I had not much time for this
+since my last patch submission, so I am happy that someone continued
+this work.
 
-ae14a79 tty: serial: 8250_core: provide a function to export
-uart_8250_port
+I have a few comments/questions, please see below.
 
-  CC      drivers/tty/serial/8250/8250_core.o
-drivers/tty/serial/8250/8250_core.c: In function 'serial8250_ioctl':
-drivers/tty/serial/8250/8250_core.c:2857: error: 'TIOCSRS485' undeclared
-(first use in this function)
-drivers/tty/serial/8250/8250_core.c:2857: error: (Each undeclared
-identifier is reported only once
-drivers/tty/serial/8250/8250_core.c:2857: error: for each function it
-appears in.)
-drivers/tty/serial/8250/8250_core.c:2858: error: implicit declaration of
-function 'copy_from_user'
-drivers/tty/serial/8250/8250_core.c:2869: error: 'TIOCGRS485' undeclared
-(first use in this function)
-drivers/tty/serial/8250/8250_core.c:2870: error: implicit declaration of
-function 'copy_to_user'
-make[4]: *** [drivers/tty/serial/8250/8250_core.o] Error 1
-make[3]: *** [drivers/tty/serial/8250] Error 2
-make[2]: *** [drivers/tty/serial] Error 2
-make[1]: *** [drivers/tty] Error 2
+On Tue, Dec 30, 2014 at 1:05 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> Add commit_head buffer index, which the producer-side publishes
+> after input processing. This ensures the consumer-side observes
+> correctly-ordered writes in raw mode
 
-I'll work out how to fix it in the morning ... but really, having a
-bisectable tree is supposed to be the first rule of a maintainer.
+I understand that the commit_head reduces the number of memory
+barriers and makes some things easier. But what is so special about
+raw mode that requires the introduction of commit_head?
 
-James
+> (ie., the buffer data is
+> written before the buffer index is advanced).
+>
+> Further, remove read_cnt() and expand inline, using ACCESS_ONCE()
 
+"ACCESS_ONCE() and memory barriers"?
 
+> on the relevant buffer index; read_tail from the producer-side
+> and canon_head/commit_head from the consumer-side, or both in shared
+> paths such as receive_room().
+>
+> Based on work by Christian Riesch <christian.riesch@omicron.at>
+>
+> NB: Exclusive access is still guaranteed with termios_rwsem write
+> lock, eg. by n_tty_set_termios() and in n_tty_ioctl(); in this
+> circumstance, commit_head is equivalent to read_head.
+>
+> Cc: Christian Riesch <christian.riesch@omicron.at>
+> Cc: <stable@vger.kernel.org> # v3.14.x (will need backport to v3.12.x)
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/n_tty.c | 80 ++++++++++++++++++++++++++---------------------------
+>  1 file changed, 40 insertions(+), 40 deletions(-)
+>
+> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> index d2b4967..a618b10 100644
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+> @@ -90,6 +90,7 @@
+>  struct n_tty_data {
+>         /* producer-published */
+>         size_t read_head;
+> +       size_t commit_head;     /* == read_head when not receiving */
+>         size_t canon_head;
+>         size_t echo_head;
+>         size_t echo_commit;
+> @@ -127,11 +128,6 @@ struct n_tty_data {
+>         struct mutex output_lock;
+>  };
+>
+> -static inline size_t read_cnt(struct n_tty_data *ldata)
+> -{
+> -       return ldata->read_head - ldata->read_tail;
+> -}
+> -
+>  static inline unsigned char read_buf(struct n_tty_data *ldata, size_t i)
+>  {
+>         return ldata->read_buf[i & (N_TTY_BUF_SIZE - 1)];
+> @@ -164,15 +160,17 @@ static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
+>  static int receive_room(struct tty_struct *tty)
+>  {
+>         struct n_tty_data *ldata = tty->disc_data;
+> +       size_t head = ACCESS_ONCE(ldata->commit_head);
+> +       size_t tail = ACCESS_ONCE(ldata->read_tail);
+>         int left;
+>
+>         if (I_PARMRK(tty)) {
+> -               /* Multiply read_cnt by 3, since each byte might take up to
+> +               /* Multiply count by 3, since each byte might take up to
+>                  * three times as many spaces when PARMRK is set (depending on
+>                  * its flags, e.g. parity error). */
+> -               left = N_TTY_BUF_SIZE - read_cnt(ldata) * 3 - 1;
+> +               left = N_TTY_BUF_SIZE - (head - tail) * 3 - 1;
+>         } else
+> -               left = N_TTY_BUF_SIZE - read_cnt(ldata) - 1;
+> +               left = N_TTY_BUF_SIZE - (head - tail) - 1;
 
+Actually, less room may be available, if read_head != commit_head.
+Could this cause problems? I guess yes, at least in
+n_tty_receive_buf_common, where this could lead to a buffer overflow,
+right?
+
+Best regards,
+Christian
