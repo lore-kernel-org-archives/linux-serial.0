@@ -1,68 +1,117 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] serial: omap_8250: Fix RTS handling, part B
-Date: Wed, 31 Dec 2014 16:32:49 -0500
-Message-ID: <1420061569-502-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-omap-owner@vger.kernel.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Felipe Balbi <balbi@ti.com>, Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
+Subject: Re: serial console problem with kernel 3.18.0-rc4
+Date: Wed, 31 Dec 2014 17:33:42 -0800
+Message-ID: <1420076022.2085.12.camel@HansenPartnership.com>
+References: <54625FCD.3070008@gmx.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <54625FCD.3070008@gmx.de>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Helge Deller <deller@gmx.de>
+Cc: linux-serial@vger.kernel.org, linux-parisc <linux-parisc@vger.kernel.org>linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Because the OMAP3 UART ignores MCR[1] (RTS) in autoRTS mode, autoRTS
-mode must not be enabled unless RTS is set (or port->mctrl & TIOCM_RTS,
-which is equivalent).
+On Tue, 2014-11-11 at 20:13 +0100, Helge Deller wrote:
+> While testing kernel 3.18-rc4 I'm facing a problem with serial console.
+> 
+> I'm seeing at bootup this message:
+> [   17.724000] console [ttyS0] disabled
+> after that it's just hanging.
+> 
+> It seems as if ttyS0 is somehow being reprogrammed which then disturbs the
+> serial ports on the receiver side (in my case a HP PCI Diva Serial [GSP] Multiport UART).
+> Any idea what changed between 3.17 and 3.18 which have caused this behavior ?
+> Full log below.
+> 
+> Helge
+> 
+> serial driver: drivers/tty/serial/8250/8250_pci.c
+> 
+> PCI info:
+> 00:04.1 Serial controller: Hewlett-Packard Company Diva Serial [GSP] Multiport UART (rev 03) (prog-if 02 [16550])
+>          Subsystem: Hewlett-Packard Company Device 1283
+>          Flags: medium devsel, IRQ 70
+>          Memory at ffffffff80000000 (32-bit, non-prefetchable) [size=4K]
+>          I/O ports at 0040 [size=64]
+>          Capabilities: [48] Power Management version 2
+>          Kernel driver in use: serial
+> 
+> 
+> dmesg after bootup:
+> 
+> [   17.708000] Serial: 8250/16550 driver, 8 ports, IRQ sharing enabled
+> [   17.724000] serial 0000:00:04.1: enabling device (0142 -> 0143)
+> [   17.724000] console [ttyS0] disabled
+> [   17.880000] serial 0000:00:04.1: ttyS0 at MMIO 0xffffffff80000000 (irq = 70, base_baud = 115200) is a 16550A
+> [   17.996000] console [ttyS0] enabled
+> [   38.888000] INFO: rcu_sched detected stalls on CPUs/tasks: { 3} (detected by 1, t=5252 jiffies, g=-290, c=-291, q=2)
+> [   38.888000] Task dump for CPU 3:
+> [   38.888000] swapper/0       R  running task        0     1      0 0x00000004
+> [   38.888000] Backtrace:
+> [   38.888000]  [<0000000040200848>] vprintk_emit+0x570/0x5f8
+> [   38.888000]  [<0000000040200bdc>] printk+0x64/0x78
+> [   38.888000]  [<0000000040201fc0>] register_console+0x438/0x550
+> [   38.888000]  [<0000000040688bb8>] uart_add_one_port+0x400/0x5d0
+> [   38.888000]  [<000000004068e6d4>] serial8250_register_8250_port+0x3e4/0x448
+> [   38.888000]  [<0000000040695f44>] pciserial_init_ports+0x22c/0x2c8
+> [   38.888000]  [<0000000040696628>] pciserial_init_one+0x250/0x2e0
+> [   38.888000]  [<00000000405f3880>] pci_device_probe+0xb0/0x150
+> [   38.888000]  [<00000000406a8244>] driver_probe_device+0x204/0x570
+> [   38.888000]  [<00000000406a8728>] __driver_attach+0xe0/0x158
+> [   38.888000]  [<00000000406a4558>] bus_for_each_dev+0xd0/0x128
+> [   38.888000]  [<00000000406a76f8>] driver_attach+0x48/0x60
+> [   38.888000]  [<00000000406a6de8>] bus_add_driver+0x268/0x460
+> [   38.888000]  [<00000000406a915c>] driver_register+0x124/0x1d0
+> [   38.888000]  [<00000000405f336c>] __pci_register_driver+0x64/0x78
+> [   38.888000]  [<00000000401375e4>] serial_pci_driver_init+0x44/0x58
+> 
+> [   59.084000] timer_interrupt(CPU 3): delayed! cycles 85EBC4C7D rem 2BAF83  next/now 2765C08677/276594D6F4
+> [   59.140000] bootconsole [ttyB0] disabled
+> [   59.144000] serial 0000:00:04.1: ttyS1 at MMIO 0xffffffff80000008 (irq = 70, base_baud = 115200) is a 16450
+> [   59.164000] serial 0000:00:04.1: ttyS2 at MMIO 0xffffffff80000010 (irq = 70, base_baud = 115200) is a 16550A
 
-Fixes premature raising of RTS in omap_8250_set_termios() -- RTS was
-raised even before UART mode was selected.
-Fixes raise of RTS after port has been shutdown; omap_8250_pm() re-enabled
-RTS after omap_8250_shutdown().
+I confirm this behaviour on the Mako system as well.  In my case, 3.18
+so royally screws up the serial port that even a power cycle won't
+recover the console connection to the MP (a sort of parisc equivalent of
+a BMC) and I have to go down to the machine room to physically yank the
+power from the system to power down the MP and get the console back.
+I've added a cc to linux-serial.  It looks like there are 20 non merge
+commits between 3.17 and 3.18.  I'm betting because of the MP problem
+it's got to be somewhere in the serial driver:
 
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/8250/8250_omap.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+cd92208 tty: serial: 8250_mtk: Fix quot calculation
+716e115 serial: 8250_pci: remove rts_n override from Baytrail quirk
+1ede7dc serial: 8250: Add Quark X1000 to 8250_pci.c
+9137568 tty: serial: 8250_core: remove UART_IER_RDI in
+serial8250_stop_rx()
+59b3e89 tty: serial: 8250_core: use the ->line argument as a hint in
+serial8250_find_match_or_unused()
+0aa525d tty: serial: 8250_core: read only RX if there is something in
+the FIFO
+d74d5d1 tty: serial: 8250_core: add run time pm
+234abab tty: serial: 8250_core: allow to set ->throttle / ->unthrottle
+callbacks
+2989708 serial: 8250_pci: Add PCI IDs for Intel Braswell
+9a1870c serial: 8250: don't use slave_id of dma_slave_config
+b4756f4 tty: serial: 8250: Add Mediatek UART driver
+0b4af1d serial/8250_core: Add reference to uacess.h
+b99b121 tty: serial: 8250_core: allow to overwrite & export
+serial8250_startup()
+ae14a79 tty: serial: 8250_core: provide a function to export
+uart_8250_port
+5435d20 serial: 8250: Document serial8250_modem_status() locking
+a6eec92 Revert "serial: uart: add hw flow control support configuration"
+c10b739 serial: 8250_hp300: trivial: fix symbol name in #warning message
+28e3fb6 serial: Add support for Fintek F81216A LPC to 4 UART
+e676253 serial/8250: Add support for RS485 IOCTLs
+91f9d33 module: make it possible to have unsafe, tainting module params
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 428f384..316c37b 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -272,7 +272,10 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
- 	serial_dl_write(up, priv->quot);
- 
--	serial_out(up, UART_EFR, priv->efr);
-+	if (up->port.mctrl & TIOCM_RTS)
-+		serial_out(up, UART_EFR, priv->efr);
-+	else
-+		serial_out(up, UART_EFR, priv->efr & ~UART_EFR_RTS);
- 
- 	/* Configure flow control */
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
-@@ -468,18 +471,18 @@ static void omap_8250_set_termios(struct uart_port *port,
- static void omap_8250_pm(struct uart_port *port, unsigned int state,
- 			 unsigned int oldstate)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
--	struct omap8250_priv *priv = up->port.private_data;
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+	u8 efr;
- 
- 	pm_runtime_get_sync(port->dev);
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
--	serial_out(up, UART_EFR, priv->efr | UART_EFR_ECB);
-+	efr = serial_in(up, UART_EFR);
-+	serial_out(up, UART_EFR, efr | UART_EFR_ECB);
- 	serial_out(up, UART_LCR, 0);
- 
- 	serial_out(up, UART_IER, (state != 0) ? UART_IERX_SLEEP : 0);
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
--	serial_out(up, UART_EFR, priv->efr);
-+	serial_out(up, UART_EFR, efr);
- 	serial_out(up, UART_LCR, 0);
- 
- 	pm_runtime_mark_last_busy(port->dev);
--- 
-2.2.1
+Bisecting is going to be a pain because of the physical power cycle
+problem on a racked system.
+
+James
+
+
 
