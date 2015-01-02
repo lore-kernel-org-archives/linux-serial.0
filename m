@@ -1,48 +1,43 @@
-From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 3/3] DTS: serial: Add bindings document for the Mediatek UARTs
-Date: Fri, 2 Jan 2015 11:24:06 +0100
-Message-ID: <CABuKBeL9r6Gm19fdKwx5HUDiyJKgC1xcLp1j1B9JbOa=c+3Epg@mail.gmail.com>
-References: <1413983529-21887-1-git-send-email-eddie.huang@mediatek.com>
-	<1413983529-21887-4-git-send-email-eddie.huang@mediatek.com>
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
+Subject: [PATCH] serial: fix parisc boot hang
+Date: Fri, 02 Jan 2015 10:05:13 -0800
+Message-ID: <1420221913.2072.7.camel@HansenPartnership.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1413983529-21887-4-git-send-email-eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Eddie Huang <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?B?WUggQ2hlbiAo6Zmz5pix6LGqKQ==?= <yh.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, HC Yen <hc.yen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Nathan Chung <nathan.chung-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+Sender: linux-parisc-owner@vger.kernel.org
+To: linux-parisc <linux-parisc@vger.kernel.org>, linux-serial@vger.kernel.org
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-2014-10-22 15:12 GMT+02:00 Eddie Huang <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>:
-> This patch add s devicetree document for Mediatek UART.
->
-> Signed-off-by: Eddie Huang <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/serial/mtk-uart.txt | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-> index 48358a3..0eebbfe 100644
-> --- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
-> +++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-> @@ -2,6 +2,8 @@
->
->  Required properties:
->  - compatible should contain:
-> +  * "mediatek,mt8135-uart" for MT8135 compatible UARTS
-> +  * "mediatek,mt8127-uart" for MT8127 compatible UARTS
->    * "mediatek,mt6589-uart" for MT6589 compatible UARTS
->    * "mediatek,mt6582-uart" for MT6582 compatible UARTS
->    * "mediatek,mt6577-uart" for all compatible UARTS (MT6589, MT6582, MT6577)
-> --
-> 1.8.1.1.dirty
->
+From: James Bottomley <JBottomley@Parallels.com>
 
-Applied to v3.20-next/dts, thanks.
+This is a partial revert of 2f2dafe (serial: serial_core.c: printk
+replacement) which gets us booting again.  The real problem seems to be
+the _emit path in early boot.  However, until we can root cause it, we
+need at least to get boot working.
 
--- 
-motzblog.wordpress.com
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Fixes: 2f2dafe77df2c78e189a9fa6b1879dffd06ae5a1
+Cc: stable@vger.kernel.org
+Signed-off-by: James Bottomley <JBottomley@Parallels.com>
+
+---
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 57ca61b..984605b 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2164,7 +2164,9 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+ 		break;
+ 	}
+ 
+-	dev_info(port->dev, "%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
++	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
++	       port->dev ? dev_name(port->dev) : "",
++	       port->dev ? ": " : "",
+ 	       drv->dev_name,
+ 	       drv->tty_driver->name_base + port->line,
+ 	       address, port->irq, port->uartclk / 16, uart_type(port));
+
+
