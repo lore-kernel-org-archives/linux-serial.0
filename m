@@ -1,43 +1,150 @@
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
-Subject: [PATCH] serial: fix parisc boot hang
-Date: Fri, 02 Jan 2015 10:05:13 -0800
-Message-ID: <1420221913.2072.7.camel@HansenPartnership.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 2/3] ARM: mediatek: add UART dts for mt8127 and mt8135
+Date: Fri, 2 Jan 2015 19:21:21 +0100
+Message-ID: <CABuKBe+WeL7AOP0U9dtujUVr=cO2EDmz8rBSnscC9_LpxB7+yg@mail.gmail.com>
+References: <1413983529-21887-1-git-send-email-eddie.huang@mediatek.com>
+	<1413983529-21887-3-git-send-email-eddie.huang@mediatek.com>
+	<CABuKBeJ-bBiJSbh9jKH1+T2MhKCjxnkryStrhG_kFX7HuBnevQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-Sender: linux-parisc-owner@vger.kernel.org
-To: linux-parisc <linux-parisc@vger.kernel.org>, linux-serial@vger.kernel.org
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CABuKBeJ-bBiJSbh9jKH1+T2MhKCjxnkryStrhG_kFX7HuBnevQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Eddie Huang <eddie.huang@mediatek.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, =?UTF-8?B?WUggQ2hlbiAo6Zmz5pix6LGqKQ==?= <yh.chen@mediatek.com>, HC Yen <hc.yen@mediatek.com>, Nathan Chung <nathan.chung@mediatek.com>, srv_heupstream <srv_heupstream@mediatek.com>, Sascha Hauer <kernel@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-From: James Bottomley <JBottomley@Parallels.com>
+2015-01-02 11:23 GMT+01:00 Matthias Brugger <matthias.bgg@gmail.com>:
+> 2014-10-22 15:12 GMT+02:00 Eddie Huang <eddie.huang@mediatek.com>:
+>> This add dts support for mt8127 and mt8135 SOC UART
+>>
+>> Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
+>> ---
+>>  arch/arm/boot/dts/mt8127.dtsi | 34 ++++++++++++++++++++++++++++++++++
+>>  arch/arm/boot/dts/mt8135.dtsi | 36 ++++++++++++++++++++++++++++++++++++
+>>  2 files changed, 70 insertions(+)
+>>
+>> diff --git a/arch/arm/boot/dts/mt8127.dtsi b/arch/arm/boot/dts/mt8127.dtsi
+>> index 25c9f69..249c218 100644
+>> --- a/arch/arm/boot/dts/mt8127.dtsi
+>> +++ b/arch/arm/boot/dts/mt8127.dtsi
+>> @@ -64,6 +64,12 @@
+>>                         clock-frequency = <32000>;
+>>                         #clock-cells = <0>;
+>>                 };
+>> +
+>> +               uart_clk: dummy26m {
+>> +                       compatible = "fixed-clock";
+>> +                       clock-frequency = <26000000>;
+>> +                       #clock-cells = <0>;
+>> +                };
+>>         };
+>>
+>>         soc {
+>> @@ -89,5 +95,33 @@
+>>                               <0 0x10214000 0 0x2000>,
+>>                               <0 0x10216000 0 0x2000>;
+>>                 };
+>> +
+>> +               uart0: serial@11006000 {
+>> +                       compatible = "mediatek,mt8127-uart","mediatek,mt6577-uart";
+>> +                       reg = <0 0x11002000 0 0x400>;
+>> +                       interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
+>> +                       clocks = <&uart_clk>;
+>> +               };
 
-This is a partial revert of 2f2dafe (serial: serial_core.c: printk
-replacement) which gets us booting again.  The real problem seems to be
-the _emit path in early boot.  However, until we can root cause it, we
-need at least to get boot working.
+I just realized that you forgot to disable the uart ports by default
+in the dtsi.
+I fixed that for you, but please send a patch enabling the necessary
+ports in the board dts file.
+It depends on the board which uarts will be enabled rather then on the SoC.
 
-Fixes: 2f2dafe77df2c78e189a9fa6b1879dffd06ae5a1
-Cc: stable@vger.kernel.org
-Signed-off-by: James Bottomley <JBottomley@Parallels.com>
+>> +
+>> +               uart1: serial@11007000 {
+>> +                       compatible = "mediatek,mt8127-uart","mediatek,mt6577-uart";
+>> +                       reg = <0 0x11003000 0 0x400>;
+>> +                       interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_LOW>;
+>> +                       clocks = <&uart_clk>;
+>> +               };
+>> +
+>> +               uart2: serial@11008000 {
+>> +                       compatible = "mediatek,mt8127-uart","mediatek,mt6577-uart";
+>> +                       reg = <0 0x11004000 0 0x400>;
+>> +                       interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
+>> +                       clocks = <&uart_clk>;
+>> +               };
+>> +
+>> +               uart3: serial@11009000 {
+>> +                       compatible = "mediatek,mt8127-uart","mediatek,mt6577-uart";
+>> +                       reg = <0 0x11005000 0 0x400>;
+>> +                       interrupts = <GIC_SPI 54 IRQ_TYPE_LEVEL_LOW>;
+>> +                       clocks = <&uart_clk>;
+>> +               };
+>>         };
+>>  };
+>> diff --git a/arch/arm/boot/dts/mt8135.dtsi b/arch/arm/boot/dts/mt8135.dtsi
+>> index 90a56ad..683b761 100644
+>> --- a/arch/arm/boot/dts/mt8135.dtsi
+>> +++ b/arch/arm/boot/dts/mt8135.dtsi
+>> @@ -86,6 +86,13 @@
+>>                         clock-frequency = <32000>;
+>>                         #clock-cells = <0>;
+>>                 };
+>> +
+>> +               uart_clk: dummy26m {
+>> +                       compatible = "fixed-clock";
+>> +                       clock-frequency = <26000000>;
+>> +                       #clock-cells = <0>;
+>> +               };
+>> +
+>>         };
+>>
+>>         soc {
+>> @@ -111,5 +118,34 @@
+>>                               <0 0x10214000 0 0x2000>,
+>>                               <0 0x10216000 0 0x2000>;
+>>                 };
+>> +
+>> +               uart0: serial@11006000 {
+>> +                       compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
+>> +                       reg = <0 0x11006000 0 0x400>;
+>> +                       interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
+>> +                       clocks = <&uart_clk>;
+>> +               };
+>> +
+>> +               uart1: serial@11007000 {
+>> +                       compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
+>> +                       reg = <0 0x11007000 0 0x400>;
+>> +                       interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_LOW>;
+>> +                       clocks = <&uart_clk>;
+>> +               };
+>> +
+>> +               uart2: serial@11008000 {
+>> +                       compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
+>> +                       reg = <0 0x11008000 0 0x400>;
+>> +                       interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
+>> +                       clocks = <&uart_clk>;
+>> +               };
+>> +
+>> +               uart3: serial@11009000 {
+>> +                       compatible = "mediatek,mt8135-uart","mediatek,mt6577-uart";
+>> +                       reg = <0 0x11009000 0 0x400>;
+>> +                       interrupts = <GIC_SPI 54 IRQ_TYPE_LEVEL_LOW>;
+>> +                       clocks = <&uart_clk>;
+>> +               };
+>> +
+>>         };
+>>  };
+>> --
+>> 1.8.1.1.dirty
+>>
+>
+> Applied to v3.20-next/dts, thanks.
+>
+> --
+> motzblog.wordpress.com
 
----
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 57ca61b..984605b 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2164,7 +2164,9 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
- 		break;
- 	}
- 
--	dev_info(port->dev, "%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
-+	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
-+	       port->dev ? dev_name(port->dev) : "",
-+	       port->dev ? ": " : "",
- 	       drv->dev_name,
- 	       drv->tty_driver->name_base + port->line,
- 	       address, port->irq, port->uartclk / 16, uart_type(port));
 
 
+-- 
+motzblog.wordpress.com
