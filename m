@@ -1,60 +1,76 @@
 From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: USB-serial console and lockdep
-Date: Sat, 3 Jan 2015 17:26:42 +0100
-Message-ID: <20150103162642.GC12203@localhost>
-References: <20141118161833.GA22786@localhost>
- <54A4ABFF.5000304@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [PATCH 1/2] USB: console: fix uninitialised ldisc semaphore
+Date: Sat,  3 Jan 2015 17:28:26 +0100
+Message-ID: <1420302507-18167-1-git-send-email-johan@kernel.org>
+References: <20150103162642.GC12203@localhost>
 Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <54A4ABFF.5000304-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <20150103162642.GC12203@localhost>
 Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, stable <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Dec 31, 2014 at 09:07:59PM -0500, Peter Hurley wrote:
-> Hi Johan,
-> 
-> On 11/18/2014 11:18 AM, Johan Hovold wrote:
-> > I get this missing-lockdep-annotation warning which I haven't seen
-> > before when booting with a usb-serial console on 3.18-rc5. It's been a
-> > while since I last tested this, though, and the tty_ldisc_ref wasn't
-> > introduced until 833efc0ed19c ("USB: serial: invoke dcd_change ldisc's
-> > handler.").
-> 
-> Sorry it took me so long to finally look at this -- at least I'm looking
-> at it in the same year ;)  (in my tzone anyway)
+The USB console currently allocates a temporary fake tty which is used
+to pass terminal settings to the underlying serial driver.
 
-No worries. Wasn't a top prio of mine either. :)
+The tty struct is not fully initialised, something which can lead to a
+lockdep warning (or worse) if a serial driver tries to acquire a
+line-discipline reference:
 
-Thanks for taking a look.
+	usbserial: USB Serial support registered for pl2303
+	pl2303 1-2.1:1.0: pl2303 converter detected
+	usb 1-2.1: pl2303 converter now attached to ttyUSB0
+	INFO: trying to register non-static key.
+	the code is fine but needs lockdep annotation.
+	turning off the locking correctness validator.
+	CPU: 0 PID: 68 Comm: udevd Tainted: G        W      3.18.0-rc5 #10
+	[<c0016f04>] (unwind_backtrace) from [<c0013978>] (show_stack+0x20/0x24)
+	[<c0013978>] (show_stack) from [<c0449794>] (dump_stack+0x24/0x28)
+	[<c0449794>] (dump_stack) from [<c006f730>] (__lock_acquire+0x1e50/0x2004)
+	[<c006f730>] (__lock_acquire) from [<c0070128>] (lock_acquire+0xe4/0x18c)
+	[<c0070128>] (lock_acquire) from [<c027c6f8>] (ldsem_down_read_trylock+0x78/0x90)
+	[<c027c6f8>] (ldsem_down_read_trylock) from [<c027a1cc>] (tty_ldisc_ref+0x24/0x58)
+	[<c027a1cc>] (tty_ldisc_ref) from [<c0340760>] (usb_serial_handle_dcd_change+0x48/0xe8)
+	[<c0340760>] (usb_serial_handle_dcd_change) from [<bf000484>] (pl2303_read_int_callback+0x210/0x220 [pl2303])
+	[<bf000484>] (pl2303_read_int_callback [pl2303]) from [<c031624c>] (__usb_hcd_giveback_urb+0x80/0x140)
+	[<c031624c>] (__usb_hcd_giveback_urb) from [<c0316fc0>] (usb_giveback_urb_bh+0x98/0xd4)
+	[<c0316fc0>] (usb_giveback_urb_bh) from [<c0042e44>] (tasklet_hi_action+0x9c/0x108)
+	[<c0042e44>] (tasklet_hi_action) from [<c0042380>] (__do_softirq+0x148/0x42c)
+	[<c0042380>] (__do_softirq) from [<c00429cc>] (irq_exit+0xd8/0x114)
+	[<c00429cc>] (irq_exit) from [<c007ae58>] (__handle_domain_irq+0x84/0xdc)
+	[<c007ae58>] (__handle_domain_irq) from [<c000879c>] (omap_intc_handle_irq+0xd8/0xe0)
+	[<c000879c>] (omap_intc_handle_irq) from [<c0014544>] (__irq_svc+0x44/0x7c)
+	Exception stack(0xdf4e7f08 to 0xdf4e7f50)
+	7f00:                   debc0b80 df4e7f5c 00000000 00000000 debc0b80 be8da96c
+	7f20: 00000000 00000128 c000fc84 df4e6000 00000000 df4e7f94 00000004 df4e7f50
+	7f40: c038ebc0 c038d74c 600f0013 ffffffff
+	[<c0014544>] (__irq_svc) from [<c038d74c>] (___sys_sendmsg.part.29+0x0/0x2e0)
+	[<c038d74c>] (___sys_sendmsg.part.29) from [<c038ec08>] (SyS_sendmsg+0x18/0x1c)
+	[<c038ec08>] (SyS_sendmsg) from [<c000fa00>] (ret_fast_syscall+0x0/0x48)
+	console [ttyUSB0] enabled
 
-> Is this easily reproducible?
+Fixes: 36697529b5bb ("tty: Replace ldisc locking with ldisc_sem")
+Cc: stable <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Signed-off-by: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ drivers/usb/serial/console.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Yes, happens on every boot with the pl2303 driver.
+diff --git a/drivers/usb/serial/console.c b/drivers/usb/serial/console.c
+index 8d7fc48b1f30..e56f394b58d8 100644
+--- a/drivers/usb/serial/console.c
++++ b/drivers/usb/serial/console.c
+@@ -140,6 +140,7 @@ static int usb_console_setup(struct console *co, char *options)
+ 			tty_port_tty_set(&port->port, tty);
+ 			tty->driver = usb_serial_tty_driver;
+ 			tty->index = co->index;
++			init_ldsem(&tty->ldisc_sem);
+ 			if (tty_init_termios(tty)) {
+ 				retval = -ENOMEM;
+ 				goto free_tty;
+-- 
+2.0.5
 
-> Because for lockdep to be trying to register the ldsem lock class
-> from the tty_ldisc_ref() means that no tty has yet been opened [see 1].
-> So how did the call to tty_port_tty_get() in pl2303_update_line_status()
-> return a tty?
-
-Because the USB console driver is using a only partially initialised,
-"fake" tty struct to pass terminal settings to the underlying driver.
-So no wonder things can blow up.
-
-This particular issue can be fixed by making sure to initialise the
-ldisc semaphore, but there are likely more potential problems here,
-including use-after-free as the fake tty wasn't released using the
-kref. I'll post two fixes as a follow up.
-
-A more long term solution might be to rewrite all usb-serial drivers to
-handle a NULL termios and pass a ktermios to set_termios similar to how
-serial-core does this.
-
-Thanks,
-Johan
 --
 To unsubscribe from this list: send the line "unsubscribe linux-usb" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
