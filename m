@@ -1,77 +1,86 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH 2/2] USB: console: fix potential use after free
-Date: Sat,  3 Jan 2015 17:28:27 +0100
-Message-ID: <1420302507-18167-2-git-send-email-johan@kernel.org>
-References: <20150103162642.GC12203@localhost>
- <1420302507-18167-1-git-send-email-johan@kernel.org>
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1420302507-18167-1-git-send-email-johan@kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-usb@vger.kernel.org
-Cc: Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, stable <stable@vger.kernel.org>
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
+Subject: Re: [PATCH] serial: fix parisc boot hang
+Date: Sun, 04 Jan 2015 11:12:48 -0800
+Message-ID: <1420398768.2078.1.camel@HansenPartnership.com>
+References: <1420221913.2072.7.camel@HansenPartnership.com>
+	 <20150102185127.GA8636@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <20150102185127.GA8636@kroah.com>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-parisc <linux-parisc@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Use tty kref to release the fake tty in usb_console_setup to avoid use
-after free if the underlying serial driver has acquired a reference.
+On Fri, 2015-01-02 at 10:51 -0800, Greg Kroah-Hartman wrote:
+> On Fri, Jan 02, 2015 at 10:05:13AM -0800, James Bottomley wrote:
+> > From: James Bottomley <JBottomley@Parallels.com>
+> > 
+> > This is a partial revert of 2f2dafe (serial: serial_core.c: printk
+> > replacement) which gets us booting again.  The real problem seems to be
+> > the _emit path in early boot.  However, until we can root cause it, we
+> > need at least to get boot working.
+> > 
+> > Fixes: 2f2dafe77df2c78e189a9fa6b1879dffd06ae5a1
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: James Bottomley <JBottomley@Parallels.com>
+> > 
+> > ---
+> > 
+> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> > index 57ca61b..984605b 100644
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -2164,7 +2164,9 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+> >  		break;
+> >  	}
+> >  
+> > -	dev_info(port->dev, "%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
+> > +	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
+> > +	       port->dev ? dev_name(port->dev) : "",
+> > +	       port->dev ? ": " : "",
+> >  	       drv->dev_name,
+> >  	       drv->tty_driver->name_base + port->line,
+> >  	       address, port->irq, port->uartclk / 16, uart_type(port));
+> 
+> Very odd, but I'll go queue it up, thanks.
 
-Fixes: 4a90f09b20f4 ("tty: usb-serial krefs")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/usb/serial/console.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+OK, well this turned out to be one of the weirder fishing expeditions
+I've been on.  The problem is this strange linux specific printf format
+flag %pV.  The way to fix the bug is not to indirect the dev_xxx printks
+via %pV.  What's happening is that in some circumstances, using %pV
+corrupts the stack.
 
-diff --git a/drivers/usb/serial/console.c b/drivers/usb/serial/console.c
-index e56f394b58d8..4fbf7fe64860 100644
---- a/drivers/usb/serial/console.c
-+++ b/drivers/usb/serial/console.c
-@@ -47,6 +47,13 @@ static struct console usbcons;
-  */
- 
- 
-+static void usb_console_release_fake_tty(struct kref *kref)
-+{
-+	struct tty_struct *tty = container_of(kref, struct tty_struct, kref);
-+
-+	kfree(tty);
-+}
-+
- /*
-  * The parsing of the command line works exactly like the
-  * serial.c code, except that the specifier is "ttyUSB" instead
-@@ -137,7 +144,6 @@ static int usb_console_setup(struct console *co, char *options)
- 				goto reset_open_count;
- 			}
- 			kref_init(&tty->kref);
--			tty_port_tty_set(&port->port, tty);
- 			tty->driver = usb_serial_tty_driver;
- 			tty->index = co->index;
- 			init_ldsem(&tty->ldisc_sem);
-@@ -145,6 +151,7 @@ static int usb_console_setup(struct console *co, char *options)
- 				retval = -ENOMEM;
- 				goto free_tty;
- 			}
-+			tty_port_tty_set(&port->port, tty);
- 		}
- 
- 		/* only call the device specific open if this
-@@ -162,7 +169,7 @@ static int usb_console_setup(struct console *co, char *options)
- 			serial->type->set_termios(tty, port, &dummy);
- 
- 			tty_port_tty_set(&port->port, NULL);
--			kfree(tty);
-+			kref_put(&tty->kref, usb_console_release_fake_tty);
- 		}
- 		set_bit(ASYNCB_INITIALIZED, &port->port.flags);
- 	}
-@@ -179,7 +186,7 @@ static int usb_console_setup(struct console *co, char *options)
-  fail:
- 	tty_port_tty_set(&port->port, NULL);
-  free_tty:
--	kfree(tty);
-+	kref_put(&tty->kref, usb_console_release_fake_tty);
-  reset_open_count:
- 	port->port.count = 0;
- 	usb_autopm_put_interface(serial->interface);
--- 
-2.0.5
+The reason seems to be that whoever came up with %pV didn't read the man
+pages carefully enough. In all the examples and use cases, the va_list
+is passed by *copy* not by reference.  For some inexplicable reason it's
+passed by reference in struct va_format.  Sure enough when I fix up my
+local tree to pass by copy it all works (at least as far as I can tell:
+most of the time the stack corruption passes unnoticed and minor
+disturbances can affect that.  However, the type and size of the va_list
+is the same in reference and copy, so I think it's reasonably
+definitive).
+
+I'd really like one of our gcc experts to comment here because all of
+these are builtin_ types and functions, so why there's a problem is a
+mystery (translate: I don't understand enough of gcc to make sense of
+the source code), but the surmise would be that the builtins are taking
+some stack frame information from the source and, because it's a pointer
+not a copy, it's in the wrong frame.
+
+Assuming this turns out to be the problem, fixing it is going to be a
+real bugger because on most platforms, the type of va_list is void *
+meaning you can't tell the difference at compile time between a copy and
+a reference, because typeof(void *) == typeof(void **),  and this %pV is
+sprayed all over our code base.
+
+We should probably also have the security experts look it over because
+any way of inducing stack frame corruption is potentially exploitable,
+although, in this case, I think all of the uses are internal so the user
+doesn't have the ability to influence the source data.
+
+James
+
+
