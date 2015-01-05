@@ -1,125 +1,210 @@
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
-Subject: Re: [PATCH] serial: fix parisc boot hang
-Date: Sun, 04 Jan 2015 22:34:32 -0800
-Message-ID: <1420439672.7744.1.camel@HansenPartnership.com>
-References: <1420221913.2072.7.camel@HansenPartnership.com>
-	 <20150102185127.GA8636@kroah.com>
-	 <1420398768.2078.1.camel@HansenPartnership.com>
-	 <BLU436-SMTP18804757BD2AD6E29059A76975B0@phx.gbl>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 04/05] serial: sh-sci: Add SCIFA/SCIFB CTS/RTS pin setup
+Date: Mon, 05 Jan 2015 09:46:20 +0200
+Message-ID: <1784675.cFO7ikSQzd@avalon>
+References: <20141217125236.14480.78833.sendpatchset@w520> <20141217125315.14480.15475.sendpatchset@w520>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <BLU436-SMTP18804757BD2AD6E29059A76975B0@phx.gbl>
-Sender: linux-parisc-owner@vger.kernel.org
-To: John David Anglin <dave.anglin@bell.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-parisc <linux-parisc@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20141217125315.14480.15475.sendpatchset@w520>
+Sender: linux-sh-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, 2015-01-04 at 15:41 -0500, John David Anglin wrote:
-> On 2015-01-04, at 2:12 PM, James Bottomley wrote:
-> 
-> > On Fri, 2015-01-02 at 10:51 -0800, Greg Kroah-Hartman wrote:
-> >> On Fri, Jan 02, 2015 at 10:05:13AM -0800, James Bottomley wrote:
-> >>> From: James Bottomley <JBottomley@Parallels.com>
-> >>> 
-> >>> This is a partial revert of 2f2dafe (serial: serial_core.c: printk
-> >>> replacement) which gets us booting again.  The real problem seems to be
-> >>> the _emit path in early boot.  However, until we can root cause it, we
-> >>> need at least to get boot working.
-> >>> 
-> >>> Fixes: 2f2dafe77df2c78e189a9fa6b1879dffd06ae5a1
-> >>> Cc: stable@vger.kernel.org
-> >>> Signed-off-by: James Bottomley <JBottomley@Parallels.com>
-> >>> 
-> >>> ---
-> >>> 
-> >>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> >>> index 57ca61b..984605b 100644
-> >>> --- a/drivers/tty/serial/serial_core.c
-> >>> +++ b/drivers/tty/serial/serial_core.c
-> >>> @@ -2164,7 +2164,9 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
-> >>> 		break;
-> >>> 	}
-> >>> 
-> >>> -	dev_info(port->dev, "%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
-> >>> +	printk(KERN_INFO "%s%s%s%d at %s (irq = %d, base_baud = %d) is a %s\n",
-> >>> +	       port->dev ? dev_name(port->dev) : "",
-> >>> +	       port->dev ? ": " : "",
-> >>> 	       drv->dev_name,
-> >>> 	       drv->tty_driver->name_base + port->line,
-> >>> 	       address, port->irq, port->uartclk / 16, uart_type(port));
-> >> 
-> >> Very odd, but I'll go queue it up, thanks.
-> > 
-> > OK, well this turned out to be one of the weirder fishing expeditions
-> > I've been on.  The problem is this strange linux specific printf format
-> > flag %pV.  The way to fix the bug is not to indirect the dev_xxx printks
-> > via %pV.  What's happening is that in some circumstances, using %pV
-> > corrupts the stack.
-> > 
-> > The reason seems to be that whoever came up with %pV didn't read the man
-> > pages carefully enough. In all the examples and use cases, the va_list
-> > is passed by *copy* not by reference.  For some inexplicable reason it's
-> > passed by reference in struct va_format.  Sure enough when I fix up my
-> > local tree to pass by copy it all works (at least as far as I can tell:
-> > most of the time the stack corruption passes unnoticed and minor
-> > disturbances can affect that.  However, the type and size of the va_list
-> > is the same in reference and copy, so I think it's reasonably
-> > definitive).
-> > 
-> > I'd really like one of our gcc experts to comment here because all of
-> > these are builtin_ types and functions, so why there's a problem is a
-> > mystery (translate: I don't understand enough of gcc to make sense of
-> > the source code), but the surmise would be that the builtins are taking
-> > some stack frame information from the source and, because it's a pointer
-> > not a copy, it's in the wrong frame.
-> > 
-> > Assuming this turns out to be the problem, fixing it is going to be a
-> > real bugger because on most platforms, the type of va_list is void *
-> > meaning you can't tell the difference at compile time between a copy and
-> > a reference, because typeof(void *) == typeof(void **),  and this %pV is
-> > sprayed all over our code base.
-> > 
-> > We should probably also have the security experts look it over because
-> > any way of inducing stack frame corruption is potentially exploitable,
-> > although, in this case, I think all of the uses are internal so the user
-> > doesn't have the ability to influence the source data.
-> 
-> 
-> Would it be possible to create a relatively simple test case?
+Hi Magnus,
 
-Unfortunately not.  I'm no longer even sure this is the root cause: it
-reproduced again, even passing va_list by copy.
+Thank you for the patch.
 
-James
+On Wednesday 17 December 2014 21:53:15 Magnus Damm wrote:
+> From: Magnus Damm <damm+renesas@opensource.se>
+> 
+> Add SCIFA/SCIFB pin setup code for CTS/RTS pins to handle
+> both cases of hardware flow control enabled or disabled.
+> 
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> ---
+> 
+>  drivers/tty/serial/sh-sci.c |   60 +++++++++++++++++++++++++++++++++++++++-
+>  include/linux/serial_sci.h  |    2 +
+>  2 files changed, 61 insertions(+), 1 deletion(-)
+> 
+> --- 0006/drivers/tty/serial/sh-sci.c
+> +++ work/drivers/tty/serial/sh-sci.c	2014-12-16 16:10:18.000000000 +0900
+> @@ -168,6 +168,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= sci_reg_invalid,
+>  		[SCLSR]		= sci_reg_invalid,
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= sci_reg_invalid,
+> +		[SCPDR]		= sci_reg_invalid,
+>  	},
+> 
+>  	/*
+> @@ -188,6 +190,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= sci_reg_invalid,
+>  		[SCLSR]		= sci_reg_invalid,
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= sci_reg_invalid,
+> +		[SCPDR]		= sci_reg_invalid,
+>  	},
+> 
+>  	/*
+> @@ -207,6 +211,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= sci_reg_invalid,
+>  		[SCLSR]		= sci_reg_invalid,
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= { 0x30, 16 },
+> +		[SCPDR]		= { 0x34, 16 },
+>  	},
+> 
+>  	/*
+> @@ -226,6 +232,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= sci_reg_invalid,
+>  		[SCLSR]		= sci_reg_invalid,
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= { 0x30, 16 },
+> +		[SCPDR]		= { 0x34, 16 },
+>  	},
+> 
+>  	/*
+> @@ -246,6 +254,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= { 0x20, 16 },
+>  		[SCLSR]		= { 0x24, 16 },
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= sci_reg_invalid,
+> +		[SCPDR]		= sci_reg_invalid,
+>  	},
+> 
+>  	/*
+> @@ -265,6 +275,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= sci_reg_invalid,
+>  		[SCLSR]		= sci_reg_invalid,
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= sci_reg_invalid,
+> +		[SCPDR]		= sci_reg_invalid,
+>  	},
+> 
+>  	/*
+> @@ -284,6 +296,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= { 0x20, 16 },
+>  		[SCLSR]		= { 0x24, 16 },
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= sci_reg_invalid,
+> +		[SCPDR]		= sci_reg_invalid,
+>  	},
+> 
+>  	/*
+> @@ -303,6 +317,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= { 0x20, 16 },
+>  		[SCLSR]		= { 0x24, 16 },
+>  		[HSSRR]		= { 0x40, 16 },
+> +		[SCPCR]		= sci_reg_invalid,
+> +		[SCPDR]		= sci_reg_invalid,
+>  	},
+> 
+>  	/*
+> @@ -323,6 +339,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= sci_reg_invalid,
+>  		[SCLSR]		= { 0x24, 16 },
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= sci_reg_invalid,
+> +		[SCPDR]		= sci_reg_invalid,
+>  	},
+> 
+>  	/*
+> @@ -343,6 +361,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= { 0x24, 16 },
+>  		[SCLSR]		= { 0x28, 16 },
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= sci_reg_invalid,
+> +		[SCPDR]		= sci_reg_invalid,
+>  	},
+> 
+>  	/*
+> @@ -363,6 +383,8 @@ static struct plat_sci_reg sci_regmap[SC
+>  		[SCSPTR]	= sci_reg_invalid,
+>  		[SCLSR]		= sci_reg_invalid,
+>  		[HSSRR]		= sci_reg_invalid,
+> +		[SCPCR]		= sci_reg_invalid,
+> +		[SCPDR]		= sci_reg_invalid,
+>  	},
+>  };
+> 
+> @@ -542,6 +564,34 @@ static void sci_init_pins_default(struct
+>  	serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
+>  }
+> 
+> +static void sci_init_pins_scifab(struct uart_port *port, bool
+> hwflow_enabled)
+> +{
+> +	unsigned short control, data;
+> +
+> +	/* SCIFA/SCIFB CTS/RTS pin configuration depends on user space.
+> +	 *
+> +	 * In case of CTS - (SCPDR.CTSD is always accessible):
+> +	 * - Hardware flow control enabled: "CTS pin function"
+> +	 * - Hardware flow control disabled: "Input port"
+> +	 *
+> +	 * In case of RTS:
+> +	 * - Hardware flow control enabled: "RTS pin function"
+> +	 * - Hardware flow control disabled: "Output port" with value 1
+> +	 */
+> +	control = serial_port_in(port, SCPCR);
+> +	data = serial_port_in(port, SCPDR);
+> +
+> +	if (hwflow_enabled) {
+> +		control &= ~(BIT(4) | BIT(3));
+> +	} else {
+> +		control |= BIT(4) | BIT(3);
 
-> On 64-bit parisc, the va_list is built up in part by
-> hppa_builtin_saveregs() in pa.c.
-> It's stored in a region in the callers frame reserved for arguments.
-> 
-> I tend to think it's dangerous to pass a va_list by reference as in
-> general the called
-> function is free to use the incoming argument region for its own
-> purposes after
-> the incoming arguments have been copied.  This might be the cause of
-> the stack
-> corruption you are seeing.
-> 
-> On parisc, the callee is responsible for copying incoming arguments if
-> necessary.
-> This is somewhat unusual...
-> 
-> Dave
-> --
-> John David Anglin	dave.anglin@bell.net
-> 
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-parisc" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Could you please define SCPCR_RTSC and SCPCR_CTSC macros to replace BIT(3) and 
+BIT(4) ?
 
+> +		data |= BIT(4);
+
+And SCPDR_RTSD here ?
+
+> +	}
+> +
+> +	serial_port_out(port, SCPDR, data);
+> +	serial_port_out(port, SCPCR, control);
+> +}
+> +
+>  static void sci_init_pins(struct uart_port *port, unsigned int cflag)
+>  {
+>  	struct sci_port *s = to_sci_port(port);
+> @@ -568,7 +618,15 @@ static void sci_init_pins(struct uart_po
+>  	if (!(s->cfg->capabilities & SCIx_HAVE_RTSCTS))
+>  		return;
+> 
+> -	sci_init_pins_default(port, hwflow_enabled);
+> +	switch (s->cfg->type) {
+> +	case PORT_SCIFA:
+> +	case PORT_SCIFB:
+> +		sci_init_pins_scifab(port, hwflow_enabled);
+> +		break;
+> +	default:
+> +		sci_init_pins_default(port, hwflow_enabled);
+> +	}
+> +
+>  }
+> 
+>  static int sci_txfill(struct uart_port *port)
+> --- 0006/include/linux/serial_sci.h
+> +++ work/include/linux/serial_sci.h	2014-12-16 16:10:18.000000000 +0900
+> @@ -102,6 +102,8 @@ enum {
+>  	SCRFDR,				/* Receive FIFO Data Count Register */
+>  	SCSPTR,				/* Serial Port Register */
+>  	HSSRR,				/* Sampling Rate Register */
+> +	SCPCR,				/* Serial Port Control Register */
+> +	SCPDR,				/* Serial Port Data Register */
+> 
+>  	SCIx_NR_REGS,
+>  };
+
+-- 
+Regards,
+
+Laurent Pinchart
 
