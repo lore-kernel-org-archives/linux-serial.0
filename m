@@ -1,114 +1,111 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 01/05] serial: sh-sci: Break out default CTS/RTS pin setup
-Date: Mon, 05 Jan 2015 10:25:56 +0200
-Message-ID: <2156158.vJVakP2u8e@avalon>
-References: <20141217125236.14480.78833.sendpatchset@w520> <20141217125246.14480.41876.sendpatchset@w520>
+From: Vijay Rai <vijay.rai@freescale.com>
+Subject: [PATCH V2] tty: 8250: Add 64byte UART support for FSL platforms
+Date: Mon, 5 Jan 2015 21:14:42 +0530
+Message-ID: <1420472682-16213-1-git-send-email-vijay.rai@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20141217125246.14480.41876.sendpatchset@w520>
-Sender: linux-sh-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc: Vijay Rai <vijay.rai@freescale.com>, Priyanka Jain <Priyanka.Jain@freescale.com>, Poonam Aggrwal <poonam.aggrwal@freescale.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Magnus,
+Some of FSL SoCs like T1040 has new version of UART controller which
+can support 64byte FiFo.
+To enable 64 byte support, following needs to be done:
+-FCR[EN64] needs to be programmed to 1 to enable it.
+-Also, when FCR[EN64]==1, RTL bits to be used as below
+to define various Receive Trigger Levels:
+        -FCR[RTL] = 00  1 byte
+        -FCR[RTL] = 01  16 bytes
+        -FCR[RTL] = 10  32 bytes
+        -FCR[RTL] = 11  56 bytes
+-tx_loadsz is set to 63-bytes instead of 64-bytes to implement
+ workaround of errata A-008006 which states that tx_loadsz should
+ be configured less than Maximum supported fifo bytes
 
-Thank you for the patch.
+Signed-off-by: Vijay Rai <vijay.rai@freescale.com>
+Signed-off-by: Priyanka Jain <Priyanka.Jain@freescale.com>
+Signed-off-by: Poonam Aggrwal <poonam.aggrwal@freescale.com>
+---
+Changes from V1:
+- tx_loadsz is set to 63-bytes now earlier it was set to 36
+- Added comment mentioning the erratum A-008006
+- Updated PORT_MAX_8250 to 30
 
-On Wednesday 17 December 2014 21:52:46 Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas@opensource.se>
-> 
-> Break out CTS/RTS pin setup for the default case. We only
-> care about those pins in case SCIx_HAVE_RTSCTS is set.
-> 
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
-> ---
-> 
->  drivers/tty/serial/sh-sci.c |   45 +++++++++++++++++++++++++++-------------
->  1 file changed, 31 insertions(+), 14 deletions(-)
-> 
-> --- 0001/drivers/tty/serial/sh-sci.c
-> +++ work/drivers/tty/serial/sh-sci.c	2014-12-16 14:40:31.000000000 +0900
-> @@ -509,10 +509,29 @@ static void sci_poll_put_char(struct uar
->  }
->  #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE */
-> 
-> -static void sci_init_pins(struct uart_port *port, unsigned int cflag)
-> +static void sci_init_pins_default(struct uart_port *port, bool
-> hwflow_enabled) {
+ drivers/tty/serial/8250/8250_core.c |   23 ++++++++++++++++++++++-
+ include/uapi/linux/serial_core.h    |    3 ++-
+ include/uapi/linux/serial_reg.h     |    3 ++-
+ 3 files changed, 26 insertions(+), 3 deletions(-)
 
-What would you think about renaming the function to sci_init_ctsrts_default ? 
-I find having both sci_init_pins and sci_init_pins_default a bit confusing.
-
->  	struct sci_port *s = to_sci_port(port);
->  	struct plat_sci_reg *reg = sci_regmap[s->cfg->regtype] + SCSPTR;
-> +	unsigned short status;
-> +
-> +	/* If no SCSPTR register exists then skip. Same if hardware flow
-> +	 * control has been enabled, in such case SCFCR.MCE will be set
-> +	 * and the SCSPTR configuration is assumed to be overridden.
-> +	 */
-> +	if (!reg->size || hwflow_enabled)
-> +		return;
-> +
-> +	status = serial_port_in(port, SCSPTR);
-> +	status &= ~SCSPTR_CTSIO;
-> +	status |= SCSPTR_RTSIO;
-> +	serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
-> +}
-> +
-> +static void sci_init_pins(struct uart_port *port, unsigned int cflag)
-> +{
-> +	struct sci_port *s = to_sci_port(port);
-> +	bool hwflow_enabled = cflag & CRTSCTS;
-> 
->  	/*
->  	 * Use port-specific handler if provided.
-> @@ -522,22 +541,20 @@ static void sci_init_pins(struct uart_po
->  		return;
->  	}
-> 
-> -	/*
-> -	 * For the generic path SCSPTR is necessary. Bail out if that's
-> -	 * unavailable, too.
-> +	/* SCIF hardware with RTS/CTS support needs special setup below.
-> +	 *
-> +	 * Please note that if RTS/CTS is available for the hardware
-> +	 * platform depends on the particular SCIF channel on a certain
-> +	 * SoC, and how this channel has been hooked up on the actual board.
-
-How do you plan to convey that information to the driver in the DT case ? If 
-I'm not mistaken the SCIx_HAVE_RTSCTS flag is only set through platform data 
-at the moment. Do you have a list of which SCIF channels support RTS/CTS on 
-which SoC ?
-
-> +	 *
-> +	 * If the RTS/CTS signals will be used or not depends on what user
-> +	 * space requests. In case RTS/CTS is available but not requested
-> +	 * by user space we still need to configure the pins somehow.
->  	 */
-> -	if (!reg->size)
-> +	if (!(s->cfg->capabilities & SCIx_HAVE_RTSCTS))
->  		return;
-> 
-> -	if ((s->cfg->capabilities & SCIx_HAVE_RTSCTS) &&
-> -	    ((!(cflag & CRTSCTS)))) {
-> -		unsigned short status;
-> -
-> -		status = serial_port_in(port, SCSPTR);
-> -		status &= ~SCSPTR_CTSIO;
-> -		status |= SCSPTR_RTSIO;
-> -		serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
-> -	}
-> +	sci_init_pins_default(port, hwflow_enabled);
->  }
-> 
->  static int sci_txfill(struct uart_port *port)
-
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 11c6685..221e047 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -329,6 +329,17 @@ static const struct serial8250_config uart_config[] = {
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+ 		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
+ 	},
++/* tx_loadsz is set to 63-bytes instead of 64-bytes to implement
++workaround of errata A-008006 which states that tx_loadsz should  be
++configured less than Maximum supported fifo bytes */
++	[PORT_16550A_FSL64] = {
++		.name		= "16550A_FSL64",
++		.fifo_size	= 64,
++		.tx_loadsz	= 63,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
++				  UART_FCR7_64BYTE,
++		.flags		= UART_CAP_FIFO,
++	},
+ };
+ 
+ /* Uart divisor latch read */
+@@ -956,7 +967,17 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+ 			up->port.type = PORT_16650;
+ 			up->capabilities |= UART_CAP_EFR | UART_CAP_SLEEP;
+ 		} else {
+-			DEBUG_AUTOCONF("Motorola 8xxx DUART ");
++			serial_out(up, UART_LCR, 0);
++			serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO |
++				   UART_FCR7_64BYTE);
++			status1 = serial_in(up, UART_IIR) >> 5;
++			serial_out(up, UART_FCR, 0);
++			serial_out(up, UART_LCR, 0);
++
++			if (status1 == 7)
++				up->port.type = PORT_16550A_FSL64;
++			else
++				DEBUG_AUTOCONF("Motorola 8xxx DUART ");
+ 		}
+ 		serial_out(up, UART_EFR, 0);
+ 		return;
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index c172180..263918b 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -55,7 +55,8 @@
+ #define PORT_ALTR_16550_F64 27	/* Altera 16550 UART with 64 FIFOs */
+ #define PORT_ALTR_16550_F128 28 /* Altera 16550 UART with 128 FIFOs */
+ #define PORT_RT2880	29	/* Ralink RT2880 internal UART */
+-#define PORT_MAX_8250	29	/* max port ID */
++#define PORT_16550A_FSL64 30	/* Freescale 16550 UART with 64 FIFOs */
++#define PORT_MAX_8250	30	/* max port ID */
+ 
+ /*
+  * ARM specific type numbers.  These are not currently guaranteed
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index 53af3b7..00adb01 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -86,7 +86,8 @@
+ #define UART_FCR6_T_TRIGGER_8	0x10 /* Mask for transmit trigger set at 8 */
+ #define UART_FCR6_T_TRIGGER_24  0x20 /* Mask for transmit trigger set at 24 */
+ #define UART_FCR6_T_TRIGGER_30	0x30 /* Mask for transmit trigger set at 30 */
+-#define UART_FCR7_64BYTE	0x20 /* Go into 64 byte mode (TI16C750) */
++#define UART_FCR7_64BYTE	0x20 /* Go into 64 byte mode (TI16C750 and
++					some Freescale UARTs) */
+ 
+ #define UART_FCR_R_TRIG_SHIFT		6
+ #define UART_FCR_R_TRIG_BITS(x)		\
 -- 
-Regards,
-
-Laurent Pinchart
-
+1.7.9.5
