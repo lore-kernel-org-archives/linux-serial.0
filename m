@@ -1,89 +1,69 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH v2 2/2] USB: console: fix potential use after free
-Date: Mon,  5 Jan 2015 16:04:13 +0100
-Message-ID: <1420470253-8141-2-git-send-email-johan@kernel.org>
-References: <20150103162642.GC12203@localhost>
- <1420470253-8141-1-git-send-email-johan@kernel.org>
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1420470253-8141-1-git-send-email-johan@kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-usb@vger.kernel.org
-Cc: Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, stable <stable@vger.kernel.org>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: USB-serial console and lockdep
+Date: Mon, 05 Jan 2015 10:26:20 -0500
+Message-ID: <54AAAD1C.8090106@hurleysoftware.com>
+References: <20141118161833.GA22786@localhost> <54A4ABFF.5000304@hurleysoftware.com> <20150103162642.GC12203@localhost>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150103162642.GC12203@localhost>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Use tty kref to release the fake tty in usb_console_setup to avoid use
-after free if the underlying serial driver has acquired a reference.
+On 01/03/2015 11:26 AM, Johan Hovold wrote:
+> On Wed, Dec 31, 2014 at 09:07:59PM -0500, Peter Hurley wrote:
+>> Hi Johan,
+>>
+>> On 11/18/2014 11:18 AM, Johan Hovold wrote:
+>>> I get this missing-lockdep-annotation warning which I haven't seen
+>>> before when booting with a usb-serial console on 3.18-rc5. It's been a
+>>> while since I last tested this, though, and the tty_ldisc_ref wasn't
+>>> introduced until 833efc0ed19c ("USB: serial: invoke dcd_change ldisc's
+>>> handler.").
+>>
+>> Sorry it took me so long to finally look at this -- at least I'm looking
+>> at it in the same year ;)  (in my tzone anyway)
+> 
+> No worries. Wasn't a top prio of mine either. :)
+> 
+> Thanks for taking a look.
+> 
+>> Is this easily reproducible?
+> 
+> Yes, happens on every boot with the pl2303 driver.
+> 
+>> Because for lockdep to be trying to register the ldsem lock class
+>> from the tty_ldisc_ref() means that no tty has yet been opened [see 1].
+>> So how did the call to tty_port_tty_get() in pl2303_update_line_status()
+>> return a tty?
+> 
+> Because the USB console driver is using a only partially initialised,
+> "fake" tty struct to pass terminal settings to the underlying driver.
+> So no wonder things can blow up.
 
-Note that using the tty destructor release_one_tty requires some more
-state to be initialised.
+Ahh, I did not know that.
 
-Fixes: 4a90f09b20f4 ("tty: usb-serial krefs")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
+> This particular issue can be fixed by making sure to initialise the
+> ldisc semaphore, but there are likely more potential problems here,
+> including use-after-free as the fake tty wasn't released using the
+> kref. I'll post two fixes as a follow up.
+> 
+> A more long term solution might be to rewrite all usb-serial drivers to
+> handle a NULL termios and pass a ktermios to set_termios similar to how
+> serial-core does this.
 
-Changes since v1:
+I agree that this definitely needs a more robust solution.
+FWIW, I don't think serial-core is a particularly good model.
 
- - Use tty_kref_put to release tty also in setup()
- - Some more state must be initialised to avoid NULL derefs when the tty
-   destructor is run after the underlying driver puts its reference.
+Regards,
+Peter Hurley
 
 
- drivers/usb/serial/console.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/usb/serial/console.c b/drivers/usb/serial/console.c
-index e56f394b58d8..29fa1c3d0089 100644
---- a/drivers/usb/serial/console.c
-+++ b/drivers/usb/serial/console.c
-@@ -46,6 +46,8 @@ static struct console usbcons;
-  * ------------------------------------------------------------
-  */
- 
-+static const struct tty_operations usb_console_fake_tty_ops = {
-+};
- 
- /*
-  * The parsing of the command line works exactly like the
-@@ -137,14 +139,17 @@ static int usb_console_setup(struct console *co, char *options)
- 				goto reset_open_count;
- 			}
- 			kref_init(&tty->kref);
--			tty_port_tty_set(&port->port, tty);
- 			tty->driver = usb_serial_tty_driver;
- 			tty->index = co->index;
- 			init_ldsem(&tty->ldisc_sem);
-+			INIT_LIST_HEAD(&tty->tty_files);
-+			kref_get(&tty->driver->kref);
-+			tty->ops = &usb_console_fake_tty_ops;
- 			if (tty_init_termios(tty)) {
- 				retval = -ENOMEM;
--				goto free_tty;
-+				goto put_tty;
- 			}
-+			tty_port_tty_set(&port->port, tty);
- 		}
- 
- 		/* only call the device specific open if this
-@@ -162,7 +167,7 @@ static int usb_console_setup(struct console *co, char *options)
- 			serial->type->set_termios(tty, port, &dummy);
- 
- 			tty_port_tty_set(&port->port, NULL);
--			kfree(tty);
-+			tty_kref_put(tty);
- 		}
- 		set_bit(ASYNCB_INITIALIZED, &port->port.flags);
- 	}
-@@ -178,8 +183,8 @@ static int usb_console_setup(struct console *co, char *options)
- 
-  fail:
- 	tty_port_tty_set(&port->port, NULL);
-- free_tty:
--	kfree(tty);
-+ put_tty:
-+	tty_kref_put(tty);
-  reset_open_count:
- 	port->port.count = 0;
- 	usb_autopm_put_interface(serial->interface);
--- 
-2.0.5
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
