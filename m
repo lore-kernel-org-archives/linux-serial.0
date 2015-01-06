@@ -1,41 +1,76 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] Revert "tty: Fix pty master poll() after slave closes
- v2"
-Date: Tue, 06 Jan 2015 11:49:41 -0500
-Message-ID: <54AC1225.7080804@hurleysoftware.com>
-References: <1419941829-6536-1-git-send-email-peter@hurleysoftware.com> <54A29B0A.3060707@hurleysoftware.com> <54ABF221.7000305@suse.cz>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] serial: 8250: Make ISA ports optional
+Date: Tue, 06 Jan 2015 20:43:37 +0100
+Message-ID: <6786513.g26uGMFKLE@wuerfel>
+References: <1420513785-23660-1-git-send-email-peter@hurleysoftware.com> <9492211.AECobr3jIN@wuerfel> <54ABF1E2.1010905@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54ABF221.7000305@suse.cz>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Francesco Ruggeri <fruggeri@aristanetworks.com>, Francesco Ruggeri <fruggeri@arista.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <54ABF1E2.1010905@hurleysoftware.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Tony Lindgren <tony@atomide.com>, Grant Likely <grant.likely@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/06/2015 09:33 AM, Jiri Slaby wrote:
-> On 12/30/2014, 01:31 PM, Peter Hurley wrote:
->> On 12/30/2014 07:17 AM, Peter Hurley wrote:
->>> This reverts commit c4dc304677e8d566572c4738d95c48be150c6606.
->>> This fix is superseded by commit 52bce7f8d4fc633c9a9d0646eef58ba6ae9a3b73,
->>> 'pty, n_tty: Simplify input processing on final close'.
->>>
->>> The final close now waits for input processing to complete before
->>> destroying the pty, so poll() does not need to special case this
->>> condition.
->>
->> Greg,
->>
->> As noted in this commit log, commit c4dc304677e8d566572c4738d95c48be150c6606,
->> 'tty: Fix pty master poll() after slave closes v2', is not required
->> after commit 52bce7f8d4fc633c9a9d0646eef58ba6ae9a3b73,
->> 'pty, n_tty: Simplify input processing on final close'
->>
->> However, 'tty: Fix pty master poll() after slave closes v2' is appropriate
->> for stable back to v3.12.
+On Tuesday 06 January 2015 09:32:02 Peter Hurley wrote:
+> On 01/06/2015 08:13 AM, Arnd Bergmann wrote:
+> > On Monday 05 January 2015 22:09:45 Peter Hurley wrote:
+> >> Some arches have no need to create unprobed 8250 ports; these phantom
+> >> ports are primarily required for ISA ports which have no probe
+> >> mechanism or to provide non-operational ports for userspace to
+> >> configure (via TIOCSSERIAL and TIOCSERCONFIG ioctls).
+> >>
+> >> Provide CONFIG_SERIAL_8250_PHANTOM_UARTS knob to disable phantom port
+> >> registration; ie., CONFIG_SERIAL_8250_PHANTOM_UARTS=N only registers
+> >> probed ports (ACPI/PNP, "serial8250" platform devices, PCI, etc).
+> >>
+> >> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> >> Cc: Tony Lindgren <tony@atomide.com>
+> >> Cc: Grant Likely <grant.likely@linaro.org>
+> >> Cc: Arnd Bergmann <arnd@arndb.de>
+> >> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> > 
+> > The intent is definitely right, but I think a better approach is
+> > possible.
+> > 
+> > I haven't tried it here, but how about moving the serial8250_init
+> > function into a separate module, along with all the other parts
+> > that are only used for ISA devices, but leaving the actual core
+> > (all exported symbols) in this file?
 > 
-> Now applied to 3.12. A backport was needed due to the later change of
-> the input_available_p 2nd parameter.
+> Unfortunately, I don't see a way to remove the stacked initialization
+> without risking tons of breakage.
+> 
+> Since later probes can "find" an already-existing port and
+> re-initialize it, the probe order is crucial. For example, a PCI
+> probe can "find" an existing "serial8250" platform device port,
+> resulting in only one device node.
 
-Thanks Jiri.
+I'm probably missing something important, by why would that
+be any different if the PCI driver gets loaded first and the
+ISA driver second?
+
+> And the configuration knob will be required on all arches anyway because
+> that's how user-configurable device nodes are created.
+
+I think that's fine: The user-configurable ports are the same as
+the "ISA" or "phantom" ports we were talking about above, right?
+
+If those are part of a separate (possibly loadable) module, having
+a configuration knob is the obvious way to do it. A lot of architectures
+can just turn it off because they know exactly which ports are present
+and there is no need for user-configurability. The ones that don't know
+can load the module.
+
+> > At the same time, the serial8250_pnp_init/serial8250_pnp_exit calls
+> > can be removed from the serial8250_init function and become
+> > standalone initcalls.
+> 
+> PNP probe must occur before the phantom ports are registered.
+> See commit 835d844d1a28efba81d5aca7385e24c29d3a6db2
+> ("8250_pnp: do pnp probe before legacy probe").
+
+Makes sense.
+
+	Arnd
