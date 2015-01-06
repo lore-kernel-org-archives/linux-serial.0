@@ -1,7 +1,7 @@
 From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: [PATCH v3 2/2] ARC: Dynamically determine BASE_BAUD from DeviceTree
-Date: Tue, 6 Jan 2015 16:59:11 +0530
-Message-ID: <1420543751-17468-3-git-send-email-vgupta@synopsys.com>
+Subject: [PATCH v3 1/2] serial: 8250_early: optimize early 8250 uart
+Date: Tue, 6 Jan 2015 16:59:10 +0530
+Message-ID: <1420543751-17468-2-git-send-email-vgupta@synopsys.com>
 References: <1420543751-17468-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,100 +9,47 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1420543751-17468-1-git-send-email-vgupta@synopsys.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, robh@kernel.org, Peter Hurley <peter@hurleysoftware.com>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, robh@kernel.org, Peter Hurley <peter@hurleysoftware.com>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-This resolves the BASE_BAUD issue in Multiplatform images
+In early 8250, IER is already zero so no point in writing this - twice
+per line
+
+This helped improve the SystemC model based ARC OSCI platform
 
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Cc: Rob Herring <robh@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
 Cc: Peter Hurley <peter@hurleysoftware.com>
 Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
 ---
- arch/arc/include/asm/serial.h | 23 +++++------------------
- arch/arc/kernel/devtree.c     | 24 ++++++++++++++++++++++++
- 2 files changed, 29 insertions(+), 18 deletions(-)
+ drivers/tty/serial/8250/8250_early.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arc/include/asm/serial.h b/arch/arc/include/asm/serial.h
-index 602b0970a764..744a6ae15754 100644
---- a/arch/arc/include/asm/serial.h
-+++ b/arch/arc/include/asm/serial.h
-@@ -10,26 +10,13 @@
- #define _ASM_ARC_SERIAL_H
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 4858b8a99d3b..ce2a8abd1f54 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -95,13 +95,16 @@ static void __init early_serial8250_write(struct console *console,
  
- /*
-- * early-8250 requires BASE_BAUD to be defined and includes this header.
-- * We put in a typical value:
-- * 	(core clk / 16) - i.e. UART samples 16 times per sec.
-- * Athough in multi-platform-image this might not work, specially if the
-- * clk driving the UART is different.
-- * We can't use DeviceTree as this is typically for early serial.
-+ * early 8250 (now earlycon) requires BASE_BAUD to be defined in this header.
-+ * However to still determine it dynamically (for multi-platform images)
-+ * we do this in a helper by parsing the FDT early
-  */
+ 	/* Save the IER and disable interrupts */
+ 	ier = serial8250_early_in(port, UART_IER);
+-	serial8250_early_out(port, UART_IER, 0);
++	if (ier)
++		serial8250_early_out(port, UART_IER, 0);
  
--#include <asm/clk.h>
-+extern unsigned int __init arc_early_base_baud(void);
+ 	uart_console_write(port, s, count, serial_putc);
  
--#define BASE_BAUD	(arc_get_core_freq() / 16)
--
--/*
-- * This is definitely going to break early 8250 consoles on multi-platform
-- * images but hey, it won't add any code complexity for a debug feature of
-- * one broken driver.
-- */
--#ifdef CONFIG_ARC_PLAT_TB10X
--#undef BASE_BAUD
--#define BASE_BAUD	(arc_get_core_freq() / 16 / 3)
--#endif
-+#define BASE_BAUD	arc_early_base_baud()
- 
- #endif /* _ASM_ARC_SERIAL_H */
-diff --git a/arch/arc/kernel/devtree.c b/arch/arc/kernel/devtree.c
-index fffdb5e41b20..69a790cd9b6e 100644
---- a/arch/arc/kernel/devtree.c
-+++ b/arch/arc/kernel/devtree.c
-@@ -17,6 +17,28 @@
- #include <asm/clk.h>
- #include <asm/mach_desc.h>
- 
-+#ifdef CONFIG_SERIAL_8250_CONSOLE
+ 	/* Wait for transmitter to become empty and restore the IER */
+ 	wait_for_xmitr(port);
+-	serial8250_early_out(port, UART_IER, ier);
 +
-+static unsigned int arc_base_baud;
-+
-+unsigned int __init arc_early_base_baud(void)
-+{
-+	return arc_base_baud/16;
-+}
-+
-+static void __init arc_set_early_base_baud(unsigned long dt_root)
-+{
-+	unsigned int core_clk = arc_get_core_freq();
-+
-+	if (of_flat_dt_is_compatible(dt_root, "abilis,arc-tb10x"))
-+		arc_base_baud = core_clk/3;
-+	else
-+		arc_base_baud = core_clk;
-+}
-+#else
-+#define arc_set_early_base_baud(dt_root)
-+#endif
-+
- static const void * __init arch_get_next_mach(const char *const **match)
- {
- 	static const struct machine_desc *mdesc = __arch_info_begin;
-@@ -56,5 +78,7 @@ const struct machine_desc * __init setup_machine_fdt(void *dt)
- 	if (clk)
- 		arc_set_core_freq(of_read_ulong(clk, len/4));
- 
-+	arc_set_early_base_baud(dt_root);
-+
- 	return mdesc;
++	if (ier)
++		serial8250_early_out(port, UART_IER, ier);
  }
+ 
+ static unsigned int __init probe_baud(struct uart_port *port)
 -- 
 1.9.1
