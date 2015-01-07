@@ -1,96 +1,67 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [Patch v4] ARC: Dynamically determine BASE_BAUD from DeviceTree
-Date: Wed, 7 Jan 2015 08:15:01 -0600
-Message-ID: <CAL_JsqJ85u=vDK--AcYWV68ExXjo===YCPMe12qHF7QQV7EuPw@mail.gmail.com>
-References: <54ABD526.9020907@hurleysoftware.com> <1420552747-27544-1-git-send-email-vgupta@synopsys.com>
- <CAL_JsqLzzLajoQAT3nYd5zi4=+zchXfVVPnYNriAZZi4tpa6yA@mail.gmail.com> <C2D7FE5348E1B147BCA15975FBA2307565BCA499@IN01WEMBXA.internal.synopsys.com>
+From: Shreyas Bethur <shreyas.bethur@ni.com>
+Subject: Re: [PATCH v2] tty: Prevent hw state corruption in exclusive mode reopen
+Date: Wed, 7 Jan 2015 16:55:01 -0600
+Message-ID: <OFE11B8E2C.C7D29A8E-ON86257DC6.007DA974-86257DC6.007DE311@ni.com>
+References: <1419942873-6779-1-git-send-email-peter@hurleysoftware.com> <1419953965-16494-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="US-ASCII"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <C2D7FE5348E1B147BCA15975FBA2307565BCA499@IN01WEMBXA.internal.synopsys.com>
+In-Reply-To: <1419953965-16494-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 7, 2015 at 12:36 AM, Vineet Gupta
-<Vineet.Gupta1@synopsys.com> wrote:
-> On Tuesday 06 January 2015 08:08 PM, Rob Herring wrote:
->> On Tue, Jan 6, 2015 at 7:59 AM, Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
->>> 8250 earlycon is broken on multi-platform ARC because the UART clk
->>> value (BASE_BAUD) is fixed at build time.
->> Note that it should only be broken if you rely on the kernel to init
->> the uart. It should work if the boot loader configured the UART and
->> you don't specify the baudrate.
->
-> But even if uboot set it up right - when the early 8250 is enabled in kernel, it
-> will try to apply BASE_BAUD to re init it again.
-> So if that doesn't match platform expectations, early prints will be garbled. Am I
-> missing something here?
+Peter Hurley <peter@hurleysoftware.com> wrote on 12/30/2014 09:39:25 AM:
 
-I could be wrong as I've only tested under QEMU which is why I'm
-curious if you find it doesn't work for you. If you do not specify the
-baud rate, the code will detect it by reading the divider registers.
-Of course it will get a crap baud rate if BASE_BAUD is wrong, but it
-just ends up setting the divider to the same value. I suppose there
-could be a problem later on when the full driver loads if the wrong
-baud rate is used then with a correct clock rate.
+> From: Peter Hurley <peter@hurleysoftware.com>
+> To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+> Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, 
+> linux-serial@vger.kernel.org, Shreyas Bethur 
+> <shreyas.bethur@ni.com>, Peter Hurley <peter@hurleysoftware.com>
+> Date: 12/30/2014 09:39 AM
+> Subject: [PATCH v2] tty: Prevent hw state corruption in exclusive mode 
+reopen
+> 
+> Exclusive mode ttys (TTY_EXCLUSIVE) do not allow further reopens;
+> fail the condition before associating the file pointer and calling
+> the driver open() method.
+> 
+> Prevents DTR programming when the tty is already in exclusive mode.
+> 
+> Reported-by: Shreyas Bethur <shreyas.bethur@ni.com>
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/tty_io.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 4f35b43..51f066a 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -1464,6 +1464,9 @@ static int tty_reopen(struct tty_struct *tty)
+>         driver->subtype == PTY_TYPE_MASTER)
+>        return -EIO;
+> 
+> +   if (test_bit(TTY_EXCLUSIVE, &tty->flags) && !capable(CAP_SYS_ADMIN))
+> +      return -EBUSY;
+> +
+>     tty->count++;
+> 
+>     WARN_ON(!tty->ldisc);
+> @@ -2106,10 +2109,6 @@ retry_open:
+>        retval = -ENODEV;
+>     filp->f_flags = saved_flags;
+> 
+> -   if (!retval && test_bit(TTY_EXCLUSIVE, &tty->flags) &&
+> -                  !capable(CAP_SYS_ADMIN))
+> -      retval = -EBUSY;
+> -
+>     if (retval) {
+>  #ifdef TTY_DEBUG_HANGUP
+>        printk(KERN_DEBUG "%s: error %d in opening %s...\n", __func__,
+> -- 
+> 2.2.1
+> 
 
->>>  #include <asm/mach_desc.h>
->>>
->>> +#ifdef CONFIG_SERIAL_8250_CONSOLE
->>> +
->>> +static unsigned int arc_base_baud;
->> This can be initdata.
->
-> OK !
->
->>
->>> +unsigned int __init arc_early_base_baud(void)
->>> +{
->>> +       return arc_base_baud/16;
->>> +}
->>> +
->>> +static void __init arc_set_early_base_baud(unsigned long dt_root)
->>> +{
->>> +       unsigned int core_clk = arc_get_core_freq();
->>> +
->>> +       if (of_flat_dt_is_compatible(dt_root, "abilis,arc-tb10x"))
->>> +               arc_base_baud = core_clk/3;
->> How many platforms do you expect this to be? This scales to maybe 10,
->> but not to 100 platforms. It certainly would not scale for ARM.
->
-> The need for this came from our internal development of 2 new platform based on
-> new ARCv2 ISA.
-> They are slated to hit mainline sometime this year. Hence this is in a sense prep
-> patch and converts the
-> only existing upstream user of BASE_BAUD for ARC (tb10x). For ARC atleast I don't
-> expect the scalability issue - yet :-)
-> ARM doesn't seem define asm/serial.h (BASE_BAUD) and it probably works OK with the
-> stub value in asm-generic ?
-
-ARM does not yet have the necessary early fixmap support in mainline
-to enable this feature yet.
-
-Rob
-
->> If it
->> is a lot, then we need to find a generic way to describe this in DT.
->> For example, perhaps we require the uart node to have a
->> clock-frequency property or add a chosen property.
->
-> Yeah that would indeed be cleanest way. But I think we shd be ok for now.
->
->> You could make this
->> part of the machine descriptor instead, but that wouldn't be my first
->> choice.
->
-> Me neither !
->
-> Thx,
-> -Vineet
->
->>
->> Rob
->>
->
+Acked-by: Shreyas Bethur <shreyas.bethur@ni.com>
