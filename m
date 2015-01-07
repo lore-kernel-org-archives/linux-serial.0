@@ -1,75 +1,83 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: 8250: Make ISA ports optional
-Date: Tue, 06 Jan 2015 16:47:55 -0500
-Message-ID: <54AC580B.2050809@hurleysoftware.com>
-References: <1420513785-23660-1-git-send-email-peter@hurleysoftware.com> <9492211.AECobr3jIN@wuerfel> <54ABF1E2.1010905@hurleysoftware.com> <6786513.g26uGMFKLE@wuerfel>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: Re: [Patch v4] ARC: Dynamically determine BASE_BAUD from DeviceTree
+Date: Wed, 7 Jan 2015 06:36:14 +0000
+Message-ID: <C2D7FE5348E1B147BCA15975FBA2307565BCA499@IN01WEMBXA.internal.synopsys.com>
+References: <54ABD526.9020907@hurleysoftware.com>
+ <1420552747-27544-1-git-send-email-vgupta@synopsys.com>
+ <CAL_JsqLzzLajoQAT3nYd5zi4=+zchXfVVPnYNriAZZi4tpa6yA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <6786513.g26uGMFKLE@wuerfel>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Tony Lindgren <tony@atomide.com>, Grant Likely <grant.likely@linaro.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/06/2015 02:43 PM, Arnd Bergmann wrote:
-> On Tuesday 06 January 2015 09:32:02 Peter Hurley wrote:
->> On 01/06/2015 08:13 AM, Arnd Bergmann wrote:
->>> On Monday 05 January 2015 22:09:45 Peter Hurley wrote:
->>>> Some arches have no need to create unprobed 8250 ports; these phantom
->>>> ports are primarily required for ISA ports which have no probe
->>>> mechanism or to provide non-operational ports for userspace to
->>>> configure (via TIOCSSERIAL and TIOCSERCONFIG ioctls).
->>>>
->>>> Provide CONFIG_SERIAL_8250_PHANTOM_UARTS knob to disable phantom port
->>>> registration; ie., CONFIG_SERIAL_8250_PHANTOM_UARTS=N only registers
->>>> probed ports (ACPI/PNP, "serial8250" platform devices, PCI, etc).
->>>>
->>>> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
->>>> Cc: Tony Lindgren <tony@atomide.com>
->>>> Cc: Grant Likely <grant.likely@linaro.org>
->>>> Cc: Arnd Bergmann <arnd@arndb.de>
->>>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
->>>
->>> The intent is definitely right, but I think a better approach is
->>> possible.
->>>
->>> I haven't tried it here, but how about moving the serial8250_init
->>> function into a separate module, along with all the other parts
->>> that are only used for ISA devices, but leaving the actual core
->>> (all exported symbols) in this file?
+On Tuesday 06 January 2015 08:08 PM, Rob Herring wrote:
+> On Tue, Jan 6, 2015 at 7:59 AM, Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
+>> 8250 earlycon is broken on multi-platform ARC because the UART clk
+>> value (BASE_BAUD) is fixed at build time.
+> Note that it should only be broken if you rely on the kernel to init
+> the uart. It should work if the boot loader configured the UART and
+> you don't specify the baudrate.
+
+But even if uboot set it up right - when the early 8250 is enabled in kernel, it
+will try to apply BASE_BAUD to re init it again.
+So if that doesn't match platform expectations, early prints will be garbled. Am I
+missing something here?
+
+>>  #include <asm/mach_desc.h>
 >>
->> Unfortunately, I don't see a way to remove the stacked initialization
->> without risking tons of breakage.
->>
->> Since later probes can "find" an already-existing port and
->> re-initialize it, the probe order is crucial. For example, a PCI
->> probe can "find" an existing "serial8250" platform device port,
->> resulting in only one device node.
-> 
-> I'm probably missing something important, by why would that
-> be any different if the PCI driver gets loaded first and the
-> ISA driver second?
+>> +#ifdef CONFIG_SERIAL_8250_CONSOLE
+>> +
+>> +static unsigned int arc_base_baud;
+> This can be initdata.
 
-Well, the PCI driver would have the proper irq, for one. So, if the
-the platform driver re-initialized the port to the wrong irq...
+OK !
 
->> And the configuration knob will be required on all arches anyway because
->> that's how user-configurable device nodes are created.
-> 
-> I think that's fine: The user-configurable ports are the same as
-> the "ISA" or "phantom" ports we were talking about above, right?
+>
+>> +unsigned int __init arc_early_base_baud(void)
+>> +{
+>> +       return arc_base_baud/16;
+>> +}
+>> +
+>> +static void __init arc_set_early_base_baud(unsigned long dt_root)
+>> +{
+>> +       unsigned int core_clk = arc_get_core_freq();
+>> +
+>> +       if (of_flat_dt_is_compatible(dt_root, "abilis,arc-tb10x"))
+>> +               arc_base_baud = core_clk/3;
+> How many platforms do you expect this to be? This scales to maybe 10,
+> but not to 100 platforms. It certainly would not scale for ARM.
 
-Yes.
+The need for this came from our internal development of 2 new platform based on
+new ARCv2 ISA.
+They are slated to hit mainline sometime this year. Hence this is in a sense prep
+patch and converts the
+only existing upstream user of BASE_BAUD for ARC (tb10x). For ARC atleast I don't
+expect the scalability issue - yet :-)
+ARM doesn't seem define asm/serial.h (BASE_BAUD) and it probably works OK with the
+stub value in asm-generic ?
 
-> If those are part of a separate (possibly loadable) module, having
-> a configuration knob is the obvious way to do it. A lot of architectures
-> can just turn it off because they know exactly which ports are present
-> and there is no need for user-configurability. The ones that don't know
-> can load the module.
 
-Let me give this some more thought.
+> If it
+> is a lot, then we need to find a generic way to describe this in DT.
+> For example, perhaps we require the uart node to have a
+> clock-frequency property or add a chosen property. 
 
-Regards,
-Peter Hurley
+Yeah that would indeed be cleanest way. But I think we shd be ok for now.
+
+> You could make this
+> part of the machine descriptor instead, but that wouldn't be my first
+> choice.
+
+Me neither !
+
+Thx,
+-Vineet
+
+>
+> Rob
+>
