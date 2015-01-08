@@ -1,67 +1,68 @@
-From: Shreyas Bethur <shreyas.bethur@ni.com>
-Subject: Re: [PATCH v2] tty: Prevent hw state corruption in exclusive mode reopen
-Date: Wed, 7 Jan 2015 16:55:01 -0600
-Message-ID: <OFE11B8E2C.C7D29A8E-ON86257DC6.007DA974-86257DC6.007DE311@ni.com>
-References: <1419942873-6779-1-git-send-email-peter@hurleysoftware.com> <1419953965-16494-1-git-send-email-peter@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1419953965-16494-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Pramod Gurav <pramod.gurav@smartplayin.com>
+Subject: [PATCH v2] tty: serial: msm_serial: Remove duplicate code in msm_console_setup
+Date: Thu,  8 Jan 2015 14:45:45 +0530
+Message-ID: <1420708545-6477-1-git-send-email-pramod.gurav@smartplayin.com>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pramod Gurav <pramod.gurav@smartplayin.com>
 List-Id: linux-serial@vger.kernel.org
 
-Peter Hurley <peter@hurleysoftware.com> wrote on 12/30/2014 09:39:25 AM:
+The changes done here are already being done somewhere else in code.
+ - The function msm_init_clock() is also called while doing msm_startup
+   hence removing.
+ - msm_set_baud_rate() is anyway called in uart_set_options when it calls
+   msm_set_termios(). msm_reset() is called when we change the baud rate.
+   Hence doing away with both of these calls.
+ - CR_CMD_PROTECTION_EN and CR_TX_ENABLE settings are done in msm_set_baud_rate.
+   So do away with this here.
 
-> From: Peter Hurley <peter@hurleysoftware.com>
-> To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-> Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, 
-> linux-serial@vger.kernel.org, Shreyas Bethur 
-> <shreyas.bethur@ni.com>, Peter Hurley <peter@hurleysoftware.com>
-> Date: 12/30/2014 09:39 AM
-> Subject: [PATCH v2] tty: Prevent hw state corruption in exclusive mode 
-reopen
-> 
-> Exclusive mode ttys (TTY_EXCLUSIVE) do not allow further reopens;
-> fail the condition before associating the file pointer and calling
-> the driver open() method.
-> 
-> Prevents DTR programming when the tty is already in exclusive mode.
-> 
-> Reported-by: Shreyas Bethur <shreyas.bethur@ni.com>
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/tty/tty_io.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> index 4f35b43..51f066a 100644
-> --- a/drivers/tty/tty_io.c
-> +++ b/drivers/tty/tty_io.c
-> @@ -1464,6 +1464,9 @@ static int tty_reopen(struct tty_struct *tty)
->         driver->subtype == PTY_TYPE_MASTER)
->        return -EIO;
-> 
-> +   if (test_bit(TTY_EXCLUSIVE, &tty->flags) && !capable(CAP_SYS_ADMIN))
-> +      return -EBUSY;
-> +
->     tty->count++;
-> 
->     WARN_ON(!tty->ldisc);
-> @@ -2106,10 +2109,6 @@ retry_open:
->        retval = -ENODEV;
->     filp->f_flags = saved_flags;
-> 
-> -   if (!retval && test_bit(TTY_EXCLUSIVE, &tty->flags) &&
-> -                  !capable(CAP_SYS_ADMIN))
-> -      retval = -EBUSY;
-> -
->     if (retval) {
->  #ifdef TTY_DEBUG_HANGUP
->        printk(KERN_DEBUG "%s: error %d in opening %s...\n", __func__,
-> -- 
-> 2.2.1
-> 
+Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
+---
 
-Acked-by: Shreyas Bethur <shreyas.bethur@ni.com>
+Changes since v1:
+ - v1 was just removing call to msm_set_baud_rate(). Other code is removed on review
+   comments from Stephen Boyd here [1].
+ - Removed call to msm_init_clock() as it is called while doing msm_startup
+
+Tested on ifc6410 console.
+
+[1]: https://patchwork.kernel.org/patch/5527551/
+
+ drivers/tty/serial/msm_serial.c |   15 ---------------
+ 1 file changed, 15 deletions(-)
+
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index c88b522..057008d 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -932,27 +932,12 @@ static int __init msm_console_setup(struct console *co, char *options)
+ 	if (unlikely(!port->membase))
+ 		return -ENXIO;
+ 
+-	msm_init_clock(port);
+-
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+ 
+ 	bits = 8;
+ 	parity = 'n';
+ 	flow = 'n';
+-	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
+-		  UART_MR2);	/* 8N1 */
+-
+-	if (baud < 300 || baud > 115200)
+-		baud = 115200;
+-	msm_set_baud_rate(port, baud);
+-
+-	msm_reset(port);
+-
+-	if (msm_port->is_uartdm) {
+-		msm_write(port, UART_CR_CMD_PROTECTION_EN, UART_CR);
+-		msm_write(port, UART_CR_TX_ENABLE, UART_CR);
+-	}
+ 
+ 	pr_info("msm_serial: console setup on port #%d\n", port->line);
+ 
+-- 
+1.7.9.5
