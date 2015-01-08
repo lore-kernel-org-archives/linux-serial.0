@@ -1,61 +1,37 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH v2] tty: serial: msm_serial: Remove duplicate code in
- msm_console_setup
-Date: Thu, 08 Jan 2015 13:46:08 -0800
-Message-ID: <54AEFAA0.3010605@codeaurora.org>
-References: <1420708545-6477-1-git-send-email-pramod.gurav@smartplayin.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] serial: 8250: Make ISA ports optional
+Date: Thu, 08 Jan 2015 23:05:12 +0100
+Message-ID: <1896224.oMI8M6J5T7@wuerfel>
+References: <1420513785-23660-1-git-send-email-peter@hurleysoftware.com> <20150108131008.16c9a31c@lxorguk.ukuu.org.uk> <54AEAC47.1040403@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1420708545-6477-1-git-send-email-pramod.gurav@smartplayin.com>
+In-Reply-To: <54AEAC47.1040403@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Pramod Gurav <pramod.gurav@smartplayin.com>
-Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Tony Lindgren <tony@atomide.com>, Grant Likely <grant.likely@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/08/2015 01:15 AM, Pramod Gurav wrote:
->  drivers/tty/serial/msm_serial.c |   15 ---------------
->  1 file changed, 15 deletions(-)
->
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index c88b522..057008d 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -932,27 +932,12 @@ static int __init msm_console_setup(struct console *co, char *options)
->  	if (unlikely(!port->membase))
->  		return -ENXIO;
->  
-> -	msm_init_clock(port);
-> -
+On Thursday 08 January 2015 11:11:51 Peter Hurley wrote:
+> 
+> This interface is just storage and minor allocation, since the
+> port-reuse behavior will be limited to the "universal" driver.
+> From a sub-driver perspective, the shared storage is actually
+> a hindrance, so that reduces the requirement to minor allocation.
+> 
+> And that's where I'm stuck at the moment -- how to share ttyS
+> minor allocation. ttyS console is a related problem.
 
-Hm.. doesn't the console setup happen before the port is opened though?
-I would think that we need to keep this around so that the clock is
-actually enabled before we go and write to hardware registers.
+One idea that has come up in the past but never saw an implementation
+is to make the ttyS namespace and minor numbers completely generic and
+let any serial port driver use it. This would be a major rework, but
+have the added advantage of cleaning up a number of other namespace
+issues as well. There also lots of open question, in particular how
+to maintain compatibility with existing drivers. One could imagine
+that each uart always gets a ttyS device and optionally also gets
+a device node for the same port with a driver specific chardev as
+most of them do today. Or it could be an either/or decision that is
+made at compile time or as a module parameter.
 
->  	if (options)
->  		uart_parse_options(options, &baud, &parity, &bits, &flow);
->  
->  	bits = 8;
->  	parity = 'n';
->  	flow = 'n';
-
-I wonder if we should leave this here? Maybe we can rely on the user
-specifying the right values on the command line?
-
-> -	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
-> -		  UART_MR2);	/* 8N1 */
-> -
-> -	if (baud < 300 || baud > 115200)
-> -		baud = 115200;
-> -	msm_set_baud_rate(port, baud);
-> -
-> -	msm_reset(port);
-> -
-> -	if (msm_port->is_uartdm) {
-
-msm_port is unused now. Please remove it in the same patch.
-
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+	Arnd
