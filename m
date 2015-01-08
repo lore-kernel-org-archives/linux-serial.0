@@ -1,68 +1,37 @@
-From: Pramod Gurav <pramod.gurav@smartplayin.com>
-Subject: [PATCH v2] tty: serial: msm_serial: Remove duplicate code in msm_console_setup
-Date: Thu,  8 Jan 2015 14:45:45 +0530
-Message-ID: <1420708545-6477-1-git-send-email-pramod.gurav@smartplayin.com>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>
-Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pramod Gurav <pramod.gurav@smartplayin.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] serial: 8250: Make ISA ports optional
+Date: Thu, 8 Jan 2015 13:10:08 +0000
+Message-ID: <20150108131008.16c9a31c@lxorguk.ukuu.org.uk>
+References: <1420513785-23660-1-git-send-email-peter@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1420513785-23660-1-git-send-email-peter@hurleysoftware.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, linux-omap@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The changes done here are already being done somewhere else in code.
- - The function msm_init_clock() is also called while doing msm_startup
-   hence removing.
- - msm_set_baud_rate() is anyway called in uart_set_options when it calls
-   msm_set_termios(). msm_reset() is called when we change the baud rate.
-   Hence doing away with both of these calls.
- - CR_CMD_PROTECTION_EN and CR_TX_ENABLE settings are done in msm_set_baud_rate.
-   So do away with this here.
+On Mon,  5 Jan 2015 22:09:45 -0500
+Peter Hurley <peter@hurleysoftware.com> wrote:
 
-Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
----
+> Some arches have no need to create unprobed 8250 ports; these phantom
+> ports are primarily required for ISA ports which have no probe
+> mechanism or to provide non-operational ports for userspace to
+> configure (via TIOCSSERIAL and TIOCSERCONFIG ioctls).
+> 
+> Provide CONFIG_SERIAL_8250_PHANTOM_UARTS knob to disable phantom port
+> registration; ie., CONFIG_SERIAL_8250_PHANTOM_UARTS=N only registers
+> probed ports (ACPI/PNP, "serial8250" platform devices, PCI, etc).
 
-Changes since v1:
- - v1 was just removing call to msm_set_baud_rate(). Other code is removed on review
-   comments from Stephen Boyd here [1].
- - Removed call to msm_init_clock() as it is called while doing msm_startup
-
-Tested on ifc6410 console.
-
-[1]: https://patchwork.kernel.org/patch/5527551/
-
- drivers/tty/serial/msm_serial.c |   15 ---------------
- 1 file changed, 15 deletions(-)
-
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index c88b522..057008d 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -932,27 +932,12 @@ static int __init msm_console_setup(struct console *co, char *options)
- 	if (unlikely(!port->membase))
- 		return -ENXIO;
- 
--	msm_init_clock(port);
--
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 
- 	bits = 8;
- 	parity = 'n';
- 	flow = 'n';
--	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
--		  UART_MR2);	/* 8N1 */
--
--	if (baud < 300 || baud > 115200)
--		baud = 115200;
--	msm_set_baud_rate(port, baud);
--
--	msm_reset(port);
--
--	if (msm_port->is_uartdm) {
--		msm_write(port, UART_CR_CMD_PROTECTION_EN, UART_CR);
--		msm_write(port, UART_CR_TX_ENABLE, UART_CR);
--	}
- 
- 	pr_info("msm_serial: console setup on port #%d\n", port->line);
- 
--- 
-1.7.9.5
+Just #define serial8250_isa_devs to 0 on such platforms. gcc should then
+be bright enough to do the rest for you.
