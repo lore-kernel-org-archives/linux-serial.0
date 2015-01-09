@@ -1,54 +1,36 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/4] serial: fsl_lpuart: fix various DMA related issues
-Date: Fri, 9 Jan 2015 14:14:32 -0800
-Message-ID: <20150109221432.GA4056@kroah.com>
-References: <1417134205-4400-1-git-send-email-stefan@agner.ch>
- <677f2c62b6b6c1fe8e16cd38d5f20d47@agner.ch>
- <20141212143244.GA2219@kroah.com>
- <f6255321feb06d32f257b7b41d5d58a3@agner.ch>
+Subject: Re: [PATCH 1/5] tty/serial: at91: use correct type for
+ dma_sync_*_for_cpu() and dma_sync_*_for_device()
+Date: Fri, 9 Jan 2015 14:19:27 -0800
+Message-ID: <20150109221927.GA19100@kroah.com>
+References: <cover.1418131298.git.cyrille.pitchen@atmel.com>
+ <830a2b33ab0226405dc310c8a6d43731bf4ca8f9.1418131298.git.cyrille.pitchen@atmel.com>
+ <54AFF037.1000004@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <f6255321feb06d32f257b7b41d5d58a3@agner.ch>
+In-Reply-To: <54AFF037.1000004@atmel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Agner <stefan@agner.ch>
-Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Cyrille Pitchen <cyrille.pitchen@atmel.com>, wenyou.yang@atmel.com, ludovic.desroches@atmel.com, leilei.zhao@atmel.com, voice.shen@atmel.com, josh.wu@atmel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Dec 12, 2014 at 05:19:02PM +0100, Stefan Agner wrote:
-> On 2014-12-12 15:32, Greg KH wrote:
-> > On Fri, Dec 12, 2014 at 02:44:06PM +0100, Stefan Agner wrote:
-> >> Any thoughts on this patchset? Would have hopped that it makes it into
-> >> 3.19 as those are mostly fixes.
-> > 
-> > "mostly"?
-> > 
-> 
-> Well, all of them fix a bug, but PATCH 2/4 does this by also moving DMA
-> allocation to probe. I would really have to split up that patch and make
-> two incremental steps (split-up of RX/TX DMA allocation to make each
-> single action revert-able and move to probe). But this would lead to
-> more changed lines in total. The patchset as is already somewhat tested
-> since we use it in our 3.18 BSP, whereas a new set would not be tested.
-> 
-> One could also argument, it only affects fsl_lpuart (UART in rather not
-> very widespread SoC's Freescale Vybrid and LS1021a).
-> 
-> 
-> > I'll get to these after 3.19-rc1 is out, but it really looks like these
-> > will be for 3.20-rc1, unless you break them up into "bugfix only" type
-> > patches.
-> 
-> 
-> PATCH 1/4 fixes a bug which happens on a normal console rather often on
-> my setup. So if you decide that patchset is for 3.20-rc1, that one would
-> be nice to have in 3.19 as well...
+On Fri, Jan 09, 2015 at 04:13:59PM +0100, Nicolas Ferre wrote:
+> Le 09/12/2014 14:31, Cyrille Pitchen a =E9crit :
+> > dma_sync_*_for_cpu() and dma_sync_*_for_device() use 'enum dma_data=
+_direction',
+> > not 'enum dma_transfer_direction'
+> >=20
+> > Signed-off-by: Cyrille Pitchen <cyrille.pitchen@atmel.com>
+>=20
+> Sure:
+> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+>=20
+> Here it's difficult to add a "stable" tag as the error was introduced=
+ by
+> several different patches.
 
-Please redo this patchset then, makeing it obvious that some are fixes,
-and need to go for 3.19 and others are ok for 3.20.  As it is, the
-changelog entries do not look like anything here is for 3.19, sorry.
-
-thanks,
-
-greg k-h
+So that means it's not ok for older kernels?  That doesn't make sense..=
+=2E
