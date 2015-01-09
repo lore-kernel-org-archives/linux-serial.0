@@ -1,44 +1,54 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] Revert "tty: Fix pty master poll() after slave closes
- v2"
-Date: Fri, 09 Jan 2015 17:00:55 -0500
-Message-ID: <54B04F97.7070200@hurleysoftware.com>
-References: <1419941829-6536-1-git-send-email-peter@hurleysoftware.com> <54A29B0A.3060707@hurleysoftware.com> <20150109214106.GA7952@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 0/4] serial: fsl_lpuart: fix various DMA related issues
+Date: Fri, 9 Jan 2015 14:14:32 -0800
+Message-ID: <20150109221432.GA4056@kroah.com>
+References: <1417134205-4400-1-git-send-email-stefan@agner.ch>
+ <677f2c62b6b6c1fe8e16cd38d5f20d47@agner.ch>
+ <20141212143244.GA2219@kroah.com>
+ <f6255321feb06d32f257b7b41d5d58a3@agner.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150109214106.GA7952@kroah.com>
+Content-Disposition: inline
+In-Reply-To: <f6255321feb06d32f257b7b41d5d58a3@agner.ch>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Francesco Ruggeri <fruggeri@aristanetworks.com>, Francesco Ruggeri <fruggeri@arista.com>
+To: Stefan Agner <stefan@agner.ch>
+Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 01/09/2015 04:41 PM, Greg Kroah-Hartman wrote:
-> On Tue, Dec 30, 2014 at 07:31:06AM -0500, Peter Hurley wrote:
->> On 12/30/2014 07:17 AM, Peter Hurley wrote:
->>> This reverts commit c4dc304677e8d566572c4738d95c48be150c6606.
->>> This fix is superseded by commit 52bce7f8d4fc633c9a9d0646eef58ba6ae9a3b73,
->>> 'pty, n_tty: Simplify input processing on final close'.
->>>
->>> The final close now waits for input processing to complete before
->>> destroying the pty, so poll() does not need to special case this
->>> condition.
->>
->> Greg,
->>
->> As noted in this commit log, commit c4dc304677e8d566572c4738d95c48be150c6606,
->> 'tty: Fix pty master poll() after slave closes v2', is not required
->> after commit 52bce7f8d4fc633c9a9d0646eef58ba6ae9a3b73,
->> 'pty, n_tty: Simplify input processing on final close'
->>
->> However, 'tty: Fix pty master poll() after slave closes v2' is appropriate
->> for stable back to v3.12.
+On Fri, Dec 12, 2014 at 05:19:02PM +0100, Stefan Agner wrote:
+> On 2014-12-12 15:32, Greg KH wrote:
+> > On Fri, Dec 12, 2014 at 02:44:06PM +0100, Stefan Agner wrote:
+> >> Any thoughts on this patchset? Would have hopped that it makes it into
+> >> 3.19 as those are mostly fixes.
+> > 
+> > "mostly"?
+> > 
 > 
-> I don't understand, what needs to go to a stable tree and what doesn't?
+> Well, all of them fix a bug, but PATCH 2/4 does this by also moving DMA
+> allocation to probe. I would really have to split up that patch and make
+> two incremental steps (split-up of RX/TX DMA allocation to make each
+> single action revert-able and move to probe). But this would lead to
+> more changed lines in total. The patchset as is already somewhat tested
+> since we use it in our 3.18 BSP, whereas a new set would not be tested.
+> 
+> One could also argument, it only affects fsl_lpuart (UART in rather not
+> very widespread SoC's Freescale Vybrid and LS1021a).
+> 
+> 
+> > I'll get to these after 3.19-rc1 is out, but it really looks like these
+> > will be for 3.20-rc1, unless you break them up into "bugfix only" type
+> > patches.
+> 
+> 
+> PATCH 1/4 fixes a bug which happens on a normal console rather often on
+> my setup. So if you decide that patchset is for 3.20-rc1, that one would
+> be nice to have in 3.19 as well...
 
-Commit c4dc304677e8d5665 ("tty: Fix pty master poll() after slave closes v2")
-goes to stable v3.12~v3.18, but not 3.19-rc1+
+Please redo this patchset then, makeing it obvious that some are fixes,
+and need to go for 3.19 and others are ok for 3.20.  As it is, the
+changelog entries do not look like anything here is for 3.19, sorry.
 
-Regards,
-Peter Hurley
+thanks,
+
+greg k-h
