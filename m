@@ -1,61 +1,66 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: 8250: Make ISA ports optional
-Date: Fri, 09 Jan 2015 00:13:28 -0500
-Message-ID: <54AF6378.6030202@hurleysoftware.com>
-References: <1420513785-23660-1-git-send-email-peter@hurleysoftware.com> <20150108131008.16c9a31c@lxorguk.ukuu.org.uk> <54AEAC47.1040403@hurleysoftware.com> <1896224.oMI8M6J5T7@wuerfel>
+From: Pramod Gurav <pramod.gurav@smartplayin.com>
+Subject: Re: [PATCH v2] tty: serial: msm_serial: Remove duplicate code in
+ msm_console_setup
+Date: Fri, 09 Jan 2015 11:46:02 +0530
+Message-ID: <54AF7222.4050901@smartplayin.com>
+References: <1420708545-6477-1-git-send-email-pramod.gurav@smartplayin.com> <54AEFAA0.3010605@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1896224.oMI8M6J5T7@wuerfel>
-Sender: linux-omap-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Tony Lindgren <tony@atomide.com>, Grant Likely <grant.likely@linaro.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <54AEFAA0.3010605@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 01/08/2015 05:05 PM, Arnd Bergmann wrote:
-> On Thursday 08 January 2015 11:11:51 Peter Hurley wrote:
+Hi Stephen,
+
+On Friday 09 January 2015 03:16 AM, Stephen Boyd wrote:
+> On 01/08/2015 01:15 AM, Pramod Gurav wrote:
+>>  drivers/tty/serial/msm_serial.c |   15 ---------------
+>>  1 file changed, 15 deletions(-)
 >>
->> This interface is just storage and minor allocation, since the
->> port-reuse behavior will be limited to the "universal" driver.
->> From a sub-driver perspective, the shared storage is actually
->> a hindrance, so that reduces the requirement to minor allocation.
->>
->> And that's where I'm stuck at the moment -- how to share ttyS
->> minor allocation. ttyS console is a related problem.
+>> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+>> index c88b522..057008d 100644
+>> --- a/drivers/tty/serial/msm_serial.c
+>> +++ b/drivers/tty/serial/msm_serial.c
+>> @@ -932,27 +932,12 @@ static int __init msm_console_setup(struct console *co, char *options)
+>>  	if (unlikely(!port->membase))
+>>  		return -ENXIO;
+>>  
+>> -	msm_init_clock(port);
+>> -
 > 
-> One idea that has come up in the past but never saw an implementation
-> is to make the ttyS namespace and minor numbers completely generic and
-> let any serial port driver use it. This would be a major rework, but
-> have the added advantage of cleaning up a number of other namespace
-> issues as well. There also lots of open question, in particular how
-> to maintain compatibility with existing drivers. One could imagine
-> that each uart always gets a ttyS device and optionally also gets
-> a device node for the same port with a driver specific chardev as
-> most of them do today. Or it could be an either/or decision that is
-> made at compile time or as a module parameter.
+> Hm.. doesn't the console setup happen before the port is opened though?
+> I would think that we need to keep this around so that the clock is
+> actually enabled before we go and write to hardware registers.
+Thanks. Verified this. Will undo this change.
 
-I'm not totally convinced that sharing minor allocation is the right
-solution. ISTM that the main goal is for at least one serial driver
-to represent ttyS (assuming that it is a suitable work-alike to the
-8250 driver) while other ttyS serial drivers must still be able to
-load and operate.
+> 
+>>  	if (options)
+>>  		uart_parse_options(options, &baud, &parity, &bits, &flow);
+>>  
+>>  	bits = 8;
+>>  	parity = 'n';
+>>  	flow = 'n';
+> 
+> I wonder if we should leave this here? Maybe we can rely on the user
+> specifying the right values on the command line?
 
-So for example, a UART that is ttyS in a typical configuration, might
-be ttyX when another driver has been configured as ttyS instead.
-Assuming that every uart driver has a unique, alternate base name,
-then the problem is reduced to selecting the appropriate driver for
-ttyS.
-
-Some use cases would require selecting the ttyS driver at build time.
-Others would probably require the notion of a preferred driver.
-
-What got me thinking about this approach instead of sharing minor
-allocation was based on the 'first-come, first-served' question
-I asked back in Dec. What happens when probe order varies and
-console=ttyS0/login prompt doesn't show up where it's supposed to?
-I've had this experience with multiple ethernet adapters and it's
-not fun.
-
-Regards,
-Peter Hurley
+Ok. Will do.
+> 
+>> -	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
+>> -		  UART_MR2);	/* 8N1 */
+>> -
+>> -	if (baud < 300 || baud > 115200)
+>> -		baud = 115200;
+>> -	msm_set_baud_rate(port, baud);
+>> -
+>> -	msm_reset(port);
+>> -
+>> -	if (msm_port->is_uartdm) {
+> 
+> msm_port is unused now. Please remove it in the same patch.
+Sure. Thanks.
+> 
