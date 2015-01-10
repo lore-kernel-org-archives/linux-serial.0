@@ -1,67 +1,86 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/4] serial: fsl_lpuart: fix various DMA related issues
-Date: Fri, 9 Jan 2015 14:34:01 -0800
-Message-ID: <20150109223401.GA15118@kroah.com>
-References: <1417134205-4400-1-git-send-email-stefan@agner.ch>
- <677f2c62b6b6c1fe8e16cd38d5f20d47@agner.ch>
- <20141212143244.GA2219@kroah.com>
- <f6255321feb06d32f257b7b41d5d58a3@agner.ch>
- <20150109221432.GA4056@kroah.com>
- <742637f13bc97ecaadd1d264cd0ad4cc@agner.ch>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Stefan Agner <stefan@agner.ch>
+Subject: [PATCH v2 2/2] serial: fsl_lpuart: avoid new transfer while DMA is running
+Date: Sat, 10 Jan 2015 01:08:59 +0100
+Message-ID: <1420848539-4519-3-git-send-email-stefan@agner.ch>
+References: <1420848539-4519-1-git-send-email-stefan@agner.ch>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <742637f13bc97ecaadd1d264cd0ad4cc@agner.ch>
+In-Reply-To: <1420848539-4519-1-git-send-email-stefan@agner.ch>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Agner <stefan@agner.ch>
-Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, stefan@agner.ch
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jan 09, 2015 at 11:19:50PM +0100, Stefan Agner wrote:
-> On 2015-01-09 23:14, Greg KH wrote:
-> > On Fri, Dec 12, 2014 at 05:19:02PM +0100, Stefan Agner wrote:
-> >> On 2014-12-12 15:32, Greg KH wrote:
-> >> > On Fri, Dec 12, 2014 at 02:44:06PM +0100, Stefan Agner wrote:
-> >> >> Any thoughts on this patchset? Would have hopped that it makes it into
-> >> >> 3.19 as those are mostly fixes.
-> >> >
-> >> > "mostly"?
-> >> >
-> >>
-> >> Well, all of them fix a bug, but PATCH 2/4 does this by also moving DMA
-> >> allocation to probe. I would really have to split up that patch and make
-> >> two incremental steps (split-up of RX/TX DMA allocation to make each
-> >> single action revert-able and move to probe). But this would lead to
-> >> more changed lines in total. The patchset as is already somewhat tested
-> >> since we use it in our 3.18 BSP, whereas a new set would not be tested.
-> >>
-> >> One could also argument, it only affects fsl_lpuart (UART in rather not
-> >> very widespread SoC's Freescale Vybrid and LS1021a).
-> >>
-> >>
-> >> > I'll get to these after 3.19-rc1 is out, but it really looks like these
-> >> > will be for 3.20-rc1, unless you break them up into "bugfix only" type
-> >> > patches.
-> >>
-> >>
-> >> PATCH 1/4 fixes a bug which happens on a normal console rather often on
-> >> my setup. So if you decide that patchset is for 3.20-rc1, that one would
-> >> be nice to have in 3.19 as well...
-> > 
-> > Please redo this patchset then, makeing it obvious that some are fixes,
-> > and need to go for 3.19 and others are ok for 3.20.  As it is, the
-> > changelog entries do not look like anything here is for 3.19, sorry.
-> > 
-> 
-> Ok, will create a patchset with 1 and 3 for 3.19 (since this two really
-> lead to reproducible kernel traces), and the rest for 3.20. Do you
-> prefer to have the patches in a single patchset (with 3 moved to 2) or
-> should I create two patchsets?
+When the UART is in DMA receive mode (RDMAS set) and one character
+just arrived while another interrupt is handled (e.g. TX), the RDRF
+(receiver data register full flag) is set due to the water level of
+1. But since the DMA will take care of this character, there is no
+need to handle it by calling lpuart_prepare_rx. Handling it leads to
+adding the RX timeout timer twice:
 
-What would you want if you were in my shoes and had to maintain two
-different branches?
+[   74.336698] Kernel BUG at 80053070 [verbose debug info unavailable]
+[   74.342999] Internal error: Oops - BUG: 0 [#1] ARM0:00.00 khungtaskd
+[   74.347817] Modules linked in:    0 S  0.0  0.0   0:00.00 writeback
+[   74.350926] CPU: 0 PID: 0 Comm: swapper Not tainted 3.19.0-rc3-00001-g39d78e2 #1788
+[   74.358617] Hardware name: Freescale Vybrid VF610 (Device Tree)t
+[   74.364563] task: 807a7678 ti: 8079c000 task.ti: 8079c000 kblockd
+[   74.370002] PC is at add_timer+0x24/0x28.0  0.0   0:00.09 kworker/u2:1
+[   74.373960] LR is at lpuart_int+0x15c/0x3d8
+[   74.378171] pc : [<80053070>]    lr : [<802e0d88>]    psr: a0010193
+[   74.378171] sp : 8079de10  ip : 8079de20  fp : 8079de1c
+[   74.389694] r10: 807d44c0  r9 : 8688c300  r8 : 00000013
+[   74.394943] r7 : 20010193  r6 : 00000000  r5 : 000000a0  r4 : 86997210
+[   74.401498] r3 : ffffa7da  r2 : 80817868  r1 : 86997210  r0 : 86997344
+[   74.408052] Flags: NzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment kernel
+[   74.415489] Control: 10c5387d  Table: 8611c059  DAC: 00000015
+[   74.421265] Process swapper (pid: 0, stack limit = 0x8079c230)
+...
 
-(hint, two different patchsets...)
+Solve this by only execute the receiver path (lpuart_prepare_rx) if
+the DMA receive mode (RDMAS) is not set. Also, make sure the flag is
+cleared on initialization, in case it has been left set.
 
-greg k-h
+This can be best reproduced using UART as a serial console, then
+running top while dd'ing data into the terminal.
+
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+---
+ drivers/tty/serial/fsl_lpuart.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 29932b7..e95c497 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -755,18 +755,18 @@ out:
+ static irqreturn_t lpuart_int(int irq, void *dev_id)
+ {
+ 	struct lpuart_port *sport = dev_id;
+-	unsigned char sts;
++	unsigned char sts, crdma;
+ 
+ 	sts = readb(sport->port.membase + UARTSR1);
++	crdma = readb(sport->port.membase + UARTCR5);
+ 
+-	if (sts & UARTSR1_RDRF) {
++	if (sts & UARTSR1_RDRF && !(crdma & UARTCR5_RDMAS)) {
+ 		if (sport->lpuart_dma_use)
+ 			lpuart_prepare_rx(sport);
+ 		else
+ 			lpuart_rxint(irq, dev_id);
+ 	}
+-	if (sts & UARTSR1_TDRE &&
+-		!(readb(sport->port.membase + UARTCR5) & UARTCR5_TDMAS)) {
++	if (sts & UARTSR1_TDRE && !(crdma & UARTCR5_TDMAS)) {
+ 		if (sport->lpuart_dma_use)
+ 			lpuart_pio_tx(sport);
+ 		else
+@@ -1106,6 +1106,7 @@ static int lpuart_startup(struct uart_port *port)
+ 		setup_timer(&sport->lpuart_timer, lpuart_timer_func,
+ 			    (unsigned long)sport);
+ 		temp = readb(port->membase + UARTCR5);
++		temp &= ~UARTCR5_RDMAS;
+ 		writeb(temp | UARTCR5_TDMAS, port->membase + UARTCR5);
+ 	}
+ 
+-- 
+2.2.1
