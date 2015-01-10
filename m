@@ -1,113 +1,275 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: [PATCH v5] ARC: Dynamically determine BASE_BAUD from DeviceTree
-Date: Sat, 10 Jan 2015 16:55:52 +0530
-Message-ID: <1420889152-29361-1-git-send-email-vgupta@synopsys.com>
-References: <CAL_JsqLzzLajoQAT3nYd5zi4=+zchXfVVPnYNriAZZi4tpa6yA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqLzzLajoQAT3nYd5zi4=+zchXfVVPnYNriAZZi4tpa6yA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, robh@kernel.org
-Cc: Vineet Gupta <Vineet.Gupta1@synopsys.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+From: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Subject: [RFC PATCH v2 2/4] serial: mxs-auart: Use helpers for gpio irqs
+Date: Sat, 10 Jan 2015 15:32:44 +0100
+Message-ID: <1420900366-9169-2-git-send-email-j.uzycki@elproma.com.pl>
+References: <1420900366-9169-1-git-send-email-j.uzycki@elproma.com.pl>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1420900366-9169-1-git-send-email-j.uzycki@elproma.com.pl>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Cc: fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, linux-arm-kernel@lists.infradead.org, Janusz Uzycki <j.uzycki@elproma.com.pl>
 List-Id: linux-serial@vger.kernel.org
 
-8250 earlycon is broken on multi-platform ARC because the UART clk
-value (BASE_BAUD) is fixed at build time.
+The patch updates mxs-auart driver to use new mctrl_gpio helpers for
+gpio irqs. The code is much simpler now.
 
-Instead, determine the appropriate UART clk at runtime; parse the
-devicetree early for platforms requiring alternate UART clk values
-(currently only the TB10X platform).
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+Signed-off-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
 ---
- arch/arc/include/asm/serial.h | 23 +++++------------------
- arch/arc/kernel/devtree.c     | 24 ++++++++++++++++++++++++
- 2 files changed, 29 insertions(+), 18 deletions(-)
 
-diff --git a/arch/arc/include/asm/serial.h b/arch/arc/include/asm/serial.h
-index 602b0970a764..744a6ae15754 100644
---- a/arch/arc/include/asm/serial.h
-+++ b/arch/arc/include/asm/serial.h
-@@ -10,26 +10,13 @@
- #define _ASM_ARC_SERIAL_H
+There is no changes since v1 (rebased only).
+
+---
+ drivers/tty/serial/mxs-auart.c | 133 ++++-------------------------------------
+ 1 file changed, 13 insertions(+), 120 deletions(-)
+
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index ec553f8..2ddba69 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -149,7 +149,6 @@ struct mxs_auart_port {
+ #define MXS_AUART_DMA_RX_READY	3  /* bit 3 */
+ #define MXS_AUART_RTSCTS	4  /* bit 4 */
+ 	unsigned long flags;
+-	unsigned int mctrl_prev;
+ 	enum mxs_auart_type devtype;
+ 
+ 	unsigned int irq;
+@@ -167,7 +166,6 @@ struct mxs_auart_port {
+ 	void *rx_dma_buf;
+ 
+ 	struct mctrl_gpios	*gpios;
+-	int			gpio_irq[UART_GPIO_MAX];
+ 	bool			ms_irq_enabled;
+ };
+ 
+@@ -433,29 +431,6 @@ static void mxs_auart_set_mctrl(struct uart_port *u, unsigned mctrl)
+ 	mctrl_gpio_set(s->gpios, mctrl);
+ }
+ 
+-#define MCTRL_ANY_DELTA        (TIOCM_RI | TIOCM_DSR | TIOCM_CD | TIOCM_CTS)
+-static u32 mxs_auart_modem_status(struct mxs_auart_port *s, u32 mctrl)
+-{
+-	u32 mctrl_diff;
+-
+-	mctrl_diff = mctrl ^ s->mctrl_prev;
+-	s->mctrl_prev = mctrl;
+-	if (mctrl_diff & MCTRL_ANY_DELTA && s->ms_irq_enabled &&
+-						s->port.state != NULL) {
+-		if (mctrl_diff & TIOCM_RI)
+-			s->port.icount.rng++;
+-		if (mctrl_diff & TIOCM_DSR)
+-			s->port.icount.dsr++;
+-		if (mctrl_diff & TIOCM_CD)
+-			uart_handle_dcd_change(&s->port, mctrl & TIOCM_CD);
+-		if (mctrl_diff & TIOCM_CTS)
+-			uart_handle_cts_change(&s->port, mctrl & TIOCM_CTS);
+-
+-		wake_up_interruptible(&s->port.state->port.delta_msr_wait);
+-	}
+-	return mctrl;
+-}
+-
+ static u32 mxs_auart_get_mctrl(struct uart_port *u)
+ {
+ 	struct mxs_auart_port *s = to_auart_port(u);
+@@ -483,18 +458,9 @@ static void mxs_auart_enable_ms(struct uart_port *port)
+ 
+ 	s->ms_irq_enabled = true;
+ 
+-	if (s->gpio_irq[UART_GPIO_CTS] >= 0)
+-		enable_irq(s->gpio_irq[UART_GPIO_CTS]);
+-	/* TODO: enable AUART_INTR_CTSMIEN otherwise */
+-
+-	if (s->gpio_irq[UART_GPIO_DSR] >= 0)
+-		enable_irq(s->gpio_irq[UART_GPIO_DSR]);
+-
+-	if (s->gpio_irq[UART_GPIO_RI] >= 0)
+-		enable_irq(s->gpio_irq[UART_GPIO_RI]);
+-
+-	if (s->gpio_irq[UART_GPIO_DCD] >= 0)
+-		enable_irq(s->gpio_irq[UART_GPIO_DCD]);
++	mctrl_gpio_enable_ms(s->gpios);
++	/* TODO: enable AUART_INTR_CTSMIEN
++	 * if s->gpios->irq[UART_GPIO_CTS] == 0 */
+ }
  
  /*
-- * early-8250 requires BASE_BAUD to be defined and includes this header.
-- * We put in a typical value:
-- * 	(core clk / 16) - i.e. UART samples 16 times per sec.
-- * Athough in multi-platform-image this might not work, specially if the
-- * clk driving the UART is different.
-- * We can't use DeviceTree as this is typically for early serial.
-+ * early 8250 (now earlycon) requires BASE_BAUD to be defined in this header.
-+ * However to still determine it dynamically (for multi-platform images)
-+ * we do this in a helper by parsing the FDT early
-  */
+@@ -512,18 +478,9 @@ static void mxs_auart_disable_ms(struct uart_port *port)
  
--#include <asm/clk.h>
-+extern unsigned int __init arc_early_base_baud(void);
+ 	s->ms_irq_enabled = false;
  
--#define BASE_BAUD	(arc_get_core_freq() / 16)
+-	if (s->gpio_irq[UART_GPIO_CTS] >= 0)
+-		disable_irq(s->gpio_irq[UART_GPIO_CTS]);
+-	/* TODO: disable AUART_INTR_CTSMIEN otherwise */
 -
--/*
-- * This is definitely going to break early 8250 consoles on multi-platform
-- * images but hey, it won't add any code complexity for a debug feature of
-- * one broken driver.
-- */
--#ifdef CONFIG_ARC_PLAT_TB10X
--#undef BASE_BAUD
--#define BASE_BAUD	(arc_get_core_freq() / 16 / 3)
--#endif
-+#define BASE_BAUD	arc_early_base_baud()
- 
- #endif /* _ASM_ARC_SERIAL_H */
-diff --git a/arch/arc/kernel/devtree.c b/arch/arc/kernel/devtree.c
-index fffdb5e41b20..5036d4c06996 100644
---- a/arch/arc/kernel/devtree.c
-+++ b/arch/arc/kernel/devtree.c
-@@ -17,6 +17,28 @@
- #include <asm/clk.h>
- #include <asm/mach_desc.h>
- 
-+#ifdef CONFIG_SERIAL_8250_CONSOLE
-+
-+static unsigned int __initdata arc_base_baud;
-+
-+unsigned int __init arc_early_base_baud(void)
-+{
-+	return arc_base_baud/16;
-+}
-+
-+static void __init arc_set_early_base_baud(unsigned long dt_root)
-+{
-+	unsigned int core_clk = arc_get_core_freq();
-+
-+	if (of_flat_dt_is_compatible(dt_root, "abilis,arc-tb10x"))
-+		arc_base_baud = core_clk/3;
-+	else
-+		arc_base_baud = core_clk;
-+}
-+#else
-+#define arc_set_early_base_baud(dt_root)
-+#endif
-+
- static const void * __init arch_get_next_mach(const char *const **match)
- {
- 	static const struct machine_desc *mdesc = __arch_info_begin;
-@@ -56,5 +78,7 @@ const struct machine_desc * __init setup_machine_fdt(void *dt)
- 	if (clk)
- 		arc_set_core_freq(of_read_ulong(clk, len/4));
- 
-+	arc_set_early_base_baud(dt_root);
-+
- 	return mdesc;
+-	if (s->gpio_irq[UART_GPIO_DSR] >= 0)
+-		disable_irq(s->gpio_irq[UART_GPIO_DSR]);
+-
+-	if (s->gpio_irq[UART_GPIO_RI] >= 0)
+-		disable_irq(s->gpio_irq[UART_GPIO_RI]);
+-
+-	if (s->gpio_irq[UART_GPIO_DCD] >= 0)
+-		disable_irq(s->gpio_irq[UART_GPIO_DCD]);
++	mctrl_gpio_disable_ms(s->gpios);
++	/* TODO: disable AUART_INTR_CTSMIEN
++	 * if s->gpios->irq[UART_GPIO_CTS] == 0 */
  }
+ 
+ static int mxs_auart_dma_prep_rx(struct mxs_auart_port *s);
+@@ -799,7 +756,6 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+ {
+ 	u32 istat;
+ 	struct mxs_auart_port *s = context;
+-	u32 mctrl_temp = s->mctrl_prev;
+ 	u32 stat = readl(s->port.membase + AUART_STAT);
+ 
+ 	istat = readl(s->port.membase + AUART_INTR);
+@@ -811,16 +767,6 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+ 		| AUART_INTR_CTSMIS),
+ 			s->port.membase + AUART_INTR_CLR);
+ 
+-	/*
+-	 * Dealing with GPIO interrupt
+-	 */
+-	if (irq == s->gpio_irq[UART_GPIO_CTS] ||
+-	    irq == s->gpio_irq[UART_GPIO_DCD] ||
+-	    irq == s->gpio_irq[UART_GPIO_DSR] ||
+-	    irq == s->gpio_irq[UART_GPIO_RI])
+-		mxs_auart_modem_status(s,
+-				mctrl_gpio_get(s->gpios, &mctrl_temp));
+-
+ 	if (istat & AUART_INTR_CTSMIS) {
+ 		if (CTS_AT_AUART() && s->ms_irq_enabled)
+ 			uart_handle_cts_change(&s->port,
+@@ -885,9 +831,6 @@ static int mxs_auart_startup(struct uart_port *u)
+ 	 */
+ 	writel(AUART_LINECTRL_FEN, u->membase + AUART_LINECTRL_SET);
+ 
+-	/* get initial status of modem lines */
+-	mctrl_gpio_get(s->gpios, &s->mctrl_prev);
+-
+ 	s->ms_irq_enabled = false;
+ 	return 0;
+ }
+@@ -1157,71 +1100,23 @@ static int serial_mxs_probe_dt(struct mxs_auart_port *s,
+ 	return 0;
+ }
+ 
+-static bool mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
++static bool mxs_auart_init_gpios(struct mxs_auart_port *s)
+ {
+-	enum mctrl_gpio_idx i;
+-	struct gpio_desc *gpiod;
+-
+-	s->gpios = mctrl_gpio_init(dev, 0);
++	s->gpios = mctrl_gpio_init_dt(&s->port, 0);
+ 	if (IS_ERR_OR_NULL(s->gpios))
+ 		return false;
+ 
+ 	/* Block (enabled before) DMA option if RTS or CTS is GPIO line */
+ 	if (!RTS_AT_AUART() || !CTS_AT_AUART()) {
+ 		if (test_bit(MXS_AUART_RTSCTS, &s->flags))
+-			dev_warn(dev,
++			dev_warn(s->dev,
+ 				 "DMA and flow control via gpio may cause some problems. DMA disabled!\n");
+ 		clear_bit(MXS_AUART_RTSCTS, &s->flags);
+ 	}
+ 
+-	for (i = 0; i < UART_GPIO_MAX; i++) {
+-		gpiod = mctrl_gpio_to_gpiod(s->gpios, i);
+-		if (gpiod && (gpiod_get_direction(gpiod) == GPIOF_DIR_IN))
+-			s->gpio_irq[i] = gpiod_to_irq(gpiod);
+-		else
+-			s->gpio_irq[i] = -EINVAL;
+-	}
+-
+ 	return true;
+ }
+ 
+-static void mxs_auart_free_gpio_irq(struct mxs_auart_port *s)
+-{
+-	enum mctrl_gpio_idx i;
+-
+-	for (i = 0; i < UART_GPIO_MAX; i++)
+-		if (s->gpio_irq[i] >= 0)
+-			free_irq(s->gpio_irq[i], s);
+-}
+-
+-static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
+-{
+-	int *irq = s->gpio_irq;
+-	enum mctrl_gpio_idx i;
+-	int err = 0;
+-
+-	for (i = 0; (i < UART_GPIO_MAX) && !err; i++) {
+-		if (irq[i] < 0)
+-			continue;
+-
+-		irq_set_status_flags(irq[i], IRQ_NOAUTOEN);
+-		err = request_irq(irq[i], mxs_auart_irq_handle,
+-				IRQ_TYPE_EDGE_BOTH, dev_name(s->dev), s);
+-		if (err)
+-			dev_err(s->dev, "%s - Can't get %d irq\n",
+-				__func__, irq[i]);
+-	}
+-
+-	/*
+-	 * If something went wrong, rollback.
+-	 */
+-	while (err && (--i >= 0))
+-		if (irq[i] >= 0)
+-			free_irq(irq[i], s);
+-
+-	return err;
+-}
+-
+ static int mxs_auart_probe(struct platform_device *pdev)
+ {
+ 	const struct of_device_id *of_id =
+@@ -1269,8 +1164,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	s->port.type = PORT_IMX;
+ 	s->port.dev = s->dev = &pdev->dev;
+ 
+-	s->mctrl_prev = 0;
+-
+ 	s->irq = platform_get_irq(pdev, 0);
+ 	s->port.irq = s->irq;
+ 	ret = request_irq(s->irq, mxs_auart_irq_handle, 0, dev_name(&pdev->dev), s);
+@@ -1279,14 +1172,14 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, s);
+ 
+-	if (!mxs_auart_init_gpios(s, &pdev->dev))
++	if (!mxs_auart_init_gpios(s))
+ 		dev_err(&pdev->dev,
+ 			"Failed to initialize GPIOs. The serial port may not work as expected\n");
+ 
+ 	/*
+ 	 * Get the GPIO lines IRQ
+ 	 */
+-	ret = mxs_auart_request_gpio_irq(s);
++	ret = mctrl_gpio_request_irqs(s->gpios);
+ 	if (ret)
+ 		goto out_free_irq;
+ 
+@@ -1306,7 +1199,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ out_free_gpio_irq:
+-	mxs_auart_free_gpio_irq(s);
++	mctrl_gpio_free_irqs(s->gpios);
+ out_free_irq:
+ 	auart_port[pdev->id] = NULL;
+ 	free_irq(s->irq, s);
+@@ -1326,7 +1219,7 @@ static int mxs_auart_remove(struct platform_device *pdev)
+ 
+ 	auart_port[pdev->id] = NULL;
+ 
+-	mxs_auart_free_gpio_irq(s);
++	mctrl_gpio_free_irqs(s->gpios);
+ 	clk_put(s->clk);
+ 	free_irq(s->irq, s);
+ 	kfree(s);
 -- 
-1.9.1
+1.7.11.3
+
