@@ -1,34 +1,54 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH v2 1/4] tty: serial: Add 8250 earlycon to support noinit
- option
-Date: Mon, 12 Jan 2015 16:08:38 +0000
-Message-ID: <1421078918.31978.32.camel@linux.intel.com>
-References: <1421068104-30463-1-git-send-email-eddie.huang@mediatek.com>
-	 <1421068104-30463-2-git-send-email-eddie.huang@mediatek.com>
-	 <3712986.8SuKNvhKTk@wuerfel>
+From: Alexandre Courbot <gnurou@gmail.com>
+Subject: Re: [RFC PATCH v2 1/4] tty: serial_mctrl_gpio: Add irqs helpers for
+ input lines
+Date: Tue, 13 Jan 2015 07:25:44 +0900
+Message-ID: <CAAVeFu+1=rF1P3Ro2kVTn=6-LvDtcOG0UcTJnKXsN-FQK9b7+Q@mail.gmail.com>
+References: <1420900366-9169-1-git-send-email-j.uzycki@elproma.com.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3712986.8SuKNvhKTk@wuerfel>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-kernel@lists.infradead.org, Eddie Huang <eddie.huang@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>, devicetree@vger.kernel.org, Vladimir Murzin <vladimir.murzin@arm.com>, srv_heupstream@mediatek.com, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Jonathan Corbet <corbet@lwn.net>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, yh.chen@mediatek.com, Howard Chen <ibanezchen@gmail.com>, Ashwin Chaugule <ashwin.chaugule@linaro.org>, linux-serial@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, "Joe.C" <yingjoe.chen@mediatek.com>, Jiri Slaby <jslaby@suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1420900366-9169-1-git-send-email-j.uzycki@elproma.com.pl>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Alexander Shiyan <shc_work@mail.ru>, fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2015-01-12 at 16:35 +0100, Arnd Bergmann wrote:
-> On Monday 12 January 2015 21:08:21 Eddie Huang wrote:
-> > Add earlycon support not only baudrate option, but also add noinit option.
-> > If use noinit option, 8250 earlycon will not init serial hardware and use
-> > loader setting.
-> > 
-> > Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
-> 
-> I probably missed something in the previous discussion, but why is
-> "noinit" not just the default? I believe that is how we handle early
-> serial ports on PowerPC, and I see no downsides to it.
+On Sat, Jan 10, 2015 at 11:32 PM, Janusz Uzycki <j.uzycki@elproma.com.pl> wrote:
+> A driver using mctrl_gpio called gpiod_get_direction() to check if
+> gpio is input line. However .get_direction callback is not available
+> for all platforms. The patch allows to avoid the function.
+> The patch introduces the following helpers:
+> - mctrl_gpio_request_irqs
+> - mctrl_gpio_free_irqs
+> - mctrl_gpio_enable_ms
+> - mctrl_gpio_disable_ms
+> They allow to:
+> - simplify drivers which use mctrl_gpio
+> - hide irq table in mctrl_gpio
+> - use default irq handler for gpios
+> - better separate code for gpio modem lines from uart's code
+> In addition mctrl_gpio_init() has been renamed to mctrl_gpio_init_dt()
+> to focus DT usage. Also mctrl_gpio_init_dt() initializes irq table for
+> gpios now and passes struct uart_port into struct mctrl_gpios.
+> This resulted in changed mctrl_gpio_init_dt() parameter.
+> It also requires port->dev is set before the function is called.
+>
+> There were also fixed:
+> - irq = 0 means invalid/unused (-EINVAL no more used)
+> - mctrl_gpio_request_irqs() doesn't use negative enum value
+>   if request_irq() failed. It just calls mctrl_gpio_free_irqs().
+>
+> The mctrl_gpio_is_gpio() inline function is under discussion
+> and likely it can replace exported mctrl_gpio_to_gpiod() function.
+>
+> IRQ_NOAUTOEN setting and request_irq() order was not commented
+> but it looks right according to other drivers.
 
-Most PC hardware at least needs the port initialised to use it. It won't
-have been configured by the firmware in many cases.
+I cannot provide a full review on this part of the kernel, but this
+series is also useful in that it will allow us to make
+gpiod_get_direction() private. This function should never have been
+public in the first place.
 
-Alan
+The series,
+
+Acked-by: Alexandre Courbot <acourbot@nvidia.com>
