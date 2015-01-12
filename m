@@ -1,35 +1,27 @@
-From: Pramod Gurav <pramod.gurav@smartplayin.com>
-Subject: [PATCH] tty: serial: msm_serial: Remove console unregistration from driver exit.
-Date: Mon, 12 Jan 2015 19:22:12 +0530
-Message-ID: <1421070732-24527-1-git-send-email-pramod.gurav@smartplayin.com>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>
-Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pramod Gurav <pramod.gurav@smartplayin.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2 1/4] tty: serial: Add 8250 earlycon to support noinit option
+Date: Mon, 12 Jan 2015 16:35:19 +0100
+Message-ID: <3712986.8SuKNvhKTk@wuerfel>
+References: <1421068104-30463-1-git-send-email-eddie.huang@mediatek.com> <1421068104-30463-2-git-send-email-eddie.huang@mediatek.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1421068104-30463-2-git-send-email-eddie.huang@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Eddie Huang <eddie.huang@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>, devicetree@vger.kernel.org, Vladimir Murzin <vladimir.murzin@arm.com>, srv_heupstream@mediatek.com, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Jonathan Corbet <corbet@lwn.net>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, yh.chen@mediatek.com, Howard Chen <ibanezchen@gmail.com>, Ashwin Chaugule <ashwin.chaugule@linaro.org>, linux-serial@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, "Joe.C" <yingjoe.chen@mediatek.com>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-unregister_console() will be called from uart_remove_one_port() while
-removing the platform driver. So not necessary to call it in driver
-exit path.
+On Monday 12 January 2015 21:08:21 Eddie Huang wrote:
+> Add earlycon support not only baudrate option, but also add noinit option.
+> If use noinit option, 8250 earlycon will not init serial hardware and use
+> loader setting.
+> 
+> Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
 
-Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
----
- drivers/tty/serial/msm_serial.c |    3 ---
- 1 file changed, 3 deletions(-)
+I probably missed something in the previous discussion, but why is
+"noinit" not just the default? I believe that is how we handle early
+serial ports on PowerPC, and I see no downsides to it.
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 8a7af98..58ba602 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -1298,9 +1298,6 @@ static int __init msm_serial_init(void)
- 
- static void __exit msm_serial_exit(void)
- {
--#ifdef CONFIG_SERIAL_MSM_CONSOLE
--	unregister_console(&msm_console);
--#endif
- 	platform_driver_unregister(&msm_platform_driver);
- 	uart_unregister_driver(&msm_uart_driver);
- }
--- 
-1.7.9.5
+	Arnd
