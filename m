@@ -1,47 +1,82 @@
-From: Eddie Huang <eddie.huang@mediatek.com>
-Subject: [PATCH v2 3/4] arm64: dts: Add mediatek MT8173 earlycon support
-Date: Mon, 12 Jan 2015 21:08:23 +0800
-Message-ID: <1421068104-30463-4-git-send-email-eddie.huang@mediatek.com>
-References: <1421068104-30463-1-git-send-email-eddie.huang@mediatek.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1421068104-30463-1-git-send-email-eddie.huang@mediatek.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: devicetree@vger.kernel.org, Vladimir Murzin <vladimir.murzin@arm.com>, srv_heupstream@mediatek.com, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Jonathan Corbet <corbet@lwn.net>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, yh.chen@mediatek.com, Howard Chen <ibanezchen@gmail.com>, Ashwin Chaugule <ashwin.chaugule@linaro.org>, linux-serial@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, "Joe.C" <yingjoe.chen@mediatek.com>, Eddie Huang <eddie.huang@mediatek.com>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
+From: Pramod Gurav <pramod.gurav@smartplayin.com>
+Subject: [PATCH v3] tty: serial: msm_serial: code cleanup in msm_console_setup
+Date: Mon, 12 Jan 2015 19:15:32 +0530
+Message-ID: <1421070332-24420-1-git-send-email-pramod.gurav@smartplayin.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pramod Gurav <pramod.gurav@smartplayin.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add earlycon support to mediatek MT8173 evaluation board dts.
+The change does following:
+ - baud, flow, bits, parity were being overwritten as they were
+   being reinitialized after parsing.  Initialize them when they are
+   declared so that user provided setting are not overwritten.
+ - msm_set_baud_rate() is anyway called in uart_set_options when it calls
+   msm_set_termios(). msm_reset() is called when we change the baud rate.
+   Hence doing away with both of these calls.
+ - CR_CMD_PROTECTION_EN and CR_TX_ENABLE settings are done in msm_set_baud_rate.
+   So do away with this here.
 
-Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
+Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8173-evb.dts | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173-evb.dts b/arch/arm64/boot/dts/mediatek/mt8173-evb.dts
-index 43d5401..d4cf751 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173-evb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8173-evb.dts
-@@ -30,7 +30,9 @@
- 		reg = <0 0x40000000 0 0x80000000>;
- 	};
+Changes since v2:
+ - initialize baud, flow, bits, parity when they are declared.
+ - undo msm_init_clock removal as suggested by Stephen.
+ - Remove unused variable msm_port
+
+Tested on IFC6410.
+
+ drivers/tty/serial/msm_serial.c |   24 ++++--------------------
+ 1 file changed, 4 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index c88b522..a0cc6e0 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -920,14 +920,15 @@ static void msm_console_write(struct console *co, const char *s,
+ static int __init msm_console_setup(struct console *co, char *options)
+ {
+ 	struct uart_port *port;
+-	struct msm_port *msm_port;
+-	int baud = 0, flow, bits, parity;
++	int baud = 115200;
++	int bits = 8;
++	int parity = 'n';
++	int flow = 'n';
  
--	chosen { };
-+	chosen {
-+		linux,stdout-path = &uart0;
-+	};
- };
+ 	if (unlikely(co->index >= UART_NR || co->index < 0))
+ 		return -ENXIO;
  
- &uart0 {
+ 	port = get_port_from_line(co->index);
+-	msm_port = UART_TO_MSM(port);
+ 
+ 	if (unlikely(!port->membase))
+ 		return -ENXIO;
+@@ -937,23 +938,6 @@ static int __init msm_console_setup(struct console *co, char *options)
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+ 
+-	bits = 8;
+-	parity = 'n';
+-	flow = 'n';
+-	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
+-		  UART_MR2);	/* 8N1 */
+-
+-	if (baud < 300 || baud > 115200)
+-		baud = 115200;
+-	msm_set_baud_rate(port, baud);
+-
+-	msm_reset(port);
+-
+-	if (msm_port->is_uartdm) {
+-		msm_write(port, UART_CR_CMD_PROTECTION_EN, UART_CR);
+-		msm_write(port, UART_CR_TX_ENABLE, UART_CR);
+-	}
+-
+ 	pr_info("msm_serial: console setup on port #%d\n", port->line);
+ 
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
 -- 
-1.8.1.1.dirty
+1.7.9.5
