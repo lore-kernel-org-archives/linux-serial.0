@@ -1,68 +1,125 @@
-From: Pramod Gurav <pramod.gurav@smartplayin.com>
-Subject: Re: [PATCH v2] tty: serial: msm_serial: Remove duplicate code in
- msm_console_setup
-Date: Mon, 12 Jan 2015 18:16:43 +0530
-Message-ID: <54B3C233.3020306@smartplayin.com>
-References: <1420708545-6477-1-git-send-email-pramod.gurav@smartplayin.com> <54AEFAA0.3010605@codeaurora.org>
+From: Eddie Huang <eddie.huang@mediatek.com>
+Subject: [PATCH v2 1/4] tty: serial: Add 8250 earlycon to support noinit option
+Date: Mon, 12 Jan 2015 21:08:21 +0800
+Message-ID: <1421068104-30463-2-git-send-email-eddie.huang@mediatek.com>
+References: <1421068104-30463-1-git-send-email-eddie.huang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <54AEFAA0.3010605@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>
-Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1421068104-30463-1-git-send-email-eddie.huang@mediatek.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: devicetree@vger.kernel.org, Vladimir Murzin <vladimir.murzin@arm.com>, srv_heupstream@mediatek.com, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Jonathan Corbet <corbet@lwn.net>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, yh.chen@mediatek.com, Howard Chen <ibanezchen@gmail.com>, Ashwin Chaugule <ashwin.chaugule@linaro.org>, linux-serial@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, "Joe.C" <yingjoe.chen@mediatek.com>, Eddie Huang <eddie.huang@mediatek.com>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Stephen,
+Add earlycon support not only baudrate option, but also add noinit option.
+If use noinit option, 8250 earlycon will not init serial hardware and use
+loader setting.
 
-On Friday 09 January 2015 03:16 AM, Stephen Boyd wrote:
-> On 01/08/2015 01:15 AM, Pramod Gurav wrote:
->>  drivers/tty/serial/msm_serial.c |   15 ---------------
->>  1 file changed, 15 deletions(-)
->>
->> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
->> index c88b522..057008d 100644
->> --- a/drivers/tty/serial/msm_serial.c
->> +++ b/drivers/tty/serial/msm_serial.c
->> @@ -932,27 +932,12 @@ static int __init msm_console_setup(struct console *co, char *options)
->>  	if (unlikely(!port->membase))
->>  		return -ENXIO;
->>  
->> -	msm_init_clock(port);
->> -
-> 
-> Hm.. doesn't the console setup happen before the port is opened though?
-> I would think that we need to keep this around so that the clock is
-> actually enabled before we go and write to hardware registers.
-> 
->>  	if (options)
->>  		uart_parse_options(options, &baud, &parity, &bits, &flow);
->>  
->>  	bits = 8;
->>  	parity = 'n';
->>  	flow = 'n';
+Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
+---
+ drivers/tty/serial/8250/8250_early.c |  7 ++++---
+ drivers/tty/serial/earlycon.c        | 17 ++++++++++++-----
+ include/linux/serial_8250.h          |  2 ++
+ include/linux/serial_core.h          |  1 +
+ 4 files changed, 19 insertions(+), 8 deletions(-)
 
-Checked some of the driver registering console and they mostly have this
-but this initialization is done when these variables are declared so
-that user provided setting won't be overwritten. I think we too should
-follow the same. With these variables initialized when they are declared
-user's values will be retained.
-
-> 
-> I wonder if we should leave this here? Maybe we can rely on the user
-> specifying the right values on the command line?
-> 
->> -	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
->> -		  UART_MR2);	/* 8N1 */
->> -
->> -	if (baud < 300 || baud > 115200)
->> -		baud = 115200;
->> -	msm_set_baud_rate(port, baud);
->> -
->> -	msm_reset(port);
->> -
->> -	if (msm_port->is_uartdm) {
-> 
-> msm_port is unused now. Please remove it in the same patch.
-> 
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 4858b8a..a13d757 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -138,19 +138,20 @@ static void __init init_port(struct earlycon_device *device)
+ 	serial8250_early_out(port, UART_LCR, c & ~UART_LCR_DLAB);
+ }
+ 
+-static int __init early_serial8250_setup(struct earlycon_device *device,
++int __init early_serial8250_setup(struct earlycon_device *device,
+ 					 const char *options)
+ {
+ 	if (!(device->port.membase || device->port.iobase))
+ 		return 0;
+ 
+-	if (!device->baud) {
++	if (!device->baud && !device->noinit) {
+ 		device->baud = probe_baud(&device->port);
+ 		snprintf(device->options, sizeof(device->options), "%u",
+ 			 device->baud);
+ 	}
+ 
+-	init_port(device);
++	if (!device->noinit)
++		init_port(device);
+ 
+ 	early_device = device;
+ 	device->con->write = early_serial8250_write;
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 64fe25a..4891251 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -58,7 +58,7 @@ static int __init parse_options(struct earlycon_device *device,
+ 				char *options)
+ {
+ 	struct uart_port *port = &device->port;
+-	int mmio, mmio32, length;
++	int noinit, mmio, mmio32, length;
+ 	unsigned long addr;
+ 
+ 	if (!options)
+@@ -92,10 +92,17 @@ static int __init parse_options(struct earlycon_device *device,
+ 	options = strchr(options, ',');
+ 	if (options) {
+ 		options++;
+-		device->baud = simple_strtoul(options, NULL, 0);
+-		length = min(strcspn(options, " ") + 1,
+-			     (size_t)(sizeof(device->options)));
+-		strlcpy(device->options, options, length);
++		noinit = !strncmp(options, "noinit", 6);
++		if (noinit) {
++			device->noinit = noinit;
++			strlcpy(device->options, options, 6);
++			device->options[6] = '\0';
++		} else {
++			device->baud = simple_strtoul(options, NULL, 0);
++			length = min(strcspn(options, " ") + 1,
++					(size_t)(sizeof(device->options)));
++			strlcpy(device->options, options, length);
++		}
+ 	}
+ 
+ 	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index e02acf0..0e26eec 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -119,6 +119,8 @@ extern int serial8250_find_port(struct uart_port *p);
+ extern int serial8250_find_port_for_earlycon(void);
+ extern unsigned int serial8250_early_in(struct uart_port *port, int offset);
+ extern void serial8250_early_out(struct uart_port *port, int offset, int value);
++extern int early_serial8250_setup(struct earlycon_device *device,
++					 const char *options);
+ extern int setup_early_serial8250_console(char *cmdline);
+ extern void serial8250_do_set_termios(struct uart_port *port,
+ 		struct ktermios *termios, struct ktermios *old);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 057038c..72c6698 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -326,6 +326,7 @@ struct earlycon_device {
+ 	struct uart_port port;
+ 	char options[16];		/* e.g., 115200n8 */
+ 	unsigned int baud;
++	int noinit;
+ };
+ int setup_earlycon(char *buf, const char *match,
+ 		   int (*setup)(struct earlycon_device *, const char *));
+-- 
+1.8.1.1.dirty
