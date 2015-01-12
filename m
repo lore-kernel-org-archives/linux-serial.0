@@ -1,82 +1,35 @@
 From: Pramod Gurav <pramod.gurav@smartplayin.com>
-Subject: [PATCH v3] tty: serial: msm_serial: code cleanup in msm_console_setup
-Date: Mon, 12 Jan 2015 19:15:32 +0530
-Message-ID: <1421070332-24420-1-git-send-email-pramod.gurav@smartplayin.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH] tty: serial: msm_serial: Remove console unregistration from driver exit.
+Date: Mon, 12 Jan 2015 19:22:12 +0530
+Message-ID: <1421070732-24527-1-git-send-email-pramod.gurav@smartplayin.com>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
 To: Stephen Boyd <sboyd@codeaurora.org>
 Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pramod Gurav <pramod.gurav@smartplayin.com>
 List-Id: linux-serial@vger.kernel.org
 
-The change does following:
- - baud, flow, bits, parity were being overwritten as they were
-   being reinitialized after parsing.  Initialize them when they are
-   declared so that user provided setting are not overwritten.
- - msm_set_baud_rate() is anyway called in uart_set_options when it calls
-   msm_set_termios(). msm_reset() is called when we change the baud rate.
-   Hence doing away with both of these calls.
- - CR_CMD_PROTECTION_EN and CR_TX_ENABLE settings are done in msm_set_baud_rate.
-   So do away with this here.
+unregister_console() will be called from uart_remove_one_port() while
+removing the platform driver. So not necessary to call it in driver
+exit path.
 
 Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
 ---
-
-Changes since v2:
- - initialize baud, flow, bits, parity when they are declared.
- - undo msm_init_clock removal as suggested by Stephen.
- - Remove unused variable msm_port
-
-Tested on IFC6410.
-
- drivers/tty/serial/msm_serial.c |   24 ++++--------------------
- 1 file changed, 4 insertions(+), 20 deletions(-)
+ drivers/tty/serial/msm_serial.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index c88b522..a0cc6e0 100644
+index 8a7af98..58ba602 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -920,14 +920,15 @@ static void msm_console_write(struct console *co, const char *s,
- static int __init msm_console_setup(struct console *co, char *options)
+@@ -1298,9 +1298,6 @@ static int __init msm_serial_init(void)
+ 
+ static void __exit msm_serial_exit(void)
  {
- 	struct uart_port *port;
--	struct msm_port *msm_port;
--	int baud = 0, flow, bits, parity;
-+	int baud = 115200;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
- 
- 	if (unlikely(co->index >= UART_NR || co->index < 0))
- 		return -ENXIO;
- 
- 	port = get_port_from_line(co->index);
--	msm_port = UART_TO_MSM(port);
- 
- 	if (unlikely(!port->membase))
- 		return -ENXIO;
-@@ -937,23 +938,6 @@ static int __init msm_console_setup(struct console *co, char *options)
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 
--	bits = 8;
--	parity = 'n';
--	flow = 'n';
--	msm_write(port, UART_MR2_BITS_PER_CHAR_8 | UART_MR2_STOP_BIT_LEN_ONE,
--		  UART_MR2);	/* 8N1 */
--
--	if (baud < 300 || baud > 115200)
--		baud = 115200;
--	msm_set_baud_rate(port, baud);
--
--	msm_reset(port);
--
--	if (msm_port->is_uartdm) {
--		msm_write(port, UART_CR_CMD_PROTECTION_EN, UART_CR);
--		msm_write(port, UART_CR_TX_ENABLE, UART_CR);
--	}
--
- 	pr_info("msm_serial: console setup on port #%d\n", port->line);
- 
- 	return uart_set_options(port, co, baud, parity, bits, flow);
+-#ifdef CONFIG_SERIAL_MSM_CONSOLE
+-	unregister_console(&msm_console);
+-#endif
+ 	platform_driver_unregister(&msm_platform_driver);
+ 	uart_unregister_driver(&msm_uart_driver);
+ }
 -- 
 1.7.9.5
