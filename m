@@ -1,54 +1,34 @@
-From: Alexandre Courbot <gnurou@gmail.com>
-Subject: Re: [RFC PATCH v2 1/4] tty: serial_mctrl_gpio: Add irqs helpers for
- input lines
-Date: Tue, 13 Jan 2015 07:25:44 +0900
-Message-ID: <CAAVeFu+1=rF1P3Ro2kVTn=6-LvDtcOG0UcTJnKXsN-FQK9b7+Q@mail.gmail.com>
-References: <1420900366-9169-1-git-send-email-j.uzycki@elproma.com.pl>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH v3] tty: serial: msm_serial: code cleanup in msm_console_setup
+Date: Mon, 12 Jan 2015 16:24:16 -0800
+Message-ID: <54B465B0.6080206@codeaurora.org>
+References: <1421070332-24420-1-git-send-email-pramod.gurav@smartplayin.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1420900366-9169-1-git-send-email-j.uzycki@elproma.com.pl>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Janusz Uzycki <j.uzycki@elproma.com.pl>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Alexander Shiyan <shc_work@mail.ru>, fabio.estevam@freescale.com, Richard Genoud <richard.genoud@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1421070332-24420-1-git-send-email-pramod.gurav@smartplayin.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Pramod Gurav <pramod.gurav@smartplayin.com>
+Cc: David Brown <davidb@codeaurora.org>, Daniel Walker <dwalker@fifo99.com>, Bryan Huntsman <bryanh@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Jan 10, 2015 at 11:32 PM, Janusz Uzycki <j.uzycki@elproma.com.pl> wrote:
-> A driver using mctrl_gpio called gpiod_get_direction() to check if
-> gpio is input line. However .get_direction callback is not available
-> for all platforms. The patch allows to avoid the function.
-> The patch introduces the following helpers:
-> - mctrl_gpio_request_irqs
-> - mctrl_gpio_free_irqs
-> - mctrl_gpio_enable_ms
-> - mctrl_gpio_disable_ms
-> They allow to:
-> - simplify drivers which use mctrl_gpio
-> - hide irq table in mctrl_gpio
-> - use default irq handler for gpios
-> - better separate code for gpio modem lines from uart's code
-> In addition mctrl_gpio_init() has been renamed to mctrl_gpio_init_dt()
-> to focus DT usage. Also mctrl_gpio_init_dt() initializes irq table for
-> gpios now and passes struct uart_port into struct mctrl_gpios.
-> This resulted in changed mctrl_gpio_init_dt() parameter.
-> It also requires port->dev is set before the function is called.
+On 01/12/2015 05:45 AM, Pramod Gurav wrote:
+> The change does following:
+>  - baud, flow, bits, parity were being overwritten as they were
+>    being reinitialized after parsing.  Initialize them when they are
+>    declared so that user provided setting are not overwritten.
+>  - msm_set_baud_rate() is anyway called in uart_set_options when it calls
+>    msm_set_termios(). msm_reset() is called when we change the baud rate.
+>    Hence doing away with both of these calls.
+>  - CR_CMD_PROTECTION_EN and CR_TX_ENABLE settings are done in msm_set_baud_rate.
+>    So do away with this here.
 >
-> There were also fixed:
-> - irq = 0 means invalid/unused (-EINVAL no more used)
-> - mctrl_gpio_request_irqs() doesn't use negative enum value
->   if request_irq() failed. It just calls mctrl_gpio_free_irqs().
+> Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
 >
-> The mctrl_gpio_is_gpio() inline function is under discussion
-> and likely it can replace exported mctrl_gpio_to_gpiod() function.
->
-> IRQ_NOAUTOEN setting and request_irq() order was not commented
-> but it looks right according to other drivers.
 
-I cannot provide a full review on this part of the kernel, but this
-series is also useful in that it will allow us to make
-gpiod_get_direction() private. This function should never have been
-public in the first place.
+Reviewed-by: Stephen Boyd <sboyd@codeaurora.org>
 
-The series,
-
-Acked-by: Alexandre Courbot <acourbot@nvidia.com>
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
