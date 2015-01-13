@@ -1,165 +1,93 @@
-From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
-Subject: Re: [RFC PATCH v2 1/4] tty: serial_mctrl_gpio: Add irqs helpers for
- input lines
-Date: Tue, 13 Jan 2015 15:44:09 +0100
-Message-ID: <54B52F39.1030709@elproma.com.pl>
-References: <1420900366-9169-1-git-send-email-j.uzycki@elproma.com.pl> <CACQ1gAibCAwWavjhT8VW8WkjEq0qGobQ9qF=pNtHRu1WUaRigA@mail.gmail.com> <54B52304.1030008@elproma.com.pl> <CACQ1gAipk7mfGdg7fjoGvFaN+1hc8iOhW65i5bkr-avXmtB+8g@mail.gmail.com> <54B52CCB.3030100@elproma.com.pl> <CACQ1gAiYH_ff8==rrcmnNNZHXTftGyfrqPyeSZZwrLSmsns6Fg@mail.gmail.com>
+From: "Michael Doswald" <michael.doswald@gmx.net>
+Subject: [PATCH] 3.19-rc4: Fix race condition in i.MX serial port driver
+Date: Tue, 13 Jan 2015 17:07:08 +0100
+Message-ID: <trinity-2ff5fec6-196c-4ecc-9ec2-f1b223f0ea25-1421165228466@3capp-gmx-bs70>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <CACQ1gAiYH_ff8==rrcmnNNZHXTftGyfrqPyeSZZwrLSmsns6Fg@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Alexander Shiyan <shc_work@mail.ru>, fabio.estevam@freescale.com, Fabio Estevam <festevam@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Alexandre Courbot <gnurou@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+Under pressure, the imx.c device driver may transfer the same data mult=
+iple
+times.=20
 
-W dniu 2015-01-13 o 15:41, Richard Genoud pisze:
-> 2015-01-13 15:33 GMT+01:00 Janusz U=C5=BCycki <j.uzycki@elproma.com.p=
-l>:
->> W dniu 2015-01-13 o 15:30, Richard Genoud pisze:
->>
->>> 2015-01-13 14:52 GMT+01:00 Janusz U=C5=BCycki <j.uzycki@elproma.com=
-=2Epl>:
->>>> W dniu 2015-01-13 o 14:04, Richard Genoud pisze:
->>>>
->>>>> 2015-01-10 15:32 GMT+01:00 Janusz Uzycki <j.uzycki@elproma.com.pl=
->:
->>>>>> diff --git a/drivers/tty/serial/serial_mctrl_gpio.h
->>>>>> b/drivers/tty/serial/serial_mctrl_gpio.h
->>>>>> index 400ba04..13ba3f4 100644
->>>>>> --- a/drivers/tty/serial/serial_mctrl_gpio.h
->>>>>> +++ b/drivers/tty/serial/serial_mctrl_gpio.h
->>>>>> @@ -21,6 +21,7 @@
->>>>>>     #include <linux/err.h>
->>>>>>     #include <linux/device.h>
->>>>>>     #include <linux/gpio/consumer.h>
->>>>>> +#include <linux/serial_core.h>
->>>>>>
->>>>>>     enum mctrl_gpio_idx {
->>>>>>            UART_GPIO_CTS,
->>>>>> @@ -40,6 +41,13 @@ enum mctrl_gpio_idx {
->>>>>>      */
->>>>>>     struct mctrl_gpios;
->>>>>>
->>>>>> +/*
->>>>>> + * Return true if gidx is GPIO line, otherwise false.
->>>>>> + * It assumes that gpios is allocated and not NULL.
->>>>>> + */
->>>>>> +inline
->>>>>> +bool mctrl_gpio_is_gpio(struct mctrl_gpios *gpios, enum mctrl_g=
-pio_idx
->>>>>> gidx);
->>>>>> +
->>>>> This leads to a compile error :
->>>>>      CC      drivers/tty/serial/atmel_serial.o
->>>>> In file included from drivers/tty/serial/atmel_serial.c:64:0:
->>>>> drivers/tty/serial/atmel_serial.c: In function
->>>>> 'atmel_disable_ms.part.22':
->>>>> drivers/tty/serial/serial_mctrl_gpio.h:49:6: error: inlining fail=
-ed in
->>>>> call to always_inline 'mctrl_gpio_is_gpio': function body not
->>>>> available
->>>>> drivers/tty/serial/atmel_serial.c:536:25: error: called from here
->>>>> In file included from drivers/tty/serial/atmel_serial.c:64:0:
->>>>> drivers/tty/serial/serial_mctrl_gpio.h:49:6: error: inlining fail=
-ed in
->>>>> call to always_inline 'mctrl_gpio_is_gpio': function body not
->>>>> available
->>>>> drivers/tty/serial/atmel_serial.c:539:25: error: called from here
->>>>> In file included from drivers/tty/serial/atmel_serial.c:64:0:
->>>>> drivers/tty/serial/serial_mctrl_gpio.h:49:6: error: inlining fail=
-ed in
->>>>> call to always_inline 'mctrl_gpio_is_gpio': function body not
->>>>> available
->>>>> drivers/tty/serial/atmel_serial.c:542:25: error: called from here
->>>>> In file included from drivers/tty/serial/atmel_serial.c:64:0:
->>>>> drivers/tty/serial/serial_mctrl_gpio.h:49:6: error: inlining fail=
-ed in
->>>>> call to always_inline 'mctrl_gpio_is_gpio': function body not
->>>>> available
->>>>> drivers/tty/serial/atmel_serial.c:545:25: error: called from here
->>>>> In file included from drivers/tty/serial/atmel_serial.c:64:0:
->>>>> drivers/tty/serial/atmel_serial.c: In function 'atmel_enable_ms':
->>>>> drivers/tty/serial/serial_mctrl_gpio.h:49:6: error: inlining fail=
-ed in
->>>>> call to always_inline 'mctrl_gpio_is_gpio': function body not
->>>>> available
->>>>> drivers/tty/serial/atmel_serial.c:503:25: error: called from here
->>>>> In file included from drivers/tty/serial/atmel_serial.c:64:0:
->>>>> drivers/tty/serial/serial_mctrl_gpio.h:49:6: error: inlining fail=
-ed in
->>>>> call to always_inline 'mctrl_gpio_is_gpio': function body not
->>>>> available
->>>>> drivers/tty/serial/atmel_serial.c:506:25: error: called from here
->>>>> In file included from drivers/tty/serial/atmel_serial.c:64:0:
->>>>> drivers/tty/serial/serial_mctrl_gpio.h:49:6: error: inlining fail=
-ed in
->>>>> call to always_inline 'mctrl_gpio_is_gpio': function body not
->>>>> available
->>>>> drivers/tty/serial/atmel_serial.c:509:25: error: called from here
->>>>> In file included from drivers/tty/serial/atmel_serial.c:64:0:
->>>>> drivers/tty/serial/serial_mctrl_gpio.h:49:6: error: inlining fail=
-ed in
->>>>> call to always_inline 'mctrl_gpio_is_gpio': function body not
->>>>> available
->>>>> drivers/tty/serial/atmel_serial.c:512:25: error: called from here
->>>>> make[3]: *** [drivers/tty/serial/atmel_serial.o] Error 1
->>>>> make[2]: *** [drivers/tty/serial] Error 2
->>>>> make[1]: *** [drivers/tty] Error 2
->>>>> make: *** [drivers] Error 2
->>>>
->>>> Do you compile atmel_serial as module? I compiled built-in and it =
-was
->>>> fine
->>>> for me.
->>>> So the function should be exported like mctrl_gpio_to_gpiod() I gu=
-ess.
->>>> An other reason can be you have CONFIG_GPIOLIB=3Dn ?
->>>> In fact, mctrl_gpio_is_gpio() should depend on CONFIG_GPIOLIB for =
-empty
->>>> body.
->>>>
->>> well, I'm also compiling it built-in (I even have config_module=3DN=
-)
->>
->> You have no CONFIG_GPIOLIB enabled and it is the bug in the patchset=
-=2E
->> Thanks.
->> Janusz
-> Actually, I have CONFIG_GPIOLIB=3Dy, only it doesn't appears in the d=
-efconfig.
-> I did:
-> # cp defconfig arch/arm/configs/toto_defconfig
-> # ARCH=3Darm make toto_defconfig
->
-> # grep CONFIG_GPIOLIB .config
-> CONFIG_GPIOLIB=3Dy
-> CONFIG_GPIOLIB_IRQCHIP=3Dy
->
-> # LANG=3DC ARCH=3Darm
-> CROSS_COMPILE=3D~/dev/LNS/buildroot-VIP/output/host/usr/bin/arm-linux=
+Reason:=20
+=46unction imx_dma_tx checks for an active DMA transfer by calling
+dmaengine_tx_status. The return value may indicate that no transfer is=20
+running while the dma_tx_callback function is still being executed. In=20
+this case the xmit->tail pointer may not be updated to the correct valu=
+e=20
+when imx_dma_tx initiates a new DMA transfer, which will result in a DM=
+A
+transfer with the same base address as the previous one.
+
+Patch:
+Use existing dma_is_txing variable to guard DMA transfer initiation ins=
+tead
+of dmaengine_tx_status. Clear dma_is_txing at the end of the DMA callba=
+ck
+function therefore extending the critical section where the port lock i=
+s
+held. Critical section extension is in line with the callback function=20
+of other drivers, e.g. serial-tegra.c (tegra_uart_tx_dma_complete).
+=20
+=20
+Signed-off-by: Michael Doswald <michael.doswald@gmx.net>
+---
+ drivers/tty/serial/imx.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 4c5e909..29e31b1 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -503,13 +503,10 @@ static void dma_tx_callback(void *data)
+=20
+ 	dma_unmap_sg(sport->port.dev, sgl, sport->dma_tx_nents, DMA_TO_DEVICE=
+);
+=20
+-	sport->dma_is_txing =3D 0;
 -
-> make -j12 uImage
-> [...]
-> drivers/tty/serial/serial_mctrl_gpio.h:49:6: error: inlining failed i=
-n
-> call to always_inline 'mctrl_gpio_is_gpio': function body not
-> available
-> drivers/tty/serial/atmel_serial.c:536:25: error: called from here
-> In file included from drivers/tty/serial/atmel_serial.c:64:0:
+ 	/* update the stat */
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 	xmit->tail =3D (xmit->tail + sport->tx_bytes) & (UART_XMIT_SIZE - 1);
+ 	sport->port.icount.tx +=3D sport->tx_bytes;
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
+=20
+ 	dev_dbg(sport->port.dev, "we finish the TX DMA.\n");
+=20
+@@ -518,8 +515,10 @@ static void dma_tx_callback(void *data)
+ 	if (waitqueue_active(&sport->dma_wait)) {
+ 		wake_up(&sport->dma_wait);
+ 		dev_dbg(sport->port.dev, "exit in %s.\n", __func__);
+-		return;
+ 	}
++
++	sport->dma_is_txing =3D 0;
++	spin_unlock_irqrestore(&sport->port.lock, flags);
+ }
+=20
+ static void imx_dma_tx(struct imx_port *sport)
+@@ -529,11 +528,9 @@ static void imx_dma_tx(struct imx_port *sport)
+ 	struct dma_async_tx_descriptor *desc;
+ 	struct dma_chan	*chan =3D sport->dma_chan_tx;
+ 	struct device *dev =3D sport->port.dev;
+-	enum dma_status status;
+ 	int ret;
+=20
+-	status =3D dmaengine_tx_status(chan, (dma_cookie_t)0, NULL);
+-	if (DMA_IN_PROGRESS =3D=3D status)
++	if (sport->dma_is_txing)
+ 		return;
+=20
+ 	sport->tx_bytes =3D uart_circ_chars_pending(xmit);
+--=20
+1.9.1
 
-OK, I will fix the bug. It's interesting I compiled it using gcc versio=
-n=20
-4.2.4.
 
-thanks,
-Janusz
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+=C2=A0
+=C2=A0
