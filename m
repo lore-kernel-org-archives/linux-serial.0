@@ -1,44 +1,50 @@
 From: Baruch Siach <baruch@tkos.co.il>
-Subject: Re: [PATCH] serial: digicolor: fix sysrq handling
-Date: Wed, 14 Jan 2015 07:57:01 +0200
-Message-ID: <20150114055701.GX2481@sapphire.tkos.co.il>
-References: <1730002.vWGOEymGdz@wuerfel>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [PATCH] tty/serial: digicolor: remove sysrq reference
+Date: Wed, 14 Jan 2015 08:04:21 +0200
+Message-ID: <445cef8cec6347114a20c79c77272e25ee804668.1421215461.git.baruch@tkos.co.il>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1730002.vWGOEymGdz@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
+The Digicolor USART hardware does not support detecting the BREAK condition.
+This means that we can't support sysrq on this hardware. Remove all reference
+to sysrq from the code.
 
-On Tue, Jan 13, 2015 at 03:37:11PM +0100, Arnd Bergmann wrote:
-> Trying to build the digicolor-usart driver when sysrq is disabled
-> results in a compile error:
-> 
-> drivers/tty/serial/digicolor-usart.c: In function 'digicolor_uart_console_write':
-> drivers/tty/serial/digicolor-usart.c:407:33: error: 'struct uart_port' has no member named 'sysrq'
-> 
-> Like a lot of other drivers, this one requires an #ifdef to avoid
-> accessing the sysrq field here. While looking into this, I noticed
-> that the case where sysrq support is enabled is also broken, because
-> the driver fails to set the SUPPORT_SYSRQ macro.
-> 
-> This patch hopefully fixes both, but I do not hardware to test if sysrq
-> is actually working now.
+This also fixes build when sysrq is disabled:
 
-Unfortunately the hardware is not able to detect the BREAK condition, so it is 
-not possible to support sysrq on this hardware. I'll send a patch removing 
-sysrq reference.
+drivers/tty/serial/digicolor-usart.c: In function 'digicolor_uart_console_write':
+drivers/tty/serial/digicolor-usart.c:407:33: error: 'struct uart_port' has no member named 'sysrq'
 
-Thanks for build testing and reporting.
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ drivers/tty/serial/digicolor-usart.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-baruch
-
+diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
+index 09ce0b3764e2..a80cdad114f3 100644
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -170,9 +170,6 @@ static void digicolor_uart_rx(struct uart_port *port)
+ 				ch_flag = TTY_OVERRUN;
+ 		}
+ 
+-		if (uart_handle_sysrq_char(port, ch))
+-			continue;
+-
+ 		if (status & port->ignore_status_mask)
+ 			continue;
+ 
+@@ -404,7 +401,7 @@ static void digicolor_uart_console_write(struct console *co, const char *c,
+ 	unsigned long flags;
+ 	int locked = 1;
+ 
+-	if (port->sysrq || oops_in_progress)
++	if (oops_in_progress)
+ 		locked = spin_trylock_irqsave(&port->lock, flags);
+ 	else
+ 		spin_lock_irqsave(&port->lock, flags);
 -- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
+2.1.4
