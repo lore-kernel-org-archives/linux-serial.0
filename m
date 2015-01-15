@@ -1,45 +1,74 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v5] ARC: Dynamically determine BASE_BAUD from DeviceTree
-Date: Wed, 14 Jan 2015 21:05:52 -0800
-Message-ID: <20150115050552.GA24813@kroah.com>
-References: <CAL_JsqLzzLajoQAT3nYd5zi4=+zchXfVVPnYNriAZZi4tpa6yA@mail.gmail.com>
- <1420889152-29361-1-git-send-email-vgupta@synopsys.com>
- <54B73FC0.4060506@synopsys.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] char: Added support for u-blox 6 i2c gps driver
+Date: Thu, 15 Jan 2015 11:29:53 +0000
+Message-ID: <20150115112953.27cc5934@lxorguk.ukuu.org.uk>
+References: <1421198202-4042-1-git-send-email-eu@felipetonello.com>
+	<20150114154816.58b0f9c7@lxorguk.ukuu.org.uk>
+	<CAGrhNMysmq==Y0naNki0z5usmMwUErj-FOTy=8KH0V=R7=VFwA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <54B73FC0.4060506@synopsys.com>
+In-Reply-To: <CAGrhNMysmq==Y0naNki0z5usmMwUErj-FOTy=8KH0V=R7=VFwA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Cc: robh@kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+To: Felipe Tonello <eu@felipetonello.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 15, 2015 at 09:49:12AM +0530, Vineet Gupta wrote:
-> Hi Greg,
-> 
-> On Saturday 10 January 2015 04:56 PM, Vineet Gupta wrote:
-> > 8250 earlycon is broken on multi-platform ARC because the UART clk
-> > value (BASE_BAUD) is fixed at build time.
-> > 
-> > Instead, determine the appropriate UART clk at runtime; parse the
-> > devicetree early for platforms requiring alternate UART clk values
-> > (currently only the TB10X platform).
-> > 
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Jiri Slaby <jslaby@suse.cz>
-> > Cc: linux-serial@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-> > Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
-> > ---
-> >  arch/arc/include/asm/serial.h | 23 +++++------------------
-> >  arch/arc/kernel/devtree.c     | 24 ++++++++++++++++++++++++
-> 
-> This being all in arch code, do you want me to take this in via ARC tree ?
+Which kernel did you see the write_room oops ? and I'll double check its
+all fixed.
 
-Sure, that's fine with me:
+> >> +     ublox_gps_i2c_client = client;
+> >> +     ublox_gps_filp = NULL;
+> >> +     ublox_gps_tty_port = NULL;
+> >> +     ublox_gps_is_open = false;
+> >
+> > There are some other i2c based tty drivers in the kernel - notably those
+> > in drivers/tty/serial that use the uart layer to deal with most of the
+> > awkward locking cases.
+> >
+> > You can do it by hand but it's fairly hairy (see
+> > drivers/mmc/card/sdio_uart.c, so it might be simplest to tweak the driver
+> > to use the uart layer. You don't really gain much from it for your driver
+> > except easier locking - but the locking is rather handy.
+> >
+> > Alan
+> 
+> Ok.
+> 
+> The thing is that: I wrote this driver to work with only one gps
+> module, because that's my configuration here. I cannot really test
+> multiple i2c gps at the same time. If you guys really want a driver
+> that works for multiple gps drivers, I cannot test it.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+It isn't just about multiple GPS devices, it's about locking. What stops
+things being unloaded or reloaded and freeing memory you are still using.
+Things happen in parallel. If you have an i2c hot unplug happen as
+you are running your worker thread for example this would occur
+
+	Device still plugged in
+               if (!ublox_gps_i2c_client)
+	       {False so we continue}
+	Device unplugged
+               Use ublock_gps_i2c_client
+               *Kaboom*
+
+There are two ways to deal with that
+
+1. Don't free the resources until the device is not being used (so while
+the hardware may have walked the memory and pointers are still valid)
+
+2. take a lock before checking, drop it after you finish using the
+object. Take the same lock when destroying it.
+
+The kernel mostly does #1, in part because the second case tends to be
+hard to get right and avoid deadlocks.
+
+I'm much less worried about the single device parts of it. The static
+values you have are fairly easy to deal with I think
+
+ublox_gps_filp isn't needed (its only used for bogus tests)
+ublox_gps_is_open isn't needed (it's only used for the open test)
+
+ublox_gps_i2c_client belongs as a pointer in your tty_data
+ublox_gps_tty_port belongs as the client pointer in your i2c
