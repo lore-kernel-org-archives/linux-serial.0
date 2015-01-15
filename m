@@ -1,33 +1,41 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] char: Added support for u-blox 6 i2c gps driver
-Date: Wed, 14 Jan 2015 12:43:30 -0800
-Message-ID: <20150114204330.GB31119@kroah.com>
-References: <1421198202-4042-1-git-send-email-eu@felipetonello.com>
- <20150114154816.58b0f9c7@lxorguk.ukuu.org.uk>
- <CAGrhNMysmq==Y0naNki0z5usmMwUErj-FOTy=8KH0V=R7=VFwA@mail.gmail.com>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: Re: [PATCH v5] ARC: Dynamically determine BASE_BAUD from DeviceTree
+Date: Thu, 15 Jan 2015 09:49:12 +0530
+Message-ID: <54B73FC0.4060506@synopsys.com>
+References: <CAL_JsqLzzLajoQAT3nYd5zi4=+zchXfVVPnYNriAZZi4tpa6yA@mail.gmail.com> <1420889152-29361-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAGrhNMysmq==Y0naNki0z5usmMwUErj-FOTy=8KH0V=R7=VFwA@mail.gmail.com>
+In-Reply-To: <1420889152-29361-1-git-send-email-vgupta@synopsys.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Felipe Tonello <eu@felipetonello.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, robh@kernel.org
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 14, 2015 at 10:39:04AM -0800, Felipe Tonello wrote:
-> The thing is that: I wrote this driver to work with only one gps
-> module, because that's my configuration here. I cannot really test
-> multiple i2c gps at the same time. If you guys really want a driver
-> that works for multiple gps drivers, I cannot test it.
+Hi Greg,
+
+On Saturday 10 January 2015 04:56 PM, Vineet Gupta wrote:
+> 8250 earlycon is broken on multi-platform ARC because the UART clk
+> value (BASE_BAUD) is fixed at build time.
 > 
-> So my question is, can I leave the driver working for one gps only and
-> then improve what needs to be improved?
+> Instead, determine the appropriate UART clk at runtime; parse the
+> devicetree early for platforms requiring alternate UART clk values
+> (currently only the TB10X platform).
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.cz>
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+> ---
+>  arch/arc/include/asm/serial.h | 23 +++++------------------
+>  arch/arc/kernel/devtree.c     | 24 ++++++++++++++++++++++++
 
-No, write it to handle any number of devices, the logic is the same for
-one, or one thousand, there should not be any issues in the driver that
-make this any different.
+This being all in arch code, do you want me to take this in via ARC tree ?
 
-thanks,
-
-greg k-h
+Thx,
+-Vineet
