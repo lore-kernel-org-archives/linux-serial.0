@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 6/6] n_tty: Fix read buffer overwrite when no newline
-Date: Fri, 16 Jan 2015 15:05:39 -0500
-Message-ID: <1421438739-29672-7-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 1/6] n_tty: Eliminate receive_room() from consumer/exclusive paths
+Date: Fri, 16 Jan 2015 15:05:34 -0500
+Message-ID: <1421438739-29672-2-git-send-email-peter@hurleysoftware.com>
 References: <1421113668-20468-1-git-send-email-peter@hurleysoftware.com>
  <1421438739-29672-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,207 +11,136 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, Christian Riesch <christian.riesch@omicron.at>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Denis Du <dudenis2000@yahoo.ca>, =?UTF-8?q?M=C3=A5ns=20Rullg=C3=A5rd?= <mans@mansr.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-In canon mode, the read buffer head will advance over the buffer tail
-if the input > 4095 bytes without receiving a line termination char.
+The input worker never reschedules itself; it only processes input until
+either there is no more input or the read buffer is full. So the reader
+is responsible for restarting the input worker only if the read buffer
+was previously full (no_room == 1) _and_ space is now available to process
+more input because the reader has consumed data from the read buffer.
 
-Discard additional input until a line termination is received.
-Before evaluating for overflow, the 'room' value is normalized for
-I_PARMRK and 1 byte is reserved for line termination (even in !icanon
-mode, in case the mode is switched). The following table shows the
-transform:
+However, computing the actual space available is not required to determine
+if the reader has consumed data from the read buffer. This condition is
+evaluated in 5 situations, each of which the space avail is already known:
+1. n_tty_flush_buffer() - the read buffer is empty; kick the worker
+2. n_tty_set_termios() - no data has been consumed; do not kick the worker
+       (although it may have kicked the reader so data _will be_ consumed)
+3. n_tty_check_unthrottle - avail space > 3968; kick the worker
+4. n_tty_read, before leaving - only kick the worker if the reader has
+       moved the tail. This prevents unnecessarily kicking the worker
+       when timeout-style reading is used.
+5. n_tty_read, before sleeping - although it is possible for the read
+       buffer to be full and input_available_p() to be false, this can
+       only happen when the input worker is racing the reader, in which
+       case the reader will have been woken and won't sleep.
 
- actual buffer |  'room' value before overflow calc
-  space avail  |    !I_PARMRK    |    I_PARMRK
- --------------------------------------------------
-      0        |       -1        |       -1
-      1        |        0        |        0
-      2        |        1        |        0
-      3        |        2        |        0
-      4+       |        3        |        1
-
-When !icanon or when icanon and the read buffer contains newlines,
-normalized 'room' values of -1 and 0 are clamped to 0, and
-'overflow' is 0, so read_head is not adjusted and the input i/o loop
-exits (setting no_room if called from flush_to_ldisc()). No input
-is discarded since the reader does have input available to read
-which ensures forward progress.
-
-When icanon and the read buffer does not contain newlines and the
-normalized 'room' value is 0, then overflow and room are reset to 1,
-so that the i/o loop will process the next input char normally
-(except for parity errors which are ignored). Thus, erasures, signalling
-chars, 7-bit mode, etc. will continue to be handled properly.
-
-If the input char processed was not a line termination char, then
-the canon_head index will not have advanced, so the normalized 'room'
-value will now be -1 and 'overflow' will be set, which indicates the
-read_head can safely be reset, effectively erasing the last char
-processed.
-
-If the input char processed was a line termination, then the
-canon_head index will have advanced, so 'overflow' is cleared to 0,
-the read_head is not reset, and 'room' is cleared to 0, which exits
-the i/o loop (because the reader now have input available to read
-which ensures forward progress).
-
-Note that it is possible for a line termination to be received, and
-for the reader to copy the line to the user buffer before the
-input i/o loop is ready to process the next input char. This is
-why the i/o loop recomputes the room/overflow state with every
-input char while handling overflow.
-
-Finally, if the input data was processed without receiving
-a line termination (so that overflow is still set), the pty
-driver must receive a write wakeup. A pty writer may be waiting
-to write more data in n_tty_write() but without unthrottling
-here that wakeup will not arrive, and forward progress will halt.
-(Normally, the pty writer is woken when the reader reads data out
-of the buffer and more space become available).
+Rename n_tty_set_room() to n_tty_kick_worker() to reflect what the
+function actually does.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 92 ++++++++++++++++++++++++++++++++++++-----------------
- 1 file changed, 62 insertions(+), 30 deletions(-)
+ drivers/tty/n_tty.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 7aeabb7..5793aa0 100644
+index 4ddfa60..b60b043 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -225,8 +225,6 @@ static void n_tty_check_throttle(struct tty_struct *tty)
+@@ -187,10 +187,10 @@ static int receive_room(struct tty_struct *tty)
+ }
+ 
+ /**
+- *	n_tty_set_room	-	receive space
++ *	n_tty_kick_worker - start input worker (if required)
+  *	@tty: terminal
+  *
+- *	Re-schedules the flip buffer work if space just became available.
++ *	Re-schedules the flip buffer work if it may have stopped
+  *
+  *	Caller holds exclusive termios_rwsem
+  *	   or
+@@ -198,12 +198,12 @@ static int receive_room(struct tty_struct *tty)
+  *		holds non-exclusive termios_rwsem
+  */
+ 
+-static void n_tty_set_room(struct tty_struct *tty)
++static void n_tty_kick_worker(struct tty_struct *tty)
  {
  	struct n_tty_data *ldata = tty->disc_data;
  
--	if (tty->driver->type == TTY_DRIVER_TYPE_PTY)
--		return;
- 	/*
- 	 * Check the remaining room for the input canonicalization
- 	 * mode.  We don't want to throttle the driver if we're in
-@@ -1483,23 +1481,6 @@ n_tty_receive_char_lnext(struct tty_struct *tty, unsigned char c, char flag)
- 		n_tty_receive_char_flagged(tty, c, flag);
- }
+-	/* Did this open up the receive buffer? We may need to flip */
+-	if (unlikely(ldata->no_room) && receive_room(tty)) {
++	/* Did the input worker stop? Restart it */
++	if (unlikely(ldata->no_room)) {
+ 		ldata->no_room = 0;
  
--/**
-- *	n_tty_receive_buf	-	data receive
-- *	@tty: terminal device
-- *	@cp: buffer
-- *	@fp: flag buffer
-- *	@count: characters
-- *
-- *	Called by the terminal driver when a block of characters has
-- *	been received. This function must be called from soft contexts
-- *	not from interrupt context. The driver is responsible for making
-- *	calls one at a time and in order (or using flush_to_ldisc)
-- *
-- *	n_tty_receive_buf()/producer path:
-- *		claims non-exclusive termios_rwsem
-- *		publishes commit_head or canon_head
-- */
--
- static void
- n_tty_receive_buf_real_raw(struct tty_struct *tty, const unsigned char *cp,
- 			   char *fp, int count)
-@@ -1658,12 +1639,45 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 	}
- }
- 
-+/**
-+ *	n_tty_receive_buf_common	-	process input
-+ *	@tty: device to receive input
-+ *	@cp: input chars
-+ *	@fp: flags for each char (if NULL, all chars are TTY_NORMAL)
-+ *	@count: number of input chars in @cp
-+ *
-+ *	Called by the terminal driver when a block of characters has
-+ *	been received. This function must be called from soft contexts
-+ *	not from interrupt context. The driver is responsible for making
-+ *	calls one at a time and in order (or using flush_to_ldisc)
-+ *
-+ *	Returns the # of input chars from @cp which were processed.
-+ *
-+ *	In canonical mode, the maximum line length is 4096 chars (including
-+ *	the line termination char); lines longer than 4096 chars are
-+ *	truncated. After 4095 chars, input data is still processed but
-+ *	not stored. Overflow processing ensures the tty can always
-+ *	receive more input until at least one line can be read.
-+ *
-+ *	In non-canonical mode, the read buffer will only accept 4095 chars;
-+ *	this provides the necessary space for a newline char if the input
-+ *	mode is switched to canonical.
-+ *
-+ *	Note it is possible for the read buffer to _contain_ 4096 chars
-+ *	in non-canonical mode: the read buffer could already contain the
-+ *	maximum canon line of 4096 chars when the mode is switched to
-+ *	non-canonical.
-+ *
-+ *	n_tty_receive_buf()/producer path:
-+ *		claims non-exclusive termios_rwsem
-+ *		publishes commit_head or canon_head
-+ */
- static int
- n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
- 			 char *fp, int count, int flow)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
--	int room, n, rcvd = 0;
-+	int room, n, rcvd = 0, overflow;
- 
- 	down_read(&tty->termios_rwsem);
- 
-@@ -1683,19 +1697,27 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
- 		 */
- 		size_t tail = smp_load_acquire(&ldata->read_tail);
- 
--		room = N_TTY_BUF_SIZE - (ldata->read_head - tail) - 1;
-+		room = N_TTY_BUF_SIZE - (ldata->read_head - tail);
- 		if (I_PARMRK(tty))
--			room /= 3;
--		if (room <= 0)
--			room = ldata->icanon && ldata->canon_head == tail;
-+			room = (room + 2) / 3;
-+		room--;
-+		if (room <= 0) {
-+			overflow = ldata->icanon && ldata->canon_head == tail;
-+			if (overflow && room < 0)
-+				ldata->read_head--;
-+			room = overflow;
-+			ldata->no_room = flow && !room;
-+		} else
-+			overflow = 0;
- 
- 		n = min(count, room);
--		if (!n) {
--			if (flow && !room)
--				ldata->no_room = 1;
-+		if (!n)
+ 		WARN_RATELIMIT(tty->port->itty == NULL,
+@@ -274,7 +274,7 @@ static void n_tty_check_unthrottle(struct tty_struct *tty)
+ 			return;
+ 		if (!tty->count)
+ 			return;
+-		n_tty_set_room(tty);
++		n_tty_kick_worker(tty);
+ 		n_tty_write_wakeup(tty->link);
+ 		if (waitqueue_active(&tty->link->write_wait))
+ 			wake_up_interruptible_poll(&tty->link->write_wait, POLLOUT);
+@@ -296,7 +296,7 @@ static void n_tty_check_unthrottle(struct tty_struct *tty)
  			break;
--		}
--		__receive_buf(tty, cp, fp, n);
-+
-+		/* ignore parity errors if handling overflow */
-+		if (!overflow || !fp || *fp != TTY_PARITY)
-+			__receive_buf(tty, cp, fp, n);
-+
- 		cp += n;
- 		if (fp)
- 			fp += n;
-@@ -1704,7 +1726,17 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
+ 		if (!tty->count)
+ 			break;
+-		n_tty_set_room(tty);
++		n_tty_kick_worker(tty);
+ 		unthrottled = tty_unthrottle_safe(tty);
+ 		if (!unthrottled)
+ 			break;
+@@ -379,7 +379,7 @@ static void n_tty_flush_buffer(struct tty_struct *tty)
+ {
+ 	down_write(&tty->termios_rwsem);
+ 	reset_buffer_flags(tty->disc_data);
+-	n_tty_set_room(tty);
++	n_tty_kick_worker(tty);
+ 
+ 	if (tty->link)
+ 		n_tty_packet_mode_flush(tty);
+@@ -1817,7 +1817,6 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
+ 		else
+ 			ldata->real_raw = 0;
+ 	}
+-	n_tty_set_room(tty);
+ 	/*
+ 	 * Fix tty hang when I_IXON(tty) is cleared, but the tty
+ 	 * been stopped by STOP_CHAR(tty) before it.
+@@ -2130,6 +2129,7 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 	ssize_t retval = 0;
+ 	long timeout;
+ 	int packet;
++	size_t tail;
+ 
+ 	c = job_control(tty, file);
+ 	if (c < 0)
+@@ -2166,6 +2166,7 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
  	}
  
- 	tty->receive_room = room;
--	n_tty_check_throttle(tty);
-+
-+	/* Unthrottle if handling overflow on pty */
-+	if (tty->driver->type == TTY_DRIVER_TYPE_PTY) {
-+		if (overflow) {
-+			tty_set_flow_change(tty, TTY_UNTHROTTLE_SAFE);
-+			tty_unthrottle_safe(tty);
-+			__tty_set_flow_change(tty, 0);
-+		}
-+	} else
-+		n_tty_check_throttle(tty);
-+
+ 	packet = tty->packet;
++	tail = ldata->read_tail;
+ 
+ 	add_wait_queue(&tty->read_wait, &wait);
+ 	while (nr) {
+@@ -2208,7 +2209,6 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 				retval = -ERESTARTSYS;
+ 				break;
+ 			}
+-			n_tty_set_room(tty);
+ 			up_read(&tty->termios_rwsem);
+ 
+ 			timeout = wait_woken(&wait, TASK_INTERRUPTIBLE,
+@@ -2253,7 +2253,8 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 		if (time)
+ 			timeout = time;
+ 	}
+-	n_tty_set_room(tty);
++	if (tail != ldata->read_tail)
++		n_tty_kick_worker(tty);
  	up_read(&tty->termios_rwsem);
  
- 	return rcvd;
+ 	remove_wait_queue(&tty->read_wait, &wait);
 -- 
 2.2.2
