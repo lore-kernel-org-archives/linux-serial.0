@@ -1,63 +1,37 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH 2/2] tty: serial: 8250_core: Check that port->line is
- >=0
-Date: Fri, 16 Jan 2015 11:37:01 +0100
-Message-ID: <df5d7450de9f4382b1cb43791f69e25c@BL2FFO11FD013.protection.gbl>
-References: <3293c93689f5d8c684133a9d9952411a201609dc.1421333585.git.michal.simek@xilinx.com>
- <d3a26f5ecd44e1415f213e6ee7f33005c1b23f4a.1421333585.git.michal.simek@xilinx.com>
- <54B8D32E.5000805@linutronix.de>
+From: Baruch Siach <baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org>
+Subject: Re: [PATCH v5 5/5] tty/serial: Add Spreadtrum sc9836-uart driver
+ support
+Date: Fri, 16 Jan 2015 13:02:09 +0200
+Message-ID: <20150116110209.GA2299@tarshish>
+References: <sc9836-v5>
+ <1421402411-3479-1-git-send-email-chunyan.zhang@spreadtrum.com>
+ <1421402411-3479-6-git-send-email-chunyan.zhang@spreadtrum.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54B8D32E.5000805@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, Tony Lindgren <tony@atomide.com>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Ingo Molnar <mingo@elte.hu>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1421402411-3479-6-git-send-email-chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org, broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, florian.vaussard-p8DiymsW2f8@public.gmane.org, andrew-g2DYL2Zd6BY@public.gmane.org, rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, antonynpavlov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Joel.Schopp-5C7GfCeVMHo@public.gmane.org, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org, shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, lea.yan-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jorge.ramirez-ortiz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, orsonzhai-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, geng.ren-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, zhizhou.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, lanqing.liu-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, wei.qiao-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Hi Chunyan Zhang,
 
-On 01/16/2015 10:00 AM, Sebastian Andrzej Siewior wrote:
-> On 01/15/2015 03:55 PM, Michal Simek wrote:
->> This patch should be the part of:
->> "tty: serial: 8250_core: use the ->line argument as a hint in
->> serial8250_find_match_or_unused()"
->> (sha1: 59b3e898ddfc81a65975043b5eb44103cc29ff6e)
->>
->> port->line can be setup by DT driver to -1 which needs to
->> be also checked.
-> 
-> This is what I have in 8250_omap to make sure it does not get < 0:
-> 
->          if (pdev->dev.of_node) {
->                  ret = of_alias_get_id(pdev->dev.of_node, "serial");
-> 
->                  of_property_read_u32(pdev->dev.of_node, "clock-frequency",
->                                       &up.port.uartclk);
->                  priv->wakeirq = irq_of_parse_and_map(pdev->dev.of_node, 1);
->          } else {
->                  ret = pdev->id;
->          }
->          if (ret < 0) {
->                  dev_err(&pdev->dev, "failed to get alias/pdev id\n");
->                  return ret;
->          }
->          up.port.line = ret;
-> 
-> but I didn't think of that others might pass < 0 since it wasn't used
-> before.
-> Does the original patch (you noted) break anything as of now? Because
-> then this patch should go stable.
+On Fri, Jan 16, 2015 at 06:00:11PM +0800, Chunyan Zhang wrote:
+> +		if (uart_handle_sysrq_char(port, ch))
+> +			continue;
 
-Origin patch looks good to me but this checking will be good to add.
-Are you using of_serial.c because I didn't find any of_alias_get_id call
-for 8250?
+You don't define SUPPORT_SYSRQ, so uart_handle_sysrq_char has no effect. See 
+include/linux/serial_core.h.
 
-Your logic here is a little bit different than I have in my tree.
-(Some sort of pl011 solution). You don't need to failed if you port.line is
-below 0 but if you are not able to read aliases port enumeration
-may be unpredictable.
+baruch
 
-Thanks,
-Michal
+-- 
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org - tel: +972.2.679.5364, http://www.tkos.co.il -
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
