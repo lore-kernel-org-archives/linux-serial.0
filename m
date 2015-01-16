@@ -1,51 +1,64 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 2/6] n_tty: Fix throttle for canon lines > 3967 chars
-Date: Fri, 16 Jan 2015 15:05:35 -0500
-Message-ID: <1421438739-29672-3-git-send-email-peter@hurleysoftware.com>
-References: <1421113668-20468-1-git-send-email-peter@hurleysoftware.com>
- <1421438739-29672-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH] pty: Fix overlimit memory use
+Date: Fri, 16 Jan 2015 15:22:14 -0500
+Message-ID: <1421439734-17335-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1421438739-29672-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Christian Riesch <christian.riesch@omicron.at>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Denis Du <dudenis2000@yahoo.ca>, =?UTF-8?q?M=C3=A5ns=20Rullg=C3=A5rd?= <mans@mansr.com>, Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-The tty driver will be mistakenly throttled if a line termination
-has not been received, and the line exceeds 3967 chars. Thus, it is
-possible for the driver to stop sending when it has not yet sent
-the newline. This does not apply to the pty driver.
+The pty_space() computation is broken; the space already consumed
+in the tty buffer is not accounted for.
 
-Don't throttle until at least one line termination has been
-received.
+Use tty_buffer_set_limit(), which enforces the limit automatically.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/pty.c | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index b60b043..d4b14c3 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -247,6 +247,8 @@ static void n_tty_write_wakeup(struct tty_struct *tty)
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index a9d256d..2cf2567 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -88,19 +88,6 @@ static void pty_unthrottle(struct tty_struct *tty)
+ }
  
- static void n_tty_check_throttle(struct tty_struct *tty)
+ /**
+- *	pty_space	-	report space left for writing
+- *	@to: tty we are writing into
+- *
+- *	Limit the buffer space used by ptys to 8k.
+- */
+-
+-static int pty_space(struct tty_struct *to)
+-{
+-	int n = tty_buffer_space_avail(to->port);
+-	return min(n, 8192);
+-}
+-
+-/**
+  *	pty_write		-	write to a pty
+  *	@tty: the tty we write from
+  *	@buf: kernel buffer of data
+@@ -141,7 +128,7 @@ static int pty_write_room(struct tty_struct *tty)
  {
-+	struct n_tty_data *ldata = tty->disc_data;
-+
- 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY)
- 		return;
- 	/*
-@@ -254,6 +256,9 @@ static void n_tty_check_throttle(struct tty_struct *tty)
- 	 * mode.  We don't want to throttle the driver if we're in
- 	 * canonical mode and don't have a newline yet!
- 	 */
-+	if (ldata->icanon && ldata->canon_head == ldata->read_tail)
-+		return;
-+
- 	while (1) {
- 		int throttled;
- 		tty_set_flow_change(tty, TTY_THROTTLE_SAFE);
+ 	if (tty->stopped)
+ 		return 0;
+-	return pty_space(tty->link);
++	return tty_buffer_space_avail(tty->link->port);
+ }
+ 
+ /**
+@@ -429,6 +416,8 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
+ 	o_tty->link = tty;
+ 	tty_port_init(ports[0]);
+ 	tty_port_init(ports[1]);
++	tty_buffer_set_limit(ports[0], 8192);
++	tty_buffer_set_limit(ports[1], 8192);
+ 	o_tty->port = ports[0];
+ 	tty->port = ports[1];
+ 	o_tty->port->itty = o_tty;
 -- 
 2.2.2
