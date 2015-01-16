@@ -1,87 +1,93 @@
-From: Lyra Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH v5 4/5] arm64: Add support for Spreadtrum's Sharkl64
- Platform in Kconfig and defconfig
-Date: Fri, 16 Jan 2015 19:50:18 +0800
-Message-ID: <CAAfSe-vuSgwH2PHQdYLyfJ+KZ0C8a7D6Ry=mHaBrjpbuksaKvQ@mail.gmail.com>
-References: <1421402411-3479-1-git-send-email-chunyan.zhang@spreadtrum.com>
- <1421402411-3479-5-git-send-email-chunyan.zhang@spreadtrum.com>
- <20150116104842.GE21809@leverpostej>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150116104842.GE21809@leverpostej>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "gnomes@lxorguk.ukuu.org.uk" <gnomes@lxorguk.ukuu.org.uk>, "heiko@sntech.de" <heiko@sntech.de>, "andrew@lunn.ch" <andrew@lunn.ch>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "lanqing.liu@spreadtrum.com" <lanqing.liu@spreadtrum.com>, "arnd@arndb.de" <arnd@arndb.de>, Chunyan Zhang <chunyan.zhang@spreadtrum.com>, "zhizhou.zhang@spreadtrum.com" <zhizhou.zhang@spreadtrum.com>, "geng.ren@spreadtrum.com" <geng.ren@spreadtrum.com>, "antonynpavlov@gmail.com" <antonynpavlov@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "orsonzhai@gmail.com" <orsonzhai@gmail.com>, "florian.vaussard@epfl.ch" <florian.vaussard@epfl.ch>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH] tty: xuartps: Fix RX hang, and TX corruption in termios call
+Date: Fri, 16 Jan 2015 13:49:25 +0100
+Message-ID: <688e4e2492ef33cc5ab0e33b8f9878735ee3c43a.1421412563.git.michal.simek@xilinx.com>
+Content-Type: multipart/signed;
+    boundary="=_mimegpg-monstr-desktop-28090-1421412565-0001";
+    micalg=pgp-sha1; protocol="application/pgp-signature"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu
+Cc: Nathan Rossi <nathan.rossi@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Mark
+This is a MIME GnuPG-signed message.  If you see this text, it means that
+your E-mail or Usenet software does not support MIME signed messages.
+The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
+To open this message correctly you will need to install E-mail or Usenet
+software that supports modern Internet standards.
 
-On Fri, Jan 16, 2015 at 6:48 PM, Mark Rutland <mark.rutland@arm.com> wrote:
-> On Fri, Jan 16, 2015 at 10:00:10AM +0000, Chunyan Zhang wrote:
->> From: Zhizhou Zhang <zhizhou.zhang@spreadtrum.com>
->>
->> Adds support for Spreadtrum's SoC Platform in the arm64 Kconfig and
->> defconfig files.
->>
->> Signed-off-by: Zhizhou Zhang <zhizhou.zhang@spreadtrum.com>
->> Signed-off-by: Orson Zhai <orson.zhai@spreadtrum.com>
->> Signed-off-by: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
->> ---
->>  arch/arm64/Kconfig           |    5 +++++
->>  arch/arm64/configs/defconfig |    1 +
->>  2 files changed, 6 insertions(+)
->>
->> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
->> index b1f9a20..885c1f4 100644
->> --- a/arch/arm64/Kconfig
->> +++ b/arch/arm64/Kconfig
->> @@ -153,6 +153,11 @@ config ARCH_SEATTLE
->>       help
->>         This enables support for AMD Seattle SOC Family
->>
->> +config ARCH_SPRD
->
-> This should presumably be ARCH_SHARKL64, so you can add other SoC
-> families later. The other entries in here are already formatted that
-> way.
->
-> I wonder if we should have these of the form ARCH_${VENDOR}_${FAMILY}
-> (e.g. ARCH_SPRD_SHARKL64) rather than just ARCH_${FAMILY} to save
-> ourselves from name conflicts in future (and to make it easier to grep
-> for a particular vendor's config options).
->
+--=_mimegpg-monstr-desktop-28090-1421412565-0001
 
-actually we've discussed this question before[1], and I think Arnd's
-suggestion is suitable for our case, so I changed this to use
-ARCH_SPRD instead of ARCH_SHARKL64.
+From: Nathan Rossi <nathan.rossi@xilinx.com>
 
-[1] http://lists.infradead.org/pipermail/linux-arm-kernel/2014-November/306246.html
+The implementation of flushing the RX FIFO breaks in a number of cases,
+it is impossible to ensure an complete flush of the RX FIFO due to the
+hardware not allowing the use of the FIFOs when the receiver is disabled
+(Reading from the FIFO register does not remove it from the FIFO when
+the RX_EN=0 or RX_DIS=1). Additionally during an initial set_termios
+call where RX_DIS=1 causes a hang waiting forever for the RX FIFO to
+empty. On top of this the FIFO will be cleared by the use of the RXRST
+bits on the Control Register, making the RX flush pointless (as it does
+not preserve the data read anyway).
 
-anyway, thank you very much!
+Due to the TXRST the TX FIFO and transmitter can be interrupted during
+frame trasmission, causing corruption and additionally data lost in the
+FIFO. Most other serial drivers do not flush or clear the FIFOs during
+a termios configuration change and as such do not have issues with
+corruption. For this UART controller is it required that the TXRST/RXRST
+bit be flagged during the change, this means that the data in the FIFO
+will be dropped when changing configuration. In order to prevent data
+loss and corruption of the transmitted data, wait until the TX FIFO is
+empty before changing the configuration. The performance of this may
+cause the set_termios call to take a longer amount of time especially
+on lower baud rates, however it is comparable to the same performance
+hit that a console_write call costs.
 
-Chunyan
+Signed-off-by: Nathan Rossi <nathan.rossi@xilinx.com>
+Acked-by: Anirudha Sarangi <anirudh@xilinx.com>
+Acked-by: Harini Katakam <harinik@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
->> +     bool "Spreadtrum SoC platform"
->
-> bool "Spreadtrun Sharkl64 SoC Family"
->
->> +     help
->> +       Support for Spreadtrum ARM based SoCs
->
->
-> Support for the Spreadtrum Sharkl64 SoC family.
->
-> Thanks,
-> Mark.
->
->> +
+ drivers/tty/serial/xilinx_uartps.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 542bab37e502..cff531a51a78 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -637,10 +637,12 @@ static void cdns_uart_set_termios(struct uart_port *port,
+
+ 	spin_lock_irqsave(&port->lock, flags);
+
+-	/* Empty the receive FIFO 1st before making changes */
+-	while ((cdns_uart_readl(CDNS_UART_SR_OFFSET) &
+-		 CDNS_UART_SR_RXEMPTY) != CDNS_UART_SR_RXEMPTY) {
+-		cdns_uart_readl(CDNS_UART_FIFO_OFFSET);
++	/* Wait for the transmit FIFO to empty before making changes */
++	if (!(cdns_uart_readl(CDNS_UART_CR_OFFSET) & CDNS_UART_CR_TX_DIS)) {
++		while (!(cdns_uart_readl(CDNS_UART_SR_OFFSET) &
++				CDNS_UART_SR_TXEMPTY)) {
++			cpu_relax();
++		}
+ 	}
+
+ 	/* Disable the TX and RX to set baud rate */
+--
+1.8.2.3
+
+
+--=_mimegpg-monstr-desktop-28090-1421412565-0001
+Content-Type: application/pgp-signature
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEABECAAYFAlS5CNUACgkQykllyylKDCFw3ACeIVojq6H9TX4V0Gqr5kEsBm3N
+2s8An1A3vdTT6VX71rXK0SUoCKbJTS2G
+=WyBo
+-----END PGP SIGNATURE-----
+
+--=_mimegpg-monstr-desktop-28090-1421412565-0001--
