@@ -1,7 +1,7 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH 04/10] drivers: PL011: refactor pl011_set_termios()
-Date: Fri, 16 Jan 2015 17:23:00 +0000
-Message-ID: <1421428986-11300-5-git-send-email-andre.przywara@arm.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 00/10] drivers: PL011: add ARM SBSA Generic UART support
+Date: Fri, 16 Jan 2015 18:31:46 +0100
+Message-ID: <7542669.MXdXNkVnKh@wuerfel>
 References: <1421428986-11300-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -17,95 +17,26 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-arm-kernel@lists.infradead.org, rob.herring@linaro.org, arnd@arndb.de, linux-serial@vger.kernel.org, Dave Martin <dave.martin@arm.com>
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: rob.herring@linaro.org, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, jslaby@suse.cz, Dave Martin <dave.martin@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Split the pl011_set_termios() function into smaller chunks to allow
-easier reuse later when adding SBSA support.
+On Friday 16 January 2015 17:22:56 Andre Przywara wrote:
+> The ARM Server Base System Architecture[1] document describes a
+> generic UART which is a subset of the PL011 UART.
+> It lacks DMA support, baud rate control and modem status line
+> control, among other things.
+> The idea is to move the UART initialization and setup into the
+> firmware (which does this job today already) and let the kernel just
+> use the UART for sending and receiving characters.
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
- drivers/tty/serial/amba-pl011.c |   60 +++++++++++++++++++++------------------
- 1 file changed, 33 insertions(+), 27 deletions(-)
+Given that all other approaches that have been tried have failed, this
+seems like the best way forward. I don't know enough about the driver
+to do a detailed review, but all patches looked good to me as far as
+I could tell.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 7373060..2153b98 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1739,6 +1739,38 @@ static void pl011_shutdown(struct uart_port *port)
- }
- 
- static void
-+pl011_setup_status_masks(struct uart_port *port, struct ktermios *termios)
-+{
-+	port->read_status_mask = UART011_DR_OE | 255;
-+	if (termios->c_iflag & INPCK)
-+		port->read_status_mask |= UART011_DR_FE | UART011_DR_PE;
-+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
-+		port->read_status_mask |= UART011_DR_BE;
-+
-+	/*
-+	 * Characters to ignore
-+	 */
-+	port->ignore_status_mask = 0;
-+	if (termios->c_iflag & IGNPAR)
-+		port->ignore_status_mask |= UART011_DR_FE | UART011_DR_PE;
-+	if (termios->c_iflag & IGNBRK) {
-+		port->ignore_status_mask |= UART011_DR_BE;
-+		/*
-+		 * If we're ignoring parity and break indicators,
-+		 * ignore overruns too (for real raw support).
-+		 */
-+		if (termios->c_iflag & IGNPAR)
-+			port->ignore_status_mask |= UART011_DR_OE;
-+	}
-+
-+	/*
-+	 * Ignore all characters if CREAD is not set.
-+	 */
-+	if ((termios->c_cflag & CREAD) == 0)
-+		port->ignore_status_mask |= UART_DUMMY_DR_RX;
-+}
-+
-+static void
- pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 		     struct ktermios *old)
- {
-@@ -1802,33 +1834,7 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 */
- 	uart_update_timeout(port, termios->c_cflag, baud);
- 
--	port->read_status_mask = UART011_DR_OE | 255;
--	if (termios->c_iflag & INPCK)
--		port->read_status_mask |= UART011_DR_FE | UART011_DR_PE;
--	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
--		port->read_status_mask |= UART011_DR_BE;
--
--	/*
--	 * Characters to ignore
--	 */
--	port->ignore_status_mask = 0;
--	if (termios->c_iflag & IGNPAR)
--		port->ignore_status_mask |= UART011_DR_FE | UART011_DR_PE;
--	if (termios->c_iflag & IGNBRK) {
--		port->ignore_status_mask |= UART011_DR_BE;
--		/*
--		 * If we're ignoring parity and break indicators,
--		 * ignore overruns too (for real raw support).
--		 */
--		if (termios->c_iflag & IGNPAR)
--			port->ignore_status_mask |= UART011_DR_OE;
--	}
--
--	/*
--	 * Ignore all characters if CREAD is not set.
--	 */
--	if ((termios->c_cflag & CREAD) == 0)
--		port->ignore_status_mask |= UART_DUMMY_DR_RX;
-+	pl011_setup_status_masks(port, termios);
- 
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		pl011_enable_ms(port);
--- 
-1.7.9.5
+One question: How does the name space and minor number allocation work
+if you have both sbsa-uart and real pl011 in the same system? Do
+they share the ttyAMA name space without collisions?
+
+	Arnd
