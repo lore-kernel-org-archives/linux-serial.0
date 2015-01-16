@@ -1,8 +1,7 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH 06/10] drivers: PL011: replace UART_MIS reading with _RIS &
- _IMSC
-Date: Fri, 16 Jan 2015 17:23:02 +0000
-Message-ID: <1421428986-11300-7-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH 02/10] drivers: PL011: refactor pl011_startup()
+Date: Fri, 16 Jan 2015 17:22:58 +0000
+Message-ID: <1421428986-11300-3-git-send-email-andre.przywara@arm.com>
 References: <1421428986-11300-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,45 +21,86 @@ To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
 Cc: linux-arm-kernel@lists.infradead.org, rob.herring@linaro.org, arnd@arndb.de, linux-serial@vger.kernel.org, Dave Martin <dave.martin@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-The PL011 register UART_MIS is actually a bitwise AND of the
-UART_RIS and the UART_MISC register.
-Since the SBSA UART does not include the _MIS register, use the
-two separate registers to get the same behaviour. Since we are
-inside the spinlock and we read the _IMSC register only once, there
-should be no race issue.
+Split the pl011_startup() function into smaller chunks to allow
+easier reuse later when adding SBSA support.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c |   48 +++++++++++++++++++++++----------------
+ 1 file changed, 28 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index e484551..e6c2746 100644
+index dbd3a21..4be4c19 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1350,11 +1350,13 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 	struct uart_amba_port *uap = dev_id;
- 	unsigned long flags;
- 	unsigned int status, pass_counter = AMBA_ISR_PASS_LIMIT;
-+	u16 imsc;
- 	int handled = 0;
- 	unsigned int dummy_read;
- 
- 	spin_lock_irqsave(&uap->port.lock, flags);
--	status = readw(uap->port.membase + UART011_MIS);
-+	imsc = readw(uap->port.membase + UART011_IMSC);
-+	status = readw(uap->port.membase + UART011_RIS) & imsc;
- 	if (status) {
- 		do {
- 			if (uap->vendor->cts_event_workaround) {
-@@ -1391,7 +1393,7 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 			if (pass_counter-- == 0)
- 				break;
- 
--			status = readw(uap->port.membase + UART011_MIS);
-+			status = readw(uap->port.membase + UART011_RIS) & imsc;
- 		} while (status != 0);
- 		handled = 1;
+@@ -1590,6 +1590,32 @@ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
  	}
+ }
+ 
++static int pl011_allocate_irq(struct uart_amba_port *uap)
++{
++	writew(uap->im, uap->port.membase + UART011_IMSC);
++
++	return request_irq(uap->port.irq, pl011_int, 0, "uart-pl011", uap);
++}
++
++/*
++ * Enable interrupts, only timeouts when using DMA
++ * if initial RX DMA job failed, start in interrupt mode
++ * as well.
++ */
++static void pl011_enable_interrupts(struct uart_amba_port *uap)
++{
++	spin_lock_irq(&uap->port.lock);
++
++	/* Clear out any spuriously appearing RX interrupts */
++	writew(UART011_RTIS | UART011_RXIS,
++		uap->port.membase + UART011_ICR);
++	uap->im = UART011_RTIM;
++	if (!pl011_dma_rx_running(uap))
++		uap->im |= UART011_RXIM;
++	writew(uap->im, uap->port.membase + UART011_IMSC);
++	spin_unlock_irq(&uap->port.lock);
++}
++
+ static int pl011_startup(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1601,12 +1627,7 @@ static int pl011_startup(struct uart_port *port)
+ 	if (retval)
+ 		goto clk_dis;
+ 
+-	writew(uap->im, uap->port.membase + UART011_IMSC);
+-
+-	/*
+-	 * Allocate the IRQ
+-	 */
+-	retval = request_irq(uap->port.irq, pl011_int, 0, "uart-pl011", uap);
++	retval = pl011_allocate_irq(uap);
+ 	if (retval)
+ 		goto clk_dis;
+ 
+@@ -1626,20 +1647,7 @@ static int pl011_startup(struct uart_port *port)
+ 	/* Startup DMA */
+ 	pl011_dma_startup(uap);
+ 
+-	/*
+-	 * Finally, enable interrupts, only timeouts when using DMA
+-	 * if initial RX DMA job failed, start in interrupt mode
+-	 * as well.
+-	 */
+-	spin_lock_irq(&uap->port.lock);
+-	/* Clear out any spuriously appearing RX interrupts */
+-	 writew(UART011_RTIS | UART011_RXIS,
+-		uap->port.membase + UART011_ICR);
+-	uap->im = UART011_RTIM;
+-	if (!pl011_dma_rx_running(uap))
+-		uap->im |= UART011_RXIM;
+-	writew(uap->im, uap->port.membase + UART011_IMSC);
+-	spin_unlock_irq(&uap->port.lock);
++	pl011_enable_interrupts(uap);
+ 
+ 	return 0;
+ 
 -- 
 1.7.9.5
