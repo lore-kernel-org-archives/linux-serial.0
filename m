@@ -1,35 +1,34 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/1] serial: Fintek F81232 driver improvement
-Date: Fri, 16 Jan 2015 07:21:53 -0800
-Message-ID: <20150116152153.GC11240@kroah.com>
-References: <1421390481-2871-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v2] n_tty: Fix unordered accesses to lockless read buffer
+Date: Fri, 16 Jan 2015 10:55:18 -0500
+Message-ID: <54B93466.9010601@hurleysoftware.com>
+References: <1421113668-20468-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1421390481-2871-1-git-send-email-hpeter+linux_kernel@gmail.com>
+In-Reply-To: <1421113668-20468-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hung <hpeter@gmail.com>
-Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Denis Du <dudenis2000@yahoo.ca>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>, Christian Riesch <christian.riesch@omicron.at>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jan 16, 2015 at 02:41:21PM +0800, Peter Hung wrote:
-> From: Peter Hong <hpeter@gmail.com>
+On 01/12/2015 08:47 PM, Peter Hurley wrote:
+> Add commit_head buffer index, which the producer-side publishes
+> after input processing in non-canon mode. This ensures the consumer-side
+> observes correctly-ordered writes in non-canonical mode (ie., the buffer
+> data is written before the buffer index is advanced). Fix consumer-side
+> uses of read_cnt() to use commit_head instead.
 > 
-> The original driver completed with TX function, but RX/MSR/MCR/LSR is not
-> workable with this driver. So we rewrite it to make this device workable.
-> 
-> This patch is tested with PassMark BurnInTest with Cycle-to-115200 +
-> MCR/MSR check for 15mins & checked with Suspend-To-RAM/DISK
-> 
-> Signed-off-by: Peter Hong <hpeter@gmail.com>
-> ---
->  drivers/usb/serial/f81232.c | 528 ++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 440 insertions(+), 88 deletions(-)
+> Add required memory barriers to the tail index to guarantee
+> the consumer-side has completed the loads before the producer-side
+> begins writing new data. Open-code the producer-side receive_room()
+> into the i/o loop.
 
-Please use get_maintainer.pl to determine who to send this to (hint,
-it's not me...)
+Hi Greg,
 
-thanks,
+Please don't apply this. I've been testing a v3 series that I should be
+able to get to you today.
 
-greg k-h
+Regards,
+Peter Hurley
