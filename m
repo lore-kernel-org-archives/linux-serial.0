@@ -1,13 +1,16 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 00/10] drivers: PL011: add ARM SBSA Generic UART support
-Date: Fri, 16 Jan 2015 18:31:46 +0100
-Message-ID: <7542669.MXdXNkVnKh@wuerfel>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 10/10] drivers: PL011: add support for the ARM SBSA
+ generic UART
+Date: Fri, 16 Jan 2015 17:34:40 +0000
+Message-ID: <20150116173440.GI32155@leverpostej>
 References: <1421428986-11300-1-git-send-email-andre.przywara@arm.com>
+ <1421428986-11300-11-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1421428986-11300-1-git-send-email-andre.przywara@arm.com>
+Content-Disposition: inline
+In-Reply-To: <1421428986-11300-11-git-send-email-andre.przywara@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,10 +21,10 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Andre Przywara <andre.przywara@arm.com>
-Cc: rob.herring@linaro.org, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, jslaby@suse.cz, Dave Martin <dave.martin@arm.com>, linux-arm-kernel@lists.infradead.org
+Cc: "rob.herring@linaro.org" <rob.herring@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "arnd@arndb.de" <arnd@arndb.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Friday 16 January 2015 17:22:56 Andre Przywara wrote:
+On Fri, Jan 16, 2015 at 05:23:06PM +0000, Andre Przywara wrote:
 > The ARM Server Base System Architecture[1] document describes a
 > generic UART which is a subset of the PL011 UART.
 > It lacks DMA support, baud rate control and modem status line
@@ -29,14 +32,60 @@ On Friday 16 January 2015 17:22:56 Andre Przywara wrote:
 > The idea is to move the UART initialization and setup into the
 > firmware (which does this job today already) and let the kernel just
 > use the UART for sending and receiving characters.
+> We use the recent refactoring the build a new struct uart_ops
+> variable which points to some new functions avoiding access to the
+> missing registers. We reuse as much existing PL011 code as possible.
+> 
+> In contrast to the PL011 the SBSA UART does not define any AMBA or
+> PrimeCell relations, so we go a pretty generic probe function
+> which only uses platform device functions.
+> A DT binding is provided, but other systems can easily attach to it,
+> too (hint, hint!).
+> 
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> ---
+>  .../devicetree/bindings/serial/arm_sbsa_uart.txt   |    9 ++
+>  drivers/tty/serial/amba-pl011.c                    |  154 ++++++++++++++++++++
+>  2 files changed, 163 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt b/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
+> new file mode 100644
+> index 0000000..21d211f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
+> @@ -0,0 +1,9 @@
+> +* ARM SBSA defined generic UART
+> +This UART uses a subset of the PL011 registers and consequently lives
+> +in the PL011 driver. It's baudrate and other communication parameters
+> +cannot be adjusted at runtime, so it lacks a clock specifier here.
+> +
+> +Required properties:
+> +- compatible: must be "arm,sbsa-uart"
+> +- reg: exactly one register range
+> +- interrupts: exactly one interrupt specifier
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index a1c929f..596e641 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -101,6 +101,14 @@ static struct vendor_data vendor_arm = {
+>  	.get_fifosize		= get_fifosize_arm,
+>  };
+>  
+> +static struct vendor_data vendor_sbsa = {
+> +	.oversampling		= false,
+> +	.dma_threshold		= false,
+> +	.cts_event_workaround	= false,
+> +	.always_enabled		= true,
+> +	.fixed_options		= "115200n8",
+> +};
 
-Given that all other approaches that have been tried have failed, this
-seems like the best way forward. I don't know enough about the driver
-to do a detailed review, but all patches looked good to me as far as
-I could tell.
+Is this configuration mandated by the SBSA? If so, please mandate it in
+the binding document.
 
-One question: How does the name space and minor number allocation work
-if you have both sbsa-uart and real pl011 in the same system? Do
-they share the ttyAMA name space without collisions?
+If the rate and so on are not mandated, they should probably be
+described by the binding so software has a chance of getting the real
+configuration details.
 
-	Arnd
+Thanks,
+Mark.
