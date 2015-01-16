@@ -1,93 +1,49 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH] tty: xuartps: Fix RX hang, and TX corruption in termios call
-Date: Fri, 16 Jan 2015 13:49:25 +0100
-Message-ID: <688e4e2492ef33cc5ab0e33b8f9878735ee3c43a.1421412563.git.michal.simek@xilinx.com>
-Content-Type: multipart/signed;
-    boundary="=_mimegpg-monstr-desktop-28090-1421412565-0001";
-    micalg=pgp-sha1; protocol="application/pgp-signature"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: Nathan Rossi <nathan.rossi@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Lyra Zhang <zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v5 2/5] Documentation: DT: Add bindings for Spreadtrum SoC Platform
+Date: Fri, 16 Jan 2015 20:53:16 +0800
+Message-ID: <CAAfSe-teDdPzRUnvzM+NErfZwmqM04yUMgic--hyZL8-Jjd8jw@mail.gmail.com>
+References: <1421402411-3479-1-git-send-email-chunyan.zhang@spreadtrum.com>
+	<1421402411-3479-3-git-send-email-chunyan.zhang@spreadtrum.com>
+	<20150116102135.GC21809@leverpostej>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150116102135.GC21809@leverpostej>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org" <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, "broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, "ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org" <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "jslaby-AlSwsSmVLrQ@public.gmane.org" <jslaby-AlSwsSmVLrQ@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org" <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "florian.vaussard-p8DiymsW2f8@public.gmane.org" <florian.vaussard-p8DiymsW2f8@public.gmane.org>, "andrew-g2DYL2Zd6BY@public.gmane.org" <andrew-g2DYL2Zd6BY@public.gmane.org>, "rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, antonynpavlov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This is a MIME GnuPG-signed message.  If you see this text, it means that
-your E-mail or Usenet software does not support MIME signed messages.
-The Internet standard for MIME PGP messages, RFC 2015, was published in 1996.
-To open this message correctly you will need to install E-mail or Usenet
-software that supports modern Internet standards.
+Hi, Mark
 
---=_mimegpg-monstr-desktop-28090-1421412565-0001
+>> +
+>> +Required properties:
+>> +- compatible: must be "sprd,sc9836-uart"
+>> +- reg: offset and length of the register set for the device
+>> +- interrupts: exactly one interrupt specifier
+>> +- clocks: phandles to input clocks.
+>
+> The order and relevance of each should be specified. If you have
+> multiple clocks I would strongly recommend you use clock-names to
+> distinguish them.
+>
 
-From: Nathan Rossi <nathan.rossi@xilinx.com>
+Thank you for the recommendation.
+but, since we haven't made the clock driver ready, for this initial
+commit, we just let 4 UARTs share a single fixed 26 MHz clock source.
+we'll do like you've recommended when we will submit the clock driver
+in the future.
 
-The implementation of flushing the RX FIFO breaks in a number of cases,
-it is impossible to ensure an complete flush of the RX FIFO due to the
-hardware not allowing the use of the FIFOs when the receiver is disabled
-(Reading from the FIFO register does not remove it from the FIFO when
-the RX_EN=0 or RX_DIS=1). Additionally during an initial set_termios
-call where RX_DIS=1 causes a hang waiting forever for the RX FIFO to
-empty. On top of this the FIFO will be cleared by the use of the RXRST
-bits on the Control Register, making the RX flush pointless (as it does
-not preserve the data read anyway).
+Best regards,
+Chunyan
 
-Due to the TXRST the TX FIFO and transmitter can be interrupted during
-frame trasmission, causing corruption and additionally data lost in the
-FIFO. Most other serial drivers do not flush or clear the FIFOs during
-a termios configuration change and as such do not have issues with
-corruption. For this UART controller is it required that the TXRST/RXRST
-bit be flagged during the change, this means that the data in the FIFO
-will be dropped when changing configuration. In order to prevent data
-loss and corruption of the transmitted data, wait until the TX FIFO is
-empty before changing the configuration. The performance of this may
-cause the set_termios call to take a longer amount of time especially
-on lower baud rates, however it is comparable to the same performance
-hit that a console_write call costs.
 
-Signed-off-by: Nathan Rossi <nathan.rossi@xilinx.com>
-Acked-by: Anirudha Sarangi <anirudh@xilinx.com>
-Acked-by: Harini Katakam <harinik@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
 
- drivers/tty/serial/xilinx_uartps.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 542bab37e502..cff531a51a78 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -637,10 +637,12 @@ static void cdns_uart_set_termios(struct uart_port *port,
-
- 	spin_lock_irqsave(&port->lock, flags);
-
--	/* Empty the receive FIFO 1st before making changes */
--	while ((cdns_uart_readl(CDNS_UART_SR_OFFSET) &
--		 CDNS_UART_SR_RXEMPTY) != CDNS_UART_SR_RXEMPTY) {
--		cdns_uart_readl(CDNS_UART_FIFO_OFFSET);
-+	/* Wait for the transmit FIFO to empty before making changes */
-+	if (!(cdns_uart_readl(CDNS_UART_CR_OFFSET) & CDNS_UART_CR_TX_DIS)) {
-+		while (!(cdns_uart_readl(CDNS_UART_SR_OFFSET) &
-+				CDNS_UART_SR_TXEMPTY)) {
-+			cpu_relax();
-+		}
- 	}
-
- 	/* Disable the TX and RX to set baud rate */
+> Otherwise this looks fine.
+>
+> Mark.
+>
 --
-1.8.2.3
-
-
---=_mimegpg-monstr-desktop-28090-1421412565-0001
-Content-Type: application/pgp-signature
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-
-iEYEABECAAYFAlS5CNUACgkQykllyylKDCFw3ACeIVojq6H9TX4V0Gqr5kEsBm3N
-2s8An1A3vdTT6VX71rXK0SUoCKbJTS2G
-=WyBo
------END PGP SIGNATURE-----
-
---=_mimegpg-monstr-desktop-28090-1421412565-0001--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
