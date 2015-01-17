@@ -1,73 +1,83 @@
-From: Orson Zhai <orsonzhai-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v5 2/5] Documentation: DT: Add bindings for Spreadtrum SoC Platform
-Date: Sat, 17 Jan 2015 16:10:32 +0800
-Message-ID: <CA+H2tpHA7PRL98VMd3d3jeaOr_6Q5ktmM3fbdaBKRpm_pXVqVw@mail.gmail.com>
-References: <1421402411-3479-1-git-send-email-chunyan.zhang@spreadtrum.com>
-	<1421402411-3479-3-git-send-email-chunyan.zhang@spreadtrum.com>
-	<20150116102135.GC21809@leverpostej>
-	<CAAfSe-teDdPzRUnvzM+NErfZwmqM04yUMgic--hyZL8-Jjd8jw@mail.gmail.com>
-	<20150116141109.GC22569@leverpostej>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150116141109.GC22569@leverpostej>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: Lyra Zhang <zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org" <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, "broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, "ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org" <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "jslaby-AlSwsSmVLrQ@public.gmane.org" <jslaby-AlSwsSmVLrQ@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org" <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "florian.vaussard-p8DiymsW2f8@public.gmane.org" <florian.vaussard-p8DiymsW2f8@public.gmane.org>, "andrew-g2DYL2Zd6BY@public.gmane.org" <andrew-g2DYL2Zd6BY@public.gmane.org>, "rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely@lin>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH 0/3] Fix buffer flush in signal char handling
+Date: Sat, 17 Jan 2015 15:42:03 -0500
+Message-ID: <1421527326-4368-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jan 16, 2015 at 10:11 PM, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Fri, Jan 16, 2015 at 12:53:16PM +0000, Lyra Zhang wrote:
->> Hi, Mark
->>
->> >> +
->> >> +Required properties:
->> >> +- compatible: must be "sprd,sc9836-uart"
->> >> +- reg: offset and length of the register set for the device
->> >> +- interrupts: exactly one interrupt specifier
->> >> +- clocks: phandles to input clocks.
->> >
->> > The order and relevance of each should be specified. If you have
->> > multiple clocks I would strongly recommend you use clock-names to
->> > distinguish them.
->> >
->>
->> Thank you for the recommendation.
->> but, since we haven't made the clock driver ready, for this initial
->> commit, we just let 4 UARTs share a single fixed 26 MHz clock source.
->> we'll do like you've recommended when we will submit the clock driver
->> in the future.
->
-> I'm on about the clock input lines on the UART instance, not the
-> providers they come from.
->
-> Is there only a single clock input line on each UART? Perhaps multiple
-> input lines which are currently fed by the same clock?
+Greg,
 
-________
-| 26MHz |-------------------------------------------------
--------------        |                  |
-                     |                  |
-                _______       ________
-               | UART1 |      | UART2 |    .........
-               --------------      -------------
+This series fixes a long-standing problem with Ctrl-C interruption
+of pty output. A while back I tried to fix this in a really ugly
+way that Alan ixnay'd.
 
-the hardware is something like the diagram.
+Quick background: the FIXME in pty_flush_buffer() relates to the
+potential for deadlock if tty_buffer_flush() is done in parallel
+by both ptys. The two potential sources for deadlock were the
+tty->ldisc_sem and the tty_buffer lock.
 
-4 Uart modules are all connected to a fixed 26Mhz crystal by power-on default.
+The first source of deadlock, the tty->ldisc_sem, can/is avoided
+by not waiting for the ldisc ref; ie., the buffer flush is simply
+not performed if the ldisc ref is not acquired. In this context,
+not acquiring the ldisc_sem is only possible when changing the
+line discipline. Although this approach is not perfect, I feel
+it's a > 99% solution.
 
-There should be a clock-mux between uart and 26Mhz which
-could select other clock source such as some pll output.
+The second source of deadlock stems from the fact that the
+input worker is holding the tty buffer lock while processing
+input. While this prevents a concurrent buffer flush of its
+own tty buffer, this also threatens a lock order inversion:
 
-But as initial commit , we are not ready to describe other inputs by
-these muxes.
-So  we treat the UART as a simple model with only one fixed-clock input.
-And we plan to add the other inputs path back in a not very far future.
-Is it appropriate  to do like this?
+ CPU 0                                 | CPU 1
+ flush_to_ldisc()                      | flush_to_ldisc()
+   claim slave buffer lock             |   claim master buffer lock
+   - process input -                   |   - process input -
+   n_tty_receive_signal_char           |   n_tty_receive_signal_char
+     tty_driver_flush_buffer           |     tty_driver_flush_buffer
+       pty_flush_buffer                |       pty_flush_buffer
+         tty_buffer_flush(other)       |         tty_buffer_flush(other)
+           try to claim other buf lock |           try to claim other buf lock
 
-  Orson
+                                 * DEADLOCK *
 
+_Except_ the CPU1 call chain is not possible because the
+pty master can never have termios settings of either BRKINT or
+ISIG, so the lock order inversion is not possible.
 
->
-> Thanks,
-> Mark.
+So patch 2 re-enables the tty_buffer_flush() in pty_flush_buffer() and
+adds lockdep annotation for the tty buffer lock; normal ttys and pty
+masters use the subclass 0 lock and pty slaves use the subclass 1 lock.
+
+This will still warn of any lock order inversions that are actually
+a problem.
+
+Patch 1 just generalizes the existing lockdep annotation used for the
+tty_lock(), so that patch 2 and 3 can use it.
+
+Patch 3 fixes the very obvious problems that shows up when pty slaves start
+flushing data; all kinds of i/o ordering issues show up. For example, if you
+interrupt a 'cat large-text-file', the echoed '^C' appears out-of-order, or a
+chunk of output is missing before the trailing out (because that is now
+flushed by pty_flush_buffer() but the writer hasn't processed the signal yet).
+FWIW, these same problems exist with regular ttys, but the speed of ptys
+makes it way more obvious.
+
+Regards,
+
+Peter Hurley (3):
+  tty: Make lock subclasses available for other tty locks
+  pty: Fix buffer flush deadlock
+  n_tty: Fix signal handling flushes
+
+ drivers/tty/n_tty.c      | 45 ++++++++++++++++++++++++++++++---------------
+ drivers/tty/pty.c        | 11 ++++++++++-
+ drivers/tty/tty_buffer.c |  6 ++++++
+ drivers/tty/tty_mutex.c  | 12 +-----------
+ include/linux/tty.h      | 24 ++++++++++++++++++++++++
+ 5 files changed, 71 insertions(+), 27 deletions(-)
+
+-- 
+2.2.2
