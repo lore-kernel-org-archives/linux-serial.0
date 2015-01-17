@@ -1,64 +1,73 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: [PATCH] sh-sci: extend PM methods
-Date: Fri, 16 Jan 2015 13:56:02 -0800 (PST)
-Message-ID: <3390015.epzKE7eYAi@wasted.cogentembedded.com>
+From: Orson Zhai <orsonzhai-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v5 2/5] Documentation: DT: Add bindings for Spreadtrum SoC Platform
+Date: Sat, 17 Jan 2015 16:10:32 +0800
+Message-ID: <CA+H2tpHA7PRL98VMd3d3jeaOr_6Q5ktmM3fbdaBKRpm_pXVqVw@mail.gmail.com>
+References: <1421402411-3479-1-git-send-email-chunyan.zhang@spreadtrum.com>
+	<1421402411-3479-3-git-send-email-chunyan.zhang@spreadtrum.com>
+	<20150116102135.GC21809@leverpostej>
+	<CAAfSe-teDdPzRUnvzM+NErfZwmqM04yUMgic--hyZL8-Jjd8jw@mail.gmail.com>
+	<20150116141109.GC22569@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org
-Cc: linux-sh@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150116141109.GC22569@leverpostej>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: Lyra Zhang <zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org" <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, "broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, "ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org" <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "jslaby-AlSwsSmVLrQ@public.gmane.org" <jslaby-AlSwsSmVLrQ@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org" <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "florian.vaussard-p8DiymsW2f8@public.gmane.org" <florian.vaussard-p8DiymsW2f8@public.gmane.org>, "andrew-g2DYL2Zd6BY@public.gmane.org" <andrew-g2DYL2Zd6BY@public.gmane.org>, "rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely@lin>
 List-Id: linux-serial@vger.kernel.org
 
-In order to make it possible to restore from hibernation not only in Linux but
-also in e.g. U-Boot, we have to use sci_{suspend|remove}() for the PM {freeze|
-thaw|restore}() methods.  It's handy to achieve this by using SIMPLE_DEV_PM_OPS()
-macro, however we have to annotate sci_{suspend|remove}() with '__maybe_unused'
-in order to avoid compilation warnings when CONFIG_PM_SLEEP is undefined.
+On Fri, Jan 16, 2015 at 10:11 PM, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Fri, Jan 16, 2015 at 12:53:16PM +0000, Lyra Zhang wrote:
+>> Hi, Mark
+>>
+>> >> +
+>> >> +Required properties:
+>> >> +- compatible: must be "sprd,sc9836-uart"
+>> >> +- reg: offset and length of the register set for the device
+>> >> +- interrupts: exactly one interrupt specifier
+>> >> +- clocks: phandles to input clocks.
+>> >
+>> > The order and relevance of each should be specified. If you have
+>> > multiple clocks I would strongly recommend you use clock-names to
+>> > distinguish them.
+>> >
+>>
+>> Thank you for the recommendation.
+>> but, since we haven't made the clock driver ready, for this initial
+>> commit, we just let 4 UARTs share a single fixed 26 MHz clock source.
+>> we'll do like you've recommended when we will submit the clock driver
+>> in the future.
+>
+> I'm on about the clock input lines on the UART instance, not the
+> providers they come from.
+>
+> Is there only a single clock input line on each UART? Perhaps multiple
+> input lines which are currently fed by the same clock?
 
-Based on orignal patch by Mikhail Ulyanov <mikhail.ulyanov@cogentembedded.com>.
+________
+| 26MHz |-------------------------------------------------
+-------------        |                  |
+                     |                  |
+                _______       ________
+               | UART1 |      | UART2 |    .........
+               --------------      -------------
 
-Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+the hardware is something like the diagram.
 
----
-This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
+4 Uart modules are all connected to a fixed 26Mhz crystal by power-on default.
 
- drivers/tty/serial/sh-sci.c |    9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+There should be a clock-mux between uart and 26Mhz which
+could select other clock source such as some pll output.
 
-Index: tty/drivers/tty/serial/sh-sci.c
-===================================================================
---- tty.orig/drivers/tty/serial/sh-sci.c
-+++ tty/drivers/tty/serial/sh-sci.c
-@@ -2605,7 +2605,7 @@ static int sci_probe(struct platform_dev
- 	return 0;
- }
- 
--static int sci_suspend(struct device *dev)
-+static __maybe_unused int sci_suspend(struct device *dev)
- {
- 	struct sci_port *sport = dev_get_drvdata(dev);
- 
-@@ -2615,7 +2615,7 @@ static int sci_suspend(struct device *de
- 	return 0;
- }
- 
--static int sci_resume(struct device *dev)
-+static __maybe_unused int sci_resume(struct device *dev)
- {
- 	struct sci_port *sport = dev_get_drvdata(dev);
- 
-@@ -2625,10 +2625,7 @@ static int sci_resume(struct device *dev
- 	return 0;
- }
- 
--static const struct dev_pm_ops sci_dev_pm_ops = {
--	.suspend	= sci_suspend,
--	.resume		= sci_resume,
--};
-+static SIMPLE_DEV_PM_OPS(sci_dev_pm_ops, sci_suspend, sci_resume);
- 
- static struct platform_driver sci_driver = {
- 	.probe		= sci_probe,
+But as initial commit , we are not ready to describe other inputs by
+these muxes.
+So  we treat the UART as a simple model with only one fixed-clock input.
+And we plan to add the other inputs path back in a not very far future.
+Is it appropriate  to do like this?
 
+  Orson
+
+
+>
+> Thanks,
+> Mark.
