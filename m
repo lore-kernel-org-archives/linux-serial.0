@@ -1,162 +1,184 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 3/3] n_tty: Fix signal handling flushes
-Date: Sat, 17 Jan 2015 15:42:06 -0500
-Message-ID: <1421527326-4368-4-git-send-email-peter@hurleysoftware.com>
-References: <1421527326-4368-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH] n_tty: Remove LINEMODE support
+Date: Sun, 18 Jan 2015 16:30:32 -0500
+Message-ID: <1421616632-4077-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1421527326-4368-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Howard Chu <hyc@symas.com>
 List-Id: linux-serial@vger.kernel.org
 
-BRKINT and ISIG requires input and output flush when a signal char
-is received. However, the order of operations is significant since
-parallel i/o may be ongoing.
+Commit 26df6d13406d1 ("tty: Add EXTPROC support for LINEMODE") added
+the undocumented EXTPROC input processing mode, which ignores the ICANON
+setting and forces pty slave input to be processed in non-canonical
+mode.
 
-Merge the signal handling for BRKINT with ISIG handling.
+Although intended to provide a transparent mechanism for local line
+edit with telnetd (and other remote shell protocols), the transparency
+is limited.
 
-Process the signal first. This ensures any ongoing i/o is aborted;
-without this, a waiting writer may continue writing after the flush
-occurs and after the signal char has been echoed.
+Userspace usage is abandoned; telnetd does not even compile with
+LINEMODE support. readline/bash and sshd never supported this.
 
-Write lock the termios_rwsem, which excludes parallel writers from
-pushing new i/o until after the output buffers are flushed; claiming
-the write lock is necessary anyway to exclude parallel readers while
-the read buffer is flushed.
-
-Subclass the termios_rwsem for ptys since the slave pty performing
-the flush may appear to reorder the termios_rwsem->tty buffer lock
-lock order; adding annotation clarifies that
-  slave tty_buffer lock-> slave termios_rwsem -> master tty_buffer lock
-is a valid lock order.
-
-Flush the echo buffer. In this context, the echo buffer is 'output'.
-Otherwise, the output will appear discontinuous because the output buffer
-was cleared which contains older output than the echo buffer.
-
-Open-code the read buffer flush since the input worker does not need
-kicking (this is the input worker).
-
+Cc: Howard Chu <hyc@symas.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 45 ++++++++++++++++++++++++++++++---------------
- drivers/tty/pty.c   |  1 +
- include/linux/tty.h |  3 +++
- 3 files changed, 34 insertions(+), 15 deletions(-)
+ drivers/tty/n_tty.c | 22 ++++++----------------
+ drivers/tty/pty.c   | 24 +-----------------------
+ 2 files changed, 7 insertions(+), 39 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 031a36b..ea26ea6 100644
+index eb9f114..5120d2b 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -1088,16 +1088,45 @@ static void eraser(unsigned char c, struct tty_struct *tty)
-  *	Called when a signal is being sent due to terminal input.
-  *	Called from the driver receive_buf path so serialized.
-  *
-+ *	Performs input and output flush if !NOFLSH. In this context, the echo
-+ *	buffer is 'output'. The signal is processed first to alert any current
-+ *	readers or writers to discontinue and exit their i/o loops.
-+ *
-  *	Locking: ctrl_lock
-  */
+@@ -1562,10 +1562,6 @@ n_tty_receive_buf_standard(struct tty_struct *tty, const unsigned char *cp,
+ 				c &= 0x7f;
+ 			if (I_IUCLC(tty) && L_IEXTEN(tty))
+ 				c = tolower(c);
+-			if (L_EXTPROC(tty)) {
+-				put_tty_queue(c, ldata);
+-				continue;
+-			}
+ 			if (!test_bit(c, ldata->char_map))
+ 				n_tty_receive_char_inline(tty, c);
+ 			else if (n_tty_receive_char_special(tty, c) && count) {
+@@ -1613,9 +1609,9 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
  
- static void isig(int sig, struct tty_struct *tty)
- {
-+	struct n_tty_data *ldata = tty->disc_data;
- 	struct pid *tty_pgrp = tty_get_pgrp(tty);
- 	if (tty_pgrp) {
- 		kill_pgrp(tty_pgrp, sig, 1);
- 		put_pid(tty_pgrp);
+ 	if (ldata->real_raw)
+ 		n_tty_receive_buf_real_raw(tty, cp, fp, count);
+-	else if (ldata->raw || (L_EXTPROC(tty) && !preops))
++	else if (ldata->raw)
+ 		n_tty_receive_buf_raw(tty, cp, fp, count);
+-	else if (tty->closing && !L_EXTPROC(tty))
++	else if (tty->closing)
+ 		n_tty_receive_buf_closing(tty, cp, fp, count);
+ 	else {
+ 		if (ldata->lnext) {
+@@ -1637,13 +1633,13 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 			tty->ops->flush_chars(tty);
  	}
-+
-+	if (!L_NOFLSH(tty)) {
-+		up_read(&tty->termios_rwsem);
-+		down_write(&tty->termios_rwsem);
-+
-+		/* clear echo buffer */
-+		mutex_lock(&ldata->output_lock);
-+		ldata->echo_head = ldata->echo_tail = 0;
-+		ldata->echo_mark = ldata->echo_commit = 0;
-+		mutex_unlock(&ldata->output_lock);
-+
-+		/* clear output buffer */
-+		tty_driver_flush_buffer(tty);
-+
-+		/* clear input buffer */
-+		reset_buffer_flags(tty->disc_data);
-+
-+		/* notify pty master of flush */
-+		if (tty->link)
-+			n_tty_packet_mode_flush(tty);
-+
-+		up_write(&tty->termios_rwsem);
-+		down_read(&tty->termios_rwsem);
-+	}
- }
  
- /**
-@@ -1121,13 +1150,6 @@ static void n_tty_receive_break(struct tty_struct *tty)
+-	if (ldata->icanon && !L_EXTPROC(tty))
++	if (ldata->icanon)
  		return;
- 	if (I_BRKINT(tty)) {
- 		isig(SIGINT, tty);
--		if (!L_NOFLSH(tty)) {
--			/* flushing needs exclusive termios_rwsem */
--			up_read(&tty->termios_rwsem);
--			n_tty_flush_buffer(tty);
--			tty_driver_flush_buffer(tty);
--			down_read(&tty->termios_rwsem);
--		}
- 		return;
+ 
+ 	/* publish read_head to consumer */
+ 	smp_store_release(&ldata->commit_head, ldata->read_head);
+ 
+-	if ((read_cnt(ldata) >= ldata->minimum_to_wake) || L_EXTPROC(tty)) {
++	if (read_cnt(ldata) >= ldata->minimum_to_wake) {
+ 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+ 		if (waitqueue_active(&tty->read_wait))
+ 			wake_up_interruptible_poll(&tty->read_wait, POLLIN);
+@@ -1939,7 +1935,7 @@ static inline int input_available_p(struct tty_struct *tty, int poll)
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	int amt = poll && !TIME_CHAR(tty) && MIN_CHAR(tty) ? MIN_CHAR(tty) : 1;
+ 
+-	if (ldata->icanon && !L_EXTPROC(tty))
++	if (ldata->icanon)
+ 		return ldata->canon_head != ldata->read_tail;
+ 	else
+ 		return ldata->commit_head - ldata->read_tail >= amt;
+@@ -1973,7 +1969,6 @@ static int copy_from_read_buf(struct tty_struct *tty,
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	int retval;
+ 	size_t n;
+-	bool is_eof;
+ 	size_t head = smp_load_acquire(&ldata->commit_head);
+ 	size_t tail = ldata->read_tail & (N_TTY_BUF_SIZE - 1);
+ 
+@@ -1983,14 +1978,9 @@ static int copy_from_read_buf(struct tty_struct *tty,
+ 	if (n) {
+ 		retval = copy_to_user(*b, read_buf_addr(ldata, tail), n);
+ 		n -= retval;
+-		is_eof = n == 1 && read_buf(ldata, tail) == EOF_CHAR(tty);
+ 		tty_audit_add_data(tty, read_buf_addr(ldata, tail), n,
+ 				ldata->icanon);
+ 		smp_store_release(&ldata->read_tail, ldata->read_tail + n);
+-		/* Turn single EOF into zero-length read */
+-		if (L_EXTPROC(tty) && ldata->icanon && is_eof &&
+-		    (head == ldata->read_tail))
+-			n = 0;
+ 		*b += n;
+ 		*nr -= n;
  	}
- 	if (I_PARMRK(tty)) {
-@@ -1197,13 +1219,7 @@ static void n_tty_receive_parity_error(struct tty_struct *tty, unsigned char c)
- static void
- n_tty_receive_signal_char(struct tty_struct *tty, int signal, unsigned char c)
- {
--	if (!L_NOFLSH(tty)) {
--		/* flushing needs exclusive termios_rwsem */
--		up_read(&tty->termios_rwsem);
--		n_tty_flush_buffer(tty);
--		tty_driver_flush_buffer(tty);
--		down_read(&tty->termios_rwsem);
--	}
-+	isig(signal, tty);
- 	if (I_IXON(tty))
- 		start_tty(tty);
- 	if (L_ECHO(tty)) {
-@@ -1211,7 +1227,6 @@ n_tty_receive_signal_char(struct tty_struct *tty, int signal, unsigned char c)
- 		commit_echoes(tty);
- 	} else
- 		process_echoes(tty);
--	isig(signal, tty);
- 	return;
- }
+@@ -2257,7 +2247,7 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 			continue;
+ 		}
  
+-		if (ldata->icanon && !L_EXTPROC(tty)) {
++		if (ldata->icanon) {
+ 			retval = canon_copy_from_read_buf(tty, &b, &nr);
+ 			if (retval == -EAGAIN) {
+ 				retval = 0;
 diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index e0007d1..ee06b77 100644
+index ee06b77..01ac182 100644
 --- a/drivers/tty/pty.c
 +++ b/drivers/tty/pty.c
-@@ -392,6 +392,7 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
- 		goto err_put_module;
+@@ -192,20 +192,6 @@ static int pty_get_pktmode(struct tty_struct *tty, int __user *arg)
+ 	return put_user(pktmode, arg);
+ }
  
- 	tty_set_lock_subclass(o_tty);
-+	lockdep_set_subclass(&o_tty->termios_rwsem, TTY_LOCK_SLAVE);
+-/* Send a signal to the slave */
+-static int pty_signal(struct tty_struct *tty, int sig)
+-{
+-	struct pid *pgrp;
+-
+-	if (tty->link) {
+-		pgrp = tty_get_pgrp(tty->link);
+-		if (pgrp)
+-			kill_pgrp(pgrp, sig, 1);
+-		put_pid(pgrp);
+-	}
+-	return 0;
+-}
+-
+ static void pty_flush_buffer(struct tty_struct *tty)
+ {
+ 	struct tty_struct *to = tty->link;
+@@ -254,15 +240,13 @@ static void pty_set_termios(struct tty_struct *tty,
+ {
+ 	/* See if packet mode change of state. */
+ 	if (tty->link && tty->link->packet) {
+-		int extproc = (old_termios->c_lflag & EXTPROC) |
+-				(tty->termios.c_lflag & EXTPROC);
+ 		int old_flow = ((old_termios->c_iflag & IXON) &&
+ 				(old_termios->c_cc[VSTOP] == '\023') &&
+ 				(old_termios->c_cc[VSTART] == '\021'));
+ 		int new_flow = (I_IXON(tty) &&
+ 				STOP_CHAR(tty) == '\023' &&
+ 				START_CHAR(tty) == '\021');
+-		if ((old_flow != new_flow) || extproc) {
++		if (old_flow != new_flow) {
+ 			spin_lock_irq(&tty->ctrl_lock);
+ 			if (old_flow != new_flow) {
+ 				tty->ctrl_status &= ~(TIOCPKT_DOSTOP | TIOCPKT_NOSTOP);
+@@ -271,8 +255,6 @@ static void pty_set_termios(struct tty_struct *tty,
+ 				else
+ 					tty->ctrl_status |= TIOCPKT_NOSTOP;
+ 			}
+-			if (extproc)
+-				tty->ctrl_status |= TIOCPKT_IOCTL;
+ 			spin_unlock_irq(&tty->ctrl_lock);
+ 			wake_up_interruptible(&tty->link->read_wait);
+ 		}
+@@ -482,8 +464,6 @@ static int pty_bsd_ioctl(struct tty_struct *tty,
+ 		return pty_set_pktmode(tty, (int __user *)arg);
+ 	case TIOCGPKT: /* Get PT packet mode */
+ 		return pty_get_pktmode(tty, (int __user *)arg);
+-	case TIOCSIG:    /* Send signal to other side of pty */
+-		return pty_signal(tty, (int) arg);
+ 	case TIOCGPTN: /* TTY returns ENOTTY, but glibc expects EINVAL here */
+ 		return -EINVAL;
+ 	}
+@@ -607,8 +587,6 @@ static int pty_unix98_ioctl(struct tty_struct *tty,
+ 		return pty_get_pktmode(tty, (int __user *)arg);
+ 	case TIOCGPTN: /* Get PT Number */
+ 		return put_user(tty->index, (unsigned int __user *)arg);
+-	case TIOCSIG:    /* Send signal to other side of pty */
+-		return pty_signal(tty, (int) arg);
+ 	}
  
- 	if (legacy) {
- 		/* We always use new tty termios data so we can do this
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index c60efad..358a337 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -25,6 +25,9 @@
-  *
-  * legacy_mutex - Nested tty locks are necessary for releasing pty pairs.
-  *		  The stable lock order is master pty first, then slave pty.
-+ * termios_rwsem - The stable lock order is tty_buffer lock->termios_rwsem.
-+ *		   Subclassing this lock enables the slave pty to hold its
-+ *		   termios_rwsem when claiming the master tty_buffer lock.
-  * tty_buffer lock - slave ptys can claim nested buffer lock when handling
-  *		     signal chars. The stable lock order is slave pty, then
-  *		     master.
+ 	return -ENOIOCTLCMD;
 -- 
 2.2.2
