@@ -1,31 +1,67 @@
-From: Howard Chu <hyc@symas.com>
-Subject: Re: [PATCH] n_tty: Remove LINEMODE support
-Date: Mon, 19 Jan 2015 20:31:32 +0000
-Message-ID: <54BD69A4.4090705@symas.com>
-References: <1421616632-4077-1-git-send-email-peter@hurleysoftware.com> <54BC3771.7030204@symas.com> <54BC5EC7.1090202@hurleysoftware.com> <54BCFC94.1040605@symas.com> <54BD1B53.9030901@hurleysoftware.com> <54BD328F.9090208@symas.com> <54BD567C.8070200@hurleysoftware.com>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: [PATCH v2] sh-sci: extend PM methods
+Date: Tue, 20 Jan 2015 01:41:48 +0300
+Message-ID: <2058633.0nQGRBdejF@wasted.cogentembedded.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54BD567C.8070200@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, Linux Kernel Mailing List <Linux-Kernel@Vger.Kernel.ORG>, linux-serial@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org
+Cc: linux-sh@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Peter Hurley wrote:
-> Ok.
-> I might see if I can get telnet + a revised kernel interface to work together; I'll
-> let you know if this works out.
+In order to make it possible to restore from hibernation not only in Linux but
+also in e.g. U-Boot, we have to use sci_{suspend|resume}() for the PM {freeze|
+thaw|restore}() methods. It's handy to achieve this by using SIMPLE_DEV_PM_OPS()
+macro, however we have to annotate sci_{suspend|remove}() with '__maybe_unused'
+in order to avoid compilation warnings when CONFIG_PM_SLEEP is undefined.
 
-The patch here 
-https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=585527#20 still 
-applies cleanly to current Ubuntu netkit-telnet source and works.
+Based on original patch by Mikhail Ulyanov <mikhail.ulyanov@cogentembedded.com>.
 
-You'll have to use a dumb shell to see any effect.
+Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 
--- 
-   -- Howard Chu
-   CTO, Symas Corp.           http://www.symas.com
-   Director, Highland Sun     http://highlandsun.com/hyc/
-   Chief Architect, OpenLDAP  http://www.openldap.org/project/
+---
+This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
+
+Changes in version 2:
+- fixed typos and too long line in the changelog.
+
+ drivers/tty/serial/sh-sci.c |    9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+Index: tty/drivers/tty/serial/sh-sci.c
+===================================================================
+--- tty.orig/drivers/tty/serial/sh-sci.c
++++ tty/drivers/tty/serial/sh-sci.c
+@@ -2605,7 +2605,7 @@ static int sci_probe(struct platform_dev
+ 	return 0;
+ }
+ 
+-static int sci_suspend(struct device *dev)
++static __maybe_unused int sci_suspend(struct device *dev)
+ {
+ 	struct sci_port *sport = dev_get_drvdata(dev);
+ 
+@@ -2615,7 +2615,7 @@ static int sci_suspend(struct device *de
+ 	return 0;
+ }
+ 
+-static int sci_resume(struct device *dev)
++static __maybe_unused int sci_resume(struct device *dev)
+ {
+ 	struct sci_port *sport = dev_get_drvdata(dev);
+ 
+@@ -2625,10 +2625,7 @@ static int sci_resume(struct device *dev
+ 	return 0;
+ }
+ 
+-static const struct dev_pm_ops sci_dev_pm_ops = {
+-	.suspend	= sci_suspend,
+-	.resume		= sci_resume,
+-};
++static SIMPLE_DEV_PM_OPS(sci_dev_pm_ops, sci_suspend, sci_resume);
+ 
+ static struct platform_driver sci_driver = {
+ 	.probe		= sci_probe,
+
