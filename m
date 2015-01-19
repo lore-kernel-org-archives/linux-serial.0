@@ -1,123 +1,63 @@
-From: Howard Chu <hyc@symas.com>
-Subject: Re: [PATCH] n_tty: Remove LINEMODE support
-Date: Mon, 19 Jan 2015 12:46:12 +0000
-Message-ID: <54BCFC94.1040605@symas.com>
-References: <1421616632-4077-1-git-send-email-peter@hurleysoftware.com> <54BC3771.7030204@symas.com> <54BC5EC7.1090202@hurleysoftware.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 10/10] drivers: PL011: add support for the ARM SBSA
+ generic UART
+Date: Mon, 19 Jan 2015 14:31:06 +0100
+Message-ID: <5407007.ZAjCvvOzus@wuerfel>
+References: <1421428986-11300-1-git-send-email-andre.przywara@arm.com>
+ <54B95960.9070906@arm.com> <20150116183717.GM32155@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54BC5EC7.1090202@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, Linux Kernel Mailing List <Linux-Kernel@Vger.Kernel.ORG>, linux-serial@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20150116183717.GM32155@leverpostej>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: "rob.herring@linaro.org" <rob.herring@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, Andre Przywara <andre.przywara@arm.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Peter Hurley wrote:
-> On 01/18/2015 05:45 PM, Howard Chu wrote:
->> Peter Hurley wrote:
->>> Commit 26df6d13406d1 ("tty: Add EXTPROC support for LINEMODE") added
->>> the undocumented EXTPROC input processing mode, which ignores the ICANON
->>> setting and forces pty slave input to be processed in non-canonical
->>> mode.
->>
->> What's the motivation to remove this code, rather than improve it if it
->> needs fixing? It has been removed from the Linux kernel at least once
->> before already, and that was a mistake back then too.
->
-> It is a significant maintenance burden, and I have concerns about the
-> level of support it's receiving. Here's some outstanding issues:
->
-> 1. No man page documentation. At a minimum, tty_ioctl(4) and termios(3)
->     need the userspace visible definitions and behavior documented. Better
->     would be a LINEMODE (7) description of how this implementation works
->     wrt supporting RFC 1116.
+On Friday 16 January 2015 18:37:17 Mark Rutland wrote:
+> 
+> > Makes some sense, so what about:
+> > -----------------------
+> > Required properties:
+> > - compatible: must be "arm,sbsa-uart"
+> > - reg: exactly one register range
+> > - interrupts: exactly one interrupt specifier
+> > 
+> > Optional properties:
+> > - current-speed : the current active speed of the UART
+> > - fifo-size : always 32 as per the SBSA specification
+> > - word-size : the number of payload bits per word
+> > - parity : used parity method, can be:
+> >       "n": no parity
+> >       "e": even parity
+> >       "o": odd parity
+> >       "m": always mark (logical 1)
+> >       "s": always space (logical 0)
+> > - stop-bits : the number of stop bits after the payload
+> 
+> Generally those look fine, though someone more familiar with serial
+> should take a look.
+> 
+> We can drop fifo-size given it's fixed. Anything that we know outright
+> doesn't need to be described.
+> 
+> We might want to make them mandatory. I don't see any value in not
+> knowing.
 
-That can be added easily enough. Historically EXTPROC has had very 
-little documentation of its own. E.g. the FreeBSD manpage only shows 
-that the flag exists.
+I think making them optional is useless, so either make them mandatory or
+drop them if we can avoid it. Unfortunately, LCR is not part of SBSA,
+that would let us drop the properties and still report the correct settings.
 
-https://www.freebsd.org/cgi/man.cgi?query=termios&sektion=4
+Would we be better off documenting that 8-n-1 is the only allowed settting?
+I can't think of a reason why anyone would use something else.
 
-> 2. read(), poll()/select() and ioctl() with and without EXTPROC need to
->     have _identical_ userspace behavior.
-
-OK, this can be fixed.
-
-> 3. Does the local edit guarantee canon lines <= 4096 chars? What happens
->     if pty slave reader does this?
->
-> 	char buffer[4096];
-> 	char *p = buffer;
->
-> 	n = read(tty, buffer, sizeof(buffer));
-> 	if (n <= 0)
-> 		goto done;
-> 	while (*p++ != '\n')
-> 		;
-
-This reader is broken, since the tty driver supports EOL and EOL2 and 
-this code doesn't account for it.
-
-In practice your concern is misdirected - it's the job of whatever code 
-is talking to the pty master to send valid data to the pty slave. 
-There's no reason for the tty driver to second-guess the app here.
-
-> 4. ioctl(TIOCSIG) can send _any_ signal to a different process without
->     permission checks. That's not good.
-
-It can only send to the pty slave. Permissions were already checked when 
-the pty master was opened. What further checks do you think are needed? 
-You think it should be limited to tty-specific signals: INT, QUIT, CONT, 
-TSTP, TTIN, TTOU, WINCH?
-
-> 5. This needs to work with readline(). Right now, I don't see how this
->     won't have worst-case behavior, constantly sending termios changes,
->     with scripted input where the reader switches back-and-forth between
->     canonical and non-canonical mode (like readline() does). Database
->     shells behave like this, but you can do a 20-line shell mockup with
->     just readline().
-
-readline() patched accordingly 
-https://groups.google.com/forum/#!topic/gnu.bash.bug/o0UA55AhADs will 
-cooperate. Sending one or two termios changes per input line is still 
-far better than one character-at-a-time packets back and forth.
-
-> 6. EXTPROC still does some input processing on the server. For example,
->     7-bit mode (ISTRIP), tolower mode (IUCLC) and processing while
->     closing; if input processing is being done on the local/client side,
->     why the extra work here?
-
-That's defensive, on the assumption that something else might break if 
-e.g. the tty expected only 7-bit input but 8-bit characters were sent to it.
-
-> 7. This needs a reference userspace implementation which for the moment
->     could double as regression testing. A library with unit tests would
->     be ideal.
-
-telnet/telnetd can probably used as a starting point for this.
-
-> ISTM the right implementation, if there is one, is for EXTPROC to process
-> input exactly like raw mode except that line termination wakes up read_wait
-> and there is no special casing in read/poll.
-
-I agree that this sounds simpler but I feel there's a reason (which I 
-can't remember at the moment) that it doesn't work out that way.
-
-> Does SLC_FORW1 & SLC_FORW2
-> map directly to termios.c_cc[] line termination values?
-
-Maps exactly to VEOL / VEOL2.
-
-> I'd like to do away with the signalling part; just turn off EXTPROC
-> and send the appropriate signalling char from the pty master, like telnetd
-> does now. Same for EOF.
-
-That introduces additional mode changes, which you were just worrying 
-about above, re: readline. It would make the traffic stream less 
-efficient overall.
-
--- 
-   -- Howard Chu
-   CTO, Symas Corp.           http://www.symas.com
-   Director, Highland Sun     http://highlandsun.com/hyc/
-   Chief Architect, OpenLDAP  http://www.openldap.org/project/
+	Arnd
