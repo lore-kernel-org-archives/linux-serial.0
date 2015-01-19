@@ -1,67 +1,177 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH v5 5/5] tty/serial: Add Spreadtrum sc9836-uart driver support
-Date: Mon, 19 Jan 2015 08:11:20 -0600
-Message-ID: <CAL_JsqLTArm1v8ka39_KLq2jMKkK2ZXQ6-an=JSWVgTK1LWmOg@mail.gmail.com>
-References: <1421402411-3479-1-git-send-email-chunyan.zhang@spreadtrum.com>
- <1421402411-3479-6-git-send-email-chunyan.zhang@spreadtrum.com>
- <CAL_JsqJg=BtanmR_rhYthCUhKbErs8viZ7MMMXr-PmPjUV4BRQ@mail.gmail.com> <CAAfSe-vqqpvbYe0bEeD-3_QsLYz4r7pxMuA1-L4cYRw9TY=NgA@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] n_tty: Remove LINEMODE support
+Date: Mon, 19 Jan 2015 09:57:23 -0500
+Message-ID: <54BD1B53.9030901@hurleysoftware.com>
+References: <1421616632-4077-1-git-send-email-peter@hurleysoftware.com> <54BC3771.7030204@symas.com> <54BC5EC7.1090202@hurleysoftware.com> <54BCFC94.1040605@symas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAfSe-vqqpvbYe0bEeD-3_QsLYz4r7pxMuA1-L4cYRw9TY=NgA@mail.gmail.com>
+In-Reply-To: <54BCFC94.1040605@symas.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lyra Zhang <zhang.lyra@gmail.com>
-Cc: Chunyan Zhang <chunyan.zhang@spreadtrum.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Jiri Slaby <jslaby@suse.cz>, Jason Cooper <jason@lakedaemon.net>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, Florian Vaussard <florian.vaussard@epfl.ch>, Andrew Lunn <andrew@lunn.ch>, Robert Richter <rrichter@cavium.com>, Hayato Suzuki <hytszk@gmail.com>, Grant Likely <grant.likely@linaro.org>, Antony Pavlov <antonynpavlov@gmail.com>, Joel Schopp <Joel.Schopp@amd.com>Suravee Suthikulanit <S>
+To: Howard Chu <hyc@symas.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, Linux Kernel Mailing List <Linux-Kernel@Vger.Kernel.ORG>, linux-serial@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 19, 2015 at 3:55 AM, Lyra Zhang <zhang.lyra@gmail.com> wrote:
-> On Sat, Jan 17, 2015 at 12:41 AM, Rob Herring <robherring2@gmail.com> wrote:
->> On Fri, Jan 16, 2015 at 4:00 AM, Chunyan Zhang
->> <chunyan.zhang@spreadtrum.com> wrote:
->>> Add a full sc9836-uart driver for SC9836 SoC which is based on the
->>> spreadtrum sharkl64 platform.
->>> This driver also support earlycon.
->>> This patch also replaced the spaces between the macros and their
->>> values with the tabs in serial_core.h
+Thanks, Howard.
 
-[...]
+[ adding Ted too ]
 
->>> +static int __init sprd_serial_init(void)
->>> +{
->>> +       int ret = 0;
->>> +
->>> +       ret = uart_register_driver(&sprd_uart_driver);
+On 01/19/2015 07:46 AM, Howard Chu wrote:
+> Peter Hurley wrote:
+>> On 01/18/2015 05:45 PM, Howard Chu wrote:
+>>> Peter Hurley wrote:
+>>>> Commit 26df6d13406d1 ("tty: Add EXTPROC support for LINEMODE") added
+>>>> the undocumented EXTPROC input processing mode, which ignores the ICANON
+>>>> setting and forces pty slave input to be processed in non-canonical
+>>>> mode.
+>>>
+>>> What's the motivation to remove this code, rather than improve it if it
+>>> needs fixing? It has been removed from the Linux kernel at least once
+>>> before already, and that was a mistake back then too.
 >>
->> This can be done in probe now. Then you can use module_platform_driver().
+>> It is a significant maintenance burden, and I have concerns about the
+>> level of support it's receiving. Here's some outstanding issues:
 >>
->
-> Question:
-> 1. there are 4 uart ports configured in dt for sprd_serial, so probe
-> will be called 4 times, but uart_register_driver only needs to be
-> called one time, so can we use uart_driver.state to check if
-> uart_register_driver has already been called ?
+>> 1. No man page documentation. At a minimum, tty_ioctl(4) and termios(3)
+>>     need the userspace visible definitions and behavior documented. Better
+>>     would be a LINEMODE (7) description of how this implementation works
+>>     wrt supporting RFC 1116.
+> 
+> That can be added easily enough.
 
-Yes.
+Is this you signing up?  :)
 
-> 2. if I use module_platform_driver() instead of
-> module_init(sprd_serial_init)  and  module_exit(sprd_serial_exit) , I
-> must move uart_unregister_driver() which is now processed in
-> sprd_serial_exit() to sprd_remove(), there is a similar problem with
-> probe(), sprd_remove() will also be called 4 times, and actually it
-> should be called only one time. How can we deal with this case?
+> Historically EXTPROC has had very little documentation of its own. E.g. the FreeBSD manpage only shows that the flag exists.
+> 
+> https://www.freebsd.org/cgi/man.cgi?query=termios&sektion=4
 
-Look at pl01x or Samsung UART drivers which have done this conversion.
+A description of how the pty master uses EXTPROC to implement line mode would
+be very helpful, especially to people working in the tty code (eg., me, although
+I don't need it now).
 
-> 3. for the second question, we can check the platform_device->id, if
-> it is equal to the index of last port (e.g. 4 for this case), then
-> uart_unregister_driver() can be called. Does it work correctly? since
-> for this case, we must keep the order of releasing ports.
 
-The id will not be the line index in the DT case. I don't think you
-can guarantee the order either.
+>> 2. read(), poll()/select() and ioctl() with and without EXTPROC need to
+>>     have _identical_ userspace behavior.
+> 
+> OK, this can be fixed.
 
-It would be better to make uart_{un}register_driver deal with being
-called multiple times so drivers don't have to deal with getting this
-correct. I'm not sure if that is feasible though.
+Ok.
 
-Rob
+>> 3. Does the local edit guarantee canon lines <= 4096 chars? What happens
+>>     if pty slave reader does this?
+>>
+>>     char buffer[4096];
+>>     char *p = buffer;
+>>
+>>     n = read(tty, buffer, sizeof(buffer));
+>>     if (n <= 0)
+>>         goto done;
+>>     while (*p++ != '\n')
+>>         ;
+> 
+> This reader is broken, since the tty driver supports EOL and EOL2 and this code doesn't account for it.
+
+This reader set EOL2 to DISABLED_CHAR earlier, and left EOL unchanged.
+I have seen userspace code that expects a line to be no longer than 4096 chars.
+
+> In practice your concern is misdirected - it's the job of whatever code is talking to the pty master to send valid data to the pty slave. There's no reason for the tty driver to second-guess the app here.
+
+What about a malicious client?
+
+>> 4. ioctl(TIOCSIG) can send _any_ signal to a different process without
+>>     permission checks. That's not good.
+> 
+> It can only send to the pty slave. Permissions were already checked when the pty master was opened.
+
+Still not ok.
+
+> What further checks do you think are needed? You think it should be limited to tty-specific signals: INT, QUIT, CONT, TSTP, TTIN, TTOU, WINCH?
+
+My first choice is to do away with TIOCSIG ioctl completely; see ending comments.
+My second would be masked to only those already used: INT, QUIT, TSTP.
+
+>> 5. This needs to work with readline(). Right now, I don't see how this
+>>     won't have worst-case behavior, constantly sending termios changes,
+>>     with scripted input where the reader switches back-and-forth between
+>>     canonical and non-canonical mode (like readline() does). Database
+>>     shells behave like this, but you can do a 20-line shell mockup with
+>>     just readline().
+> 
+> readline() patched accordingly https://groups.google.com/forum/#!topic/gnu.bash.bug/o0UA55AhADs will cooperate. Sending one or two termios changes per input line is still far better than one character-at-a-time packets back and forth.
+
+Ok, I misunderstood: the only incompatibility here is that readline()
+simply doesn't use line mode. That's fine from the kernel perspective.
+
+Although it does seem odd that the command shell doesn't support the
+input mode :)
+
+>> 6. EXTPROC still does some input processing on the server. For example,
+>>     7-bit mode (ISTRIP), tolower mode (IUCLC) and processing while
+>>     closing; if input processing is being done on the local/client side,
+>>     why the extra work here?
+> 
+> That's defensive, on the assumption that something else might break if e.g. the tty expected only 7-bit input but 8-bit characters were sent to it.
+
+Ok, is that because RFC 1116 doesn't specify ISTRIP and IUCLC handling so
+the server can't be sure the client did it? If so, that should be documented
+so that refactors don't remove that handling.
+
+Regular ptys dump input while closing so this should too.
+
+>> 7. This needs a reference userspace implementation which for the moment
+>>     could double as regression testing. A library with unit tests would
+>>     be ideal.
+> 
+> telnet/telnetd can probably used as a starting point for this.
+
+Except telnet is unmaintained except by each distro. Your patches don't apply
+to my distro telnet; they had been applied but are now ifdef'd out. I messed
+around with rebuilding it but never got telnetd to actually set EXTPROC.
+
+My point is there is no straightforward way to test this, and that's a problem.
+
+In fact, this is my main concern: no matter how useful this might be, it's
+pointless if the complementary userspace puzzle piece is unsupported.
+I know you have written patches but that's not the same as support; for example
+your OpenSSH fork is 4 years old, which is a non-starter because I'm sure
+there's known exploits which have been fixed in those 4 years.
+
+Why doesn't Ubuntu/Debian telnet even compile for line mode support? Did the
+package maintainer shut it off because it was causing bug reports?
+
+What more needs to be done to get line mode working 100% in bash?
+
+>> ISTM the right implementation, if there is one, is for EXTPROC to process
+>> input exactly like raw mode except that line termination wakes up read_wait
+>> and there is no special casing in read/poll.
+> 
+> I agree that this sounds simpler but I feel there's a reason (which I can't remember at the moment) that it doesn't work out that way.
+> 
+>> Does SLC_FORW1 & SLC_FORW2
+>> map directly to termios.c_cc[] line termination values?
+> 
+> Maps exactly to VEOL / VEOL2.
+> 
+>> I'd like to do away with the signalling part; just turn off EXTPROC
+>> and send the appropriate signalling char from the pty master, like telnetd
+>> does now. Same for EOF.
+> 
+> That introduces additional mode changes, which you were just worrying about above, re: readline. It would make the traffic stream less efficient overall.
+
+Maybe you misunderstood. If local signalling is being performed by the client,
+the over-the-wire traffic is the same. The pty master would turn off EXTPROC to
+write the signalling char but would not reflect the termios to the client (because
+it contains no relevant changes).
+
+And the signalling char is isolated and unique: it's not as if it's being stuffed
+within an existing stream of i/o, because the client should have already ceased
+input if it's handling signals locally.
+
+Which brings up another point: only a pty master should be able to set EXTPROC
+mode. Right now, any tty can be set to EXTPROC and the pty slave can even
+accidentally unset it. This argues for a new pty ioctl() to set EXTPROC in
+termios. pty_set_termios() can silently merge the bit.
+
+Regards,
+Peter Hurley
