@@ -1,73 +1,40 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] n_tty: Remove LINEMODE support
-Date: Mon, 19 Jan 2015 12:26:02 -0500
-Message-ID: <54BD3E2A.9040401@hurleysoftware.com>
-References: <1421616632-4077-1-git-send-email-peter@hurleysoftware.com> <54BC3771.7030204@symas.com> <54BC5EC7.1090202@hurleysoftware.com> <54BCFC94.1040605@symas.com> <54BD1B53.9030901@hurleysoftware.com> <20150119163703.GA23605@thunk.org>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH v4 01/21] serial: rewrite pxa2xx-uart to use 8250_core
+Date: Mon, 19 Jan 2015 12:08:21 -0600
+Message-ID: <CAL_JsqJUWRhGA_8NU+O=fLFdMiVNz0LV6G0LU=ikgk=zah2q2A@mail.gmail.com>
+References: <1387309071-22382-1-git-send-email-ynvich@gmail.com>
+ <1397668411-27162-1-git-send-email-ynvich@gmail.com> <1397668411-27162-2-git-send-email-ynvich@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150119163703.GA23605@thunk.org>
+In-Reply-To: <1397668411-27162-2-git-send-email-ynvich@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Theodore Ts'o <tytso@mit.edu>, Howard Chu <hyc@symas.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>, Linux Kernel Mailing List <Linux-Kernel@Vger.Kernel.ORG>, linux-serial@vger.kernel.org
+To: Sergei Ianovich <ynvich@gmail.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, James Cameron <quozl@laptop.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Paul Bolle <pebolle@tiscali.nl>, Arnd Bergmann <arnd@arndb.de>, Randy Dunlap <rdunlap@infradead.org>, Stefan Seyfried <seife+kernel@b1-systems.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/19/2015 11:37 AM, Theodore Ts'o wrote:
-> On Mon, Jan 19, 2015 at 09:57:23AM -0500, Peter Hurley wrote:
->>
->> This reader set EOL2 to DISABLED_CHAR earlier, and left EOL unchanged.
->> I have seen userspace code that expects a line to be no longer than 4096 chars.
-> 
-> Userspace code that does this is going to be very fragile.  Input from
-> the tty really should be considered completely untrustworthy.
+On Wed, Apr 16, 2014 at 12:13 PM, Sergei Ianovich <ynvich@gmail.com> wrote:
+> pxa2xx-uart was a separate uart platform driver. It was declaring
+> the same device names and numbers as 8250 driver. As a result,
+> it was impossible to use 8250 driver on PXA SoCs.
+>
+> Upon closer examination pxa2xx-uart turned out to be a clone of
+> 8250_core driver.
+>
+> Workaround for Erratum #19 according to Marvel(R) PXA270M Processor
+> Specification Update (April 19, 2010) is dropped. 8250_core reads
+> from FIFO immediately after checking DR bit in LSR.
+>
+> Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
+> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Reviewed-by: James Cameron <quozl@laptop.org>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  Resenging together with the rest of the series as the series
+>  breaks without this one at [PATCH 12/21]
 
-Should and do are different modal verbs.
+Whatever happened with merging this? I'm asking because either this or
+fixes to PXA uart are needed to coexist with the 8250 driver and for
+earlycon to work.
 
-> For example, what if, while the tty is in canonical (ICANON) mode, an
-> attacker sets PARMRK and clears IGNPAR, IGNBRK, and BRKINT on the tty
-> and then proceeds to send a large number of breaks or parity errors
-> down the tty?
-
-The input path limits _all_ canonical lines to 4096 chars. Input beyond that
-is discarded until a newline is received. I know this because I broke it
-and just recently fixed it.
-
-> That will certainly cause a buffer overflow of said
-> userspace process.  So if there is *any* setuid program which isn't
-> defensively checking for buffer overruns it's kind of screwed anyway.
-> 
->>>> 4. ioctl(TIOCSIG) can send _any_ signal to a different process without
->>>>     permission checks. That's not good.
->>>
->>> It can only send to the pty slave. Permissions were already checked when the pty master was opened.
->>
->> Still not ok.
-> 
-> Interestingly, TIOCSIG is supported by FreeBSD *and* OpenBSD, and
-> without any kind of checks.  That being said, I can certainly think of
-> potential security threats that could happen if a malicious program
-> were to run a setuid program (say, /bin/passwd) under a pty, and then
-> proceeded to send it a one or more of non-trappable signals -- for
-> example, either SIGKILL or SIGSTOP -- to either widen the window for a
-> race condition, or to kill a setuid program at a particularly
-> inconvenient time.
-
-I hadn't considered that possibility.
-
-> It might be interesting to see if someone could figure out an attack
-> that utilized this ioctl, and then demonstrated it on OpenBSD.  :-)
-
-I don't need that reputation :)
-
->>> What further checks do you think are needed? You think it should
->>> be limited to tty-specific signals: INT, QUIT, CONT, TSTP, TTIN,
->>> TTOU, WINCH?
-> 
-> Definitely, and we should do this sooner rather than later IMHO.
-> Preferably before someone figures out whether or not it's possible to
-> attack OpenBSD and FreeBSD using this ioctl, and requests a CVE.  :-)
-
-I'm on it.
-
-Regards,
-Peter Hurley
+Rob
