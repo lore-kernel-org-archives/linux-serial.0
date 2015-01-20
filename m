@@ -1,269 +1,935 @@
-From: Alan <gnomes@lxorguk.ukuu.org.uk>
-Subject: [PATCH RESEND] Specify PCI based UART for earlyprintk
-Date: Tue, 20 Jan 2015 12:07:57 +0000
-Message-ID: <20150120120749.28310.51041.stgit@localhost.localdomain>
+From: Orson Zhai <orsonzhai@gmail.com>
+Subject: Re: [PATCH v5 5/5] tty/serial: Add Spreadtrum sc9836-uart driver
+ support
+Date: Tue, 20 Jan 2015 20:11:22 +0800
+Message-ID: <54BE45EA.3030308@gmail.com>
+References: <sc9836-v5> <1421402411-3479-1-git-send-email-chunyan.zhang@spreadtrum.com> <1421402411-3479-6-git-send-email-chunyan.zhang@spreadtrum.com> <54B92C4F.8020009@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <54B92C4F.8020009@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: greg@kroah.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+Cc: gregkh@linuxfoundation.org, mark.rutland@arm.com, arnd@arndb.de, gnomes@lxorguk.ukuu.org.uk, broonie@kernel.org, robh+dt@kernel.org, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, will.deacon@arm.com, catalin.marinas@arm.com, jslaby@suse.cz, jason@lakedaemon.net, heiko@sntech.de, florian.vaussard@epfl.ch, andrew@lunn.ch, rrichter@cavium.com, hytszk@gmail.com, grant.likely@linaro.org, antonynpavlov@gmail.com, Joel.Schopp@amd.com, Suravee.Suthikulpanit@amd.com, shawn.guo@linaro.org, lea.yan@linaro.org, jorge.ramirez-ortiz@linaro.org, lee.jones@linaro.org, geng.ren@spreadtrum.com, zhizhou.zhang@spreadtrum.com, lanqing.liu@spreadtrum.com, zhang.lyra@gmail.com, wei.qiao@spreadtrum.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Stuart R. Anderson <stuart.r.anderson@intel.com>
+Hi, Peter,
 
-Add support for specifying PCI based UARTs for earlyprintk
-using a syntax like "earlyprintk=pciserial,00:18.1,115200",
-where 00:18.1 is the BDF of a UART device.
+Thank you for reviewing our code!
+Some discussion below.
 
-[Slightly tidied from Stuart's original patch]
-Signed-off-by: Alan Cox <alan@linux.intel.com>
----
- arch/x86/kernel/early_printk.c |  182 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 166 insertions(+), 16 deletions(-)
+On 2015=E5=B9=B401=E6=9C=8816=E6=97=A5 23:20, Peter Hurley wrote:
+> On 01/16/2015 05:00 AM, Chunyan Zhang wrote:
+>> Add a full sc9836-uart driver for SC9836 SoC which is based on the
+>> spreadtrum sharkl64 platform.
+>> This driver also support earlycon.
+>> This patch also replaced the spaces between the macros and their
+>> values with the tabs in serial_core.h
+> The locking doesn't look correct. Specific notations below.
+>
+>> Signed-off-by: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+>> Signed-off-by: Orson Zhai <orson.zhai@spreadtrum.com>
+>> Originally-by: Lanqing Liu <lanqing.liu@spreadtrum.com>
+>> ---
+>>   drivers/tty/serial/Kconfig       |   18 +
+>>   drivers/tty/serial/Makefile      |    1 +
+>>   drivers/tty/serial/sprd_serial.c |  772 ++++++++++++++++++++++++++=
+++++++++++++
+>>   include/uapi/linux/serial_core.h |    3 +
+>>   4 files changed, 794 insertions(+)
+>>   create mode 100644 drivers/tty/serial/sprd_serial.c
+>>
+>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+>> index c79b43c..969d3cd 100644
+>> --- a/drivers/tty/serial/Kconfig
+>> +++ b/drivers/tty/serial/Kconfig
+>> @@ -1577,6 +1577,24 @@ config SERIAL_MEN_Z135
+>>   	  This driver can also be build as a module. If so, the module wi=
+ll be called
+>>   	  men_z135_uart.ko
+>>  =20
+>> +config SERIAL_SPRD
+>> +	tristate "Support for SPRD serial"
+>> +	depends on ARCH_SPRD
+>> +	select SERIAL_CORE
+>> +	help
+>> +	  This enables the driver for the Spreadtrum's serial.
+>> +
+>> +config SERIAL_SPRD_CONSOLE
+>> +	bool "SPRD UART console support"
+>> +	depends on SERIAL_SPRD=3Dy
+>> +	select SERIAL_CORE_CONSOLE
+>> +	select SERIAL_EARLYCON
+>> +	help
+>> +	  Support for early debug console using Spreadtrum's serial. This =
+enables
+>> +	  the console before standard serial driver is probed. This is ena=
+bled
+>> +	  with "earlycon" on the kernel command line. The console is
+>> +	  enabled when early_param is processed.
+>> +
+>>   endmenu
+>>  =20
+>>   config SERIAL_MCTRL_GPIO
+>> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefi=
+le
+>> index 9a548ac..4801aca 100644
+>> --- a/drivers/tty/serial/Makefile
+>> +++ b/drivers/tty/serial/Makefile
+>> @@ -93,6 +93,7 @@ obj-$(CONFIG_SERIAL_ARC)	+=3D arc_uart.o
+>>   obj-$(CONFIG_SERIAL_RP2)	+=3D rp2.o
+>>   obj-$(CONFIG_SERIAL_FSL_LPUART)	+=3D fsl_lpuart.o
+>>   obj-$(CONFIG_SERIAL_MEN_Z135)	+=3D men_z135_uart.o
+>> +obj-$(CONFIG_SERIAL_SPRD) +=3D sprd_serial.o
+>>  =20
+>>   # GPIOLIB helpers for modem control lines
+>>   obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+=3D serial_mctrl_gpio.o
+>> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/s=
+prd_serial.c
+>> new file mode 100644
+>> index 0000000..81839e4
+>> --- /dev/null
+>> +++ b/drivers/tty/serial/sprd_serial.c
+>> @@ -0,0 +1,772 @@
+>> +/*
+>> + * Copyright (C) 2012 Spreadtrum Communications Inc.
+>> + *
+>> + * This software is licensed under the terms of the GNU General Pub=
+lic
+>> + * License version 2, as published by the Free Software Foundation,=
+ and
+>> + * may be copied, distributed, and modified under those terms.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + */
+>> +
+>> +#include <linux/clk.h>
+>> +#include <linux/console.h>
+>> +#include <linux/delay.h>
+>> +#include <linux/io.h>
+>> +#include <linux/ioport.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/serial_core.h>
+>> +#include <linux/serial.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/tty.h>
+>> +#include <linux/tty_flip.h>
+>> +
+>> +/* device name */
+>> +#define UART_NR_MAX		8
+>> +#define SPRD_TTY_NAME		"ttySPX"
+>> +#define SPRD_FIFO_SIZE		128
+>> +#define SPRD_DEF_RATE		26000000
+>> +#define SPRD_TIMEOUT		2048
+>> +
+>> +/* the offset of serial registers and BITs for them */
+>> +/* data registers */
+>> +#define SPRD_TXD		0x0000
+>> +#define SPRD_RXD		0x0004
+>> +
+>> +/* line status register and its BITs  */
+>> +#define SPRD_LSR		0x0008
+>> +#define SPRD_LSR_OE		BIT(4)
+>> +#define SPRD_LSR_FE		BIT(3)
+>> +#define SPRD_LSR_PE		BIT(2)
+>> +#define SPRD_LSR_BI		BIT(7)
+>> +#define SPRD_LSR_TX_OVER	BIT(15)
+>> +
+>> +/* data number in TX and RX fifo */
+>> +#define SPRD_STS1		0x000C
+>> +
+>> +/* interrupt enable register and its BITs */
+>> +#define SPRD_IEN		0x0010
+>> +#define SPRD_IEN_RX_FULL	BIT(0)
+>> +#define SPRD_IEN_TX_EMPTY	BIT(1)
+>> +#define SPRD_IEN_BREAK_DETECT	BIT(7)
+>> +#define SPRD_IEN_TIMEOUT	BIT(13)
+>> +
+>> +/* interrupt clear register */
+>> +#define SPRD_ICLR		0x0014
+>> +
+>> +/* line control register */
+>> +#define SPRD_LCR		0x0018
+>> +#define SPRD_LCR_STOP_1BIT	0x10
+>> +#define SPRD_LCR_STOP_2BIT	0x30
+>> +#define SPRD_LCR_DATA_LEN	(BIT(2) | BIT(3))
+>> +#define SPRD_LCR_DATA_LEN5	0x0
+>> +#define SPRD_LCR_DATA_LEN6	0x4
+>> +#define SPRD_LCR_DATA_LEN7	0x8
+>> +#define SPRD_LCR_DATA_LEN8	0xc
+>> +#define SPRD_LCR_PARITY		(BIT(0) | BIT(1))
+>> +#define SPRD_LCR_PARITY_EN	0x2
+>> +#define SPRD_LCR_EVEN_PAR	0x0
+>> +#define SPRD_LCR_ODD_PAR	0x1
+>> +
+>> +/* control register 1 */
+>> +#define SPRD_CTL1		0x001C
+>> +#define RX_HW_FLOW_CTL_THLD	BIT(6)
+>> +#define RX_HW_FLOW_CTL_EN	BIT(7)
+>> +#define TX_HW_FLOW_CTL_EN	BIT(8)
+>> +
+>> +/* fifo threshold register */
+>> +#define SPRD_CTL2		0x0020
+>> +#define THLD_TX_EMPTY		0x40
+>> +#define THLD_RX_FULL		0x40
+>> +
+>> +/* config baud rate register */
+>> +#define SPRD_CLKD0		0x0024
+>> +#define SPRD_CLKD1		0x0028
+>> +
+>> +/* interrupt mask status register */
+>> +#define SPRD_IMSR		0x002C
+>> +#define SPRD_IMSR_RX_FIFO_FULL	BIT(0)
+>> +#define SPRD_IMSR_TX_FIFO_EMPTY	BIT(1)
+>> +#define SPRD_IMSR_BREAK_DETECT	BIT(7)
+>> +#define SPRD_IMSR_TIMEOUT	BIT(13)
+>> +
+>> +struct reg_backup {
+>> +	uint32_t ien;
+>> +	uint32_t ctrl0;
+>> +	uint32_t ctrl1;
+>> +	uint32_t ctrl2;
+>> +	uint32_t clkd0;
+>> +	uint32_t clkd1;
+>> +	uint32_t dspwait;
+>> +};
+>> +
+>> +struct sprd_uart_port {
+>> +	struct uart_port port;
+>> +	struct reg_backup reg_bak;
+>> +	char name[16];
+>> +};
+>> +
+>> +static struct sprd_uart_port *sprd_port[UART_NR_MAX] =3D { NULL };
+>> +
+>> +static inline unsigned int serial_in(struct uart_port *port, int of=
+fset)
+>> +{
+>> +	return readl_relaxed(port->membase + offset);
+>> +}
+>> +
+>> +static inline void serial_out(struct uart_port *port, int offset, i=
+nt value)
+>> +{
+>> +	writel_relaxed(value, port->membase + offset);
+>> +}
+>> +
+>> +static unsigned int sprd_tx_empty(struct uart_port *port)
+>> +{
+>> +	if (serial_in(port, SPRD_STS1) & 0xff00)
+>> +		return 0;
+>> +	else
+>> +		return TIOCSER_TEMT;
+>> +}
+>> +
+>> +static unsigned int sprd_get_mctrl(struct uart_port *port)
+>> +{
+>> +	return TIOCM_DSR | TIOCM_CTS;
+>> +}
+>> +
+>> +static void sprd_set_mctrl(struct uart_port *port, unsigned int mct=
+rl)
+>> +{
+>> +	/* nothing to do */
+>> +}
+>> +
+>> +static void sprd_stop_tx(struct uart_port *port)
+>> +{
+>> +	unsigned int ien, iclr;
+>> +
+>> +	iclr =3D serial_in(port, SPRD_ICLR);
+>> +	ien =3D serial_in(port, SPRD_IEN);
+>> +
+>> +	iclr |=3D SPRD_IEN_TX_EMPTY;
+>> +	ien &=3D ~SPRD_IEN_TX_EMPTY;
+>> +
+>> +	serial_out(port, SPRD_ICLR, iclr);
+>> +	serial_out(port, SPRD_IEN, ien);
+>> +}
+>> +
+>> +static void sprd_start_tx(struct uart_port *port)
+>> +{
+>> +	unsigned int ien;
+>> +
+>> +	ien =3D serial_in(port, SPRD_IEN);
+>> +	if (!(ien & SPRD_IEN_TX_EMPTY)) {
+>> +		ien |=3D SPRD_IEN_TX_EMPTY;
+>> +		serial_out(port, SPRD_IEN, ien);
+>> +	}
+>> +}
+>> +
+>> +static void sprd_stop_rx(struct uart_port *port)
+>> +{
+>> +	unsigned int ien, iclr;
+>> +
+>> +	iclr =3D serial_in(port, SPRD_ICLR);
+>> +	ien =3D serial_in(port, SPRD_IEN);
+>> +
+>> +	ien &=3D ~(SPRD_IEN_RX_FULL | SPRD_IEN_BREAK_DETECT);
+>> +	iclr |=3D SPRD_IEN_RX_FULL | SPRD_IEN_BREAK_DETECT;
+>> +
+>> +	serial_out(port, SPRD_IEN, ien);
+>> +	serial_out(port, SPRD_ICLR, iclr);
+>> +}
+>> +
+>> +/* The Sprd serial does not support this function. */
+>> +static void sprd_break_ctl(struct uart_port *port, int break_state)
+>> +{
+>> +	/* nothing to do */
+>> +}
+>> +
+>> +static inline int handle_lsr_errors(struct uart_port *port,
+>> +				    unsigned int *flag,
+>> +				    unsigned int *lsr)
+>> +{
+>> +	int ret =3D 0;
+>> +
+>> +	/* statistics */
+>> +	if (*lsr & SPRD_LSR_BI) {
+>> +		*lsr &=3D ~(SPRD_LSR_FE | SPRD_LSR_PE);
+>> +		port->icount.brk++;
+>> +		ret =3D uart_handle_break(port);
+>> +		if (ret)
+>> +			return ret;
+>> +	} else if (*lsr & SPRD_LSR_PE)
+>> +		port->icount.parity++;
+>> +	else if (*lsr & SPRD_LSR_FE)
+>> +		port->icount.frame++;
+>> +	if (*lsr & SPRD_LSR_OE)
+>> +		port->icount.overrun++;
+>> +
+>> +	/* mask off conditions which should be ignored */
+>> +	*lsr &=3D port->read_status_mask;
+>> +	if (*lsr & SPRD_LSR_BI)
+>> +		*flag =3D TTY_BREAK;
+>> +	else if (*lsr & SPRD_LSR_PE)
+>> +		*flag =3D TTY_PARITY;
+>> +	else if (*lsr & SPRD_LSR_FE)
+>> +		*flag =3D TTY_FRAME;
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static inline void sprd_rx(int irq, void *dev_id)
+>> +{
+>> +	struct uart_port *port =3D dev_id;
+>> +	struct tty_port *tty =3D &port->state->port;
+>> +	unsigned int ch, flag, lsr, max_count =3D SPRD_TIMEOUT;
+>> +
+>> +	while ((serial_in(port, SPRD_STS1) & 0x00ff) && max_count--) {
+>> +		lsr =3D serial_in(port, SPRD_LSR);
+>> +		ch =3D serial_in(port, SPRD_RXD);
+>> +		flag =3D TTY_NORMAL;
+>> +		port->icount.rx++;
+>> +
+>> +		if (lsr & (SPRD_LSR_BI | SPRD_LSR_PE
+>> +			| SPRD_LSR_FE | SPRD_LSR_OE))
+>> +			if (handle_lsr_errors(port, &lsr, &flag))
+>> +				continue;
+>> +		if (uart_handle_sysrq_char(port, ch))
+>> +			continue;
+>> +
+>> +		uart_insert_char(port, lsr, SPRD_LSR_OE, ch, flag);
+>> +	}
+>> +
+>> +	tty_flip_buffer_push(tty);
+>> +}
+>> +
+>> +static inline void sprd_tx(int irq, void *dev_id)
+>> +{
+>> +	struct uart_port *port =3D dev_id;
+>> +	struct circ_buf *xmit =3D &port->state->xmit;
+>> +	int count;
+>> +
+>> +	if (port->x_char) {
+>> +		serial_out(port, SPRD_TXD, port->x_char);
+>> +		port->icount.tx++;
+>> +		port->x_char =3D 0;
+>> +		return;
+>> +	}
+>> +
+>> +	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+>> +		sprd_stop_tx(port);
+>> +		return;
+>> +	}
+>> +
+>> +	count =3D THLD_TX_EMPTY;
+>> +	do {
+>> +		serial_out(port, SPRD_TXD, xmit->buf[xmit->tail]);
+>> +		xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+>> +		port->icount.tx++;
+>> +		if (uart_circ_empty(xmit))
+>> +			break;
+>> +	} while (--count > 0);
+>> +
+>> +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+>> +		uart_write_wakeup(port);
+>> +
+>> +	if (uart_circ_empty(xmit))
+>> +		sprd_stop_tx(port);
+>> +}
+>> +
+>> +/* this handles the interrupt from one port */
+>> +static irqreturn_t sprd_handle_irq(int irq, void *dev_id)
+>> +{
+>> +	struct uart_port *port =3D (struct uart_port *)dev_id;
+>> +	unsigned int ims;
+> Why does your isr not have to take port->lock ?
 
-diff --git a/arch/x86/kernel/early_printk.c b/arch/x86/kernel/early_printk.c
-index 01d1c18..49e071e 100644
---- a/arch/x86/kernel/early_printk.c
-+++ b/arch/x86/kernel/early_printk.c
-@@ -19,6 +19,7 @@
- #include <linux/usb/ehci_def.h>
- #include <linux/efi.h>
- #include <asm/efi.h>
-+#include <asm/pci_x86.h>
- 
- /* Simple VGA output */
- #define VGABASE		(__ISA_IO_base + 0xb8000)
-@@ -76,7 +77,7 @@ static struct console early_vga_console = {
- 
- /* Serial functions loosely based on a similar package from Klaus P. Gerlicher */
- 
--static int early_serial_base = 0x3f8;  /* ttyS0 */
-+static unsigned long early_serial_base = 0x3f8;  /* ttyS0 */
- 
- #define XMTRDY          0x20
- 
-@@ -94,13 +95,40 @@ static int early_serial_base = 0x3f8;  /* ttyS0 */
- #define DLL             0       /*  Divisor Latch Low         */
- #define DLH             1       /*  Divisor latch High        */
- 
-+static void mem32_serial_out(unsigned long addr, int offset, int value)
-+{
-+	uint32_t *vaddr = (uint32_t *)addr;
-+	/* shift implied by pointer type */
-+	writel(value, vaddr + offset);
-+}
-+
-+static unsigned int mem32_serial_in(unsigned long addr, int offset)
-+{
-+	uint32_t *vaddr = (uint32_t *)addr;
-+	/* shift implied by pointer type */
-+	return readl(vaddr + offset);
-+}
-+
-+static unsigned int io_serial_in(unsigned long addr, int offset)
-+{
-+	return inb(addr + offset);
-+}
-+
-+static void io_serial_out(unsigned long addr, int offset, int value)
-+{
-+	outb(value, addr + offset);
-+}
-+
-+static unsigned int (*serial_in)(unsigned long addr, int offset) = io_serial_in;
-+static void (*serial_out)(unsigned long addr, int offset, int value) = io_serial_out;
-+
- static int early_serial_putc(unsigned char ch)
- {
- 	unsigned timeout = 0xffff;
- 
--	while ((inb(early_serial_base + LSR) & XMTRDY) == 0 && --timeout)
-+	while ((serial_in(early_serial_base, LSR) & XMTRDY) == 0 && --timeout)
- 		cpu_relax();
--	outb(ch, early_serial_base + TXR);
-+	serial_out(early_serial_base, TXR, ch);
- 	return timeout ? 0 : -1;
- }
- 
-@@ -114,13 +142,28 @@ static void early_serial_write(struct console *con, const char *s, unsigned n)
- 	}
- }
- 
-+static __init void early_serial_hw_init(unsigned divisor)
-+{
-+	unsigned char c;
-+
-+	serial_out(early_serial_base, LCR, 0x3);	/* 8n1 */
-+	serial_out(early_serial_base, IER, 0);	/* no interrupt */
-+	serial_out(early_serial_base, FCR, 0);	/* no fifo */
-+	serial_out(early_serial_base, MCR, 0x3);	/* DTR + RTS */
-+
-+	c = serial_in(early_serial_base, LCR);
-+	serial_out(early_serial_base, LCR, c | DLAB);
-+	serial_out(early_serial_base, DLL, divisor & 0xff);
-+	serial_out(early_serial_base, DLH, (divisor >> 8) & 0xff);
-+	serial_out(early_serial_base, LCR, c & ~DLAB);
-+}
-+
- #define DEFAULT_BAUD 9600
- 
- static __init void early_serial_init(char *s)
- {
--	unsigned char c;
- 	unsigned divisor;
--	unsigned baud = DEFAULT_BAUD;
-+	unsigned long baud = DEFAULT_BAUD;
- 	char *e;
- 
- 	if (*s == ',')
-@@ -145,24 +188,124 @@ static __init void early_serial_init(char *s)
- 			s++;
- 	}
- 
--	outb(0x3, early_serial_base + LCR);	/* 8n1 */
--	outb(0, early_serial_base + IER);	/* no interrupt */
--	outb(0, early_serial_base + FCR);	/* no fifo */
--	outb(0x3, early_serial_base + MCR);	/* DTR + RTS */
-+	if (*s) {
-+		if (kstrtoul(s, 0, &baud) < 0 || baud == 0)
-+			baud = DEFAULT_BAUD;
-+	}
-+
-+	/* Convert from baud to divisor value */
-+	divisor = 115200 / baud;
-+
-+	/* These will always be IO based ports */
-+	serial_in = io_serial_in;
-+	serial_out = io_serial_out;
-+
-+	/* Set up the HW */
-+	early_serial_hw_init(divisor);
-+}
-+
-+#ifdef CONFIG_PCI
-+/*
-+ * early_pci_serial_init()
-+ *
-+ * This function is invoked when the early_printk param starts with "pciserial"
-+ * The rest of the param should be ",B:D.F,baud" where B, D & F describe the
-+ * location of a PCI device that must be a UART device.
-+ */
-+static __init void early_pci_serial_init(char *s)
-+{
-+	unsigned divisor;
-+	unsigned long baud = DEFAULT_BAUD;
-+	u8 bus, slot, func;
-+	uint32_t classcode, bar0;
-+	uint16_t cmdreg;
-+	char *e;
-+
-+
-+	/*
-+	 * First, part the param to get the BDF values
-+	 */
-+	if (*s == ',')
-+		++s;
-+
-+	if (*s == 0)
-+		return;
-+
-+	bus = (u8)simple_strtoul(s, &e, 16);
-+	s = e;
-+	if (*s != ':')
-+		return;
-+	++s;
-+	slot = (u8)simple_strtoul(s, &e, 16);
-+	s = e;
-+	if (*s != '.')
-+		return;
-+	++s;
-+	func = (u8)simple_strtoul(s, &e, 16);
-+	s = e;
- 
-+	/* A baud might be following */
-+	if (*s == ',')
-+		s++;
-+
-+	/*
-+	 * Second, find the device from the BDF
-+	 */
-+	cmdreg = read_pci_config(bus, slot, func, PCI_COMMAND);
-+	classcode = read_pci_config(bus, slot, func, PCI_CLASS_REVISION);
-+	bar0 = read_pci_config(bus, slot, func, PCI_BASE_ADDRESS_0);
-+
-+	/*
-+	 * Verify it is a UART type device
-+	 */
-+	if (((classcode >> 16 != PCI_CLASS_COMMUNICATION_MODEM) &&
-+	     (classcode >> 16 != PCI_CLASS_COMMUNICATION_SERIAL)) ||
-+	   (((classcode >> 8) & 0xff) != 0x02)) /* 16550 I/F at BAR0 */
-+		return;
-+
-+	/*
-+	 * Determine if it is IO or memory mapped
-+	 */
-+	if (bar0 & 0x01) {
-+		/* it is IO mapped */
-+		serial_in = io_serial_in;
-+		serial_out = io_serial_out;
-+		early_serial_base = bar0&0xfffffffc;
-+		write_pci_config(bus, slot, func, PCI_COMMAND,
-+						cmdreg|PCI_COMMAND_IO);
-+	} else {
-+		/* It is memory mapped - assume 32-bit alignment */
-+		serial_in = mem32_serial_in;
-+		serial_out = mem32_serial_out;
-+		/* WARNING! assuming the address is always in the first 4G */
-+		early_serial_base =
-+			(unsigned long)early_ioremap(bar0 & 0xfffffff0, 0x10);
-+		write_pci_config(bus, slot, func, PCI_COMMAND,
-+						cmdreg|PCI_COMMAND_MEMORY);
-+	}
-+
-+	/*
-+	 * Lastly, initalize the hardware
-+	 */
- 	if (*s) {
--		baud = simple_strtoul(s, &e, 0);
--		if (baud == 0 || s == e)
-+		if (strcmp(s, "nocfg") == 0)
-+			/* Sometimes, we want to leave the UART alone
-+			 * and assume the BIOS has set it up correctly.
-+			 * "nocfg" tells us this is the case, and we
-+			 * should do no more setup.
-+			 */
-+			return;
-+		if (kstrtoul(s, 0, &baud) < 0 || baud == 0)
- 			baud = DEFAULT_BAUD;
- 	}
- 
-+	/* Convert from baud to divisor value */
- 	divisor = 115200 / baud;
--	c = inb(early_serial_base + LCR);
--	outb(c | DLAB, early_serial_base + LCR);
--	outb(divisor & 0xff, early_serial_base + DLL);
--	outb((divisor >> 8) & 0xff, early_serial_base + DLH);
--	outb(c & ~DLAB, early_serial_base + LCR);
-+
-+	/* Set up the HW */
-+	early_serial_hw_init(divisor);
- }
-+#endif
- 
- static struct console early_serial_console = {
- 	.name =		"earlyser",
-@@ -210,6 +353,13 @@ static int __init setup_early_printk(char *buf)
- 			early_serial_init(buf + 4);
- 			early_console_register(&early_serial_console, keep);
- 		}
-+#ifdef CONFIG_PCI
-+		if (!strncmp(buf, "pciserial", 9)) {
-+			early_pci_serial_init(buf + 9);
-+			early_console_register(&early_serial_console, keep);
-+			buf += 9; /* Keep from match the above "serial" */
-+		}
-+#endif
- 		if (!strncmp(buf, "vga", 3) &&
- 		    boot_params.screen_info.orig_video_isVGA == 1) {
- 			max_xpos = boot_params.screen_info.orig_video_cols;
+The original consideration is the registers are accessed by isr only.
+Interrupt will not be nested because of gic chip driver protection.
+So there is not other thread will race on it.
+Does this make sense?
+
+>
+>> +	ims =3D serial_in(port, SPRD_IMSR);
+>> +
+>> +	if (!ims)
+>> +		return IRQ_NONE;
+>> +
+>> +	serial_out(port, SPRD_ICLR, ~0);
+>> +
+>> +	if (ims & (SPRD_IMSR_RX_FIFO_FULL |
+>> +		SPRD_IMSR_BREAK_DETECT | SPRD_IMSR_TIMEOUT))
+>> +		sprd_rx(irq, port);
+>> +
+>> +	if (ims & SPRD_IMSR_TX_FIFO_EMPTY)
+>> +		sprd_tx(irq, port);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static int sprd_startup(struct uart_port *port)
+>> +{
+>> +	int ret =3D 0;
+>> +	unsigned int ien, ctrl1;
+>> +	unsigned int timeout;
+>> +	struct sprd_uart_port *sp;
+>> +
+>> +	serial_out(port, SPRD_CTL2, ((THLD_TX_EMPTY << 8) | THLD_RX_FULL))=
+;
+>> +
+>> +	/* clear rx fifo */
+>> +	timeout =3D SPRD_TIMEOUT;
+>> +	while (timeout-- && serial_in(port, SPRD_STS1) & 0x00ff)
+>> +		serial_in(port, SPRD_RXD);
+>> +
+>> +	/* clear tx fifo */
+>> +	timeout =3D SPRD_TIMEOUT;
+>> +	while (timeout-- && serial_in(port, SPRD_STS1) & 0xff00)
+>> +		cpu_relax();
+>> +
+>> +	/* clear interrupt */
+>> +	serial_out(port, SPRD_IEN, 0x0);
+>> +	serial_out(port, SPRD_ICLR, ~0);
+>> +
+>> +	/* allocate irq */
+>> +	sp =3D container_of(port, struct sprd_uart_port, port);
+>> +	snprintf(sp->name, sizeof(sp->name), "sprd_serial%d", port->line);
+>> +	ret =3D devm_request_irq(port->dev, port->irq, sprd_handle_irq,
+>> +				IRQF_SHARED, sp->name, port);
+>> +	if (ret) {
+>> +		dev_err(port->dev, "fail to request serial irq %d, ret=3D%d\n",
+>> +			port->irq, ret);
+>> +		return ret;
+>> +	}
+>> +	ctrl1 =3D serial_in(port, SPRD_CTL1);
+>> +	ctrl1 |=3D 0x3e00 | THLD_RX_FULL;
+>> +	serial_out(port, SPRD_CTL1, ctrl1);
+>> +
+>> +	/* enable interrupt */
+>> +	spin_lock(&port->lock);
+>> +	ien =3D serial_in(port, SPRD_IEN);
+>> +	ien |=3D SPRD_IEN_RX_FULL | SPRD_IEN_BREAK_DETECT | SPRD_IEN_TIMEO=
+UT;
+>> +	serial_out(port, SPRD_IEN, ien);
+>> +	spin_unlock(&port->lock);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static void sprd_shutdown(struct uart_port *port)
+>> +{
+>> +	serial_out(port, SPRD_IEN, 0x0);
+>> +	serial_out(port, SPRD_ICLR, ~0);
+>> +	devm_free_irq(port->dev, port->irq, port);
+>> +}
+>> +
+>> +static void sprd_set_termios(struct uart_port *port,
+>> +				    struct ktermios *termios,
+>> +				    struct ktermios *old)
+>> +{
+>> +	unsigned int baud, quot;
+>> +	unsigned int lcr, fc;
+>> +
+>> +	/* ask the core to calculate the divisor for us */
+>> +	baud =3D uart_get_baud_rate(port, termios, old, 1200, 3000000);
+>> +
+>> +	quot =3D (unsigned int)((port->uartclk + baud / 2) / baud);
+>> +
+>> +	/* set data length */
+>> +	lcr =3D serial_in(port, SPRD_LCR);
+>> +	lcr &=3D ~SPRD_LCR_DATA_LEN;
+>> +	switch (termios->c_cflag & CSIZE) {
+>> +	case CS5:
+>> +		lcr |=3D SPRD_LCR_DATA_LEN5;
+>> +		break;
+>> +	case CS6:
+>> +		lcr |=3D SPRD_LCR_DATA_LEN6;
+>> +		break;
+>> +	case CS7:
+>> +		lcr |=3D SPRD_LCR_DATA_LEN7;
+>> +		break;
+>> +	case CS8:
+>> +	default:
+>> +		lcr |=3D SPRD_LCR_DATA_LEN8;
+>> +		break;
+>> +	}
+>> +
+>> +	/* calculate stop bits */
+>> +	lcr &=3D ~(SPRD_LCR_STOP_1BIT | SPRD_LCR_STOP_2BIT);
+>> +	if (termios->c_cflag & CSTOPB)
+>> +		lcr |=3D SPRD_LCR_STOP_2BIT;
+>> +	else
+>> +		lcr |=3D SPRD_LCR_STOP_1BIT;
+>> +
+>> +	/* calculate parity */
+>> +	lcr &=3D ~SPRD_LCR_PARITY;
+>> +	termios->c_cflag &=3D ~CMSPAR;	/* no support mark/space */
+>> +	if (termios->c_cflag & PARENB) {
+>> +		lcr |=3D SPRD_LCR_PARITY_EN;
+>> +		if (termios->c_cflag & PARODD)
+>> +			lcr |=3D SPRD_LCR_ODD_PAR;
+>> +		else
+>> +			lcr |=3D SPRD_LCR_EVEN_PAR;
+>> +	}
+>> +
+>> +	/* change the port state. */
+>             ^^^^^^^^^^^^^^^^^^^^^^
+>
+> This means you should be taking the port->lock here... (and disabling
+> local interrupts if your isr takes the port->lock)
+
+Yes, I think you are right.
+
+
+>
+>> +	/* update the per-port timeout */
+>> +	uart_update_timeout(port, termios->c_cflag, baud);
+>> +
+>> +	port->read_status_mask =3D SPRD_LSR_OE;
+>> +	if (termios->c_iflag & INPCK)
+>> +		port->read_status_mask |=3D SPRD_LSR_FE | SPRD_LSR_PE;
+>> +	if (termios->c_iflag & (BRKINT | PARMRK))
+>> +		port->read_status_mask |=3D SPRD_LSR_BI;
+>> +
+>> +	/* characters to ignore */
+>> +	port->ignore_status_mask =3D 0;
+>> +	if (termios->c_iflag & IGNPAR)
+>> +		port->ignore_status_mask |=3D SPRD_LSR_PE | SPRD_LSR_FE;
+>> +	if (termios->c_iflag & IGNBRK) {
+>> +		port->ignore_status_mask |=3D SPRD_LSR_BI;
+>> +		/*
+>> +		 * If we're ignoring parity and break indicators,
+>> +		 * ignore overruns too (for real raw support).
+>> +		 */
+>> +		if (termios->c_iflag & IGNPAR)
+>> +			port->ignore_status_mask |=3D SPRD_LSR_OE;
+>> +	}
+>> +
+>> +	/* flow control */
+>> +	fc =3D serial_in(port, SPRD_CTL1);
+>> +	fc &=3D ~(RX_HW_FLOW_CTL_THLD | RX_HW_FLOW_CTL_EN | TX_HW_FLOW_CTL=
+_EN);
+>> +	if (termios->c_cflag & CRTSCTS) {
+>> +		fc |=3D RX_HW_FLOW_CTL_THLD;
+>> +		fc |=3D RX_HW_FLOW_CTL_EN;
+>> +		fc |=3D TX_HW_FLOW_CTL_EN;
+>> +	}
+>> +
+>> +	/* clock divider bit0~bit15 */
+>> +	serial_out(port, SPRD_CLKD0, quot & 0xffff);
+>> +
+>> +	/* clock divider bit16~bit20 */
+>> +	serial_out(port, SPRD_CLKD1, (quot & 0x1f0000) >> 16);
+>> +	serial_out(port, SPRD_LCR, lcr);
+>> +	fc |=3D 0x3e00 | THLD_RX_FULL;
+>> +	serial_out(port, SPRD_CTL1, fc);
+> and dropping it here.
+>
+>> +	/* Don't rewrite B0 */
+>> +	if (tty_termios_baud_rate(termios))
+>> +		tty_termios_encode_baud_rate(termios, baud, baud);
+>> +}
+>> +
+>> +static const char *sprd_type(struct uart_port *port)
+>> +{
+>> +	return "SPX";
+>> +}
+>> +
+>> +static void sprd_release_port(struct uart_port *port)
+>> +{
+>> +	/* nothing to do */
+>> +}
+>> +
+>> +static int sprd_request_port(struct uart_port *port)
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>> +static void sprd_config_port(struct uart_port *port, int flags)
+>> +{
+>> +	if (flags & UART_CONFIG_TYPE)
+>> +		port->type =3D PORT_SPRD;
+>> +}
+>> +
+>> +static int sprd_verify_port(struct uart_port *port,
+>> +				   struct serial_struct *ser)
+>> +{
+>> +	if (ser->type !=3D PORT_SPRD)
+>> +		return -EINVAL;
+>> +	if (port->irq !=3D ser->irq)
+>> +		return -EINVAL;
+>> +	return 0;
+>> +}
+>> +
+>> +static struct uart_ops serial_sprd_ops =3D {
+>> +	.tx_empty =3D sprd_tx_empty,
+>> +	.get_mctrl =3D sprd_get_mctrl,
+>> +	.set_mctrl =3D sprd_set_mctrl,
+>> +	.stop_tx =3D sprd_stop_tx,
+>> +	.start_tx =3D sprd_start_tx,
+>> +	.stop_rx =3D sprd_stop_rx,
+>> +	.break_ctl =3D sprd_break_ctl,
+>> +	.startup =3D sprd_startup,
+>> +	.shutdown =3D sprd_shutdown,
+>> +	.set_termios =3D sprd_set_termios,
+>> +	.type =3D sprd_type,
+>> +	.release_port =3D sprd_release_port,
+>> +	.request_port =3D sprd_request_port,
+>> +	.config_port =3D sprd_config_port,
+>> +	.verify_port =3D sprd_verify_port,
+>> +};
+>> +
+>> +#ifdef CONFIG_SERIAL_SPRD_CONSOLE
+>> +static inline void wait_for_xmitr(struct uart_port *port)
+>> +{
+>> +	unsigned int status, tmout =3D 10000;
+>> +
+>> +	/* wait up to 10ms for the character(s) to be sent */
+>> +	do {
+>> +		status =3D serial_in(port, SPRD_STS1);
+>> +		if (--tmout =3D=3D 0)
+>> +			break;
+>> +		udelay(1);
+>> +	} while (status & 0xff00);
+>> +}
+>> +
+>> +static void sprd_console_putchar(struct uart_port *port, int ch)
+>> +{
+>> +	wait_for_xmitr(port);
+>> +	serial_out(port, SPRD_TXD, ch);
+>> +}
+>> +
+>> +static void sprd_console_write(struct console *co, const char *s,
+>> +				      unsigned int count)
+>> +{
+>> +	struct uart_port *port =3D &sprd_port[co->index]->port;
+>> +	int ien;
+>> +	int locked =3D 1;
+>> +
+>> +	if (oops_in_progress)
+>> +		locked =3D spin_trylock(&port->lock);
+>> +	else
+>> +		spin_lock(&port->lock);
+> If you do need to take the port->lock in your isr, then you need to
+> disable local irq here.
+
+You mean to use spin_lock_irqsave()?
+
+We do disable irq below....
+
+>
+>> +	/* save the IEN then disable the interrupts */
+>> +	ien =3D serial_in(port, SPRD_IEN);
+>> +	serial_out(port, SPRD_IEN, 0x0);
+
+Here, we disable port IEN register.
+
+>> +
+>> +	uart_console_write(port, s, count, sprd_console_putchar);
+>> +
+>> +	/* wait for transmitter to become empty and restore the IEN */
+>> +	wait_for_xmitr(port);
+>> +	serial_out(port, SPRD_IEN, ien);
+>> +	if (locked)
+>> +		spin_unlock(&port->lock);
+>> +}
+>> +
+>> +static int __init sprd_console_setup(struct console *co, char *opti=
+ons)
+>> +{
+>> +	struct uart_port *port;
+>> +	int baud =3D 115200;
+>> +	int bits =3D 8;
+>> +	int parity =3D 'n';
+>> +	int flow =3D 'n';
+>> +
+>> +	if (co->index >=3D UART_NR_MAX || co->index < 0)
+>> +		co->index =3D 0;
+>> +
+>> +	port =3D &sprd_port[co->index]->port;
+>> +	if (port =3D=3D NULL) {
+>> +		pr_info("serial port %d not yet initialized\n", co->index);
+>> +		return -ENODEV;
+>> +	}
+>> +	if (options)
+>> +		uart_parse_options(options, &baud, &parity, &bits, &flow);
+>> +
+>> +	return uart_set_options(port, co, baud, parity, bits, flow);
+>> +}
+>> +
+>> +static struct uart_driver sprd_uart_driver;
+>> +static struct console sprd_console =3D {
+>> +	.name =3D SPRD_TTY_NAME,
+>> +	.write =3D sprd_console_write,
+>> +	.device =3D uart_console_device,
+>> +	.setup =3D sprd_console_setup,
+>> +	.flags =3D CON_PRINTBUFFER,
+>> +	.index =3D -1,
+>> +	.data =3D &sprd_uart_driver,
+>> +};
+>> +
+>> +#define SPRD_CONSOLE	(&sprd_console)
+>> +
+>> +/* Support for earlycon */
+>> +static void sprd_putc(struct uart_port *port, int c)
+>> +{
+>> +	unsigned int timeout =3D SPRD_TIMEOUT;
+>> +
+>> +	while (timeout-- &&
+>> +		   !(readl(port->membase + SPRD_LSR) & SPRD_LSR_TX_OVER))
+>> +		cpu_relax();
+>> +
+>> +	writeb(c, port->membase + SPRD_TXD);
+>> +}
+>> +
+>> +static void sprd_early_write(struct console *con, const char *s,
+>> +				    unsigned n)
+>> +{
+>> +	struct earlycon_device *dev =3D con->data;
+>> +
+>> +	uart_console_write(&dev->port, s, n, sprd_putc);
+>> +}
+>> +
+>> +static int __init sprd_early_console_setup(
+>> +				struct earlycon_device *device,
+>> +				const char *opt)
+>> +{
+>> +	if (!device->port.membase)
+>> +		return -ENODEV;
+>> +
+>> +	device->con->write =3D sprd_early_write;
+>> +	return 0;
+>> +}
+>> +
+>> +EARLYCON_DECLARE(sprd_serial, sprd_early_console_setup);
+>> +OF_EARLYCON_DECLARE(sprd_serial, "sprd,sc9836-uart",
+>> +		    sprd_early_console_setup);
+>> +
+>> +#else /* !CONFIG_SERIAL_SPRD_CONSOLE */
+>> +#define SPRD_CONSOLE		NULL
+>> +#endif
+>> +
+>> +static struct uart_driver sprd_uart_driver =3D {
+>> +	.owner =3D THIS_MODULE,
+>> +	.driver_name =3D "sprd_serial",
+>> +	.dev_name =3D SPRD_TTY_NAME,
+>> +	.major =3D 0,
+>> +	.minor =3D 0,
+>> +	.nr =3D UART_NR_MAX,
+>> +	.cons =3D SPRD_CONSOLE,
+>> +};
+>> +
+>> +static int sprd_probe(struct platform_device *pdev)
+>> +{
+>> +	struct resource *res;
+>> +	struct device_node *np =3D pdev->dev.of_node;
+>> +	struct uart_port *up;
+>> +	struct clk *clk;
+>> +	int irq;
+>> +
+>> +	if (np)
+>> +		pdev->id =3D of_alias_get_id(np, "serial");
+>> +
+>> +	if (pdev->id < 0 || pdev->id >=3D UART_NR_MAX) {
+>> +		dev_err(&pdev->dev, "does not support id %d\n", pdev->id);
+>> +		return -ENXIO;
+>> +	}
+>> +
+>> +	sprd_port[pdev->id] =3D devm_kzalloc(&pdev->dev,
+>> +		sizeof(*sprd_port[pdev->id]), GFP_KERNEL);
+>> +	if (!sprd_port[pdev->id])
+>> +		return -ENOMEM;
+>> +
+>> +	up =3D &sprd_port[pdev->id]->port;
+>> +	up->dev =3D &pdev->dev;
+>> +	up->line =3D pdev->id;
+>> +	up->type =3D PORT_SPRD;
+>> +	up->iotype =3D SERIAL_IO_PORT;
+>> +	up->uartclk =3D SPRD_DEF_RATE;
+>> +	up->fifosize =3D SPRD_FIFO_SIZE;
+>> +	up->ops =3D &serial_sprd_ops;
+>> +	up->flags =3D ASYNC_BOOT_AUTOCONF;
+>> +
+>> +	clk =3D devm_clk_get(&pdev->dev, NULL);
+>> +	if (!IS_ERR(clk))
+>> +		up->uartclk =3D clk_get_rate(clk);
+>> +
+>> +	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> +	if (!res) {
+>> +		dev_err(&pdev->dev, "not provide mem resource\n");
+>> +		return -ENODEV;
+>> +	}
+>> +	up->mapbase =3D res->start;
+>> +	up->membase =3D devm_ioremap_resource(&pdev->dev, res);
+>> +	if (IS_ERR(up->membase))
+>> +		return PTR_ERR(up->membase);
+>> +
+>> +	irq =3D platform_get_irq(pdev, 0);
+>> +	if (irq < 0) {
+>> +		dev_err(&pdev->dev, "not provide irq resource\n");
+>> +		return -ENODEV;
+>> +	}
+>> +	up->irq =3D irq;
+>> +
+>> +	platform_set_drvdata(pdev, up);
+>> +
+>> +	return uart_add_one_port(&sprd_uart_driver, up);
+>> +}
+>> +
+>> +static int sprd_remove(struct platform_device *dev)
+>> +{
+>> +	struct uart_port *up =3D platform_get_drvdata(dev);
+>> +
+>> +	return uart_remove_one_port(&sprd_uart_driver, up);
+>> +}
+>> +
+>> +static int sprd_suspend(struct device *dev)
+>> +{
+>> +	int id =3D to_platform_device(dev)->id;
+>> +	struct uart_port *port =3D &sprd_port[id]->port;
+>> +	struct reg_backup *reg_bak =3D &sprd_port[id]->reg_bak;
+>> +
+>> +	reg_bak->ien =3D serial_in(port, SPRD_IEN);
+>> +	reg_bak->ctrl0 =3D serial_in(port, SPRD_LCR);
+>> +	reg_bak->ctrl1 =3D serial_in(port, SPRD_CTL1);
+>> +	reg_bak->ctrl2 =3D serial_in(port, SPRD_CTL2);
+>> +	reg_bak->clkd0 =3D serial_in(port, SPRD_CLKD0);
+>> +	reg_bak->clkd1 =3D serial_in(port, SPRD_CLKD1);
+> Why are you saving and restoring these register states
+> across suspend/resume?
+>
+> The serial core calls your set_termios() handler upon
+> resume (either for the console or if a tty is open)
+> so you should be reprogramming the hardware there
+> based on the termios settings.
+
+We'll try to address it in V6.
+
+Thanks,
+Orson
+
+
+>
+> Regards,
+> Peter Hurley
+>> +
+>> +	uart_suspend_port(&sprd_uart_driver, port);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int sprd_resume(struct device *dev)
+>> +{
+>> +	int id =3D to_platform_device(dev)->id;
+>> +	struct uart_port *port =3D &sprd_port[id]->port;
+>> +	struct reg_backup *reg_bak =3D &sprd_port[id]->reg_bak;
+>> +
+>> +	serial_out(port, SPRD_LCR, reg_bak->ctrl0);
+>> +	serial_out(port, SPRD_CTL1, reg_bak->ctrl1);
+>> +	serial_out(port, SPRD_CTL2, reg_bak->ctrl2);
+>> +	serial_out(port, SPRD_CLKD0, reg_bak->clkd0);
+>> +	serial_out(port, SPRD_CLKD1, reg_bak->clkd1);
+>> +	serial_out(port, SPRD_IEN, reg_bak->ien);
+>> +
+>> +	uart_resume_port(&sprd_uart_driver, port);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct of_device_id serial_ids[] =3D {
+>> +	{.compatible =3D "sprd,sc9836-uart",},
+>> +	{}
+>> +};
+>> +
+>> +static SIMPLE_DEV_PM_OPS(sprd_pm_ops, sprd_suspend, sprd_resume);
+>> +
+>> +static struct platform_driver sprd_platform_driver =3D {
+>> +	.probe		=3D sprd_probe,
+>> +	.remove		=3D sprd_remove,
+>> +	.driver 	=3D {
+>> +		.name	=3D "sprd_serial",
+>> +		.of_match_table =3D of_match_ptr(serial_ids),
+>> +		.pm	=3D &sprd_pm_ops,
+>> +	},
+>> +};
+>> +
+>> +static int __init sprd_serial_init(void)
+>> +{
+>> +	int ret =3D 0;
+>> +
+>> +	ret =3D uart_register_driver(&sprd_uart_driver);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret =3D platform_driver_register(&sprd_platform_driver);
+>> +	if (ret)
+>> +		uart_unregister_driver(&sprd_uart_driver);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static void __exit sprd_serial_exit(void)
+>> +{
+>> +	platform_driver_unregister(&sprd_platform_driver);
+>> +	uart_unregister_driver(&sprd_uart_driver);
+>> +}
+>> +
+>> +module_init(sprd_serial_init);
+>> +module_exit(sprd_serial_exit);
+>> +
+>> +MODULE_LICENSE("GPL v2");
+>> +MODULE_DESCRIPTION("Spreadtrum SoC serial driver series");
+>> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/s=
+erial_core.h
+>> index c172180..7e6eb39 100644
+>> --- a/include/uapi/linux/serial_core.h
+>> +++ b/include/uapi/linux/serial_core.h
+>> @@ -248,4 +248,7 @@
+>>   /* MESON */
+>>   #define PORT_MESON	109
+>>  =20
+>> +/* SPRD SERIAL  */
+>> +#define PORT_SPRD	110
+>> +
+>>   #endif /* _UAPILINUX_SERIAL_CORE_H */
+>>
