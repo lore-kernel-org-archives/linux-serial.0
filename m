@@ -1,116 +1,269 @@
-From: Orson Zhai <orsonzhai-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v5 5/5] tty/serial: Add Spreadtrum sc9836-uart driver support
-Date: Tue, 20 Jan 2015 16:41:44 +0800
-Message-ID: <CA+H2tpEFQjG0fFR-D+L2KYr0uLQqYYQM8wGut7ohzLSfotV3zA@mail.gmail.com>
-References: <1421402411-3479-1-git-send-email-chunyan.zhang@spreadtrum.com>
-	<1421402411-3479-6-git-send-email-chunyan.zhang@spreadtrum.com>
-	<CAL_JsqJg=BtanmR_rhYthCUhKbErs8viZ7MMMXr-PmPjUV4BRQ@mail.gmail.com>
-	<CAAfSe-vqqpvbYe0bEeD-3_QsLYz4r7pxMuA1-L4cYRw9TY=NgA@mail.gmail.com>
-	<CAL_JsqLTArm1v8ka39_KLq2jMKkK2ZXQ6-an=JSWVgTK1LWmOg@mail.gmail.com>
-	<CAAfSe-tAwURc_P+-0+m22ao9r+Fud6Ae89JF8FGsWgg_49Mdhg@mail.gmail.com>
+From: Alan <gnomes@lxorguk.ukuu.org.uk>
+Subject: [PATCH RESEND] Specify PCI based UART for earlyprintk
+Date: Tue, 20 Jan 2015 12:07:57 +0000
+Message-ID: <20150120120749.28310.51041.stgit@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAAfSe-tAwURc_P+-0+m22ao9r+Fud6Ae89JF8FGsWgg_49Mdhg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Lyra Zhang <zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Hayato Suzuki <hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Antony Pavlov <antonynpavlov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joel Schopp <Joel.Sch>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: greg@kroah.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 20, 2015 at 3:37 PM, Lyra Zhang <zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> Hi, Rob
->
-> I still have a question to be conform, specific describes below:
->
-> On Mon, Jan 19, 2015 at 10:11 PM, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->> On Mon, Jan 19, 2015 at 3:55 AM, Lyra Zhang <zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>> On Sat, Jan 17, 2015 at 12:41 AM, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>>> On Fri, Jan 16, 2015 at 4:00 AM, Chunyan Zhang
->>>> <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org> wrote:
->>>>> Add a full sc9836-uart driver for SC9836 SoC which is based on the
->>>>> spreadtrum sharkl64 platform.
->>>>> This driver also support earlycon.
->>>>> This patch also replaced the spaces between the macros and their
->>>>> values with the tabs in serial_core.h
->>
->> [...]
->>
->>>>> +static int __init sprd_serial_init(void)
->>>>> +{
->>>>> +       int ret = 0;
->>>>> +
->>>>> +       ret = uart_register_driver(&sprd_uart_driver);
->>>>
->>>> This can be done in probe now. Then you can use module_platform_driver().
->>>>
->>>
->>> Question:
->>> 1. there are 4 uart ports configured in dt for sprd_serial, so probe
->>> will be called 4 times, but uart_register_driver only needs to be
->>> called one time, so can we use uart_driver.state to check if
->>> uart_register_driver has already been called ?
->>
->> Yes.
->>
->>> 2. if I use module_platform_driver() instead of
->>> module_init(sprd_serial_init)  and  module_exit(sprd_serial_exit) , I
->>> must move uart_unregister_driver() which is now processed in
->>> sprd_serial_exit() to sprd_remove(), there is a similar problem with
->>> probe(), sprd_remove() will also be called 4 times, and actually it
->>> should be called only one time. How can we deal with this case?
->>
->> Look at pl01x or Samsung UART drivers which have done this conversion.
->
-> Samsung UART does use module_platform_driver, but pl010/pl011 doesn't.
-> In the Samsung UART driver, uart_unregister_driver is processed in
-> remove(), like below:
->
-> static int s3c24xx_serial_remove(struct platform_device *dev)
-> {
->     struct uart_port *port = s3c24xx_dev_to_port(&dev->dev);
->
->     if (port) {
->         s3c24xx_serial_cpufreq_deregister(to_ourport(port));
->         uart_remove_one_port(&s3c24xx_uart_drv, port);
->     }
->
->     uart_unregister_driver(&s3c24xx_uart_drv);
-> }
->
-> if this serial has more than one ports, uart_unregister_driver() must
-> be called multiple times when the device need to be removed.
-> I think there may be a problem because that uart_unregister_driver()
-> will do kfree(drv->state) every time when it's called.
+From: Stuart R. Anderson <stuart.r.anderson@intel.com>
 
-I think it is no appropriate to call uart_unregister_driver() at first
-port removing.
-The drv->state buffer was shared with all uart ports.
-If there are some cases that only 1 port is needed to be removed, that
-will destroy all others, isn't it?
+Add support for specifying PCI based UARTs for earlyprintk
+using a syntax like "earlyprintk=pciserial,00:18.1,115200",
+where 00:18.1 is the BDF of a UART device.
 
-Regards,
-Orson
+[Slightly tidied from Stuart's original patch]
+Signed-off-by: Alan Cox <alan@linux.intel.com>
+---
+ arch/x86/kernel/early_printk.c |  182 ++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 166 insertions(+), 16 deletions(-)
 
-
->
-> Thanks,
-> Chunyan
->
->>
->>> 3. for the second question, we can check the platform_device->id, if
->>> it is equal to the index of last port (e.g. 4 for this case), then
->>> uart_unregister_driver() can be called. Does it work correctly? since
->>> for this case, we must keep the order of releasing ports.
->>
->> The id will not be the line index in the DT case. I don't think you
->> can guarantee the order either.
->>
->> It would be better to make uart_{un}register_driver deal with being
->> called multiple times so drivers don't have to deal with getting this
->> correct. I'm not sure if that is feasible though.
->>
->> Rob
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/arch/x86/kernel/early_printk.c b/arch/x86/kernel/early_printk.c
+index 01d1c18..49e071e 100644
+--- a/arch/x86/kernel/early_printk.c
++++ b/arch/x86/kernel/early_printk.c
+@@ -19,6 +19,7 @@
+ #include <linux/usb/ehci_def.h>
+ #include <linux/efi.h>
+ #include <asm/efi.h>
++#include <asm/pci_x86.h>
+ 
+ /* Simple VGA output */
+ #define VGABASE		(__ISA_IO_base + 0xb8000)
+@@ -76,7 +77,7 @@ static struct console early_vga_console = {
+ 
+ /* Serial functions loosely based on a similar package from Klaus P. Gerlicher */
+ 
+-static int early_serial_base = 0x3f8;  /* ttyS0 */
++static unsigned long early_serial_base = 0x3f8;  /* ttyS0 */
+ 
+ #define XMTRDY          0x20
+ 
+@@ -94,13 +95,40 @@ static int early_serial_base = 0x3f8;  /* ttyS0 */
+ #define DLL             0       /*  Divisor Latch Low         */
+ #define DLH             1       /*  Divisor latch High        */
+ 
++static void mem32_serial_out(unsigned long addr, int offset, int value)
++{
++	uint32_t *vaddr = (uint32_t *)addr;
++	/* shift implied by pointer type */
++	writel(value, vaddr + offset);
++}
++
++static unsigned int mem32_serial_in(unsigned long addr, int offset)
++{
++	uint32_t *vaddr = (uint32_t *)addr;
++	/* shift implied by pointer type */
++	return readl(vaddr + offset);
++}
++
++static unsigned int io_serial_in(unsigned long addr, int offset)
++{
++	return inb(addr + offset);
++}
++
++static void io_serial_out(unsigned long addr, int offset, int value)
++{
++	outb(value, addr + offset);
++}
++
++static unsigned int (*serial_in)(unsigned long addr, int offset) = io_serial_in;
++static void (*serial_out)(unsigned long addr, int offset, int value) = io_serial_out;
++
+ static int early_serial_putc(unsigned char ch)
+ {
+ 	unsigned timeout = 0xffff;
+ 
+-	while ((inb(early_serial_base + LSR) & XMTRDY) == 0 && --timeout)
++	while ((serial_in(early_serial_base, LSR) & XMTRDY) == 0 && --timeout)
+ 		cpu_relax();
+-	outb(ch, early_serial_base + TXR);
++	serial_out(early_serial_base, TXR, ch);
+ 	return timeout ? 0 : -1;
+ }
+ 
+@@ -114,13 +142,28 @@ static void early_serial_write(struct console *con, const char *s, unsigned n)
+ 	}
+ }
+ 
++static __init void early_serial_hw_init(unsigned divisor)
++{
++	unsigned char c;
++
++	serial_out(early_serial_base, LCR, 0x3);	/* 8n1 */
++	serial_out(early_serial_base, IER, 0);	/* no interrupt */
++	serial_out(early_serial_base, FCR, 0);	/* no fifo */
++	serial_out(early_serial_base, MCR, 0x3);	/* DTR + RTS */
++
++	c = serial_in(early_serial_base, LCR);
++	serial_out(early_serial_base, LCR, c | DLAB);
++	serial_out(early_serial_base, DLL, divisor & 0xff);
++	serial_out(early_serial_base, DLH, (divisor >> 8) & 0xff);
++	serial_out(early_serial_base, LCR, c & ~DLAB);
++}
++
+ #define DEFAULT_BAUD 9600
+ 
+ static __init void early_serial_init(char *s)
+ {
+-	unsigned char c;
+ 	unsigned divisor;
+-	unsigned baud = DEFAULT_BAUD;
++	unsigned long baud = DEFAULT_BAUD;
+ 	char *e;
+ 
+ 	if (*s == ',')
+@@ -145,24 +188,124 @@ static __init void early_serial_init(char *s)
+ 			s++;
+ 	}
+ 
+-	outb(0x3, early_serial_base + LCR);	/* 8n1 */
+-	outb(0, early_serial_base + IER);	/* no interrupt */
+-	outb(0, early_serial_base + FCR);	/* no fifo */
+-	outb(0x3, early_serial_base + MCR);	/* DTR + RTS */
++	if (*s) {
++		if (kstrtoul(s, 0, &baud) < 0 || baud == 0)
++			baud = DEFAULT_BAUD;
++	}
++
++	/* Convert from baud to divisor value */
++	divisor = 115200 / baud;
++
++	/* These will always be IO based ports */
++	serial_in = io_serial_in;
++	serial_out = io_serial_out;
++
++	/* Set up the HW */
++	early_serial_hw_init(divisor);
++}
++
++#ifdef CONFIG_PCI
++/*
++ * early_pci_serial_init()
++ *
++ * This function is invoked when the early_printk param starts with "pciserial"
++ * The rest of the param should be ",B:D.F,baud" where B, D & F describe the
++ * location of a PCI device that must be a UART device.
++ */
++static __init void early_pci_serial_init(char *s)
++{
++	unsigned divisor;
++	unsigned long baud = DEFAULT_BAUD;
++	u8 bus, slot, func;
++	uint32_t classcode, bar0;
++	uint16_t cmdreg;
++	char *e;
++
++
++	/*
++	 * First, part the param to get the BDF values
++	 */
++	if (*s == ',')
++		++s;
++
++	if (*s == 0)
++		return;
++
++	bus = (u8)simple_strtoul(s, &e, 16);
++	s = e;
++	if (*s != ':')
++		return;
++	++s;
++	slot = (u8)simple_strtoul(s, &e, 16);
++	s = e;
++	if (*s != '.')
++		return;
++	++s;
++	func = (u8)simple_strtoul(s, &e, 16);
++	s = e;
+ 
++	/* A baud might be following */
++	if (*s == ',')
++		s++;
++
++	/*
++	 * Second, find the device from the BDF
++	 */
++	cmdreg = read_pci_config(bus, slot, func, PCI_COMMAND);
++	classcode = read_pci_config(bus, slot, func, PCI_CLASS_REVISION);
++	bar0 = read_pci_config(bus, slot, func, PCI_BASE_ADDRESS_0);
++
++	/*
++	 * Verify it is a UART type device
++	 */
++	if (((classcode >> 16 != PCI_CLASS_COMMUNICATION_MODEM) &&
++	     (classcode >> 16 != PCI_CLASS_COMMUNICATION_SERIAL)) ||
++	   (((classcode >> 8) & 0xff) != 0x02)) /* 16550 I/F at BAR0 */
++		return;
++
++	/*
++	 * Determine if it is IO or memory mapped
++	 */
++	if (bar0 & 0x01) {
++		/* it is IO mapped */
++		serial_in = io_serial_in;
++		serial_out = io_serial_out;
++		early_serial_base = bar0&0xfffffffc;
++		write_pci_config(bus, slot, func, PCI_COMMAND,
++						cmdreg|PCI_COMMAND_IO);
++	} else {
++		/* It is memory mapped - assume 32-bit alignment */
++		serial_in = mem32_serial_in;
++		serial_out = mem32_serial_out;
++		/* WARNING! assuming the address is always in the first 4G */
++		early_serial_base =
++			(unsigned long)early_ioremap(bar0 & 0xfffffff0, 0x10);
++		write_pci_config(bus, slot, func, PCI_COMMAND,
++						cmdreg|PCI_COMMAND_MEMORY);
++	}
++
++	/*
++	 * Lastly, initalize the hardware
++	 */
+ 	if (*s) {
+-		baud = simple_strtoul(s, &e, 0);
+-		if (baud == 0 || s == e)
++		if (strcmp(s, "nocfg") == 0)
++			/* Sometimes, we want to leave the UART alone
++			 * and assume the BIOS has set it up correctly.
++			 * "nocfg" tells us this is the case, and we
++			 * should do no more setup.
++			 */
++			return;
++		if (kstrtoul(s, 0, &baud) < 0 || baud == 0)
+ 			baud = DEFAULT_BAUD;
+ 	}
+ 
++	/* Convert from baud to divisor value */
+ 	divisor = 115200 / baud;
+-	c = inb(early_serial_base + LCR);
+-	outb(c | DLAB, early_serial_base + LCR);
+-	outb(divisor & 0xff, early_serial_base + DLL);
+-	outb((divisor >> 8) & 0xff, early_serial_base + DLH);
+-	outb(c & ~DLAB, early_serial_base + LCR);
++
++	/* Set up the HW */
++	early_serial_hw_init(divisor);
+ }
++#endif
+ 
+ static struct console early_serial_console = {
+ 	.name =		"earlyser",
+@@ -210,6 +353,13 @@ static int __init setup_early_printk(char *buf)
+ 			early_serial_init(buf + 4);
+ 			early_console_register(&early_serial_console, keep);
+ 		}
++#ifdef CONFIG_PCI
++		if (!strncmp(buf, "pciserial", 9)) {
++			early_pci_serial_init(buf + 9);
++			early_console_register(&early_serial_console, keep);
++			buf += 9; /* Keep from match the above "serial" */
++		}
++#endif
+ 		if (!strncmp(buf, "vga", 3) &&
+ 		    boot_params.screen_info.orig_video_isVGA == 1) {
+ 			max_xpos = boot_params.screen_info.orig_video_cols;
