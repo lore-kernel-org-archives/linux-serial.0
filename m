@@ -1,67 +1,137 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 2/7] serial: 8250: Move UART_BUG_QUOT workaround
-Date: Thu, 22 Jan 2015 12:24:26 -0500
-Message-ID: <1421947471-6396-3-git-send-email-peter@hurleysoftware.com>
-References: <1421947471-6396-1-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH 5/7] serial: 8250: Refactor XR17V35X divisor calculation
+Date: Thu, 22 Jan 2015 12:46:35 -0500
+Message-ID: <54C1377B.9070801@hurleysoftware.com>
+References: <1421947471-6396-1-git-send-email-peter@hurleysoftware.com> <1421947471-6396-6-git-send-email-peter@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1421947471-6396-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1421947471-6396-6-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Joe Schultz <jschultz@xes-inc.com>, Aaron Sierra <asierra@xes-inc.com>
 List-Id: linux-serial@vger.kernel.org
 
-The UART_BUG_QUOT workaround adjusts the divisor computed from the
-baud rate by serial8250_get_divisor(). Move the workaround into
-serial8250_get_divisor(), so that divisor-from-baud computation
-is encapsulated.
+On 01/22/2015 12:24 PM, Peter Hurley wrote:
+> Exar XR17V35X PCIe uarts support a 4-bit fractional divisor register.
+> Refactor the divisor calculation from the divisor programming.
+> 
+> Allow a fractional result from serial8250_get_divisor() and pass this
+> result to serial8250_dl_write().
+> 
+> Simplify the calculation for quot and quot_frac. This was verified
+> to be identical to the results of the original calculation with a test
+> jig.
+> 
+> NB: The results were also compared with the divisor value chart
+> on pg 33 of the Exar XR17V352 datasheet, rev 1.0.3, here:
+> http://www.exar.com/common/content/document.ashx?id=1585
+> which differs from the calculated values by 1 in the fractional result.
+> This is because the calculated values are still rounded in the
+> fractional result, whereas the table values are truncated. Note
+> that the data error rate % values in the datasheet are for
+> rounded fractional results, as the truncated fractional results
+> have more error.
+> 
+> Cc: Joe Schultz <jschultz@xes-inc.com>
+> Cc: Aaron Sierra <asierra@xes-inc.com>
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/8250/8250_core.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+FWIW, here's the test jig:
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 3bfcfdb..fa40982 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -2390,8 +2390,9 @@ static void serial8250_shutdown(struct uart_port *port)
- 		serial8250_do_shutdown(port);
- }
- 
--static unsigned int serial8250_get_divisor(struct uart_port *port, unsigned int baud)
-+static unsigned int serial8250_get_divisor(struct uart_8250_port *up, unsigned int baud)
- {
-+	struct uart_port *port = &up->port;
- 	unsigned int quot;
- 
- 	/*
-@@ -2407,6 +2408,12 @@ static unsigned int serial8250_get_divisor(struct uart_port *port, unsigned int
- 	else
- 		quot = uart_get_divisor(port, baud);
- 
-+	/*
-+	 * Oxford Semi 952 rev B workaround
-+	 */
-+	if (up->bugs & UART_BUG_QUOT && (quot & 0xff) == 0)
-+		quot++;
+--- /dev/null	2015-01-22 11:30:11.407707482 -0500
++++ divisor.c	2015-01-22 12:42:34.722403359 -0500
+@@ -0,0 +1,92 @@
++/*
++ * divisor.c - test jig for evaluating computation equivalence
++ *	       of divisors for XR17V35x UART
++ */
 +
- 	return quot;
- }
- 
-@@ -2455,13 +2462,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old,
- 				  port->uartclk / 16 / 0xffff,
- 				  port->uartclk / 16);
--	quot = serial8250_get_divisor(port, baud);
--
--	/*
--	 * Oxford Semi 952 rev B workaround
--	 */
--	if (up->bugs & UART_BUG_QUOT && (quot & 0xff) == 0)
--		quot++;
-+	quot = serial8250_get_divisor(up, baud);
- 
- 	if (up->capabilities & UART_CAP_FIFO && port->fifosize > 1) {
- 		/* NOTE: If fifo_bug is not set, a user can set RX_trigger. */
--- 
-2.2.2
++#include <stdio.h>
++
++#define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
++
++/* from include/linux/kernel.h */
++
++#define DIV_ROUND_CLOSEST(x, divisor)(			\
++{							\
++	typeof(x) __x = x;				\
++	typeof(divisor) __d = divisor;			\
++	(((typeof(x))-1) > 0 ||				\
++	 ((typeof(divisor))-1) > 0 || (__x) > 0) ?	\
++		(((__x) + ((__d) / 2)) / (__d)) :	\
++		(((__x) - ((__d) / 2)) / (__d));	\
++}							\
++)
++
++/* 125MHz clock on XR17V35x */
++unsigned int clk = 125000000;
++
++
++void calc_quot(unsigned int baud, unsigned int *quot, unsigned int *frac) {
++
++	unsigned int baud_x32 = (2 * clk) / baud;
++
++	*quot = baud_x32 / 32;
++	*frac = DIV_ROUND_CLOSEST(baud_x32 % 32, 2);
++}
++
++void calc_quot2(unsigned int baud, unsigned int *quot, unsigned int *frac) {
++
++	/* compute quotient as a 16.4 fixed point value */
++	unsigned int quot_16 = DIV_ROUND_CLOSEST(clk, baud);
++
++	*quot = quot_16 >> 4;
++	*frac = quot_16 & 0x0f;
++}
++
++
++int main() {
++	int i;
++	unsigned int bauds[] = {   2400,
++				   4800,
++				   9600,
++				  10000,
++				  19200,
++				  25000,
++				  28800,
++				  38400,
++				  50000,
++				  57600,
++				  75000,
++				 100000,
++				 115200,
++				 153600,
++				 200000,
++				 225000,
++				 230400,
++				 250000,
++				 300000,
++				 400000,
++				 460800,
++				 500000,
++				 576000,
++				 750000,
++				 921600,
++				1000000,
++				1152000,
++			       };
++
++	for (i = 0; i < ARRAY_SIZE(bauds); i++) {
++		unsigned int quot, frac;
++		unsigned int quot2, frac2;
++
++		calc_quot(bauds[i], &quot, &frac);
++		calc_quot2(bauds[i], &quot2, &frac2);
++
++		if (quot != quot2 || frac != frac2) {
++			printf("diff: %04x.%01x != %04x.%01x\n", quot, frac,
++			       quot2, frac2);
++		} else
++			printf("%10d  %02X %02X %01X\n", bauds[i],
++			       quot2 >> 8, quot2 & 0xff, frac2);
++	}
++
++	return 0;
++}
