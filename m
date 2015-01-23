@@ -1,201 +1,56 @@
-From: Lyra Zhang <zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v7 2/2] tty/serial: Add Spreadtrum sc9836-uart driver support
-Date: Fri, 23 Jan 2015 21:39:11 +0800
-Message-ID: <CAAfSe-scYsf-dDiHUufhWaHngCxjXpdqUWWs76Cdp0kRbBZ_aQ@mail.gmail.com>
-References: <1422018066-24997-1-git-send-email-chunyan.zhang@spreadtrum.com>
-	<1422018066-24997-3-git-send-email-chunyan.zhang@spreadtrum.com>
-	<54C24D39.1080607@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <54C24D39.1080607-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org" <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, "ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org" <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "jslaby-AlSwsSmVLrQ@public.gmane.org" <jslaby-AlSwsSmVLrQ@public.gmane.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "florian.vaussard-p8DiymsW2f8@public.gmane.org" <florian.vaussard-p8DiymsW2f8@public.gmane.org>, "andrew-g2DYL2Zd6BY@public.gmane.org" <andrew-g2DYL2Zd6BY@public.gmane.org>, Hayato Suzuki <hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "antonynpavlov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <antonynpavlov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Shawn Guo <shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Orson Zhai <orsonzhai-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "geng.ren-lxIno14LUO0EEoCn2XhGlw@public.gmane.org" <geng.ren-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH v4 0/2] serial: samsung: add support for early console
+Date: Fri, 23 Jan 2015 14:47:40 +0100
+Message-ID: <1422020862-10169-1-git-send-email-m.szyprowski@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Alim Akhtar <alim.akhtar@samsung.com>, thomas.ab@samsung.com, Tomasz Figa <tomasz.figa@gmail.com>, Kukjin Kim <kgene@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jan 23, 2015 at 9:31 PM, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> wrote:
-> Hi Chunyan,
->
-> Just the minor fix to zeroing the stack local in sprd_set_termios()
-> and using dev_get_drvdata() in sprd_suspend()/sprd_resume().
->
+This patchset adds support for early console defined in device tree. As
+an example, DTS files for all Exynos4 based machines are updated with
+the correct value for common chosen/sdtout property.
 
-ok, I see.
+To get it fully functional on ARM architecture, additional improvements
+(support for early_ioremap) are needed in early console code.
 
-> Regards,
-> Peter Hurley
->
-> On 01/23/2015 08:01 AM, Chunyan Zhang wrote:
->> Add a full sc9836-uart driver for SC9836 SoC which is based on the
->> spreadtrum sharkl64 platform.
->> This driver also support earlycon.
->
-> [...]
->
->> +static void sprd_set_termios(struct uart_port *port,
->> +                                 struct ktermios *termios,
->> +                                 struct ktermios *old)
->> +{
->> +     unsigned int baud, quot;
->> +     unsigned int lcr, fc;
->
->         unsigned int lcr = 0, fc;
->
->> +     unsigned long flags;
->> +
->> +     /* ask the core to calculate the divisor for us */
->> +     baud = uart_get_baud_rate(port, termios, old, 0, SPRD_BAUD_IO_LIMIT);
->> +
->> +     quot = (unsigned int)((port->uartclk + baud / 2) / baud);
->> +
->> +     /* set data length */
->> +     switch (termios->c_cflag & CSIZE) {
->> +     case CS5:
->> +             lcr |= SPRD_LCR_DATA_LEN5;
->> +             break;
->> +     case CS6:
->> +             lcr |= SPRD_LCR_DATA_LEN6;
->> +             break;
->> +     case CS7:
->> +             lcr |= SPRD_LCR_DATA_LEN7;
->> +             break;
->> +     case CS8:
->> +     default:
->> +             lcr |= SPRD_LCR_DATA_LEN8;
->> +             break;
->> +     }
->> +
->> +     /* calculate stop bits */
->> +     lcr &= ~(SPRD_LCR_STOP_1BIT | SPRD_LCR_STOP_2BIT);
->> +     if (termios->c_cflag & CSTOPB)
->> +             lcr |= SPRD_LCR_STOP_2BIT;
->> +     else
->> +             lcr |= SPRD_LCR_STOP_1BIT;
->> +
->> +     /* calculate parity */
->> +     lcr &= ~SPRD_LCR_PARITY;
->> +     termios->c_cflag &= ~CMSPAR;    /* no support mark/space */
->> +     if (termios->c_cflag & PARENB) {
->> +             lcr |= SPRD_LCR_PARITY_EN;
->> +             if (termios->c_cflag & PARODD)
->> +                     lcr |= SPRD_LCR_ODD_PAR;
->> +             else
->> +                     lcr |= SPRD_LCR_EVEN_PAR;
->> +     }
->
-> [...]
->
->> +static int sprd_probe(struct platform_device *pdev)
->> +{
->> +     struct resource *res;
->> +     struct uart_port *up;
->> +     struct clk *clk;
->> +     int irq;
->> +     int index;
->> +     int ret;
->> +
->> +     for (index = 0; index < ARRAY_SIZE(sprd_port); index++)
->> +             if (sprd_port[index] == NULL)
->> +                     break;
->> +
->> +     if (index == ARRAY_SIZE(sprd_port))
->> +             return -EBUSY;
->> +
->> +     index = sprd_probe_dt_alias(index, &pdev->dev);
->> +
->> +     sprd_port[index] = devm_kzalloc(&pdev->dev,
->> +             sizeof(*sprd_port[index]), GFP_KERNEL);
->> +     if (!sprd_port[index])
->> +             return -ENOMEM;
->> +
->> +     pdev->id = index;
->
-> see my recent reply regarding this and sprd_suspend/sprd_resume.
->
->> +
->> +     up = &sprd_port[index]->port;
->> +     up->dev = &pdev->dev;
->> +     up->line = index;
->> +     up->type = PORT_SPRD;
->> +     up->iotype = SERIAL_IO_PORT;
->> +     up->uartclk = SPRD_DEF_RATE;
->> +     up->fifosize = SPRD_FIFO_SIZE;
->> +     up->ops = &serial_sprd_ops;
->> +     up->flags = UPF_BOOT_AUTOCONF;
->> +
->> +     clk = devm_clk_get(&pdev->dev, NULL);
->> +     if (!IS_ERR(clk))
->> +             up->uartclk = clk_get_rate(clk);
->> +
->> +     res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +     if (!res) {
->> +             dev_err(&pdev->dev, "not provide mem resource\n");
->> +             return -ENODEV;
->> +     }
->> +     up->mapbase = res->start;
->> +     up->membase = devm_ioremap_resource(&pdev->dev, res);
->> +     if (IS_ERR(up->membase))
->> +             return PTR_ERR(up->membase);
->> +
->> +     irq = platform_get_irq(pdev, 0);
->> +     if (irq < 0) {
->> +             dev_err(&pdev->dev, "not provide irq resource\n");
->> +             return -ENODEV;
->> +     }
->> +     up->irq = irq;
->> +
->> +     if (!sprd_ports_num) {
->> +             ret = uart_register_driver(&sprd_uart_driver);
->> +             if (ret < 0) {
->> +                     pr_err("Failed to register SPRD-UART driver\n");
->> +                     return ret;
->> +             }
->> +     }
->> +     sprd_ports_num++;
->> +
->> +     ret = uart_add_one_port(&sprd_uart_driver, up);
->> +     if (ret) {
->> +             sprd_port[index] = NULL;
->> +             sprd_remove(pdev);
->> +     }
->> +
->> +     platform_set_drvdata(pdev, up);
->> +
->> +     return ret;
->> +}
->> +
->> +static int sprd_suspend(struct device *dev)
->> +{
->> +     int id = to_platform_device(dev)->id;
->> +     struct uart_port *port = &sprd_port[id]->port;
->> +
->> +     uart_suspend_port(&sprd_uart_driver, port);
->
-> same comment: see my recent reply using dev_get_drvdata().
->
+Best regards
+Marek Szyprowski
+Samsung R&D Institute Poland
 
-ok, i see. thanks!
+Changelog:
 
-Chunyan
+v4:
+- added 'tested-by' tags, resend
 
->> +
->> +     return 0;
->> +}
->> +
->> +static int sprd_resume(struct device *dev)
->> +{
->> +     int id = to_platform_device(dev)->id;
->> +     struct uart_port *port = &sprd_port[id]->port;
->> +
->> +     uart_resume_port(&sprd_uart_driver, port);
->> +
->> +     return 0;
->> +}
->> +
->
->
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+v3: http://www.spinics.net/lists/linux-samsung-soc/msg37922.html
+- rebased onto v3.18-rc1
+- removed options from documentation (they are not yet supported)
+
+v2: http://www.spinics.net/lists/linux-samsung-soc/msg37278.html
+- added support for command line based initialization
+
+v1: http://www.spinics.net/lists/linux-samsung-soc/msg37094.html
+- initial version
+
+Tomasz Figa (2):
+  serial: samsung: Add support for early console
+  ARM: dts: exynos4: Add stdout-path properties
+
+ Documentation/kernel-parameters.txt             |  12 +++
+ arch/arm/boot/dts/exynos4210-origen.dts         |   1 +
+ arch/arm/boot/dts/exynos4210-smdkv310.dts       |   1 +
+ arch/arm/boot/dts/exynos4210-trats.dts          |   1 +
+ arch/arm/boot/dts/exynos4210-universal_c210.dts |   1 +
+ arch/arm/boot/dts/exynos4412-odroid-common.dtsi |   4 +
+ arch/arm/boot/dts/exynos4412-origen.dts         |   1 +
+ arch/arm/boot/dts/exynos4412-smdk4412.dts       |   1 +
+ arch/arm/boot/dts/exynos4412-tiny4412.dts       |   4 +
+ arch/arm/boot/dts/exynos4412-trats2.dts         |   1 +
+ drivers/tty/serial/Kconfig                      |   1 +
+ drivers/tty/serial/samsung.c                    | 103 ++++++++++++++++++++++++
+ 12 files changed, 131 insertions(+)
+
+-- 
+1.9.2
