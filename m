@@ -1,7 +1,7 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v4 1/2] serial: samsung: Add support for early console
-Date: Fri, 23 Jan 2015 14:47:41 +0100
-Message-ID: <1422020862-10169-2-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH v4 2/2] ARM: dts: exynos4: Add stdout-path properties
+Date: Fri, 23 Jan 2015 14:47:42 +0100
+Message-ID: <1422020862-10169-3-git-send-email-m.szyprowski@samsung.com>
 References: <1422020862-10169-1-git-send-email-m.szyprowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1422020862-10169-1-git-send-email-m.szyprowski@samsung.com>
@@ -12,170 +12,137 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Tomasz Figa <t.figa@samsung.com>
 
-This patch adds support for early console initialized from device tree
-and kernel command line to all variants of Samsung serial driver.
+This patch adds stdout-path property to chosen nodes of Exynos4 boards
+to enable use of earlycon feature without the need to hardcode port
+number in kernel itself.
 
 Signed-off-by: Tomasz Figa <t.figa@samsung.com>
-[mszyprow: added support for command line based initialization,
-           fixed comments, added documentation]
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Tested-by: Alim Akhtar <alim.akhtar@samsung.com>
-Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
 ---
- Documentation/kernel-parameters.txt |  12 +++++
- drivers/tty/serial/Kconfig          |   1 +
- drivers/tty/serial/samsung.c        | 103 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 116 insertions(+)
+ arch/arm/boot/dts/exynos4210-origen.dts         | 1 +
+ arch/arm/boot/dts/exynos4210-smdkv310.dts       | 1 +
+ arch/arm/boot/dts/exynos4210-trats.dts          | 1 +
+ arch/arm/boot/dts/exynos4210-universal_c210.dts | 1 +
+ arch/arm/boot/dts/exynos4412-odroid-common.dtsi | 4 ++++
+ arch/arm/boot/dts/exynos4412-origen.dts         | 1 +
+ arch/arm/boot/dts/exynos4412-smdk4412.dts       | 1 +
+ arch/arm/boot/dts/exynos4412-tiny4412.dts       | 4 ++++
+ arch/arm/boot/dts/exynos4412-trats2.dts         | 1 +
+ 9 files changed, 15 insertions(+)
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 7dbe5ec9d9cd..24f363108ab3 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -961,6 +961,18 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+diff --git a/arch/arm/boot/dts/exynos4210-origen.dts b/arch/arm/boot/dts/exynos4210-origen.dts
+index f767c425d0b5..b81146141402 100644
+--- a/arch/arm/boot/dts/exynos4210-origen.dts
++++ b/arch/arm/boot/dts/exynos4210-origen.dts
+@@ -31,6 +31,7 @@
  
- 		smh	Use ARM semihosting calls for early console.
+ 	chosen {
+ 		bootargs ="root=/dev/ram0 rw ramdisk=8192 initrd=0x41000000,8M console=ttySAC2,115200 init=/linuxrc";
++		stdout-path = &serial_2;
+ 	};
  
-+		s3c2410,<addr>
-+		s3c2412,<addr>
-+		s3c2440,<addr>
-+		s3c6400,<addr>
-+		s5pv210,<addr>
-+		exynos4210,<addr>
-+			Use early console provided by serial driver available
-+			on Samsung SoCs, requires selecting proper type and
-+			a correct base address of the selected UART port. The
-+			serial port must already be setup and configured.
-+			Options are not yet supported.
-+
- 	earlyprintk=	[X86,SH,BLACKFIN,ARM,M68k]
- 			earlyprintk=vga
- 			earlyprintk=efi
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 649b784081c7..50997be6cf6d 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -241,6 +241,7 @@ config SERIAL_SAMSUNG
- 	tristate "Samsung SoC serial support"
- 	depends on PLAT_SAMSUNG || ARCH_EXYNOS
- 	select SERIAL_CORE
-+	select SERIAL_EARLYCON
- 	help
- 	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
- 	  providing /dev/ttySAC0, 1 and 2 (note, some machines may not
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index c78f43a481ce..8ad453a5d845 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1856,6 +1856,109 @@ static struct platform_driver samsung_serial_driver = {
+ 	regulators {
+diff --git a/arch/arm/boot/dts/exynos4210-smdkv310.dts b/arch/arm/boot/dts/exynos4210-smdkv310.dts
+index 676e6e0c8cf3..86216fff1b4f 100644
+--- a/arch/arm/boot/dts/exynos4210-smdkv310.dts
++++ b/arch/arm/boot/dts/exynos4210-smdkv310.dts
+@@ -27,6 +27,7 @@
  
- module_platform_driver(samsung_serial_driver);
+ 	chosen {
+ 		bootargs = "root=/dev/ram0 rw ramdisk=8192 initrd=0x41000000,8M console=ttySAC1,115200 init=/linuxrc";
++		stdout-path = &serial_1;
+ 	};
  
-+/*
-+ * Early console.
-+ */
+ 	sdhci@12530000 {
+diff --git a/arch/arm/boot/dts/exynos4210-trats.dts b/arch/arm/boot/dts/exynos4210-trats.dts
+index f516da9e8b3a..b351c7bddf2d 100644
+--- a/arch/arm/boot/dts/exynos4210-trats.dts
++++ b/arch/arm/boot/dts/exynos4210-trats.dts
+@@ -28,6 +28,7 @@
+ 
+ 	chosen {
+ 		bootargs = "console=ttySAC2,115200N8 root=/dev/mmcblk0p5 rootwait earlyprintk panic=5";
++		stdout-path = &serial_2;
+ 	};
+ 
+ 	regulators {
+diff --git a/arch/arm/boot/dts/exynos4210-universal_c210.dts b/arch/arm/boot/dts/exynos4210-universal_c210.dts
+index d50eb3aa708e..e65ee3cb36c3 100644
+--- a/arch/arm/boot/dts/exynos4210-universal_c210.dts
++++ b/arch/arm/boot/dts/exynos4210-universal_c210.dts
+@@ -26,6 +26,7 @@
+ 
+ 	chosen {
+ 		bootargs = "console=ttySAC2,115200N8 root=/dev/mmcblk0p5 rw rootwait earlyprintk panic=5 maxcpus=1";
++		stdout-path = &serial_2;
+ 	};
+ 
+ 	sysram@02020000 {
+diff --git a/arch/arm/boot/dts/exynos4412-odroid-common.dtsi b/arch/arm/boot/dts/exynos4412-odroid-common.dtsi
+index c697ff01ae8d..7c49bddf44b6 100644
+--- a/arch/arm/boot/dts/exynos4412-odroid-common.dtsi
++++ b/arch/arm/boot/dts/exynos4412-odroid-common.dtsi
+@@ -11,6 +11,10 @@
+ #include "exynos4412.dtsi"
+ 
+ / {
++	chosen {
++		stdout-path = &serial_1;
++	};
 +
-+struct samsung_early_console_data {
-+	u32 txfull_mask;
-+};
+ 	firmware@0204F000 {
+ 		compatible = "samsung,secure-firmware";
+ 		reg = <0x0204F000 0x1000>;
+diff --git a/arch/arm/boot/dts/exynos4412-origen.dts b/arch/arm/boot/dts/exynos4412-origen.dts
+index de15114fd07c..bd8b73077d41 100644
+--- a/arch/arm/boot/dts/exynos4412-origen.dts
++++ b/arch/arm/boot/dts/exynos4412-origen.dts
+@@ -26,6 +26,7 @@
+ 
+ 	chosen {
+ 		bootargs ="console=ttySAC2,115200";
++		stdout-path = &serial_2;
+ 	};
+ 
+ 	firmware@0203F000 {
+diff --git a/arch/arm/boot/dts/exynos4412-smdk4412.dts b/arch/arm/boot/dts/exynos4412-smdk4412.dts
+index ded0b70f7644..b9256afbcc68 100644
+--- a/arch/arm/boot/dts/exynos4412-smdk4412.dts
++++ b/arch/arm/boot/dts/exynos4412-smdk4412.dts
+@@ -25,6 +25,7 @@
+ 
+ 	chosen {
+ 		bootargs ="root=/dev/ram0 rw ramdisk=8192 initrd=0x41000000,8M console=ttySAC1,115200 init=/linuxrc";
++		stdout-path = &serial_1;
+ 	};
+ 
+ 	g2d@10800000 {
+diff --git a/arch/arm/boot/dts/exynos4412-tiny4412.dts b/arch/arm/boot/dts/exynos4412-tiny4412.dts
+index ea6929d9c621..d46fd4c2aeaa 100644
+--- a/arch/arm/boot/dts/exynos4412-tiny4412.dts
++++ b/arch/arm/boot/dts/exynos4412-tiny4412.dts
+@@ -18,6 +18,10 @@
+ 	model = "FriendlyARM TINY4412 board based on Exynos4412";
+ 	compatible = "friendlyarm,tiny4412", "samsung,exynos4412", "samsung,exynos4";
+ 
++	chosen {
++		stdout-path = &serial_0;
++	};
 +
-+static void samsung_early_busyuart(struct uart_port *port)
-+{
-+	while (!(readl(port->membase + S3C2410_UTRSTAT) & S3C2410_UTRSTAT_TXFE))
-+		;
-+}
-+
-+static void samsung_early_busyuart_fifo(struct uart_port *port)
-+{
-+	struct samsung_early_console_data *data = port->private_data;
-+
-+	while (readl(port->membase + S3C2410_UFSTAT) & data->txfull_mask)
-+		;
-+}
-+
-+static void samsung_early_putc(struct uart_port *port, int c)
-+{
-+	if (readl(port->membase + S3C2410_UFCON) & S3C2410_UFCON_FIFOMODE)
-+		samsung_early_busyuart_fifo(port);
-+	else
-+		samsung_early_busyuart(port);
-+
-+	writeb(c, port->membase + S3C2410_UTXH);
-+}
-+
-+static void samsung_early_write(struct console *con, const char *s, unsigned n)
-+{
-+	struct earlycon_device *dev = con->data;
-+
-+	uart_console_write(&dev->port, s, n, samsung_early_putc);
-+}
-+
-+static int __init samsung_early_console_setup(struct earlycon_device *device,
-+					      const char *opt)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->con->write = samsung_early_write;
-+	return 0;
-+}
-+
-+/* S3C2410 */
-+static struct samsung_early_console_data s3c2410_early_console_data = {
-+	.txfull_mask = S3C2410_UFSTAT_TXFULL,
-+};
-+
-+static int __init s3c2410_early_console_setup(struct earlycon_device *device,
-+					      const char *opt)
-+{
-+	device->port.private_data = &s3c2410_early_console_data;
-+	return samsung_early_console_setup(device, opt);
-+}
-+OF_EARLYCON_DECLARE(s3c2410, "samsung,s3c2410-uart",
-+			s3c2410_early_console_setup);
-+EARLYCON_DECLARE(s3c2410, s3c2410_early_console_setup);
-+
-+/* S3C2412, S3C2440, S3C64xx */
-+static struct samsung_early_console_data s3c2440_early_console_data = {
-+	.txfull_mask = S3C2440_UFSTAT_TXFULL,
-+};
-+
-+static int __init s3c2440_early_console_setup(struct earlycon_device *device,
-+					      const char *opt)
-+{
-+	device->port.private_data = &s3c2440_early_console_data;
-+	return samsung_early_console_setup(device, opt);
-+}
-+OF_EARLYCON_DECLARE(s3c2412, "samsung,s3c2412-uart",
-+			s3c2440_early_console_setup);
-+OF_EARLYCON_DECLARE(s3c2440, "samsung,s3c2440-uart",
-+			s3c2440_early_console_setup);
-+OF_EARLYCON_DECLARE(s3c6400, "samsung,s3c6400-uart",
-+			s3c2440_early_console_setup);
-+EARLYCON_DECLARE(s3c2412, s3c2440_early_console_setup);
-+EARLYCON_DECLARE(s3c2440, s3c2440_early_console_setup);
-+EARLYCON_DECLARE(s3c6400, s3c2440_early_console_setup);
-+
-+/* S5PV210, EXYNOS */
-+static struct samsung_early_console_data s5pv210_early_console_data = {
-+	.txfull_mask = S5PV210_UFSTAT_TXFULL,
-+};
-+
-+static int __init s5pv210_early_console_setup(struct earlycon_device *device,
-+					      const char *opt)
-+{
-+	device->port.private_data = &s5pv210_early_console_data;
-+	return samsung_early_console_setup(device, opt);
-+}
-+OF_EARLYCON_DECLARE(s5pv210, "samsung,s5pv210-uart",
-+			s5pv210_early_console_setup);
-+OF_EARLYCON_DECLARE(exynos4210, "samsung,exynos4210-uart",
-+			s5pv210_early_console_setup);
-+EARLYCON_DECLARE(s5pv210, s5pv210_early_console_setup);
-+EARLYCON_DECLARE(exynos4210, s5pv210_early_console_setup);
-+
- MODULE_ALIAS("platform:samsung-uart");
- MODULE_DESCRIPTION("Samsung SoC Serial port driver");
- MODULE_AUTHOR("Ben Dooks <ben@simtec.co.uk>");
+ 	memory {
+ 		reg = <0x40000000 0x40000000>;
+ 	};
+diff --git a/arch/arm/boot/dts/exynos4412-trats2.dts b/arch/arm/boot/dts/exynos4412-trats2.dts
+index 5e066cd87f66..c8b38359d54e 100644
+--- a/arch/arm/boot/dts/exynos4412-trats2.dts
++++ b/arch/arm/boot/dts/exynos4412-trats2.dts
+@@ -30,6 +30,7 @@
+ 
+ 	chosen {
+ 		bootargs = "console=ttySAC2,115200N8 root=/dev/mmcblk0p5 rootwait earlyprintk panic=5";
++		stdout-path = &serial_2;
+ 	};
+ 
+ 	firmware@0204F000 {
 -- 
 1.9.2
