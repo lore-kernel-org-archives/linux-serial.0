@@ -1,76 +1,75 @@
 From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Fix R-Car SCIF and HSCIF overrun handling
-Date: Sun, 25 Jan 2015 20:10:09 +0900
-Message-ID: <CAH1o70+upGsSNHOsausd91GLQ-sf_Sjyv3_ghN_W9Uo54sTxLg@mail.gmail.com>
-References: <1418652883-6884-1-git-send-email-ykaneko0929@gmail.com>
-	<CABMQnV+Oh8Ctd9jM-7qaW4ZfuQJ_++fZkHYuKBL2ftQkrzAOjw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Subject: [PATCH] serial: sh-sci: Fix R-Car SCIF and HSCIF overrun handling
+Date: Mon, 26 Jan 2015 00:38:01 +0900
+Message-ID: <1422200281-22518-1-git-send-email-ykaneko0929@gmail.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <CABMQnV+Oh8Ctd9jM-7qaW4ZfuQJ_++fZkHYuKBL2ftQkrzAOjw@mail.gmail.com>
 Sender: linux-sh-owner@vger.kernel.org
-To: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh <linux-sh@vger.kernel.org>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+From: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
 
-Thanks for your review.
+When fifo overrun happened, the interrupt status refers to
+SCLSR register in R-Car SCIF and HSCIF.
+Thus, overrun handling takes SCLSR register into account.
 
-2015-01-22 13:51 GMT+09:00 Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>:
-> Hi,
->
-> 2014-12-15 23:14 GMT+09:00 Yoshihiro Kaneko <ykaneko0929@gmail.com>:
->> From: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
->>
->> When fifo overrun happened, the interrupt status refers to
->> SCLSR register in R-Car SCIF and HSCIF.
->> Thus, overrun handling takes SCLSR register into account.
->>
->> Signed-off-by: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
->> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
->> ---
->>
->> This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
->> tree.
->>
->>  drivers/tty/serial/sh-sci.c | 18 +++++++++++++-----
->>  1 file changed, 13 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
->> index 1110523..ff549a8 100644
->> --- a/drivers/tty/serial/sh-sci.c
->> +++ b/drivers/tty/serial/sh-sci.c
->> @@ -793,8 +793,6 @@ static int sci_handle_errors(struct uart_port *port)
->>                 /* overrun error */
->>                 if (tty_insert_flip_char(tport, 0, TTY_OVERRUN))
->>                         copied++;
->> -
->> -               dev_notice(port->dev, "overrun error\n");
->>         }
->>
->>         if (status & SCxSR_FER(port)) {
->> @@ -835,8 +833,6 @@ static int sci_handle_errors(struct uart_port *port)
->>
->>                 if (tty_insert_flip_char(tport, 0, TTY_PARITY))
->>                         copied++;
->> -
->> -               dev_notice(port->dev, "parity error\n");
->>         }
->
-> I think that these fixis unrelated to support of HSCIF.
-> Please split patch.
+Signed-off-by: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
+Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+---
 
-I got it.
-I'll update this patch.
+This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
+tree.
 
-Thanks,
-Kaneko
+ drivers/tty/serial/sh-sci.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
->
-> Best regards,
->   Nobuhiro
->
->
-> --
-> Nobuhiro Iwamatsu
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 8204306..69f6bf3 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1003,12 +1003,15 @@ static inline unsigned long port_rx_irq_mask(struct uart_port *port)
+ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ {
+ 	unsigned short ssr_status, scr_status, err_enabled;
++	unsigned short slr_status = 0;
+ 	struct uart_port *port = ptr;
+ 	struct sci_port *s = to_sci_port(port);
+ 	irqreturn_t ret = IRQ_NONE;
+ 
+ 	ssr_status = serial_port_in(port, SCxSR);
+ 	scr_status = serial_port_in(port, SCSCR);
++	if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
++		slr_status = serial_port_in(port, SCLSR);
+ 	err_enabled = scr_status & port_rx_irq_mask(port);
+ 
+ 	/* Tx Interrupt */
+@@ -1021,8 +1024,11 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 	 * DR flags
+ 	 */
+ 	if (((ssr_status & SCxSR_RDxF(port)) || s->chan_rx) &&
+-	    (scr_status & SCSCR_RIE))
++	    (scr_status & SCSCR_RIE)) {
++		if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
++			sci_handle_fifo_overrun(port);
+ 		ret = sci_rx_interrupt(irq, ptr);
++	}
+ 
+ 	/* Error Interrupt */
+ 	if ((ssr_status & SCxSR_ERRORS(port)) && err_enabled)
+@@ -1032,6 +1038,12 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 	if ((ssr_status & SCxSR_BRK(port)) && err_enabled)
+ 		ret = sci_br_interrupt(irq, ptr);
+ 
++	/* Overrun Interrupt */
++	if (port->type == PORT_SCIF || port->type == PORT_HSCIF) {
++		if ((slr_status & 0x01))
++			sci_handle_fifo_overrun(port);
++	}
++
+ 	return ret;
+ }
+ 
+-- 
+1.9.1
+
