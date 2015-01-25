@@ -1,42 +1,34 @@
-From: Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH 4/4] tty: Remove external interface for tty_set_termios()
-Date: Sun, 25 Jan 2015 12:36:32 -0800
-Message-ID: <6C672878-BEFC-4B8D-AC26-1320723ACFCB@holtmann.org>
-References: <1422215094-3216-1-git-send-email-peter@hurleysoftware.com> <1422215094-3216-5-git-send-email-peter@hurleysoftware.com>
-Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
-Content-Type: text/plain; charset=us-ascii
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v5] tty: serial: men_z135_uart: Fix driver for changes
+ in hardware
+Date: Sun, 25 Jan 2015 16:17:27 -0500
+Message-ID: <54C55D67.8060503@hurleysoftware.com>
+References: <1421649881-2275-1-git-send-email-johannes.thumshirn@men.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1422215094-3216-5-git-send-email-peter@hurleysoftware.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-omap <linux-omap@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Johan Hedberg <johan.hedberg@gmail.com>, linux-bluetooth@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1421649881-2275-1-git-send-email-johannes.thumshirn@men.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Johannes Thumshirn <johannes.thumshirn@men.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
-
-> tty_set_termios() is an internal helper intended for file scope use.
+On 01/19/2015 01:44 AM, Johannes Thumshirn wrote:
+> 16z135 IP Core has changed so the driver needs to be updated to respect
+> these changes. The following changes have been made:
 > 
-> UART drivers which are capable of driving the RTS pin must
-> properly handle the tiocmset() method, regardless of termios settings.
-> A failure to do so is a UART driver bug and should be fixed there.
-> Do not use this interface to workaround UART driver bugs.
-> 
-> Cc: Marcel Holtmann <marcel@holtmann.org>
-> Cc: Johan Hedberg <johan.hedberg@gmail.com>
-> Cc: <linux-bluetooth@vger.kernel.org>
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
-> drivers/bluetooth/hci_ath.c | 15 ++-------------
-> drivers/tty/tty_ioctl.c     |  3 +--
-> include/linux/tty.h         |  1 -
-> 3 files changed, 3 insertions(+), 16 deletions(-)
+> * Don't invert the 16z135 modem status register when reading.
+> * Add module parameter to configure the (baud rate dependent) RX timeout.
+>   Character timeout in seconds = (timeout_reg * baud_reg * 4)/freq_reg.
+> * Enable the handling of UART core's automatic flow control feature.
+>   When AFE is active disable generation of modem status IRQs.
+> * Rework the handling of IRQs to be conform with newer FPGA versions and
+>   take precautions not to miss an interrupt because of the destructive read
+>   of the IIR register.
+> * Correct men_z135_handle_modem_status(), MSR is stat_reg[15:8] not
+>   stat_reg[7:0]
+> * Correct calling of uart_handle_{dcd,cts}_change()
+> * Reset CLOCAL when CRTSCTS is set
 
-I think the less complication is if this goes through the TTY tree.
-
-Acked-by: Marcel Holtmann <marcel@holtmann.org>
-
-Regards
-
-Marcel
-
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
