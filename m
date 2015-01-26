@@ -1,63 +1,41 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: [PATCH] tty: serial: fsl_lpuart: terminate DMA on buffer flush
-Date: Mon, 26 Jan 2015 01:10:16 +0100
-Message-ID: <1422231016-27793-1-git-send-email-stefan@agner.ch>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, stefan@agner.ch
+From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+Subject: [PATCH] serial: sh-sci: Use dev_dbg() to log an error message
+Date: Mon, 26 Jan 2015 20:53:29 +0900
+Message-ID: <1422273209-3473-1-git-send-email-ykaneko0929@gmail.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On uart buffer flush, serial core resets the circular buffer.
-If a DMA transfer is in progress at that time, the callback
-lpuart_dma_tx_complete will move buffer's tail unconditionally,
-hence tail moves beyond head. Use the flush_buffer hook to
-terminate the DMA imeaditely and avoid lpuart_dma_tx_complete
-being called in this situation.
+Since the driver cannot return from overrun error if characters
+are output during overrun process, use dev_dbg() instead of
+dev_notice() to log the error message of overrun in syslog.
 
-This bug often showed up while shutdown and lead to duplicate
-serial console output.
+Based on a patch by Hisashi Nakamura.
 
-Signed-off-by: Stefan Agner <stefan@agner.ch>
+Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index e95c497..7615b5d 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -454,6 +454,15 @@ static int lpuart_dma_rx(struct lpuart_port *sport)
- 	return 0;
- }
+This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
+tree.
+
+ drivers/tty/serial/sh-sci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 69f6bf3..9688e74 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -864,7 +864,7 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
+ 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
+ 		tty_flip_buffer_push(tport);
  
-+static void lpuart_flush_buffer(struct uart_port *port)
-+{
-+	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
-+	if (sport->lpuart_dma_tx_use) {
-+		dmaengine_terminate_all(sport->dma_tx_chan);
-+		sport->dma_tx_in_progress = 0;
-+	}
-+}
-+
- static void lpuart_dma_rx_complete(void *arg)
- {
- 	struct lpuart_port *sport = arg;
-@@ -1519,6 +1528,7 @@ static struct uart_ops lpuart_pops = {
- 	.release_port	= lpuart_release_port,
- 	.config_port	= lpuart_config_port,
- 	.verify_port	= lpuart_verify_port,
-+	.flush_buffer	= lpuart_flush_buffer,
- };
+-		dev_notice(port->dev, "overrun error\n");
++		dev_dbg(port->dev, "overrun error\n");
+ 		copied++;
+ 	}
  
- static struct uart_ops lpuart32_pops = {
-@@ -1537,6 +1547,7 @@ static struct uart_ops lpuart32_pops = {
- 	.release_port	= lpuart_release_port,
- 	.config_port	= lpuart_config_port,
- 	.verify_port	= lpuart_verify_port,
-+	.flush_buffer	= lpuart_flush_buffer,
- };
- 
- static struct lpuart_port *lpuart_ports[UART_NR];
 -- 
-2.2.2
+1.9.1
+
