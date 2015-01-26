@@ -1,34 +1,63 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v5] tty: serial: men_z135_uart: Fix driver for changes
- in hardware
-Date: Sun, 25 Jan 2015 16:17:27 -0500
-Message-ID: <54C55D67.8060503@hurleysoftware.com>
-References: <1421649881-2275-1-git-send-email-johannes.thumshirn@men.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Stefan Agner <stefan@agner.ch>
+Subject: [PATCH] tty: serial: fsl_lpuart: terminate DMA on buffer flush
+Date: Mon, 26 Jan 2015 01:10:16 +0100
+Message-ID: <1422231016-27793-1-git-send-email-stefan@agner.ch>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1421649881-2275-1-git-send-email-johannes.thumshirn@men.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johannes Thumshirn <johannes.thumshirn@men.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, stefan@agner.ch
 List-Id: linux-serial@vger.kernel.org
 
-On 01/19/2015 01:44 AM, Johannes Thumshirn wrote:
-> 16z135 IP Core has changed so the driver needs to be updated to respect
-> these changes. The following changes have been made:
-> 
-> * Don't invert the 16z135 modem status register when reading.
-> * Add module parameter to configure the (baud rate dependent) RX timeout.
->   Character timeout in seconds = (timeout_reg * baud_reg * 4)/freq_reg.
-> * Enable the handling of UART core's automatic flow control feature.
->   When AFE is active disable generation of modem status IRQs.
-> * Rework the handling of IRQs to be conform with newer FPGA versions and
->   take precautions not to miss an interrupt because of the destructive read
->   of the IIR register.
-> * Correct men_z135_handle_modem_status(), MSR is stat_reg[15:8] not
->   stat_reg[7:0]
-> * Correct calling of uart_handle_{dcd,cts}_change()
-> * Reset CLOCAL when CRTSCTS is set
+On uart buffer flush, serial core resets the circular buffer.
+If a DMA transfer is in progress at that time, the callback
+lpuart_dma_tx_complete will move buffer's tail unconditionally,
+hence tail moves beyond head. Use the flush_buffer hook to
+terminate the DMA imeaditely and avoid lpuart_dma_tx_complete
+being called in this situation.
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+This bug often showed up while shutdown and lead to duplicate
+serial console output.
+
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+---
+ drivers/tty/serial/fsl_lpuart.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index e95c497..7615b5d 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -454,6 +454,15 @@ static int lpuart_dma_rx(struct lpuart_port *sport)
+ 	return 0;
+ }
+ 
++static void lpuart_flush_buffer(struct uart_port *port)
++{
++	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
++	if (sport->lpuart_dma_tx_use) {
++		dmaengine_terminate_all(sport->dma_tx_chan);
++		sport->dma_tx_in_progress = 0;
++	}
++}
++
+ static void lpuart_dma_rx_complete(void *arg)
+ {
+ 	struct lpuart_port *sport = arg;
+@@ -1519,6 +1528,7 @@ static struct uart_ops lpuart_pops = {
+ 	.release_port	= lpuart_release_port,
+ 	.config_port	= lpuart_config_port,
+ 	.verify_port	= lpuart_verify_port,
++	.flush_buffer	= lpuart_flush_buffer,
+ };
+ 
+ static struct uart_ops lpuart32_pops = {
+@@ -1537,6 +1547,7 @@ static struct uart_ops lpuart32_pops = {
+ 	.release_port	= lpuart_release_port,
+ 	.config_port	= lpuart_config_port,
+ 	.verify_port	= lpuart_verify_port,
++	.flush_buffer	= lpuart_flush_buffer,
+ };
+ 
+ static struct lpuart_port *lpuart_ports[UART_NR];
+-- 
+2.2.2
