@@ -1,193 +1,81 @@
-From: Lyra Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH v8 2/2] tty/serial: Add Spreadtrum sc9836-uart driver support
-Date: Tue, 27 Jan 2015 23:51:55 +0800
-Message-ID: <CAAfSe-v3jnR7O0KFp-c_fBer6KyPbLZ-HS8c+Lsf4uA1-TXXtA@mail.gmail.com>
-References: <1422345407-10037-1-git-send-email-chunyan.zhang@spreadtrum.com>
-	<1422345407-10037-3-git-send-email-chunyan.zhang@spreadtrum.com>
-	<54C7A514.6090206@hurleysoftware.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 2/3] tty/serial: of_serial: add support for PXA/MMP uarts
+Date: Tue, 27 Jan 2015 10:44:29 -0600
+Message-ID: <CAL_Jsq+wxY0=S1ff-Fk0xDBxHdhBvNopLpjfCETVoo_mou658w@mail.gmail.com>
+References: <1422334209-23125-1-git-send-email-robh@kernel.org>
+ <1422334209-23125-2-git-send-email-robh@kernel.org>
+ <54C78823.7050504@hurleysoftware.com>
+ <CAL_Jsq+8jDN+fYyed5RYd2e1K+H_R1NkjT38WXSpKfxTLgsDbQ@mail.gmail.com>
+ <54C7AA2D.7080202@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54C7A514.6090206@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: Chunyan Zhang <chunyan.zhang@spreadtrum.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, "gnomes@lxorguk.ukuu.org.uk" <gnomes@lxorguk.ukuu.org.uk>, Pawel Moll <pawel.moll@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Grant Likely <grant.likely@linaro.org>, "jslaby@suse.cz" <jslaby@suse.cz>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, "jason@lakedaemon.net" <jason@lakedaemon.net>, "florian.vaussard@epfl.ch" <florian.vaussard@epfl.ch>, "andrew@lunn.ch" <andrew@lunn.ch>, Hayato Suzuki <hytszk@gmail.com>, "antonynpavlov@gmail.com" <antonynpavlov@gmail.com>, Shawn Guo <shawn.guo@linaro.org>, Orson Zhai <orsonzhai@gmail.com>, "geng.ren@spreadtrum.com" <geng.ren@spreadtrum.com>, "zhizhou.zhang" <zhizhou.zhang@spreadtrum.com>, lanqing.
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <54C7AA2D.7080202@hurleysoftware.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 27, 2015 at 10:47 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> Hi Chunyan,
+On Tue, Jan 27, 2015 at 9:09 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> On 01/27/2015 09:30 AM, Rob Herring wrote:
+>> On Tue, Jan 27, 2015 at 6:44 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>>> Hi Rob,
+>>>
+>>> On 01/26/2015 11:50 PM, Rob Herring wrote:
+>>>> Add mrvl,pxa-uart and mrvl,mmp-uart compatible strings for the of_serial
+>>>> driver. These are 8250 variants which have a port type of PORT_XSCALE.
+>>>>
+>>>> There is also the serial driver pxa.c with these compatible strings
+>>>> already. However, it can be replaced with the common 8250 driver. It has
+>>>> some issues like it cannot coexist with the 8250 driver due to tty name
+>>>> collision. That also means adding these compatible strings here should
+>>>> not case a problem.
+>>>
+>>> So what determines which driver is controlling the port if both
+>>> drivers are built-in?
+>>
+>> If both are built-in, whoever registers ttyS ports first wins. This
+>> will be the 8250 driver due to link order.
 >
-> Minor but important fixes below.
->
-> And for the v9 version, please only use "To:" for
-> "Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
->
+> Ok, but then I think the commit log should reflect that this patch
+> effectively replaces pxa2xx-uart driver with the 8250 driver for PXA/MMP uarts
+> if both drivers are built-in or both drivers are modules.
 
-Ok, thank you, I'll address your comments below and send the v9 to Greg.
+It doesn't always. It is only on DT enabled platforms. But I can be
+more explicit about that.
 
-Greg,
-sorry, I'll send you a updated version tomorrow.
+There is another patch to remove the PXA driver entirely which I'm
+inquiring about why it was never merged [1]. This is why I went down
+the path of getting the 8250 driver to work rather than trying to fix
+the PXA driver.
 
-> All other recipients should only be Cc:
+>> So I guess PXA systems have avoided this by never building in 8250 driver.
 >
-> Regards,
-> Peter Hurley
->
->
-> On 01/27/2015 02:56 AM, Chunyan Zhang wrote:
->> Add a full sc9836-uart driver for SC9836 SoC which is based on the
->> spreadtrum sharkl64 platform.
->> This driver also support earlycon.
->
-> [...]
->
->> +static int sprd_probe_dt_alias(int index, struct device *dev)
->> +{
->> +     struct device_node *np;
->> +     static bool seen_dev_with_alias;
->> +     static bool seen_dev_without_alias;
->         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->
-> delete these two lines; these were used for the message deleted in a
-> previous patch version.
->
->> +     int ret = index;
->> +
->> +     if (!IS_ENABLED(CONFIG_OF))
->> +             return ret;
->> +
->> +     np = dev->of_node;
->> +     if (!np)
->> +             return ret;
->> +
->> +     ret = of_alias_get_id(np, "serial");
->> +     if (IS_ERR_VALUE(ret)) {
->> +             seen_dev_without_alias = true;
->                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> delete this line.
->
->> +             ret = index;
->> +     } else {
->> +             seen_dev_with_alias = true;
->                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> delete this line.
->
->> +             if (ret >= ARRAY_SIZE(sprd_port) || sprd_port[ret] != NULL) {
->> +                     dev_warn(dev, "requested serial port %d  not available.\n", ret);
->> +                     ret = index;
->> +             }
->> +     }
->
-> Simplify the entire "if (IS_ERR_VALUE(ret))" statement to:
->
->         if (IS_ERR_VALUE(ret))
->                 ret = index;
->         else if (ret >= ..................) {
->                 dev_warn(.....);
->                 ret = index;
->         }
->
->
->> +
->> +     return ret;
->> +}
->> +
->> +static int sprd_remove(struct platform_device *dev)
->> +{
->> +     struct sprd_uart_port *sup = platform_get_drvdata(dev);
->> +
->> +     if (sup) {
->> +             uart_remove_one_port(&sprd_uart_driver, &sup->port);
->> +             sprd_port[sup->port.line] = NULL;
->> +             sprd_ports_num--;
->> +     }
->> +
->> +     if (!sprd_ports_num)
->> +             uart_unregister_driver(&sprd_uart_driver);
->> +
->> +     return 0;
->> +}
->> +
->> +static int sprd_probe(struct platform_device *pdev)
->> +{
->> +     struct resource *res;
->> +     struct uart_port *up;
->> +     struct clk *clk;
->> +     int irq;
->> +     int index;
->> +     int ret;
->> +
->> +     for (index = 0; index < ARRAY_SIZE(sprd_port); index++)
->> +             if (sprd_port[index] == NULL)
->> +                     break;
->> +
->> +     if (index == ARRAY_SIZE(sprd_port))
->> +             return -EBUSY;
->> +
->> +     index = sprd_probe_dt_alias(index, &pdev->dev);
->> +
->> +     sprd_port[index] = devm_kzalloc(&pdev->dev,
->> +             sizeof(*sprd_port[index]), GFP_KERNEL);
->> +     if (!sprd_port[index])
->> +             return -ENOMEM;
->> +
->> +     pdev->id = index;
->         ^^^^^^^^^^^^^^^^
-> delete this line.
->
-> The platform device id cannot be assigned by the driver.
-> (This was left over from trying to fix sprd_suspend/sprd_resume
-> but that's fixed correctly now.)
->
->> +
->> +     up = &sprd_port[index]->port;
->> +     up->dev = &pdev->dev;
->> +     up->line = index;
->> +     up->type = PORT_SPRD;
->> +     up->iotype = SERIAL_IO_PORT;
->> +     up->uartclk = SPRD_DEF_RATE;
->> +     up->fifosize = SPRD_FIFO_SIZE;
->> +     up->ops = &serial_sprd_ops;
->> +     up->flags = UPF_BOOT_AUTOCONF;
->> +
->> +     clk = devm_clk_get(&pdev->dev, NULL);
->> +     if (!IS_ERR(clk))
->> +             up->uartclk = clk_get_rate(clk);
->> +
->> +     res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +     if (!res) {
->> +             dev_err(&pdev->dev, "not provide mem resource\n");
->> +             return -ENODEV;
->> +     }
->> +     up->mapbase = res->start;
->> +     up->membase = devm_ioremap_resource(&pdev->dev, res);
->> +     if (IS_ERR(up->membase))
->> +             return PTR_ERR(up->membase);
->> +
->> +     irq = platform_get_irq(pdev, 0);
->> +     if (irq < 0) {
->> +             dev_err(&pdev->dev, "not provide irq resource\n");
->> +             return -ENODEV;
->> +     }
->> +     up->irq = irq;
->> +
->> +     if (!sprd_ports_num) {
->> +             ret = uart_register_driver(&sprd_uart_driver);
->> +             if (ret < 0) {
->> +                     pr_err("Failed to register SPRD-UART driver\n");
->> +                     return ret;
->> +             }
->> +     }
->> +     sprd_ports_num++;
->> +
->> +     ret = uart_add_one_port(&sprd_uart_driver, up);
->> +     if (ret) {
->> +             sprd_port[index] = NULL;
->> +             sprd_remove(pdev);
->> +     }
->> +
->> +     platform_set_drvdata(pdev, up);
->> +
->> +     return ret;
->> +}
->
+> Platform devices are initialized first, so before this patch the pxa2xx-uart
+> driver would have claimed the platform ports before the 8250 driver, if
+> both were built-in (or both modules).
+
+That's not exactly what I observed. The console is killed when the
+real driver initializes. I have no other debug output capability after
+that, so I'm not completely sure what was happening. Part of the
+problem is you need to move uart_register_driver to probe from the
+initcall as this is what other serial drivers sharing ttyS have done.
+Using 8250 earlycon with the PXA driver seems to cause problems, so
+I'd have to duplicate the earlycon support in the PXA driver.
+
+> Maybe Kconfig should warn if they're both built-in or both modules?
+
+Is there a way to do that?
+
+Rob
+
+[1] https://lkml.org/lkml/2015/1/19/471
