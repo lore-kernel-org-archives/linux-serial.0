@@ -1,78 +1,49 @@
-From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-Subject: [PATCH v2] serial: sh-sci: Fix R-Car SCIF and HSCIF overrun handling
-Date: Mon, 26 Jan 2015 21:25:48 +0900
-Message-ID: <1422275148-20507-1-git-send-email-ykaneko0929@gmail.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
+From: Rob Herring <robh@kernel.org>
+Subject: [PATCH 1/3] tty/serial: of_serial: add DT alias ID handling
+Date: Mon, 26 Jan 2015 22:50:07 -0600
+Message-ID: <1422334209-23125-1-git-send-email-robh@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
+Add support for alias parsing from the DT. This allows for consistent
+tty numbering.
 
-When fifo overrun happened, the interrupt status refers to
-SCLSR register in R-Car SCIF and HSCIF.
-Thus, overrun handling takes SCLSR register into account.
-
-Signed-off-by: Hisashi Nakamura <hisashi.nakamura.ak@renesas.com>
-Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
 ---
+ drivers/tty/serial/of_serial.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
-tree.
-
-v2 [Yoshihiro Kaneko]
-* Fix coding-style
-
- drivers/tty/serial/sh-sci.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 8204306..a34958f 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1003,12 +1003,15 @@ static inline unsigned long port_rx_irq_mask(struct uart_port *port)
- static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
- {
- 	unsigned short ssr_status, scr_status, err_enabled;
-+	unsigned short slr_status = 0;
- 	struct uart_port *port = ptr;
- 	struct sci_port *s = to_sci_port(port);
- 	irqreturn_t ret = IRQ_NONE;
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 64f1bab..3194b42 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -128,6 +128,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	if (of_find_property(np, "no-loopback-test", NULL))
+ 		port->flags |= UPF_SKIP_TEST;
  
- 	ssr_status = serial_port_in(port, SCxSR);
- 	scr_status = serial_port_in(port, SCSCR);
-+	if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
-+		slr_status = serial_port_in(port, SCLSR);
- 	err_enabled = scr_status & port_rx_irq_mask(port);
- 
- 	/* Tx Interrupt */
-@@ -1021,8 +1024,11 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
- 	 * DR flags
- 	 */
- 	if (((ssr_status & SCxSR_RDxF(port)) || s->chan_rx) &&
--	    (scr_status & SCSCR_RIE))
-+	    (scr_status & SCSCR_RIE)) {
-+		if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
-+			sci_handle_fifo_overrun(port);
- 		ret = sci_rx_interrupt(irq, ptr);
-+	}
- 
- 	/* Error Interrupt */
- 	if ((ssr_status & SCxSR_ERRORS(port)) && err_enabled)
-@@ -1032,6 +1038,12 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
- 	if ((ssr_status & SCxSR_BRK(port)) && err_enabled)
- 		ret = sci_br_interrupt(irq, ptr);
- 
-+	/* Overrun Interrupt */
-+	if (port->type == PORT_SCIF || port->type == PORT_HSCIF) {
-+		if (slr_status & 0x01)
-+			sci_handle_fifo_overrun(port);
-+	}
++	ret = of_alias_get_id(np, "serial");
++	if (ret >= 0)
++		port->line = ret;
 +
- 	return ret;
- }
+ 	port->dev = &ofdev->dev;
  
+ 	switch (type) {
 -- 
-1.9.1
-
+2.1.0
