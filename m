@@ -1,11 +1,13 @@
 From: Rob Herring <robh@kernel.org>
-Subject: [PATCH 1/3] tty/serial: of_serial: add DT alias ID handling
-Date: Mon, 26 Jan 2015 22:50:07 -0600
-Message-ID: <1422334209-23125-1-git-send-email-robh@kernel.org>
+Subject: [PATCH 2/3] tty/serial: of_serial: add support for PXA/MMP uarts
+Date: Mon, 26 Jan 2015 22:50:08 -0600
+Message-ID: <1422334209-23125-2-git-send-email-robh@kernel.org>
+References: <1422334209-23125-1-git-send-email-robh@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1422334209-23125-1-git-send-email-robh@kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,8 +21,14 @@ To: linux-serial@vger.kernel.org
 Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add support for alias parsing from the DT. This allows for consistent
-tty numbering.
+Add mrvl,pxa-uart and mrvl,mmp-uart compatible strings for the of_serial
+driver. These are 8250 variants which have a port type of PORT_XSCALE.
+
+There is also the serial driver pxa.c with these compatible strings
+already. However, it can be replaced with the common 8250 driver. It has
+some issues like it cannot coexist with the 8250 driver due to tty name
+collision. That also means adding these compatible strings here should
+not case a problem.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -31,19 +39,19 @@ Cc: linux-serial@vger.kernel.org
  1 file changed, 4 insertions(+)
 
 diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 64f1bab..3194b42 100644
+index 3194b42..fbb719c 100644
 --- a/drivers/tty/serial/of_serial.c
 +++ b/drivers/tty/serial/of_serial.c
-@@ -128,6 +128,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 	if (of_find_property(np, "no-loopback-test", NULL))
- 		port->flags |= UPF_SKIP_TEST;
- 
-+	ret = of_alias_get_id(np, "serial");
-+	if (ret >= 0)
-+		port->line = ret;
-+
- 	port->dev = &ofdev->dev;
- 
- 	switch (type) {
+@@ -335,6 +335,10 @@ static struct of_device_id of_platform_serial_table[] = {
+ 		.data = (void *)PORT_ALTR_16550_F64, },
+ 	{ .compatible = "altr,16550-FIFO128",
+ 		.data = (void *)PORT_ALTR_16550_F128, },
++	{ .compatible = "mrvl,mmp-uart",
++		.data = (void *)PORT_XSCALE, },
++	{ .compatible = "mrvl,pxa-uart",
++		.data = (void *)PORT_XSCALE, },
+ #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
+ 	{ .compatible = "ibm,qpace-nwp-serial",
+ 		.data = (void *)PORT_NWPSERIAL, },
 -- 
 2.1.0
