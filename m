@@ -1,63 +1,66 @@
-From: Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
-Subject: [PATCH v8 0/2] Add Spreadtrum SoC bindings and serial driver support
-Date: Tue, 27 Jan 2015 15:56:45 +0800
-Message-ID: <1422345407-10037-1-git-send-email-chunyan.zhang@spreadtrum.com>
-References: <sc9836-serial-v8>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 2/3] tty/serial: of_serial: add support for PXA/MMP uarts
+Date: Tue, 27 Jan 2015 07:44:19 -0500
+Message-ID: <54C78823.7050504@hurleysoftware.com>
+References: <1422334209-23125-1-git-send-email-robh@kernel.org>
+ <1422334209-23125-2-git-send-email-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <sc9836-serial-v8>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-Cc: jslaby-AlSwsSmVLrQ@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, florian.vaussard-p8DiymsW2f8@public.gmane.org, andrew-g2DYL2Zd6BY@public.gmane.org, hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, antonynpavlov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, orsonzhai-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, geng.ren-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, zhizhou.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, lanqing.liu-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, wei.qiao-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1422334209-23125-2-git-send-email-robh@kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch-set split the last version, and addressed the review comments from
-last version on serial driver code.
+Hi Rob,
 
-Changes from v7:
-* Addressed review comments from Peter:
-	- Initialized the stack local with zero in sprd_set_termios()
-	- Used dev_get_drvdata() to get sprd_uart_port
+On 01/26/2015 11:50 PM, Rob Herring wrote:
+> Add mrvl,pxa-uart and mrvl,mmp-uart compatible strings for the of_serial
+> driver. These are 8250 variants which have a port type of PORT_XSCALE.
+> 
+> There is also the serial driver pxa.c with these compatible strings
+> already. However, it can be replaced with the common 8250 driver. It has
+> some issues like it cannot coexist with the 8250 driver due to tty name
+> collision. That also means adding these compatible strings here should
+> not case a problem.
 
-Changes from v6:
-	- Setted SPRD_TIMEOUT with 256 rather than 2048
-	- Used u32 instead of uint32_t
-	- Removed inline of handle_lsr_errors which is a single call site function
-	- Removed unused parameter of sprd_tx & sprd_rx
-	- Used spin_lock_irqsave in sprd_startup() instead of spin_lock
-	- Added a check for port->sysrq in sprd_console_write()
-	- Used a global counter as a condition of calling uart_{un}register_driver
-	- Added pdev->id assignment in probe()
-	- Setted port->flags with UPF_BOOT_AUTOCONF instead of ASYNC_BOOT_AUTOCONF
+So what determines which driver is controlling the port if both
+drivers are built-in?
 
-Changes from v5:
-	- Used Spreadtrum instead of SPRD in menus
-	- Changed TTY name to 'ttyS'
-	- Moved uart_register_driver() to probe()
-	- Added spinlock as needed
-	- Removed register states saving and restoring in suspend() and resume()
+Regards,
+Peter Hurley
 
-Chunyan Zhang (2):
-  Documentation: DT: Add bindings for Spreadtrum SoC Platform
-  tty/serial: Add Spreadtrum sc9836-uart driver support
-
- Documentation/devicetree/bindings/arm/sprd.txt     |   11 +
- .../devicetree/bindings/serial/sprd-uart.txt       |    7 +
- .../devicetree/bindings/vendor-prefixes.txt        |    1 +
- drivers/tty/serial/Kconfig                         |   18 +
- drivers/tty/serial/Makefile                        |    1 +
- drivers/tty/serial/sprd_serial.c                   |  797 ++++++++++++++++++++
- include/uapi/linux/serial_core.h                   |    3 +
- 7 files changed, 838 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/sprd.txt
- create mode 100644 Documentation/devicetree/bindings/serial/sprd-uart.txt
- create mode 100644 drivers/tty/serial/sprd_serial.c
-
--- 
-1.7.9.5
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.cz>
+> Cc: linux-serial@vger.kernel.org
+> ---
+>  drivers/tty/serial/of_serial.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+> index 3194b42..fbb719c 100644
+> --- a/drivers/tty/serial/of_serial.c
+> +++ b/drivers/tty/serial/of_serial.c
+> @@ -335,6 +335,10 @@ static struct of_device_id of_platform_serial_table[] = {
+>  		.data = (void *)PORT_ALTR_16550_F64, },
+>  	{ .compatible = "altr,16550-FIFO128",
+>  		.data = (void *)PORT_ALTR_16550_F128, },
+> +	{ .compatible = "mrvl,mmp-uart",
+> +		.data = (void *)PORT_XSCALE, },
+> +	{ .compatible = "mrvl,pxa-uart",
+> +		.data = (void *)PORT_XSCALE, },
+>  #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
+>  	{ .compatible = "ibm,qpace-nwp-serial",
+>  		.data = (void *)PORT_NWPSERIAL, },
+> 
