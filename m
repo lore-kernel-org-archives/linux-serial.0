@@ -1,14 +1,14 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 2/3] tty/serial: of_serial: add support for PXA/MMP uarts
-Date: Tue, 27 Jan 2015 07:44:19 -0500
-Message-ID: <54C78823.7050504@hurleysoftware.com>
+Subject: Re: [PATCH 3/3] tty/serial: 8250_early: Add support for PXA UARTs
+Date: Tue, 27 Jan 2015 08:10:10 -0500
+Message-ID: <54C78E32.4050406@hurleysoftware.com>
 References: <1422334209-23125-1-git-send-email-robh@kernel.org>
- <1422334209-23125-2-git-send-email-robh@kernel.org>
+ <1422334209-23125-3-git-send-email-robh@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1422334209-23125-2-git-send-email-robh@kernel.org>
+In-Reply-To: <1422334209-23125-3-git-send-email-robh@kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,45 +22,64 @@ To: Rob Herring <robh@kernel.org>, linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
-
 On 01/26/2015 11:50 PM, Rob Herring wrote:
-> Add mrvl,pxa-uart and mrvl,mmp-uart compatible strings for the of_serial
-> driver. These are 8250 variants which have a port type of PORT_XSCALE.
-> 
-> There is also the serial driver pxa.c with these compatible strings
-> already. However, it can be replaced with the common 8250 driver. It has
-> some issues like it cannot coexist with the 8250 driver due to tty name
-> collision. That also means adding these compatible strings here should
-> not case a problem.
+> The PXA variant of the 8250 UART adds a UART enable bit which must not
+> be cleared. Make the earlycon support maintain this bit if it is set.
+> This implies some initialization of the UART, but we cannot
+> unconditionally set the bit as some other variants require this bit to
+> be clear for other functions.
 
-So what determines which driver is controlling the port if both
-drivers are built-in?
-
-Regards,
-Peter Hurley
+So if the bootloader doesn't enable the uart, then earlycon doesn't work?
+Or is there some other piece that is enabling the uart after earlycon setup
+(besides the driver, of course)?
 
 > Signed-off-by: Rob Herring <robh@kernel.org>
 > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > Cc: Jiri Slaby <jslaby@suse.cz>
 > Cc: linux-serial@vger.kernel.org
 > ---
->  drivers/tty/serial/of_serial.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  drivers/tty/serial/8250/8250_early.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-> index 3194b42..fbb719c 100644
-> --- a/drivers/tty/serial/of_serial.c
-> +++ b/drivers/tty/serial/of_serial.c
-> @@ -335,6 +335,10 @@ static struct of_device_id of_platform_serial_table[] = {
->  		.data = (void *)PORT_ALTR_16550_F64, },
->  	{ .compatible = "altr,16550-FIFO128",
->  		.data = (void *)PORT_ALTR_16550_F128, },
-> +	{ .compatible = "mrvl,mmp-uart",
-> +		.data = (void *)PORT_XSCALE, },
-> +	{ .compatible = "mrvl,pxa-uart",
-> +		.data = (void *)PORT_XSCALE, },
->  #ifdef CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL
->  	{ .compatible = "ibm,qpace-nwp-serial",
->  		.data = (void *)PORT_NWPSERIAL, },
+> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+> index ce2a8ab..c31a22b 100644
+> --- a/drivers/tty/serial/8250/8250_early.c
+> +++ b/drivers/tty/serial/8250/8250_early.c
+> @@ -93,10 +93,10 @@ static void __init early_serial8250_write(struct console *console,
+>  	struct uart_port *port = &early_device->port;
+>  	unsigned int ier;
+>  
+> -	/* Save the IER and disable interrupts */
+> +	/* Save the IER and disable interrupts preserving the UUE bit */
+>  	ier = serial8250_early_in(port, UART_IER);
+>  	if (ier)
+> -		serial8250_early_out(port, UART_IER, 0);
+> +		serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
+>  
+>  	uart_console_write(port, s, count, serial_putc);
+>  
+> @@ -127,9 +127,11 @@ static void __init init_port(struct earlycon_device *device)
+>  	struct uart_port *port = &device->port;
+>  	unsigned int divisor;
+>  	unsigned char c;
+> +	unsigned int ier;
+>  
+>  	serial8250_early_out(port, UART_LCR, 0x3);	/* 8n1 */
+> -	serial8250_early_out(port, UART_IER, 0);	/* no interrupt */
+> +	ier = serial8250_early_in(port, UART_IER);
+> +	serial8250_early_out(port, UART_IER, ier & UART_IER_UUE); /* no interrupt */
+
+The trailing comment seems no longer relevant; how about below?
+
+	/* Mask interrupts (preserve XScale's uart enable bit) */
+	serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
+
+OTOH, if the uart is disabled, shouldn't earlycon be disabled?
+
+Regards,
+Peter Hurley
+
+>  	serial8250_early_out(port, UART_FCR, 0);	/* no fifo */
+>  	serial8250_early_out(port, UART_MCR, 0x3);	/* DTR + RTS */
+>  
 > 
