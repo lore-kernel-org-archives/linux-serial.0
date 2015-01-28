@@ -1,50 +1,78 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] Revert "tty: Fix pty master poll() after slave closes v2"
-Date: Tue, 27 Jan 2015 16:17:54 -0800
-Message-ID: <20150128001754.GD17677@kroah.com>
-References: <1419941829-6536-1-git-send-email-peter@hurleysoftware.com>
- <54A29B0A.3060707@hurleysoftware.com>
- <20150109214106.GA7952@kroah.com>
- <54B04F97.7070200@hurleysoftware.com>
+From: Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
+Subject: [PATCH v9 1/2] Documentation: DT: Add bindings for Spreadtrum SoC Platform
+Date: Wed, 28 Jan 2015 10:47:40 +0800
+Message-ID: <1422413261-17184-2-git-send-email-chunyan.zhang@spreadtrum.com>
+References: <sc9836-serial-v9>
+ <1422413261-17184-1-git-send-email-chunyan.zhang@spreadtrum.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <54B04F97.7070200@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Francesco Ruggeri <fruggeri@aristanetworks.com>, Francesco Ruggeri <fruggeri@arista.com>
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1422413261-17184-1-git-send-email-chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, florian.vaussard-p8DiymsW2f8@public.gmane.org, andrew-g2DYL2Zd6BY@public.gmane.org, hytszk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, antonynpavlov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, orsonzhai-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, geng.ren-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, zhizhou.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, lanqing.liu-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, zhang.lyra-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, wei.qiao-lxIno14LUO0EEoCn2XhGlw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jan 09, 2015 at 05:00:55PM -0500, Peter Hurley wrote:
-> On 01/09/2015 04:41 PM, Greg Kroah-Hartman wrote:
-> > On Tue, Dec 30, 2014 at 07:31:06AM -0500, Peter Hurley wrote:
-> >> On 12/30/2014 07:17 AM, Peter Hurley wrote:
-> >>> This reverts commit c4dc304677e8d566572c4738d95c48be150c6606.
-> >>> This fix is superseded by commit 52bce7f8d4fc633c9a9d0646eef58ba6ae9a3b73,
-> >>> 'pty, n_tty: Simplify input processing on final close'.
-> >>>
-> >>> The final close now waits for input processing to complete before
-> >>> destroying the pty, so poll() does not need to special case this
-> >>> condition.
-> >>
-> >> Greg,
-> >>
-> >> As noted in this commit log, commit c4dc304677e8d566572c4738d95c48be150c6606,
-> >> 'tty: Fix pty master poll() after slave closes v2', is not required
-> >> after commit 52bce7f8d4fc633c9a9d0646eef58ba6ae9a3b73,
-> >> 'pty, n_tty: Simplify input processing on final close'
-> >>
-> >> However, 'tty: Fix pty master poll() after slave closes v2' is appropriate
-> >> for stable back to v3.12.
-> > 
-> > I don't understand, what needs to go to a stable tree and what doesn't?
-> 
-> Commit c4dc304677e8d5665 ("tty: Fix pty master poll() after slave closes v2")
-> goes to stable v3.12~v3.18, but not 3.19-rc1+
+Adds Spreadtrum's prefix "sprd" to vendor-prefixes file.
+Adds the devicetree binding documentations for Spreadtrum's sc9836-uart
+and SC9836 SoC based on the Sharkl64 Platform which is a 64-bit SoC
+Platform of Spreadtrum.
 
-It can't go into 3.18, as it already is in that kernel release :)
+Signed-off-by: Chunyan Zhang <chunyan.zhang-lxIno14LUO0EEoCn2XhGlw@public.gmane.org>
+---
+ Documentation/devicetree/bindings/arm/sprd.txt     |   11 +++++++++++
+ .../devicetree/bindings/serial/sprd-uart.txt       |    7 +++++++
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ 3 files changed, 19 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/sprd.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/sprd-uart.txt
 
-I've queued it up for 3.14 now, thanks.
+diff --git a/Documentation/devicetree/bindings/arm/sprd.txt b/Documentation/devicetree/bindings/arm/sprd.txt
+new file mode 100644
+index 0000000..31a629d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/sprd.txt
+@@ -0,0 +1,11 @@
++Spreadtrum SoC Platforms Device Tree Bindings
++----------------------------------------------------
++
++Sharkl64 is a Spreadtrum's SoC Platform which is based
++on ARM 64-bit processor.
++
++SC9836 openphone board with SC9836 SoC based on the
++Sharkl64 Platform shall have the following properties.
++
++Required root node properties:
++        - compatible = "sprd,sc9836-openphone", "sprd,sc9836";
+diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.txt b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+new file mode 100644
+index 0000000..2aff0f2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+@@ -0,0 +1,7 @@
++* Spreadtrum serial UART
++
++Required properties:
++- compatible: must be "sprd,sc9836-uart"
++- reg: offset and length of the register set for the device
++- interrupts: exactly one interrupt specifier
++- clocks: phandles to input clocks.
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index b1df0ad..0a8384f 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -153,6 +153,7 @@ snps	Synopsys, Inc.
+ solidrun	SolidRun
+ sony	Sony Corporation
+ spansion	Spansion Inc.
++sprd	Spreadtrum Communications Inc.
+ st	STMicroelectronics
+ ste	ST-Ericsson
+ stericsson	ST-Ericsson
+-- 
+1.7.9.5
 
-greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
