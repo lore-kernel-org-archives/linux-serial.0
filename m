@@ -1,41 +1,49 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH] 3.19-rc4: Fix race condition in i.MX serial port driver
-Date: Fri, 30 Jan 2015 15:25:09 -0800
-Message-ID: <20150130232509.GA21337@kroah.com>
-References: <trinity-2ff5fec6-196c-4ecc-9ec2-f1b223f0ea25-1421165228466@3capp-gmx-bs70>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 26/36] serial: 8250_jz47xx: support for Ingenic jz47xx
+ UARTs
+Date: Fri, 30 Jan 2015 15:31:05 -0800
+Message-ID: <20150130233105.GA10564@kroah.com>
+References: <1421620067-23933-1-git-send-email-paul.burton@imgtec.com>
+ <1421620881-25136-1-git-send-email-paul.burton@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-mips-bounce@linux-mips.org>
 Content-Disposition: inline
-In-Reply-To: <trinity-2ff5fec6-196c-4ecc-9ec2-f1b223f0ea25-1421165228466@3capp-gmx-bs70>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Michael Doswald <michael.doswald@gmx.net>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1421620881-25136-1-git-send-email-paul.burton@imgtec.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Paul Burton <paul.burton@imgtec.com>
+Cc: linux-mips@linux-mips.org, Lars-Peter Clausen <lars@metafoo.de>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 13, 2015 at 05:07:08PM +0100, Michael Doswald wrote:
-> Under pressure, the imx.c device driver may transfer the same data multiple
-> times. 
+On Sun, Jan 18, 2015 at 02:41:21PM -0800, Paul Burton wrote:
+> Introduce a driver suitable for use with the UARTs present in
+> Ingenic jz47xx series SoCs. These are described as being ns16550
+> compatible but aren't quite - they require the setting of an extra bit
+> in the FCR register to enable the UART module. The serial_out
+> implementation is the same as that in arch/mips/jz4740/serial.c - which
+> will shortly be removed.
 > 
-> Reason: 
-> Function imx_dma_tx checks for an active DMA transfer by calling
-> dmaengine_tx_status. The return value may indicate that no transfer is 
-> running while the dma_tx_callback function is still being executed. In 
-> this case the xmit->tail pointer may not be updated to the correct value 
-> when imx_dma_tx initiates a new DMA transfer, which will result in a DMA
-> transfer with the same base address as the previous one.
-> 
-> Patch:
-> Use existing dma_is_txing variable to guard DMA transfer initiation instead
-> of dmaengine_tx_status. Clear dma_is_txing at the end of the DMA callback
-> function therefore extending the critical section where the port lock is
-> held. Critical section extension is in line with the callback function 
-> of other drivers, e.g. serial-tegra.c (tegra_uart_tx_dma_complete).
->  
->  
-> Signed-off-by: Michael Doswald <michael.doswald@gmx.net>
+> Signed-off-by: Paul Burton <paul.burton@imgtec.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: linux-serial@vger.kernel.org
 > ---
->  drivers/tty/serial/imx.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
+>  drivers/tty/serial/8250/8250_jz47xx.c | 228 ++++++++++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig       |   8 ++
+>  drivers/tty/serial/8250/Makefile      |   1 +
+>  3 files changed, 237 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_jz47xx.c
 
-Fails to apply to my tree :(
+This patch blows up on x86 systems, breaking the build :(
+
+Sorry, I can't take it.
+
+greg k-h
