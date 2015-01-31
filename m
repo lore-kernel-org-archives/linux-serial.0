@@ -1,46 +1,62 @@
-From: Kevin Hao <haokexin@gmail.com>
-Subject: [PATCH 13/15] tty: kconfig: remove the superfluous dependency on
- PPC_OF
-Date: Sat, 31 Jan 2015 21:47:43 +0800
-Message-ID: <1422712065-9403-14-git-send-email-haokexin@gmail.com>
-References: <1422712065-9403-1-git-send-email-haokexin@gmail.com>
+From: "Michael Doswald" <michael.doswald@gmx.net>
+Subject: Re: [PATCH] 3.19-rc4: Fix race condition in i.MX serial port driver
+Date: Sat, 31 Jan 2015 15:03:29 +0100
+Message-ID: <trinity-9d19a383-9282-48e7-bcaf-2da48e937031-1422713009062@3capp-gmx-bs71>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <1422712065-9403-1-git-send-email-haokexin@gmail.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kevin Hao <haokexin@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <greg@kroah.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-SW4gdGhlIGN1cnJlbnQga2VybmVsLCB0aGUgQ09ORklHX1BQQ19PRiBpcyBhbHdheXMgJ3knIGZv
-ciB0aGUgcHBjCmFyY2guIFNvIHdlIGRvbid0IG5lZWQgdG8gY2hlY2sgaXQgd2l0aCBvdGhlciBw
-cGMgc3BlY2lmaWMgb3B0aW9ucy4KClNpZ25lZC1vZmYtYnk6IEtldmluIEhhbyA8aGFva2V4aW5A
-Z21haWwuY29tPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnIHwgNCArKy0tCiAxIGZp
-bGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnIGIvZHJpdmVycy90dHkvc2VyaWFsL0tjb25maWcK
-aW5kZXggNTkzMzJhZmM3MmU5Li4xMTdhZTI1MmQ2MjIgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5
-L3NlcmlhbC9LY29uZmlnCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnCkBAIC04NDQs
-NyArODQ0LDcgQEAgY29uZmlnIFNFUklBTF9NQ0ZfQ09OU09MRQogCiBjb25maWcgU0VSSUFMX1BN
-QUNaSUxPRwogCXRyaXN0YXRlICJNYWMgb3IgUG93ZXJNYWMgejg1YzMwIEVTQ0Mgc3VwcG9ydCIK
-LQlkZXBlbmRzIG9uIChNNjhLICYmIE1BQykgfHwgKFBQQ19PRiAmJiBQUENfUE1BQykKKwlkZXBl
-bmRzIG9uIChNNjhLICYmIE1BQykgfHwgUFBDX1BNQUMKIAlzZWxlY3QgU0VSSUFMX0NPUkUKIAlo
-ZWxwCiAJICBUaGlzIGRyaXZlciBzdXBwb3J0cyB0aGUgWmlsb2cgejg1QzMwIHNlcmlhbCBwb3J0
-cyBmb3VuZCBvbgpAQCAtMTE1Miw3ICsxMTUyLDcgQEAgY29uZmlnIFNFUklBTF9PTUFQX0NPTlNP
-TEUKIAogY29uZmlnIFNFUklBTF9PRl9QTEFURk9STV9OV1BTRVJJQUwKIAl0cmlzdGF0ZSAiTldQ
-IHNlcmlhbCBwb3J0IGRyaXZlciIKLQlkZXBlbmRzIG9uIFBQQ19PRiAmJiBQUENfRENSCisJZGVw
-ZW5kcyBvbiBQUENfRENSCiAJc2VsZWN0IFNFUklBTF9PRl9QTEFURk9STQogCXNlbGVjdCBTRVJJ
-QUxfQ09SRV9DT05TT0xFCiAJc2VsZWN0IFNFUklBTF9DT1JFCi0tIAoxLjkuMwoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTGludXhwcGMtZGV2IG1haWxp
-bmcgbGlzdApMaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpodHRwczovL2xpc3RzLm96bGFi
-cy5vcmcvbGlzdGluZm8vbGludXhwcGMtZGV2
+On 31.01.2015 00:25, Greg KH wrote:
+>> Under pressure, the imx.c device driver may transfer the same data m=
+ultiple
+>> times.=20
+>>
+>> Reason:=20
+>> Function imx_dma_tx checks for an active DMA transfer by calling
+>> dmaengine_tx_status. The return value may indicate that no transfer =
+is=20
+>> running while the dma_tx_callback function is still being executed. =
+In=20
+>> this case the xmit->tail pointer may not be updated to the correct v=
+alue=20
+>> when imx_dma_tx initiates a new DMA transfer, which will result in a=
+ DMA
+>> transfer with the same base address as the previous one.
+>>
+>> Patch:
+>> Use existing dma_is_txing variable to guard DMA transfer initiation =
+instead
+>> of dmaengine_tx_status. Clear dma_is_txing at the end of the DMA cal=
+lback
+>> function therefore extending the critical section where the port loc=
+k is
+>> held. Critical section extension is in line with the callback functi=
+on=20
+>> of other drivers, e.g. serial-tegra.c (tegra_uart_tx_dma_complete).
+>> =20
+>> =20
+>> Signed-off-by: Michael Doswald <michael.doswald@gmx.net>
+>> ---
+>>  drivers/tty/serial/imx.c | 11 ++++-------
+>>  1 file changed, 4 insertions(+), 7 deletions(-)
+>
+> Fails to apply to my tree :(
+>
+
+Hi,
+
+I'm sorry, it seems I made the mistake to create the patch against 3.19=
+-rc3 instead of rc4. I just saw that the rc4 tree already contains a pa=
+tch which fixes the exact same problem (commit 42f752b3fbcfee9c27e4f6f6=
+216e60e130ba98c8 by Dirk Behme).
+
+Thank you for notifying me.
+
+Regards,
+Michael
+=C2=A0
