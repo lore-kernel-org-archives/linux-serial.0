@@ -1,65 +1,40 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 26/36] serial: 8250_jz47xx: support for Ingenic jz47xx
- UARTs
-Date: Mon, 2 Feb 2015 08:32:32 -0800
-Message-ID: <20150202163232.GA7055@kroah.com>
-References: <1421620067-23933-1-git-send-email-paul.burton@imgtec.com>
- <1421620881-25136-1-git-send-email-paul.burton@imgtec.com>
- <20150130233105.GA10564@kroah.com>
- <54CFA5BC.2070103@imgtec.com>
+Subject: Re: [PATCH 1/2] tty: serial: 8250_core: Remove trailing whitespaces
+Date: Mon, 2 Feb 2015 10:43:12 -0800
+Message-ID: <20150202184312.GA17786@kroah.com>
+References: <3293c93689f5d8c684133a9d9952411a201609dc.1421333585.git.michal.simek@xilinx.com>
+ <20150130232246.GA20932@kroah.com>
+ <4afb6faa725646d2a6746decfb7cfdf9@BY2FFO11FD056.protection.gbl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-mips-bounce@linux-mips.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <54CFA5BC.2070103@imgtec.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
-Cc: Paul Burton <paul.burton@imgtec.com>, linux-mips@linux-mips.org, Lars-Peter Clausen <lars@metafoo.de>, linux-serial@vger.kernel.org
+In-Reply-To: <4afb6faa725646d2a6746decfb7cfdf9@BY2FFO11FD056.protection.gbl>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, Tony Lindgren <tony@atomide.com>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Ingo Molnar <mingo@elte.hu>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Feb 02, 2015 at 04:28:44PM +0000, Zubair Lutfullah Kakakhel wrote:
+On Mon, Feb 02, 2015 at 09:08:30AM +0100, Michal Simek wrote:
 > Hi Greg,
 > 
-> On 30/01/15 23:31, Greg Kroah-Hartman wrote:
-> > On Sun, Jan 18, 2015 at 02:41:21PM -0800, Paul Burton wrote:
-> >> Introduce a driver suitable for use with the UARTs present in
-> >> Ingenic jz47xx series SoCs. These are described as being ns16550
-> >> compatible but aren't quite - they require the setting of an extra bit
-> >> in the FCR register to enable the UART module. The serial_out
-> >> implementation is the same as that in arch/mips/jz4740/serial.c - which
-> >> will shortly be removed.
+> On 01/31/2015 12:22 AM, Greg Kroah-Hartman wrote:
+> > On Thu, Jan 15, 2015 at 03:55:07PM +0100, Michal Simek wrote:
+> >> No functional changes.
 > >>
-> >> Signed-off-by: Paul Burton <paul.burton@imgtec.com>
-> >> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> >> Cc: linux-serial@vger.kernel.org
+> >> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 > >> ---
-> >>  drivers/tty/serial/8250/8250_jz47xx.c | 228 ++++++++++++++++++++++++++++++++++
-> >>  drivers/tty/serial/8250/Kconfig       |   8 ++
-> >>  drivers/tty/serial/8250/Makefile      |   1 +
-> >>  3 files changed, 237 insertions(+)
-> >>  create mode 100644 drivers/tty/serial/8250/8250_jz47xx.c
 > > 
-> > This patch blows up on x86 systems, breaking the build :(
+> > I can't take gpg-signed patches, git chokes on them :(
+> > 
 > 
-> Ouch.
+> Interesting. No problem to remove this signature if needed
+> but I got today email from your system that you have applied
+> this patch https://lkml.org/lkml/2015/1/16/245
+> which also has signature too.
 > 
-> Did you compile after all the patches applied? Or after every single patch.
+> What's the difference between them?
 
-After every individual patch, like is required :)
-
-> I can't manage to reproduce the build error with all of them applied.
-
-Try it with just this one patch applied.
-
-thanks,
+No idea, sorry.
 
 greg k-h
