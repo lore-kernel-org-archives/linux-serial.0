@@ -1,77 +1,67 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 2/2] tty: serial: 8250_core: Check that port->line
- is >=0
-Date: Tue, 03 Feb 2015 10:22:44 -0500
-Message-ID: <54D0E7C4.8070308@hurleysoftware.com>
-References: <d237c6e90cbd2f106a4125816b02d0541fa4cefe.1422957699.git.michal.simek@xilinx.com> <7904178c3dfbf08191514c8436e66d711455a17c.1422957699.git.michal.simek@xilinx.com>
+From: Paul Bolle <pebolle@tiscali.nl>
+Subject: [PATCH] [linux-next] sprd_serial: compile sprd_suspend and
+ sprd_resume conditionally
+Date: Tue, 03 Feb 2015 21:05:50 +0100
+Message-ID: <1422993950.23894.16.camel@x220>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7904178c3dfbf08191514c8436e66d711455a17c.1422957699.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ingo Molnar <mingo@elte.hu>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Valentin Rothberg <valentinrothberg@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Michal,
+Building sprd_serial.o when CONFIG_PM_SLEEP is not defined triggers
+these warnings:
+    drivers/tty/serial/sprd_serial.c:755:12: warning: =E2=80=98sprd_sus=
+pend=E2=80=99 defined but not used [-Wunused-function]
+     static int sprd_suspend(struct device *dev)
+                ^
+    drivers/tty/serial/sprd_serial.c:764:12: warning: =E2=80=98sprd_res=
+ume=E2=80=99 defined but not used [-Wunused-function]
+     static int sprd_resume(struct device *dev)
+                ^
 
-On 02/03/2015 05:01 AM, Michal Simek wrote:
-> Add one more checking condition which was originally added by:
-> "tty: serial: 8250_core: use the ->line argument as a hint in
-> serial8250_find_match_or_unused()"
-> (sha1: 59b3e898ddfc81a65975043b5eb44103cc29ff6e)
-> 
-> port->line can be setup by DT driver to -1 which needs to
-> be also checked.
+Let's compile these functions only when CONFIG_PM_SLEEP is defined.
 
-What driver is initializing port->line to -1?
+Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
+---
+The only reason I looked into this driver is because it landed in
+today's linux-next (ie, next-20150203) and depends on ARCH_SPRD.
+ARCH_SPRD is not yet included in linux-next. Since there was a patch
+submitted on lkml recently to add that symbol that's not a big deal.
+(That might change if that symbol doesn't make it into v3.20-rc[123] or
+so.) But I did compile this file while looking into this issue.
 
-Drivers using of_alias_get_id() and/or the platform device id
-need to clamp port->line to a valid index before port
-registration (or in the case of 8250-type drivers before
-8250 port registration.
+Compile tested only, on x86_64, using the hacky
+    make drivers/tty/serial/sprd_serial.o
 
+way to compile this file!
 
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> ---
-> 
-> Changes in v2:
-> - Change commit message description
-> - Do not sign patches - Greg reported problem with it
-> 
-> I have similar patch to 59b3e898ddfc81a65975043b5eb44103cc29ff6e
-> in xilinx tree for a while and port->line can be -1.
-> 
-> The second part of this also should be (what other drivers do)
+ drivers/tty/serial/sprd_serial.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-What 'second part of this'?
-
-I only see one change here (and I'd rather see the 8250 core
-return NULL if port->line < 0).
-
-Regards,
-Peter Hurley
-
-
-> reading aliases via of_alias_get_id() in of_serial.c:of_platform_serial_probe()
-> which setup port.line.
-> ---
->  drivers/tty/serial/8250/8250_core.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 65e52c9109e2..aab765177763 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -3512,7 +3512,8 @@ static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *
->  
->  	/* try line number first if still available */
->  	i = port->line;
-> -	if (i < nr_uarts && serial8250_ports[i].port.type == PORT_UNKNOWN &&
-> +	if (i >= 0 && i < nr_uarts &&
-> +	    serial8250_ports[i].port.type == PORT_UNKNOWN &&
->  			serial8250_ports[i].port.iobase == 0)
->  		return &serial8250_ports[i];
->  	/*
-> 
+diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd=
+_serial.c
+index 594b63331ef4..be3ed3f4ad60 100644
+--- a/drivers/tty/serial/sprd_serial.c
++++ b/drivers/tty/serial/sprd_serial.c
+@@ -752,6 +752,7 @@ static int sprd_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+=20
++#ifdef CONFIG_PM_SLEEP
+ static int sprd_suspend(struct device *dev)
+ {
+ 	struct sprd_uart_port *sup =3D dev_get_drvdata(dev);
+@@ -769,6 +770,7 @@ static int sprd_resume(struct device *dev)
+=20
+ 	return 0;
+ }
++#endif
+=20
+ static SIMPLE_DEV_PM_OPS(sprd_pm_ops, sprd_suspend, sprd_resume);
+=20
+--=20
+1.9.3
