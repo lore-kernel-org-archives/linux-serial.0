@@ -1,67 +1,44 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: [PATCH] [linux-next] sprd_serial: compile sprd_suspend and
- sprd_resume conditionally
-Date: Tue, 03 Feb 2015 21:05:50 +0100
-Message-ID: <1422993950.23894.16.camel@x220>
+From: Zubair Lutfullah Kakakhel <Zubair.Kakakhel-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH_V2 01/34] dt: Add Ingenic Semiconductor vendor prefix
+Date: Wed, 4 Feb 2015 15:21:30 +0000
+Message-ID: <1423063323-19419-2-git-send-email-Zubair.Kakakhel@imgtec.com>
+References: <1423063323-19419-1-git-send-email-Zubair.Kakakhel@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Valentin Rothberg <valentinrothberg@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1423063323-19419-1-git-send-email-Zubair.Kakakhel-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Zubair.Kakakhel-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Building sprd_serial.o when CONFIG_PM_SLEEP is not defined triggers
-these warnings:
-    drivers/tty/serial/sprd_serial.c:755:12: warning: =E2=80=98sprd_sus=
-pend=E2=80=99 defined but not used [-Wunused-function]
-     static int sprd_suspend(struct device *dev)
-                ^
-    drivers/tty/serial/sprd_serial.c:764:12: warning: =E2=80=98sprd_res=
-ume=E2=80=99 defined but not used [-Wunused-function]
-     static int sprd_resume(struct device *dev)
-                ^
+From: Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
 
-Let's compile these functions only when CONFIG_PM_SLEEP is defined.
+Simply use 'ingenic'.
 
-Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
+Signed-off-by: Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Cc: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 ---
-The only reason I looked into this driver is because it landed in
-today's linux-next (ie, next-20150203) and depends on ARCH_SPRD.
-ARCH_SPRD is not yet included in linux-next. Since there was a patch
-submitted on lkml recently to add that symbol that's not a big deal.
-(That might change if that symbol doesn't make it into v3.20-rc[123] or
-so.) But I did compile this file while looking into this issue.
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-Compile tested only, on x86_64, using the hacky
-    make drivers/tty/serial/sprd_serial.o
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index d443279..d0ea910 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -78,6 +78,7 @@ ibm	International Business Machines (IBM)
+ idt	Integrated Device Technologies, Inc.
+ iom	Iomega Corporation
+ img	Imagination Technologies Ltd.
++ingenic	Ingenic Semiconductor
+ innolux	Innolux Corporation
+ intel	Intel Corporation
+ intercontrol	Inter Control Group
+-- 
+1.9.1
 
-way to compile this file!
-
- drivers/tty/serial/sprd_serial.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd=
-_serial.c
-index 594b63331ef4..be3ed3f4ad60 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -752,6 +752,7 @@ static int sprd_probe(struct platform_device *pdev)
- 	return ret;
- }
-=20
-+#ifdef CONFIG_PM_SLEEP
- static int sprd_suspend(struct device *dev)
- {
- 	struct sprd_uart_port *sup =3D dev_get_drvdata(dev);
-@@ -769,6 +770,7 @@ static int sprd_resume(struct device *dev)
-=20
- 	return 0;
- }
-+#endif
-=20
- static SIMPLE_DEV_PM_OPS(sprd_pm_ops, sprd_suspend, sprd_resume);
-=20
---=20
-1.9.3
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
