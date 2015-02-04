@@ -1,7 +1,7 @@
 From: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
-Subject: [PATCH_V2 06/34] MIPS: jz4740: move arch_init_irq out of arch/mips/jz4740/irq.c
-Date: Wed, 4 Feb 2015 15:21:35 +0000
-Message-ID: <1423063323-19419-7-git-send-email-Zubair.Kakakhel@imgtec.com>
+Subject: [PATCH_V2 10/34] MIPS: jz4740: remove non-DT interrupt controller init
+Date: Wed, 4 Feb 2015 15:21:39 +0000
+Message-ID: <1423063323-19419-11-git-send-email-Zubair.Kakakhel@imgtec.com>
 References: <1423063323-19419-1-git-send-email-Zubair.Kakakhel@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -22,85 +22,72 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Paul Burton <paul.burton@imgtec.com>
 
-In preparation for moving the jz4740 interrupt controller driver to
-drivers/irqchip, move arch_init_irq into setup.c such that everything
-remaining in irq.c is related to said jz4740 interrupt controller.
+The jz4740 now probes the interrupt controller using DT, so remove the
+now dead non-DT init code.
 
 Signed-off-by: Paul Burton <paul.burton@imgtec.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
- arch/mips/include/asm/mach-jz4740/irq.h | 2 ++
- arch/mips/jz4740/irq.c                  | 5 +----
- arch/mips/jz4740/setup.c                | 8 ++++++++
- 3 files changed, 11 insertions(+), 4 deletions(-)
+ arch/mips/include/asm/mach-jz4740/irq.h |  2 --
+ arch/mips/jz4740/irq.c                  | 25 +++++++------------------
+ 2 files changed, 7 insertions(+), 20 deletions(-)
 
 diff --git a/arch/mips/include/asm/mach-jz4740/irq.h b/arch/mips/include/asm/mach-jz4740/irq.h
-index df50736..5ce4302 100644
+index 5ce4302..df50736 100644
 --- a/arch/mips/include/asm/mach-jz4740/irq.h
 +++ b/arch/mips/include/asm/mach-jz4740/irq.h
-@@ -54,4 +54,6 @@
+@@ -54,6 +54,4 @@
  
  #define NR_IRQS (JZ4740_IRQ_ADC_BASE + 6)
  
-+extern void __init jz4740_intc_init(void);
-+
+-extern void __init jz4740_intc_init(void);
+-
  #endif
 diff --git a/arch/mips/jz4740/irq.c b/arch/mips/jz4740/irq.c
-index 999d64b..1b742c3 100644
+index a4f0a82..9a8bda3 100644
 --- a/arch/mips/jz4740/irq.c
 +++ b/arch/mips/jz4740/irq.c
-@@ -18,7 +18,6 @@
- #include <linux/types.h>
- #include <linux/interrupt.h>
- #include <linux/ioport.h>
--#include <linux/irqchip.h>
- #include <linux/timex.h>
- #include <linux/slab.h>
- #include <linux/delay.h>
-@@ -75,13 +74,11 @@ static struct irqaction jz4740_cascade_action = {
+@@ -77,10 +77,16 @@ static struct irqaction jz4740_cascade_action = {
  	.name = "JZ4740 cascade interrupt",
  };
  
--void __init arch_init_irq(void)
-+void __init jz4740_intc_init(void)
+-static void __init __jz4740_intc_init(int parent_irq)
++static int __init jz4740_intc_of_init(struct device_node *node,
++	struct device_node *parent)
  {
  	struct irq_chip_generic *gc;
  	struct irq_chip_type *ct;
++	int parent_irq;
++
++	parent_irq = irq_of_parse_and_map(node, 0);
++	if (!parent_irq)
++		return -EINVAL;
  
--	irqchip_init();
--
  	jz_intc_base = ioremap(JZ4740_INTC_BASE_ADDR, 0x14);
  
- 	/* Mask all irqs */
-diff --git a/arch/mips/jz4740/setup.c b/arch/mips/jz4740/setup.c
-index d6bb7a3..4808730 100644
---- a/arch/mips/jz4740/setup.c
-+++ b/arch/mips/jz4740/setup.c
-@@ -16,6 +16,7 @@
+@@ -105,23 +111,6 @@ static void __init __jz4740_intc_init(int parent_irq)
+ 	irq_setup_generic_chip(gc, IRQ_MSK(32), 0, 0, IRQ_NOPROBE | IRQ_LEVEL);
  
- #include <linux/init.h>
- #include <linux/io.h>
-+#include <linux/irqchip.h>
- #include <linux/kernel.h>
- #include <linux/of_fdt.h>
- #include <linux/of_platform.h>
-@@ -24,6 +25,7 @@
- #include <asm/prom.h>
- 
- #include <asm/mach-jz4740/base.h>
-+#include <asm/mach-jz4740/irq.h>
- 
- #include "reset.h"
- 
-@@ -78,3 +80,9 @@ const char *get_system_type(void)
- {
- 	return "JZ4740";
+ 	setup_irq(parent_irq, &jz4740_cascade_action);
+-}
+-
+-void __init jz4740_intc_init(void)
+-{
+-	__jz4740_intc_init(2);
+-}
+-
+-static int __init jz4740_intc_of_init(struct device_node *node,
+-	struct device_node *parent)
+-{
+-	int parent_irq;
+-
+-	parent_irq = irq_of_parse_and_map(node, 0);
+-	if (!parent_irq)
+-		return -EINVAL;
+-
+-	__jz4740_intc_init(parent_irq);
+ 	return 0;
  }
-+
-+void __init arch_init_irq(void)
-+{
-+	irqchip_init();
-+	jz4740_intc_init();
-+}
+ IRQCHIP_DECLARE(jz4740_intc, "ingenic,jz4740-intc", jz4740_intc_of_init);
 -- 
 1.9.1
