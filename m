@@ -1,7 +1,7 @@
 From: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
-Subject: [PATCH_V2 13/34] MIPS: jz4740: replace use of jz4740_clock_bdata
-Date: Wed, 4 Feb 2015 15:21:42 +0000
-Message-ID: <1423063323-19419-14-git-send-email-Zubair.Kakakhel@imgtec.com>
+Subject: [PATCH_V2 22/34] MIPS: jz4740: support >32 interrupts
+Date: Wed, 4 Feb 2015 15:21:51 +0000
+Message-ID: <1423063323-19419-23-git-send-email-Zubair.Kakakhel@imgtec.com>
 References: <1423063323-19419-1-git-send-email-Zubair.Kakakhel@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -22,122 +22,127 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Paul Burton <paul.burton@imgtec.com>
 
-Replace uses of the jz4740_clock_bdata struct with calls to clk_get_rate
-for the appropriate clock. This is in preparation for migrating the
-clocks towards common clock framework & devicetree.
+On later jz47xx series SoCs the interrupt controller supports more than
+32 interrupts, which it does by duplicating the registers at intervals
+of 0x20 bytes within its address space. Add support for an arbitrary
+number of interrupts using multiple generic chips, and provide the
+number of chips to register from the SoC-specific probe function.
 
 Signed-off-by: Paul Burton <paul.burton@imgtec.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
- arch/mips/jz4740/platform.c | 11 ++++++++++-
- arch/mips/jz4740/reset.c    | 13 +++++++++++--
- arch/mips/jz4740/time.c     |  9 ++++++++-
- 3 files changed, 29 insertions(+), 4 deletions(-)
+ arch/mips/jz4740/irq.c | 58 ++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 37 insertions(+), 21 deletions(-)
 
-diff --git a/arch/mips/jz4740/platform.c b/arch/mips/jz4740/platform.c
-index 0b12f27..2a5c7c7 100644
---- a/arch/mips/jz4740/platform.c
-+++ b/arch/mips/jz4740/platform.c
-@@ -13,6 +13,7 @@
-  *
-  */
+diff --git a/arch/mips/jz4740/irq.c b/arch/mips/jz4740/irq.c
+index a620b23..3e53a32 100644
+--- a/arch/mips/jz4740/irq.c
++++ b/arch/mips/jz4740/irq.c
+@@ -33,21 +33,27 @@
+ #include "../../drivers/irqchip/irqchip.h"
  
-+#include <linux/clk.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/platform_device.h>
-@@ -308,9 +309,17 @@ static struct platform_device jz4740_uart_device = {
- void jz4740_serial_device_register(void)
+ static void __iomem *jz_intc_base;
++static unsigned jz_num_chips;
+ 
+ #define JZ_REG_INTC_STATUS	0x00
+ #define JZ_REG_INTC_MASK	0x04
+ #define JZ_REG_INTC_SET_MASK	0x08
+ #define JZ_REG_INTC_CLEAR_MASK	0x0c
+ #define JZ_REG_INTC_PENDING	0x10
++#define CHIP_SIZE		0x20
+ 
+ static irqreturn_t jz4740_cascade(int irq, void *data)
  {
- 	struct plat_serial8250_port *p;
-+	struct clk *ext_clk;
-+	unsigned long ext_rate;
-+
-+	ext_clk = clk_get(NULL, "ext");
-+	if (IS_ERR(ext_clk))
-+		panic("unable to get ext clock");
-+	ext_rate = clk_get_rate(ext_clk);
-+	clk_put(ext_clk);
+ 	uint32_t irq_reg;
++	unsigned i;
  
- 	for (p = jz4740_uart_data; p->flags != 0; ++p)
--		p->uartclk = jz4740_clock_bdata.ext_rate;
-+		p->uartclk = ext_rate;
+-	irq_reg = readl(jz_intc_base + JZ_REG_INTC_PENDING);
++	for (i = 0; i < jz_num_chips; i++) {
++		irq_reg = readl(jz_intc_base + (i * CHIP_SIZE) + JZ_REG_INTC_PENDING);
++		if (!irq_reg)
++			continue;
  
- 	platform_device_register(&jz4740_uart_device);
+-	if (irq_reg)
+-		generic_handle_irq(__fls(irq_reg) + JZ4740_IRQ_BASE);
++		generic_handle_irq(__fls(irq_reg) + (i * 32) + JZ4740_IRQ_BASE);
++	}
+ 
+ 	return IRQ_HANDLED;
  }
-diff --git a/arch/mips/jz4740/reset.c b/arch/mips/jz4740/reset.c
-index b6c6343..954e669 100644
---- a/arch/mips/jz4740/reset.c
-+++ b/arch/mips/jz4740/reset.c
-@@ -12,6 +12,7 @@
-  *
-  */
+@@ -77,39 +83,43 @@ static struct irqaction jz4740_cascade_action = {
+ 	.name = "JZ4740 cascade interrupt",
+ };
  
-+#include <linux/clk.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
- #include <linux/pm.h>
-@@ -79,12 +80,20 @@ static void jz4740_power_off(void)
- 	void __iomem *rtc_base = ioremap(JZ4740_RTC_BASE_ADDR, 0x38);
- 	unsigned long wakeup_filter_ticks;
- 	unsigned long reset_counter_ticks;
-+	struct clk *rtc_clk;
-+	unsigned long rtc_rate;
+-static int __init jz4740_intc_of_init(struct device_node *node,
+-	struct device_node *parent)
++static int __init jz47xx_intc_of_init(struct device_node *node, unsigned num_chips)
+ {
+ 	struct irq_chip_generic *gc;
+ 	struct irq_chip_type *ct;
+ 	struct irq_domain *domain;
+ 	int parent_irq;
++	unsigned i;
+ 
+ 	parent_irq = irq_of_parse_and_map(node, 0);
+ 	if (!parent_irq)
+ 		return -EINVAL;
+ 
+-	jz_intc_base = ioremap(JZ4740_INTC_BASE_ADDR, 0x14);
++	jz_num_chips = num_chips;
++	jz_intc_base = ioremap(JZ4740_INTC_BASE_ADDR,
++			       ((num_chips - 1) * CHIP_SIZE) + 0x14);
+ 
+-	/* Mask all irqs */
+-	writel(0xffffffff, jz_intc_base + JZ_REG_INTC_SET_MASK);
++	for (i = 0; i < num_chips; i++) {
++		/* Mask all irqs */
++		writel(0xffffffff, jz_intc_base + (i * CHIP_SIZE) + JZ_REG_INTC_SET_MASK);
+ 
+-	gc = irq_alloc_generic_chip("INTC", 1, JZ4740_IRQ_BASE, jz_intc_base,
+-		handle_level_irq);
++		gc = irq_alloc_generic_chip("INTC", 1, JZ4740_IRQ_BASE + (i * 32),
++					    jz_intc_base + (i * CHIP_SIZE), handle_level_irq);
+ 
+-	gc->wake_enabled = IRQ_MSK(32);
++		gc->wake_enabled = IRQ_MSK(32);
+ 
+-	ct = gc->chip_types;
+-	ct->regs.enable = JZ_REG_INTC_CLEAR_MASK;
+-	ct->regs.disable = JZ_REG_INTC_SET_MASK;
+-	ct->chip.irq_unmask = irq_gc_unmask_enable_reg;
+-	ct->chip.irq_mask = irq_gc_mask_disable_reg;
+-	ct->chip.irq_mask_ack = irq_gc_mask_disable_reg;
+-	ct->chip.irq_set_wake = irq_gc_set_wake;
+-	ct->chip.irq_suspend = jz4740_irq_suspend;
+-	ct->chip.irq_resume = jz4740_irq_resume;
++		ct = gc->chip_types;
++		ct->regs.enable = JZ_REG_INTC_CLEAR_MASK;
++		ct->regs.disable = JZ_REG_INTC_SET_MASK;
++		ct->chip.irq_unmask = irq_gc_unmask_enable_reg;
++		ct->chip.irq_mask = irq_gc_mask_disable_reg;
++		ct->chip.irq_mask_ack = irq_gc_mask_disable_reg;
++		ct->chip.irq_set_wake = irq_gc_set_wake;
++		ct->chip.irq_suspend = jz4740_irq_suspend;
++		ct->chip.irq_resume = jz4740_irq_resume;
+ 
+-	irq_setup_generic_chip(gc, IRQ_MSK(32), 0, 0, IRQ_NOPROBE | IRQ_LEVEL);
++		irq_setup_generic_chip(gc, IRQ_MSK(32), 0, 0, IRQ_NOPROBE | IRQ_LEVEL);
++	}
+ 
+ 	domain = irq_domain_add_legacy(node, num_chips * 32, JZ4740_IRQ_BASE, 0,
+ 				       &irq_domain_simple_ops, NULL);
+@@ -119,6 +129,12 @@ static int __init jz4740_intc_of_init(struct device_node *node,
+ 	setup_irq(parent_irq, &jz4740_cascade_action);
+ 	return 0;
+ }
 +
-+	rtc_clk = clk_get(NULL, "rtc");
-+	if (IS_ERR(rtc_clk))
-+		panic("unable to get RTC clock");
-+	rtc_rate = clk_get_rate(rtc_clk);
-+	clk_put(rtc_clk);
++static int __init jz4740_intc_of_init(struct device_node *node,
++	struct device_node *parent)
++{
++	return jz47xx_intc_of_init(node, 1);
++}
+ IRQCHIP_DECLARE(jz4740_intc, "ingenic,jz4740-intc", jz4740_intc_of_init);
  
- 	/*
- 	 * Set minimum wakeup pin assertion time: 100 ms.
- 	 * Range is 0 to 2 sec if RTC is clocked at 32 kHz.
- 	 */
--	wakeup_filter_ticks = (100 * jz4740_clock_bdata.rtc_rate) / 1000;
-+	wakeup_filter_ticks = (100 * rtc_rate) / 1000;
- 	if (wakeup_filter_ticks < JZ_RTC_WAKEUP_FILTER_MASK)
- 		wakeup_filter_ticks &= JZ_RTC_WAKEUP_FILTER_MASK;
- 	else
-@@ -96,7 +105,7 @@ static void jz4740_power_off(void)
- 	 * Set reset pin low-level assertion time after wakeup: 60 ms.
- 	 * Range is 0 to 125 ms if RTC is clocked at 32 kHz.
- 	 */
--	reset_counter_ticks = (60 * jz4740_clock_bdata.rtc_rate) / 1000;
-+	reset_counter_ticks = (60 * rtc_rate) / 1000;
- 	if (reset_counter_ticks < JZ_RTC_RESET_COUNTER_MASK)
- 		reset_counter_ticks &= JZ_RTC_RESET_COUNTER_MASK;
- 	else
-diff --git a/arch/mips/jz4740/time.c b/arch/mips/jz4740/time.c
-index 9424344..bff2ac9 100644
---- a/arch/mips/jz4740/time.c
-+++ b/arch/mips/jz4740/time.c
-@@ -13,6 +13,7 @@
-  *
-  */
- 
-+#include <linux/clk.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/time.h>
-@@ -109,11 +110,17 @@ void __init plat_time_init(void)
- 	int ret;
- 	uint32_t clk_rate;
- 	uint16_t ctrl;
-+	struct clk *ext_clk;
- 
- 	jz4740_clock_init();
- 	jz4740_timer_init();
- 
--	clk_rate = jz4740_clock_bdata.ext_rate >> 4;
-+	ext_clk = clk_get(NULL, "ext");
-+	if (IS_ERR(ext_clk))
-+		panic("unable to get ext clock");
-+	clk_rate = clk_get_rate(ext_clk) >> 4;
-+	clk_put(ext_clk);
-+
- 	jz4740_jiffies_per_tick = DIV_ROUND_CLOSEST(clk_rate, HZ);
- 
- 	clockevent_set_clock(&jz4740_clockevent, clk_rate);
+ #ifdef CONFIG_DEBUG_FS
 -- 
 1.9.1
