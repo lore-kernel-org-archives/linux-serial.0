@@ -1,14 +1,14 @@
 From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH_V2 04/34] MIPS: jz4740: probe CPU interrupt controller
- via DT
-Date: Wed, 04 Feb 2015 20:05:18 +0300
-Message-ID: <54D2514E.3020409@cogentembedded.com>
-References: <1423063323-19419-1-git-send-email-Zubair.Kakakhel@imgtec.com> <1423063323-19419-5-git-send-email-Zubair.Kakakhel@imgtec.com>
+Subject: Re: [PATCH_V2 07/34] dt: interrupt-controller: Add ingenic,jz4740-intc
+ binding doc
+Date: Wed, 04 Feb 2015 20:07:38 +0300
+Message-ID: <54D251DA.1020807@cogentembedded.com>
+References: <1423063323-19419-1-git-send-email-Zubair.Kakakhel@imgtec.com> <1423063323-19419-8-git-send-email-Zubair.Kakakhel@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1423063323-19419-5-git-send-email-Zubair.Kakakhel@imgtec.com>
+In-Reply-To: <1423063323-19419-8-git-send-email-Zubair.Kakakhel@imgtec.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>, linux-mips@linux-mips.org
 Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, mturquette@linaro.org, sboyd@codeaurora.org, ralf@linux-mips.org, jslaby@suse.cz, tglx@linutronix.de, jason@lakedaemon.net, lars@metafoo.de, paul.burton@imgtec.com
@@ -20,37 +20,53 @@ On 02/04/2015 06:21 PM, Zubair Lutfullah Kakakhel wrote:
 
 > From: Paul Burton <paul.burton@imgtec.com>
 
-> Use the generic irqchip_init function to probe irqchip drivers using DT,
-> and add the appropriate node to the jz4740 devicetree in place of the
-> call to mips_cpu_irq_init.
+> Add binding documentation for the Ingenic jz4740 interrupt controller.
 
 > Signed-off-by: Paul Burton <paul.burton@imgtec.com>
 > Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: devicetree@vger.kernel.org
 > ---
->   arch/mips/boot/dts/jz4740.dtsi | 7 +++++++
->   arch/mips/jz4740/irq.c         | 4 ++--
->   2 files changed, 9 insertions(+), 2 deletions(-)
+>   .../interrupt-controller/ingenic,jz4740-intc.txt   | 26 ++++++++++++++++++++++
+>   1 file changed, 26 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/interrupt-controller/ingenic,jz4740-intc.txt
 
-> diff --git a/arch/mips/boot/dts/jz4740.dtsi b/arch/mips/boot/dts/jz4740.dtsi
-> index c538691f..2d64765c 100644
-> --- a/arch/mips/boot/dts/jz4740.dtsi
-> +++ b/arch/mips/boot/dts/jz4740.dtsi
-> @@ -2,4 +2,11 @@
->   	#address-cells = <1>;
->   	#size-cells = <1>;
->   	compatible = "ingenic,jz4740";
+> diff --git a/Documentation/devicetree/bindings/interrupt-controller/ingenic,jz4740-intc.txt b/Documentation/devicetree/bindings/interrupt-controller/ingenic,jz4740-intc.txt
+> new file mode 100644
+> index 0000000..5e7f4bb
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/interrupt-controller/ingenic,jz4740-intc.txt
+> @@ -0,0 +1,26 @@
+> +Ingenic jz4740 SoC Interrupt Controller
+
+    JZ4740?
+
 > +
-> +	cpuintc: cpuintc@0 {
+> +Required properties:
+> +
+> +- compatible : should be "ingenic,jz4740-intc" or "ingenic,jz4780-intc"
+> +- reg : Specifies base physical address and size of the registers.
+> +- interrupt-controller : Identifies the node as an interrupt controller
+> +- #interrupt-cells : Specifies the number of cells needed to encode an
+> +  interrupt source. The value shall be 1.
+> +- interrupts - Specifies the CPU interrupt the controller is connected to.
+> +
+> +Optional properties:
+> +- interrupt-parent: phandle of the CPU interrupt controller.
+> +
+> +Example:
+> +
+> +intc: intc@10001000 {
 
-    Please name it "interrupt-controller". And why there's <unit-address> if 
-there's no "reg" prop?
+    Name it "interrupt-controller@10001000", please.
 
-> +		#address-cells = <0>;
-> +		#interrupt-cells = <1>;
-> +		interrupt-controller;
-> +		compatible = "mti,cpu-interrupt-controller";
-> +	};
->   };
-[...]
+> +	compatible = "ingenic,jz4740-intc";
+> +	reg = <0x10001000 0x14>;
+> +
+> +	interrupt-controller;
+> +	#interrupt-cells = <1>;
+> +
+> +	interrupt-parent = <&cpuintc>;
+> +	interrupts = <2>;
+> +};
 
 WBR, Sergei
