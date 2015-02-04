@@ -1,112 +1,31 @@
-From: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
-Subject: [PATCH_V2 18/34] MIPS: clk: move jz4740 UDC auto suspend functions to jz4740-cgu
-Date: Wed, 4 Feb 2015 15:21:47 +0000
-Message-ID: <1423063323-19419-19-git-send-email-Zubair.Kakakhel@imgtec.com>
-References: <1423063323-19419-1-git-send-email-Zubair.Kakakhel@imgtec.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH_V2 11/34] MIPS: jz4740: register an irq_domain for the interrupt controller
+Date: Wed, 04 Feb 2015 17:19:01 +0100
+Message-ID: <27674856.cQPkonRYdW@wuerfel>
+References: <1423063323-19419-1-git-send-email-Zubair.Kakakhel@imgtec.com> <1423063323-19419-12-git-send-email-Zubair.Kakakhel@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <1423063323-19419-1-git-send-email-Zubair.Kakakhel@imgtec.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: linux-mips@linux-mips.org
-Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Zubair.Kakakhel@imgtec.com, gregkh@linuxfoundation.org, mturquette@linaro.org, sboyd@codeaurora.org, ralf@linux-mips.org, jslaby@suse.cz, tglx@linutronix.de, jason@lakedaemon.net, lars@metafoo.de, paul.burton@imgtec.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1423063323-19419-12-git-send-email-Zubair.Kakakhel-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Zubair Lutfullah Kakakhel <Zubair.Kakakhel-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Paul Burton <paul.burton@imgtec.com>
+On Wednesday 04 February 2015 15:21:40 Zubair Lutfullah Kakakhel wrote:
+> +       domain = irq_domain_add_legacy(node, num_chips * 32, JZ4740_IRQ_BASE, 0,
+> +                                      &irq_domain_simple_ops, NULL);
+> +       if (!domain)
+> +               pr_warn("unable to register IRQ domain\n");
+> +
+>         setup_irq(parent_irq, &jz4740_cascade_action);
 
-The jz4740-cgu driver already has access to the CGU, so it makes sense
-to move the few remaining accesses to the CGU from arch/mips/jz4740
-there too. Move the jz4740_clock_udc_{dis,en}able_auto_suspend functions
-there for such consistency.
+Can you use the linear domain instead, or do you still require devices
+that are hardcoded in the platform code rather than DT?
 
-Signed-off-by: Paul Burton <paul.burton@imgtec.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Mike Turquette <mturquette@linaro.org>
----
- arch/mips/jz4740/clock.c        | 13 -------------
- drivers/clk/jz47xx/jz4740-cgu.c | 20 ++++++++++++++++++++
- 2 files changed, 20 insertions(+), 13 deletions(-)
-
-diff --git a/arch/mips/jz4740/clock.c b/arch/mips/jz4740/clock.c
-index 90b44d7..2a10829 100644
---- a/arch/mips/jz4740/clock.c
-+++ b/arch/mips/jz4740/clock.c
-@@ -33,7 +33,6 @@
- 
- #define JZ_CLOCK_GATE_UART0	BIT(0)
- #define JZ_CLOCK_GATE_TCU	BIT(1)
--#define JZ_CLOCK_GATE_UDC	BIT(11)
- #define JZ_CLOCK_GATE_DMAC	BIT(12)
- 
- #define JZ_CLOCK_PLL_STABLE		BIT(10)
-@@ -64,18 +63,6 @@ static void jz_clk_reg_clear_bits(int reg, uint32_t mask)
- 	writel(val, jz_clock_base + reg);
- }
- 
--void jz4740_clock_udc_disable_auto_suspend(void)
--{
--	jz_clk_reg_clear_bits(JZ_REG_CLOCK_GATE, JZ_CLOCK_GATE_UDC);
--}
--EXPORT_SYMBOL_GPL(jz4740_clock_udc_disable_auto_suspend);
--
--void jz4740_clock_udc_enable_auto_suspend(void)
--{
--	jz_clk_reg_set_bits(JZ_REG_CLOCK_GATE, JZ_CLOCK_GATE_UDC);
--}
--EXPORT_SYMBOL_GPL(jz4740_clock_udc_enable_auto_suspend);
--
- void jz4740_clock_suspend(void)
- {
- 	jz_clk_reg_set_bits(JZ_REG_CLOCK_GATE,
-diff --git a/drivers/clk/jz47xx/jz4740-cgu.c b/drivers/clk/jz47xx/jz4740-cgu.c
-index ef559e7..46b6c1a 100644
---- a/drivers/clk/jz47xx/jz4740-cgu.c
-+++ b/drivers/clk/jz47xx/jz4740-cgu.c
-@@ -27,6 +27,7 @@
- #define CGU_REG_CPCCR		0x00
- #define CGU_REG_LCR		0x04
- #define CGU_REG_CPPCR		0x10
-+#define CGU_REG_CLKGR		0x20
- #define CGU_REG_I2SCDR		0x60
- #define CGU_REG_LPCDR		0x64
- #define CGU_REG_MSCCDR		0x68
-@@ -47,6 +48,9 @@
- /* bits within the LCR register */
- #define LCR_SLEEP		(1 << 0)
- 
-+/* bits within the CLKGR register */
-+#define CLKGR_UDC		(1 << 11)
-+
- static struct jz47xx_cgu *cgu;
- 
- static const s8 pll_od_encoding[4] = {
-@@ -239,3 +243,19 @@ void jz4740_clock_set_wait_mode(enum jz4740_wait_mode mode)
- 
- 	writel(lcr, cgu->base + CGU_REG_LCR);
- }
-+
-+void jz4740_clock_udc_disable_auto_suspend(void)
-+{
-+	uint32_t clkgr = readl(cgu->base + CGU_REG_CLKGR);
-+	clkgr &= ~CLKGR_UDC;
-+	writel(clkgr, cgu->base + CGU_REG_CLKGR);
-+}
-+EXPORT_SYMBOL_GPL(jz4740_clock_udc_disable_auto_suspend);
-+
-+void jz4740_clock_udc_enable_auto_suspend(void)
-+{
-+	uint32_t clkgr = readl(cgu->base + CGU_REG_CLKGR);
-+	clkgr |= CLKGR_UDC;
-+	writel(clkgr, cgu->base + CGU_REG_CLKGR);
-+}
-+EXPORT_SYMBOL_GPL(jz4740_clock_udc_enable_auto_suspend);
--- 
-1.9.1
+	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
