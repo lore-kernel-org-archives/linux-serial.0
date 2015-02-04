@@ -1,62 +1,66 @@
-From: Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>
-Subject: Re: [PATCH_V2 33/34] MIPS: initial MIPS Creator CI20 board support
-Date: Wed, 04 Feb 2015 21:56:46 +0100
-Message-ID: <1423083406.27378.5.camel@x220>
+From: Paul Bolle <pebolle@tiscali.nl>
+Subject: Re: [PATCH_V2 25/34] serial: 8250_jz47xx: support for Ingenic
+ jz47xx UARTs
+Date: Wed, 04 Feb 2015 22:02:57 +0100
+Message-ID: <1423083777.27378.8.camel@x220>
 References: <1423063323-19419-1-git-send-email-Zubair.Kakakhel@imgtec.com>
-	 <1423063323-19419-34-git-send-email-Zubair.Kakakhel@imgtec.com>
+	 <1423063323-19419-26-git-send-email-Zubair.Kakakhel@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1423063323-19419-34-git-send-email-Zubair.Kakakhel-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Zubair Lutfullah Kakakhel <Zubair.Kakakhel-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1423063323-19419-26-git-send-email-Zubair.Kakakhel@imgtec.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
+Cc: linux-mips@linux-mips.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, mturquette@linaro.org, sboyd@codeaurora.org, ralf@linux-mips.org, jslaby@suse.cz, tglx@linutronix.de, jason@lakedaemon.net, lars@metafoo.de, paul.burton@imgtec.com
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2015-02-04 at 15:22 +0000, Zubair Lutfullah Kakakhel wrote:
-> From: Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+On Wed, 2015-02-04 at 15:21 +0000, Zubair Lutfullah Kakakhel wrote:
+> From: Paul Burton <paul.burton@imgtec.com>
 > 
-> Add a device tree for the Ingenic jz4780 based MIPS Creator CI20 board.
-> Note that this is unselectable via Kconfig until the jz4780 SoC is made
-> selectable in a later commit.
+> Introduce a driver suitable for use with the UARTs present in
+> Ingenic jz47xx series SoCs. These are described as being ns16550
+> compatible but aren't quite - they require the setting of an extra bit
+> in the FCR register to enable the UART module. The serial_out
+> implementation is the same as that in arch/mips/jz4740/serial.c - which
+> will shortly be removed.
 > 
-> Signed-off-by: Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
-> Cc: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>
+> Signed-off-by: Paul Burton <paul.burton@imgtec.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: linux-serial@vger.kernel.org
+> 
 > ---
->  arch/mips/boot/dts/Makefile      |   1 +
->  arch/mips/boot/dts/ci20.dts      |  21 +++++++
->  arch/mips/configs/ci20_defconfig | 127 +++++++++++++++++++++++++++++++++++++++
->  arch/mips/jz4740/Kconfig         |  10 +++
->  4 files changed, 159 insertions(+)
->  create mode 100644 arch/mips/boot/dts/ci20.dts
->  create mode 100644 arch/mips/configs/ci20_defconfig
+> V2 changes
+> Removed FSF address
+> Added select SERIAL_CORE_CONSOLE to fix a build error
+> ---
+>  drivers/tty/serial/8250/8250_jz47xx.c | 225 ++++++++++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig       |   9 ++
+>  drivers/tty/serial/8250/Makefile      |   1 +
+>  3 files changed, 235 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_jz47xx.c
+> 
 >[...]
-> diff --git a/arch/mips/jz4740/Kconfig b/arch/mips/jz4740/Kconfig
-> index 4689030..72ac174 100644
-> --- a/arch/mips/jz4740/Kconfig
-> +++ b/arch/mips/jz4740/Kconfig
-> @@ -7,3 +7,13 @@ config JZ4740_QI_LB60
->  	bool "Qi Hardware Ben NanoNote"
->  
->  endchoice
+> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+> index 0fcbcd2..ebb298e 100644
+> --- a/drivers/tty/serial/8250/Kconfig
+> +++ b/drivers/tty/serial/8250/Kconfig
+> @@ -322,3 +322,12 @@ config SERIAL_8250_MT6577
+>  	help
+>  	  If you have a Mediatek based board and want to use the
+>  	  serial port, say Y to this option. If unsure, say N.
 > +
-> +choice
-> +	prompt "Machine type"
-> +	depends on MACH_JZ4780
-> +	default JZ4780_CI20
-> +
-> +config JZ4780_CI20
-> +	bool "MIPS Creator CI20"
-> +
-> +endchoice
+> +config SERIAL_8250_JZ47XX
+> +	tristate "Support for Ingenic jz47xx series serial ports"
+> +	depends on SERIAL_8250
+> +	select SERIAL_EARLYCON
+> +	select SERIAL_CORE_CONSOLE
+> +	help
+> +	  If you have a system using an Ingenic jz47xx series SoC and wish to
+> +	  make use of its UARTs, say Y to this option. If unsure, say N.
 
-This adds a choice with a single entry. What's the point?
+Nit: should people never say M?
 
 
 Paul Bolle
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
