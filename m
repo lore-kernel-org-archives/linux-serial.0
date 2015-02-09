@@ -1,39 +1,65 @@
-From: Nicholas Mc Guire <hofrat@osadl.org>
-Subject: [PATCH] tty: max3100: use msecs_to_jiffies for time conversion
-Date: Mon,  9 Feb 2015 09:41:49 -0500
-Message-ID: <1423492909-24725-1-git-send-email-hofrat@osadl.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 03/16] tty: serial: 8250_core: read only RX if there is
+ something in the FIFO
+Date: Mon, 09 Feb 2015 18:34:51 -0500
+Message-ID: <54D9441B.7070403@hurleysoftware.com>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de> <1410377411-26656-4-git-send-email-bigeasy@linutronix.de> <54D8B772.1010405@freebox.fr>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <54D8B772.1010405@freebox.fr>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Nicholas Mc Guire <hofrat@osadl.org>
+To: Nicolas Schichan <nschichan@freebox.fr>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org
+Cc: tony@atomide.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-This is only an API consolidation and should make things more readable
-it replaces var * HZ / 1000 by msecs_to_jiffies(var).
+Hi Nicolas,
 
-Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
----
+Thanks for the report.
 
-Patch was only compile tested with x86_64_defconfig + CONFIG_SPI=y
-CONFIG_SERIAL_MAX3100=m
+On 02/09/2015 08:34 AM, Nicolas Schichan wrote:
+> On 09/10/2014 09:29 PM, Sebastian Andrzej Siewior wrote:
+>> The serial8250_do_startup() function unconditionally clears the
+>> interrupts and for that it reads from the RX-FIFO without checking if
+>> there is a byte in the FIFO or not. This works fine on OMAP4+ HW like
+>> AM335x or DRA7.
+>> OMAP3630 ES1.1 (which means probably all OMAP3 and earlier) does not like
+>> this:
+> 
+> Hello,
+> 
+> Sorry to wake up an old thread, but I'm affraid that this patch causes
+> problems on Marvell 88f6282 (Kirkwood).
+> 
+> When a caracter is received on the UART while the kernel is printing
+> the boot messages, as soon as the kernel configures the UART for
+> receiving (after root filesystem mount), it gets stuck printing the
+> following message repeatedly:
+> 
+> serial8250: too much work for irq29
+> 
+> Once stuck, the reception of another character allows the boot process
+> to finish.
+> 
+> From what I can gather, when we hit that, the UART_IIR_NO_INT is 0 (so the
+> interrupt is raised), but the UART_LSR_DR bit is 0 as well so the UART_RX
+> register is never read to clear the interrupt.
 
-Patch is against 3.19.0-rc7 (localversion-next is -next-20150209)
+The "too much work" message means serial8250_handle_irq() is returning 0,
+ie., not handled. Which in turn means IIR indicates no interrupt is pending
+(UART_IIR_NO_INT == 1).
 
- drivers/tty/serial/max3100.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Can you log the register values for LSR and IIR at both patch locations
+in serial8250_do_startup()?
 
-diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index 79f9a9e..0773772 100644
---- a/drivers/tty/serial/max3100.c
-+++ b/drivers/tty/serial/max3100.c
-@@ -782,7 +782,7 @@ static int max3100_probe(struct spi_device *spi)
- 	pdata = dev_get_platdata(&spi->dev);
- 	max3100s[i]->crystal = pdata->crystal;
- 	max3100s[i]->loopback = pdata->loopback;
--	max3100s[i]->poll_time = pdata->poll_time * HZ / 1000;
-+	max3100s[i]->poll_time = msecs_to_jiffies(pdata->poll_time);
- 	if (pdata->poll_time > 0 && max3100s[i]->poll_time == 0)
- 		max3100s[i]->poll_time = 1;
- 	max3100s[i]->max3100_hw_suspend = pdata->max3100_hw_suspend;
--- 
-1.7.10.4
+(I can get you a debug patch, if necessary. Let me know)
+
+Regards,
+Peter Hurley
+
+> We are using the second UART multiplexed on mpps 15 and 16.
+> 
+> Reverting this particular patch fixes the issue.
+> 
+> We are seing the problem on a 3.18 kernel.
