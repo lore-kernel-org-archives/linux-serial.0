@@ -1,63 +1,70 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 03/16] tty: serial: 8250_core: read only RX if there is
- something in the FIFO
-Date: Thu, 12 Feb 2015 21:34:37 +0100
-Message-ID: <54DD0E5D.8070707@linutronix.de>
-References: <1410377411-26656-4-git-send-email-bigeasy@linutronix.de> <54D8B772.1010405@freebox.fr> <54D9441B.7070403@hurleysoftware.com> <54D9F3C7.5000809@freebox.fr> <54DA43F8.9090904@hurleysoftware.com> <54DBB531.2030504@hurleysoftware.com> <20150211200313.GE2531@atomide.com> <54DBBE9E.90104@hurleysoftware.com> <54DC6832.3070507@linutronix.de> <54DCD584.3010500@hurleysoftware.com> <20150212192333.GA18882@linutronix.de> <54DD053A.8060905@hurleysoftware.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 02/14] ARM: ARMv7M: Enlarge vector table to 256 entries
+Date: Thu, 12 Feb 2015 21:34:47 +0100
+Message-ID: <CAMuHMdWESyPktOSBfVoZCb35stUbhNpbbpzSW4JfORdObgg5jw@mail.gmail.com>
+References: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1423763164-5606-3-git-send-email-mcoquelin.stm32@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54DD053A.8060905@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Tony Lindgren <tony@atomide.com>, Nicolas Schichan <nschichan@freebox.fr>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1423763164-5606-3-git-send-email-mcoquelin.stm32@gmail.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, Kees
 List-Id: linux-serial@vger.kernel.org
 
-On 02/12/2015 08:55 PM, Peter Hurley wrote:
-> On 02/12/2015 02:23 PM, Sebastian Andrzej Siewior wrote:
->> * Peter Hurley | 2015-02-12 11:32:04 [-0500]:
->>
->>> That said, I don't think serial8250_do_startup() is really doing that much
->>> for OMAP h/w startup; open-coding what omap_8250 really needs is probably
->>> < 10 loc.
->>
->> 10 loc? I have a few more.
-> 
-> :)
-> 
->> serial8250_clear_fifos(),
->> serial_link_irq_chain() aren't exported. serial8250_set_mctrl() can
->> maybe accessed via uart_ops->set_mctrl(). Maybe I'm not removing the
->> obvious not required code but here it looks better to just a BUG flag for
->> the Omap.
-> 
-> Ok.
+On Thu, Feb 12, 2015 at 6:45 PM, Maxime Coquelin
+<mcoquelin.stm32@gmail.com> wrote:
+> From Cortex-M4 and M7 reference manuals, the nvic supports up to 240
+> interrupts. So the number of entries in vectors table is 256.
+>
+> This patch adds the missing entries, and change the alignement, so that
+> vector_table remains naturally aligned.
 
-Okay. I will try to post something tomorrow.
+Shouldn't this depend on ARCH_STM32, or some other M4 or M7 specific
+Kconfig option, to avoid wasting the space on other CPUs?
 
->> --- a/drivers/tty/serial/8250/8250_omap.c
->> +++ b/drivers/tty/serial/8250/8250_omap.c
->> +
->> +	/*
->> +	 * Clear the interrupt registers.
->> +	 */
->> +	if (serial_port_in(port, UART_LSR) & UART_LSR_DR)
->> +		serial_port_in(port, UART_RX);
->> +	serial_port_in(port, UART_IIR);
->> +	serial_port_in(port, UART_MSR);
->> +
->> +	retval = serial_link_irq_chain(up);
->> +	if (retval)
->> +		goto out;
-> 
-> omap doesn't really need the legacy irq chain handling; this could just be
-> request_irq().
-> 
-> In the 8250 split I'll be posting soon, all the irq chaining and
-> polling-via-timeout workarounds stays in the universal/legacy driver so
-> other 8250 drivers can opt-out.
+>
+> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> ---
+>  arch/arm/kernel/entry-v7m.S | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/arch/arm/kernel/entry-v7m.S b/arch/arm/kernel/entry-v7m.S
+> index 8944f49..29a461b 100644
+> --- a/arch/arm/kernel/entry-v7m.S
+> +++ b/arch/arm/kernel/entry-v7m.S
+> @@ -117,9 +117,9 @@ ENTRY(__switch_to)
+>  ENDPROC(__switch_to)
+>
+>         .data
+> -       .align  8
+> +       .align  10
+>  /*
+> - * Vector table (64 words => 256 bytes natural alignment)
+> + * Vector table (256 words => 1024 bytes alignment)
+>   */
+>  ENTRY(vector_table)
+>         .long   0                       @ 0 - Reset stack pointer
+> @@ -138,6 +138,6 @@ ENTRY(vector_table)
+>         .long   __invalid_entry         @ 13 - Reserved
+>         .long   __pendsv_entry          @ 14 - PendSV
+>         .long   __invalid_entry         @ 15 - SysTick
+> -       .rept   64 - 16
+> -       .long   __irq_entry             @ 16..64 - External Interrupts
+> +       .rept   256 - 16
+> +       .long   __irq_entry             @ 16..256 - External Interrupts
+>         .endr
+> --
+> 1.9.1
 
-Ah. This sounds interesting.
+Gr{oetje,eeting}s,
 
-Sebastian
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
