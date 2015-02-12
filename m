@@ -1,16 +1,12 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2MyAxLzRdIHR0eTogc2VyaWFsX21jdHJsX2dwaW86IEFk?=
- =?UTF-8?B?ZCBpcnFzIGhlbHBlcnMgZm9yIGlucHV0IGxpbmVz?=
-Date: Thu, 12 Feb 2015 16:45:18 +0300
-Message-ID: <1423748718.221741158@f354.i.mail.ru>
-References: <1423241735-30387-1-git-send-email-j.uzycki@elproma.com.pl>
- <20150212132939.GE10842@pengutronix.de>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 1/5] serial: atmel: fix error handling when mctrl_gpio_init
+ fails
+Date: Thu, 12 Feb 2015 15:24:38 +0100
+Message-ID: <1423751082-15888-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150212132939.GE10842@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,26 +16,34 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: fabio.estevam@freescale.com, =?UTF-8?B?QWxleGFuZHJlIENvdXJib3Q=?= <gnurou@gmail.com>, =?UTF-8?B?UmljaGFyZCBHZW5vdWQ=?= <richard.genoud@gmail.com>, =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>, =?UTF-8?B?TGludXMgV2FsbGVpag==?= <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, =?UTF-8?B?SmFudXN6IFV6eWNraQ==?= <j.uzycki@elproma.com.pl>, linux-serial@vger.kernel.org, =?UTF-8?B?RmFiaW8gRXN0ZXZhbQ==?= <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Alexander Shiyan <shc_work@mail.ru>, Nicolas Ferre <nicolas.ferre@atmel.com>, Janusz Uzycki <j.uzycki@elproma.com.pl>, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-0KfQtdGC0LLQtdGA0LMsIDEyINGE0LXQstGA0LDQu9GPIDIwMTUsIDE0OjI5ICswMTowMCDQvtGC
-IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+OgouLi4K
-PiA+ICtpbnQgbWN0cmxfZ3Bpb19yZXF1ZXN0X2lycXMoc3RydWN0IG1jdHJsX2dwaW9zICpncGlv
-cykKPiAKPiA+ICt7Cj4gCj4gPiArCXN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQgPSBncGlvcy0+cG9y
-dDsKPiAKPiA+ICsJaW50ICppcnEgPSBncGlvcy0+aXJxOwo+IAo+ID4gKwllbnVtIG1jdHJsX2dw
-aW9faWR4IGk7Cj4gCj4gPiArCWludCBlcnIgPSAwOwo+IAo+ID4gKwo+IAo+ID4gKwkvKiBXaGVu
-IGdwaW9zIGlzIE5VTEwganVzdCBncGlvIGlycXMgYXJlIGFsc28gbmV2ZXIgc2V0Cj4gCj4gPiAr
-CSAqIHNvIHJldHVybiB3aXRob3V0IGFueSBlcnJvciAqLwo+IAo+ID4gKwlpZiAoSVNfRVJSX09S
-X05VTEwoZ3Bpb3MpKQo+IAo+ID4gKwkJcmV0dXJuIGVycjsKPiAKPiBJJ2QgZXhwZWN0IGRyaXZl
-cnMgdXNpbmcgbWN0cmwtZ3BpbyB0byBlcnJvciBvdXQgaWYgbWN0cmxfZ3Bpb19pbml0X2R0Cj4g
-Cj4gZmFpbHMuIEFsc28gbWN0cmxfZ3Bpb19pbml0X2R0IG5ldmVyIHJldHVybnMgTlVMTCwgc28g
-SU1ITyB0aGlzIGNoZWNrCj4gCj4gY2FuIGJlIGRyb3BwZWQuIChUaGVyZSBhcmUgbW9yZSBwbGFj
-ZXMgaW4gbWN0cmwtZ3BpbyB0aGF0IHNob3VsZCBiZQo+IAo+IGZpeGVkIGFjY29yZGluZ2x5LgoK
-QXQgbGVhc3QgdGhpcyBjaGVjayBzaG91bGQgYmUgbW92ZWQgdG8gc3RhcnQgb2YgdGhpcyBmdW5j
-dGlvbiBkdWUKZnV0dXJlIHVzYWdlIG9mIGdwaW9zLT5wb3J0IGFuZCBncGlvcy0+aXJxLgoKLS0t
-CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1h
-cm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5v
-cmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0t
-a2VybmVsCg==
+bWN0cmxfZ3Bpb19pbml0IGF0IHByZXNlbnQgZG9lc24ndCByZXR1cm4gTlVMTC4gKEl0IG1pZ2h0
+IGJlIHVzZWQgaW4gdGhlCmZ1dHVyZSB3aGVuIG5vIGdwaW9zIGFyZSB0byBiZSB1c2VkIGluZGlj
+YXRpbmcgc3VjY2Vzcy4pIFByb3Blcmx5IHBhc3MKZXJyb3IgcmV0dXJuZWQgYW5kIGFsc28gbWFr
+ZSBkcml2ZXIgcHJvYmluZyBmYWlsIG9uIGVycm9yLgoKU2lnbmVkLW9mZi1ieTogVXdlIEtsZWlu
+ZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KLS0tCiBkcml2ZXJzL3R0
+eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgfCAxMSArKysrKystLS0tLQogMSBmaWxlIGNoYW5nZWQs
+IDYgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0
+eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFs
+LmMKaW5kZXggNGQ4NDhhMjllMjIzLi44YTMwMzQyZGZhN2MgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
+dHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxf
+c2VyaWFsLmMKQEAgLTI1MDcsOCArMjUwNyw4IEBAIHN0YXRpYyBpbnQgYXRtZWxfaW5pdF9ncGlv
+cyhzdHJ1Y3QgYXRtZWxfdWFydF9wb3J0ICpwLCBzdHJ1Y3QgZGV2aWNlICpkZXYpCiAJc3RydWN0
+IGdwaW9fZGVzYyAqZ3Bpb2Q7CiAKIAlwLT5ncGlvcyA9IG1jdHJsX2dwaW9faW5pdChkZXYsIDAp
+OwotCWlmIChJU19FUlJfT1JfTlVMTChwLT5ncGlvcykpCi0JCXJldHVybiAtMTsKKwlpZiAoSVNf
+RVJSKHAtPmdwaW9zKSkKKwkJcmV0dXJuIFBUUl9FUlIocC0+Z3Bpb3MpOwogCiAJZm9yIChpID0g
+MDsgaSA8IFVBUlRfR1BJT19NQVg7IGkrKykgewogCQlncGlvZCA9IG1jdHJsX2dwaW9fdG9fZ3Bp
+b2QocC0+Z3Bpb3MsIGkpOwpAQCAtMjU1OSw5ICsyNTU5LDEwIEBAIHN0YXRpYyBpbnQgYXRtZWxf
+c2VyaWFsX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiAJcG9ydC0+dWFydC5s
+aW5lID0gcmV0OwogCiAJcmV0ID0gYXRtZWxfaW5pdF9ncGlvcyhwb3J0LCAmcGRldi0+ZGV2KTsK
+LQlpZiAocmV0IDwgMCkKLQkJZGV2X2VycigmcGRldi0+ZGV2LCAiJXMiLAotCQkJIkZhaWxlZCB0
+byBpbml0aWFsaXplIEdQSU9zLiBUaGUgc2VyaWFsIHBvcnQgbWF5IG5vdCB3b3JrIGFzIGV4cGVj
+dGVkIik7CisJaWYgKHJldCA8IDApIHsKKwkJZGV2X2VycigmcGRldi0+ZGV2LCAiRmFpbGVkIHRv
+IGluaXRpYWxpemUgR1BJT3MuIik7CisJCWdvdG8gZXJyOworCX0KIAogCXJldCA9IGF0bWVsX2lu
+aXRfcG9ydChwb3J0LCBwZGV2KTsKIAlpZiAocmV0KQotLSAKMi4xLjQKCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxp
+bmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3Rz
+LmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
