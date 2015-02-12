@@ -1,57 +1,39 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 5/5] serial: mctrl-gpio: simplify init routine
-Date: Thu, 12 Feb 2015 15:24:42 +0100
-Message-ID: <1423751082-15888-5-git-send-email-u.kleine-koenig@pengutronix.de>
-References: <1423751082-15888-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 03/16] tty: serial: 8250_core: read only RX if there is
+ something in the FIFO
+Date: Thu, 12 Feb 2015 11:32:04 -0500
+Message-ID: <54DCD584.3010500@hurleysoftware.com>
+References: <1410377411-26656-1-git-send-email-bigeasy@linutronix.de> <1410377411-26656-4-git-send-email-bigeasy@linutronix.de> <54D8B772.1010405@freebox.fr> <54D9441B.7070403@hurleysoftware.com> <54D9F3C7.5000809@freebox.fr> <54DA43F8.9090904@hurleysoftware.com> <54DBB531.2030504@hurleysoftware.com> <20150211200313.GE2531@atomide.com> <54DBBE9E.90104@hurleysoftware.com> <54DC6832.3070507@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1423751082-15888-1-git-send-email-u.kleine-koenig@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Janusz Uzycki <j.uzycki@elproma.com.pl>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Alexander Shiyan <shc_work@mail.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <54DC6832.3070507@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Tony Lindgren <tony@atomide.com>, Nicolas Schichan <nschichan@freebox.fr>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-SW5zdGVhZCBvZiBpZ25vcmluZyBlcnJvcnMgcmV0dXJuZWQgYnkgZGV2bV9ncGlvZF9nZXRfaW5k
-ZXggdXNlCmRldm1fZ3Bpb2RfZ2V0X2luZGV4X29wdGlvbmFsIHdoaWNoIHJlc3VsdHMgaW4gc2xp
-Z2h0bHkgbW9yZSBzdHJpY3QKZXJyb3IgaGFuZGxpbmcgd2hpY2ggaXMgZ29vZC4KCkFsc28gdXNl
-IHRoZSBmb3VydGggcGFyYW1ldGVyIHRvIGRldm1fZ3Bpb2RfZ2V0X2luZGV4X29wdGlvbmFsIHRv
-IGJlCmFibGUgdG8gZHJvcCB0aGUgZXhwbGljaXQgZGlyZWN0aW9uIHNldHRpbmcuCgpTaWduZWQt
-b2ZmLWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRl
-PgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfbWN0cmxfZ3Bpby5jIHwgMjkgKysrKysr
-KysrKystLS0tLS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxMSBpbnNlcnRpb25zKCsp
-LCAxOCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2VyaWFs
-X21jdHJsX2dwaW8uYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfbWN0cmxfZ3Bpby5jCmlu
-ZGV4IGMwMzgxYTA5ZjEyZC4uNTAyN2RiN2I1ODE0IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9z
-ZXJpYWwvc2VyaWFsX21jdHJsX2dwaW8uYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvc2VyaWFs
-X21jdHJsX2dwaW8uYwpAQCAtOTQsMjcgKzk0LDIwIEBAIHN0cnVjdCBtY3RybF9ncGlvcyAqbWN0
-cmxfZ3Bpb19pbml0KHN0cnVjdCBkZXZpY2UgKmRldiwgdW5zaWduZWQgaW50IGlkeCkKIAkJcmV0
-dXJuIEVSUl9QVFIoLUVOT01FTSk7CiAKIAlmb3IgKGkgPSAwOyBpIDwgVUFSVF9HUElPX01BWDsg
-aSsrKSB7Ci0JCWdwaW9zLT5ncGlvW2ldID0gZGV2bV9ncGlvZF9nZXRfaW5kZXgoZGV2LAotCQkJ
-CQkJICAgICAgbWN0cmxfZ3Bpb3NfZGVzY1tpXS5uYW1lLAotCQkJCQkJICAgICAgaWR4KTsKLQot
-CQkvKgotCQkgKiBUaGUgR1BJT3MgYXJlIG1heWJlIG5vdCBhbGwgZmlsbGVkLAotCQkgKiB0aGlz
-IGlzIG5vdCBhbiBlcnJvci4KLQkJICovCi0JCWlmIChJU19FUlJfT1JfTlVMTChncGlvcy0+Z3Bp
-b1tpXSkpCi0JCQljb250aW51ZTsKKwkJZW51bSBncGlvZF9mbGFncyBmbGFnczsKIAogCQlpZiAo
-bWN0cmxfZ3Bpb3NfZGVzY1tpXS5kaXJfb3V0KQotCQkJZXJyID0gZ3Bpb2RfZGlyZWN0aW9uX291
-dHB1dChncGlvcy0+Z3Bpb1tpXSwgMCk7CisJCQlmbGFncyA9IEdQSU9EX09VVF9MT1c7CiAJCWVs
-c2UKLQkJCWVyciA9IGdwaW9kX2RpcmVjdGlvbl9pbnB1dChncGlvcy0+Z3Bpb1tpXSk7Ci0JCWlm
-IChlcnIpIHsKLQkJCWRldl9kYmcoZGV2LCAiVW5hYmxlIHRvIHNldCBkaXJlY3Rpb24gZm9yICVz
-IEdQSU8iLAotCQkJCW1jdHJsX2dwaW9zX2Rlc2NbaV0ubmFtZSk7Ci0JCQlkZXZtX2dwaW9kX3B1
-dChkZXYsIGdwaW9zLT5ncGlvW2ldKTsKLQkJCWdwaW9zLT5ncGlvW2ldID0gTlVMTDsKLQkJfQor
-CQkJZmxhZ3MgPSBHUElPRF9JTjsKKworCQlncGlvcy0+Z3Bpb1tpXSA9CisJCQlkZXZtX2dwaW9k
-X2dldF9pbmRleF9vcHRpb25hbChkZXYsCisJCQkJCQkgICAgICBtY3RybF9ncGlvc19kZXNjW2ld
-Lm5hbWUsCisJCQkJCQkgICAgICBpZHgsIGZsYWdzKTsKKworCQlpZiAoSVNfRVJSKGdwaW9zLT5n
-cGlvW2ldKSkKKwkJCXJldHVybiBQVFJfRVJSKGdwaW9zLT5ncGlvW2ldKTsKIAl9CiAKIAlyZXR1
-cm4gZ3Bpb3M7Ci0tIAoyLjEuNAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJu
-ZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+On 02/12/2015 03:45 AM, Sebastian Andrzej Siewior wrote:
+> On 02/11/2015 09:42 PM, Peter Hurley wrote:
+> 
+>>> Reverting makes sense to me if it has caused a regression. Maybe Sebastian
+>>> can update his patch to do this based on some quirk flag instead?
+>>
+>> That's fine with me. There's a 'bugs' field in struct 8250_uart_port and
+>> UART_BUG_* defines in 8250/8250.h for that purpose.
+> 
+> Makes sense. Reading an empty FIFO does not look right. Maybe we should
+> do the bug flag the other way around? But I can do what I am told to so
+> if there is more fallout than just this Marvell UART I could come
+> around with a patch to the bug field for the older OMAP.
+
+I agree with Russell on this; better to stick with the rx read that's been
+running on 20 years of hardware.
+
+That said, I don't think serial8250_do_startup() is really doing that much
+for OMAP h/w startup; open-coding what omap_8250 really needs is probably
+< 10 loc.
+
+Regards,
+Peter Hurley
