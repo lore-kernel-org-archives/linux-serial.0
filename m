@@ -1,112 +1,41 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH 12/14] ARM: dts: Introduce STM32F429 MCU
-Date: Fri, 13 Feb 2015 20:18:22 +0100
-Message-ID: <1423855102.4182.63.camel@pengutronix.de>
-References: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com>
-	 <1423763164-5606-13-git-send-email-mcoquelin.stm32@gmail.com>
-	 <1423828078.4182.17.camel@pengutronix.de>
-	 <CALszF6D+5mXajUWarwq8M4yL_Nc+x1Bmu4D7_HxDRy2kGRXNVQ@mail.gmail.com>
-	 <1423844735.4182.52.camel@pengutronix.de>
-	 <CALszF6Ad93BgT4UsJudVKpfhhL2dbtKTTRno1XqQ5=eANkwXzA@mail.gmail.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 03/16] tty: serial: 8250_core: read only RX if there is
+ something in the FIFO
+Date: Fri, 13 Feb 2015 23:15:19 +0000
+Message-ID: <20150213231519.GF8670@n2100.arm.linux.org.uk>
+References: <54D9F3C7.5000809@freebox.fr>
+ <54DA43F8.9090904@hurleysoftware.com>
+ <54DBB531.2030504@hurleysoftware.com>
+ <20150211200313.GE2531@atomide.com>
+ <54DBBE9E.90104@hurleysoftware.com>
+ <54DC6832.3070507@linutronix.de>
+ <54DCD584.3010500@hurleysoftware.com>
+ <20150212192333.GA18882@linutronix.de>
+ <54DD053A.8060905@hurleysoftware.com>
+ <20150213185115.GF5482@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <CALszF6Ad93BgT4UsJudVKpfhhL2dbtKTTRno1XqQ5=eANkwXzA@mail.gmail.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, Kees Cook <keescook@chromium.org>, Michal
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150213185115.GF5482@linutronix.de>
+Sender: linux-omap-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Nicolas Schichan <nschichan@freebox.fr>, Tony Lindgren <tony@atomide.com>, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Am Freitag, den 13.02.2015, 17:41 +0100 schrieb Maxime Coquelin:
-> 2015-02-13 17:25 GMT+01:00 Philipp Zabel <p.zabel@pengutronix.de>:
-> > Hi Maxime,
-> >
-> > Am Freitag, den 13.02.2015, 16:59 +0100 schrieb Maxime Coquelin:
-> >> Hi Philipp,
-> >>
-> >> 2015-02-13 12:47 GMT+01:00 Philipp Zabel <p.zabel@pengutronix.de>:
-> >> > Hi Maxime,
-> >> >
-> >> > Am Donnerstag, den 12.02.2015, 18:46 +0100 schrieb Maxime Coquelin:
-> >> > [...]
-> >> >> +     soc {
-> >> >> +             reset_ahb1: reset@40023810 {
-> >> >> +                     #reset-cells = <1>;
-> >> >> +                     compatible = "st,stm32-reset";
-> >> >> +                     reg = <0x40023810 0x4>;
-> >> >> +             };
-> >> >> +
-> >> >> +             reset_ahb2: reset@40023814 {
-> >> >> +                     #reset-cells = <1>;
-> >> >> +                     compatible = "st,stm32-reset";
-> >> >> +                     reg = <0x40023814 0x4>;
-> >> >> +             };
-> >> >> +
-> >> >> +             reset_ahb3: reset@40023818 {
-> >> >> +                     #reset-cells = <1>;
-> >> >> +                     compatible = "st,stm32-reset";
-> >> >> +                     reg = <0x40023818 0x4>;
-> >> >> +             };
-> >> >> +
-> >> >> +             reset_apb1: reset@40023820 {
-> >> >> +                     #reset-cells = <1>;
-> >> >> +                     compatible = "st,stm32-reset";
-> >> >> +                     reg = <0x40023820 0x4>;
-> >> >> +             };
-> >> >> +
-> >> >> +             reset_apb2: reset@40023824 {
-> >> >> +                     #reset-cells = <1>;
-> >> >> +                     compatible = "st,stm32-reset";
-> >> >> +                     reg = <0x40023824 0x4>;
-> >> >> +             };
-> >> >
-> >> > These are mostly consecutive, single registers. I wonder if these are
-> >> > part of the same IP block and thus should be grouped together into the
-> >> > same reset controller node?
-> >>
-> >> What I could to is to have two instances. One for AHB and one for APB domain.
-> >> Doing this, I will have one instance per domain, and only consecutive registers.
-> >> Is it fine for you?
-> >
-> > Looking at
-> > http://www.st.com/web/en/resource/technical/document/reference_manual/DM00031020.pdf
-> > Table 34 (RCC register map and reset values), I'd say there is a single
-> > "Reset and Clock Control" device at 0x40023800 - 0x40023884:
-> >
-> >         soc {
-> >                 rcc: rcc@40023800 {
-> >                         #clock-cells = <1>;
-> >                         #reset-cells = <1>;
-> >                         compatible = "st,stm32-rcc";
-> >                         reg = <0x40023800 0x84>;
-> >                 };
-> >
-> >                 ...
-> >
-> > If you really want to describe the reset controller parts (offsets +0x10
-> > to +0x24) in a separate node, I won't argue against it too long,
-> > although this is a somewhat arbitrary decision.
-> >
-> > In any case, the whole register at offset +0x1c is reserved, so there is
-> > no reason to split the reset controller. It is ok to have unused ranges
-> > as is already the case with reserved bits inside the used registers.
-> 
-> Ok. I understand your point.
-> But it will be more difficult at usage, because the node referencing
-> the fourth reset bit of apb2 register will have to pass 164 as
-> parameter.
-> It is error prone IMHO.
->
-> Other solution would be to add some defines for each reset line in the
-> DT-Bindings, as we do today for STi platform.
-> But it is giving an unneeded constraint between DT and reset trees.
+On Fri, Feb 13, 2015 at 07:51:16PM +0100, Sebastian Andrzej Siewior wrote:
+> Something like this maybe?
 
-That is a bit unfortunate, but providing the named constants in
-include/dt-bindings/reset/ makes for a much better readable device tree,
-so I'd prefer that solution, even if it means having to coordinate pull
-requests.
+My personal feeling is that as 0aa525d11859 was wrong, it should be
+reverted and this should be another attempt to fix the problem.  In
+other words, there should be two patches, one a revert of the previously
+known bad commit and this one having another go at it.
 
-regards
-Philipp
+I feel that would be a better approach, since then we don't end up
+with this change building on a previously know buggy change.  It
+would also make the changes to this solution from the previous,
+known-to-work-for-decades code more obvious.
 
+-- 
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
