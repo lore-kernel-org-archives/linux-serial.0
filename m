@@ -1,18 +1,33 @@
-From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: Usb serial driver change question in the linux kernel
-Date: Sun, 15 Feb 2015 12:15:42 +0700
-Message-ID: <20150215051542.GA2551@localhost>
+From: "Li, Elvin" <elvin.li-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: Usb serial driver change question in the linux kernel
+Date: Sun, 15 Feb 2015 13:26:08 +0000
+Message-ID: <85D5955FC01BBD45B061B0BD47E1291910F5198A@SHSMSX103.ccr.corp.intel.com>
 References: <85D5955FC01BBD45B061B0BD47E1291910F50B6B@SHSMSX103.ccr.corp.intel.com>
  <85D5955FC01BBD45B061B0BD47E1291910F5140E@SHSMSX103.ccr.corp.intel.com>
+ <20150215051542.GA2551@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <85D5955FC01BBD45B061B0BD47E1291910F5140E-0J0gbvR4kTggGBtAFL8yw7fspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <20150215051542.GA2551@localhost>
+Content-Language: en-US
 Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "Li, Elvin" <elvin.li-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Cc: "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Tian, Feng" <feng.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Ni, Ruiyu" <ruiyu.ni-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org" <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, "jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
+
+Hi Johan,
+	Your patch fixed my issue. Thank you for support!
+
+Regards
+Elvin Li
+
+-----Original Message-----
+From: Johan Hovold [mailto:jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org] On Behalf Of Johan Hovold
+Sent: Sunday, February 15, 2015 1:16 PM
+To: Li, Elvin
+Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Tian, Feng; Ni, Ruiyu; greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org; jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Subject: Re: Usb serial driver change question in the linux kernel
 
 On Sun, Feb 15, 2015 at 12:43:51AM +0000, Li, Elvin wrote:
 > Hi All,
@@ -27,9 +42,7 @@ On Sun, Feb 15, 2015 at 12:43:51AM +0000, Li, Elvin wrote:
 
 > Does anyone has ideas how the issue could be resolved?
 
-Thanks for the report. The commit mentioned above should simply be
-reverted; a bulk-out buffer size smaller than the end-point size is
-indeed valid.
+Thanks for the report. The commit mentioned above should simply be reverted; a bulk-out buffer size smaller than the end-point size is indeed valid.
 
 Could you verify that the patch below fixes the issues you're seeing?
 
@@ -44,9 +57,7 @@ Subject: [PATCH] Revert "USB: serial: make bulk_out_size a lower limit"
 
 This reverts commit 5083fd7bdfe6760577235a724cf6dccae13652c2.
 
-A bulk-out size smaller than the end-point size is indeed valid. The
-offending commit broke the usb-debug driver for EHCI debug devices,
-which use 8-byte buffers.
+A bulk-out size smaller than the end-point size is indeed valid. The offending commit broke the usb-debug driver for EHCI debug devices, which use 8-byte buffers.
 
 Fixes: 5083fd7bdfe6 ("USB: serial: make bulk_out_size a lower limit")
 Reported-by: "Li, Elvin" <elvin.li-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
@@ -57,8 +68,7 @@ Signed-off-by: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
  include/linux/usb/serial.h      | 3 +--
  2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
-index 475723c006f9..19842370a07f 100644
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c index 475723c006f9..19842370a07f 100644
 --- a/drivers/usb/serial/usb-serial.c
 +++ b/drivers/usb/serial/usb-serial.c
 @@ -940,8 +940,9 @@ static int usb_serial_probe(struct usb_interface *interface,
@@ -73,8 +83,7 @@ index 475723c006f9..19842370a07f 100644
  		port->bulk_out_size = buffer_size;
  		port->bulk_out_endpointAddress = endpoint->bEndpointAddress;
  
-diff --git a/include/linux/usb/serial.h b/include/linux/usb/serial.h
-index 9bb547c7bce7..704a1ab8240c 100644
+diff --git a/include/linux/usb/serial.h b/include/linux/usb/serial.h index 9bb547c7bce7..704a1ab8240c 100644
 --- a/include/linux/usb/serial.h
 +++ b/include/linux/usb/serial.h
 @@ -190,8 +190,7 @@ static inline void usb_set_serial_data(struct usb_serial *serial, void *data)
@@ -83,11 +92,12 @@ index 9bb547c7bce7..704a1ab8240c 100644
   *	(0 = end-point size)
 - * @bulk_out_size: minimum number of bytes to allocate for bulk-out buffer
 - *	(0 = end-point size)
-+ * @bulk_out_size: bytes to allocate for bulk-out buffer (0 = end-point size)
++ * @bulk_out_size: bytes to allocate for bulk-out buffer (0 = end-point 
++ size)
   * @calc_num_ports: pointer to a function to determine how many ports this
   *	device has dynamically.  It will be called after the probe()
   *	callback is called, but before attach()
--- 
+--
 2.0.5
 
 --
