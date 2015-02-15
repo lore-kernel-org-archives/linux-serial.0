@@ -1,326 +1,173 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial patches for 3.20-rc1
-Date: Sun, 15 Feb 2015 07:13:13 -0800
-Message-ID: <20150215151313.GA31904@kroah.com>
+From: =?windows-1252?Q?Andreas_F=E4rber?= <afaerber@suse.de>
+Subject: Re: [PATCH 00/14] Add support to STMicroelectronics STM32 family
+Date: Sun, 15 Feb 2015 16:14:12 +0100
+Message-ID: <54E0B7C4.7050900@suse.de>
+References: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="95i9U1kwvGuqWFIAJoHA3lRp5dcDBiePX"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, Kees
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit ec6f34e5b552fb0a52e6aae1a5afbbb1605cc6cc:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--95i9U1kwvGuqWFIAJoHA3lRp5dcDBiePX
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
 
-  Linux 3.19-rc5 (2015-01-18 18:02:20 +1200)
+Hi Maxime,
 
-are available in the git repository at:
+Am 12.02.2015 um 18:45 schrieb Maxime Coquelin:
+> This patchset adds basic support for STMicroelectronics STM32 series MC=
+Us.
+>=20
+> STM32 MCUs are Cortex-M CPU, used in various applications (consumer
+> electronics, industrial applications, hobbyists...).
+> Datasheets, user and programming manuals are publicly available on
+> STMicroelectronics website.
+>=20
+> With this series applied, the STM32F419 Discovery can boot succesfully.=
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-3.20-rc1
+>=20
+> Once this series accepted, next steps will be to add DMA support, as US=
+ART,
+> I2C and SPI IPs don't have any FIFO. Then will come the clock driver, a=
+s today
+> the bootloader has to be patched to enable the needed clocks.
 
-for you to fetch changes up to c09babfab7ae8c7d79a5dce9d866fbb28b82dde4:
+This is somewhat unfortunate, as I have been working on the same thing
+and have demonstrated the STM32F429 Discovery Kit at ARM TechSymposium
+Europe in December and submitted a talk for LinuxCon Japan.
 
-  serial: 8250: Fix UART_BUG_TXEN workaround (2015-02-07 18:44:55 +0800)
+https://github.com/afaerber/afboot-stm32
+https://github.com/afaerber/linux/commits/stm32
 
-----------------------------------------------------------------
-TTY/Serial driver patches for 3.20-rc1
+On a brief look, it seems you are further along in terms of code quality
+and documenting. Do you spot anything that's missing in your series and
+could be added from my branch? The clk controller maybe? Also I already
+started looking into gpio and usb drivers. Me too, I skipped DMA support
+though.
 
-Here's the big tty/serial driver update for 3.20-rc1.  Nothing huge
-here, just lots of driver updates and some core tty layer fixes as well.
-All have been in linux-next with no reported issues.
+Regards,
+Andreas
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>=20
+> Maxime Coquelin (14):
+>   scripts: link-vmlinux: Don't pass page offset to kallsyms if XIP
+>     Kernel
+>   ARM: ARMv7M: Enlarge vector table to 256 entries
+>   clocksource: Add ARM System timer driver
+>   reset: Add reset_controller_of_init() function
+>   ARM: call reset_controller_of_init from default time_init handler
+>   drivers: reset: Add STM32 reset driver
+>   clockevent: Add STM32 Timer driver
+>   pinctrl: Add pinctrl driver for STM32 MCUs
+>   serial: stm32-usart: Add STM32 USART Driver
+>   ARM: Add STM32 family machine
+>   ARM: dts: Add ARM System timer as clockevent in armv7m
+>   ARM: dts: Introduce STM32F429 MCU
+>   ARM: configs: Add STM32 defconfig
+>   MAINTAINERS: Add entry for STM32 MCUs
+>=20
+>  Documentation/arm/stm32/overview.txt               |  32 +
+>  Documentation/arm/stm32/stm32f429-overview.txt     |  22 +
+>  .../devicetree/bindings/arm/system_timer.txt       |  15 +
+>  .../devicetree/bindings/pinctrl/pinctrl-stm32.txt  |  99 +++
+>  .../devicetree/bindings/reset/st,stm32-reset.txt   |  19 +
+>  .../devicetree/bindings/serial/st,stm32-usart.txt  |  18 +
+>  .../devicetree/bindings/timer/st,stm32-timer.txt   |  19 +
+>  MAINTAINERS                                        |   7 +
+>  arch/arm/Kconfig                                   |  22 +
+>  arch/arm/Makefile                                  |   1 +
+>  arch/arm/boot/dts/Makefile                         |   1 +
+>  arch/arm/boot/dts/armv7-m.dtsi                     |   7 +
+>  arch/arm/boot/dts/stm32f429-disco.dts              |  41 ++
+>  arch/arm/boot/dts/stm32f429.dtsi                   | 279 ++++++++
+>  arch/arm/configs/stm32_defconfig                   |  72 ++
+>  arch/arm/kernel/entry-v7m.S                        |   8 +-
+>  arch/arm/kernel/time.c                             |   4 +
+>  arch/arm/mach-stm32/Makefile                       |   1 +
+>  arch/arm/mach-stm32/Makefile.boot                  |   0
+>  arch/arm/mach-stm32/board-dt.c                     |  19 +
+>  drivers/clocksource/Kconfig                        |  16 +
+>  drivers/clocksource/Makefile                       |   2 +
+>  drivers/clocksource/arm_system_timer.c             |  74 ++
+>  drivers/clocksource/timer-stm32.c                  | 187 +++++
+>  drivers/pinctrl/Kconfig                            |   9 +
+>  drivers/pinctrl/Makefile                           |   1 +
+>  drivers/pinctrl/pinctrl-stm32.c                    | 779 +++++++++++++=
+++++++++
+>  drivers/reset/Makefile                             |   1 +
+>  drivers/reset/core.c                               |  20 +
+>  drivers/reset/reset-stm32.c                        | 124 ++++
+>  drivers/tty/serial/Kconfig                         |  17 +
+>  drivers/tty/serial/Makefile                        |   1 +
+>  drivers/tty/serial/stm32-usart.c                   | 695 +++++++++++++=
++++++
+>  include/asm-generic/vmlinux.lds.h                  |   4 +-
+>  include/dt-bindings/pinctrl/pinctrl-stm32.h        |  43 ++
+>  include/linux/reset-controller.h                   |   6 +
+>  include/uapi/linux/serial_core.h                   |   3 +
+>  scripts/link-vmlinux.sh                            |   2 +-
+>  38 files changed, 2664 insertions(+), 6 deletions(-)
+>  create mode 100644 Documentation/arm/stm32/overview.txt
+>  create mode 100644 Documentation/arm/stm32/stm32f429-overview.txt
+>  create mode 100644 Documentation/devicetree/bindings/arm/system_timer.=
+txt
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-s=
+tm32.txt
+>  create mode 100644 Documentation/devicetree/bindings/reset/st,stm32-re=
+set.txt
+>  create mode 100644 Documentation/devicetree/bindings/serial/st,stm32-u=
+sart.txt
+>  create mode 100644 Documentation/devicetree/bindings/timer/st,stm32-ti=
+mer.txt
+>  create mode 100644 arch/arm/boot/dts/stm32f429-disco.dts
+>  create mode 100644 arch/arm/boot/dts/stm32f429.dtsi
+>  create mode 100644 arch/arm/configs/stm32_defconfig
+>  create mode 100644 arch/arm/mach-stm32/Makefile
+>  create mode 100644 arch/arm/mach-stm32/Makefile.boot
+>  create mode 100644 arch/arm/mach-stm32/board-dt.c
+>  create mode 100644 drivers/clocksource/arm_system_timer.c
+>  create mode 100644 drivers/clocksource/timer-stm32.c
+>  create mode 100644 drivers/pinctrl/pinctrl-stm32.c
+>  create mode 100644 drivers/reset/reset-stm32.c
+>  create mode 100644 drivers/tty/serial/stm32-usart.c
+>  create mode 100644 include/dt-bindings/pinctrl/pinctrl-stm32.h
+>=20
 
-----------------------------------------------------------------
-Andy Shevchenko (4):
-      serial: 8250_dma: terminate transfer explicitly when timeout
-      x86, mrst: remove Moorestown specific serial drivers
-      serial: 8250_core: remove redundant else keyword
-      serial: 8250_dma: don't bother DMA with small transfers
 
-Anton Bondarenko (1):
-      serial: imx: initialized DMA w/o HW flow enabled
+--=20
+SUSE Linux GmbH, Maxfeldstr. 5, 90409 N=FCrnberg, Germany
+GF: Felix Imend=F6rffer, Jane Smithard, Jennifer Guild, Dilip Upmanyu,
+Graham Norton; HRB 21284 (AG N=FCrnberg)
 
-Arnd Bergmann (1):
-      tty/isicom: fix big-endian compile warning
 
-Barry Song (1):
-      serial: sirf: rename marco to atlas7
+--95i9U1kwvGuqWFIAJoHA3lRp5dcDBiePX
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Baruch Siach (4):
-      devicetree: bindings: add Conexant vendor prefix
-      serial: driver for Conexant Digicolor USART
-      serial: add device tree binding documentation for Conexant USART
-      tty/serial: digicolor: remove sysrq reference
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-Chunyan Zhang (2):
-      Documentation: DT: Add bindings for Spreadtrum SoC Platform
-      tty/serial: Add Spreadtrum sc9836-uart driver support
+iQIcBAEBAgAGBQJU4LfEAAoJEPou0S0+fgE//zYP/0EeKpvBKU08wt7+ELInpcJP
+ak50cp7i1usajMEgEjeEH7VeM+0MiGWLvEfFUOTnqidzo07aRG66svOL8orTVcW3
+GZL5MGm3zFsGGnZqff19CnRMcz2ys3BoqylCw4ya9iFD3tycqGthp7Zl6J7sZORD
+bi6Jk75LB4QEaMxAueQ8GbAQ/tswioGua7GByW0seRe2HiLS4/nDrgWnfkfdsobc
+TpyUvNCBz3HLg7/5VomZ+CfnEK0jjH2AJ3I3+y+RHVerbGN6QxcyPc7j1Lprre+N
+SafndVvs3pKb5jfgwDV4UUmzGxV4B0Tx4B336X+Zz0QhdzuWRJ4zfumQi1V8l6iD
+b8fh1TMxhluOcP6V0rwhpWLBFVzyOZjcA9hAJ+3ul0udLGvqVofGui6FCjpNNhVu
+BP8J4gb78HIao+bPImCs32xfSJ+EQdZIoGCXt6iFA6Co2pOUyn3dqoC200JqNoL3
+UOmU30VqfEvf3xyvyhSVl65XZnlkOw+HDKAbtJYaAFnHlNNzuxF4B7khcumbbPiz
+afWKJJXFfun50Y80SdZCzaf4E3kZ43j0c9KxjA0NZf1FlC1XqixQ6LkI9BRaaRnH
+GfHvjnBwPznT5/6F2DT2Na7GqbGkxCCKHNO01vZuJNX47sUPSTOO1Kkjszs6SrVt
+sbkXP7xSgMjDuE/BcIOg
+=yIcJ
+-----END PGP SIGNATURE-----
 
-Cyrille Pitchen (5):
-      tty/serial: at91: use correct type for dma_sync_*_for_cpu() and dma_sync_*_for_device()
-      tty/serial: at91: enable peripheral clock before accessing I/O registers
-      tty/serial: at91: fix error handling in atmel_serial_probe()
-      tty/serial: at91: fix RTS line management when hardware handshake is enabled
-      tty/serial: at91: fix typo and indentation
-
-Dave Airlie (1):
-      vt_buffer: drop console buffer copying optimisations
-
-Dirk Behme (6):
-      serial: imx: remove unneeded imx_transmit_buffer() from imx_start_tx()
-      serial: imx: TX DMA: clean up sg initialization
-      serial: imx: unmap sg in case of dmaengine_prep_slave_sg() failure
-      serial: imx: unmap scatter gather list in imx_flush_buffer
-      serial: imx: use dma_is_txing to synchronize dma_tx_callback and imx_dma_tx
-      serial: imx: disable TDMAEN in imx_flush_buffer()
-
-Eric Nelson (2):
-      serial: imx: preserve characters with parity or framing errors
-      serial: imx: ignore framing errors when IGNPAR is set.
-
-Fabian Frederick (1):
-      tty: remove unused variable sprop
-
-Fabio Estevam (8):
-      serial: mxs-auart: Remove unneeded goto label
-      serial: mxs-auart: Use devm_kzalloc()
-      serial: mxs-auart: Use devm_clk_get()
-      serial: mxs-auart: Use devm_request_irq()
-      serial: imx: Fix imx_flush_buffer()
-      serial: mxs-auart: Remove irq from private structure
-      serial: mxs-auart: Check for platform_get_irq() error
-      serial: mxs-auart: Remove unneeded zeroing of 'ret'
-
-Feng Kan (1):
-      serial: 8250: add support for ACPI-probed serial port for X-Gene platform
-
-Greg Kroah-Hartman (1):
-      Merge 3.19-rc5 into tty-next
-
-Greg Ungerer (3):
-      serial: mcf: change email address to gerg@uclinux.org
-      serial: mcf: fix compile warnings
-      serial: mcf: fix no driver name in probe output
-
-Heikki Krogerus (1):
-      serial: 8250_pci: remove one useless explicit type conversion
-
-Hisashi Nakamura (1):
-      serial: sh-sci: Fix R-Car SCIF and HSCIF overrun handling
-
-Imre Deak (2):
-      vt: fix check for system/busy console drivers when unregistering them
-      vt: fix locking around vt_bind/vt_unbind
-
-Jiada Wang (7):
-      serial: imx: add CREAD flag support
-      serial: imx: use locking to stop concurrent access of UCR1
-      Revert "serial: imx: always wake up the processes in the TX callback"
-      serial: imx: call imx_dma_tx() again in dma_tx_callback
-      serial: imx: Enable UCR4_OREN in startup interface
-      serial: imx: Fix issue in software flow control
-      serial: imx: Support sw flow control in DMA mode
-
-Johannes Thumshirn (1):
-      tty: serial: men_z135_uart: Fix driver for changes in hardware
-
-Julia Lawall (2):
-      TTY: fix misspelling of current function in string
-      TTY: fix misspelling of current function in string
-
-Ley Foon Tan (2):
-      serial: altera-juart: fix NULL device in log message
-      serial: altera-uart: fix NULL device in log message
-
-Lucas Stach (1):
-      serial: of-serial: fetch line number from DT
-
-Marek Szyprowski (1):
-      serial: samsung: earlycon support depends on CONFIG_SERIAL_SAMSUNG_CONSOLE
-
-Nathan Rossi (1):
-      tty: xuartps: Fix RX hang, and TX corruption in termios call
-
-Nicolas Pitre (1):
-      vt: provide notifications on selection changes
-
-Niklas Cassel (1):
-      serial: driver for ETRAX FS UART
-
-Pavel Machek (1):
-      trivial fixes for omap-serial
-
-Peter Hurley (28):
-      serial: omap_8250: Fix RTS handling
-      serial: omap_8250: Fix RTS handling, part B
-      tty: Remove warning in tty_lock_slave()
-      tty: Prevent untrappable signals from malicious program
-      PNP: Allow console to override ACPI device sleep
-      serial: 8250_pnp: Enable PNP_CONSOLE for console ports
-      pty: Fix overlimit memory use
-      n_tty: Eliminate receive_room() from consumer/exclusive paths
-      n_tty: Fix throttle for canon lines > 3967 chars
-      n_tty: Simplify throttle threshold calculation
-      n_tty: Fix unordered accesses to lockless read buffer
-      n_tty: Fix PARMRK over-throttling
-      n_tty: Fix read buffer overwrite when no newline
-      tty: Make lock subclasses available for other tty locks
-      pty: Fix buffer flush deadlock
-      n_tty: Fix signal handling flushes
-      serial: core: Simplify console suspend logic in uart_suspend_port()
-      serial: 8250: Move UART_BUG_QUOT workaround
-      serial: 8250: Refactor LCR computation
-      serial: 8250: Refactor divisor programming
-      serial: 8250: Refactor XR17V35X divisor calculation
-      serial: 8250: Use canary to restart console after suspend
-      serial: 8250: Prevent concurrent updates to shadow registers
-      serial: core: Rework hw-assisted flow control support
-      serial: 8250_omap: Use UPSTAT_AUTORTS for RTS handling
-      serial: omap: Fix RTS handling
-      tty: Remove external interface for tty_set_termios()
-      serial: 8250: Fix UART_BUG_TXEN workaround
-
-Pramod Gurav (2):
-      tty: serial: msm_serial: code cleanup in msm_console_setup
-      tty: serial: msm_serial: Remove console unregistration from driver exit.
-
-Rob Herring (3):
-      tty/serial: of_serial: add DT alias ID handling
-      tty/serial: of_serial: add support for PXA/MMP uarts
-      tty/serial: 8250_early: Add support for PXA UARTs
-
-Robert Baldyga (7):
-      serial: samsung: add struct s3c24xx_uart_dma
-      serial: samsung: alloc dma stucture in ourport
-      serial: s3c: add missing register definitions
-      serial: samsung: add dma reqest/release functions
-      serial: samsung: add DMA support for TX
-      serial: samsung: add DMA support for RX
-      serial: samsung: remove redundant interrupt enabling
-
-Robin Gong (1):
-      serial: imx: start rx_dma once RXFIFO is not empty
-
-Sebastian Andrzej Siewior (1):
-      tty: serial: 8250: omap: add ttySx console if the user didn't
-
-Sergei Shtylyov (1):
-      sh-sci: extend PM methods
-
-Stefan Agner (5):
-      serial: fsl_lpuart: delete timer on shutdown
-      serial: fsl_lpuart: avoid new transfer while DMA is running
-      serial: fsl_lpuart: move DMA channel request to probe
-      serial: fsl_lpuart: update RX timer on successful DMA transfer
-      tty: serial: fsl_lpuart: terminate DMA on buffer flush
-
-Stuart R. Anderson (1):
-      Specify PCI based UART for earlyprintk
-
-Tomasz Figa (2):
-      serial: samsung: Add support for early console
-      ARM: dts: exynos4: Add stdout-path properties
-
-Vijay Rai (1):
-      tty: 8250: Add 64byte UART support for FSL platforms
-
-Vineet Gupta (1):
-      serial: 8250_early: optimize early 8250 uart
-
-Wolfram Sang (1):
-      tty: serial: 8250: drop owner assignment from platform_drivers
-
-Yoshihiro Kaneko (1):
-      serial: sh-sci: Use dev_dbg() to log an error message
-
-Yuan Yao (1):
-      serial: fsl-lpuart: disable interrupt when suspend
-
-kbuild test robot (1):
-      tty/serial: serial8250_set_divisor() can be static
-
- Documentation/devicetree/bindings/arm/sprd.txt     |  11 +
- .../devicetree/bindings/serial/digicolor-usart.txt |  27 +
- .../devicetree/bindings/serial/sirf-uart.txt       |   4 +-
- .../devicetree/bindings/serial/sprd-uart.txt       |   7 +
- .../devicetree/bindings/vendor-prefixes.txt        |   2 +
- Documentation/kernel-parameters.txt                |  12 +
- arch/arm/boot/dts/exynos4210-origen.dts            |   1 +
- arch/arm/boot/dts/exynos4210-smdkv310.dts          |   1 +
- arch/arm/boot/dts/exynos4210-trats.dts             |   1 +
- arch/arm/boot/dts/exynos4210-universal_c210.dts    |   1 +
- arch/arm/boot/dts/exynos4412-odroid-common.dtsi    |   4 +
- arch/arm/boot/dts/exynos4412-origen.dts            |   1 +
- arch/arm/boot/dts/exynos4412-smdk4412.dts          |   1 +
- arch/arm/boot/dts/exynos4412-tiny4412.dts          |   4 +
- arch/arm/boot/dts/exynos4412-trats2.dts            |   1 +
- arch/x86/include/asm/intel-mid.h                   |   3 -
- arch/x86/kernel/early_printk.c                     | 187 +++-
- arch/x86/platform/intel-mid/device_libs/Makefile   |   2 -
- .../intel-mid/device_libs/platform_max3111.c       |  35 -
- .../platform/intel-mid/early_printk_intel_mid.c    | 220 +----
- drivers/bluetooth/hci_ath.c                        |  15 +-
- drivers/pnp/driver.c                               |   2 +-
- drivers/tty/amiserial.c                            |   2 +-
- drivers/tty/ehv_bytechan.c                         |   1 -
- drivers/tty/isicom.c                               |   2 +-
- drivers/tty/n_tty.c                                | 254 +++---
- drivers/tty/pty.c                                  |  31 +-
- drivers/tty/rocket.c                               |   4 +-
- drivers/tty/serial/8250/8250_core.c                | 230 +++--
- drivers/tty/serial/8250/8250_dma.c                 |   6 +-
- drivers/tty/serial/8250/8250_dw.c                  |  11 +
- drivers/tty/serial/8250/8250_early.c               |  13 +-
- drivers/tty/serial/8250/8250_omap.c                |  88 +-
- drivers/tty/serial/8250/8250_pci.c                 |   4 +-
- drivers/tty/serial/8250/8250_pnp.c                 |   8 +-
- drivers/tty/serial/8250/Kconfig                    |  19 +
- drivers/tty/serial/Kconfig                         |  54 +-
- drivers/tty/serial/Makefile                        |   4 +-
- drivers/tty/serial/altera_jtaguart.c               |   1 +
- drivers/tty/serial/altera_uart.c                   |   1 +
- drivers/tty/serial/atmel_serial.c                  | 153 ++--
- drivers/tty/serial/digicolor-usart.c               | 560 ++++++++++++
- drivers/tty/serial/etraxfs-uart.c                  | 996 +++++++++++++++++++++
- drivers/tty/serial/fsl_lpuart.c                    | 135 +--
- drivers/tty/serial/imx.c                           | 190 +++-
- drivers/tty/serial/mcf.c                           |   7 +-
- drivers/tty/serial/men_z135_uart.c                 | 155 +++-
- drivers/tty/serial/mrst_max3110.c                  | 909 -------------------
- drivers/tty/serial/mrst_max3110.h                  |  61 --
- drivers/tty/serial/msm_serial.c                    |  27 +-
- drivers/tty/serial/mxs-auart.c                     |  55 +-
- drivers/tty/serial/of_serial.c                     |  13 +
- drivers/tty/serial/omap-serial.c                   |  37 +-
- drivers/tty/serial/samsung.c                       | 680 +++++++++++++-
- drivers/tty/serial/samsung.h                       |  42 +
- drivers/tty/serial/serial_core.c                   | 111 +--
- drivers/tty/serial/sh-sci.c                        |  25 +-
- drivers/tty/serial/sirfsoc_uart.c                  |  40 +-
- drivers/tty/serial/sirfsoc_uart.h                  |   4 +-
- drivers/tty/serial/sprd_serial.c                   | 793 ++++++++++++++++
- drivers/tty/serial/xilinx_uartps.c                 |  10 +-
- drivers/tty/tty_buffer.c                           |   6 +
- drivers/tty/tty_ioctl.c                            |   3 +-
- drivers/tty/tty_mutex.c                            |  18 +-
- drivers/tty/vt/vt.c                                |  18 +-
- include/linux/pnp.h                                |  12 +-
- include/linux/serial_8250.h                        |   4 +
- include/linux/serial_core.h                        |  22 +-
- include/linux/serial_s3c.h                         |  28 +
- include/linux/tty.h                                |  25 +-
- include/linux/vt_buffer.h                          |   4 -
- include/uapi/linux/serial_core.h                   |  12 +-
- include/uapi/linux/serial_reg.h                    |   3 +-
- 73 files changed, 4523 insertions(+), 1910 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/arm/sprd.txt
- create mode 100644 Documentation/devicetree/bindings/serial/digicolor-usart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/sprd-uart.txt
- delete mode 100644 arch/x86/platform/intel-mid/device_libs/platform_max3111.c
- create mode 100644 drivers/tty/serial/digicolor-usart.c
- create mode 100644 drivers/tty/serial/etraxfs-uart.c
- delete mode 100644 drivers/tty/serial/mrst_max3110.c
- delete mode 100644 drivers/tty/serial/mrst_max3110.h
- create mode 100644 drivers/tty/serial/sprd_serial.c
+--95i9U1kwvGuqWFIAJoHA3lRp5dcDBiePX--
