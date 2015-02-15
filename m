@@ -1,173 +1,99 @@
-From: =?windows-1252?Q?Andreas_F=E4rber?= <afaerber@suse.de>
-Subject: Re: [PATCH 00/14] Add support to STMicroelectronics STM32 family
-Date: Sun, 15 Feb 2015 16:14:12 +0100
-Message-ID: <54E0B7C4.7050900@suse.de>
-References: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] serial: 8250: Revert "tty: serial: 8250_core: read only RX
+ if there is something in the FIFO"
+Date: Sun, 15 Feb 2015 18:32:16 +0100
+Message-ID: <20150215173216.GA8660@linutronix.de>
+References: <54DA43F8.9090904@hurleysoftware.com>
+ <54DBB531.2030504@hurleysoftware.com>
+ <20150211200313.GE2531@atomide.com>
+ <54DBBE9E.90104@hurleysoftware.com>
+ <54DC6832.3070507@linutronix.de>
+ <54DCD584.3010500@hurleysoftware.com>
+ <20150212192333.GA18882@linutronix.de>
+ <54DD053A.8060905@hurleysoftware.com>
+ <20150213185115.GF5482@linutronix.de>
+ <20150213231519.GF8670@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="95i9U1kwvGuqWFIAJoHA3lRp5dcDBiePX"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, Kees
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150213231519.GF8670@n2100.arm.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Nicolas Schichan <nschichan@freebox.fr>, Tony Lindgren <tony@atomide.com>, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---95i9U1kwvGuqWFIAJoHA3lRp5dcDBiePX
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
+This reverts commit 0aa525d11859c1a4d5b78fdc704148e2ae03ae13.
 
-Hi Maxime,
+The conditional RX-FIFO read seems to cause spurious interrupts and we
+see just:
+|serial8250: too much work for irq29
 
-Am 12.02.2015 um 18:45 schrieb Maxime Coquelin:
-> This patchset adds basic support for STMicroelectronics STM32 series MC=
-Us.
->=20
-> STM32 MCUs are Cortex-M CPU, used in various applications (consumer
-> electronics, industrial applications, hobbyists...).
-> Datasheets, user and programming manuals are publicly available on
-> STMicroelectronics website.
->=20
-> With this series applied, the STM32F419 Discovery can boot succesfully.=
+The previous behaviour was "default" for decades and Marvell's 88f6282 SoC
+might not be the only that relies on it. Therefore the Omap fix is
+reverted for now.
 
->=20
-> Once this series accepted, next steps will be to add DMA support, as US=
-ART,
-> I2C and SPI IPs don't have any FIFO. Then will come the clock driver, a=
-s today
-> the bootloader has to be patched to enable the needed clocks.
+Fixes: 0aa525d11859 ("tty: serial: 8250_core: read only RX if there is
+something in the FIFO")
+Reported-By: Nicolas Schichan <nschichan@freebox.fr>
+Debuged-By: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+* Russell King - ARM Linux | 2015-02-13 23:15:19 [+0000]:
 
-This is somewhat unfortunate, as I have been working on the same thing
-and have demonstrated the STM32F429 Discovery Kit at ARM TechSymposium
-Europe in December and submitted a talk for LinuxCon Japan.
+>On Fri, Feb 13, 2015 at 07:51:16PM +0100, Sebastian Andrzej Siewior wrote:
+>> Something like this maybe?
+>
+>My personal feeling is that as 0aa525d11859 was wrong, it should be
+>reverted and this should be another attempt to fix the problem.  In
+>other words, there should be two patches, one a revert of the previously
+>known bad commit and this one having another go at it.
+>
+>I feel that would be a better approach, since then we don't end up
+>with this change building on a previously know buggy change.  It
+>would also make the changes to this solution from the previous,
+>known-to-work-for-decades code more obvious.
 
-https://github.com/afaerber/afboot-stm32
-https://github.com/afaerber/linux/commits/stm32
+Okay. So here is the revert.
 
-On a brief look, it seems you are further along in terms of code quality
-and documenting. Do you spot anything that's missing in your series and
-could be added from my branch? The clk controller maybe? Also I already
-started looking into gpio and usb drivers. Me too, I skipped DMA support
-though.
+ drivers/tty/serial/8250/8250_core.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-Regards,
-Andreas
-
->=20
-> Maxime Coquelin (14):
->   scripts: link-vmlinux: Don't pass page offset to kallsyms if XIP
->     Kernel
->   ARM: ARMv7M: Enlarge vector table to 256 entries
->   clocksource: Add ARM System timer driver
->   reset: Add reset_controller_of_init() function
->   ARM: call reset_controller_of_init from default time_init handler
->   drivers: reset: Add STM32 reset driver
->   clockevent: Add STM32 Timer driver
->   pinctrl: Add pinctrl driver for STM32 MCUs
->   serial: stm32-usart: Add STM32 USART Driver
->   ARM: Add STM32 family machine
->   ARM: dts: Add ARM System timer as clockevent in armv7m
->   ARM: dts: Introduce STM32F429 MCU
->   ARM: configs: Add STM32 defconfig
->   MAINTAINERS: Add entry for STM32 MCUs
->=20
->  Documentation/arm/stm32/overview.txt               |  32 +
->  Documentation/arm/stm32/stm32f429-overview.txt     |  22 +
->  .../devicetree/bindings/arm/system_timer.txt       |  15 +
->  .../devicetree/bindings/pinctrl/pinctrl-stm32.txt  |  99 +++
->  .../devicetree/bindings/reset/st,stm32-reset.txt   |  19 +
->  .../devicetree/bindings/serial/st,stm32-usart.txt  |  18 +
->  .../devicetree/bindings/timer/st,stm32-timer.txt   |  19 +
->  MAINTAINERS                                        |   7 +
->  arch/arm/Kconfig                                   |  22 +
->  arch/arm/Makefile                                  |   1 +
->  arch/arm/boot/dts/Makefile                         |   1 +
->  arch/arm/boot/dts/armv7-m.dtsi                     |   7 +
->  arch/arm/boot/dts/stm32f429-disco.dts              |  41 ++
->  arch/arm/boot/dts/stm32f429.dtsi                   | 279 ++++++++
->  arch/arm/configs/stm32_defconfig                   |  72 ++
->  arch/arm/kernel/entry-v7m.S                        |   8 +-
->  arch/arm/kernel/time.c                             |   4 +
->  arch/arm/mach-stm32/Makefile                       |   1 +
->  arch/arm/mach-stm32/Makefile.boot                  |   0
->  arch/arm/mach-stm32/board-dt.c                     |  19 +
->  drivers/clocksource/Kconfig                        |  16 +
->  drivers/clocksource/Makefile                       |   2 +
->  drivers/clocksource/arm_system_timer.c             |  74 ++
->  drivers/clocksource/timer-stm32.c                  | 187 +++++
->  drivers/pinctrl/Kconfig                            |   9 +
->  drivers/pinctrl/Makefile                           |   1 +
->  drivers/pinctrl/pinctrl-stm32.c                    | 779 +++++++++++++=
-++++++++
->  drivers/reset/Makefile                             |   1 +
->  drivers/reset/core.c                               |  20 +
->  drivers/reset/reset-stm32.c                        | 124 ++++
->  drivers/tty/serial/Kconfig                         |  17 +
->  drivers/tty/serial/Makefile                        |   1 +
->  drivers/tty/serial/stm32-usart.c                   | 695 +++++++++++++=
-+++++
->  include/asm-generic/vmlinux.lds.h                  |   4 +-
->  include/dt-bindings/pinctrl/pinctrl-stm32.h        |  43 ++
->  include/linux/reset-controller.h                   |   6 +
->  include/uapi/linux/serial_core.h                   |   3 +
->  scripts/link-vmlinux.sh                            |   2 +-
->  38 files changed, 2664 insertions(+), 6 deletions(-)
->  create mode 100644 Documentation/arm/stm32/overview.txt
->  create mode 100644 Documentation/arm/stm32/stm32f429-overview.txt
->  create mode 100644 Documentation/devicetree/bindings/arm/system_timer.=
-txt
->  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-s=
-tm32.txt
->  create mode 100644 Documentation/devicetree/bindings/reset/st,stm32-re=
-set.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/st,stm32-u=
-sart.txt
->  create mode 100644 Documentation/devicetree/bindings/timer/st,stm32-ti=
-mer.txt
->  create mode 100644 arch/arm/boot/dts/stm32f429-disco.dts
->  create mode 100644 arch/arm/boot/dts/stm32f429.dtsi
->  create mode 100644 arch/arm/configs/stm32_defconfig
->  create mode 100644 arch/arm/mach-stm32/Makefile
->  create mode 100644 arch/arm/mach-stm32/Makefile.boot
->  create mode 100644 arch/arm/mach-stm32/board-dt.c
->  create mode 100644 drivers/clocksource/arm_system_timer.c
->  create mode 100644 drivers/clocksource/timer-stm32.c
->  create mode 100644 drivers/pinctrl/pinctrl-stm32.c
->  create mode 100644 drivers/reset/reset-stm32.c
->  create mode 100644 drivers/tty/serial/stm32-usart.c
->  create mode 100644 include/dt-bindings/pinctrl/pinctrl-stm32.h
->=20
-
-
---=20
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 N=FCrnberg, Germany
-GF: Felix Imend=F6rffer, Jane Smithard, Jennifer Guild, Dilip Upmanyu,
-Graham Norton; HRB 21284 (AG N=FCrnberg)
-
-
---95i9U1kwvGuqWFIAJoHA3lRp5dcDBiePX
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJU4LfEAAoJEPou0S0+fgE//zYP/0EeKpvBKU08wt7+ELInpcJP
-ak50cp7i1usajMEgEjeEH7VeM+0MiGWLvEfFUOTnqidzo07aRG66svOL8orTVcW3
-GZL5MGm3zFsGGnZqff19CnRMcz2ys3BoqylCw4ya9iFD3tycqGthp7Zl6J7sZORD
-bi6Jk75LB4QEaMxAueQ8GbAQ/tswioGua7GByW0seRe2HiLS4/nDrgWnfkfdsobc
-TpyUvNCBz3HLg7/5VomZ+CfnEK0jjH2AJ3I3+y+RHVerbGN6QxcyPc7j1Lprre+N
-SafndVvs3pKb5jfgwDV4UUmzGxV4B0Tx4B336X+Zz0QhdzuWRJ4zfumQi1V8l6iD
-b8fh1TMxhluOcP6V0rwhpWLBFVzyOZjcA9hAJ+3ul0udLGvqVofGui6FCjpNNhVu
-BP8J4gb78HIao+bPImCs32xfSJ+EQdZIoGCXt6iFA6Co2pOUyn3dqoC200JqNoL3
-UOmU30VqfEvf3xyvyhSVl65XZnlkOw+HDKAbtJYaAFnHlNNzuxF4B7khcumbbPiz
-afWKJJXFfun50Y80SdZCzaf4E3kZ43j0c9KxjA0NZf1FlC1XqixQ6LkI9BRaaRnH
-GfHvjnBwPznT5/6F2DT2Na7GqbGkxCCKHNO01vZuJNX47sUPSTOO1Kkjszs6SrVt
-sbkXP7xSgMjDuE/BcIOg
-=yIcJ
------END PGP SIGNATURE-----
-
---95i9U1kwvGuqWFIAJoHA3lRp5dcDBiePX--
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index e3b9570a1eff..deae122c9c4b 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -2138,8 +2138,8 @@ int serial8250_do_startup(struct uart_port *port)
+ 	/*
+ 	 * Clear the interrupt registers.
+ 	 */
+-	if (serial_port_in(port, UART_LSR) & UART_LSR_DR)
+-		serial_port_in(port, UART_RX);
++	serial_port_in(port, UART_LSR);
++	serial_port_in(port, UART_RX);
+ 	serial_port_in(port, UART_IIR);
+ 	serial_port_in(port, UART_MSR);
+ 
+@@ -2300,8 +2300,8 @@ int serial8250_do_startup(struct uart_port *port)
+ 	 * saved flags to avoid getting false values from polling
+ 	 * routines or the previous session.
+ 	 */
+-	if (serial_port_in(port, UART_LSR) & UART_LSR_DR)
+-		serial_port_in(port, UART_RX);
++	serial_port_in(port, UART_LSR);
++	serial_port_in(port, UART_RX);
+ 	serial_port_in(port, UART_IIR);
+ 	serial_port_in(port, UART_MSR);
+ 	up->lsr_saved_flags = 0;
+@@ -2394,8 +2394,7 @@ void serial8250_do_shutdown(struct uart_port *port)
+ 	 * Read data port to reset things, and then unlink from
+ 	 * the IRQ chain.
+ 	 */
+-	if (serial_port_in(port, UART_LSR) & UART_LSR_DR)
+-		serial_port_in(port, UART_RX);
++	serial_port_in(port, UART_RX);
+ 	serial8250_rpm_put(up);
+ 
+ 	del_timer_sync(&up->timer);
+-- 
+2.1.4
