@@ -1,106 +1,130 @@
-From: "Li, Elvin" <elvin.li-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: Usb serial driver change question in the linux kernel
-Date: Sun, 15 Feb 2015 13:26:08 +0000
-Message-ID: <85D5955FC01BBD45B061B0BD47E1291910F5198A@SHSMSX103.ccr.corp.intel.com>
-References: <85D5955FC01BBD45B061B0BD47E1291910F50B6B@SHSMSX103.ccr.corp.intel.com>
- <85D5955FC01BBD45B061B0BD47E1291910F5140E@SHSMSX103.ccr.corp.intel.com>
- <20150215051542.GA2551@localhost>
+From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH 02/14] ARM: ARMv7M: Enlarge vector table to 256 entries
+Date: Sun, 15 Feb 2015 15:34:54 +0100
+Message-ID: <CALszF6CLUVp4ST5J_1oR4MKByXALO9eK48z9sw_7V417MiSouQ@mail.gmail.com>
+References: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1423763164-5606-3-git-send-email-mcoquelin.stm32@gmail.com>
+	<CAMuHMdWESyPktOSBfVoZCb35stUbhNpbbpzSW4JfORdObgg5jw@mail.gmail.com>
+	<CALszF6BDa9pUb534YN2z9DbYA+hPCnG8XYy5YbjJwSiseKz4xg@mail.gmail.com>
+	<20150213100050.GM10842@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150215051542.GA2551@localhost>
-Content-Language: en-US
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Tian, Feng" <feng.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Ni, Ruiyu" <ruiyu.ni-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org" <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, "jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20150213100050.GM10842@pengutronix.de>
+Sender: linux-gpio-owner@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Russell King <linux@arm.linux.org.uk>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Philipp Zabel <p.zabel@pengutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>K
 List-Id: linux-serial@vger.kernel.org
 
-Hi Johan,
-	Your patch fixed my issue. Thank you for support!
+2015-02-13 11:00 GMT+01:00 Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengu=
+tronix.de>:
+> On Fri, Feb 13, 2015 at 09:42:46AM +0100, Maxime Coquelin wrote:
+>> Hi Geert,
+>>
+>> 2015-02-12 21:34 GMT+01:00 Geert Uytterhoeven <geert@linux-m68k.org>=
+:
+>> > On Thu, Feb 12, 2015 at 6:45 PM, Maxime Coquelin
+>> > <mcoquelin.stm32@gmail.com> wrote:
+>> >> From Cortex-M4 and M7 reference manuals, the nvic supports up to =
+240
+>> >> interrupts. So the number of entries in vectors table is 256.
+>> >>
+>> >> This patch adds the missing entries, and change the alignement, s=
+o that
+>> >> vector_table remains naturally aligned.
+>> >
+>> > Shouldn't this depend on ARCH_STM32, or some other M4 or M7 specif=
+ic
+>> > Kconfig option, to avoid wasting the space on other CPUs?
+>>
+>> Actually, the STM32F429 has 90 interrupts, so it would need 106
+>> entries in the vector table.
+>> The maximum of supported interrupts is not only for Cortex-M4 and M7=
+,
+>> this is also true for Cortex-M3.
+>>
+>> I see two possibilities:
+>>  1 - We declare the vector table for the maximum supported number of
+>> IRQs, as this patch does.
+>>         - Pro: it will be functionnal with all Cortex-M MCUs
+>>         - Con: Waste of less than 1KB for memory
+>>  2 - We introduce a config flag that provides the number of interrup=
+ts
+>>         - Pro: No more memory waste
+>>         - Con: Need to declare a per MCU model config flag.
+> I'd vote for 2, something like:
+>
+>         config CPUV7M_NUM_IRQ
+>                 int
+>                 default 90 if STM32F429
+>                 default 38 if EFM32GG
+>                 default 240
+>
+> then there is a working default and platforms being short on memory c=
+an
+> configure as appropriate. (The only down side is that if we create
+> multi-platfrom images at some time in the future either all or none o=
+f
+> the supported platforms must provide a value here.)
 
-Regards
-Elvin Li
+Ok, I'm fine doing this way.
+I will implement this in the v2 if Russel is fine with the proposal too=
+=2E
 
------Original Message-----
-From: Johan Hovold [mailto:jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org] On Behalf Of Johan Hovold
-Sent: Sunday, February 15, 2015 1:16 PM
-To: Li, Elvin
-Cc: linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Tian, Feng; Ni, Ruiyu; greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org; jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Subject: Re: Usb serial driver change question in the linux kernel
+>
+>> Then, regarding the natural alignment, is there a way to ensure it
+>> depending on the value of a config flag?
+> The exact wording in ARMARMv7-M is:
+>
+>         The Vector table must be naturally aligned to a power of two
+>         whose alignment value is greater than or equal
+>         to (Number of Exceptions supported x 4), with a minimum
+>         alignment of 128 bytes.
+>
+>> Or we should keep it at the maximum value possible?
+> So we need:
+>
+>         .align x
+>
+> with x being max(7, ceil(log((CPUV7M_NUM_IRQ + 16) * 4, 2))). So the
+> alignment needed is between 7 and 10.
+>
+> If the assembler supports an expression here I'd use that. But before
+> adding strange hacks to generate the right value there better go for =
+a
+> static value like:
+>
+>         /* The vector table must be naturally aligned */
+>         #if CONFIG_CPUV7M_NUM_IRQ <=3D 112
+>         .align 9 /* log2((112 + 16) * 4) */
+>         #else
+>         .align 10
+>         #endif
+>
+> Further steps would be:
+>
+>         CONFIG_CPUV7M_NUM_IRQ <=3D 48 -> .align 8
+>         CONFIG_CPUV7M_NUM_IRQ <=3D 16 -> .align 7
+>
+> Probably it's not worth to add the respective #ifdefs here.
 
-On Sun, Feb 15, 2015 at 12:43:51AM +0000, Li, Elvin wrote:
-> Hi All,
->                 I am using usb_debug driver in Linux kernel  to manage
->                 Ajays USB debug device (Vendor Id: 0525 Product Id:
->                 127a) which follows EHCI debug device specification.
->                 drivers\usb\serial\usb_debug.c was developed by Greg
->                 Kroah-Hartman, it worked very well with Ajays debug
->                 device until one change to usb-serial.c. I could see
->                 the Johan's change at
->                 https://github.com/torvalds/linux/commit/5083fd7bdfe6760577235a724cf6dccae13652c2.
-
-> Does anyone has ideas how the issue could be resolved?
-
-Thanks for the report. The commit mentioned above should simply be reverted; a bulk-out buffer size smaller than the end-point size is indeed valid.
-
-Could you verify that the patch below fixes the issues you're seeing?
+I will go for the  #ifdefs.
 
 Thanks,
-Johan
+Maxime
 
-
->From fffe54908863974c20adf1b1bf4e24e35a8d921b Mon Sep 17 00:00:00 2001
-From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Date: Sun, 15 Feb 2015 11:57:53 +0700
-Subject: [PATCH] Revert "USB: serial: make bulk_out_size a lower limit"
-
-This reverts commit 5083fd7bdfe6760577235a724cf6dccae13652c2.
-
-A bulk-out size smaller than the end-point size is indeed valid. The offending commit broke the usb-debug driver for EHCI debug devices, which use 8-byte buffers.
-
-Fixes: 5083fd7bdfe6 ("USB: serial: make bulk_out_size a lower limit")
-Reported-by: "Li, Elvin" <elvin.li-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: stable <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>	# v3.15
-Signed-off-by: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
- drivers/usb/serial/usb-serial.c | 5 +++--
- include/linux/usb/serial.h      | 3 +--
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c index 475723c006f9..19842370a07f 100644
---- a/drivers/usb/serial/usb-serial.c
-+++ b/drivers/usb/serial/usb-serial.c
-@@ -940,8 +940,9 @@ static int usb_serial_probe(struct usb_interface *interface,
- 		port = serial->port[i];
- 		if (kfifo_alloc(&port->write_fifo, PAGE_SIZE, GFP_KERNEL))
- 			goto probe_error;
--		buffer_size = max_t(int, serial->type->bulk_out_size,
--						usb_endpoint_maxp(endpoint));
-+		buffer_size = serial->type->bulk_out_size;
-+		if (!buffer_size)
-+			buffer_size = usb_endpoint_maxp(endpoint);
- 		port->bulk_out_size = buffer_size;
- 		port->bulk_out_endpointAddress = endpoint->bEndpointAddress;
- 
-diff --git a/include/linux/usb/serial.h b/include/linux/usb/serial.h index 9bb547c7bce7..704a1ab8240c 100644
---- a/include/linux/usb/serial.h
-+++ b/include/linux/usb/serial.h
-@@ -190,8 +190,7 @@ static inline void usb_set_serial_data(struct usb_serial *serial, void *data)
-  * @num_ports: the number of different ports this device will have.
-  * @bulk_in_size: minimum number of bytes to allocate for bulk-in buffer
-  *	(0 = end-point size)
-- * @bulk_out_size: minimum number of bytes to allocate for bulk-out buffer
-- *	(0 = end-point size)
-+ * @bulk_out_size: bytes to allocate for bulk-out buffer (0 = end-point 
-+ size)
-  * @calc_num_ports: pointer to a function to determine how many ports this
-  *	device has dynamically.  It will be called after the probe()
-  *	callback is called, but before attach()
+>
+> Best regards
+> Uwe
+>
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig   =
+         |
+> Industrial Linux Solutions                 | http://www.pengutronix.d=
+e/  |
 --
-2.0.5
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
+the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
