@@ -1,99 +1,63 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH] serial: 8250: Revert "tty: serial: 8250_core: read only RX
- if there is something in the FIFO"
-Date: Sun, 15 Feb 2015 18:32:16 +0100
-Message-ID: <20150215173216.GA8660@linutronix.de>
-References: <54DA43F8.9090904@hurleysoftware.com>
- <54DBB531.2030504@hurleysoftware.com>
- <20150211200313.GE2531@atomide.com>
- <54DBBE9E.90104@hurleysoftware.com>
- <54DC6832.3070507@linutronix.de>
- <54DCD584.3010500@hurleysoftware.com>
- <20150212192333.GA18882@linutronix.de>
- <54DD053A.8060905@hurleysoftware.com>
- <20150213185115.GF5482@linutronix.de>
- <20150213231519.GF8670@n2100.arm.linux.org.uk>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH 05/14] ARM: call reset_controller_of_init from default
+ time_init handler
+Date: Sun, 15 Feb 2015 16:17:31 -0600
+Message-ID: <CAL_Jsq+Sk0C-1UHCKE18fEVwBbV=quV9mrJSKTO_UPXWcaYfCw@mail.gmail.com>
+References: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com> <1423763164-5606-6-git-send-email-mcoquelin.stm32@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150213231519.GF8670@n2100.arm.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Nicolas Schichan <nschichan@freebox.fr>, Tony Lindgren <tony@atomide.com>, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, balbi@ti.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1423763164-5606-6-git-send-email-mcoquelin.stm32@gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, Kees
 List-Id: linux-serial@vger.kernel.org
 
-This reverts commit 0aa525d11859c1a4d5b78fdc704148e2ae03ae13.
+On Thu, Feb 12, 2015 at 11:45 AM, Maxime Coquelin
+<mcoquelin.stm32@gmail.com> wrote:
+> Some DT ARM platforms need the reset controllers to be initialized before
+> the timers.
+> This is the case of the stm32 and sunxi platforms.
 
-The conditional RX-FIFO read seems to cause spurious interrupts and we
-see just:
-|serial8250: too much work for irq29
+I would say this is the exception, not the rule and therefore should
+be handled in a machine desc function. Or it could be part of your
+timer setup. Or is the bootloader's problem (like arch timer setup).
 
-The previous behaviour was "default" for decades and Marvell's 88f6282 SoC
-might not be the only that relies on it. Therefore the Omap fix is
-reverted for now.
+We just want to limit how much this mechanism gets used.
 
-Fixes: 0aa525d11859 ("tty: serial: 8250_core: read only RX if there is
-something in the FIFO")
-Reported-By: Nicolas Schichan <nschichan@freebox.fr>
-Debuged-By: Peter Hurley <peter@hurleysoftware.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
-* Russell King - ARM Linux | 2015-02-13 23:15:19 [+0000]:
+Rob
 
->On Fri, Feb 13, 2015 at 07:51:16PM +0100, Sebastian Andrzej Siewior wrote:
->> Something like this maybe?
 >
->My personal feeling is that as 0aa525d11859 was wrong, it should be
->reverted and this should be another attempt to fix the problem.  In
->other words, there should be two patches, one a revert of the previously
->known bad commit and this one having another go at it.
+> This patch adds a call to reset_controller_of_init() to the default
+> .init_time callback when RESET_CONTROLLER is used by the platform.
 >
->I feel that would be a better approach, since then we don't end up
->with this change building on a previously know buggy change.  It
->would also make the changes to this solution from the previous,
->known-to-work-for-decades code more obvious.
-
-Okay. So here is the revert.
-
- drivers/tty/serial/8250/8250_core.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index e3b9570a1eff..deae122c9c4b 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -2138,8 +2138,8 @@ int serial8250_do_startup(struct uart_port *port)
- 	/*
- 	 * Clear the interrupt registers.
- 	 */
--	if (serial_port_in(port, UART_LSR) & UART_LSR_DR)
--		serial_port_in(port, UART_RX);
-+	serial_port_in(port, UART_LSR);
-+	serial_port_in(port, UART_RX);
- 	serial_port_in(port, UART_IIR);
- 	serial_port_in(port, UART_MSR);
- 
-@@ -2300,8 +2300,8 @@ int serial8250_do_startup(struct uart_port *port)
- 	 * saved flags to avoid getting false values from polling
- 	 * routines or the previous session.
- 	 */
--	if (serial_port_in(port, UART_LSR) & UART_LSR_DR)
--		serial_port_in(port, UART_RX);
-+	serial_port_in(port, UART_LSR);
-+	serial_port_in(port, UART_RX);
- 	serial_port_in(port, UART_IIR);
- 	serial_port_in(port, UART_MSR);
- 	up->lsr_saved_flags = 0;
-@@ -2394,8 +2394,7 @@ void serial8250_do_shutdown(struct uart_port *port)
- 	 * Read data port to reset things, and then unlink from
- 	 * the IRQ chain.
- 	 */
--	if (serial_port_in(port, UART_LSR) & UART_LSR_DR)
--		serial_port_in(port, UART_RX);
-+	serial_port_in(port, UART_RX);
- 	serial8250_rpm_put(up);
- 
- 	del_timer_sync(&up->timer);
--- 
-2.1.4
+> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> ---
+>  arch/arm/kernel/time.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/arch/arm/kernel/time.c b/arch/arm/kernel/time.c
+> index 0cc7e58..4601b1e 100644
+> --- a/arch/arm/kernel/time.c
+> +++ b/arch/arm/kernel/time.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/irq.h>
+>  #include <linux/kernel.h>
+>  #include <linux/profile.h>
+> +#include <linux/reset-controller.h>
+>  #include <linux/sched.h>
+>  #include <linux/sched_clock.h>
+>  #include <linux/smp.h>
+> @@ -117,6 +118,9 @@ void __init time_init(void)
+>         if (machine_desc->init_time) {
+>                 machine_desc->init_time();
+>         } else {
+> +#ifdef CONFIG_RESET_CONTROLLER
+> +               reset_controller_of_init();
+> +#endif
+>  #ifdef CONFIG_COMMON_CLK
+>                 of_clk_init(NULL);
+>  #endif
+> --
+> 1.9.1
+>
