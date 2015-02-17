@@ -1,52 +1,61 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH 05/14] ARM: call reset_controller_of_init from default
- time_init handler
-Date: Mon, 16 Feb 2015 09:48:58 -0600
-Message-ID: <CAL_JsqL=A+O+J_X4aeJWeWMNg5StMJM9oosqv0Q0BZH5t=aPHQ@mail.gmail.com>
-References: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com>
- <1423763164-5606-6-git-send-email-mcoquelin.stm32@gmail.com>
- <CAL_Jsq+Sk0C-1UHCKE18fEVwBbV=quV9mrJSKTO_UPXWcaYfCw@mail.gmail.com> <20150215231251.GL8656@n2100.arm.linux.org.uk>
+From: Philip Elcan <pelcan@codeaurora.org>
+Subject: Re: [PATCH 10/10] drivers: PL011: add support for the ARM SBSA generic
+ UART
+Date: Tue, 17 Feb 2015 10:55:35 -0500
+Message-ID: <54E36477.3050406@codeaurora.org>
+References: <1421428986-11300-1-git-send-email-andre.przywara@arm.com>
+ <1421428986-11300-11-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150215231251.GL8656@n2100.arm.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Philipp Zabel <p.zabel@pengutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1421428986-11300-11-git-send-email-andre.przywara@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: Mark Rutland <mark.rutland@arm.com>, rob.herring@linaro.org, arnd@arndb.de, linux-serial@vger.kernel.org, Dave Martin <dave.martin@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Feb 15, 2015 at 5:12 PM, Russell King - ARM Linux
-<linux@arm.linux.org.uk> wrote:
-> On Sun, Feb 15, 2015 at 04:17:31PM -0600, Rob Herring wrote:
->> On Thu, Feb 12, 2015 at 11:45 AM, Maxime Coquelin
->> <mcoquelin.stm32@gmail.com> wrote:
->> > Some DT ARM platforms need the reset controllers to be initialized before
->> > the timers.
->> > This is the case of the stm32 and sunxi platforms.
->>
->> I would say this is the exception, not the rule and therefore should
->> be handled in a machine desc function. Or it could be part of your
->> timer setup. Or is the bootloader's problem (like arch timer setup).
->>
->> We just want to limit how much this mechanism gets used.
->
-> Can you clarify please - what is "this mechanism"?  Placing explicit
-> calls at this location, or the whole OF_DECLARE_* stuff?
+On 01/16/2015 12:23 PM, Andre Przywara wrote:
+> The ARM Server Base System Architecture[1] document describes a
+> generic UART which is a subset of the PL011 UART.
+> It lacks DMA support, baud rate control and modem status line
+> control, among other things.
+> The idea is to move the UART initialization and setup into the
+> firmware (which does this job today already) and let the kernel just
+> use the UART for sending and receiving characters.
+> We use the recent refactoring the build a new struct uart_ops
+> variable which points to some new functions avoiding access to the
+> missing registers. We reuse as much existing PL011 code as possible.
+> 
+> In contrast to the PL011 the SBSA UART does not define any AMBA or
+> PrimeCell relations, so we go a pretty generic probe function
+> which only uses platform device functions.
+> A DT binding is provided, but other systems can easily attach to it,
+> too (hint, hint!).
+> 
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> ---
 
-Well, it is both really, but I guess OF_DECLARE_ linker sections are
-just an implementation detail of scattering various explicit init
-calls. My concern is we'll end up with another initcall like mechanism
-and the ordering problems associated with them. For example, what if
-another platform needs clocks initialized before the reset controller?
-I could see wanting to add gpio, pinctrl, syscon, etc. Another example
-is the Beagleboard Cape folks want to read an I2C EEPROM early to
-apply overlays before drivers probe. Where do we draw the line?
+<snip>
 
-> Sebastian suggested using the OF_DECLARE_* stuff for the Dove PMU -
-> so maybe you have a comment on that too?
+Andre,
 
-I have the same position that it is the exception, not the rule, so
-use the machine descriptor. I'm willing to be convinced otherwise, but
-I think these cases need to be questioned.
+I'm a little late to address this patchset, but the SBSA defines all
+the Generic UART registers 32-bit wide. However, the amba-pl011 driver
+uses 16-bit accessors. How will you be handling that? Can the ARM PL011
+hardware handle 32-bit access?
 
-Rob
+Philip
+
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora
+Forum, a Linux Foundation Collaborative Project
