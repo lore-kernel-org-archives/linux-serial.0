@@ -1,13 +1,14 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 2/7] serial: imx: reformat and cleanup copyright header
-Date: Wed, 18 Feb 2015 21:41:03 +0100
-Message-ID: <1424292068-28197-2-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH 4/7] serial: imx: drop support for IRDA
+Date: Wed, 18 Feb 2015 19:16:39 -0200
+Message-ID: <CAOMZO5AfE_tikox7d49=9ZtSD8R0_mGuuOQWZEg+E3rTqL4LSA@mail.gmail.com>
 References: <1424292068-28197-1-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1424292068-28197-4-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1424292068-28197-1-git-send-email-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <1424292068-28197-4-git-send-email-u.kleine-koenig@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,42 +18,17 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <kernel@pengutronix.de>, Oskar Schirmer <os@emlix.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Rml4IGluZGVudGlvbiwgcmVtb3ZlIG9sZCBhZGRyZXNzIG9mIHRoZSBGU0YsIHJlbW92ZSBpbi1m
-aWxlIGNoYW5nZWxvZywKbWVudGlvbiBGcmVlc2NhbGUuCgpTaWduZWQtb2ZmLWJ5OiBVd2UgS2xl
-aW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgotLS0KIGRyaXZlcnMv
-dHR5L3NlcmlhbC9pbXguYyB8IDE5ICsrKysrKy0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2Vk
-LCA2IGluc2VydGlvbnMoKyksIDEzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-dHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwppbmRleCBkNmRhMDIy
-MTA5MTkuLjhhYjUyZWQxNTkxNyAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5j
-CisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwpAQCAtMSwxMyArMSwxMyBAQAogLyoKLSAq
-ICBEcml2ZXIgZm9yIE1vdG9yb2xhIElNWCBzZXJpYWwgcG9ydHMKKyAqIERyaXZlciBmb3IgTW90
-b3JvbGEvRnJlZXNjYWxlIElNWCBzZXJpYWwgcG9ydHMKICAqCi0gKiAgQmFzZWQgb24gZHJpdmVy
-cy9jaGFyL3NlcmlhbC5jLCBieSBMaW51cyBUb3J2YWxkcywgVGhlb2RvcmUgVHMnby4KKyAqIEJh
-c2VkIG9uIGRyaXZlcnMvY2hhci9zZXJpYWwuYywgYnkgTGludXMgVG9ydmFsZHMsIFRoZW9kb3Jl
-IFRzJ28uCiAgKgotICogIEF1dGhvcjogU2FzY2hhIEhhdWVyIDxzYXNjaGFAc2FzY2hhaGF1ZXIu
-ZGU+Ci0gKiAgQ29weXJpZ2h0IChDKSAyMDA0IFBlbmd1dHJvbml4CisgKiBBdXRob3I6IFNhc2No
-YSBIYXVlciA8c2FzY2hhQHNhc2NoYWhhdWVyLmRlPgorICogQ29weXJpZ2h0IChDKSAyMDA0IFBl
-bmd1dHJvbml4CiAgKgotICogIENvcHlyaWdodCAoQykgMjAwOSBlbWxpeCBHbWJICi0gKiAgQXV0
-aG9yOiBGYWJpYW4gR29kZWhhcmR0IChhZGRlZCBJckRBIHN1cHBvcnQgZm9yIGlNWCkKKyAqIEF1
-dGhvcjogRmFiaWFuIEdvZGVoYXJkdCAoYWRkZWQgSXJEQSBzdXBwb3J0IGZvciBpTVgpCisgKiBD
-b3B5cmlnaHQgKEMpIDIwMDkgZW1saXggR21iSAogICoKICAqIFRoaXMgcHJvZ3JhbSBpcyBmcmVl
-IHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5CiAgKiBpdCB1
-bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGFzIHB1Ymxp
-c2hlZCBieQpAQCAtMTgsMTMgKzE4LDYgQEAKICAqIGJ1dCBXSVRIT1VUIEFOWSBXQVJSQU5UWTsg
-d2l0aG91dCBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mCiAgKiBNRVJDSEFOVEFCSUxJVFkg
-b3IgRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UuICBTZWUgdGhlCiAgKiBHTlUgR2Vu
-ZXJhbCBQdWJsaWMgTGljZW5zZSBmb3IgbW9yZSBkZXRhaWxzLgotICoKLSAqIFlvdSBzaG91bGQg
-aGF2ZSByZWNlaXZlZCBhIGNvcHkgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlCi0g
-KiBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbTsgaWYgbm90LCB3cml0ZSB0byB0aGUgRnJlZSBTb2Z0
-d2FyZQotICogRm91bmRhdGlvbiwgSW5jLiwgNTkgVGVtcGxlIFBsYWNlLCBTdWl0ZSAzMzAsIEJv
-c3RvbiwgTUEgIDAyMTExLTEzMDcgIFVTQQotICoKLSAqIFsyOS1NYXItMjAwNV0gTWlrZSBMZWUK
-LSAqIEFkZGVkIGhhcmR3YXJlIGhhbmRzaGFrZQogICovCiAKICNpZiBkZWZpbmVkKENPTkZJR19T
-RVJJQUxfSU1YX0NPTlNPTEUpICYmIGRlZmluZWQoQ09ORklHX01BR0lDX1NZU1JRKQotLSAKMi4x
-LjQKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51
-eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
-ZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1h
-cm0ta2VybmVsCg==
+SGkgVXdlLAoKT24gV2VkLCBGZWIgMTgsIDIwMTUgYXQgNjo0MSBQTSwgVXdlIEtsZWluZS1Lw7Zu
+aWcKPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JvdGU6Cj4gU3VwcG9ydCBmb3Ig
+SVJEQSB3YXMgYWRkZWQgaW4gMjAwOSBpbiBjb21taXQgdjIuNi4zMS1yYzF+Mzk5XjJ+Mi4gVGhl
+cmUKPiBhcmUgbm8gaW4tdHJlZSB1c2Vycy4KCidmc2wsaXJkYS1tb2RlJyBpcyBzdGlsbCBkb2N1
+bWVudGVkIGF0CkRvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvZnNsLWlt
+eC11YXJ0LnR4dCAuCgpJcyB0aGUgaXJkYSBzdXBwb3J0IGJyb2tlbj8KCk1heWJlIHRoZXJlIGFy
+ZSBwZW9wbGUgdXNpbmcgaXQgaW4gb3V0LW9mLXRyZWUgZHRzIGZpbGVzPwoKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWls
+aW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0
+cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
