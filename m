@@ -1,39 +1,68 @@
-From: Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH 7/7 linux-next] serial: core: replace current->state by __set_current_state()
-Date: Fri, 20 Feb 2015 19:12:57 +0100
-Message-ID: <1424455977-21903-7-git-send-email-fabf@skynet.be>
-References: <1424455977-21903-1-git-send-email-fabf@skynet.be>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 02/18] ARM: ARMv7M: Enlarge vector table to 256 entries
+Date: Fri, 20 Feb 2015 20:47:56 +0100
+Message-ID: <20150220194756.GS19388@pengutronix.de>
+References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
+ <1424455277-29983-3-git-send-email-mcoquelin.stm32@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1424455977-21903-1-git-send-email-fabf@skynet.be>
+Content-Disposition: inline
+In-Reply-To: <1424455277-29983-3-git-send-email-mcoquelin.stm32@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabian Frederick <fabf@skynet.be>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: afaerber@suse.de, geert@linux-m68k.org, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rust
 List-Id: linux-serial@vger.kernel.org
 
-Use helper functions to access current->state.
-Direct assignments are prone to races and therefore buggy.
+On Fri, Feb 20, 2015 at 07:01:01PM +0100, Maxime Coquelin wrote:
+> From Cortex-M reference manuals, the nvic supports up to 240 interrup=
+ts.
+> So the number of entries in vectors table is up to 256.
+>=20
+> This patch adds a new config flag to specify the number of external i=
+nterrupts.
+> Some ifdeferies are added in order to respect the natural alignment w=
+ithout
+> wasting too much space on smaller systems.
+>=20
+> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> ---
+>  arch/arm/kernel/entry-v7m.S | 13 +++++++++----
+>  arch/arm/mm/Kconfig         | 15 +++++++++++++++
+>  2 files changed, 24 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/arch/arm/kernel/entry-v7m.S b/arch/arm/kernel/entry-v7m.=
+S
+> index 8944f49..68cde36 100644
+> --- a/arch/arm/kernel/entry-v7m.S
+> +++ b/arch/arm/kernel/entry-v7m.S
+> @@ -117,9 +117,14 @@ ENTRY(__switch_to)
+>  ENDPROC(__switch_to)
+> =20
+>  	.data
+> -	.align	8
+> +#if CONFIG_CPUV7M_NUM_IRQ <=3D 112
+I would have called this CONFIG_CPU_V7M_NUM_IRQ to match the already
+existing CPU_V7M symbol.
 
-Thanks to Peter Zijlstra for the exact definition of the problem.
+> +	.align	9
+> +#else
+> +	.align	10
+> +#endif
+> +
 
-Suggested-By: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Fabian Frederick <fabf@skynet.be>
----
- drivers/tty/serial/serial_core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Other than that:
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 6a1055a..63d2947 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1118,8 +1118,7 @@ uart_wait_modem_status(struct uart_state *state, unsigned long arg)
- 
- 		cprev = cnow;
- 	}
--
--	current->state = TASK_RUNNING;
-+	__set_current_state(TASK_RUNNING);
- 	remove_wait_queue(&port->delta_msr_wait, &wait);
- 
- 	return ret;
--- 
-2.1.0
+Who do you target to apply this series?
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
