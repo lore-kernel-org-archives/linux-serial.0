@@ -1,40 +1,77 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 1/7] serial: imx: drop members from driver data that are
- only used during probe
-Date: Sat, 21 Feb 2015 09:58:57 +0100
-Message-ID: <20150221085857.GW19388@pengutronix.de>
-References: <1424292068-28197-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH V3 0/7] serial: Configure {big,native}-endian MMIO
+ accesses via DT
+Date: Sat, 21 Feb 2015 12:53:09 -0800
+Message-ID: <CAJiQ=7AMG44h7d2Fuw_ZLynPP62EcD++_kttBymqZgcKK=V8Ug@mail.gmail.com>
+References: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
+ <20141125151018.359EAC44343@trevor.secretlab.ca> <20141125173859.GA27287@kroah.com>
+ <20141125211116.GA9997@kroah.com> <CACxGe6uifCPz6RM59MVODWo2WGoVBMWSFzmL9Uz3AVJ0C9-hig@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1424292068-28197-1-git-send-email-u.kleine-koenig@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CACxGe6uifCPz6RM59MVODWo2WGoVBMWSFzmL9Uz3AVJ0C9-hig-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-mips <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello Greg,
+On Wed, Nov 26, 2014 at 5:14 AM, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> On Tue, Nov 25, 2014 at 9:11 PM, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org> wrote:
+>> On Tue, Nov 25, 2014 at 09:38:59AM -0800, Greg KH wrote:
+>>> On Tue, Nov 25, 2014 at 03:10:18PM +0000, Grant Likely wrote:
+>>> > On Mon, 24 Nov 2014 15:36:15 -0800
+>>> > , Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>>> >  wrote:
+>>> > > My last submission attempted to work around serial driver coexistence
+>>> > > problems on multiplatform kernels.  Since there are still questions
+>>> > > surrounding the best way to solve that problem, this patch series
+>>> > > will focus on the narrower topic of big endian MMIO support on serial.
+>>> > >
+>>> > >
+>>> > > V2->V3:
+>>> > >
+>>> > >  - Document the new DT properties.
+>>> > >
+>>> > >  - Add libfdt-based wrapper, to complement the "struct device_node" based
+>>> > >    version.
+>>> > >
+>>> > >  - Restructure early_init_dt_scan_chosen_serial() changes to use a
+>>> > >    temporary variable, so it is easy to add more of_setup_earlycon()
+>>> > >    properties later.
+>>> > >
+>>> > >  - Make of_serial and serial8250 honor the new "big-endian" property.
+>>> > >
+>>> > >
+>>> > > This series applies cleanly to:
+>>> > >
+>>> > > git://git.kernel.org/pub/scm/linux/kernel/git/glikely/linux.git devicetree/next-overlay
+>>> > >
+>>> > > but was tested on the mips-for-linux-next branch because my BE platform
+>>> > > isn't supported in mainline yet.
+>>> >
+>>> > For the whole series:
+>>> > Acked-by: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>> >
+>>> > Greg, which tree do you want to merge this through? My DT tree, or the
+>>> > tty tree?
+>>>
+>>> I can take these through my tty tree, thanks.
+>>
+>> I take that back, it doesn't apply to my tty tree due to changes in the
+>> of codebase.  So feel free to take all of these through your DT tree
+>> please:
+>>
+>> Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+>
+> Applied all 7 patches. Thanks.
 
-On Wed, Feb 18, 2015 at 09:41:02PM +0100, Uwe Kleine-K=F6nig wrote:
-> [... several changes to drivers/tty/serial/imx.c ...]
-I noticed that some changes to this driver were merged after v3.19, some
-of them conflict with my patches. I will rebase and resend once
-v3.20-rc1 (however this will be called) is out.
+Hi guys,
 
-Best regards
-Uwe
+I don't see these patches in devicetree-next or mainline.  Would you
+like me to rebase + resend?
 
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Thanks.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
