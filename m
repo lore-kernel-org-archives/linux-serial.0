@@ -1,11 +1,14 @@
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v2 0/7] serial: imx: a fix, cleanups and rs485 support
-Date: Tue, 24 Feb 2015 11:17:04 +0100
-Message-ID: <1424773031-19692-1-git-send-email-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 5/7] serial: imx: fix comment about which machines use the
+ i.MX21 type
+Date: Tue, 24 Feb 2015 11:17:09 +0100
+Message-ID: <1424773031-19692-6-git-send-email-u.kleine-koenig@pengutronix.de>
+References: <1424773031-19692-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1424773031-19692-1-git-send-email-u.kleine-koenig@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,23 +22,16 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: =?UTF-8?q?aur=C3=A9lien=20bouin?= <a.bouin@gmail.com>, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-SGVsbG8sCgp0aGlzIGlzIGEgcmViYXNlZCBzZXJpZXMgZm9yIHRoZSBpbXggc2VyaWFsIGRyaXZl
-ci4gSSBhbHJlYWR5IHNlbnQgaXQKb3V0IGEgd2VlayBhZ28gYmFzaW5nIG9uIDMuMTksIGJ1dCBp
-dCBkb2Vzbid0IGFwcGx5IHRvIDQuMC1yYzEsIHNvIEkgZGlkCnRoZSBub24tdHJpdmlhbCByZWJh
-c2luZyBhbmQgcmVzZW5kIG5vdy4KCkkgYWxzbyByZW9yZGVyZWQgdGhlIHBhdGNoZXMgdG8gaGF2
-ZSB0aGUgZml4IGZpcnN0LiBJTUhPIHRoaXMgY2FuIGdvIGluCmJlZm9yZSA0LjAsIHRoZSBvdGhl
-ciA2IHBhdGNoZXMgYXJlIG1lcmdlIHdpbmRvdyBtYXRlcmlhbC4KCkJlc3QgcmVnYXJkcwpVd2UK
-ClV3ZSBLbGVpbmUtS8O2bmlnICg3KToKICBzZXJpYWw6IGlteDogRml4IGNsZWFyaW5nIG9mIHJl
-Y2VpdmVyIG92ZXJydW4gZmxhZwogIHNlcmlhbDogaW14OiByZW1vdmUgbG9uZyBkZWFkIGNvZGUK
-ICBzZXJpYWw6IGlteDogZHJvcCBtZW1iZXJzIGZyb20gZHJpdmVyIGRhdGEgdGhhdCBhcmUgb25s
-eSB1c2VkIGR1cmluZwogICAgcHJvYmUKICBzZXJpYWw6IGlteDogcmVmb3JtYXQgYW5kIGNsZWFu
-dXAgY29weXJpZ2h0IGhlYWRlcgogIHNlcmlhbDogaW14OiBmaXggY29tbWVudCBhYm91dCB3aGlj
-aCBtYWNoaW5lcyB1c2UgdGhlIGkuTVgyMSB0eXBlCiAgc2VyaWFsOiBpbXg6IGRyb3Agc3VwcG9y
-dCBmb3IgSVJEQQogIHNlcmlhbDogaW14OiBhZGQgc3VwcG9ydCBmb3IgaGFsZiBkdXBsZXggcnM0
-ODUKCiBkcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgICAgICAgICAgICAgICAgIHwgMzExICsrKysr
-KysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0KIGluY2x1ZGUvbGludXgvcGxhdGZvcm1fZGF0YS9z
-ZXJpYWwtaW14LmggfCAgIDUgLQogMiBmaWxlcyBjaGFuZ2VkLCAxMTkgaW5zZXJ0aW9ucygrKSwg
-MTk3IGRlbGV0aW9ucygtKQoKLS0gCjIuMS40CgoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgt
-YXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3Jn
-L21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+U2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRy
+b25peC5kZT4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgfCAyICstCiAxIGZpbGUgY2hh
+bmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJz
+L3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKaW5kZXggMjM1YzM2
+NTIyZGQ2Li5lNzRkZDc0ZDg0ZDAgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXgu
+YworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKQEAgLTE4Miw3ICsxODIsNyBAQAogCiAj
+ZGVmaW5lIFVBUlRfTlIgOAogCi0vKiBpLm14MjEgdHlwZSB1YXJ0IHJ1bnMgb24gYWxsIGkubXgg
+ZXhjZXB0IGkubXgxICovCisvKiBpLk1YMjEgdHlwZSB1YXJ0IHJ1bnMgb24gYWxsIGkubXggZXhj
+ZXB0IGkuTVgxIGFuZCBpLk1YNnEgKi8KIGVudW0gaW14X3VhcnRfdHlwZSB7CiAJSU1YMV9VQVJU
+LAogCUlNWDIxX1VBUlQsCi0tIAoyLjEuNAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFy
+bS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
