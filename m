@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 10/13] serial: earlycon: Allow earlycon params with name only
-Date: Tue, 24 Feb 2015 11:37:07 -0500
-Message-ID: <1424795830-31223-11-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 07/13] serial: 8250_early: Assume uart already initialized if no baud option
+Date: Tue, 24 Feb 2015 11:37:04 -0500
+Message-ID: <1424795830-31223-8-git-send-email-peter@hurleysoftware.com>
 References: <1424795830-31223-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1424795830-31223-1-git-send-email-peter@hurleysoftware.com>
@@ -10,38 +10,46 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-f
 Cc: Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Allow earlycon param strings of the form
-   earlycon=<name>
+The <baud><parity><bit> option string is not supplied if the earlycon
+is started via devicetree and OF_EARLYCON_DECLARE(). The option string
+is also not required if started via kernel command line parameters of
+the form:
+  earlycon=uart,mmio,<addr>
+  console=uart,mmio,<addr>
+
+If earlycon_device->baud is 0, then an option string was not supplied.
+In this case, assume the uart has already been initialized by the
+bootloader or firmware.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/earlycon.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_early.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index da5e8c8..025ea01 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -109,13 +109,16 @@ int __init setup_earlycon(char *buf, const char *match,
- 	len = strlen(match);
- 	if (strncmp(buf, match, len))
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index d7b831b..1701d00 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -149,12 +149,18 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
  		return 0;
--	if (buf[len] && (buf[len] != ','))
--		return 0;
  
--	buf += len + 1;
-+	if (buf[len]) {
-+		if (buf[len] != ',')
-+			return 0;
-+		buf += len + 1;
+ 	if (!device->baud) {
++		struct uart_port *port = &device->port;
++		unsigned int ier;
++
+ 		device->baud = probe_baud(&device->port);
+ 		snprintf(device->options, sizeof(device->options), "%u",
+ 			 device->baud);
+-	}
+ 
+-	init_port(device);
++		/* assume the device was initialized, only mask interrupts */
++		ier = serial8250_early_in(port, UART_IER);
++		serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
 +	} else
-+		buf = NULL;
++		init_port(device);
  
- 	/* On parsing error, pass the options buf to the setup function */
--	if (!parse_options(&early_console_dev, buf))
-+	if (buf && !parse_options(&early_console_dev, buf))
- 		buf = NULL;
- 
- 	port->uartclk = BASE_BAUD * 16;
+ 	device->con->write = early_serial8250_write;
+ 	return 0;
 -- 
 2.3.0
