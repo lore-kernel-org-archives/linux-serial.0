@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 07/13] serial: 8250_early: Assume uart already initialized if no baud option
-Date: Tue, 24 Feb 2015 11:37:04 -0500
-Message-ID: <1424795830-31223-8-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 06/13] serial: earlycon: Move ->uartclk initialize
+Date: Tue, 24 Feb 2015 11:37:03 -0500
+Message-ID: <1424795830-31223-7-git-send-email-peter@hurleysoftware.com>
 References: <1424795830-31223-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1424795830-31223-1-git-send-email-peter@hurleysoftware.com>
@@ -10,46 +10,35 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-f
 Cc: Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-The <baud><parity><bit> option string is not supplied if the earlycon
-is started via devicetree and OF_EARLYCON_DECLARE(). The option string
-is also not required if started via kernel command line parameters of
-the form:
-  earlycon=uart,mmio,<addr>
-  console=uart,mmio,<addr>
-
-If earlycon_device->baud is 0, then an option string was not supplied.
-In this case, assume the uart has already been initialized by the
-bootloader or firmware.
+Initializing the ->uartclk field is not related to option parsing;
+relocate from parse_options() to setup_earlycon() (which mirrors the
+behavior of of_setup_earlycon()).
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250_early.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/tty/serial/earlycon.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index d7b831b..1701d00 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -149,12 +149,18 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
- 		return 0;
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 58d6bcd..0480c8f 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -76,8 +76,6 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 		return -EINVAL;
+ 	}
  
- 	if (!device->baud) {
-+		struct uart_port *port = &device->port;
-+		unsigned int ier;
-+
- 		device->baud = probe_baud(&device->port);
- 		snprintf(device->options, sizeof(device->options), "%u",
- 			 device->baud);
--	}
+-	port->uartclk = BASE_BAUD * 16;
+-
+ 	if (options) {
+ 		device->baud = simple_strtoul(options, NULL, 0);
+ 		length = min(strcspn(options, " ") + 1,
+@@ -121,6 +119,7 @@ int __init setup_earlycon(char *buf, const char *match,
+ 	if (!err)
+ 		buf = NULL;
  
--	init_port(device);
-+		/* assume the device was initialized, only mask interrupts */
-+		ier = serial8250_early_in(port, UART_IER);
-+		serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
-+	} else
-+		init_port(device);
++	port->uartclk = BASE_BAUD * 16;
+ 	if (port->mapbase)
+ 		port->membase = earlycon_map(port->mapbase, 64);
  
- 	device->con->write = early_serial8250_write;
- 	return 0;
 -- 
 2.3.0
