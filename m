@@ -1,78 +1,196 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v2 14/18] ARM: Add STM32 family machine
-Date: Wed, 25 Feb 2015 13:04:47 +0100
-Message-ID: <CALszF6CGT35V71QKTrDx+1Ltrctv5F7t8Zq6Tq15zn2bZGQXwQ@mail.gmail.com>
-References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<1424455277-29983-15-git-send-email-mcoquelin.stm32@gmail.com>
-	<20150220200019.GU19388@pengutronix.de>
-	<1424468240.24292.5.camel@x220>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH -next 01/13] serial: earlycon: Refactor parse_options
+ into serial core
+Date: Wed, 25 Feb 2015 08:03:04 -0500
+Message-ID: <54EDC808.7070508@hurleysoftware.com>
+References: <1424795830-31223-1-git-send-email-peter@hurleysoftware.com> <1424795830-31223-2-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1424468240.24292.5.camel@x220>
+In-Reply-To: <1424795830-31223-2-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Bolle <pebolle@tiscali.nl>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti
+To: Joe Perches <joe@perches.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Linux kernel <linux-kernel@vger.kernel.org>, Eldad Zack <eldad@fogrefinery.com>
 List-Id: linux-serial@vger.kernel.org
 
-2015-02-20 22:37 GMT+01:00 Paul Bolle <pebolle@tiscali.nl>:
-> On Fri, 2015-02-20 at 21:00 +0100, Uwe Kleine-K=C3=B6nig wrote:
->> On Fri, Feb 20, 2015 at 07:01:13PM +0100, Maxime Coquelin wrote:
->> > diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
->> > index 97d07ed..cfd9532 100644
->> > --- a/arch/arm/Kconfig
->> > +++ b/arch/arm/Kconfig
->> > @@ -774,6 +774,28 @@ config ARCH_OMAP1
->> >     help
->> >       Support for older TI OMAP1 (omap7xx, omap15xx or omap16xx)
->> >
->> > +config ARCH_STM32
->> > +   bool "STMicrolectronics STM32"
->> > +   depends on !MMU
->> > +   select ARCH_REQUIRE_GPIOLIB
->> > +   select ARM_NVIC
->> > +   select AUTO_ZRELADDR
->> > +   select ARCH_HAS_RESET_CONTROLLER
->> > +   select RESET_CONTROLLER
->> > +   select PINCTRL
->> > +   select PINCTRL_STM32
->> > +   select CLKSRC_OF
->> > +   select ARMV7M_SYSTICK
->> > +   select COMMON_CLK
->> > +   select CPU_V7M
->> > +   select GENERIC_CLOCKEVENTS
->> > +   select NO_DMA
->> > +   select NO_IOPORT_MAP
->> > +   select SPARSE_IRQ
->> > +   select USE_OF
->> Please sort this list alphabetically.
->
-> And drop
->     select NO_DMA
->
-> You copied that from ARCH_EFM32, but it's pointless on arm (as arch/a=
-rm/
-> doesn't provide a NO_DMA Kconfig symbol).
+Hi Joe,
 
-You are right, I will drop NO_DMA in v3.
+checkpatch warns on the line below:
 
-Thanks,
-Maxime
+On 02/24/2015 11:36 AM, Peter Hurley wrote:
+> Prepare to support console-defined matching; refactor the command
+> line parameter string processing from parse_options() into a
+> new core function, uart_parse_earlycon(), which decodes command line
+> parameters of the form:
+>    earlycon=<name>,io|mmio|mmio32,<addr>,<options>
+>    console=<name>,io|mmio|mmio32,<addr>,<options>
+>    earlycon=<name>,0x<addr>,<options>
+>    console=<name>,0x<addr>,<options>
+> 
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/serial/earlycon.c    | 39 ++++++++++++----------------------
+>  drivers/tty/serial/serial_core.c | 46 ++++++++++++++++++++++++++++++++++++++++
+>  include/linux/serial_core.h      |  2 ++
+>  3 files changed, 61 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> index 64fe25a..58d6bcd 100644
+> --- a/drivers/tty/serial/earlycon.c
+> +++ b/drivers/tty/serial/earlycon.c
+> @@ -54,44 +54,31 @@ static void __iomem * __init earlycon_map(unsigned long paddr, size_t size)
+>  	return base;
+>  }
+>  
+> -static int __init parse_options(struct earlycon_device *device,
+> -				char *options)
+> +static int __init parse_options(struct earlycon_device *device, char *options)
+>  {
+>  	struct uart_port *port = &device->port;
+> -	int mmio, mmio32, length;
+> +	int length;
+>  	unsigned long addr;
+>  
+> -	if (!options)
+> -		return -ENODEV;
+> +	if (uart_parse_earlycon(options, &port->iotype, &addr, &options))
+> +		return -EINVAL;
+>  
+> -	mmio = !strncmp(options, "mmio,", 5);
+> -	mmio32 = !strncmp(options, "mmio32,", 7);
+> -	if (mmio || mmio32) {
+> -		port->iotype = (mmio ? UPIO_MEM : UPIO_MEM32);
+> -		options += mmio ? 5 : 7;
+> -		addr = simple_strtoul(options, NULL, 0);
+> +	switch (port->iotype) {
+> +	case UPIO_MEM32:
+> +		port->regshift = 2;	/* fall-through */
+> +	case UPIO_MEM:
+>  		port->mapbase = addr;
+> -		if (mmio32)
+> -			port->regshift = 2;
+> -	} else if (!strncmp(options, "io,", 3)) {
+> -		port->iotype = UPIO_PORT;
+> -		options += 3;
+> -		addr = simple_strtoul(options, NULL, 0);
+> +		break;
+> +	case UPIO_PORT:
+>  		port->iobase = addr;
+> -		mmio = 0;
+> -	} else if (!strncmp(options, "0x", 2)) {
+> -		port->iotype = UPIO_MEM;
+> -		addr = simple_strtoul(options, NULL, 0);
+> -		port->mapbase = addr;
+> -	} else {
+> +		break;
+> +	default:
+>  		return -EINVAL;
+>  	}
+>  
+>  	port->uartclk = BASE_BAUD * 16;
+>  
+> -	options = strchr(options, ',');
+>  	if (options) {
+> -		options++;
+>  		device->baud = simple_strtoul(options, NULL, 0);
+>  		length = min(strcspn(options, " ") + 1,
+>  			     (size_t)(sizeof(device->options)));
+> @@ -100,7 +87,7 @@ static int __init parse_options(struct earlycon_device *device,
+>  
+>  	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
+>  		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
+> -			mmio32 ? "32" : "",
+> +			(port->iotype == UPIO_MEM32) ? "32" : "",
+>  			(unsigned long long)port->mapbase,
+>  			device->options);
+>  	else
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 6a1055a..3f823c26 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1810,6 +1810,52 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+>  }
+>  
+>  /**
+> + *	uart_parse_earlycon - Parse earlycon options
+> + *	@p:	  ptr to 2nd field (ie., just beyond '<name>,')
+> + *	@iotype:  ptr for decoded iotype (out)
+> + *	@addr:    ptr for decoded mapbase/iobase (out)
+> + *	@options: ptr for <options> field; NULL if not present (out)
+> + *
+> + *	Decodes earlycon kernel command line parameters of the form
+> + *	   earlycon=<name>,io|mmio|mmio32,<addr>,<options>
+> + *	   console=<name>,io|mmio|mmio32,<addr>,<options>
+> + *
+> + *	The optional form
+> + *	   earlycon=<name>,0x<addr>,<options>
+> + *	   console=<name>,0x<addr>,<options>
+> + *	is also accepted; the returned @iotype will be UPIO_MEM.
+> + *
+> + *	Returns 0 on success or -EINVAL on failure
+> + */
+> +int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
+> +			char **options)
+> +{
+> +	if (strncmp(p, "mmio,", 5) == 0) {
+> +		*iotype = UPIO_MEM;
+> +		p += 5;
+> +	} else if (strncmp(p, "mmio32,", 7) == 0) {
+> +		*iotype = UPIO_MEM32;
+> +		p += 7;
+> +	} else if (strncmp(p, "io,", 3) == 0) {
+> +		*iotype = UPIO_PORT;
+> +		p += 3;
+> +	} else if (strncmp(p, "0x", 2) == 0) {
+> +		*iotype = UPIO_MEM;
+> +	} else {
+> +		return -EINVAL;
+> +	}
+> +
+> +	*addr = simple_strtoul(p, NULL, 0);
 
->
-> I submitted a patch last year to drop it from ARCH_EFM32, which Uwe
-> Acked, but then nothing happened. I'm to blame, as I should have sent=
- a
-> reminder.
->
->> > +   help
->> > +     Support for STMicorelectronics STM32 processors.
->> > +
->> >  endchoice
->> >
->> >  menu "Multiple platform selection"
->
->
-> Paul Bolle
->
+WARNING: simple_strtoul is obsolete, use kstrtoul instead
+#136: FILE: drivers/tty/serial/serial_core.c:1848:
++	*addr = simple_strtoul(p, NULL, 0);
+
+
+simple_strtoul() is _not_ obsolete.
+kstrtoul() cannot parse the <addr> field in a string of the form:
+
+	console=<name>,io|mmio|mmio32,<addr>,<options>
+
+kstrtoul() returns EINVAL without the result.
+
+It was pretty fun debugging that without a console :/
+
+Regards,
+Peter Hurley
+
+> +	p = strchr(p, ',');
+> +	if (p)
+> +		p++;
+> +
+> +	*options = p;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(uart_parse_earlycon);
+> +
+> +/**
+>   *	uart_parse_options - Parse serial port baud/parity/bits/flow control.
+>   *	@options: pointer to option string
+>   *	@baud: pointer to an 'int' variable for the baud rate.
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index baf3e1d..cc5c506 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -354,6 +354,8 @@ early_param("earlycon", name ## _setup_earlycon);
+>  
+>  struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+>  				   struct console *c);
+> +int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
+> +			char **options);
+>  void uart_parse_options(char *options, int *baud, int *parity, int *bits,
+>  			int *flow);
+>  int uart_set_options(struct uart_port *port, struct console *co, int baud,
+> 
