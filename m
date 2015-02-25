@@ -1,50 +1,91 @@
 From: Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH 0/8] Fix struct clk pointer comparing
-Date: Wed, 25 Feb 2015 22:53:30 +0800
-Message-ID: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Subject: [PATCH 1/8] clk: add helper function clk_is_match()
+Date: Wed, 25 Feb 2015 22:53:31 +0800
+Message-ID: <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+In-Reply-To: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 To: Mike Turquette <mturquette@linaro.org>
-Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+Cc: linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gdGhlIGZpcnN0IGRheSBiYWNrIGZyb20gQ2hpbmVzZSBuZXcgeWVhciBob2xpZGF5LCBJIGdv
-dCBhIHJlZ3Jlc3Npb24KcmVwb3J0IGZyb20gcm1rLCBzYXlpbmcgRXRoZXJuZXQgc3RvcHMgd29y
-a2luZyBvbiBIaW1taW5nQm9hcmQgd2l0aAp2NC4wLXJjMS4KCkkgcmVhZCB0aHJvdWdoIHRoZSB0
-aHJlYWQgWzFdIGFuZCBmb3VuZCBhIGNvdXBsZSBvZiBpLk1YIGF1ZGlvIGRyaXZlcnMKYXJlIGFs
-c28gYWZmZWN0ZWQgcGVyIFN0ZXBoZW4ncyBDb2NjaW5lbGxlIHJlcG9ydC4gIFRoYXQncyB3aHkg
-SSBjYW1lIHVwCndpdGggdGhpcyBzZXJpZXMgYmFzZWQgb24gUXVlbnRpbidzIHN0cnVjdGNsay5j
-b2NjaSwgU3RlcGhlbidzIHJlc3VsdAphbmQgTWlrZSdzIGlucHV0ICh0aGFua3MgYWxsKS4KClRo
-ZSBmaXJzdCB0d28gcGF0Y2hlcyBhcmUgcnVuLXRpbWUgdGVzdGVkIGFuZCBhbGwgb3RoZXJzIGFy
-ZQpjb21waWxlLXRlc3RlZCBvbmx5LgoKWzFdIGh0dHA6Ly90aHJlYWQuZ21hbmUub3JnL2dtYW5l
-LmxpbnV4Lmtlcm5lbC8xODcyNjA0L2ZvY3VzPTE4ODA4NjIKClNoYXduIEd1byAoOCk6CiAgY2xr
-OiBhZGQgaGVscGVyIGZ1bmN0aW9uIGNsa19pc19tYXRjaCgpCiAgQVJNOiBpbXg6IGZpeCBzdHJ1
-Y3QgY2xrIHBvaW50ZXIgY29tcGFyaW5nCiAgZHJtOiBhcm1hZGE6IGZpeCBzdHJ1Y3QgY2xrIHBv
-aW50ZXIgY29tcGFyaW5nCiAgcHdtOiBhdG1lbC1obGNkYzogZml4IHN0cnVjdCBjbGsgcG9pbnRl
-ciBjb21wYXJpbmcKICBzZXJpYWw6IHNhbXN1bmc6IGZpeCBzdHJ1Y3QgY2xrIHBvaW50ZXIgY29t
-cGFyaW5nCiAgQVNvQzogZnNsX2VzYWk6IGZpeCBzdHJ1Y3QgY2xrIHBvaW50ZXIgY29tcGFyaW5n
-CiAgQVNvQzogZnNsX3NwZGlmOiBmaXggc3RydWN0IGNsayBwb2ludGVyIGNvbXBhcmluZwogIEFT
-b0M6IGtpcmt3b29kOiBmaXggc3RydWN0IGNsayBwb2ludGVyIGNvbXBhcmluZwoKIGFyY2gvYXJt
-L21hY2gtaW14L21hY2gtaW14NnEuYyAgICAgIHwgIDUgKysrLS0KIGRyaXZlcnMvY2xrL2Nsay5j
-ICAgICAgICAgICAgICAgICAgIHwgIDYgKysrKysrCiBkcml2ZXJzL2dwdS9kcm0vYXJtYWRhL2Fy
-bWFkYV81MTAuYyB8ICAyICstCiBkcml2ZXJzL3B3bS9wd20tYXRtZWwtaGxjZGMuYyAgICAgICB8
-ICAyICstCiBkcml2ZXJzL3R0eS9zZXJpYWwvc2Ftc3VuZy5jICAgICAgICB8ICAyICstCiBpbmNs
-dWRlL2xpbnV4L2Nsay5oICAgICAgICAgICAgICAgICB8IDE2ICsrKysrKysrKysrKysrKysKIHNv
-dW5kL3NvYy9mc2wvZnNsX2VzYWkuYyAgICAgICAgICAgIHwgIDIgKy0KIHNvdW5kL3NvYy9mc2wv
-ZnNsX3NwZGlmLmMgICAgICAgICAgIHwgIDQgKystLQogc291bmQvc29jL2tpcmt3b29kL2tpcmt3
-b29kLWkycy5jICAgfCAgMiArLQogOSBmaWxlcyBjaGFuZ2VkLCAzMiBpbnNlcnRpb25zKCspLCA5
-IGRlbGV0aW9ucygtKQoKLS0gCjEuOS4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5m
-cmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2RyaS1kZXZlbAo=
+Since commit 035a61c314eb ("clk: Make clk API return per-user struct clk
+instances"), clk API users can no longer check if two struct clk
+pointers are pointing to the same hardware clock, i.e. struct clk_hw, by
+simply comparing two pointers.  That's because with the per-user clk
+change, a brand new struct clk is created whenever clients try to look
+up the clock by calling clk_get() or sister functions like clk_get_sys()
+and of_clk_get().  This changes the original behavior where the struct
+clk is only created for once when clock driver registers the clock to
+CCF in the first place.  The net change here is before commit
+035a61c314eb the struct clk pointer is unique for given hardware
+clock, while after the commit the pointers returned by clk lookup calls
+become different for the same hardware clock.
+
+A number of client drivers detecting if two struct clk pointers point to
+the same one hardware clock by comparing the pointers are broken now.
+As a stop-gap solution, this patch adds a helper function clk_is_match()
+to test if two struct clk pointers point to the same hardware clock, so
+that these client drivers can use to fix the regression.
+
+Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+---
+ drivers/clk/clk.c   |  6 ++++++
+ include/linux/clk.h | 16 ++++++++++++++++
+ 2 files changed, 22 insertions(+)
+
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index eb0152961d3c..7df4826d9c7b 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -597,6 +597,12 @@ struct clk *__clk_get_parent(struct clk *clk)
+ }
+ EXPORT_SYMBOL_GPL(__clk_get_parent);
+ 
++bool clk_is_match(struct clk *clk1, struct clk *clk2)
++{
++	return __clk_get_hw(clk1) == __clk_get_hw(clk2) ? true : false;
++}
++EXPORT_SYMBOL_GPL(clk_is_match);
++
+ static struct clk_core *clk_core_get_parent_by_index(struct clk_core *clk,
+ 							 u8 index)
+ {
+diff --git a/include/linux/clk.h b/include/linux/clk.h
+index 8381bbfbc308..f8a8a6dd6a98 100644
+--- a/include/linux/clk.h
++++ b/include/linux/clk.h
+@@ -376,6 +376,17 @@ struct clk *clk_get_parent(struct clk *clk);
+  */
+ struct clk *clk_get_sys(const char *dev_id, const char *con_id);
+ 
++/**
++ * clk_is_match - test if two given struct clk pointers point to the same
++ * 		  hardware clock, i.e. struct clk_hw.
++ * @clk1: the first clk
++ * @clk2: the second clk
++ *
++ * Returns true if two clk pointers point to the same hardware clock,
++ * or false otherwise.
++ */
++bool clk_is_match(struct clk *clk1, struct clk *clk2);
++
+ #else /* !CONFIG_HAVE_CLK */
+ 
+ static inline struct clk *clk_get(struct device *dev, const char *id)
+@@ -429,6 +440,11 @@ static inline struct clk *clk_get_parent(struct clk *clk)
+ 	return NULL;
+ }
+ 
++static inline bool clk_is_match(struct clk *clk1, struct clk *clk2)
++{
++	return clk1 == clk2 ? true : false;
++}
++
+ #endif
+ 
+ /* clk_prepare_enable helps cases using clk_enable in non-atomic context. */
+-- 
+1.9.1
+
