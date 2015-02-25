@@ -1,54 +1,49 @@
 From: Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH 3/8] drm: armada: fix struct clk pointer comparing
-Date: Wed, 25 Feb 2015 22:53:33 +0800
-Message-ID: <1424876018-17852-4-git-send-email-shawn.guo@linaro.org>
+Subject: [PATCH 4/8] pwm: atmel-hlcdc: fix struct clk pointer comparing
+Date: Wed, 25 Feb 2015 22:53:34 +0800
+Message-ID: <1424876018-17852-5-git-send-email-shawn.guo@linaro.org>
 References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
 In-Reply-To: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Sender: linux-pwm-owner@vger.kernel.org
 To: Mike Turquette <mturquette@linaro.org>
-Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+Cc: linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-U2luY2UgY29tbWl0IDAzNWE2MWMzMTRlYiAoImNsazogTWFrZSBjbGsgQVBJIHJldHVybiBwZXIt
-dXNlciBzdHJ1Y3QgY2xrCmluc3RhbmNlcyIpLCBjbGsgQVBJIHVzZXJzIGNhbiBubyBsb25nZXIg
-Y2hlY2sgaWYgdHdvIHN0cnVjdCBjbGsKcG9pbnRlcnMgYXJlIHBvaW50aW5nIHRvIHRoZSBzYW1l
-IGhhcmR3YXJlIGNsb2NrLCBpLmUuIHN0cnVjdCBjbGtfaHcsIGJ5CnNpbXBseSBjb21wYXJpbmcg
-dHdvIHBvaW50ZXJzLiAgVGhhdCdzIGJlY2F1c2Ugd2l0aCB0aGUgcGVyLXVzZXIgY2xrCmNoYW5n
-ZSwgYSBicmFuZCBuZXcgc3RydWN0IGNsayBpcyBjcmVhdGVkIHdoZW5ldmVyIGNsaWVudHMgdHJ5
-IHRvIGxvb2sKdXAgdGhlIGNsb2NrIGJ5IGNhbGxpbmcgY2xrX2dldCgpIG9yIHNpc3RlciBmdW5j
-dGlvbnMgbGlrZSBjbGtfZ2V0X3N5cygpCmFuZCBvZl9jbGtfZ2V0KCkuICBUaGlzIGNoYW5nZXMg
-dGhlIG9yaWdpbmFsIGJlaGF2aW9yIHdoZXJlIHRoZSBzdHJ1Y3QKY2xrIGlzIG9ubHkgY3JlYXRl
-ZCBmb3Igb25jZSB3aGVuIGNsb2NrIGRyaXZlciByZWdpc3RlcnMgdGhlIGNsb2NrIHRvCkNDRiBp
-biB0aGUgZmlyc3QgcGxhY2UuICBUaGUgbmV0IGNoYW5nZSBoZXJlIGlzIGJlZm9yZSBjb21taXQK
-MDM1YTYxYzMxNGViIHRoZSBzdHJ1Y3QgY2xrIHBvaW50ZXIgaXMgdW5pcXVlIGZvciBnaXZlbiBo
-YXJkd2FyZQpjbG9jaywgd2hpbGUgYWZ0ZXIgdGhlIGNvbW1pdCB0aGUgcG9pbnRlcnMgcmV0dXJu
-ZWQgYnkgY2xrIGxvb2t1cCBjYWxscwpiZWNvbWUgZGlmZmVyZW50IGZvciB0aGUgc2FtZSBoYXJk
-d2FyZSBjbG9jay4KClRoYXQgc2FpZCwgdGhlIHN0cnVjdCBjbGsgcG9pbnRlciBjb21wYXJpbmcg
-aW4gdGhlIGNvZGUgZG9lc24ndCB3b3JrIGFueQptb3JlLiAgQ2FsbCBoZWxwZXIgZnVuY3Rpb24g
-Y2xrX2lzX21hdGNoKCkgaW5zdGVhZCB0byBmaXggdGhlIHByb2JsZW0uCgpTaWduZWQtb2ZmLWJ5
-OiBTaGF3biBHdW8gPHNoYXduLmd1b0BsaW5hcm8ub3JnPgotLS0KIGRyaXZlcnMvZ3B1L2RybS9h
-cm1hZGEvYXJtYWRhXzUxMC5jIHwgMiArLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCsp
-LCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2FybWFkYS9hcm1h
-ZGFfNTEwLmMgYi9kcml2ZXJzL2dwdS9kcm0vYXJtYWRhL2FybWFkYV81MTAuYwppbmRleCBhZDNk
-MmViZjk1YzkuLjg2MmRlYWZlOGIyNCAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncHUvZHJtL2FybWFk
-YS9hcm1hZGFfNTEwLmMKKysrIGIvZHJpdmVycy9ncHUvZHJtL2FybWFkYS9hcm1hZGFfNTEwLmMK
-QEAgLTUzLDcgKzUzLDcgQEAgc3RhdGljIGludCBhcm1hZGE1MTBfY3J0Y19jb21wdXRlX2Nsb2Nr
-KHN0cnVjdCBhcm1hZGFfY3J0YyAqZGNydGMsCiAJaWYgKElTX0VSUihjbGspKQogCQlyZXR1cm4g
-UFRSX0VSUihjbGspOwogCi0JaWYgKGRjcnRjLT5jbGsgIT0gY2xrKSB7CisJaWYgKCFjbGtfaXNf
-bWF0Y2goZGNydGMtPmNsaywgY2xrKSkgewogCQlyZXQgPSBjbGtfcHJlcGFyZV9lbmFibGUoY2xr
-KTsKIAkJaWYgKHJldCkKIAkJCXJldHVybiByZXQ7Ci0tIAoxLjkuMQoKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApk
-cmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+Since commit 035a61c314eb ("clk: Make clk API return per-user struct clk
+instances"), clk API users can no longer check if two struct clk
+pointers are pointing to the same hardware clock, i.e. struct clk_hw, by
+simply comparing two pointers.  That's because with the per-user clk
+change, a brand new struct clk is created whenever clients try to look
+up the clock by calling clk_get() or sister functions like clk_get_sys()
+and of_clk_get().  This changes the original behavior where the struct
+clk is only created for once when clock driver registers the clock to
+CCF in the first place.  The net change here is before commit
+035a61c314eb the struct clk pointer is unique for given hardware
+clock, while after the commit the pointers returned by clk lookup calls
+become different for the same hardware clock.
+
+That said, the struct clk pointer comparing in the code doesn't work any
+more.  Call helper function clk_is_match() instead to fix the problem.
+
+Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+---
+ drivers/pwm/pwm-atmel-hlcdc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
+index 522f7075bb1a..36475949b829 100644
+--- a/drivers/pwm/pwm-atmel-hlcdc.c
++++ b/drivers/pwm/pwm-atmel-hlcdc.c
+@@ -97,7 +97,7 @@ static int atmel_hlcdc_pwm_config(struct pwm_chip *c,
+ 
+ 	pwmcfg = ATMEL_HLCDC_PWMPS(pres);
+ 
+-	if (new_clk != chip->cur_clk) {
++	if (!clk_is_match(new_clk, chip->cur_clk)) {
+ 		u32 gencfg = 0;
+ 		int ret;
+ 
+-- 
+1.9.1
+
