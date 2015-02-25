@@ -1,7 +1,7 @@
 From: Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH 5/8] serial: samsung: fix struct clk pointer comparing
-Date: Wed, 25 Feb 2015 22:53:35 +0800
-Message-ID: <1424876018-17852-6-git-send-email-shawn.guo@linaro.org>
+Subject: [PATCH 6/8] ASoC: fsl_esai: fix struct clk pointer comparing
+Date: Wed, 25 Feb 2015 22:53:36 +0800
+Message-ID: <1424876018-17852-7-git-send-email-shawn.guo@linaro.org>
 References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
 In-Reply-To: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
@@ -28,22 +28,22 @@ more.  Call helper function clk_is_match() instead to fix the problem.
 
 Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
 ---
- drivers/tty/serial/samsung.c | 2 +-
+ sound/soc/fsl/fsl_esai.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index af821a908720..b747066247df 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1277,7 +1277,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+diff --git a/sound/soc/fsl/fsl_esai.c b/sound/soc/fsl/fsl_esai.c
+index 5c7597191e3f..6e00e51b98c2 100644
+--- a/sound/soc/fsl/fsl_esai.c
++++ b/sound/soc/fsl/fsl_esai.c
+@@ -269,7 +269,7 @@ static int fsl_esai_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
+ 	}
  
- 	/* check to see if we need  to change clock source */
- 
--	if (ourport->baudclk != clk) {
-+	if (!clk_is_match(ourport->baudclk, clk)) {
- 		s3c24xx_serial_setsource(port, clk_sel);
- 
- 		if (!IS_ERR(ourport->baudclk)) {
+ 	/* Only EXTAL source can be output directly without using PSR and PM */
+-	if (ratio == 1 && clksrc == esai_priv->extalclk) {
++	if (ratio == 1 && clk_is_match(clksrc, esai_priv->extalclk)) {
+ 		/* Bypass all the dividers if not being needed */
+ 		ecr |= tx ? ESAI_ECR_ETO : ESAI_ECR_ERO;
+ 		goto out;
 -- 
 1.9.1
 
