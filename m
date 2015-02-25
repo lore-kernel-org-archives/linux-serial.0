@@ -1,7 +1,7 @@
 From: Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH 6/8] ASoC: fsl_esai: fix struct clk pointer comparing
-Date: Wed, 25 Feb 2015 22:53:36 +0800
-Message-ID: <1424876018-17852-7-git-send-email-shawn.guo@linaro.org>
+Subject: [PATCH 7/8] ASoC: fsl_spdif: fix struct clk pointer comparing
+Date: Wed, 25 Feb 2015 22:53:37 +0800
+Message-ID: <1424876018-17852-8-git-send-email-shawn.guo@linaro.org>
 References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
 In-Reply-To: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
@@ -28,22 +28,31 @@ more.  Call helper function clk_is_match() instead to fix the problem.
 
 Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
 ---
- sound/soc/fsl/fsl_esai.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/fsl/fsl_spdif.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/fsl/fsl_esai.c b/sound/soc/fsl/fsl_esai.c
-index 5c7597191e3f..6e00e51b98c2 100644
---- a/sound/soc/fsl/fsl_esai.c
-+++ b/sound/soc/fsl/fsl_esai.c
-@@ -269,7 +269,7 @@ static int fsl_esai_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
- 	}
- 
- 	/* Only EXTAL source can be output directly without using PSR and PM */
--	if (ratio == 1 && clksrc == esai_priv->extalclk) {
-+	if (ratio == 1 && clk_is_match(clksrc, esai_priv->extalclk)) {
- 		/* Bypass all the dividers if not being needed */
- 		ecr |= tx ? ESAI_ECR_ETO : ESAI_ECR_ERO;
- 		goto out;
+diff --git a/sound/soc/fsl/fsl_spdif.c b/sound/soc/fsl/fsl_spdif.c
+index 75870c0ea2c9..91eb3aef7f02 100644
+--- a/sound/soc/fsl/fsl_spdif.c
++++ b/sound/soc/fsl/fsl_spdif.c
+@@ -1049,7 +1049,7 @@ static u32 fsl_spdif_txclk_caldiv(struct fsl_spdif_priv *spdif_priv,
+ 				enum spdif_txrate index, bool round)
+ {
+ 	const u32 rate[] = { 32000, 44100, 48000, 96000, 192000 };
+-	bool is_sysclk = clk == spdif_priv->sysclk;
++	bool is_sysclk = clk_is_match(clk, spdif_priv->sysclk);
+ 	u64 rate_ideal, rate_actual, sub;
+ 	u32 sysclk_dfmin, sysclk_dfmax;
+ 	u32 txclk_df, sysclk_df, arate;
+@@ -1143,7 +1143,7 @@ static int fsl_spdif_probe_txclk(struct fsl_spdif_priv *spdif_priv,
+ 			spdif_priv->txclk_src[index], rate[index]);
+ 	dev_dbg(&pdev->dev, "use txclk df %d for %dHz sample rate\n",
+ 			spdif_priv->txclk_df[index], rate[index]);
+-	if (spdif_priv->txclk[index] == spdif_priv->sysclk)
++	if (clk_is_match(spdif_priv->txclk[index], spdif_priv->sysclk))
+ 		dev_dbg(&pdev->dev, "use sysclk df %d for %dHz sample rate\n",
+ 				spdif_priv->sysclk_df[index], rate[index]);
+ 	dev_dbg(&pdev->dev, "the best rate for %dHz sample rate is %dHz\n",
 -- 
 1.9.1
 
