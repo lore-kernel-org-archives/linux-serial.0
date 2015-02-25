@@ -1,7 +1,7 @@
 From: Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH 4/8] pwm: atmel-hlcdc: fix struct clk pointer comparing
-Date: Wed, 25 Feb 2015 22:53:34 +0800
-Message-ID: <1424876018-17852-5-git-send-email-shawn.guo@linaro.org>
+Subject: [PATCH 5/8] serial: samsung: fix struct clk pointer comparing
+Date: Wed, 25 Feb 2015 22:53:35 +0800
+Message-ID: <1424876018-17852-6-git-send-email-shawn.guo@linaro.org>
 References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
 In-Reply-To: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
@@ -28,22 +28,22 @@ more.  Call helper function clk_is_match() instead to fix the problem.
 
 Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
 ---
- drivers/pwm/pwm-atmel-hlcdc.c | 2 +-
+ drivers/tty/serial/samsung.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
-index 522f7075bb1a..36475949b829 100644
---- a/drivers/pwm/pwm-atmel-hlcdc.c
-+++ b/drivers/pwm/pwm-atmel-hlcdc.c
-@@ -97,7 +97,7 @@ static int atmel_hlcdc_pwm_config(struct pwm_chip *c,
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index af821a908720..b747066247df 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1277,7 +1277,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
  
- 	pwmcfg = ATMEL_HLCDC_PWMPS(pres);
+ 	/* check to see if we need  to change clock source */
  
--	if (new_clk != chip->cur_clk) {
-+	if (!clk_is_match(new_clk, chip->cur_clk)) {
- 		u32 gencfg = 0;
- 		int ret;
+-	if (ourport->baudclk != clk) {
++	if (!clk_is_match(ourport->baudclk, clk)) {
+ 		s3c24xx_serial_setsource(port, clk_sel);
  
+ 		if (!IS_ERR(ourport->baudclk)) {
 -- 
 1.9.1
 
