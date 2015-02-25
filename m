@@ -1,49 +1,73 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH 8/8] ASoC: kirkwood: fix struct clk pointer comparing
-Date: Wed, 25 Feb 2015 22:53:38 +0800
-Message-ID: <1424876018-17852-9-git-send-email-shawn.guo@linaro.org>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 0/8] Fix struct clk pointer comparing
+Date: Wed, 25 Feb 2015 15:03:49 +0000
+Message-ID: <20150225150349.GB8656@n2100.arm.linux.org.uk>
 References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
-To: Mike Turquette <mturquette@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>
+To: Shawn Guo <shawn.guo@linaro.org>
+Cc: Mike Turquette <mturquette@linaro.org>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Since commit 035a61c314eb ("clk: Make clk API return per-user struct clk
-instances"), clk API users can no longer check if two struct clk
-pointers are pointing to the same hardware clock, i.e. struct clk_hw, by
-simply comparing two pointers.  That's because with the per-user clk
-change, a brand new struct clk is created whenever clients try to look
-up the clock by calling clk_get() or sister functions like clk_get_sys()
-and of_clk_get().  This changes the original behavior where the struct
-clk is only created for once when clock driver registers the clock to
-CCF in the first place.  The net change here is before commit
-035a61c314eb the struct clk pointer is unique for given hardware
-clock, while after the commit the pointers returned by clk lookup calls
-become different for the same hardware clock.
+On Wed, Feb 25, 2015 at 10:53:30PM +0800, Shawn Guo wrote:
+> On the first day back from Chinese new year holiday, I got a regression
+> report from rmk, saying Ethernet stops working on HimmingBoard with
+> v4.0-rc1.
+> 
+> I read through the thread [1] and found a couple of i.MX audio drivers
+> are also affected per Stephen's Coccinelle report.  That's why I came up
+> with this series based on Quentin's structclk.cocci, Stephen's result
+> and Mike's input (thanks all).
 
-That said, the struct clk pointer comparing in the code doesn't work any
-more.  Call helper function clk_is_match() instead to fix the problem.
+Not all places need to be fixed in this way.
 
-Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
----
- sound/soc/kirkwood/kirkwood-i2s.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+There are two broad cases:
 
-diff --git a/sound/soc/kirkwood/kirkwood-i2s.c b/sound/soc/kirkwood/kirkwood-i2s.c
-index def7d8260c4e..d19483081f9b 100644
---- a/sound/soc/kirkwood/kirkwood-i2s.c
-+++ b/sound/soc/kirkwood/kirkwood-i2s.c
-@@ -579,7 +579,7 @@ static int kirkwood_i2s_dev_probe(struct platform_device *pdev)
- 		if (PTR_ERR(priv->extclk) == -EPROBE_DEFER)
- 			return -EPROBE_DEFER;
- 	} else {
--		if (priv->extclk == priv->clk) {
-+		if (clk_is_match(priv->extclk, priv->clk)) {
- 			devm_clk_put(&pdev->dev, priv->extclk);
- 			priv->extclk = ERR_PTR(-EINVAL);
- 		} else {
+1. Where we are trying to determine if two clocks obtained from clk_get()
+   are the same clock.  IOW:
+
+	probe()
+	{
+		clk1 = clk_get(dev, ...);
+		clk2 = clk_get(dev, ...);
+
+		if (clk1 == clk2)
+			do_something();
+	}
+
+2. Where we are trying to determine if a clock selected from a set of
+   previously obtained clk_get()'d clocks is the same as a one of those
+   clocks.  IOW:
+
+	probe()
+	{
+		clk1 = clk_get(dev, ...);
+		clk2 = clk_get(dev, ...);
+	}
+...
+	some_fn()
+	{
+		clk = select_best_clock(clk1, clk2);
+		if (clk == previously_selected_clk) {
+			previously_selected_clk = clk;
+			do_something();
+		}
+	}
+
+Case 1 applies in places like the Kirkwood I2S driver, and the iMX6
+ethernet code, and it's these cases which need to be fixed.
+
+Case 2 applies in the Armada DRM driver, and these cases need not be
+"fixed".
+
+To put it a different way: case 1 is when you're testing to see whether
+two clocks refer to the same clock.  case 2 is when you're testing
+whether the cached clk cookie is the same.
+
 -- 
-1.9.1
-
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
