@@ -1,7 +1,7 @@
 From: Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH 1/8] clk: add helper function clk_is_match()
-Date: Wed, 25 Feb 2015 22:53:31 +0800
-Message-ID: <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+Subject: [PATCH 2/8] ARM: imx: fix struct clk pointer comparing
+Date: Wed, 25 Feb 2015 22:53:32 +0800
+Message-ID: <1424876018-17852-3-git-send-email-shawn.guo@linaro.org>
 References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
 In-Reply-To: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
@@ -23,69 +23,30 @@ CCF in the first place.  The net change here is before commit
 clock, while after the commit the pointers returned by clk lookup calls
 become different for the same hardware clock.
 
-A number of client drivers detecting if two struct clk pointers point to
-the same one hardware clock by comparing the pointers are broken now.
-As a stop-gap solution, this patch adds a helper function clk_is_match()
-to test if two struct clk pointers point to the same hardware clock, so
-that these client drivers can use to fix the regression.
+That said, the struct clk pointer comparing in the code doesn't work any
+more.  Call helper function clk_is_match() instead to fix the problem.
 
 Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
 ---
- drivers/clk/clk.c   |  6 ++++++
- include/linux/clk.h | 16 ++++++++++++++++
- 2 files changed, 22 insertions(+)
+ arch/arm/mach-imx/mach-imx6q.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index eb0152961d3c..7df4826d9c7b 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -597,6 +597,12 @@ struct clk *__clk_get_parent(struct clk *clk)
- }
- EXPORT_SYMBOL_GPL(__clk_get_parent);
- 
-+bool clk_is_match(struct clk *clk1, struct clk *clk2)
-+{
-+	return __clk_get_hw(clk1) == __clk_get_hw(clk2) ? true : false;
-+}
-+EXPORT_SYMBOL_GPL(clk_is_match);
-+
- static struct clk_core *clk_core_get_parent_by_index(struct clk_core *clk,
- 							 u8 index)
- {
-diff --git a/include/linux/clk.h b/include/linux/clk.h
-index 8381bbfbc308..f8a8a6dd6a98 100644
---- a/include/linux/clk.h
-+++ b/include/linux/clk.h
-@@ -376,6 +376,17 @@ struct clk *clk_get_parent(struct clk *clk);
-  */
- struct clk *clk_get_sys(const char *dev_id, const char *con_id);
- 
-+/**
-+ * clk_is_match - test if two given struct clk pointers point to the same
-+ * 		  hardware clock, i.e. struct clk_hw.
-+ * @clk1: the first clk
-+ * @clk2: the second clk
-+ *
-+ * Returns true if two clk pointers point to the same hardware clock,
-+ * or false otherwise.
-+ */
-+bool clk_is_match(struct clk *clk1, struct clk *clk2);
-+
- #else /* !CONFIG_HAVE_CLK */
- 
- static inline struct clk *clk_get(struct device *dev, const char *id)
-@@ -429,6 +440,11 @@ static inline struct clk *clk_get_parent(struct clk *clk)
- 	return NULL;
- }
- 
-+static inline bool clk_is_match(struct clk *clk1, struct clk *clk2)
-+{
-+	return clk1 == clk2 ? true : false;
-+}
-+
- #endif
- 
- /* clk_prepare_enable helps cases using clk_enable in non-atomic context. */
+diff --git a/arch/arm/mach-imx/mach-imx6q.c b/arch/arm/mach-imx/mach-imx6q.c
+index 4ad6e473cf83..9de3412af406 100644
+--- a/arch/arm/mach-imx/mach-imx6q.c
++++ b/arch/arm/mach-imx/mach-imx6q.c
+@@ -211,8 +211,9 @@ static void __init imx6q_1588_init(void)
+ 	 * set bit IOMUXC_GPR1[21].  Or the PTP clock must be from pad
+ 	 * (external OSC), and we need to clear the bit.
+ 	 */
+-	clksel = ptp_clk == enet_ref ? IMX6Q_GPR1_ENET_CLK_SEL_ANATOP :
+-				       IMX6Q_GPR1_ENET_CLK_SEL_PAD;
++	clksel = clk_is_match(ptp_clk, enet_ref) ?
++				IMX6Q_GPR1_ENET_CLK_SEL_ANATOP :
++				IMX6Q_GPR1_ENET_CLK_SEL_PAD;
+ 	gpr = syscon_regmap_lookup_by_compatible("fsl,imx6q-iomuxc-gpr");
+ 	if (!IS_ERR(gpr))
+ 		regmap_update_bits(gpr, IOMUXC_GPR1,
 -- 
 1.9.1
 
