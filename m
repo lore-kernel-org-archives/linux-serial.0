@@ -1,48 +1,39 @@
-From: Jonathan Richardson <jonathar@broadcom.com>
-Subject: Re: [PATCH 1/1] serial: 8250_dw: Fix get_mctrl behaviour
-Date: Wed, 25 Feb 2015 12:00:15 -0800
-Message-ID: <54EE29CF.6090208@broadcom.com>
-References: <1424891056-1222-2-git-send-email-jonathar@broadcom.com> <3836329.RsbZqYqPAB@wuerfel>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH 0/8] Fix struct clk pointer comparing
+Date: Wed, 25 Feb 2015 12:42:45 -0800
+Message-ID: <54EE33C5.5010701@codeaurora.org>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org> <20150225150349.GB8656@n2100.arm.linux.org.uk> <20150225175533.421.41831@quantum>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3836329.RsbZqYqPAB@wuerfel>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Scott Branden <sbranden@broadcom.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+In-Reply-To: <20150225175533.421.41831@quantum>
+Sender: linux-pwm-owner@vger.kernel.org
+To: Mike Turquette <mturquette@linaro.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Shawn Guo <shawn.guo@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
-
-On 15-02-25 11:21 AM, Arnd Bergmann wrote:
-> On Wednesday 25 February 2015 11:04:16 Jonathan Richardson wrote:
->> +- msr-override : array of strings to be used to override the individual
->> +  modem status signals for DCD, DSR, CTS, and RI.  If the property is not
->> +  present, the individual signals are obtained from the modem status register.
->> +  Strings accepted are "dcd", "dsr", "cts", and "ri". If "dcd", "dsr", or
->> +  "cts" are present, these signals will always be reported as active. If
->> +  "ri" is present, this signal will always be reported as inactive.
+On 02/25/15 09:55, Mike Turquette wrote:
+> Quoting Russell King - ARM Linux (2015-02-25 07:03:49)
+>> Case 1 applies in places like the Kirkwood I2S driver, and the iMX6
+>> ethernet code, and it's these cases which need to be fixed.
 >>
-> 
-> Did you copy this definition from another driver? If not, we should try
-> to come up with a more natural way to do it. How about defining four
-> boolean properties instead, like
-> 
-> 	dcd-override
-> 	dsr-override
-> 	cts-override
-> 	ri-override
-> 
-> Simplifies the parser and the binding.
+>> Case 2 applies in the Armada DRM driver, and these cases need not be
+>> "fixed".
+>>
+>> To put it a different way: case 1 is when you're testing to see whether
+>> two clocks refer to the same clock.  case 2 is when you're testing
+>> whether the cached clk cookie is the same.
+> It looks like patches 2, 7 and 8 are correct in this series. I'll apply
+> them towards -rc2 if nobody objects.
+>
+>
 
-I didn't see anything similar in another driver. I agree with the bools
-instead of strings. Did you want to keep these in the Synopsis driver
-for now or were you thinking of putting them somewhere that they could
-be re-used?
+For patch 8 can't we use the alternative patch that I came up with
+before? I have a patch for sound/soc/fsl/fsl_esai.c and
+drivers/pwm/pwm-atmel-hlcdc.c which I can send shortly.
 
-Thanks.
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
-> 
-> 	Arnd
-> 
