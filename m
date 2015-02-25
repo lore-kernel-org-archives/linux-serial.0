@@ -1,82 +1,40 @@
-From: Mike Turquette <mturquette@linaro.org>
-Subject: Re: [PATCH 0/8] Fix struct clk pointer comparing
-Date: Wed, 25 Feb 2015 09:55:33 -0800
-Message-ID: <20150225175533.421.41831@quantum>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
- <20150225150349.GB8656@n2100.arm.linux.org.uk>
+From: Jonathan Richardson <jonathar-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH 0/1] Synopsis 8250 serial port driver fix
+Date: Wed, 25 Feb 2015 11:04:15 -0800
+Message-ID: <1424891056-1222-1-git-send-email-jonathar@broadcom.com>
+References: <Jonathan Richardson <jonathar@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-In-Reply-To: <20150225150349.GB8656@n2100.arm.linux.org.uk>
-Sender: linux-pwm-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Shawn Guo <shawn.guo@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <Jonathan Richardson <jonathar-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Dmitry Torokhov <dtor-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Anatol Pomazau <anatol-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Jonathan Richardson <jonathar-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Quoting Russell King - ARM Linux (2015-02-25 07:03:49)
-> On Wed, Feb 25, 2015 at 10:53:30PM +0800, Shawn Guo wrote:
-> > On the first day back from Chinese new year holiday, I got a regression
-> > report from rmk, saying Ethernet stops working on HimmingBoard with
-> > v4.0-rc1.
-> > 
-> > I read through the thread [1] and found a couple of i.MX audio drivers
-> > are also affected per Stephen's Coccinelle report.  That's why I came up
-> > with this series based on Quentin's structclk.cocci, Stephen's result
-> > and Mike's input (thanks all).
-> 
-> Not all places need to be fixed in this way.
-> 
-> There are two broad cases:
-> 
-> 1. Where we are trying to determine if two clocks obtained from clk_get()
->    are the same clock.  IOW:
-> 
->         probe()
->         {
->                 clk1 = clk_get(dev, ...);
->                 clk2 = clk_get(dev, ...);
-> 
->                 if (clk1 == clk2)
->                         do_something();
->         }
-> 
-> 2. Where we are trying to determine if a clock selected from a set of
->    previously obtained clk_get()'d clocks is the same as a one of those
->    clocks.  IOW:
-> 
->         probe()
->         {
->                 clk1 = clk_get(dev, ...);
->                 clk2 = clk_get(dev, ...);
->         }
-> ...
->         some_fn()
->         {
->                 clk = select_best_clock(clk1, clk2);
->                 if (clk == previously_selected_clk) {
->                         previously_selected_clk = clk;
->                         do_something();
->                 }
->         }
-> 
-> Case 1 applies in places like the Kirkwood I2S driver, and the iMX6
-> ethernet code, and it's these cases which need to be fixed.
-> 
-> Case 2 applies in the Armada DRM driver, and these cases need not be
-> "fixed".
-> 
-> To put it a different way: case 1 is when you're testing to see whether
-> two clocks refer to the same clock.  case 2 is when you're testing
-> whether the cached clk cookie is the same.
+Hi,
 
-It looks like patches 2, 7 and 8 are correct in this series. I'll apply
-them towards -rc2 if nobody objects.
+This patchset fixes a bug in the Synopsis 8250 serial driver which causes the
+driver to hang. The bug occurs on simple 2 wire serial ports when modem control
+signalling has been enabled. It can be reproduced from user space by enabling
+modem control signals (stty -clocal), then opening a serial port and polling for
+data available to read with a timeout. A properly implemented driver will
+ignore the control signals and the call to poll will return. The current
+version of the driver hangs forever on the call to poll despite the timeout.
 
-Regards,
-Mike
+Jon
 
-> 
-> -- 
-> FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-> according to speedtest.net.
+Desmond Liu (1):
+  serial: 8250_dw: Fix get_mctrl behaviour
+
+ .../bindings/serial/snps-dw-apb-uart.txt           |    7 ++++
+ drivers/tty/serial/8250/8250_dw.c                  |   41 ++++++++++++++++++++
+ 2 files changed, 48 insertions(+)
+
+-- 
+1.7.9.5
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
