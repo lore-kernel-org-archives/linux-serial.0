@@ -1,61 +1,46 @@
 From: Kevin Hao <haokexin@gmail.com>
-Subject: [PATCH v2 00/11] powerpc: kill PPC_OF
-Date: Thu, 26 Feb 2015 20:08:12 +0800
-Message-ID: <1424952503-8247-1-git-send-email-haokexin@gmail.com>
-Return-path: <linux-mmc-owner@vger.kernel.org>
-Sender: linux-mmc-owner@vger.kernel.org
+Subject: [PATCH v2 10/11] tty: kconfig: remove the superfluous dependency on
+ PPC_OF
+Date: Thu, 26 Feb 2015 20:08:22 +0800
+Message-ID: <1424952503-8247-11-git-send-email-haokexin@gmail.com>
+References: <1424952503-8247-1-git-send-email-haokexin@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <1424952503-8247-1-git-send-email-haokexin@gmail.com>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 To: Michael Ellerman <mpe@ellerman.id.au>
-Cc: linuxppc-dev@lists.ozlabs.org, linux-fbdev@vger.kernel.org, linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
-
-v2:
-   - Drop the following patches which were already merged.
-	be802bf955a1 ("mtd: kconfig: replace PPC_OF with PPC")
-	0a4a3529df40 ("gpio: kconfig: replace PPC_OF with PPC")
-	c31316cb6c5a ("usb: kconfig: replace PPC_OF with PPC")
-	f0b66a2cf68e ("PCI: Add pci_device_to_OF_node() stub for !CONFIG_OF")
-   - Add the ack in v1 cycle.
-   - Resolve the comments in v1 cycle.
-
-We plan to merge this patch series via the powerpc tree in 4.1 cycle. So please
-ack the corresponding patches if you are OK with these changes.
-
-Kevin Hao (11):
-  sata_svw: remove the dependency on PPC_OF
-  fbdev: aty128fb: replace PPC_OF with PPC
-  fbdev: radeon: replace PPC_OF with PPC
-  fbdev: imsttfb: remove the dependency on PPC_OF
-  fbdev: nvidia: remove the dependency on PPC_OF
-  fbdev: riva: remove the dependency on PPC_OF
-  fbdev: remove the unnecessary includes of ppc specific header files
-  fbdev: kconfig: replace PPC_OF with PPC
-  mmc: kconfig: replace PPC_OF with PPC
-  tty: kconfig: remove the superfluous dependency on PPC_OF
-  powerpc: kill PPC_OF
-
- arch/powerpc/Kconfig                     |  3 ---
- arch/powerpc/Kconfig.debug               |  2 +-
- arch/powerpc/kernel/Makefile             |  4 ++--
- drivers/ata/sata_svw.c                   | 11 +----------
- drivers/mmc/host/Kconfig                 |  4 ++--
- drivers/tty/serial/Kconfig               |  4 ++--
- drivers/video/fbdev/Kconfig              |  4 ++--
- drivers/video/fbdev/aty/aty128fb.c       |  4 ++--
- drivers/video/fbdev/aty/radeon_base.c    | 24 ++++++++++++------------
- drivers/video/fbdev/aty/radeon_monitor.c | 20 ++++++++++----------
- drivers/video/fbdev/aty/radeon_pm.c      | 16 ++++++++--------
- drivers/video/fbdev/aty/radeonfb.h       |  4 ++--
- drivers/video/fbdev/core/fbmon.c         |  4 ----
- drivers/video/fbdev/imsttfb.c            |  6 +-----
- drivers/video/fbdev/nvidia/Makefile      |  3 +--
- drivers/video/fbdev/nvidia/nv_of.c       |  3 ---
- drivers/video/fbdev/nvidia/nv_proto.h    |  8 --------
- drivers/video/fbdev/nvidia/nvidia.c      |  4 ----
- drivers/video/fbdev/riva/fbdev.c         | 17 +++++++----------
- 19 files changed, 53 insertions(+), 92 deletions(-)
-
--- 
-1.9.3
-
+SW4gdGhlIGN1cnJlbnQga2VybmVsLCB0aGUgQ09ORklHX1BQQ19PRiBpcyBhbHdheXMgJ3knIGZv
+ciB0aGUgcHBjCmFyY2guIFNvIHdlIGRvbid0IG5lZWQgdG8gY2hlY2sgaXQgd2l0aCBvdGhlciBw
+cGMgc3BlY2lmaWMgb3B0aW9ucy4KClNpZ25lZC1vZmYtYnk6IEtldmluIEhhbyA8aGFva2V4aW5A
+Z21haWwuY29tPgotLS0KdjI6IE5vIGNoYW5nZS4KCiBkcml2ZXJzL3R0eS9zZXJpYWwvS2NvbmZp
+ZyB8IDQgKystLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMo
+LSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvS2NvbmZpZyBiL2RyaXZlcnMvdHR5
+L3NlcmlhbC9LY29uZmlnCmluZGV4IGQyNTAxZjAxY2QwMy4uNzc0NzFkM2RiOGQzIDEwMDY0NAot
+LS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvS2NvbmZpZworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwv
+S2NvbmZpZwpAQCAtODM1LDcgKzgzNSw3IEBAIGNvbmZpZyBTRVJJQUxfTUNGX0NPTlNPTEUKIAog
+Y29uZmlnIFNFUklBTF9QTUFDWklMT0cKIAl0cmlzdGF0ZSAiTWFjIG9yIFBvd2VyTWFjIHo4NWMz
+MCBFU0NDIHN1cHBvcnQiCi0JZGVwZW5kcyBvbiAoTTY4SyAmJiBNQUMpIHx8IChQUENfT0YgJiYg
+UFBDX1BNQUMpCisJZGVwZW5kcyBvbiAoTTY4SyAmJiBNQUMpIHx8IFBQQ19QTUFDCiAJc2VsZWN0
+IFNFUklBTF9DT1JFCiAJaGVscAogCSAgVGhpcyBkcml2ZXIgc3VwcG9ydHMgdGhlIFppbG9nIHo4
+NUMzMCBzZXJpYWwgcG9ydHMgZm91bmQgb24KQEAgLTExNTMsNyArMTE1Myw3IEBAIGNvbmZpZyBT
+RVJJQUxfT01BUF9DT05TT0xFCiAKIGNvbmZpZyBTRVJJQUxfT0ZfUExBVEZPUk1fTldQU0VSSUFM
+CiAJdHJpc3RhdGUgIk5XUCBzZXJpYWwgcG9ydCBkcml2ZXIiCi0JZGVwZW5kcyBvbiBQUENfT0Yg
+JiYgUFBDX0RDUgorCWRlcGVuZHMgb24gUFBDX0RDUgogCXNlbGVjdCBTRVJJQUxfT0ZfUExBVEZP
+Uk0KIAlzZWxlY3QgU0VSSUFMX0NPUkVfQ09OU09MRQogCXNlbGVjdCBTRVJJQUxfQ09SRQotLSAK
+MS45LjMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkxp
+bnV4cHBjLWRldiBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmcKaHR0
+cHM6Ly9saXN0cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBjLWRldg==
