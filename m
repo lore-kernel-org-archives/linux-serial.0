@@ -1,50 +1,46 @@
-From: Mike Turquette <mturquette@linaro.org>
-Subject: Re: [PATCH 0/8] Fix struct clk pointer comparing
-Date: Wed, 25 Feb 2015 17:24:26 -0800
-Message-ID: <20150226012426.421.62077@quantum>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 8/8] ASoC: kirkwood: fix struct clk pointer comparing
+Date: Thu, 26 Feb 2015 11:12:10 +0900
+Message-ID: <20150226021210.GZ6236@finisterre.sirena.org.uk>
 References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
- <20150225150349.GB8656@n2100.arm.linux.org.uk>
- <20150225175533.421.41831@quantum> <54EE33C5.5010701@codeaurora.org>
+ <1424876018-17852-9-git-send-email-shawn.guo@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="2y/feSa6JmJqKeZ6"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-In-Reply-To: <54EE33C5.5010701@codeaurora.org>
+Content-Disposition: inline
+In-Reply-To: <1424876018-17852-9-git-send-email-shawn.guo@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Shawn Guo <shawn.guo@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
+To: Shawn Guo <shawn.guo@linaro.org>
+Cc: Mike Turquette <mturquette@linaro.org>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Quoting Stephen Boyd (2015-02-25 12:42:45)
-> On 02/25/15 09:55, Mike Turquette wrote:
-> > Quoting Russell King - ARM Linux (2015-02-25 07:03:49)
-> >> Case 1 applies in places like the Kirkwood I2S driver, and the iMX6
-> >> ethernet code, and it's these cases which need to be fixed.
-> >>
-> >> Case 2 applies in the Armada DRM driver, and these cases need not be
-> >> "fixed".
-> >>
-> >> To put it a different way: case 1 is when you're testing to see whether
-> >> two clocks refer to the same clock.  case 2 is when you're testing
-> >> whether the cached clk cookie is the same.
-> > It looks like patches 2, 7 and 8 are correct in this series. I'll apply
-> > them towards -rc2 if nobody objects.
-> >
-> >
-> 
-> For patch 8 can't we use the alternative patch that I came up with
-> before? I have a patch for sound/soc/fsl/fsl_esai.c and
-> drivers/pwm/pwm-atmel-hlcdc.c which I can send shortly.
 
-Probably we can use them. I'll need to spend a few minutes with both
-patches and make sure it looks good. clkdev stuff always spins my head
-around.
+--2y/feSa6JmJqKeZ6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Regards,
-Mike
+On Wed, Feb 25, 2015 at 10:53:38PM +0800, Shawn Guo wrote:
+> Since commit 035a61c314eb ("clk: Make clk API return per-user struct clk
+> instances"), clk API users can no longer check if two struct clk
+> pointers are pointing to the same hardware clock, i.e. struct clk_hw, by
 
-> 
-> -- 
-> Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-> a Linux Foundation Collaborative Project
-> 
+Applied, thanks.
+
+--2y/feSa6JmJqKeZ6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJU7oD5AAoJECTWi3JdVIfQFQ4H/0M4eiqeTojCqqaGjS2zVV5n
+QdMeX4YdLBhl2oehBLDPYjhpJfzvivGBIjkQcXgNBy+Rw5J0Nw3MHrBy7EVVoocN
+5kLFGSjrXrLiqBK+wOBMY2eVRzVBh3GOoSiIVuMaG8o70wTkbhz5Do9m3AqIngv4
+elRHiFUZoaEdcxAay/jSJqVathaGCpZZUodcOLCLYVtvDKCeo4LEWnWpfUWEh9xd
+XFtVecq9UaMrOxxACzadT3mBa/rdzcXJimNtk8/MQonrSqYYdO29lIi4JvBkfIxR
+lEmrrllrCw/wBTK1XQvRVe472pko6L3tPwtEM1CmWD1UxA8xunhhXN4g0icUSrI=
+=LTZZ
+-----END PGP SIGNATURE-----
+
+--2y/feSa6JmJqKeZ6--
