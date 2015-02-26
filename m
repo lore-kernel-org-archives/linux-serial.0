@@ -1,36 +1,61 @@
-From: Ricard Wanderlof <ricard.wanderlof@axis.com>
-Subject: Re: [alsa-devel] [PATCH 1/8] clk: add helper function
- clk_is_match()
-Date: Thu, 26 Feb 2015 12:59:31 +0100
-Message-ID: <alpine.DEB.2.02.1502261259060.17631@lnxricardw1.se.axis.com>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org> <1424876018-17852-2-git-send-email-shawn.guo@linaro.org> <20150225172757.421.43718@quantum> <20150226090256.GQ30445@trinity.fluff.org> <1424944618.3073.6.camel@pengutronix.de>
- <20150226112509.GR30445@trinity.fluff.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-In-Reply-To: <20150226112509.GR30445@trinity.fluff.org>
-Sender: linux-pwm-owner@vger.kernel.org
-To: Ben Dooks <ben@trinity.fluff.org>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, Mike Turquette <mturquette@linaro.org>, Ben Dooks <ben-linux@fluff.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Shawn Guo <shawn.guo@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Kevin Hao <haokexin@gmail.com>
+Subject: [PATCH v2 00/11] powerpc: kill PPC_OF
+Date: Thu, 26 Feb 2015 20:08:12 +0800
+Message-ID: <1424952503-8247-1-git-send-email-haokexin@gmail.com>
+Return-path: <linux-mmc-owner@vger.kernel.org>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Michael Ellerman <mpe@ellerman.id.au>
+Cc: linuxppc-dev@lists.ozlabs.org, linux-fbdev@vger.kernel.org, linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+Hi,
 
-On Thu, 26 Feb 2015, Ben Dooks wrote:
+v2:
+   - Drop the following patches which were already merged.
+	be802bf955a1 ("mtd: kconfig: replace PPC_OF with PPC")
+	0a4a3529df40 ("gpio: kconfig: replace PPC_OF with PPC")
+	c31316cb6c5a ("usb: kconfig: replace PPC_OF with PPC")
+	f0b66a2cf68e ("PCI: Add pci_device_to_OF_node() stub for !CONFIG_OF")
+   - Add the ack in v1 cycle.
+   - Resolve the comments in v1 cycle.
 
-> > > small observaton, clk_is_same() is linguistically nicer.
-> >=20
-> > How about clk_equal() ?
->=20
-> That's good, the only issue that's not clear in any of these names is
-> that does this mean "the same clock", a "clock of the same rate" or a
-> "clock that is equivalent to in the rate and phase but not subject to
-> the same gate".
+We plan to merge this patch series via the powerpc tree in 4.1 cycle. So please
+ack the corresponding patches if you are OK with these changes.
 
-clk_identical() ?
+Kevin Hao (11):
+  sata_svw: remove the dependency on PPC_OF
+  fbdev: aty128fb: replace PPC_OF with PPC
+  fbdev: radeon: replace PPC_OF with PPC
+  fbdev: imsttfb: remove the dependency on PPC_OF
+  fbdev: nvidia: remove the dependency on PPC_OF
+  fbdev: riva: remove the dependency on PPC_OF
+  fbdev: remove the unnecessary includes of ppc specific header files
+  fbdev: kconfig: replace PPC_OF with PPC
+  mmc: kconfig: replace PPC_OF with PPC
+  tty: kconfig: remove the superfluous dependency on PPC_OF
+  powerpc: kill PPC_OF
 
-/Ricard
---=20
-Ricard Wolf Wanderl=F6f                           ricardw(at)axis.com
-Axis Communications AB, Lund, Sweden            www.axis.com
-Phone +46 46 272 2016                           Fax +46 46 13 61 30
+ arch/powerpc/Kconfig                     |  3 ---
+ arch/powerpc/Kconfig.debug               |  2 +-
+ arch/powerpc/kernel/Makefile             |  4 ++--
+ drivers/ata/sata_svw.c                   | 11 +----------
+ drivers/mmc/host/Kconfig                 |  4 ++--
+ drivers/tty/serial/Kconfig               |  4 ++--
+ drivers/video/fbdev/Kconfig              |  4 ++--
+ drivers/video/fbdev/aty/aty128fb.c       |  4 ++--
+ drivers/video/fbdev/aty/radeon_base.c    | 24 ++++++++++++------------
+ drivers/video/fbdev/aty/radeon_monitor.c | 20 ++++++++++----------
+ drivers/video/fbdev/aty/radeon_pm.c      | 16 ++++++++--------
+ drivers/video/fbdev/aty/radeonfb.h       |  4 ++--
+ drivers/video/fbdev/core/fbmon.c         |  4 ----
+ drivers/video/fbdev/imsttfb.c            |  6 +-----
+ drivers/video/fbdev/nvidia/Makefile      |  3 +--
+ drivers/video/fbdev/nvidia/nv_of.c       |  3 ---
+ drivers/video/fbdev/nvidia/nv_proto.h    |  8 --------
+ drivers/video/fbdev/nvidia/nvidia.c      |  4 ----
+ drivers/video/fbdev/riva/fbdev.c         | 17 +++++++----------
+ 19 files changed, 53 insertions(+), 92 deletions(-)
+
+-- 
+1.9.3
+
