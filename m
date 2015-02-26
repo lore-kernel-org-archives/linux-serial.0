@@ -1,46 +1,61 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 6/8] ASoC: fsl_esai: fix struct clk pointer comparing
-Date: Thu, 26 Feb 2015 11:36:41 +0900
-Message-ID: <20150226023641.GI6236@finisterre.sirena.org.uk>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
- <1424876018-17852-7-git-send-email-shawn.guo@linaro.org>
+From: Leilei Zhao <leilei.zhao@atmel.com>
+Subject: [PATCH 5/5] tty/serial: at91: correct the usage of tasklet
+Date: Thu, 26 Feb 2015 14:55:25 +0800
+Message-ID: <1424933725-16242-6-git-send-email-leilei.zhao@atmel.com>
+References: <1424933725-16242-1-git-send-email-leilei.zhao@atmel.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="5/gejftf0Hzkayd1"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1424876018-17852-7-git-send-email-shawn.guo@linaro.org>
-Sender: linux-pwm-owner@vger.kernel.org
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: Mike Turquette <mturquette@linaro.org>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1424933725-16242-1-git-send-email-leilei.zhao@atmel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, jslaby@suse.cz
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Leilei Zhao <leilei.zhao@atmel.com>
 List-Id: linux-serial@vger.kernel.org
 
+The tasklet may be scheduled and executed after serial port
+was shutdown, for example, DMA rx callback will schedule the
+tasklet while serial port is shutting down, especially serial
+port is sending and receiving data in a higher baud rate and
+it's killed by external program. In this case, tasklet_kill
+can only clear the current scheduling out, so tasklet should
+be disabled to prevent being executed in later scheduling.
+Otherwise, the tasklet executed after serial port was shutdown
+can lead to kernel crash.
 
---5/gejftf0Hzkayd1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Leilei Zhao <leilei.zhao@atmel.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+---
+ drivers/tty/serial/atmel_serial.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-On Wed, Feb 25, 2015 at 10:53:36PM +0800, Shawn Guo wrote:
-> Since commit 035a61c314eb ("clk: Make clk API return per-user struct clk
-> instances"), clk API users can no longer check if two struct clk
-> pointers are pointing to the same hardware clock, i.e. struct clk_hw, by
-
-Acked-by: Mark Brown <broonie@kernel.org>
-
---5/gejftf0Hzkayd1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJU7oa4AAoJECTWi3JdVIfQLVMH/jt28RRduIQD9/S7ZS2bBxQb
-iv7Sz3k6f4fZFhsOYif5BkvptIhQnZWmjLjUGTio9LbC/aOpDzD30wOLR+6KrwLG
-fwxi3fvPhEcRN0YyAR/+QlnsPqqrmpYKq+4+JoSz2dQxi8duGLzBIrx81/6gwi+e
-TzYaYgUuSnZisoKLusAeIN31Ql9L0LrT+jtprY0Hdm0XQwOZ+okcvwjoaQLLhobv
-Ho1yEFFkqjH6L223445QNQ6Nm7r8FO0lJYJmNSEhtf0HNpHWZzSHrxOGwnrVsaHI
-BwMaC44DnhCtLm+jVjcbc8q4ydg2xUbnO7SoPJnF3G85iTMCUbAIw7oxn758J+k=
-=GPOW
------END PGP SIGNATURE-----
-
---5/gejftf0Hzkayd1--
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 8d28210..39ec278 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1755,6 +1755,8 @@ static int atmel_startup(struct uart_port *port)
+ 	if (retval)
+ 		goto free_irq;
+ 
++	tasklet_enable(&atmel_port->tasklet);
++
+ 	/*
+ 	 * Initialize DMA (if necessary)
+ 	 */
+@@ -1858,6 +1860,7 @@ static void atmel_shutdown(struct uart_port *port)
+ 	 * Clear out any scheduled tasklets before
+ 	 * we destroy the buffers
+ 	 */
++	tasklet_disable(&atmel_port->tasklet);
+ 	tasklet_kill(&atmel_port->tasklet);
+ 
+ 	/*
+@@ -2251,6 +2254,7 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
+ 
+ 	tasklet_init(&atmel_port->tasklet, atmel_tasklet_func,
+ 			(unsigned long)port);
++	tasklet_disable(&atmel_port->tasklet);
+ 
+ 	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
+ 
+-- 
+1.7.9.5
