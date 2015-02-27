@@ -1,39 +1,59 @@
-From: Jonathan Richardson <jonathar@broadcom.com>
-Subject: [PATCH v2 0/1] Synopsis 8250 serial port driver fix
-Date: Thu, 26 Feb 2015 16:35:56 -0800
-Message-ID: <1424997357-31487-1-git-send-email-jonathar@broadcom.com>
-References: <Jonathan Richardson <jonathar@broadcom.com>
+From: "Zhao, Leilei" <Leilei.Zhao@atmel.com>
+Subject: RE: [PATCH 1/5] tty/serial: at91: correct check of buf used in DMA
+Date: Fri, 27 Feb 2015 07:38:11 +0000
+Message-ID: <C2F288CD23A3A94D985CB167373816C92AC7E162@penmbx01>
+References: <1424933725-16242-1-git-send-email-leilei.zhao@atmel.com>
+ <1424933725-16242-2-git-send-email-leilei.zhao@atmel.com>
+ <54EEE792.9060706@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <Jonathan Richardson <jonathar@broadcom.com>
+In-Reply-To: <54EEE792.9060706@suse.cz>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Jonathan Richardson <jonathar@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+To: Jiri Slaby <jslaby@suse.cz>, "Ferre, Nicolas" <Nicolas.FERRE@atmel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Thanks
 
-This patchset fixes a bug in the Synopsis 8250 serial driver which causes the
-driver to hang. The bug occurs on simple 2 wire serial ports when modem control
-signalling has been enabled. It can be reproduced from user space by enabling
-modem control signals (stty -clocal), then opening a serial port and polling for
-data available to read with a timeout. A properly implemented driver will
-ignore the control signals and the call to poll will return. The current
-version of the driver hangs forever on the call to poll despite the timeout.
+Best Regards
+Zhao Leilei
 
-Jon
+-----Original Message-----
+From: Jiri Slaby [mailto:jirislaby@gmail.com] On Behalf Of Jiri Slaby
+Sent: Thursday, February 26, 2015 17:30
+To: Zhao, Leilei; Ferre, Nicolas; gregkh@linuxfoundation.org; linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/5] tty/serial: at91: correct check of buf used in DMA
 
-Changes from v1:
-- Changed DT properties from strings to booleans as suggested by Arnd. 
-  Documentation updated accordingly.
+On 02/26/2015, 07:55 AM, Leilei Zhao wrote:
+> We only use buf of ring In DMA rx function while using buf of xmit in 
+> DMA tx function. So here we need definitively to check the buf of ring 
+> which is corresponding to DMA rx function.
+> 
+> Signed-off-by: Leilei Zhao <leilei.zhao@atmel.com>
+> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c 
+> b/drivers/tty/serial/atmel_serial.c
+> index 846552b..460903c 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -1027,7 +1027,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+>  	spin_lock_init(&atmel_port->lock_rx);
+>  	sg_init_table(&atmel_port->sg_rx, 1);
+>  	/* UART circular rx buffer is an aligned page. */
+> -	BUG_ON((int)port->state->xmit.buf & ~PAGE_MASK);
+> +	BUG_ON((int)ring->buf & ~PAGE_MASK);
 
-Desmond Liu (1):
-  serial: 8250_dw: Fix get_mctrl behaviour
+Please use PAGE_ALIGNED. This will also make the bad (int) cast to dismiss.
 
- .../bindings/serial/snps-dw-apb-uart.txt           |   16 ++++++++++
- drivers/tty/serial/8250/8250_dw.c                  |   32 ++++++++++++++++++++
- 2 files changed, 48 insertions(+)
-
--- 
-1.7.9.5
+thanks,
+--
+js
+suse labs
