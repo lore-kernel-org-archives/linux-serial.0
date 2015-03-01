@@ -1,32 +1,41 @@
-From: Joseph Kogut <joseph.kogut@gmail.com>
-Subject: [PATCH] tty: serial: Fix spelling of Medfield
-Date: Sun,  1 Mar 2015 00:54:41 -0700
-Message-ID: <1425196481-3703-1-git-send-email-joseph.kogut@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: trivial@kernel.org, gregkh@linuxfoundation.org
-Cc: jslaby@suse.cz, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Joseph Kogut <joseph.kogut@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] serial: core: Fix iotype userspace breakage
+Date: Sun,  1 Mar 2015 10:18:16 -0500
+Message-ID: <1425223096-17635-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Kevin Cernekee <cernekee@gmail.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Changed 'Medfile' to 'Medfield' in Kconfig
+commit 3ffb1a8193bea ("serial: core: Add big-endian iotype")
+re-numbered userspace-dependent values; ioctl(TIOCSSERIAL) can
+assign the port iotype (which is expected to match the selected
+i/o accessors), so iotype values must not be changed.
 
-Signed-off-by: Joseph Kogut <joseph.kogut@gmail.com>
+Cc: Kevin Cernekee <cernekee@gmail.com>
+Cc: <stable@vger.kernel.org> # 3.19+
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/serial_core.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index d2501f0..7baf98c 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -489,7 +489,7 @@ config SERIAL_MFD_HSU
- 	select SERIAL_CORE
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index a3fd182..85fdd89 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -147,9 +147,9 @@ struct uart_port {
+ #define UPIO_HUB6		(1)			/* Hub6 ISA card */
+ #define UPIO_MEM		(2)			/* 8b MMIO access */
+ #define UPIO_MEM32		(3)			/* 32b little endian */
+-#define UPIO_MEM32BE		(4)			/* 32b big endian */
+-#define UPIO_AU			(5)			/* Au1x00 and RT288x type IO */
+-#define UPIO_TSI		(6)			/* Tsi108/109 type IO */
++#define UPIO_AU			(4)			/* Au1x00 and RT288x type IO */
++#define UPIO_TSI		(5)			/* Tsi108/109 type IO */
++#define UPIO_MEM32BE		(6)			/* 32b big endian */
  
- config SERIAL_MFD_HSU_CONSOLE
--	bool "Medfile HSU serial console support"
-+	bool "Medfield HSU serial console support"
- 	depends on SERIAL_MFD_HSU=y
- 	select SERIAL_CORE_CONSOLE
- 
+ 	unsigned int		read_status_mask;	/* driver specific */
+ 	unsigned int		ignore_status_mask;	/* driver specific */
 -- 
-2.3.1
+2.3.0
