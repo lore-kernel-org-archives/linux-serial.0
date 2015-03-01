@@ -1,93 +1,131 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH -next 00/13] Extensible console matching & direct earlycon
-Date: Sun, 01 Mar 2015 12:40:25 -0500
-Message-ID: <54F34F09.9030802@hurleysoftware.com>
-References: <1424795830-31223-1-git-send-email-peter@hurleysoftware.com> <CAL_JsqKTtiN-WuQjEQJe22g35BCNaDpXkijNcPyRHojcbbAvhQ@mail.gmail.com> <54ECD6BA.9070009@hurleysoftware.com> <CAL_JsqLTMBJKFcv9cy7UvqOL5=4vDypaP9ZwW5p4rgx74OWxkg@mail.gmail.com> <54EF324C.2080205@hurleysoftware.com> <CAL_JsqLcTHNpsXmG1TSPAvvEpdVYahnFm-LRLUUWJd3eotMAEQ@mail.gmail.com>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH V3 5/7] serial: earlycon: Set UPIO_MEM32BE based on DT
+ properties
+Date: Sun, 01 Mar 2015 17:23:11 -0500
+Message-ID: <54F3914F.3080905@hurleysoftware.com>
+References: <1416872182-6440-1-git-send-email-cernekee@gmail.com> <1416872182-6440-6-git-send-email-cernekee@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqLcTHNpsXmG1TSPAvvEpdVYahnFm-LRLUUWJd3eotMAEQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, mark.rutland@arm.com, "grant.likely@linaro.org >> Grant Likely" <grant.likely@linaro.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1416872182-6440-6-git-send-email-cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: arnd-r2nGTMty4D4@public.gmane.org, f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-[ +cc devicetree, Mark Rutland, Grant Likely ]
+Hi Kevin,
 
-On 02/26/2015 09:58 AM, Rob Herring wrote:
-> On Thu, Feb 26, 2015 at 8:48 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
->> Hi Rob,
->>
->> On 02/24/2015 03:20 PM, Rob Herring wrote:
->>> On Tue, Feb 24, 2015 at 1:53 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
->>
->> [...]
->>
->>>>>> Direct earlycon
->>>>>>
->>>>>> This feature enables arches and proms to start an earlycon directly,
->>>>>> rather than requiring an "earlycon=" command line parameter.
->>>>>> Devicetree can already do this via the 'linux,stdout-path' property,
->>>>>> but arch and prom code requires direct coupling to the serial driver.
->>>>>>
->>>>>> This support is implemented by judicious refactoring and the same
->>>>>> construct that devicetree and early_param use: a link table containing
->>>>>> the necessary information (name and setup() function) to find and
->>>>>> bind the appropriate earlycon "driver".
->>>>>
->>>>> I've skimmed thru this and it looks like a great improvement.
->>>>>
->>>>> One problem we have currently with DT stdout-path and earlycon is a
->>>>> preferred console does not get registered, so the console will get
->>>>> switched to tty0 and you lose your console. The problem is DT does not
->>>>> know the console name to register a preferred console. It looks like
->>>>> this series may help this problem, but I'm not sure and wanted your
->>>>> thoughts.
->>>>
->>>> I thought that of_alias_scan() + of_console_check() caused DT stdout-path
->>>> to add_preferred_console() the driver console @ port registration time
->>>> via uart_add_one_port() -> of_console_check().
->>>>
->>>> Is that not how that works?
->>>
->>> Yes, I believe that is how it works with earlycon not enabled. This
->>> doesn't work when earlycon is enabled with just "earlycon" on the
->>> command line. The fix I have is here[1], but I don't like putting DT
->>> specifics into the console code.
->>
->> After much gnashing of teeth and pulling of hair yesterday, I managed
->> to mock up the situation you describe, but I need to study it in more
->> detail. Some things I did learn:
->>
->> 1. The serial console _does_ come back up when using stdout-path but the
->>    line settings don't match, because the serial core sets them to the
->>    default of 9600n8 if unspecified.
+On 11/24/2014 06:36 PM, Kevin Cernekee wrote:
+> If an earlycon (stdout-path) node is being used, check for "big-endian"
+> or "native-endian" properties and pass the appropriate iotype to the
+> driver.
 > 
-> That may have been what I saw as I tested on QEMU which ignores the
-> baud rate. But it does stop between the time tty0 is enabled and the
-> "real" serial console which is a time period we really want the
-> console.
-
-The bug is that of_alias_scan() does not emit a preferred console, but
-rather defers it until of_console_check().
-
-In many setups, this means there is no preferred console. So when the
-dummy vt console loads (which happens via console_init()), all the boot
-consoles are disabled.
-
-The trivial fix is to emit a preferred console from of_alias_scan(), even
-if that console is never matched. I've sent you a patch to do just that.
-
-
->> 2. The line settings can now be set with stdout-path like,
->>      stdout-path = "serial0:115200n8"
->>    but this breaks DT earlycon (as I wrote in the other email you were
->>    cc'd on).
+> Note that LE sets UPIO_MEM (8-bit) but BE sets UPIO_MEM32BE (32-bit).  The
+> big-endian property only really makes sense in the context of 32-bit
+> registers, since 8-bit accesses never require data swapping.
 > 
-> Right. We should fix libfdt.
+> At some point, the of_earlycon code may want to pass in the reg-io-width,
+> reg-offset, and reg-shift parameters too.
+> 
+> Signed-off-by: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/of/fdt.c              | 7 ++++++-
+>  drivers/tty/serial/earlycon.c | 4 ++--
+>  include/linux/serial_core.h   | 2 +-
+>  3 files changed, 9 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> index 658656f..9d21472 100644
+> --- a/drivers/of/fdt.c
+> +++ b/drivers/of/fdt.c
+> @@ -794,6 +794,8 @@ int __init early_init_dt_scan_chosen_serial(void)
+>  
+>  	while (match->compatible[0]) {
+>  		unsigned long addr;
+> +		unsigned char iotype = UPIO_MEM;
+> +
+>  		if (fdt_node_check_compatible(fdt, offset, match->compatible)) {
+>  			match++;
+>  			continue;
+> @@ -803,7 +805,10 @@ int __init early_init_dt_scan_chosen_serial(void)
+>  		if (!addr)
+>  			return -ENXIO;
+>  
+> -		of_setup_earlycon(addr, match->data);
+> +		if (of_fdt_is_big_endian(fdt, offset))
+> +			iotype = UPIO_MEM32BE;
+> +
+> +		of_setup_earlycon(addr, iotype, match->data);
 
-Ok.
+I know these got ACKs already but as you point out in the commit log,
+earlycon _will_ need reg-io-width, reg-offset and reg-shift. Since the
+distinction between early_init_dt_scan_chosen_serial() and
+of_setup_earlycon() is arbitrary, I'd rather see of_setup_earlycon()
+taught to properly decode of_serial driver bindings instead of a
+stack of parameters to of_setup_earlycon().
+
+In fact, this patch allows a mis-defined devicetree to bring up a
+functioning earlycon because the 'big-endian' property is directly
+associated with UPIO_MEM32BE, which will create incompatibility problems
+when DT earlycon is fixed to decode the of_serial DT bindings.
+
+[rant]
+In general, the ability to query devicetree from all over the
+kernel creates all kinds of compatibility issues which eventually
+will cause unresolvable breakage.
+
+The same rigor applied to ioctls is the analysis required for how
+DT bindings are used in the kernel.
+
+I realize that since this particular case only applies to earlycon, it's
+no big deal, but if this same mistake had been made in the of_serial
+driver, the serial core would be permanently stuck with the
+'big-endian' property == UPIO_MEM32BE which could impact future designs.
+[/rant]
 
 Regards,
 Peter Hurley
+
+>  		return 0;
+>  	}
+>  	return -ENODEV;
+> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> index a514ee6..548f7d7 100644
+> --- a/drivers/tty/serial/earlycon.c
+> +++ b/drivers/tty/serial/earlycon.c
+> @@ -148,13 +148,13 @@ int __init setup_earlycon(char *buf, const char *match,
+>  	return 0;
+>  }
+>  
+> -int __init of_setup_earlycon(unsigned long addr,
+> +int __init of_setup_earlycon(unsigned long addr, unsigned char iotype,
+>  			     int (*setup)(struct earlycon_device *, const char *))
+>  {
+>  	int err;
+>  	struct uart_port *port = &early_console_dev.port;
+>  
+> -	port->iotype = UPIO_MEM;
+> +	port->iotype = iotype;
+>  	port->mapbase = addr;
+>  	port->uartclk = BASE_BAUD * 16;
+>  	port->membase = earlycon_map(addr, SZ_4K);
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index d2d5bf6..0d60c64 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -310,7 +310,7 @@ struct earlycon_device {
+>  int setup_earlycon(char *buf, const char *match,
+>  		   int (*setup)(struct earlycon_device *, const char *));
+>  
+> -extern int of_setup_earlycon(unsigned long addr,
+> +extern int of_setup_earlycon(unsigned long addr, unsigned char iotype,
+>  			     int (*setup)(struct earlycon_device *, const char *));
+>  
+>  #define EARLYCON_DECLARE(name, func) \
+> 
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
