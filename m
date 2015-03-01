@@ -1,170 +1,93 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 -next 01/13] serial: earlycon: Refactor parse_options into serial core
-Date: Sun,  1 Mar 2015 11:05:46 -0500
-Message-ID: <1425225958-17908-2-git-send-email-peter@hurleysoftware.com>
-References: <1425225958-17908-1-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH -next 00/13] Extensible console matching & direct earlycon
+Date: Sun, 01 Mar 2015 12:40:25 -0500
+Message-ID: <54F34F09.9030802@hurleysoftware.com>
+References: <1424795830-31223-1-git-send-email-peter@hurleysoftware.com> <CAL_JsqKTtiN-WuQjEQJe22g35BCNaDpXkijNcPyRHojcbbAvhQ@mail.gmail.com> <54ECD6BA.9070009@hurleysoftware.com> <CAL_JsqLTMBJKFcv9cy7UvqOL5=4vDypaP9ZwW5p4rgx74OWxkg@mail.gmail.com> <54EF324C.2080205@hurleysoftware.com> <CAL_JsqLcTHNpsXmG1TSPAvvEpdVYahnFm-LRLUUWJd3eotMAEQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1425225958-17908-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <CAL_JsqLcTHNpsXmG1TSPAvvEpdVYahnFm-LRLUUWJd3eotMAEQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, mark.rutland@arm.com, "grant.likely@linaro.org >> Grant Likely" <grant.likely@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Prepare to support console-defined matching; refactor the command
-line parameter string processing from parse_options() into a
-new core function, uart_parse_earlycon(), which decodes command line
-parameters of the form:
-   earlycon=<name>,io|mmio|mmio32,<addr>,<options>
-   console=<name>,io|mmio|mmio32,<addr>,<options>
-   earlycon=<name>,0x<addr>,<options>
-   console=<name>,0x<addr>,<options>
+[ +cc devicetree, Mark Rutland, Grant Likely ]
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/earlycon.c    | 39 ++++++++++++----------------------
- drivers/tty/serial/serial_core.c | 46 ++++++++++++++++++++++++++++++++++++++++
- include/linux/serial_core.h      |  2 ++
- 3 files changed, 61 insertions(+), 26 deletions(-)
+On 02/26/2015 09:58 AM, Rob Herring wrote:
+> On Thu, Feb 26, 2015 at 8:48 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>> Hi Rob,
+>>
+>> On 02/24/2015 03:20 PM, Rob Herring wrote:
+>>> On Tue, Feb 24, 2015 at 1:53 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>>
+>> [...]
+>>
+>>>>>> Direct earlycon
+>>>>>>
+>>>>>> This feature enables arches and proms to start an earlycon directly,
+>>>>>> rather than requiring an "earlycon=" command line parameter.
+>>>>>> Devicetree can already do this via the 'linux,stdout-path' property,
+>>>>>> but arch and prom code requires direct coupling to the serial driver.
+>>>>>>
+>>>>>> This support is implemented by judicious refactoring and the same
+>>>>>> construct that devicetree and early_param use: a link table containing
+>>>>>> the necessary information (name and setup() function) to find and
+>>>>>> bind the appropriate earlycon "driver".
+>>>>>
+>>>>> I've skimmed thru this and it looks like a great improvement.
+>>>>>
+>>>>> One problem we have currently with DT stdout-path and earlycon is a
+>>>>> preferred console does not get registered, so the console will get
+>>>>> switched to tty0 and you lose your console. The problem is DT does not
+>>>>> know the console name to register a preferred console. It looks like
+>>>>> this series may help this problem, but I'm not sure and wanted your
+>>>>> thoughts.
+>>>>
+>>>> I thought that of_alias_scan() + of_console_check() caused DT stdout-path
+>>>> to add_preferred_console() the driver console @ port registration time
+>>>> via uart_add_one_port() -> of_console_check().
+>>>>
+>>>> Is that not how that works?
+>>>
+>>> Yes, I believe that is how it works with earlycon not enabled. This
+>>> doesn't work when earlycon is enabled with just "earlycon" on the
+>>> command line. The fix I have is here[1], but I don't like putting DT
+>>> specifics into the console code.
+>>
+>> After much gnashing of teeth and pulling of hair yesterday, I managed
+>> to mock up the situation you describe, but I need to study it in more
+>> detail. Some things I did learn:
+>>
+>> 1. The serial console _does_ come back up when using stdout-path but the
+>>    line settings don't match, because the serial core sets them to the
+>>    default of 9600n8 if unspecified.
+> 
+> That may have been what I saw as I tested on QEMU which ignores the
+> baud rate. But it does stop between the time tty0 is enabled and the
+> "real" serial console which is a time period we really want the
+> console.
 
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 64fe25a..58d6bcd 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -54,44 +54,31 @@ static void __iomem * __init earlycon_map(unsigned long paddr, size_t size)
- 	return base;
- }
- 
--static int __init parse_options(struct earlycon_device *device,
--				char *options)
-+static int __init parse_options(struct earlycon_device *device, char *options)
- {
- 	struct uart_port *port = &device->port;
--	int mmio, mmio32, length;
-+	int length;
- 	unsigned long addr;
- 
--	if (!options)
--		return -ENODEV;
-+	if (uart_parse_earlycon(options, &port->iotype, &addr, &options))
-+		return -EINVAL;
- 
--	mmio = !strncmp(options, "mmio,", 5);
--	mmio32 = !strncmp(options, "mmio32,", 7);
--	if (mmio || mmio32) {
--		port->iotype = (mmio ? UPIO_MEM : UPIO_MEM32);
--		options += mmio ? 5 : 7;
--		addr = simple_strtoul(options, NULL, 0);
-+	switch (port->iotype) {
-+	case UPIO_MEM32:
-+		port->regshift = 2;	/* fall-through */
-+	case UPIO_MEM:
- 		port->mapbase = addr;
--		if (mmio32)
--			port->regshift = 2;
--	} else if (!strncmp(options, "io,", 3)) {
--		port->iotype = UPIO_PORT;
--		options += 3;
--		addr = simple_strtoul(options, NULL, 0);
-+		break;
-+	case UPIO_PORT:
- 		port->iobase = addr;
--		mmio = 0;
--	} else if (!strncmp(options, "0x", 2)) {
--		port->iotype = UPIO_MEM;
--		addr = simple_strtoul(options, NULL, 0);
--		port->mapbase = addr;
--	} else {
-+		break;
-+	default:
- 		return -EINVAL;
- 	}
- 
- 	port->uartclk = BASE_BAUD * 16;
- 
--	options = strchr(options, ',');
- 	if (options) {
--		options++;
- 		device->baud = simple_strtoul(options, NULL, 0);
- 		length = min(strcspn(options, " ") + 1,
- 			     (size_t)(sizeof(device->options)));
-@@ -100,7 +87,7 @@ static int __init parse_options(struct earlycon_device *device,
- 
- 	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
- 		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
--			mmio32 ? "32" : "",
-+			(port->iotype == UPIO_MEM32) ? "32" : "",
- 			(unsigned long long)port->mapbase,
- 			device->options);
- 	else
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 6a1055a..3f823c26 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1810,6 +1810,52 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
- }
- 
- /**
-+ *	uart_parse_earlycon - Parse earlycon options
-+ *	@p:	  ptr to 2nd field (ie., just beyond '<name>,')
-+ *	@iotype:  ptr for decoded iotype (out)
-+ *	@addr:    ptr for decoded mapbase/iobase (out)
-+ *	@options: ptr for <options> field; NULL if not present (out)
-+ *
-+ *	Decodes earlycon kernel command line parameters of the form
-+ *	   earlycon=<name>,io|mmio|mmio32,<addr>,<options>
-+ *	   console=<name>,io|mmio|mmio32,<addr>,<options>
-+ *
-+ *	The optional form
-+ *	   earlycon=<name>,0x<addr>,<options>
-+ *	   console=<name>,0x<addr>,<options>
-+ *	is also accepted; the returned @iotype will be UPIO_MEM.
-+ *
-+ *	Returns 0 on success or -EINVAL on failure
-+ */
-+int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
-+			char **options)
-+{
-+	if (strncmp(p, "mmio,", 5) == 0) {
-+		*iotype = UPIO_MEM;
-+		p += 5;
-+	} else if (strncmp(p, "mmio32,", 7) == 0) {
-+		*iotype = UPIO_MEM32;
-+		p += 7;
-+	} else if (strncmp(p, "io,", 3) == 0) {
-+		*iotype = UPIO_PORT;
-+		p += 3;
-+	} else if (strncmp(p, "0x", 2) == 0) {
-+		*iotype = UPIO_MEM;
-+	} else {
-+		return -EINVAL;
-+	}
-+
-+	*addr = simple_strtoul(p, NULL, 0);
-+	p = strchr(p, ',');
-+	if (p)
-+		p++;
-+
-+	*options = p;
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(uart_parse_earlycon);
-+
-+/**
-  *	uart_parse_options - Parse serial port baud/parity/bits/flow control.
-  *	@options: pointer to option string
-  *	@baud: pointer to an 'int' variable for the baud rate.
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index baf3e1d..cc5c506 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -354,6 +354,8 @@ early_param("earlycon", name ## _setup_earlycon);
- 
- struct uart_port *uart_get_console(struct uart_port *ports, int nr,
- 				   struct console *c);
-+int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
-+			char **options);
- void uart_parse_options(char *options, int *baud, int *parity, int *bits,
- 			int *flow);
- int uart_set_options(struct uart_port *port, struct console *co, int baud,
--- 
-2.3.0
+The bug is that of_alias_scan() does not emit a preferred console, but
+rather defers it until of_console_check().
+
+In many setups, this means there is no preferred console. So when the
+dummy vt console loads (which happens via console_init()), all the boot
+consoles are disabled.
+
+The trivial fix is to emit a preferred console from of_alias_scan(), even
+if that console is never matched. I've sent you a patch to do just that.
+
+
+>> 2. The line settings can now be set with stdout-path like,
+>>      stdout-path = "serial0:115200n8"
+>>    but this breaks DT earlycon (as I wrote in the other email you were
+>>    cc'd on).
+> 
+> Right. We should fix libfdt.
+
+Ok.
+
+Regards,
+Peter Hurley
