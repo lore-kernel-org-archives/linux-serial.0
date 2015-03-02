@@ -1,74 +1,157 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v2 0/6] ARM: at91: fix irq_pm_install_action WARNING
-Date: Mon,  2 Mar 2015 10:18:12 +0100
-Message-ID: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Cc: Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wim Van Sebroeck <wim-IQzOog9fTRqzQB+pC5nmwQ@public.gmane.org>, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [PATCH v2 3/6] rtc: at91rm9200: rework wakeup and interrupt handling
+Date: Mon,  2 Mar 2015 10:18:15 +0100
+Message-ID: <1425287898-15093-4-git-send-email-boris.brezillon@free-electrons.com>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, linux-pm@vger.kernel.org, Wim Van Sebroeck <wim@iguana.be>, linux-watchdog@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, rtc-linux@googlegroups.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Boris Brezillon <boris.brezillon@free-electrons.com>
 List-Id: linux-serial@vger.kernel.org
 
-My apologies to those of you who already received this series, but I
-didn't increment the patch version and forgot some subsystem maintainers
-and MLs.
+The IRQ line used by the RTC device is usually shared with the system
+timer (PIT) on at91 platforms.
+Since timers are registering their handlers with IRQF_NO_SUSPEND, we
+should expect being called in suspended state, and properly wake the
+system up when this is the case.
 
-Commit cab303be91dc47942bc25de33dc1140123540800 [1] introduced a WARN_ON
-test which triggers a WARNING backtrace on at91 platforms.
-While this WARN_ON is absolutely necessary to warn users that they should
-not mix request with and without IRQF_NO_SUSPEND flags on shared IRQs,
-there is no easy way to solve this issue on at91 platforms.
+Set IRQF_COND_SUSPEND flag when registering the IRQ handler to inform
+irq core that it can safely be called while the system is suspended.
 
-The main reason is that the init timer is often using a shared irq line
-and thus request this irq with IRQF_NO_SUSPEND flag set, while other
-peripherals request the same irq line without this flag.
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+---
+ drivers/rtc/rtc-at91rm9200.c | 62 ++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 48 insertions(+), 14 deletions(-)
 
-This problem has recently been addressed by this patch [2] which adds
-a new IRQF_COND_SUSPEND flag, that authorize mixing IRQF_NO_SUSPEND and
-!IRQF_NO_SUSPEND as long as irq handlers setting IRQF_COND_SUSPEND
-can safely be called in suspended state.
-
-Doing this also implies taking care of system wakeup in devices handlers
-if they tag the IRQ line as a wakeup source.
-The first patch of this series exports the pm_system_wakeup symbol so
-that drivers can call pm_system_wakeup from their interrupt handler.
-
-This series then patches all at91 drivers that can have devices sharing
-their IRQ line with a timer.
-
-This series depends on [2].
-
-Best Regards,
-
-Boris
-
-[1]https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/kernel/irq/pm.c?id=cab303be91dc47942bc25de33dc1140123540800
-[2]https://lkml.org/lkml/2015/2/26/675
-
-Changes since v1:
- - replaced the IRQF_SUSPEND_NOACTION flag by IRQF_COND_SUSPEND
- - properly addressed wakeup handling in drivers
-
-Boris Brezillon (6):
-  PM / wakeup: export pm_system_wakeup symbol
-  rtc: at91sam9: rework wakeup and interrupt handling
-  rtc: at91rm9200: rework wakeup and interrupt handling
-  clk: at91: implement suspend/resume for the PMC irqchip
-  watchdog: at91sam9: request the irq with IRQF_NO_SUSPEND
-  tty: serial: atmel: rework interrupt and wakeup handling
-
- drivers/base/power/wakeup.c       |  1 +
- drivers/clk/at91/pmc.c            | 20 ++++++++++-
- drivers/clk/at91/pmc.h            |  1 +
- drivers/rtc/rtc-at91rm9200.c      | 62 +++++++++++++++++++++++++--------
- drivers/rtc/rtc-at91sam9.c        | 73 ++++++++++++++++++++++++++++++++-------
- drivers/tty/serial/atmel_serial.c | 49 +++++++++++++++++++++++---
- drivers/watchdog/at91sam9_wdt.c   |  3 +-
- 7 files changed, 177 insertions(+), 32 deletions(-)
-
+diff --git a/drivers/rtc/rtc-at91rm9200.c b/drivers/rtc/rtc-at91rm9200.c
+index 70a5d94..b4f7744 100644
+--- a/drivers/rtc/rtc-at91rm9200.c
++++ b/drivers/rtc/rtc-at91rm9200.c
+@@ -31,6 +31,7 @@
+ #include <linux/io.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/suspend.h>
+ #include <linux/uaccess.h>
+ 
+ #include "rtc-at91rm9200.h"
+@@ -54,6 +55,10 @@ static void __iomem *at91_rtc_regs;
+ static int irq;
+ static DEFINE_SPINLOCK(at91_rtc_lock);
+ static u32 at91_rtc_shadow_imr;
++static bool suspended;
++static DEFINE_SPINLOCK(suspended_lock);
++static unsigned long cached_events;
++static u32 at91_rtc_imr;
+ 
+ static void at91_rtc_write_ier(u32 mask)
+ {
+@@ -290,7 +295,9 @@ static irqreturn_t at91_rtc_interrupt(int irq, void *dev_id)
+ 	struct rtc_device *rtc = platform_get_drvdata(pdev);
+ 	unsigned int rtsr;
+ 	unsigned long events = 0;
++	int ret = IRQ_NONE;
+ 
++	spin_lock(&suspended_lock);
+ 	rtsr = at91_rtc_read(AT91_RTC_SR) & at91_rtc_read_imr();
+ 	if (rtsr) {		/* this interrupt is shared!  Is it ours? */
+ 		if (rtsr & AT91_RTC_ALARM)
+@@ -304,14 +311,22 @@ static irqreturn_t at91_rtc_interrupt(int irq, void *dev_id)
+ 
+ 		at91_rtc_write(AT91_RTC_SCCR, rtsr);	/* clear status reg */
+ 
+-		rtc_update_irq(rtc, 1, events);
++		if (!suspended) {
++			rtc_update_irq(rtc, 1, events);
+ 
+-		dev_dbg(&pdev->dev, "%s(): num=%ld, events=0x%02lx\n", __func__,
+-			events >> 8, events & 0x000000FF);
++			dev_dbg(&pdev->dev, "%s(): num=%ld, events=0x%02lx\n",
++				__func__, events >> 8, events & 0x000000FF);
++		} else {
++			cached_events |= events;
++			at91_rtc_write_idr(at91_rtc_imr);
++			pm_system_wakeup();
++		}
+ 
+-		return IRQ_HANDLED;
++		ret = IRQ_HANDLED;
+ 	}
+-	return IRQ_NONE;		/* not handled */
++	spin_lock(&suspended_lock);
++
++	return ret;
+ }
+ 
+ static const struct at91_rtc_config at91rm9200_config = {
+@@ -401,8 +416,8 @@ static int __init at91_rtc_probe(struct platform_device *pdev)
+ 					AT91_RTC_CALEV);
+ 
+ 	ret = devm_request_irq(&pdev->dev, irq, at91_rtc_interrupt,
+-				IRQF_SHARED,
+-				"at91_rtc", pdev);
++			       IRQF_SHARED | IRQF_COND_SUSPEND,
++			       "at91_rtc", pdev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "IRQ %d already in use.\n", irq);
+ 		return ret;
+@@ -454,8 +469,6 @@ static void at91_rtc_shutdown(struct platform_device *pdev)
+ 
+ /* AT91RM9200 RTC Power management control */
+ 
+-static u32 at91_rtc_imr;
+-
+ static int at91_rtc_suspend(struct device *dev)
+ {
+ 	/* this IRQ is shared with DBGU and other hardware which isn't
+@@ -464,21 +477,42 @@ static int at91_rtc_suspend(struct device *dev)
+ 	at91_rtc_imr = at91_rtc_read_imr()
+ 			& (AT91_RTC_ALARM|AT91_RTC_SECEV);
+ 	if (at91_rtc_imr) {
+-		if (device_may_wakeup(dev))
++		if (device_may_wakeup(dev)) {
++			unsigned long flags;
++
+ 			enable_irq_wake(irq);
+-		else
++
++			spin_lock_irqsave(&suspended_lock, flags);
++			suspended = true;
++			spin_unlock_irqrestore(&suspended_lock, flags);
++		} else {
+ 			at91_rtc_write_idr(at91_rtc_imr);
++		}
+ 	}
+ 	return 0;
+ }
+ 
+ static int at91_rtc_resume(struct device *dev)
+ {
++	struct rtc_device *rtc = dev_get_drvdata(dev);
++
+ 	if (at91_rtc_imr) {
+-		if (device_may_wakeup(dev))
++		if (device_may_wakeup(dev)) {
++			unsigned long flags;
++
++			spin_lock_irqsave(&suspended_lock, flags);
++
++			if (cached_events) {
++				rtc_update_irq(rtc, 1, cached_events);
++				cached_events = 0;
++			}
++
++			suspended = false;
++			spin_unlock_irqrestore(&suspended_lock, flags);
++
+ 			disable_irq_wake(irq);
+-		else
+-			at91_rtc_write_ier(at91_rtc_imr);
++		}
++		at91_rtc_write_ier(at91_rtc_imr);
+ 	}
+ 	return 0;
+ }
 -- 
 1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
