@@ -1,93 +1,90 @@
-From: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH V3 3/7] of: Document {little,big,native}-endian bindings
-Date: Mon, 2 Mar 2015 08:28:53 -0800
-Message-ID: <CAJiQ=7CKE5Nw=maewN_ChkySh1NReoUnddLO_ohOJQfwo_FXAg@mail.gmail.com>
-References: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
- <1416872182-6440-4-git-send-email-cernekee@gmail.com> <54F4624D.6000909@hurleysoftware.com>
- <CAJiQ=7DQ6CRWddii_9HZqH0a_1ixos6FBQRzb+HM+YAh1jmkBA@mail.gmail.com> <54F48B03.5040205@hurleysoftware.com>
+From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v2 04/18] clocksource: Add ARM System timer driver
+Date: Mon, 2 Mar 2015 17:53:09 +0100
+Message-ID: <CALszF6Bm_Y4ZLednjpmP-hMix3gA23FwLm5hViEjr1QojUY+Mg@mail.gmail.com>
+References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1424455277-29983-5-git-send-email-mcoquelin.stm32@gmail.com>
+	<20150220195437.GT19388@pengutronix.de>
+	<1424468908.24292.10.camel@x220>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <54F48B03.5040205-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MIPS Mailing List <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1424468908.24292.10.camel@x220>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Bolle <pebolle@tiscali.nl>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Mar 2, 2015 at 8:08 AM, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> wrote:
-> On 03/02/2015 09:56 AM, Kevin Cernekee wrote:
->> On Mon, Mar 2, 2015 at 5:14 AM, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> wrote:
->>> On 11/24/2014 06:36 PM, Kevin Cernekee wrote:
->>>> These apply to newly converted drivers, like serial8250/libahci/...
->>>> The examples were adapted from the regmap bindings document.
->>>>
->>>> Signed-off-by: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>>> ---
->>>>  .../devicetree/bindings/common-properties.txt      | 60 ++++++++++++++++++++++
->>>>  1 file changed, 60 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/common-properties.txt
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/common-properties.txt b/Documentation/devicetree/bindings/common-properties.txt
->>>> new file mode 100644
->>>> index 0000000..21044a4
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/common-properties.txt
->>>> @@ -0,0 +1,60 @@
->>>> +Common properties
->>>> +
->>>> +The ePAPR specification does not define any properties related to hardware
->>>> +byteswapping, but endianness issues show up frequently in porting Linux to
->>>> +different machine types.  This document attempts to provide a consistent
->>>> +way of handling byteswapping across drivers.
->>>> +
->>>> +Optional properties:
->>>> + - big-endian: Boolean; force big endian register accesses
->>>> +   unconditionally (e.g. ioread32be/iowrite32be).  Use this if you
->>>> +   know the peripheral always needs to be accessed in BE mode.
->>>> + - little-endian: Boolean; force little endian register accesses
->>>> +   unconditionally (e.g. readl/writel).  Use this if you know the
->>>> +   peripheral always needs to be accessed in LE mode.  This is the
->>>> +   default.
->>>
->>> There is a fundamental problem with specifying the default in DT bindings.
->>> How can drivers which are currently native-endian support big-endian?
->>>
->>> If the driver is converted to support big-endian, every previous
->>> devicetree will be invalid with the new kernel (because those devicetrees
->>> don't specify 'native-endian').
->>>
->>> IOW, consider if the default were 'native-endian'. How would the 8250
->>> driver support existing devicetrees?
+Hi Paul, Uwe,
+
+2015-02-20 22:48 GMT+01:00 Paul Bolle <pebolle@tiscali.nl>:
+> On Fri, 2015-02-20 at 20:54 +0100, Uwe Kleine-K=C3=B6nig wrote:
+>> On Fri, Feb 20, 2015 at 07:01:03PM +0100, Maxime Coquelin wrote:
+>> > This patch adds clocksource support for ARMv7-M's System timer,
+>> > also known as SysTick.
+>> >
+>> > Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+>> > ---
+>> >  drivers/clocksource/Kconfig          |  7 ++++
+>> >  drivers/clocksource/Makefile         |  1 +
+>> >  drivers/clocksource/armv7m_systick.c | 78 +++++++++++++++++++++++=
++++++++++++++
+>> >  3 files changed, 86 insertions(+)
+>> >  create mode 100644 drivers/clocksource/armv7m_systick.c
+>> >
+>> > diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kco=
+nfig
+>> > index fc01ec2..fb6011e 100644
+>> > --- a/drivers/clocksource/Kconfig
+>> > +++ b/drivers/clocksource/Kconfig
+>> > @@ -124,6 +124,13 @@ config CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
+>> >     help
+>> >      Use ARM global timer clock source as sched_clock
+>> >
+>> > +config ARMV7M_SYSTICK
+>> > +   bool
+>> I assume this symbol is enabled later in the series.
+>
+> Yes, I noticed it was selected in 14/18 ("ARM: Add STM32 family
+> machine").
+>
+>> Would it make sense
+>> to allow enabing the symbol for compile test coverage?
 >>
->> Correct.  This scheme is intended for drivers like 8250 and libahci
->> which currently default to little-endian by virtue of using
->> readl/writel for MMIO accesses.  Drivers that default to native-endian
->> should specify that in their bindings documents, similar to
->> Documentation/devicetree/bindings/regmap/regmap.txt.
+>> > +   select CLKSRC_OF if OF
+>> What happens if ARMV7M_SYSTICK=3Dy but OF=3Dn? Doesn't the driver fa=
+il to
+>> compile?
+>>
+>> > +   select CLKSRC_MMIO
+>> > +   help
+>> > +     This options enables support for the ARMv7M system timer uni=
+t
+>> the right spelling is ARMv7-M.
 >
-> Which effectively means if a user can't upgrade their devicetree, they
-> can't upgrade their kernel. I don't think that flies.
+> This Kconfig entry has no prompt, so no one is going to see this text
+> during make *config. Perhaps this should be made a comment. In that c=
+ase
+> the right spelling should still be used.
 
-This doesn't change the behavior of pre-existing drivers that
-implement the *-endian properties in a different way.  There are not
-many of these drivers and they can be documented as special cases.
+Yes, you are right.
+Do you agree if I define it like this:
 
-> It's exactly this kind of stuff that prompted Jonathan Corbet's article,
-> "Device trees as ABI"  http://lwn.net/Articles/561462
+config ARMV7M_SYSTICK
+    bool "Clocksource driver for ARMv7-M System timer"
+    depends on OF && (CPU_V7M || COMPILE_TEST)
+    select CLKSRC_OF
+    select CLKSRC_MMIO
+    help
+      This options enables clocksource support for the ARMv7-M system
+      timer unit.
+
+Thanks,
+Maxime
 >
-> Why not leave the default unspecified?
-
-The document aims to provide a consistent way of handling DT
-endianness properties across (compliant) drivers.  It is confusing if
-one new driver defaults to little-endian, and another new driver
-defaults to native-endian.
-
-And since most of the commonly used drivers already implement
-little-endian MMIO accesses, that is the default.  My personal
-preference would have been native-endian since that seems more common
-on the hardware side, but defaulting to little-endian prevents
-breaking the device tree "ABI" on existing systems.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Thanks,
+>
+>
+> Paul Bolle
+>
