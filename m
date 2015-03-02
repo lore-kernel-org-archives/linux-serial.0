@@ -1,45 +1,72 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with IRQF_NO_SUSPEND
-Date: Mon, 02 Mar 2015 06:10:38 -0800
-Message-ID: <54F46F5E.3020707@roeck-us.net>
-References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com> <1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com>
+From: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH V3 3/7] of: Document {little,big,native}-endian bindings
+Date: Mon, 2 Mar 2015 06:56:20 -0800
+Message-ID: <CAJiQ=7DQ6CRWddii_9HZqH0a_1ixos6FBQRzb+HM+YAh1jmkBA@mail.gmail.com>
+References: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
+ <1416872182-6440-4-git-send-email-cernekee@gmail.com> <54F4624D.6000909@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, linux-pm@vger.kernel.org, Wim Van Sebroeck <wim@iguana.be>, linux-watchdog@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, rtc-linux@googlegroups.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <54F4624D.6000909-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MIPS Mailing List <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/02/2015 01:18 AM, Boris Brezillon wrote:
-> The watchdog interrupt (only used when activating software watchdog)
-> shouldn't be suspended when entering suspend mode, because it is shared
-> with a timer device (which request the line with IRQF_NO_SUSPEND) and once
-> the watchdog "Mode Register" has been written, it cannot be changed (which
-> means we cannot disable the watchdog interrupt when entering suspend).
+On Mon, Mar 2, 2015 at 5:14 AM, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> wrote:
+> On 11/24/2014 06:36 PM, Kevin Cernekee wrote:
+>> These apply to newly converted drivers, like serial8250/libahci/...
+>> The examples were adapted from the regmap bindings document.
+>>
+>> Signed-off-by: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> ---
+>>  .../devicetree/bindings/common-properties.txt      | 60 ++++++++++++++++++++++
+>>  1 file changed, 60 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/common-properties.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/common-properties.txt b/Documentation/devicetree/bindings/common-properties.txt
+>> new file mode 100644
+>> index 0000000..21044a4
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/common-properties.txt
+>> @@ -0,0 +1,60 @@
+>> +Common properties
+>> +
+>> +The ePAPR specification does not define any properties related to hardware
+>> +byteswapping, but endianness issues show up frequently in porting Linux to
+>> +different machine types.  This document attempts to provide a consistent
+>> +way of handling byteswapping across drivers.
+>> +
+>> +Optional properties:
+>> + - big-endian: Boolean; force big endian register accesses
+>> +   unconditionally (e.g. ioread32be/iowrite32be).  Use this if you
+>> +   know the peripheral always needs to be accessed in BE mode.
+>> + - little-endian: Boolean; force little endian register accesses
+>> +   unconditionally (e.g. readl/writel).  Use this if you know the
+>> +   peripheral always needs to be accessed in LE mode.  This is the
+>> +   default.
 >
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> There is a fundamental problem with specifying the default in DT bindings.
+> How can drivers which are currently native-endian support big-endian?
+>
+> If the driver is converted to support big-endian, every previous
+> devicetree will be invalid with the new kernel (because those devicetrees
+> don't specify 'native-endian').
+>
+> IOW, consider if the default were 'native-endian'. How would the 8250
+> driver support existing devicetrees?
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+Correct.  This scheme is intended for drivers like 8250 and libahci
+which currently default to little-endian by virtue of using
+readl/writel for MMIO accesses.  Drivers that default to native-endian
+should specify that in their bindings documents, similar to
+Documentation/devicetree/bindings/regmap/regmap.txt.
 
-> ---
->   drivers/watchdog/at91sam9_wdt.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/watchdog/at91sam9_wdt.c b/drivers/watchdog/at91sam9_wdt.c
-> index 6df9405..1443b3c 100644
-> --- a/drivers/watchdog/at91sam9_wdt.c
-> +++ b/drivers/watchdog/at91sam9_wdt.c
-> @@ -208,7 +208,8 @@ static int at91_wdt_init(struct platform_device *pdev, struct at91wdt *wdt)
->
->   	if ((tmp & AT91_WDT_WDFIEN) && wdt->irq) {
->   		err = request_irq(wdt->irq, wdt_interrupt,
-> -				  IRQF_SHARED | IRQF_IRQPOLL,
-> +				  IRQF_SHARED | IRQF_IRQPOLL |
-> +				  IRQF_NO_SUSPEND,
->   				  pdev->name, wdt);
->   		if (err)
->   			return err;
->
+In practice we might not see too many cases of native-endian drivers
+that need to be converted to work in forced big-endian mode anyway,
+because most uses of the __raw_* accessors are found in SoC-specific
+code.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
