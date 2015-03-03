@@ -1,63 +1,58 @@
-From: Alexey Brodkin <Alexey.Brodkin@synopsys.com>
-Subject: [PATCH] serial/8250_dw: use platform_get_irq() instead of platform_get_resource()
-Date: Tue,  3 Mar 2015 11:41:03 +0300
-Message-ID: <1425372063-17023-1-git-send-email-abrodkin@synopsys.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Alexey Brodkin <Alexey.Brodkin@synopsys.com>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v2 0/6] ARM: at91: fix irq_pm_install_action WARNING
+Date: Tue, 3 Mar 2015 09:56:46 +0100
+Message-ID: <20150303085646.GA3892@piout.net>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1425287898-15093-1-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wim Van Sebroeck <wim-IQzOog9fTRqzQB+pC5nmwQ@public.gmane.org>, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
-for requesting IRQ's resources any more, as they can be not ready yet in
-case of DT-booting.
+On 02/03/2015 at 10:18:12 +0100, Boris Brezillon wrote :
+> My apologies to those of you who already received this series, but I
+> didn't increment the patch version and forgot some subsystem maintainers
+> and MLs.
+> 
+> Commit cab303be91dc47942bc25de33dc1140123540800 [1] introduced a WARN_ON
+> test which triggers a WARNING backtrace on at91 platforms.
+> While this WARN_ON is absolutely necessary to warn users that they should
+> not mix request with and without IRQF_NO_SUSPEND flags on shared IRQs,
+> there is no easy way to solve this issue on at91 platforms.
+> 
+> The main reason is that the init timer is often using a shared irq line
+> and thus request this irq with IRQF_NO_SUSPEND flag set, while other
+> peripherals request the same irq line without this flag.
+> 
+> This problem has recently been addressed by this patch [2] which adds
+> a new IRQF_COND_SUSPEND flag, that authorize mixing IRQF_NO_SUSPEND and
+> !IRQF_NO_SUSPEND as long as irq handlers setting IRQF_COND_SUSPEND
+> can safely be called in suspended state.
+> 
+> Doing this also implies taking care of system wakeup in devices handlers
+> if they tag the IRQ line as a wakeup source.
+> The first patch of this series exports the pm_system_wakeup symbol so
+> that drivers can call pm_system_wakeup from their interrupt handler.
+> 
+> This series then patches all at91 drivers that can have devices sharing
+> their IRQ line with a timer.
+> 
+> This series depends on [2].
+> 
 
-platform_get_irq() instead is a recommended way for getting IRQ even if
-it was not retrieved earlier.
+For the whole series:
+Reviewed-by: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 
-It also makes code simpler because we're getting "int" value right away
-and no conversion from resource to int is required.
 
-Signed-off-by: Alexey Brodkin <abrodkin@synopsys.com>
-Cc: Vineet Gupta <vgupta@synopsys.com>
-Cc: Alan Cox <alan@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index e601162..d2081c3 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -384,18 +384,23 @@ static int dw8250_probe(struct platform_device *pdev)
- {
- 	struct uart_8250_port uart = {};
- 	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-+	int irq = platform_get_irq(pdev, 0);
- 	struct dw8250_data *data;
- 	int err;
- 
--	if (!regs || !irq) {
--		dev_err(&pdev->dev, "no registers/irq defined\n");
-+	if (!regs) {
-+		dev_err(&pdev->dev, "no registers defined\n");
- 		return -EINVAL;
- 	}
- 
-+	if (irq < 0) {
-+		dev_err(&pdev->dev, "cannot get irq\n");
-+		return irq;
-+	}
-+
- 	spin_lock_init(&uart.port.lock);
- 	uart.port.mapbase = regs->start;
--	uart.port.irq = irq->start;
-+	uart.port.irq = irq;
- 	uart.port.handle_irq = dw8250_handle_irq;
- 	uart.port.pm = dw8250_do_pm;
- 	uart.port.type = PORT_8250;
 -- 
-2.1.0
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+--
+To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
