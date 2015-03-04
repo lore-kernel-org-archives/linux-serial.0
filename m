@@ -1,44 +1,57 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: Re: [PATCH REPOST 0/2] Remove pl011 startup glitches and avoid dummy
- TX during startup
-Date: Wed, 04 Mar 2015 16:44:00 +0000
-Message-ID: <54F73650.2070304@arm.com>
-References: <1425472054-7543-1-git-send-email-Dave.Martin@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1425472054-7543-1-git-send-email-Dave.Martin@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH -next 02/12] serial: earlycon: Emit earlycon name in the OF table
+Date: Wed,  4 Mar 2015 12:24:21 -0500
+Message-ID: <1425489871-22415-3-git-send-email-peter@hurleysoftware.com>
+References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Dave,
+The OF device name of the earlycon is never used because there is no
+device; re-purpose the name field to store the earlycon name in
+the OF earlycon table. Earlycon will use the table entry to
+fixup the console name and index.
 
-On 04/03/15 12:27, Dave P Martin wrote:
-> There have been no comments on this series since my previous post, and
-> I have made no further changes.
-> 
-> Since then, I have confirmed that this also works robustly with TX DMA
-> enabled on Juno.
-> 
-> Review/comments/testing still welcome.
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ include/linux/serial_core.h | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-this has been tested briefly on a Calxeda Midway without any
-regressions. Also I use them as the base for my SBSA series now (which
-are tested on the model and the Midway) and I see that all problems
-observed before are gone now.
-
-Tested-by: Andre Przywara <andre.przywara@arm.com>
-
-Cheers,
-Andre.
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 8aeec49..c523785 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -29,6 +29,7 @@
+ #include <linux/tty.h>
+ #include <linux/mutex.h>
+ #include <linux/sysrq.h>
++#include <linux/mod_devicetable.h>
+ #include <uapi/linux/serial_core.h>
+ 
+ #ifdef CONFIG_SERIAL_CORE_CONSOLE
+@@ -353,8 +354,18 @@ extern int of_setup_earlycon(unsigned long addr,
+ 		 = { .name  = __stringify(_name),			\
+ 		     .setup = func  }
+ 
+-#define OF_EARLYCON_DECLARE(name, compat, fn)				\
+-	_OF_DECLARE(earlycon, name, compat, fn, void *)
++#ifdef CONFIG_OF
++#define EARLYCON_OF_TABLE_ATTR __used __section(__earlycon_of_table)
++#else
++#define EARLYCON_OF_TABLE_ATTR __attribute__((unused))
++#endif
++
++#define OF_EARLYCON_DECLARE(_name, compat, fn)				\
++	static const struct of_device_id __of_table_##_name		\
++		EARLYCON_OF_TABLE_ATTR					\
++		 = { .name = __stringify(_name),			\
++		     .compatible = compat,				\
++		     .data = (fn == (void *)NULL) ? fn : fn  }
+ 
+ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 				   struct console *c);
+-- 
+2.3.1
