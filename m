@@ -1,7 +1,8 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v2 03/10] drivers: PL011: refactor pl011_shutdown()
-Date: Wed,  4 Mar 2015 17:59:47 +0000
-Message-ID: <1425491994-23913-4-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v2 08/10] drivers: PL011: allow avoiding UART
+ enabling/disabling
+Date: Wed,  4 Mar 2015 17:59:52 +0000
+Message-ID: <1425491994-23913-9-git-send-email-andre.przywara@arm.com>
 References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,96 +22,79 @@ To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
 Cc: linux-arm-kernel@lists.infradead.org, rob.herring@linaro.org, arnd@arndb.de, linux-serial@vger.kernel.org, Dave.Martin@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-Split the pl011_shutdown() function into smaller chunks to allow
-easier reuse later when adding SBSA support.
+The SBSA UART should not be enabled or disabled (it is always on),
+and consequently the spec lacks the UART_CR register.
+Add a vendor specific property to skip disabling or enabling of the
+UART. This will be used later by the SBSA UART support.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c |   62 ++++++++++++++++++++++-----------------
- 1 file changed, 35 insertions(+), 27 deletions(-)
+ drivers/tty/serial/amba-pl011.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index db2f90e..4e0036c 100644
+index bca5a3f..fdb9fa5 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1733,36 +1733,15 @@ static void pl011_shutdown_channel(struct uart_amba_port *uap,
-       writew(val, uap->port.membase + lcrh);
- }
+@@ -79,6 +79,7 @@ struct vendor_data {
+ 	bool			oversampling;
+ 	bool			dma_threshold;
+ 	bool			cts_event_workaround;
++	bool			always_enabled;
  
--static void pl011_shutdown(struct uart_port *port)
-+/*
-+ * disable the port. It should not disable RTS and DTR.
-+ * Also RTS and DTR state should be preserved to restore
-+ * it during startup().
-+ */
-+static void pl011_disable_uart(struct uart_amba_port *uap)
+ 	unsigned int (*get_fifosize)(struct amba_device *dev);
+ };
+@@ -95,6 +96,7 @@ static struct vendor_data vendor_arm = {
+ 	.oversampling		= false,
+ 	.dma_threshold		= false,
+ 	.cts_event_workaround	= false,
++	.always_enabled		= false,
+ 	.get_fifosize		= get_fifosize_arm,
+ };
+ 
+@@ -110,6 +112,7 @@ static struct vendor_data vendor_st = {
+ 	.oversampling		= true,
+ 	.dma_threshold		= true,
+ 	.cts_event_workaround	= true,
++	.always_enabled		= false,
+ 	.get_fifosize		= get_fifosize_st,
+ };
+ 
+@@ -2059,7 +2062,7 @@ static void
+ pl011_console_write(struct console *co, const char *s, unsigned int count)
  {
--	struct uart_amba_port *uap =
--	    container_of(port, struct uart_amba_port, port);
- 	unsigned int cr;
+ 	struct uart_amba_port *uap = amba_ports[co->index];
+-	unsigned int status, old_cr, new_cr;
++	unsigned int status, old_cr = 0, new_cr;
+ 	unsigned long flags;
+ 	int locked = 1;
  
--	cancel_delayed_work_sync(&uap->tx_softirq_work);
--
--	/*
--	 * disable all interrupts
--	 */
--	spin_lock_irq(&uap->port.lock);
--	uap->im = 0;
--	writew(uap->im, uap->port.membase + UART011_IMSC);
--	writew(0xffff & ~UART011_TXIS, uap->port.membase + UART011_ICR);
--	spin_unlock_irq(&uap->port.lock);
--
--	pl011_dma_shutdown(uap);
--
--	/*
--	 * Free the interrupt
--	 */
--	free_irq(uap->port.irq, uap);
--
--	/*
--	 * disable the port
--	 * disable the port. It should not disable RTS and DTR.
--	 * Also RTS and DTR state should be preserved to restore
--	 * it during startup().
--	 */
- 	uap->autorts = false;
- 	spin_lock_irq(&uap->port.lock);
- 	cr = readw(uap->port.membase + UART011_CR);
-@@ -1778,6 +1757,35 @@ static void pl011_shutdown(struct uart_port *port)
- 	pl011_shutdown_channel(uap, uap->lcrh_rx);
- 	if (uap->lcrh_rx != uap->lcrh_tx)
- 		pl011_shutdown_channel(uap, uap->lcrh_tx);
-+}
-+
-+static void pl011_disable_interrupts(struct uart_amba_port *uap)
-+{
-+	cancel_delayed_work_sync(&uap->tx_softirq_work);
-+
-+	spin_lock_irq(&uap->port.lock);
-+	/*
-+	 * mask all interrupts and clear all pending ones
-+	 */
-+	uap->im = 0;
-+	writew(uap->im, uap->port.membase + UART011_IMSC);
-+	writew(0xffff & ~UART011_TXIS, uap->port.membase + UART011_ICR);
-+
-+	spin_unlock_irq(&uap->port.lock);
-+}
-+
-+static void pl011_shutdown(struct uart_port *port)
-+{
-+	struct uart_amba_port *uap =
-+		container_of(port, struct uart_amba_port, port);
-+
-+	pl011_disable_interrupts(uap);
-+
-+	pl011_dma_shutdown(uap);
-+
-+	free_irq(uap->port.irq, uap);
-+
-+	pl011_disable_uart(uap);
- 
+@@ -2076,10 +2079,12 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
  	/*
- 	 * Shut down the clock producer
+ 	 *	First save the CR then disable the interrupts
+ 	 */
+-	old_cr = readw(uap->port.membase + UART011_CR);
+-	new_cr = old_cr & ~UART011_CR_CTSEN;
+-	new_cr |= UART01x_CR_UARTEN | UART011_CR_TXE;
+-	writew(new_cr, uap->port.membase + UART011_CR);
++	if (!uap->vendor->always_enabled) {
++		old_cr = readw(uap->port.membase + UART011_CR);
++		new_cr = old_cr & ~UART011_CR_CTSEN;
++		new_cr |= UART01x_CR_UARTEN | UART011_CR_TXE;
++		writew(new_cr, uap->port.membase + UART011_CR);
++	}
+ 
+ 	uart_console_write(&uap->port, s, count, pl011_console_putchar);
+ 
+@@ -2090,7 +2095,8 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+ 	do {
+ 		status = readw(uap->port.membase + UART01x_FR);
+ 	} while (status & UART01x_FR_BUSY);
+-	writew(old_cr, uap->port.membase + UART011_CR);
++	if (!uap->vendor->always_enabled)
++		writew(old_cr, uap->port.membase + UART011_CR);
+ 
+ 	if (locked)
+ 		spin_unlock(&uap->port.lock);
 -- 
 1.7.9.5
