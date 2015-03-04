@@ -1,28 +1,51 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 1/8] clk: add helper function clk_is_match()
-Date: Wed, 4 Mar 2015 09:51:55 +0000
-Message-ID: <20150304095155.GB8656@n2100.arm.linux.org.uk>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
- <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
- <20150225172757.421.43718@quantum>
+From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v2 04/18] clocksource: Add ARM System timer driver
+Date: Wed, 4 Mar 2015 13:08:02 +0100
+Message-ID: <CALszF6AEThPrRe7c7nJ6q7yb2fhLMFuHJUV10sf=w0TMcqVVaw@mail.gmail.com>
+References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1424455277-29983-5-git-send-email-mcoquelin.stm32@gmail.com>
+	<20150220195437.GT19388@pengutronix.de>
+	<1424468908.24292.10.camel@x220>
+	<CALszF6Bm_Y4ZLednjpmP-hMix3gA23FwLm5hViEjr1QojUY+Mg@mail.gmail.com>
+	<1425411786.2606.24.camel@tiscali.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150225172757.421.43718@quantum>
-Sender: linux-pwm-owner@vger.kernel.org
-To: Mike Turquette <mturquette@linaro.org>
-Cc: Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1425411786.2606.24.camel@tiscali.nl>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Paul Bolle <pebolle@tiscali.nl>
+Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Feb 25, 2015 at 09:27:57AM -0800, Mike Turquette wrote:
-> +static inline bool clk_is_match(struct clk *p, struct clk *q)
-> +{
-> +	return p == q ? true : false;
+2015-03-03 20:43 GMT+01:00 Paul Bolle <pebolle@tiscali.nl>:
+> Maxime Coquelin schreef op ma 02-03-2015 om 17:53 [+0100]:
+>> Do you agree if I define it like this:
+>>
+>> config ARMV7M_SYSTICK
+>>     bool "Clocksource driver for ARMv7-M System timer"
+>>     depends on OF && (CPU_V7M || COMPILE_TEST)
+>>     select CLKSRC_OF
+>>     select CLKSRC_MMIO
+>>     help
+>>       This options enables clocksource support for the ARMv7-M system
+>>       timer unit.
+>
+> I don't really have strong feelings on whatever way you choose to fix
+> the, well, minor problem I pointed out.
+>
+> Having said that, if a Kconfig entry without a prompt (and therefor,
+> without help) actually does what you want it to do, why bother adding a
+> prompt and a one line help text?
 
-When they created the C standard, they already taught the compiler that
-p == q returns a true / false boolean value; there's no need for ?: here.
+This is because I added also support for COMPILE_TEST coverage as per
+Uwe advice,
+and thought it was necessary to have an entry for this.
+Maybe I'm just wrong?
 
--- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
+Thanks,
+Maxime
+
+>
+>
+> Paul Bolle
+>
