@@ -1,7 +1,7 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v2 09/10] drivers: PL011: allow to supply fixed option string
-Date: Wed,  4 Mar 2015 17:59:53 +0000
-Message-ID: <1425491994-23913-10-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v2 03/10] drivers: PL011: refactor pl011_shutdown()
+Date: Wed,  4 Mar 2015 17:59:47 +0000
+Message-ID: <1425491994-23913-4-git-send-email-andre.przywara@arm.com>
 References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,71 +21,96 @@ To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
 Cc: linux-arm-kernel@lists.infradead.org, rob.herring@linaro.org, arnd@arndb.de, linux-serial@vger.kernel.org, Dave.Martin@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-The SBSA UART has a fixed baud rate and flow control setting, which
-cannot be changed or queried by software.
-Add a vendor specific property to always return fixed values when
-trying to read the console options.
+Split the pl011_shutdown() function into smaller chunks to allow
+easier reuse later when adding SBSA support.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c |   17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/tty/serial/amba-pl011.c |   62 ++++++++++++++++++++++-----------------
+ 1 file changed, 35 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index fdb9fa5..d3b034f 100644
+index db2f90e..4e0036c 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -80,6 +80,7 @@ struct vendor_data {
- 	bool			dma_threshold;
- 	bool			cts_event_workaround;
- 	bool			always_enabled;
-+	bool			fixed_options;
- 
- 	unsigned int (*get_fifosize)(struct amba_device *dev);
- };
-@@ -97,6 +98,7 @@ static struct vendor_data vendor_arm = {
- 	.dma_threshold		= false,
- 	.cts_event_workaround	= false,
- 	.always_enabled		= false,
-+	.fixed_options		= false,
- 	.get_fifosize		= get_fifosize_arm,
- };
- 
-@@ -113,6 +115,7 @@ static struct vendor_data vendor_st = {
- 	.dma_threshold		= true,
- 	.cts_event_workaround	= true,
- 	.always_enabled		= false,
-+	.fixed_options		= false,
- 	.get_fifosize		= get_fifosize_st,
- };
- 
-@@ -163,6 +166,7 @@ struct uart_amba_port {
- 	struct delayed_work	tx_softirq_work;
- 	bool			autorts;
- 	unsigned int		tx_irq_seen;	/* 0=none, 1=1, 2=2 or more */
-+	unsigned int		fixed_baud;	/* vendor-set fixed baud rate */
- 	char			type[12];
- #ifdef CONFIG_DMA_ENGINE
- 	/* DMA stuff */
-@@ -2177,10 +2181,15 @@ static int __init pl011_console_setup(struct console *co, char *options)
- 
- 	uap->port.uartclk = clk_get_rate(uap->clk);
- 
--	if (options)
--		uart_parse_options(options, &baud, &parity, &bits, &flow);
--	else
--		pl011_console_get_options(uap, &baud, &parity, &bits);
-+	if (uap->vendor->fixed_options) {
-+		baud = uap->fixed_baud;
-+	} else {
-+		if (options)
-+			uart_parse_options(options,
-+					   &baud, &parity, &bits, &flow);
-+		else
-+			pl011_console_get_options(uap, &baud, &parity, &bits);
-+	}
- 
- 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
+@@ -1733,36 +1733,15 @@ static void pl011_shutdown_channel(struct uart_amba_port *uap,
+       writew(val, uap->port.membase + lcrh);
  }
+ 
+-static void pl011_shutdown(struct uart_port *port)
++/*
++ * disable the port. It should not disable RTS and DTR.
++ * Also RTS and DTR state should be preserved to restore
++ * it during startup().
++ */
++static void pl011_disable_uart(struct uart_amba_port *uap)
+ {
+-	struct uart_amba_port *uap =
+-	    container_of(port, struct uart_amba_port, port);
+ 	unsigned int cr;
+ 
+-	cancel_delayed_work_sync(&uap->tx_softirq_work);
+-
+-	/*
+-	 * disable all interrupts
+-	 */
+-	spin_lock_irq(&uap->port.lock);
+-	uap->im = 0;
+-	writew(uap->im, uap->port.membase + UART011_IMSC);
+-	writew(0xffff & ~UART011_TXIS, uap->port.membase + UART011_ICR);
+-	spin_unlock_irq(&uap->port.lock);
+-
+-	pl011_dma_shutdown(uap);
+-
+-	/*
+-	 * Free the interrupt
+-	 */
+-	free_irq(uap->port.irq, uap);
+-
+-	/*
+-	 * disable the port
+-	 * disable the port. It should not disable RTS and DTR.
+-	 * Also RTS and DTR state should be preserved to restore
+-	 * it during startup().
+-	 */
+ 	uap->autorts = false;
+ 	spin_lock_irq(&uap->port.lock);
+ 	cr = readw(uap->port.membase + UART011_CR);
+@@ -1778,6 +1757,35 @@ static void pl011_shutdown(struct uart_port *port)
+ 	pl011_shutdown_channel(uap, uap->lcrh_rx);
+ 	if (uap->lcrh_rx != uap->lcrh_tx)
+ 		pl011_shutdown_channel(uap, uap->lcrh_tx);
++}
++
++static void pl011_disable_interrupts(struct uart_amba_port *uap)
++{
++	cancel_delayed_work_sync(&uap->tx_softirq_work);
++
++	spin_lock_irq(&uap->port.lock);
++	/*
++	 * mask all interrupts and clear all pending ones
++	 */
++	uap->im = 0;
++	writew(uap->im, uap->port.membase + UART011_IMSC);
++	writew(0xffff & ~UART011_TXIS, uap->port.membase + UART011_ICR);
++
++	spin_unlock_irq(&uap->port.lock);
++}
++
++static void pl011_shutdown(struct uart_port *port)
++{
++	struct uart_amba_port *uap =
++		container_of(port, struct uart_amba_port, port);
++
++	pl011_disable_interrupts(uap);
++
++	pl011_dma_shutdown(uap);
++
++	free_irq(uap->port.irq, uap);
++
++	pl011_disable_uart(uap);
+ 
+ 	/*
+ 	 * Shut down the clock producer
 -- 
 1.7.9.5
