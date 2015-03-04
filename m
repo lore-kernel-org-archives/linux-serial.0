@@ -1,50 +1,28 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5/5] TTY: fix tty_wait_until_sent maximum timeout
-Date: Wed,  4 Mar 2015 10:39:07 +0100
-Message-ID: <1425461947-15888-6-git-send-email-johan@kernel.org>
-References: <1425461947-15888-1-git-send-email-johan@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1425461947-15888-1-git-send-email-johan@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Samuel Ortiz <samuel@sortiz.org>, "David S. Miller" <davem@davemloft.net>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, ZIV-Asier Llano Palacios <asier.llano@cgglobal.com>, Johan Hovold <johan@kernel.org>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 1/8] clk: add helper function clk_is_match()
+Date: Wed, 4 Mar 2015 09:51:55 +0000
+Message-ID: <20150304095155.GB8656@n2100.arm.linux.org.uk>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+ <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+ <20150225172757.421.43718@quantum>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150225172757.421.43718@quantum>
+Sender: linux-pwm-owner@vger.kernel.org
+To: Mike Turquette <mturquette@linaro.org>
+Cc: Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Currently tty_wait_until_sent may take up to twice as long as the
-requested timeout while waiting for driver and hardware buffers to
-drain.
+On Wed, Feb 25, 2015 at 09:27:57AM -0800, Mike Turquette wrote:
+> +static inline bool clk_is_match(struct clk *p, struct clk *q)
+> +{
+> +	return p == q ? true : false;
 
-Fix this by taking the remaining number of jiffies after waiting for
-driver buffers to drain into account so that the timeout actually
-becomes a maximum timeout as it is documented to be.
+When they created the C standard, they already taught the compiler that
+p == q returns a true / false boolean value; there's no need for ?: here.
 
-Note that this specifically implies tighter timings when closing a port
-as a consequence of actually honouring the port closing-wait setting
-for drivers relying on tty_wait_until_sent_from_close (e.g. via
-tty_port_close_start).
-
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/tty/tty_ioctl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 89ae23ac9ae6..632fc8152061 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -218,10 +218,10 @@ void tty_wait_until_sent(struct tty_struct *tty, long timeout)
- 	if (!timeout)
- 		timeout = MAX_SCHEDULE_TIMEOUT;
- 
--	if (wait_event_interruptible_timeout(tty->write_wait,
--			!tty_chars_in_buffer(tty), timeout) < 0) {
-+	timeout = wait_event_interruptible_timeout(tty->write_wait,
-+			!tty_chars_in_buffer(tty), timeout);
-+	if (timeout <= 0)
- 		return;
--	}
- 
- 	if (timeout == MAX_SCHEDULE_TIMEOUT)
- 		timeout = 0;
 -- 
-2.0.5
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
