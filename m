@@ -1,51 +1,64 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v2 04/18] clocksource: Add ARM System timer driver
-Date: Wed, 4 Mar 2015 13:08:02 +0100
-Message-ID: <CALszF6AEThPrRe7c7nJ6q7yb2fhLMFuHJUV10sf=w0TMcqVVaw@mail.gmail.com>
-References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<1424455277-29983-5-git-send-email-mcoquelin.stm32@gmail.com>
-	<20150220195437.GT19388@pengutronix.de>
-	<1424468908.24292.10.camel@x220>
-	<CALszF6Bm_Y4ZLednjpmP-hMix3gA23FwLm5hViEjr1QojUY+Mg@mail.gmail.com>
-	<1425411786.2606.24.camel@tiscali.nl>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [PATCH REPOST 2/2] serial/amba-pl011: Leave the TX IRQ alone when the
+ UART is not open
+Date: Wed,  4 Mar 2015 12:27:34 +0000
+Message-ID: <1425472054-7543-3-git-send-email-Dave.Martin@arm.com>
+References: <1425472054-7543-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1425411786.2606.24.camel@tiscali.nl>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Paul Bolle <pebolle@tiscali.nl>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1425472054-7543-1-git-send-email-Dave.Martin@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-2015-03-03 20:43 GMT+01:00 Paul Bolle <pebolle@tiscali.nl>:
-> Maxime Coquelin schreef op ma 02-03-2015 om 17:53 [+0100]:
->> Do you agree if I define it like this:
->>
->> config ARMV7M_SYSTICK
->>     bool "Clocksource driver for ARMv7-M System timer"
->>     depends on OF && (CPU_V7M || COMPILE_TEST)
->>     select CLKSRC_OF
->>     select CLKSRC_MMIO
->>     help
->>       This options enables clocksource support for the ARMv7-M system
->>       timer unit.
->
-> I don't really have strong feelings on whatever way you choose to fix
-> the, well, minor problem I pointed out.
->
-> Having said that, if a Kconfig entry without a prompt (and therefor,
-> without help) actually does what you want it to do, why bother adding a
-> prompt and a one line help text?
+Getting the TX IRQ re-asserted from scratch can be inefficient in
+some setups.
 
-This is because I added also support for COMPILE_TEST coverage as per
-Uwe advice,
-and thought it was necessary to have an entry for this.
-Maybe I'm just wrong?
+This patch avoids clearing the TX IRQ across pl011_shutdown()...
+pl011_startup(), so that if the port is closed and reopened, the
+IRQ will still work afterwards without having to bootstrap it again.
 
-Thanks,
-Maxime
+The TX IRQ continues to be masked in IMSC when the UART is not in
+use.
 
->
->
-> Paul Bolle
->
+Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+---
+ drivers/tty/serial/amba-pl011.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 69910f7..92783fc 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1676,9 +1676,6 @@ static int pl011_startup(struct uart_port *port)
+ 
+ 	writew(uap->vendor->ifls, uap->port.membase + UART011_IFLS);
+ 
+-	/* Assume that TX IRQ doesn't work until we see one: */
+-	uap->tx_irq_seen = 0;
+-
+ 	spin_lock_irq(&uap->port.lock);
+ 
+ 	/* restore RTS and DTR */
+@@ -1742,7 +1739,7 @@ static void pl011_shutdown(struct uart_port *port)
+ 	spin_lock_irq(&uap->port.lock);
+ 	uap->im = 0;
+ 	writew(uap->im, uap->port.membase + UART011_IMSC);
+-	writew(0xffff, uap->port.membase + UART011_ICR);
++	writew(0xffff & ~UART011_TXIS, uap->port.membase + UART011_ICR);
+ 	spin_unlock_irq(&uap->port.lock);
+ 
+ 	pl011_dma_shutdown(uap);
+-- 
+1.7.10.4
