@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 12/12] serial: 8250_omap: Add omap8250 earlycon
-Date: Wed,  4 Mar 2015 12:24:31 -0500
-Message-ID: <1425489871-22415-13-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 09/12] of: earlycon: Allow multiple OF_EARLYCON_DECLARE() with same name
+Date: Wed,  4 Mar 2015 12:24:28 -0500
+Message-ID: <1425489871-22415-10-git-send-email-peter@hurleysoftware.com>
 References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
@@ -10,69 +10,33 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add DT earlycon for 8250_omap driver. This boot console is included
-for kernels built with CONFIG_SERIAL_EARLYCON=y, CONFIG_OF=y,
-CONFIG_SERIAL_8250_OMAP=y, and CONFIG_OF_EARLY_FLATTREE=y.
+Since matching is performed only on the compatible string, allow
+multiple declarations of OF_EARLYCON_DECLARE() with the same name.
+For example,
+    OF_EARLYCON_DECLARE(omap8250, "ti,omap2-uart", early_omap8250_setup);
+    OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
+    OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
 
-This boot console is enabled with the command line option "earlycon"
-(without "=<name>...") when the DT 'stdout-path' property matches a
-compatible uart. For example,
-
-/ {
-   chosen {
-   	stdout-path = "serial0:115200";
-   };
-
-   ....
-
-   aliases {
-   	serial0 = &uart0;
-   };
-
-   ....
-
-   ocp : ocp {
-   	uart0 : serial@44e09000 {
-	      compatible = "ti,omap3-uart";
-	}
-   };
-};
+Generate a unique identifier for each declaration in the current
+compilation unit.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250_early.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ include/linux/serial_core.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index 53db31c..daa983d 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -169,5 +169,26 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
- 	device->con->write = early_serial8250_write;
- 	return 0;
- }
-+
- EARLYCON_DECLARE(uart8250, early_serial8250_setup);
- EARLYCON_DECLARE(uart, early_serial8250_setup);
-+
-+#ifdef CONFIG_SERIAL_8250_OMAP
-+
-+static int __init early_omap8250_setup(struct earlycon_device *device,
-+					 const char *options)
-+{
-+	struct uart_port *port = &device->port;
-+
-+	if (!(device->port.membase || device->port.iobase))
-+		return -ENODEV;
-+
-+	port->regshift = 2;
-+	device->con->write = early_serial8250_write;
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(omap8250, "ti,omap2-uart", early_omap8250_setup);
-+OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
-+OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
-+#endif
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 675d36f..0a711a7 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -362,7 +362,7 @@ extern int of_setup_earlycon(const struct of_device_id *match,
+ #endif
+ 
+ #define OF_EARLYCON_DECLARE(_name, compat, fn)				\
+-	static const struct of_device_id __of_table_##_name		\
++	static const struct of_device_id __UNIQUE_ID(_name)		\
+ 		EARLYCON_OF_TABLE_ATTR					\
+ 		 = { .name = __stringify(_name),			\
+ 		     .compatible = compat,				\
 -- 
 2.3.1
