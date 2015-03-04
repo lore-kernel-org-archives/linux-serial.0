@@ -1,68 +1,109 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH v2 0/6] ARM: at91: fix irq_pm_install_action WARNING
-Date: Wed, 04 Mar 2015 02:43:08 +0100
-Message-ID: <1459461.VrAQVInSTR@vostro.rjw.lan>
-References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com> <54F5D4CC.3090805@atmel.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 1/8] clk: add helper function clk_is_match()
+Date: Wed, 4 Mar 2015 09:55:37 +0100
+Message-ID: <CAMuHMdX_co60Aez4_8iA4+41CMSD=Ky7af8mVJruQL-2v9m=0g@mail.gmail.com>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+	<1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+	<20150225172757.421.43718@quantum>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54F5D4CC.3090805@atmel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, linux-pm@vger.kernel.org, Wim Van Sebroeck <wim@iguana.be>, linux-watchdog@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, rtc-linux@googlegroups.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Mike Turquette <mturquette@linaro.org>, linux-kernel@vger.kernel.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+In-Reply-To: <20150225172757.421.43718@quantum>
+Sender: linux-pwm-owner@vger.kernel.org
+To: Mike Turquette <mturquette@linaro.org>
+Cc: Shawn Guo <shawn.guo@linaro.org>, linux-pwm@vger.kernel.org, ALSA Development Mailing List <alsa-devel@alsa-project.org>, Russell King <linux@arm.linux.org.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, DRI Development <dri-devel@lists.freedesktop.org>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <kernel@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday, March 03, 2015 04:35:40 PM Nicolas Ferre wrote:
-> Le 02/03/2015 10:18, Boris Brezillon a =C3=A9crit :
-> > My apologies to those of you who already received this series, but =
-I
-> > didn't increment the patch version and forgot some subsystem mainta=
-iners
-> > and MLs.
-> >=20
-> > Commit cab303be91dc47942bc25de33dc1140123540800 [1] introduced a WA=
-RN_ON
-> > test which triggers a WARNING backtrace on at91 platforms.
-> > While this WARN_ON is absolutely necessary to warn users that they =
-should
-> > not mix request with and without IRQF_NO_SUSPEND flags on shared IR=
-Qs,
-> > there is no easy way to solve this issue on at91 platforms.
-> >=20
-> > The main reason is that the init timer is often using a shared irq =
-line
-> > and thus request this irq with IRQF_NO_SUSPEND flag set, while othe=
-r
-> > peripherals request the same irq line without this flag.
-> >=20
-> > This problem has recently been addressed by this patch [2] which ad=
-ds
-> > a new IRQF_COND_SUSPEND flag, that authorize mixing IRQF_NO_SUSPEND=
- and
-> > !IRQF_NO_SUSPEND as long as irq handlers setting IRQF_COND_SUSPEND
-> > can safely be called in suspended state.
-> >=20
-> > Doing this also implies taking care of system wakeup in devices han=
-dlers
-> > if they tag the IRQ line as a wakeup source.
-> > The first patch of this series exports the pm_system_wakeup symbol =
-so
-> > that drivers can call pm_system_wakeup from their interrupt handler=
-=2E
-> >=20
-> > This series then patches all at91 drivers that can have devices sha=
-ring
-> > their IRQ line with a timer.
-> >=20
-> > This series depends on [2].
->=20
-> I'm okay with all the patches:
-> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
->=20
-> As it seems easier to keep the whole series together, I'll let Rafael
-> take it.
+On Wed, Feb 25, 2015 at 6:27 PM, Mike Turquette <mturquette@linaro.org> wrote:
+> From: Michael Turquette <mturquette@linaro.org>
+> Date: Wed, 25 Feb 2015 09:11:01 -0800
+> Subject: [PATCH] clk: introduce clk_is_match
+>
+> Some drivers compare struct clk pointers as a means of knowing
+> if the two pointers reference the same clock hardware. This behavior is
+> dubious (drivers must not dereference struct clk), but did not cause any
+> regressions until the per-user struct clk patch was merged. Now the test
+> for matching clk's will always fail with per-user struct clk's.
+>
+> clk_is_match is introduced to fix the regression and prevent drivers
+> from comparing the pointers manually.
+>
+> Fixes: 035a61c314eb ("clk: Make clk API return per-user struct clk instances")
+> Cc: Russell King <linux@arm.linux.org.uk>
+> Cc: Stephen Boyd <sboyd@codeaurora.org>
+> Cc: Shawn Guo <shawn.guo@linaro.org>
+> Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+> Signed-off-by: Michael Turquette <mturquette@linaro.org>
+> ---
+>  drivers/clk/clk.c   | 26 ++++++++++++++++++++++++++
+>  include/linux/clk.h | 18 ++++++++++++++++++
+>  2 files changed, 44 insertions(+)
+>
+> diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+> index eb01529..09670de 100644
+> --- a/drivers/clk/clk.c
+> +++ b/drivers/clk/clk.c
+> @@ -2171,6 +2171,32 @@ int clk_get_phase(struct clk *clk)
+>  }
+>
+>  /**
+> + * clk_is_match - check if two clk's point to the same hardware clock
+> + * @p: clk compared against q
+> + * @q: clk compared against p
+> + *
+> + * Returns true if the two struct clk pointers both point to the same hardware
+> + * clock node. Put differently, returns true if struct clk *p and struct clk *q
+> + * share the same struct clk_core object.
+> + *
+> + * Returns false otherwise. Note that two NULL clks are treated as matching.
+> + */
+> +bool clk_is_match(struct clk *p, struct clk *q)
 
-OK, I'll queue up the patches for the next PM pull request.
+const struct clk *p, const struct clk *q
 
-Thanks!
+> --- a/include/linux/clk.h
+> +++ b/include/linux/clk.h
+> @@ -376,6 +376,19 @@ struct clk *clk_get_parent(struct clk *clk);
+>   */
+>  struct clk *clk_get_sys(const char *dev_id, const char *con_id);
+>
+> +/**
+> + * clk_is_match - check if two clk's point to the same hardware clock
+> + * @p: clk compared against q
+> + * @q: clk compared against p
+> + *
+> + * Returns true if the two struct clk pointers both point to the same hardware
+> + * clock node. Put differently, returns true if struct clk *p and struct clk *q
+> + * share the same struct clk_core object.
+> + *
+> + * Returns false otherwise. Note that two NULL clks are treated as matching.
+> + */
+> +bool clk_is_match(struct clk *p, struct clk *q);
+
+const struct clk *p, const struct clk *q
+
+> +
+>  #else /* !CONFIG_HAVE_CLK */
+>
+>  static inline struct clk *clk_get(struct device *dev, const char *id)
+> @@ -429,6 +442,11 @@ static inline struct clk *clk_get_parent(struct clk *clk)
+>         return NULL;
+>  }
+>
+> +static inline bool clk_is_match(struct clk *p, struct clk *q)
+
+const struct clk *p, const struct clk *q
+
+> +{
+> +       return p == q ? true : false;
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
