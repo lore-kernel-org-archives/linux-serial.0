@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 02/12] serial: earlycon: Emit earlycon name in the OF table
-Date: Wed,  4 Mar 2015 12:24:21 -0500
-Message-ID: <1425489871-22415-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 05/12] of: earlycon: Initialize port fields from DT properties
+Date: Wed,  4 Mar 2015 12:24:24 -0500
+Message-ID: <1425489871-22415-6-git-send-email-peter@hurleysoftware.com>
 References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
@@ -10,48 +10,100 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-The OF device name of the earlycon is never used because there is no
-device; re-purpose the name field to store the earlycon name in
-the OF earlycon table. Earlycon will use the table entry to
-fixup the console name and index.
+Read the optional "reg-offset", "reg-shift" and "reg-io-width" properties
+and initialize the respective struct uart_port field if found.
+
+NB: These bindings are common to several drivers and the values merely
+indicate the default value; the registering earlycon setup() method can
+simply override the values if required.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- include/linux/serial_core.h | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/of/fdt.c              |  2 +-
+ drivers/tty/serial/earlycon.c | 27 +++++++++++++++++++++++++++
+ include/linux/serial_core.h   |  1 +
+ 3 files changed, 29 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 8aeec49..c523785 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -29,6 +29,7 @@
- #include <linux/tty.h>
- #include <linux/mutex.h>
- #include <linux/sysrq.h>
-+#include <linux/mod_devicetable.h>
- #include <uapi/linux/serial_core.h>
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index bdb74a8..a732890 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -802,7 +802,7 @@ int __init early_init_dt_scan_chosen_serial(void)
+ 		if (!addr)
+ 			return -ENXIO;
  
- #ifdef CONFIG_SERIAL_CORE_CONSOLE
-@@ -353,8 +354,18 @@ extern int of_setup_earlycon(unsigned long addr,
- 		 = { .name  = __stringify(_name),			\
- 		     .setup = func  }
+-		of_setup_earlycon(addr, match, options);
++		of_setup_earlycon(addr, match, offset, options);
+ 		return 0;
+ 	}
+ 	return -ENODEV;
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 436ac88..019010f 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -21,6 +21,10 @@
+ #include <linux/sizes.h>
+ #include <linux/mod_devicetable.h>
  
--#define OF_EARLYCON_DECLARE(name, compat, fn)				\
--	_OF_DECLARE(earlycon, name, compat, fn, void *)
-+#ifdef CONFIG_OF
-+#define EARLYCON_OF_TABLE_ATTR __used __section(__earlycon_of_table)
-+#else
-+#define EARLYCON_OF_TABLE_ATTR __attribute__((unused))
++#ifdef CONFIG_OF_EARLY_FLATTREE
++#include <linux/of_fdt.h>
 +#endif
 +
-+#define OF_EARLYCON_DECLARE(_name, compat, fn)				\
-+	static const struct of_device_id __of_table_##_name		\
-+		EARLYCON_OF_TABLE_ATTR					\
-+		 = { .name = __stringify(_name),			\
-+		     .compatible = compat,				\
-+		     .data = (fn == (void *)NULL) ? fn : fn  }
+ #ifdef CONFIG_FIX_EARLYCON_MEM
+ #include <asm/fixmap.h>
+ #endif
+@@ -219,17 +223,40 @@ early_param("earlycon", param_setup_earlycon);
  
- struct uart_port *uart_get_console(struct uart_port *ports, int nr,
- 				   struct console *c);
+ int __init of_setup_earlycon(unsigned long addr,
+ 			     const struct of_device_id *match,
++			     unsigned long node,
+ 			     const char *options)
+ {
+ 	int err;
+ 	struct uart_port *port = &early_console_dev.port;
+ 	int (*setup)(struct earlycon_device *, const char *) = match->data;
++	const __be32 *val;
+ 
+ 	port->iotype = UPIO_MEM;
+ 	port->mapbase = addr;
+ 	port->uartclk = BASE_BAUD * 16;
+ 	port->membase = earlycon_map(addr, SZ_4K);
+ 
++	val = of_get_flat_dt_prop(node, "reg-offset", NULL);
++	if (val)
++		port->mapbase += be32_to_cpu(*val);
++	val = of_get_flat_dt_prop(node, "reg-shift", NULL);
++	if (val)
++		port->regshift = be32_to_cpu(*val);
++	val = of_get_flat_dt_prop(node, "reg-io-width", NULL);
++	if (val) {
++		switch (be32_to_cpu(*val)) {
++		case 1:
++			port->iotype = UPIO_MEM;
++			break;
++		case 4:
++			port->iotype = UPIO_MEM32;
++			break;
++		default:
++			pr_warn("[%s] unsupported reg-io-width\n", match->name);
++			return -EINVAL;
++		}
++	}
++
+ 	if (options) {
+ 		strlcpy(early_console_dev.options, options,
+ 			sizeof(early_console_dev.options));
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index ebbcd43..c8e4e8f 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -347,6 +347,7 @@ struct earlycon_id {
+ extern int setup_earlycon(char *buf);
+ extern int of_setup_earlycon(unsigned long addr,
+ 			     const struct of_device_id *match,
++			     unsigned long node,
+ 			     const char *options);
+ 
+ #define EARLYCON_DECLARE(_name, func)					\
 -- 
 2.3.1
