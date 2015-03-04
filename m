@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 05/12] of: earlycon: Initialize port fields from DT properties
-Date: Wed,  4 Mar 2015 12:24:24 -0500
-Message-ID: <1425489871-22415-6-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 11/12] serial: 8250_early: Use port->regshift
+Date: Wed,  4 Mar 2015 12:24:30 -0500
+Message-ID: <1425489871-22415-12-git-send-email-peter@hurleysoftware.com>
 References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
@@ -10,100 +10,52 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Read the optional "reg-offset", "reg-shift" and "reg-io-width" properties
-and initialize the respective struct uart_port field if found.
+earlycon initializes struct uart_port::regshift to the correct
+value for UPIO_MEM32 already. Use the port field rather than
+hard-coded value.
 
-NB: These bindings are common to several drivers and the values merely
-indicate the default value; the registering earlycon setup() method can
-simply override the values if required.
+This enables broader support for various i/o access methods in
+8250 earlycon (eg., omap8250 earlycon).
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/of/fdt.c              |  2 +-
- drivers/tty/serial/earlycon.c | 27 +++++++++++++++++++++++++++
- include/linux/serial_core.h   |  1 +
- 3 files changed, 29 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_early.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index bdb74a8..a732890 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -802,7 +802,7 @@ int __init early_init_dt_scan_chosen_serial(void)
- 		if (!addr)
- 			return -ENXIO;
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index a2b4e58..53db31c 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -38,11 +38,13 @@
  
--		of_setup_earlycon(addr, match, options);
-+		of_setup_earlycon(addr, match, offset, options);
- 		return 0;
- 	}
- 	return -ENODEV;
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 436ac88..019010f 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -21,6 +21,10 @@
- #include <linux/sizes.h>
- #include <linux/mod_devicetable.h>
- 
-+#ifdef CONFIG_OF_EARLY_FLATTREE
-+#include <linux/of_fdt.h>
-+#endif
-+
- #ifdef CONFIG_FIX_EARLYCON_MEM
- #include <asm/fixmap.h>
- #endif
-@@ -219,17 +223,40 @@ early_param("earlycon", param_setup_earlycon);
- 
- int __init of_setup_earlycon(unsigned long addr,
- 			     const struct of_device_id *match,
-+			     unsigned long node,
- 			     const char *options)
+ unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
  {
- 	int err;
- 	struct uart_port *port = &early_console_dev.port;
- 	int (*setup)(struct earlycon_device *, const char *) = match->data;
-+	const __be32 *val;
- 
- 	port->iotype = UPIO_MEM;
- 	port->mapbase = addr;
- 	port->uartclk = BASE_BAUD * 16;
- 	port->membase = earlycon_map(addr, SZ_4K);
- 
-+	val = of_get_flat_dt_prop(node, "reg-offset", NULL);
-+	if (val)
-+		port->mapbase += be32_to_cpu(*val);
-+	val = of_get_flat_dt_prop(node, "reg-shift", NULL);
-+	if (val)
-+		port->regshift = be32_to_cpu(*val);
-+	val = of_get_flat_dt_prop(node, "reg-io-width", NULL);
-+	if (val) {
-+		switch (be32_to_cpu(*val)) {
-+		case 1:
-+			port->iotype = UPIO_MEM;
-+			break;
-+		case 4:
-+			port->iotype = UPIO_MEM32;
-+			break;
-+		default:
-+			pr_warn("[%s] unsupported reg-io-width\n", match->name);
-+			return -EINVAL;
-+		}
-+	}
++	offset <<= port->regshift;
 +
- 	if (options) {
- 		strlcpy(early_console_dev.options, options,
- 			sizeof(early_console_dev.options));
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index ebbcd43..c8e4e8f 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -347,6 +347,7 @@ struct earlycon_id {
- extern int setup_earlycon(char *buf);
- extern int of_setup_earlycon(unsigned long addr,
- 			     const struct of_device_id *match,
-+			     unsigned long node,
- 			     const char *options);
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+ 		return readb(port->membase + offset);
+ 	case UPIO_MEM32:
+-		return readl(port->membase + (offset << 2));
++		return readl(port->membase + offset);
+ 	case UPIO_PORT:
+ 		return inb(port->iobase + offset);
+ 	default:
+@@ -52,12 +54,14 @@ unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offse
  
- #define EARLYCON_DECLARE(_name, func)					\
+ void __weak __init serial8250_early_out(struct uart_port *port, int offset, int value)
+ {
++	offset <<= port->regshift;
++
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+ 		writeb(value, port->membase + offset);
+ 		break;
+ 	case UPIO_MEM32:
+-		writel(value, port->membase + (offset << 2));
++		writel(value, port->membase + offset);
+ 		break;
+ 	case UPIO_PORT:
+ 		outb(value, port->iobase + offset);
 -- 
 2.3.1
