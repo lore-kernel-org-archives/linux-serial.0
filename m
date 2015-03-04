@@ -1,82 +1,64 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 01/12] serial: earlycon: Fixup earlycon console name and index
-Date: Wed,  4 Mar 2015 12:24:20 -0500
-Message-ID: <1425489871-22415-2-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH -next 00/12] OF earlycon cleanup
+Date: Wed, 04 Mar 2015 12:33:45 -0500
+Message-ID: <54F741F9.7070308@hurleysoftware.com>
 References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Properly initialize the struct console::name and ::index for
-the registering earlycon. The earlycon's ::index == 0
-for earlycons without trailing numerals and the numeral value
-for earlycons with trailing numerals. For example, exynos4210
-earlycon ::name == "exynos" and ::index = 4210. Earlycons with
-embedded numerals will have all non-trailing numerals as part of
-the name; for example, s3c2412 earlycon ::name == "s3c" and ::index
-== 2412. This ackward scheme was initially supported for the
-uart8250 earlycon; this patch extends this support to the other
-earlycon "drivers".
+On 03/04/2015 12:24 PM, Peter Hurley wrote:
+> Hi Greg, Grant & Rob,
+> 
+> This patch series builds on my earlier "Extensible console matching &
+> direct earlycon" to add several useful features to earlycon:
+> * Proper port i/o configuration from DT node with of_serial properties
+>   (such as reg-io-width, reg-shift and reg-offset)
+> * Proper console name & index initialization from earlycon name
+>   (for both command line and DT-defined earlycons)
+> * Support for DT 'stdout-path' options pass-through to earlycon setup
+> * Improved log messages for troubleshooting
+> * Support for multiple OF earlycon declarations so different
+>   compatible strings can specify the same OF earlycon
+> 
+> Lastly, this patch series adds an omap8250 OF earlycon. I don't think
+> the last patch requires the "Split 8250 driver" to work but it won't
+> apply cleanly without it.
+> 
+> Requires: "libfdt: Teach fdt_path_offset() about ':' path separator"
 
-Introduce earlycon_init() which performs the string scanning
-and initializes the ::name and ::index fields; encapsulate the other
-console field initializations within.
+I forgot to mention that the last patch which adds omap8250 earlycon
+requires some kind of fixmap support, such as "ARM: early fixmap support
+for earlycon", which has not yet been accepted upstream.
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/earlycon.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 5fdc9f3..bfe21b8 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -28,7 +28,7 @@
- #include <asm/serial.h>
- 
- static struct console early_con = {
--	.name =		"uart", /* 8250 console switch requires this name */
-+	.name =		"uart",		/* fixed up at earlycon registration */
- 	.flags =	CON_PRINTBUFFER | CON_BOOT,
- 	.index =	-1,
- };
-@@ -61,6 +61,25 @@ static void __iomem * __init earlycon_map(unsigned long paddr, size_t size)
- 	return base;
- }
- 
-+static void __init earlycon_init(struct earlycon_device *device,
-+				 const char *name)
-+{
-+	struct console *earlycon = device->con;
-+	const char *s;
-+	size_t len;
-+
-+	/* scan backwards from end of string for first non-numeral */
-+	for (s = name + strlen(name);
-+	     s > name && s[-1] >= '0' && s[-1] <= '9';
-+	     s--)
-+		;
-+	if (*s)
-+		earlycon->index = simple_strtoul(s, NULL, 10);
-+	len = s - name;
-+	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
-+	earlycon->data = &early_console_dev;
-+}
-+
- static int __init parse_options(struct earlycon_device *device, char *options)
- {
- 	struct uart_port *port = &device->port;
-@@ -116,7 +135,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
- 	if (port->mapbase)
- 		port->membase = earlycon_map(port->mapbase, 64);
- 
--	early_console_dev.con->data = &early_console_dev;
-+	earlycon_init(&early_console_dev, match->name);
- 	err = match->setup(&early_console_dev, buf);
- 	if (err < 0)
- 		return err;
--- 
-2.3.1
+> Regards
+> 
+> Peter Hurley (12):
+>   serial: earlycon: Fixup earlycon console name and index
+>   serial: earlycon: Emit earlycon name in the OF table
+>   of: earlycon: Fixup earlycon console name and index
+>   of: earlycon: Add options string handling
+>   of: earlycon: Initialize port fields from DT properties
+>   of: earlycon: Move address translation to of_setup_earlycon()
+>   serial: earlycon: Common log banner for command line and DT
+>   serial: earlycon: Id the earlycon "driver" in banner
+>   of: earlycon: Allow multiple OF_EARLYCON_DECLARE() with same name
+>   of: earlycon: Log more helpful message if earlycon not found
+>   serial: 8250_early: Use port->regshift
+>   serial: 8250_omap: Add omap8250 earlycon
+> 
+>  drivers/of/fdt.c                     | 16 +++---
+>  drivers/of/fdt_address.c             | 11 ++++-
+>  drivers/tty/serial/8250/8250_early.c | 29 ++++++++++-
+>  drivers/tty/serial/earlycon.c        | 94 +++++++++++++++++++++++++++++-------
+>  include/linux/of_fdt.h               |  2 +-
+>  include/linux/serial_core.h          | 20 ++++++--
+>  6 files changed, 138 insertions(+), 34 deletions(-)
+> 
