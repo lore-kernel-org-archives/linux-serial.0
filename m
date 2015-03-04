@@ -1,8 +1,7 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v2 01/10] drivers: PL011: avoid potential unregister_driver
- call
-Date: Wed,  4 Mar 2015 17:59:45 +0000
-Message-ID: <1425491994-23913-2-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v2 09/10] drivers: PL011: allow to supply fixed option string
+Date: Wed,  4 Mar 2015 17:59:53 +0000
+Message-ID: <1425491994-23913-10-git-send-email-andre.przywara@arm.com>
 References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,83 +21,71 @@ To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
 Cc: linux-arm-kernel@lists.infradead.org, rob.herring@linaro.org, arnd@arndb.de, linux-serial@vger.kernel.org, Dave.Martin@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-Although we care about not unregistering the driver if there are
-still ports connected during the .remove callback, we do miss this
-check in the pl011_probe function. So if the current port allocation
-fails, but there are other ports already registered, we will kill
-those.
-So factor out the port removal into a separate function and use that
-in the probe function, too.
+The SBSA UART has a fixed baud rate and flow control setting, which
+cannot be changed or queried by software.
+Add a vendor specific property to always return fixed values when
+trying to read the console options.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c |   38 +++++++++++++++++++++-----------------
- 1 file changed, 21 insertions(+), 17 deletions(-)
+ drivers/tty/serial/amba-pl011.c |   17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 92783fc..961f9b0 100644
+index fdb9fa5..d3b034f 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -2235,6 +2235,24 @@ static int pl011_probe_dt_alias(int index, struct device *dev)
- 	return ret;
- }
+@@ -80,6 +80,7 @@ struct vendor_data {
+ 	bool			dma_threshold;
+ 	bool			cts_event_workaround;
+ 	bool			always_enabled;
++	bool			fixed_options;
  
-+/* unregisters the driver also if no more ports are left */
-+static void pl011_unregister_port(struct uart_amba_port *uap)
-+{
-+	int i;
-+	bool busy = false;
-+
-+	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
-+		if (amba_ports[i] == uap)
-+			amba_ports[i] = NULL;
-+		else if (amba_ports[i])
-+			busy = true;
+ 	unsigned int (*get_fifosize)(struct amba_device *dev);
+ };
+@@ -97,6 +98,7 @@ static struct vendor_data vendor_arm = {
+ 	.dma_threshold		= false,
+ 	.cts_event_workaround	= false,
+ 	.always_enabled		= false,
++	.fixed_options		= false,
+ 	.get_fifosize		= get_fifosize_arm,
+ };
+ 
+@@ -113,6 +115,7 @@ static struct vendor_data vendor_st = {
+ 	.dma_threshold		= true,
+ 	.cts_event_workaround	= true,
+ 	.always_enabled		= false,
++	.fixed_options		= false,
+ 	.get_fifosize		= get_fifosize_st,
+ };
+ 
+@@ -163,6 +166,7 @@ struct uart_amba_port {
+ 	struct delayed_work	tx_softirq_work;
+ 	bool			autorts;
+ 	unsigned int		tx_irq_seen;	/* 0=none, 1=1, 2=2 or more */
++	unsigned int		fixed_baud;	/* vendor-set fixed baud rate */
+ 	char			type[12];
+ #ifdef CONFIG_DMA_ENGINE
+ 	/* DMA stuff */
+@@ -2177,10 +2181,15 @@ static int __init pl011_console_setup(struct console *co, char *options)
+ 
+ 	uap->port.uartclk = clk_get_rate(uap->clk);
+ 
+-	if (options)
+-		uart_parse_options(options, &baud, &parity, &bits, &flow);
+-	else
+-		pl011_console_get_options(uap, &baud, &parity, &bits);
++	if (uap->vendor->fixed_options) {
++		baud = uap->fixed_baud;
++	} else {
++		if (options)
++			uart_parse_options(options,
++					   &baud, &parity, &bits, &flow);
++		else
++			pl011_console_get_options(uap, &baud, &parity, &bits);
 +	}
-+	pl011_dma_remove(uap);
-+	if (!busy)
-+		uart_unregister_driver(&amba_reg);
-+}
-+
-+
- static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- {
- 	struct uart_amba_port *uap;
-@@ -2301,11 +2319,8 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	}
  
- 	ret = uart_add_one_port(&amba_reg, &uap->port);
--	if (ret) {
--		amba_ports[i] = NULL;
--		uart_unregister_driver(&amba_reg);
--		pl011_dma_remove(uap);
--	}
-+	if (ret)
-+		pl011_unregister_port(uap);
- 
- 	return ret;
+ 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
  }
-@@ -2313,20 +2328,9 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- static int pl011_remove(struct amba_device *dev)
- {
- 	struct uart_amba_port *uap = amba_get_drvdata(dev);
--	bool busy = false;
--	int i;
- 
- 	uart_remove_one_port(&amba_reg, &uap->port);
--
--	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
--		if (amba_ports[i] == uap)
--			amba_ports[i] = NULL;
--		else if (amba_ports[i])
--			busy = true;
--
--	pl011_dma_remove(uap);
--	if (!busy)
--		uart_unregister_driver(&amba_reg);
-+	pl011_unregister_port(uap);
- 	return 0;
- }
- 
 -- 
 1.7.9.5
