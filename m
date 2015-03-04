@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH -next 06/12] of: earlycon: Move address translation to of_setup_earlycon()
-Date: Wed,  4 Mar 2015 12:24:25 -0500
-Message-ID: <1425489871-22415-7-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH -next 07/12] serial: earlycon: Common log banner for command line and DT
+Date: Wed,  4 Mar 2015 12:24:26 -0500
+Message-ID: <1425489871-22415-8-git-send-email-peter@hurleysoftware.com>
 References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
@@ -10,125 +10,59 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Cleanup the early DT/earlycon separation; remove the 'addr' parameter
-from of_setup_earlycon() and get the uart phys addr directly with a
-new wrapper function, of_flat_dt_translate_addr(). Limit
-fdt_translate_address() to file scope.
+Refactor the command line earlycon banner into earlycon_init() so
+both earlycon startup methods output an info banner.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/of/fdt.c              |  7 +------
- drivers/of/fdt_address.c      | 11 ++++++++++-
- drivers/tty/serial/earlycon.c | 11 +++++++----
- include/linux/of_fdt.h        |  2 +-
- include/linux/serial_core.h   |  3 +--
- 5 files changed, 20 insertions(+), 14 deletions(-)
+ drivers/tty/serial/earlycon.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index a732890..dd2baae 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -792,17 +792,12 @@ int __init early_init_dt_scan_chosen_serial(void)
- 		return -ENODEV;
- 
- 	while (match->compatible[0]) {
--		unsigned long addr;
- 		if (fdt_node_check_compatible(fdt, offset, match->compatible)) {
- 			match++;
- 			continue;
- 		}
- 
--		addr = fdt_translate_address(fdt, offset);
--		if (!addr)
--			return -ENXIO;
--
--		of_setup_earlycon(addr, match, offset, options);
-+		of_setup_earlycon(match, offset, options);
- 		return 0;
- 	}
- 	return -ENODEV;
-diff --git a/drivers/of/fdt_address.c b/drivers/of/fdt_address.c
-index 8d3dc6f..dca8f9b 100644
---- a/drivers/of/fdt_address.c
-+++ b/drivers/of/fdt_address.c
-@@ -161,7 +161,7 @@ static int __init fdt_translate_one(const void *blob, int parent,
-  * that can be mapped to a cpu physical address). This is not really specified
-  * that way, but this is traditionally the way IBM at least do things
-  */
--u64 __init fdt_translate_address(const void *blob, int node_offset)
-+static u64 __init fdt_translate_address(const void *blob, int node_offset)
- {
- 	int parent, len;
- 	const struct of_bus *bus, *pbus;
-@@ -239,3 +239,12 @@ u64 __init fdt_translate_address(const void *blob, int node_offset)
-  bail:
- 	return result;
- }
-+
-+/**
-+ * of_flat_dt_translate_address - translate DT addr into CPU phys addr
-+ * @node: node in the flat blob
-+ */
-+u64 __init of_flat_dt_translate_address(unsigned long node)
-+{
-+	return fdt_translate_address(initial_boot_params, node);
-+}
 diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 019010f..b1a4bd1 100644
+index b1a4bd1..522ceb8 100644
 --- a/drivers/tty/serial/earlycon.c
 +++ b/drivers/tty/serial/earlycon.c
-@@ -221,8 +221,7 @@ static int __init param_setup_earlycon(char *buf)
- }
- early_param("earlycon", param_setup_earlycon);
- 
--int __init of_setup_earlycon(unsigned long addr,
--			     const struct of_device_id *match,
-+int __init of_setup_earlycon(const struct of_device_id *match,
- 			     unsigned long node,
- 			     const char *options)
+@@ -69,6 +69,7 @@ static void __init earlycon_init(struct earlycon_device *device,
+ 				 const char *name)
  {
-@@ -232,9 +231,13 @@ int __init of_setup_earlycon(unsigned long addr,
- 	const __be32 *val;
+ 	struct console *earlycon = device->con;
++	struct uart_port *port = &device->port;
+ 	const char *s;
+ 	size_t len;
  
- 	port->iotype = UPIO_MEM;
--	port->mapbase = addr;
-+	port->mapbase = of_flat_dt_translate_address(node);
-+	if (!port->mapbase) {
-+		pr_warn("[%s] bad address\n", match->name);
-+		return -ENXIO;
-+	}
- 	port->uartclk = BASE_BAUD * 16;
--	port->membase = earlycon_map(addr, SZ_4K);
-+	port->membase = earlycon_map(port->mapbase, SZ_4K);
+@@ -82,6 +83,16 @@ static void __init earlycon_init(struct earlycon_device *device,
+ 	len = s - name;
+ 	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
+ 	earlycon->data = &early_console_dev;
++
++	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
++		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
++			(port->iotype == UPIO_MEM32) ? "32" : "",
++			(unsigned long long)port->mapbase,
++			device->options);
++	else
++		pr_info("Early serial console at I/O port 0x%lx (options '%s')\n",
++			port->iobase,
++			device->options);
+ }
  
- 	val = of_get_flat_dt_prop(node, "reg-offset", NULL);
- 	if (val)
-diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
-index 0ff360d..d31e6cb 100644
---- a/include/linux/of_fdt.h
-+++ b/include/linux/of_fdt.h
-@@ -85,7 +85,7 @@ extern void unflatten_device_tree(void);
- extern void unflatten_and_copy_device_tree(void);
- extern void early_init_devtree(void *);
- extern void early_get_first_memblock_info(void *, phys_addr_t *);
--extern u64 fdt_translate_address(const void *blob, int node_offset);
-+extern u64 of_flat_dt_translate_address(unsigned long node);
- extern void of_fdt_limit_memory(int limit);
- #else /* CONFIG_OF_FLATTREE */
- static inline void early_init_fdt_scan_reserved_mem(void) {}
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index c8e4e8f..675d36f 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -345,8 +345,7 @@ struct earlycon_id {
- };
+ static int __init parse_options(struct earlycon_device *device, char *options)
+@@ -113,16 +124,6 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 		strlcpy(device->options, options, length);
+ 	}
  
- extern int setup_earlycon(char *buf);
--extern int of_setup_earlycon(unsigned long addr,
--			     const struct of_device_id *match,
-+extern int of_setup_earlycon(const struct of_device_id *match,
- 			     unsigned long node,
- 			     const char *options);
+-	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
+-		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
+-			(port->iotype == UPIO_MEM32) ? "32" : "",
+-			(unsigned long long)port->mapbase,
+-			device->options);
+-	else
+-		pr_info("Early serial console at I/O port 0x%lx (options '%s')\n",
+-			port->iobase,
+-			device->options);
+-
+ 	return 0;
+ }
  
 -- 
 2.3.1
