@@ -1,171 +1,93 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v2 05/10] drivers: PL011: refactor pl011_probe()
-Date: Wed,  4 Mar 2015 17:59:49 +0000
-Message-ID: <1425491994-23913-6-git-send-email-andre.przywara@arm.com>
-References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 2/6] rtc: at91sam9: rework wakeup and interrupt
+ handling
+Date: Wed, 4 Mar 2015 18:23:56 +0000
+Message-ID: <20150304182356.GC22156@leverpostej>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1425287898-15093-3-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-arm-kernel@lists.infradead.org, rob.herring@linaro.org, arnd@arndb.de, linux-serial@vger.kernel.org, Dave.Martin@arm.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1425287898-15093-3-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Wim Van Sebroeck <wim-IQzOog9fTRqzQB+pC5nmwQ@public.gmane.org>, "linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, "rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>lin
 List-Id: linux-serial@vger.kernel.org
 
-Currently the pl011_probe() function is relying on some AMBA IDs
-and a device tree node to initialize the driver and a port.
-Both features are not necessarily required for the driver:
-- we lack AMBA IDs in the ARM SBSA generic UART and
-- we lack a DT node in ACPI systems.
-So lets refactor the function to ease later reuse.
+Hi Boris,
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
- drivers/tty/serial/amba-pl011.c |   89 ++++++++++++++++++++++++++-------------
- 1 file changed, 60 insertions(+), 29 deletions(-)
+On Mon, Mar 02, 2015 at 09:18:14AM +0000, Boris Brezillon wrote:
+> The IRQ line used by the RTC device is usually shared with the system timer
+> (PIT) on at91 platforms.
+> Since timers are registering their handlers with IRQF_NO_SUSPEND, we should
+> expect being called in suspended state, and properly wake the system up
+> when this is the case.
+> 
+> Set IRQF_COND_SUSPEND flag when registering the IRQ handler to inform
+> irq core that it can safely be called while the system is suspended.
+> 
+> Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+> ---
+>  drivers/rtc/rtc-at91sam9.c | 73 ++++++++++++++++++++++++++++++++++++++--------
+>  1 file changed, 61 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 37b55ee..4fe0a0a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2274,13 +2274,10 @@ static void pl011_unregister_port(struct uart_amba_port *uap)
- 		uart_unregister_driver(&amba_reg);
- }
- 
--
--static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
-+static int pl011_allocate_port(struct device *dev, struct uart_amba_port **_uap)
- {
- 	struct uart_amba_port *uap;
--	struct vendor_data *vendor = id->data;
--	void __iomem *base;
--	int i, ret;
-+	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
- 		if (amba_ports[i] == NULL)
-@@ -2289,48 +2286,50 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	if (i == ARRAY_SIZE(amba_ports))
- 		return -EBUSY;
- 
--	uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
--			   GFP_KERNEL);
-+	uap = devm_kzalloc(dev, sizeof(struct uart_amba_port), GFP_KERNEL);
- 	if (uap == NULL)
- 		return -ENOMEM;
- 
--	i = pl011_probe_dt_alias(i, &dev->dev);
-+	if (_uap)
-+		*_uap = uap;
-+
-+	return i;
-+}
- 
--	base = devm_ioremap(&dev->dev, dev->res.start,
--			    resource_size(&dev->res));
-+static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
-+			    struct resource *mmiobase, int index)
-+{
-+	void __iomem *base;
-+
-+	base = devm_ioremap_resource(dev, mmiobase);
- 	if (!base)
- 		return -ENOMEM;
- 
--	uap->clk = devm_clk_get(&dev->dev, NULL);
--	if (IS_ERR(uap->clk))
--		return PTR_ERR(uap->clk);
-+	index = pl011_probe_dt_alias(index, dev);
- 
--	uap->vendor = vendor;
--	uap->lcrh_rx = vendor->lcrh_rx;
--	uap->lcrh_tx = vendor->lcrh_tx;
- 	uap->old_cr = 0;
--	uap->fifosize = vendor->get_fifosize(dev);
--	uap->port.dev = &dev->dev;
--	uap->port.mapbase = dev->res.start;
-+	uap->port.dev = dev;
-+	uap->port.mapbase = mmiobase->start;
- 	uap->port.membase = base;
- 	uap->port.iotype = UPIO_MEM;
--	uap->port.irq = dev->irq[0];
- 	uap->port.fifosize = uap->fifosize;
--	uap->port.ops = &amba_pl011_pops;
- 	uap->port.flags = UPF_BOOT_AUTOCONF;
--	uap->port.line = i;
-+	uap->port.line = index;
- 	INIT_DELAYED_WORK(&uap->tx_softirq_work, pl011_tx_softirq);
--	pl011_dma_probe(&dev->dev, uap);
-+	pl011_dma_probe(dev, uap);
- 
--	/* Ensure interrupts from this UART are masked and cleared */
--	writew(0, uap->port.membase + UART011_IMSC);
--	writew(0xffff, uap->port.membase + UART011_ICR);
-+	amba_ports[index] = uap;
- 
--	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
-+	return 0;
-+}
- 
--	amba_ports[i] = uap;
-+static int pl011_register_port(struct uart_amba_port *uap)
-+{
-+	int ret;
- 
--	amba_set_drvdata(dev, uap);
-+	/* Ensure interrupts from this UART are masked and cleared */
-+	writew(0, uap->port.membase + UART011_IMSC);
-+	writew(0xffff, uap->port.membase + UART011_ICR);
- 
- 	if (!amba_reg.state) {
- 		ret = uart_register_driver(&amba_reg);
-@@ -2347,6 +2346,38 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	return ret;
- }
- 
-+static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
-+{
-+	struct uart_amba_port *uap;
-+	struct vendor_data *vendor = id->data;
-+	int portnr, ret;
-+
-+	portnr = pl011_allocate_port(&dev->dev, &uap);
-+	if (portnr < 0)
-+		return portnr;
-+
-+	uap->clk = devm_clk_get(&dev->dev, NULL);
-+	if (IS_ERR(uap->clk))
-+		return PTR_ERR(uap->clk);
-+
-+	uap->vendor = vendor;
-+	uap->lcrh_rx = vendor->lcrh_rx;
-+	uap->lcrh_tx = vendor->lcrh_tx;
-+	uap->fifosize = vendor->get_fifosize(dev);
-+	uap->port.irq = dev->irq[0];
-+	uap->port.ops = &amba_pl011_pops;
-+
-+	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
-+
-+	ret = pl011_setup_port(&dev->dev, uap, &dev->res, portnr);
-+	if (ret)
-+		return ret;
-+
-+	amba_set_drvdata(dev, uap);
-+
-+	return pl011_register_port(uap);
-+}
-+
- static int pl011_remove(struct amba_device *dev)
- {
- 	struct uart_amba_port *uap = amba_get_drvdata(dev);
--- 
-1.7.9.5
+[...]
+
+> +/*
+> + * IRQ handler for the RTC
+> + */
+> +static irqreturn_t at91_rtc_interrupt(int irq, void *_rtc)
+> +{
+> +	struct sam9_rtc *rtc = _rtc;
+> +	int ret;
+> +
+> +	spin_lock(&rtc->lock);
+> +
+> +	ret = at91_rtc_cache_events(rtc);
+> +
+> +	/* We're called in suspended state */
+> +	if (rtc->suspended) {
+> +		/* Mask irqs coming from this peripheral */
+> +		rtt_writel(rtc, MR,
+> +			   rtt_readl(rtc, MR) &
+> +			   ~(AT91_RTT_ALMIEN | AT91_RTT_RTTINCIEN));
+> +		/* Trigger a system wakeup */
+> +		pm_system_wakeup();
+> +	} else {
+> +		at91_rtc_flush_events(rtc);
+> +	}
+> +
+> +	spin_unlock(&rtc->lock);
+> +
+> +	return ret;
+
+[...]
+
+> @@ -421,7 +456,8 @@ static int at91_rtc_probe(struct platform_device *pdev)
+>  
+>  	/* register irq handler after we know what name we'll use */
+>  	ret = devm_request_irq(&pdev->dev, rtc->irq, at91_rtc_interrupt,
+> -				IRQF_SHARED, dev_name(&rtc->rtcdev->dev), rtc);
+> +			       IRQF_SHARED | IRQF_COND_SUSPEND,
+> +			       dev_name(&rtc->rtcdev->dev), rtc);
+
+To try to avoid thie getting cargo-culted, it's probably worth expanding
+the comment to cover the IRQF_COND_SUSPEND usage. Something like:
+
+	/* 
+	 * Register irq handler after we know what name we'll use.
+	 *
+	 * The interrupt line may be shared with a timer (the PIT), so
+	 * we must use IRQF_COND_SUSPEND and call pm_system_wakeup()
+	 * when a genuine wakeup event occurs.
+	 */
+
+Otherwise this looks good to me.
+
+Thanks,
+Mark.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
