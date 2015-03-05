@@ -1,58 +1,40 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: Re: [PATCH REPOST 0/2] Remove pl011 startup glitches and avoid dummy
- TX during startup
-Date: Thu, 5 Mar 2015 12:33:07 +0000
-Message-ID: <20150305123307.GD3612@e103592.cambridge.arm.com>
-References: <1425472054-7543-1-git-send-email-Dave.Martin@arm.com>
- <54F73650.2070304@arm.com>
- <20150305120320.GB3612@e103592.cambridge.arm.com>
- <54F84713.6040305@arm.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 4/5] TTY: fix tty_wait_until_sent on 64-bit machines
+Date: Thu, 05 Mar 2015 09:31:19 -0500
+Message-ID: <54F868B7.9010709@hurleysoftware.com>
+References: <1425461947-15888-1-git-send-email-johan@kernel.org> <1425461947-15888-5-git-send-email-johan@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <54F84713.6040305@arm.com>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1425461947-15888-5-git-send-email-johan@kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Samuel Ortiz <samuel@sortiz.org>, "David S. Miller" <davem@davemloft.net>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, ZIV-Asier Llano Palacios <asier.llano@cgglobal.com>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 05, 2015 at 12:07:47PM +0000, Andre Przywara wrote:
-> On 05/03/15 12:03, Dave P Martin wrote:
-> > On Wed, Mar 04, 2015 at 04:44:00PM +0000, Andre Przywara wrote:
-> >> Hi Dave,
-> >>
-> >> On 04/03/15 12:27, Dave P Martin wrote:
-> >>> There have been no comments on this series since my previous post, and
-> >>> I have made no further changes.
-> >>>
-> >>> Since then, I have confirmed that this also works robustly with TX DMA
-> >>> enabled on Juno.
-> >>>
-> >>> Review/comments/testing still welcome.
-> >>
-> >> this has been tested briefly on a Calxeda Midway without any
-> >> regressions. Also I use them as the base for my SBSA series now (which
-> >> are tested on the model and the Midway) and I see that all problems
-> >> observed before are gone now.
-> >>
-> >> Tested-by: Andre Przywara <andre.przywara@arm.com>
-> > 
-> > Thanks -- should I take that for both patches?
+On 03/04/2015 04:39 AM, Johan Hovold wrote:
+> Fix overflow bug in tty_wait_until_sent on 64-bit machines, where an
+> infinite timeout (0) would be passed to the underlying tty-driver's
+> wait_until_sent-operation as a negative timeout (-1), causing it to
+> return immediately.
+
+Wow, that is a nasty bug.
+
+> This manifests itself for example as tcdrain() returning immediately,
+> drivers not honouring the drain flags when setting terminal attributes,
+> or even dropped data on close as a requested infinite closing-wait
+> timeout would be ignored.
 > 
-> Yes, please. Also I tested this on the Raspberry Pi 2 today (though with
-> their kernel, not upstream).
+> The first symptom  was reported by Asier LLANO who noted that tcdrain()
+> returned prematurely when using the ftdi_sio usb-serial driver.
+> 
+> Fix this by passing 0 rather than MAX_SCHEDULE_TIMEOUT (LONG_MAX) to the
+> underlying tty driver.
+> 
+> Note that the serial-core wait_until_sent-implementation is not affected
+> by this bug due to a lucky chance (comparison to an unsigned maximum
+> timeout), and neither is the cyclades one that had an explicit check for
+> negative timeouts, but all other tty drivers appear to be affected.
 
-Thanks for that.  The more the better!
-
-Cheers
----Dave
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
