@@ -1,80 +1,87 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: Re: [PATCH 10/10] drivers: PL011: add support for the ARM SBSA
- generic UART
-Date: Thu, 5 Mar 2015 11:15:56 +0000
-Message-ID: <20150305111550.GA3612@e103592.cambridge.arm.com>
-References: <1421428986-11300-1-git-send-email-andre.przywara@arm.com>
- <1421428986-11300-11-git-send-email-andre.przywara@arm.com>
- <54E36477.3050406@codeaurora.org>
- <20150217161613.GC3783@e103592.cambridge.arm.com>
- <54F7453C.5060407@arm.com>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with
+ IRQF_NO_SUSPEND
+Date: Thu, 5 Mar 2015 12:17:23 +0100
+Message-ID: <20150305121723.1da0d016@bbrezillon>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
+	<1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com>
+	<20150304183809.GD22156@leverpostej>
+	<20150305095306.3db98ac8@bbrezillon>
+	<20150305105308.GA13617@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <54F7453C.5060407@arm.com>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Mark Rutland <Mark.Rutland@arm.com>, "rob.herring@linaro.org" <rob.herring@linaro.org>, Philip Elcan <pelcan@codeaurora.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "arnd@arndb.de" <arnd@arndb.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <20150305105308.GA13617@leverpostej>
+Sender: linux-pm-owner@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Peter Zijlstra <peterz@infradead.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Wim Van Sebroeck <wim@iguana.be>, "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Mike Turquette <mturquette@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>lin
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 04, 2015 at 05:47:40PM +0000, Andre Przywara wrote:
-> Philip,
-> 
-> sorry for the late reply, that was stuck in my Drafts folder :-(
-> 
-> On 02/17/2015 04:16 PM, Dave P Martin wrote:
-> > On Tue, Feb 17, 2015 at 10:55:35AM -0500, Philip Elcan wrote:
+Hi Boris,
 
-[...]
+On Thu, 5 Mar 2015 10:53:08 +0000
+Mark Rutland <mark.rutland@arm.com> wrote:
 
-> >> I'm a little late to address this patchset, but the SBSA defines all
-> >> the Generic UART registers 32-bit wide. However, the amba-pl011 driver
-> >> uses 16-bit accessors. How will you be handling that? Can the ARM PL011
-> >> hardware handle 32-bit access?
+> Hi Boris,
+> 
+> I'd missed the fact that this was for SW watchdog as opposed to HW
+> watchdog, which may explain my confusion.
+> 
+> [...]
+> 
+> > > >  		err = request_irq(wdt->irq, wdt_interrupt,
+> > > > -				  IRQF_SHARED | IRQF_IRQPOLL,
+> > > > +				  IRQF_SHARED | IRQF_IRQPOLL |
+> > > > +				  IRQF_NO_SUSPEND,
+> > > 
+> > > I'm a little confused by this. What happens if the watchdog fires when
+> > > we're actually in the suspended state (when IRQF_NO_SUSPEND interrupts
+> > > aren't guaranteed to be delivered).
 > > 
-> > Interesting question.  The PL011 TRM [1] specifies only a 16-bit-wide
-> > APB bus interface, but does not say that 32-bit accesses won't work.
-> > 
-> > I suspect that 32-bit accesses will work on all or most PL011s -- if
-> > that looks too risky or we can't find enough test platforms to be sure
-> > of this, then we could maybe abstract the register access size as a
-> > quirk.
-> > 
-> > Andre may already have an answer on this.
+> > It reboot the system.
 > 
-> I am not sure if the 32-bit register _width_ mentioned in the spec
-> really mandates 32-bit accesses, also the width may be just a spec bug.
-> Since the SBSA states that an ARM PL011r1p5 is a valid SBSA-UART
-> implementation, I wonder how this goes together. Also the highest
-> non-reserved bit in the registers is bit 15 in PL011 and bit 11 in the
-> SBSA subset.
+> Is the timer we use to ping the watchdog guaranted to result in a wakeup
+> before an interrupt will be triggered? If so, then I think we're ok.
+
+It should be (I don't recall exactly what the logic is, but it's at
+least half the watchdog time limit).
+
 > 
-> I fear the actual bus connection is an implementation detail. Given the
-> fact that all existing PL011 hardware so far works with the 16bit
-> accesses, I don't dare to change this.
+> If not, then don't we need to clear a potentially pending watchdog irq
+> at resume time so at to not immediately reboot the machine? I couldn't
+> see any logic to that effect in the driver.
+
+That depends on what we want.
+If we want the watchdog to be inactive when entering suspend, then we
+shouldn't reboot the machine when receiving a watchdog irq while the
+system is suspended.
+ITOH, with the hardware mode (reset handled by the watchdog IP) you
+can't disable the watchdog when entering suspend, so I would expect the
+same behavior for the SW mode.
+
 > 
-> So I'd suggest to keep it as readw/writew for now and the revisit this
-> topic if some SBSA UART users complain. That makes it easier to justify
-> the rather invasive change to all MMIO accessors (which I already tried
-> on one machine for now without problems, btw).
+> Regardless, if the only reason we care about taking the interrupt during
+> the suspend/resume phases is due to the timer sharing the IRQ, then
+> shouldn't we be using IRQF_COND_SUSPEND?
 
-+1
+I'm not sure, but IMO this interrupt should be flagged as NO_SUSPEND,
+because it's here to reset the system (even if it is suspended).
+If you flag the irq line as COND_SUSPEND, and atmel decide to give this
+peripheral its own IRQ line (on new SoCs), then your watchdog will not
+reboot the system when it is suspended.
+Another solution would be to support wakeup for this peripheral and
+delay the system reboot until it has resumed.
 
-As I understand it, the PL011 bus interface does not take access size
-into account at all, so providing "large-enough" accesses are used to
-cover all the bits meaningful to the UART, things are likely to work
-fine -- and this seems to be the case for all platforms currently
-supported by the amba-pl011 driver.
+Anyway, if we decide to go for the wakeup approach, I'd prefer to post
+another patch on top of this one.
 
-Cheers
----Dave
+Best Regards,
+
+Boris
+
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
