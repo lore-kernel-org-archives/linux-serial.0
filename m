@@ -1,110 +1,86 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH -next 04/12] of: earlycon: Add options string handling
-Date: Thu, 5 Mar 2015 10:28:23 -0600
-Message-ID: <CAL_JsqJ6j5z8MOy7GKGscKfmgLc7X_S-633=VC-qoKYAcTsD3g@mail.gmail.com>
-References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com> <1425489871-22415-5-git-send-email-peter@hurleysoftware.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with
+ IRQF_NO_SUSPEND
+Date: Thu, 5 Mar 2015 16:32:27 +0000
+Message-ID: <20150305163227.GF14093@leverpostej>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com>
+ <20150304183809.GD22156@leverpostej>
+ <14143668.0aRkeVrc3Q@vostro.rjw.lan>
+ <20150305105729.GB13617@leverpostej>
+ <CAJZ5v0h8vn26BeWPVhC4e_KNhBu15-mshnbq0K=OQ1M36vPQEQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1425489871-22415-5-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0h8vn26BeWPVhC4e_KNhBu15-mshnbq0K=OQ1M36vPQEQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Wim Van Sebroeck <wim-IQzOog9fTRqzQB+pC5nmwQ@public.gmane.org>, "linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, "rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Alexandr
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 4, 2015 at 11:24 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> commit 7914a7c5651a5 ("of: support passing console options with
-> stdout-path") added options string support to the stdout-path property.
->
-> Handle the options string for earlycon as well.
->
-> Requires: "libfdt: Teach fdt_path_offset() about ':' path separator"
-> Cc: Leif Lindholm <leif.lindholm@linaro.org>
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+Hi Rafael,
 
-Acked-by: Rob Herring <robh@kernel.org>
+> enable_irq_wake() has no effect on IRQF_NO_SUSPEND interrupts, so if the
+> driver uses IRQF_NO_SUSPEND, it does not need to use enable_irq_wake()
+> in addition to that.
 
-> ---
->  drivers/of/fdt.c              | 8 ++++++--
->  drivers/tty/serial/earlycon.c | 9 +++++++--
->  include/linux/serial_core.h   | 3 ++-
->  3 files changed, 15 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index 5b67c6a..bdb74a8 100644
-> --- a/drivers/of/fdt.c
-> +++ b/drivers/of/fdt.c
-> @@ -765,7 +765,7 @@ extern struct of_device_id __earlycon_of_table[];
->  int __init early_init_dt_scan_chosen_serial(void)
->  {
->         int offset;
-> -       const char *p;
-> +       const char *p, *options;
->         int l;
->         const struct of_device_id *match = __earlycon_of_table;
->         const void *fdt = initial_boot_params;
-> @@ -782,6 +782,10 @@ int __init early_init_dt_scan_chosen_serial(void)
->         if (!p || !l)
->                 return -ENOENT;
->
-> +       options = strchr(p, ':');
-> +       if (options)
-> +               options++;
-> +
->         /* Get the node specified by stdout-path */
->         offset = fdt_path_offset(fdt, p);
->         if (offset < 0)
-> @@ -798,7 +802,7 @@ int __init early_init_dt_scan_chosen_serial(void)
->                 if (!addr)
->                         return -ENXIO;
->
-> -               of_setup_earlycon(addr, match);
-> +               of_setup_earlycon(addr, match, options);
->                 return 0;
->         }
->         return -ENODEV;
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index 04aa22c..436ac88 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -218,7 +218,8 @@ static int __init param_setup_earlycon(char *buf)
->  early_param("earlycon", param_setup_earlycon);
->
->  int __init of_setup_earlycon(unsigned long addr,
-> -                            const struct of_device_id *match)
-> +                            const struct of_device_id *match,
-> +                            const char *options)
->  {
->         int err;
->         struct uart_port *port = &early_console_dev.port;
-> @@ -229,8 +230,12 @@ int __init of_setup_earlycon(unsigned long addr,
->         port->uartclk = BASE_BAUD * 16;
->         port->membase = earlycon_map(addr, SZ_4K);
->
-> +       if (options) {
-> +               strlcpy(early_console_dev.options, options,
-> +                       sizeof(early_console_dev.options));
-> +       }
->         earlycon_init(&early_console_dev, match->name);
-> -       err = setup(&early_console_dev, NULL);
-> +       err = setup(&early_console_dev, options);
->         if (err < 0)
->                 return err;
->         if (!early_console_dev.con->write)
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index a2db5bd..ebbcd43 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -346,7 +346,8 @@ struct earlycon_id {
->
->  extern int setup_earlycon(char *buf);
->  extern int of_setup_earlycon(unsigned long addr,
-> -                            const struct of_device_id *match);
-> +                            const struct of_device_id *match,
-> +                            const char *options);
->
->  #define EARLYCON_DECLARE(_name, func)                                  \
->         static const struct earlycon_id __earlycon_##_name              \
-> --
-> 2.3.1
->
+That's not generally true -- certainly not for irq_chips without the
+IRQCHIP_SKIP_SET_WAKE flag.
+
+Consider systems where the suspended state results in power to the CPU
+being cut, and we rely on an external piece of logic attached to the
+irq_chip to detect wakeup IRQs and restore power.
+
+In those cases irq_chip::irq_set_wake() must be called to ensure that
+the wakeup logic is configured. If the wakeup logic is not configured to
+look out for an IRQ, then when the IRQ is asserted by a device the
+wakeup logic may not trigger. Thus the CPU power never gets restored, so
+the CPU cannot handle the interrupt.
+
+This is handled in enable_irq_wake() -- either the chip has the
+IRQCHIP_SKIP_SET_WAKE flag set or chip->irq_set_wake() must succeed. If
+neither is true enable_irq_wake() will return an error code to indicate
+we can't use the IRQ for wakeup.
+
+The request_irq path never results in a call to chip->irq_set_wake(),
+even with the IRQF_NO_SUSPEND flag. So requesting an irq with
+IRQF_NO_SUSPEND does not guarantee wakeup; it only guarantees that the
+CPU can take the interrupt _around_ the suspended state, not necessarily
+while _in_ the suspended state.
+
+> Drivers using IRQF_COND_SUSPEND generally should use enable_irq_wake() too
+> in case they end up in a situation without sharing a NO_SUSPEND interrupt, in
+> which case their interrupt handlers won't be called after suspend_device_irqs(),
+> so they need to rely on the core to do the wakeup.
+> 
+> > I agree that if problematic, it's an existing bug. Given Boris's
+> > comments in the other thread this may just a minor semantic issue w.r.t.
+> > IRQF_NO_SUSPEND vs IRQF_COND_SUSPEND.
+> 
+> It depends on whether or not the watchdog's interrupt handler has to be
+> called immediately after receiving an interrupt (IRQF_NO_SUSPEND is
+> better then) or it can be deferred till the resume_device_irqs() time.
+
+We seem to be conflating some related properties:
+
+[a] The IRQ will be left unmasked.
+[b] The IRQ will be handled immediately when taken.
+[c] The IRQ will wake the system from suspend.
+
+Requesting an IRQ with IRQF_NO_SUSPEND guarantees [a,b], but does not
+guarantee [c].
+
+A successful enable_irq_wake() on an IRQ guarantees [a,c], but usually
+does not give [b] unless the IRQ was requested with IRQF_COND_SUSPEND
+and happens to be shared with an IRQF_NO_SUSPEND user.
+
+It sounds like for this kind of watchdog device we want [a,b,c], even if
+the IRQ is not shared with an IRQF_NO_SUSPEND user.
+
+Thanks,
+Mark.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
