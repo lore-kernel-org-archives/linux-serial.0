@@ -1,56 +1,49 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH -next 07/12] serial: earlycon: Common log banner for
- command line and DT
-Date: Thu, 5 Mar 2015 13:02:54 +0100
-Message-ID: <CAMuHMdUxiy9P+4adf77ZssRs7QauP6yO2z27d+VWC3NuoJEaSA@mail.gmail.com>
-References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com>
-	<1425489871-22415-8-git-send-email-peter@hurleysoftware.com>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: Re: [PATCH REPOST 0/2] Remove pl011 startup glitches and avoid dummy
+ TX during startup
+Date: Thu, 5 Mar 2015 12:03:20 +0000
+Message-ID: <20150305120320.GB3612@e103592.cambridge.arm.com>
+References: <1425472054-7543-1-git-send-email-Dave.Martin@arm.com>
+ <54F73650.2070304@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1425489871-22415-8-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <54F73650.2070304@arm.com>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
+On Wed, Mar 04, 2015 at 04:44:00PM +0000, Andre Przywara wrote:
+> Hi Dave,
+> 
+> On 04/03/15 12:27, Dave P Martin wrote:
+> > There have been no comments on this series since my previous post, and
+> > I have made no further changes.
+> > 
+> > Since then, I have confirmed that this also works robustly with TX DMA
+> > enabled on Juno.
+> > 
+> > Review/comments/testing still welcome.
+> 
+> this has been tested briefly on a Calxeda Midway without any
+> regressions. Also I use them as the base for my SBSA series now (which
+> are tested on the model and the Midway) and I see that all problems
+> observed before are gone now.
+> 
+> Tested-by: Andre Przywara <andre.przywara@arm.com>
 
-On Wed, Mar 4, 2015 at 6:24 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -69,6 +69,7 @@ static void __init earlycon_init(struct earlycon_device *device,
->                                  const char *name)
->  {
->         struct console *earlycon = device->con;
-> +       struct uart_port *port = &device->port;
->         const char *s;
->         size_t len;
->
-> @@ -82,6 +83,16 @@ static void __init earlycon_init(struct earlycon_device *device,
->         len = s - name;
->         strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
->         earlycon->data = &early_console_dev;
-> +
-> +       if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
-> +               pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
-> +                       (port->iotype == UPIO_MEM32) ? "32" : "",
-> +                       (unsigned long long)port->mapbase,
+Thanks -- should I take that for both patches?
 
-I know you're just moving this piece of code around, but mapbase is a
-resource_size_t (it should actually be phys_addr_t, which probably didn't
-exist in 2007), so it should be printed using %pa and passing a reference,
-instead of %llx and using a cast.
-
-> +                       device->options);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Cheers
+---Dave
