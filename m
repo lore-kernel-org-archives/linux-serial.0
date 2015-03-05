@@ -1,75 +1,61 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with
  IRQF_NO_SUSPEND
-Date: Thu, 5 Mar 2015 12:31:01 +0100
-Message-ID: <20150305123101.07f4f372@bbrezillon>
+Date: Thu, 5 Mar 2015 11:53:08 +0000
+Message-ID: <20150305115307.GA14093@leverpostej>
 References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com>
-	<20150304183809.GD22156@leverpostej>
-	<20150305095306.3db98ac8@bbrezillon>
-	<20150305105308.GA13617@leverpostej>
-	<20150305121723.1da0d016@bbrezillon>
+ <1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com>
+ <20150304183809.GD22156@leverpostej>
+ <20150305095306.3db98ac8@bbrezillon>
+ <20150305105308.GA13617@leverpostej>
+ <20150305121723.1da0d016@bbrezillon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pm-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
 In-Reply-To: <20150305121723.1da0d016@bbrezillon>
-Sender: linux-pm-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Peter Zijlstra <peterz@infradead.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Wim Van Sebroeck <wim@iguana.be>, "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Mike Turquette <mturquette@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexan>
+Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Wim Van Sebroeck <wim-IQzOog9fTRqzQB+pC5nmwQ@public.gmane.org>, "linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, "rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>lin
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 5 Mar 2015 12:17:23 +0100
-Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
+Hi Boris,
 
-> Hi Boris,
+TL;DR - I guess using IRQF_NO_SUSPEND for now is OK a a best-effort
+approach for now, so don't let my comments block this patch.
 
-     ^ Mark,
+However, there are still some potential issues in what would already be
+a failure case: your usual wakeup mechanism not waking the system up in
+time to poke the watchdog, and then the watchdog raising an IRQ that
+never gets taken because the system is in a suspended state.
 
-I'm suffering from a dual personality disorder :-)
-
-> 
-> On Thu, 5 Mar 2015 10:53:08 +0000
-> Mark Rutland <mark.rutland@arm.com> wrote:
-> 
-> > Hi Boris,
-> > 
-> > I'd missed the fact that this was for SW watchdog as opposed to HW
-> > watchdog, which may explain my confusion.
-> > 
-> > [...]
-> > 
-> > > > >  		err = request_irq(wdt->irq, wdt_interrupt,
-> > > > > -				  IRQF_SHARED | IRQF_IRQPOLL,
-> > > > > +				  IRQF_SHARED | IRQF_IRQPOLL |
-> > > > > +				  IRQF_NO_SUSPEND,
-> > > > 
-> > > > I'm a little confused by this. What happens if the watchdog fires when
-> > > > we're actually in the suspended state (when IRQF_NO_SUSPEND interrupts
-> > > > aren't guaranteed to be delivered).
-> > > 
-> > > It reboot the system.
-> > 
 > > Is the timer we use to ping the watchdog guaranted to result in a wakeup
 > > before an interrupt will be triggered? If so, then I think we're ok.
 > 
 > It should be (I don't recall exactly what the logic is, but it's at
 > least half the watchdog time limit).
-> 
-> > 
-> > If not, then don't we need to clear a potentially pending watchdog irq
-> > at resume time so at to not immediately reboot the machine? I couldn't
-> > see any logic to that effect in the driver.
-> 
-> That depends on what we want.
+
+Ok. If that's the case then my main fear is gone.
+
+[...]
+
 > If we want the watchdog to be inactive when entering suspend, then we
 > shouldn't reboot the machine when receiving a watchdog irq while the
 > system is suspended.
+
+For this I would expect IRQF_COND_SUSPEND, because we don't care about
+the suspended case. We just don't want to negatively impact the timers.
+
 > ITOH, with the hardware mode (reset handled by the watchdog IP) you
 > can't disable the watchdog when entering suspend, so I would expect the
 > same behavior for the SW mode.
-> 
-> > 
+
+For this I would expect IRQF_COND_SUSPEND and enable_irq_wake().
+
+If we really want a wakeup IRQ guaranteed to be called immediately
+(without bothering to do most of the resume work first), none of the
+current semantics align.
+
 > > Regardless, if the only reason we care about taking the interrupt during
 > > the suspend/resume phases is due to the timer sharing the IRQ, then
 > > shouldn't we be using IRQF_COND_SUSPEND?
@@ -81,19 +67,20 @@ I'm suffering from a dual personality disorder :-)
 > reboot the system when it is suspended.
 > Another solution would be to support wakeup for this peripheral and
 > delay the system reboot until it has resumed.
-> 
+
+>From the above it sounds like we'd need wakeup and guaranteed immediate
+handler calling. That either needs rethink of IRQF_NO_SUSPEND +
+enable_irq_wake(), or something like a new IRQF_SW_WATCHDOG +
+enable_irq_wake().
+
 > Anyway, if we decide to go for the wakeup approach, I'd prefer to post
 > another patch on top of this one.
-> 
-> Best Regards,
-> 
-> Boris
-> 
-> 
 
+If everyone else is happy with this using IRQF_NO_SUSPEND for now then
+don't let my comments above block this patch.
 
-
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Mark.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
