@@ -1,62 +1,73 @@
 From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: [PATCH v2 -next 10/13] serial: earlycon: Allow earlycon params
  with name only
-Date: Thu, 05 Mar 2015 10:53:57 -0500
-Message-ID: <54F87C15.6020801@hurleysoftware.com>
-References: <1425225958-17908-1-git-send-email-peter@hurleysoftware.com> <1425225958-17908-11-git-send-email-peter@hurleysoftware.com> <CAL_Jsq+bL4qB797M0s+ZHSSrh=d_7bhP2AZQxAbqjmp5Gd0MXg@mail.gmail.com>
+Date: Thu, 05 Mar 2015 11:07:08 -0500
+Message-ID: <54F87F2C.9070508@hurleysoftware.com>
+References: <1425225958-17908-1-git-send-email-peter@hurleysoftware.com> <1425225958-17908-11-git-send-email-peter@hurleysoftware.com> <CAL_Jsq+bL4qB797M0s+ZHSSrh=d_7bhP2AZQxAbqjmp5Gd0MXg@mail.gmail.com> <54F87C15.6020801@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_Jsq+bL4qB797M0s+ZHSSrh=d_7bhP2AZQxAbqjmp5Gd0MXg@mail.gmail.com>
+In-Reply-To: <54F87C15.6020801@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/05/2015 10:46 AM, Rob Herring wrote:
-> On Sun, Mar 1, 2015 at 10:05 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
->> Allow earlycon param strings of the form
->>    earlycon=<name>
+On 03/05/2015 10:53 AM, Peter Hurley wrote:
+> On 03/05/2015 10:46 AM, Rob Herring wrote:
+>> On Sun, Mar 1, 2015 at 10:05 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>>> Allow earlycon param strings of the form
+>>>    earlycon=<name>
+>>
+>> Humm, that should already be the case with ARM semihosting (smh).
+>>
+>> Rob
 > 
-> Humm, that should already be the case with ARM semihosting (smh).
+> Then it's passing a bogus options string to parse_options()
+
+No, that's not right.
+
+It's passing an empty string (the '\0' at the end) to parse_options()
+which is failing with -EINVAL, which upon returning sets buf to NULL.
+
+My way has less obfuscation but the commit log needs to change.
+
+Regards,
+Peter Hurley
+
+>>>
+>>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+>>> ---
+>>>  drivers/tty/serial/earlycon.c | 11 +++++++----
+>>>  1 file changed, 7 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+>>> index da5e8c8..025ea01 100644
+>>> --- a/drivers/tty/serial/earlycon.c
+>>> +++ b/drivers/tty/serial/earlycon.c
+>>> @@ -109,13 +109,16 @@ int __init setup_earlycon(char *buf, const char *match,
+>>>         len = strlen(match);
+>>>         if (strncmp(buf, match, len))
+>>>                 return 0;
+>>> -       if (buf[len] && (buf[len] != ','))
+>>> -               return 0;
+>>>
+>>> -       buf += len + 1;
+>>> +       if (buf[len]) {
+>>> +               if (buf[len] != ',')
+>>> +                       return 0;
+>>> +               buf += len + 1;
+>>> +       } else
+>>> +               buf = NULL;
+>>>
+>>>         /* On parsing error, pass the options buf to the setup function */
+>>> -       if (!parse_options(&early_console_dev, buf))
+>>> +       if (buf && !parse_options(&early_console_dev, buf))
+>>>                 buf = NULL;
+>>>
+>>>         port->uartclk = BASE_BAUD * 16;
+>>> --
+>>> 2.3.0
+>>>
 > 
-> Rob
-
-Then it's passing a bogus options string to parse_options()
-
-
->>
->> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
->> ---
->>  drivers/tty/serial/earlycon.c | 11 +++++++----
->>  1 file changed, 7 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
->> index da5e8c8..025ea01 100644
->> --- a/drivers/tty/serial/earlycon.c
->> +++ b/drivers/tty/serial/earlycon.c
->> @@ -109,13 +109,16 @@ int __init setup_earlycon(char *buf, const char *match,
->>         len = strlen(match);
->>         if (strncmp(buf, match, len))
->>                 return 0;
->> -       if (buf[len] && (buf[len] != ','))
->> -               return 0;
->>
->> -       buf += len + 1;
->> +       if (buf[len]) {
->> +               if (buf[len] != ',')
->> +                       return 0;
->> +               buf += len + 1;
->> +       } else
->> +               buf = NULL;
->>
->>         /* On parsing error, pass the options buf to the setup function */
->> -       if (!parse_options(&early_console_dev, buf))
->> +       if (buf && !parse_options(&early_console_dev, buf))
->>                 buf = NULL;
->>
->>         port->uartclk = BASE_BAUD * 16;
->> --
->> 2.3.0
->>
