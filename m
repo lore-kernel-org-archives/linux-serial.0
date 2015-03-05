@@ -1,114 +1,116 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 -next 00/13] Extensible console matching & direct earlycon
-Date: Thu, 5 Mar 2015 10:11:09 -0600
-Message-ID: <CAL_JsqJj6h7RM=R=dzeiycL7YQZ7H6JzaTrZweB26oTOgyjHpw@mail.gmail.com>
-References: <1425225958-17908-1-git-send-email-peter@hurleysoftware.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH -next 05/12] of: earlycon: Initialize port fields from DT properties
+Date: Thu, 5 Mar 2015 10:16:43 -0600
+Message-ID: <CAL_JsqKD2+_MvJO83Jgr3YTqxnPym=WL6BT-AzUauYkQEoXZ2A@mail.gmail.com>
+References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com> <1425489871-22415-6-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1425225958-17908-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1425489871-22415-6-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Mar 1, 2015 at 10:05 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> Changes from v1:
-> * rebased on and requires "console: Fix console name size mismatch"
-
-I plan to pick this one up for 4.0 because I need it for "of: Fix
-premature bootconsole disable with 'stdout-path'".
-
-> Hi Greg & Andrew,
+On Wed, Mar 4, 2015 at 11:24 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> Read the optional "reg-offset", "reg-shift" and "reg-io-width" properties
+> and initialize the respective struct uart_port field if found.
 >
-> This patch series implements:
->   1. console-definable (aka extensible) matching
->   2. generic earlycon-to-console handoff via extensible matching
->   3. arch/prom support for direct earlycon
+> NB: These bindings are common to several drivers and the values merely
+> indicate the default value; the registering earlycon setup() method can
+> simply override the values if required.
 >
->
-> Extensible console matching
->
-> Extensible console matching enables the console itself to define the
-> conditions for a "command line" match. This mimics the design of
-> device matching in the driver model. Two important use-cases which this
-> feature enables are generic earlycon-to-console handoff and support
-> for driver migration.
->
-> Earlycon-to-console handoff was implemented in 2007. Console command
-> lines of the form:
->    console=uart,io,0x3f8,115200n8
-> start an earlycon and later allow the 8250 driver console to takeover.
-> Unfortunately this implementation requires direct coupling between
-> the earlycon and the console and is facilitated by ugly hacks like
-> editing the console command line in-place.
->
-> Extensible console matching allows the 8250 driver to directly match
-> that console command line instead, and enables other serial drivers
-> to trivially support console handoff themselves.
->
-> In addition, extensible console matching allows a new driver to
-> provide support for a different driver's console. This requirement
-> stems from needing to minimize breakage when migrating serial drivers.
-> Since many devices are based on the original 8250/16550 designs
-> but sometimes have features incompatible with the existing 8250 driver
-> support, the initial driver is often standalone. When/if the standalone
-> driver is migrated to the 8250 driver, the problem of console names in
-> the command line remains. Extensible console matching enables a simple
-> migration path.
->
->
-> Direct earlycon
->
-> This feature enables arches and proms to start an earlycon directly,
-> rather than requiring an "earlycon=" command line parameter.
-> Devicetree can already do this via the 'linux,stdout-path' property,
-> but arch and prom code requires direct coupling to the serial driver.
->
-> This support is implemented by judicious refactoring and the same
-> construct that devicetree and early_param use: a link table containing
-> the necessary information (name and setup() function) to find and
-> bind the appropriate earlycon "driver".
->
->
-> NB: I combined these two features in this series because their
-> implementations heavily overlap in the same source files.
->
-> Regards,
->
-> Peter Hurley (13):
->   serial: earlycon: Refactor parse_options into serial core
->   console: Preserve index after console setup()
->   console: Add extensible console matching
->   serial: core: Fix kernel doc for uart_console_write()
->   serial: 8250_early: Remove early_device variable
->   serial: earlycon: Move ->uartclk initialize
->   serial: 8250_early: Assume uart already initialized if no baud option
->   serial: 8250_early: Fix setup() error code
->   serial: earlycon: Ignore parse_options() error code
->   serial: earlycon: Allow earlycon params with name only
->   serial: earlycon: Refactor earlycon registration
->   serial: earlycon: Enable earlycon without command line param
->   serial: 8250_early: Remove setup_early_serial8250_console()
->
->  arch/mips/mti-malta/malta-init.c     |   4 +-
->  drivers/firmware/pcdp.c              |   4 +-
->  drivers/tty/serial/8250/8250_core.c  |  64 ++++++++++++----
->  drivers/tty/serial/8250/8250_early.c |  51 +++----------
->  drivers/tty/serial/earlycon.c        | 140 ++++++++++++++++++++++++-----------
->  drivers/tty/serial/serial_core.c     |  48 +++++++++++-
->  include/asm-generic/vmlinux.lds.h    |   9 +++
->  include/linux/console.h              |   3 +-
->  include/linux/serial_8250.h          |   3 -
->  include/linux/serial_core.h          |  21 ++++--
->  kernel/printk/printk.c               |  53 +++++--------
->  11 files changed, 246 insertions(+), 154 deletions(-)
-
-For the series:
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 
 Acked-by: Rob Herring <robh@kernel.org>
 
+> ---
+>  drivers/of/fdt.c              |  2 +-
+>  drivers/tty/serial/earlycon.c | 27 +++++++++++++++++++++++++++
+>  include/linux/serial_core.h   |  1 +
+>  3 files changed, 29 insertions(+), 1 deletion(-)
 >
+> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> index bdb74a8..a732890 100644
+> --- a/drivers/of/fdt.c
+> +++ b/drivers/of/fdt.c
+> @@ -802,7 +802,7 @@ int __init early_init_dt_scan_chosen_serial(void)
+>                 if (!addr)
+>                         return -ENXIO;
+>
+> -               of_setup_earlycon(addr, match, options);
+> +               of_setup_earlycon(addr, match, offset, options);
+>                 return 0;
+>         }
+>         return -ENODEV;
+> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> index 436ac88..019010f 100644
+> --- a/drivers/tty/serial/earlycon.c
+> +++ b/drivers/tty/serial/earlycon.c
+> @@ -21,6 +21,10 @@
+>  #include <linux/sizes.h>
+>  #include <linux/mod_devicetable.h>
+>
+> +#ifdef CONFIG_OF_EARLY_FLATTREE
+> +#include <linux/of_fdt.h>
+> +#endif
+> +
+>  #ifdef CONFIG_FIX_EARLYCON_MEM
+>  #include <asm/fixmap.h>
+>  #endif
+> @@ -219,17 +223,40 @@ early_param("earlycon", param_setup_earlycon);
+>
+>  int __init of_setup_earlycon(unsigned long addr,
+>                              const struct of_device_id *match,
+> +                            unsigned long node,
+>                              const char *options)
+>  {
+>         int err;
+>         struct uart_port *port = &early_console_dev.port;
+>         int (*setup)(struct earlycon_device *, const char *) = match->data;
+> +       const __be32 *val;
+>
+>         port->iotype = UPIO_MEM;
+>         port->mapbase = addr;
+>         port->uartclk = BASE_BAUD * 16;
+>         port->membase = earlycon_map(addr, SZ_4K);
+>
+> +       val = of_get_flat_dt_prop(node, "reg-offset", NULL);
+> +       if (val)
+> +               port->mapbase += be32_to_cpu(*val);
+> +       val = of_get_flat_dt_prop(node, "reg-shift", NULL);
+> +       if (val)
+> +               port->regshift = be32_to_cpu(*val);
+> +       val = of_get_flat_dt_prop(node, "reg-io-width", NULL);
+> +       if (val) {
+> +               switch (be32_to_cpu(*val)) {
+> +               case 1:
+> +                       port->iotype = UPIO_MEM;
+> +                       break;
+> +               case 4:
+> +                       port->iotype = UPIO_MEM32;
+> +                       break;
+> +               default:
+> +                       pr_warn("[%s] unsupported reg-io-width\n", match->name);
+> +                       return -EINVAL;
+> +               }
+> +       }
+> +
+>         if (options) {
+>                 strlcpy(early_console_dev.options, options,
+>                         sizeof(early_console_dev.options));
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index ebbcd43..c8e4e8f 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -347,6 +347,7 @@ struct earlycon_id {
+>  extern int setup_earlycon(char *buf);
+>  extern int of_setup_earlycon(unsigned long addr,
+>                              const struct of_device_id *match,
+> +                            unsigned long node,
+>                              const char *options);
+>
+>  #define EARLYCON_DECLARE(_name, func)                                  \
 > --
-> 2.3.0
+> 2.3.1
 >
