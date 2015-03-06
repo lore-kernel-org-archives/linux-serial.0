@@ -1,68 +1,77 @@
-From: Alan Stern <stern@rowland.harvard.edu>
-Subject: Re: [PATCH 1/4] PM / Wakeirq: Add minimal device wakeirq helper
- functions
-Date: Fri, 6 Mar 2015 14:05:43 -0500 (EST)
-Message-ID: <Pine.LNX.4.44L0.1503061358260.1407-100000@iolanthe.rowland.org>
-References: <20150306161920.GM13520@atomide.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <20150306161920.GM13520@atomide.com>
-Sender: linux-pm-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, Linux PM list <linux-pm@vger.kernel.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v2 -next 00/14] OF earlycon cleanup
+Date: Fri,  6 Mar 2015 14:25:16 -0500
+Message-ID: <1425669930-22137-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 6 Mar 2015, Tony Lindgren wrote:
+I thought I'd respin this to address the bugs in v1.
 
-> > > +	struct wakeirq_source *wirq = _wirq;
-> > > +	irqreturn_t ret = IRQ_NONE;
-> > > +
-> > > +	/* We don't want RPM_ASYNC or RPM_NOWAIT here */
-> > > +	if (pm_runtime_suspended(wirq->dev)) {
-> > 
-> > What if the device is resumed on a different CPU right here?
-> 
-> Good point, sounds like we need to do this in some pm_runtime
-> function directly for the locking.
->  
-> > > +		pm_runtime_mark_last_busy(wirq->dev);
-> > > +		pm_runtime_resume(wirq->dev);
-> > 
-> > Calling this with disabled interrupts is a bad idea in general.
-> > Is the device guaranteed to have power.irq_safe set?
-> 
-> Well right now it's using threaded irq, and I'd like to get rid of
-> the pm_runtime calls in the regular driver interrupts completely.
-> We need to ensure the device runtime_resume is completed before
-> returning IRQ_HANDLED here.
+I'm still having an open conversation with Rob Herring about the
+OF_EARLYCON_DECLARE macro and earlycon console names.
 
-In general, runtime_resume methods are allowed to sleep.  They can't be
-used in an interrupt handler top half unless the driver has
-specifically promised they are IRQ-safe.  That's what Rafael was
-getting at.
+* Changes from v1 *
 
-Of course, if this routine is a threaded-irq bottom half then there's 
-no problem.
+- Rebase on top of device-tree compiler patch submission,
+  "libfdt: Add fdt_path_offset_namelen()"
+- Fixed x86 build breakage, conditionally compile of_setup_earlycon();
+  Note: this should have already been the case since of_setup_earlycon()
+  is dead code without CONFIG_OF_EARLY_FLATTREE
+- Fixed Geert's suggestion to change the printf specifier for ->mapbase
+- Fixed initial console index value for earlycon name without trailing
+  numerals
 
-> > I guess what you want to call here is pm_request_resume() and
-> > I wouldn't say that calling pm_runtime_mark_last_busy() on a
-> > suspended device was valid.
-> 
-> I'll verify again, but I believe the issue was that without doing
-> mark_last_busy here the device falls back asleep right away.
-> That probably should be fixed in pm_runtime in general if that's
-> the case.
 
-It's up to the subsystem to handle this.  For example, the USB 
-subsystem's runtime-resume routine calls pm_runtime_mark_last_busy.
+Hi Greg, Grant & Rob,
 
-> Considering the above, should we add a new function something like
-> pm_resume_complete() that does not need irq_safe set but does
-> not return until the device has completed resume?
+This patch series builds on my earlier "Extensible console matching &
+direct earlycon" to add several useful features to earlycon:
+* Proper port i/o configuration from DT node with of_serial properties
+  (such as reg-io-width, reg-shift and reg-offset)
+* Proper console name & index initialization from earlycon name
+  (for both command line and DT-defined earlycons)
+* Support for DT 'stdout-path' options pass-through to earlycon setup
+* Improved log messages for troubleshooting
+* Support for multiple OF earlycon declarations so different
+  compatible strings can specify the same OF earlycon
 
-That doesn't make sense.  You're asking for a routine that is allowed
-to sleep but can safely be called in interrupt context.
+Lastly, this patch series adds an omap8250 OF earlycon. I don't think
+the last patch requires the "Split 8250 driver" to work but it won't
+apply cleanly without it.
 
-Alan Stern
+Requires: 1) "libfdt: Add fdt_path_offset_namelen()"
+	  2) the last patch which adds omap8250 earlycon requires some
+	     kind of fixmap support, such as "ARM: early fixmap support
+	     for earlycon", which has not yet been accepted upstream.
 
+Regards,
+
+Peter Hurley (14):
+  of: earlycon: Fix 'stdout-path' with ':' path terminator
+  serial: earlycon: Fixup earlycon console name and index
+  serial: earlycon: Emit earlycon name in the OF table
+  of: earlycon: Fixup earlycon console name and index
+  of: earlycon: Add options string handling
+  of: earlycon: of_setup_earlycon() requires CONFIG_OF_EARLY_FLATTREE
+  of: earlycon: Initialize port fields from DT properties
+  of: earlycon: Move address translation to of_setup_earlycon()
+  serial: earlycon: Common log banner for command line and DT
+  serial: earlycon: Show the earlycon "driver" in banner
+  of: earlycon: Allow multiple OF_EARLYCON_DECLARE() with same name
+  of: earlycon: Log more helpful message if earlycon not found
+  serial: 8250_early: Use port->regshift
+  serial: 8250_omap: Add omap8250 earlycon
+
+ drivers/of/fdt.c                     |  18 +++----
+ drivers/of/fdt_address.c             |  11 +++-
+ drivers/tty/serial/8250/8250_early.c |  29 +++++++++-
+ drivers/tty/serial/earlycon.c        | 100 ++++++++++++++++++++++++++++-------
+ include/linux/of_fdt.h               |   2 +-
+ include/linux/serial_core.h          |  20 +++++--
+ 6 files changed, 144 insertions(+), 36 deletions(-)
+
+-- 
+2.3.1
