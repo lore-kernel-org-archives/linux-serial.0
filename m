@@ -1,94 +1,60 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with IRQF_NO_SUSPEND
-Date: Fri, 06 Mar 2015 01:29:03 +0100
-Message-ID: <1696230.CygTkv53VA@vostro.rjw.lan>
-References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com> <CAJZ5v0h8vn26BeWPVhC4e_KNhBu15-mshnbq0K=OQ1M36vPQEQ@mail.gmail.com> <20150305163227.GF14093@leverpostej>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <20150305163227.GF14093@leverpostej>
-Sender: linux-pm-owner@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Peter Zijlstra <peterz@infradead.org>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Wim Van Sebroeck <wim@iguana.be>, "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Mike Turquette <mturquette@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandr
+From: Tony Lindgren <tony@atomide.com>
+Subject: [PATCH 0/4] Minimal generic wakeirq helpers
+Date: Thu,  5 Mar 2015 16:34:05 -0800
+Message-ID: <1425602049-2674-1-git-send-email-tony@atomide.com>
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Cc: Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thursday, March 05, 2015 04:32:27 PM Mark Rutland wrote:
-> Hi Rafael,
-> 
-> > enable_irq_wake() has no effect on IRQF_NO_SUSPEND interrupts, so if the
-> > driver uses IRQF_NO_SUSPEND, it does not need to use enable_irq_wake()
-> > in addition to that.
-> 
-> That's not generally true -- certainly not for irq_chips without the
-> IRQCHIP_SKIP_SET_WAKE flag.
-> 
-> Consider systems where the suspended state results in power to the CPU
-> being cut, and we rely on an external piece of logic attached to the
-> irq_chip to detect wakeup IRQs and restore power.
-> 
-> In those cases irq_chip::irq_set_wake() must be called to ensure that
-> the wakeup logic is configured. If the wakeup logic is not configured to
-> look out for an IRQ, then when the IRQ is asserted by a device the
-> wakeup logic may not trigger. Thus the CPU power never gets restored, so
-> the CPU cannot handle the interrupt.
-> 
-> This is handled in enable_irq_wake() -- either the chip has the
-> IRQCHIP_SKIP_SET_WAKE flag set or chip->irq_set_wake() must succeed. If
-> neither is true enable_irq_wake() will return an error code to indicate
-> we can't use the IRQ for wakeup.
+Hi all,
 
-Right.  I forgot about that part.
+Here's an attempt to have Linux generic wakeirq helpers. This allows
+removing most of the related code from drivers. Currently the drivers
+all do it in a slightly different way. And may have issues with interrupt
+re-entrancy and getting the suspend/resume vs runtime_pm wake handling
+right.
 
-> The request_irq path never results in a call to chip->irq_set_wake(),
-> even with the IRQF_NO_SUSPEND flag. So requesting an irq with
-> IRQF_NO_SUSPEND does not guarantee wakeup; it only guarantees that the
-> CPU can take the interrupt _around_ the suspended state, not necessarily
-> while _in_ the suspended state.
+This is for wakerirqs that are available for some devices in addition
+to the regular device interrupts. The seprate always-on wake-up interrupt
+controller is needed to allow devices and the SoC to enter deeper idle
+states and still be able to wake-up to events.
 
-Right.  "Suspended state" meaning full suspend here I suppose?
+Some of this was discussed in the kernel/irq context a while back [1].
+But it seems that this can be done in drivers/base/power. If somebody has
+hardware that needs to replay lost device interrupts based on the
+wake-up interrupts, then additional kernel/irq changes will be needed.
 
-> > Drivers using IRQF_COND_SUSPEND generally should use enable_irq_wake() too
-> > in case they end up in a situation without sharing a NO_SUSPEND interrupt, in
-> > which case their interrupt handlers won't be called after suspend_device_irqs(),
-> > so they need to rely on the core to do the wakeup.
-> > 
-> > > I agree that if problematic, it's an existing bug. Given Boris's
-> > > comments in the other thread this may just a minor semantic issue w.r.t.
-> > > IRQF_NO_SUSPEND vs IRQF_COND_SUSPEND.
-> > 
-> > It depends on whether or not the watchdog's interrupt handler has to be
-> > called immediately after receiving an interrupt (IRQF_NO_SUSPEND is
-> > better then) or it can be deferred till the resume_device_irqs() time.
-> 
-> We seem to be conflating some related properties:
-> 
-> [a] The IRQ will be left unmasked.
-> [b] The IRQ will be handled immediately when taken.
-> [c] The IRQ will wake the system from suspend.
-> 
-> Requesting an IRQ with IRQF_NO_SUSPEND guarantees [a,b], but does not
-> guarantee [c].
+This set fixes up three drivers to use the generic wakeirq. Note that
+eventually the wakeirq handling for these drivers might end up in a
+bus specific code and could be hidden away from the drivers.
 
-That's correct.  IRQF_NO_SUSPEND does not guarantee that interrupts from
-that IRQ will have any effect after arch_suspend_disable_irqs() in
-suspend_enter().
+Regards,
 
-> A successful enable_irq_wake() on an IRQ guarantees [a,c], but usually
-> does not give [b] unless the IRQ was requested with IRQF_COND_SUSPEND
-> and happens to be shared with an IRQF_NO_SUSPEND user.
+Tony
 
-That's correct too.
 
-> It sounds like for this kind of watchdog device we want [a,b,c], even if
-> the IRQ is not shared with an IRQF_NO_SUSPEND user.
+[1] https://lkml.org/lkml/2014/11/13/458
 
-We can't guarantee that, though.  arch_suspend_disable_irqs() disables
-interrupts on the last working CPU and it won't get any.  It may be
-brought out of a low-power state by a pending interrupt, but it won't act
-upon that interrupt immediately anyway, only after the arch_suspend_enable_irqs()
-in suspend_enter().  But then it might as well be deferred until after
-resume_device_irqs().
+Tony Lindgren (4):
+  PM / Wakeirq: Add minimal device wakeirq helper functions
+  serial: 8250_omap: Move wake-up interrupt to generic wakeirq
+  serial: omap: Switch wake-up interrupt to generic wakeirq
+  mmc: omap_hsmmc: Change wake-up interrupt to use generic wakeirq
 
-Rafael
+ arch/arm/mach-omap2/Kconfig         |   1 +
+ drivers/base/power/Makefile         |   1 +
+ drivers/base/power/wakeirq.c        | 201 ++++++++++++++++++++++++++++++++++++
+ drivers/mmc/host/omap_hsmmc.c       |  55 +++-------
+ drivers/tty/serial/8250/8250_omap.c |  67 +++---------
+ drivers/tty/serial/omap-serial.c    |  38 +++----
+ include/linux/pm_wakeirq.h          |  69 +++++++++++++
+ kernel/power/Kconfig                |   4 +
+ 8 files changed, 318 insertions(+), 118 deletions(-)
+ create mode 100644 drivers/base/power/wakeirq.c
+ create mode 100644 include/linux/pm_wakeirq.h
+
+-- 
+2.1.4
 
