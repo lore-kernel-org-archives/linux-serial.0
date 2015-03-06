@@ -1,50 +1,59 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2 11/18] pinctrl: Add pinctrl driver for STM32 MCUs
-Date: Fri, 6 Mar 2015 10:24:25 +0100
-Message-ID: <CACRpkdbuJ5B_GwvRXax2Y4V37ihh5e6H7=2no0fYTMZPXwDdCw@mail.gmail.com>
-References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<1424455277-29983-12-git-send-email-mcoquelin.stm32@gmail.com>
+From: Zhang Zhen <zhenzhang.zhang@huawei.com>
+Subject: [RFC] With 8250 Designware UART, if writes to the LCR failed the
+ kernel will hung up
+Date: Fri, 6 Mar 2015 17:11:55 +0800
+Message-ID: <54F96F5B.2090601@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <1424455277-29983-12-git-send-email-mcoquelin.stm32@gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: tim.kryger@linaro.org, gregkh@linuxfoundation.org, jamie@jamieiles.com, alan@linux.intel.com, arnd@arndb.de, shenjiangjiang@huawei.com, long.wanglong@huawei.com
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 20, 2015 at 7:01 PM, Maxime Coquelin
-<mcoquelin.stm32@gmail.com> wrote:
+Hi,
 
-> This driver adds pinctrl and GPIO support to STMicrolectronic's
-> STM32 family of MCUs.
->
-> Pin muxing and GPIO handling have been tested on STM32F429
-> based Discovery board.
->
-> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+	I'm testing 4.0-rc1 kernel on my board with 8250 Designware UART.(ARM Cortex-a15 single core).
+	
+	I found if serial is busy and writes to the LCR failed after tried 1000 times.
+	The kernel will hung up.
 
-(...)
-> +config PINCTRL_STM32
-> +       bool "STMicroelectronics STM32 pinctrl driver"
-> +       depends on OF
-> +       depends on ARCH_STM32 || COMPILE_TEST
-> +       select PINMUX
-> +       select PINCONF
-> +       select GPIOLIB_IRQCHIP
-> +       help
-> +         This selects the device tree based generic pinctrl driver for STM32.
+	The system boot success after changed from:
 
-Good start! Especially that you use GPIOLIB_IRQCHIP.
+ 95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
+ 96 {
+ 97         struct dw8250_data *d = p->private_data;
+ 98
+...
+...
+112                         writeb(value, p->membase + (UART_LCR << p->regshift));
+113                 }
+114                 dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+115         }
+116 }
 
-But this (as discussed earlier) should select GENERIC_PINCONF
+	to:
 
-Stopping review here so you can reengineer it a bit using GENERIC_PINCONF
-for next submission.
+ 95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
+ 96 {
+ 97         struct dw8250_data *d = p->private_data;
+ 98
+...
+...
+112                         writeb(value, p->membase + (UART_LCR << p->regshift));
+113                 }
+114                 dev_info(p->dev, "Couldn't set LCR to %d\n", value);            //changed here
+115         }
+116 }
 
-Also think about pinmux in single registers, whether you want to do this
-with a single value for a register or using strings to identify groups
-and functions.
+	The reason is serial8250_console_write can't get port->lock because serial8250_do_set_termios has
+	got port->lock.
+	So i think here we should change from dev_err to dev_info ?
+	Any suggestions are welcome.
 
-Yours,
-Linus Walleij
+Best regards!
+
+	
+
+	
