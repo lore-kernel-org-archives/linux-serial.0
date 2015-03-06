@@ -1,77 +1,55 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed
- the kernel will hung up
-Date: Fri, 06 Mar 2015 11:50:18 -0500
-Message-ID: <54F9DACA.3020103@hurleysoftware.com>
-References: <54F96F5B.2090601@huawei.com>
+From: Wang YanQing <udknight@gmail.com>
+Subject: [PATCH] serial:8250:8250_pci: delete unneeded quirk entries
+Date: Sat, 7 Mar 2015 01:08:35 +0800
+Message-ID: <20150306170835.GA1990@udknight>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54F96F5B.2090601@huawei.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Zhang Zhen <zhenzhang.zhang@huawei.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tim.kryger@linaro.org, gregkh@linuxfoundation.org, jamie@jamieiles.com, alan@linux.intel.com, arnd@arndb.de, shenjiangjiang@huawei.com, long.wanglong@huawei.com
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, pure.logic@nexus-software.ie
 List-Id: linux-serial@vger.kernel.org
 
-Hi Zhang,
+These quirk entries have the same effect as default
+quirk entry, so we can just delete them.
 
-On 03/06/2015 04:11 AM, Zhang Zhen wrote:
-> Hi,
-> 
-> 	I'm testing 4.0-rc1 kernel on my board with 8250 Designware UART.(ARM Cortex-a15 single core).
-> 	
-> 	I found if serial is busy and writes to the LCR failed after tried 1000 times.
-> 	The kernel will hung up.
-> 
-> 	The system boot success after changed from:
-> 
->  95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
->  96 {
->  97         struct dw8250_data *d = p->private_data;
->  98
-> ...
-> ...
-> 112                         writeb(value, p->membase + (UART_LCR << p->regshift));
-> 113                 }
-> 114                 dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> 115         }
-> 116 }
-> 
-> 	to:
-> 
->  95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
->  96 {
->  97         struct dw8250_data *d = p->private_data;
->  98
-> ...
-> ...
-> 112                         writeb(value, p->membase + (UART_LCR << p->regshift));
-> 113                 }
-> 114                 dev_info(p->dev, "Couldn't set LCR to %d\n", value);            //changed here
-> 115         }
-> 116 }
-> 
-> 	The reason is serial8250_console_write can't get port->lock because serial8250_do_set_termios has
-> 	got port->lock.
-> 	So i think here we should change from dev_err to dev_info ?
+Signed-off-by: Wang YanQing <udknight@gmail.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
-That's not really going to help because this will still hang if the
-console_loglevel is set to < KERN_INFO.
-
-> 	Any suggestions are welcome.
-
-Check that the port is not the uart_console() before logging the error,
-like;
-
-	if (!uart_console(p))
-		dev_err(p->dev, "Couldn't .....");
-
-Use a global flag to note the error and check it from other contexts.
-Plus, find out why you can't write LCR there.
-
-Also, consider re-designing how the 8250_dw driver implements that
-"feature".
-
-Regards,
-Peter Hurley
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index daf2c82..cf1cab1 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1989,13 +1989,6 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 	},
+ 	{
+ 		.vendor		= PCI_VENDOR_ID_INTEL,
+-		.device		= PCI_DEVICE_ID_INTEL_QRK_UART,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_default_setup,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_INTEL,
+ 		.device		= PCI_DEVICE_ID_INTEL_BSW_UART1,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+@@ -2201,13 +2194,6 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 	 */
+ 	{
+ 		.vendor		= PCI_VENDOR_ID_PLX,
+-		.device		= PCI_DEVICE_ID_PLX_9030,
+-		.subvendor	= PCI_SUBVENDOR_ID_PERLE,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_default_setup,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_PLX,
+ 		.device		= PCI_DEVICE_ID_PLX_9050,
+ 		.subvendor	= PCI_SUBVENDOR_ID_EXSYS,
+ 		.subdevice	= PCI_SUBDEVICE_ID_EXSYS_4055,
+-- 
+2.2.2.dirty
