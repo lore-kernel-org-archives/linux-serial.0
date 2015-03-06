@@ -1,59 +1,46 @@
-From: Zhang Zhen <zhenzhang.zhang@huawei.com>
-Subject: [RFC] With 8250 Designware UART, if writes to the LCR failed the
- kernel will hung up
-Date: Fri, 6 Mar 2015 17:11:55 +0800
-Message-ID: <54F96F5B.2090601@huawei.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2 10/18] dt-bindings: Document the STM32 pin controller
+Date: Fri, 6 Mar 2015 10:35:50 +0100
+Message-ID: <CACRpkdZOz99bttSpTNQiazcLb1ts-YQyuhp4Kpevgq4mV8N6sw@mail.gmail.com>
+References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1424455277-29983-11-git-send-email-mcoquelin.stm32@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1424455277-29983-11-git-send-email-mcoquelin.stm32@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: tim.kryger@linaro.org, gregkh@linuxfoundation.org, jamie@jamieiles.com, alan@linux.intel.com, arnd@arndb.de, shenjiangjiang@huawei.com, long.wanglong@huawei.com
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+I saw this other thing:
 
-	I'm testing 4.0-rc1 kernel on my board with 8250 Designware UART.(ARM Cortex-a15 single core).
-	
-	I found if serial is busy and writes to the LCR failed after tried 1000 times.
-	The kernel will hung up.
+On Fri, Feb 20, 2015 at 7:01 PM, Maxime Coquelin
+<mcoquelin.stm32@gmail.com> wrote:
 
-	The system boot success after changed from:
+> This adds documentation of device tree bindings for the
+> STM32 pin controller.
+>
+> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+(...)
+> +- altmode : Should be mode or alternate function number associated this pin, as
+> +described in the datasheet (IN, OUT, ALT0...ALT15, ANALOG)
 
- 95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
- 96 {
- 97         struct dw8250_data *d = p->private_data;
- 98
-...
-...
-112                         writeb(value, p->membase + (UART_LCR << p->regshift));
-113                 }
-114                 dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-115         }
-116 }
+We can now describe muxing (altmodes etc) in two ways as described
+in the generic bindings in
+Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
 
-	to:
+This is done by strings combining a function with N groups.
 
- 95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
- 96 {
- 97         struct dw8250_data *d = p->private_data;
- 98
-...
-...
-112                         writeb(value, p->membase + (UART_LCR << p->regshift));
-113                 }
-114                 dev_info(p->dev, "Couldn't set LCR to %d\n", value);            //changed here
-115         }
-116 }
+We are also discussing having a single config number setting up
+all and keeping down the size of the DTB (which
+is close to what you're doing here). Please take part in that
+discussion to standardize such bindings. Sascha Hauer and
+others are involved, don't know the exact topic right now but
+it involved using a single "pinmux" parameter in the device treel.
 
-	The reason is serial8250_console_write can't get port->lock because serial8250_do_set_termios has
-	got port->lock.
-	So i think here we should change from dev_err to dev_info ?
-	Any suggestions are welcome.
+All agree on using the standardized pin config bindings henceforth
+so start by migrating to these.
 
-Best regards!
-
-	
-
-	
+Yours,
+Linus Walleij
