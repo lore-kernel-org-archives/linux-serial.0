@@ -1,58 +1,96 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with
- IRQF_NO_SUSPEND
-Date: Fri, 6 Mar 2015 13:10:26 +0000
-Message-ID: <20150306131025.GH8700@leverpostej>
-References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
- <CAJZ5v0h8vn26BeWPVhC4e_KNhBu15-mshnbq0K=OQ1M36vPQEQ@mail.gmail.com>
- <20150305163227.GF14093@leverpostej>
- <1696230.CygTkv53VA@vostro.rjw.lan>
- <20150306110618.GC8700@leverpostej>
- <CAJZ5v0jA-hRUnP_+mOdFw7vN7CGZ4o0FjUVu81rq7foi92f63g@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH -next 02/12] serial: earlycon: Emit earlycon name in the
+ OF table
+Date: Fri, 06 Mar 2015 11:05:25 -0500
+Message-ID: <54F9D045.5070909@hurleysoftware.com>
+References: <1425489871-22415-1-git-send-email-peter@hurleysoftware.com> <1425489871-22415-3-git-send-email-peter@hurleysoftware.com> <CAL_Jsq+aj1oWYGLOV4F9c6ZWb79fN56hQiGEZE98+7zHqLX6fg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0jA-hRUnP_+mOdFw7vN7CGZ4o0FjUVu81rq7foi92f63g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Wim Van Sebroeck <wim-IQzOog9fTRqzQB+pC5nmwQ@public.gmane.org>, "linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, "rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Alexandr
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAL_Jsq+aj1oWYGLOV4F9c6ZWb79fN56hQiGEZE98+7zHqLX6fg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robherring2@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-> >> > We seem to be conflating some related properties:
-> >> >
-> >> > [a] The IRQ will be left unmasked.
-> >> > [b] The IRQ will be handled immediately when taken.
-> >> > [c] The IRQ will wake the system from suspend.
-
-[...]
-
-> > Considering that the use-case of a watchdog is to alert us to something
-> > going hideously wrong in the kernel, we want to handle the IRQ after
-> > executing the smallest amount of kernel code possible. For that, they
-> > need to have their handlers to be called "immediately" outside of the
-> > arch_suspend_disable_irqs() ... arch_suspend_enable_irqs() window, and
-> > need to be enabled during suspend to attempt to catch bad wakeup device
-> > configuration.
-> >
-> > I think it's possible (assuming the caveats on [b] above) to provide
-> > [a,b,c] for this case.
+On 03/05/2015 10:13 AM, Rob Herring wrote:
+> On Wed, Mar 4, 2015 at 11:24 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>> The OF device name of the earlycon is never used because there is no
+>> device; re-purpose the name field to store the earlycon name in
+>> the OF earlycon table. Earlycon will use the table entry to
+>> fixup the console name and index.
+>>
+>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+>> ---
+>>  include/linux/serial_core.h | 15 +++++++++++++--
+>>  1 file changed, 13 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+>> index 8aeec49..c523785 100644
+>> --- a/include/linux/serial_core.h
+>> +++ b/include/linux/serial_core.h
+>> @@ -29,6 +29,7 @@
+>>  #include <linux/tty.h>
+>>  #include <linux/mutex.h>
+>>  #include <linux/sysrq.h>
+>> +#include <linux/mod_devicetable.h>
+>>  #include <uapi/linux/serial_core.h>
+>>
+>>  #ifdef CONFIG_SERIAL_CORE_CONSOLE
+>> @@ -353,8 +354,18 @@ extern int of_setup_earlycon(unsigned long addr,
+>>                  = { .name  = __stringify(_name),                       \
+>>                      .setup = func  }
+>>
+>> -#define OF_EARLYCON_DECLARE(name, compat, fn)                          \
+>> -       _OF_DECLARE(earlycon, name, compat, fn, void *)
 > 
-> OK
+> The purpose of this was to follow the same structure for all users of
+> this. We're not there yet, but this moves in the wrong direction.
+
+Ok.
+
+There's no special dependence on the earlycons needing to be of_device_ids;
+afaict that's simply for convenience' sake also.
+
+Maybe this is a good time to ditch separate OF_EARLYCON_DECLARE/EARLYCON_DECLARE
+macros and simply use a single table to find and start the correct earlycon?
+
+
+>> +#ifdef CONFIG_OF
+>> +#define EARLYCON_OF_TABLE_ATTR __used __section(__earlycon_of_table)
+>> +#else
+>> +#define EARLYCON_OF_TABLE_ATTR __attribute__((unused))
+>> +#endif
+>> +
+>> +#define OF_EARLYCON_DECLARE(_name, compat, fn)                         \
+>> +       static const struct of_device_id __of_table_##_name             \
+>> +               EARLYCON_OF_TABLE_ATTR                                  \
+>> +                = { .name = __stringify(_name),                        \
 > 
-> But in this case the request_irq() passing IRQF_NO_SUSPEND *and* requiring
-> enable_irq_wake() in addition to that needs a big fat comment explaining the
-> whole thing or we'll forget about the gory details at one point and no one will
-> know what's going on in there.
+> While convenient, this is an abuse of name which is supposed to be the
+> DT node name.
+> 
+> Perhaps instead of trying to make the earlycon have the right name,
+> the real console can know the matching earlycon's name?
 
-Agreed.
+Just to be clear here: as of the other patch series, "Extensible console
+matching & direct earlycon", the name and index values stored in the earlycon
+struct console have no effect on earlycon->console handoff (which at the moment,
+is supported by command line matching).
 
-I'd expect an IRQF_SW_WATCHDOG or something to that effect should also
-be required for that case.
+However, console names are really the basis for the whole console subsystem;
+I'd really like to see devicetree working within that framework rather than
+parallel to it.
 
-Thanks,
-Mark.
---
-To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Regards,
+Peter Hurley
+
+>> +                    .compatible = compat,                              \
+>> +                    .data = (fn == (void *)NULL) ? fn : fn  }
+>>
+>>  struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+>>                                    struct console *c);
+>> --
+>> 2.3.1
+>>
