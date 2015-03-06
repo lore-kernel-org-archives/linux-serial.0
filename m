@@ -1,59 +1,83 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v2 11/18] pinctrl: Add pinctrl driver for STM32 MCUs
-Date: Fri, 6 Mar 2015 10:57:08 +0100
-Message-ID: <CALszF6C2qESwxmZ=q+QKdAooQnttpv49yheAiWVUEaGWeGSubA@mail.gmail.com>
-References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<1424455277-29983-12-git-send-email-mcoquelin.stm32@gmail.com>
-	<CACRpkdbuJ5B_GwvRXax2Y4V37ihh5e6H7=2no0fYTMZPXwDdCw@mail.gmail.com>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with
+ IRQF_NO_SUSPEND
+Date: Fri, 6 Mar 2015 11:06:18 +0000
+Message-ID: <20150306110618.GC8700@leverpostej>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
+ <CAJZ5v0h8vn26BeWPVhC4e_KNhBu15-mshnbq0K=OQ1M36vPQEQ@mail.gmail.com>
+ <20150305163227.GF14093@leverpostej>
+ <1696230.CygTkv53VA@vostro.rjw.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdbuJ5B_GwvRXax2Y4V37ihh5e6H7=2no0fYTMZPXwDdCw@mail.gmail.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1696230.CygTkv53VA@vostro.rjw.lan>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Peter Zijlstra <peterz@infradead.org>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Wim Van Sebroeck <wim@iguana.be>, "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Mike Turquette <mturquette@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandr
 List-Id: linux-serial@vger.kernel.org
 
-2015-03-06 10:24 GMT+01:00 Linus Walleij <linus.walleij@linaro.org>:
-> On Fri, Feb 20, 2015 at 7:01 PM, Maxime Coquelin
-> <mcoquelin.stm32@gmail.com> wrote:
->
->> This driver adds pinctrl and GPIO support to STMicrolectronic's
->> STM32 family of MCUs.
->>
->> Pin muxing and GPIO handling have been tested on STM32F429
->> based Discovery board.
->>
->> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
->
-> (...)
->> +config PINCTRL_STM32
->> +       bool "STMicroelectronics STM32 pinctrl driver"
->> +       depends on OF
->> +       depends on ARCH_STM32 || COMPILE_TEST
->> +       select PINMUX
->> +       select PINCONF
->> +       select GPIOLIB_IRQCHIP
->> +       help
->> +         This selects the device tree based generic pinctrl driver for STM32.
->
-> Good start! Especially that you use GPIOLIB_IRQCHIP.
->
-> But this (as discussed earlier) should select GENERIC_PINCONF
->
-> Stopping review here so you can reengineer it a bit using GENERIC_PINCONF
-> for next submission.
->
-> Also think about pinmux in single registers, whether you want to do this
-> with a single value for a register or using strings to identify groups
-> and functions.
+[...]
 
-Thanks for the review.
-I will digest all this, and come back with another solution :)
+> > The request_irq path never results in a call to chip->irq_set_wake(),
+> > even with the IRQF_NO_SUSPEND flag. So requesting an irq with
+> > IRQF_NO_SUSPEND does not guarantee wakeup; it only guarantees that the
+> > CPU can take the interrupt _around_ the suspended state, not necessarily
+> > while _in_ the suspended state.
+> 
+> Right.  "Suspended state" meaning full suspend here I suppose?
 
-Best regards,
-Maxime
+Yes; any state deeper than suspend-to-idle.
 
->
-> Yours,
-> Linus Walleij
+[...]
+
+> > We seem to be conflating some related properties:
+> > 
+> > [a] The IRQ will be left unmasked.
+> > [b] The IRQ will be handled immediately when taken.
+> > [c] The IRQ will wake the system from suspend.
+> > 
+> > Requesting an IRQ with IRQF_NO_SUSPEND guarantees [a,b], but does not
+> > guarantee [c].
+> 
+> That's correct.  IRQF_NO_SUSPEND does not guarantee that interrupts from
+> that IRQ will have any effect after arch_suspend_disable_irqs() in
+> suspend_enter().
+
+[...]
+
+> > It sounds like for this kind of watchdog device we want [a,b,c], even if
+> > the IRQ is not shared with an IRQF_NO_SUSPEND user.
+> 
+> We can't guarantee that, though.  arch_suspend_disable_irqs() disables
+> interrupts on the last working CPU and it won't get any.  It may be
+> brought out of a low-power state by a pending interrupt, but it won't act
+> upon that interrupt immediately anyway, only after the arch_suspend_enable_irqs()
+> in suspend_enter().
+
+Ok, so [b] needs the caveat that it's only handled "immediately" outside
+of the arch_suspend_disable_irqs() ... arch_suspend_enable_irqs()
+section.
+
+> But then it might as well be deferred until after
+> resume_device_irqs().
+
+That was my original line of thinking, in which case the watchdog driver
+should use IRQF_COND_SUSPEND rather than IRQF_NO_SUSPEND, with
+enable_irq_wake() if we care about the watchdog during suspend. I'm
+happy with this.
+
+Considering that the use-case of a watchdog is to alert us to something
+going hideously wrong in the kernel, we want to handle the IRQ after
+executing the smallest amount of kernel code possible. For that, they
+need to have their handlers to be called "immediately" outside of the
+arch_suspend_disable_irqs() ... arch_suspend_enable_irqs() window, and
+need to be enabled during suspend to attempt to catch bad wakeup device
+configuration.
+
+I think it's possible (assuming the caveats on [b] above) to provide
+[a,b,c] for this case.
+
+Thanks,
+Mark.
