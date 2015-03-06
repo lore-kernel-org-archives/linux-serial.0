@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 -next 03/14] serial: earlycon: Emit earlycon name in the OF table
-Date: Fri,  6 Mar 2015 14:25:19 -0500
-Message-ID: <1425669930-22137-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 -next 14/14] serial: 8250_omap: Add omap8250 earlycon
+Date: Fri,  6 Mar 2015 14:25:30 -0500
+Message-ID: <1425669930-22137-15-git-send-email-peter@hurleysoftware.com>
 References: <1425669930-22137-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425669930-22137-1-git-send-email-peter@hurleysoftware.com>
@@ -10,48 +10,69 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-The OF device name of the earlycon is never used because there is no
-device; re-purpose the name field to store the earlycon name in
-the OF earlycon table. Earlycon will use the table entry to
-fixup the console name and index.
+Add DT earlycon for 8250_omap driver. This boot console is included
+for kernels built with CONFIG_SERIAL_EARLYCON=y, CONFIG_OF=y,
+CONFIG_SERIAL_8250_OMAP=y, and CONFIG_OF_EARLY_FLATTREE=y.
+
+This boot console is enabled with the command line option "earlycon"
+(without "=<name>...") when the DT 'stdout-path' property matches a
+compatible uart. For example,
+
+/ {
+   chosen {
+   	stdout-path = "serial0:115200";
+   };
+
+   ....
+
+   aliases {
+   	serial0 = &uart0;
+   };
+
+   ....
+
+   ocp : ocp {
+   	uart0 : serial@44e09000 {
+	      compatible = "ti,omap3-uart";
+	}
+   };
+};
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- include/linux/serial_core.h | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_early.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 8aeec49..c523785 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -29,6 +29,7 @@
- #include <linux/tty.h>
- #include <linux/mutex.h>
- #include <linux/sysrq.h>
-+#include <linux/mod_devicetable.h>
- #include <uapi/linux/serial_core.h>
- 
- #ifdef CONFIG_SERIAL_CORE_CONSOLE
-@@ -353,8 +354,18 @@ extern int of_setup_earlycon(unsigned long addr,
- 		 = { .name  = __stringify(_name),			\
- 		     .setup = func  }
- 
--#define OF_EARLYCON_DECLARE(name, compat, fn)				\
--	_OF_DECLARE(earlycon, name, compat, fn, void *)
-+#ifdef CONFIG_OF
-+#define EARLYCON_OF_TABLE_ATTR __used __section(__earlycon_of_table)
-+#else
-+#define EARLYCON_OF_TABLE_ATTR __attribute__((unused))
-+#endif
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 53db31c..daa983d 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -169,5 +169,26 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
+ 	device->con->write = early_serial8250_write;
+ 	return 0;
+ }
 +
-+#define OF_EARLYCON_DECLARE(_name, compat, fn)				\
-+	static const struct of_device_id __of_table_##_name		\
-+		EARLYCON_OF_TABLE_ATTR					\
-+		 = { .name = __stringify(_name),			\
-+		     .compatible = compat,				\
-+		     .data = (fn == (void *)NULL) ? fn : fn  }
- 
- struct uart_port *uart_get_console(struct uart_port *ports, int nr,
- 				   struct console *c);
+ EARLYCON_DECLARE(uart8250, early_serial8250_setup);
+ EARLYCON_DECLARE(uart, early_serial8250_setup);
++
++#ifdef CONFIG_SERIAL_8250_OMAP
++
++static int __init early_omap8250_setup(struct earlycon_device *device,
++					 const char *options)
++{
++	struct uart_port *port = &device->port;
++
++	if (!(device->port.membase || device->port.iobase))
++		return -ENODEV;
++
++	port->regshift = 2;
++	device->con->write = early_serial8250_write;
++	return 0;
++}
++
++OF_EARLYCON_DECLARE(omap8250, "ti,omap2-uart", early_omap8250_setup);
++OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
++OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
++#endif
 -- 
 2.3.1
