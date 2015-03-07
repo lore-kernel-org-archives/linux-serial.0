@@ -1,93 +1,94 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 1/4] PM / Wakeirq: Add minimal device wakeirq helper
- functions
-Date: Fri, 6 Mar 2015 17:09:59 -0800
-Message-ID: <20150307010959.GB5264@atomide.com>
-References: <20150306161920.GM13520@atomide.com>
- <Pine.LNX.4.44L0.1503061358260.1407-100000@iolanthe.rowland.org>
- <20150306230539.GA2651@atomide.com>
- <142581656.cLu1yoPyFQ@vostro.rjw.lan>
+From: Tim Kryger <tim.kryger@gmail.com>
+Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed the
+ kernel will hung up
+Date: Fri, 6 Mar 2015 19:01:57 -0800
+Message-ID: <CAD7vxxJXEz8KfXd9fBjkxTi5Nnjyw0=wwvbw5qCSwCMbBd64eA@mail.gmail.com>
+References: <54F96F5B.2090601@huawei.com>
+	<54F9DACA.3020103@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <142581656.cLu1yoPyFQ@vostro.rjw.lan>
+In-Reply-To: <54F9DACA.3020103@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Alan Stern <stern@rowland.harvard.edu>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, Linux PM list <linux-pm@vger.kernel.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Zhang Zhen <zhenzhang.zhang@huawei.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tim Kryger <tim.kryger@linaro.org>, gregkh@linuxfoundation.org, jamie@jamieiles.com, alan@linux.intel.com, arnd@arndb.de, shenjiangjiang@huawei.com, long.wanglong@huawei.com
 List-Id: linux-serial@vger.kernel.org
 
-* Rafael J. Wysocki <rjw@rjwysocki.net> [150306 16:19]:
-> On Friday, March 06, 2015 03:05:40 PM Tony Lindgren wrote:
-> > 
-> > Oh it naturally would not work in irq context, it's for the bottom
-> > half again. But I'll take a look if we can just call
-> > pm_request_resume() and disable_irq() on the wakeirq in without
-> > waiting for the device driver runtime_suspend to disable the wakeirq.
-> > That would minimize the interface to just dev_pm_request_wakeirq()
-> > and dev_pm_free_wakeirq().
-> 
-> But this is part of a bigger picture.  Namely, if a separete wakeup interrupt
-> is required for a device, the device's power.can_wakeup flag cannot be set
-> until that interrupt has been successfully requested.  Also for devices that
-> can signal wakeup via their own IO interrupts, it would make sense to allow
-> those interrupts to be registered somehow as "wakeup interrupts".
+You only hit the silicon bug if you bombard the uart with characters
+and simultaneously request a baud rate or framing change.
 
-It sure would be nice to provide at least some automated handling
-for those too, even if it was just to deal with if device_may_wake()
-irq_set_irq_wake().
+I'm not sure why you would do either to the uart console.  Is it
+possible your host machine is doing something weird?
 
-At least in the cases I've seen, the IO interrupt is capable of waking
-up too, but not from any deeper idle states. The wakeirq is always
-capable of waking up the system, so if wakeirq was configured we
-could just ignore the wake configureation for the IO interrupt.
+If you have the leverage, remind the SoC vendor to upgrade the serial
+block.  Synopsys fixed this a long time ago.
 
-And it seems some devices have a single wakeirq dealing with a group
-of IO interrupts (GPIOs), see commit 97d86e07b716 ("Input: gpio_keys -
-allow separating gpio and irq in device tree"). Not sure if that
-interrupt is wake-up capable, but that would certainly make sense
-considering it's for gpio-keys.
+-Tim
 
-So it seems as long as we have one wakeirq entry per device, we
-should be covered, even if a single wakeirq needs to wake up multiple
-devices.
-
-> So I wonder if we can define a new struct along the lines of your
-> struct wakeirq_source, but call it struct wake_irq and make it look
-> something like this:
-> 
-> struct wake_irq {
->        struct device *dev;
->        int irq;
->        irq_handler_t handler;
-> };
-> 
-> Then, add a struct wake_irq pointer to struct dev_pm_info *and* to
-> struct wakeup_source.  Next, make dev_pm_request_wake_irq() allocate the
-> structure and request the interrupt and only set the pointer to it from
-> struct dev_pm_info *along* *with* power.can_wakeup if all that was
-> successful.
-> 
-> For devices that use their own IO IRQ for wakeup, we can add something
-> like dev_pm_set_wake_irq() that will work analogously, but without requesting
-> the interrupt.  It will just set the dev and irq members of struct wake_irq
-> and point struct dev_pm_info to it and set its power.can_wakeup flag.
-
-OK
- 
-> Then, device_wakeup_enable() will be able to see that the device has a
-> wakeup IRQ and it may then point its own struct wake_irq pointer to that.
-> The core may then use that pointer to trigger enable_irq_wake() for the
-> IRQ in question and it will cover the devices that don't need separate
-> wakeup interrupts too.
-
-Are you thinking we could do more than automate irq_set_irq_wake()
-for the devices with just wake-up capable IO IRQ?
- 
-> Does that make sense to you?
-
-Sure, at least for the irq_set_irq_wake() case.
-
-Regards,
-
-Tony
+On Fri, Mar 6, 2015 at 8:50 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> Hi Zhang,
+>
+> On 03/06/2015 04:11 AM, Zhang Zhen wrote:
+>> Hi,
+>>
+>>       I'm testing 4.0-rc1 kernel on my board with 8250 Designware UART.(ARM Cortex-a15 single core).
+>>
+>>       I found if serial is busy and writes to the LCR failed after tried 1000 times.
+>>       The kernel will hung up.
+>>
+>>       The system boot success after changed from:
+>>
+>>  95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
+>>  96 {
+>>  97         struct dw8250_data *d = p->private_data;
+>>  98
+>> ...
+>> ...
+>> 112                         writeb(value, p->membase + (UART_LCR << p->regshift));
+>> 113                 }
+>> 114                 dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+>> 115         }
+>> 116 }
+>>
+>>       to:
+>>
+>>  95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
+>>  96 {
+>>  97         struct dw8250_data *d = p->private_data;
+>>  98
+>> ...
+>> ...
+>> 112                         writeb(value, p->membase + (UART_LCR << p->regshift));
+>> 113                 }
+>> 114                 dev_info(p->dev, "Couldn't set LCR to %d\n", value);            //changed here
+>> 115         }
+>> 116 }
+>>
+>>       The reason is serial8250_console_write can't get port->lock because serial8250_do_set_termios has
+>>       got port->lock.
+>>       So i think here we should change from dev_err to dev_info ?
+>
+> That's not really going to help because this will still hang if the
+> console_loglevel is set to < KERN_INFO.
+>
+>>       Any suggestions are welcome.
+>
+> Check that the port is not the uart_console() before logging the error,
+> like;
+>
+>         if (!uart_console(p))
+>                 dev_err(p->dev, "Couldn't .....");
+>
+> Use a global flag to note the error and check it from other contexts.
+> Plus, find out why you can't write LCR there.
+>
+> Also, consider re-designing how the 8250_dw driver implements that
+> "feature".
+>
+> Regards,
+> Peter Hurley
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
