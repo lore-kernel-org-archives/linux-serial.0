@@ -1,94 +1,30 @@
-From: Tim Kryger <tim.kryger@gmail.com>
-Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed the
- kernel will hung up
-Date: Fri, 6 Mar 2015 19:01:57 -0800
-Message-ID: <CAD7vxxJXEz8KfXd9fBjkxTi5Nnjyw0=wwvbw5qCSwCMbBd64eA@mail.gmail.com>
-References: <54F96F5B.2090601@huawei.com>
-	<54F9DACA.3020103@hurleysoftware.com>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with
+ IRQF_NO_SUSPEND
+Date: Sat, 7 Mar 2015 10:06:21 +0100
+Message-ID: <20150307090621.GL23367@worktop.ger.corp.intel.com>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com>
+ <20150304183809.GD22156@leverpostej>
+ <14143668.0aRkeVrc3Q@vostro.rjw.lan>
+ <20150305105729.GB13617@leverpostej>
+ <CAJZ5v0h8vn26BeWPVhC4e_KNhBu15-mshnbq0K=OQ1M36vPQEQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54F9DACA.3020103@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Zhang Zhen <zhenzhang.zhang@huawei.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tim Kryger <tim.kryger@linaro.org>, gregkh@linuxfoundation.org, jamie@jamieiles.com, alan@linux.intel.com, arnd@arndb.de, shenjiangjiang@huawei.com, long.wanglong@huawei.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0h8vn26BeWPVhC4e_KNhBu15-mshnbq0K=OQ1M36vPQEQ@mail.gmail.com>
+Sender: linux-pm-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Wim Van Sebroeck <wim@iguana.be>, "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Mike Turquette <mturquette@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre
 List-Id: linux-serial@vger.kernel.org
 
-You only hit the silicon bug if you bombard the uart with characters
-and simultaneously request a baud rate or framing change.
+On Thu, Mar 05, 2015 at 04:10:16PM +0100, Rafael J. Wysocki wrote:
+> enable_irq_wake() has no effect on IRQF_NO_SUSPEND interrupts, so if the
+> driver uses IRQF_NO_SUSPEND, it does not need to use enable_irq_wake()
+> in addition to that.
 
-I'm not sure why you would do either to the uart console.  Is it
-possible your host machine is doing something weird?
+I still feel we should BUG when someone is calling enable_irq_wake() on
+an irq with only one desc which has NO_SUSPEND set.
 
-If you have the leverage, remind the SoC vendor to upgrade the serial
-block.  Synopsys fixed this a long time ago.
 
--Tim
-
-On Fri, Mar 6, 2015 at 8:50 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> Hi Zhang,
->
-> On 03/06/2015 04:11 AM, Zhang Zhen wrote:
->> Hi,
->>
->>       I'm testing 4.0-rc1 kernel on my board with 8250 Designware UART.(ARM Cortex-a15 single core).
->>
->>       I found if serial is busy and writes to the LCR failed after tried 1000 times.
->>       The kernel will hung up.
->>
->>       The system boot success after changed from:
->>
->>  95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
->>  96 {
->>  97         struct dw8250_data *d = p->private_data;
->>  98
->> ...
->> ...
->> 112                         writeb(value, p->membase + (UART_LCR << p->regshift));
->> 113                 }
->> 114                 dev_err(p->dev, "Couldn't set LCR to %d\n", value);
->> 115         }
->> 116 }
->>
->>       to:
->>
->>  95 static void dw8250_serial_out(struct uart_port *p, int offset, int value)
->>  96 {
->>  97         struct dw8250_data *d = p->private_data;
->>  98
->> ...
->> ...
->> 112                         writeb(value, p->membase + (UART_LCR << p->regshift));
->> 113                 }
->> 114                 dev_info(p->dev, "Couldn't set LCR to %d\n", value);            //changed here
->> 115         }
->> 116 }
->>
->>       The reason is serial8250_console_write can't get port->lock because serial8250_do_set_termios has
->>       got port->lock.
->>       So i think here we should change from dev_err to dev_info ?
->
-> That's not really going to help because this will still hang if the
-> console_loglevel is set to < KERN_INFO.
->
->>       Any suggestions are welcome.
->
-> Check that the port is not the uart_console() before logging the error,
-> like;
->
->         if (!uart_console(p))
->                 dev_err(p->dev, "Couldn't .....");
->
-> Use a global flag to note the error and check it from other contexts.
-> Plus, find out why you can't write LCR there.
->
-> Also, consider re-designing how the 8250_dw driver implements that
-> "feature".
->
-> Regards,
-> Peter Hurley
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
