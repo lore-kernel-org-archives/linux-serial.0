@@ -1,52 +1,56 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 -next 03/13] console: Add extensible console matching
-Date: Sat, 07 Mar 2015 08:00:25 -0500
-Message-ID: <54FAF669.6060303@hurleysoftware.com>
-References: <1425225958-17908-1-git-send-email-peter@hurleysoftware.com> <1425225958-17908-4-git-send-email-peter@hurleysoftware.com> <20150307025754.GA23812@kroah.com>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with IRQF_NO_SUSPEND
+Date: Sun, 08 Mar 2015 02:11:45 +0100
+Message-ID: <2616799.fRG1k0Q6sR@vostro.rjw.lan>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com> <20150307103939.GA17964@amd> <20150307110645.GW3989@piout.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150307025754.GA23812@kroah.com>
+In-Reply-To: <20150307110645.GW3989@piout.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Pavel Machek <pavel@ucw.cz>, Sylvain Rochet <gradator@gradator.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alessandro Zummo <a.zummo@towertech.it>, Mike Turquette <mturquette@linaro.org>, Jason Cooper <jason@lakedaemon.net>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Len Brown <len.brown@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Wim Van Sebroeck <wim@iguana.be>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 03/06/2015 09:57 PM, Greg Kroah-Hartman wrote:
-> On Sun, Mar 01, 2015 at 11:05:48AM -0500, Peter Hurley wrote:
->> Add match() method to struct console which allows the console to
->> perform console command line matching instead of (or in addition to)
->> default console matching (ie., by fixed name and index).
->>
->> The match() method returns 0 to indicate a successful match; normal
->> console matching occurs if no match() method is defined or the
->> match() method returns non-zero. The match() method is expected to set
->> the console index if required.
->>
->> Re-implement earlycon-to-console-handoff with direct matching of
->> "console=uart|uart8250,..." to the 8250 ttyS console.
->>
->> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
->> ---
->>  drivers/tty/serial/8250/8250_core.c  | 64 +++++++++++++++++++++++++++---------
->>  drivers/tty/serial/8250/8250_early.c | 23 -------------
->>  include/linux/console.h              |  3 +-
->>  include/linux/serial_8250.h          |  2 --
->>  kernel/printk/printk.c               | 52 ++++++++++-------------------
->>  5 files changed, 67 insertions(+), 77 deletions(-)
+On Saturday, March 07, 2015 12:06:45 PM Alexandre Belloni wrote:
+> On 07/03/2015 at 11:39:39 +0100, Pavel Machek wrote :
+> > > The Atmel watchdog can't be stopped once it's started. This is actually 
+> > > very useful so we can reset if suspend or resume failed, the only 
+> > > drawback is that you have to wake up from time to time (e.g. by using 
+> > > the RTC/RTT) to clear the watchdog and then go back to sleep ASAP.
+> > 
+> > Yeah. So you do "echo mem > /sys/power/state", and few seconds/minutes
+> > after watchdog kills the system. But you did not ask for dead system,
+> > you asked for suspend.
+> > 
+> > And while that behaviour is useful for you, I don't think it is
+> > exactly useful behaviour, nor it is the behaviour user would expect.
+> > 
 > 
-> This didn't apply, so I've stopped here.
+> I think you misunderstood, that is exactly the expected behaviour. This
+> is hardware defined. Once the watchdog is started, nobody can stop it.
+> Trying to change the mode register will result in a reset of the SoC.
+> 
+> It is documented in the datasheet and any user wanting another behaviour
+> is out of luck.
+> 
+> So basically, when using a watchdog, you have to wake up every 15-16s to
+> restart it.
 
-Hi Greg,
+So question is if we need a separate interrupt handler for that, expecially
+since it is shared with the PIT timer anyway.
 
-Your tty-testing branch doesn't have "console: Fix console name size mismatch"
-that you added to tty-linus. I tried to draw attention to that in the series
-cover letter:
+Seems to me that the simplest way out of this conundrum would be to simply
+make the timer's interrupt handler kick the watchdog every once a while and
+get rid of the separate watchdog interrupt handler entirely.
 
-On 03/01/2015 11:05 AM, Peter Hurley wrote:
-> Changes from v1:
-> * rebased on and requires "console: Fix console name size mismatch"
+While at it, can anyone explain to me please how the suspend state (full
+suspend) looks like on that platform?  What's different from the working
+state in particular.
 
-Regards,
-Peter Hurley
+
+
+-- 
+I speak only for myself.
+Rafael J. Wysocki, Intel Open Source Technology Center.
