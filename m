@@ -1,56 +1,99 @@
-From: Alan Stern <stern@rowland.harvard.edu>
-Subject: Re: [PATCH 1/4] PM / Wakeirq: Add minimal device wakeirq helper
- functions
-Date: Sun, 8 Mar 2015 11:43:34 -0400 (EDT)
-Message-ID: <Pine.LNX.4.44L0.1503081142270.3638-100000@netrider.rowland.org>
-References: <142581656.cLu1yoPyFQ@vostro.rjw.lan>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] clk: provide clk_is_match() dummy for non-common clk
+Date: Sun, 08 Mar 2015 22:05:29 +0100
+Message-ID: <8682755.oK0Ae34OOP@wuerfel>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org> <1424876018-17852-2-git-send-email-shawn.guo@linaro.org> <20150225172757.421.43718@quantum>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <142581656.cLu1yoPyFQ@vostro.rjw.lan>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Tony Lindgren <tony@atomide.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, Linux PM list <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+In-Reply-To: <20150225172757.421.43718@quantum>
+Sender: linux-pwm-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Mike Turquette <mturquette@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, 7 Mar 2015, Rafael J. Wysocki wrote:
+ARM randconfig build tests found a new error for configurations
+with COMMON_CLK disabled but HAS_CLK selected by the platform:
 
-> But this is part of a bigger picture.  Namely, if a separete wakeup interrupt
-> is required for a device, the device's power.can_wakeup flag cannot be set
-> until that interrupt has been successfully requested.  Also for devices that
-> can signal wakeup via their own IO interrupts, it would make sense to allow
-> those interrupts to be registered somehow as "wakeup interrupts".
-> 
-> So I wonder if we can define a new struct along the lines of your
-> struct wakeirq_source, but call it struct wake_irq and make it look
-> something like this:
-> 
-> struct wake_irq {
->        struct device *dev;
->        int irq;
->        irq_handler_t handler;
-> };
-> 
-> Then, add a struct wake_irq pointer to struct dev_pm_info *and* to
-> struct wakeup_source.  Next, make dev_pm_request_wake_irq() allocate the
-> structure and request the interrupt and only set the pointer to it from
-> struct dev_pm_info *along* *with* power.can_wakeup if all that was
-> successful.
-> 
-> For devices that use their own IO IRQ for wakeup, we can add something
-> like dev_pm_set_wake_irq() that will work analogously, but without requesting
-> the interrupt.  It will just set the dev and irq members of struct wake_irq
-> and point struct dev_pm_info to it and set its power.can_wakeup flag.
-> 
-> Then, device_wakeup_enable() will be able to see that the device has a
-> wakeup IRQ and it may then point its own struct wake_irq pointer to that.
-> The core may then use that pointer to trigger enable_irq_wake() for the
-> IRQ in question and it will cover the devices that don't need separate
-> wakeup interrupts too.
-> 
-> Does that make sense to you?
+ERROR: "clk_is_match" [sound/soc/fsl/snd-soc-fsl-spdif.ko] undefined!
 
-Can we back up a little?  What is the basic problem the two of you are 
-trying to solve?
+This moves the declaration around, so this case is covered
+by the existing static inline helper function.
 
-Alan Stern
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: c69e182e51d89 ("clk: introduce clk_is_match")
+----
+BTW, we have a preexisting problem in clk_get_parent,
+clk_round_rate and clk_set_parent, which I've worked around in
+my randconfig builds so far. Should we do that the same way?
+
+diff --git a/include/linux/clk.h b/include/linux/clk.h
+index 5c076e4d90f9..a9b91595d106 100644
+--- a/include/linux/clk.h
++++ b/include/linux/clk.h
+@@ -125,6 +125,19 @@ int clk_set_phase(struct clk *clk, int degrees);
+  */
+ int clk_get_phase(struct clk *clk);
+ 
++/**
++ * clk_is_match - check if two clk's point to the same hardware clock
++ * @p: clk compared against q
++ * @q: clk compared against p
++ *
++ * Returns true if the two struct clk pointers both point to the same hardware
++ * clock node. Put differently, returns true if struct clk *p and struct clk *q
++ * share the same struct clk_core object.
++ *
++ * Returns false otherwise. Note that two NULL clks are treated as matching.
++ */
++bool clk_is_match(struct clk *p, struct clk *q);
++
+ #else
+ 
+ static inline long clk_get_accuracy(struct clk *clk)
+@@ -142,6 +155,11 @@ static inline long clk_get_phase(struct clk *clk)
+ 	return -ENOTSUPP;
+ }
+ 
++static inline bool clk_is_match(struct clk *p, struct clk *q)
++{
++	return p == q ? true : false;
++}
++
+ #endif
+ 
+ /**
+@@ -376,19 +394,6 @@ struct clk *clk_get_parent(struct clk *clk);
+  */
+ struct clk *clk_get_sys(const char *dev_id, const char *con_id);
+ 
+-/**
+- * clk_is_match - check if two clk's point to the same hardware clock
+- * @p: clk compared against q
+- * @q: clk compared against p
+- *
+- * Returns true if the two struct clk pointers both point to the same hardware
+- * clock node. Put differently, returns true if struct clk *p and struct clk *q
+- * share the same struct clk_core object.
+- *
+- * Returns false otherwise. Note that two NULL clks are treated as matching.
+- */
+-bool clk_is_match(struct clk *p, struct clk *q);
+-
+ #else /* !CONFIG_HAVE_CLK */
+ 
+ static inline struct clk *clk_get(struct device *dev, const char *id)
+@@ -442,11 +447,6 @@ static inline struct clk *clk_get_parent(struct clk *clk)
+ 	return NULL;
+ }
+ 
+-static inline bool clk_is_match(struct clk *p, struct clk *q)
+-{
+-	return p == q ? true : false;
+-}
+-
+ #endif
+ 
+ /* clk_prepare_enable helps cases using clk_enable in non-atomic context. */
+
