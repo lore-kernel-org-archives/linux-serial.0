@@ -1,53 +1,90 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with IRQF_NO_SUSPEND
-Date: Sun, 08 Mar 2015 02:12:53 +0100
-Message-ID: <1615214.0rkGfM1gZL@vostro.rjw.lan>
-References: <1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com> <20150307110645.GW3989@piout.net> <20150307112932.GA1372@amd>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 4.0-rc3
+Date: Sun, 8 Mar 2015 13:52:20 +0100
+Message-ID: <20150308125220.GA400@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <20150307112932.GA1372@amd>
-Sender: linux-pm-owner@vger.kernel.org
-To: Pavel Machek <pavel@ucw.cz>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Sylvain Rochet <gradator@gradator.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alessandro Zummo <a.zummo@towertech.it>, Mike Turquette <mturquette@linaro.org>, Jason Cooper <jason@lakedaemon.net>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Len Brown <len.brown@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Wim Van Sebroeck <wim@iguana.be>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, linux-ar
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Saturday, March 07, 2015 12:29:33 PM Pavel Machek wrote:
-> On Sat 2015-03-07 12:06:45, Alexandre Belloni wrote:
-> > On 07/03/2015 at 11:39:39 +0100, Pavel Machek wrote :
-> > > > The Atmel watchdog can't be stopped once it's started. This is actually 
-> > > > very useful so we can reset if suspend or resume failed, the only 
-> > > > drawback is that you have to wake up from time to time (e.g. by using 
-> > > > the RTC/RTT) to clear the watchdog and then go back to sleep ASAP.
-> > > 
-> > > Yeah. So you do "echo mem > /sys/power/state", and few seconds/minutes
-> > > after watchdog kills the system. But you did not ask for dead system,
-> > > you asked for suspend.
-> > > 
-> > > And while that behaviour is useful for you, I don't think it is
-> > > exactly useful behaviour, nor it is the behaviour user would expect.
-> > > 
-> > 
-> > I think you misunderstood, that is exactly the expected behaviour. This
-> > is hardware defined. Once the watchdog is started, nobody can stop it.
-> > Trying to change the mode register will result in a reset of the
-> > SoC.
-> 
-> Well, it boils down to "what is stronger". Desire to suspend the
-> system, or desire to reboot the system.
-> 
-> It is "echo mem > state", not "echo reboot > state".
-> 
-> > It is documented in the datasheet and any user wanting another behaviour
-> > is out of luck.
-> 
-> Actaully, your platform should just refuse to enter suspend-to-RAM
-> when hw watchdog is enabled.
+The following changes since commit 13a7a6ac0a11197edcd0f756a035f472b42cdf8b:
 
-Quite likely, depending on how exactly the suspend is implemented.
+  Linux 4.0-rc2 (2015-03-03 09:04:59 -0800)
 
+are available in the git repository at:
 
--- 
-I speak only for myself.
-Rafael J. Wysocki, Intel Open Source Technology Center.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.0-rc3
+
+for you to fetch changes up to c37bc682e30b8027054356214eb8a3aafbda8e37:
+
+  TTY: fix tty_wait_until_sent maximum timeout (2015-03-07 03:44:15 +0100)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 4.0-rc3
+
+Here are some tty and serial driver fixes for 4.0-rc3.
+
+Along with the atime fix that you know about, here are some other serial
+driver bugfixes as well.  Most notable is a wait_until_sent bugfix that
+was traced back to being around since before 2.6.12 that Johan has fixed
+up.
+
+All have been in linux-next successfully.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Axel Lin (1):
+      serial: sprd: Fix missing spin_unlock in sprd_handle_irq()
+
+Baruch Siach (1):
+      Revert "tty/serial: of_serial: add DT alias ID handling"
+
+Desmond Liu (1):
+      serial: 8250_dw: Fix get_mctrl behaviour
+
+Jiri Slaby (1):
+      tty: fix up atime/mtime mess, take four
+
+Johan Hovold (5):
+      net: irda: fix wait_until_sent poll timeout
+      TTY: bfin_jtag_comm: remove incorrect wait_until_sent operation
+      USB: serial: fix infinite wait_until_sent timeout
+      TTY: fix tty_wait_until_sent on 64-bit machines
+      TTY: fix tty_wait_until_sent maximum timeout
+
+Peter Hurley (3):
+      console: Fix console name size mismatch
+      serial: core: Fix iotype userspace breakage
+      serial: uapi: Declare all userspace-visible io types
+
+Russell King (1):
+      Change email address for 8250_pci
+
+Sebastian Andrzej Siewior (1):
+      serial: 8250: Revert "tty: serial: 8250_core: read only RX if there is something in the FIFO"
+
+Wang YanQing (2):
+      serial:8250:8250_pci: fix redundant entry report for WCH_CH352_2S
+      serial:8250:8250_pci: delete unneeded quirk entries
+
+ .../bindings/serial/snps-dw-apb-uart.txt           | 16 +++++++++++
+ drivers/tty/bfin_jtag_comm.c                       | 13 ---------
+ drivers/tty/serial/8250/8250_core.c                | 11 ++++----
+ drivers/tty/serial/8250/8250_dw.c                  | 32 ++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pci.c                 | 20 +-------------
+ drivers/tty/serial/of_serial.c                     |  4 ---
+ drivers/tty/serial/sprd_serial.c                   |  4 ++-
+ drivers/tty/tty_io.c                               |  4 +--
+ drivers/tty/tty_ioctl.c                            | 16 +++++++----
+ drivers/usb/serial/generic.c                       |  5 ++--
+ include/linux/serial_core.h                        | 14 +++++-----
+ include/uapi/linux/serial.h                        |  4 +++
+ kernel/printk/console_cmdline.h                    |  2 +-
+ kernel/printk/printk.c                             |  1 +
+ net/irda/ircomm/ircomm_tty.c                       |  4 ++-
+ 15 files changed, 89 insertions(+), 61 deletions(-)
