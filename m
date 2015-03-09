@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 -next 09/11] serial: earlycon: Refactor earlycon registration
-Date: Mon,  9 Mar 2015 16:27:20 -0400
-Message-ID: <1425932842-21812-10-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 -next 08/11] serial: earlycon: Skip parse_options() if empty string
+Date: Mon,  9 Mar 2015 16:27:19 -0400
+Message-ID: <1425932842-21812-9-git-send-email-peter@hurleysoftware.com>
 References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
@@ -10,78 +10,45 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Separate earlycon matching from registration; add register_earlycon
-which initializes and registers the matched earlycon.
+Earlycon param strings of the form
+   earlycon=<name>
+are rejected from parse_options() with an error (which, in turn,
+results in a NULL argument for the setup() method options parameter).
+
+Only pass non-empty string to parse_options(); this will enable
+handling actual parse errors differently than expected and allow
+formats.
 
 Acked-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/earlycon.c | 42 +++++++++++++++++++++++++-----------------
- 1 file changed, 25 insertions(+), 17 deletions(-)
+ drivers/tty/serial/earlycon.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 025ea01..9fb76b6 100644
+index da5e8c8..025ea01 100644
 --- a/drivers/tty/serial/earlycon.c
 +++ b/drivers/tty/serial/earlycon.c
-@@ -96,27 +96,13 @@ static int __init parse_options(struct earlycon_device *device, char *options)
- 	return 0;
- }
- 
--int __init setup_earlycon(char *buf, const char *match,
--			  int (*setup)(struct earlycon_device *, const char *))
-+
-+static int __init
-+register_earlycon(char *buf, int (*setup)(struct earlycon_device *, const char *))
- {
- 	int err;
--	size_t len;
- 	struct uart_port *port = &early_console_dev.port;
- 
--	if (!buf || !match || !setup)
+@@ -109,13 +109,16 @@ int __init setup_earlycon(char *buf, const char *match,
+ 	len = strlen(match);
+ 	if (strncmp(buf, match, len))
+ 		return 0;
+-	if (buf[len] && (buf[len] != ','))
 -		return 0;
--
--	len = strlen(match);
--	if (strncmp(buf, match, len))
--		return 0;
--
--	if (buf[len]) {
--		if (buf[len] != ',')
--			return 0;
--		buf += len + 1;
--	} else
--		buf = NULL;
--
- 	/* On parsing error, pass the options buf to the setup function */
- 	if (buf && !parse_options(&early_console_dev, buf))
- 		buf = NULL;
-@@ -136,6 +122,28 @@ int __init setup_earlycon(char *buf, const char *match,
- 	return 0;
- }
  
-+int __init setup_earlycon(char *buf, const char *match,
-+			  int (*setup)(struct earlycon_device *, const char *))
-+{
-+	size_t len;
-+
-+	if (!buf || !match || !setup)
-+		return 0;
-+
-+	len = strlen(match);
-+	if (strncmp(buf, match, len))
-+		return 0;
-+
+-	buf += len + 1;
 +	if (buf[len]) {
 +		if (buf[len] != ',')
 +			return 0;
 +		buf += len + 1;
 +	} else
 +		buf = NULL;
-+
-+	return register_earlycon(buf, setup);
-+}
-+
- int __init of_setup_earlycon(unsigned long addr,
- 			     int (*setup)(struct earlycon_device *, const char *))
- {
+ 
+ 	/* On parsing error, pass the options buf to the setup function */
+-	if (!parse_options(&early_console_dev, buf))
++	if (buf && !parse_options(&early_console_dev, buf))
+ 		buf = NULL;
+ 
+ 	port->uartclk = BASE_BAUD * 16;
 -- 
 2.3.1
