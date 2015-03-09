@@ -1,53 +1,35 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with IRQF_NO_SUSPEND
-Date: Mon, 09 Mar 2015 15:30:01 +0100
-Message-ID: <1592385.fqRVVyPSPE@vostro.rjw.lan>
-References: <1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com> <1615214.0rkGfM1gZL@vostro.rjw.lan> <20150309075546.GY3989@piout.net>
+From: Tim Kryger <tim.kryger@gmail.com>
+Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed the
+ kernel will hung up
+Date: Mon, 9 Mar 2015 07:36:21 -0700
+Message-ID: <CAD7vxxJvL61BjD9AMBF34Y8xnY+D-umuWLUq8Dh7ZbSm5tCE9w@mail.gmail.com>
+References: <54F96F5B.2090601@huawei.com>
+	<54F9DACA.3020103@hurleysoftware.com>
+	<CAD7vxxJXEz8KfXd9fBjkxTi5Nnjyw0=wwvbw5qCSwCMbBd64eA@mail.gmail.com>
+	<54FD4779.3020902@huawei.com>
+	<1425907939.3838.182.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <20150309075546.GY3989@piout.net>
-Sender: linux-pm-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Pavel Machek <pavel@ucw.cz>, Sylvain Rochet <gradator@gradator.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alessandro Zummo <a.zummo@towertech.it>, Mike Turquette <mturquette@linaro.org>, Jason Cooper <jason@lakedaemon.net>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Len Brown <len.brown@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Wim Van Sebroeck <wim@iguana.be>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1425907939.3838.182.camel@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: "long.wanglong" <long.wanglong@huawei.com>, Peter Hurley <peter@hurleysoftware.com>, Zhang Zhen <zhenzhang.zhang@huawei.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tim Kryger <tim.kryger@linaro.org>, gregkh@linuxfoundation.org, Jamie Iles <jamie@jamieiles.com>, Arnd Bergmann <arnd@arndb.de>, shenjiangjiang@huawei.com, Wang Kai <morgan.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Monday, March 09, 2015 08:55:46 AM Alexandre Belloni wrote:
-> Hi,
-> 
-> On 08/03/2015 at 02:12:53 +0100, Rafael J. Wysocki wrote :
-> > > > I think you misunderstood, that is exactly the expected behaviour. This
-> > > > is hardware defined. Once the watchdog is started, nobody can stop it.
-> > > > Trying to change the mode register will result in a reset of the
-> > > > SoC.
-> > > 
-> > > Well, it boils down to "what is stronger". Desire to suspend the
-> > > system, or desire to reboot the system.
-> > > 
-> > > It is "echo mem > state", not "echo reboot > state".
-> > > 
-> > > > It is documented in the datasheet and any user wanting another behaviour
-> > > > is out of luck.
-> > > 
-> > > Actaully, your platform should just refuse to enter suspend-to-RAM
-> > > when hw watchdog is enabled.
-> > 
-> > Quite likely, depending on how exactly the suspend is implemented.
-> >
-> 
-> We've had absolutely zero complain on that. It is quite clear in the
-> datasheet that failing to refresh the watchdog once started will lead to
-> a reset and that it is impossible to stop.
-> It is actually quite convenient to also ensure that you can actually
-> wake up from suspend because that can obviously go wrong.
+On Mon, Mar 9, 2015 at 6:32 AM, Alan Cox <alan@linux.intel.com> wrote:
+>> Maybe the next release of the board we will upgrade the serial block to the new version.
+>> but the issue is that how we circumvent this problem in kernel?
+>
+> What is the official vendor workaround ?
 
-I gather then that the suspend implementation is such that touching the
-watchdog periodically while suspended is not a problem.
+They introduced a UART_16550_COMPATIBLE option for the IP which should
+be selected.
 
-Again, can you please tell me how suspend is implemented on at91?
+If configured, writes to the LCR are allowed even if it is "busy" so
+there is no need to retry.
 
+More importantly there is no possibility of failing to write the LCR
+after numerous retries.
 
--- 
-I speak only for myself.
-Rafael J. Wysocki, Intel Open Source Technology Center.
+-Tim
