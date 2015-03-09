@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 -next 11/11] serial: 8250_early: Remove setup_early_serial8250_console()
-Date: Mon,  9 Mar 2015 16:27:22 -0400
-Message-ID: <1425932842-21812-12-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 -next 09/11] serial: earlycon: Refactor earlycon registration
+Date: Mon,  9 Mar 2015 16:27:20 -0400
+Message-ID: <1425932842-21812-10-git-send-email-peter@hurleysoftware.com>
 References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
@@ -10,88 +10,78 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-setup_earlycon() will now match and register the desired earlycon
-from the param string (as if 'earlycon=...' had been set on the
-command line). Use setup_earlycon() from existing arch call sites
-which start an earlycon directly.
+Separate earlycon matching from registration; add register_earlycon
+which initializes and registers the matched earlycon.
 
 Acked-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- arch/mips/mti-malta/malta-init.c     | 4 ++--
- drivers/firmware/pcdp.c              | 4 ++--
- drivers/tty/serial/8250/8250_early.c | 5 -----
- include/linux/serial_8250.h          | 1 -
- 4 files changed, 4 insertions(+), 10 deletions(-)
+ drivers/tty/serial/earlycon.c | 42 +++++++++++++++++++++++++-----------------
+ 1 file changed, 25 insertions(+), 17 deletions(-)
 
-diff --git a/arch/mips/mti-malta/malta-init.c b/arch/mips/mti-malta/malta-init.c
-index 6849f53..cec3e18 100644
---- a/arch/mips/mti-malta/malta-init.c
-+++ b/arch/mips/mti-malta/malta-init.c
-@@ -14,7 +14,7 @@
- #include <linux/init.h>
- #include <linux/string.h>
- #include <linux/kernel.h>
--#include <linux/serial_8250.h>
-+#include <linux/serial_core.h>
- 
- #include <asm/cacheflush.h>
- #include <asm/smp-ops.h>
-@@ -75,7 +75,7 @@ static void __init console_config(void)
- 	if ((strstr(fw_getcmdline(), "earlycon=")) == NULL) {
- 		sprintf(console_string, "uart8250,io,0x3f8,%d%c%c", baud,
- 			parity, bits);
--		setup_early_serial8250_console(console_string);
-+		setup_earlycon(console_string);
- 	}
- 
- 	if ((strstr(fw_getcmdline(), "console=")) == NULL) {
-diff --git a/drivers/firmware/pcdp.c b/drivers/firmware/pcdp.c
-index a330492..75273a25 100644
---- a/drivers/firmware/pcdp.c
-+++ b/drivers/firmware/pcdp.c
-@@ -15,7 +15,7 @@
- #include <linux/console.h>
- #include <linux/efi.h>
- #include <linux/serial.h>
--#include <linux/serial_8250.h>
-+#include <linux/serial_core.h>
- #include <asm/vga.h>
- #include "pcdp.h"
- 
-@@ -43,7 +43,7 @@ setup_serial_console(struct pcdp_uart *uart)
- 	}
- 
- 	add_preferred_console("uart", 8250, &options[9]);
--	return setup_early_serial8250_console(options);
-+	return setup_earlycon(options);
- #else
- 	return -ENODEV;
- #endif
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index d272139..a2b4e58 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -167,8 +167,3 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 025ea01..9fb76b6 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -96,27 +96,13 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 	return 0;
  }
- EARLYCON_DECLARE(uart8250, early_serial8250_setup);
- EARLYCON_DECLARE(uart, early_serial8250_setup);
--
--int __init setup_early_serial8250_console(char *cmdline)
--{
--	return setup_earlycon(cmdline);
--}
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index f26ae7f..ca9f87b 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -120,7 +120,6 @@ extern int early_serial_setup(struct uart_port *port);
  
- extern unsigned int serial8250_early_in(struct uart_port *port, int offset);
- extern void serial8250_early_out(struct uart_port *port, int offset, int value);
--extern int setup_early_serial8250_console(char *cmdline);
- extern void serial8250_do_set_termios(struct uart_port *port,
- 		struct ktermios *termios, struct ktermios *old);
- extern int serial8250_do_startup(struct uart_port *port);
+-int __init setup_earlycon(char *buf, const char *match,
+-			  int (*setup)(struct earlycon_device *, const char *))
++
++static int __init
++register_earlycon(char *buf, int (*setup)(struct earlycon_device *, const char *))
+ {
+ 	int err;
+-	size_t len;
+ 	struct uart_port *port = &early_console_dev.port;
+ 
+-	if (!buf || !match || !setup)
+-		return 0;
+-
+-	len = strlen(match);
+-	if (strncmp(buf, match, len))
+-		return 0;
+-
+-	if (buf[len]) {
+-		if (buf[len] != ',')
+-			return 0;
+-		buf += len + 1;
+-	} else
+-		buf = NULL;
+-
+ 	/* On parsing error, pass the options buf to the setup function */
+ 	if (buf && !parse_options(&early_console_dev, buf))
+ 		buf = NULL;
+@@ -136,6 +122,28 @@ int __init setup_earlycon(char *buf, const char *match,
+ 	return 0;
+ }
+ 
++int __init setup_earlycon(char *buf, const char *match,
++			  int (*setup)(struct earlycon_device *, const char *))
++{
++	size_t len;
++
++	if (!buf || !match || !setup)
++		return 0;
++
++	len = strlen(match);
++	if (strncmp(buf, match, len))
++		return 0;
++
++	if (buf[len]) {
++		if (buf[len] != ',')
++			return 0;
++		buf += len + 1;
++	} else
++		buf = NULL;
++
++	return register_earlycon(buf, setup);
++}
++
+ int __init of_setup_earlycon(unsigned long addr,
+ 			     int (*setup)(struct earlycon_device *, const char *))
+ {
 -- 
 2.3.1
