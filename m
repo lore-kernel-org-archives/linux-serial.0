@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 -next 06/11] serial: 8250_early: Fix setup() error code
-Date: Mon,  9 Mar 2015 16:27:17 -0400
-Message-ID: <1425932842-21812-7-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 -next 05/11] serial: 8250_early: Assume uart already initialized if no baud option
+Date: Mon,  9 Mar 2015 16:27:16 -0400
+Message-ID: <1425932842-21812-6-git-send-email-peter@hurleysoftware.com>
 References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
@@ -10,29 +10,47 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-If parsing failed to decode a valid uart addr, return -ENODEV instead
-of success. Although setup_earlycon() will detect the failure anyway
-(because the write() method has not been set), that behavior is not
-obvious and should not be relied on.
+The <baud><parity><bit> option string is not supplied if the earlycon
+is started via devicetree and OF_EARLYCON_DECLARE(). The option string
+is also not required if started via kernel command line parameters of
+the form:
+  earlycon=uart,mmio,<addr>
+  console=uart,mmio,<addr>
+
+If earlycon_device->baud is 0, then an option string was not supplied.
+In this case, assume the uart has already been initialized by the
+bootloader or firmware.
 
 Acked-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250_early.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_early.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index 1701d00..b199c10 100644
+index d7b831b..1701d00 100644
 --- a/drivers/tty/serial/8250/8250_early.c
 +++ b/drivers/tty/serial/8250/8250_early.c
-@@ -146,7 +146,7 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
- 					 const char *options)
- {
- 	if (!(device->port.membase || device->port.iobase))
--		return 0;
-+		return -ENODEV;
+@@ -149,12 +149,18 @@ static int __init early_serial8250_setup(struct earlycon_device *device,
+ 		return 0;
  
  	if (!device->baud) {
- 		struct uart_port *port = &device->port;
++		struct uart_port *port = &device->port;
++		unsigned int ier;
++
+ 		device->baud = probe_baud(&device->port);
+ 		snprintf(device->options, sizeof(device->options), "%u",
+ 			 device->baud);
+-	}
+ 
+-	init_port(device);
++		/* assume the device was initialized, only mask interrupts */
++		ier = serial8250_early_in(port, UART_IER);
++		serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
++	} else
++		init_port(device);
+ 
+ 	device->con->write = early_serial8250_write;
+ 	return 0;
 -- 
 2.3.1
