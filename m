@@ -1,41 +1,75 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2 04/18] clocksource: Add ARM System timer driver
-Date: Mon, 9 Mar 2015 16:50:26 +0100
-Message-ID: <CACRpkdYnj0vTBVEEDp4isznRZ+KQuC2h+VViZr=Pt8VtEOWP-A@mail.gmail.com>
-References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<1424455277-29983-5-git-send-email-mcoquelin.stm32@gmail.com>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: Re: [PATCH v2 10/10] drivers: PL011: add support for the ARM SBSA
+ generic UART
+Date: Mon, 9 Mar 2015 15:59:48 +0000
+Message-ID: <20150309155935.GA3984@e103592.cambridge.arm.com>
+References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
+ <1425491994-23913-11-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <1424455277-29983-5-git-send-email-mcoquelin.stm32@gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1425491994-23913-11-git-send-email-andre.przywara@arm.com>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: rob.herring@linaro.org, linux@arm.linux.org.uk, arnd@arndb.de, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, jslaby@suse.cz, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 20, 2015 at 7:01 PM, Maxime Coquelin
-<mcoquelin.stm32@gmail.com> wrote:
+On Wed, Mar 04, 2015 at 05:59:54PM +0000, Andre Przywara wrote:
+> The ARM Server Base System Architecture[1] document describes a
+> generic UART which is a subset of the PL011 UART.
+> It lacks DMA support, baud rate control and modem status line
+> control, among other things.
+> The idea is to move the UART initialization and setup into the
+> firmware (which does this job today already) and let the kernel just
+> use the UART for sending and receiving characters.
+> 
+> We use the recent refactoring to build a new struct uart_ops
+> variable which points to some new functions avoiding access to the
+> missing registers. We reuse as much existing PL011 code as possible.
+> 
+> In contrast to the PL011 the SBSA UART does not define any AMBA or
+> PrimeCell relations, so we go with a pretty generic probe function
+> which only uses platform device functions.
+> A DT binding is provided, but other systems can easily attach to it,
+> too (hint, hint!).
+> 
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 
-> This patch adds clocksource support for ARMv7-M's System timer,
-> also known as SysTick.
->
-> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-(...)
-> +       /* If no clock found, try to get clock-frequency property */
-> +       if (!rate) {
-> +               ret = of_property_read_u32(np, "clock-frequency", &rate);
-> +               if (ret)
-> +                       goto out_unmap;
-> +       }
+[...]
 
-If this driver is only used for this one system, and if on this one system
-the clk subsystem will provide the clock rate, then there is no need
-to include this hackaround property.
+> +MODULE_DEVICE_TABLE(of, sbsa_uart_match);
+> +
+> +static struct platform_driver arm_sbsa_uart_platform_driver = {
+> +	.probe		= sbsa_uart_probe,
+> +	.remove		= sbsa_uart_remove,
+> +	.driver	= {
+> +		.name	= "sbsa-uart",
+> +		.of_match_table = of_match_ptr(sbsa_uart_match),
+> +	},
+> +};
+> +
+> +module_platform_driver(arm_sbsa_uart_platform_driver);
 
-Alternatively there is no point including reading the frequency from
-the clk subsystem for this one system.
+Hmmm, this seems to break with CONFIG_MODULE -- it tries to create its
+own module_{init,exit} that just register/unregister the platform
+driver.
 
-So which one is it?
+Instead, I think the existing init/exit functions need to register/
+unregister both drivers.
 
-Yours,
-Linus Walleij
+Module initialisation shouldn't fail unless neither registration
+succeeds (?) -- if only one succeeds we can carry on, but it's worth
+a printk.  Or can the failure of either registration just be fatal?
+
+Cheers
+---Dave
