@@ -1,7 +1,7 @@
 From: Wang Long <long.wanglong@huawei.com>
-Subject: [PATCH] serial: 8250: remove the redundant include
-Date: Mon, 9 Mar 2015 04:12:56 +0000
-Message-ID: <1425874376-153286-1-git-send-email-long.wanglong@huawei.com>
+Subject: [PATCH v1] serial: 8250: remove the redundant include
+Date: Mon, 9 Mar 2015 04:17:51 +0000
+Message-ID: <1425874671-153401-1-git-send-email-long.wanglong@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -18,11 +18,12 @@ serial_8250.h.
 Signed-off-by: Wang Long <long.wanglong@huawei.com>
 ---
  drivers/tty/serial/8250/8250_core.c  | 1 -
+ drivers/tty/serial/8250/8250_dw.c    | 1 -
  drivers/tty/serial/8250/8250_early.c | 1 -
  drivers/tty/serial/8250/8250_em.c    | 1 -
  drivers/tty/serial/8250/8250_hp300.c | 1 -
  drivers/tty/serial/8250/8250_omap.c  | 1 -
- 5 files changed, 5 deletions(-)
+ 6 files changed, 6 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
 index e3b9570a..7ddd668 100644
@@ -36,6 +37,18 @@ index e3b9570a..7ddd668 100644
  #include <linux/serial.h>
  #include <linux/serial_8250.h>
  #include <linux/nmi.h>
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index e601162..9c58ceb 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -17,7 +17,6 @@
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/serial_8250.h>
+-#include <linux/serial_core.h>
+ #include <linux/serial_reg.h>
+ #include <linux/of.h>
+ #include <linux/of_irq.h>
 diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
 index c31a22b..c7ae647 100644
 --- a/drivers/tty/serial/8250/8250_early.c
