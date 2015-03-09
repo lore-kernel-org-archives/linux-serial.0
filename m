@@ -1,57 +1,42 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 1/4] PM / Wakeirq: Add minimal device wakeirq helper
- functions
-Date: Mon, 9 Mar 2015 09:41:25 -0700
-Message-ID: <20150309164125.GG5264@atomide.com>
-References: <20150309150908.GC5264@atomide.com>
- <Pine.LNX.4.44L0.1503091134240.1472-100000@iolanthe.rowland.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 14/14] MAINTAINERS: Add entry for STM32 MCUs
+Date: Mon, 9 Mar 2015 17:47:40 +0100
+Message-ID: <CACRpkdaYVyH-y19yHYp2noq6VhDVJYQfqkevDtLr-7y8gVwdXw@mail.gmail.com>
+References: <1423763164-5606-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1423763164-5606-15-git-send-email-mcoquelin.stm32@gmail.com>
+	<CACRpkdaM0BwMcq77MO=0-dVaqwobD5Pt+11j7ZZ4c3yKM=AkeA@mail.gmail.com>
+	<CALszF6Bz978KA1DAxcKtmA55X=vJWEcVDa9fLOF=uNatYS+b+Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <Pine.LNX.4.44L0.1503091134240.1472-100000@iolanthe.rowland.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: Alan Stern <stern@rowland.harvard.edu>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, Linux PM list <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <CALszF6Bz978KA1DAxcKtmA55X=vJWEcVDa9fLOF=uNatYS+b+Q@mail.gmail.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, Kees Cook <keescook@chromium.org>, Michal
 List-Id: linux-serial@vger.kernel.org
 
-* Alan Stern <stern@rowland.harvard.edu> [150309 08:42]:
-> On Mon, 9 Mar 2015, Tony Lindgren wrote:
-> 
-> > > > > > Considering the above, should we add a new function something like
-> > > > > > pm_resume_complete() that does not need irq_safe set but does
-> > > > > > not return until the device has completed resume?
-> > > > > 
-> > > > > That doesn't make sense.  You're asking for a routine that is allowed
-> > > > > to sleep but can safely be called in interrupt context.
-> > > > 
-> > > > Oh it naturally would not work in irq context, it's for the bottom
-> > > > half again.
-> > > 
-> > > In other words, you're suggesting we add a function that runs in 
-> > > process context and doesn't return until the device is fully resumed?  
-> > > That's exactly what pm_runtime_resume does right now.
-> > 
-> > But doesn't it only wait for completion if the driver is marked with
-> > pm_runtime_irq_safe()?
-> 
-> Put it this way: pm_runtime_resume invokes a ->runtime_resume
-> callback routine (the subsystem's or the driver's or whichever), and it
-> assumes that if the routine returns 0 then the device has been resumed.  
-> It doesn't really _wait_ for anything; it just calls the callback
-> routine.
-> 
-> It behaves this way whether or not the irq_safe flag is set.  The only
-> difference is that if irq_safe is set then the callback routine is
-> invoked with interrupts disabled (and in this case pm_runtime_resume
-> may be called in interrupt context -- normally it can be called only in
-> process context).
+On Fri, Mar 6, 2015 at 10:55 AM, Maxime Coquelin
+<mcoquelin.stm32@gmail.com> wrote:
+> 2015-03-06 10:03 GMT+01:00 Linus Walleij <linus.walleij@linaro.org>:
+>> On Thu, Feb 12, 2015 at 6:46 PM, Maxime Coquelin
+>> <mcoquelin.stm32@gmail.com> wrote:
+>>
+>>> Add a MAINTAINER entry covering all STM32 machine and drivers files.
+>>>
+>>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+>>
+>> (...)
+>>> +F:     drivers/clocksource/arm_system_timer.c
+>>
+>> Is that all? And that is not even a STM32 specific driver.
+>
+> For the ARM System Timer, I'm fine to add a new entry.
+> Or remove the line, and let the maintain-ship to clocksource maintainers.
+>
+> All the STM32 files are covered by this line:
+> +N:     stm32
 
-Oh right you are. Looking at rpm_resume() again, it's the RPM_ASYNC that
-was causing problems to me earlier, not the irq_safe. Sorry it seems I
-was a bit confused. And yes, pm_runtime_resume() does not set RPM_ASYNC
-like you pointed out earlier so no need to do anything there.
+Aha you're right, news2me, I'm old and stupid :/
 
-Regards,
-
-Tony
+Thanks,
+Linus Walleij
