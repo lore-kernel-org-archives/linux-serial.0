@@ -1,60 +1,43 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2 16/18] ARM: dts: Introduce STM32F429 MCU
-Date: Mon, 9 Mar 2015 15:39:47 +0100
-Message-ID: <CACRpkdaW-OMgGfw8+ngia8AsmzRpW8z7922=dPpRGjgv79-gqw@mail.gmail.com>
-References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<1424455277-29983-17-git-send-email-mcoquelin.stm32@gmail.com>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed
+ the kernel will hung up
+Date: Mon, 09 Mar 2015 15:05:02 +0000
+Message-ID: <1425913502.3838.185.camel@linux.intel.com>
+References: <54F96F5B.2090601@huawei.com>
+	 <54F9DACA.3020103@hurleysoftware.com>
+	 <CAD7vxxJXEz8KfXd9fBjkxTi5Nnjyw0=wwvbw5qCSwCMbBd64eA@mail.gmail.com>
+	 <54FD4779.3020902@huawei.com> <1425907939.3838.182.camel@linux.intel.com>
+	 <CAD7vxxJvL61BjD9AMBF34Y8xnY+D-umuWLUq8Dh7ZbSm5tCE9w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1424455277-29983-17-git-send-email-mcoquelin.stm32@gmail.com>
+In-Reply-To: <CAD7vxxJvL61BjD9AMBF34Y8xnY+D-umuWLUq8Dh7ZbSm5tCE9w@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>
+To: Tim Kryger <tim.kryger@gmail.com>
+Cc: "long.wanglong" <long.wanglong@huawei.com>, Peter Hurley <peter@hurleysoftware.com>, Zhang Zhen <zhenzhang.zhang@huawei.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tim Kryger <tim.kryger@linaro.org>, gregkh@linuxfoundation.org, Jamie Iles <jamie@jamieiles.com>, Arnd Bergmann <arnd@arndb.de>, shenjiangjiang@huawei.com, Wang Kai <morgan.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 20, 2015 at 7:01 PM, Maxime Coquelin
-<mcoquelin.stm32@gmail.com> wrote:
+On Mon, 2015-03-09 at 07:36 -0700, Tim Kryger wrote:
+> On Mon, Mar 9, 2015 at 6:32 AM, Alan Cox <alan@linux.intel.com> wrote:
+> >> Maybe the next release of the board we will upgrade the serial block to the new version.
+> >> but the issue is that how we circumvent this problem in kernel?
+> >
+> > What is the official vendor workaround ?
+> 
+> They introduced a UART_16550_COMPATIBLE option for the IP which should
+> be selected.
+> 
+> If configured, writes to the LCR are allowed even if it is "busy" so
+> there is no need to retry.
+> 
+> More importantly there is no possibility of failing to write the LCR
+> after numerous retries.
 
-> The STMicrolectornics's STM32F419 MCU has the following main features:
->  - Cortex-M4 core running up to @180MHz
->  - 2MB internal flash, 256KBytes internal RAM
->  - FMC controller to connect SDRAM, NOR and NAND memories
->  - SD/MMC/SDIO support
->  - Ethernet controller
->  - USB OTFG FS & HS controllers
->  - I2C, SPI, CAN busses support
->  - Several 16 & 32 bits general purpose timers
->  - Serial Audio interface
->  - LCD controller
->
-> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-(...)
-> +       soc {
-> +               usart1: usart@40011000 {
-> +                       status = "okay";
-> +               };
-> +
-> +               leds {
-> +                       compatible = "gpio-leds";
-> +                       red {
-> +                               #gpio-cells = <2>;
-> +                               label = "Front Panel LED";
-> +                               gpios = <&gpiog 14 0>;
-> +                               linux,default-trigger = "heartbeat";
-> +                       };
-> +                       green {
-> +                               #gpio-cells = <2>;
-> +                               gpios = <&gpiog 13 0>;
-> +                               default-state = "off";
-> +                       };
-> +               };
-> +       };
 
-The LEDs are mounted on the board not the SoC, right?
+Ah no - I meant what is their official software workaround for existing
+parts with the bug ? Presumably they have an errata document that
+discusses this and the correct methods they recommend to avoid the
+hang ?
 
-So move them outside of the soc node, to the top level
-of the DTS file.
-
-Yours,
-Linus Walleij
+Alan
