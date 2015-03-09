@@ -1,36 +1,25 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH] serial:8250:8250_pci: delete unneeded quirk entries
-Date: Mon, 9 Mar 2015 11:31:02 +0200
-Message-ID: <CAHp75VebU_-EUGU6_nQuK054G5PnLvdJ-=C7dBNk6aNSoKgW+Q@mail.gmail.com>
-References: <20150306170835.GA1990@udknight>
-	<54FA1A50.1000404@nexus-software.ie>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed
+ the kernel will hung up
+Date: Mon, 09 Mar 2015 13:32:19 +0000
+Message-ID: <1425907939.3838.182.camel@linux.intel.com>
+References: <54F96F5B.2090601@huawei.com>
+	 <54F9DACA.3020103@hurleysoftware.com>
+	 <CAD7vxxJXEz8KfXd9fBjkxTi5Nnjyw0=wwvbw5qCSwCMbBd64eA@mail.gmail.com>
+	 <54FD4779.3020902@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54FA1A50.1000404@nexus-software.ie>
+In-Reply-To: <54FD4779.3020902@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Cc: Wang YanQing <udknight@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: "long.wanglong" <long.wanglong@huawei.com>
+Cc: Tim Kryger <tim.kryger@gmail.com>, Peter Hurley <peter@hurleysoftware.com>, Zhang Zhen <zhenzhang.zhang@huawei.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tim Kryger <tim.kryger@linaro.org>, gregkh@linuxfoundation.org, jamie@jamieiles.com, arnd@arndb.de, shenjiangjiang@huawei.com, Wang Kai <morgan.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 6, 2015 at 11:21 PM, Bryan O'Donoghue
-<pure.logic@nexus-software.ie> wrote:
-> On 06/03/15 17:08, Wang YanQing wrote:
->>
->> These quirk entries have the same effect as default
->> quirk entry, so we can just delete them.
->>
->> Signed-off-by: Wang YanQing <udknight@gmail.com>
->
->
-> ACK - does exactly what it says on the tin.
->
-> Tested-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+> Maybe the next release of the board we will upgrade the serial block to the new version.
+> but the issue is that how we circumvent this problem in kernel?
 
-Guys, the idea was as far as I remember to keep this placeholder to
-introduce DMA support later.
-Now it brought an additional effort to be done for that.
+What is the official vendor workaround ?
 
--- 
-With Best Regards,
-Andy Shevchenko
+Alan
