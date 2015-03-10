@@ -1,45 +1,48 @@
-From: Dmitry Torokhov <dtor@chromium.org>
-Subject: [PATCH] serial: 8250_dw: fix 'cts-override'
-Date: Mon, 9 Mar 2015 17:37:31 -0700
-Message-ID: <20150310003731.GA21791@dtor-ws>
+From: Tim Kryger <tim.kryger@gmail.com>
+Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed the
+ kernel will hung up
+Date: Mon, 9 Mar 2015 19:47:06 -0700
+Message-ID: <CAD7vxx+WYgOujpTAxXsUmcr8T4zHS9MYfwrWu8hV2t=TudLamQ@mail.gmail.com>
+References: <54F96F5B.2090601@huawei.com>
+	<54F9DACA.3020103@hurleysoftware.com>
+	<CAD7vxxJXEz8KfXd9fBjkxTi5Nnjyw0=wwvbw5qCSwCMbBd64eA@mail.gmail.com>
+	<54FD4779.3020902@huawei.com>
+	<1425907939.3838.182.camel@linux.intel.com>
+	<CAD7vxxJvL61BjD9AMBF34Y8xnY+D-umuWLUq8Dh7ZbSm5tCE9w@mail.gmail.com>
+	<1425913502.3838.185.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <1425913502.3838.185.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Kevin Cernekee <cernekee@chromium.org>, "JD (Jiandong) Zheng" <jdzheng@broadcom.com>, Ray Jui <rjui@broadcom.com>, Desmond Liu <desmondl@broadcom.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: "long.wanglong" <long.wanglong@huawei.com>, Peter Hurley <peter@hurleysoftware.com>, Zhang Zhen <zhenzhang.zhang@huawei.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, gregkh@linuxfoundation.org, Jamie Iles <jamie@jamieiles.com>, Arnd Bergmann <arnd@arndb.de>, shenjiangjiang@huawei.com, Wang Kai <morgan.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-We are dealing with CTS, not DSR here (we dealt with DSR a few lines
-above), so set appropriate bits.
+On Mon, Mar 9, 2015 at 8:05 AM, Alan Cox <alan@linux.intel.com> wrote:
 
-Reported-by: Kevin Cernekee <cernekee@chromium.org>
-Signed-off-by: Dmitry Torokhov <dtor@chromium.org>
----
- drivers/tty/serial/8250/8250_dw.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> Ah no - I meant what is their official software workaround for existing
+> parts with the bug ? Presumably they have an errata document that
+> discusses this and the correct methods they recommend to avoid the
+> hang ?
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 2ab229d..eb0a511 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -355,9 +355,9 @@ static int dw8250_probe_of(struct uart_port *p,
- 	}
- 
- 	if (of_property_read_bool(np, "cts-override")) {
--		/* Always report DSR as active */
--		data->msr_mask_on |= UART_MSR_DSR;
--		data->msr_mask_off |= UART_MSR_DDSR;
-+		/* Always report CTS as active */
-+		data->msr_mask_on |= UART_MSR_CTS;
-+		data->msr_mask_off |= UART_MSR_DCTS;
- 	}
- 
- 	if (of_property_read_bool(np, "ri-override")) {
--- 
-2.2.0.rc0.207.ga3a616c
+As far as I know, the only advice they provided was rather naive.
 
+The documentation I saw suggested stashing a copy of the LCR and then
+rewriting it when the special LCR write failed interrupt was raised.
 
--- 
-Dmitry
+That approach was not workable as the LCR might be written while the
+interrupt is masked causing the sequence of register writes to occur
+in an order other than what was desired.
+
+Additionally, when the LCR needed to be re-written but the UART stayed
+busy, the interrupt would keep firing and the driver would starve out
+everything else on the CPU.
+
+The current workaround of clearing fifos and retrying a fixed number
+of times isn't ideal but I'm not sure what else can be done given the
+way this hardware works.
+
+Additional background is in c49436b657d0a56a6ad90d14a7c3041add7cf64d
+
+-Tim
