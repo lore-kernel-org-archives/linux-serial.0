@@ -1,40 +1,39 @@
-From: Nicholas Mc Guire <hofrat@osadl.org>
-Subject: [PATCH] serial: mxs-auart: fix build failure due to broken goto statement
-Date: Tue, 10 Mar 2015 13:57:57 -0400
-Message-ID: <1426010277-5910-1-git-send-email-hofrat@osadl.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial: mxs-auart: fix build failure due to broken goto
+ statement
+Date: Tue, 10 Mar 2015 20:45:27 +0100
+Message-ID: <20150310194527.GF952@pengutronix.de>
+References: <1426010277-5910-1-git-send-email-hofrat@osadl.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-next-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1426010277-5910-1-git-send-email-hofrat@osadl.org>
 Sender: linux-next-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>, Janusz Uzycki <j.uzycki@elproma.com.pl>, linux-serial@vger.kernel.org, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org, Nicholas Mc Guire <hofrat@osadl.org>
+To: Nicholas Mc Guire <hofrat@osadl.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Janusz Uzycki <j.uzycki@elproma.com.pl>, linux-serial@vger.kernel.org, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-fix mxs-auart build failure. got -> goto and wrong jump target.
+Hello,
 
-Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
----
+On Tue, Mar 10, 2015 at 01:57:57PM -0400, Nicholas Mc Guire wrote:
+> fix mxs-auart build failure. got -> goto and wrong jump target.
+>=20
+> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+=46abio was bit quicker than you. He sent the same patch just before yo=
+u
+with Message-Id: 1425997464-3422-1-git-send-email-fabio.estevam@freesca=
+le.com.
 
-Seems this was introduced in 343fda95481a ("serial: mxs-auart: properly handle 
-mctrl_gpio failing")
+I failed to find a working archive though.
 
-This was only compile tested for mxs_defconfig
+Thanks anyhow,
+Uwe
 
-Patch is against 4.0-rc3 (localversion-next is -next-20150310)
-
- drivers/tty/serial/mxs-auart.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 9abdccf..a17abca 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1279,7 +1279,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	ret = mxs_auart_init_gpios(s, &pdev->dev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Failed to initialize GPIOs.\n");
--		got out_free_irq;
-+		goto out_free_gpio_irq;
- 	}
- 
- 	/*
--- 
-1.7.10.4
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
