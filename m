@@ -1,35 +1,33 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed
- the kernel will hung up
-Date: Tue, 10 Mar 2015 09:25:04 -0400
-Message-ID: <54FEF0B0.6010002@hurleysoftware.com>
-References: <54F96F5B.2090601@huawei.com>	<54F9DACA.3020103@hurleysoftware.com>	<CAD7vxxJXEz8KfXd9fBjkxTi5Nnjyw0=wwvbw5qCSwCMbBd64eA@mail.gmail.com>	<54FD4779.3020902@huawei.com>	<1425907939.3838.182.camel@linux.intel.com>	<CAD7vxxJvL61BjD9AMBF34Y8xnY+D-umuWLUq8Dh7ZbSm5tCE9w@mail.gmail.com>	<1425913502.3838.185.camel@linux.intel.com> <CAD7vxx+WYgOujpTAxXsUmcr8T4zHS9MYfwrWu8hV2t=TudLamQ@mail.gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2 05/18] reset: Add reset_controller_of_init() function
+Date: Tue, 10 Mar 2015 16:00:44 +0100
+Message-ID: <8729383.kvUZDm4dQz@wuerfel>
+References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com> <1424455277-29983-6-git-send-email-mcoquelin.stm32@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAD7vxx+WYgOujpTAxXsUmcr8T4zHS9MYfwrWu8hV2t=TudLamQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tim Kryger <tim.kryger@gmail.com>, Alan Cox <alan@linux.intel.com>
-Cc: "long.wanglong" <long.wanglong@huawei.com>, Zhang Zhen <zhenzhang.zhang@huawei.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, gregkh@linuxfoundation.org, Jamie Iles <jamie@jamieiles.com>, Arnd Bergmann <arnd@arndb.de>, shenjiangjiang@huawei.com, Wang Kai <morgan.wang@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1424455277-29983-6-git-send-email-mcoquelin.stm32@gmail.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: u.kleine-koenig@pengutronix.de, afaerber@suse.de, geert@linux-m68k.org, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>Rus
 List-Id: linux-serial@vger.kernel.org
 
-On 03/09/2015 10:47 PM, Tim Kryger wrote:
-> The current workaround of clearing fifos and retrying a fixed number
-> of times isn't ideal but I'm not sure what else can be done given the
-> way this hardware works.
+On Friday 20 February 2015 19:01:04 Maxime Coquelin wrote:
+> Some platforms need to initialize the reset controller before the timers.
+> 
+> This patch introduces a reset_controller_of_init() function that can be
+> called before the timers intialization.
+> 
+> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> 
 
-But hanging the machine is not an acceptable outcome.
+Not sure about this. It seems like the cleanest approach if we get
+a lot of these, but then again it is probably very rare, and I'd
+like to avoid adding such infrastructure if it's just for one
+SoC. Could we add a hack in the machine initialization instead?
 
-Since the hang stems from the printk while already holding the port->lock,
-until I can fix the console write, I think it's best to comment out
-the dev_err() with a FIXME note.
+I think ideally this would be done in the boot loader before we
+even start Linux, but I don't know if that's possible for you.
 
-The 8250 console write already checks port->sysrq to allow printk from
-within the driver so this solution just needs to be generalized.
-And there are debug uses of printk() from within the driver that are just
-as broken, so this isn't the only use case. (I want to do something
-similar for the au_serial-* i/o accessors too).
-
-Regards,
-Peter Hurley
+	Arnd
