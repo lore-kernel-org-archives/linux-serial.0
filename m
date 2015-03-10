@@ -1,39 +1,61 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] serial: mxs-auart: fix build failure due to broken goto
- statement
-Date: Tue, 10 Mar 2015 20:45:27 +0100
-Message-ID: <20150310194527.GF952@pengutronix.de>
-References: <1426010277-5910-1-git-send-email-hofrat@osadl.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2 05/18] reset: Add reset_controller_of_init() function
+Date: Tue, 10 Mar 2015 21:19:55 +0100
+Message-ID: <6773745.i9mx5zmPP4@wuerfel>
+References: <1424455277-29983-1-git-send-email-mcoquelin.stm32@gmail.com>
+ <8729383.kvUZDm4dQz@wuerfel>
+ <CALszF6BkTOLR+VNkRKfvEBG5ZyaYL+9fZ4EAPVu5b_imCvEQoQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-next-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1426010277-5910-1-git-send-email-hofrat@osadl.org>
-Sender: linux-next-owner@vger.kernel.org
-To: Nicholas Mc Guire <hofrat@osadl.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Janusz Uzycki <j.uzycki@elproma.com.pl>, linux-serial@vger.kernel.org, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CALszF6BkTOLR+VNkRKfvEBG5ZyaYL+9fZ4EAPVu5b_imCvEQoQ@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Linux-Arch <linux-arch@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Jonathan Corbet <corbet@lwn.net>, Daniel Lezcano <daniel.lezcano@linaro.org>, Antti Palosaari <crope@iki.fi>, Geert Uytterhoeven <geert@linux-m68k.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= <u.kleine-koenig@pengutronix.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Kees Cook <keescook@chromium.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.or>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+On Tuesday 10 March 2015 16:28:44 Maxime Coquelin wrote:
+> 2015-03-10 16:00 GMT+01:00 Arnd Bergmann <arnd@arndb.de>:
+> > On Friday 20 February 2015 19:01:04 Maxime Coquelin wrote:
+> >> Some platforms need to initialize the reset controller before the timers.
+> >>
+> >> This patch introduces a reset_controller_of_init() function that can be
+> >> called before the timers intialization.
+> >>
+> >> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> >>
+> >
+> > Not sure about this. It seems like the cleanest approach if we get
+> > a lot of these, but then again it is probably very rare, and I'd
+> > like to avoid adding such infrastructure if it's just for one
+> > SoC. Could we add a hack in the machine initialization instead?
+> 
+> Sun6i also need to initialize the reset controller early. Today, they
+> hack the machine initialization.
+> With two SoCs having the same need, what should we do?
 
-On Tue, Mar 10, 2015 at 01:57:57PM -0400, Nicholas Mc Guire wrote:
-> fix mxs-auart build failure. got -> goto and wrong jump target.
->=20
-> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
-=46abio was bit quicker than you. He sent the same patch just before yo=
-u
-with Message-Id: 1425997464-3422-1-git-send-email-fabio.estevam@freesca=
-le.com.
+Good question, I'd like to hear some other opinions on this first.
 
-I failed to find a working archive though.
+> > I think ideally this would be done in the boot loader before we
+> > even start Linux, but I don't know if that's possible for you.
+> 
+> From what I understand, the only constraint is to perform it after the
+> clock is enabled.
+> So this should be possible to do it in the bootloader, but it means
+> also adding timers clocks ungating in the bootloader.
 
-Thanks anyhow,
-Uwe
+Ungating the timer clock input seems like a reasonable thing to
+do for the bootloader, I think a lot of platforms rely on this
+elsewhere (but enough of them don't, which is why we have the
+early clk init).
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
+	Arnd
