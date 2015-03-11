@@ -1,41 +1,37 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: mctrl-gpio: fix build warning
-Date: Wed, 11 Mar 2015 14:01:05 +0100
-Message-ID: <20150311130105.GB16733@kroah.com>
-References: <2661449.5Eht12RCUu@wuerfel>
+From: Dmitry Torokhov <dtor@chromium.org>
+Subject: Re: [PATCH] serial: 8250_dw: fix 'cts-override'
+Date: Wed, 11 Mar 2015 10:25:57 -0700
+Message-ID: <CAE_wzQ9VnrmPKfdxpZsQFT5tEhekTFobTQBNBVRMWVE6cbRAoA@mail.gmail.com>
+References: <20150310003731.GA21791@dtor-ws>
+	<20150311130053.GA16733@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <2661449.5Eht12RCUu@wuerfel>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20150311130053.GA16733@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Dmitry Torokhov <dtor@chromium.org>, Kevin Cernekee <cernekee@chromium.org>, "JD (Jiandong) Zheng" <jdzheng@broadcom.com>, Ray Jui <rjui@broadcom.com>, Desmond Liu <desmondl@broadcom.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 11, 2015 at 11:25:41AM +0100, Arnd Bergmann wrote:
-> A recent fix to the error handling in this driver introduced a
-> harmless warning:
-> 
-> serial/serial_mctrl_gpio.c: In function 'mctrl_gpio_init':
-> serial/serial_mctrl_gpio.c:110:4: warning: return makes pointer from integer without a cast
-> serial/serial_mctrl_gpio.c:90:6: warning: unused variable 'err' [-Wunused-variable]
-> 
-> This removes the unused variable and uses the ERR_CAST helper
-> to return the error value as the correct type.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 1d267ea6539f2 ("serial: mctrl-gpio: simplify init routine")
+Hi Greg,
 
-Someone else sent me this before you did, sorry.
+On Wed, Mar 11, 2015 at 6:00 AM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Mon, Mar 09, 2015 at 05:37:31PM -0700, Dmitry Torokhov wrote:
+>> We are dealing with CTS, not DSR here (we dealt with DSR a few lines
+>> above), so set appropriate bits.
+>>
+>> Reported-by: Kevin Cernekee <cernekee@chromium.org>
+>> Signed-off-by: Dmitry Torokhov <dtor@chromium.org>
+>> ---
+>>  drivers/tty/serial/8250/8250_dw.c | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> Should this go into 4.0-final, or can it wait for 4.1-rc1?
+> I'm guessing 4.0-final, but want to make sure.
 
-greg k-h
+I'd like to have it in 4.0 but since there are no users of the feature
+in mainline yet I think it can wait.
+
+Thanks,
+Dmitry
