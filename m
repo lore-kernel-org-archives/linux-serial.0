@@ -1,93 +1,90 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 4/8] pwm: atmel-hlcdc: fix struct clk pointer comparing
-Date: Wed, 11 Mar 2015 11:54:23 +0100
-Message-ID: <20150311105422.GC22149@ulmo.nvidia.com>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
- <1424876018-17852-5-git-send-email-shawn.guo@linaro.org>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with IRQF_NO_SUSPEND
+Date: Wed, 11 Mar 2015 12:17:01 +0100
+Message-ID: <5500242D.3080605@atmel.com>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>	<20150307103939.GA17964@amd>	<20150307110645.GW3989@piout.net>	<2616799.fRG1k0Q6sR@vostro.rjw.lan> <20150311093848.2b23a027@bbrezillon>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1890710781=="
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1424876018-17852-5-git-send-email-shawn.guo@linaro.org>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>, kernel@pengutronix.de, Mike Turquette <mturquette@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <20150311093848.2b23a027@bbrezillon>
+Sender: linux-pm-owner@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Pavel Machek <pavel@ucw.cz>, Sylvain Rochet <gradator@gradator.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, Alessandro Zummo <a.zummo@towertech.it>, Mike Turquette <mturquette@linaro.org>, Jason Cooper <jason@lakedaemon.net>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Len Brown <len.brown@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Wim Van Sebroeck <wim@iguana.be>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead>
 List-Id: linux-serial@vger.kernel.org
 
-
---===============1890710781==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="jousvV0MzM2p6OtC"
-Content-Disposition: inline
-
-
---jousvV0MzM2p6OtC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Feb 25, 2015 at 10:53:34PM +0800, Shawn Guo wrote:
-> Since commit 035a61c314eb ("clk: Make clk API return per-user struct clk
-> instances"), clk API users can no longer check if two struct clk
-> pointers are pointing to the same hardware clock, i.e. struct clk_hw, by
-> simply comparing two pointers.  That's because with the per-user clk
-> change, a brand new struct clk is created whenever clients try to look
-> up the clock by calling clk_get() or sister functions like clk_get_sys()
-> and of_clk_get().  This changes the original behavior where the struct
-> clk is only created for once when clock driver registers the clock to
-> CCF in the first place.  The net change here is before commit
-> 035a61c314eb the struct clk pointer is unique for given hardware
-> clock, while after the commit the pointers returned by clk lookup calls
-> become different for the same hardware clock.
+Le 11/03/2015 09:38, Boris Brezillon a =E9crit :
+> On Sun, 08 Mar 2015 02:11:45 +0100
+> "Rafael J. Wysocki" <rjw@rjwysocki.net> wrote:
 >=20
-> That said, the struct clk pointer comparing in the code doesn't work any
-> more.  Call helper function clk_is_match() instead to fix the problem.
+>> On Saturday, March 07, 2015 12:06:45 PM Alexandre Belloni wrote:
+>>> On 07/03/2015 at 11:39:39 +0100, Pavel Machek wrote :
+>>>>> The Atmel watchdog can't be stopped once it's started. This is ac=
+tually=20
+>>>>> very useful so we can reset if suspend or resume failed, the only=
+=20
+>>>>> drawback is that you have to wake up from time to time (e.g. by u=
+sing=20
+>>>>> the RTC/RTT) to clear the watchdog and then go back to sleep ASAP=
+=2E
+>>>>
+>>>> Yeah. So you do "echo mem > /sys/power/state", and few seconds/min=
+utes
+>>>> after watchdog kills the system. But you did not ask for dead syst=
+em,
+>>>> you asked for suspend.
+>>>>
+>>>> And while that behaviour is useful for you, I don't think it is
+>>>> exactly useful behaviour, nor it is the behaviour user would expec=
+t.
+>>>>
+>>>
+>>> I think you misunderstood, that is exactly the expected behaviour. =
+This
+>>> is hardware defined. Once the watchdog is started, nobody can stop =
+it.
+>>> Trying to change the mode register will result in a reset of the So=
+C.
+>>>
+>>> It is documented in the datasheet and any user wanting another beha=
+viour
+>>> is out of luck.
+>>>
+>>> So basically, when using a watchdog, you have to wake up every 15-1=
+6s to
+>>> restart it.
+>>
+>> So question is if we need a separate interrupt handler for that, exp=
+ecially
+>> since it is shared with the PIT timer anyway.
+>>
+>> Seems to me that the simplest way out of this conundrum would be to =
+simply
+>> make the timer's interrupt handler kick the watchdog every once a wh=
+ile and
+>> get rid of the separate watchdog interrupt handler entirely.
 >=20
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> ---
->  drivers/pwm/pwm-atmel-hlcdc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> The watchdog interrupt handler is not here to ping the watchdog, it's
+> here to reset the platform if the watchdog hasn't been refreshed
+> appropriately.
+>=20
+> IOW, it's a software watchdog using at91 WDT capabilities to determin=
+e
+> when it should reboot the system.
+> IIRC, we need this on some at91 platforms to fix a HW bug (maybe
+> Nicolas can confirm this).
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Yes, the HW bug that we address in these functions:
+at91sam9260_restart() and at91sam9g45_restart().
 
---jousvV0MzM2p6OtC
-Content-Type: application/pgp-signature
+We have this issue because of NAND flash lines shared with DDR that are
+driven during product reboot on old products (Cf. these functions
+comments). This bug would kick-in when doing "software reset"/"watchdog
+reset"/"push button reset". Only the "software reset" is handled by the
+functions above.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+So, yes, this "software watchdog" is there for this purpose IIRC.
 
-iQIcBAABCAAGBQJVAB7eAAoJEN0jrNd/PrOh9YcP/RkPCXu45VwcVdVStHzH6Cn8
-N9QkZdfN7ZoImawBuqzvkJJTgSDH078ztV1Xy11A65axi5c4NuaByqe4lC+4gNUZ
-EqeCaIG/EzDg26/YTb78p1TdTux8y2cfJSpFUQAdpojHxH8nKpQ33kcrjS5eYwi6
-J3rk3nt1OAR/15cIFfvp41TTIXPouINmiTnUkvx56u6ptSonn3sJulwJUiPN+tpB
-r4uRv2TVI0pLF82PmCX3R0wxyGaBj8d3CTyb1X5IXoMs5YVmPG501OYMi9Sp7uKR
-Q2Lx+++LBZl9La9EPHEVMZ/2GXBeougzTo2bCmZ/AGcHBVEQZNPgFCr0bn4nY6QO
-Dp2FCi9Xaiqey2Z5hvIR5u7Jgj1HVtL3yFAZBcsErq1BPDJel/NSErY+OmPpMJJx
-0msm7wn9DVNEU5AehHaD81PjnCtHcf2TI8OjkwDlU1cLDFet5czNHAEK/d2dezwO
-x5IfE4pbjkrj1K4Hek5Q5WHpP0KcomOtzglQAsVihi6P8qdCSyfh6+XP3u3pXcLS
-so0dEJLg5isTO2zuLt9Wekfz5ho4Kc/oh23p1cbIhWlNoAo6f9kQ9GGKL9w2DAUk
-IOjyJij5ZeFRQY6T/djwNBAePIlwl455hvaEOPyiyjWUNJudi4RjDbkjSk3fnT+R
-Hoyt2z4Qi6cIJEdu1kew
-=1SFi
------END PGP SIGNATURE-----
-
---jousvV0MzM2p6OtC--
-
---===============1890710781==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
-cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
-
---===============1890710781==--
+Bye,
+--=20
+Nicolas Ferre
