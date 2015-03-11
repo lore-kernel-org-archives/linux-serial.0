@@ -1,64 +1,47 @@
-From: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with IRQF_NO_SUSPEND
-Date: Wed, 11 Mar 2015 02:03:08 +0100
-Message-ID: <2194398.CCV6AEYQ7u@vostro.rjw.lan>
-References: <1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com> <1901056.Mqyykpv3e9@vostro.rjw.lan> <20150310223305.GN9188@piout.net>
+From: Zhang Zhen <zhenzhang.zhang@huawei.com>
+Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed
+ the kernel will hung up
+Date: Wed, 11 Mar 2015 09:20:19 +0800
+Message-ID: <54FF9853.2060105@huawei.com>
+References: <54F96F5B.2090601@huawei.com>	<54F9DACA.3020103@hurleysoftware.com>	<CAD7vxxJXEz8KfXd9fBjkxTi5Nnjyw0=wwvbw5qCSwCMbBd64eA@mail.gmail.com>	<54FD4779.3020902@huawei.com>	<1425907939.3838.182.camel@linux.intel.com>	<CAD7vxxJvL61BjD9AMBF34Y8xnY+D-umuWLUq8Dh7ZbSm5tCE9w@mail.gmail.com>	<1425913502.3838.185.camel@linux.intel.com> <CAD7vxx+WYgOujpTAxXsUmcr8T4zHS9MYfwrWu8hV2t=TudLamQ@mail.gmail.com> <54FEF0B0.6010002@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150310223305.GN9188-m++hUPXGwpdeoWH0uzbU5w@public.gmane.org>
-Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Sylvain Rochet <gradator-XWGZPxRNpGHk1uMJSBkQmQ@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Wim Van Sebroeck <wim-IQzOog9fTRqzQB+pC5nmwQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <54FEF0B0.6010002@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Tim Kryger <tim.kryger@gmail.com>, Alan Cox <alan@linux.intel.com>, "long.wanglong" <long.wanglong@huawei.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, gregkh@linuxfoundation.org, Jamie Iles <jamie@jamieiles.com>, Arnd Bergmann <arnd@arndb.de>, shenjiangjiang@huawei.com, Wang Kai <morgan.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday, March 10, 2015 11:33:05 PM Alexandre Belloni wrote:
-> On 10/03/2015 at 23:31:52 +0100, Rafael J. Wysocki wrote :
-> > On Tuesday, March 10, 2015 10:33:17 PM Alexandre Belloni wrote:
-> > > Hi,
-> > > 
-> > > On 09/03/2015 at 15:30:01 +0100, Rafael J. Wysocki wrote :
-> > > > > > > Actaully, your platform should just refuse to enter suspend-to-RAM
-> > > > > > > when hw watchdog is enabled.
-> > > > > > 
-> > > > > > Quite likely, depending on how exactly the suspend is implemented.
-> > > > > >
-> > > > > 
-> > > > > We've had absolutely zero complain on that. It is quite clear in the
-> > > > > datasheet that failing to refresh the watchdog once started will lead to
-> > > > > a reset and that it is impossible to stop.
-> > > > > It is actually quite convenient to also ensure that you can actually
-> > > > > wake up from suspend because that can obviously go wrong.
-> > > > 
-> > > > I gather then that the suspend implementation is such that touching the
-> > > > watchdog periodically while suspended is not a problem.
-> > > > 
-> > > > Again, can you please tell me how suspend is implemented on at91?
-> > > > 
-> > > 
-> > > It actually depends on the architecture (at91rm9200, at91sam9 or sama5)
-> > > but basically, the clocks are switched off in almost all the peripheral
-> > > drivers then the ram self refresh activated, the master clock is
-> > > switched off using code running from SRAM and the core is then waiting
-> > > for interrupt.
-> > 
-> > OK, so it looks like enable_irq_wake() doesn't actually affect the hardware
-> > on those platforms, is that correct?
-> > 
-> 
-> I didn't exactly look in details but apart from the wakeup from gpio
-> handling (keeping the pio controller clocked in the case one of its gpio
-> has wakeup enabled), I don't think it does much more. It uses
-> irq_gc_set_wake().
+On 2015/3/10 21:25, Peter Hurley wrote:
+> On 03/09/2015 10:47 PM, Tim Kryger wrote:
+>> The current workaround of clearing fifos and retrying a fixed number
+>> of times isn't ideal but I'm not sure what else can be done given th=
+e
+>> way this hardware works.
+>=20
+> But hanging the machine is not an acceptable outcome.
+>=20
+> Since the hang stems from the printk while already holding the port->=
+lock,
+> until I can fix the console write, I think it's best to comment out
+> the dev_err() with a FIXME note.
 
-Well, that only modifies gc->wake_active, so no hardware interactions.
-
-
--- 
-I speak only for myself.
-Rafael J. Wysocki, Intel Open Source Technology Center.
---
-To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Yeah=EF=BC=8Ci agree.
+>=20
+> The 8250 console write already checks port->sysrq to allow printk fro=
+m
+> within the driver so this solution just needs to be generalized.
+> And there are debug uses of printk() from within the driver that are =
+just
+> as broken, so this isn't the only use case. (I want to do something
+> similar for the au_serial-* i/o accessors too).
+>=20
+> Regards,
+> Peter Hurley
+>=20
+>=20
+>=20
+> .
+>=20
