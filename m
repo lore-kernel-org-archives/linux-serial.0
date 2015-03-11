@@ -1,80 +1,66 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
 Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with
  IRQF_NO_SUSPEND
-Date: Wed, 11 Mar 2015 08:33:53 +0100
-Message-ID: <20150311083353.577b8a30@bbrezillon>
-References: <1425287898-15093-6-git-send-email-boris.brezillon@free-electrons.com>
-	<1901056.Mqyykpv3e9@vostro.rjw.lan>
-	<20150310223305.GN9188@piout.net>
-	<2194398.CCV6AEYQ7u@vostro.rjw.lan>
+Date: Wed, 11 Mar 2015 09:38:48 +0100
+Message-ID: <20150311093848.2b23a027@bbrezillon>
+References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
+	<20150307103939.GA17964@amd>
+	<20150307110645.GW3989@piout.net>
+	<2616799.fRG1k0Q6sR@vostro.rjw.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2194398.CCV6AEYQ7u@vostro.rjw.lan>
+In-Reply-To: <2616799.fRG1k0Q6sR@vostro.rjw.lan>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Pavel Machek <pavel@ucw.cz>, Sylvain Rochet <gradator@gradator.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, Alessandro Zummo <a.zummo@towertech.it>, Mike Turquette <mturquette@linaro.org>, Jason Cooper <jason@lakedaemon.net>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Len Brown <len.brown@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Wim Van Sebroeck <wim@iguana.be>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-watc
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Pavel Machek <pavel@ucw.cz>, Sylvain Rochet <gradator@gradator.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, Alessandro Zummo <a.zummo@towertech.it>, Mike Turquette <mturquette@linaro.org>, Jason Cooper <jason@lakedaemon.net>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Len Brown <len.brown@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Wim Van Sebroeck <wim@iguana.be>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.
 List-Id: linux-serial@vger.kernel.org
 
-Rafael, Alexandre,
-
-On Wed, 11 Mar 2015 02:03:08 +0100
+On Sun, 08 Mar 2015 02:11:45 +0100
 "Rafael J. Wysocki" <rjw@rjwysocki.net> wrote:
 
-> On Tuesday, March 10, 2015 11:33:05 PM Alexandre Belloni wrote:
-> > On 10/03/2015 at 23:31:52 +0100, Rafael J. Wysocki wrote :
-> > > On Tuesday, March 10, 2015 10:33:17 PM Alexandre Belloni wrote:
-> > > > Hi,
-> > > > 
-> > > > On 09/03/2015 at 15:30:01 +0100, Rafael J. Wysocki wrote :
-> > > > > > > > Actaully, your platform should just refuse to enter suspend-to-RAM
-> > > > > > > > when hw watchdog is enabled.
-> > > > > > > 
-> > > > > > > Quite likely, depending on how exactly the suspend is implemented.
-> > > > > > >
-> > > > > > 
-> > > > > > We've had absolutely zero complain on that. It is quite clear in the
-> > > > > > datasheet that failing to refresh the watchdog once started will lead to
-> > > > > > a reset and that it is impossible to stop.
-> > > > > > It is actually quite convenient to also ensure that you can actually
-> > > > > > wake up from suspend because that can obviously go wrong.
-> > > > > 
-> > > > > I gather then that the suspend implementation is such that touching the
-> > > > > watchdog periodically while suspended is not a problem.
-> > > > > 
-> > > > > Again, can you please tell me how suspend is implemented on at91?
-> > > > > 
-> > > > 
-> > > > It actually depends on the architecture (at91rm9200, at91sam9 or sama5)
-> > > > but basically, the clocks are switched off in almost all the peripheral
-> > > > drivers then the ram self refresh activated, the master clock is
-> > > > switched off using code running from SRAM and the core is then waiting
-> > > > for interrupt.
+> On Saturday, March 07, 2015 12:06:45 PM Alexandre Belloni wrote:
+> > On 07/03/2015 at 11:39:39 +0100, Pavel Machek wrote :
+> > > > The Atmel watchdog can't be stopped once it's started. This is actually 
+> > > > very useful so we can reset if suspend or resume failed, the only 
+> > > > drawback is that you have to wake up from time to time (e.g. by using 
+> > > > the RTC/RTT) to clear the watchdog and then go back to sleep ASAP.
 > > > 
-> > > OK, so it looks like enable_irq_wake() doesn't actually affect the hardware
-> > > on those platforms, is that correct?
+> > > Yeah. So you do "echo mem > /sys/power/state", and few seconds/minutes
+> > > after watchdog kills the system. But you did not ask for dead system,
+> > > you asked for suspend.
+> > > 
+> > > And while that behaviour is useful for you, I don't think it is
+> > > exactly useful behaviour, nor it is the behaviour user would expect.
 > > > 
 > > 
-> > I didn't exactly look in details but apart from the wakeup from gpio
-> > handling (keeping the pio controller clocked in the case one of its gpio
-> > has wakeup enabled), I don't think it does much more. It uses
-> > irq_gc_set_wake().
+> > I think you misunderstood, that is exactly the expected behaviour. This
+> > is hardware defined. Once the watchdog is started, nobody can stop it.
+> > Trying to change the mode register will result in a reset of the SoC.
+> > 
+> > It is documented in the datasheet and any user wanting another behaviour
+> > is out of luck.
+> > 
+> > So basically, when using a watchdog, you have to wake up every 15-16s to
+> > restart it.
 > 
-> Well, that only modifies gc->wake_active, so no hardware interactions.
+> So question is if we need a separate interrupt handler for that, expecially
+> since it is shared with the PIT timer anyway.
+> 
+> Seems to me that the simplest way out of this conundrum would be to simply
+> make the timer's interrupt handler kick the watchdog every once a while and
+> get rid of the separate watchdog interrupt handler entirely.
 
-I'm not sure I understand the whole discussion, but calling
-enable_irq_wake() does affect suspend behavior on at91 platforms.
-Take a look at the suspend() implementation [1], it's making use of the
-wake_active field (modified by irq_gc_set_wake) when entering suspend
-in order to keep wakeup IRQ sources enabled. 
+The watchdog interrupt handler is not here to ping the watchdog, it's
+here to reset the platform if the watchdog hasn't been refreshed
+appropriately.
 
-Best Regards,
+IOW, it's a software watchdog using at91 WDT capabilities to determine
+when it should reboot the system.
+IIRC, we need this on some at91 platforms to fix a HW bug (maybe
+Nicolas can confirm this).
 
-Boris
-
-
-[1]http://lxr.free-electrons.com/source/drivers/irqchip/irq-atmel-aic.c#L106
 
 -- 
 Boris Brezillon, Free Electrons
