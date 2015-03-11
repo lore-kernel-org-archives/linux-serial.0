@@ -1,68 +1,48 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v2 5/6] watchdog: at91sam9: request the irq with
- IRQF_NO_SUSPEND
-Date: Wed, 11 Mar 2015 09:38:48 +0100
-Message-ID: <20150311093848.2b23a027@bbrezillon>
-References: <1425287898-15093-1-git-send-email-boris.brezillon@free-electrons.com>
-	<20150307103939.GA17964@amd>
-	<20150307110645.GW3989@piout.net>
-	<2616799.fRG1k0Q6sR@vostro.rjw.lan>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] clk: provide clk_is_match() dummy for
+	non-common clk
+Date: Wed, 11 Mar 2015 10:22:09 +0000
+Message-ID: <20150311102208.GX8656@n2100.arm.linux.org.uk>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+ <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+ <20150225172757.421.43718@quantum> <8682755.oK0Ae34OOP@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2616799.fRG1k0Q6sR@vostro.rjw.lan>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Pavel Machek <pavel@ucw.cz>, Sylvain Rochet <gradator@gradator.net>, Peter Zijlstra <peterz@infradead.org>, Mark Rutland <mark.rutland@arm.com>, Alessandro Zummo <a.zummo@towertech.it>, Mike Turquette <mturquette@linaro.org>, Jason Cooper <jason@lakedaemon.net>, "rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>, Len Brown <len.brown@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Wim Van Sebroeck <wim@iguana.be>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.
+Return-path: <alsa-devel-bounces@alsa-project.org>
+Content-Disposition: inline
+In-Reply-To: <8682755.oK0Ae34OOP@wuerfel>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Mike Turquette <mturquette@linaro.org>, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-serial@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, 08 Mar 2015 02:11:45 +0100
-"Rafael J. Wysocki" <rjw@rjwysocki.net> wrote:
-
-> On Saturday, March 07, 2015 12:06:45 PM Alexandre Belloni wrote:
-> > On 07/03/2015 at 11:39:39 +0100, Pavel Machek wrote :
-> > > > The Atmel watchdog can't be stopped once it's started. This is actually 
-> > > > very useful so we can reset if suspend or resume failed, the only 
-> > > > drawback is that you have to wake up from time to time (e.g. by using 
-> > > > the RTC/RTT) to clear the watchdog and then go back to sleep ASAP.
-> > > 
-> > > Yeah. So you do "echo mem > /sys/power/state", and few seconds/minutes
-> > > after watchdog kills the system. But you did not ask for dead system,
-> > > you asked for suspend.
-> > > 
-> > > And while that behaviour is useful for you, I don't think it is
-> > > exactly useful behaviour, nor it is the behaviour user would expect.
-> > > 
-> > 
-> > I think you misunderstood, that is exactly the expected behaviour. This
-> > is hardware defined. Once the watchdog is started, nobody can stop it.
-> > Trying to change the mode register will result in a reset of the SoC.
-> > 
-> > It is documented in the datasheet and any user wanting another behaviour
-> > is out of luck.
-> > 
-> > So basically, when using a watchdog, you have to wake up every 15-16s to
-> > restart it.
+On Sun, Mar 08, 2015 at 10:05:29PM +0100, Arnd Bergmann wrote:
+> ARM randconfig build tests found a new error for configurations
+> with COMMON_CLK disabled but HAS_CLK selected by the platform:
 > 
-> So question is if we need a separate interrupt handler for that, expecially
-> since it is shared with the PIT timer anyway.
+> ERROR: "clk_is_match" [sound/soc/fsl/snd-soc-fsl-spdif.ko] undefined!
 > 
-> Seems to me that the simplest way out of this conundrum would be to simply
-> make the timer's interrupt handler kick the watchdog every once a while and
-> get rid of the separate watchdog interrupt handler entirely.
+> This moves the declaration around, so this case is covered
+> by the existing static inline helper function.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: c69e182e51d89 ("clk: introduce clk_is_match")
+> ----
+> BTW, we have a preexisting problem in clk_get_parent,
+> clk_round_rate and clk_set_parent, which I've worked around in
+> my randconfig builds so far. Should we do that the same way?
 
-The watchdog interrupt handler is not here to ping the watchdog, it's
-here to reset the platform if the watchdog hasn't been refreshed
-appropriately.
-
-IOW, it's a software watchdog using at91 WDT capabilities to determine
-when it should reboot the system.
-IIRC, we need this on some at91 platforms to fix a HW bug (maybe
-Nicolas can confirm this).
-
+NAK, as Uwe points out, you didn't address my comment.
 
 -- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
