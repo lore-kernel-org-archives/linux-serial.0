@@ -1,177 +1,82 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH] clk: provide clk_is_match() dummy for non-common clk
-Date: Wed, 11 Mar 2015 17:35:42 -0700
-Message-ID: <5500DF5E.7010404@codeaurora.org>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org> <1424876018-17852-2-git-send-email-shawn.guo@linaro.org> <20150225172757.421.43718@quantum> <8682755.oK0Ae34OOP@wuerfel> <20150311102208.GX8656@n2100.arm.linux.org.uk> <20150311111755.GI952@pengutronix.de> <20150311122905.GY8656@n2100.arm.linux.org.uk>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH v2 01/10] drivers: PL011: avoid potential
+ unregister_driver call
+Date: Thu, 12 Mar 2015 10:42:59 +0000
+Message-ID: <20150312104258.GI8656@n2100.arm.linux.org.uk>
+References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
+ <1425491994-23913-2-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-In-Reply-To: <20150311122905.GY8656@n2100.arm.linux.org.uk>
-Sender: linux-pwm-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>, =?windows-1252?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Mike Turquette <mturquette@linaro.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-serial@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1425491994-23913-2-git-send-email-andre.przywara@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: rob.herring@linaro.org, arnd@arndb.de, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, jslaby@suse.cz, Dave.Martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 03/11/15 05:29, Russell King - ARM Linux wrote:
-> On Wed, Mar 11, 2015 at 12:17:55PM +0100, Uwe Kleine-K=F6nig wrote:
->> Hey Russell,
->>
->> On Wed, Mar 11, 2015 at 10:22:09AM +0000, Russell King - ARM Linux w=
-rote:
->>> On Sun, Mar 08, 2015 at 10:05:29PM +0100, Arnd Bergmann wrote:
->>>> ARM randconfig build tests found a new error for configurations
->>>> with COMMON_CLK disabled but HAS_CLK selected by the platform:
->>>>
->>>> ERROR: "clk_is_match" [sound/soc/fsl/snd-soc-fsl-spdif.ko] undefin=
-ed!
->>>>
->>>> This moves the declaration around, so this case is covered
->>>> by the existing static inline helper function.
->>>>
->>>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->>>> Fixes: c69e182e51d89 ("clk: introduce clk_is_match")
->>>> ----
->>>> BTW, we have a preexisting problem in clk_get_parent,
->>>> clk_round_rate and clk_set_parent, which I've worked around in
->>>> my randconfig builds so far. Should we do that the same way?
->>> NAK, as Uwe points out, you didn't address my comment.
->> You commented on the patch that is c69e182e51d8 ("clk: introduce
->> clk_is_match") now in next. Arnd just moved this around.
-> *Sigh*
->
-> Mike - please remove this commit until proper kernel patch process is
-> honoured.  We'll have some order here, and mutual respect of fellow
-> kernel developers, rather than people selectively ignoring people.
-> Yes, I realise that it fixes a bug, but it's utterly disgusting that
-> comments on a patch are ignored and it's just picked up irrespective
-> of comments being addressed.
->
-> If you don't like that, bloody well do a better job.
->
+On Wed, Mar 04, 2015 at 05:59:45PM +0000, Andre Przywara wrote:
+> Although we care about not unregistering the driver if there are
+> still ports connected during the .remove callback, we do miss this
+> check in the pl011_probe function. So if the current port allocation
+> fails, but there are other ports already registered, we will kill
+> those.
+> So factor out the port removal into a separate function and use that
+> in the probe function, too.
+> 
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> ---
+>  drivers/tty/serial/amba-pl011.c |   38 +++++++++++++++++++++-----------------
+>  1 file changed, 21 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 92783fc..961f9b0 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2235,6 +2235,24 @@ static int pl011_probe_dt_alias(int index, struct device *dev)
+>  	return ret;
+>  }
+>  
+> +/* unregisters the driver also if no more ports are left */
+> +static void pl011_unregister_port(struct uart_amba_port *uap)
+> +{
+> +	int i;
+> +	bool busy = false;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
+> +		if (amba_ports[i] == uap)
+> +			amba_ports[i] = NULL;
+> +		else if (amba_ports[i])
+> +			busy = true;
+> +	}
+> +	pl011_dma_remove(uap);
+> +	if (!busy)
+> +		uart_unregister_driver(&amba_reg);
+> +}
 
-The patch was *not* picked up after your mail was sent. The patch was
-picked up the same day it was posted to the list (Feb 25). You sent
-review comments a week later (March 4). I don't see any selective
-ignoring here.
+This is still racy, as I pointed out at the time this crap was dreamt
+up.
 
-I'll fold the const comments from Geert, your comments, and Arnd's fix
-into the patch. Here's the new patch:
+There is _no_ locking between an individual driver's ->probe or ->remove
+functions being called concurrently for different devices.  The only
+locking which the driver model guarantees is that a single struct device
+can only be probed by one driver at a time.
 
-----8<----
+Multiple struct device's can be in-progress of ->probe or ->remove
+simultaneously.
 
-=46rom: Michael Turquette <mturquette@linaro.org>
-Subject: [PATCH] clk: introduce clk_is_match
+However, this isn't your bug to solve... it's those who were proponents
+of this crap approach.
 
-Some drivers compare struct clk pointers as a means of knowing
-if the two pointers reference the same clock hardware. This behavior is
-dubious (drivers must not dereference struct clk), but did not cause an=
-y
-regressions until the per-user struct clk patch was merged. Now the tes=
-t
-for matching clk's will always fail with per-user struct clk's.
-
-clk_is_match is introduced to fix the regression and prevent drivers
-from comparing the pointers manually.
-
-=46ixes: 035a61c314eb ("clk: Make clk API return per-user struct clk in=
-stances")
-Cc: Russell King <linux@arm.linux.org.uk>
-Cc: Shawn Guo <shawn.guo@linaro.org>
-Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Signed-off-by: Michael Turquette <mturquette@linaro.org>
-[arnd@arndb.de: Fix COMMON_CLK=3DN && HAS_CLK=3DY config]
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-[sboyd@codeaurora.org: const arguments to clk_is_match() and
-remove unnecessary ternary operation]
-Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
----
- drivers/clk/clk.c   | 26 ++++++++++++++++++++++++++
- include/linux/clk.h | 18 ++++++++++++++++++
- 2 files changed, 44 insertions(+)
-
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index b9f85fc2ce3f..237f23f68bfc 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -2170,6 +2170,32 @@ int clk_get_phase(struct clk *clk)
- }
-=20
- /**
-+ * clk_is_match - check if two clk's point to the same hardware clock
-+ * @p: clk compared against q
-+ * @q: clk compared against p
-+ *
-+ * Returns true if the two struct clk pointers both point to the same =
-hardware
-+ * clock node. Put differently, returns true if struct clk *p and stru=
-ct clk *q
-+ * share the same struct clk_core object.
-+ *
-+ * Returns false otherwise. Note that two NULL clks are treated as mat=
-ching.
-+ */
-+bool clk_is_match(const struct clk *p, const struct clk *q)
-+{
-+	/* trivial case: identical struct clk's or both NULL */
-+	if (p =3D=3D q)
-+		return true;
-+
-+	/* true if clk->core pointers match. Avoid derefing garbage */
-+	if (!IS_ERR_OR_NULL(p) && !IS_ERR_OR_NULL(q))
-+		if (p->core =3D=3D q->core)
-+			return true;
-+
-+	return false;
-+}
-+EXPORT_SYMBOL_GPL(clk_is_match);
-+
-+/**
-  * __clk_init - initialize the data structures in a struct clk
-  * @dev:	device initializing this clk, placeholder for now
-  * @clk:	clk being initialized
-diff --git a/include/linux/clk.h b/include/linux/clk.h
-index 8381bbfbc308..68c16a6bedb3 100644
---- a/include/linux/clk.h
-+++ b/include/linux/clk.h
-@@ -125,6 +125,19 @@ int clk_set_phase(struct clk *clk, int degrees);
-  */
- int clk_get_phase(struct clk *clk);
-=20
-+/**
-+ * clk_is_match - check if two clk's point to the same hardware clock
-+ * @p: clk compared against q
-+ * @q: clk compared against p
-+ *
-+ * Returns true if the two struct clk pointers both point to the same =
-hardware
-+ * clock node. Put differently, returns true if struct clk *p and stru=
-ct clk *q
-+ * share the same struct clk_core object.
-+ *
-+ * Returns false otherwise. Note that two NULL clks are treated as mat=
-ching.
-+ */
-+bool clk_is_match(const struct clk *p, const struct clk *q);
-+
- #else
-=20
- static inline long clk_get_accuracy(struct clk *clk)
-@@ -142,6 +155,11 @@ static inline long clk_get_phase(struct clk *clk)
- 	return -ENOTSUPP;
- }
-=20
-+static inline bool clk_is_match(const struct clk *p, const struct clk =
-*q)
-+{
-+	return p =3D=3D q;
-+}
-+
- #endif
-=20
- /**
-
---=20
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+-- 
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
