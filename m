@@ -1,18 +1,16 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: Re: [PATCH REPOST 2/2] serial/amba-pl011: Leave the TX IRQ alone
- when the UART is not open
-Date: Thu, 12 Mar 2015 12:56:04 +0000
-Message-ID: <20150312125604.GB15596@e103592.cambridge.arm.com>
-References: <1425472054-7543-1-git-send-email-Dave.Martin@arm.com>
- <1425472054-7543-3-git-send-email-Dave.Martin@arm.com>
- <20150312110441.GM8656@n2100.arm.linux.org.uk>
+From: Andre Przywara <andre.przywara@arm.com>
+Subject: Re: [PATCH v2 10/10] drivers: PL011: add support for the ARM SBSA
+ generic UART
+Date: Thu, 12 Mar 2015 13:43:17 +0000
+Message-ID: <550197F5.1020107@arm.com>
+References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
+ <1425491994-23913-11-git-send-email-andre.przywara@arm.com>
+ <20150312105210.GK8656@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150312110441.GM8656@n2100.arm.linux.org.uk>
-Content-Language: en-US
-Content-Disposition: inline
+In-Reply-To: <20150312105210.GK8656@n2100.arm.linux.org.uk>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -23,29 +21,55 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: "rob.herring@linaro.org" <rob.herring@linaro.org>, "arnd@arndb.de" <arnd@arndb.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 12, 2015 at 11:04:41AM +0000, Russell King - ARM Linux wrote:
-> On Wed, Mar 04, 2015 at 12:27:34PM +0000, Dave Martin wrote:
-> > Getting the TX IRQ re-asserted from scratch can be inefficient in
-> > some setups.
-> > 
-> > This patch avoids clearing the TX IRQ across pl011_shutdown()...
-> > pl011_startup(), so that if the port is closed and reopened, the
-> > IRQ will still work afterwards without having to bootstrap it again.
+Hi Russel,
+
+thanks a lot for looking at the patches!
+
+On 12/03/15 10:52, Russell King - ARM Linux wrote:
+> On Wed, Mar 04, 2015 at 05:59:54PM +0000, Andre Przywara wrote:
+>> +static struct uart_ops sbsa_uart_pops = {
+>> +	.tx_empty	= pl011_tx_empty,
+>> +	.set_mctrl	= sbsa_uart_set_mctrl,
+>> +	.get_mctrl	= sbsa_uart_get_mctrl,
+>> +	.stop_tx	= pl011_stop_tx,
+>> +	.start_tx	= pl011_start_tx,
+>> +	.stop_rx	= pl011_stop_rx,
+>> +	.enable_ms	= NULL,
+>> +	.break_ctl	= NULL,
 > 
-> So if a port is being used as the console, we end up spraying the system
-> with transmit interrupts?  This can't be right.
+> It is generally accepted that we don't mention pointers/values which are
+> initialised to NULL/0 in initialisers.
 
-Nope, if the port is not open theough serial_core then TXIS remains
-asserted but is masked off in IMSC.
+Right, I forgot to delete those after development where I had them in
+explicitly to make sure I covered everything.
+Thanks for spotting.
 
-This should be  just the same as the way we avoid a screaming TX interrupt
-when the port *is* open but the transmitter is idle.
+> 
+>> +static struct platform_driver arm_sbsa_uart_platform_driver = {
+>> +	.probe		= sbsa_uart_probe,
+>> +	.remove		= sbsa_uart_remove,
+>> +	.driver	= {
+>> +		.name	= "sbsa-uart",
+>> +		.of_match_table = of_match_ptr(sbsa_uart_match),
+>> +	},
+>> +};
+>> +
+>> +module_platform_driver(arm_sbsa_uart_platform_driver);
+> 
+> No need to open code the initialisation, rather than using the
+> module_*_driver() helper macros to avoid the problem which Dave mentioned.
+> 
+> These macros are only there to avoid having to write out the same boiler
+> plate in loads of simple drivers.  As soon as a driver has more than one
+> device driver structure in it, it needs to be open coded.
 
+Actually I prepared this already for the ACPI guys, which want to stuff
+their ACPI table match function in there - I think then we need the open
+coded version. So if you don't mind too much, I'd like to keep it like
+this and hope for someone to actually use it ;-)
 
-My commit message could have explained that better...
-
-Cheers
----Dave
+Cheers,
+Andre.
