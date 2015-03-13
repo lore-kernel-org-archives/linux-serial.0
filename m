@@ -1,102 +1,147 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [PATCH v2 0/2] serial/amba-pl011: Activate TX IRQ passively
-Date: Fri, 13 Mar 2015 15:56:20 +0000
-Message-ID: <1426262182-2298-1-git-send-email-Dave.Martin@arm.com>
+From: Ming Lei <ming.lei@canonical.com>
+Subject: Re: [BUG] n_tty: 4.0-rc3+: Unable to handle kernel paging request at
+ virtual address 000044d0
+Date: Sat, 14 Mar 2015 07:09:03 +0800
+Message-ID: <CACVXFVM0kPM65GNOvB6SOaEB+JRuOsxcPJiYkG=7dnxeQP-i3A@mail.gmail.com>
+References: <CACVXFVMWBnZSPk=QAB1ZkRkNYUxw2kdpGeazUR31h2HiAmxswA@mail.gmail.com>
+	<5502DF4C.3030201@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5502DF4C.3030201@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Changes since v1:
+On Fri, Mar 13, 2015 at 8:59 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> [ +cc Will Deacon, linux-arm ]
+>
+> Hi Ming,
+>
+> On 03/13/2015 02:02 AM, Ming Lei wrote:
+>> Hi Guys,
+>>
+>> Just found the following oops during kernel booting when I
+>> test the latest linus tree on one arm64 VM booted from uefi
+>> plus grub2:
+>
+> Thanks for the bug report.
+>
+> This looks like a compiler bug when generating code for
+> smp_load_acquire() (see below); what compiler are you using?
 
-This is a cleanup of v1 which significantly simplifies some things and
-fixes a couple of bugs.
+It is one gcc-4.7 based compiler from one customer, and when I switch
+to aarch64-linux-gnu, the bug does disappear.
 
-Due to these changes, I've stripped the Tested-bys.  If the guys who
-already gave a Tested-by (thanks) have a chance, a re-test would be
-much appreciated.
+Thanks for your help!
 
- * Refactored pl011_tx_char() and associated control flow to have
-   "try to transmit a char" semantics, instead of "transmit, then
-   tell me whether I can transmit another".
-
-   This makes the code clearer, and ensures by construction that TXFF is
-   always checked before sending a char, if character transmission was
-   not triggered by an interrupt.
-
-   As a side effect, this change exposed and also fixes a bug which can
-   cause the last character to be sent twice when the FIFO becomes full
-   (thanks to Dom Cobley for reporting this).
-
- * Removal of some redundant changes, and verbose comments that are no
-   longer needed.
-
-[Russell: I didn't do all the restructuring you suggested, because I
-wanted to clean up and stabilise the existing series.  The result seems
-a fair bit less convoluted, but I'm happy to further restructuring if
-you feel it's needed.]
-
-
-Original cover letter:
-
-The current PL011 driver transmits a dummy character when the UART
-is opened, to assert the TX IRQ for the first time
-(see pl011_startup()).  The UART is put in loopback mode temporarily,
-so the receiver presumably shouldn't see anything.
-
-However...
-
-At least some platforms containing a PL011 send characters down the
-wire even when loopback mode is enabled.  This means that a
-spurious NUL character may be seen at the receiver when the PL011 is
-opened through the TTY layer.
-
-The current code also temporarily sets the baud rate to maximum and
-the character width to the minimum, to that the dummy TX completes
-as quickly as possible.  If this is seen by the receiver it will
-result in a framing error and can knock the receiver out of sync --
-turning subsequent output into garbage until synchronisation
-is reestablished.  (Particularly problematic during boot with systemd.)
-
-To avoid spurious transmissions, this patch removes assumptions about
-whether the TX IRQ will fire until at least one TX IRQ has been seen.
-
-Instead, the UART will unmask the TX IRQ and then slow-start via
-polling and timer-based soft IRQs initially.  If the TTY layer writes
-enough data to fill the FIFO to the interrupt threshold in one go,
-the TX IRQ should assert, at which point the driver changes to
-fully interrupt-driven TX.
-
-In this way, the TX IRQ is activated as a side-effect instead of
-being done deliberately.
-
-This should also mean that the driver works on the SBSA Generic
-UART[1] (a cut-down PL011) without invasive changes.  The Generic
-UART lacks some features needed for the dummy TX approach to work
-(FIFO disabling and loopback).
-
-[1] Server Base System Architecture (ARM-DEN-0029-v2.3)
-    http://infocenter.arm.com/
-    (click-thru required :/)
-
-Dave Martin (2):
-  serial/amba-pl011: Activate TX IRQ passively
-  serial/amba-pl011: Leave the TX IRQ alone when the UART is not open
-
- drivers/tty/serial/amba-pl011.c |  120 +++++++++++++++++++++++++--------------
- 1 file changed, 76 insertions(+), 44 deletions(-)
-
--- 
-1.7.10.4
+>
+>
+>> Unable to handle kernel paging request at virtual address 000044d0
+>> pgd = ffffffc0007fb000
+>> [000044d0] *pgd=0000000079407003, *pud=0000000079407003,
+>> *pmd=0000000079408003, *pte=0060000008004707
+>> Internal error: Oops: 94000005 [#1] PREEMPT SMP
+>> Modules linked in:
+>> CPU: 1 PID: 632 Comm: kworker/1:1 Not tainted 4.0.0-rc3+ #121
+>> Hardware name: linux,dummy-virt (DT)
+>> Workqueue: events flush_to_ldisc
+>> task: ffffffc0395eac00 ti: ffffffc038cb0000 task.ti: ffffffc038cb0000
+>> PC is at n_tty_receive_buf_common+0x60/0xa28
+>> LR is at n_tty_receive_buf_common+0x4c/0xa28
+>> pc : [<ffffffc000362490>] lr : [<ffffffc00036247c>] pstate: 20000145
+>> sp : ffffffc038cb3c70
+>> x29: ffffffc038cb3c70 x28: ffffffc0385ab400
+>> x27: ffffffc03ffe3380 x26: 0000000000000008
+>> x25: ffffffc0006a5260 x24: ffffffc0385b0e28
+>> x23: ffffffc038557340 x22: ffffffc0385ab400
+>> x21: ffffffc0385b0e08 x20: ffffffc0385b0e00
+>> x19: ffffffc03854c800 x18: 0000007fda9ad810
+>> x17: 0000007f8291ee7c x16: ffffffc000185540
+>> x15: 0000007f8298f590 x14: 0000007472617473
+>> x13: 2d65727000000009 x12: 0000000000000020
+>> x11: 000000000000002c x10: 0000007fb1e23360
+>> x9 : ffffffc038cb3d40 x8 : ffffffc00079cb10
+>> x7 : ffffffc000362e58 x6 : ffffffc03854c820
+>> x5 : 00000000000044d0 x4 : ffffff8000278000
+>> x3 : 000000000000002e x2 : 0000000000000000
+>> x1 : 0000000000000001 x0 : ffffffc00058f250
+>>
+>> Process kworker/1:1 (pid: 632, stack limit = 0xffffffc038cb0028)
+>> Stack: (0xffffffc038cb3c70 to 0xffffffc038cb4000)
+>> 3c60:                                     38cb3d20 ffffffc0 00362e68 ffffffc0
+>> 3c80: 3854c800 ffffffc0 385b0e00 ffffffc0 385b0e08 ffffffc0 385ab400 ffffffc0
+>> 3ca0: 38557340 ffffffc0 385b0e28 ffffffc0 006a5260 ffffffc0 00000008 00000000
+>> 3cc0: 3ffe3380 ffffffc0 00000000 00000000 3946c200 ffffffc0 3946c268 ffffffc0
+>> 3ce0: 385ab4d8 ffffffc0 00000001 00000000 00278000 ffffff80 3854c820 ffffffc0
+>> 3d00: 00000000 00000000 0000002e ffffffc0 385b0e58 ffffffc0 0058f250 ffffffc0
+>> 3d20: 38cb3d30 ffffffc0 00365b68 ffffffc0 38cb3d80 ffffffc0 000b522c ffffffc0
+>> 3d40: 38b84540 ffffffc0 385b0e08 ffffffc0 3ffe3380 ffffffc0 3ffe7600 ffffffc0
+>> 3d60: 00000000 00000000 00000000 00000000 006a5260 ffffffc0 000b5220 ffffffc0
+>> 3d80: 38cb3dd0 ffffffc0 000b5974 ffffffc0 38b84540 ffffffc0 3ffe3398 ffffffc0
+>> 3da0: 3ffe3380 ffffffc0 38b84570 ffffffc0 007c641d ffffffc0 00000001 00000000
+>> 3dc0: 006a5260 ffffffc0 00000008 00000000 38cb3e30 ffffffc0 000ba900 ffffffc0
+>> 3de0: 38c7d8c0 ffffffc0 007cced0 ffffffc0 006a3ee8 ffffffc0 38b84540 ffffffc0
+>> 3e00: 000b5828 ffffffc0 00000000 00000000 00000000 00000000 00000000 00000000
+>> 3e20: 00000000 00000000 00000000 00000000 00000000 00000000 00085bf0 ffffffc0
+>> 3e40: 000ba828 ffffffc0 38c7d8c0 ffffffc0 00000000 00000000 00000000 00000000
+>> 3e60: 00000000 00000000 000c0fbc ffffffc0 000ba828 ffffffc0 00000000 00000000
+>> 3e80: 00000000 00000000 38b84540 ffffffc0 00000000 00000000 00000000 00000000
+>> 3ea0: 38cb3ea0 ffffffc0 38cb3ea0 ffffffc0 00000000 ffffffc0 00000000 ffffffc0
+>> 3ec0: 38cb3ec0 ffffffc0 38cb3ec0 ffffffc0 00000000 00000000 00000000 00000000
+>> 3ee0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+>> 3f00: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+>> 3f20: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+>> 3f40: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+>> 3f60: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+>> 3f80: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+>> 3fa0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+>> 3fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000005 00000000
+>> 3fe0: 00000000 00000000 00000000 00000000 afafafaf afafafaf afafafaf afafafaf
+>> Call trace:
+>> [<ffffffc000362490>] n_tty_receive_buf_common+0x60/0xa28
+>> [<ffffffc000362e64>] n_tty_receive_buf2+0xc/0x18
+>> [<ffffffc000365b64>] flush_to_ldisc+0xec/0x140
+>> [<ffffffc0000b5228>] process_one_work+0x138/0x338
+>> [<ffffffc0000b5970>] worker_thread+0x148/0x420
+>> [<ffffffc0000ba8fc>] kthread+0xd4/0xf0
+>> Code: 91094000 f90057a0 d2844d05 8b0500a5 (c8dffca3)
+>
+> This code disassembles as:
+>
+>    0:   91094000        add     x0, x0, #0x250
+>    4:   f90057a0        str     x0, [x29,#168]
+>    8:   d2844d05        mov     x5, #0x2268                     // #8808
+>    c:   8b0500a5        add     x5, x5, x5
+>   10:   c8dffca3        ldar    x3, [x5]           <==== faulting insn
+>
+> Using latest trusty gcc 4.8.2,
+>
+>     $ make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=../build/arm64/ drivers/tty/n_tty.lst
+>
+> generates the corresponding mixed listing for n_tty_receive_buf_common + 0x60
+> (...3660b4 + 0x60 = ...366114), which is PC advanced to the insn after faulting:
+>
+>     ffffffc0003660b4 <n_tty_receive_buf_common>:
+>     ....
+>                  * paired with store in *_copy_from_read_buf() -- guarantees
+>                  * the consumer has loaded the data in read_buf up to the new
+>                  * read_tail (so this producer will not overwrite unread data)
+>                  */
+>                  size_t tail = smp_load_acquire(&ldata->read_tail);
+>     ffffffc000366108:       d2844d00        mov     x0, #0x2268                // #8808
+>     ffffffc00036610c:       8b170000        add     x0, x0, x23
+>     ffffffc000366110:       c8dffc03        ldar    x3, [x0]      <==== corresponding insn
+>
+>
+> Note that in the correctly generated machine code above, the ea in x0 is
+>
+>    x0 = x23 + 0x2268
+>
+> but in the your broken binary it's
+>
+>    x5 = 0x2268 + 0x2268   // 0x44d0
+>
+> Regards,
+> Peter Hurley
