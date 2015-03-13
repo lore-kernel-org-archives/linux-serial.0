@@ -1,47 +1,48 @@
 From: Stefan Agner <stefan@agner.ch>
-Subject: [PATCH 1/2] tty: serial: fsl_lpuart: specify transmit FIFO size
-Date: Fri, 13 Mar 2015 14:51:50 +0100
-Message-ID: <1426254711-618-1-git-send-email-stefan@agner.ch>
+Subject: [PATCH 2/2] tty: serial: fsl_lpuart: clear receive flag on FIFO flush
+Date: Fri, 13 Mar 2015 14:51:51 +0100
+Message-ID: <1426254711-618-2-git-send-email-stefan@agner.ch>
+References: <1426254711-618-1-git-send-email-stefan@agner.ch>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1426254711-618-1-git-send-email-stefan@agner.ch>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: jslaby@suse.cz, jingchang.lu@freescale.com, shawn.guo@linaro.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, stefan@agner.ch
 List-Id: linux-serial@vger.kernel.org
 
-Specify transmit FIFO size which might be different depending on
-LPUART instance. This makes sure uart_wait_until_sent in serial
-core getting called, which in turn waits and checks if the FIFO
-is really empty on shutdown by using the tx_empty callback.
-Without the call of this callback, the last several characters
-might not yet be transmitted when closing the serial port. This
-can be reproduced by simply using echo and redirect the output to
-a ttyLP device.
+When the receiver was enabled during startup, a character could
+have been in the FIFO when the UART get initially used. The
+driver configures the (receive) watermark level, and flushes the
+FIFO. However, the receive flag (RDRF) could still be set at that
+stage (as mentioned in the register description of UARTx_RWFIFO).
+This leads to an interrupt which won't be handled properly in
+interrupt mode: The receive interrupt function lpuart_rxint checks
+the FIFO count, which is 0 at that point (due to the flush
+during initialization). The problem does not manifest when using
+DMA to receive characters.
+
+Fix this situation by explicitly read the status register, which
+leads to clearing of the RDRF flag. Due to the flush just after
+the status flag read, a explicit data read is not to required.
 
 Signed-off-by: Stefan Agner <stefan@agner.ch>
 ---
-Hi Greg,
-
-Another two fixes for this driver. I think they both are worthwhile
-fixes to be part of stable kernels too...
-
---
-Stefan
-
- drivers/tty/serial/fsl_lpuart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/fsl_lpuart.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index b1893f3..7ec9110 100644
+index 7ec9110..3ad1458 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1076,6 +1076,8 @@ static int lpuart_startup(struct uart_port *port)
- 	sport->txfifo_size = 0x1 << (((temp >> UARTPFIFO_TXSIZE_OFF) &
- 		UARTPFIFO_FIFOSIZE_MASK) + 1);
+@@ -921,6 +921,9 @@ static void lpuart_setup_watermark(struct lpuart_port *sport)
+ 	writeb(val | UARTPFIFO_TXFE | UARTPFIFO_RXFE,
+ 			sport->port.membase + UARTPFIFO);
  
-+	sport->port.fifosize = sport->txfifo_size;
++	/* explicitly clear RDRF */
++	readb(sport->port.membase + UARTSR1);
 +
- 	sport->rxfifo_size = 0x1 << (((temp >> UARTPFIFO_RXSIZE_OFF) &
- 		UARTPFIFO_FIFOSIZE_MASK) + 1);
- 
+ 	/* flush Tx and Rx FIFO */
+ 	writeb(UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH,
+ 			sport->port.membase + UARTCFIFO);
 -- 
 2.3.1
