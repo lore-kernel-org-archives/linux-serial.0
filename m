@@ -1,42 +1,54 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: Re: [PATCH v3  10/15] serial: stm32-usart: Add STM32 USART Driver
-Date: Fri, 13 Mar 2015 10:41:23 +0100
-Message-ID: <1426239683.5304.59.camel@x220>
-References: <1426197361-19290-1-git-send-email-maxime.coquelin@st.com>
-	 <1426197361-19290-11-git-send-email-maxime.coquelin@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1426197361-19290-11-git-send-email-maxime.coquelin@st.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: u.kleine-koenig@pengutronix.de, afaerber@suse.de, geert@linux-m68k.org, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, stefan@agner.ch, pmeerw@pmeerw.net, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <wi>
+From: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+Subject: [PATCH 1/1] serial: samsung: Clear operation mode on UART shutdown
+Date: Fri, 13 Mar 2015 12:38:51 +0100
+Message-ID: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Robert Baldyga <r.baldyga@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Olof Johansson <olof@lixom.net>, Doug Anderson <dianders@chromium.org>, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Javier Martinez Canillas <javier.martinez@collabora.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-Just a license nit, I'm afraid.
+Exynos serial ports operate either in a DMA-based or interrupt-based
+modes. In DMA-based mode, the UART generates a transfer data request
+and a Transmission (Tx) interrupt in interrupt-based mode.
 
-On Thu, 2015-03-12 at 22:55 +0100, Maxime Coquelin wrote:
-> --- /dev/null
-> +++ b/drivers/tty/serial/stm32-usart.c
-> @@ -0,0 +1,695 @@
-> +/*
-> + * Copyright (C) Maxime Coquelin 2015
-> + * Author:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> + * License terms:  GNU General Public License (GPL), version 2
-> + *
-> + * Inspired by st-asc.c from STMicroelectronics (c)
-> + */
+The Tx IRQ is only unmasked in interrupt-based mode and it was done
+in s3c24xx_serial_start_tx(). Commit ba019a3e2ad5 ("serial: samsung:
+remove redundant interrupt enabling") removed the IRQ enable on that
+function since it is enabled when the mode is set in enable_tx_pio().
 
-This states the license is GPL v2.
+The problem is that enable_tx_pio() is only called if the port mode
+has not been set before but the mode was not cleared on .shutdown().
 
-> +MODULE_LICENSE("GPL");
+So if the UART was shutdown and then started up again, the mode set
+will remain and the Tx IRQ won't be unmasked.
 
-And
-    MODULE_LICENSE("GPL v2");
+This caused a hang on at least Exynos5250, Exynos5420 and Exynos5800
+when the system is rebooted or powered off.
 
-would match that statement.
+Fixes: ba019a3e2ad5 ("serial: samsung: remove redundant interrupt enabling")
+Signed-off-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+---
 
+I noticed this issue on an Exynos5250 Snow, Exynos5420 Peach Pit and Exynos
+5800 Peach Pi Chromebooks. This patch fixes the issue on all of them.
 
-Paul Bolle
+The offending commit landed in v4.0-rc1 so this fix is -rc material.
 
+ drivers/tty/serial/samsung.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index af821a908720..cf08876922f1 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -963,6 +963,7 @@ static void s3c24xx_serial_shutdown(struct uart_port *port)
+ 			free_irq(ourport->tx_irq, ourport);
+ 		tx_enabled(port) = 0;
+ 		ourport->tx_claimed = 0;
++		ourport->tx_mode = 0;
+ 	}
+ 
+ 	if (ourport->rx_claimed) {
+-- 
+2.1.4
