@@ -1,185 +1,91 @@
-From: Chanwoo Choi <cw00.choi@samsung.com>
-Subject: Re: [PATCH v3  06/15] drivers: reset: Add STM32 reset driver
-Date: Fri, 13 Mar 2015 09:11:02 +0900
-Message-ID: <55022B16.7070408@samsung.com>
-References: <1426197361-19290-1-git-send-email-maxime.coquelin@st.com>
- <1426197361-19290-7-git-send-email-maxime.coquelin@st.com>
+From: Ming Lei <ming.lei@canonical.com>
+Subject: [BUG] n_tty: 4.0-rc3+: Unable to handle kernel paging request at
+ virtual address 000044d0
+Date: Fri, 13 Mar 2015 14:02:37 +0800
+Message-ID: <CACVXFVMWBnZSPk=QAB1ZkRkNYUxw2kdpGeazUR31h2HiAmxswA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-reply-to: <1426197361-19290-7-git-send-email-maxime.coquelin@st.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: u.kleine-koenig@pengutronix.de, afaerber@suse.de, geert@linux-m68k.org, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, stefan@agner.ch, pmeerw@pmeerw.net, pebolle@tiscali.nl, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Maxime,
+Hi Guys,
 
-On 03/13/2015 06:55 AM, Maxime Coquelin wrote:
-> From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> 
-> The STM32 MCUs family IP can be reset by accessing some shared registers.
-> 
-> The specificity is that some reset lines are used by the timers.
-> At timer initialization time, the timer has to be reset, that's why
-> we cannot use a regular driver.
-> 
-> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> ---
->  drivers/reset/Makefile      |   1 +
->  drivers/reset/reset-stm32.c | 125 ++++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 126 insertions(+)
->  create mode 100644 drivers/reset/reset-stm32.c
-> 
-> diff --git a/drivers/reset/Makefile b/drivers/reset/Makefile
-> index 157d421..aed12d1 100644
-> --- a/drivers/reset/Makefile
-> +++ b/drivers/reset/Makefile
-> @@ -1,5 +1,6 @@
->  obj-$(CONFIG_RESET_CONTROLLER) += core.o
->  obj-$(CONFIG_ARCH_SOCFPGA) += reset-socfpga.o
->  obj-$(CONFIG_ARCH_BERLIN) += reset-berlin.o
-> +obj-$(CONFIG_ARCH_STM32) += reset-stm32.o
->  obj-$(CONFIG_ARCH_SUNXI) += reset-sunxi.o
->  obj-$(CONFIG_ARCH_STI) += sti/
-> diff --git a/drivers/reset/reset-stm32.c b/drivers/reset/reset-stm32.c
-> new file mode 100644
-> index 0000000..0d389b1
-> --- /dev/null
-> +++ b/drivers/reset/reset-stm32.c
-> @@ -0,0 +1,125 @@
-> +/*
-> + * Copyright (C) Maxime Coquelin 2015
-> + * Author:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> + * License terms:  GNU General Public License (GPL), version 2
-> + *
-> + * Heavily based on sunxi driver from Maxime Ripard.
-> + */
-> +
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_address.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/reset-controller.h>
-> +#include <linux/slab.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/types.h>
-> +
-> +struct stm32_reset_data {
-> +	spinlock_t			lock;
-> +	void __iomem			*membase;
-> +	struct reset_controller_dev	rcdev;
-> +};
-> +
-> +static int stm32_reset_assert(struct reset_controller_dev *rcdev,
-> +			      unsigned long id)
-> +{
-> +	struct stm32_reset_data *data = container_of(rcdev,
-> +						     struct stm32_reset_data,
-> +						     rcdev);
-> +	int bank = id / BITS_PER_LONG;
-> +	int offset = id % BITS_PER_LONG;
-> +	unsigned long flags;
-> +	u32 reg;
-> +
-> +	spin_lock_irqsave(&data->lock, flags);
-> +
-> +	reg = readl_relaxed(data->membase + (bank * 4));
-> +	writel_relaxed(reg | BIT(offset), data->membase + (bank * 4));
-> +
-> +	spin_unlock_irqrestore(&data->lock, flags);
-> +
-> +	return 0;
-> +}
-> +
-> +static int stm32_reset_deassert(struct reset_controller_dev *rcdev,
-> +				unsigned long id)
-> +{
-> +	struct stm32_reset_data *data = container_of(rcdev,
-> +						     struct stm32_reset_data,
-> +						     rcdev);
-> +	int bank = id / BITS_PER_LONG;
-> +	int offset = id % BITS_PER_LONG;
-> +	unsigned long flags;
-> +	u32 reg;
-> +
-> +	spin_lock_irqsave(&data->lock, flags);
-> +
-> +	reg = readl_relaxed(data->membase + (bank * 4));
-> +	writel_relaxed(reg & ~BIT(offset), data->membase + (bank * 4));
-> +
-> +	spin_unlock_irqrestore(&data->lock, flags);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct reset_control_ops stm32_reset_ops = {
-> +	.assert		= stm32_reset_assert,
-> +	.deassert	= stm32_reset_deassert,
-> +};
-> +
-> +static const struct of_device_id stm32_reset_dt_ids[] = {
-> +	 { .compatible = "st,stm32-rcc", },
-> +	 { /* sentinel */ },
-> +};
-> +MODULE_DEVICE_TABLE(of, sstm32_reset_dt_ids);
-> +
-> +static int stm32_reset_probe(struct platform_device *pdev)
-> +{
-> +	struct stm32_reset_data *data;
-> +	struct resource *res;
-> +
-> +	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-> +	if (!data)
-> +		return -ENOMEM;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	data->membase = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(data->membase))
-> +		return PTR_ERR(data->membase);
-> +
-> +	spin_lock_init(&data->lock);
-> +
-> +	data->rcdev.owner = THIS_MODULE;
-> +	data->rcdev.nr_resets = resource_size(res) * 8;
-> +	data->rcdev.ops = &stm32_reset_ops;
-> +	data->rcdev.of_node = pdev->dev.of_node;
-> +
-> +	return reset_controller_register(&data->rcdev);
-> +}
-> +
-> +static int stm32_reset_remove(struct platform_device *pdev)
-> +{
-> +	struct stm32_reset_data *data = platform_get_drvdata(pdev);
-> +
-> +	reset_controller_unregister(&data->rcdev);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver stm32_reset_driver = {
-> +	.probe	= stm32_reset_probe,
-> +	.remove	= stm32_reset_remove,
-> +	.driver = {
-> +		.name		= "stm32-rcc-reset",
-> +		.of_match_table	= stm32_reset_dt_ids,
-> +	},
-> +};
-> +module_platform_driver(stm32_reset_driver);
-> +
-> +MODULE_AUTHOR("Maxime Coquelin <maxime.coquelin@gmail.com>");
-> +MODULE_DESCRIPTION("STM32 MCUs Reset Controller Driver");
-> +MODULE_LICENSE("GPL");
-> +
-> 
+Just found the following oops during kernel booting when I
+test the latest linus tree on one arm64 VM booted from uefi
+plus grub2:
 
-Last blank line is un-necessary. When I applied this patch for test,
-"new blank line at EOF" happen.
+
+Unable to handle kernel paging request at virtual address 000044d0
+pgd = ffffffc0007fb000
+[000044d0] *pgd=0000000079407003, *pud=0000000079407003,
+*pmd=0000000079408003, *pte=0060000008004707
+Internal error: Oops: 94000005 [#1] PREEMPT SMP
+Modules linked in:
+CPU: 1 PID: 632 Comm: kworker/1:1 Not tainted 4.0.0-rc3+ #121
+Hardware name: linux,dummy-virt (DT)
+Workqueue: events flush_to_ldisc
+task: ffffffc0395eac00 ti: ffffffc038cb0000 task.ti: ffffffc038cb0000
+PC is at n_tty_receive_buf_common+0x60/0xa28
+LR is at n_tty_receive_buf_common+0x4c/0xa28
+pc : [<ffffffc000362490>] lr : [<ffffffc00036247c>] pstate: 20000145
+sp : ffffffc038cb3c70
+x29: ffffffc038cb3c70 x28: ffffffc0385ab400
+x27: ffffffc03ffe3380 x26: 0000000000000008
+x25: ffffffc0006a5260 x24: ffffffc0385b0e28
+x23: ffffffc038557340 x22: ffffffc0385ab400
+x21: ffffffc0385b0e08 x20: ffffffc0385b0e00
+x19: ffffffc03854c800 x18: 0000007fda9ad810
+x17: 0000007f8291ee7c x16: ffffffc000185540
+x15: 0000007f8298f590 x14: 0000007472617473
+x13: 2d65727000000009 x12: 0000000000000020
+x11: 000000000000002c x10: 0000007fb1e23360
+x9 : ffffffc038cb3d40 x8 : ffffffc00079cb10
+x7 : ffffffc000362e58 x6 : ffffffc03854c820
+x5 : 00000000000044d0 x4 : ffffff8000278000
+x3 : 000000000000002e x2 : 0000000000000000
+x1 : 0000000000000001 x0 : ffffffc00058f250
+
+Process kworker/1:1 (pid: 632, stack limit = 0xffffffc038cb0028)
+Stack: (0xffffffc038cb3c70 to 0xffffffc038cb4000)
+3c60:                                     38cb3d20 ffffffc0 00362e68 ffffffc0
+3c80: 3854c800 ffffffc0 385b0e00 ffffffc0 385b0e08 ffffffc0 385ab400 ffffffc0
+3ca0: 38557340 ffffffc0 385b0e28 ffffffc0 006a5260 ffffffc0 00000008 00000000
+3cc0: 3ffe3380 ffffffc0 00000000 00000000 3946c200 ffffffc0 3946c268 ffffffc0
+3ce0: 385ab4d8 ffffffc0 00000001 00000000 00278000 ffffff80 3854c820 ffffffc0
+3d00: 00000000 00000000 0000002e ffffffc0 385b0e58 ffffffc0 0058f250 ffffffc0
+3d20: 38cb3d30 ffffffc0 00365b68 ffffffc0 38cb3d80 ffffffc0 000b522c ffffffc0
+3d40: 38b84540 ffffffc0 385b0e08 ffffffc0 3ffe3380 ffffffc0 3ffe7600 ffffffc0
+3d60: 00000000 00000000 00000000 00000000 006a5260 ffffffc0 000b5220 ffffffc0
+3d80: 38cb3dd0 ffffffc0 000b5974 ffffffc0 38b84540 ffffffc0 3ffe3398 ffffffc0
+3da0: 3ffe3380 ffffffc0 38b84570 ffffffc0 007c641d ffffffc0 00000001 00000000
+3dc0: 006a5260 ffffffc0 00000008 00000000 38cb3e30 ffffffc0 000ba900 ffffffc0
+3de0: 38c7d8c0 ffffffc0 007cced0 ffffffc0 006a3ee8 ffffffc0 38b84540 ffffffc0
+3e00: 000b5828 ffffffc0 00000000 00000000 00000000 00000000 00000000 00000000
+3e20: 00000000 00000000 00000000 00000000 00000000 00000000 00085bf0 ffffffc0
+3e40: 000ba828 ffffffc0 38c7d8c0 ffffffc0 00000000 00000000 00000000 00000000
+3e60: 00000000 00000000 000c0fbc ffffffc0 000ba828 ffffffc0 00000000 00000000
+3e80: 00000000 00000000 38b84540 ffffffc0 00000000 00000000 00000000 00000000
+3ea0: 38cb3ea0 ffffffc0 38cb3ea0 ffffffc0 00000000 ffffffc0 00000000 ffffffc0
+3ec0: 38cb3ec0 ffffffc0 38cb3ec0 ffffffc0 00000000 00000000 00000000 00000000
+3ee0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+3f00: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+3f20: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+3f40: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+3f60: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+3f80: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+3fa0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+3fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000005 00000000
+3fe0: 00000000 00000000 00000000 00000000 afafafaf afafafaf afafafaf afafafaf
+Call trace:
+[<ffffffc000362490>] n_tty_receive_buf_common+0x60/0xa28
+[<ffffffc000362e64>] n_tty_receive_buf2+0xc/0x18
+[<ffffffc000365b64>] flush_to_ldisc+0xec/0x140
+[<ffffffc0000b5228>] process_one_work+0x138/0x338
+[<ffffffc0000b5970>] worker_thread+0x148/0x420
+[<ffffffc0000ba8fc>] kthread+0xd4/0xf0
+Code: 91094000 f90057a0 d2844d05 8b0500a5 (c8dffca3)
+---[ end trace a6c1b0900ff37a1c ]---
 
 Thanks,
-Chanwoo Choi
-
-
