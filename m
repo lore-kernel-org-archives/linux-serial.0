@@ -1,147 +1,98 @@
-From: Ming Lei <ming.lei@canonical.com>
-Subject: Re: [BUG] n_tty: 4.0-rc3+: Unable to handle kernel paging request at
- virtual address 000044d0
-Date: Sat, 14 Mar 2015 07:09:03 +0800
-Message-ID: <CACVXFVM0kPM65GNOvB6SOaEB+JRuOsxcPJiYkG=7dnxeQP-i3A@mail.gmail.com>
-References: <CACVXFVMWBnZSPk=QAB1ZkRkNYUxw2kdpGeazUR31h2HiAmxswA@mail.gmail.com>
-	<5502DF4C.3030201@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5502DF4C.3030201@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
+From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+Subject: [PATCH/RFC] serial: sh-sci: Add overrun handling of SCIFA and SCIFB
+Date: Sun, 15 Mar 2015 23:28:15 +0900
+Message-ID: <1426429695-2993-1-git-send-email-ykaneko0929@gmail.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 13, 2015 at 8:59 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> [ +cc Will Deacon, linux-arm ]
->
-> Hi Ming,
->
-> On 03/13/2015 02:02 AM, Ming Lei wrote:
->> Hi Guys,
->>
->> Just found the following oops during kernel booting when I
->> test the latest linus tree on one arm64 VM booted from uefi
->> plus grub2:
->
-> Thanks for the bug report.
->
-> This looks like a compiler bug when generating code for
-> smp_load_acquire() (see below); what compiler are you using?
+From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 
-It is one gcc-4.7 based compiler from one customer, and when I switch
-to aarch64-linux-gnu, the bug does disappear.
+SCIFA and SCIFB can detect the overrun, but it does not support.
+This adds overrun handling of SCIFA and SCIFB.
 
-Thanks for your help!
+Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+---
 
->
->
->> Unable to handle kernel paging request at virtual address 000044d0
->> pgd = ffffffc0007fb000
->> [000044d0] *pgd=0000000079407003, *pud=0000000079407003,
->> *pmd=0000000079408003, *pte=0060000008004707
->> Internal error: Oops: 94000005 [#1] PREEMPT SMP
->> Modules linked in:
->> CPU: 1 PID: 632 Comm: kworker/1:1 Not tainted 4.0.0-rc3+ #121
->> Hardware name: linux,dummy-virt (DT)
->> Workqueue: events flush_to_ldisc
->> task: ffffffc0395eac00 ti: ffffffc038cb0000 task.ti: ffffffc038cb0000
->> PC is at n_tty_receive_buf_common+0x60/0xa28
->> LR is at n_tty_receive_buf_common+0x4c/0xa28
->> pc : [<ffffffc000362490>] lr : [<ffffffc00036247c>] pstate: 20000145
->> sp : ffffffc038cb3c70
->> x29: ffffffc038cb3c70 x28: ffffffc0385ab400
->> x27: ffffffc03ffe3380 x26: 0000000000000008
->> x25: ffffffc0006a5260 x24: ffffffc0385b0e28
->> x23: ffffffc038557340 x22: ffffffc0385ab400
->> x21: ffffffc0385b0e08 x20: ffffffc0385b0e00
->> x19: ffffffc03854c800 x18: 0000007fda9ad810
->> x17: 0000007f8291ee7c x16: ffffffc000185540
->> x15: 0000007f8298f590 x14: 0000007472617473
->> x13: 2d65727000000009 x12: 0000000000000020
->> x11: 000000000000002c x10: 0000007fb1e23360
->> x9 : ffffffc038cb3d40 x8 : ffffffc00079cb10
->> x7 : ffffffc000362e58 x6 : ffffffc03854c820
->> x5 : 00000000000044d0 x4 : ffffff8000278000
->> x3 : 000000000000002e x2 : 0000000000000000
->> x1 : 0000000000000001 x0 : ffffffc00058f250
->>
->> Process kworker/1:1 (pid: 632, stack limit = 0xffffffc038cb0028)
->> Stack: (0xffffffc038cb3c70 to 0xffffffc038cb4000)
->> 3c60:                                     38cb3d20 ffffffc0 00362e68 ffffffc0
->> 3c80: 3854c800 ffffffc0 385b0e00 ffffffc0 385b0e08 ffffffc0 385ab400 ffffffc0
->> 3ca0: 38557340 ffffffc0 385b0e28 ffffffc0 006a5260 ffffffc0 00000008 00000000
->> 3cc0: 3ffe3380 ffffffc0 00000000 00000000 3946c200 ffffffc0 3946c268 ffffffc0
->> 3ce0: 385ab4d8 ffffffc0 00000001 00000000 00278000 ffffff80 3854c820 ffffffc0
->> 3d00: 00000000 00000000 0000002e ffffffc0 385b0e58 ffffffc0 0058f250 ffffffc0
->> 3d20: 38cb3d30 ffffffc0 00365b68 ffffffc0 38cb3d80 ffffffc0 000b522c ffffffc0
->> 3d40: 38b84540 ffffffc0 385b0e08 ffffffc0 3ffe3380 ffffffc0 3ffe7600 ffffffc0
->> 3d60: 00000000 00000000 00000000 00000000 006a5260 ffffffc0 000b5220 ffffffc0
->> 3d80: 38cb3dd0 ffffffc0 000b5974 ffffffc0 38b84540 ffffffc0 3ffe3398 ffffffc0
->> 3da0: 3ffe3380 ffffffc0 38b84570 ffffffc0 007c641d ffffffc0 00000001 00000000
->> 3dc0: 006a5260 ffffffc0 00000008 00000000 38cb3e30 ffffffc0 000ba900 ffffffc0
->> 3de0: 38c7d8c0 ffffffc0 007cced0 ffffffc0 006a3ee8 ffffffc0 38b84540 ffffffc0
->> 3e00: 000b5828 ffffffc0 00000000 00000000 00000000 00000000 00000000 00000000
->> 3e20: 00000000 00000000 00000000 00000000 00000000 00000000 00085bf0 ffffffc0
->> 3e40: 000ba828 ffffffc0 38c7d8c0 ffffffc0 00000000 00000000 00000000 00000000
->> 3e60: 00000000 00000000 000c0fbc ffffffc0 000ba828 ffffffc0 00000000 00000000
->> 3e80: 00000000 00000000 38b84540 ffffffc0 00000000 00000000 00000000 00000000
->> 3ea0: 38cb3ea0 ffffffc0 38cb3ea0 ffffffc0 00000000 ffffffc0 00000000 ffffffc0
->> 3ec0: 38cb3ec0 ffffffc0 38cb3ec0 ffffffc0 00000000 00000000 00000000 00000000
->> 3ee0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
->> 3f00: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
->> 3f20: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
->> 3f40: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
->> 3f60: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
->> 3f80: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
->> 3fa0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
->> 3fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000005 00000000
->> 3fe0: 00000000 00000000 00000000 00000000 afafafaf afafafaf afafafaf afafafaf
->> Call trace:
->> [<ffffffc000362490>] n_tty_receive_buf_common+0x60/0xa28
->> [<ffffffc000362e64>] n_tty_receive_buf2+0xc/0x18
->> [<ffffffc000365b64>] flush_to_ldisc+0xec/0x140
->> [<ffffffc0000b5228>] process_one_work+0x138/0x338
->> [<ffffffc0000b5970>] worker_thread+0x148/0x420
->> [<ffffffc0000ba8fc>] kthread+0xd4/0xf0
->> Code: 91094000 f90057a0 d2844d05 8b0500a5 (c8dffca3)
->
-> This code disassembles as:
->
->    0:   91094000        add     x0, x0, #0x250
->    4:   f90057a0        str     x0, [x29,#168]
->    8:   d2844d05        mov     x5, #0x2268                     // #8808
->    c:   8b0500a5        add     x5, x5, x5
->   10:   c8dffca3        ldar    x3, [x5]           <==== faulting insn
->
-> Using latest trusty gcc 4.8.2,
->
->     $ make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=../build/arm64/ drivers/tty/n_tty.lst
->
-> generates the corresponding mixed listing for n_tty_receive_buf_common + 0x60
-> (...3660b4 + 0x60 = ...366114), which is PC advanced to the insn after faulting:
->
->     ffffffc0003660b4 <n_tty_receive_buf_common>:
->     ....
->                  * paired with store in *_copy_from_read_buf() -- guarantees
->                  * the consumer has loaded the data in read_buf up to the new
->                  * read_tail (so this producer will not overwrite unread data)
->                  */
->                  size_t tail = smp_load_acquire(&ldata->read_tail);
->     ffffffc000366108:       d2844d00        mov     x0, #0x2268                // #8808
->     ffffffc00036610c:       8b170000        add     x0, x0, x23
->     ffffffc000366110:       c8dffc03        ldar    x3, [x0]      <==== corresponding insn
->
->
-> Note that in the correctly generated machine code above, the ea in x0 is
->
->    x0 = x23 + 0x2268
->
-> but in the your broken binary it's
->
->    x5 = 0x2268 + 0x2268   // 0x44d0
->
-> Regards,
-> Peter Hurley
+This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
+tree.
+
+ drivers/tty/serial/sh-sci.c | 34 +++++++++++++++++++++++-----------
+ 1 file changed, 23 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 5b50c79..d165b21 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -844,14 +844,26 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
+ 	struct tty_port *tport = &port->state->port;
+ 	struct sci_port *s = to_sci_port(port);
+ 	struct plat_sci_reg *reg;
+-	int copied = 0;
++	int copied = 0, offset;
++	u16 status, bit;
++
++	if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
++		offset = SCLSR;
++	else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
++		offset = SCxSR;
++	else
++		return 0;
+ 
+-	reg = sci_getreg(port, SCLSR);
++	reg = sci_getreg(port, offset);
+ 	if (!reg->size)
+ 		return 0;
+ 
+-	if ((serial_port_in(port, SCLSR) & (1 << s->overrun_bit))) {
+-		serial_port_out(port, SCLSR, 0);
++	status = serial_port_in(port, offset);
++	bit = 1 << s->overrun_bit;
++
++	if (status & bit) {
++		status &= ~bit;
++		serial_port_out(port, offset, status);
+ 
+ 		port->icount.overrun++;
+ 
+@@ -996,8 +1008,7 @@ static inline unsigned long port_rx_irq_mask(struct uart_port *port)
+ 
+ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ {
+-	unsigned short ssr_status, scr_status, err_enabled;
+-	unsigned short slr_status = 0;
++	unsigned short ssr_status, scr_status, err_enabled, orer_status = 0;
+ 	struct uart_port *port = ptr;
+ 	struct sci_port *s = to_sci_port(port);
+ 	irqreturn_t ret = IRQ_NONE;
+@@ -1005,7 +1016,10 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 	ssr_status = serial_port_in(port, SCxSR);
+ 	scr_status = serial_port_in(port, SCSCR);
+ 	if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
+-		slr_status = serial_port_in(port, SCLSR);
++		orer_status = serial_port_in(port, SCLSR);
++	else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
++		orer_status = ssr_status;
++
+ 	err_enabled = scr_status & port_rx_irq_mask(port);
+ 
+ 	/* Tx Interrupt */
+@@ -1033,10 +1047,8 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 		ret = sci_br_interrupt(irq, ptr);
+ 
+ 	/* Overrun Interrupt */
+-	if (port->type == PORT_SCIF || port->type == PORT_HSCIF) {
+-		if (slr_status & 0x01)
+-			sci_handle_fifo_overrun(port);
+-	}
++	if (orer_status & (1 << s->overrun_bit))
++		sci_handle_fifo_overrun(port);
+ 
+ 	return ret;
+ }
+-- 
+1.9.1
+
