@@ -1,7 +1,7 @@
 From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-Subject: [PATCH/RFC] serial: sh-sci: Add overrun handling of SCIFA and SCIFB
-Date: Sun, 15 Mar 2015 23:28:15 +0900
-Message-ID: <1426429695-2993-1-git-send-email-ykaneko0929@gmail.com>
+Subject: [PATCH/RFC] serial: sh-sci: Update calculation of timeout for DMA
+Date: Sun, 15 Mar 2015 23:29:02 +0900
+Message-ID: <1426429742-3041-1-git-send-email-ykaneko0929@gmail.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 Sender: linux-sh-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
@@ -10,89 +10,79 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 
-SCIFA and SCIFB can detect the overrun, but it does not support.
-This adds overrun handling of SCIFA and SCIFB.
+The current calculation method in the case of 9600bps, rounding error occurs
+has become setting that occur timeout faster than the required time. When we
+use 9600bps, 32byte buffer, 10 bit (CS8) and 100 HZ, it becomes 3 jiffies
+(30msec). In fact it is necessary 33msec. This updates to the calculation
+that are not actually less than the value set by the rounding error.
+Also, this is nothing will be calculated value when there is no load. If there
+are a lot of case load, overrun error will occur immediately.
+This is by the buffer size to be calculated twice the DMA buffer, and add the
+change of setting a sufficient time-out value.
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+Signedroff-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
 ---
 
 This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
 tree.
 
- drivers/tty/serial/sh-sci.c | 34 +++++++++++++++++++++++-----------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+ drivers/tty/serial/sh-sci.c | 38 ++++++++++++++++++++++++++++++--------
+ 1 file changed, 30 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 5b50c79..d165b21 100644
+index 5b50c79..891116c 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -844,14 +844,26 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
- 	struct tty_port *tport = &port->state->port;
- 	struct sci_port *s = to_sci_port(port);
- 	struct plat_sci_reg *reg;
--	int copied = 0;
-+	int copied = 0, offset;
-+	u16 status, bit;
+@@ -1967,18 +1967,40 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+ 	/*
+-	 * Calculate delay for 1.5 DMA buffers: see
+-	 * drivers/serial/serial_core.c::uart_update_timeout(). With 10 bits
++	 * Calculate delay for 2 DMA buffers (4 FIFO).
++	 * See drivers/serial/serial_core.c::uart_update_timeout(). With 10 bits
+ 	 * (CS8), 250Hz, 115200 baud and 64 bytes FIFO, the above function
+ 	 * calculates 1 jiffie for the data plus 5 jiffies for the "slop(e)."
+-	 * Then below we calculate 3 jiffies (12ms) for 1.5 DMA buffers (3 FIFO
+-	 * sizes), but it has been found out experimentally, that this is not
+-	 * enough: the driver too often needlessly runs on a DMA timeout. 20ms
+-	 * as a minimum seem to work perfectly.
++	 * Then below we calculate 5 jiffies (20ms) for 2 DMA buffers (4 FIFO
++	 * sizes), but when performing a faster transfer, value obtained by this
++	 * formula is may not enough. Therefore, if value is smaller than 20msec,
++	 * this sets 20msec as timeout of DMA.
+ 	 */
+ 	if (s->chan_rx) {
+-		s->rx_timeout = (port->timeout - HZ / 50) * s->buf_len_rx * 3 /
+-			port->fifosize / 2;
++		unsigned int bits;
 +
-+	if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
-+		offset = SCLSR;
-+	else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
-+		offset = SCxSR;
-+	else
-+		return 0;
- 
--	reg = sci_getreg(port, SCLSR);
-+	reg = sci_getreg(port, offset);
- 	if (!reg->size)
- 		return 0;
- 
--	if ((serial_port_in(port, SCLSR) & (1 << s->overrun_bit))) {
--		serial_port_out(port, SCLSR, 0);
-+	status = serial_port_in(port, offset);
-+	bit = 1 << s->overrun_bit;
++		/* byte size and parity */
++		switch (termios->c_cflag & CSIZE) {
++			case CS5:
++				bits = 7;
++				break;
++			case CS6:
++				bits = 8;
++				break;
++			case CS7:
++				bits = 9;
++				break;
++			default:
++				bits = 10;
++				break;
++		}
 +
-+	if (status & bit) {
-+		status &= ~bit;
-+		serial_port_out(port, offset, status);
- 
- 		port->icount.overrun++;
- 
-@@ -996,8 +1008,7 @@ static inline unsigned long port_rx_irq_mask(struct uart_port *port)
- 
- static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
- {
--	unsigned short ssr_status, scr_status, err_enabled;
--	unsigned short slr_status = 0;
-+	unsigned short ssr_status, scr_status, err_enabled, orer_status = 0;
- 	struct uart_port *port = ptr;
- 	struct sci_port *s = to_sci_port(port);
- 	irqreturn_t ret = IRQ_NONE;
-@@ -1005,7 +1016,10 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
- 	ssr_status = serial_port_in(port, SCxSR);
- 	scr_status = serial_port_in(port, SCSCR);
- 	if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
--		slr_status = serial_port_in(port, SCLSR);
-+		orer_status = serial_port_in(port, SCLSR);
-+	else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
-+		orer_status = ssr_status;
-+
- 	err_enabled = scr_status & port_rx_irq_mask(port);
- 
- 	/* Tx Interrupt */
-@@ -1033,10 +1047,8 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
- 		ret = sci_br_interrupt(irq, ptr);
- 
- 	/* Overrun Interrupt */
--	if (port->type == PORT_SCIF || port->type == PORT_HSCIF) {
--		if (slr_status & 0x01)
--			sci_handle_fifo_overrun(port);
--	}
-+	if (orer_status & (1 << s->overrun_bit))
-+		sci_handle_fifo_overrun(port);
- 
- 	return ret;
- }
++		if (termios->c_cflag & CSTOPB)
++			bits++;
++		if (termios->c_cflag & PARENB)
++			bits++;
++		s->rx_timeout = DIV_ROUND_UP((s->buf_len_rx * 2 * bits * HZ) /
++					     (baud / 10), 10);
+ 		dev_dbg(port->dev, "DMA Rx t-out %ums, tty t-out %u jiffies\n",
+ 			s->rx_timeout * 1000 / HZ, port->timeout);
+ 		if (s->rx_timeout < msecs_to_jiffies(20))
 -- 
 1.9.1
 
