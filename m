@@ -1,60 +1,72 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [RFC] With 8250 Designware UART, if writes to the LCR failed
- the kernel will hung up
-Date: Sun, 15 Mar 2015 10:50:30 -0400
-Message-ID: <55059C36.10307@hurleysoftware.com>
-References: <54F96F5B.2090601@huawei.com>	<54F9DACA.3020103@hurleysoftware.com>	<CAD7vxxJXEz8KfXd9fBjkxTi5Nnjyw0=wwvbw5qCSwCMbBd64eA@mail.gmail.com>	<54FD4779.3020902@huawei.com>	<1425907939.3838.182.camel@linux.intel.com>	<CAD7vxxJvL61BjD9AMBF34Y8xnY+D-umuWLUq8Dh7ZbSm5tCE9w@mail.gmail.com>	<1425913502.3838.185.camel@linux.intel.com>	<CAD7vxx+WYgOujpTAxXsUmcr8T4zHS9MYfwrWu8hV2t=TudLamQ@mail.gmail.com> <CAHp75Vd5UhG1nLfmLw3KgUjYsVi5JBq2=UZx1A=ec0Bu5htAMw@mail.gmail.com>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Add overrun handling of SCIFA and
+ SCIFB
+Date: Sun, 15 Mar 2015 18:28:12 +0300
+Message-ID: <5505A50C.70802@cogentembedded.com>
+References: <1426429695-2993-1-git-send-email-ykaneko0929@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Vd5UhG1nLfmLw3KgUjYsVi5JBq2=UZx1A=ec0Bu5htAMw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Tim Kryger <tim.kryger@gmail.com>, Alan Cox <alan@linux.intel.com>, "long.wanglong" <long.wanglong@huawei.com>, Zhang Zhen <zhenzhang.zhang@huawei.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jamie Iles <jamie@jamieiles.com>, Arnd Bergmann <arnd@arndb.de>, shenjiangjiang@huawei.com, Wang Kai <morgan.wang@huawei.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1426429695-2993-1-git-send-email-ykaneko0929@gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Yoshihiro Kaneko <ykaneko0929@gmail.com>, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
+Hello.
 
-On 03/13/2015 11:36 AM, Andy Shevchenko wrote:
-> On Tue, Mar 10, 2015 at 4:47 AM, Tim Kryger <tim.kryger@gmail.com> wrote:
->> On Mon, Mar 9, 2015 at 8:05 AM, Alan Cox <alan@linux.intel.com> wrote:
->>
->>> Ah no - I meant what is their official software workaround for existing
->>> parts with the bug ? Presumably they have an errata document that
->>> discusses this and the correct methods they recommend to avoid the
->>> hang ?
->>
->> As far as I know, the only advice they provided was rather naive.
->>
->> The documentation I saw suggested stashing a copy of the LCR and then
->> rewriting it when the special LCR write failed interrupt was raised.
->>
->> That approach was not workable as the LCR might be written while the
->> interrupt is masked causing the sequence of register writes to occur
->> in an order other than what was desired.
->>
->> Additionally, when the LCR needed to be re-written but the UART stayed
->> busy, the interrupt would keep firing and the driver would starve out
->> everything else on the CPU.
->>
->> The current workaround of clearing fifos and retrying a fixed number
->> of times isn't ideal but I'm not sure what else can be done given the
->> way this hardware works.
->>
->> Additional background is in c49436b657d0a56a6ad90d14a7c3041add7cf64d
-> 
-> I hit the similar problem as Zhang described quite long ago when I
-> tried to write to the port chosen as console.
-> In my case seems the same (DW) IP is enumerated via PCI. Do we need to
-> tweak PCI cases as well?
+On 3/15/2015 5:28 PM, Yoshihiro Kaneko wrote:
 
-Currently, 8250_dw only supports platform devices.
+> From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 
-To support your use-case, the 8250_dw i/o accessors would need to be
-set for that hardware. Otherwise, even if you get this hardware past
-the PCI probe, it will lockup anytime the LCR is written while data is
-still in the RX fifo.
+> SCIFA and SCIFB can detect the overrun, but it does not support.
+> This adds overrun handling of SCIFA and SCIFB.
 
-Regards,
-Peter Hurley
+> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+> ---
+
+> This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
+> tree.
+
+>   drivers/tty/serial/sh-sci.c | 34 +++++++++++++++++++++++-----------
+>   1 file changed, 23 insertions(+), 11 deletions(-)
+
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 5b50c79..d165b21 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -844,14 +844,26 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
+>   	struct tty_port *tport = &port->state->port;
+>   	struct sci_port *s = to_sci_port(port);
+>   	struct plat_sci_reg *reg;
+> -	int copied = 0;
+> +	int copied = 0, offset;
+> +	u16 status, bit;
+> +
+> +	if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
+> +		offset = SCLSR;
+> +	else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+> +		offset = SCxSR;
+> +	else
+> +		return 0;
+
+    This is asking to be a *switch* statement instead.
+
+[...]
+> @@ -1005,7 +1016,10 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+>   	ssr_status = serial_port_in(port, SCxSR);
+>   	scr_status = serial_port_in(port, SCSCR);
+>   	if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
+> -		slr_status = serial_port_in(port, SCLSR);
+> +		orer_status = serial_port_in(port, SCLSR);
+> +	else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+> +		orer_status = ssr_status;
+
+    This one too...
+
+[...]
+
+WBR, Sergei
+
