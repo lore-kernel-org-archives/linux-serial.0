@@ -1,32 +1,30 @@
-From: Peter Korsgaard <peter-+2lRwdCCLRT2eFz/2MeuCQ@public.gmane.org>
-Subject: Re: [PATCH 05/35 linux-next] tty: constify of_device_id array
-Date: Mon, 16 Mar 2015 20:51:34 +0100
-Message-ID: <878uewen5l.fsf@dell.be.48ers.dk>
-References: <1426533469-25458-1-git-send-email-fabf@skynet.be>
-	<1426533469-25458-6-git-send-email-fabf@skynet.be>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1426533469-25458-6-git-send-email-fabf-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org> (Fabian
-	Frederick's message of "Mon, 16 Mar 2015 20:17:11 +0100")
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Fabian Frederick <fabf-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Barry Song <baohua-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Coquelin <maxime.coquelin-qxv4g6HH51o@public.gmane.org>, Patrice Chotard <patrice.chotard-qxv4g6HH51o@public.gmane.org>, Peter Korsgaard <jacmet-OfajU3CKLf1/SzgSGea1oA@public.gmane.org>, Timur Tabi <timur-N01EOCouUvQ@public.gmane.org>, Michal Simek <michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, =?utf-8?Q?S=C3=B6ren?= Brinkmann <soren.brinkmann-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+From: Jakub Kicinski <moorray3-5tc4TXWwyLM@public.gmane.org>
+Subject: [PATCH 0/4] serial: sc16is7xx: bunch of small fixes
+Date: Tue, 17 Mar 2015 00:28:45 +0100
+Message-ID: <1426548529-21738-1-git-send-email-moorray3@wp.pl>
+Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?q?Karol=20D=C4=99bog=C3=B3rski?= <k.debogorski-XA5MxPtj9CQ@public.gmane.org>, Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
->>>>> "Fabian" == Fabian Frederick <fabf-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org> writes:
+From: Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>
 
- > of_device_id is always used as const.
- > (See driver.of_match_table and open firmware functions)
+This series fixes three small problems with the sc16is7xx driver
+and adds an ability to configure from user space the RTS inversion
+for RS-485 mode.
 
- > Signed-off-by: Fabian Frederick <fabf-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
- > ---
+None of the fixed issues is pressing so this seems like a -next
+material (based on tty.git/tty-next).
 
-For this:
+Jakub Kicinski (4):
+  sc16is7xx: remove ports on probe error path
+  sc16is7xx: don't wipe out port configuration on shutdown
+  sc16is7xx: expose RTS inversion in RS-485 mode
+  sc16is7xx: enable the clock
 
->  drivers/tty/serial/uartlite.c               | 2 +-
-
-Acked-by: Peter Korsgaard <peter-+2lRwdCCLRT2eFz/2MeuCQ@public.gmane.org>
+ drivers/tty/serial/sc16is7xx.c | 44 ++++++++++++++++++++++++++++++------------
+ 1 file changed, 32 insertions(+), 12 deletions(-)
 
 -- 
-Bye, Peter Korsgaard
+2.1.0
