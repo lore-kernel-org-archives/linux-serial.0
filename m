@@ -1,13 +1,13 @@
 From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Add overrun handling of SCIFA and SCIFB
-Date: Mon, 16 Mar 2015 22:55:57 +0900
-Message-ID: <CAH1o70Lwoyr8b=qHsd9kQc6DECNWo468JAaxTiFgv7_=6Lsi5g@mail.gmail.com>
-References: <1426429695-2993-1-git-send-email-ykaneko0929@gmail.com>
-	<5505A50C.70802@cogentembedded.com>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Update calculation of timeout for DMA
+Date: Mon, 16 Mar 2015 22:58:26 +0900
+Message-ID: <CAH1o70Ku+8W04oNyBABLSF5qMO2KPyn4VEWdC2OH61XHmD=-qA@mail.gmail.com>
+References: <1426429742-3041-1-git-send-email-ykaneko0929@gmail.com>
+	<5505A5B2.2020600@cogentembedded.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <5505A50C.70802@cogentembedded.com>
+In-Reply-To: <5505A5B2.2020600@cogentembedded.com>
 Sender: linux-sh-owner@vger.kernel.org
 To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>
@@ -15,19 +15,28 @@ List-Id: linux-serial@vger.kernel.org
 
 Hello,
 
-2015-03-16 0:28 GMT+09:00 Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>:
-> Hello.
->
-> On 3/15/2015 5:28 PM, Yoshihiro Kaneko wrote:
+2015-03-16 0:30 GMT+09:00 Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>:
+> On 3/15/2015 5:29 PM, Yoshihiro Kaneko wrote:
 >
 >> From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 >
 >
->> SCIFA and SCIFB can detect the overrun, but it does not support.
->> This adds overrun handling of SCIFA and SCIFB.
+>> The current calculation method in the case of 9600bps, rounding error
+>> occurs
+>> has become setting that occur timeout faster than the required time. When
+>> we
+>> use 9600bps, 32byte buffer, 10 bit (CS8) and 100 HZ, it becomes 3 jiffies
+>> (30msec). In fact it is necessary 33msec. This updates to the calculation
+>> that are not actually less than the value set by the rounding error.
+>> Also, this is nothing will be calculated value when there is no load. If
+>> there
+>> are a lot of case load, overrun error will occur immediately.
+>> This is by the buffer size to be calculated twice the DMA buffer, and add
+>> the
+>> change of setting a sufficient time-out value.
 >
 >
->> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+>> Signedroff-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 >> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
 >> ---
 >
@@ -36,57 +45,51 @@ Hello,
 >> tree.
 >
 >
->>   drivers/tty/serial/sh-sci.c | 34 +++++++++++++++++++++++-----------
->>   1 file changed, 23 insertions(+), 11 deletions(-)
+>>   drivers/tty/serial/sh-sci.c | 38 ++++++++++++++++++++++++++++++--------
+>>   1 file changed, 30 insertions(+), 8 deletions(-)
 >
 >
 >> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
->> index 5b50c79..d165b21 100644
+>> index 5b50c79..891116c 100644
 >> --- a/drivers/tty/serial/sh-sci.c
 >> +++ b/drivers/tty/serial/sh-sci.c
->> @@ -844,14 +844,26 @@ static int sci_handle_fifo_overrun(struct uart_port
->> *port)
->>         struct tty_port *tport = &port->state->port;
->>         struct sci_port *s = to_sci_port(port);
->>         struct plat_sci_reg *reg;
->> -       int copied = 0;
->> +       int copied = 0, offset;
->> +       u16 status, bit;
->> +
->> +       if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
->> +               offset = SCLSR;
->> +       else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
->> +               offset = SCxSR;
->> +       else
->> +               return 0;
->
->
->    This is asking to be a *switch* statement instead.
-
-I certainly think so.
-
+>> @@ -1967,18 +1967,40 @@ static void sci_set_termios(struct uart_port
+>> *port, struct ktermios *termios,
 >
 > [...]
 >>
->> @@ -1005,7 +1016,10 @@ static irqreturn_t sci_mpxed_interrupt(int irq,
->> void *ptr)
->>         ssr_status = serial_port_in(port, SCxSR);
->>         scr_status = serial_port_in(port, SCSCR);
->>         if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
->> -               slr_status = serial_port_in(port, SCLSR);
->> +               orer_status = serial_port_in(port, SCLSR);
->> +       else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
->> +               orer_status = ssr_status;
+>>         if (s->chan_rx) {
+>> -               s->rx_timeout = (port->timeout - HZ / 50) * s->buf_len_rx
+>> * 3 /
+>> -                       port->fifosize / 2;
+>> +               unsigned int bits;
+>> +
+>> +               /* byte size and parity */
+>> +               switch (termios->c_cflag & CSIZE) {
+>> +                       case CS5:
 >
 >
->    This one too...
+>    *case* should at the same indentation level as *switch*. I guess you
+> haven't run the patch thru scripts/checkpatch.pl?
 
-I also revise this one.
-
+Sorry, I forgot to run the script.
 
 Thanks,
 Kaneko
 
+>
+>> +                               bits = 7;
+>> +                               break;
+>> +                       case CS6:
+>> +                               bits = 8;
+>> +                               break;
+>> +                       case CS7:
+>> +                               bits = 9;
+>> +                               break;
+>> +                       default:
+>> +                               bits = 10;
+>> +                               break;
+>> +               }
 >
 > [...]
 >
