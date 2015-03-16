@@ -1,93 +1,69 @@
-From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-Subject: [PATCH v2] serial: sh-sci: Update calculation of timeout for DMA
-Date: Tue, 17 Mar 2015 01:19:54 +0900
-Message-ID: <1426522794-25845-1-git-send-email-ykaneko0929@gmail.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org
+From: cascardo@linux.vnet.ibm.com
+Subject: Re: [patch 2/2] serial: jsm: some off by one bugs
+Date: Mon, 16 Mar 2015 14:47:43 -0300
+Message-ID: <20150316174743.GB6037@oc0812247204.ltc.br.ibm.com>
+References: <20150312170823.GB21911@mwanda>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150312170823.GB21911@mwanda>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, driverdev-devel@linuxdriverproject.org, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
+On Thu, Mar 12, 2015 at 08:08:24PM +0300, Dan Carpenter wrote:
+> "brd->nasync" amd "brd->maxports" are the same.  They hold the number of
+> filled out channels in the brd->channels[] array.  These tests should
+> be ">=" instead of ">" so that we don't read one element past the end.
+> 
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
+> index bfb0681..4eb12a9 100644
+> --- a/drivers/tty/serial/jsm/jsm_cls.c
+> +++ b/drivers/tty/serial/jsm/jsm_cls.c
+> @@ -570,7 +570,7 @@ static inline void cls_parse_isr(struct jsm_board *brd, uint port)
+>  	 * verified in the interrupt routine.
+>  	 */
+> 
+> -	if (port > brd->nasync)
+> +	if (port >= brd->nasync)
+>  		return;
+> 
+>  	ch = brd->channels[port];
+> diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+> index 7291c21..f413ef0 100644
+> --- a/drivers/tty/serial/jsm/jsm_neo.c
+> +++ b/drivers/tty/serial/jsm/jsm_neo.c
 
-The current calculation method in the case of 9600bps, rounding error occurs
-has become setting that occur timeout faster than the required time. When we
-use 9600bps, 32byte buffer, 10 bit (CS8) and 100 HZ, it becomes 3 jiffies
-(30msec). In fact it is necessary 33msec. This updates to the calculation
-that are not actually less than the value set by the rounding error.
-Also, this is nothing will be calculated value when there is no load. If there
-are a lot of case load, overrun error will occur immediately.
-This is by the buffer size to be calculated twice the DMA buffer, and add the
-change of setting a sufficient time-out value.
+Hi, Dan.
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
-Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
----
+It looks like you missed the fix for neo_parse_isr.
 
-This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
-tree.
+Would you send a v2 fixing that as well?
 
-v2 [Yoshihiro Kaneko]
-* fix indentation of a case statement.
-* wrap a too long line in the block comment.
+Thanks.
+Cascardo.
 
- drivers/tty/serial/sh-sci.c | 40 +++++++++++++++++++++++++++++++---------
- 1 file changed, 31 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 5b50c79..bc6daf8 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1967,18 +1967,40 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- #ifdef CONFIG_SERIAL_SH_SCI_DMA
- 	/*
--	 * Calculate delay for 1.5 DMA buffers: see
--	 * drivers/serial/serial_core.c::uart_update_timeout(). With 10 bits
--	 * (CS8), 250Hz, 115200 baud and 64 bytes FIFO, the above function
-+	 * Calculate delay for 2 DMA buffers (4 FIFO).
-+	 * See drivers/serial/serial_core.c::uart_update_timeout(). With 10
-+	 * bits (CS8), 250Hz, 115200 baud and 64 bytes FIFO, the above function
- 	 * calculates 1 jiffie for the data plus 5 jiffies for the "slop(e)."
--	 * Then below we calculate 3 jiffies (12ms) for 1.5 DMA buffers (3 FIFO
--	 * sizes), but it has been found out experimentally, that this is not
--	 * enough: the driver too often needlessly runs on a DMA timeout. 20ms
--	 * as a minimum seem to work perfectly.
-+	 * Then below we calculate 5 jiffies (20ms) for 2 DMA buffers (4 FIFO
-+	 * sizes), but when performing a faster transfer, value obtained by
-+	 * this formula is may not enough. Therefore, if value is smaller than
-+	 * 20msec, this sets 20msec as timeout of DMA.
- 	 */
- 	if (s->chan_rx) {
--		s->rx_timeout = (port->timeout - HZ / 50) * s->buf_len_rx * 3 /
--			port->fifosize / 2;
-+		unsigned int bits;
-+
-+		/* byte size and parity */
-+		switch (termios->c_cflag & CSIZE) {
-+		case CS5:
-+			bits = 7;
-+			break;
-+		case CS6:
-+			bits = 8;
-+			break;
-+		case CS7:
-+			bits = 9;
-+			break;
-+		default:
-+			bits = 10;
-+			break;
-+		}
-+
-+		if (termios->c_cflag & CSTOPB)
-+			bits++;
-+		if (termios->c_cflag & PARENB)
-+			bits++;
-+		s->rx_timeout = DIV_ROUND_UP((s->buf_len_rx * 2 * bits * HZ) /
-+					     (baud / 10), 10);
- 		dev_dbg(port->dev, "DMA Rx t-out %ums, tty t-out %u jiffies\n",
- 			s->rx_timeout * 1000 / HZ, port->timeout);
- 		if (s->rx_timeout < msecs_to_jiffies(20))
--- 
-1.9.1
+> @@ -840,7 +840,7 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
+>  	if (!brd)
+>  		return;
+> 
+> -	if (port > brd->maxports)
+> +	if (port >= brd->maxports)
+>  		return;
+> 
+>  	ch = brd->channels[port];
+> @@ -1180,7 +1180,7 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
+>  			 */
+> 
+>  			/* Verify the port is in range. */
+> -			if (port > brd->nasync)
+> +			if (port >= brd->nasync)
+>  				continue;
+> 
+>  			ch = brd->channels[port];
+> 
 
