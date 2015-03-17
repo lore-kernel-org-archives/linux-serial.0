@@ -1,40 +1,67 @@
-From: Patrice Chotard <patrice.chotard@st.com>
-Subject: Re: [PATCH 05/35 linux-next] tty: constify of_device_id array
-Date: Tue, 17 Mar 2015 09:10:37 +0100
-Message-ID: <5507E17D.2050701@st.com>
-References: <1426533469-25458-1-git-send-email-fabf@skynet.be>
- <1426533469-25458-6-git-send-email-fabf@skynet.be>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [patch 2/2 v2] serial: jsm: some off by one bugs
+Date: Tue, 17 Mar 2015 12:17:28 +0300
+Message-ID: <20150317091728.GA19685@mwanda>
+References: <20150316174743.GB6037@oc0812247204.ltc.br.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1426533469-25458-6-git-send-email-fabf@skynet.be>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Fabian Frederick <fabf@skynet.be>, linux-kernel@vger.kernel.org
-Cc: Alexandre Courbot <gnurou@gmail.com>, Barry Song <baohua@kernel.org>, kernel@stlinux.com, Stephen Warren <swarren@wwwdotorg.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org, Timur Tabi <timur@tabi.org>, Michal Simek <michal.simek@xilinx.com>, Thierry Reding <thierry.reding@gmail.com>, Laxman Dewangan <ldewangan@nvidia.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, linux-tegra@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>, Jiri Slaby <jslaby@suse.cz>, =?windows-1252?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>, Maxime Coquelin <maxime.coquelin@st.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150316174743.GB6037@oc0812247204.ltc.br.ibm.com>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Fabian
+"brd->nasync" amd "brd->maxports" are the same.  They hold the number of
+filled out channels in the brd->channels[] array.  These tests should
+be ">=" instead of ">" so that we don't read one element past the end.
 
-On 03/16/2015 08:17 PM, Fabian Frederick wrote:
-> of_device_id is always used as const.
-> (See driver.of_match_table and open firmware functions)
->
-> Signed-off-by: Fabian Frederick <fabf@skynet.be>
-> ---
-....
->   drivers/tty/serial/st-asc.c                 | 2 +-
->
-For this driver
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+v2: Thadeu Cascardo noticed another off by one that I missed.
 
-Acked-by: Patrice Chotard <patrice.chotard@st.com>
-
-Thanks
+diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
+index bfb0681..4eb12a9 100644
+--- a/drivers/tty/serial/jsm/jsm_cls.c
++++ b/drivers/tty/serial/jsm/jsm_cls.c
+@@ -570,7 +570,7 @@ static inline void cls_parse_isr(struct jsm_board *brd, uint port)
+ 	 * verified in the interrupt routine.
+ 	 */
+ 
+-	if (port > brd->nasync)
++	if (port >= brd->nasync)
+ 		return;
+ 
+ 	ch = brd->channels[port];
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index 7291c21..932b2ac 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -724,7 +724,7 @@ static inline void neo_parse_isr(struct jsm_board *brd, u32 port)
+ 	if (!brd)
+ 		return;
+ 
+-	if (port > brd->maxports)
++	if (port >= brd->maxports)
+ 		return;
+ 
+ 	ch = brd->channels[port];
+@@ -840,7 +840,7 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
+ 	if (!brd)
+ 		return;
+ 
+-	if (port > brd->maxports)
++	if (port >= brd->maxports)
+ 		return;
+ 
+ 	ch = brd->channels[port];
+@@ -1180,7 +1180,7 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
+ 			 */
+ 
+ 			/* Verify the port is in range. */
+-			if (port > brd->nasync)
++			if (port >= brd->nasync)
+ 				continue;
+ 
+ 			ch = brd->channels[port];
