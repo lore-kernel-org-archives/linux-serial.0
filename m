@@ -1,67 +1,36 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [patch 2/2 v2] serial: jsm: some off by one bugs
-Date: Tue, 17 Mar 2015 12:17:28 +0300
-Message-ID: <20150317091728.GA19685@mwanda>
-References: <20150316174743.GB6037@oc0812247204.ltc.br.ibm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150316174743.GB6037@oc0812247204.ltc.br.ibm.com>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
+From: Peter Hung <hpeter@gmail.com>
+Subject: [PATCH V2 RESEND 0/2] serial: 8250_pci: Fintek products patches
+Date: Tue, 17 Mar 2015 18:02:13 +0800
+Message-ID: <1426586535-6900-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-"brd->nasync" amd "brd->maxports" are the same.  They hold the number of
-filled out channels in the brd->channels[] array.  These tests should
-be ">=" instead of ">" so that we don't read one element past the end.
+These series patches works for Fintek F81504/F81508/F81512 PCI to Serial Port.
+and patch 0002 is following with patch 0001.
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-v2: Thadeu Cascardo noticed another off by one that I missed.
+patch 0001 is just cleanup non-used source code.
+patch 0002 is major patch.
 
-diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
-index bfb0681..4eb12a9 100644
---- a/drivers/tty/serial/jsm/jsm_cls.c
-+++ b/drivers/tty/serial/jsm/jsm_cls.c
-@@ -570,7 +570,7 @@ static inline void cls_parse_isr(struct jsm_board *brd, uint port)
- 	 * verified in the interrupt routine.
- 	 */
- 
--	if (port > brd->nasync)
-+	if (port >= brd->nasync)
- 		return;
- 
- 	ch = brd->channels[port];
-diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
-index 7291c21..932b2ac 100644
---- a/drivers/tty/serial/jsm/jsm_neo.c
-+++ b/drivers/tty/serial/jsm/jsm_neo.c
-@@ -724,7 +724,7 @@ static inline void neo_parse_isr(struct jsm_board *brd, u32 port)
- 	if (!brd)
- 		return;
- 
--	if (port > brd->maxports)
-+	if (port >= brd->maxports)
- 		return;
- 
- 	ch = brd->channels[port];
-@@ -840,7 +840,7 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
- 	if (!brd)
- 		return;
- 
--	if (port > brd->maxports)
-+	if (port >= brd->maxports)
- 		return;
- 
- 	ch = brd->channels[port];
-@@ -1180,7 +1180,7 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
- 			 */
- 
- 			/* Verify the port is in range. */
--			if (port > brd->nasync)
-+			if (port >= brd->nasync)
- 				continue;
- 
- 			ch = brd->channels[port];
+The serial port of our product will failed after wakeup from S3(STR).
+
+It's due to when the system wakeup from S3(STR), this PCI device's
+configuration space from 0x40 to 0x40 + max_port * 0x08 should be
+re-configured. If had no re-configure, It's will all zero.
+
+We move all initialization from pci_fintek_setup() to pci_fintek_init() and
+set it to pci_serial_quirks struct .init section. It's will re-init this 
+device when system wakeup from pciserial_resume_ports().
+
+Peter Hung (2):
+  serial: 8250_pci: remove non-used var for F81504
+  serial: 8250_pci: port failed after wakeup from S3
+
+ drivers/tty/serial/8250/8250_pci.c | 121 +++++++++++++++----------------------
+ 1 file changed, 50 insertions(+), 71 deletions(-)
+ mode change 100644 => 100755 drivers/tty/serial/8250/8250_pci.c
+
+-- 
+1.9.1
