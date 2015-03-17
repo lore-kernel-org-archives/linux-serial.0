@@ -1,39 +1,40 @@
-From: Jakub Kicinski <moorray3-5tc4TXWwyLM@public.gmane.org>
-Subject: [PATCH 1/4] sc16is7xx: remove ports on probe error path
-Date: Tue, 17 Mar 2015 00:28:46 +0100
-Message-ID: <1426548529-21738-2-git-send-email-moorray3@wp.pl>
-References: <1426548529-21738-1-git-send-email-moorray3@wp.pl>
-Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1426548529-21738-1-git-send-email-moorray3-5tc4TXWwyLM@public.gmane.org>
-Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?q?Karol=20D=C4=99bog=C3=B3rski?= <k.debogorski-XA5MxPtj9CQ@public.gmane.org>, Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>
+From: Patrice Chotard <patrice.chotard@st.com>
+Subject: Re: [PATCH 05/35 linux-next] tty: constify of_device_id array
+Date: Tue, 17 Mar 2015 09:10:37 +0100
+Message-ID: <5507E17D.2050701@st.com>
+References: <1426533469-25458-1-git-send-email-fabf@skynet.be>
+ <1426533469-25458-6-git-send-email-fabf@skynet.be>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1426533469-25458-6-git-send-email-fabf@skynet.be>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Fabian Frederick <fabf@skynet.be>, linux-kernel@vger.kernel.org
+Cc: Alexandre Courbot <gnurou@gmail.com>, Barry Song <baohua@kernel.org>, kernel@stlinux.com, Stephen Warren <swarren@wwwdotorg.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org, Timur Tabi <timur@tabi.org>, Michal Simek <michal.simek@xilinx.com>, Thierry Reding <thierry.reding@gmail.com>, Laxman Dewangan <ldewangan@nvidia.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, linux-tegra@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>, Jiri Slaby <jslaby@suse.cz>, =?windows-1252?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>, Maxime Coquelin <maxime.coquelin@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>
+Hi Fabian
 
-If ports are not explicitly removed on the error path
-the device will not get properly unregistered leaving
-/dev/ttySC* nodes in the filesystem.
+On 03/16/2015 08:17 PM, Fabian Frederick wrote:
+> of_device_id is always used as const.
+> (See driver.of_match_table and open firmware functions)
+>
+> Signed-off-by: Fabian Frederick <fabf@skynet.be>
+> ---
+....
+>   drivers/tty/serial/st-asc.c                 | 2 +-
+>
+For this driver
 
-Signed-off-by: Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>
----
- drivers/tty/serial/sc16is7xx.c | 3 +++
- 1 file changed, 3 insertions(+)
+Acked-by: Patrice Chotard <patrice.chotard@st.com>
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index df9a384dfbda..11bb44039a57 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1120,6 +1120,9 @@ static int sc16is7xx_probe(struct device *dev,
- 	if (!ret)
- 		return 0;
- 
-+	for (i = 0; i < s->uart.nr; i++)
-+		uart_remove_one_port(&s->uart, &s->p[i].port);
-+
- 	mutex_destroy(&s->mutex);
- 
- #ifdef CONFIG_GPIOLIB
--- 
-2.1.0
+Thanks
