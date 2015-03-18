@@ -1,13 +1,11 @@
-From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
-Subject: Re: [PATCH] amba-pl011: simplify TX handling
-Date: Wed, 18 Mar 2015 00:42:55 +0100
-Message-ID: <20150318004255.538fd48e@north>
-References: <20150317163200.GE3759@e103592.cambridge.arm.com>
+From: Jakub Kicinski <moorray3@wp.pl>
+Subject: [PATCH v2] amba-pl011: simplify TX handling
+Date: Wed, 18 Mar 2015 01:02:47 +0100
+Message-ID: <1426636967-9124-1-git-send-email-moorray3@wp.pl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150317163200.GE3759@e103592.cambridge.arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,200 +15,263 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Dave P Martin <Dave.Martin@arm.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Jakub Kicinski <kubakici@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Karol Debogorski <k.debogorski@a2s.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andre Przywara <Andre.Przywara@arm.com>, linux-arm-kernel@lists.infradead.org
+To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jakub Kicinski <kubakici@wp.pl>, Andre Przywara <andre.przywara@arm.com>, =?UTF-8?q?Karol=20D=C4=99bog=C3=B3rski?= <k.debogorski@a2s.pl>, linux-serial@vger.kernel.org, Dave Martin <Dave.Martin@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 17 Mar 2015 16:32:00 +0000, Dave P Martin wrote:
-> [Apologies for any duplicate mails received -- some MTAs keep
-> choking on this.  Squshing to ASCII in case that helps.
-> 
-> [fixed typo'd address for linux-arm-kernel]
-> 
-> [Greg, to minimise confusion while these patches are still under
-> discussion, can you drop the following patches from tty-next:
-> 
->  * f2ee6df serial/amba-pl011: Leave the TX IRQ alone when the UART is not open
->  * 734745c serial/amba-pl011: Activate TX IRQ passively
-> 
-> You can pull in my updated series if you want, but at this point further
-> changes are likely:
-> 
-> http://lists.infradead.org/pipermail/linux-arm-kernel/2015-March/330619.html
-> 
-> See below for context.]
-> 
->> [...]
-> 
-> -next is an automated merge of lots of people's branches.  This helps
-> give advance warning of changes that are likely to break the kernel,
-> or each other.  Stuff in -next isn't necessarily accepted by anyone
-> for actual merging yet.  All history can get rewritten until patches
-> land in torvalds/master.
-> 
-> Many maintainers keep separate branches for sending to -next, so that
-> immature patches can get wider visibility before they accept them for
-> merging; a separate branch (called for-linus or similar) is often used
-> for sending pull requests to Linus.
+From: Jakub Kicinski <kubakici@wp.pl>
 
-OK, the reason I asked is that I come from the networking corner of the
-kernel where rebasing even -next trees is more frowned upon.  However,
-if we agree to merge my patch we could actually leave the tree as it
-is, I think most of your v1 -> v2 changes are overwritten anyway.
+Since pre-git era PL011 used an elaborate scheme to load data
+to TX FIFO.  Only TX IRQ handler was loading data into the FIFO,
+which required the IRQ to fire before any transmission started
+(to load the first batch of characters).  Initial IRQ was fired
+by putting UART into loopback mode and writing an arbitrary
+character during .startup().
 
-> > > Can you try to rebase?
-> > >
-> > > My update still keeps the softirq stuff.  I wanted to avoid adding
-> > > status polling inside the interrupt handler's core loop, due to
-> > > concerns about performance overhead: without the polling, the
-> > > writes to DR are fire-and-forget, whereas polling FR each time
-> > > involves a whole round-trip to the UART which may involve significant
-> > > extra time cost and/or IRQ disable latency; however.
-> > >
-> > > Your approach does mitigate some of the cost by only starting to
-> > > poll after count chars have been transmitted, and will typically
-> > > halve the number of IRQs taken -- which could lead to a net benefit.
-> > > It would be good to see some benchmarks to understand how much
-> > > difference it makes to performance.
-> > 
-> > I will *try* to come up with some figures but I don't have any
-> > high-speed UARTs so my tests run at 115k tops.  I think dropping the FF
-> > poll at the end of load from IRQ could be a good idea.  And I have to
-> > respin anyway because I just noticed I added a double new line in
-> > pl011_tx_chars()...
-> 
-> Maybe you can drop some getnstimeofday() into pl011_int() and/or
-> pl011_tx_chars(), to collect some simple stats?
-> 
-> I might have a go at this if I get a moment -- but any info you
-> could obtain would be helpful.  For one thing, the behvaiour
-> might vary a bit between platforms, even for a fixed baud rate.
+Unfortunately some PL011-compatible UART (most notably BCM2708
+in Raspberry Pi) would transmit the arbitrary character even
+though the device was in loopback mode.  Commit 734745caeb9f
+("serial/amba-pl011: Activate TX IRQ passively") solved this
+issue by loading the first batch explicitly from .start_tx()
+handler.  It employed quite a complex scheme involving IRQ
+counting and a delayed work.
 
-Unfortunately I had to give up trying to get perf to work on my RPi (I
-read somewhere that SOC does not have PMU properly connected?).  What I
-have instead are some simple, "proxy" numbers:
+f2ee6dfa0e85 ("serial/amba-pl011: Leave the TX IRQ alone when
+the UART is not open") was an attempt to optimise the loading
+by assuming that when the device is opened second time TX IRQ
+from the previous transmission will still be pending.  This
+assumption is incorrect if the device is closed with FIFO full
+because FIFO will be programmatically flushed and therefore no
+IRQ will be pending on next .open().
 
-1) First I measured how much more data can be loaded thanks to the FF
-   check at the end of guaranteed FIFO filling.  For 2Mbps I got
-   following numbers (transferring the same file):
+This patch simplifies the code and fixes above problem. It should
+also make things a bit more efficient as the FIFO was not filled
+properly after the driver seen more than two IRQs.
 
-          | FIFO loads | FF seen** | additional chars loaded |  
-no load   |   173350   |  169157   |         8429	     |
-100% CPU* |   136757   |   50942   |       300375	     |
+Fixes: f2ee6dfa0e85 ("serial/amba-pl011: Leave the TX IRQ alone when the UART is not open")
+Signed-off-by: Jakub Kicinski <kubakici@wp.pl>
+---
+v2:
+ - don't try to load FIFO from outside of IRQ handler
+   if IRQ is unmasked (change to pl011_start_tx_pio());
+ - don't check for FIFO_FULL at the end of load from IRQ;
+ - remove unnecessary newlines.
+---
+ drivers/tty/serial/amba-pl011.c | 113 +++++++++++++---------------------------
+ 1 file changed, 35 insertions(+), 78 deletions(-)
 
-*  100% CPU utilization achieved by running iperf and UART traffic on
-   other chips;
-** after guaranteed count FF was set - no additional chars loaded.
-
-Breakdown of how many additional chars could be loaded per IRQ:
-
-               1    2    3    4    5    6    7    8    9  10 ...
-no load  |  2094 1127  418  256  120   81   36   31   23   1 0 0 0 0 0 0
-100% CPU | 33375 7336 6527 7324 7971 8586 6983 3387 4007   4 0 0 0 0 0 0
-
-I also tested with 115kbps and only 5 times out of 30k checks IRQ was
-able to put in a single additional character on a fully loaded system.
-
-
-To sum up - on a fully loaded system FF check gives a significant (~20%)
-drop in the number of pl011_tx_chars() calls (but they are more costly).
-
-
-2) I run some CPU intensive and I/O intensive benchmarks to see the
-   effect doing FF check has on general performance:
-
-w/read - check performed
- /read - just load FIFO size/2; don't check FIFO_FULL
-
-iperf  -c 10.1.1.16 -t 60  # [Mbps] usb ethernet stick
-clean:  49.3 49.2 49.3 49.4 49.4 
-w/read: 42.0 40.9 42.0 42.1 42.0
- /read: 42.0 43.1 42.2 42.1 42.6
-
-time echo "scale=1500; a(1)*5" | bc -l  # [s] of real time
-clean:  12.263 12.311 12.230 12.242 12.272
-w/read: 14.512 14.646 14.541 14.894 14.504
- /read: 14.776 14.714 14.936 14.588 14.658
-
-
-This simple test indicates that not doing the check helps I/O
-performance but hurts the CPU computation speed.  The difference is not
-big in either case but since my heart lies with networking I will
-actually drop the FF check in v2 :)
-
-I don't feel strongly about it though, let me know if you prefer to
-leave it in.
-
-> > > Looping in pl011_tx_chars() until either the FIFO is full or
-> > > we run out of chars to transmit gets rid of the need for the
-> > > softirq, so I wouldn't be opposed to keeping that if the
-> > > performance impact is not too significant.
-> > 
-> > TBH the softirq stuff I don't quite understand.  I had never seen it
-> > fire in my tests.  Can you explain its purpose?  Is there HW out there
-> > which fails to fire the IRQ (but it wouldn't work until now anyhow)?
-> 
-> At the moment it's partly theoretical: I have seen the TX IRQ fail
-> to fire on some software models -- it's not that uncommon for
-> a model not to bother emulating the actual transmission delay, so
-> some effectively drain every char written to the FIFO instantly.
-> 
-> It could happen in some hardware configurations too -- I once had an
-> embedded UART running at 3Mbps, fed by a 15MHz ARM7TDMI at one point.
-> Could have gone faster, but the FTDI uart at the other end of
-> the link used a different base clock, making it hard to match
-> the rates closely enough at high speeds.  Even on fast modern
-> platforms, DVFS may slow down the CPU quite aggressively on some
-> systems.
-
-So the delayed work serves as TX watchdog.  I'm not convinced that we
-should add it if we have no report of hardware in the wild which needs
-it...  If we do add it - perhaps the watchdog should check all of the
-IRQs (e.g. RX IRQ delivery can fail as well)? 
-
-> That said, my current approach of backing off and scheduling a
-> softirq doesn't necessarily bring a lot of benefit.
-> 
-> The main difference is that writing a huge buffer to a UART with
-> an unfillable TX FIFO will just leave execution stuck in pl011_int()
-> holding the port lock for a long time until all the data has been
-> sent.  But I think that would happen even with the original driver code
-> -- TXIS would stay asserted, so pl011_int() would just keep calling
-> _tx_chars() without releasing the port lock or returning.
-> 
-> I think I'll have a try at getting rid of the softirq, following
-> your example, and see how things look.
-> 
-> A system where feeding the UART really does take ~100%CPU really
-> has a design problem, which we can't expect to fix in the pl011
-> driver...
-
-Agreed.
-
-> > > On port shutdown, the TX interrupt will be masked by IMSC, but should
-> > > remain asserted inside the PL011, triggering an interrupt the next time
-> > > it is unmasked.
-> > > 
-> > > If you observed something that conflicts with these assumptions,
-> > > I'd be interested to know what's going on...
-> > 
-> > Actually seeing this bug in practice was what motivated this work.
-> > I triggered it by catting a long file over the UART and then hitting
-> > ^C.  UART died every time...  That being said I test this on BCM2708
-> > which is also notorious for transmitting while device in loopback
-> > configuration, so perhaps it's implementation-dependent...
-> 
-> Can you describe in more detail what you did?  I don't think that
-> ^C should break things ever, but I'd like to try to reproduce it
-> just in case there is some faulty logic somewhere...
-
-This is exactly what I did:
-# stty -F /dev/ttyAMA0 115200 -onlcr
-# cat 1MB_text_file > /dev/ttyAMA0
-^C
-Now AMA0 is dead.  If I waited until the whole file was written,
-everything was fine.  This was 100% reproducible and I later checked
-that on .shutdown() the FIFO was full (no IRQ pending yet).  Initially I
-tried to play around with CR programming on .shutdown() but it didn't
-change anything (according to Broadcom docs one should be very careful
-not to touch CR while UART is busy).
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 5a4e9d579585..39993dc874cc 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -73,7 +73,7 @@
+ 
+ /* There is by now at least one vendor with differing details, so handle it */
+ struct vendor_data {
+-	unsigned int		ifls;
++	unsigned int		ifls; /* Note: TX depends on IRQ at 1/2 FIFO */
+ 	unsigned int		lcrh_tx;
+ 	unsigned int		lcrh_rx;
+ 	bool			oversampling;
+@@ -157,9 +157,8 @@ struct uart_amba_port {
+ 	unsigned int		lcrh_tx;	/* vendor-specific */
+ 	unsigned int		lcrh_rx;	/* vendor-specific */
+ 	unsigned int		old_cr;		/* state during shutdown */
+-	struct delayed_work	tx_softirq_work;
+ 	bool			autorts;
+-	unsigned int		tx_irq_seen;	/* 0=none, 1=1, 2=2 or more */
++	bool			prev_load_from_irq;
+ 	char			type[12];
+ #ifdef CONFIG_DMA_ENGINE
+ 	/* DMA stuff */
+@@ -1172,15 +1171,17 @@ static void pl011_stop_tx(struct uart_port *port)
+ 	pl011_dma_tx_stop(uap);
+ }
+ 
+-static bool pl011_tx_chars(struct uart_amba_port *uap);
++static void pl011_tx_chars(struct uart_amba_port *uap, bool from_irq);
+ 
+ /* Start TX with programmed I/O only (no DMA) */
+ static void pl011_start_tx_pio(struct uart_amba_port *uap)
+ {
++	/* IRQ is on - it will load the data */
++	if (uap->im & UART011_TXIM)
++		return;
+ 	uap->im |= UART011_TXIM;
+ 	writew(uap->im, uap->port.membase + UART011_IMSC);
+-	if (!uap->tx_irq_seen)
+-		pl011_tx_chars(uap);
++	pl011_tx_chars(uap, false);
+ }
+ 
+ static void pl011_start_tx(struct uart_port *port)
+@@ -1249,67 +1250,56 @@ __acquires(&uap->port.lock)
+ 
+ /*
+  * Transmit a character
+- * There must be at least one free entry in the TX FIFO to accept the char.
+  *
+- * Returns true if the FIFO might have space in it afterwards;
+- * returns false if the FIFO definitely became full.
++ * Returns true if character was transmitted;
++ * returns false if character was not transmitted.
+  */
+-static bool pl011_tx_char(struct uart_amba_port *uap, unsigned char c)
++static bool pl011_tx_char(struct uart_amba_port *uap,
++			  int *count, unsigned char c)
+ {
++	if (*count > 0)
++		(*count)--;
++	else if (!*count)
++		return false;
++	else if (readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF)
++		return false;
++
+ 	writew(c, uap->port.membase + UART01x_DR);
+ 	uap->port.icount.tx++;
+ 
+-	if (likely(uap->tx_irq_seen > 1))
+-		return true;
+-
+-	return !(readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF);
++	return true;
+ }
+ 
+-static bool pl011_tx_chars(struct uart_amba_port *uap)
++static void pl011_tx_chars(struct uart_amba_port *uap, bool from_irq)
+ {
+ 	struct circ_buf *xmit = &uap->port.state->xmit;
+ 	int count;
+ 
+-	if (unlikely(uap->tx_irq_seen < 2))
+-		/*
+-		 * Initial FIFO fill level unknown: we must check TXFF
+-		 * after each write, so just try to fill up the FIFO.
+-		 */
+-		count = uap->fifosize;
+-	else /* tx_irq_seen >= 2 */
+-		/*
+-		 * FIFO initially at least half-empty, so we can simply
+-		 * write half the FIFO without polling TXFF.
+-
+-		 * Note: the *first* TX IRQ can still race with
+-		 * pl011_start_tx_pio(), which can result in the FIFO
+-		 * being fuller than expected in that case.
+-		 */
+-		count = uap->fifosize >> 1;
+-
+ 	/*
+-	 * If the FIFO is full we're guaranteed a TX IRQ at some later point,
+-	 * and can't transmit immediately in any case:
++	 * If we are loading from IRQs only we are guaranteed at least
++	 * half of the FIFO to be empty.
+ 	 */
+-	if (unlikely(uap->tx_irq_seen < 2 &&
+-		     readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF))
+-		return false;
++	if (from_irq && uap->prev_load_from_irq)
++		count = uap->fifosize >> 1;
++	else
++		count = -1;
++	uap->prev_load_from_irq = from_irq;
+ 
+ 	if (uap->port.x_char) {
+-		pl011_tx_char(uap, uap->port.x_char);
++		if (!pl011_tx_char(uap, &count, uap->port.x_char))
++			return;
+ 		uap->port.x_char = 0;
+-		--count;
+ 	}
+ 	if (uart_circ_empty(xmit) || uart_tx_stopped(&uap->port)) {
+ 		pl011_stop_tx(&uap->port);
+-		goto done;
++		return;
+ 	}
+ 
+ 	/* If we are using DMA mode, try to send some characters. */
+ 	if (pl011_dma_tx_irq(uap))
+-		goto done;
++		return;
+ 
+-	while (count-- > 0 && pl011_tx_char(uap, xmit->buf[xmit->tail])) {
++	while (pl011_tx_char(uap, &count, xmit->buf[xmit->tail])) {
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		if (uart_circ_empty(xmit))
+ 			break;
+@@ -1320,14 +1310,8 @@ static bool pl011_tx_chars(struct uart_amba_port *uap)
+ 
+ 	if (uart_circ_empty(xmit)) {
+ 		pl011_stop_tx(&uap->port);
+-		goto done;
++		return;
+ 	}
+-
+-	if (unlikely(!uap->tx_irq_seen))
+-		schedule_delayed_work(&uap->tx_softirq_work, uap->port.timeout);
+-
+-done:
+-	return false;
+ }
+ 
+ static void pl011_modem_status(struct uart_amba_port *uap)
+@@ -1354,28 +1338,6 @@ static void pl011_modem_status(struct uart_amba_port *uap)
+ 	wake_up_interruptible(&uap->port.state->port.delta_msr_wait);
+ }
+ 
+-static void pl011_tx_softirq(struct work_struct *work)
+-{
+-	struct delayed_work *dwork = to_delayed_work(work);
+-	struct uart_amba_port *uap =
+-		container_of(dwork, struct uart_amba_port, tx_softirq_work);
+-
+-	spin_lock(&uap->port.lock);
+-	while (pl011_tx_chars(uap)) ;
+-	spin_unlock(&uap->port.lock);
+-}
+-
+-static void pl011_tx_irq_seen(struct uart_amba_port *uap)
+-{
+-	if (likely(uap->tx_irq_seen > 1))
+-		return;
+-
+-	uap->tx_irq_seen++;
+-	if (uap->tx_irq_seen < 2)
+-		/* first TX IRQ */
+-		cancel_delayed_work(&uap->tx_softirq_work);
+-}
+-
+ static irqreturn_t pl011_int(int irq, void *dev_id)
+ {
+ 	struct uart_amba_port *uap = dev_id;
+@@ -1414,10 +1376,8 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
+ 			if (status & (UART011_DSRMIS|UART011_DCDMIS|
+ 				      UART011_CTSMIS|UART011_RIMIS))
+ 				pl011_modem_status(uap);
+-			if (status & UART011_TXIS) {
+-				pl011_tx_irq_seen(uap);
+-				pl011_tx_chars(uap);
+-			}
++			if (status & UART011_TXIS)
++				pl011_tx_chars(uap, true);
+ 
+ 			if (pass_counter-- == 0)
+ 				break;
+@@ -1694,8 +1654,6 @@ static void pl011_shutdown(struct uart_port *port)
+ 	    container_of(port, struct uart_amba_port, port);
+ 	unsigned int cr;
+ 
+-	cancel_delayed_work_sync(&uap->tx_softirq_work);
+-
+ 	/*
+ 	 * disable all interrupts
+ 	 */
+@@ -2242,7 +2200,6 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	uap->port.ops = &amba_pl011_pops;
+ 	uap->port.flags = UPF_BOOT_AUTOCONF;
+ 	uap->port.line = i;
+-	INIT_DELAYED_WORK(&uap->tx_softirq_work, pl011_tx_softirq);
+ 
+ 	/* Ensure interrupts from this UART are masked and cleared */
+ 	writew(0, uap->port.membase + UART011_IMSC);
+-- 
+2.1.0
