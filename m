@@ -1,40 +1,93 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] amba-pl011: simplify TX handling
-Date: Wed, 18 Mar 2015 23:43:48 +0000
-Message-ID: <20150318234348.GF8656@n2100.arm.linux.org.uk>
-References: <20150317163200.GE3759@e103592.cambridge.arm.com>
- <20150318004255.538fd48e@north>
- <20150318174157.GD3549@e103592.cambridge.arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20150318174157.GD3549@e103592.cambridge.arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Dave P Martin <Dave.Martin@arm.com>
-Cc: Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Jakub Kicinski <kubakici@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Karol Debogorski <k.debogorski@a2s.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andre Przywara <Andre.Przywara@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH v2 01/05] serial: sh-sci: Break out default CTS/RTS pin setup
+Date: Thu, 19 Mar 2015 10:49:43 +0900
+Message-ID: <20150319014943.14235.12896.sendpatchset@little-apple>
+References: <20150319014933.14235.44835.sendpatchset@little-apple>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20150319014933.14235.44835.sendpatchset@little-apple>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, geert@glider.be, laurent.pinchart@ideasonboard.com, linux-serial@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, jslaby@suse.cz
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 18, 2015 at 05:41:57PM +0000, Dave P Martin wrote:
->  * uart_wait_until_sent()'s timeout calculations aim to wait for
->    no longer than it takes the FIFO to drain.  However, this function
->    can get called when the serial_core xmit queue for the port is
->    very non-empty -- meaning that the FIFO continues to be topped
->    up for some time.  This can cause more data to be lost.
+From: Magnus Damm <damm+renesas@opensource.se>
 
-The code used to wait for the xmit queue to empty (up to closing_wait)
-before shutting the port down, which defaulted to 30 seconds.  If the
-xmit queue doesn't drain in 30 seconds, it probably never will.
+Break out CTS/RTS pin setup for the default case. We only
+care about those pins in case SCIx_HAVE_RTSCTS is set.
 
--- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+---
+
+ Changes since V1:
+ - Function name change, thanks Laurent!
+
+ drivers/tty/serial/sh-sci.c |   45 +++++++++++++++++++++++++++++--------------
+ 1 file changed, 31 insertions(+), 14 deletions(-)
+
+--- 0001/drivers/tty/serial/sh-sci.c
++++ work/drivers/tty/serial/sh-sci.c	2015-03-19 09:07:40.616799151 +0900
+@@ -509,10 +509,29 @@ static void sci_poll_put_char(struct uar
+ }
+ #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE */
+ 
+-static void sci_init_pins(struct uart_port *port, unsigned int cflag)
++static void sci_init_ctsrts_default(struct uart_port *port, bool hwflow_enabled)
+ {
+ 	struct sci_port *s = to_sci_port(port);
+ 	struct plat_sci_reg *reg = sci_regmap[s->cfg->regtype] + SCSPTR;
++	unsigned short status;
++
++	/* If no SCSPTR register exists then skip. Same if hardware flow
++	 * control has been enabled, in such case SCFCR.MCE will be set
++	 * and the SCSPTR configuration is assumed to be overridden.
++	 */
++	if (!reg->size || hwflow_enabled)
++		return;
++
++	status = serial_port_in(port, SCSPTR);
++	status &= ~SCSPTR_CTSIO;
++	status |= SCSPTR_RTSIO;
++	serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
++}
++
++static void sci_init_pins(struct uart_port *port, unsigned int cflag)
++{
++	struct sci_port *s = to_sci_port(port);
++	bool hwflow_enabled = cflag & CRTSCTS;
+ 
+ 	/*
+ 	 * Use port-specific handler if provided.
+@@ -522,22 +541,20 @@ static void sci_init_pins(struct uart_po
+ 		return;
+ 	}
+ 
+-	/*
+-	 * For the generic path SCSPTR is necessary. Bail out if that's
+-	 * unavailable, too.
++	/* SCIF hardware with RTS/CTS support needs special setup below.
++	 *
++	 * Please note that if RTS/CTS is available for the hardware
++	 * platform depends on the particular SCIF channel on a certain
++	 * SoC, and how this channel has been hooked up on the actual board.
++	 *
++	 * If the RTS/CTS signals will be used or not depends on what user
++	 * space requests. In case RTS/CTS is available but not requested
++	 * by user space we still need to configure the pins somehow.
+ 	 */
+-	if (!reg->size)
++	if (!(s->cfg->capabilities & SCIx_HAVE_RTSCTS))
+ 		return;
+ 
+-	if ((s->cfg->capabilities & SCIx_HAVE_RTSCTS) &&
+-	    ((!(cflag & CRTSCTS)))) {
+-		unsigned short status;
+-
+-		status = serial_port_in(port, SCSPTR);
+-		status &= ~SCSPTR_CTSIO;
+-		status |= SCSPTR_RTSIO;
+-		serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
+-	}
++	sci_init_ctsrts_default(port, hwflow_enabled);
+ }
+ 
+ static int sci_txfill(struct uart_port *port)
