@@ -1,38 +1,54 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 00/05] serial: sh-sci: Hardware flow control update
- V2
-Date: Thu, 19 Mar 2015 11:57:19 -0400
-Message-ID: <550AF1DF.4070509@hurleysoftware.com>
-References: <20150319014933.14235.44835.sendpatchset@little-apple>
+From: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 10/15] serial: stm32-usart: Add STM32 USART Driver
+Date: Thu, 19 Mar 2015 18:35:30 +0100
+Message-ID: <CALszF6DX2pz_US6uqQwBjmZhfgjw5PP1UAy9H+c-_Kgkk_Z72w@mail.gmail.com>
+References: <1426197361-19290-1-git-send-email-maxime.coquelin@st.com>
+	<1426197361-19290-11-git-send-email-maxime.coquelin@st.com>
+	<CAHp75Vd7+oLiLLuyocYh95TebtocWrRho6xNjuSUt8fYGp8npg@mail.gmail.com>
+	<CALszF6BWuUYRh+3rWnSQLApkAHA5dQXw=6x6D_evRtb+5B_ukA@mail.gmail.com>
+	<CAHp75Vdf6=z1d5+eYJ+QGTko9kkZf-oPfoWaf8FRoTdqcdWxjw@mail.gmail.com>
+	<CALszF6A5Zu7i0hxSLTS-nfOAXmd0__jLjB=fHxK93Ex5Vbi9LA@mail.gmail.com>
+	<550AE41C.8070803@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20150319014933.14235.44835.sendpatchset@little-apple>
-Sender: linux-sh-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, geert@glider.be, laurent.pinchart@ideasonboard.com, linux-serial@vger.kernel.org, jslaby@suse.cz
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <550AE41C.8070803-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Peter Meerwald <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Andrew Morton <akpm@linux-founda>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Magnus,
+2015-03-19 15:58 GMT+01:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+> On 03/19/2015 09:55 AM, Maxime Coquelin wrote:
+>>>>>> +static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
+>>>>>> +                           struct ktermios *old)
+> [...]
+>>>>>> +       usardiv = (port->uartclk * 25) / (baud * 4);
+>>>>>> +       mantissa = (usardiv / 100) << USART_BRR_DIV_M_SHIFT;
+>>>>>> +       fraction = DIV_ROUND_CLOSEST((usardiv % 100) * 16, 100);
+>>>>>> +       if (fraction & ~USART_BRR_DIV_F_MASK) {
+>>>>>> +               fraction = 0;
+>>>>>> +               mantissa += (1 << USART_BRR_DIV_M_SHIFT);
+>>>>>> +       }
+> [...]
+>> Really, I would prefer keeping this fractional divider as it is
+>> implemented today.
+>
+> You have to admit that's basically an unintelligible mess;
+> how would anyone ever be able to refactor and replace that with a
+> common divider implementation?
+>
+> At the very least, please comment on the formula and format.
 
-On 03/18/2015 09:49 PM, Magnus Damm wrote:
-> serial: sh-sci: Hardware flow control update V2
-> 
-> [PATCH v2 01/05] serial: sh-sci: Break out default CTS/RTS pin setup
-> [PATCH v2 02/05] serial: sh-sci: Fix default RTS handling
-> [PATCH v2 03/05] serial: sh-sci: Expose default CTS pin
-> [PATCH v2 04/05] serial: sh-sci: Add SCIFA/SCIFB CTS/RTS pin setup
-> [PATCH v2 05/05] serial: sh-sci: Expose SCIFA/SCIFB CTS pin
-> 
-> These patches are my latest take at improving CTS/RTS pin handling in
-> the SCIF driver. The goal for these patches is to improve the default
-> hardware flow control handling and also add CTS/RTS support for SCIFA/SCIFB.
-
-The serial core expects RTS pin control to be implemented via the driver's
-set_mctrl() method, and will take care of raising and lowering it when
-necessary.
+Ok, I will refactor the implementation, and comment it.
 
 Regards,
-Peter Hurley
+Maxime
 
+>
+> Regards,
+> Peter Hurley
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
