@@ -1,54 +1,67 @@
-From: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 10/15] serial: stm32-usart: Add STM32 USART Driver
-Date: Thu, 19 Mar 2015 18:35:30 +0100
-Message-ID: <CALszF6DX2pz_US6uqQwBjmZhfgjw5PP1UAy9H+c-_Kgkk_Z72w@mail.gmail.com>
-References: <1426197361-19290-1-git-send-email-maxime.coquelin@st.com>
-	<1426197361-19290-11-git-send-email-maxime.coquelin@st.com>
-	<CAHp75Vd7+oLiLLuyocYh95TebtocWrRho6xNjuSUt8fYGp8npg@mail.gmail.com>
-	<CALszF6BWuUYRh+3rWnSQLApkAHA5dQXw=6x6D_evRtb+5B_ukA@mail.gmail.com>
-	<CAHp75Vdf6=z1d5+eYJ+QGTko9kkZf-oPfoWaf8FRoTdqcdWxjw@mail.gmail.com>
-	<CALszF6A5Zu7i0hxSLTS-nfOAXmd0__jLjB=fHxK93Ex5Vbi9LA@mail.gmail.com>
-	<550AE41C.8070803@hurleysoftware.com>
+From: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+Subject: Re: [PATCH 1/1] serial: samsung: Clear operation mode on UART shutdown
+Date: Fri, 20 Mar 2015 13:19:44 +0100
+Message-ID: <550C1060.1040900@collabora.co.uk>
+References: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <550AE41C.8070803-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Peter Meerwald <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Andrew Morton <akpm@linux-founda>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Robert Baldyga <r.baldyga@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Olof Johansson <olof@lixom.net>, Doug Anderson <dianders@chromium.org>, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-2015-03-19 15:58 GMT+01:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
-> On 03/19/2015 09:55 AM, Maxime Coquelin wrote:
->>>>>> +static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
->>>>>> +                           struct ktermios *old)
-> [...]
->>>>>> +       usardiv = (port->uartclk * 25) / (baud * 4);
->>>>>> +       mantissa = (usardiv / 100) << USART_BRR_DIV_M_SHIFT;
->>>>>> +       fraction = DIV_ROUND_CLOSEST((usardiv % 100) * 16, 100);
->>>>>> +       if (fraction & ~USART_BRR_DIV_F_MASK) {
->>>>>> +               fraction = 0;
->>>>>> +               mantissa += (1 << USART_BRR_DIV_M_SHIFT);
->>>>>> +       }
-> [...]
->> Really, I would prefer keeping this fractional divider as it is
->> implemented today.
->
-> You have to admit that's basically an unintelligible mess;
-> how would anyone ever be able to refactor and replace that with a
-> common divider implementation?
->
-> At the very least, please comment on the formula and format.
+Hello,
 
-Ok, I will refactor the implementation, and comment it.
+On 03/13/2015 12:38 PM, Javier Martinez Canillas wrote:
+> Exynos serial ports operate either in a DMA-based or interrupt-based
+> modes. In DMA-based mode, the UART generates a transfer data request
+> and a Transmission (Tx) interrupt in interrupt-based mode.
+> 
+> The Tx IRQ is only unmasked in interrupt-based mode and it was done
+> in s3c24xx_serial_start_tx(). Commit ba019a3e2ad5 ("serial: samsung:
+> remove redundant interrupt enabling") removed the IRQ enable on that
+> function since it is enabled when the mode is set in enable_tx_pio().
+> 
+> The problem is that enable_tx_pio() is only called if the port mode
+> has not been set before but the mode was not cleared on .shutdown().
+> 
+> So if the UART was shutdown and then started up again, the mode set
+> will remain and the Tx IRQ won't be unmasked.
+> 
+> This caused a hang on at least Exynos5250, Exynos5420 and Exynos5800
+> when the system is rebooted or powered off.
+> 
+> Fixes: ba019a3e2ad5 ("serial: samsung: remove redundant interrupt enabling")
+> Signed-off-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+> ---
+> 
+> I noticed this issue on an Exynos5250 Snow, Exynos5420 Peach Pit and Exynos
+> 5800 Peach Pi Chromebooks. This patch fixes the issue on all of them.
+> 
+> The offending commit landed in v4.0-rc1 so this fix is -rc material.
+> 
+>  drivers/tty/serial/samsung.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index af821a908720..cf08876922f1 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -963,6 +963,7 @@ static void s3c24xx_serial_shutdown(struct uart_port *port)
+>  			free_irq(ourport->tx_irq, ourport);
+>  		tx_enabled(port) = 0;
+>  		ourport->tx_claimed = 0;
+> +		ourport->tx_mode = 0;
+>  	}
+>  
+>  	if (ourport->rx_claimed) {
+> 
 
-Regards,
-Maxime
+Any comments about this patch? 3.14-rc5 will most likely be released this weekend
+so we are running out of time to fix this issue before 3.14 is released.
 
->
-> Regards,
-> Peter Hurley
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Best regards,
+Javier
