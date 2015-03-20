@@ -1,64 +1,44 @@
-From: Sylwester Nawrocki <s.nawrocki@samsung.com>
-Subject: Re: [PATCH 1/1] serial: samsung: Clear operation mode on UART shutdown
-Date: Fri, 20 Mar 2015 14:34:41 +0100
-Message-ID: <550C21F1.5030404@samsung.com>
-References: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk>
+From: Dmitry Torokhov <dtor@chromium.org>
+Subject: Re: [PATCH] serial: 8250_dw: fix 'cts-override'
+Date: Fri, 20 Mar 2015 11:00:43 -0700
+Message-ID: <CAE_wzQ_Qx=-yg0y3SLKe1Q=TroTQ0cq-sQ3dysp7raQmGjBahw@mail.gmail.com>
+References: <20150310003731.GA21791@dtor-ws>
+	<20150311130053.GA16733@kroah.com>
+	<CAE_wzQ9VnrmPKfdxpZsQFT5tEhekTFobTQBNBVRMWVE6cbRAoA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Javier Martinez Canillas <javier.martinez@collabora.co.uk>, Robert Baldyga <r.baldyga@samsung.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Olof Johansson <olof@lixom.net>, Doug Anderson <dianders@chromium.org>, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAE_wzQ9VnrmPKfdxpZsQFT5tEhekTFobTQBNBVRMWVE6cbRAoA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dmitry Torokhov <dtor@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kevin Cernekee <cernekee@chromium.org>, "JD (Jiandong) Zheng" <jdzheng@broadcom.com>, Ray Jui <rjui@broadcom.com>, Desmond Liu <desmondl@broadcom.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 13/03/15 12:38, Javier Martinez Canillas wrote:
-> Exynos serial ports operate either in a DMA-based or interrupt-based
-> modes. In DMA-based mode, the UART generates a transfer data request
-> and a Transmission (Tx) interrupt in interrupt-based mode.
-> 
-> The Tx IRQ is only unmasked in interrupt-based mode and it was done
-> in s3c24xx_serial_start_tx(). Commit ba019a3e2ad5 ("serial: samsung:
-> remove redundant interrupt enabling") removed the IRQ enable on that
-> function since it is enabled when the mode is set in enable_tx_pio().
-> 
-> The problem is that enable_tx_pio() is only called if the port mode
-> has not been set before but the mode was not cleared on .shutdown().
-> 
-> So if the UART was shutdown and then started up again, the mode set
-> will remain and the Tx IRQ won't be unmasked.
-> 
-> This caused a hang on at least Exynos5250, Exynos5420 and Exynos5800
-> when the system is rebooted or powered off.
-> 
-> Fixes: ba019a3e2ad5 ("serial: samsung: remove redundant interrupt enabling")
-> Signed-off-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
-> ---
-> 
-> I noticed this issue on an Exynos5250 Snow, Exynos5420 Peach Pit and Exynos
-> 5800 Peach Pi Chromebooks. This patch fixes the issue on all of them.
-> 
-> The offending commit landed in v4.0-rc1 so this fix is -rc material.
-> 
->  drivers/tty/serial/samsung.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> index af821a908720..cf08876922f1 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -963,6 +963,7 @@ static void s3c24xx_serial_shutdown(struct uart_port *port)
->  			free_irq(ourport->tx_irq, ourport);
->  		tx_enabled(port) = 0;
->  		ourport->tx_claimed = 0;
-> +		ourport->tx_mode = 0;
->  	}
+Hi Greg,
 
-The patch looks good to me, Robert could you comment on that?
+On Wed, Mar 11, 2015 at 10:25 AM, Dmitry Torokhov <dtor@chromium.org> wrote:
+> Hi Greg,
+>
+> On Wed, Mar 11, 2015 at 6:00 AM, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+>> On Mon, Mar 09, 2015 at 05:37:31PM -0700, Dmitry Torokhov wrote:
+>>> We are dealing with CTS, not DSR here (we dealt with DSR a few lines
+>>> above), so set appropriate bits.
+>>>
+>>> Reported-by: Kevin Cernekee <cernekee@chromium.org>
+>>> Signed-off-by: Dmitry Torokhov <dtor@chromium.org>
+>>> ---
+>>>  drivers/tty/serial/8250/8250_dw.c | 6 +++---
+>>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> Should this go into 4.0-final, or can it wait for 4.1-rc1?
+>> I'm guessing 4.0-final, but want to make sure.
+>
+> I'd like to have it in 4.0 but since there are no users of the feature
+> in mainline yet I think it can wait.
+>
 
-Reviewed-by: Sylwester Nawrocki <s.nawrocki@samsung.com>
+Could you please pick it for 4.1?
 
--- 
 Thanks,
-Sylwester
+Dmitry
