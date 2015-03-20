@@ -1,21 +1,19 @@
-From: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+From: Sylwester Nawrocki <s.nawrocki@samsung.com>
 Subject: Re: [PATCH 1/1] serial: samsung: Clear operation mode on UART shutdown
-Date: Fri, 20 Mar 2015 13:19:44 +0100
-Message-ID: <550C1060.1040900@collabora.co.uk>
+Date: Fri, 20 Mar 2015 14:34:41 +0100
+Message-ID: <550C21F1.5030404@samsung.com>
 References: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Robert Baldyga <r.baldyga@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Olof Johansson <olof@lixom.net>, Doug Anderson <dianders@chromium.org>, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Javier Martinez Canillas <javier.martinez@collabora.co.uk>, Robert Baldyga <r.baldyga@samsung.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Olof Johansson <olof@lixom.net>, Doug Anderson <dianders@chromium.org>, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
-
-On 03/13/2015 12:38 PM, Javier Martinez Canillas wrote:
+On 13/03/15 12:38, Javier Martinez Canillas wrote:
 > Exynos serial ports operate either in a DMA-based or interrupt-based
 > modes. In DMA-based mode, the UART generates a transfer data request
 > and a Transmission (Tx) interrupt in interrupt-based mode.
@@ -56,12 +54,11 @@ On 03/13/2015 12:38 PM, Javier Martinez Canillas wrote:
 >  		ourport->tx_claimed = 0;
 > +		ourport->tx_mode = 0;
 >  	}
->  
->  	if (ourport->rx_claimed) {
-> 
 
-Any comments about this patch? 3.14-rc5 will most likely be released this weekend
-so we are running out of time to fix this issue before 3.14 is released.
+The patch looks good to me, Robert could you comment on that?
 
-Best regards,
-Javier
+Reviewed-by: Sylwester Nawrocki <s.nawrocki@samsung.com>
+
+-- 
+Thanks,
+Sylwester
