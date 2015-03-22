@@ -1,48 +1,41 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250_dw: fix 'cts-override'
-Date: Sun, 22 Mar 2015 11:34:17 +0100
-Message-ID: <20150322103417.GA21904@kroah.com>
-References: <20150310003731.GA21791@dtor-ws>
- <20150311130053.GA16733@kroah.com>
- <CAE_wzQ9VnrmPKfdxpZsQFT5tEhekTFobTQBNBVRMWVE6cbRAoA@mail.gmail.com>
- <CAE_wzQ_Qx=-yg0y3SLKe1Q=TroTQ0cq-sQ3dysp7raQmGjBahw@mail.gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 4.0-rc5
+Date: Sun, 22 Mar 2015 11:36:56 +0100
+Message-ID: <20150322103656.GA22097@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAE_wzQ_Qx=-yg0y3SLKe1Q=TroTQ0cq-sQ3dysp7raQmGjBahw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Torokhov <dtor@chromium.org>
-Cc: Kevin Cernekee <cernekee@chromium.org>, "JD (Jiandong) Zheng" <jdzheng@broadcom.com>, Ray Jui <rjui@broadcom.com>, Desmond Liu <desmondl@broadcom.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 20, 2015 at 11:00:43AM -0700, Dmitry Torokhov wrote:
-> Hi Greg,
-> 
-> On Wed, Mar 11, 2015 at 10:25 AM, Dmitry Torokhov <dtor@chromium.org> wrote:
-> > Hi Greg,
-> >
-> > On Wed, Mar 11, 2015 at 6:00 AM, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> >> On Mon, Mar 09, 2015 at 05:37:31PM -0700, Dmitry Torokhov wrote:
-> >>> We are dealing with CTS, not DSR here (we dealt with DSR a few lines
-> >>> above), so set appropriate bits.
-> >>>
-> >>> Reported-by: Kevin Cernekee <cernekee@chromium.org>
-> >>> Signed-off-by: Dmitry Torokhov <dtor@chromium.org>
-> >>> ---
-> >>>  drivers/tty/serial/8250/8250_dw.c | 6 +++---
-> >>>  1 file changed, 3 insertions(+), 3 deletions(-)
-> >>
-> >> Should this go into 4.0-final, or can it wait for 4.1-rc1?
-> >> I'm guessing 4.0-final, but want to make sure.
-> >
-> > I'd like to have it in 4.0 but since there are no users of the feature
-> > in mainline yet I think it can wait.
-> >
-> 
-> Could you please pick it for 4.1?
+The following changes since commit 9eccca0843205f87c00404b663188b88eb248051:
 
-Will do, thanks.
+  Linux 4.0-rc3 (2015-03-08 16:09:09 -0700)
 
-greg k-h
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.0-rc5
+
+for you to fetch changes up to 7fd6f640f2dd17dac6ddd6702c378cb0bb9cfa11:
+
+  serial: 8250_dw: Fix deadlock in LCR workaround (2015-03-11 16:39:52 +0100)
+
+----------------------------------------------------------------
+TTY/Serial driver fix for 4.0-rc5
+
+Here's a single 8250 serial driver that fixes a reported deadlock with
+the serial console and the tty driver.
+
+It's been in linux-next for a while now.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Peter Hurley (1):
+      serial: 8250_dw: Fix deadlock in LCR workaround
+
+ drivers/tty/serial/8250/8250_dw.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
