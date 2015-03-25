@@ -1,14 +1,16 @@
 From: Dave Martin <Dave.Martin@arm.com>
 Subject: [PATCH v3,
- tty-next.. 0/2] serial/amba-pl011: Activate TX IRQ passively
-Date: Wed, 25 Mar 2015 18:26:13 +0000
-Message-ID: <1427307975-2940-1-git-send-email-Dave.Martin@arm.com>
+ tty-next.. 1/2] Revert "serial/amba-pl011: Leave the TX IRQ alone
+ when the UART is not open"
+Date: Wed, 25 Mar 2015 18:26:14 +0000
+Message-ID: <1427307975-2940-2-git-send-email-Dave.Martin@arm.com>
 References: <1427307746-2811-1-git-send-email-Dave.Martin@arm.com>
+ <1427307975-2940-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1427307746-2811-1-git-send-email-Dave.Martin@arm.com>
+In-Reply-To: <1427307975-2940-1-git-send-email-Dave.Martin@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,47 +24,34 @@ To: linux-arm-kernel@lists.infradead.org
 Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-(Based on git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-tty-next (caa445d))
-
-The current PL011 driver transmits a dummy character when the UART
-is opened, to assert the TX IRQ for the first time
-(see pl011_startup()).  The UART is put in loopback mode temporarily,
-so the receiver presumably shouldn't see anything.
-
-However...
-
-At least some platforms containing a PL011 send characters down the
-wire even when loopback mode is enabled.  This means that a
-spurious NUL character may be seen at the receiver when the PL011 is
-opened through the TTY layer.
-
-The current code also temporarily sets the baud rate to maximum and
-the character width to the minimum, to that the dummy TX completes
-as quickly as possible.  If this is seen by the receiver it will
-result in a framing error and can knock the receiver out of sync --
-turning subsequent output into garbage until synchronisation
-is reestablished.  (Particularly problematic during boot with systemd.)
-
-To avoid spurious transmissions, this patch removes assumptions about
-whether the TX IRQ will fire until the FIFO has been filled.
-
-This should also mean that the driver works on the SBSA Generic
-UART[1] (a cut-down PL011) without invasive changes.  The Generic
-UART lacks some features needed for the dummy TX approach to work
-(FIFO disabling and loopback).
-
-[1] Server Base System Architecture (ARM-DEN-0029-v2.3)
-    http://infocenter.arm.com/
-    (click-thru required :/)
-
-Dave Martin (2):
-  Revert "serial/amba-pl011: Leave the TX IRQ alone when the UART is
-    not open"
-  serial/amba-pl011: Activate TX IRQ passively
-
- drivers/tty/serial/amba-pl011.c |  118 +++++++++------------------------------
- 1 file changed, 27 insertions(+), 91 deletions(-)
-
--- 
-1.7.10.4
+VGhpcyByZXZlcnRzIGNvbW1pdCBmMmVlNmRmYTBlODU5N2VlYThiOThkMjQwYjAwMzM5OTRlMjBk
+MjE1LgoKSmFrdWIgS2ljacWEc2tpIG9ic2VydmVkIHRoYXQgdGhpcyBwYXRjaCBjYW4gY2F1c2Ug
+dGhlIHBsMDExCmRyaXZlciB0byBoYW5nIGlmIGlmIHRoZSBvbmx5IHByb2Nlc3Mgd2l0aCBhIHBs
+MDExIHBvcnQgb3BlbiBpcwpraWxsZWQgYnkgYSBzaWduYWwsIHBsMDExX3NodXRkb3duKCkgY2Fu
+IGdldCBjYWxsZWQgd2l0aCBhbgphcmJpdHJhcnkgYW1vdW50IG9mIGRhdGEgc3RpbGwgaW4gdGhl
+IEZJRk8uCgpDYWxsaW5nIF9zaHV0ZG93bigpIHdpdGggdGhlIFRYIEZJRk8gbm9uLWVtcHR5IGlz
+IHF1ZXN0aW9uYWJsZQpiZWhhdmlvdXIgYW5kIG15IGl0c2VsZiBiZSBhIGJ1Zy4KClNpbmNlIHRo
+ZSBhZmZlY3RlZCBwYXRjaCB3YXMgc3BlY3VsYXRpdmUgYW55d2F5LCBhbmQgYnJpbmdzIGxpbWl0
+ZWQKYmVuZWZpdCwgdGhlIHNpbXBsZXN0IGNvdXJzZSBpcyB0byByZW1vdmUgdGhlIGFzc3VtcHRp
+b24gdGhhdCBUWElTCndpbGwgYWx3YXlzIGJlIGxlZnQgYXNzZXJ0ZWQgYWZ0ZXIgdGhlIHBvcnQg
+aXMgc2h1dCBkb3duLgoKU2lnbmVkLW9mZi1ieTogRGF2ZSBNYXJ0aW4gPERhdmUuTWFydGluQGFy
+bS5jb20+Ci0tLQogZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYyB8ICAgIDUgKysrKy0K
+IDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jIGIvZHJpdmVycy90dHkvc2VyaWFs
+L2FtYmEtcGwwMTEuYwppbmRleCA1YTRlOWQ1Li42ZjVhMDcyIDEwMDY0NAotLS0gYS9kcml2ZXJz
+L3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBs
+MDExLmMKQEAgLTE2MzksNiArMTYzOSw5IEBAIHN0YXRpYyBpbnQgcGwwMTFfc3RhcnR1cChzdHJ1
+Y3QgdWFydF9wb3J0ICpwb3J0KQogCiAJd3JpdGV3KHVhcC0+dmVuZG9yLT5pZmxzLCB1YXAtPnBv
+cnQubWVtYmFzZSArIFVBUlQwMTFfSUZMUyk7CiAKKwkvKiBBc3N1bWUgdGhhdCBUWCBJUlEgZG9l
+c24ndCB3b3JrIHVudGlsIHdlIHNlZSBvbmU6ICovCisJdWFwLT50eF9pcnFfc2VlbiA9IDA7CisK
+IAlzcGluX2xvY2tfaXJxKCZ1YXAtPnBvcnQubG9jayk7CiAKIAkvKiByZXN0b3JlIFJUUyBhbmQg
+RFRSICovCkBAIC0xNzAyLDcgKzE3MDUsNyBAQCBzdGF0aWMgdm9pZCBwbDAxMV9zaHV0ZG93bihz
+dHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQogCXNwaW5fbG9ja19pcnEoJnVhcC0+cG9ydC5sb2NrKTsK
+IAl1YXAtPmltID0gMDsKIAl3cml0ZXcodWFwLT5pbSwgdWFwLT5wb3J0Lm1lbWJhc2UgKyBVQVJU
+MDExX0lNU0MpOwotCXdyaXRldygweGZmZmYgJiB+VUFSVDAxMV9UWElTLCB1YXAtPnBvcnQubWVt
+YmFzZSArIFVBUlQwMTFfSUNSKTsKKwl3cml0ZXcoMHhmZmZmLCB1YXAtPnBvcnQubWVtYmFzZSAr
+IFVBUlQwMTFfSUNSKTsKIAlzcGluX3VubG9ja19pcnEoJnVhcC0+cG9ydC5sb2NrKTsKIAogCXBs
+MDExX2RtYV9zaHV0ZG93bih1YXApOwotLSAKMS43LjEwLjQKCgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlz
+dApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJh
+ZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
