@@ -1,7 +1,8 @@
 From: Dave Martin <Dave.Martin@arm.com>
-Subject: [PATCH v3 0/1] serial/amba-pl011: Activate TX IRQ passively
-Date: Wed, 25 Mar 2015 18:25:56 +0000
-Message-ID: <1427307957-2904-1-git-send-email-Dave.Martin@arm.com>
+Subject: [PATCH v3,
+ tty-next.. 0/2] serial/amba-pl011: Activate TX IRQ passively
+Date: Wed, 25 Mar 2015 18:26:13 +0000
+Message-ID: <1427307975-2940-1-git-send-email-Dave.Martin@arm.com>
 References: <1427307746-2811-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,7 +22,8 @@ To: linux-arm-kernel@lists.infradead.org
 Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-(Rework based on v4.0-rc5)
+(Based on git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+tty-next (caa445d))
 
 The current PL011 driver transmits a dummy character when the UART
 is opened, to assert the TX IRQ for the first time
@@ -54,11 +56,13 @@ UART lacks some features needed for the dummy TX approach to work
     http://infocenter.arm.com/
     (click-thru required :/)
 
-Dave Martin (1):
+Dave Martin (2):
+  Revert "serial/amba-pl011: Leave the TX IRQ alone when the UART is
+    not open"
   serial/amba-pl011: Activate TX IRQ passively
 
- drivers/tty/serial/amba-pl011.c |   88 +++++++++++++++++++--------------------
- 1 file changed, 44 insertions(+), 44 deletions(-)
+ drivers/tty/serial/amba-pl011.c |  118 +++++++++------------------------------
+ 1 file changed, 27 insertions(+), 91 deletions(-)
 
 -- 
 1.7.10.4
