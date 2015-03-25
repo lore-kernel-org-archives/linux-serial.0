@@ -1,53 +1,83 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH] serial: sh-sci: Add overrun handling of SCIFA and SCIFB
-Date: Wed, 25 Mar 2015 14:57:25 +0300
-Message-ID: <5512A2A5.7040406@cogentembedded.com>
-References: <1427266818-10985-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: =?UTF-8?q?=5BPATCH=20v3=200/*=5D=20serial/amba-pl011=3A=20Activate=20TX=20IRQ=20passively?=
+Date: Wed, 25 Mar 2015 18:22:26 +0000
+Message-ID: <1427307746-2811-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1427266818-10985-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello.
-
-On 3/25/2015 10:00 AM, Nobuhiro Iwamatsu wrote:
-
-> SCIFA and SCIFB can detect the overrun, but it does not support.
-
-    s/it/the driver/.
-
-> This adds overrun handling of SCIFA and SCIFB.
-
-    s/of/for/.
-
-> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
-> ---
->   drivers/tty/serial/sh-sci.c | 33 +++++++++++++++++++++++----------
->   1 file changed, 23 insertions(+), 10 deletions(-)
-
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 5b50c79..0a78e1d 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-[...]
-> @@ -1005,7 +1017,10 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
->   	ssr_status = serial_port_in(port, SCxSR);
->   	scr_status = serial_port_in(port, SCSCR);
->   	if (port->type == PORT_SCIF || port->type == PORT_HSCIF)
-> -		slr_status = serial_port_in(port, SCLSR);
-> +		orer_status = serial_port_in(port, SCLSR);
-> +	else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
-> +		orer_status = ssr_status;
-> +
-
-    I think the above *if*'s are asking to be *switch* statement instead.
-
-[...]
-
-WBR, Sergei
-
+VGhhbmtzIHRvIEpha3ViIEtpY2nFhHNraSBmb3IgaGlzIGJ1ZyByZXBvcnQgYW5kIGRpc2N1c3Np
+b24sIGFuZCBmb3IKc2hvd2luZyBvdXQgaG93IHdlIGNhbiBtYW5hZ2Ugd2l0aG91dCB0aGUgc29m
+dGlycSAoYW5kIHByb3ZpZGluZyBhCnBhdGNoLCB0aG91Z2ggbWVyZ2luZyBteSByZXdvcmsgd2l0
+aCBpdCBnb3QgZGlmZmljdWx0LCBzbyBJIGRvbid0CmluY2x1ZGUgaXQgaW4gdGhlIHNlcmllcyBu
+b3cpLgoKClRoZXJlIGFyZSB0d28gYWx0ZXJuYXRlIHZlcnNpb25zIG9mIHRoZSBzZXJpZXMgdGhy
+ZWFkZWQgZnJvbSB0aGlzIGNvdmVyCmxldHRlcjoKCiAqIFtQQVRDSCB2M10gLSBwYXRjaCBhZ2Fp
+bnN0IHY0LjAtcmM1IHRoYXQgc3VwZXJzZWRlcyB0aGUgcHJldmlvdXMKICAgICAgICBzZXJpZXM7
+IHRoaXMgaXMgdGhlIGxlc3MgY2h1cm55IG9wdGlvbi4KCiAqIFtQQVRDSCB2MywgdHR5LW5leHQu
+Ll0gLSBwYXRjaGVzIGFnYWluc3QgdHR5LW5leHQgdGhhdAogICAgICAgIG1vZGlmeS9wYXJ0aWFs
+bHkgcmV2ZXJ0IHRoZSBwcmV2aW91cyBzZXJpZXMgd2l0aG91dCBuZWVkaW5nIGEKICAgICAgICBy
+ZWJhc2UuCgpUYWtlIHlvdXIgcGljay4KCgpDaGFuZ2VzIHNpbmNlIHYyOgoKICogUmVtb3ZlIHRo
+ZSBvcHRpbWlzYXRpb24gdGhhdCBhc3N1bWVzIFRYSVMgc3RheXMgYXNzZXJ0ZWQgYWNyb3NzIHBv
+cnQKICAgc2h1dGRvd24uLnN0YXJ0dXAgKHRoYW5rcyB0byBKYWt1YiBLaWNpxYRza2kgZm9yIHNw
+b3R0aW5nIHRoaXMgb24KICAgcmFzcGJlcnJ5cGktMikuICBUaGlzIHR1cm5zIG91dCB0byBiZSB1
+bnRydWUgaW4gY2VydGFpbiBzaXR1YXRpb25zLAogICBuYW1lbHkgd2hlbiB0aGUgb25seSBwcm9j
+ZXNzIHdpdGggdGhlIHBvcnQgb3BlbiBpcyBraWxsZWQgYnkgYQogICBzaWduYWwuICBUaGlzIG1h
+eSBpbmRpY2F0ZSBhIGJ1ZyBpbiBzZXJpYWxfY29yZSwgYnV0IHRoZSAiY29ycmVjdCIKICAgYmVo
+YXZpb3VyIGZvciB0aGlzIGNhc2UgaXMgbm90IGNvbXBsZXRlbHkgb2J2aW91cy4KCiAgIEZvciB0
+aGlzIHJlcG9zdCwgSSBqdXN0IHJldmVydCB0aGUgb3B0aW1pc2F0aW9uIHNvIHRoYXQgdGhlIHBs
+MDExCiAgIGRyaXZlciBkb2Vzbid0IGhhbmcgaW4gdGhpcyBzaXR1YXRpb24uICBJdCBkaWRuJ3Qg
+YnJpbmcgbXVjaCByZWFsCiAgIGJlbmVmaXQgaW4gYW55IGNhc2UuCgogKiBSZW1vdmUgdGhlIHR4
+IHNvZnRpcnEgYW5kIHJld29yayB0aGUgY29kZSBmb3IgbW9yZSBpbnRlbGxpZ2libGUKICAgY29k
+ZSBmbG93LgoKICogcGwwMTFfc3RhcnRfdHgoKSBub3cgc2ltcGx5IHN0dWZmcyB0aGUgRklGTyB1
+bnRpbCBpdCdzIGZ1bGwgKGluIHdoaWNoCiAgIGNhc2UgdGhlIFRYIElSUSB3aWxsIGRlZmluaXRl
+bHkgZmlyZSksIG9yIHVudGlsIHRoZSBzZXJpYWxfY29yZQogICBjaXJjdWxhciBidWZmZXIgaXMg
+ZW1wdHkgKGluIHdoaWNoIGNhc2Ugd2UgZG9uJ3QgY2FyZSBhYm91dCB0aGUKICAgaW50ZXJydXB0
+IGJlY2F1c2UgdGhlcmUgaXMgbm90aGluZyBtb3JlIHRvIHNlbmQpLgoKCk9yaWdpbmFsIGNvdmVy
+IGxldHRlcjoKClRoZSBjdXJyZW50IFBMMDExIGRyaXZlciB0cmFuc21pdHMgYSBkdW1teSBjaGFy
+YWN0ZXIgd2hlbiB0aGUgVUFSVAppcyBvcGVuZWQsIHRvIGFzc2VydCB0aGUgVFggSVJRIGZvciB0
+aGUgZmlyc3QgdGltZQooc2VlIHBsMDExX3N0YXJ0dXAoKSkuICBUaGUgVUFSVCBpcyBwdXQgaW4g
+bG9vcGJhY2sgbW9kZSB0ZW1wb3JhcmlseSwKc28gdGhlIHJlY2VpdmVyIHByZXN1bWFibHkgc2hv
+dWxkbid0IHNlZSBhbnl0aGluZy4KCkhvd2V2ZXIuLi4KCkF0IGxlYXN0IHNvbWUgcGxhdGZvcm1z
+IGNvbnRhaW5pbmcgYSBQTDAxMSBzZW5kIGNoYXJhY3RlcnMgZG93biB0aGUKd2lyZSBldmVuIHdo
+ZW4gbG9vcGJhY2sgbW9kZSBpcyBlbmFibGVkLiAgVGhpcyBtZWFucyB0aGF0IGEKc3B1cmlvdXMg
+TlVMIGNoYXJhY3RlciBtYXkgYmUgc2VlbiBhdCB0aGUgcmVjZWl2ZXIgd2hlbiB0aGUgUEwwMTEg
+aXMKb3BlbmVkIHRocm91Z2ggdGhlIFRUWSBsYXllci4KClRoZSBjdXJyZW50IGNvZGUgYWxzbyB0
+ZW1wb3JhcmlseSBzZXRzIHRoZSBiYXVkIHJhdGUgdG8gbWF4aW11bSBhbmQKdGhlIGNoYXJhY3Rl
+ciB3aWR0aCB0byB0aGUgbWluaW11bSwgdG8gdGhhdCB0aGUgZHVtbXkgVFggY29tcGxldGVzCmFz
+IHF1aWNrbHkgYXMgcG9zc2libGUuICBJZiB0aGlzIGlzIHNlZW4gYnkgdGhlIHJlY2VpdmVyIGl0
+IHdpbGwKcmVzdWx0IGluIGEgZnJhbWluZyBlcnJvciBhbmQgY2FuIGtub2NrIHRoZSByZWNlaXZl
+ciBvdXQgb2Ygc3luYyAtLQp0dXJuaW5nIHN1YnNlcXVlbnQgb3V0cHV0IGludG8gZ2FyYmFnZSB1
+bnRpbCBzeW5jaHJvbmlzYXRpb24KaXMgcmVlc3RhYmxpc2hlZC4gIChQYXJ0aWN1bGFybHkgcHJv
+YmxlbWF0aWMgZHVyaW5nIGJvb3Qgd2l0aCBzeXN0ZW1kLikKClRvIGF2b2lkIHNwdXJpb3VzIHRy
+YW5zbWlzc2lvbnMsIHRoaXMgcGF0Y2ggcmVtb3ZlcyBhc3N1bXB0aW9ucyBhYm91dAp3aGV0aGVy
+IHRoZSBUWCBJUlEgd2lsbCBmaXJlIHVudGlsIGF0IGxlYXN0IG9uZSBUWCBJUlEgaGFzIGJlZW4g
+c2Vlbi4KCkluc3RlYWQsIHRoZSBVQVJUIHdpbGwgdW5tYXNrIHRoZSBUWCBJUlEgYW5kIHRoZW4g
+c2xvdy1zdGFydCB2aWEKcG9sbGluZyBhbmQgdGltZXItYmFzZWQgc29mdCBJUlFzIGluaXRpYWxs
+eS4gIElmIHRoZSBUVFkgbGF5ZXIgd3JpdGVzCmVub3VnaCBkYXRhIHRvIGZpbGwgdGhlIEZJRk8g
+dG8gdGhlIGludGVycnVwdCB0aHJlc2hvbGQgaW4gb25lIGdvLAp0aGUgVFggSVJRIHNob3VsZCBh
+c3NlcnQsIGF0IHdoaWNoIHBvaW50IHRoZSBkcml2ZXIgY2hhbmdlcyB0bwpmdWxseSBpbnRlcnJ1
+cHQtZHJpdmVuIFRYLgoKSW4gdGhpcyB3YXksIHRoZSBUWCBJUlEgaXMgYWN0aXZhdGVkIGFzIGEg
+c2lkZS1lZmZlY3QgaW5zdGVhZCBvZgpiZWluZyBkb25lIGRlbGliZXJhdGVseS4KClRoaXMgc2hv
+dWxkIGFsc28gbWVhbiB0aGF0IHRoZSBkcml2ZXIgd29ya3Mgb24gdGhlIFNCU0EgR2VuZXJpYwpV
+QVJUWzFdIChhIGN1dC1kb3duIFBMMDExKSB3aXRob3V0IGludmFzaXZlIGNoYW5nZXMuICBUaGUg
+R2VuZXJpYwpVQVJUIGxhY2tzIHNvbWUgZmVhdHVyZXMgbmVlZGVkIGZvciB0aGUgZHVtbXkgVFgg
+YXBwcm9hY2ggdG8gd29yawooRklGTyBkaXNhYmxpbmcgYW5kIGxvb3BiYWNrKS4KClsxXSBTZXJ2
+ZXIgQmFzZSBTeXN0ZW0gQXJjaGl0ZWN0dXJlIChBUk0tREVOLTAwMjktdjIuMykKICAgIGh0dHA6
+Ly9pbmZvY2VudGVyLmFybS5jb20vCiAgICAoY2xpY2stdGhydSByZXF1aXJlZCA6LykKCi0tIAox
+LjcuMTAuNAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5m
+cmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xp
+bnV4LWFybS1rZXJuZWwK
