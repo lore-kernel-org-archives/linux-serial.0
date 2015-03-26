@@ -1,52 +1,86 @@
-From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: Re: [PATCH v3  10/15] serial: stm32-usart: Add STM32 USART Driver
-Date: Thu, 26 Mar 2015 15:46:18 +0000
-Message-ID: <20150326154618.GO8656@n2100.arm.linux.org.uk>
-References: <1426197361-19290-1-git-send-email-maxime.coquelin@st.com>
- <1426197361-19290-11-git-send-email-maxime.coquelin@st.com>
- <5511ABAA.2010303@hurleysoftware.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 -next 00/11]  Extensible console matching & direct
+ earlycon
+Date: Thu, 26 Mar 2015 18:13:16 +0100
+Message-ID: <20150326171316.GA5891@kroah.com>
+References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5511ABAA.2010303-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, afaerber-l3A5Bk7waGM@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, stefan-XLVq0VzYD2Y@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Antti Palosaari <crope-X3B1VOXEql0@public.gmane.org>, Tejun Heo <tj@k>
+In-Reply-To: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 24, 2015 at 02:23:38PM -0400, Peter Hurley wrote:
-> Hi Maxime,
+On Mon, Mar 09, 2015 at 04:27:11PM -0400, Peter Hurley wrote:
+> Changes from v2:
+> * remainder of unapplied series
+> * Changed the title and commit log for
+>   "serial: earlycon: Allow earlycon params with name only" to
+>   "serial: earlycon: Skip parse_options() for empty string" per Rob's
+>   comment.
 > 
-> On 03/12/2015 05:55 PM, Maxime Coquelin wrote:
-> > +static unsigned int stm32_get_mctrl(struct uart_port *port)
-> > +{
-> > +	/*
-> > +	 * This routine is used for geting signals of: DTR, DCD, DSR, RI,
-> > +	 * and CTS/RTS
-
-It's also worth noting that this comment is wrong.  This is used to get
-the state of DCD, DSR, RI and CTS.  DTR and RTS are *not* included
-because the core tracks their state.
-
-...
-
-> > +	stm32port->clk = devm_clk_get(&pdev->dev, NULL);
-> > +
-> > +	if (WARN_ON(IS_ERR(stm32port->clk)))
+> Changes from v1:
+> * rebased on and requires "console: Fix console name size mismatch"
 > 
-> Do you really need a stack trace here? Could this be dev_err() instead?
 > 
-> > +		return -EINVAL;
+> Hi Greg & Andrew,
+> 
+> This patch series implements:
+>   1. console-definable (aka extensible) matching
+>   2. generic earlycon-to-console handoff via extensible matching
+>   3. arch/prom support for direct earlycon
+> 
+> 
+> Extensible console matching
+> 
+> Extensible console matching enables the console itself to define the
+> conditions for a "command line" match. This mimics the design of
+> device matching in the driver model. Two important use-cases which this
+> feature enables are generic earlycon-to-console handoff and support
+> for driver migration.
+> 
+> Earlycon-to-console handoff was implemented in 2007. Console command
+> lines of the form:
+>    console=uart,io,0x3f8,115200n8
+> start an earlycon and later allow the 8250 driver console to takeover.
+> Unfortunately this implementation requires direct coupling between
+> the earlycon and the console and is facilitated by ugly hacks like
+> editing the console command line in-place.
+> 
+> Extensible console matching allows the 8250 driver to directly match
+> that console command line instead, and enables other serial drivers
+> to trivially support console handoff themselves.
+> 
+> In addition, extensible console matching allows a new driver to
+> provide support for a different driver's console. This requirement
+> stems from needing to minimize breakage when migrating serial drivers.
+> Since many devices are based on the original 8250/16550 designs
+> but sometimes have features incompatible with the existing 8250 driver
+> support, the initial driver is often standalone. When/if the standalone
+> driver is migrated to the 8250 driver, the problem of console names in
+> the command line remains. Extensible console matching enables a simple
+> migration path.
+> 
+> 
+> Direct earlycon
+> 
+> This feature enables arches and proms to start an earlycon directly,
+> rather than requiring an "earlycon=" command line parameter.
+> Devicetree can already do this via the 'linux,stdout-path' property,
+> but arch and prom code requires direct coupling to the serial driver.
+> 
+> This support is implemented by judicious refactoring and the same
+> construct that devicetree and early_param use: a link table containing
+> the necessary information (name and setup() function) to find and
+> bind the appropriate earlycon "driver".
+> 
+> 
+> NB: I combined these two features in this series because their
+> implementations heavily overlap in the same source files.
 
-Also, propagate the error code.
+All now queued up, thanks.
 
-> > +
-> > +	/* ensure that clk rate is correct by enabling the clk */
-> > +	clk_prepare_enable(stm32port->clk);
-
-And remember to check the return value of clk_prepare_enable().
-
--- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
+greg k-h
