@@ -1,37 +1,69 @@
-From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3-5tc4TXWwyLM@public.gmane.org>
-Subject: Re: [PATCH 3/4] sc16is7xx: expose RTS inversion in RS-485 mode
-Date: Thu, 26 Mar 2015 22:48:27 +0100
-Message-ID: <20150326224827.198f09ec@north>
-References: <1426548529-21738-1-git-send-email-moorray3@wp.pl>
-	<1426548529-21738-4-git-send-email-moorray3@wp.pl>
-	<alpine.DEB.2.10.1503171043400.3566@jring-w510-7m3g.gridpoint.com>
-	<20150317155700.71a4ad1b@north>
-	<20150326213701.GA29278@kroah.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/1] serial: samsung: Clear operation mode on UART
+ shutdown
+Date: Thu, 26 Mar 2015 22:57:19 +0100
+Message-ID: <20150326215719.GA13985@kroah.com>
+References: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk>
+ <550C1060.1040900@collabora.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150326213701.GA29278-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Jon Ringle <jon-7zJyie9iPacdnm+yROfE0A@public.gmane.org>, "Ringle, Jonathan" <Jonathan.Ringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Karol =?UTF-8?B?RMSZYm9nw7Nyc2tp?= <k.debogorski-XA5MxPtj9CQ@public.gmane.org>, Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <550C1060.1040900@collabora.co.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+Cc: Jiri Slaby <jslaby@suse.cz>, Robert Baldyga <r.baldyga@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Olof Johansson <olof@lixom.net>, Doug Anderson <dianders@chromium.org>, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 26 Mar 2015 22:37:01 +0100, Greg Kroah-Hartman wrote:
-> On Tue, Mar 17, 2015 at 03:57:00PM +0100, Jakub Kici=C5=84ski wrote:
-> > On Tue, 17 Mar 2015 10:45:26 -0400 (EDT), Jon Ringle wrote:
-> > > This makes sense. I did have to fix up my user space app to set=20
-> > > SER_RS485_RTS_ON_SEND after applying this patch.
-> >=20
-> > Yes, perhaps I should have mentioned that this makes the ioctl retu=
-rn
-> > -EINVAL when neither of SER_RS485_RTS_*_SEND flags is set.  This
-> > definitely has potential to break people's apps.  Let's see if anyo=
-ne
-> > else has an opinion on this.
->=20
-> Yes, don't break people's apps.
+On Fri, Mar 20, 2015 at 01:19:44PM +0100, Javier Martinez Canillas wrote:
+> Hello,
+> 
+> On 03/13/2015 12:38 PM, Javier Martinez Canillas wrote:
+> > Exynos serial ports operate either in a DMA-based or interrupt-based
+> > modes. In DMA-based mode, the UART generates a transfer data request
+> > and a Transmission (Tx) interrupt in interrupt-based mode.
+> > 
+> > The Tx IRQ is only unmasked in interrupt-based mode and it was done
+> > in s3c24xx_serial_start_tx(). Commit ba019a3e2ad5 ("serial: samsung:
+> > remove redundant interrupt enabling") removed the IRQ enable on that
+> > function since it is enabled when the mode is set in enable_tx_pio().
+> > 
+> > The problem is that enable_tx_pio() is only called if the port mode
+> > has not been set before but the mode was not cleared on .shutdown().
+> > 
+> > So if the UART was shutdown and then started up again, the mode set
+> > will remain and the Tx IRQ won't be unmasked.
+> > 
+> > This caused a hang on at least Exynos5250, Exynos5420 and Exynos5800
+> > when the system is rebooted or powered off.
+> > 
+> > Fixes: ba019a3e2ad5 ("serial: samsung: remove redundant interrupt enabling")
+> > Signed-off-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+> > ---
+> > 
+> > I noticed this issue on an Exynos5250 Snow, Exynos5420 Peach Pit and Exynos
+> > 5800 Peach Pi Chromebooks. This patch fixes the issue on all of them.
+> > 
+> > The offending commit landed in v4.0-rc1 so this fix is -rc material.
+> > 
+> >  drivers/tty/serial/samsung.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> > index af821a908720..cf08876922f1 100644
+> > --- a/drivers/tty/serial/samsung.c
+> > +++ b/drivers/tty/serial/samsung.c
+> > @@ -963,6 +963,7 @@ static void s3c24xx_serial_shutdown(struct uart_port *port)
+> >  			free_irq(ourport->tx_irq, ourport);
+> >  		tx_enabled(port) = 0;
+> >  		ourport->tx_claimed = 0;
+> > +		ourport->tx_mode = 0;
+> >  	}
+> >  
+> >  	if (ourport->rx_claimed) {
+> > 
+> 
+> Any comments about this patch? 3.14-rc5 will most likely be released this weekend
+> so we are running out of time to fix this issue before 3.14 is released.
 
-Do you mean it would be OK if I ignore the incorrect combinations
-instead of returning -EINVAL or is any user-visible change in the
-behaviour of the driver unacceptable?
+3.14 was released months ago...
