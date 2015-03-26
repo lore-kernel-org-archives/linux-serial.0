@@ -1,64 +1,47 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v3 10/15] serial: stm32-usart: Add STM32 USART Driver
-Date: Thu, 26 Mar 2015 23:05:52 +0100
-Message-ID: <CALszF6CPRqB-wOfyM6QuN3v7GNRbsaHtPv82okiLcNekoBQ2tQ@mail.gmail.com>
-References: <1426197361-19290-1-git-send-email-maxime.coquelin@st.com>
-	<1426197361-19290-11-git-send-email-maxime.coquelin@st.com>
-	<5511ABAA.2010303@hurleysoftware.com>
-	<20150326154618.GO8656@n2100.arm.linux.org.uk>
+From: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+Subject: Re: [PATCH 1/1] serial: samsung: Clear operation mode on UART shutdown
+Date: Thu, 26 Mar 2015 23:19:20 +0100
+Message-ID: <551485E8.2050406@collabora.co.uk>
+References: <1426246731-13751-1-git-send-email-javier.martinez@collabora.co.uk> <550C1060.1040900@collabora.co.uk> <20150326215719.GA13985@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <20150326154618.GO8656@n2100.arm.linux.org.uk>
-Sender: linux-arch-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Peter Hurley <peter@hurleysoftware.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemlo>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <20150326215719.GA13985@kroah.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Robert Baldyga <r.baldyga@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Olof Johansson <olof@lixom.net>, Doug Anderson <dianders@chromium.org>, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-2015-03-26 16:46 GMT+01:00 Russell King - ARM Linux <linux@arm.linux.org.uk>:
-> On Tue, Mar 24, 2015 at 02:23:38PM -0400, Peter Hurley wrote:
->> Hi Maxime,
->>
->> On 03/12/2015 05:55 PM, Maxime Coquelin wrote:
->> > +static unsigned int stm32_get_mctrl(struct uart_port *port)
->> > +{
->> > +   /*
->> > +    * This routine is used for geting signals of: DTR, DCD, DSR, RI,
->> > +    * and CTS/RTS
->
-> It's also worth noting that this comment is wrong.  This is used to get
-> the state of DCD, DSR, RI and CTS.  DTR and RTS are *not* included
-> because the core tracks their state.
+On 03/26/2015 10:57 PM, Greg Kroah-Hartman wrote:
+> On Fri, Mar 20, 2015 at 01:19:44PM +0100, Javier Martinez Canillas wrote:
+>> > The offending commit landed in v4.0-rc1 so this fix is -rc material.
+>> > 
+>> >  drivers/tty/serial/samsung.c | 1 +
+>> >  1 file changed, 1 insertion(+)
+>> > 
+>> > diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+>> > index af821a908720..cf08876922f1 100644
+>> > --- a/drivers/tty/serial/samsung.c
+>> > +++ b/drivers/tty/serial/samsung.c
+>> > @@ -963,6 +963,7 @@ static void s3c24xx_serial_shutdown(struct uart_port *port)
+>> >  			free_irq(ourport->tx_irq, ourport);
+>> >  		tx_enabled(port) = 0;
+>> >  		ourport->tx_claimed = 0;
+>> > +		ourport->tx_mode = 0;
+>> >  	}
+>> >  
+>> >  	if (ourport->rx_claimed) {
+>> > 
+>> 
+>> Any comments about this patch? 3.14-rc5 will most likely be released this weekend
+>> so we are running out of time to fix this issue before 3.14 is released.
+> 
+> 3.14 was released months ago...
+> 
 
-OK, thanks for pointing this.
-I will fix the comment in the v4.
+err... I don't know what I was thinking when I wrote this, I obviously
+meant 4.0. It seems the 3.1 prefix stuck in my head :)
 
->
-> ...
->
->> > +   stm32port->clk = devm_clk_get(&pdev->dev, NULL);
->> > +
->> > +   if (WARN_ON(IS_ERR(stm32port->clk)))
->>
->> Do you really need a stack trace here? Could this be dev_err() instead?
->>
->> > +           return -EINVAL;
->
-> Also, propagate the error code.
-Ok.
-
->
->> > +
->> > +   /* ensure that clk rate is correct by enabling the clk */
->> > +   clk_prepare_enable(stm32port->clk);
->
-> And remember to check the return value of clk_prepare_enable().
-I will.
-
-Thanks for the review,
-Maxime
-
->
-> --
-> FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-> according to speedtest.net.
+Best regards,
+Javier
