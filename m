@@ -1,15 +1,14 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 1/2] serial/amba-pl011: Activate TX IRQ passively
-Date: Thu, 26 Mar 2015 22:27:27 +0100
-Message-ID: <20150326212727.GA21598@kroah.com>
-References: <1426262182-2298-1-git-send-email-Dave.Martin@arm.com>
- <1426262182-2298-2-git-send-email-Dave.Martin@arm.com>
+Subject: Re: [PATCH v2] amba-pl011: simplify TX handling
+Date: Thu, 26 Mar 2015 22:28:37 +0100
+Message-ID: <20150326212837.GA21648@kroah.com>
+References: <1426636967-9124-1-git-send-email-moorray3@wp.pl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1426262182-2298-2-git-send-email-Dave.Martin@arm.com>
+In-Reply-To: <1426636967-9124-1-git-send-email-moorray3@wp.pl>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,57 +18,55 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Dave Martin <Dave.Martin@arm.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
+To: Jakub Kicinski <moorray3@wp.pl>
+Cc: Russell King <linux@arm.linux.org.uk>, Jakub Kicinski <kubakici@wp.pl>, Andre Przywara <andre.przywara@arm.com>, Karol =?utf-8?B?RMSZYm9nw7Nyc2tp?= <k.debogorski@a2s.pl>, linux-serial@vger.kernel.org, Dave Martin <Dave.Martin@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 13, 2015 at 03:56:21PM +0000, Dave Martin wrote:
-> The current PL011 driver transmits a dummy character when the UART
-> is opened, to assert the TX IRQ for the first time
-> (see pl011_startup()).  The UART is put in loopback mode temporarily,
-> so the receiver presumably shouldn't see anything.
+On Wed, Mar 18, 2015 at 01:02:47AM +0100, Jakub Kicinski wrote:
+> From: Jakub Kicinski <kubakici@wp.pl>
 > 
-> However...
+> Since pre-git era PL011 used an elaborate scheme to load data
+> to TX FIFO.  Only TX IRQ handler was loading data into the FIFO,
+> which required the IRQ to fire before any transmission started
+> (to load the first batch of characters).  Initial IRQ was fired
+> by putting UART into loopback mode and writing an arbitrary
+> character during .startup().
 > 
-> At least some platforms containing a PL011 send characters down the
-> wire even when loopback mode is enabled.  This means that a
-> spurious NUL character may be seen at the receiver when the PL011 is
-> opened through the TTY layer.
+> Unfortunately some PL011-compatible UART (most notably BCM2708
+> in Raspberry Pi) would transmit the arbitrary character even
+> though the device was in loopback mode.  Commit 734745caeb9f
+> ("serial/amba-pl011: Activate TX IRQ passively") solved this
+> issue by loading the first batch explicitly from .start_tx()
+> handler.  It employed quite a complex scheme involving IRQ
+> counting and a delayed work.
 > 
-> The current code also temporarily sets the baud rate to maximum and
-> the character width to the minimum, to that the dummy TX completes
-> as quickly as possible.  If this is seen by the receiver it will
-> result in a framing error and can knock the receiver out of sync --
-> turning subsequent output into garbage until synchronisation
-> is reestablished.  (Particularly problematic during boot with systemd.)
+> f2ee6dfa0e85 ("serial/amba-pl011: Leave the TX IRQ alone when
+> the UART is not open") was an attempt to optimise the loading
+> by assuming that when the device is opened second time TX IRQ
+> from the previous transmission will still be pending.  This
+> assumption is incorrect if the device is closed with FIFO full
+> because FIFO will be programmatically flushed and therefore no
+> IRQ will be pending on next .open().
 > 
-> To avoid spurious transmissions, this patch removes assumptions about
-> whether the TX IRQ will fire until at least one TX IRQ has been seen.
+> This patch simplifies the code and fixes above problem. It should
+> also make things a bit more efficient as the FIFO was not filled
+> properly after the driver seen more than two IRQs.
 > 
-> Instead, the UART will unmask the TX IRQ and then slow-start via
-> polling and timer-based soft IRQs initially.  If the TTY layer writes
-> enough data to fill the FIFO to the interrupt threshold in one go,
-> the TX IRQ should assert, at which point the driver changes to
-> fully interrupt-driven TX.
-> 
-> This should also mean that the driver works on the SBSA Generic
-> UART[1] (a cut-down PL011) without invasive changes.  The Generic
-> UART lacks some features needed for the dummy TX approach to work
-> (FIFO disabling and loopback).
-> 
-> [1] Server Base System Architecture (ARM-DEN-0029-v2.3)
->     http://infocenter.arm.com/
->     (click-thru required :/)
-> 
-> Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+> Fixes: f2ee6dfa0e85 ("serial/amba-pl011: Leave the TX IRQ alone when the UART is not open")
+> Signed-off-by: Jakub Kicinski <kubakici@wp.pl>
 > ---
->  drivers/tty/serial/amba-pl011.c |  121 +++++++++++++++++++++++++--------------
->  1 file changed, 78 insertions(+), 43 deletions(-)
+> v2:
+>  - don't try to load FIFO from outside of IRQ handler
+>    if IRQ is unmasked (change to pl011_start_tx_pio());
+>  - don't check for FIFO_FULL at the end of load from IRQ;
+>  - remove unnecessary newlines.
+> ---
+>  drivers/tty/serial/amba-pl011.c | 113 +++++++++++++---------------------------
+>  1 file changed, 35 insertions(+), 78 deletions(-)
 
-Wait, I already took this patch, right?
+As I think this does much the same thing Dave Martin's patch does, I
+want him to ack this before I can accept it.
 
-Was there some difference here with this version?
-
-confused,
+thanks,
 
 greg k-h
