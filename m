@@ -1,123 +1,52 @@
-From: Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [RFC 2/6] tty: serial: atmel: use atmel_io.h to provide on-chip IO
-Date: Thu, 26 Mar 2015 11:45:50 +0000
-Message-ID: <1427370354-21247-3-git-send-email-ben.dooks@codethink.co.uk>
-References: <1427370354-21247-1-git-send-email-ben.dooks@codethink.co.uk>
+From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Subject: Re: [PATCH v3  10/15] serial: stm32-usart: Add STM32 USART Driver
+Date: Thu, 26 Mar 2015 15:46:18 +0000
+Message-ID: <20150326154618.GO8656@n2100.arm.linux.org.uk>
+References: <1426197361-19290-1-git-send-email-maxime.coquelin@st.com>
+ <1426197361-19290-11-git-send-email-maxime.coquelin@st.com>
+ <5511ABAA.2010303@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1427370354-21247-1-git-send-email-ben.dooks@codethink.co.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-kernel@lists.codethink.co.uk
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, nicolas.ferre@atmel.com, Ben Dooks <ben.dooks@codethink.co.uk>, linux-serial@vger.kernel.org, hskinnemoen@gmail.com, Jiri Slaby <jslaby@suse.cz>, linux@maxim.org.za, linux-arm-kernel@lists.infradead.org, egtvedt@samfundet.no
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5511ABAA.2010303-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, afaerber-l3A5Bk7waGM@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, stefan-XLVq0VzYD2Y@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Antti Palosaari <crope-X3B1VOXEql0@public.gmane.org>, Tejun Heo <tj@k>
 List-Id: linux-serial@vger.kernel.org
 
-Use <linux/atmel_io.h> to provide IO accessors which work on both
-AVR32 and ARM for on-chip peripherals.
+On Tue, Mar 24, 2015 at 02:23:38PM -0400, Peter Hurley wrote:
+> Hi Maxime,
+> 
+> On 03/12/2015 05:55 PM, Maxime Coquelin wrote:
+> > +static unsigned int stm32_get_mctrl(struct uart_port *port)
+> > +{
+> > +	/*
+> > +	 * This routine is used for geting signals of: DTR, DCD, DSR, RI,
+> > +	 * and CTS/RTS
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
---
-CC: Nicolas Ferre <nicolas.ferre@atmel.com>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Jiri Slaby <jslaby@suse.cz>
-CC: linux-serial@vger.kernel.org
-CC: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
----
- drivers/tty/serial/atmel_serial.c | 63 +++++++++++++++++----------------------
- 1 file changed, 28 insertions(+), 35 deletions(-)
+It's also worth noting that this comment is wrong.  This is used to get
+the state of DCD, DSR, RI and CTS.  DTR and RTS are *not* included
+because the core tracks their state.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 40ef95f..eed0700 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -38,6 +38,7 @@
- #include <linux/of_gpio.h>
- #include <linux/dma-mapping.h>
- #include <linux/dmaengine.h>
-+#include <linux/atmel_io.h>
- #include <linux/atmel_pdc.h>
- #include <linux/atmel_serial.h>
- #include <linux/uaccess.h>
-@@ -88,44 +89,36 @@ static void atmel_stop_rx(struct uart_port *port);
- 
- #define ATMEL_ISR_PASS_LIMIT	256
- 
--#ifdef CONFIG_AVR32
--#define __atserial_writel	__raw_writel
--#define __atserial_readl	__raw_readl
--#else
--#define __atserial_writel	writel_relaxed
--#define __atserial_readl	readl_relaxed
--#endif
--
- /* UART registers. CR is write-only, hence no GET macro */
--#define UART_PUT_CR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_CR)
--#define UART_GET_MR(port)	__atserial_readl((port)->membase + ATMEL_US_MR)
--#define UART_PUT_MR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_MR)
--#define UART_PUT_IER(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_IER)
--#define UART_PUT_IDR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_IDR)
--#define UART_GET_IMR(port)	__atserial_readl((port)->membase + ATMEL_US_IMR)
--#define UART_GET_CSR(port)	__atserial_readl((port)->membase + ATMEL_US_CSR)
--#define UART_GET_CHAR(port)	__atserial_readl((port)->membase + ATMEL_US_RHR)
--#define UART_PUT_CHAR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_THR)
--#define UART_GET_BRGR(port)	__atserial_readl((port)->membase + ATMEL_US_BRGR)
--#define UART_PUT_BRGR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_BRGR)
--#define UART_PUT_RTOR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_RTOR)
--#define UART_PUT_TTGR(port, v)	__atserial_writel(v, (port)->membase + ATMEL_US_TTGR)
--#define UART_GET_IP_NAME(port)	__atserial_readl((port)->membase + ATMEL_US_NAME)
--#define UART_GET_IP_VERSION(port) __atserial_readl((port)->membase + ATMEL_US_VERSION)
-+#define UART_PUT_CR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_CR)
-+#define UART_GET_MR(port)	atmel_oc_readl((port)->membase + ATMEL_US_MR)
-+#define UART_PUT_MR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_MR)
-+#define UART_PUT_IER(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_IER)
-+#define UART_PUT_IDR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_IDR)
-+#define UART_GET_IMR(port)	atmel_oc_readl((port)->membase + ATMEL_US_IMR)
-+#define UART_GET_CSR(port)	atmel_oc_readl((port)->membase + ATMEL_US_CSR)
-+#define UART_GET_CHAR(port)	atmel_oc_readl((port)->membase + ATMEL_US_RHR)
-+#define UART_PUT_CHAR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_THR)
-+#define UART_GET_BRGR(port)	atmel_oc_readl((port)->membase + ATMEL_US_BRGR)
-+#define UART_PUT_BRGR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_BRGR)
-+#define UART_PUT_RTOR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_RTOR)
-+#define UART_PUT_TTGR(port, v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_TTGR)
-+#define UART_GET_IP_NAME(port)	atmel_oc_readl((port)->membase + ATMEL_US_NAME)
-+#define UART_GET_IP_VERSION(port) atmel_oc_readl((port)->membase + ATMEL_US_VERSION)
- 
-  /* PDC registers */
--#define UART_PUT_PTCR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_PTCR)
--#define UART_GET_PTSR(port)	__atserial_readl((port)->membase + ATMEL_PDC_PTSR)
--
--#define UART_PUT_RPR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_RPR)
--#define UART_GET_RPR(port)	__atserial_readl((port)->membase + ATMEL_PDC_RPR)
--#define UART_PUT_RCR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_RCR)
--#define UART_PUT_RNPR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_RNPR)
--#define UART_PUT_RNCR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_RNCR)
--
--#define UART_PUT_TPR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_TPR)
--#define UART_PUT_TCR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_TCR)
--#define UART_GET_TCR(port)	__atserial_readl((port)->membase + ATMEL_PDC_TCR)
-+#define UART_PUT_PTCR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_PTCR)
-+#define UART_GET_PTSR(port)	atmel_oc_readl((port)->membase + ATMEL_PDC_PTSR)
-+
-+#define UART_PUT_RPR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_RPR)
-+#define UART_GET_RPR(port)	atmel_oc_readl((port)->membase + ATMEL_PDC_RPR)
-+#define UART_PUT_RCR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_RCR)
-+#define UART_PUT_RNPR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_RNPR)
-+#define UART_PUT_RNCR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_RNCR)
-+
-+#define UART_PUT_TPR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_TPR)
-+#define UART_PUT_TCR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_TCR)
-+#define UART_GET_TCR(port)	atmel_oc_readl((port)->membase + ATMEL_PDC_TCR)
- 
- struct atmel_dma_buffer {
- 	unsigned char	*buf;
+...
+
+> > +	stm32port->clk = devm_clk_get(&pdev->dev, NULL);
+> > +
+> > +	if (WARN_ON(IS_ERR(stm32port->clk)))
+> 
+> Do you really need a stack trace here? Could this be dev_err() instead?
+> 
+> > +		return -EINVAL;
+
+Also, propagate the error code.
+
+> > +
+> > +	/* ensure that clk rate is correct by enabling the clk */
+> > +	clk_prepare_enable(stm32port->clk);
+
+And remember to check the return value of clk_prepare_enable().
+
 -- 
-2.1.4
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
