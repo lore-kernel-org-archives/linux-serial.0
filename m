@@ -1,282 +1,45 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [PATCH v3,
- tty-next.. 2/2] serial/amba-pl011: Activate TX IRQ passively
-Date: Wed, 25 Mar 2015 18:26:15 +0000
-Message-ID: <1427307975-2940-3-git-send-email-Dave.Martin@arm.com>
-References: <1427307746-2811-1-git-send-email-Dave.Martin@arm.com>
- <1427307975-2940-1-git-send-email-Dave.Martin@arm.com>
+From: Hao Liang <hliang1025@gmail.com>
+Subject: [PATCH] bfin uart: it will hang when read current y count if not disable dma irq
+Date: Thu, 26 Mar 2015 17:13:24 +0800
+Message-ID: <1427361205-31801-1-git-send-email-hliang1025@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1427307975-2940-1-git-send-email-Dave.Martin@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: sonic.zhang@analog.com, gregkh@linuxfoundation.org, jslaby@suse.cz
+Cc: adi-buildroot-devel@lists.sourceforge.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, hliang1025@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-The current PL011 driver transmits a dummy character when the UART
-is opened, to assert the TX IRQ for the first time
-(see pl011_startup()).  The UART is put in loopback mode temporarily,
-so the receiver presumably shouldn't see anything.
+Add irq disable and enable in bfin_serial_rx_dma_timeout in case of
+system hang.
 
-However...
+This reverts part of commit 9642dbe73c8a ("serial: bfin-uart: avoid
+dead lock in rx irq handler in smp kernel").
 
-At least some platforms containing a PL011 send characters down the
-wire even when loopback mode is enabled.  This means that a
-spurious NUL character may be seen at the receiver when the PL011 is
-opened through the TTY layer.
-
-The current code also temporarily sets the baud rate to maximum and
-the character width to the minimum, to that the dummy TX completes
-as quickly as possible.  If this is seen by the receiver it will
-result in a framing error and can knock the receiver out of sync --
-turning subsequent output into garbage until synchronisation
-is reestablished.  (Particularly problematic during boot with systemd.)
-
-To avoid spurious transmissions, this patch removes assumptions about
-whether the TX IRQ will fire until the FIFO has been filled.
-
-This should also mean that the driver works on the SBSA Generic
-UART[1] (a cut-down PL011) without invasive changes.  The Generic
-UART lacks some features needed for the dummy TX approach to work
-(FIFO disabling and loopback).
-
-[1] Server Base System Architecture (ARM-DEN-0029-v2.3)
-    http://infocenter.arm.com/
-    (click-thru required :/)
-
-Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+Signed-off-by: Hao Liang <hliang1025@gmail.com>
 ---
- drivers/tty/serial/amba-pl011.c |  119 +++++++++------------------------------
- 1 file changed, 26 insertions(+), 93 deletions(-)
+ drivers/tty/serial/bfin_uart.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6f5a072..f5bd842 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -58,7 +58,6 @@
- #include <linux/pinctrl/consumer.h>
- #include <linux/sizes.h>
- #include <linux/io.h>
--#include <linux/workqueue.h>
+diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+index 43b3e2c..155781e 100644
+--- a/drivers/tty/serial/bfin_uart.c
++++ b/drivers/tty/serial/bfin_uart.c
+@@ -464,6 +464,7 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
+ 	int x_pos, pos;
+ 	unsigned long flags;
  
- #define UART_NR			14
++	dma_disable_irq_nosync(uart->rx_dma_channel);
+ 	spin_lock_irqsave(&uart->rx_lock, flags);
  
-@@ -157,9 +156,7 @@ struct uart_amba_port {
- 	unsigned int		lcrh_tx;	/* vendor-specific */
- 	unsigned int		lcrh_rx;	/* vendor-specific */
- 	unsigned int		old_cr;		/* state during shutdown */
--	struct delayed_work	tx_softirq_work;
- 	bool			autorts;
--	unsigned int		tx_irq_seen;	/* 0=none, 1=1, 2=2 or more */
- 	char			type[12];
- #ifdef CONFIG_DMA_ENGINE
- 	/* DMA stuff */
-@@ -1172,15 +1169,14 @@ static void pl011_stop_tx(struct uart_port *port)
- 	pl011_dma_tx_stop(uap);
- }
- 
--static bool pl011_tx_chars(struct uart_amba_port *uap);
-+static void pl011_tx_chars(struct uart_amba_port *uap, bool from_irq);
- 
- /* Start TX with programmed I/O only (no DMA) */
- static void pl011_start_tx_pio(struct uart_amba_port *uap)
- {
- 	uap->im |= UART011_TXIM;
- 	writew(uap->im, uap->port.membase + UART011_IMSC);
--	if (!uap->tx_irq_seen)
--		pl011_tx_chars(uap);
-+	pl011_tx_chars(uap, false);
- }
- 
- static void pl011_start_tx(struct uart_port *port)
-@@ -1247,87 +1243,54 @@ __acquires(&uap->port.lock)
- 	spin_lock(&uap->port.lock);
- }
- 
--/*
-- * Transmit a character
-- * There must be at least one free entry in the TX FIFO to accept the char.
-- *
-- * Returns true if the FIFO might have space in it afterwards;
-- * returns false if the FIFO definitely became full.
-- */
--static bool pl011_tx_char(struct uart_amba_port *uap, unsigned char c)
-+static bool pl011_tx_char(struct uart_amba_port *uap, unsigned char c,
-+			  bool from_irq)
- {
-+	if (unlikely(!from_irq) &&
-+	    readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF)
-+		return false; /* unable to transmit character */
-+
- 	writew(c, uap->port.membase + UART01x_DR);
- 	uap->port.icount.tx++;
- 
--	if (likely(uap->tx_irq_seen > 1))
--		return true;
--
--	return !(readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF);
-+	return true;
- }
- 
--static bool pl011_tx_chars(struct uart_amba_port *uap)
-+static void pl011_tx_chars(struct uart_amba_port *uap, bool from_irq)
- {
- 	struct circ_buf *xmit = &uap->port.state->xmit;
--	int count;
--
--	if (unlikely(uap->tx_irq_seen < 2))
--		/*
--		 * Initial FIFO fill level unknown: we must check TXFF
--		 * after each write, so just try to fill up the FIFO.
--		 */
--		count = uap->fifosize;
--	else /* tx_irq_seen >= 2 */
--		/*
--		 * FIFO initially at least half-empty, so we can simply
--		 * write half the FIFO without polling TXFF.
--
--		 * Note: the *first* TX IRQ can still race with
--		 * pl011_start_tx_pio(), which can result in the FIFO
--		 * being fuller than expected in that case.
--		 */
--		count = uap->fifosize >> 1;
--
--	/*
--	 * If the FIFO is full we're guaranteed a TX IRQ at some later point,
--	 * and can't transmit immediately in any case:
--	 */
--	if (unlikely(uap->tx_irq_seen < 2 &&
--		     readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF))
--		return false;
-+	int count = uap->fifosize >> 1;
- 
- 	if (uap->port.x_char) {
--		pl011_tx_char(uap, uap->port.x_char);
-+		if (!pl011_tx_char(uap, uap->port.x_char, from_irq))
-+			return;
- 		uap->port.x_char = 0;
- 		--count;
- 	}
- 	if (uart_circ_empty(xmit) || uart_tx_stopped(&uap->port)) {
- 		pl011_stop_tx(&uap->port);
--		goto done;
-+		return;
+ 	/* 2D DMA RX buffer ring is used. Because curr_y_count and
+@@ -496,6 +497,7 @@ void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
  	}
  
- 	/* If we are using DMA mode, try to send some characters. */
- 	if (pl011_dma_tx_irq(uap))
--		goto done;
-+		return;
+ 	spin_unlock_irqrestore(&uart->rx_lock, flags);
++	dma_enable_irq(uart->rx_dma_channel);
  
--	while (count-- > 0 && pl011_tx_char(uap, xmit->buf[xmit->tail])) {
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		if (uart_circ_empty(xmit))
-+	do {
-+		if (likely(from_irq) && count-- == 0)
- 			break;
--	}
-+
-+		if (!pl011_tx_char(uap, xmit->buf[xmit->tail], from_irq))
-+			break;
-+
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+	} while (!uart_circ_empty(xmit));
- 
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(&uap->port);
- 
--	if (uart_circ_empty(xmit)) {
-+	if (uart_circ_empty(xmit))
- 		pl011_stop_tx(&uap->port);
--		goto done;
--	}
--
--	if (unlikely(!uap->tx_irq_seen))
--		schedule_delayed_work(&uap->tx_softirq_work, uap->port.timeout);
--
--done:
--	return false;
+ 	mod_timer(&(uart->rx_dma_timer), jiffies + DMA_RX_FLUSH_JIFFIES);
  }
- 
- static void pl011_modem_status(struct uart_amba_port *uap)
-@@ -1354,28 +1317,6 @@ static void pl011_modem_status(struct uart_amba_port *uap)
- 	wake_up_interruptible(&uap->port.state->port.delta_msr_wait);
- }
- 
--static void pl011_tx_softirq(struct work_struct *work)
--{
--	struct delayed_work *dwork = to_delayed_work(work);
--	struct uart_amba_port *uap =
--		container_of(dwork, struct uart_amba_port, tx_softirq_work);
--
--	spin_lock(&uap->port.lock);
--	while (pl011_tx_chars(uap)) ;
--	spin_unlock(&uap->port.lock);
--}
--
--static void pl011_tx_irq_seen(struct uart_amba_port *uap)
--{
--	if (likely(uap->tx_irq_seen > 1))
--		return;
--
--	uap->tx_irq_seen++;
--	if (uap->tx_irq_seen < 2)
--		/* first TX IRQ */
--		cancel_delayed_work(&uap->tx_softirq_work);
--}
--
- static irqreturn_t pl011_int(int irq, void *dev_id)
- {
- 	struct uart_amba_port *uap = dev_id;
-@@ -1414,10 +1355,8 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 			if (status & (UART011_DSRMIS|UART011_DCDMIS|
- 				      UART011_CTSMIS|UART011_RIMIS))
- 				pl011_modem_status(uap);
--			if (status & UART011_TXIS) {
--				pl011_tx_irq_seen(uap);
--				pl011_tx_chars(uap);
--			}
-+			if (status & UART011_TXIS)
-+				pl011_tx_chars(uap, true);
- 
- 			if (pass_counter-- == 0)
- 				break;
-@@ -1639,9 +1578,6 @@ static int pl011_startup(struct uart_port *port)
- 
- 	writew(uap->vendor->ifls, uap->port.membase + UART011_IFLS);
- 
--	/* Assume that TX IRQ doesn't work until we see one: */
--	uap->tx_irq_seen = 0;
--
- 	spin_lock_irq(&uap->port.lock);
- 
- 	/* restore RTS and DTR */
-@@ -1697,8 +1633,6 @@ static void pl011_shutdown(struct uart_port *port)
- 	    container_of(port, struct uart_amba_port, port);
- 	unsigned int cr;
- 
--	cancel_delayed_work_sync(&uap->tx_softirq_work);
--
- 	/*
- 	 * disable all interrupts
- 	 */
-@@ -2245,7 +2179,6 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	uap->port.ops = &amba_pl011_pops;
- 	uap->port.flags = UPF_BOOT_AUTOCONF;
- 	uap->port.line = i;
--	INIT_DELAYED_WORK(&uap->tx_softirq_work, pl011_tx_softirq);
- 
- 	/* Ensure interrupts from this UART are masked and cleared */
- 	writew(0, uap->port.membase + UART011_IMSC);
 -- 
-1.7.10.4
+1.7.9.5
