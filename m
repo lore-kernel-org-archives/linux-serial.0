@@ -1,14 +1,14 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2] amba-pl011: simplify TX handling
-Date: Thu, 26 Mar 2015 22:28:37 +0100
-Message-ID: <20150326212837.GA21648@kroah.com>
-References: <1426636967-9124-1-git-send-email-moorray3@wp.pl>
+Subject: Re: [PATCH v3 0/*] serial/amba-pl011: Activate TX IRQ passively
+Date: Thu, 26 Mar 2015 22:30:14 +0100
+Message-ID: <20150326213014.GA21687@kroah.com>
+References: <1427307746-2811-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1426636967-9124-1-git-send-email-moorray3@wp.pl>
+In-Reply-To: <1427307746-2811-1-git-send-email-Dave.Martin@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,55 +18,28 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jakub Kicinski <moorray3@wp.pl>
-Cc: Russell King <linux@arm.linux.org.uk>, Jakub Kicinski <kubakici@wp.pl>, Andre Przywara <andre.przywara@arm.com>, Karol =?utf-8?B?RMSZYm9nw7Nyc2tp?= <k.debogorski@a2s.pl>, linux-serial@vger.kernel.org, Dave Martin <Dave.Martin@arm.com>, linux-arm-kernel@lists.infradead.org
+To: Dave Martin <Dave.Martin@arm.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 18, 2015 at 01:02:47AM +0100, Jakub Kicinski wrote:
-> From: Jakub Kicinski <kubakici@wp.pl>
-> 
-> Since pre-git era PL011 used an elaborate scheme to load data
-> to TX FIFO.  Only TX IRQ handler was loading data into the FIFO,
-> which required the IRQ to fire before any transmission started
-> (to load the first batch of characters).  Initial IRQ was fired
-> by putting UART into loopback mode and writing an arbitrary
-> character during .startup().
-> 
-> Unfortunately some PL011-compatible UART (most notably BCM2708
-> in Raspberry Pi) would transmit the arbitrary character even
-> though the device was in loopback mode.  Commit 734745caeb9f
-> ("serial/amba-pl011: Activate TX IRQ passively") solved this
-> issue by loading the first batch explicitly from .start_tx()
-> handler.  It employed quite a complex scheme involving IRQ
-> counting and a delayed work.
-> 
-> f2ee6dfa0e85 ("serial/amba-pl011: Leave the TX IRQ alone when
-> the UART is not open") was an attempt to optimise the loading
-> by assuming that when the device is opened second time TX IRQ
-> from the previous transmission will still be pending.  This
-> assumption is incorrect if the device is closed with FIFO full
-> because FIFO will be programmatically flushed and therefore no
-> IRQ will be pending on next .open().
-> 
-> This patch simplifies the code and fixes above problem. It should
-> also make things a bit more efficient as the FIFO was not filled
-> properly after the driver seen more than two IRQs.
-> 
-> Fixes: f2ee6dfa0e85 ("serial/amba-pl011: Leave the TX IRQ alone when the UART is not open")
-> Signed-off-by: Jakub Kicinski <kubakici@wp.pl>
-> ---
-> v2:
->  - don't try to load FIFO from outside of IRQ handler
->    if IRQ is unmasked (change to pl011_start_tx_pio());
->  - don't check for FIFO_FULL at the end of load from IRQ;
->  - remove unnecessary newlines.
-> ---
->  drivers/tty/serial/amba-pl011.c | 113 +++++++++++++---------------------------
->  1 file changed, 35 insertions(+), 78 deletions(-)
-
-As I think this does much the same thing Dave Martin's patch does, I
-want him to ack this before I can accept it.
-
-thanks,
-
-greg k-h
+T24gV2VkLCBNYXIgMjUsIDIwMTUgYXQgMDY6MjI6MjZQTSArMDAwMCwgRGF2ZSBNYXJ0aW4gd3Jv
+dGU6Cj4gVGhhbmtzIHRvIEpha3ViIEtpY2nFhHNraSBmb3IgaGlzIGJ1ZyByZXBvcnQgYW5kIGRp
+c2N1c3Npb24sIGFuZCBmb3IKPiBzaG93aW5nIG91dCBob3cgd2UgY2FuIG1hbmFnZSB3aXRob3V0
+IHRoZSBzb2Z0aXJxIChhbmQgcHJvdmlkaW5nIGEKPiBwYXRjaCwgdGhvdWdoIG1lcmdpbmcgbXkg
+cmV3b3JrIHdpdGggaXQgZ290IGRpZmZpY3VsdCwgc28gSSBkb24ndAo+IGluY2x1ZGUgaXQgaW4g
+dGhlIHNlcmllcyBub3cpLgo+IAo+IAo+IFRoZXJlIGFyZSB0d28gYWx0ZXJuYXRlIHZlcnNpb25z
+IG9mIHRoZSBzZXJpZXMgdGhyZWFkZWQgZnJvbSB0aGlzIGNvdmVyCj4gbGV0dGVyOgo+IAo+ICAq
+IFtQQVRDSCB2M10gLSBwYXRjaCBhZ2FpbnN0IHY0LjAtcmM1IHRoYXQgc3VwZXJzZWRlcyB0aGUg
+cHJldmlvdXMKPiAgICAgICAgIHNlcmllczsgdGhpcyBpcyB0aGUgbGVzcyBjaHVybnkgb3B0aW9u
+Lgo+IAo+ICAqIFtQQVRDSCB2MywgdHR5LW5leHQuLl0gLSBwYXRjaGVzIGFnYWluc3QgdHR5LW5l
+eHQgdGhhdAo+ICAgICAgICAgbW9kaWZ5L3BhcnRpYWxseSByZXZlcnQgdGhlIHByZXZpb3VzIHNl
+cmllcyB3aXRob3V0IG5lZWRpbmcgYQo+ICAgICAgICAgcmViYXNlLgo+IAo+IFRha2UgeW91ciBw
+aWNrLgoKSSBoYXZlIG5vIGlkZWEgd2hhdCB5b3Ugd2FudCBtZSB0byBkbyBoZXJlLCBzb3JyeS4K
+CkkgbmVlZCB0byBhcHBseSBwYXRjaGVzIHRvIHR0eS1uZXh0LCBJIGNhbid0IGRvIGFueXRoaW5n
+IGFnYWluc3QgYQoiY2xlYW4iIDQuMC1yYzUgYXMgeW91ciBwYXRjaGVzIGFyZSBhbHJlYWR5IGlu
+IHR0eS1uZXh0LgoKQW5kIEkgY2FuJ3QgdGVsbCB0aGUgdHdvIHNlcmllcyBhcGFydCBoZXJlLi4u
+CgpDYW4geW91IGp1c3QgcmVzZW5kIHdoYXQgeW91IHdhbnQgbWUgdG8gYXBwbHkgdG8gdHR5LW5l
+eHQgYW5kIHdlIGNhbiBnbwpmcm9tIHRoZXJlPwoKY29uZnVzZWQsCgpncmVnIGstaAoKX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5l
+bCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6
+Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
