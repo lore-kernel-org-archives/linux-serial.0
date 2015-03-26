@@ -1,180 +1,123 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v3  04/15] clocksource: Add ARM System timer driver
-Date: Thu, 26 Mar 2015 10:50:02 +0100
-Message-ID: <5513D64A.7060702@linaro.org>
-References: <1426197361-19290-1-git-send-email-maxime.coquelin@st.com> <1426197361-19290-5-git-send-email-maxime.coquelin@st.com>
+From: Ben Dooks <ben.dooks@codethink.co.uk>
+Subject: [RFC 2/6] tty: serial: atmel: use atmel_io.h to provide on-chip IO
+Date: Thu, 26 Mar 2015 11:45:50 +0000
+Message-ID: <1427370354-21247-3-git-send-email-ben.dooks@codethink.co.uk>
+References: <1427370354-21247-1-git-send-email-ben.dooks@codethink.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1426197361-19290-5-git-send-email-maxime.coquelin@st.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>, u.kleine-koenig@pengutronix.de, afaerber@suse.de, geert@linux-m68k.org, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, stefan@agner.ch, pmeerw@pmeerw.net, pebolle@tiscali.nl
-Cc: Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Joe Perches <joe@perches.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, Kees Cook <keescook@chromium.org>, Michal Marek <mmarek@suse.cz>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-gpi
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1427370354-21247-1-git-send-email-ben.dooks@codethink.co.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-kernel@lists.codethink.co.uk
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, nicolas.ferre@atmel.com, Ben Dooks <ben.dooks@codethink.co.uk>, linux-serial@vger.kernel.org, hskinnemoen@gmail.com, Jiri Slaby <jslaby@suse.cz>, linux@maxim.org.za, linux-arm-kernel@lists.infradead.org, egtvedt@samfundet.no
 List-Id: linux-serial@vger.kernel.org
 
-On 03/12/2015 10:55 PM, Maxime Coquelin wrote:
-> From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
->
-> This patch adds clocksource support for ARMv7-M's System timer,
-> also known as SysTick.
->
-> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Use <linux/atmel_io.h> to provide IO accessors which work on both
+AVR32 and ARM for on-chip peripherals.
 
-Hi Maxime,
-
-the driver looks good. Three comments below.
-
-   -- Daniel
-
-> ---
->   drivers/clocksource/Kconfig          |  7 ++++
->   drivers/clocksource/Makefile         |  1 +
->   drivers/clocksource/armv7m_systick.c | 78 +++++++++++++++++++++++++=
-+++++++++++
->   3 files changed, 86 insertions(+)
->   create mode 100644 drivers/clocksource/armv7m_systick.c
->
-> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfi=
-g
-> index 1c2506f..b82e58b 100644
-> --- a/drivers/clocksource/Kconfig
-> +++ b/drivers/clocksource/Kconfig
-> @@ -134,6 +134,13 @@ config CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
->   	help
->   	 Use ARM global timer clock source as sched_clock
->
-> +config ARMV7M_SYSTICK
-> +	bool
-> +	select CLKSRC_OF if OF
-> +	select CLKSRC_MMIO
-> +	help
-> +	  This options enables support for the ARMv7M system timer unit
-> +
->   config ATMEL_PIT
->   	select CLKSRC_OF if OF
->   	def_bool SOC_AT91SAM9 || SOC_SAMA5
-> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makef=
-ile
-> index 752d5c7..1c9a643 100644
-> --- a/drivers/clocksource/Makefile
-> +++ b/drivers/clocksource/Makefile
-> @@ -44,6 +44,7 @@ obj-$(CONFIG_MTK_TIMER)		+=3D mtk_timer.o
->
->   obj-$(CONFIG_ARM_ARCH_TIMER)		+=3D arm_arch_timer.o
->   obj-$(CONFIG_ARM_GLOBAL_TIMER)		+=3D arm_global_timer.o
-> +obj-$(CONFIG_ARMV7M_SYSTICK)		+=3D armv7m_systick.o
->   obj-$(CONFIG_CLKSRC_METAG_GENERIC)	+=3D metag_generic.o
->   obj-$(CONFIG_ARCH_HAS_TICK_BROADCAST)	+=3D dummy_timer.o
->   obj-$(CONFIG_ARCH_KEYSTONE)		+=3D timer-keystone.o
-> diff --git a/drivers/clocksource/armv7m_systick.c b/drivers/clocksour=
-ce/armv7m_systick.c
-> new file mode 100644
-> index 0000000..23d8249
-> --- /dev/null
-> +++ b/drivers/clocksource/armv7m_systick.c
-> @@ -0,0 +1,78 @@
-> +/*
-> + * Copyright (C) Maxime Coquelin 2015
-> + * Author:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> + * License terms:  GNU General Public License (GPL), version 2
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/clocksource.h>
-> +#include <linux/clockchips.h>
-> +#include <linux/of.h>
-> +#include <linux/of_address.h>
-> +#include <linux/clk.h>
-> +#include <linux/bitops.h>
-> +
-> +#define SYST_CSR	0x00
-> +#define SYST_RVR	0x04
-> +#define SYST_CVR	0x08
-> +#define SYST_CALIB	0x0c
-> +
-> +#define SYST_CSR_ENABLE BIT(0)
-> +
-> +#define SYSTICK_LOAD_RELOAD_MASK 0x00FFFFFF
-> +
-> +static void __init system_timer_of_register(struct device_node *np)
-> +{
-> +	struct clk *clk;
-> +	void __iomem *base;
-> +	u32 rate =3D 0;
-> +	int ret;
-> +
-> +	base =3D of_iomap(np, 0);
-> +	if (!base) {
-> +		pr_warn("system-timer: invalid base address\n");
-> +		return;
-> +	}
-> +
-> +	clk =3D of_clk_get(np, 0);
-> +	if (!IS_ERR(clk)) {
-> +		ret =3D clk_prepare_enable(clk);
-> +		if (ret) {
-> +			clk_put(clk);
-> +			goto out_unmap;
-> +		}
-> +
-> +		rate =3D clk_get_rate(clk);
-> +	}
-> +
-> +	/* If no clock found, try to get clock-frequency property */
-> +	if (!rate) {
-> +		ret =3D of_property_read_u32(np, "clock-frequency", &rate);
-> +		if (ret)
-> +			goto out_unmap;
-
-Shouldn't be 'goto out_clk_disable' ?
-
-> +	}
-> +
-> +	writel_relaxed(SYSTICK_LOAD_RELOAD_MASK, base + SYST_RVR);
-> +	writel_relaxed(SYST_CSR_ENABLE, base + SYST_CSR);
-> +
-> +	ret =3D clocksource_mmio_init(base + SYST_CVR, "arm_system_timer", =
-rate,
-> +			200, 24, clocksource_mmio_readl_down);
-> +	if (ret) {
-> +		pr_err("failed to init clocksource (%d)\n", ret);
-> +		goto out_clk_disable;
-> +	}
-> +
-> +	pr_info("ARM System timer initialized as clocksource\n");
-> +
-> +	return;
-> +
-> +out_clk_disable:
-> +	if (!IS_ERR(clk))
-
-Why do you need this check ?
-
-It isn't missing a clk_put ?
-
-> +		clk_disable_unprepare(clk);
-> +out_unmap:
-> +	iounmap(base);
-> +	WARN(ret, "ARM System timer register failed (%d)\n", ret);
-> +}
-> +
-> +CLOCKSOURCE_OF_DECLARE(arm_systick, "arm,armv7m-systick",
-> +			system_timer_of_register);
->
-
-
---=20
-  <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software fo=
-r ARM SoCs
-
-=46ollow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
-
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
 --
-To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+CC: Nicolas Ferre <nicolas.ferre@atmel.com>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Jiri Slaby <jslaby@suse.cz>
+CC: linux-serial@vger.kernel.org
+CC: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
+---
+ drivers/tty/serial/atmel_serial.c | 63 +++++++++++++++++----------------------
+ 1 file changed, 28 insertions(+), 35 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 40ef95f..eed0700 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -38,6 +38,7 @@
+ #include <linux/of_gpio.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmaengine.h>
++#include <linux/atmel_io.h>
+ #include <linux/atmel_pdc.h>
+ #include <linux/atmel_serial.h>
+ #include <linux/uaccess.h>
+@@ -88,44 +89,36 @@ static void atmel_stop_rx(struct uart_port *port);
+ 
+ #define ATMEL_ISR_PASS_LIMIT	256
+ 
+-#ifdef CONFIG_AVR32
+-#define __atserial_writel	__raw_writel
+-#define __atserial_readl	__raw_readl
+-#else
+-#define __atserial_writel	writel_relaxed
+-#define __atserial_readl	readl_relaxed
+-#endif
+-
+ /* UART registers. CR is write-only, hence no GET macro */
+-#define UART_PUT_CR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_CR)
+-#define UART_GET_MR(port)	__atserial_readl((port)->membase + ATMEL_US_MR)
+-#define UART_PUT_MR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_MR)
+-#define UART_PUT_IER(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_IER)
+-#define UART_PUT_IDR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_IDR)
+-#define UART_GET_IMR(port)	__atserial_readl((port)->membase + ATMEL_US_IMR)
+-#define UART_GET_CSR(port)	__atserial_readl((port)->membase + ATMEL_US_CSR)
+-#define UART_GET_CHAR(port)	__atserial_readl((port)->membase + ATMEL_US_RHR)
+-#define UART_PUT_CHAR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_THR)
+-#define UART_GET_BRGR(port)	__atserial_readl((port)->membase + ATMEL_US_BRGR)
+-#define UART_PUT_BRGR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_BRGR)
+-#define UART_PUT_RTOR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_US_RTOR)
+-#define UART_PUT_TTGR(port, v)	__atserial_writel(v, (port)->membase + ATMEL_US_TTGR)
+-#define UART_GET_IP_NAME(port)	__atserial_readl((port)->membase + ATMEL_US_NAME)
+-#define UART_GET_IP_VERSION(port) __atserial_readl((port)->membase + ATMEL_US_VERSION)
++#define UART_PUT_CR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_CR)
++#define UART_GET_MR(port)	atmel_oc_readl((port)->membase + ATMEL_US_MR)
++#define UART_PUT_MR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_MR)
++#define UART_PUT_IER(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_IER)
++#define UART_PUT_IDR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_IDR)
++#define UART_GET_IMR(port)	atmel_oc_readl((port)->membase + ATMEL_US_IMR)
++#define UART_GET_CSR(port)	atmel_oc_readl((port)->membase + ATMEL_US_CSR)
++#define UART_GET_CHAR(port)	atmel_oc_readl((port)->membase + ATMEL_US_RHR)
++#define UART_PUT_CHAR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_THR)
++#define UART_GET_BRGR(port)	atmel_oc_readl((port)->membase + ATMEL_US_BRGR)
++#define UART_PUT_BRGR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_BRGR)
++#define UART_PUT_RTOR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_RTOR)
++#define UART_PUT_TTGR(port, v)	atmel_oc_writel(v, (port)->membase + ATMEL_US_TTGR)
++#define UART_GET_IP_NAME(port)	atmel_oc_readl((port)->membase + ATMEL_US_NAME)
++#define UART_GET_IP_VERSION(port) atmel_oc_readl((port)->membase + ATMEL_US_VERSION)
+ 
+  /* PDC registers */
+-#define UART_PUT_PTCR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_PTCR)
+-#define UART_GET_PTSR(port)	__atserial_readl((port)->membase + ATMEL_PDC_PTSR)
+-
+-#define UART_PUT_RPR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_RPR)
+-#define UART_GET_RPR(port)	__atserial_readl((port)->membase + ATMEL_PDC_RPR)
+-#define UART_PUT_RCR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_RCR)
+-#define UART_PUT_RNPR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_RNPR)
+-#define UART_PUT_RNCR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_RNCR)
+-
+-#define UART_PUT_TPR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_TPR)
+-#define UART_PUT_TCR(port,v)	__atserial_writel(v, (port)->membase + ATMEL_PDC_TCR)
+-#define UART_GET_TCR(port)	__atserial_readl((port)->membase + ATMEL_PDC_TCR)
++#define UART_PUT_PTCR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_PTCR)
++#define UART_GET_PTSR(port)	atmel_oc_readl((port)->membase + ATMEL_PDC_PTSR)
++
++#define UART_PUT_RPR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_RPR)
++#define UART_GET_RPR(port)	atmel_oc_readl((port)->membase + ATMEL_PDC_RPR)
++#define UART_PUT_RCR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_RCR)
++#define UART_PUT_RNPR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_RNPR)
++#define UART_PUT_RNCR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_RNCR)
++
++#define UART_PUT_TPR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_TPR)
++#define UART_PUT_TCR(port,v)	atmel_oc_writel(v, (port)->membase + ATMEL_PDC_TCR)
++#define UART_GET_TCR(port)	atmel_oc_readl((port)->membase + ATMEL_PDC_TCR)
+ 
+ struct atmel_dma_buffer {
+ 	unsigned char	*buf;
+-- 
+2.1.4
