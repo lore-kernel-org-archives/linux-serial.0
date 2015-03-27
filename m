@@ -1,15 +1,17 @@
-From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
+From: Dave P Martin <Dave.Martin@arm.com>
 Subject: Re: [PATCH v4 2/2] serial/amba-pl011: Refactor and simplify TX FIFO
  handling
-Date: Fri, 27 Mar 2015 17:40:55 +0100
-Message-ID: <20150327174055.1a2dc194@north>
+Date: Fri, 27 Mar 2015 17:42:24 +0000
+Message-ID: <20150327174223.GA12666@e103592.cambridge.arm.com>
 References: <1427468371-11915-1-git-send-email-Dave.Martin@arm.com>
  <1427468371-11915-3-git-send-email-Dave.Martin@arm.com>
+ <20150327174055.1a2dc194@north>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1427468371-11915-3-git-send-email-Dave.Martin@arm.com>
+In-Reply-To: <20150327174055.1a2dc194@north>
+Content-Disposition: inline
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,89 +21,144 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Dave Martin <Dave.Martin@arm.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
+To: Jakub Kicinski <moorray3@wp.pl>
+Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gRnJpLCAyNyBNYXIgMjAxNSAxNDo1OTozMSArMDAwMCwgRGF2ZSBNYXJ0aW4gd3JvdGU6Cj4g
-Q29tbWl0IDczNDc0NWMgc2VyaWFsL2FtYmEtcGwwMTE6IEFjdGl2YXRlIFRYIElSUSBwYXNzaXZl
-bHkKPiBhZGRzIHNvbWUgdW5uZWNlc3NhcnkgY29tcGxleGl0eSBhbmQgb3ZlcmhlYWQgaW4gdGhl
-IGZvcm0gb2YKPiBhIHNvZnRpcnEgbWVjaGFuaXNtIGZvciB0cmFuc21pdHRpbmcgaW4gdGhlIGFi
-c2VuY2Ugb2YgaW50ZXJydXB0cy4KPiAKPiBBZnRlciBzb21lIGRpc2N1c3Npb24gWzFdLCB0aGlz
-IHR1cm5zIG91dCB0byBiZSB1bm5lY2Vzc2FyeS4KPiAKPiBUaGlzIHBhdGNoIHNpbXBsaWZpZXMg
-dGhlIGNvZGUgZmxvdyB0byByZWR1Y2UgdGhlIHJlbGlhbmNlIG9uCj4gc3VidGxlIGJlaGF2aW91
-ciBhbmQgYXZvaWQgZnJhZ2lsaXR5IHVuZGVyIGZ1dHVyZSBtYWludGVuYW5jZS4KPiAKPiBUbyB0
-aGlzIGVuZCwgdGhlIFRYIHNvZnRpcnEgbWVjaGFuaXNtIGlzIHJlbW92ZWQgYW5kIGluc3RlYWQK
-PiBwbDAxMV9zdGFydF90eCgpIHdpbGwgbm93IHNpbXBseSBzdHVmZiB0aGUgRklGTyB1bnRpbCBm
-dWxsCj4gKGd1YXJhbnRlZWluZyBmdXR1cmUgVFggSVJRcyksIG9yIHVudGlsIHRoZXJlIGFyZSBu
-byBtb3JlIGNoYXJzCj4gdG8gd3JpdGUgKGluIHdoaWNoIGNhc2Ugd2UgZG9uJ3QgY2FyZSB3aGV0
-aGVyIGFuIElSUSBoYXBwZW5zKS4KPiAKPiBbMV0gVGhhbmtzIHRvIEpha3ViIEtpY2nFhHNraSBm
-b3IgaGlzIGlucHV0IGFuZCBzaW1pbGFyIHBhdGNoLgo+IAo+IFNpZ25lZC1vZmYtYnk6IERhdmUg
-TWFydGluIDxEYXZlLk1hcnRpbkBhcm0uY29tPgo+IC0tLQo+ICBkcml2ZXJzL3R0eS9zZXJpYWwv
-YW1iYS1wbDAxMS5jIHwgIDExOSArKysrKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0KPiAgMSBmaWxlIGNoYW5nZWQsIDI2IGluc2VydGlvbnMoKyksIDkzIGRlbGV0aW9ucygtKQo+
-IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jIGIvZHJpdmVy
-cy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYwo+IGluZGV4IDZmNWEwNzIuLmY1YmQ4NDIgMTAwNjQ0
-Cj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYwo+ICsrKyBiL2RyaXZlcnMv
-dHR5L3NlcmlhbC9hbWJhLXBsMDExLmMKPHNuaXA+Cj4gQEAgLTEyNDcsODcgKzEyNDMsNTQgQEAg
-X19hY3F1aXJlcygmdWFwLT5wb3J0LmxvY2spCj4gIAlzcGluX2xvY2soJnVhcC0+cG9ydC5sb2Nr
-KTsKPiAgfQo+ICAKPiAtLyoKPiAtICogVHJhbnNtaXQgYSBjaGFyYWN0ZXIKPiAtICogVGhlcmUg
-bXVzdCBiZSBhdCBsZWFzdCBvbmUgZnJlZSBlbnRyeSBpbiB0aGUgVFggRklGTyB0byBhY2NlcHQg
-dGhlIGNoYXIuCj4gLSAqCj4gLSAqIFJldHVybnMgdHJ1ZSBpZiB0aGUgRklGTyBtaWdodCBoYXZl
-IHNwYWNlIGluIGl0IGFmdGVyd2FyZHM7Cj4gLSAqIHJldHVybnMgZmFsc2UgaWYgdGhlIEZJRk8g
-ZGVmaW5pdGVseSBiZWNhbWUgZnVsbC4KPiAtICovCj4gLXN0YXRpYyBib29sIHBsMDExX3R4X2No
-YXIoc3RydWN0IHVhcnRfYW1iYV9wb3J0ICp1YXAsIHVuc2lnbmVkIGNoYXIgYykKPiArc3RhdGlj
-IGJvb2wgcGwwMTFfdHhfY2hhcihzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVhcCwgdW5zaWduZWQg
-Y2hhciBjLAo+ICsJCQkgIGJvb2wgZnJvbV9pcnEpCj4gIHsKPiArCWlmICh1bmxpa2VseSghZnJv
-bV9pcnEpICYmCj4gKwkgICAgcmVhZHcodWFwLT5wb3J0Lm1lbWJhc2UgKyBVQVJUMDF4X0ZSKSAm
-IFVBUlQwMXhfRlJfVFhGRikKPiArCQlyZXR1cm4gZmFsc2U7IC8qIHVuYWJsZSB0byB0cmFuc21p
-dCBjaGFyYWN0ZXIgKi8KPiArCj4gIAl3cml0ZXcoYywgdWFwLT5wb3J0Lm1lbWJhc2UgKyBVQVJU
-MDF4X0RSKTsKPiAgCXVhcC0+cG9ydC5pY291bnQudHgrKzsKPiAgCj4gLQlpZiAobGlrZWx5KHVh
-cC0+dHhfaXJxX3NlZW4gPiAxKSkKPiAtCQlyZXR1cm4gdHJ1ZTsKPiAtCj4gLQlyZXR1cm4gIShy
-ZWFkdyh1YXAtPnBvcnQubWVtYmFzZSArIFVBUlQwMXhfRlIpICYgVUFSVDAxeF9GUl9UWEZGKTsK
-PiArCXJldHVybiB0cnVlOwo+ICB9Cj4gIAo+IC1zdGF0aWMgYm9vbCBwbDAxMV90eF9jaGFycyhz
-dHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVhcCkKPiArc3RhdGljIHZvaWQgcGwwMTFfdHhfY2hhcnMo
-c3RydWN0IHVhcnRfYW1iYV9wb3J0ICp1YXAsIGJvb2wgZnJvbV9pcnEpCj4gIHsKPiAgCXN0cnVj
-dCBjaXJjX2J1ZiAqeG1pdCA9ICZ1YXAtPnBvcnQuc3RhdGUtPnhtaXQ7Cj4gLQlpbnQgY291bnQ7
-Cj4gLQo+IC0JaWYgKHVubGlrZWx5KHVhcC0+dHhfaXJxX3NlZW4gPCAyKSkKPiAtCQkvKgo+IC0J
-CSAqIEluaXRpYWwgRklGTyBmaWxsIGxldmVsIHVua25vd246IHdlIG11c3QgY2hlY2sgVFhGRgo+
-IC0JCSAqIGFmdGVyIGVhY2ggd3JpdGUsIHNvIGp1c3QgdHJ5IHRvIGZpbGwgdXAgdGhlIEZJRk8u
-Cj4gLQkJICovCj4gLQkJY291bnQgPSB1YXAtPmZpZm9zaXplOwo+IC0JZWxzZSAvKiB0eF9pcnFf
-c2VlbiA+PSAyICovCj4gLQkJLyoKPiAtCQkgKiBGSUZPIGluaXRpYWxseSBhdCBsZWFzdCBoYWxm
-LWVtcHR5LCBzbyB3ZSBjYW4gc2ltcGx5Cj4gLQkJICogd3JpdGUgaGFsZiB0aGUgRklGTyB3aXRo
-b3V0IHBvbGxpbmcgVFhGRi4KPiAtCj4gLQkJICogTm90ZTogdGhlICpmaXJzdCogVFggSVJRIGNh
-biBzdGlsbCByYWNlIHdpdGgKPiAtCQkgKiBwbDAxMV9zdGFydF90eF9waW8oKSwgd2hpY2ggY2Fu
-IHJlc3VsdCBpbiB0aGUgRklGTwo+IC0JCSAqIGJlaW5nIGZ1bGxlciB0aGFuIGV4cGVjdGVkIGlu
-IHRoYXQgY2FzZS4KPiAtCQkgKi8KPiAtCQljb3VudCA9IHVhcC0+Zmlmb3NpemUgPj4gMTsKPiAt
-Cj4gLQkvKgo+IC0JICogSWYgdGhlIEZJRk8gaXMgZnVsbCB3ZSdyZSBndWFyYW50ZWVkIGEgVFgg
-SVJRIGF0IHNvbWUgbGF0ZXIgcG9pbnQsCj4gLQkgKiBhbmQgY2FuJ3QgdHJhbnNtaXQgaW1tZWRp
-YXRlbHkgaW4gYW55IGNhc2U6Cj4gLQkgKi8KPiAtCWlmICh1bmxpa2VseSh1YXAtPnR4X2lycV9z
-ZWVuIDwgMiAmJgo+IC0JCSAgICAgcmVhZHcodWFwLT5wb3J0Lm1lbWJhc2UgKyBVQVJUMDF4X0ZS
-KSAmIFVBUlQwMXhfRlJfVFhGRikpCj4gLQkJcmV0dXJuIGZhbHNlOwo+ICsJaW50IGNvdW50ID0g
-dWFwLT5maWZvc2l6ZSA+PiAxOwoKRGF2ZSwgSSdkIHByZWZlciBpZiB5b3Uga2VwdCBteSAucHJl
-dl9mcm9tX2lycSB0aGluZy4gIElmIC5zdGFydF90eCgpCnJhY2VzIHdpdGggdGhlIElSUSB3ZSBt
-YXkgaGF2ZSBhIHNpdHVhdGlvbiB3aGVyZSB0aGUgSVJRIGFycml2ZXMKYnV0IC5zdGFydF90eCgp
-IGFscmVhZHkgZmlsbGVkIHRoZSBGSUZPLiAgVGhlIGd1YXJhbnRlZSBvZiBoYWxmIG9mIHRoZQpG
-SUZPIGJlaW5nIGVtcHR5IHdpbGwgbm90IGhvbGQgaW4gdGhpcyBjYXNlLiAgVGhhdCdzIHdoeSBJ
-IHVzZSB0aGUKZ3VhcmFudGVlIG9ubHkgaWYgdGhlIHByZXZpb3VzIGxvYWQgd2FzIGFsc28gZnJv
-bSBGSUZPLgoKPiAgCWlmICh1YXAtPnBvcnQueF9jaGFyKSB7Cj4gLQkJcGwwMTFfdHhfY2hhcih1
-YXAsIHVhcC0+cG9ydC54X2NoYXIpOwo+ICsJCWlmICghcGwwMTFfdHhfY2hhcih1YXAsIHVhcC0+
-cG9ydC54X2NoYXIsIGZyb21faXJxKSkKPiArCQkJcmV0dXJuOwo+ICAJCXVhcC0+cG9ydC54X2No
-YXIgPSAwOwo+ICAJCS0tY291bnQ7Cj4gIAl9Cj4gIAlpZiAodWFydF9jaXJjX2VtcHR5KHhtaXQp
-IHx8IHVhcnRfdHhfc3RvcHBlZCgmdWFwLT5wb3J0KSkgewo+ICAJCXBsMDExX3N0b3BfdHgoJnVh
-cC0+cG9ydCk7Cj4gLQkJZ290byBkb25lOwo+ICsJCXJldHVybjsKPiAgCX0KPiAgCj4gIAkvKiBJ
-ZiB3ZSBhcmUgdXNpbmcgRE1BIG1vZGUsIHRyeSB0byBzZW5kIHNvbWUgY2hhcmFjdGVycy4gKi8K
-PiAgCWlmIChwbDAxMV9kbWFfdHhfaXJxKHVhcCkpCj4gLQkJZ290byBkb25lOwo+ICsJCXJldHVy
-bjsKPiAgCj4gLQl3aGlsZSAoY291bnQtLSA+IDAgJiYgcGwwMTFfdHhfY2hhcih1YXAsIHhtaXQt
-PmJ1Zlt4bWl0LT50YWlsXSkpIHsKPiAtCQl4bWl0LT50YWlsID0gKHhtaXQtPnRhaWwgKyAxKSAm
-IChVQVJUX1hNSVRfU0laRSAtIDEpOwo+IC0JCWlmICh1YXJ0X2NpcmNfZW1wdHkoeG1pdCkpCj4g
-KwlkbyB7Cj4gKwkJaWYgKGxpa2VseShmcm9tX2lycSkgJiYgY291bnQtLSA9PSAwKQo+ICAJCQli
-cmVhazsKPiAtCX0KPiArCj4gKwkJaWYgKCFwbDAxMV90eF9jaGFyKHVhcCwgeG1pdC0+YnVmW3ht
-aXQtPnRhaWxdLCBmcm9tX2lycSkpCj4gKwkJCWJyZWFrOwo+ICsKPiArCQl4bWl0LT50YWlsID0g
-KHhtaXQtPnRhaWwgKyAxKSAmIChVQVJUX1hNSVRfU0laRSAtIDEpOwo+ICsJfSB3aGlsZSAoIXVh
-cnRfY2lyY19lbXB0eSh4bWl0KSk7CgpJZiB5b3UgYWRkIHRoZSAucHJldl8qIHRoaXMgbG9vcCB3
-aWxsIGJlY29tZSBldmVuIG1vcmUgdWdseS4gIEZlZWwgZnJlZQp0byBjb3B5IG15IGNvZGUgd2hl
-cmV2ZXIgeW91IHNlZSBmaXQuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVs
-QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+[Resend -- apologies again for any duplicates received]
+
+On Fri, Mar 27, 2015 at 05:40:55PM +0100, Jakub Kicinski wrote:
+> On Fri, 27 Mar 2015 14:59:31 +0000, Dave Martin wrote:
+> > Commit 734745c serial/amba-pl011: Activate TX IRQ passively
+> > adds some unnecessary complexity and overhead in the form of
+> > a softirq mechanism for transmitting in the absence of interrupts.
+> > 
+> > After some discussion [1], this turns out to be unnecessary.
+> > 
+> > This patch simplifies the code flow to reduce the reliance on
+> > subtle behaviour and avoid fragility under future maintenance.
+> > 
+> > To this end, the TX softirq mechanism is removed and instead
+> > pl011_start_tx() will now simply stuff the FIFO until full
+> > (guaranteeing future TX IRQs), or until there are no more chars
+> > to write (in which case we don't care whether an IRQ happens).
+> > 
+> > [1] Thanks to Jakub Kicinski for his input and similar patch.
+> > 
+> > Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+> > ---
+> >  drivers/tty/serial/amba-pl011.c |  119 +++++++++------------------------------
+> >  1 file changed, 26 insertions(+), 93 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+
+[...]
+
+> > -
+> > -	/*
+> > -	 * If the FIFO is full we're guaranteed a TX IRQ at some later point,
+> > -	 * and can't transmit immediately in any case:
+> > -	 */
+> > -	if (unlikely(uap->tx_irq_seen < 2 &&
+> > -		     readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF))
+> > -		return false;
+> > +	int count = uap->fifosize >> 1;
+> 
+> Dave, I'd prefer if you kept my .prev_from_irq thing.  If .start_tx()
+> races with the IRQ we may have a situation where the IRQ arrives
+> but .start_tx() already filled the FIFO.  The guarantee of half of the
+> FIFO being empty will not hold in this case.  That's why I use the
+> guarantee only if the previous load was also from FIFO.
+
+I thought about this, but I think port->lock prevents this from
+happening.  I was overly defensive about this in the earlier versions
+of the patches, and that made the code a fair bit more complicated...
+I was hoping it could just go away ;)
+
+
+In pl011_int(), we have
+
+-8<-
+
+spin_lock_irqsave(&uap->port.lock, flags);
+
+[...]
+
+while (status = readw(uap->port.membase + UART012_MIS), status != 0) {
+
+[...]
+
+	if (status & UART011_TXIS)
+		pl011_tx_chars(uap, true);
+
+} while (status != 0);
+
+[...]
+
+spin_unlock_irqrestore(&uap->port.lock, flags);
+
+->8-
+
+
+serial_core always holds port->lock around _start_tx(), so it should be
+impossible for any part of _start_tx() to run in parallel with this.  If
+TXIS is asserted and nothing can write the FIFO in the meantime, then
+that should mean that the FIFO is definitely half-empty on entry to
+pl011_tx_chars(..., from_irq=true) -- this is also why it's safe for
+pl011_int() to loop and potentially make repeated calls to
+pl011_tx_chars().
+
+Can you see a way this could break, or does this reasoning sound good to
+you?
+
+	do {
+> 
+> >  	if (uap->port.x_char) {
+> > -		pl011_tx_char(uap, uap->port.x_char);
+> > +		if (!pl011_tx_char(uap, uap->port.x_char, from_irq))
+> > +			return;
+> >  		uap->port.x_char = 0;
+> >  		--count;
+> >  	}
+> >  	if (uart_circ_empty(xmit) || uart_tx_stopped(&uap->port)) {
+> >  		pl011_stop_tx(&uap->port);
+> > -		goto done;
+> > +		return;
+> >  	}
+> >  
+> >  	/* If we are using DMA mode, try to send some characters. */
+> >  	if (pl011_dma_tx_irq(uap))
+> > -		goto done;
+> > +		return;
+> >  
+> > -	while (count-- > 0 && pl011_tx_char(uap, xmit->buf[xmit->tail])) {
+> > -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> > -		if (uart_circ_empty(xmit))
+> > +	do {
+> > +		if (likely(from_irq) && count-- == 0)
+> >  			break;
+> > -	}
+> > +
+> > +		if (!pl011_tx_char(uap, xmit->buf[xmit->tail], from_irq))
+> > +			break;
+> > +
+> > +		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> > +	} while (!uart_circ_empty(xmit));
+> 
+> If you add the .prev_* this loop will become even more ugly.  Feel free
+> to copy my code wherever you see fit.
+
+My main reason for refactoring this loop was to split up the complex
+termination condition.  Possibly replacing from_irq with from_irq &&
+prev_from_irq in the loop would do the trick, but only of this change
+is really needed...
+
+
+Can you see any other problems?
+
+There's nothing wrong with additional patches going on top of this,
+but I've been giving Greg the runaround and don't want to keep
+respinning the whole thing unless really necessary...
+
+Cheers
+---Dave
