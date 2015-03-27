@@ -1,93 +1,56 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 10/15] serial: stm32-usart: Add STM32 USART Driver
-Date: Fri, 27 Mar 2015 07:32:34 -0400
-Message-ID: <55153FD2.7070304@hurleysoftware.com>
-References: <1426197361-19290-1-git-send-email-maxime.coquelin@st.com>	<1426197361-19290-11-git-send-email-maxime.coquelin@st.com>	<5511ABAA.2010303@hurleysoftware.com> <CALszF6Ds5b9V35iuSzxnOYDL2sD3psYfYp3b+6a-2Atse6_w3Q@mail.gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 4/5] dmaengine: hsu: Fix memory leak when stopping a
+ running transfer
+Date: Fri, 27 Mar 2015 14:01:58 +0200
+Message-ID: <1427457718.14897.428.camel@linux.intel.com>
+References: <1427456155-28990-1-git-send-email-peter.ujfalusi@ti.com>
+	 <1427456155-28990-5-git-send-email-peter.ujfalusi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CALszF6Ds5b9V35iuSzxnOYDL2sD3psYfYp3b+6a-2Atse6_w3Q@mail.gmail.com>
+In-Reply-To: <1427456155-28990-5-git-send-email-peter.ujfalusi@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemlo>
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: vinod.koul@intel.com, linux@arm.linux.org.uk, dan.j.williams@intel.com, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 03/26/2015 06:03 PM, Maxime Coquelin wrote:
->>> +static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
->>> +                         struct ktermios *old)
->>> +{
->>> +     unsigned int baud;
->>> +     u32 usardiv, mantissa, fraction;
->>> +     tcflag_t cflag;
->>> +     u32 cr1, cr2, cr3;
->>> +     unsigned long flags;
->>> +
->>> +     baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
->>> +     cflag = termios->c_cflag;
->>> +
->>> +     spin_lock_irqsave(&port->lock, flags);
->>> +
->>> +     /* Stop serial port and reset value */
->>> +     writel_relaxed(0, port->membase + USART_CR1);
->>> +
->>> +     cr1 = USART_CR1_TE | USART_CR1_RE | USART_CR1_UE | USART_CR1_RXNEIE;
->>> +
->>> +     if (cflag & CSTOPB)
->>> +             cr2 = USART_CR2_STOP_2B;
->>> +
->>> +     if (cflag & PARENB) {
->>> +             cr1 |= USART_CR1_PCE;
->>> +             if ((cflag & CSIZE) == CS8)
->>> +                     cr1 |= USART_CR1_M;
->>> +     }
->>> +
->>> +     if (cflag & PARODD)
->>> +             cr1 |= USART_CR1_PS;
->>> +
->>> +     if (cflag & CRTSCTS)
->>> +             cr3 = USART_CR3_RTSE | USART_CR3_CTSE;
->>
->> If this means autoflow control, then you need to define
->> throttle()/unthrottle() methods, otherwise the serial core won't
->> be able to throttle the remote when input buffers are about
->> to overflow.
->>
->> And you should only enable the autoCTS and let the serial
->> core enable autoRTS through set_mctrl(TIOCM_RTS).
->>
->> Just let me know if you need more info about how to do this.
+On Fri, 2015-03-27 at 13:35 +0200, Peter Ujfalusi wrote:
+> The vd->node is removed from the lists when the transfer started so the
+> vchan_get_all_descriptors() will not find it. This results memory leak.
 > 
-> Ok, let's see if I have well understood.
+
+Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+Though this one would go via Greg's tty tree (Cc'ed) I think.
+It becomes to regular work flow after 4.1-rc1.
+
+
+> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> ---
+>  drivers/dma/hsu/hsu.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> USART_CR3_RTSE should be set/cleared in set_mctrl(), depending on
-> TIOCM_RTS  value.
-> The throttle callback should disable the rx interrupt, and the
-> unthrottle enable it.
-> For CTS, it should be enabled in set_termios() if CRTSCTS, as done here.
-> 
-> Am I right?
+> diff --git a/drivers/dma/hsu/hsu.c b/drivers/dma/hsu/hsu.c
+> index 683ba9b62795..d1864bda008f 100644
+> --- a/drivers/dma/hsu/hsu.c
+> +++ b/drivers/dma/hsu/hsu.c
+> @@ -387,7 +387,10 @@ static int hsu_dma_terminate_all(struct dma_chan *chan)
+>  	spin_lock_irqsave(&hsuc->vchan.lock, flags);
+>  
+>  	hsu_dma_stop_channel(hsuc);
+> -	hsuc->desc = NULL;
+> +	if (hsuc->desc) {
+> +		hsu_dma_desc_free(&hsuc->desc->vchan);
+> +		hsuc->desc = NULL;
+> +	}
+>  
+>  	vchan_get_all_descriptors(&hsuc->vchan, &head);
+>  	spin_unlock_irqrestore(&hsuc->vchan.lock, flags);
 
-Yeah, basically. You also have to indicate to the serial core that you
-require throttle/unthrottle handling in this mode by setting port->status.
 
-Your set_termios() method would look like:
-
-	port->status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS);
-	if (cflag & CRTSCTS) {
-		port->status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
-		cr3 = USART_CR3_CTSE;
-	}
-
-and your set_mctrl() method would look like:
-
-	if ((mctrl & TIOCM_RTS) && (port->status & UPSTAT_AUTORTS))
-		stm32_set_bits(port, USART_CR3, USART_CR3_RTSE);
-	else
-		stm32_clear_bits(port, USART_CR3, USART_CR3_RTSE);
-
-The UPSTAT_AUTOCTS doesn't really do anything right now but please
-use it anyway to indicate this driver has that functionality.
-
-Regards,
-Peter Hurley
+-- 
+Andy Shevchenko <andriy.shevchenko@intel.com>
+Intel Finland Oy
