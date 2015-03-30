@@ -1,50 +1,70 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: Re: [PATCH v4 2/2] serial/amba-pl011: Refactor and simplify TX FIFO
- handling
-Date: Mon, 30 Mar 2015 17:09:35 +0100
-Message-ID: <20150330160934.GE22949@e103592.cambridge.arm.com>
-References: <1427468371-11915-1-git-send-email-Dave.Martin@arm.com>
- <1427468371-11915-3-git-send-email-Dave.Martin@arm.com>
- <20150330162811.3673482b@north>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 4/5] dmaengine: hsu: Fix memory leak when stopping a
+ running transfer
+Date: Mon, 30 Mar 2015 23:07:32 +0530
+Message-ID: <20150330173732.GK7192@intel.com>
+References: <1427456155-28990-1-git-send-email-peter.ujfalusi@ti.com>
+ <1427456155-28990-5-git-send-email-peter.ujfalusi@ti.com>
+ <1427457718.14897.428.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150330162811.3673482b@north>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jakub Kicinski <moorray3@wp.pl>
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1427457718.14897.428.camel@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux@arm.linux.org.uk, dan.j.williams@intel.com, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Mar 30, 2015 at 04:28:11PM +0200, Jakub Kicinski wrote:
-> On Fri, 27 Mar 2015 14:59:31 +0000, Dave Martin wrote:
-> > To this end, the TX softirq mechanism is removed and instead
-
-[...]
-
-> > pl011_start_tx() will now simply stuff the FIFO until full
-> > (guaranteeing future TX IRQs), or until there are no more chars
-> > to write (in which case we don't care whether an IRQ happens).
+On Fri, Mar 27, 2015 at 02:01:58PM +0200, Andy Shevchenko wrote:
+> On Fri, 2015-03-27 at 13:35 +0200, Peter Ujfalusi wrote:
+> > The vd->node is removed from the lists when the transfer started so the
+> > vchan_get_all_descriptors() will not find it. This results memory leak.
 > > 
-> > [1] Thanks to Jakub Kicinski for his input and similar patch.
-> > 
-> > Signed-off-by: Dave Martin <Dave.Martin@arm.com>
 > 
-> Signed-off-by: Jakub Kicinski <kubakici@wp.pl>
+> Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Vinod Koul <vinod.koul@intel.com>
 
-Agreed, shoulda had that (sorry!)
+Greg,
 
-Greg, can you add Jakub's S-o-B when applying, or do you want me to
-repost?
+Please apply this in your queue for next
 
-Cheers
----Dave
+-- 
+Vinod
+
+> 
+> Though this one would go via Greg's tty tree (Cc'ed) I think.
+> It becomes to regular work flow after 4.1-rc1.
+> 
+> 
+> > Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> > CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+> > ---
+> >  drivers/dma/hsu/hsu.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/dma/hsu/hsu.c b/drivers/dma/hsu/hsu.c
+> > index 683ba9b62795..d1864bda008f 100644
+> > --- a/drivers/dma/hsu/hsu.c
+> > +++ b/drivers/dma/hsu/hsu.c
+> > @@ -387,7 +387,10 @@ static int hsu_dma_terminate_all(struct dma_chan *chan)
+> >  	spin_lock_irqsave(&hsuc->vchan.lock, flags);
+> >  
+> >  	hsu_dma_stop_channel(hsuc);
+> > -	hsuc->desc = NULL;
+> > +	if (hsuc->desc) {
+> > +		hsu_dma_desc_free(&hsuc->desc->vchan);
+> > +		hsuc->desc = NULL;
+> > +	}
+> >  
+> >  	vchan_get_all_descriptors(&hsuc->vchan, &head);
+> >  	spin_unlock_irqrestore(&hsuc->vchan.lock, flags);
+> 
+> 
+> -- 
+> Andy Shevchenko <andriy.shevchenko@intel.com>
+> Intel Finland Oy
+> 
+
+-- 
