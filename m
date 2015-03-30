@@ -1,38 +1,43 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 64/86] tty/serial: comment update
-Date: Sun, 29 Mar 2015 15:42:15 +0200
-Message-ID: <1427635734-24786-65-git-send-email-mst@redhat.com>
-References: <1427635734-24786-1-git-send-email-mst@redhat.com>
+From: Dave P Martin <Dave.Martin@arm.com>
+Subject: Re: [PATCH v3 0/*] serial/amba-pl011: Activate TX IRQ passively
+Date: Mon, 30 Mar 2015 13:02:22 +0100
+Message-ID: <20150330120222.GA22336@e103592.cambridge.arm.com>
+References: <1427307746-2811-1-git-send-email-Dave.Martin@arm.com>
+ <20150326213014.GA21687@kroah.com>
+ <20150327145118.GA1711@e103592.cambridge.arm.com>
+ <20150327204753.GC4019@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20150327204753.GC4019@n2100.arm.linux.org.uk>
 Content-Disposition: inline
-In-Reply-To: <1427635734-24786-1-git-send-email-mst@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Wang YanQing <udknight@gmail.com>, Aaron Sierra <asierra@xes-inc.com>, Sergej Pupykin <ml@sergej.pp.ru>, Peter Hung <hpeter@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Jakub Kicinski <moorray3@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Header moved from linux/pci_ids.h to uapi/linux/pci_ids.h,
-update comment to list the correct header.
+On Fri, Mar 27, 2015 at 08:47:54PM +0000, Russell King - ARM Linux wrote:
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/tty/serial/8250/8250_pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+[...]
+ 
+> This month, 1/7th of all email received has not even been read... and
+> some of that's stuff I've thought "I really need to look back at that."
+> 
+> There's just too much irrelevant email coming into my mailbox.
+> 
+> Sorry.
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 892eb32..7dc6d5f 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1882,7 +1882,7 @@ pci_wch_ch38x_setup(struct serial_private *priv,
- #define PCIE_DEVICE_ID_WCH_CH382_2S1P	0x3250
- #define PCIE_DEVICE_ID_WCH_CH384_4S	0x3470
- 
--/* Unknown vendors/cards - this should not be in linux/pci_ids.h */
-+/* Unknown vendors/cards - this should not be in uapi/linux/pci_ids.h */
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1588	0x1588
- 
--- 
-MST
+No worries, I just wanted didn't want Greg to infer that you'd given
+your opinion already.
+
+Cheers
+---Dave
