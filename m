@@ -1,37 +1,37 @@
-From: Brian Norris <computersforpeace@gmail.com>
-Subject: Re: [PATCH 6/8] mtd: replace CONFIG_8xx by CONFIG_PPC_8xx
-Date: Mon, 30 Mar 2015 17:55:38 -0700
-Message-ID: <20150331005538.GJ32500@ld-irv-0074>
-References: <20150312152404.D6C391A2421@localhost.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150312152404.D6C391A2421@localhost.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christophe Leroy <christophe.leroy@c-s.fr>
-Cc: David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, user-mode-linux-devel@lists.sourceforge.net, user-mode-linux-user@lists.sourceforge.net, linux-fbdev@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, linux-mtd@lists.infradead.org
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH 0/3] tty: eliminate 64 byte stack buffers passed to tty_name
+Date: Tue, 31 Mar 2015 15:55:56 +0200
+Message-ID: <1427810160-15779-1-git-send-email-linux@rasmusvillemoes.dk>
+Return-path: <linux-input-owner@vger.kernel.org>
+Sender: linux-input-owner@vger.kernel.org
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 12, 2015 at 04:24:04PM +0100, Christophe Leroy wrote:
-> Two config options exist to define powerpc MPC8xx:
-> * CONFIG_PPC_8xx
-> * CONFIG_8xx
-> In addition, CONFIG_PPC_8xx also defines CONFIG_CPM1 as
-> communication co-processor
-> 
-> arch/powerpc/platforms/Kconfig.cputype has contained the following
-> comment about CONFIG_8xx item for some years:
-> "# this is temp to handle compat with arch=ppc"
-> 
-> It looks like not many places still have that old CONFIG_8xx used,
-> so it is likely to be a good time to get rid of it completely ?
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+All users of tty_name pass the return value directly to a printf
+function, so we might as well use tty->name directly instead of
+copying it to a user-supplied (stack) buffer.
 
-I'm not sure if the consistency aspect is worked out for all symbols
-(Geert's comment on the cover letter), but this one looks fine.
+allmodconfig compile-tested only.
 
-Applied this patch to l2-mtd.git.
+Rasmus Villemoes (3):
+  tty: constify return type of tty_name
+  tty: return tty->name directly from tty_name
+  tty: remove buf parameter from tty_name()
 
-Brian
+ drivers/input/serio/serport.c    |  5 ++---
+ drivers/tty/amiserial.c          |  8 ++------
+ drivers/tty/cyclades.c           |  8 ++------
+ drivers/tty/n_gsm.c              |  3 +--
+ drivers/tty/n_tty.c              |  7 ++-----
+ drivers/tty/serial/crisv10.c     |  8 ++------
+ drivers/tty/serial/serial_core.c |  4 +---
+ drivers/tty/tty_io.c             | 34 +++++++++++++---------------------
+ drivers/tty/tty_ioctl.c          |  4 +---
+ drivers/tty/tty_ldisc.c          |  8 +++-----
+ include/linux/tty.h              |  2 +-
+ 11 files changed, 30 insertions(+), 61 deletions(-)
+
+-- 
+2.1.3
+
