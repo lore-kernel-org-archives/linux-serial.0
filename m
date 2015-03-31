@@ -1,47 +1,37 @@
-From: Joe Perches <joe@perches.com>
-Subject: [PATCH 7/7] serial: kgdb_nmi: Use bool function return values of true/false not 1/0
-Date: Mon, 30 Mar 2015 10:43:23 -0700
-Message-ID: <6a716f753b4f3dc753c85cb6f84f8f07ce4cfcd1.1427736972.git.joe@perches.com>
-References: <cover.1427736972.git.joe@perches.com>
+From: Brian Norris <computersforpeace@gmail.com>
+Subject: Re: [PATCH 6/8] mtd: replace CONFIG_8xx by CONFIG_PPC_8xx
+Date: Mon, 30 Mar 2015 17:55:38 -0700
+Message-ID: <20150331005538.GJ32500@ld-irv-0074>
+References: <20150312152404.D6C391A2421@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1427736972.git.joe@perches.com>
+Content-Disposition: inline
+In-Reply-To: <20150312152404.D6C391A2421@localhost.localdomain>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org
+To: Christophe Leroy <christophe.leroy@c-s.fr>
+Cc: David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, user-mode-linux-devel@lists.sourceforge.net, user-mode-linux-user@lists.sourceforge.net, linux-fbdev@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, linux-mtd@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Use the normal return values for bool functions
+On Thu, Mar 12, 2015 at 04:24:04PM +0100, Christophe Leroy wrote:
+> Two config options exist to define powerpc MPC8xx:
+> * CONFIG_PPC_8xx
+> * CONFIG_8xx
+> In addition, CONFIG_PPC_8xx also defines CONFIG_CPM1 as
+> communication co-processor
+> 
+> arch/powerpc/platforms/Kconfig.cputype has contained the following
+> comment about CONFIG_8xx item for some years:
+> "# this is temp to handle compat with arch=ppc"
+> 
+> It looks like not many places still have that old CONFIG_8xx used,
+> so it is likely to be a good time to get rid of it completely ?
+> 
+> Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
 
-Signed-off-by: Joe Perches <joe@perches.com>
----
- drivers/tty/serial/kgdb_nmi.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+I'm not sure if the consistency aspect is worked out for all symbols
+(Geert's comment on the cover letter), but this one looks fine.
 
-diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-index 129dc5b..117df15 100644
---- a/drivers/tty/serial/kgdb_nmi.c
-+++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -173,18 +173,18 @@ static int kgdb_nmi_poll_one_knock(void)
- bool kgdb_nmi_poll_knock(void)
- {
- 	if (kgdb_nmi_knock < 0)
--		return 1;
-+		return true;
- 
- 	while (1) {
- 		int ret;
- 
- 		ret = kgdb_nmi_poll_one_knock();
- 		if (ret == NO_POLL_CHAR)
--			return 0;
-+			return false;
- 		else if (ret == 1)
- 			break;
- 	}
--	return 1;
-+	return true;
- }
- 
- /*
--- 
-2.1.2
+Applied this patch to l2-mtd.git.
+
+Brian
