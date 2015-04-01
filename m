@@ -1,42 +1,193 @@
 From: Peter Hung <hpeter@gmail.com>
-Subject: [PATCH V3 0/1] serial: 8250_pci: Fintek products S3 patch
-Date: Wed,  1 Apr 2015 14:00:20 +0800
-Message-ID: <1427868021-4027-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Subject: [PATCH V3 1/1] serial: 8250_pci: port failed after wakeup from S3
+Date: Wed,  1 Apr 2015 14:00:21 +0800
+Message-ID: <1427868021-4027-2-git-send-email-hpeter+linux_kernel@gmail.com>
+References: <1427868021-4027-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1427868021-4027-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, hpeter+kernel@gmail.com, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-The patch works for Fintek F81504/F81508/F81512 PCI to Serial Port IC.
-Serial port of this IC will failed after wakeup from S3(STR).
+Serial ports of F81504/F81508/F81512 will failed when wakeup from S3(STR).
 
-It's due to this PCI device's configuration space from 0x40 to 
-0x40 + max_port * 0x08 should be re-configured when the system wakeup from 
-S3(STR). If had no re-configure after S3, It's will all zero. It's will make
-uart function disabled.
+It's due to when the system wakeup from S3(STR), this PCI device's
+configuration space from 0x40 to 0x40 + max_port * 0x08 should be
+re-configured.
 
 We move all initialization from pci_fintek_setup() to pci_fintek_init() and
-set it to pci_serial_quirks struct .init section. It's will re-init this 
-device when system wakeup from pciserial_resume_ports().
+set it to pci_serial_quirks .init section. It's will re-init this device when
+system wakeup from pciserial_resume_ports().
 
-V3 changelog
-1. due to cleanup code patch is applied, this patch is following branch
-   tty_testing fbf47635315ab308c9b58a1ea0906e711a9228de.
-
-V2 changelog (old)
-1. swap pci_fintek_setup() / pci_fintek_init() location in source code to
-   make diff more readable
-
-V1 changelog (old)
-1. Initial version, including 2 patches, one is cleanup code, another is fix
-   S3 bug. 
-
-Peter Hung (1):
-  serial: 8250_pci: port failed after wakeup from S3
-
+Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
+---
  drivers/tty/serial/8250/8250_pci.c | 114 ++++++++++++++++---------------------
  1 file changed, 50 insertions(+), 64 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 98e5a6d..08da4d3 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1690,88 +1690,71 @@ static int pci_fintek_setup(struct serial_private *priv,
+ 			    struct uart_8250_port *port, int idx)
+ {
+ 	struct pci_dev *pdev = priv->dev;
+-	unsigned long iobase;
+ 	u8 config_base;
++	u16 iobase;
++
++	config_base = 0x40 + 0x08 * idx;
++
++	/* Get the io address from configuration space */
++	pci_read_config_word(pdev, config_base + 4, &iobase);
++
++	dev_dbg(&pdev->dev, "%s: idx=%d iobase=0x%x", __func__, idx, iobase);
++
++	port->port.iotype = UPIO_PORT;
++	port->port.iobase = iobase;
++
++	return 0;
++}
++
++static int pci_fintek_init(struct pci_dev *dev)
++{
++	unsigned long iobase;
++	u32 max_port, i;
+ 	u32 bar_data[3];
++	u8 config_base;
+ 
+-	/*
+-	 * Find each UARTs offset in PCI configuraion space
+-	 */
+-	switch (idx) {
+-	case 0:
+-		config_base = 0x40;
++	switch (dev->device) {
++	case 0x1104: /* 4 ports */
++	case 0x1108: /* 8 ports */
++		max_port = dev->device & 0xff;
+ 		break;
+-	case 1:
+-		config_base = 0x48;
+-		break;
+-	case 2:
+-		config_base = 0x50;
+-		break;
+-	case 3:
+-		config_base = 0x58;
+-		break;
+-	case 4:
+-		config_base = 0x60;
+-		break;
+-	case 5:
+-		config_base = 0x68;
+-		break;
+-	case 6:
+-		config_base = 0x70;
+-		break;
+-	case 7:
+-		config_base = 0x78;
+-		break;
+-	case 8:
+-		config_base = 0x80;
+-		break;
+-	case 9:
+-		config_base = 0x88;
+-		break;
+-	case 10:
+-		config_base = 0x90;
+-		break;
+-	case 11:
+-		config_base = 0x98;
++	case 0x1112: /* 12 ports */
++		max_port = 12;
+ 		break;
+ 	default:
+-		/* Unknown number of ports, get out of here */
+ 		return -EINVAL;
+ 	}
+ 
+ 	/* Get the io address dispatch from the BIOS */
+-	pci_read_config_dword(pdev, 0x24, &bar_data[0]);
+-	pci_read_config_dword(pdev, 0x20, &bar_data[1]);
+-	pci_read_config_dword(pdev, 0x1c, &bar_data[2]);
+-
+-	/* Calculate Real IO Port */
+-	iobase = (bar_data[idx/4] & 0xffffffe0) + (idx % 4) * 8;
++	pci_read_config_dword(dev, 0x24, &bar_data[0]);
++	pci_read_config_dword(dev, 0x20, &bar_data[1]);
++	pci_read_config_dword(dev, 0x1c, &bar_data[2]);
+ 
+-	dev_dbg(&pdev->dev, "%s: idx=%d iobase=0x%lx config_base=0x%2x\n",
+-		__func__, idx, iobase, config_base);
++	for (i = 0; i < max_port; ++i) {
++		/* UART0 configuration offset start from 0x40 */
++		config_base = 0x40 + 0x08 * i;
+ 
+-	/* Enable UART I/O port */
+-	pci_write_config_byte(pdev, config_base + 0x00, 0x01);
++		/* Calculate Real IO Port */
++		iobase = (bar_data[i / 4] & 0xffffffe0) + (i % 4) * 8;
+ 
+-	/* Select 128-byte FIFO and 8x FIFO threshold */
+-	pci_write_config_byte(pdev, config_base + 0x01, 0x33);
++		/* Enable UART I/O port */
++		pci_write_config_byte(dev, config_base + 0x00, 0x01);
+ 
+-	/* LSB UART */
+-	pci_write_config_byte(pdev, config_base + 0x04, (u8)(iobase & 0xff));
++		/* Select 128-byte FIFO and 8x FIFO threshold */
++		pci_write_config_byte(dev, config_base + 0x01, 0x33);
+ 
+-	/* MSB UART */
+-	pci_write_config_byte(pdev, config_base + 0x05, (u8)((iobase & 0xff00) >> 8));
++		/* LSB UART */
++		pci_write_config_byte(dev, config_base + 0x04,
++				(u8)(iobase & 0xff));
+ 
+-	/* irq number, this usually fails, but the spec says to do it anyway. */
+-	pci_write_config_byte(pdev, config_base + 0x06, pdev->irq);
++		/* MSB UART */
++		pci_write_config_byte(dev, config_base + 0x05,
++				(u8)((iobase & 0xff00) >> 8));
+ 
+-	port->port.iotype = UPIO_PORT;
+-	port->port.iobase = iobase;
+-	port->port.mapbase = 0;
+-	port->port.membase = NULL;
+-	port->port.regshift = 0;
++		pci_write_config_byte(dev, config_base + 0x06, dev->irq);
++	}
+ 
+-	return 0;
++	return max_port;
+ }
+ 
+ static int skip_tx_en_setup(struct serial_private *priv,
+@@ -2814,6 +2797,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_fintek_setup,
++		.init		= pci_fintek_init,
+ 	},
+ 	{
+ 		.vendor		= 0x1c29,
+@@ -2821,6 +2805,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_fintek_setup,
++		.init		= pci_fintek_init,
+ 	},
+ 	{
+ 		.vendor		= 0x1c29,
+@@ -2828,6 +2813,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_fintek_setup,
++		.init		= pci_fintek_init,
+ 	},
+ 
+ 	/*
 -- 
 1.9.1
