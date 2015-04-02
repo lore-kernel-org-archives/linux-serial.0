@@ -1,90 +1,131 @@
-From: Peter Hurley <peter@hurleysoftware.com>
+From: Yinghai Lu <yinghai@kernel.org>
 Subject: Re: [PATCH v3 -next 11/11] serial: 8250_early: Remove setup_early_serial8250_console()
-Date: Wed, 01 Apr 2015 23:22:07 -0400
-Message-ID: <551CB5DF.1010108@hurleysoftware.com>
-References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>	<1425932842-21812-12-git-send-email-peter@hurleysoftware.com> <CAE9FiQVWhfVt8kmj5QumAH2hyp+DRYGeQcBtFrynojXTCOdnQw@mail.gmail.com>
+Date: Thu, 2 Apr 2015 02:15:09 -0700
+Message-ID: <CAE9FiQVKY9KLeBOB0shqTPZZipsmAiU=3_8gzfFhsCW9kxo_uA@mail.gmail.com>
+References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
+	<1425932842-21812-12-git-send-email-peter@hurleysoftware.com>
+	<CAE9FiQVWhfVt8kmj5QumAH2hyp+DRYGeQcBtFrynojXTCOdnQw@mail.gmail.com>
+	<551CB5DF.1010108@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary=20cf304275beb7e0780512ba44b1
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAE9FiQVWhfVt8kmj5QumAH2hyp+DRYGeQcBtFrynojXTCOdnQw@mail.gmail.com>
+In-Reply-To: <551CB5DF.1010108@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yinghai Lu <yinghai@kernel.org>
+To: Peter Hurley <peter@hurleysoftware.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Yinghai,
+--20cf304275beb7e0780512ba44b1
+Content-Type: text/plain; charset=UTF-8
 
-On 04/01/2015 10:04 PM, Yinghai Lu wrote:
-> On Mon, Mar 9, 2015 at 1:27 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
->> setup_earlycon() will now match and register the desired earlycon
->> from the param string (as if 'earlycon=...' had been set on the
->> command line). Use setup_earlycon() from existing arch call sites
->> which start an earlycon directly.
->>
-> 
-> Hi,
-> 
-> Looks like this patcheset cause regression:
-> when set grub console to 115200, and later kernel only have
-> 
-> console=uart8250,io,0x3f8
-> 
-> the kernel will revert baud rate to 9600 instead of keeping 115200.
-> 
-> in setup_earlycon: you say:
-> 
->  *      Registers the earlycon console matching the earlycon specified
->  *      in the param string @buf. Acceptable param strings are of the form
->  *         <name>,io|mmio|mmio32,<addr>,<options>
->  *         <name>,0x<addr>,<options>
->  *         <name>,<options>
->  *         <name>
->  *
->  *      Only for the third form does the earlycon setup() method receive the
->  *      <options> string in the 'options' parameter; all other forms set
->  *      the parameter to NULL.
-> 
-> 
-> so that change the old behavior that we defined in
-> Documentation/kernel-parameters.txt
-> 
->                 uart[8250],io,<addr>[,options]
->                 uart[8250],mmio,<addr>[,options]
->                 uart[8250],mmio32,<addr>[,options]
->                         Start an early, polled-mode console on the 8250/16550
->                         UART at the specified I/O port or MMIO address.
->                         MMIO inter-register address stride is either 8-bit
->                         (mmio) or 32-bit (mmio32).
+On Wed, Apr 1, 2015 at 8:22 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> The documented behavior of console=ttyS options, to which your
+> quote refers, clearly states:
+>
+>                 Default is "9600n8".
 
+drivers/tty/serial/8250/8250_early.c:early_serial8250_setup
+still have calling to probe_baud, but it is not triggered.
 
->                         The options are the same as for ttyS, above.
-                                      ^^^^^^^^^^^^
-The documented behavior of console=ttyS options, to which your
-quote refers, clearly states:
+Here is root cause.
+The gap between entries in earlycon_table cause
+iteration fail to find next entry, so uart8250 handler is
+not called proplerly.
 
-		Default is "9600n8".
+attached patch fix the problem.
 
-> The old behavior: options is optional , and will use baud rate that is
-> set by bootloader.
+Thanks
 
-so the previous behavior was actually at odds with the documentation.
+Yinghai
 
-> Please fix the problem and restore to old behavior.
+--20cf304275beb7e0780512ba44b1
+Content-Type: text/x-patch; charset=US-ASCII; name="fix_earlycon_alignment.patch"
+Content-Disposition: attachment; filename="fix_earlycon_alignment.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_i7zy3usd0
 
-Is this really necessary (or even desirable)?
-I think it's a bad idea to have one console type (ttyS) initialize its
-options to default settings, but yet allow another console type (uart) to
-probe the existing state.
-
-Also, this expectation is an impediment when adding support for other
-8250-like designs that don't have the same 8250 divisor registers
-(ie., _every_ new design). To properly support this requirement for
-just the existing 8250 hardware will require special probe_baud()
-functions for: dw_8250, intel byt, intel mid, omap_8250, exar 17v35 series,
-omap 1510.
-
-Is specifying the line speed on the command line really a burden?
-
-Regards,
-Peter Hurley
+U3ViamVjdDogW1BBVENIXSBzZXJpYWw6IEZpeCBlYXJseWNvbiBzZWN0aW9uIGl0ZXJhdGlvbgoK
+Rm91bmQgd2hlbiBib290aW5nIHdpdGggY29uc29sZT11YXJ0ODI1MCxpbywweDNmOAp0aGUga2Vy
+bmVsIHdpbGwgcmV2ZXJ0IGJhdWQgcmF0ZSB0byA5NjAwIGluc3RlYWQgb2Yga2VlcGluZyAxMTUy
+MDAuCgpyb290IGNhdXNlczogVGhlIGdhcCBiZXR3ZWVuIGVudHJpZXMgaW4gZWFybHljb25fdGFi
+bGUgY2F1c2UKaXRlcmF0aW9uIGZhaWwgdG8gZmluZCBuZXh0IGVudHJ5LCBzbyB1YXJ0ODI1MCBo
+YW5kbGVyIGlzCm5vdCBjYWxsZWQgcHJvcGxlcmx5LgoKY29tbWl0IGQyZmQ2ODEwYTgyMyAoInR0
+eS9zZXJpYWw6IGNvbnZlcnQgODI1MCB0byBnZW5lcmljIGVhcmx5Y29uIikKYWRkIHR3byBlbnRy
+aWVzIGludG8gZWFybHljb25fdGFibGUuCiBFQVJMWUNPTl9ERUNMQVJFKHVhcnQ4MjUwLCBlYXJs
+eV9zZXJpYWw4MjUwX3NldHVwKTsKIEVBUkxZQ09OX0RFQ0xBUkUodWFydCwgZWFybHlfc2VyaWFs
+ODI1MF9zZXR1cCk7CgphbmQgYWNjb3JkaW5nIHRvIFN5c3RlbS5tYXAsIGVhcmx5Y29uX3VhcnQg
+aXMgYmVmb3JlIGVhcmx5Y29uX3VhcnQ4MjUwLgogIGZmZmZmZmZmODMyMDQ5YTAgdCBfX2Vhcmx5
+Y29uX3VhcnQKICBmZmZmZmZmZjgzMjA0OWMwIHQgX19lYXJseWNvbl91YXJ0ODI1MApBbmQgb2Zm
+c2V0IGJldHdlZW4gdHdvIGVudHJpZXMgaXMgMHgyMC4KCmNvbW1pdCA0NzBjYTBkZTY5ZmUgKCJz
+ZXJpYWw6IGVhcmx5Y29uOiBFbmFibGUgZWFybHljb24gd2l0aG91dCBjb21tYW5kIGxpbmUgcGFy
+YW0iKQpzZXR1cF9lYXJseWNvbigpIHdpbGwgbG9vcCBfX2Vhcmx5Y29uX3RhYmxlIHdpdGggcG9p
+bnRlciB0byBlYXJseWNvbl9pZCwKCWZvciAobWF0Y2ggPSBfX2Vhcmx5Y29uX3RhYmxlOyBtYXRj
+aC0+bmFtZVswXTsgbWF0Y2grKykgewogICAgICAgICAgICAgICBzaXplX3QgbGVuID0gc3RybGVu
+KG1hdGNoLT5uYW1lKTsKCiAgICAgICAgICAgICAgIGlmIChzdHJuY21wKGJ1ZiwgbWF0Y2gtPm5h
+bWUsIGxlbikpCiAgICAgICAgICAgICAgICAgICAgICAgY29udGludWU7CgpidXQgbWF0Y2ggc2l6
+ZSAoc2l6ZSBvZiBzdHJ1Y3QgZWFybHljb25faWQpIGlzIG9ubHkgMHgxOC4gIHNvIHdpbGwgcG9p
+bnQgdG8Kd3JvbmcgcGxhY2UgZm9yIG5leHQgbWF0Y2ggYW5kIHdpbGwgZ2V0IHJhbmRvbSByZXN1
+bHQuCgpNYWtlIHRoZSBlYXJseWNvbl90YWJsZSBzZWN0aW9uIGhhdmUgcG9pbnRlciB0byBlYXJs
+eWNvbl9pZCBzdHJ1Y3QgaW5zdGVhZC4KCkZpeGVzOiBjb21taXQgNDcwY2EwZGU2OWZlICgic2Vy
+aWFsOiBlYXJseWNvbjogRW5hYmxlIGVhcmx5Y29uIHdpdGhvdXQgY29tbWFuZCBsaW5lIHBhcmFt
+IikKU2lnbmVkLW9mZi1ieTogWWluZ2hhaSBMdSA8eWluZ2hhaUBrZXJuZWwub3JnPgoKLS0tCiBk
+cml2ZXJzL3R0eS9zZXJpYWwvZWFybHljb24uYyAgICAgfCAgIDEzICsrKysrKystLS0tLS0KIGlu
+Y2x1ZGUvYXNtLWdlbmVyaWMvdm1saW51eC5sZHMuaCB8ICAgIDggKysrKy0tLS0KIGluY2x1ZGUv
+bGludXgvc2VyaWFsX2NvcmUuaCAgICAgICB8ICAgIDggKysrKystLS0KIDMgZmlsZXMgY2hhbmdl
+ZCwgMTYgaW5zZXJ0aW9ucygrKSwgMTMgZGVsZXRpb25zKC0pCgpJbmRleDogbGludXgtMi42L2lu
+Y2x1ZGUvbGludXgvc2VyaWFsX2NvcmUuaAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBsaW51eC0yLjYub3JpZy9p
+bmNsdWRlL2xpbnV4L3NlcmlhbF9jb3JlLmgKKysrIGxpbnV4LTIuNi9pbmNsdWRlL2xpbnV4L3Nl
+cmlhbF9jb3JlLmgKQEAgLTM0OSwxMCArMzQ5LDEyIEBAIGV4dGVybiBpbnQgb2Zfc2V0dXBfZWFy
+bHljb24odW5zaWduZWQgbG8KIAkJCSAgICAgaW50ICgqc2V0dXApKHN0cnVjdCBlYXJseWNvbl9k
+ZXZpY2UgKiwgY29uc3QgY2hhciAqKSk7CiAKICNkZWZpbmUgRUFSTFlDT05fREVDTEFSRShfbmFt
+ZSwgZnVuYykJCQkJCVwKLQlzdGF0aWMgY29uc3Qgc3RydWN0IGVhcmx5Y29uX2lkIF9fZWFybHlj
+b25fIyNfbmFtZQkJXAotCQlfX3VzZWQgX19zZWN0aW9uKF9fZWFybHljb25fdGFibGUpCQkJXAor
+CXN0YXRpYyBzdHJ1Y3QgZWFybHljb25faWQgX19lYXJseWNvbl8jI19uYW1lIF9faW5pdGRhdGEJ
+XAogCQkgPSB7IC5uYW1lICA9IF9fc3RyaW5naWZ5KF9uYW1lKSwJCQlcCi0JCSAgICAgLnNldHVw
+ID0gZnVuYyAgfQorCQkgICAgIC5zZXR1cCA9IGZ1bmMgIH07CQkJCQlcCisJc3RhdGljIHN0cnVj
+dCBlYXJseWNvbl9pZCAqX19wX2Vhcmx5Y29uXyMjX25hbWUJX191c2VkCQlcCisJCV9fYWxpZ25l
+ZChzaXplb2Yoc3RydWN0IGVhcmx5Y29uX2lkICopKQkJCVwKKwkJX19zZWN0aW9uKF9fZWFybHlj
+b25fdGFibGUpID0geyAmX19lYXJseWNvbl8jI19uYW1lIH0KIAogI2RlZmluZSBPRl9FQVJMWUNP
+Tl9ERUNMQVJFKG5hbWUsIGNvbXBhdCwgZm4pCQkJCVwKIAlfT0ZfREVDTEFSRShlYXJseWNvbiwg
+bmFtZSwgY29tcGF0LCBmbiwgdm9pZCAqKQpJbmRleDogbGludXgtMi42L2RyaXZlcnMvdHR5L3Nl
+cmlhbC9lYXJseWNvbi5jCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGxpbnV4LTIuNi5vcmlnL2RyaXZlcnMvdHR5
+L3NlcmlhbC9lYXJseWNvbi5jCisrKyBsaW51eC0yLjYvZHJpdmVycy90dHkvc2VyaWFsL2Vhcmx5
+Y29uLmMKQEAgLTM3LDkgKzM3LDggQEAgc3RhdGljIHN0cnVjdCBlYXJseWNvbl9kZXZpY2UgZWFy
+bHlfY29ucwogCS5jb24gPSAmZWFybHlfY29uLAogfTsKIAotZXh0ZXJuIHN0cnVjdCBlYXJseWNv
+bl9pZCBfX2Vhcmx5Y29uX3RhYmxlW107Ci1zdGF0aWMgY29uc3Qgc3RydWN0IGVhcmx5Y29uX2lk
+IF9fZWFybHljb25fdGFibGVfc2VudGluZWwKLQlfX3VzZWQgX19zZWN0aW9uKF9fZWFybHljb25f
+dGFibGVfZW5kKTsKK2V4dGVybiBzdHJ1Y3QgZWFybHljb25faWQgKl9fc3RhcnRfZWFybHljb25f
+dGFibGVbXTsKK2V4dGVybiBzdHJ1Y3QgZWFybHljb25faWQgKl9fc3RvcF9lYXJseWNvbl90YWJs
+ZVtdOwogCiBzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCBfX2Vhcmx5Y29uX29mX3Rh
+YmxlX3NlbnRpbmVsCiAJX191c2VkIF9fc2VjdGlvbihfX2Vhcmx5Y29uX29mX3RhYmxlX2VuZCk7
+CkBAIC0xMDMsNyArMTAyLDcgQEAgc3RhdGljIGludCBfX2luaXQgcGFyc2Vfb3B0aW9ucyhzdHJ1
+Y3QgZQogCXJldHVybiAwOwogfQogCi1zdGF0aWMgaW50IF9faW5pdCByZWdpc3Rlcl9lYXJseWNv
+bihjaGFyICpidWYsIGNvbnN0IHN0cnVjdCBlYXJseWNvbl9pZCAqbWF0Y2gpCitzdGF0aWMgaW50
+IF9faW5pdCByZWdpc3Rlcl9lYXJseWNvbihjaGFyICpidWYsIHN0cnVjdCBlYXJseWNvbl9pZCAq
+bWF0Y2gpCiB7CiAJaW50IGVycjsKIAlzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0ID0gJmVhcmx5X2Nv
+bnNvbGVfZGV2LnBvcnQ7CkBAIC0xNDcsNyArMTQ2LDcgQEAgc3RhdGljIGludCBfX2luaXQgcmVn
+aXN0ZXJfZWFybHljb24oY2hhcgogICovCiBpbnQgX19pbml0IHNldHVwX2Vhcmx5Y29uKGNoYXIg
+KmJ1ZikKIHsKLQljb25zdCBzdHJ1Y3QgZWFybHljb25faWQgKm1hdGNoOworCXN0cnVjdCBlYXJs
+eWNvbl9pZCAqKnBtYXRjaDsKIAogCWlmICghYnVmIHx8ICFidWZbMF0pCiAJCXJldHVybiAtRUlO
+VkFMOwpAQCAtMTU1LDcgKzE1NCw5IEBAIGludCBfX2luaXQgc2V0dXBfZWFybHljb24oY2hhciAq
+YnVmKQogCWlmIChlYXJseV9jb24uZmxhZ3MgJiBDT05fRU5BQkxFRCkKIAkJcmV0dXJuIC1FQUxS
+RUFEWTsKIAotCWZvciAobWF0Y2ggPSBfX2Vhcmx5Y29uX3RhYmxlOyBtYXRjaC0+bmFtZVswXTsg
+bWF0Y2grKykgeworCWZvciAocG1hdGNoID0gX19zdGFydF9lYXJseWNvbl90YWJsZTsgcG1hdGNo
+IDwgX19zdG9wX2Vhcmx5Y29uX3RhYmxlOworCSAgICAgcG1hdGNoKyspIHsKKwkJc3RydWN0IGVh
+cmx5Y29uX2lkICptYXRjaCA9ICpwbWF0Y2g7CiAJCXNpemVfdCBsZW4gPSBzdHJsZW4obWF0Y2gt
+Pm5hbWUpOwogCiAJCWlmIChzdHJuY21wKGJ1ZiwgbWF0Y2gtPm5hbWUsIGxlbikpCkluZGV4OiBs
+aW51eC0yLjYvaW5jbHVkZS9hc20tZ2VuZXJpYy92bWxpbnV4Lmxkcy5oCj09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0t
+IGxpbnV4LTIuNi5vcmlnL2luY2x1ZGUvYXNtLWdlbmVyaWMvdm1saW51eC5sZHMuaAorKysgbGlu
+dXgtMi42L2luY2x1ZGUvYXNtLWdlbmVyaWMvdm1saW51eC5sZHMuaApAQCAtMTUxLDEwICsxNTEs
+MTAgQEAKICNlbmRpZgogCiAjaWZkZWYgQ09ORklHX1NFUklBTF9FQVJMWUNPTgotI2RlZmluZSBF
+QVJMWUNPTl9UQUJMRSgpIC4gPSBBTElHTig4KTsJCQkJXAotCQkJIFZNTElOVVhfU1lNQk9MKF9f
+ZWFybHljb25fdGFibGUpID0gLjsJXAotCQkJICooX19lYXJseWNvbl90YWJsZSkJCQlcCi0JCQkg
+KihfX2Vhcmx5Y29uX3RhYmxlX2VuZCkKKyNkZWZpbmUgRUFSTFlDT05fVEFCTEUoKSAuID0gQUxJ
+R04oOCk7CQkJCQlcCisJCQkgVk1MSU5VWF9TWU1CT0woX19zdGFydF9lYXJseWNvbl90YWJsZSkg
+PSAuOwlcCisJCQkgKihfX2Vhcmx5Y29uX3RhYmxlKQkJCQlcCisJCQkgVk1MSU5VWF9TWU1CT0wo
+X19zdG9wX2Vhcmx5Y29uX3RhYmxlKSA9IC47CiAjZWxzZQogI2RlZmluZSBFQVJMWUNPTl9UQUJM
+RSgpCiAjZW5kaWYK
+--20cf304275beb7e0780512ba44b1--
