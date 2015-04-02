@@ -1,57 +1,79 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH V3 5/7] serial: earlycon: Set UPIO_MEM32BE based on DT
- properties
-Date: Thu, 02 Apr 2015 12:15:05 -0400
-Message-ID: <551D6B09.6060100@hurleysoftware.com>
-References: <1416872182-6440-1-git-send-email-cernekee@gmail.com> <1416872182-6440-6-git-send-email-cernekee@gmail.com> <54F3914F.3080905@hurleysoftware.com> <20150328013604.488A0C4091F@trevor.secretlab.ca> <5516DE64.6000104@hurleysoftware.com> <CAJiQ=7AS5+HkHcjRsYKi-EHVc3F1fg3Zp=1fCor1HrKeSWU72Q@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 -next 11/11] serial: 8250_early: Remove setup_early_serial8250_console()
+Date: Thu, 02 Apr 2015 12:31:38 -0400
+Message-ID: <551D6EEA.6050704@hurleysoftware.com>
+References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>	<1425932842-21812-12-git-send-email-peter@hurleysoftware.com>	<CAE9FiQVWhfVt8kmj5QumAH2hyp+DRYGeQcBtFrynojXTCOdnQw@mail.gmail.com>	<551CB5DF.1010108@hurleysoftware.com> <CAE9FiQVKY9KLeBOB0shqTPZZipsmAiU=3_8gzfFhsCW9kxo_uA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAJiQ=7AS5+HkHcjRsYKi-EHVc3F1fg3Zp=1fCor1HrKeSWU72Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MIPS Mailing List <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAE9FiQVKY9KLeBOB0shqTPZZipsmAiU=3_8gzfFhsCW9kxo_uA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yinghai Lu <yinghai@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/28/2015 03:28 PM, Kevin Cernekee wrote:
-> Side note:
+Hi Yinghai,
+
+On 04/02/2015 05:15 AM, Yinghai Lu wrote:
+> On Wed, Apr 1, 2015 at 8:22 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>> The documented behavior of console=ttyS options, to which your
+>> quote refers, clearly states:
+>>
+>>                 Default is "9600n8".
 > 
-> AFAIK we still have a problem if somebody wants to build serial8250 +
-> (any other tty driver that occupies major 4 / minor 64) into the same
-> kernel, and use DT to pick the correct driver at runtime.
+> drivers/tty/serial/8250/8250_early.c:early_serial8250_setup
+> still have calling to probe_baud, but it is not triggered.
+> 
+> Here is root cause.
+> The gap between entries in earlycon_table cause
+> iteration fail to find next entry, so uart8250 handler is
+> not called proplerly.
 
-Yep, exactly.
+Thanks for finding that bug; so the earlycon never started, right?
 
-> serial8250_init() starts registering ports before it knows whether the
-> system even has an 8250.
+> attached patch fix the problem.
 
-This behavior is required to support hw configuration from userspace.
-
-> I talked to Rob about it earlier this week
-> and he suggested that you might have some thoughts on how to fix it.
- 
-A big piece of that will land in 4.01 (once I get the actual 8250 split
-commit to Greg).
-
-The 8250 driver has been split into a legacy/universal 8250 driver
-and separate port ops module; one of the benefits of this is that the
-objectionable legacy behavior of the 8250 driver (especially limitations
-wrt ttyS sharing) can be left behind in that driver without breaking
-existing users.
-
-The idea is that an alternate 8250 driver(s) with none of the legacy
-baggage can be taught to share (4,64) ports with other drivers.
-Unfortunately, I haven't made further progress with because of other
-projects.
+Would you please try the patch below instead?
 
 Regards,
 Peter Hurley
 
+--- >% ---
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] earlycon: Fix __earlycon_table stride
 
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ include/asm-generic/vmlinux.lds.h | 2 +-
+ include/linux/serial_core.h       | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 7b0ef49..2e11f31 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -151,7 +151,7 @@
+ #endif
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
+-#define EARLYCON_TABLE() . = ALIGN(8);				\
++#define EARLYCON_TABLE() STRUCT_ALIGN();			\
+ 			 VMLINUX_SYMBOL(__earlycon_table) = .;	\
+ 			 *(__earlycon_table)			\
+ 			 *(__earlycon_table_end)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 34de168..025dad9 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -342,7 +342,7 @@ struct earlycon_device {
+ struct earlycon_id {
+ 	char	name[16];
+ 	int	(*setup)(struct earlycon_device *, const char *options);
+-};
++} __aligned(32);
+ 
+ extern int setup_earlycon(char *buf);
+ extern int of_setup_earlycon(unsigned long addr,
+-- 
+2.3.5
