@@ -1,131 +1,68 @@
-From: Yinghai Lu <yinghai@kernel.org>
-Subject: Re: [PATCH v3 -next 11/11] serial: 8250_early: Remove setup_early_serial8250_console()
-Date: Thu, 2 Apr 2015 02:15:09 -0700
-Message-ID: <CAE9FiQVKY9KLeBOB0shqTPZZipsmAiU=3_8gzfFhsCW9kxo_uA@mail.gmail.com>
-References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
-	<1425932842-21812-12-git-send-email-peter@hurleysoftware.com>
-	<CAE9FiQVWhfVt8kmj5QumAH2hyp+DRYGeQcBtFrynojXTCOdnQw@mail.gmail.com>
-	<551CB5DF.1010108@hurleysoftware.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH V3 5/7] serial: earlycon: Set UPIO_MEM32BE based on DT properties
+Date: Thu, 2 Apr 2015 08:46:12 -0500
+Message-ID: <CAL_JsqKQD2ivpZ5kOy8ehmzsdFy8EMFZ-KvO2QS3fxtLgQL8Lw@mail.gmail.com>
+References: <1416872182-6440-1-git-send-email-cernekee@gmail.com>
+ <1416872182-6440-6-git-send-email-cernekee@gmail.com> <54F3914F.3080905@hurleysoftware.com>
+ <20150328013604.488A0C4091F@trevor.secretlab.ca> <5516DE64.6000104@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=20cf304275beb7e0780512ba44b1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <551CB5DF.1010108@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5516DE64.6000104-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-MIPS <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
---20cf304275beb7e0780512ba44b1
-Content-Type: text/plain; charset=UTF-8
-
-On Wed, Apr 1, 2015 at 8:22 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> The documented behavior of console=ttyS options, to which your
-> quote refers, clearly states:
+On Sat, Mar 28, 2015 at 12:01 PM, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> wrote:
+> Hi Grant,
 >
->                 Default is "9600n8".
+> On 03/27/2015 09:36 PM, Grant Likely wrote:
+>> On Sun, 01 Mar 2015 17:23:11 -0500
+>> , Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+>>  wrote:
 
-drivers/tty/serial/8250/8250_early.c:early_serial8250_setup
-still have calling to probe_baud, but it is not triggered.
+[...]
 
-Here is root cause.
-The gap between entries in earlycon_table cause
-iteration fail to find next entry, so uart8250 handler is
-not called proplerly.
+>> Something like the following would do it and would be future-proof. We
+>> can add support for 16 or 64bit big or little endian access if it ever
+>> became necessary.
+>
+> I was planning on adding MEM32BE support to OF earlycon on top of my
+> patch series 'OF earlycon cleanup', which adds full support for the
+> of_serial driver DT properties (among other things).
+>
+> Unfortunately, that series is waiting on two things:
+> 1. libfdt upstream patch, which I submitted but was referred back to me
+> to add test cases. That was 3 weeks ago and I simply haven't had a free
+> day to burn to figure out how their test matrix is organized. I don't
+> think that's going to change anytime soon; I might just abandon that patch
+> and do the string manipulation on the stack.
+>
+> ATM, earlycon is still broken if stdout-path options have been set.
 
-attached patch fix the problem.
+Given David was okay with the patch itself, I suppose we could go
+ahead and apply it to the kernel copy. If you're going to require
+testcases, it should be trivial and/or documented on how to add...
 
-Thanks
+> 2. Rob never got back to me on my query [1] to unify the OF_EARLYCON_DECLARE
+> macro with the EARLYCON_DECLARE macro so that all earlycon consoles
+> are named.
 
-Yinghai
+Sorry about that. I had thought about doing the same thing. At least
+unifying the macros, but not necessarily the tables. If it is also
+extendable to other firmware interfaces like ACPI perhaps that would
+be good.
 
---20cf304275beb7e0780512ba44b1
-Content-Type: text/x-patch; charset=US-ASCII; name="fix_earlycon_alignment.patch"
-Content-Disposition: attachment; filename="fix_earlycon_alignment.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_i7zy3usd0
+Rob
 
-U3ViamVjdDogW1BBVENIXSBzZXJpYWw6IEZpeCBlYXJseWNvbiBzZWN0aW9uIGl0ZXJhdGlvbgoK
-Rm91bmQgd2hlbiBib290aW5nIHdpdGggY29uc29sZT11YXJ0ODI1MCxpbywweDNmOAp0aGUga2Vy
-bmVsIHdpbGwgcmV2ZXJ0IGJhdWQgcmF0ZSB0byA5NjAwIGluc3RlYWQgb2Yga2VlcGluZyAxMTUy
-MDAuCgpyb290IGNhdXNlczogVGhlIGdhcCBiZXR3ZWVuIGVudHJpZXMgaW4gZWFybHljb25fdGFi
-bGUgY2F1c2UKaXRlcmF0aW9uIGZhaWwgdG8gZmluZCBuZXh0IGVudHJ5LCBzbyB1YXJ0ODI1MCBo
-YW5kbGVyIGlzCm5vdCBjYWxsZWQgcHJvcGxlcmx5LgoKY29tbWl0IGQyZmQ2ODEwYTgyMyAoInR0
-eS9zZXJpYWw6IGNvbnZlcnQgODI1MCB0byBnZW5lcmljIGVhcmx5Y29uIikKYWRkIHR3byBlbnRy
-aWVzIGludG8gZWFybHljb25fdGFibGUuCiBFQVJMWUNPTl9ERUNMQVJFKHVhcnQ4MjUwLCBlYXJs
-eV9zZXJpYWw4MjUwX3NldHVwKTsKIEVBUkxZQ09OX0RFQ0xBUkUodWFydCwgZWFybHlfc2VyaWFs
-ODI1MF9zZXR1cCk7CgphbmQgYWNjb3JkaW5nIHRvIFN5c3RlbS5tYXAsIGVhcmx5Y29uX3VhcnQg
-aXMgYmVmb3JlIGVhcmx5Y29uX3VhcnQ4MjUwLgogIGZmZmZmZmZmODMyMDQ5YTAgdCBfX2Vhcmx5
-Y29uX3VhcnQKICBmZmZmZmZmZjgzMjA0OWMwIHQgX19lYXJseWNvbl91YXJ0ODI1MApBbmQgb2Zm
-c2V0IGJldHdlZW4gdHdvIGVudHJpZXMgaXMgMHgyMC4KCmNvbW1pdCA0NzBjYTBkZTY5ZmUgKCJz
-ZXJpYWw6IGVhcmx5Y29uOiBFbmFibGUgZWFybHljb24gd2l0aG91dCBjb21tYW5kIGxpbmUgcGFy
-YW0iKQpzZXR1cF9lYXJseWNvbigpIHdpbGwgbG9vcCBfX2Vhcmx5Y29uX3RhYmxlIHdpdGggcG9p
-bnRlciB0byBlYXJseWNvbl9pZCwKCWZvciAobWF0Y2ggPSBfX2Vhcmx5Y29uX3RhYmxlOyBtYXRj
-aC0+bmFtZVswXTsgbWF0Y2grKykgewogICAgICAgICAgICAgICBzaXplX3QgbGVuID0gc3RybGVu
-KG1hdGNoLT5uYW1lKTsKCiAgICAgICAgICAgICAgIGlmIChzdHJuY21wKGJ1ZiwgbWF0Y2gtPm5h
-bWUsIGxlbikpCiAgICAgICAgICAgICAgICAgICAgICAgY29udGludWU7CgpidXQgbWF0Y2ggc2l6
-ZSAoc2l6ZSBvZiBzdHJ1Y3QgZWFybHljb25faWQpIGlzIG9ubHkgMHgxOC4gIHNvIHdpbGwgcG9p
-bnQgdG8Kd3JvbmcgcGxhY2UgZm9yIG5leHQgbWF0Y2ggYW5kIHdpbGwgZ2V0IHJhbmRvbSByZXN1
-bHQuCgpNYWtlIHRoZSBlYXJseWNvbl90YWJsZSBzZWN0aW9uIGhhdmUgcG9pbnRlciB0byBlYXJs
-eWNvbl9pZCBzdHJ1Y3QgaW5zdGVhZC4KCkZpeGVzOiBjb21taXQgNDcwY2EwZGU2OWZlICgic2Vy
-aWFsOiBlYXJseWNvbjogRW5hYmxlIGVhcmx5Y29uIHdpdGhvdXQgY29tbWFuZCBsaW5lIHBhcmFt
-IikKU2lnbmVkLW9mZi1ieTogWWluZ2hhaSBMdSA8eWluZ2hhaUBrZXJuZWwub3JnPgoKLS0tCiBk
-cml2ZXJzL3R0eS9zZXJpYWwvZWFybHljb24uYyAgICAgfCAgIDEzICsrKysrKystLS0tLS0KIGlu
-Y2x1ZGUvYXNtLWdlbmVyaWMvdm1saW51eC5sZHMuaCB8ICAgIDggKysrKy0tLS0KIGluY2x1ZGUv
-bGludXgvc2VyaWFsX2NvcmUuaCAgICAgICB8ICAgIDggKysrKystLS0KIDMgZmlsZXMgY2hhbmdl
-ZCwgMTYgaW5zZXJ0aW9ucygrKSwgMTMgZGVsZXRpb25zKC0pCgpJbmRleDogbGludXgtMi42L2lu
-Y2x1ZGUvbGludXgvc2VyaWFsX2NvcmUuaAo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBsaW51eC0yLjYub3JpZy9p
-bmNsdWRlL2xpbnV4L3NlcmlhbF9jb3JlLmgKKysrIGxpbnV4LTIuNi9pbmNsdWRlL2xpbnV4L3Nl
-cmlhbF9jb3JlLmgKQEAgLTM0OSwxMCArMzQ5LDEyIEBAIGV4dGVybiBpbnQgb2Zfc2V0dXBfZWFy
-bHljb24odW5zaWduZWQgbG8KIAkJCSAgICAgaW50ICgqc2V0dXApKHN0cnVjdCBlYXJseWNvbl9k
-ZXZpY2UgKiwgY29uc3QgY2hhciAqKSk7CiAKICNkZWZpbmUgRUFSTFlDT05fREVDTEFSRShfbmFt
-ZSwgZnVuYykJCQkJCVwKLQlzdGF0aWMgY29uc3Qgc3RydWN0IGVhcmx5Y29uX2lkIF9fZWFybHlj
-b25fIyNfbmFtZQkJXAotCQlfX3VzZWQgX19zZWN0aW9uKF9fZWFybHljb25fdGFibGUpCQkJXAor
-CXN0YXRpYyBzdHJ1Y3QgZWFybHljb25faWQgX19lYXJseWNvbl8jI19uYW1lIF9faW5pdGRhdGEJ
-XAogCQkgPSB7IC5uYW1lICA9IF9fc3RyaW5naWZ5KF9uYW1lKSwJCQlcCi0JCSAgICAgLnNldHVw
-ID0gZnVuYyAgfQorCQkgICAgIC5zZXR1cCA9IGZ1bmMgIH07CQkJCQlcCisJc3RhdGljIHN0cnVj
-dCBlYXJseWNvbl9pZCAqX19wX2Vhcmx5Y29uXyMjX25hbWUJX191c2VkCQlcCisJCV9fYWxpZ25l
-ZChzaXplb2Yoc3RydWN0IGVhcmx5Y29uX2lkICopKQkJCVwKKwkJX19zZWN0aW9uKF9fZWFybHlj
-b25fdGFibGUpID0geyAmX19lYXJseWNvbl8jI19uYW1lIH0KIAogI2RlZmluZSBPRl9FQVJMWUNP
-Tl9ERUNMQVJFKG5hbWUsIGNvbXBhdCwgZm4pCQkJCVwKIAlfT0ZfREVDTEFSRShlYXJseWNvbiwg
-bmFtZSwgY29tcGF0LCBmbiwgdm9pZCAqKQpJbmRleDogbGludXgtMi42L2RyaXZlcnMvdHR5L3Nl
-cmlhbC9lYXJseWNvbi5jCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGxpbnV4LTIuNi5vcmlnL2RyaXZlcnMvdHR5
-L3NlcmlhbC9lYXJseWNvbi5jCisrKyBsaW51eC0yLjYvZHJpdmVycy90dHkvc2VyaWFsL2Vhcmx5
-Y29uLmMKQEAgLTM3LDkgKzM3LDggQEAgc3RhdGljIHN0cnVjdCBlYXJseWNvbl9kZXZpY2UgZWFy
-bHlfY29ucwogCS5jb24gPSAmZWFybHlfY29uLAogfTsKIAotZXh0ZXJuIHN0cnVjdCBlYXJseWNv
-bl9pZCBfX2Vhcmx5Y29uX3RhYmxlW107Ci1zdGF0aWMgY29uc3Qgc3RydWN0IGVhcmx5Y29uX2lk
-IF9fZWFybHljb25fdGFibGVfc2VudGluZWwKLQlfX3VzZWQgX19zZWN0aW9uKF9fZWFybHljb25f
-dGFibGVfZW5kKTsKK2V4dGVybiBzdHJ1Y3QgZWFybHljb25faWQgKl9fc3RhcnRfZWFybHljb25f
-dGFibGVbXTsKK2V4dGVybiBzdHJ1Y3QgZWFybHljb25faWQgKl9fc3RvcF9lYXJseWNvbl90YWJs
-ZVtdOwogCiBzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCBfX2Vhcmx5Y29uX29mX3Rh
-YmxlX3NlbnRpbmVsCiAJX191c2VkIF9fc2VjdGlvbihfX2Vhcmx5Y29uX29mX3RhYmxlX2VuZCk7
-CkBAIC0xMDMsNyArMTAyLDcgQEAgc3RhdGljIGludCBfX2luaXQgcGFyc2Vfb3B0aW9ucyhzdHJ1
-Y3QgZQogCXJldHVybiAwOwogfQogCi1zdGF0aWMgaW50IF9faW5pdCByZWdpc3Rlcl9lYXJseWNv
-bihjaGFyICpidWYsIGNvbnN0IHN0cnVjdCBlYXJseWNvbl9pZCAqbWF0Y2gpCitzdGF0aWMgaW50
-IF9faW5pdCByZWdpc3Rlcl9lYXJseWNvbihjaGFyICpidWYsIHN0cnVjdCBlYXJseWNvbl9pZCAq
-bWF0Y2gpCiB7CiAJaW50IGVycjsKIAlzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0ID0gJmVhcmx5X2Nv
-bnNvbGVfZGV2LnBvcnQ7CkBAIC0xNDcsNyArMTQ2LDcgQEAgc3RhdGljIGludCBfX2luaXQgcmVn
-aXN0ZXJfZWFybHljb24oY2hhcgogICovCiBpbnQgX19pbml0IHNldHVwX2Vhcmx5Y29uKGNoYXIg
-KmJ1ZikKIHsKLQljb25zdCBzdHJ1Y3QgZWFybHljb25faWQgKm1hdGNoOworCXN0cnVjdCBlYXJs
-eWNvbl9pZCAqKnBtYXRjaDsKIAogCWlmICghYnVmIHx8ICFidWZbMF0pCiAJCXJldHVybiAtRUlO
-VkFMOwpAQCAtMTU1LDcgKzE1NCw5IEBAIGludCBfX2luaXQgc2V0dXBfZWFybHljb24oY2hhciAq
-YnVmKQogCWlmIChlYXJseV9jb24uZmxhZ3MgJiBDT05fRU5BQkxFRCkKIAkJcmV0dXJuIC1FQUxS
-RUFEWTsKIAotCWZvciAobWF0Y2ggPSBfX2Vhcmx5Y29uX3RhYmxlOyBtYXRjaC0+bmFtZVswXTsg
-bWF0Y2grKykgeworCWZvciAocG1hdGNoID0gX19zdGFydF9lYXJseWNvbl90YWJsZTsgcG1hdGNo
-IDwgX19zdG9wX2Vhcmx5Y29uX3RhYmxlOworCSAgICAgcG1hdGNoKyspIHsKKwkJc3RydWN0IGVh
-cmx5Y29uX2lkICptYXRjaCA9ICpwbWF0Y2g7CiAJCXNpemVfdCBsZW4gPSBzdHJsZW4obWF0Y2gt
-Pm5hbWUpOwogCiAJCWlmIChzdHJuY21wKGJ1ZiwgbWF0Y2gtPm5hbWUsIGxlbikpCkluZGV4OiBs
-aW51eC0yLjYvaW5jbHVkZS9hc20tZ2VuZXJpYy92bWxpbnV4Lmxkcy5oCj09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0t
-IGxpbnV4LTIuNi5vcmlnL2luY2x1ZGUvYXNtLWdlbmVyaWMvdm1saW51eC5sZHMuaAorKysgbGlu
-dXgtMi42L2luY2x1ZGUvYXNtLWdlbmVyaWMvdm1saW51eC5sZHMuaApAQCAtMTUxLDEwICsxNTEs
-MTAgQEAKICNlbmRpZgogCiAjaWZkZWYgQ09ORklHX1NFUklBTF9FQVJMWUNPTgotI2RlZmluZSBF
-QVJMWUNPTl9UQUJMRSgpIC4gPSBBTElHTig4KTsJCQkJXAotCQkJIFZNTElOVVhfU1lNQk9MKF9f
-ZWFybHljb25fdGFibGUpID0gLjsJXAotCQkJICooX19lYXJseWNvbl90YWJsZSkJCQlcCi0JCQkg
-KihfX2Vhcmx5Y29uX3RhYmxlX2VuZCkKKyNkZWZpbmUgRUFSTFlDT05fVEFCTEUoKSAuID0gQUxJ
-R04oOCk7CQkJCQlcCisJCQkgVk1MSU5VWF9TWU1CT0woX19zdGFydF9lYXJseWNvbl90YWJsZSkg
-PSAuOwlcCisJCQkgKihfX2Vhcmx5Y29uX3RhYmxlKQkJCQlcCisJCQkgVk1MSU5VWF9TWU1CT0wo
-X19zdG9wX2Vhcmx5Y29uX3RhYmxlKSA9IC47CiAjZWxzZQogI2RlZmluZSBFQVJMWUNPTl9UQUJM
-RSgpCiAjZW5kaWYK
---20cf304275beb7e0780512ba44b1--
+>
+> Regards,
+> Peter Hurley
+>
+> [1] https://lkml.org/lkml/2015/3/6/571
+>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
