@@ -1,45 +1,34 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 -next 11/11] serial: 8250_early: Remove setup_early_serial8250_console()
-Date: Fri, 03 Apr 2015 06:37:21 -0400
-Message-ID: <551E6D61.7000501@hurleysoftware.com>
-References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>	<1425932842-21812-12-git-send-email-peter@hurleysoftware.com>	<CAE9FiQVWhfVt8kmj5QumAH2hyp+DRYGeQcBtFrynojXTCOdnQw@mail.gmail.com>	<551CB5DF.1010108@hurleysoftware.com>	<CAE9FiQVKY9KLeBOB0shqTPZZipsmAiU=3_8gzfFhsCW9kxo_uA@mail.gmail.com>	<551D6EEA.6050704@hurleysoftware.com>	<CAE9FiQUGeGuf9z0tQyjOujfRW_RtrWe8ELeKe=W6GNFmRVdpfg@mail.gmail.com>	<CAE9FiQVBxGt_jX-juzf4vvc_6MgiiSixW6RtVTz1aUTw0h3Rmg@mail.gmail.com>	<CAE9FiQVaM650O139RgLcHRv7NGUVVMqSETq0YJ+7OAWVg=0Y0A@mail.gmail.com>	<CAE9FiQUJq0zi2gx0jM1AQp60FhyaytKEMV_mpY+fNc3OATnCBA@mail.gmail.com>	<CAE9FiQV0rfOfo3-=yQOYLDD-x+48_OuWfkHVNy-+oTzWvgr9Ew@mail.gmail.com> <CAE9FiQX2gQQcD5OrFkDCN5Ew746H1kd5+VgpAcSNvEqg-gFx7Q@mail.gmail.com>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: [Patch] tty: Re-add external interface for tty_set_termios()
+Date: Fri, 03 Apr 2015 07:49:20 -0400
+Message-ID: <551E7E40.5030904@hurleysoftware.com>
+References: <1428055395-10648-1-git-send-email-frederic.danis@linux.intel.com> <551E6BCA.7000807@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAE9FiQX2gQQcD5OrFkDCN5Ew746H1kd5+VgpAcSNvEqg-gFx7Q@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yinghai Lu <yinghai@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <551E6BCA.7000807-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 04/02/2015 10:38 PM, Yinghai Lu wrote:
-> On Thu, Apr 2, 2015 at 5:22 PM, Yinghai Lu <yinghai@kernel.org> wrote:
+[ +cc GregKH, JiriS ]
+
+On 04/03/2015 06:30 AM, Peter Hurley wrote:
+> Hi Frederic,
 > 
->>>>> still have another problem.
->>>>> when using console=uart8250,io,0x3f8
->>>>> it works as earlycon at first.
->>>>> but after handover to normal console
->>>>> it will revert back to 9600 again.
->>>>
->>>> this regression should be caused by:
->>>>
->>>> commit c7cef0a84912cab3c9df8949b034e4aa62982ec9
->>>> Author: Peter Hurley <peter@hurleysoftware.com>
->>>> Date:   Mon Mar 9 16:27:12 2015 -0400
->>>>
->>>>     console: Add extensible console matching
->>>
->> So your whole patchset will need the first patch ?
+> On 04/03/2015 06:03 AM, Frederic Danis wrote:
+>> This is a partial revert of patch "tty: Remove external interface for
+>> tty_set_termios()" from Peter Hurley (2015-01-25 SHA1 632f32e2107) to
+>> set tty_set_termios() publicly available.
 >>
->> or can you just drop the first one patch ?
+>> This will be needed by Bluetooth hci_uart module to be able to change
+>> Bluetooth controller and local UART speed during vendor specific
+>> initialization.
 > 
-> Please check attached patch that fix regresion by. commit c7cef0a849
-> ("console: Add extensible console matching")
+> NAK.
 > 
-> or you have better way?
+> 1. Where is this _proposed_ usage?
 
-Please re-read my first response to this problem.
-
-Regards,
-Peter Hurley
+Found it. RFC series in linux-bluetooth.
