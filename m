@@ -1,48 +1,37 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 -next 11/11] serial: 8250_early: Remove setup_early_serial8250_console()
-Date: Fri, 03 Apr 2015 14:27:30 -0400
-Message-ID: <551EDB92.9070008@hurleysoftware.com>
-References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>	<1425932842-21812-12-git-send-email-peter@hurleysoftware.com>	<CAE9FiQVWhfVt8kmj5QumAH2hyp+DRYGeQcBtFrynojXTCOdnQw@mail.gmail.com>	<551CB5DF.1010108@hurleysoftware.com>	<CAE9FiQVKY9KLeBOB0shqTPZZipsmAiU=3_8gzfFhsCW9kxo_uA@mail.gmail.com>	<551D6EEA.6050704@hurleysoftware.com>	<CAE9FiQUGeGuf9z0tQyjOujfRW_RtrWe8ELeKe=W6GNFmRVdpfg@mail.gmail.com>	<CAE9FiQVBxGt_jX-juzf4vvc_6MgiiSixW6RtVTz1aUTw0h3Rmg@mail.gmail.com>	<CAE9FiQVaM650O139RgLcHRv7NGUVVMqSETq0YJ+7OAWVg=0Y0A@mail.gmail.com>	<CAE9FiQUJq0zi2gx0jM1AQp60FhyaytKEMV_mpY+fNc3OATnCBA@mail.gmail.com>	<CAE9FiQV0rfOfo3-=yQOYLDD-x+48_OuWfkHVNy-+oTzWvgr9Ew@mail.gmail.com>	<CAE9FiQX2gQQcD5OrFkDCN5Ew746H1kd5+VgpAcSNvEqg-gFx7Q@mail.gmail.com>	<551E6D61.7000501@hurleysoftware.com>
- 	<CAE9FiQXaOZOf4hj72iUpDoYgGTuO+jwF34qOeiLw=3rrWK+ucA@mail.gmail.com>	<551ED011.1030004@hurleysoftware.com> <CAE9FiQW4PM1aozMOXMfvey2=zVjm3uMVLGW3924eidACBbTjag@mail.gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 -next 11/11] serial: 8250_early: Remove
+ setup_early_serial8250_console()
+Date: Fri, 3 Apr 2015 21:00:44 +0200
+Message-ID: <20150403190044.GA24702@kroah.com>
+References: <CAE9FiQVBxGt_jX-juzf4vvc_6MgiiSixW6RtVTz1aUTw0h3Rmg@mail.gmail.com>
+ <CAE9FiQVaM650O139RgLcHRv7NGUVVMqSETq0YJ+7OAWVg=0Y0A@mail.gmail.com>
+ <CAE9FiQUJq0zi2gx0jM1AQp60FhyaytKEMV_mpY+fNc3OATnCBA@mail.gmail.com>
+ <CAE9FiQV0rfOfo3-=yQOYLDD-x+48_OuWfkHVNy-+oTzWvgr9Ew@mail.gmail.com>
+ <CAE9FiQX2gQQcD5OrFkDCN5Ew746H1kd5+VgpAcSNvEqg-gFx7Q@mail.gmail.com>
+ <551E6D61.7000501@hurleysoftware.com>
+ <CAE9FiQXaOZOf4hj72iUpDoYgGTuO+jwF34qOeiLw=3rrWK+ucA@mail.gmail.com>
+ <551ED011.1030004@hurleysoftware.com>
+ <CAE9FiQW4PM1aozMOXMfvey2=zVjm3uMVLGW3924eidACBbTjag@mail.gmail.com>
+ <551EDB92.9070008@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAE9FiQW4PM1aozMOXMfvey2=zVjm3uMVLGW3924eidACBbTjag@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <551EDB92.9070008@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yinghai Lu <yinghai@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Yinghai Lu <yinghai@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 04/03/2015 01:44 PM, Yinghai Lu wrote:
-> On Fri, Apr 3, 2015 at 10:38 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
->> On 04/03/2015 12:57 PM, Yinghai Lu wrote:
->>
->> Wait -- you have earlycon in a product??
-> 
-> What do you mean?
+On Fri, Apr 03, 2015 at 02:27:30PM -0400, Peter Hurley wrote:
+> I have no problem fixing this _if this is causing actual regressions_,
+> and not simply some minor inconvenience that can be fixed by editing your
+> grub command line.
 
-I mean, what will happen if I put in a big debug banner like Steven
-did for ftrace?
+But, you can't break working command lines from previous kernel
+releases.  Undocumented or not, sorry.  It's a working configuration.
+Upgrading a kernel can not break that.
 
-Kernel developers need earlycon for debugging arch code; often the earlycon
-is just hacked together especially when it requires fixmap support.
+sorry,
 
-Putting it in a product and _relying on undocumented behavior_ is a bad idea.
-
-
-> when you are using "console=uart8250,io,0x3f8"
-> you will have earlycon at first, and handover to console.
-
-which means you have to have CONFIG_SERIAL_EARLYCON to get a serial console
-at all.
-
-I have no problem fixing this _if this is causing actual regressions_,
-and not simply some minor inconvenience that can be fixed by editing your
-grub command line.
-
-However, I see this undocumented behavior as a cautionary tale for why not
-every kernel command line hack should be accepted in mainline.
-
-Regards,
-Peter Hurley
+greg k-h
