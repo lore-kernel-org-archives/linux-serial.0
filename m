@@ -1,34 +1,50 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [Patch] tty: Re-add external interface for tty_set_termios()
-Date: Fri, 03 Apr 2015 07:49:20 -0400
-Message-ID: <551E7E40.5030904@hurleysoftware.com>
-References: <1428055395-10648-1-git-send-email-frederic.danis@linux.intel.com> <551E6BCA.7000807@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <551E6BCA.7000807-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] earlycon: Fix __earlycon_table stride
+Date: Fri,  3 Apr 2015 08:57:51 -0400
+Message-ID: <1428065871-17281-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-next-owner@vger.kernel.org>
+Sender: linux-next-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-[ +cc GregKH, JiriS ]
+The compiler and the linker must agree on the alignment of
+struct earlycon_id; empirical testing and commit 07fca0e57fca92
+("tracing: Properly align linker defined symbols") suggests
+32-byte alignment is the LCD.
 
-On 04/03/2015 06:30 AM, Peter Hurley wrote:
-> Hi Frederic,
-> 
-> On 04/03/2015 06:03 AM, Frederic Danis wrote:
->> This is a partial revert of patch "tty: Remove external interface for
->> tty_set_termios()" from Peter Hurley (2015-01-25 SHA1 632f32e2107) to
->> set tty_set_termios() publicly available.
->>
->> This will be needed by Bluetooth hci_uart module to be able to change
->> Bluetooth controller and local UART speed during vendor specific
->> initialization.
-> 
-> NAK.
-> 
-> 1. Where is this _proposed_ usage?
+Reported-by: Yinghai Lu <yinghai@kernel.org>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ include/asm-generic/vmlinux.lds.h | 2 +-
+ include/linux/serial_core.h       | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Found it. RFC series in linux-bluetooth.
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 87e5b6f..561daf4 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -151,7 +151,7 @@
+ #endif
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
+-#define EARLYCON_TABLE() . = ALIGN(8);				\
++#define EARLYCON_TABLE() STRUCT_ALIGN();			\
+ 			 VMLINUX_SYMBOL(__earlycon_table) = .;	\
+ 			 *(__earlycon_table)			\
+ 			 *(__earlycon_table_end)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 34de168..025dad9 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -342,7 +342,7 @@ struct earlycon_device {
+ struct earlycon_id {
+ 	char	name[16];
+ 	int	(*setup)(struct earlycon_device *, const char *options);
+-};
++} __aligned(32);
+ 
+ extern int setup_earlycon(char *buf);
+ extern int of_setup_earlycon(unsigned long addr,
+-- 
+2.3.5
