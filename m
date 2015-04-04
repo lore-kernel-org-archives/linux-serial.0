@@ -1,47 +1,46 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 -next 11/11] serial: 8250_early: Remove setup_early_serial8250_console()
-Date: Fri, 03 Apr 2015 21:16:04 -0400
-Message-ID: <551F3B54.3070707@hurleysoftware.com>
-References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>	<551CB5DF.1010108@hurleysoftware.com>	<CAE9FiQVKY9KLeBOB0shqTPZZipsmAiU=3_8gzfFhsCW9kxo_uA@mail.gmail.com>	<551D6EEA.6050704@hurleysoftware.com>	<CAE9FiQUGeGuf9z0tQyjOujfRW_RtrWe8ELeKe=W6GNFmRVdpfg@mail.gmail.com>	<CAE9FiQVBxGt_jX-juzf4vvc_6MgiiSixW6RtVTz1aUTw0h3Rmg@mail.gmail.com>	<CAE9FiQVaM650O139RgLcHRv7NGUVVMqSETq0YJ+7OAWVg=0Y0A@mail.gmail.com>	<CAE9FiQUJq0zi2gx0jM1AQp60FhyaytKEMV_mpY+fNc3OATnCBA@mail.gmail.com>	<CAE9FiQV0rfOfo3-=yQOYLDD-x+48_OuWfkHVNy-+oTzWvgr9Ew@mail.gmail.com>	<CAE9FiQX2gQQcD5OrFkDCN5Ew746H1kd5+VgpAcSNvEqg-gFx7Q@mail.gmail.com>	<551E6D61.7000501@hurleysoftware.com>	<CAE9FiQXaOZOf4hj72iUpDoYgGTuO+jwF34qOeiLw=3rrWK+ucA@mail.gmail.com>	<551ED011.1030004@hurleysoftware.com>	<CAE9FiQW4PM1aozMOXMfve
- y2=zVjm3uMVLGW3924eidACBbTjag@mail.gmail.com>	<551EDB92.9070008@hurleysoftware.com> <CAE9FiQV1BF9R5Roc1HDRX+03h+Enb13seRNhYxE5P6CgUb02yA@mail.gmail.com>
+From: Yinghai Lu <yinghai@kernel.org>
+Subject: Re: [PATCH v2] earlycon: 8250: Fix command line regression
+Date: Fri, 3 Apr 2015 19:19:50 -0700
+Message-ID: <CAE9FiQWvxfg_mG4pab=yBHKbq8C+_ujiHtx2mmzS6aEfMzG8Jw@mail.gmail.com>
+References: <1428102229-26103-1-git-send-email-peter@hurleysoftware.com>
+	<1428105875-4038-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAE9FiQV1BF9R5Roc1HDRX+03h+Enb13seRNhYxE5P6CgUb02yA@mail.gmail.com>
+In-Reply-To: <1428105875-4038-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yinghai Lu <yinghai@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, Rob Herring <robh@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 04/03/2015 08:52 PM, Yinghai Lu wrote:
-> On Fri, Apr 3, 2015 at 11:27 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
->> On 04/03/2015 01:44 PM, Yinghai Lu wrote:
->>> On Fri, Apr 3, 2015 at 10:38 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
->>>> On 04/03/2015 12:57 PM, Yinghai Lu wrote:
->>>>
->>>> Wait -- you have earlycon in a product??
->>>
->>> What do you mean?
->>
->> I mean, what will happen if I put in a big debug banner like Steven
->> did for ftrace?
->>
->> Kernel developers need earlycon for debugging arch code; often the earlycon
->> is just hacked together especially when it requires fixmap support.
->>
->> Putting it in a product and _relying on undocumented behavior_ is a bad idea.
-> 
-> let me repeat again:
-> when you have "console=uart8250,io,0x3f8", you will have earlycon and
-> then console.
-> 
-> That is just for kernel developer for debugging.
-> 
-> When you have x86 with bunch of dimms and cpus, user will have to wait couple
-> of minutes to output from console=ttyS0....and if it hang early, no
-> one would know what happen.
-> 
-> Also it is only boot time only....
+On Fri, Apr 3, 2015 at 5:04 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> Restore undocumented behavior of kernel command line parameters of
+> the forms:
+>     console=uart[8250],io|mmio|mmio32,<addr>[,options]
+>     console=uart[8250],<addr>[,options]
+> where 'options' have not been specified; in this case, the hardware
+> is assumed to be initialized.
 
-The fix is sitting in your inbox. Pointless to discuss it now.
+
+Please separated bug fix and other documentation change to different patches.
+
+also fix the patch title to make it clear and you need to mention which commit
+cause the regression.
+
+This patch fix regression for the hand over.  Thanks.
+
+Another regression.
+when user have
+console=uart8250,io,0x3f8 console=uart8250,io,0x2f8
+
+before your patchset:
+port_0x3f8 is early console, and will be console later.
+and port_0x2f8 is ignored, because only ONE early console is allowed.
+       and old console setup, only handle ttyS0.
+
+after your patchset:
+port_0x3f8 is early console, and will be console later.
+port_0x2f8 will become default console, as new console with match method
+   treat all uart8250 as ttyS0.
+
+Please fix that too.
