@@ -1,36 +1,48 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4] earlycon: 8250: Fix command line regression
-Date: Sat, 4 Apr 2015 19:41:23 +0200
-Message-ID: <20150404174123.GA31910@kroah.com>
-References: <1428157650-16418-1-git-send-email-peter@hurleysoftware.com>
- <1428167961-26841-1-git-send-email-peter@hurleysoftware.com>
- <55201E63.6040505@hurleysoftware.com>
+From: Joe Perches <joe@perches.com>
+Subject: [PATCH] checkpatch: Add uart_ops to normally const structs
+Date: Sat, 04 Apr 2015 10:47:31 -0700
+Message-ID: <1428169651.2775.51.camel@perches.com>
+References: <1428080481-18591-1-git-send-email-mcoquelin.stm32@gmail.com>
+	 <1428080481-18591-11-git-send-email-mcoquelin.stm32@gmail.com>
+	 <1428083006.13180.35.camel@perches.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55201E63.6040505@hurleysoftware.com>
+In-Reply-To: <1428083006.13180.35.camel@perches.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Yinghai Lu <yinghai@kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Whitcroft <apw@shadowen.org>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Apr 04, 2015 at 01:24:51PM -0400, Peter Hurley wrote:
-> On 04/04/2015 01:19 PM, Peter Hurley wrote:
-> > Restore undocumented behavior of kernel command line parameters of
-> > the forms:
-> >     console=uart[8250],io|mmio|mmio32,<addr>[,options]
-> >     console=uart[8250],<addr>[,options]
-> > where 'options' have not been specified; in this case, the hardware
-> > is assumed to be initialized.
-> > 
-> > Document the required behavior of the original implementation.
-> 
-> Greg,
-> 
-> Please wait for a Tested-by from Yinghai before pushing; I have no
-> platform to test if this fixes his regression.
+Add another struct to the list of normally const struct types
 
-Ok, will do, thanks for redoing this and spinning up a fix so quickly.
+Signed-off-by: Joe Perches <joe@perches.com>
+---
 
-greg k-h
+On Fri, 2015-04-03 at 10:43 -0700, Joe Perches wrote:
+> On Fri, 2015-04-03 at 19:01 +0200, Maxime Coquelin wrote:
+> > This drivers adds support to the STM32 USART controller, which is a
+> > standard serial driver.
+> trivia:
+> > diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> []
+> > +static struct uart_ops stm32_uart_ops = {
+> could be const
+> and it could be updated in a separate patch later too.
+
+ scripts/checkpatch.pl | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index 9a8b2bd..db3dcf5 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -5338,6 +5338,7 @@ sub process {
+ 				stacktrace_ops|
+ 				sysfs_ops|
+ 				tty_operations|
++				uart_ops|
+ 				usb_mon_operations|
+ 				wd_ops}x;
+ 		if ($line !~ /\bconst\b/ &&
