@@ -1,7 +1,7 @@
 From: Yinghai Lu <yinghai@kernel.org>
 Subject: Re: [PATCH v3 -next 11/11] serial: 8250_early: Remove setup_early_serial8250_console()
-Date: Fri, 3 Apr 2015 17:52:58 -0700
-Message-ID: <CAE9FiQV1BF9R5Roc1HDRX+03h+Enb13seRNhYxE5P6CgUb02yA@mail.gmail.com>
+Date: Fri, 3 Apr 2015 17:58:03 -0700
+Message-ID: <CAE9FiQUB83RzL71QfGrbA2eZJ5ACJokcGU+OrgAbXAg0ss3Mmg@mail.gmail.com>
 References: <1425932842-21812-1-git-send-email-peter@hurleysoftware.com>
 	<1425932842-21812-12-git-send-email-peter@hurleysoftware.com>
 	<CAE9FiQVWhfVt8kmj5QumAH2hyp+DRYGeQcBtFrynojXTCOdnQw@mail.gmail.com>
@@ -30,29 +30,16 @@ List-Id: linux-serial@vger.kernel.org
 
 On Fri, Apr 3, 2015 at 11:27 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
 > On 04/03/2015 01:44 PM, Yinghai Lu wrote:
->> On Fri, Apr 3, 2015 at 10:38 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
->>> On 04/03/2015 12:57 PM, Yinghai Lu wrote:
->>>
->>> Wait -- you have earlycon in a product??
->>
->> What do you mean?
 >
-> I mean, what will happen if I put in a big debug banner like Steven
-> did for ftrace?
->
-> Kernel developers need earlycon for debugging arch code; often the earlycon
-> is just hacked together especially when it requires fixmap support.
->
-> Putting it in a product and _relying on undocumented behavior_ is a bad idea.
+> which means you have to have CONFIG_SERIAL_EARLYCON to get a serial console
+> at all.
 
-let me repeat again:
-when you have "console=uart8250,io,0x3f8", you will have earlycon and
-then console.
+what do you mean? Now in drivers/tty/serial/8250/Kconfig we have
 
-That is just for kernel developer for debugging.
+config SERIAL_8250_CONSOLE
+        bool "Console on 8250/16550 and compatible serial port"
+        depends on SERIAL_8250=y
+        select SERIAL_CORE_CONSOLE
+        select SERIAL_EARLYCON
 
-When you have x86 with bunch of dimms and cpus, user will have to wait couple
-of minutes to output from console=ttyS0....and if it hang early, no
-one would know what happen.
-
-Also it is only boot time only....
+do you mean, we should not have that "select SERIAL_EARLYCON" ?
