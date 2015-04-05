@@ -1,71 +1,107 @@
 From: Yinghai Lu <yinghai@kernel.org>
-Subject: Re: [PATCH v5] earlycon: 8250: Fix command line regression
-Date: Sun, 5 Apr 2015 13:02:12 -0700
-Message-ID: <CAE9FiQWbha9tYpDNRW-KHUc8YPYjXVZLz9RQ+QvkcO4Y5ftMHQ@mail.gmail.com>
-References: <1428167961-26841-1-git-send-email-peter@hurleysoftware.com>
-	<1428245532-1523-1-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH v4] earlycon: 8250: Fix command line regression
+Date: Sun, 5 Apr 2015 13:14:32 -0700
+Message-ID: <CAE9FiQUEQeyd57E=xtZjbRn-ASfDdMY8unToKjJHwz-u9oQ5dQ@mail.gmail.com>
+References: <1428157650-16418-1-git-send-email-peter@hurleysoftware.com>
+	<1428167961-26841-1-git-send-email-peter@hurleysoftware.com>
+	<CAE9FiQXhbR-g0SPeZ=CPGXuRGk0KrdpvaPXK_JDgg58OGk0EbA@mail.gmail.com>
+	<55213339.7050304@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/mixed; boundary=001a113e94b25ca1af0512ffd466
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1428245532-1523-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <55213339.7050304@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Apr 5, 2015 at 7:52 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> Restore undocumented behavior of kernel command line parameters of
-> the forms:
->     console=uart[8250],io|mmio|mmio32,<addr>[,options]
->     console=uart[8250],<addr>[,options]
-> where 'options' have not been specified; in this case, the hardware
-> is assumed to be initialized.
->
-> Document the required behavior of the original implementation.
->
-> Fixes: c7cef0a84912cab3c9df8 ("console: Add extensible console matching")
-> Reported-by: Yinghai Lu <yinghai@kernel.org>
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
-> v5: Refactored serial8250_console_setup() & univ8250_console_setup()
->     to eliminate open-coding; net +1 LOC (excludes documentation)
->
-> v4: Removed FIXME comment
->
-> v3: Fixed automatic console to port line settings initialization;
->     open-coded serial8250_console_setup() so the baud can be probed;
->     added sha reference in commit log
->
-> v2: Fixed regression which allowed "console=uart1337,..." to start a
->     console (but not an earlycon)
->   + fixed earlycon= documentation related required behavior fixed by
->     this patch
->
->  Documentation/kernel-parameters.txt  | 18 ++++++++++++---
->  drivers/tty/serial/8250/8250_core.c  | 45 ++++++++++++++++++++++++++++--------
->  drivers/tty/serial/8250/8250_early.c | 19 ---------------
->  3 files changed, 50 insertions(+), 32 deletions(-)
->
-> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-> index bfcb1a6..1facf0b 100644
-> --- a/Documentation/kernel-parameters.txt
-> +++ b/Documentation/kernel-parameters.txt
-> @@ -713,10 +713,18 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
->
->                 uart[8250],io,<addr>[,options]
->                 uart[8250],mmio,<addr>[,options]
-> +               uart[8250],mmio32,<addr>[,options]
-> +               uart[8250],0x<addr>[,options]
+--001a113e94b25ca1af0512ffd466
+Content-Type: text/plain; charset=UTF-8
 
-You just don't listen.
+On Sun, Apr 5, 2015 at 6:06 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> On 04/05/2015 03:09 AM, Yinghai Lu wrote:
 
-I wasted too much time on this.
+> On what planet is 27 loc across 4 source files cleaner than
+> 6 loc that might be reducible to 2?
 
-Greg,
+loc is not only thing to decide if it is cleaner.
 
-Please just drop c7cef0a84912cab3c9df8 ("console: Add extensible
-console matching").
+Let's Greg and Andrew to check which one is clean.
 
-Thanks
+--001a113e94b25ca1af0512ffd466
+Content-Type: text/x-patch; charset=US-ASCII; name="fix_earlycon_console_handover_v3.patch"
+Content-Disposition: attachment;
+	filename="fix_earlycon_console_handover_v3.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_i84vzlae0
 
-Yinghai
+U3ViamVjdDogW1BBVENIIC12M10gZWFybHljb246IEZpeCBlYXJseWNvbi9jb25zb2xlIGhhbmRv
+dmVyIHdpdGhvdXQgb3B0aW9ucwoKY29tbWl0IGM3Y2VmMGE4NDkxMiAoImNvbnNvbGU6IEFkZCBl
+eHRlbnNpYmxlIGNvbnNvbGUgbWF0Y2hpbmciKQpicm9rZSB0aGUgZWFybHljb24vaGFuZG92ZXIg
+d2hlbiBib290aW5nCmNvbnNvbGU9dWFydDgyNTAsaW8sMHgzZjgKCnRoZSBib290bG9hZGVyIGlz
+IHVzaW5nIDExNTIwMCwgYW5kIHRoZSBlYXJseWNvbiBjb250aW51ZQp1c2UgMTE1MjAwLCBidXQg
+Y29uc29sZSByZXZlcnQgYmFjayB0byA5NjAwLgoKQmVmb3JlIHRoZSBjb21taXQsIHByb2JlZCBi
+YXVkIHJhdGUgaXMgcGFzc2VkIHZpYSBjb25zb2xlX2NtZGxpbmUKZnJvbSBlYXJseWNvbiB0byBu
+b3JtYWwgY29uc29sZS4KVGhhdCBjb21taXQgcmVtb3ZlIHRoYXQgYW5kIG9ubHkgY2hlY2sgYm9v
+dCBjb21tYW5kIGxpbmUuCgpUaGlzIHBhdGNoIHVzZSBwb3J0IG1hdGNoIHRvIGdldCBob2xkIGVh
+cmx5Y29uLCBhbmQgdXNlIGVhcmx5Y29uCmRldmljZSBvcHRpb25zIHRvIHVwZGF0ZSBvcHRpb25z
+IGZvciBjb25zb2xlLgoKV2l0aCB0aGF0IHdlIHJlc3RvcmUgdGhlIG9yaWdpbmFsIGJlaGF2aW9y
+LgoKRml4ZXM6IGNvbW1pdCBjN2NlZjBhODQ5MTIgKCJjb25zb2xlOiBBZGQgZXh0ZW5zaWJsZSBj
+b25zb2xlIG1hdGNoaW5nIikKU2lnbmVkLW9mZi1ieTogWWluZ2hhaSBMdSA8eWluZ2hhaUBrZXJu
+ZWwub3JnPgoKLS0tCi12Mjogc2ltcGxpZnkgc2VyaWFsODI1MF9nZXRfZWFybHljb25fb3B0aW9u
+cyBhbmQgZG9uJ3QgdXBkYXRlCiAgICAgY29uc29sZV9jbWRsaW5lLgotdjM6IGFkZCBlYXJseWNv
+bl9tYXRjaCB0byByZXN0b3JlIG9yaWdpbmFsIGJlaGF2aW9yLgotLS0KCi0tLQogZHJpdmVycy90
+dHkvc2VyaWFsLzgyNTAvODI1MF9jb3JlLmMgIHwgICAgMyArKysKIGRyaXZlcnMvdHR5L3Nlcmlh
+bC84MjUwLzgyNTBfZWFybHkuYyB8ICAgIDcgKysrKysrKwogZHJpdmVycy90dHkvc2VyaWFsL2Vh
+cmx5Y29uLmMgICAgICAgIHwgICAxNSArKysrKysrKysrKysrKysKIGluY2x1ZGUvbGludXgvc2Vy
+aWFsX2NvcmUuaCAgICAgICAgICB8ICAgIDIgKysKIDQgZmlsZXMgY2hhbmdlZCwgMjcgaW5zZXJ0
+aW9ucygrKQoKSW5kZXg6IGxpbnV4LTIuNi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2Nv
+cmUuYwo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09Ci0tLSBsaW51eC0yLjYub3JpZy9kcml2ZXJzL3R0eS9zZXJpYWwvODI1
+MC84MjUwX2NvcmUuYworKysgbGludXgtMi42L2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBf
+Y29yZS5jCkBAIC0zNDkwLDYgKzM0OTAsOSBAQCBzdGF0aWMgaW50IHVuaXY4MjUwX2NvbnNvbGVf
+bWF0Y2goc3RydWN0CiAJCWlmIChpb3R5cGUgPT0gVVBJT19QT1JUICYmIHBvcnQtPmlvYmFzZSAh
+PSBhZGRyKQogCQkJY29udGludWU7CiAKKwkJaWYgKCFlYXJseWNvbl9tYXRjaChwb3J0LCAmb3B0
+aW9ucykpCisJCQlyZXR1cm4gLUVOT0RFVjsKKwogCQljby0+aW5kZXggPSBpOwogCQlyZXR1cm4g
+dW5pdjgyNTBfY29uc29sZV9zZXR1cChjbywgb3B0aW9ucyk7CiAJfQpJbmRleDogbGludXgtMi42
+L2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZWFybHkuYwo9PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBsaW51
+eC0yLjYub3JpZy9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2Vhcmx5LmMKKysrIGxpbnV4
+LTIuNi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2Vhcmx5LmMKQEAgLTEwNSw2ICsxMDUs
+MTIgQEAgc3RhdGljIHZvaWQgX19pbml0IGVhcmx5X3NlcmlhbDgyNTBfd3JpdAogCQlzZXJpYWw4
+MjUwX2Vhcmx5X291dChwb3J0LCBVQVJUX0lFUiwgaWVyKTsKIH0KIAorc3RhdGljIGludCBzZXJp
+YWw4MjUwX2Vhcmx5Y29uX21hdGNoKHN0cnVjdCBlYXJseWNvbl9kZXZpY2UgKmRldmljZSwKKwkJ
+CQkgICAgIHN0cnVjdCB1YXJ0X3BvcnQgKnVwKQoreworCXJldHVybiB1YXJ0X21hdGNoX3BvcnQo
+dXAsICZkZXZpY2UtPnBvcnQpOworfQorCiBzdGF0aWMgdW5zaWduZWQgaW50IF9faW5pdCBwcm9i
+ZV9iYXVkKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiB7CiAJdW5zaWduZWQgY2hhciBsY3IsIGRs
+bCwgZGxtOwpAQCAtMTYxLDYgKzE2Nyw3IEBAIHN0YXRpYyBpbnQgX19pbml0IGVhcmx5X3Nlcmlh
+bDgyNTBfc2V0dXAKIAl9IGVsc2UKIAkJaW5pdF9wb3J0KGRldmljZSk7CiAKKwlkZXZpY2UtPm1h
+dGNoID0gc2VyaWFsODI1MF9lYXJseWNvbl9tYXRjaDsKIAlkZXZpY2UtPmNvbi0+d3JpdGUgPSBl
+YXJseV9zZXJpYWw4MjUwX3dyaXRlOwogCXJldHVybiAwOwogfQpJbmRleDogbGludXgtMi42L2Ry
+aXZlcnMvdHR5L3NlcmlhbC9lYXJseWNvbi5jCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGxpbnV4LTIuNi5vcmln
+L2RyaXZlcnMvdHR5L3NlcmlhbC9lYXJseWNvbi5jCisrKyBsaW51eC0yLjYvZHJpdmVycy90dHkv
+c2VyaWFsL2Vhcmx5Y29uLmMKQEAgLTEyNyw2ICsxMjcsMjEgQEAgc3RhdGljIGludCBfX2luaXQg
+cmVnaXN0ZXJfZWFybHljb24oY2hhcgogCXJldHVybiAwOwogfQogCitpbnQgZWFybHljb25fbWF0
+Y2goc3RydWN0IHVhcnRfcG9ydCAqdXAsIGNoYXIgKipvcHRpb25zX3ApCit7CisJc3RydWN0IGVh
+cmx5Y29uX2RldmljZSAqZGV2aWNlID0gJmVhcmx5X2NvbnNvbGVfZGV2OworCisJaWYgKCFkZXZp
+Y2UtPmNvbiB8fCAhKGRldmljZS0+Y29uLT5mbGFncyAmIENPTl9FTkFCTEVEKSkKKwkJcmV0dXJu
+IDA7CisKKwlpZiAoZGV2aWNlLT5tYXRjaCAmJiBkZXZpY2UtPm1hdGNoKGRldmljZSwgdXApKSB7
+CisJCSpvcHRpb25zX3AgPSBkZXZpY2UtPm9wdGlvbnM7CisJCXJldHVybiAxOworCX0KKworCXJl
+dHVybiAwOworfQorCiAvKioKICAqCXNldHVwX2Vhcmx5Y29uIC0gbWF0Y2ggYW5kIHJlZ2lzdGVy
+IGVhcmx5Y29uIGNvbnNvbGUKICAqCUBidWY6CWVhcmx5Y29uIHBhcmFtIHN0cmluZwpJbmRleDog
+bGludXgtMi42L2luY2x1ZGUvbGludXgvc2VyaWFsX2NvcmUuaAo9PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBsaW51
+eC0yLjYub3JpZy9pbmNsdWRlL2xpbnV4L3NlcmlhbF9jb3JlLmgKKysrIGxpbnV4LTIuNi9pbmNs
+dWRlL2xpbnV4L3NlcmlhbF9jb3JlLmgKQEAgLTMzNyw2ICszMzcsNyBAQCBzdHJ1Y3QgZWFybHlj
+b25fZGV2aWNlIHsKIAlzdHJ1Y3QgdWFydF9wb3J0IHBvcnQ7CiAJY2hhciBvcHRpb25zWzE2XTsJ
+CS8qIGUuZy4sIDExNTIwMG44ICovCiAJdW5zaWduZWQgaW50IGJhdWQ7CisJaW50ICgqbWF0Y2gp
+KHN0cnVjdCBlYXJseWNvbl9kZXZpY2UgKiwgc3RydWN0IHVhcnRfcG9ydCAqKTsKIH07CiAKIHN0
+cnVjdCBlYXJseWNvbl9pZCB7CkBAIC0zNDQsNiArMzQ1LDcgQEAgc3RydWN0IGVhcmx5Y29uX2lk
+IHsKIAlpbnQJKCpzZXR1cCkoc3RydWN0IGVhcmx5Y29uX2RldmljZSAqLCBjb25zdCBjaGFyICpv
+cHRpb25zKTsKIH07CiAKK2V4dGVybiBpbnQgZWFybHljb25fbWF0Y2goc3RydWN0IHVhcnRfcG9y
+dCAqdXAsIGNoYXIgKipvcHRpb25zX3ApOwogZXh0ZXJuIGludCBzZXR1cF9lYXJseWNvbihjaGFy
+ICpidWYpOwogZXh0ZXJuIGludCBvZl9zZXR1cF9lYXJseWNvbih1bnNpZ25lZCBsb25nIGFkZHIs
+CiAJCQkgICAgIGludCAoKnNldHVwKShzdHJ1Y3QgZWFybHljb25fZGV2aWNlICosIGNvbnN0IGNo
+YXIgKikpOwo=
+--001a113e94b25ca1af0512ffd466--
