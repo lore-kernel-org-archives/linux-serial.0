@@ -1,107 +1,35 @@
-From: Yinghai Lu <yinghai@kernel.org>
-Subject: Re: [PATCH v4] earlycon: 8250: Fix command line regression
-Date: Sun, 5 Apr 2015 13:14:32 -0700
-Message-ID: <CAE9FiQUEQeyd57E=xtZjbRn-ASfDdMY8unToKjJHwz-u9oQ5dQ@mail.gmail.com>
-References: <1428157650-16418-1-git-send-email-peter@hurleysoftware.com>
-	<1428167961-26841-1-git-send-email-peter@hurleysoftware.com>
-	<CAE9FiQXhbR-g0SPeZ=CPGXuRGk0KrdpvaPXK_JDgg58OGk0EbA@mail.gmail.com>
-	<55213339.7050304@hurleysoftware.com>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
+Subject: Re: [PATCH V2] tty: serial: Add const to struct uart_ops declarations
+Date: Sun, 5 Apr 2015 23:23:10 +0100 (BST)
+Message-ID: <alpine.LFD.2.11.1504052319340.21028@eddie.linux-mips.org>
+References: <1428169665.2775.53.camel@perches.com>
+ <a938a0e86638588e5ccff85771fa3b95@agner.ch>
+ <1428258294.2775.69.camel@perches.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=001a113e94b25ca1af0512ffd466
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55213339.7050304@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1428258294.2775.69.camel@perches.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Joe Perches <joe@perches.com>
+Cc: linux-ia64@vger.kernel.org, kernel@stlinux.com, Nicolas Ferre <nicolas.ferre@atmel.com>, Timur Tabi <timur@tabi.org>, Stefan Agner <stefan@agner.ch>, Patrice Chotard <patrice.chotard@st.com>, Pat Gefre <pfg@sgi.com>, Laxman Dewangan <ldewangan@nvidia.com>, Daniel Walker <dwalker@fifo99.com>, sparclinux@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>, Sonic Zhang <sonic.zhang@analog.com>, Jiri Slaby <jslaby@suse.cz>, Alexandre Courbot <gnurou@gmail.com>, Russell King <linux@arm.linux.org.uk>, Michal Simek <michal.simek@xilinx.com>, =?ISO-8859-15?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>, Stephen Warren <swarren@wwwdotorg.org>, linux-arm-msm@vger.kernel.org, adi-buildroot-devel@lists.sourceforge.net, Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>, linux-tegra@vger.kernel.org, Dav
 List-Id: linux-serial@vger.kernel.org
 
---001a113e94b25ca1af0512ffd466
-Content-Type: text/plain; charset=UTF-8
+On Sun, 5 Apr 2015, Joe Perches wrote:
 
-On Sun, Apr 5, 2015 at 6:06 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 04/05/2015 03:09 AM, Yinghai Lu wrote:
+>  drivers/tty/serial/dz.c                     | 2 +-
+>  drivers/tty/serial/zs.c                     | 2 +-
 
-> On what planet is 27 loc across 4 source files cleaner than
-> 6 loc that might be reducible to 2?
+ For these verified that the change works correctly, thanks for your work.
 
-loc is not only thing to decide if it is cleaner.
+Acked-by: Maciej W. Rozycki <macro@linux-mips.org>
 
-Let's Greg and Andrew to check which one is clean.
-
---001a113e94b25ca1af0512ffd466
-Content-Type: text/x-patch; charset=US-ASCII; name="fix_earlycon_console_handover_v3.patch"
-Content-Disposition: attachment;
-	filename="fix_earlycon_console_handover_v3.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_i84vzlae0
-
-U3ViamVjdDogW1BBVENIIC12M10gZWFybHljb246IEZpeCBlYXJseWNvbi9jb25zb2xlIGhhbmRv
-dmVyIHdpdGhvdXQgb3B0aW9ucwoKY29tbWl0IGM3Y2VmMGE4NDkxMiAoImNvbnNvbGU6IEFkZCBl
-eHRlbnNpYmxlIGNvbnNvbGUgbWF0Y2hpbmciKQpicm9rZSB0aGUgZWFybHljb24vaGFuZG92ZXIg
-d2hlbiBib290aW5nCmNvbnNvbGU9dWFydDgyNTAsaW8sMHgzZjgKCnRoZSBib290bG9hZGVyIGlz
-IHVzaW5nIDExNTIwMCwgYW5kIHRoZSBlYXJseWNvbiBjb250aW51ZQp1c2UgMTE1MjAwLCBidXQg
-Y29uc29sZSByZXZlcnQgYmFjayB0byA5NjAwLgoKQmVmb3JlIHRoZSBjb21taXQsIHByb2JlZCBi
-YXVkIHJhdGUgaXMgcGFzc2VkIHZpYSBjb25zb2xlX2NtZGxpbmUKZnJvbSBlYXJseWNvbiB0byBu
-b3JtYWwgY29uc29sZS4KVGhhdCBjb21taXQgcmVtb3ZlIHRoYXQgYW5kIG9ubHkgY2hlY2sgYm9v
-dCBjb21tYW5kIGxpbmUuCgpUaGlzIHBhdGNoIHVzZSBwb3J0IG1hdGNoIHRvIGdldCBob2xkIGVh
-cmx5Y29uLCBhbmQgdXNlIGVhcmx5Y29uCmRldmljZSBvcHRpb25zIHRvIHVwZGF0ZSBvcHRpb25z
-IGZvciBjb25zb2xlLgoKV2l0aCB0aGF0IHdlIHJlc3RvcmUgdGhlIG9yaWdpbmFsIGJlaGF2aW9y
-LgoKRml4ZXM6IGNvbW1pdCBjN2NlZjBhODQ5MTIgKCJjb25zb2xlOiBBZGQgZXh0ZW5zaWJsZSBj
-b25zb2xlIG1hdGNoaW5nIikKU2lnbmVkLW9mZi1ieTogWWluZ2hhaSBMdSA8eWluZ2hhaUBrZXJu
-ZWwub3JnPgoKLS0tCi12Mjogc2ltcGxpZnkgc2VyaWFsODI1MF9nZXRfZWFybHljb25fb3B0aW9u
-cyBhbmQgZG9uJ3QgdXBkYXRlCiAgICAgY29uc29sZV9jbWRsaW5lLgotdjM6IGFkZCBlYXJseWNv
-bl9tYXRjaCB0byByZXN0b3JlIG9yaWdpbmFsIGJlaGF2aW9yLgotLS0KCi0tLQogZHJpdmVycy90
-dHkvc2VyaWFsLzgyNTAvODI1MF9jb3JlLmMgIHwgICAgMyArKysKIGRyaXZlcnMvdHR5L3Nlcmlh
-bC84MjUwLzgyNTBfZWFybHkuYyB8ICAgIDcgKysrKysrKwogZHJpdmVycy90dHkvc2VyaWFsL2Vh
-cmx5Y29uLmMgICAgICAgIHwgICAxNSArKysrKysrKysrKysrKysKIGluY2x1ZGUvbGludXgvc2Vy
-aWFsX2NvcmUuaCAgICAgICAgICB8ICAgIDIgKysKIDQgZmlsZXMgY2hhbmdlZCwgMjcgaW5zZXJ0
-aW9ucygrKQoKSW5kZXg6IGxpbnV4LTIuNi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2Nv
-cmUuYwo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09Ci0tLSBsaW51eC0yLjYub3JpZy9kcml2ZXJzL3R0eS9zZXJpYWwvODI1
-MC84MjUwX2NvcmUuYworKysgbGludXgtMi42L2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBf
-Y29yZS5jCkBAIC0zNDkwLDYgKzM0OTAsOSBAQCBzdGF0aWMgaW50IHVuaXY4MjUwX2NvbnNvbGVf
-bWF0Y2goc3RydWN0CiAJCWlmIChpb3R5cGUgPT0gVVBJT19QT1JUICYmIHBvcnQtPmlvYmFzZSAh
-PSBhZGRyKQogCQkJY29udGludWU7CiAKKwkJaWYgKCFlYXJseWNvbl9tYXRjaChwb3J0LCAmb3B0
-aW9ucykpCisJCQlyZXR1cm4gLUVOT0RFVjsKKwogCQljby0+aW5kZXggPSBpOwogCQlyZXR1cm4g
-dW5pdjgyNTBfY29uc29sZV9zZXR1cChjbywgb3B0aW9ucyk7CiAJfQpJbmRleDogbGludXgtMi42
-L2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZWFybHkuYwo9PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBsaW51
-eC0yLjYub3JpZy9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2Vhcmx5LmMKKysrIGxpbnV4
-LTIuNi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2Vhcmx5LmMKQEAgLTEwNSw2ICsxMDUs
-MTIgQEAgc3RhdGljIHZvaWQgX19pbml0IGVhcmx5X3NlcmlhbDgyNTBfd3JpdAogCQlzZXJpYWw4
-MjUwX2Vhcmx5X291dChwb3J0LCBVQVJUX0lFUiwgaWVyKTsKIH0KIAorc3RhdGljIGludCBzZXJp
-YWw4MjUwX2Vhcmx5Y29uX21hdGNoKHN0cnVjdCBlYXJseWNvbl9kZXZpY2UgKmRldmljZSwKKwkJ
-CQkgICAgIHN0cnVjdCB1YXJ0X3BvcnQgKnVwKQoreworCXJldHVybiB1YXJ0X21hdGNoX3BvcnQo
-dXAsICZkZXZpY2UtPnBvcnQpOworfQorCiBzdGF0aWMgdW5zaWduZWQgaW50IF9faW5pdCBwcm9i
-ZV9iYXVkKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiB7CiAJdW5zaWduZWQgY2hhciBsY3IsIGRs
-bCwgZGxtOwpAQCAtMTYxLDYgKzE2Nyw3IEBAIHN0YXRpYyBpbnQgX19pbml0IGVhcmx5X3Nlcmlh
-bDgyNTBfc2V0dXAKIAl9IGVsc2UKIAkJaW5pdF9wb3J0KGRldmljZSk7CiAKKwlkZXZpY2UtPm1h
-dGNoID0gc2VyaWFsODI1MF9lYXJseWNvbl9tYXRjaDsKIAlkZXZpY2UtPmNvbi0+d3JpdGUgPSBl
-YXJseV9zZXJpYWw4MjUwX3dyaXRlOwogCXJldHVybiAwOwogfQpJbmRleDogbGludXgtMi42L2Ry
-aXZlcnMvdHR5L3NlcmlhbC9lYXJseWNvbi5jCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGxpbnV4LTIuNi5vcmln
-L2RyaXZlcnMvdHR5L3NlcmlhbC9lYXJseWNvbi5jCisrKyBsaW51eC0yLjYvZHJpdmVycy90dHkv
-c2VyaWFsL2Vhcmx5Y29uLmMKQEAgLTEyNyw2ICsxMjcsMjEgQEAgc3RhdGljIGludCBfX2luaXQg
-cmVnaXN0ZXJfZWFybHljb24oY2hhcgogCXJldHVybiAwOwogfQogCitpbnQgZWFybHljb25fbWF0
-Y2goc3RydWN0IHVhcnRfcG9ydCAqdXAsIGNoYXIgKipvcHRpb25zX3ApCit7CisJc3RydWN0IGVh
-cmx5Y29uX2RldmljZSAqZGV2aWNlID0gJmVhcmx5X2NvbnNvbGVfZGV2OworCisJaWYgKCFkZXZp
-Y2UtPmNvbiB8fCAhKGRldmljZS0+Y29uLT5mbGFncyAmIENPTl9FTkFCTEVEKSkKKwkJcmV0dXJu
-IDA7CisKKwlpZiAoZGV2aWNlLT5tYXRjaCAmJiBkZXZpY2UtPm1hdGNoKGRldmljZSwgdXApKSB7
-CisJCSpvcHRpb25zX3AgPSBkZXZpY2UtPm9wdGlvbnM7CisJCXJldHVybiAxOworCX0KKworCXJl
-dHVybiAwOworfQorCiAvKioKICAqCXNldHVwX2Vhcmx5Y29uIC0gbWF0Y2ggYW5kIHJlZ2lzdGVy
-IGVhcmx5Y29uIGNvbnNvbGUKICAqCUBidWY6CWVhcmx5Y29uIHBhcmFtIHN0cmluZwpJbmRleDog
-bGludXgtMi42L2luY2x1ZGUvbGludXgvc2VyaWFsX2NvcmUuaAo9PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBsaW51
-eC0yLjYub3JpZy9pbmNsdWRlL2xpbnV4L3NlcmlhbF9jb3JlLmgKKysrIGxpbnV4LTIuNi9pbmNs
-dWRlL2xpbnV4L3NlcmlhbF9jb3JlLmgKQEAgLTMzNyw2ICszMzcsNyBAQCBzdHJ1Y3QgZWFybHlj
-b25fZGV2aWNlIHsKIAlzdHJ1Y3QgdWFydF9wb3J0IHBvcnQ7CiAJY2hhciBvcHRpb25zWzE2XTsJ
-CS8qIGUuZy4sIDExNTIwMG44ICovCiAJdW5zaWduZWQgaW50IGJhdWQ7CisJaW50ICgqbWF0Y2gp
-KHN0cnVjdCBlYXJseWNvbl9kZXZpY2UgKiwgc3RydWN0IHVhcnRfcG9ydCAqKTsKIH07CiAKIHN0
-cnVjdCBlYXJseWNvbl9pZCB7CkBAIC0zNDQsNiArMzQ1LDcgQEAgc3RydWN0IGVhcmx5Y29uX2lk
-IHsKIAlpbnQJKCpzZXR1cCkoc3RydWN0IGVhcmx5Y29uX2RldmljZSAqLCBjb25zdCBjaGFyICpv
-cHRpb25zKTsKIH07CiAKK2V4dGVybiBpbnQgZWFybHljb25fbWF0Y2goc3RydWN0IHVhcnRfcG9y
-dCAqdXAsIGNoYXIgKipvcHRpb25zX3ApOwogZXh0ZXJuIGludCBzZXR1cF9lYXJseWNvbihjaGFy
-ICpidWYpOwogZXh0ZXJuIGludCBvZl9zZXR1cF9lYXJseWNvbih1bnNpZ25lZCBsb25nIGFkZHIs
-CiAJCQkgICAgIGludCAoKnNldHVwKShzdHJ1Y3QgZWFybHljb25fZGV2aWNlICosIGNvbnN0IGNo
-YXIgKikpOwo=
---001a113e94b25ca1af0512ffd466--
+  Maciej
