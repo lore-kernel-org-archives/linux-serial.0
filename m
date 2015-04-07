@@ -1,27 +1,45 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH V2] tty: serial: Add const to struct uart_ops declarations
-Date: Tue, 7 Apr 2015 09:49:57 +0200
-Message-ID: <20150407074957.GA25696@distanz.ch>
-References: <1428169665.2775.53.camel@perches.com>
- <a938a0e86638588e5ccff85771fa3b95@agner.ch>
- <1428258294.2775.69.camel@perches.com>
+From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH] checkpatch: Add uart_ops to normally const structs
+Date: Tue, 7 Apr 2015 09:55:20 +0200
+Message-ID: <CALszF6CZTyo8e6Ywx5awbAmgJkCFNZcrkpxqkANS+QF_CxSd-A@mail.gmail.com>
+References: <1428080481-18591-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1428080481-18591-11-git-send-email-mcoquelin.stm32@gmail.com>
+	<1428083006.13180.35.camel@perches.com>
+	<1428169651.2775.51.camel@perches.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1428258294.2775.69.camel@perches.com>
+In-Reply-To: <1428169651.2775.51.camel@perches.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joe Perches <joe@perches.com>
-Cc: Stefan Agner <stefan@agner.ch>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-ia64@vger.kernel.org, kernel@stlinux.com, Nicolas Ferre <nicolas.ferre@atmel.com>, Timur Tabi <timur@tabi.org>, linux-kernel@vger.kernel.org, Pat Gefre <pfg@sgi.com>, Laxman Dewangan <ldewangan@nvidia.com>, "Maciej W. Rozycki" <macro@linux-mips.org>, Daniel Walker <dwalker@fifo99.com>, sparclinux@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>, Sonic Zhang <sonic.zhang@analog.com>, Alexandre Courbot <gnurou@gmail.com>, Russell King <linux@arm.linux.org.uk>, Michal Simek <michal.simek@xilinx.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, linux-arm-msm@vger.kernel.org, adi-buildroot-devel@lists.sourceforge.net, Thadeu Lima de Souza Cascardo <cascardo@linux.vnet.ibm.com>, linux-tegra
+Cc: Andrew Morton <akpm@linux-foundation.org>, Andy Whitcroft <apw@shadowen.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 2015-04-05 at 20:24:54 +0200, Joe Perches <joe@perches.com> wrote:
+Hi Joe,
 
-[...]
+2015-04-04 19:47 GMT+02:00 Joe Perches <joe@perches.com>:
+> Add another struct to the list of normally const struct types
+>
+> Signed-off-by: Joe Perches <joe@perches.com>
+> ---
+>
+> On Fri, 2015-04-03 at 10:43 -0700, Joe Perches wrote:
+>> On Fri, 2015-04-03 at 19:01 +0200, Maxime Coquelin wrote:
+>> > This drivers adds support to the STM32 USART controller, which is a
+>> > standard serial driver.
+>> trivia:
+>> > diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+>> []
+>> > +static struct uart_ops stm32_uart_ops = {
+>> could be const
+>> and it could be updated in a separate patch later too.
+>
+>  scripts/checkpatch.pl | 1 +
+>  1 file changed, 1 insertion(+)
+>
 
->  drivers/tty/serial/altera_jtaguart.c        | 2 +-
->  drivers/tty/serial/altera_uart.c            | 2 +-
+For what it's worth, you can add:
+Acked-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
 
-For these two drivers:
-
-Acked-by: Tobias Klauser <tklauser@distanz.ch>
+Regards,
+Maxime
