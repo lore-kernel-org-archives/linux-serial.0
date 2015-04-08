@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 12/13] serial: 8250_early: Use port->regshift
-Date: Wed,  8 Apr 2015 13:45:18 -0400
-Message-ID: <1428515119-25248-13-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 11/13] of: earlycon: Log more helpful message if earlycon not found
+Date: Wed,  8 Apr 2015 13:45:17 -0400
+Message-ID: <1428515119-25248-12-git-send-email-peter@hurleysoftware.com>
 References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
@@ -10,52 +10,29 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-earlycon initializes struct uart_port::regshift to the correct
-value for UPIO_MEM32 already. Use the port field rather than
-hard-coded value.
-
-This enables broader support for various i/o access methods in
-8250 earlycon (eg., omap8250 earlycon).
+Earlycon may fail to initialize for a variety of reasons, most of
+which log the default early param message. If the earlycon is
+not found, log the OF path which was not found (and suppress the
+default early param message).
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250_early.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/of/fdt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index 8e11968..1b5aca3 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -37,11 +37,13 @@
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 007c330..f55c77c 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -800,7 +800,8 @@ static int __init early_init_dt_scan_chosen_serial(void)
+ 		of_setup_earlycon(match, offset, options);
+ 		return 0;
+ 	}
+-	return -ENODEV;
++	pr_warn("earlycon: %.*s no match\n", (int)(q - p), p);
++	return 0;
+ }
  
- unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
- {
-+	offset <<= port->regshift;
-+
- 	switch (port->iotype) {
- 	case UPIO_MEM:
- 		return readb(port->membase + offset);
- 	case UPIO_MEM32:
--		return readl(port->membase + (offset << 2));
-+		return readl(port->membase + offset);
- 	case UPIO_PORT:
- 		return inb(port->iobase + offset);
- 	default:
-@@ -51,12 +53,14 @@ unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offse
- 
- void __weak __init serial8250_early_out(struct uart_port *port, int offset, int value)
- {
-+	offset <<= port->regshift;
-+
- 	switch (port->iotype) {
- 	case UPIO_MEM:
- 		writeb(value, port->membase + offset);
- 		break;
- 	case UPIO_MEM32:
--		writel(value, port->membase + (offset << 2));
-+		writel(value, port->membase + offset);
- 		break;
- 	case UPIO_PORT:
- 		outb(value, port->iobase + offset);
+ static int __init setup_of_earlycon(char *buf)
 -- 
 2.3.5
