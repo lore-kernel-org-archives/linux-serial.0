@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 09/13] serial: earlycon: Common log banner for command line and DT
-Date: Wed,  8 Apr 2015 13:45:15 -0400
-Message-ID: <1428515119-25248-10-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 06/13] of: earlycon: of_setup_earlycon() requires CONFIG_OF_EARLY_FLATTREE
+Date: Wed,  8 Apr 2015 13:45:12 -0400
+Message-ID: <1428515119-25248-7-git-send-email-peter@hurleysoftware.com>
 References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
@@ -10,59 +10,32 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Refactor the command line earlycon banner into earlycon_init() so
-both earlycon startup methods output an info banner.
+DT earlycon is only supported for CONFIG_OF_EARLY_FLATTREE=y; exclude
+of_setup_earlycon() if not defined.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/earlycon.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/tty/serial/earlycon.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 0d8f187..7c61581 100644
+index 46f39c9..96e3ad1 100644
 --- a/drivers/tty/serial/earlycon.c
 +++ b/drivers/tty/serial/earlycon.c
-@@ -61,6 +61,7 @@ static void __init earlycon_init(struct earlycon_device *device,
- 				 const char *name)
- {
- 	struct console *earlycon = device->con;
-+	struct uart_port *port = &device->port;
- 	const char *s;
- 	size_t len;
- 
-@@ -74,6 +75,16 @@ static void __init earlycon_init(struct earlycon_device *device,
- 	len = s - name;
- 	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
- 	earlycon->data = &early_console_dev;
-+
-+	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
-+		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
-+			(port->iotype == UPIO_MEM32) ? "32" : "",
-+			(unsigned long long)port->mapbase,
-+			device->options);
-+	else
-+		pr_info("Early serial console at I/O port 0x%lx (options '%s')\n",
-+			port->iobase,
-+			device->options);
+@@ -209,6 +209,8 @@ static int __init param_setup_earlycon(char *buf)
  }
+ early_param("earlycon", param_setup_earlycon);
  
- static int __init parse_options(struct earlycon_device *device, char *options)
-@@ -105,16 +116,6 @@ static int __init parse_options(struct earlycon_device *device, char *options)
- 		strlcpy(device->options, options, length);
- 	}
- 
--	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
--		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
--			(port->iotype == UPIO_MEM32) ? "32" : "",
--			(unsigned long long)port->mapbase,
--			device->options);
--	else
--		pr_info("Early serial console at I/O port 0x%lx (options '%s')\n",
--			port->iobase,
--			device->options);
--
++#ifdef CONFIG_OF_EARLY_FLATTREE
++
+ int __init of_setup_earlycon(unsigned long addr,
+ 			     const struct earlycon_id *match,
+ 			     const char *options)
+@@ -236,3 +238,5 @@ int __init of_setup_earlycon(unsigned long addr,
+ 	register_console(early_console_dev.con);
  	return 0;
  }
- 
++
++#endif /* CONFIG_OF_EARLY_FLATTREE */
 -- 
 2.3.5
