@@ -1,67 +1,58 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH v3 01/13] of: earlycon: Fix 'stdout-path' with ':' path terminator
-Date: Wed, 8 Apr 2015 16:24:04 -0500
-Message-ID: <CAL_JsqLvKVDTD9-ees=gynVD2WDtEPGAa+XPCCpkX9ydaAVyTw@mail.gmail.com>
-References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com> <1428515119-25248-2-git-send-email-peter@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: console=ttyS1 breaks ttyS1 termios and prevents me from logging
+ in
+Date: Wed, 08 Apr 2015 17:29:21 -0400
+Message-ID: <55259DB1.4080104@hurleysoftware.com>
+References: <CALCETrVHeApB0_GxMkc88Giq6vLMpOz+wdZLmwhK7Ytumh2y6g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1428515119-25248-2-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <CALCETrVHeApB0_GxMkc88Giq6vLMpOz+wdZLmwhK7Ytumh2y6g@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Leif Lindholm <leif.lindholm@linaro.org>
+To: Andy Lutomirski <luto@amacapital.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Theodore Ts'o <tytso@mit.edu>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Apr 8, 2015 at 12:45 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> stdout-path defines ':' as a path terminator and commit 75c28c09af99a
-> ("of: add optional options parameter to of_find_node_by_path()") added
-> the necessary support to parse paths terminated with ':'.
-> commit 7914a7c5651a5 ("of: support passing console options with
-> stdout-path") added options string support to the stdout-path property,
-> which broke earlycon.
->
-> Add the same support to earlycon to process 'stdout-path' properties
-> which contain an options string.
->
-> Requires: "libfdt: Add fdt_path_offset_namelen()"
+Hi Andy,
 
-Since David has applied this, we can cherrypick that commit for the
-kernel copy. Ideally, we would do a dtc sync, but it's not going to
-happen for 4.1.
+On 04/08/2015 05:17 PM, Andy Lutomirski wrote:
+> Something strange seems to have happened to my serial console setup.
+> I boot with console=ttyS1,115200n8 and I have a getty running on
+> /dev/ttyS1.
+> 
+> On older kernels, or if I remove the console= boot parameter, then my
+> getty works fine.  On 3.19.3 with the console= parameter, something's
+> wrong with termios and I can't log in.  Running:
 
-Rob
+Thanks for the report.
+1. Please attach your dmesg.
+2. Is this behavior new to 3.19.3? (iow, what was the last version
+   that you noticed didn't do this)
 
-> Cc: Leif Lindholm <leif.lindholm@linaro.org>
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/of/fdt.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index 3a896c9..7cef9f9 100644
-> --- a/drivers/of/fdt.c
-> +++ b/drivers/of/fdt.c
-> @@ -765,7 +765,7 @@ extern struct of_device_id __earlycon_of_table[];
->  static int __init early_init_dt_scan_chosen_serial(void)
->  {
->         int offset;
-> -       const char *p;
-> +       const char *p, *q;
->         int l;
->         const struct of_device_id *match = __earlycon_of_table;
->         const void *fdt = initial_boot_params;
-> @@ -782,8 +782,10 @@ static int __init early_init_dt_scan_chosen_serial(void)
->         if (!p || !l)
->                 return -ENOENT;
->
-> +       q = strchrnul(p, ':');
-> +
->         /* Get the node specified by stdout-path */
-> -       offset = fdt_path_offset(fdt, p);
-> +       offset = fdt_path_offset_namelen(fdt, p, (int)(q - p));
->         if (offset < 0)
->                 return -ENODEV;
->
-> --
-> 2.3.5
->
+Regards,
+Peter Hurley
+
+> # stty icanon </dev/ttyS1
+> 
+> breaks line this (partial strace results included):
+> 
+> ioctl(0, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or
+> TCGETS, {B115200 opost -isig -icanon -echo ...}) = 0
+> ioctl(0, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or
+> TCGETS, {B115200 opost -isig -icanon -echo ...}) = 0
+> ioctl(0, SNDCTL_TMR_STOP or SNDRV_TIMER_IOCTL_GINFO or TCSETSW,
+> {B115200 opost -isig icanon -echo ...}) = 0
+> ioctl(0, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or
+> TCGETS, {B115200 opost -isig -icanon -echo ...}) = 0
+> ioctl(0, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or
+> TCGETS, {B115200 opost -isig -icanon -echo ...}) = 0
+> write(2, "stty: ", 6stty: )                   = 6
+> write(2, "standard input: unable to perfor"..., 58standard input:
+> unable to perform all requested operations) = 58
+> 
+> IOW, the setting didn't stick.  On the bad kernel, stty works just
+> fine on ttyS0.  If I switch to using console=ttyS0,115200, then stty
+> works on ttyS1 and fails on ttyS0.
+> 
+> I have no idea what's going on here.  I have two apparently identical
+> boxes.  One of them has this problem and the other doesn't.
