@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 11/13] of: earlycon: Log more helpful message if earlycon not found
-Date: Wed,  8 Apr 2015 13:45:17 -0400
-Message-ID: <1428515119-25248-12-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 10/13] serial: earlycon: Show the earlycon "driver" in banner
+Date: Wed,  8 Apr 2015 13:45:16 -0400
+Message-ID: <1428515119-25248-11-git-send-email-peter@hurleysoftware.com>
 References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
@@ -10,29 +10,36 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Earlycon may fail to initialize for a variety of reasons, most of
-which log the default early param message. If the earlycon is
-not found, log the OF path which was not found (and suppress the
-default early param message).
+Output the earlycon "driver" from the just-parsed console 'name'
+and 'index' fields.
 
+NB: ->mapbase is a resource_size_t so use %pa format specifier
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/of/fdt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/earlycon.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 007c330..f55c77c 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -800,7 +800,8 @@ static int __init early_init_dt_scan_chosen_serial(void)
- 		of_setup_earlycon(match, offset, options);
- 		return 0;
- 	}
--	return -ENODEV;
-+	pr_warn("earlycon: %.*s no match\n", (int)(q - p), p);
-+	return 0;
- }
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 7c61581..9834afc 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -77,12 +77,14 @@ static void __init earlycon_init(struct earlycon_device *device,
+ 	earlycon->data = &early_console_dev;
  
- static int __init setup_of_earlycon(char *buf)
+ 	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
+-		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
++		pr_info("%s%d at MMIO%s %pa (options '%s')\n",
++			earlycon->name, earlycon->index,
+ 			(port->iotype == UPIO_MEM32) ? "32" : "",
+-			(unsigned long long)port->mapbase,
++			&port->mapbase,
+ 			device->options);
+ 	else
+-		pr_info("Early serial console at I/O port 0x%lx (options '%s')\n",
++		pr_info("%s%d at I/O port 0x%lx (options '%s')\n",
++			earlycon->name, earlycon->index,
+ 			port->iobase,
+ 			device->options);
+ }
 -- 
 2.3.5
