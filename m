@@ -1,34 +1,91 @@
-From: Pramod Gurav <gpramod@codeaurora.org>
-Subject: [PATCH v2 2/2] tty: serial: msm: Disable pclk when port is closed
-Date: Wed,  8 Apr 2015 18:58:53 +0530
-Message-ID: <1428499733-21963-2-git-send-email-gpramod@codeaurora.org>
-References: <1428499733-21963-1-git-send-email-gpramod@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1428499733-21963-1-git-send-email-gpramod@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, bryanh@codeaurora.org, sboyd@codeaurora.org, jslaby@suse.cz, Pramod Gurav <gpramod@codeaurora.org>
+From: Andre Przywara <andre.przywara@arm.com>
+Subject: Re: [PATCH v2 01/10] drivers: PL011: avoid potential unregister_driver
+ call
+Date: Wed, 08 Apr 2015 16:39:03 +0100
+Message-ID: <55254B97.6050704@arm.com>
+References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
+ <1425491994-23913-2-git-send-email-andre.przywara@arm.com>
+ <20150312104258.GI8656@n2100.arm.linux.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20150312104258.GI8656@n2100.arm.linux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: "rob.herring@linaro.org" <rob.herring@linaro.org>, "arnd@arndb.de" <arnd@arndb.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Disable the pclk when tty port is closed by user space.
+Hi Russell,
 
-Signed-off-by: Pramod Gurav <gpramod@codeaurora.org>
----
- drivers/tty/serial/msm_serial.c | 1 +
- 1 file changed, 1 insertion(+)
+On 12/03/15 10:42, Russell King - ARM Linux wrote:
+> On Wed, Mar 04, 2015 at 05:59:45PM +0000, Andre Przywara wrote:
+>> Although we care about not unregistering the driver if there are
+>> still ports connected during the .remove callback, we do miss this
+>> check in the pl011_probe function. So if the current port allocation
+>> fails, but there are other ports already registered, we will kill
+>> those.
+>> So factor out the port removal into a separate function and use that
+>> in the probe function, too.
+>>
+>> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+>> ---
+>>  drivers/tty/serial/amba-pl011.c |   38 +++++++++++++++++++++-----------------
+>>  1 file changed, 21 insertions(+), 17 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+>> index 92783fc..961f9b0 100644
+>> --- a/drivers/tty/serial/amba-pl011.c
+>> +++ b/drivers/tty/serial/amba-pl011.c
+>> @@ -2235,6 +2235,24 @@ static int pl011_probe_dt_alias(int index, struct device *dev)
+>>  	return ret;
+>>  }
+>>  
+>> +/* unregisters the driver also if no more ports are left */
+>> +static void pl011_unregister_port(struct uart_amba_port *uap)
+>> +{
+>> +	int i;
+>> +	bool busy = false;
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
+>> +		if (amba_ports[i] == uap)
+>> +			amba_ports[i] = NULL;
+>> +		else if (amba_ports[i])
+>> +			busy = true;
+>> +	}
+>> +	pl011_dma_remove(uap);
+>> +	if (!busy)
+>> +		uart_unregister_driver(&amba_reg);
+>> +}
+> 
+> This is still racy, as I pointed out at the time this crap was dreamt
+> up.
+> 
+> There is _no_ locking between an individual driver's ->probe or ->remove
+> functions being called concurrently for different devices.  The only
+> locking which the driver model guarantees is that a single struct device
+> can only be probed by one driver at a time.
+> 
+> Multiple struct device's can be in-progress of ->probe or ->remove
+> simultaneously.
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 4c1e9ea..f38565c 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -523,6 +523,7 @@ static void msm_shutdown(struct uart_port *port)
- 	msm_write(port, 0, UART_IMR); /* disable interrupts */
- 
- 	clk_disable_unprepare(msm_port->clk);
-+	clk_disable_unprepare(msm_port->pclk);
- 
- 	free_irq(port->irq, port);
- }
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+OK, I see.
+
+> However, this isn't your bug to solve... it's those who were proponents
+> of this crap approach.
+
+Does that mean you want me to drop this patch? It isn't strictly
+necessary for my series. So do you want to postpone a fix until later
+when there is a real solution (tm) for this issue or shall I include
+this still in my series for fixing at least half of the issue?
+
+Thanks,
+Andre.
