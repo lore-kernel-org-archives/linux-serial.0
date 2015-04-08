@@ -1,79 +1,97 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 00/13] Earlycon cleanup
-Date: Wed,  8 Apr 2015 13:45:06 -0400
-Message-ID: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v3 05/13] of: earlycon: Add options string handling
+Date: Wed,  8 Apr 2015 13:45:11 -0400
+Message-ID: <1428515119-25248-6-git-send-email-peter@hurleysoftware.com>
+References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg, Grant & Rob,
+Pass-through any options string in the 'stdout-path' property to the
+earlycon "driver" setup.
 
-This patch series builds on my earlier "Extensible console matching &
-direct earlycon" to add several useful features to earlycon:
-* Proper port i/o configuration from DT node with of_serial properties
-  (such as reg-io-width, reg-shift and reg-offset)
-* Proper console name & index initialization from earlycon name
-  (for both command line and DT-defined earlycons)
-* Support for DT 'stdout-path' options pass-through to earlycon setup
-* Improved log messages for troubleshooting
-* Support for multiple OF earlycon declarations so different
-  compatible strings can specify the same OF earlycon
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/of/fdt.c              | 6 ++++--
+ drivers/tty/serial/earlycon.c | 9 +++++++--
+ include/linux/serial_core.h   | 3 ++-
+ 3 files changed, 13 insertions(+), 5 deletions(-)
 
-* Changes from v1 *
-
-- Rebase on top of device-tree compiler patch submission,
-  "libfdt: Add fdt_path_offset_namelen()"
-- Fixed x86 build breakage, conditionally compile of_setup_earlycon();
-  Note: this should have already been the case since of_setup_earlycon()
-  is dead code without CONFIG_OF_EARLY_FLATTREE
-- Fixed Geert's suggestion to change the printf specifier for ->mapbase
-- Fixed initial console index value for earlycon name without trailing
-  numerals
-
-* Changes from v2 *
-
-- All earlycon declarations are now in a single table, with a common
-  framework for devicetree and command line earlycons
-
-
-Requires: 1) "libfdt: Add fdt_path_offset_namelen()" -- now in
-	     upstream dtc
-	  2) the last patch which adds omap8250 earlycon requires some
-	     kind of fixmap support, such as "ARM: early fixmap support
-	     for earlycon", which has not yet been accepted upstream.
-
-Regards,
-
-Peter Hurley (13):
-  of: earlycon: Fix 'stdout-path' with ':' path terminator
-  earlycon: Use common framework for earlycon declarations
-  serial: earlycon: Fixup earlycon console name and index
-  of: earlycon: Fixup earlycon console name and index
-  of: earlycon: Add options string handling
-  of: earlycon: of_setup_earlycon() requires CONFIG_OF_EARLY_FLATTREE
-  of: earlycon: Initialize port fields from DT properties
-  of: earlycon: Move address translation to of_setup_earlycon()
-  serial: earlycon: Common log banner for command line and DT
-  serial: earlycon: Show the earlycon "driver" in banner
-  of: earlycon: Log more helpful message if earlycon not found
-  serial: 8250_early: Use port->regshift
-  serial: 8250_omap: Add omap8250 earlycon
-
- drivers/of/fdt.c                     |  28 ++++-----
- drivers/of/fdt_address.c             |  11 +++-
- drivers/tty/serial/8250/8250_early.c |  29 +++++++++-
- drivers/tty/serial/amba-pl011.c      |   1 -
- drivers/tty/serial/arc_uart.c        |   1 -
- drivers/tty/serial/earlycon.c        | 109 ++++++++++++++++++++++++++---------
- drivers/tty/serial/msm_serial.c      |   2 -
- drivers/tty/serial/samsung.c         |   6 --
- drivers/tty/serial/sprd_serial.c     |   2 -
- include/asm-generic/vmlinux.lds.h    |   8 +--
- include/linux/of_fdt.h               |   2 +-
- include/linux/serial_core.h          |  25 ++++----
- 12 files changed, 151 insertions(+), 73 deletions(-)
-
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 89fc70c..e0b8013 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -764,7 +764,7 @@ static inline void early_init_dt_check_for_initrd(unsigned long node)
+ static int __init early_init_dt_scan_chosen_serial(void)
+ {
+ 	int offset;
+-	const char *p, *q;
++	const char *p, *q, *options = NULL;
+ 	int l;
+ 	const struct earlycon_id *match;
+ 	const void *fdt = initial_boot_params;
+@@ -782,6 +782,8 @@ static int __init early_init_dt_scan_chosen_serial(void)
+ 		return -ENOENT;
+ 
+ 	q = strchrnul(p, ':');
++	if (*q != '\0')
++		options = q + 1;
+ 
+ 	/* Get the node specified by stdout-path */
+ 	offset = fdt_path_offset_namelen(fdt, p, (int)(q - p));
+@@ -801,7 +803,7 @@ static int __init early_init_dt_scan_chosen_serial(void)
+ 		if (!addr)
+ 			return -ENXIO;
+ 
+-		of_setup_earlycon(addr, match);
++		of_setup_earlycon(addr, match, options);
+ 		return 0;
+ 	}
+ 	return -ENODEV;
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 1cb2864..46f39c9 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -210,7 +210,8 @@ static int __init param_setup_earlycon(char *buf)
+ early_param("earlycon", param_setup_earlycon);
+ 
+ int __init of_setup_earlycon(unsigned long addr,
+-			     const struct earlycon_id *match)
++			     const struct earlycon_id *match,
++			     const char *options)
+ {
+ 	int err;
+ 	struct uart_port *port = &early_console_dev.port;
+@@ -220,8 +221,12 @@ int __init of_setup_earlycon(unsigned long addr,
+ 	port->uartclk = BASE_BAUD * 16;
+ 	port->membase = earlycon_map(addr, SZ_4K);
+ 
++	if (options) {
++		strlcpy(early_console_dev.options, options,
++			sizeof(early_console_dev.options));
++	}
+ 	earlycon_init(&early_console_dev, match->name);
+-	err = match->setup(&early_console_dev, NULL);
++	err = match->setup(&early_console_dev, options);
+ 	if (err < 0)
+ 		return err;
+ 	if (!early_console_dev.con->write)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 63662e8..3cc5e42 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -358,7 +358,8 @@ extern const struct earlycon_id __earlycon_table_end[];
+ #define EARLYCON_DECLARE(_name, fn)	OF_EARLYCON_DECLARE(_name, "", fn)
+ 
+ extern int setup_earlycon(char *buf);
+-extern int of_setup_earlycon(unsigned long addr, const struct earlycon_id *match);
++extern int of_setup_earlycon(unsigned long addr, const struct earlycon_id *match,
++			     const char *options);
+ 
+ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 				   struct console *c);
 -- 
 2.3.5
