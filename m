@@ -1,43 +1,87 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH V3 5/7] serial: earlycon: Set UPIO_MEM32BE based on DT
- properties
-Date: Wed, 08 Apr 2015 13:56:33 -0400
-Message-ID: <55256BD1.4040604@hurleysoftware.com>
-References: <1416872182-6440-1-git-send-email-cernekee@gmail.com> <1416872182-6440-6-git-send-email-cernekee@gmail.com> <54F3914F.3080905@hurleysoftware.com> <20150328013604.488A0C4091F@trevor.secretlab.ca> <5516DE64.6000104@hurleysoftware.com> <CAJiQ=7AS5+HkHcjRsYKi-EHVc3F1fg3Zp=1fCor1HrKeSWU72Q@mail.gmail.com> <551D6208.2060009@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 00/13] Earlycon cleanup
+Date: Wed, 08 Apr 2015 14:07:04 -0400
+Message-ID: <55256E48.7030806@hurleysoftware.com>
+References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <551D6208.2060009-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MIPS Mailing List <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kevin,
-
-On 04/02/2015 11:36 AM, Peter Hurley wrote:
-> On 03/28/2015 03:28 PM, Kevin Cernekee wrote:
->> Hi Peter,
->>
->> This is my latest work-in-progress, incorporating the feedback from
->> you and Grant:
->>
->> https://github.com/cernekee/linux/commits/endian
->>
->> Not sure if this code plays nice with your recent cleanups?  If we're
->> touching the same files/functions we should probably coordinate.
+On 04/08/2015 01:45 PM, Peter Hurley wrote:
+> Hi Greg, Grant & Rob,
 > 
-> Ok, I'll look over your git tree and add whatever's required to
-> earlycon.
+> This patch series builds on my earlier "Extensible console matching &
+> direct earlycon" to add several useful features to earlycon:
+> * Proper port i/o configuration from DT node with of_serial properties
+>   (such as reg-io-width, reg-shift and reg-offset)
+> * Proper console name & index initialization from earlycon name
+>   (for both command line and DT-defined earlycons)
+> * Support for DT 'stdout-path' options pass-through to earlycon setup
+> * Improved log messages for troubleshooting
+> * Support for multiple OF earlycon declarations so different
+>   compatible strings can specify the same OF earlycon
+> 
+> * Changes from v1 *
+> 
+> - Rebase on top of device-tree compiler patch submission,
+>   "libfdt: Add fdt_path_offset_namelen()"
+> - Fixed x86 build breakage, conditionally compile of_setup_earlycon();
+>   Note: this should have already been the case since of_setup_earlycon()
+>   is dead code without CONFIG_OF_EARLY_FLATTREE
+> - Fixed Geert's suggestion to change the printf specifier for ->mapbase
+> - Fixed initial console index value for earlycon name without trailing
+>   numerals
+> 
+> * Changes from v2 *
+> 
+> - All earlycon declarations are now in a single table, with a common
+>   framework for devicetree and command line earlycons
+> 
+> 
+> Requires: 1) "libfdt: Add fdt_path_offset_namelen()" -- now in
+> 	     upstream dtc
 
-Could you submit the first 5 patches from your 'endian' branch, so
-that big-endian support can be added to earlycon?
+also requires "earlycon: Fix __earlycon_table stride"
 
-Regards,
-Peter Hurley
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 	  2) the last patch which adds omap8250 earlycon requires some
+> 	     kind of fixmap support, such as "ARM: early fixmap support
+> 	     for earlycon", which has not yet been accepted upstream.
+> 
+> Regards,
+> 
+> Peter Hurley (13):
+>   of: earlycon: Fix 'stdout-path' with ':' path terminator
+>   earlycon: Use common framework for earlycon declarations
+>   serial: earlycon: Fixup earlycon console name and index
+>   of: earlycon: Fixup earlycon console name and index
+>   of: earlycon: Add options string handling
+>   of: earlycon: of_setup_earlycon() requires CONFIG_OF_EARLY_FLATTREE
+>   of: earlycon: Initialize port fields from DT properties
+>   of: earlycon: Move address translation to of_setup_earlycon()
+>   serial: earlycon: Common log banner for command line and DT
+>   serial: earlycon: Show the earlycon "driver" in banner
+>   of: earlycon: Log more helpful message if earlycon not found
+>   serial: 8250_early: Use port->regshift
+>   serial: 8250_omap: Add omap8250 earlycon
+> 
+>  drivers/of/fdt.c                     |  28 ++++-----
+>  drivers/of/fdt_address.c             |  11 +++-
+>  drivers/tty/serial/8250/8250_early.c |  29 +++++++++-
+>  drivers/tty/serial/amba-pl011.c      |   1 -
+>  drivers/tty/serial/arc_uart.c        |   1 -
+>  drivers/tty/serial/earlycon.c        | 109 ++++++++++++++++++++++++++---------
+>  drivers/tty/serial/msm_serial.c      |   2 -
+>  drivers/tty/serial/samsung.c         |   6 --
+>  drivers/tty/serial/sprd_serial.c     |   2 -
+>  include/asm-generic/vmlinux.lds.h    |   8 +--
+>  include/linux/of_fdt.h               |   2 +-
+>  include/linux/serial_core.h          |  25 ++++----
+>  12 files changed, 151 insertions(+), 73 deletions(-)
+> 
