@@ -1,91 +1,79 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: Re: [PATCH v2 01/10] drivers: PL011: avoid potential unregister_driver
- call
-Date: Wed, 08 Apr 2015 16:39:03 +0100
-Message-ID: <55254B97.6050704@arm.com>
-References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
- <1425491994-23913-2-git-send-email-andre.przywara@arm.com>
- <20150312104258.GI8656@n2100.arm.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150312104258.GI8656@n2100.arm.linux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: "rob.herring@linaro.org" <rob.herring@linaro.org>, "arnd@arndb.de" <arnd@arndb.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v3 00/13] Earlycon cleanup
+Date: Wed,  8 Apr 2015 13:45:06 -0400
+Message-ID: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Russell,
+Hi Greg, Grant & Rob,
 
-On 12/03/15 10:42, Russell King - ARM Linux wrote:
-> On Wed, Mar 04, 2015 at 05:59:45PM +0000, Andre Przywara wrote:
->> Although we care about not unregistering the driver if there are
->> still ports connected during the .remove callback, we do miss this
->> check in the pl011_probe function. So if the current port allocation
->> fails, but there are other ports already registered, we will kill
->> those.
->> So factor out the port removal into a separate function and use that
->> in the probe function, too.
->>
->> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
->> ---
->>  drivers/tty/serial/amba-pl011.c |   38 +++++++++++++++++++++-----------------
->>  1 file changed, 21 insertions(+), 17 deletions(-)
->>
->> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
->> index 92783fc..961f9b0 100644
->> --- a/drivers/tty/serial/amba-pl011.c
->> +++ b/drivers/tty/serial/amba-pl011.c
->> @@ -2235,6 +2235,24 @@ static int pl011_probe_dt_alias(int index, struct device *dev)
->>  	return ret;
->>  }
->>  
->> +/* unregisters the driver also if no more ports are left */
->> +static void pl011_unregister_port(struct uart_amba_port *uap)
->> +{
->> +	int i;
->> +	bool busy = false;
->> +
->> +	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
->> +		if (amba_ports[i] == uap)
->> +			amba_ports[i] = NULL;
->> +		else if (amba_ports[i])
->> +			busy = true;
->> +	}
->> +	pl011_dma_remove(uap);
->> +	if (!busy)
->> +		uart_unregister_driver(&amba_reg);
->> +}
-> 
-> This is still racy, as I pointed out at the time this crap was dreamt
-> up.
-> 
-> There is _no_ locking between an individual driver's ->probe or ->remove
-> functions being called concurrently for different devices.  The only
-> locking which the driver model guarantees is that a single struct device
-> can only be probed by one driver at a time.
-> 
-> Multiple struct device's can be in-progress of ->probe or ->remove
-> simultaneously.
+This patch series builds on my earlier "Extensible console matching &
+direct earlycon" to add several useful features to earlycon:
+* Proper port i/o configuration from DT node with of_serial properties
+  (such as reg-io-width, reg-shift and reg-offset)
+* Proper console name & index initialization from earlycon name
+  (for both command line and DT-defined earlycons)
+* Support for DT 'stdout-path' options pass-through to earlycon setup
+* Improved log messages for troubleshooting
+* Support for multiple OF earlycon declarations so different
+  compatible strings can specify the same OF earlycon
 
-OK, I see.
+* Changes from v1 *
 
-> However, this isn't your bug to solve... it's those who were proponents
-> of this crap approach.
+- Rebase on top of device-tree compiler patch submission,
+  "libfdt: Add fdt_path_offset_namelen()"
+- Fixed x86 build breakage, conditionally compile of_setup_earlycon();
+  Note: this should have already been the case since of_setup_earlycon()
+  is dead code without CONFIG_OF_EARLY_FLATTREE
+- Fixed Geert's suggestion to change the printf specifier for ->mapbase
+- Fixed initial console index value for earlycon name without trailing
+  numerals
 
-Does that mean you want me to drop this patch? It isn't strictly
-necessary for my series. So do you want to postpone a fix until later
-when there is a real solution (tm) for this issue or shall I include
-this still in my series for fixing at least half of the issue?
+* Changes from v2 *
 
-Thanks,
-Andre.
+- All earlycon declarations are now in a single table, with a common
+  framework for devicetree and command line earlycons
+
+
+Requires: 1) "libfdt: Add fdt_path_offset_namelen()" -- now in
+	     upstream dtc
+	  2) the last patch which adds omap8250 earlycon requires some
+	     kind of fixmap support, such as "ARM: early fixmap support
+	     for earlycon", which has not yet been accepted upstream.
+
+Regards,
+
+Peter Hurley (13):
+  of: earlycon: Fix 'stdout-path' with ':' path terminator
+  earlycon: Use common framework for earlycon declarations
+  serial: earlycon: Fixup earlycon console name and index
+  of: earlycon: Fixup earlycon console name and index
+  of: earlycon: Add options string handling
+  of: earlycon: of_setup_earlycon() requires CONFIG_OF_EARLY_FLATTREE
+  of: earlycon: Initialize port fields from DT properties
+  of: earlycon: Move address translation to of_setup_earlycon()
+  serial: earlycon: Common log banner for command line and DT
+  serial: earlycon: Show the earlycon "driver" in banner
+  of: earlycon: Log more helpful message if earlycon not found
+  serial: 8250_early: Use port->regshift
+  serial: 8250_omap: Add omap8250 earlycon
+
+ drivers/of/fdt.c                     |  28 ++++-----
+ drivers/of/fdt_address.c             |  11 +++-
+ drivers/tty/serial/8250/8250_early.c |  29 +++++++++-
+ drivers/tty/serial/amba-pl011.c      |   1 -
+ drivers/tty/serial/arc_uart.c        |   1 -
+ drivers/tty/serial/earlycon.c        | 109 ++++++++++++++++++++++++++---------
+ drivers/tty/serial/msm_serial.c      |   2 -
+ drivers/tty/serial/samsung.c         |   6 --
+ drivers/tty/serial/sprd_serial.c     |   2 -
+ include/asm-generic/vmlinux.lds.h    |   8 +--
+ include/linux/of_fdt.h               |   2 +-
+ include/linux/serial_core.h          |  25 ++++----
+ 12 files changed, 151 insertions(+), 73 deletions(-)
+
+-- 
+2.3.5
