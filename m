@@ -1,98 +1,46 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH v2 01/10] drivers: PL011: avoid potential
- unregister_driver call
-Date: Wed, 8 Apr 2015 19:14:07 +0100
-Message-ID: <20150408181407.GR12732@n2100.arm.linux.org.uk>
-References: <1425491994-23913-1-git-send-email-andre.przywara@arm.com>
- <1425491994-23913-2-git-send-email-andre.przywara@arm.com>
- <20150312104258.GI8656@n2100.arm.linux.org.uk>
- <55254B97.6050704@arm.com>
+From: Andy Lutomirski <luto@amacapital.net>
+Subject: console=ttyS1 breaks ttyS1 termios and prevents me from logging in
+Date: Wed, 8 Apr 2015 14:17:35 -0700
+Message-ID: <CALCETrVHeApB0_GxMkc88Giq6vLMpOz+wdZLmwhK7Ytumh2y6g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <55254B97.6050704@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: "rob.herring@linaro.org" <rob.herring@linaro.org>, "arnd@arndb.de" <arnd@arndb.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Theodore Ts'o <tytso@mit.edu>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Apr 08, 2015 at 04:39:03PM +0100, Andre Przywara wrote:
-> Hi Russell,
-> 
-> On 12/03/15 10:42, Russell King - ARM Linux wrote:
-> > On Wed, Mar 04, 2015 at 05:59:45PM +0000, Andre Przywara wrote:
-> >> Although we care about not unregistering the driver if there are
-> >> still ports connected during the .remove callback, we do miss this
-> >> check in the pl011_probe function. So if the current port allocation
-> >> fails, but there are other ports already registered, we will kill
-> >> those.
-> >> So factor out the port removal into a separate function and use that
-> >> in the probe function, too.
-> >>
-> >> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> >> ---
-> >>  drivers/tty/serial/amba-pl011.c |   38 +++++++++++++++++++++-----------------
-> >>  1 file changed, 21 insertions(+), 17 deletions(-)
-> >>
-> >> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> >> index 92783fc..961f9b0 100644
-> >> --- a/drivers/tty/serial/amba-pl011.c
-> >> +++ b/drivers/tty/serial/amba-pl011.c
-> >> @@ -2235,6 +2235,24 @@ static int pl011_probe_dt_alias(int index, struct device *dev)
-> >>  	return ret;
-> >>  }
-> >>  
-> >> +/* unregisters the driver also if no more ports are left */
-> >> +static void pl011_unregister_port(struct uart_amba_port *uap)
-> >> +{
-> >> +	int i;
-> >> +	bool busy = false;
-> >> +
-> >> +	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
-> >> +		if (amba_ports[i] == uap)
-> >> +			amba_ports[i] = NULL;
-> >> +		else if (amba_ports[i])
-> >> +			busy = true;
-> >> +	}
-> >> +	pl011_dma_remove(uap);
-> >> +	if (!busy)
-> >> +		uart_unregister_driver(&amba_reg);
-> >> +}
-> > 
-> > This is still racy, as I pointed out at the time this crap was dreamt
-> > up.
-> > 
-> > There is _no_ locking between an individual driver's ->probe or ->remove
-> > functions being called concurrently for different devices.  The only
-> > locking which the driver model guarantees is that a single struct device
-> > can only be probed by one driver at a time.
-> > 
-> > Multiple struct device's can be in-progress of ->probe or ->remove
-> > simultaneously.
-> 
-> OK, I see.
-> 
-> > However, this isn't your bug to solve... it's those who were proponents
-> > of this crap approach.
-> 
-> Does that mean you want me to drop this patch? It isn't strictly
-> necessary for my series. So do you want to postpone a fix until later
-> when there is a real solution (tm) for this issue or shall I include
-> this still in my series for fixing at least half of the issue?
+Something strange seems to have happened to my serial console setup.
+I boot with console=ttyS1,115200n8 and I have a getty running on
+/dev/ttyS1.
 
-Sorry, it's been way too long since my mail was sent, I've lost all
-context about it.
+On older kernels, or if I remove the console= boot parameter, then my
+getty works fine.  On 3.19.3 with the console= parameter, something's
+wrong with termios and I can't log in.  Running:
 
--- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
+# stty icanon </dev/ttyS1
+
+breaks line this (partial strace results included):
+
+ioctl(0, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or
+TCGETS, {B115200 opost -isig -icanon -echo ...}) = 0
+ioctl(0, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or
+TCGETS, {B115200 opost -isig -icanon -echo ...}) = 0
+ioctl(0, SNDCTL_TMR_STOP or SNDRV_TIMER_IOCTL_GINFO or TCSETSW,
+{B115200 opost -isig icanon -echo ...}) = 0
+ioctl(0, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or
+TCGETS, {B115200 opost -isig -icanon -echo ...}) = 0
+ioctl(0, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or
+TCGETS, {B115200 opost -isig -icanon -echo ...}) = 0
+write(2, "stty: ", 6stty: )                   = 6
+write(2, "standard input: unable to perfor"..., 58standard input:
+unable to perform all requested operations) = 58
+
+IOW, the setting didn't stick.  On the bad kernel, stty works just
+fine on ttyS0.  If I switch to using console=ttyS0,115200, then stty
+works on ttyS1 and fails on ttyS0.
+
+I have no idea what's going on here.  I have two apparently identical
+boxes.  One of them has this problem and the other doesn't.
+
+Thanks,
+Andy
