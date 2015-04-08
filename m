@@ -1,56 +1,43 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v3 01/13] of: earlycon: Fix 'stdout-path' with ':' path terminator
-Date: Wed,  8 Apr 2015 13:45:07 -0400
-Message-ID: <1428515119-25248-2-git-send-email-peter@hurleysoftware.com>
-References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Peter Hurley <peter@hurleysoftware.com>, Leif Lindholm <leif.lindholm@linaro.org>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH V3 5/7] serial: earlycon: Set UPIO_MEM32BE based on DT
+ properties
+Date: Wed, 08 Apr 2015 13:56:33 -0400
+Message-ID: <55256BD1.4040604@hurleysoftware.com>
+References: <1416872182-6440-1-git-send-email-cernekee@gmail.com> <1416872182-6440-6-git-send-email-cernekee@gmail.com> <54F3914F.3080905@hurleysoftware.com> <20150328013604.488A0C4091F@trevor.secretlab.ca> <5516DE64.6000104@hurleysoftware.com> <CAJiQ=7AS5+HkHcjRsYKi-EHVc3F1fg3Zp=1fCor1HrKeSWU72Q@mail.gmail.com> <551D6208.2060009@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <551D6208.2060009-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MIPS Mailing List <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-stdout-path defines ':' as a path terminator and commit 75c28c09af99a
-("of: add optional options parameter to of_find_node_by_path()") added
-the necessary support to parse paths terminated with ':'.
-commit 7914a7c5651a5 ("of: support passing console options with
-stdout-path") added options string support to the stdout-path property,
-which broke earlycon.
+Hi Kevin,
 
-Add the same support to earlycon to process 'stdout-path' properties
-which contain an options string.
+On 04/02/2015 11:36 AM, Peter Hurley wrote:
+> On 03/28/2015 03:28 PM, Kevin Cernekee wrote:
+>> Hi Peter,
+>>
+>> This is my latest work-in-progress, incorporating the feedback from
+>> you and Grant:
+>>
+>> https://github.com/cernekee/linux/commits/endian
+>>
+>> Not sure if this code plays nice with your recent cleanups?  If we're
+>> touching the same files/functions we should probably coordinate.
+> 
+> Ok, I'll look over your git tree and add whatever's required to
+> earlycon.
 
-Requires: "libfdt: Add fdt_path_offset_namelen()"
-Cc: Leif Lindholm <leif.lindholm@linaro.org>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/of/fdt.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Could you submit the first 5 patches from your 'endian' branch, so
+that big-endian support can be added to earlycon?
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 3a896c9..7cef9f9 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -765,7 +765,7 @@ extern struct of_device_id __earlycon_of_table[];
- static int __init early_init_dt_scan_chosen_serial(void)
- {
- 	int offset;
--	const char *p;
-+	const char *p, *q;
- 	int l;
- 	const struct of_device_id *match = __earlycon_of_table;
- 	const void *fdt = initial_boot_params;
-@@ -782,8 +782,10 @@ static int __init early_init_dt_scan_chosen_serial(void)
- 	if (!p || !l)
- 		return -ENOENT;
- 
-+	q = strchrnul(p, ':');
-+
- 	/* Get the node specified by stdout-path */
--	offset = fdt_path_offset(fdt, p);
-+	offset = fdt_path_offset_namelen(fdt, p, (int)(q - p));
- 	if (offset < 0)
- 		return -ENODEV;
- 
--- 
-2.3.5
+Regards,
+Peter Hurley
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
