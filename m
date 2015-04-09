@@ -1,86 +1,51 @@
-From: "Pramod Gurav" <gpramod@codeaurora.org>
-Subject: Re: [PATCH v2 2/2] tty: serial: msm: Disable pclk when port is
- closed
-Date: Thu, 9 Apr 2015 11:06:14 +0530
-Message-ID: <28dae70b3f6435d2e0178c31154af9f5.squirrel@www.codeaurora.org>
-References: <1428499733-21963-1-git-send-email-gpramod@codeaurora.org>
-    <1428499733-21963-2-git-send-email-gpramod@codeaurora.org>
-    <5525BF1D.3050408@codeaurora.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH V2] tty: serial: Add const to struct uart_ops declarations
+Date: Thu, 9 Apr 2015 11:48:28 +0200
+Message-ID: <20150409094827.GI12103@ulmo>
+References: <1428169665.2775.53.camel@perches.com>
+ <a938a0e86638588e5ccff85771fa3b95@agner.ch>
+ <1428258294.2775.69.camel@perches.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="mhOzvPhkurUs4vA9"
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <5525BF1D.3050408@codeaurora.org>
+Content-Disposition: inline
+In-Reply-To: <1428258294.2775.69.camel@perches.com>
 Sender: linux-arm-msm-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>
-Cc: Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, bryanh@codeaurora.org, jslaby@suse.cz
+To: Joe Perches <joe@perches.com>
+Cc: Stefan Agner <stefan@agner.ch>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-ia64@vger.kernel.org, kernel@stlinux.com, Nicolas Ferre <nicolas.ferre@atmel.com>, Timur Tabi <timur@tabi.org>, linux-kernel@vger.kernel.org, Pat Gefre <pfg@sgi.com>, Laxman Dewangan <ldewangan@nvidia.com>, "Maciej W. Rozycki" <macro@linux-mips.org>, Daniel Walker <dwalker@fifo99.com>, sparclinux@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>, Sonic Zhang <sonic.zhang@analog.com>, Alexandre Courbot <gnurou@gmail.com>, Russell King <linux@arm.linux.org.uk>, Michal Simek <michal.simek@xilinx.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>, Stephen Warren <swarren@wwwdotorg.org>, linux-arm-msm@vger.kernel.org, adi-buildroot-devel@lists.sourceforge.net, Thadeu Lima de Souza Cascardo <cas>
 List-Id: linux-serial@vger.kernel.org
 
 
-On Thu, April 9, 2015 5:21 am, Stephen Boyd wrote:
-> On 04/08/15 06:28, Pramod Gurav wrote:
->> Disable the pclk when tty port is closed by user space.
->>
->> Signed-off-by: Pramod Gurav <gpramod@codeaurora.org>
->> ---
->>  drivers/tty/serial/msm_serial.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/tty/serial/msm_serial.c
->> b/drivers/tty/serial/msm_serial.c
->> index 4c1e9ea..f38565c 100644
->> --- a/drivers/tty/serial/msm_serial.c
->> +++ b/drivers/tty/serial/msm_serial.c
->> @@ -523,6 +523,7 @@ static void msm_shutdown(struct uart_port *port)
->>  	msm_write(port, 0, UART_IMR); /* disable interrupts */
->>
->>  	clk_disable_unprepare(msm_port->clk);
->> +	clk_disable_unprepare(msm_port->pclk);
->>
->>  	free_irq(port->irq, port);
->>  }
->
-> It's not clear to me at all when this clock is enabled and when it's
-> disabled during the lifetime of this driver. For example, why do we have
-> a .pm op to turn clocks on and off? Shouldn't they already be on? Can
-> you please explain when the clocks are turned on and off and what
-> userspace actions cause that to happen? Looking at drivers like
-> amba-pl010.c I don't see any .pm op, just a
-> clk_prepare_enable/clk_disable_unprepare pair in the startup and
-> shutdown ops.
+--mhOzvPhkurUs4vA9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+On Sun, Apr 05, 2015 at 11:24:54AM -0700, Joe Perches wrote:
+[...]
+>  drivers/tty/serial/serial-tegra.c           | 2 +-
 
-When a userspce opens a serial port the uart_startup (in serial_core)
-function is executed which changes the uart_pm state to UART_PM_STATE_ON.
-So when this port is release/closed by the application
-uart_close(serial_core) changes the uart_pm state to UART_PM_STATE_OFF if
-its not console. But it is not done in uart_shutdown function.
+Acked-by: Thierry Reding <treding@nvidia.com>
 
-So ideally clk_prepare_enable/clk_disable_unprepare must be called in .pm
-only. So, we can get rid of these operations from msm_startup function as
-these will be called anyway using .pm ops.
+--mhOzvPhkurUs4vA9
+Content-Type: application/pgp-signature
 
-About .pm in uart_ops, there are few drivers which have it for an example,
-atmel_serial, sh-sci etc. That is where they do
-clk_prepare_enable/clk_disable_unprepare. And moreover when there is
-suspend across system these function will handled through .pm.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
+iQIcBAABCAAGBQJVJkrqAAoJEN0jrNd/PrOh45MP/3gSYsW+iLTl6x31M/1w3yG5
+Bbh0OsyQ9lCEtTmbpLR0fLf8G7p5BonsghFrt98B0rzRBMwnXGhE5/9p0daLOE3K
+3tyu2w1OAxcXuOatR8SDWkXex/lNLvNxDKUMPDvrvJtI5zVrfIRsG7FTp7zQkupV
+jWGCR9j59RFkLAyz1A0avgCbOGl11xVin1d+EUD2ZCrTwxl5FiuV2Ar2E7/7hh04
+NsghKA4FLAfZZiyYJ5Lc+7VHqqlk5araKzUOHee1eKi19ntmC6PYbYz2dbMEzcCt
+xpKUEe7jrIqhqZjWfOws6GWUy5GTN8zrxlqPjf1D9wWX8bVUK5/n2wQYTrf91exg
+3K668MqIYosS044FhFSu+0hXq42Q4BcsMlI9SLjJaVvjs/9uUuXdCtKO0tHN4qfj
+9SbgPQ5eKCVX23VJX5BsKD8RxhxSAes5ELi851yvtap7SUSF8QQ5IUp8BZ6Wk5iD
+1/F1ZmCggM0BHK5uOE1Omv8t2/Mvj/7vNXzU6uHxl7iPKe6lmVEJQkwrH+qzwtWL
+heunoQ0JmW+vsbkJsJdia23ybd6im3RUszQ1no1IBJqUeG8QuGFUAcNcad4H931m
+EocSXdQJqiDb82MgylCRfPrwL5s4YpAF+xaVeMm75CWwKXGP1aaywXLbkW40JVWj
+C/WJI66kI+i093rg6DmD
+=7FoG
+-----END PGP SIGNATURE-----
 
->
-> Minus my confusion of why our clocking is complicated, it looks correct
-> to me to do this, so
->
-> Reviewed-by: Stephen Boyd <sboyd@codeaurora.org>
-
->
-> --
-> Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-> a Linux Foundation Collaborative Project
->
->
-
-Pramod
-
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+--mhOzvPhkurUs4vA9--
