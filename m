@@ -1,63 +1,56 @@
-From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Subject: Re: [PATCH v6 10/15] serial: stm32-usart: Add STM32 USART Driver
-Date: Thu, 9 Apr 2015 16:04:39 +0300
-Message-ID: <552678E7.4040107@mentor.com>
-References: <1428424234-28572-1-git-send-email-mcoquelin.stm32@gmail.com> <1428424234-28572-11-git-send-email-mcoquelin.stm32@gmail.com>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH v2 2/2] tty: serial: msm: Disable pclk when port is closed
+Date: Thu, 9 Apr 2015 07:04:20 -0700
+Message-ID: <20150409140420.GA9663@codeaurora.org>
+References: <1428499733-21963-1-git-send-email-gpramod@codeaurora.org>
+ <1428499733-21963-2-git-send-email-gpramod@codeaurora.org>
+ <5525BF1D.3050408@codeaurora.org>
+ <28dae70b3f6435d2e0178c31154af9f5.squirrel@www.codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <1428424234-28572-11-git-send-email-mcoquelin.stm32@gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>, u.kleine-koenig@pengutronix.de, afaerber@suse.de, geert@linux-m68k.org, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, stefan@agner.ch, pmeerw@pmeerw.net, pebolle@tiscali.nl, peter@hurleysoftware.com, andy.shevchenko@gmail.com, cw00.choi@samsung.com, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, joe@perches.com
-Cc: Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, Kees Cook <keescook@chromium.org>, Michal Marek <mmarek@suse.cz>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.orglinux-a
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <28dae70b3f6435d2e0178c31154af9f5.squirrel@www.codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Pramod Gurav <gpramod@codeaurora.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, bryanh@codeaurora.org, jslaby@suse.cz
 List-Id: linux-serial@vger.kernel.org
 
-Hi Maxime,
-
-On 07.04.2015 19:30, Maxime Coquelin wrote:
-> This drivers adds support to the STM32 USART controller, which is a
-> standard serial driver.
+On 04/09, Pramod Gurav wrote:
 > 
-> Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
-> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> ---
->  drivers/tty/serial/Kconfig       |  17 +
->  drivers/tty/serial/Makefile      |   1 +
->  drivers/tty/serial/stm32-usart.c | 735 +++++++++++++++++++++++++++++++++++++++
->  include/uapi/linux/serial_core.h |   3 +
->  4 files changed, 756 insertions(+)
->  create mode 100644 drivers/tty/serial/stm32-usart.c
+> On Thu, April 9, 2015 5:21 am, Stephen Boyd wrote:
+> >
+> > It's not clear to me at all when this clock is enabled and when it's
+> > disabled during the lifetime of this driver. For example, why do we have
+> > a .pm op to turn clocks on and off? Shouldn't they already be on? Can
+> > you please explain when the clocks are turned on and off and what
+> > userspace actions cause that to happen? Looking at drivers like
+> > amba-pl010.c I don't see any .pm op, just a
+> > clk_prepare_enable/clk_disable_unprepare pair in the startup and
+> > shutdown ops.
+> 
+> 
+> When a userspce opens a serial port the uart_startup (in serial_core)
+> function is executed which changes the uart_pm state to UART_PM_STATE_ON.
+> So when this port is release/closed by the application
+> uart_close(serial_core) changes the uart_pm state to UART_PM_STATE_OFF if
+> its not console. But it is not done in uart_shutdown function.
+> 
+> So ideally clk_prepare_enable/clk_disable_unprepare must be called in .pm
+> only. So, we can get rid of these operations from msm_startup function as
+> these will be called anyway using .pm ops.
+> 
+> About .pm in uart_ops, there are few drivers which have it for an example,
+> atmel_serial, sh-sci etc. That is where they do
+> clk_prepare_enable/clk_disable_unprepare. And moreover when there is
+> suspend across system these function will handled through .pm.
 
-[snip]
+Ok. If the .pm op is called at the right time then it seems to be
+possible to drop the clock operations from startup/shutdown. Do
+other drivers hook the .pm op to do runtime PM as well? Because
+it would be nice to move this driver to use runtime PM sometime
+in the future as well. 
 
-> +static void stm32_console_write(struct console *co, const char *s, unsigned cnt)
-> +{
-> +	struct uart_port *port = &stm32_ports[co->index].port;
-> +	unsigned long flags;
-> +	u32 old_cr1, new_cr1;
-> +	int locked = 1;
-> +
-> +	if (oops_in_progress) {
-> +		locked = spin_trylock_irqsave(&port->lock, flags);
-> +	} else {
-> +		locked = 1;
-
-locked = 1 is done from the declaration.
-
-Also do you want to add "if (port->sysrq) locked = 0;" check?
-
-> +		spin_lock_irqsave(&port->lock, flags);
-> +	}
-> +
-
-[snip]
-
-Everything else is fine from point of view.
-
-Reviewed-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-
---
-With best wishes,
-Vladimir
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
