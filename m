@@ -1,7 +1,8 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v3 05/10] drivers: PL011: refactor pl011_probe()
-Date: Thu,  9 Apr 2015 12:29:16 +0100
-Message-ID: <1428578961-6896-6-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v3 06/10] drivers: PL011: replace UART_MIS reading with _RIS &
+ _IMSC
+Date: Thu,  9 Apr 2015 12:29:17 +0100
+Message-ID: <1428578961-6896-7-git-send-email-andre.przywara@arm.com>
 References: <1428578961-6896-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,154 +22,45 @@ To: rmk+kernel@arm.linux.org.uk, Greg KH <gregkh@linuxfoundation.org>, Jiri Slab
 Cc: rob.herring@linaro.org, Dave.Martin@arm.com, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Currently the pl011_probe() function is relying on some AMBA IDs
-and a device tree node to initialize the driver and a port.
-Both features are not necessarily required for the driver:
-- we lack AMBA IDs in the ARM SBSA generic UART and
-- we lack a DT node in ACPI systems.
-So lets refactor the function to ease later reuse.
+The PL011 register UART_MIS is actually a bitwise AND of the
+UART_RIS and the UART_MISC register.
+Since the SBSA UART does not include the _MIS register, use the
+two separate registers to get the same behaviour. Since we are
+inside the spinlock and we read the _IMSC register only once, there
+should be no race issue.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c |   89 ++++++++++++++++++++++++++-------------
- 1 file changed, 60 insertions(+), 29 deletions(-)
+ drivers/tty/serial/amba-pl011.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index e1ac2cb..65df5c7 100644
+index 65df5c7..3829879 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -2174,13 +2174,10 @@ static void pl011_unregister_port(struct uart_amba_port *uap)
- 		uart_unregister_driver(&amba_reg);
- }
+@@ -1322,11 +1322,13 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
+ 	struct uart_amba_port *uap = dev_id;
+ 	unsigned long flags;
+ 	unsigned int status, pass_counter = AMBA_ISR_PASS_LIMIT;
++	u16 imsc;
+ 	int handled = 0;
+ 	unsigned int dummy_read;
  
--
--static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
-+static int pl011_allocate_port(struct device *dev, struct uart_amba_port **_uap)
- {
- 	struct uart_amba_port *uap;
--	struct vendor_data *vendor = id->data;
--	void __iomem *base;
--	int i, ret;
-+	int i;
+ 	spin_lock_irqsave(&uap->port.lock, flags);
+-	status = readw(uap->port.membase + UART011_MIS);
++	imsc = readw(uap->port.membase + UART011_IMSC);
++	status = readw(uap->port.membase + UART011_RIS) & imsc;
+ 	if (status) {
+ 		do {
+ 			if (uap->vendor->cts_event_workaround) {
+@@ -1361,7 +1363,7 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
+ 			if (pass_counter-- == 0)
+ 				break;
  
- 	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
- 		if (amba_ports[i] == NULL)
-@@ -2189,51 +2186,53 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	if (i == ARRAY_SIZE(amba_ports))
- 		return -EBUSY;
- 
--	uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
--			   GFP_KERNEL);
-+	uap = devm_kzalloc(dev, sizeof(struct uart_amba_port), GFP_KERNEL);
- 	if (uap == NULL)
- 		return -ENOMEM;
- 
--	i = pl011_probe_dt_alias(i, &dev->dev);
-+	if (_uap)
-+		*_uap = uap;
-+
-+	return i;
-+}
- 
--	base = devm_ioremap(&dev->dev, dev->res.start,
--			    resource_size(&dev->res));
-+static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
-+			    struct resource *mmiobase, int index)
-+{
-+	void __iomem *base;
-+
-+	base = devm_ioremap_resource(dev, mmiobase);
- 	if (!base)
- 		return -ENOMEM;
- 
--	uap->clk = devm_clk_get(&dev->dev, NULL);
--	if (IS_ERR(uap->clk))
--		return PTR_ERR(uap->clk);
-+	index = pl011_probe_dt_alias(index, dev);
- 
--	uap->vendor = vendor;
--	uap->lcrh_rx = vendor->lcrh_rx;
--	uap->lcrh_tx = vendor->lcrh_tx;
- 	uap->old_cr = 0;
--	uap->fifosize = vendor->get_fifosize(dev);
--	uap->port.dev = &dev->dev;
--	uap->port.mapbase = dev->res.start;
-+	uap->port.dev = dev;
-+	uap->port.mapbase = mmiobase->start;
- 	uap->port.membase = base;
- 	uap->port.iotype = UPIO_MEM;
--	uap->port.irq = dev->irq[0];
- 	uap->port.fifosize = uap->fifosize;
--	uap->port.ops = &amba_pl011_pops;
- 	uap->port.flags = UPF_BOOT_AUTOCONF;
--	uap->port.line = i;
-+	uap->port.line = index;
- 
--	/* Ensure interrupts from this UART are masked and cleared */
--	writew(0, uap->port.membase + UART011_IMSC);
--	writew(0xffff, uap->port.membase + UART011_ICR);
-+	amba_ports[index] = uap;
- 
--	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
-+	return 0;
-+}
- 
--	amba_ports[i] = uap;
-+static int pl011_register_port(struct uart_amba_port *uap)
-+{
-+	int ret;
- 
--	amba_set_drvdata(dev, uap);
-+	/* Ensure interrupts from this UART are masked and cleared */
-+	writew(0, uap->port.membase + UART011_IMSC);
-+	writew(0xffff, uap->port.membase + UART011_ICR);
- 
- 	if (!amba_reg.state) {
- 		ret = uart_register_driver(&amba_reg);
- 		if (ret < 0) {
--			dev_err(&dev->dev,
-+			dev_err(uap->port.dev,
- 				"Failed to register AMBA-PL011 driver\n");
- 			return ret;
- 		}
-@@ -2246,6 +2245,38 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	return ret;
- }
- 
-+static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
-+{
-+	struct uart_amba_port *uap;
-+	struct vendor_data *vendor = id->data;
-+	int portnr, ret;
-+
-+	portnr = pl011_allocate_port(&dev->dev, &uap);
-+	if (portnr < 0)
-+		return portnr;
-+
-+	uap->clk = devm_clk_get(&dev->dev, NULL);
-+	if (IS_ERR(uap->clk))
-+		return PTR_ERR(uap->clk);
-+
-+	uap->vendor = vendor;
-+	uap->lcrh_rx = vendor->lcrh_rx;
-+	uap->lcrh_tx = vendor->lcrh_tx;
-+	uap->fifosize = vendor->get_fifosize(dev);
-+	uap->port.irq = dev->irq[0];
-+	uap->port.ops = &amba_pl011_pops;
-+
-+	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
-+
-+	ret = pl011_setup_port(&dev->dev, uap, &dev->res, portnr);
-+	if (ret)
-+		return ret;
-+
-+	amba_set_drvdata(dev, uap);
-+
-+	return pl011_register_port(uap);
-+}
-+
- static int pl011_remove(struct amba_device *dev)
- {
- 	struct uart_amba_port *uap = amba_get_drvdata(dev);
+-			status = readw(uap->port.membase + UART011_MIS);
++			status = readw(uap->port.membase + UART011_RIS) & imsc;
+ 		} while (status != 0);
+ 		handled = 1;
+ 	}
 -- 
 1.7.9.5
