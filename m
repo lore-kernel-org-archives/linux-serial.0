@@ -1,40 +1,63 @@
-From: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
-Subject: Re: [PATCH v1 11/15] serial: imx: initialized DMA w/o HW flow enabled
-Date: Thu, 9 Apr 2015 14:00:57 +0200
-Message-ID: <20150409120057.GA12596@breakpoint.cc>
-References: <1418116296-12082-1-git-send-email-jiada_wang@mentor.com>
- <1418116296-12082-12-git-send-email-jiada_wang@mentor.com>
+From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+Subject: Re: [PATCH v6 10/15] serial: stm32-usart: Add STM32 USART Driver
+Date: Thu, 9 Apr 2015 16:04:39 +0300
+Message-ID: <552678E7.4040107@mentor.com>
+References: <1428424234-28572-1-git-send-email-mcoquelin.stm32@gmail.com> <1428424234-28572-11-git-send-email-mcoquelin.stm32@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1418116296-12082-12-git-send-email-jiada_wang@mentor.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiada Wang <jiada_wang@mentor.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, anton_bondarenko@mentor.com, dirk.behme@de.bosch.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <1428424234-28572-11-git-send-email-mcoquelin.stm32@gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>, u.kleine-koenig@pengutronix.de, afaerber@suse.de, geert@linux-m68k.org, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, stefan@agner.ch, pmeerw@pmeerw.net, pebolle@tiscali.nl, peter@hurleysoftware.com, andy.shevchenko@gmail.com, cw00.choi@samsung.com, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, joe@perches.com
+Cc: Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Antti Palosaari <crope@iki.fi>, Tejun Heo <tj@kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, Kees Cook <keescook@chromium.org>, Michal Marek <mmarek@suse.cz>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.orglinux-a
 List-Id: linux-serial@vger.kernel.org
 
-On 2014-12-09 18:11:32 [+0900], Jiada Wang wrote:
-> From: Anton Bondarenko <anton_bondarenko@mentor.com>
+Hi Maxime,
+
+On 07.04.2015 19:30, Maxime Coquelin wrote:
+> This drivers adds support to the STM32 USART controller, which is a
+> standard serial driver.
 > 
-> DMA mode for UART can be used even w/o HW flow control with RTS/CTS.
-> So it need to be initialized and enabled earlier.
-> 
-> Signed-off-by: Anton Bondarenko <anton_bondarenko@mentor.com>
-> Signed-off-by: Jiada Wang <jiada_wang@mentor.com>
+> Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> ---
+>  drivers/tty/serial/Kconfig       |  17 +
+>  drivers/tty/serial/Makefile      |   1 +
+>  drivers/tty/serial/stm32-usart.c | 735 +++++++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/serial_core.h |   3 +
+>  4 files changed, 756 insertions(+)
+>  create mode 100644 drivers/tty/serial/stm32-usart.c
 
-How was this tested? I read you used the Sambe IMX6Q. I have here the
-Wandboard which is IMX6D and a PBAB01 which is IMX6Q. Both have the same
-issue with this patch, that is once DMA is enabled I receive the data in
-question plus one extra byte which is 0x00.
-That extra byte was not part of transaction. After that, the SDMA driver
-is handling interrupts like crazing and feeding one byte data (usually
-0x00 but sometimes 0x02 not sure if this new or whatever was there
-before) to the core. Those one byte transaction are bogus of course.
+[snip]
 
-My question is how was this tested. Before your patch none of my boards
-were using DMA because RTS/CTS is not in use and this was a key
-requirement. Now SDMA goes crazy. Is there a SDMA firmware required for
-this to work?
+> +static void stm32_console_write(struct console *co, const char *s, unsigned cnt)
+> +{
+> +	struct uart_port *port = &stm32_ports[co->index].port;
+> +	unsigned long flags;
+> +	u32 old_cr1, new_cr1;
+> +	int locked = 1;
+> +
+> +	if (oops_in_progress) {
+> +		locked = spin_trylock_irqsave(&port->lock, flags);
+> +	} else {
+> +		locked = 1;
 
-Sebastian
+locked = 1 is done from the declaration.
+
+Also do you want to add "if (port->sysrq) locked = 0;" check?
+
+> +		spin_lock_irqsave(&port->lock, flags);
+> +	}
+> +
+
+[snip]
+
+Everything else is fine from point of view.
+
+Reviewed-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+
+--
+With best wishes,
+Vladimir
