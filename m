@@ -1,8 +1,7 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v3 06/10] drivers: PL011: replace UART_MIS reading with _RIS &
- _IMSC
-Date: Thu,  9 Apr 2015 12:29:17 +0100
-Message-ID: <1428578961-6896-7-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v3 03/10] drivers: PL011: refactor pl011_shutdown()
+Date: Thu,  9 Apr 2015 12:29:14 +0100
+Message-ID: <1428578961-6896-4-git-send-email-andre.przywara@arm.com>
 References: <1428578961-6896-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,45 +21,92 @@ To: rmk+kernel@arm.linux.org.uk, Greg KH <gregkh@linuxfoundation.org>, Jiri Slab
 Cc: rob.herring@linaro.org, Dave.Martin@arm.com, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The PL011 register UART_MIS is actually a bitwise AND of the
-UART_RIS and the UART_MISC register.
-Since the SBSA UART does not include the _MIS register, use the
-two separate registers to get the same behaviour. Since we are
-inside the spinlock and we read the _IMSC register only once, there
-should be no race issue.
+Split the pl011_shutdown() function into smaller chunks to allow
+easier reuse later when adding SBSA support.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c |   58 ++++++++++++++++++++++-----------------
+ 1 file changed, 33 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 65df5c7..3829879 100644
+index d6a081e..9eb6d13 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1322,11 +1322,13 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 	struct uart_amba_port *uap = dev_id;
- 	unsigned long flags;
- 	unsigned int status, pass_counter = AMBA_ISR_PASS_LIMIT;
-+	u16 imsc;
- 	int handled = 0;
- 	unsigned int dummy_read;
+@@ -1635,34 +1635,15 @@ static void pl011_shutdown_channel(struct uart_amba_port *uap,
+       writew(val, uap->port.membase + lcrh);
+ }
  
- 	spin_lock_irqsave(&uap->port.lock, flags);
--	status = readw(uap->port.membase + UART011_MIS);
-+	imsc = readw(uap->port.membase + UART011_IMSC);
-+	status = readw(uap->port.membase + UART011_RIS) & imsc;
- 	if (status) {
- 		do {
- 			if (uap->vendor->cts_event_workaround) {
-@@ -1361,7 +1363,7 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 			if (pass_counter-- == 0)
- 				break;
+-static void pl011_shutdown(struct uart_port *port)
++/*
++ * disable the port. It should not disable RTS and DTR.
++ * Also RTS and DTR state should be preserved to restore
++ * it during startup().
++ */
++static void pl011_disable_uart(struct uart_amba_port *uap)
+ {
+-	struct uart_amba_port *uap =
+-	    container_of(port, struct uart_amba_port, port);
+ 	unsigned int cr;
  
--			status = readw(uap->port.membase + UART011_MIS);
-+			status = readw(uap->port.membase + UART011_RIS) & imsc;
- 		} while (status != 0);
- 		handled = 1;
- 	}
+-	/*
+-	 * disable all interrupts
+-	 */
+-	spin_lock_irq(&uap->port.lock);
+-	uap->im = 0;
+-	writew(uap->im, uap->port.membase + UART011_IMSC);
+-	writew(0xffff, uap->port.membase + UART011_ICR);
+-	spin_unlock_irq(&uap->port.lock);
+-
+-	pl011_dma_shutdown(uap);
+-
+-	/*
+-	 * Free the interrupt
+-	 */
+-	free_irq(uap->port.irq, uap);
+-
+-	/*
+-	 * disable the port
+-	 * disable the port. It should not disable RTS and DTR.
+-	 * Also RTS and DTR state should be preserved to restore
+-	 * it during startup().
+-	 */
+ 	uap->autorts = false;
+ 	spin_lock_irq(&uap->port.lock);
+ 	cr = readw(uap->port.membase + UART011_CR);
+@@ -1678,6 +1659,33 @@ static void pl011_shutdown(struct uart_port *port)
+ 	pl011_shutdown_channel(uap, uap->lcrh_rx);
+ 	if (uap->lcrh_rx != uap->lcrh_tx)
+ 		pl011_shutdown_channel(uap, uap->lcrh_tx);
++}
++
++static void pl011_disable_interrupts(struct uart_amba_port *uap)
++{
++	spin_lock_irq(&uap->port.lock);
++	/*
++	 * mask all interrupts and clear all pending ones
++	 */
++	uap->im = 0;
++	writew(uap->im, uap->port.membase + UART011_IMSC);
++	writew(0xffff & ~UART011_TXIS, uap->port.membase + UART011_ICR);
++
++	spin_unlock_irq(&uap->port.lock);
++}
++
++static void pl011_shutdown(struct uart_port *port)
++{
++	struct uart_amba_port *uap =
++		container_of(port, struct uart_amba_port, port);
++
++	pl011_disable_interrupts(uap);
++
++	pl011_dma_shutdown(uap);
++
++	free_irq(uap->port.irq, uap);
++
++	pl011_disable_uart(uap);
+ 
+ 	/*
+ 	 * Shut down the clock producer
 -- 
 1.7.9.5
