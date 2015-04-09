@@ -1,78 +1,86 @@
-From: Leilei Zhao <leilei.zhao@atmel.com>
-Subject: [PATCH] tty/serial: at91: handle IRQ status more safely
-Date: Thu, 9 Apr 2015 10:48:15 +0800
-Message-ID: <1428547695-11004-1-git-send-email-leilei.zhao@atmel.com>
+From: "Pramod Gurav" <gpramod@codeaurora.org>
+Subject: Re: [PATCH v2 2/2] tty: serial: msm: Disable pclk when port is
+ closed
+Date: Thu, 9 Apr 2015 11:06:14 +0530
+Message-ID: <28dae70b3f6435d2e0178c31154af9f5.squirrel@www.codeaurora.org>
+References: <1428499733-21963-1-git-send-email-gpramod@codeaurora.org>
+    <1428499733-21963-2-git-send-email-gpramod@codeaurora.org>
+    <5525BF1D.3050408@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, jslaby@suse.cz
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Leilei Zhao <leilei.zhao@atmel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <5525BF1D.3050408@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, bryanh@codeaurora.org, jslaby@suse.cz
 List-Id: linux-serial@vger.kernel.org
 
-Handle the changed flag of IRQ status in interruption
-instead of handling it in tasklet due to the tasklet
-may be scheduled more than once in one interruption.
-Otherwise, the changed status may be processed more
-than once which will lead to unexpected result. And
-seriously, kernel will crash.
 
-Signed-off-by: Leilei Zhao <leilei.zhao@atmel.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
----
- drivers/tty/serial/atmel_serial.c |   13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+On Thu, April 9, 2015 5:21 am, Stephen Boyd wrote:
+> On 04/08/15 06:28, Pramod Gurav wrote:
+>> Disable the pclk when tty port is closed by user space.
+>>
+>> Signed-off-by: Pramod Gurav <gpramod@codeaurora.org>
+>> ---
+>>  drivers/tty/serial/msm_serial.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/tty/serial/msm_serial.c
+>> b/drivers/tty/serial/msm_serial.c
+>> index 4c1e9ea..f38565c 100644
+>> --- a/drivers/tty/serial/msm_serial.c
+>> +++ b/drivers/tty/serial/msm_serial.c
+>> @@ -523,6 +523,7 @@ static void msm_shutdown(struct uart_port *port)
+>>  	msm_write(port, 0, UART_IMR); /* disable interrupts */
+>>
+>>  	clk_disable_unprepare(msm_port->clk);
+>> +	clk_disable_unprepare(msm_port->pclk);
+>>
+>>  	free_irq(port->irq, port);
+>>  }
+>
+> It's not clear to me at all when this clock is enabled and when it's
+> disabled during the lifetime of this driver. For example, why do we have
+> a .pm op to turn clocks on and off? Shouldn't they already be on? Can
+> you please explain when the clocks are turned on and off and what
+> userspace actions cause that to happen? Looking at drivers like
+> amba-pl010.c I don't see any .pm op, just a
+> clk_prepare_enable/clk_disable_unprepare pair in the startup and
+> shutdown ops.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index d58fe47..d536d31 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -165,6 +165,7 @@ struct atmel_uart_port {
- 	struct tasklet_struct	tasklet;
- 	unsigned int		irq_status;
- 	unsigned int		irq_status_prev;
-+	unsigned int		status_change;
- 
- 	struct circ_buf		rx_ring;
- 
-@@ -1175,6 +1176,9 @@ atmel_handle_status(struct uart_port *port, unsigned int pending,
- 	if (pending & (ATMEL_US_RIIC | ATMEL_US_DSRIC | ATMEL_US_DCDIC
- 				| ATMEL_US_CTSIC)) {
- 		atmel_port->irq_status = status;
-+		atmel_port->status_change = atmel_port->irq_status ^
-+					    atmel_port->irq_status_prev;
-+		atmel_port->irq_status_prev = status;
- 		tasklet_schedule(&atmel_port->tasklet);
- 	}
- }
-@@ -1521,17 +1525,14 @@ static void atmel_tasklet_func(unsigned long data)
- {
- 	struct uart_port *port = (struct uart_port *)data;
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
--	unsigned int status;
--	unsigned int status_change;
-+	unsigned int status = atmel_port->irq_status;
-+	unsigned int status_change = atmel_port->status_change;
- 
- 	/* The interrupt handler does not take the lock */
- 	spin_lock(&port->lock);
- 
- 	atmel_port->schedule_tx(port);
- 
--	status = atmel_port->irq_status;
--	status_change = status ^ atmel_port->irq_status_prev;
--
- 	if (status_change & (ATMEL_US_RI | ATMEL_US_DSR
- 				| ATMEL_US_DCD | ATMEL_US_CTS)) {
- 		/* TODO: All reads to CSR will clear these interrupts! */
-@@ -1546,7 +1547,7 @@ static void atmel_tasklet_func(unsigned long data)
- 
- 		wake_up_interruptible(&port->state->port.delta_msr_wait);
- 
--		atmel_port->irq_status_prev = status;
-+		atmel_port->status_change = 0;
- 	}
- 
- 	atmel_port->schedule_rx(port);
+
+When a userspce opens a serial port the uart_startup (in serial_core)
+function is executed which changes the uart_pm state to UART_PM_STATE_ON.
+So when this port is release/closed by the application
+uart_close(serial_core) changes the uart_pm state to UART_PM_STATE_OFF if
+its not console. But it is not done in uart_shutdown function.
+
+So ideally clk_prepare_enable/clk_disable_unprepare must be called in .pm
+only. So, we can get rid of these operations from msm_startup function as
+these will be called anyway using .pm ops.
+
+About .pm in uart_ops, there are few drivers which have it for an example,
+atmel_serial, sh-sci etc. That is where they do
+clk_prepare_enable/clk_disable_unprepare. And moreover when there is
+suspend across system these function will handled through .pm.
+
+
+>
+> Minus my confusion of why our clocking is complicated, it looks correct
+> to me to do this, so
+>
+> Reviewed-by: Stephen Boyd <sboyd@codeaurora.org>
+
+>
+> --
+> Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+> a Linux Foundation Collaborative Project
+>
+>
+
+Pramod
+
 -- 
-1.7.9.5
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
