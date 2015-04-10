@@ -1,30 +1,39 @@
 From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH v3 1/3] tty: serial: msm: Add mask value for UART_DM registers
-Date: Fri, 10 Apr 2015 10:57:08 -0700
-Message-ID: <55280EF4.9000100@codeaurora.org>
-References: <1428668396-6955-1-git-send-email-gpramod@codeaurora.org>
+Subject: Re: [PATCH v3 2/3] tty: serial: msm: Remove duplicate operations
+ on clocks in startup/shutdown
+Date: Fri, 10 Apr 2015 11:03:20 -0700
+Message-ID: <55281068.3000309@codeaurora.org>
+References: <1428668396-6955-1-git-send-email-gpramod@codeaurora.org> <1428668396-6955-2-git-send-email-gpramod@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1428668396-6955-1-git-send-email-gpramod@codeaurora.org>
+In-Reply-To: <1428668396-6955-2-git-send-email-gpramod@codeaurora.org>
 Sender: linux-arm-msm-owner@vger.kernel.org
 To: Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, bryanh@codeaurora.org, jslaby@suse.cz
 List-Id: linux-serial@vger.kernel.org
 
 On 04/10/15 05:19, Pramod Gurav wrote:
-> The bit masks for RFR_LEVEL1 and STALE_TIMEOUT_MSB values in MR1 and
-> IPR registers respectively are different for UART and UART_DM hardware
-> cores. We have been using UART core mask values for these. Add the same
-> for UART_DM core.
->
-> There is no bit setting as UART_IPR_RXSTALE_LAST for UART_DM core so do
-> it only for UART core.
->
-> Signed-off-by: Pramod Gurav <gpramod@codeaurora.org>
+> @@ -683,8 +679,7 @@ static void msm_power(struct uart_port *port, unsigned int state,
+>  
+>  	switch (state) {
+>  	case 0:
+> -		clk_prepare_enable(msm_port->clk);
+> -		clk_prepare_enable(msm_port->pclk);
+> +		msm_init_clock(port);
 
-Reviewed-by: Stephen Boyd <sboyd@codeaurora.org>
+Hm... now we would call msm_serial_set_mnd_regs() whenever we power on
+the port? Presumably we only need to do that once when we probe (or when
+we resume from a sleep state that resets the registers, i.e.
+hibernation) but I guess we're getting saved by the fact that the
+if/else if pair in msm_serial_set_mnd_regs_from_uartclk would never be
+true after the first time we call it?
+
+>  		break;
+>  	case 3:
+>  		clk_disable_unprepare(msm_port->clk);
+
 
 -- 
 Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
