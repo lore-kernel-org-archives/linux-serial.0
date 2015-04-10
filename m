@@ -1,53 +1,42 @@
-From: Rob Herring <robh@kernel.org>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 Subject: Re: [PATCH V4 0/5] Add big-endian MMIO support to serial8250
-Date: Fri, 10 Apr 2015 08:52:50 -0500
-Message-ID: <CAL_Jsq+-Yr3oB2=7X2a9XDU_-b+08WfJRJUqVsCHAaQEQxQ1Mg@mail.gmail.com>
-References: <1428609918-10290-1-git-send-email-cernekee@gmail.com>
+Date: Fri, 10 Apr 2015 10:28:55 -0400
+Message-ID: <5527DE27.8060700@hurleysoftware.com>
+References: <1428609918-10290-1-git-send-email-cernekee@gmail.com> <CAL_Jsq+-Yr3oB2=7X2a9XDU_-b+08WfJRJUqVsCHAaQEQxQ1Mg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1428609918-10290-1-git-send-email-cernekee@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Kevin Cernekee <cernekee@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Peter Hurley <peter@hurleysoftware.com>, Florian Fainelli <f.fainelli@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAL_Jsq+-Yr3oB2=7X2a9XDU_-b+08WfJRJUqVsCHAaQEQxQ1Mg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Apr 9, 2015 at 3:05 PM, Kevin Cernekee <cernekee@gmail.com> wrote:
-> V3->V4:
->
-> Rebase on Linus' head of tree
->
-> Tweak documentation per Grant's request
->
-> Drop the of_earlycon patches in favor of Peter's series
+On 04/10/2015 09:52 AM, Rob Herring wrote:
+> On Thu, Apr 9, 2015 at 3:05 PM, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>> V3->V4:
+>>
+>> Rebase on Linus' head of tree
+>>
+>> Tweak documentation per Grant's request
+>>
+>> Drop the of_earlycon patches in favor of Peter's series
+> 
+> Are there conflicts with Peter's stuff?
 
-Are there conflicts with Peter's stuff? The series looks good to me.
-So either I can take it with Greg's ack or Greg can take it.
+No.
 
-Acked-by: Rob Herring <robh@kernel.org>
+It adds the required pieces so that a trivial patch on top of 
+both series will enable mmio32be for earlycon.
 
-Rob
+> The series looks good to me.
 
->
->
-> Kevin Cernekee (5):
->   of: Add helper function to check MMIO register endianness
->   of/fdt: Add endianness helper function for early init code
->   of: Document {little,big,native}-endian bindings
->   serial: 8250: Add support for big-endian MMIO accesses
->   serial: of_serial: Support big-endian register accesses
->
->  .../devicetree/bindings/common-properties.txt      | 60 ++++++++++++++++++++++
->  drivers/of/base.c                                  | 23 +++++++++
->  drivers/of/fdt.c                                   | 19 +++++++
->  drivers/tty/serial/8250/8250_core.c                | 20 ++++++++
->  drivers/tty/serial/8250/8250_early.c               |  5 ++
->  drivers/tty/serial/of_serial.c                     |  3 +-
->  include/linux/of.h                                 |  6 +++
->  include/linux/of_fdt.h                             |  2 +
->  8 files changed, 137 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/common-properties.txt
->
-> --
-> 2.2.2
->
+Same.
+
+Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
