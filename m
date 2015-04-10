@@ -1,42 +1,31 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH V4 0/5] Add big-endian MMIO support to serial8250
-Date: Fri, 10 Apr 2015 10:28:55 -0400
-Message-ID: <5527DE27.8060700@hurleysoftware.com>
-References: <1428609918-10290-1-git-send-email-cernekee@gmail.com> <CAL_Jsq+-Yr3oB2=7X2a9XDU_-b+08WfJRJUqVsCHAaQEQxQ1Mg@mail.gmail.com>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH v3 1/3] tty: serial: msm: Add mask value for UART_DM registers
+Date: Fri, 10 Apr 2015 10:57:08 -0700
+Message-ID: <55280EF4.9000100@codeaurora.org>
+References: <1428668396-6955-1-git-send-email-gpramod@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAL_Jsq+-Yr3oB2=7X2a9XDU_-b+08WfJRJUqVsCHAaQEQxQ1Mg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1428668396-6955-1-git-send-email-gpramod@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, bryanh@codeaurora.org, jslaby@suse.cz
 List-Id: linux-serial@vger.kernel.org
 
-On 04/10/2015 09:52 AM, Rob Herring wrote:
-> On Thu, Apr 9, 2015 at 3:05 PM, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->> V3->V4:
->>
->> Rebase on Linus' head of tree
->>
->> Tweak documentation per Grant's request
->>
->> Drop the of_earlycon patches in favor of Peter's series
-> 
-> Are there conflicts with Peter's stuff?
+On 04/10/15 05:19, Pramod Gurav wrote:
+> The bit masks for RFR_LEVEL1 and STALE_TIMEOUT_MSB values in MR1 and
+> IPR registers respectively are different for UART and UART_DM hardware
+> cores. We have been using UART core mask values for these. Add the same
+> for UART_DM core.
+>
+> There is no bit setting as UART_IPR_RXSTALE_LAST for UART_DM core so do
+> it only for UART core.
+>
+> Signed-off-by: Pramod Gurav <gpramod@codeaurora.org>
 
-No.
+Reviewed-by: Stephen Boyd <sboyd@codeaurora.org>
 
-It adds the required pieces so that a trivial patch on top of 
-both series will enable mmio32be for earlycon.
-
-> The series looks good to me.
-
-Same.
-
-Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
