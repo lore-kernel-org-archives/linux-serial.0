@@ -1,38 +1,58 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v3 3/3] tty: serial: msm: replaces (1 << x) with BIT(x) macro
-Date: Fri, 10 Apr 2015 09:33:16 -0300
-Message-ID: <CAOMZO5Css1at4beoJZzwcSnWMPNhUMEc8Qtn=usQQfYVdzvvug@mail.gmail.com>
-References: <1428668396-6955-1-git-send-email-gpramod@codeaurora.org>
-	<1428668396-6955-3-git-send-email-gpramod@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1428668396-6955-3-git-send-email-gpramod@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Pramod Gurav <gpramod@codeaurora.org>
-Cc: linux-arm-msm@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, bryanh@codeaurora.org, Stephen Boyd <sboyd@codeaurora.org>, Jiri Slaby <jslaby@suse.cz>
+From: Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH] tty: Re-add external interface for tty_set_termios()
+Date: Fri, 10 Apr 2015 15:13:05 +0200
+Message-ID: <1428671585-13310-1-git-send-email-frederic.danis@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org
+Cc: peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Apr 10, 2015 at 9:19 AM, Pramod Gurav <gpramod@codeaurora.org> wrote:
+This is needed by Bluetooth hci_uart module to be able to change speed
+of Bluetooth controller and local UART.
 
-> -#define UART_TF                0x000C
-> -#define UARTDM_TF      0x0070
-> +#define UART_TF                                0x000C
-> +#define UARTDM_TF                      0x0070
+Signed-off-by: Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+Re-send this patch on Peter Hurley request
 
-This is a different change, so it should be part of a different patch.
+ drivers/tty/tty_ioctl.c | 3 ++-
+ include/linux/tty.h     | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-> -#define UART_IPR       0x0018
-> -#define UART_TFWR      0x001C
-> -#define UART_RFWR      0x0020
-> -#define UART_HCR       0x0024
-> +#define UART_IPR               0x0018
-> +#define UART_TFWR              0x001C
-> +#define UART_RFWR              0x0020
-> +#define UART_HCR               0x0024
-
-Same here.
-
-Regards,
-
-Fabio Estevam
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 632fc81..8e53fe4 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -536,7 +536,7 @@ EXPORT_SYMBOL(tty_termios_hw_change);
+  *	Locking: termios_rwsem
+  */
+ 
+-static int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
++int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
+ {
+ 	struct ktermios old_termios;
+ 	struct tty_ldisc *ld;
+@@ -569,6 +569,7 @@ static int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
+ 	up_write(&tty->termios_rwsem);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(tty_set_termios);
+ 
+ /**
+  *	set_termios		-	set termios values for a tty
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 358a337..fe5623c 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -491,6 +491,7 @@ static inline speed_t tty_get_baud_rate(struct tty_struct *tty)
+ 
+ extern void tty_termios_copy_hw(struct ktermios *new, struct ktermios *old);
+ extern int tty_termios_hw_change(struct ktermios *a, struct ktermios *b);
++extern int tty_set_termios(struct tty_struct *tty, struct ktermios *kt);
+ 
+ extern struct tty_ldisc *tty_ldisc_ref(struct tty_struct *);
+ extern void tty_ldisc_deref(struct tty_ldisc *);
+-- 
+1.9.1
