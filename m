@@ -1,140 +1,45 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] earlycon: Fix uart_parse_earlycon() if !CONFIG_SERIAL_CORE_CONSOLE
-Date: Sat, 11 Apr 2015 10:42:36 -0400
-Message-ID: <1428763356-29158-1-git-send-email-peter@hurleysoftware.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] serial: earlycon requires console support
+Date: Sat, 11 Apr 2015 17:00:20 +0200
+Message-ID: <19182495.QL5edbqjaN@wuerfel>
+References: <5009638.HyplLv73fU@wuerfel> <5529241F.2040308@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5529241F.2040308@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alim Akhtar <alim.akhtar@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, tfiga@google.com, Chanwoo Choi <cw00.choi@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Peter Hurley <peter@hurleysoftware.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alim Akhtar <alim.akhtar@samsung.com>, tfiga@google.com, linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-Arnd Bergmann wrote:
-> A configuration that enables earlycon but not the core console
-> code causes a link error:
->
-> drivers/built-in.o: In function `setup_earlycon':
-> drivers/tty/serial/earlycon.c:70: undefined reference to `uart_parse_earlycon'
+On Saturday 11 April 2015 09:39:43 Peter Hurley wrote:
+> Hi Arnd,
+> 
+> On 04/10/2015 06:01 PM, Arnd Bergmann wrote:
+> > A configuration that enables earlycon but not the core console
+> > code causes a link error:
+> > 
+> > drivers/built-in.o: In function `setup_earlycon':
+> > drivers/tty/serial/earlycon.c:70: undefined reference to `uart_parse_earlycon'
+> > 
+> > That error can be triggered by the newly added samsung earlycon support,
+> > which is missing a 'select' statement. This patch adds the 'select'
+> > to make serial-samsung behave like the other drivers.
+> 
+> Since Kconfig has a separate option for enabling console on Samsung,
+> I'd rather move uart_parse_earlycon() and enclose it in
+> 
+> #if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_SERIAL_EARLYCON)
+> ...
+> #endif
+> 
+> I'll send a fix for that right now.
+> 
 
-CONFIG_SERIAL_EARLYCON should not require CONFIG_SERIAL_CORE_CONSOLE.
-Move uart_parse_earlycon() and compile if either CONFIG_SERIAL_CORE_CONSOLE
-or CONFIG_SERIAL_EARLYCON.
+Hmm, maybe the 'select SERIAL_EARLYCON' should just be under SERIAL_SAMSUNG_CONSOLE
+then? Upon looking closer at the other drivers, that seems to be the common
+model, and I don't know what it means to have EARLYCON but no CORE_CONSOLE
+enabled.
 
-Reported-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
-
-NB: The diff moves everything else around uart_parse_earlycon() :/
-
- drivers/tty/serial/serial_core.c | 90 ++++++++++++++++++++--------------------
- 1 file changed, 46 insertions(+), 44 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index eec067d..4d42b13 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1762,50 +1762,7 @@ static const struct file_operations uart_proc_fops = {
- };
- #endif
- 
--#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_CONSOLE_POLL)
--/**
-- *	uart_console_write - write a console message to a serial port
-- *	@port: the port to write the message
-- *	@s: array of characters
-- *	@count: number of characters in string to write
-- *	@putchar: function to write character to port
-- */
--void uart_console_write(struct uart_port *port, const char *s,
--			unsigned int count,
--			void (*putchar)(struct uart_port *, int))
--{
--	unsigned int i;
--
--	for (i = 0; i < count; i++, s++) {
--		if (*s == '\n')
--			putchar(port, '\r');
--		putchar(port, *s);
--	}
--}
--EXPORT_SYMBOL_GPL(uart_console_write);
--
--/*
-- *	Check whether an invalid uart number has been specified, and
-- *	if so, search for the first available port that does have
-- *	console support.
-- */
--struct uart_port * __init
--uart_get_console(struct uart_port *ports, int nr, struct console *co)
--{
--	int idx = co->index;
--
--	if (idx < 0 || idx >= nr || (ports[idx].iobase == 0 &&
--				     ports[idx].membase == NULL))
--		for (idx = 0; idx < nr; idx++)
--			if (ports[idx].iobase != 0 ||
--			    ports[idx].membase != NULL)
--				break;
--
--	co->index = idx;
--
--	return ports + idx;
--}
--
-+#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_SERIAL_EARLYCON)
- /**
-  *	uart_parse_earlycon - Parse earlycon options
-  *	@p:	  ptr to 2nd field (ie., just beyond '<name>,')
-@@ -1851,6 +1808,51 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(uart_parse_earlycon);
-+#endif
-+
-+#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_CONSOLE_POLL)
-+/**
-+ *	uart_console_write - write a console message to a serial port
-+ *	@port: the port to write the message
-+ *	@s: array of characters
-+ *	@count: number of characters in string to write
-+ *	@putchar: function to write character to port
-+ */
-+void uart_console_write(struct uart_port *port, const char *s,
-+			unsigned int count,
-+			void (*putchar)(struct uart_port *, int))
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < count; i++, s++) {
-+		if (*s == '\n')
-+			putchar(port, '\r');
-+		putchar(port, *s);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(uart_console_write);
-+
-+/*
-+ *	Check whether an invalid uart number has been specified, and
-+ *	if so, search for the first available port that does have
-+ *	console support.
-+ */
-+struct uart_port * __init
-+uart_get_console(struct uart_port *ports, int nr, struct console *co)
-+{
-+	int idx = co->index;
-+
-+	if (idx < 0 || idx >= nr || (ports[idx].iobase == 0 &&
-+				     ports[idx].membase == NULL))
-+		for (idx = 0; idx < nr; idx++)
-+			if (ports[idx].iobase != 0 ||
-+			    ports[idx].membase != NULL)
-+				break;
-+
-+	co->index = idx;
-+
-+	return ports + idx;
-+}
- 
- /**
-  *	uart_parse_options - Parse serial port baud/parity/bits/flow control.
--- 
-2.3.5
+	Arnd
