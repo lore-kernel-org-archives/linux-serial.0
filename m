@@ -1,35 +1,55 @@
-From: Valentin Rothberg <valentinrothberg@gmail.com>
-Subject: [PATCH 1/2] drivers/tty/serial/sh-sci.h: remove dead reference on ARCH_SH7372
-Date: Sat, 11 Apr 2015 12:26:19 +0200
-Message-ID: <1428747979-20455-1-git-send-email-valentinrothberg@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] serial: earlycon requires console support
+Date: Sat, 11 Apr 2015 09:39:43 -0400
+Message-ID: <5529241F.2040308@hurleysoftware.com>
+References: <5009638.HyplLv73fU@wuerfel>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5009638.HyplLv73fU@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, pebolle@tiscali.nl
-Cc: Valentin Rothberg <valentinrothberg@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, tfiga@google.com, Marek Szyprowski <m.szyprowski@samsung.com>, Alim Akhtar <alim.akhtar@samsung.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The Kconfig option ARCH_SH7372 has been removed by commit 59b89af1d555
-("ARM: shmobile: sh7372: Remove Legacy C SoC code").  This patch removes
-the last reference on this Kconfig option.
+Hi Arnd,
 
-Signed-off-by: Valentin Rothberg <valentinrothberg@gmail.com>
----
-I found this issue with ./scripts/checkkconfigsymbols.py
----
- drivers/tty/serial/sh-sci.h | 1 -
- 1 file changed, 1 deletion(-)
+On 04/10/2015 06:01 PM, Arnd Bergmann wrote:
+> A configuration that enables earlycon but not the core console
+> code causes a link error:
+> 
+> drivers/built-in.o: In function `setup_earlycon':
+> drivers/tty/serial/earlycon.c:70: undefined reference to `uart_parse_earlycon'
+> 
+> That error can be triggered by the newly added samsung earlycon support,
+> which is missing a 'select' statement. This patch adds the 'select'
+> to make serial-samsung behave like the other drivers.
 
-diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
-index d5db81a0a430..350717404507 100644
---- a/drivers/tty/serial/sh-sci.h
-+++ b/drivers/tty/serial/sh-sci.h
-@@ -15,7 +15,6 @@
-     defined(CONFIG_CPU_SUBTYPE_SH7720) || \
-     defined(CONFIG_CPU_SUBTYPE_SH7721) || \
-     defined(CONFIG_ARCH_SH73A0) || \
--    defined(CONFIG_ARCH_SH7372) || \
-     defined(CONFIG_ARCH_R8A7740)
- 
- # define SCxSR_RDxF_CLEAR(port)	 (serial_port_in(port, SCxSR) & 0xfffc)
--- 
-2.1.0
+Since Kconfig has a separate option for enabling console on Samsung,
+I'd rather move uart_parse_earlycon() and enclose it in
+
+#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_SERIAL_EARLYCON)
+...
+#endif
+
+I'll send a fix for that right now.
+
+Regards,
+Peter Hurley
+
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: b94ba0328d3b3 ("serial: samsung: Add support for early console")
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index f8120c1bde14..5cd8f38a36de 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -241,6 +241,7 @@ config SERIAL_SAMSUNG
+>  	tristate "Samsung SoC serial support"
+>  	depends on PLAT_SAMSUNG || ARCH_EXYNOS
+>  	select SERIAL_CORE
+> +	select SERIAL_CORE_CONSOLE
+>  	select SERIAL_EARLYCON
+>  	help
+>  	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
