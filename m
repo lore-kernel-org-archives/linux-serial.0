@@ -1,55 +1,58 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: earlycon requires console support
-Date: Sat, 11 Apr 2015 09:39:43 -0400
-Message-ID: <5529241F.2040308@hurleysoftware.com>
-References: <5009638.HyplLv73fU@wuerfel>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Valentin Rothberg <valentinrothberg@gmail.com>
+Subject: [PATCH 4/4] drivers/tty/serial/crisv10.c: rename CPP identifier CONFIG_ETRAX_SERX_DTR_RI_DSR_CD_MIXED
+Date: Sat, 11 Apr 2015 15:56:03 +0200
+Message-ID: <1428760563-13413-5-git-send-email-valentinrothberg@gmail.com>
+References: <1428760563-13413-1-git-send-email-valentinrothberg@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5009638.HyplLv73fU@wuerfel>
+In-Reply-To: <1428760563-13413-1-git-send-email-valentinrothberg@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, tfiga@google.com, Marek Szyprowski <m.szyprowski@samsung.com>, Alim Akhtar <alim.akhtar@samsung.com>, linux-arm-kernel@lists.infradead.org
+To: starvik@axis.com, jesper.nilsson@axis.com, gregkh@linuxfoundation.org, jslaby@suse.cz, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, pebolle@tiscali.nl
+Cc: Valentin Rothberg <valentinrothberg@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
+The 'CONFIG_' prefix is reserved for Kconfig options in Make and CPP
+syntax only.  Remove this prefix from the self-defined CPP identifier to
+apply to this convention and make static analysis tools happy.
 
-On 04/10/2015 06:01 PM, Arnd Bergmann wrote:
-> A configuration that enables earlycon but not the core console
-> code causes a link error:
-> 
-> drivers/built-in.o: In function `setup_earlycon':
-> drivers/tty/serial/earlycon.c:70: undefined reference to `uart_parse_earlycon'
-> 
-> That error can be triggered by the newly added samsung earlycon support,
-> which is missing a 'select' statement. This patch adds the 'select'
-> to make serial-samsung behave like the other drivers.
+Signed-off-by: Valentin Rothberg <valentinrothberg@gmail.com>
+---
+ drivers/tty/serial/crisv10.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Since Kconfig has a separate option for enabling console on Samsung,
-I'd rather move uart_parse_earlycon() and enclose it in
-
-#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_SERIAL_EARLYCON)
-...
-#endif
-
-I'll send a fix for that right now.
-
-Regards,
-Peter Hurley
-
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: b94ba0328d3b3 ("serial: samsung: Add support for early console")
-> 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index f8120c1bde14..5cd8f38a36de 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -241,6 +241,7 @@ config SERIAL_SAMSUNG
->  	tristate "Samsung SoC serial support"
->  	depends on PLAT_SAMSUNG || ARCH_EXYNOS
->  	select SERIAL_CORE
-> +	select SERIAL_CORE_CONSOLE
->  	select SERIAL_EARLYCON
->  	help
->  	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
+index 9ce6c1ce80b5..ad5b289ad2b1 100644
+--- a/drivers/tty/serial/crisv10.c
++++ b/drivers/tty/serial/crisv10.c
+@@ -708,10 +708,10 @@ static unsigned char dummy_ser[NR_PORTS] = {0xFF, 0xFF, 0xFF,0xFF};
+     defined(CONFIG_ETRAX_SER1_DTR_RI_DSR_CD_MIXED) || \
+     defined(CONFIG_ETRAX_SER2_DTR_RI_DSR_CD_MIXED) || \
+     defined(CONFIG_ETRAX_SER3_DTR_RI_DSR_CD_MIXED)
+-#define CONFIG_ETRAX_SERX_DTR_RI_DSR_CD_MIXED
++#define ETRAX_SERX_DTR_RI_DSR_CD_MIXED
+ #endif
+ 
+-#ifdef CONFIG_ETRAX_SERX_DTR_RI_DSR_CD_MIXED
++#ifdef ETRAX_SERX_DTR_RI_DSR_CD_MIXED
+ /* The pins can be mixed on PA and PB */
+ #define CONTROL_PINS_PORT_NOT_USED(line) \
+   &dummy_ser[line], &dummy_ser[line], \
+@@ -804,7 +804,7 @@ static const struct control_pins e100_modem_pins[NR_PORTS] =
+ #endif
+ 	}
+ };
+-#else  /* CONFIG_ETRAX_SERX_DTR_RI_DSR_CD_MIXED */
++#else  /* ETRAX_SERX_DTR_RI_DSR_CD_MIXED */
+ 
+ /* All pins are on either PA or PB for each serial port */
+ #define CONTROL_PINS_PORT_NOT_USED(line) \
+@@ -886,7 +886,7 @@ static const struct control_pins e100_modem_pins[NR_PORTS] =
+ #endif
+ 	}
+ };
+-#endif /* !CONFIG_ETRAX_SERX_DTR_RI_DSR_CD_MIXED */
++#endif /* !ETRAX_SERX_DTR_RI_DSR_CD_MIXED */
+ 
+ #define E100_RTS_MASK 0x20
+ #define E100_CTS_MASK 0x40
+-- 
+2.1.0
