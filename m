@@ -1,38 +1,49 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] serial: earlycon requires console support
-Date: Sat, 11 Apr 2015 00:01:32 +0200
-Message-ID: <5009638.HyplLv73fU@wuerfel>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+From: Valentin Rothberg <valentinrothberg@gmail.com>
+Subject: [PATCH 1/2] drivers/tty/serial: altera: fix typos in #endif comments
+Date: Sat, 11 Apr 2015 12:21:30 +0200
+Message-ID: <1428747690-19948-1-git-send-email-valentinrothberg@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, tfiga@google.com, Marek Szyprowski <m.szyprowski@samsung.com>, Alim Akhtar <alim.akhtar@samsung.com>, linux-arm-kernel@lists.infradead.org
+To: tklauser@distanz.ch, gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, pebolle@tiscalie.nl
+Cc: Valentin Rothberg <valentinrothberg@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-A configuration that enables earlycon but not the core console
-code causes a link error:
+Correct reference on CONFIG_SERIAL_ALTERA_{JTAG}UART_CONSOLE in
+C-comment after #endif.
 
-drivers/built-in.o: In function `setup_earlycon':
-drivers/tty/serial/earlycon.c:70: undefined reference to `uart_parse_earlycon'
+Signed-off-by: Valentin Rothberg <valentinrothberg@gmail.com>
+---
+I found this issue with ./scripts/checkkconfigsymbols.py
+---
+ drivers/tty/serial/altera_jtaguart.c | 2 +-
+ drivers/tty/serial/altera_uart.c     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-That error can be triggered by the newly added samsung earlycon support,
-which is missing a 'select' statement. This patch adds the 'select'
-to make serial-samsung behave like the other drivers.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Fixes: b94ba0328d3b3 ("serial: samsung: Add support for early console")
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index f8120c1bde14..5cd8f38a36de 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -241,6 +241,7 @@ config SERIAL_SAMSUNG
- 	tristate "Samsung SoC serial support"
- 	depends on PLAT_SAMSUNG || ARCH_EXYNOS
- 	select SERIAL_CORE
-+	select SERIAL_CORE_CONSOLE
- 	select SERIAL_EARLYCON
- 	help
- 	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index 0fefdd8931a2..32df2a0cb060 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -387,7 +387,7 @@ console_initcall(altera_jtaguart_console_init);
+ 
+ #define	ALTERA_JTAGUART_CONSOLE	NULL
+ 
+-#endif /* CONFIG_ALTERA_JTAGUART_CONSOLE */
++#endif /* CONFIG_SERIAL_ALTERA_JTAGUART_CONSOLE */
+ 
+ static struct uart_driver altera_jtaguart_driver = {
+ 	.owner		= THIS_MODULE,
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index b2859fe07e14..fd87a6f574e3 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -493,7 +493,7 @@ console_initcall(altera_uart_console_init);
+ 
+ #define	ALTERA_UART_CONSOLE	NULL
+ 
+-#endif /* CONFIG_ALTERA_UART_CONSOLE */
++#endif /* CONFIG_SERIAL_ALTERA_UART_CONSOLE */
+ 
+ /*
+  *	Define the altera_uart UART driver structure.
+-- 
+2.1.0
