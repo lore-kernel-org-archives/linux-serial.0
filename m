@@ -1,98 +1,140 @@
-From: Valentin Rothberg <valentinrothberg@gmail.com>
-Subject: [PATCH 2/4] drivers/tty/serial/crisv10.c: remove dead #ifdef blocks
-Date: Sat, 11 Apr 2015 15:56:01 +0200
-Message-ID: <1428760563-13413-3-git-send-email-valentinrothberg@gmail.com>
-References: <1428760563-13413-1-git-send-email-valentinrothberg@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] earlycon: Fix uart_parse_earlycon() if !CONFIG_SERIAL_CORE_CONSOLE
+Date: Sat, 11 Apr 2015 10:42:36 -0400
+Message-ID: <1428763356-29158-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1428760563-13413-1-git-send-email-valentinrothberg@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: starvik@axis.com, jesper.nilsson@axis.com, gregkh@linuxfoundation.org, jslaby@suse.cz, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, pebolle@tiscali.nl
-Cc: Valentin Rothberg <valentinrothberg@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alim Akhtar <alim.akhtar@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, tfiga@google.com, Chanwoo Choi <cw00.choi@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-ETRAX_RS485_{ON_PORT_G, LTC1387} are not defined in Kconfig.  The
-affected #ifdef block have not been compiled for years, so remove them
-entirely.
+Arnd Bergmann wrote:
+> A configuration that enables earlycon but not the core console
+> code causes a link error:
+>
+> drivers/built-in.o: In function `setup_earlycon':
+> drivers/tty/serial/earlycon.c:70: undefined reference to `uart_parse_earlycon'
 
-Signed-off-by: Valentin Rothberg <valentinrothberg@gmail.com>
+CONFIG_SERIAL_EARLYCON should not require CONFIG_SERIAL_CORE_CONSOLE.
+Move uart_parse_earlycon() and compile if either CONFIG_SERIAL_CORE_CONSOLE
+or CONFIG_SERIAL_EARLYCON.
+
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/crisv10.c | 36 ------------------------------------
- 1 file changed, 36 deletions(-)
 
-diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
-index 771314d2b7a3..349f95ea4a0f 100644
---- a/drivers/tty/serial/crisv10.c
-+++ b/drivers/tty/serial/crisv10.c
-@@ -56,10 +56,6 @@ static char *serial_version = "$Revision: 1.25 $";
- #error "RX_TIMEOUT_TICKS == 0 not allowed, use 1"
+NB: The diff moves everything else around uart_parse_earlycon() :/
+
+ drivers/tty/serial/serial_core.c | 90 ++++++++++++++++++++--------------------
+ 1 file changed, 46 insertions(+), 44 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index eec067d..4d42b13 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1762,50 +1762,7 @@ static const struct file_operations uart_proc_fops = {
+ };
  #endif
  
--#if defined(CONFIG_ETRAX_RS485_ON_PA) && defined(CONFIG_ETRAX_RS485_ON_PORT_G)
--#error "Disable either CONFIG_ETRAX_RS485_ON_PA or CONFIG_ETRAX_RS485_ON_PORT_G"
--#endif
+-#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_CONSOLE_POLL)
+-/**
+- *	uart_console_write - write a console message to a serial port
+- *	@port: the port to write the message
+- *	@s: array of characters
+- *	@count: number of characters in string to write
+- *	@putchar: function to write character to port
+- */
+-void uart_console_write(struct uart_port *port, const char *s,
+-			unsigned int count,
+-			void (*putchar)(struct uart_port *, int))
+-{
+-	unsigned int i;
 -
- /*
-  * All of the compatibilty code so we can compile serial.c against
-  * older kernels is hidden in serial_compat.h
-@@ -487,9 +483,6 @@ static struct fast_timer fast_timers_rs485[NR_PORTS];
- #if defined(CONFIG_ETRAX_RS485_ON_PA)
- static int rs485_pa_bit = CONFIG_ETRAX_RS485_ON_PA_BIT;
- #endif
--#if defined(CONFIG_ETRAX_RS485_ON_PORT_G)
--static int rs485_port_g_bit = CONFIG_ETRAX_RS485_ON_PORT_G_BIT;
--#endif
- #endif
- 
- /* Info and macros needed for each ports extra control/status signals. */
-@@ -1367,16 +1360,6 @@ e100_enable_rs485(struct tty_struct *tty, struct serial_rs485 *r)
- #if defined(CONFIG_ETRAX_RS485_ON_PA)
- 	*R_PORT_PA_DATA = port_pa_data_shadow |= (1 << rs485_pa_bit);
- #endif
--#if defined(CONFIG_ETRAX_RS485_ON_PORT_G)
--	REG_SHADOW_SET(R_PORT_G_DATA,  port_g_data_shadow,
--		       rs485_port_g_bit, 1);
--#endif
--#if defined(CONFIG_ETRAX_RS485_LTC1387)
--	REG_SHADOW_SET(R_PORT_G_DATA, port_g_data_shadow,
--		       CONFIG_ETRAX_RS485_LTC1387_DXEN_PORT_G_BIT, 1);
--	REG_SHADOW_SET(R_PORT_G_DATA, port_g_data_shadow,
--		       CONFIG_ETRAX_RS485_LTC1387_RXEN_PORT_G_BIT, 1);
--#endif
- 
- 	info->rs485 = *r;
- 
-@@ -3712,16 +3695,6 @@ rs_close(struct tty_struct *tty, struct file * filp)
- #if defined(CONFIG_ETRAX_RS485_ON_PA)
- 		*R_PORT_PA_DATA = port_pa_data_shadow &= ~(1 << rs485_pa_bit);
- #endif
--#if defined(CONFIG_ETRAX_RS485_ON_PORT_G)
--		REG_SHADOW_SET(R_PORT_G_DATA, port_g_data_shadow,
--			       rs485_port_g_bit, 0);
--#endif
--#if defined(CONFIG_ETRAX_RS485_LTC1387)
--		REG_SHADOW_SET(R_PORT_G_DATA, port_g_data_shadow,
--			       CONFIG_ETRAX_RS485_LTC1387_DXEN_PORT_G_BIT, 0);
--		REG_SHADOW_SET(R_PORT_G_DATA, port_g_data_shadow,
--			       CONFIG_ETRAX_RS485_LTC1387_RXEN_PORT_G_BIT, 0);
--#endif
- 	}
- #endif
- 
-@@ -4250,15 +4223,6 @@ static int __init rs_init(void)
- 		return -EBUSY;
- 	}
- #endif
--#if defined(CONFIG_ETRAX_RS485_ON_PORT_G)
--	if (cris_io_interface_allocate_pins(if_serial_0, 'g', rs485_pa_bit,
--			rs485_port_g_bit)) {
--		printk(KERN_ERR "ETRAX100LX serial: Could not allocate "
--			"RS485 pin\n");
--		put_tty_driver(driver);
--		return -EBUSY;
+-	for (i = 0; i < count; i++, s++) {
+-		if (*s == '\n')
+-			putchar(port, '\r');
+-		putchar(port, *s);
 -	}
--#endif
- #endif
+-}
+-EXPORT_SYMBOL_GPL(uart_console_write);
+-
+-/*
+- *	Check whether an invalid uart number has been specified, and
+- *	if so, search for the first available port that does have
+- *	console support.
+- */
+-struct uart_port * __init
+-uart_get_console(struct uart_port *ports, int nr, struct console *co)
+-{
+-	int idx = co->index;
+-
+-	if (idx < 0 || idx >= nr || (ports[idx].iobase == 0 &&
+-				     ports[idx].membase == NULL))
+-		for (idx = 0; idx < nr; idx++)
+-			if (ports[idx].iobase != 0 ||
+-			    ports[idx].membase != NULL)
+-				break;
+-
+-	co->index = idx;
+-
+-	return ports + idx;
+-}
+-
++#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_SERIAL_EARLYCON)
+ /**
+  *	uart_parse_earlycon - Parse earlycon options
+  *	@p:	  ptr to 2nd field (ie., just beyond '<name>,')
+@@ -1851,6 +1808,51 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(uart_parse_earlycon);
++#endif
++
++#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_CONSOLE_POLL)
++/**
++ *	uart_console_write - write a console message to a serial port
++ *	@port: the port to write the message
++ *	@s: array of characters
++ *	@count: number of characters in string to write
++ *	@putchar: function to write character to port
++ */
++void uart_console_write(struct uart_port *port, const char *s,
++			unsigned int count,
++			void (*putchar)(struct uart_port *, int))
++{
++	unsigned int i;
++
++	for (i = 0; i < count; i++, s++) {
++		if (*s == '\n')
++			putchar(port, '\r');
++		putchar(port, *s);
++	}
++}
++EXPORT_SYMBOL_GPL(uart_console_write);
++
++/*
++ *	Check whether an invalid uart number has been specified, and
++ *	if so, search for the first available port that does have
++ *	console support.
++ */
++struct uart_port * __init
++uart_get_console(struct uart_port *ports, int nr, struct console *co)
++{
++	int idx = co->index;
++
++	if (idx < 0 || idx >= nr || (ports[idx].iobase == 0 &&
++				     ports[idx].membase == NULL))
++		for (idx = 0; idx < nr; idx++)
++			if (ports[idx].iobase != 0 ||
++			    ports[idx].membase != NULL)
++				break;
++
++	co->index = idx;
++
++	return ports + idx;
++}
  
- 	/* Initialize the tty_driver structure */
+ /**
+  *	uart_parse_options - Parse serial port baud/parity/bits/flow control.
 -- 
-2.1.0
+2.3.5
