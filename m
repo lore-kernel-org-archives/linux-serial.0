@@ -1,14 +1,14 @@
 From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
-Subject: Re: [PATCH v3 03/10] drivers: PL011: refactor pl011_shutdown()
-Date: Sun, 12 Apr 2015 11:19:26 +0200
-Message-ID: <20150412111926.21f513bf@north>
+Subject: Re: [PATCH v3 05/10] drivers: PL011: refactor pl011_probe()
+Date: Sun, 12 Apr 2015 12:16:22 +0200
+Message-ID: <20150412121622.2ee92f59@north>
 References: <1428578961-6896-1-git-send-email-andre.przywara@arm.com>
- <1428578961-6896-4-git-send-email-andre.przywara@arm.com>
+ <1428578961-6896-6-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1428578961-6896-4-git-send-email-andre.przywara@arm.com>
+In-Reply-To: <1428578961-6896-6-git-send-email-andre.przywara@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,80 +22,58 @@ To: Andre Przywara <andre.przywara@arm.com>
 Cc: rob.herring@linaro.org, arnd@arndb.de, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, rmk+kernel@arm.linux.org.uk, Jiri Slaby <jslaby@suse.cz>, Dave.Martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu,  9 Apr 2015 12:29:14 +0100, Andre Przywara wrote:
-> Split the pl011_shutdown() function into smaller chunks to allow
-> easier reuse later when adding SBSA support.
+On Thu,  9 Apr 2015 12:29:16 +0100, Andre Przywara wrote:
+> Currently the pl011_probe() function is relying on some AMBA IDs
+> and a device tree node to initialize the driver and a port.
+> Both features are not necessarily required for the driver:
+> - we lack AMBA IDs in the ARM SBSA generic UART and
+> - we lack a DT node in ACPI systems.
+> So lets refactor the function to ease later reuse.
 > 
 > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 > ---
->  drivers/tty/serial/amba-pl011.c |   58 ++++++++++++++++++++++-----------------
->  1 file changed, 33 insertions(+), 25 deletions(-)
+>  drivers/tty/serial/amba-pl011.c |   89 ++++++++++++++++++++++++++-------------
+>  1 file changed, 60 insertions(+), 29 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index d6a081e..9eb6d13 100644
+> index e1ac2cb..65df5c7 100644
 > --- a/drivers/tty/serial/amba-pl011.c
 > +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -1635,34 +1635,15 @@ static void pl011_shutdown_channel(struct uart_amba_port *uap,
->        writew(val, uap->port.membase + lcrh);
+> @@ -2174,13 +2174,10 @@ static void pl011_unregister_port(struct uart_amba_port *uap)
+>  		uart_unregister_driver(&amba_reg);
 >  }
 >  
-> -static void pl011_shutdown(struct uart_port *port)
-> +/*
-> + * disable the port. It should not disable RTS and DTR.
-> + * Also RTS and DTR state should be preserved to restore
-> + * it during startup().
-> + */
-> +static void pl011_disable_uart(struct uart_amba_port *uap)
+> -
+> -static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+> +static int pl011_allocate_port(struct device *dev, struct uart_amba_port **_uap)
 >  {
-> -	struct uart_amba_port *uap =
-> -	    container_of(port, struct uart_amba_port, port);
->  	unsigned int cr;
+>  	struct uart_amba_port *uap;
+> -	struct vendor_data *vendor = id->data;
+> -	void __iomem *base;
+> -	int i, ret;
+> +	int i;
 >  
-> -	/*
-> -	 * disable all interrupts
-> -	 */
-> -	spin_lock_irq(&uap->port.lock);
-> -	uap->im = 0;
-> -	writew(uap->im, uap->port.membase + UART011_IMSC);
-> -	writew(0xffff, uap->port.membase + UART011_ICR);
-> -	spin_unlock_irq(&uap->port.lock);
-> -
-> -	pl011_dma_shutdown(uap);
-> -
-> -	/*
-> -	 * Free the interrupt
-> -	 */
-> -	free_irq(uap->port.irq, uap);
-> -
-> -	/*
-> -	 * disable the port
-> -	 * disable the port. It should not disable RTS and DTR.
-> -	 * Also RTS and DTR state should be preserved to restore
-> -	 * it during startup().
-> -	 */
->  	uap->autorts = false;
->  	spin_lock_irq(&uap->port.lock);
->  	cr = readw(uap->port.membase + UART011_CR);
-> @@ -1678,6 +1659,33 @@ static void pl011_shutdown(struct uart_port *port)
->  	pl011_shutdown_channel(uap, uap->lcrh_rx);
->  	if (uap->lcrh_rx != uap->lcrh_tx)
->  		pl011_shutdown_channel(uap, uap->lcrh_tx);
-> +}
+>  	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
+>  		if (amba_ports[i] == NULL)
+> @@ -2189,51 +2186,53 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>  	if (i == ARRAY_SIZE(amba_ports))
+>  		return -EBUSY;
+>  
+> -	uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
+> -			   GFP_KERNEL);
+> +	uap = devm_kzalloc(dev, sizeof(struct uart_amba_port), GFP_KERNEL);
+>  	if (uap == NULL)
+>  		return -ENOMEM;
+>  
+> -	i = pl011_probe_dt_alias(i, &dev->dev);
+> +	if (_uap)
+> +		*_uap = uap;
 > +
-> +static void pl011_disable_interrupts(struct uart_amba_port *uap)
-> +{
-> +	spin_lock_irq(&uap->port.lock);
-> +	/*
-> +	 * mask all interrupts and clear all pending ones
-> +	 */
+> +	return i;
+> +}
 
-No need for a multi-line comment here.
+Could we please move the allocation out of this function and spare
+ourselves the "out argument".  It's just a matter of personal
+preference so the final decision is up to you.
 
-> +	uap->im = 0;
-> +	writew(uap->im, uap->port.membase + UART011_IMSC);
-> +	writew(0xffff & ~UART011_TXIS, uap->port.membase + UART011_ICR);
-
-The line you removed was:
-	writew(0xffff, uap->port.membase + UART011_ICR);
-
-Please rebase more carefully.
+Also you never pass _uap as NULL so the check is unnecessary.
