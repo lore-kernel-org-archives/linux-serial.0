@@ -1,57 +1,97 @@
-From: Jiada Wang <jiada_wang@mentor.com>
-Subject: [PATCH v2] serial: imx: protect Soft Reset of port with lock
-Date: Mon, 13 Apr 2015 18:31:43 +0900
-Message-ID: <1428917503-27324-1-git-send-email-jiada_wang@mentor.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH] serial: xilinx: Use platform_get_irq to get irq description structure
+Date: Mon, 13 Apr 2015 16:34:21 +0200
+Message-ID: <aded4ecb0160a068860b00bbed71e0b00f7742e8.1428935656.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.cz
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jiada_wang@mentor.com
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu
+Cc: Arnd Bergmann <arnd@arndb.de>, stable@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>, Jiri Slaby <jslaby@suse.cz>, =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Previously Soft Reset (clear of SRST bit in UCR2 register)
-of UART in startup is not protected by lock, which may have race
-with console_write, as console_write may occur at anytime even
-when UART port is shutdown.
+For systems with CONFIG_SERIAL_OF_PLATFORM=y and device_type =
+"serial"; property in DT of_serial.c driver maps and unmaps IRQ (because
+driver probe fails). Then a driver is called but irq mapping is not
+created that's why driver is failing again in again on request_irq().
+Based on this use platform_get_irq() instead of platform_get_resource()
+which is doing irq_desc allocation and driver itself can request IRQ.
 
-To avoid this race, protect Soft reset of UART port with spin_lock.
+Fix both xilinx serial drivers in the tree.
 
-Signed-off-by: Jiada Wang <jiada_wang@mentor.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+CC: <stable@vger.kernel.org>
 ---
- drivers/tty/serial/imx.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index c8cfa06..38717c7 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1114,6 +1114,12 @@ static int imx_startup(struct uart_port *port)
+ drivers/tty/serial/uartlite.c      | 11 ++++++-----
+ drivers/tty/serial/xilinx_uartps.c | 12 ++++++------
+ 2 files changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 189f52e3111f..a0099a7f60d4 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -632,7 +632,8 @@ MODULE_DEVICE_TABLE(of, ulite_of_match);
  
- 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+ static int ulite_probe(struct platform_device *pdev)
+ {
+-	struct resource *res, *res2;
++	struct resource *res;
++	int irq;
+ 	int id = pdev->id;
+ #ifdef CONFIG_OF
+ 	const __be32 *prop;
+@@ -646,11 +647,11 @@ static int ulite_probe(struct platform_device *pdev)
+ 	if (!res)
+ 		return -ENODEV;
  
-+	/* Can we enable the DMA support? */
-+	if (is_imx6q_uart(sport) && !uart_console(port) &&
-+	    !sport->dma_is_inited)
-+		imx_uart_dma_init(sport);
-+
-+	spin_lock_irqsave(&sport->port.lock, flags);
- 	/* Reset fifo's and state machines */
- 	i = 100;
+-	res2 = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (!res2)
+-		return -ENODEV;
++	irq = platform_get_irq(pdev, 0);
++	if (irq <= 0)
++		return -ENXIO;
  
-@@ -1124,13 +1130,6 @@ static int imx_startup(struct uart_port *port)
- 	while (!(readl(sport->port.membase + UCR2) & UCR2_SRST) && (--i > 0))
- 		udelay(1);
+-	return ulite_assign(&pdev->dev, id, res->start, res2->start);
++	return ulite_assign(&pdev->dev, id, res->start, irq);
+ }
  
--	/* Can we enable the DMA support? */
--	if (is_imx6q_uart(sport) && !uart_console(port) &&
--	    !sport->dma_is_inited)
--		imx_uart_dma_init(sport);
--
--	spin_lock_irqsave(&sport->port.lock, flags);
--
- 	/*
- 	 * Finally, clear and enable interrupts
- 	 */
+ static int ulite_remove(struct platform_device *pdev)
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index cff531a51a78..54853a02ce9e 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1325,9 +1325,9 @@ static SIMPLE_DEV_PM_OPS(cdns_uart_dev_pm_ops, cdns_uart_suspend,
+  */
+ static int cdns_uart_probe(struct platform_device *pdev)
+ {
+-	int rc, id;
++	int rc, id, irq;
+ 	struct uart_port *port;
+-	struct resource *res, *res2;
++	struct resource *res;
+ 	struct cdns_uart *cdns_uart_data;
+ 
+ 	cdns_uart_data = devm_kzalloc(&pdev->dev, sizeof(*cdns_uart_data),
+@@ -1374,9 +1374,9 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		goto err_out_clk_disable;
+ 	}
+ 
+-	res2 = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (!res2) {
+-		rc = -ENODEV;
++	irq = platform_get_irq(pdev, 0);
++	if (irq <= 0) {
++		rc = -ENXIO;
+ 		goto err_out_clk_disable;
+ 	}
+ 
+@@ -1405,7 +1405,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		 * and triggers invocation of the config_port() entry point.
+ 		 */
+ 		port->mapbase = res->start;
+-		port->irq = res2->start;
++		port->irq = irq;
+ 		port->dev = &pdev->dev;
+ 		port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
+ 		port->private_data = cdns_uart_data;
 -- 
-1.9.3
+2.3.5
