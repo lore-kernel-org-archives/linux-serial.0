@@ -1,42 +1,154 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH V4 0/5] Add big-endian MMIO support to serial8250
-Date: Mon, 13 Apr 2015 19:09:12 +0200
-Message-ID: <20150413170912.GA802@kroah.com>
-References: <1428609918-10290-1-git-send-email-cernekee@gmail.com>
- <CAL_Jsq+-Yr3oB2=7X2a9XDU_-b+08WfJRJUqVsCHAaQEQxQ1Mg@mail.gmail.com>
- <5527DE27.8060700@hurleysoftware.com>
+From: Sonic Zhang <sonic.adi@gmail.com>
+Subject: Re: [PATCH] serial: bfin: ctsrts: enfore Kconfig naming convention
+Date: Tue, 14 Apr 2015 10:38:52 +0800
+Message-ID: <CAJxxZ0MwZZ5RiHbV_7O-nG4QD3aQ2shrEftGz4+bYv8WdoLDkQ@mail.gmail.com>
+References: <1428854075-6241-1-git-send-email-valentinrothberg@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5527DE27.8060700@hurleysoftware.com>
+In-Reply-To: <1428854075-6241-1-git-send-email-valentinrothberg@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Rob Herring <robh@kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.cz>, Grant Likely <grant.likely@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Florian Fainelli <f.fainelli@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Valentin Rothberg <valentinrothberg@gmail.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Serial <linux-serial@vger.kernel.org>, Miao Steven <realmz6@gmail.com>, "Zhang, Sonic" <sonic.zhang@analog.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Apr 10, 2015 at 10:28:55AM -0400, Peter Hurley wrote:
-> On 04/10/2015 09:52 AM, Rob Herring wrote:
-> > On Thu, Apr 9, 2015 at 3:05 PM, Kevin Cernekee <cernekee@gmail.com> wrote:
-> >> V3->V4:
-> >>
-> >> Rebase on Linus' head of tree
-> >>
-> >> Tweak documentation per Grant's request
-> >>
-> >> Drop the of_earlycon patches in favor of Peter's series
-> > 
-> > Are there conflicts with Peter's stuff?
-> 
-> No.
-> 
-> It adds the required pieces so that a trivial patch on top of 
-> both series will enable mmio32be for earlycon.
-> 
-> > The series looks good to me.
-> 
-> Same.
-> 
-> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Acked-by: Sonic Zhang <sonic.zhang@analog.com>
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+On Sun, Apr 12, 2015 at 11:54 PM, Valentin Rothberg
+<valentinrothberg@gmail.com> wrote:
+> The CONFIG_ prefix is reserved for Kconfig options in Make and CPP
+> syntax; static analysis tools rely on this convention.  This patch
+> enforces this behavior for SERIAL_BFIN_{HARD_}CTSRTS.
+>
+> Signed-off-by: Valentin Rothberg <valentinrothberg@gmail.com>
+> ---
+> I found this issue with ./scripts/checkkconfigsymbols.py
+> ---
+>  arch/blackfin/include/asm/bfin_serial.h |  8 ++++----
+>  drivers/tty/serial/bfin_uart.c          | 24 ++++++++++++------------
+>  2 files changed, 16 insertions(+), 16 deletions(-)
+>
+> diff --git a/arch/blackfin/include/asm/bfin_serial.h b/arch/blackfin/include/asm/bfin_serial.h
+> index d00d732784b1..b550ada7321b 100644
+> --- a/arch/blackfin/include/asm/bfin_serial.h
+> +++ b/arch/blackfin/include/asm/bfin_serial.h
+> @@ -22,9 +22,9 @@
+>      defined(CONFIG_BFIN_UART2_CTSRTS) || \
+>      defined(CONFIG_BFIN_UART3_CTSRTS)
+>  # if defined(BFIN_UART_BF54X_STYLE) || defined(BFIN_UART_BF60X_STYLE)
+> -#  define CONFIG_SERIAL_BFIN_HARD_CTSRTS
+> +#  define SERIAL_BFIN_HARD_CTSRTS
+>  # else
+> -#  define CONFIG_SERIAL_BFIN_CTSRTS
+> +#  define SERIAL_BFIN_CTSRTS
+>  # endif
+>  #endif
+>
+> @@ -50,8 +50,8 @@ struct bfin_serial_port {
+>  #elif ANOMALY_05000363
+>         unsigned int anomaly_threshold;
+>  #endif
+> -#if defined(CONFIG_SERIAL_BFIN_CTSRTS) || \
+> -       defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
+> +#if defined(SERIAL_BFIN_CTSRTS) || \
+> +       defined(SERIAL_BFIN_HARD_CTSRTS)
+>         int cts_pin;
+>         int rts_pin;
+>  #endif
+> diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+> index 155781ece050..ae3cf94b146b 100644
+> --- a/drivers/tty/serial/bfin_uart.c
+> +++ b/drivers/tty/serial/bfin_uart.c
+> @@ -74,8 +74,8 @@ static void bfin_serial_tx_chars(struct bfin_serial_port *uart);
+>
+>  static void bfin_serial_reset_irda(struct uart_port *port);
+>
+> -#if defined(CONFIG_SERIAL_BFIN_CTSRTS) || \
+> -       defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
+> +#if defined(SERIAL_BFIN_CTSRTS) || \
+> +       defined(SERIAL_BFIN_HARD_CTSRTS)
+>  static unsigned int bfin_serial_get_mctrl(struct uart_port *port)
+>  {
+>         struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
+> @@ -110,7 +110,7 @@ static irqreturn_t bfin_serial_mctrl_cts_int(int irq, void *dev_id)
+>         struct bfin_serial_port *uart = dev_id;
+>         struct uart_port *uport = &uart->port;
+>         unsigned int status = bfin_serial_get_mctrl(uport);
+> -#ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
+> +#ifdef SERIAL_BFIN_HARD_CTSRTS
+>
+>         UART_CLEAR_SCTS(uart);
+>         if (uport->hw_stopped) {
+> @@ -700,7 +700,7 @@ static int bfin_serial_startup(struct uart_port *port)
+>  # endif
+>  #endif
+>
+> -#ifdef CONFIG_SERIAL_BFIN_CTSRTS
+> +#ifdef SERIAL_BFIN_CTSRTS
+>         if (uart->cts_pin >= 0) {
+>                 if (request_irq(gpio_to_irq(uart->cts_pin),
+>                         bfin_serial_mctrl_cts_int,
+> @@ -718,7 +718,7 @@ static int bfin_serial_startup(struct uart_port *port)
+>                         gpio_direction_output(uart->rts_pin, 0);
+>         }
+>  #endif
+> -#ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
+> +#ifdef SERIAL_BFIN_HARD_CTSRTS
+>         if (uart->cts_pin >= 0) {
+>                 if (request_irq(uart->status_irq, bfin_serial_mctrl_cts_int,
+>                         0, "BFIN_UART_MODEM_STATUS", uart)) {
+> @@ -766,13 +766,13 @@ static void bfin_serial_shutdown(struct uart_port *port)
+>         free_irq(uart->tx_irq, uart);
+>  #endif
+>
+> -#ifdef CONFIG_SERIAL_BFIN_CTSRTS
+> +#ifdef SERIAL_BFIN_CTSRTS
+>         if (uart->cts_pin >= 0)
+>                 free_irq(gpio_to_irq(uart->cts_pin), uart);
+>         if (uart->rts_pin >= 0)
+>                 gpio_free(uart->rts_pin);
+>  #endif
+> -#ifdef CONFIG_SERIAL_BFIN_HARD_CTSRTS
+> +#ifdef SERIAL_BFIN_HARD_CTSRTS
+>         if (uart->cts_pin >= 0)
+>                 free_irq(uart->status_irq, uart);
+>  #endif
+> @@ -788,7 +788,7 @@ bfin_serial_set_termios(struct uart_port *port, struct ktermios *termios,
+>         unsigned int ier, lcr = 0;
+>         unsigned long timeout;
+>
+> -#ifdef CONFIG_SERIAL_BFIN_CTSRTS
+> +#ifdef SERIAL_BFIN_CTSRTS
+>         if (old == NULL && uart->cts_pin != -1)
+>                 termios->c_cflag |= CRTSCTS;
+>         else if (uart->cts_pin == -1)
+> @@ -1110,8 +1110,8 @@ bfin_serial_console_setup(struct console *co, char *options)
+>         int baud = 57600;
+>         int bits = 8;
+>         int parity = 'n';
+> -# if defined(CONFIG_SERIAL_BFIN_CTSRTS) || \
+> -       defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
+> +# if defined(SERIAL_BFIN_CTSRTS) || \
+> +       defined(SERIAL_BFIN_HARD_CTSRTS)
+>         int flow = 'r';
+>  # else
+>         int flow = 'n';
+> @@ -1322,8 +1322,8 @@ static int bfin_serial_probe(struct platform_device *pdev)
+>                 init_timer(&(uart->rx_dma_timer));
+>  #endif
+>
+> -#if defined(CONFIG_SERIAL_BFIN_CTSRTS) || \
+> -       defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
+> +#if defined(SERIAL_BFIN_CTSRTS) || \
+> +       defined(SERIAL_BFIN_HARD_CTSRTS)
+>                 res = platform_get_resource(pdev, IORESOURCE_IO, 0);
+>                 if (res == NULL)
+>                         uart->cts_pin = -1;
+> --
+> 2.1.0
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
