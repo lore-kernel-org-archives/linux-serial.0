@@ -1,63 +1,51 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2] serial: of-serial: Remove device_type = "serial" registration
-Date: Wed, 15 Apr 2015 07:08:01 -0400
-Message-ID: <552E4691.5040501@hurleysoftware.com>
-References: <ffb577a257d14087e1d2d0347a071f5aef519e52.1429005786.git.michal.simek@xilinx.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH V4 0/5] Add big-endian MMIO support to serial8250
+Date: Wed, 15 Apr 2015 07:51:12 -0500
+Message-ID: <CAL_JsqKz_8Zb2DX0Yvg-Oh-26hKDMR4RzUagFtsGauGVdH9RqA@mail.gmail.com>
+References: <1428609918-10290-1-git-send-email-cernekee@gmail.com>
+ <CAL_Jsq+-Yr3oB2=7X2a9XDU_-b+08WfJRJUqVsCHAaQEQxQ1Mg@mail.gmail.com>
+ <5527DE27.8060700@hurleysoftware.com> <20150413170912.GA802@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ffb577a257d14087e1d2d0347a071f5aef519e52.1429005786.git.michal.simek@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, monstr@monstr.eu, Arnd Bergmann <arnd@arndb.de>
-Cc: stable@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150413170912.GA802-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 04/14/2015 06:03 AM, Michal Simek wrote:
-> Do not probe all serial drivers by of_serial.c which are using
-> device_type = "serial"; property. Only drivers which have valid
-> compatible strings listed in the driver should be probed.
-> 
-> When PORT_UNKNOWN is setup probe will fail anyway.
-> 
-> Arnd quotation about driver historical background:
-> "when I wrote that driver initially, the idea was that it would
-> get used as a stub to hook up all other serial drivers but after
-> that, the common code learned to create platform devices from DT"
-> 
-> This patch fix the problem with on the system with xilinx_uartps and
-> 16550a where of_serial failed to register for xilinx_uartps and because
-> of irq_dispose_mapping() removed irq_desc. Then when xilinx_uartps was asking
-> for irq with request_irq() EINVAL is returned.
+On Mon, Apr 13, 2015 at 12:09 PM, Greg Kroah-Hartman
+<gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org> wrote:
+> On Fri, Apr 10, 2015 at 10:28:55AM -0400, Peter Hurley wrote:
+>> On 04/10/2015 09:52 AM, Rob Herring wrote:
+>> > On Thu, Apr 9, 2015 at 3:05 PM, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>> >> V3->V4:
+>> >>
+>> >> Rebase on Linus' head of tree
+>> >>
+>> >> Tweak documentation per Grant's request
+>> >>
+>> >> Drop the of_earlycon patches in favor of Peter's series
+>> >
+>> > Are there conflicts with Peter's stuff?
+>>
+>> No.
+>>
+>> It adds the required pieces so that a trivial patch on top of
+>> both series will enable mmio32be for earlycon.
+>>
+>> > The series looks good to me.
+>>
+>> Same.
+>>
+>> Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+>
+> Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 
-The problem is that irq_create_mapping()/irq_dispose_mapping()
-is not symmetrical, which breaks the device probe model. With that
-fixed, no change would be required here.
+I've applied the series for 4.1. I took it since it got dropped last time.
 
-Regards,
-Peter Hurley
-
-
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> CC: <stable@vger.kernel.org>
-> ---
-> 
-> Changes in v2:
-> - Extend patch description
-> 
->  drivers/tty/serial/of_serial.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-> index 33fb94f78967..0a52c8b55a5f 100644
-> --- a/drivers/tty/serial/of_serial.c
-> +++ b/drivers/tty/serial/of_serial.c
-> @@ -344,7 +344,6 @@ static struct of_device_id of_platform_serial_table[] = {
->  	{ .compatible = "ibm,qpace-nwp-serial",
->  		.data = (void *)PORT_NWPSERIAL, },
->  #endif
-> -	{ .type = "serial",         .data = (void *)PORT_UNKNOWN, },
->  	{ /* end of list */ },
->  };
->  
-> 
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
