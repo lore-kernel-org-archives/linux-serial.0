@@ -1,61 +1,56 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v1 11/15] serial: imx: initialized DMA w/o HW flow enabled
-Date: Fri, 17 Apr 2015 12:31:42 +0200
-Message-ID: <5530E10E.8060808@linutronix.de>
-References: <1418116296-12082-1-git-send-email-jiada_wang@mentor.com> <1418116296-12082-12-git-send-email-jiada_wang@mentor.com> <20150409120057.GA12596@breakpoint.cc> <552B72DF.7060006@mentor.com> <20150413080637.GA1537@breakpoint.cc> <5530CFEF.9080807@mentor.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v2] serial: samsung: fix serial console break
+Date: Sat, 18 Apr 2015 10:42:45 -0400
+Message-ID: <55326D65.7010609@hurleysoftware.com>
+References: <1429252989-4724-1-git-send-email-r.baldyga@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5530CFEF.9080807@mentor.com>
+In-Reply-To: <1429252989-4724-1-git-send-email-r.baldyga@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jiwang <jiada_wang@mentor.com>, Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, anton_bondarenko@mentor.com, dirk.behme@de.bosch.com
+To: Robert Baldyga <r.baldyga@samsung.com>, gregkh@linuxfoundation.org
+Cc: akpm@linux-foundation.org, jslaby@suse.cz, cw00.choi@samsung.com, m.szyprowski@samsung.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 04/17/2015 11:18 AM, jiwang wrote:
-> Hello Sebastian
-
-Hallo Jiada,
-
->> Please make sure it is tagged stable. There is no hint that this is
->> required
->> and as of it now, it breaks v4.0.
-> Due to missing of SDMA firmware, uart sdma mode is broken,
-> but it is uncovered by this commit on your environment.
+On 04/17/2015 02:43 AM, Robert Baldyga wrote:
+> This patch fixes problems with serial console break. When function
+> s3c64xx_serial_startup() was started while serial console has been working,
+> it caused lose of characters written to TX FIFO. This effect was particularly
+> observable with systemd, which closes serial port every time when it's
+> not currently needed, hence function s3c64xx_serial_startup() is called
+> quite often there. To fix this problem we avoid resetting TX FIFO if port is
+> used as serial console.
 > 
->> One question, where do you have the firmware from? I picked the one
->> from FSL's
->> v3.10 SDK and I ended up with FIFO-overflows so it was clearly the
->> wrong one
->> (and the built-in SDMA firmware does not work as expected as you
->> mentioned).
-> I got sdma firmware from FSL kernel tree.
-
-Can you post a link please?
-
->> Is this firmware only required the imx6 series or also for older
->> versions like
->> imx5?
-> the firmware only supports imx6 series, AFAIK,
-
-What I meant is if imx5 (and earlier) have a working DMA without the
-SDMA firmware which seems to be required for IMX6.
-
-> I checked with Freescale imx6 support team, due to
-> licensing issue, I am not entitled to upstream FSL SDMA firmware.
-> so seems currently disable SDMA support for uart is our only option
-> at the moment.
-Disable it please, add a hint in the source so one knows _why_ it has
-been disabled and push it stable. In future you would need some kind of
-a hint from the sdma driver to let the uart know that the proper
-firmware is in place.
-
-Is it okay to send a patch against the linux-firmware tree?
-	https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git/
-
+> Example of broken console log:
 > 
-> Thanks,
-> Jiada
+> [ 1086.7         Expecting device dev-ttySAC1.device...
+> [ 1086.[  OK  ] Reached target Paths.
+> [ 1086.756416] s[  OK  ] Reached target Swap.
+> [ 1086.776413] systemd[1]: Reached target Swap.
+> [ 1086.776642] systemd[1]: Starting Root Slice.
+> [    5.53403[  OK  ] Created slice Root Slice.
+> [    5.548433] systemd[1]: Create[  OK  ] Created slice User and Session Slice.
+> [    5.568414] sys[  OK  ] Listening on /dev/initctl Compatibility Named Pipe.
+> [    5.588388] s[  OK  ] Listening on Delayed Shutdown Socket.
+> [    5.608376] sy[  OK  ] Listening on Journal Socket (/dev/log).
+> [    5.628361] [  OK  ] Listening on udev Kernel Socket.
+> [    5.648357] s[  OK  ] Listening on udev Control Socket.
+> [    5.668353] s[  OK  ] Listening on Journal Socket.
+> [    5.688366] systemd[1]: Listeni[  OK  ] Created slice System Slice.
+> [    5.708393]          Mounting Temporary Directory...
+> [ 7139.067436]          Starting prepare device daemon...
+> [ 7139.091726] sy         Starting Generate environment from /etc/profile.d...
+> [    5.792867] system         Starting Create Static Device Nodes in /dev...
+> [ 7848.718         Mounting Debug File System...
+> [ 7848.7384         Mounting Configuration File System...
+> [    5.852         Starting Apply Kernel Variables...
+> [    5.8720         Starting Setup Virtual Console...
+> [ 7848.798         Starting udev Coldplug all Devices...
+> [ 7848.817         Starting Journal Service...
+> [  OK  ] Started Journal Service.
+> [ 7848.854222] s[  OK  ] Reached target Slices.
+>          Starting Remount Root and Kernel File Systems...
+> [  OK  ] Mounted Configuration File System.
 
-Sebastian
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
