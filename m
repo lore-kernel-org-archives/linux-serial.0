@@ -1,31 +1,44 @@
-From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH] tty: Re-add external interface for tty_set_termios()
-Date: Tue, 21 Apr 2015 09:04:18 -0700
-Message-ID: <5F75AEFB-A885-465E-9A5E-032B9380D226@holtmann.org>
-References: <1428671585-13310-1-git-send-email-frederic.danis@linux.intel.com> <5527CEFB.5070406@hurleysoftware.com> <20150421090640.GB1569@kroah.com>
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150421090640.GB1569-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "bluez mailin list (linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org)" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, jslaby-AlSwsSmVLrQ@public.gmane.org
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [GIT PULL] TTY/Serial patches for 4.1-rc1
+Date: Tue, 21 Apr 2015 09:41:22 -0700
+Message-ID: <CA+55aFzeqhQ=oDMoOmw_Mr6rzKRLCWC8bL1LtyXv96f-+_AtXA@mail.gmail.com>
+References: <20150421101032.GA4733@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20150421101032.GA4733@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vinod Koul <vinod.koul@intel.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+On Tue, Apr 21, 2015 at 3:10 AM, Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> TTY/Serial patches for 4.1-rc1
+>
+> Here's the big tty/serial driver update for 4.1-rc1.
 
->>> This is needed by Bluetooth hci_uart module to be able to change speed
->>> of Bluetooth controller and local UART.
->> 
->> Because this is the lesser evil right now,
->> 
->> Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-> 
-> Does this need to be in 4.1-rc1?  Or is this a 4.2 thing?
+This causes Kconfig annoyances:
 
-if you can queue this up for 4.1-rc1, that would be great. We are using it. It is just the driver using it did not make it to 4.0-rc1 yet.
+  High Speed UART DMA support (HSU_DMA) [N/m/y] (NEW)
+  High Speed UART DMA PCI driver (HSU_DMA_PCI) [N/m/y/?] (NEW)
 
-Regards
+I _just_ said "no, I don't want High Speed UART DMA support", so why
+did it then ask me "do you want the High Speed UART DMA PCI driver"?
 
-Marcel
+And no, there wasn't even a help-fext for that first question (and the
+second one I couldn't be arsed about, at that point I just went "well,
+f*ck you too").
+
+So at the very least, the wording doesn't make sense. Or maybe that
+PCI driver question should depend on the previous one? And can we
+please make sure that there are help text entries for new config
+options?
+
+I pulled it, but please people, make sure this gets fixed. Our config
+phase is probably _the_ most painful part of trying to get new people
+involved in compiling their own kernels, so we should consider good
+Kconfig language a priority. Lack of help-texts, and questions that
+are annoying and make no sense are *not* helpful.
+
+          Linus
