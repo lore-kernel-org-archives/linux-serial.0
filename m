@@ -1,56 +1,30 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2] serial: samsung: fix serial console break
-Date: Sat, 18 Apr 2015 10:42:45 -0400
-Message-ID: <55326D65.7010609@hurleysoftware.com>
-References: <1429252989-4724-1-git-send-email-r.baldyga@samsung.com>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH] tty: Re-add external interface for tty_set_termios()
+Date: Tue, 21 Apr 2015 11:06:40 +0200
+Message-ID: <20150421090640.GB1569@kroah.com>
+References: <1428671585-13310-1-git-send-email-frederic.danis@linux.intel.com>
+ <5527CEFB.5070406@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1429252989-4724-1-git-send-email-r.baldyga@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robert Baldyga <r.baldyga@samsung.com>, gregkh@linuxfoundation.org
-Cc: akpm@linux-foundation.org, jslaby@suse.cz, cw00.choi@samsung.com, m.szyprowski@samsung.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5527CEFB.5070406-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 04/17/2015 02:43 AM, Robert Baldyga wrote:
-> This patch fixes problems with serial console break. When function
-> s3c64xx_serial_startup() was started while serial console has been working,
-> it caused lose of characters written to TX FIFO. This effect was particularly
-> observable with systemd, which closes serial port every time when it's
-> not currently needed, hence function s3c64xx_serial_startup() is called
-> quite often there. To fix this problem we avoid resetting TX FIFO if port is
-> used as serial console.
+On Fri, Apr 10, 2015 at 09:24:11AM -0400, Peter Hurley wrote:
+> On 04/10/2015 09:13 AM, Frederic Danis wrote:
+> > This is needed by Bluetooth hci_uart module to be able to change speed
+> > of Bluetooth controller and local UART.
 > 
-> Example of broken console log:
+> Because this is the lesser evil right now,
 > 
-> [ 1086.7         Expecting device dev-ttySAC1.device...
-> [ 1086.[  OK  ] Reached target Paths.
-> [ 1086.756416] s[  OK  ] Reached target Swap.
-> [ 1086.776413] systemd[1]: Reached target Swap.
-> [ 1086.776642] systemd[1]: Starting Root Slice.
-> [    5.53403[  OK  ] Created slice Root Slice.
-> [    5.548433] systemd[1]: Create[  OK  ] Created slice User and Session Slice.
-> [    5.568414] sys[  OK  ] Listening on /dev/initctl Compatibility Named Pipe.
-> [    5.588388] s[  OK  ] Listening on Delayed Shutdown Socket.
-> [    5.608376] sy[  OK  ] Listening on Journal Socket (/dev/log).
-> [    5.628361] [  OK  ] Listening on udev Kernel Socket.
-> [    5.648357] s[  OK  ] Listening on udev Control Socket.
-> [    5.668353] s[  OK  ] Listening on Journal Socket.
-> [    5.688366] systemd[1]: Listeni[  OK  ] Created slice System Slice.
-> [    5.708393]          Mounting Temporary Directory...
-> [ 7139.067436]          Starting prepare device daemon...
-> [ 7139.091726] sy         Starting Generate environment from /etc/profile.d...
-> [    5.792867] system         Starting Create Static Device Nodes in /dev...
-> [ 7848.718         Mounting Debug File System...
-> [ 7848.7384         Mounting Configuration File System...
-> [    5.852         Starting Apply Kernel Variables...
-> [    5.8720         Starting Setup Virtual Console...
-> [ 7848.798         Starting udev Coldplug all Devices...
-> [ 7848.817         Starting Journal Service...
-> [  OK  ] Started Journal Service.
-> [ 7848.854222] s[  OK  ] Reached target Slices.
->          Starting Remount Root and Kernel File Systems...
-> [  OK  ] Mounted Configuration File System.
+> Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Does this need to be in 4.1-rc1?  Or is this a 4.2 thing?
+
+thanks,
+
+greg k-h
