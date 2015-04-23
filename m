@@ -1,53 +1,44 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 1/3] serial: ifx6x60: Remove dangerous spi_driver casts
-Date: Thu, 23 Apr 2015 16:15:39 +0200
-Message-ID: <1429798541-32252-1-git-send-email-geert@linux-m68k.org>
+Subject: [PATCH 3/3] serial: SERIAL_IFX6X60 should depend on HAS_DMA
+Date: Thu, 23 Apr 2015 16:15:41 +0200
+Message-ID: <1429798541-32252-3-git-send-email-geert@linux-m68k.org>
+References: <1429798541-32252-1-git-send-email-geert@linux-m68k.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1429798541-32252-1-git-send-email-geert@linux-m68k.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
 
-Casting spi_driver pointers to "void *" when calling
-spi_{,un}register_driver() bypasses all type checking.
+If NO_DMA=y:
 
-Remove the superfluous casts to fix this.
+    drivers/built-in.o: In function `ifx_spi_free_device':
+    ifx6x60.c:(.text+0x96d9a): undefined reference to `dma_free_coherent'
+    drivers/built-in.o: In function `ifx_spi_spi_probe':
+    ifx6x60.c:(.text+0x978a2): undefined reference to `dma_alloc_coherent'
+
+While DMA is optional in this driver, and is used only if
+ifx_modem_platform_data.use_dma is set, there are currently no in-tree
+users of ifx_modem_platform_data (and thus of this driver), so just make
+it depend on HAS_DMA.
 
 Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- drivers/tty/serial/ifx6x60.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 590390970996b78f..7d858a74ee38d8ce 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -1381,7 +1381,7 @@ static void __exit ifx_spi_exit(void)
- 	/* unregister */
- 	tty_unregister_driver(tty_drv);
- 	put_tty_driver(tty_drv);
--	spi_unregister_driver((void *)&ifx_spi_driver);
-+	spi_unregister_driver(&ifx_spi_driver);
- 	unregister_reboot_notifier(&ifx_modem_reboot_notifier_block);
- }
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index f8120c1bde14760f..daee183386368149 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1349,7 +1349,7 @@ config SERIAL_ALTERA_UART_CONSOLE
  
-@@ -1420,7 +1420,7 @@ static int __init ifx_spi_init(void)
- 		goto err_free_tty;
- 	}
+ config SERIAL_IFX6X60
+         tristate "SPI protocol driver for Infineon 6x60 modem (EXPERIMENTAL)"
+-	depends on GPIOLIB && SPI
++	depends on GPIOLIB && SPI && HAS_DMA
+ 	help
+ 	  Support for the IFX6x60 modem devices on Intel MID platforms.
  
--	result = spi_register_driver((void *)&ifx_spi_driver);
-+	result = spi_register_driver(&ifx_spi_driver);
- 	if (result) {
- 		pr_err("%s: spi_register_driver failed(%d)",
- 			DRVNAME, result);
-@@ -1436,7 +1436,7 @@ static int __init ifx_spi_init(void)
- 
- 	return 0;
- err_unreg_spi:
--	spi_unregister_driver((void *)&ifx_spi_driver);
-+	spi_unregister_driver(&ifx_spi_driver);
- err_unreg_tty:
- 	tty_unregister_driver(tty_drv);
- err_free_tty:
 -- 
 1.9.1
