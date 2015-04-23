@@ -1,103 +1,53 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH 4/4] tty: serial: 8250_mtk: Add support for bus clock
-Date: Thu, 23 Apr 2015 10:51:06 +0200
-Message-ID: <1429779066-21406-5-git-send-email-s.hauer@pengutronix.de>
-References: <1429779066-21406-1-git-send-email-s.hauer@pengutronix.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 1/3] serial: ifx6x60: Remove dangerous spi_driver casts
+Date: Thu, 23 Apr 2015 16:15:39 +0200
+Message-ID: <1429798541-32252-1-git-send-email-geert@linux-m68k.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1429779066-21406-1-git-send-email-s.hauer@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, Matthias Brugger <matthias.bgg@gmail.com>, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>, Sascha Hauer <s.hauer@pengutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
 
-The mtk 8250 needs two clocks, one for providing the baudrate and
-one that needs to be enabled for register accesses. The latter has
-not been supported, this patch adds support for it. It is optional
-for now since not all SoCs provide a bus clock.
+Casting spi_driver pointers to "void *" when calling
+spi_{,un}register_driver() bypasses all type checking.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Remove the superfluous casts to fix this.
+
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- Documentation/devicetree/bindings/serial/mtk-uart.txt |  9 +++++++--
- drivers/tty/serial/8250/8250_mtk.c                    | 14 +++++++++++++-
- 2 files changed, 20 insertions(+), 3 deletions(-)
+ drivers/tty/serial/ifx6x60.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-index 4415226..369b5c3 100644
---- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-@@ -14,7 +14,11 @@ Required properties:
- 
- - interrupts: A single interrupt specifier.
- 
--- clocks: Clock driving the hardware.
-+- clocks : Must contain an entry for each entry in clock-names.
-+  See ../clocks/clock-bindings.txt for details.
-+- clock-names:
-+  - "baud": The clock the baudrate is derived from
-+  - "bus": The bus clock for register accesses (optional)
- 
- Example:
- 
-@@ -22,5 +26,6 @@ Example:
- 		compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
- 		reg = <0x11006000 0x400>;
- 		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
--		clocks = <&uart_clk>;
-+		clocks = <&uart_clk>, <&bus_clk>;
-+		clock-names = "baud", "bus";
- 	};
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index 2f28bd0..20c27f0 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -34,6 +34,7 @@
- struct mtk8250_data {
- 	int			line;
- 	struct clk		*uart_clk;
-+	struct clk		*bus_clk;
- };
- 
- static void
-@@ -120,6 +121,7 @@ static int mtk8250_runtime_suspend(struct device *dev)
- 	struct mtk8250_data *data = dev_get_drvdata(dev);
- 
- 	clk_disable_unprepare(data->uart_clk);
-+	clk_disable_unprepare(data->bus_clk);
- 
- 	return 0;
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 590390970996b78f..7d858a74ee38d8ce 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -1381,7 +1381,7 @@ static void __exit ifx_spi_exit(void)
+ 	/* unregister */
+ 	tty_unregister_driver(tty_drv);
+ 	put_tty_driver(tty_drv);
+-	spi_unregister_driver((void *)&ifx_spi_driver);
++	spi_unregister_driver(&ifx_spi_driver);
+ 	unregister_reboot_notifier(&ifx_modem_reboot_notifier_block);
  }
-@@ -135,6 +137,12 @@ static int mtk8250_runtime_resume(struct device *dev)
- 		return err;
+ 
+@@ -1420,7 +1420,7 @@ static int __init ifx_spi_init(void)
+ 		goto err_free_tty;
  	}
  
-+	err = clk_prepare_enable(data->bus_clk);
-+	if (err) {
-+		dev_warn(dev, "Can't enable bus clock\n");
-+		return err;
-+	}
-+
+-	result = spi_register_driver((void *)&ifx_spi_driver);
++	result = spi_register_driver(&ifx_spi_driver);
+ 	if (result) {
+ 		pr_err("%s: spi_register_driver failed(%d)",
+ 			DRVNAME, result);
+@@ -1436,7 +1436,7 @@ static int __init ifx_spi_init(void)
+ 
  	return 0;
- }
- 
-@@ -153,7 +161,7 @@ mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
- static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
- 			   struct mtk8250_data *data)
- {
--	data->uart_clk = devm_clk_get(&pdev->dev, NULL);
-+	data->uart_clk = devm_clk_get(&pdev->dev, "baud");
- 	if (IS_ERR(data->uart_clk)) {
- 		dev_warn(&pdev->dev, "Can't get uart clock\n");
- 		return PTR_ERR(data->uart_clk);
-@@ -161,6 +169,10 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
- 
- 	p->uartclk = clk_get_rate(data->uart_clk);
- 
-+	data->bus_clk = devm_clk_get(&pdev->dev, "bus");
-+	if (IS_ERR(data->bus_clk))
-+		data->bus_clk = NULL;
-+
- 	return 0;
- }
- 
+ err_unreg_spi:
+-	spi_unregister_driver((void *)&ifx_spi_driver);
++	spi_unregister_driver(&ifx_spi_driver);
+ err_unreg_tty:
+ 	tty_unregister_driver(tty_drv);
+ err_free_tty:
 -- 
-2.1.4
+1.9.1
