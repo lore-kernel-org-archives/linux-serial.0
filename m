@@ -1,66 +1,63 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 1/2] drivers/tty/serial/sh-sci.h: remove dead reference on ARCH_SH7372
-Date: Fri, 24 Apr 2015 10:54:11 +0200
-Message-ID: <CAMuHMdWK0Nf7-pk=H1nt_WyARcDv=ZHXrOVi9WgUMorTd+YF+g@mail.gmail.com>
-References: <1428747979-20455-1-git-send-email-valentinrothberg@gmail.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 1/4] tty: serial: 8250_mtk: Use devm_clk_get
+Date: Fri, 24 Apr 2015 12:28:33 +0200
+Message-ID: <CABuKBe+bACg_5uDQc3BF4BaBUG1-CQ3mH199o3nMsaMfH3ad3w@mail.gmail.com>
+References: <1429779066-21406-1-git-send-email-s.hauer@pengutronix.de>
+	<1429779066-21406-2-git-send-email-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1428747979-20455-1-git-send-email-valentinrothberg@gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Valentin Rothberg <valentinrothberg@gmail.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Paul Bolle <pebolle@tiscali.nl>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1429779066-21406-2-git-send-email-s.hauer@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, linux-mediatek@lists.infradead.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Valentin,
-
-On Sat, Apr 11, 2015 at 12:26 PM, Valentin Rothberg
-<valentinrothberg@gmail.com> wrote:
-> The Kconfig option ARCH_SH7372 has been removed by commit 59b89af1d555
-> ("ARM: shmobile: sh7372: Remove Legacy C SoC code").  This patch removes
-> the last reference on this Kconfig option.
+2015-04-23 10:51 GMT+02:00 Sascha Hauer <s.hauer@pengutronix.de>:
+> Just because of_clk_get() doesn't mean it should be used. Use devm_clk_get
+> which is the correct function when a struct device * is available. Also
+> since it's a devm function we can drop the calls to clk_put(). While at
+> it also fix a wrong debug message.
 >
-> Signed-off-by: Valentin Rothberg <valentinrothberg@gmail.com>
-
-Thanks for your patch!
-
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 > ---
-> I found this issue with ./scripts/checkkconfigsymbols.py
-> ---
->  drivers/tty/serial/sh-sci.h | 1 -
->  1 file changed, 1 deletion(-)
+>  drivers/tty/serial/8250/8250_mtk.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
 >
-> diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
-> index d5db81a0a430..350717404507 100644
-> --- a/drivers/tty/serial/sh-sci.h
-> +++ b/drivers/tty/serial/sh-sci.h
-> @@ -15,7 +15,6 @@
->      defined(CONFIG_CPU_SUBTYPE_SH7720) || \
->      defined(CONFIG_CPU_SUBTYPE_SH7721) || \
->      defined(CONFIG_ARCH_SH73A0) || \
-> -    defined(CONFIG_ARCH_SH7372) || \
->      defined(CONFIG_ARCH_R8A7740)
->  # define SCxSR_RDxF_CLEAR(port)         (serial_port_in(port, SCxSR) & 0xfffc)
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index 7a11fac..c6901dc 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -131,18 +131,16 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
+>                            struct mtk8250_data *data)
+>  {
+>         int err;
+> -       struct device_node *np = pdev->dev.of_node;
+>
+> -       data->uart_clk = of_clk_get(np, 0);
+> +       data->uart_clk = devm_clk_get(&pdev->dev, NULL);
+>         if (IS_ERR(data->uart_clk)) {
+> -               dev_warn(&pdev->dev, "Can't get timer clock\n");
+> +               dev_warn(&pdev->dev, "Can't get uart clock\n");
+>                 return PTR_ERR(data->uart_clk);
+>         }
+>
+>         err = clk_prepare_enable(data->uart_clk);
+>         if (err) {
+>                 dev_warn(&pdev->dev, "Can't prepare clock\n");
+> -               clk_put(data->uart_clk);
+>                 return err;
+>         }
+>         p->uartclk = clk_get_rate(data->uart_clk);
+> @@ -216,7 +214,6 @@ static int mtk8250_remove(struct platform_device *pdev)
+>         serial8250_unregister_port(data->line);
+>         if (!IS_ERR(data->uart_clk)) {
+>                 clk_disable_unprepare(data->uart_clk);
+> -               clk_put(data->uart_clk);
+>         }
 
-There are more things wrong with the above:
-  1. It's not multi-platform safe: any ARM kernel with sh73a0 or r8a7740
-     support will treat all SCIFs and HSCIFs as SCIFA/Bs.
-  2. It wasn't updated for newer SoCs, e.g.
-       - r8a73a4 has SCIFA/B, too,
-       - R-Car Gen2 has all of SCIF, HSCIF, SCIFA, SCIFB, which isn't
-         supported by the current logic at all.
+Please delete the braces.
 
-Looking into it...
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+motzblog.wordpress.com
