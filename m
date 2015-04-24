@@ -1,150 +1,359 @@
-From: Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v4 00/37] JZ4780 & CI20 support
-Date: Fri, 24 Apr 2015 14:17:00 +0100
-Message-ID: <1429881457-16016-1-git-send-email-paul.burton@imgtec.com>
+From: Paul Burton <paul.burton@imgtec.com>
+Subject: [PATCH v4 34/37] serial: 8250_ingenic: support for Ingenic SoC UARTs
+Date: Fri, 24 Apr 2015 14:17:34 +0100
+Message-ID: <1429881457-16016-35-git-send-email-paul.burton@imgtec.com>
+References: <1429881457-16016-1-git-send-email-paul.burton@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org
-Cc: Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <1429881457-16016-1-git-send-email-paul.burton@imgtec.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: linux-mips@linux-mips.org
+Cc: Paul Burton <paul.burton@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Lars-Peter Clausen <lars@metafoo.de>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This series introduces initial support for the Ingenic JZ4780 SoC and
-the Imagination Technologies MIPS Creator CI20 board which is built
-around it. In the process the existing JZ4740 & qi_lb60 code gains
-initial support for using DeviceTree such that much of the existing
-platform code under arch/mips/jz4740 can be shared.
+Introduce a driver suitable for use with the UARTs present in
+Ingenic SoCs such as the JZ4740 & JZ4780. These are described as being
+ns16550 compatible but aren't quite - they require the setting of an
+extra bit in the FCR register to enable the UART module. The serial_out
+implementation is the same as that in arch/mips/jz4740/serial.c - which
+will shortly be removed.
 
-The series applies atop next-20150421. Review appreciated, and
-hopefully this can make it in for v4.2.
+Signed-off-by: Paul Burton <paul.burton@imgtec.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: linux-serial@vger.kernel.org
+---
+Changes in v4:
+  - None.
 
-Thanks,
-    Paul
+Changes in v3:
+  - s/jz47xx/ingenic/ to reflect Ingenic's naming change for newer SoCs.
 
-Paul Burton (37):
-  devicetree/bindings: add Ingenic Semiconductor vendor prefix
-  devicetree/bindings: add Qi Hardware vendor prefix
-  MIPS: JZ4740: introduce CONFIG_MACH_INGENIC
-  MIPS: ingenic: add newer vendor IDs
-  MIPS: JZ4740: require & include DT
-  MIPS: irq_cpu: declare irqchip table entry
-  MIPS: JZ4740: probe CPU interrupt controller via DT
-  MIPS: JZ4740: use generic plat_irq_dispatch
-  MIPS: JZ4740: move arch_init_irq out of arch/mips/jz4740/irq.c
-  devicetree: document Ingenic SoC interrupt controller binding
-  MIPS: JZ4740: probe interrupt controller via DT
-  MIPS: JZ4740: parse SoC interrupt controller parent IRQ from DT
-  MIPS: JZ4740: register an irq_domain for the interrupt controller
-  MIPS: JZ4740: drop intc debugfs code
-  MIPS: JZ4740: remove jz_intc_base global
-  MIPS: JZ4740: support >32 interrupts
-  MIPS: JZ4740: define IRQ numbers based on number of intc IRQs
-  MIPS: JZ4740: read intc base address from DT
-  MIPS: JZ4740: avoid JZ4740-specific naming
-  MIPS: JZ4740: support newer SoC interrupt controllers
-  irqchip: move Ingenic SoC intc driver to drivers/irqchip
-  MIPS: JZ4740: call jz4740_clock_init earlier
-  MIPS: JZ4740: replace use of jz4740_clock_bdata
-  devicetree: add Ingenic CGU binding documentation
-  clk: ingenic: add driver for Ingenic SoC CGU clocks
-  MIPS,clk: migrate JZ4740 to common clock framework
-  MIPS,clk: move jz4740_clock_set_wait_mode to jz4740-cgu
-  MIPS,clk: move jz4740 UDC auto suspend functions to jz4740-cgu
-  MIPS,clk: move jz4740 clock suspend,resume functions to jz4740-cgu
-  clk: ingenic: add JZ4780 CGU support
-  MIPS: JZ4740: remove clock.h
-  MIPS: JZ4740: only detect RAM size if not specified in DT
-  devicetree: document Ingenic SoC UART binding
-  serial: 8250_ingenic: support for Ingenic SoC UARTs
-  MIPS: JZ4740: use Ingenic SoC UART driver
-  MIPS: ingenic: initial JZ4780 support
-  MIPS: ingenic: initial MIPS Creator CI20 support
+  - Support JZ4775.
 
- .../devicetree/bindings/clock/ingenic,cgu.txt      |  53 ++
- .../bindings/interrupt-controller/ingenic,intc.txt |  25 +
- .../devicetree/bindings/serial/ingenic,uart.txt    |  22 +
- .../devicetree/bindings/vendor-prefixes.txt        |   2 +
- arch/mips/Kconfig                                  |  11 +-
- arch/mips/boot/dts/Makefile                        |   1 +
- arch/mips/boot/dts/ingenic/Makefile                |  10 +
- arch/mips/boot/dts/ingenic/ci20.dts                |  21 +
- arch/mips/boot/dts/ingenic/jz4740.dtsi             |  68 ++
- arch/mips/boot/dts/ingenic/jz4780.dtsi             | 101 +++
- arch/mips/boot/dts/ingenic/qi_lb60.dts             |  15 +
- arch/mips/configs/ci20_defconfig                   | 169 ++++
- arch/mips/configs/qi_lb60_defconfig                |   3 +-
- arch/mips/include/asm/cpu-type.h                   |   2 +-
- arch/mips/include/asm/cpu.h                        |   6 +-
- arch/mips/include/asm/mach-jz4740/clock.h          |   3 +
- .../asm/mach-jz4740/cpu-feature-overrides.h        |   3 -
- arch/mips/include/asm/mach-jz4740/irq.h            |  14 +-
- arch/mips/include/asm/mach-jz4740/platform.h       |   2 -
- arch/mips/jz4740/Kconfig                           |  17 +-
- arch/mips/jz4740/Makefile                          |   8 +-
- arch/mips/jz4740/Platform                          |   8 +-
- arch/mips/jz4740/board-qi_lb60.c                   |   7 -
- arch/mips/jz4740/clock-debugfs.c                   | 108 ---
- arch/mips/jz4740/clock.c                           | 924 ---------------------
- arch/mips/jz4740/clock.h                           |  76 --
- arch/mips/jz4740/gpio.c                            |   7 +-
- arch/mips/jz4740/irq.c                             | 162 ----
- arch/mips/jz4740/platform.c                        |  38 +-
- arch/mips/jz4740/pm.c                              |   2 -
- arch/mips/jz4740/prom.c                            |  13 -
- arch/mips/jz4740/reset.c                           |  13 +-
- arch/mips/jz4740/serial.c                          |  33 -
- arch/mips/jz4740/serial.h                          |  23 -
- arch/mips/jz4740/setup.c                           |  36 +-
- arch/mips/jz4740/time.c                            |  19 +-
- arch/mips/kernel/cpu-probe.c                       |   4 +-
- arch/mips/kernel/irq_cpu.c                         |   3 +
- drivers/clk/Makefile                               |   1 +
- drivers/clk/ingenic/Makefile                       |   3 +
- drivers/clk/ingenic/cgu.c                          | 712 ++++++++++++++++
- drivers/clk/ingenic/cgu.h                          | 223 +++++
- drivers/clk/ingenic/jz4740-cgu.c                   | 303 +++++++
- drivers/clk/ingenic/jz4780-cgu.c                   | 736 ++++++++++++++++
- drivers/irqchip/Kconfig                            |   5 +
- drivers/irqchip/Makefile                           |   1 +
- drivers/irqchip/irq-ingenic.c                      | 171 ++++
- drivers/tty/serial/8250/8250_ingenic.c             | 261 ++++++
- drivers/tty/serial/8250/Kconfig                    |   9 +
- drivers/tty/serial/8250/Makefile                   |   3 +
- include/dt-bindings/clock/jz4740-cgu.h             |  37 +
- include/dt-bindings/clock/jz4780-cgu.h             |  88 ++
- .../irq.h => include/linux/irqchip/ingenic.h       |   8 +-
- 53 files changed, 3169 insertions(+), 1424 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/ingenic,cgu.txt
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/ingenic,intc.txt
- create mode 100644 Documentation/devicetree/bindings/serial/ingenic,uart.txt
- create mode 100644 arch/mips/boot/dts/ingenic/Makefile
- create mode 100644 arch/mips/boot/dts/ingenic/ci20.dts
- create mode 100644 arch/mips/boot/dts/ingenic/jz4740.dtsi
- create mode 100644 arch/mips/boot/dts/ingenic/jz4780.dtsi
- create mode 100644 arch/mips/boot/dts/ingenic/qi_lb60.dts
- create mode 100644 arch/mips/configs/ci20_defconfig
- delete mode 100644 arch/mips/jz4740/clock-debugfs.c
- delete mode 100644 arch/mips/jz4740/clock.c
- delete mode 100644 arch/mips/jz4740/clock.h
- delete mode 100644 arch/mips/jz4740/irq.c
- delete mode 100644 arch/mips/jz4740/serial.c
- delete mode 100644 arch/mips/jz4740/serial.h
- create mode 100644 drivers/clk/ingenic/Makefile
- create mode 100644 drivers/clk/ingenic/cgu.c
- create mode 100644 drivers/clk/ingenic/cgu.h
- create mode 100644 drivers/clk/ingenic/jz4740-cgu.c
- create mode 100644 drivers/clk/ingenic/jz4780-cgu.c
- create mode 100644 drivers/irqchip/irq-ingenic.c
+  - Depend on SERIAL_8250_CONSOLE rather than selecting
+    SERIAL_CORE_CONSOLE.
+
+  - Read the UART clock for early consoles from the DT, using libfdt to
+    find the node for the fixed rate external clock which drives the UART
+    in all known Ingenic SoCs, rather than relying upon a hardcoded
+    definition for BASE_BAUD.
+
+Changes in v2:
+  - Remove FSF address (ZubairLK).
+
+  - Select SERIAL_CORE_CONSOLE (ZubairLK).
+---
+ drivers/tty/serial/8250/8250_ingenic.c | 261 +++++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig        |   9 ++
+ drivers/tty/serial/8250/Makefile       |   3 +
+ 3 files changed, 273 insertions(+)
  create mode 100644 drivers/tty/serial/8250/8250_ingenic.c
- create mode 100644 include/dt-bindings/clock/jz4740-cgu.h
- create mode 100644 include/dt-bindings/clock/jz4780-cgu.h
- rename arch/mips/jz4740/irq.h => include/linux/irqchip/ingenic.h (74%)
 
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+new file mode 100644
+index 0000000..8eeadb4
+--- /dev/null
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -0,0 +1,261 @@
++/*
++ * Copyright (C) 2010 Lars-Peter Clausen <lars@metafoo.de>
++ * Copyright (C) 2015 Imagination Technologies
++ *
++ * Ingenic SoC UART support
++ *
++ * This program is free software; you can redistribute	 it and/or modify it
++ * under  the terms of	 the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the	License, or (at your
++ * option) any later version.
++ *
++ * You should have received a copy of the  GNU General Public License along
++ * with this program; if not, write  to the Free Software Foundation, Inc.,
++ * 675 Mass Ave, Cambridge, MA 02139, USA.
++ */
++
++#include <linux/clk.h>
++#include <linux/console.h>
++#include <linux/io.h>
++#include <linux/libfdt.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_fdt.h>
++#include <linux/platform_device.h>
++#include <linux/serial_8250.h>
++#include <linux/serial_core.h>
++#include <linux/serial_reg.h>
++
++struct ingenic_uart_data {
++	struct clk	*clk_module;
++	struct clk	*clk_baud;
++	int		line;
++};
++
++#define UART_FCR_UME	BIT(4)
++
++static struct earlycon_device *early_device;
++
++static uint8_t __init early_in(struct uart_port *port, int offset)
++{
++	return readl(port->membase + (offset << 2));
++}
++
++static void __init early_out(struct uart_port *port, int offset, uint8_t value)
++{
++	writel(value, port->membase + (offset << 2));
++}
++
++static void __init ingenic_early_console_putc(struct uart_port *port, int c)
++{
++	uint8_t lsr;
++
++	do {
++		lsr = early_in(port, UART_LSR);
++	} while ((lsr & UART_LSR_TEMT) == 0);
++
++	early_out(port, UART_TX, c);
++}
++
++static void __init ingenic_early_console_write(struct console *console,
++					      const char *s, unsigned int count)
++{
++	uart_console_write(&early_device->port, s, count,
++			   ingenic_early_console_putc);
++}
++
++static void __init ingenic_early_console_setup_clock(struct earlycon_device *dev)
++{
++	void *fdt = initial_boot_params;
++	const __be32 *prop;
++	int offset;
++
++	offset = fdt_path_offset(fdt, "/ext");
++	if (offset < 0)
++		return;
++
++	prop = fdt_getprop(fdt, offset, "clock-frequency", NULL);
++	if (!prop)
++		return;
++
++	dev->port.uartclk = be32_to_cpup(prop);
++}
++
++static int __init ingenic_early_console_setup(struct earlycon_device *dev,
++					      const char *opt)
++{
++	struct uart_port *port = &dev->port;
++	unsigned int baud, divisor;
++
++	if (!dev->port.membase)
++		return -ENODEV;
++
++	ingenic_early_console_setup_clock(dev);
++
++	baud = dev->baud ?: 115200;
++	divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
++
++	early_out(port, UART_IER, 0);
++	early_out(port, UART_LCR, UART_LCR_DLAB | UART_LCR_WLEN8);
++	early_out(port, UART_DLL, 0);
++	early_out(port, UART_DLM, 0);
++	early_out(port, UART_LCR, UART_LCR_WLEN8);
++	early_out(port, UART_FCR, UART_FCR_UME | UART_FCR_CLEAR_XMIT |
++			UART_FCR_CLEAR_RCVR | UART_FCR_ENABLE_FIFO);
++	early_out(port, UART_MCR, UART_MCR_RTS | UART_MCR_DTR);
++
++	early_out(port, UART_LCR, UART_LCR_DLAB | UART_LCR_WLEN8);
++	early_out(port, UART_DLL, divisor & 0xff);
++	early_out(port, UART_DLM, (divisor >> 8) & 0xff);
++	early_out(port, UART_LCR, UART_LCR_WLEN8);
++
++	early_device = dev;
++	dev->con->write = ingenic_early_console_write;
++
++	return 0;
++}
++
++EARLYCON_DECLARE(jz4740_uart, ingenic_early_console_setup);
++OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
++		    ingenic_early_console_setup);
++
++EARLYCON_DECLARE(jz4775_uart, ingenic_early_console_setup);
++OF_EARLYCON_DECLARE(jz4775_uart, "ingenic,jz4775-uart",
++		    ingenic_early_console_setup);
++
++EARLYCON_DECLARE(jz4780_uart, ingenic_early_console_setup);
++OF_EARLYCON_DECLARE(jz4780_uart, "ingenic,jz4780-uart",
++		    ingenic_early_console_setup);
++
++static void ingenic_uart_serial_out(struct uart_port *p, int offset, int value)
++{
++	switch (offset) {
++	case UART_FCR:
++		/* UART module enable */
++		value |= UART_FCR_UME;
++		break;
++
++	case UART_IER:
++		value |= (value & 0x4) << 2;
++		break;
++
++	default:
++		break;
++	}
++
++	writeb(value, p->membase + (offset << p->regshift));
++}
++
++static int ingenic_uart_probe(struct platform_device *pdev)
++{
++	struct uart_8250_port uart = {};
++	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++	struct ingenic_uart_data *data;
++	int err;
++
++	if (!regs || !irq) {
++		dev_err(&pdev->dev, "no registers/irq defined\n");
++		return -EINVAL;
++	}
++
++	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	spin_lock_init(&uart.port.lock);
++	uart.port.type = PORT_16550;
++	uart.port.flags = UPF_SKIP_TEST | UPF_IOREMAP | UPF_FIXED_TYPE;
++	uart.port.iotype = UPIO_MEM;
++	uart.port.mapbase = regs->start;
++	uart.port.regshift = 2;
++	uart.port.serial_out = ingenic_uart_serial_out;
++	uart.port.irq = irq->start;
++	uart.port.dev = &pdev->dev;
++
++	uart.port.membase = devm_ioremap(&pdev->dev, regs->start,
++					 resource_size(regs));
++	if (!uart.port.membase)
++		return -ENOMEM;
++
++	data->clk_module = devm_clk_get(&pdev->dev, "module");
++	if (IS_ERR(data->clk_module)) {
++		err = PTR_ERR(data->clk_module);
++		if (err != -EPROBE_DEFER)
++			dev_err(&pdev->dev,
++				"unable to get module clock: %d\n", err);
++		return err;
++	}
++
++	data->clk_baud = devm_clk_get(&pdev->dev, "baud");
++	if (IS_ERR(data->clk_baud)) {
++		err = PTR_ERR(data->clk_baud);
++		if (err != -EPROBE_DEFER)
++			dev_err(&pdev->dev,
++				"unable to get baud clock: %d\n", err);
++		return err;
++	}
++
++	err = clk_prepare_enable(data->clk_module);
++	if (err) {
++		dev_err(&pdev->dev, "could not enable module clock: %d\n", err);
++		goto out;
++	}
++
++	err = clk_prepare_enable(data->clk_baud);
++	if (err) {
++		dev_err(&pdev->dev, "could not enable baud clock: %d\n", err);
++		goto out_disable_moduleclk;
++	}
++	uart.port.uartclk = clk_get_rate(data->clk_baud);
++
++	data->line = serial8250_register_8250_port(&uart);
++	if (data->line < 0) {
++		err = data->line;
++		goto out_disable_baudclk;
++	}
++
++	platform_set_drvdata(pdev, data);
++	return 0;
++
++out_disable_baudclk:
++	clk_disable_unprepare(data->clk_baud);
++out_disable_moduleclk:
++	clk_disable_unprepare(data->clk_module);
++out:
++	return err;
++}
++
++static int ingenic_uart_remove(struct platform_device *pdev)
++{
++	struct ingenic_uart_data *data = platform_get_drvdata(pdev);
++
++	serial8250_unregister_port(data->line);
++	clk_disable_unprepare(data->clk_module);
++	clk_disable_unprepare(data->clk_baud);
++	return 0;
++}
++
++static const struct of_device_id of_match[] = {
++	{ .compatible = "ingenic,jz4740-uart" },
++	{ .compatible = "ingenic,jz4775-uart" },
++	{ .compatible = "ingenic,jz4780-uart" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, of_match);
++
++static struct platform_driver ingenic_uart_platform_driver = {
++	.driver = {
++		.name		= "ingenic-uart",
++		.owner		= THIS_MODULE,
++		.of_match_table	= of_match,
++	},
++	.probe			= ingenic_uart_probe,
++	.remove			= ingenic_uart_remove,
++};
++
++module_platform_driver(ingenic_uart_platform_driver);
++
++MODULE_AUTHOR("Paul Burton");
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Ingenic SoC UART driver");
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index c350703..43330ea 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -342,3 +342,12 @@ config SERIAL_8250_MT6577
+ 	help
+ 	  If you have a Mediatek based board and want to use the
+ 	  serial port, say Y to this option. If unsure, say N.
++
++config SERIAL_8250_INGENIC
++	bool "Support for Ingenic SoC serial ports"
++	depends on SERIAL_8250_CONSOLE && OF_FLATTREE
++	select LIBFDT
++	select SERIAL_EARLYCON
++	help
++	  If you have a system using an Ingenic SoC and wish to make use of
++	  its UARTs, say Y to this option. If unsure, say N.
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index 31e7cdc..98fba26 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -23,3 +23,6 @@ obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
+ obj-$(CONFIG_SERIAL_8250_OMAP)		+= 8250_omap.o
+ obj-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
+ obj-$(CONFIG_SERIAL_8250_MT6577)	+= 8250_mtk.o
++obj-$(CONFIG_SERIAL_8250_INGENIC)	+= 8250_ingenic.o
++
++CFLAGS_8250_ingenic.o += -I$(srctree)/scripts/dtc/libfdt
 -- 
 2.3.5
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
