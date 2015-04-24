@@ -1,117 +1,150 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 4/4] tty: serial: 8250_mtk: Add support for bus clock
-Date: Fri, 24 Apr 2015 13:18:07 +0200
-Message-ID: <CABuKBe+ebskWHVRtcfei9hZVvt5oHA0wij0WuLCkYqJo0Hzm=Q@mail.gmail.com>
-References: <1429779066-21406-1-git-send-email-s.hauer@pengutronix.de>
-	<1429779066-21406-5-git-send-email-s.hauer@pengutronix.de>
+From: Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v4 00/37] JZ4780 & CI20 support
+Date: Fri, 24 Apr 2015 14:17:00 +0100
+Message-ID: <1429881457-16016-1-git-send-email-paul.burton@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1429779066-21406-5-git-send-email-s.hauer@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, linux-mediatek@lists.infradead.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org
+Cc: Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-2015-04-23 10:51 GMT+02:00 Sascha Hauer <s.hauer@pengutronix.de>:
-> The mtk 8250 needs two clocks, one for providing the baudrate and
-> one that needs to be enabled for register accesses. The latter has
-> not been supported, this patch adds support for it. It is optional
-> for now since not all SoCs provide a bus clock.
->
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> ---
->  Documentation/devicetree/bindings/serial/mtk-uart.txt |  9 +++++++--
->  drivers/tty/serial/8250/8250_mtk.c                    | 14 +++++++++++++-
->  2 files changed, 20 insertions(+), 3 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-> index 4415226..369b5c3 100644
-> --- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
-> +++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-> @@ -14,7 +14,11 @@ Required properties:
->
->  - interrupts: A single interrupt specifier.
->
-> -- clocks: Clock driving the hardware.
-> +- clocks : Must contain an entry for each entry in clock-names.
-> +  See ../clocks/clock-bindings.txt for details.
-> +- clock-names:
-> +  - "baud": The clock the baudrate is derived from
-> +  - "bus": The bus clock for register accesses (optional)
->
->  Example:
->
-> @@ -22,5 +26,6 @@ Example:
->                 compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
->                 reg = <0x11006000 0x400>;
->                 interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
-> -               clocks = <&uart_clk>;
-> +               clocks = <&uart_clk>, <&bus_clk>;
-> +               clock-names = "baud", "bus";
->         };
-> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> index 2f28bd0..20c27f0 100644
-> --- a/drivers/tty/serial/8250/8250_mtk.c
-> +++ b/drivers/tty/serial/8250/8250_mtk.c
-> @@ -34,6 +34,7 @@
->  struct mtk8250_data {
->         int                     line;
->         struct clk              *uart_clk;
-> +       struct clk              *bus_clk;
->  };
->
->  static void
-> @@ -120,6 +121,7 @@ static int mtk8250_runtime_suspend(struct device *dev)
->         struct mtk8250_data *data = dev_get_drvdata(dev);
->
->         clk_disable_unprepare(data->uart_clk);
-> +       clk_disable_unprepare(data->bus_clk);
->
->         return 0;
->  }
-> @@ -135,6 +137,12 @@ static int mtk8250_runtime_resume(struct device *dev)
->                 return err;
->         }
->
-> +       err = clk_prepare_enable(data->bus_clk);
-> +       if (err) {
-> +               dev_warn(dev, "Can't enable bus clock\n");
-> +               return err;
-> +       }
-> +
->         return 0;
->  }
->
-> @@ -153,7 +161,7 @@ mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
->  static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
->                            struct mtk8250_data *data)
->  {
-> -       data->uart_clk = devm_clk_get(&pdev->dev, NULL);
-> +       data->uart_clk = devm_clk_get(&pdev->dev, "baud");
->         if (IS_ERR(data->uart_clk)) {
->                 dev_warn(&pdev->dev, "Can't get uart clock\n");
->                 return PTR_ERR(data->uart_clk);
-> @@ -161,6 +169,10 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
->
->         p->uartclk = clk_get_rate(data->uart_clk);
->
-> +       data->bus_clk = devm_clk_get(&pdev->dev, "bus");
-> +       if (IS_ERR(data->bus_clk))
-> +               data->bus_clk = NULL;
-> +
+This series introduces initial support for the Ingenic JZ4780 SoC and
+the Imagination Technologies MIPS Creator CI20 board which is built
+around it. In the process the existing JZ4740 & qi_lb60 code gains
+initial support for using DeviceTree such that much of the existing
+platform code under arch/mips/jz4740 can be shared.
 
-We have to take into account the old DTS definition. This means, that
-if devm_clk_get(&pdev->dev, "baud") fails, we have to look for
-devm_clk_get(&pdev->dev, NULL).
-Only in the case I when clock "baud" does exist, do we check for clock
-"bus". Does this make sense?
+The series applies atop next-20150421. Review appreciated, and
+hopefully this can make it in for v4.2.
 
-The backwards compatibility should be reflected in the bindings
-documentation as well.
+Thanks,
+    Paul
 
-Cheers,
-Matthias
+Paul Burton (37):
+  devicetree/bindings: add Ingenic Semiconductor vendor prefix
+  devicetree/bindings: add Qi Hardware vendor prefix
+  MIPS: JZ4740: introduce CONFIG_MACH_INGENIC
+  MIPS: ingenic: add newer vendor IDs
+  MIPS: JZ4740: require & include DT
+  MIPS: irq_cpu: declare irqchip table entry
+  MIPS: JZ4740: probe CPU interrupt controller via DT
+  MIPS: JZ4740: use generic plat_irq_dispatch
+  MIPS: JZ4740: move arch_init_irq out of arch/mips/jz4740/irq.c
+  devicetree: document Ingenic SoC interrupt controller binding
+  MIPS: JZ4740: probe interrupt controller via DT
+  MIPS: JZ4740: parse SoC interrupt controller parent IRQ from DT
+  MIPS: JZ4740: register an irq_domain for the interrupt controller
+  MIPS: JZ4740: drop intc debugfs code
+  MIPS: JZ4740: remove jz_intc_base global
+  MIPS: JZ4740: support >32 interrupts
+  MIPS: JZ4740: define IRQ numbers based on number of intc IRQs
+  MIPS: JZ4740: read intc base address from DT
+  MIPS: JZ4740: avoid JZ4740-specific naming
+  MIPS: JZ4740: support newer SoC interrupt controllers
+  irqchip: move Ingenic SoC intc driver to drivers/irqchip
+  MIPS: JZ4740: call jz4740_clock_init earlier
+  MIPS: JZ4740: replace use of jz4740_clock_bdata
+  devicetree: add Ingenic CGU binding documentation
+  clk: ingenic: add driver for Ingenic SoC CGU clocks
+  MIPS,clk: migrate JZ4740 to common clock framework
+  MIPS,clk: move jz4740_clock_set_wait_mode to jz4740-cgu
+  MIPS,clk: move jz4740 UDC auto suspend functions to jz4740-cgu
+  MIPS,clk: move jz4740 clock suspend,resume functions to jz4740-cgu
+  clk: ingenic: add JZ4780 CGU support
+  MIPS: JZ4740: remove clock.h
+  MIPS: JZ4740: only detect RAM size if not specified in DT
+  devicetree: document Ingenic SoC UART binding
+  serial: 8250_ingenic: support for Ingenic SoC UARTs
+  MIPS: JZ4740: use Ingenic SoC UART driver
+  MIPS: ingenic: initial JZ4780 support
+  MIPS: ingenic: initial MIPS Creator CI20 support
+
+ .../devicetree/bindings/clock/ingenic,cgu.txt      |  53 ++
+ .../bindings/interrupt-controller/ingenic,intc.txt |  25 +
+ .../devicetree/bindings/serial/ingenic,uart.txt    |  22 +
+ .../devicetree/bindings/vendor-prefixes.txt        |   2 +
+ arch/mips/Kconfig                                  |  11 +-
+ arch/mips/boot/dts/Makefile                        |   1 +
+ arch/mips/boot/dts/ingenic/Makefile                |  10 +
+ arch/mips/boot/dts/ingenic/ci20.dts                |  21 +
+ arch/mips/boot/dts/ingenic/jz4740.dtsi             |  68 ++
+ arch/mips/boot/dts/ingenic/jz4780.dtsi             | 101 +++
+ arch/mips/boot/dts/ingenic/qi_lb60.dts             |  15 +
+ arch/mips/configs/ci20_defconfig                   | 169 ++++
+ arch/mips/configs/qi_lb60_defconfig                |   3 +-
+ arch/mips/include/asm/cpu-type.h                   |   2 +-
+ arch/mips/include/asm/cpu.h                        |   6 +-
+ arch/mips/include/asm/mach-jz4740/clock.h          |   3 +
+ .../asm/mach-jz4740/cpu-feature-overrides.h        |   3 -
+ arch/mips/include/asm/mach-jz4740/irq.h            |  14 +-
+ arch/mips/include/asm/mach-jz4740/platform.h       |   2 -
+ arch/mips/jz4740/Kconfig                           |  17 +-
+ arch/mips/jz4740/Makefile                          |   8 +-
+ arch/mips/jz4740/Platform                          |   8 +-
+ arch/mips/jz4740/board-qi_lb60.c                   |   7 -
+ arch/mips/jz4740/clock-debugfs.c                   | 108 ---
+ arch/mips/jz4740/clock.c                           | 924 ---------------------
+ arch/mips/jz4740/clock.h                           |  76 --
+ arch/mips/jz4740/gpio.c                            |   7 +-
+ arch/mips/jz4740/irq.c                             | 162 ----
+ arch/mips/jz4740/platform.c                        |  38 +-
+ arch/mips/jz4740/pm.c                              |   2 -
+ arch/mips/jz4740/prom.c                            |  13 -
+ arch/mips/jz4740/reset.c                           |  13 +-
+ arch/mips/jz4740/serial.c                          |  33 -
+ arch/mips/jz4740/serial.h                          |  23 -
+ arch/mips/jz4740/setup.c                           |  36 +-
+ arch/mips/jz4740/time.c                            |  19 +-
+ arch/mips/kernel/cpu-probe.c                       |   4 +-
+ arch/mips/kernel/irq_cpu.c                         |   3 +
+ drivers/clk/Makefile                               |   1 +
+ drivers/clk/ingenic/Makefile                       |   3 +
+ drivers/clk/ingenic/cgu.c                          | 712 ++++++++++++++++
+ drivers/clk/ingenic/cgu.h                          | 223 +++++
+ drivers/clk/ingenic/jz4740-cgu.c                   | 303 +++++++
+ drivers/clk/ingenic/jz4780-cgu.c                   | 736 ++++++++++++++++
+ drivers/irqchip/Kconfig                            |   5 +
+ drivers/irqchip/Makefile                           |   1 +
+ drivers/irqchip/irq-ingenic.c                      | 171 ++++
+ drivers/tty/serial/8250/8250_ingenic.c             | 261 ++++++
+ drivers/tty/serial/8250/Kconfig                    |   9 +
+ drivers/tty/serial/8250/Makefile                   |   3 +
+ include/dt-bindings/clock/jz4740-cgu.h             |  37 +
+ include/dt-bindings/clock/jz4780-cgu.h             |  88 ++
+ .../irq.h => include/linux/irqchip/ingenic.h       |   8 +-
+ 53 files changed, 3169 insertions(+), 1424 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/ingenic,cgu.txt
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/ingenic,intc.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/ingenic,uart.txt
+ create mode 100644 arch/mips/boot/dts/ingenic/Makefile
+ create mode 100644 arch/mips/boot/dts/ingenic/ci20.dts
+ create mode 100644 arch/mips/boot/dts/ingenic/jz4740.dtsi
+ create mode 100644 arch/mips/boot/dts/ingenic/jz4780.dtsi
+ create mode 100644 arch/mips/boot/dts/ingenic/qi_lb60.dts
+ create mode 100644 arch/mips/configs/ci20_defconfig
+ delete mode 100644 arch/mips/jz4740/clock-debugfs.c
+ delete mode 100644 arch/mips/jz4740/clock.c
+ delete mode 100644 arch/mips/jz4740/clock.h
+ delete mode 100644 arch/mips/jz4740/irq.c
+ delete mode 100644 arch/mips/jz4740/serial.c
+ delete mode 100644 arch/mips/jz4740/serial.h
+ create mode 100644 drivers/clk/ingenic/Makefile
+ create mode 100644 drivers/clk/ingenic/cgu.c
+ create mode 100644 drivers/clk/ingenic/cgu.h
+ create mode 100644 drivers/clk/ingenic/jz4740-cgu.c
+ create mode 100644 drivers/clk/ingenic/jz4780-cgu.c
+ create mode 100644 drivers/irqchip/irq-ingenic.c
+ create mode 100644 drivers/tty/serial/8250/8250_ingenic.c
+ create mode 100644 include/dt-bindings/clock/jz4740-cgu.h
+ create mode 100644 include/dt-bindings/clock/jz4780-cgu.h
+ rename arch/mips/jz4740/irq.h => include/linux/irqchip/ingenic.h (74%)
 
 -- 
-motzblog.wordpress.com
+2.3.5
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
