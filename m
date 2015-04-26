@@ -1,57 +1,38 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: 8250-based SoC serial ports and features
-Date: Sat, 25 Apr 2015 22:08 +0200
-Message-ID: <6085099.eeiYtUGZgl@wuerfel>
-References: <CAGhQ9Vw5hJKX+wrhV91mGmB00eUJKaR8Astns8rpk465BQnv1Q@mail.gmail.com> <9563845.vZY1xECvNe@wuerfel> <CAGhQ9VyrnPrgzqtkTN5V7zpSQQ6QhmQdpQi5Sc1eTkcQnxKZXw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAGhQ9VyrnPrgzqtkTN5V7zpSQQ6QhmQdpQi5Sc1eTkcQnxKZXw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+From: Firo Yang <firogm@gmail.com>
+Subject: [PATCH] ARM: meson: serial: convert iounmap to devm_iounmap
+Date: Sun, 26 Apr 2015 18:46:06 +0800
+Message-ID: <1430045166-21701-1-git-send-email-firogm@gmail.com>
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: kernel-janitors@vger.kernel.org, jslaby@suse.cz, linux-serial@vger.kernel.org, Firo Yang <firogm@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Saturday 25 April 2015 16:33:18 Joachim Eastwood wrote:
-> 
-> One other question: What is the preferred way of describing different
-> UART SoC features in DT?
-> 16550a is used as base on most NXP Cortex-M devices, but each UART can
-> have different features like; IRDA, Smart card, RS485, sync mode
-> (USART), DMA, hardware RTS/CTS pins and full modem pins.
-> Features also differ between UARTs on the same device.
-> 
-> I am thinking about either using different comp strings or some kind
-> of feature flags in DT. (Freescale UART already uses feature flags
-> like: "fsl,irda-mode" and "fsl,uart-has-rtscts")
+The function meson_uart_release_port() inappropriately try to
+iounmap() a resource managed by devm_ioremap_nocache().
+The function meson_uart_release_port() maybe called by uart_ioctl()
+that means meson_uart_release_port() is not called from within a
+probe or remove function, for safety, I convert iounmap() to
+devm_iounmap().
 
-I would probably specify both then, to give more flexibility to the
-driver in implementing it one way or the other.
+Signed-off-by: Firo Yang <firogm@gmail.com>
+---
+ drivers/tty/serial/meson_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> All UARTs on LPC1850 have RS485 and DMA support. In additional you have:
-> UART0,2,3: sync mode and smart card.
-> UART3: IRDA
-> UART1: full modem control pin set.
-> 
-> Comp strings could be something like:
-> "nxp,lpc1850-usart" <- sync+smart card
-> "nxp,lpc1850-usart-irda" <- sync+smart card+irda
-> "nxp,lpc1850-uart-modem" <- modem-pins
-> 
-> or feature flags like:
-> nxp,sync-mode;
-> nxp,rs485-mode;
-> nxp,smart-card;
-> nxp,irda-mode;
-> nxp,full-modem;
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 67c0367..0fc83c9 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -370,7 +370,7 @@ static int meson_uart_verify_port(struct uart_port *port,
+ static void meson_uart_release_port(struct uart_port *port)
+ {
+ 	if (port->flags & UPF_IOREMAP) {
+-		iounmap(port->membase);
++		devm_iounmap(port->dev, port->membase);
+ 		port->membase = NULL;
+ 	}
+ }
+-- 
+2.1.0
 
-For cases where a single chip has uarts with different features,
-using feature flags makes most sense, you can probably skip
-assigning different compatible strings there.
-
-	Arnd
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
