@@ -1,7 +1,7 @@
 From: John Ogness <john.ogness@linutronix.de>
-Subject: [PATCH 2/3] dmaenegine: edma: allow pause/resume for non-cyclic mode
-Date: Mon, 27 Apr 2015 13:52:25 +0200
-Message-ID: <87vbghaiva.fsf@linutronix.de>
+Subject: [PATCH 3/3] tty: serial: 8250: omap: synchronize rx_running
+Date: Mon, 27 Apr 2015 13:52:33 +0200
+Message-ID: <87tww1aiv2.fsf@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -10,41 +10,171 @@ To: linux-kernel@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-The 8250_omap serial driver relies on dmaengine_pause() actually
-pausing the DMA transfer. Before this patch dmaengine_pause() is
-a NOP for non-cylic DMA transfers. This allowed the 8250_omap
-driver to read DMA buffers while the DMA was still active,
-resulting in lost serial data.
+The rx_running flag should show if DMA is currently active. However
+there is a window between when the flag is set/cleared and when
+the DMA is started/stopped. Because the flag is queried from both
+hard and soft irq contexts, the driver can make incorrect
+decisions and do things like start a DMA transfer using a buffer
+that is already setup to be used for a DMA transfer.
+
+This patch adds a spinlock to synchronize the rx_running flag and
+close the above mentioned window.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- drivers/dma/edma.c |    7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/tty/serial/8250/8250_omap.c |   65 ++++++++++++++++++++++++++---------
+ 1 file changed, 49 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/dma/edma.c b/drivers/dma/edma.c
-index bf09db7..88853af 100644
---- a/drivers/dma/edma.c
-+++ b/drivers/dma/edma.c
-@@ -300,8 +300,7 @@ static int edma_dma_pause(struct dma_chan *chan)
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 9289999..77c9f5a 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -98,6 +98,7 @@ struct omap8250_priv {
+ 	struct pm_qos_request pm_qos_request;
+ 	struct work_struct qos_work;
+ 	struct uart_8250_dma omap8250_dma;
++	spinlock_t rx_dma_lock;
+ };
+ 
+ static u32 uart_read(struct uart_8250_port *up, u32 reg)
+@@ -669,14 +670,21 @@ static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir);
+ 
+ static void __dma_rx_do_complete(struct uart_8250_port *p, bool error)
  {
- 	struct edma_chan *echan = to_edma_chan(chan);
++	struct omap8250_priv	*priv = p->port.private_data;
+ 	struct uart_8250_dma    *dma = p->dma;
+ 	struct tty_port         *tty_port = &p->port.state->port;
+ 	struct dma_tx_state     state;
+ 	int                     count;
++	unsigned long		flags;
  
--	/* Pause/Resume only allowed with cyclic mode */
--	if (!echan->edesc || !echan->edesc->cyclic)
-+	if (!echan->edesc)
- 		return -EINVAL;
+ 	dma_sync_single_for_cpu(dma->rxchan->device->dev, dma->rx_addr,
+ 				dma->rx_size, DMA_FROM_DEVICE);
  
- 	edma_pause(echan->ch_num);
-@@ -312,10 +311,6 @@ static int edma_dma_resume(struct dma_chan *chan)
- {
- 	struct edma_chan *echan = to_edma_chan(chan);
++	spin_lock_irqsave(&priv->rx_dma_lock, flags);
++
++	if (!dma->rx_running)
++		goto unlock;
++
+ 	dma->rx_running = 0;
+ 	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+ 	dmaengine_terminate_all(dma->rxchan);
+@@ -685,6 +693,9 @@ static void __dma_rx_do_complete(struct uart_8250_port *p, bool error)
  
--	/* Pause/Resume only allowed with cyclic mode */
--	if (!echan->edesc->cyclic)
--		return -EINVAL;
--
- 	edma_resume(echan->ch_num);
- 	return 0;
+ 	tty_insert_flip_string(tty_port, dma->rx_buf, count);
+ 	p->port.icount.rx += count;
++unlock:
++	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
++
+ 	if (!error)
+ 		omap_8250_rx_dma(p, 0);
+ 
+@@ -696,28 +707,45 @@ static void __dma_rx_complete(void *param)
+ 	__dma_rx_do_complete(param, false);
  }
+ 
++static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
++{
++	struct omap8250_priv	*priv = p->port.private_data;
++	struct uart_8250_dma	*dma = p->dma;
++	unsigned long		flags;
++
++	spin_lock_irqsave(&priv->rx_dma_lock, flags);
++
++	if (!dma->rx_running) {
++		spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
++		return;
++	}
++
++	dmaengine_pause(dma->rxchan);
++
++	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
++
++	__dma_rx_do_complete(p, true);
++}
++
+ static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+ {
++	struct omap8250_priv		*priv = p->port.private_data;
+ 	struct uart_8250_dma            *dma = p->dma;
++	int				err = 0;
+ 	struct dma_async_tx_descriptor  *desc;
++	unsigned long			flags;
+ 
+ 	switch (iir & 0x3f) {
+ 	case UART_IIR_RLSI:
+ 		/* 8250_core handles errors and break interrupts */
+-		if (dma->rx_running) {
+-			dmaengine_pause(dma->rxchan);
+-			__dma_rx_do_complete(p, true);
+-		}
++		omap_8250_rx_dma_flush(p);
+ 		return -EIO;
+ 	case UART_IIR_RX_TIMEOUT:
+ 		/*
+ 		 * If RCVR FIFO trigger level was not reached, complete the
+ 		 * transfer and let 8250_core copy the remaining data.
+ 		 */
+-		if (dma->rx_running) {
+-			dmaengine_pause(dma->rxchan);
+-			__dma_rx_do_complete(p, true);
+-		}
++		omap_8250_rx_dma_flush(p);
+ 		return -ETIMEDOUT;
+ 	case UART_IIR_RDI:
+ 		/*
+@@ -729,24 +757,25 @@ static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+ 		 * the DMA won't do anything soon so we have to cancel the DMA
+ 		 * transfer and purge the FIFO manually.
+ 		 */
+-		if (dma->rx_running) {
+-			dmaengine_pause(dma->rxchan);
+-			__dma_rx_do_complete(p, true);
+-		}
++		omap_8250_rx_dma_flush(p);
+ 		return -ETIMEDOUT;
+ 
+ 	default:
+ 		break;
+ 	}
+ 
++	spin_lock_irqsave(&priv->rx_dma_lock, flags);
++
+ 	if (dma->rx_running)
+-		return 0;
++		goto out;
+ 
+ 	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
+ 					   dma->rx_size, DMA_DEV_TO_MEM,
+ 					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+-	if (!desc)
+-		return -EBUSY;
++	if (!desc) {
++		err = -EBUSY;
++		goto out;
++	}
+ 
+ 	dma->rx_running = 1;
+ 	desc->callback = __dma_rx_complete;
+@@ -758,7 +787,9 @@ static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+ 				   dma->rx_size, DMA_FROM_DEVICE);
+ 
+ 	dma_async_issue_pending(dma->rxchan);
+-	return 0;
++out:
++	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
++	return err;
+ }
+ 
+ static int omap_8250_tx_dma(struct uart_8250_port *p);
+@@ -1065,6 +1096,8 @@ static int omap8250_probe(struct platform_device *pdev)
+ 			   priv->latency);
+ 	INIT_WORK(&priv->qos_work, omap8250_uart_qos_work);
+ 
++	spin_lock_init(&priv->rx_dma_lock);
++
+ 	device_init_wakeup(&pdev->dev, true);
+ 	pm_runtime_use_autosuspend(&pdev->dev);
+ 	pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
 -- 
 1.7.10.4
