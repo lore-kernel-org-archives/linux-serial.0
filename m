@@ -1,180 +1,52 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: [PATCH 3/3] tty: serial: 8250: omap: synchronize rx_running
-Date: Mon, 27 Apr 2015 13:52:33 +0200
-Message-ID: <87tww1aiv2.fsf@linutronix.de>
+From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Subject: Re: [PATCH 1/3] ARM: common: edma: clear completion interrupts on
+ stop
+Date: Mon, 27 Apr 2015 14:55:26 +0300
+Message-ID: <553E23AE.5010601@ti.com>
+References: <87wq0xaivk.fsf@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <87wq0xaivk.fsf@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: John Ogness <john.ogness@linutronix.de>, linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-The rx_running flag should show if DMA is currently active. However
-there is a window between when the flag is set/cleared and when
-the DMA is started/stopped. Because the flag is queried from both
-hard and soft irq contexts, the driver can make incorrect
-decisions and do things like start a DMA transfer using a buffer
-that is already setup to be used for a DMA transfer.
+On 04/27/2015 02:52 PM, John Ogness wrote:
+> When stopping a DMA transfer with interrupts disabled it is possible
+> that the DMA transfer completes before the events are cleared. In
+> this case the completion interrupt will be pending, causing a
+> completion callback after the transfer was stopped.
+>=20
+> By clearing the completion interrupt for the stopping channel it is
+> ensured that no completion event will be generated after the stop.
 
-This patch adds a spinlock to synchronize the rx_running flag and
-close the above mentioned window.
+Acked-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/serial/8250/8250_omap.c |   65 ++++++++++++++++++++++++++---------
- 1 file changed, 49 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 9289999..77c9f5a 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -98,6 +98,7 @@ struct omap8250_priv {
- 	struct pm_qos_request pm_qos_request;
- 	struct work_struct qos_work;
- 	struct uart_8250_dma omap8250_dma;
-+	spinlock_t rx_dma_lock;
- };
- 
- static u32 uart_read(struct uart_8250_port *up, u32 reg)
-@@ -669,14 +670,21 @@ static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir);
- 
- static void __dma_rx_do_complete(struct uart_8250_port *p, bool error)
- {
-+	struct omap8250_priv	*priv = p->port.private_data;
- 	struct uart_8250_dma    *dma = p->dma;
- 	struct tty_port         *tty_port = &p->port.state->port;
- 	struct dma_tx_state     state;
- 	int                     count;
-+	unsigned long		flags;
- 
- 	dma_sync_single_for_cpu(dma->rxchan->device->dev, dma->rx_addr,
- 				dma->rx_size, DMA_FROM_DEVICE);
- 
-+	spin_lock_irqsave(&priv->rx_dma_lock, flags);
-+
-+	if (!dma->rx_running)
-+		goto unlock;
-+
- 	dma->rx_running = 0;
- 	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
- 	dmaengine_terminate_all(dma->rxchan);
-@@ -685,6 +693,9 @@ static void __dma_rx_do_complete(struct uart_8250_port *p, bool error)
- 
- 	tty_insert_flip_string(tty_port, dma->rx_buf, count);
- 	p->port.icount.rx += count;
-+unlock:
-+	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
-+
- 	if (!error)
- 		omap_8250_rx_dma(p, 0);
- 
-@@ -696,28 +707,45 @@ static void __dma_rx_complete(void *param)
- 	__dma_rx_do_complete(param, false);
- }
- 
-+static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
-+{
-+	struct omap8250_priv	*priv = p->port.private_data;
-+	struct uart_8250_dma	*dma = p->dma;
-+	unsigned long		flags;
-+
-+	spin_lock_irqsave(&priv->rx_dma_lock, flags);
-+
-+	if (!dma->rx_running) {
-+		spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
-+		return;
-+	}
-+
-+	dmaengine_pause(dma->rxchan);
-+
-+	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
-+
-+	__dma_rx_do_complete(p, true);
-+}
-+
- static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
- {
-+	struct omap8250_priv		*priv = p->port.private_data;
- 	struct uart_8250_dma            *dma = p->dma;
-+	int				err = 0;
- 	struct dma_async_tx_descriptor  *desc;
-+	unsigned long			flags;
- 
- 	switch (iir & 0x3f) {
- 	case UART_IIR_RLSI:
- 		/* 8250_core handles errors and break interrupts */
--		if (dma->rx_running) {
--			dmaengine_pause(dma->rxchan);
--			__dma_rx_do_complete(p, true);
--		}
-+		omap_8250_rx_dma_flush(p);
- 		return -EIO;
- 	case UART_IIR_RX_TIMEOUT:
- 		/*
- 		 * If RCVR FIFO trigger level was not reached, complete the
- 		 * transfer and let 8250_core copy the remaining data.
- 		 */
--		if (dma->rx_running) {
--			dmaengine_pause(dma->rxchan);
--			__dma_rx_do_complete(p, true);
--		}
-+		omap_8250_rx_dma_flush(p);
- 		return -ETIMEDOUT;
- 	case UART_IIR_RDI:
- 		/*
-@@ -729,24 +757,25 @@ static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
- 		 * the DMA won't do anything soon so we have to cancel the DMA
- 		 * transfer and purge the FIFO manually.
- 		 */
--		if (dma->rx_running) {
--			dmaengine_pause(dma->rxchan);
--			__dma_rx_do_complete(p, true);
--		}
-+		omap_8250_rx_dma_flush(p);
- 		return -ETIMEDOUT;
- 
- 	default:
- 		break;
- 	}
- 
-+	spin_lock_irqsave(&priv->rx_dma_lock, flags);
-+
- 	if (dma->rx_running)
--		return 0;
-+		goto out;
- 
- 	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
- 					   dma->rx_size, DMA_DEV_TO_MEM,
- 					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
--	if (!desc)
--		return -EBUSY;
-+	if (!desc) {
-+		err = -EBUSY;
-+		goto out;
-+	}
- 
- 	dma->rx_running = 1;
- 	desc->callback = __dma_rx_complete;
-@@ -758,7 +787,9 @@ static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
- 				   dma->rx_size, DMA_FROM_DEVICE);
- 
- 	dma_async_issue_pending(dma->rxchan);
--	return 0;
-+out:
-+	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
-+	return err;
- }
- 
- static int omap_8250_tx_dma(struct uart_8250_port *p);
-@@ -1065,6 +1096,8 @@ static int omap8250_probe(struct platform_device *pdev)
- 			   priv->latency);
- 	INIT_WORK(&priv->qos_work, omap8250_uart_qos_work);
- 
-+	spin_lock_init(&priv->rx_dma_lock);
-+
- 	device_init_wakeup(&pdev->dev, true);
- 	pm_runtime_use_autosuspend(&pdev->dev);
- 	pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
--- 
-1.7.10.4
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> ---
+>  arch/arm/common/edma.c |    3 +++
+>  1 file changed, 3 insertions(+)
+>=20
+> diff --git a/arch/arm/common/edma.c b/arch/arm/common/edma.c
+> index 5662a87..873dbfc 100644
+> --- a/arch/arm/common/edma.c
+> +++ b/arch/arm/common/edma.c
+> @@ -1350,6 +1350,9 @@ void edma_stop(unsigned channel)
+>  		edma_shadow0_write_array(ctlr, SH_SECR, j, mask);
+>  		edma_write_array(ctlr, EDMA_EMCR, j, mask);
+> =20
+> +		/* clear possibly pending completion interrupt */
+> +		edma_shadow0_write_array(ctlr, SH_ICR, j, mask);
+> +
+>  		pr_debug("EDMA: EER%d %08x\n", j,
+>  				edma_shadow0_read_array(ctlr, SH_EER, j));
+> =20
+>=20
+
+
+--=20
+P=E9ter
