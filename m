@@ -1,67 +1,55 @@
-From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: 8250-based SoC serial ports and features
-Date: Mon, 27 Apr 2015 09:07:43 -0500
-Message-ID: <CAL_JsqLqtmOogeizn2cNFzPe=dwm-f+ZDu2n2TsA82kv85YBoA@mail.gmail.com>
-References: <CAGhQ9Vw5hJKX+wrhV91mGmB00eUJKaR8Astns8rpk465BQnv1Q@mail.gmail.com>
- <9563845.vZY1xECvNe@wuerfel> <CAGhQ9VyrnPrgzqtkTN5V7zpSQQ6QhmQdpQi5Sc1eTkcQnxKZXw@mail.gmail.com>
- <6085099.eeiYtUGZgl@wuerfel>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [PATCH v4 REPOST 1/2] Revert "serial/amba-pl011: Leave the TX IRQ
+ alone when the UART is not open"
+Date: Mon, 27 Apr 2015 16:49:04 +0100
+Message-ID: <1430149745-27195-2-git-send-email-Dave.Martin@arm.com>
+References: <1430149745-27195-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <6085099.eeiYtUGZgl@wuerfel>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1430149745-27195-1-git-send-email-Dave.Martin@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Apr 25, 2015 at 3:08 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
-> On Saturday 25 April 2015 16:33:18 Joachim Eastwood wrote:
->>
->> One other question: What is the preferred way of describing different
->> UART SoC features in DT?
->> 16550a is used as base on most NXP Cortex-M devices, but each UART can
->> have different features like; IRDA, Smart card, RS485, sync mode
->> (USART), DMA, hardware RTS/CTS pins and full modem pins.
->> Features also differ between UARTs on the same device.
->>
->> I am thinking about either using different comp strings or some kind
->> of feature flags in DT. (Freescale UART already uses feature flags
->> like: "fsl,irda-mode" and "fsl,uart-has-rtscts")
->
-> I would probably specify both then, to give more flexibility to the
-> driver in implementing it one way or the other.
->
->> All UARTs on LPC1850 have RS485 and DMA support. In additional you have:
->> UART0,2,3: sync mode and smart card.
->> UART3: IRDA
->> UART1: full modem control pin set.
->>
->> Comp strings could be something like:
->> "nxp,lpc1850-usart" <- sync+smart card
->> "nxp,lpc1850-usart-irda" <- sync+smart card+irda
->> "nxp,lpc1850-uart-modem" <- modem-pins
-
-I'd only consider going this route if the UARTs are hard wired in the
-chip for these functions. But use of full modem signals is almost
-always optional.
-
->> or feature flags like:
->> nxp,sync-mode;
->> nxp,rs485-mode;
->> nxp,smart-card;
->> nxp,irda-mode;
->> nxp,full-modem;
->
-> For cases where a single chip has uarts with different features,
-> using feature flags makes most sense, you can probably skip
-> assigning different compatible strings there.
-
-Agreed. I would add that if you find vendor specific flags like this
-that you also need, drop the vendor prefix and create something
-generic.
-
-Rob
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+VGhpcyByZXZlcnRzIGNvbW1pdCBmMmVlNmRmYTBlODU5N2VlYThiOThkMjQwYjAwMzM5OTRlMjBk
+MjE1LgoKSmFrdWIgS2ljacWEc2tpIG9ic2VydmVkIHRoYXQgdGhpcyBwYXRjaCBjYW4gY2F1c2Ug
+dGhlIHBsMDExCmRyaXZlciB0byBoYW5nIGlmIGlmIHRoZSBvbmx5IHByb2Nlc3Mgd2l0aCBhIHBs
+MDExIHBvcnQgb3BlbiBpcwpraWxsZWQgYnkgYSBzaWduYWwsIHBsMDExX3NodXRkb3duKCkgY2Fu
+IGdldCBjYWxsZWQgd2l0aCBhbgphcmJpdHJhcnkgYW1vdW50IG9mIGRhdGEgc3RpbGwgaW4gdGhl
+IEZJRk8uCgpDYWxsaW5nIF9zaHV0ZG93bigpIHdpdGggdGhlIFRYIEZJRk8gbm9uLWVtcHR5IGlz
+IHF1ZXN0aW9uYWJsZQpiZWhhdmlvdXIgYW5kIG15IGl0c2VsZiBiZSBhIGJ1Zy4KClNpbmNlIHRo
+ZSBhZmZlY3RlZCBwYXRjaCB3YXMgc3BlY3VsYXRpdmUgYW55d2F5LCBhbmQgYnJpbmdzIGxpbWl0
+ZWQKYmVuZWZpdCwgdGhlIHNpbXBsZXN0IGNvdXJzZSBpcyB0byByZW1vdmUgdGhlIGFzc3VtcHRp
+b24gdGhhdCBUWElTCndpbGwgYWx3YXlzIGJlIGxlZnQgYXNzZXJ0ZWQgYWZ0ZXIgdGhlIHBvcnQg
+aXMgc2h1dCBkb3duLgoKU2lnbmVkLW9mZi1ieTogRGF2ZSBNYXJ0aW4gPERhdmUuTWFydGluQGFy
+bS5jb20+Ci0tLQogZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYyB8ICAgIDUgKysrKy0K
+IDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jIGIvZHJpdmVycy90dHkvc2VyaWFs
+L2FtYmEtcGwwMTEuYwppbmRleCA1YTRlOWQ1Li42ZjVhMDcyIDEwMDY0NAotLS0gYS9kcml2ZXJz
+L3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBs
+MDExLmMKQEAgLTE2MzksNiArMTYzOSw5IEBAIHN0YXRpYyBpbnQgcGwwMTFfc3RhcnR1cChzdHJ1
+Y3QgdWFydF9wb3J0ICpwb3J0KQogCiAJd3JpdGV3KHVhcC0+dmVuZG9yLT5pZmxzLCB1YXAtPnBv
+cnQubWVtYmFzZSArIFVBUlQwMTFfSUZMUyk7CiAKKwkvKiBBc3N1bWUgdGhhdCBUWCBJUlEgZG9l
+c24ndCB3b3JrIHVudGlsIHdlIHNlZSBvbmU6ICovCisJdWFwLT50eF9pcnFfc2VlbiA9IDA7CisK
+IAlzcGluX2xvY2tfaXJxKCZ1YXAtPnBvcnQubG9jayk7CiAKIAkvKiByZXN0b3JlIFJUUyBhbmQg
+RFRSICovCkBAIC0xNzAyLDcgKzE3MDUsNyBAQCBzdGF0aWMgdm9pZCBwbDAxMV9zaHV0ZG93bihz
+dHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQogCXNwaW5fbG9ja19pcnEoJnVhcC0+cG9ydC5sb2NrKTsK
+IAl1YXAtPmltID0gMDsKIAl3cml0ZXcodWFwLT5pbSwgdWFwLT5wb3J0Lm1lbWJhc2UgKyBVQVJU
+MDExX0lNU0MpOwotCXdyaXRldygweGZmZmYgJiB+VUFSVDAxMV9UWElTLCB1YXAtPnBvcnQubWVt
+YmFzZSArIFVBUlQwMTFfSUNSKTsKKwl3cml0ZXcoMHhmZmZmLCB1YXAtPnBvcnQubWVtYmFzZSAr
+IFVBUlQwMTFfSUNSKTsKIAlzcGluX3VubG9ja19pcnEoJnVhcC0+cG9ydC5sb2NrKTsKIAogCXBs
+MDExX2RtYV9zaHV0ZG93bih1YXApOwotLSAKMS43LjEwLjQKCgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlz
+dApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJh
+ZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
