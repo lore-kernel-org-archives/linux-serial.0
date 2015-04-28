@@ -1,50 +1,55 @@
-From: Eddie Huang <eddie.huang@mediatek.com>
-Subject: [PATCH v3 2/3] tty: serial: 8250_mtk: Add earlycon
-Date: Tue, 28 Apr 2015 21:40:33 +0800
-Message-ID: <1430228434-31779-3-git-send-email-eddie.huang@mediatek.com>
-References: <1430228434-31779-1-git-send-email-eddie.huang@mediatek.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 01/13] of: earlycon: Fix 'stdout-path' with ':' path
+ terminator
+Date: Tue, 28 Apr 2015 09:58:16 -0400
+Message-ID: <553F91F8.3010400@hurleysoftware.com>
+References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com> <1428515119-25248-2-git-send-email-peter@hurleysoftware.com> <CAL_JsqLvKVDTD9-ees=gynVD2WDtEPGAa+XPCCpkX9ydaAVyTw@mail.gmail.com> <553F862A.2000709@hurleysoftware.com> <20150428132838.GA10782@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1430228434-31779-1-git-send-email-eddie.huang@mediatek.com>
+In-Reply-To: <20150428132838.GA10782@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: srv_heupstream@mediatek.com, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jiri Slaby <jslaby@suse.cz>, Eddie Huang <eddie.huang@mediatek.com>, Howard Chen <ibanezchen@gmail.com>, Ashwin Chaugule <ashwin.chaugule@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Wang Long <long.wanglong@huawei.com>, Kevin Cernekee <cernekee@gmail.com>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Alan Cox <alan@linux.intel.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.orgSascha Hauer <kern>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rob Herring <robherring2@gmail.com>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Leif Lindholm <leif.lindholm@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add 8250 MTK UART driver to support earlycon device tree.
-Earlycon take effect by
-  add "earlycon" in kernel boot argument
-  add "linux,sdtout-path" property in device tree file
+On 04/28/2015 09:28 AM, Greg Kroah-Hartman wrote:
+> On Tue, Apr 28, 2015 at 09:07:54AM -0400, Peter Hurley wrote:
+>> On 04/08/2015 05:24 PM, Rob Herring wrote:
+>>> On Wed, Apr 8, 2015 at 12:45 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>>>> stdout-path defines ':' as a path terminator and commit 75c28c09af99a
+>>>> ("of: add optional options parameter to of_find_node_by_path()") added
+>>>> the necessary support to parse paths terminated with ':'.
+>>>> commit 7914a7c5651a5 ("of: support passing console options with
+>>>> stdout-path") added options string support to the stdout-path property,
+>>>> which broke earlycon.
+>>>>
+>>>> Add the same support to earlycon to process 'stdout-path' properties
+>>>> which contain an options string.
+>>>>
+>>>> Requires: "libfdt: Add fdt_path_offset_namelen()"
+>>>
+>>> Since David has applied this, we can cherrypick that commit for the
+>>> kernel copy. Ideally, we would do a dtc sync, but it's not going to
+>>> happen for 4.1.
+>>
+>> Rob,
+>>
+>> Greg pulled this series for -next and kbuild robot promptly blew up
+>> because of this missing commit. Are you planning on cherry-picking
+>> "libfdt: Add fdt_path_offset_namelen()"?
+> 
+> Can I just take that patch so I don't see the build issues in my branch?
 
-Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
----
- drivers/tty/serial/8250/8250_mtk.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+It's ok with me, fwiw.
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index 7a11fac..8b2a666 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -289,6 +289,19 @@ static struct platform_driver mtk8250_platform_driver = {
- };
- module_platform_driver(mtk8250_platform_driver);
- 
-+static int __init early_mtk8250_setup(struct earlycon_device *device,
-+					const char *options)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->port.iotype = UPIO_MEM32;
-+
-+	return early_serial8250_setup(device, NULL);
-+}
-+
-+OF_EARLYCON_DECLARE(mtk8250, "mediatek,mt6577-uart", early_mtk8250_setup);
-+
- MODULE_AUTHOR("Matthias Brugger");
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Mediatek 8250 serial port driver");
--- 
-1.8.1.1.dirty
+However, you should be aware that the patch is for the out-of-tree
+devicetree compiler at git://git.kernel.org/pub/scm/utils/dtc/dtc.git,
+which is not the same as in-tree compiler.
+
+I could send you an edited patch that applies cleanly to the
+in-tree compiler but I don't know how Rob and Grant feel about that.
+
+Regards,
+Peter Hurley
