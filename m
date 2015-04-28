@@ -1,41 +1,34 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3 1/3] tty: serial: msm: Add mask value for UART_DM
- registers
-Date: Tue, 28 Apr 2015 13:26:28 +0200
-Message-ID: <20150428112628.GA8228@kroah.com>
-References: <1428668396-6955-1-git-send-email-gpramod@codeaurora.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 12/13] serial: 8250_early: Use port->regshift
+Date: Tue, 28 Apr 2015 13:38:36 +0200
+Message-ID: <20150428113836.GA5838@kroah.com>
+References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
+ <1428515119-25248-13-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1428668396-6955-1-git-send-email-gpramod@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Pramod Gurav <gpramod@codeaurora.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, bryanh@codeaurora.org, sboyd@codeaurora.org, jslaby@suse.cz
+In-Reply-To: <1428515119-25248-13-git-send-email-peter@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Apr 10, 2015 at 05:49:54PM +0530, Pramod Gurav wrote:
-> The bit masks for RFR_LEVEL1 and STALE_TIMEOUT_MSB values in MR1 and
-> IPR registers respectively are different for UART and UART_DM hardware
-> cores. We have been using UART core mask values for these. Add the same
-> for UART_DM core.
+On Wed, Apr 08, 2015 at 01:45:18PM -0400, Peter Hurley wrote:
+> earlycon initializes struct uart_port::regshift to the correct
+> value for UPIO_MEM32 already. Use the port field rather than
+> hard-coded value.
 > 
-> There is no bit setting as UART_IPR_RXSTALE_LAST for UART_DM core so do
-> it only for UART core.
+> This enables broader support for various i/o access methods in
+> 8250 earlycon (eg., omap8250 earlycon).
 > 
-> Signed-off-by: Pramod Gurav <gpramod@codeaurora.org>
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 > ---
-> Changes since v2:
-> 
->  - Changed the sequnce of code to avoid duplication of code.
-> 
->  drivers/tty/serial/msm_serial.c | 26 ++++++++++++++++++++------
->  drivers/tty/serial/msm_serial.h |  2 ++
->  2 files changed, 22 insertions(+), 6 deletions(-)
+>  drivers/tty/serial/8250/8250_early.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 
-I only have patch 1/3 in my inbox, please resend all of them, not just
-individual ones you have redone, as that makes it impossible to keep
-track of patches in series.
+This patch fails to apply to my tty-testing branch.  Can you refresh it
+and resend this one, and patch 13/13 so that I can apply them?
 
 thanks,
 
