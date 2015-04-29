@@ -1,57 +1,66 @@
-From: Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v3 3/3] arm64: dts: Add mediatek MT8173 earlycon support
-Date: Wed, 29 Apr 2015 08:19:02 +0000
-Message-ID: <C2D7FE5348E1B147BCA15975FBA230756659C0C2@IN01WEMBXB.internal.synopsys.com>
-References: <1430228434-31779-1-git-send-email-eddie.huang@mediatek.com>
- <1430228434-31779-4-git-send-email-eddie.huang@mediatek.com>
- <20150429064454.GR6325@pengutronix.de>
+From: "Pramod Gurav" <gpramod@codeaurora.org>
+Subject: Re: [PATCH v3 2/3] tty: serial: msm: Remove duplicate operations on
+ clocks in startup/shutdown
+Date: Wed, 29 Apr 2015 21:15:56 +0530
+Message-ID: <f656bf979fb566091a3b8c6cc06712c2.squirrel@www.codeaurora.org>
+References: <1428668396-6955-1-git-send-email-gpramod@codeaurora.org>
+    <1428668396-6955-2-git-send-email-gpramod@codeaurora.org>
+    <55281068.3000309@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Eddie Huang <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Howard Chen <ibanezchen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ashwin Chaugule <ashwin.chaugule-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Wang Long <long.wanglong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>linu
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <55281068.3000309@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, bryanh@codeaurora.org, jslaby@suse.cz
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday 29 April 2015 12:15 PM, Sascha Hauer wrote:
-> Hi Eddie,
+Thanks Stephen for review.
+
+On Fri, April 10, 2015 11:33 pm, Stephen Boyd wrote:
+> On 04/10/15 05:19, Pramod Gurav wrote:
+>> @@ -683,8 +679,7 @@ static void msm_power(struct uart_port *port,
+>> unsigned int state,
+>>
+>>  	switch (state) {
+>>  	case 0:
+>> -		clk_prepare_enable(msm_port->clk);
+>> -		clk_prepare_enable(msm_port->pclk);
+>> +		msm_init_clock(port);
 >
-> On Tue, Apr 28, 2015 at 09:40:34PM +0800, Eddie Huang wrote:
->> Add earlycon support to mediatek MT8173 evaluation board dts.
-> This is not about earlycon support. It adds the stdout-path property
-> which is generally about console.
+> Hm... now we would call msm_serial_set_mnd_regs() whenever we power on
+> the port? Presumably we only need to do that once when we probe (or when
+> we resume from a sleep state that resets the registers, i.e.
+> hibernation) but I guess we're getting saved by the fact that the
+> if/else if pair in msm_serial_set_mnd_regs_from_uartclk would never be
+> true after the first time we call it?
 
-Indeed, this is shorter way of specifying the default console by referring to uart
-device.
+I tried replacing msm_init_clock() call with msm_serial_set_mnd_regs() in
+msm_startup() as msm_startup gets called just after msm_power() so that
+clk_prepare_enable() is followed by mnd settings. But it does not get the
+kernel booted for some reason.
 
->  It only happens to used for earlycon,
-> but would be used as a regular console aswell if it wasn't broken for
-> some kernel revisisions.
-
-Really - I'm confused. When I last tried this for arc_uart (in 3.17 time frame),
-it would setup default console, but to use it for earlycon we needed
-bootargs=earlycon in chosen. However I had to revet that change since OF core
-still was fixing a few things in that area.
-
-See mainline 22524b02b17b901f28 ("Revert "ARC: [arcfpga] stdout-path now suffices
-for earlycon/console"")
-
--Vineet
-
+So, can I get a acked-by for this patch or you still think it can be done
+in a better way?
 >
->>  
->> -	chosen { };
->> +	chosen {
->> +		linux,stdout-path = &uart0;
->> +	};
-> Please use stdout-path, without the 'linux,'.
+>>  		break;
+>>  	case 3:
+>>  		clk_disable_unprepare(msm_port->clk);
 >
-> Sascha
+>
+> --
+> Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+> a Linux Foundation Collaborative Project
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm"
+> in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
