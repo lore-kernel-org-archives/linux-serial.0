@@ -1,161 +1,225 @@
-From: Rajendra Nayak <rnayak@codeaurora.org>
-Subject: Re: [RFC/RFT 3/6] serial: msm: convert driver to use runtime PM apis
-Date: Wed, 29 Apr 2015 08:45:54 +0530
-Message-ID: <55404CEA.5090803@codeaurora.org>
-References: <1429778744-13352-1-git-send-email-rnayak@codeaurora.org> <1429778744-13352-4-git-send-email-rnayak@codeaurora.org> <554022E7.90407@codeaurora.org>
+From: Barry Song <21cnbao@gmail.com>
+Subject: [PATCH 1/2] serial: sirf: use dynamic method allocate uart structure
+Date: Wed, 29 Apr 2015 06:45:08 +0000
+Message-ID: <1430289909-28396-1-git-send-email-21cnbao@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <554022E7.90407@codeaurora.org>
-Sender: linux-pm-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Pramod Gurav <gpramod@codeaurora.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
+Cc: Qipan Li <Qipan.Li@csr.com>, workgroup.linux@csr.com, linux-arm-kernel@lists.infradead.org, Barry Song <Baohua.Song@csr.com>
 List-Id: linux-serial@vger.kernel.org
 
+From: Qipan Li <Qipan.Li@csr.com>
 
-On 04/29/2015 05:46 AM, Stephen Boyd wrote:
-> On 04/23/15 01:45, Rajendra Nayak wrote:
->> With platform support now in place to manage clocks from within runtime PM
->> callbacks, get rid of all clock handling from the driver and convert the
->> driver to use runtime PM apis.
->>
->> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
->> Cc: <linux-serial@vger.kernel.org>
->
-> Pramod is changing the same file in the same area. Please work together
-> if necessary.
+In different platform of SiRF SoCs, there is no same uart and usp-uart
+numbers, it is not convenient to use hard-coded ports array and port
+lines.
 
-Sure, will do. For some reason I thought those changes already made it
-in 4.1, but maybe not.
+here we drop the hard-coded ports table , and drop "cell-index". then
+move to use alias id to get line.
 
->
-> -Stephen
->
->> ---
->>   drivers/tty/serial/msm_serial.c | 33 ++++++++++++++++-----------------
->>   1 file changed, 16 insertions(+), 17 deletions(-)
->>
->> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
->> index b73889c..eb66502 100644
->> --- a/drivers/tty/serial/msm_serial.c
->> +++ b/drivers/tty/serial/msm_serial.c
->> @@ -33,6 +33,7 @@
->>   #include <linux/serial.h>
->>   #include <linux/clk.h>
->>   #include <linux/platform_device.h>
->> +#include <linux/pm_runtime.h>
->>   #include <linux/delay.h>
->>   #include <linux/of.h>
->>   #include <linux/of_device.h>
->> @@ -50,11 +51,11 @@ struct msm_port {
->>   	struct uart_port	uart;
->>   	char			name[16];
->>   	struct clk		*clk;
->> -	struct clk		*pclk;
->>   	unsigned int		imr;
->>   	int			is_uartdm;
->>   	unsigned int		old_snap_state;
->>   	bool			break_detected;
->> +	struct device		*dev;
->>   };
->>
->>   static inline void wait_for_xmitr(struct uart_port *port)
->> @@ -464,12 +465,11 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud)
->>   	return baud;
->>   }
->>
->> -static void msm_init_clock(struct uart_port *port)
->> +static void msm_init(struct uart_port *port)
->>   {
->>   	struct msm_port *msm_port = UART_TO_MSM(port);
->>
->> -	clk_prepare_enable(msm_port->clk);
->> -	clk_prepare_enable(msm_port->pclk);
->> +	pm_runtime_get_sync(msm_port->dev);
->>   	msm_serial_set_mnd_regs(port);
->>   }
->>
->> @@ -487,7 +487,7 @@ static int msm_startup(struct uart_port *port)
->>   	if (unlikely(ret))
->>   		return ret;
->>
->> -	msm_init_clock(port);
->> +	msm_init(port);
->>
->>   	if (likely(port->fifosize > 12))
->>   		rfr_level = port->fifosize - 12;
->> @@ -511,7 +511,7 @@ static void msm_shutdown(struct uart_port *port)
->>   	msm_port->imr = 0;
->>   	msm_write(port, 0, UART_IMR); /* disable interrupts */
->>
->> -	clk_disable_unprepare(msm_port->clk);
->> +	pm_runtime_put_sync(msm_port->dev);
->>
->>   	free_irq(port->irq, port);
->>   }
->> @@ -669,12 +669,10 @@ static void msm_power(struct uart_port *port, unsigned int state,
->>
->>   	switch (state) {
->>   	case 0:
->> -		clk_prepare_enable(msm_port->clk);
->> -		clk_prepare_enable(msm_port->pclk);
->> +		pm_runtime_get_sync(msm_port->dev);
->>   		break;
->>   	case 3:
->> -		clk_disable_unprepare(msm_port->clk);
->> -		clk_disable_unprepare(msm_port->pclk);
->> +		pm_runtime_put_sync(msm_port->dev);
->>   		break;
->>   	default:
->>   		pr_err("msm_serial: Unknown PM state %d\n", state);
->> @@ -933,7 +931,7 @@ static int __init msm_console_setup(struct console *co, char *options)
->>   	if (unlikely(!port->membase))
->>   		return -ENXIO;
->>
->> -	msm_init_clock(port);
->> +	msm_init(port);
->>
->>   	if (options)
->>   		uart_parse_options(options, &baud, &parity, &bits, &flow);
->> @@ -1057,13 +1055,10 @@ static int msm_serial_probe(struct platform_device *pdev)
->>   	if (IS_ERR(msm_port->clk))
->>   		return PTR_ERR(msm_port->clk);
->>
->> -	if (msm_port->is_uartdm) {
->> -		msm_port->pclk = devm_clk_get(&pdev->dev, "iface");
->> -		if (IS_ERR(msm_port->pclk))
->> -			return PTR_ERR(msm_port->pclk);
->> -
->> +	if (msm_port->is_uartdm)
->>   		clk_set_rate(msm_port->clk, 1843200);
->> -	}
->> +
->> +	msm_port->dev = &pdev->dev;
->>
->>   	port->uartclk = clk_get_rate(msm_port->clk);
->>   	dev_info(&pdev->dev, "uartclk = %d\n", port->uartclk);
->> @@ -1080,13 +1075,17 @@ static int msm_serial_probe(struct platform_device *pdev)
->>
->>   	platform_set_drvdata(pdev, port);
->>
->> +	pm_runtime_enable(&pdev->dev);
->> +
->>   	return uart_add_one_port(&msm_uart_driver, port);
->>   }
->>
->>   static int msm_serial_remove(struct platform_device *pdev)
->>   {
->>   	struct uart_port *port = platform_get_drvdata(pdev);
->> +	struct msm_port *msm_port = UART_TO_MSM(port);
->>
->> +	pm_runtime_disable(msm_port->dev);
->>   	uart_remove_one_port(&msm_uart_driver, port);
->>
->>   	return 0;
->
->
+for example:
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+		serial4 = &uart4;
+		serial5 = &uart5;
+		serial6 = &uart6;
+		serial9 = &usp2;
+	};
 
+at the same, enlarge the max port number according to the chip with the most
+UART.
+
+Signed-off-by: Qipan Li <Qipan.Li@csr.com>
+Signed-off-by: Barry Song <Baohua.Song@csr.com>
+---
+ drivers/tty/serial/sirfsoc_uart.c | 84 ++++++++++-----------------------------
+ drivers/tty/serial/sirfsoc_uart.h |  8 +---
+ 2 files changed, 23 insertions(+), 69 deletions(-)
+
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index 247faed..e033b93 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -59,50 +59,7 @@ static const struct sirfsoc_baudrate_to_regv baudrate_to_regv[] = {
+ 	{9600, 1114979},
+ };
+ 
+-static struct sirfsoc_uart_port sirfsoc_uart_ports[SIRFSOC_UART_NR] = {
+-	[0] = {
+-		.port = {
+-			.iotype		= UPIO_MEM,
+-			.flags		= UPF_BOOT_AUTOCONF,
+-			.line		= 0,
+-		},
+-	},
+-	[1] = {
+-		.port = {
+-			.iotype		= UPIO_MEM,
+-			.flags		= UPF_BOOT_AUTOCONF,
+-			.line		= 1,
+-		},
+-	},
+-	[2] = {
+-		.port = {
+-			.iotype		= UPIO_MEM,
+-			.flags		= UPF_BOOT_AUTOCONF,
+-			.line		= 2,
+-		},
+-	},
+-	[3] = {
+-		.port = {
+-			.iotype		= UPIO_MEM,
+-			.flags		= UPF_BOOT_AUTOCONF,
+-			.line		= 3,
+-		},
+-	},
+-	[4] = {
+-		.port = {
+-			.iotype		= UPIO_MEM,
+-			.flags		= UPF_BOOT_AUTOCONF,
+-			.line		= 4,
+-		},
+-	},
+-	[5] = {
+-		.port = {
+-			.iotype		= UPIO_MEM,
+-			.flags		= UPF_BOOT_AUTOCONF,
+-			.line		= 5,
+-		},
+-	},
+-};
++static struct sirfsoc_uart_port *sirf_ports[SIRFSOC_UART_NR];
+ 
+ static inline struct sirfsoc_uart_port *to_sirfport(struct uart_port *port)
+ {
+@@ -1187,27 +1144,29 @@ sirfsoc_uart_console_setup(struct console *co, char *options)
+ 	unsigned int bits = 8;
+ 	unsigned int parity = 'n';
+ 	unsigned int flow = 'n';
+-	struct uart_port *port = &sirfsoc_uart_ports[co->index].port;
+-	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
+-	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
++	struct sirfsoc_uart_port *sirfport;
++	struct sirfsoc_register *ureg;
+ 	if (co->index < 0 || co->index >= SIRFSOC_UART_NR)
+ 		return -EINVAL;
+-
+-	if (!port->mapbase)
++	sirfport = sirf_ports[co->index];
++	if (!sirfport)
++		return -ENODEV;
++	ureg = &sirfport->uart_reg->uart_reg;
++	if (!sirfport->port.mapbase)
+ 		return -ENODEV;
+ 
+ 	/* enable usp in mode1 register */
+ 	if (sirfport->uart_reg->uart_type == SIRF_USP_UART)
+-		wr_regl(port, ureg->sirfsoc_mode1, SIRFSOC_USP_EN |
++		wr_regl(&sirfport->port, ureg->sirfsoc_mode1, SIRFSOC_USP_EN |
+ 				SIRFSOC_USP_ENDIAN_CTRL_LSBF);
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+-	port->cons = co;
++	sirfport->port.cons = co;
+ 
+ 	/* default console tx/rx transfer using io mode */
+ 	sirfport->rx_dma_chan = NULL;
+ 	sirfport->tx_dma_chan = NULL;
+-	return uart_set_options(port, co, baud, parity, bits, flow);
++	return uart_set_options(&sirfport->port, co, baud, parity, bits, flow);
+ }
+ 
+ static void sirfsoc_uart_console_putchar(struct uart_port *port, int ch)
+@@ -1224,8 +1183,10 @@ static void sirfsoc_uart_console_putchar(struct uart_port *port, int ch)
+ static void sirfsoc_uart_console_write(struct console *co, const char *s,
+ 							unsigned int count)
+ {
+-	struct uart_port *port = &sirfsoc_uart_ports[co->index].port;
+-	uart_console_write(port, s, count, sirfsoc_uart_console_putchar);
++	struct sirfsoc_uart_port *sirfport = sirf_ports[co->index];
++
++	uart_console_write(&sirfport->port, s, count,
++			sirfsoc_uart_console_putchar);
+ }
+ 
+ static struct console sirfsoc_uart_console = {
+@@ -1284,16 +1245,15 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
+ 	const struct of_device_id *match;
+ 
+ 	match = of_match_node(sirfsoc_uart_ids, pdev->dev.of_node);
+-	if (of_property_read_u32(pdev->dev.of_node, "cell-index", &pdev->id)) {
+-		dev_err(&pdev->dev,
+-			"Unable to find cell-index in uart node.\n");
+-		ret = -EFAULT;
++	sirfport = devm_kzalloc(&pdev->dev, sizeof(*sirfport), GFP_KERNEL);
++	if (!sirfport) {
++		ret = -ENOMEM;
+ 		goto err;
+ 	}
+-	if (of_device_is_compatible(pdev->dev.of_node, "sirf,prima2-usp-uart"))
+-		pdev->id += ((struct sirfsoc_uart_register *)
+-				match->data)->uart_param.register_uart_nr;
+-	sirfport = &sirfsoc_uart_ports[pdev->id];
++	sirfport->port.line = of_alias_get_id(pdev->dev.of_node, "serial");
++	sirf_ports[sirfport->port.line] = sirfport;
++	sirfport->port.iotype = UPIO_MEM;
++	sirfport->port.flags = UPF_BOOT_AUTOCONF;
+ 	port = &sirfport->port;
+ 	port->dev = &pdev->dev;
+ 	port->private_data = sirfport;
+diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
+index 11fd681..cd30ba9 100644
+--- a/drivers/tty/serial/sirfsoc_uart.h
++++ b/drivers/tty/serial/sirfsoc_uart.h
+@@ -9,8 +9,6 @@
+ struct sirfsoc_uart_param {
+ 	const char *uart_name;
+ 	const char *port_name;
+-	u32 uart_nr;
+-	u32 register_uart_nr;
+ };
+ 
+ struct sirfsoc_register {
+@@ -183,8 +181,6 @@ struct sirfsoc_uart_register sirfsoc_usp = {
+ 	.uart_param = {
+ 		.uart_name = "ttySiRF",
+ 		.port_name = "sirfsoc-uart",
+-		.uart_nr = 2,
+-		.register_uart_nr = 3,
+ 	},
+ };
+ 
+@@ -255,8 +251,6 @@ struct sirfsoc_uart_register sirfsoc_uart = {
+ 	.uart_param = {
+ 		.uart_name = "ttySiRF",
+ 		.port_name = "sirfsoc_uart",
+-		.uart_nr = 3,
+-		.register_uart_nr = 0,
+ 	},
+ };
+ /* uart io ctrl */
+@@ -365,7 +359,7 @@ struct sirfsoc_uart_register sirfsoc_uart = {
+ #define SIRFSOC_UART_MINOR			0
+ #define SIRFUART_PORT_NAME			"sirfsoc-uart"
+ #define SIRFUART_MAP_SIZE			0x200
+-#define SIRFSOC_UART_NR				6
++#define SIRFSOC_UART_NR				11
+ #define SIRFSOC_PORT_TYPE			0xa5
+ 
+ /* Uart Common Use Macro*/
 -- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
+2.3.5
