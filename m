@@ -1,67 +1,59 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 4.1-rc2
-Date: Thu, 30 Apr 2015 15:46:48 +0200
-Message-ID: <20150430134648.GA32285@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Semen Protsenko <semen.protsenko@globallogic.com>
+Subject: [PATCH] serial: omap: Fix error handling in probe
+Date: Thu, 30 Apr 2015 18:28:53 +0300
+Message-ID: <1430407733-4762-1-git-send-email-semen.protsenko@globallogic.com>
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Grygorii Strashko <grygorii.strashko@linaro.org>, Nishanth Menon <nm@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit b787f68c36d49bb1d9236f403813641efa74a031:
+There is pm_qos_add_request() being executed on serial_omap_probe(),
+which stores "&up->pm_qos_request" from omap-serial driver to
+"pm_qos_array[PM_QOS_CPU_DMA_LATENCY]->constraints". If
+serial_omap_probe() fails after pm_qos_add_request() (e.g. on
+uart_add_one_port() call), pm_qos_array still keeping pm_qos_request
+struct from omap-serial driver, which is not valid anymore (since driver
+failed). This leads further to kernel crash on pm_qos_update_target(),
+executing from some completely different driver.
 
-  Linux 4.1-rc1 (2015-04-26 17:59:10 -0700)
+We were observing this while trying to run audio playback while having
+one of omap-serial driver instances failed on uart_add_one_port() call:
+    Unable to handle kernel paging request at virtual address fffffffc
+    Backtrace:
+    (plist_add) from (pm_qos_update_target)
+    (pm_qos_update_target) from (pm_qos_add_request)
+    (pm_qos_add_request) from (snd_pcm_hw_params)
+    (snd_pcm_hw_params) from (snd_pcm_common_ioctl1)
+    (snd_pcm_common_ioctl1) from (snd_pcm_playback_ioctl1)
+    (snd_pcm_playback_ioctl1) from (snd_pcm_playback_ioctl)
+    (snd_pcm_playback_ioctl) from (do_vfs_ioctl)
+    (do_vfs_ioctl) from (SyS_ioctl)
+    (SyS_ioctl) from (ret_fast_syscall)
 
-are available in the git repository at:
+This patch adds pm_qos_remove_request() on fail path in
+serial_omap_probe() in order to fix this issue. While at it, free the
+wakeup settings on fail path as well, just like it's done in
+serial_omap_remove().
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.1-rc2
+Signed-off-by: Semen Protsenko <semen.protsenko@globallogic.com>
+---
+ drivers/tty/serial/omap-serial.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-for you to fetch changes up to 96a5d18bc1338786fecac73599f1681f59a59a8e:
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index d55714d..8d03486 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1761,6 +1761,8 @@ static int serial_omap_probe(struct platform_device *pdev)
+ err_add_port:
+ 	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
++	pm_qos_remove_request(&up->pm_qos_request);
++	device_init_wakeup(up->dev, false);
+ err_rs485:
+ err_port_line:
+ 	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
+-- 
+1.7.9.5
 
-  serial: 8250_pci: Add support for 16 port Exar boards (2015-04-28 20:22:31 +0200)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 4.1-rc2
-
-Here are some small tty/serial driver fixes for 4.1-rc2.
-
-They include some minor fixes that resolve reported issues, and a new
-device quirk.
-
-All have been in linux-next succesfully.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Frederic Danis (1):
-      tty: Re-add external interface for tty_set_termios()
-
-Ludovic Desroches (1):
-      tty/serial: at91: maxburst was missing for dma transfers
-
-Michal Simek (2):
-      serial: xilinx: Use platform_get_irq to get irq description structure
-      serial: of-serial: Remove device_type = "serial" registration
-
-Peter Hurley (1):
-      serial: core: Fix kernel-doc build warnings
-
-Robert Baldyga (1):
-      serial: samsung: fix serial console break
-
-Soeren Grunewald (1):
-      serial: 8250_pci: Add support for 16 port Exar boards
-
- drivers/tty/serial/8250/8250_pci.c | 25 +++++++++++++++++++++++--
- drivers/tty/serial/atmel_serial.c  |  2 ++
- drivers/tty/serial/of_serial.c     |  1 -
- drivers/tty/serial/samsung.c       |  5 +++--
- drivers/tty/serial/serial_core.c   |  2 +-
- drivers/tty/serial/uartlite.c      | 11 ++++++-----
- drivers/tty/serial/xilinx_uartps.c | 12 ++++++------
- drivers/tty/tty_ioctl.c            |  3 ++-
- include/linux/tty.h                |  1 +
- 9 files changed, 44 insertions(+), 18 deletions(-)
