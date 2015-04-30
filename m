@@ -1,11 +1,11 @@
 From: Semen Protsenko <semen.protsenko@globallogic.com>
-Subject: [PATCH] serial: omap: Fix error handling in probe
-Date: Thu, 30 Apr 2015 18:28:53 +0300
-Message-ID: <1430407733-4762-1-git-send-email-semen.protsenko@globallogic.com>
+Subject: [PATCH v2] serial: omap: Fix error handling in probe
+Date: Thu, 30 Apr 2015 18:35:27 +0300
+Message-ID: <1430408127-5237-1-git-send-email-semen.protsenko@globallogic.com>
 Return-path: <linux-omap-owner@vger.kernel.org>
 Sender: linux-omap-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Grygorii Strashko <grygorii.strashko@linaro.org>, Nishanth Menon <nm@ti.com>, "Govindraj.R" <govindraj.raja@ti.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.cz>, Grygorii Strashko <grygorii.strashko@linaro.org>, Nishanth Menon <nm@ti.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 There is pm_qos_add_request() being executed on serial_omap_probe(),
@@ -42,10 +42,10 @@ Signed-off-by: Semen Protsenko <semen.protsenko@globallogic.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index d55714d..8d03486 100644
+index 211479a..7f49172 100644
 --- a/drivers/tty/serial/omap-serial.c
 +++ b/drivers/tty/serial/omap-serial.c
-@@ -1761,6 +1761,8 @@ static int serial_omap_probe(struct platform_device *pdev)
+@@ -1735,6 +1735,8 @@ static int serial_omap_probe(struct platform_device *pdev)
  err_add_port:
  	pm_runtime_put(&pdev->dev);
  	pm_runtime_disable(&pdev->dev);
@@ -53,7 +53,7 @@ index d55714d..8d03486 100644
 +	device_init_wakeup(up->dev, false);
  err_rs485:
  err_port_line:
- 	dev_err(&pdev->dev, "[UART%d]: failure [%s]: %d\n",
+ 	return ret;
 -- 
 1.7.9.5
 
