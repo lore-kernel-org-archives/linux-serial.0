@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 06/13] serial: sh-sci: Replace hardcoded values in SCxSR_*_CLEAR macros
-Date: Thu, 30 Apr 2015 18:21:30 +0200
-Message-ID: <1430410897-12770-7-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 09/13] serial: sh-sci: Don't set SCLSR bits in the SCxSR error mask
+Date: Thu, 30 Apr 2015 18:21:33 +0200
+Message-ID: <1430410897-12770-10-git-send-email-geert+renesas@glider.be>
 References: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
@@ -10,101 +10,32 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Simon Horman <horms@verge.net.au>, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Add the missing overrun error bit in SCxSR on SCIFA/SCIFB and SCIF on
-SH7705/SH7720/SH7721.
-Document what the corresponding bit(s) on plain SCIF are used for.
-Sort the components of SCIF_DEFAULT_ERROR_MASK by reverse definition
-order.
+error_mask is the union of all error indicating bits in the SCxSR
+register, while overrun_mask may apply to a different register (SCLSR),
+depending on the SCI variant.
 
-Replace the hardcoded values in the SCxSR_*_CLEAR macros by proper
-defines. Use bit masks (negations of sets of bits) to make it more
-obvious which bits are being cleared.
-
-Assembler output (on sh) was compared before and after this commit:
-  - For the first branch of the big "#if defined(...) || ..." construct,
-    the code has changed slightly, as 32-bit bitmasks can be loaded in a
-    single instruction, unlike the old large 16-bit constants (the SCxSR
-    register is 16 bit, so we don't care about the top 16 bits),
-  - For the second branch, the generated code is identical.
+Hence overrun_mask should only be ORed into error_mask if it applies to
+the SCxSR register.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.h | 44 ++++++++++++++++++++++++++++++++++----------
- 1 file changed, 34 insertions(+), 10 deletions(-)
+ drivers/tty/serial/sh-sci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
-index 5282738375ae309d..3939513b04547e7f 100644
---- a/drivers/tty/serial/sh-sci.h
-+++ b/drivers/tty/serial/sh-sci.h
-@@ -50,10 +50,16 @@ enum {
- #define SCI_FER		BIT(4)	/* Framing Error */
- #define SCI_PER		BIT(3)	/* Parity Error */
- #define SCI_TEND	BIT(2)	/* Transmit End */
-+#define SCI_RESERVED	0x03	/* All reserved bits */
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index b636c53a1e5b3866..c3e884dd925f43a4 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2323,7 +2323,8 @@ static int sci_init_single(struct platform_device *dev,
+ 	 * Make the error mask inclusive of overrun detection, if
+ 	 * supported.
+ 	 */
+-	sci_port->error_mask |= sci_port->overrun_mask;
++	if (sci_port->overrun_reg == SCxSR)
++		sci_port->error_mask |= sci_port->overrun_mask;
  
- #define SCI_DEFAULT_ERROR_MASK (SCI_PER | SCI_FER)
- 
--/* SCxSR (Serial Status Register) on SCIF, HSCIF */
-+#define SCI_RDxF_CLEAR	~(SCI_RESERVED | SCI_RDRF)
-+#define SCI_ERROR_CLEAR	~(SCI_RESERVED | SCI_PER | SCI_FER | SCI_ORER)
-+#define SCI_TDxE_CLEAR	~(SCI_RESERVED | SCI_TEND | SCI_TDRE)
-+#define SCI_BREAK_CLEAR	~(SCI_RESERVED | SCI_PER | SCI_FER | SCI_ORER)
-+
-+/* SCxSR (Serial Status Register) on SCIF, SCIFA, SCIFB, HSCIF */
- #define SCIF_ER		BIT(7)	/* Receive Error */
- #define SCIF_TEND	BIT(6)	/* Transmission End */
- #define SCIF_TDFE	BIT(5)	/* Transmit FIFO Data Empty */
-@@ -62,8 +68,18 @@ enum {
- #define SCIF_PER	BIT(2)	/* Parity Error */
- #define SCIF_RDF	BIT(1)	/* Receive FIFO Data Full */
- #define SCIF_DR		BIT(0)	/* Receive Data Ready */
-+/* SCIF only (optional) */
-+#define SCIF_PERC	0xf000	/* Number of Parity Errors */
-+#define SCIF_FERC	0x0f00	/* Number of Framing Errors */
-+/*SCIFA/SCIFB and SCIF on SH7705/SH7720/SH7721 only */
-+#define SCIFA_ORER	BIT(9)	/* Overrun Error */
-+
-+#define SCIF_DEFAULT_ERROR_MASK (SCIF_PER | SCIF_FER | SCIF_BRK | SCIF_ER)
- 
--#define SCIF_DEFAULT_ERROR_MASK (SCIF_PER | SCIF_FER | SCIF_ER | SCIF_BRK)
-+#define SCIF_RDxF_CLEAR		~(SCIF_DR | SCIF_RDF)
-+#define SCIF_ERROR_CLEAR	~(SCIFA_ORER | SCIF_PER | SCIF_FER | SCIF_ER)
-+#define SCIF_TDxE_CLEAR		~(SCIF_TDFE)
-+#define SCIF_BREAK_CLEAR	~(SCIF_PER | SCIF_FER | SCIF_BRK)
- 
- /* SCFCR (FIFO Control Register) */
- #define SCFCR_MCE	BIT(3)	/* Modem Control Enable */
-@@ -106,14 +122,22 @@ enum {
-     defined(CONFIG_ARCH_SH73A0) || \
-     defined(CONFIG_ARCH_R8A7740)
- 
--# define SCxSR_RDxF_CLEAR(port)	 (serial_port_in(port, SCxSR) & 0xfffc)
--# define SCxSR_ERROR_CLEAR(port) (serial_port_in(port, SCxSR) & 0xfd73)
--# define SCxSR_TDxE_CLEAR(port)	 (serial_port_in(port, SCxSR) & 0xffdf)
--# define SCxSR_BREAK_CLEAR(port) (serial_port_in(port, SCxSR) & 0xffe3)
-+# define SCxSR_RDxF_CLEAR(port) \
-+	(serial_port_in(port, SCxSR) & SCIF_RDxF_CLEAR)
-+# define SCxSR_ERROR_CLEAR(port) \
-+	(serial_port_in(port, SCxSR) & SCIF_ERROR_CLEAR)
-+# define SCxSR_TDxE_CLEAR(port) \
-+	(serial_port_in(port, SCxSR) & SCIF_TDxE_CLEAR)
-+# define SCxSR_BREAK_CLEAR(port) \
-+	(serial_port_in(port, SCxSR) & SCIF_BREAK_CLEAR)
- #else
--# define SCxSR_RDxF_CLEAR(port)	 (((port)->type == PORT_SCI) ? 0xbc : 0x00fc)
--# define SCxSR_ERROR_CLEAR(port) (((port)->type == PORT_SCI) ? 0xc4 : 0x0073)
--# define SCxSR_TDxE_CLEAR(port)  (((port)->type == PORT_SCI) ? 0x78 : 0x00df)
--# define SCxSR_BREAK_CLEAR(port) (((port)->type == PORT_SCI) ? 0xc4 : 0x00e3)
-+# define SCxSR_RDxF_CLEAR(port) \
-+	((((port)->type == PORT_SCI) ? SCI_RDxF_CLEAR : SCIF_RDxF_CLEAR) & 0xff)
-+# define SCxSR_ERROR_CLEAR(port) \
-+	((((port)->type == PORT_SCI) ? SCI_ERROR_CLEAR : SCIF_ERROR_CLEAR) & 0xff)
-+# define SCxSR_TDxE_CLEAR(port) \
-+	((((port)->type == PORT_SCI) ? SCI_TDxE_CLEAR : SCIF_TDxE_CLEAR) & 0xff)
-+# define SCxSR_BREAK_CLEAR(port) \
-+	((((port)->type == PORT_SCI) ? SCI_BREAK_CLEAR : SCIF_BREAK_CLEAR) & 0xff)
- #endif
- 
+ 	port->type		= p->type;
+ 	port->flags		= UPF_FIXED_PORT | p->flags;
 -- 
 1.9.1
 
