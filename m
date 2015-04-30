@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 05/13] serial: sh-sci: Standardize on using the BIT() macro to define register bits
-Date: Thu, 30 Apr 2015 18:21:29 +0200
-Message-ID: <1430410897-12770-6-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH/RFC 12/13] serial: sh-sci: Correct SCIF_ERROR_CLEAR for plain SCIF
+Date: Thu, 30 Apr 2015 18:21:36 +0200
+Message-ID: <1430410897-12770-13-git-send-email-geert+renesas@glider.be>
 References: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
@@ -10,164 +10,81 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Simon Horman <horms@verge.net.au>, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
+SCIF_ERROR_CLEAR includes SCIFA_ORER, which exists only on SCIFA/SCIFB
+and SCIF on sh7705/sh7720/sh7721.
+
+To fix this:
+  1. Remove SCIFA_ORER from the definition of SCIF_ERROR_CLEAR,
+  2. During initialization, store the error clear mask to use,
+     incorporating the overrun bit only if it applies to the SCxSR
+     register.
+
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.h | 73 +++++++++++++++++++++++----------------------
- include/linux/serial_sci.h  | 19 ++++++------
- 2 files changed, 47 insertions(+), 45 deletions(-)
+ drivers/tty/serial/sh-sci.c | 14 +++++++++++---
+ drivers/tty/serial/sh-sci.h |  4 ++--
+ 2 files changed, 13 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 67f796b3f4d51a97..f1591b243bccb2bf 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -84,6 +84,7 @@ struct sci_port {
+ 	unsigned int		overrun_reg;
+ 	unsigned int		overrun_mask;
+ 	unsigned int		error_mask;
++	unsigned int		error_clear;
+ 	unsigned int		sampling_rate;
+ 
+ 
+@@ -2327,15 +2328,22 @@ static int sci_init_single(struct platform_device *dev,
+ 	/*
+ 	 * Establish some sensible defaults for the error detection.
+ 	 */
+-	sci_port->error_mask = (p->type == PORT_SCI) ?
+-			SCI_DEFAULT_ERROR_MASK : SCIF_DEFAULT_ERROR_MASK;
++	if (p->type == PORT_SCI) {
++		sci_port->error_mask = SCI_DEFAULT_ERROR_MASK;
++		sci_port->error_clear = SCI_ERROR_CLEAR;
++	} else {
++		sci_port->error_mask = SCIF_DEFAULT_ERROR_MASK;
++		sci_port->error_clear = SCIF_ERROR_CLEAR;
++	}
+ 
+ 	/*
+ 	 * Make the error mask inclusive of overrun detection, if
+ 	 * supported.
+ 	 */
+-	if (sci_port->overrun_reg == SCxSR)
++	if (sci_port->overrun_reg == SCxSR) {
+ 		sci_port->error_mask |= sci_port->overrun_mask;
++		sci_port->error_clear &= ~sci_port->overrun_mask;
++	}
+ 
+ 	port->type		= p->type;
+ 	port->flags		= UPF_FIXED_PORT | p->flags;
 diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
-index 1586d68470b6f0a2..5282738375ae309d 100644
+index 1e1edbd152673e8f..09995f896acd267b 100644
 --- a/drivers/tty/serial/sh-sci.h
 +++ b/drivers/tty/serial/sh-sci.h
-@@ -1,3 +1,4 @@
-+#include <linux/bitops.h>
- #include <linux/serial_core.h>
- #include <linux/io.h>
- #include <linux/gpio.h>
-@@ -32,62 +33,62 @@ enum {
+@@ -77,7 +77,7 @@ enum {
+ #define SCIF_DEFAULT_ERROR_MASK (SCIF_PER | SCIF_FER | SCIF_BRK | SCIF_ER)
  
+ #define SCIF_RDxF_CLEAR		~(SCIF_DR | SCIF_RDF)
+-#define SCIF_ERROR_CLEAR	~(SCIFA_ORER | SCIF_PER | SCIF_FER | SCIF_ER)
++#define SCIF_ERROR_CLEAR	~(SCIF_PER | SCIF_FER | SCIF_ER)
+ #define SCIF_TDxE_CLEAR		~(SCIF_TDFE)
+ #define SCIF_BREAK_CLEAR	~(SCIF_PER | SCIF_FER | SCIF_BRK)
  
- /* SCSMR (Serial Mode Register) */
--#define SCSMR_CHR	(1 << 6)	/* 7-bit Character Length */
--#define SCSMR_PE	(1 << 5)	/* Parity Enable */
--#define SCSMR_ODD	(1 << 4)	/* Odd Parity */
--#define SCSMR_STOP	(1 << 3)	/* Stop Bit Length */
--#define SCSMR_CKS	0x0003		/* Clock Select */
-+#define SCSMR_CHR	BIT(6)	/* 7-bit Character Length */
-+#define SCSMR_PE	BIT(5)	/* Parity Enable */
-+#define SCSMR_ODD	BIT(4)	/* Odd Parity */
-+#define SCSMR_STOP	BIT(3)	/* Stop Bit Length */
-+#define SCSMR_CKS	0x0003	/* Clock Select */
- 
- /* Serial Control Register, SCIFA/SCIFB only bits */
--#define SCSCR_TDRQE	(1 << 15)	/* Tx Data Transfer Request Enable */
--#define SCSCR_RDRQE	(1 << 14)	/* Rx Data Transfer Request Enable */
-+#define SCSCR_TDRQE	BIT(15)	/* Tx Data Transfer Request Enable */
-+#define SCSCR_RDRQE	BIT(14)	/* Rx Data Transfer Request Enable */
- 
- /* SCxSR (Serial Status Register) on SCI */
--#define SCI_TDRE  0x80			/* Transmit Data Register Empty */
--#define SCI_RDRF  0x40			/* Receive Data Register Full */
--#define SCI_ORER  0x20			/* Overrun Error */
--#define SCI_FER   0x10			/* Framing Error */
--#define SCI_PER   0x08			/* Parity Error */
--#define SCI_TEND  0x04			/* Transmit End */
-+#define SCI_TDRE	BIT(7)	/* Transmit Data Register Empty */
-+#define SCI_RDRF	BIT(6)	/* Receive Data Register Full */
-+#define SCI_ORER	BIT(5)	/* Overrun Error */
-+#define SCI_FER		BIT(4)	/* Framing Error */
-+#define SCI_PER		BIT(3)	/* Parity Error */
-+#define SCI_TEND	BIT(2)	/* Transmit End */
- 
- #define SCI_DEFAULT_ERROR_MASK (SCI_PER | SCI_FER)
- 
- /* SCxSR (Serial Status Register) on SCIF, HSCIF */
--#define SCIF_ER    0x0080		/* Receive Error */
--#define SCIF_TEND  0x0040		/* Transmission End */
--#define SCIF_TDFE  0x0020		/* Transmit FIFO Data Empty */
--#define SCIF_BRK   0x0010		/* Break Detect */
--#define SCIF_FER   0x0008		/* Framing Error */
--#define SCIF_PER   0x0004		/* Parity Error */
--#define SCIF_RDF   0x0002		/* Receive FIFO Data Full */
--#define SCIF_DR    0x0001		/* Receive Data Ready */
-+#define SCIF_ER		BIT(7)	/* Receive Error */
-+#define SCIF_TEND	BIT(6)	/* Transmission End */
-+#define SCIF_TDFE	BIT(5)	/* Transmit FIFO Data Empty */
-+#define SCIF_BRK	BIT(4)	/* Break Detect */
-+#define SCIF_FER	BIT(3)	/* Framing Error */
-+#define SCIF_PER	BIT(2)	/* Parity Error */
-+#define SCIF_RDF	BIT(1)	/* Receive FIFO Data Full */
-+#define SCIF_DR		BIT(0)	/* Receive Data Ready */
- 
- #define SCIF_DEFAULT_ERROR_MASK (SCIF_PER | SCIF_FER | SCIF_ER | SCIF_BRK)
- 
- /* SCFCR (FIFO Control Register) */
--#define SCFCR_MCE	0x0008		/* Modem Control Enable */
--#define SCFCR_TFRST	0x0004		/* Transmit FIFO Data Register Reset */
--#define SCFCR_RFRST	0x0002		/* Receive FIFO Data Register Reset */
--#define SCFCR_LOOP	(1 << 0)	/* Loopback Test */
-+#define SCFCR_MCE	BIT(3)	/* Modem Control Enable */
-+#define SCFCR_TFRST	BIT(2)	/* Transmit FIFO Data Register Reset */
-+#define SCFCR_RFRST	BIT(1)	/* Receive FIFO Data Register Reset */
-+#define SCFCR_LOOP	BIT(0)	/* Loopback Test */
- 
- /* SCSPTR (Serial Port Register), optional */
--#define SCSPTR_RTSIO	(1 << 7)	/* Serial Port RTS Pin Input/Output */
--#define SCSPTR_RTSDT	(1 << 6)	/* Serial Port RTS Pin Data */
--#define SCSPTR_CTSIO	(1 << 5)	/* Serial Port CTS Pin Input/Output */
--#define SCSPTR_CTSDT	(1 << 4)	/* Serial Port CTS Pin Data */
--#define SCSPTR_SPB2IO	(1 << 1)	/* Serial Port Break Input/Output */
--#define SCSPTR_SPB2DT	(1 << 0)	/* Serial Port Break Data */
-+#define SCSPTR_RTSIO	BIT(7)	/* Serial Port RTS Pin Input/Output */
-+#define SCSPTR_RTSDT	BIT(6)	/* Serial Port RTS Pin Data */
-+#define SCSPTR_CTSIO	BIT(5)	/* Serial Port CTS Pin Input/Output */
-+#define SCSPTR_CTSDT	BIT(4)	/* Serial Port CTS Pin Data */
-+#define SCSPTR_SPB2IO	BIT(1)	/* Serial Port Break Input/Output */
-+#define SCSPTR_SPB2DT	BIT(0)	/* Serial Port Break Data */
- 
- /* HSSRR HSCIF */
--#define HSCIF_SRE	0x8000		/* Sampling Rate Register Enable */
-+#define HSCIF_SRE	BIT(15)	/* Sampling Rate Register Enable */
- 
- /* SCPCR (Serial Port Control Register), SCIFA/SCIFB only */
--#define SCPCR_RTSC	(1 << 4)	/* Serial Port RTS Pin / Output Pin */
--#define SCPCR_CTSC	(1 << 3)	/* Serial Port CTS Pin / Input Pin */
-+#define SCPCR_RTSC	BIT(4)	/* Serial Port RTS Pin / Output Pin */
-+#define SCPCR_CTSC	BIT(3)	/* Serial Port CTS Pin / Input Pin */
- 
- /* SCPDR (Serial Port Data Register), SCIFA/SCIFB only */
--#define SCPDR_RTSD	(1 << 4)	/* Serial Port RTS Output Pin Data */
--#define SCPDR_CTSD	(1 << 3)	/* Serial Port CTS Input Pin Data */
-+#define SCPDR_RTSD	BIT(4)	/* Serial Port RTS Output Pin Data */
-+#define SCPDR_CTSD	BIT(3)	/* Serial Port CTS Input Pin Data */
- 
- 
- #define SCxSR_TEND(port)	(((port)->type == PORT_SCI) ? SCI_TEND   : SCIF_TEND)
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index 395fceb8c0600988..7c536ac5be05d3aa 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -1,6 +1,7 @@
- #ifndef __LINUX_SERIAL_SCI_H
- #define __LINUX_SERIAL_SCI_H
- 
-+#include <linux/bitops.h>
- #include <linux/serial_core.h>
- #include <linux/sh_dma.h>
- 
-@@ -11,14 +12,14 @@
- #define SCIx_NOT_SUPPORTED	(-1)
- 
- /* Serial Control Register (@ = not supported by all parts) */
--#define SCSCR_TIE	(1 << 7)	/* Transmit Interrupt Enable */
--#define SCSCR_RIE	(1 << 6)	/* Receive Interrupt Enable */
--#define SCSCR_TE	(1 << 5)	/* Transmit Enable */
--#define SCSCR_RE	(1 << 4)	/* Receive Enable */
--#define SCSCR_REIE	(1 << 3)	/* Receive Error Interrupt Enable @ */
--#define SCSCR_TOIE	(1 << 2)	/* Timeout Interrupt Enable @ */
--#define SCSCR_CKE1	(1 << 1)	/* Clock Enable 1 */
--#define SCSCR_CKE0	(1 << 0)	/* Clock Enable 0 */
-+#define SCSCR_TIE	BIT(7)	/* Transmit Interrupt Enable */
-+#define SCSCR_RIE	BIT(6)	/* Receive Interrupt Enable */
-+#define SCSCR_TE	BIT(5)	/* Transmit Enable */
-+#define SCSCR_RE	BIT(4)	/* Receive Enable */
-+#define SCSCR_REIE	BIT(3)	/* Receive Error Interrupt Enable @ */
-+#define SCSCR_TOIE	BIT(2)	/* Timeout Interrupt Enable @ */
-+#define SCSCR_CKE1	BIT(1)	/* Clock Enable 1 */
-+#define SCSCR_CKE0	BIT(0)	/* Clock Enable 0 */
- 
- 
- enum {
-@@ -48,7 +49,7 @@ struct plat_sci_port_ops {
- /*
-  * Port-specific capabilities
-  */
--#define SCIx_HAVE_RTSCTS	(1 << 0)
-+#define SCIx_HAVE_RTSCTS	BIT(0)
- 
- /*
-  * Platform device specific platform_data struct
+@@ -122,7 +122,7 @@ enum {
+ #define SCxSR_RDxF_CLEAR(port) \
+ 	(((port)->type == PORT_SCI) ? SCI_RDxF_CLEAR : SCIF_RDxF_CLEAR)
+ #define SCxSR_ERROR_CLEAR(port) \
+-	(((port)->type == PORT_SCI) ? SCI_ERROR_CLEAR : SCIF_ERROR_CLEAR)
++	(to_sci_port(port)->error_clear)
+ #define SCxSR_TDxE_CLEAR(port) \
+ 	(((port)->type == PORT_SCI) ? SCI_TDxE_CLEAR : SCIF_TDxE_CLEAR)
+ #define SCxSR_BREAK_CLEAR(port) \
 -- 
 1.9.1
 
