@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC 13/13] serial: sh-sci: Correct FIFO stages on sh7705/sh7720/sh7721
-Date: Thu, 30 Apr 2015 18:21:37 +0200
-Message-ID: <1430410897-12770-14-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 02/13] serial: sh-sci: Add (H)SCIF RTS/CTS pin data register bit definitions
+Date: Thu, 30 Apr 2015 18:21:26 +0200
+Message-ID: <1430410897-12770-3-git-send-email-geert+renesas@glider.be>
 References: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
@@ -10,35 +10,30 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Simon Horman <horms@verge.net.au>, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-According to the datasheet, SCIFs on SoCs using SCIx_SH7705_SCIF_REGTYPE
-(sh7705, sh7720, and sh7721) have 64-stage FIFO registers.
+Add the missing register bit definitions to set the RTS pin and read the
+CTS pin on (H)SCIF.
+
+Extracted from patches by Magnus Damm <damm+renesas@opensource.se>.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
-Untested due to lack of hardware.
----
- drivers/tty/serial/sh-sci.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/sh-sci.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index f1591b243bccb2bf..583aa563d4038f8b 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2272,12 +2272,13 @@ static int sci_init_single(struct platform_device *dev,
- 		sampling_rate = 16;
- 		break;
- 	case PORT_SCIF:
--		port->fifosize = 16;
- 		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE) {
-+			port->fifosize = 64;
- 			sci_port->overrun_reg = SCxSR;
- 			sci_port->overrun_mask = SCIFA_ORER;
- 			sampling_rate = 16;
- 		} else {
-+			port->fifosize = 16;
- 			sci_port->overrun_reg = SCLSR;
- 			sci_port->overrun_mask = SCLSR_ORER;
- 			sampling_rate = 32;
+diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
+index 238ad0c5584b06f2..8b4447e66708aea5 100644
+--- a/drivers/tty/serial/sh-sci.h
++++ b/drivers/tty/serial/sh-sci.h
+@@ -70,7 +70,9 @@ enum {
+ 
+ /* SCSPTR (Serial Port Register), optional */
+ #define SCSPTR_RTSIO	(1 << 7)	/* Serial Port RTS Pin Input/Output */
++#define SCSPTR_RTSDT	(1 << 6)	/* Serial Port RTS Pin Data */
+ #define SCSPTR_CTSIO	(1 << 5)	/* Serial Port CTS Pin Input/Output */
++#define SCSPTR_CTSDT	(1 << 4)	/* Serial Port CTS Pin Data */
+ #define SCSPTR_SPB2IO	(1 << 1)	/* Serial Port Break Input/Output */
+ #define SCSPTR_SPB2DT	(1 << 0)	/* Serial Port Break Data */
+ 
 -- 
 1.9.1
 
