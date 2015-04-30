@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC 12/13] serial: sh-sci: Correct SCIF_ERROR_CLEAR for plain SCIF
-Date: Thu, 30 Apr 2015 18:21:36 +0200
-Message-ID: <1430410897-12770-13-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH/RFC 11/13] serial: sh-sci: Replace buggy big #ifdef by runtime logic
+Date: Thu, 30 Apr 2015 18:21:35 +0200
+Message-ID: <1430410897-12770-12-git-send-email-geert+renesas@glider.be>
 References: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
@@ -10,81 +10,191 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Simon Horman <horms@verge.net.au>, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-SCIF_ERROR_CLEAR includes SCIFA_ORER, which exists only on SCIFA/SCIFB
-and SCIF on sh7705/sh7720/sh7721.
+The #ifdef logic to clear SCxSR bits using RMW on SCIFA/SCIFB and SCIF
+variants with some SCIFA features (sh7705/SH7720/sh7721) has several
+drawbacks:
+  - It wasn't updated for newer R-Mobile variants (APE6),
+  - It doesn't correctly handle SoCs with both SCIF and SCIFA/B (e.g.
+    R-Car Gen2, but also legacy sh7723/sh7724),
+  - It doesn't play well with ARM multi-platform kernels: on R-Car Gen2,
+    SCIF/SCIFA/SCIFB/HSCIF were handled differently, depending on
+    whether r8a7740 or sh73a0 support was enabled or not,
 
-To fix this:
-  1. Remove SCIFA_ORER from the definition of SCIF_ERROR_CLEAR,
-  2. During initialization, store the error clear mask to use,
-     incorporating the overrun bit only if it applies to the SCxSR
-     register.
+Replace the #ifdef logic by runtime logic to fix this.
+
+SCIFA/SCIFB and SCIF on sh7705/sh7720/sh7721 use RMW to clear error
+bits, other variants use plain stores, as before.
+
+Note that this changes behavior for SCIFA on sh7723/sh7724 (these SoCs
+have both SCIF and SCIFA), which didn't use RMW before.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 14 +++++++++++---
- drivers/tty/serial/sh-sci.h |  4 ++--
- 2 files changed, 13 insertions(+), 5 deletions(-)
+Question: Can we simplify the logic and use RMW everywhere?
+We seem to have been using it fine with (H)SCIF on R-Car Gen2 running
+multi-platform kernels.
+---
+ drivers/tty/serial/sh-sci.c | 36 ++++++++++++++++++++++++++----------
+ drivers/tty/serial/sh-sci.h | 33 ++++++++-------------------------
+ 2 files changed, 34 insertions(+), 35 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 67f796b3f4d51a97..f1591b243bccb2bf 100644
+index b74a644e4b044b8b..67f796b3f4d51a97 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -84,6 +84,7 @@ struct sci_port {
- 	unsigned int		overrun_reg;
- 	unsigned int		overrun_mask;
- 	unsigned int		error_mask;
-+	unsigned int		error_clear;
- 	unsigned int		sampling_rate;
+@@ -489,6 +489,22 @@ static void sci_port_disable(struct sci_port *sci_port)
+ 	pm_runtime_put_sync(sci_port->port.dev);
+ }
  
- 
-@@ -2327,15 +2328,22 @@ static int sci_init_single(struct platform_device *dev,
- 	/*
- 	 * Establish some sensible defaults for the error detection.
- 	 */
--	sci_port->error_mask = (p->type == PORT_SCI) ?
--			SCI_DEFAULT_ERROR_MASK : SCIF_DEFAULT_ERROR_MASK;
-+	if (p->type == PORT_SCI) {
-+		sci_port->error_mask = SCI_DEFAULT_ERROR_MASK;
-+		sci_port->error_clear = SCI_ERROR_CLEAR;
++static void sci_clear_SCxSR(struct uart_port *port, unsigned int mask)
++{
++	if (port->type == PORT_SCI) {
++		/* Just store the mask */
++		serial_port_out(port, SCxSR, mask);
++	} else if (to_sci_port(port)->overrun_mask == SCIFA_ORER) {
++		/* SCIFA/SCIFB and SCIF on SH7705/SH7720/SH7721 */
++		/* Only clear the status bits we want to clear */
++		serial_port_out(port, SCxSR,
++				serial_port_in(port, SCxSR) & mask);
 +	} else {
-+		sci_port->error_mask = SCIF_DEFAULT_ERROR_MASK;
-+		sci_port->error_clear = SCIF_ERROR_CLEAR;
++		/* Store the mask, clear parity/framing errors */
++		serial_port_out(port, SCxSR, mask & ~(SCIF_FERC | SCIF_PERC));
 +	}
++}
++
+ #if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_SH_SCI_CONSOLE)
  
- 	/*
- 	 * Make the error mask inclusive of overrun detection, if
- 	 * supported.
- 	 */
--	if (sci_port->overrun_reg == SCxSR)
-+	if (sci_port->overrun_reg == SCxSR) {
- 		sci_port->error_mask |= sci_port->overrun_mask;
-+		sci_port->error_clear &= ~sci_port->overrun_mask;
-+	}
+ #ifdef CONFIG_CONSOLE_POLL
+@@ -500,7 +516,7 @@ static int sci_poll_get_char(struct uart_port *port)
+ 	do {
+ 		status = serial_port_in(port, SCxSR);
+ 		if (status & SCxSR_ERRORS(port)) {
+-			serial_port_out(port, SCxSR, SCxSR_ERROR_CLEAR(port));
++			sci_clear_SCxSR(port, SCxSR_ERROR_CLEAR(port));
+ 			continue;
+ 		}
+ 		break;
+@@ -513,7 +529,7 @@ static int sci_poll_get_char(struct uart_port *port)
  
- 	port->type		= p->type;
- 	port->flags		= UPF_FIXED_PORT | p->flags;
+ 	/* Dummy read */
+ 	serial_port_in(port, SCxSR);
+-	serial_port_out(port, SCxSR, SCxSR_RDxF_CLEAR(port));
++	sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
+ 
+ 	return c;
+ }
+@@ -528,7 +544,7 @@ static void sci_poll_put_char(struct uart_port *port, unsigned char c)
+ 	} while (!(status & SCxSR_TDxE(port)));
+ 
+ 	serial_port_out(port, SCxTDR, c);
+-	serial_port_out(port, SCxSR, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
++	sci_clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
+ }
+ #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE */
+ 
+@@ -655,7 +671,7 @@ static void sci_transmit_chars(struct uart_port *port)
+ 		port->icount.tx++;
+ 	} while (--count > 0);
+ 
+-	serial_port_out(port, SCxSR, SCxSR_TDxE_CLEAR(port));
++	sci_clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
+ 
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+@@ -666,7 +682,7 @@ static void sci_transmit_chars(struct uart_port *port)
+ 
+ 		if (port->type != PORT_SCI) {
+ 			serial_port_in(port, SCxSR); /* Dummy read */
+-			serial_port_out(port, SCxSR, SCxSR_TDxE_CLEAR(port));
++			sci_clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
+ 		}
+ 
+ 		ctrl |= SCSCR_TIE;
+@@ -750,7 +766,7 @@ static void sci_receive_chars(struct uart_port *port)
+ 		}
+ 
+ 		serial_port_in(port, SCxSR); /* dummy read */
+-		serial_port_out(port, SCxSR, SCxSR_RDxF_CLEAR(port));
++		sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
+ 
+ 		copied += count;
+ 		port->icount.rx += count;
+@@ -761,7 +777,7 @@ static void sci_receive_chars(struct uart_port *port)
+ 		tty_flip_buffer_push(tport);
+ 	} else {
+ 		serial_port_in(port, SCxSR); /* dummy read */
+-		serial_port_out(port, SCxSR, SCxSR_RDxF_CLEAR(port));
++		sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
+ 	}
+ }
+ 
+@@ -982,14 +998,14 @@ static irqreturn_t sci_er_interrupt(int irq, void *ptr)
+ 		if (sci_handle_errors(port)) {
+ 			/* discard character in rx buffer */
+ 			serial_port_in(port, SCxSR);
+-			serial_port_out(port, SCxSR, SCxSR_RDxF_CLEAR(port));
++			sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
+ 		}
+ 	} else {
+ 		sci_handle_fifo_overrun(port);
+ 		sci_rx_interrupt(irq, ptr);
+ 	}
+ 
+-	serial_port_out(port, SCxSR, SCxSR_ERROR_CLEAR(port));
++	sci_clear_SCxSR(port, SCxSR_ERROR_CLEAR(port));
+ 
+ 	/* Kick the transmission */
+ 	sci_tx_interrupt(irq, ptr);
+@@ -1003,7 +1019,7 @@ static irqreturn_t sci_br_interrupt(int irq, void *ptr)
+ 
+ 	/* Handle BREAKs */
+ 	sci_handle_breaks(port);
+-	serial_port_out(port, SCxSR, SCxSR_BREAK_CLEAR(port));
++	sci_clear_SCxSR(port, SCxSR_BREAK_CLEAR(port));
+ 
+ 	return IRQ_HANDLED;
+ }
 diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
-index 1e1edbd152673e8f..09995f896acd267b 100644
+index 3393f67b4e843578..1e1edbd152673e8f 100644
 --- a/drivers/tty/serial/sh-sci.h
 +++ b/drivers/tty/serial/sh-sci.h
-@@ -77,7 +77,7 @@ enum {
- #define SCIF_DEFAULT_ERROR_MASK (SCIF_PER | SCIF_FER | SCIF_BRK | SCIF_ER)
+@@ -119,28 +119,11 @@ enum {
  
- #define SCIF_RDxF_CLEAR		~(SCIF_DR | SCIF_RDF)
--#define SCIF_ERROR_CLEAR	~(SCIFA_ORER | SCIF_PER | SCIF_FER | SCIF_ER)
-+#define SCIF_ERROR_CLEAR	~(SCIF_PER | SCIF_FER | SCIF_ER)
- #define SCIF_TDxE_CLEAR		~(SCIF_TDFE)
- #define SCIF_BREAK_CLEAR	~(SCIF_PER | SCIF_FER | SCIF_BRK)
+ #define SCxSR_ERRORS(port)	(to_sci_port(port)->error_mask)
  
-@@ -122,7 +122,7 @@ enum {
- #define SCxSR_RDxF_CLEAR(port) \
- 	(((port)->type == PORT_SCI) ? SCI_RDxF_CLEAR : SCIF_RDxF_CLEAR)
- #define SCxSR_ERROR_CLEAR(port) \
--	(((port)->type == PORT_SCI) ? SCI_ERROR_CLEAR : SCIF_ERROR_CLEAR)
-+	(to_sci_port(port)->error_clear)
- #define SCxSR_TDxE_CLEAR(port) \
- 	(((port)->type == PORT_SCI) ? SCI_TDxE_CLEAR : SCIF_TDxE_CLEAR)
- #define SCxSR_BREAK_CLEAR(port) \
+-#if defined(CONFIG_CPU_SUBTYPE_SH7705) || \
+-    defined(CONFIG_CPU_SUBTYPE_SH7720) || \
+-    defined(CONFIG_CPU_SUBTYPE_SH7721) || \
+-    defined(CONFIG_ARCH_SH73A0) || \
+-    defined(CONFIG_ARCH_R8A7740)
+-
+-# define SCxSR_RDxF_CLEAR(port) \
+-	(serial_port_in(port, SCxSR) & SCIF_RDxF_CLEAR)
+-# define SCxSR_ERROR_CLEAR(port) \
+-	(serial_port_in(port, SCxSR) & SCIF_ERROR_CLEAR)
+-# define SCxSR_TDxE_CLEAR(port) \
+-	(serial_port_in(port, SCxSR) & SCIF_TDxE_CLEAR)
+-# define SCxSR_BREAK_CLEAR(port) \
+-	(serial_port_in(port, SCxSR) & SCIF_BREAK_CLEAR)
+-#else
+-# define SCxSR_RDxF_CLEAR(port) \
+-	((((port)->type == PORT_SCI) ? SCI_RDxF_CLEAR : SCIF_RDxF_CLEAR) & 0xff)
+-# define SCxSR_ERROR_CLEAR(port) \
+-	((((port)->type == PORT_SCI) ? SCI_ERROR_CLEAR : SCIF_ERROR_CLEAR) & 0xff)
+-# define SCxSR_TDxE_CLEAR(port) \
+-	((((port)->type == PORT_SCI) ? SCI_TDxE_CLEAR : SCIF_TDxE_CLEAR) & 0xff)
+-# define SCxSR_BREAK_CLEAR(port) \
+-	((((port)->type == PORT_SCI) ? SCI_BREAK_CLEAR : SCIF_BREAK_CLEAR) & 0xff)
+-#endif
+-
++#define SCxSR_RDxF_CLEAR(port) \
++	(((port)->type == PORT_SCI) ? SCI_RDxF_CLEAR : SCIF_RDxF_CLEAR)
++#define SCxSR_ERROR_CLEAR(port) \
++	(((port)->type == PORT_SCI) ? SCI_ERROR_CLEAR : SCIF_ERROR_CLEAR)
++#define SCxSR_TDxE_CLEAR(port) \
++	(((port)->type == PORT_SCI) ? SCI_TDxE_CLEAR : SCIF_TDxE_CLEAR)
++#define SCxSR_BREAK_CLEAR(port) \
++	(((port)->type == PORT_SCI) ? SCI_BREAK_CLEAR : SCIF_BREAK_CLEAR)
 -- 
 1.9.1
 
