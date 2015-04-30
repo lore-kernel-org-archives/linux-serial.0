@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 08/13] serial: sh-sci: Use the correct register for overrun checks
-Date: Thu, 30 Apr 2015 18:21:32 +0200
-Message-ID: <1430410897-12770-9-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 05/13] serial: sh-sci: Standardize on using the BIT() macro to define register bits
+Date: Thu, 30 Apr 2015 18:21:29 +0200
+Message-ID: <1430410897-12770-6-git-send-email-geert+renesas@glider.be>
 References: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
@@ -10,139 +10,164 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Simon Horman <horms@verge.net.au>, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The various SCI implementations use 3 different methods to signal
-overrun errors:
-  - Bit SCI_ORER in register SCxSR on SCI,
-  - Bit SCIFA_ORER in register SCxSR on SCIFA and SCIFB, and SCIF on
-    SH7705/SH7720/SH7721,
-  - Bit SCLSR_ORER in (optional!) register SCLSR on (H)SCIF.
-
-However:
-  1. sci_handle_fifo_overrun()
-       a. handles (H)SCIF and SCIFA/SCIFB only,
-       b. treats SCIF on SH7705/SH7720/SH7721 incorrectly,
-  2. sci_mpxed_interrupt()
-       a. treats SCIF on SH7705/SH7720/SH7721 incorrectly,
-       b. ignores that not all SCIFs have the SCLSR register, causing
-	  "Invalid register access" WARN()ings.
-
-To fix the above:
-  1. Determine and store the correct register enum during
-     initialization,
-  2. Replace the duplicated buggy switch statements by using the stored
-     register enum,
-  3. Add the missing existence check to  sci_mpxed_interrupt().
-
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 40 +++++++++++++++-------------------------
- 1 file changed, 15 insertions(+), 25 deletions(-)
+ drivers/tty/serial/sh-sci.h | 73 +++++++++++++++++++++++----------------------
+ include/linux/serial_sci.h  | 19 ++++++------
+ 2 files changed, 47 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 83c46e1581590401..b636c53a1e5b3866 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -81,6 +81,7 @@ struct sci_port {
+diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
+index 1586d68470b6f0a2..5282738375ae309d 100644
+--- a/drivers/tty/serial/sh-sci.h
++++ b/drivers/tty/serial/sh-sci.h
+@@ -1,3 +1,4 @@
++#include <linux/bitops.h>
+ #include <linux/serial_core.h>
+ #include <linux/io.h>
+ #include <linux/gpio.h>
+@@ -32,62 +33,62 @@ enum {
  
- 	/* Platform configuration */
- 	struct plat_sci_port	*cfg;
-+	unsigned int		overrun_reg;
- 	unsigned int		overrun_mask;
- 	unsigned int		error_mask;
- 	unsigned int		sampling_rate;
-@@ -866,30 +867,17 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
- 	struct tty_port *tport = &port->state->port;
- 	struct sci_port *s = to_sci_port(port);
- 	struct plat_sci_reg *reg;
--	int copied = 0, offset;
-+	int copied = 0;
- 	u16 status;
  
--	switch (port->type) {
--	case PORT_SCIF:
--	case PORT_HSCIF:
--		offset = SCLSR;
--		break;
--	case PORT_SCIFA:
--	case PORT_SCIFB:
--		offset = SCxSR;
--		break;
--	default:
--		return 0;
--	}
--
--	reg = sci_getreg(port, offset);
-+	reg = sci_getreg(port, s->overrun_reg);
- 	if (!reg->size)
- 		return 0;
+ /* SCSMR (Serial Mode Register) */
+-#define SCSMR_CHR	(1 << 6)	/* 7-bit Character Length */
+-#define SCSMR_PE	(1 << 5)	/* Parity Enable */
+-#define SCSMR_ODD	(1 << 4)	/* Odd Parity */
+-#define SCSMR_STOP	(1 << 3)	/* Stop Bit Length */
+-#define SCSMR_CKS	0x0003		/* Clock Select */
++#define SCSMR_CHR	BIT(6)	/* 7-bit Character Length */
++#define SCSMR_PE	BIT(5)	/* Parity Enable */
++#define SCSMR_ODD	BIT(4)	/* Odd Parity */
++#define SCSMR_STOP	BIT(3)	/* Stop Bit Length */
++#define SCSMR_CKS	0x0003	/* Clock Select */
  
--	status = serial_port_in(port, offset);
-+	status = serial_port_in(port, s->overrun_reg);
- 	if (status & s->overrun_mask) {
- 		status &= ~s->overrun_mask;
--		serial_port_out(port, offset, status);
-+		serial_port_out(port, s->overrun_reg, status);
+ /* Serial Control Register, SCIFA/SCIFB only bits */
+-#define SCSCR_TDRQE	(1 << 15)	/* Tx Data Transfer Request Enable */
+-#define SCSCR_RDRQE	(1 << 14)	/* Rx Data Transfer Request Enable */
++#define SCSCR_TDRQE	BIT(15)	/* Tx Data Transfer Request Enable */
++#define SCSCR_RDRQE	BIT(14)	/* Rx Data Transfer Request Enable */
  
- 		port->icount.overrun++;
+ /* SCxSR (Serial Status Register) on SCI */
+-#define SCI_TDRE  0x80			/* Transmit Data Register Empty */
+-#define SCI_RDRF  0x40			/* Receive Data Register Full */
+-#define SCI_ORER  0x20			/* Overrun Error */
+-#define SCI_FER   0x10			/* Framing Error */
+-#define SCI_PER   0x08			/* Parity Error */
+-#define SCI_TEND  0x04			/* Transmit End */
++#define SCI_TDRE	BIT(7)	/* Transmit Data Register Empty */
++#define SCI_RDRF	BIT(6)	/* Receive Data Register Full */
++#define SCI_ORER	BIT(5)	/* Overrun Error */
++#define SCI_FER		BIT(4)	/* Framing Error */
++#define SCI_PER		BIT(3)	/* Parity Error */
++#define SCI_TEND	BIT(2)	/* Transmit End */
  
-@@ -1041,15 +1029,11 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ #define SCI_DEFAULT_ERROR_MASK (SCI_PER | SCI_FER)
  
- 	ssr_status = serial_port_in(port, SCxSR);
- 	scr_status = serial_port_in(port, SCSCR);
--	switch (port->type) {
--	case PORT_SCIF:
--	case PORT_HSCIF:
--		orer_status = serial_port_in(port, SCLSR);
--		break;
--	case PORT_SCIFA:
--	case PORT_SCIFB:
-+	if (s->overrun_reg == SCxSR)
- 		orer_status = ssr_status;
--		break;
-+	else {
-+		if (sci_getreg(port, s->overrun_reg)->size)
-+			orer_status = serial_port_in(port, s->overrun_reg);
- 	}
+ /* SCxSR (Serial Status Register) on SCIF, HSCIF */
+-#define SCIF_ER    0x0080		/* Receive Error */
+-#define SCIF_TEND  0x0040		/* Transmission End */
+-#define SCIF_TDFE  0x0020		/* Transmit FIFO Data Empty */
+-#define SCIF_BRK   0x0010		/* Break Detect */
+-#define SCIF_FER   0x0008		/* Framing Error */
+-#define SCIF_PER   0x0004		/* Parity Error */
+-#define SCIF_RDF   0x0002		/* Receive FIFO Data Full */
+-#define SCIF_DR    0x0001		/* Receive Data Ready */
++#define SCIF_ER		BIT(7)	/* Receive Error */
++#define SCIF_TEND	BIT(6)	/* Transmission End */
++#define SCIF_TDFE	BIT(5)	/* Transmit FIFO Data Empty */
++#define SCIF_BRK	BIT(4)	/* Break Detect */
++#define SCIF_FER	BIT(3)	/* Framing Error */
++#define SCIF_PER	BIT(2)	/* Parity Error */
++#define SCIF_RDF	BIT(1)	/* Receive FIFO Data Full */
++#define SCIF_DR		BIT(0)	/* Receive Data Ready */
  
- 	err_enabled = scr_status & port_rx_irq_mask(port);
-@@ -2254,31 +2238,37 @@ static int sci_init_single(struct platform_device *dev,
- 	switch (p->type) {
- 	case PORT_SCIFB:
- 		port->fifosize = 256;
-+		sci_port->overrun_reg = SCxSR;
- 		sci_port->overrun_mask = SCIFA_ORER;
- 		sampling_rate = 16;
- 		break;
- 	case PORT_HSCIF:
- 		port->fifosize = 128;
- 		sampling_rate = 0;
-+		sci_port->overrun_reg = SCLSR;
- 		sci_port->overrun_mask = SCLSR_ORER;
- 		break;
- 	case PORT_SCIFA:
- 		port->fifosize = 64;
-+		sci_port->overrun_reg = SCxSR;
- 		sci_port->overrun_mask = SCIFA_ORER;
- 		sampling_rate = 16;
- 		break;
- 	case PORT_SCIF:
- 		port->fifosize = 16;
- 		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE) {
-+			sci_port->overrun_reg = SCxSR;
- 			sci_port->overrun_mask = SCIFA_ORER;
- 			sampling_rate = 16;
- 		} else {
-+			sci_port->overrun_reg = SCLSR;
- 			sci_port->overrun_mask = SCLSR_ORER;
- 			sampling_rate = 32;
- 		}
- 		break;
- 	default:
- 		port->fifosize = 1;
-+		sci_port->overrun_reg = SCxSR;
- 		sci_port->overrun_mask = SCI_ORER;
- 		sampling_rate = 32;
- 		break;
+ #define SCIF_DEFAULT_ERROR_MASK (SCIF_PER | SCIF_FER | SCIF_ER | SCIF_BRK)
+ 
+ /* SCFCR (FIFO Control Register) */
+-#define SCFCR_MCE	0x0008		/* Modem Control Enable */
+-#define SCFCR_TFRST	0x0004		/* Transmit FIFO Data Register Reset */
+-#define SCFCR_RFRST	0x0002		/* Receive FIFO Data Register Reset */
+-#define SCFCR_LOOP	(1 << 0)	/* Loopback Test */
++#define SCFCR_MCE	BIT(3)	/* Modem Control Enable */
++#define SCFCR_TFRST	BIT(2)	/* Transmit FIFO Data Register Reset */
++#define SCFCR_RFRST	BIT(1)	/* Receive FIFO Data Register Reset */
++#define SCFCR_LOOP	BIT(0)	/* Loopback Test */
+ 
+ /* SCSPTR (Serial Port Register), optional */
+-#define SCSPTR_RTSIO	(1 << 7)	/* Serial Port RTS Pin Input/Output */
+-#define SCSPTR_RTSDT	(1 << 6)	/* Serial Port RTS Pin Data */
+-#define SCSPTR_CTSIO	(1 << 5)	/* Serial Port CTS Pin Input/Output */
+-#define SCSPTR_CTSDT	(1 << 4)	/* Serial Port CTS Pin Data */
+-#define SCSPTR_SPB2IO	(1 << 1)	/* Serial Port Break Input/Output */
+-#define SCSPTR_SPB2DT	(1 << 0)	/* Serial Port Break Data */
++#define SCSPTR_RTSIO	BIT(7)	/* Serial Port RTS Pin Input/Output */
++#define SCSPTR_RTSDT	BIT(6)	/* Serial Port RTS Pin Data */
++#define SCSPTR_CTSIO	BIT(5)	/* Serial Port CTS Pin Input/Output */
++#define SCSPTR_CTSDT	BIT(4)	/* Serial Port CTS Pin Data */
++#define SCSPTR_SPB2IO	BIT(1)	/* Serial Port Break Input/Output */
++#define SCSPTR_SPB2DT	BIT(0)	/* Serial Port Break Data */
+ 
+ /* HSSRR HSCIF */
+-#define HSCIF_SRE	0x8000		/* Sampling Rate Register Enable */
++#define HSCIF_SRE	BIT(15)	/* Sampling Rate Register Enable */
+ 
+ /* SCPCR (Serial Port Control Register), SCIFA/SCIFB only */
+-#define SCPCR_RTSC	(1 << 4)	/* Serial Port RTS Pin / Output Pin */
+-#define SCPCR_CTSC	(1 << 3)	/* Serial Port CTS Pin / Input Pin */
++#define SCPCR_RTSC	BIT(4)	/* Serial Port RTS Pin / Output Pin */
++#define SCPCR_CTSC	BIT(3)	/* Serial Port CTS Pin / Input Pin */
+ 
+ /* SCPDR (Serial Port Data Register), SCIFA/SCIFB only */
+-#define SCPDR_RTSD	(1 << 4)	/* Serial Port RTS Output Pin Data */
+-#define SCPDR_CTSD	(1 << 3)	/* Serial Port CTS Input Pin Data */
++#define SCPDR_RTSD	BIT(4)	/* Serial Port RTS Output Pin Data */
++#define SCPDR_CTSD	BIT(3)	/* Serial Port CTS Input Pin Data */
+ 
+ 
+ #define SCxSR_TEND(port)	(((port)->type == PORT_SCI) ? SCI_TEND   : SCIF_TEND)
+diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+index 395fceb8c0600988..7c536ac5be05d3aa 100644
+--- a/include/linux/serial_sci.h
++++ b/include/linux/serial_sci.h
+@@ -1,6 +1,7 @@
+ #ifndef __LINUX_SERIAL_SCI_H
+ #define __LINUX_SERIAL_SCI_H
+ 
++#include <linux/bitops.h>
+ #include <linux/serial_core.h>
+ #include <linux/sh_dma.h>
+ 
+@@ -11,14 +12,14 @@
+ #define SCIx_NOT_SUPPORTED	(-1)
+ 
+ /* Serial Control Register (@ = not supported by all parts) */
+-#define SCSCR_TIE	(1 << 7)	/* Transmit Interrupt Enable */
+-#define SCSCR_RIE	(1 << 6)	/* Receive Interrupt Enable */
+-#define SCSCR_TE	(1 << 5)	/* Transmit Enable */
+-#define SCSCR_RE	(1 << 4)	/* Receive Enable */
+-#define SCSCR_REIE	(1 << 3)	/* Receive Error Interrupt Enable @ */
+-#define SCSCR_TOIE	(1 << 2)	/* Timeout Interrupt Enable @ */
+-#define SCSCR_CKE1	(1 << 1)	/* Clock Enable 1 */
+-#define SCSCR_CKE0	(1 << 0)	/* Clock Enable 0 */
++#define SCSCR_TIE	BIT(7)	/* Transmit Interrupt Enable */
++#define SCSCR_RIE	BIT(6)	/* Receive Interrupt Enable */
++#define SCSCR_TE	BIT(5)	/* Transmit Enable */
++#define SCSCR_RE	BIT(4)	/* Receive Enable */
++#define SCSCR_REIE	BIT(3)	/* Receive Error Interrupt Enable @ */
++#define SCSCR_TOIE	BIT(2)	/* Timeout Interrupt Enable @ */
++#define SCSCR_CKE1	BIT(1)	/* Clock Enable 1 */
++#define SCSCR_CKE0	BIT(0)	/* Clock Enable 0 */
+ 
+ 
+ enum {
+@@ -48,7 +49,7 @@ struct plat_sci_port_ops {
+ /*
+  * Port-specific capabilities
+  */
+-#define SCIx_HAVE_RTSCTS	(1 << 0)
++#define SCIx_HAVE_RTSCTS	BIT(0)
+ 
+ /*
+  * Platform device specific platform_data struct
 -- 
 1.9.1
 
