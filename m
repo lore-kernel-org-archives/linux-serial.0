@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 02/13] serial: sh-sci: Add (H)SCIF RTS/CTS pin data register bit definitions
-Date: Thu, 30 Apr 2015 18:21:26 +0200
-Message-ID: <1430410897-12770-3-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 03/13] serial: sh-sci: Add SCIFA/B SCPCR register definitions
+Date: Thu, 30 Apr 2015 18:21:27 +0200
+Message-ID: <1430410897-12770-4-git-send-email-geert+renesas@glider.be>
 References: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1430410897-12770-1-git-send-email-geert+renesas@glider.be>
@@ -10,30 +10,148 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Simon Horman <horms@verge.net.au>, Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Add the missing register bit definitions to set the RTS pin and read the
-CTS pin on (H)SCIF.
+Add the register definitions for the Serial Port Control and Data
+Registers on SCIFA/SCIFB, which are needed for RTS/CTS pin control.
 
 Extracted from patches by Magnus Damm <damm+renesas@opensource.se>.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/sh-sci.c | 22 ++++++++++++++++++++++
+ drivers/tty/serial/sh-sci.h | 10 ++++++++++
+ 2 files changed, 32 insertions(+)
 
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index e7d6566fafaf3da5..7ee0f686bdf1b216 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -168,6 +168,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -188,6 +190,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -207,6 +211,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= { 0x30, 16 },
++		[SCPDR]		= { 0x34, 16 },
+ 	},
+ 
+ 	/*
+@@ -226,6 +232,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= { 0x30, 16 },
++		[SCPDR]		= { 0x34, 16 },
+ 	},
+ 
+ 	/*
+@@ -246,6 +254,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= { 0x20, 16 },
+ 		[SCLSR]		= { 0x24, 16 },
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -265,6 +275,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -284,6 +296,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= { 0x20, 16 },
+ 		[SCLSR]		= { 0x24, 16 },
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -303,6 +317,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= { 0x20, 16 },
+ 		[SCLSR]		= { 0x24, 16 },
+ 		[HSSRR]		= { 0x40, 16 },
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -323,6 +339,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= { 0x24, 16 },
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -343,6 +361,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= { 0x24, 16 },
+ 		[SCLSR]		= { 0x28, 16 },
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ 
+ 	/*
+@@ -363,6 +383,8 @@ static struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCSPTR]	= sci_reg_invalid,
+ 		[SCLSR]		= sci_reg_invalid,
+ 		[HSSRR]		= sci_reg_invalid,
++		[SCPCR]		= sci_reg_invalid,
++		[SCPDR]		= sci_reg_invalid,
+ 	},
+ };
+ 
 diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
-index 238ad0c5584b06f2..8b4447e66708aea5 100644
+index 8b4447e66708aea5..2bae842fb0fc0ae6 100644
 --- a/drivers/tty/serial/sh-sci.h
 +++ b/drivers/tty/serial/sh-sci.h
-@@ -70,7 +70,9 @@ enum {
+@@ -24,6 +24,8 @@ enum {
+ 	SCRFDR,				/* Receive FIFO Data Count Register */
+ 	SCSPTR,				/* Serial Port Register */
+ 	HSSRR,				/* Sampling Rate Register */
++	SCPCR,				/* Serial Port Control Register */
++	SCPDR,				/* Serial Port Data Register */
  
- /* SCSPTR (Serial Port Register), optional */
- #define SCSPTR_RTSIO	(1 << 7)	/* Serial Port RTS Pin Input/Output */
-+#define SCSPTR_RTSDT	(1 << 6)	/* Serial Port RTS Pin Data */
- #define SCSPTR_CTSIO	(1 << 5)	/* Serial Port CTS Pin Input/Output */
-+#define SCSPTR_CTSDT	(1 << 4)	/* Serial Port CTS Pin Data */
- #define SCSPTR_SPB2IO	(1 << 1)	/* Serial Port Break Input/Output */
- #define SCSPTR_SPB2DT	(1 << 0)	/* Serial Port Break Data */
+ 	SCIx_NR_REGS,
+ };
+@@ -79,6 +81,14 @@ enum {
+ /* HSSRR HSCIF */
+ #define HSCIF_SRE	0x8000		/* Sampling Rate Register Enable */
  
++/* SCPCR (Serial Port Control Register), SCIFA/SCIFB only */
++#define SCPCR_RTSC	(1 << 4)	/* Serial Port RTS Pin / Output Pin */
++#define SCPCR_CTSC	(1 << 3)	/* Serial Port CTS Pin / Input Pin */
++
++/* SCPDR (Serial Port Data Register), SCIFA/SCIFB only */
++#define SCPDR_RTSD	(1 << 4)	/* Serial Port RTS Output Pin Data */
++#define SCPDR_CTSD	(1 << 3)	/* Serial Port CTS Input Pin Data */
++
+ 
+ #define SCxSR_TEND(port)	(((port)->type == PORT_SCI) ? SCI_TEND   : SCIF_TEND)
+ #define SCxSR_RDxF(port)	(((port)->type == PORT_SCI) ? SCI_RDRF   : SCIF_RDF)
 -- 
 1.9.1
 
