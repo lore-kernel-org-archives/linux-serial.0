@@ -1,54 +1,67 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Remove schedule_work in sci_dma_rx_complete
-Date: Wed, 29 Apr 2015 20:21:51 +0200
-Message-ID: <CAMuHMdWZj3tzwfFhjrTAB4cO0ZAKNJu+G_jBuNyfi46g1fQrYQ@mail.gmail.com>
-References: <1430327256-8545-1-git-send-email-ykaneko0929@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 4.1-rc2
+Date: Thu, 30 Apr 2015 15:46:48 +0200
+Message-ID: <20150430134648.GA32285@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1430327256-8545-1-git-send-email-ykaneko0929@gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Yoshihiro Kaneko <ykaneko0929@gmail.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kaneko-san, Mizuguchi-san,
+The following changes since commit b787f68c36d49bb1d9236f403813641efa74a031:
 
-On Wed, Apr 29, 2015 at 7:07 PM, Yoshihiro Kaneko <ykaneko0929@gmail.com> wrote:
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index e7d6566..664ae78 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -126,6 +126,9 @@ struct sci_port {
->  static void sci_start_tx(struct uart_port *port);
->  static void sci_stop_tx(struct uart_port *port);
->  static void sci_start_rx(struct uart_port *port);
-> +#ifdef CONFIG_SERIAL_SH_SCI_DMA
-> +static void work_fn_rx(struct work_struct *work);
-> +#endif
+  Linux 4.1-rc1 (2015-04-26 17:59:10 -0700)
 
-While it would generate a larger patch, I think it's worthwhile moving
-work_fn_rx() up, so you don't need the #ifdef and the forward declaration.
+are available in the git repository at:
 
->  #define SCI_NPORTS CONFIG_SERIAL_SH_SCI_NR_UARTS
->
-> @@ -1341,7 +1344,7 @@ static void sci_dma_rx_complete(void *arg)
->         if (count)
->                 tty_flip_buffer_push(&port->state->port);
->
-> -       schedule_work(&s->work_rx);
-> +       work_fn_rx(&s->work_rx);
->  }
->
->  static void sci_rx_dma_release(struct sci_port *s, bool enable_pio)
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.1-rc2
 
-Gr{oetje,eeting}s,
+for you to fetch changes up to 96a5d18bc1338786fecac73599f1681f59a59a8e:
 
-                        Geert
+  serial: 8250_pci: Add support for 16 port Exar boards (2015-04-28 20:22:31 +0200)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+----------------------------------------------------------------
+TTY/Serial fixes for 4.1-rc2
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Here are some small tty/serial driver fixes for 4.1-rc2.
+
+They include some minor fixes that resolve reported issues, and a new
+device quirk.
+
+All have been in linux-next succesfully.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Frederic Danis (1):
+      tty: Re-add external interface for tty_set_termios()
+
+Ludovic Desroches (1):
+      tty/serial: at91: maxburst was missing for dma transfers
+
+Michal Simek (2):
+      serial: xilinx: Use platform_get_irq to get irq description structure
+      serial: of-serial: Remove device_type = "serial" registration
+
+Peter Hurley (1):
+      serial: core: Fix kernel-doc build warnings
+
+Robert Baldyga (1):
+      serial: samsung: fix serial console break
+
+Soeren Grunewald (1):
+      serial: 8250_pci: Add support for 16 port Exar boards
+
+ drivers/tty/serial/8250/8250_pci.c | 25 +++++++++++++++++++++++--
+ drivers/tty/serial/atmel_serial.c  |  2 ++
+ drivers/tty/serial/of_serial.c     |  1 -
+ drivers/tty/serial/samsung.c       |  5 +++--
+ drivers/tty/serial/serial_core.c   |  2 +-
+ drivers/tty/serial/uartlite.c      | 11 ++++++-----
+ drivers/tty/serial/xilinx_uartps.c | 12 ++++++------
+ drivers/tty/tty_ioctl.c            |  3 ++-
+ include/linux/tty.h                |  1 +
+ 9 files changed, 44 insertions(+), 18 deletions(-)
