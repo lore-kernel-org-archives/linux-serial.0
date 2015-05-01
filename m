@@ -1,7 +1,7 @@
 From: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
-Subject: [PATCH 4/4] serial: samsung: Constify platform_device_id
-Date: Sat,  2 May 2015 00:40:05 +0900
-Message-ID: <1430494805-30906-4-git-send-email-k.kozlowski.k@gmail.com>
+Subject: [PATCH 2/4] serial: mxs: Constify platform_device_id
+Date: Sat,  2 May 2015 00:40:03 +0900
+Message-ID: <1430494805-30906-2-git-send-email-k.kozlowski.k@gmail.com>
 References: <1430494805-30906-1-git-send-email-k.kozlowski.k@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1430494805-30906-1-git-send-email-k.kozlowski.k@gmail.com>
@@ -15,21 +15,21 @@ const.
 
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
 ---
- drivers/tty/serial/samsung.c | 2 +-
+ drivers/tty/serial/mxs-auart.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 19ce68e421a7..67d0c213b1c7 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -2337,7 +2337,7 @@ static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
- #define EXYNOS5433_SERIAL_DRV_DATA (kernel_ulong_t)NULL
- #endif
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index f7e5825b55ab..13cf7738fbdc 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -169,7 +169,7 @@ struct mxs_auart_port {
+ 	bool			ms_irq_enabled;
+ };
  
--static struct platform_device_id s3c24xx_serial_driver_ids[] = {
-+static const struct platform_device_id s3c24xx_serial_driver_ids[] = {
- 	{
- 		.name		= "s3c2410-uart",
- 		.driver_data	= S3C2410_SERIAL_DRV_DATA,
+-static struct platform_device_id mxs_auart_devtype[] = {
++static const struct platform_device_id mxs_auart_devtype[] = {
+ 	{ .name = "mxs-auart-imx23", .driver_data = IMX23_AUART },
+ 	{ .name = "mxs-auart-imx28", .driver_data = IMX28_AUART },
+ 	{ /* sentinel */ }
 -- 
 2.1.4
