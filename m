@@ -1,157 +1,43 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v7 05/15] dt-bindings: Document the STM32 reset bindings
-Date: Sat, 02 May 2015 11:01:13 +0100
-Message-ID: <5544A069.5000808@linaro.org>
-References: <1430410844-16062-1-git-send-email-mcoquelin.stm32@gmail.com>	<1430410844-16062-6-git-send-email-mcoquelin.stm32@gmail.com>	<55433467.2010603@linaro.org> <CALszF6Bw900E9MtpaVmvkFxsrOODRkNg+RxRXz5V3WghHtsxbw@mail.gmail.com>
+From: Robert Schwebel <r.schwebel@pengutronix.de>
+Subject: earlycon: no match?
+Date: Sun, 3 May 2015 23:10:54 +0200
+Message-ID: <20150503211054.GR15254@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <CALszF6Bw900E9MtpaVmvkFxsrOODRkNg+RxRXz5V3WghHtsxbw@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@c>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-On 02/05/15 08:55, Maxime Coquelin wrote:
-> 2015-05-01 10:08 GMT+02:00 Daniel Thompson <daniel.thompson@linaro.org>:
->> On 30/04/15 17:20, Maxime Coquelin wrote:
->>>
->>> This adds documentation of device tree bindings for the
->>> STM32 reset controller.
->>>
->>> Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
->>> Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
->>> Acked-by: Rob Herring <robh@kernel.org>
->>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
->>> ---
->>>    .../devicetree/bindings/reset/st,stm32-rcc.txt     | 107
->>> +++++++++++++++++++++
->>>    1 file changed, 107 insertions(+)
->>>    create mode 100644
->>> Documentation/devicetree/bindings/reset/st,stm32-rcc.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/reset/st,stm32-rcc.txt
->>> b/Documentation/devicetree/bindings/reset/st,stm32-rcc.txt
->>> new file mode 100644
->>> index 0000000..c1b0f8d
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/reset/st,stm32-rcc.txt
->>> @@ -0,0 +1,107 @@
->>> +STMicroelectronics STM32 Peripheral Reset Controller
->>> +====================================================
->>> +
->>> +The RCC IP is both a reset and a clock controller. This documentation
->>> only
->>> +documents the reset part.
->>> +
->>> +Please also refer to reset.txt in this directory for common reset
->>> +controller binding usage.
->>> +
->>> +Required properties:
->>> +- compatible: Should be "st,stm32-rcc"
->>> +- reg: should be register base and length as documented in the
->>> +  datasheet
->>> +- #reset-cells: 1, see below
->>> +
->>> +example:
->>> +
->>> +rcc: reset@40023800 {
->>> +       #reset-cells = <1>;
->>> +       compatible = "st,stm32-rcc";
->>
->>
->> Do you intend the clock driver to use the same compatible string (given it
->> is the same bit of hardware).
->>
->> If so, is it better to use st,stm32f4-rcc here? It seems unlikey to me that
->> the register layout of the PLLs and dividers can be the same on the f7 parts
->> (and later).
->
-> I agree we need a compatible dedicate to f4 series for clocks, and
-> maybe even one for f429 (to be checked).
-> For the reset part, we don't have this need.
->
-> So either we use only "st,stm32f4" as you suggest, or we can have both
-> in device tree:
->
-> rcc: reset@40023800 {
->      #reset-cells = <1>;
->      compatible = "st,stm32f4-rcc", "st,stm32-rcc";
->      reg = <0x40023800 0x400>;
-> };
->
-> What do you think?
+Hi Peter,
 
-Having both makes sense. The reset driver probably doesn't care about 
-differences between F4 and F7 (I know very little about F7 but I can't 
-think of any obvious h/ware evolution that would confuse the current 
-reset driver).
+with 4.1-rc1, my boxes with early console enabled show something like
+this (the example is vexpress, but it for example also happens on an
+AM335x board):
 
+  earlycon: no match for ttyAMA0,38400n8
 
->>> +       reg = <0x40023800 0x400>;
->>> +};
->>> +
->>> +Specifying softreset control of devices
->>> +=======================================
->>> +
->>> +Device nodes should specify the reset channel required in their "resets"
->>> +property, containing a phandle to the reset device node and an index
->>> specifying
->>> +which channel to use.
->>> +The index is the bit number within the RCC registers bank, starting from
->>> RCC
->>> +base address.
->>> +It is calculated as: index = register_offset / 4 * 32 + bit_offset.
->>> +Where bit_offset is the bit offset within the register.
->>> +For example, for CRC reset:
->>> +  crc = AHB1RSTR_offset / 4 * 32 + CRCRST_bit_offset = 0x10 / 4 * 32 + 12
->>> = 140
->>> +
->>> +example:
->>> +
->>> +       timer2 {
->>> +               resets                  = <&rcc 256>;
->>> +       };
->>> +
->>> +List of valid indices for STM32F429:
->>> + - gpioa: 128
->>> + - gpiob: 129
->>> ...
->>> <snip>
->>> ...
->>> + - sai1: 310
->>> + - ltdc: 314
->>
->>
->> These numbers are stable for all STM32F4 family parts. Should this table go
->> into a dt-bindings header file?
->>
->
-> This has already been discussed with Philipp and Arnd in earlier
-> versions of this series [0].
-> I initially created a header file, and we  decided going this way finally.
+The box was booted with "console=ttyAMA0,38400n8" on the commandline.
+If I understand this right, the code in drivers/tty/serial/earlycon.c
+calls setup_earlycon() with the string above ("ttyAMA0,38400n8") and
+fails to find that string in the "names" part of the __earlycon_table,
+because for the pl011 component on vexpress, the early console was
+registered in drivers/tty/serial/amba-pl011.c with:
 
-Thanks for the link. I had overlooked that (I only really started paying 
-attention at v5; I should probably have looked further back before 
-commenting).
+OF_EARLYCON_DECLARE(pl011, "arm,pl011", pl011_early_console_setup);
+                    ^^^^^ name
 
-However...
+So isn't that trying to match "ttyAMA0" against "arm,pl011"? I have the
+feeling that I didn't understand the logic behind that.
 
-Arnd's concerns about mergability of headers can also be met by using 
-h/ware values in the header file can't there. To be honest my comment 
-was pretty heavily influenced after having read a recent patch from Rob 
-Herring ( https://lkml.org/lkml/2015/5/1/14 ) which does exactly this.
+Can you elaborate about how this is supposed to work correctly?
 
-The main reason I got interested in having a header is that the reset 
-bits and the clock gate bits are encoded using the same bit patterns so 
-I wondering it we could express that only once.
-
-I guess it doesn't matter that much, especially given there is only one 
-.dtsi file, and we can add a header later and remain binary compatible. 
-However if the same number set does end up repeated in different .dtsi 
-files I think that would motivate adding a header for F4 family.
-
-
-Daniel.
-
+Thanks,
+rsc
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
