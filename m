@@ -1,48 +1,39 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 1/2] Documentation/magic-number: Remove SCI_MAGIC
-Date: Mon,  4 May 2015 19:39:50 +0200
-Message-ID: <1430761191-23663-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-doc-owner@vger.kernel.org>
-Sender: linux-doc-owner@vger.kernel.org
-To: Jonathan Corbet <corbet@lwn.net>, Harry Wei <harryxiyou@gmail.com>
-Cc: linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@zh-kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [PATCH] serial: 8250: Prevent kernel crash with nr_uarts=0
+Date: Mon, 04 May 2015 19:45:48 +0200
+Message-ID: <5547B04C.8080706@siemens.com>
+References: <554797D4.5080704@siemens.com> <5547A614.9020109@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5547A614.9020109@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The SCI_MAGIC define was removed in commit f8e53553f452dcbf ("serial:
-sh-sci: Kill off more unused defines.").
-Its last user was the old drivers/char sh-sci driver, which was removed
-in 2004.
+On 2015-05-04 19:02, Peter Hurley wrote:
+> Hi Jan,
+> 
+> On 05/04/2015 12:01 PM, Jan Kiszka wrote:
+>> When nr_uarts was set to 0 (via config or 8250_core.nr_uarts), we crash
+>> early on x86 because serial8250_isa_init_ports dereferences base_ops
+>> which remains NULL. In fact, there is nothing to do for that function if
+>> there are no uarts.
+> 
+> Thanks for finding this.
+> 
+> So nr_uarts == 0 effectively disables the 8250 driver. Is there any 
+> reason not to simply abort the driver init instead?
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- Documentation/magic-number.txt       | 1 -
- Documentation/zh_CN/magic-number.txt | 1 -
- 2 files changed, 2 deletions(-)
+I'm not very deep into this code, just stumbled over this while trying
+some, well, unusual configurations.
 
-diff --git a/Documentation/magic-number.txt b/Documentation/magic-number.txt
-index 4c8e142db2ef99fe..d9af851a6f2056bc 100644
---- a/Documentation/magic-number.txt
-+++ b/Documentation/magic-number.txt
-@@ -138,7 +138,6 @@ KMALLOC_MAGIC         0x87654321  snd_alloc_track   sound/core/memory.c
- PWC_MAGIC             0x89DC10AB  pwc_device        drivers/usb/media/pwc.h
- NBD_REPLY_MAGIC       0x96744668  nbd_reply         include/linux/nbd.h
- ENI155_MAGIC          0xa54b872d  midway_eprom	    drivers/atm/eni.h
--SCI_MAGIC             0xbabeface  gs_port           drivers/char/sh-sci.h
- CODA_MAGIC            0xC0DAC0DA  coda_file_info    fs/coda/coda_fs_i.h
- DPMEM_MAGIC           0xc0ffee11  gdt_pci_sram      drivers/scsi/gdth.h
- YAM_MAGIC             0xF10A7654  yam_port          drivers/net/hamradio/yam.c
-diff --git a/Documentation/zh_CN/magic-number.txt b/Documentation/zh_CN/magic-number.txt
-index dfb72a5c63e9ba63..c2607a69a72743a5 100644
---- a/Documentation/zh_CN/magic-number.txt
-+++ b/Documentation/zh_CN/magic-number.txt
-@@ -138,7 +138,6 @@ KMALLOC_MAGIC         0x87654321  snd_alloc_track   sound/core/memory.c
- PWC_MAGIC             0x89DC10AB  pwc_device        drivers/usb/media/pwc.h
- NBD_REPLY_MAGIC       0x96744668  nbd_reply         include/linux/nbd.h
- ENI155_MAGIC          0xa54b872d  midway_eprom	    drivers/atm/eni.h
--SCI_MAGIC             0xbabeface  gs_port           drivers/char/sh-sci.h
- CODA_MAGIC            0xC0DAC0DA  coda_file_info    include/linux/coda_fs_i.h
- DPMEM_MAGIC           0xc0ffee11  gdt_pci_sram      drivers/scsi/gdth.h
- YAM_MAGIC             0xF10A7654  yam_port          drivers/net/hamradio/yam.c
+If you prefer to handle this differently, I can recode it, of course.
+
+Jan
+
 -- 
-1.9.1
-
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
