@@ -1,50 +1,103 @@
-From: Vinod Koul <vinod.koul@intel.com>
-Subject: Re: [PATCH 4/5] dmaengine: hsu: Fix memory leak when stopping a
- running transfer
-Date: Mon, 4 May 2015 16:34:04 +0530
-Message-ID: <20150504110404.GH3521@localhost>
-References: <1427456155-28990-1-git-send-email-peter.ujfalusi@ti.com>
- <1427456155-28990-5-git-send-email-peter.ujfalusi@ti.com>
- <1427457718.14897.428.camel@linux.intel.com>
- <20150330173732.GK7192@intel.com>
- <20150428111708.GB16174@kroah.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 3/4] tty: serial: 8250_mtk: use pm_runtime callbacks for enabling
+Date: Mon, 4 May 2015 13:05:27 +0200
+Message-ID: <CABuKBeJwduxLuyXcy7Ho+k+_Ye3+nHiGvdr8vTFsJzdHDBQPSA@mail.gmail.com>
+References: <1430117397-13517-1-git-send-email-s.hauer@pengutronix.de>
+	<1430117397-13517-4-git-send-email-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150428111708.GB16174@kroah.com>
+In-Reply-To: <1430117397-13517-4-git-send-email-s.hauer@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux@arm.linux.org.uk, dan.j.williams@intel.com, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, linux-mediatek@lists.infradead.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Apr 28, 2015 at 01:17:08PM +0200, 'Greg Kroah-Hartman' wrote:
-> On Mon, Mar 30, 2015 at 11:07:32PM +0530, Vinod Koul wrote:
-> > On Fri, Mar 27, 2015 at 02:01:58PM +0200, Andy Shevchenko wrote:
-> > > On Fri, 2015-03-27 at 13:35 +0200, Peter Ujfalusi wrote:
-> > > > The vd->node is removed from the lists when the transfer started so the
-> > > > vchan_get_all_descriptors() will not find it. This results memory leak.
-> > > > 
-> > > 
-> > > Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Acked-by: Vinod Koul <vinod.koul@intel.com>
-> > 
-> > Greg,
-> > 
-> > Please apply this in your queue for next
-> 
-> Apply what?  Can someone resend this in a format I can apply it in?
+2015-04-27 8:49 GMT+02:00 Sascha Hauer <s.hauer@pengutronix.de>:
+> The pm_runtime callbacks already enable and disable the device.
+> Use them in probe() and remove() instead of duplicating the
+> code. This allows us to concentrate more code for enabling/disabling
+> the UART in a single place.
+>
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+>  drivers/tty/serial/8250/8250_mtk.c | 69 ++++++++++++++++++++------------------
+>  1 file changed, 36 insertions(+), 33 deletions(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index bcfaa8dc..2f28bd0 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -115,6 +115,29 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
+>                 tty_termios_encode_baud_rate(termios, baud, baud);
+>  }
+>
+> +static int mtk8250_runtime_suspend(struct device *dev)
+> +{
+> +       struct mtk8250_data *data = dev_get_drvdata(dev);
+> +
+> +       clk_disable_unprepare(data->uart_clk);
+> +
+> +       return 0;
+> +}
+> +
+> +static int mtk8250_runtime_resume(struct device *dev)
+> +{
+> +       struct mtk8250_data *data = dev_get_drvdata(dev);
+> +       int err;
+> +
+> +       err = clk_prepare_enable(data->uart_clk);
+> +       if (err) {
+> +               dev_warn(dev, "Can't enable clock\n");
+> +               return err;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+>  static void
+>  mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
+>  {
+> @@ -130,19 +153,12 @@ mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
+>  static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
+>                            struct mtk8250_data *data)
+>  {
+> -       int err;
+> -
+>         data->uart_clk = devm_clk_get(&pdev->dev, NULL);
+>         if (IS_ERR(data->uart_clk)) {
+>                 dev_warn(&pdev->dev, "Can't get uart clock\n");
+>                 return PTR_ERR(data->uart_clk);
+>         }
+>
+> -       err = clk_prepare_enable(data->uart_clk);
+> -       if (err) {
+> -               dev_warn(&pdev->dev, "Can't prepare clock\n");
+> -               return err;
+> -       }
+>         p->uartclk = clk_get_rate(data->uart_clk);
+>
+>         return 0;
+> @@ -193,14 +209,18 @@ static int mtk8250_probe(struct platform_device *pdev)
+>         writel(0x0, uart.port.membase +
+>                         (MTK_UART_RATE_FIX << uart.port.regshift));
+>
+> -       data->line = serial8250_register_8250_port(&uart);
+> -       if (data->line < 0)
+> -               return data->line;
+> -
+>         platform_set_drvdata(pdev, data);
+>
+> -       pm_runtime_set_active(&pdev->dev);
+>         pm_runtime_enable(&pdev->dev);
+> +       if (!pm_runtime_enabled(&pdev->dev)) {
+> +               err = mtk8250_runtime_resume(&pdev->dev);
+> +               if (err)
+> +                       return err;
+> +       }
+> +
+> +       data->line = serial8250_register_8250_port(&uart);
+> +       if (data->line < 0)
+> +               return data->line;
 
-Ah sorry Greg, I thought you were cced in the orignal patch as well, so..
-
-Peter, can you resend, now that this is in my next I will apply it
-
--- 
-~Vinod
-
-> 
-> thanks,
-> 
-> gregk -h
-
--- 
+Why do you delete pm_runtime_set_active here?
