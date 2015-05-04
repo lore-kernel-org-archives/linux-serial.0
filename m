@@ -1,43 +1,81 @@
-From: Robert Schwebel <r.schwebel@pengutronix.de>
-Subject: earlycon: no match?
-Date: Sun, 3 May 2015 23:10:54 +0200
-Message-ID: <20150503211054.GR15254@pengutronix.de>
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 1/4] tty: serial: 8250_mtk: remove unnecessary test
+Date: Mon, 4 May 2015 11:32:09 +0200
+Message-ID: <CABuKBeL4BzjOpVNttqKLAMayLROup+qAA81duSxphwWxNTdPqQ@mail.gmail.com>
+References: <1430117397-13517-1-git-send-email-s.hauer@pengutronix.de>
+ <1430117397-13517-2-git-send-email-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1430117397-13517-2-git-send-email-s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
+2015-04-27 8:49 GMT+02:00 Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>:
+> When the driver has probed successfully the clk pointer is always valid,
+> so no need to test for it.
+>
+> Signed-off-by: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+> ---
+>  drivers/tty/serial/8250/8250_mtk.c | 12 ++++--------
+>  1 file changed, 4 insertions(+), 8 deletions(-)
+>
 
-with 4.1-rc1, my boxes with early console enabled show something like
-this (the example is vexpress, but it for example also happens on an
-AM335x board):
+Acked-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-  earlycon: no match for ttyAMA0,38400n8
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index 7a11fac..1297827 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -214,10 +214,8 @@ static int mtk8250_remove(struct platform_device *pdev)
+>         pm_runtime_get_sync(&pdev->dev);
+>
+>         serial8250_unregister_port(data->line);
+> -       if (!IS_ERR(data->uart_clk)) {
+> -               clk_disable_unprepare(data->uart_clk);
+> -               clk_put(data->uart_clk);
+> -       }
+> +       clk_disable_unprepare(data->uart_clk);
+> +       clk_put(data->uart_clk);
+>
+>         pm_runtime_disable(&pdev->dev);
+>         pm_runtime_put_noidle(&pdev->dev);
+> @@ -249,8 +247,7 @@ static int mtk8250_runtime_suspend(struct device *dev)
+>  {
+>         struct mtk8250_data *data = dev_get_drvdata(dev);
+>
+> -       if (!IS_ERR(data->uart_clk))
+> -               clk_disable_unprepare(data->uart_clk);
+> +       clk_disable_unprepare(data->uart_clk);
+>
+>         return 0;
+>  }
+> @@ -259,8 +256,7 @@ static int mtk8250_runtime_resume(struct device *dev)
+>  {
+>         struct mtk8250_data *data = dev_get_drvdata(dev);
+>
+> -       if (!IS_ERR(data->uart_clk))
+> -               clk_prepare_enable(data->uart_clk);
+> +       clk_prepare_enable(data->uart_clk);
+>
+>         return 0;
+>  }
+> --
+> 2.1.4
+>
 
-The box was booted with "console=ttyAMA0,38400n8" on the commandline.
-If I understand this right, the code in drivers/tty/serial/earlycon.c
-calls setup_earlycon() with the string above ("ttyAMA0,38400n8") and
-fails to find that string in the "names" part of the __earlycon_table,
-because for the pl011 component on vexpress, the early console was
-registered in drivers/tty/serial/amba-pl011.c with:
 
-OF_EARLYCON_DECLARE(pl011, "arm,pl011", pl011_early_console_setup);
-                    ^^^^^ name
 
-So isn't that trying to match "ttyAMA0" against "arm,pl011"? I have the
-feeling that I didn't understand the logic behind that.
-
-Can you elaborate about how this is supposed to work correctly?
-
-Thanks,
-rsc
 -- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+motzblog.wordpress.com
