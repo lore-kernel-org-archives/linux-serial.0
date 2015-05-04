@@ -1,130 +1,107 @@
-From: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH 3/4] tty: serial: 8250_mtk: use pm_runtime callbacks for
- enabling
-Date: Mon, 4 May 2015 14:06:51 +0200
-Message-ID: <20150504120651.GR6325@pengutronix.de>
-References: <1430117397-13517-1-git-send-email-s.hauer@pengutronix.de>
- <1430117397-13517-4-git-send-email-s.hauer@pengutronix.de>
- <CABuKBeJwduxLuyXcy7Ho+k+_Ye3+nHiGvdr8vTFsJzdHDBQPSA@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: earlycon: no match?
+Date: Mon, 04 May 2015 10:01:37 -0400
+Message-ID: <55477BC1.6000805@hurleysoftware.com>
+References: <20150503211054.GR15254@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CABuKBeJwduxLuyXcy7Ho+k+_Ye3+nHiGvdr8vTFsJzdHDBQPSA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Alan Cox <alan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20150503211054.GR15254@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robert Schwebel <r.schwebel@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, May 04, 2015 at 01:05:27PM +0200, Matthias Brugger wrote:
-> 2015-04-27 8:49 GMT+02:00 Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>:
-> > The pm_runtime callbacks already enable and disable the device.
-> > Use them in probe() and remove() instead of duplicating the
-> > code. This allows us to concentrate more code for enabling/disabling
-> > the UART in a single place.
-> >
-> > Signed-off-by: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> > ---
-> >  drivers/tty/serial/8250/8250_mtk.c | 69 ++++++++++++++++++++------------------
-> >  1 file changed, 36 insertions(+), 33 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> > index bcfaa8dc..2f28bd0 100644
-> > --- a/drivers/tty/serial/8250/8250_mtk.c
-> > +++ b/drivers/tty/serial/8250/8250_mtk.c
-> > @@ -115,6 +115,29 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
-> >                 tty_termios_encode_baud_rate(termios, baud, baud);
-> >  }
-> >
-> > +static int mtk8250_runtime_suspend(struct device *dev)
-> > +{
-> > +       struct mtk8250_data *data = dev_get_drvdata(dev);
-> > +
-> > +       clk_disable_unprepare(data->uart_clk);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int mtk8250_runtime_resume(struct device *dev)
-> > +{
-> > +       struct mtk8250_data *data = dev_get_drvdata(dev);
-> > +       int err;
-> > +
-> > +       err = clk_prepare_enable(data->uart_clk);
-> > +       if (err) {
-> > +               dev_warn(dev, "Can't enable clock\n");
-> > +               return err;
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +
-> >  static void
-> >  mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
-> >  {
-> > @@ -130,19 +153,12 @@ mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
-> >  static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
-> >                            struct mtk8250_data *data)
-> >  {
-> > -       int err;
-> > -
-> >         data->uart_clk = devm_clk_get(&pdev->dev, NULL);
-> >         if (IS_ERR(data->uart_clk)) {
-> >                 dev_warn(&pdev->dev, "Can't get uart clock\n");
-> >                 return PTR_ERR(data->uart_clk);
-> >         }
-> >
-> > -       err = clk_prepare_enable(data->uart_clk);
-> > -       if (err) {
-> > -               dev_warn(&pdev->dev, "Can't prepare clock\n");
-> > -               return err;
-> > -       }
-> >         p->uartclk = clk_get_rate(data->uart_clk);
-> >
-> >         return 0;
-> > @@ -193,14 +209,18 @@ static int mtk8250_probe(struct platform_device *pdev)
-> >         writel(0x0, uart.port.membase +
-> >                         (MTK_UART_RATE_FIX << uart.port.regshift));
-> >
-> > -       data->line = serial8250_register_8250_port(&uart);
-> > -       if (data->line < 0)
-> > -               return data->line;
-> > -
-> >         platform_set_drvdata(pdev, data);
-> >
-> > -       pm_runtime_set_active(&pdev->dev);
-> >         pm_runtime_enable(&pdev->dev);
-> > +       if (!pm_runtime_enabled(&pdev->dev)) {
-> > +               err = mtk8250_runtime_resume(&pdev->dev);
-> > +               if (err)
-> > +                       return err;
-> > +       }
-> > +
-> > +       data->line = serial8250_register_8250_port(&uart);
-> > +       if (data->line < 0)
-> > +               return data->line;
+Hi Robert,
+
+On 05/03/2015 05:10 PM, Robert Schwebel wrote:
+> Hi Peter,
 > 
-> Why do you delete pm_runtime_set_active here?
+> with 4.1-rc1, my boxes with early console enabled show something like
+> this (the example is vexpress, but it for example also happens on an
+> AM335x board):
+> 
+>   earlycon: no match for ttyAMA0,38400n8
 
-pm_runtime_set_active() communicates the initial state of the device to
-the pm core. Previously the driver activated the device manually by
-directly calling clk_prepare_enable(). Since this manual enabling of
-the clock is removed in this patch, the device is no longer active,
-hence pm_runtime_set_active() has to be removed.
+This shouldn't impact any previous earlycon setup. Are you saying
+you're seeing a regression?
 
-Sascha
+How do you have early console enabled, via the command line or via DT?
 
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+> The box was booted with "console=ttyAMA0,38400n8" on the commandline.
+> If I understand this right, the code in drivers/tty/serial/earlycon.c
+> calls setup_earlycon() with the string above ("ttyAMA0,38400n8") and
+> fails to find that string in the "names" part of the __earlycon_table,
+> because for the pl011 component on vexpress, the early console was
+> registered in drivers/tty/serial/amba-pl011.c with:
+> 
+> OF_EARLYCON_DECLARE(pl011, "arm,pl011", pl011_early_console_setup);
+>                     ^^^^^ name
+> 
+> So isn't that trying to match "ttyAMA0" against "arm,pl011"? I have the
+> feeling that I didn't understand the logic behind that.
+> 
+> Can you elaborate about how this is supposed to work correctly?
+
+Yeah, I've been meaning to write about this but simply haven't had the
+time yet; apologies for that.
+
+The facility is hopefully best explained by the existing 8250 exemplar.
+Normally, an 8250 early console is started via command line with a
+command line parameter like:
+
+	earlycon=uart,io,0x2f8,115200n8
+
+Since 2007, an 8250 early console can also be started via command line
+using console= instead, like:
+
+	console=uart,io,0x2f8,115200n8
+
+In this alternate form, this early console will go on to become the
+corresponding ttyS console.
+
+However, that functionality was exclusive to 8250 console/earlycon.
+To get this same behavior for the amba-pl011 console would look
+something like:
+
+/* drivers/tty/serial/amba-pl011.c */
+
+/* returns 0 if the console matches; otherwise, non-zero to use default matching */
+static int pl011_console_match(struct console *co, char *name, int idx, char *options)
+{
+	unsigned char iotype;
+	unsigned long addr;
+
+	if (strncmp(name, "pl" 2) != 0 || idx != 11)
+		return -ENODEV;
+
+	if (uart_parse_earlycon(options, &iotype, &addr, &options))
+		return -ENODEV;
+
+	/* find the port from the addr */
+	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
+		if (amba_ports[i] == NULL)
+			continue;
+		if (port->mapbase != addr)
+			continue;
+
+		co->index = i;
+		return pl011_console_setup(co, options);
+	}
+
+	return -ENODEV;
+}
+
+...
+
+static struct console amba_console = {
+	...
+	.match		= pl011_console_match,
+	...
+};
+
+
+Regards,
+Peter Hurley
