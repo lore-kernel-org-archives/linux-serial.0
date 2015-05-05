@@ -1,101 +1,109 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v7 05/15] dt-bindings: Document the STM32 reset bindings
-Date: Tue, 5 May 2015 19:24:04 +0200
-Message-ID: <CALszF6C2B-Ja+hgdYz7N4c7MYg41XAWEYbRRbnuf+H0EY0OwGQ@mail.gmail.com>
-References: <1430410844-16062-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<1430410844-16062-6-git-send-email-mcoquelin.stm32@gmail.com>
-	<55433467.2010603@linaro.org>
-	<CALszF6Bw900E9MtpaVmvkFxsrOODRkNg+RxRXz5V3WghHtsxbw@mail.gmail.com>
-	<5544A069.5000808@linaro.org>
-	<CALszF6BTb0Ce6jfT5gY4eEtSep6+8XqOxu1LbpUXHmPYX9PmgQ@mail.gmail.com>
-	<5548CEA2.8020807@linaro.org>
-	<CALszF6DyUA7Wr2qo4sASFBTRwwjhGAkFKRYnY+1UwHmf4nTj5w@mail.gmail.com>
-	<1430840557.3035.60.camel@pengutronix.de>
-	<5548EAC1.7010002@linaro.org>
+From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 8/8] serial: tegra: Correct error handling on DMA setup
+Date: Tue, 5 May 2015 15:17:59 +0100
+Message-ID: <1430835479-6613-9-git-send-email-jonathanh@nvidia.com>
+References: <1430835479-6613-1-git-send-email-jonathanh@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5548EAC1.7010002@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>, Philipp Zabel <p.zabel@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gr>
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1430835479-6613-1-git-send-email-jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-2015-05-05 18:07 GMT+02:00 Daniel Thompson <daniel.thompson@linaro.org>:
-> On 05/05/15 16:42, Philipp Zabel wrote:
->>
->> Am Dienstag, den 05.05.2015, 17:19 +0200 schrieb Maxime Coquelin:
->>>>>
->>>>> For example, includes/dt-bindings/mfd/stm32f4-rcc.h would look like:
->>>>>
->>>>> #define GPIOA 0
->>>>> #define GPIOB 1
->>>>> ...
->>>>> #define LTDC 186
->>
->>
->> That looks a bit fragile.
->> At least the defines for the indices should be properly namespaced,
->> check out include/dt-bindings/gpio/tegra-gpio.h for a similar case.
->
->
-> Good point.
->
->>>>> #define STM32F4_RESET(x) (x + 128)
->>>>> #define STM32F4_CLOCK(x) (x + 384)
->
->
-> Thinking more about this point, if we are going to follow hardware if might
-> be better to have:
->
-> #define STM32F4_RCC_AHB1_GPIOA 0
-> #define STM32F4_RCC_AHB1_GPIOA 1
-> ...
-> #define STM32F4_RCC_APB2_LTDC 26
->
->
-> #define STM32F4_AHB1_RESET(x) (STM32F4_RCC_AHB1_##x##_BIT + (0x10 * 8))
-> #define STM32F4_AHB2_RESET(x) (STM32F4_RCC_AHB2_##x##_BIT + (0x14 * 8))
-> ...
-> #define STM32F4_APB2_RESET(x) (STM32F4_RCC_APB2_##x##_BIT + (0x24 * 8))
->
-> Its more typing (or copy 'n pasting) by at least every number now maps
-> directly to the datasheet.
+Function tegra_uart_dma_channel_allocate() does not check that
+dma_map_single() mapped the DMA buffer correctly. Add a check for this
+and appropriate error handling.
 
-As said in Philipp's reply, I like the idea.
+Furthermore, if dmaengine_slave_config() (called by
+tegra_uart_dma_channel_allocate()) fails, then memory allocated/mapped
+is not freed/unmapped. Therefore, call tegra_uart_dma_channel_free()
+instead of just dma_release_channel() if  dmaengine_slave_config() fails.
 
-Regards,
-Maxime
->
->
->
->>>>>
->>>>> Then, in DT, a reset would be described like this:
->>>>>
->>>>> timer2 {
->>>>>       resets = <&rcc STM32F4_RESET(TIM2)>;
->>>>> };
->>>>>
->>>>> Phillip, Daniel, does that look acceptable to you?
->>>>
->>>>
->>>>
->>>> Doesn't look unreasonable.
->>>>
->>>> I am a little uneasy simply because there are very few similar header
->>>> files
->>>> in that directory but I haven't thought of a better idea.
->>>
->>>
->>> Since this file will be shared by both clock and reset drivers, I
->>> don't see better option.
->>> I will implement it in v8 if Philipp agrees.
->>
->>
->> Are the device tree maintainers happy with this idiom spreading?
->> Except for the point above, I think this is acceptable.
->>
->> regards
->> Philipp
->>
->
+Signed-off-by: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/tty/serial/serial-tegra.c | 51 +++++++++++++++++++++------------------
+ 1 file changed, 28 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 96378da9aefc..3b63f103f0c9 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -949,6 +949,28 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
+ 	return 0;
+ }
+ 
++static void tegra_uart_dma_channel_free(struct tegra_uart_port *tup,
++		bool dma_to_memory)
++{
++	if (dma_to_memory) {
++		dmaengine_terminate_all(tup->rx_dma_chan);
++		dma_release_channel(tup->rx_dma_chan);
++		dma_free_coherent(tup->uport.dev, TEGRA_UART_RX_DMA_BUFFER_SIZE,
++				tup->rx_dma_buf_virt, tup->rx_dma_buf_phys);
++		tup->rx_dma_chan = NULL;
++		tup->rx_dma_buf_phys = 0;
++		tup->rx_dma_buf_virt = NULL;
++	} else {
++		dmaengine_terminate_all(tup->tx_dma_chan);
++		dma_release_channel(tup->tx_dma_chan);
++		dma_unmap_single(tup->uport.dev, tup->tx_dma_buf_phys,
++			UART_XMIT_SIZE, DMA_TO_DEVICE);
++		tup->tx_dma_chan = NULL;
++		tup->tx_dma_buf_phys = 0;
++		tup->tx_dma_buf_virt = NULL;
++	}
++}
++
+ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+ 			bool dma_to_memory)
+ {
+@@ -981,6 +1003,11 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+ 		dma_phys = dma_map_single(tup->uport.dev,
+ 			tup->uport.state->xmit.buf, UART_XMIT_SIZE,
+ 			DMA_TO_DEVICE);
++		if (dma_mapping_error(tup->uport.dev, dma_phys)) {
++			dev_err(tup->uport.dev, "dma_map_single tx failed\n");
++			dma_release_channel(dma_chan);
++			return -ENOMEM;
++		}
+ 		dma_buf = tup->uport.state->xmit.buf;
+ 	}
+ 
+@@ -1013,32 +1040,10 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+ 	return 0;
+ 
+ scrub:
+-	dma_release_channel(dma_chan);
++	tegra_uart_dma_channel_free(tup, dma_to_memory);
+ 	return ret;
+ }
+ 
+-static void tegra_uart_dma_channel_free(struct tegra_uart_port *tup,
+-		bool dma_to_memory)
+-{
+-	if (dma_to_memory) {
+-		dmaengine_terminate_all(tup->rx_dma_chan);
+-		dma_release_channel(tup->rx_dma_chan);
+-		dma_free_coherent(tup->uport.dev, TEGRA_UART_RX_DMA_BUFFER_SIZE,
+-				tup->rx_dma_buf_virt, tup->rx_dma_buf_phys);
+-		tup->rx_dma_chan = NULL;
+-		tup->rx_dma_buf_phys = 0;
+-		tup->rx_dma_buf_virt = NULL;
+-	} else {
+-		dmaengine_terminate_all(tup->tx_dma_chan);
+-		dma_release_channel(tup->tx_dma_chan);
+-		dma_unmap_single(tup->uport.dev, tup->tx_dma_buf_phys,
+-			UART_XMIT_SIZE, DMA_TO_DEVICE);
+-		tup->tx_dma_chan = NULL;
+-		tup->tx_dma_buf_phys = 0;
+-		tup->tx_dma_buf_virt = NULL;
+-	}
+-}
+-
+ static int tegra_uart_startup(struct uart_port *u)
+ {
+ 	struct tegra_uart_port *tup = to_tegra_uport(u);
+-- 
+1.9.1
