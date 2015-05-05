@@ -1,91 +1,214 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: earlycon: no match?
-Date: Tue, 05 May 2015 06:39:47 -0400
-Message-ID: <55489DF3.3070703@hurleysoftware.com>
-References: <20150503211054.GR15254@pengutronix.de> <55477BC1.6000805@hurleysoftware.com> <20150504194229.GR15254@pengutronix.de> <5547D4DB.8060300@hurleysoftware.com> <20150504205241.GT15254@pengutronix.de> <5547E447.9020604@hurleysoftware.com> <20150504215832.GW15254@pengutronix.de> <5547F350.7030405@hurleysoftware.com> <20150505045139.GY15254@pengutronix.de>
+From: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v7 05/15] dt-bindings: Document the STM32 reset bindings
+Date: Tue, 05 May 2015 15:07:30 +0100
+Message-ID: <5548CEA2.8020807@linaro.org>
+References: <1430410844-16062-1-git-send-email-mcoquelin.stm32@gmail.com>	<1430410844-16062-6-git-send-email-mcoquelin.stm32@gmail.com>	<55433467.2010603@linaro.org>	<CALszF6Bw900E9MtpaVmvkFxsrOODRkNg+RxRXz5V3WghHtsxbw@mail.gmail.com>	<5544A069.5000808@linaro.org> <CALszF6BTb0Ce6jfT5gY4eEtSep6+8XqOxu1LbpUXHmPYX9PmgQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150505045139.GY15254@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robert Schwebel <r.schwebel@pengutronix.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CALszF6BTb0Ce6jfT5gY4eEtSep6+8XqOxu1LbpUXHmPYX9PmgQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Peter Meerwald <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Vladimir Zapolskiy <vladimir_zapolskiy-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Gleixner <tglx@li>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/05/2015 12:51 AM, Robert Schwebel wrote:
-> Peter,
-> 
-> On Mon, May 04, 2015 at 06:31:44PM -0400, Peter Hurley wrote:
->>> You say it is a diagnostics message that indicates a misspelling.
->>> I fail to see what is misspelled, so what does it diagnose?
+On 04/05/15 12:25, Maxime Coquelin wrote:
+> 2015-05-02 12:01 GMT+02:00 Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>:
+>> On 02/05/15 08:55, Maxime Coquelin wrote:
+>>>
+>>> 2015-05-01 10:08 GMT+02:00 Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>:
+>>>>
+>>>> On 30/04/15 17:20, Maxime Coquelin wrote:
+>>>>>
+>>>>>
+>>>>> This adds documentation of device tree bindings for the
+>>>>> STM32 reset controller.
+>>>>>
+>>>>> Tested-by: Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>>>>> Acked-by: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+>>>>> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>>>>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>>>>> ---
+>>>>>     .../devicetree/bindings/reset/st,stm32-rcc.txt     | 107
+>>>>> +++++++++++++++++++++
+>>>>>     1 file changed, 107 insertions(+)
+>>>>>     create mode 100644
+>>>>> Documentation/devicetree/bindings/reset/st,stm32-rcc.txt
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/reset/st,stm32-rcc.txt
+>>>>> b/Documentation/devicetree/bindings/reset/st,stm32-rcc.txt
+>>>>> new file mode 100644
+>>>>> index 0000000..c1b0f8d
+>>>>> --- /dev/null
+>>>>> +++ b/Documentation/devicetree/bindings/reset/st,stm32-rcc.txt
+>>>>> @@ -0,0 +1,107 @@
+>>>>> +STMicroelectronics STM32 Peripheral Reset Controller
+>>>>> +====================================================
+>>>>> +
+>>>>> +The RCC IP is both a reset and a clock controller. This documentation
+>>>>> only
+>>>>> +documents the reset part.
+>>>>> +
+>>>>> +Please also refer to reset.txt in this directory for common reset
+>>>>> +controller binding usage.
+>>>>> +
+>>>>> +Required properties:
+>>>>> +- compatible: Should be "st,stm32-rcc"
+>>>>> +- reg: should be register base and length as documented in the
+>>>>> +  datasheet
+>>>>> +- #reset-cells: 1, see below
+>>>>> +
+>>>>> +example:
+>>>>> +
+>>>>> +rcc: reset@40023800 {
+>>>>> +       #reset-cells = <1>;
+>>>>> +       compatible = "st,stm32-rcc";
+>>>>
+>>>>
+>>>>
+>>>> Do you intend the clock driver to use the same compatible string (given
+>>>> it
+>>>> is the same bit of hardware).
+>>>>
+>>>> If so, is it better to use st,stm32f4-rcc here? It seems unlikey to me
+>>>> that
+>>>> the register layout of the PLLs and dividers can be the same on the f7
+>>>> parts
+>>>> (and later).
+>>>
+>>>
+>>> I agree we need a compatible dedicate to f4 series for clocks, and
+>>> maybe even one for f429 (to be checked).
+>>> For the reset part, we don't have this need.
+>>>
+>>> So either we use only "st,stm32f4" as you suggest, or we can have both
+>>> in device tree:
+>>>
+>>> rcc: reset@40023800 {
+>>>       #reset-cells = <1>;
+>>>       compatible = "st,stm32f4-rcc", "st,stm32-rcc";
+>>>       reg = <0x40023800 0x400>;
+>>> };
+>>>
+>>> What do you think?
 >>
->> Ok, so this is only about the diagnostic message, and not about some
->> other failure.
 >>
->> I don't typically describe harmless diagnostics that didn't appear before
->> as "broken", so I was having trouble believing what I was reading.
+>> Having both makes sense. The reset driver probably doesn't care about
+>> differences between F4 and F7 (I know very little about F7 but I can't think
+>> of any obvious h/ware evolution that would confuse the current reset
+>> driver).
 >>
->> Now that I understand that this is _only_ about a diagnostic message that
->> didn't appear in previous kernels, I will direct to what I have written
->> previously multiple times.
 >>
->> Further, I would ask how _you_ would programmatically distinguish
->> misspellings amongst the following console strings?
+>>>>> +       reg = <0x40023800 0x400>;
+>>>>> +};
+>>>>> +
+>>>>> +Specifying softreset control of devices
+>>>>> +=======================================
+>>>>> +
+>>>>> +Device nodes should specify the reset channel required in their
+>>>>> "resets"
+>>>>> +property, containing a phandle to the reset device node and an index
+>>>>> specifying
+>>>>> +which channel to use.
+>>>>> +The index is the bit number within the RCC registers bank, starting
+>>>>> from
+>>>>> RCC
+>>>>> +base address.
+>>>>> +It is calculated as: index = register_offset / 4 * 32 + bit_offset.
+>>>>> +Where bit_offset is the bit offset within the register.
+>>>>> +For example, for CRC reset:
+>>>>> +  crc = AHB1RSTR_offset / 4 * 32 + CRCRST_bit_offset = 0x10 / 4 * 32 +
+>>>>> 12
+>>>>> = 140
+>>>>> +
+>>>>> +example:
+>>>>> +
+>>>>> +       timer2 {
+>>>>> +               resets                  = <&rcc 256>;
+>>>>> +       };
+>>>>> +
+>>>>> +List of valid indices for STM32F429:
+>>>>> + - gpioa: 128
+>>>>> + - gpiob: 129
+>>>>> ...
+>>>>> <snip>
+>>>>> ...
+>>>>> + - sai1: 310
+>>>>> + - ltdc: 314
+>>>>
+>>>>
+>>>>
+>>>> These numbers are stable for all STM32F4 family parts. Should this table
+>>>> go
+>>>> into a dt-bindings header file?
+>>>>
+>>>
+>>> This has already been discussed with Philipp and Arnd in earlier
+>>> versions of this series [0].
+>>> I initially created a header file, and we  decided going this way finally.
 >>
->> 	console=pl012,...
->> 	console=_pl011,...
->> 	console=pl,...
->> 	console=ttyAMA0,...
-> 
-> Only the last line gives me output, but with the warning. All others are
-> misspellings but output nothing. The last one gives me a misspelling
-> warning, but it is the one that makes the output work.
-> 
-> Obviously this was not tested on an ARM device with a serial console,
-> because it doesn't work there.
+>>
+>> Thanks for the link. I had overlooked that (I only really started paying
+>> attention at v5; I should probably have looked further back before
+>> commenting).
+>>
+>> However...
+>>
+>> Arnd's concerns about mergability of headers can also be met by using h/ware
+>> values in the header file can't there. To be honest my comment was pretty
+>> heavily influenced after having read a recent patch from Rob Herring (
+>> https://lkml.org/lkml/2015/5/1/14 ) which does exactly this.
+>>
+>> The main reason I got interested in having a header is that the reset bits
+>> and the clock gate bits are encoded using the same bit patterns so I
+>> wondering it we could express that only once.
+>
+> Ok, I understand your need, and it makes sense.
+> The problem is that the values defined today cannot be re-used
+> directly for clocks.
+> Since the calculation is starting from rcc base, there is a 128 offset.
+>
+> To re-use the same values, maybe we should create a mfd dt-binding header file.
+> It would contain the bits definition starting from 0, and  define
+> macros for both reset and clocks to add the offsets.
+>
+> For example, includes/dt-bindings/mfd/stm32f4-rcc.h would look like:
+>
+> #define GPIOA 0
+> #define GPIOB 1
+> ...
+> #define LTDC 186
+>
+> #define STM32F4_RESET(x) (x + 128)
+> #define STM32F4_CLOCK(x) (x + 384)
+>
+> Then, in DT, a reset would be described like this:
+>
+> timer2 {
+>      resets = <&rcc STM32F4_RESET(TIM2)>;
+> };
+>
+> Phillip, Daniel, does that look acceptable to you?
 
-The primary test platform was a ARM device with a serial console.
-And yes, it does work there.
+Doesn't look unreasonable.
 
-> There should be an intended variant where *nothing* is misspelled in my
-> oftree+kernel commandline.
-> 
-> In that case, the system should come up, console comes out of the serial
-> line and earlycon is available. Then I should not get a diagnostic
-> message, becasue I did everything right.
-
-On 05/04/2015 05:27 PM, Peter Hurley wrote:
-> Since the set of possible console names is not a closed set, there's
-> simply no way to differentiate a misspelled name from a name that
-> has not been added because a console driver has not yet loaded.
+I am a little uneasy simply because there are very few similar header 
+files in that directory but I haven't thought of a better idea.
 
 
-> Case A: consoleo=ttyAMA0
-> 
->   Result: - system boots with output on intended serial console
->           - warning about having the earlycon misspelled
->           - earlycon not operational, although driver supports it
-> 
-> Case B: console=pl011
-> 
->   Result: - no output at all, because system doesn't output to its
->             intented serial console.
-> 
-> Case C: ...?
-> 
->   Are there other things I'm supposed to do in order to do it right?
-> 
-> So both cases A+B are not fully working as intented, right?
-> 
-> I'd like to fix it, but in order to do so, I want to learn how it is
-> actually *intended* to work.
+Daniel.
 
-What do you want to "fix"?
 
-Please stop using the indefinite pronoun, "it". I have no idea to what
-you are referring, because I already supplied you with a patch to "fix"
-the loglevel of the message.
-
-Regards,
-Peter Hurley
+>
+> Kind regards,
+> Maxime
+>>
+>> I guess it doesn't matter that much, especially given there is only one
+>> .dtsi file, and we can add a header later and remain binary compatible.
+>> However if the same number set does end up repeated in different .dtsi files
+>> I think that would motivate adding a header for F4 family.
+>>
+>>
+>> Daniel.
+>>
