@@ -1,100 +1,46 @@
-From: Robert Schwebel <r.schwebel@pengutronix.de>
-Subject: Re: earlycon: no match?
-Date: Tue, 5 May 2015 18:32:17 +0200
-Message-ID: <20150505163217.GK14416@pengutronix.de>
-References: <20150503211054.GR15254@pengutronix.de>
- <55477BC1.6000805@hurleysoftware.com>
- <20150504194229.GR15254@pengutronix.de>
- <5547D4DB.8060300@hurleysoftware.com>
- <20150504205241.GT15254@pengutronix.de>
- <5547E447.9020604@hurleysoftware.com>
- <20150504215832.GW15254@pengutronix.de>
- <5547F350.7030405@hurleysoftware.com>
- <20150505045139.GY15254@pengutronix.de>
- <55489DF3.3070703@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 21/27] serial: Allow compile test of GPIO consumers if !GPIOLIB
+Date: Tue,  5 May 2015 18:32:37 +0200
+Message-ID: <1430843563-18615-21-git-send-email-geert@linux-m68k.org>
+References: <1430836404-15513-1-git-send-email-geert@linux-m68k.org>
+ <1430843563-18615-1-git-send-email-geert@linux-m68k.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55489DF3.3070703@hurleysoftware.com>
+In-Reply-To: <1430843563-18615-1-git-send-email-geert@linux-m68k.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
+To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Arnd Bergmann <arnd@arndb.de>
+Cc: linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 05, 2015 at 06:39:47AM -0400, Peter Hurley wrote:
-> > > Further, I would ask how _you_ would programmatically distinguish
-> > > misspellings amongst the following console strings?
-> > >
-> > > 	console=pl012,...
-> > > 	console=_pl011,...
-> > > 	console=pl,...
-> > > 	console=ttyAMA0,...
-> > 
-> > Only the last line gives me output, but with the warning. All others are
-> > misspellings but output nothing. The last one gives me a misspelling
-> > warning, but it is the one that makes the output work.
-> > 
-> > Obviously this was not tested on an ARM device with a serial console,
-> > because it doesn't work there.
-> 
-> The primary test platform was a ARM device with a serial console.
-> And yes, it does work there.
+The GPIO subsystem provides dummy GPIO consumer functions if GPIOLIB is
+not enabled. Hence drivers that depend on GPIOLIB, but use GPIO consumer
+functionality only, can still be compiled if GPIOLIB is not enabled.
 
-Which ARM device was that, and which serial driver?
-How did the kernel command line look like?
+Relax the dependency on GPIOLIB if COMPILE_TEST is enabled, where
+appropriate.
 
-Maybe that helps me to understand how this is supposed to be used, which
-is currently totally unclear.
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+---
+This depends on "serial: SERIAL_IFX6X60 should depend on HAS_DMA".
+Without that patch, just drop " && HAS_DMA".
+---
+ drivers/tty/serial/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> > Case A: console=ttyAMA0
-> > 
-> >   Result: - system boots with output on intended serial console
-> >           - warning about having the earlycon misspelled
-> >           - earlycon not operational, although driver supports it
-> > 
-> > Case B: console=pl011
-> > 
-> >   Result: - no output at all, because system doesn't output to its
-> >             intented serial console.
-> > 
-> > Case C: ...?
-> > 
-> >   Are there other things I'm supposed to do in order to do it right?
-> > 
-> > So both cases A+B are not fully working as intented, right?
-> > 
-> > I'd like to fix it, but in order to do so, I want to learn how it is
-> > actually *intended* to work.
-> 
-> What do you want to "fix"?
-> 
-> Please stop using the indefinite pronoun, "it". I have no idea to what
-> you are referring, because I already supplied you with a patch to "fix"
-> the loglevel of the message.
-
-I have explained that above, under "Case A" and "Case B"...?
-
-Sorry, I simply don't get it.
-
-My task:
-
-  I want to setup a vexpress system with a pl011 serial port in a
-  way that the console + early console is configured to be on
-  /dev/ttyAMA0.
-
-My attempts:
-
-  Case A from above -> doesn't set the earlycon to /dev/ttyAMA0.
-  Case B from above -> doesn't output anything.
-
-I fail to find out how this task is supposed to be done in a way that
-the kernel doesn't complain, and with the result to have console and
-earlycon on /dev/ttyAMA0.
-
-rsc
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index daee183386368149..bf6a73864ee80f1f 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1349,7 +1349,8 @@ config SERIAL_ALTERA_UART_CONSOLE
+ 
+ config SERIAL_IFX6X60
+         tristate "SPI protocol driver for Infineon 6x60 modem (EXPERIMENTAL)"
+-	depends on GPIOLIB && SPI && HAS_DMA
++	depends on GPIOLIB || COMPILE_TEST
++	depends on SPI && HAS_DMA
+ 	help
+ 	  Support for the IFX6x60 modem devices on Intel MID platforms.
+ 
 -- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1.9.1
