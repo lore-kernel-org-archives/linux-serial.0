@@ -1,92 +1,100 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v7 05/15] dt-bindings: Document the STM32 reset bindings
-Date: Tue, 05 May 2015 17:07:29 +0100
-Message-ID: <5548EAC1.7010002@linaro.org>
-References: <1430410844-16062-1-git-send-email-mcoquelin.stm32@gmail.com>	
- <1430410844-16062-6-git-send-email-mcoquelin.stm32@gmail.com>	
- <55433467.2010603@linaro.org>	
- <CALszF6Bw900E9MtpaVmvkFxsrOODRkNg+RxRXz5V3WghHtsxbw@mail.gmail.com>	
- <5544A069.5000808@linaro.org>	
- <CALszF6BTb0Ce6jfT5gY4eEtSep6+8XqOxu1LbpUXHmPYX9PmgQ@mail.gmail.com>	
- <5548CEA2.8020807@linaro.org>	
- <CALszF6DyUA7Wr2qo4sASFBTRwwjhGAkFKRYnY+1UwHmf4nTj5w@mail.gmail.com>
- <1430840557.3035.60.camel@pengutronix.de>
+From: Robert Schwebel <r.schwebel@pengutronix.de>
+Subject: Re: earlycon: no match?
+Date: Tue, 5 May 2015 18:32:17 +0200
+Message-ID: <20150505163217.GK14416@pengutronix.de>
+References: <20150503211054.GR15254@pengutronix.de>
+ <55477BC1.6000805@hurleysoftware.com>
+ <20150504194229.GR15254@pengutronix.de>
+ <5547D4DB.8060300@hurleysoftware.com>
+ <20150504205241.GT15254@pengutronix.de>
+ <5547E447.9020604@hurleysoftware.com>
+ <20150504215832.GW15254@pengutronix.de>
+ <5547F350.7030405@hurleysoftware.com>
+ <20150505045139.GY15254@pengutronix.de>
+ <55489DF3.3070703@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1430840557.3035.60.camel@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Philipp Zabel <p.zabel@pengutronix.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Will Deacon <will.deacon@arm.com>, Stefan Agner <stefan@agner.ch>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Peter Meerwald <pmeerw@pmeerw.net>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Linux-Arch <linux-arch@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Pawel Moll <pawel.moll@arm.com>, Jonathan Corbet <corbet@lwn.net>, Lee Jones <lee.jones@linaro.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Chanwoo Choi <cw00.choi@samsung.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Antti Palosaari <crope@iki.fi>, Geert Uytterhoeven <geert@linux-m68k.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?UTF-8?B?VXdlIEtsZ
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <55489DF3.3070703@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-On 05/05/15 16:42, Philipp Zabel wrote:
-> Am Dienstag, den 05.05.2015, 17:19 +0200 schrieb Maxime Coquelin:
->>>> For example, includes/dt-bindings/mfd/stm32f4-rcc.h would look like:
->>>>
->>>> #define GPIOA 0
->>>> #define GPIOB 1
->>>> ...
->>>> #define LTDC 186
->
-> That looks a bit fragile.
-> At least the defines for the indices should be properly namespaced,
-> check out include/dt-bindings/gpio/tegra-gpio.h for a similar case.
+On Tue, May 05, 2015 at 06:39:47AM -0400, Peter Hurley wrote:
+> > > Further, I would ask how _you_ would programmatically distinguish
+> > > misspellings amongst the following console strings?
+> > >
+> > > 	console=pl012,...
+> > > 	console=_pl011,...
+> > > 	console=pl,...
+> > > 	console=ttyAMA0,...
+> > 
+> > Only the last line gives me output, but with the warning. All others are
+> > misspellings but output nothing. The last one gives me a misspelling
+> > warning, but it is the one that makes the output work.
+> > 
+> > Obviously this was not tested on an ARM device with a serial console,
+> > because it doesn't work there.
+> 
+> The primary test platform was a ARM device with a serial console.
+> And yes, it does work there.
 
-Good point.
+Which ARM device was that, and which serial driver?
+How did the kernel command line look like?
 
->>>> #define STM32F4_RESET(x) (x + 128)
->>>> #define STM32F4_CLOCK(x) (x + 384)
+Maybe that helps me to understand how this is supposed to be used, which
+is currently totally unclear.
 
-Thinking more about this point, if we are going to follow hardware if 
-might be better to have:
+> > Case A: console=ttyAMA0
+> > 
+> >   Result: - system boots with output on intended serial console
+> >           - warning about having the earlycon misspelled
+> >           - earlycon not operational, although driver supports it
+> > 
+> > Case B: console=pl011
+> > 
+> >   Result: - no output at all, because system doesn't output to its
+> >             intented serial console.
+> > 
+> > Case C: ...?
+> > 
+> >   Are there other things I'm supposed to do in order to do it right?
+> > 
+> > So both cases A+B are not fully working as intented, right?
+> > 
+> > I'd like to fix it, but in order to do so, I want to learn how it is
+> > actually *intended* to work.
+> 
+> What do you want to "fix"?
+> 
+> Please stop using the indefinite pronoun, "it". I have no idea to what
+> you are referring, because I already supplied you with a patch to "fix"
+> the loglevel of the message.
 
-#define STM32F4_RCC_AHB1_GPIOA 0
-#define STM32F4_RCC_AHB1_GPIOA 1
-...
-#define STM32F4_RCC_APB2_LTDC 26
+I have explained that above, under "Case A" and "Case B"...?
 
+Sorry, I simply don't get it.
 
-#define STM32F4_AHB1_RESET(x) (STM32F4_RCC_AHB1_##x##_BIT + (0x10 * 8))
-#define STM32F4_AHB2_RESET(x) (STM32F4_RCC_AHB2_##x##_BIT + (0x14 * 8))
-...
-#define STM32F4_APB2_RESET(x) (STM32F4_RCC_APB2_##x##_BIT + (0x24 * 8))
+My task:
 
-Its more typing (or copy 'n pasting) by at least every number now maps 
-directly to the datasheet.
+  I want to setup a vexpress system with a pl011 serial port in a
+  way that the console + early console is configured to be on
+  /dev/ttyAMA0.
 
+My attempts:
 
->>>>
->>>> Then, in DT, a reset would be described like this:
->>>>
->>>> timer2 {
->>>>       resets = <&rcc STM32F4_RESET(TIM2)>;
->>>> };
->>>>
->>>> Phillip, Daniel, does that look acceptable to you?
->>>
->>>
->>> Doesn't look unreasonable.
->>>
->>> I am a little uneasy simply because there are very few similar header files
->>> in that directory but I haven't thought of a better idea.
->>
->> Since this file will be shared by both clock and reset drivers, I
->> don't see better option.
->> I will implement it in v8 if Philipp agrees.
->
-> Are the device tree maintainers happy with this idiom spreading?
-> Except for the point above, I think this is acceptable.
->
-> regards
-> Philipp
->
+  Case A from above -> doesn't set the earlycon to /dev/ttyAMA0.
+  Case B from above -> doesn't output anything.
+
+I fail to find out how this task is supposed to be done in a way that
+the kernel doesn't complain, and with the result to have console and
+earlycon on /dev/ttyAMA0.
+
+rsc
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
