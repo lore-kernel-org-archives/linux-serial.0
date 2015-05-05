@@ -1,46 +1,37 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 21/27] serial: Allow compile test of GPIO consumers if !GPIOLIB
-Date: Tue,  5 May 2015 18:32:37 +0200
-Message-ID: <1430843563-18615-21-git-send-email-geert@linux-m68k.org>
-References: <1430836404-15513-1-git-send-email-geert@linux-m68k.org>
- <1430843563-18615-1-git-send-email-geert@linux-m68k.org>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: earlycon: no match?
+Date: Tue, 5 May 2015 14:06:52 -0300
+Message-ID: <CAOMZO5A4=Pc8Q6-RGo-Ub7zKmhH0P3bfRsNXB-1DYd7Zzdf-NQ@mail.gmail.com>
+References: <20150503211054.GR15254@pengutronix.de>
+	<55477BC1.6000805@hurleysoftware.com>
+	<20150504194229.GR15254@pengutronix.de>
+	<5547D4DB.8060300@hurleysoftware.com>
+	<20150504205241.GT15254@pengutronix.de>
+	<5547E447.9020604@hurleysoftware.com>
+	<20150504215832.GW15254@pengutronix.de>
+	<5547F350.7030405@hurleysoftware.com>
+	<20150505045139.GY15254@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1430843563-18615-1-git-send-email-geert@linux-m68k.org>
+In-Reply-To: <20150505045139.GY15254@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Arnd Bergmann <arnd@arndb.de>
-Cc: linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Robert Schwebel <r.schwebel@pengutronix.de>
+Cc: Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Sascha Hauer <kernel@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-The GPIO subsystem provides dummy GPIO consumer functions if GPIOLIB is
-not enabled. Hence drivers that depend on GPIOLIB, but use GPIO consumer
-functionality only, can still be compiled if GPIOLIB is not enabled.
+On Tue, May 5, 2015 at 1:51 AM, Robert Schwebel
+<r.schwebel@pengutronix.de> wrote:
 
-Relax the dependency on GPIOLIB if COMPILE_TEST is enabled, where
-appropriate.
+> In that case, the system should come up, console comes out of the serial
+> line and earlycon is available. Then I should not get a diagnostic
+> message, becasue I did everything right.
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
----
-This depends on "serial: SERIAL_IFX6X60 should depend on HAS_DMA".
-Without that patch, just drop " && HAS_DMA".
----
- drivers/tty/serial/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On imx6q-wandboard when building multi_v7_defconfig, we get [1]:
+[    0.000000] earlycon: no match for ttymxc0,115200
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index daee183386368149..bf6a73864ee80f1f 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1349,7 +1349,8 @@ config SERIAL_ALTERA_UART_CONSOLE
- 
- config SERIAL_IFX6X60
-         tristate "SPI protocol driver for Infineon 6x60 modem (EXPERIMENTAL)"
--	depends on GPIOLIB && SPI && HAS_DMA
-+	depends on GPIOLIB || COMPILE_TEST
-+	depends on SPI && HAS_DMA
- 	help
- 	  Support for the IFX6x60 modem devices on Intel MID platforms.
- 
--- 
-1.9.1
+
+[1] http://arm-soc.lixom.net/bootlogs/next/next-20150505/wandboard-arm-multi_v7_defconfig.html
+
+Actually this 'no match' warning appears in all arm configs:
+http://arm-soc.lixom.net/bootlogs/next/next-20150505/
