@@ -1,71 +1,87 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: earlycon: no match?
-Date: Thu, 7 May 2015 21:14:54 +0100 (BST)
-Message-ID: <alpine.LFD.2.11.1505071942110.1538@eddie.linux-mips.org>
-References: <20150503211054.GR15254@pengutronix.de> <55477BC1.6000805@hurleysoftware.com> <20150504194229.GR15254@pengutronix.de> <5547D4DB.8060300@hurleysoftware.com> <20150504205241.GT15254@pengutronix.de> <5547E447.9020604@hurleysoftware.com>
- <alpine.LFD.2.11.1505071749370.1538@eddie.linux-mips.org> <554B9F43.6000702@hurleysoftware.com>
+From: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Subject: [PATCH] serial: imx: Revert "initialized DMA w/o HW flow enabled"
+Date: Thu, 7 May 2015 22:24:39 +0200
+Message-ID: <20150507202439.GA4717@breakpoint.cc>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <554B9F43.6000702@hurleysoftware.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Robert Schwebel <r.schwebel@pengutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
+To: gregkh@linuxfoundation.org
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, jiwang <jiada_wang@mentor.com>, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, anton_bondarenko@mentor.com, dirk.behme@de.bosch.com, Nicolae Rosia <nicolae.rosia@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 7 May 2015, Peter Hurley wrote:
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-> >  What's the point of having two parameters as synonyms whose syntax is not 
-> > compatible to each other in the general case?  I'd expect the following 
-> > cases to be handled:
-> > 
-> > 1. Regular console only (no early console requested) => `console=foo...'.
-> > 
-> > 2. Both early and regular console => `earlycon=blah... console=foo...'.
-> > 
-> > 3. Early console handing over to regular console => `earlycon=blah...'.
-> 
->   4. Early console only => `earlycon=blah...'
-> 
-> How to distinguish between 3 & 4?
+This basically reverts commit 068500e08dc8 ("serial: imx: initialized
+DMA w/o HW flow enabled") simply because it does not work as expected
+without additional magic which I am not aware of. The DMA mode is only
+used for non-console UARTs so the "standard" boot test won't notice this.
 
- Good point.  If you want to disable the handover, then it has to be 
-handled by the early console driver somehow.  Perhaps an option for 
-`earlycon=' (e.g. `nohandover') would be required for that.  In that case 
-the default selection would apply for the regular console, depending on 
-the available drivers.
+I tested it on various IMX6 (S and Q) boards and the default SDMA firmware
+that is included in ROM does work properly. The SDMA interrupt counter does
+not stop increment (which means the SDMA does not stop working or the ACK
+is working) and I see a lot of 0x00 (sometimes other bytes) which are added
+to the tty buffer which are not part of the data transfer.
+Jiada claimed that there is a firmware which makes it work but failed to
+provide me a link to the firmware. All he said was that it can not be
+shipped as part of the kernel due to license issues. I've found a firmware
+blob in the FSL-tree but this firmware causes only TTY-overflows an *no*
+data is transmitted.
 
- Your concern appears to me unrelated to `earlycon=' vs `console=' 
-parameter aliasing though.  The same observation about the handover 
-applies whether the parameters are aliased to each other or not.  Have I 
-missed anything?
+Currently I see no other way out.
 
-> > Why do you want to support `console=blah...' too (a question to be asked 
-> > back in 2007, but better late than never)?
-> 
-> Command line is considered to be userspace, so it doesn't really matter
-> what I think about whether console= should have been overloaded like that.
-> 
-> The fact is, it was.
+Fixes: 068500e08dc8 ("serial: imx: initialized DMA w/o HW flow enabled")
+Cc: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Jiada Wang <jiada_wang@mentor.com>
+Cc: nicolae.rosia@gmail.com
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/imx.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
- The change has not been cast in stone, it can always be reverted if on 
-the second thoughts it is concluded to have been wrong.
-
- How does this overload interact with multiple `console=' options being 
-present BTW, which one is considered the early console?  Or do we support 
-driving multiple early consoles in parallel just as we do with regular 
-consoles?
-
-> >  If you do need to support such aliasing, then I suggest that you complain 
-> > about no early console match only if `earlycon=blah...' has been truly 
-> > used and avoid the warning where `console=blah...' has been used instead 
-> > (a warning about the latter can be issued where no regular console match 
-> > happened).
-> 
-> I'm tearing it out;  I'd prefer to go back to the old way where you
-> don't know why your earlycon didn't start, and I don't get emails
-> complaining about logs.
-
- Up to you.
-
-  Maciej
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8aff0b4d8ddf..e686c75fa4dc 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1113,11 +1113,6 @@ static int imx_startup(struct uart_port *port)
+ 
+ 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+ 
+-	/* Can we enable the DMA support? */
+-	if (is_imx6q_uart(sport) && !uart_console(port) &&
+-	    !sport->dma_is_inited)
+-		imx_uart_dma_init(sport);
+-
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 	/* Reset fifo's and state machines */
+ 	i = 100;
+@@ -1308,6 +1303,17 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			} else {
+ 				ucr2 |= UCR2_CTSC;
+ 			}
++
++			/*
++			 * Can we enable the DMA support? Be aware that
++			 * at least IMX6 needs to load external SDMA firmware in
++			 * order work properly. The in-ROM firmware is not
++			 * wokring properly.
++			 */
++			if ((ucr2 & UCR2_CTSC) && is_imx6q_uart(sport) &&
++			    !uart_console(port) && !sport->dma_is_inited)
++				imx_uart_dma_init(sport);
++
+ 		} else {
+ 			termios->c_cflag &= ~CRTSCTS;
+ 		}
+@@ -1424,6 +1430,8 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if (UART_ENABLE_MS(&sport->port, termios->c_cflag))
+ 		imx_enable_ms(&sport->port);
+ 
++	if (sport->dma_is_inited && !sport->dma_is_enabled)
++		imx_enable_dma(sport);
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ }
+ 
+-- 
+2.1.4
