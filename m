@@ -1,92 +1,81 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: earlycon: no match?
-Date: Thu, 07 May 2015 18:37:42 -0400
-Message-ID: <554BE936.2040508@hurleysoftware.com>
-References: <20150503211054.GR15254@pengutronix.de> <55477BC1.6000805@hurleysoftware.com> <20150504194229.GR15254@pengutronix.de> <5547D4DB.8060300@hurleysoftware.com> <20150504205241.GT15254@pengutronix.de> <5547E447.9020604@hurleysoftware.com> <alpine.LFD.2.11.1505071749370.1538@eddie.linux-mips.org> <554B9F43.6000702@hurleysoftware.com> <alpine.LFD.2.11.1505071942110.1538@eddie.linux-mips.org> <554BD56D.9010800@hurleysoftware.com> <alpine.LFD.2.11.1505072241140.1538@eddie.linux-mips.org>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH] serial: imx: Revert "initialized DMA w/o HW flow enabled"
+Date: Thu, 7 May 2015 20:17:19 -0300
+Message-ID: <CAOMZO5Dvv2oMujUqtXg0QXZ-VNbwKuRTCOVfcfNYzgWLkHZ1NA@mail.gmail.com>
+References: <20150507202439.GA4717@breakpoint.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.LFD.2.11.1505072241140.1538@eddie.linux-mips.org>
+In-Reply-To: <20150507202439.GA4717@breakpoint.cc>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Maciej W. Rozycki" <macro@linux-mips.org>
-Cc: Robert Schwebel <r.schwebel@pengutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
+To: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, jiwang <jiada_wang@mentor.com>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, anton_bondarenko@mentor.com, Dirk Behme <dirk.behme@de.bosch.com>, Nicolae Rosia <nicolae.rosia@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/07/2015 06:25 PM, Maciej W. Rozycki wrote:
-> On Thu, 7 May 2015, Peter Hurley wrote:
-> 
->>>  How does this overload interact with multiple `console=' options being 
->>> present BTW, which one is considered the early console?  Or do we support 
->>> driving multiple early consoles in parallel just as we do with regular 
->>> consoles?
->>
->> Please familiarize yourself with the existing 'console=' and 'earlycon='
->> command line options documented in Documentation/kernel-parameters.txt
-> 
->  Thank you for your suggestion, however that documentation does not answer 
-> my questions I am afraid (and neither does serial-console.txt).  Otherwise
-> I wouldn't have asked them in the first place.  If you don't know the 
-> answers either, then it's OK to say: "I don't know".
-> 
->  E.g. (given the parameter aliasing we have) will:
-> 
-> `earlycon=uart8250,io,0x3f8 console=tty0'
-> `console=tty0 earlycon=uart8250,io,0x3f8'
-> 
-> do what I expect it to, that is open the UART at 0x3f8 as an early console 
-> and then hand it over to the ttyS0 device as respectively a secondary and 
-> the primary (/dev/console) regular console?
+On Thu, May 7, 2015 at 5:24 PM, Sebastian Andrzej Siewior
+<sebastian@breakpoint.cc> wrote:
+> From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>
+> This basically reverts commit 068500e08dc8 ("serial: imx: initialized
+> DMA w/o HW flow enabled") simply because it does not work as expected
+> without additional magic which I am not aware of. The DMA mode is only
+> used for non-console UARTs so the "standard" boot test won't notice this.
+>
+> I tested it on various IMX6 (S and Q) boards and the default SDMA firmware
+> that is included in ROM does work properly. The SDMA interrupt counter does
 
-No.
+Here you say that the ROM SDMA works properly.
 
->From Documentation/kernel-parameters.txt:
+> not stop increment (which means the SDMA does not stop working or the ACK
+> is working) and I see a lot of 0x00 (sometimes other bytes) which are added
+> to the tty buffer which are not part of the data transfer.
+> Jiada claimed that there is a firmware which makes it work but failed to
+> provide me a link to the firmware. All he said was that it can not be
+> shipped as part of the kernel due to license issues. I've found a firmware
+> blob in the FSL-tree but this firmware causes only TTY-overflows an *no*
+> data is transmitted.
+>
+> Currently I see no other way out.
+>
+> Fixes: 068500e08dc8 ("serial: imx: initialized DMA w/o HW flow enabled")
+> Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> Cc: Jiada Wang <jiada_wang@mentor.com>
+> Cc: nicolae.rosia@gmail.com
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  drivers/tty/serial/imx.c | 18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 8aff0b4d8ddf..e686c75fa4dc 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1113,11 +1113,6 @@ static int imx_startup(struct uart_port *port)
+>
+>         writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+>
+> -       /* Can we enable the DMA support? */
+> -       if (is_imx6q_uart(sport) && !uart_console(port) &&
+> -           !sport->dma_is_inited)
+> -               imx_uart_dma_init(sport);
+> -
+>         spin_lock_irqsave(&sport->port.lock, flags);
+>         /* Reset fifo's and state machines */
+>         i = 100;
+> @@ -1308,6 +1303,17 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+>                         } else {
+>                                 ucr2 |= UCR2_CTSC;
+>                         }
+> +
+> +                       /*
+> +                        * Can we enable the DMA support? Be aware that
+> +                        * at least IMX6 needs to load external SDMA firmware in
+> +                        * order work properly. The in-ROM firmware is not
+> +                        * wokring properly.
 
-	earlycon=	[KNL] Output early console device and options.
+,but here you say the contrary.
 
-		.....
+With this fixed (and please also Cc stable):
 
-		uart[8250],io,<addr>[,options]
-		uart[8250],mmio,<addr>[,options]
-		uart[8250],mmio32,<addr>[,options]
-			Start an early, polled-mode console on the 8250/16550
-			UART at the specified I/O port or MMIO address.
-			MMIO inter-register address stride is either 8-bit
-			(mmio) or 32-bit (mmio32).
-			The options are the same as for ttyS, above.
-
-IOW, command line parameters of the form:
-
-	earlycon=uart8250,...
-
-does not perform earlycon-to-console handoff.
-
-Also from Documentation/kernel-parameters.txt:
-
-	console=	[KNL] Output console device and options.
-
-		.....
-
-		uart[8250],io,<addr>[,options]
-		uart[8250],mmio,<addr>[,options]
-			Start an early, polled-mode console on the 8250/16550
-			UART at the specified I/O port or MMIO address,
-			switching to the matching ttyS device later.  The
-			options are the same as for ttyS, above.
-
-IOW, command line parameters of the form:
-
-	console=uart8250,...
-
-performs earlycon-to-console handoff.
-
-Furthermore, because of the way aliasing was implemented in 2007,
-it has been possible since to start _any_ earlycon with command line
-parameters of the form:
-
-	console=<earlycon name>,....
-
-However, only 8250 implemented the console handoff.
-
-Regards,
-Peter Hurley
+Reviewed-by: Fabio Estevam <fabio.estevam@freescale.com>
+Tested-by: Fabio Estevam <fabio.estevam@freescale.com>
