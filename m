@@ -1,35 +1,28 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v1 11/15] serial: imx: initialized DMA w/o HW flow enabled
-Date: Thu, 07 May 2015 15:58:20 +0200
-Message-ID: <554B6F7C.7070405@linutronix.de>
-References: <1418116296-12082-1-git-send-email-jiada_wang@mentor.com>	<1418116296-12082-12-git-send-email-jiada_wang@mentor.com>	<20150409120057.GA12596@breakpoint.cc>	<552B72DF.7060006@mentor.com>	<20150413080637.GA1537@breakpoint.cc>	<5530CFEF.9080807@mentor.com>	<CAH=tA9G2sPaV5uoWrW0FwHd4FUtPL-A8=jgp3p6Y9ijxDLgdTw@mail.gmail.com>	<554A3D83.8040707@linutronix.de>	<CAH=tA9E7N+rfnbuQ6cWRoVz6wCXzNwxBusgv-kzJf3OYqMQyfg@mail.gmail.com>	<554A4F9F.9000604@linutronix.de> <CAH=tA9Hr6kZzyapk5oron44_fP5J8EjwXHUMyRFaWxkaFbWkmg@mail.gmail.com>
+From: Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH 1/2] Documentation/magic-number: Remove SCI_MAGIC
+Date: Thu, 7 May 2015 10:02:56 -0600
+Message-ID: <20150507100256.70414d73@lwn.net>
+References: <1430761191-23663-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAH=tA9Hr6kZzyapk5oron44_fP5J8EjwXHUMyRFaWxkaFbWkmg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolae Rosia <nicolae.rosia@gmail.com>
-Cc: jiwang <jiada_wang@mentor.com>, Sebastian Andrzej Siewior <sebastian@breakpoint.cc>, gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, anton_bondarenko@mentor.com, dirk.behme@de.bosch.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1430761191-23663-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-doc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Harry Wei <harryxiyou@gmail.com>, linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@zh-kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 05/07/2015 03:55 PM, Nicolae Rosia wrote:
-> Hi,
+On Mon,  4 May 2015 19:39:50 +0200
+Geert Uytterhoeven <geert+renesas@glider.be> wrote:
 
-Hi,
+> The SCI_MAGIC define was removed in commit f8e53553f452dcbf ("serial:
+> sh-sci: Kill off more unused defines.").
+> Its last user was the old drivers/char sh-sci driver, which was removed
+> in 2004.
 
->> Okay, please inform about your results. I think I had that one and the
->> result was no UART communication at all and a lot overrun errors.
-> 
-> I have reverted this patch and the serial comm is working well.
-> I haven't been able to test with the SDMA firmware, yet.
-> Thank you for the bug report and fix!
+Dunno...do we really want to rush into these things? :)
 
-Okay. So I am definitely sending a revert tonight since I haven't got
-any news about the firmware. If you happen to have the time to test
-with SDMA firmware, please let me know (no matter if it worked or not).
+Applied to the docs tree, thanks.
 
-> Best regards,
-> Nicolae Rosia
-
-Sebastian
+jon
