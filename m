@@ -1,38 +1,33 @@
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH v2] serial: xuartps: add __init to earlycon write method
-Date: Thu,  7 May 2015 18:55:40 +0900
-Message-ID: <1430992540-14109-1-git-send-email-yamada.masahiro@socionext.com>
+Subject: [PATCH] serial: 8250: do not copy port.fifosize member twice
+Date: Thu,  7 May 2015 19:04:46 +0900
+Message-ID: <1430993086-15652-1-git-send-email-yamada.masahiro@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-kernel@vger.kernel.org, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
 List-Id: linux-serial@vger.kernel.org
 
-Early console functions are only used during the early boot stage.
-This change just saves a small amount of memory footprint.
+The port.fifosize member has already been copied at 8 lines above.
+Maybe the compiler optimization can clean it away, but just in case.
 
 Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 ---
 
-Changes in v2:
-  -  Add a little explanation in the git log.
+ drivers/tty/serial/8250/8250_core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
- drivers/tty/serial/xilinx_uartps.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 3ddbac7..009e0db 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1075,7 +1075,8 @@ static void cdns_uart_console_putchar(struct uart_port *port, int ch)
- 	writel(ch, port->membase + CDNS_UART_FIFO_OFFSET);
- }
- 
--static void cdns_early_write(struct console *con, const char *s, unsigned n)
-+static void __init cdns_early_write(struct console *con, const char *s,
-+				    unsigned n)
- {
- 	struct earlycon_device *dev = con->data;
- 
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 4506e40..4882027 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -3850,7 +3850,6 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 		uart->port.mapbase      = up->port.mapbase;
+ 		uart->port.mapsize      = up->port.mapsize;
+ 		uart->port.private_data = up->port.private_data;
+-		uart->port.fifosize	= up->port.fifosize;
+ 		uart->tx_loadsz		= up->tx_loadsz;
+ 		uart->capabilities	= up->capabilities;
+ 		uart->port.throttle	= up->port.throttle;
 -- 
 1.9.1
