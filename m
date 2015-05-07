@@ -1,81 +1,47 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH] serial: imx: Revert "initialized DMA w/o HW flow enabled"
-Date: Thu, 7 May 2015 20:17:19 -0300
-Message-ID: <CAOMZO5Dvv2oMujUqtXg0QXZ-VNbwKuRTCOVfcfNYzgWLkHZ1NA@mail.gmail.com>
-References: <20150507202439.GA4717@breakpoint.cc>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] Revert "serial/amba-pl011: Leave the TX IRQ alone when
+ the UART is not open"
+Date: Fri, 8 May 2015 01:28:35 +0200
+Message-ID: <20150507232835.GD5449@kroah.com>
+References: <20150507105934.GA18402@e103592.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150507202439.GA4717@breakpoint.cc>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, jiwang <jiada_wang@mentor.com>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, anton_bondarenko@mentor.com, Dirk Behme <dirk.behme@de.bosch.com>, Nicolae Rosia <nicolae.rosia@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20150507105934.GA18402@e103592.cambridge.arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Dave Martin <Dave.Martin@arm.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 7, 2015 at 5:24 PM, Sebastian Andrzej Siewior
-<sebastian@breakpoint.cc> wrote:
-> From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
->
-> This basically reverts commit 068500e08dc8 ("serial: imx: initialized
-> DMA w/o HW flow enabled") simply because it does not work as expected
-> without additional magic which I am not aware of. The DMA mode is only
-> used for non-console UARTs so the "standard" boot test won't notice this.
->
-> I tested it on various IMX6 (S and Q) boards and the default SDMA firmware
-> that is included in ROM does work properly. The SDMA interrupt counter does
+On Thu, May 07, 2015 at 11:59:47AM +0100, Dave Martin wrote:
+> Calling serial maintainers...
+> 
+> Please consider the following commit for merging in v4.1.
+> 
+> f28c1d0a78a8c6a217ac5362cb719efa169ae2a7 Revert "serial/amba-pl011: Leave the TX IRQ alone when the UART is not open"
+> 
+> This backs out a misguided optimisation that is causing pl011 driver
+> deadlocks for some people in certain scenarios (my bad).
+> 
+> The revert is self-contained and independent of the other changes I
+> posted.
+> 
+> Thanks
+> ---Dave
+> 
+> 
+> Original commit message:
+> 
+> This reverts commit f2ee6dfa0e8597eea8b98d240b0033994e20d215.
 
-Here you say that the ROM SDMA works properly.
-
-> not stop increment (which means the SDMA does not stop working or the ACK
-> is working) and I see a lot of 0x00 (sometimes other bytes) which are added
-> to the tty buffer which are not part of the data transfer.
-> Jiada claimed that there is a firmware which makes it work but failed to
-> provide me a link to the firmware. All he said was that it can not be
-> shipped as part of the kernel due to license issues. I've found a firmware
-> blob in the FSL-tree but this firmware causes only TTY-overflows an *no*
-> data is transmitted.
->
-> Currently I see no other way out.
->
-> Fixes: 068500e08dc8 ("serial: imx: initialized DMA w/o HW flow enabled")
-> Cc: Fabio Estevam <fabio.estevam@freescale.com>
-> Cc: Jiada Wang <jiada_wang@mentor.com>
-> Cc: nicolae.rosia@gmail.com
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  drivers/tty/serial/imx.c | 18 +++++++++++++-----
->  1 file changed, 13 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 8aff0b4d8ddf..e686c75fa4dc 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -1113,11 +1113,6 @@ static int imx_startup(struct uart_port *port)
->
->         writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
->
-> -       /* Can we enable the DMA support? */
-> -       if (is_imx6q_uart(sport) && !uart_console(port) &&
-> -           !sport->dma_is_inited)
-> -               imx_uart_dma_init(sport);
-> -
->         spin_lock_irqsave(&sport->port.lock, flags);
->         /* Reset fifo's and state machines */
->         i = 100;
-> @@ -1308,6 +1303,17 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
->                         } else {
->                                 ucr2 |= UCR2_CTSC;
->                         }
-> +
-> +                       /*
-> +                        * Can we enable the DMA support? Be aware that
-> +                        * at least IMX6 needs to load external SDMA firmware in
-> +                        * order work properly. The in-ROM firmware is not
-> +                        * wokring properly.
-
-,but here you say the contrary.
-
-With this fixed (and please also Cc stable):
-
-Reviewed-by: Fabio Estevam <fabio.estevam@freescale.com>
-Tested-by: Fabio Estevam <fabio.estevam@freescale.com>
+Please send this in a format I can apply it in...
