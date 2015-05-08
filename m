@@ -1,44 +1,66 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v2] serial: imx: Revert "initialized DMA w/o HW flow enabled"
-Date: Fri, 08 May 2015 13:50:47 +0200
-Message-ID: <554CA317.8050303@linutronix.de>
-References: <20150507202439.GA4717@breakpoint.cc>	<CAOMZO5Dvv2oMujUqtXg0QXZ-VNbwKuRTCOVfcfNYzgWLkHZ1NA@mail.gmail.com>	<20150508071340.GA2603@breakpoint.cc> <CAOMZO5Cu1AG7xYN+uCKnueiwBzBVDhXmqX3FkF3u03Faju4thw@mail.gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] Revert "serial/amba-pl011: Leave the TX IRQ alone when
+ the UART is not open"
+Date: Fri, 8 May 2015 14:17:00 +0200
+Message-ID: <20150508121700.GA4781@kroah.com>
+References: <20150507105934.GA18402@e103592.cambridge.arm.com>
+ <20150507232835.GD5449@kroah.com>
+ <20150508085029.GA17900@e103592.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5Cu1AG7xYN+uCKnueiwBzBVDhXmqX3FkF3u03Faju4thw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>, Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jiwang <jiada_wang@mentor.com>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, anton_bondarenko@mentor.com, Dirk Behme <dirk.behme@de.bosch.com>, Nicolae Rosia <nicolae.rosia@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20150508085029.GA17900@e103592.cambridge.arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Dave P Martin <Dave.Martin@arm.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/08/2015 01:30 PM, Fabio Estevam wrote:
-> On Fri, May 8, 2015 at 4:13 AM, Sebastian Andrzej Siewior
-> <sebastian@breakpoint.cc> wrote:
+On Fri, May 08, 2015 at 09:50:29AM +0100, Dave P Martin wrote:
+> On Fri, May 08, 2015 at 12:28:35AM +0100, Greg Kroah-Hartman wrote:
+> > On Thu, May 07, 2015 at 11:59:47AM +0100, Dave Martin wrote:
+> > > Calling serial maintainers...
+> > > 
+> > > Please consider the following commit for merging in v4.1.
+> > > 
+> > > f28c1d0a78a8c6a217ac5362cb719efa169ae2a7 Revert "serial/amba-pl011: Leave the TX IRQ alone when the UART is not open"
+> > > 
+> > > This backs out a misguided optimisation that is causing pl011 driver
+> > > deadlocks for some people in certain scenarios (my bad).
+> > > 
+> > > The revert is self-contained and independent of the other changes I
+> > > posted.
+> > > 
+> > > Thanks
+> > > ---Dave
+> > > 
+> > > 
+> > > Original commit message:
+> > > 
+> > > This reverts commit f2ee6dfa0e8597eea8b98d240b0033994e20d215.
+> > 
+> > Please send this in a format I can apply it in...
 > 
->> +
->> +                       /*
->> +                        * Can we enable the DMA support? Be aware that
->> +                        * at least IMX6 needs to load external SDMA firmware in
->> +                        * order work properly. The in-ROM firmware is not
->> +                        * wokring properly.
->> +                        */
-> 
-> On my tests:
-> 
-> Prior to this patch: with the internal ROM SDMA firmware I got UART
-> issues when communicating through a Bluetooth module. With external
-> SDMA firmware (version 3.1) it worked fine.
-> 
-> With your patch applied: Bluetooth worked fine even with no external
-> SDMA firmware, which does not match the comments you added.
+> The revert has been posted twice on this list and you already applied it
+> to tty-next with commit ID f28c1d0a78a8c6a217ac5362cb719efa169ae2a7
+> (thanks btw).  I could have made that clearer...
 
-Why doesn't it match the comment? The patch disables DMA so the SDMA
-firmware does not matter.
+Yes, as I had no idea that is what you wanted here.
 
-> Can't you just remove these comments?
-> 
-> Thanks
+> I'm happy to post it again, but I assumed (wrongly?) that you'd prefer
+> to cherry-pick it from your own branch.  If you really want me to
+> post a duplicate, please confirm.
 
-Sebastian
+Please resend, and be more explicit, remember, I get over 1000 emails a
+day...
+
+greg k-h
