@@ -1,52 +1,63 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: How to use CONFIG_SERIAL_8250_SHARE_IRQ with device tree ?
-Date: Fri, 8 May 2015 17:27:26 +0900
-Message-ID: <CAK7LNARQqTrzWCSvKMw32NYTQiC++yE3y0DPa_TxUsq3YeD3=Q@mail.gmail.com>
+From: Dave P Martin <Dave.Martin@arm.com>
+Subject: Re: [PATCH] Revert "serial/amba-pl011: Leave the TX IRQ alone when
+ the UART is not open"
+Date: Fri, 8 May 2015 09:50:29 +0100
+Message-ID: <20150508085029.GA17900@e103592.cambridge.arm.com>
+References: <20150507105934.GA18402@e103592.cambridge.arm.com>
+ <20150507232835.GD5449@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20150507232835.GD5449@kroah.com>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King <linux@arm.linux.org.uk>, Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello, experts.
+On Fri, May 08, 2015 at 12:28:35AM +0100, Greg Kroah-Hartman wrote:
+> On Thu, May 07, 2015 at 11:59:47AM +0100, Dave Martin wrote:
+> > Calling serial maintainers...
+> > 
+> > Please consider the following commit for merging in v4.1.
+> > 
+> > f28c1d0a78a8c6a217ac5362cb719efa169ae2a7 Revert "serial/amba-pl011: Leave the TX IRQ alone when the UART is not open"
+> > 
+> > This backs out a misguided optimisation that is causing pl011 driver
+> > deadlocks for some people in certain scenarios (my bad).
+> > 
+> > The revert is self-contained and independent of the other changes I
+> > posted.
+> > 
+> > Thanks
+> > ---Dave
+> > 
+> > 
+> > Original commit message:
+> > 
+> > This reverts commit f2ee6dfa0e8597eea8b98d240b0033994e20d215.
+> 
+> Please send this in a format I can apply it in...
 
-I am porting my board support for the latest kernel.
+The revert has been posted twice on this list and you already applied it
+to tty-next with commit ID f28c1d0a78a8c6a217ac5362cb719efa169ae2a7
+(thanks btw).  I could have made that clearer...
 
+I'm happy to post it again, but I assumed (wrongly?) that you'd prefer
+to cherry-pick it from your own branch.  If you really want me to
+post a duplicate, please confirm.
 
-The 16550 UART device on my board (ARM architecture)
-shares an IRQ line with an ethernet device.
+I was concerned that posting a duplicate of a patch you already
+picked up would risk further confusion...
 
-
-With both devices enabled, I got an error message like this:
-
-genirq:  Flags mismatch irq 18.  00000080 (serial) vs. 00000084 (eth0)
-
-
-I am working on Linux 4.0 with device tree configuration.
-
-Is there any solution?
-
-
-When I used an old kernel with a board file,
-I could use CONFIG_SERIAL_8250_SHARE_IRQ.
-
-I gave it a try on the latest kernel, but it looked like no effect for me.
-
-As I use device tree configuration, the UART is initialized
-via drivers/tty/serial/of_serial.c
-
-If CONFIG_SERIAL_8250_SHARE_IRQ is on, IRQF_SHARED is set
-in serial8250_probe(), but this function is only for
-pre-device-tree old boards, I think.
-
-
-Is CONFIG_SERIAL_8250_SHARE_IRQ no longer supported
-for DTS-configured boards?
-
-Any hint is appreciated.
-
--- 
-Best Regards
-Masahiro Yamada
+Cheers
+---Dave
