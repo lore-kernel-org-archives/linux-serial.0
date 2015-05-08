@@ -1,115 +1,100 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: earlycon: no match?
-Date: Fri, 8 May 2015 08:34:33 +0200
-Message-ID: <20150508063433.GA6325@pengutronix.de>
-References: <20150503211054.GR15254@pengutronix.de>
- <55477BC1.6000805@hurleysoftware.com>
- <20150504194229.GR15254@pengutronix.de>
- <5547D4DB.8060300@hurleysoftware.com>
- <20150504205241.GT15254@pengutronix.de>
- <5547E447.9020604@hurleysoftware.com>
- <alpine.LFD.2.11.1505071749370.1538@eddie.linux-mips.org>
- <554B9F43.6000702@hurleysoftware.com>
+From: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Subject: [PATCH v2] serial: imx: Revert "initialized DMA w/o HW flow enabled"
+Date: Fri, 8 May 2015 09:13:40 +0200
+Message-ID: <20150508071340.GA2603@breakpoint.cc>
+References: <20150507202439.GA4717@breakpoint.cc>
+ <CAOMZO5Dvv2oMujUqtXg0QXZ-VNbwKuRTCOVfcfNYzgWLkHZ1NA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <554B9F43.6000702@hurleysoftware.com>
+In-Reply-To: <CAOMZO5Dvv2oMujUqtXg0QXZ-VNbwKuRTCOVfcfNYzgWLkHZ1NA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: "Maciej W. Rozycki" <macro@linux-mips.org>, kernel@pengutronix.de, Robert Schwebel <r.schwebel@pengutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Fabio Estevam <festevam@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, jiwang <jiada_wang@mentor.com>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, anton_bondarenko@mentor.com, Dirk Behme <dirk.behme@de.bosch.com>, Nicolae Rosia <nicolae.rosia@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 07, 2015 at 01:22:11PM -0400, Peter Hurley wrote:
-> On 05/07/2015 01:09 PM, Maciej W. Rozycki wrote:
-> > On Mon, 4 May 2015, Peter Hurley wrote:
-> > 
-> >>>> Since 2007, 'console=' is a early param synonym for 'earlycon='; IOW,
-> >>>> the message is new but not the behavior.
-> >>>
-> >>> "console=" had nothing to do with early param before.
-> >>
-> >> *Yes, it has* since the commit I referenced in the previous email and
-> >> the email before that when I noted that 'console=' and 'earlycon=' are
-> >> synonyms if CONFIG_SERIAL_EARLYCON=y, and it has been that way since
-> >> 2007.
-> >>
-> >> The only thing that has changed is that I added a diagnostic; _to repeat_,
-> >> the earlycon matching code has always run in this case, only the
-> >> diagnostic is new.
-> > 
-> >  What's the point of having two parameters as synonyms whose syntax is not 
-> > compatible to each other in the general case?  I'd expect the following 
-> > cases to be handled:
-> > 
-> > 1. Regular console only (no early console requested) => `console=foo...'.
-> > 
-> > 2. Both early and regular console => `earlycon=blah... console=foo...'.
-> > 
-> > 3. Early console handing over to regular console => `earlycon=blah...'.
-> 
->   4. Early console only => `earlycon=blah...'
-> 
-> How to distinguish between 3 & 4?
+=46rom: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Given that the aliasing only makes sense for console=uart, and
-console=uart8250, we can do the following. Not exactly the nicest
-code, but only slighty more ugly than what we have now in
-do_early_param()
+This basically reverts commit 068500e08dc8 ("serial: imx: initialized
+DMA w/o HW flow enabled") simply because it does not work.
+I tested it on various IMX6 boards and the default SDMA firmware, that =
+is
+included in ROM, does not work properly. The SDMA interrupt counter doe=
+s
+not stop increment (which means the SDMA does not stop working) and I s=
+ee
+a lot of 0x00 (sometimes other bytes) which are added to the tty buffer
+which are not part of the data transfer.
+Jiada claimed that there is a firmware which makes it work but failed t=
+o
+provide me a link to the firmware. All he said was that it can not be
+shipped as part of the kernel due to license issues. I've found one
+firmware in the FSL-tree but this firmware causes only TTY-overflows an=
+d
+*no* data is transmitted.
 
-Sascha
+Currently I see no other way out.
 
---------------------------8<----------------------------
-
->From e4d5a09877e48308ee0cf4170f2eef8aa2f747f5 Mon Sep 17 00:00:00 2001
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Date: Fri, 8 May 2015 08:23:47 +0200
-Subject: [PATCH] param: console: Do not treat console as synonym for earlycon
-
-Since 2007 console= and earlycon= are treated as synonyms, but the
-syntax for both options is different. The only case in which they
-are identical is for console=uart or console=uart8250. All other
-cases currently lead to the warning:
-
-earlycon: no match for xxx
-
-This patch drops the general aliasing, but keeps the current
-behaviour for console=uart and console=uart8250 to keep the kernel
-parameters compatible.
-
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+=46ixes: 068500e08dc8 ("serial: imx: initialized DMA w/o HW flow enable=
+d")
+Cc: stable@vger.kernel.org
+Reviewed-by: Fabio Estevam <fabio.estevam@freescale.com>
+Tested-by: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Jiada Wang <jiada_wang@mentor.com>
+Cc: nicolae.rosia@gmail.com
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- init/main.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+v1=E2=80=A6v2: wording
 
-diff --git a/init/main.c b/init/main.c
-index 2115055..bfcbbc5 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -413,12 +413,15 @@ static noinline void __init_refok rest_init(void)
- static int __init do_early_param(char *param, char *val, const char *unused)
- {
- 	const struct obs_kernel_param *p;
-+	bool earlyconalias = false;
+ drivers/tty/serial/imx.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8aff0b4d8ddf..e686c75fa4dc 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1113,11 +1113,6 @@ static int imx_startup(struct uart_port *port)
+=20
+ 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+=20
+-	/* Can we enable the DMA support? */
+-	if (is_imx6q_uart(sport) && !uart_console(port) &&
+-	    !sport->dma_is_inited)
+-		imx_uart_dma_init(sport);
+-
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 	/* Reset fifo's and state machines */
+ 	i =3D 100;
+@@ -1308,6 +1303,17 @@ imx_set_termios(struct uart_port *port, struct k=
+termios *termios,
+ 			} else {
+ 				ucr2 |=3D UCR2_CTSC;
+ 			}
 +
-+	if (val && !strcmp(param, "console") &&
-+	    (!strncmp(val, "uart,", 5) || !strncmp(val, "uart8250,", 9)))
-+		earlyconalias = true;
- 
- 	for (p = __setup_start; p < __setup_end; p++) {
- 		if ((p->early && parameq(param, p->str)) ||
--		    (strcmp(param, "console") == 0 &&
--		     strcmp(p->str, "earlycon") == 0)
--		) {
-+		    (earlyconalias && strcmp(p->str, "earlycon") == 0)) {
- 			if (p->setup_func(val) != 0)
- 				pr_warn("Malformed early option '%s'\n", param);
++			/*
++			 * Can we enable the DMA support? Be aware that
++			 * at least IMX6 needs to load external SDMA firmware in
++			 * order work properly. The in-ROM firmware is not
++			 * wokring properly.
++			 */
++			if ((ucr2 & UCR2_CTSC) && is_imx6q_uart(sport) &&
++			    !uart_console(port) && !sport->dma_is_inited)
++				imx_uart_dma_init(sport);
++
+ 		} else {
+ 			termios->c_cflag &=3D ~CRTSCTS;
  		}
--- 
+@@ -1424,6 +1430,8 @@ imx_set_termios(struct uart_port *port, struct kt=
+ermios *termios,
+ 	if (UART_ENABLE_MS(&sport->port, termios->c_cflag))
+ 		imx_enable_ms(&sport->port);
+=20
++	if (sport->dma_is_inited && !sport->dma_is_enabled)
++		imx_enable_dma(sport);
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ }
+=20
+--=20
 2.1.4
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
