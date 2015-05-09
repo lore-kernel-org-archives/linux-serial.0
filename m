@@ -1,87 +1,48 @@
-From: Mason <slash.tmp@free.fr>
-Subject: Hardware spec prevents optimal performance in device driver
-Date: Sat, 09 May 2015 12:22:43 +0200
-Message-ID: <554DDFF3.5060906@free.fr>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: Hardware spec prevents optimal performance in device driver
+Date: Sat, 9 May 2015 18:32:54 +0100
+Message-ID: <20150509183254.18b786f9@lxorguk.ukuu.org.uk>
+References: <554DDFF3.5060906@free.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <554DDFF3.5060906@free.fr>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: LKML <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Mans Rullgard <mans@mansr.com>
+To: Mason <slash.tmp@free.fr>
+Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Mans Rullgard <mans@mansr.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hello everyone,
+On Sat, 09 May 2015 12:22:43 +0200
+Mason <slash.tmp@free.fr> wrote:
 
-I'm writing a device driver for a serial-ish kind of device.
-I'm interested in the TX side of the problem. (I'm working on
-an ARM Cortex A9 system by the way.)
+> Hello everyone,
+> 
+> I'm writing a device driver for a serial-ish kind of device.
+> I'm interested in the TX side of the problem. (I'm working on
+> an ARM Cortex A9 system by the way.)
+> 
+> There's a 16-byte TX FIFO. Data is queued to the FIFO by writing
+> {1,2,4} bytes to a TX{8,16,32} memory-mapped register.
+> Reading the TX_DEPTH register returns the current queue depth.
+> 
+> The TX_READY IRQ is asserted when (and only when) TX_DEPTH
+> transitions from 1 to 0.
 
-There's a 16-byte TX FIFO. Data is queued to the FIFO by writing
-{1,2,4} bytes to a TX{8,16,32} memory-mapped register.
-Reading the TX_DEPTH register returns the current queue depth.
+If the last statement is correct then your performance is probably always
+going to suck unless there is additional invisible queueing beyond the
+visible FIFO.
 
-The TX_READY IRQ is asserted when (and only when) TX_DEPTH
-transitions from 1 to 0.
+FIFOs on sane serial ports either have an adjustable threshold or fire
+when its some way off empty. That way our normal flow is that you take
+the TX interrupt before the port empties so you can fill it back up.
 
-With this spec in mind, I don't see how it is possible to
-attain optimal TX performance in the driver. There's a race
-between the SW thread filling the queue and the HW thread
-emptying it.
+On that kind of port I'd expect optimal to probably be something like
+writing 4 bytes until < 4 is left, and repeating that until your own
+transmit queue is < 4 bytes and the write the dribble.
 
-My first attempt went along these lines:
+You don't normally want to perfectly fill the FIFO, you just want to ram
+stuff into it efficiently with sufficient hardware queue and latency of
+response that the queue never empties. Beyond that it doesn't matter.
 
-SW thread pseudo-code (blocking write)
-
-while (bytes_to_send > 16) {
-  write 16 bytes to the queue /* NON ATOMIC */
-  bytes_to_send -= 16;
-  wait for semaphore
-}
-write the last bytes to the queue
-wait for semaphore
-
-The simplest way to "write 16 bytes to the queue" is
-a byte-access loop.
-
-for (i = 0; i < 16; ++i) write buf[i] to TX8
-or -- just slightly more complex
-for (i = 0; i < 4; ++i) write buf[4i .. 4i+3] to TX32
-
-But you see the problem: I write a byte, and then, for some
-reason (low freq from cpufreq, IRQ) the CPU takes a very long
-time to get to the next, thus TX_READY fires before I even
-write the next byte.
-
-In short, TX_READY could fire at any point while filling the queue.
-
-In my opinion, the semantics of TX_READY are fuzzy. When I hit
-the ISR, I just know that "the TX queue reached 0 at some point
-in time" but the HW might still be working on sending some bytes.
-
-Seems the best one can do is:
-
-while (bytes_to_send > 4) {
-  write 4 bytes to TX32 /* ATOMIC */
-  bytes_to_send -= 4;
-  wait for semaphore
-}
-while (bytes_to_send > 0) {
-  write 1 byte to TX8 /* ATOMIC */
-  bytes_to_send -= 1;
-  wait for semaphore
-}
-
-(This is ignoring the fact that the original buffer to
-send may not be word-aligned, I will have to investigate
-misaligned loads, or handle the first 0-3 bytes manually.)
-
-In the solution proposed above, using atomic writes to
-the device, I know that TX_READY signals "the work you
-requested in now complete". But I have sacrificed
-performance, as I will take an IRQ for every 4 bytes,
-instead of one for every 16 bytes.
-
-Is this making any sense? Or am I completely mistaken?
-
-Regards.
+Alan
