@@ -1,72 +1,76 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: [PATCH] tty/serial: at91: RS485 mode: 0 is valid for delay_rts_after_send
-Date: Mon, 11 May 2015 13:00:31 +0200
-Message-ID: <1431342044-23343-1-git-send-email-nicolas.ferre@atmel.com>
-References: <EBD2DE4ADA47B94E831AED12A4B0CADA8D002E7C@edb1.wapice.localdomain>
+From: Andre Przywara <andre.przywara@arm.com>
+Subject: Re: [PATCH v4 REPOST] Revert "serial/amba-pl011: Leave the TX IRQ
+ alone when the UART is not open"
+Date: Mon, 11 May 2015 17:09:30 +0100
+Message-ID: <5550D43A.4090200@arm.com>
+References: <1431090470-1394-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <EBD2DE4ADA47B94E831AED12A4B0CADA8D002E7C@edb1.wapice.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
-Cc: Sami.Pietikainen@wapice.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1431090470-1394-1-git-send-email-Dave.Martin@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?B?SmFrdWIgS2ljacWEc2tp?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-In RS485 mode, we may want to set the delay_rts_after_send value to 0.
-In the datasheet, the 0 value is said to "disable" the Transmitter Time=
-guard but
-this is exactly the expected behavior if we want no delay...
-
-Moreover, if the value was set to non-zero value by device-tree or earl=
-ier
-ioctl command, it was impossible to change it back to zero.
-
-Reported-by: Sami Pietik=C3=A4inen <Sami.Pietikainen@wapice.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: stable@vger.kernel.org  # 3.2+
----
- drivers/tty/serial/atmel_serial.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atm=
-el_serial.c
-index 27dade29646b..5ca1dfb0561c 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -315,8 +315,7 @@ static int atmel_config_rs485(struct uart_port *por=
-t,
- 	if (rs485conf->flags & SER_RS485_ENABLED) {
- 		dev_dbg(port->dev, "Setting UART to RS485\n");
- 		atmel_port->tx_done_mask =3D ATMEL_US_TXEMPTY;
--		if ((rs485conf->delay_rts_after_send) > 0)
--			UART_PUT_TTGR(port, rs485conf->delay_rts_after_send);
-+		UART_PUT_TTGR(port, rs485conf->delay_rts_after_send);
- 		mode |=3D ATMEL_US_USMODE_RS485;
- 	} else {
- 		dev_dbg(port->dev, "Setting UART to RS232\n");
-@@ -354,8 +353,7 @@ static void atmel_set_mctrl(struct uart_port *port,=
- u_int mctrl)
-=20
- 	/* override mode to RS485 if needed, otherwise keep the current mode =
-*/
- 	if (port->rs485.flags & SER_RS485_ENABLED) {
--		if ((port->rs485.delay_rts_after_send) > 0)
--			UART_PUT_TTGR(port, port->rs485.delay_rts_after_send);
-+		UART_PUT_TTGR(port, port->rs485.delay_rts_after_send);
- 		mode &=3D ~ATMEL_US_USMODE;
- 		mode |=3D ATMEL_US_USMODE_RS485;
- 	}
-@@ -2061,8 +2059,7 @@ static void atmel_set_termios(struct uart_port *p=
-ort, struct ktermios *termios,
-=20
- 	/* mode */
- 	if (port->rs485.flags & SER_RS485_ENABLED) {
--		if ((port->rs485.delay_rts_after_send) > 0)
--			UART_PUT_TTGR(port, port->rs485.delay_rts_after_send);
-+		UART_PUT_TTGR(port, port->rs485.delay_rts_after_send);
- 		mode |=3D ATMEL_US_USMODE_RS485;
- 	} else if (termios->c_cflag & CRTSCTS) {
- 		/* RS232 with hardware handshake (RTS/CTS) */
---=20
-2.1.3
+SGkgR3JlZywKCk9uIDA1LzA4LzIwMTUgMDI6MDcgUE0sIERhdmUgUCBNYXJ0aW4gd3JvdGU6Cj4g
+VGhpcyByZXZlcnRzIGNvbW1pdCBmMmVlNmRmYTBlODU5N2VlYThiOThkMjQwYjAwMzM5OTRlMjBk
+MjE1Lgo+IAo+IEpha3ViIEtpY2nFhHNraSBvYnNlcnZlZCB0aGF0IHRoaXMgcGF0Y2ggY2FuIGNh
+dXNlIHRoZSBwbDAxMQo+IGRyaXZlciB0byBoYW5nIGlmIGlmIHRoZSBvbmx5IHByb2Nlc3Mgd2l0
+aCBhIHBsMDExIHBvcnQgb3BlbiBpcwo+IGtpbGxlZCBieSBhIHNpZ25hbCwgcGwwMTFfc2h1dGRv
+d24oKSBjYW4gZ2V0IGNhbGxlZCB3aXRoIGFuCj4gYXJiaXRyYXJ5IGFtb3VudCBvZiBkYXRhIHN0
+aWxsIGluIHRoZSBGSUZPLgo+IAo+IENhbGxpbmcgX3NodXRkb3duKCkgd2l0aCB0aGUgVFggRklG
+TyBub24tZW1wdHkgaXMgcXVlc3Rpb25hYmxlCj4gYmVoYXZpb3VyIGFuZCBteSBpdHNlbGYgYmUg
+YSBidWcuCj4gCj4gU2luY2UgdGhlIGFmZmVjdGVkIHBhdGNoIHdhcyBzcGVjdWxhdGl2ZSBhbnl3
+YXksIGFuZCBicmluZ3MgbGltaXRlZAo+IGJlbmVmaXQsIHRoZSBzaW1wbGVzdCBjb3Vyc2UgaXMg
+dG8gcmVtb3ZlIHRoZSBhc3N1bXB0aW9uIHRoYXQgVFhJUwo+IHdpbGwgYWx3YXlzIGJlIGxlZnQg
+YXNzZXJ0ZWQgYWZ0ZXIgdGhlIHBvcnQgaXMgc2h1dCBkb3duLgoKSSBzZWUgdGhhdCB5b3UgaGF2
+ZSBxdWV1ZWQgaXQgZm9yIExpbnVzIGFscmVhZHksIHNvIEkgZ3Vlc3MgaXQgd2lsbCBoaXQKNC4x
+LXJjNCBhbnl3YXksIGJ1dCBqdXN0IHRvIGdpdmUgbW9yZSByYXRpb25hbGU6ClRoaXMgcmV2ZXJ0
+IGZpeGVzIGEgcmVib290IGlzc3VlIHdpdGggUEwwMTEgYW5kIHN5c3RlbWQgb24gdGhlIEFNRApT
+ZWF0dGxlIGJvYXJkLiBSZWJvb3QgKG9yIHNodXRkb3duKSB3YXMgZmluZSB3aXRoIDQuMCwgYnV0
+IHN0YXJ0ZWQgdG8KaGFuZyBhZnRlciB0aGUgZmlyc3QgY2hhcmFjdGVycyBmb2xsb3dpbmcgdGhl
+IHJlYm9vdCBvciBzaHV0ZG93biBjb21tYW5kCndpdGggNC4xLXJjMS4gU28gdGhpcyB2ZXJ5IHBh
+dGNoIGFjdHVhbGx5IGZpeGVzIGEgNC4xIHJlZ3Jlc3Npb24gYW5kIGhhcwp0byBiZSBpbiB0aGUg
+cmVsZWFzZS4KU28gYWN0dWFsbHkgbm90aGluZyB0byBkbyBmb3IgeW91IChnaXZlbiB0aGF0IHR0
+eS1saW51cyB3aWxsIGJlIHRoZQpicmFuY2ggZm9yIHlvdXIgbmV4dCA0LjEtcmMgcHVsbCByZXF1
+ZXN0KSwganVzdCB0byBtYWtlIHN1cmUgdGhhdCB5b3UKZG9uJ3Qgc3RpbGwgZHJvcCB0aGUgcGF0
+Y2guCgpDaGVlcnMsCkFuZHJlLgoKPiAKPiBTaWduZWQtb2ZmLWJ5OiBEYXZlIE1hcnRpbiA8RGF2
+ZS5NYXJ0aW5AYXJtLmNvbT4KPiBTaWduZWQtb2ZmLWJ5OiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdy
+ZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPgo+IC0tLQo+IAo+ICBkcml2ZXJzL3R0eS9zZXJpYWwv
+YW1iYS1wbDAxMS5jIHwgICAgNSArKysrLQo+ICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25z
+KCspLCAxIGRlbGV0aW9uKC0pCj4gCj4gVGhlIG9yaWdpbmFsIHBhdGNoIHdhcyBhIG1pc2d1aWRl
+ZCBvcHRpbWlzYXRpb24gYW5kIGludHJvZHVjZXMgYSBidWcKPiB0aGF0IGNhbiBsZWFkIHRvIGRy
+aXZlciBkZWFkbG9jay4gIFNvbWUgcGVvcGxlIGFyZSBoaXR0aW5nIHRoaXMgaW4KPiB2NC4wLXJj
+MS8yLgo+IAo+IFRoZSByZXZlcnQgaXMgc3RyYWlnaHRmb3dhcmQ6IHBsZWFzZSBjb25zaWRlciBh
+cHBseWluZyBpdCBmb3IgdjQuMS4KPiAKPiBUaGlzIHJldmVydCBoYXMgYWxyZWFkeSBiZWVuIHBv
+c3RlZCB0byBsaW51eC1zZXJpYWwgYW5kIGFwcGxpZWQgaW4KPiB0dHktbmV4dCwgYnV0IGlzIG5v
+dCB5ZXQgc2NoZWR1bGVkIGZvciB2NC4xLgo+IAo+IFRoYW5rcwo+IC0tLURhdmUKPiAKPiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYyBiL2RyaXZlcnMvdHR5L3Nl
+cmlhbC9hbWJhLXBsMDExLmMKPiBpbmRleCA1YTRlOWQ1Li42ZjVhMDcyIDEwMDY0NAo+IC0tLSBh
+L2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMKPiArKysgYi9kcml2ZXJzL3R0eS9zZXJp
+YWwvYW1iYS1wbDAxMS5jCj4gQEAgLTE2MzksNiArMTYzOSw5IEBAIHN0YXRpYyBpbnQgcGwwMTFf
+c3RhcnR1cChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQo+ICAKPiAgCXdyaXRldyh1YXAtPnZlbmRv
+ci0+aWZscywgdWFwLT5wb3J0Lm1lbWJhc2UgKyBVQVJUMDExX0lGTFMpOwo+ICAKPiArCS8qIEFz
+c3VtZSB0aGF0IFRYIElSUSBkb2Vzbid0IHdvcmsgdW50aWwgd2Ugc2VlIG9uZTogKi8KPiArCXVh
+cC0+dHhfaXJxX3NlZW4gPSAwOwo+ICsKPiAgCXNwaW5fbG9ja19pcnEoJnVhcC0+cG9ydC5sb2Nr
+KTsKPiAgCj4gIAkvKiByZXN0b3JlIFJUUyBhbmQgRFRSICovCj4gQEAgLTE3MDIsNyArMTcwNSw3
+IEBAIHN0YXRpYyB2b2lkIHBsMDExX3NodXRkb3duKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCj4g
+IAlzcGluX2xvY2tfaXJxKCZ1YXAtPnBvcnQubG9jayk7Cj4gIAl1YXAtPmltID0gMDsKPiAgCXdy
+aXRldyh1YXAtPmltLCB1YXAtPnBvcnQubWVtYmFzZSArIFVBUlQwMTFfSU1TQyk7Cj4gLQl3cml0
+ZXcoMHhmZmZmICYgflVBUlQwMTFfVFhJUywgdWFwLT5wb3J0Lm1lbWJhc2UgKyBVQVJUMDExX0lD
+Uik7Cj4gKwl3cml0ZXcoMHhmZmZmLCB1YXAtPnBvcnQubWVtYmFzZSArIFVBUlQwMTFfSUNSKTsK
+PiAgCXNwaW5fdW5sb2NrX2lycSgmdWFwLT5wb3J0LmxvY2spOwo+ICAKPiAgCXBsMDExX2RtYV9z
+aHV0ZG93bih1YXApOwo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBs
+aXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlz
+dGluZm8vbGludXgtYXJtLWtlcm5lbAo=
