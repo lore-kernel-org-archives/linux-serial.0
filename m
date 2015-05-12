@@ -1,106 +1,113 @@
-From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 8/8] serial: tegra: Correct error handling on DMA setup
-Date: Tue, 12 May 2015 10:51:33 +0100
-Message-ID: <5551CD25.4030206@nvidia.com>
-References: <1430835479-6613-1-git-send-email-jonathanh@nvidia.com> <1430835479-6613-9-git-send-email-jonathanh@nvidia.com> <CAAVeFuL=z-xbGT1e_L6+_GQ8aZ0BvNBfmoi65u_7qVHv=tpTbA@mail.gmail.com>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [PATCH] serial/amba-pl011: Unconditionally poll for FIFO space before
+ each TX char
+Date: Tue, 12 May 2015 14:44:26 +0100
+Message-ID: <1431438266-28094-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAAVeFuL=z-xbGT1e_L6+_GQ8aZ0BvNBfmoi65u_7qVHv=tpTbA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
+Commit 734745caeb9f155ab58918834a8c70e83fa6afd3 serial/amba-pl011:
+(Activate TX IRQ passively) introduces a race which causes the driver
+sometimes to attempt to write a character to the TX FIFO when the FIFO
+is already full.
 
-On 12/05/15 09:39, Alexandre Courbot wrote:
-> On Tue, May 5, 2015 at 11:17 PM, Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
->> Function tegra_uart_dma_channel_allocate() does not check that
->> dma_map_single() mapped the DMA buffer correctly. Add a check for this
->> and appropriate error handling.
->>
->> Furthermore, if dmaengine_slave_config() (called by
->> tegra_uart_dma_channel_allocate()) fails, then memory allocated/mapped
->> is not freed/unmapped. Therefore, call tegra_uart_dma_channel_free()
->> instead of just dma_release_channel() if  dmaengine_slave_config() fails.
->>
->> Signed-off-by: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->> ---
->>  drivers/tty/serial/serial-tegra.c | 51 +++++++++++++++++++++------------------
->>  1 file changed, 28 insertions(+), 23 deletions(-)
->>
->> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
->> index 96378da9aefc..3b63f103f0c9 100644
->> --- a/drivers/tty/serial/serial-tegra.c
->> +++ b/drivers/tty/serial/serial-tegra.c
->> @@ -949,6 +949,28 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
->>         return 0;
->>  }
->>
->> +static void tegra_uart_dma_channel_free(struct tegra_uart_port *tup,
->> +               bool dma_to_memory)
->> +{
->> +       if (dma_to_memory) {
->> +               dmaengine_terminate_all(tup->rx_dma_chan);
->> +               dma_release_channel(tup->rx_dma_chan);
->> +               dma_free_coherent(tup->uport.dev, TEGRA_UART_RX_DMA_BUFFER_SIZE,
->> +                               tup->rx_dma_buf_virt, tup->rx_dma_buf_phys);
->> +               tup->rx_dma_chan = NULL;
->> +               tup->rx_dma_buf_phys = 0;
->> +               tup->rx_dma_buf_virt = NULL;
->> +       } else {
->> +               dmaengine_terminate_all(tup->tx_dma_chan);
->> +               dma_release_channel(tup->tx_dma_chan);
->> +               dma_unmap_single(tup->uport.dev, tup->tx_dma_buf_phys,
->> +                       UART_XMIT_SIZE, DMA_TO_DEVICE);
->> +               tup->tx_dma_chan = NULL;
->> +               tup->tx_dma_buf_phys = 0;
->> +               tup->tx_dma_buf_virt = NULL;
->> +       }
->> +}
->> +
->>  static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
->>                         bool dma_to_memory)
->>  {
->> @@ -981,6 +1003,11 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
->>                 dma_phys = dma_map_single(tup->uport.dev,
->>                         tup->uport.state->xmit.buf, UART_XMIT_SIZE,
->>                         DMA_TO_DEVICE);
->> +               if (dma_mapping_error(tup->uport.dev, dma_phys)) {
->> +                       dev_err(tup->uport.dev, "dma_map_single tx failed\n");
->> +                       dma_release_channel(dma_chan);
->> +                       return -ENOMEM;
-> 
-> Is -ENOMEM the error code we want to return here?
+The PL011 does not guarantee its behaviour when the FIFO is overfilled.
+In practice, this can cause duplicate and/or dropped characters to be
+output on the wire.  The problem is common enough to be readily
+observable on the ARM Juno platform when the PL011 UART is used as
+the console and DMA is not in use.
 
-I think that it is appropriate as we are unable to map the memory we are
-requesting. I did look at a few other drivers and several return -ENOMEM
-here. I saw others return -EFAULT, but given this is memory related,
-seems ok, unless you have a better suggestion.
+This patch fixes this problem by always polling for space before each
+character is written to the FIFO.
 
-> IIUC dma_buf will be leaked if an error occurs here because it has not
-> been assigned to your structure and will therefore be ignored when
-> tegra_uart_dma_channel_free() is called.
+This will be amended to a less brute-force approach in a later commit,
+but this patch should help ensure correct behaviour for now.
 
-In the original code, if dmaengine_slave_config() failed, then yes there
-would be a memory leak. That should no longer be the case.
+Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+---
 
-> Since we have a "scrub" label at the end of this function, I think I'd
-> also prefer if this block and the one before could jump to error
-> labels as well for consistency.
+The patch is based on gregkh/tty.git tty-linus.
 
-Yes I see. I wondered if it would be better to just get rid of the
-"scrub" label since it is only used in one place instead?
+Please consider applying it for v4.1.  Without it, we have a regression
+compared with v4.0.
 
-By the way, I got a notification from Greg that these are now queued in
-his tty-testing branch [1]. Assuming these are ok, may be I could fix
-that up in a follow-up patch?
+*Note*
+This will cause a conflict with tty-next because it pulls forward
+some changes made by commit 1e84d22 (serial/amba-pl011: Refactor and
+simplify TX FIFO handling); however, the resolution is simple except
+for the following lines which may need to be deleted manually from
+amba-pl011.c:pl011_startup():
 
-> Otherwise, pretty nice series, comprehensive and easy to read.
+-8<-
+	/* Assume that TX IRQ doesn't work until we see one: */
+	uap->tx_irq_seen = 0;
 
-Thanks!
-Jon
+->8-
 
-[1]
-http://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git/log/?h=tty-testing
+(This is is the same mismerge already observed by Steven Rothwell when
+building next.)
+
+Cheers
+---Dave
+
+
+ drivers/tty/serial/amba-pl011.c |   16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 6f5a072..763eb20 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1249,20 +1249,19 @@ __acquires(&uap->port.lock)
+ 
+ /*
+  * Transmit a character
+- * There must be at least one free entry in the TX FIFO to accept the char.
+  *
+- * Returns true if the FIFO might have space in it afterwards;
+- * returns false if the FIFO definitely became full.
++ * Returns true if the character was successfully queued to the FIFO.
++ * Returns false otherwise.
+  */
+ static bool pl011_tx_char(struct uart_amba_port *uap, unsigned char c)
+ {
++	if (readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF)
++		return false; /* unable to transmit character */
++
+ 	writew(c, uap->port.membase + UART01x_DR);
+ 	uap->port.icount.tx++;
+ 
+-	if (likely(uap->tx_irq_seen > 1))
+-		return true;
+-
+-	return !(readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF);
++	return true;
+ }
+ 
+ static bool pl011_tx_chars(struct uart_amba_port *uap)
+@@ -1296,7 +1295,8 @@ static bool pl011_tx_chars(struct uart_amba_port *uap)
+ 		return false;
+ 
+ 	if (uap->port.x_char) {
+-		pl011_tx_char(uap, uap->port.x_char);
++		if (!pl011_tx_char(uap, uap->port.x_char))
++			goto done;
+ 		uap->port.x_char = 0;
+ 		--count;
+ 	}
+-- 
+1.7.10.4
