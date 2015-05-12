@@ -1,8 +1,7 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v4 01/11] drivers: PL011: avoid potential unregister_driver
- call
-Date: Tue, 12 May 2015 15:14:45 +0100
-Message-ID: <1431440095-5146-2-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v4 02/11] drivers: PL011: refactor pl011_startup()
+Date: Tue, 12 May 2015 15:14:46 +0100
+Message-ID: <1431440095-5146-3-git-send-email-andre.przywara@arm.com>
 References: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,82 +21,86 @@ To: rmk+kernel@arm.linux.org.uk, Greg KH <gregkh@linuxfoundation.org>, Jiri Slab
 Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Graeme Gregory <graeme.gregory@linaro.org>, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Although we care about not unregistering the driver if there are
-still ports connected during the .remove callback, we do miss this
-check in the pl011_probe function. So if the current port allocation
-fails, but there are other ports already registered, we will kill
-those.
-So factor out the port removal into a separate function and use that
-in the probe function, too.
+Split the pl011_startup() function into smaller chunks to allow
+easier reuse later when adding SBSA support.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c | 37 +++++++++++++++++++++----------------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 48 ++++++++++++++++++++++++-----------------
+ 1 file changed, 28 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index f5bd842..d08951f 100644
+index d08951f..d6a081e 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -2135,6 +2135,24 @@ static int pl011_probe_dt_alias(int index, struct device *dev)
- 	return ret;
+@@ -1556,6 +1556,32 @@ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
+ 	}
  }
  
-+/* unregisters the driver also if no more ports are left */
-+static void pl011_unregister_port(struct uart_amba_port *uap)
++static int pl011_allocate_irq(struct uart_amba_port *uap)
 +{
-+	int i;
-+	bool busy = false;
++	writew(uap->im, uap->port.membase + UART011_IMSC);
 +
-+	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
-+		if (amba_ports[i] == uap)
-+			amba_ports[i] = NULL;
-+		else if (amba_ports[i])
-+			busy = true;
-+	}
-+	pl011_dma_remove(uap);
-+	if (!busy)
-+		uart_unregister_driver(&amba_reg);
++	return request_irq(uap->port.irq, pl011_int, 0, "uart-pl011", uap);
 +}
 +
++/*
++ * Enable interrupts, only timeouts when using DMA
++ * if initial RX DMA job failed, start in interrupt mode
++ * as well.
++ */
++static void pl011_enable_interrupts(struct uart_amba_port *uap)
++{
++	spin_lock_irq(&uap->port.lock);
 +
- static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
++	/* Clear out any spuriously appearing RX interrupts */
++	writew(UART011_RTIS | UART011_RXIS,
++		uap->port.membase + UART011_ICR);
++	uap->im = UART011_RTIM;
++	if (!pl011_dma_rx_running(uap))
++		uap->im |= UART011_RXIM;
++	writew(uap->im, uap->port.membase + UART011_IMSC);
++	spin_unlock_irq(&uap->port.lock);
++}
++
+ static int pl011_startup(struct uart_port *port)
  {
- 	struct uart_amba_port *uap;
-@@ -2200,10 +2218,8 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	}
+ 	struct uart_amba_port *uap =
+@@ -1567,12 +1593,7 @@ static int pl011_startup(struct uart_port *port)
+ 	if (retval)
+ 		goto clk_dis;
  
- 	ret = uart_add_one_port(&amba_reg, &uap->port);
--	if (ret) {
--		amba_ports[i] = NULL;
--		uart_unregister_driver(&amba_reg);
--	}
-+	if (ret)
-+		pl011_unregister_port(uap);
- 
- 	return ret;
- }
-@@ -2211,20 +2227,9 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- static int pl011_remove(struct amba_device *dev)
- {
- 	struct uart_amba_port *uap = amba_get_drvdata(dev);
--	bool busy = false;
--	int i;
- 
- 	uart_remove_one_port(&amba_reg, &uap->port);
+-	writew(uap->im, uap->port.membase + UART011_IMSC);
 -
--	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
--		if (amba_ports[i] == uap)
--			amba_ports[i] = NULL;
--		else if (amba_ports[i])
--			busy = true;
--
--	pl011_dma_remove(uap);
--	if (!busy)
--		uart_unregister_driver(&amba_reg);
-+	pl011_unregister_port(uap);
+-	/*
+-	 * Allocate the IRQ
+-	 */
+-	retval = request_irq(uap->port.irq, pl011_int, 0, "uart-pl011", uap);
++	retval = pl011_allocate_irq(uap);
+ 	if (retval)
+ 		goto clk_dis;
+ 
+@@ -1595,20 +1616,7 @@ static int pl011_startup(struct uart_port *port)
+ 	/* Startup DMA */
+ 	pl011_dma_startup(uap);
+ 
+-	/*
+-	 * Finally, enable interrupts, only timeouts when using DMA
+-	 * if initial RX DMA job failed, start in interrupt mode
+-	 * as well.
+-	 */
+-	spin_lock_irq(&uap->port.lock);
+-	/* Clear out any spuriously appearing RX interrupts */
+-	 writew(UART011_RTIS | UART011_RXIS,
+-		uap->port.membase + UART011_ICR);
+-	uap->im = UART011_RTIM;
+-	if (!pl011_dma_rx_running(uap))
+-		uap->im |= UART011_RXIM;
+-	writew(uap->im, uap->port.membase + UART011_IMSC);
+-	spin_unlock_irq(&uap->port.lock);
++	pl011_enable_interrupts(uap);
+ 
  	return 0;
- }
  
 -- 
 2.3.5
