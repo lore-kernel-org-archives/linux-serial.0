@@ -1,7 +1,7 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v4 04/11] drivers: PL011: refactor pl011_set_termios()
-Date: Tue, 12 May 2015 15:14:48 +0100
-Message-ID: <1431440095-5146-5-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v4 03/11] drivers: PL011: refactor pl011_shutdown()
+Date: Tue, 12 May 2015 15:14:47 +0100
+Message-ID: <1431440095-5146-4-git-send-email-andre.przywara@arm.com>
 References: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,91 +21,91 @@ To: rmk+kernel@arm.linux.org.uk, Greg KH <gregkh@linuxfoundation.org>, Jiri Slab
 Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Graeme Gregory <graeme.gregory@linaro.org>, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Split the pl011_set_termios() function into smaller chunks to allow
+Split the pl011_shutdown() function into smaller chunks to allow
 easier reuse later when adding SBSA support.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c | 60 ++++++++++++++++++++++-------------------
- 1 file changed, 33 insertions(+), 27 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 57 +++++++++++++++++++++++------------------
+ 1 file changed, 32 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 722a7ce..f465c1e 100644
+index d6a081e..722a7ce 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1706,6 +1706,38 @@ static void pl011_shutdown(struct uart_port *port)
+@@ -1635,34 +1635,15 @@ static void pl011_shutdown_channel(struct uart_amba_port *uap,
+       writew(val, uap->port.membase + lcrh);
  }
  
- static void
-+pl011_setup_status_masks(struct uart_port *port, struct ktermios *termios)
-+{
-+	port->read_status_mask = UART011_DR_OE | 255;
-+	if (termios->c_iflag & INPCK)
-+		port->read_status_mask |= UART011_DR_FE | UART011_DR_PE;
-+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
-+		port->read_status_mask |= UART011_DR_BE;
-+
-+	/*
-+	 * Characters to ignore
-+	 */
-+	port->ignore_status_mask = 0;
-+	if (termios->c_iflag & IGNPAR)
-+		port->ignore_status_mask |= UART011_DR_FE | UART011_DR_PE;
-+	if (termios->c_iflag & IGNBRK) {
-+		port->ignore_status_mask |= UART011_DR_BE;
-+		/*
-+		 * If we're ignoring parity and break indicators,
-+		 * ignore overruns too (for real raw support).
-+		 */
-+		if (termios->c_iflag & IGNPAR)
-+			port->ignore_status_mask |= UART011_DR_OE;
-+	}
-+
-+	/*
-+	 * Ignore all characters if CREAD is not set.
-+	 */
-+	if ((termios->c_cflag & CREAD) == 0)
-+		port->ignore_status_mask |= UART_DUMMY_DR_RX;
+-static void pl011_shutdown(struct uart_port *port)
++/*
++ * disable the port. It should not disable RTS and DTR.
++ * Also RTS and DTR state should be preserved to restore
++ * it during startup().
++ */
++static void pl011_disable_uart(struct uart_amba_port *uap)
+ {
+-	struct uart_amba_port *uap =
+-	    container_of(port, struct uart_amba_port, port);
+ 	unsigned int cr;
+ 
+-	/*
+-	 * disable all interrupts
+-	 */
+-	spin_lock_irq(&uap->port.lock);
+-	uap->im = 0;
+-	writew(uap->im, uap->port.membase + UART011_IMSC);
+-	writew(0xffff, uap->port.membase + UART011_ICR);
+-	spin_unlock_irq(&uap->port.lock);
+-
+-	pl011_dma_shutdown(uap);
+-
+-	/*
+-	 * Free the interrupt
+-	 */
+-	free_irq(uap->port.irq, uap);
+-
+-	/*
+-	 * disable the port
+-	 * disable the port. It should not disable RTS and DTR.
+-	 * Also RTS and DTR state should be preserved to restore
+-	 * it during startup().
+-	 */
+ 	uap->autorts = false;
+ 	spin_lock_irq(&uap->port.lock);
+ 	cr = readw(uap->port.membase + UART011_CR);
+@@ -1678,6 +1659,32 @@ static void pl011_shutdown(struct uart_port *port)
+ 	pl011_shutdown_channel(uap, uap->lcrh_rx);
+ 	if (uap->lcrh_rx != uap->lcrh_tx)
+ 		pl011_shutdown_channel(uap, uap->lcrh_tx);
 +}
 +
-+static void
- pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 		     struct ktermios *old)
- {
-@@ -1769,33 +1801,7 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 */
- 	uart_update_timeout(port, termios->c_cflag, baud);
++static void pl011_disable_interrupts(struct uart_amba_port *uap)
++{
++	spin_lock_irq(&uap->port.lock);
++
++	/* mask all interrupts and clear all pending ones */
++	uap->im = 0;
++	writew(uap->im, uap->port.membase + UART011_IMSC);
++	writew(0xffff, uap->port.membase + UART011_ICR);
++
++	spin_unlock_irq(&uap->port.lock);
++}
++
++static void pl011_shutdown(struct uart_port *port)
++{
++	struct uart_amba_port *uap =
++		container_of(port, struct uart_amba_port, port);
++
++	pl011_disable_interrupts(uap);
++
++	pl011_dma_shutdown(uap);
++
++	free_irq(uap->port.irq, uap);
++
++	pl011_disable_uart(uap);
  
--	port->read_status_mask = UART011_DR_OE | 255;
--	if (termios->c_iflag & INPCK)
--		port->read_status_mask |= UART011_DR_FE | UART011_DR_PE;
--	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
--		port->read_status_mask |= UART011_DR_BE;
--
--	/*
--	 * Characters to ignore
--	 */
--	port->ignore_status_mask = 0;
--	if (termios->c_iflag & IGNPAR)
--		port->ignore_status_mask |= UART011_DR_FE | UART011_DR_PE;
--	if (termios->c_iflag & IGNBRK) {
--		port->ignore_status_mask |= UART011_DR_BE;
--		/*
--		 * If we're ignoring parity and break indicators,
--		 * ignore overruns too (for real raw support).
--		 */
--		if (termios->c_iflag & IGNPAR)
--			port->ignore_status_mask |= UART011_DR_OE;
--	}
--
--	/*
--	 * Ignore all characters if CREAD is not set.
--	 */
--	if ((termios->c_cflag & CREAD) == 0)
--		port->ignore_status_mask |= UART_DUMMY_DR_RX;
-+	pl011_setup_status_masks(port, termios);
- 
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		pl011_enable_ms(port);
+ 	/*
+ 	 * Shut down the clock producer
 -- 
 2.3.5
