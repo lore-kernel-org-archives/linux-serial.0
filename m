@@ -1,11 +1,13 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v4 00/11] drivers: PL011: add ARM SBSA Generic UART support
-Date: Tue, 12 May 2015 15:14:44 +0100
-Message-ID: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v4 04/11] drivers: PL011: refactor pl011_set_termios()
+Date: Tue, 12 May 2015 15:14:48 +0100
+Message-ID: <1431440095-5146-5-git-send-email-andre.przywara@arm.com>
+References: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,105 +21,91 @@ To: rmk+kernel@arm.linux.org.uk, Greg KH <gregkh@linuxfoundation.org>, Jiri Slab
 Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Graeme Gregory <graeme.gregory@linaro.org>, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-This is the fourth revision of the SBSA UART support series, now
-based on the current tty-next branch.
-Compared to v3 I addressed some comments Jakub had on v3 (thanks for
-the review!). Also since some basic ACPI support for ARM64 is now
-upstream, I include the necessary ACPI binding as a new patch 11
-on top.
-----
+Split the pl011_set_termios() function into smaller chunks to allow
+easier reuse later when adding SBSA support.
 
-The ARM Server Base System Architecture[1] document describes a
-generic UART which is a subset of the ARM PL011 UART.
-It lacks DMA support, baud rate control and modem status line
-control, among other things.
-The idea is to move the UART initialization and setup into the
-firmware (which does this job today already) and let the kernel just
-use the UART for sending and receiving characters.
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ drivers/tty/serial/amba-pl011.c | 60 ++++++++++++++++++++++-------------------
+ 1 file changed, 33 insertions(+), 27 deletions(-)
 
-This patchset integrates support for this UART subset into the
-existing PL011 driver - basically by refactoring some
-functions and providing a new uart_ops structure for it. It also has
-a separate probe function to be not dependent on AMBA/PrimeCell.
-It provides a device tree and an ACPI binding.
-Beside the obvious effect of code sharing reusing most of the PL011
-code has the advantage of not introducing another serial device
-prefix, so it can go with ttyAMA, which seems to be pretty common.
-As changing the baudrate and other communication parameters is not
-specified for the SBSA UART, any userland attempt will be denied by
-the kernel. The device-tree provided fixed baud rate will be
-reported, so stty for instance prints the right value.
-
-This series is based on Greg's tty-next branch, a git repo can
-be found at [2] (branch sbsa-uart/v4).
-
-Patch 1/11 contains a bug fix which applies to the PL011 part also,
-it should be considered regardless of the rest of the series.
-According to Russell this is still racy, but still better than the
-current solution.
-Patch 2-7 refactor some PL011 functions by splitting them up into
-smaller pieces, so that most of the code can be reused later by the
-SBSA part.
-Patch 8 and 9 introduce two new properties for the vendor structure,
-this is for SBSA functionality which cannot be controlled by
-separate uart_ops members only.
-Patch 10 then finally drops in the SBSA specific code, by providing
-a new uart_ops, vendor struct and probe function for it. Also the new
-device tree binding is documented.
-Patch 11 adds the necessary ACPI boilerplate.
-
-For testing you should be able to take any hardware which has a PL011
-and change the DT to use a "arm,sbsa-uart" compatible string and the
-baud rate with the "current-speed" property.
-Of course testing with a real SBSA Generic UART is welcomed - as well
-as regression testing with any PL011 implementation.
-I tested this on a FastModel, a Juno and a Midway machine, both in
-PL011 and in (DT-emulated) SBSA mode.
-
-Changelog:
-v3 .. v4:
-- fixed rebase artifact
-- moved memory allocation out of pl011_allocate_port() function
-  (and consequently renamed that to pl011_find_free_port)
-- added ACPI driver binding
-
-v2 .. v3:
-- rebased on top of tty-next and Dave's latest PL011 rework
-- fixed module build
-- removed redundant =NULL members in sbsa_uart_ops
-
-v1 .. v2:
-- rebased on top of 4.0-rc1 and Dave's newest PL011 fix [3]
-- added mandatory current-speed property and report that to userland
-
-Cheers,
-Andre
-
-[1] ARM-DEN-0029 Server Base System Architecture, available (click-
-    thru...) from http://infocenter.arm.com
-[2] http://www.linux-arm.org/git?p=linux-ap.git
-    git://linux-arm.org/linux-ap.git
-[3] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-March/327631.html
-
-Andre Przywara (10):
-  drivers: PL011: avoid potential unregister_driver call
-  drivers: PL011: refactor pl011_startup()
-  drivers: PL011: refactor pl011_shutdown()
-  drivers: PL011: refactor pl011_set_termios()
-  drivers: PL011: refactor pl011_probe()
-  drivers: PL011: replace UART_MIS reading with _RIS & _IMSC
-  drivers: PL011: move cts_event workaround into separate function
-  drivers: PL011: allow avoiding UART enabling/disabling
-  drivers: PL011: allow to supply fixed option string
-  drivers: PL011: add support for the ARM SBSA generic UART
-
-Graeme Gregory (1):
-  drivers: PL011: add ACPI probing for SBSA UART
-
- .../devicetree/bindings/serial/arm_sbsa_uart.txt   |  10 +
- drivers/tty/serial/amba-pl011.c                    | 547 +++++++++++++++------
- 2 files changed, 409 insertions(+), 148 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
-
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 722a7ce..f465c1e 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1706,6 +1706,38 @@ static void pl011_shutdown(struct uart_port *port)
+ }
+ 
+ static void
++pl011_setup_status_masks(struct uart_port *port, struct ktermios *termios)
++{
++	port->read_status_mask = UART011_DR_OE | 255;
++	if (termios->c_iflag & INPCK)
++		port->read_status_mask |= UART011_DR_FE | UART011_DR_PE;
++	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
++		port->read_status_mask |= UART011_DR_BE;
++
++	/*
++	 * Characters to ignore
++	 */
++	port->ignore_status_mask = 0;
++	if (termios->c_iflag & IGNPAR)
++		port->ignore_status_mask |= UART011_DR_FE | UART011_DR_PE;
++	if (termios->c_iflag & IGNBRK) {
++		port->ignore_status_mask |= UART011_DR_BE;
++		/*
++		 * If we're ignoring parity and break indicators,
++		 * ignore overruns too (for real raw support).
++		 */
++		if (termios->c_iflag & IGNPAR)
++			port->ignore_status_mask |= UART011_DR_OE;
++	}
++
++	/*
++	 * Ignore all characters if CREAD is not set.
++	 */
++	if ((termios->c_cflag & CREAD) == 0)
++		port->ignore_status_mask |= UART_DUMMY_DR_RX;
++}
++
++static void
+ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		     struct ktermios *old)
+ {
+@@ -1769,33 +1801,7 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 */
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+-	port->read_status_mask = UART011_DR_OE | 255;
+-	if (termios->c_iflag & INPCK)
+-		port->read_status_mask |= UART011_DR_FE | UART011_DR_PE;
+-	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+-		port->read_status_mask |= UART011_DR_BE;
+-
+-	/*
+-	 * Characters to ignore
+-	 */
+-	port->ignore_status_mask = 0;
+-	if (termios->c_iflag & IGNPAR)
+-		port->ignore_status_mask |= UART011_DR_FE | UART011_DR_PE;
+-	if (termios->c_iflag & IGNBRK) {
+-		port->ignore_status_mask |= UART011_DR_BE;
+-		/*
+-		 * If we're ignoring parity and break indicators,
+-		 * ignore overruns too (for real raw support).
+-		 */
+-		if (termios->c_iflag & IGNPAR)
+-			port->ignore_status_mask |= UART011_DR_OE;
+-	}
+-
+-	/*
+-	 * Ignore all characters if CREAD is not set.
+-	 */
+-	if ((termios->c_cflag & CREAD) == 0)
+-		port->ignore_status_mask |= UART_DUMMY_DR_RX;
++	pl011_setup_status_masks(port, termios);
+ 
+ 	if (UART_ENABLE_MS(port, termios->c_cflag))
+ 		pl011_enable_ms(port);
 -- 
 2.3.5
