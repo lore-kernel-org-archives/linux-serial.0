@@ -1,8 +1,7 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v4 06/11] drivers: PL011: replace UART_MIS reading with _RIS &
- _IMSC
-Date: Tue, 12 May 2015 15:14:50 +0100
-Message-ID: <1431440095-5146-7-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v4 09/11] drivers: PL011: allow to supply fixed option string
+Date: Tue, 12 May 2015 15:14:53 +0100
+Message-ID: <1431440095-5146-10-git-send-email-andre.przywara@arm.com>
 References: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,45 +21,71 @@ To: rmk+kernel@arm.linux.org.uk, Greg KH <gregkh@linuxfoundation.org>, Jiri Slab
 Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Graeme Gregory <graeme.gregory@linaro.org>, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The PL011 register UART_MIS is actually a bitwise AND of the
-UART_RIS and the UART_MISC register.
-Since the SBSA UART does not include the _MIS register, use the
-two separate registers to get the same behaviour. Since we are
-inside the spinlock and we read the _IMSC register only once, there
-should be no race issue.
+The SBSA UART has a fixed baud rate and flow control setting, which
+cannot be changed or queried by software.
+Add a vendor specific property to always return fixed values when
+trying to read the console options.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6709c6c..52cc2f5 100644
+index fe92289..70e2958 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1322,11 +1322,13 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 	struct uart_amba_port *uap = dev_id;
- 	unsigned long flags;
- 	unsigned int status, pass_counter = AMBA_ISR_PASS_LIMIT;
-+	u16 imsc;
- 	int handled = 0;
- 	unsigned int dummy_read;
+@@ -79,6 +79,7 @@ struct vendor_data {
+ 	bool			dma_threshold;
+ 	bool			cts_event_workaround;
+ 	bool			always_enabled;
++	bool			fixed_options;
  
- 	spin_lock_irqsave(&uap->port.lock, flags);
--	status = readw(uap->port.membase + UART011_MIS);
-+	imsc = readw(uap->port.membase + UART011_IMSC);
-+	status = readw(uap->port.membase + UART011_RIS) & imsc;
- 	if (status) {
- 		do {
- 			if (uap->vendor->cts_event_workaround) {
-@@ -1361,7 +1363,7 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 			if (pass_counter-- == 0)
- 				break;
+ 	unsigned int (*get_fifosize)(struct amba_device *dev);
+ };
+@@ -96,6 +97,7 @@ static struct vendor_data vendor_arm = {
+ 	.dma_threshold		= false,
+ 	.cts_event_workaround	= false,
+ 	.always_enabled		= false,
++	.fixed_options		= false,
+ 	.get_fifosize		= get_fifosize_arm,
+ };
  
--			status = readw(uap->port.membase + UART011_MIS);
-+			status = readw(uap->port.membase + UART011_RIS) & imsc;
- 		} while (status != 0);
- 		handled = 1;
- 	}
+@@ -112,6 +114,7 @@ static struct vendor_data vendor_st = {
+ 	.dma_threshold		= true,
+ 	.cts_event_workaround	= true,
+ 	.always_enabled		= false,
++	.fixed_options		= false,
+ 	.get_fifosize		= get_fifosize_st,
+ };
+ 
+@@ -160,6 +163,7 @@ struct uart_amba_port {
+ 	unsigned int		lcrh_rx;	/* vendor-specific */
+ 	unsigned int		old_cr;		/* state during shutdown */
+ 	bool			autorts;
++	unsigned int		fixed_baud;	/* vendor-set fixed baud rate */
+ 	char			type[12];
+ #ifdef CONFIG_DMA_ENGINE
+ 	/* DMA stuff */
+@@ -2076,10 +2080,15 @@ static int __init pl011_console_setup(struct console *co, char *options)
+ 
+ 	uap->port.uartclk = clk_get_rate(uap->clk);
+ 
+-	if (options)
+-		uart_parse_options(options, &baud, &parity, &bits, &flow);
+-	else
+-		pl011_console_get_options(uap, &baud, &parity, &bits);
++	if (uap->vendor->fixed_options) {
++		baud = uap->fixed_baud;
++	} else {
++		if (options)
++			uart_parse_options(options,
++					   &baud, &parity, &bits, &flow);
++		else
++			pl011_console_get_options(uap, &baud, &parity, &bits);
++	}
+ 
+ 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
+ }
 -- 
 2.3.5
