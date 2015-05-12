@@ -1,13 +1,16 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v4 11/11] drivers: PL011: add ACPI probing for SBSA UART
-Date: Tue, 12 May 2015 15:14:55 +0100
-Message-ID: <1431440095-5146-12-git-send-email-andre.przywara@arm.com>
-References: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
+From: Dave P Martin <Dave.Martin@arm.com>
+Subject: Re: [PATCH] serial/amba-pl011: Unconditionally poll for FIFO space
+ before each TX char
+Date: Tue, 12 May 2015 16:00:38 +0100
+Message-ID: <20150512150037.GA29594@e103592.cambridge.arm.com>
+References: <1431438266-28094-1-git-send-email-Dave.Martin@arm.com>
+ <20150512160027.21244f64@north>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
+In-Reply-To: <20150512160027.21244f64@north>
+Content-Disposition: inline
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,57 +20,20 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: rmk+kernel@arm.linux.org.uk, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Graeme Gregory <graeme.gregory@linaro.org>, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
+To: Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
+Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andre Przywara <Andre.Przywara@arm.com>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Graeme Gregory <graeme.gregory@linaro.org>
-
-Add the necessary driver boilerplate to let the driver be used when
-the respective ACPI table is discovered by the ACPI subsystem.
-
-[Andre: change table name, add MODULE_DEVICE_TABLE entry and improve
-	commit message]
-
-Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Acked-by: Sudeep Holla <sudeep.holla@arm.com>
----
- drivers/tty/serial/amba-pl011.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index cca93d9..79f716c 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -58,6 +58,7 @@
- #include <linux/pinctrl/consumer.h>
- #include <linux/sizes.h>
- #include <linux/io.h>
-+#include <linux/acpi.h>
- 
- #define UART_NR			14
- 
-@@ -2483,12 +2484,19 @@ static const struct of_device_id sbsa_uart_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, sbsa_uart_of_match);
- 
-+static const struct acpi_device_id sbsa_uart_acpi_match[] = {
-+	{ "ARMH0011", 0 },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(acpi, sbsa_uart_acpi_match);
-+
- static struct platform_driver arm_sbsa_uart_platform_driver = {
- 	.probe		= sbsa_uart_probe,
- 	.remove		= sbsa_uart_remove,
- 	.driver	= {
- 		.name	= "sbsa-uart",
- 		.of_match_table = of_match_ptr(sbsa_uart_of_match),
-+		.acpi_match_table = ACPI_PTR(sbsa_uart_acpi_match),
- 	},
- };
- 
--- 
-2.3.5
+T24gVHVlLCBNYXkgMTIsIDIwMTUgYXQgMDM6MDA6MjdQTSArMDEwMCwgSmFrdWIgS2ljacWEc2tp
+IHdyb3RlOgo+IE9uIFR1ZSwgMTIgTWF5IDIwMTUgMTQ6NDQ6MjYgKzAxMDAsIERhdmUgTWFydGlu
+IHdyb3RlOgo+ID4gVGhpcyB3aWxsIGNhdXNlIGEgY29uZmxpY3Qgd2l0aCB0dHktbmV4dCBiZWNh
+dXNlIGl0IHB1bGxzIGZvcndhcmQKPiA+IHNvbWUgY2hhbmdlcyBtYWRlIGJ5IGNvbW1pdCAxZTg0
+ZDIyIChzZXJpYWwvYW1iYS1wbDAxMTogUmVmYWN0b3IgYW5kCj4gPiBzaW1wbGlmeSBUWCBGSUZP
+IGhhbmRsaW5nKTsgaG93ZXZlciwgdGhlIHJlc29sdXRpb24gaXMgc2ltcGxlIGV4Y2VwdAo+ID4g
+Zm9yIHRoZSBmb2xsb3dpbmcgbGluZXMgd2hpY2ggbWF5IG5lZWQgdG8gYmUgZGVsZXRlZCBtYW51
+YWxseSBmcm9tCj4gPiBhbWJhLXBsMDExLmM6cGwwMTFfc3RhcnR1cCgpOgo+IAo+IEJ5IHJlc29s
+dXRpb24gaXMgc2ltcGxlIHlvdSBtZWFuOiBrZWVwIHRoZSBjb2RlIGFzIGl0IGlzIGluIHR0eS1u
+ZXh0LAo+IHJpZ2h0PwoKWWVzLCB0aGF0J3MgcmlnaHQuCgpDaGVlcnMKLS0tRGF2ZQoKCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJu
+ZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRw
+Oi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
