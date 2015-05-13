@@ -1,181 +1,61 @@
-From: ram kiran <indrakanti_ram@hotmail.com>
-Subject: RE: [PATCH v2] sc16is7xx: spi interface is added
-Date: Wed, 13 May 2015 17:09:59 +0530
-Message-ID: <SNT151-W59A9C5ADDA1491FE7C422EE7D90@phx.gbl>
-References: <BLU436-SMTP5618D721DB5945207A778BE7D90@phx.gbl>
+From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v8 14/16] ARM: dts: Introduce STM32F429 MCU
+Date: Wed, 13 May 2015 13:45:36 +0200
+Message-ID: <CALszF6CS8Q9DWX+ERtu=k=Bzr1-25N3oZQyWyxDZBF3an4nFKQ@mail.gmail.com>
+References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1431158038-3813-15-git-send-email-mcoquelin.stm32@gmail.com>
+	<2789447.8FUTAOJOHR@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <BLU436-SMTP5618D721DB5945207A778BE7D90@phx.gbl>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: =?iso-8859-2?B?SmFrdWIgS2ljafFza2k=?= <moorray3@wp.pl>, "indrakanti.ram@gmail.com" <indrakanti.ram@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <2789447.8FUTAOJOHR@wuerfel>
+Sender: linux-doc-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <daniel.thompson@linaro.org>
+Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Lee Jones <lee.jones@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak>
 List-Id: linux-serial@vger.kernel.org
 
-not sure why is not available on mailing list...
+2015-05-12 23:21 GMT+02:00 Arnd Bergmann <arnd@arndb.de>:
+> On Saturday 09 May 2015 09:53:56 Maxime Coquelin wrote:
+>> +#include  <dt-bindings/mfd/stm32f4-rcc.h>
+>> +
+>>
+>
+> Can you find a way to avoid this dependency?
+>
+> Maybe you can change the bindings so that the numbers you pass as
+> arguments to the reset and clock specifiers reflect the numbers that
+> the hardware use?
 
-----------------------------------------
-> From: indrakanti_ram@hotmail.com
-> To: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; jslaby@suse.cz; gregkh@linuxfoundation.org
-> CC: moorray3@wp.pl; indrakanti.ram@gmail.com; indrakanti_ram@hotmail.com
-> Subject: [PATCH v2] sc16is7xx: spi interface is added
-> Date: Wed, 13 May 2015 16:27:58 +0530
+If I understand correctly, you prefer the way I did in v7 [0]?
+
+I don't have a strong opinion on this. Either way is fine to me.
+
+I changed the bindings in the v8 after discussions with Daniel
+Thompson, who is implementing the clock driver part of the RCC IP.
+
+He proposed we used common defines, because each peripheral has a
+reset line and a clock gate.
+Both reset and clock are represented as a single bit, with only the
+base offset differing between clock and reset.
+You can have a look at chapter 6 of the reference manual [1] if you
+find some time.
+
+Having common defines between clocks and reset make sense to me, but I
+also understand your point of avoiding dependencies.
+
+Maybe I can revert back to v7 bindings for now, and then we can
+reconsider using common defines when Daniel will send the clock
+patches.
+Note that doing that won't break the DT binary compatibility, as the
+raw reset values, or the ones from defines are the same.
+
+Daniel, could you share an example of the bindings you would use for the clocks?
+
+Kind regards,
+Maxime
+
 >
-> spi interface for sc16is7xx is added along with Kconfig flag
-> to enable spi or i2c, thus in a instance we can have either
-> spi or i2c or both, in sync to the hw.
->
-> Signed-off-by: ram.i hcltech <indrakanti_ram@hotmail.com>
-> ---
->
-> Changes in v2:
-> -Added seprate flags for i2c and spi
-> -Added space in the comments lines
-> -Added MODULE_ALIAS for spi interface
-> ---
-> drivers/tty/serial/Kconfig | 27 +++++++++++++++--
-> drivers/tty/serial/sc16is7xx.c | 69 +++++++++++++++++++++++++++++++++++++++++-
-> 2 files changed, 92 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index f8120c1..8c505b2 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1181,13 +1181,34 @@ config SERIAL_SCCNXP_CONSOLE
->
-> config SERIAL_SC16IS7XX
-> tristate "SC16IS7xx serial support"
-> - depends on I2C
-> select SERIAL_CORE
-> - select REGMAP_I2C if I2C
-> help
-> This selects support for SC16IS7xx serial ports.
-> Supported ICs are SC16IS740, SC16IS741, SC16IS750, SC16IS752,
-> - SC16IS760 and SC16IS762.
-> + SC16IS760 and SC16IS762, over i2c or spi.
-> + select at least one of the i2c or spi interface.
-> +
-> +config SERIAL_SC16IS7XX_I2C
-> + bool "SC16IS7xx for I2C interface"
-> + depends on SERIAL_SC16IS7XX=y
-> + depends on I2C
-> + select REGMAP_I2C if I2C
-> + help
-> + to enable i2c interface for SC16IS7XX, say Y,
-> + Otherwise, for i2c say N.
-> + this would make the driver to interface over SPI and I2C would
-> + be diabled.
-> +
-> +config SERIAL_SC16IS7XX_SPI
-> + bool "SC16IS7xx for spi interface"
-> + depends on SERIAL_SC16IS7XX
-> + depends on SPI_MASTER
-> + select REGMAP_SPI if SPI_MASTER
-> + help
-> + to enable spi interface for SC16IS7XX, say Y,
-> + Otherwise, for i2c say N.
-> + this would make the driver to interface over SPI and I2C would
-> + be diabled.
->
-> config SERIAL_BFIN_SPORT
-> tristate "Blackfin SPORT emulate UART"
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 468354e..ca6a838 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -25,6 +25,7 @@
-> #include <linux/serial.h>
-> #include <linux/tty.h>
-> #include <linux/tty_flip.h>
-> +#include <linux/spi/spi.h>
-> #include <linux/uaccess.h>
->
-> #define SC16IS7XX_NAME "sc16is7xx"
-> @@ -1203,7 +1204,73 @@ static struct regmap_config regcfg = {
-> .volatile_reg = sc16is7xx_regmap_volatile,
-> .precious_reg = sc16is7xx_regmap_precious,
-> };
-> +#ifdef CONFIG_SERIAL_SC16IS7XX_SPI
-> +static int sc16is7xx_spi_probe(struct spi_device *spi)
-> +{
-> + struct sc16is7xx_devtype *devtype;
-> + unsigned long flags = 0;
-> + struct regmap *regmap;
-> + int ret;
-> +
-> + /* Setup SPI bus */
-> + spi->bits_per_word = 8;
-> + /* only supports mode 0 on SC16IS762 */
-> + spi->mode = spi->mode ? : SPI_MODE_0;
-> + spi->max_speed_hz = spi->max_speed_hz ? : 15000000;
-> + ret = spi_setup(spi);
-> + if (ret)
-> + return ret;
-> +
-> + if (spi->dev.of_node) {
-> + const struct of_device_id *of_id =
-> + of_match_device(sc16is7xx_dt_ids, &spi->dev);
-> +
-> + devtype = (struct sc16is7xx_devtype *)of_id->data;
-> + } else {
-> + const struct spi_device_id *id_entry = spi_get_device_id(spi);
-> +
-> + devtype = (struct sc16is7xx_devtype *)id_entry->driver_data;
-> + flags = IRQF_TRIGGER_FALLING;
-> + }
-> +
-> + regcfg.max_register = (0xf << SC16IS7XX_REG_SHIFT) |
-> + (devtype->nr_uart - 1);
-> + regmap = devm_regmap_init_spi(spi, &regcfg);
-> +
-> + return sc16is7xx_probe(&spi->dev, devtype, regmap, spi->irq, flags);
-> +}
-> +
-> +static int sc16is7xx_spi_remove(struct spi_device *spi)
-> +{
-> + return sc16is7xx_remove(&spi->dev);
-> +}
->
-> +static const struct spi_device_id sc16is7xx_spi_id_table[] = {
-> + { "sc16is74x", (kernel_ulong_t)&sc16is74x_devtype, },
-> + { "sc16is750", (kernel_ulong_t)&sc16is750_devtype, },
-> + { "sc16is752", (kernel_ulong_t)&sc16is752_devtype, },
-> + { "sc16is760", (kernel_ulong_t)&sc16is760_devtype, },
-> + { "sc16is762", (kernel_ulong_t)&sc16is762_devtype, },
-> + { }
-> +};
-> +
-> +MODULE_DEVICE_TABLE(spi, sc16is7xx_spi_id_table);
-> +
-> +static struct spi_driver sc16is7xx_spi_uart_driver = {
-> + .driver = {
-> + .name = SC16IS7XX_NAME,
-> + .owner = THIS_MODULE,
-> + .of_match_table = of_match_ptr(sc16is7xx_dt_ids),
-> + },
-> + .probe = sc16is7xx_spi_probe,
-> + .remove = sc16is7xx_spi_remove,
-> + .id_table = sc16is7xx_spi_id_table,
-> +};
-> +module_spi_driver(sc16is7xx_spi_uart_driver);
-> +MODULE_ALIAS("spi:sc16is7xx");
-> +#endif
-> +
-> +#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
-> static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
-> const struct i2c_device_id *id)
-> {
-> @@ -1255,7 +1322,7 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
-> };
-> module_i2c_driver(sc16is7xx_i2c_uart_driver);
-> MODULE_ALIAS("i2c:sc16is7xx");
-> -
-> +#endif
-> MODULE_LICENSE("GPL");
-> MODULE_AUTHOR("Jon Ringle <jringle@gridpoint.com>");
-> MODULE_DESCRIPTION("SC16IS7XX serial driver");
-> --
-> 1.9.1
->
- 		 	   		  
+>         Arnd
+
+[0]: http://lkml.iu.edu/hypermail/linux/kernel/1504.3/04523.html
+[1]: http://www.st.com/web/en/resource/technical/document/reference_manual/DM00031020.pdf
