@@ -1,131 +1,106 @@
-From: Jon Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH 8/8] serial: tegra: Correct error handling on DMA setup
-Date: Wed, 13 May 2015 09:23:16 +0100
-Message-ID: <555309F4.1080306@nvidia.com>
-References: <1430835479-6613-1-git-send-email-jonathanh@nvidia.com> <1430835479-6613-9-git-send-email-jonathanh@nvidia.com> <CAAVeFuL=z-xbGT1e_L6+_GQ8aZ0BvNBfmoi65u_7qVHv=tpTbA@mail.gmail.com> <5551CD25.4030206@nvidia.com> <CAAVeFuLUVHJMPjy3y6bw9J7iQHb+is-SR_5H-=TCe4yoyEGRqQ@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Add R-Car SCIF DMA receive support
+Date: Wed, 13 May 2015 11:18:59 +0200
+Message-ID: <CAMuHMdWE03xpqXtEGzORQF3_L1v-UMux_2v76vkM0=hoOKFEOg@mail.gmail.com>
+References: <1430500294-23407-1-git-send-email-ykaneko0929@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAVeFuLUVHJMPjy3y6bw9J7iQHb+is-SR_5H-=TCe4yoyEGRqQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Courbot <gnurou@gmail.com>
-Cc: Laxman Dewangan <ldewangan@nvidia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1430500294-23407-1-git-send-email-ykaneko0929@gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
 List-Id: linux-serial@vger.kernel.org
 
+Hi Kaneko-san,
 
-On 13/05/15 05:56, Alexandre Courbot wrote:
-> On Tue, May 12, 2015 at 6:51 PM, Jon Hunter <jonathanh@nvidia.com> wrote:
->>
->> On 12/05/15 09:39, Alexandre Courbot wrote:
->>> On Tue, May 5, 2015 at 11:17 PM, Jon Hunter <jonathanh@nvidia.com> wrote:
->>>> Function tegra_uart_dma_channel_allocate() does not check that
->>>> dma_map_single() mapped the DMA buffer correctly. Add a check for this
->>>> and appropriate error handling.
->>>>
->>>> Furthermore, if dmaengine_slave_config() (called by
->>>> tegra_uart_dma_channel_allocate()) fails, then memory allocated/mapped
->>>> is not freed/unmapped. Therefore, call tegra_uart_dma_channel_free()
->>>> instead of just dma_release_channel() if  dmaengine_slave_config() fails.
->>>>
->>>> Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
->>>> ---
->>>>  drivers/tty/serial/serial-tegra.c | 51 +++++++++++++++++++++------------------
->>>>  1 file changed, 28 insertions(+), 23 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
->>>> index 96378da9aefc..3b63f103f0c9 100644
->>>> --- a/drivers/tty/serial/serial-tegra.c
->>>> +++ b/drivers/tty/serial/serial-tegra.c
->>>> @@ -949,6 +949,28 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
->>>>         return 0;
->>>>  }
->>>>
->>>> +static void tegra_uart_dma_channel_free(struct tegra_uart_port *tup,
->>>> +               bool dma_to_memory)
->>>> +{
->>>> +       if (dma_to_memory) {
->>>> +               dmaengine_terminate_all(tup->rx_dma_chan);
->>>> +               dma_release_channel(tup->rx_dma_chan);
->>>> +               dma_free_coherent(tup->uport.dev, TEGRA_UART_RX_DMA_BUFFER_SIZE,
->>>> +                               tup->rx_dma_buf_virt, tup->rx_dma_buf_phys);
->>>> +               tup->rx_dma_chan = NULL;
->>>> +               tup->rx_dma_buf_phys = 0;
->>>> +               tup->rx_dma_buf_virt = NULL;
->>>> +       } else {
->>>> +               dmaengine_terminate_all(tup->tx_dma_chan);
->>>> +               dma_release_channel(tup->tx_dma_chan);
->>>> +               dma_unmap_single(tup->uport.dev, tup->tx_dma_buf_phys,
->>>> +                       UART_XMIT_SIZE, DMA_TO_DEVICE);
->>>> +               tup->tx_dma_chan = NULL;
->>>> +               tup->tx_dma_buf_phys = 0;
->>>> +               tup->tx_dma_buf_virt = NULL;
->>>> +       }
->>>> +}
->>>> +
->>>>  static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
->>>>                         bool dma_to_memory)
->>>>  {
->>>> @@ -981,6 +1003,11 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
->>>>                 dma_phys = dma_map_single(tup->uport.dev,
->>>>                         tup->uport.state->xmit.buf, UART_XMIT_SIZE,
->>>>                         DMA_TO_DEVICE);
->>>> +               if (dma_mapping_error(tup->uport.dev, dma_phys)) {
->>>> +                       dev_err(tup->uport.dev, "dma_map_single tx failed\n");
->>>> +                       dma_release_channel(dma_chan);
->>>> +                       return -ENOMEM;
->>>
->>> Is -ENOMEM the error code we want to return here?
->>
->> I think that it is appropriate as we are unable to map the memory we are
->> requesting. I did look at a few other drivers and several return -ENOMEM
->> here. I saw others return -EFAULT, but given this is memory related,
->> seems ok, unless you have a better suggestion.
->>
->>> IIUC dma_buf will be leaked if an error occurs here because it has not
->>> been assigned to your structure and will therefore be ignored when
->>> tegra_uart_dma_channel_free() is called.
->>
->> In the original code, if dmaengine_slave_config() failed, then yes there
->> would be a memory leak. That should no longer be the case.
-> 
-> Mmm I am pretty sure that even after your patch the memory allocated
-> through the DMA API will not be freed if we hit an error there,
-> because dma_buf/dma_phys are not yet affected to your tegra_uart_port
-> structure when you call dma_release_channel(). Or maybe I am missing
-> something?
+On Fri, May 1, 2015 at 7:11 PM, Yoshihiro Kaneko <ykaneko0929@gmail.com> wrote:
+> From: Koji Matsuoka <koji.matsuoka.xm@renesas.com>
+>
+> Signed-off-by: Koji Matsuoka <koji.matsuoka.xm@renesas.com>
+> Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
 
-So there are two paths through the tegra_uart_dma_channel_allocate()
-function, one for RX and one for TX. In the RX case, a buffer is
-allocated via dma_alloc_coherent() and if this fails, then we simply
-call dma_release_channel(). So there should not be any memory leaked in
-this path and we should not need to worry about dma_buf/dma_phys here.
+Thank you for your patch! I will give it a try...
 
-In the TX case, the xmit.buf (allocated by the serial_core driver) is
-mapped to physical space for DMA. If the mapping fails, the xmit.buf is
-not freed here and we simply call dma_release_channel().
+It would be nice to have some more information in the patch description.
+E.g. what it's doing, and why it's needed.
 
-If you are concerned about the xmit.buf, then this is part serial core
-and allocated when uart_open() is called. It uart_open() fails, because
-the tegra_uart_dma_channel_allocate() fails, then uart_close() will be
-called (according the to kernel-doc for uart_open) and should be freed
-when uart_shutdown() is called. So I don't see a problem here.
+> ---
+>
+> This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
+> tree.
+>
+> This patch is the result of squashing two patches.
+> One, of the same name, by Koji Matsuoka. And a second small fix by
+> Kazuya Mizuguchi. Accordingly I have included both authors signed-off-by
+> lines above.
+>
+>  drivers/tty/serial/sh-sci.c | 142 +++++++++++++++++++++++++++++++++++---------
+>  1 file changed, 114 insertions(+), 28 deletions(-)
+>
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index e7d6566..65cc72a 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -1,4 +1,8 @@
+>  /*
+> + * drivers/tty/serial/sh-sci.c
 
-Let me know if I am misunderstanding you.
+It's preferred to not put full paths in source files, as the source file
+may be moved later.
 
->>
->>> Since we have a "scrub" label at the end of this function, I think I'd
->>> also prefer if this block and the one before could jump to error
->>> labels as well for consistency.
->>
->> Yes I see. I wondered if it would be better to just get rid of the
->> "scrub" label since it is only used in one place instead?
-> 
-> I am fine with whichever makes the most sense, although I am biased
-> towards having all error handing at the end of the function. But your
-> call.
+> + *
+> + *  Copyright (C) 2014 Renesas Electronics Corporation
+> + *
+>   * SuperH on-chip serial module support.  (SCI with no FIFO / with FIFO)
+>   *
+>   *  Copyright (C) 2002 - 2011  Paul Mundt
+> @@ -103,13 +107,13 @@ struct sci_port {
+>
+>  #ifdef CONFIG_SERIAL_SH_SCI_DMA
+>         struct dma_async_tx_descriptor  *desc_tx;
+> -       struct dma_async_tx_descriptor  *desc_rx[2];
+> +       struct dma_async_tx_descriptor  *desc_rx[3];
+>         dma_cookie_t                    cookie_tx;
+> -       dma_cookie_t                    cookie_rx[2];
+> +       dma_cookie_t                    cookie_rx[3];
+>         dma_cookie_t                    active_rx;
+>         struct scatterlist              sg_tx;
+>         unsigned int                    sg_len_tx;
+> -       struct scatterlist              sg_rx[2];
+> +       struct scatterlist              sg_rx[3];
 
-Ok.
+Why do you need 3 scatter lists?
 
-Cheers
-Jon
+>         size_t                          buf_len_rx;
+>         struct sh_dmae_slave            param_tx;
+>         struct sh_dmae_slave            param_rx;
+> @@ -117,6 +121,8 @@ struct sci_port {
+
+> @@ -1348,13 +1363,26 @@ static void sci_rx_dma_release(struct sci_port *s, bool enable_pio)
+>  {
+>         struct dma_chan *chan = s->chan_rx;
+>         struct uart_port *port = &s->port;
+> +       size_t buf_len_rx;
+> +       int t = 100000;
+> +
+> +       s->rx_release_flag = 1;
+> +       while (t--) {
+> +               if (!s->rx_flag)
+> +                       break;
+> +               usleep_range(10, 50);
+> +       }
+
+The above part looks a bit fishy to me... Isn't there a better way to wait?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
