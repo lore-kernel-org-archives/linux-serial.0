@@ -1,106 +1,125 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Add R-Car SCIF DMA receive support
-Date: Wed, 13 May 2015 11:18:59 +0200
-Message-ID: <CAMuHMdWE03xpqXtEGzORQF3_L1v-UMux_2v76vkM0=hoOKFEOg@mail.gmail.com>
-References: <1430500294-23407-1-git-send-email-ykaneko0929@gmail.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v4 00/11] drivers: PL011: add ARM SBSA Generic UART support
+Date: Wed, 13 May 2015 10:17:48 +0100
+Message-ID: <20150513091748.GA25891@red-moon>
+References: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1430500294-23407-1-git-send-email-ykaneko0929@gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: "arnd@arndb.de" <arnd@arndb.de>, "graeme.gregory@linaro.org" <graeme.gregory@linaro.org>, Jakub Kicinski <moorray3@wp.pl>, Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "rmk+kernel@arm.linux.org.uk" <rmk+kernel@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kaneko-san,
-
-On Fri, May 1, 2015 at 7:11 PM, Yoshihiro Kaneko <ykaneko0929@gmail.com> wrote:
-> From: Koji Matsuoka <koji.matsuoka.xm@renesas.com>
->
-> Signed-off-by: Koji Matsuoka <koji.matsuoka.xm@renesas.com>
-> Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
-> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-
-Thank you for your patch! I will give it a try...
-
-It would be nice to have some more information in the patch description.
-E.g. what it's doing, and why it's needed.
-
-> ---
->
-> This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
-> tree.
->
-> This patch is the result of squashing two patches.
-> One, of the same name, by Koji Matsuoka. And a second small fix by
-> Kazuya Mizuguchi. Accordingly I have included both authors signed-off-by
-> lines above.
->
->  drivers/tty/serial/sh-sci.c | 142 +++++++++++++++++++++++++++++++++++---------
->  1 file changed, 114 insertions(+), 28 deletions(-)
->
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index e7d6566..65cc72a 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -1,4 +1,8 @@
->  /*
-> + * drivers/tty/serial/sh-sci.c
-
-It's preferred to not put full paths in source files, as the source file
-may be moved later.
-
-> + *
-> + *  Copyright (C) 2014 Renesas Electronics Corporation
-> + *
->   * SuperH on-chip serial module support.  (SCI with no FIFO / with FIFO)
->   *
->   *  Copyright (C) 2002 - 2011  Paul Mundt
-> @@ -103,13 +107,13 @@ struct sci_port {
->
->  #ifdef CONFIG_SERIAL_SH_SCI_DMA
->         struct dma_async_tx_descriptor  *desc_tx;
-> -       struct dma_async_tx_descriptor  *desc_rx[2];
-> +       struct dma_async_tx_descriptor  *desc_rx[3];
->         dma_cookie_t                    cookie_tx;
-> -       dma_cookie_t                    cookie_rx[2];
-> +       dma_cookie_t                    cookie_rx[3];
->         dma_cookie_t                    active_rx;
->         struct scatterlist              sg_tx;
->         unsigned int                    sg_len_tx;
-> -       struct scatterlist              sg_rx[2];
-> +       struct scatterlist              sg_rx[3];
-
-Why do you need 3 scatter lists?
-
->         size_t                          buf_len_rx;
->         struct sh_dmae_slave            param_tx;
->         struct sh_dmae_slave            param_rx;
-> @@ -117,6 +121,8 @@ struct sci_port {
-
-> @@ -1348,13 +1363,26 @@ static void sci_rx_dma_release(struct sci_port *s, bool enable_pio)
->  {
->         struct dma_chan *chan = s->chan_rx;
->         struct uart_port *port = &s->port;
-> +       size_t buf_len_rx;
-> +       int t = 100000;
-> +
-> +       s->rx_release_flag = 1;
-> +       while (t--) {
-> +               if (!s->rx_flag)
-> +                       break;
-> +               usleep_range(10, 50);
-> +       }
-
-The above part looks a bit fishy to me... Isn't there a better way to wait?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+On Tue, May 12, 2015 at 03:14:44PM +0100, Andre Przywara wrote:
+> This is the fourth revision of the SBSA UART support series, now
+> based on the current tty-next branch.
+> Compared to v3 I addressed some comments Jakub had on v3 (thanks for
+> the review!). Also since some basic ACPI support for ARM64 is now
+> upstream, I include the necessary ACPI binding as a new patch 11
+> on top.
+> ----
+> 
+> The ARM Server Base System Architecture[1] document describes a
+> generic UART which is a subset of the ARM PL011 UART.
+> It lacks DMA support, baud rate control and modem status line
+> control, among other things.
+> The idea is to move the UART initialization and setup into the
+> firmware (which does this job today already) and let the kernel just
+> use the UART for sending and receiving characters.
+> 
+> This patchset integrates support for this UART subset into the
+> existing PL011 driver - basically by refactoring some
+> functions and providing a new uart_ops structure for it. It also has
+> a separate probe function to be not dependent on AMBA/PrimeCell.
+> It provides a device tree and an ACPI binding.
+> Beside the obvious effect of code sharing reusing most of the PL011
+> code has the advantage of not introducing another serial device
+> prefix, so it can go with ttyAMA, which seems to be pretty common.
+> As changing the baudrate and other communication parameters is not
+> specified for the SBSA UART, any userland attempt will be denied by
+> the kernel. The device-tree provided fixed baud rate will be
+> reported, so stty for instance prints the right value.
+> 
+> This series is based on Greg's tty-next branch, a git repo can
+> be found at [2] (branch sbsa-uart/v4).
+> 
+> Patch 1/11 contains a bug fix which applies to the PL011 part also,
+> it should be considered regardless of the rest of the series.
+> According to Russell this is still racy, but still better than the
+> current solution.
+> Patch 2-7 refactor some PL011 functions by splitting them up into
+> smaller pieces, so that most of the code can be reused later by the
+> SBSA part.
+> Patch 8 and 9 introduce two new properties for the vendor structure,
+> this is for SBSA functionality which cannot be controlled by
+> separate uart_ops members only.
+> Patch 10 then finally drops in the SBSA specific code, by providing
+> a new uart_ops, vendor struct and probe function for it. Also the new
+> device tree binding is documented.
+> Patch 11 adds the necessary ACPI boilerplate.
+> 
+> For testing you should be able to take any hardware which has a PL011
+> and change the DT to use a "arm,sbsa-uart" compatible string and the
+> baud rate with the "current-speed" property.
+> Of course testing with a real SBSA Generic UART is welcomed - as well
+> as regression testing with any PL011 implementation.
+> I tested this on a FastModel, a Juno and a Midway machine, both in
+> PL011 and in (DT-emulated) SBSA mode.
+> 
+> Changelog:
+> v3 .. v4:
+> - fixed rebase artifact
+> - moved memory allocation out of pl011_allocate_port() function
+>   (and consequently renamed that to pl011_find_free_port)
+> - added ACPI driver binding
+> 
+> v2 .. v3:
+> - rebased on top of tty-next and Dave's latest PL011 rework
+> - fixed module build
+> - removed redundant =NULL members in sbsa_uart_ops
+> 
+> v1 .. v2:
+> - rebased on top of 4.0-rc1 and Dave's newest PL011 fix [3]
+> - added mandatory current-speed property and report that to userland
+> 
+> Cheers,
+> Andre
+> 
+> [1] ARM-DEN-0029 Server Base System Architecture, available (click-
+>     thru...) from http://infocenter.arm.com
+> [2] http://www.linux-arm.org/git?p=linux-ap.git
+>     git://linux-arm.org/linux-ap.git
+> [3] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-March/327631.html
+> 
+> Andre Przywara (10):
+>   drivers: PL011: avoid potential unregister_driver call
+>   drivers: PL011: refactor pl011_startup()
+>   drivers: PL011: refactor pl011_shutdown()
+>   drivers: PL011: refactor pl011_set_termios()
+>   drivers: PL011: refactor pl011_probe()
+>   drivers: PL011: replace UART_MIS reading with _RIS & _IMSC
+>   drivers: PL011: move cts_event workaround into separate function
+>   drivers: PL011: allow avoiding UART enabling/disabling
+>   drivers: PL011: allow to supply fixed option string
+>   drivers: PL011: add support for the ARM SBSA generic UART
+> 
+> Graeme Gregory (1):
+>   drivers: PL011: add ACPI probing for SBSA UART
+> 
+>  .../devicetree/bindings/serial/arm_sbsa_uart.txt   |  10 +
+>  drivers/tty/serial/amba-pl011.c                    | 547 +++++++++++++++------
+>  2 files changed, 409 insertions(+), 148 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
+Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
