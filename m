@@ -1,44 +1,58 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: serial_core: add pci uart early console support
-Date: Wed, 13 May 2015 23:08:44 +0100
-Message-ID: <20150513230844.1d9a5d9a@lxorguk.ukuu.org.uk>
-References: <20150513192016.GA167188@worksta>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150513192016.GA167188@worksta>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Bin Gao <bin.gao@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Tony Lindgren <tony@atomide.com>
+Subject: [PATCHv3 0/5] Linux generic wakeirq handling
+Date: Wed, 13 May 2015 16:36:31 -0700
+Message-ID: <1431560196-5722-1-git-send-email-tony@atomide.com>
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Alan Stern <stern@rowland.harvard.edu>
+Cc: Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 13 May 2015 12:20:16 -0700
-Bin Gao <bin.gao@linux.intel.com> wrote:
+Hi all,
 
-> >From 8977941ac3d70425fa7ca5ef3ab6de6c28743f1f Mon Sep 17 00:00:00 2001
-> From: Bin Gao <bin.gao@intel.com>
-> Date: Tue, 12 May 2015 16:40:27 -0700
-> Subject: [PATCH] serial_core: add pci uart early console support
-> 
-> On some Intel Atom SoCs, the legacy IO port UART(0x3F8) is not available.
-> Instead, a 8250 compatible PCI uart can be used as early console.
-> This patch adds pci support to the 8250 early console driver uart8250.
-> For example, to enable pci uart(00:21.3) as early console on these
-> platforms, append the following line to the kernel command line
-> (assume baud rate is 115200):
-> earlycon=uart8250,pci32,0:24.2,115200n8
+Here's the third version of the Linux generic wakeirq support.
 
+I've added support for automatically handling wake-up capable
+IO interrupts too as suggested by Rafael the last time around.
 
-We've already got support for this
+I think I've addressed all the comments, please review and let
+me know if I've missed something.
 
-commit ea9e9d8029020d438b0717ffddf65140fda16051
+For reference, the two earlier versions can be found at:
+
+http://www.spinics.net/lists/arm-kernel/msg377300.html
+https://lwn.net/Articles/635904/
+
+Regards,
+
+Tony
 
 
-I actually think the fact you've put it into drivers/tty is better as PCI
-is generic and PCI serial boot likewise. However it ought to use the same
-command line interface (with extensions) to be compatible with the
-existing arch/x86 code, and to remove the arch/x86 version if you are
-doing so.
+Tony Lindgren (5):
+  PM / Runtime: Update last_busy in rpm_resume
+  PM / Wakeirq: Add automated device wake IRQ handling
+  serial: omap: Switch wake-up interrupt to generic wakeirq
+  serial: 8250_omap: Move wake-up interrupt to generic wakeirq
+  mmc: omap_hsmmc: Change wake-up interrupt to use generic wakeirq
 
-Alan
+ arch/arm/mach-omap2/Kconfig         |   1 +
+ drivers/base/power/Makefile         |   1 +
+ drivers/base/power/main.c           |   2 +
+ drivers/base/power/power.h          |  38 +++++
+ drivers/base/power/runtime.c        |   1 +
+ drivers/base/power/wakeirq.c        | 316 ++++++++++++++++++++++++++++++++++++
+ drivers/base/power/wakeup.c         |  96 +++++++++++
+ drivers/mmc/host/omap_hsmmc.c       |  51 +-----
+ drivers/tty/serial/8250/8250_omap.c |  61 +------
+ drivers/tty/serial/omap-serial.c    |  38 +----
+ include/linux/pm.h                  |   2 +
+ include/linux/pm_wakeirq.h          |  72 ++++++++
+ include/linux/pm_wakeup.h           |   7 +
+ kernel/power/Kconfig                |   4 +
+ 14 files changed, 562 insertions(+), 128 deletions(-)
+ create mode 100644 drivers/base/power/wakeirq.c
+ create mode 100644 include/linux/pm_wakeirq.h
+
+-- 
+2.1.4
+
