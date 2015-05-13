@@ -1,125 +1,181 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v4 00/11] drivers: PL011: add ARM SBSA Generic UART support
-Date: Wed, 13 May 2015 10:17:48 +0100
-Message-ID: <20150513091748.GA25891@red-moon>
-References: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
+From: ram kiran <indrakanti_ram@hotmail.com>
+Subject: RE: [PATCH v2] sc16is7xx: spi interface is added
+Date: Wed, 13 May 2015 17:09:59 +0530
+Message-ID: <SNT151-W59A9C5ADDA1491FE7C422EE7D90@phx.gbl>
+References: <BLU436-SMTP5618D721DB5945207A778BE7D90@phx.gbl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: "arnd@arndb.de" <arnd@arndb.de>, "graeme.gregory@linaro.org" <graeme.gregory@linaro.org>, Jakub Kicinski <moorray3@wp.pl>, Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "rmk+kernel@arm.linux.org.uk" <rmk+kernel@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <BLU436-SMTP5618D721DB5945207A778BE7D90@phx.gbl>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: =?iso-8859-2?B?SmFrdWIgS2ljafFza2k=?= <moorray3@wp.pl>, "indrakanti.ram@gmail.com" <indrakanti.ram@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 12, 2015 at 03:14:44PM +0100, Andre Przywara wrote:
-> This is the fourth revision of the SBSA UART support series, now
-> based on the current tty-next branch.
-> Compared to v3 I addressed some comments Jakub had on v3 (thanks for
-> the review!). Also since some basic ACPI support for ARM64 is now
-> upstream, I include the necessary ACPI binding as a new patch 11
-> on top.
-> ----
-> 
-> The ARM Server Base System Architecture[1] document describes a
-> generic UART which is a subset of the ARM PL011 UART.
-> It lacks DMA support, baud rate control and modem status line
-> control, among other things.
-> The idea is to move the UART initialization and setup into the
-> firmware (which does this job today already) and let the kernel just
-> use the UART for sending and receiving characters.
-> 
-> This patchset integrates support for this UART subset into the
-> existing PL011 driver - basically by refactoring some
-> functions and providing a new uart_ops structure for it. It also has
-> a separate probe function to be not dependent on AMBA/PrimeCell.
-> It provides a device tree and an ACPI binding.
-> Beside the obvious effect of code sharing reusing most of the PL011
-> code has the advantage of not introducing another serial device
-> prefix, so it can go with ttyAMA, which seems to be pretty common.
-> As changing the baudrate and other communication parameters is not
-> specified for the SBSA UART, any userland attempt will be denied by
-> the kernel. The device-tree provided fixed baud rate will be
-> reported, so stty for instance prints the right value.
-> 
-> This series is based on Greg's tty-next branch, a git repo can
-> be found at [2] (branch sbsa-uart/v4).
-> 
-> Patch 1/11 contains a bug fix which applies to the PL011 part also,
-> it should be considered regardless of the rest of the series.
-> According to Russell this is still racy, but still better than the
-> current solution.
-> Patch 2-7 refactor some PL011 functions by splitting them up into
-> smaller pieces, so that most of the code can be reused later by the
-> SBSA part.
-> Patch 8 and 9 introduce two new properties for the vendor structure,
-> this is for SBSA functionality which cannot be controlled by
-> separate uart_ops members only.
-> Patch 10 then finally drops in the SBSA specific code, by providing
-> a new uart_ops, vendor struct and probe function for it. Also the new
-> device tree binding is documented.
-> Patch 11 adds the necessary ACPI boilerplate.
-> 
-> For testing you should be able to take any hardware which has a PL011
-> and change the DT to use a "arm,sbsa-uart" compatible string and the
-> baud rate with the "current-speed" property.
-> Of course testing with a real SBSA Generic UART is welcomed - as well
-> as regression testing with any PL011 implementation.
-> I tested this on a FastModel, a Juno and a Midway machine, both in
-> PL011 and in (DT-emulated) SBSA mode.
-> 
-> Changelog:
-> v3 .. v4:
-> - fixed rebase artifact
-> - moved memory allocation out of pl011_allocate_port() function
->   (and consequently renamed that to pl011_find_free_port)
-> - added ACPI driver binding
-> 
-> v2 .. v3:
-> - rebased on top of tty-next and Dave's latest PL011 rework
-> - fixed module build
-> - removed redundant =NULL members in sbsa_uart_ops
-> 
-> v1 .. v2:
-> - rebased on top of 4.0-rc1 and Dave's newest PL011 fix [3]
-> - added mandatory current-speed property and report that to userland
-> 
-> Cheers,
-> Andre
-> 
-> [1] ARM-DEN-0029 Server Base System Architecture, available (click-
->     thru...) from http://infocenter.arm.com
-> [2] http://www.linux-arm.org/git?p=linux-ap.git
->     git://linux-arm.org/linux-ap.git
-> [3] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-March/327631.html
-> 
-> Andre Przywara (10):
->   drivers: PL011: avoid potential unregister_driver call
->   drivers: PL011: refactor pl011_startup()
->   drivers: PL011: refactor pl011_shutdown()
->   drivers: PL011: refactor pl011_set_termios()
->   drivers: PL011: refactor pl011_probe()
->   drivers: PL011: replace UART_MIS reading with _RIS & _IMSC
->   drivers: PL011: move cts_event workaround into separate function
->   drivers: PL011: allow avoiding UART enabling/disabling
->   drivers: PL011: allow to supply fixed option string
->   drivers: PL011: add support for the ARM SBSA generic UART
-> 
-> Graeme Gregory (1):
->   drivers: PL011: add ACPI probing for SBSA UART
-> 
->  .../devicetree/bindings/serial/arm_sbsa_uart.txt   |  10 +
->  drivers/tty/serial/amba-pl011.c                    | 547 +++++++++++++++------
->  2 files changed, 409 insertions(+), 148 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
-Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+not sure why is not available on mailing list...
+
+----------------------------------------
+> From: indrakanti_ram@hotmail.com
+> To: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; jslaby@suse.cz; gregkh@linuxfoundation.org
+> CC: moorray3@wp.pl; indrakanti.ram@gmail.com; indrakanti_ram@hotmail.com
+> Subject: [PATCH v2] sc16is7xx: spi interface is added
+> Date: Wed, 13 May 2015 16:27:58 +0530
+>
+> spi interface for sc16is7xx is added along with Kconfig flag
+> to enable spi or i2c, thus in a instance we can have either
+> spi or i2c or both, in sync to the hw.
+>
+> Signed-off-by: ram.i hcltech <indrakanti_ram@hotmail.com>
+> ---
+>
+> Changes in v2:
+> -Added seprate flags for i2c and spi
+> -Added space in the comments lines
+> -Added MODULE_ALIAS for spi interface
+> ---
+> drivers/tty/serial/Kconfig | 27 +++++++++++++++--
+> drivers/tty/serial/sc16is7xx.c | 69 +++++++++++++++++++++++++++++++++++++++++-
+> 2 files changed, 92 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index f8120c1..8c505b2 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1181,13 +1181,34 @@ config SERIAL_SCCNXP_CONSOLE
+>
+> config SERIAL_SC16IS7XX
+> tristate "SC16IS7xx serial support"
+> - depends on I2C
+> select SERIAL_CORE
+> - select REGMAP_I2C if I2C
+> help
+> This selects support for SC16IS7xx serial ports.
+> Supported ICs are SC16IS740, SC16IS741, SC16IS750, SC16IS752,
+> - SC16IS760 and SC16IS762.
+> + SC16IS760 and SC16IS762, over i2c or spi.
+> + select at least one of the i2c or spi interface.
+> +
+> +config SERIAL_SC16IS7XX_I2C
+> + bool "SC16IS7xx for I2C interface"
+> + depends on SERIAL_SC16IS7XX=y
+> + depends on I2C
+> + select REGMAP_I2C if I2C
+> + help
+> + to enable i2c interface for SC16IS7XX, say Y,
+> + Otherwise, for i2c say N.
+> + this would make the driver to interface over SPI and I2C would
+> + be diabled.
+> +
+> +config SERIAL_SC16IS7XX_SPI
+> + bool "SC16IS7xx for spi interface"
+> + depends on SERIAL_SC16IS7XX
+> + depends on SPI_MASTER
+> + select REGMAP_SPI if SPI_MASTER
+> + help
+> + to enable spi interface for SC16IS7XX, say Y,
+> + Otherwise, for i2c say N.
+> + this would make the driver to interface over SPI and I2C would
+> + be diabled.
+>
+> config SERIAL_BFIN_SPORT
+> tristate "Blackfin SPORT emulate UART"
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 468354e..ca6a838 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -25,6 +25,7 @@
+> #include <linux/serial.h>
+> #include <linux/tty.h>
+> #include <linux/tty_flip.h>
+> +#include <linux/spi/spi.h>
+> #include <linux/uaccess.h>
+>
+> #define SC16IS7XX_NAME "sc16is7xx"
+> @@ -1203,7 +1204,73 @@ static struct regmap_config regcfg = {
+> .volatile_reg = sc16is7xx_regmap_volatile,
+> .precious_reg = sc16is7xx_regmap_precious,
+> };
+> +#ifdef CONFIG_SERIAL_SC16IS7XX_SPI
+> +static int sc16is7xx_spi_probe(struct spi_device *spi)
+> +{
+> + struct sc16is7xx_devtype *devtype;
+> + unsigned long flags = 0;
+> + struct regmap *regmap;
+> + int ret;
+> +
+> + /* Setup SPI bus */
+> + spi->bits_per_word = 8;
+> + /* only supports mode 0 on SC16IS762 */
+> + spi->mode = spi->mode ? : SPI_MODE_0;
+> + spi->max_speed_hz = spi->max_speed_hz ? : 15000000;
+> + ret = spi_setup(spi);
+> + if (ret)
+> + return ret;
+> +
+> + if (spi->dev.of_node) {
+> + const struct of_device_id *of_id =
+> + of_match_device(sc16is7xx_dt_ids, &spi->dev);
+> +
+> + devtype = (struct sc16is7xx_devtype *)of_id->data;
+> + } else {
+> + const struct spi_device_id *id_entry = spi_get_device_id(spi);
+> +
+> + devtype = (struct sc16is7xx_devtype *)id_entry->driver_data;
+> + flags = IRQF_TRIGGER_FALLING;
+> + }
+> +
+> + regcfg.max_register = (0xf << SC16IS7XX_REG_SHIFT) |
+> + (devtype->nr_uart - 1);
+> + regmap = devm_regmap_init_spi(spi, &regcfg);
+> +
+> + return sc16is7xx_probe(&spi->dev, devtype, regmap, spi->irq, flags);
+> +}
+> +
+> +static int sc16is7xx_spi_remove(struct spi_device *spi)
+> +{
+> + return sc16is7xx_remove(&spi->dev);
+> +}
+>
+> +static const struct spi_device_id sc16is7xx_spi_id_table[] = {
+> + { "sc16is74x", (kernel_ulong_t)&sc16is74x_devtype, },
+> + { "sc16is750", (kernel_ulong_t)&sc16is750_devtype, },
+> + { "sc16is752", (kernel_ulong_t)&sc16is752_devtype, },
+> + { "sc16is760", (kernel_ulong_t)&sc16is760_devtype, },
+> + { "sc16is762", (kernel_ulong_t)&sc16is762_devtype, },
+> + { }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(spi, sc16is7xx_spi_id_table);
+> +
+> +static struct spi_driver sc16is7xx_spi_uart_driver = {
+> + .driver = {
+> + .name = SC16IS7XX_NAME,
+> + .owner = THIS_MODULE,
+> + .of_match_table = of_match_ptr(sc16is7xx_dt_ids),
+> + },
+> + .probe = sc16is7xx_spi_probe,
+> + .remove = sc16is7xx_spi_remove,
+> + .id_table = sc16is7xx_spi_id_table,
+> +};
+> +module_spi_driver(sc16is7xx_spi_uart_driver);
+> +MODULE_ALIAS("spi:sc16is7xx");
+> +#endif
+> +
+> +#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+> static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
+> const struct i2c_device_id *id)
+> {
+> @@ -1255,7 +1322,7 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
+> };
+> module_i2c_driver(sc16is7xx_i2c_uart_driver);
+> MODULE_ALIAS("i2c:sc16is7xx");
+> -
+> +#endif
+> MODULE_LICENSE("GPL");
+> MODULE_AUTHOR("Jon Ringle <jringle@gridpoint.com>");
+> MODULE_DESCRIPTION("SC16IS7XX serial driver");
+> --
+> 1.9.1
+>
+ 		 	   		  
