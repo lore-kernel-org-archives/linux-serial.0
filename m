@@ -1,61 +1,98 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v8 14/16] ARM: dts: Introduce STM32F429 MCU
-Date: Wed, 13 May 2015 13:45:36 +0200
-Message-ID: <CALszF6CS8Q9DWX+ERtu=k=Bzr1-25N3oZQyWyxDZBF3an4nFKQ@mail.gmail.com>
-References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<1431158038-3813-15-git-send-email-mcoquelin.stm32@gmail.com>
-	<2789447.8FUTAOJOHR@wuerfel>
+From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
+Subject: Re: [PATCH v2] sc16is7xx: spi interface is added
+Date: Wed, 13 May 2015 14:21:12 +0200
+Message-ID: <20150513142112.32fb6781@north>
+References: <BLU436-SMTP5618D721DB5945207A778BE7D90@phx.gbl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <2789447.8FUTAOJOHR@wuerfel>
-Sender: linux-doc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <daniel.thompson@linaro.org>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Lee Jones <lee.jones@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <BLU436-SMTP5618D721DB5945207A778BE7D90@phx.gbl>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "ram.i hcltech" <indrakanti_ram@hotmail.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jslaby@suse.cz, gregkh@linuxfoundation.org, indrakanti.ram@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-2015-05-12 23:21 GMT+02:00 Arnd Bergmann <arnd@arndb.de>:
-> On Saturday 09 May 2015 09:53:56 Maxime Coquelin wrote:
->> +#include  <dt-bindings/mfd/stm32f4-rcc.h>
->> +
->>
->
-> Can you find a way to avoid this dependency?
->
-> Maybe you can change the bindings so that the numbers you pass as
-> arguments to the reset and clock specifiers reflect the numbers that
-> the hardware use?
+On Wed, 13 May 2015 16:27:58 +0530, ram.i hcltech wrote:
+> spi interface for sc16is7xx is added along with Kconfig flag
+> to enable spi or i2c, thus in a instance we can have either
+> spi or i2c or both, in sync to the hw.
+> 
+> Signed-off-by: ram.i hcltech <indrakanti_ram@hotmail.com>
+> ---
+> 
+> Changes in v2:
+>  -Added seprate flags for i2c and spi
+>  -Added space in the comments lines
+>  -Added MODULE_ALIAS for spi interface
+> ---
+>  drivers/tty/serial/Kconfig     | 27 +++++++++++++++--
+>  drivers/tty/serial/sc16is7xx.c | 69 +++++++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 92 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index f8120c1..8c505b2 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1181,13 +1181,34 @@ config SERIAL_SCCNXP_CONSOLE
+>  
+>  config SERIAL_SC16IS7XX
+>  	tristate "SC16IS7xx serial support"
+> -	depends on I2C
 
-If I understand correctly, you prefer the way I did in v7 [0]?
+Please keep the dependency like this:
+depends on I2C || SPI_MASTER
 
-I don't have a strong opinion on this. Either way is fine to me.
+(or SPI, I don't know what's the difference. SPI seems fine.)
 
-I changed the bindings in the v8 after discussions with Daniel
-Thompson, who is implementing the clock driver part of the RCC IP.
+>  	select SERIAL_CORE
+> -	select REGMAP_I2C if I2C
+>  	help
+>  	  This selects support for SC16IS7xx serial ports.
+>  	  Supported ICs are SC16IS740, SC16IS741, SC16IS750, SC16IS752,
+> -	  SC16IS760 and SC16IS762.
+> +	  SC16IS760 and SC16IS762, over i2c or spi.
+> +	  select at least one of the i2c or spi interface.
 
-He proposed we used common defines, because each peripheral has a
-reset line and a clock gate.
-Both reset and clock are represented as a single bit, with only the
-base offset differing between clock and reset.
-You can have a look at chapter 6 of the reference manual [1] if you
-find some time.
+I would phrase the help message like this:
 
-Having common defines between clocks and reset make sense to me, but I
-also understand your point of avoiding dependencies.
+This selects support for SC16IS7xx serial ports.
+Supported ICs are SC16IS740, SC16IS741, SC16IS750, SC16IS752,
+SC16IS760 and SC16IS762. Select supported buses using options below.
 
-Maybe I can revert back to v7 bindings for now, and then we can
-reconsider using common defines when Daniel will send the clock
-patches.
-Note that doing that won't break the DT binary compatibility, as the
-raw reset values, or the ones from defines are the same.
+> +config SERIAL_SC16IS7XX_I2C
+> +	bool "SC16IS7xx for I2C interface"
 
-Daniel, could you share an example of the bindings you would use for the clocks?
+Please add "default y" to minimize oldconfig pain for those already
+using the driver.
 
-Kind regards,
-Maxime
+> +	depends on SERIAL_SC16IS7XX=y
 
->
->         Arnd
+Why =y?
 
-[0]: http://lkml.iu.edu/hypermail/linux/kernel/1504.3/04523.html
-[1]: http://www.st.com/web/en/resource/technical/document/reference_manual/DM00031020.pdf
+> +	depends on I2C
+> +	select REGMAP_I2C if I2C
+> +	help
+> +	  to enable i2c interface for SC16IS7XX, say Y,
+> +	  Otherwise, for i2c say N.
+> +	  this would make the driver to interface over SPI and I2C would
+> +	  be diabled.
+
+I would phrase it simply like this:
+
+Enable SC16IS7xx driver on I2C bus.
+
+> +config SERIAL_SC16IS7XX_SPI
+> +	bool "SC16IS7xx for spi interface"
+> +	depends on SERIAL_SC16IS7XX
+> +	depends on SPI_MASTER
+
+Right now it is possible to select the driver without any bus-specific
+option being set.  I don't see an easy way to avoid this but please
+make sure that there are no build failures/warnings in this scenario.
+
+You should also extend the binding information to include the new SPI
+interface (Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt)
+
+
+Thanks!
