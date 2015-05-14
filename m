@@ -1,8 +1,7 @@
 From: Barry Song <21cnbao@gmail.com>
-Subject: [PATCH 2/6] serial: sirf: fix the issue that HW flow control doesn't
- work for BT
-Date: Thu, 14 May 2015 06:45:22 +0000
-Message-ID: <1431585926-10746-2-git-send-email-21cnbao@gmail.com>
+Subject: [PATCH 5/6] serial: sirf: add serial loopback function support
+Date: Thu, 14 May 2015 06:45:25 +0000
+Message-ID: <1431585926-10746-5-git-send-email-21cnbao@gmail.com>
 References: <1431585926-10746-1-git-send-email-21cnbao@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,31 +23,56 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Qipan Li <Qipan.Li@csr.com>
 
->From HW spec, when rxfifo's data is less than AFC_RX_THD(RX threshhold), RTS
-signal is active. otherwise, RTS signal is inactive.
-
-Crrently the RX threshhold is set as zero, so RTS has no chance to be
-active. This patch replaces the default 0 by a positive number.
-
 Signed-off-by: Qipan Li <Qipan.Li@csr.com>
 Signed-off-by: Barry Song <Baohua.Song@csr.com>
 ---
- drivers/tty/serial/sirfsoc_uart.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/sirfsoc_uart.c | 20 ++++++++++++++++++++
+ drivers/tty/serial/sirfsoc_uart.h |  2 +-
+ 2 files changed, 21 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index 1d0d47f..48cceaf 100644
+index a500721..0e43799 100644
 --- a/drivers/tty/serial/sirfsoc_uart.c
 +++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -344,7 +344,8 @@ static void sirfsoc_uart_enable_ms(struct uart_port *port)
+@@ -108,6 +108,26 @@ static void sirfsoc_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 	unsigned int val = assert ? SIRFUART_AFC_CTRL_RX_THD : 0x0;
+ 	unsigned int current_val;
+ 
++	if (mctrl & TIOCM_LOOP) {
++		if (sirfport->uart_reg->uart_type == SIRF_REAL_UART)
++			wr_regl(port, ureg->sirfsoc_line_ctrl,
++				rd_regl(port, ureg->sirfsoc_line_ctrl) |
++				SIRFUART_LOOP_BACK);
++		else
++			wr_regl(port, ureg->sirfsoc_mode1,
++				rd_regl(port, ureg->sirfsoc_mode1) |
++				SIRFSOC_USP_LOOP_BACK_CTRL);
++	} else {
++		if (sirfport->uart_reg->uart_type == SIRF_REAL_UART)
++			wr_regl(port, ureg->sirfsoc_line_ctrl,
++				rd_regl(port, ureg->sirfsoc_line_ctrl) &
++				~SIRFUART_LOOP_BACK);
++		else
++			wr_regl(port, ureg->sirfsoc_mode1,
++				rd_regl(port, ureg->sirfsoc_mode1) &
++				~SIRFSOC_USP_LOOP_BACK_CTRL);
++	}
++
+ 	if (!sirfport->hw_flow_ctrl || !sirfport->ms_enabled)
+ 		return;
  	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART) {
- 		wr_regl(port, ureg->sirfsoc_afc_ctrl,
- 				rd_regl(port, ureg->sirfsoc_afc_ctrl) |
--				SIRFUART_AFC_TX_EN | SIRFUART_AFC_RX_EN);
-+				SIRFUART_AFC_TX_EN | SIRFUART_AFC_RX_EN |
-+				SIRFUART_AFC_CTRL_RX_THD);
- 		if (!sirfport->is_atlas7)
- 			wr_regl(port, ureg->sirfsoc_int_en_reg,
- 					rd_regl(port, ureg->sirfsoc_int_en_reg)
+diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
+index b49c23a..3ab3141 100644
+--- a/drivers/tty/serial/sirfsoc_uart.h
++++ b/drivers/tty/serial/sirfsoc_uart.h
+@@ -322,7 +322,7 @@ struct sirfsoc_uart_register sirfsoc_uart = {
+ #define SIRFSOC_USP_RX_CLK_DIVISOR_OFFSET	24
+ #define SIRFSOC_USP_ASYNC_DIV2_MASK		0x3f
+ #define SIRFSOC_USP_ASYNC_DIV2_OFFSET		16
+-
++#define SIRFSOC_USP_LOOP_BACK_CTRL		BIT(2)
+ /* USP-UART Common */
+ #define SIRFSOC_UART_RX_TIMEOUT(br, to)	(((br) * (((to) + 999) / 1000)) / 1000)
+ #define SIRFUART_RECV_TIMEOUT_VALUE(x)	\
 -- 
 2.3.5
