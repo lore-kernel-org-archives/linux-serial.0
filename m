@@ -1,7 +1,7 @@
 From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
 Subject: Re: [PATCH v2] sc16is7xx: spi interface is added
-Date: Thu, 14 May 2015 11:39:05 +0200
-Message-ID: <20150514113905.638dd163@north>
+Date: Thu, 14 May 2015 11:51:06 +0200
+Message-ID: <20150514115106.41bfdbca@north>
 References: <BLU436-SMTP5618D721DB5945207A778BE7D90@phx.gbl>
 	<20150513142112.32fb6781@north>
 	<SNT151-W2631587836D659058C19A7E7D80@phx.gbl>
