@@ -1,554 +1,435 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 2/5] PM / Wakeirq: Add automated device wake IRQ handling
-Date: Wed, 13 May 2015 21:06:34 -0500
-Message-ID: <20150514020634.GB20006@saruman.tx.rr.com>
-References: <1431560196-5722-1-git-send-email-tony@atomide.com>
- <1431560196-5722-3-git-send-email-tony@atomide.com>
-Reply-To: <balbi@ti.com>
+From: Barry Song <21cnbao@gmail.com>
+Subject: [PATCH 1/6] serial: sirf: enable ATLAS7 USP serial support
+Date: Thu, 14 May 2015 06:45:21 +0000
+Message-ID: <1431585926-10746-1-git-send-email-21cnbao@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1LKvkjL3sHcu1TtY"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1431560196-5722-3-git-send-email-tony@atomide.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Alan Stern <stern@rowland.harvard.edu>, Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
+Cc: Qipan Li <Qipan.Li@csr.com>, workgroup.linux@csr.com, linux-arm-kernel@lists.infradead.org, Barry Song <Baohua.Song@csr.com>
 List-Id: linux-serial@vger.kernel.org
 
---1LKvkjL3sHcu1TtY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: Qipan Li <Qipan.Li@csr.com>
 
-Hi,
+differentiate difference port types by re-defining the status MARCO
+or putting HW differences into private data of the related ports.
 
-On Wed, May 13, 2015 at 04:36:33PM -0700, Tony Lindgren wrote:
-> Turns out we can automate the handling for the device_may_wakeup()
-> quite a bit by using the kernel wakeup source list.
->=20
-> And as some hardware has separate dedicated wake-up interrupt
-> in addition to the IO interrupt, we can automate the handling by
-> adding a generic threaded interrupt handler that just calls the
-> device PM runtime to wake up the device.
->=20
-> This allows dropping code from device drivers as we currently
-> are doing it in multiple ways, and often wrong.
->=20
-> For most drivers, we should be able to drop the following
-> boilerplate code from runtime_suspend and runtime_resume
-> functions:
->=20
-> 	...
-> 	if (device_may_wakeup(dev)
-> 		enable_irq_wake(irq);
-> 	...
-> 	if (device_may_wakeup(dev)
-> 		enable_irq_wake(irq);
-> 	...
->=20
-> We can replace it with just the following init and exit
-> time code:
->=20
-> 	...
-> 	device_init_wakeup(dev, true);
-> 	dev_pm_set_wake_irq(dev, irq);
-> 	...
-> 	dev_pm_clear_wake_irq(dev);
-> 	device_init_wakeup(dev, false);
-> 	...
->=20
-> And for hardware with dedicated wake-up interrupts:
->=20
-> 	...
-> 	device_init_wakeup(dev, true);
-> 	dev_pm_request_wake_irq(dev, wakeirq, NULL, 0, NULL);
-> 	...
-> 	dev_pm_enable_wake_irq(dev);
-> 	...
-> 	dev_pm_disable_wake_irq(dev);
-> 	...
-> 	dev_pm_free_wake_irq(dev);
-> 	device_init_wakeup(dev, false);
-> 	...
->=20
-> For now, let's only enable it for select PM_WAKEIRQ.
->=20
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  arch/arm/mach-omap2/Kconfig  |   1 +
->  drivers/base/power/Makefile  |   1 +
->  drivers/base/power/main.c    |   2 +
->  drivers/base/power/power.h   |  38 ++++++
->  drivers/base/power/wakeirq.c | 316 +++++++++++++++++++++++++++++++++++++=
-++++++
->  drivers/base/power/wakeup.c  |  96 +++++++++++++
->  include/linux/pm.h           |   2 +
->  include/linux/pm_wakeirq.h   |  72 ++++++++++
->  include/linux/pm_wakeup.h    |   7 +
->  kernel/power/Kconfig         |   4 +
->  10 files changed, 539 insertions(+)
->  create mode 100644 drivers/base/power/wakeirq.c
->  create mode 100644 include/linux/pm_wakeirq.h
->=20
-> diff --git a/arch/arm/mach-omap2/Kconfig b/arch/arm/mach-omap2/Kconfig
-> index 6468f15..ac7b570 100644
-> --- a/arch/arm/mach-omap2/Kconfig
-> +++ b/arch/arm/mach-omap2/Kconfig
-> @@ -85,6 +85,7 @@ config ARCH_OMAP2PLUS
->  	select OMAP_DM_TIMER
->  	select OMAP_GPMC
->  	select PINCTRL
-> +	select PM_WAKEIRQ if PM_SLEEP
->  	select SOC_BUS
->  	select TI_PRIV_EDMA
->  	select OMAP_IRQCHIP
+Signed-off-by: Qipan Li <Qipan.Li@csr.com>
+Signed-off-by: Barry Song <Baohua.Song@csr.com>
+---
+ drivers/tty/serial/sirfsoc_uart.c | 129 ++++++++++++++++++++++++++++----------
+ drivers/tty/serial/sirfsoc_uart.h |  33 +++++-----
+ 2 files changed, 115 insertions(+), 47 deletions(-)
 
-seems like enabling this for OMAP should be a patch of its own.
-
-> diff --git a/drivers/base/power/Makefile b/drivers/base/power/Makefile
-> index 1cb8544..527546e 100644
-> --- a/drivers/base/power/Makefile
-> +++ b/drivers/base/power/Makefile
-> @@ -4,5 +4,6 @@ obj-$(CONFIG_PM_TRACE_RTC)	+=3D trace.o
->  obj-$(CONFIG_PM_OPP)	+=3D opp.o
->  obj-$(CONFIG_PM_GENERIC_DOMAINS)	+=3D  domain.o domain_governor.o
->  obj-$(CONFIG_HAVE_CLK)	+=3D clock_ops.o
-> +obj-$(CONFIG_PM_WAKEIRQ)	+=3D wakeirq.o
-> =20
->  ccflags-$(CONFIG_DEBUG_DRIVER) :=3D -DDEBUG
-> diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
-> index 3d874ec..24515e7 100644
-> --- a/drivers/base/power/main.c
-> +++ b/drivers/base/power/main.c
-> @@ -587,6 +587,7 @@ void dpm_resume_noirq(pm_message_t state)
->  	async_synchronize_full();
->  	dpm_show_time(starttime, state, "noirq");
->  	resume_device_irqs();
-> +	device_wakeup_disarm_wakeirqs();
->  	cpuidle_resume();
->  	trace_suspend_resume(TPS("dpm_resume_noirq"), state.event, false);
->  }
-> @@ -1104,6 +1105,7 @@ int dpm_suspend_noirq(pm_message_t state)
-> =20
->  	trace_suspend_resume(TPS("dpm_suspend_noirq"), state.event, true);
->  	cpuidle_pause();
-> +	device_wakeup_arm_wakeirqs();
->  	suspend_device_irqs();
->  	mutex_lock(&dpm_list_mtx);
->  	pm_transition =3D state;
-> diff --git a/drivers/base/power/power.h b/drivers/base/power/power.h
-> index b6b8a27..6183c5d 100644
-> --- a/drivers/base/power/power.h
-> +++ b/drivers/base/power/power.h
-> @@ -20,6 +20,44 @@ static inline void pm_runtime_early_init(struct device=
- *dev)
->  extern void pm_runtime_init(struct device *dev);
->  extern void pm_runtime_remove(struct device *dev);
-> =20
-> +#ifdef CONFIG_PM_WAKEIRQ
-> +
-> +extern int device_wakeup_attach_irq(struct device *dev,
-> +				    struct wake_irq *wakeirq);
-> +extern void device_wakeup_detach_irq(struct device *dev);
-> +extern void device_wakeup_arm_wakeirqs(void);
-> +extern void device_wakeup_disarm_wakeirqs(void);
-> +
-> +extern void dev_pm_arm_wake_irq(struct wake_irq *wirq);
-> +extern void dev_pm_disarm_wake_irq(struct wake_irq *wirq);
-> +
-> +#else
-> +
-> +static inline int
-> +device_wakeup_attach_irq(struct device *dev,
-> +			 struct wake_irq *wakeirq)
-> +{
-> +	return 0;
-> +}
-> +
-> +static inline void device_wakeup_detach_irq(struct device *dev)
-> +{
-> +}
-> +
-> +static inline void device_wakeup_arm_wakeirqs(void)
-> +{
-> +}
-> +
-> +static inline void dev_pm_arm_wake_irq(struct wake_irq *wirq)
-> +{
-> +}
-> +
-> +static inline void dev_pm_disarm_wake_irq(struct wake_irq *wirq)
-> +{
-> +}
-> +
-> +#endif /* CONFIG_PM_WAKEIRQ */
-> +
->  /*
->   * sysfs.c
->   */
-> diff --git a/drivers/base/power/wakeirq.c b/drivers/base/power/wakeirq.c
-> new file mode 100644
-> index 0000000..579157b
-> --- /dev/null
-> +++ b/drivers/base/power/wakeirq.c
-> @@ -0,0 +1,316 @@
-> +/*
-> + * wakeirq.c - Device wakeirq helper functions
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-> + * kind, whether express or implied; without even the implied warranty
-> + * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/device.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/irq.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/pm_wakeirq.h>
-> +
-> +#include "power.h"
-> +
-> +/**
-> + * dev_pm_attach_wake_irq - Attach device interrupt as a wake IRQ
-> + * @dev: Device entry
-> + * @irq: Device wake-up capable interrupt
-> + * @wirq: Wake irq specific data
-> + *
-> + * Internal function to attach either a device IO interrupt or a
-> + * dedicated wake-up interrupt as a wake IRQ.
-> + */
-> +static int dev_pm_attach_wake_irq(struct device *dev, int irq,
-> +				  struct wake_irq *wirq)
-> +{
-> +	unsigned long flags;
-> +	int err;
-> +
-> +	if (!dev || !wirq)
-> +		return -EINVAL;
-> +
-> +	if (!dev->power.wakeup) {
-> +		dev_err(dev, "forgot to call call device_init_wakeup?\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	spin_lock_irqsave(&dev->power.lock, flags);
-> +	if (WARN_ON(dev->power.wakeirq)) {
-> +		dev_err(dev, "wake irq already initialized\n");
-> +		err =3D -EEXIST;
-> +		goto err_unlock;
-> +	}
-> +
-> +	dev->power.wakeirq =3D wirq;
-> +	spin_unlock_irqrestore(&dev->power.lock, flags);
-> +
-> +	err =3D device_wakeup_attach_irq(dev, wirq);
-> +	if (err)
-> +		goto err_free_mem;
-> +
-> +	return 0;
-> +
-> +err_unlock:
-> +	spin_unlock_irqrestore(&dev->power.lock, flags);
-> +err_free_mem:
-
-minor nit, there's no memory being freed here :-)
-
-> +	return err;
-> +}
-> +
-> +/**
-> + * dev_pm_set_wake_irq - Attach device IO interrupt as wake IRQ
-> + * @dev: Device entry
-> + * @irq: Device IO interrupt
-> + *
-> + * Attach a device IO interrupt as a wake IRQ. The wake IRQ gets
-> + * automatically configured for wake-up from suspend  based
-> + * on the device specific sysfs wakeup entry. Typically called
-> + * during driver probe after calling device_init_wakeup().
-> + */
-> +int dev_pm_set_wake_irq(struct device *dev, int irq)
-> +{
-> +	struct wake_irq *wirq;
-> +	int err;
-> +
-> +	wirq =3D devm_kzalloc(dev, sizeof(*wirq), GFP_KERNEL);
-> +	if (!wirq)
-> +		return -ENOMEM;
-> +
-> +	wirq->dev =3D dev;
-> +	wirq->irq =3D irq;
-> +
-> +	err =3D dev_pm_attach_wake_irq(dev, irq, wirq);
-> +	if (err)
-> +		devm_kfree(dev, wirq);
-> +
-> +	return err;
-> +}
-> +EXPORT_SYMBOL_GPL(dev_pm_set_wake_irq);
-> +
-> +/**
-> + * dev_pm_clear_wake_irq - Detach a device IO interrupt wake IRQ
-> + * @dev: Device entry
-> + *
-> + * Detach a device IO interrupt wake IRQ and free resources.
-> + */
-> +void dev_pm_clear_wake_irq(struct device *dev)
-> +{
-> +	struct wake_irq *wirq =3D dev->power.wakeirq;
-> +	unsigned long flags;
-> +
-> +	if (!wirq)
-
-WARN() to catch bad users ? Maybe with unlikely() around to give
-compiler a hint that this is likely not going to happen ?
-
-> +		return;
-> +
-> +	device_wakeup_detach_irq(dev);
-> +
-> +	spin_lock_irqsave(&dev->power.lock, flags);
-> +	dev->power.wakeirq =3D NULL;
-> +	spin_unlock_irqrestore(&dev->power.lock, flags);
-> +
-> +	wirq->irq =3D -EINVAL;
-> +	devm_kfree(dev, wirq);
-> +}
-> +EXPORT_SYMBOL_GPL(dev_pm_clear_wake_irq);
-> +
-> +/**
-> + * handle_threaded_wakeirq - Handler for dedicated wake-up interrupts
-> + * @irq: Device dedicated wake-up interrupt
-> + * @_wirq: Wake IRQ data
-> + *
-> + * Some devices have a separate wake-up interrupt in addition to the
-> + * device IO interrupt. The wake-up interrupts signal that the device
-> + * should be woken up from a idle state. This handler uses device
-> + * specific pm_runtime functions to wake the device and then it's
-> + * up to the device to do whatever it needs to. Note as the device
-> + * may need to restore context and start up regulators, we use a
-> + * threaded IRQ.
-> + *
-> + * Also note that we are not resending the lost device interrupts.
-> + * We assume that the wake-up interrupt just needs to wake-up the
-> + * device, and the device pm_runtime_resume() can deal with the
-> + * situation.
-> + */
-> +static irqreturn_t handle_threaded_wakeirq(int wakeirq, void *_wirq)
-> +{
-> +	struct wake_irq *wirq =3D _wirq;
-> +	irqreturn_t ret =3D IRQ_NONE;
-> +
-> +	if (!pm_runtime_suspended(wirq->dev))
-
-should you WARN() here ? Why would this IRQ fire if we're not
-pm_runtime_suspended() ?
-
-> +		goto out;
-> +
-> +	/* We don't want RPM_ASYNC or RPM_NOWAIT here */
-> +	pm_runtime_resume(wirq->dev);
-> +	ret =3D IRQ_HANDLED;
-> +
-> +	if (wirq->handler)
-> +		ret =3D wirq->handler(wakeirq, wirq->data);
-> +out:
-> +	return ret;
-> +}
-> +
-> +/**
-> + * dev_pm_request_wake_irq - Request a dedicated wake-up interrupt
-> + * @dev: Device entry
-> + * @irq: Device wake-up interrupt
-> + * @handler: Optional device specific handler
-> + * @irqflags: Optional irqflags, IRQF_ONESHOT if not specified
-> + * @data: Optional device specific data
-> + *
-> + * Unless your hardware has separate wake-up interrupts in addition
-> + * to the device IO interrupts, you don't need this.
-> + *
-> + * Sets up a threaded interrupt handler for a device that has
-> + * a dedicated wake-up interrupt in addition to the device IO
-> + * interrupt.
-> + *
-> + * The interrupt starts disabled, and needs to be managed for
-> + * the device by the bus code or the device driver using
-> + * dev_pm_enable_wake_irq() and dev_pm_disable_wake_irq()
-> + * functions.
-> + */
-> +int dev_pm_request_wake_irq(struct device *dev,
-> +			    int irq,
-> +			    irq_handler_t handler,
-> +			    unsigned long irqflags,
-> +			    void *data)
-> +{
-> +	struct wake_irq *wirq;
-> +	int err;
-> +
-> +	wirq =3D devm_kzalloc(dev, sizeof(*wirq), GFP_KERNEL);
-> +	if (!wirq)
-> +		return -ENOMEM;
-> +
-> +	wirq->dev =3D dev;
-> +	wirq->irq =3D irq;
-> +	wirq->handler =3D handler;
-
-you need to make sure that IRQF_ONESHOT is set in cases where handler is
-NULL. Either set it by default:
-
-	if (!handler)
-		irqflags |=3D IRQF_ONESHOT;
-
-or WARN() about it:
-
-	WARN_ON((!handler && !(irqflags & IRQF_ONESHOT));
-
-Actually, after reading more of the code, you have some weird circular
-call chain going on here. If handler is a valid function pointer, you
-use as primary handler, so IRQ core will call it from hardirq context.
-But you also save that pointer as wirq->handler, and call that from
-within handle_threaded_wakeirq(). Essentially, handler() is called
-twice, once with IRQs disabled, one with IRQs (potentially) enabled.
-
-What did you have in mind for handler() anyway, it seems completely
-unnecessary.
-
-> +	wirq->data =3D data;
-> +	if (!irqflags) {
-> +		irqflags =3D IRQF_ONESHOT;
-> +		wirq->manage_irq =3D true;
-> +	}
-> +	irq_set_status_flags(irq, IRQ_NOAUTOEN);
-> +
-> +	/*
-> +	 * Consumer device may need to power up and restore state
-> +	 * so we use a threaded irq.
-> +	 */
-> +	err =3D devm_request_threaded_irq(dev, irq, handler,
-> +					handle_threaded_wakeirq,
-> +					irqflags, dev_name(dev),
-> +					wirq);
-> +	if (err)
-> +		goto err_free;
-> +
-> +	err =3D dev_pm_attach_wake_irq(dev, irq, wirq);
-> +	if (err)
-> +		goto err_free_irq;
-> +
-> +	return err;
-> +
-> +err_free_irq:
-> +	devm_free_irq(dev, irq, wirq);
-> +err_free:
-> +	devm_kfree(dev, wirq);
-> +
-> +	return err;
-> +}
-> +EXPORT_SYMBOL_GPL(dev_pm_request_wake_irq);
-> +
-> +/**
-> + * dev_pm_free_wake_irq - Free a wake-up interrupt
-> + * @wirq: Device wake-up interrupt
-> + */
-> +void dev_pm_free_wake_irq(struct device *dev)
-> +{
-> +	struct wake_irq *wirq =3D dev->power.wakeirq;
-> +	unsigned long flags;
-> +
-> +	if (!wirq)
-> +		return;
-> +
-> +	spin_lock_irqsave(&dev->power.lock, flags);
-> +	wirq->manage_irq =3D false;
-> +	spin_unlock_irqrestore(&dev->power.lock, flags);
-> +	devm_free_irq(wirq->dev, wirq->irq, wirq);
-
-this seems unnecessary, the IRQ will be freed anyway when the device
-kobj is destroyed, dev_pm_clear_wake_irq() seems important, however.
-
-> +	dev_pm_clear_wake_irq(dev);
-> +}
-> +EXPORT_SYMBOL_GPL(dev_pm_free_wake_irq);
-> +
-> +/**
-> + * dev_pm_enable_wake_irq - Enable device wake-up interrupt
-> + * @dev: Device
-> + *
-> + * Called from the bus code or the device driver for
-> + * runtime_suspend() to enable the wake-up interrupt while
-> + * the device is running.
-> + *
-> + * Note that for runtime_suspend()) the wake-up interrupts
-> + * should be unconditionally enabled unlike for suspend()
-> + * that is conditional.
-> + */
-> +void dev_pm_enable_wake_irq(struct device *dev)
-> +{
-> +	struct wake_irq *wirq =3D dev->power.wakeirq;
-> +
-> +	if (wirq && wirq->manage_irq)
-> +		enable_irq(wirq->irq);
-> +}
-> +EXPORT_SYMBOL_GPL(dev_pm_enable_wake_irq);
-
-you probably want to enable dev_pm_enable_wake_irq() automatically for
-=66rom rpm_suspend(). According to runtime_pm documentation, wakeup should
-always be enabled for runtime suspended devices. I didn't really look
-through the whole thing yet to know if you did call it or not.
-
-> +/**
-> + * dev_pm_disable_wake_irq - Disable device wake-up interrupt
-> + * @dev: Device
-> + *
-> + * Called from the bus code or the device driver for
-> + * runtime_resume() to disable the wake-up interrupt while
-> + * the device is running.
-> + */
-> +void dev_pm_disable_wake_irq(struct device *dev)
-> +{
-> +	struct wake_irq *wirq =3D dev->power.wakeirq;
-> +
-> +	if (wirq && wirq->manage_irq)
-> +		disable_irq_nosync(wirq->irq);
-> +}
-> +EXPORT_SYMBOL_GPL(dev_pm_disable_wake_irq);
-
-likewise, call this automatically from rpm_resume().
-
-This brings up a question, actually. What to do with devices which were
-already runtime suspended when user initiated suspend-to-ram ? Do we
-leave wakeups enabled, or do we revisit device_may_wakeup() and
-conditionally runtime_resume the device, disable wakeup, and let its
-->suspend() callback be called ?
-
---=20
-balbi
-
---1LKvkjL3sHcu1TtY
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJVVAMqAAoJEIaOsuA1yqREnpQP/1BGuBU/fwyBKjMFpUCioH23
-uCy+x67FDobZ7x8haaqMgw1RmoezNprjs7gPGJGkU04QAZ+SVS9V2glk+0adavhL
-H60dCuCKsjR47X/OnU0KMYz2jNOjaqrPuz2RCP+1LFJRmyQrQ8JCxkJNq/BuKNNn
-CgrKLFA0xnGAiOmwsGrAtRQc20GQJBcWdYGA8pC3MD0GFtOu6sVnZMJJoprQHquT
-rXmWcGyZlSpvd3oDWcoZaky4GkUWaQa2Cw9TQYC5TcXzV07k24jJt+SlDEU87v8k
-pcgS+kAAB0m3dbjIhUqVVH+GR+I7tkR/pAkK4aYsMgHt7Rw8HNhJ6XOyO1abjv33
-J4hSiBTM8li/nmHCTDJ/fKeFJG4mFPHigjU0NI78VXlFmFUFSs48yoN0+CInT2Hl
-Q/3GRVx+2d7uvtnwryanIxdz2tt63Mj3hluUt4GzFnMFr3eELMO1qVW3J/+Qqsil
-dVrygNWhmAYZDSsPj+3PLtNb7Vwfp4sWfIYBfjVh8sljLzVvO+JQ5Jc472v+AaKP
-7hSiH4+yE1Nzm49gsXSVcL8RVWc+U1JrGC2YccE2qDYaCaHLvERqsymXv/IkYaDP
-g1UsmBB43VqIr3FwOuGld7+DKHNf0Q5RwKkgE5conSKOzOWuM76cV6wwkPSi20Df
-0ASd+HDt7iDhzb6Gnct7
-=odhO
------END PGP SIGNATURE-----
-
---1LKvkjL3sHcu1TtY--
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index 7214abe..1d0d47f 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -138,16 +138,19 @@ static void sirfsoc_uart_stop_tx(struct uart_port *port)
+ 				rd_regl(port, ureg->sirfsoc_int_en_reg) &
+ 				~uint_en->sirfsoc_txfifo_empty_en);
+ 			else
+-				wr_regl(port, SIRFUART_INT_EN_CLR,
++				wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+ 				uint_en->sirfsoc_txfifo_empty_en);
+ 		}
+ 	} else {
++		if (sirfport->uart_reg->uart_type == SIRF_USP_UART)
++			wr_regl(port, ureg->sirfsoc_tx_rx_en, rd_regl(port,
++				ureg->sirfsoc_tx_rx_en) & ~SIRFUART_TX_EN);
+ 		if (!sirfport->is_atlas7)
+ 			wr_regl(port, ureg->sirfsoc_int_en_reg,
+ 				rd_regl(port, ureg->sirfsoc_int_en_reg) &
+ 				~uint_en->sirfsoc_txfifo_empty_en);
+ 		else
+-			wr_regl(port, SIRFUART_INT_EN_CLR,
++			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+ 				uint_en->sirfsoc_txfifo_empty_en);
+ 	}
+ }
+@@ -178,7 +181,7 @@ static void sirfsoc_uart_tx_with_dma(struct sirfsoc_uart_port *sirfport)
+ 				rd_regl(port, ureg->sirfsoc_int_en_reg)&
+ 				~(uint_en->sirfsoc_txfifo_empty_en));
+ 	else
+-		wr_regl(port, SIRFUART_INT_EN_CLR,
++		wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+ 				uint_en->sirfsoc_txfifo_empty_en);
+ 	/*
+ 	 * DMA requires buffer address and buffer length are both aligned with
+@@ -246,6 +249,9 @@ static void sirfsoc_uart_start_tx(struct uart_port *port)
+ 	if (sirfport->tx_dma_chan)
+ 		sirfsoc_uart_tx_with_dma(sirfport);
+ 	else {
++		if (sirfport->uart_reg->uart_type == SIRF_USP_UART)
++			wr_regl(port, ureg->sirfsoc_tx_rx_en, rd_regl(port,
++				ureg->sirfsoc_tx_rx_en) | SIRFUART_TX_EN);
+ 		sirfsoc_uart_pio_tx_chars(sirfport, port->fifosize);
+ 		wr_regl(port, ureg->sirfsoc_tx_fifo_op, SIRFUART_FIFO_START);
+ 		if (!sirfport->is_atlas7)
+@@ -269,21 +275,25 @@ static void sirfsoc_uart_stop_rx(struct uart_port *port)
+ 		if (!sirfport->is_atlas7)
+ 			wr_regl(port, ureg->sirfsoc_int_en_reg,
+ 				rd_regl(port, ureg->sirfsoc_int_en_reg) &
+-				~(SIRFUART_RX_DMA_INT_EN(port, uint_en) |
++				~(SIRFUART_RX_DMA_INT_EN(uint_en,
++				sirfport->uart_reg->uart_type) |
+ 				uint_en->sirfsoc_rx_done_en));
+ 		else
+-			wr_regl(port, SIRFUART_INT_EN_CLR,
+-					SIRFUART_RX_DMA_INT_EN(port, uint_en)|
+-					uint_en->sirfsoc_rx_done_en);
++			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
++				SIRFUART_RX_DMA_INT_EN(uint_en,
++				sirfport->uart_reg->uart_type)|
++				uint_en->sirfsoc_rx_done_en);
+ 		dmaengine_terminate_all(sirfport->rx_dma_chan);
+ 	} else {
+ 		if (!sirfport->is_atlas7)
+ 			wr_regl(port, ureg->sirfsoc_int_en_reg,
+ 				rd_regl(port, ureg->sirfsoc_int_en_reg)&
+-				~(SIRFUART_RX_IO_INT_EN(port, uint_en)));
++				~(SIRFUART_RX_IO_INT_EN(uint_en,
++				sirfport->uart_reg->uart_type)));
+ 		else
+-			wr_regl(port, SIRFUART_INT_EN_CLR,
+-					SIRFUART_RX_IO_INT_EN(port, uint_en));
++			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
++				SIRFUART_RX_IO_INT_EN(uint_en,
++				sirfport->uart_reg->uart_type));
+ 	}
+ }
+ 
+@@ -304,7 +314,7 @@ static void sirfsoc_uart_disable_ms(struct uart_port *port)
+ 					rd_regl(port, ureg->sirfsoc_int_en_reg)&
+ 					~uint_en->sirfsoc_cts_en);
+ 		else
+-			wr_regl(port, SIRFUART_INT_EN_CLR,
++			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+ 					uint_en->sirfsoc_cts_en);
+ 	} else
+ 		disable_irq(gpio_to_irq(sirfport->cts_gpio));
+@@ -455,7 +465,7 @@ static void sirfsoc_rx_submit_one_dma_desc(struct uart_port *port, int index)
+ 		dmaengine_prep_slave_single(sirfport->rx_dma_chan,
+ 		sirfport->rx_dma_items[index].dma_addr, SIRFSOC_RX_DMA_BUF_SIZE,
+ 		DMA_DEV_TO_MEM, DMA_PREP_INTERRUPT);
+-	if (!sirfport->rx_dma_items[index].desc) {
++	if (IS_ERR_OR_NULL(sirfport->rx_dma_items[index].desc)) {
+ 		dev_err(port->dev, "DMA slave single fail\n");
+ 		return;
+ 	}
+@@ -475,12 +485,13 @@ static void sirfsoc_rx_tmo_process_tl(unsigned long param)
+ 	struct sirfsoc_int_en *uint_en = &sirfport->uart_reg->uart_int_en;
+ 	struct sirfsoc_int_status *uint_st = &sirfport->uart_reg->uart_int_st;
+ 	unsigned int count;
+-	unsigned long flags;
+ 	struct dma_tx_state tx_state;
++	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+ 	while (DMA_COMPLETE == dmaengine_tx_status(sirfport->rx_dma_chan,
+-		sirfport->rx_dma_items[sirfport->rx_completed].cookie, &tx_state)) {
++		sirfport->rx_dma_items[sirfport->rx_completed].cookie,
++		&tx_state)) {
+ 		sirfsoc_uart_insert_rx_buf_to_tty(sirfport,
+ 					SIRFSOC_RX_DMA_BUF_SIZE);
+ 		sirfport->rx_completed++;
+@@ -504,7 +515,7 @@ static void sirfsoc_rx_tmo_process_tl(unsigned long param)
+ 				rd_regl(port, ureg->sirfsoc_int_en_reg) &
+ 				~(uint_en->sirfsoc_rx_done_en));
+ 		else
+-			wr_regl(port, SIRFUART_INT_EN_CLR,
++			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+ 					uint_en->sirfsoc_rx_done_en);
+ 		sirfsoc_uart_start_next_rx_dma(port);
+ 	} else {
+@@ -538,7 +549,7 @@ static void sirfsoc_uart_handle_rx_tmo(struct sirfsoc_uart_port *sirfport)
+ 			rd_regl(port, ureg->sirfsoc_int_en_reg) &
+ 			~(uint_en->sirfsoc_rx_timeout_en));
+ 	else
+-		wr_regl(port, SIRFUART_INT_EN_CLR,
++		wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+ 				uint_en->sirfsoc_rx_timeout_en);
+ 	tasklet_schedule(&sirfport->rx_tmo_process_tasklet);
+ }
+@@ -558,7 +569,7 @@ static void sirfsoc_uart_handle_rx_done(struct sirfsoc_uart_port *sirfport)
+ 				rd_regl(port, ureg->sirfsoc_int_en_reg) &
+ 				~(uint_en->sirfsoc_rx_done_en));
+ 		else
+-			wr_regl(port, SIRFUART_INT_EN_CLR,
++			wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
+ 					uint_en->sirfsoc_rx_done_en);
+ 		wr_regl(port, ureg->sirfsoc_int_st_reg,
+ 				uint_st->sirfsoc_rx_timeout);
+@@ -583,7 +594,8 @@ static irqreturn_t sirfsoc_uart_isr(int irq, void *dev_id)
+ 	intr_status = rd_regl(port, ureg->sirfsoc_int_st_reg);
+ 	wr_regl(port, ureg->sirfsoc_int_st_reg, intr_status);
+ 	intr_status &= rd_regl(port, ureg->sirfsoc_int_en_reg);
+-	if (unlikely(intr_status & (SIRFUART_ERR_INT_STAT(port, uint_st)))) {
++	if (unlikely(intr_status & (SIRFUART_ERR_INT_STAT(uint_st,
++				sirfport->uart_reg->uart_type)))) {
+ 		if (intr_status & uint_st->sirfsoc_rxd_brk) {
+ 			port->icount.brk++;
+ 			if (uart_handle_break(port))
+@@ -622,9 +634,50 @@ recv_char:
+ 			sirfsoc_uart_handle_rx_tmo(sirfport);
+ 		if (intr_status & uint_st->sirfsoc_rx_done)
+ 			sirfsoc_uart_handle_rx_done(sirfport);
+-	} else {
+-		if (intr_status & SIRFUART_RX_IO_INT_ST(uint_st))
++	} else if (intr_status & SIRFUART_RX_IO_INT_ST(uint_st)) {
++		/*
++		 * chip will trigger continuous RX_TIMEOUT interrupt
++		 * in RXFIFO empty and not trigger if RXFIFO recevice
++		 * data in limit time, original method use RX_TIMEOUT
++		 * will trigger lots of useless interrupt in RXFIFO
++		 * empty.RXFIFO received one byte will trigger RX_DONE
++		 * interrupt.use RX_DONE to wait for data received
++		 * into RXFIFO, use RX_THD/RX_FULL for lots data receive
++		 * and use RX_TIMEOUT for the last left data.
++		 */
++		if (intr_status & uint_st->sirfsoc_rx_done) {
++			if (!sirfport->is_atlas7) {
++				wr_regl(port, ureg->sirfsoc_int_en_reg,
++					rd_regl(port, ureg->sirfsoc_int_en_reg)
++					& ~(uint_en->sirfsoc_rx_done_en));
++				wr_regl(port, ureg->sirfsoc_int_en_reg,
++				rd_regl(port, ureg->sirfsoc_int_en_reg)
++				| (uint_en->sirfsoc_rx_timeout_en));
++			} else {
++				wr_regl(port, ureg->sirfsoc_int_en_clr_reg,
++					uint_en->sirfsoc_rx_done_en);
++				wr_regl(port, ureg->sirfsoc_int_en_reg,
++					uint_en->sirfsoc_rx_timeout_en);
++			}
++		} else {
++			if (intr_status & uint_st->sirfsoc_rx_timeout) {
++				if (!sirfport->is_atlas7) {
++					wr_regl(port, ureg->sirfsoc_int_en_reg,
++					rd_regl(port, ureg->sirfsoc_int_en_reg)
++					& ~(uint_en->sirfsoc_rx_timeout_en));
++					wr_regl(port, ureg->sirfsoc_int_en_reg,
++					rd_regl(port, ureg->sirfsoc_int_en_reg)
++					| (uint_en->sirfsoc_rx_done_en));
++				} else {
++					wr_regl(port,
++						ureg->sirfsoc_int_en_clr_reg,
++						uint_en->sirfsoc_rx_timeout_en);
++					wr_regl(port, ureg->sirfsoc_int_en_reg,
++						uint_en->sirfsoc_rx_done_en);
++				}
++			}
+ 			sirfsoc_uart_pio_rx_chars(port, port->fifosize);
++		}
+ 	}
+ 	spin_unlock(&port->lock);
+ 	tty_flip_buffer_push(&state->port);
+@@ -657,11 +710,12 @@ static void sirfsoc_uart_rx_dma_complete_tl(unsigned long param)
+ 	struct uart_port *port = &sirfport->port;
+ 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
+ 	struct sirfsoc_int_en *uint_en = &sirfport->uart_reg->uart_int_en;
+-	unsigned long flags;
+ 	struct dma_tx_state tx_state;
++	unsigned long flags;
+ 	spin_lock_irqsave(&port->lock, flags);
+ 	while (DMA_COMPLETE == dmaengine_tx_status(sirfport->rx_dma_chan,
+-			sirfport->rx_dma_items[sirfport->rx_completed].cookie, &tx_state)) {
++		sirfport->rx_dma_items[sirfport->rx_completed].cookie,
++		&tx_state)) {
+ 		sirfsoc_uart_insert_rx_buf_to_tty(sirfport,
+ 					SIRFSOC_RX_DMA_BUF_SIZE);
+ 		if (rd_regl(port, ureg->sirfsoc_int_en_reg) &
+@@ -705,10 +759,12 @@ static void sirfsoc_uart_start_next_rx_dma(struct uart_port *port)
+ 	if (!sirfport->is_atlas7)
+ 		wr_regl(port, ureg->sirfsoc_int_en_reg,
+ 				rd_regl(port, ureg->sirfsoc_int_en_reg) |
+-				SIRFUART_RX_DMA_INT_EN(port, uint_en));
++				SIRFUART_RX_DMA_INT_EN(uint_en,
++				sirfport->uart_reg->uart_type));
+ 	else
+ 		wr_regl(port, ureg->sirfsoc_int_en_reg,
+-			SIRFUART_RX_DMA_INT_EN(port, uint_en));
++				SIRFUART_RX_DMA_INT_EN(uint_en,
++				sirfport->uart_reg->uart_type));
+ }
+ 
+ static void sirfsoc_uart_start_rx(struct uart_port *port)
+@@ -727,10 +783,12 @@ static void sirfsoc_uart_start_rx(struct uart_port *port)
+ 		if (!sirfport->is_atlas7)
+ 			wr_regl(port, ureg->sirfsoc_int_en_reg,
+ 				rd_regl(port, ureg->sirfsoc_int_en_reg) |
+-				SIRFUART_RX_IO_INT_EN(port, uint_en));
++				SIRFUART_RX_IO_INT_EN(uint_en,
++					sirfport->uart_reg->uart_type));
+ 		else
+ 			wr_regl(port, ureg->sirfsoc_int_en_reg,
+-				SIRFUART_RX_IO_INT_EN(port, uint_en));
++				SIRFUART_RX_IO_INT_EN(uint_en,
++					sirfport->uart_reg->uart_type));
+ 	}
+ }
+ 
+@@ -930,7 +988,7 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
+ 	wr_regl(port, ureg->sirfsoc_tx_fifo_op,
+ 			(txfifo_op_reg & ~SIRFUART_FIFO_START));
+ 	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART) {
+-		config_reg |= SIRFUART_RECV_TIMEOUT(port, rx_time_out);
++		config_reg |= SIRFUART_UART_RECV_TIMEOUT(rx_time_out);
+ 		wr_regl(port, ureg->sirfsoc_line_ctrl, config_reg);
+ 	} else {
+ 		/*tx frame ctrl*/
+@@ -953,7 +1011,7 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
+ 		wr_regl(port, ureg->sirfsoc_rx_frame_ctrl, len_val);
+ 		/*async param*/
+ 		wr_regl(port, ureg->sirfsoc_async_param_reg,
+-			(SIRFUART_RECV_TIMEOUT(port, rx_time_out)) |
++			(SIRFUART_USP_RECV_TIMEOUT(rx_time_out)) |
+ 			(sample_div_reg & SIRFSOC_USP_ASYNC_DIV2_MASK) <<
+ 			SIRFSOC_USP_ASYNC_DIV2_OFFSET);
+ 	}
+@@ -1071,7 +1129,7 @@ static void sirfsoc_uart_shutdown(struct uart_port *port)
+ 	if (!sirfport->is_atlas7)
+ 		wr_regl(port, ureg->sirfsoc_int_en_reg, 0);
+ 	else
+-		wr_regl(port, SIRFUART_INT_EN_CLR, ~0UL);
++		wr_regl(port, ureg->sirfsoc_int_en_clr_reg, ~0UL);
+ 
+ 	free_irq(port->irq, sirfport);
+ 	if (sirfport->ms_enabled)
+@@ -1217,10 +1275,11 @@ static struct uart_driver sirfsoc_uart_drv = {
+ #endif
+ };
+ 
+-static const struct of_device_id sirfsoc_uart_ids[] = {
++static struct of_device_id sirfsoc_uart_ids[] = {
+ 	{ .compatible = "sirf,prima2-uart", .data = &sirfsoc_uart,},
+ 	{ .compatible = "sirf,atlas7-uart", .data = &sirfsoc_uart},
+ 	{ .compatible = "sirf,prima2-usp-uart", .data = &sirfsoc_usp},
++	{ .compatible = "sirf,atlas7-usp-uart", .data = &sirfsoc_usp},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, sirfsoc_uart_ids);
+@@ -1257,9 +1316,12 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
+ 
+ 	sirfport->hw_flow_ctrl = of_property_read_bool(pdev->dev.of_node,
+ 		"sirf,uart-has-rtscts");
+-	if (of_device_is_compatible(pdev->dev.of_node, "sirf,prima2-uart"))
++	if (of_device_is_compatible(pdev->dev.of_node, "sirf,prima2-uart") ||
++		of_device_is_compatible(pdev->dev.of_node, "sirf,atlas7-uart"))
+ 		sirfport->uart_reg->uart_type = SIRF_REAL_UART;
+-	if (of_device_is_compatible(pdev->dev.of_node, "sirf,prima2-usp-uart")) {
++	if (of_device_is_compatible(pdev->dev.of_node,
++		"sirf,prima2-usp-uart") || of_device_is_compatible(
++		pdev->dev.of_node, "sirf,atlas7-usp-uart")) {
+ 		sirfport->uart_reg->uart_type =	SIRF_USP_UART;
+ 		if (!sirfport->hw_flow_ctrl)
+ 			goto usp_no_flow_control;
+@@ -1297,7 +1359,8 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
+ 		gpio_direction_output(sirfport->rts_gpio, 1);
+ 	}
+ usp_no_flow_control:
+-	if (of_device_is_compatible(pdev->dev.of_node, "sirf,atlas7-uart"))
++	if (of_device_is_compatible(pdev->dev.of_node, "sirf,atlas7-uart") ||
++	    of_device_is_compatible(pdev->dev.of_node, "sirf,atlas7-usp-uart"))
+ 		sirfport->is_atlas7 = true;
+ 
+ 	if (of_property_read_u32(pdev->dev.of_node,
+diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
+index af2f187..b49c23a 100644
+--- a/drivers/tty/serial/sirfsoc_uart.h
++++ b/drivers/tty/serial/sirfsoc_uart.h
+@@ -20,6 +20,7 @@ struct sirfsoc_register {
+ 	u32 sirfsoc_tx_rx_en;
+ 	u32 sirfsoc_int_en_reg;
+ 	u32 sirfsoc_int_st_reg;
++	u32 sirfsoc_int_en_clr_reg;
+ 	u32 sirfsoc_tx_dma_io_ctrl;
+ 	u32 sirfsoc_tx_dma_io_len;
+ 	u32 sirfsoc_tx_fifo_ctrl;
+@@ -143,6 +144,7 @@ struct sirfsoc_uart_register sirfsoc_usp = {
+ 		.sirfsoc_rx_fifo_op	= 0x0130,
+ 		.sirfsoc_rx_fifo_status	= 0x0134,
+ 		.sirfsoc_rx_fifo_data	= 0x0138,
++		.sirfsoc_int_en_clr_reg = 0x140,
+ 	},
+ 	.uart_int_en = {
+ 		.sirfsoc_rx_done_en	= BIT(0),
+@@ -191,6 +193,7 @@ struct sirfsoc_uart_register sirfsoc_uart = {
+ 		.sirfsoc_divisor	= 0x0050,
+ 		.sirfsoc_int_en_reg	= 0x0054,
+ 		.sirfsoc_int_st_reg	= 0x0058,
++		.sirfsoc_int_en_clr_reg	= 0x0060,
+ 		.sirfsoc_tx_dma_io_ctrl	= 0x0100,
+ 		.sirfsoc_tx_dma_io_len	= 0x0104,
+ 		.sirfsoc_tx_fifo_ctrl	= 0x0108,
+@@ -291,8 +294,6 @@ struct sirfsoc_uart_register sirfsoc_uart = {
+ #define SIRFUART_IO_MODE			BIT(0)
+ #define SIRFUART_DMA_MODE			0x0
+ 
+-/* Macro Specific*/
+-#define SIRFUART_INT_EN_CLR                    0x0060
+ /* Baud Rate Calculation */
+ #define SIRF_USP_MIN_SAMPLE_DIV			0x1
+ #define SIRF_MIN_SAMPLE_DIV			0xf
+@@ -326,34 +327,38 @@ struct sirfsoc_uart_register sirfsoc_uart = {
+ #define SIRFSOC_UART_RX_TIMEOUT(br, to)	(((br) * (((to) + 999) / 1000)) / 1000)
+ #define SIRFUART_RECV_TIMEOUT_VALUE(x)	\
+ 				(((x) > 0xFFFF) ? 0xFFFF : ((x) & 0xFFFF))
+-#define SIRFUART_RECV_TIMEOUT(port, x)	\
+-		(((port)->line > 2) ? (x & 0xFFFF) : ((x) & 0xFFFF) << 16)
++#define SIRFUART_USP_RECV_TIMEOUT(x)	(x & 0xFFFF)
++#define SIRFUART_UART_RECV_TIMEOUT(x)	((x & 0xFFFF) << 16)
+ 
+ #define SIRFUART_FIFO_THD(port)		(port->fifosize >> 1)
+-#define SIRFUART_ERR_INT_STAT(port, unit_st)			\
++#define SIRFUART_ERR_INT_STAT(unit_st, uart_type)			\
+ 				(uint_st->sirfsoc_rx_oflow |		\
+ 				uint_st->sirfsoc_frm_err |		\
+ 				uint_st->sirfsoc_rxd_brk |		\
+-		((port->line > 2) ? 0 : uint_st->sirfsoc_parity_err))
+-#define SIRFUART_RX_IO_INT_EN(port, uint_en)				\
+-				(uint_en->sirfsoc_rx_timeout_en |\
++				((uart_type != SIRF_REAL_UART) ? \
++				 0 : uint_st->sirfsoc_parity_err))
++#define SIRFUART_RX_IO_INT_EN(uint_en, uart_type)			\
++				(uint_en->sirfsoc_rx_done_en |\
+ 				 uint_en->sirfsoc_rxfifo_thd_en |\
+ 				 uint_en->sirfsoc_rxfifo_full_en |\
+ 				 uint_en->sirfsoc_frm_err_en |\
+ 				 uint_en->sirfsoc_rx_oflow_en |\
+ 				 uint_en->sirfsoc_rxd_brk_en |\
+-		((port->line > 2) ? 0 : uint_en->sirfsoc_parity_err_en))
++				((uart_type != SIRF_REAL_UART) ? \
++				 0 : uint_en->sirfsoc_parity_err_en))
+ #define SIRFUART_RX_IO_INT_ST(uint_st)				\
+-				(uint_st->sirfsoc_rx_timeout |\
+-				 uint_st->sirfsoc_rxfifo_thd |\
+-				 uint_st->sirfsoc_rxfifo_full)
++				(uint_st->sirfsoc_rxfifo_thd |\
++				 uint_st->sirfsoc_rxfifo_full|\
++				 uint_st->sirfsoc_rx_done |\
++				 uint_st->sirfsoc_rx_timeout)
+ #define SIRFUART_CTS_INT_ST(uint_st)	(uint_st->sirfsoc_cts)
+-#define SIRFUART_RX_DMA_INT_EN(port, uint_en)				\
++#define SIRFUART_RX_DMA_INT_EN(uint_en, uart_type)		\
+ 				(uint_en->sirfsoc_rx_timeout_en |\
+ 				 uint_en->sirfsoc_frm_err_en |\
+ 				 uint_en->sirfsoc_rx_oflow_en |\
+ 				 uint_en->sirfsoc_rxd_brk_en |\
+-		((port->line > 2) ? 0 : uint_en->sirfsoc_parity_err_en))
++				((uart_type != SIRF_REAL_UART) ? \
++				 0 : uint_en->sirfsoc_parity_err_en))
+ /* Generic Definitions */
+ #define SIRFSOC_UART_NAME			"ttySiRF"
+ #define SIRFSOC_UART_MAJOR			0
+-- 
+2.3.5
