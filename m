@@ -1,8 +1,8 @@
 From: Barry Song <21cnbao@gmail.com>
-Subject: [PATCH 6/6] serial: sirf: assign console default index if users not
- set a valid one
-Date: Thu, 14 May 2015 06:45:26 +0000
-Message-ID: <1431585926-10746-6-git-send-email-21cnbao@gmail.com>
+Subject: [PATCH 2/6] serial: sirf: fix the issue that HW flow control doesn't
+ work for BT
+Date: Thu, 14 May 2015 06:45:22 +0000
+Message-ID: <1431585926-10746-2-git-send-email-21cnbao@gmail.com>
 References: <1431585926-10746-1-git-send-email-21cnbao@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,27 +24,31 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Qipan Li <Qipan.Li@csr.com>
 
-it seems this is a more typical behaviour from reviewing other console
-drivers.
+>From HW spec, when rxfifo's data is less than AFC_RX_THD(RX threshhold), RTS
+signal is active. otherwise, RTS signal is inactive.
+
+Crrently the RX threshhold is set as zero, so RTS has no chance to be
+active. This patch replaces the default 0 by a positive number.
 
 Signed-off-by: Qipan Li <Qipan.Li@csr.com>
 Signed-off-by: Barry Song <Baohua.Song@csr.com>
 ---
- drivers/tty/serial/sirfsoc_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/sirfsoc_uart.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index 0e43799..8d75962 100644
+index 1d0d47f..48cceaf 100644
 --- a/drivers/tty/serial/sirfsoc_uart.c
 +++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -1236,7 +1236,7 @@ sirfsoc_uart_console_setup(struct console *co, char *options)
- 	struct sirfsoc_uart_port *sirfport;
- 	struct sirfsoc_register *ureg;
- 	if (co->index < 0 || co->index >= SIRFSOC_UART_NR)
--		return -EINVAL;
-+		co->index = 1;
- 	sirfport = sirf_ports[co->index];
- 	if (!sirfport)
- 		return -ENODEV;
+@@ -344,7 +344,8 @@ static void sirfsoc_uart_enable_ms(struct uart_port *port)
+ 	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART) {
+ 		wr_regl(port, ureg->sirfsoc_afc_ctrl,
+ 				rd_regl(port, ureg->sirfsoc_afc_ctrl) |
+-				SIRFUART_AFC_TX_EN | SIRFUART_AFC_RX_EN);
++				SIRFUART_AFC_TX_EN | SIRFUART_AFC_RX_EN |
++				SIRFUART_AFC_CTRL_RX_THD);
+ 		if (!sirfport->is_atlas7)
+ 			wr_regl(port, ureg->sirfsoc_int_en_reg,
+ 					rd_regl(port, ureg->sirfsoc_int_en_reg)
 -- 
 2.3.5
