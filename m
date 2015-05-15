@@ -1,36 +1,79 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/2] arch/x86: remove pci uart early console from
- early_prink.c
-Date: Thu, 14 May 2015 17:07:30 -0700
-Message-ID: <20150515000730.GB4385@kroah.com>
-References: <20150514234442.GA91197@worksta>
+From: Hanjun Guo <hanjun.guo@linaro.org>
+Subject: Re: [PATCH v4 00/11] drivers: PL011: add ARM SBSA Generic UART support
+Date: Fri, 15 May 2015 11:31:12 +0800
+Message-ID: <55556880.2010207@linaro.org>
+References: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150514234442.GA91197@worksta>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Bin Gao <bin.gao@linux.intel.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>, rmk+kernel@arm.linux.org.uk, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Graeme Gregory <graeme.gregory@linaro.org>, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 14, 2015 at 04:44:42PM -0700, Bin Gao wrote:
-> >From 78ab0810176c544e2b6f14ca8b19c90d339fa6f1 Mon Sep 17 00:00:00 2001
-> From: Bin Gao <bin.gao@intel.com>
-> Date: Thu, 14 May 2015 15:49:58 -0700
-> Subject: [PATCH] arch/x86: remove pci uart early console from early_prink.c
-> 
-> The arch independent uart8250 early console driver has good
-> support for memory mapped and io port based 8250 uarts. Since
-> pci is arch independent so it's natural to extend uart8250 to
-> support mem, io and pci. Hence pci uart early console in
-> arch/x86/kernel_printk.c by the following commit:
-> 'commit 5140fda16051 ("Specify PCI based UART for earlyprintk")'
-> is removed. And its equivalent function will be available from
-> uart8250 early console driver.
-> 
-> This patch comes with another patch:
-> serial_core: add pci uart early console support
-
-What is this here for?  If this is 2/2, of course we know patch 1/2
-needs to come first...
+T24gMjAxNeW5tDA15pyIMTLml6UgMjI6MTQsIEFuZHJlIFByenl3YXJhIHdyb3RlOgo+IFRoaXMg
+aXMgdGhlIGZvdXJ0aCByZXZpc2lvbiBvZiB0aGUgU0JTQSBVQVJUIHN1cHBvcnQgc2VyaWVzLCBu
+b3cKPiBiYXNlZCBvbiB0aGUgY3VycmVudCB0dHktbmV4dCBicmFuY2guCj4gQ29tcGFyZWQgdG8g
+djMgSSBhZGRyZXNzZWQgc29tZSBjb21tZW50cyBKYWt1YiBoYWQgb24gdjMgKHRoYW5rcyBmb3IK
+PiB0aGUgcmV2aWV3ISkuIEFsc28gc2luY2Ugc29tZSBiYXNpYyBBQ1BJIHN1cHBvcnQgZm9yIEFS
+TTY0IGlzIG5vdwo+IHVwc3RyZWFtLCBJIGluY2x1ZGUgdGhlIG5lY2Vzc2FyeSBBQ1BJIGJpbmRp
+bmcgYXMgYSBuZXcgcGF0Y2ggMTEKPiBvbiB0b3AuCj4gLS0tLQo+Cj4gVGhlIEFSTSBTZXJ2ZXIg
+QmFzZSBTeXN0ZW0gQXJjaGl0ZWN0dXJlWzFdIGRvY3VtZW50IGRlc2NyaWJlcyBhCj4gZ2VuZXJp
+YyBVQVJUIHdoaWNoIGlzIGEgc3Vic2V0IG9mIHRoZSBBUk0gUEwwMTEgVUFSVC4KPiBJdCBsYWNr
+cyBETUEgc3VwcG9ydCwgYmF1ZCByYXRlIGNvbnRyb2wgYW5kIG1vZGVtIHN0YXR1cyBsaW5lCj4g
+Y29udHJvbCwgYW1vbmcgb3RoZXIgdGhpbmdzLgo+IFRoZSBpZGVhIGlzIHRvIG1vdmUgdGhlIFVB
+UlQgaW5pdGlhbGl6YXRpb24gYW5kIHNldHVwIGludG8gdGhlCj4gZmlybXdhcmUgKHdoaWNoIGRv
+ZXMgdGhpcyBqb2IgdG9kYXkgYWxyZWFkeSkgYW5kIGxldCB0aGUga2VybmVsIGp1c3QKPiB1c2Ug
+dGhlIFVBUlQgZm9yIHNlbmRpbmcgYW5kIHJlY2VpdmluZyBjaGFyYWN0ZXJzLgo+Cj4gVGhpcyBw
+YXRjaHNldCBpbnRlZ3JhdGVzIHN1cHBvcnQgZm9yIHRoaXMgVUFSVCBzdWJzZXQgaW50byB0aGUK
+PiBleGlzdGluZyBQTDAxMSBkcml2ZXIgLSBiYXNpY2FsbHkgYnkgcmVmYWN0b3Jpbmcgc29tZQo+
+IGZ1bmN0aW9ucyBhbmQgcHJvdmlkaW5nIGEgbmV3IHVhcnRfb3BzIHN0cnVjdHVyZSBmb3IgaXQu
+IEl0IGFsc28gaGFzCj4gYSBzZXBhcmF0ZSBwcm9iZSBmdW5jdGlvbiB0byBiZSBub3QgZGVwZW5k
+ZW50IG9uIEFNQkEvUHJpbWVDZWxsLgo+IEl0IHByb3ZpZGVzIGEgZGV2aWNlIHRyZWUgYW5kIGFu
+IEFDUEkgYmluZGluZy4KPiBCZXNpZGUgdGhlIG9idmlvdXMgZWZmZWN0IG9mIGNvZGUgc2hhcmlu
+ZyByZXVzaW5nIG1vc3Qgb2YgdGhlIFBMMDExCj4gY29kZSBoYXMgdGhlIGFkdmFudGFnZSBvZiBu
+b3QgaW50cm9kdWNpbmcgYW5vdGhlciBzZXJpYWwgZGV2aWNlCj4gcHJlZml4LCBzbyBpdCBjYW4g
+Z28gd2l0aCB0dHlBTUEsIHdoaWNoIHNlZW1zIHRvIGJlIHByZXR0eSBjb21tb24uCj4gQXMgY2hh
+bmdpbmcgdGhlIGJhdWRyYXRlIGFuZCBvdGhlciBjb21tdW5pY2F0aW9uIHBhcmFtZXRlcnMgaXMg
+bm90Cj4gc3BlY2lmaWVkIGZvciB0aGUgU0JTQSBVQVJULCBhbnkgdXNlcmxhbmQgYXR0ZW1wdCB3
+aWxsIGJlIGRlbmllZCBieQo+IHRoZSBrZXJuZWwuIFRoZSBkZXZpY2UtdHJlZSBwcm92aWRlZCBm
+aXhlZCBiYXVkIHJhdGUgd2lsbCBiZQo+IHJlcG9ydGVkLCBzbyBzdHR5IGZvciBpbnN0YW5jZSBw
+cmludHMgdGhlIHJpZ2h0IHZhbHVlLgo+Cj4gVGhpcyBzZXJpZXMgaXMgYmFzZWQgb24gR3JlZydz
+IHR0eS1uZXh0IGJyYW5jaCwgYSBnaXQgcmVwbyBjYW4KPiBiZSBmb3VuZCBhdCBbMl0gKGJyYW5j
+aCBzYnNhLXVhcnQvdjQpLgo+Cj4gUGF0Y2ggMS8xMSBjb250YWlucyBhIGJ1ZyBmaXggd2hpY2gg
+YXBwbGllcyB0byB0aGUgUEwwMTEgcGFydCBhbHNvLAo+IGl0IHNob3VsZCBiZSBjb25zaWRlcmVk
+IHJlZ2FyZGxlc3Mgb2YgdGhlIHJlc3Qgb2YgdGhlIHNlcmllcy4KPiBBY2NvcmRpbmcgdG8gUnVz
+c2VsbCB0aGlzIGlzIHN0aWxsIHJhY3ksIGJ1dCBzdGlsbCBiZXR0ZXIgdGhhbiB0aGUKPiBjdXJy
+ZW50IHNvbHV0aW9uLgo+IFBhdGNoIDItNyByZWZhY3RvciBzb21lIFBMMDExIGZ1bmN0aW9ucyBi
+eSBzcGxpdHRpbmcgdGhlbSB1cCBpbnRvCj4gc21hbGxlciBwaWVjZXMsIHNvIHRoYXQgbW9zdCBv
+ZiB0aGUgY29kZSBjYW4gYmUgcmV1c2VkIGxhdGVyIGJ5IHRoZQo+IFNCU0EgcGFydC4KPiBQYXRj
+aCA4IGFuZCA5IGludHJvZHVjZSB0d28gbmV3IHByb3BlcnRpZXMgZm9yIHRoZSB2ZW5kb3Igc3Ry
+dWN0dXJlLAo+IHRoaXMgaXMgZm9yIFNCU0EgZnVuY3Rpb25hbGl0eSB3aGljaCBjYW5ub3QgYmUg
+Y29udHJvbGxlZCBieQo+IHNlcGFyYXRlIHVhcnRfb3BzIG1lbWJlcnMgb25seS4KPiBQYXRjaCAx
+MCB0aGVuIGZpbmFsbHkgZHJvcHMgaW4gdGhlIFNCU0Egc3BlY2lmaWMgY29kZSwgYnkgcHJvdmlk
+aW5nCj4gYSBuZXcgdWFydF9vcHMsIHZlbmRvciBzdHJ1Y3QgYW5kIHByb2JlIGZ1bmN0aW9uIGZv
+ciBpdC4gQWxzbyB0aGUgbmV3Cj4gZGV2aWNlIHRyZWUgYmluZGluZyBpcyBkb2N1bWVudGVkLgo+
+IFBhdGNoIDExIGFkZHMgdGhlIG5lY2Vzc2FyeSBBQ1BJIGJvaWxlcnBsYXRlLgo+Cj4gRm9yIHRl
+c3RpbmcgeW91IHNob3VsZCBiZSBhYmxlIHRvIHRha2UgYW55IGhhcmR3YXJlIHdoaWNoIGhhcyBh
+IFBMMDExCj4gYW5kIGNoYW5nZSB0aGUgRFQgdG8gdXNlIGEgImFybSxzYnNhLXVhcnQiIGNvbXBh
+dGlibGUgc3RyaW5nIGFuZCB0aGUKPiBiYXVkIHJhdGUgd2l0aCB0aGUgImN1cnJlbnQtc3BlZWQi
+IHByb3BlcnR5Lgo+IE9mIGNvdXJzZSB0ZXN0aW5nIHdpdGggYSByZWFsIFNCU0EgR2VuZXJpYyBV
+QVJUIGlzIHdlbGNvbWVkIC0gYXMgd2VsbAo+IGFzIHJlZ3Jlc3Npb24gdGVzdGluZyB3aXRoIGFu
+eSBQTDAxMSBpbXBsZW1lbnRhdGlvbi4KPiBJIHRlc3RlZCB0aGlzIG9uIGEgRmFzdE1vZGVsLCBh
+IEp1bm8gYW5kIGEgTWlkd2F5IG1hY2hpbmUsIGJvdGggaW4KPiBQTDAxMSBhbmQgaW4gKERULWVt
+dWxhdGVkKSBTQlNBIG1vZGUuCgpUZXN0ZWQtYnk6IEhhbmp1biBHdW8gPGhhbmp1bi5ndW9AbGlu
+YXJvLm9yZz4KCmluIEFDUEkgY2FzZSB3aXRoIGRldmljZSBISUQgb2YgQVJNSDAwMTEgaW4gRFNE
+VC4KCkhhbmp1bgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5p
+bmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8v
+bGludXgtYXJtLWtlcm5lbAo=
