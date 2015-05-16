@@ -1,186 +1,91 @@
-From: Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 2/5] PM / Wakeirq: Add automated device wake IRQ handling
-Date: Fri, 15 May 2015 20:56:51 -0500
-Message-ID: <20150516015651.GA7493@saruman.tx.rr.com>
-References: <1431560196-5722-1-git-send-email-tony@atomide.com>
- <20150514155945.GL15563@atomide.com>
- <20150514211501.GO15563@atomide.com>
- <3499196.MCAcS31ICO@vostro.rjw.lan>
- <20150514215921.GQ15563@atomide.com>
- <20150515222513.GB10274@atomide.com>
-Reply-To: <balbi@ti.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH] serial: 8250_uniphier: add UniPhier serial driver
+Date: Sat, 16 May 2015 11:17:31 +0200
+Message-ID: <CABuKBeJnMcyH7TGtYcUToRhLnu_qcxHtwEedS2JgGjX8EiX1Gw@mail.gmail.com>
+References: <1431692764-17576-1-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="y0ulUmNC+osPPQO6"
-Return-path: <linux-pm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150515222513.GB10274@atomide.com>
-Sender: linux-pm-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Felipe Balbi <balbi@ti.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Alan Stern <stern@rowland.harvard.edu>, Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1431692764-17576-1-git-send-email-yamada.masahiro@socionext.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: linux-serial@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, John Crispin <blogic@openwrt.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
---y0ulUmNC+osPPQO6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Fri, May 15, 2015 at 03:25:13PM -0700, Tony Lindgren wrote:
-
-<snip>
-
-> diff --git a/drivers/base/power/wakeirq.c b/drivers/base/power/wakeirq.c
+2015-05-15 14:26 GMT+02:00 Masahiro Yamada <yamada.masahiro@socionext.com>:
+> Add the driver for on-chip UART used on UniPhier SoCs.
+> The register map of this hardware is similar to that of 8250
+> (but the address for FCR, LCR is different), so it should go
+> into drivers/tty/serial/8250 directory.
+>
+> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> ---
+>
+>  drivers/tty/serial/8250/8250_uniphier.c | 243 ++++++++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig         |   7 +
+>  drivers/tty/serial/8250/Makefile        |   1 +
+>  3 files changed, 251 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_uniphier.c
+>
+> diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
 > new file mode 100644
-> index 0000000..1125481
+> index 0000000..f108d81
 > --- /dev/null
-> +++ b/drivers/base/power/wakeirq.c
-> @@ -0,0 +1,276 @@
+> +++ b/drivers/tty/serial/8250/8250_uniphier.c
+> @@ -0,0 +1,243 @@
 > +/*
-> + * wakeirq.c - Device wakeirq helper functions
+> + * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
 > + *
 > + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
 > + *
-> + * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-> + * kind, whether express or implied; without even the implied warranty
-> + * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 > + * GNU General Public License for more details.
 > + */
 > +
-> +#include <linux/device.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/irq.h>
-> +#include <linux/slab.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/pm_wakeirq.h>
+> +#include <linux/init.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/clk.h>
+> +#include <linux/of.h>
+> +#include <linux/io.h>
+> +#include <linux/serial_core.h>
+> +#include <linux/serial_reg.h>
+> +#include <linux/serial_8250.h>
+> +#include "8250.h"
 > +
-> +#include "power.h"
-> +
-> +/**
-> + * dev_pm_attach_wake_irq - Attach device interrupt as a wake IRQ
-> + * @dev: Device entry
-> + * @irq: Device wake-up capable interrupt
-> + * @wirq: Wake irq specific data
-> + *
-> + * Internal function to attach either a device IO interrupt or a
-> + * dedicated wake-up interrupt as a wake IRQ.
+> +/*
+> + * Most (but not all) of UniPhier UART devices have 64-depth FIFO.
+> + * Set this value if "fifo-size" property is missing from the device tree node.
 > + */
-> +static int dev_pm_attach_wake_irq(struct device *dev, int irq,
-> +				  struct wake_irq *wirq)
-> +{
-> +	unsigned long flags;
-> +	int err;
+> +#define UNIPHIER_UART_DEFAULT_FIFO_SIZE        64
 > +
-> +	if (!dev || !wirq)
-> +		return -EINVAL;
+> +#define UNIPHIER_UART_CHAR_FCR 3       /* Character / FIFO Control Register */
+> +#define UNIPHIER_UART_LCR_MCR  4       /* Line/Modem Control Register */
+> +#define UNIPHIER_UART_DLR      9       /* Divisor Latch Register */
 > +
-> +	if (!dev->power.wakeup) {
-> +		dev_err(dev, "forgot to call call device_init_wakeup?\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	spin_lock_irqsave(&dev->power.lock, flags);
-> +	if (WARN_ON(dev->power.wakeirq)) {
-> +		dev_err(dev, "wake irq already initialized\n");
-
-these two can be combined if you can live with a WARN_ONCE() instead:
-
-	if (dev_WARN_ONCE(dev, dev->power.wakeirq,
-		"wake irq already initialized\n")) {
-		spin_unlock_irqrestore(&dev->power.lock, flags);
-		return -EEXIST;
-	}
-
-dev_WARN() needs to be fixed at some point to accept a "condition"
-argument :s
-
-But really, no strong feelings.
-
-> +static irqreturn_t handle_threaded_wakeirq(int wakeirq, void *_wirq)
-> +{
-> +	struct wake_irq *wirq =3D _wirq;
-> +
-> +	/* We don't want RPM_ASYNC or RPM_NOWAIT here */
-> +	return pm_runtime_resume(wirq->dev) ? IRQ_NONE : IRQ_HANDLED;
-
-I wonder if you should add a pm_runtime_mark_last_busy() here. I guess
-not after your previous patch ?
-
-> diff --git a/drivers/base/power/wakeup.c b/drivers/base/power/wakeup.c
-> index 7726200..7191519 100644
-> --- a/drivers/base/power/wakeup.c
-> +++ b/drivers/base/power/wakeup.c
-> @@ -238,6 +239,100 @@ int device_wakeup_enable(struct device *dev)
->  }
->  EXPORT_SYMBOL_GPL(device_wakeup_enable);
-> =20
-> +#ifdef CONFIG_PM_WAKEIRQ
-> +
-> +/**
-> + * device_wakeup_attach_irq - Attach a wakeirq to a wakeup source
-> + * @dev: Device to handle
-> + * @irq: Device specific wakeirq entry
-
-s/irq/wakeirq to match argument name below ?
-
-> + * Attach a device specific wakeirq to the device specific
-> + * wakeup source so the device wakeirq can be configured
-> + * automatically for suspend and resume.
+> +/*
+> + * The register map is slightly different from that of 8250.
+> + * IO callbacks must be overridden for correct access to FCR, LCR, and MCR.
 > + */
-> +int device_wakeup_attach_irq(struct device *dev,
-> +			     struct wake_irq *wakeirq)
+> +static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
 > +{
-> +	struct wakeup_source *ws;
-> +	int ret =3D 0;
+> +       int valshift = 0;
 > +
-> +	spin_lock_irq(&dev->power.lock);
-> +	ws =3D dev->power.wakeup;
-> +	if (!ws) {
-> +		ret =3D -EINVAL;
-> +		goto unlock;
-> +	}
-> +
-> +	if (ws->wakeirq) {
-> +		ret =3D -EEXIST;
-> +		goto unlock;
-> +	}
-> +
-> +	ws->wakeirq =3D wakeirq;
-> +
-> +unlock:
-> +	spin_unlock_irq(&dev->power.lock);
-> +
-> +	return ret;
-> +}
+> +       switch (offset) {
+> +       case UART_LCR:
+> +               valshift = 8;
 
-<snip>
+Please use a define for the value. Something like UNIPHIER_UART_LCR_SHIFT maybe.
 
---=20
-balbi
+Cheers,
+Matthias
 
---y0ulUmNC+osPPQO6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
 
-iQIcBAEBAgAGBQJVVqPjAAoJEIaOsuA1yqRE2fAQAIQKuBWi+jm4UhtXaqpEOF0+
-tCKSrX+W5gdWWi0hXzOhCLBuDxObxaCPYszPoCP/WnDsDJttz54+DIybMFjJcqPV
-QaX6WBZIBlOgIoPKhpIHgUJuoFQIoWN7NxLlwqHNfyXa+dDzSc9WVkSE4BDyTbB1
-MFVcx2K3TM1sWRqJon7BtUihWR7BTGO1f91h335rXU40DTT2MHjwaYEbfrQfjmc5
-sevDIuOqNnDTLeUHmhxmq95tUM5IbLErrMCc+AN/cOuk62GkChi8C5QE9G0oasdQ
-Nqd3H4hxDk5NMGPsqyVJGHt5oNi7LrkjftwSGCdi1DfrwyGoqxx+wNRzAsvSmP8g
-ojPma47ki2tV6c0EL2nes+9yZEmV2dqQbGFiufJokN0G5KpmH02hTEbDrRyrKS+M
-iPOVFbQ48iYOtzf+YRi49kCXdPZa8CL8V8PS75ZCMKaPzSGHafptlkGK4t1z2akT
-M6X8n47a5lL6i4DtIoKsuQ4Yj0xAj+Dmn59siRfEQY5lfd8fB6HXqvjMEtcT7Kgs
-HLyS9NtlRk9WqJUXhj6SrkxcZ972/MYfQIeT4ymVE0tvieFs7jjewcEiLBPtKmHQ
-zfnOxgoqdJzhpnp2t2t2cNXL+73kAb1p2UARby8E/fL2NGxuJBzEVvgPlg2kOv68
-SJH3XH7Lbubp2Fuj80UO
-=02Dt
------END PGP SIGNATURE-----
-
---y0ulUmNC+osPPQO6--
+-- 
+motzblog.wordpress.com
