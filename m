@@ -1,91 +1,115 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH] serial: 8250_uniphier: add UniPhier serial driver
-Date: Sat, 16 May 2015 11:17:31 +0200
-Message-ID: <CABuKBeJnMcyH7TGtYcUToRhLnu_qcxHtwEedS2JgGjX8EiX1Gw@mail.gmail.com>
-References: <1431692764-17576-1-git-send-email-yamada.masahiro@socionext.com>
+From: Noam Camus <noamc@ezchip.com>
+Subject: [PATCH 1/1] serial: earlycon: Add support for big-endian MMIO accesses
+Date: Sat, 16 May 2015 16:31:49 +0300
+Message-ID: <1431783109-26679-1-git-send-email-noamc@ezchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1431692764-17576-1-git-send-email-yamada.masahiro@socionext.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: linux-serial@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, John Crispin <blogic@openwrt.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Cc: vgupta@synopsys.com, giladb@ezchip.com, cmetcalf@ezchip.com, Noam Camus <noamc@ezchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-2015-05-15 14:26 GMT+02:00 Masahiro Yamada <yamada.masahiro@socionext.com>:
-> Add the driver for on-chip UART used on UniPhier SoCs.
-> The register map of this hardware is similar to that of 8250
-> (but the address for FCR, LCR is different), so it should go
-> into drivers/tty/serial/8250 directory.
->
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-> ---
->
->  drivers/tty/serial/8250/8250_uniphier.c | 243 ++++++++++++++++++++++++++++++++
->  drivers/tty/serial/8250/Kconfig         |   7 +
->  drivers/tty/serial/8250/Makefile        |   1 +
->  3 files changed, 251 insertions(+)
->  create mode 100644 drivers/tty/serial/8250/8250_uniphier.c
->
-> diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-> new file mode 100644
-> index 0000000..f108d81
-> --- /dev/null
-> +++ b/drivers/tty/serial/8250/8250_uniphier.c
-> @@ -0,0 +1,243 @@
-> +/*
-> + * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/init.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/clk.h>
-> +#include <linux/of.h>
-> +#include <linux/io.h>
-> +#include <linux/serial_core.h>
-> +#include <linux/serial_reg.h>
-> +#include <linux/serial_8250.h>
-> +#include "8250.h"
-> +
-> +/*
-> + * Most (but not all) of UniPhier UART devices have 64-depth FIFO.
-> + * Set this value if "fifo-size" property is missing from the device tree node.
-> + */
-> +#define UNIPHIER_UART_DEFAULT_FIFO_SIZE        64
-> +
-> +#define UNIPHIER_UART_CHAR_FCR 3       /* Character / FIFO Control Register */
-> +#define UNIPHIER_UART_LCR_MCR  4       /* Line/Modem Control Register */
-> +#define UNIPHIER_UART_DLR      9       /* Divisor Latch Register */
-> +
-> +/*
-> + * The register map is slightly different from that of 8250.
-> + * IO callbacks must be overridden for correct access to FCR, LCR, and MCR.
-> + */
-> +static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
-> +{
-> +       int valshift = 0;
-> +
-> +       switch (offset) {
-> +       case UART_LCR:
-> +               valshift = 8;
+From: Noam Camus <noamc@ezchip.com>
 
-Please use a define for the value. Something like UNIPHIER_UART_LCR_SHIFT maybe.
+Support command line parameters of the form:
+earlycon=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
 
-Cheers,
-Matthias
+This commit seem to be needed even after commit:
+serial: 8250: Add support for big-endian MMIO accesses
+c627f2ceb692e8a9358b64ac2d139314e7bb0d17
 
+Signed-off-by: Noam Camus <noamc@ezchip.com>
+---
+ Documentation/kernel-parameters.txt |    9 +++++----
+ drivers/tty/serial/earlycon.c       |    9 ++++++---
+ drivers/tty/serial/serial_core.c    |    7 +++++--
+ 3 files changed, 16 insertions(+), 9 deletions(-)
 
-
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 61ab162..55bb093 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -959,14 +959,15 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 		uart[8250],io,<addr>[,options]
+ 		uart[8250],mmio,<addr>[,options]
+ 		uart[8250],mmio32,<addr>[,options]
++		uart[8250],mmio32be,<addr>[,options]
+ 		uart[8250],0x<addr>[,options]
+ 			Start an early, polled-mode console on the 8250/16550
+ 			UART at the specified I/O port or MMIO address.
+ 			MMIO inter-register address stride is either 8-bit
+-			(mmio) or 32-bit (mmio32).
+-			If none of [io|mmio|mmio32], <addr> is assumed to be
+-			equivalent to 'mmio'. 'options' are specified in the
+-			same format described for "console=ttyS<n>"; if
++			(mmio) or 32-bit (mmio32 or mmio32be).
++			If none of [io|mmio|mmio32|mmio32be], <addr> is assumed
++			to be equivalent to 'mmio'. 'options' are specified
++			in the same format described for "console=ttyS<n>"; if
+ 			unspecified, the h/w is not initialized.
+ 
+ 		pl011,<addr>
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 5fdc9f3..a840732 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -72,6 +72,7 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 
+ 	switch (port->iotype) {
+ 	case UPIO_MEM32:
++	case UPIO_MEM32BE:
+ 		port->regshift = 2;	/* fall-through */
+ 	case UPIO_MEM:
+ 		port->mapbase = addr;
+@@ -90,9 +91,11 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 		strlcpy(device->options, options, length);
+ 	}
+ 
+-	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
++	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32 ||
++	    port->iotype == UPIO_MEM32BE)
+ 		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
+-			(port->iotype == UPIO_MEM32) ? "32" : "",
++			(port->iotype == UPIO_MEM) ? "" :
++			(port->iotype == UPIO_MEM32) ? "32" : "32be",
+ 			(unsigned long long)port->mapbase,
+ 			device->options);
+ 	else
+@@ -133,7 +136,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+  *
+  *	Registers the earlycon console matching the earlycon specified
+  *	in the param string @buf. Acceptable param strings are of the form
+- *	   <name>,io|mmio|mmio32,<addr>,<options>
++ *	   <name>,io|mmio|mmio32|mmio32be,<addr>,<options>
+  *	   <name>,0x<addr>,<options>
+  *	   <name>,<options>
+  *	   <name>
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 0b7bb12..1124090 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1816,8 +1816,8 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+  *	@options: ptr for <options> field; NULL if not present (out)
+  *
+  *	Decodes earlycon kernel command line parameters of the form
+- *	   earlycon=<name>,io|mmio|mmio32,<addr>,<options>
+- *	   console=<name>,io|mmio|mmio32,<addr>,<options>
++ *	   earlycon=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
++ *	   console=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
+  *
+  *	The optional form
+  *	   earlycon=<name>,0x<addr>,<options>
+@@ -1835,6 +1835,9 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
+ 	} else if (strncmp(p, "mmio32,", 7) == 0) {
+ 		*iotype = UPIO_MEM32;
+ 		p += 7;
++	} else if (strncmp(p, "mmio32be,", 9) == 0) {
++		*iotype = UPIO_MEM32BE;
++		p += 9;
+ 	} else if (strncmp(p, "io,", 3) == 0) {
+ 		*iotype = UPIO_PORT;
+ 		p += 3;
 -- 
-motzblog.wordpress.com
+1.7.1
+
