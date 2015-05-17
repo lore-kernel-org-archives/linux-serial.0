@@ -1,58 +1,65 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 4.1-rc4
-Date: Sat, 16 May 2015 17:33:50 -0700
-Message-ID: <20150517003350.GA18001@kroah.com>
+From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Remove schedule_work in sci_dma_rx_complete
+Date: Mon, 18 May 2015 00:15:21 +0900
+Message-ID: <CAH1o70LUUC7teuzLqM-8SsindwSaYP9LtsT2vLmwv6EGHcDygg@mail.gmail.com>
+References: <1430327256-8545-1-git-send-email-ykaneko0929@gmail.com>
+	<CAMuHMdWZj3tzwfFhjrTAB4cO0ZAKNJu+G_jBuNyfi46g1fQrYQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdWZj3tzwfFhjrTAB4cO0ZAKNJu+G_jBuNyfi46g1fQrYQ@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 5ebe6afaf0057ac3eaeb98defd5456894b446d22:
+Hi Geert-san,
 
-  Linux 4.1-rc2 (2015-05-03 19:22:23 -0700)
+2015-04-30 3:21 GMT+09:00 Geert Uytterhoeven <geert@linux-m68k.org>:
+> Hi Kaneko-san, Mizuguchi-san,
+>
+> On Wed, Apr 29, 2015 at 7:07 PM, Yoshihiro Kaneko <ykaneko0929@gmail.com> wrote:
+>> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+>> index e7d6566..664ae78 100644
+>> --- a/drivers/tty/serial/sh-sci.c
+>> +++ b/drivers/tty/serial/sh-sci.c
+>> @@ -126,6 +126,9 @@ struct sci_port {
+>>  static void sci_start_tx(struct uart_port *port);
+>>  static void sci_stop_tx(struct uart_port *port);
+>>  static void sci_start_rx(struct uart_port *port);
+>> +#ifdef CONFIG_SERIAL_SH_SCI_DMA
+>> +static void work_fn_rx(struct work_struct *work);
+>> +#endif
+>
+> While it would generate a larger patch, I think it's worthwhile moving
+> work_fn_rx() up, so you don't need the #ifdef and the forward declaration.
 
-are available in the git repository at:
+Thanks for your review.
+I'll send patch v2.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.1-rc4
+Regards,
+Kaneko
 
-for you to fetch changes up to 1a48632ffed61352a7810ce089dc5a8bcd505a60:
-
-  pty: Fix input race when closing (2015-05-10 19:26:37 +0200)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 4.1-rc4
-
-Here's some TTY and serial driver fixes for reported issues.  All of
-these have been in linux-next successfully.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Dave Martin (1):
-      Revert "serial/amba-pl011: Leave the TX IRQ alone when the UART is not open"
-
-Pan Xinhui (1):
-      tty/n_gsm.c: fix a memory leak when gsmtty is removed
-
-Peter Hurley (2):
-      earlycon: Revert log warnings
-      pty: Fix input race when closing
-
-Semen Protsenko (1):
-      serial: omap: Fix error handling in probe
-
- Documentation/serial/tty.txt     |  3 +++
- drivers/tty/n_gsm.c              |  5 ++---
- drivers/tty/n_hdlc.c             |  4 ++--
- drivers/tty/n_tty.c              | 22 +++++++++++++++++----
- drivers/tty/pty.c                |  5 +++--
- drivers/tty/serial/amba-pl011.c  |  5 ++++-
- drivers/tty/serial/earlycon.c    |  9 ++-------
- drivers/tty/serial/omap-serial.c |  2 ++
- drivers/tty/tty_buffer.c         | 41 ++++++++++++++++++++++++++--------------
- include/linux/tty.h              |  2 +-
- 10 files changed, 64 insertions(+), 34 deletions(-)
+>
+>>  #define SCI_NPORTS CONFIG_SERIAL_SH_SCI_NR_UARTS
+>>
+>> @@ -1341,7 +1344,7 @@ static void sci_dma_rx_complete(void *arg)
+>>         if (count)
+>>                 tty_flip_buffer_push(&port->state->port);
+>>
+>> -       schedule_work(&s->work_rx);
+>> +       work_fn_rx(&s->work_rx);
+>>  }
+>>
+>>  static void sci_rx_dma_release(struct sci_port *s, bool enable_pio)
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
