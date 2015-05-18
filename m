@@ -1,149 +1,55 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v2] serial: 8250_uniphier: add UniPhier serial driver
-Date: Mon, 18 May 2015 10:43:15 +0200
-Message-ID: <CABuKBe+goF4OFWUeeJ_okUL9ys0RO7HwHW3jg938a1xKoY9azA@mail.gmail.com>
-References: <1431920711-1953-1-git-send-email-yamada.masahiro@socionext.com>
+From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v8 01/16] scripts: link-vmlinux: Don't pass page offset to
+ kallsyms if XIP Kernel
+Date: Mon, 18 May 2015 13:47:06 +0200
+Message-ID: <CALszF6B0=dgSDfLFwDi9YmEzrrNVuYbUnqMu5DmDhhy--emtpw@mail.gmail.com>
+References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1431158038-3813-2-git-send-email-mcoquelin.stm32@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1431920711-1953-1-git-send-email-yamada.masahiro@socionext.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: linux-serial@vger.kernel.org, Joachim Eastwood <manabian@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, John Crispin <blogic@openwrt.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <1431158038-3813-2-git-send-email-mcoquelin.stm32@gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Michal Marek <mmarek@suse.cz>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Rob Herring <robh+dt@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Jonathan Corbet <corbet@lwn.net>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Linus Walleij <linus.walleij@linaro.org>, Stefan Agner <stefan@agner.ch>, Lee Jones <lee.jones@linaro.org>, Joe Perches <joe@perches.com>, Russell King <linux@arm.linux.org.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.>
 List-Id: linux-serial@vger.kernel.org
 
-2015-05-18 5:45 GMT+02:00 Masahiro Yamada <yamada.masahiro@socionext.com>:
-> Add the driver for on-chip UART used on UniPhier SoCs.
+Hi Michal,
+
+2015-05-09 9:53 GMT+02:00 Maxime Coquelin <mcoquelin.stm32@gmail.com>:
+> When Kernel is executed in place from ROM, the symbol addresses can be
+> lower than the page offset.
 >
-> This hardware is similar to 8250 with a slightly different register
-> mapping, so it should go into drivers/tty/serial/8250 directory.
->
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
 > ---
+>  scripts/link-vmlinux.sh | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> Changes in v2:
->   - Drop unnecessary #include <linux/init.h>
->   - Sort includes in alphabetical order
->   - Use devm_clk_get() rather than of_clk_get()
->   - Delete unneeded clk_put() from uniphier_uart_remove callback
->   - Delete unneeded IS_ERR_OR_NULL check from uniphier_uart_remove callback
->   - Use UNIPHIER_UART_*_SHIFT instead of hard-coded shift values
->   - Change the first argument type of uniphier_of_serial_setup()
->     from (struct platform_device *) to (struct device *) for code-cleanup.
+> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> index 86a4fe7..b055d9d 100755
+> --- a/scripts/link-vmlinux.sh
+> +++ b/scripts/link-vmlinux.sh
+> @@ -82,7 +82,7 @@ kallsyms()
+>                 kallsymopt="${kallsymopt} --all-symbols"
+>         fi
 >
->  drivers/tty/serial/8250/8250_uniphier.c | 247 ++++++++++++++++++++++++++++++++
->  drivers/tty/serial/8250/Kconfig         |   7 +
->  drivers/tty/serial/8250/Makefile        |   1 +
->  3 files changed, 255 insertions(+)
->  create mode 100644 drivers/tty/serial/8250/8250_uniphier.c
+> -       if [ -n "${CONFIG_ARM}" ] && [ -n "${CONFIG_PAGE_OFFSET}" ]; then
+> +       if [ -n "${CONFIG_ARM}" ] && [ -z "${CONFIG_XIP_KERNEL}" ] && [ -n "${CONFIG_PAGE_OFFSET}" ]; then
+>                 kallsymopt="${kallsymopt} --page-offset=$CONFIG_PAGE_OFFSET"
+>         fi
 >
-> diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-> new file mode 100644
-> index 0000000..aabb64b
-> --- /dev/null
-> +++ b/drivers/tty/serial/8250/8250_uniphier.c
-> @@ -0,0 +1,247 @@
-> +/*
-> + * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/serial_8250.h>
-> +#include <linux/serial_core.h>
-> +#include <linux/serial_reg.h>
-> +#include "8250.h"
-> +
-> +/* Most (but not all) of UniPhier UART devices have 64-depth FIFO. */
-> +#define UNIPHIER_UART_DEFAULT_FIFO_SIZE        64
-> +
-> +#define UNIPHIER_UART_CHAR_FCR 3
-> +#define     UNIPHIER_UART_CHAR_SHIFT   8       /* Character Register */
+> --
+> 1.9.1
+>
 
-Do you use this define? If not, please delete it.
+The get_maintainer.pl does not explicitly provide your name as
+maintainer for this file.
+But looking at MAINTAINERS file, I think you are the one for it.
 
-> +#define     UNIPHIER_UART_FCR_SHIFT    0       /* FIFO Control Register */
-> +#define UNIPHIER_UART_LCR_MCR  4
-> +#define     UNIPHIER_UART_LCR_SHIFT    8       /* Line Control Register */
-> +#define     UNIPHIER_UART_MCR_SHIFT    0       /* Modem Control Register */
-> +#define UNIPHIER_UART_DLR      9               /* Divisor Latch Register */
-> +
-> +/*
-> + * The register map is slightly different from that of 8250.
-> + * IO callbacks must be overridden for correct access to FCR, LCR, and MCR.
-> + */
-> +static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
-> +{
-> +       int valshift = 0;
-> +
-> +       switch (offset) {
-> +       case UART_LCR:
-> +               offset = UNIPHIER_UART_LCR_MCR;
-> +               valshift = UNIPHIER_UART_LCR_SHIFT;
-> +               break;
-> +       case UART_MCR:
-> +               offset = UNIPHIER_UART_LCR_MCR;
-> +               valshift = UNIPHIER_UART_MCR_SHIFT;
+Do you confirm?
+If this is the case and you agree with the patch, could you consider
+taking it for v4.2?
 
-
-Sorry for insisting on this, but please just add defines for the special case.
-Don't add defines for valshift which does not shift nothing. To me it
-makes the code less clear.
-
-
-> +               break;
-> +       default:
-> +               break;
-> +       }
-> +
-> +       offset <<= p->regshift;
-> +
-> +       /*
-> +        * The return value must be masked with 0xff because LCR and MCR reside
-> +        * in the same register that must be accessed by 32-bit write/read.
-> +        * 8 or 16 bit access to this hardware result in unexpected behavior.
-> +        */
-> +       return (readl(p->membase + offset) >> valshift) & 0xff;
-> +}
-> +
-> +static void uniphier_serial_out(struct uart_port *p, int offset, int value)
-> +{
-> +       int valshift = 0;
-> +       bool normal = false;
-> +
-> +       switch (offset) {
-> +       case UART_FCR:
-> +               offset = UNIPHIER_UART_CHAR_FCR;
-> +               valshift = UNIPHIER_UART_FCR_SHIFT;
-> +               break;
-> +       case UART_LCR:
-> +               offset = UNIPHIER_UART_LCR_MCR;
-> +               valshift = UNIPHIER_UART_LCR_SHIFT;
-> +               /* Divisor latch access bit does not exist. */
-> +               value &= ~(UART_LCR_DLAB << valshift);
-> +               break;
-> +       case UART_MCR:
-> +               offset = UNIPHIER_UART_LCR_MCR;
-> +               valshift = UNIPHIER_UART_MCR_SHIFT;
-
-Same here.
-Apart from that the driver looks good to me.
-
-Cheers,
-Matthias
-
--- 
-motzblog.wordpress.com
+Thanks in advance,
+Maxime
