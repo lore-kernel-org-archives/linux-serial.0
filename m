@@ -1,186 +1,274 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [RFC PATCH] serial: 8250_omap: provide complete custom startup &
- shutdown callbacks
-Date: Mon, 18 May 2015 18:47:20 +0200
-Message-ID: <20150518164720.GA29261@linutronix.de>
+From: Bin Gao <bin.gao@linux.intel.com>
+Subject: [PATCH v3 1/2] serial_core: add pci uart early console support
+Date: Mon, 18 May 2015 14:21:52 -0700
+Message-ID: <20150518212152.GA95407@worksta>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-omap-owner@vger.kernel.org
-To: peter@hurleysoftware.com, linux-serial@vger.kernel.org
-Cc: linux-omap@vger.kernel.org, nsekhar@ti.com, tony@atomide.com, nm@ti.com
+Sender: linux-kernel-owner@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-The currently in-use port->startup and port->shutdown are "okay". The
-startup part for instance does the tiny omap extra part and invokes
-serial8250_do_startup() for the remaining pieces. The workflow in
-serial8250_do_startup() is okay except for the part where UART_RX is
-read without a check if there is something to read. I tried to
-workaround it in commit 0aa525d1 ("tty: serial: 8250_core: read only
-RX if there is something in the FIFO") but then reverted it later in
-commit ca8bb4aefb9 ("serial: 8250: Revert "tty: serial: 8250_core: read
-only RX if there is something in the FIFO"").
+On some Intel Atom SoCs, the legacy IO port UART(0x3F8) is not available.
+Instead, a 8250 compatible PCI uart can be used as early console.
+This patch adds pci support to the 8250 early console driver uart8250.
+For example, to enable pci uart(00:21.3) as early console on these
+platforms, append the following line to the kernel command line
+(assume baud rate is 115200):
+earlyprintk=uart8250,pci32,0:24.2,115200n8
 
-This is the second attempt to get it to work on older OMAPs without
-breaking other chips this time :)
-Peter Hurley suggested to pull in the few needed lines from
-serial8250_do_startup() and drop everything else that is not required
-including makeing it simpler like using just request_irq() instead the
-chain handler like it is doing now.
-So lets try that.
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Bin Gao <bin.gao@intel.com>
 ---
-Peter is this what you had in mind? If so I will repost it without the
-RFC. And I think tony would like a stable + fixes tag for it.
+ arch/x86/Kconfig                 |  11 +++
+ drivers/tty/serial/earlycon.c    |   9 +++
+ drivers/tty/serial/serial_core.c | 145 ++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 163 insertions(+), 2 deletions(-)
 
- drivers/tty/serial/8250/8250_omap.c | 81 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 72 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 9289999cb7c6..7fd02a03c1ed 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -562,12 +562,36 @@ static irqreturn_t omap_wake_irq(int irq, void *dev_id)
- 	return IRQ_NONE;
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 226d569..1283220 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2228,6 +2228,8 @@ config PCI
+ 	  your box. Other bus systems are ISA, EISA, MicroChannel (MCA) or
+ 	  VESA. If you have PCI, say Y, otherwise N.
+ 
++	select HAVE_EARLY_PCI
++
+ choice
+ 	prompt "PCI access mode"
+ 	depends on X86_32 && PCI
+@@ -2265,6 +2267,15 @@ config PCI_GOANY
+ 
+ endchoice
+ 
++config HAVE_EARLY_PCI
++	def_bool y
++	help
++	  This option indicates that a group of APIs are available (in
++	  asm/pci-direct.h) so the kernel can access pci config registers
++	  before the PCI subsystem is initialized. Any arch that supports
++	  early pci APIs must enable this option which is required  by arch
++	  independent codes, e.g. uart8250 pci early console driver.
++
+ config PCI_BIOS
+ 	def_bool y
+ 	depends on X86_32 && PCI && (PCI_GOBIOS || PCI_GOANY)
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 6dc471e..63ae60e 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -193,6 +193,15 @@ static int __init param_setup_earlycon(char *buf)
+ }
+ early_param("earlycon", param_setup_earlycon);
+ 
++/* x86 uses "earlyprintk=xxx", so we keep the compatibility here */
++#ifdef CONFIG_X86
++static int __init param_setup_earlycon_x86(char *buf)
++{
++	return param_setup_earlycon(buf);
++}
++early_param("earlyprintk", param_setup_earlycon_x86);
++#endif
++
+ int __init of_setup_earlycon(unsigned long addr,
+ 			     int (*setup)(struct earlycon_device *, const char *))
+ {
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 0b7bb12..06218f5 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -34,10 +34,15 @@
+ #include <linux/serial_core.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
++#include <linux/pci_regs.h>
+ 
+ #include <asm/irq.h>
+ #include <asm/uaccess.h>
+ 
++#ifdef CONFIG_HAVE_EARLY_PCI
++#include <asm/pci-direct.h>
++#endif
++
+ /*
+  * This is used to lock changes in serial line configuration.
+  */
+@@ -1808,6 +1813,110 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+ 	return ports + idx;
  }
  
-+#ifdef CONFIG_SERIAL_8250_DMA
-+static int omap_8250_dma_handle_irq(struct uart_port *port);
-+#endif
-+
-+static irqreturn_t omap8250_irq(int irq, void *dev_id)
++static int parse_bdf(char *options, char **endp, char delimiter, u8 *val)
 +{
-+	struct uart_port *port = dev_id;
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+	unsigned int iir;
-+	int ret;
++	char str[4]; /* max 3 chars, plus a NULL terminator */
++	char *p = options;
++	int i = 0;
 +
-+#ifdef CONFIG_SERIAL_8250_DMA
-+	if (up->dma) {
-+		ret = omap_8250_dma_handle_irq(port);
-+		return IRQ_RETVAL(ret);
++	while (*p) {
++		if (i >= 4)
++			return -EINVAL;
++
++		if (*p == delimiter) {
++			str[i++] = 0;
++			if (endp)
++				*endp = p + 1;
++			return kstrtou8(str, 10, val); /* decimal, no hex */
++		}
++
++		str[i++] = *p++;
 +	}
-+#endif
 +
-+	serial8250_rpm_get(up);
-+	iir = serial_port_in(port, UART_IIR);
-+	ret = serial8250_handle_irq(port, iir);
-+	serial8250_rpm_put(up);
-+
-+	return IRQ_RETVAL(ret);
++	return -EINVAL;
 +}
 +
- static int omap_8250_startup(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct omap8250_priv *priv = port->private_data;
--
- 	int ret;
- 
- 	if (priv->wakeirq) {
-@@ -580,10 +604,31 @@ static int omap_8250_startup(struct uart_port *port)
- 
- 	pm_runtime_get_sync(port->dev);
- 
--	ret = serial8250_do_startup(port);
--	if (ret)
-+	up->mcr = 0;
-+	serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
++#ifdef CONFIG_HAVE_EARLY_PCI
++/*
++ * The whole pci option from the command line is: pci[32],B:D.F[,options]
++ * Examples:
++ *     pci,0:21.3,115200n8
++ *     pci32,0:21.3
++ * Here pci32 means 8250 UART registers are 32-bit width(regshift = 2).
++ * pci means 8250 UART registers are 8-bit width(regshift = 0).
++ * B,D and F are bus, device and function, in decimal(not hex).
++ * The additional options(115200n8) would be parsed by the earlycon framework.
++ *
++ * @options: the pci options
++ * @phys: the pointer to return pci mem or io address
++ * return: <0: error
++ *          0: pci mem
++ *          1: pci io
++ */
++static int parse_pci_options(char *options, unsigned long *phys)
++{
++	u8 bus, dev, func;
++	char *endp;
++	u64 bar0;
++	u16 cmd;
++	int pci_io = 0;
 +
-+	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
-+
-+	up->lsr_saved_flags = 0;
-+	up->msr_saved_flags = 0;
-+
-+	if (up->dma) {
-+		ret = serial8250_request_dma(up);
-+		if (ret) {
-+			dev_warn_ratelimited(port->dev,
-+					     "failed to request DMA\n");
-+			up->dma = NULL;
-+		}
++	if (!early_pci_allowed()) {
++		pr_err("earlycon pci not available(early pci not allowed)\n");
++		return -EINVAL;
 +	}
 +
-+	ret = request_irq(port->irq, omap8250_irq, IRQF_SHARED,
-+			  dev_name(port->dev), port);
-+	if (ret < 0)
- 		goto err;
- 
-+	up->ier = UART_IER_RLSI | UART_IER_RDI;
-+	serial_port_out(port, UART_IER, up->ier);
++	/* We come here with options=B:D.F[,options] */
++	if (parse_bdf(options, &endp, ':', &bus))
++		goto failed;
 +
- #ifdef CONFIG_PM
- 	up->capabilities |= UART_CAP_RPM;
- #endif
-@@ -610,8 +655,7 @@ static int omap_8250_startup(struct uart_port *port)
- 
- static void omap_8250_shutdown(struct uart_port *port)
- {
--	struct uart_8250_port *up =
--		container_of(port, struct uart_8250_port, port);
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct omap8250_priv *priv = port->private_data;
- 
- 	flush_work(&priv->qos_work);
-@@ -621,11 +665,24 @@ static void omap_8250_shutdown(struct uart_port *port)
- 	pm_runtime_get_sync(port->dev);
- 
- 	serial_out(up, UART_OMAP_WER, 0);
--	serial8250_do_shutdown(port);
++	if (parse_bdf(endp, &endp, '.', &dev))
++		goto failed;
 +
-+	up->ier = 0;
-+	serial_port_out(port, UART_IER, 0);
-+
-+	if (up->dma)
-+		serial8250_release_dma(up);
++	if (parse_bdf(endp, &endp, ',', &func))
++		goto failed;
 +
 +	/*
-+	 * Disable break condition and FIFOs
++	 * On these platforms class code in pci config is broken,
++	 * so skip checking it.
 +	 */
-+	if (up->lcr & UART_LCR_SBC)
-+		serial_port_out(port, UART_LCR, up->lcr & ~UART_LCR_SBC);
-+	serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
- 
- 	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- 
-+	free_irq(port->irq, port);
- 	if (priv->wakeirq)
- 		free_irq(priv->wakeirq, port);
- }
-@@ -974,6 +1031,12 @@ static inline int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
- }
- #endif
- 
-+static int omap8250_no_handle_irq(struct uart_port *port)
-+{
-+	WARN_ONCE(1, "This shouldn't be used\n");
-+	return 0;
++
++	bar0 = read_pci_config(bus, dev, func, PCI_BASE_ADDRESS_0);
++
++	/* The BAR is IO or Memory? */
++	if ((bar0 & PCI_BASE_ADDRESS_SPACE) == PCI_BASE_ADDRESS_SPACE_IO)
++		pci_io = 1;
++
++	if ((bar0 & PCI_BASE_ADDRESS_MEM_TYPE_MASK) ==
++			PCI_BASE_ADDRESS_MEM_TYPE_64)
++		bar0 |= (u64)read_pci_config(bus, dev, func,
++				PCI_BASE_ADDRESS_0 + 4) << 32;
++
++	*phys = bar0 & (pci_io ? PCI_BASE_ADDRESS_IO_MASK :
++				 PCI_BASE_ADDRESS_MEM_MASK);
++
++	/* Enable address decoding */
++	cmd = read_pci_config_16(bus, dev, func, PCI_COMMAND);
++	write_pci_config_16(bus, dev, func, PCI_COMMAND,
++		cmd | (pci_io ? PCI_COMMAND_IO : PCI_COMMAND_MEMORY));
++
++	pr_info("Use 8250 uart at PCI 0000:%02u:%02u.%01u as early console\n",
++							bus, dev, func);
++	return pci_io;
++
++failed:
++	pr_err("Invalid earlycon pci parameters\n");
++	return -EINVAL;
 +}
 +
- static int omap8250_probe(struct platform_device *pdev)
++#else
++static int parse_pci_options(char *options, unsigned long *phys)
++{
++	pr_err("earlycon pci not available(need CONFIG_HAVE_EARLY_PCI)\n");
++	return -EINVAL;
++}
++#endif
++
+ /**
+  *	uart_parse_earlycon - Parse earlycon options
+  *	@p:	  ptr to 2nd field (ie., just beyond '<name>,')
+@@ -1816,8 +1925,9 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+  *	@options: ptr for <options> field; NULL if not present (out)
+  *
+  *	Decodes earlycon kernel command line parameters of the form
+- *	   earlycon=<name>,io|mmio|mmio32,<addr>,<options>
++ *	   earlycon=<name>,io|mmio|mmio32|pci|pci32,<addr>,<options>
+  *	   console=<name>,io|mmio|mmio32,<addr>,<options>
++ *	For pci/pci32, the <addr> format is B:D.F, e.g. 0:24.2
+  *
+  *	The optional form
+  *	   earlycon=<name>,0x<addr>,<options>
+@@ -1829,12 +1939,23 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
+ 			char **options)
  {
- 	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -1075,6 +1138,7 @@ static int omap8250_probe(struct platform_device *pdev)
- 	pm_runtime_get_sync(&pdev->dev);
++	int pci = 0, ret;
++	unsigned long phys;
++
+ 	if (strncmp(p, "mmio,", 5) == 0) {
+ 		*iotype = UPIO_MEM;
+ 		p += 5;
+ 	} else if (strncmp(p, "mmio32,", 7) == 0) {
+ 		*iotype = UPIO_MEM32;
+ 		p += 7;
++	} else if (strncmp(p, "pci,", 4) == 0) {
++		pci = 1;
++		p += 4;
++		ret = parse_pci_options(p, &phys);
++	} else if (strncmp(p, "pci32,", 6) == 0) {
++		pci = 2;
++		p += 6;
++		ret = parse_pci_options(p, &phys);
+ 	} else if (strncmp(p, "io,", 3) == 0) {
+ 		*iotype = UPIO_PORT;
+ 		p += 3;
+@@ -1844,7 +1965,27 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
+ 		return -EINVAL;
+ 	}
  
- 	omap_serial_fill_features_erratas(&up, priv);
-+	up.port.handle_irq = omap8250_no_handle_irq;
- #ifdef CONFIG_SERIAL_8250_DMA
- 	if (pdev->dev.of_node) {
- 		/*
-@@ -1088,7 +1152,6 @@ static int omap8250_probe(struct platform_device *pdev)
- 		ret = of_property_count_strings(pdev->dev.of_node, "dma-names");
- 		if (ret == 2) {
- 			up.dma = &priv->omap8250_dma;
--			up.port.handle_irq = omap_8250_dma_handle_irq;
- 			priv->omap8250_dma.fn = the_no_dma_filter_fn;
- 			priv->omap8250_dma.tx_dma = omap_8250_tx_dma;
- 			priv->omap8250_dma.rx_dma = omap_8250_rx_dma;
+-	*addr = simple_strtoul(p, NULL, 0);
++	if (pci) {
++		if (ret < 0) /* error */
++			return ret;
++
++		/*
++		 * Once PCI mem/io is read from PCI BAR, we can reuse
++		 * mmio/mmio32/io type to minimize code change.
++		 */
++		if (ret > 0) /* PCI io */
++			*iotype = UPIO_PORT;
++		else { /* ret = 0: PCI mem */
++			if (pci == 2)
++				*iotype = UPIO_MEM32;
++			else
++				*iotype = UPIO_MEM;
++		}
++
++		*addr = phys;
++	} else
++		*addr = simple_strtoul(p, NULL, 0);
++
+ 	p = strchr(p, ',');
+ 	if (p)
+ 		p++;
 -- 
-2.1.4
-
+1.9.1
