@@ -1,95 +1,52 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v8 14/16] ARM: dts: Introduce STM32F429 MCU
-Date: Mon, 18 May 2015 14:21:42 +0200
-Message-ID: <CALszF6BU2uReeTdx6+FZG7Qx1TxCBNk_gzp00WWADi-oe-wyHA@mail.gmail.com>
-References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<11310179.epfRucfQKB@wuerfel>
-	<CALszF6DHazhN6+hGShyrmqtMrPod0hdb8mHAwK-GWfRxXzy7wQ@mail.gmail.com>
-	<2282066.NWoIT9ZyLc@wuerfel>
-	<CALszF6CaO_yuNiSDuDV+4d2NRe_+32j=zcSE1HPhB1UH59cW9w@mail.gmail.com>
+From: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v8 04/16] clocksource/drivers: Add ARM System timer driver
+Date: Mon, 18 May 2015 14:49:26 +0200
+Message-ID: <5559DFD6.3050603@linaro.org>
+References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>	<1431158038-3813-5-git-send-email-mcoquelin.stm32@gmail.com> <CALszF6BiKwDKejfpVgs6ojTxC4LSRfLSEaszXTGVy7xfbHLHZg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <CALszF6CaO_yuNiSDuDV+4d2NRe_+32j=zcSE1HPhB1UH59cW9w@mail.gmail.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <daniel.thompson@linaro.org>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Lee Jones <lee.jones@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak>
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CALszF6BiKwDKejfpVgs6ojTxC4LSRfLSEaszXTGVy7xfbHLHZg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?B?VXdlIEtsZWluZS0=?= =?UTF-8?B?S8O2bmln?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, =?UTF-8?B?QW5kcmVh?= =?UTF-8?B?cyBGw6RyYmVy?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Peter Meerwald <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Vladimir Zapolskiy <vladimir_zapolskiy-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Antti Palosaari <crope-X3B1VOXEql0@public.gmane.org>, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Nikolay Borisov <Nikolay.Borisov-5wv7dgnIgG8@public.gmane.org>, Rusty Russell <rusty-8n+1lVoiYb80n/F98K4Iww@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Michal Marek <mmarek-AlSwsSmVLrQ@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd, Daniel,
+On 05/18/2015 01:55 PM, Maxime Coquelin wrote:
+> Hi Daniel,
+>
+> 2015-05-09 9:53 GMT+02:00 Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>=
+:
+>> This patch adds clocksource support for ARMv7-M's System timer,
+>> also known as SysTick.
+>>
+>> Tested-by: Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>> Acked-by: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> ---
+>>   drivers/clocksource/Kconfig          |  7 ++++
+>>   drivers/clocksource/Makefile         |  1 +
+>>   drivers/clocksource/armv7m_systick.c | 79 ++++++++++++++++++++++++=
+++++++++++++
+>>   3 files changed, 87 insertions(+)
+>>   create mode 100644 drivers/clocksource/armv7m_systick.c
+>>
+>
+> Could you consider applying this patch and its dt-bindings
+> documentation (patch 3/16) on your tree for v4.2?
 
-2015-05-13 18:54 GMT+02:00 Maxime Coquelin <mcoquelin.stm32@gmail.com>:
-> 2015-05-13 18:37 GMT+02:00 Arnd Bergmann <arnd@arndb.de>:
->> On Wednesday 13 May 2015 18:29:05 Maxime Coquelin wrote:
->>> 2015-05-13 17:28 GMT+02:00 Arnd Bergmann <arnd@arndb.de>:
->>> > On Wednesday 13 May 2015 16:20:34 Daniel Thompson wrote:
->>> >>
->>> >> That would suit me very well (although is the 0x20/0x40 not the 8 that
->>> >> we would need in the middle column).
->>> >
->>> > We don't normally use register offsets in DT. The number 8 here instead
->>> > would indicate block 8, where each block is four bytes wide. Using the
->>> > same index here for reset and clock would also help readability.
->>>
->>> My view is that it makes the bindings usage very complex.
->>> Also, it implies we have a specific compatible for stm32f429, whereas
->>> we didn't need with my earlier proposals.
->>> Indeed, the reset driver will need to know the offset of every reset
->>> registers, because:
->>>   1. The AHB registers start at RCC offset 0x10 (up to 0x18)
->>>   2. The APB registers start at RCC offset 0x20 (up to 0x24).
->>> We have a gap between AHB and APB registers, so how do we map the
->>> index for the block you propose?
->>> Should the gap be considered as a block, or we should skip it?
->>>
->>> I'm afraid it will not be straightforward for a reset user to
->>> understand how to use this bindings.
->>>
->>> Either my v7 or v8 versions would have made possible to use a single
->>> compatible for STM32 series.
->>> If we stick with one of these, we could even think to have a "generic"
->>> reset driver, as it could be compatible with sunxi driver bindings.
->>
->> We should definitely try to use the same compatible string for all of
->> them, and make a binding that is easy to use.
->>
->> I haven't fully understood the requirements for the various parts that
->> are involved here. My understanding so far was that the driver could
->> use the index from the first cell and compute
->>
->>         void __iomem *reset_reg = rcc_base + 0x10 + 4 * index;
->>         void __iomem *clock_reg = rcc_base + 0x30 + 4 * index;
->
-> This calculation is true, but we have to take into account there is a
-> hole in the middle, between AHB3, and APB1 register:
->
-> AHB1RSTR : offset = 0x10, index = 0
-> AHB2RSTR : offset = 0x14, index = 1
-> AHB3RSTR : offset = 0x18, index = 2
-> <HOLE >     : offset = 0x1c, index = 3
-> APB1RSTR : offset = 0x20, index = 4
-> APB2RSTR : offset = 0x24, index = 5
->
-> So we have to carefully document this hole in the bindings, maybe by
-> listing indexes in the documentation?
->
->>
->> Are there parts that need something else? If the 0x10 offset is
->> different, we probably want a different compatible string, and I'd
->> consider it a different part at that point. If there are chips
->> that do not spread the clock from the reset by exactly 256 bits,
->> we could add a DT property in the rcc node for that.
->
-> I will check other chips, to see if this is valid generally.
+Patches applied for 4.2.
 
-I checked on other chips, and the assumption looks valid generally.
+Thanks
 
-Kind regards,
-Maxime
+   -- Daniel
 
->
-> Thanks for your feedback,
-> Maxime
->
->>
->>         Arnd
+--=20
+  <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software fo=
+r ARM SoCs
+
+=46ollow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
