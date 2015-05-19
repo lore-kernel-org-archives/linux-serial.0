@@ -1,46 +1,40 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v2] serial: imx: Revert "initialized DMA w/o HW flow enabled"
-Date: Tue, 19 May 2015 09:18:37 -0300
-Message-ID: <CAOMZO5BLeKyeOFd8=VTM_44KEGeVVxYOz2_XX0XQcGSwCS7Xkg@mail.gmail.com>
-References: <20150507202439.GA4717@breakpoint.cc>
-	<CAOMZO5Dvv2oMujUqtXg0QXZ-VNbwKuRTCOVfcfNYzgWLkHZ1NA@mail.gmail.com>
-	<20150508071340.GA2603@breakpoint.cc>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v8 09/16] clockevents/drivers: Add STM32 Timer driver
+Date: Tue, 19 May 2015 14:56:43 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1505191455540.4225@nanos>
+References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com> <1431158038-3813-10-git-send-email-mcoquelin.stm32@gmail.com> <5559E4B0.70506@linaro.org> <CALszF6CK7axU0qrWNf38aqrt2R2126ZACn7wx5jNY_1KE+4H+g@mail.gmail.com> <555AF143.2060807@linaro.org>
+ <CALszF6CwGuKqgbX6gVrya1-_YOgvtrgC7pVqKTNjCRif_o532A@mail.gmail.com> <555AFD18.2070009@linaro.org> <CALszF6Asfke0-cMQJcEQ8ya+rbPPPhUc6aXTZXQvQ8QF66cwYQ@mail.gmail.com> <555B098A.8030202@linaro.org>
+ <CALszF6AJ3Zf598wYeUx=iNWHHKT24xUyfagB=+4GocwZ-Fd-0g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150508071340.GA2603@breakpoint.cc>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, jiwang <jiada_wang@mentor.com>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, anton_bondarenko@mentor.com, Dirk Behme <dirk.behme@de.bosch.com>, Nicolae Rosia <nicolae.rosia@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>, Philipp Zabel <p.zabel@pengutronix.de>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <CALszF6AJ3Zf598wYeUx=iNWHHKT24xUyfagB=+4GocwZ-Fd-0g@mail.gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, =?ISO-8859-15?Q?Andreas_F=E4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.r>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sebastian,
+On Tue, 19 May 2015, Maxime Coquelin wrote:
+> 2015-05-19 11:59 GMT+02:00 Daniel Lezcano <daniel.lezcano@linaro.org>:
+> >> Is the below Kconfig entry fine for you?
+> >>
+> >> config CLKSRC_STM32
+> >>      def_bool y if ARCH_STM32
+> >>      select CLKSRC_MMIO
+> >
+> >
+> > config CLKSRC_STM32
+> >         bool
+> >         select CLKSRC_MMIO
+> >
+> > and in the arch/arm/mach-stm32/Kconfig add select CLKSRC_STM32
+> 
+> Ok, I will send a patch for arch/arm/Kconfig, as Arnd already applied
+> the one intruducing ARCH_STM32.
 
-On Fri, May 8, 2015 at 4:13 AM, Sebastian Andrzej Siewior
-<sebastian@breakpoint.cc> wrote:
-> From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
->
-> This basically reverts commit 068500e08dc8 ("serial: imx: initialized
-> DMA w/o HW flow enabled") simply because it does not work.
-> I tested it on various IMX6 boards and the default SDMA firmware, that is
-> included in ROM, does not work properly. The SDMA interrupt counter does
-> not stop increment (which means the SDMA does not stop working) and I see
-> a lot of 0x00 (sometimes other bytes) which are added to the tty buffer
-> which are not part of the data transfer.
-> Jiada claimed that there is a firmware which makes it work but failed to
-> provide me a link to the firmware. All he said was that it can not be
-> shipped as part of the kernel due to license issues. I've found one
-> firmware in the FSL-tree but this firmware causes only TTY-overflows and
-> *no* data is transmitted.
->
-> Currently I see no other way out.
-
-Could you please test Philipp's patch?
-http://marc.info/?l=linux-serial&m=143202566332128&q=raw
-
-It worked on my tests and DMA still works with his patch, so I would
-prefer his solution.
+Folks, can you please trim your replies. It's a PITA to scroll down
+through several pages to find a single line of content.
 
 Thanks,
 
-Fabio Estevam
+	tglx
