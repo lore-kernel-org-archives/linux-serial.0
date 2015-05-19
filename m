@@ -1,89 +1,98 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v8 09/16] clockevents/drivers: Add STM32 Timer driver
-Date: Tue, 19 May 2015 10:16:03 +0200
-Message-ID: <555AF143.2060807@linaro.org>
-References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>	<1431158038-3813-10-git-send-email-mcoquelin.stm32@gmail.com>	<5559E4B0.70506@linaro.org> <CALszF6CK7axU0qrWNf38aqrt2R2126ZACn7wx5jNY_1KE+4H+g@mail.gmail.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v3] serial: 8250_uniphier: add UniPhier serial driver
+Date: Tue, 19 May 2015 10:22:06 +0200
+Message-ID: <CABuKBeJwOp3Km=Vw+xn8cRtH8DC-TNB_m7s8WSdPxzKHdzrdcw@mail.gmail.com>
+References: <1431997900-18390-1-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <CALszF6CK7axU0qrWNf38aqrt2R2126ZACn7wx5jNY_1KE+4H+g@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1431997900-18390-1-git-send-email-yamada.masahiro@socionext.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: linux-serial@vger.kernel.org, Joachim Eastwood <manabian@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, John Crispin <blogic@openwrt.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/18/2015 04:03 PM, Maxime Coquelin wrote:
-> 2015-05-18 15:10 GMT+02:00 Daniel Lezcano <daniel.lezcano@linaro.org>=
-:
->> On 05/09/2015 09:53 AM, Maxime Coquelin wrote:
->>>
->>> STM32 MCUs feature 16 and 32 bits general purpose timers with presc=
-alers.
->>> The drivers detects whether the time is 16 or 32 bits, and applies =
-a
->>> 1024 prescaler value if it is 16 bits.
->>>
->>> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
->>> Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
->>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
->>> ---
->>>    drivers/clocksource/Kconfig       |   8 ++
->>>    drivers/clocksource/Makefile      |   1 +
->>>    drivers/clocksource/timer-stm32.c | 184
->>> ++++++++++++++++++++++++++++++++++++++
->>>    3 files changed, 193 insertions(+)
->>>    create mode 100644 drivers/clocksource/timer-stm32.c
->>>
->>> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kcon=
-fig
->>> index bf9364c..2443520 100644
->>> --- a/drivers/clocksource/Kconfig
->>> +++ b/drivers/clocksource/Kconfig
->>> @@ -106,6 +106,14 @@ config CLKSRC_EFM32
->>>            Support to use the timers of EFM32 SoCs as clock source =
-and
->>> clock
->>>            event device.
->>>
->>> +config CLKSRC_STM32
->>> +       bool "Clocksource for STM32 SoCs" if !ARCH_STM32
->>> +       depends on OF && ARM && (ARCH_STM32 || COMPILE_TEST)
->>
->>
->> Are the interactive bool and the 'COMPILE_TEST' necessary ?
->>
+2015-05-19 3:11 GMT+02:00 Masahiro Yamada <yamada.masahiro@socionext.com>:
+> Add the driver for on-chip UART used on UniPhier SoCs.
 >
-> The interactive bool is necessary if we want to be able to
-> select/deselect it in COMPILE_TEST configuration.
-> And personnaly, I think COMPILE_TEST use makes sense.
+> This hardware is similar to 8250 with a slightly different register
+> mapping, so it should go into drivers/tty/serial/8250 directory.
+
+The patch is for a driver in this folder, so no need to but it in the
+commit message.
+Instead just write a short description about the difference to a
+standard 8250 device.
+
 >
-> Note that other timer drivers are doing the same thing today
-> (CLKSRC_EFM32, SH_TIMER_CMT, EM_TIMER_STI...).
+> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> ---
 >
-> Do you have a specific concern regarding COMPILE_TEST?
+> Changes in v3:
+>   - Just add *_SHIFT macro for the special case
+>
+> Changes in v2:
+>   - Drop unnecessary #include <linux/init.h>
+>   - Sort includes in alphabetical order
+>   - Use devm_clk_get() rather than of_clk_get()
+>   - Delete unneeded clk_put() from uniphier_uart_remove callback
+>   - Delete unneeded IS_ERR_OR_NULL check from uniphier_uart_remove callback
+>   - Use UNIPHIER_UART_*_SHIFT instead of hard-coded shift values
+>   - Change the first argument type of uniphier_of_serial_setup()
+>     from (struct platform_device *) to (struct device *) for code-cleanup.
+>
+>  drivers/tty/serial/8250/8250_uniphier.c | 237 ++++++++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig         |   7 +
+>  drivers/tty/serial/8250/Makefile        |   1 +
+>  3 files changed, 245 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_uniphier.c
+>
+> diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+> new file mode 100644
+> index 0000000..50349bf
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_uniphier.c
+> @@ -0,0 +1,237 @@
+> +/*
+> + * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/serial_8250.h>
+> +#include <linux/serial_core.h>
+> +#include <linux/serial_reg.h>
+> +#include "8250.h"
+> +
+> +/* Most (but not all) of UniPhier UART devices have 64-depth FIFO. */
+> +#define UNIPHIER_UART_DEFAULT_FIFO_SIZE        64
+> +
+> +#define UNIPHIER_UART_CHAR_FCR 3       /* Character / FIFO Control Register */
+> +#define UNIPHIER_UART_LCR_MCR  4       /* Line/Modem Control Register */
+> +#define     UNIPHIER_UART_LCR_SHIFT    8
+> +#define UNIPHIER_UART_DLR      9       /* Divisor Latch Register */
 
-Actually, we try to keep the timer selection non-interactive and let th=
-e=20
-platform's Kconfig to select the timer.
+Nit pick: Please fix identation. After "define" just put one blank.
+I personally prefer that the define values are aligned by tabs, but
+that's up tu you.
 
-I like when the code is consistent. The COMPILE_TEST was introduced and=
-=20
-created a precedence. I would like to get rid of the interactive timer=20
-selection but I did not have time to go through this yet.
+With these changes you can add:
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
+Thanks,
+Matthias
 
---=20
-  <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software fo=
-r ARM SoCs
-
-=46ollow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+motzblog.wordpress.com
