@@ -1,49 +1,53 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v8 09/16] clockevents/drivers: Add STM32 Timer driver
-Date: Tue, 19 May 2015 17:34:16 +0200
-Message-ID: <CALszF6CRXst-4UwMYeDLxrN_3N4Z9q1dxAR7CzFyngeM6Qeqzw@mail.gmail.com>
-References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<555B098A.8030202@linaro.org>
-	<CALszF6AJ3Zf598wYeUx=iNWHHKT24xUyfagB=+4GocwZ-Fd-0g@mail.gmail.com>
-	<6177628.0ZDPLeVyah@wuerfel>
-	<CALszF6BZKD-CPTZ6Hc85wv2Z3Y7JmUv-cMkBtbk2Ga6WeeWU=A@mail.gmail.com>
-	<555B3F80.8070605@linaro.org>
-	<CALszF6A-De6dvcRNoa9ruL+y6Wt_rc7bi-O-VxHWkFF9NSt5_g@mail.gmail.com>
-	<20150519145006.GH2067@n2100.arm.linux.org.uk>
+From: Bin Gao <bin.gao@linux.intel.com>
+Subject: Re: [PATCH v3 1/2] serial_core: add pci uart early console support
+Date: Tue, 19 May 2015 10:32:26 -0700
+Message-ID: <20150519173224.GA202975@worksta>
+References: <20150518212152.GA95407@worksta>
+ <1432036867.9091.75.camel@x220>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <20150519145006.GH2067@n2100.arm.linux.org.uk>
-Sender: linux-arch-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, Arnd Bergmann <arnd@arndb.de>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicet>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1432036867.9091.75.camel@x220>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Bolle <pebolle@tiscali.nl>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-2015-05-19 16:50 GMT+02:00 Russell King - ARM Linux <linux@arm.linux.org.uk>:
->
-> config CLKSRC_STM32
->         bool "Clocksource for STM32 SoCs" if COMPILE_TEST
->         depends on OF
->         select CLKSRC_MMIO
->
-> This permits CLKSRC_STM32 to be selected by STM32 (provided OF is enabled,
-> it's always going to be for that case, right?) while allowing the option
-> to be visible when both OF!=n and COMPILE_TEST!=n.
+On Tue, May 19, 2015 at 02:01:07PM +0200, Paul Bolle wrote:
+> On Mon, 2015-05-18 at 14:21 -0700, Bin Gao wrote:
+> > --- a/arch/x86/Kconfig
+> > +++ b/arch/x86/Kconfig
+> > @@ -2228,6 +2228,8 @@ config PCI
+> >  	  your box. Other bus systems are ISA, EISA, MicroChannel (MCA) or
+> >  	  VESA. If you have PCI, say Y, otherwise N.
+> >  
+> > +	select HAVE_EARLY_PCI
+> > +
+> 
+> It's legal to have options after the help text of a Kconfig entry. It's
+> also very uncommon to do that. Please put this select statement before
+> the line reading "---help---" of the PCI entry.
+>  
+Will fix this in next patch set.
 
-Yes OF is always enabled when STM32.
-
-So it fits our needs, as we only want the option to be visible when
-both OF!=n and COMPILE_TEST!=n.
-
+> > +config HAVE_EARLY_PCI
+> > +	def_bool y
+> 
+> You probably want just
+> 	bool
+> 
+> here. Because this symbol has no further dependencies, which means
+> HAVE_EARLY_PCI will now always be set to 'y'. That, in turn, makes the
+> select you added above pointless.
 >
-> Remember,
->
->         bool "string" if <condition-affects-visibility-of-string>
->         depends on <condition-affects-config-symbol-availability>
->
-> The former merely hides the option from the user _if_ the condition fails.
-> The latter _disables_ the option completely (except if you try and select
-> it, at which point you end up with a Kconfig warning about that.)
+Yes, you're right. bool is better.
 
-Thanks for the reminder!
-Maxime
+ 
+> > +	help
+> > +	  This option indicates that a group of APIs are available (in
+> > +	  asm/pci-direct.h) so the kernel can access pci config registers
+> > +	  before the PCI subsystem is initialized. Any arch that supports
+> 
+> Is this expected to be used outside of X86?
+Yes, drivers/tty/serial/serial_core.c is going to use it.
