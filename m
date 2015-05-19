@@ -1,306 +1,89 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH v3] serial: 8250_uniphier: add UniPhier serial driver
-Date: Tue, 19 May 2015 10:11:40 +0900
-Message-ID: <1431997900-18390-1-git-send-email-yamada.masahiro@socionext.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Joachim Eastwood <manabian@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, John Crispin <blogic@openwrt.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v8 09/16] clockevents/drivers: Add STM32 Timer driver
+Date: Tue, 19 May 2015 10:16:03 +0200
+Message-ID: <555AF143.2060807@linaro.org>
+References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>	<1431158038-3813-10-git-send-email-mcoquelin.stm32@gmail.com>	<5559E4B0.70506@linaro.org> <CALszF6CK7axU0qrWNf38aqrt2R2126ZACn7wx5jNY_1KE+4H+g@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <CALszF6CK7axU0qrWNf38aqrt2R2126ZACn7wx5jNY_1KE+4H+g@mail.gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@>
 List-Id: linux-serial@vger.kernel.org
 
-Add the driver for on-chip UART used on UniPhier SoCs.
+On 05/18/2015 04:03 PM, Maxime Coquelin wrote:
+> 2015-05-18 15:10 GMT+02:00 Daniel Lezcano <daniel.lezcano@linaro.org>=
+:
+>> On 05/09/2015 09:53 AM, Maxime Coquelin wrote:
+>>>
+>>> STM32 MCUs feature 16 and 32 bits general purpose timers with presc=
+alers.
+>>> The drivers detects whether the time is 16 or 32 bits, and applies =
+a
+>>> 1024 prescaler value if it is 16 bits.
+>>>
+>>> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+>>> Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
+>>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+>>> ---
+>>>    drivers/clocksource/Kconfig       |   8 ++
+>>>    drivers/clocksource/Makefile      |   1 +
+>>>    drivers/clocksource/timer-stm32.c | 184
+>>> ++++++++++++++++++++++++++++++++++++++
+>>>    3 files changed, 193 insertions(+)
+>>>    create mode 100644 drivers/clocksource/timer-stm32.c
+>>>
+>>> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kcon=
+fig
+>>> index bf9364c..2443520 100644
+>>> --- a/drivers/clocksource/Kconfig
+>>> +++ b/drivers/clocksource/Kconfig
+>>> @@ -106,6 +106,14 @@ config CLKSRC_EFM32
+>>>            Support to use the timers of EFM32 SoCs as clock source =
+and
+>>> clock
+>>>            event device.
+>>>
+>>> +config CLKSRC_STM32
+>>> +       bool "Clocksource for STM32 SoCs" if !ARCH_STM32
+>>> +       depends on OF && ARM && (ARCH_STM32 || COMPILE_TEST)
+>>
+>>
+>> Are the interactive bool and the 'COMPILE_TEST' necessary ?
+>>
+>
+> The interactive bool is necessary if we want to be able to
+> select/deselect it in COMPILE_TEST configuration.
+> And personnaly, I think COMPILE_TEST use makes sense.
+>
+> Note that other timer drivers are doing the same thing today
+> (CLKSRC_EFM32, SH_TIMER_CMT, EM_TIMER_STI...).
+>
+> Do you have a specific concern regarding COMPILE_TEST?
 
-This hardware is similar to 8250 with a slightly different register
-mapping, so it should go into drivers/tty/serial/8250 directory.
+Actually, we try to keep the timer selection non-interactive and let th=
+e=20
+platform's Kconfig to select the timer.
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
+I like when the code is consistent. The COMPILE_TEST was introduced and=
+=20
+created a precedence. I would like to get rid of the interactive timer=20
+selection but I did not have time to go through this yet.
 
-Changes in v3:
-  - Just add *_SHIFT macro for the special case
 
-Changes in v2:
-  - Drop unnecessary #include <linux/init.h>
-  - Sort includes in alphabetical order
-  - Use devm_clk_get() rather than of_clk_get()
-  - Delete unneeded clk_put() from uniphier_uart_remove callback
-  - Delete unneeded IS_ERR_OR_NULL check from uniphier_uart_remove callback
-  - Use UNIPHIER_UART_*_SHIFT instead of hard-coded shift values
-  - Change the first argument type of uniphier_of_serial_setup()
-    from (struct platform_device *) to (struct device *) for code-cleanup.
+--=20
+  <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software fo=
+r ARM SoCs
 
- drivers/tty/serial/8250/8250_uniphier.c | 237 ++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig         |   7 +
- drivers/tty/serial/8250/Makefile        |   1 +
- 3 files changed, 245 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_uniphier.c
+=46ollow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
 
-diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-new file mode 100644
-index 0000000..50349bf
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_uniphier.c
-@@ -0,0 +1,237 @@
-+/*
-+ * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/serial_8250.h>
-+#include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
-+#include "8250.h"
-+
-+/* Most (but not all) of UniPhier UART devices have 64-depth FIFO. */
-+#define UNIPHIER_UART_DEFAULT_FIFO_SIZE	64
-+
-+#define UNIPHIER_UART_CHAR_FCR	3	/* Character / FIFO Control Register */
-+#define UNIPHIER_UART_LCR_MCR	4	/* Line/Modem Control Register */
-+#define     UNIPHIER_UART_LCR_SHIFT	8
-+#define UNIPHIER_UART_DLR	9	/* Divisor Latch Register */
-+
-+/*
-+ * The register map is slightly different from that of 8250.
-+ * IO callbacks must be overridden for correct access to FCR, LCR, and MCR.
-+ */
-+static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
-+{
-+	int valshift = 0;
-+
-+	switch (offset) {
-+	case UART_LCR:
-+		valshift = UNIPHIER_UART_LCR_SHIFT;
-+	case UART_MCR:
-+		offset = UNIPHIER_UART_LCR_MCR;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	offset <<= p->regshift;
-+
-+	/*
-+	 * The return value must be masked with 0xff because LCR and MCR reside
-+	 * in the same register that must be accessed by 32-bit write/read.
-+	 * 8 or 16 bit access to this hardware result in unexpected behavior.
-+	 */
-+	return (readl(p->membase + offset) >> valshift) & 0xff;
-+}
-+
-+static void uniphier_serial_out(struct uart_port *p, int offset, int value)
-+{
-+	int valshift = 0;
-+	bool normal = false;
-+
-+	switch (offset) {
-+	case UART_FCR:
-+		offset = UNIPHIER_UART_CHAR_FCR;
-+		break;
-+	case UART_LCR:
-+		valshift = UNIPHIER_UART_LCR_SHIFT;
-+		/* Divisor latch access bit does not exist. */
-+		value &= ~(UART_LCR_DLAB << valshift);
-+	case UART_MCR:
-+		offset = UNIPHIER_UART_LCR_MCR;
-+		break;
-+	default:
-+		normal = true;
-+		break;
-+	}
-+
-+	offset <<= p->regshift;
-+
-+	if (normal) {
-+		writel(value, p->membase + offset);
-+	} else {
-+		/* special case: two registers share the same address. */
-+		u32 tmp = readl(p->membase + offset);
-+
-+		tmp &= ~(0xff << valshift);
-+		tmp |= value << valshift;
-+		writel(tmp, p->membase + offset);
-+	}
-+}
-+
-+/*
-+ * This hardware does not have the divisor latch access bit.
-+ * The divisor latch register exists at different address.
-+ * Override dl_read/write callbacks.
-+ */
-+static int uniphier_serial_dl_read(struct uart_8250_port *up)
-+{
-+	return readl(up->port.membase + UNIPHIER_UART_DLR);
-+}
-+
-+static void uniphier_serial_dl_write(struct uart_8250_port *up, int value)
-+{
-+	writel(value, up->port.membase + UNIPHIER_UART_DLR);
-+}
-+
-+struct uniphier8250_priv {
-+	int line;
-+	struct clk *clk;
-+};
-+
-+static int uniphier_of_serial_setup(struct device *dev, struct uart_port *port,
-+				    struct uniphier8250_priv *priv)
-+{
-+	int ret;
-+	u32 prop;
-+	struct device_node *np = dev->of_node;
-+
-+	ret = of_alias_get_id(np, "serial");
-+	if (ret < 0) {
-+		dev_err(dev, "failed to get alias id\n");
-+		return ret;
-+	}
-+	port->line = priv->line = ret;
-+
-+	/* Get clk rate through clk driver */
-+	priv->clk = devm_clk_get(dev, 0);
-+	if (IS_ERR(priv->clk)) {
-+		dev_err(dev, "failed to get clock\n");
-+		return PTR_ERR(priv->clk);
-+	}
-+
-+	ret = clk_prepare_enable(priv->clk);
-+	if (ret < 0)
-+		return ret;
-+
-+	port->uartclk = clk_get_rate(priv->clk);
-+
-+	/* Check for fifo size */
-+	if (of_property_read_u32(np, "fifo-size", &prop) == 0)
-+		port->fifosize = prop;
-+	else
-+		port->fifosize = UNIPHIER_UART_DEFAULT_FIFO_SIZE;
-+
-+	return 0;
-+}
-+
-+static int uniphier_uart_probe(struct platform_device *pdev)
-+{
-+	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-+	struct device *dev = &pdev->dev;
-+	struct uniphier8250_priv *priv;
-+	struct uart_8250_port up;
-+	int ret;
-+	void __iomem *membase;
-+
-+	if (!regs || !irq) {
-+		dev_err(dev, "missing registers or irq\n");
-+		return -EINVAL;
-+	}
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	membase = devm_ioremap(dev, regs->start, resource_size(regs));
-+	if (!membase)
-+		return -ENOMEM;
-+
-+	memset(&up, 0, sizeof(up));
-+
-+	ret = uniphier_of_serial_setup(dev, &up.port, priv);
-+	if (ret < 0)
-+		return ret;
-+
-+	up.port.dev = dev;
-+	up.port.private_data = priv;
-+	up.port.mapbase = regs->start;
-+	up.port.membase = membase;
-+	up.port.irq = irq->start;
-+
-+	up.port.type = PORT_16550A;
-+	up.port.iotype = UPIO_MEM32;
-+	up.port.regshift = 2;
-+	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE;
-+	up.capabilities = UART_CAP_FIFO;
-+
-+	up.port.serial_in = uniphier_serial_in;
-+	up.port.serial_out = uniphier_serial_out;
-+	up.dl_read = uniphier_serial_dl_read;
-+	up.dl_write = uniphier_serial_dl_write;
-+
-+	ret = serial8250_register_8250_port(&up);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to register 8250 port\n");
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	return 0;
-+}
-+
-+static int uniphier_uart_remove(struct platform_device *pdev)
-+{
-+	struct uniphier8250_priv *priv = platform_get_drvdata(pdev);
-+
-+	serial8250_unregister_port(priv->line);
-+	clk_disable_unprepare(priv->clk);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id uniphier_uart_match[] = {
-+	{ .compatible = "socionext,uniphier-uart" },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, uniphier_uart_match);
-+
-+static struct platform_driver uniphier_uart_platform_driver = {
-+	.probe		= uniphier_uart_probe,
-+	.remove		= uniphier_uart_remove,
-+	.driver = {
-+		.name	= "uniphier-uart",
-+		.of_match_table = uniphier_uart_match,
-+	},
-+};
-+module_platform_driver(uniphier_uart_platform_driver);
-+
-+MODULE_AUTHOR("Masahiro Yamada <yamada.masahiro@socionext.com>");
-+MODULE_DESCRIPTION("UniPhier UART driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index c350703..3e1ae446 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -342,3 +342,10 @@ config SERIAL_8250_MT6577
- 	help
- 	  If you have a Mediatek based board and want to use the
- 	  serial port, say Y to this option. If unsure, say N.
-+
-+config SERIAL_8250_UNIPHIER
-+	tristate "Support for UniPhier on-chip UART"
-+	depends on SERIAL_8250 && ARCH_UNIPHIER
-+	help
-+	  If you have a UniPhier based board and want to use the on-chip
-+	  serial ports, say Y to this option. If unsure, say N.
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index 31e7cdc..f7ca8c3 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -23,3 +23,4 @@ obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
- obj-$(CONFIG_SERIAL_8250_OMAP)		+= 8250_omap.o
- obj-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
- obj-$(CONFIG_SERIAL_8250_MT6577)	+= 8250_mtk.o
-+obj-$(CONFIG_SERIAL_8250_UNIPHIER)	+= 8250_uniphier.o
--- 
-1.9.1
+--
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
