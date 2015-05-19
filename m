@@ -1,54 +1,32 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: Re: [PATCH v3 1/2] serial_core: add pci uart early console support
-Date: Tue, 19 May 2015 14:01:07 +0200
-Message-ID: <1432036867.9091.75.camel@x220>
-References: <20150518212152.GA95407@worksta>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH v8 09/16] clockevents/drivers: Add STM32 Timer driver
+Date: Tue, 19 May 2015 12:55:52 +0200
+Message-ID: <6177628.0ZDPLeVyah@wuerfel>
+References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com> <555B098A.8030202@linaro.org> <CALszF6AJ3Zf598wYeUx=iNWHHKT24xUyfagB=+4GocwZ-Fd-0g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150518212152.GA95407@worksta>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Bin Gao <bin.gao@linux.intel.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.cz>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CALszF6AJ3Zf598wYeUx=iNWHHKT24xUyfagB=+4GocwZ-Fd-0g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Andreas =?ISO-8859-1?Q?F=E4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Peter Meerwald <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Vladimir Zapolskiy <vladimir_zapolskiy-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2015-05-18 at 14:21 -0700, Bin Gao wrote:
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -2228,6 +2228,8 @@ config PCI
->  	  your box. Other bus systems are ISA, EISA, MicroChannel (MCA) or
->  	  VESA. If you have PCI, say Y, otherwise N.
->  
-> +	select HAVE_EARLY_PCI
-> +
+On Tuesday 19 May 2015 12:02:59 Maxime Coquelin wrote:
+> >
+> > config CLKSRC_STM32
+> >         bool
+> >         select CLKSRC_MMIO
+> >
+> > and in the arch/arm/mach-stm32/Kconfig add select CLKSRC_STM32
+> 
+> Ok, I will send a patch for arch/arm/Kconfig, as Arnd already applied
+> the one intruducing ARCH_STM32.
+> 
+> 
 
-It's legal to have options after the help text of a Kconfig entry. It's
-also very uncommon to do that. Please put this select statement before
-the line reading "---help---" of the PCI entry.
- 
-> +config HAVE_EARLY_PCI
-> +	def_bool y
+Please also make it possible to select this driver on other architectures
+with COMPILE_TEST, so we get coverage from all the x86 test infrastructure.
 
-You probably want just
-	bool
-
-here. Because this symbol has no further dependencies, which means
-HAVE_EARLY_PCI will now always be set to 'y'. That, in turn, makes the
-select you added above pointless.
-
-> +	help
-> +	  This option indicates that a group of APIs are available (in
-> +	  asm/pci-direct.h) so the kernel can access pci config registers
-> +	  before the PCI subsystem is initialized. Any arch that supports
-
-Is this expected to be used outside of X86?
-
-> +	  early pci APIs must enable this option which is required  by arch
-> +	  independent codes, e.g. uart8250 pci early console driver.
-> +
-
-Thanks,
-
-
-Paul Bolle
+	Arnd
