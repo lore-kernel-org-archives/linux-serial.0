@@ -1,105 +1,113 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v3] serial: 8250_uniphier: add UniPhier serial driver
-Date: Tue, 19 May 2015 17:54:02 +0900
-Message-ID: <CAK7LNARrjkCcMsVJwe5hdB71QsEQAf51sNf4xYVMkNazdbdxKA@mail.gmail.com>
-References: <1431997900-18390-1-git-send-email-yamada.masahiro@socionext.com>
-	<CABuKBeJwOp3Km=Vw+xn8cRtH8DC-TNB_m7s8WSdPxzKHdzrdcw@mail.gmail.com>
+From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v8 09/16] clockevents/drivers: Add STM32 Timer driver
+Date: Tue, 19 May 2015 10:55:56 +0200
+Message-ID: <CALszF6CwGuKqgbX6gVrya1-_YOgvtrgC7pVqKTNjCRif_o532A@mail.gmail.com>
+References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1431158038-3813-10-git-send-email-mcoquelin.stm32@gmail.com>
+	<5559E4B0.70506@linaro.org>
+	<CALszF6CK7axU0qrWNf38aqrt2R2126ZACn7wx5jNY_1KE+4H+g@mail.gmail.com>
+	<555AF143.2060807@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CABuKBeJwOp3Km=Vw+xn8cRtH8DC-TNB_m7s8WSdPxzKHdzrdcw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, John Crispin <blogic@openwrt.org>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joachim Eastwood <manabian@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Alan Cox <alan@linux.intel.com>
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <555AF143.2060807@linaro.org>
+Sender: linux-arch-owner@vger.kernel.org
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@he>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Matthias,
-
-2015-05-19 17:22 GMT+09:00 Matthias Brugger <matthias.bgg@gmail.com>:
-> 2015-05-19 3:11 GMT+02:00 Masahiro Yamada <yamada.masahiro@socionext.com>:
->> Add the driver for on-chip UART used on UniPhier SoCs.
+2015-05-19 10:16 GMT+02:00 Daniel Lezcano <daniel.lezcano@linaro.org>:
+> On 05/18/2015 04:03 PM, Maxime Coquelin wrote:
 >>
->> This hardware is similar to 8250 with a slightly different register
->> mapping, so it should go into drivers/tty/serial/8250 directory.
+>> 2015-05-18 15:10 GMT+02:00 Daniel Lezcano <daniel.lezcano@linaro.org=
+>:
+>>>
+>>> On 05/09/2015 09:53 AM, Maxime Coquelin wrote:
+>>>>
+>>>>
+>>>> STM32 MCUs feature 16 and 32 bits general purpose timers with
+>>>> prescalers.
+>>>> The drivers detects whether the time is 16 or 32 bits, and applies=
+ a
+>>>> 1024 prescaler value if it is 16 bits.
+>>>>
+>>>> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+>>>> Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
+>>>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+>>>> ---
+>>>>    drivers/clocksource/Kconfig       |   8 ++
+>>>>    drivers/clocksource/Makefile      |   1 +
+>>>>    drivers/clocksource/timer-stm32.c | 184
+>>>> ++++++++++++++++++++++++++++++++++++++
+>>>>    3 files changed, 193 insertions(+)
+>>>>    create mode 100644 drivers/clocksource/timer-stm32.c
+>>>>
+>>>> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kco=
+nfig
+>>>> index bf9364c..2443520 100644
+>>>> --- a/drivers/clocksource/Kconfig
+>>>> +++ b/drivers/clocksource/Kconfig
+>>>> @@ -106,6 +106,14 @@ config CLKSRC_EFM32
+>>>>            Support to use the timers of EFM32 SoCs as clock source=
+ and
+>>>> clock
+>>>>            event device.
+>>>>
+>>>> +config CLKSRC_STM32
+>>>> +       bool "Clocksource for STM32 SoCs" if !ARCH_STM32
+>>>> +       depends on OF && ARM && (ARCH_STM32 || COMPILE_TEST)
+>>>
+>>>
+>>>
+>>> Are the interactive bool and the 'COMPILE_TEST' necessary ?
+>>>
+>>
+>> The interactive bool is necessary if we want to be able to
+>> select/deselect it in COMPILE_TEST configuration.
+>> And personnaly, I think COMPILE_TEST use makes sense.
+>>
+>> Note that other timer drivers are doing the same thing today
+>> (CLKSRC_EFM32, SH_TIMER_CMT, EM_TIMER_STI...).
+>>
+>> Do you have a specific concern regarding COMPILE_TEST?
 >
-> The patch is for a driver in this folder, so no need to but it in the
-> commit message.
-> Instead just write a short description about the difference to a
-> standard 8250 device.
 >
->>
->> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
->> ---
->>
->> Changes in v3:
->>   - Just add *_SHIFT macro for the special case
->>
->> Changes in v2:
->>   - Drop unnecessary #include <linux/init.h>
->>   - Sort includes in alphabetical order
->>   - Use devm_clk_get() rather than of_clk_get()
->>   - Delete unneeded clk_put() from uniphier_uart_remove callback
->>   - Delete unneeded IS_ERR_OR_NULL check from uniphier_uart_remove callback
->>   - Use UNIPHIER_UART_*_SHIFT instead of hard-coded shift values
->>   - Change the first argument type of uniphier_of_serial_setup()
->>     from (struct platform_device *) to (struct device *) for code-cleanup.
->>
->>  drivers/tty/serial/8250/8250_uniphier.c | 237 ++++++++++++++++++++++++++++++++
->>  drivers/tty/serial/8250/Kconfig         |   7 +
->>  drivers/tty/serial/8250/Makefile        |   1 +
->>  3 files changed, 245 insertions(+)
->>  create mode 100644 drivers/tty/serial/8250/8250_uniphier.c
->>
->> diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
->> new file mode 100644
->> index 0000000..50349bf
->> --- /dev/null
->> +++ b/drivers/tty/serial/8250/8250_uniphier.c
->> @@ -0,0 +1,237 @@
->> +/*
->> + * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + */
->> +
->> +#include <linux/clk.h>
->> +#include <linux/io.h>
->> +#include <linux/module.h>
->> +#include <linux/of.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/serial_8250.h>
->> +#include <linux/serial_core.h>
->> +#include <linux/serial_reg.h>
->> +#include "8250.h"
->> +
->> +/* Most (but not all) of UniPhier UART devices have 64-depth FIFO. */
->> +#define UNIPHIER_UART_DEFAULT_FIFO_SIZE        64
->> +
->> +#define UNIPHIER_UART_CHAR_FCR 3       /* Character / FIFO Control Register */
->> +#define UNIPHIER_UART_LCR_MCR  4       /* Line/Modem Control Register */
->> +#define     UNIPHIER_UART_LCR_SHIFT    8
->> +#define UNIPHIER_UART_DLR      9       /* Divisor Latch Register */
+> Actually, we try to keep the timer selection non-interactive and let =
+the
+> platform's Kconfig to select the timer.
+
+Ok.
+
 >
-> Nit pick: Please fix identation. After "define" just put one blank.
-> I personally prefer that the define values are aligned by tabs, but
-> that's up tu you.
+> I like when the code is consistent. The COMPILE_TEST was introduced a=
+nd
+> created a precedence. I would like to get rid of the interactive time=
+r
+> selection but I did not have time to go through this yet.
+
+Indeed, consistency is important.
+On my side, I don't have a strong opinion regarding the COMPILE_TEST th=
+ing.
+IMHO, it is more a subsystem's maintainer choice.
+
+So, if as a maintainer you don't use it and prefer not supporting it,
+I'm fine to provide you a new version without COMPILE_TEST.
+Doing that, the interactive selection will disappear too.
+
+I can provide you a new version this evenning.
+
+Best regards,
+Maxime
+
 >
-
-I intentionally use deeper indentation for *_SHIFT
-because I want to clearly show  UNIPHIER_UART_LCR_SHIFT
-belongs to UNIPHIER_UART_LCR_MCR register.
-
-I also want to describe them within 80 columns including comments,
-so I cannot insert extra TABs to align the values.
-
--- 
-Best Regards
-Masahiro Yamada
+>
+>
+> --
+>  <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software f=
+or ARM SoCs
+>
+> Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+> <http://twitter.com/#!/linaroorg> Twitter |
+> <http://www.linaro.org/linaro-blog/> Blog
+>
