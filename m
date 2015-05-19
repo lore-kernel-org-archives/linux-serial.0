@@ -1,47 +1,141 @@
-From: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v8 09/16] clockevents/drivers: Add STM32 Timer driver
-Date: Tue, 19 May 2015 15:49:52 +0200
-Message-ID: <555B3F80.8070605@linaro.org>
-References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>	<555B098A.8030202@linaro.org>	<CALszF6AJ3Zf598wYeUx=iNWHHKT24xUyfagB=+4GocwZ-Fd-0g@mail.gmail.com>	<6177628.0ZDPLeVyah@wuerfel> <CALszF6BZKD-CPTZ6Hc85wv2Z3Y7JmUv-cMkBtbk2Ga6WeeWU=A@mail.gmail.com>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [PATCH 2/5] PM / Wakeirq: Add automated device wake IRQ handling
+Date: Tue, 19 May 2015 16:26:37 +0200
+Message-ID: <3371662.LPKmgz3rb9@vostro.rjw.lan>
+References: <1431560196-5722-1-git-send-email-tony@atomide.com> <20150518234400.GN10274@atomide.com> <3554198.gIGuGWK14O@vostro.rjw.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CALszF6BZKD-CPTZ6Hc85wv2Z3Y7JmUv-cMkBtbk2Ga6WeeWU=A@mail.gmail.com>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Peter Meerwald <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Vladimir Zapolskiy <vladimir_zapolskiy-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>Kumar Gala <g>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <3554198.gIGuGWK14O@vostro.rjw.lan>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Felipe Balbi <balbi@ti.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Alan Stern <stern@rowland.harvard.edu>, Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 05/19/2015 03:42 PM, Maxime Coquelin wrote:
-> 2015-05-19 12:55 GMT+02:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
->> Please also make it possible to select this driver on other architec=
-tures
->> with COMPILE_TEST, so we get coverage from all the x86 test infrastr=
-ucture.
->
-> You proposal is to revert back to the original patch, except that
-> ARCH_STM32 should select CLKSRC_STM32, right?
->
-> Daniel, what do you think?
+On Tuesday, May 19, 2015 04:04:43 PM Rafael J. Wysocki wrote:
+> On Monday, May 18, 2015 04:44:01 PM Tony Lindgren wrote:
+> > * Tony Lindgren <tony@atomide.com> [150518 15:06]:
+> > > +/**
+> > > + * dev_pm_set_wake_irq - Attach device IO interrupt as wake IRQ
+> > > + * @dev: Device entry
+> > > + * @irq: Device IO interrupt
+> > > + *
+> > > + * Attach a device IO interrupt as a wake IRQ. The wake IRQ gets
+> > > + * automatically configured for wake-up from suspend  based
+> > > +void dev_pm_clear_wake_irq(struct device *dev)
+> > > +{
+> > > +	struct wake_irq *wirq = dev->power.wakeirq;
+> > > +	unsigned long flags;
+> > > +
+> > > +	if (!wirq)
+> > > +		return;
+> > > +
+> > > +	device_wakeup_detach_irq(dev);
+> > > +
+> > > +	spin_lock_irqsave(&dev->power.lock, flags);
+> > > +	if (wirq->manage_irq) {
+> > > +		free_irq(wirq->irq, wirq);
+> > > +		wirq->manage_irq = false;
+> > > +	}
+> > > +	dev->power.wakeirq = NULL;
+> > > +	spin_unlock_irqrestore(&dev->power.lock, flags);
+> > > +
+> > > +	wirq->irq = -EINVAL;
+> > > +	kfree(wirq);
+> > > +}
+> > 
+> > I just noticed most of the dev_pm_clear_wake_irq is no longer needed.
+> > We're now freeing it anyways. so it can be just:
+> > 
+> > void dev_pm_clear_wake_irq(struct device *dev)
+> > {
+> > 	struct wake_irq *wirq = dev->power.wakeirq;
+> > 	unsigned long flags;
+> > 
+> > 	if (!wirq)
+> > 		return;
+> > 
+> > 	spin_lock_irqsave(&dev->power.lock, flags);
+> > 	dev->power.wakeirq = NULL;
+> > 	spin_unlock_irqrestore(&dev->power.lock, flags);
+> > 
+> > 	device_wakeup_detach_irq(dev);
+> > 	if (wirq->manage_irq)
+> > 		free_irq(wirq->irq, wirq);
+> > 	kfree(wirq);
+> > }
+> > 
+> > 
+> > Regards,
+> > 
+> > Tony
+> > 
+> > 8< ---------------------
+> > From: Tony Lindgren <tony@atomide.com>
+> > Date: Mon, 18 May 2015 15:40:29 -0700
+> > Subject: [PATCH] PM / Wakeirq: Add automated device wake IRQ handling
+> > 
+> > Turns out we can automate the handling for the device_may_wakeup()
+> > quite a bit by using the kernel wakeup source list.
+> > 
+> > And as some hardware has separate dedicated wake-up interrupt
+> > in addition to the IO interrupt, we can automate the handling by
+> > adding a generic threaded interrupt handler that just calls the
+> > device PM runtime to wake up the device.
+> > 
+> > This allows dropping code from device drivers as we currently
+> > are doing it in multiple ways, and often wrong.
+> > 
+> > For most drivers, we should be able to drop the following
+> > boilerplate code from runtime_suspend and runtime_resume
+> > functions:
+> > 
+> > 	...
+> > 	device_init_wakeup(dev, true);
+> > 	...
+> > 	if (device_may_wakeup(dev)
+> > 		enable_irq_wake(irq);
+> > 	...
+> > 	if (device_may_wakeup(dev)
+> > 		enable_irq_wake(irq);
+> 
+> Closing parens are missin in the above two if () statements.
+> 
+> Also, should the second one be disable_irq_wake(irq)?
+> 
+> > 	...
+> > 	device_init_wakeup(dev, false);
+> > 	...
+> > 
+> > We can replace it with just the following init and exit
+> > time code:
+> > 
+> > 	...
+> > 	device_init_wakeup(dev, true);
+> > 	dev_pm_set_wake_irq(dev, irq);
+> > 	...
+> > 	dev_pm_clear_wake_irq(dev);
+> > 	device_init_wakeup(dev, false);
+> > 	...
+> > 
+> > And for hardware with dedicated wake-up interrupts:
+> > 
+> > 	...
+> > 	device_init_wakeup(dev, true);
+> > 	dev_pm_set_dedicated_wake_irq(dev, irq);
+> > 	...
+> > 	dev_pm_clear_wake_irq(dev);
+> > 	device_init_wakeup(dev, false);
+> > 	...
+> > 
+> > For now, let's only enable it for select PM_WAKEIRQ.
+> 
+> Why?  What would be wrong with doing that unconditionally?
 
-It is not exactly as the initial patch.
-
-I think Arnd is proposing:
-
-config CLKSRC_STM32
-	bool "Clocksource for STM32 SoCs" if COMPILE_TEST
-	select CLKSRC_MMIO
+I mean, what about making it depend on CONFIG_PM directly?
 
 
-
-
-
---=20
-  <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software fo=
-r ARM SoCs
-
-=46ollow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+-- 
+I speak only for myself.
+Rafael J. Wysocki, Intel Open Source Technology Center.
