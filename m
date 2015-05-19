@@ -1,109 +1,56 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v3] serial: 8250_uniphier: add UniPhier serial driver
-Date: Tue, 19 May 2015 12:13:51 +0200
-Message-ID: <CABuKBeLNdeHCOY1c6Szn-WfN2GUBz7OUe2kPNifwe1XFEj1yRA@mail.gmail.com>
-References: <1431997900-18390-1-git-send-email-yamada.masahiro@socionext.com>
-	<CABuKBeJwOp3Km=Vw+xn8cRtH8DC-TNB_m7s8WSdPxzKHdzrdcw@mail.gmail.com>
-	<CAK7LNARrjkCcMsVJwe5hdB71QsEQAf51sNf4xYVMkNazdbdxKA@mail.gmail.com>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [PATCH] serial/amba-pl011: Fix mismerge between v4.1-rc4 and tty-next
+Date: Tue, 19 May 2015 11:51:14 +0100
+Message-ID: <1432032674-22167-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK7LNARrjkCcMsVJwe5hdB71QsEQAf51sNf4xYVMkNazdbdxKA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, John Crispin <blogic@openwrt.org>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joachim Eastwood <manabian@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Alan Cox <alan@linux.intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-2015-05-19 10:54 GMT+02:00 Masahiro Yamada <yamada.masahiro@socionext.com>:
-> Hi Matthias,
->
-> 2015-05-19 17:22 GMT+09:00 Matthias Brugger <matthias.bgg@gmail.com>:
->> 2015-05-19 3:11 GMT+02:00 Masahiro Yamada <yamada.masahiro@socionext.com>:
->>> Add the driver for on-chip UART used on UniPhier SoCs.
->>>
->>> This hardware is similar to 8250 with a slightly different register
->>> mapping, so it should go into drivers/tty/serial/8250 directory.
->>
->> The patch is for a driver in this folder, so no need to but it in the
->> commit message.
->> Instead just write a short description about the difference to a
->> standard 8250 device.
->>
->>>
->>> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
->>> ---
->>>
->>> Changes in v3:
->>>   - Just add *_SHIFT macro for the special case
->>>
->>> Changes in v2:
->>>   - Drop unnecessary #include <linux/init.h>
->>>   - Sort includes in alphabetical order
->>>   - Use devm_clk_get() rather than of_clk_get()
->>>   - Delete unneeded clk_put() from uniphier_uart_remove callback
->>>   - Delete unneeded IS_ERR_OR_NULL check from uniphier_uart_remove callback
->>>   - Use UNIPHIER_UART_*_SHIFT instead of hard-coded shift values
->>>   - Change the first argument type of uniphier_of_serial_setup()
->>>     from (struct platform_device *) to (struct device *) for code-cleanup.
->>>
->>>  drivers/tty/serial/8250/8250_uniphier.c | 237 ++++++++++++++++++++++++++++++++
->>>  drivers/tty/serial/8250/Kconfig         |   7 +
->>>  drivers/tty/serial/8250/Makefile        |   1 +
->>>  3 files changed, 245 insertions(+)
->>>  create mode 100644 drivers/tty/serial/8250/8250_uniphier.c
->>>
->>> diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
->>> new file mode 100644
->>> index 0000000..50349bf
->>> --- /dev/null
->>> +++ b/drivers/tty/serial/8250/8250_uniphier.c
->>> @@ -0,0 +1,237 @@
->>> +/*
->>> + * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify
->>> + * it under the terms of the GNU General Public License as published by
->>> + * the Free Software Foundation; either version 2 of the License, or
->>> + * (at your option) any later version.
->>> + *
->>> + * This program is distributed in the hope that it will be useful,
->>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->>> + * GNU General Public License for more details.
->>> + */
->>> +
->>> +#include <linux/clk.h>
->>> +#include <linux/io.h>
->>> +#include <linux/module.h>
->>> +#include <linux/of.h>
->>> +#include <linux/platform_device.h>
->>> +#include <linux/serial_8250.h>
->>> +#include <linux/serial_core.h>
->>> +#include <linux/serial_reg.h>
->>> +#include "8250.h"
->>> +
->>> +/* Most (but not all) of UniPhier UART devices have 64-depth FIFO. */
->>> +#define UNIPHIER_UART_DEFAULT_FIFO_SIZE        64
->>> +
->>> +#define UNIPHIER_UART_CHAR_FCR 3       /* Character / FIFO Control Register */
->>> +#define UNIPHIER_UART_LCR_MCR  4       /* Line/Modem Control Register */
->>> +#define     UNIPHIER_UART_LCR_SHIFT    8
->>> +#define UNIPHIER_UART_DLR      9       /* Divisor Latch Register */
->>
->> Nit pick: Please fix identation. After "define" just put one blank.
->> I personally prefer that the define values are aligned by tabs, but
->> that's up tu you.
->>
->
-> I intentionally use deeper indentation for *_SHIFT
-> because I want to clearly show  UNIPHIER_UART_LCR_SHIFT
-> belongs to UNIPHIER_UART_LCR_MCR register.
->
-> I also want to describe them within 80 columns including comments,
-> so I cannot insert extra TABs to align the values.
+In commit 02730d3c053a9af1d402e1c8dc8bbbc5a1340406
+(Merge 4.1-rc4 into tty-next), git mismerged some lines,
+reintroducing a reference to the removed field
+uart_amba_port.tx_irq_seen.  This causes a build failure.
 
-Ok, than from my side that's fine as it is.
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+This patch removes the mismerged lines, restoring the code to what
+was in tty-next (which was the intention).
 
+Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+---
+
+This patch is based on tty-next commit
+02730d3c053a9af1d402e1c8dc8bbbc5a1340406 (Merge 4.1-rc4 into tty-next).
+
+Without it, amba-pl011.c won't build.
+
+ drivers/tty/serial/amba-pl011.c |    3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 6fabc05..f5bd842 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1578,9 +1578,6 @@ static int pl011_startup(struct uart_port *port)
+ 
+ 	writew(uap->vendor->ifls, uap->port.membase + UART011_IFLS);
+ 
+-	/* Assume that TX IRQ doesn't work until we see one: */
+-	uap->tx_irq_seen = 0;
+-
+ 	spin_lock_irq(&uap->port.lock);
+ 
+ 	/* restore RTS and DTR */
 -- 
-motzblog.wordpress.com
+1.7.10.4
