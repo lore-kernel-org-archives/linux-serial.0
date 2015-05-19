@@ -1,43 +1,200 @@
-From: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v8 09/16] clockevents/drivers: Add STM32 Timer driver
-Date: Tue, 19 May 2015 15:17:32 +0200
-Message-ID: <CALszF6CLE3NY=pcsKeL2HGbr0HvJJZnHprpkOHgjRquC4pWNxw@mail.gmail.com>
-References: <1431158038-3813-10-git-send-email-mcoquelin.stm32@gmail.com>
-	<5559E4B0.70506@linaro.org>
-	<CALszF6CK7axU0qrWNf38aqrt2R2126ZACn7wx5jNY_1KE+4H+g@mail.gmail.com>
-	<555AF143.2060807@linaro.org>
-	<CALszF6CwGuKqgbX6gVrya1-_YOgvtrgC7pVqKTNjCRif_o532A@mail.gmail.com>
-	<555AFD18.2070009@linaro.org>
-	<CALszF6Asfke0-cMQJcEQ8ya+rbPPPhUc6aXTZXQvQ8QF66cwYQ@mail.gmail.com>
-	<555B098A.8030202@linaro.org>
-	<CALszF6AJ3Zf598wYeUx=iNWHHKT24xUyfagB=+4GocwZ-Fd-0g@mail.gmail.com>
-	<alpine.DEB.2.11.1505191455540.4225@nanos>
-	<20150519130028.GF2067@n2100.arm.linux.org.uk>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [PATCH 2/5] PM / Wakeirq: Add automated device wake IRQ handling
+Date: Tue, 19 May 2015 16:04:43 +0200
+Message-ID: <3554198.gIGuGWK14O@vostro.rjw.lan>
+References: <1431560196-5722-1-git-send-email-tony@atomide.com> <20150518220459.GJ10274@atomide.com> <20150518234400.GN10274@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150519130028.GF2067-l+eeeJia6m9vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Peter Meerwald <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Vladimir Zapolskiy <vladimir_zapolskiy-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutlan>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <20150518234400.GN10274@atomide.com>
+Sender: linux-pm-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Felipe Balbi <balbi@ti.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Alan Stern <stern@rowland.harvard.edu>, Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-2015-05-19 15:00 GMT+02:00 Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>:
-> On Tue, May 19, 2015 at 02:56:43PM +0200, Thomas Gleixner wrote:
->> Folks, can you please trim your replies. It's a PITA to scroll down
->> through several pages to find a single line of content.
->
-> Absolutely right.  Too many people do not do this, and it's a waste of
-> readers time.  Maybe we should start ignoring emails which contain only
-> quoted mail in the first 50 lines.
->
-> Also, cutting the rest of the email below the point which you've finished
-> replying is good etiquette as well.  I've seen a number of posts where
-> people have added their signature mid-mail and left a huge chunk of quoted
-> mail below.  That's just not on either.
->
+On Monday, May 18, 2015 04:44:01 PM Tony Lindgren wrote:
+> * Tony Lindgren <tony@atomide.com> [150518 15:06]:
+> > +/**
+> > + * dev_pm_set_wake_irq - Attach device IO interrupt as wake IRQ
+> > + * @dev: Device entry
+> > + * @irq: Device IO interrupt
+> > + *
+> > + * Attach a device IO interrupt as a wake IRQ. The wake IRQ gets
+> > + * automatically configured for wake-up from suspend  based
+> > +void dev_pm_clear_wake_irq(struct device *dev)
+> > +{
+> > +	struct wake_irq *wirq = dev->power.wakeirq;
+> > +	unsigned long flags;
+> > +
+> > +	if (!wirq)
+> > +		return;
+> > +
+> > +	device_wakeup_detach_irq(dev);
+> > +
+> > +	spin_lock_irqsave(&dev->power.lock, flags);
+> > +	if (wirq->manage_irq) {
+> > +		free_irq(wirq->irq, wirq);
+> > +		wirq->manage_irq = false;
+> > +	}
+> > +	dev->power.wakeirq = NULL;
+> > +	spin_unlock_irqrestore(&dev->power.lock, flags);
+> > +
+> > +	wirq->irq = -EINVAL;
+> > +	kfree(wirq);
+> > +}
+> 
+> I just noticed most of the dev_pm_clear_wake_irq is no longer needed.
+> We're now freeing it anyways. so it can be just:
+> 
+> void dev_pm_clear_wake_irq(struct device *dev)
+> {
+> 	struct wake_irq *wirq = dev->power.wakeirq;
+> 	unsigned long flags;
+> 
+> 	if (!wirq)
+> 		return;
+> 
+> 	spin_lock_irqsave(&dev->power.lock, flags);
+> 	dev->power.wakeirq = NULL;
+> 	spin_unlock_irqrestore(&dev->power.lock, flags);
+> 
+> 	device_wakeup_detach_irq(dev);
+> 	if (wirq->manage_irq)
+> 		free_irq(wirq->irq, wirq);
+> 	kfree(wirq);
+> }
+> 
+> 
+> Regards,
+> 
+> Tony
+> 
+> 8< ---------------------
+> From: Tony Lindgren <tony@atomide.com>
+> Date: Mon, 18 May 2015 15:40:29 -0700
+> Subject: [PATCH] PM / Wakeirq: Add automated device wake IRQ handling
+> 
+> Turns out we can automate the handling for the device_may_wakeup()
+> quite a bit by using the kernel wakeup source list.
+> 
+> And as some hardware has separate dedicated wake-up interrupt
+> in addition to the IO interrupt, we can automate the handling by
+> adding a generic threaded interrupt handler that just calls the
+> device PM runtime to wake up the device.
+> 
+> This allows dropping code from device drivers as we currently
+> are doing it in multiple ways, and often wrong.
+> 
+> For most drivers, we should be able to drop the following
+> boilerplate code from runtime_suspend and runtime_resume
+> functions:
+> 
+> 	...
+> 	device_init_wakeup(dev, true);
+> 	...
+> 	if (device_may_wakeup(dev)
+> 		enable_irq_wake(irq);
+> 	...
+> 	if (device_may_wakeup(dev)
+> 		enable_irq_wake(irq);
 
-Ok, I will take care of that.
-Sorry for the inconvenience,
+Closing parens are missin in the above two if () statements.
 
-Maxime
+Also, should the second one be disable_irq_wake(irq)?
+
+> 	...
+> 	device_init_wakeup(dev, false);
+> 	...
+> 
+> We can replace it with just the following init and exit
+> time code:
+> 
+> 	...
+> 	device_init_wakeup(dev, true);
+> 	dev_pm_set_wake_irq(dev, irq);
+> 	...
+> 	dev_pm_clear_wake_irq(dev);
+> 	device_init_wakeup(dev, false);
+> 	...
+> 
+> And for hardware with dedicated wake-up interrupts:
+> 
+> 	...
+> 	device_init_wakeup(dev, true);
+> 	dev_pm_set_dedicated_wake_irq(dev, irq);
+> 	...
+> 	dev_pm_clear_wake_irq(dev);
+> 	device_init_wakeup(dev, false);
+> 	...
+> 
+> For now, let's only enable it for select PM_WAKEIRQ.
+
+Why?  What would be wrong with doing that unconditionally?
+
+
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+
+Looks good overall, a couple of nits below.
+
+[cut]
+
+> +/**
+> + * handle_threaded_wake_irq - Handler for dedicated wake-up interrupts
+> + * @irq: Device dedicated wake-up interrupt
+> + * @_wirq: Wake IRQ data
+> + *
+> + * Some devices have a separate wake-up interrupt in addition to the
+> + * device IO interrupt. The wake-up interrupts signal that the device
+> + * should be woken up from a idle state. This handler uses device
+> + * specific pm_runtime functions to wake the device and then it's
+> + * up to the device to do whatever it needs to. Note as the device
+> + * may need to restore context and start up regulators, we use a
+> + * threaded IRQ.
+> + *
+> + * Also note that we are not resending the lost device interrupts.
+> + * We assume that the wake-up interrupt just needs to wake-up the
+> + * device, and the device pm_runtime_resume() can deal with the
+> + * situation.
+> + */
+> +static irqreturn_t handle_threaded_wake_irq(int irq, void *_wirq)
+> +{
+> +	struct wake_irq *wirq = _wirq;
+> +
+> +	/* We don't want RPM_ASYNC or RPM_NOWAIT here */
+> +	return pm_runtime_resume(wirq->dev) ? IRQ_NONE : IRQ_HANDLED;
+
+There are various reasons why pm_runtime_resume() may return error codes and
+some of them don't mean that the interrupt was not legitimate.
+
+Moreover, it returns 1 if the device is already active, in which case the above
+check won't do any good to us.
+
+Why not to return IRQ_HANDLED unconditionally from here?
+
+
+[cut]
+
+> diff --git a/kernel/power/Kconfig b/kernel/power/Kconfig
+> index 7e01f78..d3735bd 100644
+> --- a/kernel/power/Kconfig
+> +++ b/kernel/power/Kconfig
+> @@ -267,6 +267,10 @@ config PM_CLK
+>  	def_bool y
+>  	depends on PM && HAVE_CLK
+>  
+> +config PM_WAKEIRQ
+> +	bool
+> +	depends on PM_SLEEP
+> +
+
+If you really really want this (I'm still not sure why exactly, though), it
+should depend on PM_SLEEP || PM_RUNTIME, because the latter uses it too.
+
+>  config PM_GENERIC_DOMAINS
+>  	bool
+>  	depends on PM
+
+Thanks,
+Rafael
+
