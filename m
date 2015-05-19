@@ -1,32 +1,46 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v8 09/16] clockevents/drivers: Add STM32 Timer driver
-Date: Tue, 19 May 2015 12:55:52 +0200
-Message-ID: <6177628.0ZDPLeVyah@wuerfel>
-References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com> <555B098A.8030202@linaro.org> <CALszF6AJ3Zf598wYeUx=iNWHHKT24xUyfagB=+4GocwZ-Fd-0g@mail.gmail.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH v2] serial: imx: Revert "initialized DMA w/o HW flow enabled"
+Date: Tue, 19 May 2015 09:18:37 -0300
+Message-ID: <CAOMZO5BLeKyeOFd8=VTM_44KEGeVVxYOz2_XX0XQcGSwCS7Xkg@mail.gmail.com>
+References: <20150507202439.GA4717@breakpoint.cc>
+	<CAOMZO5Dvv2oMujUqtXg0QXZ-VNbwKuRTCOVfcfNYzgWLkHZ1NA@mail.gmail.com>
+	<20150508071340.GA2603@breakpoint.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CALszF6AJ3Zf598wYeUx=iNWHHKT24xUyfagB=+4GocwZ-Fd-0g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Andreas =?ISO-8859-1?Q?F=E4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Peter Meerwald <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Vladimir Zapolskiy <vladimir_zapolskiy-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20150508071340.GA2603@breakpoint.cc>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, jiwang <jiada_wang@mentor.com>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, anton_bondarenko@mentor.com, Dirk Behme <dirk.behme@de.bosch.com>, Nicolae Rosia <nicolae.rosia@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>, Philipp Zabel <p.zabel@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday 19 May 2015 12:02:59 Maxime Coquelin wrote:
-> >
-> > config CLKSRC_STM32
-> >         bool
-> >         select CLKSRC_MMIO
-> >
-> > and in the arch/arm/mach-stm32/Kconfig add select CLKSRC_STM32
-> 
-> Ok, I will send a patch for arch/arm/Kconfig, as Arnd already applied
-> the one intruducing ARCH_STM32.
-> 
-> 
+Hi Sebastian,
 
-Please also make it possible to select this driver on other architectures
-with COMPILE_TEST, so we get coverage from all the x86 test infrastructure.
+On Fri, May 8, 2015 at 4:13 AM, Sebastian Andrzej Siewior
+<sebastian@breakpoint.cc> wrote:
+> From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>
+> This basically reverts commit 068500e08dc8 ("serial: imx: initialized
+> DMA w/o HW flow enabled") simply because it does not work.
+> I tested it on various IMX6 boards and the default SDMA firmware, that is
+> included in ROM, does not work properly. The SDMA interrupt counter does
+> not stop increment (which means the SDMA does not stop working) and I see
+> a lot of 0x00 (sometimes other bytes) which are added to the tty buffer
+> which are not part of the data transfer.
+> Jiada claimed that there is a firmware which makes it work but failed to
+> provide me a link to the firmware. All he said was that it can not be
+> shipped as part of the kernel due to license issues. I've found one
+> firmware in the FSL-tree but this firmware causes only TTY-overflows and
+> *no* data is transmitted.
+>
+> Currently I see no other way out.
 
-	Arnd
+Could you please test Philipp's patch?
+http://marc.info/?l=linux-serial&m=143202566332128&q=raw
+
+It worked on my tests and DMA still works with his patch, so I would
+prefer his solution.
+
+Thanks,
+
+Fabio Estevam
