@@ -1,121 +1,212 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v3] serial: 8250_uniphier: add UniPhier serial driver
-Date: Tue, 19 May 2015 20:18:09 +0900
-Message-ID: <CAK7LNARG6F97s9gTY_YZi0srKUBebFd1uBJhbVjzj_dAn9+nsg@mail.gmail.com>
-References: <1431997900-18390-1-git-send-email-yamada.masahiro@socionext.com>
-	<CABuKBeJwOp3Km=Vw+xn8cRtH8DC-TNB_m7s8WSdPxzKHdzrdcw@mail.gmail.com>
-	<CAK7LNARrjkCcMsVJwe5hdB71QsEQAf51sNf4xYVMkNazdbdxKA@mail.gmail.com>
-	<20150519104800.5ebd3518@lxorguk.ukuu.org.uk>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [RFC PATCH] serial: 8250_omap: provide complete custom startup
+ & shutdown callbacks
+Date: Tue, 19 May 2015 07:25:46 -0400
+Message-ID: <555B1DBA.3010104@hurleysoftware.com>
+References: <20150518164720.GA29261@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150519104800.5ebd3518@lxorguk.ukuu.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Peter Hurley <peter@hurleysoftware.com>, John Crispin <blogic@openwrt.org>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joachim Eastwood <manabian@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-arm-kernel@lists.infradead.org\" <linux-arm-kernel@lists.infradead.org>"@lxorguk.ukuu.org.uk
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20150518164720.GA29261@linutronix.de>
+Sender: linux-omap-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, nsekhar@ti.com, tony@atomide.com, nm@ti.com
 List-Id: linux-serial@vger.kernel.org
 
-Hi Alan,
+Hi Sebastian,
 
+On 05/18/2015 12:47 PM, Sebastian Andrzej Siewior wrote:
+> The currently in-use port->startup and port->shutdown are "okay". The
+> startup part for instance does the tiny omap extra part and invokes
+> serial8250_do_startup() for the remaining pieces. The workflow in
+> serial8250_do_startup() is okay except for the part where UART_RX is
+> read without a check if there is something to read. I tried to
+> workaround it in commit 0aa525d1 ("tty: serial: 8250_core: read only
+> RX if there is something in the FIFO") but then reverted it later in
+> commit ca8bb4aefb9 ("serial: 8250: Revert "tty: serial: 8250_core: read
+> only RX if there is something in the FIFO"").
+> 
+> This is the second attempt to get it to work on older OMAPs without
+> breaking other chips this time :)
+> Peter Hurley suggested to pull in the few needed lines from
+> serial8250_do_startup() and drop everything else that is not required
+> including makeing it simpler like using just request_irq() instead the
+> chain handler like it is doing now.
+> So lets try that.
+> 
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> Peter is this what you had in mind?
 
-2015-05-19 18:48 GMT+09:00 One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>:
->> I intentionally use deeper indentation for *_SHIFT
->> because I want to clearly show  UNIPHIER_UART_LCR_SHIFT
->> belongs to UNIPHIER_UART_LCR_MCR register.
->
-> Seems sensible to do it that way to me and a lot of other bits of the
-> kernel do.
->
-> The only other question I have is about the unipher_serial_out. If I am
-> writing a "special" register then the sequence becomes
->
-> - read 32bits
-> - modify
-> - write 32bits
->
-> That means that it's no longer atomic safe as the kernel expects.
-> Checking the users FCR seems safe, LCR is probably safe and MCR likewise
-> so I don't see a problem but I think it's worth noting in case anyone
-> else does.
+Yes, thanks.
+Functionality looks correct; minor comments below.
 
-Uh, I missed this.
-I am a bit afraid what if LCR and MCR are updated at the same time.
+> If so I will repost it without the
+> RFC. And I think tony would like a stable + fixes tag for it.
+> 
+>  drivers/tty/serial/8250/8250_omap.c | 81 ++++++++++++++++++++++++++++++++-----
+>  1 file changed, 72 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index 9289999cb7c6..7fd02a03c1ed 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -562,12 +562,36 @@ static irqreturn_t omap_wake_irq(int irq, void *dev_id)
+>  	return IRQ_NONE;
+>  }
+>  
+> +#ifdef CONFIG_SERIAL_8250_DMA
+> +static int omap_8250_dma_handle_irq(struct uart_port *port);
+> +#endif
+> +
+> +static irqreturn_t omap8250_irq(int irq, void *dev_id)
+> +{
+> +	struct uart_port *port = dev_id;
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+> +	unsigned int iir;
+> +	int ret;
+> +
+> +#ifdef CONFIG_SERIAL_8250_DMA
+> +	if (up->dma) {
+> +		ret = omap_8250_dma_handle_irq(port);
+> +		return IRQ_RETVAL(ret);
+> +	}
+> +#endif
+> +
+> +	serial8250_rpm_get(up);
+> +	iir = serial_port_in(port, UART_IIR);
+> +	ret = serial8250_handle_irq(port, iir);
+> +	serial8250_rpm_put(up);
+> +
+> +	return IRQ_RETVAL(ret);
+> +}
+> +
+>  static int omap_8250_startup(struct uart_port *port)
+>  {
+> -	struct uart_8250_port *up =
+> -		container_of(port, struct uart_8250_port, port);
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+>  	struct omap8250_priv *priv = port->private_data;
+> -
+>  	int ret;
+>  
+>  	if (priv->wakeirq) {
+> @@ -580,10 +604,31 @@ static int omap_8250_startup(struct uart_port *port)
+>  
+>  	pm_runtime_get_sync(port->dev);
+>  
+> -	ret = serial8250_do_startup(port);
+> -	if (ret)
+> +	up->mcr = 0;
+> +	serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
+> +
+> +	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
 
-Is it better to add mutex for writing special case registers?
+Please use either serial_out() or serial_port_out() but not both
+in the same function.
 
-    if (normal) {
-            writel(value, p->membase + offset);
-    } else {
-            /* special case: two registers share the same address. */
-            u32 tmp = readl(p->membase + offset);
-            struct uniphier8250_priv *priv = p->private_data;
+> +
+> +	up->lsr_saved_flags = 0;
+> +	up->msr_saved_flags = 0;
+> +
+> +	if (up->dma) {
+> +		ret = serial8250_request_dma(up);
+> +		if (ret) {
+> +			dev_warn_ratelimited(port->dev,
+> +					     "failed to request DMA\n");
+> +			up->dma = NULL;
+> +		}
+> +	}
+> +
+> +	ret = request_irq(port->irq, omap8250_irq, IRQF_SHARED,
+> +			  dev_name(port->dev), port);
+> +	if (ret < 0)
+>  		goto err;
+>  
+> +	up->ier = UART_IER_RLSI | UART_IER_RDI;
+> +	serial_port_out(port, UART_IER, up->ier);
+> +
+>  #ifdef CONFIG_PM
+>  	up->capabilities |= UART_CAP_RPM;
+>  #endif
+> @@ -610,8 +655,7 @@ static int omap_8250_startup(struct uart_port *port)
+>  
+>  static void omap_8250_shutdown(struct uart_port *port)
+>  {
+> -	struct uart_8250_port *up =
+> -		container_of(port, struct uart_8250_port, port);
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+>  	struct omap8250_priv *priv = port->private_data;
+>  
+>  	flush_work(&priv->qos_work);
+> @@ -621,11 +665,24 @@ static void omap_8250_shutdown(struct uart_port *port)
+>  	pm_runtime_get_sync(port->dev);
+>  
+>  	serial_out(up, UART_OMAP_WER, 0);
+> -	serial8250_do_shutdown(port);
+> +
+> +	up->ier = 0;
+> +	serial_port_out(port, UART_IER, 0);
+> +
+> +	if (up->dma)
+> +		serial8250_release_dma(up);
+> +
+> +	/*
+> +	 * Disable break condition and FIFOs
+> +	 */
+> +	if (up->lcr & UART_LCR_SBC)
+> +		serial_port_out(port, UART_LCR, up->lcr & ~UART_LCR_SBC);
+> +	serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
 
-            mutex_lock(&priv->atomic_write_lock);
-            tmp &= ~(0xff << valshift);
-            tmp |= value << valshift;
-            writel(tmp, p->membase + offset);
-            mutex_unlock(&priv->atomic_write_lock);
-    }
+Same here.
 
+>  
+>  	pm_runtime_mark_last_busy(port->dev);
+>  	pm_runtime_put_autosuspend(port->dev);
+>  
+> +	free_irq(port->irq, port);
+>  	if (priv->wakeirq)
+>  		free_irq(priv->wakeirq, port);
+>  }
+> @@ -974,6 +1031,12 @@ static inline int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+>  }
+>  #endif
+>  
+> +static int omap8250_no_handle_irq(struct uart_port *port)
+> +{
+> +	WARN_ONCE(1, "This shouldn't be used\n");
 
-If it is OK, I can fix it in v4.
+I think it might be helpful if the message or a comment briefly
+identified why this should never happen. Something like,
 
+	/* IRQ has not been requested but handling irq?? */
+	WARN_ONCE(1, "Unexpected irq handling before port startup\n");
 
+Regards,
+Peter Hurley
 
+> +	return 0;
+> +}
+> +
+>  static int omap8250_probe(struct platform_device *pdev)
+>  {
+>  	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> @@ -1075,6 +1138,7 @@ static int omap8250_probe(struct platform_device *pdev)
+>  	pm_runtime_get_sync(&pdev->dev);
+>  
+>  	omap_serial_fill_features_erratas(&up, priv);
+> +	up.port.handle_irq = omap8250_no_handle_irq;
+>  #ifdef CONFIG_SERIAL_8250_DMA
+>  	if (pdev->dev.of_node) {
+>  		/*
+> @@ -1088,7 +1152,6 @@ static int omap8250_probe(struct platform_device *pdev)
+>  		ret = of_property_count_strings(pdev->dev.of_node, "dma-names");
+>  		if (ret == 2) {
+>  			up.dma = &priv->omap8250_dma;
+> -			up.port.handle_irq = omap_8250_dma_handle_irq;
+>  			priv->omap8250_dma.fn = the_no_dma_filter_fn;
+>  			priv->omap8250_dma.tx_dma = omap_8250_tx_dma;
+>  			priv->omap8250_dma.rx_dma = omap_8250_rx_dma;
+> 
 
-> Finally can you add a comment in serial_in and serial_out where one
-> switch case drops through into the next so its obvious to anyone looking
-> at Coverity and other analyser output that this drop through was
-> intentional ?
-
-I thought about it, too.
-
-My previous version was as follows:
-
-
-+#define UNIPHIER_UART_CHAR_FCR 3
-+#define     UNIPHIER_UART_CHAR_SHIFT   8       /* Character Register */
-+#define     UNIPHIER_UART_FCR_SHIFT    0       /* FIFO Control Register */
-+#define UNIPHIER_UART_LCR_MCR  4
-+#define     UNIPHIER_UART_LCR_SHIFT    8       /* Line Control Register */
-+#define     UNIPHIER_UART_MCR_SHIFT    0       /* Modem Control Register */
-+#define UNIPHIER_UART_DLR      9               /* Divisor Latch Register */
-
-[snip]
-
-+static void uniphier_serial_out(struct uart_port *p, int offset, int value)
-+{
-+       int valshift = 0;
-+       bool normal = false;
-+
-+       switch (offset) {
-+       case UART_FCR:
-+               offset = UNIPHIER_UART_CHAR_FCR;
-+               valshift = UNIPHIER_UART_FCR_SHIFT;
-+               break;
-+       case UART_LCR:
-+               offset = UNIPHIER_UART_LCR_MCR;
-+               valshift = UNIPHIER_UART_LCR_SHIFT;
-+               /* Divisor latch access bit does not exist. */
-+               value &= ~(UART_LCR_DLAB << valshift);
-+               break;
-+       case UART_MCR:
-+               offset = UNIPHIER_UART_LCR_MCR;
-+               valshift = UNIPHIER_UART_MCR_SHIFT;
-+               break;
-+       default:
-+               normal = true;
-+               break;
-+       }
-
-
-
-I thought it was clear to anyone although it was a bit redundant and
-Matthias was opposed to it.
-
-I personally prefer clear code to tricky code that requires comments.
-
-
--- 
-Best Regards
-Masahiro Yamada
