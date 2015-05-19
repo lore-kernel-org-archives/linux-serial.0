@@ -1,56 +1,121 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [PATCH] serial/amba-pl011: Fix mismerge between v4.1-rc4 and tty-next
-Date: Tue, 19 May 2015 11:51:14 +0100
-Message-ID: <1432032674-22167-1-git-send-email-Dave.Martin@arm.com>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: Re: [PATCH v3] serial: 8250_uniphier: add UniPhier serial driver
+Date: Tue, 19 May 2015 20:18:09 +0900
+Message-ID: <CAK7LNARG6F97s9gTY_YZi0srKUBebFd1uBJhbVjzj_dAn9+nsg@mail.gmail.com>
+References: <1431997900-18390-1-git-send-email-yamada.masahiro@socionext.com>
+	<CABuKBeJwOp3Km=Vw+xn8cRtH8DC-TNB_m7s8WSdPxzKHdzrdcw@mail.gmail.com>
+	<CAK7LNARrjkCcMsVJwe5hdB71QsEQAf51sNf4xYVMkNazdbdxKA@mail.gmail.com>
+	<20150519104800.5ebd3518@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20150519104800.5ebd3518@lxorguk.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Peter Hurley <peter@hurleysoftware.com>, John Crispin <blogic@openwrt.org>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joachim Eastwood <manabian@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-arm-kernel@lists.infradead.org\" <linux-arm-kernel@lists.infradead.org>"@lxorguk.ukuu.org.uk
 List-Id: linux-serial@vger.kernel.org
 
-In commit 02730d3c053a9af1d402e1c8dc8bbbc5a1340406
-(Merge 4.1-rc4 into tty-next), git mismerged some lines,
-reintroducing a reference to the removed field
-uart_amba_port.tx_irq_seen.  This causes a build failure.
+Hi Alan,
 
-This patch removes the mismerged lines, restoring the code to what
-was in tty-next (which was the intention).
 
-Signed-off-by: Dave Martin <Dave.Martin@arm.com>
----
+2015-05-19 18:48 GMT+09:00 One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>:
+>> I intentionally use deeper indentation for *_SHIFT
+>> because I want to clearly show  UNIPHIER_UART_LCR_SHIFT
+>> belongs to UNIPHIER_UART_LCR_MCR register.
+>
+> Seems sensible to do it that way to me and a lot of other bits of the
+> kernel do.
+>
+> The only other question I have is about the unipher_serial_out. If I am
+> writing a "special" register then the sequence becomes
+>
+> - read 32bits
+> - modify
+> - write 32bits
+>
+> That means that it's no longer atomic safe as the kernel expects.
+> Checking the users FCR seems safe, LCR is probably safe and MCR likewise
+> so I don't see a problem but I think it's worth noting in case anyone
+> else does.
 
-This patch is based on tty-next commit
-02730d3c053a9af1d402e1c8dc8bbbc5a1340406 (Merge 4.1-rc4 into tty-next).
+Uh, I missed this.
+I am a bit afraid what if LCR and MCR are updated at the same time.
 
-Without it, amba-pl011.c won't build.
+Is it better to add mutex for writing special case registers?
 
- drivers/tty/serial/amba-pl011.c |    3 ---
- 1 file changed, 3 deletions(-)
+    if (normal) {
+            writel(value, p->membase + offset);
+    } else {
+            /* special case: two registers share the same address. */
+            u32 tmp = readl(p->membase + offset);
+            struct uniphier8250_priv *priv = p->private_data;
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6fabc05..f5bd842 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1578,9 +1578,6 @@ static int pl011_startup(struct uart_port *port)
- 
- 	writew(uap->vendor->ifls, uap->port.membase + UART011_IFLS);
- 
--	/* Assume that TX IRQ doesn't work until we see one: */
--	uap->tx_irq_seen = 0;
--
- 	spin_lock_irq(&uap->port.lock);
- 
- 	/* restore RTS and DTR */
+            mutex_lock(&priv->atomic_write_lock);
+            tmp &= ~(0xff << valshift);
+            tmp |= value << valshift;
+            writel(tmp, p->membase + offset);
+            mutex_unlock(&priv->atomic_write_lock);
+    }
+
+
+If it is OK, I can fix it in v4.
+
+
+
+
+> Finally can you add a comment in serial_in and serial_out where one
+> switch case drops through into the next so its obvious to anyone looking
+> at Coverity and other analyser output that this drop through was
+> intentional ?
+
+I thought about it, too.
+
+My previous version was as follows:
+
+
++#define UNIPHIER_UART_CHAR_FCR 3
++#define     UNIPHIER_UART_CHAR_SHIFT   8       /* Character Register */
++#define     UNIPHIER_UART_FCR_SHIFT    0       /* FIFO Control Register */
++#define UNIPHIER_UART_LCR_MCR  4
++#define     UNIPHIER_UART_LCR_SHIFT    8       /* Line Control Register */
++#define     UNIPHIER_UART_MCR_SHIFT    0       /* Modem Control Register */
++#define UNIPHIER_UART_DLR      9               /* Divisor Latch Register */
+
+[snip]
+
++static void uniphier_serial_out(struct uart_port *p, int offset, int value)
++{
++       int valshift = 0;
++       bool normal = false;
++
++       switch (offset) {
++       case UART_FCR:
++               offset = UNIPHIER_UART_CHAR_FCR;
++               valshift = UNIPHIER_UART_FCR_SHIFT;
++               break;
++       case UART_LCR:
++               offset = UNIPHIER_UART_LCR_MCR;
++               valshift = UNIPHIER_UART_LCR_SHIFT;
++               /* Divisor latch access bit does not exist. */
++               value &= ~(UART_LCR_DLAB << valshift);
++               break;
++       case UART_MCR:
++               offset = UNIPHIER_UART_LCR_MCR;
++               valshift = UNIPHIER_UART_MCR_SHIFT;
++               break;
++       default:
++               normal = true;
++               break;
++       }
+
+
+
+I thought it was clear to anyone although it was a bit redundant and
+Matthias was opposed to it.
+
+I personally prefer clear code to tricky code that requires comments.
+
+
 -- 
-1.7.10.4
+Best Regards
+Masahiro Yamada
