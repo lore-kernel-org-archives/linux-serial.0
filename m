@@ -1,134 +1,109 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Add R-Car SCIF DMA receive support
-Date: Wed, 20 May 2015 11:40:43 +0200
-Message-ID: <CAMuHMdVKWEK2y=y+wAF3r4Etxha4WhTe1O0u+RX3W8nH8AXq=g@mail.gmail.com>
-References: <1430500294-23407-1-git-send-email-ykaneko0929@gmail.com>
+From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 8/8] serial: tegra: Correct error handling on DMA setup
+Date: Wed, 20 May 2015 10:51:59 +0100
+Message-ID: <555C593F.5040107@nvidia.com>
+References: <1430835479-6613-1-git-send-email-jonathanh@nvidia.com> <1430835479-6613-9-git-send-email-jonathanh@nvidia.com> <CAAVeFuL=z-xbGT1e_L6+_GQ8aZ0BvNBfmoi65u_7qVHv=tpTbA@mail.gmail.com> <5551CD25.4030206@nvidia.com> <CAAVeFuLUVHJMPjy3y6bw9J7iQHb+is-SR_5H-=TCe4yoyEGRqQ@mail.gmail.com> <555309F4.1080306@nvidia.com> <CAAVeFuL8XoQUykpVbzgJiYNkoXA0e7c1k95nvB6Q+wZUHjOjSw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1430500294-23407-1-git-send-email-ykaneko0929@gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Yoshihiro Kaneko <ykaneko0929@gmail.com>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAAVeFuL8XoQUykpVbzgJiYNkoXA0e7c1k95nvB6Q+wZUHjOjSw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kaneko-san, Matsuoka-san, Mizuguchi-san,
 
-On Fri, May 1, 2015 at 7:11 PM, Yoshihiro Kaneko <ykaneko0929@gmail.com> wrote:
-> From: Koji Matsuoka <koji.matsuoka.xm@renesas.com>
->
-> Signed-off-by: Koji Matsuoka <koji.matsuoka.xm@renesas.com>
-> Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
-> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+On 20/05/15 04:57, Alexandre Courbot wrote:
 
-Thanks for your patch!
+[snip]
 
-BTW, with which DMA engine was this tested? The old shdmac or the new
-rcar-dmac?
+> There may still be a leak (that is not related to your patch) in the
+> RX path though:
+> 
+>     dma_buf = dma_alloc_coherent(...);
+>     ret = dmaengine_slave_config(...);
+>     if (ret < 0) {
+>         ...
+>         goto scrub;
+>     }
+> 
+>     tup->rx_dma_buf_virt = dma_buf;
+>     tup->rx_dma_buf_phys = dma_phys;
+> 
+> scrub:
+>     dma_release_channel(dma_chan);
+>     return ret;
+> 
+> It seems that if dmaengine_slave_config() fails, then the result of
+> dma_alloc_coherent() remains purely local to the function and is never
+> freed. Or am I missing something again?
 
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
+Yes, you are right here. Actually, this would be applicable to
+both RX and TX paths because in the TX path the buffer would
+not be unmapped. I will generated a separate patch for fix
+this. How does the following look?
 
-> @@ -1348,13 +1363,26 @@ static void sci_rx_dma_release(struct sci_port *s, bool enable_pio)
->  {
->         struct dma_chan *chan = s->chan_rx;
->         struct uart_port *port = &s->port;
-> +       size_t buf_len_rx;
-> +       int t = 100000;
-> +
-> +       s->rx_release_flag = 1;
-> +       while (t--) {
-> +               if (!s->rx_flag)
-> +                       break;
-> +               usleep_range(10, 50);
-> +       }
-
-This is done to make sure rx DMA has completed before releasing the channel
-(and setting s->chan_rx = NULL)?
-
-Is there a better way to wait for this, without looping?
-
->         s->chan_rx = NULL;
-
-> @@ -1419,11 +1457,19 @@ static void work_fn_rx(struct work_struct *work)
->         struct uart_port *port = &s->port;
->         struct dma_async_tx_descriptor *desc;
->         int new;
-> +       int next;
-> +
-> +       if (s->chan_rx == NULL) {
-> +               dev_dbg(port->dev, "%s: DMA channel is released.\n", __func__);
-> +               return;
-> +       }
-
-I believe this is a workaround for the race condition where work_fn_rx()
-is called after shutdown of the port, and s->chan_rx has already been set
-to NULL in sci_rx_dma_release(), which leads to a NULL pointer dereference
-in work_fn_rx()?
-
-As this is a bug fix, it should be a separate patch.
-
-Can this still happen in the presence of the loop until !rx_flag in
-sci_rx_dma_release() above?
-
-> @@ -1707,14 +1770,22 @@ static void sci_request_dma(struct uart_port *port)
->         chan = dma_request_channel(mask, filter, param);
->         dev_dbg(port->dev, "%s: RX: got channel %p\n", __func__, chan);
->         if (chan) {
-> -               dma_addr_t dma[2];
-> -               void *buf[2];
-> +               dma_addr_t dma[3];
-> +               void *buf[3];
-> +               size_t sum_buf_len;
-> +               int nr_sg = 2;
->                 int i;
->
->                 s->chan_rx = chan;
->
->                 s->buf_len_rx = 2 * max(16, (int)port->fifosize);
-> -               buf[0] = dma_alloc_coherent(port->dev, s->buf_len_rx * 2,
-> +               if (port->type == PORT_SCIF || port->type == PORT_HSCIF) {
-> +                       nr_sg = 3;
-> +                       sum_buf_len = 1 + s->buf_len_rx * 2;
-> +               } else {
-> +                       sum_buf_len = s->buf_len_rx * 2;
-> +               }
-> +               buf[0] = dma_alloc_coherent(port->dev, sum_buf_len,
->                                             &dma[0], GFP_KERNEL);
-
-I think the code manipulating the buffers can be simplified a lot by
-storing in sci_port:
-  - The number of buffers in use (2 vs. 3),
-  - The sizes of the individual buffers.
-
-That way you can remove many checks for (H)SCIF, and avoid recalculating the
-buffer sizes everywhere.
-
-> @@ -1778,7 +1863,6 @@ static int sci_startup(struct uart_port *port)
->
->         spin_lock_irqsave(&port->lock, flags);
->         sci_start_tx(port);
-> -       sci_start_rx(port);
-
-Why is this needed?
-
-> @@ -1796,6 +1880,8 @@ static void sci_shutdown(struct uart_port *port)
->         sci_stop_tx(port);
->         spin_unlock_irqrestore(&port->lock, flags);
->
-> +       serial_port_out(port, SCSCR, 0x00);
-
-Isn't this already handled by sci_stop_tx() above, and by sci_stop_rx() in
-the line above that (not visible in the patch)?
-Which additional bits do you need to clear?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 3b63f103f0c9..cf0133ae762d 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -999,6 +999,12 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+                        dma_release_channel(dma_chan);
+                        return -ENOMEM;
+                }
++               dma_sconfig.src_addr = tup->uport.mapbase;
++               dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
++               dma_sconfig.src_maxburst = 4;
++               tup->rx_dma_chan = dma_chan;
++               tup->rx_dma_buf_virt = dma_buf;
++               tup->rx_dma_buf_phys = dma_phys;
+        } else {
+                dma_phys = dma_map_single(tup->uport.dev,
+                        tup->uport.state->xmit.buf, UART_XMIT_SIZE,
+@@ -1009,39 +1015,23 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+                        return -ENOMEM;
+                }
+                dma_buf = tup->uport.state->xmit.buf;
+-       }
+-
+-       if (dma_to_memory) {
+-               dma_sconfig.src_addr = tup->uport.mapbase;
+-               dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+-               dma_sconfig.src_maxburst = 4;
+-       } else {
+                dma_sconfig.dst_addr = tup->uport.mapbase;
+                dma_sconfig.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+                dma_sconfig.dst_maxburst = 16;
++               tup->tx_dma_chan = dma_chan;
++               tup->tx_dma_buf_virt = dma_buf;
++               tup->tx_dma_buf_phys = dma_phys;
+        }
+ 
+        ret = dmaengine_slave_config(dma_chan, &dma_sconfig);
+        if (ret < 0) {
+                dev_err(tup->uport.dev,
+                        "Dma slave config failed, err = %d\n", ret);
+-               goto scrub;
++               tegra_uart_dma_channel_free(tup, dma_to_memory);
++               return ret;
+        }
+ 
+-       if (dma_to_memory) {
+-               tup->rx_dma_chan = dma_chan;
+-               tup->rx_dma_buf_virt = dma_buf;
+-               tup->rx_dma_buf_phys = dma_phys;
+-       } else {
+-               tup->tx_dma_chan = dma_chan;
+-               tup->tx_dma_buf_virt = dma_buf;
+-               tup->tx_dma_buf_phys = dma_phys;
+-       }
+        return 0;
+-
+-scrub:
+-       tegra_uart_dma_channel_free(tup, dma_to_memory);
+-       return ret;
+ }
+ 
+Cheers
+Jon
