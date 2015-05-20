@@ -1,34 +1,114 @@
-From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] serial: tegra: Fix memory leak on DMA setup failure
-Date: Wed, 20 May 2015 12:33:22 +0100
-Message-ID: <555C7102.8060207@nvidia.com>
-References: <1432120864-23916-1-git-send-email-jonathanh@nvidia.com> <555C6F38.50603@nvidia.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH 8/8] serial: tegra: Correct error handling on DMA setup
+Date: Wed, 20 May 2015 13:12:55 +0100
+Message-ID: <555C7A47.1070901@nvidia.com>
+References: <1430835479-6613-1-git-send-email-jonathanh@nvidia.com> <1430835479-6613-9-git-send-email-jonathanh@nvidia.com> <CAAVeFuL=z-xbGT1e_L6+_GQ8aZ0BvNBfmoi65u_7qVHv=tpTbA@mail.gmail.com> <5551CD25.4030206@nvidia.com> <CAAVeFuLUVHJMPjy3y6bw9J7iQHb+is-SR_5H-=TCe4yoyEGRqQ@mail.gmail.com> <555309F4.1080306@nvidia.com> <CAAVeFuL8XoQUykpVbzgJiYNkoXA0e7c1k95nvB6Q+wZUHjOjSw@mail.gmail.com> <555C593F.5040107@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <555C6F38.50603-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <555C593F.5040107@nvidia.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexandre Courbot <gnurou@gmail.com>
+Cc: Laxman Dewangan <ldewangan@nvidia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
 
-
-On 20/05/15 12:25, Jon Hunter wrote:
+On 20/05/15 10:51, Jon Hunter wrote:
 > 
-> On 20/05/15 12:21, Jon Hunter wrote:
->> If the call to dmaengine_slave_config() fails, then the DMA buffer will
->> not be freed/unmapped. Fix this by moving the code that stores the
->> address of the buffer in the tegra_uart_port structure to before the
->> call to dmaengine_slave_config().
+> On 20/05/15 04:57, Alexandre Courbot wrote:
 > 
-> By the way, just to be clear, I did try to fix this before [1], but
-> failed :-(
+> [snip]
+> 
+>> There may still be a leak (that is not related to your patch) in the
+>> RX path though:
+>>
+>>     dma_buf = dma_alloc_coherent(...);
+>>     ret = dmaengine_slave_config(...);
+>>     if (ret < 0) {
+>>         ...
+>>         goto scrub;
+>>     }
+>>
+>>     tup->rx_dma_buf_virt = dma_buf;
+>>     tup->rx_dma_buf_phys = dma_phys;
+>>
+>> scrub:
+>>     dma_release_channel(dma_chan);
+>>     return ret;
+>>
+>> It seems that if dmaengine_slave_config() fails, then the result of
+>> dma_alloc_coherent() remains purely local to the function and is never
+>> freed. Or am I missing something again?
+> 
+> Yes, you are right here. Actually, this would be applicable to
+> both RX and TX paths because in the TX path the buffer would
+> not be unmapped. I will generated a separate patch for fix
+> this. How does the following look?
+> 
+> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+> index 3b63f103f0c9..cf0133ae762d 100644
+> --- a/drivers/tty/serial/serial-tegra.c
+> +++ b/drivers/tty/serial/serial-tegra.c
+> @@ -999,6 +999,12 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+>                         dma_release_channel(dma_chan);
+>                         return -ENOMEM;
+>                 }
+> +               dma_sconfig.src_addr = tup->uport.mapbase;
+> +               dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+> +               dma_sconfig.src_maxburst = 4;
+> +               tup->rx_dma_chan = dma_chan;
+> +               tup->rx_dma_buf_virt = dma_buf;
+> +               tup->rx_dma_buf_phys = dma_phys;
+>         } else {
+>                 dma_phys = dma_map_single(tup->uport.dev,
+>                         tup->uport.state->xmit.buf, UART_XMIT_SIZE,
+> @@ -1009,39 +1015,23 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+>                         return -ENOMEM;
+>                 }
+>                 dma_buf = tup->uport.state->xmit.buf;
+> -       }
+> -
+> -       if (dma_to_memory) {
+> -               dma_sconfig.src_addr = tup->uport.mapbase;
+> -               dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+> -               dma_sconfig.src_maxburst = 4;
+> -       } else {
+>                 dma_sconfig.dst_addr = tup->uport.mapbase;
+>                 dma_sconfig.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+>                 dma_sconfig.dst_maxburst = 16;
+> +               tup->tx_dma_chan = dma_chan;
+> +               tup->tx_dma_buf_virt = dma_buf;
+> +               tup->tx_dma_buf_phys = dma_phys;
+>         }
+>  
+>         ret = dmaengine_slave_config(dma_chan, &dma_sconfig);
+>         if (ret < 0) {
+>                 dev_err(tup->uport.dev,
+>                         "Dma slave config failed, err = %d\n", ret);
+> -               goto scrub;
+> +               tegra_uart_dma_channel_free(tup, dma_to_memory);
+> +               return ret;
+>         }
+>  
+> -       if (dma_to_memory) {
+> -               tup->rx_dma_chan = dma_chan;
+> -               tup->rx_dma_buf_virt = dma_buf;
+> -               tup->rx_dma_buf_phys = dma_phys;
+> -       } else {
+> -               tup->tx_dma_chan = dma_chan;
+> -               tup->tx_dma_buf_virt = dma_buf;
+> -               tup->tx_dma_buf_phys = dma_phys;
+> -       }
+>         return 0;
+> -
+> -scrub:
+> -       tegra_uart_dma_channel_free(tup, dma_to_memory);
+> -       return ret;
+>  }
 
-To be doubly clear, this is targeted to be applied on top of the
-previous patch [1] which is now in linux-next.
+Posted the patch here [1].
 
 Jon
 
-> [1] https://lkml.org/lkml/2015/5/5/802
+[1] https://lkml.org/lkml/2015/5/20/347
