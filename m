@@ -1,41 +1,58 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH 2/5] PM / Wakeirq: Add automated device wake IRQ handling
-Date: Wed, 20 May 2015 02:25:19 +0200
-Message-ID: <143211021.lFoirF2CMg@vostro.rjw.lan>
-References: <1431560196-5722-1-git-send-email-tony@atomide.com> <1757867.ugVzJ2yl3G@vostro.rjw.lan> <20150519232756.GS10274@atomide.com>
+From: Eddie Huang <eddie.huang@mediatek.com>
+Subject: Re: [PATCH] tty: serial/8250: remove console dependency for mediatek
+Date: Wed, 20 May 2015 09:34:39 +0800
+Message-ID: <1432085679.18194.1.camel@mtksdaap41>
+References: <2421682.546VBfrkgn@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <20150519232756.GS10274@atomide.com>
-Sender: linux-pm-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Felipe Balbi <balbi@ti.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Alan Stern <stern@rowland.harvard.edu>, Andreas Fenkart <afenkart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <2421682.546VBfrkgn@wuerfel>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday, May 19, 2015 04:27:56 PM Tony Lindgren wrote:
-> * Rafael J. Wysocki <rjw@rjwysocki.net> [150519 16:07]:
-> > On Wednesday, May 20, 2015 12:41:06 AM Thomas Gleixner wrote:
-> > > On Wed, 20 May 2015, Rafael J. Wysocki wrote:
-> > > > This one looks really good. :-)
-> > > > 
-> > > > If it doesn't depend on anything, I can apply it right away, so please let me
-> > > > know.
+Hi Arnd,
+
+On Tue, 2015-05-19 at 22:11 +0200, Arnd Bergmann wrote:
+> If the mediatek serial port driver is built-in, but serial
+> console is disabled in Kconfig (e.g. when the serial driver
+> itself is a loadable module), we get this build error:
 > 
-> Sure works for me, it just has a dependency to patch #1 in this
-> series ("[PATCH 1/5] PM / Runtime: Update last_busy in rpm_resume").
-
-OK, I'll queue them both up for 4.2, then.
-
-Please let me know if you need a special branch with them.
-
-> > > Can you pretty please trim your replies? It's a PITA to scroll through
-> > > several pages of quoted patch just to find your signature as the extra
-> > > content.
-> > 
-> > Sorry about that.
+> drivers/built-in.o: In function `early_mtk8250_setup':
+> undefined reference to `early_serial8250_setup'
 > 
-> Sounds like Thomas might be OK with the patch too then :)
+> To avoid that problem, this patch encloses the early_mtk8250_setup
+> function in #ifdef CONFIG_SERIAL_8250_CONSOLE, the same symbol
+> that guards the early_serial8250_setup function.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index 4488c2bdb7ba..78883ca64ddd 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -305,6 +305,7 @@ static struct platform_driver mtk8250_platform_driver = {
+>  };
+>  module_platform_driver(mtk8250_platform_driver);
+>  
+> +#ifdef CONFIG_SERIAL_8250_CONSOLE
+>  static int __init early_mtk8250_setup(struct earlycon_device *device,
+>  					const char *options)
+>  {
+> @@ -317,6 +318,7 @@ static int __init early_mtk8250_setup(struct earlycon_device *device,
+>  }
+>  
+>  OF_EARLYCON_DECLARE(mtk8250, "mediatek,mt6577-uart", early_mtk8250_setup);
+> +#endif
+>  
+>  MODULE_AUTHOR("Matthias Brugger");
+>  MODULE_LICENSE("GPL");
+> 
 
-Well, yeah.
+Acked-by: Eddie Huang <eddie.huang@mediatek.com>
 
+Thanks your correction.
+
+Eddie
