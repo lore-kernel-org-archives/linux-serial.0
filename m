@@ -1,8 +1,7 @@
 From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v5 07/11] drivers: PL011: move cts_event workaround into
- separate function
-Date: Thu, 21 May 2015 17:26:20 +0100
-Message-ID: <1432225584-4655-8-git-send-email-andre.przywara@arm.com>
+Subject: [PATCH v5 11/11] drivers: PL011: add ACPI probing for SBSA UART
+Date: Thu, 21 May 2015 17:26:24 +0100
+Message-ID: <1432225584-4655-12-git-send-email-andre.przywara@arm.com>
 References: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,71 +21,52 @@ To: rmk+kernel@arm.linux.org.uk, GregKH <gregkh@linuxfoundation.org>, Jiri Slaby
 Cc: Lorenzo.Pieralisi@arm.com, graeme.gregory@linaro.org, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, nareshgbhat@gmail.com, mlangsdo@redhat.com, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-To avoid lines with more than 80 characters and to make the
-pl011_int() function more readable, move the workaround out into a
-separate function.
+From: Graeme Gregory <graeme.gregory@linaro.org>
 
+Add the necessary driver boilerplate to let the driver be used when
+the respective ACPI table is discovered by the ACPI subsystem.
+
+[Andre: change table name, add MODULE_DEVICE_TABLE entry and improve
+	commit message]
+
+Reviewed-by: Hanjun Guo <hanjun.guo@linaro.org>
+Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- drivers/tty/serial/amba-pl011.c | 33 ++++++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 13 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index b66636b..7ecf3b3 100644
+index c0850f3..50cf5b1 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1317,6 +1317,25 @@ static void pl011_modem_status(struct uart_amba_port *uap)
- 	wake_up_interruptible(&uap->port.state->port.delta_msr_wait);
- }
+@@ -58,6 +58,7 @@
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/sizes.h>
+ #include <linux/io.h>
++#include <linux/acpi.h>
  
-+static void check_apply_cts_event_workaround(struct uart_amba_port *uap)
-+{
-+	unsigned int dummy_read;
-+
-+	if (!uap->vendor->cts_event_workaround)
-+		return;
-+
-+	/* workaround to make sure that all bits are unlocked.. */
-+	writew(0x00, uap->port.membase + UART011_ICR);
-+
-+	/*
-+	 * WA: introduce 26ns(1 uart clk) delay before W1C;
-+	 * single apb access will incur 2 pclk(133.12Mhz) delay,
-+	 * so add 2 dummy reads
-+	 */
-+	dummy_read = readw(uap->port.membase + UART011_ICR);
-+	dummy_read = readw(uap->port.membase + UART011_ICR);
-+}
-+
- static irqreturn_t pl011_int(int irq, void *dev_id)
- {
- 	struct uart_amba_port *uap = dev_id;
-@@ -1324,25 +1343,13 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 	unsigned int status, pass_counter = AMBA_ISR_PASS_LIMIT;
- 	u16 imsc;
- 	int handled = 0;
--	unsigned int dummy_read;
+ #define UART_NR			14
  
- 	spin_lock_irqsave(&uap->port.lock, flags);
- 	imsc = readw(uap->port.membase + UART011_IMSC);
- 	status = readw(uap->port.membase + UART011_RIS) & imsc;
- 	if (status) {
- 		do {
--			if (uap->vendor->cts_event_workaround) {
--				/* workaround to make sure that all bits are unlocked.. */
--				writew(0x00, uap->port.membase + UART011_ICR);
--
--				/*
--				 * WA: introduce 26ns(1 uart clk) delay before W1C;
--				 * single apb access will incur 2 pclk(133.12Mhz) delay,
--				 * so add 2 dummy reads
--				 */
--				dummy_read = readw(uap->port.membase + UART011_ICR);
--				dummy_read = readw(uap->port.membase + UART011_ICR);
--			}
-+			check_apply_cts_event_workaround(uap);
+@@ -2486,12 +2487,19 @@ static const struct of_device_id sbsa_uart_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, sbsa_uart_of_match);
  
- 			writew(status & ~(UART011_TXIS|UART011_RTIS|
- 					  UART011_RXIS),
++static const struct acpi_device_id sbsa_uart_acpi_match[] = {
++	{ "ARMH0011", 0 },
++	{},
++};
++MODULE_DEVICE_TABLE(acpi, sbsa_uart_acpi_match);
++
+ static struct platform_driver arm_sbsa_uart_platform_driver = {
+ 	.probe		= sbsa_uart_probe,
+ 	.remove		= sbsa_uart_remove,
+ 	.driver	= {
+ 		.name	= "sbsa-uart",
+ 		.of_match_table = of_match_ptr(sbsa_uart_of_match),
++		.acpi_match_table = ACPI_PTR(sbsa_uart_acpi_match),
+ 	},
+ };
+ 
 -- 
 2.3.5
