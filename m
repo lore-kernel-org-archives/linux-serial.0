@@ -1,46 +1,75 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v8 07/16] drivers: reset: Add STM32 reset driver
-Date: Thu, 21 May 2015 09:46:34 +0200
-Message-ID: <CALszF6CrouFF3oS_Qz6+qQRqa4a5PurdYNdvHnZRDb4zwOJ6mQ@mail.gmail.com>
-References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>
-	<1431158038-3813-8-git-send-email-mcoquelin.stm32@gmail.com>
-	<555D1C7D.1060205@suse.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] tty: remove platform_sysrq_reset_seq
+Date: Thu, 21 May 2015 11:11:28 +0200
+Message-ID: <2397446.P9RRJqoFo7@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <555D1C7D.1060205@suse.de>
-Sender: linux-gpio-owner@vger.kernel.org
-To: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Agner <stefan@agner.ch>, Peter Meerwald <pmeerw@pmeerw.net>, Paul Bolle <pebolle@tiscali.nl>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>, Russell King <linux@arm.linux.org.uk>, Daniel Lezcano <daniel.lezcano@linaro.org>, Joe Perches <joe@perches.com>, Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, Nikolay
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-input-owner@vger.kernel.org>
+Sender: linux-input-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, mathieu.poirier@linaro.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-input@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-2015-05-21 1:45 GMT+02:00 Andreas F=C3=A4rber <afaerber@suse.de>:
-> Am 09.05.2015 um 09:53 schrieb Maxime Coquelin:
->> +static const struct of_device_id stm32_reset_dt_ids[] =3D {
->> +      { .compatible =3D "st,stm32-rcc", },
->> +      { /* sentinel */ },
->> +};
->> +MODULE_DEVICE_TABLE(of, sstm32_reset_dt_ids);
->
-> Typo.
+The platform_sysrq_reset_seq code was intended as a way for an embedded
+platform to provide its own sysrq sequence at compile time. After over
+two years, nobody has started using it in an upstream kernel, and
+the platforms that were interested in it have moved on to devicetree,
+which can be used to configure the sequence without requiring kernel
+changes. The method is also incompatible with the way that most
+architectures build support for multiple platforms into a single
+kernel.
 
-Indeed, thanks for pointing this out.
+Now the code is producing warnings when built with gcc-5.1:
 
->
-> IIUC the timer depends on the reset controller, so it must be built i=
-n
-> anyway, and that's what's enforced in the Makefile above. Drop the li=
-ne?
->
+drivers/tty/sysrq.c: In function 'sysrq_init':
+drivers/tty/sysrq.c:959:33: warning: array subscript is above array bounds [-Warray-bounds]
+   key = platform_sysrq_reset_seq[i];
 
-Agree it must be built-in.
-I will fix that in next version.
+We could fix this, but it seems unlikely that it will ever be used,
+so let's just remove the code instead. We still have the option to
+pass the sequence either in DT, using the kernel command line,
+or using the /sys/module/sysrq/parameters/reset_seq file.
 
-Thanks for the review,
-Maxime
---
-To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 154b7a489a ("Input: sysrq - allow specifying alternate reset sequence")
+
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index 8ba52e56bb8b..9c5395db6a57 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -55,8 +55,7 @@
+ static int __read_mostly sysrq_enabled = CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE;
+ static bool __read_mostly sysrq_always_enabled;
+ 
+-unsigned short platform_sysrq_reset_seq[] __weak = { KEY_RESERVED };
+-int sysrq_reset_downtime_ms __weak;
++static int sysrq_reset_downtime_ms;
+ 
+ static bool sysrq_on(void)
+ {
+@@ -950,23 +949,8 @@ static bool sysrq_handler_registered;
+ 
+ static inline void sysrq_register_handler(void)
+ {
+-	unsigned short key;
+ 	int error;
+-	int i;
+-
+-	/* First check if a __weak interface was instantiated. */
+-	for (i = 0; i < ARRAY_SIZE(sysrq_reset_seq); i++) {
+-		key = platform_sysrq_reset_seq[i];
+-		if (key == KEY_RESERVED || key > KEY_MAX)
+-			break;
+ 
+-		sysrq_reset_seq[sysrq_reset_seq_len++] = key;
+-	}
+-
+-	/*
+-	 * DT configuration takes precedence over anything that would
+-	 * have been defined via the __weak interface.
+-	 */
+ 	sysrq_of_get_keyreset_config();
+ 
+ 	error = input_register_handler(&sysrq_handler);
+
