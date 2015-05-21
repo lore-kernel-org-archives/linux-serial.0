@@ -1,11 +1,10 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH v5 10/11] drivers: PL011: add support for the ARM SBSA generic
- UART
-Date: Thu, 21 May 2015 17:26:23 +0100
-Message-ID: <1432225584-4655-11-git-send-email-andre.przywara@arm.com>
+From: Mark Langsdorf <mlangsdo@redhat.com>
+Subject: Re: [PATCH v5 00/11] drivers: PL011: add ARM SBSA Generic UART support
+Date: Thu, 21 May 2015 12:19:18 -0500
+Message-ID: <555E1396.4020207@redhat.com>
 References: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
@@ -18,279 +17,129 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: rmk+kernel@arm.linux.org.uk, GregKH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Lorenzo.Pieralisi@arm.com, graeme.gregory@linaro.org, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, nareshgbhat@gmail.com, mlangsdo@redhat.com, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>, rmk+kernel@arm.linux.org.uk, GregKH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Lorenzo.Pieralisi@arm.com, graeme.gregory@linaro.org, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, nareshgbhat@gmail.com, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The ARM Server Base System Architecture[1] document describes a
-generic UART which is a subset of the PL011 UART.
-It lacks DMA support, baud rate control and modem status line
-control, among other things.
-The idea is to move the UART initialization and setup into the
-firmware (which does this job today already) and let the kernel just
-use the UART for sending and receiving characters.
+On 05/21/2015 11:26 AM, Andre Przywara wrote:
+> This is the fifth revision of the SBSA UART support series, based on
+> the current tty-next branch.
+> Beside some minor formatting issues fixed (thanks ot Jakub for
+> noticing) the SBSA UART set_termios() function has been reworked.
+> We now completely ignore the old value, instead we filter the new
+> setting to match the SBSA UART's fixed parameters for word size,
+> parity, stop bits and so on.
+> This should also address the issues people have seen with ACPI on
+> Fedora systems.
+> Mark, Naresh, Graeme: can you confirm that this version works for
+> you? If needed I can bake a follow-up patch on top of v4.
+> ----
 
-We use the recent refactoring to build a new struct uart_ops
-variable which points to some new functions avoiding access to the
-missing registers. We reuse as much existing PL011 code as possible.
+Works for me, thanks.
 
-In contrast to the PL011 the SBSA UART does not define any AMBA or
-PrimeCell relations, so we go with a pretty generic probe function
-which only uses platform device functions.
-A DT binding is provided with this patch, ACPI support is added in a
-separate one.
+Tested-by: Mark Langsdorf <mlangsdo@redhat.com>
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
- .../devicetree/bindings/serial/arm_sbsa_uart.txt   |  10 ++
- drivers/tty/serial/amba-pl011.c                    | 171 +++++++++++++++++++++
- 2 files changed, 181 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
+--Mark Langsdorf
 
-diff --git a/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt b/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
-new file mode 100644
-index 0000000..4163e7e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
-@@ -0,0 +1,10 @@
-+* ARM SBSA defined generic UART
-+This UART uses a subset of the PL011 registers and consequently lives
-+in the PL011 driver. It's baudrate and other communication parameters
-+cannot be adjusted at runtime, so it lacks a clock specifier here.
-+
-+Required properties:
-+- compatible: must be "arm,sbsa-uart"
-+- reg: exactly one register range
-+- interrupts: exactly one interrupt specifier
-+- current-speed: the (fixed) baud rate set by the firmware
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6558400..c0850f3 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -101,6 +101,14 @@ static struct vendor_data vendor_arm = {
- 	.get_fifosize		= get_fifosize_arm,
- };
- 
-+static struct vendor_data vendor_sbsa = {
-+	.oversampling		= false,
-+	.dma_threshold		= false,
-+	.cts_event_workaround	= false,
-+	.always_enabled		= true,
-+	.fixed_options		= true,
-+};
-+
- static unsigned int get_fifosize_st(struct amba_device *dev)
- {
- 	return 64;
-@@ -1641,6 +1649,28 @@ static int pl011_startup(struct uart_port *port)
- 	return retval;
- }
- 
-+static int sbsa_uart_startup(struct uart_port *port)
-+{
-+	struct uart_amba_port *uap =
-+		container_of(port, struct uart_amba_port, port);
-+	int retval;
-+
-+	retval = pl011_hwinit(port);
-+	if (retval)
-+		return retval;
-+
-+	retval = pl011_allocate_irq(uap);
-+	if (retval)
-+		return retval;
-+
-+	/* The SBSA UART does not support any modem status lines. */
-+	uap->old_status = 0;
-+
-+	pl011_enable_interrupts(uap);
-+
-+	return 0;
-+}
-+
- static void pl011_shutdown_channel(struct uart_amba_port *uap,
- 					unsigned int lcrh)
- {
-@@ -1721,6 +1751,19 @@ static void pl011_shutdown(struct uart_port *port)
- 		uap->port.ops->flush_buffer(port);
- }
- 
-+static void sbsa_uart_shutdown(struct uart_port *port)
-+{
-+	struct uart_amba_port *uap =
-+		container_of(port, struct uart_amba_port, port);
-+
-+	pl011_disable_interrupts(uap);
-+
-+	free_irq(uap->port.irq, uap);
-+
-+	if (uap->port.ops->flush_buffer)
-+		uap->port.ops->flush_buffer(port);
-+}
-+
- static void
- pl011_setup_status_masks(struct uart_port *port, struct ktermios *termios)
- {
-@@ -1872,6 +1915,27 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
-+static void
-+sbsa_uart_set_termios(struct uart_port *port, struct ktermios *termios,
-+		      struct ktermios *old)
-+{
-+	struct uart_amba_port *uap =
-+	    container_of(port, struct uart_amba_port, port);
-+	unsigned long flags;
-+
-+	tty_termios_encode_baud_rate(termios, uap->fixed_baud, uap->fixed_baud);
-+
-+	/* The SBSA UART only supports 8n1 without hardware flow control. */
-+	termios->c_cflag &= ~(CSIZE | CSTOPB | PARENB | PARODD);
-+	termios->c_cflag &= ~(CMSPAR | CRTSCTS);
-+	termios->c_cflag |= CS8 | CLOCAL;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	uart_update_timeout(port, CS8, uap->fixed_baud);
-+	pl011_setup_status_masks(port, termios);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
- static const char *pl011_type(struct uart_port *port)
- {
- 	struct uart_amba_port *uap =
-@@ -1947,6 +2011,37 @@ static struct uart_ops amba_pl011_pops = {
- #endif
- };
- 
-+static void sbsa_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+}
-+
-+static unsigned int sbsa_uart_get_mctrl(struct uart_port *port)
-+{
-+	return 0;
-+}
-+
-+static const struct uart_ops sbsa_uart_pops = {
-+	.tx_empty	= pl011_tx_empty,
-+	.set_mctrl	= sbsa_uart_set_mctrl,
-+	.get_mctrl	= sbsa_uart_get_mctrl,
-+	.stop_tx	= pl011_stop_tx,
-+	.start_tx	= pl011_start_tx,
-+	.stop_rx	= pl011_stop_rx,
-+	.startup	= sbsa_uart_startup,
-+	.shutdown	= sbsa_uart_shutdown,
-+	.set_termios	= sbsa_uart_set_termios,
-+	.type		= pl011_type,
-+	.release_port	= pl011_release_port,
-+	.request_port	= pl011_request_port,
-+	.config_port	= pl011_config_port,
-+	.verify_port	= pl011_verify_port,
-+#ifdef CONFIG_CONSOLE_POLL
-+	.poll_init     = pl011_hwinit,
-+	.poll_get_char = pl011_get_poll_char,
-+	.poll_put_char = pl011_put_poll_char,
-+#endif
-+};
-+
- static struct uart_amba_port *amba_ports[UART_NR];
- 
- #ifdef CONFIG_SERIAL_AMBA_PL011_CONSOLE
-@@ -2327,6 +2422,79 @@ static int pl011_resume(struct device *dev)
- 
- static SIMPLE_DEV_PM_OPS(pl011_dev_pm_ops, pl011_suspend, pl011_resume);
- 
-+static int sbsa_uart_probe(struct platform_device *pdev)
-+{
-+	struct uart_amba_port *uap;
-+	struct resource *r;
-+	int portnr, ret;
-+	int baudrate;
-+
-+	/*
-+	 * Check the mandatory baud rate parameter in the DT node early
-+	 * so that we can easily exit with the error.
-+	 */
-+	if (pdev->dev.of_node) {
-+		struct device_node *np = pdev->dev.of_node;
-+
-+		ret = of_property_read_u32(np, "current-speed", &baudrate);
-+		if (ret)
-+			return ret;
-+	} else {
-+		baudrate = 115200;
-+	}
-+
-+	portnr = pl011_find_free_port();
-+	if (portnr < 0)
-+		return portnr;
-+
-+	uap = devm_kzalloc(&pdev->dev, sizeof(struct uart_amba_port),
-+			   GFP_KERNEL);
-+	if (!uap)
-+		return -ENOMEM;
-+
-+	uap->vendor	= &vendor_sbsa;
-+	uap->fifosize	= 32;
-+	uap->port.irq	= platform_get_irq(pdev, 0);
-+	uap->port.ops	= &sbsa_uart_pops;
-+	uap->fixed_baud = baudrate;
-+
-+	snprintf(uap->type, sizeof(uap->type), "SBSA");
-+
-+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+
-+	ret = pl011_setup_port(&pdev->dev, uap, r, portnr);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, uap);
-+
-+	return pl011_register_port(uap);
-+}
-+
-+static int sbsa_uart_remove(struct platform_device *pdev)
-+{
-+	struct uart_amba_port *uap = platform_get_drvdata(pdev);
-+
-+	uart_remove_one_port(&amba_reg, &uap->port);
-+	pl011_unregister_port(uap);
-+	return 0;
-+}
-+
-+static const struct of_device_id sbsa_uart_of_match[] = {
-+	{ .compatible = "arm,sbsa-uart", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, sbsa_uart_of_match);
-+
-+static struct platform_driver arm_sbsa_uart_platform_driver = {
-+	.probe		= sbsa_uart_probe,
-+	.remove		= sbsa_uart_remove,
-+	.driver	= {
-+		.name	= "sbsa-uart",
-+		.of_match_table = of_match_ptr(sbsa_uart_of_match),
-+	},
-+};
-+
- static struct amba_id pl011_ids[] = {
- 	{
- 		.id	= 0x00041011,
-@@ -2357,11 +2525,14 @@ static int __init pl011_init(void)
- {
- 	printk(KERN_INFO "Serial: AMBA PL011 UART driver\n");
- 
-+	if (platform_driver_register(&arm_sbsa_uart_platform_driver))
-+		pr_warn("could not register SBSA UART platform driver\n");
- 	return amba_driver_register(&pl011_driver);
- }
- 
- static void __exit pl011_exit(void)
- {
-+	platform_driver_unregister(&arm_sbsa_uart_platform_driver);
- 	amba_driver_unregister(&pl011_driver);
- }
- 
--- 
-2.3.5
+> The ARM Server Base System Architecture[1] document describes a
+> generic UART which is a subset of the ARM PL011 UART.
+> It lacks DMA support, baud rate control and modem status line
+> control, among other things.
+> The idea is to move the UART initialization and setup into the
+> firmware (which does this job today already) and let the kernel just
+> use the UART for sending and receiving characters.
+>
+> This patchset integrates support for this UART subset into the
+> existing PL011 driver - basically by refactoring some
+> functions and providing a new uart_ops structure for it. It also has
+> a separate probe function to be not dependent on AMBA/PrimeCell.
+> It provides a device tree and an ACPI binding.
+> Beside the obvious effect of code sharing reusing most of the PL011
+> code has the advantage of not introducing another serial device
+> prefix, so it can go with ttyAMA, which seems to be pretty common.
+> As changing the baudrate and other communication parameters is not
+> specified for the SBSA UART, any userland attempt will be denied by
+> the kernel. The device-tree provided fixed baud rate will be
+> reported, so stty for instance prints the right value.
+>
+> This series is based on Greg's tty-next branch, a git repo can
+> be found at [2] (branch sbsa-uart/v5).
+>
+> Patch 1/11 contains a bug fix which applies to the PL011 part also,
+> it should be considered regardless of the rest of the series.
+> According to Russell this is still racy, but still better than the
+> current solution.
+> Patch 2-7 refactor some PL011 functions by splitting them up into
+> smaller pieces, so that most of the code can be reused later by the
+> SBSA part.
+> Patch 8 and 9 introduce two new properties for the vendor structure,
+> this is for SBSA functionality which cannot be controlled by
+> separate uart_ops members only.
+> Patch 10 then finally drops in the SBSA specific code, by providing
+> a new uart_ops, vendor struct and probe function for it. Also the new
+> device tree binding is documented.
+> Patch 11 adds the necessary ACPI boilerplate.
+>
+> For testing you should be able to take any hardware which has a PL011
+> and change the DT to use a "arm,sbsa-uart" compatible string and the
+> baud rate with the "current-speed" property.
+> Of course testing with a real SBSA Generic UART is welcomed - as well
+> as regression testing with any PL011 implementation.
+> I tested this on a FastModel, a Juno and a Midway machine, both in
+> PL011 and in (DT-emulated) SBSA mode.
+>
+> Tested-by: Robert Richter <rrichter@cavium.com>
+> Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
+>
+> Changelog:
+> v4 .. v5:
+> - fixed checkpatch --strict complaints
+> - rework set_termios:
+>    - disallow changes or UART fixed communication parameters
+>    - ignore old value to fix an issue with Fedora on ACPI
+>
+> v3 .. v4:
+> - fixed rebase artifact
+> - moved memory allocation out of pl011_allocate_port() function
+>    (and consequently renamed that to pl011_find_free_port)
+> - added ACPI driver binding
+>
+> v2 .. v3:
+> - rebased on top of tty-next and Dave's latest PL011 rework
+> - fixed module build
+> - removed redundant =NULL members in sbsa_uart_ops
+>
+> v1 .. v2:
+> - rebased on top of 4.0-rc1 and Dave's newest PL011 fix [3]
+> - added mandatory current-speed property and report that to userland
+>
+> Cheers,
+> Andre
+>
+> [1] ARM-DEN-0029 Server Base System Architecture, available (click-
+>      thru...) from http://infocenter.arm.com
+> [2] http://www.linux-arm.org/git?p=linux-ap.git
+>      git://linux-arm.org/linux-ap.git
+> [3] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-March/327631.html
+>
+> Andre Przywara (10):
+>    drivers: PL011: avoid potential unregister_driver call
+>    drivers: PL011: refactor pl011_startup()
+>    drivers: PL011: refactor pl011_shutdown()
+>    drivers: PL011: refactor pl011_set_termios()
+>    drivers: PL011: refactor pl011_probe()
+>    drivers: PL011: replace UART_MIS reading with _RIS & _IMSC
+>    drivers: PL011: move cts_event workaround into separate function
+>    drivers: PL011: allow avoiding UART enabling/disabling
+>    drivers: PL011: allow to supply fixed option string
+>    drivers: PL011: add support for the ARM SBSA generic UART
+>
+> Graeme Gregory (1):
+>    drivers: PL011: add ACPI probing for SBSA UART
+>
+>   .../devicetree/bindings/serial/arm_sbsa_uart.txt   |  10 +
+>   drivers/tty/serial/amba-pl011.c                    | 550 +++++++++++++++------
+>   2 files changed, 412 insertions(+), 148 deletions(-)
+>   create mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
+>
