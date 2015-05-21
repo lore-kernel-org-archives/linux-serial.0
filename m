@@ -1,13 +1,13 @@
-From: Naresh Bhat <nareshgbhat@gmail.com>
+From: Mark Langsdorf <mlangsdo@redhat.com>
 Subject: Re: [PATCH v4 10/11] drivers: PL011: add support for the ARM SBSA
  generic UART
-Date: Thu, 21 May 2015 18:19:52 +0530
-Message-ID: <CAJXQGfLY5BCSgLvn2m5QDDvG8Zc8JEr9By=7Jk3swu4VERj6SA@mail.gmail.com>
+Date: Thu, 21 May 2015 10:12:46 -0500
+Message-ID: <555DF5EE.5040901@redhat.com>
 References: <1431440095-5146-1-git-send-email-andre.przywara@arm.com>
  <1431440095-5146-11-git-send-email-andre.przywara@arm.com>
  <55536096.4020008@redhat.com> <555DBDDA.6070908@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <555DBDDA.6070908@arm.com>
@@ -21,10 +21,10 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Andre Przywara <andre.przywara@arm.com>
-Cc: Mark Langsdorf <mlangsdo@redhat.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Graeme Gregory <graeme.gregory@linaro.org>, =?UTF-8?Q?Jakub_Kici=C5=84ski?= <moorray3@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Graeme Gregory <graeme.gregory@linaro.org>, =?UTF-8?B?SmFrdWIgS2ljacWEc2tp?= <moorray3@wp.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 21, 2015 at 4:43 PM, Andre Przywara <andre.przywara@arm.com> wrote:
+On 05/21/2015 06:13 AM, Andre Przywara wrote:
 > Hi Mark,
 >
 > (please keep the people on CC:, I almost missed that mail)
@@ -51,11 +51,11 @@ On Thu, May 21, 2015 at 4:43 PM, Andre Przywara <andre.przywara@arm.com> wrote:
 >>>
 >>> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 >>> ---
->>>   .../devicetree/bindings/serial/arm_sbsa_uart.txt   |  10 ++
->>>   drivers/tty/serial/amba-pl011.c                    | 168
+>>>    .../devicetree/bindings/serial/arm_sbsa_uart.txt   |  10 ++
+>>>    drivers/tty/serial/amba-pl011.c                    | 168
 >>> +++++++++++++++++++++
->>>   2 files changed, 178 insertions(+)
->>>   create mode 100644
+>>>    2 files changed, 178 insertions(+)
+>>>    create mode 100644
 >>> Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
 >>>
 >>> diff --git
@@ -86,8 +86,8 @@ On Thu, May 21, 2015 at 4:43 PM, Andre Przywara <andre.przywara@arm.com> wrote:
 >
 >>> @@ -1872,6 +1915,24 @@ pl011_set_termios(struct uart_port *port,
 >>> struct ktermios *termios,
->>>       spin_unlock_irqrestore(&port->lock, flags);
->>>   }
+>>>        spin_unlock_irqrestore(&port->lock, flags);
+>>>    }
 >>>
 >>> +static void
 >>> +sbsa_uart_set_termios(struct uart_port *port, struct ktermios *termios,
@@ -113,10 +113,7 @@ On Thu, May 21, 2015 at 4:43 PM, Andre Przywara <andre.przywara@arm.com> wrote:
 >> +        * it.
 >> +        */
 >> +       if (old && old->c_cflag)
->>                 tty_termios_copy_hw(termios, old);
-
-Yes, this fixes the problem I was seeing with Fedora21 on ThunderX.
-
+>>                  tty_termios_copy_hw(termios, old);
 >
 > That seems like a kludge to me.
 > Regardless of the reason why uart_send_options() is passing a
@@ -127,17 +124,28 @@ Yes, this fixes the problem I was seeing with Fedora21 on ThunderX.
 >
 > Can you describe a setup where this issue shows up? I haven't observed
 > this issue in my testing.
->
+
+Since other people have said it:
+
+AMD Seattle, booting with ACPI, connected via a serial console
+and running Fedora. Systems boot just fine, but when you attempt
+to log in, the first time you hit return it doesn't register
+so you can't ask for your password. If you do hit return twice,
+apparently both instances of the return are registered at the
+same time and the system rejects your invalid password (less
+sure of the mechanics here).
+
 > But in fact I think we actually shouldn't care about the old value at
 > all. Instead we should filter the new termios settings to avoid userland
 > configuring for instance flow control or an differing byte format which
 > the SBSA UART does not support.
 > I will cook up a patch and send out a v5 ASAP.
->
-> Cheers,
-> Andre.
->
->>
+
+Okay.
+
+--Mark Langsdorf
+
+
 >> which fixed the issue.
 >>
 >>> +    tty_termios_encode_baud_rate(termios, uap->fixed_baud,
@@ -149,17 +157,6 @@ Yes, this fixes the problem I was seeing with Fedora21 on ThunderX.
 >>> +    spin_unlock_irqrestore(&port->lock, flags);
 >>> +}
 >>> +
->>>   static const char *pl011_type(struct uart_port *port)
->>>   {
->>>       struct uart_amba_port *uap =
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
-
-
--- 
-"For things to change, we must change"
--Naresh Bhat
+>>>    static const char *pl011_type(struct uart_port *port)
+>>>    {
+>>>        struct uart_amba_port *uap =
