@@ -1,12 +1,14 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [PATCH REPOST] serial/amba-pl011: Unconditionally poll for FIFO space
- before each TX char
-Date: Thu, 21 May 2015 16:37:49 +0100
-Message-ID: <1432222669-20117-1-git-send-email-Dave.Martin@arm.com>
+From: Andre Przywara <andre.przywara@arm.com>
+Subject: [PATCH v5 01/11] drivers: PL011: avoid potential unregister_driver
+ call
+Date: Thu, 21 May 2015 17:26:14 +0100
+Message-ID: <1432225584-4655-2-git-send-email-andre.przywara@arm.com>
+References: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -16,93 +18,85 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King <linux@arm.linux.org.uk>, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, linux-arm-kernel@lists.infradead.org
+To: rmk+kernel@arm.linux.org.uk, GregKH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Lorenzo.Pieralisi@arm.com, graeme.gregory@linaro.org, arnd@arndb.de, Jakub Kicinski <moorray3@wp.pl>, nareshgbhat@gmail.com, mlangsdo@redhat.com, linux-serial@vger.kernel.org, dave.martin@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Commit 734745caeb9f155ab58918834a8c70e83fa6afd3 serial/amba-pl011:
-(Activate TX IRQ passively) introduces a race which causes the driver
-sometimes to attempt to write a character to the TX FIFO when the FIFO
-is already full.
+Although we care about not unregistering the driver if there are
+still ports connected during the .remove callback, we do miss this
+check in the pl011_probe function. So if the current port allocation
+fails, but there are other ports already registered, we will kill
+those.
+So factor out the port removal into a separate function and use that
+in the probe function, too.
 
-The PL011 does not guarantee its behaviour when the FIFO is overfilled.
-In practice, this can cause duplicate and/or dropped characters to be
-output on the wire.  The problem is common enough to be readily
-observable on the ARM Juno platform when the PL011 UART is used as
-the console and DMA is not in use.
-
-This patch fixes this problem by always polling for space before each
-character is written to the FIFO.
-
-This will be amended to a less brute-force approach in a later commit,
-but this patch should help ensure correct behaviour for now.
-
-Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
-
-The patch is based on torvalds/master (v4.1-rc4-11-g1113cdf)
-
-Please consider applying it for v4.1.  Without it, we have a
-significant functional regression compared with v4.0.
-
-
-I've been testing this for a couple of weeks on ARM Juno and it appears
-sound; any further testing by other people is still encouraged.
-
-*Note*
-This will cause a conflict with tty-next because it pulls forward
-some changes made by commit 1e84d22 (serial/amba-pl011: Refactor and
-simplify TX FIFO handling).
-
-The correct resolution is to take amba-pl011.c from tty-next.
-
-Cheers
----Dave
-
-
- drivers/tty/serial/amba-pl011.c |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 36 ++++++++++++++++++++----------------
+ 1 file changed, 20 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 6f5a072..763eb20 100644
+index f5bd842..b4de23c 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -1249,20 +1249,19 @@ __acquires(&uap->port.lock)
- 
- /*
-  * Transmit a character
-- * There must be at least one free entry in the TX FIFO to accept the char.
-  *
-- * Returns true if the FIFO might have space in it afterwards;
-- * returns false if the FIFO definitely became full.
-+ * Returns true if the character was successfully queued to the FIFO.
-+ * Returns false otherwise.
-  */
- static bool pl011_tx_char(struct uart_amba_port *uap, unsigned char c)
- {
-+	if (readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF)
-+		return false; /* unable to transmit character */
-+
- 	writew(c, uap->port.membase + UART01x_DR);
- 	uap->port.icount.tx++;
- 
--	if (likely(uap->tx_irq_seen > 1))
--		return true;
--
--	return !(readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF);
-+	return true;
+@@ -2135,6 +2135,23 @@ static int pl011_probe_dt_alias(int index, struct device *dev)
+ 	return ret;
  }
  
- static bool pl011_tx_chars(struct uart_amba_port *uap)
-@@ -1296,7 +1295,8 @@ static bool pl011_tx_chars(struct uart_amba_port *uap)
- 		return false;
- 
- 	if (uap->port.x_char) {
--		pl011_tx_char(uap, uap->port.x_char);
-+		if (!pl011_tx_char(uap, uap->port.x_char))
-+			goto done;
- 		uap->port.x_char = 0;
- 		--count;
++/* unregisters the driver also if no more ports are left */
++static void pl011_unregister_port(struct uart_amba_port *uap)
++{
++	int i;
++	bool busy = false;
++
++	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
++		if (amba_ports[i] == uap)
++			amba_ports[i] = NULL;
++		else if (amba_ports[i])
++			busy = true;
++	}
++	pl011_dma_remove(uap);
++	if (!busy)
++		uart_unregister_driver(&amba_reg);
++}
++
+ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ {
+ 	struct uart_amba_port *uap;
+@@ -2200,10 +2217,8 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
  	}
+ 
+ 	ret = uart_add_one_port(&amba_reg, &uap->port);
+-	if (ret) {
+-		amba_ports[i] = NULL;
+-		uart_unregister_driver(&amba_reg);
+-	}
++	if (ret)
++		pl011_unregister_port(uap);
+ 
+ 	return ret;
+ }
+@@ -2211,20 +2226,9 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ static int pl011_remove(struct amba_device *dev)
+ {
+ 	struct uart_amba_port *uap = amba_get_drvdata(dev);
+-	bool busy = false;
+-	int i;
+ 
+ 	uart_remove_one_port(&amba_reg, &uap->port);
+-
+-	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
+-		if (amba_ports[i] == uap)
+-			amba_ports[i] = NULL;
+-		else if (amba_ports[i])
+-			busy = true;
+-
+-	pl011_dma_remove(uap);
+-	if (!busy)
+-		uart_unregister_driver(&amba_reg);
++	pl011_unregister_port(uap);
+ 	return 0;
+ }
+ 
 -- 
-1.7.10.4
+2.3.5
