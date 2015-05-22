@@ -1,101 +1,114 @@
-From: =?windows-1252?Q?Andreas_F=E4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH v8 01/16] scripts: link-vmlinux: Don't pass page offset
- to kallsyms if XIP Kernel
-Date: Fri, 22 May 2015 22:20:35 +0200
-Message-ID: <555F8F93.7000705@suse.de>
-References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com> <1431158038-3813-2-git-send-email-mcoquelin.stm32@gmail.com> <CALszF6B0=dgSDfLFwDi9YmEzrrNVuYbUnqMu5DmDhhy--emtpw@mail.gmail.com> <555D12F8.4000403@suse.de>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="NGubmuQWF8p0L662mvgUTwp27eogPw0JI"
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <555D12F8.4000403-l3A5Bk7waGM@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Michal Marek <mmarek-AlSwsSmVLrQ@public.gmane.org>
-Cc: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Nikolay Borisov <Nikolay.Borisov-5wv7dgnIgG8@public.gmane.org>, Peter Meerwald <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Linux-Arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Antti Palosaari <crope-X3B1VOXEql0@public.gmane.org>, Geert Uytterhoeven <geert@linu>
+From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: [PATCH v9 0/5] Add support to STMicroelectronics STM32 family
+Date: Fri, 22 May 2015 23:03:31 +0200
+Message-ID: <1432328616-16964-1-git-send-email-mcoquelin.stm32@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Kamil Lulko <rev13@wp.pl>, u.kleine-koenig@pengutronix.de, afaerber@suse.de, geert@linux-m68k.org
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-api@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---NGubmuQWF8p0L662mvgUTwp27eogPw0JI
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
+This ninth round counts less patches as some have already been applied,
+and the reset driver will be part of another series because it will
+introduce a generic reset driver to be used by several SoCs (sunxi, socfpga).
+Main change in remaining patches is the rework of the STM32 clocksource 
+Kconfig entry.
 
-Am 21.05.2015 um 01:04 schrieb Andreas F=E4rber:
-> Hi,
->=20
-> Am 18.05.2015 um 13:47 schrieb Maxime Coquelin:
->> 2015-05-09 9:53 GMT+02:00 Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>:=
+STM32 MCUs are Cortex-M CPU, used in various applications (consumer
+electronics, industrial applications, hobbyists...).
+Datasheets, user and programming manuals are publicly available on
+STMicroelectronics website.
 
->>> When Kernel is executed in place from ROM, the symbol addresses can b=
-e
->>> lower than the page offset.
->>>
->>> Tested-by: Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-[...]
-> Back then on STM32F4 I debugged that disabling KALLSYMS works around it=
-=2E
->=20
-> Now on a different XIP target I have confirmed this patch to help show =
-a
-> stacktrace (my clk driver was missing some CLK_DIVIDER_ALLOW_ZEROs) ...=
+Changes since v8:
+-----------------
+ - Rework clocksource driver Kconfig entry.
+ - Remove reset driver from the series.
 
-> although my earlyprintk serial output still gets stuck further down the=
+Changes since v7:
+-----------------
+ - Add DT-bindings header file for RCC IP (Daniel)
+ - Fix uninitialized variables in serial driver
+ - Enable CONFIG_NO_HZ in stm32_defconfig
 
-> stacktrace - probably unrelated.
+Changes since v6:
+-----------------
+ - serial: Fix locking in case of sysrq (Vladimir)
+ - Rebase on top of v4.1-rc1
+ - Apply Acked-by and Reviewed-by
+ - Clean-up stm32_defconfig
 
-FTR confirming my suspicion: insufficient power supply. ;)
+Changes since v5:
+-----------------
+ - Change st,hw-flow-ctrl property to auto-flow-control (Rob)
+ - Constify stm32_uart_ops (Joe)
+ - Propagate request_irq error in USART driver (Andy)
+ - Applies Acked-by and Reviewed-by (Rob, Peter)
 
-Andreas
+Changes since v4:
+-----------------
+ - Cosmetic changes in USART driver (Andy)
+ - Apply Acks on reset driver & bindings (Philipp & Rob)
 
-> [    0.000000] ------------[ cut here ]------------
-> [    0.000000] WARNING: CPU: 0 PID: 0 at drivers/clk/clk-divider.c:126
-> divider_recalc_rate+0x2b/0x44()
-> [    0.000000] SYS: Zero divisor and CLK_DIVIDER_ALLOW_ZERO not set
-> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted
-> 4.1.0-rc4-next-20150519+ #23
-> [    0.000000] Hardware name: XMC4000 (Device Tree Support)
-> [    0.000000] [<0800bd5d>] (unwind_backtrace) from [<0800b0cb>]
-> (show_stack+0xb/0xc)
-> [    0.000000] [<0800b0cb>] (show_stack) from [<0800e0a5>]
-> (warn_slowpath_common+0x55/0x78)
-> [    0.000000] [<0800e0a5>] (warn_slowpath_common) from [<0800e103>]
-> (warn_slowpath_fmt+0x1b/0x24)
-> [    0.000000] [<0800e103>] (warn_slowpath_fmt) from [<080942e3>] (divi=
-de
->=20
-> But this is definitely an improvement for ARMv7-M debugging,
->=20
-> Tested-by: Andreas F=E4rber <afaerber-l3A5Bk7waGM@public.gmane.org>
+Changes since v3:
+-----------------
+ - Fix and simplify error path in ARMv7-M Systick driver (Daniel)
+ - Improve reset bindings documentation (Philipp)
+ - Fix trailing lines anf typos in reset driver & doc (Philipp & Chanwoo)
+ - Fix MODULE_LICENCE in USART driver (Paul)
+ - Refactor USART baudrate calculation (Peter & Andy)
+ - Fix error path in USART init (Peter & Russell)
+ - Fix HW flow control in USART driver (Peter)
+ - Fix serial port type number to unused one (Peter)
+ - Applies Chanwoo's Tested-by on the series
 
---=20
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 N=FCrnberg, Germany
-GF: Felix Imend=F6rffer, Jane Smithard, Dilip Upmanyu, Graham Norton; HRB=
+Changes since v2:
+-----------------
+ - Remove pinctrl driver from the series. 
+ - Remove reset_controller_of_init(), and reset the timers in the bootloader
+ - Add HW flow contrl property for serial driver
+ - Lots of changes in the DTS file, as per Andreas recommendations
+ - Some Kconfig clean-ups
+ - Adapt the config to be compatible with Andreas' bootwrapper, except UART port.
+ - Various fixes in documentation
 
-21284 (AG N=FCrnberg)
+Changes since v1:
+-----------------
+ - Move bindings documentation in their own patches (Andreas)
+ - Rename ARM System timer to armv7m-systick (Rob)
+ - Add clock-frequency property handling in armv7m-systick (Rob)
+ - Re-factor the reset controllers into a single controller (Philipp)
+ - Add kerneldoc to reset_controller_of_init (Philipp)
+ - Add named constants in include/dt-bindings/reset/ (Philipp)
+ - Make pinctrl driver to depend on ARCH_STM32 or COMPILE_TEST (Geert)
+ - Introduce CPUV7M_NUM_IRQ config flag to indicate the number of interrupts
+supported by the MCU, in order to limit memory waste in vectors' table (Uwe)
 
+Maxime Coquelin (5):
+  dt-bindings: Document the STM32 timer bindings
+  clockevents/drivers: Add STM32 Timer driver
+  dt-bindings: Document the STM32 USART bindings
+  serial: stm32-usart: Add STM32 USART Driver
+  ARM: dts: Introduce STM32F429 MCU
 
---NGubmuQWF8p0L662mvgUTwp27eogPw0JI
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+ .../devicetree/bindings/serial/st,stm32-usart.txt  |  32 +
+ .../devicetree/bindings/timer/st,stm32-timer.txt   |  22 +
+ arch/arm/boot/dts/Makefile                         |   1 +
+ arch/arm/boot/dts/stm32f429-disco.dts              |  71 ++
+ arch/arm/boot/dts/stm32f429.dtsi                   | 214 ++++++
+ drivers/clocksource/Kconfig                        |   5 +
+ drivers/clocksource/Makefile                       |   1 +
+ drivers/clocksource/timer-stm32.c                  | 184 +++++
+ drivers/tty/serial/Kconfig                         |  17 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/stm32-usart.c                   | 739 +++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 12 files changed, 1290 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/st,stm32-timer.txt
+ create mode 100644 arch/arm/boot/dts/stm32f429-disco.dts
+ create mode 100644 arch/arm/boot/dts/stm32f429.dtsi
+ create mode 100644 drivers/clocksource/timer-stm32.c
+ create mode 100644 drivers/tty/serial/stm32-usart.c
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJVX4+TAAoJEPou0S0+fgE/61oQAIIlc6qJ4pWt3nX9Yckg+uqF
-1BjibhteOVF5/dJIm1lPJTNrwJahTjjiV3Wk0j9bYV8i8UDRwHieOsqJx9adstM/
-VSM/fAQr1ex3Fzx6II5q16bKIZ6vHQwrcgDEIK+W32Q5pmEyCa03wF5zalEln6e/
-8mOgK/GaVIDy6KQUlzY+s+6yGY4HeYuzvp/b/NtXUJqOUv0KpFKLvjfhNX4TTUcy
-W2uGBwnbwmPGBvkMlbm6jHcd04kpjmNr4zP1e4VW4cLaiP4KZ8psbP27raTWfO9V
-sBaQuxcD1GrvJIamFHmXo4A0xMZzwYPpPjWtSY6QI8Vcgo5PU6KRMDXpNWClKFAw
-0sQ7/Ic/1NNTFM2PcVbrfMEurpgXB+y+8ukrcK9Uc/aRdX1NVowD8ceKGvAiAV7W
-QcRbzd0K+IcpJdR9loe2MOJLX4nZxNTKYhm3Gqb2XXjCXKDyr18/3hoba5ZktxEE
-7Y7WZLIbT8j2G9w7OBP+xHhGC71Jl723VHirS1oUoZJ7jidd1UfRTissm9/hE/4a
-HV7CKO2HqHBUm4FAripxEKDv4j5ucMgPAXE/F5k3UjiC4hQGFMVE1PSmgCQpHTyr
-wEpZxGXWvEzY9prjOCEZoaQJ2GnNyRcD+TIYjzT1QdwCneQfwOlW/G3e1lDRp7CM
-G8xXS3KNZkfwX4R7bNoG
-=blWh
------END PGP SIGNATURE-----
-
---NGubmuQWF8p0L662mvgUTwp27eogPw0JI--
+-- 
+1.9.1
