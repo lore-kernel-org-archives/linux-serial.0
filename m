@@ -1,84 +1,78 @@
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH] tty: remove platform_sysrq_reset_seq
-Date: Fri, 22 May 2015 10:07:14 -0700
-Message-ID: <20150522170714.GD40101@dtor-ws>
-References: <2397446.P9RRJqoFo7@wuerfel>
+From: Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH] tty: serial: omap: use mctrl_gpio helpers
+Date: Fri, 22 May 2015 12:38:16 -0500
+Message-ID: <20150522173816.GE5582@saruman.tx.rr.com>
+References: <1432297017-1264-1-git-send-email-yegorslists@googlemail.com>
+ <555F4C7F.9020307@ti.com>
+ <20150522165212.GZ10274@atomide.com>
+Reply-To: <balbi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-input-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="phCU5ROyZO6kBE05"
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <2397446.P9RRJqoFo7@wuerfel>
-Sender: linux-input-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, mathieu.poirier@linaro.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+In-Reply-To: <20150522165212.GZ10274@atomide.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Nishanth Menon <nm@ti.com>, yegorslists@googlemail.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, balbi@ti.com, gregkh@linuxfoundation.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Sekhar Nori <nsekhar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 21, 2015 at 11:11:28AM +0200, Arnd Bergmann wrote:
-> The platform_sysrq_reset_seq code was intended as a way for an embedded
-> platform to provide its own sysrq sequence at compile time. After over
-> two years, nobody has started using it in an upstream kernel, and
-> the platforms that were interested in it have moved on to devicetree,
-> which can be used to configure the sequence without requiring kernel
-> changes. The method is also incompatible with the way that most
-> architectures build support for multiple platforms into a single
-> kernel.
-> 
-> Now the code is producing warnings when built with gcc-5.1:
-> 
-> drivers/tty/sysrq.c: In function 'sysrq_init':
-> drivers/tty/sysrq.c:959:33: warning: array subscript is above array bounds [-Warray-bounds]
->    key = platform_sysrq_reset_seq[i];
-> 
-> We could fix this, but it seems unlikely that it will ever be used,
-> so let's just remove the code instead. We still have the option to
-> pass the sequence either in DT, using the kernel command line,
-> or using the /sys/module/sysrq/parameters/reset_seq file.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 154b7a489a ("Input: sysrq - allow specifying alternate reset sequence")
+--phCU5ROyZO6kBE05
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Mathieu, are you OK with dropping this?
+On Fri, May 22, 2015 at 09:52:13AM -0700, Tony Lindgren wrote:
+> * Nishanth Menon <nm@ti.com> [150522 08:36]:
+> > On 05/22/2015 07:16 AM, yegorslists@googlemail.com wrote:
+> > > From: Yegor Yefremov <yegorslists@googlemail.com>
+> > >=20
+> > > This patch permits to use GPIOs to control the CTS/RTS/DTR/DSR/DCD/RI
+> > > signals.
+> > >=20
+> > > Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+> > > ---
+> > >  .../devicetree/bindings/serial/omap_serial.txt     |    9 +
+> > >  drivers/tty/serial/Kconfig                         |    1 +
+> > >  drivers/tty/serial/omap-serial.c                   |  168 ++++++++++=
++++++++++-
+> > >  3 files changed, 171 insertions(+), 7 deletions(-)
+> >=20
+> > Would we rather move introducing new features to 8250_omap.c rather
+> > than doing that to omap-serial and keep feature creeping it such that
+> > we wont ever be able to switch to 8250_omap ?
+>=20
+> Yes please. Also, do we really want to allow mapping
+> random GPIO pins to the UART driver? I guess it would be
 
-> 
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index 8ba52e56bb8b..9c5395db6a57 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -55,8 +55,7 @@
->  static int __read_mostly sysrq_enabled = CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE;
->  static bool __read_mostly sysrq_always_enabled;
->  
-> -unsigned short platform_sysrq_reset_seq[] __weak = { KEY_RESERVED };
-> -int sysrq_reset_downtime_ms __weak;
-> +static int sysrq_reset_downtime_ms;
->  
->  static bool sysrq_on(void)
->  {
-> @@ -950,23 +949,8 @@ static bool sysrq_handler_registered;
->  
->  static inline void sysrq_register_handler(void)
->  {
-> -	unsigned short key;
->  	int error;
-> -	int i;
-> -
-> -	/* First check if a __weak interface was instantiated. */
-> -	for (i = 0; i < ARRAY_SIZE(sysrq_reset_seq); i++) {
-> -		key = platform_sysrq_reset_seq[i];
-> -		if (key == KEY_RESERVED || key > KEY_MAX)
-> -			break;
->  
-> -		sysrq_reset_seq[sysrq_reset_seq_len++] = key;
-> -	}
-> -
-> -	/*
-> -	 * DT configuration takes precedence over anything that would
-> -	 * have been defined via the __weak interface.
-> -	 */
->  	sysrq_of_get_keyreset_config();
->  
->  	error = input_register_handler(&sysrq_handler);
-> 
+See drivers/tty/serial/serial_mctrl_gpio.[ch], these are used for UARTs
+on SoCs with enough GPIOs available whose UART don't have full Modem
+signals. It's pretty handy for BT, GSM, LTE, whatever type of modem-like
+device.
 
--- 
-Dmitry
+--=20
+balbi
+
+--phCU5ROyZO6kBE05
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJVX2mIAAoJEIaOsuA1yqREY2kP/1NqS7k4GbMQqYJvBEJE3mmC
+/PfE07xRjjJ+kdOrmXbIELlsKHslpDNkLq5VUW5rR6VvbKUN4Wi2oy1em9rPWGYl
+6JSHGxNvNetKqXWuQg/r//e0cWLnk1wB1kGlacaKRhcAcvKLpLY7Yf29jl4FuM5q
+nxVefQgBXaUdL9mjaT4rNIOlclthfMdHdNji2pznbVqLFjEuAEDjCU6Oach1eiKw
+0VdPUnj1LwJJmllXuXFl9W5DKzCWDH/dxXUISr30i7bmxC/yu9qLG2ZTuMZQ4t7o
+LyndadX8c3eyF0Zuna7bl40vMU2H5CGwzLhfjh+8qkphey4gSbSYGm1VZPEhAm3/
+ngt4cggTsBLdYeDJsgPeoSYdWcRjFKcmJ9OPkrIcbncZuj5lmaCJUoABh5dnNeCI
+fWoifo2pcdsZdkHMbWCaxbm8H4XyDsRSuN0OhygXse1fbIBw67lTYadxXgd4p/Zq
+1XBrkaFmPSz2sDu4ED3nyfje9t3BEYjUFKKI5cKIAaYVHvfIHMbnU+G+RYDcVTD2
+uMCWP8MXl1dnWKQ4sM4yvGipfNu2NBaStyMiKOt7DBKuZ25kBTyPqmb85BE8wNuE
+TedSmxvTHPgmKzrjAkB/PgUNBp2cKK+vHFXeXzzaHEzIlaalTkPvJ2ZQcSmDDCR/
+M4OpjBmWpjinw7Y1z+Si
+=jkUW
+-----END PGP SIGNATURE-----
+
+--phCU5ROyZO6kBE05--
