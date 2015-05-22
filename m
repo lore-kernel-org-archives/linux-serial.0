@@ -1,49 +1,36 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH] tty: serial: omap: use mctrl_gpio helpers
-Date: Fri, 22 May 2015 10:54:30 -0700
-Message-ID: <20150522175429.GB10274@atomide.com>
-References: <1432297017-1264-1-git-send-email-yegorslists@googlemail.com>
- <555F4C7F.9020307@ti.com>
- <20150522165212.GZ10274@atomide.com>
- <20150522173816.GE5582@saruman.tx.rr.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] tty: remove platform_sysrq_reset_seq
+Date: Fri, 22 May 2015 21:58:56 +0200
+Message-ID: <3075531.er6Vo6bmpE@wuerfel>
+References: <2397446.P9RRJqoFo7@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150522173816.GE5582@saruman.tx.rr.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Felipe Balbi <balbi@ti.com>
-Cc: Nishanth Menon <nm@ti.com>, yegorslists@googlemail.com, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, gregkh@linuxfoundation.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Sekhar Nori <nsekhar@ti.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-input-owner@vger.kernel.org>
+In-Reply-To: <2397446.P9RRJqoFo7@wuerfel>
+Sender: linux-input-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, mathieu.poirier@linaro.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-input@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-* Felipe Balbi <balbi@ti.com> [150522 10:41]:
-> On Fri, May 22, 2015 at 09:52:13AM -0700, Tony Lindgren wrote:
-> > * Nishanth Menon <nm@ti.com> [150522 08:36]:
-> > > On 05/22/2015 07:16 AM, yegorslists@googlemail.com wrote:
-> > > > From: Yegor Yefremov <yegorslists@googlemail.com>
-> > > > 
-> > > > This patch permits to use GPIOs to control the CTS/RTS/DTR/DSR/DCD/RI
-> > > > signals.
-> > > > 
-> > > > Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
-> > > > ---
-> > > >  .../devicetree/bindings/serial/omap_serial.txt     |    9 +
-> > > >  drivers/tty/serial/Kconfig                         |    1 +
-> > > >  drivers/tty/serial/omap-serial.c                   |  168 +++++++++++++++++++-
-> > > >  3 files changed, 171 insertions(+), 7 deletions(-)
-> > > 
-> > > Would we rather move introducing new features to 8250_omap.c rather
-> > > than doing that to omap-serial and keep feature creeping it such that
-> > > we wont ever be able to switch to 8250_omap ?
-> > 
-> > Yes please. Also, do we really want to allow mapping
-> > random GPIO pins to the UART driver? I guess it would be
+On Thursday 21 May 2015 11:11:28 Arnd Bergmann wrote:
+> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+> index 8ba52e56bb8b..9c5395db6a57 100644
+> --- a/drivers/tty/sysrq.c
+> +++ b/drivers/tty/sysrq.c
+> @@ -55,8 +55,7 @@
+>  static int __read_mostly sysrq_enabled = CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE;
+>  static bool __read_mostly sysrq_always_enabled;
+>  
+> -unsigned short platform_sysrq_reset_seq[] __weak = { KEY_RESERVED };
+> -int sysrq_reset_downtime_ms __weak;
+> +static int sysrq_reset_downtime_ms;
+>  
+>  static bool sysrq_on(void)
+>  {
 > 
-> See drivers/tty/serial/serial_mctrl_gpio.[ch], these are used for UARTs
-> on SoCs with enough GPIOs available whose UART don't have full Modem
-> signals. It's pretty handy for BT, GSM, LTE, whatever type of modem-like
-> device.
 
-OK
+It turns out that the variable is now potentially unused, and we get a warning
+when CONFIG_INPUT is disabled. I'll send a fixed v2 of this patch.
 
-Tony
+	Arnd
