@@ -1,246 +1,133 @@
-From: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: [PATCH v9 2/5] clockevents/drivers: Add STM32 Timer driver
-Date: Fri, 22 May 2015 23:03:33 +0200
-Message-ID: <1432328616-16964-3-git-send-email-mcoquelin.stm32@gmail.com>
-References: <1432328616-16964-1-git-send-email-mcoquelin.stm32@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1432328616-16964-1-git-send-email-mcoquelin.stm32@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Kamil Lulko <rev13@wp.pl>, u.kleine-koenig@pengutronix.de, afaerber@suse.de, geert@linux-m68k.org
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-api@vger.kernel.org
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH v8 14/16] ARM: dts: Introduce STM32F429 MCU
+Date: Sat, 23 May 2015 10:18:47 +0200
+Message-ID: <20150523081847.GJ8557@lukather>
+References: <1431158038-3813-1-git-send-email-mcoquelin.stm32@gmail.com>
+ <2282066.NWoIT9ZyLc@wuerfel>
+ <CALszF6CaO_yuNiSDuDV+4d2NRe_+32j=zcSE1HPhB1UH59cW9w@mail.gmail.com>
+ <13641152.Yt4ZI3oT6L@wuerfel>
+ <CALszF6CK5ezrO6D=4zr6zEPC7VanzbQjnZJwKOZekEZ5L4D-Dg@mail.gmail.com>
+ <1432285588.3929.28.camel@pengutronix.de>
+ <20150522091822.GF8557@lukather>
+ <1432289231.3929.60.camel@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============4285934497855337019=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1432289231.3929.60.camel@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Mark Rutland <mark.rutland@arm.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Will Deacon <will.deacon@arm.com>, Stefan Agner <stefan@agner.ch>, Nikolay Borisov <Nikolay.Borisov@arm.com>, Peter Meerwald <pmeerw@pmeerw.net>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Linux-Arch <linux-arch@vger.kernel.org>, Daniel Thompson <daniel.thompson@linaro.org>, Russell King <linux@arm.linux.org.uk>, Pawel Moll <pawel.moll@arm.com>, Jonathan Corbet <corbet@lwn.net>, Jiri Slaby <jslaby@suse.cz>, Daniel Lezcano <daniel.lezcano@linaro.org>, Chanwoo Choi <cw00.choi@samsung.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Antti Palosaari <crope@iki.fi>, Geert Uytterhoeven <geert@linux-m68k.org>"linux-serial@vger.kernel.org" <li>
 List-Id: linux-serial@vger.kernel.org
 
-STM32 MCUs feature 16 and 32 bits general purpose timers with prescalers.
-The drivers detects whether the time is 16 or 32 bits, and applies a
-1024 prescaler value if it is 16 bits.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
-Signed-off-by: Maxime Coquelin <mcoquelin.stm32@gmail.com>
----
- drivers/clocksource/Kconfig       |   5 ++
- drivers/clocksource/Makefile      |   1 +
- drivers/clocksource/timer-stm32.c | 184 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 190 insertions(+)
- create mode 100644 drivers/clocksource/timer-stm32.c
+--===============4285934497855337019==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gmhhrsDozM2n+uz5"
+Content-Disposition: inline
 
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index 51d7865f..115e980 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -106,6 +106,11 @@ config CLKSRC_EFM32
- 	  Support to use the timers of EFM32 SoCs as clock source and clock
- 	  event device.
- 
-+config CLKSRC_STM32
-+	bool "Clocksource for STM32 SoCs" if COMPILE_TEST
-+	depends on OF
-+	select CLKSRC_MMIO
-+
- config ARM_ARCH_TIMER
- 	bool
- 	select CLKSRC_OF if OF
-diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-index 5b85f6a..3a4c2f1 100644
---- a/drivers/clocksource/Makefile
-+++ b/drivers/clocksource/Makefile
-@@ -36,6 +36,7 @@ obj-$(CONFIG_ARCH_NSPIRE)	+= zevio-timer.o
- obj-$(CONFIG_ARCH_BCM_MOBILE)	+= bcm_kona_timer.o
- obj-$(CONFIG_CADENCE_TTC_TIMER)	+= cadence_ttc_timer.o
- obj-$(CONFIG_CLKSRC_EFM32)	+= time-efm32.o
-+obj-$(CONFIG_CLKSRC_STM32)	+= timer-stm32.o
- obj-$(CONFIG_CLKSRC_EXYNOS_MCT)	+= exynos_mct.o
- obj-$(CONFIG_CLKSRC_SAMSUNG_PWM)	+= samsung_pwm_timer.o
- obj-$(CONFIG_FSL_FTM_TIMER)	+= fsl_ftm_timer.o
-diff --git a/drivers/clocksource/timer-stm32.c b/drivers/clocksource/timer-stm32.c
-new file mode 100644
-index 0000000..fad2e2e
---- /dev/null
-+++ b/drivers/clocksource/timer-stm32.c
-@@ -0,0 +1,184 @@
-+/*
-+ * Copyright (C) Maxime Coquelin 2015
-+ * Author:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
-+ * License terms:  GNU General Public License (GPL), version 2
-+ *
-+ * Inspired by time-efm32.c from Uwe Kleine-Koenig
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/clocksource.h>
-+#include <linux/clockchips.h>
-+#include <linux/irq.h>
-+#include <linux/interrupt.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
-+#include <linux/clk.h>
-+#include <linux/reset.h>
-+
-+#define TIM_CR1		0x00
-+#define TIM_DIER	0x0c
-+#define TIM_SR		0x10
-+#define TIM_EGR		0x14
-+#define TIM_PSC		0x28
-+#define TIM_ARR		0x2c
-+
-+#define TIM_CR1_CEN	BIT(0)
-+#define TIM_CR1_OPM	BIT(3)
-+#define TIM_CR1_ARPE	BIT(7)
-+
-+#define TIM_DIER_UIE	BIT(0)
-+
-+#define TIM_SR_UIF	BIT(0)
-+
-+#define TIM_EGR_UG	BIT(0)
-+
-+struct stm32_clock_event_ddata {
-+	struct clock_event_device evtdev;
-+	unsigned periodic_top;
-+	void __iomem *base;
-+};
-+
-+static void stm32_clock_event_set_mode(enum clock_event_mode mode,
-+				       struct clock_event_device *evtdev)
-+{
-+	struct stm32_clock_event_ddata *data =
-+		container_of(evtdev, struct stm32_clock_event_ddata, evtdev);
-+	void *base = data->base;
-+
-+	switch (mode) {
-+	case CLOCK_EVT_MODE_PERIODIC:
-+		writel_relaxed(data->periodic_top, base + TIM_ARR);
-+		writel_relaxed(TIM_CR1_ARPE | TIM_CR1_CEN, base + TIM_CR1);
-+		break;
-+
-+	case CLOCK_EVT_MODE_ONESHOT:
-+	default:
-+		writel_relaxed(0, base + TIM_CR1);
-+		break;
-+	}
-+}
-+
-+static int stm32_clock_event_set_next_event(unsigned long evt,
-+					    struct clock_event_device *evtdev)
-+{
-+	struct stm32_clock_event_ddata *data =
-+		container_of(evtdev, struct stm32_clock_event_ddata, evtdev);
-+
-+	writel_relaxed(evt, data->base + TIM_ARR);
-+	writel_relaxed(TIM_CR1_ARPE | TIM_CR1_OPM | TIM_CR1_CEN,
-+		       data->base + TIM_CR1);
-+
-+	return 0;
-+}
-+
-+static irqreturn_t stm32_clock_event_handler(int irq, void *dev_id)
-+{
-+	struct stm32_clock_event_ddata *data = dev_id;
-+
-+	writel_relaxed(0, data->base + TIM_SR);
-+
-+	data->evtdev.event_handler(&data->evtdev);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static struct stm32_clock_event_ddata clock_event_ddata = {
-+	.evtdev = {
-+		.name = "stm32 clockevent",
-+		.features = CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_PERIODIC,
-+		.set_mode = stm32_clock_event_set_mode,
-+		.set_next_event = stm32_clock_event_set_next_event,
-+		.rating = 200,
-+	},
-+};
-+
-+static void __init stm32_clockevent_init(struct device_node *np)
-+{
-+	struct stm32_clock_event_ddata *data = &clock_event_ddata;
-+	struct clk *clk;
-+	struct reset_control *rstc;
-+	unsigned long rate, max_delta;
-+	int irq, ret, bits, prescaler = 1;
-+
-+	clk = of_clk_get(np, 0);
-+	if (IS_ERR(clk)) {
-+		ret = PTR_ERR(clk);
-+		pr_err("failed to get clock for clockevent (%d)\n", ret);
-+		goto err_clk_get;
-+	}
-+
-+	ret = clk_prepare_enable(clk);
-+	if (ret) {
-+		pr_err("failed to enable timer clock for clockevent (%d)\n",
-+		       ret);
-+		goto err_clk_enable;
-+	}
-+
-+	rate = clk_get_rate(clk);
-+
-+	rstc = of_reset_control_get(np, NULL);
-+	if (!IS_ERR(rstc)) {
-+		reset_control_assert(rstc);
-+		reset_control_deassert(rstc);
-+	}
-+
-+	data->base = of_iomap(np, 0);
-+	if (!data->base) {
-+		pr_err("failed to map registers for clockevent\n");
-+		goto err_iomap;
-+	}
-+
-+	irq = irq_of_parse_and_map(np, 0);
-+	if (!irq) {
-+		pr_err("%s: failed to get irq.\n", np->full_name);
-+		goto err_get_irq;
-+	}
-+
-+	/* Detect whether the timer is 16 or 32 bits */
-+	writel_relaxed(~0UL, data->base + TIM_ARR);
-+	max_delta = readl_relaxed(data->base + TIM_ARR);
-+	if (max_delta == ~0UL) {
-+		prescaler = 1;
-+		bits = 32;
-+	} else {
-+		prescaler = 1024;
-+		bits = 16;
-+	}
-+	writel_relaxed(0, data->base + TIM_ARR);
-+
-+	writel_relaxed(prescaler - 1, data->base + TIM_PSC);
-+	writel_relaxed(TIM_EGR_UG, data->base + TIM_EGR);
-+	writel_relaxed(TIM_DIER_UIE, data->base + TIM_DIER);
-+	writel_relaxed(0, data->base + TIM_SR);
-+
-+	data->periodic_top = DIV_ROUND_CLOSEST(rate, prescaler * HZ);
-+
-+	clockevents_config_and_register(&data->evtdev,
-+					DIV_ROUND_CLOSEST(rate, prescaler),
-+					0x1, max_delta);
-+
-+	ret = request_irq(irq, stm32_clock_event_handler, IRQF_TIMER,
-+			"stm32 clockevent", data);
-+	if (ret) {
-+		pr_err("%s: failed to request irq.\n", np->full_name);
-+		goto err_get_irq;
-+	}
-+
-+	pr_info("%s: STM32 clockevent driver initialized (%d bits)\n",
-+			np->full_name, bits);
-+
-+	return;
-+
-+err_get_irq:
-+	iounmap(data->base);
-+err_iomap:
-+	clk_disable_unprepare(clk);
-+err_clk_enable:
-+	clk_put(clk);
-+err_clk_get:
-+	return;
-+}
-+
-+CLOCKSOURCE_OF_DECLARE(stm32, "st,stm32-timer", stm32_clockevent_init);
--- 
-1.9.1
+
+--gmhhrsDozM2n+uz5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi Philipp,
+
+On Fri, May 22, 2015 at 12:07:11PM +0200, Philipp Zabel wrote:
+> Am Freitag, den 22.05.2015, 11:18 +0200 schrieb Maxime Ripard:
+> > On Fri, May 22, 2015 at 11:06:28AM +0200, Philipp Zabel wrote:
+> > > > In the probe function, it would check the number of reg resources.
+> > > > If a single resource is passed, it would take it, else it would look
+> > > > the one named "reset".
+> > > > The driver and bindings would be the same for the two families, and
+> > > > the bindings would be backward compatible with sunxi ones.
+> > > >=20
+> > > > Philip, Arnd, what do you think?
+> > >=20
+> > > I'm not a fan of describing the register layout in the device tree as
+> > > detailed as the sunxi bindings do. I'd prefer the reg property to
+> > > describe the device's register address space with one entry per
+> > > contiguous block of registers.
+> >=20
+> > That's exactly what we do.
+>=20
+> Sorry, what I mean is 'as detailed as reusing the sunxi bindings for
+> stm32xx here would do'. I don't know enough about the Allwinner register
+> layouts to form an opinion.
+>=20
+> The STM32F427xx/STM32F429xx manual, Table 13. "STM32F427xx and
+> STM32F429xx register boundary addresses" contains this entry:
+>     Bus    Boundary address       Peripheral
+>     AHB1   0x40023800-0x400238bf  RCC
+>=20
+> And that's how I'd expect it to be described by the device tree:
+>=20
+>     rcc: rcc@40023800 {
+>         compatible =3D "st,stm32-rcc";
+>         reg =3D <0x40023800 0xc0>;
+>     };
+
+It's pretty much what we do already. The thing is that our reset
+controllers are intertwined with our clock ones, so our reset
+controllers are usually taking only a few registers, and we can't use
+more than that since we have clocks in the registers around.
+
+> Instead of "reg =3D <0x40023810 0x20>" for the resets. Where in the
+> address range the reset, clock gate and clock configuration registers
+> reside could be derived from the compatible value.
+
+I agree on that, and if a generic solution was to be made like this,
+we could definitely use it.
+
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--gmhhrsDozM2n+uz5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJVYDfnAAoJEBx+YmzsjxAgNi0P/jSOTQ3vHIrcKoIWxtBtGLGd
+6mvkQpyaIFt9E8AQZbD0XDaFoHI01r2ZoVQjAZKXFjbvlNeU2q1HQjzIV4cKURbt
+8ZOdee82KVHY3ZfmBMyVmvYu2Q6p/qJi03hoLqZ3/VrnwSavNq02lQRevcWg+kva
+RKlgphWNUElei6bon9rzeAkUR46Xz53k/cku/Jjd6ufwl8c6hBrLCVnEowJh2jzG
+x2H51EXcl6ACh3yXd9GB28cMnghzSb1jwXb9AK4rLQGD1y66yrKl8gElr1OHTWUS
+0a26Ao3y+epFySC7t+kuC7xLOWpnim7DxgR60/kkwlJ8KHRInzcm/4kqmGY3d3mY
+U0O1sbMqu44tL4xNkcjEGLunGE/Ji+lS499k3UsAeG+T7nDSsiflApYALm9QIxG6
+TJ2eYva89d3KJJg2vzy5oyrBrjanfaSgwDfX0t0c9Ff6wAuZFoRw1QLT+A2fWhYa
+RDcIp3b58jQ52RL7Tl4aRRlo7bDdNA+dviqqkonpjKS5SlUv6unGuU1HkIQuj/N0
+teIZH90VM7QoVKiRqhB9VgvvoZQrztHvHii6meErIzG8VKdZ7byu6ZTZCLXiwubV
+LCc1HfWCgvAACoYhguHFZhTg7Jht8niRERwX56A8J44I6c4yRs2gERwq8cLz2hH5
+ugYDmZTVzeQ+xwPBC+TA
+=ec/B
+-----END PGP SIGNATURE-----
+
+--gmhhrsDozM2n+uz5--
+
+
+--===============4285934497855337019==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============4285934497855337019==--
