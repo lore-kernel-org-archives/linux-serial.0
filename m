@@ -1,22 +1,11 @@
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH v5] serial: 8250_uniphier: add UniPhier serial driver
-Date: Mon, 25 May 2015 11:36:13 +0900
-Message-ID: <1432521373-25127-1-git-send-email-yamada.masahiro@socionext.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Subject: [PATCH v6] serial: 8250_uniphier: add UniPhier serial driver
+Date: Mon, 25 May 2015 12:44:37 +0900
+Message-ID: <1432525477-14051-1-git-send-email-yamada.masahiro@socionext.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, John Crispin <blogic@openwrt.org>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joachim Eastwood <manabian@gmail.com>, linux-kernel@vger.kernel.org, Masahiro Yamada <yamada.masahiro@socionext.com>, linux-arm-kernel@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>
+Cc: Joachim Eastwood <manabian@gmail.com>, Andy Shevchenko <andriy.shevchenko@intel.com>, Matthias Brugger <matthias.bgg@gmail.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, John Crispin <blogic@openwrt.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
 Add the driver for on-chip UART used on UniPhier SoCs.
@@ -33,6 +22,10 @@ but wants to borrow most of code from 8250_core.c.
 Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 ---
+
+Changes in v6:
+  - Drop unnecessary #include <linux/serial_8250.h>
+    (it is covered by #include "8250.h")
 
 Changes in v5:
   - Set up.port.mapsize
@@ -60,18 +53,18 @@ Changes in v2:
   - Change the first argument type of uniphier_of_serial_setup()
     from (struct platform_device *) to (struct device *) for code-cleanup.
 
- drivers/tty/serial/8250/8250_uniphier.c | 258 ++++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_uniphier.c | 257 ++++++++++++++++++++++++++++++++
  drivers/tty/serial/8250/Kconfig         |   7 +
  drivers/tty/serial/8250/Makefile        |   1 +
- 3 files changed, 266 insertions(+)
+ 3 files changed, 265 insertions(+)
  create mode 100644 drivers/tty/serial/8250/8250_uniphier.c
 
 diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
 new file mode 100644
-index 0000000..13cc66b
+index 0000000..6f1e997
 --- /dev/null
 +++ b/drivers/tty/serial/8250/8250_uniphier.c
-@@ -0,0 +1,258 @@
+@@ -0,0 +1,257 @@
 +/*
 + * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
 + *
@@ -91,7 +84,6 @@ index 0000000..13cc66b
 +#include <linux/module.h>
 +#include <linux/of.h>
 +#include <linux/platform_device.h>
-+#include <linux/serial_8250.h>
 +
 +#include "8250.h"
 +
