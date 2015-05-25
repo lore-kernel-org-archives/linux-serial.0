@@ -1,36 +1,38 @@
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH] serial: of_serial: use devm_clk_get() instead of clk_get()
-Date: Mon, 25 May 2015 14:57:43 +0900
-Message-ID: <1432533463-30810-1-git-send-email-yamada.masahiro@socionext.com>
+Subject: [PATCH] serial: of_serial: check the return value of clk_prepare_enable()
+Date: Mon, 25 May 2015 15:03:32 +0900
+Message-ID: <1432533812-31033-1-git-send-email-yamada.masahiro@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Joachim Eastwood <manabian@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The probe method of this driver calls clk_get(), but clk_put() is
-missing from the remove callback.
-
-Using the managed clk function is easier than fixing other parts.
+The function clk_prepare_enable() may fail, and in that case it
+does not make sense to proceed.  Let's check its return code and
+error out if it is a negative value.
 
 Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 ---
 
- drivers/tty/serial/of_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/of_serial.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 28b9b47..d353fdf 100644
+index d353fdf..6823df9 100644
 --- a/drivers/tty/serial/of_serial.c
 +++ b/drivers/tty/serial/of_serial.c
-@@ -67,7 +67,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 	if (of_property_read_u32(np, "clock-frequency", &clk)) {
+@@ -74,7 +74,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 			return PTR_ERR(info->clk);
+ 		}
  
- 		/* Get clk rate through clk driver if present */
--		info->clk = clk_get(&ofdev->dev, NULL);
-+		info->clk = devm_clk_get(&ofdev->dev, NULL);
- 		if (IS_ERR(info->clk)) {
- 			dev_warn(&ofdev->dev,
- 				"clk or clock-frequency not defined\n");
+-		clk_prepare_enable(info->clk);
++		ret = clk_prepare_enable(info->clk);
++		if (ret < 0)
++			return ret;
++
+ 		clk = clk_get_rate(info->clk);
+ 	}
+ 	/* If current-speed was set, then try not to change it. */
 -- 
 1.9.1
