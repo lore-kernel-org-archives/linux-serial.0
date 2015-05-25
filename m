@@ -1,38 +1,39 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH] serial: of_serial: check the return value of clk_prepare_enable()
-Date: Mon, 25 May 2015 15:03:32 +0900
-Message-ID: <1432533812-31033-1-git-send-email-yamada.masahiro@socionext.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org
+From: Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>
+Subject: Re: [PATCH 00/15] MIPS Malta DT Conversion
+Date: Mon, 25 May 2015 02:59:31 -0500
+Message-ID: <CAOS_Y6TRN2b5PGxWdO6SD5W2Wmo33Z88DeHw7Jrxw4TzzVYLcA@mail.gmail.com>
+References: <1432309875-9712-1-git-send-email-paul.burton@imgtec.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1432309875-9712-1-git-send-email-paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Leonid Yegoshin <Leonid.Yegoshin-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, James Hogan <james.hogan-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, "Steven J. Hill" <Steven.Hill-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Hannes Reinecke <hare-l3A5Bk7waGM@public.gmane.org>, Andrew Bresticker <abrestic-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Qais Yousef <qais.yousef-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Markos Chandras <markos.chandras-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Michal Marek <mm>
 List-Id: linux-serial@vger.kernel.org
 
-The function clk_prepare_enable() may fail, and in that case it
-does not make sense to proceed.  Let's check its return code and
-error out if it is a negative value.
+On Fri, May 22, 2015 at 10:50 AM, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org> wrote:
+> This series begins converting the MIPS Malta board to use device tree,
+> which is done with a few goals in mind:
+>
+>   - To modernise the Malta board support, providing a cleaner example to
+>     people referencing it when bringing up new boards and reducing the
+>     amount of code they need to write.
+>
+>   - To make the code at the board level more generic with the eventual
+>     aim of sharing it between multiple boards & allowing for
+>     multi-platform kernel binaries. Although this series doesn't result
+>     in the kernel reaching those goals, it is a step in that direction.
+>
+>   - To result in a more maintainable kernel through a combination of the
+>     above.
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
+How would I go about testing this under qemu?
 
- drivers/tty/serial/of_serial.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+(Especially the "more than 256 megs ram" part. :)
 
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index d353fdf..6823df9 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -74,7 +74,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 			return PTR_ERR(info->clk);
- 		}
- 
--		clk_prepare_enable(info->clk);
-+		ret = clk_prepare_enable(info->clk);
-+		if (ret < 0)
-+			return ret;
-+
- 		clk = clk_get_rate(info->clk);
- 	}
- 	/* If current-speed was set, then try not to change it. */
--- 
-1.9.1
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
