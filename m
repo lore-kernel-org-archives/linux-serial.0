@@ -1,49 +1,80 @@
-From: "Shevchenko, Andriy" <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v6] serial: 8250_uniphier: add UniPhier serial driver
-Date: Tue, 26 May 2015 15:08:27 +0000
-Message-ID: <1432652906.8736.44.camel@intel.com>
-References: <1432525477-14051-1-git-send-email-yamada.masahiro@socionext.com>
-	 <1432545245.8736.5.camel@intel.com>
-	 <1432650518.13900.72.camel@linux.intel.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 03/13] serial: 8250_dma: Support for
+ deferred probing when requesting DMA channels
+Date: Tue, 26 May 2015 08:08:53 -0700
+Message-ID: <20150526150852.GC16525@atomide.com>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
+ <1432646768-12532-4-git-send-email-peter.ujfalusi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1432650518.13900.72.camel@linux.intel.com>
-Content-Language: en-US
-Content-ID: <FB92BF499CCECA49AA97A00CE467B76D@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "alan@linux.intel.com" <alan@linux.intel.com>
-Cc: "manabian@gmail.com" <manabian@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "blogic@openwrt.org" <blogic@openwrt.org>, "bigeasy@linutronix.de" <bigeasy@linutronix.de>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, "ricardo.ribalda@gmail.com" <ricardo.ribalda@gmail.com>, "yamada.masahiro@socionext.com" <yamada.masahiro@socionext.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+Content-Disposition: inline
+In-Reply-To: <1432646768-12532-4-git-send-email-peter.ujfalusi@ti.com>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Cc: devicetree@vger.kernel.org, alsa-devel@alsa-project.org, vinod.koul@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, dan.j.williams@intel.com, linux-omap@vger.kernel.org, linux-media@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gVHVlLCAyMDE1LTA1LTI2IGF0IDE1OjI4ICswMTAwLCBBbGFuIENveCB3cm90ZToNCj4gPiA+
-ICsNCj4gPiA+ICsjZGVmaW5lIFVOSVBISUVSX1VBUlRfQ0hBUl9GQ1IJMwkvKiBDaGFyYWN0ZXIg
-LyBGSUZPIENvbnRyb2wgUmVnaXN0ZXIgKi8NCj4gPiA+ICsjZGVmaW5lIFVOSVBISUVSX1VBUlRf
-TENSX01DUgk0CS8qIExpbmUvTW9kZW0gQ29udHJvbCBSZWdpc3RlciAqLw0KPiA+ID4gKyNkZWZp
-bmUgICBVTklQSElFUl9VQVJUX0xDUl9TSElGVAk4DQo+ID4gDQo+ID4gSW5kZW50YXRpb24gcHJv
-YmxlbSwgbmVlZHMgdG8gYmUgZml4ZWQuDQo+IA0KPiBJZiB5b3UgYXJlIGdvaW5nIHRvIHJldmll
-dyBhIHBhdGNoIHNldCBhdCBsZWFzdCBsb29rIGF0IHRoZSBwcmV2aW91cw0KPiByZXZpZXdzIC0g
-dGhlIGluZGVudGF0aW9uIHdhcyBhbHJlYWR5IGRpc2N1c3NlZCBhbmQgaXMgZG9uZSB0aGF0IHdh
-eSB0bw0KPiBzaG93IChhcyBtYW55IGRyaXZlcnMgZG8pIHdoaWNoIGFyZSBmaWVsZHMgZm9yIHdo
-aWNoIHJlZ2lzdGVycw0KDQpUaGlzIGlzIG5vdCBleGFjdGx5IHRoZSBmaWVsZCwgdGhlIHdheSBo
-b3cgdG8gZ2V0IHRoZSBmaWVsZC4NCkluIHNvbWUgY2FzZXMgaXQgaXMgZXZlbiBiZXR0ZXIgdG8g
-ZGVmaW5lIHNvbWV0aGluZyBsaWtlDQpfTENSKHgpICAoKHgpIDw8IDgpDQoNCg0KPiANCj4gPiA+
-ICtzdGF0aWMgdW5zaWduZWQgaW50IHVuaXBoaWVyX3NlcmlhbF9pbihzdHJ1Y3QgdWFydF9wb3J0
-ICpwLCBpbnQgb2Zmc2V0KQ0KPiA+ID4gK3sNCj4gPiA+ICsJaW50IHZhbHNoaWZ0ID0gMDsNCj4g
-PiANCj4gPiBQZXJoYXBzIHVuc2lnbmVkIGludD8NCj4gDQo+IFdoeSA/IGV2ZW4gaWYgaXQgbWF0
-dGVyZWQgZ2NjIGlzIGFscmVhZHkgcmVhbGlzaW5nIHRoYXQgdGhlIHZhbHVlIGNhbg0KPiBvbmx5
-IGJlIDAgb3IgOCBhbmQgd2lsbCBiZSBnZW5lcmF0aW5nIHdoYXRldmVyIHdvcmtzIGJlc3QgZm9y
-IHRoYXQuDQoNCkl0J3Mgbm90IGFib3V0IGhvdyBnY2MgZG9lcywgaXQncyBhYm91dCB3aGF0IGFz
-c3VtcHRpb25zIGNhbiBiZSBtYWRlDQpmcm9tIHRoZSByZWFkaW5nIG9mIHRoZSBzb3VyY2UgY29k
-ZS4gSSB0aGluayBpZiB3ZSBkbyBhIGNvdW50ZXIgb2Ygc2hpZnQNCnZhbHVlIGl0IHdvdWxkIGJl
-IG5pY2UgdG8gc2V0IGFuIHVuc2lnbmVkIHR5cGUgZXhwbGljaXRseS4NCg0KLS0gDQpBbmR5IFNo
-ZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGludGVsLmNvbT4NCkludGVsIEZpbmxhbmQgT3kN
-Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLQpJbnRlbCBGaW5sYW5kIE95ClJlZ2lzdGVyZWQgQWRkcmVzczogUEwgMjgx
-LCAwMDE4MSBIZWxzaW5raSAKQnVzaW5lc3MgSWRlbnRpdHkgQ29kZTogMDM1NzYwNiAtIDQgCkRv
-bWljaWxlZCBpbiBIZWxzaW5raSAKClRoaXMgZS1tYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgbWF5
-IGNvbnRhaW4gY29uZmlkZW50aWFsIG1hdGVyaWFsIGZvcgp0aGUgc29sZSB1c2Ugb2YgdGhlIGlu
-dGVuZGVkIHJlY2lwaWVudChzKS4gQW55IHJldmlldyBvciBkaXN0cmlidXRpb24KYnkgb3RoZXJz
-IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZApyZWNp
-cGllbnQsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSBhbGwgY29waWVzLgo=
+* Peter Ujfalusi <peter.ujfalusi@ti.com> [150526 06:28]:
+> Switch to use ma_request_slave_channel_compat_reason() to request the DMA
+> channels. In case of error, return the error code we received including
+> -EPROBE_DEFER
+> 
+> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/tty/serial/8250/8250_dma.c | 18 ++++++++----------
+>  1 file changed, 8 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+> index 21d01a491405..a617eca4e97d 100644
+> --- a/drivers/tty/serial/8250/8250_dma.c
+> +++ b/drivers/tty/serial/8250/8250_dma.c
+> @@ -182,21 +182,19 @@ int serial8250_request_dma(struct uart_8250_port *p)
+>  	dma_cap_set(DMA_SLAVE, mask);
+>  
+>  	/* Get a channel for RX */
+> -	dma->rxchan = dma_request_slave_channel_compat(mask,
+> -						       dma->fn, dma->rx_param,
+> -						       p->port.dev, "rx");
+> -	if (!dma->rxchan)
+> -		return -ENODEV;
+> +	dma->rxchan = dma_request_slave_channel_compat_reason(mask, dma->fn,
+> +					dma->rx_param, p->port.dev, "rx");
+> +	if (IS_ERR(dma->rxchan))
+> +		return PTR_ERR(dma->rxchan);
+>  
+>  	dmaengine_slave_config(dma->rxchan, &dma->rxconf);
+>  
+>  	/* Get a channel for TX */
+> -	dma->txchan = dma_request_slave_channel_compat(mask,
+> -						       dma->fn, dma->tx_param,
+> -						       p->port.dev, "tx");
+> -	if (!dma->txchan) {
+> +	dma->txchan = dma_request_slave_channel_compat_reason(mask, dma->fn,
+> +					dma->tx_param, p->port.dev, "tx");
+> +	if (IS_ERR(dma->txchan)) {
+>  		dma_release_channel(dma->rxchan);
+> -		return -ENODEV;
+> +		return PTR_ERR(dma->txchan);
+>  	}
+>  
+>  	dmaengine_slave_config(dma->txchan, &dma->txconf);
+
+In general the drivers need to work just fine also without DMA.
+
+Does this handle the case properly where no DMA channel is configured
+for the driver in the dts file?
+
+Regards,
+
+Tony
