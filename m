@@ -1,34 +1,57 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH] serial: 8250: include <linux/serial_reg.h> from serial_8250.h
-Date: Tue, 26 May 2015 13:28:48 +0900
-Message-ID: <1432614528-13605-1-git-send-email-yamada.masahiro@socionext.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
+From: Yegor Yefremov <yegorslists@googlemail.com>
+Subject: Re: [PATCH] tty: serial: omap: use mctrl_gpio helpers
+Date: Tue, 26 May 2015 09:04:52 +0200
+Message-ID: <CAGm1_ksofPwNmvmzo_8h0L1xHnZjEfYa7YYey6dF=TsYVPELtQ@mail.gmail.com>
+References: <1432297017-1264-1-git-send-email-yegorslists@googlemail.com>
+ <555F4C7F.9020307@ti.com> <20150522165212.GZ10274@atomide.com>
+ <20150522173816.GE5582@saruman.tx.rr.com> <20150522175429.GB10274@atomide.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20150522175429.GB10274@atomide.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Felipe Balbi <balbi@ti.com>, Nishanth Menon <nm@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Sekhar Nori <nsekhar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-The header file, include/linux/serial_8250.h, contains references to
-UART_LSR_BRK_ERROR_BITS and UART_MSR_ANY_DELTA that are defined in
-<linux/serial_reg.h>.
+Hi Tony, Nishanth and Felipe,
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
+On Fri, May 22, 2015 at 7:54 PM, Tony Lindgren <tony@atomide.com> wrote:
+> * Felipe Balbi <balbi@ti.com> [150522 10:41]:
+>> On Fri, May 22, 2015 at 09:52:13AM -0700, Tony Lindgren wrote:
+>> > * Nishanth Menon <nm@ti.com> [150522 08:36]:
+>> > > On 05/22/2015 07:16 AM, yegorslists@googlemail.com wrote:
+>> > > > From: Yegor Yefremov <yegorslists@googlemail.com>
+>> > > >
+>> > > > This patch permits to use GPIOs to control the CTS/RTS/DTR/DSR/DCD/RI
+>> > > > signals.
+>> > > >
+>> > > > Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+>> > > > ---
+>> > > >  .../devicetree/bindings/serial/omap_serial.txt     |    9 +
+>> > > >  drivers/tty/serial/Kconfig                         |    1 +
+>> > > >  drivers/tty/serial/omap-serial.c                   |  168 +++++++++++++++++++-
+>> > > >  3 files changed, 171 insertions(+), 7 deletions(-)
+>> > >
+>> > > Would we rather move introducing new features to 8250_omap.c rather
+>> > > than doing that to omap-serial and keep feature creeping it such that
+>> > > we wont ever be able to switch to 8250_omap ?
+>> >
+>> > Yes please. Also, do we really want to allow mapping
+>> > random GPIO pins to the UART driver? I guess it would be
+>>
+>> See drivers/tty/serial/serial_mctrl_gpio.[ch], these are used for UARTs
+>> on SoCs with enough GPIOs available whose UART don't have full Modem
+>> signals. It's pretty handy for BT, GSM, LTE, whatever type of modem-like
+>> device.
+>
+> OK
 
- include/linux/serial_8250.h | 1 +
- 1 file changed, 1 insertion(+)
+I need this functionality for a real device having switchable
+RS232/422/485 driver. So I need both RS232 signals, that are not all
+possible to get via pinmux, and RS485 transmitter switching.
 
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 78097e7..89e44a7 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -12,6 +12,7 @@
- #define _LINUX_SERIAL_8250_H
- 
- #include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
- #include <linux/platform_device.h>
- 
- /*
--- 
-1.9.1
+AFAIK RS485 feature is still not implemented in 8250. That's why I
+would like this patch to be still included into omap_serial for now.
+
+Yegor
