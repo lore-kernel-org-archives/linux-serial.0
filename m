@@ -1,39 +1,38 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: 8250_omap: provide complete custom startup &
- shutdown callbacks
-Date: Tue, 26 May 2015 10:06:48 -0400
-Message-ID: <55647DF8.4030209@hurleysoftware.com>
-References: <20150520200735.GA7790@linutronix.de>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH v6] serial: 8250_uniphier: add UniPhier serial driver
+Date: Tue, 26 May 2015 15:28:38 +0100
+Message-ID: <1432650518.13900.72.camel@linux.intel.com>
+References: <1432525477-14051-1-git-send-email-yamada.masahiro@socionext.com>
+	 <1432545245.8736.5.camel@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20150520200735.GA7790@linutronix.de>
-Sender: linux-omap-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-omap@vger.kernel.org, nsekhar@ti.com, tony@atomide.comm, nm@ti.com, linux-serial@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1432545245.8736.5.camel@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Shevchenko, Andriy" <andriy.shevchenko@intel.com>
+Cc: "yamada.masahiro@socionext.com" <yamada.masahiro@socionext.com>, "manabian@gmail.com" <manabian@gmail.com>, "bigeasy@linutronix.de" <bigeasy@linutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, "ricardo.ribalda@gmail.com" <ricardo.ribalda@gmail.com>, "blogic@openwrt.org" <blogic@openwrt.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/20/2015 04:07 PM, Sebastian Andrzej Siewior wrote:
-> The currently in-use port->startup and port->shutdown are "okay". The
-> startup part for instance does the tiny omap extra part and invokes
-> serial8250_do_startup() for the remaining pieces. The workflow in
-> serial8250_do_startup() is okay except for the part where UART_RX is
-> read without a check if there is something to read. I tried to
-> workaround it in commit 0aa525d11859 ("tty: serial: 8250_core: read only
-> RX if there is something in the FIFO") but then reverted it later in
-> commit ca8bb4aefb9 ("serial: 8250: Revert "tty: serial: 8250_core: read
-> only RX if there is something in the FIFO"").
+> > +
+> > +#define UNIPHIER_UART_CHAR_FCR	3	/* Character / FIFO Control Register */
+> > +#define UNIPHIER_UART_LCR_MCR	4	/* Line/Modem Control Register */
+> > +#define   UNIPHIER_UART_LCR_SHIFT	8
 > 
-> This is the second attempt to get it to work on older OMAPs without
-> breaking other chips this time
-> Peter Hurley suggested to pull in the few needed lines from
-> serial8250_do_startup() and drop everything else that is not required
-> including making it simpler like using just request_irq() instead the
-> chain handler like it is doing now.
-> So lets try that.
+> Indentation problem, needs to be fixed.
 
-Thanks, Sebastian.
+If you are going to review a patch set at least look at the previous
+reviews - the indentation was already discussed and is done that way to
+show (as many drivers do) which are fields for which registers
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> > +static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
+> > +{
+> > +	int valshift = 0;
+> 
+> Perhaps unsigned int?
 
+Why ? even if it mattered gcc is already realising that the value can
+only be 0 or 8 and will be generating whatever works best for that.
+
+
+Alan
