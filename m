@@ -1,38 +1,28 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH v6] serial: 8250_uniphier: add UniPhier serial driver
-Date: Tue, 26 May 2015 15:28:38 +0100
-Message-ID: <1432650518.13900.72.camel@linux.intel.com>
-References: <1432525477-14051-1-git-send-email-yamada.masahiro@socionext.com>
-	 <1432545245.8736.5.camel@intel.com>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH 03/13] serial: 8250_dma: Support for deferred probing
+ when requesting DMA channels
+Date: Tue, 26 May 2015 07:44:32 -0700
+Message-ID: <20150526144432.GA23156@kroah.com>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
+ <1432646768-12532-4-git-send-email-peter.ujfalusi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1432545245.8736.5.camel@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Shevchenko, Andriy" <andriy.shevchenko@intel.com>
-Cc: "yamada.masahiro@socionext.com" <yamada.masahiro@socionext.com>, "manabian@gmail.com" <manabian@gmail.com>, "bigeasy@linutronix.de" <bigeasy@linutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, "ricardo.ribalda@gmail.com" <ricardo.ribalda@gmail.com>, "blogic@openwrt.org" <blogic@openwrt.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1432646768-12532-4-git-send-email-peter.ujfalusi-l0cyMroinI0@public.gmane.org>
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>
+Cc: vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-> > +
-> > +#define UNIPHIER_UART_CHAR_FCR	3	/* Character / FIFO Control Register */
-> > +#define UNIPHIER_UART_LCR_MCR	4	/* Line/Modem Control Register */
-> > +#define   UNIPHIER_UART_LCR_SHIFT	8
-> 
-> Indentation problem, needs to be fixed.
+On Tue, May 26, 2015 at 04:25:58PM +0300, Peter Ujfalusi wrote:
+> Switch to use ma_request_slave_channel_compat_reason() to request the DMA
+> channels. In case of error, return the error code we received including
+> -EPROBE_DEFER
 
-If you are going to review a patch set at least look at the previous
-reviews - the indentation was already discussed and is done that way to
-show (as many drivers do) which are fields for which registers
+I think you typed the function name wrong here :(
 
-> > +static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
-> > +{
-> > +	int valshift = 0;
-> 
-> Perhaps unsigned int?
-
-Why ? even if it mattered gcc is already realising that the value can
-only be 0 or 8 and will be generating whatever works best for that.
-
-
-Alan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
