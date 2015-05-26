@@ -1,56 +1,34 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250: remove return statements from void function
-Date: Mon, 25 May 2015 09:23:06 -0700
-Message-ID: <20150525162306.GG9772@kroah.com>
-References: <1431315022-10526-1-git-send-email-yamada.masahiro@socionext.com>
- <20150524194609.GB18445@kroah.com>
- <CAK7LNARZfr4OS0oS_sGr1zG=G+=pwzCPZNGSC+_wi3+pRza=_A@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: [PATCH] serial: 8250: include <linux/serial_reg.h> from serial_8250.h
+Date: Tue, 26 May 2015 13:28:48 +0900
+Message-ID: <1432614528-13605-1-git-send-email-yamada.masahiro@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAK7LNARZfr4OS0oS_sGr1zG=G+=pwzCPZNGSC+_wi3+pRza=_A@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: linux-serial@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Tony Lindgren <tony@atomide.com>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+To: linux-serial@vger.kernel.org
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, May 25, 2015 at 10:53:03AM +0900, Masahiro Yamada wrote:
-> 2015-05-25 4:46 GMT+09:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
-> > On Mon, May 11, 2015 at 12:30:22PM +0900, Masahiro Yamada wrote:
-> >> serial8250_set_mctrl() is a void type function.  Returning something
-> >> does not look nice.
-> >>
-> >> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-> >> ---
-> >>
-> >>  drivers/tty/serial/8250/8250_core.c | 5 +++--
-> >>  1 file changed, 3 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> >> index 4882027..146f56c 100644
-> >> --- a/drivers/tty/serial/8250/8250_core.c
-> >> +++ b/drivers/tty/serial/8250/8250_core.c
-> >> @@ -2019,8 +2019,9 @@ EXPORT_SYMBOL_GPL(serial8250_do_set_mctrl);
-> >>  static void serial8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> >>  {
-> >>       if (port->set_mctrl)
-> >> -             return port->set_mctrl(port, mctrl);
-> >> -     return serial8250_do_set_mctrl(port, mctrl);
-> >> +             port->set_mctrl(port, mctrl);
-> >> +     else
-> >> +             serial8250_do_set_mctrl(port, mctrl);
-> >>  }
-> >
-> > You just changed the logic here!
-> 
-> 
-> Could you tell me why?
-> 
-> The logic still looks the same to me.
+The header file, include/linux/serial_8250.h, contains references to
+UART_LSR_BRK_ERROR_BITS and UART_MSR_ANY_DELTA that are defined in
+<linux/serial_reg.h>.
 
-{sigh} you are right.  Sorry about that, I'll go dig up the original
-patch and queue it up, this was my fault in reading the code
-incorrectly.
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+---
 
-greg k-h
+ include/linux/serial_8250.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 78097e7..89e44a7 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -12,6 +12,7 @@
+ #define _LINUX_SERIAL_8250_H
+ 
+ #include <linux/serial_core.h>
++#include <linux/serial_reg.h>
+ #include <linux/platform_device.h>
+ 
+ /*
+-- 
+1.9.1
