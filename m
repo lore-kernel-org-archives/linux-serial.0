@@ -1,32 +1,39 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: samsung: only use earlycon for console
-Date: Tue, 26 May 2015 10:00:30 -0400
-Message-ID: <55647C7E.6010907@hurleysoftware.com>
-References: <3397068.2Doeo7zeZ1@wuerfel>
+Subject: Re: [PATCH] serial: 8250_omap: provide complete custom startup &
+ shutdown callbacks
+Date: Tue, 26 May 2015 10:06:48 -0400
+Message-ID: <55647DF8.4030209@hurleysoftware.com>
+References: <20150520200735.GA7790@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <3397068.2Doeo7zeZ1@wuerfel>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tfiga@google.com, Marek Szyprowski <m.szyprowski@samsung.com>, Alim Akhtar <alim.akhtar@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20150520200735.GA7790@linutronix.de>
+Sender: linux-omap-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-omap@vger.kernel.org, nsekhar@ti.com, tony@atomide.comm, nm@ti.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 05/19/2015 04:26 PM, Arnd Bergmann wrote:
-> A configuration that enables earlycon but not the core console
-> code causes a link error:
+On 05/20/2015 04:07 PM, Sebastian Andrzej Siewior wrote:
+> The currently in-use port->startup and port->shutdown are "okay". The
+> startup part for instance does the tiny omap extra part and invokes
+> serial8250_do_startup() for the remaining pieces. The workflow in
+> serial8250_do_startup() is okay except for the part where UART_RX is
+> read without a check if there is something to read. I tried to
+> workaround it in commit 0aa525d11859 ("tty: serial: 8250_core: read only
+> RX if there is something in the FIFO") but then reverted it later in
+> commit ca8bb4aefb9 ("serial: 8250: Revert "tty: serial: 8250_core: read
+> only RX if there is something in the FIFO"").
 > 
->   drivers/built-in.o: In function `setup_earlycon':
->   drivers/tty/serial/earlycon.c:70: undefined reference to `uart_parse_earlycon'
-> 
-> That error can be triggered by the newly added samsung earlycon support,
-> which is missing a 'select' statement.
-> 
-> As suggested by Peter Hurley, solves the problem by moving the
-> 'select SERIAL_EARLYCON' statement to the samsung console driver
-> option, as it is done by all other console drivers.
+> This is the second attempt to get it to work on older OMAPs without
+> breaking other chips this time
+> Peter Hurley suggested to pull in the few needed lines from
+> serial8250_do_startup() and drop everything else that is not required
+> including making it simpler like using just request_irq() instead the
+> chain handler like it is doing now.
+> So lets try that.
 
-Thanks.
+Thanks, Sebastian.
 
 Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+
