@@ -1,52 +1,58 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 11/13] spi: omap2-mcspi: Support for deferred probing
- when requesting DMA channels
-Date: Tue, 26 May 2015 16:27:30 +0100
-Message-ID: <20150526152730.GT21577@sirena.org.uk>
-References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
- <1432646768-12532-12-git-send-email-peter.ujfalusi@ti.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH] serial: 8250_omap: provide complete custom startup &
+ shutdown callbacks
+Date: Tue, 26 May 2015 09:09:26 -0700
+Message-ID: <20150526160926.GE16525@atomide.com>
+References: <20150520200735.GA7790@linutronix.de>
+ <55647DF8.4030209@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cCVGH4QhGbYkRKO5"
-Return-path: <linux-crypto-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1432646768-12532-12-git-send-email-peter.ujfalusi@ti.com>
-Sender: linux-crypto-owner@vger.kernel.org
-To: Peter Ujfalusi <peter.ujfalusi@ti.com>
-Cc: vinod.koul@intel.com, tony@atomide.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dan.j.williams@intel.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-mmc@vger.kernel.org, linux-crypto@vger.kernel.org, linux-spi@vger.kernel.org, linux-media@vger.kernel.org, alsa-devel@alsa-project.org
+In-Reply-To: <55647DF8.4030209@hurleysoftware.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, nsekhar@ti.com, tony@atomide.comm, nm@ti.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+* Peter Hurley <peter@hurleysoftware.com> [150526 07:14]:
+> On 05/20/2015 04:07 PM, Sebastian Andrzej Siewior wrote:
+> > The currently in-use port->startup and port->shutdown are "okay". The
+> > startup part for instance does the tiny omap extra part and invokes
+> > serial8250_do_startup() for the remaining pieces. The workflow in
+> > serial8250_do_startup() is okay except for the part where UART_RX is
+> > read without a check if there is something to read. I tried to
+> > workaround it in commit 0aa525d11859 ("tty: serial: 8250_core: read only
+> > RX if there is something in the FIFO") but then reverted it later in
+> > commit ca8bb4aefb9 ("serial: 8250: Revert "tty: serial: 8250_core: read
+> > only RX if there is something in the FIFO"").
+> > 
+> > This is the second attempt to get it to work on older OMAPs without
+> > breaking other chips this time
+> > Peter Hurley suggested to pull in the few needed lines from
+> > serial8250_do_startup() and drop everything else that is not required
+> > including making it simpler like using just request_irq() instead the
+> > chain handler like it is doing now.
+> > So lets try that.
+> 
+> Thanks, Sebastian.
+> 
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 
---cCVGH4QhGbYkRKO5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Can we please get this into the v4.1-rc series?
 
-On Tue, May 26, 2015 at 04:26:06PM +0300, Peter Ujfalusi wrote:
+It fixes the following:
 
-> Switch to use ma_request_slave_channel_compat_reason() to request the DMA
-> channels. Only fall back to pio mode if the error code returned is not
-> -EPROBE_DEFER, otherwise return from the probe with the -EPROBE_DEFER.
+Unhandled fault: external abort on non-linefetch (0x1028) at 0xfa06a000                                                       
+...                                                                                                                           
+[<c04217e8>] (mem_serial_in) from [<c0425480>] (serial8250_do_startup+0xe4/0x694)
+[<c0425480>] (serial8250_do_startup) from [<c0427e48>] (omap_8250_startup+0x70/0x144)
+[<c0427e48>] (omap_8250_startup) from [<c0425a54>] (serial8250_startup+0x24/0x30)
+[<c0425a54>] (serial8250_startup) from [<c04208e4>] (uart_startup.part.14+0x8c/0x1a0)
+[<c04208e4>] (uart_startup.part.14) from [<c0420fec>] (uart_open+0xd8/0x134)
+[<c0420fec>] (uart_open) from [<c0403e50>] (tty_open+0xdc/0x5e0)
+[<c0403e50>] (tty_open) from [<c018f008>] (chrdev_open+0xac/0x188)
 
-I've got two patches from a patch series here with no cover letter...
-I'm guessing there's no interdependencies or anything?  Please always
-ensure that when sending a patch series everyone getting the patches can
-tell what the series as a whole looks like (if there's no dependencies
-consider posting as individual patches rather than a series).
+Regards,
 
---cCVGH4QhGbYkRKO5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJVZJDhAAoJECTWi3JdVIfQii8H/1dNPl+UQ4hYgOsQbXMiYH/e
-613k9/0lY7U0SMHKZ0pKlQNnbkrEDfY1qniWMTAYfBjxhcP97iACvq/Dhf8hPBoX
-UsaJGnpjmbMBw9OKGo3aSFQW3OA84ifW7VZK51316IwlL9weniqOJlQ7zRAl8nJe
-mBwR9lhFKAfUexsHRZkfqeoxIiZkCM4DU9pqPNeZUI4cu7uiGPGWmwonZ/+K0Zr5
-Vm5pe7A4BAyKUYoJatAOfektb0ODeNvo8ogFbsYGThHghm4+24fRQdNDiw/jYGTP
-TUJQRHR2/KRHvi2EjdlTMKdG7c/EhnPtH6jS8H2ryIDYtLte+1nBs8lL2EzQJRE=
-=GuJ4
------END PGP SIGNATURE-----
-
---cCVGH4QhGbYkRKO5--
+Tony
