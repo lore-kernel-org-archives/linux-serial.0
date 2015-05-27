@@ -1,67 +1,41 @@
-From: Sekhar Nori <nsekhar@ti.com>
-Subject: Re: [PATCH] tty: serial: omap: use mctrl_gpio helpers
-Date: Wed, 27 May 2015 11:31:03 +0530
-Message-ID: <55655D9F.107@ti.com>
-References: <1432297017-1264-1-git-send-email-yegorslists@googlemail.com> <555F4C7F.9020307@ti.com> <20150522165212.GZ10274@atomide.com> <20150522173816.GE5582@saruman.tx.rr.com> <20150522175429.GB10274@atomide.com> <CAGm1_ksofPwNmvmzo_8h0L1xHnZjEfYa7YYey6dF=TsYVPELtQ@mail.gmail.com>
+From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Subject: Re: [PATCH 03/13] serial: 8250_dma: Support for deferred probing
+ when requesting DMA channels
+Date: Wed, 27 May 2015 13:41:03 +0300
+Message-ID: <55659F3F.5080503@ti.com>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com> <1432646768-12532-4-git-send-email-peter.ujfalusi@ti.com> <20150526144432.GA23156@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <CAGm1_ksofPwNmvmzo_8h0L1xHnZjEfYa7YYey6dF=TsYVPELtQ@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Yegor Yefremov <yegorslists@googlemail.com>, Tony Lindgren <tony@atomide.com>
-Cc: Felipe Balbi <balbi@ti.com>, Nishanth Menon <nm@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-media-owner@vger.kernel.org>
+In-Reply-To: <20150526144432.GA23156@kroah.com>
+Sender: linux-media-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: vinod.koul@intel.com, tony@atomide.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dan.j.williams@intel.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-mmc@vger.kernel.org, linux-crypto@vger.kernel.org, linux-spi@vger.kernel.org, linux-media@vger.kernel.org, alsa-devel@alsa-project.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday 26 May 2015 12:34 PM, Yegor Yefremov wrote:
-> Hi Tony, Nishanth and Felipe,
-> 
-> On Fri, May 22, 2015 at 7:54 PM, Tony Lindgren <tony@atomide.com> wrote:
->> * Felipe Balbi <balbi@ti.com> [150522 10:41]:
->>> On Fri, May 22, 2015 at 09:52:13AM -0700, Tony Lindgren wrote:
->>>> * Nishanth Menon <nm@ti.com> [150522 08:36]:
->>>>> On 05/22/2015 07:16 AM, yegorslists@googlemail.com wrote:
->>>>>> From: Yegor Yefremov <yegorslists@googlemail.com>
->>>>>>
->>>>>> This patch permits to use GPIOs to control the CTS/RTS/DTR/DSR/DCD/RI
->>>>>> signals.
->>>>>>
->>>>>> Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
->>>>>> ---
->>>>>>  .../devicetree/bindings/serial/omap_serial.txt     |    9 +
->>>>>>  drivers/tty/serial/Kconfig                         |    1 +
->>>>>>  drivers/tty/serial/omap-serial.c                   |  168 +++++++++++++++++++-
->>>>>>  3 files changed, 171 insertions(+), 7 deletions(-)
->>>>>
->>>>> Would we rather move introducing new features to 8250_omap.c rather
->>>>> than doing that to omap-serial and keep feature creeping it such that
->>>>> we wont ever be able to switch to 8250_omap ?
->>>>
->>>> Yes please. Also, do we really want to allow mapping
->>>> random GPIO pins to the UART driver? I guess it would be
->>>
->>> See drivers/tty/serial/serial_mctrl_gpio.[ch], these are used for UARTs
->>> on SoCs with enough GPIOs available whose UART don't have full Modem
->>> signals. It's pretty handy for BT, GSM, LTE, whatever type of modem-like
->>> device.
->>
->> OK
-> 
-> I need this functionality for a real device having switchable
-> RS232/422/485 driver. So I need both RS232 signals, that are not all
-> possible to get via pinmux, and RS485 transmitter switching.
-> 
-> AFAIK RS485 feature is still not implemented in 8250. That's why I
-> would like this patch to be still included into omap_serial for now.
+On 05/26/2015 05:44 PM, Greg Kroah-Hartman wrote:
+> On Tue, May 26, 2015 at 04:25:58PM +0300, Peter Ujfalusi wrote:
+>> Switch to use ma_request_slave_channel_compat_reason() to request th=
+e DMA
+>> channels. In case of error, return the error code we received includ=
+ing
+>> -EPROBE_DEFER
+>=20
+> I think you typed the function name wrong here :(
 
-No one I know in TI has used or tested the RS485 functionality. Thats
-why Sebastian left it when he created the 8250_omap driver. Since you
-have the setup to test it, is it possible for you to migrate that
-functionality to 8250_omap.c itself rather than enhance omap-serial.c?
+Oops. Also in other drivers :(
+I will fix up the messages for the v2 series, which will not going to i=
+nclude
+the patch against 8250_dma.
 
-We really want to be gravitating towards 8250_omap.c and this patch will
-take us backwards. As a bonus you get more efficient interrupt handling
-etc with the new driver.
+If I understand things right around the 8250_* is that the
+serial8250_request_dma() which is called from serial8250_do_startup() i=
+s not
+called at module probe time, so it can not be used to handle deferred p=
+robing.
 
-Thanks,
-Sekhar
+Thus this patch can be dropped IMO.
+
+--=20
+P=E9ter
