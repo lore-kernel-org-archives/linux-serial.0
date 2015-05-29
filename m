@@ -1,135 +1,353 @@
-From: Bin Gao <bin.gao@linux.intel.com>
-Subject: Re: [PATCH v4 1/2] serial_core: add pci uart early console support
-Date: Thu, 28 May 2015 10:54:52 -0700
-Message-ID: <20150528175452.GA139550@worksta>
-References: <20150522160659.GA108447@worksta>
- <5564A982.9050600@hurleysoftware.com>
- <20150527231426.GA105692@worksta>
- <55665F81.1050301@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: [PATCH v7] serial: 8250_uniphier: add UniPhier serial driver
+Date: Fri, 29 May 2015 15:04:31 +0900
+Message-ID: <1432879471-31074-1-git-send-email-yamada.masahiro@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55665F81.1050301@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: linux-serial@vger.kernel.org
+Cc: Joachim Eastwood <manabian@gmail.com>, Andy Shevchenko <andriy.shevchenko@intel.com>, Matthias Brugger <matthias.bgg@gmail.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-kernel@vger.kernel.org, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, John Crispin <blogic@openwrt.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 27, 2015 at 08:21:21PM -0400, Peter Hurley wrote:
-> I meant that the patch hunk below should be moved to patch
-> 2/2, and the purpose of patch 2/2 should be to replace x86-specific
-> earlyprintk=pciserial with arch-independent earlyprintk=pciserial.
-> 
-> There are 2 reasons for my suggestion:
-> 1) Changes to x86 earlyprintk should get acks from the x86 maintainers.
->    Borislav Petkov <bp@suse.de> is particularly involved in the
->    'early' earlyprintk proposal. Patch 2/2 should cc them and the
->    author of the original earlyprintk=pciserial patch.
-> 2) Changes to x86 earlyprintk may be rejected.
-> 
-> 
-> > +/* x86 uses "earlyprintk=xxx", so we keep the compatibility here */
-> > +#ifdef CONFIG_X86
-> > +static int __init param_setup_earlycon_x86(char *buf)
-> > +{
-> > +	return param_setup_earlycon(buf);
-> > +}
-> > +early_param("earlyprintk", param_setup_earlycon_x86);
-> > +#endif
-> > +
-Ok now I got it.
+Add the driver for on-chip UART used on UniPhier SoCs.
 
+This hardware is similar to 8250, but the register mapping is
+slightly different:
+  - The offset to FCR, MCR is different.
+  - The divisor latch access bit does not exist.  Instead, the
+    divisor latch register is available at offset 9.
 
-> >> FYI, there is a proposal to evaluate "earlyprintk=" earlier than
-> >> parse_early_params(), which this would break.
-> >>
-> >> https://lkml.org/lkml/2015/5/18/127
-> > No, it wouldn't. The proposal only moves earlyprintk=serial(legacy 0x3f8).
-> > If you look into arch/x86/kernel/early_printk.c, you'll find many other
-> > options other than serial, e.g. vga, dbgp, xen, efi, pciserial, etc.
-> > uart8250(previously pciserial) is one of these "others".
-> 
-> I see; so when re-evaluating earlyprintk= for earlycon, there is no danger 
-> of corrupting the device state for earlyprintk?
-No, because uart8250 is a unknown value to earlyprintk= in
-arch/x86/kernel/early_prink.c, so it simply returns from there.
- 
-> However, the namespace will now be shared so that is an important change
-> that maintainers and future earlycon/earlyprintk authors need to know.
-Yes, I'll cc more x86 people.
+This driver overrides serial_{in,out}, dl_{read,write} callbacks,
+but wants to borrow most of code from 8250_core.c.
 
- 
-> > Then scripts/checkpatch.pl should be updated to avoid this kind of "misguiding".
-> > Also the kstrto* API descriptions should be updated...
-> 
-> I know; I've already made that point to Joe.
-> 
-> >> The code above is exactly what is wrong with the kstrto* api.
-> > Can you elaborate a little bit? Thanks.
-> 
-> I don't mean there is anything wrong with _your_ code, per se.
-> Rather that it should not be necessary to write 14 lines of code, use temp
-> storage and visit the entire string three times simply to parse a string
-> into a number. IOW, the kstrto* API usefulness is limited, which is why
-> simple_strto* is _not_ obsolete.
-> 
->  
-> >>> +	if (!early_pci_allowed()) {
-> >>> +		pr_err("earlycon pci not available(early pci not allowed)\n");
-> >>
-> >> Error message is redundant.
-> > "early pci not allowed" is the reason of "earlycon pci not available".
-> 
-> Only one or the other is necessary. For example,
-> 
-> 	"earlycon: early pci not allowed\n"
-Will do.
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+---
 
+Changes in v7:
+  - Change the type of "valshift" from "int" to "unsigned int"
 
-> 
-> 
-> >>> +	/*
-> >>> +	 * On these platforms class code in pci config is broken,
-> >>               ^^^^^^^^^^^^^^^
-> >> which platforms?
-> > On platforms where this code will run on.
-> > Do you prefer something like:
-> > On platforms with early pci serial class code in pci config is broken,
-> 
-> This statement doesn't make sense to me: the original earlyprintk=pciserial
-> implementation read the class code register, so it worked then.
-> 
-> Why not now?
-Indeed on real silicon the class code is broken.
-I would say it might be an accident that those class code related codes
-were checked in...
+Changes in v6:
+  - Drop unnecessary #include <linux/serial_8250.h>
+    (it is covered by #include "8250.h")
 
+Changes in v5:
+  - Set up.port.mapsize
+  - Pass NULL rahter than 0 to the second argument of devm_clk_get()
 
-> >>>   *	@options: ptr for <options> field; NULL if not present (out)
-> >>>   *
-> >>>   *	Decodes earlycon kernel command line parameters of the form
-> >>> - *	   earlycon=<name>,io|mmio|mmio32,<addr>,<options>
-> >>> + *	   earlycon=<name>,io|mmio|mmio32|pci|pci32,<addr>,<options>
-> >>
-> >> Document the pci/pci32 format separately because
-> >> 	earlycon=uart8250,pci32,<addr>,<options> is not a valid form.
-> > Why it's not a valid form? It follows the existed syntax like this:
-> > earlycon=uart8250,<io type>,<addr>,<options>
-> 
-> Well, isn't <addr> being retrieved from BAR0? Why would you specify
-> the <addr> on the command line?
-> 
-> But I see now that's where the 'bus:device.function' goes.
-> I think if I was confused, others will be too. Further, in the context
-> of this code 'addr' is a variable to which the command line parameter
-> comment identifies, whereas 'bus:device.function' does not follow
-> the same convention.
-I think it's confusing because pci is special - we can say B:D.F is PCI
-address(bus address), but address from BAR is also pci address(IO or
-Memory address). How about we undertand the <address> from the comment
-is bus address? So for mmio, it's 32bit(or 64bit) physical address, for
-pci it's B:D.F.
+Changes in v4:
+  - Use spin_lock for read-modify-write register access
+  - Add /* fall through */ comments where I intentionally
+    did not add "break";
+  - Drop unnecessary #include <linux/serial_core.h>
+  - Drop unnecessary #include <linux/serial_reg.h>
+  - Add an empty line between #include <> and ""
+  - Use platform_get_irq() instead of platform_get_resource()
 
-Thanks,
-Bin
+Changes in v3:
+  - Just add *_SHIFT macro for the special case
+
+Changes in v2:
+  - Drop unnecessary #include <linux/init.h>
+  - Sort includes in alphabetical order
+  - Use devm_clk_get() rather than of_clk_get()
+  - Delete unneeded clk_put() from uniphier_uart_remove callback
+  - Delete unneeded IS_ERR_OR_NULL check from uniphier_uart_remove callback
+  - Use UNIPHIER_UART_*_SHIFT instead of hard-coded shift values
+  - Change the first argument type of uniphier_of_serial_setup()
+    from (struct platform_device *) to (struct device *) for code-cleanup.
+
+ drivers/tty/serial/8250/8250_uniphier.c | 257 ++++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig         |   7 +
+ drivers/tty/serial/8250/Makefile        |   1 +
+ 3 files changed, 265 insertions(+)
+ create mode 100644 drivers/tty/serial/8250/8250_uniphier.c
+
+diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+new file mode 100644
+index 0000000..7d79425
+--- /dev/null
++++ b/drivers/tty/serial/8250/8250_uniphier.c
+@@ -0,0 +1,257 @@
++/*
++ * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/clk.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++
++#include "8250.h"
++
++/* Most (but not all) of UniPhier UART devices have 64-depth FIFO. */
++#define UNIPHIER_UART_DEFAULT_FIFO_SIZE	64
++
++#define UNIPHIER_UART_CHAR_FCR	3	/* Character / FIFO Control Register */
++#define UNIPHIER_UART_LCR_MCR	4	/* Line/Modem Control Register */
++#define   UNIPHIER_UART_LCR_SHIFT	8
++#define UNIPHIER_UART_DLR	9	/* Divisor Latch Register */
++
++struct uniphier8250_priv {
++	int line;
++	struct clk *clk;
++	spinlock_t atomic_write_lock;
++};
++
++/*
++ * The register map is slightly different from that of 8250.
++ * IO callbacks must be overridden for correct access to FCR, LCR, and MCR.
++ */
++static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
++{
++	unsigned int valshift = 0;
++
++	switch (offset) {
++	case UART_LCR:
++		valshift = UNIPHIER_UART_LCR_SHIFT;
++		/* fall through */
++	case UART_MCR:
++		offset = UNIPHIER_UART_LCR_MCR;
++		break;
++	default:
++		break;
++	}
++
++	offset <<= p->regshift;
++
++	/*
++	 * The return value must be masked with 0xff because LCR and MCR reside
++	 * in the same register that must be accessed by 32-bit write/read.
++	 * 8 or 16 bit access to this hardware result in unexpected behavior.
++	 */
++	return (readl(p->membase + offset) >> valshift) & 0xff;
++}
++
++static void uniphier_serial_out(struct uart_port *p, int offset, int value)
++{
++	unsigned int valshift = 0;
++	bool normal = false;
++
++	switch (offset) {
++	case UART_FCR:
++		offset = UNIPHIER_UART_CHAR_FCR;
++		break;
++	case UART_LCR:
++		valshift = UNIPHIER_UART_LCR_SHIFT;
++		/* Divisor latch access bit does not exist. */
++		value &= ~(UART_LCR_DLAB << valshift);
++		/* fall through */
++	case UART_MCR:
++		offset = UNIPHIER_UART_LCR_MCR;
++		break;
++	default:
++		normal = true;
++		break;
++	}
++
++	offset <<= p->regshift;
++
++	if (normal) {
++		writel(value, p->membase + offset);
++	} else {
++		/*
++		 * Special case: two registers share the same address that
++		 * must be 32-bit accessed.  As this is not longer atomic safe,
++		 * take a lock just in case.
++		 */
++		struct uniphier8250_priv *priv = p->private_data;
++		unsigned long flags;
++		u32 tmp;
++
++		spin_lock_irqsave(&priv->atomic_write_lock, flags);
++		tmp = readl(p->membase + offset);
++		tmp &= ~(0xff << valshift);
++		tmp |= value << valshift;
++		writel(tmp, p->membase + offset);
++		spin_unlock_irqrestore(&priv->atomic_write_lock, flags);
++	}
++}
++
++/*
++ * This hardware does not have the divisor latch access bit.
++ * The divisor latch register exists at different address.
++ * Override dl_read/write callbacks.
++ */
++static int uniphier_serial_dl_read(struct uart_8250_port *up)
++{
++	return readl(up->port.membase + UNIPHIER_UART_DLR);
++}
++
++static void uniphier_serial_dl_write(struct uart_8250_port *up, int value)
++{
++	writel(value, up->port.membase + UNIPHIER_UART_DLR);
++}
++
++static int uniphier_of_serial_setup(struct device *dev, struct uart_port *port,
++				    struct uniphier8250_priv *priv)
++{
++	int ret;
++	u32 prop;
++	struct device_node *np = dev->of_node;
++
++	ret = of_alias_get_id(np, "serial");
++	if (ret < 0) {
++		dev_err(dev, "failed to get alias id\n");
++		return ret;
++	}
++	port->line = priv->line = ret;
++
++	/* Get clk rate through clk driver */
++	priv->clk = devm_clk_get(dev, NULL);
++	if (IS_ERR(priv->clk)) {
++		dev_err(dev, "failed to get clock\n");
++		return PTR_ERR(priv->clk);
++	}
++
++	ret = clk_prepare_enable(priv->clk);
++	if (ret < 0)
++		return ret;
++
++	port->uartclk = clk_get_rate(priv->clk);
++
++	/* Check for fifo size */
++	if (of_property_read_u32(np, "fifo-size", &prop) == 0)
++		port->fifosize = prop;
++	else
++		port->fifosize = UNIPHIER_UART_DEFAULT_FIFO_SIZE;
++
++	return 0;
++}
++
++static int uniphier_uart_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct uart_8250_port up;
++	struct uniphier8250_priv *priv;
++	struct resource *regs;
++	void __iomem *membase;
++	int irq;
++	int ret;
++
++	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!regs) {
++		dev_err(dev, "failed to get memory resource");
++		return -EINVAL;
++	}
++
++	membase = devm_ioremap(dev, regs->start, resource_size(regs));
++	if (!membase)
++		return -ENOMEM;
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(dev, "failed to get IRQ number");
++		return irq;
++	}
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	memset(&up, 0, sizeof(up));
++
++	ret = uniphier_of_serial_setup(dev, &up.port, priv);
++	if (ret < 0)
++		return ret;
++
++	spin_lock_init(&priv->atomic_write_lock);
++
++	up.port.dev = dev;
++	up.port.private_data = priv;
++	up.port.mapbase = regs->start;
++	up.port.mapsize = resource_size(regs);
++	up.port.membase = membase;
++	up.port.irq = irq;
++
++	up.port.type = PORT_16550A;
++	up.port.iotype = UPIO_MEM32;
++	up.port.regshift = 2;
++	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE;
++	up.capabilities = UART_CAP_FIFO;
++
++	up.port.serial_in = uniphier_serial_in;
++	up.port.serial_out = uniphier_serial_out;
++	up.dl_read = uniphier_serial_dl_read;
++	up.dl_write = uniphier_serial_dl_write;
++
++	ret = serial8250_register_8250_port(&up);
++	if (ret < 0) {
++		dev_err(dev, "failed to register 8250 port\n");
++		return ret;
++	}
++
++	platform_set_drvdata(pdev, priv);
++
++	return 0;
++}
++
++static int uniphier_uart_remove(struct platform_device *pdev)
++{
++	struct uniphier8250_priv *priv = platform_get_drvdata(pdev);
++
++	serial8250_unregister_port(priv->line);
++	clk_disable_unprepare(priv->clk);
++
++	return 0;
++}
++
++static const struct of_device_id uniphier_uart_match[] = {
++	{ .compatible = "socionext,uniphier-uart" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, uniphier_uart_match);
++
++static struct platform_driver uniphier_uart_platform_driver = {
++	.probe		= uniphier_uart_probe,
++	.remove		= uniphier_uart_remove,
++	.driver = {
++		.name	= "uniphier-uart",
++		.of_match_table = uniphier_uart_match,
++	},
++};
++module_platform_driver(uniphier_uart_platform_driver);
++
++MODULE_AUTHOR("Masahiro Yamada <yamada.masahiro@socionext.com>");
++MODULE_DESCRIPTION("UniPhier UART driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index c350703..3e1ae446 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -342,3 +342,10 @@ config SERIAL_8250_MT6577
+ 	help
+ 	  If you have a Mediatek based board and want to use the
+ 	  serial port, say Y to this option. If unsure, say N.
++
++config SERIAL_8250_UNIPHIER
++	tristate "Support for UniPhier on-chip UART"
++	depends on SERIAL_8250 && ARCH_UNIPHIER
++	help
++	  If you have a UniPhier based board and want to use the on-chip
++	  serial ports, say Y to this option. If unsure, say N.
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index 31e7cdc..f7ca8c3 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -23,3 +23,4 @@ obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
+ obj-$(CONFIG_SERIAL_8250_OMAP)		+= 8250_omap.o
+ obj-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
+ obj-$(CONFIG_SERIAL_8250_MT6577)	+= 8250_mtk.o
++obj-$(CONFIG_SERIAL_8250_UNIPHIER)	+= 8250_uniphier.o
+-- 
+1.9.1
