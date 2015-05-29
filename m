@@ -1,62 +1,40 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v6] serial: 8250_uniphier: add UniPhier serial driver
-Date: Fri, 29 May 2015 15:08:39 +0900
-Message-ID: <CAK7LNAQ6Q9OzTT0NN-uruGQhhXzt9d_n7gogXTtPYgH8PnzRrg@mail.gmail.com>
-References: <1432525477-14051-1-git-send-email-yamada.masahiro@socionext.com>
-	<1432545245.8736.5.camel@intel.com>
-	<1432650518.13900.72.camel@linux.intel.com>
-	<1432652906.8736.44.camel@intel.com>
+From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Subject: [PATCH 0/3] Add RS-485 support and fix RTS/CTS implementation
+Date: Fri, 29 May 2015 13:35:51 +0530
+Message-ID: <1432886754-30115-1-git-send-email-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1432652906.8736.44.camel@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Shevchenko, Andriy" <andriy.shevchenko@intel.com>
-Cc: "alan@linux.intel.com" <alan@linux.intel.com>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "manabian@gmail.com" <manabian@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, "ricardo.ribalda@gmail.com" <ricardo.ribalda@gmail.com>, "jslaby@suse.cz" <jslaby@suse.cz>, "bigeasy@linutronix.de" <bigeasy@linutronix.de>, "alan@lxorguk.ukuu.org.uk" <alan@lxorguk.ukuu.org.uk>, "blogic@openwrt.org" <blogic@openwrt.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, bhuvanchandra.dv@gmail.com, kernel@pengutronix.de, shawn.guo@linaro.org, jslaby@suse.cz, linux-arm-kernel@lists.infradead.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 List-Id: linux-serial@vger.kernel.org
 
-2015-05-27 0:08 GMT+09:00 Shevchenko, Andriy <andriy.shevchenko@intel.com>:
-> On Tue, 2015-05-26 at 15:28 +0100, Alan Cox wrote:
->> > > +
->> > > +#define UNIPHIER_UART_CHAR_FCR   3       /* Character / FIFO Control Register */
->> > > +#define UNIPHIER_UART_LCR_MCR    4       /* Line/Modem Control Register */
->> > > +#define   UNIPHIER_UART_LCR_SHIFT        8
->> >
->> > Indentation problem, needs to be fixed.
->>
->> If you are going to review a patch set at least look at the previous
->> reviews - the indentation was already discussed and is done that way to
->> show (as many drivers do) which are fields for which registers
->
-> This is not exactly the field, the way how to get the field.
-> In some cases it is even better to define something like
-> _LCR(x)  ((x) << 8)
+- Add pinmux for UART_0 RTS/CTS pins.
+
+- Since hardware can handle RTS/CTS flow control automatically,
+  remove manual control of RTS/CTS from set/get mctrl.
+
+- Add RS-485 support for Vybird platform.
 
 
-I want to shift the value for both read and write,
-so I think LCR_SHIFT is handier than _LCR(x).
+Bhuvanchandra DV (3):
+  ARM: dts: colibri-vf: Add pinmux for UART_0 aka UART_A RTS/CTS pins
+  tty: serial: fsl_lpuart: remove RTS/CTS control from set/get_mctrl
+  tty: serial: fsl_lpuart: Add support for RS-485
 
-I think the indentation here is OK as it is.
-
-
-
->>
->> > > +static unsigned int uniphier_serial_in(struct uart_port *p, int offset)
->> > > +{
->> > > + int valshift = 0;
->> >
->> > Perhaps unsigned int?
->>
->> Why ? even if it mattered gcc is already realising that the value can
->> only be 0 or 8 and will be generating whatever works best for that.
->
-> It's not about how gcc does, it's about what assumptions can be made
-> from the reading of the source code. I think if we do a counter of shift
-> value it would be nice to set an unsigned type explicitly.
-
-int should work enough, but just in case, I added unsigned in v7.
-
+ arch/arm/boot/dts/vf-colibri.dtsi |   2 +
+ drivers/tty/serial/fsl_lpuart.c   | 112 +++++++++++++++++++++++---------------
+ 2 files changed, 70 insertions(+), 44 deletions(-)
 
 -- 
-Best Regards
-Masahiro Yamada
+2.1.0
