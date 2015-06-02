@@ -1,64 +1,82 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 3/5] serial: omap: Switch wake-up interrupt to generic
- wakeirq
-Date: Mon, 1 Jun 2015 15:05:55 -0700
-Message-ID: <20150601220555.GJ30984@atomide.com>
-References: <1431560196-5722-1-git-send-email-tony@atomide.com>
- <1431560196-5722-4-git-send-email-tony@atomide.com>
- <20150528145616.GG30984@atomide.com>
- <20150531071634.GA9051@kroah.com>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 02/13] dmaengine: Introduce
+ dma_request_slave_channel_compat_reason()
+Date: Tue, 2 Jun 2015 18:25:35 +0530
+Message-ID: <20150602125535.GS3140@localhost>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
+ <1432646768-12532-3-git-send-email-peter.ujfalusi@ti.com>
+ <20150529093317.GF3140@localhost>
+ <CAMuHMdVJ0h9qXxBWH9L2y4O2KLkEq12KW_6k8rTgi+Lux=C0gw@mail.gmail.com>
+ <20150529101846.GG3140@localhost>
+ <55687892.7050606@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
+Return-path: <linux-crypto-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20150531071634.GA9051@kroah.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andreas Fenkart <afenkart@gmail.com>, Felipe Balbi <balbi@ti.com>, Huiquan Zhong <huiquan.zhong@intel.com>, Kevin Hilman <khilman@kernel.org>, NeilBrown <neilb@suse.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Ulf Hansson <ulf.hansson@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Alan Stern <stern@rowland.harvard.edu>
+In-Reply-To: <55687892.7050606@ti.com>
+Sender: linux-crypto-owner@vger.kernel.org
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Tony Lindgren <tony@atomide.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Linux MMC List <linux-mmc@vger.kernel.org>, linux-crypto@vger.kernel.org, linux-spi <linux-spi@vger.kernel.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, ALSA Development Mailing List <alsa-devel@alsa-project.org>
 List-Id: linux-serial@vger.kernel.org
 
-* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [150531 00:24]:
-> On Thu, May 28, 2015 at 07:56:16AM -0700, Tony Lindgren wrote:
-> > Hi Greg,
-> > 
-> > * Tony Lindgren <tony@atomide.com> [150513 16:38]:
-> > > We can now use generic wakeirq handling and remove the custom handling
-> > > for the wake-up interrupts.
-> > 
-> > How do you prefer to handle the two omap specific serial driver
-> > changes in this series?
-> > 
-> > There's a dependency to Rafael's pm-wakeirq branch that contains:
-> > 
-> > 4990d4fe327b ("PM / Wakeirq: Add automated device wake IRQ handling")
-> > 56f487c78015 ("PM / Runtime: Update last_busy in rpm_resume")
-> > f6a2fbb903d5 ("PM / runtime: add note about re-calling in during
-> > device probe()")
-> > 
-> > The 8250_omap.c driver change also needs to be merged with:
-> > 
-> > 9e91597f2423 ("serial: 8250_omap: provide complete custom startup &
-> > shutdown callbacks")
-> > 
-> > Not sure if 9e91597f2423 is immutable, but if so then I could:
-> > 
-> > a) Send you a pull request for the two serial driver patches
-> >    based on Rafael's pm-wakeirq branch merged with 9e91597f2423 to
-> >    avoid the merge conflict.
-> > 
-> > b) Apply both serial driver patches into omap-for-v4.2/wakeirq
-> >    based on Rafael's pm-wakeirq branch merged with 9e91597f2423.
+On Fri, May 29, 2015 at 05:32:50PM +0300, Peter Ujfalusi wrote:
+> On 05/29/2015 01:18 PM, Vinod Koul wrote:
+> > On Fri, May 29, 2015 at 11:42:27AM +0200, Geert Uytterhoeven wrote:
+> >> On Fri, May 29, 2015 at 11:33 AM, Vinod Koul <vinod.koul@intel.com> wrote:
+> >>> On Tue, May 26, 2015 at 04:25:57PM +0300, Peter Ujfalusi wrote:
+> >>>> dma_request_slave_channel_compat() 'eats' up the returned error codes which
+> >>>> prevents drivers using the compat call to be able to do deferred probing.
+> >>>>
+> >>>> The new wrapper is identical in functionality but it will return with error
+> >>>> code in case of failure and will pass the -EPROBE_DEFER to the caller in
+> >>>> case dma_request_slave_channel_reason() returned with it.
+> >>> This is okay but am worried about one more warpper, how about fixing
+> >>> dma_request_slave_channel_compat()
+> >>
+> >> Then all callers of dma_request_slave_channel_compat() have to be
+> >> modified to handle ERR_PTR first.
+> >>
+> >> The same is true for (the existing) dma_request_slave_channel_reason()
+> >> vs. dma_request_slave_channel().
+> > Good point, looking again, I think we should rather fix
+> > dma_request_slave_channel_reason() as it was expected to return err code and
+> > add new users. Anyway users of this API do expect the reason...
 > 
-> That one sounds good to me, feel free to do so and add:
+> Hrm, they are for different use.dma_request_slave_channel()/_reason() is for
+> drivers only working via DT or ACPI while
+> dma_request_slave_channel_compat()/_reason() is for drivers expected to run in
+> DT/ACPI or legacy mode as well.
 > 
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> I added the dma_request_slave_channel_compat_reason() because OMAP/daVinci
+> drivers are using this to request channels - they need to support DT and
+> legacy mode.
+I think we should hide these things behind the API and do this behind the
+hood for ACPI/DT systems.
+
+Also it makes sense to use right API and mark rest as depricated
 > 
-> It's the easiest for everyone involved, right?
+> But it is doable to do this for both the non _compat and _compat version:
+> 1. change all users to check IS_ERR_OR_NULL(chan)
+>  return the PTR_ERR if not NULL, or do whatever the driver was doing in case
+> of chan == NULL.
+> 2. change the non _compat and _compat versions to do the same as the _reason
+> variants, #define the _reason ones to the non _reason names
+> 3. Rename the _reason use to non _reason function in drivers
+> 4. Remove the #defines for the _reason functions
+> 5. Change the IS_ERR_OR_NULL(chan) to IS_ERR(chan) in all drivers
+> The result:
+> Both dma_request_slave_channel() and dma_request_slave_channel_compat() will
+> return ERR_PTR in case of failure or in success they will return the pinter to
+> chan.
+> 
+> Is this what you were asking?
+> It is a bit broader than what this series was doing: taking care of
+> OMAP/daVinci drivers for deferred probing regarding to dmaengine ;)
+Yes but it would make sense right? I know it is a larger work but then we
+wouldn't want another dma_request_slave_xxx API, at some point we have stop
+it exapnding, perhpas now :)
 
-OK thanks, looks like there's a new commit for the fix as
-9809889c708e, I'll base on that and wait that the commit gets
-merged before sending out any pull request.
+Yes I am all ears to stage this work and not do transition gardually..
 
-Regards,
-
-Tony
+-- 
+~Vinod
