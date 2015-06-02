@@ -1,82 +1,53 @@
-From: Vinod Koul <vinod.koul@intel.com>
-Subject: Re: [PATCH 02/13] dmaengine: Introduce
- dma_request_slave_channel_compat_reason()
-Date: Tue, 2 Jun 2015 18:25:35 +0530
-Message-ID: <20150602125535.GS3140@localhost>
-References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
- <1432646768-12532-3-git-send-email-peter.ujfalusi@ti.com>
- <20150529093317.GF3140@localhost>
- <CAMuHMdVJ0h9qXxBWH9L2y4O2KLkEq12KW_6k8rTgi+Lux=C0gw@mail.gmail.com>
- <20150529101846.GG3140@localhost>
- <55687892.7050606@ti.com>
+From: Cyrille Pitchen <cyrille.pitchen@atmel.com>
+Subject: [PATCH linux-next 0/4] tty/serial: at91: add support to FIFOs
+Date: Tue, 2 Jun 2015 16:18:20 +0200
+Message-ID: <cover.1433253787.git.cyrille.pitchen@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-crypto-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55687892.7050606@ti.com>
-Sender: linux-crypto-owner@vger.kernel.org
-To: Peter Ujfalusi <peter.ujfalusi@ti.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Tony Lindgren <tony@atomide.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Linux MMC List <linux-mmc@vger.kernel.org>, linux-crypto@vger.kernel.org, linux-spi <linux-spi@vger.kernel.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, ALSA Development Mailing List <alsa-devel@alsa-project.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, wenyou.yang@atmel.com, ludovic.desroches@atmel.com, leilei.zhao@atmel.com, josh.wu@atmel.com, alexandre.belloni@free-electrons.com, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, galak@codeaurora.org, ijc+devicetree@hellion.org.uk, mark.rutland@arm.com, pawel.moll@arm.com, robh+dt@kernel.org, Cyrille Pitchen <cyrille.pitchen@atmel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 29, 2015 at 05:32:50PM +0300, Peter Ujfalusi wrote:
-> On 05/29/2015 01:18 PM, Vinod Koul wrote:
-> > On Fri, May 29, 2015 at 11:42:27AM +0200, Geert Uytterhoeven wrote:
-> >> On Fri, May 29, 2015 at 11:33 AM, Vinod Koul <vinod.koul@intel.com> wrote:
-> >>> On Tue, May 26, 2015 at 04:25:57PM +0300, Peter Ujfalusi wrote:
-> >>>> dma_request_slave_channel_compat() 'eats' up the returned error codes which
-> >>>> prevents drivers using the compat call to be able to do deferred probing.
-> >>>>
-> >>>> The new wrapper is identical in functionality but it will return with error
-> >>>> code in case of failure and will pass the -EPROBE_DEFER to the caller in
-> >>>> case dma_request_slave_channel_reason() returned with it.
-> >>> This is okay but am worried about one more warpper, how about fixing
-> >>> dma_request_slave_channel_compat()
-> >>
-> >> Then all callers of dma_request_slave_channel_compat() have to be
-> >> modified to handle ERR_PTR first.
-> >>
-> >> The same is true for (the existing) dma_request_slave_channel_reason()
-> >> vs. dma_request_slave_channel().
-> > Good point, looking again, I think we should rather fix
-> > dma_request_slave_channel_reason() as it was expected to return err code and
-> > add new users. Anyway users of this API do expect the reason...
-> 
-> Hrm, they are for different use.dma_request_slave_channel()/_reason() is for
-> drivers only working via DT or ACPI while
-> dma_request_slave_channel_compat()/_reason() is for drivers expected to run in
-> DT/ACPI or legacy mode as well.
-> 
-> I added the dma_request_slave_channel_compat_reason() because OMAP/daVinci
-> drivers are using this to request channels - they need to support DT and
-> legacy mode.
-I think we should hide these things behind the API and do this behind the
-hood for ACPI/DT systems.
+ChangeLog
 
-Also it makes sense to use right API and mark rest as depricated
-> 
-> But it is doable to do this for both the non _compat and _compat version:
-> 1. change all users to check IS_ERR_OR_NULL(chan)
->  return the PTR_ERR if not NULL, or do whatever the driver was doing in case
-> of chan == NULL.
-> 2. change the non _compat and _compat versions to do the same as the _reason
-> variants, #define the _reason ones to the non _reason names
-> 3. Rename the _reason use to non _reason function in drivers
-> 4. Remove the #defines for the _reason functions
-> 5. Change the IS_ERR_OR_NULL(chan) to IS_ERR(chan) in all drivers
-> The result:
-> Both dma_request_slave_channel() and dma_request_slave_channel_compat() will
-> return ERR_PTR in case of failure or in success they will return the pinter to
-> chan.
-> 
-> Is this what you were asking?
-> It is a bit broader than what this series was doing: taking care of
-> OMAP/daVinci drivers for deferred probing regarding to dmaengine ;)
-Yes but it would make sense right? I know it is a larger work but then we
-wouldn't want another dma_request_slave_xxx API, at some point we have stop
-it exapnding, perhpas now :)
+v1:
+This series of patches add support to FIFOs which will be introduced with Atmel
+sama5d2x SoC.
 
-Yes I am all ears to stage this work and not do transition gardually..
+FIFOs allow to reduce the number of I/O access. Indeed depending on the data
+size and the USART mode, FIFOs work in either single or multiple data. For
+multiple data, up to 4 data can be written into the Transmit Holding Register
+or read from the Receive Holding Register in a single word access.
+
+Also the RX FIFO allows to reduce the risk of receive overrun and data loss,
+especially when the DMA controller is not used.
+
+Finally, when the hardware handshake mode is selected, the RTS line can now be
+controlled by two thresholds on the RX FIFO. When FIFO level (the number of
+data available to be read) crosses the high threshold, the RTS line is set to
+high level telling the peer that it should stop sending new data. Data are read
+from the RX FIFO and when the FIFO level crosses the low threshold, the RTS
+is set back to low level telling the remote peer that it can send data again.
+
+This new feature resolves a long time hardware limitation where the RTS line
+was directly controlled by a PDC signal. There is no equivalent of that signal
+for the DMA controller so for all SoCs without PDC for USART there was no mean
+to control the RTS line properly: once the hardware handshake mode selected,
+the RTS line remains high level. Next SoCs with FIFOs will be able to use the
+hardware handshake mode thanks to the RX FIFO.
+
+Cyrille Pitchen (4):
+  ARM: at91/dt: add new DT properties for Atmel usart
+  tty/serial: at91: fix some macro definitions to fit coding style
+  tty/serial: at91: add support to FIFOs
+  tty/serial: at91: use 32bit writes into TX FIFO when DMA is enabled
+
+ .../devicetree/bindings/serial/atmel-usart.txt     |  15 ++
+ drivers/tty/serial/atmel_serial.c                  | 195 +++++++++++++----
+ include/linux/atmel_serial.h                       | 240 ++++++++++++---------
+ 3 files changed, 307 insertions(+), 143 deletions(-)
 
 -- 
-~Vinod
+1.8.2.2
