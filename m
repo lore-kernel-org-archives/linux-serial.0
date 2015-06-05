@@ -1,123 +1,51 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH 1/1] serial: earlycon: Add support for big-endian MMIO
- accesses
-Date: Fri, 5 Jun 2015 11:00:47 +0530
-Message-ID: <55713407.3010803@synopsys.com>
-References: <1432526068-22820-1-git-send-email-noamc@ezchip.com>
+From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+Subject: [PATCH 0/2] serial: 8250: Workaround to avoid irq=0 for console
+Date: Fri, 5 Jun 2015 09:55:48 +0000
+Message-ID: <55717224.9060104@cp.jp.nec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1432526068-22820-1-git-send-email-noamc@ezchip.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Noam Camus <noamc@ezchip.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
-Cc: giladb@ezchip.com, cmetcalf@ezchip.com, cernekee@gmail.com, robh@kernel.org, peter@hurleysoftware.com, gregkh@linuxfoundation.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: ja-JP
+Content-ID: <A8E840C5CC7BCC4A88DFE0C1B7E80E7B@gisp.nec.co.jp>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Monday 25 May 2015 09:24 AM, Noam Camus wrote:
-> From: Noam Camus <noamc@ezchip.com>
-> 
-> Support command line parameters of the form:
-> earlycon=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
-> 
-> This commit seem to be needed even after commit:
-> serial: 8250: Add support for big-endian MMIO accesses
-> c627f2ceb692e8a9358b64ac2d139314e7bb0d17
-> 
-> Signed-off-by: Noam Camus <noamc@ezchip.com>
-> ---
->  Documentation/kernel-parameters.txt |    9 +++++----
->  drivers/tty/serial/earlycon.c       |    9 ++++++---
->  drivers/tty/serial/serial_core.c    |    7 +++++--
->  3 files changed, 16 insertions(+), 9 deletions(-)
-> 
-> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-> index 61ab162..55bb093 100644
-> --- a/Documentation/kernel-parameters.txt
-> +++ b/Documentation/kernel-parameters.txt
-> @@ -959,14 +959,15 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
->  		uart[8250],io,<addr>[,options]
->  		uart[8250],mmio,<addr>[,options]
->  		uart[8250],mmio32,<addr>[,options]
-> +		uart[8250],mmio32be,<addr>[,options]
->  		uart[8250],0x<addr>[,options]
->  			Start an early, polled-mode console on the 8250/16550
->  			UART at the specified I/O port or MMIO address.
->  			MMIO inter-register address stride is either 8-bit
-> -			(mmio) or 32-bit (mmio32).
-> -			If none of [io|mmio|mmio32], <addr> is assumed to be
-> -			equivalent to 'mmio'. 'options' are specified in the
-> -			same format described for "console=ttyS<n>"; if
-> +			(mmio) or 32-bit (mmio32 or mmio32be).
-> +			If none of [io|mmio|mmio32|mmio32be], <addr> is assumed
-> +			to be equivalent to 'mmio'. 'options' are specified
-> +			in the same format described for "console=ttyS<n>"; if
->  			unspecified, the h/w is not initialized.
->  
->  		pl011,<addr>
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index 5fdc9f3..a840732 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -72,6 +72,7 @@ static int __init parse_options(struct earlycon_device *device, char *options)
->  
->  	switch (port->iotype) {
->  	case UPIO_MEM32:
-> +	case UPIO_MEM32BE:
->  		port->regshift = 2;	/* fall-through */
->  	case UPIO_MEM:
->  		port->mapbase = addr;
-> @@ -90,9 +91,11 @@ static int __init parse_options(struct earlycon_device *device, char *options)
->  		strlcpy(device->options, options, length);
->  	}
->  
-> -	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
-> +	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32 ||
-> +	    port->iotype == UPIO_MEM32BE)
->  		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
-> -			(port->iotype == UPIO_MEM32) ? "32" : "",
-> +			(port->iotype == UPIO_MEM) ? "" :
-> +			(port->iotype == UPIO_MEM32) ? "32" : "32be",
->  			(unsigned long long)port->mapbase,
->  			device->options);
->  	else
-> @@ -133,7 +136,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
->   *
->   *	Registers the earlycon console matching the earlycon specified
->   *	in the param string @buf. Acceptable param strings are of the form
-> - *	   <name>,io|mmio|mmio32,<addr>,<options>
-> + *	   <name>,io|mmio|mmio32|mmio32be,<addr>,<options>
->   *	   <name>,0x<addr>,<options>
->   *	   <name>,<options>
->   *	   <name>
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 0b7bb12..1124090 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1816,8 +1816,8 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
->   *	@options: ptr for <options> field; NULL if not present (out)
->   *
->   *	Decodes earlycon kernel command line parameters of the form
-> - *	   earlycon=<name>,io|mmio|mmio32,<addr>,<options>
-> - *	   console=<name>,io|mmio|mmio32,<addr>,<options>
-> + *	   earlycon=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
-> + *	   console=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
->   *
->   *	The optional form
->   *	   earlycon=<name>,0x<addr>,<options>
-> @@ -1835,6 +1835,9 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
->  	} else if (strncmp(p, "mmio32,", 7) == 0) {
->  		*iotype = UPIO_MEM32;
->  		p += 7;
-> +	} else if (strncmp(p, "mmio32be,", 9) == 0) {
-> +		*iotype = UPIO_MEM32BE;
-> +		p += 9;
->  	} else if (strncmp(p, "io,", 3) == 0) {
->  		*iotype = UPIO_PORT;
->  		p += 3;
-> 
-
-
-Ping ! Peter, Rob, Kevin - can u please take a look.
-
-
+VGhpcyBwYXRjaCBzZXQgcHJvdmlkZXMgYSB3b3JrYXJvdW5kIHRvIGF2b2lkIHRoZSBmb2xsb3dp
+bmcgcHJvYmxlbS4NCkl0J3MgYmFzZWQgb24gTGludXggNC4xLXJjMyBtYWluc3RyZWFtIGtlcm5l
+bC4NCkkndmUgdGVzdGVkIHRoaXMgcGF0Y2ggc2V0IG9uIHg4Ni02NCBtYWNoaW5lIGFuZCBLVk0u
+DQoNClByb2JsZW0NCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpUaGVyZSdyZSBjYXNlcyB3
+aGVyZSBhdXRvY29uZmlnX2lycSgpIGZhaWxzIGR1cmluZyBib290Lg0KSW4gdGhlc2UgY2FzZXMs
+IHRoZSBjb25zb2xlIGRvZXNuJ3Qgd29yayBpbiBpbnRlcnJ1cHQgbW9kZSwNCnRoZSBtb2RlIGNh
+bm5vdCBiZSBjaGFuZ2VkIGFueW1vcmUsIGFuZCAiaW5wdXQgb3ZlcnJ1biINCih3aGljaCBjYW4g
+bWFrZSBvcGVyYXRpb24gbWlzdGFrZXMpIGhhcHBlbnMgZWFzaWx5Lg0KVGhpcyBwcm9ibGVtIGhh
+cHBlbnMgd2l0aCBoaWdoIHJhdGUgZXZlcnkgYm9vdCBvbmNlIGl0IG9jY3Vycw0KYmVjYXVzZSB0
+aGUgYm9vdCBzZXF1ZW5jZSBpcyBhbHdheXMgYWxtb3N0IHNhbWUuDQpJIHNhdyB0aGUgb3JpZ2lu
+YWwgcHJvYmxlbSBvbiBSSEVMNi42Lg0KDQpGaXgNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+DQpzZXJpYWw6IDgyNTA6IEZpeCBhdXRvY29uZmlnX2lycSgpIHRvIGF2b2lkIHJhY2UgY29uZGl0
+aW9ucw0KICBGaXggb25lIG9mIGF1dG9jb25maWdfaXJxKCkgZmFpbHVyZSBjYXNlLg0Kc2VyaWFs
+OiA4MjUwOiBBbGxvdyB0byBza2lwIGF1dG9jb25maWdfaXJxKCkgZm9yIGEgY29uc29sZQ0KICBQ
+cm92aWRlIGEgd29ya2Fyb3VuZCB0byBhdm9pZCBvdGhlciBhdXRvY29uZmlnX2lycSgpIGZhaWx1
+cmUgY2FzZXMuDQoNCkNvbmRpdGlvbnMgb2YgUmVwcm9kdWN0aW9uDQotLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLQ0KLSBCdWlsZCB3aXRoIENPTkZJR19TRVJJQUxfODI1MF9ERVRFQ1RfSVJRLg0K
+LSBOZWVkIG5vbi1QblAgY29uc29sZSBzZXJpYWwgb3IgUG5QIGNvbnNvbGUgd2l0aCBubyBDT05G
+SUdfU0VSSUFMXzgyNTBfUE5QDQotIEtpY2sgcHJpbnRrKCkgcmVwZWF0ZWRseSBvbiB0aGUgQ1BV
+IHdoaWNoIGNhbiBoYW5kbGUgYW4gaW50ZXJydXB0DQogICBmcm9tIGEgY29uc29sZSBzZXJpYWwg
+ZHVyaW5nIGF1dG9jb25maWdfaXJxKCkuIFRoZSBDUFUgaXMgYmFzaWNhbGx5IGNwdTAuDQotIERp
+c2FibGUgdGhlIGludGVycnVwdCBvZiB0aGUgQ1BVIGZvciBsb25nZXIgZHVyaW5nIGF1dG9jb25m
+aWdfaXJxKCkuDQoNCk5vdGUNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpJZGVhbGx5LCBJ
+IHRoaW5rIGF1dG9jb25maWdfaXJxKCkgc2hvdWxkIGJlIGZpeGVkIGNvbXBsZXRlbHksDQpidXQg
+aXQncyBoYXJkIGZyb20gdGhlIGZvbGxvd2luZyBwb2ludHMNCmFzIGxvbmcgYXMgYXV0b19pcnEg
+YWxnb3JpdGhtIGlzIHVzZWQuDQogIC0gSG93IGxvbmcgaXQgc2hvdWxkIHdhaXQgZm9yIGFuIGlu
+dGVycnJ1cHQNCiAgLSBIb3cgdG8gYXNzdXJlIHRoZSBpbnRlcnJ1cHQgb2YgdGhlIENQVSBlbmFi
+bGVkIGR1cmluZyBhdXRvX2lycQ0KICAtIEhvdyB0byBrbm93IHdoaWNoIENQVSBjYW4gaGFuZGxl
+IGFuIGludGVycnVwdCBmcm9tIGEgc2VyaWFsLg0KDQpEbyB5b3UgaGF2ZSBhbnkgb3RoZXIgaWRl
+YT8NCkluIG15IG9waW5pb24sIHByb3ZpZGluZyBhIHdvcmthcm91bmQgaXMgYmV0dGVyIHRoYW4N
+CmFwcGx5aW5nIGJpZyBjaGFuZ2VzIHRvIHRoZSBvbGQgZnVuY3Rpb24gZm9yIGxlZ2FjeSBkZXZp
+Y2VzLg0KDQpUYWljaGkgS2FnZXlhbWEgKDIpOg0KICAgc2VyaWFsOiA4MjUwOiBGaXggYXV0b2Nv
+bmZpZ19pcnEoKSB0byBhdm9pZCByYWNlIGNvbmRpdGlvbnMNCiAgIHNlcmlhbDogODI1MDogQWxs
+b3cgdG8gc2tpcCBhdXRvY29uZmlnX2lycSgpIGZvciBhIGNvbnNvbGUNCg0KICBkcml2ZXJzL3R0
+eS9zZXJpYWwvODI1MC84MjUwX2NvcmUuYyB8ICAgMjMgKysrKysrKysrKysrKysrKysrKysrKysN
+CiAgMSBmaWxlcyBjaGFuZ2VkLCAyMyBpbnNlcnRpb25zKCspLCAwIGRlbGV0aW9ucygtKQ0K
