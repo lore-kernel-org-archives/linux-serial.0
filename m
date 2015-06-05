@@ -1,58 +1,77 @@
-From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Subject: [PATCH 1/2] serial: 8250: Fix autoconfig_irq() to avoid race
- conditions
-Date: Fri, 5 Jun 2015 09:57:40 +0000
-Message-ID: <55717294.8020905@cp.jp.nec.com>
-References: <55717224.9060104@cp.jp.nec.com>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: console setting via stdout-path vs console=xxx (was Re: [PATCH 2/4]
+ ARC: [axs101] support early 8250 uart)
+Date: Fri, 5 Jun 2015 13:01:23 +0000
+Message-ID: <C2D7FE5348E1B147BCA15975FBA23075665A3DF6@IN01WEMBXB.internal.synopsys.com>
+References: <1431607724-9142-1-git-send-email-abrodkin@synopsys.com>
+ <1431607724-9142-3-git-send-email-abrodkin@synopsys.com>
+ <2836384.o6ec7X8zDk@wuerfel>
+ <C2D7FE5348E1B147BCA15975FBA23075665A0229@IN01WEMBXB.internal.synopsys.com>
+ <55712D5B.6090302@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55717224.9060104@cp.jp.nec.com>
-Content-Language: ja-JP
-Content-ID: <FFC7FD8170EEB54DA6708F787E398F0F@gisp.nec.co.jp>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+To: Arnd Bergmann <arnd@arndb.de>, Alexey Brodkin <Alexey.Brodkin@synopsys.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "arc-linux-dev@synopsys.com" <arc-linux-dev@synopsys.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-VGhlIGZvbGxvd2luZyByYWNlIGNvbmRpdGlvbnMgY2FuIGhhcHBlbiBpZiBhIHNlcmlhbCBpcyB1
-c2VkIGFzIGNvbnNvbGUuDQogIENhc2UxLiBDUFVfQiBoYW5kbGVzIGFuIGludGVycnVwdCBmcm9t
-IGEgc2VyaWFsDQogICAgYXV0b2NvbmZpZ19pcnEoKSBmYWlscyB3aGV0aGVyIHRoZSBpbnRlcnJ1
-cHQgaXMgcmFpc2VkIG9yIG5vdA0KICAgIGlmIENQVV9CIGlzIGRpc2FibGVkIHRvIGhhbmRsZSBp
-bnRlcnJ1cHRzIGZvciBsb25nZXIgdGhhbiBpdCBleHBlY3RzLg0KICBDYXNlMi4gQ1BVX0IgY2xl
-YXJzIFVBUlRfSUVSIGp1c3QgYWZ0ZXIgQ1BVX0Egc2V0cyBVQVJUX0lFUg0KICAgIEEgc2VyaWFs
-IG1heSBub3QgbWFrZSBhbiBpbnRlcnJ1cHQuDQogICAgYXV0b2NvbmZpZ19pcnEoKSBjYW4gZmFp
-bCBpZiB0aGUgaW50ZXJydXB0IGlzIG5vdCByYWlzZWQuDQogIENhc2UzLiBDUFVfQSBzZXRzIFVB
-UlRfSUVSIGp1c3QgYWZ0ZXIgQ1BVX0IgY2xlYXJzIFVBUlRfSUVSDQogICAgVGhpcyBpcyBhbiB1
-bmV4cGVjdGVkIGJlaGF2aW9yIGZvciB1YXJ0X2NvbnNvbGVfd3JpdGUoKS4NCg0KICBDUFVfQSBb
-YXV0b2NvbmZpZ19pcnFdICAgICAgQ1BVX0IgW3NlcmlhbDgyNTBfY29uc29sZV93cml0ZV0NCiAg
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0NCiAgcHJvYmVfaXJxX29uKCkgICAgICAgICAgICAgIHNwaW5fbG9ja19pcnFzYXZl
-KCZwb3J0LT5sb2NrLCkNCiAgc2VyaWFsX291dHAoLFVBUlRfSUVSLDB4MGYpIHNlcmlhbF9vdXQo
-LFVBUlRfSUVSLDApDQogIHVkZWxheSgyMCk7ICAgICAgICAgICAgICAgICB1YXJ0X2NvbnNvbGVf
-d3JpdGUoKQ0KICBwcm9iZV9pcnFfb2ZmKCkNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IHNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJnBvcnQtPmxvY2ssKQ0KICAtLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KDQpJZiBh
-dXRvY29uZmlnX2lycSgpIGZhaWxzLCB0aGUgY29uc29sZSBkb2Vzbid0IHdvcmsgaW4gaW50ZXJy
-dXB0IG1vZGUsDQp0aGUgbW9kZSBjYW5ub3QgYmUgY2hhbmdlZCBhbnltb3JlLCBhbmQgImlucHV0
-IG92ZXJydW4iDQood2hpY2ggY2FuIG1ha2Ugb3BlcmF0aW9uIG1pc3Rha2VzKSBoYXBwZW5zIGVh
-c2lseS4NClRoaXMgcHJvYmxlbSBoYXBwZW5zIHdpdGggaGlnaCByYXRlIGV2ZXJ5IGJvb3Qgb25j
-ZSBpdCBvY2N1cnMNCmJlY2F1c2UgdGhlIGJvb3Qgc2VxdWVuY2UgaXMgYWx3YXlzIGFsbW9zdCBz
-YW1lLg0KDQpTaWduZWQtb2ZmLWJ5OiBUYWljaGkgS2FnZXlhbWEgPHQta2FnZXlhbWFAY3AuanAu
-bmVjLmNvbT4NCkNjOiBOYW95YSBIb3JpZ3VjaGkgPG4taG9yaWd1Y2hpQGFoLmpwLm5lYy5jb20+
-DQotLS0NCiAgZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9jb3JlLmMgfCAgICA2ICsrKysr
-Kw0KICAxIGZpbGVzIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgMCBkZWxldGlvbnMoLSkNCg0K
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfY29yZS5jIGIvZHJpdmVy
-cy90dHkvc2VyaWFsLzgyNTAvODI1MF9jb3JlLmMNCmluZGV4IDQ1MDZlNDAuLjZiZjMxZjIgMTAw
-NjQ0DQotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2NvcmUuYw0KKysrIGIvZHJp
-dmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9jb3JlLmMNCkBAIC0xMzA5LDYgKzEzMDksOSBAQCBz
-dGF0aWMgdm9pZCBhdXRvY29uZmlnX2lycShzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnVwKQ0KICAJ
-dW5zaWduZWQgbG9uZyBpcnFzOw0KICAJaW50IGlycTsNCg0KKwlpZiAodWFydF9jb25zb2xlKHBv
-cnQpKQ0KKwkJY29uc29sZV9sb2NrKCk7DQorDQogIAlpZiAocG9ydC0+ZmxhZ3MgJiBVUEZfRk9V
-UlBPUlQpIHsNCiAgCQlJQ1AgPSAocG9ydC0+aW9iYXNlICYgMHhmZTApIHwgMHgxZjsNCiAgCQlz
-YXZlX0lDUCA9IGluYl9wKElDUCk7DQpAQCAtMTM0Nyw2ICsxMzUwLDkgQEAgc3RhdGljIHZvaWQg
-YXV0b2NvbmZpZ19pcnEoc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1cCkNCiAgCWlmIChwb3J0LT5m
-bGFncyAmIFVQRl9GT1VSUE9SVCkNCiAgCQlvdXRiX3Aoc2F2ZV9JQ1AsIElDUCk7DQoNCisJaWYg
-KHVhcnRfY29uc29sZShwb3J0KSkNCisJCWNvbnNvbGVfdW5sb2NrKCk7DQorDQogIAlwb3J0LT5p
-cnEgPSAoaXJxID4gMCkgPyBpcnEgOiAwOw0KICB9DQoNCi0tIA0KMS43LjENCg0K
+On Friday 05 June 2015 10:32 AM, Vineet Gupta wrote:
+> On Thursday 14 May 2015 06:34 PM, Vineet Gupta wrote:
+>> > On Thursday 14 May 2015 06:23 PM, Arnd Bergmann wrote:
+>> > 
+>> > On Thursday 14 May 2015 15:48:42 Alexey Brodkin wrote:
+>> > 
+>> > 
+>>>> >> >
+>>>> >> >         chosen {
+>>>> >> > -               bootargs = "console=tty0 console=ttyS3,115200n8 consoleblank=0";
+>>>> >> > +               bootargs = "earlycon=uart8250,mmio32,0xe0022000,115200n8 console=tty0 console=ttyS3,115200n8 consoleblank=0";
+>>>> >> >         };
+>>>> >> >  };
+>>>> >> >
+>> > 
+>> > When you do earlycon with DT, better use a 'stdout-path' property that points
+>> > to the device, and just put 'earlycon' without arguments on the command line.
+>> > 
+>> >         Arnd
+>> > 
+>> > 
+>> > Sure ! I tried that once (3.16) and even the dts patch got merged but had to be reverted out !
+>> > 
+>> > 2014-07-27 22524b02b17b Revert "ARC: [arcfpga] stdout-path now suffices for earlycon/console"
+>> > 
+>> > Let me see if that works again since serial land has seen some significant churn in recent times
+>> > 
+>> > Thx for pointing this out !
+> so specifying console with stdout-path works for me,
+> 
+> -  bootargs = "earlycon=uart8250,mmio32,0xf0000000,115200n8 console=tty0
+> console=ttyS0,115200n8 consoleblank=0 debug";
+> +  bootargs = "earlycon=uart8250,mmio32,0xf0000000,115200n8";
+> +  stdout-path = &uart0;
+> ..
+
+Also interestingly, specifying console with stdout-path vs. console=xyz leads to a
+subtle behaviour change of boot printing.
+
+With console=xyz, console_setup() -> __add_preferred_console() sets
+preferred_console = 0, which doesn't happen with stdout-path.
+
+ARC defconfigs have CONFIG_VT_CONSOLE, so tty0 gets registered. For stdout-path
+case it becomes default (deregistering the earlycon), but not in case of cconsole=xyz.
+
+This manifests as a "pause" in boot logging (perceivable if u have linux running
+in simulation on a slow host or a large initramfs loading etc). printing is
+restored when the real 8250 console registers towards end of boot.
+
+One workaround to this seems to be using @keep_bootcon cmdline option. Asking for
+all the bells and whistles to be implemented with paramless earlycon is perhaps
+not fair :-)
+
+But this is something developers in this area need to be aware of nevertheless.
+
+Thx,
+-Vineet
