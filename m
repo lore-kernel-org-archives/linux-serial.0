@@ -1,113 +1,123 @@
 From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH 2/4] ARC: [axs101] support early 8250 uart
-Date: Fri, 5 Jun 2015 10:32:19 +0530
-Message-ID: <55712D5B.6090302@synopsys.com>
-References: <1431607724-9142-1-git-send-email-abrodkin@synopsys.com> <1431607724-9142-3-git-send-email-abrodkin@synopsys.com> <2836384.o6ec7X8zDk@wuerfel> <C2D7FE5348E1B147BCA15975FBA23075665A0229@IN01WEMBXB.internal.synopsys.com>
+Subject: Re: [PATCH 1/1] serial: earlycon: Add support for big-endian MMIO
+ accesses
+Date: Fri, 5 Jun 2015 11:00:47 +0530
+Message-ID: <55713407.3010803@synopsys.com>
+References: <1432526068-22820-1-git-send-email-noamc@ezchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <C2D7FE5348E1B147BCA15975FBA23075665A0229@IN01WEMBXB.internal.synopsys.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Alexey Brodkin <Alexey.Brodkin@synopsys.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "arc-linux-dev@synopsys.com" <arc-linux-dev@synopsys.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <rob.herring@calxeda.com>, Peter Hurley <peter@hurleysoftware.com>
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1432526068-22820-1-git-send-email-noamc@ezchip.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Noam Camus <noamc@ezchip.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
+Cc: giladb@ezchip.com, cmetcalf@ezchip.com, cernekee@gmail.com, robh@kernel.org, peter@hurleysoftware.com, gregkh@linuxfoundation.org
 List-Id: linux-serial@vger.kernel.org
 
-+CC  linux-serial
-
-On Thursday 14 May 2015 06:34 PM, Vineet Gupta wrote:
-> On Thursday 14 May 2015 06:23 PM, Arnd Bergmann wrote:
+On Monday 25 May 2015 09:24 AM, Noam Camus wrote:
+> From: Noam Camus <noamc@ezchip.com>
 > 
-> On Thursday 14 May 2015 15:48:42 Alexey Brodkin wrote:
+> Support command line parameters of the form:
+> earlycon=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
 > 
+> This commit seem to be needed even after commit:
+> serial: 8250: Add support for big-endian MMIO accesses
+> c627f2ceb692e8a9358b64ac2d139314e7bb0d17
 > 
->> >
->> >         chosen {
->> > -               bootargs = "console=tty0 console=ttyS3,115200n8 consoleblank=0";
->> > +               bootargs = "earlycon=uart8250,mmio32,0xe0022000,115200n8 console=tty0 console=ttyS3,115200n8 consoleblank=0";
->> >         };
->> >  };
->> >
+> Signed-off-by: Noam Camus <noamc@ezchip.com>
+> ---
+>  Documentation/kernel-parameters.txt |    9 +++++----
+>  drivers/tty/serial/earlycon.c       |    9 ++++++---
+>  drivers/tty/serial/serial_core.c    |    7 +++++--
+>  3 files changed, 16 insertions(+), 9 deletions(-)
 > 
-> When you do earlycon with DT, better use a 'stdout-path' property that points
-> to the device, and just put 'earlycon' without arguments on the command line.
+> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+> index 61ab162..55bb093 100644
+> --- a/Documentation/kernel-parameters.txt
+> +++ b/Documentation/kernel-parameters.txt
+> @@ -959,14 +959,15 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+>  		uart[8250],io,<addr>[,options]
+>  		uart[8250],mmio,<addr>[,options]
+>  		uart[8250],mmio32,<addr>[,options]
+> +		uart[8250],mmio32be,<addr>[,options]
+>  		uart[8250],0x<addr>[,options]
+>  			Start an early, polled-mode console on the 8250/16550
+>  			UART at the specified I/O port or MMIO address.
+>  			MMIO inter-register address stride is either 8-bit
+> -			(mmio) or 32-bit (mmio32).
+> -			If none of [io|mmio|mmio32], <addr> is assumed to be
+> -			equivalent to 'mmio'. 'options' are specified in the
+> -			same format described for "console=ttyS<n>"; if
+> +			(mmio) or 32-bit (mmio32 or mmio32be).
+> +			If none of [io|mmio|mmio32|mmio32be], <addr> is assumed
+> +			to be equivalent to 'mmio'. 'options' are specified
+> +			in the same format described for "console=ttyS<n>"; if
+>  			unspecified, the h/w is not initialized.
+>  
+>  		pl011,<addr>
+> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> index 5fdc9f3..a840732 100644
+> --- a/drivers/tty/serial/earlycon.c
+> +++ b/drivers/tty/serial/earlycon.c
+> @@ -72,6 +72,7 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+>  
+>  	switch (port->iotype) {
+>  	case UPIO_MEM32:
+> +	case UPIO_MEM32BE:
+>  		port->regshift = 2;	/* fall-through */
+>  	case UPIO_MEM:
+>  		port->mapbase = addr;
+> @@ -90,9 +91,11 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+>  		strlcpy(device->options, options, length);
+>  	}
+>  
+> -	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32)
+> +	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32 ||
+> +	    port->iotype == UPIO_MEM32BE)
+>  		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
+> -			(port->iotype == UPIO_MEM32) ? "32" : "",
+> +			(port->iotype == UPIO_MEM) ? "" :
+> +			(port->iotype == UPIO_MEM32) ? "32" : "32be",
+>  			(unsigned long long)port->mapbase,
+>  			device->options);
+>  	else
+> @@ -133,7 +136,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+>   *
+>   *	Registers the earlycon console matching the earlycon specified
+>   *	in the param string @buf. Acceptable param strings are of the form
+> - *	   <name>,io|mmio|mmio32,<addr>,<options>
+> + *	   <name>,io|mmio|mmio32|mmio32be,<addr>,<options>
+>   *	   <name>,0x<addr>,<options>
+>   *	   <name>,<options>
+>   *	   <name>
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 0b7bb12..1124090 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1816,8 +1816,8 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+>   *	@options: ptr for <options> field; NULL if not present (out)
+>   *
+>   *	Decodes earlycon kernel command line parameters of the form
+> - *	   earlycon=<name>,io|mmio|mmio32,<addr>,<options>
+> - *	   console=<name>,io|mmio|mmio32,<addr>,<options>
+> + *	   earlycon=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
+> + *	   console=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
+>   *
+>   *	The optional form
+>   *	   earlycon=<name>,0x<addr>,<options>
+> @@ -1835,6 +1835,9 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
+>  	} else if (strncmp(p, "mmio32,", 7) == 0) {
+>  		*iotype = UPIO_MEM32;
+>  		p += 7;
+> +	} else if (strncmp(p, "mmio32be,", 9) == 0) {
+> +		*iotype = UPIO_MEM32BE;
+> +		p += 9;
+>  	} else if (strncmp(p, "io,", 3) == 0) {
+>  		*iotype = UPIO_PORT;
+>  		p += 3;
 > 
->         Arnd
-> 
-> 
-> Sure ! I tried that once (3.16) and even the dts patch got merged but had to be reverted out !
-> 
-> 2014-07-27 22524b02b17b Revert "ARC: [arcfpga] stdout-path now suffices for earlycon/console"
-> 
-> Let me see if that works again since serial land has seen some significant churn in recent times
-> 
-> Thx for pointing this out !
 
-so specifying console with stdout-path works for me,
 
--  bootargs = "earlycon=uart8250,mmio32,0xf0000000,115200n8 console=tty0
-console=ttyS0,115200n8 consoleblank=0 debug";
-+  bootargs = "earlycon=uart8250,mmio32,0xf0000000,115200n8";
-+  stdout-path = &uart0;
-..
+Ping ! Peter, Rob, Kevin - can u please take a look.
 
-But I don't see earlycon working with paramless earlycon
 
--  bootargs = "earlycon=uart8250,mmio32,0xf0000000,115200n8";
-+  bootargs = "earlycon";
-   stdout-path = &uart0;
-
-And I don't see how it would work for others as of 4.1-rc6
-Relevant config items I have are:
-
-CONFIG_SERIAL_EARLYCON=y
-CONFIG_SERIAL_8250=y
-CONFIG_SERIAL_8250_CONSOLE=y
-CONFIG_SERIAL_CORE=y
-CONFIG_SERIAL_CORE_CONSOLE=y
-CONFIG_SERIAL_OF_PLATFORM=y
-...
-
-There are 2 earlyparam handlers for earlcon,
-(1) param_setup_earlycon() -> setup_earlycon() -> register_console()
-(2) setup_of_earlycon() -> early_init_dt_scan_chosen_serial -> of_setup_earlycon()
-
-#1 only works when arg to earlycon is *not NULL*
-#2 only works when arg is *NULL*.
-
-For my case, #2 bails out early as __earlycon_of_table happens to be empty.
-
-8071d8a0 T __earlycon_of_table
-8071d8a0 000000c4 t __earlycon_of_table_sentinel
-
-This make sense since I don't see any OF_EARLYCON_DECLARE() in 8250 driver.
-As a quick hack I added one in 8250/8250_early.c
-
-@@ -152,3 +154,4 @@ static int __init early_serial8250_setup(struct
-earlycon_device *device,
- }
- EARLYCON_DECLARE(uart8250, early_serial8250_setup);
- EARLYCON_DECLARE(uart, early_serial8250_setup);
-+OF_EARLYCON_DECLARE(uart8250, "ns8250", early_serial8250_setup);
-
-I needed another fine adjustment as of_setup_earlycon() assumes mmio, while it
-needs to be memio32 for my case.
-
-@@ -199,7 +199,7 @@ int __init of_setup_earlycon(unsigned long addr,
-        int err;
-        struct uart_port *port = &early_console_dev.port;
-
--       port->iotype = UPIO_MEM;
-+       port->iotype = UPIO_MEM32;
-
-With this paramless earlycon works.
-
-Now both the above are hacks, but I want to understand if I'm missing something in
-ARC port or does core need some adjustments along the lines of above, since
-presumably others have it working !
-
-P.S. with respect to the original patch, I would fold it into for-next with change
-to stdout-path and keep earlycon as before - we can fix it up later.
-
-Thx,
--vineet
