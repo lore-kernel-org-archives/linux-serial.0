@@ -1,8 +1,8 @@
 From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 Subject: Re: [PATCH V2 2/3] tty: serial: fsl_lpuart: remove RTS/CTS control
  from set/get_mctrl
-Date: Mon, 8 Jun 2015 10:14:48 +0100
-Message-ID: <20150608091448.GT7557@n2100.arm.linux.org.uk>
+Date: Mon, 8 Jun 2015 10:19:31 +0100
+Message-ID: <20150608091931.GU7557@n2100.arm.linux.org.uk>
 References: <1433136067-20644-1-git-send-email-bhuvanchandra.dv@toradex.com>
  <1433136067-20644-3-git-send-email-bhuvanchandra.dv@toradex.com>
  <20150608064113.GX18985@pengutronix.de>
@@ -18,55 +18,24 @@ Cc: Bhuvanchandra DV <bhuvanchandra.dv-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>,
 List-Id: linux-serial@vger.kernel.org
 
 On Mon, Jun 08, 2015 at 08:41:13AM +0200, Uwe Kleine-K=F6nig wrote:
-> Hello,
->=20
-> On Mon, Jun 01, 2015 at 10:51:06AM +0530, Bhuvanchandra DV wrote:
-> > The LPUART does not provide manual control of RTS/CTS signals,
-> > those can only be controlled by the hardware directly. Therefore
-> > manual control of those signals through mctrl can not be provided.
-> > The current implementation enables/disables the automatic control,
-> > which is not what mctrl should do, hence remove the incorrect
-> > implementation.
-> >=20
-> > Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
-> > ---
-> >  drivers/tty/serial/fsl_lpuart.c | 63 +++++------------------------=
-------------
-> >  1 file changed, 7 insertions(+), 56 deletions(-)
-> >=20
-> > diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/f=
-sl_lpuart.c
-> > index 08ce76f..532cfb7 100644
-> > --- a/drivers/tty/serial/fsl_lpuart.c
-> > +++ b/drivers/tty/serial/fsl_lpuart.c
-> > @@ -822,64 +822,15 @@ static unsigned int lpuart32_tx_empty(struct =
-uart_port *port)
-> > =20
-> >  static unsigned int lpuart_get_mctrl(struct uart_port *port)
-> >  {
-> > -	unsigned int temp =3D 0;
-> > -	unsigned char reg;
-> > -
-> > -	reg =3D readb(port->membase + UARTMODEM);
-> > -	if (reg & UARTMODEM_TXCTSE)
-> > -		temp |=3D TIOCM_CTS;
-> > -
-> > -	if (reg & UARTMODEM_RXRTSE)
-> > -		temp |=3D TIOCM_RTS;
-> > -
-> > -	return temp;
 > >From reading the commit log I would expect that you only touch the
 > set_mctrl function, but not get_mctrl. Assuming your code change is
 > right, can you mention this in the commit log please? The bits
 > UARTMODEM_TXCTSE and UARTMODEM_RXRTSE only control the automatic mode=
 ?
 
-Dumb serial writers common fault #1 is to make get_mctrl return TIOCM_R=
-TS
-and/or TIOCM_DTR.  It should never return these.  This is a sure sign
-that the serial writer doesn't know what they're doing, and doesn't
-understand the interface they're implementing.  That's a good enough
-reason IMHO to reject a driver prior to merging.
+And... another point. UARTMODEM_TXCTSE and UARTMODEM_RXRTSE are the
+auto flow control _enable_ signals.  That's not something that
+get_mctrl() should ever return.  get_mctrl() is about reporting the
+actual current state of the CTS, DSR, DCD and RI signals _only_.
+
+If the hardware doesn't let you read the state, then reporting that
+CTS, DSR and DCD are all asserted is recommended, as that's the
+state needed to make the UART do useful stuff.  So that part of
+this patch is the sane thing to do.
+
+What isn't sane is to use the auto-cts enable bit to report a
+ficticious current CTS state.
 
 --=20
 =46TTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps u=
