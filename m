@@ -1,55 +1,37 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 4.1-rc7
-Date: Sat, 6 Jun 2015 16:39:46 -0700
-Message-ID: <20150606233946.GA25610@kroah.com>
+From: Bhuvanchandra DV <bhuvanchandra.dv-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH V2 0/3] Add RS-485 support and fix RTS/CTS implementation
+Date: Mon, 8 Jun 2015 11:28:13 +0530
+Message-ID: <55752EF5.1040103@toradex.com>
+References: <1433136067-20644-1-git-send-email-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1433136067-20644-1-git-send-email-bhuvanchandra.dv-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stefan-XLVq0VzYD2Y@public.gmane.org, shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, moorray3-5tc4TXWwyLM@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhuvanchandra.dv-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit e26081808edadfd257c6c9d81014e3b25e9a6118:
+Hello,
 
-  Linux 4.1-rc4 (2015-05-18 10:13:47 -0700)
+Ping!
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.1-rc7
-
-for you to fetch changes up to 72586c6061ab8c23ffd9f301ed19782a44ff5f04:
-
-  n_tty: Fix auditing support for cannonical mode (2015-06-01 07:11:04 +0900)
-
-----------------------------------------------------------------
-TTY/Serial driver fixes for 4.1-rc7
-
-Here are a few TTY and Serial driver fixes for reported regressions and
-crashes.  All of these have been in linux-next with no reported
-problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Dave Martin (1):
-      serial/amba-pl011: Unconditionally poll for FIFO space before each TX char
-
-Laura Abbott (1):
-      n_tty: Fix auditing support for cannonical mode
-
-Mark Tomlinson (1):
-      n_tty: Fix calculation of size in canon_copy_from_read_buf
-
-Philipp Zabel (1):
-      serial: imx: Fix DMA handling for IDLE condition aborts
-
-Sebastian Andrzej Siewior (1):
-      serial: 8250_omap: provide complete custom startup & shutdown callbacks
-
- drivers/tty/n_tty.c                 | 21 +++++++---
- drivers/tty/serial/8250/8250_omap.c | 82 +++++++++++++++++++++++++++++++++----
- drivers/tty/serial/amba-pl011.c     | 16 ++++----
- drivers/tty/serial/imx.c            |  8 ++++
- 4 files changed, 105 insertions(+), 22 deletions(-)
+On 06/01/2015 10:51 AM, Bhuvanchandra DV wrote:
+> Changes since V1:
+> Use common get/set mctrl control methods for both lpuart, lpuart32
+> and fix indention.
+>
+> Bhuvanchandra DV (3):
+>    ARM: dts: colibri-vf: Add pinmux for UART_0 aka UART_A RTS/CTS pins
+>    tty: serial: fsl_lpuart: remove RTS/CTS control from set/get_mctrl
+>    tty: serial: fsl_lpuart: Add support for RS-485
+>
+>   arch/arm/boot/dts/vf-colibri.dtsi |   2 +
+>   drivers/tty/serial/fsl_lpuart.c   | 103 ++++++++++++++++++++------------------
+>   2 files changed, 57 insertions(+), 48 deletions(-)
+>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
