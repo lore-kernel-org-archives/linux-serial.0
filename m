@@ -1,39 +1,77 @@
-From: Bhuvanchandra DV <bhuvanchandra.dv-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH V2 2/3] tty: serial: fsl_lpuart: remove RTS/CTS control
- from set/get_mctrl
-Date: Tue, 9 Jun 2015 09:42:28 +0530
-Message-ID: <557667AC.3030506@toradex.com>
-References: <1433136067-20644-1-git-send-email-bhuvanchandra.dv@toradex.com> <1433136067-20644-3-git-send-email-bhuvanchandra.dv@toradex.com> <20150608091244.GS7557@n2100.arm.linux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150608091244.GS7557-l+eeeJia6m9vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, moorray3-5tc4TXWwyLM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stefan-XLVq0VzYD2Y@public.gmane.org, bhuvanchandra.dv-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Rob Herring <robh@kernel.org>
+Subject: [PATCH 13/15] tty/serial: kill off set_irq_flags usage
+Date: Tue,  9 Jun 2015 13:26:39 -0500
+Message-ID: <1433874401-27161-14-git-send-email-robh@kernel.org>
+References: <1433874401-27161-1-git-send-email-robh@kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1433874401-27161-1-git-send-email-robh@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org, arm@kernel.org, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Barry Song <baohua@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 06/08/2015 02:42 PM, Russell King - ARM Linux wrote:
-> On Mon, Jun 01, 2015 at 10:51:06AM +0530, Bhuvanchandra DV wrote:
->> +    /*
->> +     * CTS/RTS can _only_ be handled
->> +     * automatically by the hardware.
->> +     */
->
-> That's really not acceptable.  You need to do something here so that you
-> can _force_ RTS to be deasserted when the kernel buffers fill up - be
-> that by stopping reading characters and letting the FIFO fill up or
-> something of that ilk.
-Agreed, will fix this.
->
-> Ignoring the rest of the flow control system in the kernel is not really
-> acceptable.
->
+set_irq_flags is ARM specific with custom flags which have genirq
+equivalents. Convert drivers to use the genirq interfaces directly, so we
+can kill off set_irq_flags. The translation of flags is as follows:
 
-Best regards,
-Bhuvan
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+IRQF_VALID -> !IRQ_NOREQUEST
+IRQF_PROBE -> !IRQ_NOPROBE
+IRQF_NOAUTOEN -> IRQ_NOAUTOEN
+
+For IRQs managed by an irqdomain, the irqdomain core code handles clearing
+and setting IRQ_NOREQUEST already, so there is no need to do this in
+.map() functions and we can simply remove the set_irq_flags calls. Some
+users also set IRQ_NOPROBE and this has been maintained although it is not
+clear that is really needed. There appears to be a great deal of blind
+copy and paste of this code.
+
+Signed-off-by: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Barry Song <baohua@kernel.org>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+---
+ drivers/tty/serial/serial_ks8695.c | 2 +-
+ drivers/tty/serial/sirfsoc_uart.c  | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_ks8695.c b/drivers/tty/serial/serial_ks8695.c
+index 5c79bda..b4decf8 100644
+--- a/drivers/tty/serial/serial_ks8695.c
++++ b/drivers/tty/serial/serial_ks8695.c
+@@ -328,7 +328,7 @@ static int ks8695uart_startup(struct uart_port *port)
+ {
+ 	int retval;
+ 
+-	set_irq_flags(KS8695_IRQ_UART_TX, IRQF_VALID | IRQF_NOAUTOEN);
++	irq_modify_status(KS8695_IRQ_UART_TX, IRQ_NOREQUEST, IRQ_NOAUTOEN);
+ 	tx_enable(port, 0);
+ 	rx_enable(port, 1);
+ 	ms_enable(port, 1);
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index 9de3eab..bcc298d 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -1053,7 +1053,7 @@ static int sirfsoc_uart_startup(struct uart_port *port)
+ 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
+ 	unsigned int index			= port->line;
+ 	int ret;
+-	set_irq_flags(port->irq, IRQF_VALID | IRQF_NOAUTOEN);
++	irq_modify_status(port->irq, IRQ_NOREQUEST, IRQ_NOAUTOEN);
+ 	ret = request_irq(port->irq,
+ 				sirfsoc_uart_isr,
+ 				0,
+@@ -1100,8 +1100,8 @@ static int sirfsoc_uart_startup(struct uart_port *port)
+ 	sirfport->ms_enabled = false;
+ 	if (sirfport->uart_reg->uart_type == SIRF_USP_UART &&
+ 		sirfport->hw_flow_ctrl) {
+-		set_irq_flags(gpio_to_irq(sirfport->cts_gpio),
+-			IRQF_VALID | IRQF_NOAUTOEN);
++		irq_modify_status(gpio_to_irq(sirfport->cts_gpio),
++			IRQ_NOREQUEST, IRQ_NOAUTOEN);
+ 		ret = request_irq(gpio_to_irq(sirfport->cts_gpio),
+ 			sirfsoc_uart_usp_cts_handler, IRQF_TRIGGER_FALLING |
+ 			IRQF_TRIGGER_RISING, "usp_cts_irq", sirfport);
+-- 
+2.1.0
