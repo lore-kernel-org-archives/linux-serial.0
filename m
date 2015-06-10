@@ -1,77 +1,40 @@
-From: Rob Herring <robh@kernel.org>
-Subject: [PATCH 13/15] tty/serial: kill off set_irq_flags usage
-Date: Tue,  9 Jun 2015 13:26:39 -0500
-Message-ID: <1433874401-27161-14-git-send-email-robh@kernel.org>
-References: <1433874401-27161-1-git-send-email-robh@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1433874401-27161-1-git-send-email-robh@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, arm@kernel.org, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Barry Song <baohua@kernel.org>, linux-serial@vger.kernel.org
+From: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v9 4/5] serial: stm32-usart: Add STM32 USART Driver
+Date: Wed, 10 Jun 2015 13:33:22 +0200
+Message-ID: <CALszF6B7_xOMvO9pRJJPNeR4JnOgAQAohSARDivzt2d1DQWP_Q@mail.gmail.com>
+References: <1432328616-16964-1-git-send-email-mcoquelin.stm32@gmail.com>
+	<1432328616-16964-5-git-send-email-mcoquelin.stm32@gmail.com>
+	<20150531215246.GA24174@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150531215246.GA24174-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kamil Lulko <rev13-5tc4TXWwyLM@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>linu
 List-Id: linux-serial@vger.kernel.org
 
-set_irq_flags is ARM specific with custom flags which have genirq
-equivalents. Convert drivers to use the genirq interfaces directly, so we
-can kill off set_irq_flags. The translation of flags is as follows:
+2015-05-31 23:52 GMT+02:00 Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>:
+> On Fri, May 22, 2015 at 11:03:35PM +0200, Maxime Coquelin wrote:
+>> This drivers adds support to the STM32 USART controller, which is a
+>> standard serial driver.
+>>
+>> Tested-by: Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>> Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+>> Reviewed-by: Vladimir Zapolskiy <vladimir_zapolskiy-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org>
+>> Reviewed-by: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>
+> Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 
-IRQF_VALID -> !IRQ_NOREQUEST
-IRQF_PROBE -> !IRQ_NOPROBE
-IRQF_NOAUTOEN -> IRQ_NOAUTOEN
+Thanks Greg.
 
-For IRQs managed by an irqdomain, the irqdomain core code handles clearing
-and setting IRQ_NOREQUEST already, so there is no need to do this in
-.map() functions and we can simply remove the set_irq_flags calls. Some
-users also set IRQ_NOPROBE and this has been maintained although it is not
-clear that is really needed. There appears to be a great deal of blind
-copy and paste of this code.
+Will you apply it to your tty tree for v4.2? Or it should go in
+someone else tree?
 
-Signed-off-by: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: Barry Song <baohua@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
----
- drivers/tty/serial/serial_ks8695.c | 2 +-
- drivers/tty/serial/sirfsoc_uart.c  | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_ks8695.c b/drivers/tty/serial/serial_ks8695.c
-index 5c79bda..b4decf8 100644
---- a/drivers/tty/serial/serial_ks8695.c
-+++ b/drivers/tty/serial/serial_ks8695.c
-@@ -328,7 +328,7 @@ static int ks8695uart_startup(struct uart_port *port)
- {
- 	int retval;
- 
--	set_irq_flags(KS8695_IRQ_UART_TX, IRQF_VALID | IRQF_NOAUTOEN);
-+	irq_modify_status(KS8695_IRQ_UART_TX, IRQ_NOREQUEST, IRQ_NOAUTOEN);
- 	tx_enable(port, 0);
- 	rx_enable(port, 1);
- 	ms_enable(port, 1);
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index 9de3eab..bcc298d 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -1053,7 +1053,7 @@ static int sirfsoc_uart_startup(struct uart_port *port)
- 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
- 	unsigned int index			= port->line;
- 	int ret;
--	set_irq_flags(port->irq, IRQF_VALID | IRQF_NOAUTOEN);
-+	irq_modify_status(port->irq, IRQ_NOREQUEST, IRQ_NOAUTOEN);
- 	ret = request_irq(port->irq,
- 				sirfsoc_uart_isr,
- 				0,
-@@ -1100,8 +1100,8 @@ static int sirfsoc_uart_startup(struct uart_port *port)
- 	sirfport->ms_enabled = false;
- 	if (sirfport->uart_reg->uart_type == SIRF_USP_UART &&
- 		sirfport->hw_flow_ctrl) {
--		set_irq_flags(gpio_to_irq(sirfport->cts_gpio),
--			IRQF_VALID | IRQF_NOAUTOEN);
-+		irq_modify_status(gpio_to_irq(sirfport->cts_gpio),
-+			IRQ_NOREQUEST, IRQ_NOAUTOEN);
- 		ret = request_irq(gpio_to_irq(sirfport->cts_gpio),
- 			sirfsoc_uart_usp_cts_handler, IRQF_TRIGGER_FALLING |
- 			IRQF_TRIGGER_RISING, "usp_cts_irq", sirfport);
--- 
-2.1.0
+Regards,
+Maxime
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
