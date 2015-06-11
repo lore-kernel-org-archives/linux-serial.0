@@ -1,41 +1,68 @@
-From: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
-Subject: [PATCH] serial: sprd: check for NULL after calling devm_clk_get
-Date: Thu, 11 Jun 2015 10:39:46 +0800
-Message-ID: <1433990386-14722-1-git-send-email-chunyan.zhang@spreadtrum.com>
-References: <serial-sprd>
+From: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH linux-next v2 0/4] tty/serial: at91: add support to FIFOs
+Date: Thu, 11 Jun 2015 18:20:13 +0200
+Message-ID: <cover.1434038494.git.cyrille.pitchen@atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <serial-sprd>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: peter@hurleysoftware.com, zhang.lyra@gmail.com, fernando.guzman.lugo@intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, ludovic.desroches-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, leilei.zhao-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, josh.wu-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Fernando Guzman Lugo <fernando.guzman.lugo@intel.com>
+ChangeLog
 
-In platforms which does not use CLK framework (HAVE_CLK not set), the
-clk_* functions return NULL instead of an error. This patch handles that
-scenario.
+v2:
+- remove "atmel,rts-high-threshold" and "atmel,rts-low-threshold" from new
+  DT properties. For now these two thresholds are set once for all during the
+  probe but a later patch might allow to configure them at run time.
+- reword the commit message of the DT property patch to better explain why we
+  have chosen to introduce the new property "atmel,fifo-size".
+- add a missing chunk in the FIFO patch: as the commit message explains, we
+  need to use 8bit accesses when dealing with the Transmit/Receive Holding
+  Registers.
 
-Signed-off-by: Fernando Guzman Lugo <fernando.guzman.lugo@intel.com>
-Signed-off-by: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
----
- drivers/tty/serial/sprd_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v1:
+This series of patches add support to FIFOs which will be introduced with Atmel
+sama5d2x SoC.
 
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index 582d272..3866516 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -716,7 +716,7 @@ static int sprd_probe(struct platform_device *pdev)
- 	up->flags = UPF_BOOT_AUTOCONF;
- 
- 	clk = devm_clk_get(&pdev->dev, NULL);
--	if (!IS_ERR(clk))
-+	if (!IS_ERR_OR_NULL(clk))
- 		up->uartclk = clk_get_rate(clk);
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+FIFOs allow to reduce the number of I/O access. Indeed depending on the data
+size and the USART mode, FIFOs work in either single or multiple data. For
+multiple data, up to 4 data can be written into the Transmit Holding Register
+or read from the Receive Holding Register in a single word access.
+
+Also the RX FIFO allows to reduce the risk of receive overrun and data loss,
+especially when the DMA controller is not used.
+
+Finally, when the hardware handshake mode is selected, the RTS line can now be
+controlled by two thresholds on the RX FIFO. When FIFO level (the number of
+data available to be read) crosses the high threshold, the RTS line is set to
+high level telling the peer that it should stop sending new data. Data are read
+from the RX FIFO and when the FIFO level crosses the low threshold, the RTS
+is set back to low level telling the remote peer that it can send data again.
+
+This new feature resolves a long time hardware limitation where the RTS line
+was directly controlled by a PDC signal. There is no equivalent of that signal
+for the DMA controller so for all SoCs without PDC for USART there was no mean
+to control the RTS line properly: once the hardware handshake mode selected,
+the RTS line remains high level. Next SoCs with FIFOs will be able to use the
+hardware handshake mode thanks to the RX FIFO.
+
+Cyrille Pitchen (4):
+  ARM: at91/dt: add a new DT property to support FIFOs on Atmel USARTs
+  tty/serial: at91: fix some macro definitions to fit coding style
+  tty/serial: at91: add support to FIFOs
+  tty/serial: at91: use 32bit writes into TX FIFO when DMA is enabled
+
+ .../devicetree/bindings/serial/atmel-usart.txt     |   3 +
+ drivers/tty/serial/atmel_serial.c                  | 193 +++++++++++++----
+ include/linux/atmel_serial.h                       | 240 ++++++++++++---------
+ 3 files changed, 293 insertions(+), 143 deletions(-)
+
 -- 
-1.9.1
+1.8.2.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
