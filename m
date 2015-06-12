@@ -1,62 +1,76 @@
-From: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
-Subject: [PATCH] serial: 8250_uniphier: add bindings document for UniPhier UART
-Date: Fri, 12 Jun 2015 18:04:17 +0900
-Message-ID: <1434099857-13594-1-git-send-email-yamada.masahiro@socionext.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 02/13] dmaengine: Introduce
+ dma_request_slave_channel_compat_reason()
+Date: Fri, 12 Jun 2015 18:28:37 +0530
+Message-ID: <20150612125837.GJ28601@localhost>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
+ <1432646768-12532-3-git-send-email-peter.ujfalusi@ti.com>
+ <20150529093317.GF3140@localhost>
+ <CAMuHMdVJ0h9qXxBWH9L2y4O2KLkEq12KW_6k8rTgi+Lux=C0gw@mail.gmail.com>
+ <20150529101846.GG3140@localhost>
+ <55687892.7050606@ti.com>
+ <20150602125535.GS3140@localhost>
+ <5570758E.6030302@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-crypto-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5570758E.6030302@ti.com>
+Sender: linux-crypto-owner@vger.kernel.org
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Tony Lindgren <tony@atomide.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Linux MMC List <linux-mmc@vger.kernel.org>, linux-crypto@vger.kernel.org, linux-spi <linux-spi@vger.kernel.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, ALSA Development Mailing List <alsa-devel@alsa-project.org>
 List-Id: linux-serial@vger.kernel.org
 
-This is binding information for the UniPhier on-chip UART driver
-(drivers/tty/serial/8250/8250_uniphier.c).
+On Thu, Jun 04, 2015 at 06:58:06PM +0300, Peter Ujfalusi wrote:
+> Vinod,
+> 
+> On 06/02/2015 03:55 PM, Vinod Koul wrote:
+> > On Fri, May 29, 2015 at 05:32:50PM +0300, Peter Ujfalusi wrote:
+> >> On 05/29/2015 01:18 PM, Vinod Koul wrote:
+> >>> On Fri, May 29, 2015 at 11:42:27AM +0200, Geert Uytterhoeven wrote:
+> >>>> On Fri, May 29, 2015 at 11:33 AM, Vinod Koul <vinod.koul@intel.com> wrote:
+> >>>>> On Tue, May 26, 2015 at 04:25:57PM +0300, Peter Ujfalusi wrote:
+> >>>>>> dma_request_slave_channel_compat() 'eats' up the returned error codes which
+> >>>>>> prevents drivers using the compat call to be able to do deferred probing.
+> >>>>>>
+> >>>>>> The new wrapper is identical in functionality but it will return with error
+> >>>>>> code in case of failure and will pass the -EPROBE_DEFER to the caller in
+> >>>>>> case dma_request_slave_channel_reason() returned with it.
+> >>>>> This is okay but am worried about one more warpper, how about fixing
+> >>>>> dma_request_slave_channel_compat()
+> >>>>
+> >>>> Then all callers of dma_request_slave_channel_compat() have to be
+> >>>> modified to handle ERR_PTR first.
+> >>>>
+> >>>> The same is true for (the existing) dma_request_slave_channel_reason()
+> >>>> vs. dma_request_slave_channel().
+> >>> Good point, looking again, I think we should rather fix
+> >>> dma_request_slave_channel_reason() as it was expected to return err code and
+> >>> add new users. Anyway users of this API do expect the reason...
+> >>
+> >> Hrm, they are for different use.dma_request_slave_channel()/_reason() is for
+> >> drivers only working via DT or ACPI while
+> >> dma_request_slave_channel_compat()/_reason() is for drivers expected to run in
+> >> DT/ACPI or legacy mode as well.
+> >>
+> >> I added the dma_request_slave_channel_compat_reason() because OMAP/daVinci
+> >> drivers are using this to request channels - they need to support DT and
+> >> legacy mode.
+> > I think we should hide these things behind the API and do this behind the
+> > hood for ACPI/DT systems.
+> > 
+> > Also it makes sense to use right API and mark rest as depricated
+> 
+> So to convert the dma_request_slave_channel_compat() and not to create _reason
+> variant?
+> 
+> Or to have single API to request channel? The problem with that is that we
+> need different parameters for legacy and DT for example.
+Sorry this slipped thru
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
----
-
-Greg,
-
-If not too late, can you merge this patch into your tty repository
-for the upcoming merge window, please?
+Thinking about it again, I think we should coverge to two APIs and mark the
+legacy depracuated and look to convert folks and phase that out
 
 
- .../devicetree/bindings/serial/uniphier-uart.txt   | 23 ++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/uniphier-uart.txt
-
-diff --git a/Documentation/devicetree/bindings/serial/uniphier-uart.txt b/Documentation/devicetree/bindings/serial/uniphier-uart.txt
-new file mode 100644
-index 0000000..0b3892a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/uniphier-uart.txt
-@@ -0,0 +1,23 @@
-+UniPhier UART controller
-+
-+Required properties:
-+- compatible: should be "socionext,uniphier-uart".
-+- reg: offset and length of the register set for the device.
-+- interrupts: a single interrupt specifier.
-+- clocks: phandle to the input clock.
-+
-+Optional properties:
-+- fifo-size: the RX/TX FIFO size.  Defaults to 64 if not specified.
-+
-+Example:
-+	aliases {
-+		serial0 = &serial0;
-+	};
-+
-+	serial0: serial@54006800 {
-+		compatible = "socionext,uniphier-uart";
-+		reg = <0x54006800 0x40>;
-+		interrupts = <0 33 4>;
-+		clocks = <&uart_clk>;
-+		fifo-size = <64>;
-+	};
 -- 
-1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+~Vinod
