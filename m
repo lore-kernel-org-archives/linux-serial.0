@@ -1,49 +1,79 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
-Date: Fri, 12 Jun 2015 17:39:45 -0700
-Message-ID: <20150613003945.GA10941@kroah.com>
-References: <1433513267-24163-1-git-send-email-Dave.Martin@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1433513267-24163-1-git-send-email-Dave.Martin@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Dave Martin <Dave.Martin@arm.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, linux-serial@vger.kernel.org, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, Robin Murphy <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+Subject: [PATCH/RFC] serial: sh-sci: Fix issue of frequent rx_full interrupt
+Date: Mon, 15 Jun 2015 02:26:26 +0900
+Message-ID: <1434302786-31162-1-git-send-email-ykaneko0929@gmail.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jun 05, 2015 at 03:07:47PM +0100, Dave Martin wrote:
-> pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
-> sufficient to inhibit pl011_int() from being triggered by a local
-> IRQ and trying to re-take the same lock.  This can lead to
-> deadlocks.
-> 
-> This patch uses the _irq() locking variants instead to ensure that
-> pl011_int() handling for a given port is deferred until any
-> pl011_tx_softirq() work for that port is complete.
-> 
-> Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-> Tested-by: Robin Murphy <robin.murphy@arm.com>
-> Cc: stable <stable@vger.kernel.org> # 4.1
-> ---
-> 
-> Another candidate for v4.1 if possible (sorry!) -- I thought this change
-> was already in, but it went astray when I was refactoring.
+From: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
 
-Too late for 4.1, sorry.  This doesn't apply to my tty-next branch,
-otherwise I would have queued it up there.  Care to redo it and mark it
-for -stable, like I did above, and resend it?
+When the receive FIFO is not read in PIO transfer, rx_full interrupt
+occurs frequently. This patch avoids it by discarding the receive FIFO.
 
-thanks,
+Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+---
 
-greg k-h
+This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
+tree.
+
+ drivers/tty/serial/sh-sci.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index b74a644..4ec3c32 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -121,6 +121,8 @@ struct sci_port {
+ #endif
+ 
+ 	struct notifier_block		freq_transition;
++
++	u64				rxfull_time;
+ };
+ 
+ /* Function prototypes */
+@@ -690,12 +692,26 @@ static void sci_receive_chars(struct uart_port *port)
+ 		return;
+ 
+ 	while (1) {
++		int rxfill = sci_rxfill(port);
++		u64 now = get_jiffies_64();
+ 		/* Don't copy more bytes than there is room for in the buffer */
+-		count = tty_buffer_request_room(tport, sci_rxfill(port));
++		count = tty_buffer_request_room(tport, rxfill);
+ 
+ 		/* If for any reason we can't copy more data, we're done! */
+-		if (count == 0)
++		if (count == 0) {
++			int n;
++			/* discarded bytes in RX-FIFO */
++			for (n = 0; n < rxfill; n++)
++				serial_port_in(port, SCxRDR);
++			if (rxfill > 0 &&
++			    time_after64(now, sci_port->rxfull_time + (5*HZ))) {
++				sci_port->rxfull_time = now;
++				dev_warn(port->dev,
++					 "RX-FIFO isn't read, so %d bytes is discarded.\n",
++					 rxfill);
++			}
+ 			break;
++		}
+ 
+ 		if (port->type == PORT_SCI) {
+ 			char c = serial_port_in(port, SCxRDR);
+@@ -2342,6 +2358,8 @@ static int sci_init_single(struct platform_device *dev,
+ 		dev_dbg(port->dev, "DMA tx %d, rx %d\n",
+ 			p->dma_slave_tx, p->dma_slave_rx);
+ 
++	sci_port->rxfull_time = get_jiffies_64();
++
+ 	return 0;
+ }
+ 
+-- 
+1.9.1
+
