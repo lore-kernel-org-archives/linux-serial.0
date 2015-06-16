@@ -1,7 +1,7 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v3 5/5] serial/8250_fintek: Support for any io address.
-Date: Tue, 16 Jun 2015 10:41:09 +0200
-Message-ID: <1434444069-30260-6-git-send-email-ricardo.ribalda@gmail.com>
+Subject: [PATCH v3 4/5] serial/8250_fintek: Support keys different than default
+Date: Tue, 16 Jun 2015 10:41:08 +0200
+Message-ID: <1434444069-30260-5-git-send-email-ricardo.ribalda@gmail.com>
 References: <1434444069-30260-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1434444069-30260-1-git-send-email-ricardo.ribalda@gmail.com>
@@ -10,121 +10,116 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
 Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Fintek chip can be configured for io addresses different than the standard.
-
-Query the chip for the configured addresses and try to match it with the
-pnp address.
+Chip can be configured to use entry key different than 0x77. Try all the
+valid keys until one gives out the right chip id.
 
 Reported-by: Peter Hong <peter_hong@fintek.com.tw>
 Reviewed-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 51 ++++++++++++++++++-----------------
- 1 file changed, 27 insertions(+), 24 deletions(-)
+ drivers/tty/serial/8250/8250_fintek.c | 39 +++++++++++++++++++++--------------
+ 1 file changed, 23 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 8fa4d88fc98f..76e6313978de 100644
+index 2c3228e84a2e..8fa4d88fc98f 100644
 --- a/drivers/tty/serial/8250/8250_fintek.c
 +++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -28,6 +28,8 @@
- #define VENDOR_ID1_VAL 0x19
- #define VENDOR_ID2 0x24
- #define VENDOR_ID2_VAL 0x34
-+#define IO_ADDR1 0x61
-+#define IO_ADDR2 0x60
- #define LDN 0x7
+@@ -19,7 +19,6 @@
  
- #define RS485  0xF0
-@@ -63,18 +65,6 @@ static void fintek_8250_exit_key(u16 base_port)
- 	release_region(base_port + ADDR_PORT, 2);
- }
+ #define ADDR_PORT 0
+ #define DATA_PORT 1
+-#define ENTRY_KEY 0x77
+ #define EXIT_KEY 0xAA
+ #define CHIP_ID1  0x20
+ #define CHIP_ID2  0x21
+@@ -42,17 +41,18 @@
+ struct fintek_8250 {
+ 	u16 base_port;
+ 	u8 index;
++	u8 key;
+ 	long line;
+ };
  
--static int fintek_8250_get_index(resource_size_t base_addr)
--{
--	resource_size_t base[] = {0x3f8, 0x2f8, 0x3e8, 0x2e8};
--	int i;
--
--	for (i = 0; i < ARRAY_SIZE(base); i++)
--		if (base_addr == base[i])
--			return i;
--
--	return -ENODEV;
--}
--
- static int fintek_8250_check_id(u16 base_port)
+-static int fintek_8250_enter_key(u16 base_port)
++static int fintek_8250_enter_key(u16 base_port, u8 key)
  {
- 	u16 chip;
-@@ -148,24 +138,41 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+ 
+ 	if (!request_muxed_region(base_port, 2, DRIVER_NAME))
+ 		return -EBUSY;
+ 
+-	outb(ENTRY_KEY, base_port + ADDR_PORT);
+-	outb(ENTRY_KEY, base_port + ADDR_PORT);
++	outb(key, base_port + ADDR_PORT);
++	outb(key, base_port + ADDR_PORT);
  	return 0;
  }
  
--static int fintek_8250_base_port(u8 *key)
-+static int fintek_8250_base_port(u16 io_address, u8 *key, u8 *index)
+@@ -134,7 +134,7 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+ 	if (rs485->flags & SER_RS485_RTS_ON_SEND)
+ 		config |= RTS_INVERT;
+ 
+-	if (fintek_8250_enter_key(pdata->base_port))
++	if (fintek_8250_enter_key(pdata->base_port, pdata->key))
+ 		return -EBUSY;
+ 
+ 	outb(LDN, pdata->base_port + ADDR_PORT);
+@@ -148,20 +148,25 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+ 	return 0;
+ }
+ 
+-static int fintek_8250_base_port(void)
++static int fintek_8250_base_port(u8 *key)
  {
  	static const u16 addr[] = {0x4e, 0x2e};
- 	static const u16 keys[] = {0x77, 0xa0, 0x87, 0x67};
--	int i, j;
-+	int i, j, k;
+-	int i;
++	static const u16 keys[] = {0x77, 0xa0, 0x87, 0x67};
++	int i, j;
  
  	for (i = 0; i < ARRAY_SIZE(addr); i++) {
- 		for (j = 0; j < ARRAY_SIZE(keys); j++) {
--			int ret;
- 
- 			if (fintek_8250_enter_key(addr[i], keys[j]))
- 				continue;
--			ret = fintek_8250_check_id(addr[i]);
--			fintek_8250_exit_key(addr[i]);
--			if (!ret) {
-+			if (fintek_8250_check_id(addr[i])) {
-+				fintek_8250_exit_key(addr[i]);
+-		int ret;
+-
+-		if (fintek_8250_enter_key(addr[i]))
+-			continue;
+-		ret = fintek_8250_check_id(addr[i]);
+-		fintek_8250_exit_key(addr[i]);
+-		if (!ret)
+-			return addr[i];
++		for (j = 0; j < ARRAY_SIZE(keys); j++) {
++			int ret;
++
++			if (fintek_8250_enter_key(addr[i], keys[j]))
 +				continue;
-+			}
-+
-+			for (k = 0; k < 4; k++) {
-+				u16 aux;
-+
-+				outb(LDN, addr[i] + ADDR_PORT);
-+				outb(k, addr[i] + DATA_PORT);
-+
-+				outb(IO_ADDR1, addr[i] + ADDR_PORT);
-+				aux = inb(addr[i] + DATA_PORT);
-+				outb(IO_ADDR2, addr[i] + ADDR_PORT);
-+				aux |= inb(addr[i] + DATA_PORT) << 8;
-+				if (aux != io_address)
-+					continue;
-+
-+				fintek_8250_exit_key(addr[i]);
- 				*key = keys[j];
-+				*index = k;
- 				return addr[i];
- 			}
++			ret = fintek_8250_check_id(addr[i]);
 +			fintek_8250_exit_key(addr[i]);
- 		}
++			if (!ret) {
++				*key = keys[j];
++				return addr[i];
++			}
++		}
  	}
  
-@@ -177,21 +184,17 @@ fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- {
- 	struct uart_8250_port uart;
+ 	return -ENODEV;
+@@ -174,11 +179,12 @@ fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
  	struct fintek_8250 *pdata;
--	int index;
+ 	int index;
  	int base_port;
- 	u8 key;
-+	u8 index;
++	u8 key;
  
  	if (!pnp_port_valid(dev, 0))
  		return -ENODEV;
  
--	base_port = fintek_8250_base_port(&key);
-+	base_port = fintek_8250_base_port(pnp_port_start(dev, 0), &key, &index);
+-	base_port = fintek_8250_base_port();
++	base_port = fintek_8250_base_port(&key);
  	if (base_port < 0)
  		return -ENODEV;
  
--	index = fintek_8250_get_index(pnp_port_start(dev, 0));
--	if (index < 0)
--		return -ENODEV;
--
- 	memset(&uart, 0, sizeof(uart));
+@@ -206,6 +212,7 @@ fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+ 	uart.port.uartclk = 1843200;
+ 	uart.port.dev = &dev->dev;
  
- 	pdata = devm_kzalloc(&dev->dev, sizeof(*pdata), GFP_KERNEL);
++	pdata->key = key;
+ 	pdata->base_port = base_port;
+ 	pdata->index = index;
+ 	pdata->line = serial8250_register_8250_port(&uart);
 -- 
 2.1.4
