@@ -1,50 +1,51 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
-Date: Thu, 18 Jun 2015 14:54:29 +0100
-Message-ID: <1434635669-23367-1-git-send-email-Dave.Martin@arm.com>
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King <linux@arm.linux.org.uk>, Robin Murphy <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, popcorn mix <popcornmix@gmail.com>, stable <stable@vger.kernel.org>
+From: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH linux-next v2 3/4] tty/serial: at91: add support to FIFOs
+Date: Thu, 18 Jun 2015 18:36:36 +0200
+Message-ID: <20150618163636.GP27492@piout.net>
+References: <cover.1434038494.git.cyrille.pitchen@atmel.com>
+ <e9b7445f103969a286d586054d79461a6efacd65.1434038494.git.cyrille.pitchen@atmel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <e9b7445f103969a286d586054d79461a6efacd65.1434038494.git.cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Cc: nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, ludovic.desroches-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, leilei.zhao-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, josh.wu-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
-sufficient to inhibit pl011_int() from being triggered by a local
-IRQ and trying to re-take the same lock.  This can lead to
-deadlocks.
+Hi,
 
-This patch uses the _irq() locking variants instead to ensure that
-pl011_int() handling for a given port is deferred until any
-pl011_tx_softirq() work for that port is complete.
+On 11/06/2015 at 18:20:16 +0200, Cyrille Pitchen wrote :
+> 
+> Signed-off-by: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
 
-Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
-Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-Tested-by: Robin Murphy <robin.murphy@arm.com>
-Cc: stable <stable@vger.kernel.org> # 4.1
+Seems good to me, a few comments:
 
----
- drivers/tty/serial/amba-pl011.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> +	if (port->fifo_size < 8 || port->fifo_size > 32) {
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl01=
-1.c
-index 763eb20..0cc622a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1360,9 +1360,9 @@ static void pl011_tx_softirq(struct work_struct *work=
-)
- =09struct uart_amba_port *uap =3D
- =09=09container_of(dwork, struct uart_amba_port, tx_softirq_work);
-=20
--=09spin_lock(&uap->port.lock);
-+=09spin_lock_irq(&uap->port.lock);
- =09while (pl011_tx_chars(uap)) ;
--=09spin_unlock(&uap->port.lock);
-+=09spin_unlock_irq(&uap->port.lock);
- }
-=20
- static void pl011_tx_irq_seen(struct uart_amba_port *uap)
---=20
-1.7.10.4
+I'm not sure why you limit the size to 32. At some point, a new SoC may
+be release with a bigger FIFO then we'll have to change the code instead
+of just putting the appropriate value in the device tree.
+
+> +		port->fifo_size = 0;
+> +		dev_err(&pdev->dev, "Invalid FIFO size\n");
+> +		return;
+> +	}
+> +
+> +	/*
+> +	 * 0 <= rts_low <= rts_high <= fifo_size
+> +	 * Once their CTS line asserted by the remote peer, some x86 UARTs tend
+> +	 * to flush their internal TX FIFO, commonly up to 8 data, before
+> +	 * actually stopping to send new data. So we try to set the RTS High
+> +	 * Threshold to a raisonable high value respecting this 8 data empirical
+              reasonably --^
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
