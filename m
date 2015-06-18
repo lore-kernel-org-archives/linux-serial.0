@@ -1,70 +1,50 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v3 3/5] serial/8250_fintek: Support for chip_ip 0x0501
-Date: Tue, 16 Jun 2015 10:41:07 +0200
-Message-ID: <1434444069-30260-4-git-send-email-ricardo.ribalda@gmail.com>
-References: <1434444069-30260-1-git-send-email-ricardo.ribalda@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1434444069-30260-1-git-send-email-ricardo.ribalda@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Peter Huewe <PeterHuewe@gmx.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, peter_hong@fintek.com.tw
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
+Date: Thu, 18 Jun 2015 14:54:29 +0100
+Message-ID: <1434635669-23367-1-git-send-email-Dave.Martin@arm.com>
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King <linux@arm.linux.org.uk>, Robin Murphy <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, popcorn mix <popcornmix@gmail.com>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-There are some chips with the same interface but different chip ip.
+pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
+sufficient to inhibit pl011_int() from being triggered by a local
+IRQ and trying to re-take the same lock.  This can lead to
+deadlocks.
 
-Reported-by: Peter Hong <peter_hong@fintek.com.tw>
-Reviewed-by: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+This patch uses the _irq() locking variants instead to ensure that
+pl011_int() handling for a given port is deferred until any
+pl011_tx_softirq() work for that port is complete.
+
+Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
+Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+Tested-by: Robin Murphy <robin.murphy@arm.com>
+Cc: stable <stable@vger.kernel.org> # 4.1
+
 ---
- drivers/tty/serial/8250/8250_fintek.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/tty/serial/amba-pl011.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 82b055b5a26d..2c3228e84a2e 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -22,9 +22,9 @@
- #define ENTRY_KEY 0x77
- #define EXIT_KEY 0xAA
- #define CHIP_ID1  0x20
--#define CHIP_ID1_VAL 0x02
- #define CHIP_ID2  0x21
--#define CHIP_ID2_VAL 0x16
-+#define CHIP_ID_0 0x1602
-+#define CHIP_ID_1 0x0501
- #define VENDOR_ID1 0x23
- #define VENDOR_ID1_VAL 0x19
- #define VENDOR_ID2 0x24
-@@ -77,14 +77,7 @@ static int fintek_8250_get_index(resource_size_t base_addr)
- 
- static int fintek_8250_check_id(u16 base_port)
- {
--
--	outb(CHIP_ID1, base_port + ADDR_PORT);
--	if (inb(base_port + DATA_PORT) != CHIP_ID1_VAL)
--		return -ENODEV;
--
--	outb(CHIP_ID2, base_port + ADDR_PORT);
--	if (inb(base_port + DATA_PORT) != CHIP_ID2_VAL)
--		return -ENODEV;
-+	u16 chip;
- 
- 	outb(VENDOR_ID1, base_port + ADDR_PORT);
- 	if (inb(base_port + DATA_PORT) != VENDOR_ID1_VAL)
-@@ -94,6 +87,14 @@ static int fintek_8250_check_id(u16 base_port)
- 	if (inb(base_port + DATA_PORT) != VENDOR_ID2_VAL)
- 		return -ENODEV;
- 
-+	outb(CHIP_ID1, base_port + ADDR_PORT);
-+	chip = inb(base_port + DATA_PORT);
-+	outb(CHIP_ID2, base_port + ADDR_PORT);
-+	chip |= inb(base_port + DATA_PORT) << 8;
-+
-+	if (chip != CHIP_ID_0 && chip != CHIP_ID_1)
-+		return -ENODEV;
-+
- 	return 0;
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl01=
+1.c
+index 763eb20..0cc622a 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1360,9 +1360,9 @@ static void pl011_tx_softirq(struct work_struct *work=
+)
+ =09struct uart_amba_port *uap =3D
+ =09=09container_of(dwork, struct uart_amba_port, tx_softirq_work);
+=20
+-=09spin_lock(&uap->port.lock);
++=09spin_lock_irq(&uap->port.lock);
+ =09while (pl011_tx_chars(uap)) ;
+-=09spin_unlock(&uap->port.lock);
++=09spin_unlock_irq(&uap->port.lock);
  }
- 
--- 
-2.1.4
+=20
+ static void pl011_tx_irq_seen(struct uart_amba_port *uap)
+--=20
+1.7.10.4
