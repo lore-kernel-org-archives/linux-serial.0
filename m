@@ -1,46 +1,38 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH linux-next v2 1/4] ARM: at91/dt: add a new DT property to
- support FIFOs on Atmel USARTs
-Date: Thu, 18 Jun 2015 18:39:24 +0200
-Message-ID: <20150618163924.GQ27492@piout.net>
+From: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH linux-next v2 2/4] tty/serial: at91: fix some macro
+ definitions to fit coding style
+Date: Thu, 18 Jun 2015 18:39:47 +0200
+Message-ID: <20150618163947.GR27492@piout.net>
 References: <cover.1434038494.git.cyrille.pitchen@atmel.com>
- <16bdcf0c3f710ca46df86eeea82c9840454cb7aa.1434038494.git.cyrille.pitchen@atmel.com>
+ <f22220ee42ecf9301def7e90154b74937ca9ffab.1434038494.git.cyrille.pitchen@atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <16bdcf0c3f710ca46df86eeea82c9840454cb7aa.1434038494.git.cyrille.pitchen@atmel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Cyrille Pitchen <cyrille.pitchen@atmel.com>
-Cc: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, wenyou.yang@atmel.com, ludovic.desroches@atmel.com, leilei.zhao@atmel.com, josh.wu@atmel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, galak@codeaurora.org, ijc+devicetree@hellion.org.uk, mark.rutland@arm.com, pawel.moll@arm.com, robh+dt@kernel.org
+In-Reply-To: <f22220ee42ecf9301def7e90154b74937ca9ffab.1434038494.git.cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Cc: nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, ludovic.desroches-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, leilei.zhao-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, josh.wu-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 11/06/2015 at 18:20:14 +0200, Cyrille Pitchen wrote :
-> This patch adds a new DT property, "atmel,fifo-size", to enable and set
-> the maximum number of data the RX and TX FIFOs can store on FIFO capable
-> USARTs.
+On 11/06/2015 at 18:20:15 +0200, Cyrille Pitchen wrote :
+> This patch updates macro definitions in atmel_serial.h to fit the
+> 80 column rule.
 > 
-> Please be aware that the VERSION register can not be used to guess the
-> size of FIFOs. Indeed, for a given hardware version, the USARTs can be
-> integrated on Atmel SoCs with different FIFO sizes. Also the
-> "atmel,fifo-size" property is optional as older USARTs don't embed FIFO at
-> all.
+> Please note that some deprecated comments such as "[AT91SAM9261 only]"
+> are removed as the corresponding bits also exist in some later chips.
 > 
-> Besides, the FIFO size can not be read or guessed from other registers:
-> When designing the FIFO feature, no dedicated registers were added to
-> store this size. Unsed spaces in the I/O register range are limited and
-> better reserved for future usages. Instead, the FIFO size of each
-> peripheral is documented in the programmer datasheet.
+> The patch also fix macro definitions in atmel_serial.c to replace
+> (port,v) by (port, v).
 > 
-> Finally, on a given SoC, there can be several instances of USART with
-> different FIFO sizes. This explain why we'd rather use a dedicated DT
-> property than use the "compatible" property.
-> 
-> Signed-off-by: Cyrille Pitchen <cyrille.pitchen@atmel.com>
-Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-
+> Signed-off-by: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Acked-by: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 
 -- 
 Alexandre Belloni, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
