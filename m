@@ -1,68 +1,116 @@
 From: Rob Landley <rob@landley.net>
 Subject: Re: [PATCH 2/2] Changes to existing files for 0PF FPGA board.
-Date: Fri, 19 Jun 2015 16:57:00 -0500
-Message-ID: <5584902C.5010309@landley.net>
-References: <1434647946.861556@landley.net> <1434647946.861922@landley.net> <20150618175931.GA11748@kroah.com>
+Date: Fri, 19 Jun 2015 17:11:35 -0500
+Message-ID: <55849397.1060000@landley.net>
+References: <1434647946.861556@landley.net>	<1434647946.861922@landley.net> <CAMuHMdV_hNng9MDotN3jidRdG+WEUwjDwYcmTTohLPtfMEoAKg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20150618175931.GA11748@kroah.com>
+In-Reply-To: <CAMuHMdV_hNng9MDotN3jidRdG+WEUwjDwYcmTTohLPtfMEoAKg@mail.gmail.com>
 Sender: linux-sh-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Kevin Hilman <khilman@linaro.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Vivek Goyal <vgoyal@redhat.com>, "Steven Rostedt (Red Hat)" <rostedt@goodmis.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Riku Voipio <riku.voipio@linaro.org>, Jiri Kosina <jkosina@suse.cz>, Paul Bolle <pebolle@tiscali.nl>, Ingo Molnar <mingo@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Davidlohr Bueso <davidlohr@hp.com>, Richard Weinberger <richard@nod.at>, Zhigang Lu <zlu@tilera.com>, Vineet Gupta <vgupta@synopsys.com>, Richard Kuo <rkuo@codeaurora.org>, Max Filippov <jcmvbkbc@gmail.com>, Pranith Kumar <bobby.prani@gmail.com>, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, ysato@users.sourceforge.jp
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Kevin Hilman <khilman@linaro.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Vivek Goyal <vgoyal@redhat.com>, "Steven Rostedt (Red Hat)" <rostedt@goodmis.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Riku Voipio <riku.voipio@linaro.org>, Jiri Kosina <jkosina@suse.cz>, Paul Bolle <pebolle@tiscali.nl>, Ingo Molnar <mingo@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Davidlohr Bueso <davidlohr@hp.com>, Richard Weinberger <richard@nod.at>, Zhigang Lu <zlu@tilera.com>, Vineet Gupta <vgupta@synopsys.com>, Richard Kuo <rkuo@codeaurora.org>, Max Filippov <jcmvbkbc@gmail.com>, Pranith Kumar <bobby.prani@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>linux-s
 List-Id: linux-serial@vger.kernel.org
 
-On 06/18/2015 12:59 PM, Greg Kroah-Hartman wrote:
-> On Thu, Jun 18, 2015 at 10:19:19AM -0700, Rob Landley wrote:
+[Trimmed greg at what I'm interpreting as his request.]
+
+On 06/18/2015 02:36 PM, Geert Uytterhoeven wrote:
+> Hi Rob,
+> 
+> On Thu, Jun 18, 2015 at 7:19 PM, Rob Landley <rob@landley.net> wrote:
 >> Changes to existing files to add 0pf j2 board support.
+> 
+> Thanks for your patch!
+> 
+> Like Greg already said, splitting it up in logical parts and providing useful
+> patch descriptions would be highly appreciated.
+
+I actually don't know how to split it up further. The initial port was
+done by a series of contractors (in Russia, I think), and then I
+inherited it to try to get something releasable. This is the smallest
+chunk I could get to actually boot.
+
+I suppose I could send you the serial driver by itself, and _then_ the
+board, but it wouldn't compile if nothing uses it. (Similarly you can't
+boot the board without a serial console...)
+
+>> diff --git a/arch/sh/Makefile b/arch/sh/Makefile
+>> index bf5b3f5..e609157 100644
+>> --- a/arch/sh/Makefile
+>> +++ b/arch/sh/Makefile
+> 
+>> @@ -31,6 +33,7 @@ isa-y                                 := $(isa-y)-up
+>>  endif
 >>
+>>  cflags-$(CONFIG_CPU_SH2)               := $(call cc-option,-m2,)
+>> +cflags-$(CONFIG_CPU_SH2J)              := $(call cc-option,-m2,)
 > 
-> That's the second worse commit message and subject: line I've read
-> today.
+> This is superfluous, as CPU_SH2J selects CPU_SH2.
+
+Ooh, thanks.
+
+>> diff --git a/arch/sh/kernel/irq.c b/arch/sh/kernel/irq.c
+>> index eb10ff8..7de9bcb 100644
+>> --- a/arch/sh/kernel/irq.c
+>> +++ b/arch/sh/kernel/irq.c
+>> @@ -20,6 +20,8 @@
+>>  #include <asm/thread_info.h>
+>>  #include <cpu/mmu_context.h>
+>>
+>> +#include <asm/board-0pf.h>
 > 
-> And there's no signed off by line.
+> Board-specific inclusion in generic sh source file?
 
-My bad. I've always sucked at filling out paperwork, and I didn't expect
-this to go in as is. But for the sake of following the official
-procedures (well, step 11 of of SubmittingPatches, it's not mentioned in
-any of the 26 steps of SubmitChecklist), here's the requested certification:
+Gah, I thought I'd whacked all of those. (Staring at it too long to see
+some of this stuff anymore...)
 
-Signed-off-by: Rob Landley <rob@landley.net>
-Reviewed-by: D. Jeff Dionne <jeff@uclinux.org>
-
-> And there was no 1/2 patch sent.
-
-I sent one, which made it to the archive...
-
-http://lkml.iu.edu/hypermail/linux/kernel/1506.2/02539.html
-
-> And, most importantly:
+>> +
+>>  atomic_t irq_err_count;
+>>
+>>  /*
+>> @@ -175,11 +177,24 @@ void do_softirq_own_stack(void)
+>>         );
+>>  }
+>>  #else
+>> +#define noinline __attribute__((noinline))
+>> +static noinline void handle_irq_UART0(unsigned int irq) { generic_handle_irq(irq); }
+>> +static noinline void handle_irq_UART1(unsigned int irq) { generic_handle_irq(irq); }
+>> +static noinline void handle_irq_GPS(unsigned int irq) { generic_handle_irq(irq); }
+>> +static noinline void handle_irq_EMAC(unsigned int irq) { generic_handle_irq(irq); }
+>>  static inline void handle_one_irq(unsigned int irq)
+>>  {
+>> -       generic_handle_irq(irq);
+>> +       switch(irq) {
+>> +       case Irq_UART0: handle_irq_UART0(irq); break;
+>> +       case Irq_UART1: handle_irq_UART1(irq); break;
+>> +       case Irq_GPS:   handle_irq_GPS(irq); break;
+>> +       case Irq_EMAC:  handle_irq_EMAC(irq); break;
+>> +       default:
+>> +               generic_handle_irq(irq);
+>> +               break;
+>> +       }
 > 
->> diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
+> What's the purpose of this change?
+
+Honestly, your guess is as good as mine. (Sorry, I'll move it to a
+board-specific file. I mentioned needing to redo the interrupt logic
+_entirely_, it should totally be using SPARSE_IRQ. And in fact most of
+the above is for drivers I trimmed out of this submission anyway.)
+
+>>  }
+>> -#endif
+>> +#endif // CONFIG_IRQSTACKS
 > 
-> I don't care about arch/sh/ stuff, why are you sending this to me?
+> Please no C++-style comments (scripts/checkpatch.pl?)
 
-$ scripts/get_maintainer.pl j2-oldfiles.patch | grep Greg
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> (maintainer:SERIAL DRIVERS)
+I expect it to try to reach through the screen and throttle me, but sure...
 
-Sorry, my bad, I was trying to follow the documented procedure.
-Personally I'd have trimmed the cc: list but filling things out in
-triplicate seems to be all the rage these days.
-
-> You have a bit of work to do here...
-
-As I mentioned in 0/2, yes. But "release early, release often" and all that.
-
-(Or did we stop doing that now the Linux Foundation's in charge? I'm
-still stuck in the hobbyist era from back before we had a foundation
-with committees and a hierarchy where you need to go through proper
-channels and three dozen patch submission steps in two different files
-and all that. I'm trying to keep up, but I've always been really bad at
-bureaucracy...)
-
-> greg k-h
-> .
+(Now the reason _I_ thought you'd reject it had more to do with not
+having converted it to device tree yet, and things on that level. But I
+wanted to get it out there so people outside $DAYJOB can test the
+hardware. We did a linuxcon japan presentation which lwn.net covered,
+and we're getting pokes about "where can I download this", so...)
 
 Rob
 --
