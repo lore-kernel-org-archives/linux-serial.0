@@ -1,42 +1,73 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
-Date: Sat, 20 Jun 2015 11:09:37 +0200 (CEST)
-Message-ID: <416658426.177742.1434791378036.JavaMail.open-xchange@oxbsltgw09.schlund.de>
-References: <1434635669-23367-1-git-send-email-Dave.Martin@arm.com>
-Reply-To: Stefan Wahren <stefan.wahren@i2se.com>
+From: "manfred.schlaegl@gmx.at" <manfred.schlaegl@gmx.at>
+Subject: [PATCH] serial: imx: count tty buffer overruns
+Date: Sat, 20 Jun 2015 18:41:20 +0200
+Message-ID: <558597B0.80104@gmx.at>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1434635669-23367-1-git-send-email-Dave.Martin@arm.com>
-Sender: stable-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dave Martin <Dave.Martin@arm.com>
-Cc: Robin Murphy <Robin.Murphy@arm.com>, popcorn mix <popcornmix@gmail.com>, =?UTF-8?Q?Jakub_Kici=C5=84ski?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, linux-arm-kernel@lists.infradead.org, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, stable <stable@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Manfred Schlaegl <manfred.schlaegl@ginzinger.com>
 List-Id: linux-serial@vger.kernel.org
 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-> Dave Martin <Dave.Martin@arm.com> hat am 18. Juni 2015 um 15:54 geschrieben:
->
->
-> pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
-> sufficient to inhibit pl011_int() from being triggered by a local
-> IRQ and trying to re-take the same lock. This can lead to
-> deadlocks.
->
-> This patch uses the _irq() locking variants instead to ensure that
-> pl011_int() handling for a given port is deferred until any
-> pl011_tx_softirq() work for that port is complete.
->
-> Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
-> Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-> Tested-by: Robin Murphy <robin.murphy@arm.com>
-> Cc: stable <stable@vger.kernel.org> # 4.1
->
+As can be seen in function uart_insert_char (serial_core) the element
+buf_overrun of struct uart_icount is used to count overruns of
+tty-buffer.
+Added support for counting of overruns in imx driver analogue to
+serial_core.
 
-I also get info messages about inconsistent lock state on my mx28 board,
-after applying the patch the messages disappeared.
+Signed-off-by: Manfred Schlaegl <manfred.schlaegl@gmx.at>
+- ---
+ drivers/tty/serial/imx.c |   12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8825039..384cf1d 100644
+- --- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -700,7 +700,8 @@ static irqreturn_t imx_rxint(int irq, void *dev_id)
+ 		if (sport->port.ignore_status_mask & URXD_DUMMY_READ)
+ 			goto out;
+ -		tty_insert_flip_char(port, rx, flg);
++		if (tty_insert_flip_char(port, rx, flg) == 0)
++			sport->port.icount.buf_overrun++;
+ 	}
+  out:
+@@ -922,8 +923,13 @@ static void dma_rx_callback(void *data)
+ 	dev_dbg(sport->port.dev, "We get %d bytes.\n", count);
+  	if (count) {
+- -		if (!(sport->port.ignore_status_mask & URXD_DUMMY_READ))
+- -			tty_insert_flip_string(port, sport->rx_buf, count);
++		if (!(sport->port.ignore_status_mask & URXD_DUMMY_READ)) {
++			int bytes = tty_insert_flip_string(port, sport->rx_buf,
++					count);
++
++			if (bytes != count)
++				sport->port.icount.buf_overrun++;
++		}
+ 		tty_flip_buffer_push(port);
+  		start_rx_dma(sport);
+- -- 
+1.7.10.4
 
-Regards
-Stefan
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJVhZevAAoJEGS1eKPM78WhYlIP/1xUn8g37afejHntKdRgYOGZ
+V5izKDvCWNNxIIWQ3Rw1NtN9+695LO4WsZX7n4FYzBQbZHE8F5bzVM9bGnSJOjie
+4imHKaGrzWhHy9uP/Z6j6aGqdqGHD6QtxcJ6A0u4A8CrYbUZKjEXk0YUH8BPawb4
+8oKwm8Gn4N+ispHL9SDtV+q4yoOZApd6OcXdIpxrtKSunHWuSigJ66Fs7416liuh
+D90q4zEENvfdMqpBf5w5IxYUkhQHDCzE3NAgVUCeOqnFa84daq+H51GPEsbFdGlo
+MsFsu/qU0lQ1S+EnkbSoFQ/519ujMhi0pdxvcgHlijEFtLUmibh1jvIYdsw9et0o
+v3Xp5xGro7r9GOUhjiiTazVR0jPCt+owjAc/7PPiiBqaToeSeiSa7sJk8FBSkMPF
+sr2/4UStomLVZgnm/KY2O+HTTyw2insH7iVxJeHf7ZBEeQeRL+jgn2cgeyE8e8Vt
+x8jYXPhwYnWWh4C6wC1lidlCLfgDZGQI6DnnyTb2W7DEHNwGXJHPTA3N/liz5Kox
+LxNA5KA/l0gzsRZdv9iCuJVlxAWHBH5/wRE4+ojurNcyI5gGcOaiLzGqYc5QL7gz
+1ODtX0RoP1guMkq6w1LSBSIWVIGXoFn8AcWkdDgpqBp0jXWo5s2ivGXaa3OKX80y
+NMGTG7+2PxXQ9aPtk3gv
+=BuFt
+-----END PGP SIGNATURE-----
