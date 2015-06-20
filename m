@@ -1,43 +1,32 @@
-From: "manfred.schlaegl@gmx.at" <manfred.schlaegl@gmx.at>
-Subject: [PATCH] serial: imx: reduce irq-latency after rx overflow
-Date: Sat, 20 Jun 2015 18:47:53 +0200
-Message-ID: <55859939.2090505@gmx.at>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: imx: count tty buffer overruns
+Date: Sat, 20 Jun 2015 09:57:18 -0700
+Message-ID: <20150620165718.GA31390@kroah.com>
+References: <558597B0.80104@gmx.at>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <558597B0.80104@gmx.at>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: "manfred.schlaegl@gmx.at" <manfred.schlaegl@gmx.at>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Manfred Schlaegl <manfred.schlaegl@ginzinger.com>
 List-Id: linux-serial@vger.kernel.org
 
-To prevent problems with interrupt latency, and due to the fact, that
-the error will be counted anyway (icount.overrun), the dev_err is simply
-removed.
+On Sat, Jun 20, 2015 at 06:41:20PM +0200, manfred.schlaegl@gmx.at wrote:
+> As can be seen in function uart_insert_char (serial_core) the element
+> buf_overrun of struct uart_icount is used to count overruns of
+> tty-buffer.
+> Added support for counting of overruns in imx driver analogue to
+> serial_core.
+> 
+> Signed-off-by: Manfred Schlaegl <manfred.schlaegl@gmx.at>
 
-Background:
-If an rx-fifo overflow occurs a dev_err message was called in interrupt
-context. Since dev_err messages are written to console in a synchronous way
-(unbuffered), and console may be a serial terminal, this leads to a
-highly increased interrupt-latency (several milliseconds).
-As a result of the high latency more rx-fifo overflows will happen, and
-therefore a feedback loop of errors is created.
+Your From: line in your email doesn't match this, please fix up and
+resend.
 
-Signed-off-by: Manfred Schlaegl <manfred.schlaegl@gmx.at>
----
- drivers/tty/serial/imx.c |    1 -
- 1 file changed, 1 deletion(-)
+Same goes for your other serial patch.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 384cf1d..40fd32c 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -767,7 +767,6 @@ static irqreturn_t imx_int(int irq, void *dev_id)
- 		writel(USR1_AWAKE, sport->port.membase + USR1);
-  	if (sts2 & USR2_ORE) {
--		dev_err(sport->port.dev, "Rx FIFO overrun\n");
- 		sport->port.icount.overrun++;
- 		writel(USR2_ORE, sport->port.membase + USR2);
- 	}
--- 
-1.7.10.4
+thanks,
+
+greg k-h
