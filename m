@@ -1,76 +1,42 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 2/2] Changes to existing files for 0PF FPGA board.
-Date: Sat, 20 Jun 2015 10:00:37 +0200
-Message-ID: <CAMuHMdXscFCvHGGkFvF6XPS9b=K+p7cCQrnUA86BMfyWpwHP1Q@mail.gmail.com>
-References: <1434647946.861556@landley.net>
-	<1434647946.861922@landley.net>
-	<CAMuHMdV_hNng9MDotN3jidRdG+WEUwjDwYcmTTohLPtfMEoAKg@mail.gmail.com>
-	<55849397.1060000@landley.net>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
+Date: Sat, 20 Jun 2015 11:09:37 +0200 (CEST)
+Message-ID: <416658426.177742.1434791378036.JavaMail.open-xchange@oxbsltgw09.schlund.de>
+References: <1434635669-23367-1-git-send-email-Dave.Martin@arm.com>
+Reply-To: Stefan Wahren <stefan.wahren@i2se.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <55849397.1060000@landley.net>
-Sender: linux-sh-owner@vger.kernel.org
-To: Rob Landley <rob@landley.net>
-Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Kevin Hilman <khilman@linaro.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Vivek Goyal <vgoyal@redhat.com>, "Steven Rostedt (Red Hat)" <rostedt@goodmis.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Riku Voipio <riku.voipio@linaro.org>, Jiri Kosina <jkosina@suse.cz>, Paul Bolle <pebolle@tiscali.nl>, Ingo Molnar <mingo@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Davidlohr Bueso <davidlohr@hp.com>, Richard Weinberger <richard@nod.at>, Zhigang Lu <zlu@tilera.com>, Vineet Gupta <vgupta@synopsys.com>, Richard Kuo <rkuo@codeaurora.org>, Max Filippov <jcmvbkbc@gmail.com>, Pranith Kumar <bobby.prani@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>linux-s
+Content-Transfer-Encoding: 7bit
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1434635669-23367-1-git-send-email-Dave.Martin@arm.com>
+Sender: stable-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dave Martin <Dave.Martin@arm.com>
+Cc: Robin Murphy <Robin.Murphy@arm.com>, popcorn mix <popcornmix@gmail.com>, =?UTF-8?Q?Jakub_Kici=C5=84ski?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, linux-arm-kernel@lists.infradead.org, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
 
-On Sat, Jun 20, 2015 at 12:11 AM, Rob Landley <rob@landley.net> wrote:
-> On 06/18/2015 02:36 PM, Geert Uytterhoeven wrote:
->> On Thu, Jun 18, 2015 at 7:19 PM, Rob Landley <rob@landley.net> wrote:
->>> Changes to existing files to add 0pf j2 board support.
->>
->> Thanks for your patch!
->>
->> Like Greg already said, splitting it up in logical parts and providing useful
->> patch descriptions would be highly appreciated.
+> Dave Martin <Dave.Martin@arm.com> hat am 18. Juni 2015 um 15:54 geschrieben:
 >
-> I actually don't know how to split it up further. The initial port was
-> done by a series of contractors (in Russia, I think), and then I
-> inherited it to try to get something releasable. This is the smallest
-> chunk I could get to actually boot.
 >
-> I suppose I could send you the serial driver by itself, and _then_ the
-> board, but it wouldn't compile if nothing uses it. (Similarly you can't
-> boot the board without a serial console...)
+> pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
+> sufficient to inhibit pl011_int() from being triggered by a local
+> IRQ and trying to re-take the same lock. This can lead to
+> deadlocks.
+>
+> This patch uses the _irq() locking variants instead to ensure that
+> pl011_int() handling for a given port is deferred until any
+> pl011_tx_softirq() work for that port is complete.
+>
+> Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
+> Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+> Tested-by: Robin Murphy <robin.murphy@arm.com>
+> Cc: stable <stable@vger.kernel.org> # 4.1
+>
 
-You don't have to send in a big initial patch that actually boots.
-For new architecture/SoC/board support, just split it in logical hunks,
-and submit it in some logical order that always builds.
+I also get info messages about inconsistent lock state on my mx28 board,
+after applying the patch the messages disappeared.
 
-E.g.:
-  - SoC core support (arch/sh/),
-  - Board support (arch/sh/),
-  - Drivers.
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
 
-The first two should go in through akpm (sh is orphaned),
-the rest through the individual subsystem maintainers.
-
-> (Now the reason _I_ thought you'd reject it had more to do with not
-> having converted it to device tree yet, and things on that level. But I
-
-Sh is an existing supported architecture, so DT is not a hard requirement.
-If you would have waited until after the removal of sh, it would be much
-harder :-) (cfr. h8300, but Sato-san did a great job there, with DT, CCF, ...)
-
-> wanted to get it out there so people outside $DAYJOB can test the
-> hardware. We did a linuxcon japan presentation which lwn.net covered,
-> and we're getting pokes about "where can I download this", so...)
-
-It's great to hear there's so much interest in this! Let's hope this will
-attract more actual contributors...
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
---
-To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+Regards
+Stefan
