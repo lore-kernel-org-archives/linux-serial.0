@@ -1,44 +1,101 @@
-From: Manfred Schlaegl <manfred.schlaegl@gmx.at>
-Subject: [PATCH] serial: imx: reduce irq-latency after rx overflow
-Date: Sat, 20 Jun 2015 19:25:52 +0200
-Message-ID: <5585A220.5000405@gmx.at>
+From: Rob Landley <rob@landley.net>
+Subject: Re: [PATCH 2/2] Changes to existing files for 0PF FPGA board.
+Date: Sat, 20 Jun 2015 15:13:06 -0500
+Message-ID: <5585C952.6020406@landley.net>
+References: <1434647946.861556@landley.net>	<1434647946.861922@landley.net>	<CAMuHMdV_hNng9MDotN3jidRdG+WEUwjDwYcmTTohLPtfMEoAKg@mail.gmail.com>	<55849397.1060000@landley.net> <CAMuHMdXscFCvHGGkFvF6XPS9b=K+p7cCQrnUA86BMfyWpwHP1Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Manfred Schlaegl <manfred.schlaegl@ginzinger.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdXscFCvHGGkFvF6XPS9b=K+p7cCQrnUA86BMfyWpwHP1Q@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Kevin Hilman <khilman@linaro.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Vivek Goyal <vgoyal@redhat.com>, "Steven Rostedt (Red Hat)" <rostedt@goodmis.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Riku Voipio <riku.voipio@linaro.org>, Jiri Kosina <jkosina@suse.cz>, Paul Bolle <pebolle@tiscali.nl>, Ingo Molnar <mingo@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Davidlohr Bueso <davidlohr@hp.com>, Richard Weinberger <richard@nod.at>, Zhigang Lu <zlu@tilera.com>, Vineet Gupta <vgupta@synopsys.com>, Richard Kuo <rkuo@codeaurora.org>, Max Filippov <jcmvbkbc@gmail.com>, Pranith Kumar <bobby.prani@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>linux-s
 List-Id: linux-serial@vger.kernel.org
 
-To prevent problems with interrupt latency, and due to the fact, that
-the error will be counted anyway (icount.overrun), the dev_err is simply
-removed.
+On 06/20/2015 03:00 AM, Geert Uytterhoeven wrote:
+> Hi Rob,
+> 
+> On Sat, Jun 20, 2015 at 12:11 AM, Rob Landley <rob@landley.net> wrote:
+>> On 06/18/2015 02:36 PM, Geert Uytterhoeven wrote:
+>>> On Thu, Jun 18, 2015 at 7:19 PM, Rob Landley <rob@landley.net> wrote:
+>>>> Changes to existing files to add 0pf j2 board support.
+>>>
+>>> Thanks for your patch!
+>>>
+>>> Like Greg already said, splitting it up in logical parts and providing useful
+>>> patch descriptions would be highly appreciated.
+>>
+>> I actually don't know how to split it up further. The initial port was
+>> done by a series of contractors (in Russia, I think), and then I
+>> inherited it to try to get something releasable. This is the smallest
+>> chunk I could get to actually boot.
+>>
+>> I suppose I could send you the serial driver by itself, and _then_ the
+>> board, but it wouldn't compile if nothing uses it. (Similarly you can't
+>> boot the board without a serial console...)
+> 
+> You don't have to send in a big initial patch that actually boots.
+> For new architecture/SoC/board support, just split it in logical hunks,
+> and submit it in some logical order that always builds.
+> 
+> E.g.:
+>   - SoC core support (arch/sh/),
+>   - Board support (arch/sh/),
+>   - Drivers.
+> 
+> The first two should go in through akpm (sh is orphaned),
+> the rest through the individual subsystem maintainers.
 
-Background:
-If an rx-fifo overflow occurs a dev_err message was called in interrupt
-context. Since dev_err messages are written to console in a synchronous way
-(unbuffered), and console may be a serial terminal, this leads to a
-highly increased interrupt-latency (several milliseconds).
-As a result of the high latency more rx-fifo overflows will happen, and
-therefore a feedback loop of errors is created.
+I'm aware sh is orphaned
+(http://www.openwall.com/lists/musl/2014/02/17/3). I'm trying to do
+something about that.
 
-Signed-off-by: Manfred Schlaegl <manfred.schlaegl@gmx.at>
----
- drivers/tty/serial/imx.c |    1 -
- 1 file changed, 1 deletion(-)
+I'm not up to maintaining an architecture myself (after the
+kernel.org/doc thing I walked away from kernel stuff for most of a year,
+as you can see I'm a bit out of practice), but I spoke to Yoshinori Sato
+(who used to maintain sh2, and only dropped it when renesas discontinued
+the hardware) and he said he might be interested in returning as a
+co-maintainer.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 384cf1d..40fd32c 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -767,7 +767,6 @@ static irqreturn_t imx_int(int irq, void *dev_id)
- 		writel(USR1_AWAKE, sport->port.membase + USR1);
- 
- 	if (sts2 & USR2_ORE) {
--		dev_err(sport->port.dev, "Rx FIFO overrun\n");
- 		sport->port.icount.overrun++;
- 		writel(USR2_ORE, sport->port.membase + USR2);
- 	}
--- 
-1.7.10.4
+(I note that I've been regression testing and fixing sh4 in my
+aboriginal linux project for several years now, although it's been
+quiescent enough on the kernel side the majority of my posts about it
+seem to be qemu issues, from
+https://lists.gnu.org/archive/html/qemu-devel/2010-03/msg00976.html to
+http://comments.gmane.org/gmane.comp.emulators.qemu/294066 . Dealing
+with sh2 is new to me, but it's also my day job these days. :)
+
+>> (Now the reason _I_ thought you'd reject it had more to do with not
+>> having converted it to device tree yet, and things on that level. But I
+> 
+> Sh is an existing supported architecture, so DT is not a hard requirement.
+
+Yeah, but new board... And it's the right thing to do.
+
+> If you would have waited until after the removal of sh, it would be much
+> harder :-) (cfr. h8300, but Sato-san did a great job there, with DT, CCF, ...)
+
+Indeed he did. We had lunch with him when I was in Japan a couple weeks ago.
+
+I've got the references I need to do this, just... lots of shoveling on
+a lot of fronts to do right now. (And I mentioned like 3 other things I
+already know I need to fix in the 0/2 message.)
+
+>> wanted to get it out there so people outside $DAYJOB can test the
+>> hardware. We did a linuxcon japan presentation which lwn.net covered,
+>> and we're getting pokes about "where can I download this", so...)
+> 
+> It's great to hear there's so much interest in this! Let's hope this will
+> attract more actual contributors...
+
+The "where can I download this" is now the developer tab of 0pf.org by
+the way. And the mailing lists are on lists.nommu.org.
+
+I'll try to submit an updated patch set in the next couple days.
+
+Thanks,
+
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe linux-sh" in
