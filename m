@@ -1,46 +1,49 @@
-From: Dave P Martin <Dave.Martin@arm.com>
-Subject: Re: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
-Date: Tue, 23 Jun 2015 12:13:10 +0100
-Message-ID: <20150623111310.GB3645@e103592.cambridge.arm.com>
-References: <1434635669-23367-1-git-send-email-Dave.Martin@arm.com>
- <416658426.177742.1434791378036.JavaMail.open-xchange@oxbsltgw09.schlund.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 3/9] arm: add call to CPU idle quirks handler
+Date: Tue, 23 Jun 2015 23:59 +0200
+Message-ID: <2235698.8UjxLOMCMb@wuerfel>
+References: <1435094387-20146-1-git-send-email-pawelo@king.net.pl> <1435094387-20146-4-git-send-email-pawelo@king.net.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <416658426.177742.1434791378036.JavaMail.open-xchange@oxbsltgw09.schlund.de>
-Content-Disposition: inline
-Sender: stable-owner@vger.kernel.org
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Robin Murphy <Robin.Murphy@arm.com>, popcorn mix <popcornmix@gmail.com>, Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1435094387-20146-4-git-send-email-pawelo@king.net.pl>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Paul Osmialowski <pawelo@king.net.pl>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Anson Huang <b20788@freescale.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Frank Li <Frank.Li@freescale.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jingchang Lu <jingchang.lu@freescale.com>, Jiri Slaby <jslaby@suse.cz>, Kees Cook <keescook@chromium.org>, Kumar Gala <galak@codeaurora.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Linus Walleij <linus.walleij@linaro.org>, Magnus Damm <damm+renesas@opensource.se>, Michael Turquette <mturquette@baylibre.com>, Nathan Lynch <nathan_lynch@mentor.com>, Nicolas Pitre <nico@linaro.org>, Maxime
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Jun 20, 2015 at 10:09:37AM +0100, Stefan Wahren wrote:
+On Tuesday 23 June 2015 23:19:41 Paul Osmialowski wrote:
+> Some SoCs need additional actions to be performed after arch idle,
+> e.g. Kinetis requires invalidation of the I/D bus cache.
 > 
-> > Dave Martin <Dave.Martin@arm.com> hat am 18. Juni 2015 um 15:54 geschrieben:
-> >
-> >
-> > pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
-> > sufficient to inhibit pl011_int() from being triggered by a local
-> > IRQ and trying to re-take the same lock. This can lead to
-> > deadlocks.
-> >
-> > This patch uses the _irq() locking variants instead to ensure that
-> > pl011_int() handling for a given port is deferred until any
-> > pl011_tx_softirq() work for that port is complete.
-> >
-> > Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
-> > Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-> > Tested-by: Robin Murphy <robin.murphy@arm.com>
-> > Cc: stable <stable@vger.kernel.org> # 4.1
-> >
+> Such handler could be held in provided <mach/idle.h> header file.
 > 
-> I also get info messages about inconsistent lock state on my mx28 board,
-> after applying the patch the messages disappeared.
+> Signed-off-by: Paul Osmialowski <pawelo@king.net.pl>
+> ---
+>  arch/arm/Kconfig          | 7 +++++++
+>  arch/arm/kernel/process.c | 7 +++++++
+>  2 files changed, 14 insertions(+)
 > 
-> Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 8e3a833..8ef8f8f 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -98,6 +98,13 @@ config ARM_HAS_SG_CHAIN
+>  config NEED_SG_DMA_LENGTH
+>  	bool
+>  
+> +config NEED_MACH_IDLE_H
+> +	bool
+> +
+> +config ARM_CPU_IDLE_QUIRKS
+> +	bool
+> +	select NEED_MACH_IDLE_H
+> +
 
-Thanks for the confirmation.
+We're not adding header files like this, please come up
+with another solution. How about a cpuidle driver, or
+possibly just overriding arm_pm_idle()?
 
-Cheers
----Dave
+
+	Arnd
