@@ -1,94 +1,73 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH 6/9] arm: twr-k70f120m: clock source drivers for Kinetis
- SoC
-Date: Wed, 24 Jun 2015 09:53:30 +0200 (CEST)
-Message-ID: <alpine.DEB.2.11.1506240947330.4037@nanos>
-References: <1435094387-20146-1-git-send-email-pawelo@king.net.pl> <1435094387-20146-7-git-send-email-pawelo@king.net.pl>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: [PATCH] tty/early: make serial8250_early_{in,out} static again
+Date: Wed, 24 Jun 2015 16:56:24 +0530
+Message-ID: <1435145184-32303-1-git-send-email-vgupta@synopsys.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1435094387-20146-7-git-send-email-pawelo@king.net.pl>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Paul Osmialowski <pawelo@king.net.pl>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Anson Huang <b20788@freescale.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Frank Li <Frank.Li@freescale.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jingchang Lu <jingchang.lu@freescale.com>, Jiri Slaby <jslaby@suse.cz>, Kees Cook <keescook@chromium.org>, Kumar Gala <galak@codeaurora.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Linus Walleij <linus.walleij@linaro.org>, Magnus Damm <damm+renesas@opensource.se>, Michael Turquette <mturquette@baylibre.com>, Nathan Lynch <nathan_lynch@mentor.com>, Nicolas
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Vineet Gupta <Vineet.Gupta1@synopsys.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Noam Camus <noamc@ezchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 23 Jun 2015, Paul Osmialowski wrote:
-> +/*
-> + * Clock event device set mode function
-> + */
-> +static void kinetis_clockevent_tmr_set_mode(
-> +	enum clock_event_mode mode, struct clock_event_device *clk)
-> +{
-> +	struct kinetis_clock_event_ddata *pit =
-> +		container_of(clk, struct kinetis_clock_event_ddata, evtdev);
-> +
-> +	switch (mode) {
-> +	case CLOCK_EVT_MODE_PERIODIC:
-> +		kinetis_pit_enable(pit->base, 1);
-> +		break;
-> +	case CLOCK_EVT_MODE_ONESHOT:
-> +	case CLOCK_EVT_MODE_UNUSED:
-> +	case CLOCK_EVT_MODE_SHUTDOWN:
-> +	default:
-> +		kinetis_pit_enable(pit->base, 0);
-> +	}
-> +}
+Commit ed71871bed719 ("tty/8250_early: Turn serial_in/serial_out into
+weak symbols") made these routines weak to allow platform specific
+Big endian override
 
-Please move to the new set_state_* interfaces. set_mode() is deprecated.
+However recent updates to core, specifically ebc5e20082 ("serial:
+of_serial: Support big-endian register accesses") and 6e63be3fee14
+("serial: earlycon: Add support for big-endian MMIO accesses") means
+that round about way to overide the early serial accessors is no longer
+needed.
 
-> +static int kinetis_clockevent_tmr_set_next_event(
-> +	unsigned long delta, struct clock_event_device *c)
-> +{
-> +	struct kinetis_clock_event_ddata *pit =
-> +		container_of(c, struct kinetis_clock_event_ddata, evtdev);
-> +	unsigned long flags;
-> +
-> +	raw_local_irq_save(flags);
+Cc: <linux-serial@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Kevin Cernekee <cernekee@gmail.com>
+Cc: Noam Camus <noamc@ezchip.com>
+Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+---
+ drivers/tty/serial/8250/8250_early.c | 4 ++--
+ include/linux/serial_8250.h          | 2 --
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-Pointless exercise. This is called with interrupts disabled.
-
-> +	kinetis_pit_init(pit->base, delta);
-> +	kinetis_pit_enable(pit->base, 1);
-> +	raw_local_irq_restore(flags);
-
-
-> +static struct irqaction kinetis_clockevent_irqaction[KINETIS_PIT_CHANNELS] = {
-> +	{
-> +		.name = "Kinetis Kernel Time Tick (pit0)",
-
-Please use oneword descriptive names not half sentences.
-
-> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
-> +		.dev_id = &kinetis_clockevent_tmrs[0],
-> +		.handler = kinetis_clockevent_tmr_irq_handler,
-> +	}, {
-> +		.name = "Kinetis Kernel Time Tick (pit1)",
-> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
-> +		.dev_id = &kinetis_clockevent_tmrs[1],
-> +		.handler = kinetis_clockevent_tmr_irq_handler,
-> +	}, {
-> +		.name = "Kinetis Kernel Time Tick (pit2)",
-> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
-> +		.dev_id = &kinetis_clockevent_tmrs[2],
-> +		.handler = kinetis_clockevent_tmr_irq_handler,
-> +	}, {
-> +		.name = "Kinetis Kernel Time Tick (pit3)",
-> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
-> +		.dev_id = &kinetis_clockevent_tmrs[3],
-> +		.handler = kinetis_clockevent_tmr_irq_handler,
-> +	},
-
-Aside of that. Please use standard request_irq() there is no reason to
-use setup_irq here.
-
-> +
-> +	setup_irq(irq, &(kinetis_clockevent_irqaction[chan]));
-
-  request_irq(irq, handler, flags, "name", &kinetis_clockevent_tmrs[chan]);
-
-....
-
-Thanks,
-
-	tglx
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 771dda29a0f8..faed05f25bc2 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -35,7 +35,7 @@
+ #include <asm/io.h>
+ #include <asm/serial.h>
+ 
+-unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offset)
++static unsigned int __init serial8250_early_in(struct uart_port *port, int offset)
+ {
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+@@ -51,7 +51,7 @@ unsigned int __weak __init serial8250_early_in(struct uart_port *port, int offse
+ 	}
+ }
+ 
+-void __weak __init serial8250_early_out(struct uart_port *port, int offset, int value)
++static void __init serial8250_early_out(struct uart_port *port, int offset, int value)
+ {
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index ba82c07feb95..9075712db8d8 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -136,8 +136,6 @@ void serial8250_resume_port(int line);
+ 
+ extern int early_serial_setup(struct uart_port *port);
+ 
+-extern unsigned int serial8250_early_in(struct uart_port *port, int offset);
+-extern void serial8250_early_out(struct uart_port *port, int offset, int value);
+ extern int early_serial8250_setup(struct earlycon_device *device,
+ 					 const char *options);
+ extern void serial8250_do_set_termios(struct uart_port *port,
+-- 
+1.9.1
