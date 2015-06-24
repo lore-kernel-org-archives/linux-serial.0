@@ -1,181 +1,231 @@
 From: Paul Osmialowski <pawelo@king.net.pl>
-Subject: Re: [PATCH 5/9] arm: twr-k70f120m: basic support for Kinetis
- TWR-K70F120M
-Date: Wed, 24 Jun 2015 06:42:58 +0200 (CEST)
-Message-ID: <alpine.LNX.2.00.1506240627020.24366@localhost.localdomain>
-References: <1435094387-20146-1-git-send-email-pawelo@king.net.pl> <1435094387-20146-6-git-send-email-pawelo@king.net.pl> <3935594.UmXqE2ND2k@wuerfel>
+Subject: Re: [PATCH 6/9] arm: twr-k70f120m: clock source drivers for Kinetis
+ SoC
+Date: Wed, 24 Jun 2015 07:09:06 +0200 (CEST)
+Message-ID: <alpine.LNX.2.00.1506240703440.24366@localhost.localdomain>
+References: <1435094387-20146-1-git-send-email-pawelo@king.net.pl> <1435094387-20146-7-git-send-email-pawelo@king.net.pl> <5589DCB9.2000908@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3935594.UmXqE2ND2k@wuerfel>
+In-Reply-To: <5589DCB9.2000908@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Paul Osmialowski <pawelo@king.net.pl>, Andrew Morton <akpm@linux-foundation.org>, Anson Huang <b20788@freescale.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Frank Li <Frank.Li@freescale.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jingchang Lu <jingchang.lu@freescale.com>, Jiri Slaby <jslaby@suse.cz>, Kees Cook <keescook@chromium.org>, Kumar Gala <galak@codeaurora.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Linus Walleij <linus.walleij@linaro.org>, Magnus Damm <damm+renesas@opensource.se>, Michael Turquette <mturquette@baylibre.com>, Nathan Lynch <nathan_lynch@mentor.com>, Nic
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Paul Osmialowski <pawelo@king.net.pl>, Andrew Morton <akpm@linux-foundation.org>, Anson Huang <b20788@freescale.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Frank Li <Frank.Li@freescale.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jingchang Lu <jingchang.lu@freescale.com>, Jiri Slaby <jslaby@suse.cz>, Kees Cook <keescook@chromium.org>, Kumar Gala <galak@codeaurora.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Linus Walleij <linus.walleij@linaro.org>, Magnus Damm <damm+renesas@opensource.se>, Michael Turquette <mturquette@baylibre.com>, Nathan
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
+Hi Stephen,
 
-Thanks for all of your input. Your comments will all be considered during 
-my works on the second iteration of this patchset.
+Thanks for the valuable input - all of those points are now on my 
+checklist for the work on the second iteration of this patchset.
 
-On Wed, 24 Jun 2015, Arnd Bergmann wrote:
+On Tue, 23 Jun 2015, Stephen Boyd wrote:
 
-> On Tuesday 23 June 2015 23:19:43 Paul Osmialowski wrote:
->> @@ -1740,7 +1752,7 @@ source "mm/Kconfig"
->>  config FORCE_MAX_ZONEORDER
->>  	int "Maximum zone order" if ARCH_SHMOBILE_LEGACY
->>  	range 11 64 if ARCH_SHMOBILE_LEGACY
->> -	default "12" if SOC_AM33XX
->> +	default "12" if SOC_AM33XX || ARCH_KINETIS
->>  	default "9" if SA1111 || ARCH_EFM32
->>  	default "11"
->>  	help
->
-> Put it in the defconfig?
->
->> +#
->> +
->> +obj-$(CONFIG_MACH_KINETIS)	+= kinetis_platform.o
->
-> just use
->
-> obj-y	+= kinetis.o
->
->> diff --git a/arch/arm/mach-kinetis/include/mach/idle.h b/arch/arm/mach-kinetis/include/mach/idle.h
+> On 06/23/2015 02:19 PM, Paul Osmialowski wrote:
+>>
+>> diff --git a/drivers/clk/clk-kinetis.c b/drivers/clk/clk-kinetis.c
 >> new file mode 100644
->> index 0000000..0aafefd
+>> index 0000000..dea1054
 >> --- /dev/null
->> +++ b/arch/arm/mach-kinetis/include/mach/idle.h
->
-> No mach/*.h files please.
->
+>> +++ b/drivers/clk/clk-kinetis.c
+>> @@ -0,0 +1,226 @@
 >> +/*
->> + * This Kinetis port assumes that the CPU works in little-endian mode.
->> + * Switching to big-endian will require different bit offsets in peripheral
->> + * devices' registers. Also, some bit groups may lay on byte edges, so issue
->> + * with big-endian cannot be fixed only by defining bit offsets differently
->> + * for the big-endian mode.
->> + */
->> +#ifndef __LITTLE_ENDIAN
->> +#error This Kinetis port assumes that the CPU works in little-endian mode
->> +#endif
->
-> Fix the drivers instead?
->
->> +/*
->> + * Peripheral memory map
->> + */
->> +#define KINETIS_AIPS0PERIPH_BASE	0x40000000
->> +#define KINETIS_AIPS1PERIPH_BASE	0x40080000
->
-> Move it into DT
->
->> +/*
->> + * System Integration Module (SIM) register map
+>> + * clk-kinetis.c - Clock driver for Kinetis K70 MCG
 >> + *
->> + * This map actually covers two hardware modules:
->> + *     1. SIM low-power logic, at 0x40047000
->> + *     2. System integration module (SIM), at 0x40048000
+>> + * Based on legacy pre-OF code by Alexander Potashev <aspotashev@emcraft.com>
+>> + *
+>> + * Copyright (C) 2015 Paul Osmialowski <pawelo@king.net.pl>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify it under
+>> + * the terms of the GNU General Public License version 2 as published by the
+>> + * Free Software Foundation.
 >> + */
->> +struct kinetis_sim_regs {
->> +	u32 sopt1;	/* System Options Register 1 */
->> +	u32 rsv0[1024];
->> +	u32 sopt2;	/* System Options Register 2 */
->> +	u32 rsv1;
->> +	u32 sopt4;	/* System Options Register 4 */
->> +	u32 sopt5;	/* System Options Register 5 */
->> +	u32 sopt6;	/* System Options Register 6 */
->> +	u32 sopt7;	/* System Options Register 7 */
->> +	u32 rsv2[2];
->> +	u32 sdid;	/* System Device Identification Register */
->> +	u32 scgc[KINETIS_SIM_CG_NUMREGS];	/* Clock Gating Regs 1...7 */
->> +	u32 clkdiv1;	/* System Clock Divider Register 1 */
->> +	u32 clkdiv2;	/* System Clock Divider Register 2 */
->> +	u32 fcfg1;	/* Flash Configuration Register 1 */
->> +	u32 fcfg2;	/* Flash Configuration Register 2 */
->> +	u32 uidh;	/* Unique Identification Register High */
->> +	u32 uidmh;	/* Unique Identification Register Mid-High */
->> +	u32 uidml;	/* Unique Identification Register Mid Low */
->> +	u32 uidl;	/* Unique Identification Register Low */
->> +	u32 clkdiv3;	/* System Clock Divider Register 3 */
->> +	u32 clkdiv4;	/* System Clock Divider Register 4 */
->> +	u32 mcr;	/* Misc Control Register */
+>> +
+>> +#include <linux/clk.h>
+>
+> Is this using the consumer API? Please remove this include.
+>
+>> +#include <linux/io.h>
+>> +#include <linux/clk-provider.h>
+>> +#include <linux/of.h>
+>> +#include <linux/of_address.h>
+>> +#include <linux/of_device.h>
+>> +#include <linux/err.h>
+>> +#include <mach/kinetis.h>
+>> +#include <mach/power.h>
+>
+> It would be nice if we didn't need these mach includes so that this
+> driver can be easily build tested.
+>
+>> +
+>> +#include <dt-bindings/clock/kinetis-mcg.h>
+> [..]
+>> +}
+>> +
+>> +CLK_OF_DECLARE(kinetis_mcg, "fsl,kinetis-cmu", kinetis_mcg_init);
+>
+> A clocksource isn't the same as a clk provider. Please split this patch
+> into two, one for the clk provider (drivers/clk) and one for the
+> clocksource driver (drivers/clocksource).
+>
+>> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+>> index 0f1c77e..1d2ecde 100644
+>> --- a/drivers/clocksource/Kconfig
+>> +++ b/drivers/clocksource/Kconfig
+>> @@ -106,6 +106,11 @@ config CLKSRC_EFM32
+>>  	  Support to use the timers of EFM32 SoCs as clock source and clock
+>>  	  event device.
+>>
+>> +config CLKSRC_KINETIS
+>> +	bool "Clocksource for Kinetis SoCs"
+>> +	depends on OF && ARM && ARCH_KINETIS
+>
+> Doesn't ARCH_KINETIS imply ARM? Seems that we can drop the ARM
+> dependency here.
+>
+>> +	select CLKSRC_OF
+>>
+>>
+>> diff --git a/drivers/clocksource/timer-kinetis.c b/drivers/clocksource/timer-kinetis.c
+>> new file mode 100644
+>> index 0000000..634f365
+>> --- /dev/null
+>> +++ b/drivers/clocksource/timer-kinetis.c
+> [..]
+>> +
+>> +/*
+>> + * Clock event device set mode function
+>> + */
+>> +static void kinetis_clockevent_tmr_set_mode(
+>> +	enum clock_event_mode mode, struct clock_event_device *clk)
+>
+> s/clk/evt/ ?
+>
+>> +{
+>> +	struct kinetis_clock_event_ddata *pit =
+>> +		container_of(clk, struct kinetis_clock_event_ddata, evtdev);
+>> +
+>> +	switch (mode) {
+>> +	case CLOCK_EVT_MODE_PERIODIC:
+>> +		kinetis_pit_enable(pit->base, 1);
+>> +		break;
+>> +	case CLOCK_EVT_MODE_ONESHOT:
+>> +	case CLOCK_EVT_MODE_UNUSED:
+>> +	case CLOCK_EVT_MODE_SHUTDOWN:
+>> +	default:
+>> +		kinetis_pit_enable(pit->base, 0);
+>> +	}
+>> +}
+>> +
+>> +/*
+>> + * Configure the timer to generate an interrupt in the specified amount of ticks
+>> + */
+>> +static int kinetis_clockevent_tmr_set_next_event(
+>> +	unsigned long delta, struct clock_event_device *c)
+>> +{
+>> +	struct kinetis_clock_event_ddata *pit =
+>> +		container_of(c, struct kinetis_clock_event_ddata, evtdev);
+>> +	unsigned long flags;
+>> +
+>> +	raw_local_irq_save(flags);
+>
+> What is this protecting against?
+>
+>> +	kinetis_pit_init(pit->base, delta);
+>> +	kinetis_pit_enable(pit->base, 1);
+>> +	raw_local_irq_restore(flags);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static struct kinetis_clock_event_ddata
+>> +		kinetis_clockevent_tmrs[KINETIS_PIT_CHANNELS] = {
+>> +	{
+>> +		.evtdev = {
+>> +			.name		= "fsl,kinetis-pit-timer0",
+>> +			.rating		= 200,
+>> +			.features	=
+>> +			    CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
+>> +			.set_mode	= kinetis_clockevent_tmr_set_mode,
+>> +			.set_next_event	= kinetis_clockevent_tmr_set_next_event,
+>> +		},
+>> +	},
+>> +	{
+>> +		.evtdev = {
+>> +			.name		= "fsl,kinetis-pit-timer1",
+>> +		},
+>> +	},
+>> +	{
+>> +		.evtdev = {
+>> +			.name		= "fsl,kinetis-pit-timer2",
+>> +		},
+>> +	},
+>> +	{
+>> +		.evtdev = {
+>> +			.name		= "fsl,kinetis-pit-timer3",
+>> +		},
+>> +	},
+>> +};
+>> +
+>> +/*
+>> + * Timer IRQ handler
+>> + */
+>> +static irqreturn_t kinetis_clockevent_tmr_irq_handler(int irq, void *dev_id)
+>> +{
+>> +	struct kinetis_clock_event_ddata *tmr = dev_id;
+>> +
+>> +	KINETIS_PIT_WR(tmr->base, tflg, KINETIS_PIT_TFLG_TIF_MSK);
+>> +
+>> +	tmr->evtdev.event_handler(&(tmr->evtdev));
+>
+> Unnecessary parentheses, please remove them.
+>
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +/*
+>> + * System timer IRQ action
+>> + */
+>> +static struct irqaction kinetis_clockevent_irqaction[KINETIS_PIT_CHANNELS] = {
+>> +	{
+>> +		.name = "Kinetis Kernel Time Tick (pit0)",
+>> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
+>> +		.dev_id = &kinetis_clockevent_tmrs[0],
+>> +		.handler = kinetis_clockevent_tmr_irq_handler,
+>> +	}, {
+>> +		.name = "Kinetis Kernel Time Tick (pit1)",
+>> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
+>> +		.dev_id = &kinetis_clockevent_tmrs[1],
+>> +		.handler = kinetis_clockevent_tmr_irq_handler,
+>> +	}, {
+>> +		.name = "Kinetis Kernel Time Tick (pit2)",
+>> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
+>> +		.dev_id = &kinetis_clockevent_tmrs[2],
+>> +		.handler = kinetis_clockevent_tmr_irq_handler,
+>> +	}, {
+>> +		.name = "Kinetis Kernel Time Tick (pit3)",
+>> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
+>> +		.dev_id = &kinetis_clockevent_tmrs[3],
+>> +		.handler = kinetis_clockevent_tmr_irq_handler,
+>> +	},
 >> +};
 >
-> Move it into the driver that uses these.
+> Any reason we can't just use request_irq() instead of having a set of
+> static irq actions?
 >
->> +/*
->> + * SIM registers base
->> + */
->> +#define KINETIS_SIM_BASE		(KINETIS_AIPS0PERIPH_BASE + 0x00047000)
->> +#define KINETIS_SIM_PTR(reg) \
->> +	(&(((struct kinetis_sim_regs *)(KINETIS_SIM_BASE))->reg))
->> +#define KINETIS_SIM_RD(reg) readl_relaxed(KINETIS_SIM_PTR(reg))
->> +#define KINETIS_SIM_WR(reg, val) writel_relaxed((val), KINETIS_SIM_PTR(reg))
->> +#define KINETIS_SIM_SET(reg, mask) \
->> +	KINETIS_SIM_WR(reg, (KINETIS_SIM_RD(reg)) | (mask))
->> +#define KINETIS_SIM_RESET(reg, mask) \
->> +	KINETIS_SIM_WR(reg, (KINETIS_SIM_RD(reg)) & (~(mask)))
->> +#define KINETIS_SIM_ISSET(reg, mask) \
->> +	(KINETIS_SIM_RD(reg) & (mask))
 >> +
->> +/*
->> + * SIM registers
->> + */
->> +/*
->> + * System Options Register 2
->> + */
->> +/* USB HS clock source select */
->> +#define KINETIS_SIM_SOPT2_USBHSRC_BITS	2
->> +#define KINETIS_SIM_SOPT2_USBHSRC_MSK	(3 << KINETIS_SIM_SOPT2_USBHSRC_BITS)
->> +#define KINETIS_SIM_SOPT2_USBHSRC_PLL0	(1 << KINETIS_SIM_SOPT2_USBHSRC_BITS)
->> +#define KINETIS_SIM_SOPT2_USBHSRC_PLL1	(2 << KINETIS_SIM_SOPT2_USBHSRC_BITS)
->> +
->> +/* USB FS clock source select */
->> +#define KINETIS_SIM_SOPT2_USBFSRC_BITS	22
->> +#define KINETIS_SIM_SOPT2_USBFSRC_MSK	(3 << KINETIS_SIM_SOPT2_USBFSRC_BITS)
->> +#define KINETIS_SIM_SOPT2_USBFSRC_PLL0	(1 << KINETIS_SIM_SOPT2_USBFSRC_BITS)
->> +#define KINETIS_SIM_SOPT2_USBFSRC_PLL1	(2 << KINETIS_SIM_SOPT2_USBFSRC_BITS)
->> +#define KINETIS_SIM_SOPT2_USBF_CLKSEL	(1 << 18)
->> +
->
-> remove all these here.
->
->> +/*
->> + * Map required regions.
->> + * This being the no-MMU Linux, I am not mapping anything
->> + * since all I/O registers are available at their physical addresses.
->> + */
->> +static void __init kinetis_map_io(void)
+>> +static void __init kinetis_clockevent_init(struct device_node *np)
 >> +{
->> +}
+> [..]
+>> irq;
+>> +	}
+>> +
+>> +	chan = of_alias_get_id(np, "pit");
+>> +	if ((chan < 0) || (chan >= KINETIS_PIT_CHANNELS)) {
 >
-> Not needed, remove.
+> Unnecessary parentheses, please remove them.
 >
->> +/*
->> + * Freescale Kinetis platform initialization
->> + */
->> +static void __init kinetis_init(void)
->> +{
->> +	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
->> +}
->
-> same here.
->
->> diff --git a/arch/arm/tools/mach-types b/arch/arm/tools/mach-types
->> index 2ed1b8a..1d05516 100644
->> --- a/arch/arm/tools/mach-types
->> +++ b/arch/arm/tools/mach-types
->> @@ -554,6 +554,7 @@ smdk4412		MACH_SMDK4412		SMDK4412		3765
->>  marzen			MACH_MARZEN		MARZEN			3790
->>  krome			MACH_KROME		KROME			3797
->>  armadillo800eva		MACH_ARMADILLO800EVA	ARMADILLO800EVA		3863
->> +kinetis			MACH_KINETIS		KINETIS			3896
->>  mx53_umobo		MACH_MX53_UMOBO		MX53_UMOBO		3927
->>  mt4			MACH_MT4		MT4			3981
->>  u8520			MACH_U8520		U8520			3990
->
-> Unused, please remove.
->
-> 	Arnd
+> -- 
+> Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+> a Linux Foundation Collaborative Project
 >
