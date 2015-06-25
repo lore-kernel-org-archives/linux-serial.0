@@ -1,65 +1,48 @@
-From: Paul Osmialowski <pawelo@king.net.pl>
-Subject: Re: [PATCH 7/9] arm: twr-k70f120m: IOMUX driver for Kinetis SoC
-Date: Wed, 24 Jun 2015 19:44:30 +0200 (CEST)
-Message-ID: <alpine.LNX.2.00.1506241944060.32459@localhost.localdomain>
-References: <1435094387-20146-1-git-send-email-pawelo@king.net.pl>  <1435094387-20146-8-git-send-email-pawelo@king.net.pl> <1435141282.4528.71.camel@tiscali.nl>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 02/13] dmaengine: Introduce dma_request_slave_channel_compat_reason()
+Date: Thu, 25 Jun 2015 13:15:57 +0200
+Message-ID: <4970019.av0JOFIyTW@wuerfel>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com> <5587F1F4.1060905@ti.com> <20150624162401.GP19530@localhost>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1435141282.4528.71.camel@tiscali.nl>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Paul Bolle <pebolle@tiscali.nl>
-Cc: Paul Osmialowski <pawelo@king.net.pl>, Andrew Morton <akpm@linux-foundation.org>, Anson Huang <b20788@freescale.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Frank Li <Frank.Li@freescale.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jingchang Lu <jingchang.lu@freescale.com>, Jiri Slaby <jslaby@suse.cz>, Kees Cook <keescook@chromium.org>, Kumar Gala <galak@codeaurora.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Linus Walleij <linus.walleij@linaro.org>, Magnus Damm <damm+renesas@opensource.se>, Michael Turquette <mturquette@baylibre.com>, Nathan
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <20150624162401.GP19530@localhost>
+Sender: linux-crypto-owner@vger.kernel.org
+To: Vinod Koul <vinod.koul@intel.com>
+Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Tony Lindgren <tony@atomide.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Linux MMC List <linux-mmc@vger.kernel.org>, linux-crypto@vger.kernel.org, linux-spi <linux-spi@vger.kernel.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, ALSA Development Mailing List <alsa-devel@alsa-project.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Paul,
+On Wednesday 24 June 2015 21:54:01 Vinod Koul wrote:
+> > It would be nice to find another name for the
+> > dma_request_slave_channel_compat() so with the new name we could have chance
+> > to rearrange the parameters: (dev, name, mask, fn, fn_param)
+> > 
+> > We would end up with the following APIs, all returning with error code on failure:
+> > dma_request_slave_channel(dev, name);
+> > dma_request_channel_legacy(mask, fn, fn_param);
+> > dma_request_slave_channel_compat(mask, fn, fn_param, dev, name);
+> > dma_request_any_channel(mask);
+> This is good idea but still we end up with 4 APIs. Why not just converge to
+> two API, one legacy + memcpy + filer fn and one untimate API for slave?
+> 
+> Internally we may have 4 APIs for cleaner handling...
+> 
 
-Thanks for your comments. I'll make it tristate.
+Not sure if it's realistic, but I think it would be nice to have
+a way for converting the current slave drivers that use the
+mask/filter/param API to the dev/name based API. We should
+be able to do this by registering a lookup table from platform
+code that translates one to the other, like we do with the
+clkdev lookup to find a device clock based on a local identifier.
 
-On Wed, 24 Jun 2015, Paul Bolle wrote:
+The main downside of this is that it's a lot of work if we want
+to completely remove dma_request_channel() for slave drivers,
+but it could be done more gradually.
 
-> On Tue, 2015-06-23 at 23:19 +0200, Paul Osmialowski wrote:
->> --- a/drivers/pinctrl/freescale/Kconfig
->> +++ b/drivers/pinctrl/freescale/Kconfig
->
->> +config PINCTRL_KINETIS
->> +	bool "Kinetis pinctrl driver"
->> +	depends on OF
->> +	depends on SOC_K70
->> +	select PINMUX
->> +	help
->> +	  Say Y here to enable the Kinetis pinctrl driver
->
->> --- a/drivers/pinctrl/freescale/Makefile
->> +++ b/drivers/pinctrl/freescale/Makefile
->
->> +obj-$(CONFIG_PINCTRL_KINETIS)	+= pinctrl-kinetis.o
->
->> --- /dev/null
->> +++ b/drivers/pinctrl/freescale/pinctrl-kinetis.c
->
->> +#include <linux/module.h>
->
->> +static struct pinctrl_desc kinetis_pinctrl_desc = {
->> +	[...]
->> +	.owner = THIS_MODULE,
->> +};
->
->> +static void __exit kinetis_pinctrl_exit(void)
->> +{
->> +	platform_driver_unregister(&kinetis_pinctrl_driver);
->> +}
->> +module_exit(kinetis_pinctrl_exit);
->> +
->> +MODULE_DESCRIPTION("Freescale Kinetis pinctrl driver");
->> +MODULE_LICENSE("GPL v2");
->
-> pinctrl-kinetis.o can only be built-in, right? But the code uses a few
-> module specific constructs. Did you mean to make PINCTRL_KINETIS
-> tristate instead?
->
-> Thanks,
->
->
-> Paul Bolle
->
+Another upside is that we could come up with a mechanism to
+avoid the link-time dependency on the filter-function that
+causes problems when that filter is defined in a loadable
+module for the dmaengine driver.
+
+	Arnd
