@@ -1,404 +1,311 @@
 From: Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH linux-next v2 2/4] tty/serial: at91: fix some macro definitions
- to fit coding style
-Date: Mon, 29 Jun 2015 15:00:57 +0200
-Message-ID: <55914189.8030808@atmel.com>
-References: <cover.1434038494.git.cyrille.pitchen@atmel.com> <f22220ee42ecf9301def7e90154b74937ca9ffab.1434038494.git.cyrille.pitchen@atmel.com>
+Subject: Re: [PATCH linux-next v2 3/4] tty/serial: at91: add support to FIFOs
+Date: Mon, 29 Jun 2015 15:11:18 +0200
+Message-ID: <559143F6.7070409@atmel.com>
+References: <cover.1434038494.git.cyrille.pitchen@atmel.com> <e9b7445f103969a286d586054d79461a6efacd65.1434038494.git.cyrille.pitchen@atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <f22220ee42ecf9301def7e90154b74937ca9ffab.1434038494.git.cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <e9b7445f103969a286d586054d79461a6efacd65.1434038494.git.cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, ludovic.desroches-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, leilei.zhao-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, josh.wu-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 Le 11/06/2015 18:20, Cyrille Pitchen a =E9crit :
-> This patch updates macro definitions in atmel_serial.h to fit the
-> 80 column rule.
+> Depending on the hardware, TX and RX FIFOs may be available. The RX
+> FIFO can avoid receive overruns, especially when DMA transfers are
+> not used to read data from the Receive Holding Register. For heavy
+> system load, The CPU is likely not be able to fetch data fast enough
+> from the RHR.
 >=20
-> Please note that some deprecated comments such as "[AT91SAM9261 only]=
-"
-> are removed as the corresponding bits also exist in some later chips.
+> In addition, the RX FIFO can supersede the DMA/PDC to control the RTS
+> line when the Hardware Handshaking mode is enabled. Two thresholds
+> are to be set for that purpose:
+> - When the number of data in the RX FIFO crosses and becomes lower
+>   than or equal to the low threshold, the RTS line is set to low
+>   level: the remote peer is requested to send data.
+> - When the number of data in the RX FIFO crosses and becomes greater
+>   than or equal to the high threshold, the RTS line is set to high
+>   level: the remote peer should stop sending new data.
+> - low threshold <=3D high threshold
+> Once these two thresholds are set properly, this new feature is
+> enabled by setting the FIFO RTS Control bit of the FIFO Mode Register=
+=2E
 >=20
-> The patch also fix macro definitions in atmel_serial.c to replace
-> (port,v) by (port, v).
+> FIFOs also introduce a new multiple data mode: the USART works either
+> in multiple data mode or in single data (legacy) mode.
+>=20
+> If MODE9 bit is set into the Mode Register or if USMODE is set to
+> either LIN_MASTER, LIN_SLAVE or LON_MODE, FIFOs operate in single
+> data mode. Otherwise, they operate in multiple data mode.
+>=20
+> In this new multiple data mode, accesses to the Receive Holding
+> Register or Transmit Holding Register slightly change.
+>=20
+> Since this driver implements neither the 9bit data feature (MODE9 bit
+> set into the Mode Register) nor LIN modes, the USART works in
+> multiple data mode whenever FIFOs are available and enabled. We also
+> assume that data are 8bit wide.
+>=20
+> In single data mode, 32bit access CAN be used to read a single data
+> from RHR or write a single data into THR.
+> However in multiple data mode, a 32bit access to RHR now allows us to
+> read four consecutive data from RX FIFO. Also a 32bit access to THR
+> now allows to write four consecutive data into TX FIFO. So we MUST
+> use 8bit access whenever only one data have to be read/written at a
+> time.
 >=20
 > Signed-off-by: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
-
-Acked-by: Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
-
 > ---
->  drivers/tty/serial/atmel_serial.c |  52 +++++-----
->  include/linux/atmel_serial.h      | 204 +++++++++++++++++++---------=
-----------
->  2 files changed, 128 insertions(+), 128 deletions(-)
+>  drivers/tty/serial/atmel_serial.c | 79 +++++++++++++++++++++++++++++=
++++++++++-
+>  include/linux/atmel_serial.h      | 36 ++++++++++++++++++
+>  2 files changed, 113 insertions(+), 2 deletions(-)
 >=20
 > diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/a=
 tmel_serial.c
-> index 2a8f528..112e74b 100644
+> index 112e74b..6767570 100644
 > --- a/drivers/tty/serial/atmel_serial.c
 > +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -89,35 +89,35 @@ static void atmel_stop_rx(struct uart_port *port)=
-;
->  #define ATMEL_ISR_PASS_LIMIT	256
-> =20
->  /* UART registers. CR is write-only, hence no GET macro */
-> -#define UART_PUT_CR(port,v)	__raw_writel(v, (port)->membase + ATMEL_=
-US_CR)
-> -#define UART_GET_MR(port)	__raw_readl((port)->membase + ATMEL_US_MR)
-> -#define UART_PUT_MR(port,v)	__raw_writel(v, (port)->membase + ATMEL_=
-US_MR)
-> -#define UART_PUT_IER(port,v)	__raw_writel(v, (port)->membase + ATMEL=
-_US_IER)
-> -#define UART_PUT_IDR(port,v)	__raw_writel(v, (port)->membase + ATMEL=
-_US_IDR)
-> -#define UART_GET_IMR(port)	__raw_readl((port)->membase + ATMEL_US_IM=
-R)
-> -#define UART_GET_CSR(port)	__raw_readl((port)->membase + ATMEL_US_CS=
-R)
-> -#define UART_GET_CHAR(port)	__raw_readl((port)->membase + ATMEL_US_R=
-HR)
-> -#define UART_PUT_CHAR(port,v)	__raw_writel(v, (port)->membase + ATME=
-L_US_THR)
-> -#define UART_GET_BRGR(port)	__raw_readl((port)->membase + ATMEL_US_B=
-RGR)
-> -#define UART_PUT_BRGR(port,v)	__raw_writel(v, (port)->membase + ATME=
-L_US_BRGR)
-> -#define UART_PUT_RTOR(port,v)	__raw_writel(v, (port)->membase + ATME=
-L_US_RTOR)
-> -#define UART_PUT_TTGR(port, v)	__raw_writel(v, (port)->membase + ATM=
-EL_US_TTGR)
-> -#define UART_GET_IP_NAME(port)	__raw_readl((port)->membase + ATMEL_U=
-S_NAME)
-> -#define UART_GET_IP_VERSION(port) __raw_readl((port)->membase + ATME=
-L_US_VERSION)
-> +#define UART_PUT_CR(port, v)   __raw_writel(v, (port)->membase + ATM=
-EL_US_CR)
-> +#define UART_GET_MR(port)      __raw_readl((port)->membase + ATMEL_U=
-S_MR)
-> +#define UART_PUT_MR(port, v)   __raw_writel(v, (port)->membase + ATM=
-EL_US_MR)
-> +#define UART_PUT_IER(port, v)  __raw_writel(v, (port)->membase + ATM=
-EL_US_IER)
-> +#define UART_PUT_IDR(port, v)  __raw_writel(v, (port)->membase + ATM=
+> @@ -96,8 +96,8 @@ static void atmel_stop_rx(struct uart_port *port);
+>  #define UART_PUT_IDR(port, v)  __raw_writel(v, (port)->membase + ATM=
 EL_US_IDR)
-> +#define UART_GET_IMR(port)     __raw_readl((port)->membase + ATMEL_U=
+>  #define UART_GET_IMR(port)     __raw_readl((port)->membase + ATMEL_U=
 S_IMR)
-> +#define UART_GET_CSR(port)     __raw_readl((port)->membase + ATMEL_U=
+>  #define UART_GET_CSR(port)     __raw_readl((port)->membase + ATMEL_U=
 S_CSR)
-> +#define UART_GET_CHAR(port)    __raw_readl((port)->membase + ATMEL_U=
+> -#define UART_GET_CHAR(port)    __raw_readl((port)->membase + ATMEL_U=
 S_RHR)
-> +#define UART_PUT_CHAR(port, v) __raw_writel(v, (port)->membase + ATM=
+> -#define UART_PUT_CHAR(port, v) __raw_writel(v, (port)->membase + ATM=
 EL_US_THR)
-> +#define UART_GET_BRGR(port)    __raw_readl((port)->membase + ATMEL_U=
+> +#define UART_GET_CHAR(port)    __raw_readb((port)->membase + ATMEL_U=
+S_RHR)
+> +#define UART_PUT_CHAR(port, v) __raw_writeb(v, (port)->membase + ATM=
+EL_US_THR)
+>  #define UART_GET_BRGR(port)    __raw_readl((port)->membase + ATMEL_U=
 S_BRGR)
-> +#define UART_PUT_BRGR(port, v) __raw_writel(v, (port)->membase + ATM=
+>  #define UART_PUT_BRGR(port, v) __raw_writel(v, (port)->membase + ATM=
 EL_US_BRGR)
-> +#define UART_PUT_RTOR(port, v) __raw_writel(v, (port)->membase + ATM=
+>  #define UART_PUT_RTOR(port, v) __raw_writel(v, (port)->membase + ATM=
 EL_US_RTOR)
-> +#define UART_PUT_TTGR(port, v) __raw_writel(v, (port)->membase + ATM=
-EL_US_TTGR)
-> +#define UART_GET_IP_NAME(port) __raw_readl((port)->membase + ATMEL_U=
-S_NAME)
-> +#define UART_GET_IP_VERS(port) __raw_readl((port)->membase + ATMEL_U=
-S_VERSION)
-> =20
->   /* PDC registers */
-> -#define UART_PUT_PTCR(port,v)	__raw_writel(v, (port)->membase + ATME=
-L_PDC_PTCR)
-> -#define UART_GET_PTSR(port)	__raw_readl((port)->membase + ATMEL_PDC_=
-PTSR)
-> +#define UART_PUT_PTCR(port, v) __raw_writel(v, (port)->membase + ATM=
-EL_PDC_PTCR)
-> +#define UART_GET_PTSR(port)    __raw_readl((port)->membase + ATMEL_P=
-DC_PTSR)
-> =20
-> -#define UART_PUT_RPR(port,v)	__raw_writel(v, (port)->membase + ATMEL=
-_PDC_RPR)
-> -#define UART_GET_RPR(port)	__raw_readl((port)->membase + ATMEL_PDC_R=
-PR)
-> -#define UART_PUT_RCR(port,v)	__raw_writel(v, (port)->membase + ATMEL=
-_PDC_RCR)
-> -#define UART_PUT_RNPR(port,v)	__raw_writel(v, (port)->membase + ATME=
-L_PDC_RNPR)
-> -#define UART_PUT_RNCR(port,v)	__raw_writel(v, (port)->membase + ATME=
-L_PDC_RNCR)
-> +#define UART_PUT_RPR(port, v)  __raw_writel(v, (port)->membase + ATM=
-EL_PDC_RPR)
-> +#define UART_GET_RPR(port)     __raw_readl((port)->membase + ATMEL_P=
-DC_RPR)
-> +#define UART_PUT_RCR(port, v)  __raw_writel(v, (port)->membase + ATM=
-EL_PDC_RCR)
-> +#define UART_PUT_RNPR(port, v) __raw_writel(v, (port)->membase + ATM=
-EL_PDC_RNPR)
-> +#define UART_PUT_RNCR(port, v) __raw_writel(v, (port)->membase + ATM=
-EL_PDC_RNCR)
-> =20
-> -#define UART_PUT_TPR(port,v)	__raw_writel(v, (port)->membase + ATMEL=
-_PDC_TPR)
-> -#define UART_PUT_TCR(port,v)	__raw_writel(v, (port)->membase + ATMEL=
-_PDC_TCR)
-> -#define UART_GET_TCR(port)	__raw_readl((port)->membase + ATMEL_PDC_T=
-CR)
-> +#define UART_PUT_TPR(port, v)  __raw_writel(v, (port)->membase + ATM=
-EL_PDC_TPR)
-> +#define UART_PUT_TCR(port, v)  __raw_writel(v, (port)->membase + ATM=
+> @@ -119,6 +119,16 @@ static void atmel_stop_rx(struct uart_port *port=
+);
+>  #define UART_PUT_TCR(port, v)  __raw_writel(v, (port)->membase + ATM=
 EL_PDC_TCR)
-> +#define UART_GET_TCR(port)     __raw_readl((port)->membase + ATMEL_P=
+>  #define UART_GET_TCR(port)     __raw_readl((port)->membase + ATMEL_P=
 DC_TCR)
 > =20
+> +/* FIFO registers */
+> +#define UART_PUT_FMR(port, v)  __raw_writel(v, (port)->membase + ATM=
+EL_US_FMR)
+> +#define UART_GET_FMR(port)     __raw_readl((port)->membase + ATMEL_U=
+S_FMR)
+> +#define UART_GET_FESR(port)    __raw_readl((port)->membase + ATMEL_U=
+S_FESR)
+> +#define UART_PUT_FIER(port, v) __raw_writel(v, (port)->membase + ATM=
+EL_US_FIER)
+> +#define UART_PUT_FIDR(port, v) __raw_writel(v, (port)->membase + ATM=
+EL_US_FIDR)
+> +#define UART_GET_FIMR(port)    __raw_readl((port)->membase + ATMEL_U=
+S_FIMR)
+> +#define UART_GET_FLR(port)     __raw_readl((port)->membase + ATMEL_U=
+S_FLR)
+> +
+> +
 >  struct atmel_dma_buffer {
 >  	unsigned char	*buf;
-> @@ -1684,7 +1684,7 @@ static void atmel_get_ip_name(struct uart_port =
-*port)
->  		atmel_port->is_usart =3D false;
->  	} else {
->  		/* fallback for older SoCs: use version field */
-> -		version =3D UART_GET_IP_VERSION(port);
-> +		version =3D UART_GET_IP_VERS(port);
->  		switch (version) {
->  		case 0x302:
->  		case 0x10213:
+>  	dma_addr_t	dma_addr;
+> @@ -172,6 +182,9 @@ struct atmel_uart_port {
+>  	struct mctrl_gpios	*gpios;
+>  	int			gpio_irq[UART_GPIO_MAX];
+>  	unsigned int		tx_done_mask;
+> +	u32			fifo_size;
+> +	u32			rts_high;
+> +	u32			rts_low;
+>  	bool			ms_irq_enabled;
+>  	bool			is_usart;	/* usart or uart */
+>  	struct timer_list	uart_timer;	/* uart timer */
+> @@ -1797,6 +1810,29 @@ static int atmel_startup(struct uart_port *por=
+t)
+>  			atmel_set_ops(port);
+>  	}
+> =20
+> +	/*
+> +	 * Enable FIFO when available
+> +	 */
+> +	if (atmel_port->fifo_size) {
+> +		unsigned int txrdym =3D ATMEL_US_ONE_DATA;
+> +		unsigned int rxrdym =3D ATMEL_US_ONE_DATA;
+> +		unsigned int fmr;
+> +
+> +		UART_PUT_CR(port,
+> +			    ATMEL_US_FIFOEN |
+> +			    ATMEL_US_RXFCLR |
+> +			    ATMEL_US_TXFLCLR);
+> +
+> +		fmr =3D ATMEL_US_TXRDYM(txrdym) | ATMEL_US_RXRDYM(rxrdym);
+
+If above is the only place where we use txrdym and rxrdym, why not use
+directly the defined constants here?
+
+
+> +		if (atmel_port->rts_high &&
+> +		    atmel_port->rts_low)
+> +			fmr |=3D	ATMEL_US_FRTSC |
+> +				ATMEL_US_RXFTHRES(atmel_port->rts_high) |
+> +				ATMEL_US_RXFTHRES2(atmel_port->rts_low);
+> +
+> +		UART_PUT_FMR(port, fmr);
+> +	}
+> +
+>  	/* Save current CSR for comparison in atmel_tasklet_func() */
+>  	atmel_port->irq_status_prev =3D atmel_get_lines_status(port);
+>  	atmel_port->irq_status =3D atmel_port->irq_status_prev;
+> @@ -2599,6 +2635,44 @@ static int atmel_init_gpios(struct atmel_uart_=
+port *p, struct device *dev)
+>  	return 0;
+>  }
+> =20
+> +static void atmel_serial_probe_fifos(struct atmel_uart_port *port,
+> +				     struct platform_device *pdev)
+> +{
+> +	port->fifo_size =3D 0;
+> +	port->rts_low =3D 0;
+> +	port->rts_high =3D 0;
+> +
+> +	if (of_property_read_u32(pdev->dev.of_node,
+> +				 "atmel,fifo-size",
+> +				 &port->fifo_size) ||
+> +	    !port->fifo_size)
+
+I understand, but here, please split the test in 2: it's far more reada=
+ble.
+
+> +		return;
+> +
+> +	if (port->fifo_size < 8 || port->fifo_size > 32) {
+
+Can you define constants for these 2 values and use them here?
+
+> +		port->fifo_size =3D 0;
+> +		dev_err(&pdev->dev, "Invalid FIFO size\n");
+> +		return;
+> +	}
+> +
+> +	/*
+> +	 * 0 <=3D rts_low <=3D rts_high <=3D fifo_size
+> +	 * Once their CTS line asserted by the remote peer, some x86 UARTs =
+tend
+> +	 * to flush their internal TX FIFO, commonly up to 8 data, before
+> +	 * actually stopping to send new data. So we try to set the RTS Hig=
+h
+> +	 * Threshold to a raisonable high value respecting this 8 data empi=
+rical
+> +	 * rule when possible.
+> +	 */
+> +	port->rts_high =3D max_t(int, port->fifo_size >> 1, port->fifo_size=
+ - 8);
+> +	port->rts_low  =3D max_t(int, port->fifo_size >> 2, port->fifo_size=
+ - 16);
+
+Same here: I'd prefer constants with meaningful names.
+
+> +
+> +	dev_info(&pdev->dev, "Using FIFO (%u data)\n",
+> +		 port->fifo_size);
+
+Okay for this information.
+
+> +	dev_info(&pdev->dev, "RTS High Threshold : %2u data\n",
+> +		 port->rts_high);
+> +	dev_info(&pdev->dev, "RTS Low Threshold  : %2u data\n",
+> +		 port->rts_low);
+
+Aren't these two other dev_info() better suited as dev_dbg()?
+
+
+> +}
+> +
+>  static int atmel_serial_probe(struct platform_device *pdev)
+>  {
+>  	struct atmel_uart_port *port;
+> @@ -2635,6 +2709,7 @@ static int atmel_serial_probe(struct platform_d=
+evice *pdev)
+>  	port =3D &atmel_ports[ret];
+>  	port->backup_imr =3D 0;
+>  	port->uart.line =3D ret;
+> +	atmel_serial_probe_fifos(port, pdev);
+> =20
+>  	spin_lock_init(&port->lock_suspended);
+> =20
 > diff --git a/include/linux/atmel_serial.h b/include/linux/atmel_seria=
 l.h
-> index 00beddf..c384c21 100644
+> index c384c21..ee696d7 100644
 > --- a/include/linux/atmel_serial.h
 > +++ b/include/linux/atmel_serial.h
-> @@ -16,115 +16,115 @@
->  #ifndef ATMEL_SERIAL_H
->  #define ATMEL_SERIAL_H
+> @@ -35,6 +35,11 @@
+>  #define	ATMEL_US_DTRDIS		BIT(17)	/* Data Terminal Ready Disable */
+>  #define	ATMEL_US_RTSEN		BIT(18)	/* Request To Send Enable */
+>  #define	ATMEL_US_RTSDIS		BIT(19)	/* Request To Send Disable */
+> +#define	ATMEL_US_TXFCLR		BIT(24)	/* Transmit FIFO Clear */
+> +#define	ATMEL_US_RXFCLR		BIT(25)	/* Receive FIFO Clear */
+> +#define	ATMEL_US_TXFLCLR	BIT(26)	/* Transmit FIFO Lock Clear */
+> +#define	ATMEL_US_FIFOEN		BIT(30)	/* FIFO enable */
+> +#define	ATMEL_US_FIFODIS	BIT(31)	/* FIFO disable */
 > =20
-> -#define ATMEL_US_CR		0x00			/* Control Register */
-> -#define		ATMEL_US_RSTRX		(1 <<  2)		/* Reset Receiver */
-> -#define		ATMEL_US_RSTTX		(1 <<  3)		/* Reset Transmitter */
-> -#define		ATMEL_US_RXEN		(1 <<  4)		/* Receiver Enable */
-> -#define		ATMEL_US_RXDIS		(1 <<  5)		/* Receiver Disable */
-> -#define		ATMEL_US_TXEN		(1 <<  6)		/* Transmitter Enable */
-> -#define		ATMEL_US_TXDIS		(1 <<  7)		/* Transmitter Disable */
-> -#define		ATMEL_US_RSTSTA		(1 <<  8)		/* Reset Status Bits */
-> -#define		ATMEL_US_STTBRK		(1 <<  9)		/* Start Break */
-> -#define		ATMEL_US_STPBRK		(1 << 10)		/* Stop Break */
-> -#define		ATMEL_US_STTTO		(1 << 11)		/* Start Time-out */
-> -#define		ATMEL_US_SENDA		(1 << 12)		/* Send Address */
-> -#define		ATMEL_US_RSTIT		(1 << 13)		/* Reset Iterations */
-> -#define		ATMEL_US_RSTNACK	(1 << 14)		/* Reset Non Acknowledge */
-> -#define		ATMEL_US_RETTO		(1 << 15)		/* Rearm Time-out */
-> -#define		ATMEL_US_DTREN		(1 << 16)		/* Data Terminal Ready Enable [A=
-T91RM9200 only] */
-> -#define		ATMEL_US_DTRDIS		(1 << 17)		/* Data Terminal Ready Disable =
-[AT91RM9200 only] */
-> -#define		ATMEL_US_RTSEN		(1 << 18)		/* Request To Send Enable */
-> -#define		ATMEL_US_RTSDIS		(1 << 19)		/* Request To Send Disable */
-> +#define ATMEL_US_CR		0x00	/* Control Register */
-> +#define	ATMEL_US_RSTRX		BIT(2)	/* Reset Receiver */
-> +#define	ATMEL_US_RSTTX		BIT(3)	/* Reset Transmitter */
-> +#define	ATMEL_US_RXEN		BIT(4)	/* Receiver Enable */
-> +#define	ATMEL_US_RXDIS		BIT(5)	/* Receiver Disable */
-> +#define	ATMEL_US_TXEN		BIT(6)	/* Transmitter Enable */
-> +#define	ATMEL_US_TXDIS		BIT(7)	/* Transmitter Disable */
-> +#define	ATMEL_US_RSTSTA		BIT(8)	/* Reset Status Bits */
-> +#define	ATMEL_US_STTBRK		BIT(9)	/* Start Break */
-> +#define	ATMEL_US_STPBRK		BIT(10)	/* Stop Break */
-> +#define	ATMEL_US_STTTO		BIT(11)	/* Start Time-out */
-> +#define	ATMEL_US_SENDA		BIT(12)	/* Send Address */
-> +#define	ATMEL_US_RSTIT		BIT(13)	/* Reset Iterations */
-> +#define	ATMEL_US_RSTNACK	BIT(14)	/* Reset Non Acknowledge */
-> +#define	ATMEL_US_RETTO		BIT(15)	/* Rearm Time-out */
-> +#define	ATMEL_US_DTREN		BIT(16)	/* Data Terminal Ready Enable */
-> +#define	ATMEL_US_DTRDIS		BIT(17)	/* Data Terminal Ready Disable */
-> +#define	ATMEL_US_RTSEN		BIT(18)	/* Request To Send Enable */
-> +#define	ATMEL_US_RTSDIS		BIT(19)	/* Request To Send Disable */
+>  #define ATMEL_US_MR		0x04	/* Mode Register */
+>  #define	ATMEL_US_USMODE		GENMASK(3, 0)	/* Mode of the USART */
+> @@ -124,6 +129,37 @@
+>  #define ATMEL_US_NER		0x44	/* Number of Errors Register */
+>  #define ATMEL_US_IF		0x4c	/* IrDA Filter Register */
 > =20
-> -#define ATMEL_US_MR		0x04			/* Mode Register */
-> -#define		ATMEL_US_USMODE		(0xf <<  0)		/* Mode of the USART */
-> -#define			ATMEL_US_USMODE_NORMAL		0
-> -#define			ATMEL_US_USMODE_RS485		1
-> -#define			ATMEL_US_USMODE_HWHS		2
-> -#define			ATMEL_US_USMODE_MODEM		3
-> -#define			ATMEL_US_USMODE_ISO7816_T0	4
-> -#define			ATMEL_US_USMODE_ISO7816_T1	6
-> -#define			ATMEL_US_USMODE_IRDA		8
-> -#define		ATMEL_US_USCLKS		(3   <<  4)		/* Clock Selection */
-> -#define			ATMEL_US_USCLKS_MCK		(0 <<  4)
-> -#define			ATMEL_US_USCLKS_MCK_DIV8	(1 <<  4)
-> -#define			ATMEL_US_USCLKS_SCK		(3 <<  4)
-> -#define		ATMEL_US_CHRL		(3   <<  6)		/* Character Length */
-> -#define			ATMEL_US_CHRL_5			(0 <<  6)
-> -#define			ATMEL_US_CHRL_6			(1 <<  6)
-> -#define			ATMEL_US_CHRL_7			(2 <<  6)
-> -#define			ATMEL_US_CHRL_8			(3 <<  6)
-> -#define		ATMEL_US_SYNC		(1 <<  8)		/* Synchronous Mode Select */
-> -#define		ATMEL_US_PAR		(7 <<  9)		/* Parity Type */
-> -#define			ATMEL_US_PAR_EVEN		(0 <<  9)
-> -#define			ATMEL_US_PAR_ODD		(1 <<  9)
-> -#define			ATMEL_US_PAR_SPACE		(2 <<  9)
-> -#define			ATMEL_US_PAR_MARK		(3 <<  9)
-> -#define			ATMEL_US_PAR_NONE		(4 <<  9)
-> -#define			ATMEL_US_PAR_MULTI_DROP		(6 <<  9)
-> -#define		ATMEL_US_NBSTOP		(3 << 12)		/* Number of Stop Bits */
-> -#define			ATMEL_US_NBSTOP_1		(0 << 12)
-> -#define			ATMEL_US_NBSTOP_1_5		(1 << 12)
-> -#define			ATMEL_US_NBSTOP_2		(2 << 12)
-> -#define		ATMEL_US_CHMODE		(3 << 14)		/* Channel Mode */
-> -#define			ATMEL_US_CHMODE_NORMAL		(0 << 14)
-> -#define			ATMEL_US_CHMODE_ECHO		(1 << 14)
-> -#define			ATMEL_US_CHMODE_LOC_LOOP	(2 << 14)
-> -#define			ATMEL_US_CHMODE_REM_LOOP	(3 << 14)
-> -#define		ATMEL_US_MSBF		(1 << 16)		/* Bit Order */
-> -#define		ATMEL_US_MODE9		(1 << 17)		/* 9-bit Character Length */
-> -#define		ATMEL_US_CLKO		(1 << 18)		/* Clock Output Select */
-> -#define		ATMEL_US_OVER		(1 << 19)		/* Oversampling Mode */
-> -#define		ATMEL_US_INACK		(1 << 20)		/* Inhibit Non Acknowledge */
-> -#define		ATMEL_US_DSNACK		(1 << 21)		/* Disable Successive NACK */
-> -#define		ATMEL_US_MAX_ITER	(7 << 24)		/* Max Iterations */
-> -#define		ATMEL_US_FILTER		(1 << 28)		/* Infrared Receive Line Filter=
+> +#define ATMEL_US_CMPR		0x90	/* Comparaison Register */
+> +#define ATMEL_US_FMR		0xa0	/* FIFO Mode Register */
+> +#define	ATMEL_US_TXRDYM(data)	(((data) & 0x3) << 0)	/* TX Ready Mode=
  */
-> +#define ATMEL_US_MR		0x04	/* Mode Register */
-> +#define	ATMEL_US_USMODE		GENMASK(3, 0)	/* Mode of the USART */
-> +#define		ATMEL_US_USMODE_NORMAL		0
-> +#define		ATMEL_US_USMODE_RS485		1
-> +#define		ATMEL_US_USMODE_HWHS		2
-> +#define		ATMEL_US_USMODE_MODEM		3
-> +#define		ATMEL_US_USMODE_ISO7816_T0	4
-> +#define		ATMEL_US_USMODE_ISO7816_T1	6
-> +#define		ATMEL_US_USMODE_IRDA		8
-> +#define	ATMEL_US_USCLKS		GENMASK(5, 4)	/* Clock Selection */
-> +#define		ATMEL_US_USCLKS_MCK		(0 <<  4)
-> +#define		ATMEL_US_USCLKS_MCK_DIV8	(1 <<  4)
-> +#define		ATMEL_US_USCLKS_SCK		(3 <<  4)
-> +#define	ATMEL_US_CHRL		GENMASK(7, 6)	/* Character Length */
-> +#define		ATMEL_US_CHRL_5			(0 <<  6)
-> +#define		ATMEL_US_CHRL_6			(1 <<  6)
-> +#define		ATMEL_US_CHRL_7			(2 <<  6)
-> +#define		ATMEL_US_CHRL_8			(3 <<  6)
-> +#define	ATMEL_US_SYNC		BIT(8)		/* Synchronous Mode Select */
-> +#define	ATMEL_US_PAR		GENMASK(11, 9)	/* Parity Type */
-> +#define		ATMEL_US_PAR_EVEN		(0 <<  9)
-> +#define		ATMEL_US_PAR_ODD		(1 <<  9)
-> +#define		ATMEL_US_PAR_SPACE		(2 <<  9)
-> +#define		ATMEL_US_PAR_MARK		(3 <<  9)
-> +#define		ATMEL_US_PAR_NONE		(4 <<  9)
-> +#define		ATMEL_US_PAR_MULTI_DROP		(6 <<  9)
-> +#define	ATMEL_US_NBSTOP		GENMASK(13, 12)	/* Number of Stop Bits */
-> +#define		ATMEL_US_NBSTOP_1		(0 << 12)
-> +#define		ATMEL_US_NBSTOP_1_5		(1 << 12)
-> +#define		ATMEL_US_NBSTOP_2		(2 << 12)
-> +#define	ATMEL_US_CHMODE		GENMASK(15, 14)	/* Channel Mode */
-> +#define		ATMEL_US_CHMODE_NORMAL		(0 << 14)
-> +#define		ATMEL_US_CHMODE_ECHO		(1 << 14)
-> +#define		ATMEL_US_CHMODE_LOC_LOOP	(2 << 14)
-> +#define		ATMEL_US_CHMODE_REM_LOOP	(3 << 14)
-> +#define	ATMEL_US_MSBF		BIT(16)	/* Bit Order */
-> +#define	ATMEL_US_MODE9		BIT(17)	/* 9-bit Character Length */
-> +#define	ATMEL_US_CLKO		BIT(18)	/* Clock Output Select */
-> +#define	ATMEL_US_OVER		BIT(19)	/* Oversampling Mode */
-> +#define	ATMEL_US_INACK		BIT(20)	/* Inhibit Non Acknowledge */
-> +#define	ATMEL_US_DSNACK		BIT(21)	/* Disable Successive NACK */
-> +#define	ATMEL_US_MAX_ITER	GENMASK(26, 24)	/* Max Iterations */
-> +#define	ATMEL_US_FILTER		BIT(28)	/* Infrared Receive Line Filter */
-> =20
-> -#define ATMEL_US_IER		0x08			/* Interrupt Enable Register */
-> -#define		ATMEL_US_RXRDY		(1 <<  0)		/* Receiver Ready */
-> -#define		ATMEL_US_TXRDY		(1 <<  1)		/* Transmitter Ready */
-> -#define		ATMEL_US_RXBRK		(1 <<  2)		/* Break Received / End of Break=
+> +#define	ATMEL_US_RXRDYM(data)	(((data) & 0x3) << 4)	/* RX Ready Mode=
  */
-> -#define		ATMEL_US_ENDRX		(1 <<  3)		/* End of Receiver Transfer */
-> -#define		ATMEL_US_ENDTX		(1 <<  4)		/* End of Transmitter Transfer *=
+> +#define		ATMEL_US_ONE_DATA	0x0
+> +#define		ATMEL_US_TWO_DATA	0x1
+> +#define		ATMEL_US_FOUR_DATA	0x2
+> +#define	ATMEL_US_FRTSC		BIT(7)	/* FIFO RTS pin Control */
+> +#define	ATMEL_US_TXFTHRES(thr)	(((thr) & 0x3f) << 8)	/* TX FIFO Thre=
+shold */
+> +#define	ATMEL_US_RXFTHRES(thr)	(((thr) & 0x3f) << 16)	/* RX FIFO Thr=
+eshold */
+> +#define	ATMEL_US_RXFTHRES2(thr)	(((thr) & 0x3f) << 24)	/* RX FIFO Th=
+reshold2 */
+> +
+> +#define ATMEL_US_FLR		0xa4	/* FIFO Level Register */
+> +#define	ATMEL_US_TXFL(reg)	(((reg) >> 0) & 0x3f)	/* TX FIFO Level */
+> +#define	ATMEL_US_RXFL(reg)	(((reg) >> 16) & 0x3f)	/* RX FIFO Level *=
 /
-> -#define		ATMEL_US_OVRE		(1 <<  5)		/* Overrun Error */
-> -#define		ATMEL_US_FRAME		(1 <<  6)		/* Framing Error */
-> -#define		ATMEL_US_PARE		(1 <<  7)		/* Parity Error */
-> -#define		ATMEL_US_TIMEOUT	(1 <<  8)		/* Receiver Time-out */
-> -#define		ATMEL_US_TXEMPTY	(1 <<  9)		/* Transmitter Empty */
-> -#define		ATMEL_US_ITERATION	(1 << 10)		/* Max number of Repetitions =
-Reached */
-> -#define		ATMEL_US_TXBUFE		(1 << 11)		/* Transmission Buffer Empty */
-> -#define		ATMEL_US_RXBUFF		(1 << 12)		/* Reception Buffer Full */
-> -#define		ATMEL_US_NACK		(1 << 13)		/* Non Acknowledge */
-> -#define		ATMEL_US_RIIC		(1 << 16)		/* Ring Indicator Input Change [A=
-T91RM9200 only] */
-> -#define		ATMEL_US_DSRIC		(1 << 17)		/* Data Set Ready Input Change [=
-AT91RM9200 only] */
-> -#define		ATMEL_US_DCDIC		(1 << 18)		/* Data Carrier Detect Input Cha=
-nge [AT91RM9200 only] */
-> -#define		ATMEL_US_CTSIC		(1 << 19)		/* Clear to Send Input Change */
-> -#define		ATMEL_US_RI		(1 << 20)		/* RI */
-> -#define		ATMEL_US_DSR		(1 << 21)		/* DSR */
-> -#define		ATMEL_US_DCD		(1 << 22)		/* DCD */
-> -#define		ATMEL_US_CTS		(1 << 23)		/* CTS */
-> +#define ATMEL_US_IER		0x08	/* Interrupt Enable Register */
-> +#define	ATMEL_US_RXRDY		BIT(0)	/* Receiver Ready */
-> +#define	ATMEL_US_TXRDY		BIT(1)	/* Transmitter Ready */
-> +#define	ATMEL_US_RXBRK		BIT(2)	/* Break Received / End of Break */
-> +#define	ATMEL_US_ENDRX		BIT(3)	/* End of Receiver Transfer */
-> +#define	ATMEL_US_ENDTX		BIT(4)	/* End of Transmitter Transfer */
-> +#define	ATMEL_US_OVRE		BIT(5)	/* Overrun Error */
-> +#define	ATMEL_US_FRAME		BIT(6)	/* Framing Error */
-> +#define	ATMEL_US_PARE		BIT(7)	/* Parity Error */
-> +#define	ATMEL_US_TIMEOUT	BIT(8)	/* Receiver Time-out */
-> +#define	ATMEL_US_TXEMPTY	BIT(9)	/* Transmitter Empty */
-> +#define	ATMEL_US_ITERATION	BIT(10)	/* Max number of Repetitions Reac=
-hed */
-> +#define	ATMEL_US_TXBUFE		BIT(11)	/* Transmission Buffer Empty */
-> +#define	ATMEL_US_RXBUFF		BIT(12)	/* Reception Buffer Full */
-> +#define	ATMEL_US_NACK		BIT(13)	/* Non Acknowledge */
-> +#define	ATMEL_US_RIIC		BIT(16)	/* Ring Indicator Input Change */
-> +#define	ATMEL_US_DSRIC		BIT(17)	/* Data Set Ready Input Change */
-> +#define	ATMEL_US_DCDIC		BIT(18)	/* Data Carrier Detect Input Change =
+> +
+> +#define ATMEL_US_FIER		0xa8	/* FIFO Interrupt Enable Register */
+> +#define ATMEL_US_FIDR		0xac	/* FIFO Interrupt Disable Register */
+> +#define ATMEL_US_FIMR		0xb0	/* FIFO Interrupt Mask Register */
+> +#define ATMEL_US_FESR		0xb4	/* FIFO Event Status Register */
+> +#define	ATMEL_US_TXFEF		BIT(0)	/* Transmit FIFO Empty Flag */
+> +#define	ATMEL_US_TXFFF		BIT(1)	/* Transmit FIFO Full Flag */
+> +#define	ATMEL_US_TXFTHF		BIT(2)	/* Transmit FIFO Threshold Flag */
+> +#define	ATMEL_US_RXFEF		BIT(3)	/* Receive FIFO Empty Flag */
+> +#define	ATMEL_US_RXFFF		BIT(4)	/* Receive FIFO Full Flag */
+> +#define	ATMEL_US_RXFTHF		BIT(5)	/* Receive FIFO Threshold Flag */
+> +#define	ATMEL_US_TXFPTEF	BIT(6)	/* Transmit FIFO Pointer Error Flag =
 */
-> +#define	ATMEL_US_CTSIC		BIT(19)	/* Clear to Send Input Change */
-> +#define	ATMEL_US_RI		BIT(20)	/* RI */
-> +#define	ATMEL_US_DSR		BIT(21)	/* DSR */
-> +#define	ATMEL_US_DCD		BIT(22)	/* DCD */
-> +#define	ATMEL_US_CTS		BIT(23)	/* CTS */
-> =20
-> -#define ATMEL_US_IDR		0x0c			/* Interrupt Disable Register */
-> -#define ATMEL_US_IMR		0x10			/* Interrupt Mask Register */
-> -#define ATMEL_US_CSR		0x14			/* Channel Status Register */
-> -#define ATMEL_US_RHR		0x18			/* Receiver Holding Register */
-> -#define ATMEL_US_THR		0x1c			/* Transmitter Holding Register */
-> -#define		ATMEL_US_SYNH		(1 << 15)		/* Transmit/Receive Sync [AT91SAM=
-9261 only] */
-> +#define ATMEL_US_IDR		0x0c	/* Interrupt Disable Register */
-> +#define ATMEL_US_IMR		0x10	/* Interrupt Mask Register */
-> +#define ATMEL_US_CSR		0x14	/* Channel Status Register */
-> +#define ATMEL_US_RHR		0x18	/* Receiver Holding Register */
-> +#define ATMEL_US_THR		0x1c	/* Transmitter Holding Register */
-> +#define	ATMEL_US_SYNH		BIT(15)	/* Transmit/Receive Sync */
-> =20
-> -#define ATMEL_US_BRGR		0x20			/* Baud Rate Generator Register */
-> -#define		ATMEL_US_CD		(0xffff << 0)		/* Clock Divider */
-> +#define ATMEL_US_BRGR		0x20	/* Baud Rate Generator Register */
-> +#define	ATMEL_US_CD		GENMASK(15, 0)	/* Clock Divider */
-> =20
-> -#define ATMEL_US_RTOR		0x24			/* Receiver Time-out Register */
-> -#define		ATMEL_US_TO		(0xffff << 0)		/* Time-out Value */
-> +#define ATMEL_US_RTOR		0x24	/* Receiver Time-out Register */
-> +#define	ATMEL_US_TO		GENMASK(15, 0)	/* Time-out Value */
-> =20
-> -#define ATMEL_US_TTGR		0x28			/* Transmitter Timeguard Register */
-> -#define		ATMEL_US_TG		(0xff << 0)		/* Timeguard Value */
-> +#define ATMEL_US_TTGR		0x28	/* Transmitter Timeguard Register */
-> +#define	ATMEL_US_TG		GENMASK(7, 0)	/* Timeguard Value */
-> =20
-> -#define ATMEL_US_FIDI		0x40			/* FI DI Ratio Register */
-> -#define ATMEL_US_NER		0x44			/* Number of Errors Register */
-> -#define ATMEL_US_IF		0x4c			/* IrDA Filter Register */
-> +#define ATMEL_US_FIDI		0x40	/* FI DI Ratio Register */
-> +#define ATMEL_US_NER		0x44	/* Number of Errors Register */
-> +#define ATMEL_US_IF		0x4c	/* IrDA Filter Register */
-> =20
-> -#define ATMEL_US_NAME		0xf0			/* Ip Name */
-> -#define ATMEL_US_VERSION	0xfc			/* Ip Version */
-> +#define ATMEL_US_NAME		0xf0	/* Ip Name */
-> +#define ATMEL_US_VERSION	0xfc	/* Ip Version */
-> =20
->  #endif
->=20
+> +#define	ATMEL_US_RXFPTEF	BIT(7)	/* Receive FIFO Pointer Error Flag *=
+/
+> +#define	ATMEL_US_TXFLOCK	BIT(8)	/* Transmit FIFO Lock (FESR only) */
+> +#define	ATMEL_US_RXFTHF2	BIT(9)	/* Receive FIFO Threshold Flag 2 */
+> +
+>  #define ATMEL_US_NAME		0xf0	/* Ip Name */
+>  #define ATMEL_US_VERSION	0xfc	/* Ip Version */
 
+Otherwise it look good.
 
+Thanks, bye,
 --=20
 Nicolas Ferre
 --
