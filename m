@@ -1,279 +1,247 @@
 From: Paul Osmialowski <pawelo@king.net.pl>
-Subject: [PATCH v2 6/9] arm: twr-k70f120m: extend Freescale eDMA driver with
- the ability to support Kinetis SoC
-Date: Tue, 30 Jun 2015 14:27:27 +0200
-Message-ID: <1435667250-28299-7-git-send-email-pawelo@king.net.pl>
+Subject: [PATCH v2 2/9] arm: twr-k70f120m: basic support for Kinetis TWR-K70F120M
+Date: Tue, 30 Jun 2015 14:27:23 +0200
+Message-ID: <1435667250-28299-3-git-send-email-pawelo@king.net.pl>
 References: <1435667250-28299-1-git-send-email-pawelo@king.net.pl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1435667250-28299-1-git-send-email-pawelo@king.net.pl>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jiri Slaby <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, dmaengine@vger.kernel.org
-Cc: Nicolas Pitre <nicolas.pitre@linaro.org>, Sergei Poselenov <sposelenov@emcraft.com>, Paul Bolle <pebolle@tiscali.nl>, Paul Osmialowski <pawelo@king.net.pl>, Arnd Bergmann <arnd@arndb.de>, Jingchang Lu <jingchang.lu@freescale.com>, Yuri Tikhonov <yur@emcraft.com>, Rob Herring <r.herring@freescale.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Alexander Potashev <aspotashev@emcraft.com>, Frank Li <Frank.Li@freescale.com>, Thomas Gleixner <tglx@linutronix.de>, Anson Huang <b20788@freescale.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Nicolas Pitre <nicolas.pitre@linaro.org>, Paul Bolle <pebolle@tiscali.nl>, Thomas Gleixner <tglx@linutronix.de>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Paul Osmialowski <pawelo@king.net.pl>, Anson Huang <b20788@freescale.com>, Frank Li <Frank.Li@freescale.com>, Jingchang Lu <jingchang.lu@freescale.com>, Rob Herring <r.herring@freescale.com>, Yuri Tikhonov <yur@emcraft.com>, Sergei Poselenov <sposelenov@emcraft.com>, Alexander Potashev <aspotashev@emcraft.com>
 List-Id: linux-serial@vger.kernel.org
 
-Surprisingly small amount of work was required in order to extend already
-existing eDMA driver with the support for Kinetis SoC architecture.
+This one was inspired by a serie of commits published on Emcraft git repo:
+
+https://github.com/EmcraftSystems/linux-emcraft.git
+
+Entry commit: f014da1df860ad702d923c95cb97e068bd302cb0
+ RT75957. twr-k70f120m: basic support
+
+by: Alexander Potashev <aspotashev@emcraft.com>
 
 Signed-off-by: Paul Osmialowski <pawelo@king.net.pl>
 ---
- Documentation/devicetree/bindings/dma/fsl-edma.txt |  38 ++++++-
- drivers/dma/fsl-edma.c                             | 114 ++++++++++++++++-----
- 2 files changed, 125 insertions(+), 27 deletions(-)
+ Documentation/devicetree/bindings/arm/fsl.txt |  6 +++++
+ arch/arm/Kconfig                              |  9 ++++++-
+ arch/arm/Kconfig-nommu                        |  1 +
+ arch/arm/Makefile                             |  1 +
+ arch/arm/boot/dts/kinetis-twr-k70f120m.dts    | 16 +++++++++++++
+ arch/arm/boot/dts/kinetis.dtsi                |  5 ++++
+ arch/arm/mach-kinetis/Makefile                |  5 ++++
+ arch/arm/mach-kinetis/Makefile.boot           |  3 +++
+ arch/arm/mach-kinetis/idle.c                  | 27 +++++++++++++++++++++
+ arch/arm/mach-kinetis/kinetis.c               | 34 +++++++++++++++++++++++++++
+ arch/arm/mm/Kconfig                           |  1 +
+ 11 files changed, 107 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/boot/dts/kinetis-twr-k70f120m.dts
+ create mode 100644 arch/arm/boot/dts/kinetis.dtsi
+ create mode 100644 arch/arm/mach-kinetis/Makefile
+ create mode 100644 arch/arm/mach-kinetis/Makefile.boot
+ create mode 100644 arch/arm/mach-kinetis/idle.c
+ create mode 100644 arch/arm/mach-kinetis/kinetis.c
 
-diff --git a/Documentation/devicetree/bindings/dma/fsl-edma.txt b/Documentation/devicetree/bindings/dma/fsl-edma.txt
-index 191d7bd..88c3e20 100644
---- a/Documentation/devicetree/bindings/dma/fsl-edma.txt
-+++ b/Documentation/devicetree/bindings/dma/fsl-edma.txt
-@@ -9,6 +9,7 @@ group, DMAMUX0 or DMAMUX1, but not both.
- Required properties:
- - compatible :
- 	- "fsl,vf610-edma" for eDMA used similar to that on Vybrid vf610 SoC
-+	- "fsl,kinetis-edma" for eDMA used similar to that on Kinetis SoC
- - reg : Specifies base physical address(s) and size of the eDMA registers.
- 	The 1st region is eDMA control register's address and size.
- 	The 2nd and the 3rd regions are programmable channel multiplexing
-@@ -16,7 +17,8 @@ Required properties:
- - interrupts : A list of interrupt-specifiers, one for each entry in
- 	interrupt-names.
- - interrupt-names : Should contain:
--	"edma-tx" - the transmission interrupt
-+	"edma-tx" - the transmission interrupt (Vybrid)
-+	"edma-tx-n,m" - interrupt for channels n (0-15) and m (16-31) (Kinetis)
- 	"edma-err" - the error interrupt
- - #dma-cells : Must be <2>.
- 	The 1st cell specifies the DMAMUX(0 for DMAMUX0 and 1 for DMAMUX1).
-@@ -28,6 +30,7 @@ Required properties:
- - clock-names : A list of channel group clock names. Should contain:
- 	"dmamux0" - clock name of mux0 group
- 	"dmamux1" - clock name of mux1 group
-+	"edma"    - clock gate for whole controller (Kinetis only)
- - clocks : A list of phandle and clock-specifier pairs, one for each entry in
- 	clock-names.
+diff --git a/Documentation/devicetree/bindings/arm/fsl.txt b/Documentation/devicetree/bindings/arm/fsl.txt
+index 2a3ba73..36179fd 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.txt
++++ b/Documentation/devicetree/bindings/arm/fsl.txt
+@@ -135,3 +135,9 @@ LS2085A ARMv8 based Simulator model
+ Required root node properties:
+     - compatible = "fsl,ls2085a-simu", "fsl,ls2085a";
  
-@@ -54,6 +57,39 @@ edma0: dma-controller@40018000 {
- 		<&clks VF610_CLK_DMAMUX1>;
- };
++Freescale Kinetis SoC Device Tree Bindings
++------------------------------------------
++
++TWR-K70F120M Kinetis K70 based development board.
++Required root node compatible properties:
++  - compatible = "fsl,kinetis-twr-k70f120m"
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index a750c14..9c89bdc 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -964,6 +964,13 @@ config ARCH_EFM32
+ 	  Support for Energy Micro's (now Silicon Labs) efm32 Giant Gecko
+ 	  processors.
  
-+edma: dma-controller@40008000 {
-+	compatible = "fsl,kinetis-edma";
-+	reg = <0x40008000 0x2000>, /* DMAC */
-+		<0x40021000 0x1000>, /* DMAMUX0 */
-+		<0x40022000 0x1000>; /* DMAMUX1 */
-+	#dma-cells = <2>;
-+	dma-channels = <32>;
-+	interrupts =	 <0>,  <1>,  <2>,  <3>,
-+			 <4>,  <5>,  <6>,  <7>,
-+			 <8>,  <9>, <10>, <11>,
-+			<12>, <13>, <14>, <15>,
-+			<16>;
-+	interrupt-names = "edma-tx-0,16",
-+			  "edma-tx-1,17",
-+			  "edma-tx-2,18",
-+			  "edma-tx-3,19",
-+			  "edma-tx-4,20",
-+			  "edma-tx-5,21",
-+			  "edma-tx-6,22",
-+			  "edma-tx-7,23",
-+			  "edma-tx-8,24",
-+			  "edma-tx-9,25",
-+			  "edma-tx-10,26",
-+			  "edma-tx-11,27",
-+			  "edma-tx-12,28",
-+			  "edma-tx-13,29",
-+			  "edma-tx-14,30",
-+			  "edma-tx-15,31",
-+			  "edma-err";
-+	clocks = <&mcg_cclk_gate 6 1>,
-+		 <&mcg_pclk_gate 5 1>, <&mcg_pclk_gate 5 2>;
-+	clock-names = "edma", "dmamux0", "dmamux1";
++config ARCH_KINETIS
++	bool "Freescale Kinetis MCU"
++	depends on ARM_SINGLE_ARMV7M
++	select ARMV7M_SYSTICK
++	help
++	  This enables support for the Freescale Kinetis MCUs
++
+ config ARCH_LPC18XX
+ 	bool "NXP LPC18xx/LPC43xx"
+ 	depends on ARM_SINGLE_ARMV7M
+@@ -1733,7 +1740,7 @@ source "mm/Kconfig"
+ config FORCE_MAX_ZONEORDER
+ 	int "Maximum zone order" if ARCH_SHMOBILE_LEGACY
+ 	range 11 64 if ARCH_SHMOBILE_LEGACY
+-	default "12" if SOC_AM33XX
++	default "12" if SOC_AM33XX || ARCH_KINETIS
+ 	default "9" if SA1111 || ARCH_EFM32
+ 	default "11"
+ 	help
+diff --git a/arch/arm/Kconfig-nommu b/arch/arm/Kconfig-nommu
+index d081fcb..4b9aab3 100644
+--- a/arch/arm/Kconfig-nommu
++++ b/arch/arm/Kconfig-nommu
+@@ -65,6 +65,7 @@ config ARM_MPU
+ 
+ config COPY_VECTOR_TABLE_TO_SRAM_ADDR
+ 	hex 'If non-zero, copy Vector Table to this SRAM Address' if CPU_V7M
++	default 0x20000000 if ARCH_KINETIS
+ 	default 0x00000000
+ 	depends on CPU_V7M
+ 	help
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 07ab3d2..e71fc01 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -170,6 +170,7 @@ machine-$(CONFIG_ARCH_IOP32X)		+= iop32x
+ machine-$(CONFIG_ARCH_IOP33X)		+= iop33x
+ machine-$(CONFIG_ARCH_IXP4XX)		+= ixp4xx
+ machine-$(CONFIG_ARCH_KEYSTONE)		+= keystone
++machine-$(CONFIG_ARCH_KINETIS)		+= kinetis
+ machine-$(CONFIG_ARCH_KS8695)		+= ks8695
+ machine-$(CONFIG_ARCH_LPC18XX)		+= lpc18xx
+ machine-$(CONFIG_ARCH_LPC32XX)		+= lpc32xx
+diff --git a/arch/arm/boot/dts/kinetis-twr-k70f120m.dts b/arch/arm/boot/dts/kinetis-twr-k70f120m.dts
+new file mode 100644
+index 0000000..edccf37
+--- /dev/null
++++ b/arch/arm/boot/dts/kinetis-twr-k70f120m.dts
+@@ -0,0 +1,16 @@
++/*
++ * Device tree for TWR-K70F120M development board.
++ *
++ */
++
++/dts-v1/;
++#include "kinetis.dtsi"
++
++/ {
++	model = "Freescale TWR-K70F120M Development Kit";
++	compatible = "fsl,kinetis-twr-k70f120m";
++
++	memory {
++		reg = <0x8000000 0x8000000>;
++	};
 +};
- 
- * DMA clients
- DMA client drivers that uses the DMA function must use the format described
-diff --git a/drivers/dma/fsl-edma.c b/drivers/dma/fsl-edma.c
-index 915eec3..e41a3b9 100644
---- a/drivers/dma/fsl-edma.c
-+++ b/drivers/dma/fsl-edma.c
-@@ -164,13 +164,13 @@ struct fsl_edma_desc {
- struct fsl_edma_engine {
- 	struct dma_device	dma_dev;
- 	void __iomem		*membase;
-+	struct clk		*clk;
- 	void __iomem		*muxbase[DMAMUX_NR];
- 	struct clk		*muxclk[DMAMUX_NR];
- 	struct mutex		fsl_edma_mutex;
- 	u32			n_chans;
--	int			txirq;
--	int			errirq;
- 	bool			big_endian;
-+	bool			kinetis;
- 	struct fsl_edma_chan	chans[];
- };
- 
-@@ -788,42 +788,85 @@ static void fsl_edma_free_chan_resources(struct dma_chan *chan)
- }
- 
- static int
--fsl_edma_irq_init(struct platform_device *pdev, struct fsl_edma_engine *fsl_edma)
-+fsl_edma_irq_init(struct platform_device *pdev,
-+		  struct fsl_edma_engine *fsl_edma)
- {
-+	struct device_node *np = pdev->dev.of_node;
-+	int irq, errirq;
- 	int ret;
- 
--	fsl_edma->txirq = platform_get_irq_byname(pdev, "edma-tx");
--	if (fsl_edma->txirq < 0) {
--		dev_err(&pdev->dev, "Can't get edma-tx irq.\n");
--		return fsl_edma->txirq;
--	}
--
--	fsl_edma->errirq = platform_get_irq_byname(pdev, "edma-err");
--	if (fsl_edma->errirq < 0) {
-+	errirq = platform_get_irq_byname(pdev, "edma-err");
-+	if (errirq < 0) {
- 		dev_err(&pdev->dev, "Can't get edma-err irq.\n");
--		return fsl_edma->errirq;
-+		return irq;
- 	}
- 
--	if (fsl_edma->txirq == fsl_edma->errirq) {
--		ret = devm_request_irq(&pdev->dev, fsl_edma->txirq,
--				fsl_edma_irq_handler, 0, "eDMA", fsl_edma);
--		if (ret) {
--			dev_err(&pdev->dev, "Can't register eDMA IRQ.\n");
--			 return  ret;
-+	if (fsl_edma->kinetis) {
-+		int i;
-+		int irqs = of_irq_count(np);
+diff --git a/arch/arm/boot/dts/kinetis.dtsi b/arch/arm/boot/dts/kinetis.dtsi
+new file mode 100644
+index 0000000..93d2a8a
+--- /dev/null
++++ b/arch/arm/boot/dts/kinetis.dtsi
+@@ -0,0 +1,5 @@
++/*
++ * Device tree for Freescale Kinetis SoC.
++ *
++ */
++#include "armv7-m.dtsi"
+diff --git a/arch/arm/mach-kinetis/Makefile b/arch/arm/mach-kinetis/Makefile
+new file mode 100644
+index 0000000..e759d9e
+--- /dev/null
++++ b/arch/arm/mach-kinetis/Makefile
+@@ -0,0 +1,5 @@
++#
++# Makefile for the Freescale Kinetis platform files
++#
 +
-+		if (irqs <= 1) {
-+			dev_err(&pdev->dev, "Wrong eDMA irq count %d\n", irqs);
-+			return -EINVAL;
- 		}
--	} else {
--		ret = devm_request_irq(&pdev->dev, fsl_edma->txirq,
++obj-y += kinetis.o idle.o
+diff --git a/arch/arm/mach-kinetis/Makefile.boot b/arch/arm/mach-kinetis/Makefile.boot
+new file mode 100644
+index 0000000..3b442ab
+--- /dev/null
++++ b/arch/arm/mach-kinetis/Makefile.boot
+@@ -0,0 +1,3 @@
++   zreladdr-y	:= 0x08008000
++params_phys-y	:= 0x08000100
++initrd_phys-y	:= 0x08100000
+diff --git a/arch/arm/mach-kinetis/idle.c b/arch/arm/mach-kinetis/idle.c
+new file mode 100644
+index 0000000..79d2e1c
+--- /dev/null
++++ b/arch/arm/mach-kinetis/idle.c
+@@ -0,0 +1,27 @@
++/*
++ * arch/arm/mach-kinetis/idle.c
++ */
 +
-+		for (i = 0; i < (irqs - 1); i++) {
-+			char irq_name[32];
++#include <linux/init.h>
++#include <linux/io.h>
++#include <asm/system_misc.h>
++#include <asm/proc-fns.h>
 +
-+			sprintf(irq_name, "edma-tx-%d,%d", i, 16 + i);
-+			irq = platform_get_irq_byname(pdev, irq_name);
-+			if (irq < 0) {
-+				dev_err(&pdev->dev, "Can't get %s irq.\n",
-+							irq_name);
-+				return irq;
-+			}
++static void kinetis_idle(void)
++{
++	asm volatile ("wfi");
 +
-+			ret = devm_request_irq(&pdev->dev, irq,
- 				fsl_edma_tx_handler, 0, "eDMA tx", fsl_edma);
--		if (ret) {
--			dev_err(&pdev->dev, "Can't register eDMA tx IRQ.\n");
--			return  ret;
-+			if (ret) {
-+				dev_err(&pdev->dev, "Can't register %s IRQ.\n",
-+							irq_name);
-+				return  ret;
-+			}
- 		}
- 
--		ret = devm_request_irq(&pdev->dev, fsl_edma->errirq,
--				fsl_edma_err_handler, 0, "eDMA err", fsl_edma);
-+		ret = devm_request_irq(&pdev->dev, errirq,
-+			fsl_edma_err_handler, 0, "eDMA err", fsl_edma);
- 		if (ret) {
- 			dev_err(&pdev->dev, "Can't register eDMA err IRQ.\n");
--			return  ret;
-+		return  ret;
-+		}
-+	} else {
-+		irq = platform_get_irq_byname(pdev, "edma-tx");
-+		if (irq < 0) {
-+			dev_err(&pdev->dev, "Can't get edma-tx irq.\n");
-+			return irq;
-+		}
++	/*
++	 * This is a dirty hack that invalidates the I/D bus cache
++	 * on Kinetis K70. This must be done after idle.
++	 */
++	writel(readl(IOMEM(0xe0082000)) | 0x85000000, IOMEM(0xe0082000));
++}
 +
-+		if (irq == errirq) {
-+			ret = devm_request_irq(&pdev->dev, irq,
-+				fsl_edma_irq_handler, 0, "eDMA", fsl_edma);
-+			if (ret) {
-+				dev_err(&pdev->dev,
-+						"Can't register eDMA IRQ.\n");
-+				return  ret;
-+			}
-+		} else {
-+			ret = devm_request_irq(&pdev->dev, irq,
-+				fsl_edma_tx_handler, 0, "eDMA tx", fsl_edma);
-+			if (ret) {
-+				dev_err(&pdev->dev,
-+					    "Can't register eDMA tx IRQ.\n");
-+				return  ret;
-+			}
++static int __init kinetis_idle_init(void)
++{
++	arm_pm_idle = kinetis_idle;
++	return 0;
++}
 +
-+			ret = devm_request_irq(&pdev->dev, errirq,
-+				fsl_edma_err_handler, 0, "eDMA err", fsl_edma);
-+			if (ret) {
-+				dev_err(&pdev->dev,
-+					    "Can't register eDMA err IRQ.\n");
-+				return  ret;
-+			}
- 		}
- 	}
- 
-@@ -851,6 +894,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	fsl_edma->n_chans = chans;
-+	fsl_edma->kinetis = of_device_is_compatible(np, "fsl,kinetis-edma");
- 	mutex_init(&fsl_edma->fsl_edma_mutex);
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -858,6 +902,20 @@ static int fsl_edma_probe(struct platform_device *pdev)
- 	if (IS_ERR(fsl_edma->membase))
- 		return PTR_ERR(fsl_edma->membase);
- 
-+	if (fsl_edma->kinetis) {
-+		fsl_edma->clk = devm_clk_get(&pdev->dev, "edma");
-+		if (IS_ERR(fsl_edma->clk)) {
-+			dev_err(&pdev->dev, "Missing EDMA clock.\n");
-+			return PTR_ERR(fsl_edma->clk);
-+		}
++arch_initcall(kinetis_idle_init);
+diff --git a/arch/arm/mach-kinetis/kinetis.c b/arch/arm/mach-kinetis/kinetis.c
+new file mode 100644
+index 0000000..45e15c6
+--- /dev/null
++++ b/arch/arm/mach-kinetis/kinetis.c
+@@ -0,0 +1,34 @@
++/*
++ * kinetis.c - Freescale Kinetis K70F120M Development Board
++ *
++ * Based on legacy pre-OF code by Alexander Potashev <aspotashev@emcraft.com>
++ *
++ * (C) Copyright 2011, 2012
++ * Emcraft Systems, <www.emcraft.com>
++ * Alexander Potashev <aspotashev@emcraft.com>
++ *
++ * Copyright (C) 2015 Paul Osmialowski <pawelo@king.net.pl>
++ *
++ * This program is free software; you can redistribute it and/or modify it under
++ * the terms of the GNU General Public License version 2 as published by the
++ * Free Software Foundation.
++ */
 +
-+		ret = clk_prepare_enable(fsl_edma->clk);
-+		if (ret) {
-+			dev_err(&pdev->dev, "EDMA clk failed.\n");
-+			return ret;
-+		}
-+	}
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/of_platform.h>
++#include <asm/v7m.h>
++#include <asm/mach/arch.h>
 +
- 	for (i = 0; i < DMAMUX_NR; i++) {
- 		char clkname[32];
- 
-@@ -956,10 +1014,14 @@ static int fsl_edma_remove(struct platform_device *pdev)
- 	for (i = 0; i < DMAMUX_NR; i++)
- 		clk_disable_unprepare(fsl_edma->muxclk[i]);
- 
-+	if (fsl_edma->kinetis)
-+		clk_disable_unprepare(fsl_edma->clk);
++static const char *const kinetis_compat[] __initconst = {
++	"fsl,kinetis-twr-k70f120m",
++	NULL
++};
 +
- 	return 0;
- }
- 
- static const struct of_device_id fsl_edma_dt_ids[] = {
-+	{ .compatible = "fsl,kinetis-edma", },
- 	{ .compatible = "fsl,vf610-edma", },
- 	{ /* sentinel */ }
- };
++/*
++ * Freescale Kinetis platform machine description
++ */
++DT_MACHINE_START(KINETIS, "Freescale Kinetis")
++	.dt_compat	= kinetis_compat,
++	.restart	= armv7m_restart,
++MACHINE_END
+diff --git a/arch/arm/mm/Kconfig b/arch/arm/mm/Kconfig
+index 7c6b976..121b580 100644
+--- a/arch/arm/mm/Kconfig
++++ b/arch/arm/mm/Kconfig
+@@ -609,6 +609,7 @@ config CPU_V7M_NUM_IRQ
+ 	depends on CPU_V7M
+ 	default 90 if ARCH_STM32
+ 	default 38 if ARCH_EFM32
++	default 106 if ARCH_KINETIS
+ 	default 112 if SOC_VF610
+ 	default 240
+ 	help
 -- 
 2.3.6
