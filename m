@@ -1,154 +1,74 @@
-From: Paul Osmialowski <pawelo@king.net.pl>
-Subject: [PATCH v2 7/9] arm: twr-k70f120m: use Freescale eDMA driver with Kinetis SoC
-Date: Tue, 30 Jun 2015 14:27:28 +0200
-Message-ID: <1435667250-28299-8-git-send-email-pawelo@king.net.pl>
-References: <1435667250-28299-1-git-send-email-pawelo@king.net.pl>
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1435667250-28299-1-git-send-email-pawelo@king.net.pl>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jiri Slaby <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, dmaengine@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Nicolas Pitre <nicolas.pitre@linaro.org>, Paul Bolle <pebolle@tiscali.nl>, Thomas Gleixner <tglx@linutronix.de>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Paul Osmialowski <pawelo@king.net.pl>, Anson Huang <b20788@freescale.com>, Frank Li <Frank.Li@freescale.com>, Jingchang Lu <jingchang.lu@freescale.com>, Rob Herring <r.herring@freescale.com>, Yuri Tikhonov <yur@emcraft.com>, Sergei Poselenov <sposelenov@emcraft.com>, Alexander Potashev <aspotashev@emcraft.com>
+From: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v3 0/4] tty/serial: at91: add support to FIFOs
+Date: Tue, 30 Jun 2015 16:05:13 +0200
+Message-ID: <cover.1435672649.git.cyrille.pitchen@atmel.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, ludovic.desroches-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, leilei.zhao-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, josh.wu-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Note that <mach/memory.h> is needed (which is denoted by
-CONFIG_NEED_MACH_MEMORY_H) as it provides macros required for proper
-operation of DMA allocation functions.
+ChangeLog
 
-Signed-off-by: Paul Osmialowski <pawelo@king.net.pl>
----
- arch/arm/Kconfig                            |  4 ++
- arch/arm/boot/dts/kinetis.dtsi              | 34 ++++++++++++++++
- arch/arm/mach-kinetis/include/mach/memory.h | 61 +++++++++++++++++++++++++++++
- 3 files changed, 99 insertions(+)
- create mode 100644 arch/arm/mach-kinetis/include/mach/memory.h
+v3:
+- add "Acked-by" tags on patches 1, 2 and 4.
+- define macros check the FIFO size and to configure the high and low RTS
+  thresholds in patch 3.
+- fix a spelling mistake in patch 3: s/raisonable/reasonably/
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index b21592b..8ccffee 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -971,6 +971,10 @@ config ARCH_KINETIS
- 	select CLKSRC_KINETIS
- 	select PINCTRL
- 	select PINCTRL_KINETIS
-+	select DMADEVICES
-+	select FSL_EDMA
-+	select DMA_OF
-+	select NEED_MACH_MEMORY_H
- 	help
- 	  This enables support for the Freescale Kinetis MCUs
- 
-diff --git a/arch/arm/boot/dts/kinetis.dtsi b/arch/arm/boot/dts/kinetis.dtsi
-index 5ff1d3b..c2861f5 100644
---- a/arch/arm/boot/dts/kinetis.dtsi
-+++ b/arch/arm/boot/dts/kinetis.dtsi
-@@ -19,6 +19,40 @@
- 	};
- 
- 	soc {
-+		edma: dma-controller@40008000 {
-+			compatible = "fsl,kinetis-edma";
-+			reg = <0x40008000 0x2000>, /* DMAC */
-+				<0x40021000 0x1000>, /* DMAMUX0 */
-+				<0x40022000 0x1000>; /* DMAMUX1 */
-+			#dma-cells = <2>;
-+			dma-channels = <32>;
-+			interrupts =	 <0>,  <1>,  <2>,  <3>,
-+					 <4>,  <5>,  <6>,  <7>,
-+					 <8>,  <9>, <10>, <11>,
-+					<12>, <13>, <14>, <15>,
-+					<16>;
-+			interrupt-names = "edma-tx-0,16",
-+					  "edma-tx-1,17",
-+					  "edma-tx-2,18",
-+					  "edma-tx-3,19",
-+					  "edma-tx-4,20",
-+					  "edma-tx-5,21",
-+					  "edma-tx-6,22",
-+					  "edma-tx-7,23",
-+					  "edma-tx-8,24",
-+					  "edma-tx-9,25",
-+					  "edma-tx-10,26",
-+					  "edma-tx-11,27",
-+					  "edma-tx-12,28",
-+					  "edma-tx-13,29",
-+					  "edma-tx-14,30",
-+					  "edma-tx-15,31",
-+					  "edma-err";
-+			clocks = <&mcg_cclk_gate 6 1>,
-+				 <&mcg_pclk_gate 5 1>, <&mcg_pclk_gate 5 2>;
-+			clock-names = "edma", "dmamux0", "dmamux1";
-+		};
-+
- 		portA: pinmux@40049000 {
- 			compatible = "fsl,kinetis-padconf";
- 			reg = <0x40049000 0x1000>;
-diff --git a/arch/arm/mach-kinetis/include/mach/memory.h b/arch/arm/mach-kinetis/include/mach/memory.h
-new file mode 100644
-index 0000000..8bad034
---- /dev/null
-+++ b/arch/arm/mach-kinetis/include/mach/memory.h
-@@ -0,0 +1,61 @@
-+/*
-+ * Based on original code by Alexander Potashev <aspotashev@emcraft.com>
-+ *
-+ * (C) Copyright 2011, 2012
-+ * Emcraft Systems, <www.emcraft.com>
-+ * Alexander Potashev <aspotashev@emcraft.com>
-+ *
-+ * Copyright (C) 2015 Paul Osmialowski <pawelo@king.net.pl>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it under
-+ * the terms of the GNU General Public License version 2 as published by the
-+ * Free Software Foundation.
-+ */
-+
-+#ifndef _MACH_KINETIS_MEMORY_H
-+#define _MACH_KINETIS_MEMORY_H
-+
-+#ifndef __ASSEMBLY__
-+
-+/*
-+ * On Kinetis K70, consistent DMA memory resides in a special
-+ * DDRAM alias region (non-cacheable DDRAM at 0x80000000).
-+ *
-+ */
-+#define KINETIS_PHYS_DMA_OFFSET UL(0x80000000)
-+
-+/*
-+ * Mask of the field used to distinguish DDRAM aliases
-+ */
-+#define KINETIS_DRAM_ALIAS_MASK UL(0xf8000000)
-+
-+/*
-+ * This macro converts an address in the kernel run-time memory
-+ * to an alias in the non-cacheable memory region
-+ */
-+#define KINETIS_DMA_ALIAS_ADDR(addr)					\
-+		(((unsigned long)(addr) & ~KINETIS_DRAM_ALIAS_MASK) |	\
-+		(KINETIS_PHYS_DMA_OFFSET & KINETIS_DRAM_ALIAS_MASK))
-+
-+/*
-+ * This macro converts an address in the kernel code or
-+ * in the non-cacheable DMA region to an alias in
-+ * the run-time kernel memory region
-+ */
-+#define KINETIS_PHYS_ALIAS_ADDR(addr) \
-+		((unsigned long)(addr) & ~KINETIS_DRAM_ALIAS_MASK)
-+
-+#define __arch_dma_to_pfn(dev, addr) __phys_to_pfn(addr)
-+
-+#define __arch_pfn_to_dma(dev, pfn) \
-+		((dma_addr_t)KINETIS_DMA_ALIAS_ADDR(__pfn_to_phys(pfn)))
-+
-+#define __arch_dma_to_virt(dev, addr) \
-+		((void *)KINETIS_PHYS_ALIAS_ADDR(addr))
-+
-+#define __arch_virt_to_dma(dev, addr) \
-+		((dma_addr_t)KINETIS_DMA_ALIAS_ADDR(addr))
-+
-+#endif /* __ASSEMBLY__ */
-+
-+#endif /*_MACH_KINETIS_MEMORY_H */
+v2:
+- remove "atmel,rts-high-threshold" and "atmel,rts-low-threshold" from new
+  DT properties. For now these two thresholds are set once for all during the
+  probe but a later patch might allow to configure them at run time.
+- reword the commit message of the DT property patch to better explain why we
+  have chosen to introduce the new property "atmel,fifo-size".
+- add a missing chunk in the FIFO patch: as the commit message explains, we
+  need to use 8bit accesses when dealing with the Transmit/Receive Holding
+  Registers.
+
+v1:
+This series of patches add support to FIFOs which will be introduced with Atmel
+sama5d2x SoC.
+
+FIFOs allow to reduce the number of I/O access. Indeed depending on the data
+size and the USART mode, FIFOs work in either single or multiple data. For
+multiple data, up to 4 data can be written into the Transmit Holding Register
+or read from the Receive Holding Register in a single word access.
+
+Also the RX FIFO allows to reduce the risk of receive overrun and data loss,
+especially when the DMA controller is not used.
+
+Finally, when the hardware handshake mode is selected, the RTS line can now be
+controlled by two thresholds on the RX FIFO. When FIFO level (the number of
+data available to be read) crosses the high threshold, the RTS line is set to
+high level telling the peer that it should stop sending new data. Data are read
+from the RX FIFO and when the FIFO level crosses the low threshold, the RTS
+is set back to low level telling the remote peer that it can send data again.
+
+This new feature resolves a long time hardware limitation where the RTS line
+was directly controlled by a PDC signal. There is no equivalent of that signal
+for the DMA controller so for all SoCs without PDC for USART there was no mean
+to control the RTS line properly: once the hardware handshake mode selected,
+the RTS line remains high level. Next SoCs with FIFOs will be able to use the
+hardware handshake mode thanks to the RX FIFO.
+
+Cyrille Pitchen (4):
+  ARM: at91/dt: add a new DT property to support FIFOs on Atmel USARTs
+  tty/serial: at91: fix some macro definitions to fit coding style
+  tty/serial: at91: add support to FIFOs
+  tty/serial: at91: use 32bit writes into TX FIFO when DMA is enabled
+
+ .../devicetree/bindings/serial/atmel-usart.txt     |   3 +
+ drivers/tty/serial/atmel_serial.c                  | 206 ++++++++++++++----
+ include/linux/atmel_serial.h                       | 240 ++++++++++++---------
+ 3 files changed, 306 insertions(+), 143 deletions(-)
+
 -- 
-2.3.6
+1.8.2.2
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
