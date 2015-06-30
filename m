@@ -1,247 +1,286 @@
 From: Paul Osmialowski <pawelo@king.net.pl>
-Subject: [PATCH v2 2/9] arm: twr-k70f120m: basic support for Kinetis TWR-K70F120M
-Date: Tue, 30 Jun 2015 14:27:23 +0200
-Message-ID: <1435667250-28299-3-git-send-email-pawelo@king.net.pl>
+Subject: [PATCH v2 8/9] arm: twr-k70f120m: extend Freescale lpuart driver with ability to support Kinetis SoC
+Date: Tue, 30 Jun 2015 14:27:29 +0200
+Message-ID: <1435667250-28299-9-git-send-email-pawelo@king.net.pl>
 References: <1435667250-28299-1-git-send-email-pawelo@king.net.pl>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
 In-Reply-To: <1435667250-28299-1-git-send-email-pawelo@king.net.pl>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-gpio-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jiri Slaby <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, dmaengine@vger.kernel.org
 Cc: Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Nicolas Pitre <nicolas.pitre@linaro.org>, Paul Bolle <pebolle@tiscali.nl>, Thomas Gleixner <tglx@linutronix.de>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Paul Osmialowski <pawelo@king.net.pl>, Anson Huang <b20788@freescale.com>, Frank Li <Frank.Li@freescale.com>, Jingchang Lu <jingchang.lu@freescale.com>, Rob Herring <r.herring@freescale.com>, Yuri Tikhonov <yur@emcraft.com>, Sergei Poselenov <sposelenov@emcraft.com>, Alexander Potashev <aspotashev@emcraft.com>
 List-Id: linux-serial@vger.kernel.org
 
-This one was inspired by a serie of commits published on Emcraft git repo:
+This adds Kinetis SoC UART support to Freescale lpuart driver.
+
+Apart from some small changes (e.g. phony handler for error interrupt),
+somewhat bigger change was required by rx DMA operation model: for Kinetis
+the transfer residue should be consumed when handling interrupt caused by
+IDLE state. As a reference I used DMA related code from pre-OF UART driver
+published on Emcraft git repo:
 
 https://github.com/EmcraftSystems/linux-emcraft.git
 
-Entry commit: f014da1df860ad702d923c95cb97e068bd302cb0
- RT75957. twr-k70f120m: basic support
+9dc9c6dd13fa3058c776ac71a5a9f71ec89712d3
+ RT76540. serial: kinetis_uart: Support receiving from UART using DMA
 
-by: Alexander Potashev <aspotashev@emcraft.com>
+by Alexander Potashev <aspotashev@emcraft.com>
 
 Signed-off-by: Paul Osmialowski <pawelo@king.net.pl>
 ---
- Documentation/devicetree/bindings/arm/fsl.txt |  6 +++++
- arch/arm/Kconfig                              |  9 ++++++-
- arch/arm/Kconfig-nommu                        |  1 +
- arch/arm/Makefile                             |  1 +
- arch/arm/boot/dts/kinetis-twr-k70f120m.dts    | 16 +++++++++++++
- arch/arm/boot/dts/kinetis.dtsi                |  5 ++++
- arch/arm/mach-kinetis/Makefile                |  5 ++++
- arch/arm/mach-kinetis/Makefile.boot           |  3 +++
- arch/arm/mach-kinetis/idle.c                  | 27 +++++++++++++++++++++
- arch/arm/mach-kinetis/kinetis.c               | 34 +++++++++++++++++++++++++++
- arch/arm/mm/Kconfig                           |  1 +
- 11 files changed, 107 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm/boot/dts/kinetis-twr-k70f120m.dts
- create mode 100644 arch/arm/boot/dts/kinetis.dtsi
- create mode 100644 arch/arm/mach-kinetis/Makefile
- create mode 100644 arch/arm/mach-kinetis/Makefile.boot
- create mode 100644 arch/arm/mach-kinetis/idle.c
- create mode 100644 arch/arm/mach-kinetis/kinetis.c
+ .../devicetree/bindings/serial/fsl-lpuart.txt      |  6 +-
+ drivers/tty/serial/fsl_lpuart.c                    | 90 ++++++++++++++++++----
+ 2 files changed, 80 insertions(+), 16 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.txt b/Documentation/devicetree/bindings/arm/fsl.txt
-index 2a3ba73..36179fd 100644
---- a/Documentation/devicetree/bindings/arm/fsl.txt
-+++ b/Documentation/devicetree/bindings/arm/fsl.txt
-@@ -135,3 +135,9 @@ LS2085A ARMv8 based Simulator model
- Required root node properties:
-     - compatible = "fsl,ls2085a-simu", "fsl,ls2085a";
+diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+index c95005e..9a8d672 100644
+--- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
++++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+@@ -6,6 +6,8 @@ Required properties:
+     on Vybrid vf610 SoC with 8-bit register organization
+   - "fsl,ls1021a-lpuart" for lpuart compatible with the one integrated
+     on LS1021A SoC with 32-bit big-endian register organization
++  - "fsl,kinetis-lpuart" for lpuart compatible with the one integrated
++    on Kinetis SoC with 8-bit register organization
+ - reg : Address and length of the register set for the device
+ - interrupts : Should contain uart interrupt
+ - clocks : phandle + clock specifier pairs, one for each entry in clock-names
+@@ -15,7 +17,9 @@ Optional properties:
+ - dmas: A list of two dma specifiers, one for each entry in dma-names.
+ - dma-names: should contain "tx" and "rx".
  
-+Freescale Kinetis SoC Device Tree Bindings
-+------------------------------------------
-+
-+TWR-K70F120M Kinetis K70 based development board.
-+Required root node compatible properties:
-+  - compatible = "fsl,kinetis-twr-k70f120m"
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index a750c14..9c89bdc 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -964,6 +964,13 @@ config ARCH_EFM32
- 	  Support for Energy Micro's (now Silicon Labs) efm32 Giant Gecko
- 	  processors.
+-Note: Optional properties for DMA support. Write them both or both not.
++Note: Optional properties for DMA support.
++        For Kinetis SoC, write "rx" only.
++        For others, write them both or both not.
  
-+config ARCH_KINETIS
-+	bool "Freescale Kinetis MCU"
-+	depends on ARM_SINGLE_ARMV7M
-+	select ARMV7M_SYSTICK
-+	help
-+	  This enables support for the Freescale Kinetis MCUs
-+
- config ARCH_LPC18XX
- 	bool "NXP LPC18xx/LPC43xx"
- 	depends on ARM_SINGLE_ARMV7M
-@@ -1733,7 +1740,7 @@ source "mm/Kconfig"
- config FORCE_MAX_ZONEORDER
- 	int "Maximum zone order" if ARCH_SHMOBILE_LEGACY
- 	range 11 64 if ARCH_SHMOBILE_LEGACY
--	default "12" if SOC_AM33XX
-+	default "12" if SOC_AM33XX || ARCH_KINETIS
- 	default "9" if SA1111 || ARCH_EFM32
- 	default "11"
- 	help
-diff --git a/arch/arm/Kconfig-nommu b/arch/arm/Kconfig-nommu
-index d081fcb..4b9aab3 100644
---- a/arch/arm/Kconfig-nommu
-+++ b/arch/arm/Kconfig-nommu
-@@ -65,6 +65,7 @@ config ARM_MPU
+ Example:
  
- config COPY_VECTOR_TABLE_TO_SRAM_ADDR
- 	hex 'If non-zero, copy Vector Table to this SRAM Address' if CPU_V7M
-+	default 0x20000000 if ARCH_KINETIS
- 	default 0x00000000
- 	depends on CPU_V7M
- 	help
-diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index 07ab3d2..e71fc01 100644
---- a/arch/arm/Makefile
-+++ b/arch/arm/Makefile
-@@ -170,6 +170,7 @@ machine-$(CONFIG_ARCH_IOP32X)		+= iop32x
- machine-$(CONFIG_ARCH_IOP33X)		+= iop33x
- machine-$(CONFIG_ARCH_IXP4XX)		+= ixp4xx
- machine-$(CONFIG_ARCH_KEYSTONE)		+= keystone
-+machine-$(CONFIG_ARCH_KINETIS)		+= kinetis
- machine-$(CONFIG_ARCH_KS8695)		+= ks8695
- machine-$(CONFIG_ARCH_LPC18XX)		+= lpc18xx
- machine-$(CONFIG_ARCH_LPC32XX)		+= lpc32xx
-diff --git a/arch/arm/boot/dts/kinetis-twr-k70f120m.dts b/arch/arm/boot/dts/kinetis-twr-k70f120m.dts
-new file mode 100644
-index 0000000..edccf37
---- /dev/null
-+++ b/arch/arm/boot/dts/kinetis-twr-k70f120m.dts
-@@ -0,0 +1,16 @@
-+/*
-+ * Device tree for TWR-K70F120M development board.
-+ *
-+ */
-+
-+/dts-v1/;
-+#include "kinetis.dtsi"
-+
-+/ {
-+	model = "Freescale TWR-K70F120M Development Kit";
-+	compatible = "fsl,kinetis-twr-k70f120m";
-+
-+	memory {
-+		reg = <0x8000000 0x8000000>;
-+	};
-+};
-diff --git a/arch/arm/boot/dts/kinetis.dtsi b/arch/arm/boot/dts/kinetis.dtsi
-new file mode 100644
-index 0000000..93d2a8a
---- /dev/null
-+++ b/arch/arm/boot/dts/kinetis.dtsi
-@@ -0,0 +1,5 @@
-+/*
-+ * Device tree for Freescale Kinetis SoC.
-+ *
-+ */
-+#include "armv7-m.dtsi"
-diff --git a/arch/arm/mach-kinetis/Makefile b/arch/arm/mach-kinetis/Makefile
-new file mode 100644
-index 0000000..e759d9e
---- /dev/null
-+++ b/arch/arm/mach-kinetis/Makefile
-@@ -0,0 +1,5 @@
-+#
-+# Makefile for the Freescale Kinetis platform files
-+#
-+
-+obj-y += kinetis.o idle.o
-diff --git a/arch/arm/mach-kinetis/Makefile.boot b/arch/arm/mach-kinetis/Makefile.boot
-new file mode 100644
-index 0000000..3b442ab
---- /dev/null
-+++ b/arch/arm/mach-kinetis/Makefile.boot
-@@ -0,0 +1,3 @@
-+   zreladdr-y	:= 0x08008000
-+params_phys-y	:= 0x08000100
-+initrd_phys-y	:= 0x08100000
-diff --git a/arch/arm/mach-kinetis/idle.c b/arch/arm/mach-kinetis/idle.c
-new file mode 100644
-index 0000000..79d2e1c
---- /dev/null
-+++ b/arch/arm/mach-kinetis/idle.c
-@@ -0,0 +1,27 @@
-+/*
-+ * arch/arm/mach-kinetis/idle.c
-+ */
-+
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <asm/system_misc.h>
-+#include <asm/proc-fns.h>
-+
-+static void kinetis_idle(void)
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 08ce76f..acf4094 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -236,6 +236,8 @@ struct lpuart_port {
+ 	unsigned int		txfifo_size;
+ 	unsigned int		rxfifo_size;
+ 	bool			lpuart32;
++	bool			kinetis;
++	int			kinetis_err_irq;
+ 
+ 	bool			lpuart_dma_tx_use;
+ 	bool			lpuart_dma_rx_use;
+@@ -264,6 +266,9 @@ static const struct of_device_id lpuart_dt_ids[] = {
+ 	{
+ 		.compatible = "fsl,ls1021a-lpuart",
+ 	},
++	{
++		.compatible = "fsl,kinetis-lpuart",
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
+@@ -350,7 +355,9 @@ static void lpuart_pio_tx(struct lpuart_port *sport)
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	while (!uart_circ_empty(xmit) &&
+-		readb(sport->port.membase + UARTTCFIFO) < sport->txfifo_size) {
++	    (sport->kinetis ?
++	      (readb(sport->port.membase + UARTSR1) & UARTSR1_TDRE) :
++	      (readb(sport->port.membase + UARTTCFIFO) < sport->txfifo_size))) {
+ 		writeb(xmit->buf[xmit->tail], sport->port.membase + UARTDR);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		sport->port.icount.tx++;
+@@ -471,7 +478,10 @@ static void lpuart_dma_rx_complete(void *arg)
+ 	unsigned long flags;
+ 
+ 	async_tx_ack(sport->dma_rx_desc);
+-	mod_timer(&sport->lpuart_timer, jiffies + sport->dma_rx_timeout);
++	if (!(sport->kinetis)) {
++		mod_timer(&sport->lpuart_timer,
++				jiffies + sport->dma_rx_timeout);
++	}
+ 
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+@@ -483,16 +493,14 @@ static void lpuart_dma_rx_complete(void *arg)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ }
+ 
+-static void lpuart_timer_func(unsigned long data)
++static inline void lpuart_dma_rx_extract_residue(struct lpuart_port *sport)
+ {
+-	struct lpuart_port *sport = (struct lpuart_port *)data;
+ 	struct tty_port *port = &sport->port.state->port;
+ 	struct dma_tx_state state;
+ 	unsigned long flags;
+ 	unsigned char temp;
+ 	int count;
+ 
+-	del_timer(&sport->lpuart_timer);
+ 	dmaengine_pause(sport->dma_rx_chan);
+ 	dmaengine_tx_status(sport->dma_rx_chan, sport->dma_rx_cookie, &state);
+ 	dmaengine_terminate_all(sport->dma_rx_chan);
+@@ -510,6 +518,14 @@ static void lpuart_timer_func(unsigned long data)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ }
+ 
++static void lpuart_timer_func(unsigned long data)
 +{
-+	asm volatile ("wfi");
++	struct lpuart_port *sport = (struct lpuart_port *)data;
 +
-+	/*
-+	 * This is a dirty hack that invalidates the I/D bus cache
-+	 * on Kinetis K70. This must be done after idle.
-+	 */
-+	writel(readl(IOMEM(0xe0082000)) | 0x85000000, IOMEM(0xe0082000));
++	del_timer(&sport->lpuart_timer);
++	lpuart_dma_rx_extract_residue(sport);
 +}
 +
-+static int __init kinetis_idle_init(void)
+ static inline void lpuart_prepare_rx(struct lpuart_port *sport)
+ {
+ 	unsigned long flags;
+@@ -517,8 +533,10 @@ static inline void lpuart_prepare_rx(struct lpuart_port *sport)
+ 
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+-	sport->lpuart_timer.expires = jiffies + sport->dma_rx_timeout;
+-	add_timer(&sport->lpuart_timer);
++	if (!(sport->kinetis)) {
++		sport->lpuart_timer.expires = jiffies + sport->dma_rx_timeout;
++		add_timer(&sport->lpuart_timer);
++	}
+ 
+ 	lpuart_dma_rx(sport);
+ 	temp = readb(sport->port.membase + UARTCR5);
+@@ -532,7 +550,9 @@ static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
+ 	struct circ_buf *xmit = &sport->port.state->xmit;
+ 
+ 	while (!uart_circ_empty(xmit) &&
+-		(readb(sport->port.membase + UARTTCFIFO) < sport->txfifo_size)) {
++	    (sport->kinetis ?
++	      (readb(sport->port.membase + UARTSR1) & UARTSR1_TDRE) :
++	      (readb(sport->port.membase + UARTTCFIFO) < sport->txfifo_size))) {
+ 		writeb(xmit->buf[xmit->tail], sport->port.membase + UARTDR);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		sport->port.icount.tx++;
+@@ -766,13 +786,20 @@ out:
+ static irqreturn_t lpuart_int(int irq, void *dev_id)
+ {
+ 	struct lpuart_port *sport = dev_id;
+-	unsigned char sts, crdma;
++	unsigned char sts, crdma, tmp;
+ 
+ 	sts = readb(sport->port.membase + UARTSR1);
+ 	crdma = readb(sport->port.membase + UARTCR5);
+ 
+-	if (sts & UARTSR1_RDRF && !(crdma & UARTCR5_RDMAS)) {
+-		if (sport->lpuart_dma_rx_use)
++	if (sport->kinetis && sport->lpuart_dma_rx_use) {
++		if (sts & UARTSR1_IDLE) {
++			/* Clear S[IDLE] flag by reading from UARTx_D */
++			tmp = readb(sport->port.membase + UARTDR);
++			lpuart_dma_rx_extract_residue(sport);
++			lpuart_prepare_rx(sport);
++		}
++	} else if (sts & UARTSR1_RDRF && !(crdma & UARTCR5_RDMAS)) {
++		if ((!(sport->kinetis)) && (sport->lpuart_dma_rx_use))
+ 			lpuart_prepare_rx(sport);
+ 		else
+ 			lpuart_rxint(irq, dev_id);
+@@ -807,6 +834,11 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
++static irqreturn_t lpuart_errint(int irq, void *data)
 +{
-+	arm_pm_idle = kinetis_idle;
-+	return 0;
++	return IRQ_HANDLED;
 +}
 +
-+arch_initcall(kinetis_idle_init);
-diff --git a/arch/arm/mach-kinetis/kinetis.c b/arch/arm/mach-kinetis/kinetis.c
-new file mode 100644
-index 0000000..45e15c6
---- /dev/null
-+++ b/arch/arm/mach-kinetis/kinetis.c
-@@ -0,0 +1,34 @@
-+/*
-+ * kinetis.c - Freescale Kinetis K70F120M Development Board
-+ *
-+ * Based on legacy pre-OF code by Alexander Potashev <aspotashev@emcraft.com>
-+ *
-+ * (C) Copyright 2011, 2012
-+ * Emcraft Systems, <www.emcraft.com>
-+ * Alexander Potashev <aspotashev@emcraft.com>
-+ *
-+ * Copyright (C) 2015 Paul Osmialowski <pawelo@king.net.pl>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it under
-+ * the terms of the GNU General Public License version 2 as published by the
-+ * Free Software Foundation.
-+ */
+ /* return TIOCSER_TEMT when transmitter is not busy */
+ static unsigned int lpuart_tx_empty(struct uart_port *port)
+ {
+@@ -1086,8 +1118,11 @@ static int lpuart_startup(struct uart_port *port)
+ 
+ 	if (sport->dma_rx_chan && !lpuart_dma_rx_request(port)) {
+ 		sport->lpuart_dma_rx_use = true;
+-		setup_timer(&sport->lpuart_timer, lpuart_timer_func,
+-			    (unsigned long)sport);
++		if (sport->kinetis)
++			lpuart_prepare_rx(sport);
++		else
++			setup_timer(&sport->lpuart_timer, lpuart_timer_func,
++					(unsigned long)sport);
+ 	} else
+ 		sport->lpuart_dma_rx_use = false;
+ 
+@@ -1105,12 +1140,23 @@ static int lpuart_startup(struct uart_port *port)
+ 	if (ret)
+ 		return ret;
+ 
++	if (sport->kinetis) {
++		ret = devm_request_irq(port->dev, sport->kinetis_err_irq,
++					lpuart_errint, 0, DRIVER_NAME, sport);
++		if (ret) {
++			devm_free_irq(port->dev, port->irq, sport);
++			return ret;
++		}
++	}
 +
-+#include <linux/kernel.h>
-+#include <linux/init.h>
-+#include <linux/of_platform.h>
-+#include <asm/v7m.h>
-+#include <asm/mach/arch.h>
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	lpuart_setup_watermark(sport);
+ 
+ 	temp = readb(sport->port.membase + UARTCR2);
+ 	temp |= (UARTCR2_RIE | UARTCR2_TIE | UARTCR2_RE | UARTCR2_TE);
++	if (sport->kinetis && sport->lpuart_dma_rx_use)
++		temp |= UARTCR2_ILIE;
+ 	writeb(temp, sport->port.membase + UARTCR2);
+ 
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+@@ -1169,6 +1215,9 @@ static void lpuart_shutdown(struct uart_port *port)
+ 
+ 	devm_free_irq(port->dev, port->irq, sport);
+ 
++	if (sport->kinetis)
++		devm_free_irq(port->dev, sport->kinetis_err_irq, sport);
 +
-+static const char *const kinetis_compat[] __initconst = {
-+	"fsl,kinetis-twr-k70f120m",
-+	NULL
-+};
+ 	if (sport->lpuart_dma_rx_use) {
+ 		lpuart_dma_rx_free(&sport->port);
+ 		del_timer_sync(&sport->lpuart_timer);
+@@ -1781,6 +1830,8 @@ static int lpuart_probe(struct platform_device *pdev)
+ 	}
+ 	sport->port.line = ret;
+ 	sport->lpuart32 = of_device_is_compatible(np, "fsl,ls1021a-lpuart");
++	sport->kinetis = of_device_is_compatible(np, "fsl,kinetis-lpuart");
++	spin_lock_init(&(sport->port.lock));
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	sport->port.membase = devm_ioremap_resource(&pdev->dev, res);
+@@ -1788,10 +1839,19 @@ static int lpuart_probe(struct platform_device *pdev)
+ 		return PTR_ERR(sport->port.membase);
+ 
+ 	sport->port.mapbase = res->start;
++	sport->port.mapsize = resource_size(res);
+ 	sport->port.dev = &pdev->dev;
+ 	sport->port.type = PORT_LPUART;
+ 	sport->port.iotype = UPIO_MEM;
+-	sport->port.irq = platform_get_irq(pdev, 0);
 +
-+/*
-+ * Freescale Kinetis platform machine description
-+ */
-+DT_MACHINE_START(KINETIS, "Freescale Kinetis")
-+	.dt_compat	= kinetis_compat,
-+	.restart	= armv7m_restart,
-+MACHINE_END
-diff --git a/arch/arm/mm/Kconfig b/arch/arm/mm/Kconfig
-index 7c6b976..121b580 100644
---- a/arch/arm/mm/Kconfig
-+++ b/arch/arm/mm/Kconfig
-@@ -609,6 +609,7 @@ config CPU_V7M_NUM_IRQ
- 	depends on CPU_V7M
- 	default 90 if ARCH_STM32
- 	default 38 if ARCH_EFM32
-+	default 106 if ARCH_KINETIS
- 	default 112 if SOC_VF610
- 	default 240
- 	help
++	if (sport->kinetis) {
++		sport->port.irq = platform_get_irq_byname(pdev, "uart-stat");
++		sport->kinetis_err_irq =
++				platform_get_irq_byname(pdev, "uart-err");
++	} else {
++		sport->port.irq = platform_get_irq(pdev, 0);
++	}
++
+ 	if (sport->lpuart32)
+ 		sport->port.ops = &lpuart32_pops;
+ 	else
+@@ -1829,7 +1889,7 @@ static int lpuart_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	sport->dma_tx_chan = dma_request_slave_channel(sport->port.dev, "tx");
+-	if (!sport->dma_tx_chan)
++	if ((!sport->dma_tx_chan) && (!sport->kinetis))
+ 		dev_info(sport->port.dev, "DMA tx channel request failed, "
+ 				"operating without tx DMA\n");
+ 
 -- 
 2.3.6
+
