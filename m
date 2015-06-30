@@ -1,263 +1,174 @@
-From: Cyrille Pitchen <cyrille.pitchen@atmel.com>
-Subject: [PATCH v3 3/4] tty/serial: at91: add support to FIFOs
-Date: Tue, 30 Jun 2015 16:05:16 +0200
-Message-ID: <3d02083b34cdd8b37f6cface84d677be5044cd23.1435672649.git.cyrille.pitchen@atmel.com>
+From: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v3 4/4] tty/serial: at91: use 32bit writes into TX FIFO when DMA is enabled
+Date: Tue, 30 Jun 2015 16:05:17 +0200
+Message-ID: <e742dbf0268c5f191e73061e57a5fc4ca992fc8b.1435672649.git.cyrille.pitchen@atmel.com>
 References: <cover.1435672649.git.cyrille.pitchen@atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1435672649.git.cyrille.pitchen@atmel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, wenyou.yang@atmel.com, ludovic.desroches@atmel.com, leilei.zhao@atmel.com, josh.wu@atmel.com, alexandre.belloni@free-electrons.com, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, galak@codeaurora.org, ijc+devicetree@hellion.org.uk, mark.rutland@arm.com, pawel.moll@arm.com, robh+dt@kernel.org, Cyrille Pitchen <cyrille.pitchen@atmel.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <cover.1435672649.git.cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, ludovic.desroches-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, leilei.zhao-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, josh.wu-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Depending on the hardware, TX and RX FIFOs may be available. The RX
-FIFO can avoid receive overruns, especially when DMA transfers are
-not used to read data from the Receive Holding Register. For heavy
-system load, The CPU is likely not be able to fetch data fast enough
-from the RHR.
+For now this improvement is only used with TX DMA transfers. The data
+width must be set properly when configuring the DMA controller. Also
+the FIFO configuration must be set to match the DMA transfer data
+width:
+TXRDYM (Transmitter Ready Mode) and RXRDYM (Receiver Ready Mode) must
+be set into the FIFO Mode Register. These values are used by the
+USART to trigger the DMA controller. In single data mode they are not
+used and should be reset to 0.
+So the TXRDYM bits are changed to FOUR_DATA; then USART triggers the
+DMA controller when at least 4 data can be written into the TX FIFO
+througth the THR. On the other hand the RXRDYM bits are left unchanged
+to ONE_DATA.
 
-In addition, the RX FIFO can supersede the DMA/PDC to control the RTS
-line when the Hardware Handshaking mode is enabled. Two thresholds
-are to be set for that purpose:
-- When the number of data in the RX FIFO crosses and becomes lower
-  than or equal to the low threshold, the RTS line is set to low
-  level: the remote peer is requested to send data.
-- When the number of data in the RX FIFO crosses and becomes greater
-  than or equal to the high threshold, the RTS line is set to high
-  level: the remote peer should stop sending new data.
-- low threshold <= high threshold
-Once these two thresholds are set properly, this new feature is
-enabled by setting the FIFO RTS Control bit of the FIFO Mode Register.
+Atmel eXtended DMA controller allows us to set a different data width
+for each part of a scatter-gather transfer. So when calling
+dmaengine_slave_config() to configure the TX path, we just need to set
+dst_addr_width to the maximum data width. Then DMA writes into THR are
+split into up to two parts. The first part carries the first data to
+be sent and has a length equal to the greatest multiple of 4 (bytes)
+lower than or equal to the total length of the TX DMA transfer. The
+second part carries the trailing data (up to 3 bytes). The first part
+is written by the DMA into THR using 32 bit accesses, whereas 8bit
+accesses are used for the second part.
 
-FIFOs also introduce a new multiple data mode: the USART works either
-in multiple data mode or in single data (legacy) mode.
-
-If MODE9 bit is set into the Mode Register or if USMODE is set to
-either LIN_MASTER, LIN_SLAVE or LON_MODE, FIFOs operate in single
-data mode. Otherwise, they operate in multiple data mode.
-
-In this new multiple data mode, accesses to the Receive Holding
-Register or Transmit Holding Register slightly change.
-
-Since this driver implements neither the 9bit data feature (MODE9 bit
-set into the Mode Register) nor LIN modes, the USART works in
-multiple data mode whenever FIFOs are available and enabled. We also
-assume that data are 8bit wide.
-
-In single data mode, 32bit access CAN be used to read a single data
-from RHR or write a single data into THR.
-However in multiple data mode, a 32bit access to RHR now allows us to
-read four consecutive data from RX FIFO. Also a 32bit access to THR
-now allows to write four consecutive data into TX FIFO. So we MUST
-use 8bit access whenever only one data have to be read/written at a
-time.
-
-Signed-off-by: Cyrille Pitchen <cyrille.pitchen@atmel.com>
+Signed-off-by: Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Acked-by: Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/tty/serial/atmel_serial.c | 92 ++++++++++++++++++++++++++++++++++++++-
- include/linux/atmel_serial.h      | 36 +++++++++++++++
- 2 files changed, 126 insertions(+), 2 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 66 ++++++++++++++++++++++++++++++---------
+ 1 file changed, 51 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 112e74b61f1f..e3082d912a52 100644
+index e3082d912a52..06cbb68923a8 100644
 --- a/drivers/tty/serial/atmel_serial.c
 +++ b/drivers/tty/serial/atmel_serial.c
-@@ -56,6 +56,15 @@
- /* Revisit: We should calculate this based on the actual port settings */
- #define PDC_RX_TIMEOUT		(3 * 10)		/* 3 bytes */
+@@ -185,6 +185,7 @@ struct atmel_uart_port {
+ 	unsigned int		irq_status;
+ 	unsigned int		irq_status_prev;
+ 	unsigned int		status_change;
++	unsigned int		tx_len;
  
-+/* The minium number of data FIFOs should be able to contain */
-+#define ATMEL_MIN_FIFO_SIZE	8
-+/*
-+ * These two offsets are substracted from the RX FIFO size to define the RTS
-+ * high and low thresholds
-+ */
-+#define ATMEL_RTS_HIGH_OFFSET	8
-+#define ATMEL_RTS_LOW_OFFSET	16
-+
- #if defined(CONFIG_SERIAL_ATMEL_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
- #define SUPPORT_SYSRQ
- #endif
-@@ -96,8 +105,8 @@ static void atmel_stop_rx(struct uart_port *port);
- #define UART_PUT_IDR(port, v)  __raw_writel(v, (port)->membase + ATMEL_US_IDR)
- #define UART_GET_IMR(port)     __raw_readl((port)->membase + ATMEL_US_IMR)
- #define UART_GET_CSR(port)     __raw_readl((port)->membase + ATMEL_US_CSR)
--#define UART_GET_CHAR(port)    __raw_readl((port)->membase + ATMEL_US_RHR)
--#define UART_PUT_CHAR(port, v) __raw_writel(v, (port)->membase + ATMEL_US_THR)
-+#define UART_GET_CHAR(port)    __raw_readb((port)->membase + ATMEL_US_RHR)
-+#define UART_PUT_CHAR(port, v) __raw_writeb(v, (port)->membase + ATMEL_US_THR)
- #define UART_GET_BRGR(port)    __raw_readl((port)->membase + ATMEL_US_BRGR)
- #define UART_PUT_BRGR(port, v) __raw_writel(v, (port)->membase + ATMEL_US_BRGR)
- #define UART_PUT_RTOR(port, v) __raw_writel(v, (port)->membase + ATMEL_US_RTOR)
-@@ -119,6 +128,16 @@ static void atmel_stop_rx(struct uart_port *port);
- #define UART_PUT_TCR(port, v)  __raw_writel(v, (port)->membase + ATMEL_PDC_TCR)
- #define UART_GET_TCR(port)     __raw_readl((port)->membase + ATMEL_PDC_TCR)
+ 	struct circ_buf		rx_ring;
  
-+/* FIFO registers */
-+#define UART_PUT_FMR(port, v)  __raw_writel(v, (port)->membase + ATMEL_US_FMR)
-+#define UART_GET_FMR(port)     __raw_readl((port)->membase + ATMEL_US_FMR)
-+#define UART_GET_FESR(port)    __raw_readl((port)->membase + ATMEL_US_FESR)
-+#define UART_PUT_FIER(port, v) __raw_writel(v, (port)->membase + ATMEL_US_FIER)
-+#define UART_PUT_FIDR(port, v) __raw_writel(v, (port)->membase + ATMEL_US_FIDR)
-+#define UART_GET_FIMR(port)    __raw_readl((port)->membase + ATMEL_US_FIMR)
-+#define UART_GET_FLR(port)     __raw_readl((port)->membase + ATMEL_US_FLR)
-+
-+
- struct atmel_dma_buffer {
- 	unsigned char	*buf;
- 	dma_addr_t	dma_addr;
-@@ -172,6 +191,9 @@ struct atmel_uart_port {
- 	struct mctrl_gpios	*gpios;
- 	int			gpio_irq[UART_GPIO_MAX];
- 	unsigned int		tx_done_mask;
-+	u32			fifo_size;
-+	u32			rts_high;
-+	u32			rts_low;
- 	bool			ms_irq_enabled;
- 	bool			is_usart;	/* usart or uart */
- 	struct timer_list	uart_timer;	/* uart timer */
-@@ -1797,6 +1819,29 @@ static int atmel_startup(struct uart_port *port)
- 			atmel_set_ops(port);
- 	}
+@@ -752,10 +753,10 @@ static void atmel_complete_tx_dma(void *arg)
  
-+	/*
-+	 * Enable FIFO when available
-+	 */
-+	if (atmel_port->fifo_size) {
-+		unsigned int txrdym = ATMEL_US_ONE_DATA;
-+		unsigned int rxrdym = ATMEL_US_ONE_DATA;
-+		unsigned int fmr;
-+
-+		UART_PUT_CR(port,
-+			    ATMEL_US_FIFOEN |
-+			    ATMEL_US_RXFCLR |
-+			    ATMEL_US_TXFLCLR);
-+
-+		fmr = ATMEL_US_TXRDYM(txrdym) | ATMEL_US_RXRDYM(rxrdym);
-+		if (atmel_port->rts_high &&
-+		    atmel_port->rts_low)
-+			fmr |=	ATMEL_US_FRTSC |
-+				ATMEL_US_RXFTHRES(atmel_port->rts_high) |
-+				ATMEL_US_RXFTHRES2(atmel_port->rts_low);
-+
-+		UART_PUT_FMR(port, fmr);
-+	}
-+
- 	/* Save current CSR for comparison in atmel_tasklet_func() */
- 	atmel_port->irq_status_prev = atmel_get_lines_status(port);
- 	atmel_port->irq_status = atmel_port->irq_status_prev;
-@@ -2599,6 +2644,48 @@ static int atmel_init_gpios(struct atmel_uart_port *p, struct device *dev)
- 	return 0;
- }
+ 	if (chan)
+ 		dmaengine_terminate_all(chan);
+-	xmit->tail += sg_dma_len(&atmel_port->sg_tx);
++	xmit->tail += atmel_port->tx_len;
+ 	xmit->tail &= UART_XMIT_SIZE - 1;
  
-+static void atmel_serial_probe_fifos(struct atmel_uart_port *port,
-+				     struct platform_device *pdev)
-+{
-+	port->fifo_size = 0;
-+	port->rts_low = 0;
-+	port->rts_high = 0;
-+
-+	if (of_property_read_u32(pdev->dev.of_node,
-+				 "atmel,fifo-size",
-+				 &port->fifo_size))
-+		return;
-+
-+	if (!port->fifo_size)
-+		return;
-+
-+	if (port->fifo_size < ATMEL_MIN_FIFO_SIZE) {
-+		port->fifo_size = 0;
-+		dev_err(&pdev->dev, "Invalid FIFO size\n");
-+		return;
-+	}
-+
-+	/*
-+	 * 0 <= rts_low <= rts_high <= fifo_size
-+	 * Once their CTS line asserted by the remote peer, some x86 UARTs tend
-+	 * to flush their internal TX FIFO, commonly up to 8 data, before
-+	 * actually stopping to send new data. So we try to set the RTS High
-+	 * Threshold to a reasonably high value respecting this 8 data empirical
-+	 * rule when possible.
-+	 */
-+	port->rts_high = max_t(int, port->fifo_size >> 1,
-+			       port->fifo_size - ATMEL_RTS_HIGH_OFFSET);
-+	port->rts_low  = max_t(int, port->fifo_size >> 2,
-+			       port->fifo_size - ATMEL_RTS_LOW_OFFSET);
-+
-+	dev_info(&pdev->dev, "Using FIFO (%u data)\n",
-+		 port->fifo_size);
-+	dev_info(&pdev->dev, "RTS High Threshold : %2u data\n",
-+		 port->rts_high);
-+	dev_info(&pdev->dev, "RTS Low Threshold  : %2u data\n",
-+		 port->rts_low);
-+}
-+
- static int atmel_serial_probe(struct platform_device *pdev)
- {
- 	struct atmel_uart_port *port;
-@@ -2635,6 +2722,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 	port = &atmel_ports[ret];
- 	port->backup_imr = 0;
- 	port->uart.line = ret;
-+	atmel_serial_probe_fifos(port, pdev);
+-	port->icount.tx += sg_dma_len(&atmel_port->sg_tx);
++	port->icount.tx += atmel_port->tx_len;
  
- 	spin_lock_init(&port->lock_suspended);
+ 	spin_lock_irq(&atmel_port->lock_tx);
+ 	async_tx_ack(atmel_port->desc_tx);
+@@ -803,7 +804,9 @@ static void atmel_tx_dma(struct uart_port *port)
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 	struct dma_chan *chan = atmel_port->chan_tx;
+ 	struct dma_async_tx_descriptor *desc;
+-	struct scatterlist *sg = &atmel_port->sg_tx;
++	struct scatterlist sgl[2], *sg, *sg_tx = &atmel_port->sg_tx;
++	unsigned int tx_len, part1_len, part2_len, sg_len;
++	dma_addr_t phys_addr;
  
-diff --git a/include/linux/atmel_serial.h b/include/linux/atmel_serial.h
-index c384c21d65f0..ee696d7e8a43 100644
---- a/include/linux/atmel_serial.h
-+++ b/include/linux/atmel_serial.h
-@@ -35,6 +35,11 @@
- #define	ATMEL_US_DTRDIS		BIT(17)	/* Data Terminal Ready Disable */
- #define	ATMEL_US_RTSEN		BIT(18)	/* Request To Send Enable */
- #define	ATMEL_US_RTSDIS		BIT(19)	/* Request To Send Disable */
-+#define	ATMEL_US_TXFCLR		BIT(24)	/* Transmit FIFO Clear */
-+#define	ATMEL_US_RXFCLR		BIT(25)	/* Receive FIFO Clear */
-+#define	ATMEL_US_TXFLCLR	BIT(26)	/* Transmit FIFO Lock Clear */
-+#define	ATMEL_US_FIFOEN		BIT(30)	/* FIFO enable */
-+#define	ATMEL_US_FIFODIS	BIT(31)	/* FIFO disable */
- 
- #define ATMEL_US_MR		0x04	/* Mode Register */
- #define	ATMEL_US_USMODE		GENMASK(3, 0)	/* Mode of the USART */
-@@ -124,6 +129,37 @@
- #define ATMEL_US_NER		0x44	/* Number of Errors Register */
- #define ATMEL_US_IF		0x4c	/* IrDA Filter Register */
- 
-+#define ATMEL_US_CMPR		0x90	/* Comparaison Register */
-+#define ATMEL_US_FMR		0xa0	/* FIFO Mode Register */
-+#define	ATMEL_US_TXRDYM(data)	(((data) & 0x3) << 0)	/* TX Ready Mode */
-+#define	ATMEL_US_RXRDYM(data)	(((data) & 0x3) << 4)	/* RX Ready Mode */
-+#define		ATMEL_US_ONE_DATA	0x0
-+#define		ATMEL_US_TWO_DATA	0x1
-+#define		ATMEL_US_FOUR_DATA	0x2
-+#define	ATMEL_US_FRTSC		BIT(7)	/* FIFO RTS pin Control */
-+#define	ATMEL_US_TXFTHRES(thr)	(((thr) & 0x3f) << 8)	/* TX FIFO Threshold */
-+#define	ATMEL_US_RXFTHRES(thr)	(((thr) & 0x3f) << 16)	/* RX FIFO Threshold */
-+#define	ATMEL_US_RXFTHRES2(thr)	(((thr) & 0x3f) << 24)	/* RX FIFO Threshold2 */
+ 	/* Make sure we have an idle channel */
+ 	if (atmel_port->desc_tx != NULL)
+@@ -819,18 +822,46 @@ static void atmel_tx_dma(struct uart_port *port)
+ 		 * Take the port lock to get a
+ 		 * consistent xmit buffer state.
+ 		 */
+-		sg->offset = xmit->tail & (UART_XMIT_SIZE - 1);
+-		sg_dma_address(sg) = (sg_dma_address(sg) &
+-					~(UART_XMIT_SIZE - 1))
+-					+ sg->offset;
+-		sg_dma_len(sg) = CIRC_CNT_TO_END(xmit->head,
+-						xmit->tail,
+-						UART_XMIT_SIZE);
+-		BUG_ON(!sg_dma_len(sg));
++		tx_len = CIRC_CNT_TO_END(xmit->head,
++					 xmit->tail,
++					 UART_XMIT_SIZE);
 +
-+#define ATMEL_US_FLR		0xa4	/* FIFO Level Register */
-+#define	ATMEL_US_TXFL(reg)	(((reg) >> 0) & 0x3f)	/* TX FIFO Level */
-+#define	ATMEL_US_RXFL(reg)	(((reg) >> 16) & 0x3f)	/* RX FIFO Level */
++		if (atmel_port->fifo_size) {
++			/* multi data mode */
++			part1_len = (tx_len & ~0x3); /* DWORD access */
++			part2_len = (tx_len & 0x3); /* BYTE access */
++		} else {
++			/* single data (legacy) mode */
++			part1_len = 0;
++			part2_len = tx_len; /* BYTE access only */
++		}
 +
-+#define ATMEL_US_FIER		0xa8	/* FIFO Interrupt Enable Register */
-+#define ATMEL_US_FIDR		0xac	/* FIFO Interrupt Disable Register */
-+#define ATMEL_US_FIMR		0xb0	/* FIFO Interrupt Mask Register */
-+#define ATMEL_US_FESR		0xb4	/* FIFO Event Status Register */
-+#define	ATMEL_US_TXFEF		BIT(0)	/* Transmit FIFO Empty Flag */
-+#define	ATMEL_US_TXFFF		BIT(1)	/* Transmit FIFO Full Flag */
-+#define	ATMEL_US_TXFTHF		BIT(2)	/* Transmit FIFO Threshold Flag */
-+#define	ATMEL_US_RXFEF		BIT(3)	/* Receive FIFO Empty Flag */
-+#define	ATMEL_US_RXFFF		BIT(4)	/* Receive FIFO Full Flag */
-+#define	ATMEL_US_RXFTHF		BIT(5)	/* Receive FIFO Threshold Flag */
-+#define	ATMEL_US_TXFPTEF	BIT(6)	/* Transmit FIFO Pointer Error Flag */
-+#define	ATMEL_US_RXFPTEF	BIT(7)	/* Receive FIFO Pointer Error Flag */
-+#define	ATMEL_US_TXFLOCK	BIT(8)	/* Transmit FIFO Lock (FESR only) */
-+#define	ATMEL_US_RXFTHF2	BIT(9)	/* Receive FIFO Threshold Flag 2 */
++		sg_init_table(sgl, 2);
++		sg_len = 0;
++		phys_addr = sg_dma_address(sg_tx) + xmit->tail;
++		if (part1_len) {
++			sg = &sgl[sg_len++];
++			sg_dma_address(sg) = phys_addr;
++			sg_dma_len(sg) = part1_len;
 +
- #define ATMEL_US_NAME		0xf0	/* Ip Name */
- #define ATMEL_US_VERSION	0xfc	/* Ip Version */
++			phys_addr += part1_len;
++		}
++
++		if (part2_len) {
++			sg = &sgl[sg_len++];
++			sg_dma_address(sg) = phys_addr;
++			sg_dma_len(sg) = part2_len;
++		}
++
++		/*
++		 * save tx_len so atmel_complete_tx_dma() will increase
++		 * xmit->tail correctly
++		 */
++		atmel_port->tx_len = tx_len;
  
+ 		desc = dmaengine_prep_slave_sg(chan,
+-					       sg,
+-					       1,
++					       sgl,
++					       sg_len,
+ 					       DMA_MEM_TO_DEV,
+ 					       DMA_PREP_INTERRUPT |
+ 					       DMA_CTRL_ACK);
+@@ -839,7 +870,7 @@ static void atmel_tx_dma(struct uart_port *port)
+ 			return;
+ 		}
+ 
+-		dma_sync_sg_for_device(port->dev, sg, 1, DMA_TO_DEVICE);
++		dma_sync_sg_for_device(port->dev, sg_tx, 1, DMA_TO_DEVICE);
+ 
+ 		atmel_port->desc_tx = desc;
+ 		desc->callback = atmel_complete_tx_dma;
+@@ -899,7 +930,9 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
+ 	/* Configure the slave DMA */
+ 	memset(&config, 0, sizeof(config));
+ 	config.direction = DMA_MEM_TO_DEV;
+-	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
++	config.dst_addr_width = (atmel_port->fifo_size) ?
++				DMA_SLAVE_BUSWIDTH_4_BYTES :
++				DMA_SLAVE_BUSWIDTH_1_BYTE;
+ 	config.dst_addr = port->mapbase + ATMEL_US_THR;
+ 	config.dst_maxburst = 1;
+ 
+@@ -1832,6 +1865,9 @@ static int atmel_startup(struct uart_port *port)
+ 			    ATMEL_US_RXFCLR |
+ 			    ATMEL_US_TXFLCLR);
+ 
++		if (atmel_use_dma_tx(port))
++			txrdym = ATMEL_US_FOUR_DATA;
++
+ 		fmr = ATMEL_US_TXRDYM(txrdym) | ATMEL_US_RXRDYM(rxrdym);
+ 		if (atmel_port->rts_high &&
+ 		    atmel_port->rts_low)
 -- 
 1.8.2.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
