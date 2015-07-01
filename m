@@ -1,36 +1,52 @@
-From: Paul Osmialowski <pawelo-rhuoMcPwk82rDJvtcaxF/A@public.gmane.org>
-Subject: Re: [PATCH v2 4/9] arm: twr-k70f120m: timer driver for Kinetis SoC
-Date: Wed, 1 Jul 2015 10:42:07 +0200 (CEST)
-Message-ID: <alpine.LNX.2.00.1507011031050.9009@localhost.localdomain>
-References: <1435667250-28299-1-git-send-email-pawelo@king.net.pl> <1435667250-28299-5-git-send-email-pawelo@king.net.pl> <alpine.DEB.2.11.1507010944580.3916@nanos>
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH] serial/uartlite: Let it build on any arch with IOMEM
+Date: Wed, 1 Jul 2015 11:04:55 +0200
+Message-ID: <CAPybu_0zs6R8nhM8J-ao_rShX2zBhPWV7p1zmtdJ7BJFE9jLfQ@mail.gmail.com>
+References: <1434378967-32486-1-git-send-email-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <alpine.DEB.2.11.1507010944580.3916@nanos>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: Paul Osmialowski <pawelo-rhuoMcPwk82rDJvtcaxF/A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Michael Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Nicolas Pitre <nicolas.pitre-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>Uwe Kleine-Koenig <u>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1434378967-32486-1-git-send-email-ricardo.ribalda@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Michal Simek <michal.simek@xilinx.com>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Thomas,
+ping?
 
-On Wed, 1 Jul 2015, Thomas Gleixner wrote:
-
->> +		clockevents_register_device(
->> +				&kinetis_clockevent_tmrs[chan].evtdev);
->> +
->> +		kinetis_pit_init(&kinetis_clockevent_tmrs[chan],
->> +						(rate / HZ) - 1);
->> +		kinetis_pit_enable(&kinetis_clockevent_tmrs[chan], 1);
+On Mon, Jun 15, 2015 at 4:36 PM, Ricardo Ribalda Delgado
+<ricardo.ribalda@gmail.com> wrote:
+> Being a soft core, it can be located not only on PPC or Microblaze
+> platforms.
 >
-> No point doing this. The core code has invoked the set_periodic call
-> back via clockevents_register_device() already.
+> Since the driver already does endianness detection we only need to
+> change the Kconfig to use it in other arches.
+>
+> This is also done in other softcores as xilinx-spi.
+>
+> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+> ---
+>  drivers/tty/serial/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 76e65b714471..10a5f0a503e3 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -594,7 +594,7 @@ config SERIAL_IMX_CONSOLE
+>
+>  config SERIAL_UARTLITE
+>         tristate "Xilinx uartlite serial port support"
+> -       depends on PPC32 || MICROBLAZE || MFD_TIMBERDALE || ARCH_ZYNQ
+> +       depends on HAS_IOMEM
+>         select SERIAL_CORE
+>         help
+>           Say Y here if you want to use the Xilinx uartlite serial controller.
+> --
+> 2.1.4
 >
 
-As I removed this kinetis_pit_enable() line, the timer did not start, 
-therefore the system became unusable. What could be possible reason for 
-that?
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+
+-- 
+Ricardo Ribalda
