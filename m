@@ -1,72 +1,23 @@
-From: Paul Osmialowski <pawelo@king.net.pl>
-Subject: Re: [PATCH v2 4/9] arm: twr-k70f120m: timer driver for Kinetis SoC
-Date: Wed, 1 Jul 2015 16:20:48 +0200 (CEST)
-Message-ID: <alpine.LNX.2.00.1507011619250.13307@localhost.localdomain>
-References: <1435667250-28299-1-git-send-email-pawelo@king.net.pl> <1435667250-28299-5-git-send-email-pawelo@king.net.pl> <alpine.DEB.2.11.1507010944580.3916@nanos> <alpine.LNX.2.00.1507011031050.9009@localhost.localdomain>
- <alpine.DEB.2.11.1507011527380.3916@nanos>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial/uartlite: Let it build on any arch with IOMEM
+Date: Wed, 1 Jul 2015 08:31:44 -0700
+Message-ID: <20150701153144.GA27598@kroah.com>
+References: <1434378967-32486-1-git-send-email-ricardo.ribalda@gmail.com>
+ <CAPybu_0zs6R8nhM8J-ao_rShX2zBhPWV7p1zmtdJ7BJFE9jLfQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.11.1507011527380.3916@nanos>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Paul Osmialowski <pawelo@king.net.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jiri Slaby <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, dmaengine@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Nicolas Pitre <nicolas.pitre@linaro.org>, Paul Bolle <pebolle@tiscali.nl>Uwe Kleine-Koenig <u>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAPybu_0zs6R8nhM8J-ao_rShX2zBhPWV7p1zmtdJ7BJFE9jLfQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Michal Simek <michal.simek@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
+On Wed, Jul 01, 2015 at 11:04:55AM +0200, Ricardo Ribalda Delgado wrote:
+> ping?
 
+I can't do anything with this patch until the merge window is over,
+please be patient.
 
-On Wed, 1 Jul 2015, Thomas Gleixner wrote:
-
->>
->> As I removed this kinetis_pit_enable() line, the timer did not start,
->> therefore the system became unusable. What could be possible reason for that?
->
-> Well, you need to move both, the init and the enable into
-> set_periodic().
->
-
-Indeed, something like this worked:
-
-diff --git a/drivers/clocksource/timer-kinetis.c 
-b/drivers/clocksource/timer-kinetis.c
-index 1424308..41ef94f 100644
---- a/drivers/clocksource/timer-kinetis.c
-+++ b/drivers/clocksource/timer-kinetis.c
-@@ -61,6 +61,7 @@ struct kinetis_clock_event_ddata {
-         struct clock_event_device evtdev;
-         void __iomem *base;
-         void __iomem *mcr;
-+       unsigned long rate;
-         spinlock_t lock;
-  };
-
-@@ -115,6 +116,7 @@ static int kinetis_clockevent_tmr_set_state_periodic(
-         struct kinetis_clock_event_ddata *pit =
-                 container_of(evt, struct kinetis_clock_event_ddata, 
-evtdev);
-
-+       kinetis_pit_init(pit, (pit->rate / HZ) - 1);
-         kinetis_pit_enable(pit, 1);
-
-         return 0;
-@@ -235,6 +237,7 @@ static void __init kinetis_clockevent_init(struct 
-device_node *np)
-                                 kinetis_clockevent_tmr_set_state_oneshot;
-                 kinetis_tmr->base = base;
-                 kinetis_tmr->mcr = mcr;
-+               kinetis_tmr->rate = rate;
-                 spin_lock_init(&kinetis_tmr->lock);
-
-                 /*
-@@ -250,9 +253,6 @@ static void __init kinetis_clockevent_init(struct 
-device_node *np)
-
-                 clockevents_register_device(&kinetis_tmr->evtdev);
-
--               kinetis_pit_init(kinetis_tmr, (rate / HZ) - 1);
--               kinetis_pit_enable(kinetis_tmr, 1);
--
-                 if (request_irq(irq, kinetis_clockevent_tmr_irq_handler,
-                                         IRQF_TIMER | IRQF_IRQPOLL,
-                                         "kinetis-timer",
-
+greg k-h
