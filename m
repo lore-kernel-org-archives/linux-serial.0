@@ -1,7 +1,7 @@
 From: Cyrille Pitchen <cyrille.pitchen@atmel.com>
-Subject: [PATCH v4 2/5] tty/serial: at91: fix some macro definitions to fit coding style
-Date: Thu, 2 Jul 2015 15:18:10 +0200
-Message-ID: <de1b8ce5accb2f40475123120b33aab11d366caa.1435842688.git.cyrille.pitchen@atmel.com>
+Subject: [PATCH v4 5/5] tty/serial: at91: use 32bit writes into TX FIFO when DMA is enabled
+Date: Thu, 2 Jul 2015 15:18:13 +0200
+Message-ID: <744588591e107efd4eb55c768384e13e49f1f032.1435842688.git.cyrille.pitchen@atmel.com>
 References: <cover.1435842688.git.cyrille.pitchen@atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,240 +12,158 @@ To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, wenyou.yang@atmel.com, 
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, galak@codeaurora.org, ijc+devicetree@hellion.org.uk, mark.rutland@arm.com, pawel.moll@arm.com, robh+dt@kernel.org, Cyrille Pitchen <cyrille.pitchen@atmel.com>
 List-Id: linux-serial@vger.kernel.org
 
-This patch updates macro definitions in atmel_serial.h to fit the
-80 column rule.
+For now this improvement is only used with TX DMA transfers. The data
+width must be set properly when configuring the DMA controller. Also
+the FIFO configuration must be set to match the DMA transfer data
+width:
+TXRDYM (Transmitter Ready Mode) and RXRDYM (Receiver Ready Mode) must
+be set into the FIFO Mode Register. These values are used by the
+USART to trigger the DMA controller. In single data mode they are not
+used and should be reset to 0.
+So the TXRDYM bits are changed to FOUR_DATA; then USART triggers the
+DMA controller when at least 4 data can be written into the TX FIFO
+througth the THR. On the other hand the RXRDYM bits are left unchanged
+to ONE_DATA.
 
-Please note that some deprecated comments such as "[AT91SAM9261 only]"
-are removed as the corresponding bits also exist in some later chips.
+Atmel eXtended DMA controller allows us to set a different data width
+for each part of a scatter-gather transfer. So when calling
+dmaengine_slave_config() to configure the TX path, we just need to set
+dst_addr_width to the maximum data width. Then DMA writes into THR are
+split into up to two parts. The first part carries the first data to
+be sent and has a length equal to the greatest multiple of 4 (bytes)
+lower than or equal to the total length of the TX DMA transfer. The
+second part carries the trailing data (up to 3 bytes). The first part
+is written by the DMA into THR using 32 bit accesses, whereas 8bit
+accesses are used for the second part.
 
 Signed-off-by: Cyrille Pitchen <cyrille.pitchen@atmel.com>
-Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 ---
- include/linux/atmel_serial.h | 204 +++++++++++++++++++++----------------------
- 1 file changed, 102 insertions(+), 102 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 66 ++++++++++++++++++++++++++++++---------
+ 1 file changed, 51 insertions(+), 15 deletions(-)
 
-diff --git a/include/linux/atmel_serial.h b/include/linux/atmel_serial.h
-index 00beddf6be20..c384c21d65f0 100644
---- a/include/linux/atmel_serial.h
-+++ b/include/linux/atmel_serial.h
-@@ -16,115 +16,115 @@
- #ifndef ATMEL_SERIAL_H
- #define ATMEL_SERIAL_H
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 87de21f0c7a3..e91b3b2f0590 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -144,6 +144,7 @@ struct atmel_uart_port {
+ 	unsigned int		irq_status;
+ 	unsigned int		irq_status_prev;
+ 	unsigned int		status_change;
++	unsigned int		tx_len;
  
--#define ATMEL_US_CR		0x00			/* Control Register */
--#define		ATMEL_US_RSTRX		(1 <<  2)		/* Reset Receiver */
--#define		ATMEL_US_RSTTX		(1 <<  3)		/* Reset Transmitter */
--#define		ATMEL_US_RXEN		(1 <<  4)		/* Receiver Enable */
--#define		ATMEL_US_RXDIS		(1 <<  5)		/* Receiver Disable */
--#define		ATMEL_US_TXEN		(1 <<  6)		/* Transmitter Enable */
--#define		ATMEL_US_TXDIS		(1 <<  7)		/* Transmitter Disable */
--#define		ATMEL_US_RSTSTA		(1 <<  8)		/* Reset Status Bits */
--#define		ATMEL_US_STTBRK		(1 <<  9)		/* Start Break */
--#define		ATMEL_US_STPBRK		(1 << 10)		/* Stop Break */
--#define		ATMEL_US_STTTO		(1 << 11)		/* Start Time-out */
--#define		ATMEL_US_SENDA		(1 << 12)		/* Send Address */
--#define		ATMEL_US_RSTIT		(1 << 13)		/* Reset Iterations */
--#define		ATMEL_US_RSTNACK	(1 << 14)		/* Reset Non Acknowledge */
--#define		ATMEL_US_RETTO		(1 << 15)		/* Rearm Time-out */
--#define		ATMEL_US_DTREN		(1 << 16)		/* Data Terminal Ready Enable [AT91RM9200 only] */
--#define		ATMEL_US_DTRDIS		(1 << 17)		/* Data Terminal Ready Disable [AT91RM9200 only] */
--#define		ATMEL_US_RTSEN		(1 << 18)		/* Request To Send Enable */
--#define		ATMEL_US_RTSDIS		(1 << 19)		/* Request To Send Disable */
-+#define ATMEL_US_CR		0x00	/* Control Register */
-+#define	ATMEL_US_RSTRX		BIT(2)	/* Reset Receiver */
-+#define	ATMEL_US_RSTTX		BIT(3)	/* Reset Transmitter */
-+#define	ATMEL_US_RXEN		BIT(4)	/* Receiver Enable */
-+#define	ATMEL_US_RXDIS		BIT(5)	/* Receiver Disable */
-+#define	ATMEL_US_TXEN		BIT(6)	/* Transmitter Enable */
-+#define	ATMEL_US_TXDIS		BIT(7)	/* Transmitter Disable */
-+#define	ATMEL_US_RSTSTA		BIT(8)	/* Reset Status Bits */
-+#define	ATMEL_US_STTBRK		BIT(9)	/* Start Break */
-+#define	ATMEL_US_STPBRK		BIT(10)	/* Stop Break */
-+#define	ATMEL_US_STTTO		BIT(11)	/* Start Time-out */
-+#define	ATMEL_US_SENDA		BIT(12)	/* Send Address */
-+#define	ATMEL_US_RSTIT		BIT(13)	/* Reset Iterations */
-+#define	ATMEL_US_RSTNACK	BIT(14)	/* Reset Non Acknowledge */
-+#define	ATMEL_US_RETTO		BIT(15)	/* Rearm Time-out */
-+#define	ATMEL_US_DTREN		BIT(16)	/* Data Terminal Ready Enable */
-+#define	ATMEL_US_DTRDIS		BIT(17)	/* Data Terminal Ready Disable */
-+#define	ATMEL_US_RTSEN		BIT(18)	/* Request To Send Enable */
-+#define	ATMEL_US_RTSDIS		BIT(19)	/* Request To Send Disable */
+ 	struct circ_buf		rx_ring;
  
--#define ATMEL_US_MR		0x04			/* Mode Register */
--#define		ATMEL_US_USMODE		(0xf <<  0)		/* Mode of the USART */
--#define			ATMEL_US_USMODE_NORMAL		0
--#define			ATMEL_US_USMODE_RS485		1
--#define			ATMEL_US_USMODE_HWHS		2
--#define			ATMEL_US_USMODE_MODEM		3
--#define			ATMEL_US_USMODE_ISO7816_T0	4
--#define			ATMEL_US_USMODE_ISO7816_T1	6
--#define			ATMEL_US_USMODE_IRDA		8
--#define		ATMEL_US_USCLKS		(3   <<  4)		/* Clock Selection */
--#define			ATMEL_US_USCLKS_MCK		(0 <<  4)
--#define			ATMEL_US_USCLKS_MCK_DIV8	(1 <<  4)
--#define			ATMEL_US_USCLKS_SCK		(3 <<  4)
--#define		ATMEL_US_CHRL		(3   <<  6)		/* Character Length */
--#define			ATMEL_US_CHRL_5			(0 <<  6)
--#define			ATMEL_US_CHRL_6			(1 <<  6)
--#define			ATMEL_US_CHRL_7			(2 <<  6)
--#define			ATMEL_US_CHRL_8			(3 <<  6)
--#define		ATMEL_US_SYNC		(1 <<  8)		/* Synchronous Mode Select */
--#define		ATMEL_US_PAR		(7 <<  9)		/* Parity Type */
--#define			ATMEL_US_PAR_EVEN		(0 <<  9)
--#define			ATMEL_US_PAR_ODD		(1 <<  9)
--#define			ATMEL_US_PAR_SPACE		(2 <<  9)
--#define			ATMEL_US_PAR_MARK		(3 <<  9)
--#define			ATMEL_US_PAR_NONE		(4 <<  9)
--#define			ATMEL_US_PAR_MULTI_DROP		(6 <<  9)
--#define		ATMEL_US_NBSTOP		(3 << 12)		/* Number of Stop Bits */
--#define			ATMEL_US_NBSTOP_1		(0 << 12)
--#define			ATMEL_US_NBSTOP_1_5		(1 << 12)
--#define			ATMEL_US_NBSTOP_2		(2 << 12)
--#define		ATMEL_US_CHMODE		(3 << 14)		/* Channel Mode */
--#define			ATMEL_US_CHMODE_NORMAL		(0 << 14)
--#define			ATMEL_US_CHMODE_ECHO		(1 << 14)
--#define			ATMEL_US_CHMODE_LOC_LOOP	(2 << 14)
--#define			ATMEL_US_CHMODE_REM_LOOP	(3 << 14)
--#define		ATMEL_US_MSBF		(1 << 16)		/* Bit Order */
--#define		ATMEL_US_MODE9		(1 << 17)		/* 9-bit Character Length */
--#define		ATMEL_US_CLKO		(1 << 18)		/* Clock Output Select */
--#define		ATMEL_US_OVER		(1 << 19)		/* Oversampling Mode */
--#define		ATMEL_US_INACK		(1 << 20)		/* Inhibit Non Acknowledge */
--#define		ATMEL_US_DSNACK		(1 << 21)		/* Disable Successive NACK */
--#define		ATMEL_US_MAX_ITER	(7 << 24)		/* Max Iterations */
--#define		ATMEL_US_FILTER		(1 << 28)		/* Infrared Receive Line Filter */
-+#define ATMEL_US_MR		0x04	/* Mode Register */
-+#define	ATMEL_US_USMODE		GENMASK(3, 0)	/* Mode of the USART */
-+#define		ATMEL_US_USMODE_NORMAL		0
-+#define		ATMEL_US_USMODE_RS485		1
-+#define		ATMEL_US_USMODE_HWHS		2
-+#define		ATMEL_US_USMODE_MODEM		3
-+#define		ATMEL_US_USMODE_ISO7816_T0	4
-+#define		ATMEL_US_USMODE_ISO7816_T1	6
-+#define		ATMEL_US_USMODE_IRDA		8
-+#define	ATMEL_US_USCLKS		GENMASK(5, 4)	/* Clock Selection */
-+#define		ATMEL_US_USCLKS_MCK		(0 <<  4)
-+#define		ATMEL_US_USCLKS_MCK_DIV8	(1 <<  4)
-+#define		ATMEL_US_USCLKS_SCK		(3 <<  4)
-+#define	ATMEL_US_CHRL		GENMASK(7, 6)	/* Character Length */
-+#define		ATMEL_US_CHRL_5			(0 <<  6)
-+#define		ATMEL_US_CHRL_6			(1 <<  6)
-+#define		ATMEL_US_CHRL_7			(2 <<  6)
-+#define		ATMEL_US_CHRL_8			(3 <<  6)
-+#define	ATMEL_US_SYNC		BIT(8)		/* Synchronous Mode Select */
-+#define	ATMEL_US_PAR		GENMASK(11, 9)	/* Parity Type */
-+#define		ATMEL_US_PAR_EVEN		(0 <<  9)
-+#define		ATMEL_US_PAR_ODD		(1 <<  9)
-+#define		ATMEL_US_PAR_SPACE		(2 <<  9)
-+#define		ATMEL_US_PAR_MARK		(3 <<  9)
-+#define		ATMEL_US_PAR_NONE		(4 <<  9)
-+#define		ATMEL_US_PAR_MULTI_DROP		(6 <<  9)
-+#define	ATMEL_US_NBSTOP		GENMASK(13, 12)	/* Number of Stop Bits */
-+#define		ATMEL_US_NBSTOP_1		(0 << 12)
-+#define		ATMEL_US_NBSTOP_1_5		(1 << 12)
-+#define		ATMEL_US_NBSTOP_2		(2 << 12)
-+#define	ATMEL_US_CHMODE		GENMASK(15, 14)	/* Channel Mode */
-+#define		ATMEL_US_CHMODE_NORMAL		(0 << 14)
-+#define		ATMEL_US_CHMODE_ECHO		(1 << 14)
-+#define		ATMEL_US_CHMODE_LOC_LOOP	(2 << 14)
-+#define		ATMEL_US_CHMODE_REM_LOOP	(3 << 14)
-+#define	ATMEL_US_MSBF		BIT(16)	/* Bit Order */
-+#define	ATMEL_US_MODE9		BIT(17)	/* 9-bit Character Length */
-+#define	ATMEL_US_CLKO		BIT(18)	/* Clock Output Select */
-+#define	ATMEL_US_OVER		BIT(19)	/* Oversampling Mode */
-+#define	ATMEL_US_INACK		BIT(20)	/* Inhibit Non Acknowledge */
-+#define	ATMEL_US_DSNACK		BIT(21)	/* Disable Successive NACK */
-+#define	ATMEL_US_MAX_ITER	GENMASK(26, 24)	/* Max Iterations */
-+#define	ATMEL_US_FILTER		BIT(28)	/* Infrared Receive Line Filter */
+@@ -745,10 +746,10 @@ static void atmel_complete_tx_dma(void *arg)
  
--#define ATMEL_US_IER		0x08			/* Interrupt Enable Register */
--#define		ATMEL_US_RXRDY		(1 <<  0)		/* Receiver Ready */
--#define		ATMEL_US_TXRDY		(1 <<  1)		/* Transmitter Ready */
--#define		ATMEL_US_RXBRK		(1 <<  2)		/* Break Received / End of Break */
--#define		ATMEL_US_ENDRX		(1 <<  3)		/* End of Receiver Transfer */
--#define		ATMEL_US_ENDTX		(1 <<  4)		/* End of Transmitter Transfer */
--#define		ATMEL_US_OVRE		(1 <<  5)		/* Overrun Error */
--#define		ATMEL_US_FRAME		(1 <<  6)		/* Framing Error */
--#define		ATMEL_US_PARE		(1 <<  7)		/* Parity Error */
--#define		ATMEL_US_TIMEOUT	(1 <<  8)		/* Receiver Time-out */
--#define		ATMEL_US_TXEMPTY	(1 <<  9)		/* Transmitter Empty */
--#define		ATMEL_US_ITERATION	(1 << 10)		/* Max number of Repetitions Reached */
--#define		ATMEL_US_TXBUFE		(1 << 11)		/* Transmission Buffer Empty */
--#define		ATMEL_US_RXBUFF		(1 << 12)		/* Reception Buffer Full */
--#define		ATMEL_US_NACK		(1 << 13)		/* Non Acknowledge */
--#define		ATMEL_US_RIIC		(1 << 16)		/* Ring Indicator Input Change [AT91RM9200 only] */
--#define		ATMEL_US_DSRIC		(1 << 17)		/* Data Set Ready Input Change [AT91RM9200 only] */
--#define		ATMEL_US_DCDIC		(1 << 18)		/* Data Carrier Detect Input Change [AT91RM9200 only] */
--#define		ATMEL_US_CTSIC		(1 << 19)		/* Clear to Send Input Change */
--#define		ATMEL_US_RI		(1 << 20)		/* RI */
--#define		ATMEL_US_DSR		(1 << 21)		/* DSR */
--#define		ATMEL_US_DCD		(1 << 22)		/* DCD */
--#define		ATMEL_US_CTS		(1 << 23)		/* CTS */
-+#define ATMEL_US_IER		0x08	/* Interrupt Enable Register */
-+#define	ATMEL_US_RXRDY		BIT(0)	/* Receiver Ready */
-+#define	ATMEL_US_TXRDY		BIT(1)	/* Transmitter Ready */
-+#define	ATMEL_US_RXBRK		BIT(2)	/* Break Received / End of Break */
-+#define	ATMEL_US_ENDRX		BIT(3)	/* End of Receiver Transfer */
-+#define	ATMEL_US_ENDTX		BIT(4)	/* End of Transmitter Transfer */
-+#define	ATMEL_US_OVRE		BIT(5)	/* Overrun Error */
-+#define	ATMEL_US_FRAME		BIT(6)	/* Framing Error */
-+#define	ATMEL_US_PARE		BIT(7)	/* Parity Error */
-+#define	ATMEL_US_TIMEOUT	BIT(8)	/* Receiver Time-out */
-+#define	ATMEL_US_TXEMPTY	BIT(9)	/* Transmitter Empty */
-+#define	ATMEL_US_ITERATION	BIT(10)	/* Max number of Repetitions Reached */
-+#define	ATMEL_US_TXBUFE		BIT(11)	/* Transmission Buffer Empty */
-+#define	ATMEL_US_RXBUFF		BIT(12)	/* Reception Buffer Full */
-+#define	ATMEL_US_NACK		BIT(13)	/* Non Acknowledge */
-+#define	ATMEL_US_RIIC		BIT(16)	/* Ring Indicator Input Change */
-+#define	ATMEL_US_DSRIC		BIT(17)	/* Data Set Ready Input Change */
-+#define	ATMEL_US_DCDIC		BIT(18)	/* Data Carrier Detect Input Change */
-+#define	ATMEL_US_CTSIC		BIT(19)	/* Clear to Send Input Change */
-+#define	ATMEL_US_RI		BIT(20)	/* RI */
-+#define	ATMEL_US_DSR		BIT(21)	/* DSR */
-+#define	ATMEL_US_DCD		BIT(22)	/* DCD */
-+#define	ATMEL_US_CTS		BIT(23)	/* CTS */
+ 	if (chan)
+ 		dmaengine_terminate_all(chan);
+-	xmit->tail += sg_dma_len(&atmel_port->sg_tx);
++	xmit->tail += atmel_port->tx_len;
+ 	xmit->tail &= UART_XMIT_SIZE - 1;
  
--#define ATMEL_US_IDR		0x0c			/* Interrupt Disable Register */
--#define ATMEL_US_IMR		0x10			/* Interrupt Mask Register */
--#define ATMEL_US_CSR		0x14			/* Channel Status Register */
--#define ATMEL_US_RHR		0x18			/* Receiver Holding Register */
--#define ATMEL_US_THR		0x1c			/* Transmitter Holding Register */
--#define		ATMEL_US_SYNH		(1 << 15)		/* Transmit/Receive Sync [AT91SAM9261 only] */
-+#define ATMEL_US_IDR		0x0c	/* Interrupt Disable Register */
-+#define ATMEL_US_IMR		0x10	/* Interrupt Mask Register */
-+#define ATMEL_US_CSR		0x14	/* Channel Status Register */
-+#define ATMEL_US_RHR		0x18	/* Receiver Holding Register */
-+#define ATMEL_US_THR		0x1c	/* Transmitter Holding Register */
-+#define	ATMEL_US_SYNH		BIT(15)	/* Transmit/Receive Sync */
+-	port->icount.tx += sg_dma_len(&atmel_port->sg_tx);
++	port->icount.tx += atmel_port->tx_len;
  
--#define ATMEL_US_BRGR		0x20			/* Baud Rate Generator Register */
--#define		ATMEL_US_CD		(0xffff << 0)		/* Clock Divider */
-+#define ATMEL_US_BRGR		0x20	/* Baud Rate Generator Register */
-+#define	ATMEL_US_CD		GENMASK(15, 0)	/* Clock Divider */
+ 	spin_lock_irq(&atmel_port->lock_tx);
+ 	async_tx_ack(atmel_port->desc_tx);
+@@ -796,7 +797,9 @@ static void atmel_tx_dma(struct uart_port *port)
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 	struct dma_chan *chan = atmel_port->chan_tx;
+ 	struct dma_async_tx_descriptor *desc;
+-	struct scatterlist *sg = &atmel_port->sg_tx;
++	struct scatterlist sgl[2], *sg, *sg_tx = &atmel_port->sg_tx;
++	unsigned int tx_len, part1_len, part2_len, sg_len;
++	dma_addr_t phys_addr;
  
--#define ATMEL_US_RTOR		0x24			/* Receiver Time-out Register */
--#define		ATMEL_US_TO		(0xffff << 0)		/* Time-out Value */
-+#define ATMEL_US_RTOR		0x24	/* Receiver Time-out Register */
-+#define	ATMEL_US_TO		GENMASK(15, 0)	/* Time-out Value */
+ 	/* Make sure we have an idle channel */
+ 	if (atmel_port->desc_tx != NULL)
+@@ -812,18 +815,46 @@ static void atmel_tx_dma(struct uart_port *port)
+ 		 * Take the port lock to get a
+ 		 * consistent xmit buffer state.
+ 		 */
+-		sg->offset = xmit->tail & (UART_XMIT_SIZE - 1);
+-		sg_dma_address(sg) = (sg_dma_address(sg) &
+-					~(UART_XMIT_SIZE - 1))
+-					+ sg->offset;
+-		sg_dma_len(sg) = CIRC_CNT_TO_END(xmit->head,
+-						xmit->tail,
+-						UART_XMIT_SIZE);
+-		BUG_ON(!sg_dma_len(sg));
++		tx_len = CIRC_CNT_TO_END(xmit->head,
++					 xmit->tail,
++					 UART_XMIT_SIZE);
++
++		if (atmel_port->fifo_size) {
++			/* multi data mode */
++			part1_len = (tx_len & ~0x3); /* DWORD access */
++			part2_len = (tx_len & 0x3); /* BYTE access */
++		} else {
++			/* single data (legacy) mode */
++			part1_len = 0;
++			part2_len = tx_len; /* BYTE access only */
++		}
++
++		sg_init_table(sgl, 2);
++		sg_len = 0;
++		phys_addr = sg_dma_address(sg_tx) + xmit->tail;
++		if (part1_len) {
++			sg = &sgl[sg_len++];
++			sg_dma_address(sg) = phys_addr;
++			sg_dma_len(sg) = part1_len;
++
++			phys_addr += part1_len;
++		}
++
++		if (part2_len) {
++			sg = &sgl[sg_len++];
++			sg_dma_address(sg) = phys_addr;
++			sg_dma_len(sg) = part2_len;
++		}
++
++		/*
++		 * save tx_len so atmel_complete_tx_dma() will increase
++		 * xmit->tail correctly
++		 */
++		atmel_port->tx_len = tx_len;
  
--#define ATMEL_US_TTGR		0x28			/* Transmitter Timeguard Register */
--#define		ATMEL_US_TG		(0xff << 0)		/* Timeguard Value */
-+#define ATMEL_US_TTGR		0x28	/* Transmitter Timeguard Register */
-+#define	ATMEL_US_TG		GENMASK(7, 0)	/* Timeguard Value */
+ 		desc = dmaengine_prep_slave_sg(chan,
+-					       sg,
+-					       1,
++					       sgl,
++					       sg_len,
+ 					       DMA_MEM_TO_DEV,
+ 					       DMA_PREP_INTERRUPT |
+ 					       DMA_CTRL_ACK);
+@@ -832,7 +863,7 @@ static void atmel_tx_dma(struct uart_port *port)
+ 			return;
+ 		}
  
--#define ATMEL_US_FIDI		0x40			/* FI DI Ratio Register */
--#define ATMEL_US_NER		0x44			/* Number of Errors Register */
--#define ATMEL_US_IF		0x4c			/* IrDA Filter Register */
-+#define ATMEL_US_FIDI		0x40	/* FI DI Ratio Register */
-+#define ATMEL_US_NER		0x44	/* Number of Errors Register */
-+#define ATMEL_US_IF		0x4c	/* IrDA Filter Register */
+-		dma_sync_sg_for_device(port->dev, sg, 1, DMA_TO_DEVICE);
++		dma_sync_sg_for_device(port->dev, sg_tx, 1, DMA_TO_DEVICE);
  
--#define ATMEL_US_NAME		0xf0			/* Ip Name */
--#define ATMEL_US_VERSION	0xfc			/* Ip Version */
-+#define ATMEL_US_NAME		0xf0	/* Ip Name */
-+#define ATMEL_US_VERSION	0xfc	/* Ip Version */
+ 		atmel_port->desc_tx = desc;
+ 		desc->callback = atmel_complete_tx_dma;
+@@ -892,7 +923,9 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
+ 	/* Configure the slave DMA */
+ 	memset(&config, 0, sizeof(config));
+ 	config.direction = DMA_MEM_TO_DEV;
+-	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
++	config.dst_addr_width = (atmel_port->fifo_size) ?
++				DMA_SLAVE_BUSWIDTH_4_BYTES :
++				DMA_SLAVE_BUSWIDTH_1_BYTE;
+ 	config.dst_addr = port->mapbase + ATMEL_US_THR;
+ 	config.dst_maxburst = 1;
  
- #endif
+@@ -1831,6 +1864,9 @@ static int atmel_startup(struct uart_port *port)
+ 				  ATMEL_US_RXFCLR |
+ 				  ATMEL_US_TXFLCLR);
+ 
++		if (atmel_use_dma_tx(port))
++			txrdym = ATMEL_US_FOUR_DATA;
++
+ 		fmr = ATMEL_US_TXRDYM(txrdym) | ATMEL_US_RXRDYM(rxrdym);
+ 		if (atmel_port->rts_high &&
+ 		    atmel_port->rts_low)
 -- 
 1.8.2.2
