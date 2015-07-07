@@ -1,57 +1,71 @@
-From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH 0/2] serial: 8250: Workaround to avoid irq=0 for console
-Date: Tue, 7 Jul 2015 08:13:59 +0000
-Message-ID: <559B8A48.5060004@cp.jp.nec.com>
+Date: Tue, 7 Jul 2015 15:42:05 -0700
+Message-ID: <20150707224205.GB30851@kroah.com>
 References: <55717224.9060104@cp.jp.nec.com>
+ <559B8A48.5060004@cp.jp.nec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55717224.9060104@cp.jp.nec.com>
-Content-Language: ja-JP
-Content-ID: <88C84985DF982344B370394D0F6E0671@gisp.nec.co.jp>
+Content-Disposition: inline
+In-Reply-To: <559B8A48.5060004@cp.jp.nec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
 Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-T24gMjAxNS8wNi8wNSAxODo1NSwgVGFpY2hpIEthZ2V5YW1hIHdyb3RlOg0KPiBUaGlzIHBhdGNo
-IHNldCBwcm92aWRlcyBhIHdvcmthcm91bmQgdG8gYXZvaWQgdGhlIGZvbGxvd2luZyBwcm9ibGVt
-Lg0KPiBJdCdzIGJhc2VkIG9uIExpbnV4IDQuMS1yYzMgbWFpbnN0cmVhbSBrZXJuZWwuDQo+IEkn
-dmUgdGVzdGVkIHRoaXMgcGF0Y2ggc2V0IG9uIHg4Ni02NCBtYWNoaW5lIGFuZCBLVk0uDQo+DQo+
-IFByb2JsZW0NCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gVGhlcmUncmUgY2FzZXMg
-d2hlcmUgYXV0b2NvbmZpZ19pcnEoKSBmYWlscyBkdXJpbmcgYm9vdC4NCj4gSW4gdGhlc2UgY2Fz
-ZXMsIHRoZSBjb25zb2xlIGRvZXNuJ3Qgd29yayBpbiBpbnRlcnJ1cHQgbW9kZSwNCj4gdGhlIG1v
-ZGUgY2Fubm90IGJlIGNoYW5nZWQgYW55bW9yZSwgYW5kICJpbnB1dCBvdmVycnVuIg0KPiAod2hp
-Y2ggY2FuIG1ha2Ugb3BlcmF0aW9uIG1pc3Rha2VzKSBoYXBwZW5zIGVhc2lseS4NCj4gVGhpcyBw
-cm9ibGVtIGhhcHBlbnMgd2l0aCBoaWdoIHJhdGUgZXZlcnkgYm9vdCBvbmNlIGl0IG9jY3Vycw0K
-PiBiZWNhdXNlIHRoZSBib290IHNlcXVlbmNlIGlzIGFsd2F5cyBhbG1vc3Qgc2FtZS4NCj4gSSBz
-YXcgdGhlIG9yaWdpbmFsIHByb2JsZW0gb24gUkhFTDYuNi4NCj4NCj4gRml4DQo+IC0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tDQo+IHNlcmlhbDogODI1MDogRml4IGF1dG9jb25maWdfaXJxKCkg
-dG8gYXZvaWQgcmFjZSBjb25kaXRpb25zDQo+ICAgRml4IG9uZSBvZiBhdXRvY29uZmlnX2lycSgp
-IGZhaWx1cmUgY2FzZS4NCj4gc2VyaWFsOiA4MjUwOiBBbGxvdyB0byBza2lwIGF1dG9jb25maWdf
-aXJxKCkgZm9yIGEgY29uc29sZQ0KPiAgIFByb3ZpZGUgYSB3b3JrYXJvdW5kIHRvIGF2b2lkIG90
-aGVyIGF1dG9jb25maWdfaXJxKCkgZmFpbHVyZSBjYXNlcy4NCj4NCj4gQ29uZGl0aW9ucyBvZiBS
-ZXByb2R1Y3Rpb24NCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gLSBCdWlsZCB3aXRo
-IENPTkZJR19TRVJJQUxfODI1MF9ERVRFQ1RfSVJRLg0KPiAtIE5lZWQgbm9uLVBuUCBjb25zb2xl
-IHNlcmlhbCBvciBQblAgY29uc29sZSB3aXRoIG5vIENPTkZJR19TRVJJQUxfODI1MF9QTlANCj4g
-LSBLaWNrIHByaW50aygpIHJlcGVhdGVkbHkgb24gdGhlIENQVSB3aGljaCBjYW4gaGFuZGxlIGFu
-IGludGVycnVwdA0KPiAgICBmcm9tIGEgY29uc29sZSBzZXJpYWwgZHVyaW5nIGF1dG9jb25maWdf
-aXJxKCkuIFRoZSBDUFUgaXMgYmFzaWNhbGx5IGNwdTAuDQo+IC0gRGlzYWJsZSB0aGUgaW50ZXJy
-dXB0IG9mIHRoZSBDUFUgZm9yIGxvbmdlciBkdXJpbmcgYXV0b2NvbmZpZ19pcnEoKS4NCj4NCj4g
-Tm90ZQ0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiBJZGVhbGx5LCBJIHRoaW5rIGF1
-dG9jb25maWdfaXJxKCkgc2hvdWxkIGJlIGZpeGVkIGNvbXBsZXRlbHksDQo+IGJ1dCBpdCdzIGhh
-cmQgZnJvbSB0aGUgZm9sbG93aW5nIHBvaW50cw0KPiBhcyBsb25nIGFzIGF1dG9faXJxIGFsZ29y
-aXRobSBpcyB1c2VkLg0KPiAgIC0gSG93IGxvbmcgaXQgc2hvdWxkIHdhaXQgZm9yIGFuIGludGVy
-cnJ1cHQNCj4gICAtIEhvdyB0byBhc3N1cmUgdGhlIGludGVycnVwdCBvZiB0aGUgQ1BVIGVuYWJs
-ZWQgZHVyaW5nIGF1dG9faXJxDQo+ICAgLSBIb3cgdG8ga25vdyB3aGljaCBDUFUgY2FuIGhhbmRs
-ZSBhbiBpbnRlcnJ1cHQgZnJvbSBhIHNlcmlhbC4NCj4NCj4gRG8geW91IGhhdmUgYW55IG90aGVy
-IGlkZWE/DQo+IEluIG15IG9waW5pb24sIHByb3ZpZGluZyBhIHdvcmthcm91bmQgaXMgYmV0dGVy
-IHRoYW4NCj4gYXBwbHlpbmcgYmlnIGNoYW5nZXMgdG8gdGhlIG9sZCBmdW5jdGlvbiBmb3IgbGVn
-YWN5IGRldmljZXMuDQo+DQo+IFRhaWNoaSBLYWdleWFtYSAoMik6DQo+ICAgIHNlcmlhbDogODI1
-MDogRml4IGF1dG9jb25maWdfaXJxKCkgdG8gYXZvaWQgcmFjZSBjb25kaXRpb25zDQo+ICAgIHNl
-cmlhbDogODI1MDogQWxsb3cgdG8gc2tpcCBhdXRvY29uZmlnX2lycSgpIGZvciBhIGNvbnNvbGUN
-Cj4NCj4gICBkcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2NvcmUuYyB8ICAgMjMgKysrKysr
-KysrKysrKysrKysrKysrKysNCj4gICAxIGZpbGVzIGNoYW5nZWQsIDIzIGluc2VydGlvbnMoKyks
-IDAgZGVsZXRpb25zKC0pDQo+DQoNCkNvdWxkIHlvdSByZXZpZXcgdGhpcyBwYXRjaCBzZXQ/DQoN
-Cg0KVGhhbmtzLA0KVGFpY2hp
+On Tue, Jul 07, 2015 at 08:13:59AM +0000, Taichi Kageyama wrote:
+> On 2015/06/05 18:55, Taichi Kageyama wrote:
+> > This patch set provides a workaround to avoid the following problem.
+> > It's based on Linux 4.1-rc3 mainstream kernel.
+> > I've tested this patch set on x86-64 machine and KVM.
+> >
+> > Problem
+> > --------------------------
+> > There're cases where autoconfig_irq() fails during boot.
+> > In these cases, the console doesn't work in interrupt mode,
+> > the mode cannot be changed anymore, and "input overrun"
+> > (which can make operation mistakes) happens easily.
+> > This problem happens with high rate every boot once it occurs
+> > because the boot sequence is always almost same.
+> > I saw the original problem on RHEL6.6.
+> >
+> > Fix
+> > --------------------------
+> > serial: 8250: Fix autoconfig_irq() to avoid race conditions
+> >   Fix one of autoconfig_irq() failure case.
+> > serial: 8250: Allow to skip autoconfig_irq() for a console
+> >   Provide a workaround to avoid other autoconfig_irq() failure cases.
+> >
+> > Conditions of Reproduction
+> > --------------------------
+> > - Build with CONFIG_SERIAL_8250_DETECT_IRQ.
+> > - Need non-PnP console serial or PnP console with no CONFIG_SERIAL_8250_PNP
+> > - Kick printk() repeatedly on the CPU which can handle an interrupt
+> >    from a console serial during autoconfig_irq(). The CPU is basically cpu0.
+> > - Disable the interrupt of the CPU for longer during autoconfig_irq().
+> >
+> > Note
+> > --------------------------
+> > Ideally, I think autoconfig_irq() should be fixed completely,
+> > but it's hard from the following points
+> > as long as auto_irq algorithm is used.
+> >   - How long it should wait for an interrrupt
+> >   - How to assure the interrupt of the CPU enabled during auto_irq
+> >   - How to know which CPU can handle an interrupt from a serial.
+> >
+> > Do you have any other idea?
+> > In my opinion, providing a workaround is better than
+> > applying big changes to the old function for legacy devices.
+> >
+> > Taichi Kageyama (2):
+> >    serial: 8250: Fix autoconfig_irq() to avoid race conditions
+> >    serial: 8250: Allow to skip autoconfig_irq() for a console
+> >
+> >   drivers/tty/serial/8250/8250_core.c |   23 +++++++++++++++++++++++
+> >   1 files changed, 23 insertions(+), 0 deletions(-)
+> >
+> 
+> Could you review this patch set?
+
+Relax, it's in my queue...
