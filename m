@@ -1,71 +1,125 @@
-From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/2] serial: 8250: Workaround to avoid irq=0 for console
-Date: Tue, 7 Jul 2015 15:42:05 -0700
-Message-ID: <20150707224205.GB30851@kroah.com>
-References: <55717224.9060104@cp.jp.nec.com>
- <559B8A48.5060004@cp.jp.nec.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 2/2] serial: 8250: Allow to skip autoconfig_irq() for
+ a console
+Date: Wed, 08 Jul 2015 07:55:56 -0400
+Message-ID: <559D0FCC.5040107@hurleysoftware.com>
+References: <55717224.9060104@cp.jp.nec.com> <557173EC.5000307@cp.jp.nec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <559B8A48.5060004@cp.jp.nec.com>
+In-Reply-To: <557173EC.5000307@cp.jp.nec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jul 07, 2015 at 08:13:59AM +0000, Taichi Kageyama wrote:
-> On 2015/06/05 18:55, Taichi Kageyama wrote:
-> > This patch set provides a workaround to avoid the following problem.
-> > It's based on Linux 4.1-rc3 mainstream kernel.
-> > I've tested this patch set on x86-64 machine and KVM.
-> >
-> > Problem
-> > --------------------------
-> > There're cases where autoconfig_irq() fails during boot.
-> > In these cases, the console doesn't work in interrupt mode,
-> > the mode cannot be changed anymore, and "input overrun"
-> > (which can make operation mistakes) happens easily.
-> > This problem happens with high rate every boot once it occurs
-> > because the boot sequence is always almost same.
-> > I saw the original problem on RHEL6.6.
-> >
-> > Fix
-> > --------------------------
-> > serial: 8250: Fix autoconfig_irq() to avoid race conditions
-> >   Fix one of autoconfig_irq() failure case.
-> > serial: 8250: Allow to skip autoconfig_irq() for a console
-> >   Provide a workaround to avoid other autoconfig_irq() failure cases.
-> >
-> > Conditions of Reproduction
-> > --------------------------
-> > - Build with CONFIG_SERIAL_8250_DETECT_IRQ.
-> > - Need non-PnP console serial or PnP console with no CONFIG_SERIAL_8250_PNP
-> > - Kick printk() repeatedly on the CPU which can handle an interrupt
-> >    from a console serial during autoconfig_irq(). The CPU is basically cpu0.
-> > - Disable the interrupt of the CPU for longer during autoconfig_irq().
-> >
-> > Note
-> > --------------------------
-> > Ideally, I think autoconfig_irq() should be fixed completely,
-> > but it's hard from the following points
-> > as long as auto_irq algorithm is used.
-> >   - How long it should wait for an interrrupt
-> >   - How to assure the interrupt of the CPU enabled during auto_irq
-> >   - How to know which CPU can handle an interrupt from a serial.
-> >
-> > Do you have any other idea?
-> > In my opinion, providing a workaround is better than
-> > applying big changes to the old function for legacy devices.
-> >
-> > Taichi Kageyama (2):
-> >    serial: 8250: Fix autoconfig_irq() to avoid race conditions
-> >    serial: 8250: Allow to skip autoconfig_irq() for a console
-> >
-> >   drivers/tty/serial/8250/8250_core.c |   23 +++++++++++++++++++++++
-> >   1 files changed, 23 insertions(+), 0 deletions(-)
-> >
-> 
-> Could you review this patch set?
+Hi Taichi,
 
-Relax, it's in my queue...
+On 06/05/2015 06:03 AM, Taichi Kageyama wrote:
+> This patch provides a new parameter as a workaround of the following
+> problem. It allows us to skip autoconfig_irq() and to use a well-known irq
+> number for a console even if CONFIG_SERIAL_8250_DETECT_IRQ is defined.
+> 
+> There're cases where autoconfig_irq() fails during boot.
+> In these cases, the console doesn't work in interrupt mode,
+> the mode cannot be changed anymore, and "input overrun"
+> (which can make operation mistakes) happens easily.
+> This problem happens with high rate every boot once it occurs
+> because the boot sequence is always almost same.
+> 
+> autoconfig_irq() assumes that a CPU can handle an interrupt from a serial
+> during the waiting time, but there're some cases where the CPU cannot
+> handle the interrupt for longer than the time. It completely depends on
+> how other functions work on the CPU. Ideally, autoconfig_irq() should be
+> fixed
+
+It completely depends on how long some other driver has interrupts disabled,
+which is a problem that needs fixed _in that driver_. autoconfig_irq() does not
+need fixing.
+
+A typical cause of this behavior is printk spew from overly-instrumented
+debugging of some driver (trace_printk is better suited to heavy instrumentation).
+
+Regards,
+Peter Hurley
+
+
+> to control these cases but as long as auto_irq algorithm is used,
+> it's hard to know which CPU can handle an interrupt from a serial and
+> to assure the interrupt of the CPU is enabled during auto_irq.
+> Meanwhile for legacy consoles, they actually don't require auto_irq
+> because they basically use well-known irq number.
+> For non-console serials, this workaround is not required
+> because setserial command can kick autoconfig_irq() again for them.
+> 
+> Signed-off-by: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+> Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+> ---
+>   drivers/tty/serial/8250/8250_core.c |   17 +++++++++++++++++
+>   1 files changed, 17 insertions(+), 0 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index 6bf31f2..60fda28 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -65,6 +65,8 @@ static int serial_index(struct uart_port *port)
+> 
+>   static unsigned int skip_txen_test; /* force skip of txen test at init time */
+> 
+> +static unsigned int skip_cons_autoirq; /* force skip autoirq for console */
+> +
+>   /*
+>    * Debugging.
+>    */
+> @@ -3336,6 +3338,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+>   		if (skip_txen_test)
+>   			up->port.flags |= UPF_NO_TXEN_TEST;
+> 
+> +		if (uart_console(&up->port) && skip_cons_autoirq)
+> +			up->port.flags &= ~UPF_AUTO_IRQ;
+> +
+>   		uart_add_one_port(drv, &up->port);
+>   	}
+>   }
+> @@ -3875,6 +3880,9 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+>   		if (skip_txen_test)
+>   			uart->port.flags |= UPF_NO_TXEN_TEST;
+> 
+> +		if (uart_console(&uart->port) && skip_cons_autoirq)
+> +			uart->port.flags &= ~UPF_AUTO_IRQ;
+> +
+>   		if (up->port.flags & UPF_FIXED_TYPE)
+>   			uart->port.type = up->port.type;
+> 
+> @@ -3936,6 +3944,10 @@ void serial8250_unregister_port(int line)
+>   		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
+>   		if (skip_txen_test)
+>   			uart->port.flags |= UPF_NO_TXEN_TEST;
+> +
+> +		if (uart_console(&uart->port) && skip_cons_autoirq)
+> +			uart->port.flags &= ~UPF_AUTO_IRQ;
+> +
+>   		uart->port.type = PORT_UNKNOWN;
+>   		uart->port.dev = &serial8250_isa_devs->dev;
+>   		uart->capabilities = 0;
+> @@ -4044,6 +4056,9 @@ MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STR
+>   module_param(skip_txen_test, uint, 0644);
+>   MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
+> 
+> +module_param(skip_cons_autoirq, uint, 0644);
+> +MODULE_PARM_DESC(skip_cons_autoirq, "Skip auto irq for console during boot");
+> +
+>   #ifdef CONFIG_SERIAL_8250_RSA
+>   module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
+>   MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
+> @@ -4070,6 +4085,8 @@ static void __used s8250_options(void)
+>   	module_param_cb(share_irqs, &param_ops_uint, &share_irqs, 0644);
+>   	module_param_cb(nr_uarts, &param_ops_uint, &nr_uarts, 0644);
+>   	module_param_cb(skip_txen_test, &param_ops_uint, &skip_txen_test, 0644);
+> +	module_param_cb(skip_cons_autoirq, &param_ops_uint,
+> +		&skip_cons_autoirq, 0644);
+>   #ifdef CONFIG_SERIAL_8250_RSA
+>   	__module_param_call(MODULE_PARAM_PREFIX, probe_rsa,
+>   		&param_array_ops, .arr = &__param_arr_probe_rsa,
+> 
