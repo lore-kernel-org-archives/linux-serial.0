@@ -1,78 +1,43 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH RESEND 1/7] tty: serial: 8250: omap: fix kernel crash
- in suspend-to-ram
-Date: Wed, 08 Jul 2015 10:04:44 -0400
-Message-ID: <559D2DFC.9010602@hurleysoftware.com>
-References: <cover.1436174801.git.nsekhar@ti.com> <d8cb86b2717e0fc084b6651be54ee6d96dbc603a.1436174801.git.nsekhar@ti.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 1/2] serial: 8250: Fix autoconfig_irq() to avoid race
+ conditions
+Date: Wed, 08 Jul 2015 19:35:26 -0400
+Message-ID: <559DB3BE.5080306@hurleysoftware.com>
+References: <55717224.9060104@cp.jp.nec.com> <55717294.8020905@cp.jp.nec.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <d8cb86b2717e0fc084b6651be54ee6d96dbc603a.1436174801.git.nsekhar-l0cyMroinI0@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Cc: Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55717294.8020905@cp.jp.nec.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sekhar,
-
-On 07/06/2015 05:47 AM, Sekhar Nori wrote:
-> omap_device infrastructure has a suspend_noirq hook which
-> runtime suspends all devices late in the suspend cycle (see
-> _od_suspend_noirq() in arch/arm/mach-omap2/omap_device.c)
-
-Why is omap2 the only arch/SoC that does this; ie., call the runtime
-callbacks after the system pm callbacks?
-
-Whatever positive it brings, it's a mess at the driver level.
-For example, this driver has to hook prepare()/complete() so it can
-set local state so that it can detect when the runtime suspend
-is being called during system suspend.
-
-Regards,
-Peter Hurley
-
-
-> This leads to a NULL pointer exception in 8250_omap driver
-> since by the time omap8250_runtime_suspend() is called, 8250_dma
-> driver has already set rxchan to NULL via serial8250_release_dma().
+On 06/05/2015 05:57 AM, Taichi Kageyama wrote:
+> The following race conditions can happen if a serial is used as console.
+>   Case1. CPU_B handles an interrupt from a serial
+>     autoconfig_irq() fails whether the interrupt is raised or not
+>     if CPU_B is disabled to handle interrupts for longer than it expects.
+>   Case2. CPU_B clears UART_IER just after CPU_A sets UART_IER
+>     A serial may not make an interrupt.
+>     autoconfig_irq() can fail if the interrupt is not raised.
+>   Case3. CPU_A sets UART_IER just after CPU_B clears UART_IER
+>     This is an unexpected behavior for uart_console_write().
 > 
-> Make an explicit check to see if rxchan is NULL in
-> runtime_{suspend|resume} hooks to fix this.
+>   CPU_A [autoconfig_irq]      CPU_B [serial8250_console_write]
+>   -----------------------------------------------------------------
+>   probe_irq_on()              spin_lock_irqsave(&port->lock,)
+>   serial_outp(,UART_IER,0x0f) serial_out(,UART_IER,0)
+>   udelay(20);                 uart_console_write()
+>   probe_irq_off()
+>                               spin_unlock_irqrestore(&port->lock,)
+>   -----------------------------------------------------------------
 > 
-> Signed-off-by: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-> ---
-> Previous version: http://www.spinics.net/lists/linux-omap/msg119459.html
-> No change in this version except rebased to v4.2-rc1
-> 
->  drivers/tty/serial/8250/8250_omap.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index d75a66c72750..20c5b9c4c288 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -1285,7 +1285,7 @@ static int omap8250_runtime_suspend(struct device *dev)
->  			return -EBUSY;
->  	}
->  
-> -	if (up->dma)
-> +	if (up->dma && up->dma->rxchan)
->  		omap_8250_rx_dma(up, UART_IIR_RX_TIMEOUT);
->  
->  	priv->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
-> @@ -1310,7 +1310,7 @@ static int omap8250_runtime_resume(struct device *dev)
->  	if (loss_cntx)
->  		omap8250_restore_regs(up);
->  
-> -	if (up->dma)
-> +	if (up->dma && up->dma->rxchan)
->  		omap_8250_rx_dma(up, 0);
->  
->  	priv->latency = priv->calc_latency;
-> 
+> If autoconfig_irq() fails, the console doesn't work in interrupt mode,
+> the mode cannot be changed anymore, and "input overrun"
+> (which can make operation mistakes) happens easily.
+> This problem happens with high rate every boot once it occurs
+> because the boot sequence is always almost same.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
