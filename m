@@ -1,41 +1,50 @@
-From: Alexander Stein <alexander.stein@systec-electronic.com>
-Subject: [PATCH 1/1] serial/uuc_uart: Support higher bitrates than 115200 Bit/s
-Date: Thu,  9 Jul 2015 10:34:34 +0200
-Message-ID: <1436430874-17385-1-git-send-email-alexander.stein@systec-electronic.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Timur Tabi <timur@tabi.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org, Alexander Stein <alexander.stein@systec-electronic.com>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
+Date: Thu,  9 Jul 2015 11:57:12 +0100
+Message-ID: <1436439433-10258-1-git-send-email-Dave.Martin@arm.com>
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King <linux@arm.linux.org.uk>, Robin Murphy <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, popcorn mix <popcornmix@gmail.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-VGhlIG1heGltdW0gYml0cmF0ZSBzdXBwb3J0ZWQgZGVwZW5kcyBvbiB0aGUgY2xvY2sgcmF0ZSB1
-c2VkIGluIEJSRy4KVGhpcyBpcyBzdG9yZWQgaW4gcG9ydC51YXJ0Y2xrIGR1cmluZyBwcm9iZS4g
-UmVzcGVjdGluZyB0aGUgMTZ4Cm92ZXJzYW1wbGluZyBoaWdoZXIgYml0cmF0ZXMgY2FuIGJlIHN1
-cHBvcnRlZC4KClNpZ25lZC1vZmYtYnk6IEFsZXhhbmRlciBTdGVpbiA8YWxleGFuZGVyLnN0ZWlu
-QHN5c3RlYy1lbGVjdHJvbmljLmNvbT4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvdWNjX3VhcnQu
-YyB8IDIgKy0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQoK
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC91Y2NfdWFydC5jIGIvZHJpdmVycy90dHkv
-c2VyaWFsL3VjY191YXJ0LmMKaW5kZXggN2QyNTMyYi4uNzMxOTBmNSAxMDA2NDQKLS0tIGEvZHJp
-dmVycy90dHkvc2VyaWFsL3VjY191YXJ0LmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL3VjY191
-YXJ0LmMKQEAgLTk1MCw3ICs5NTAsNyBAQCBzdGF0aWMgdm9pZCBxZV91YXJ0X3NldF90ZXJtaW9z
-KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsCiAJaWYgKCh0ZXJtaW9zLT5jX2NmbGFnICYgQ1JFQUQp
-ID09IDApCiAJCXBvcnQtPnJlYWRfc3RhdHVzX21hc2sgJj0gfkJEX1NDX0VNUFRZOwogCi0JYmF1
-ZCA9IHVhcnRfZ2V0X2JhdWRfcmF0ZShwb3J0LCB0ZXJtaW9zLCBvbGQsIDAsIDExNTIwMCk7CisJ
-YmF1ZCA9IHVhcnRfZ2V0X2JhdWRfcmF0ZShwb3J0LCB0ZXJtaW9zLCBvbGQsIDAsIHBvcnQtPnVh
-cnRjbGsgLyAxNik7CiAKIAkvKiBEbyB3ZSByZWFsbHkgbmVlZCBhIHNwaW5sb2NrIGhlcmU/ICov
-CiAJc3Bpbl9sb2NrX2lycXNhdmUoJnBvcnQtPmxvY2ssIGZsYWdzKTsKLS0gCjIuMy42CgpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eHBwYy1kZXYg
-bWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlzdHMu
-b3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
+pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
+sufficient to inhibit pl011_int() from being triggered by a local
+IRQ and trying to re-take the same lock.  This can lead to
+deadlocks.
+
+This patch uses the _irq() locking variants instead to ensure that
+pl011_int() handling for a given port is deferred until any
+pl011_tx_softirq() work for that port is complete.
+
+Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
+Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+Tested-by: Robin Murphy <robin.murphy@arm.com>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: stable <stable@vger.kernel.org> # 4.1
+---
+ drivers/tty/serial/amba-pl011.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl01=
+1.c
+index 763eb20..0cc622a 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1360,9 +1360,9 @@ static void pl011_tx_softirq(struct work_struct *work=
+)
+ =09struct uart_amba_port *uap =3D
+ =09=09container_of(dwork, struct uart_amba_port, tx_softirq_work);
+=20
+-=09spin_lock(&uap->port.lock);
++=09spin_lock_irq(&uap->port.lock);
+ =09while (pl011_tx_chars(uap)) ;
+-=09spin_unlock(&uap->port.lock);
++=09spin_unlock_irq(&uap->port.lock);
+ }
+=20
+ static void pl011_tx_irq_seen(struct uart_amba_port *uap)
+--=20
+1.7.10.4
