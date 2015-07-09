@@ -1,46 +1,42 @@
-From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 3/7] tty: 8250: omap: introduce function to update mdr1
-Date: Thu, 9 Jul 2015 16:50:55 +0530
-Message-ID: <559E5917.7090707@ti.com>
-References: <cover.1436174801.git.nsekhar@ti.com> <597e0f4bf4455cb7755851f5c34a02fbdd0d4aeb.1436174801.git.nsekhar@ti.com> <559DC05F.9070707@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <559DC05F.9070707-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Cc: Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
+Subject: [RFT PATCH] serial: amba-pl011: Fix devm_ioremap_resource return value check
+Date: Thu,  9 Jul 2015 22:21:41 +0900
+Message-ID: <1436448101-24819-1-git-send-email-k.kozlowski.k@gmail.com>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thursday 09 July 2015 05:59 AM, Peter Hurley wrote:
-> Hi Sekhar,
-> 
-> On 07/06/2015 05:47 AM, Sekhar Nori wrote:
->> updating mdr1 register on OMAP needs to take care of
->> errata i202. Introduce a function to update mdr1.
->>
->> This will be useful later on when mdr1 needs to be
->> written to from other places. No functional change.
-> 
-> This changelog is not clear. May I suggest:
-> 
-> serial: 8250_omap: Refactor MDR1 update
-> 
-> The errata [1] workaround implemented in follow-on patch,
-> "serial: 8250_omap: workaround errata on disabling UART after using DMA",
-> requires MDR1 register programming.
-> 
-> Extract MDR1 register update into helper function, omap8250_update_mdr1().
-> 
-> [1] Advisory 21 in http://www.ti.com/lit/er/sprz408b/sprz408b.pdf
+Value returned by devm_ioremap_resource() was checked for non-NULL but
+devm_ioremap_resource() returns IOMEM_ERR_PTR, not NULL. In case of
+error this could lead to dereference of ERR_PTR.
 
-Alright, will use this description instead.
+Signed-off-by: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
+Cc: <stable@vger.kernel.org>
+Fixes: 3873e2d7f63a ("drivers: PL011: refactor pl011_probe()")
 
-Thanks,
-Sekhar
+---
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Patch only compile tested.
+---
+ drivers/tty/serial/amba-pl011.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 50cf5b10ceed..fd27e986b1dd 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2310,8 +2310,8 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+ 	void __iomem *base;
+ 
+ 	base = devm_ioremap_resource(dev, mmiobase);
+-	if (!base)
+-		return -ENOMEM;
++	if (IS_ERR(base))
++		return PTR_ERR(base);
+ 
+ 	index = pl011_probe_dt_alias(index, dev);
+ 
+-- 
+2.1.4
