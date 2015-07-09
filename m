@@ -1,50 +1,95 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
-Date: Thu,  9 Jul 2015 11:57:12 +0100
-Message-ID: <1436439433-10258-1-git-send-email-Dave.Martin@arm.com>
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King <linux@arm.linux.org.uk>, Robin Murphy <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, popcorn mix <popcornmix@gmail.com>, stable@vger.kernel.org
+From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH RESEND 1/7] tty: serial: 8250: omap: fix kernel crash
+ in suspend-to-ram
+Date: Thu, 9 Jul 2015 16:45:14 +0530
+Message-ID: <559E57C2.5080009@ti.com>
+References: <cover.1436174801.git.nsekhar@ti.com> <d8cb86b2717e0fc084b6651be54ee6d96dbc603a.1436174801.git.nsekhar@ti.com> <559D2DFC.9010602@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <559D2DFC.9010602-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Cc: Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kevin Hilman <khilman-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
-sufficient to inhibit pl011_int() from being triggered by a local
-IRQ and trying to re-take the same lock.  This can lead to
-deadlocks.
+Hi Peter,
 
-This patch uses the _irq() locking variants instead to ensure that
-pl011_int() handling for a given port is deferred until any
-pl011_tx_softirq() work for that port is complete.
+On Wednesday 08 July 2015 07:34 PM, Peter Hurley wrote:
+> Hi Sekhar,
+> 
+> On 07/06/2015 05:47 AM, Sekhar Nori wrote:
+>> omap_device infrastructure has a suspend_noirq hook which
+>> runtime suspends all devices late in the suspend cycle (see
+>> _od_suspend_noirq() in arch/arm/mach-omap2/omap_device.c)
+> 
+> Why is omap2 the only arch/SoC that does this; ie., call the runtime
+> callbacks after the system pm callbacks?
 
-Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
-Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-Tested-by: Robin Murphy <robin.murphy@arm.com>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: stable <stable@vger.kernel.org> # 4.1
----
- drivers/tty/serial/amba-pl011.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Even I am not sure why this needs to be done. I _think_ it was done to
+make sure all IPs are idled even if driver did not implement system
+sleep ops, but I could be wrong.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl01=
-1.c
-index 763eb20..0cc622a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1360,9 +1360,9 @@ static void pl011_tx_softirq(struct work_struct *work=
-)
- =09struct uart_amba_port *uap =3D
- =09=09container_of(dwork, struct uart_amba_port, tx_softirq_work);
-=20
--=09spin_lock(&uap->port.lock);
-+=09spin_lock_irq(&uap->port.lock);
- =09while (pl011_tx_chars(uap)) ;
--=09spin_unlock(&uap->port.lock);
-+=09spin_unlock_irq(&uap->port.lock);
- }
-=20
- static void pl011_tx_irq_seen(struct uart_amba_port *uap)
---=20
-1.7.10.4
+Cc: Kevin Hilman since he added this support.
+
+In any case, I think this patch is okay, as the additional NULL pointer
+check is still valid.
+
+Thanks,
+Sekhar
+
+> 
+> Whatever positive it brings, it's a mess at the driver level.
+> For example, this driver has to hook prepare()/complete() so it can
+> set local state so that it can detect when the runtime suspend
+> is being called during system suspend.
+> 
+> Regards,
+> Peter Hurley
+> 
+> 
+>> This leads to a NULL pointer exception in 8250_omap driver
+>> since by the time omap8250_runtime_suspend() is called, 8250_dma
+>> driver has already set rxchan to NULL via serial8250_release_dma().
+>>
+>> Make an explicit check to see if rxchan is NULL in
+>> runtime_{suspend|resume} hooks to fix this.
+>>
+>> Signed-off-by: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
+>> ---
+>> Previous version: http://www.spinics.net/lists/linux-omap/msg119459.html
+>> No change in this version except rebased to v4.2-rc1
+>>
+>>  drivers/tty/serial/8250/8250_omap.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+>> index d75a66c72750..20c5b9c4c288 100644
+>> --- a/drivers/tty/serial/8250/8250_omap.c
+>> +++ b/drivers/tty/serial/8250/8250_omap.c
+>> @@ -1285,7 +1285,7 @@ static int omap8250_runtime_suspend(struct device *dev)
+>>  			return -EBUSY;
+>>  	}
+>>  
+>> -	if (up->dma)
+>> +	if (up->dma && up->dma->rxchan)
+>>  		omap_8250_rx_dma(up, UART_IIR_RX_TIMEOUT);
+>>  
+>>  	priv->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
+>> @@ -1310,7 +1310,7 @@ static int omap8250_runtime_resume(struct device *dev)
+>>  	if (loss_cntx)
+>>  		omap8250_restore_regs(up);
+>>  
+>> -	if (up->dma)
+>> +	if (up->dma && up->dma->rxchan)
+>>  		omap_8250_rx_dma(up, 0);
+>>  
+>>  	priv->latency = priv->calc_latency;
+>>
+> 
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
