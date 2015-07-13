@@ -1,11 +1,13 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] serial: core: Fix crashes while echoing when closing
-Date: Sun, 12 Jul 2015 20:39:03 -0400
-Message-ID: <1436747943-4059-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2] serial: core: Fix crashes while echoing when closing
+Date: Sun, 12 Jul 2015 21:05:26 -0400
+Message-ID: <1436749526-5664-1-git-send-email-peter@hurleysoftware.com>
+References: <1436747943-4059-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1436747943-4059-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Robert Elliot <elliot@hp.com>, Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Robert Elliott <elliott@hp.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
 While closing, new rx data may be received after the input buffers
@@ -50,10 +52,12 @@ handled when stop_rx() disables rx interrupts.
 
 Fixes: 2e758910832d ("serial: core: Flush ldisc after dropping port
 mutex in uart_close()")
-Reported-by: Robert Elliot <elliot@hp.com>
-
+Reported-by: Robert Elliott <elliott@hp.com>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
+
+v2: Fixed Robert Elliott's email address
+
  drivers/tty/serial/serial_core.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
