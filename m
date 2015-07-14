@@ -1,57 +1,34 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2 3/9] arm: twr-k70f120m: clock driver for Kinetis SoC
-Date: Tue, 14 Jul 2015 11:03:59 +0200
-Message-ID: <CACRpkdasMqFCwy=ZEvMLeG2Z-xV01dbf8cXaPACP1=RSz2gdjw@mail.gmail.com>
-References: <1435667250-28299-1-git-send-email-pawelo@king.net.pl>
-	<1435667250-28299-4-git-send-email-pawelo@king.net.pl>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v2 0/7] serial: 8250_omap: workaround for IP errata
+Date: Tue, 14 Jul 2015 08:22:04 -0400
+Message-ID: <55A4FEEC.3080101@hurleysoftware.com>
+References: <cover.1436855646.git.nsekhar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1435667250-28299-4-git-send-email-pawelo@king.net.pl>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Paul Osmialowski <pawelo@king.net.pl>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jiri Slaby <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-clk@vger.kernel.org, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, dmaengine@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Nicolas
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <cover.1436855646.git.nsekhar-l0cyMroinI0@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 30, 2015 at 2:27 PM, Paul Osmialowski <pawelo@king.net.pl> wrote:
+On 07/14/2015 04:02 AM, Sekhar Nori wrote:
+> This series works around "Advisory 21" as documented in
+> AM437x SoC errata[1]. This errata prevents UART module
+> from idling after DMA is used. AM335x and DRA7x also suffer
+> from the same errata and chip design team is in the process
+> of updating the errata documents of those devices as well.
+> 
+> Patch 1/7 fixes a related bug but can be applied independently.
 
-> Based on K70P256M150SF3RM.pdf K70 Sub-Family Reference Manual, Rev. 3.
->
-> Signed-off-by: Paul Osmialowski <pawelo@king.net.pl>
-(...)
-> +struct kinetis_sim_regs {
-> +       u32 sopt1;      /* System Options Register 1 */
-> +       u32 rsv0[1024];
-> +       u32 sopt2;      /* System Options Register 2 */
-> +       u32 rsv1;
-> +       u32 sopt4;      /* System Options Register 4 */
-> +       u32 sopt5;      /* System Options Register 5 */
-> +       u32 sopt6;      /* System Options Register 6 */
-> +       u32 sopt7;      /* System Options Register 7 */
-> +       u32 rsv2[2];
-> +       u32 sdid;       /* System Device Identification Register */
-> +       u32 scgc[KINETIS_SIM_CG_NUMREGS];       /* Clock Gating Regs 1...7 */
-> +       u32 clkdiv1;    /* System Clock Divider Register 1 */
-> +       u32 clkdiv2;    /* System Clock Divider Register 2 */
-> +       u32 fcfg1;      /* Flash Configuration Register 1 */
-> +       u32 fcfg2;      /* Flash Configuration Register 2 */
-> +       u32 uidh;       /* Unique Identification Register High */
-> +       u32 uidmh;      /* Unique Identification Register Mid-High */
-> +       u32 uidml;      /* Unique Identification Register Mid Low */
-> +       u32 uidl;       /* Unique Identification Register Low */
-> +       u32 clkdiv3;    /* System Clock Divider Register 3 */
-> +       u32 clkdiv4;    /* System Clock Divider Register 4 */
-> +       u32 mcr;        /* Misc Control Register */
-> +};
+Looks good. Thanks Sekhar!
 
-Now there is this design pattern where you copy the datasheet
-register map to a struct again.
+For series,
 
-This is not good if there is a second revision of the hardware and some
-registers are shuffled around. IMO it is better to just use #defines
-for register
-offsets, so you can do exceptions later. Else a new hardware revision
-leads to a new struct with new accessor functions etc etc.
+Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 
-Yours,
-Linus Walleij
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
