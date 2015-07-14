@@ -1,45 +1,62 @@
-From: Kukjin Kim <kgene@kernel.org>
-Subject: RE: [PATCH] serial: samsung: Remove redundant DEBUG_LL check
-Date: Tue, 14 Jul 2015 13:41:29 +0900
-Message-ID: <069e01d0bdef$59a73c70$0cf5b550$@kernel.org>
-References: <1436786331-5188-1-git-send-email-javier@osg.samsung.com>
- <55A46C4F.8050803@samsung.com>
+From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
+Subject: [PATCH v2 1/7] serial: 8250_omap: fix kernel crash in suspend-to-ram
+Date: Tue, 14 Jul 2015 13:32:03 +0530
+Message-ID: <144e3c053990dae825b7e06f5340e04bf7d81163.1436855646.git.nsekhar@ti.com>
+References: <cover.1436855646.git.nsekhar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <55A46C4F.8050803@samsung.com>
-Content-language: ko
-Sender: linux-kernel-owner@vger.kernel.org
-To: 'Krzysztof Kozlowski' <k.kozlowski@samsung.com>, 'Javier Martinez Canillas' <javier@osg.samsung.com>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc: linux-samsung-soc@vger.kernel.org, 'Arnd Bergmann' <arnd@arndb.de>, linux-kernel@vger.kernel.org, 'Kukjin Kim' <kgene@kernel.org>, linux-serial@vger.kernel.org, 'Jiri Slaby' <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <cover.1436855646.git.nsekhar-l0cyMroinI0@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Krzysztof Kozlowski wrote:
-> 
-> On 13.07.2015 20:18, Javier Martinez Canillas wrote:
-> > Commit 84f57d9e3685 ("tty: serial/samsung: fix modular build") fixed
-> > build issues when the driver was built as a module. One of those was
-> > that printascii is only accessible when the driver is built-in.
-> >
-> > But there is no need to check for defined(CONFIG_DEBUG_LL) since the
-> > SERIAL_SAMSUNG_DEBUG Kconfig symbol already depends on DEBUG_LL.
-> >
-> > Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
+omap_device infrastructure has a suspend_noirq hook which
+runtime suspends all devices late in the suspend cycle (see
+_od_suspend_noirq() in arch/arm/mach-omap2/omap_device.c)
 
-Acked-by: Kukjin Kim <kgene@kernel.org>
+This leads to a NULL pointer exception in 8250_omap driver
+since by the time omap8250_runtime_suspend() is called, 8250_dma
+driver has already set rxchan to NULL via serial8250_release_dma().
 
-Thanks,
-Kukjin
+Make an explicit check to see if rxchan is NULL in
+runtime_{suspend|resume} hooks to fix this.
 
-> >
-> > ---
-> >
-> >  drivers/tty/serial/samsung.c | 1 -
-> >  1 file changed, 1 deletion(-)
-> 
-> Although this redundancy is not harmful the patch seems fine, so:
-> Reviewed-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-> 
-> Best regards,
-> Krzysztof
+Signed-off-by: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
+---
+v2:
+- updated subject line according to subsystem conventions
+
+ drivers/tty/serial/8250/8250_omap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index d75a66c72750..20c5b9c4c288 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1285,7 +1285,7 @@ static int omap8250_runtime_suspend(struct device *dev)
+ 			return -EBUSY;
+ 	}
+ 
+-	if (up->dma)
++	if (up->dma && up->dma->rxchan)
+ 		omap_8250_rx_dma(up, UART_IIR_RX_TIMEOUT);
+ 
+ 	priv->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
+@@ -1310,7 +1310,7 @@ static int omap8250_runtime_resume(struct device *dev)
+ 	if (loss_cntx)
+ 		omap8250_restore_regs(up);
+ 
+-	if (up->dma)
++	if (up->dma && up->dma->rxchan)
+ 		omap_8250_rx_dma(up, 0);
+ 
+ 	priv->latency = priv->calc_latency;
+-- 
+2.4.4.408.g16da57c
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
