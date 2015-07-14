@@ -1,42 +1,109 @@
-From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2 0/7] serial: 8250_omap: workaround for IP errata
-Date: Tue, 14 Jul 2015 05:49:08 -0700
-Message-ID: <20150714124908.GE10928@atomide.com>
-References: <cover.1436855646.git.nsekhar@ti.com>
- <55A4FEEC.3080101@hurleysoftware.com>
+From: Juergen Borleis <jbe@pengutronix.de>
+Subject: [PATCH] serial: mxs-auart: keep the AUART unit in reset state when not in use
+Date: Tue, 14 Jul 2015 16:41:04 +0200
+Message-ID: <1436884864-6782-1-git-send-email-jbe@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <55A4FEEC.3080101-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-* Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> [150714 05:24]:
-> On 07/14/2015 04:02 AM, Sekhar Nori wrote:
-> > This series works around "Advisory 21" as documented in
-> > AM437x SoC errata[1]. This errata prevents UART module
-> > from idling after DMA is used. AM335x and DRA7x also suffer
-> > from the same errata and chip design team is in the process
-> > of updating the errata documents of those devices as well.
-> > 
-> > Patch 1/7 fixes a related bug but can be applied independently.
-> 
-> Looks good. Thanks Sekhar!
-> 
-> For series,
-> 
-> Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Whenever the UART device driver gets closed from userland, the driver
+disables the UART unit and then stops the clocks to save power.
 
-Also things still work for me, and the dts changes should
-not cause merge conflicts during v4.3 merge window based on
-what I have queued. So please feel free to queue these
-all via the tty tree and add:
+The bit which disabled the UART unit is described as:
 
-Acked-by: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org> 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+=C2=A0"UART Enable. If this bit is set to 1, the UART is enabled. Data
+  transmission and reception occurs for the UART signals. When the
+  UART is disabled in the middle of transmission or reception, it
+  completes the current character before stopping."
+
+The important part is the "it completes the current character". Wheneve=
+r
+a reception is ongoing when the UART gets disabled (including the clock
+off) the statemachine freezes and "remembers" this state on the next
+open() and re-enabling of the unit's clock.
+
+In this case we end up receiving an additional bogus character
+immediately.
+
+The solution in this change is to move the AUART unit into its reset
+state on close() and only release it from its reset state on the next
+open().
+
+Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
+---
+ drivers/tty/serial/mxs-auart.c | 38 ++++++++++++++++++++++++++++++----=
+----
+ 1 file changed, 30 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-au=
+art.c
+index 13cf773..f42b6ad 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -858,6 +858,30 @@ static void mxs_auart_reset(struct uart_port *u)
+ 	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
+ }
+=20
++static void mxs_auart_do_reset(struct uart_port *u)
++{
++	int i;
++	u32 reg;
++
++	reg =3D readl(u->membase + AUART_CTRL0);
++	/* if already in reset state, keep it untouched */
++	if (reg & AUART_CTRL0_SFTRST)
++		return;
++
++	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
++	writel(AUART_CTRL0_SFTRST, u->membase + AUART_CTRL0_SET);
++
++	for (i =3D 0; i < 1000; i++) {
++		reg =3D readl(u->membase + AUART_CTRL0);
++		/* reset is finished when the clock is gated */
++		if (reg & AUART_CTRL0_CLKGATE)
++			return;
++		udelay(10);
++	}
++
++	dev_err(u->dev, "Failed to reset the unit.");
++}
++
+ static int mxs_auart_startup(struct uart_port *u)
+ {
+ 	int ret;
+@@ -867,7 +891,10 @@ static int mxs_auart_startup(struct uart_port *u)
+ 	if (ret)
+ 		return ret;
+=20
+-	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
++	/* reset the unit if not aready done */
++	mxs_auart_do_reset(u);
++	/* bring it out of reset now */
++	mxs_auart_reset(u);
+=20
+ 	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_SET);
+=20
+@@ -899,13 +926,8 @@ static void mxs_auart_shutdown(struct uart_port *u=
+)
+ 	if (auart_dma_enabled(s))
+ 		mxs_auart_dma_exit(s);
+=20
+-	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_CLR);
+-
+-	writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
+-			u->membase + AUART_INTR_CLR);
+-
+-	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_SET);
+-
++	/* reset the unit and keep it in reset state */
++	mxs_auart_do_reset(u);
+ 	clk_disable_unprepare(s->clk);
+ }
+=20
+--=20
+2.1.4
