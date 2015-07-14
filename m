@@ -1,38 +1,257 @@
-From: Javier Martinez Canillas <javier@osg.samsung.com>
-Subject: [PATCH] serial: samsung: Remove redundant DEBUG_LL check
-Date: Mon, 13 Jul 2015 13:18:51 +0200
-Message-ID: <1436786331-5188-1-git-send-email-javier@osg.samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-samsung-soc@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, Kukjin Kim <kgene@kernel.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Javier Martinez Canillas <javier@osg.samsung.com>
+From: Barry Song <21cnbao@gmail.com>
+Subject: [PATCH 1/2] serial: sirf: workaround rx process to avoid possible
+ data loss
+Date: Tue, 14 Jul 2015 00:52:22 +0000
+Message-ID: <1436835143-6697-1-git-send-email-21cnbao@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
+Cc: Qipan Li <Qipan.Li@csr.com>, workgroup.linux@csr.com, linux-arm-kernel@lists.infradead.org, Barry Song <Baohua.Song@csr.com>
 List-Id: linux-serial@vger.kernel.org
 
-Commit 84f57d9e3685 ("tty: serial/samsung: fix modular build") fixed
-build issues when the driver was built as a module. One of those was
-that printascii is only accessible when the driver is built-in.
+From: Qipan Li <Qipan.Li@csr.com>
 
-But there is no need to check for defined(CONFIG_DEBUG_LL) since the
-SERIAL_SAMSUNG_DEBUG Kconfig symbol already depends on DEBUG_LL.
+when UART works in DMA mode and left bytes in rx fifo less than
+a dma transfer unit, DMA engine can't transfer the bytes out
+to rx DMA buffer. so it need a way to fetch them out and
+flush them into tty buffer in time.
 
-Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
+in the above case, we want UART switch from DMA mode to PIO mode and
+fetch && flush bytes into tty layer buffer until rxfifo become empty,
+after that done let UART switch from PIO mode back to DMA mode.
+(record as method1)
 
+method1 result in the next receive result wrong. for example in PIO part
+of method1, we fetched && pushed X1...X3 bytes, when UART rxfifo newly
+received Y1...Y4 bytes, UART trigger a DMA unit transfer, the DMA unit's
+content is X1...X3Y1 and rxfifo fifo status is empty, so X1X2X3 pushed
+twice by PIO way and DMA way also the bytes Y2Y3Y4 missed. add rxfifo
+reset operation before UART switch back to DMA mode would resolve the
+issue. ([method1 + do fifo reset] record as method2)
+
+before the commit, UART driver use method2. but methd2 have a risk of
+data loss, as if UART's shift register receive a complete byte and
+transfer it into rxfifo before rxfifo reset operation the byte will
+loss.
+
+UART and USP have the similar bits CLEAR_RX_ADDR_EN(uart)/FRADDR_CLR_EN(usp),
+When found UART controller changing I/O to DMA mode, UART controller
+clears the two low bits of read point (rx_fifo_addr[1:0]).
+when enable the bit + method1(record as method3), in above example
+the DMA unit's content is X1...X3Y1 and there are Y2Y3Y4 in rxfifo by
+experiment, we just push bytes in rx DMA buffer.
+
+BTW, the workaround works only for UART receive DMA channel use SINGLE
+DMA mode.
+
+Signed-off-by: Qipan Li <Qipan.Li@csr.com>
+Signed-off-by: Barry Song <Baohua.Song@csr.com>
 ---
+ drivers/tty/serial/sirfsoc_uart.c | 80 ++++++++++++++++++++++++++++++---------
+ drivers/tty/serial/sirfsoc_uart.h |  4 ++
+ 2 files changed, 66 insertions(+), 18 deletions(-)
 
- drivers/tty/serial/samsung.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 67d0c213b1c7..8c963d6d9074 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -53,7 +53,6 @@
- #include "samsung.h"
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index 653cdd5..8cac7ac 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -886,9 +886,13 @@ static void sirfsoc_uart_set_termios(struct uart_port *port,
+ 	else
+ 		wr_regl(port, ureg->sirfsoc_tx_dma_io_ctrl, SIRFUART_IO_MODE);
+ 	if (sirfport->rx_dma_chan)
+-		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl, SIRFUART_DMA_MODE);
++		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
++			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) &
++			~SIRFUART_IO_MODE);
+ 	else
+-		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl, SIRFUART_IO_MODE);
++		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
++			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) |
++			SIRFUART_IO_MODE);
+ 	sirfport->rx_period_time = 20000000;
+ 	/* Reset Rx/Tx FIFO Threshold level for proper baudrate */
+ 	if (set_baud < 1000000)
+@@ -958,9 +962,9 @@ static int sirfsoc_uart_startup(struct uart_port *port)
+ 	wr_regl(port, ureg->sirfsoc_rx_fifo_ctrl, SIRFUART_FIFO_THD(port));
+ 	if (sirfport->rx_dma_chan)
+ 		wr_regl(port, ureg->sirfsoc_rx_fifo_level_chk,
+-			SIRFUART_RX_FIFO_CHK_SC(port->line, 0x4) |
+-			SIRFUART_RX_FIFO_CHK_LC(port->line, 0xe) |
+-			SIRFUART_RX_FIFO_CHK_HC(port->line, 0x1b));
++			SIRFUART_RX_FIFO_CHK_SC(port->line, 0x1) |
++			SIRFUART_RX_FIFO_CHK_LC(port->line, 0x2) |
++			SIRFUART_RX_FIFO_CHK_HC(port->line, 0x4));
+ 	if (sirfport->tx_dma_chan) {
+ 		sirfport->tx_dma_state = TX_DMA_IDLE;
+ 		wr_regl(port, ureg->sirfsoc_tx_fifo_level_chk,
+@@ -981,10 +985,21 @@ static int sirfsoc_uart_startup(struct uart_port *port)
+ 			goto init_rx_err;
+ 		}
+ 	}
++	if (sirfport->uart_reg->uart_type == SIRF_REAL_UART &&
++		sirfport->rx_dma_chan)
++		wr_regl(port, ureg->sirfsoc_swh_dma_io,
++			SIRFUART_CLEAR_RX_ADDR_EN);
++	if (sirfport->uart_reg->uart_type == SIRF_USP_UART &&
++			sirfport->rx_dma_chan)
++		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
++			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) |
++			SIRFSOC_USP_FRADDR_CLR_EN);
+ 	enable_irq(port->irq);
+ 	if (sirfport->rx_dma_chan && !sirfport->is_hrt_enabled) {
+ 		sirfport->is_hrt_enabled = true;
+ 		sirfport->rx_period_time = 20000000;
++		sirfport->rx_last_pos = -1;
++		sirfport->pio_fetch_cnt = 0;
+ 		sirfport->rx_dma_items.xmit.tail =
+ 			sirfport->rx_dma_items.xmit.head = 0;
+ 		hrtimer_start(&sirfport->hrt,
+@@ -1003,6 +1018,9 @@ static void sirfsoc_uart_shutdown(struct uart_port *port)
+ {
+ 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
+ 	struct sirfsoc_register *ureg = &sirfport->uart_reg->uart_reg;
++	struct circ_buf *xmit;
++
++	xmit = &sirfport->rx_dma_items.xmit;
+ 	if (!sirfport->is_atlas7)
+ 		wr_regl(port, ureg->sirfsoc_int_en_reg, 0);
+ 	else
+@@ -1019,8 +1037,10 @@ static void sirfsoc_uart_shutdown(struct uart_port *port)
+ 	if (sirfport->tx_dma_chan)
+ 		sirfport->tx_dma_state = TX_DMA_IDLE;
+ 	if (sirfport->rx_dma_chan && sirfport->is_hrt_enabled) {
+-		while ((rd_regl(port, ureg->sirfsoc_rx_fifo_status) &
+-			SIRFUART_RX_FIFO_MASK) > 0)
++		while (((rd_regl(port, ureg->sirfsoc_rx_fifo_status) &
++			SIRFUART_RX_FIFO_MASK) > sirfport->pio_fetch_cnt) &&
++			!CIRC_CNT(xmit->head, xmit->tail,
++			SIRFSOC_RX_DMA_BUF_SIZE))
+ 			;
+ 		sirfport->is_hrt_enabled = false;
+ 		hrtimer_cancel(&sirfport->hrt);
+@@ -1169,6 +1189,8 @@ static enum hrtimer_restart
+ 	struct tty_struct *tty;
+ 	struct sirfsoc_register *ureg;
+ 	struct circ_buf *xmit;
++	struct sirfsoc_fifo_status *ufifo_st;
++	int max_pio_cnt;
  
- #if	defined(CONFIG_SERIAL_SAMSUNG_DEBUG) &&	\
--	defined(CONFIG_DEBUG_LL) &&		\
- 	!defined(MODULE)
+ 	sirfport = container_of(hrt, struct sirfsoc_uart_port, hrt);
+ 	port = &sirfport->port;
+@@ -1176,9 +1198,16 @@ static enum hrtimer_restart
+ 	tty = port->state->port.tty;
+ 	ureg = &sirfport->uart_reg->uart_reg;
+ 	xmit = &sirfport->rx_dma_items.xmit;
++	ufifo_st = &sirfport->uart_reg->fifo_status;
++
+ 	dmaengine_tx_status(sirfport->rx_dma_chan,
+-		sirfport->rx_dma_items.cookie, &tx_state);
+-	xmit->head = SIRFSOC_RX_DMA_BUF_SIZE - tx_state.residue;
++			sirfport->rx_dma_items.cookie, &tx_state);
++	if (SIRFSOC_RX_DMA_BUF_SIZE - tx_state.residue !=
++		sirfport->rx_last_pos) {
++		xmit->head = SIRFSOC_RX_DMA_BUF_SIZE - tx_state.residue;
++		sirfport->rx_last_pos = xmit->head;
++		sirfport->pio_fetch_cnt = 0;
++	}
+ 	count = CIRC_CNT_TO_END(xmit->head, xmit->tail,
+ 			SIRFSOC_RX_DMA_BUF_SIZE);
+ 	while (count > 0) {
+@@ -1200,23 +1229,38 @@ static enum hrtimer_restart
+ 	 */
+ 	if (!inserted && !count &&
+ 		((rd_regl(port, ureg->sirfsoc_rx_fifo_status) &
+-		SIRFUART_RX_FIFO_MASK) > 0)) {
++		SIRFUART_RX_FIFO_MASK) > sirfport->pio_fetch_cnt)) {
++		dmaengine_pause(sirfport->rx_dma_chan);
+ 		/* switch to pio mode */
+ 		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+ 			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) |
+ 			SIRFUART_IO_MODE);
+-		while ((rd_regl(port, ureg->sirfsoc_rx_fifo_status) &
+-			SIRFUART_RX_FIFO_MASK) > 0) {
+-			if (sirfsoc_uart_pio_rx_chars(port, 16) > 0)
+-				tty_flip_buffer_push(tty->port);
++		/*
++		 * UART controller SWH_DMA_IO register have CLEAR_RX_ADDR_EN
++		 * When found changing I/O to DMA mode, it clears
++		 * two low bits of read point;
++		 * USP have similar FRADDR_CLR_EN bit in USP_RX_DMA_IO_CTRL.
++		 * Fetch data out from rxfifo into DMA buffer in PIO mode,
++		 * while switch back to DMA mode, the data fetched will override
++		 * by DMA, as hardware have a strange behaviour:
++		 * after switch back to DMA mode, check rxfifo status it will
++		 * be the number PIO fetched, so record the fetched data count
++		 * to avoid the repeated fetch
++		 */
++		max_pio_cnt = 3;
++		while (!(rd_regl(port, ureg->sirfsoc_rx_fifo_status) &
++			ufifo_st->ff_empty(port)) && max_pio_cnt--) {
++			xmit->buf[xmit->head] =
++				rd_regl(port, ureg->sirfsoc_rx_fifo_data);
++			xmit->head = (xmit->head + 1) &
++					(SIRFSOC_RX_DMA_BUF_SIZE - 1);
++			sirfport->pio_fetch_cnt++;
+ 		}
+-		wr_regl(port, ureg->sirfsoc_rx_fifo_op, SIRFUART_FIFO_RESET);
+-		wr_regl(port, ureg->sirfsoc_rx_fifo_op, 0);
+-		wr_regl(port, ureg->sirfsoc_rx_fifo_op, SIRFUART_FIFO_START);
+ 		/* switch back to dma mode */
+ 		wr_regl(port, ureg->sirfsoc_rx_dma_io_ctrl,
+ 			rd_regl(port, ureg->sirfsoc_rx_dma_io_ctrl) &
+ 			~SIRFUART_IO_MODE);
++		dmaengine_resume(sirfport->rx_dma_chan);
+ 	}
+ next_hrt:
+ 	hrtimer_forward_now(hrt, ns_to_ktime(sirfport->rx_period_time));
+@@ -1239,7 +1283,7 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	int ret;
+ 	struct dma_slave_config slv_cfg = {
+-		.src_maxburst = 2,
++		.src_maxburst = 1,
+ 	};
+ 	struct dma_slave_config tx_slv_cfg = {
+ 		.dst_maxburst = 2,
+diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
+index eb162b0..671a08d 100644
+--- a/drivers/tty/serial/sirfsoc_uart.h
++++ b/drivers/tty/serial/sirfsoc_uart.h
+@@ -296,6 +296,7 @@ struct sirfsoc_uart_register sirfsoc_uart = {
+ #define SIRFUART_DMA_MODE			0x0
+ #define SIRFUART_RX_DMA_FLUSH			0x4
  
- extern void printascii(const char *);
++#define SIRFUART_CLEAR_RX_ADDR_EN		0x2
+ /* Baud Rate Calculation */
+ #define SIRF_USP_MIN_SAMPLE_DIV			0x1
+ #define SIRF_MIN_SAMPLE_DIV			0xf
+@@ -325,6 +326,7 @@ struct sirfsoc_uart_register sirfsoc_uart = {
+ #define SIRFSOC_USP_ASYNC_DIV2_MASK		0x3f
+ #define SIRFSOC_USP_ASYNC_DIV2_OFFSET		16
+ #define SIRFSOC_USP_LOOP_BACK_CTRL		BIT(2)
++#define SIRFSOC_USP_FRADDR_CLR_EN		BIT(1)
+ /* USP-UART Common */
+ #define SIRFSOC_UART_RX_TIMEOUT(br, to)	(((br) * (((to) + 999) / 1000)) / 1000)
+ #define SIRFUART_RECV_TIMEOUT_VALUE(x)	\
+@@ -431,6 +433,8 @@ struct sirfsoc_uart_port {
+ 	struct hrtimer			hrt;
+ 	bool				is_hrt_enabled;
+ 	unsigned long			rx_period_time;
++	unsigned long			rx_last_pos;
++	unsigned long			pio_fetch_cnt;
+ };
+ 
+ /* Register Access Control */
 -- 
-2.4.3
+2.3.5
