@@ -1,85 +1,94 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH v2] serial: mxs-auart: keep the AUART unit in reset state
- when not in use
-Date: Wed, 15 Jul 2015 18:06:26 +0200
-Message-ID: <55A68502.1090609@i2se.com>
-References: <1436945777-4332-1-git-send-email-jbe@pengutronix.de>
+From: Paul Osmialowski <pawelo@king.net.pl>
+Subject: Re: [PATCH v2 3/9] arm: twr-k70f120m: clock driver for Kinetis SoC
+Date: Wed, 15 Jul 2015 19:34:09 +0200 (CEST)
+Message-ID: <alpine.LNX.2.00.1507151931200.7048@localhost.localdomain>
+References: <1435667250-28299-1-git-send-email-pawelo@king.net.pl> <1435667250-28299-4-git-send-email-pawelo@king.net.pl> <CACRpkdasMqFCwy=ZEvMLeG2Z-xV01dbf8cXaPACP1=RSz2gdjw@mail.gmail.com> <alpine.LNX.2.00.1507150917470.32721@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1436945777-4332-1-git-send-email-jbe@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Juergen Borleis <jbe@pengutronix.de>, linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <alpine.LNX.2.00.1507150917470.32721@localhost.localdomain>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Paul Osmialowski <pawelo@king.net.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jiri Slaby <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-clk@vger.kernel.org, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, dmaengine@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Geert
 List-Id: linux-serial@vger.kernel.org
 
-Hi Juergen,
+Hi Linus,
 
-Am 15.07.2015 um 09:36 schrieb Juergen Borleis:
-> Whenever the UART device driver gets closed from userland, the driver
-> disables the UART unit and then stops its clock to save power.
->
-> The bit which disabled the UART unit is described as:
->
->   "UART Enable. If this bit is set to 1, the UART is enabled. Data
->   transmission and reception occurs for the UART signals. When the
->   UART is disabled in the middle of transmission or reception, it
->   completes the current character before stopping."
->
-> The important part is the "it completes the current character". Whenever
-> a reception is ongoing when the UART gets disabled (including the clock
-> off) the statemachine freezes and "remembers" this state on the next
-> open() and re-enabling of the unit's clock.
->
-> In this case we end up receiving an additional bogus character
-> immediately.
->
-> The solution in this change is to move the AUART unit into its reset
-> state on close() and only release it from its reset state on the next
-> open().
->
-> Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
-> ---
+I had some discussion with an expert here and now I see drawbacks of using 
+struct for regs, I'll turn it into defines as you suggested.
 
-changelog for v2?
+On Wed, 15 Jul 2015, Paul Osmialowski wrote:
 
->  drivers/tty/serial/mxs-auart.c | 38 ++++++++++++++++++++++++++++++--------
->  1 file changed, 30 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-> index 13cf773..13b3e3c 100644
-> --- a/drivers/tty/serial/mxs-auart.c
-> +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -858,6 +858,30 @@ static void mxs_auart_reset(struct uart_port *u)
->  	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
->  }
->  
-> +static void mxs_auart_keep_reset(struct uart_port *u)
-> +{
-> +	int i;
-> +	u32 reg;
-> +
-> +	reg = readl(u->membase + AUART_CTRL0);
-> +	/* if already in reset state, keep it untouched */
-> +	if (reg & AUART_CTRL0_SFTRST)
-> +		return;
-> +
-> +	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
-> +	writel(AUART_CTRL0_SFTRST, u->membase + AUART_CTRL0_SET);
-> +
-> +	for (i = 0; i < 10000; i++) {
-> +		reg = readl(u->membase + AUART_CTRL0);
-> +		/* reset is finished when the clock is gated */
-> +		if (reg & AUART_CTRL0_CLKGATE)
-> +			return;
-> +		udelay(3);
-> +	}
-> +
-> +	dev_err(u->dev, "Failed to reset the unit.");
-
-Sorry, i missed that in my first review. It looks like that the newline
-at the end of the error message is missing.
-
-Regards
-Stefan
+> Hi Linus,
+> 
+> Thanks for all of your comments, I'll consider them during my works on the 
+> next iteration. However, I have doubts about this one:
+> 
+> On Tue, 14 Jul 2015, Linus Walleij wrote:
+> 
+> > On Tue, Jun 30, 2015 at 2:27 PM, Paul Osmialowski <pawelo@king.net.pl> wrote:
+> > 
+> > > Based on K70P256M150SF3RM.pdf K70 Sub-Family Reference Manual, Rev. 3.
+> > >
+> > > Signed-off-by: Paul Osmialowski <pawelo@king.net.pl>
+> > (...)
+> > > +struct kinetis_sim_regs {
+> > > +       u32 sopt1;      /* System Options Register 1 */
+> > > +       u32 rsv0[1024];
+> > > +       u32 sopt2;      /* System Options Register 2 */
+> > > +       u32 rsv1;
+> > > +       u32 sopt4;      /* System Options Register 4 */
+> > > +       u32 sopt5;      /* System Options Register 5 */
+> > > +       u32 sopt6;      /* System Options Register 6 */
+> > > +       u32 sopt7;      /* System Options Register 7 */
+> > > +       u32 rsv2[2];
+> > > +       u32 sdid;       /* System Device Identification Register */
+> > > +       u32 scgc[KINETIS_SIM_CG_NUMREGS];       /* Clock Gating Regs 1...7 */
+> > > +       u32 clkdiv1;    /* System Clock Divider Register 1 */
+> > > +       u32 clkdiv2;    /* System Clock Divider Register 2 */
+> > > +       u32 fcfg1;      /* Flash Configuration Register 1 */
+> > > +       u32 fcfg2;      /* Flash Configuration Register 2 */
+> > > +       u32 uidh;       /* Unique Identification Register High */
+> > > +       u32 uidmh;      /* Unique Identification Register Mid-High */
+> > > +       u32 uidml;      /* Unique Identification Register Mid Low */
+> > > +       u32 uidl;       /* Unique Identification Register Low */
+> > > +       u32 clkdiv3;    /* System Clock Divider Register 3 */
+> > > +       u32 clkdiv4;    /* System Clock Divider Register 4 */
+> > > +       u32 mcr;        /* Misc Control Register */
+> > > +};
+> > 
+> > Now there is this design pattern where you copy the datasheet
+> > register map to a struct again.
+> > 
+> > This is not good if there is a second revision of the hardware and some
+> > registers are shuffled around. IMO it is better to just use #defines
+> > for register
+> > offsets, so you can do exceptions later. Else a new hardware revision
+> > leads to a new struct with new accessor functions etc etc.
+> > 
+> 
+> I don't see how replacing this structure with bunch of defines could make 
+> anyones life easier. As registers are shuffled around due to updated 
+> hardware revision they could be shuffled in this structure too. Doing 
+> this with buch of defines would require eager and careful adaptation of 
+> all the defines. I don't see how this could be easier.
+> 
+> Note that I'm not making any instances of the structure (it is used only 
+> for casting), so shuffling its fields around should not affect the code 
+> that follows.
+> 
+> After recent purge it is only used within this macro:
+> 
+> #define KINETIS_SIM_PTR(base, reg) \
+>         (&(((struct kinetis_sim_regs *)(base))->reg))
+> 
+> ...and used like this:
+> 
+>         ioread32(KINETIS_SIM_PTR(sim, clkdiv1));
+> 
+> IMHO changing the struct internals does not require subsequent changes in 
+> any of those.
+> 
+> Thanks,
+> Paul
+> 
