@@ -1,113 +1,85 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Fix exclusion of work_fn_rx and sci_dma_rx_complete
-Date: Wed, 15 Jul 2015 14:53:56 +0200
-Message-ID: <CAMuHMdXMLaNUYg4zNu5WoyEE2_shTVxuc5ksfLPZvxzbYjNSyA@mail.gmail.com>
-References: <1434302839-31216-1-git-send-email-ykaneko0929@gmail.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH v2] serial: mxs-auart: keep the AUART unit in reset state
+ when not in use
+Date: Wed, 15 Jul 2015 18:06:26 +0200
+Message-ID: <55A68502.1090609@i2se.com>
+References: <1436945777-4332-1-git-send-email-jbe@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1434302839-31216-1-git-send-email-ykaneko0929@gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1436945777-4332-1-git-send-email-jbe@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Juergen Borleis <jbe@pengutronix.de>, linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kaneko-san, Mizuguchi-san,
+Hi Juergen,
 
-On Sun, Jun 14, 2015 at 7:27 PM, Yoshihiro Kaneko <ykaneko0929@gmail.com> wrote:
-> From: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+Am 15.07.2015 um 09:36 schrieb Juergen Borleis:
+> Whenever the UART device driver gets closed from userland, the driver
+> disables the UART unit and then stops its clock to save power.
 >
-> There is a problem when the sci_dma_rx_complete() is processed
-> before cancel process of work_fn_rx() completes by rx_timer_fn().
-> This patch locks work_fn_rx().
+> The bit which disabled the UART unit is described as:
 >
-> Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
-> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-
-Thanks for your patch!
-
-Unfortunately this is not sufficient. work_fn_rx() may race with
-sci_rx_dma_release(), too.
-
+>   "UART Enable. If this bit is set to 1, the UART is enabled. Data
+>   transmission and reception occurs for the UART signals. When the
+>   UART is disabled in the middle of transmission or reception, it
+>   completes the current character before stopping."
+>
+> The important part is the "it completes the current character". Whenever
+> a reception is ongoing when the UART gets disabled (including the clock
+> off) the statemachine freezes and "remembers" this state on the next
+> open() and re-enabling of the unit's clock.
+>
+> In this case we end up receiving an additional bogus character
+> immediately.
+>
+> The solution in this change is to move the AUART unit into its reset
+> state on close() and only release it from its reset state on the next
+> open().
+>
+> Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
 > ---
+
+changelog for v2?
+
+>  drivers/tty/serial/mxs-auart.c | 38 ++++++++++++++++++++++++++++++--------
+>  1 file changed, 30 insertions(+), 8 deletions(-)
 >
-> This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
-> tree.
->
->  drivers/tty/serial/sh-sci.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index b74a644..ef59842 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -1423,14 +1423,16 @@ static void work_fn_rx(struct work_struct *work)
->         struct uart_port *port = &s->port;
->         struct dma_async_tx_descriptor *desc;
->         int new;
-> +       unsigned long flags;
->
-> +       spin_lock_irqsave(&port->lock, flags);
->         if (s->active_rx == s->cookie_rx[0]) {
->                 new = 0;
->         } else if (s->active_rx == s->cookie_rx[1]) {
->                 new = 1;
->         } else {
->                 dev_err(port->dev, "cookie %d not found!\n", s->active_rx);
-> -               return;
-> +               goto out;
->         }
->         desc = s->desc_rx[new];
->
-> @@ -1440,36 +1442,35 @@ static void work_fn_rx(struct work_struct *work)
->                 struct dma_chan *chan = s->chan_rx;
->                 struct shdma_desc *sh_desc = container_of(desc,
->                                         struct shdma_desc, async_tx);
-> -               unsigned long flags;
->                 int count;
->
->                 dmaengine_terminate_all(chan);
->                 dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
->                         sh_desc->partial, sh_desc->cookie);
->
-> -               spin_lock_irqsave(&port->lock, flags);
->                 count = sci_dma_rx_push(s, sh_desc->partial);
-> -               spin_unlock_irqrestore(&port->lock, flags);
->
->                 if (count)
->                         tty_flip_buffer_push(&port->state->port);
->
->                 sci_submit_rx(s);
->
-> -               return;
-> +               goto out;
->         }
->
->         s->cookie_rx[new] = desc->tx_submit(desc);
->         if (s->cookie_rx[new] < 0) {
->                 dev_warn(port->dev, "Failed submitting Rx DMA descriptor\n");
->                 sci_rx_dma_release(s, true);
-> -               return;
-> +               goto out;
->         }
->
->         s->active_rx = s->cookie_rx[!new];
->
->         dev_dbg(port->dev, "%s: cookie %d #%d, new active #%d\n",
->                 __func__, s->cookie_rx[new], new, s->active_rx);
-> +out:
-> +       spin_unlock_irqrestore(&port->lock, flags);
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+> index 13cf773..13b3e3c 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -858,6 +858,30 @@ static void mxs_auart_reset(struct uart_port *u)
+>  	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
 >  }
->
->  static void work_fn_tx(struct work_struct *work)
+>  
+> +static void mxs_auart_keep_reset(struct uart_port *u)
+> +{
+> +	int i;
+> +	u32 reg;
+> +
+> +	reg = readl(u->membase + AUART_CTRL0);
+> +	/* if already in reset state, keep it untouched */
+> +	if (reg & AUART_CTRL0_SFTRST)
+> +		return;
+> +
+> +	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
+> +	writel(AUART_CTRL0_SFTRST, u->membase + AUART_CTRL0_SET);
+> +
+> +	for (i = 0; i < 10000; i++) {
+> +		reg = readl(u->membase + AUART_CTRL0);
+> +		/* reset is finished when the clock is gated */
+> +		if (reg & AUART_CTRL0_CLKGATE)
+> +			return;
+> +		udelay(3);
+> +	}
+> +
+> +	dev_err(u->dev, "Failed to reset the unit.");
 
-Gr{oetje,eeting}s,
+Sorry, i missed that in my first review. It looks like that the newline
+at the end of the error message is missing.
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Regards
+Stefan
