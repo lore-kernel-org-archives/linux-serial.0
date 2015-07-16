@@ -1,94 +1,24 @@
-From: Paul Osmialowski <pawelo@king.net.pl>
-Subject: Re: [PATCH v2 3/9] arm: twr-k70f120m: clock driver for Kinetis SoC
-Date: Wed, 15 Jul 2015 19:34:09 +0200 (CEST)
-Message-ID: <alpine.LNX.2.00.1507151931200.7048@localhost.localdomain>
-References: <1435667250-28299-1-git-send-email-pawelo@king.net.pl> <1435667250-28299-4-git-send-email-pawelo@king.net.pl> <CACRpkdasMqFCwy=ZEvMLeG2Z-xV01dbf8cXaPACP1=RSz2gdjw@mail.gmail.com> <alpine.LNX.2.00.1507150917470.32721@localhost.localdomain>
+From: Juergen Borleis <jbe@pengutronix.de>
+Subject: Re: [PATCH v2] serial: mxs-auart: keep the AUART unit in reset state when not in use
+Date: Thu, 16 Jul 2015 09:41:10 +0200
+Message-ID: <201507160941.11261.jbe@pengutronix.de>
+References: <1436945777-4332-1-git-send-email-jbe@pengutronix.de> <55A68502.1090609@i2se.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <alpine.LNX.2.00.1507150917470.32721@localhost.localdomain>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Paul Osmialowski <pawelo@king.net.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jiri Slaby <jslaby@suse.cz>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-clk@vger.kernel.org, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, dmaengine@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Geert
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55A68502.1090609@i2se.com>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: kernel@pengutronix.de
+Cc: Stefan Wahren <stefan.wahren@i2se.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Linus,
-
-I had some discussion with an expert here and now I see drawbacks of using 
-struct for regs, I'll turn it into defines as you suggested.
-
-On Wed, 15 Jul 2015, Paul Osmialowski wrote:
-
-> Hi Linus,
-> 
-> Thanks for all of your comments, I'll consider them during my works on the 
-> next iteration. However, I have doubts about this one:
-> 
-> On Tue, 14 Jul 2015, Linus Walleij wrote:
-> 
-> > On Tue, Jun 30, 2015 at 2:27 PM, Paul Osmialowski <pawelo@king.net.pl> wrote:
-> > 
-> > > Based on K70P256M150SF3RM.pdf K70 Sub-Family Reference Manual, Rev. 3.
-> > >
-> > > Signed-off-by: Paul Osmialowski <pawelo@king.net.pl>
-> > (...)
-> > > +struct kinetis_sim_regs {
-> > > +       u32 sopt1;      /* System Options Register 1 */
-> > > +       u32 rsv0[1024];
-> > > +       u32 sopt2;      /* System Options Register 2 */
-> > > +       u32 rsv1;
-> > > +       u32 sopt4;      /* System Options Register 4 */
-> > > +       u32 sopt5;      /* System Options Register 5 */
-> > > +       u32 sopt6;      /* System Options Register 6 */
-> > > +       u32 sopt7;      /* System Options Register 7 */
-> > > +       u32 rsv2[2];
-> > > +       u32 sdid;       /* System Device Identification Register */
-> > > +       u32 scgc[KINETIS_SIM_CG_NUMREGS];       /* Clock Gating Regs 1...7 */
-> > > +       u32 clkdiv1;    /* System Clock Divider Register 1 */
-> > > +       u32 clkdiv2;    /* System Clock Divider Register 2 */
-> > > +       u32 fcfg1;      /* Flash Configuration Register 1 */
-> > > +       u32 fcfg2;      /* Flash Configuration Register 2 */
-> > > +       u32 uidh;       /* Unique Identification Register High */
-> > > +       u32 uidmh;      /* Unique Identification Register Mid-High */
-> > > +       u32 uidml;      /* Unique Identification Register Mid Low */
-> > > +       u32 uidl;       /* Unique Identification Register Low */
-> > > +       u32 clkdiv3;    /* System Clock Divider Register 3 */
-> > > +       u32 clkdiv4;    /* System Clock Divider Register 4 */
-> > > +       u32 mcr;        /* Misc Control Register */
-> > > +};
-> > 
-> > Now there is this design pattern where you copy the datasheet
-> > register map to a struct again.
-> > 
-> > This is not good if there is a second revision of the hardware and some
-> > registers are shuffled around. IMO it is better to just use #defines
-> > for register
-> > offsets, so you can do exceptions later. Else a new hardware revision
-> > leads to a new struct with new accessor functions etc etc.
-> > 
-> 
-> I don't see how replacing this structure with bunch of defines could make 
-> anyones life easier. As registers are shuffled around due to updated 
-> hardware revision they could be shuffled in this structure too. Doing 
-> this with buch of defines would require eager and careful adaptation of 
-> all the defines. I don't see how this could be easier.
-> 
-> Note that I'm not making any instances of the structure (it is used only 
-> for casting), so shuffling its fields around should not affect the code 
-> that follows.
-> 
-> After recent purge it is only used within this macro:
-> 
-> #define KINETIS_SIM_PTR(base, reg) \
->         (&(((struct kinetis_sim_regs *)(base))->reg))
-> 
-> ...and used like this:
-> 
->         ioread32(KINETIS_SIM_PTR(sim, clkdiv1));
-> 
-> IMHO changing the struct internals does not require subsequent changes in 
-> any of those.
-> 
-> Thanks,
-> Paul
-> 
+SGkgU3RlZmFuLAoKT24gV2VkbmVzZGF5IDE1IEp1bHkgMjAxNSAxODowNjoyNiBTdGVmYW4gV2Fo
+cmVuIHdyb3RlOgo+IFsuLi5dCj4gPiAtLS0KPgo+IGNoYW5nZWxvZyBmb3IgdjI/Cgo6KSBmb2xs
+b3dzLiBXaWxsIHNlbmQgdjMgd2hpY2ggYWxzbyBjb250YWlucyB0aGUgbWlzc2luZyBuZXdsaW5l
+IGZpeC4KClRoYW5rcywKSnVlcmdlbgoKLS0gClBlbmd1dHJvbml4IGUuSy4gwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqB8IEp1ZXJnZW4gQm9ybGVpcyDCoCDCoCDC
+oCDCoCDCoCDCoCB8CkluZHVzdHJpYWwgTGludXggU29sdXRpb25zIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgfCBodHRwOi8vd3d3LnBlbmd1dHJvbml4LmRlLyDCoHwK
