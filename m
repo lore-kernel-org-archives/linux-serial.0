@@ -1,126 +1,50 @@
-From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Fix exclusion of work_fn_rx and sci_dma_rx_complete
-Date: Tue, 21 Jul 2015 02:06:27 +0900
-Message-ID: <CAH1o70KOBnjvmew0Q2=eeyvLSp8866GdDo=pRG7kZbEfzMb=Kg@mail.gmail.com>
-References: <1434302839-31216-1-git-send-email-ykaneko0929@gmail.com>
-	<CAMuHMdXMLaNUYg4zNu5WoyEE2_shTVxuc5ksfLPZvxzbYjNSyA@mail.gmail.com>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH] Fix data loss in cdc-acm
+Date: Mon, 20 Jul 2015 19:25:46 +0200
+Message-ID: <20150720172546.GF20628@localhost>
+References: <55AC1883.4050605@svenbrauch.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdXMLaNUYg4zNu5WoyEE2_shTVxuc5ksfLPZvxzbYjNSyA@mail.gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <55AC1883.4050605@svenbrauch.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sven Brauch <mail@svenbrauch.de>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Oliver Neukum <oliver@neukum.org>, Peter Hurley <peter@hurleysoftware.com>, Toby Gray <toby.gray@realvnc.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert-san,
+[ +CC: Alan, Oliver, Peter, Toby, linux-serial, linux-usb ]
 
-2015-07-15 21:53 GMT+09:00 Geert Uytterhoeven <geert@linux-m68k.org>:
-> Hi Kaneko-san, Mizuguchi-san,
->
-> On Sun, Jun 14, 2015 at 7:27 PM, Yoshihiro Kaneko <ykaneko0929@gmail.com> wrote:
->> From: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
->>
->> There is a problem when the sci_dma_rx_complete() is processed
->> before cancel process of work_fn_rx() completes by rx_timer_fn().
->> This patch locks work_fn_rx().
->>
->> Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
->> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
->
-> Thanks for your patch!
->
-> Unfortunately this is not sufficient. work_fn_rx() may race with
-> sci_rx_dma_release(), too.
+On Sun, Jul 19, 2015 at 11:37:07PM +0200, Sven Brauch wrote:
+> Since acm_process_read_urb does not check the return value
+> of tty_insert_flip_string, it can happen that not all data
+> is copied from the urb to the tty if the tty buffer
+> is full and throttling does not set in quickly enough. This
+> problem is very evident for devices with high data throughput;
+> for a device with ~12 MB/s of data transfer, I get a few
+> missing kB of data every few MB transferred randomly.
 
-Thanks for your review!
-Your following patch fixes that problem, right?
-[PATCH/RFC v2 23/29] serial: sh-sci: Fix race condition between RX
-work_struct and cleanup
+What kernel version are you using?
 
-Thanks,
-Kaneko
+> To solve this problem, a check is introduced which verifies
+> that indeed all data was copied from the urb to the tty buffer.
+> If that is not the case, the urb is held in a queue instead
+> of resubmitting it to the USB subsystem right away. When new
+> data arrives or the tty is unthrottled, the queue is emptied
+> again (as far as possible).
+> 
+> Effectively, this change will force the transmitting USB device
+> to wait until the tty buffer can accept new data again, instead
+> of discarding the data in this case.
 
->
->> ---
->>
->> This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
->> tree.
->>
->>  drivers/tty/serial/sh-sci.c | 13 +++++++------
->>  1 file changed, 7 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
->> index b74a644..ef59842 100644
->> --- a/drivers/tty/serial/sh-sci.c
->> +++ b/drivers/tty/serial/sh-sci.c
->> @@ -1423,14 +1423,16 @@ static void work_fn_rx(struct work_struct *work)
->>         struct uart_port *port = &s->port;
->>         struct dma_async_tx_descriptor *desc;
->>         int new;
->> +       unsigned long flags;
->>
->> +       spin_lock_irqsave(&port->lock, flags);
->>         if (s->active_rx == s->cookie_rx[0]) {
->>                 new = 0;
->>         } else if (s->active_rx == s->cookie_rx[1]) {
->>                 new = 1;
->>         } else {
->>                 dev_err(port->dev, "cookie %d not found!\n", s->active_rx);
->> -               return;
->> +               goto out;
->>         }
->>         desc = s->desc_rx[new];
->>
->> @@ -1440,36 +1442,35 @@ static void work_fn_rx(struct work_struct *work)
->>                 struct dma_chan *chan = s->chan_rx;
->>                 struct shdma_desc *sh_desc = container_of(desc,
->>                                         struct shdma_desc, async_tx);
->> -               unsigned long flags;
->>                 int count;
->>
->>                 dmaengine_terminate_all(chan);
->>                 dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
->>                         sh_desc->partial, sh_desc->cookie);
->>
->> -               spin_lock_irqsave(&port->lock, flags);
->>                 count = sci_dma_rx_push(s, sh_desc->partial);
->> -               spin_unlock_irqrestore(&port->lock, flags);
->>
->>                 if (count)
->>                         tty_flip_buffer_push(&port->state->port);
->>
->>                 sci_submit_rx(s);
->>
->> -               return;
->> +               goto out;
->>         }
->>
->>         s->cookie_rx[new] = desc->tx_submit(desc);
->>         if (s->cookie_rx[new] < 0) {
->>                 dev_warn(port->dev, "Failed submitting Rx DMA descriptor\n");
->>                 sci_rx_dma_release(s, true);
->> -               return;
->> +               goto out;
->>         }
->>
->>         s->active_rx = s->cookie_rx[!new];
->>
->>         dev_dbg(port->dev, "%s: cookie %d #%d, new active #%d\n",
->>                 __func__, s->cookie_rx[new], new, s->active_rx);
->> +out:
->> +       spin_unlock_irqrestore(&port->lock, flags);
->>  }
->>
->>  static void work_fn_tx(struct work_struct *work)
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+The idea of adding another layer of buffering in the cdc-acm driver has
+been suggested in the past but was rejected (or at least questioned).
+See for example this thread:
+
+	https://lkml.kernel.org/r/20110608164626.22bc893c@lxorguk.ukuu.org.uk
+
+The tty buffers are quite large these days, but could possibly be bumped
+further if needed to give the ldisc some more time to throttle the
+device at very high speeds.
+
+Johan
