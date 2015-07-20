@@ -1,117 +1,164 @@
-From: Shenwei Wang <shenwei.wang@freescale.com>
-Subject: [PATCH 1/1] Serial: imx: add dev_pm_ops to support suspend to ram/disk
-Date: Fri, 17 Jul 2015 15:30:18 -0500
-Message-ID: <1437165018-56026-1-git-send-email-shenwei.wang@freescale.com>
+From: Juergen Borleis <jbe@pengutronix.de>
+Subject: Re: [PATCH v3] serial: mxs-auart: keep the AUART unit in reset state when not in use
+Date: Mon, 20 Jul 2015 10:04:02 +0200
+Message-ID: <201507201004.02646.jbe@pengutronix.de>
+References: <1437032458-8577-1-git-send-email-jbe@pengutronix.de> <55A8FEAE.9010502@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: Text/Plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55A8FEAE.9010502@hurleysoftware.com>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-kernel@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-When system goes into low power states like SUSPEND_MEM and
-HIBERNATION, the hardware IP block may be powered off to reduce
-the power consumption. This power down may cause problems on
-some imx platforms, because the hardware settings are reset to
-its power on default values which may differ from the ones when
-it power off. This patch added the dev_pm_ops and implemented
-two callbacks: suspend_noirq and resume_noirq, which will save
-the necessory hardware parameters right before power down and
-recover them before system uses the hardware.
+Hi Peter,
 
-Signed-off-by: Shenwei Wang <shenwei.wang@freescale.com>
----
- drivers/tty/serial/imx.c | 54 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
+On Friday 17 July 2015 15:10:06 Peter Hurley wrote:
+> On 07/16/2015 03:40 AM, Juergen Borleis wrote:
+> > Whenever the UART device driver gets closed from userland, the driv=
+er
+> > disables the UART unit and then stops its clock to save power.
+> >
+> > The bit which disabled the UART unit is described as:
+> >
+> >   "UART Enable. If this bit is set to 1, the UART is enabled. Data
+> >   transmission and reception occurs for the UART signals. When the
+> >   UART is disabled in the middle of transmission or reception, it
+> >   completes the current character before stopping."
+> >
+> > The important part is the "it completes the current character". Whe=
+never
+> > a reception is ongoing when the UART gets disabled (including the c=
+lock
+> > off) the statemachine freezes and "remembers" this state on the nex=
+t
+> > open() and re-enabling of the unit's clock.
+> >
+> > In this case we end up receiving an additional bogus character
+> > immediately.
+> >
+> > The solution in this change is to move the AUART unit into its rese=
+t
+> > state on close() and only release it from its reset state on the ne=
+xt
+> > open().
+> >
+> > Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
+> > ---
+> >
+> > Notes:
+> >     v3:
+> >      - missing newline added to an error message
+> >
+> >     v2:
+> >      - rename mxs_auart_do_reset() to mxs_auart_keep_reset() to bet=
+ter
+> > reflect what it really does
+> >      - adapt the delay in mxs_auart_keep_reset() to wait for the re=
+set of
+> > the AURAT unit to what is used in mxs_auart_reset()
+>
+> The function names and semantics are not clear. See below.
+>
+> >      - typo fixed
+> >
+> >  drivers/tty/serial/mxs-auart.c | 38
+> > ++++++++++++++++++++++++++++++-------- 1 file changed, 30 insertion=
+s(+),
+> > 8 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/mxs-auart.c
+> > b/drivers/tty/serial/mxs-auart.c index 13cf773..135ee6c 100644
+> > --- a/drivers/tty/serial/mxs-auart.c
+> > +++ b/drivers/tty/serial/mxs-auart.c
+> > @@ -858,6 +858,30 @@ static void mxs_auart_reset(struct uart_port *=
+u)
+> >  	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
+> >  }
+> >
+> > +static void mxs_auart_keep_reset(struct uart_port *u)
+> > +{
+> > +	int i;
+> > +	u32 reg;
+> > +
+> > +	reg =3D readl(u->membase + AUART_CTRL0);
+> > +	/* if already in reset state, keep it untouched */
+> > +	if (reg & AUART_CTRL0_SFTRST)
+> > +		return;
+> > +
+> > +	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
+> > +	writel(AUART_CTRL0_SFTRST, u->membase + AUART_CTRL0_SET);
+> > +
+> > +	for (i =3D 0; i < 10000; i++) {
+> > +		reg =3D readl(u->membase + AUART_CTRL0);
+> > +		/* reset is finished when the clock is gated */
+> > +		if (reg & AUART_CTRL0_CLKGATE)
+> > +			return;
+> > +		udelay(3);
+> > +	}
+> > +
+> > +	dev_err(u->dev, "Failed to reset the unit.\n");
+> > +}
+> > +
+> >  static int mxs_auart_startup(struct uart_port *u)
+> >  {
+> >  	int ret;
+> > @@ -867,7 +891,10 @@ static int mxs_auart_startup(struct uart_port =
+*u)
+> >  	if (ret)
+> >  		return ret;
+> >
+> > -	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
+> > +	/* reset the unit if not aleady done */
+> > +	mxs_auart_keep_reset(u);
+>
+> Why is this performing a soft-reset on open now? Didn't
+> mxs_auart_shutdown() already leave it in this state?
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index c8cfa06..acaaa68 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -216,6 +216,7 @@ struct imx_port {
- 	unsigned int		tx_bytes;
- 	unsigned int		dma_tx_nents;
- 	wait_queue_head_t	dma_wait;
-+	unsigned int            saved_reg[10];
- };
- 
- struct imx_port_ucrs {
-@@ -1986,6 +1987,58 @@ static int serial_imx_remove(struct platform_device *pdev)
- 	return uart_remove_one_port(&imx_reg, &sport->port);
- }
- 
-+static int imx_serial_port_suspend_noirq(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct imx_port *sport = platform_get_drvdata(pdev);
-+
-+	/* Save necessary regs */
-+	clk_enable(sport->clk_ipg);
-+	sport->saved_reg[0] = readl(sport->port.membase + UCR1);
-+	sport->saved_reg[1] = readl(sport->port.membase + UCR2);
-+	sport->saved_reg[2] = readl(sport->port.membase + UCR3);
-+	sport->saved_reg[3] = readl(sport->port.membase + UCR4);
-+	sport->saved_reg[4] = readl(sport->port.membase + UFCR);
-+	sport->saved_reg[5] = readl(sport->port.membase + UESC);
-+	sport->saved_reg[6] = readl(sport->port.membase + UTIM);
-+	sport->saved_reg[7] = readl(sport->port.membase + UBIR);
-+	sport->saved_reg[8] = readl(sport->port.membase + UBMR);
-+	sport->saved_reg[9] = readl(sport->port.membase + IMX21_UTS);
-+	clk_disable(sport->clk_ipg);
-+
-+	pr_debug("0x%p (%d)\r\n", sport->port.membase, sport->port.line);
-+
-+	return 0;
-+}
-+
-+static int imx_serial_port_resume_noirq(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct imx_port *sport = platform_get_drvdata(pdev);
-+
-+	clk_enable(sport->clk_ipg);
-+	writel(sport->saved_reg[4], sport->port.membase + UFCR);
-+	writel(sport->saved_reg[5], sport->port.membase + UESC);
-+	writel(sport->saved_reg[6], sport->port.membase + UTIM);
-+	writel(sport->saved_reg[7], sport->port.membase + UBIR);
-+	writel(sport->saved_reg[8], sport->port.membase + UBMR);
-+	writel(sport->saved_reg[9], sport->port.membase + IMX21_UTS);
-+	writel(sport->saved_reg[0], sport->port.membase + UCR1);
-+	writel(sport->saved_reg[1] | 0x1, sport->port.membase + UCR2);
-+	writel(sport->saved_reg[2], sport->port.membase + UCR3);
-+	writel(sport->saved_reg[3], sport->port.membase + UCR4);
-+	clk_disable(sport->clk_ipg);
-+
-+	pr_debug("0x%p (%d)\r\n", sport->port.membase, sport->port.line);
-+
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops imx_serial_port_pm_ops = {
-+	.suspend_noirq = imx_serial_port_suspend_noirq,
-+	.resume_noirq = imx_serial_port_resume_noirq,
-+};
-+
- static struct platform_driver serial_imx_driver = {
- 	.probe		= serial_imx_probe,
- 	.remove		= serial_imx_remove,
-@@ -1996,6 +2049,7 @@ static struct platform_driver serial_imx_driver = {
- 	.driver		= {
- 		.name	= "imx-uart",
- 		.of_match_table = imx_uart_dt_ids,
-+		.pm	= &imx_serial_port_pm_ops,
- 	},
- };
- 
--- 
-2.5.0.rc2
+The probe function let the device left without reset. That is why I do =
+a reset=20
+here (which is skipped if the device is already in reset state).
+
+> Because if you're performing a soft-reset deliberately as part of the
+> initial condition, you make no mention of that in the changelog.
+
+If I switch the device into the reset state immediately after the probe=
+=20
+function has finished, I could skip this additional reset.
+
+> > +	/* bring it out of reset now */
+> > +	mxs_auart_reset(u);
+>
+> mxs_auart_reset() is really not resetting but simply performing a blo=
+ck
+> enable. Isn't there a generic block enable for the iMX.2x SoCs? (Mayb=
+e
+> there should be)
+>
+> The names of these functions don't match expected operations of start=
+up().
+> Start up should be enabling the device, not keeping it in reset.
+>
+> And "keep reset" immediately followed by "reset" makes no sense.
+
+mxs_auart_reset() is a bad name from the beginning. But I just wanted t=
+o keep=20
+this change small and only change things that are really required.
+I will try with a V4.
+
+Regards,
+Juergen
+
+--=20
+Pengutronix e.K. =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| Juergen Borleis =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 |
+Linux Solutions for Science and Industry =C2=A0 =C2=A0 =C2=A0| Phone: +=
+49-5121-206917-5128 |
+Peiner Str. 6-8, 31137 Hildesheim, Germany =C2=A0 =C2=A0| Fax: =C2=A0 +=
+49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0| http://www.pengutronix.de/ =C2=A0|
