@@ -1,155 +1,126 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 2/2] serial: 8250: Allow to skip autoconfig_irq() for
- a console
-Date: Mon, 20 Jul 2015 12:36:11 -0400
-Message-ID: <55AD237B.1080904@hurleysoftware.com>
-References: <55717224.9060104@cp.jp.nec.com> <557173EC.5000307@cp.jp.nec.com> <559D0FCC.5040107@hurleysoftware.com> <559D1D39.9070405@redhat.com> <559D2AE8.8080603@hurleysoftware.com> <559D2CFB.1060507@redhat.com> <559E075F.8040800@cp.jp.nec.com> <55A05F56.90305@hurleysoftware.com> <55A462D1.3080709@cp.jp.nec.com> <55A56313.4050703@hurleysoftware.com> <55A78042.2090408@cp.jp.nec.com>
+From: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Fix exclusion of work_fn_rx and sci_dma_rx_complete
+Date: Tue, 21 Jul 2015 02:06:27 +0900
+Message-ID: <CAH1o70KOBnjvmew0Q2=eeyvLSp8866GdDo=pRG7kZbEfzMb=Kg@mail.gmail.com>
+References: <1434302839-31216-1-git-send-email-ykaneko0929@gmail.com>
+	<CAMuHMdXMLaNUYg4zNu5WoyEE2_shTVxuc5ksfLPZvxzbYjNSyA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55A78042.2090408@cp.jp.nec.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Cc: Prarit Bhargava <prarit@redhat.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdXMLaNUYg4zNu5WoyEE2_shTVxuc5ksfLPZvxzbYjNSyA@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Taichi,
+Hi Geert-san,
 
-On 07/16/2015 05:58 AM, Taichi Kageyama wrote:
-> On 2015/07/15 4:29, Peter Hurley wrote:
->> On 07/13/2015 09:16 PM, Taichi Kageyama wrote:
->>> On 2015/07/11 9:12, Peter Hurley wrote:
->>>> On 07/09/2015 01:32 AM, Taichi Kageyama wrote:
->>>>> On 2015/07/08 23:00, Prarit Bhargava wrote:
->>>>>> On 07/08/2015 09:51 AM, Peter Hurley wrote:
->>>>>>> On 07/08/2015 08:53 AM, Prarit Bhargava wrote:
->>>>>>>> On 07/08/2015 07:55 AM, Peter Hurley wrote:
->>>>>>>>> On 06/05/2015 06:03 AM, Taichi Kageyama wrote:
->>>>>>>>>> This patch provides a new parameter as a workaround of the following
->>>>>>>>>> problem. It allows us to skip autoconfig_irq() and to use a well-known irq
->>>>>>>>>> number for a console even if CONFIG_SERIAL_8250_DETECT_IRQ is defined.
->>>>>>>>>>
->>>>>>>>>> There're cases where autoconfig_irq() fails during boot.
->>>>>>>>>> In these cases, the console doesn't work in interrupt mode,
->>>>>>>>>> the mode cannot be changed anymore, and "input overrun"
->>>>>>>>>> (which can make operation mistakes) happens easily.
->>>>>>>>>> This problem happens with high rate every boot once it occurs
->>>>>>>>>> because the boot sequence is always almost same.
->>>>>>>>>>
->>>>>>>>>> autoconfig_irq() assumes that a CPU can handle an interrupt from a serial
->>>>>>>>>> during the waiting time, but there're some cases where the CPU cannot
->>>>>>>>>> handle the interrupt for longer than the time. It completely depends on
->>>>>>>>>> how other functions work on the CPU. Ideally, autoconfig_irq() should be
->>>>>>>>>> fixed
->>>>>>>>>
->>>>>
->>>>> Thank you for your comments.
->>>>>
->>>>>>>>> It completely depends on how long some other driver has interrupts disabled,
->>>>>
->>>>> Agree.
->>>>>
->>>>>>>>> which is a problem that needs fixed _in that driver_. autoconfig_irq() does not
->>>>>>>>> need fixing.
->>>>>
->>>>> Peter, ideally, you're right.
->>>>> However, we cannot assume how long other drivers disable interrupts.
->>>>> That's why I introduced this workaround.
->>>>> In my opinion, a console is important and always should be available
->>>>> even if other drivers have a bad behavior.
->>>>
->>>> I have no problem with wanting to make the console more robust, but
->>>> rather with the hacky way this is being done.
->>>
->>> Hi Peter,
->>>
->>> Thank you for your advice.
->>> If there is other way to fix this problem simply,
->>> I also think it's better than the dirty hack.
+2015-07-15 21:53 GMT+09:00 Geert Uytterhoeven <geert@linux-m68k.org>:
+> Hi Kaneko-san, Mizuguchi-san,
+>
+> On Sun, Jun 14, 2015 at 7:27 PM, Yoshihiro Kaneko <ykaneko0929@gmail.com> wrote:
+>> From: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
 >>
->> While module parameters seem like "simple" solutions at the time,
->> they add real maintenance burden, because they establish userspace
->> requirements that must be preserved forever to avoid breakage.
-> 
-> Yeah, I agree with you.
-> 
->>>> Better solutions:
->>>> 1. Fix autoprobing to force irq affinity to autoprobing cpu
->>>
->>> I couldn't make sure which CPU handled serial interrupt
->>> on all platforms before irq# was not known.
->>> Do you know the way to detect which CPU is used for console serial?
+>> There is a problem when the sci_dma_rx_complete() is processed
+>> before cancel process of work_fn_rx() completes by rx_timer_fn().
+>> This patch locks work_fn_rx().
 >>
+>> Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+>> Signed-off-by: Yoshihiro Kaneko <ykaneko0929@gmail.com>
+>
+> Thanks for your patch!
+>
+> Unfortunately this is not sufficient. work_fn_rx() may race with
+> sci_rx_dma_release(), too.
+
+Thanks for your review!
+Your following patch fixes that problem, right?
+[PATCH/RFC v2 23/29] serial: sh-sci: Fix race condition between RX
+work_struct and cleanup
+
+Thanks,
+Kaneko
+
+>
+>> ---
 >>
->> The basic idea would be:
->> 1. disable preemption
->> 2. for each irq descriptor selected for autoprobing, set the irq
->>     affinity to the current processor.
->> 3. probe the i/o port as is done now
->> 4. stop probing
->> 5. re-enable preemption.
-> 
-> Thanks, I think it works.
-> 
->> With this solution, your patch 1/2 wouldn't be required either
->> because the worker thread that disabled interrupts wouldn't be
->> running on the cpu detecting the triggered irq(s).
-> 
-> I still need my patch 1/2 which fixes also other cases (see case2 & 3).
-> I think both port->lock and console_lock are required in your solution.
-> to avoid deadlock because printk() can be called on every context.
-> 
->> I would imagine most or all of this would be done in
->> probe_irq_on(), possibly refactored to perform the preemption
->> disable and irq affinity.
-> 
-> I think introducing new function like "probe_irq_set_affinity()" is better
-> than modifying probe_irq_on(). I cannot test all legacy devices and
-> I don't have any reason to break the code which works for other devices.
-
-That's fine, although most of the arguments for fixing this in the serial
-driver apply equally to other users of probe_irq_on().
-
-
->>> The way is safe for all platforms?
+>> This patch is based on the tty-next branch of Greg Kroah-Hartman's tty
+>> tree.
 >>
->> Please understand though, autoprobing is not safe, period.
->> Even says so in Kconfig.
-> 
-> OK, I'll try to create new patch which makes autoprobing safer as possible.
-> New patch is going to be like below.
->   1. console and port lock
->   2. probe_irq_on()
->   3. probe_irq_set_affinity(&cpumask)
->   4. probe_irq_off()
->   5. port and console unlock
-
-The port->lock can't be taken in this context because hard irq
-has to be disabled with port->lock which defeats the purpose of
-pinning the irq affinity to the current cpu.
-
-What are you concerned about being concurrent with autoconfig_irq()?
-Many operations are excluded by the port->mutex.
-
-
-> I think we don't have to care saving original affinity value and restore it.
-> Probably serial8250_startup->... setup_affinity() resets irq affinity
-> as default every after autoconfig_irq() is called.
-> 
->>>> 2. Fix how the 8250 driver behaves with no irq
->>>
->>> The console works with polling-mode if irq==0.
->>> I think this behavior should not be changed.
+>>  drivers/tty/serial/sh-sci.c | 13 +++++++------
+>>  1 file changed, 7 insertions(+), 6 deletions(-)
 >>
->> So another solution would be to use setserial to set the irq during
->> boot, right?
-> 
-> Right, if it works. Users have to kick setserial before some programs
-> which opens the console and make sure its irq# is valid.
-
-Ubuntu does this as part of boot (restores saved serial setup) but I
-understand other distros might not do this.
-
-Regards,
-Peter Hurley
+>> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+>> index b74a644..ef59842 100644
+>> --- a/drivers/tty/serial/sh-sci.c
+>> +++ b/drivers/tty/serial/sh-sci.c
+>> @@ -1423,14 +1423,16 @@ static void work_fn_rx(struct work_struct *work)
+>>         struct uart_port *port = &s->port;
+>>         struct dma_async_tx_descriptor *desc;
+>>         int new;
+>> +       unsigned long flags;
+>>
+>> +       spin_lock_irqsave(&port->lock, flags);
+>>         if (s->active_rx == s->cookie_rx[0]) {
+>>                 new = 0;
+>>         } else if (s->active_rx == s->cookie_rx[1]) {
+>>                 new = 1;
+>>         } else {
+>>                 dev_err(port->dev, "cookie %d not found!\n", s->active_rx);
+>> -               return;
+>> +               goto out;
+>>         }
+>>         desc = s->desc_rx[new];
+>>
+>> @@ -1440,36 +1442,35 @@ static void work_fn_rx(struct work_struct *work)
+>>                 struct dma_chan *chan = s->chan_rx;
+>>                 struct shdma_desc *sh_desc = container_of(desc,
+>>                                         struct shdma_desc, async_tx);
+>> -               unsigned long flags;
+>>                 int count;
+>>
+>>                 dmaengine_terminate_all(chan);
+>>                 dev_dbg(port->dev, "Read %zu bytes with cookie %d\n",
+>>                         sh_desc->partial, sh_desc->cookie);
+>>
+>> -               spin_lock_irqsave(&port->lock, flags);
+>>                 count = sci_dma_rx_push(s, sh_desc->partial);
+>> -               spin_unlock_irqrestore(&port->lock, flags);
+>>
+>>                 if (count)
+>>                         tty_flip_buffer_push(&port->state->port);
+>>
+>>                 sci_submit_rx(s);
+>>
+>> -               return;
+>> +               goto out;
+>>         }
+>>
+>>         s->cookie_rx[new] = desc->tx_submit(desc);
+>>         if (s->cookie_rx[new] < 0) {
+>>                 dev_warn(port->dev, "Failed submitting Rx DMA descriptor\n");
+>>                 sci_rx_dma_release(s, true);
+>> -               return;
+>> +               goto out;
+>>         }
+>>
+>>         s->active_rx = s->cookie_rx[!new];
+>>
+>>         dev_dbg(port->dev, "%s: cookie %d #%d, new active #%d\n",
+>>                 __func__, s->cookie_rx[new], new, s->active_rx);
+>> +out:
+>> +       spin_unlock_irqrestore(&port->lock, flags);
+>>  }
+>>
+>>  static void work_fn_tx(struct work_struct *work)
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
