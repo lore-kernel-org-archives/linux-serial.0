@@ -1,77 +1,143 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] Fix data loss in cdc-acm
-Date: Tue, 21 Jul 2015 11:18:38 +0200
-Message-ID: <20150721091838.GG20628@localhost>
-References: <55AC1883.4050605@svenbrauch.de>
- <20150720172546.GF20628@localhost>
- <55AD38E5.1090807@svenbrauch.de>
+From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+Subject: Re: [PATCH 2/2] serial: 8250: Allow to skip autoconfig_irq() for a
+ console
+Date: Tue, 21 Jul 2015 09:44:29 +0000
+Message-ID: <55AE147D.5020808@cp.jp.nec.com>
+References: <55717224.9060104@cp.jp.nec.com>
+ <557173EC.5000307@cp.jp.nec.com> <559D0FCC.5040107@hurleysoftware.com>
+ <559D1D39.9070405@redhat.com> <559D2AE8.8080603@hurleysoftware.com>
+ <559D2CFB.1060507@redhat.com> <559E075F.8040800@cp.jp.nec.com>
+ <55A05F56.90305@hurleysoftware.com> <55A462D1.3080709@cp.jp.nec.com>
+ <55A56313.4050703@hurleysoftware.com> <55A78042.2090408@cp.jp.nec.com>
+ <55AD237B.1080904@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55AD38E5.1090807@svenbrauch.de>
+In-Reply-To: <55AD237B.1080904@hurleysoftware.com>
+Content-Language: ja-JP
+Content-ID: <57668661123EC7458C5D8567C508EE4C@gisp.nec.co.jp>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sven Brauch <mail@svenbrauch.de>
-Cc: Johan Hovold <johan@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Oliver Neukum <oliver@neukum.org>, Peter Hurley <peter@hurleysoftware.com>, Toby Gray <toby.gray@realvnc.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Prarit Bhargava <prarit@redhat.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jul 20, 2015 at 08:07:33PM +0200, Sven Brauch wrote:
-> On 20/07/15 19:25, Johan Hovold wrote:
-
-> > The idea of adding another layer of buffering in the cdc-acm driver has
-> > been suggested in the past but was rejected (or at least questioned).
-> > See for example this thread:
-> > 
-> > 	https://lkml.kernel.org/r/20110608164626.22bc893c@lxorguk.ukuu.org.uk
-> Yes, that is indeed pretty much the same problem and the same solution.
-> Answering to the questions brought up in that thread:
-> 
-> > a) Why is your setup filling 64K in the time it takes the throttle
-> > response to occur
-> As far as I understand, the throttle happens only when there's less than
-> 128 bytes of free space in the tty buffer. Data can already be lost
-> before the tty even decides it should start throttling, simply because
-> the throttle threshold is smaller than the amount of data potentially in
-> each urb. Also (excuse my cluelessness) it seems that when exactly the
-> throttling happens depends on some scheduling "jitter" as well.
-> Additionally, the response of the cdc_acm driver to a throttle request
-> is not very prompt; it might have a queue of up to 16kB (16 urbs) pending.
-
-Not really. The n_tty ldisc throttles when *its* buffer space is low,
-but there should still be plenty of room in the tty buffers.
-
-Looks like the ldisc processing is being starved.
-
-> > b) Do we care (is the right thing to do to lose bits anyway at
-> > that point)
-> This I cannot answer, I don't know enough about the architecture or
-> standards. I can just say that for my case, there's a lot of losses;
-> this it not an issue which happens after hours when the system is under
-> heavy load, it happens after just a few seconds reproducably.
-
-In general if data isn't being consumed fast enough we eventually need
-to drop it (unless we can throttle the producer).
-
-But this isn't necessarily the case in your setup.
-
-> > The tty buffers are quite large these days, but could possibly be bumped
-> > further if needed to give the ldisc some more time to throttle the
-> > device at very high speeds.
-> I do not like this solution. It will again be based on luck, and you
-> will still be unable to rely on the delivery guarantee made by the USB
-> stack (at least when using bulk).
-
-See above.
-
-> My suggestion instead stops the host system from accepting any more data
-> from the device when its buffers are full, forcing the device to wait
-> before sending out more data (which many kinds of devices might very
-> well be able to do).
-
-This is what we are supposed to do today, but by relying on the ldisc
-and tty buffers rather than forcing every driver to implement another
-custom throttling mechanism.
-
-But something obviously isn't working as intended.
-
-Johan
+SGkgUGV0ZXIsDQoNCk9uIDIwMTUvMDcvMjEgMTozNiwgUGV0ZXIgSHVybGV5IHdyb3RlOg0KPiBP
+biAwNy8xNi8yMDE1IDA1OjU4IEFNLCBUYWljaGkgS2FnZXlhbWEgd3JvdGU6DQo+PiBPbiAyMDE1
+LzA3LzE1IDQ6MjksIFBldGVyIEh1cmxleSB3cm90ZToNCj4+PiBPbiAwNy8xMy8yMDE1IDA5OjE2
+IFBNLCBUYWljaGkgS2FnZXlhbWEgd3JvdGU6DQo+Pj4+IE9uIDIwMTUvMDcvMTEgOToxMiwgUGV0
+ZXIgSHVybGV5IHdyb3RlOg0KPj4+Pj4gT24gMDcvMDkvMjAxNSAwMTozMiBBTSwgVGFpY2hpIEth
+Z2V5YW1hIHdyb3RlOg0KPj4+Pj4+IE9uIDIwMTUvMDcvMDggMjM6MDAsIFByYXJpdCBCaGFyZ2F2
+YSB3cm90ZToNCj4+Pj4+Pj4gT24gMDcvMDgvMjAxNSAwOTo1MSBBTSwgUGV0ZXIgSHVybGV5IHdy
+b3RlOg0KPj4+Pj4+Pj4gT24gMDcvMDgvMjAxNSAwODo1MyBBTSwgUHJhcml0IEJoYXJnYXZhIHdy
+b3RlOg0KPj4+Pj4+Pj4+IE9uIDA3LzA4LzIwMTUgMDc6NTUgQU0sIFBldGVyIEh1cmxleSB3cm90
+ZToNCj4+Pj4+Pj4+Pj4gT24gMDYvMDUvMjAxNSAwNjowMyBBTSwgVGFpY2hpIEthZ2V5YW1hIHdy
+b3RlOg0KPj4+Pj4+Pj4+Pj4gVGhpcyBwYXRjaCBwcm92aWRlcyBhIG5ldyBwYXJhbWV0ZXIgYXMg
+YSB3b3JrYXJvdW5kIG9mIHRoZSBmb2xsb3dpbmcNCj4+Pj4+Pj4+Pj4+IHByb2JsZW0uIEl0IGFs
+bG93cyB1cyB0byBza2lwIGF1dG9jb25maWdfaXJxKCkgYW5kIHRvIHVzZSBhIHdlbGwta25vd24g
+aXJxDQo+Pj4+Pj4+Pj4+PiBudW1iZXIgZm9yIGEgY29uc29sZSBldmVuIGlmIENPTkZJR19TRVJJ
+QUxfODI1MF9ERVRFQ1RfSVJRIGlzIGRlZmluZWQuDQo+Pj4+Pj4+Pj4+Pg0KPj4+Pj4+Pj4+Pj4g
+VGhlcmUncmUgY2FzZXMgd2hlcmUgYXV0b2NvbmZpZ19pcnEoKSBmYWlscyBkdXJpbmcgYm9vdC4N
+Cj4+Pj4+Pj4+Pj4+IEluIHRoZXNlIGNhc2VzLCB0aGUgY29uc29sZSBkb2Vzbid0IHdvcmsgaW4g
+aW50ZXJydXB0IG1vZGUsDQo+Pj4+Pj4+Pj4+PiB0aGUgbW9kZSBjYW5ub3QgYmUgY2hhbmdlZCBh
+bnltb3JlLCBhbmQgImlucHV0IG92ZXJydW4iDQo+Pj4+Pj4+Pj4+PiAod2hpY2ggY2FuIG1ha2Ug
+b3BlcmF0aW9uIG1pc3Rha2VzKSBoYXBwZW5zIGVhc2lseS4NCj4+Pj4+Pj4+Pj4+IFRoaXMgcHJv
+YmxlbSBoYXBwZW5zIHdpdGggaGlnaCByYXRlIGV2ZXJ5IGJvb3Qgb25jZSBpdCBvY2N1cnMNCj4+
+Pj4+Pj4+Pj4+IGJlY2F1c2UgdGhlIGJvb3Qgc2VxdWVuY2UgaXMgYWx3YXlzIGFsbW9zdCBzYW1l
+Lg0KPj4+Pj4+Pj4+Pj4NCj4+Pj4+Pj4+Pj4+IGF1dG9jb25maWdfaXJxKCkgYXNzdW1lcyB0aGF0
+IGEgQ1BVIGNhbiBoYW5kbGUgYW4gaW50ZXJydXB0IGZyb20gYSBzZXJpYWwNCj4+Pj4+Pj4+Pj4+
+IGR1cmluZyB0aGUgd2FpdGluZyB0aW1lLCBidXQgdGhlcmUncmUgc29tZSBjYXNlcyB3aGVyZSB0
+aGUgQ1BVIGNhbm5vdA0KPj4+Pj4+Pj4+Pj4gaGFuZGxlIHRoZSBpbnRlcnJ1cHQgZm9yIGxvbmdl
+ciB0aGFuIHRoZSB0aW1lLiBJdCBjb21wbGV0ZWx5IGRlcGVuZHMgb24NCj4+Pj4+Pj4+Pj4+IGhv
+dyBvdGhlciBmdW5jdGlvbnMgd29yayBvbiB0aGUgQ1BVLiBJZGVhbGx5LCBhdXRvY29uZmlnX2ly
+cSgpIHNob3VsZCBiZQ0KPj4+Pj4+Pj4+Pj4gZml4ZWQNCj4+Pj4+Pj4+Pj4NCj4+Pj4+Pg0KPj4+
+Pj4+IFRoYW5rIHlvdSBmb3IgeW91ciBjb21tZW50cy4NCj4+Pj4+Pg0KPj4+Pj4+Pj4+PiBJdCBj
+b21wbGV0ZWx5IGRlcGVuZHMgb24gaG93IGxvbmcgc29tZSBvdGhlciBkcml2ZXIgaGFzIGludGVy
+cnVwdHMgZGlzYWJsZWQsDQo+Pj4+Pj4NCj4+Pj4+PiBBZ3JlZS4NCj4+Pj4+Pg0KPj4+Pj4+Pj4+
+PiB3aGljaCBpcyBhIHByb2JsZW0gdGhhdCBuZWVkcyBmaXhlZCBfaW4gdGhhdCBkcml2ZXJfLiBh
+dXRvY29uZmlnX2lycSgpIGRvZXMgbm90DQo+Pj4+Pj4+Pj4+IG5lZWQgZml4aW5nLg0KPj4+Pj4+
+DQo+Pj4+Pj4gUGV0ZXIsIGlkZWFsbHksIHlvdSdyZSByaWdodC4NCj4+Pj4+PiBIb3dldmVyLCB3
+ZSBjYW5ub3QgYXNzdW1lIGhvdyBsb25nIG90aGVyIGRyaXZlcnMgZGlzYWJsZSBpbnRlcnJ1cHRz
+Lg0KPj4+Pj4+IFRoYXQncyB3aHkgSSBpbnRyb2R1Y2VkIHRoaXMgd29ya2Fyb3VuZC4NCj4+Pj4+
+PiBJbiBteSBvcGluaW9uLCBhIGNvbnNvbGUgaXMgaW1wb3J0YW50IGFuZCBhbHdheXMgc2hvdWxk
+IGJlIGF2YWlsYWJsZQ0KPj4+Pj4+IGV2ZW4gaWYgb3RoZXIgZHJpdmVycyBoYXZlIGEgYmFkIGJl
+aGF2aW9yLg0KPj4+Pj4NCj4+Pj4+IEkgaGF2ZSBubyBwcm9ibGVtIHdpdGggd2FudGluZyB0byBt
+YWtlIHRoZSBjb25zb2xlIG1vcmUgcm9idXN0LCBidXQNCj4+Pj4+IHJhdGhlciB3aXRoIHRoZSBo
+YWNreSB3YXkgdGhpcyBpcyBiZWluZyBkb25lLg0KPj4+Pg0KPj4+PiBIaSBQZXRlciwNCj4+Pj4N
+Cj4+Pj4gVGhhbmsgeW91IGZvciB5b3VyIGFkdmljZS4NCj4+Pj4gSWYgdGhlcmUgaXMgb3RoZXIg
+d2F5IHRvIGZpeCB0aGlzIHByb2JsZW0gc2ltcGx5LA0KPj4+PiBJIGFsc28gdGhpbmsgaXQncyBi
+ZXR0ZXIgdGhhbiB0aGUgZGlydHkgaGFjay4NCj4+Pg0KPj4+IFdoaWxlIG1vZHVsZSBwYXJhbWV0
+ZXJzIHNlZW0gbGlrZSAic2ltcGxlIiBzb2x1dGlvbnMgYXQgdGhlIHRpbWUsDQo+Pj4gdGhleSBh
+ZGQgcmVhbCBtYWludGVuYW5jZSBidXJkZW4sIGJlY2F1c2UgdGhleSBlc3RhYmxpc2ggdXNlcnNw
+YWNlDQo+Pj4gcmVxdWlyZW1lbnRzIHRoYXQgbXVzdCBiZSBwcmVzZXJ2ZWQgZm9yZXZlciB0byBh
+dm9pZCBicmVha2FnZS4NCj4+DQo+PiBZZWFoLCBJIGFncmVlIHdpdGggeW91Lg0KPj4NCj4+Pj4+
+IEJldHRlciBzb2x1dGlvbnM6DQo+Pj4+PiAxLiBGaXggYXV0b3Byb2JpbmcgdG8gZm9yY2UgaXJx
+IGFmZmluaXR5IHRvIGF1dG9wcm9iaW5nIGNwdQ0KPj4+Pg0KPj4+PiBJIGNvdWxkbid0IG1ha2Ug
+c3VyZSB3aGljaCBDUFUgaGFuZGxlZCBzZXJpYWwgaW50ZXJydXB0DQo+Pj4+IG9uIGFsbCBwbGF0
+Zm9ybXMgYmVmb3JlIGlycSMgd2FzIG5vdCBrbm93bi4NCj4+Pj4gRG8geW91IGtub3cgdGhlIHdh
+eSB0byBkZXRlY3Qgd2hpY2ggQ1BVIGlzIHVzZWQgZm9yIGNvbnNvbGUgc2VyaWFsPw0KPj4+DQo+
+Pj4NCj4+PiBUaGUgYmFzaWMgaWRlYSB3b3VsZCBiZToNCj4+PiAxLiBkaXNhYmxlIHByZWVtcHRp
+b24NCj4+PiAyLiBmb3IgZWFjaCBpcnEgZGVzY3JpcHRvciBzZWxlY3RlZCBmb3IgYXV0b3Byb2Jp
+bmcsIHNldCB0aGUgaXJxDQo+Pj4gICAgICBhZmZpbml0eSB0byB0aGUgY3VycmVudCBwcm9jZXNz
+b3IuDQo+Pj4gMy4gcHJvYmUgdGhlIGkvbyBwb3J0IGFzIGlzIGRvbmUgbm93DQo+Pj4gNC4gc3Rv
+cCBwcm9iaW5nDQo+Pj4gNS4gcmUtZW5hYmxlIHByZWVtcHRpb24uDQo+Pg0KPj4gVGhhbmtzLCBJ
+IHRoaW5rIGl0IHdvcmtzLg0KPj4NCj4+PiBXaXRoIHRoaXMgc29sdXRpb24sIHlvdXIgcGF0Y2gg
+MS8yIHdvdWxkbid0IGJlIHJlcXVpcmVkIGVpdGhlcg0KPj4+IGJlY2F1c2UgdGhlIHdvcmtlciB0
+aHJlYWQgdGhhdCBkaXNhYmxlZCBpbnRlcnJ1cHRzIHdvdWxkbid0IGJlDQo+Pj4gcnVubmluZyBv
+biB0aGUgY3B1IGRldGVjdGluZyB0aGUgdHJpZ2dlcmVkIGlycShzKS4NCj4+DQo+PiBJIHN0aWxs
+IG5lZWQgbXkgcGF0Y2ggMS8yIHdoaWNoIGZpeGVzIGFsc28gb3RoZXIgY2FzZXMgKHNlZSBjYXNl
+MiAmIDMpLg0KPj4gSSB0aGluayBib3RoIHBvcnQtPmxvY2sgYW5kIGNvbnNvbGVfbG9jayBhcmUg
+cmVxdWlyZWQgaW4geW91ciBzb2x1dGlvbi4NCj4+IHRvIGF2b2lkIGRlYWRsb2NrIGJlY2F1c2Ug
+cHJpbnRrKCkgY2FuIGJlIGNhbGxlZCBvbiBldmVyeSBjb250ZXh0Lg0KPj4NCj4+PiBJIHdvdWxk
+IGltYWdpbmUgbW9zdCBvciBhbGwgb2YgdGhpcyB3b3VsZCBiZSBkb25lIGluDQo+Pj4gcHJvYmVf
+aXJxX29uKCksIHBvc3NpYmx5IHJlZmFjdG9yZWQgdG8gcGVyZm9ybSB0aGUgcHJlZW1wdGlvbg0K
+Pj4+IGRpc2FibGUgYW5kIGlycSBhZmZpbml0eS4NCj4+DQo+PiBJIHRoaW5rIGludHJvZHVjaW5n
+IG5ldyBmdW5jdGlvbiBsaWtlICJwcm9iZV9pcnFfc2V0X2FmZmluaXR5KCkiIGlzIGJldHRlcg0K
+Pj4gdGhhbiBtb2RpZnlpbmcgcHJvYmVfaXJxX29uKCkuIEkgY2Fubm90IHRlc3QgYWxsIGxlZ2Fj
+eSBkZXZpY2VzIGFuZA0KPj4gSSBkb24ndCBoYXZlIGFueSByZWFzb24gdG8gYnJlYWsgdGhlIGNv
+ZGUgd2hpY2ggd29ya3MgZm9yIG90aGVyIGRldmljZXMuDQo+DQo+IFRoYXQncyBmaW5lLCBhbHRo
+b3VnaCBtb3N0IG9mIHRoZSBhcmd1bWVudHMgZm9yIGZpeGluZyB0aGlzIGluIHRoZSBzZXJpYWwN
+Cj4gZHJpdmVyIGFwcGx5IGVxdWFsbHkgdG8gb3RoZXIgdXNlcnMgb2YgcHJvYmVfaXJxX29uKCku
+DQo+DQo+DQo+Pj4+IFRoZSB3YXkgaXMgc2FmZSBmb3IgYWxsIHBsYXRmb3Jtcz8NCj4+Pg0KPj4+
+IFBsZWFzZSB1bmRlcnN0YW5kIHRob3VnaCwgYXV0b3Byb2JpbmcgaXMgbm90IHNhZmUsIHBlcmlv
+ZC4NCj4+PiBFdmVuIHNheXMgc28gaW4gS2NvbmZpZy4NCj4+DQo+PiBPSywgSSdsbCB0cnkgdG8g
+Y3JlYXRlIG5ldyBwYXRjaCB3aGljaCBtYWtlcyBhdXRvcHJvYmluZyBzYWZlciBhcyBwb3NzaWJs
+ZS4NCj4+IE5ldyBwYXRjaCBpcyBnb2luZyB0byBiZSBsaWtlIGJlbG93Lg0KPj4gICAgMS4gY29u
+c29sZSBhbmQgcG9ydCBsb2NrDQo+PiAgICAyLiBwcm9iZV9pcnFfb24oKQ0KPj4gICAgMy4gcHJv
+YmVfaXJxX3NldF9hZmZpbml0eSgmY3B1bWFzaykNCj4+ICAgIDQuIHByb2JlX2lycV9vZmYoKQ0K
+Pj4gICAgNS4gcG9ydCBhbmQgY29uc29sZSB1bmxvY2sNCj4NCj4gVGhlIHBvcnQtPmxvY2sgY2Fu
+J3QgYmUgdGFrZW4gaW4gdGhpcyBjb250ZXh0IGJlY2F1c2UgaGFyZCBpcnENCj4gaGFzIHRvIGJl
+IGRpc2FibGVkIHdpdGggcG9ydC0+bG9jayB3aGljaCBkZWZlYXRzIHRoZSBwdXJwb3NlIG9mDQo+
+IHBpbm5pbmcgdGhlIGlycSBhZmZpbml0eSB0byB0aGUgY3VycmVudCBjcHUuDQoNCk15IHRlc3Qg
+Y29kZSB1c2VzIHNwaW5fbG9jaygpIGluc3RlYWQgb2Ygc3Bpbl9sb2NrX2lycXNhdmUoKS4NCg0K
+PiBXaGF0IGFyZSB5b3UgY29uY2VybmVkIGFib3V0IGJlaW5nIGNvbmN1cnJlbnQgd2l0aCBhdXRv
+Y29uZmlnX2lycSgpPw0KPiBNYW55IG9wZXJhdGlvbnMgYXJlIGV4Y2x1ZGVkIGJ5IHRoZSBwb3J0
+LT5tdXRleC4NCg0KQWN0dWFsbHkgSSBkb24ndCBoYXZlIGFueSBjb25jZXJucyBhcyBsb25nIGFz
+IGNvbnNvbGVfbG9jaygpIGlzIHVzZWQsDQpidXQgSSB0aG91Z2h0IHByb3RlY3RpbmcgcG9ydCB3
+YXMgYmV0dGVyIGR1cmluZyBhdXRvX2lycQ0Kb3IgcmVnaXN0ZXIgb3BlcmF0aW9ucyBhcyBzYW1l
+IGFzIGF1dG9jb25maWcoKS4NCg0KSSB3YXMgdGhpbmtpbmcgdGhleSBhcmUgdXNlZCBhcyB0aGUg
+Zm9sbG93aW5nIHB1cnBvc2VzOw0KICAgY29uc29sZV9sb2NrKCkNCiAgICArIE1ha2Ugc3VyZSBz
+ZXJpYWw4MjUwX2NvbnNvbGVfd3JpdGUoKSBkb2Vzbid0IGRpc2FibGUgaW50ZXJydXB0LA0KICAg
+ICAgdHJ5IHRvIGdldCBwb3J0LT5sb2NrIG9yIHRvdWNoIHRoZSBjdHJsIHJlZ2lzdGVyIG9mIHRo
+ZSBwb3J0Lg0KICAgICAgIyBzZXJpYWw4MjUwX2NvbnNvbGVfd3JpdGUoKSBjYW4gYmUgY2FsbGVk
+IGluIGFueSBjb250ZXh0Lg0KICAgc3Bpbl9sb2NrKCkNCiAgICArIE1ha2Ugc3VyZSB0aGUgcHJv
+YmluZyBydW5zIG9uIHRoZSBjdXJyZW50IENQVSBvbmx5DQogICAgICB0byBoYW5kbGUgYSBzZXJp
+YWwgaXJxIGJ5IGl0c2VsZiBhZnRlciBzZXR0aW5nIGlycSBhZmZpbml0eS4NCiAgICArIE1ha2Ug
+c3VyZSBhbnkgb3RoZXIgQ1BVcyBkb24ndCB0b3VjaCB0aGUgY3RybCByZWdpc3RlciBvZiB0aGUg
+cG9ydC4NCg0KSXQgc2VlbXMgbXkgdGVzdCBjb2RlIGhhcyBiZWVuIHdvcmtpbmcgZmluZSBzbyBm
+YXIsDQpidXQgbGV0IG1lIGtub3cgaWYgeW91IGhhdmUgYW55IGNvbmNlcm5zIGFib3V0IHVzaW5n
+IHNwaW5fbG9jaygpDQppbnN0ZWFkIG9mIHByZWVtcHRfZGlzYWJsZSgpLg0KDQoNClRoYW5rcywN
+ClRhaWNoaQ0KDQoNCj4+IEkgdGhpbmsgd2UgZG9uJ3QgaGF2ZSB0byBjYXJlIHNhdmluZyBvcmln
+aW5hbCBhZmZpbml0eSB2YWx1ZSBhbmQgcmVzdG9yZSBpdC4NCj4+IFByb2JhYmx5IHNlcmlhbDgy
+NTBfc3RhcnR1cC0+Li4uIHNldHVwX2FmZmluaXR5KCkgcmVzZXRzIGlycSBhZmZpbml0eQ0KPj4g
+YXMgZGVmYXVsdCBldmVyeSBhZnRlciBhdXRvY29uZmlnX2lycSgpIGlzIGNhbGxlZC4NCj4+DQo+
+Pj4+PiAyLiBGaXggaG93IHRoZSA4MjUwIGRyaXZlciBiZWhhdmVzIHdpdGggbm8gaXJxDQo+Pj4+
+DQo+Pj4+IFRoZSBjb25zb2xlIHdvcmtzIHdpdGggcG9sbGluZy1tb2RlIGlmIGlycT09MC4NCj4+
+Pj4gSSB0aGluayB0aGlzIGJlaGF2aW9yIHNob3VsZCBub3QgYmUgY2hhbmdlZC4NCj4+Pg0KPj4+
+IFNvIGFub3RoZXIgc29sdXRpb24gd291bGQgYmUgdG8gdXNlIHNldHNlcmlhbCB0byBzZXQgdGhl
+IGlycSBkdXJpbmcNCj4+PiBib290LCByaWdodD8NCj4+DQo+PiBSaWdodCwgaWYgaXQgd29ya3Mu
+IFVzZXJzIGhhdmUgdG8ga2ljayBzZXRzZXJpYWwgYmVmb3JlIHNvbWUgcHJvZ3JhbXMNCj4+IHdo
+aWNoIG9wZW5zIHRoZSBjb25zb2xlIGFuZCBtYWtlIHN1cmUgaXRzIGlycSMgaXMgdmFsaWQuDQo+
+DQo+IFVidW50dSBkb2VzIHRoaXMgYXMgcGFydCBvZiBib290IChyZXN0b3JlcyBzYXZlZCBzZXJp
+YWwgc2V0dXApIGJ1dCBJDQo+IHVuZGVyc3RhbmQgb3RoZXIgZGlzdHJvcyBtaWdodCBub3QgZG8g
+dGhpcy4NCj4NCj4gUmVnYXJkcywNCj4gUGV0ZXIgSHVybGV5DQo+DQo=
