@@ -1,135 +1,114 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH 1/4] drivers/tty: make serial/sn_console.c driver explicitly non-modular
-Date: Tue, 21 Jul 2015 22:02:15 -0400
-Message-ID: <1437530538-5078-2-git-send-email-paul.gortmaker@windriver.com>
-References: <1437530538-5078-1-git-send-email-paul.gortmaker@windriver.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH -next] serial: etraxfs-uart: Update gpiod API
+Date: Wed, 22 Jul 2015 09:06:59 +0200
+Message-ID: <20150722070659.GK9981@pengutronix.de>
+References: <1437510892-30376-1-git-send-email-linux@roeck-us.net>
+ <20150721210115.GJ9981@pengutronix.de>
+ <55AEC50E.3030202@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1437530538-5078-1-git-send-email-paul.gortmaker@windriver.com>
+Content-Disposition: inline
+In-Reply-To: <55AEC50E.3030202@roeck-us.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-cris-kernel@axis.com, Jesper Nilsson <jesper.nilsson@axis.com>, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-The Kconfig for this option is currently:
+Hello,
 
-config SERIAL_SGI_L1_CONSOLE
-    bool "SGI Altix L1 serial console support"
+On Tue, Jul 21, 2015 at 03:17:50PM -0700, Guenter Roeck wrote:
+> On 07/21/2015 02:01 PM, Uwe Kleine-K=C3=B6nig wrote:
+> >On Tue, Jul 21, 2015 at 01:34:52PM -0700, Guenter Roeck wrote:
+> >>Commit b17d1bf16cc7 ("gpio: make flags mandatory for gpiod_get func=
+tions")
+> >>makes the flags argument to devm_gpiod_get_optional mandatory but d=
+oes not
+> >>update all users. This results in the following build error.
+> >>
+> >>drivers/tty/serial/etraxfs-uart.c:933:16: error:
+> >>	too few arguments to function =E2=80=98devm_gpiod_get_optional=E2=80=
+=99
+> >>
+> >>Fixes: b17d1bf16cc7 ("gpio: make flags mandatory for gpiod_get func=
+tions")
+> >>Cc: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> >>Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> >We discussed this driver while I worked on updating the gpiod API. I
+> >don't care much about this driver, but if you want to do something a=
+bout
+> >the build failure, I'd prefer:
+> >
+> >diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> >index 76e65b714471..3a6a7c235f09 100644
+> >--- a/drivers/tty/serial/Kconfig
+> >+++ b/drivers/tty/serial/Kconfig
+> >@@ -1066,6 +1066,7 @@ config SERIAL_VT8500_CONSOLE
+> >  config SERIAL_ETRAXFS
+> >  	bool "ETRAX FS serial port support"
+> >  	depends on ETRAX_ARCH_V32 && OF
+> >+	depends on BROKEN
+> >  	select SERIAL_CORE
+> >
+> >  config SERIAL_ETRAXFS_CONSOLE
+> >
+> >Best regards
+> >Uwe
+> >
+>=20
+> Uwe,
+>=20
+> I understand the value of BROKEN, but I do not think it would be
+> appropriate here. It would be appropriate for a driver which is reall=
+y
+> broken, not one that doesn't build anymore because an API it uses
+> was updated and the driver code wasn't updated for some reason.
+>=20
+> With your suggested patch I would no longer be able to run my qemu te=
+sts
+> for this architecture, which I would not entirely be happy about.
+>=20
+> You may not care, but maybe others do.
+>=20
+> Makes me wonder: It used to be that API changes were handled by those
+> making the API changes, not by those responsible for the code using
+> the API. Has this changed recently, ie is it now acceptable to not
+> update all callers of a modified API (on purpose, as it looks like
+> it was done here) ?
+While I stumbled over the calls to gpiod_get variants in the etraxfs
+serial driver I noticed several problems with that driver. I pointed
+them out in
 
-...meaning that it currently is not being built as a module by anyone.
-Lets remove the orphaned module code, so that when reading the
-driver there is no doubt it is builtin-only.  We could consider
-making it tristate, but the above bool has been there since before
-the start of git history, which isn't all that surprising, since
-consoles are typically critical to have at early boot.  So adding
-tristate is really of no value here.
+	http://www.spinics.net/lists/linux-serial/msg17794.html
 
-Since module_init translates to device_initcall in the non-modular
-case, the init ordering remains unchanged with this commit.
+=2E If you read the follow-ups Jesper Nilsson then said:
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
----
- drivers/tty/serial/sn_console.c | 32 +++++++++-----------------------
- 1 file changed, 9 insertions(+), 23 deletions(-)
+	I can push a patch that just drops all signal handling (since
+	it's bogus ATM), or you can ignore the driver as currently
+	implemented.
 
-diff --git a/drivers/tty/serial/sn_console.c b/drivers/tty/serial/sn_console.c
-index 33e94e56dcdb..d4692d888e9d 100644
---- a/drivers/tty/serial/sn_console.c
-+++ b/drivers/tty/serial/sn_console.c
-@@ -42,7 +42,7 @@
- #include <linux/tty_flip.h>
- #include <linux/serial.h>
- #include <linux/console.h>
--#include <linux/module.h>
-+#include <linux/init.h>
- #include <linux/sysrq.h>
- #include <linux/circ_buf.h>
- #include <linux/serial_reg.h>
-@@ -659,7 +659,7 @@ static void sn_sal_timer_poll(unsigned long data)
-  * @port: Our sn_cons_port (which contains the uart port)
-  *
-  * So this is used by sn_sal_serial_console_init (early on, before we're
-- * registered with serial core).  It's also used by sn_sal_module_init
-+ * registered with serial core).  It's also used by sn_sal_init
-  * right after we've registered with serial core.  The later only happens
-  * if we didn't already come through here via sn_sal_serial_console_init.
-  *
-@@ -709,7 +709,7 @@ static void __init sn_sal_switch_to_asynch(struct sn_cons_port *port)
-  * sn_sal_switch_to_interrupts - Switch to interrupt driven mode
-  * @port: Our sn_cons_port (which contains the uart port)
-  *
-- * In sn_sal_module_init, after we're registered with serial core and
-+ * In sn_sal_init, after we're registered with serial core and
-  * the port is added, this function is called to switch us to interrupt
-  * mode.  We were previously in asynch/polling mode (using init_timer).
-  *
-@@ -773,7 +773,7 @@ static struct uart_driver sal_console_uart = {
- };
- 
- /**
-- * sn_sal_module_init - When the kernel loads us, get us rolling w/ serial core
-+ * sn_sal_init - When the kernel loads us, get us rolling w/ serial core
-  *
-  * Before this is called, we've been printing kernel messages in a special
-  * early mode not making use of the serial core infrastructure.  When our
-@@ -781,7 +781,7 @@ static struct uart_driver sal_console_uart = {
-  * core and try to enable interrupt driven mode.
-  *
-  */
--static int __init sn_sal_module_init(void)
-+static int __init sn_sal_init(void)
- {
- 	int retval;
- 
-@@ -811,7 +811,7 @@ static int __init sn_sal_module_init(void)
- 
- 	if (uart_register_driver(&sal_console_uart) < 0) {
- 		printk
--		    ("ERROR sn_sal_module_init failed uart_register_driver, line %d\n",
-+		    ("ERROR sn_sal_init failed uart_register_driver, line %d\n",
- 		     __LINE__);
- 		return -ENODEV;
- 	}
-@@ -832,33 +832,19 @@ static int __init sn_sal_module_init(void)
- 
- 	/* when this driver is compiled in, the console initialization
- 	 * will have already switched us into asynchronous operation
--	 * before we get here through the module initcalls */
-+	 * before we get here through the initcalls */
- 	if (!sal_console_port.sc_is_asynch) {
- 		sn_sal_switch_to_asynch(&sal_console_port);
- 	}
- 
--	/* at this point (module_init) we can try to turn on interrupts */
-+	/* at this point (device_init) we can try to turn on interrupts */
- 	if (!IS_RUNNING_ON_SIMULATOR()) {
- 		sn_sal_switch_to_interrupts(&sal_console_port);
- 	}
- 	sn_process_input = 1;
- 	return 0;
- }
--
--/**
-- * sn_sal_module_exit - When we're unloaded, remove the driver/port
-- *
-- */
--static void __exit sn_sal_module_exit(void)
--{
--	del_timer_sync(&sal_console_port.sc_timer);
--	uart_remove_one_port(&sal_console_uart, &sal_console_port.sc_port);
--	uart_unregister_driver(&sal_console_uart);
--	misc_deregister(&misc);
--}
--
--module_init(sn_sal_module_init);
--module_exit(sn_sal_module_exit);
-+device_initcall(sn_sal_init);
- 
- /**
-  * puts_raw_fixed - sn_sal_console_write helper for adding \r's as required
--- 
-2.2.1
+I explicitly did the latter. Apart from that single driver I fixed all
+users. @Jesper: You said you poked Niklas to care for that. Any news
+from that front?
+
+I'm all for the usual habit that API changes should be handled by the
+API changer. But if the code was already relying on undefined behaviour
+before the change and fixing that needs testing on the respective
+hardware, I think pushing the needed work back to the driver owner is
+fine. IMHO a simple build fix that doesn't fix the brokeness isn't that
+helpful here.
+
+Having said that I don't care for that driver. So if you say it's good
+enough for you to simply add GPIOD_ASIS and the responsible maintainers
+are ok, too, I won't stand in the way.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig     =
+       |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
