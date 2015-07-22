@@ -1,73 +1,122 @@
-From: Sudeep Holla <sudeep.holla@arm.com>
-Subject: Re: [PATCH v3 01/13] of: earlycon: Fix 'stdout-path' with ':' path terminator
-Date: Wed, 22 Jul 2015 11:16:09 +0100
-Message-ID: <CAPKp9uYXyX919=A6T7hNa1YrLG=dMhw9a0fP8G95F6H6fr47bA@mail.gmail.com>
-References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
-	<1428515119-25248-2-git-send-email-peter@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 1/4] serial: 8250_dw: Add support for big-endian MMIO
+ accesses
+Date: Wed, 22 Jul 2015 08:19:00 -0400
+Message-ID: <55AF8A34.2060900@hurleysoftware.com>
+References: <1437557699-25722-1-git-send-email-noamc@ezchip.com> <1437557699-25722-2-git-send-email-noamc@ezchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1428515119-25248-2-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1437557699-25722-2-git-send-email-noamc@ezchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, linux-serial@vger.kernel.org, open list <linux-kernel@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Leif Lindholm <leif.lindholm@linaro.org>
+To: Noam Camus <noamc@ezchip.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alexey.Brodkin@synopsys.com, vgupta@synopsys.com, gregkh@linuxfoundation.org, jslaby@suse.com
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Apr 8, 2015 at 6:45 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> stdout-path defines ':' as a path terminator and commit 75c28c09af99a
-> ("of: add optional options parameter to of_find_node_by_path()") added
-> the necessary support to parse paths terminated with ':'.
-> commit 7914a7c5651a5 ("of: support passing console options with
-> stdout-path") added options string support to the stdout-path property,
-> which broke earlycon.
->
-> Add the same support to earlycon to process 'stdout-path' properties
-> which contain an options string.
->
+Hi Noam,
 
-Any update on this patch ? Without this earlycon fails to parse stdout-path
-with baud separated by ':'
+On 07/22/2015 05:34 AM, Noam Camus wrote:
+> From: Noam Camus <noamc@ezchip.com>
+> 
+> Add support for UPIO_MEM32BE in addition to UPIO_MEM32.
+
+This is not an adequate changelog.
+Please describe the refactoring.
 
 Regards,
-sudeep
+Peter Hurley
 
-> Requires: "libfdt: Add fdt_path_offset_namelen()"
-> Cc: Leif Lindholm <leif.lindholm@linaro.org>
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> Signed-off-by: Noam Camus <noamc@ezchip.com>
 > ---
->  drivers/of/fdt.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index 3a896c9..7cef9f9 100644
-> --- a/drivers/of/fdt.c
-> +++ b/drivers/of/fdt.c
-> @@ -765,7 +765,7 @@ extern struct of_device_id __earlycon_of_table[];
->  static int __init early_init_dt_scan_chosen_serial(void)
+>  drivers/tty/serial/8250/8250_dw.c |   42 ++++++++++++++++++++++++++++++------
+>  1 files changed, 35 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index d48b506..fe0b487 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -173,15 +173,13 @@ static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
+>  }
+>  #endif /* CONFIG_64BIT */
+>  
+> -static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+> +static void dw8250_check_control(struct uart_port *p, int offset, int value)
 >  {
->         int offset;
-> -       const char *p;
-> +       const char *p, *q;
->         int l;
->         const struct of_device_id *match = __earlycon_of_table;
->         const void *fdt = initial_boot_params;
-> @@ -782,8 +782,10 @@ static int __init early_init_dt_scan_chosen_serial(void)
->         if (!p || !l)
->                 return -ENOENT;
->
-> +       q = strchrnul(p, ':');
+>  	struct dw8250_data *d = p->private_data;
+>  
+>  	if (offset == UART_MCR)
+>  		d->last_mcr = value;
+>  
+> -	writel(value, p->membase + (offset << p->regshift));
+> -
+>  	/* Make sure LCR write wasn't ignored */
+>  	if (offset == UART_LCR) {
+>  		int tries = 1000;
+> @@ -190,7 +188,12 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+>  			if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
+>  				return;
+>  			dw8250_force_idle(p);
+> -			writel(value, p->membase + (UART_LCR << p->regshift));
+> +			if (p->iotype == UPIO_MEM32BE)
+> +				iowrite32be(value,
+> +					p->membase + (UART_LCR << p->regshift));
+> +			else
+> +				writel(value,
+> +					p->membase + (UART_LCR << p->regshift));
+>  		}
+>  		/*
+>  		 * FIXME: this deadlocks if port->lock is already held
+> @@ -199,6 +202,12 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+>  	}
+>  }
+>  
+> +static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+> +{
+> +	writel(value, p->membase + (offset << p->regshift));
+> +	dw8250_check_control(p, offset, value);
+> +}
 > +
->         /* Get the node specified by stdout-path */
-> -       offset = fdt_path_offset(fdt, p);
-> +       offset = fdt_path_offset_namelen(fdt, p, (int)(q - p));
->         if (offset < 0)
->                 return -ENODEV;
->
-> --
-> 2.3.5
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+>  static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
+>  {
+>  	unsigned int value = readl(p->membase + (offset << p->regshift));
+> @@ -206,6 +215,19 @@ static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
+>  	return dw8250_modify_msr(p, offset, value);
+>  }
+>  
+> +static void dw8250_serial_out32be(struct uart_port *p, int offset, int value)
+> +{
+> +	iowrite32be(value, p->membase + (offset << p->regshift));
+> +	dw8250_check_control(p, offset, value);
+> +}
+> +
+> +static unsigned int dw8250_serial_in32be(struct uart_port *p, int offset)
+> +{
+> +	unsigned int value = ioread32be(p->membase + (offset << p->regshift));
+> +
+> +	return dw8250_modify_msr(p, offset, value);
+> +}
+> +
+>  static int dw8250_handle_irq(struct uart_port *p)
+>  {
+>  	struct dw8250_data *d = p->private_data;
+> @@ -322,9 +344,15 @@ static int dw8250_probe_of(struct uart_port *p,
+>  		case 1:
+>  			break;
+>  		case 4:
+> -			p->iotype = UPIO_MEM32;
+> -			p->serial_in = dw8250_serial_in32;
+> -			p->serial_out = dw8250_serial_out32;
+> +			p->iotype = of_device_is_big_endian(np) ?
+> +				    UPIO_MEM32BE : UPIO_MEM32;
+> +			if (p->iotype == UPIO_MEM32) {
+> +				p->serial_in = dw8250_serial_in32;
+> +				p->serial_out = dw8250_serial_out32;
+> +			} else {
+> +				p->serial_in = dw8250_serial_in32be;
+> +				p->serial_out = dw8250_serial_out32be;
+> +			}
+>  			break;
+>  		default:
+>  			dev_err(p->dev, "unsupported reg-io-width (%u)\n", val);
+> 
