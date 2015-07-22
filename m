@@ -1,106 +1,41 @@
-From: Shenwei Wang <Shenwei.Wang@freescale.com>
-Subject: RE: [PATCH 1/1] Serial: imx: add dev_pm_ops to support suspend to
- ram/disk
-Date: Wed, 22 Jul 2015 18:11:17 +0000
-Message-ID: <BL2PR03MB3703AB8E97B8E39801A2E4A83830@BL2PR03MB370.namprd03.prod.outlook.com>
-References: <1437165018-56026-1-git-send-email-shenwei.wang@freescale.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] Fix data loss in cdc-acm
+Date: Wed, 22 Jul 2015 18:12:36 -0400
+Message-ID: <55B01554.90201@hurleysoftware.com>
+References: <55AC1883.4050605@svenbrauch.de> <20150720172546.GF20628@localhost> <55AD38E5.1090807@svenbrauch.de> <1437486195.3823.13.camel@suse.com> <55AEBD06.6020402@svenbrauch.de> <55AED708.903@hurleysoftware.com> <55AEE805.9050204@svenbrauch.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1437165018-56026-1-git-send-email-shenwei.wang@freescale.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55AEE805.9050204@svenbrauch.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sven Brauch <mail@svenbrauch.de>
+Cc: Oliver Neukum <oneukum@suse.com>, Johan Hovold <johan@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Toby Gray <toby.gray@realvnc.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-S2luZCBQSU5HLg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IGxpbnV4
-LWFybS1rZXJuZWwgW21haWx0bzpsaW51eC1hcm0ta2VybmVsLWJvdW5jZXNAbGlzdHMuaW5mcmFk
-ZWFkLm9yZ10gT24NCj4gQmVoYWxmIE9mIFNoZW53ZWkgV2FuZw0KPiBTZW50OiAyMDE1xOo31MIx
-N8jVIDE1OjMwDQo+IFRvOiBncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZw0KPiBDYzogbGludXgt
-YXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwu
-b3JnDQo+IFN1YmplY3Q6IFtQQVRDSCAxLzFdIFNlcmlhbDogaW14OiBhZGQgZGV2X3BtX29wcyB0
-byBzdXBwb3J0IHN1c3BlbmQgdG8gcmFtL2Rpc2sNCj4gDQo+IFdoZW4gc3lzdGVtIGdvZXMgaW50
-byBsb3cgcG93ZXIgc3RhdGVzIGxpa2UgU1VTUEVORF9NRU0gYW5kIEhJQkVSTkFUSU9OLA0KPiB0
-aGUgaGFyZHdhcmUgSVAgYmxvY2sgbWF5IGJlIHBvd2VyZWQgb2ZmIHRvIHJlZHVjZSB0aGUgcG93
-ZXIgY29uc3VtcHRpb24uDQo+IFRoaXMgcG93ZXIgZG93biBtYXkgY2F1c2UgcHJvYmxlbXMgb24g
-c29tZSBpbXggcGxhdGZvcm1zLCBiZWNhdXNlIHRoZQ0KPiBoYXJkd2FyZSBzZXR0aW5ncyBhcmUg
-cmVzZXQgdG8gaXRzIHBvd2VyIG9uIGRlZmF1bHQgdmFsdWVzIHdoaWNoIG1heSBkaWZmZXIgZnJv
-bQ0KPiB0aGUgb25lcyB3aGVuIGl0IHBvd2VyIG9mZi4gVGhpcyBwYXRjaCBhZGRlZCB0aGUgZGV2
-X3BtX29wcyBhbmQgaW1wbGVtZW50ZWQNCj4gdHdvIGNhbGxiYWNrczogc3VzcGVuZF9ub2lycSBh
-bmQgcmVzdW1lX25vaXJxLCB3aGljaCB3aWxsIHNhdmUgdGhlIG5lY2Vzc29yeQ0KPiBoYXJkd2Fy
-ZSBwYXJhbWV0ZXJzIHJpZ2h0IGJlZm9yZSBwb3dlciBkb3duIGFuZCByZWNvdmVyIHRoZW0gYmVm
-b3JlIHN5c3RlbQ0KPiB1c2VzIHRoZSBoYXJkd2FyZS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFNo
-ZW53ZWkgV2FuZyA8c2hlbndlaS53YW5nQGZyZWVzY2FsZS5jb20+DQo+IC0tLQ0KPiAgZHJpdmVy
-cy90dHkvc2VyaWFsL2lteC5jIHwgNTQNCj4gKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrDQo+ICAxIGZpbGUgY2hhbmdlZCwgNTQgaW5zZXJ0aW9ucygrKQ0K
-PiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5
-L3NlcmlhbC9pbXguYyBpbmRleA0KPiBjOGNmYTA2Li5hY2FhYTY4IDEwMDY0NA0KPiAtLS0gYS9k
-cml2ZXJzL3R0eS9zZXJpYWwvaW14LmMNCj4gKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5j
-DQo+IEBAIC0yMTYsNiArMjE2LDcgQEAgc3RydWN0IGlteF9wb3J0IHsNCj4gIAl1bnNpZ25lZCBp
-bnQJCXR4X2J5dGVzOw0KPiAgCXVuc2lnbmVkIGludAkJZG1hX3R4X25lbnRzOw0KPiAgCXdhaXRf
-cXVldWVfaGVhZF90CWRtYV93YWl0Ow0KPiArCXVuc2lnbmVkIGludCAgICAgICAgICAgIHNhdmVk
-X3JlZ1sxMF07DQo+ICB9Ow0KPiANCj4gIHN0cnVjdCBpbXhfcG9ydF91Y3JzIHsNCj4gQEAgLTE5
-ODYsNiArMTk4Nyw1OCBAQCBzdGF0aWMgaW50IHNlcmlhbF9pbXhfcmVtb3ZlKHN0cnVjdCBwbGF0
-Zm9ybV9kZXZpY2UNCj4gKnBkZXYpDQo+ICAJcmV0dXJuIHVhcnRfcmVtb3ZlX29uZV9wb3J0KCZp
-bXhfcmVnLCAmc3BvcnQtPnBvcnQpOyAgfQ0KPiANCj4gK3N0YXRpYyBpbnQgaW14X3NlcmlhbF9w
-b3J0X3N1c3BlbmRfbm9pcnEoc3RydWN0IGRldmljZSAqZGV2KSB7DQo+ICsJc3RydWN0IHBsYXRm
-b3JtX2RldmljZSAqcGRldiA9IHRvX3BsYXRmb3JtX2RldmljZShkZXYpOw0KPiArCXN0cnVjdCBp
-bXhfcG9ydCAqc3BvcnQgPSBwbGF0Zm9ybV9nZXRfZHJ2ZGF0YShwZGV2KTsNCj4gKw0KPiArCS8q
-IFNhdmUgbmVjZXNzYXJ5IHJlZ3MgKi8NCj4gKwljbGtfZW5hYmxlKHNwb3J0LT5jbGtfaXBnKTsN
-Cj4gKwlzcG9ydC0+c2F2ZWRfcmVnWzBdID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVD
-UjEpOw0KPiArCXNwb3J0LT5zYXZlZF9yZWdbMV0gPSByZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNl
-ICsgVUNSMik7DQo+ICsJc3BvcnQtPnNhdmVkX3JlZ1syXSA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1l
-bWJhc2UgKyBVQ1IzKTsNCj4gKwlzcG9ydC0+c2F2ZWRfcmVnWzNdID0gcmVhZGwoc3BvcnQtPnBv
-cnQubWVtYmFzZSArIFVDUjQpOw0KPiArCXNwb3J0LT5zYXZlZF9yZWdbNF0gPSByZWFkbChzcG9y
-dC0+cG9ydC5tZW1iYXNlICsgVUZDUik7DQo+ICsJc3BvcnQtPnNhdmVkX3JlZ1s1XSA9IHJlYWRs
-KHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVRVNDKTsNCj4gKwlzcG9ydC0+c2F2ZWRfcmVnWzZdID0g
-cmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVUSU0pOw0KPiArCXNwb3J0LT5zYXZlZF9yZWdb
-N10gPSByZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUJJUik7DQo+ICsJc3BvcnQtPnNhdmVk
-X3JlZ1s4XSA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQk1SKTsNCj4gKwlzcG9ydC0+
-c2F2ZWRfcmVnWzldID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIElNWDIxX1VUUyk7DQo+
-ICsJY2xrX2Rpc2FibGUoc3BvcnQtPmNsa19pcGcpOw0KPiArDQo+ICsJcHJfZGVidWcoIjB4JXAg
-KCVkKVxyXG4iLCBzcG9ydC0+cG9ydC5tZW1iYXNlLCBzcG9ydC0+cG9ydC5saW5lKTsNCj4gKw0K
-PiArCXJldHVybiAwOw0KPiArfQ0KPiArDQo+ICtzdGF0aWMgaW50IGlteF9zZXJpYWxfcG9ydF9y
-ZXN1bWVfbm9pcnEoc3RydWN0IGRldmljZSAqZGV2KSB7DQo+ICsJc3RydWN0IHBsYXRmb3JtX2Rl
-dmljZSAqcGRldiA9IHRvX3BsYXRmb3JtX2RldmljZShkZXYpOw0KPiArCXN0cnVjdCBpbXhfcG9y
-dCAqc3BvcnQgPSBwbGF0Zm9ybV9nZXRfZHJ2ZGF0YShwZGV2KTsNCj4gKw0KPiArCWNsa19lbmFi
-bGUoc3BvcnQtPmNsa19pcGcpOw0KPiArCXdyaXRlbChzcG9ydC0+c2F2ZWRfcmVnWzRdLCBzcG9y
-dC0+cG9ydC5tZW1iYXNlICsgVUZDUik7DQo+ICsJd3JpdGVsKHNwb3J0LT5zYXZlZF9yZWdbNV0s
-IHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVRVNDKTsNCj4gKwl3cml0ZWwoc3BvcnQtPnNhdmVkX3Jl
-Z1s2XSwgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVUSU0pOw0KPiArCXdyaXRlbChzcG9ydC0+c2F2
-ZWRfcmVnWzddLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUJJUik7DQo+ICsJd3JpdGVsKHNwb3J0
-LT5zYXZlZF9yZWdbOF0sIHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQk1SKTsNCj4gKwl3cml0ZWwo
-c3BvcnQtPnNhdmVkX3JlZ1s5XSwgc3BvcnQtPnBvcnQubWVtYmFzZSArIElNWDIxX1VUUyk7DQo+
-ICsJd3JpdGVsKHNwb3J0LT5zYXZlZF9yZWdbMF0sIHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1Ix
-KTsNCj4gKwl3cml0ZWwoc3BvcnQtPnNhdmVkX3JlZ1sxXSB8IDB4MSwgc3BvcnQtPnBvcnQubWVt
-YmFzZSArIFVDUjIpOw0KPiArCXdyaXRlbChzcG9ydC0+c2F2ZWRfcmVnWzJdLCBzcG9ydC0+cG9y
-dC5tZW1iYXNlICsgVUNSMyk7DQo+ICsJd3JpdGVsKHNwb3J0LT5zYXZlZF9yZWdbM10sIHNwb3J0
-LT5wb3J0Lm1lbWJhc2UgKyBVQ1I0KTsNCj4gKwljbGtfZGlzYWJsZShzcG9ydC0+Y2xrX2lwZyk7
-DQo+ICsNCj4gKwlwcl9kZWJ1ZygiMHglcCAoJWQpXHJcbiIsIHNwb3J0LT5wb3J0Lm1lbWJhc2Us
-IHNwb3J0LT5wb3J0LmxpbmUpOw0KPiArDQo+ICsJcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gK3N0
-YXRpYyBjb25zdCBzdHJ1Y3QgZGV2X3BtX29wcyBpbXhfc2VyaWFsX3BvcnRfcG1fb3BzID0gew0K
-PiArCS5zdXNwZW5kX25vaXJxID0gaW14X3NlcmlhbF9wb3J0X3N1c3BlbmRfbm9pcnEsDQo+ICsJ
-LnJlc3VtZV9ub2lycSA9IGlteF9zZXJpYWxfcG9ydF9yZXN1bWVfbm9pcnEsIH07DQo+ICsNCj4g
-IHN0YXRpYyBzdHJ1Y3QgcGxhdGZvcm1fZHJpdmVyIHNlcmlhbF9pbXhfZHJpdmVyID0gew0KPiAg
-CS5wcm9iZQkJPSBzZXJpYWxfaW14X3Byb2JlLA0KPiAgCS5yZW1vdmUJCT0gc2VyaWFsX2lteF9y
-ZW1vdmUsDQo+IEBAIC0xOTk2LDYgKzIwNDksNyBAQCBzdGF0aWMgc3RydWN0IHBsYXRmb3JtX2Ry
-aXZlciBzZXJpYWxfaW14X2RyaXZlciA9IHsNCj4gIAkuZHJpdmVyCQk9IHsNCj4gIAkJLm5hbWUJ
-PSAiaW14LXVhcnQiLA0KPiAgCQkub2ZfbWF0Y2hfdGFibGUgPSBpbXhfdWFydF9kdF9pZHMsDQo+
-ICsJCS5wbQk9ICZpbXhfc2VyaWFsX3BvcnRfcG1fb3BzLA0KPiAgCX0sDQo+ICB9Ow0KPiANCj4g
-LS0NCj4gMi41LjAucmMyDQo+IA0KPiANCj4gDQo+IF9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fDQo+IGxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0DQo+
-IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZw0KPiBodHRwOi8vbGlzdHMuaW5m
-cmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwNCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFp
-bGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlz
-dHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+Hi Sven,
+
+On 07/21/2015 08:47 PM, Sven Brauch wrote:
+> On 22/07/15 01:34, Peter Hurley wrote:
+>> I'd like to see that data, if you can, which will help me understand
+>> at least the timing.
+> Sure, please see below for the code which produced the output
+> and the actual output. Let me know if you need anything else.
+> This was run with the unmodified version of the driver, i.e. without
+> my patch.
+
+Thanks for this, which confirms that roughly 10.4ms elapses from
+kworker schedule (of input into nearly empty tty buffers) to throttle
+notification.
+
+The premature unthrottle actually leads to the data loss but the throttling
+with a mere 2K left is _way too late_.
+
+10ms is a _really_ long time for a cpu not to attend to a kworker.
+Which raises 2 questions:
+1. What are the termios settings of the tty receiving input? Is it 'raw'
+   mode or typical terminal mode (icanon, echo, etc.) or something else?
+2. Are there RT threads that are hogging cpu time?
+
+Regards,
+Peter Hurley
