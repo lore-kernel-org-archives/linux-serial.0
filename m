@@ -1,14 +1,13 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 2/4] serial: 8250_dw: Add UPF_SKIP_TEST to flags depend
- on device tree
-Date: Wed, 22 Jul 2015 08:20:30 -0400
-Message-ID: <55AF8A8E.9070706@hurleysoftware.com>
-References: <1437557699-25722-1-git-send-email-noamc@ezchip.com> <1437557699-25722-2-git-send-email-noamc@ezchip.com> <1437557699-25722-3-git-send-email-noamc@ezchip.com>
+Subject: Re: [PATCH 3/4] serial: 8250_dw: Add UPF_FIXED_TYPE to flags
+Date: Wed, 22 Jul 2015 08:38:59 -0400
+Message-ID: <55AF8EE3.1040406@hurleysoftware.com>
+References: <1437557699-25722-1-git-send-email-noamc@ezchip.com> <1437557699-25722-2-git-send-email-noamc@ezchip.com> <1437557699-25722-3-git-send-email-noamc@ezchip.com> <1437557699-25722-4-git-send-email-noamc@ezchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1437557699-25722-3-git-send-email-noamc@ezchip.com>
+In-Reply-To: <1437557699-25722-4-git-send-email-noamc@ezchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Noam Camus <noamc@ezchip.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alexey.Brodkin@synopsys.com, vgupta@synopsys.com, gregkh@linuxfoundation.org, jslaby@suse.com
@@ -19,46 +18,42 @@ Hi Noam,
 On 07/22/2015 05:34 AM, Noam Camus wrote:
 > From: Noam Camus <noamc@ezchip.com>
 > 
-> Add support for OF option "no-loopback-test"
-
-Changes to devicetree need to at least get acks from DT maintainers.
-
-Regards,
-Peter Hurley
-
-> use case: simulator which does not implements loopback test mode.
+> Always add UPF_FIXED_TYPE to flags so autoconf() will be skipped.
+> We do that since autoconf() performs many writes to LCR that cause
+> BUSY interrupt.
+> The problem with such interrupt is that driver is not yet called to
+> request_irq() and generic IRQ subsystem will mask the UART line.
 > 
 > Signed-off-by: Noam Camus <noamc@ezchip.com>
 > ---
->  .../bindings/serial/snps-dw-apb-uart.txt           |    2 ++
->  drivers/tty/serial/8250/8250_dw.c                  |    3 +++
->  2 files changed, 5 insertions(+), 0 deletions(-)
+>  drivers/tty/serial/8250/8250_dw.c |    8 ++++++++
+>  1 files changed, 8 insertions(+), 0 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-> index 289c40e..5d16047 100644
-> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-> @@ -33,6 +33,8 @@ Optional properties:
->  - ri-override : Override the RI modem status signal. This signal will always be
->    reported as inactive instead of being obtained from the modem status register.
->    Define this if your serial port does not use this pin.
-> +- no-loopback-test: set to indicate that the port does not implements loopback
-> +  test mode
->  
->  Example:
->  
 > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index fe0b487..1a57105 100644
+> index 1a57105..620f983 100644
 > --- a/drivers/tty/serial/8250/8250_dw.c
 > +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -370,6 +370,9 @@ static int dw8250_probe_of(struct uart_port *p,
->  		up->dma->txconf.dst_maxburst = p->fifosize / 4;
->  	}
+> @@ -362,6 +362,14 @@ static int dw8250_probe_of(struct uart_port *p,
+>  	if (has_ucv)
+>  		dw8250_setup_port(up);
 >  
-> +	if (of_find_property(np, "no-loopback-test", NULL))
-> +		p->flags |= UPF_SKIP_TEST;
+> +	/* Writing to LCR may cause BUSY interrupt before we
+> +	 * register the IRQ line.
+> +	 * Currently autoconf() uses several writes to LCR.
+> +	 * In order to avoid calling to autoconf() always add
+> +	 * following flag.
+> +	 */
+> +	p->flags |= UPF_FIXED_TYPE;
+
+Why only for devicetree DW8250's?  Don't all DW8250's have this LCR "feature"?
+
+And what port type does this id DW8250's as, PORT_8250? Except with fifos,
+autoflow control, dma, etc.?
+
+If the port type is being fixed, then please fix it to a new port type.
+
 > +
->  	if (!of_property_read_u32(np, "reg-shift", &val))
->  		p->regshift = val;
->  
+>  	/* if we have a valid fifosize, try hooking up DMA here */
+>  	if (p->fifosize) {
+>  		up->dma = &data->dma;
 > 
