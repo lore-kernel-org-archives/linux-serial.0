@@ -1,59 +1,50 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 4/4] serial: 8250_dw: use serial_in() and not readl()
-Date: Wed, 22 Jul 2015 08:51:52 -0400
-Message-ID: <55AF91E8.3020903@hurleysoftware.com>
-References: <1437557699-25722-1-git-send-email-noamc@ezchip.com> <1437557699-25722-2-git-send-email-noamc@ezchip.com> <1437557699-25722-3-git-send-email-noamc@ezchip.com> <1437557699-25722-4-git-send-email-noamc@ezchip.com> <1437557699-25722-5-git-send-email-noamc@ezchip.com>
+Subject: Re: [PATCH] Fix data loss in cdc-acm
+Date: Wed, 22 Jul 2015 10:30:24 -0400
+Message-ID: <55AFA900.6040605@hurleysoftware.com>
+References: <55AC1883.4050605@svenbrauch.de>	 <20150720172546.GF20628@localhost> <55AD38E5.1090807@svenbrauch.de>	 <20150721091838.GG20628@localhost> <55AE7714.80306@hurleysoftware.com> <1437554428.5445.0.camel@suse.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1437557699-25722-5-git-send-email-noamc@ezchip.com>
+In-Reply-To: <1437554428.5445.0.camel@suse.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Noam Camus <noamc@ezchip.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alexey.Brodkin@synopsys.com, vgupta@synopsys.com, gregkh@linuxfoundation.org, jslaby@suse.com
+To: Oliver Neukum <oneukum@suse.com>
+Cc: Sven Brauch <mail@svenbrauch.de>, Johan Hovold <johan@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Toby Gray <toby.gray@realvnc.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Noam,
-
-On 07/22/2015 05:34 AM, Noam Camus wrote:
-> From: Noam Camus <noamc@ezchip.com>
+On 07/22/2015 04:40 AM, Oliver Neukum wrote:
+> On Tue, 2015-07-21 at 12:45 -0400, Peter Hurley wrote:
+>> Let me know if you need help instrumenting the tty buffers/throttling
+>> to help figure out what the actual problem is.
+>>
+>> Regarding the patch itself, I have no opinion on the suitability of
+>> simply not resubmitting urbs. However, that is exactly how the
+>> throttle
+>> mechanism works, and the tty buffer API is specifically designed to
+>> allow drivers to manage flow via that interface as well (especially
+>> for high-throughput drivers).
 > 
-> This is now matches device endianness.
+> Could you please expand on how this is supposed to work?
+> For once how does one learn that room is available again?
 
-I'm not seeing where serial_in() is used here, as claimed by the $subject.
+There are basically 3 mechanisms for managing rx data:
+1. Allocate space when the data arrives; drop data if no space is avail
+   and indicate buf_overrun. This is what most drivers do.
+2. Allocate space when the data arrives; try to buffer uncopied data
+   and resubmit the data later. Some high-throughput drivers (in the wild)
+   do this (but less so now that the tty buffer space is configurable).
+3. Pre-allocate space _before_ the data arrives (with tty_buffer_request_room());
+   this is applicable to subsystems which know how much data can be in-flight
+   at any one time. This guarantees that when rx data arrives buffer space is
+   available (since it has already been allocated).
+
+Drivers that use method 2 typically attempt to recopy the buffered data
+when either new data arrives or @ unthrottle. I've seen others use deferred
+work as well.
+
+AFAIK no driver/subsystem is using method 3 for guaranteed delivery
+of in-flight data, but it seems ideally suited to usb serial.
 
 Regards,
 Peter Hurley
-
-> Signed-off-by: Noam Camus <noamc@ezchip.com>
-> ---
->  drivers/tty/serial/8250/8250_dw.c |    8 ++++++--
->  1 files changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 620f983..a64197c 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -291,7 +291,9 @@ static bool dw8250_dma_filter(struct dma_chan *chan, void *param)
->  static void dw8250_setup_port(struct uart_8250_port *up)
->  {
->  	struct uart_port	*p = &up->port;
-> -	u32			reg = readl(p->membase + DW_UART_UCV);
-> +	u32			reg = (p->iotype == UPIO_MEM32BE) ?
-> +					ioread32be(p->membase + DW_UART_UCV) :
-> +					readl(p->membase + DW_UART_UCV);
->  
->  	/*
->  	 * If the Component Version Register returns zero, we know that
-> @@ -303,7 +305,9 @@ static void dw8250_setup_port(struct uart_8250_port *up)
->  	dev_dbg_ratelimited(p->dev, "Designware UART version %c.%c%c\n",
->  		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
->  
-> -	reg = readl(p->membase + DW_UART_CPR);
-> +	reg = (p->iotype == UPIO_MEM32BE) ?
-> +		ioread32be(p->membase + DW_UART_CPR) :
-> +		readl(p->membase + DW_UART_CPR);
->  	if (!reg)
->  		return;
->  
-> 
