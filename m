@@ -1,50 +1,53 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] Fix data loss in cdc-acm
-Date: Wed, 22 Jul 2015 10:30:24 -0400
-Message-ID: <55AFA900.6040605@hurleysoftware.com>
-References: <55AC1883.4050605@svenbrauch.de>	 <20150720172546.GF20628@localhost> <55AD38E5.1090807@svenbrauch.de>	 <20150721091838.GG20628@localhost> <55AE7714.80306@hurleysoftware.com> <1437554428.5445.0.camel@suse.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH -next] serial: etraxfs-uart: Update gpiod API
+Date: Wed, 22 Jul 2015 07:51:32 -0700
+Message-ID: <55AFADF4.5030409@roeck-us.net>
+References: <1437510892-30376-1-git-send-email-linux@roeck-us.net> <20150721210115.GJ9981@pengutronix.de> <55AEC50E.3030202@roeck-us.net> <20150722070659.GK9981@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1437554428.5445.0.camel@suse.com>
+In-Reply-To: <20150722070659.GK9981@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Oliver Neukum <oneukum@suse.com>
-Cc: Sven Brauch <mail@svenbrauch.de>, Johan Hovold <johan@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Toby Gray <toby.gray@realvnc.com>, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
+To: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-cris-kernel@axis.com, Jesper Nilsson <jesper.nilsson@axis.com>, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-On 07/22/2015 04:40 AM, Oliver Neukum wrote:
-> On Tue, 2015-07-21 at 12:45 -0400, Peter Hurley wrote:
->> Let me know if you need help instrumenting the tty buffers/throttling
->> to help figure out what the actual problem is.
->>
->> Regarding the patch itself, I have no opinion on the suitability of
->> simply not resubmitting urbs. However, that is exactly how the
->> throttle
->> mechanism works, and the tty buffer API is specifically designed to
->> allow drivers to manage flow via that interface as well (especially
->> for high-throughput drivers).
-> 
-> Could you please expand on how this is supposed to work?
-> For once how does one learn that room is available again?
+On 07/22/2015 12:06 AM, Uwe Kleine-K=C3=B6nig wrote:
 
-There are basically 3 mechanisms for managing rx data:
-1. Allocate space when the data arrives; drop data if no space is avail
-   and indicate buf_overrun. This is what most drivers do.
-2. Allocate space when the data arrives; try to buffer uncopied data
-   and resubmit the data later. Some high-throughput drivers (in the wild)
-   do this (but less so now that the tty buffer space is configurable).
-3. Pre-allocate space _before_ the data arrives (with tty_buffer_request_room());
-   this is applicable to subsystems which know how much data can be in-flight
-   at any one time. This guarantees that when rx data arrives buffer space is
-   available (since it has already been allocated).
+> While I stumbled over the calls to gpiod_get variants in the etraxfs
+> serial driver I noticed several problems with that driver. I pointed
+> them out in
+>
+> 	http://www.spinics.net/lists/linux-serial/msg17794.html
+>
+> . If you read the follow-ups Jesper Nilsson then said:
+>
+> 	I can push a patch that just drops all signal handling (since
+> 	it's bogus ATM), or you can ignore the driver as currently
+> 	implemented.
+>
 
-Drivers that use method 2 typically attempt to recopy the buffered data
-when either new data arrives or @ unthrottle. I've seen others use deferred
-work as well.
+If you want to mark the driver as BROKEN due to those other problems,
+go ahead, and I'll drop the architecture from my tests. But it should
+not be marked BROKEN because you did not update an API.
 
-AFAIK no driver/subsystem is using method 3 for guaranteed delivery
-of in-flight data, but it seems ideally suited to usb serial.
+> I explicitly did the latter. Apart from that single driver I fixed al=
+l
+> users. @Jesper: You said you poked Niklas to care for that. Any news
+> from that front?
+>
+> I'm all for the usual habit that API changes should be handled by the
+> API changer. But if the code was already relying on undefined behavio=
+ur
+> before the change and fixing that needs testing on the respective
+> hardware, I think pushing the needed work back to the driver owner is
+> fine. IMHO a simple build fix that doesn't fix the brokeness isn't th=
+at
+> helpful here.
+>
+The driver works fine for me (in qemu), possibly because qemu doesn't
+use/need modem lines.
 
-Regards,
-Peter Hurley
+Guenter
