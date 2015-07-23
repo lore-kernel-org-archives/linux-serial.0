@@ -1,28 +1,35 @@
-From: Noam Camus <noamc@ezchip.com>
-Subject: RE: [PATCH 4/4] serial: 8250_dw: use serial_in() and not readl()
-Date: Thu, 23 Jul 2015 10:40:36 +0000
-Message-ID: <DB4PR02MB272E255AAD6D46A0CB6F459D6820@DB4PR02MB272.eurprd02.prod.outlook.com>
-References: <1437557699-25722-1-git-send-email-noamc@ezchip.com>
- <1437557699-25722-2-git-send-email-noamc@ezchip.com>
- <1437557699-25722-3-git-send-email-noamc@ezchip.com>
- <1437557699-25722-4-git-send-email-noamc@ezchip.com>
- <1437557699-25722-5-git-send-email-noamc@ezchip.com>
- <55AF91E8.3020903@hurleysoftware.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
+Date: Thu, 23 Jul 2015 15:05:50 -0700
+Message-ID: <20150723220550.GA15032@kroah.com>
+References: <1436439433-10258-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55AF91E8.3020903@hurleysoftware.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "Alexey.Brodkin@synopsys.com" <Alexey.Brodkin@synopsys.com>, "vgupta@synopsys.com" <vgupta@synopsys.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1436439433-10258-1-git-send-email-Dave.Martin@arm.com>
+Sender: stable-owner@vger.kernel.org
+To: Dave Martin <Dave.Martin@arm.com>
+Cc: linux-serial@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Robin Murphy <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org, Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, popcorn mix <popcornmix@gmail.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogUGV0ZXIgSHVybGV5IFttYWlsdG86cGV0ZXJAaHVybGV5c29mdHdhcmUuY29tXSANClNl
-bnQ6IFdlZG5lc2RheSwgSnVseSAyMiwgMjAxNSAzOjUyIFBNDQoNCj4gU3ViamVjdDogUmU6IFtQ
-QVRDSCA0LzRdIHNlcmlhbDogODI1MF9kdzogdXNlIHNlcmlhbF9pbigpIGFuZCBub3QgcmVhZGwo
-KQ0KDQo+IEZyb206IE5vYW0gQ2FtdXMgPG5vYW1jQGV6Y2hpcC5jb20+DQo+IA0KPiBUaGlzIGlz
-IG5vdyBtYXRjaGVzIGRldmljZSBlbmRpYW5uZXNzLg0KDQo+IEknbSBub3Qgc2VlaW5nIHdoZXJl
-IHNlcmlhbF9pbigpIGlzIHVzZWQgaGVyZSwgYXMgY2xhaW1lZCBieSB0aGUgJHN1YmplY3QuDQoN
-ClRoYW5rcywgSSB3aWxsICJyZXdvcmQiIG15IGNvbW1pdCBpbiB2Mg0K
+On Thu, Jul 09, 2015 at 11:57:12AM +0100, Dave Martin wrote:
+> pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
+> sufficient to inhibit pl011_int() from being triggered by a local
+> IRQ and trying to re-take the same lock.  This can lead to
+> deadlocks.
+> 
+> This patch uses the _irq() locking variants instead to ensure that
+> pl011_int() handling for a given port is deferred until any
+> pl011_tx_softirq() work for that port is complete.
+> 
+> Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
+> Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+> Tested-by: Robin Murphy <robin.murphy@arm.com>
+> Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+> Cc: stable <stable@vger.kernel.org> # 4.1
+> ---
+>  drivers/tty/serial/amba-pl011.c |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+
+This doesn't apply at all to 4.2-rc3, so I can't apply it :(
