@@ -1,36 +1,51 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH -next] serial: etraxfs-uart: Update gpiod API
-Date: Thu, 23 Jul 2015 15:23:49 -0700
-Message-ID: <20150723222349.GB9973@kroah.com>
-References: <1437510892-30376-1-git-send-email-linux@roeck-us.net>
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/2] serial: 8250: Fix autoconfig_irq() to avoid race
+ conditions
+Date: Thu, 23 Jul 2015 15:32:02 -0700
+Message-ID: <20150723223202.GA23915@kroah.com>
+References: <55717224.9060104@cp.jp.nec.com>
+ <55717294.8020905@cp.jp.nec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1437510892-30376-1-git-send-email-linux@roeck-us.net>
+In-Reply-To: <55717294.8020905@cp.jp.nec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-cris-kernel@axis.com, Jesper Nilsson <jesper.nilsson@axis.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jul 21, 2015 at 01:34:52PM -0700, Guenter Roeck wrote:
-> Commit b17d1bf16cc7 ("gpio: make flags mandatory for gpiod_get functi=
-ons")
-> makes the flags argument to devm_gpiod_get_optional mandatory but doe=
-s not
-> update all users. This results in the following build error.
->=20
-> drivers/tty/serial/etraxfs-uart.c:933:16: error:
-> 	too few arguments to function =E2=80=98devm_gpiod_get_optional=E2=80=
-=99
->=20
-> Fixes: b17d1bf16cc7 ("gpio: make flags mandatory for gpiod_get functi=
-ons")
+On Fri, Jun 05, 2015 at 09:57:40AM +0000, Taichi Kageyama wrote:
+> The following race conditions can happen if a serial is used as console.
+>   Case1. CPU_B handles an interrupt from a serial
+>     autoconfig_irq() fails whether the interrupt is raised or not
+>     if CPU_B is disabled to handle interrupts for longer than it expects.
+>   Case2. CPU_B clears UART_IER just after CPU_A sets UART_IER
+>     A serial may not make an interrupt.
+>     autoconfig_irq() can fail if the interrupt is not raised.
+>   Case3. CPU_A sets UART_IER just after CPU_B clears UART_IER
+>     This is an unexpected behavior for uart_console_write().
+> 
+>   CPU_A [autoconfig_irq]      CPU_B [serial8250_console_write]
+>   -----------------------------------------------------------------
+>   probe_irq_on()              spin_lock_irqsave(&port->lock,)
+>   serial_outp(,UART_IER,0x0f) serial_out(,UART_IER,0)
+>   udelay(20);                 uart_console_write()
+>   probe_irq_off()
+>                               spin_unlock_irqrestore(&port->lock,)
+>   -----------------------------------------------------------------
+> 
+> If autoconfig_irq() fails, the console doesn't work in interrupt mode,
+> the mode cannot be changed anymore, and "input overrun"
+> (which can make operation mistakes) happens easily.
+> This problem happens with high rate every boot once it occurs
+> because the boot sequence is always almost same.
+> 
+> Signed-off-by: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+> Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>   drivers/tty/serial/8250/8250_core.c |    6 ++++++
+>   1 files changed, 6 insertions(+), 0 deletions(-)
 
-This patch isn't in Linus's tree, so whatever tree this commit is in,
-needs to also take this fix.
-
-thanks,
-
-greg k-h
+Does not apply to 4.2-rc3 :(
