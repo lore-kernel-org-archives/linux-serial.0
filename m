@@ -1,52 +1,34 @@
-From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v2 0/7] serial: 8250_omap: workaround for IP errata
-Date: Fri, 24 Jul 2015 12:11:20 +0530
-Message-ID: <55B1DE10.60408@ti.com>
-References: <cover.1436855646.git.nsekhar@ti.com> <55A4FEEC.3080101@hurleysoftware.com> <20150714124908.GE10928@atomide.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150714124908.GE10928-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: [PATCH] serial: 8250_uniphier: call clk_disable_unprepare() on failure path
+Date: Fri, 24 Jul 2015 15:58:28 +0900
+Message-ID: <1437721108-19037-1-git-send-email-yamada.masahiro@socionext.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Matthias Brugger <matthias.bgg@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+If serial8250_register_8250_port() fails, disable and unprepare the
+clock before exiting.
 
-On Tuesday 14 July 2015 06:19 PM, Tony Lindgren wrote:
-> * Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> [150714 05:24]:
->> On 07/14/2015 04:02 AM, Sekhar Nori wrote:
->>> This series works around "Advisory 21" as documented in
->>> AM437x SoC errata[1]. This errata prevents UART module
->>> from idling after DMA is used. AM335x and DRA7x also suffer
->>> from the same errata and chip design team is in the process
->>> of updating the errata documents of those devices as well.
->>>
->>> Patch 1/7 fixes a related bug but can be applied independently.
->>
->> Looks good. Thanks Sekhar!
->>
->> For series,
->>
->> Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-> 
-> Also things still work for me, and the dts changes should
-> not cause merge conflicts during v4.3 merge window based on
-> what I have queued. So please feel free to queue these
-> all via the tty tree and add:
-> 
-> Acked-by: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org> 
+Fixes: 1a8d2903cb6a ("serial: 8250_uniphier: add UniPhier serial driver")
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+---
 
-Looks like you have queued the first 6 patches of this series but left
-out 7/7 which is a DTS update. Based on above, Tony is okay with you
-going ahead and queuing that DTS patch too. Can you please go ahead and
-queue 7/7 as well?
+ drivers/tty/serial/8250/8250_uniphier.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-Sekhar
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+index 7d79425..d11621e 100644
+--- a/drivers/tty/serial/8250/8250_uniphier.c
++++ b/drivers/tty/serial/8250/8250_uniphier.c
+@@ -218,6 +218,7 @@ static int uniphier_uart_probe(struct platform_device *pdev)
+ 	ret = serial8250_register_8250_port(&up);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to register 8250 port\n");
++		clk_disable_unprepare(priv->clk);
+ 		return ret;
+ 	}
+ 
+-- 
+1.9.1
