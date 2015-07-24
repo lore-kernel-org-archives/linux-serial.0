@@ -1,120 +1,52 @@
-From: Shenwei Wang <shenwei.wang@freescale.com>
-Subject: [PATCH v2] Serial: imx: add dev_pm_ops to support suspend to ram/disk
-Date: Fri, 24 Jul 2015 09:23:33 -0500
-Message-ID: <1437747813-9473-1-git-send-email-shenwei.wang@freescale.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
+Date: Fri, 24 Jul 2015 08:15:59 -0700
+Message-ID: <20150724151559.GA12324@kroah.com>
+References: <1436439433-10258-1-git-send-email-Dave.Martin@arm.com>
+ <20150723220550.GA15032@kroah.com>
+ <20150724095605.GI10670@e103592.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150724095605.GI10670@e103592.cambridge.arm.com>
+Sender: stable-owner@vger.kernel.org
+To: Dave Martin <Dave.Martin@arm.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, "stable@vger.kernel.org" <stable@vger.kernel.org>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, Robin Murphy <Robin.Murphy@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-When system goes into low power states like SUSPEND_MEM and
-HIBERNATION, the hardware IP block may be powered off to reduce
-the power consumption. This power down may cause problems on
-some imx platforms, because the hardware settings are reset to
-its power on default values which may differ from the ones when
-it power off. This patch added the dev_pm_ops and implemented
-two callbacks: suspend_noirq and resume_noirq, which will save
-the necessory hardware parameters right before power down and
-recover them before system uses the hardware.
+On Fri, Jul 24, 2015 at 10:56:06AM +0100, Dave Martin wrote:
+> On Thu, Jul 23, 2015 at 03:05:50PM -0700, Greg Kroah-Hartman wrote:
+> > On Thu, Jul 09, 2015 at 11:57:12AM +0100, Dave Martin wrote:
+> > > pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
+> > > sufficient to inhibit pl011_int() from being triggered by a local
+> > > IRQ and trying to re-take the same lock.  This can lead to
+> > > deadlocks.
+> > > 
+> > > This patch uses the _irq() locking variants instead to ensure that
+> > > pl011_int() handling for a given port is deferred until any
+> > > pl011_tx_softirq() work for that port is complete.
+> > > 
+> > > Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
+> > > Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+> > > Tested-by: Robin Murphy <robin.murphy@arm.com>
+> > > Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+> > > Cc: stable <stable@vger.kernel.org> # 4.1
+> > > ---
+> > >  drivers/tty/serial/amba-pl011.c |    4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > This doesn't apply at all to 4.2-rc3, so I can't apply it :(
+> 
+> This is applicable to 4.1 stable only, since the code this patch fixes
+> was replaced in 4.2-rc1.
+> 
+> Apologies, I didn't make that clear in the text.
 
-Signed-off-by: Shenwei Wang <shenwei.wang@freescale.com>
----
-Change log:
-	v2	Change pr_debug to dev_dbg per GregK's review feedback.
+I can't do anything with a 4.1-only patch, please read
+Documentation/stable_kernel_rules.txt for how to get a patch into the
+stable kernel releases.
 
- drivers/tty/serial/imx.c | 54 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
+thanks,
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 2c90dc3..ef4d3fd 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -216,6 +216,7 @@ struct imx_port {
- 	unsigned int		tx_bytes;
- 	unsigned int		dma_tx_nents;
- 	wait_queue_head_t	dma_wait;
-+	unsigned int            saved_reg[10];
- };
-
- struct imx_port_ucrs {
-@@ -1992,6 +1993,58 @@ static int serial_imx_remove(struct platform_device *pdev)
- 	return uart_remove_one_port(&imx_reg, &sport->port);
- }
-
-+static int imx_serial_port_suspend_noirq(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct imx_port *sport = platform_get_drvdata(pdev);
-+
-+	/* Save necessary regs */
-+	clk_enable(sport->clk_ipg);
-+	sport->saved_reg[0] = readl(sport->port.membase + UCR1);
-+	sport->saved_reg[1] = readl(sport->port.membase + UCR2);
-+	sport->saved_reg[2] = readl(sport->port.membase + UCR3);
-+	sport->saved_reg[3] = readl(sport->port.membase + UCR4);
-+	sport->saved_reg[4] = readl(sport->port.membase + UFCR);
-+	sport->saved_reg[5] = readl(sport->port.membase + UESC);
-+	sport->saved_reg[6] = readl(sport->port.membase + UTIM);
-+	sport->saved_reg[7] = readl(sport->port.membase + UBIR);
-+	sport->saved_reg[8] = readl(sport->port.membase + UBMR);
-+	sport->saved_reg[9] = readl(sport->port.membase + IMX21_UTS);
-+	clk_disable(sport->clk_ipg);
-+
-+	dev_dbg(dev, "0x%p (%d)\r\n", sport->port.membase, sport->port.line);
-+
-+	return 0;
-+}
-+
-+static int imx_serial_port_resume_noirq(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct imx_port *sport = platform_get_drvdata(pdev);
-+
-+	clk_enable(sport->clk_ipg);
-+	writel(sport->saved_reg[4], sport->port.membase + UFCR);
-+	writel(sport->saved_reg[5], sport->port.membase + UESC);
-+	writel(sport->saved_reg[6], sport->port.membase + UTIM);
-+	writel(sport->saved_reg[7], sport->port.membase + UBIR);
-+	writel(sport->saved_reg[8], sport->port.membase + UBMR);
-+	writel(sport->saved_reg[9], sport->port.membase + IMX21_UTS);
-+	writel(sport->saved_reg[0], sport->port.membase + UCR1);
-+	writel(sport->saved_reg[1] | 0x1, sport->port.membase + UCR2);
-+	writel(sport->saved_reg[2], sport->port.membase + UCR3);
-+	writel(sport->saved_reg[3], sport->port.membase + UCR4);
-+	clk_disable(sport->clk_ipg);
-+
-+	dev_dbg(dev, "0x%p (%d)\r\n", sport->port.membase, sport->port.line);
-+
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops imx_serial_port_pm_ops = {
-+	.suspend_noirq = imx_serial_port_suspend_noirq,
-+	.resume_noirq = imx_serial_port_resume_noirq,
-+};
-+
- static struct platform_driver serial_imx_driver = {
- 	.probe		= serial_imx_probe,
- 	.remove		= serial_imx_remove,
-@@ -2002,6 +2055,7 @@ static struct platform_driver serial_imx_driver = {
- 	.driver		= {
- 		.name	= "imx-uart",
- 		.of_match_table = imx_uart_dt_ids,
-+		.pm	= &imx_serial_port_pm_ops,
- 	},
- };
-
---
-2.5.0.rc2
+greg k-h
