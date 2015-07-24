@@ -1,52 +1,68 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial/amba-pl011: Disable interrupts around TX softirq
-Date: Fri, 24 Jul 2015 08:15:59 -0700
-Message-ID: <20150724151559.GA12324@kroah.com>
-References: <1436439433-10258-1-git-send-email-Dave.Martin@arm.com>
- <20150723220550.GA15032@kroah.com>
- <20150724095605.GI10670@e103592.cambridge.arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [PATCH REPOST] serial/amba-pl011: Disable interrupts around TX softirq
+Date: Fri, 24 Jul 2015 17:39:21 +0100
+Message-ID: <1437755961-15403-1-git-send-email-Dave.Martin@arm.com>
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150724095605.GI10670@e103592.cambridge.arm.com>
 Sender: stable-owner@vger.kernel.org
-To: Dave Martin <Dave.Martin@arm.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>, Andre Przywara <Andre.Przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, "stable@vger.kernel.org" <stable@vger.kernel.org>, Graeme Gregory <gg@slimlogic.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, popcorn mix <popcornmix@gmail.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, Robin Murphy <Robin.Murphy@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King <linux@arm.linux.org.uk>, Robin Murphy <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, popcorn mix <popcornmix@gmail.com>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 24, 2015 at 10:56:06AM +0100, Dave Martin wrote:
-> On Thu, Jul 23, 2015 at 03:05:50PM -0700, Greg Kroah-Hartman wrote:
-> > On Thu, Jul 09, 2015 at 11:57:12AM +0100, Dave Martin wrote:
-> > > pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
-> > > sufficient to inhibit pl011_int() from being triggered by a local
-> > > IRQ and trying to re-take the same lock.  This can lead to
-> > > deadlocks.
-> > > 
-> > > This patch uses the _irq() locking variants instead to ensure that
-> > > pl011_int() handling for a given port is deferred until any
-> > > pl011_tx_softirq() work for that port is complete.
-> > > 
-> > > Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
-> > > Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-> > > Tested-by: Robin Murphy <robin.murphy@arm.com>
-> > > Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-> > > Cc: stable <stable@vger.kernel.org> # 4.1
-> > > ---
-> > >  drivers/tty/serial/amba-pl011.c |    4 ++--
-> > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > This doesn't apply at all to 4.2-rc3, so I can't apply it :(
-> 
-> This is applicable to 4.1 stable only, since the code this patch fixes
-> was replaced in 4.2-rc1.
-> 
-> Apologies, I didn't make that clear in the text.
+pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
+sufficient to inhibit pl011_int() from being triggered by a local
+IRQ and trying to re-take the same lock.  This can lead to
+deadlocks.
 
-I can't do anything with a 4.1-only patch, please read
-Documentation/stable_kernel_rules.txt for how to get a patch into the
-stable kernel releases.
+This patch uses the _irq() locking variants instead to ensure that
+pl011_int() handling for a given port is deferred until any
+pl011_tx_softirq() work for that port is complete.
 
-thanks,
 
-greg k-h
+Notes for stable:
+
+This patch fixes an issue that is fixed by the following upstream
+commit, which is a more substantial rewrite of the affected code,
+fixing multiple, mostly more minor issues:
+
+        1e84d22322ceed4767db1e5342c830dd60c8210f
+        serial/amba-pl011: Refactor and simplify TX FIFO handling
+
+The upstream patch was rejected for stable on the reasonable grounds
+that it was too big and complex a patch.  The original buggy code was
+merged in v4.1, and the rewrite was merged in v4.2, leaving only v4.1
+affected.
+
+
+This patch replaces the 1e84d22, for 4.1.x only.
+
+Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
+Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+Tested-by: Robin Murphy <robin.murphy@arm.com>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: stable <stable@vger.kernel.org> # 4.1.x
+---
+ drivers/tty/serial/amba-pl011.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl01=
+1.c
+index 763eb20..0cc622a 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1360,9 +1360,9 @@ static void pl011_tx_softirq(struct work_struct *work=
+)
+ =09struct uart_amba_port *uap =3D
+ =09=09container_of(dwork, struct uart_amba_port, tx_softirq_work);
+=20
+-=09spin_lock(&uap->port.lock);
++=09spin_lock_irq(&uap->port.lock);
+ =09while (pl011_tx_chars(uap)) ;
+-=09spin_unlock(&uap->port.lock);
++=09spin_unlock_irq(&uap->port.lock);
+ }
+=20
+ static void pl011_tx_irq_seen(struct uart_amba_port *uap)
+--=20
+1.7.10.4
