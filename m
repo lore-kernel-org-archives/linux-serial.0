@@ -1,59 +1,84 @@
-From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2 0/7] serial: 8250_omap: workaround for IP errata
-Date: Fri, 24 Jul 2015 05:01:08 -0700
-Message-ID: <20150724120108.GI16878@atomide.com>
-References: <cover.1436855646.git.nsekhar@ti.com>
- <55A4FEEC.3080101@hurleysoftware.com>
- <20150714124908.GE10928@atomide.com>
- <55B1DE10.60408@ti.com>
+From: Alan Stern <stern@rowland.harvard.edu>
+Subject: Re: [PATCH 1/1] Avoid usb reset crashes by making tty_io cdevs truly
+ dynamic
+Date: Fri, 24 Jul 2015 09:12:08 -0400 (EDT)
+Message-ID: <Pine.LNX.4.44L0.1507240859070.24450-100000@netrider.rowland.org>
+References: <55B16EA9.3020609@kynesim.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <55B1DE10.60408-l0cyMroinI0@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55B16EA9.3020609@kynesim.co.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Richard Watts <rrw@kynesim.co.uk>
+Cc: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-* Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org> [150723 23:44]:
-> Hi Greg,
+On Thu, 23 Jul 2015, Richard Watts wrote:
+
+>   When the USB reset happens, we get a bunch of complaints from the
+> kernel.
 > 
-> On Tuesday 14 July 2015 06:19 PM, Tony Lindgren wrote:
-> > * Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> [150714 05:24]:
-> >> On 07/14/2015 04:02 AM, Sekhar Nori wrote:
-> >>> This series works around "Advisory 21" as documented in
-> >>> AM437x SoC errata[1]. This errata prevents UART module
-> >>> from idling after DMA is used. AM335x and DRA7x also suffer
-> >>> from the same errata and chip design team is in the process
-> >>> of updating the errata documents of those devices as well.
-> >>>
-> >>> Patch 1/7 fixes a related bug but can be applied independently.
-> >>
-> >> Looks good. Thanks Sekhar!
-> >>
-> >> For series,
-> >>
-> >> Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-> > 
-> > Also things still work for me, and the dts changes should
-> > not cause merge conflicts during v4.3 merge window based on
-> > what I have queued. So please feel free to queue these
-> > all via the tty tree and add:
-> > 
-> > Acked-by: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org> 
+>   Some of these are to do with races on the kobjects associated with the
+> sysfs entries for the ttyACM0 device. They turn out not to be fatal,
+> and have their own patch series ('Attempt to cope with device changes
+> and delayed kobject deallocation' on linux-kernel).
 > 
-> Looks like you have queued the first 6 patches of this series but left
-> out 7/7 which is a DTS update. Based on above, Tony is okay with you
-> going ahead and queuing that DTS patch too. Can you please go ahead and
-> queue 7/7 as well?
+>   The fatal one turns out to be an execution path that goes like this:
+> 
+>   1 USB device declares itself to be CDC
+>   2 tty driver fires up and allocates a cdev for the relevant tty.
 
-OK seems it won't cause merge conflicts so I've acked it.
+Does this happen in the same thread as 1?
 
-Regards,
+>   3 driver->cdevs[0].kobj gets initialised as part of the cdev_alloc()
+>   4 USB reset happens, queueing driver->cdevs[0].kobj for release.
 
-Tony
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+1 and 4 should be mutually exclusive.  Probing and reset both acquire
+the USB device's mutex.
+
+>   5 The tty driver calls cdev_init(&driver->cdevs[0]), which
+>       reinitialises driver->cdevs[0].kobj with a refcount of 1.
+
+Presumably this happens in the same thread as 1, 2, and 3?  Which means 
+it should be mutually exclusive with 4 -- it should happen _before_ 4, 
+not after.
+
+By the way, kobjects should _never_ be reinitialized.  They are 
+initialized just once, when they are created.  If something initializes 
+them again afterward, that's a bug.
+
+>   6 tty driver starts using that new cdev, queueing an operation on it.
+>      This causes a timer entry to be added including the kobj.
+>   7 At this point, the release we scheduled in (4) happens and the
+>      members of kobj are deallocated.
+>   8 Someone allocates the newly released memory for one of the members of
+>       cdriver->cdevs[0].kobj somewhere else and overwrites it.
+>   9 The timer goes off.
+> 10 Boom
+> 
+>   My patch (ham-fistedly) fixes this by ensuring that because we
+> never reuse the cdev pointer, we are never fooled into reinitialising
+> a kobject queued for deletion.
+> 
+>   I'm not all that familiar with how the locking should go here, and
+> there is a definite argument that under non CONFIG_DEBUG_KOBJECT_RELEASE
+> conditions, the kobject_release() would have happened by 5, and
+> therefore this situation should never exist "for real".
+
+I can tell you a little about locking in the USB subsystem (don't know
+about the TTY subsystem).  In particular, USB probing and reset are
+mutually exclusive.
+
+>   .. but (a) that makes it rather hard to test kernels with
+> CONFIG_DEBUG_KOBJECT_RELEASE, and (b) my customer's crashes have
+> (allegedly) now gone away even without CONFIG_DEBUG_KOBJECT_RELEASE
+> set.
+
+In general, delaying an object's release should make no difference at
+all (except for the fact that the memory is temporarily unavailable for
+other purposes).  Objects don't get released until their refcounts are
+0, meaning that they are not in use anywhere.  If an object is still in
+use (being initialized, or on a list, etc.) then its refcount should 
+not be 0.  If it is, that's a bug.
+
+Alan Stern
