@@ -1,45 +1,52 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH -next] serial: etraxfs-uart: Update gpiod API
-Date: Fri, 24 Jul 2015 08:33:27 +0200
-Message-ID: <20150724063327.GI745@pengutronix.de>
-References: <1437510892-30376-1-git-send-email-linux@roeck-us.net>
- <20150723222349.GB9973@kroah.com>
+From: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v2 0/7] serial: 8250_omap: workaround for IP errata
+Date: Fri, 24 Jul 2015 12:11:20 +0530
+Message-ID: <55B1DE10.60408@ti.com>
+References: <cover.1436855646.git.nsekhar@ti.com> <55A4FEEC.3080101@hurleysoftware.com> <20150714124908.GE10928@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150723222349.GB9973@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Guenter Roeck <linux@roeck-us.net>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-cris-kernel@axis.com, Jesper Nilsson <jesper.nilsson@axis.com>, Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150714124908.GE10928-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 23, 2015 at 03:23:49PM -0700, Greg Kroah-Hartman wrote:
-> On Tue, Jul 21, 2015 at 01:34:52PM -0700, Guenter Roeck wrote:
-> > Commit b17d1bf16cc7 ("gpio: make flags mandatory for gpiod_get func=
-tions")
-> > makes the flags argument to devm_gpiod_get_optional mandatory but d=
-oes not
-> > update all users. This results in the following build error.
-> >=20
-> > drivers/tty/serial/etraxfs-uart.c:933:16: error:
-> > 	too few arguments to function =E2=80=98devm_gpiod_get_optional=E2=80=
-=99
-> >=20
-> > Fixes: b17d1bf16cc7 ("gpio: make flags mandatory for gpiod_get func=
-tions")
->=20
-> This patch isn't in Linus's tree, so whatever tree this commit is in,
-> needs to also take this fix.
-It is in Linus's tree. The Walleij one though, not Torvalds :-)
+Hi Greg,
 
-Best regards
-Uwe
+On Tuesday 14 July 2015 06:19 PM, Tony Lindgren wrote:
+> * Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> [150714 05:24]:
+>> On 07/14/2015 04:02 AM, Sekhar Nori wrote:
+>>> This series works around "Advisory 21" as documented in
+>>> AM437x SoC errata[1]. This errata prevents UART module
+>>> from idling after DMA is used. AM335x and DRA7x also suffer
+>>> from the same errata and chip design team is in the process
+>>> of updating the errata documents of those devices as well.
+>>>
+>>> Patch 1/7 fixes a related bug but can be applied independently.
+>>
+>> Looks good. Thanks Sekhar!
+>>
+>> For series,
+>>
+>> Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+> 
+> Also things still work for me, and the dts changes should
+> not cause merge conflicts during v4.3 merge window based on
+> what I have queued. So please feel free to queue these
+> all via the tty tree and add:
+> 
+> Acked-by: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org> 
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig     =
-       |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
+Looks like you have queued the first 6 patches of this series but left
+out 7/7 which is a DTS update. Based on above, Tony is okay with you
+going ahead and queuing that DTS patch too. Can you please go ahead and
+queue 7/7 as well?
+
+Thanks,
+Sekhar
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
