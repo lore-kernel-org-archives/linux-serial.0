@@ -1,139 +1,83 @@
-From: Niklas Cassel <nks@flawful.org>
-Subject: [PATCH] serial: etraxfs-uart: use mctrl_gpio helpers for handling modem signals
-Date: Sat, 25 Jul 2015 02:02:46 +0200
-Message-ID: <1437782566-11528-1-git-send-email-nks@flawful.org>
+From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
+Subject: Re: [PATCH 1/1] serial: 8250_pci: add RS485 for F81504/508/512
+Date: Sat, 25 Jul 2015 11:35:45 +0200
+Message-ID: <20150725113545.6bce8038@north>
+References: <1437717339-28881-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1437717339-28881-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Niklas Cassel <nks@flawful.org>
+To: Peter Hung <hpeter@gmail.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-In order to use the mctrl_gpio helpers, we change the DT bindings:
-ri-gpios renamed to rng-gpios. cd-gpios renamed to dcd-gpios.
-However, no in-tree dts/dtsi specifies these, so no worries.
+On Fri, 24 Jul 2015 13:55:39 +0800, Peter Hung wrote:
+> Add RS485 control for Fintek F81504/508/512
+> 
+> F81504/508/512 can control their RTS with H/W mode.
+> PCI configuration space for each port is 0x40 + idx * 8 + 7.
+> 
+> When it set with 0x01, it's configured with RS232 mode.
+> RTS is controlled by MCR.
+> 
+> When it set with 0x11, it's configured with RS485 mode.
+> RTS is controlled by H/W, RTS high with idle & RX, low with TX.
+> 
+> When it set with 0x31, it's configured with RS485 mode.
+> RTS is controlled by H/W, RTS low with idle & RX, high with TX.
+> 
+> We will force 0x01 on pci_fintek_setup().
+> 
+> Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_pci.c | 44 ++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 44 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index e55f18b..36280fa 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1685,11 +1685,43 @@ pci_brcm_trumanage_setup(struct serial_private *priv,
+>  	return ret;
+>  }
+>  
+> +static int pci_fintek_rs485_config(struct uart_port *port,
+> +			       struct serial_rs485 *rs485)
+> +{
+> +	u8 setting;
+> +	u8 *index = (u8 *) port->private_data;
+> +	struct pci_dev *pci_dev = container_of(port->dev, struct pci_dev,
+> +									dev);
 
-Signed-off-by: Niklas Cassel <nks@flawful.org>
----
- .../bindings/serial/axis,etraxfs-uart.txt          |  6 +++-
- drivers/tty/serial/Kconfig                         |  1 +
- drivers/tty/serial/etraxfs-uart.c                  | 40 ++++++----------------
- 3 files changed, 16 insertions(+), 31 deletions(-)
+This looks misaligned.  'dev' should be aligned with opening
+parenthesis.
 
-diff --git a/Documentation/devicetree/bindings/serial/axis,etraxfs-uart.txt b/Documentation/devicetree/bindings/serial/axis,etraxfs-uart.txt
-index ebcbb62..51b3c9e 100644
---- a/Documentation/devicetree/bindings/serial/axis,etraxfs-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/axis,etraxfs-uart.txt
-@@ -6,7 +6,7 @@ Required properties:
- - interrupts: device interrupt
- 
- Optional properties:
--- {dtr,dsr,ri,cd}-gpios: specify a GPIO for DTR/DSR/RI/CD
-+- {dtr,dsr,rng,dcd}-gpios: specify a GPIO for DTR/DSR/RI/DCD
-   line respectively.
- 
- Example:
-@@ -16,4 +16,8 @@ serial@b00260000 {
- 	reg = <0xb0026000 0x1000>;
- 	interrupts = <68>;
- 	status = "disabled";
-+	dtr-gpios = <&sysgpio 0 GPIO_ACTIVE_LOW>;
-+	dsr-gpios = <&sysgpio 1 GPIO_ACTIVE_LOW>;
-+	rng-gpios = <&sysgpio 2 GPIO_ACTIVE_LOW>;
-+	dcd-gpios = <&sysgpio 3 GPIO_ACTIVE_LOW>;
- };
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 15b4079..8a4b62e 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1067,6 +1067,7 @@ config SERIAL_ETRAXFS
- 	bool "ETRAX FS serial port support"
- 	depends on ETRAX_ARCH_V32 && OF
- 	select SERIAL_CORE
-+	select SERIAL_MCTRL_GPIO if GPIOLIB
- 
- config SERIAL_ETRAXFS_CONSOLE
- 	bool "ETRAX FS serial console support"
-diff --git a/drivers/tty/serial/etraxfs-uart.c b/drivers/tty/serial/etraxfs-uart.c
-index a647605..382d434 100644
---- a/drivers/tty/serial/etraxfs-uart.c
-+++ b/drivers/tty/serial/etraxfs-uart.c
-@@ -10,6 +10,8 @@
- #include <linux/of_address.h>
- #include <hwregs/ser_defs.h>
- 
-+#include "serial_mctrl_gpio.h"
-+
- #define DRV_NAME "etraxfs-uart"
- #define UART_NR CONFIG_ETRAX_SERIAL_PORTS
- 
-@@ -28,10 +30,7 @@ struct uart_cris_port {
- 
- 	void __iomem *regi_ser;
- 
--	struct gpio_desc *dtr_pin;
--	struct gpio_desc *dsr_pin;
--	struct gpio_desc *ri_pin;
--	struct gpio_desc *cd_pin;
-+	struct mctrl_gpios *gpios;
- 
- 	int write_ongoing;
- };
-@@ -396,21 +395,9 @@ static unsigned int etraxfs_uart_get_mctrl(struct uart_port *port)
- 	ret = 0;
- 	if (crisv32_serial_get_rts(up))
- 		ret |= TIOCM_RTS;
--	/* DTR is active low */
--	if (up->dtr_pin && !gpiod_get_raw_value(up->dtr_pin))
--		ret |= TIOCM_DTR;
--	/* CD is active low */
--	if (up->cd_pin && !gpiod_get_raw_value(up->cd_pin))
--		ret |= TIOCM_CD;
--	/* RI is active low */
--	if (up->ri_pin && !gpiod_get_raw_value(up->ri_pin))
--		ret |= TIOCM_RI;
--	/* DSR is active low */
--	if (up->dsr_pin && !gpiod_get_raw_value(up->dsr_pin))
--		ret |= TIOCM_DSR;
- 	if (crisv32_serial_get_cts(up))
- 		ret |= TIOCM_CTS;
--	return ret;
-+	return mctrl_gpio_get(up->gpios, &ret);
- }
- 
- static void etraxfs_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-@@ -418,15 +405,7 @@ static void etraxfs_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	struct uart_cris_port *up = (struct uart_cris_port *)port;
- 
- 	crisv32_serial_set_rts(up, mctrl & TIOCM_RTS ? 1 : 0, 0);
--	/* DTR is active low */
--	if (up->dtr_pin)
--		gpiod_set_raw_value(up->dtr_pin, mctrl & TIOCM_DTR ? 0 : 1);
--	/* RI is active low */
--	if (up->ri_pin)
--		gpiod_set_raw_value(up->ri_pin, mctrl & TIOCM_RNG ? 0 : 1);
--	/* CD is active low */
--	if (up->cd_pin)
--		gpiod_set_raw_value(up->cd_pin, mctrl & TIOCM_CD ? 0 : 1);
-+	mctrl_gpio_set(up->gpios, mctrl);
- }
- 
- static void etraxfs_uart_break_ctl(struct uart_port *port, int break_state)
-@@ -920,11 +899,12 @@ static int etraxfs_uart_probe(struct platform_device *pdev)
- 
- 	up->irq = irq_of_parse_and_map(np, 0);
- 	up->regi_ser = of_iomap(np, 0);
--	up->dtr_pin = devm_gpiod_get_optional(&pdev->dev, "dtr");
--	up->dsr_pin = devm_gpiod_get_optional(&pdev->dev, "dsr");
--	up->ri_pin = devm_gpiod_get_optional(&pdev->dev, "ri");
--	up->cd_pin = devm_gpiod_get_optional(&pdev->dev, "cd");
- 	up->port.dev = &pdev->dev;
-+
-+	up->gpios = mctrl_gpio_init(&pdev->dev, 0);
-+	if (IS_ERR(up->gpios))
-+		return PTR_ERR(up->gpios);
-+
- 	cris_serial_port_init(&up->port, dev_id);
- 
- 	etraxfs_uart_ports[dev_id] = up;
--- 
-2.4.6
+> +
+> +	pci_read_config_byte(pci_dev, 0x40 + 8 * *index + 7, &setting);
+> +
+> +	if (rs485->flags & SER_RS485_ENABLED) {
+> +		/* Enable RTS H/W control mode */
+> +		setting |= BIT(4);
+
+Please add defines with the bit names.
+
+> +
+> +		if (rs485->flags & SER_RS485_RTS_ON_SEND) {
+> +			/* RTS driving high on TX */
+> +			setting |= BIT(5);
+> +		} else {
+> +			/* RTS driving low on TX */
+> +			setting &= ~BIT(5);
+> +		}
+> +	} else {
+> +		/* Disable RTS H/W control mode */
+> +		setting &= ~(BIT(4) | BIT(5));
+> +	}
+
+Please make sure you correct the rs485 configuration with what you can
+actually support.  Look at 8250_lpc18xx.c as an example.  In your case
+when the function returns it should have SER_RS485_ENABLED and one of
+SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND set and nothing else
+(or be completely zeroed if SER_RS485_ENABLED was not set).
