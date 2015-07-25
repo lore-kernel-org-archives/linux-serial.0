@@ -1,55 +1,55 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH v2 0/7] serial: 8250_omap: workaround for IP errata
-Date: Fri, 24 Jul 2015 11:59:50 -0700
-Message-ID: <20150724185950.GA21552@kroah.com>
-References: <cover.1436855646.git.nsekhar@ti.com>
- <55A4FEEC.3080101@hurleysoftware.com>
- <20150714124908.GE10928@atomide.com>
- <55B1DE10.60408@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <55B1DE10.60408-l0cyMroinI0@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>
-Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux OMAP Mailing List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Device Tree Mailing List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Ogness <john.ogness-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+From: Niklas Cassel <nks@flawful.org>
+Subject: [PATCH] serial: etraxfs-uart: remove empty functions
+Date: Sat, 25 Jul 2015 02:00:40 +0200
+Message-ID: <1437782440-11414-1-git-send-email-nks@flawful.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Niklas Cassel <nks@flawful.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 24, 2015 at 12:11:20PM +0530, Sekhar Nori wrote:
-> Hi Greg,
-> 
-> On Tuesday 14 July 2015 06:19 PM, Tony Lindgren wrote:
-> > * Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> [150714 05:24]:
-> >> On 07/14/2015 04:02 AM, Sekhar Nori wrote:
-> >>> This series works around "Advisory 21" as documented in
-> >>> AM437x SoC errata[1]. This errata prevents UART module
-> >>> from idling after DMA is used. AM335x and DRA7x also suffer
-> >>> from the same errata and chip design team is in the process
-> >>> of updating the errata documents of those devices as well.
-> >>>
-> >>> Patch 1/7 fixes a related bug but can be applied independently.
-> >>
-> >> Looks good. Thanks Sekhar!
-> >>
-> >> For series,
-> >>
-> >> Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-> > 
-> > Also things still work for me, and the dts changes should
-> > not cause merge conflicts during v4.3 merge window based on
-> > what I have queued. So please feel free to queue these
-> > all via the tty tree and add:
-> > 
-> > Acked-by: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org> 
-> 
-> Looks like you have queued the first 6 patches of this series but left
-> out 7/7 which is a DTS update. Based on above, Tony is okay with you
-> going ahead and queuing that DTS patch too. Can you please go ahead and
-> queue 7/7 as well?
+Implementing enable_ms is optional by serial_core.
+check_modem_status is just an empty local function.
 
-Can you please resend it?  My queue is now empty.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Niklas Cassel <nks@flawful.org>
+---
+ drivers/tty/serial/etraxfs-uart.c | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/drivers/tty/serial/etraxfs-uart.c b/drivers/tty/serial/etraxfs-uart.c
+index 679709f..a647605 100644
+--- a/drivers/tty/serial/etraxfs-uart.c
++++ b/drivers/tty/serial/etraxfs-uart.c
+@@ -373,14 +373,6 @@ static void etraxfs_uart_stop_rx(struct uart_port *port)
+ 	REG_WR(ser, regi_ser, rw_rec_ctrl, rec_ctrl);
+ }
+ 
+-static void etraxfs_uart_enable_ms(struct uart_port *port)
+-{
+-}
+-
+-static void check_modem_status(struct uart_cris_port *up)
+-{
+-}
+-
+ static unsigned int etraxfs_uart_tx_empty(struct uart_port *port)
+ {
+ 	struct uart_cris_port *up = (struct uart_cris_port *)port;
+@@ -598,7 +590,6 @@ ser_interrupt(int irq, void *dev_id)
+ 			receive_chars_no_dma(up);
+ 			handled = 1;
+ 		}
+-		check_modem_status(up);
+ 
+ 		if (masked_intr.tr_rdy) {
+ 			transmit_chars_no_dma(up);
+@@ -862,7 +853,6 @@ static const struct uart_ops etraxfs_uart_pops = {
+ 	.start_tx = etraxfs_uart_start_tx,
+ 	.send_xchar = etraxfs_uart_send_xchar,
+ 	.stop_rx = etraxfs_uart_stop_rx,
+-	.enable_ms = etraxfs_uart_enable_ms,
+ 	.break_ctl = etraxfs_uart_break_ctl,
+ 	.startup = etraxfs_uart_startup,
+ 	.shutdown = etraxfs_uart_shutdown,
+-- 
+2.4.6
