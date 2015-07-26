@@ -1,83 +1,76 @@
-From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
-Subject: Re: [PATCH 1/1] serial: 8250_pci: add RS485 for F81504/508/512
-Date: Sat, 25 Jul 2015 11:35:45 +0200
-Message-ID: <20150725113545.6bce8038@north>
-References: <1437717339-28881-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial patches for 4.2-rc4
+Date: Sat, 25 Jul 2015 19:21:15 -0700
+Message-ID: <20150726022115.GA21421@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1437717339-28881-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hung <hpeter@gmail.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 24 Jul 2015 13:55:39 +0800, Peter Hung wrote:
-> Add RS485 control for Fintek F81504/508/512
-> 
-> F81504/508/512 can control their RTS with H/W mode.
-> PCI configuration space for each port is 0x40 + idx * 8 + 7.
-> 
-> When it set with 0x01, it's configured with RS232 mode.
-> RTS is controlled by MCR.
-> 
-> When it set with 0x11, it's configured with RS485 mode.
-> RTS is controlled by H/W, RTS high with idle & RX, low with TX.
-> 
-> When it set with 0x31, it's configured with RS485 mode.
-> RTS is controlled by H/W, RTS low with idle & RX, high with TX.
-> 
-> We will force 0x01 on pci_fintek_setup().
-> 
-> Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 44 ++++++++++++++++++++++++++++++++++++++
->  1 file changed, 44 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index e55f18b..36280fa 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1685,11 +1685,43 @@ pci_brcm_trumanage_setup(struct serial_private *priv,
->  	return ret;
->  }
->  
-> +static int pci_fintek_rs485_config(struct uart_port *port,
-> +			       struct serial_rs485 *rs485)
-> +{
-> +	u8 setting;
-> +	u8 *index = (u8 *) port->private_data;
-> +	struct pci_dev *pci_dev = container_of(port->dev, struct pci_dev,
-> +									dev);
+The following changes since commit 52721d9d3334c1cb1f76219a161084094ec6=
+34dc:
 
-This looks misaligned.  'dev' should be aligned with opening
-parenthesis.
+  Linux 4.2-rc3 (2015-07-19 14:45:02 -0700)
 
-> +
-> +	pci_read_config_byte(pci_dev, 0x40 + 8 * *index + 7, &setting);
-> +
-> +	if (rs485->flags & SER_RS485_ENABLED) {
-> +		/* Enable RTS H/W control mode */
-> +		setting |= BIT(4);
+are available in the git repository at:
 
-Please add defines with the bit names.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
+y-4.2-rc4
 
-> +
-> +		if (rs485->flags & SER_RS485_RTS_ON_SEND) {
-> +			/* RTS driving high on TX */
-> +			setting |= BIT(5);
-> +		} else {
-> +			/* RTS driving low on TX */
-> +			setting &= ~BIT(5);
-> +		}
-> +	} else {
-> +		/* Disable RTS H/W control mode */
-> +		setting &= ~(BIT(4) | BIT(5));
-> +	}
+for you to fetch changes up to 61e86cc90af49cecef9c54ccea1f572fbcb695ac=
+:
 
-Please make sure you correct the rs485 configuration with what you can
-actually support.  Look at 8250_lpc18xx.c as an example.  In your case
-when the function returns it should have SER_RS485_ENABLED and one of
-SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND set and nothing else
-(or be completely zeroed if SER_RS485_ENABLED was not set).
+  tty: vt: Fix !TASK_RUNNING diagnostic warning from paste_selection() =
+(2015-07-23 18:08:29 -0700)
+
+----------------------------------------------------------------
+TTY/Serial driver fixes for 4.2-rc4
+
+Here are a number of small serial and tty fixes for reported issues.
+
+All have been in linux-next successfully.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Axel Lin (1):
+      serial: etraxfs-uart: Fix release etraxfs_uart_ports
+
+Bo Svang=E5rd (1):
+      sc16is7xx: fix FIFO address of secondary UART
+
+David Jander (1):
+      Revert "serial: imx: initialized DMA w/o HW flow enabled"
+
+Dongxing Zhang (1):
+      tty/vt: Fix the memory leak in visual_init
+
+Jakub Kicinski (1):
+      sc16is7xx: fix Kconfig dependencies
+
+Krzysztof Kozlowski (1):
+      serial: amba-pl011: Fix devm_ioremap_resource return value check
+
+Peter Hurley (4):
+      n_tty: signal and flush atomically
+      m32r: Add ioreadXX/iowriteXX big-endian mmio accessors
+      serial: core: Fix crashes while echoing when closing
+      tty: vt: Fix !TASK_RUNNING diagnostic warning from paste_selectio=
+n()
+
+ arch/m32r/include/asm/io.h        |  5 +++++
+ drivers/tty/n_tty.c               | 16 +++++++++++++---
+ drivers/tty/serial/Kconfig        |  2 +-
+ drivers/tty/serial/amba-pl011.c   |  4 ++--
+ drivers/tty/serial/etraxfs-uart.c |  2 +-
+ drivers/tty/serial/imx.c          | 15 +++++++--------
+ drivers/tty/serial/sc16is7xx.c    | 30 +++++++++++++++++++++++-------
+ drivers/tty/serial/serial_core.c  |  3 ++-
+ drivers/tty/vt/selection.c        |  1 +
+ drivers/tty/vt/vt.c               |  2 ++
+ 10 files changed, 57 insertions(+), 23 deletions(-)
