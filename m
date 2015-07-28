@@ -1,56 +1,35 @@
-From: Bin Gao <bin.gao@linux.intel.com>
-Subject: Re: [PATCH v6 1/2] serial_core: add pci uart early console support
-Date: Mon, 27 Jul 2015 16:33:12 -0700
-Message-ID: <20150727233312.GA188620@worksta>
-References: <20150529183839.GA13090@worksta>
- <20150608181711.GA181146@worksta>
- <20150723222127.GA9973@kroah.com>
+From: Peter Hung <hpeter@gmail.com>
+Subject: Re: [PATCH 1/1] serial: 8250_pci: add RS485 for F81504/508/512
+Date: Tue, 28 Jul 2015 09:44:21 +0800
+Message-ID: <55B6DE75.8090309@gmail.com>
+References: <1437717339-28881-1-git-send-email-hpeter+linux_kernel@gmail.com>
+ <20150725113545.6bce8038@north>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150723222127.GA9973@kroah.com>
+In-Reply-To: <20150725113545.6bce8038@north>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.cz>, Paul Bolle <pebolle@tiscali.nl>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: =?UTF-8?Q?Jakub_Kici=c5=84ski?= <moorray3@wp.pl>, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 23, 2015 at 03:21:27PM -0700, Greg Kroah-Hartman wrote:
-> > +config PCI_EARLY
-> > +	bool "Early PCI access"
-> > +	depends on PCI
-> > +	default n
-> 
-> Default is always 'n' so this isn't needed here.
+Hi Jakub Kici=C5=84ski,
 
-Will fix this.
+Jakub Kici=C5=84ski =E6=96=BC 2015/7/25 =E4=B8=8B=E5=8D=88 05:35 =E5=AF=
+=AB=E9=81=93:
+> Please make sure you correct the rs485 configuration with what you ca=
+n
+> actually support.  Look at 8250_lpc18xx.c as an example.  In your cas=
+e
+> when the function returns it should have SER_RS485_ENABLED and one of
+> SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND set and nothing else
+> (or be completely zeroed if SER_RS485_ENABLED was not set).
+>
 
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > index 0b7bb12..5b21999 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -34,10 +34,15 @@
-> >  #include <linux/serial_core.h>
-> >  #include <linux/delay.h>
-> >  #include <linux/mutex.h>
-> > +#include <linux/pci_regs.h>
-> >  
-> >  #include <asm/irq.h>
-> >  #include <asm/uaccess.h>
-> >  
-> > +#ifdef CONFIG_PCI_EARLY
-> > +#include <asm/pci-direct.h>
-> > +#endif
-> 
-> You shouldn't need an #ifdef here, the .h file should handle it.  Why
-> doesn't pci.h always include this if it is present?
+Thanks for your advice, I'll fix it and re-send patch
 
-Only x86 has asm/pci-direct.h. Compiling on any other archs will fail
-if we don't put CONFIG_PCI_EARLY here. That's way I added a new config
-option CONFIG_PCI_EARLY to drivers/pci/Kconfig and let an arch to select
-it. Do you want me to move "#include <asm/pci-direct.h>" to linux/pci.h?
-
-> 
-> thanks,
-> 
-> greg k-h
+--=20
+With Best Regards,
+Peter Hung
