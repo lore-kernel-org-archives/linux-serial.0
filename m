@@ -1,138 +1,46 @@
-From: Peter Hung <hpeter@gmail.com>
-Subject: [PATCH V2 1/1] serial: 8250_pci: add RS485 for F81504/508/512
-Date: Tue, 28 Jul 2015 11:59:24 +0800
-Message-ID: <1438055964-9310-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] serial: 8250: Do XR17V35X specific wakeup in
+ serial8250_do_startup
+Date: Tue, 28 Jul 2015 09:20:59 +0200
+Message-ID: <20150728072059.GQ10969@8bytes.org>
+References: <1437035353-13708-1-git-send-email-joro@8bytes.org>
+ <55A90467.9000804@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <55A90467.9000804@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Tony Lindgren <tony@atomide.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, Michael Welling <mwelling@ieee.org>, Joe Schultz <jschultz@xes-inc.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add RS485 control for Fintek F81504/508/512
+Hi Peter,
 
-F81504/508/512 can control their RTS with H/W mode.
-PCI configuration space for each port is 0x40 + idx * 8 + 7.
+On Fri, Jul 17, 2015 at 09:34:31AM -0400, Peter Hurley wrote:
+> On 07/16/2015 04:29 AM, Joerg Roedel wrote:
+> > From: Joerg Roedel <jroedel@suse.de>
+> > 
+> > The XR17V35X UART needs the ECB bit set in its XR_EFR
+> > register to enable access to IER [7:5], ISR [5:4], FCR[5:4],
+> > MCR[7:5], and MSR [7:0].
+> > 
+> > Also reset the IER register to mask interrupts after access
+> > to all bits of this register has been enabled.
+> > 
+> > This makes my 8-port XR17V35X working with the in-kernel
+> > serial driver.
+> 
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 
-When it set with 0x01, it's configured with RS232 mode.
-RTS is controlled by MCR.
+Thanks for your review.
 
-When it set with 0x11, it's configured with RS485 mode.
-RTS is controlled by H/W, RTS low with idle & RX, high with TX.
+> Also, would you please find out what bits are set in the IER
+> that this fixes and let me know? I don't have this hardware.
 
-When it set with 0x31, it's configured with RS485 mode.
-RTS is controlled by H/W, RTS high with idle & RX, low with TX.
+Unfortunatly I put the card back into a production machine and can't
+easily check this anymore. But I'll let you know when I update the
+kernel on the box next time.
 
-We will force 0x01 on pci_fintek_setup().
 
-Changelog:
-V2
-1. change direct bit operation with meaningful define name.
-2. due to F81504 series only support SER_RS485_ENABLED &
-   SER_RS485_RTS_ON_SEND. We'll clean non-support area of
-   struct serial_rs485.
-3. change control method of SER_RS485_RTS_ON_SEND. In our
-   reference circuit, the transceiver default mode needed
-   in rx mode with RTS logic high, tx mode with RTS logic low.
-
-   If user set to SER_RS485_ENABLED(default), we should set
-   reg with 0x31. if SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND
-   will set reg to 0x11.
-
-Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
----
- drivers/tty/serial/8250/8250_pci.c | 61 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 61 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index e55f18b..5d16e14 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1685,11 +1685,60 @@ pci_brcm_trumanage_setup(struct serial_private *priv,
- 	return ret;
- }
- 
-+/* RTS will control by MCR if this bit is 0 */
-+#define FINTEK_RTS_CONTROL_BY_HW	BIT(4)
-+/* only worked with FINTEK_RTS_CONTROL_BY_HW on */
-+#define FINTEK_RTS_INVERT		BIT(5)
-+
-+/* We should do proper H/W transceiver setting before change to RS485 mode */
-+static int pci_fintek_rs485_config(struct uart_port *port,
-+			       struct serial_rs485 *rs485)
-+{
-+	u8 setting;
-+	u8 *index = (u8 *) port->private_data;
-+	struct pci_dev *pci_dev = container_of(port->dev, struct pci_dev,
-+						dev);
-+
-+	pci_read_config_byte(pci_dev, 0x40 + 8 * *index + 7, &setting);
-+
-+	if (rs485->flags & SER_RS485_ENABLED)
-+		memset(rs485->padding, 0, sizeof(rs485->padding));
-+	else
-+		memset(rs485, 0, sizeof(*rs485));
-+
-+	/* F81504/508/512 not support RTS delay before or after send */
-+	rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND;
-+
-+	if (rs485->flags & SER_RS485_ENABLED) {
-+		/* Enable RTS H/W control mode */
-+		setting |= FINTEK_RTS_CONTROL_BY_HW;
-+
-+		if (rs485->flags & SER_RS485_RTS_ON_SEND) {
-+			/* RTS driving high on TX */
-+			setting &= ~FINTEK_RTS_INVERT;
-+		} else {
-+			/* RTS driving low on TX */
-+			setting |= FINTEK_RTS_INVERT;
-+		}
-+
-+		rs485->delay_rts_after_send = 0;
-+		rs485->delay_rts_before_send = 0;
-+	} else {
-+		/* Disable RTS H/W control mode */
-+		setting &= ~(FINTEK_RTS_CONTROL_BY_HW | FINTEK_RTS_INVERT);
-+	}
-+
-+	pci_write_config_byte(pci_dev, 0x40 + 8 * *index + 7, setting);
-+	port->rs485 = *rs485;
-+	return 0;
-+}
-+
- static int pci_fintek_setup(struct serial_private *priv,
- 			    const struct pciserial_board *board,
- 			    struct uart_8250_port *port, int idx)
- {
- 	struct pci_dev *pdev = priv->dev;
-+	u8 *data;
- 	u8 config_base;
- 	u16 iobase;
- 
-@@ -1702,6 +1751,15 @@ static int pci_fintek_setup(struct serial_private *priv,
- 
- 	port->port.iotype = UPIO_PORT;
- 	port->port.iobase = iobase;
-+	port->port.rs485_config = pci_fintek_rs485_config;
-+
-+	data = devm_kzalloc(&pdev->dev, sizeof(u8), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	/* preserve index in PCI configuration space */
-+	*data = idx;
-+	port->port.private_data = data;
- 
- 	return 0;
- }
-@@ -1752,6 +1810,9 @@ static int pci_fintek_init(struct pci_dev *dev)
- 				(u8)((iobase & 0xff00) >> 8));
- 
- 		pci_write_config_byte(dev, config_base + 0x06, dev->irq);
-+
-+		/* force init to RS232 Mode */
-+		pci_write_config_byte(dev, config_base + 0x07, 0x01);
- 	}
- 
- 	return max_port;
--- 
-1.9.1
+	Joerg
