@@ -1,66 +1,64 @@
 From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Subject: [RFC PATCH v2 3/3] serial: 8250: Fix autoconfig_irq() to reduce the
- risk of failure
-Date: Wed, 29 Jul 2015 08:13:01 +0000
-Message-ID: <1438157443-19447-4-git-send-email-t-kageyama@cp.jp.nec.com>
-References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com>
+Subject: Re: [PATCH 1/2] serial: 8250: Fix autoconfig_irq() to avoid race
+ conditions
+Date: Wed, 29 Jul 2015 08:13:44 +0000
+Message-ID: <55B88B38.4070703@cp.jp.nec.com>
+References: <55717224.9060104@cp.jp.nec.com>
+ <55717294.8020905@cp.jp.nec.com> <20150723223202.GA23915@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-2022-jp"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com>
+In-Reply-To: <20150723223202.GA23915@kroah.com>
 Content-Language: ja-JP
+Content-ID: <81439D3C2E113947ACDD9353532602CB@gisp.nec.co.jp>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>
-Cc: Taichi Kageyama <t-kageyama@cp.jp.nec.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-autoconfig_irq() expects a CPU detects an interrupt from a serial
-port, but it doesn't work when the CPU has interrupts disabled
-during the waiting time.
-New one tries to specify own CPU to probe the interrupt
-and reduce the risk of the failure as far as possible.
+On 2015/07/24 7:32, gregkh@linuxfoundation.org wrote:
+> On Fri, Jun 05, 2015 at 09:57:40AM +0000, Taichi Kageyama wrote:
+>> The following race conditions can happen if a serial is used as console.
+>>   Case1. CPU_B handles an interrupt from a serial
+>>     autoconfig_irq() fails whether the interrupt is raised or not
+>>     if CPU_B is disabled to handle interrupts for longer than it expects.
+>>   Case2. CPU_B clears UART_IER just after CPU_A sets UART_IER
+>>     A serial may not make an interrupt.
+>>     autoconfig_irq() can fail if the interrupt is not raised.
+>>   Case3. CPU_A sets UART_IER just after CPU_B clears UART_IER
+>>     This is an unexpected behavior for uart_console_write().
+>>
+>>   CPU_A [autoconfig_irq]      CPU_B [serial8250_console_write]
+>>   -----------------------------------------------------------------
+>>   probe_irq_on()              spin_lock_irqsave(&port->lock,)
+>>   serial_outp(,UART_IER,0x0f) serial_out(,UART_IER,0)
+>>   udelay(20);                 uart_console_write()
+>>   probe_irq_off()
+>>                               spin_unlock_irqrestore(&port->lock,)
+>>   -----------------------------------------------------------------
+>>
+>> If autoconfig_irq() fails, the console doesn't work in interrupt mode,
+>> the mode cannot be changed anymore, and "input overrun"
+>> (which can make operation mistakes) happens easily.
+>> This problem happens with high rate every boot once it occurs
+>> because the boot sequence is always almost same.
+>>
+>> Signed-off-by: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+>> Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+>> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+>> ---
+>>   drivers/tty/serial/8250/8250_core.c |    6 ++++++
+>>   1 files changed, 6 insertions(+), 0 deletions(-)
+> 
+> Does not apply to 4.2-rc3 :(
+> 
 
-Signed-off-by: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
-Suggested-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/8250/8250_core.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Sorry for the trouble and late reply.
+It's my fault. It was encoded as base64 by Exchange.
+I sent new patch set including this patch.
+I updated commit log.
 
-diff --git v4.2-rc4.org/drivers/tty/serial/8250/8250_core.c v4.2-rc4.work/drivers/tty/serial/8250/8250_core.c
-index ed1e23e..85e8cdf 100644
---- v4.2-rc4.org/drivers/tty/serial/8250/8250_core.c
-+++ v4.2-rc4.work/drivers/tty/serial/8250/8250_core.c
-@@ -1295,6 +1295,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	unsigned int ICP = 0;
- 	unsigned long irqs;
- 	int irq;
-+	cpumask_t this_cpu;
- 
- 	if (port->flags & UPF_FOURPORT) {
- 		ICP = (port->iobase & 0xfe0) | 0x1f;
-@@ -1313,6 +1314,13 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	serial_out(up, UART_MCR, UART_MCR_OUT1 | UART_MCR_OUT2);
- 
- 	irqs = probe_irq_on();
-+
-+	/* Try to detect irq on the current CPU */
-+	cpumask_clear(&this_cpu);
-+	preempt_disable();
-+	cpumask_set_cpu(smp_processor_id(), &this_cpu);
-+	probe_irq_set_affinity(irqs, &this_cpu);
-+
- 	serial_out(up, UART_MCR, 0);
- 	udelay(10);
- 	if (port->flags & UPF_FOURPORT) {
-@@ -1330,6 +1338,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	serial_out(up, UART_TX, 0xFF);
- 	udelay(20);
- 	irq = probe_irq_off(irqs);
-+	preempt_enable();
- 
- 	serial_out(up, UART_MCR, save_mcr);
- 	serial_out(up, UART_IER, save_ier);
--- 
-2.4.6
+
+Regards,
+Taichi
