@@ -1,16 +1,16 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v3 1/1] Serial: imx: add dev_pm_ops to support suspend to
+From: Shenwei Wang <Shenwei.Wang@freescale.com>
+Subject: RE: [PATCH v3 1/1] Serial: imx: add dev_pm_ops to support suspend to
  ram/disk
-Date: Wed, 29 Jul 2015 18:45:35 -0300
-Message-ID: <CAOMZO5DaZ+1Ud0RAX2RELz5c0zyZUo_X1y50gY2XwM5o0BeVmg@mail.gmail.com>
+Date: Wed, 29 Jul 2015 21:41:00 +0000
+Message-ID: <CY1PR0301MB0843BEF6A40A0A28018E0D5D838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
 References: <1438203535-38028-1-git-send-email-shenwei.wang@freescale.com>
  <CAOMZO5Aj5PASPKRq47vmenDBSPMPHdLgSbJZXkhZu3MNYprqXA@mail.gmail.com>
- <CY1PR0301MB0843BEF6A40A0A28018E0D5D838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CY1PR0301MB0843BEF6A40A0A28018E0D5D838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
+In-Reply-To: <CAOMZO5Aj5PASPKRq47vmenDBSPMPHdLgSbJZXkhZu3MNYprqXA@mail.gmail.com>
+Content-Language: en-US
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,18 +20,60 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Shenwei Wang <Shenwei.Wang@freescale.com>
+To: Fabio Estevam <festevam@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jul 29, 2015 at 6:41 PM, Shenwei Wang
-<Shenwei.Wang@freescale.com> wrote:
-
->> clk_enable() may fail, so you should check its return value.
->
-> The check seems a little superfluous because the failure condition for clk_enable is
-> (clk == NULL || IS_ERR(clk))
-> Once this function is called which means the initialization of the driver is successful.
-
-Not superfluos. You can't assume that clk_enable() will always be
-successful. Better check its return value.
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBGYWJpbyBFc3RldmFtIFttYWls
+dG86ZmVzdGV2YW1AZ21haWwuY29tXQ0KPiBTZW50OiAyMDE15bm0N+aciDI55pelIDE2OjIxDQo+
+IFRvOiBXYW5nIFNoZW53ZWktQjM4MzM5DQo+IENjOiBHcmVnIEtyb2FoLUhhcnRtYW47IGxpbnV4
+LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gbGludXgtc2VyaWFsQHZnZXIua2Vy
+bmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYzIDEvMV0gU2VyaWFsOiBpbXg6IGFkZCBk
+ZXZfcG1fb3BzIHRvIHN1cHBvcnQgc3VzcGVuZCB0bw0KPiByYW0vZGlzaw0KPiANCj4gT24gV2Vk
+LCBKdWwgMjksIDIwMTUgYXQgNTo1OCBQTSwgU2hlbndlaSBXYW5nIDxzaGVud2VpLndhbmdAZnJl
+ZXNjYWxlLmNvbT4NCj4gd3JvdGU6DQo+IA0KPiA+ICtzdGF0aWMgaW50IGlteF9zZXJpYWxfcG9y
+dF9zdXNwZW5kX25vaXJxKHN0cnVjdCBkZXZpY2UgKmRldikgew0KPiA+ICsgICAgICAgc3RydWN0
+IHBsYXRmb3JtX2RldmljZSAqcGRldiA9IHRvX3BsYXRmb3JtX2RldmljZShkZXYpOw0KPiA+ICsg
+ICAgICAgc3RydWN0IGlteF9wb3J0ICpzcG9ydCA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYp
+Ow0KPiA+ICsNCj4gPiArICAgICAgIC8qIFNhdmUgbmVjZXNzYXJ5IHJlZ3MgKi8NCj4gPiArICAg
+ICAgIGNsa19lbmFibGUoc3BvcnQtPmNsa19pcGcpOw0KPiANCj4gY2xrX2VuYWJsZSgpIG1heSBm
+YWlsLCBzbyB5b3Ugc2hvdWxkIGNoZWNrIGl0cyByZXR1cm4gdmFsdWUuDQoNClRoZSBjaGVjayBz
+ZWVtcyBhIGxpdHRsZSBzdXBlcmZsdW91cyBiZWNhdXNlIHRoZSBmYWlsdXJlIGNvbmRpdGlvbiBm
+b3IgY2xrX2VuYWJsZSBpcyANCihjbGsgPT0gTlVMTCB8fCBJU19FUlIoY2xrKSkNCk9uY2UgdGhp
+cyBmdW5jdGlvbiBpcyBjYWxsZWQgd2hpY2ggbWVhbnMgdGhlIGluaXRpYWxpemF0aW9uIG9mIHRo
+ZSBkcml2ZXIgaXMgc3VjY2Vzc2Z1bC4NCg0KPiA+ICsgICAgICAgc3BvcnQtPnNhdmVkX3JlZ1sw
+XSA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IxKTsNCj4gPiArICAgICAgIHNwb3J0
+LT5zYXZlZF9yZWdbMV0gPSByZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMik7DQo+ID4g
+KyAgICAgICBzcG9ydC0+c2F2ZWRfcmVnWzJdID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSAr
+IFVDUjMpOw0KPiA+ICsgICAgICAgc3BvcnQtPnNhdmVkX3JlZ1szXSA9IHJlYWRsKHNwb3J0LT5w
+b3J0Lm1lbWJhc2UgKyBVQ1I0KTsNCj4gPiArICAgICAgIHNwb3J0LT5zYXZlZF9yZWdbNF0gPSBy
+ZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUZDUik7DQo+ID4gKyAgICAgICBzcG9ydC0+c2F2
+ZWRfcmVnWzVdID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVFU0MpOw0KPiA+ICsgICAg
+ICAgc3BvcnQtPnNhdmVkX3JlZ1s2XSA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVVElN
+KTsNCj4gPiArICAgICAgIHNwb3J0LT5zYXZlZF9yZWdbN10gPSByZWFkbChzcG9ydC0+cG9ydC5t
+ZW1iYXNlICsgVUJJUik7DQo+ID4gKyAgICAgICBzcG9ydC0+c2F2ZWRfcmVnWzhdID0gcmVhZGwo
+c3BvcnQtPnBvcnQubWVtYmFzZSArIFVCTVIpOw0KPiA+ICsgICAgICAgc3BvcnQtPnNhdmVkX3Jl
+Z1s5XSA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBJTVgyMV9VVFMpOw0KPiA+ICsgICAg
+ICAgY2xrX2Rpc2FibGUoc3BvcnQtPmNsa19pcGcpOw0KPiA+ICsNCj4gPiArICAgICAgIGRldl9k
+YmcoZGV2LCAiMHglcCAoJWQpXHJcbiIsIHNwb3J0LT5wb3J0Lm1lbWJhc2UsDQo+ID4gKyBzcG9y
+dC0+cG9ydC5saW5lKTsNCj4gPiArDQo+ID4gKyAgICAgICByZXR1cm4gMDsNCj4gPiArfQ0KPiA+
+ICsNCj4gPiArc3RhdGljIGludCBpbXhfc2VyaWFsX3BvcnRfcmVzdW1lX25vaXJxKHN0cnVjdCBk
+ZXZpY2UgKmRldikgew0KPiA+ICsgICAgICAgc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldiA9
+IHRvX3BsYXRmb3JtX2RldmljZShkZXYpOw0KPiA+ICsgICAgICAgc3RydWN0IGlteF9wb3J0ICpz
+cG9ydCA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYpOw0KPiA+ICsNCj4gPiArICAgICAgIGNs
+a19lbmFibGUoc3BvcnQtPmNsa19pcGcpOw0KPiANCj4gU2FtZSBoZXJlLg0KPiANCj4gPiArICAg
+ICAgIHdyaXRlbChzcG9ydC0+c2F2ZWRfcmVnWzRdLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUZD
+Uik7DQo+ID4gKyAgICAgICB3cml0ZWwoc3BvcnQtPnNhdmVkX3JlZ1s1XSwgc3BvcnQtPnBvcnQu
+bWVtYmFzZSArIFVFU0MpOw0KPiA+ICsgICAgICAgd3JpdGVsKHNwb3J0LT5zYXZlZF9yZWdbNl0s
+IHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVVElNKTsNCj4gPiArICAgICAgIHdyaXRlbChzcG9ydC0+
+c2F2ZWRfcmVnWzddLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUJJUik7DQo+ID4gKyAgICAgICB3
+cml0ZWwoc3BvcnQtPnNhdmVkX3JlZ1s4XSwgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVCTVIpOw0K
+PiA+ICsgICAgICAgd3JpdGVsKHNwb3J0LT5zYXZlZF9yZWdbOV0sIHNwb3J0LT5wb3J0Lm1lbWJh
+c2UgKyBJTVgyMV9VVFMpOw0KPiA+ICsgICAgICAgd3JpdGVsKHNwb3J0LT5zYXZlZF9yZWdbMF0s
+IHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IxKTsNCj4gPiArICAgICAgIHdyaXRlbChzcG9ydC0+
+c2F2ZWRfcmVnWzFdIHwgMHgxLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMik7DQo+IA0KPiBX
+aHkgdGhpcyBtYWdpYyAnfCAweDEnPyBDYW4ndCB5b3UgdXNlIGEgZGVmaW5lIGluc3RlYWQ/DQoN
+Clllcywgc2hvdWxkIGJlIGEgbWFjcm8uDQoNClRoYW5rcywNClNoZW53ZWkNCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFp
+bGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlz
+dHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
