@@ -1,127 +1,173 @@
-From: Jose Manuel Abuin Mosquera <abuinjm@gmail.com>
-Subject: [PATCH 1/1] Changed some lines according to coding style in drivers/tty/serial/jsm
-Date: Wed, 29 Jul 2015 08:59:32 +0200
-Message-ID: <1438153172-17881-1-git-send-email-abuinjm@gmail.com>
+From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+Subject: Re: [PATCH 2/2] serial: 8250: Allow to skip autoconfig_irq() for a
+ console
+Date: Wed, 29 Jul 2015 08:09:01 +0000
+Message-ID: <55B88A1D.2000601@cp.jp.nec.com>
+References: <55717224.9060104@cp.jp.nec.com>
+ <557173EC.5000307@cp.jp.nec.com> <559D0FCC.5040107@hurleysoftware.com>
+ <559D1D39.9070405@redhat.com> <559D2AE8.8080603@hurleysoftware.com>
+ <559D2CFB.1060507@redhat.com> <559E075F.8040800@cp.jp.nec.com>
+ <55A05F56.90305@hurleysoftware.com> <55A462D1.3080709@cp.jp.nec.com>
+ <55A56313.4050703@hurleysoftware.com> <55A78042.2090408@cp.jp.nec.com>
+ <55AD237B.1080904@hurleysoftware.com> <55AE147D.5020808@cp.jp.nec.com>
+ <55B68A05.2060809@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55B68A05.2060809@hurleysoftware.com>
+Content-Language: ja-JP
+Content-ID: <8EE8E538AB20A94688983C9E43BD7387@gisp.nec.co.jp>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Prarit Bhargava <prarit@redhat.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-Changed some lines according to coding style in drivers/tty/serial/jsm.
-
-Some lines passing 80 characters are left
-
-Signed-off-by: Jose Manuel Abuin Mosquera <abuinjm@gmail.com>
----
- drivers/tty/serial/jsm/jsm_tty.c | 39 ++++++++++++++++++++++-----------------
- 1 file changed, 22 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index 524e86a..c96b0a2 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -124,6 +124,7 @@ static void jsm_tty_set_mctrl(struct uart_port *port, unsigned int mctrl)
- static void jsm_tty_write(struct uart_port *port)
- {
- 	struct jsm_channel *channel;
-+
- 	channel = container_of(port, struct jsm_channel, uart_port);
- 	channel->ch_bd->bd_ops->copy_data_from_queue_to_uart(channel);
- }
-@@ -399,6 +400,7 @@ int jsm_tty_init(struct jsm_board *brd)
- 			 * interrupt context, and there are no locks held.
- 			 */
- 			brd->channels[i] = kzalloc(sizeof(struct jsm_channel), GFP_KERNEL);
-+
- 			if (!brd->channels[i]) {
- 				jsm_dbg(CORE, &brd->pci_dev,
- 					"%s:%d Unable to allocate memory for channel struct\n",
-@@ -468,18 +470,19 @@ int jsm_uart_port_init(struct jsm_board *brd)
- 		brd->channels[i]->uart_port.ops = &jsm_ops;
- 		line = find_first_zero_bit(linemap, MAXLINES);
- 		if (line >= MAXLINES) {
--			printk(KERN_INFO "jsm: linemap is full, added device failed\n");
-+			pr_info("jsm: linemap is full, added device failed\n");
- 			continue;
- 		} else
- 			set_bit(line, linemap);
- 		brd->channels[i]->uart_port.line = line;
--		rc = uart_add_one_port (&jsm_uart_driver, &brd->channels[i]->uart_port);
--		if (rc){
--			printk(KERN_INFO "jsm: Port %d failed. Aborting...\n", i);
-+		rc = uart_add_one_port(&jsm_uart_driver, &brd->channels[i]->uart_port);
-+
-+		if (rc) {
-+			pr_info("jsm: Port %d failed. Aborting...\n", i);
- 			return rc;
-+		} else {
-+			pr_info("jsm: Port %d added\n", i);
- 		}
--		else
--			printk(KERN_INFO "jsm: Port %d added\n", i);
- 	}
- 
- 	jsm_dbg(INIT, &brd->pci_dev, "finish\n");
-@@ -542,7 +545,7 @@ void jsm_input(struct jsm_channel *ch)
- 	tp = port->tty;
- 
- 	bd = ch->ch_bd;
--	if(!bd)
-+	if (!bd)
- 		return;
- 
- 	spin_lock_irqsave(&ch->ch_lock, lock_flags);
-@@ -570,7 +573,7 @@ void jsm_input(struct jsm_channel *ch)
- 	 *input data and return immediately.
- 	 */
- 	if (!tp ||
--		!(tp->termios.c_cflag & CREAD) ) {
-+		!(tp->termios.c_cflag & CREAD)) {
- 
- 		jsm_dbg(READ, &ch->ch_bd->pci_dev,
- 			"input. dropping %d bytes on port %d...\n",
-@@ -625,14 +628,14 @@ void jsm_input(struct jsm_channel *ch)
- 				 * Give the Linux ld the flags in the
- 				 * format it likes.
- 				 */
--				if (*(ch->ch_equeue +tail +i) & UART_LSR_BI)
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i),  TTY_BREAK);
--				else if (*(ch->ch_equeue +tail +i) & UART_LSR_PE)
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i), TTY_PARITY);
--				else if (*(ch->ch_equeue +tail +i) & UART_LSR_FE)
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i), TTY_FRAME);
-+				if (*(ch->ch_equeue + tail + i) & UART_LSR_BI)
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i),  TTY_BREAK);
-+				else if (*(ch->ch_equeue + tail + i) & UART_LSR_PE)
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i), TTY_PARITY);
-+				else if (*(ch->ch_equeue + tail + i) & UART_LSR_FE)
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i), TTY_FRAME);
- 				else
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i), TTY_NORMAL);
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i), TTY_NORMAL);
- 			}
- 		} else {
- 			tty_insert_flip_string(port, ch->ch_rqueue + tail, s);
-@@ -763,7 +766,9 @@ void jsm_check_queue_flow_control(struct jsm_channel *ch)
- 	int qleft;
- 
- 	/* Store how much space we have left in the queue */
--	if ((qleft = ch->ch_r_tail - ch->ch_r_head - 1) < 0)
-+	qleft = ch->ch_r_tail - ch->ch_r_head - 1;
-+
-+	if (qleft < 0)
- 		qleft += RQUEUEMASK + 1;
- 
- 	/*
-@@ -784,7 +789,7 @@ void jsm_check_queue_flow_control(struct jsm_channel *ch)
- 	if (qleft < 256) {
- 		/* HWFLOW */
- 		if (ch->ch_c_cflag & CRTSCTS) {
--			if(!(ch->ch_flags & CH_RECEIVER_OFF)) {
-+			if (!(ch->ch_flags & CH_RECEIVER_OFF)) {
- 				bd_ops->disable_receiver(ch);
- 				ch->ch_flags |= (CH_RECEIVER_OFF);
- 				jsm_dbg(READ, &ch->ch_bd->pci_dev,
--- 
-2.4.6
+T24gMjAxNS8wNy8yOCA0OjQ0LCBQZXRlciBIdXJsZXkgd3JvdGU6DQo+IE9uIDA3LzIxLzIwMTUg
+MDU6NDQgQU0sIFRhaWNoaSBLYWdleWFtYSB3cm90ZToNCj4+IE9uIDIwMTUvMDcvMjEgMTozNiwg
+UGV0ZXIgSHVybGV5IHdyb3RlOg0KPj4+IE9uIDA3LzE2LzIwMTUgMDU6NTggQU0sIFRhaWNoaSBL
+YWdleWFtYSB3cm90ZToNCj4+Pj4gT24gMjAxNS8wNy8xNSA0OjI5LCBQZXRlciBIdXJsZXkgd3Jv
+dGU6DQo+Pj4+PiBPbiAwNy8xMy8yMDE1IDA5OjE2IFBNLCBUYWljaGkgS2FnZXlhbWEgd3JvdGU6
+DQo+Pj4+Pj4gT24gMjAxNS8wNy8xMSA5OjEyLCBQZXRlciBIdXJsZXkgd3JvdGU6DQo+Pj4+Pj4+
+IE9uIDA3LzA5LzIwMTUgMDE6MzIgQU0sIFRhaWNoaSBLYWdleWFtYSB3cm90ZToNCj4+Pj4+Pj4+
+IE9uIDIwMTUvMDcvMDggMjM6MDAsIFByYXJpdCBCaGFyZ2F2YSB3cm90ZToNCj4+Pj4+Pj4+PiBP
+biAwNy8wOC8yMDE1IDA5OjUxIEFNLCBQZXRlciBIdXJsZXkgd3JvdGU6DQo+Pj4+Pj4+Pj4+IE9u
+IDA3LzA4LzIwMTUgMDg6NTMgQU0sIFByYXJpdCBCaGFyZ2F2YSB3cm90ZToNCj4+Pj4+Pj4+Pj4+
+IE9uIDA3LzA4LzIwMTUgMDc6NTUgQU0sIFBldGVyIEh1cmxleSB3cm90ZToNCj4+Pj4+Pj4+Pj4+
+PiBPbiAwNi8wNS8yMDE1IDA2OjAzIEFNLCBUYWljaGkgS2FnZXlhbWEgd3JvdGU6DQo+Pj4+Pj4+
+Pj4+Pj4+IFRoaXMgcGF0Y2ggcHJvdmlkZXMgYSBuZXcgcGFyYW1ldGVyIGFzIGEgd29ya2Fyb3Vu
+ZCBvZiB0aGUgZm9sbG93aW5nDQo+Pj4+Pj4+Pj4+Pj4+IHByb2JsZW0uIEl0IGFsbG93cyB1cyB0
+byBza2lwIGF1dG9jb25maWdfaXJxKCkgYW5kIHRvIHVzZSBhIHdlbGwta25vd24gaXJxDQo+Pj4+
+Pj4+Pj4+Pj4+IG51bWJlciBmb3IgYSBjb25zb2xlIGV2ZW4gaWYgQ09ORklHX1NFUklBTF84MjUw
+X0RFVEVDVF9JUlEgaXMgZGVmaW5lZC4NCj4+Pj4+Pj4+Pj4+Pj4NCj4+Pj4+Pj4+Pj4+Pj4gVGhl
+cmUncmUgY2FzZXMgd2hlcmUgYXV0b2NvbmZpZ19pcnEoKSBmYWlscyBkdXJpbmcgYm9vdC4NCj4+
+Pj4+Pj4+Pj4+Pj4gSW4gdGhlc2UgY2FzZXMsIHRoZSBjb25zb2xlIGRvZXNuJ3Qgd29yayBpbiBp
+bnRlcnJ1cHQgbW9kZSwNCj4+Pj4+Pj4+Pj4+Pj4gdGhlIG1vZGUgY2Fubm90IGJlIGNoYW5nZWQg
+YW55bW9yZSwgYW5kICJpbnB1dCBvdmVycnVuIg0KPj4+Pj4+Pj4+Pj4+PiAod2hpY2ggY2FuIG1h
+a2Ugb3BlcmF0aW9uIG1pc3Rha2VzKSBoYXBwZW5zIGVhc2lseS4NCj4+Pj4+Pj4+Pj4+Pj4gVGhp
+cyBwcm9ibGVtIGhhcHBlbnMgd2l0aCBoaWdoIHJhdGUgZXZlcnkgYm9vdCBvbmNlIGl0IG9jY3Vy
+cw0KPj4+Pj4+Pj4+Pj4+PiBiZWNhdXNlIHRoZSBib290IHNlcXVlbmNlIGlzIGFsd2F5cyBhbG1v
+c3Qgc2FtZS4NCj4+Pj4+Pj4+Pj4+Pj4NCj4+Pj4+Pj4+Pj4+Pj4gYXV0b2NvbmZpZ19pcnEoKSBh
+c3N1bWVzIHRoYXQgYSBDUFUgY2FuIGhhbmRsZSBhbiBpbnRlcnJ1cHQgZnJvbSBhIHNlcmlhbA0K
+Pj4+Pj4+Pj4+Pj4+PiBkdXJpbmcgdGhlIHdhaXRpbmcgdGltZSwgYnV0IHRoZXJlJ3JlIHNvbWUg
+Y2FzZXMgd2hlcmUgdGhlIENQVSBjYW5ub3QNCj4+Pj4+Pj4+Pj4+Pj4gaGFuZGxlIHRoZSBpbnRl
+cnJ1cHQgZm9yIGxvbmdlciB0aGFuIHRoZSB0aW1lLiBJdCBjb21wbGV0ZWx5IGRlcGVuZHMgb24N
+Cj4+Pj4+Pj4+Pj4+Pj4gaG93IG90aGVyIGZ1bmN0aW9ucyB3b3JrIG9uIHRoZSBDUFUuIElkZWFs
+bHksIGF1dG9jb25maWdfaXJxKCkgc2hvdWxkIGJlDQo+Pj4+Pj4+Pj4+Pj4+IGZpeGVkDQo+Pj4+
+Pj4+Pj4+Pj4NCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBUaGFuayB5b3UgZm9yIHlvdXIgY29tbWVudHMu
+DQo+Pj4+Pj4+Pg0KPj4+Pj4+Pj4+Pj4+IEl0IGNvbXBsZXRlbHkgZGVwZW5kcyBvbiBob3cgbG9u
+ZyBzb21lIG90aGVyIGRyaXZlciBoYXMgaW50ZXJydXB0cyBkaXNhYmxlZCwNCj4+Pj4+Pj4+DQo+
+Pj4+Pj4+PiBBZ3JlZS4NCj4+Pj4+Pj4+DQo+Pj4+Pj4+Pj4+Pj4gd2hpY2ggaXMgYSBwcm9ibGVt
+IHRoYXQgbmVlZHMgZml4ZWQgX2luIHRoYXQgZHJpdmVyXy4gYXV0b2NvbmZpZ19pcnEoKSBkb2Vz
+IG5vdA0KPj4+Pj4+Pj4+Pj4+IG5lZWQgZml4aW5nLg0KPj4+Pj4+Pj4NCj4+Pj4+Pj4+IFBldGVy
+LCBpZGVhbGx5LCB5b3UncmUgcmlnaHQuDQo+Pj4+Pj4+PiBIb3dldmVyLCB3ZSBjYW5ub3QgYXNz
+dW1lIGhvdyBsb25nIG90aGVyIGRyaXZlcnMgZGlzYWJsZSBpbnRlcnJ1cHRzLg0KPj4+Pj4+Pj4g
+VGhhdCdzIHdoeSBJIGludHJvZHVjZWQgdGhpcyB3b3JrYXJvdW5kLg0KPj4+Pj4+Pj4gSW4gbXkg
+b3BpbmlvbiwgYSBjb25zb2xlIGlzIGltcG9ydGFudCBhbmQgYWx3YXlzIHNob3VsZCBiZSBhdmFp
+bGFibGUNCj4+Pj4+Pj4+IGV2ZW4gaWYgb3RoZXIgZHJpdmVycyBoYXZlIGEgYmFkIGJlaGF2aW9y
+Lg0KPj4+Pj4+Pg0KPj4+Pj4+PiBJIGhhdmUgbm8gcHJvYmxlbSB3aXRoIHdhbnRpbmcgdG8gbWFr
+ZSB0aGUgY29uc29sZSBtb3JlIHJvYnVzdCwgYnV0DQo+Pj4+Pj4+IHJhdGhlciB3aXRoIHRoZSBo
+YWNreSB3YXkgdGhpcyBpcyBiZWluZyBkb25lLg0KPj4+Pj4+DQo+Pj4+Pj4gSGkgUGV0ZXIsDQo+
+Pj4+Pj4NCj4+Pj4+PiBUaGFuayB5b3UgZm9yIHlvdXIgYWR2aWNlLg0KPj4+Pj4+IElmIHRoZXJl
+IGlzIG90aGVyIHdheSB0byBmaXggdGhpcyBwcm9ibGVtIHNpbXBseSwNCj4+Pj4+PiBJIGFsc28g
+dGhpbmsgaXQncyBiZXR0ZXIgdGhhbiB0aGUgZGlydHkgaGFjay4NCj4+Pj4+DQo+Pj4+PiBXaGls
+ZSBtb2R1bGUgcGFyYW1ldGVycyBzZWVtIGxpa2UgInNpbXBsZSIgc29sdXRpb25zIGF0IHRoZSB0
+aW1lLA0KPj4+Pj4gdGhleSBhZGQgcmVhbCBtYWludGVuYW5jZSBidXJkZW4sIGJlY2F1c2UgdGhl
+eSBlc3RhYmxpc2ggdXNlcnNwYWNlDQo+Pj4+PiByZXF1aXJlbWVudHMgdGhhdCBtdXN0IGJlIHBy
+ZXNlcnZlZCBmb3JldmVyIHRvIGF2b2lkIGJyZWFrYWdlLg0KPj4+Pg0KPj4+PiBZZWFoLCBJIGFn
+cmVlIHdpdGggeW91Lg0KPj4+Pg0KPj4+Pj4+PiBCZXR0ZXIgc29sdXRpb25zOg0KPj4+Pj4+PiAx
+LiBGaXggYXV0b3Byb2JpbmcgdG8gZm9yY2UgaXJxIGFmZmluaXR5IHRvIGF1dG9wcm9iaW5nIGNw
+dQ0KPj4+Pj4+DQo+Pj4+Pj4gSSBjb3VsZG4ndCBtYWtlIHN1cmUgd2hpY2ggQ1BVIGhhbmRsZWQg
+c2VyaWFsIGludGVycnVwdA0KPj4+Pj4+IG9uIGFsbCBwbGF0Zm9ybXMgYmVmb3JlIGlycSMgd2Fz
+IG5vdCBrbm93bi4NCj4+Pj4+PiBEbyB5b3Uga25vdyB0aGUgd2F5IHRvIGRldGVjdCB3aGljaCBD
+UFUgaXMgdXNlZCBmb3IgY29uc29sZSBzZXJpYWw/DQo+Pj4+Pg0KPj4+Pj4NCj4+Pj4+IFRoZSBi
+YXNpYyBpZGVhIHdvdWxkIGJlOg0KPj4+Pj4gMS4gZGlzYWJsZSBwcmVlbXB0aW9uDQo+Pj4+PiAy
+LiBmb3IgZWFjaCBpcnEgZGVzY3JpcHRvciBzZWxlY3RlZCBmb3IgYXV0b3Byb2JpbmcsIHNldCB0
+aGUgaXJxDQo+Pj4+PiAgICAgIGFmZmluaXR5IHRvIHRoZSBjdXJyZW50IHByb2Nlc3Nvci4NCj4+
+Pj4+IDMuIHByb2JlIHRoZSBpL28gcG9ydCBhcyBpcyBkb25lIG5vdw0KPj4+Pj4gNC4gc3RvcCBw
+cm9iaW5nDQo+Pj4+PiA1LiByZS1lbmFibGUgcHJlZW1wdGlvbi4NCj4+Pj4NCj4+Pj4gVGhhbmtz
+LCBJIHRoaW5rIGl0IHdvcmtzLg0KPj4+Pg0KPj4+Pj4gV2l0aCB0aGlzIHNvbHV0aW9uLCB5b3Vy
+IHBhdGNoIDEvMiB3b3VsZG4ndCBiZSByZXF1aXJlZCBlaXRoZXINCj4+Pj4+IGJlY2F1c2UgdGhl
+IHdvcmtlciB0aHJlYWQgdGhhdCBkaXNhYmxlZCBpbnRlcnJ1cHRzIHdvdWxkbid0IGJlDQo+Pj4+
+PiBydW5uaW5nIG9uIHRoZSBjcHUgZGV0ZWN0aW5nIHRoZSB0cmlnZ2VyZWQgaXJxKHMpLg0KPj4+
+Pg0KPj4+PiBJIHN0aWxsIG5lZWQgbXkgcGF0Y2ggMS8yIHdoaWNoIGZpeGVzIGFsc28gb3RoZXIg
+Y2FzZXMgKHNlZSBjYXNlMiAmIDMpLg0KPj4+PiBJIHRoaW5rIGJvdGggcG9ydC0+bG9jayBhbmQg
+Y29uc29sZV9sb2NrIGFyZSByZXF1aXJlZCBpbiB5b3VyIHNvbHV0aW9uLg0KPj4+PiB0byBhdm9p
+ZCBkZWFkbG9jayBiZWNhdXNlIHByaW50aygpIGNhbiBiZSBjYWxsZWQgb24gZXZlcnkgY29udGV4
+dC4NCj4+Pj4NCj4+Pj4+IEkgd291bGQgaW1hZ2luZSBtb3N0IG9yIGFsbCBvZiB0aGlzIHdvdWxk
+IGJlIGRvbmUgaW4NCj4+Pj4+IHByb2JlX2lycV9vbigpLCBwb3NzaWJseSByZWZhY3RvcmVkIHRv
+IHBlcmZvcm0gdGhlIHByZWVtcHRpb24NCj4+Pj4+IGRpc2FibGUgYW5kIGlycSBhZmZpbml0eS4N
+Cj4+Pj4NCj4+Pj4gSSB0aGluayBpbnRyb2R1Y2luZyBuZXcgZnVuY3Rpb24gbGlrZSAicHJvYmVf
+aXJxX3NldF9hZmZpbml0eSgpIiBpcyBiZXR0ZXINCj4+Pj4gdGhhbiBtb2RpZnlpbmcgcHJvYmVf
+aXJxX29uKCkuIEkgY2Fubm90IHRlc3QgYWxsIGxlZ2FjeSBkZXZpY2VzIGFuZA0KPj4+PiBJIGRv
+bid0IGhhdmUgYW55IHJlYXNvbiB0byBicmVhayB0aGUgY29kZSB3aGljaCB3b3JrcyBmb3Igb3Ro
+ZXIgZGV2aWNlcy4NCj4+Pg0KPj4+IFRoYXQncyBmaW5lLCBhbHRob3VnaCBtb3N0IG9mIHRoZSBh
+cmd1bWVudHMgZm9yIGZpeGluZyB0aGlzIGluIHRoZSBzZXJpYWwNCj4+PiBkcml2ZXIgYXBwbHkg
+ZXF1YWxseSB0byBvdGhlciB1c2VycyBvZiBwcm9iZV9pcnFfb24oKS4NCj4+Pg0KPj4+DQo+Pj4+
+Pj4gVGhlIHdheSBpcyBzYWZlIGZvciBhbGwgcGxhdGZvcm1zPw0KPj4+Pj4NCj4+Pj4+IFBsZWFz
+ZSB1bmRlcnN0YW5kIHRob3VnaCwgYXV0b3Byb2JpbmcgaXMgbm90IHNhZmUsIHBlcmlvZC4NCj4+
+Pj4+IEV2ZW4gc2F5cyBzbyBpbiBLY29uZmlnLg0KPj4+Pg0KPj4+PiBPSywgSSdsbCB0cnkgdG8g
+Y3JlYXRlIG5ldyBwYXRjaCB3aGljaCBtYWtlcyBhdXRvcHJvYmluZyBzYWZlciBhcyBwb3NzaWJs
+ZS4NCj4+Pj4gTmV3IHBhdGNoIGlzIGdvaW5nIHRvIGJlIGxpa2UgYmVsb3cuDQo+Pj4+ICAgIDEu
+IGNvbnNvbGUgYW5kIHBvcnQgbG9jaw0KPj4+PiAgICAyLiBwcm9iZV9pcnFfb24oKQ0KPj4+PiAg
+ICAzLiBwcm9iZV9pcnFfc2V0X2FmZmluaXR5KCZjcHVtYXNrKQ0KPj4+PiAgICA0LiBwcm9iZV9p
+cnFfb2ZmKCkNCj4+Pj4gICAgNS4gcG9ydCBhbmQgY29uc29sZSB1bmxvY2sNCj4+Pg0KPj4+IFRo
+ZSBwb3J0LT5sb2NrIGNhbid0IGJlIHRha2VuIGluIHRoaXMgY29udGV4dCBiZWNhdXNlIGhhcmQg
+aXJxDQo+Pj4gaGFzIHRvIGJlIGRpc2FibGVkIHdpdGggcG9ydC0+bG9jayB3aGljaCBkZWZlYXRz
+IHRoZSBwdXJwb3NlIG9mDQo+Pj4gcGlubmluZyB0aGUgaXJxIGFmZmluaXR5IHRvIHRoZSBjdXJy
+ZW50IGNwdS4NCj4+DQo+PiBNeSB0ZXN0IGNvZGUgdXNlcyBzcGluX2xvY2soKSBpbnN0ZWFkIG9m
+IHNwaW5fbG9ja19pcnFzYXZlKCkuDQo+Pg0KPj4+IFdoYXQgYXJlIHlvdSBjb25jZXJuZWQgYWJv
+dXQgYmVpbmcgY29uY3VycmVudCB3aXRoIGF1dG9jb25maWdfaXJxKCk/DQo+Pj4gTWFueSBvcGVy
+YXRpb25zIGFyZSBleGNsdWRlZCBieSB0aGUgcG9ydC0+bXV0ZXguDQo+Pg0KPj4gQWN0dWFsbHkg
+SSBkb24ndCBoYXZlIGFueSBjb25jZXJucyBhcyBsb25nIGFzIGNvbnNvbGVfbG9jaygpIGlzIHVz
+ZWQsDQo+PiBidXQgSSB0aG91Z2h0IHByb3RlY3RpbmcgcG9ydCB3YXMgYmV0dGVyIGR1cmluZyBh
+dXRvX2lycQ0KPj4gb3IgcmVnaXN0ZXIgb3BlcmF0aW9ucyBhcyBzYW1lIGFzIGF1dG9jb25maWco
+KS4NCj4+DQo+PiBJIHdhcyB0aGlua2luZyB0aGV5IGFyZSB1c2VkIGFzIHRoZSBmb2xsb3dpbmcg
+cHVycG9zZXM7DQo+PiAgICBjb25zb2xlX2xvY2soKQ0KPj4gICAgICsgTWFrZSBzdXJlIHNlcmlh
+bDgyNTBfY29uc29sZV93cml0ZSgpIGRvZXNuJ3QgZGlzYWJsZSBpbnRlcnJ1cHQsDQo+PiAgICAg
+ICB0cnkgdG8gZ2V0IHBvcnQtPmxvY2sgb3IgdG91Y2ggdGhlIGN0cmwgcmVnaXN0ZXIgb2YgdGhl
+IHBvcnQuDQo+PiAgICAgICAjIHNlcmlhbDgyNTBfY29uc29sZV93cml0ZSgpIGNhbiBiZSBjYWxs
+ZWQgaW4gYW55IGNvbnRleHQuDQo+PiAgICBzcGluX2xvY2soKQ0KPj4gICAgICsgTWFrZSBzdXJl
+IHRoZSBwcm9iaW5nIHJ1bnMgb24gdGhlIGN1cnJlbnQgQ1BVIG9ubHkNCj4+ICAgICAgIHRvIGhh
+bmRsZSBhIHNlcmlhbCBpcnEgYnkgaXRzZWxmIGFmdGVyIHNldHRpbmcgaXJxIGFmZmluaXR5Lg0K
+Pj4gICAgICsgTWFrZSBzdXJlIGFueSBvdGhlciBDUFVzIGRvbid0IHRvdWNoIHRoZSBjdHJsIHJl
+Z2lzdGVyIG9mIHRoZSBwb3J0Lg0KPj4NCj4+IEl0IHNlZW1zIG15IHRlc3QgY29kZSBoYXMgYmVl
+biB3b3JraW5nIGZpbmUgc28gZmFyLA0KPj4gYnV0IGxldCBtZSBrbm93IGlmIHlvdSBoYXZlIGFu
+eSBjb25jZXJucyBhYm91dCB1c2luZyBzcGluX2xvY2soKQ0KPj4gaW5zdGVhZCBvZiBwcmVlbXB0
+X2Rpc2FibGUoKS4NCj4gDQo+IElmIHlvdSB0dXJuIG9uIGxvY2tkZXAsIHRha2luZyB0aGUgcG9y
+dC0+bG9jayB3aXRob3V0IGRpc2FibGluZyBpcnEgd2lsbA0KPiBhc3NlcnQuDQoNCllvdSdyZSBy
+aWdodC4gDQpJJ3ZlIGNoYW5nZWQgbXkgY29kZSwgdGhhbmsgeW91IQ0KDQpJIGFjdHVhbGx5IGhh
+dmUgdGVzdGVkIHByZWVtcHRfZGlzYWJsZSB2ZXJzaW9uIHRvby4NCkl0IGhhcyBiZWVuIHdvcmtp
+bmcgb24gbXkgbWFjaGluZSwgYnV0IEkndmUgZm91bmQgaXQgZG9lc24ndCB3b3JrIG9uIEtWTSB3
+aXRoIHY0LjEuDQpOb3cgSSdtIGxvc3QgYWJvdXQgaG93IGlycSBhZmZpbml0eSBzaG91bGQgYmUg
+c2V0IGR1cmluZyBpbnRlcnJ1cHQgcHJvYmluZyBwaGFzZS4uLg0KSSBndWVzcyBtb3JlIGZpeGVz
+IGFyZSByZXF1aXJlZCB0byBhY2hpZXZlIHRoaXMuIA0KSSdsbCBzZW5kIHYyIGFzIFJGQy4NCg0K
+PiBBIHF1aWNrIHN0YXRpYyBhbmFseXNpcyBzaG93cyBhdXRvY29uZmlnX2lycSgpIHJlYWNoYWJs
+ZSB2aWEgMiBkaWZmZXJlbnQNCj4gY2FsbCB0cmVlczoNCj4gDQo+IFsxXSAgdWFydF9hZGRfb25l
+X3BvcnQoKQ0KPiAgICAgICAgIGxvY2sgZ2xvYmFsIHBvcnRfbXV0ZXggKHRvIHByZXZlbnQgY29u
+Y3VycmVudCBwb3J0IGFkZC9yZW1vdmUpDQo+ICAgICAgICAgbG9jayBwb3J0LT5tdXRleA0KPiAg
+ICAgICAgIHVhcnRfY29uZmlndXJlX3BvcnQoKQ0KPiAgICAgICAgICAgIG9wcy0+Y29uZmlnX3Bv
+cnQgPT4gc2VyaWFsODI1MF9jb25maWdfcG9ydCgpDQo+ICAgICAgICAgICAgICAgYXV0b2NvbmZp
+Z19pcnEoKQ0KPiANCj4gWzJdICBpb2N0bChUSU9DU0VSQ09ORklHKQ0KPiAgICAgICAgIHVhcnRf
+ZG9fYXV0b2NvbmZpZygpDQo+ICAgICAgICAgICAgbG9jayBwb3J0LT5tdXRleA0KPiAgICAgICAg
+ICAgIHVhcnRfc2h1dGRvd24oKQ0KPiAgICAgICAgICAgIG9wcy0+Y29uZmlnX3BvcnQgPT4gc2Vy
+aWFsODI1MF9jb25maWdfcG9ydCgpDQo+ICAgICAgICAgICAgICAgYXV0b2NvbmZpZ19pcnEoKQ0K
+PiANCj4gQ2FsbCB0cmVlICMxIGNhbm5vdCBleGVjdXRlIGNvbmN1cnJlbnRseSB3aXRoIGFueSBv
+dGhlciBkcml2ZXIgZnVuY3Rpb24NCj4gYmVjYXVzZSB0aGUgdHR5IGRldmljZSBkb2Vzbid0IGV2
+ZW4gZXhpc3QgYXQgdGhhdCB0aW1lLg0KPiANCj4gaW9jdGwoVElPQ1NFUkNPTkZJRykgLS0gY2Fs
+bCB0cmVlICMyIC0tIGlzIHByZXR0eSBtdWNoIGEgaGFjayBhbmQgdHJpZXMNCj4gdG8gZG8gaXRz
+IGJlc3QgdG8gcHJldmVudCBjb25jdXJyZW50IGRyaXZlciBmdW5jdGlvbi9oYXJkd2FyZSBhY2Nl
+c3MuDQo+IFNvIGl0IHRha2VzIHRoZSBwb3J0LT5tdXRleCB3aGljaCBwcmV2ZW50cyBtYW55IGNv
+bmN1cnJlbnQgb3BlcmF0aW9ucywNCj4gYW5kIHNodXRzIGRvd24gdGhlIHBvcnQgaGFyZHdhcmUu
+IEluIG90aGVyIHdvcmRzLCB0aGUgYXV0b2NvbmZpZyBvcGVyYXRpb24NCj4gaXMgaW50ZW5kZWQg
+dG8gYmUgZXhjbHVzaXZlIG9mIGFueSBvdGhlciBjb25jdXJyZW50IGhhcmR3YXJlIGFjY2VzcyAo
+ZXhjZXB0DQo+IGNvbnNvbGUpLg0KPiANCj4gSSBzYXkgJ2ludGVuZGVkJyBiZWNhdXNlIHRoaXMg
+aXMgYnJva2VuIGlmIHRoZSBsaW5lIGRpc2NpcGxpbmUgaXMgZWNob2luZzsNCj4gSSBqdXN0IGZp
+eGVkIHRoaXMgaW4gdWFydF9jbG9zZSgpIGFuZCBub3cgcmVhbGl6ZSBpdCdzIHBvc3NpYmxlIHdo
+ZXJldmVyDQo+IHVhcnRfc2h1dGRvd24oKSBpcyBjYWxsZWQgLS0gc28gSSBuZWVkIHRvIGZpeCB0
+aGF0IGhhcmRlci4gQnV0IG15IHBvaW50IGlzDQo+IHRoYXQgbm8gb3RoZXIgbG9jayBzaG91bGQg
+bm90IGJlIG5lY2Vzc2FyeS4NCj4gDQo+IFBsZWFzZSBmZWVsIGZyZWUgdG8gZG91YmxlLWNoZWNr
+IG15IHdvcmsuDQoNClRoYW5rIHlvdSBmb3IgdGhlIGRldGFpbHMuIEkgdW5kZXJzdGFuZC4gDQpJ
+J3ZlIHVwZGF0ZWQgY29tbWl0IGxvZy4NCg0KDQpUaGFua3MsDQpUYWljaGkNCg0KDQoNCj4gDQo+
+IFJlZ2FyZHMsDQo+IFBldGVyIEh1cmxleQ0KPiANCj4gUFMgLUkgYXR0YWNoZWQgYSBjYXRhbG9n
+IG9mIGNvbmN1cnJlbnQgb3BlcmF0aW9ucyBleGNsdWRlZCBieSBwb3J0LT5tdXRleC4NCj4gDQo=
