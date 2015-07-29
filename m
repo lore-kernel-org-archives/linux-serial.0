@@ -1,8 +1,8 @@
 From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Subject: [RFC PATCH v2 1/3] serial: 8250: Fix autoconfig_irq() to avoid race
- conditions
-Date: Wed, 29 Jul 2015 08:12:57 +0000
-Message-ID: <1438157443-19447-2-git-send-email-t-kageyama@cp.jp.nec.com>
+Subject: [RFC PATCH v2 2/3] genirq: Add a function to set irq affinity of
+ candidate IRQs
+Date: Wed, 29 Jul 2015 08:12:59 +0000
+Message-ID: <1438157443-19447-3-git-send-email-t-kageyama@cp.jp.nec.com>
 References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-2022-jp"
@@ -15,66 +15,79 @@ To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "tglx@linutronix.
 Cc: Taichi Kageyama <t-kageyama@cp.jp.nec.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-The following race conditions can happen when a serial port is used
-as console.
+This new function can specify which CPU is used for interrupt probing.
 
-Case1: CPU_B is used to detect an interrupt from a serial port,
-       but it can have interrupts disabled during the waiting time.
-Case2: CPU_B clears UART_IER just after CPU_A sets UART_IER and then
-       a serial port may not make an interrupt.
-Case3: CPU_A sets UART_IER just after CPU_B clears UART_IER.
-       This is an unexpected behavior for serial8250_console_write().
-
-CPU_A [autoconfig_irq]      |  CPU_B [serial8250_console_write]
-----------------------------|---------------------------------------
-                            |
-probe_irq_on()              |  spin_lock_irqsave(&port->lock,)
-serial_outp(,UART_IER,0x0f) |  serial_out(,UART_IER,0)
-udelay(20);                 |  uart_console_write()
-probe_irq_off()             |
-                            |  spin_unlock_irqrestore(&port->lock,)
-
-Case1 and 2 can make autoconfig_irq() failed.
-In these cases, the console doesn't work in interrupt mode and
-"input overrun" (which can make operation mistakes) can happen
-on some systems. Especially in the Case1, It is known that the
-problem happens with high rate every boot once it occurs
-because the boot sequence is always almost same.
-
-port mutex makes sure that the autoconfig operation is exclusive of
-any other concurrent HW access except by the console operation.
-console lock is required in autoconfig_irq().
+An interrupt probing code expects a CPU detects an interrupt from the
+target device, but it doesn't work when the CPU has interrupts disabled
+during the waiting time.
+The probing code can use this function to specify which CPU detects the
+interrupt and reduce the risk of the failure as far as possible.
 
 Signed-off-by: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
 Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250_core.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ include/linux/interrupt.h |  4 ++++
+ kernel/irq/autoprobe.c    | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+)
 
-diff --git v4.2-rc4.org/drivers/tty/serial/8250/8250_core.c v4.2-rc4.work/drivers/tty/serial/8250/8250_core.c
-index 37fff12..ed1e23e 100644
---- v4.2-rc4.org/drivers/tty/serial/8250/8250_core.c
-+++ v4.2-rc4.work/drivers/tty/serial/8250/8250_core.c
-@@ -1303,6 +1303,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 		inb_p(ICP);
- 	}
- 
-+	if (uart_console(port))
-+		console_lock();
-+
- 	/* forget possible initially masked and pending IRQ */
- 	probe_irq_off(probe_irq_on());
- 	save_mcr = serial_in(up, UART_MCR);
-@@ -1334,6 +1337,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	if (port->flags & UPF_FOURPORT)
- 		outb_p(save_ICP, ICP);
- 
-+	if (uart_console(port))
-+		console_unlock();
-+
- 	port->irq = (irq > 0) ? irq : 0;
+diff --git v4.2-rc4.org/include/linux/interrupt.h v4.2-rc4.work/include/linux/interrupt.h
+index be7e75c..4f08f6d 100644
+--- v4.2-rc4.org/include/linux/interrupt.h
++++ v4.2-rc4.work/include/linux/interrupt.h
+@@ -647,10 +647,14 @@ static inline unsigned int probe_irq_mask(unsigned long val)
+ {
+ 	return 0;
  }
++static inline void probe_irq_set_affinity(unsigned long val, cpumask_t *mask)
++{
++}
+ #else
+ extern unsigned long probe_irq_on(void);	/* returns 0 on failure */
+ extern int probe_irq_off(unsigned long);	/* returns 0 or negative on failure */
+ extern unsigned int probe_irq_mask(unsigned long);	/* returns mask of ISA interrupts */
++extern void probe_irq_set_affinity(unsigned long, cpumask_t *);
+ #endif
  
+ #ifdef CONFIG_PROC_FS
+diff --git v4.2-rc4.org/kernel/irq/autoprobe.c v4.2-rc4.work/kernel/irq/autoprobe.c
+index 0119b9d..24e7647 100644
+--- v4.2-rc4.org/kernel/irq/autoprobe.c
++++ v4.2-rc4.work/kernel/irq/autoprobe.c
+@@ -183,3 +183,34 @@ int probe_irq_off(unsigned long val)
+ }
+ EXPORT_SYMBOL(probe_irq_off);
+ 
++/**
++ *	probe_irq_set_affinity	- change smp_affinity during autodetect
++ *	@val: mask of potential interrupts (unused)
++ *
++ *	Sets smp_affinity of candidate irq lines if possible.
++ *
++ *	An interrupt probing code expects a CPU detects an interrupt
++ *	from the target device, but it doesn't work when the CPU has
++ *	interrupts disabled during the waiting time.
++ *	The code can use this function to specify which CPU detects
++ *	the interrupt and reduce the risk of the failure.
++ */
++void probe_irq_set_affinity(unsigned long val, cpumask_t *mask)
++{
++	int i;
++	struct irq_desc *desc;
++
++	for_each_irq_desc(i, desc) {
++		raw_spin_lock_irq(&desc->lock);
++
++		if (desc->istate & IRQS_AUTODETECT) {
++			struct irq_data *data = &desc->irq_data;
++
++			if (data->chip && data->chip->irq_set_affinity)
++				irq_do_set_affinity(data, mask, false);
++		}
++		raw_spin_unlock_irq(&desc->lock);
++	}
++}
++EXPORT_SYMBOL(probe_irq_set_affinity);
++
 -- 
 2.4.6
