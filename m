@@ -1,50 +1,90 @@
-From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
-Subject: Re: [PATCH V2 1/1] serial: 8250_pci: add RS485 for F81504/508/512
-Date: Wed, 29 Jul 2015 14:01:08 +0200
-Message-ID: <20150729140108.30120282@north>
-References: <1438055964-9310-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [RFC PATCH v2 0/3] genirq, serial: 8250: Workaround to avoid
+ irq=0 for console
+Date: Wed, 29 Jul 2015 09:17:30 -0400
+Message-ID: <55B8D26A.7000402@hurleysoftware.com>
+References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com> <alpine.DEB.2.11.1507291230590.3825@nanos> <55B8BE39.6080500@hurleysoftware.com> <alpine.DEB.2.11.1507291351530.3825@nanos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1438055964-9310-1-git-send-email-hpeter+linux_kernel@gmail.com>
+In-Reply-To: <alpine.DEB.2.11.1507291351530.3825@nanos>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hung <hpeter@gmail.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Taichi Kageyama <t-kageyama@cp.jp.nec.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 28 Jul 2015 11:59:24 +0800, Peter Hung wrote:
-> Add RS485 control for Fintek F81504/508/512
+On 07/29/2015 07:53 AM, Thomas Gleixner wrote:
+> On Wed, 29 Jul 2015, Peter Hurley wrote:
+>> On 07/29/2015 06:32 AM, Thomas Gleixner wrote:
+>>> On Wed, 29 Jul 2015, Taichi Kageyama wrote:
+>>>> - Keep interrupt disabled on the CPU which is used to detect 
+>>>>   an interrupt during the timeout of autoconfig_irq().
+>>>>      + Kick printk() on the CPU which detects interrupt 
+>>>>        from a console serial port.
+>>>
+>>> This is wrong to begin with. How is that supposed to work on an UP
+>>> machine? Not at all.
+>>>
+>>> So no, fix the code which has interrupts disabled accross autoprobing
+>>> and do not try to apply bandaids somewhere else.
+>>
+>> Like printk() from some unrelated driver?
 > 
-> F81504/508/512 can control their RTS with H/W mode.
-> PCI configuration space for each port is 0x40 + idx * 8 + 7.
-> 
-> When it set with 0x01, it's configured with RS232 mode.
-> RTS is controlled by MCR.
-> 
-> When it set with 0x11, it's configured with RS485 mode.
-> RTS is controlled by H/W, RTS low with idle & RX, high with TX.
-> 
-> When it set with 0x31, it's configured with RS485 mode.
-> RTS is controlled by H/W, RTS high with idle & RX, low with TX.
-> 
-> We will force 0x01 on pci_fintek_setup().
-> 
-> Changelog:
-> V2
-> 1. change direct bit operation with meaningful define name.
-> 2. due to F81504 series only support SER_RS485_ENABLED &
->    SER_RS485_RTS_ON_SEND. We'll clean non-support area of
->    struct serial_rs485.
-> 3. change control method of SER_RS485_RTS_ON_SEND. In our
->    reference circuit, the transceiver default mode needed
->    in rx mode with RTS logic high, tx mode with RTS logic low.
-> 
->    If user set to SER_RS485_ENABLED(default), we should set
->    reg with 0x31. if SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND
->    will set reg to 0x11.
-> 
-> Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
+> If that's the cause for the wreckage then yes, we need a way to tell
+> the printk code not to call into the driver until that initialization
+> step is done. It's that simple.
 
-Looks better, thanks.  For future postings please put the changelog
-below the ---, we don't need it in the logs.
+Like this?
+
+--- >% --
+Subject: [PATCH] genirq: Disable printk() during irq probe
+
+printk() disables interrupts for extended periods of time while
+outputting to console drivers. This breaks irq probing since the
+triggered irq may not be serviced (in time) if scheduled on the
+printk() cpu.
+
+Claim the console_lock() which effectively disables console output.
+
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ kernel/irq/autoprobe.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/kernel/irq/autoprobe.c b/kernel/irq/autoprobe.c
+index 0119b9d..47535d2 100644
+--- a/kernel/irq/autoprobe.c
++++ b/kernel/irq/autoprobe.c
+@@ -39,6 +39,13 @@ unsigned long probe_irq_on(void)
+ 	 */
+ 	async_synchronize_full();
+ 	mutex_lock(&probing_active);
++
++	/*
++	 * printk() breaks irq probing - disable printk output until probe
++	 * completes
++	 */
++	console_lock();
++
+ 	/*
+ 	 * something may have generated an irq long ago and we want to
+ 	 * flush such a longstanding irq before considering it as spurious.
+@@ -132,6 +139,7 @@ unsigned int probe_irq_mask(unsigned long val)
+ 		}
+ 		raw_spin_unlock_irq(&desc->lock);
+ 	}
++	console_unlock();
+ 	mutex_unlock(&probing_active);
+ 
+ 	return mask & val;
+@@ -174,6 +182,7 @@ int probe_irq_off(unsigned long val)
+ 		}
+ 		raw_spin_unlock_irq(&desc->lock);
+ 	}
++	console_unlock();
+ 	mutex_unlock(&probing_active);
+ 
+ 	if (nr_of_irqs > 1)
+-- 
+2.5.0
