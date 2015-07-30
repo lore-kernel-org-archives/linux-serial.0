@@ -1,504 +1,100 @@
-From: Paul Osmialowski <pawelo@king.net.pl>
-Subject: Re: [PATCH v2 3/9] arm: twr-k70f120m: clock driver for Kinetis SoC
-Date: Thu, 30 Jul 2015 23:40:48 +0200 (CEST)
-Message-ID: <alpine.LNX.2.00.1507302326500.20387@localhost.localdomain>
-References: <1435667250-28299-1-git-send-email-pawelo@king.net.pl> <alpine.LNX.2.00.1507022338070.28322@localhost.localdomain> <alpine.DEB.2.11.1507030006280.3916@nanos> <2009463.YLtdMegFel@wuerfel> <alpine.LNX.2.00.1507042327490.1296@localhost.localdomain>
- <20150724034229.642.88156@quantum> <alpine.LNX.2.00.1507262211470.28341@localhost.localdomain> <20150728160347.642.31950@quantum> <alpine.LNX.2.00.1507282201220.2619@localhost.localdomain> <20150729230517.642.66061@quantum>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC PATCH v2 0/3] genirq, serial: 8250: Workaround to avoid
+ irq=0 for console
+Date: Fri, 31 Jul 2015 00:12:38 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1507302204440.3825@nanos>
+References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com> <alpine.DEB.2.11.1507291230590.3825@nanos> <55B8BE39.6080500@hurleysoftware.com> <alpine.DEB.2.11.1507291351530.3825@nanos> <55B8D26A.7000402@hurleysoftware.com> <alpine.DEB.2.11.1507291534350.3825@nanos>
+ <55B980E6.70800@cp.jp.nec.com> <alpine.DEB.2.11.1507301207070.3825@nanos> <55BA2A06.1080109@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20150729230517.642.66061@quantum>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Michael Turquette <mturquette@baylibre.com>
-Cc: Paul Osmialowski <pawelo@king.net.pl>, Arnd Bergmann <arnd@arndb.de>, Mark Rutland <mark.rutland@arm.com>, Nicolas Pitre <nicolas.pitre@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Rob Herring <r.herring@freescale.com>, Alexander Potashev <aspotashev@emcraft.com>, Frank Li <Frank.Li@freescale.com>, Jiri Slaby <jslaby@suse.cz>, linux-clk@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Vinod Koul <vinod.koul@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-serial@vger.kernel.org, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Anson Huang <b20788@freescale.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Yuri Tikhonov <yur@emcraft.com>, linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55BA2A06.1080109@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Taichi Kageyama <t-kageyama@cp.jp.nec.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, Peter Zijlstra <peterz@infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Mike,
+On Thu, 30 Jul 2015, Peter Hurley wrote:
+> Honestly, I'm not too sure this is the way to go.
+> 
+> Messing around with irqsoff tracer for 30 mins turned up:
+> 3.664ms in intel_unmap_page
+>   - iotlb flush, spinlock contention on iova_rbtree_lock
+> 1.726ms in intel_map_page()
+>   - iommu core @ __alloc_and_insert_iova_range()
+> 1.859ms in syslog_print_all()
+>   - which is holding the logbuf_lock so that's pretty bad anyway
+> 387us in nouveau @ nv50_vm_flush()
+>   - gpu tlb flush
+> 
+> I have irqsoff trace reports for all of these if anyone is interested.
+> 
+> Looks like lockdep would need to be off as well because I saw but
+> failed to capture a save_trace() in the 300us range.
+> 
+> I think this is just the tip of the iceberg for irqsoff.
 
-I encountered some trouble while I tried to implement code fitting to DTS 
-that you proposed. SIM_CLKDIVx are SIM device registers, not MCG. 
-Therefore, in MCG device code I won't be able to figure out clock rate 
-for outputed clocks unles I try to access SIM registers from MCG driver - 
-that's what we wanted to avoid. Looks like it's the mcgoutclk that we want 
-to expose not core, bus and the others:
+I agree.
+ 
+> I'm not saying these don't need fixing as well, but there's no way
+> irq probe will ever be reliable with this approach.
 
-        soc {
-                mcg: clock-controller@40064000 {
-                        compatible = "fsl,kinetis-mcg";
-                        clock-cells = <0>;
-                        reg = <0x40064000 0x14>;
-                        clocks = <&osc0>, <&osc1>, <&rtc>;
-                        clock-names = "osc0", "osc1", "rtc";
-                };
-                sim: clock-controller@40047000 {
-                        compatible = "fsl,kinetis-sim";
-                        clock-cells = <1>;
-                        reg = <0x40047000 0x1100>;
-                        clocks = <&mcg>,
-                                 <&osc0>;
-                        clock-names = "mcgoutclk", "enet";
-                };
+irq probe is a known to be unreliable heuristic endavour anyway and it
+cannot ever become truly reliable, except you put a gazillion of
+restrictions to the system state on it.
 
-                uart0: serial@4006a000 {
-                        compatible = "fsl,kinetis-lpuart";
-                        reg = <0x4006a000 0x1000>;
-                        interrupts = <45>, <46>;
-                        interrupt-names = "uart-stat", "uart-err";
-                        clocks = <&sim SIM_SCGC4_UART0_CLK>;
-                        clock-names = "ipg";
-                        dmas = <&edma 0 2>;
-                        dma-names = "rx";
-                        status = "disabled";
-                };
-        };
+> Going back to the RFC idea of pinning the irq affinity to the cpu
+> actually doing the probing (which is in a known context), what about
+> that is broken on UP? Just the implementation or is it the fundamental
+> concept?
 
-Now fsl,kinetis-sim device will be responsible for clock gating and it 
-will know about core, bus, flexbus and flash clocks only internally - 
-none of them are exposed.
+First of all, there is no guarantee that you can affine these
+interrupts at all. We have interrupt controllers which cannot set the
+affinity and they deliver to cpus in a round robin scheme or whatever
+hardware designers thought would be clever.
 
-Also note that fec (ethernet device) driver is connected directly to osc0 
-(though clock gate, you can see this CG attached to osc0 on the diagram 
-too) - to control this gate I need to access SIM device registers, so it 
-should be covered by the same fsl,kinetis-sim driver.
+Second, what prevents the following scenario on UP or the affine core:
 
-On Wed, 29 Jul 2015, Michael Turquette wrote:
+	probe_start()
+	interrupt
+	  looong running handler (usb is an obvious candidate)
+	     printk()
 
-> Quoting Paul Osmialowski (2015-07-28 13:30:17)
-> > Hi Mike,
-> > 
-> > My trouble is that now I'm dealing with two conradictory opinions on how 
-> > this driver should be written. The one you presented in your previous post 
-> > assumes that there will be a header file with defines shared between the 
-> > clock driver and DTS, also with clock gating details hidden behind some 
-> > additional level of indirection, e.g.:
-> > 
-> > clocks = <&sim SIM_SCGC4_UART1_CLK>;
-> > 
-> > Note that I've been through this at the very beginning, though the names 
-> > I used have been bit different, e.g.:
-> > 
-> > #define KINETIS_CG_UART1       KINETIS_MKCG(3, 11)     /* SIM_SCGC4[11] */
-> > 
-> > This was rejected with a comment by Arnd:
-> > 
-> > Instead of using a triple indirection here, just put the tuples
-> > in the DT directly using #clock-cells=<2>, and get rid of both this
-> > header file and the dt-bindings/clock/kinetis-mcg.h file.
-> 
-> Arnd, are you OK with my type of binding description now that I
-> explained it with some examples?
-> 
-> > 
-> > So I dropped all of these includes and started to use magic numbers (as 
-> > you put it). Now I need to go one way or another or even go the third way: 
-> > extend #clock-cells to <3> and address it like: <&sim parent_clock_id 
-> > scgc_register_number bit_index_number>.
-> 
-> Paul,
-> 
-> >From my understanding the DT folks do not like register-level or
-> bit-level details going into DT. It is better to handle the clock
-> signals as abstract resources and link a provider and consumer with a
-> simple phandle plus an index representing that abstract resource (i.e.
-> the clock output signal).
-> 
-> > 
-> > Reading your previous post I'm starting to feel that it would bring me 
-> > closer to final acceptance if I stick to what you proposed in that post 
-> > (I'm really grateful to you for writting so huge chunk of DTS for me!), so 
-> > I'll probably adopt that.
-> > 
-> > You're right about my "get things up and running" attitude - currently I 
-> > want to develop things extensively (cover as much subsystems as 
-> > possible) and then at some stage switch to intensive approach. This board 
-> > is a somewhat huge monster (for a Cortex-M4 SoC) and there will be a lot 
-> > of coding opportunity in this field in the future.
-> 
-> I'm happy to take clock drivers and add my Reviewed-by to .dts files
-> that make use of fixed-rate and fixed-factor clocks as an interim
-> solution.  Of course it will be best to get The Real Thing merged
-> upstream asap, but this is something I've done before to help get new
-> platform upstream before and I'm fine to do it again.
-> 
-> With that said, Devicetree bindings are allegedly a stable ABI that
-> cannot be broken. So let's make sure that any Kinetis clock binding
-> description is in good shape before merging it. The rest can follow on
-> later if it needs to.
-> 
-> Regards,
-> Mike
-> 
-> > 
-> > Thanks,
-> > Paul
-> > 
-> > On Tue, 28 Jul 2015, Michael Turquette wrote:
-> > 
-> > > Quoting Paul Osmialowski (2015-07-26 13:24:08)
-> > > > Hi Mike,
-> > > > 
-> > > > Thank you for spending time on this and pointing me into the right 
-> > > > direction. I'm wondering about going even further with it. Assuming that I 
-> > > 
-> > > Hi Paul,
-> > > 
-> > > No problem! And thanks for the quick turnaround on your patches so far.
-> > > 
-> > > > know everything about my board, I can skip run-time discovery phase (note 
-> > > > that the original driver was designed for other Kinetis-based boards too) 
-> > > > and move everything into DTS, somewhat like this:
-> > > > 
-> > > > / {
-> > > >         osc0: clock {
-> > > >                 compatible = "fixed-clock";
-> > > >                 #clock-cells = <0>;
-> > > >                 clock-frequency = <50000000>;
-> > > >         };
-> > > > 
-> > > >         osc1: clock {
-> > > >                 compatible = "fixed-clock";
-> > > >                 #clock-cells = <0>;
-> > > >                 clock-frequency = <12000000>;
-> > > >         };
-> > > > 
-> > > >         rtc: clock {
-> > > >                 compatible = "fixed-clock";
-> > > >                 #clock-cells = <0>;
-> > > >                 clock-frequency = <32768>;
-> > > >         };
-> > > > 
-> > > >         mcgout: clock {
-> > > >                 compatible = "fixed-factor-clock";
-> > > >                 #clock-cells = <0>;
-> > > >                 clocks = <&osc0>;
-> > > >                 clock-mult = <12>;
-> > > >                 clock-div = <5>;
-> > > >         };
-> > > 
-> > > I think this is a step backwards.
-> > > 
-> > > Did you look at the qcom clock binding and read the email where I
-> > > detailed how that binding works?
-> > > 
-> > > The point of that type of binding is to not shove per-clock data into
-> > > DT, but instead to declare every clock controller IP block (e.g. the
-> > > device) as well as every board-level clock (e.g. as osc that feeds into
-> > > your mcu). Once these "clock providers" are enumerated in DT, then we
-> > > create linkage between the clock providers and the clock consumers by
-> > > using phandles + an index. Linux device drivers tap into this by using
-> > > clk_get() and using the "clock-names" property from DT.
-> > > 
-> > > Put another way: we mostly use DT to model "devices". That is open to
-> > > interpretation for but for clock-related stuff we typically interpret
-> > > the clock controller as the device, not the individual clock outputs
-> > > coming out of the controller.
-> > > 
-> > > Note that a clock controller IP block may be both a provider and a
-> > > consumer.  I/O controllers are a very common type of consumer (e.g. USB
-> > > host controller, MMC controller, GPU, etc).
-> > > 
-> > > Additionally, from my reading of the reference manual, mcgout is defined
-> > > as:
-> > > 
-> > > """
-> > > MCG output of either IRC, MCGFLLCLK MCGPLL0CLK,
-> > > MCGPLL1CLK, or MCG's external reference clock that
-> > > sources the core, system, bus, FlexBus, and flash clock. It is
-> > > also an option for the debug trace clock.
-> > > """
-> > > 
-> > > So why is it listed here as a fixed-factor clock? Is it not a
-> > > multiplexer? Also, why is it listed here at all? Please take another
-> > > look at the qcom binding example I linked to in my previous mail.
-> > > 
-> > > > 
-> > > >         core: clock {
-> > > >                 compatible = "fixed-factor-clock";
-> > > >                 #clock-cells = <0>;
-> > > >                 clocks = <&mcgout>;
-> > > >                 clock-mult = <1>;
-> > > >                 clock-div = <1>;
-> > > >         };
-> > > > 
-> > > >         bus: clock {
-> > > >                 compatible = "fixed-factor-clock";
-> > > >                 #clock-cells = <0>;
-> > > >                 clocks = <&mcgout>;
-> > > >                 clock-mult = <1>;
-> > > >                 clock-div = <2>;
-> > > 
-> > > These are actually not fixed dividers but programmable dividers. You can
-> > > probably use drivers/clk/clk-divider.c for these. I'm fine with using
-> > > fixed-dividers for the initial merge just to get things up and running
-> > > if that is your strategy, but you'll need to revisit them later on when
-> > > you need more flexible support for other boards.
-> > > 
-> > > Again, I'm not sure why these clocks are enumerated in DT. Why not just
-> > > enumerate your mcg clock controller and your sim clock controller? If
-> > > you want to be a perfectionist then it appears that there is an osc
-> > > clock controller upstream from the mcg controller as well ;-)
-> > > 
-> > > It occurs to me that maybe you are trying to use fixed-factor clocks so
-> > > that you can program a sane default rate? We use the
-> > > assigned-clock-rates property for that. Note that this value is a
-> > > property of some device which *consumes* the clock, not the clock
-> > > controller or the clock output itself.
-> > > 
-> > > >         };
-> > > > 
-> > > >         soc {
-> > > >                 cmu@0x40047000 {
-> > > >                         compatible = "fsl,kinetis-gate-clock";
-> > > >                         reg = <0x40047000 0x1100>;
-> > > > 
-> > > >                         mcg_core_gate: clock-gate {
-> > > >                                 clocks = <&core>;
-> > > >                                 #clock-cells = <2>;
-> > > >                         };
-> > > > 
-> > > >                         mcg_bus_gate: clock-gate {
-> > > >                                 clocks = <&bus>;
-> > > >                                 #clock-cells = <2>;
-> > > >                         };
-> > > > 
-> > > >                         osc0_erclk_gate: clock-gate {
-> > > >                                 clocks = <&osc0>;
-> > > >                                 #clock-cells = <2>;
-> > > >                         };
-> > > >                 };
-> > > > 
-> > > >                 uart0: serial@4006a000 {
-> > > >                         compatible = "fsl,kinetis-lpuart";
-> > > >                         reg = <0x4006a000 0x1000>;
-> > > >                         interrupts = <45>, <46>;
-> > > >                         interrupt-names = "uart-stat", "uart-err";
-> > > >                         clocks = <&mcg_core_gate 3 10>;
-> > > 
-> > > Magic numbers are not good. dtc has been able to use preprocessor macros
-> > > for a while now which means we can use constants instead of magic
-> > > numbers. Please look at the shared header in the qcom binding for an
-> > > example.
-> > > 
-> > > >                         clock-names = "ipg";
-> > > >                         dmas = <&edma 0 2>;
-> > > >                         dma-names = "rx";
-> > > >                         status = "disabled";
-> > > >                 };
-> > > >         };
-> > > > };
-> > > > 
-> > > > As you can see, mcg part is not required anymore.
-> > > 
-> > > I think the mcg should be required. The mcg is a real IP block on your
-> > > SoC, according to my reading of your technical reference manual. Just
-> > > because you can model a few of its output clocks in dts does not mean
-> > > that you should.
-> > > 
-> > > I did a quick grep and didn't find "cmu" anywhere in the reference
-> > > manual.
-> > > 
-> > > > 
-> > > > I guess that the approach above would require split into soc-specific and 
-> > > > board-specific part (as I said, dividers arrangement is something board 
-> > > > specific), but I wonder what you thing about this proposal.
-> > > 
-> > > Splitting is good. Chip-specific stuff can go into the chip-specific
-> > > dtsi file. The board-level (osc) stuff can go into the individual board
-> > > files. The ultimate goal is to make it trivial to add new boards.
-> > > 
-> > > Regards,
-> > > Mike
-> > > 
-> > > > 
-> > > > Thanks,
-> > > > Paul
-> > > > 
-> > > > On Thu, 23 Jul 2015, Michael Turquette wrote:
-> > > > 
-> > > > > Quoting Paul Osmialowski (2015-07-04 14:50:03)
-> > > > > > Hi Arnd,
-> > > > > > 
-> > > > > > I'm attaching excerpt from Kinetis reference manual that may make 
-> > > > > > situation clearer.
-> > > > > 
-> > > > > Hi Paul,
-> > > > > 
-> > > > > Can you please post the patch in the body of the email instead of an
-> > > > > attachment? It makes it easier to review. Another small nitpick is that
-> > > > > the $SUBJECT for this patch might be better off as something like:
-> > > > > 
-> > > > > clk: mcg and sim clock drivers for twr-k70f120m Kinetis SoC
-> > > > > 
-> > > > > At least it helps me find the patch I care about when skimming the
-> > > > > series ;-)
-> > > > > 
-> > > > > > 
-> > > > > > These MCG and SIM registers are used only to determine configuration 
-> > > > > > (clock fixed rates and clock signal origins) at run time.
-> > > > > > 
-> > > > > > Namely, the real MCGOUTCLK source (in the middle) which is the parent for 
-> > > > > > core clock (CCLK) and peripheral clock (PCLK) is determined at run time by 
-> > > > > > reading MCG registers, let me quote commit message from Emcraft git repo:
-> > > > > > 
-> > > > > >       * Determine in run-time what oscillator module (OSC0 or OSC1) is used
-> > > > > >      as clock source for the main PLL.
-> > > > > 
-> > > > > According to [0] there are three options: a 32k RTC osc clock and osc0
-> > > > > both feed into a mux. You should model this 32k clock with the
-> > > > > fixed-rate binding.
-> > > > > 
-> > > > > >       * When OSC1 is selected, assume its frequency to be 12 MHz on all
-> > > > > >      boards (there is a 12 MHz oscillator on XTAL1/EXTAL1 on K70-SOM and
-> > > > > >      TWR-K70F120M boards).
-> > > > > > 
-> > > > > > In my .dts I'm trying to possibly follow real clock hierarchy, but to go 
-> > > > > > anywhere behind MCGOUTCLK would require ability to rewrite .dtb e.g. by 
-> > > > > > U-boot. But that's too demanding for any potential users of this BSP. So 
-> > > > > > let's asume that MCGOUTCLK is the root clock and a parent for CCLK and 
-> > > > > > PCLK.
-> > > > > 
-> > > > > I'm confused. The point of device tree is to solve problems like this;
-> > > > > i.e. board-specific differences such as different oscillator
-> > > > > frequencies.
-> > > > > 
-> > > > > OSC0 and OSC1 should each be a fixed-rate clock in your board-specific
-> > > > > TWR-K70F120M DTS (not a chip-specific file). They do not belong in the
-> > > > > cmu node, and they should use the "fixed-clock" binding. The 32k RTC osc
-> > > > > can probably go in your chip-specific .dtsi as a fixed-rate clock since
-> > > > > it appears to mandated in the reference manual[0].
-> > > > > 
-> > > > > These three fixed-rate clocks are your root clock nodes. Customers only
-> > > > > need to worry about this if they spin a board, and then they will need
-> > > > > to populate the frequencies of OSC0 and OSC1 in their board-specific
-> > > > > .dts.
-> > > > > 
-> > > > > Please break clk-kinetis.c into two files:
-> > > > > drivers/clk/kinetis/clk-mcg.c
-> > > > > drivers/clk/kinetis/clk-sim.c
-> > > > > 
-> > > > > Below is what your binding/dts should look like:
-> > > > > 
-> > > > > {
-> > > > >       osc0: clock {
-> > > > >               compatible = "fixed-clock";
-> > > > >               #clock-cells = <0>;
-> > > > >               clock-frequency = <50000000>;
-> > > > >       };
-> > > > > 
-> > > > >       osc1: clock {
-> > > > >               compatible = "fixed-clock";
-> > > > >               #clock-cells = <0>;
-> > > > >               clock-frequency = <12000000>;
-> > > > >       };
-> > > > > 
-> > > > >       rtc: clock {
-> > > > >               compatible = "fixed-clock";
-> > > > >               #clock-cells = <0>;
-> > > > >               clock-frequency = <32768>;
-> > > > >       };
-> > > > > 
-> > > > >       soc: soc {
-> > > > >               mcg: clock-controller@40064000 {
-> > > > >                       compatible = "fsl,kinetis-mcg";
-> > > > >                       clock-cells = <1>;
-> > > > >                       reg = <0x40064000 0x14>;
-> > > > >                       clocks = <&osc0>, <&osc1>, <&rtc>;
-> > > > >                       clock-names = "osc0", "osc1", "rtc";
-> > > > >               };
-> > > > > 
-> > > > >               sim: clock-controller@40047000 {
-> > > > >                       compatible = "fsl,kinetis-sim";
-> > > > >                       clock-cells = <1>;
-> > > > >                       reg = <0x40047000 0x1100>;
-> > > > >                       clocks = <&mcg MCG_MCGOUTCLK_DIV1>, <&mcg MCG_MCGOUTCLK_DIV2>, <&mcg MCG_MCGOUTCLK_DIV3> <&mcg MCG_MCGOUTCLK_DIV4>;
-> > > > >                       clock-names = "core", "bus", "flexbus", "flash";
-> > > > >               };
-> > > > >       };
-> > > > > 
-> > > > >       uart0: serial@4006a000 {
-> > > > >               compatible = "fsl,kinetis-lpuart";
-> > > > >               reg = <0x4006a000 0x1000>;
-> > > > >               clocks = <&sim SIM_SCGC4_UART1_CLK>;
-> > > > >               clock-names = "gate";
-> > > > >       };
-> > > > > 
-> > > > > I removed the interrupts and dma stuff from the uart0 node for clarity.
-> > > > > The above is the only style of binding that I have been accepting for
-> > > > > some time; first declare the clock controller and establish its register
-> > > > > space, and then consumers can consume clocks by providing the phandle to
-> > > > > the controller plus an offset corresponding to a unique clock. The
-> > > > > clock-names property makes it really easy to use with the clkdev stuff
-> > > > > (e.g. clk_get()).
-> > > > > 
-> > > > > I've covered this before on the mailing list so here is a link
-> > > > > describing how the qcom bindings do it in detail:
-> > > > > 
-> > > > > http://lkml.kernel.org/r/<20150416192014.19585.9663@quantum>
-> > > > > 
-> > > > > Technically you could encode the same bits as sub-nodes of the mcg and
-> > > > > sim nodes, but the shared header is how the magic happens with the
-> > > > > driver so it's best to keep the clock controller binding small and
-> > > > > light.
-> > > > > 
-> > > > > I think this means you can also get rid of kinetis_of_clk_get_name and
-> > > > > kinetis_clk_gate_get but my brain is tired so I'll leave that as an
-> > > > > exercise to the reader.
-> > > > > 
-> > > > > [0] http://cache.freescale.com/files/microcontrollers/doc/ref_manual/K70P256M150SF3RM.pdf
-> > > > > 
-> > > > > Regards,
-> > > > > Mike
-> > > > > 
-> > > > > > 
-> > > > > > In my most recent version I added OSC0ERCLK explicitly as one more root 
-> > > > > > clock, since it is also used directly (through CG reg. 1 bit 0) by 
-> > > > > > Freescale fec network device whose in-tree driver I'm trying to make 
-> > > > > > usable for Kinetis.
-> > > > > > 
-> > > > > > On Sat, 4 Jul 2015, Arnd Bergmann wrote:
-> > > > > > 
-> > > > > > > On Friday 03 July 2015 00:08:27 Thomas Gleixner wrote:
-> > > > > > >> On Thu, 2 Jul 2015, Paul Osmialowski wrote:
-> > > > > > >>> On Thu, 2 Jul 2015, Arnd Bergmann wrote:
-> > > > > > >>>
-> > > > > > >>>> I wonder if you could move out the fixed rate clocks into their own
-> > > > > > >>>> nodes. Are they actually controlled by the same block? If they are
-> > > > > > >>>> just fixed, you can use the normal binding for fixed rate clocks
-> > > > > > >>>> and only describe the clocks that are related to the driver.
-> > > > > > >>>
-> > > > > > >>> In my view having these clocks grouped together looks more convincing. After
-> > > > > > >>> all, they all share the same I/O regs in order to read configuration.
-> > > > > > >>
-> > > > > > >> The fact that they share a register is not making them a group. That's
-> > > > > > >> just a HW design decision and you need to deal with that by protecting
-> > > > > > >> the register access, but not by trying to group them artificially at
-> > > > > > >> the functional level.
-> > > > > > >
-> > > > > > > I'd disagree with that: The clock controller is the device that owns the
-> > > > > > > registers and that should be one node in DT, as Paul's first version does.
-> > > > > > >
-> > > > > > > The part I'm still struggling with is understanding how the fixed-rate
-> > > > > > > clocks are controlled through those registers. If they are indeed configured
-> > > > > > > through the registers, the name is probably wrong and should be changed
-> > > > > > > to whatever kind of non-fixed clock this is.
-> > > > > > >
-> > > > > > >       Arnd
-> > > > > > >
-> > > > > > 
-> > > > > > _______________________________________________
-> > > > > > linux-arm-kernel mailing list
-> > > > > > linux-arm-kernel@lists.infradead.org
-> > > > > > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> > > > > 
-> > > > --
-> > > > To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> > > > the body of a message to majordomo@vger.kernel.org
-> > > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > > > Please read the FAQ at  http://www.tux.org/lkml/
-> > > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > Please read the FAQ at  http://www.tux.org/lkml/
-> 
+That will swallow your uart state and ruin detection as well.
+
+So for the problem at hand, we really need to prevent that something
+is fiddling with the uart in the first place and the most obvious way
+is to serialize against printk.
+
+We can debate whether the autoprobe code is the right place or not, we
+can actually stick it into the 8250 driver and be done with it
+because:
+
+If you look at the actual autoprobe users aside of 8250. That's really
+all ancient ISA hardware and hardly interesting. So all we really care
+about are the 8250 serial ports.
+
+Now lets look at the 8250 serial ports. I just checked the random
+collection of machines I have access to:
+
+ In 100% of all cases ttyS0 is on irq4 and ttyS1 is on irq3
+
+ All of the machines have even a correct PNP entry of the irq resource
+ for the serial ports. And there is pretty old crap in that lot.
+
+So the real question is: Why would we autoprobe in the first place?
+
+Debian, Fedora, OpenSuse, SLES have:
+
+   # CONFIG_SERIAL_8250_DETECT_IRQ is not set
+
+and so do my kernels.
+
+I just built one with that option enabled for the fun of it and it
+still uses the PNP information. No autoprobing.
+
+So why are you interested in that serial irq autoprobe crap at all?
+
+Thanks,
+
+	tglx
