@@ -1,80 +1,71 @@
-From: Robert Baldyga <r.baldyga@samsung.com>
-Subject: [PATCH 1/2] serial: samsung: calculate min_dma_size
-Date: Thu, 30 Jul 2015 11:14:15 +0200
-Message-ID: <1438247656-24695-2-git-send-email-r.baldyga@samsung.com>
-References: <1438247656-24695-1-git-send-email-r.baldyga@samsung.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <1438247656-24695-1-git-send-email-r.baldyga@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: akpm@linux-foundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, Robert Baldyga <r.baldyga@samsung.com>
+From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
+Subject: Re: [PATCH v3 1/1] Serial: imx: add dev_pm_ops to support suspend
+ to ram/disk
+Date: Thu, 30 Jul 2015 11:34:49 +0200
+Message-ID: <20150730113449.6c4743f2@ipc1.ka-ro>
+References: <1438203535-38028-1-git-send-email-shenwei.wang@freescale.com>
+ <CAOMZO5Aj5PASPKRq47vmenDBSPMPHdLgSbJZXkhZu3MNYprqXA@mail.gmail.com>
+ <CY1PR0301MB0843BEF6A40A0A28018E0D5D838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
+ <CAOMZO5DaZ+1Ud0RAX2RELz5c0zyZUo_X1y50gY2XwM5o0BeVmg@mail.gmail.com>
+ <CY1PR0301MB08437D6E977C99821622976A838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
+ <CAOMZO5Drw9SAnocz2pBY2RhuQE7HbFrvdXhSWEqjiwxgvq2pgQ@mail.gmail.com>
+ <CY1PR0301MB0843EC6EA393B4E5BC15FB9C838B0@CY1PR0301MB0843.namprd03.prod.outlook.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CY1PR0301MB0843EC6EA393B4E5BC15FB9C838B0@CY1PR0301MB0843.namprd03.prod.outlook.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Shenwei Wang <Shenwei.Wang@freescale.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <festevam@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-
-Due to some of serial ports can have FIFO size smaller than cache line
-size, and because of need to align DMA buffer address to cache line size,
-it's necessary to calculate minimum number of bytes for which we want
-to start DMA transaction to be at least cache line size. The simplest
-way to meet this requirement is to get maximum of cache line size and
-FIFO size.
-
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Robert Baldyga <r.baldyga@samsung.com>
----
- drivers/tty/serial/samsung.c | 13 +++++++++++--
- drivers/tty/serial/samsung.h |  1 +
- 2 files changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 67d0c21..08168f9 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -342,7 +342,8 @@ static void s3c24xx_serial_start_next_tx(struct s3c24xx_uart_port *ourport)
- 		return;
- 	}
- 
--	if (!ourport->dma || !ourport->dma->tx_chan || count < port->fifosize)
-+	if (!ourport->dma || !ourport->dma->tx_chan ||
-+	    count < ourport->min_dma_size)
- 		s3c24xx_serial_start_tx_pio(ourport);
- 	else
- 		s3c24xx_serial_start_tx_dma(ourport, count);
-@@ -742,7 +743,8 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
- 
- 	count = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
- 
--	if (ourport->dma && ourport->dma->tx_chan && count >= port->fifosize) {
-+	if (ourport->dma && ourport->dma->tx_chan &&
-+	    count >= ourport->min_dma_size) {
- 		s3c24xx_serial_start_tx_dma(ourport, count);
- 		goto out;
- 	}
-@@ -1838,6 +1840,13 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 	else if (ourport->info->fifosize)
- 		ourport->port.fifosize = ourport->info->fifosize;
- 
-+	/*
-+	 * DMA transfers must be aligned at least to cache line size,
-+	 * so find minimal transfer size suitable for DMA mode
-+	 */
-+	ourport->min_dma_size = max_t(int, ourport->port.fifosize,
-+				    dma_get_cache_alignment());
-+
- 	probe_index++;
- 
- 	dbg("%s: initialising port %p...\n", __func__, ourport);
-diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
-index d275032..fc5deaa 100644
---- a/drivers/tty/serial/samsung.h
-+++ b/drivers/tty/serial/samsung.h
-@@ -82,6 +82,7 @@ struct s3c24xx_uart_port {
- 	unsigned char			tx_claimed;
- 	unsigned int			pm_level;
- 	unsigned long			baudclk_rate;
-+	unsigned int			min_dma_size;
- 
- 	unsigned int			rx_irq;
- 	unsigned int			tx_irq;
--- 
-1.9.1
+SGksCgo+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0KPiA+IEZyb206IEZhYmlvIEVzdGV2
+YW0gW21haWx0bzpmZXN0ZXZhbUBnbWFpbC5jb21dCj4gPiBTZW50OiAyMDE15bm0N+aciDI55pel
+IDE3OjExCj4gPiBUbzogV2FuZyBTaGVud2VpLUIzODMzOQo+ID4gQ2M6IEdyZWcgS3JvYWgtSGFy
+dG1hbjsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOwo+ID4gbGludXgtc2Vy
+aWFsQHZnZXIua2VybmVsLm9yZwo+ID4gU3ViamVjdDogUmU6IFtQQVRDSCB2MyAxLzFdIFNlcmlh
+bDogaW14OiBhZGQgZGV2X3BtX29wcyB0byBzdXBwb3J0IHN1c3BlbmQgdG8KPiA+IHJhbS9kaXNr
+Cj4gPiAKPiA+IE9uIFdlZCwgSnVsIDI5LCAyMDE1IGF0IDY6NTQgUE0sIFNoZW53ZWkgV2FuZyA8
+U2hlbndlaS5XYW5nQGZyZWVzY2FsZS5jb20+Cj4gPiB3cm90ZToKPiA+IAo+ID4gPiBJIGFtIHZl
+cnkgaW50ZXJlc3RpbmcgdG8ga25vdyBpZiB5b3UgY291bGQgcHJvdmlkZSBhbiBleGFtcGxlCj4g
+PiA+IGNvbmRpdGlvbiB0aGF0IG1heSBjYXVzZSBjbGtfZW5hYmxlIGZhaWxlZCBpbiB0aGlzIGNh
+bGxiYWNrIGZ1bmN0aW9uPwo+ID4gCj4gPiBMZXQncyBjaGVjayBjbGtfZW5hYmxlIGRlZmluaXRp
+b246Cj4gPiAKPiA+IGludCBjbGtfZW5hYmxlKHN0cnVjdCBjbGsgKmNsaykKPiA+IHsKPiA+ICAg
+ICB1bnNpZ25lZCBsb25nIGZsYWdzOwo+ID4gICAgIGludCByZXQ7Cj4gPiAKPiA+ICAgICBpZiAo
+IWNsaykKPiA+ICAgICAgICAgcmV0dXJuIDA7Cj4gPiAKPiA+ICAgICBmbGFncyA9IGNsa19lbmFi
+bGVfbG9jaygpOwo+ID4gICAgIHJldCA9IGNsa19jb3JlX2VuYWJsZShjbGstPmNvcmUpOwo+ID4g
+ICAgIGNsa19lbmFibGVfdW5sb2NrKGZsYWdzKTsKPiA+IAo+ID4gICAgIHJldHVybiByZXQ7Cj4g
+PiB9Cj4gPiAKPiA+IFNvIGlmIEkgc2VlIGl0IHJpZ2h0IGl0IHJldHVybnMgJ2ludCcgbm90ICd2
+b2lkJyA7LSkKPiAKPiBBY3R1YWxseSwgdGhlIGZ1bmN0aW9uIHNob3dzIGV2ZW4gaWYgaXQgaXMg
+aW4gZXJyb3Igc3RhdHVzIGxpa2UgdGhlIHBhcmFtZXRlciAiY2xrIiBpcyBudWxsIHRoZSByZXR1
+cm4gdmFsdWUgaXMgemVyby4gCj4gSW5zaWRlIHRoZSBmdW5jdGlvbiAiY2xrX2NvcmVfZW5hYmxl
+IiwgaWYgZXZlcnl0aGluZyBnb2VzIHNtb290aCwgaXQgc3RpbGwgcmV0dXJucyB6ZXJvLiAKPiAK
+QSBOVUxMIGNsayBpcyBhIHZhbGlkIGNsayBwZXIgZGVmaW5pdGlvbi4KCj4gTW9yZW92ZXIsIHRo
+aXMgcGF0Y2ggZG9lcyBub3QgY2FyZSBhYm91dCB0aGUgcmV0dXJuIHZhbHVlIG9mIGNsa19lbmFi
+bGUsIHdoYXRldmVyIHZhbHVlIGl0IHJldHVybnMsIHRoZSBmb2xsb3dpbmcgY29kZXMga2VlcCAK
+PiB0aGUgc2FtZS4KPgpOZXZlcnRoZWxlc3MgaXQgd291bGQgYmUgZ29vZCB0byBpbmZvcm0gdGhl
+IHVzZXIgb2YgYSBmYWlsdXJlLApzaW5jZSB0aGF0IG1heSBhZmZlY3QgdGhlIHN5c3RlbSdzIHN0
+YWJpbGl0eSBhZnRlciByZXR1cm5pbmcgZnJvbQpzdXNwZW5kLgpFdmVuIGlmIHRoZSBjdXJyZW50
+IGltcGxlbWVudGF0aW9uIG9mIGEgZnVuY3Rpb24gY2Fubm90IHJldHVybiBhbiBlcnJvcgpjb2Rl
+IGluIHNvbWUgc3BlY2lmaWMgY2lyY3Vtc3RhbmNlLCB0aGF0IGRvZXNuJ3QgbWVhbiB0aGF0IHRo
+aXMgd2lsbCBiZQphbHdheXMgdGhlIGNhc2UuIFRodXMsIGNoZWNraW5nIHRoZSByZXR1cm4gY29k
+ZSBhbmQgYWN0aW5nIHVwb24gaXQgaXMKYWx3YXlzIGFkdmlzYWJsZS4KCgpMb3RoYXIgV2HDn21h
+bm4KLS0gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCgpLYS1SbyBlbGVjdHJvbmljcyBHbWJIIHwgUGFzY2Fsc3RyYcOfZSAyMiB8IEQg
+LSA1MjA3NiBBYWNoZW4KUGhvbmU6ICs0OSAyNDA4IDE0MDItMCB8IEZheDogKzQ5IDI0MDggMTQw
+Mi0xMApHZXNjaMOkZnRzZsO8aHJlcjogTWF0dGhpYXMgS2F1c3NlbgpIYW5kZWxzcmVnaXN0ZXJl
+aW50cmFnOiBBbXRzZ2VyaWNodCBBYWNoZW4sIEhSQiA0OTk2Cgp3d3cua2Fyby1lbGVjdHJvbmlj
+cy5kZSB8IGluZm9Aa2Fyby1lbGVjdHJvbmljcy5kZQpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwoKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QK
+bGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRl
+YWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
