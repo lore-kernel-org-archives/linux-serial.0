@@ -1,77 +1,151 @@
-From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v1 1/2] dt: atmel-usart: document new I/O data register
- width property
-Date: Thu, 30 Jul 2015 16:54:00 +0300
-Message-ID: <1438264440.29746.125.camel@linux.intel.com>
-References: <1438261591-13130-1-git-send-email-andriy.shevchenko@linux.intel.com>
-	 <55BA2849.2050803@atmel.com>
+From: Cyrille Pitchen <cyrille.pitchen@atmel.com>
+Subject: [PATCH linux-next 1/1] tty/serial: at91: fix I/O accesses on RHR and THR for AVR32
+Date: Thu, 30 Jul 2015 16:33:38 +0200
+Message-ID: <b950edd352e715d7f1f0d5ca4856ae4fec56890f.1438260564.git.cyrille.pitchen@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <55BA2849.2050803-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Hans-Christian Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org, alexandre.belloni@free-electrons.com, linux-serial@vger.kernel.org, egtvedt@samfundet.no, andriy.shevchenko@linux.intel.com
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Cyrille Pitchen <cyrille.pitchen@atmel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2015-07-30 at 15:36 +0200, Nicolas Ferre wrote:
-> Le 30/07/2015 15:06, Andy Shevchenko a =C3=A9crit :
-> > This change documents a new property for the Atmel serial device,=20
-> > allowing an
-> > implementer to specify either four bytes or one byte access to the=20
-> > controller
-> > data register.
-> >=20
-> > This supports a change that unbreaks this driver on ATNGW100 board.
-> >=20
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > ---
-> >  Documentation/devicetree/bindings/serial/atmel-usart.txt | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/serial/atmel
-> > -usart.txt b/Documentation/devicetree/bindings/serial/atmel
-> > -usart.txt
-> > index e6e6142..a8c290a7 100644
-> > --- a/Documentation/devicetree/bindings/serial/atmel-usart.txt
-> > +++ b/Documentation/devicetree/bindings/serial/atmel-usart.txt
-> > @@ -6,6 +6,8 @@ Required properties:
-> >    additional mode or an USART new feature.
-> >    For the dbgu UART, use "atmel,<chip>-dbgu", "atmel,<chip>-usart"
-> >  - reg: Should contain registers location and length
-> > +- reg-io-width: The I/O register width (in bytes) implemented by
-> > +  this device. Supported values are 1 or 4 (the default).
->=20
-> Well, sorry but no.
-> The proper way to implement this is to cling to certain compatible
-> strings. But I'm pretty sure that this issue shall not be fixed like=20
-> this.
->=20
-> But I think that Cyrille is about to propose another version. Let's=20
-> wait
-> for his code...
+This patch fixes I/O accesses on the Receiver Holding Register and on the
+Transmitter Holding Register. Indeed AVR32 can only perform 32bit I/O
+accesses on registers: using 8bit I/O accesses would read or write garbage
+data.
 
-Good, because I have really no time for this.
-As I said earlier I can test whatever you propose. I'm not going to imp
-rove my approach. Sorry.
+Fixes: commit b5199d468177 ("tty/serial: at91: add support to FIFOs")
+Signed-off-by: Cyrille Pitchen <cyrille.pitchen@atmel.com>
+---
+Hi all,
 
->=20
-> Bye,
->=20
->=20
-> >  - interrupts: Should contain interrupt
-> >  - clock-names: tuple listing input clock names.
-> >  	Required elements: "usart"
-> >=20
->=20
->=20
+this patch fixes a bug on AVR32 introduced by the support of FIFOs for
+AT91. Indeed when FIFOs are enabled they work in Multiple Data mode.
+The Multiple Data mode allows to read up to 4 data from the Receiver
+Holding Register (RHR) or write up to 4 data into the Transmitter Holding
+Register (THR) in a single I/O access. Hence when only one data is to be
+read from the RHR or written into the THR, the driver cannot use 32bit I/O
+access anymore but must use 8bit I/O access instead.
 
---=20
-Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Intel Finland Oy
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+For ARM-base AT91 SoCs, 8bit I/O accesses can always be used even when
+FIFOs are not available. However AV32 can only use 32bit I/O accesses.
+
+Since atmel_uart_readb(), resp. atmel_uart_writeb(), was created by the
+FIFO support patch to access the RHR, resp. the THR, this patch replaces
+it by atmel_uart_read_char(), resp. atmel_uart_write_char(). Hence the
+actual width of the I/O access now depends only on the architecture.
+
+All registers but RHR and THR use 32bit I/O accesses.
+
+This patch was tested on a at91sam9260ek board.
+
+Best Regards,
+
+Cyrille
+
+ChangeLog:
+
+v1: initial version
+
+ drivers/tty/serial/atmel_serial.c | 37 +++++++++++++++++++++++++++----------
+ 1 file changed, 27 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index e91b3b2f0590..5ca5cf3e9359 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -204,16 +204,33 @@ static inline void atmel_uart_writel(struct uart_port *port, u32 reg, u32 value)
+ 	__raw_writel(value, port->membase + reg);
+ }
+ 
+-static inline u8 atmel_uart_readb(struct uart_port *port, u32 reg)
++#ifdef CONFIG_AVR32
++
++/* AVR32 cannot handle 8 or 16bit I/O accesses but only 32bit I/O accesses */
++static inline u8 atmel_uart_read_char(struct uart_port *port)
++{
++	return __raw_readl(port->membase + ATMEL_US_RHR);
++}
++
++static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
+ {
+-	return __raw_readb(port->membase + reg);
++	__raw_writel(value, port->membase + ATMEL_US_THR);
+ }
+ 
+-static inline void atmel_uart_writeb(struct uart_port *port, u32 reg, u8 value)
++#else
++
++static inline u8 atmel_uart_read_char(struct uart_port *port)
+ {
+-	__raw_writeb(value, port->membase + reg);
++	return __raw_readb(port->membase + ATMEL_US_RHR);
+ }
+ 
++static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
++{
++	__raw_writeb(value, port->membase + ATMEL_US_THR);
++}
++
++#endif
++
+ #ifdef CONFIG_SERIAL_ATMEL_PDC
+ static bool atmel_use_pdc_rx(struct uart_port *port)
+ {
+@@ -658,7 +675,7 @@ static void atmel_rx_chars(struct uart_port *port)
+ 
+ 	status = atmel_uart_readl(port, ATMEL_US_CSR);
+ 	while (status & ATMEL_US_RXRDY) {
+-		ch = atmel_uart_readb(port, ATMEL_US_RHR);
++		ch = atmel_uart_read_char(port);
+ 
+ 		/*
+ 		 * note that the error handling code is
+@@ -709,7 +726,7 @@ static void atmel_tx_chars(struct uart_port *port)
+ 
+ 	if (port->x_char &&
+ 	    (atmel_uart_readl(port, ATMEL_US_CSR) & atmel_port->tx_done_mask)) {
+-		atmel_uart_writeb(port, ATMEL_US_THR, port->x_char);
++		atmel_uart_write_char(port, port->x_char);
+ 		port->icount.tx++;
+ 		port->x_char = 0;
+ 	}
+@@ -718,7 +735,7 @@ static void atmel_tx_chars(struct uart_port *port)
+ 
+ 	while (atmel_uart_readl(port, ATMEL_US_CSR) &
+ 	       atmel_port->tx_done_mask) {
+-		atmel_uart_writeb(port, ATMEL_US_THR, xmit->buf[xmit->tail]);
++		atmel_uart_write_char(port, xmit->buf[xmit->tail]);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		port->icount.tx++;
+ 		if (uart_circ_empty(xmit))
+@@ -2294,7 +2311,7 @@ static int atmel_poll_get_char(struct uart_port *port)
+ 	while (!(atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_RXRDY))
+ 		cpu_relax();
+ 
+-	return atmel_uart_readb(port, ATMEL_US_RHR);
++	return atmel_uart_read_char(port);
+ }
+ 
+ static void atmel_poll_put_char(struct uart_port *port, unsigned char ch)
+@@ -2302,7 +2319,7 @@ static void atmel_poll_put_char(struct uart_port *port, unsigned char ch)
+ 	while (!(atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXRDY))
+ 		cpu_relax();
+ 
+-	atmel_uart_writeb(port, ATMEL_US_THR, ch);
++	atmel_uart_write_char(port, ch);
+ }
+ #endif
+ 
+@@ -2409,7 +2426,7 @@ static void atmel_console_putchar(struct uart_port *port, int ch)
+ {
+ 	while (!(atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXRDY))
+ 		cpu_relax();
+-	atmel_uart_writeb(port, ATMEL_US_THR, ch);
++	atmel_uart_write_char(port, ch);
+ }
+ 
+ /*
+-- 
+1.8.2.2
