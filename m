@@ -1,14 +1,16 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v4 1/1] Serial: imx: add dev_pm_ops to support suspend to
+From: Shenwei Wang <Shenwei.Wang@freescale.com>
+Subject: RE: [PATCH v4 1/1] Serial: imx: add dev_pm_ops to support suspend to
  ram/disk
-Date: Thu, 30 Jul 2015 12:15:50 -0300
-Message-ID: <CAOMZO5DN3vARpY0ZQ7nEv+jbf-kcQQF4jrXqddGi81wvaxLPMg@mail.gmail.com>
+Date: Thu, 30 Jul 2015 15:19:48 +0000
+Message-ID: <CY1PR0301MB08437A8C708E5C550F10EDD2838B0@CY1PR0301MB0843.namprd03.prod.outlook.com>
 References: <1438266762-4397-1-git-send-email-shenwei.wang@freescale.com>
+ <CAOMZO5DN3vARpY0ZQ7nEv+jbf-kcQQF4jrXqddGi81wvaxLPMg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1438266762-4397-1-git-send-email-shenwei.wang@freescale.com>
+In-Reply-To: <CAOMZO5DN3vARpY0ZQ7nEv+jbf-kcQQF4jrXqddGi81wvaxLPMg@mail.gmail.com>
+Content-Language: en-US
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,61 +20,43 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Shenwei Wang <shenwei.wang@freescale.com>
+To: Fabio Estevam <festevam@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Shenwei,
-
-On Thu, Jul 30, 2015 at 11:32 AM, Shenwei Wang
-<shenwei.wang@freescale.com> wrote:
-
-> +static int imx_serial_port_suspend_noirq(struct device *dev)
-> +{
-> +       struct platform_device *pdev = to_platform_device(dev);
-> +       struct imx_port *sport = platform_get_drvdata(pdev);
-> +       int ret;
-> +
-> +       ret = clk_enable(sport->clk_ipg);
-> +       if (ret)
-> +               dev_err(dev, "UART%d suspend error!\r\n", sport->port.line);
-
-In case of error you should propagate it:
-
-ret = clk_enable(sport->clk_ipg);
-if (ret)
-    return ret;
-
-> +
-> +       /* Save necessary regs */
-> +       sport->saved_reg[0] = readl(sport->port.membase + UCR1);
-> +       sport->saved_reg[1] = readl(sport->port.membase + UCR2);
-> +       sport->saved_reg[2] = readl(sport->port.membase + UCR3);
-> +       sport->saved_reg[3] = readl(sport->port.membase + UCR4);
-> +       sport->saved_reg[4] = readl(sport->port.membase + UFCR);
-> +       sport->saved_reg[5] = readl(sport->port.membase + UESC);
-> +       sport->saved_reg[6] = readl(sport->port.membase + UTIM);
-> +       sport->saved_reg[7] = readl(sport->port.membase + UBIR);
-> +       sport->saved_reg[8] = readl(sport->port.membase + UBMR);
-> +       sport->saved_reg[9] = readl(sport->port.membase + IMX21_UTS);
-> +
-> +       if (ret == 0)
-> +               clk_disable(sport->clk_ipg);
-
-then you don't need to check ret here. Just call clk_disable unconditionally.
-
-> +
-> +       return 0;
-> +}
-> +
-> +static int imx_serial_port_resume_noirq(struct device *dev)
-> +{
-> +       struct platform_device *pdev = to_platform_device(dev);
-> +       struct imx_port *sport = platform_get_drvdata(pdev);
-> +       int ret;
-> +
-> +       ret = clk_enable(sport->clk_ipg);
-> +       if (ret)
-> +               dev_err(dev, "UART%d resume error!\r\n", sport->port.line);
-
-Same here.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRmFiaW8gRXN0ZXZhbSBb
+bWFpbHRvOmZlc3RldmFtQGdtYWlsLmNvbV0NCj4gU2VudDogMjAxNeW5tDfmnIgzMOaXpSAxMDox
+Ng0KPiBUbzogV2FuZyBTaGVud2VpLUIzODMzOQ0KPiBDYzogR3JlZyBLcm9haC1IYXJ0bWFuOyBs
+aW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOw0KPiBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmlu
+ZnJhZGVhZC5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2NCAxLzFdIFNlcmlhbDogaW14OiBh
+ZGQgZGV2X3BtX29wcyB0byBzdXBwb3J0IHN1c3BlbmQgdG8NCj4gcmFtL2Rpc2sNCj4gDQo+IElu
+IGNhc2Ugb2YgZXJyb3IgeW91IHNob3VsZCBwcm9wYWdhdGUgaXQ6DQo+IA0KPiByZXQgPSBjbGtf
+ZW5hYmxlKHNwb3J0LT5jbGtfaXBnKTsNCj4gaWYgKHJldCkNCj4gICAgIHJldHVybiByZXQ7DQoN
+Ck9rYXkuDQoNCiANCj4gPiArDQo+ID4gKyAgICAgICAvKiBTYXZlIG5lY2Vzc2FyeSByZWdzICov
+DQo+ID4gKyAgICAgICBzcG9ydC0+c2F2ZWRfcmVnWzBdID0gcmVhZGwoc3BvcnQtPnBvcnQubWVt
+YmFzZSArIFVDUjEpOw0KPiA+ICsgICAgICAgc3BvcnQtPnNhdmVkX3JlZ1sxXSA9IHJlYWRsKHNw
+b3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IyKTsNCj4gPiArICAgICAgIHNwb3J0LT5zYXZlZF9yZWdb
+Ml0gPSByZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMyk7DQo+ID4gKyAgICAgICBzcG9y
+dC0+c2F2ZWRfcmVnWzNdID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjQpOw0KPiA+
+ICsgICAgICAgc3BvcnQtPnNhdmVkX3JlZ1s0XSA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2Ug
+KyBVRkNSKTsNCj4gPiArICAgICAgIHNwb3J0LT5zYXZlZF9yZWdbNV0gPSByZWFkbChzcG9ydC0+
+cG9ydC5tZW1iYXNlICsgVUVTQyk7DQo+ID4gKyAgICAgICBzcG9ydC0+c2F2ZWRfcmVnWzZdID0g
+cmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVUSU0pOw0KPiA+ICsgICAgICAgc3BvcnQtPnNh
+dmVkX3JlZ1s3XSA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQklSKTsNCj4gPiArICAg
+ICAgIHNwb3J0LT5zYXZlZF9yZWdbOF0gPSByZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUJN
+Uik7DQo+ID4gKyAgICAgICBzcG9ydC0+c2F2ZWRfcmVnWzldID0gcmVhZGwoc3BvcnQtPnBvcnQu
+bWVtYmFzZSArIElNWDIxX1VUUyk7DQo+ID4gKw0KPiA+ICsgICAgICAgaWYgKHJldCA9PSAwKQ0K
+PiA+ICsgICAgICAgICAgICAgICBjbGtfZGlzYWJsZShzcG9ydC0+Y2xrX2lwZyk7DQo+IA0KPiB0
+aGVuIHlvdSBkb24ndCBuZWVkIHRvIGNoZWNrIHJldCBoZXJlLiBKdXN0IGNhbGwgY2xrX2Rpc2Fi
+bGUgdW5jb25kaXRpb25hbGx5Lg0KPiANCj4gPiArDQo+ID4gKyAgICAgICByZXR1cm4gMDsNCj4g
+PiArfQ0KPiA+ICsNCj4gPiArc3RhdGljIGludCBpbXhfc2VyaWFsX3BvcnRfcmVzdW1lX25vaXJx
+KHN0cnVjdCBkZXZpY2UgKmRldikgew0KPiA+ICsgICAgICAgc3RydWN0IHBsYXRmb3JtX2Rldmlj
+ZSAqcGRldiA9IHRvX3BsYXRmb3JtX2RldmljZShkZXYpOw0KPiA+ICsgICAgICAgc3RydWN0IGlt
+eF9wb3J0ICpzcG9ydCA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYpOw0KPiA+ICsgICAgICAg
+aW50IHJldDsNCj4gPiArDQo+ID4gKyAgICAgICByZXQgPSBjbGtfZW5hYmxlKHNwb3J0LT5jbGtf
+aXBnKTsNCj4gPiArICAgICAgIGlmIChyZXQpDQo+ID4gKyAgICAgICAgICAgICAgIGRldl9lcnIo
+ZGV2LCAiVUFSVCVkIHJlc3VtZSBlcnJvciFcclxuIiwNCj4gPiArIHNwb3J0LT5wb3J0LmxpbmUp
+Ow0KPiANCj4gU2FtZSBoZXJlLg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5l
+bEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4v
+bGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
