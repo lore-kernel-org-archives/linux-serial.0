@@ -1,36 +1,41 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC PATCH v2 0/3] genirq, serial: 8250: Workaround to avoid
- irq=0 for console
-Date: Thu, 30 Jul 2015 12:12:29 +0200 (CEST)
-Message-ID: <alpine.DEB.2.11.1507301207070.3825@nanos>
-References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com> <alpine.DEB.2.11.1507291230590.3825@nanos> <55B8BE39.6080500@hurleysoftware.com> <alpine.DEB.2.11.1507291351530.3825@nanos> <55B8D26A.7000402@hurleysoftware.com> <alpine.DEB.2.11.1507291534350.3825@nanos>
- <55B980E6.70800@cp.jp.nec.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55B980E6.70800@cp.jp.nec.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, Peter Zijlstra <peterz@infradead.org>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v1 1/2] dt: atmel-usart: document new I/O data register width property
+Date: Thu, 30 Jul 2015 16:06:30 +0300
+Message-ID: <1438261591-13130-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Hans-Christian Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 30 Jul 2015, Taichi Kageyama wrote:
-> On 2015/07/29 22:35, Thomas Gleixner wrote:
-> I know your code is sample (console.h is required), 
-> but it is conflict with [patch v2 1/3].
-> I think serial8250_console_write should not touch ctrl reg during autoconfig_irq. 
-> To resolve the real problem, I think keeping only [patch v2 1/3] is best(opt1).
-> What do you think?
-> 
-> opt1. keep [patch v2 1/3]
->     + Don't touch other legacy drivers using autoprobe.
->        Each driver can use console_lock to fix this problem if it happens.
+This change documents a new property for the Atmel serial device, allowing an
+implementer to specify either four bytes or one byte access to the controller
+data register.
 
-No, we already know that autoprobing and console access can cause
-this, so we fix it at the core code and be done with it.
- 
-Can you please test Peters patch and confirm that is solves it.
+This supports a change that unbreaks this driver on ATNGW100 board.
 
-Thanks,
+Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ Documentation/devicetree/bindings/serial/atmel-usart.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-	tglx
+diff --git a/Documentation/devicetree/bindings/serial/atmel-usart.txt b/Documentation/devicetree/bindings/serial/atmel-usart.txt
+index e6e6142..a8c290a7 100644
+--- a/Documentation/devicetree/bindings/serial/atmel-usart.txt
++++ b/Documentation/devicetree/bindings/serial/atmel-usart.txt
+@@ -6,6 +6,8 @@ Required properties:
+   additional mode or an USART new feature.
+   For the dbgu UART, use "atmel,<chip>-dbgu", "atmel,<chip>-usart"
+ - reg: Should contain registers location and length
++- reg-io-width: The I/O register width (in bytes) implemented by
++  this device. Supported values are 1 or 4 (the default).
+ - interrupts: Should contain interrupt
+ - clock-names: tuple listing input clock names.
+ 	Required elements: "usart"
+-- 
+2.5.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
