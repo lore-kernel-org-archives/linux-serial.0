@@ -1,57 +1,39 @@
-From: Shenwei Wang <Shenwei.Wang@freescale.com>
-Subject: RE: [PATCH v3 1/1] Serial: imx: add dev_pm_ops to support suspend to
- ram/disk
-Date: Thu, 30 Jul 2015 02:45:35 +0000
-Message-ID: <CY1PR0301MB0843EC6EA393B4E5BC15FB9C838B0@CY1PR0301MB0843.namprd03.prod.outlook.com>
-References: <1438203535-38028-1-git-send-email-shenwei.wang@freescale.com>
- <CAOMZO5Aj5PASPKRq47vmenDBSPMPHdLgSbJZXkhZu3MNYprqXA@mail.gmail.com>
- <CY1PR0301MB0843BEF6A40A0A28018E0D5D838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
- <CAOMZO5DaZ+1Ud0RAX2RELz5c0zyZUo_X1y50gY2XwM5o0BeVmg@mail.gmail.com>
- <CY1PR0301MB08437D6E977C99821622976A838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
- <CAOMZO5Drw9SAnocz2pBY2RhuQE7HbFrvdXhSWEqjiwxgvq2pgQ@mail.gmail.com>
+From: =?windows-1252?Q?Jos=E9_Manuel_Abu=EDn_Mosquera?=
+	<abuinjm@gmail.com>
+Subject: Re: [PATCH 1/1] Changed some lines according to coding style in drivers/tty/serial/jsm
+Date: Thu, 30 Jul 2015 08:51:51 +0200
+Message-ID: <55B9C987.4010403@gmail.com>
+References: <1438153172-17881-1-git-send-email-abuinjm@gmail.com> <20150729135044.GA12008@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAOMZO5Drw9SAnocz2pBY2RhuQE7HbFrvdXhSWEqjiwxgvq2pgQ@mail.gmail.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20150729135044.GA12008@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBGYWJpbyBFc3RldmFtIFttYWls
-dG86ZmVzdGV2YW1AZ21haWwuY29tXQ0KPiBTZW50OiAyMDE15bm0N+aciDI55pelIDE3OjExDQo+
-IFRvOiBXYW5nIFNoZW53ZWktQjM4MzM5DQo+IENjOiBHcmVnIEtyb2FoLUhhcnRtYW47IGxpbnV4
-LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gbGludXgtc2VyaWFsQHZnZXIua2Vy
-bmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYzIDEvMV0gU2VyaWFsOiBpbXg6IGFkZCBk
-ZXZfcG1fb3BzIHRvIHN1cHBvcnQgc3VzcGVuZCB0bw0KPiByYW0vZGlzaw0KPiANCj4gT24gV2Vk
-LCBKdWwgMjksIDIwMTUgYXQgNjo1NCBQTSwgU2hlbndlaSBXYW5nIDxTaGVud2VpLldhbmdAZnJl
-ZXNjYWxlLmNvbT4NCj4gd3JvdGU6DQo+IA0KPiA+IEkgYW0gdmVyeSBpbnRlcmVzdGluZyB0byBr
-bm93IGlmIHlvdSBjb3VsZCBwcm92aWRlIGFuIGV4YW1wbGUNCj4gPiBjb25kaXRpb24gdGhhdCBt
-YXkgY2F1c2UgY2xrX2VuYWJsZSBmYWlsZWQgaW4gdGhpcyBjYWxsYmFjayBmdW5jdGlvbj8NCj4g
-DQo+IExldCdzIGNoZWNrIGNsa19lbmFibGUgZGVmaW5pdGlvbjoNCj4gDQo+IGludCBjbGtfZW5h
-YmxlKHN0cnVjdCBjbGsgKmNsaykNCj4gew0KPiAgICAgdW5zaWduZWQgbG9uZyBmbGFnczsNCj4g
-ICAgIGludCByZXQ7DQo+IA0KPiAgICAgaWYgKCFjbGspDQo+ICAgICAgICAgcmV0dXJuIDA7DQo+
-IA0KPiAgICAgZmxhZ3MgPSBjbGtfZW5hYmxlX2xvY2soKTsNCj4gICAgIHJldCA9IGNsa19jb3Jl
-X2VuYWJsZShjbGstPmNvcmUpOw0KPiAgICAgY2xrX2VuYWJsZV91bmxvY2soZmxhZ3MpOw0KPiAN
-Cj4gICAgIHJldHVybiByZXQ7DQo+IH0NCj4gDQo+IFNvIGlmIEkgc2VlIGl0IHJpZ2h0IGl0IHJl
-dHVybnMgJ2ludCcgbm90ICd2b2lkJyA7LSkNCg0KQWN0dWFsbHksIHRoZSBmdW5jdGlvbiBzaG93
-cyBldmVuIGlmIGl0IGlzIGluIGVycm9yIHN0YXR1cyBsaWtlIHRoZSBwYXJhbWV0ZXIgImNsayIg
-aXMgbnVsbCB0aGUgcmV0dXJuIHZhbHVlIGlzIHplcm8uIA0KSW5zaWRlIHRoZSBmdW5jdGlvbiAi
-Y2xrX2NvcmVfZW5hYmxlIiwgaWYgZXZlcnl0aGluZyBnb2VzIHNtb290aCwgaXQgc3RpbGwgcmV0
-dXJucyB6ZXJvLiANCg0KTW9yZW92ZXIsIHRoaXMgcGF0Y2ggZG9lcyBub3QgY2FyZSBhYm91dCB0
-aGUgcmV0dXJuIHZhbHVlIG9mIGNsa19lbmFibGUsIHdoYXRldmVyIHZhbHVlIGl0IHJldHVybnMs
-IHRoZSBmb2xsb3dpbmcgY29kZXMga2VlcCANCnRoZSBzYW1lLg0KDQpSZWdhcmRzLA0KU2hlbndl
-aQ0KDQoNCiANCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5m
-cmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xp
-bnV4LWFybS1rZXJuZWwK
+Sorry, it's my first contribution.
+
+I'll fix that and resend the patch
+
+Thank you
+
+On 29/07/15 15:50, Greg KH wrote:
+> On Wed, Jul 29, 2015 at 08:59:32AM +0200, Jose Manuel Abuin Mosquera wrote:
+>> Changed some lines according to coding style in drivers/tty/serial/jsm.
+>
+> That was vague, what exactly did you do?
+>
+> And please change your subject: to put the subsystem and driver first,
+> like:
+> 	tty: jsm: added extra...
+>
+>
+> Can you fix that up and resend?
+>
+> thanks,
+>
+> greg k-h
+>
