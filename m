@@ -1,71 +1,36 @@
-From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
-Subject: Re: [PATCH v3 1/1] Serial: imx: add dev_pm_ops to support suspend
- to ram/disk
-Date: Thu, 30 Jul 2015 11:34:49 +0200
-Message-ID: <20150730113449.6c4743f2@ipc1.ka-ro>
-References: <1438203535-38028-1-git-send-email-shenwei.wang@freescale.com>
- <CAOMZO5Aj5PASPKRq47vmenDBSPMPHdLgSbJZXkhZu3MNYprqXA@mail.gmail.com>
- <CY1PR0301MB0843BEF6A40A0A28018E0D5D838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
- <CAOMZO5DaZ+1Ud0RAX2RELz5c0zyZUo_X1y50gY2XwM5o0BeVmg@mail.gmail.com>
- <CY1PR0301MB08437D6E977C99821622976A838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
- <CAOMZO5Drw9SAnocz2pBY2RhuQE7HbFrvdXhSWEqjiwxgvq2pgQ@mail.gmail.com>
- <CY1PR0301MB0843EC6EA393B4E5BC15FB9C838B0@CY1PR0301MB0843.namprd03.prod.outlook.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC PATCH v2 0/3] genirq, serial: 8250: Workaround to avoid
+ irq=0 for console
+Date: Thu, 30 Jul 2015 12:12:29 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1507301207070.3825@nanos>
+References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com> <alpine.DEB.2.11.1507291230590.3825@nanos> <55B8BE39.6080500@hurleysoftware.com> <alpine.DEB.2.11.1507291351530.3825@nanos> <55B8D26A.7000402@hurleysoftware.com> <alpine.DEB.2.11.1507291534350.3825@nanos>
+ <55B980E6.70800@cp.jp.nec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CY1PR0301MB0843EC6EA393B4E5BC15FB9C838B0@CY1PR0301MB0843.namprd03.prod.outlook.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Shenwei Wang <Shenwei.Wang@freescale.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <festevam@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55B980E6.70800@cp.jp.nec.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, Peter Zijlstra <peterz@infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGksCgo+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0KPiA+IEZyb206IEZhYmlvIEVzdGV2
-YW0gW21haWx0bzpmZXN0ZXZhbUBnbWFpbC5jb21dCj4gPiBTZW50OiAyMDE15bm0N+aciDI55pel
-IDE3OjExCj4gPiBUbzogV2FuZyBTaGVud2VpLUIzODMzOQo+ID4gQ2M6IEdyZWcgS3JvYWgtSGFy
-dG1hbjsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOwo+ID4gbGludXgtc2Vy
-aWFsQHZnZXIua2VybmVsLm9yZwo+ID4gU3ViamVjdDogUmU6IFtQQVRDSCB2MyAxLzFdIFNlcmlh
-bDogaW14OiBhZGQgZGV2X3BtX29wcyB0byBzdXBwb3J0IHN1c3BlbmQgdG8KPiA+IHJhbS9kaXNr
-Cj4gPiAKPiA+IE9uIFdlZCwgSnVsIDI5LCAyMDE1IGF0IDY6NTQgUE0sIFNoZW53ZWkgV2FuZyA8
-U2hlbndlaS5XYW5nQGZyZWVzY2FsZS5jb20+Cj4gPiB3cm90ZToKPiA+IAo+ID4gPiBJIGFtIHZl
-cnkgaW50ZXJlc3RpbmcgdG8ga25vdyBpZiB5b3UgY291bGQgcHJvdmlkZSBhbiBleGFtcGxlCj4g
-PiA+IGNvbmRpdGlvbiB0aGF0IG1heSBjYXVzZSBjbGtfZW5hYmxlIGZhaWxlZCBpbiB0aGlzIGNh
-bGxiYWNrIGZ1bmN0aW9uPwo+ID4gCj4gPiBMZXQncyBjaGVjayBjbGtfZW5hYmxlIGRlZmluaXRp
-b246Cj4gPiAKPiA+IGludCBjbGtfZW5hYmxlKHN0cnVjdCBjbGsgKmNsaykKPiA+IHsKPiA+ICAg
-ICB1bnNpZ25lZCBsb25nIGZsYWdzOwo+ID4gICAgIGludCByZXQ7Cj4gPiAKPiA+ICAgICBpZiAo
-IWNsaykKPiA+ICAgICAgICAgcmV0dXJuIDA7Cj4gPiAKPiA+ICAgICBmbGFncyA9IGNsa19lbmFi
-bGVfbG9jaygpOwo+ID4gICAgIHJldCA9IGNsa19jb3JlX2VuYWJsZShjbGstPmNvcmUpOwo+ID4g
-ICAgIGNsa19lbmFibGVfdW5sb2NrKGZsYWdzKTsKPiA+IAo+ID4gICAgIHJldHVybiByZXQ7Cj4g
-PiB9Cj4gPiAKPiA+IFNvIGlmIEkgc2VlIGl0IHJpZ2h0IGl0IHJldHVybnMgJ2ludCcgbm90ICd2
-b2lkJyA7LSkKPiAKPiBBY3R1YWxseSwgdGhlIGZ1bmN0aW9uIHNob3dzIGV2ZW4gaWYgaXQgaXMg
-aW4gZXJyb3Igc3RhdHVzIGxpa2UgdGhlIHBhcmFtZXRlciAiY2xrIiBpcyBudWxsIHRoZSByZXR1
-cm4gdmFsdWUgaXMgemVyby4gCj4gSW5zaWRlIHRoZSBmdW5jdGlvbiAiY2xrX2NvcmVfZW5hYmxl
-IiwgaWYgZXZlcnl0aGluZyBnb2VzIHNtb290aCwgaXQgc3RpbGwgcmV0dXJucyB6ZXJvLiAKPiAK
-QSBOVUxMIGNsayBpcyBhIHZhbGlkIGNsayBwZXIgZGVmaW5pdGlvbi4KCj4gTW9yZW92ZXIsIHRo
-aXMgcGF0Y2ggZG9lcyBub3QgY2FyZSBhYm91dCB0aGUgcmV0dXJuIHZhbHVlIG9mIGNsa19lbmFi
-bGUsIHdoYXRldmVyIHZhbHVlIGl0IHJldHVybnMsIHRoZSBmb2xsb3dpbmcgY29kZXMga2VlcCAK
-PiB0aGUgc2FtZS4KPgpOZXZlcnRoZWxlc3MgaXQgd291bGQgYmUgZ29vZCB0byBpbmZvcm0gdGhl
-IHVzZXIgb2YgYSBmYWlsdXJlLApzaW5jZSB0aGF0IG1heSBhZmZlY3QgdGhlIHN5c3RlbSdzIHN0
-YWJpbGl0eSBhZnRlciByZXR1cm5pbmcgZnJvbQpzdXNwZW5kLgpFdmVuIGlmIHRoZSBjdXJyZW50
-IGltcGxlbWVudGF0aW9uIG9mIGEgZnVuY3Rpb24gY2Fubm90IHJldHVybiBhbiBlcnJvcgpjb2Rl
-IGluIHNvbWUgc3BlY2lmaWMgY2lyY3Vtc3RhbmNlLCB0aGF0IGRvZXNuJ3QgbWVhbiB0aGF0IHRo
-aXMgd2lsbCBiZQphbHdheXMgdGhlIGNhc2UuIFRodXMsIGNoZWNraW5nIHRoZSByZXR1cm4gY29k
-ZSBhbmQgYWN0aW5nIHVwb24gaXQgaXMKYWx3YXlzIGFkdmlzYWJsZS4KCgpMb3RoYXIgV2HDn21h
-bm4KLS0gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCgpLYS1SbyBlbGVjdHJvbmljcyBHbWJIIHwgUGFzY2Fsc3RyYcOfZSAyMiB8IEQg
-LSA1MjA3NiBBYWNoZW4KUGhvbmU6ICs0OSAyNDA4IDE0MDItMCB8IEZheDogKzQ5IDI0MDggMTQw
-Mi0xMApHZXNjaMOkZnRzZsO8aHJlcjogTWF0dGhpYXMgS2F1c3NlbgpIYW5kZWxzcmVnaXN0ZXJl
-aW50cmFnOiBBbXRzZ2VyaWNodCBBYWNoZW4sIEhSQiA0OTk2Cgp3d3cua2Fyby1lbGVjdHJvbmlj
-cy5kZSB8IGluZm9Aa2Fyby1lbGVjdHJvbmljcy5kZQpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwoKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QK
-bGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRl
-YWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On Thu, 30 Jul 2015, Taichi Kageyama wrote:
+> On 2015/07/29 22:35, Thomas Gleixner wrote:
+> I know your code is sample (console.h is required), 
+> but it is conflict with [patch v2 1/3].
+> I think serial8250_console_write should not touch ctrl reg during autoconfig_irq. 
+> To resolve the real problem, I think keeping only [patch v2 1/3] is best(opt1).
+> What do you think?
+> 
+> opt1. keep [patch v2 1/3]
+>     + Don't touch other legacy drivers using autoprobe.
+>        Each driver can use console_lock to fix this problem if it happens.
+
+No, we already know that autoprobing and console access can cause
+this, so we fix it at the core code and be done with it.
+ 
+Can you please test Peters patch and confirm that is solves it.
+
+Thanks,
+
+	tglx
