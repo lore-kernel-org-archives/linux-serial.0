@@ -1,131 +1,115 @@
-From: Jose Manuel Abuin Mosquera <abuinjm@gmail.com>
-Subject: [PATCH 1/1] tty/serial: jsm: Added spaces in if sentences and around binary operators
-Date: Thu, 30 Jul 2015 09:36:05 +0200
-Message-ID: <1438241765-3094-1-git-send-email-abuinjm@gmail.com>
+From: Robert Baldyga <r.baldyga@samsung.com>
+Subject: [PATCH 2/2] serial: samsung: fix DMA for FIFO smaller than cache line
+ size
+Date: Thu, 30 Jul 2015 11:14:16 +0200
+Message-ID: <1438247656-24695-3-git-send-email-r.baldyga@samsung.com>
+References: <1438247656-24695-1-git-send-email-r.baldyga@samsung.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <1438247656-24695-1-git-send-email-r.baldyga@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: cascardo@linux.vnet.ibm.com, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Jose M. Abuin" <abuinjm@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: akpm@linux-foundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, Robert Baldyga <r.baldyga@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: "Jose M. Abuin" <abuinjm@gmail.com>
+So far DMA mode were activated when only number of bytes to send was
+equal or greater than min_dma_size. Due to requirement that DMA transaction
+buffer should be aligned to cache line size, the excessive bytes were
+written to FIFO before starting DMA transaction. The problem occurred
+when FIFO size were smaller than cache alignment, because writing all
+excessive bytes to FIFO would fail. It happened in DMA mode when PIO
+interrupts disabled, which caused driver hung.
 
-Added a blank line between variable declaration and code.
-Changed printk(KERN_INFO by pr_info( in some lines.
-Fixed space separations in if - else sentences.
-Added spaces between binary operators and variables.
-Variable assignation outside if in line 766.
+The solution is to test if buffer is alligned to cache line size before
+activating DMA mode, and if it's not, running PIO mode to align buffer
+and then starting DMA transaction. In PIO mode, when interrupts are
+enabled, lack of space in FIFO isn't the problem, so buffer aligning
+will always finish with success.
 
-Signed-off-by: Jose Manuel Abuin Mosquera <abuinjm@gmail.com>
+Signed-off-by: Robert Baldyga <r.baldyga@samsung.com>
 ---
- drivers/tty/serial/jsm/jsm_tty.c | 39 ++++++++++++++++++++++-----------------
- 1 file changed, 22 insertions(+), 17 deletions(-)
+ drivers/tty/serial/samsung.c | 36 +++++++++++++++++++++---------------
+ 1 file changed, 21 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index 524e86a..c96b0a2 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -124,6 +124,7 @@ static void jsm_tty_set_mctrl(struct uart_port *port, unsigned int mctrl)
- static void jsm_tty_write(struct uart_port *port)
- {
- 	struct jsm_channel *channel;
-+
- 	channel = container_of(port, struct jsm_channel, uart_port);
- 	channel->ch_bd->bd_ops->copy_data_from_queue_to_uart(channel);
- }
-@@ -399,6 +400,7 @@ int jsm_tty_init(struct jsm_board *brd)
- 			 * interrupt context, and there are no locks held.
- 			 */
- 			brd->channels[i] = kzalloc(sizeof(struct jsm_channel), GFP_KERNEL);
-+
- 			if (!brd->channels[i]) {
- 				jsm_dbg(CORE, &brd->pci_dev,
- 					"%s:%d Unable to allocate memory for channel struct\n",
-@@ -468,18 +470,19 @@ int jsm_uart_port_init(struct jsm_board *brd)
- 		brd->channels[i]->uart_port.ops = &jsm_ops;
- 		line = find_first_zero_bit(linemap, MAXLINES);
- 		if (line >= MAXLINES) {
--			printk(KERN_INFO "jsm: linemap is full, added device failed\n");
-+			pr_info("jsm: linemap is full, added device failed\n");
- 			continue;
- 		} else
- 			set_bit(line, linemap);
- 		brd->channels[i]->uart_port.line = line;
--		rc = uart_add_one_port (&jsm_uart_driver, &brd->channels[i]->uart_port);
--		if (rc){
--			printk(KERN_INFO "jsm: Port %d failed. Aborting...\n", i);
-+		rc = uart_add_one_port(&jsm_uart_driver, &brd->channels[i]->uart_port);
-+
-+		if (rc) {
-+			pr_info("jsm: Port %d failed. Aborting...\n", i);
- 			return rc;
-+		} else {
-+			pr_info("jsm: Port %d added\n", i);
- 		}
--		else
--			printk(KERN_INFO "jsm: Port %d added\n", i);
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 08168f9..5916311 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -295,15 +295,6 @@ static int s3c24xx_serial_start_tx_dma(struct s3c24xx_uart_port *ourport,
+ 	if (ourport->tx_mode != S3C24XX_TX_DMA)
+ 		enable_tx_dma(ourport);
+ 
+-	while (xmit->tail & (dma_get_cache_alignment() - 1)) {
+-		if (rd_regl(port, S3C2410_UFSTAT) & ourport->info->tx_fifofull)
+-			return 0;
+-		wr_regb(port, S3C2410_UTXH, xmit->buf[xmit->tail]);
+-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+-		port->icount.tx++;
+-		count--;
+-	}
+-
+ 	dma->tx_size = count & ~(dma_get_cache_alignment() - 1);
+ 	dma->tx_transfer_addr = dma->tx_addr + xmit->tail;
+ 
+@@ -343,7 +334,8 @@ static void s3c24xx_serial_start_next_tx(struct s3c24xx_uart_port *ourport)
  	}
  
- 	jsm_dbg(INIT, &brd->pci_dev, "finish\n");
-@@ -542,7 +545,7 @@ void jsm_input(struct jsm_channel *ch)
- 	tp = port->tty;
+ 	if (!ourport->dma || !ourport->dma->tx_chan ||
+-	    count < ourport->min_dma_size)
++	    count < ourport->min_dma_size ||
++	    xmit->tail & (dma_get_cache_alignment() - 1))
+ 		s3c24xx_serial_start_tx_pio(ourport);
+ 	else
+ 		s3c24xx_serial_start_tx_dma(ourport, count);
+@@ -737,7 +729,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 	struct uart_port *port = &ourport->port;
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 	unsigned long flags;
+-	int count;
++	int count, dma_count = 0;
  
- 	bd = ch->ch_bd;
--	if(!bd)
-+	if (!bd)
- 		return;
+ 	spin_lock_irqsave(&port->lock, flags);
  
- 	spin_lock_irqsave(&ch->ch_lock, lock_flags);
-@@ -570,7 +573,7 @@ void jsm_input(struct jsm_channel *ch)
- 	 *input data and return immediately.
- 	 */
- 	if (!tp ||
--		!(tp->termios.c_cflag & CREAD) ) {
-+		!(tp->termios.c_cflag & CREAD)) {
+@@ -745,8 +737,12 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
  
- 		jsm_dbg(READ, &ch->ch_bd->pci_dev,
- 			"input. dropping %d bytes on port %d...\n",
-@@ -625,14 +628,14 @@ void jsm_input(struct jsm_channel *ch)
- 				 * Give the Linux ld the flags in the
- 				 * format it likes.
- 				 */
--				if (*(ch->ch_equeue +tail +i) & UART_LSR_BI)
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i),  TTY_BREAK);
--				else if (*(ch->ch_equeue +tail +i) & UART_LSR_PE)
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i), TTY_PARITY);
--				else if (*(ch->ch_equeue +tail +i) & UART_LSR_FE)
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i), TTY_FRAME);
-+				if (*(ch->ch_equeue + tail + i) & UART_LSR_BI)
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i),  TTY_BREAK);
-+				else if (*(ch->ch_equeue + tail + i) & UART_LSR_PE)
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i), TTY_PARITY);
-+				else if (*(ch->ch_equeue + tail + i) & UART_LSR_FE)
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i), TTY_FRAME);
- 				else
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i), TTY_NORMAL);
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i), TTY_NORMAL);
- 			}
- 		} else {
- 			tty_insert_flip_string(port, ch->ch_rqueue + tail, s);
-@@ -763,7 +766,9 @@ void jsm_check_queue_flow_control(struct jsm_channel *ch)
- 	int qleft;
+ 	if (ourport->dma && ourport->dma->tx_chan &&
+ 	    count >= ourport->min_dma_size) {
+-		s3c24xx_serial_start_tx_dma(ourport, count);
+-		goto out;
++		int align = dma_get_cache_alignment() -
++			(xmit->tail & (dma_get_cache_alignment() - 1));
++		if (count-align >= ourport->min_dma_size) {
++			dma_count = count-align;
++			count = align;
++		}
+ 	}
  
- 	/* Store how much space we have left in the queue */
--	if ((qleft = ch->ch_r_tail - ch->ch_r_head - 1) < 0)
-+	qleft = ch->ch_r_tail - ch->ch_r_head - 1;
+ 	if (port->x_char) {
+@@ -767,14 +763,24 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 
+ 	/* try and drain the buffer... */
+ 
+-	count = port->fifosize;
+-	while (!uart_circ_empty(xmit) && count-- > 0) {
++	if (count > port->fifosize) {
++		count = port->fifosize;
++		dma_count = 0;
++	}
 +
-+	if (qleft < 0)
- 		qleft += RQUEUEMASK + 1;
++	while (!uart_circ_empty(xmit) && count > 0) {
+ 		if (rd_regl(port, S3C2410_UFSTAT) & ourport->info->tx_fifofull)
+ 			break;
  
- 	/*
-@@ -784,7 +789,7 @@ void jsm_check_queue_flow_control(struct jsm_channel *ch)
- 	if (qleft < 256) {
- 		/* HWFLOW */
- 		if (ch->ch_c_cflag & CRTSCTS) {
--			if(!(ch->ch_flags & CH_RECEIVER_OFF)) {
-+			if (!(ch->ch_flags & CH_RECEIVER_OFF)) {
- 				bd_ops->disable_receiver(ch);
- 				ch->ch_flags |= (CH_RECEIVER_OFF);
- 				jsm_dbg(READ, &ch->ch_bd->pci_dev,
+ 		wr_regb(port, S3C2410_UTXH, xmit->buf[xmit->tail]);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		port->icount.tx++;
++		count--;
++	}
++
++	if (!count && dma_count) {
++		s3c24xx_serial_start_tx_dma(ourport, dma_count);
++		goto out;
+ 	}
+ 
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
 -- 
-2.4.6
+1.9.1
