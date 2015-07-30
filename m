@@ -1,139 +1,57 @@
-From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Subject: Re: [RFC PATCH v2 0/3] genirq, serial: 8250: Workaround to avoid
- irq=0 for console
-Date: Thu, 30 Jul 2015 01:41:57 +0000
-Message-ID: <55B980E6.70800@cp.jp.nec.com>
-References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com>
- <alpine.DEB.2.11.1507291230590.3825@nanos>
- <55B8BE39.6080500@hurleysoftware.com>
- <alpine.DEB.2.11.1507291351530.3825@nanos>
- <55B8D26A.7000402@hurleysoftware.com>
- <alpine.DEB.2.11.1507291534350.3825@nanos>
+From: Shenwei Wang <Shenwei.Wang@freescale.com>
+Subject: RE: [PATCH v3 1/1] Serial: imx: add dev_pm_ops to support suspend to
+ ram/disk
+Date: Thu, 30 Jul 2015 02:45:35 +0000
+Message-ID: <CY1PR0301MB0843EC6EA393B4E5BC15FB9C838B0@CY1PR0301MB0843.namprd03.prod.outlook.com>
+References: <1438203535-38028-1-git-send-email-shenwei.wang@freescale.com>
+ <CAOMZO5Aj5PASPKRq47vmenDBSPMPHdLgSbJZXkhZu3MNYprqXA@mail.gmail.com>
+ <CY1PR0301MB0843BEF6A40A0A28018E0D5D838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
+ <CAOMZO5DaZ+1Ud0RAX2RELz5c0zyZUo_X1y50gY2XwM5o0BeVmg@mail.gmail.com>
+ <CY1PR0301MB08437D6E977C99821622976A838C0@CY1PR0301MB0843.namprd03.prod.outlook.com>
+ <CAOMZO5Drw9SAnocz2pBY2RhuQE7HbFrvdXhSWEqjiwxgvq2pgQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.11.1507291534350.3825@nanos>
-Content-Language: ja-JP
-Content-ID: <152734F95B37CE4F81E96672D5A4F9B1@gisp.nec.co.jp>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>, Peter Hurley <peter@hurleysoftware.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAOMZO5Drw9SAnocz2pBY2RhuQE7HbFrvdXhSWEqjiwxgvq2pgQ@mail.gmail.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Fabio Estevam <festevam@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 2015/07/29 22:35, Thomas Gleixner wrote:
-> On Wed, 29 Jul 2015, Peter Hurley wrote:
->> On 07/29/2015 07:53 AM, Thomas Gleixner wrote:
->>> On Wed, 29 Jul 2015, Peter Hurley wrote:
->>>> On 07/29/2015 06:32 AM, Thomas Gleixner wrote:
->>>>> On Wed, 29 Jul 2015, Taichi Kageyama wrote:
->>>>>> - Keep interrupt disabled on the CPU which is used to detect 
->>>>>>   an interrupt during the timeout of autoconfig_irq().
->>>>>>      + Kick printk() on the CPU which detects interrupt 
->>>>>>        from a console serial port.
->>>>>
->>>>> This is wrong to begin with. How is that supposed to work on an UP
->>>>> machine? Not at all.
->>>>>
->>>>> So no, fix the code which has interrupts disabled accross autoprobing
->>>>> and do not try to apply bandaids somewhere else.
->>>>
->>>> Like printk() from some unrelated driver?
->>>
->>> If that's the cause for the wreckage then yes, we need a way to tell
->>> the printk code not to call into the driver until that initialization
->>> step is done. It's that simple.
->>
->> Like this?
-> 
-> Looks about right.
-
-
-Thomas,
-Thank you for your comments.
-The status of interrupt disabled should be short,
-but it cannot be controlled from autorpobing side.
-That's why I was thinking fixing autoprobing itself was better.
-
-However, I remember Peter also mentioned about your idea first.
-OK, I change my mind to fix the real problem simply.
-I actually have seen the problem caused only by "printk()" on RHEL.
-
-
-Peter,
-I know your code is sample (console.h is required), 
-but it is conflict with [patch v2 1/3].
-I think serial8250_console_write should not touch ctrl reg during autoconfig_irq. 
-To resolve the real problem, I think keeping only [patch v2 1/3] is best(opt1).
-What do you think?
-
-opt1. keep [patch v2 1/3]
-    + Don't touch other legacy drivers using autoprobe.
-       Each driver can use console_lock to fix this problem if it happens.
-
-opt2. fix probe_irq_on/mask/off for all legacy devices which use them
-    + Discard [patch v2 1/3]
-    + Fix autoconfig_irq and probe_irq_*
-    + Test for all these drivers is required.
-      --> Probably, it works but I cannot test them.
-
-
-Thanks,
-Taichi
-
-
-
->  
->> --- >% --
->> Subject: [PATCH] genirq: Disable printk() during irq probe
->>
->> printk() disables interrupts for extended periods of time while
->> outputting to console drivers. This breaks irq probing since the
->> triggered irq may not be serviced (in time) if scheduled on the
->> printk() cpu.
->>
->> Claim the console_lock() which effectively disables console output.
->>
->> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
->> ---
->>  kernel/irq/autoprobe.c | 9 +++++++++
->>  1 file changed, 9 insertions(+)
->>
->> diff --git a/kernel/irq/autoprobe.c b/kernel/irq/autoprobe.c
->> index 0119b9d..47535d2 100644
->> --- a/kernel/irq/autoprobe.c
->> +++ b/kernel/irq/autoprobe.c
->> @@ -39,6 +39,13 @@ unsigned long probe_irq_on(void)
->>  	 */
->>  	async_synchronize_full();
->>  	mutex_lock(&probing_active);
->> +
->> +	/*
->> +	 * printk() breaks irq probing - disable printk output until probe
->> +	 * completes
->> +	 */
->> +	console_lock();
->> +
->>  	/*
->>  	 * something may have generated an irq long ago and we want to
->>  	 * flush such a longstanding irq before considering it as spurious.
->> @@ -132,6 +139,7 @@ unsigned int probe_irq_mask(unsigned long val)
->>  		}
->>  		raw_spin_unlock_irq(&desc->lock);
->>  	}
->> +	console_unlock();
->>  	mutex_unlock(&probing_active);
->>  
->>  	return mask & val;
->> @@ -174,6 +182,7 @@ int probe_irq_off(unsigned long val)
->>  		}
->>  		raw_spin_unlock_irq(&desc->lock);
->>  	}
->> +	console_unlock();
->>  	mutex_unlock(&probing_active);
->>  
->>  	if (nr_of_irqs > 1)
->> -- 
->> 2.5.0
->>
->>
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBGYWJpbyBFc3RldmFtIFttYWls
+dG86ZmVzdGV2YW1AZ21haWwuY29tXQ0KPiBTZW50OiAyMDE15bm0N+aciDI55pelIDE3OjExDQo+
+IFRvOiBXYW5nIFNoZW53ZWktQjM4MzM5DQo+IENjOiBHcmVnIEtyb2FoLUhhcnRtYW47IGxpbnV4
+LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gbGludXgtc2VyaWFsQHZnZXIua2Vy
+bmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYzIDEvMV0gU2VyaWFsOiBpbXg6IGFkZCBk
+ZXZfcG1fb3BzIHRvIHN1cHBvcnQgc3VzcGVuZCB0bw0KPiByYW0vZGlzaw0KPiANCj4gT24gV2Vk
+LCBKdWwgMjksIDIwMTUgYXQgNjo1NCBQTSwgU2hlbndlaSBXYW5nIDxTaGVud2VpLldhbmdAZnJl
+ZXNjYWxlLmNvbT4NCj4gd3JvdGU6DQo+IA0KPiA+IEkgYW0gdmVyeSBpbnRlcmVzdGluZyB0byBr
+bm93IGlmIHlvdSBjb3VsZCBwcm92aWRlIGFuIGV4YW1wbGUNCj4gPiBjb25kaXRpb24gdGhhdCBt
+YXkgY2F1c2UgY2xrX2VuYWJsZSBmYWlsZWQgaW4gdGhpcyBjYWxsYmFjayBmdW5jdGlvbj8NCj4g
+DQo+IExldCdzIGNoZWNrIGNsa19lbmFibGUgZGVmaW5pdGlvbjoNCj4gDQo+IGludCBjbGtfZW5h
+YmxlKHN0cnVjdCBjbGsgKmNsaykNCj4gew0KPiAgICAgdW5zaWduZWQgbG9uZyBmbGFnczsNCj4g
+ICAgIGludCByZXQ7DQo+IA0KPiAgICAgaWYgKCFjbGspDQo+ICAgICAgICAgcmV0dXJuIDA7DQo+
+IA0KPiAgICAgZmxhZ3MgPSBjbGtfZW5hYmxlX2xvY2soKTsNCj4gICAgIHJldCA9IGNsa19jb3Jl
+X2VuYWJsZShjbGstPmNvcmUpOw0KPiAgICAgY2xrX2VuYWJsZV91bmxvY2soZmxhZ3MpOw0KPiAN
+Cj4gICAgIHJldHVybiByZXQ7DQo+IH0NCj4gDQo+IFNvIGlmIEkgc2VlIGl0IHJpZ2h0IGl0IHJl
+dHVybnMgJ2ludCcgbm90ICd2b2lkJyA7LSkNCg0KQWN0dWFsbHksIHRoZSBmdW5jdGlvbiBzaG93
+cyBldmVuIGlmIGl0IGlzIGluIGVycm9yIHN0YXR1cyBsaWtlIHRoZSBwYXJhbWV0ZXIgImNsayIg
+aXMgbnVsbCB0aGUgcmV0dXJuIHZhbHVlIGlzIHplcm8uIA0KSW5zaWRlIHRoZSBmdW5jdGlvbiAi
+Y2xrX2NvcmVfZW5hYmxlIiwgaWYgZXZlcnl0aGluZyBnb2VzIHNtb290aCwgaXQgc3RpbGwgcmV0
+dXJucyB6ZXJvLiANCg0KTW9yZW92ZXIsIHRoaXMgcGF0Y2ggZG9lcyBub3QgY2FyZSBhYm91dCB0
+aGUgcmV0dXJuIHZhbHVlIG9mIGNsa19lbmFibGUsIHdoYXRldmVyIHZhbHVlIGl0IHJldHVybnMs
+IHRoZSBmb2xsb3dpbmcgY29kZXMga2VlcCANCnRoZSBzYW1lLg0KDQpSZWdhcmRzLA0KU2hlbndl
+aQ0KDQoNCiANCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5m
+cmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xp
+bnV4LWFybS1rZXJuZWwK
