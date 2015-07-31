@@ -1,198 +1,124 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH linux-next 1/1] tty/serial: at91: fix I/O accesses on
- RHR and THR for AVR32
-Date: Fri, 31 Jul 2015 09:03:20 +0200
-Message-ID: <55BB1DB8.4010601@atmel.com>
-References: <b950edd352e715d7f1f0d5ca4856ae4fec56890f.1438260564.git.cyrille.pitchen@atmel.com> <20150730174605.GE27985@piout.net>
+From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+Subject: Re: [RFC PATCH v2 0/3] genirq, serial: 8250: Workaround to avoid
+ irq=0 for console
+Date: Fri, 31 Jul 2015 07:02:26 +0000
+Message-ID: <55BB1D82.909@cp.jp.nec.com>
+References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com>
+ <alpine.DEB.2.11.1507291230590.3825@nanos>
+ <55B8BE39.6080500@hurleysoftware.com>
+ <alpine.DEB.2.11.1507291351530.3825@nanos>
+ <55B8D26A.7000402@hurleysoftware.com>
+ <alpine.DEB.2.11.1507291534350.3825@nanos> <55B980E6.70800@cp.jp.nec.com>
+ <alpine.DEB.2.11.1507301207070.3825@nanos>
+ <55BA2A06.1080109@hurleysoftware.com>
+ <alpine.DEB.2.11.1507302204440.3825@nanos>
+ <55BAB6B5.2090908@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150730174605.GE27985@piout.net>
+In-Reply-To: <55BAB6B5.2090908@hurleysoftware.com>
+Content-Language: ja-JP
+Content-ID: <5927DFD3B67E0D41A75018A5F183FF65@gisp.nec.co.jp>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Cyrille Pitchen <cyrille.pitchen@atmel.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, egtvedt@samfundet.no, andriy.shevchenko@linux.intel.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Peter Hurley <peter@hurleysoftware.com>, Thomas Gleixner <tglx@linutronix.de>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, Peter Zijlstra <peterz@infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Le 30/07/2015 19:46, Alexandre Belloni a =E9crit :
-> On 30/07/2015 at 16:33:38 +0200, Cyrille Pitchen wrote :
->> This patch fixes I/O accesses on the Receiver Holding Register and o=
-n the
->> Transmitter Holding Register. Indeed AVR32 can only perform 32bit I/=
-O
->> accesses on registers: using 8bit I/O accesses would read or write g=
-arbage
->> data.
->>
->> Fixes: commit b5199d468177 ("tty/serial: at91: add support to FIFOs"=
-)
->> Signed-off-by: Cyrille Pitchen <cyrille.pitchen@atmel.com>
-> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
->=20
-> Also, tested on at91rm9200ek.
-
-Great! thanks Alexandre.
-
-
->> ---
->> Hi all,
->>
->> this patch fixes a bug on AVR32 introduced by the support of FIFOs f=
-or
->> AT91. Indeed when FIFOs are enabled they work in Multiple Data mode.
->> The Multiple Data mode allows to read up to 4 data from the Receiver
->> Holding Register (RHR) or write up to 4 data into the Transmitter Ho=
-lding
->> Register (THR) in a single I/O access. Hence when only one data is t=
-o be
->> read from the RHR or written into the THR, the driver cannot use 32b=
-it I/O
->> access anymore but must use 8bit I/O access instead.
->>
->> For ARM-base AT91 SoCs, 8bit I/O accesses can always be used even wh=
-en
->> FIFOs are not available. However AV32 can only use 32bit I/O accesse=
-s.
->>
->> Since atmel_uart_readb(), resp. atmel_uart_writeb(), was created by =
-the
->> FIFO support patch to access the RHR, resp. the THR, this patch repl=
-aces
->> it by atmel_uart_read_char(), resp. atmel_uart_write_char(). Hence t=
-he
->> actual width of the I/O access now depends only on the architecture.
->>
->> All registers but RHR and THR use 32bit I/O accesses.
->>
->> This patch was tested on a at91sam9260ek board.
->>
->> Best Regards,
->>
->> Cyrille
->>
->> ChangeLog:
->>
->> v1: initial version
->>
->>  drivers/tty/serial/atmel_serial.c | 37 +++++++++++++++++++++++++++-=
----------
->>  1 file changed, 27 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/=
-atmel_serial.c
->> index e91b3b2f0590..5ca5cf3e9359 100644
->> --- a/drivers/tty/serial/atmel_serial.c
->> +++ b/drivers/tty/serial/atmel_serial.c
->> @@ -204,16 +204,33 @@ static inline void atmel_uart_writel(struct ua=
-rt_port *port, u32 reg, u32 value)
->>  	__raw_writel(value, port->membase + reg);
->>  }
->> =20
->> -static inline u8 atmel_uart_readb(struct uart_port *port, u32 reg)
->> +#ifdef CONFIG_AVR32
->> +
->> +/* AVR32 cannot handle 8 or 16bit I/O accesses but only 32bit I/O a=
-ccesses */
->> +static inline u8 atmel_uart_read_char(struct uart_port *port)
->> +{
->> +	return __raw_readl(port->membase + ATMEL_US_RHR);
->> +}
->> +
->> +static inline void atmel_uart_write_char(struct uart_port *port, u8=
- value)
->>  {
->> -	return __raw_readb(port->membase + reg);
->> +	__raw_writel(value, port->membase + ATMEL_US_THR);
->>  }
->> =20
->> -static inline void atmel_uart_writeb(struct uart_port *port, u32 re=
-g, u8 value)
->> +#else
->> +
->> +static inline u8 atmel_uart_read_char(struct uart_port *port)
->>  {
->> -	__raw_writeb(value, port->membase + reg);
->> +	return __raw_readb(port->membase + ATMEL_US_RHR);
->>  }
->> =20
->> +static inline void atmel_uart_write_char(struct uart_port *port, u8=
- value)
->> +{
->> +	__raw_writeb(value, port->membase + ATMEL_US_THR);
->> +}
->> +
->> +#endif
->> +
->>  #ifdef CONFIG_SERIAL_ATMEL_PDC
->>  static bool atmel_use_pdc_rx(struct uart_port *port)
->>  {
->> @@ -658,7 +675,7 @@ static void atmel_rx_chars(struct uart_port *por=
-t)
->> =20
->>  	status =3D atmel_uart_readl(port, ATMEL_US_CSR);
->>  	while (status & ATMEL_US_RXRDY) {
->> -		ch =3D atmel_uart_readb(port, ATMEL_US_RHR);
->> +		ch =3D atmel_uart_read_char(port);
->> =20
->>  		/*
->>  		 * note that the error handling code is
->> @@ -709,7 +726,7 @@ static void atmel_tx_chars(struct uart_port *por=
-t)
->> =20
->>  	if (port->x_char &&
->>  	    (atmel_uart_readl(port, ATMEL_US_CSR) & atmel_port->tx_done_ma=
-sk)) {
->> -		atmel_uart_writeb(port, ATMEL_US_THR, port->x_char);
->> +		atmel_uart_write_char(port, port->x_char);
->>  		port->icount.tx++;
->>  		port->x_char =3D 0;
->>  	}
->> @@ -718,7 +735,7 @@ static void atmel_tx_chars(struct uart_port *por=
-t)
->> =20
->>  	while (atmel_uart_readl(port, ATMEL_US_CSR) &
->>  	       atmel_port->tx_done_mask) {
->> -		atmel_uart_writeb(port, ATMEL_US_THR, xmit->buf[xmit->tail]);
->> +		atmel_uart_write_char(port, xmit->buf[xmit->tail]);
->>  		xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
->>  		port->icount.tx++;
->>  		if (uart_circ_empty(xmit))
->> @@ -2294,7 +2311,7 @@ static int atmel_poll_get_char(struct uart_por=
-t *port)
->>  	while (!(atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_RXRDY))
->>  		cpu_relax();
->> =20
->> -	return atmel_uart_readb(port, ATMEL_US_RHR);
->> +	return atmel_uart_read_char(port);
->>  }
->> =20
->>  static void atmel_poll_put_char(struct uart_port *port, unsigned ch=
-ar ch)
->> @@ -2302,7 +2319,7 @@ static void atmel_poll_put_char(struct uart_po=
-rt *port, unsigned char ch)
->>  	while (!(atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXRDY))
->>  		cpu_relax();
->> =20
->> -	atmel_uart_writeb(port, ATMEL_US_THR, ch);
->> +	atmel_uart_write_char(port, ch);
->>  }
->>  #endif
->> =20
->> @@ -2409,7 +2426,7 @@ static void atmel_console_putchar(struct uart_=
-port *port, int ch)
->>  {
->>  	while (!(atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXRDY))
->>  		cpu_relax();
->> -	atmel_uart_writeb(port, ATMEL_US_THR, ch);
->> +	atmel_uart_write_char(port, ch);
->>  }
->> =20
->>  /*
->> --=20
->> 1.8.2.2
->>
->=20
-
-
---=20
-Nicolas Ferre
+T24gMjAxNS8wNy8zMSA4OjQzLCBQZXRlciBIdXJsZXkgd3JvdGU6DQo+IE9uIDA3LzMwLzIwMTUg
+MDY6MTIgUE0sIFRob21hcyBHbGVpeG5lciB3cm90ZToNCj4+IE9uIFRodSwgMzAgSnVsIDIwMTUs
+IFBldGVyIEh1cmxleSB3cm90ZToNCj4+PiBIb25lc3RseSwgSSdtIG5vdCB0b28gc3VyZSB0aGlz
+IGlzIHRoZSB3YXkgdG8gZ28uDQo+Pj4NCj4+PiBNZXNzaW5nIGFyb3VuZCB3aXRoIGlycXNvZmYg
+dHJhY2VyIGZvciAzMCBtaW5zIHR1cm5lZCB1cDoNCj4+PiAzLjY2NG1zIGluIGludGVsX3VubWFw
+X3BhZ2UNCj4+PiAgIC0gaW90bGIgZmx1c2gsIHNwaW5sb2NrIGNvbnRlbnRpb24gb24gaW92YV9y
+YnRyZWVfbG9jaw0KPj4+IDEuNzI2bXMgaW4gaW50ZWxfbWFwX3BhZ2UoKQ0KPj4+ICAgLSBpb21t
+dSBjb3JlIEAgX19hbGxvY19hbmRfaW5zZXJ0X2lvdmFfcmFuZ2UoKQ0KPj4+IDEuODU5bXMgaW4g
+c3lzbG9nX3ByaW50X2FsbCgpDQo+Pj4gICAtIHdoaWNoIGlzIGhvbGRpbmcgdGhlIGxvZ2J1Zl9s
+b2NrIHNvIHRoYXQncyBwcmV0dHkgYmFkIGFueXdheQ0KPj4+IDM4N3VzIGluIG5vdXZlYXUgQCBu
+djUwX3ZtX2ZsdXNoKCkNCj4+PiAgIC0gZ3B1IHRsYiBmbHVzaA0KPj4+DQo+Pj4gSSBoYXZlIGly
+cXNvZmYgdHJhY2UgcmVwb3J0cyBmb3IgYWxsIG9mIHRoZXNlIGlmIGFueW9uZSBpcyBpbnRlcmVz
+dGVkLg0KPj4+DQo+Pj4gTG9va3MgbGlrZSBsb2NrZGVwIHdvdWxkIG5lZWQgdG8gYmUgb2ZmIGFz
+IHdlbGwgYmVjYXVzZSBJIHNhdyBidXQNCj4+PiBmYWlsZWQgdG8gY2FwdHVyZSBhIHNhdmVfdHJh
+Y2UoKSBpbiB0aGUgMzAwdXMgcmFuZ2UuDQo+Pj4NCj4+PiBJIHRoaW5rIHRoaXMgaXMganVzdCB0
+aGUgdGlwIG9mIHRoZSBpY2ViZXJnIGZvciBpcnFzb2ZmLg0KPj4NCj4+IEkgYWdyZWUuDQo+PiAg
+DQo+Pj4gSSdtIG5vdCBzYXlpbmcgdGhlc2UgZG9uJ3QgbmVlZCBmaXhpbmcgYXMgd2VsbCwgYnV0
+IHRoZXJlJ3Mgbm8gd2F5DQo+Pj4gaXJxIHByb2JlIHdpbGwgZXZlciBiZSByZWxpYWJsZSB3aXRo
+IHRoaXMgYXBwcm9hY2guDQo+Pg0KPj4gaXJxIHByb2JlIGlzIGEga25vd24gdG8gYmUgdW5yZWxp
+YWJsZSBoZXVyaXN0aWMgZW5kYXZvdXIgYW55d2F5IGFuZCBpdA0KPj4gY2Fubm90IGV2ZXIgYmVj
+b21lIHRydWx5IHJlbGlhYmxlLCBleGNlcHQgeW91IHB1dCBhIGdhemlsbGlvbiBvZg0KPj4gcmVz
+dHJpY3Rpb25zIHRvIHRoZSBzeXN0ZW0gc3RhdGUgb24gaXQuDQo+IA0KPiBZZXAsIHRvdGFsbHkg
+YWdyZWUuIEFzIHlvdSBub3RlIGJlbG93LCB0aGlzIGZ1bmN0aW9uYWxpdHkgaXMgY29tcGxldGVs
+eQ0KPiBkaXNhYmxlZCBvbiBldmVyeSBrbm93biBkaXN0cm8ga2VybmVsLg0KPiANCj4gDQo+Pj4g
+R29pbmcgYmFjayB0byB0aGUgUkZDIGlkZWEgb2YgcGlubmluZyB0aGUgaXJxIGFmZmluaXR5IHRv
+IHRoZSBjcHUNCj4+PiBhY3R1YWxseSBkb2luZyB0aGUgcHJvYmluZyAod2hpY2ggaXMgaW4gYSBr
+bm93biBjb250ZXh0KSwgd2hhdCBhYm91dA0KPj4+IHRoYXQgaXMgYnJva2VuIG9uIFVQPyBKdXN0
+IHRoZSBpbXBsZW1lbnRhdGlvbiBvciBpcyBpdCB0aGUgZnVuZGFtZW50YWwNCj4+PiBjb25jZXB0
+Pw0KPj4NCj4+IEZpcnN0IG9mIGFsbCwgdGhlcmUgaXMgbm8gZ3VhcmFudGVlIHRoYXQgeW91IGNh
+biBhZmZpbmUgdGhlc2UNCj4+IGludGVycnVwdHMgYXQgYWxsLiBXZSBoYXZlIGludGVycnVwdCBj
+b250cm9sbGVycyB3aGljaCBjYW5ub3Qgc2V0IHRoZQ0KPj4gYWZmaW5pdHkgYW5kIHRoZXkgZGVs
+aXZlciB0byBjcHVzIGluIGEgcm91bmQgcm9iaW4gc2NoZW1lIG9yIHdoYXRldmVyDQo+PiBoYXJk
+d2FyZSBkZXNpZ25lcnMgdGhvdWdodCB3b3VsZCBiZSBjbGV2ZXIuDQo+Pg0KPj4gU2Vjb25kLCB3
+aGF0IHByZXZlbnRzIHRoZSBmb2xsb3dpbmcgc2NlbmFyaW8gb24gVVAgb3IgdGhlIGFmZmluZSBj
+b3JlOg0KPj4NCj4+IAlwcm9iZV9zdGFydCgpDQo+PiAJaW50ZXJydXB0DQo+PiAJICBsb29vbmcg
+cnVubmluZyBoYW5kbGVyICh1c2IgaXMgYW4gb2J2aW91cyBjYW5kaWRhdGUpDQo+PiAJICAgICBw
+cmludGsoKQ0KPj4NCj4+IFRoYXQgd2lsbCBzd2FsbG93IHlvdXIgdWFydCBzdGF0ZSBhbmQgcnVp
+biBkZXRlY3Rpb24gYXMgd2VsbC4NCg0KDQpZZXMsIHRoZSBSRkMgaWRlYSB3YXMganVzdCBmb3Ig
+cmVkdWNpbmcgdGhlIHJpc2sgb2YgZmFpbHVyZSwgbm90IHBlcmZlY3QuDQpJIGtub3cgaXQgZGVw
+ZW5kcyBvbiB0aGUgaW50ZXJydXB0IGNvbnRyb2xsZXJzLA0KYnV0IEkgZGlkbid0IGtub3cgdGhl
+IGVycm9yIG9jY3VycmVkIGFmdGVyIG90aGVycyBzZXQgYWZmaW5pdHkuDQpJIHVuZGVyc3RhbmQg
+dGhlcmUgaXMgbm8gZ3VhcmFudGVlIGF0IGFsbCBpbiBteSBSRkMgY2FzZS4NCg0KPiBZZWFoLCBv
+aywgc28gZnVuZGFtZW50YWxseSBicm9rZW4gY29uY2VwdCB0byBwaW4gdGhlIGlycXMgZm9yIHBy
+b2JpbmcuDQo+IFRoYW5rcyBmb3IgY2xhcmlmeWluZyB0aGF0Lg0KPiANCj4gDQo+PiBTbyBmb3Ig
+dGhlIHByb2JsZW0gYXQgaGFuZCwgd2UgcmVhbGx5IG5lZWQgdG8gcHJldmVudCB0aGF0IHNvbWV0
+aGluZw0KPj4gaXMgZmlkZGxpbmcgd2l0aCB0aGUgdWFydCBpbiB0aGUgZmlyc3QgcGxhY2UgYW5k
+IHRoZSBtb3N0IG9idmlvdXMgd2F5DQo+PiBpcyB0byBzZXJpYWxpemUgYWdhaW5zdCBwcmludGsu
+DQo+IA0KPiBJJ20gb2sgd2l0aCBqdXN0IHRoZSBvcmlnaW5hbCBwYXRjaCAxICh3aGljaCBJIHJl
+dmlld2VkIHNvbWUgdGltZSBhZ28pLg0KPiANCj4gDQo+PiBXZSBjYW4gZGViYXRlIHdoZXRoZXIg
+dGhlIGF1dG9wcm9iZSBjb2RlIGlzIHRoZSByaWdodCBwbGFjZSBvciBub3QsIHdlDQo+PiBjYW4g
+YWN0dWFsbHkgc3RpY2sgaXQgaW50byB0aGUgODI1MCBkcml2ZXIgYW5kIGJlIGRvbmUgd2l0aCBp
+dA0KPj4gYmVjYXVzZToNCj4+DQo+PiBJZiB5b3UgbG9vayBhdCB0aGUgYWN0dWFsIGF1dG9wcm9i
+ZSB1c2VycyBhc2lkZSBvZiA4MjUwLiBUaGF0J3MgcmVhbGx5DQo+PiBhbGwgYW5jaWVudCBJU0Eg
+aGFyZHdhcmUgYW5kIGhhcmRseSBpbnRlcmVzdGluZy4gU28gYWxsIHdlIHJlYWxseSBjYXJlDQo+
+PiBhYm91dCBhcmUgdGhlIDgyNTAgc2VyaWFsIHBvcnRzLg0KDQpJbiB0aGlzIGNhc2UsIEkgdGhp
+bmsgW3BhdGNoIHYyIDEvM10gaXMgZW5vdWdoLg0KY29uc29sZV9sb2NrIGlzIHJlcXVpcmVkIGlu
+IGF1dG9jb25maWdfaXJxKCkgdG8gcmVzb2x2ZSBvdGhlciByYWNlIGNvbmRpdGlvbnMNCmJlZm9y
+ZSBjYWxsaW5nIHByb2JlX2lycV9vbigpLg0KDQo+Pg0KPj4gTm93IGxldHMgbG9vayBhdCB0aGUg
+ODI1MCBzZXJpYWwgcG9ydHMuIEkganVzdCBjaGVja2VkIHRoZSByYW5kb20NCj4+IGNvbGxlY3Rp
+b24gb2YgbWFjaGluZXMgSSBoYXZlIGFjY2VzcyB0bzoNCj4+DQo+PiAgSW4gMTAwJSBvZiBhbGwg
+Y2FzZXMgdHR5UzAgaXMgb24gaXJxNCBhbmQgdHR5UzEgaXMgb24gaXJxMw0KPj4NCj4+ICBBbGwg
+b2YgdGhlIG1hY2hpbmVzIGhhdmUgZXZlbiBhIGNvcnJlY3QgUE5QIGVudHJ5IG9mIHRoZSBpcnEg
+cmVzb3VyY2UNCj4+ICBmb3IgdGhlIHNlcmlhbCBwb3J0cy4gQW5kIHRoZXJlIGlzIHByZXR0eSBv
+bGQgY3JhcCBpbiB0aGF0IGxvdC4NCj4+DQo+PiBTbyB0aGUgcmVhbCBxdWVzdGlvbiBpczogV2h5
+IHdvdWxkIHdlIGF1dG9wcm9iZSBpbiB0aGUgZmlyc3QgcGxhY2U/DQo+Pg0KPj4gRGViaWFuLCBG
+ZWRvcmEsIE9wZW5TdXNlLCBTTEVTIGhhdmU6DQo+Pg0KPj4gICAgIyBDT05GSUdfU0VSSUFMXzgy
+NTBfREVURUNUX0lSUSBpcyBub3Qgc2V0DQo+Pg0KPj4gYW5kIHNvIGRvIG15IGtlcm5lbHMuDQo+
+PiBJIGp1c3QgYnVpbHQgb25lIHdpdGggdGhhdCBvcHRpb24gZW5hYmxlZCBmb3IgdGhlIGZ1biBv
+ZiBpdCBhbmQgaXQNCj4+IHN0aWxsIHVzZXMgdGhlIFBOUCBpbmZvcm1hdGlvbi4gTm8gYXV0b3By
+b2JpbmcuDQo+Pg0KPj4gU28gd2h5IGFyZSB5b3UgaW50ZXJlc3RlZCBpbiB0aGF0IHNlcmlhbCBp
+cnEgYXV0b3Byb2JlIGNyYXAgYXQgYWxsPw0KPiANCg0KQmVjYXVzZSBSSEVMNiB1c2VzIENPTkZJ
+R19TRVJJQUxfODI1MF9ERVRFQ1RfSVJRPXkgdW5mb3J0dW5hdGVseS4NCg0KPiBBZ3JlZSwgYnV0
+IEkgZ3Vlc3MgdGhlIGhhcmR3YXJlIGluIHF1ZXN0aW9uIGlzIG5vbi1QTlAgc2VyaWFsLW92ZXIt
+TEFOLg0KPiBJdCdzIFRhaWNoaSdzIGhhcmR3YXJlIHNvIGhlIGNhbiBiZSBtb3JlIHNwZWNpZmlj
+LiBBbHNvLCB0aGlzIHByb2JsZW0NCj4gd291bGQgbm90IGFwcGx5IHRvIDgyNTAgcG9ydHMgQCB0
+aGUgSVNBIGFkZHJlc3NlcyAoM2Y4LGlycSA0ICYgMmY4LGlycSAzKQ0KPiBiZWNhdXNlIHRob3Nl
+IGFyZSBwcmVkZWZpbmVkIG9uIHRoZSBwbGF0Zm9ybS4NCj4gDQo+IFRhaWNoaSdzIG9yaWdpbmFs
+IHByb3Bvc2FsIHdhcyB0byBhZGQgbW9kdWxlIHBhcmFtZXRlcnMgZm9yIHRoZSBzZXJpYWwNCj4g
+ZHJpdmVyLCB3aGljaCBJIGFtIGRlYWQgc2V0IGFnYWluc3QsIGhhdmluZyBqdXN0IHN0cnVnZ2xl
+ZCB0byBkZWFsIHdpdGgNCj4gYW5jaWVudCBtb2R1bGUgcGFyYW1ldGVycyB3aGlsZSBzcGxpdHRp
+bmcgdGhlIDgyNTAgZHJpdmVyLg0KDQpBcyB5b3UgZ3V5cyBtZW50aW9uZWQsIGlycTMgYW5kIDQg
+Zm9yIGNvbnNvbGUgcG9ydHMgYXJlIHByZWRlZmluZWQgYmFzaWNhbGx5Lg0KVGhhdCdzIHdoeSBJ
+IGludHJvZHVjZWQgb3JpZ2luYWwgcGF0Y2ggdG8gc2tpcCBhdXRvY29uZmlnX2lycSBvbmx5IGZv
+ciBjb25zb2xlDQphbHRob3VnaCB0aGUgcGFyYW1ldGVyIHRoaW5nIHdhcyBub3QgZ29vZCBpZGVh
+Lg0KSSdtIHVzaW5nIG9uZSBvZiB2ZXJ5IGxhcmdlIEhQIHBsYXRmb3JtLg0KSXQgZXhwZWN0cyBJ
+U0EgYWRkcmVzc2VzIGZvciBTT0wsIGJ1dCBkb2Vzbid0IHByb3ZpZGVzIFBOUCBkZWZpbmUgbGlr
+ZSBQTlAwNTAxLg0KU28gYXV0b2NvbmZpZ19pcnEoKSBjYW4gb3ZlcndyaXRlcyB2YWxpZCBpcnEg
+d2l0aCBpbnZhbGlkIG9uZS4uLg0KDQoNCj4gSSBhbHNvIG5vdGVkIGluIHJldmlld2luZyB0aGF0
+IHByb3Bvc2FsIHRoYXQgdXNlci1zcGFjZSB0b29scyAoc2V0c2VyaWFsKQ0KPiBjYW4gcmVzZXQg
+dGhlIGlycSB0byBhIGtub3duIHZhbHVlIGFmdGVyIGRyaXZlciBsb2FkLiBVYnVudHUsIGZvciBv
+bmUsDQo+IHJ1bnMgc2V0c2VyaWFsIGFzIHBhcnQgb2YgYm9vdCAodG8gcmVzdG9yZSBzZXJpYWwg
+aGFyZHdhcmUgdG8ga25vd24td29ya2luZw0KPiBjb25maWd1cmF0aW9uKS4NCg0KSSBhbHJlYWR5
+IGdvdCB0aGUgZm9sbG93aW5nIGNvbnNvbGUgc29sdXRpb25zIGFmdGVyIGRpc2N1c3Npb24gd2l0
+aCBQZXRlci4NCiAtIEZvcmNlIHNldCBpcnEgYmVmb3JlIGFueSBBUHMgYW5kIGdldHR5IG9wZW4g
+L2Rldi9jb25zb2xlLiANCiAgIFVzZXJzIGhhdmUgdG8ga25vdyB2YWxpZCBpcnEjLg0KIC0gRml4
+IEZXIHRvIGRlZmluZSBQTlANCiAtIENPTkZJR19TRVJJQUxfODI1MF9ERVRFQ1RfSVJRPW4NCg0K
+DQpUaGFua3MsDQpUYWljaGkNCg0K
