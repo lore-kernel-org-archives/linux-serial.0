@@ -1,124 +1,45 @@
-From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Subject: Re: [RFC PATCH v2 0/3] genirq, serial: 8250: Workaround to avoid
- irq=0 for console
-Date: Fri, 31 Jul 2015 07:02:26 +0000
-Message-ID: <55BB1D82.909@cp.jp.nec.com>
-References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com>
- <alpine.DEB.2.11.1507291230590.3825@nanos>
- <55B8BE39.6080500@hurleysoftware.com>
- <alpine.DEB.2.11.1507291351530.3825@nanos>
- <55B8D26A.7000402@hurleysoftware.com>
- <alpine.DEB.2.11.1507291534350.3825@nanos> <55B980E6.70800@cp.jp.nec.com>
- <alpine.DEB.2.11.1507301207070.3825@nanos>
- <55BA2A06.1080109@hurleysoftware.com>
- <alpine.DEB.2.11.1507302204440.3825@nanos>
- <55BAB6B5.2090908@hurleysoftware.com>
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: Re: [PATCH 0/2] serial: samsung: fix DMA for small FIFO sizes
+Date: Fri, 31 Jul 2015 17:04:58 +0900
+Message-ID: <CAJKOXPfwnYVyJCPPyG5L0B2kw9nG1KNgj7L6Sy2hJEbihf-b2Q@mail.gmail.com>
+References: <1438247656-24695-1-git-send-email-r.baldyga@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55BAB6B5.2090908@hurleysoftware.com>
-Content-Language: ja-JP
-Content-ID: <5927DFD3B67E0D41A75018A5F183FF65@gisp.nec.co.jp>
+In-Reply-To: <1438247656-24695-1-git-send-email-r.baldyga@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Thomas Gleixner <tglx@linutronix.de>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, Peter Zijlstra <peterz@infradead.org>
+To: Robert Baldyga <r.baldyga@samsung.com>
+Cc: gregkh@linuxfoundation.org, akpm@linux-foundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-T24gMjAxNS8wNy8zMSA4OjQzLCBQZXRlciBIdXJsZXkgd3JvdGU6DQo+IE9uIDA3LzMwLzIwMTUg
-MDY6MTIgUE0sIFRob21hcyBHbGVpeG5lciB3cm90ZToNCj4+IE9uIFRodSwgMzAgSnVsIDIwMTUs
-IFBldGVyIEh1cmxleSB3cm90ZToNCj4+PiBIb25lc3RseSwgSSdtIG5vdCB0b28gc3VyZSB0aGlz
-IGlzIHRoZSB3YXkgdG8gZ28uDQo+Pj4NCj4+PiBNZXNzaW5nIGFyb3VuZCB3aXRoIGlycXNvZmYg
-dHJhY2VyIGZvciAzMCBtaW5zIHR1cm5lZCB1cDoNCj4+PiAzLjY2NG1zIGluIGludGVsX3VubWFw
-X3BhZ2UNCj4+PiAgIC0gaW90bGIgZmx1c2gsIHNwaW5sb2NrIGNvbnRlbnRpb24gb24gaW92YV9y
-YnRyZWVfbG9jaw0KPj4+IDEuNzI2bXMgaW4gaW50ZWxfbWFwX3BhZ2UoKQ0KPj4+ICAgLSBpb21t
-dSBjb3JlIEAgX19hbGxvY19hbmRfaW5zZXJ0X2lvdmFfcmFuZ2UoKQ0KPj4+IDEuODU5bXMgaW4g
-c3lzbG9nX3ByaW50X2FsbCgpDQo+Pj4gICAtIHdoaWNoIGlzIGhvbGRpbmcgdGhlIGxvZ2J1Zl9s
-b2NrIHNvIHRoYXQncyBwcmV0dHkgYmFkIGFueXdheQ0KPj4+IDM4N3VzIGluIG5vdXZlYXUgQCBu
-djUwX3ZtX2ZsdXNoKCkNCj4+PiAgIC0gZ3B1IHRsYiBmbHVzaA0KPj4+DQo+Pj4gSSBoYXZlIGly
-cXNvZmYgdHJhY2UgcmVwb3J0cyBmb3IgYWxsIG9mIHRoZXNlIGlmIGFueW9uZSBpcyBpbnRlcmVz
-dGVkLg0KPj4+DQo+Pj4gTG9va3MgbGlrZSBsb2NrZGVwIHdvdWxkIG5lZWQgdG8gYmUgb2ZmIGFz
-IHdlbGwgYmVjYXVzZSBJIHNhdyBidXQNCj4+PiBmYWlsZWQgdG8gY2FwdHVyZSBhIHNhdmVfdHJh
-Y2UoKSBpbiB0aGUgMzAwdXMgcmFuZ2UuDQo+Pj4NCj4+PiBJIHRoaW5rIHRoaXMgaXMganVzdCB0
-aGUgdGlwIG9mIHRoZSBpY2ViZXJnIGZvciBpcnFzb2ZmLg0KPj4NCj4+IEkgYWdyZWUuDQo+PiAg
-DQo+Pj4gSSdtIG5vdCBzYXlpbmcgdGhlc2UgZG9uJ3QgbmVlZCBmaXhpbmcgYXMgd2VsbCwgYnV0
-IHRoZXJlJ3Mgbm8gd2F5DQo+Pj4gaXJxIHByb2JlIHdpbGwgZXZlciBiZSByZWxpYWJsZSB3aXRo
-IHRoaXMgYXBwcm9hY2guDQo+Pg0KPj4gaXJxIHByb2JlIGlzIGEga25vd24gdG8gYmUgdW5yZWxp
-YWJsZSBoZXVyaXN0aWMgZW5kYXZvdXIgYW55d2F5IGFuZCBpdA0KPj4gY2Fubm90IGV2ZXIgYmVj
-b21lIHRydWx5IHJlbGlhYmxlLCBleGNlcHQgeW91IHB1dCBhIGdhemlsbGlvbiBvZg0KPj4gcmVz
-dHJpY3Rpb25zIHRvIHRoZSBzeXN0ZW0gc3RhdGUgb24gaXQuDQo+IA0KPiBZZXAsIHRvdGFsbHkg
-YWdyZWUuIEFzIHlvdSBub3RlIGJlbG93LCB0aGlzIGZ1bmN0aW9uYWxpdHkgaXMgY29tcGxldGVs
-eQ0KPiBkaXNhYmxlZCBvbiBldmVyeSBrbm93biBkaXN0cm8ga2VybmVsLg0KPiANCj4gDQo+Pj4g
-R29pbmcgYmFjayB0byB0aGUgUkZDIGlkZWEgb2YgcGlubmluZyB0aGUgaXJxIGFmZmluaXR5IHRv
-IHRoZSBjcHUNCj4+PiBhY3R1YWxseSBkb2luZyB0aGUgcHJvYmluZyAod2hpY2ggaXMgaW4gYSBr
-bm93biBjb250ZXh0KSwgd2hhdCBhYm91dA0KPj4+IHRoYXQgaXMgYnJva2VuIG9uIFVQPyBKdXN0
-IHRoZSBpbXBsZW1lbnRhdGlvbiBvciBpcyBpdCB0aGUgZnVuZGFtZW50YWwNCj4+PiBjb25jZXB0
-Pw0KPj4NCj4+IEZpcnN0IG9mIGFsbCwgdGhlcmUgaXMgbm8gZ3VhcmFudGVlIHRoYXQgeW91IGNh
-biBhZmZpbmUgdGhlc2UNCj4+IGludGVycnVwdHMgYXQgYWxsLiBXZSBoYXZlIGludGVycnVwdCBj
-b250cm9sbGVycyB3aGljaCBjYW5ub3Qgc2V0IHRoZQ0KPj4gYWZmaW5pdHkgYW5kIHRoZXkgZGVs
-aXZlciB0byBjcHVzIGluIGEgcm91bmQgcm9iaW4gc2NoZW1lIG9yIHdoYXRldmVyDQo+PiBoYXJk
-d2FyZSBkZXNpZ25lcnMgdGhvdWdodCB3b3VsZCBiZSBjbGV2ZXIuDQo+Pg0KPj4gU2Vjb25kLCB3
-aGF0IHByZXZlbnRzIHRoZSBmb2xsb3dpbmcgc2NlbmFyaW8gb24gVVAgb3IgdGhlIGFmZmluZSBj
-b3JlOg0KPj4NCj4+IAlwcm9iZV9zdGFydCgpDQo+PiAJaW50ZXJydXB0DQo+PiAJICBsb29vbmcg
-cnVubmluZyBoYW5kbGVyICh1c2IgaXMgYW4gb2J2aW91cyBjYW5kaWRhdGUpDQo+PiAJICAgICBw
-cmludGsoKQ0KPj4NCj4+IFRoYXQgd2lsbCBzd2FsbG93IHlvdXIgdWFydCBzdGF0ZSBhbmQgcnVp
-biBkZXRlY3Rpb24gYXMgd2VsbC4NCg0KDQpZZXMsIHRoZSBSRkMgaWRlYSB3YXMganVzdCBmb3Ig
-cmVkdWNpbmcgdGhlIHJpc2sgb2YgZmFpbHVyZSwgbm90IHBlcmZlY3QuDQpJIGtub3cgaXQgZGVw
-ZW5kcyBvbiB0aGUgaW50ZXJydXB0IGNvbnRyb2xsZXJzLA0KYnV0IEkgZGlkbid0IGtub3cgdGhl
-IGVycm9yIG9jY3VycmVkIGFmdGVyIG90aGVycyBzZXQgYWZmaW5pdHkuDQpJIHVuZGVyc3RhbmQg
-dGhlcmUgaXMgbm8gZ3VhcmFudGVlIGF0IGFsbCBpbiBteSBSRkMgY2FzZS4NCg0KPiBZZWFoLCBv
-aywgc28gZnVuZGFtZW50YWxseSBicm9rZW4gY29uY2VwdCB0byBwaW4gdGhlIGlycXMgZm9yIHBy
-b2JpbmcuDQo+IFRoYW5rcyBmb3IgY2xhcmlmeWluZyB0aGF0Lg0KPiANCj4gDQo+PiBTbyBmb3Ig
-dGhlIHByb2JsZW0gYXQgaGFuZCwgd2UgcmVhbGx5IG5lZWQgdG8gcHJldmVudCB0aGF0IHNvbWV0
-aGluZw0KPj4gaXMgZmlkZGxpbmcgd2l0aCB0aGUgdWFydCBpbiB0aGUgZmlyc3QgcGxhY2UgYW5k
-IHRoZSBtb3N0IG9idmlvdXMgd2F5DQo+PiBpcyB0byBzZXJpYWxpemUgYWdhaW5zdCBwcmludGsu
-DQo+IA0KPiBJJ20gb2sgd2l0aCBqdXN0IHRoZSBvcmlnaW5hbCBwYXRjaCAxICh3aGljaCBJIHJl
-dmlld2VkIHNvbWUgdGltZSBhZ28pLg0KPiANCj4gDQo+PiBXZSBjYW4gZGViYXRlIHdoZXRoZXIg
-dGhlIGF1dG9wcm9iZSBjb2RlIGlzIHRoZSByaWdodCBwbGFjZSBvciBub3QsIHdlDQo+PiBjYW4g
-YWN0dWFsbHkgc3RpY2sgaXQgaW50byB0aGUgODI1MCBkcml2ZXIgYW5kIGJlIGRvbmUgd2l0aCBp
-dA0KPj4gYmVjYXVzZToNCj4+DQo+PiBJZiB5b3UgbG9vayBhdCB0aGUgYWN0dWFsIGF1dG9wcm9i
-ZSB1c2VycyBhc2lkZSBvZiA4MjUwLiBUaGF0J3MgcmVhbGx5DQo+PiBhbGwgYW5jaWVudCBJU0Eg
-aGFyZHdhcmUgYW5kIGhhcmRseSBpbnRlcmVzdGluZy4gU28gYWxsIHdlIHJlYWxseSBjYXJlDQo+
-PiBhYm91dCBhcmUgdGhlIDgyNTAgc2VyaWFsIHBvcnRzLg0KDQpJbiB0aGlzIGNhc2UsIEkgdGhp
-bmsgW3BhdGNoIHYyIDEvM10gaXMgZW5vdWdoLg0KY29uc29sZV9sb2NrIGlzIHJlcXVpcmVkIGlu
-IGF1dG9jb25maWdfaXJxKCkgdG8gcmVzb2x2ZSBvdGhlciByYWNlIGNvbmRpdGlvbnMNCmJlZm9y
-ZSBjYWxsaW5nIHByb2JlX2lycV9vbigpLg0KDQo+Pg0KPj4gTm93IGxldHMgbG9vayBhdCB0aGUg
-ODI1MCBzZXJpYWwgcG9ydHMuIEkganVzdCBjaGVja2VkIHRoZSByYW5kb20NCj4+IGNvbGxlY3Rp
-b24gb2YgbWFjaGluZXMgSSBoYXZlIGFjY2VzcyB0bzoNCj4+DQo+PiAgSW4gMTAwJSBvZiBhbGwg
-Y2FzZXMgdHR5UzAgaXMgb24gaXJxNCBhbmQgdHR5UzEgaXMgb24gaXJxMw0KPj4NCj4+ICBBbGwg
-b2YgdGhlIG1hY2hpbmVzIGhhdmUgZXZlbiBhIGNvcnJlY3QgUE5QIGVudHJ5IG9mIHRoZSBpcnEg
-cmVzb3VyY2UNCj4+ICBmb3IgdGhlIHNlcmlhbCBwb3J0cy4gQW5kIHRoZXJlIGlzIHByZXR0eSBv
-bGQgY3JhcCBpbiB0aGF0IGxvdC4NCj4+DQo+PiBTbyB0aGUgcmVhbCBxdWVzdGlvbiBpczogV2h5
-IHdvdWxkIHdlIGF1dG9wcm9iZSBpbiB0aGUgZmlyc3QgcGxhY2U/DQo+Pg0KPj4gRGViaWFuLCBG
-ZWRvcmEsIE9wZW5TdXNlLCBTTEVTIGhhdmU6DQo+Pg0KPj4gICAgIyBDT05GSUdfU0VSSUFMXzgy
-NTBfREVURUNUX0lSUSBpcyBub3Qgc2V0DQo+Pg0KPj4gYW5kIHNvIGRvIG15IGtlcm5lbHMuDQo+
-PiBJIGp1c3QgYnVpbHQgb25lIHdpdGggdGhhdCBvcHRpb24gZW5hYmxlZCBmb3IgdGhlIGZ1biBv
-ZiBpdCBhbmQgaXQNCj4+IHN0aWxsIHVzZXMgdGhlIFBOUCBpbmZvcm1hdGlvbi4gTm8gYXV0b3By
-b2JpbmcuDQo+Pg0KPj4gU28gd2h5IGFyZSB5b3UgaW50ZXJlc3RlZCBpbiB0aGF0IHNlcmlhbCBp
-cnEgYXV0b3Byb2JlIGNyYXAgYXQgYWxsPw0KPiANCg0KQmVjYXVzZSBSSEVMNiB1c2VzIENPTkZJ
-R19TRVJJQUxfODI1MF9ERVRFQ1RfSVJRPXkgdW5mb3J0dW5hdGVseS4NCg0KPiBBZ3JlZSwgYnV0
-IEkgZ3Vlc3MgdGhlIGhhcmR3YXJlIGluIHF1ZXN0aW9uIGlzIG5vbi1QTlAgc2VyaWFsLW92ZXIt
-TEFOLg0KPiBJdCdzIFRhaWNoaSdzIGhhcmR3YXJlIHNvIGhlIGNhbiBiZSBtb3JlIHNwZWNpZmlj
-LiBBbHNvLCB0aGlzIHByb2JsZW0NCj4gd291bGQgbm90IGFwcGx5IHRvIDgyNTAgcG9ydHMgQCB0
-aGUgSVNBIGFkZHJlc3NlcyAoM2Y4LGlycSA0ICYgMmY4LGlycSAzKQ0KPiBiZWNhdXNlIHRob3Nl
-IGFyZSBwcmVkZWZpbmVkIG9uIHRoZSBwbGF0Zm9ybS4NCj4gDQo+IFRhaWNoaSdzIG9yaWdpbmFs
-IHByb3Bvc2FsIHdhcyB0byBhZGQgbW9kdWxlIHBhcmFtZXRlcnMgZm9yIHRoZSBzZXJpYWwNCj4g
-ZHJpdmVyLCB3aGljaCBJIGFtIGRlYWQgc2V0IGFnYWluc3QsIGhhdmluZyBqdXN0IHN0cnVnZ2xl
-ZCB0byBkZWFsIHdpdGgNCj4gYW5jaWVudCBtb2R1bGUgcGFyYW1ldGVycyB3aGlsZSBzcGxpdHRp
-bmcgdGhlIDgyNTAgZHJpdmVyLg0KDQpBcyB5b3UgZ3V5cyBtZW50aW9uZWQsIGlycTMgYW5kIDQg
-Zm9yIGNvbnNvbGUgcG9ydHMgYXJlIHByZWRlZmluZWQgYmFzaWNhbGx5Lg0KVGhhdCdzIHdoeSBJ
-IGludHJvZHVjZWQgb3JpZ2luYWwgcGF0Y2ggdG8gc2tpcCBhdXRvY29uZmlnX2lycSBvbmx5IGZv
-ciBjb25zb2xlDQphbHRob3VnaCB0aGUgcGFyYW1ldGVyIHRoaW5nIHdhcyBub3QgZ29vZCBpZGVh
-Lg0KSSdtIHVzaW5nIG9uZSBvZiB2ZXJ5IGxhcmdlIEhQIHBsYXRmb3JtLg0KSXQgZXhwZWN0cyBJ
-U0EgYWRkcmVzc2VzIGZvciBTT0wsIGJ1dCBkb2Vzbid0IHByb3ZpZGVzIFBOUCBkZWZpbmUgbGlr
-ZSBQTlAwNTAxLg0KU28gYXV0b2NvbmZpZ19pcnEoKSBjYW4gb3ZlcndyaXRlcyB2YWxpZCBpcnEg
-d2l0aCBpbnZhbGlkIG9uZS4uLg0KDQoNCj4gSSBhbHNvIG5vdGVkIGluIHJldmlld2luZyB0aGF0
-IHByb3Bvc2FsIHRoYXQgdXNlci1zcGFjZSB0b29scyAoc2V0c2VyaWFsKQ0KPiBjYW4gcmVzZXQg
-dGhlIGlycSB0byBhIGtub3duIHZhbHVlIGFmdGVyIGRyaXZlciBsb2FkLiBVYnVudHUsIGZvciBv
-bmUsDQo+IHJ1bnMgc2V0c2VyaWFsIGFzIHBhcnQgb2YgYm9vdCAodG8gcmVzdG9yZSBzZXJpYWwg
-aGFyZHdhcmUgdG8ga25vd24td29ya2luZw0KPiBjb25maWd1cmF0aW9uKS4NCg0KSSBhbHJlYWR5
-IGdvdCB0aGUgZm9sbG93aW5nIGNvbnNvbGUgc29sdXRpb25zIGFmdGVyIGRpc2N1c3Npb24gd2l0
-aCBQZXRlci4NCiAtIEZvcmNlIHNldCBpcnEgYmVmb3JlIGFueSBBUHMgYW5kIGdldHR5IG9wZW4g
-L2Rldi9jb25zb2xlLiANCiAgIFVzZXJzIGhhdmUgdG8ga25vdyB2YWxpZCBpcnEjLg0KIC0gRml4
-IEZXIHRvIGRlZmluZSBQTlANCiAtIENPTkZJR19TRVJJQUxfODI1MF9ERVRFQ1RfSVJRPW4NCg0K
-DQpUaGFua3MsDQpUYWljaGkNCg0K
+2015-07-30 18:14 GMT+09:00 Robert Baldyga <r.baldyga@samsung.com>:
+> Hello,
+>
+> This patch set fixes bug causing serial hang in DMA mode for FIFO sizes
+> smaller than cache alignment. The first patch fixes DMA mode entering
+> condition to avoid starting with buffer smaller than cache line size.
+> Second patch fixes the serial hang bug, which was caused by unproper
+> buffer aligning algorithm which assumed that there is always enough
+> free space in FIFO for excessive bytes of buffer that is being alligned.
+>
+> Best regards,
+> Robert Baldyga
+>
+> Marek Szyprowski (1):
+>   serial: samsung: calculate min_dma_size
+>
+> Robert Baldyga (1):
+>   serial: samsung: fix DMA for FIFO smaller than cache line size
+>
+>  drivers/tty/serial/samsung.c | 47 +++++++++++++++++++++++++++++---------------
+>  drivers/tty/serial/samsung.h |  1 +
+>  2 files changed, 32 insertions(+), 16 deletions(-)
+
+Does this apply for stable backporting? Or at least fixes tag
+indicating a bug? I could not figure this out from description of
+first patch. For second patch it seems it applies.
+
+Anyway I would appreciate a reported-by credits.
+
+Best regards,
+Krzysztof
