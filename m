@@ -1,45 +1,36 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC PATCH v2 0/3] genirq, serial: 8250: Workaround to avoid
- irq=0 for console
-Date: Sun, 2 Aug 2015 11:52:53 +0200 (CEST)
-Message-ID: <alpine.DEB.2.11.1508021150520.3825@nanos>
-References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com> <alpine.DEB.2.11.1507291230590.3825@nanos> <55B8BE39.6080500@hurleysoftware.com> <alpine.DEB.2.11.1507291351530.3825@nanos> <55B8D26A.7000402@hurleysoftware.com> <alpine.DEB.2.11.1507291534350.3825@nanos>
- <55B980E6.70800@cp.jp.nec.com> <alpine.DEB.2.11.1507301207070.3825@nanos> <55BA2A06.1080109@hurleysoftware.com> <alpine.DEB.2.11.1507302204440.3825@nanos> <55BAB6B5.2090908@hurleysoftware.com> <55BB1D82.909@cp.jp.nec.com>
+From: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: [PATCH] serial: don't announce CIR serial ports
+Date: Sun, 02 Aug 2015 23:09:57 +0200
+Message-ID: <55BE8725.6090303@maciej.szmigiero.name>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55BB1D82.909@cp.jp.nec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, Peter Zijlstra <peterz@infradead.org>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 31 Jul 2015, Taichi Kageyama wrote:
-> On 2015/07/31 8:43, Peter Hurley wrote:
-> >> If you look at the actual autoprobe users aside of 8250. That's really
-> >> all ancient ISA hardware and hardly interesting. So all we really care
-> >> about are the 8250 serial ports.
-> 
-> In this case, I think [patch v2 1/3] is enough.
-> console_lock is required in autoconfig_irq() to resolve other race conditions
-> before calling probe_irq_on().
+CIR type serial ports aren't real serial ports.
+This is just a way to prevent legacy serial driver
+from probing and eventually binding some resources
+so don't announce them like normal serial ports.
 
-Fine with me.
+Signed-off-by: Maciej Szmigiero <mail@maciej.szmigiero.name>
+---
+ drivers/tty/serial/serial_core.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index f368520..99f944d 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2237,7 +2237,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		port->ops->config_port(port, flags);
+ 	}
  
-> >> So why are you interested in that serial irq autoprobe crap at all?
-> > 
-> Because RHEL6 uses CONFIG_SERIAL_8250_DETECT_IRQ=y unfortunately.
-
-Doh!
+-	if (port->type != PORT_UNKNOWN) {
++	if (port->type != PORT_UNKNOWN && port->type != PORT_8250_CIR) {
+ 		unsigned long flags;
  
-> I already got the following console solutions after discussion with Peter.
->  - Force set irq before any APs and getty open /dev/console. 
->    Users have to know valid irq#.
->  - Fix FW to define PNP
->  - CONFIG_SERIAL_8250_DETECT_IRQ=n
-
-Ack!
-
-Thanks,
-
-	tglx
+ 		uart_report_port(drv, port);
