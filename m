@@ -1,45 +1,45 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v2 08/11] serial: Allow compile test of GPIO consumers if !GPIOLIB
-Date: Sun,  2 Aug 2015 11:09:52 +0200
-Message-ID: <1438506592-31802-1-git-send-email-geert@linux-m68k.org>
-References: <1438506475-31012-1-git-send-email-geert@linux-m68k.org>
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1438506475-31012-1-git-send-email-geert@linux-m68k.org>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, linux-gpio@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC PATCH v2 0/3] genirq, serial: 8250: Workaround to avoid
+ irq=0 for console
+Date: Sun, 2 Aug 2015 11:52:53 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1508021150520.3825@nanos>
+References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com> <alpine.DEB.2.11.1507291230590.3825@nanos> <55B8BE39.6080500@hurleysoftware.com> <alpine.DEB.2.11.1507291351530.3825@nanos> <55B8D26A.7000402@hurleysoftware.com> <alpine.DEB.2.11.1507291534350.3825@nanos>
+ <55B980E6.70800@cp.jp.nec.com> <alpine.DEB.2.11.1507301207070.3825@nanos> <55BA2A06.1080109@hurleysoftware.com> <alpine.DEB.2.11.1507302204440.3825@nanos> <55BAB6B5.2090908@hurleysoftware.com> <55BB1D82.909@cp.jp.nec.com>
+Mime-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55BB1D82.909@cp.jp.nec.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, Peter Zijlstra <peterz@infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-The GPIO subsystem provides dummy GPIO consumer functions if GPIOLIB is
-not enabled. Hence drivers that depend on GPIOLIB, but use GPIO consumer
-functionality only, can still be compiled if GPIOLIB is not enabled.
+On Fri, 31 Jul 2015, Taichi Kageyama wrote:
+> On 2015/07/31 8:43, Peter Hurley wrote:
+> >> If you look at the actual autoprobe users aside of 8250. That's really
+> >> all ancient ISA hardware and hardly interesting. So all we really care
+> >> about are the 8250 serial ports.
+> 
+> In this case, I think [patch v2 1/3] is enough.
+> console_lock is required in autoconfig_irq() to resolve other race conditions
+> before calling probe_irq_on().
 
-Relax the dependency on GPIOLIB if COMPILE_TEST is enabled, where
-appropriate.
-
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
----
-v2:
-  - Add Acked-by.
----
- drivers/tty/serial/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 4c8662ea7bb063ed..d6393e24acb30a2d 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1376,7 +1376,8 @@ config SERIAL_ALTERA_UART_CONSOLE
+Fine with me.
  
- config SERIAL_IFX6X60
-         tristate "SPI protocol driver for Infineon 6x60 modem (EXPERIMENTAL)"
--	depends on GPIOLIB && SPI && HAS_DMA
-+	depends on GPIOLIB || COMPILE_TEST
-+	depends on SPI && HAS_DMA
- 	help
- 	  Support for the IFX6x60 modem devices on Intel MID platforms.
- 
--- 
-1.9.1
+> >> So why are you interested in that serial irq autoprobe crap at all?
+> > 
+> Because RHEL6 uses CONFIG_SERIAL_8250_DETECT_IRQ=y unfortunately.
 
+Doh!
+ 
+> I already got the following console solutions after discussion with Peter.
+>  - Force set irq before any APs and getty open /dev/console. 
+>    Users have to know valid irq#.
+>  - Fix FW to define PNP
+>  - CONFIG_SERIAL_8250_DETECT_IRQ=n
+
+Ack!
+
+Thanks,
+
+	tglx
