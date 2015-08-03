@@ -1,53 +1,59 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/2] pci_ids: Add Pericom vendor and device ids
-Date: Sun, 2 Aug 2015 22:14:16 -0700
-Message-ID: <20150803051416.GA14585@kroah.com>
-References: <1438576401-24921-1-git-send-email-adam.lee@canonical.com>
- <20150803043647.GA20605@kroah.com>
- <20150803044428.GD19820@adam-laptop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150803044428.GD19820@adam-laptop>
-Sender: linux-pci-owner@vger.kernel.org
-To: Adam Lee <adam.lee@canonical.com>
-Cc: linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+From: Johannes Thumshirn <jthumshirn@suse.de>
+Subject: [PATCH] tty: serial: men_z135_uart.c: Fix race between IRQ and set_termios()
+Date: Mon,  3 Aug 2015 15:58:05 +0200
+Message-ID: <1438610285-1441-1-git-send-email-jthumshirn@suse.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johannes Thumshirn <jthumshirn@suse.de>, Andreas Werner <andreas.werner@men.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Aug 03, 2015 at 12:44:28PM +0800, Adam Lee wrote:
-> On Sun, Aug 02, 2015 at 09:36:47PM -0700, Greg Kroah-Hartman wrote:
-> > On Mon, Aug 03, 2015 at 12:33:20PM +0800, Adam Lee wrote:
-> > > This patch add Pericom's vendor id and Pericom PI7C9X795[1248] chips'
-> > > device ids.
-> > > 
-> > > Signed-off-by: Adam Lee <adam.lee@canonical.com>
-> > > ---
-> > >  include/linux/pci_ids.h | 6 ++++++
-> > >  1 file changed, 6 insertions(+)
-> > > 
-> > > diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-> > > index fcff8f8..c4a93cf 100644
-> > > --- a/include/linux/pci_ids.h
-> > > +++ b/include/linux/pci_ids.h
-> > > @@ -2995,4 +2995,10 @@
-> > >  
-> > >  #define PCI_VENDOR_ID_OCZ		0x1b85
-> > >  
-> > > +#define PCI_VENDOR_ID_PERICOM			0x12D8
-> > > +#define PCI_DEVICE_ID_PERICOM_PI7C9X7951	0x7951
-> > > +#define PCI_DEVICE_ID_PERICOM_PI7C9X7952	0x7952
-> > > +#define PCI_DEVICE_ID_PERICOM_PI7C9X7954	0x7954
-> > > +#define PCI_DEVICE_ID_PERICOM_PI7C9X7958	0x7958
-> > 
-> > Please read the top of this file, this isn't needed...
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> Oops. Pericom also has other products than serial card, so is it OK if I
-> still leave PCI_VENDOR_ID_PERICOM in pci_ids.h and move device ids to
-> particular driver? Thanks.
+Fix panic caused by a race between men_z135_intr() and men_z135_set_termios().
 
-Until it's needed, I wouldn't recommend added anything to pci_ids.h
+men_z135_intr() and men_z135_set_termios() both hold the struct uart_port::lock
+spinlock, but men_z135_intr() does a spin_lock_irqsave() and
+men_z135_set_termios() does a normal spin_lock(), which can lead to a deadlock
+when an interrupt is called while the lock is being helt by
+men_z135_set_termios().
+
+This was discovered using a insmod, hardware looppback send/receive, rmmod
+stress test.
+
+Signed-off-by: Johannes Thumshirn <jthumshirn@suse.de>
+Cc: Andreas Werner <andreas.werner@men.de>
+---
+ drivers/tty/serial/men_z135_uart.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
+index 35c5550..d020435 100644
+--- a/drivers/tty/serial/men_z135_uart.c
++++ b/drivers/tty/serial/men_z135_uart.c
+@@ -656,6 +656,7 @@ static void men_z135_set_termios(struct uart_port *port,
+ 				struct ktermios *old)
+ {
+ 	struct men_z135_port *uart = to_men_z135(port);
++	unsigned long flags;
+ 	unsigned int baud;
+ 	u32 conf_reg;
+ 	u32 bd_reg;
+@@ -717,7 +718,7 @@ static void men_z135_set_termios(struct uart_port *port,
+ 
+ 	baud = uart_get_baud_rate(port, termios, old, 0, uart_freq / 16);
+ 
+-	spin_lock(&port->lock);
++	spin_lock_irqsave(&port->lock, flags);
+ 	if (tty_termios_baud_rate(termios))
+ 		tty_termios_encode_baud_rate(termios, baud, baud);
+ 
+@@ -725,7 +726,7 @@ static void men_z135_set_termios(struct uart_port *port,
+ 	iowrite32(bd_reg, port->membase + MEN_Z135_BAUD_REG);
+ 
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+-	spin_unlock(&port->lock);
++	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+ static const char *men_z135_type(struct uart_port *port)
+-- 
+2.4.3
