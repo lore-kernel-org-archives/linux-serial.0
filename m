@@ -1,66 +1,77 @@
 From: Greg KH <greg@kroah.com>
-Subject: Re: [v2 2/3] serial: 8250_dw: dw8250_setup_port() use endianness
- aware read.
-Date: Mon, 3 Aug 2015 16:42:21 -0700
-Message-ID: <20150803234221.GA5257@kroah.com>
+Subject: Re: [v2 1/3] serial: 8250_dw: Add support for big-endian MMIO
+ accesses
+Date: Mon, 3 Aug 2015 16:43:26 -0700
+Message-ID: <20150803234326.GB5257@kroah.com>
 References: <1437557699-25722-1-git-send-email-noamc@ezchip.com>
  <1437886478-29273-1-git-send-email-noamc@ezchip.com>
  <1437886478-29273-2-git-send-email-noamc@ezchip.com>
- <1437886478-29273-3-git-send-email-noamc@ezchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1437886478-29273-3-git-send-email-noamc@ezchip.com>
+In-Reply-To: <1437886478-29273-2-git-send-email-noamc@ezchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Noam Camus <noamc@ezchip.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Jul 26, 2015 at 07:54:37AM +0300, Noam Camus wrote:
+On Sun, Jul 26, 2015 at 07:54:36AM +0300, Noam Camus wrote:
 > From: Noam Camus <noamc@ezchip.com>
 > 
-> readl() for UCV and CPR will not work for port type UPIO_MEM32BE.
-> Instead we use ioread32be for uart port of type UPIO_MEM32BE.
+> Add support for UPIO_MEM32BE in addition to UPIO_MEM32.
+> dw8250_serial_out32() main functionality was moved to new
+> function called dw8250_check_LCR().
+> 
+> We use new 2 accessors similar to little endian, called
+> dw8250_serial_out32be() and dw8250_serial_in32be().
+> 
+> Both little and big endian accessors use dw8250_check_LCR()
+> for their dw8250_serial_out32{,be}().
 > 
 > Signed-off-by: Noam Camus <noamc@ezchip.com>
 > ---
->  drivers/tty/serial/8250/8250_dw.c |    8 ++++++--
->  1 files changed, 6 insertions(+), 2 deletions(-)
+>  drivers/tty/serial/8250/8250_dw.c |   42 ++++++++++++++++++++++++++++++------
+>  1 files changed, 35 insertions(+), 7 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 5c60ec8..9bc4cac 100644
+> index d48b506..5c60ec8 100644
 > --- a/drivers/tty/serial/8250/8250_dw.c
 > +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -291,7 +291,9 @@ static bool dw8250_dma_filter(struct dma_chan *chan, void *param)
->  static void dw8250_setup_port(struct uart_8250_port *up)
+> @@ -173,15 +173,13 @@ static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
+>  }
+>  #endif /* CONFIG_64BIT */
+>  
+> -static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+> +static void dw8250_check_LCR(struct uart_port *p, int offset, int value)
 >  {
->  	struct uart_port	*p = &up->port;
-> -	u32			reg = readl(p->membase + DW_UART_UCV);
-> +	u32			reg = (p->iotype == UPIO_MEM32BE) ?
-> +					ioread32be(p->membase + DW_UART_UCV) :
-> +					readl(p->membase + DW_UART_UCV);
-
-Ugh.  Just use a "real" if statement for this please.  Don't abuse ? :
-lines for no reason.
-
-
+>  	struct dw8250_data *d = p->private_data;
 >  
->  	/*
->  	 * If the Component Version Register returns zero, we know that
-> @@ -303,7 +305,9 @@ static void dw8250_setup_port(struct uart_8250_port *up)
->  	dev_dbg_ratelimited(p->dev, "Designware UART version %c.%c%c\n",
->  		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
+>  	if (offset == UART_MCR)
+>  		d->last_mcr = value;
 >  
-> -	reg = readl(p->membase + DW_UART_CPR);
-> +	reg = (p->iotype == UPIO_MEM32BE) ?
-> +		ioread32be(p->membase + DW_UART_CPR) :
-> +		readl(p->membase + DW_UART_CPR);
+> -	writel(value, p->membase + (offset << p->regshift));
 
-Same here.
+Why drop this write?
 
-And shouldn't all of this be "hidden" behind something else?  You should
-not have to do this for each readl call...
+> -
+>  	/* Make sure LCR write wasn't ignored */
+>  	if (offset == UART_LCR) {
+>  		int tries = 1000;
+> @@ -190,7 +188,12 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+>  			if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
+>  				return;
+>  			dw8250_force_idle(p);
+> -			writel(value, p->membase + (UART_LCR << p->regshift));
+> +			if (p->iotype == UPIO_MEM32BE)
+> +				iowrite32be(value,
+> +					p->membase + (UART_LCR << p->regshift));
+> +			else
+> +				writel(value,
+> +					p->membase + (UART_LCR << p->regshift));
+
+Shouldn't this be hidden behind some other type of accessor?  Why is
+this one writel() "special"?
 
 thanks,
 
