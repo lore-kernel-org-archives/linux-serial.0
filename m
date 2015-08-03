@@ -1,45 +1,66 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: don't announce CIR serial ports
-Date: Mon, 3 Aug 2015 16:40:12 -0700
-Message-ID: <20150803234012.GA31555@kroah.com>
-References: <55BE8725.6090303@maciej.szmigiero.name>
+From: Greg KH <greg@kroah.com>
+Subject: Re: [v2 2/3] serial: 8250_dw: dw8250_setup_port() use endianness
+ aware read.
+Date: Mon, 3 Aug 2015 16:42:21 -0700
+Message-ID: <20150803234221.GA5257@kroah.com>
+References: <1437557699-25722-1-git-send-email-noamc@ezchip.com>
+ <1437886478-29273-1-git-send-email-noamc@ezchip.com>
+ <1437886478-29273-2-git-send-email-noamc@ezchip.com>
+ <1437886478-29273-3-git-send-email-noamc@ezchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <55BE8725.6090303@maciej.szmigiero.name>
+In-Reply-To: <1437886478-29273-3-git-send-email-noamc@ezchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-kernel <linux-kernel@vger.kernel.org>
+To: Noam Camus <noamc@ezchip.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Aug 02, 2015 at 11:09:57PM +0200, Maciej S. Szmigiero wrote:
-> CIR type serial ports aren't real serial ports.
-> This is just a way to prevent legacy serial driver
-> from probing and eventually binding some resources
-> so don't announce them like normal serial ports.
+On Sun, Jul 26, 2015 at 07:54:37AM +0300, Noam Camus wrote:
+> From: Noam Camus <noamc@ezchip.com>
 > 
-> Signed-off-by: Maciej Szmigiero <mail@maciej.szmigiero.name>
+> readl() for UCV and CPR will not work for port type UPIO_MEM32BE.
+> Instead we use ioread32be for uart port of type UPIO_MEM32BE.
+> 
+> Signed-off-by: Noam Camus <noamc@ezchip.com>
 > ---
->  drivers/tty/serial/serial_core.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
+>  drivers/tty/serial/8250/8250_dw.c |    8 ++++++--
+>  1 files changed, 6 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index f368520..99f944d 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2237,7 +2237,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
->  		port->ops->config_port(port, flags);
->  	}
->  
-> -	if (port->type != PORT_UNKNOWN) {
-> +	if (port->type != PORT_UNKNOWN && port->type != PORT_8250_CIR) {
->  		unsigned long flags;
->  
->  		uart_report_port(drv, port);
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index 5c60ec8..9bc4cac 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -291,7 +291,9 @@ static bool dw8250_dma_filter(struct dma_chan *chan, void *param)
+>  static void dw8250_setup_port(struct uart_8250_port *up)
+>  {
+>  	struct uart_port	*p = &up->port;
+> -	u32			reg = readl(p->membase + DW_UART_UCV);
+> +	u32			reg = (p->iotype == UPIO_MEM32BE) ?
+> +					ioread32be(p->membase + DW_UART_UCV) :
+> +					readl(p->membase + DW_UART_UCV);
 
-This does not seem correct, why is this type of "port" somehow special
-that it should be skiped?
+Ugh.  Just use a "real" if statement for this please.  Don't abuse ? :
+lines for no reason.
+
+
+>  
+>  	/*
+>  	 * If the Component Version Register returns zero, we know that
+> @@ -303,7 +305,9 @@ static void dw8250_setup_port(struct uart_8250_port *up)
+>  	dev_dbg_ratelimited(p->dev, "Designware UART version %c.%c%c\n",
+>  		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
+>  
+> -	reg = readl(p->membase + DW_UART_CPR);
+> +	reg = (p->iotype == UPIO_MEM32BE) ?
+> +		ioread32be(p->membase + DW_UART_CPR) :
+> +		readl(p->membase + DW_UART_CPR);
+
+Same here.
+
+And shouldn't all of this be "hidden" behind something else?  You should
+not have to do this for each readl call...
 
 thanks,
 
