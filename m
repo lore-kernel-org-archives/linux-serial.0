@@ -1,160 +1,101 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCHv2] serial: don't register CIR serial ports
-Date: Wed, 05 Aug 2015 15:02:42 -0400
-Message-ID: <55C25DD2.4050707@hurleysoftware.com>
-References: <55C22F0B.5020803@maciej.szmigiero.name>
+Subject: Re: [PATCH] tty: serial: men_z135_uart.c: Fix race between IRQ and
+ set_termios()
+Date: Wed, 05 Aug 2015 15:17:37 -0400
+Message-ID: <55C26151.5080004@hurleysoftware.com>
+References: <1438610285-1441-1-git-send-email-jthumshirn@suse.de>	<55BF893C.1000901@hurleysoftware.com>	<mqdbnenv8ml.fsf@c203.arch.suse.de>	<55C0D6DC.3020706@hurleysoftware.com> <mqdvbcu40sy.fsf@c203.arch.suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55C22F0B.5020803@maciej.szmigiero.name>
+In-Reply-To: <mqdvbcu40sy.fsf@c203.arch.suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel <linux-kernel@vger.kernel.org>
+To: Johannes Thumshirn <jthumshirn@suse.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andreas Werner <andreas.werner@men.de>
 List-Id: linux-serial@vger.kernel.org
 
-On 08/05/2015 11:43 AM, Maciej S. Szmigiero wrote:
-> CIR type serial ports aren't real serial ports.
+On 08/05/2015 04:06 AM, Johannes Thumshirn wrote:
+> Peter Hurley <peter@hurleysoftware.com> writes:
 > 
-> This is just a way to prevent legacy 8250 serial
-> driver from probing and eventually binding some
-> resources.
+>> On 08/04/2015 03:02 AM, Johannes Thumshirn wrote:
+>>> Peter Hurley <peter@hurleysoftware.com> writes:
+>>>> On 08/03/2015 09:58 AM, Johannes Thumshirn wrote:
+>>>>> Fix panic caused by a race between men_z135_intr() and men_z135_set_termios().
+>>>>>
+>>>>> men_z135_intr() and men_z135_set_termios() both hold the struct uart_port::lock
+>>>>> spinlock, but men_z135_intr() does a spin_lock_irqsave() and
+>>>>> men_z135_set_termios() does a normal spin_lock(), which can lead to a deadlock
+>>>>> when an interrupt is called while the lock is being helt by
+>>>>> men_z135_set_termios().
+>>>>
+>>>>
+>>>> The irq handler can and should use normal spin_lock()/unlock().
+>>>
+>>> I always thought an irq handler _must_ use the irqsave versions. Good to
+>>> know that.
+>>
+>> Your irq handler does not need to protect itself from re-entrancy (by using
+>> the same irq handler for different irqs) and your serial driver doesn't support
+>> console (so can't be deadlocked by printk() usage either).
+>>
 > 
-> Since in current state such ports aren't providing
-> any real functionality and it is not possible
-> to change their type via setserial/ioctl(TIOCSSERIAL)
-> (due to UPF_FIXED_PORT flag set on them)
-> it is simpler and cleaner to not register them at all
-> with serial core.
+> So once we have console support (I don't know if this is planned at
+> all), we must go back to the irqsave variant?
+
+Depends on if the platform for this hardware always disables irqs for interrupt
+handlers. If it does, then the irqsave variant _in the interrupt handler_ is
+not required.
 
 
-The only thing I think this patch is missing is either a comment
-or specific code in serial8250_register_ports() regarding not
-adding PORT_8250_CIR-type ports.
+> But looking at the driver
+> again I have the feeling that the locking could be made more fine
+> grained (if this makes sense) and I saw two possible races, please
+> correct me if I'm wrong.
+> 
+> men_z135_intr() reads the status register and saves a copy in struct
+> men_z135_port::stat_reg. The men_z135_handle_lsr() and
+> men_z135_handle_modem_status() functions use this stat_reg value to get
+> to the LSR and MSR registers. But in the meanwhile the content of the
+> registers could have been changed by men_z135_intr() again. Is this a
+> problem or am I on the wrong track here?
 
-Like either:
-
-static void __init
-serial8250_register_ports(struct uart_driver *drv, struct device *dev)
-{
-	int i;
-
-	for (i = 0; i < nr_uarts; i++) {
-		struct uart_8250_port *up = &serial8250_ports[i];
-
-+		/* PORT_8250_CIR-type ports must have non-NULL dev */
-		if (up->port.dev)
-			continue;
-
-		up->port.dev = dev;
-
-or:
-
-static void __init
-serial8250_register_ports(struct uart_driver *drv, struct device *dev)
-{
-	int i;
-
-	for (i = 0; i < nr_uarts; i++) {
-		struct uart_8250_port *up = &serial8250_ports[i];
-
-+		if (up->port.type == PORT_8250_CIR)
-+			continue;
-
-		if (up->port.dev)
-			continue;
-
-		up->port.dev = dev;
+The irq handler itself can _never_ be re-entered (as long as the handler only
+handles one irq # for a given device). So the race(s) outlined above can never
+happen _regardless of which flavor spinlock is used_.
 
 Regards,
 Peter Hurley
 
-> Print a short message in this case so it is known
-> to user what has happened.
+
+>>>> The set_termios() method should used spin_lock_irq(); there's no need to save the
+>>>> interrupt state because that method will never be called from interrupt context.
+>>>>
+>>>> So the 'flags' local can be dropped from the patch.
+>>>
+>>> Given that the irqsave variant isn't needed that sounds reasonable.
+>>
+>> It's for a different reason; irqs will _always_ be on when your driver's
+>> set_termios() method is called. So you don't see to save the irq state, because
+>> you know it's always on. That's why you can use the spin_lock_irq()/spin_unlock_irq()
+>> version here.
+>>
+>>>> Also, the port lock is already initialized in uart_add_one_port() and should
+>>>> not be initialized by the probe() function.
+>>>
+>>> OK, do you prefer (or better Greg and Jiri) prefer that change folded
+>>> into this patch or an extra patch?
+>>
+>> Separate patch please.
 > 
-> This way checks for PORT_8250_CIR in serial port
-> callbacks can be removed too, since they won't
-> ever be called.
+> OK.
 > 
-> Signed-off-by: Maciej Szmigiero <mail@maciej.szmigiero.name>
-> ---
-> This replaces "serial: don't announce CIR serial ports"
-> submission.
+>>
+>> I assume this deadlock fix will need to be pushed to -stable as well,
+>> yes?
 > 
-> Changes from v1: print message using dev_info()
+> I wasn't quite sure about this, I 1st had a CC stable for v4.0+ but
+> then removed it again before sending the patch. So I'll put it back in.
 > 
->  drivers/tty/serial/8250/8250_core.c |   37 +++++++++++++++++------------------
->  1 files changed, 18 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 37fff12..145b0b37 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -2129,9 +2129,6 @@ int serial8250_do_startup(struct uart_port *port)
->  	unsigned char lsr, iir;
->  	int retval;
->  
-> -	if (port->type == PORT_8250_CIR)
-> -		return -ENODEV;
-> -
->  	if (!port->fifosize)
->  		port->fifosize = uart_config[port->type].fifo_size;
->  	if (!up->tx_loadsz)
-> @@ -2858,14 +2855,8 @@ static void serial8250_release_port(struct uart_port *port)
->  static int serial8250_request_port(struct uart_port *port)
->  {
->  	struct uart_8250_port *up = up_to_u8250p(port);
-> -	int ret;
-> -
-> -	if (port->type == PORT_8250_CIR)
-> -		return -ENODEV;
-> -
-> -	ret = serial8250_request_std_resource(up);
->  
-> -	return ret;
-> +	return serial8250_request_std_resource(up);
->  }
->  
->  static int fcr_get_rxtrig_bytes(struct uart_8250_port *up)
-> @@ -3013,9 +3004,6 @@ static void serial8250_config_port(struct uart_port *port, int flags)
->  	struct uart_8250_port *up = up_to_u8250p(port);
->  	int ret;
->  
-> -	if (port->type == PORT_8250_CIR)
-> -		return;
-> -
->  	/*
->  	 * Find the region that we can probe for.  This in turn
->  	 * tells us whether we can probe for the type of port.
-> @@ -3889,13 +3877,24 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
->  		if (up->dl_write)
->  			uart->dl_write = up->dl_write;
->  
-> -		if (serial8250_isa_config != NULL)
-> -			serial8250_isa_config(0, &uart->port,
-> -					&uart->capabilities);
-> +		if (uart->port.type != PORT_8250_CIR) {
-> +			if (serial8250_isa_config != NULL)
-> +				serial8250_isa_config(0, &uart->port,
-> +						&uart->capabilities);
->  
-> -		ret = uart_add_one_port(&serial8250_reg, &uart->port);
-> -		if (ret == 0)
-> -			ret = uart->port.line;
-> +			ret = uart_add_one_port(&serial8250_reg,
-> +						&uart->port);
-> +			if (ret == 0)
-> +				ret = uart->port.line;
-> +		} else {
-> +			dev_info(uart->port.dev,
-> +				"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
-> +				uart->port.iobase,
-> +				(unsigned long long)uart->port.mapbase,
-> +				uart->port.irq);
-> +
-> +			ret = 0;
-> +		}
->  	}
->  	mutex_unlock(&serial_mutex);
->  
+> Thanks,
+>         Johannes
 > 
