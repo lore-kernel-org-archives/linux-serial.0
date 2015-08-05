@@ -1,101 +1,55 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty: serial: men_z135_uart.c: Fix race between IRQ and
- set_termios()
-Date: Wed, 05 Aug 2015 15:17:37 -0400
-Message-ID: <55C26151.5080004@hurleysoftware.com>
-References: <1438610285-1441-1-git-send-email-jthumshirn@suse.de>	<55BF893C.1000901@hurleysoftware.com>	<mqdbnenv8ml.fsf@c203.arch.suse.de>	<55C0D6DC.3020706@hurleysoftware.com> <mqdvbcu40sy.fsf@c203.arch.suse.de>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/7] tty: core: Add tty_debug() for printk(KERN_DEBUG)
+ messages
+Date: Wed, 5 Aug 2015 12:22:46 -0700
+Message-ID: <20150805192246.GA32372@kroah.com>
+References: <1436755753-7746-1-git-send-email-peter@hurleysoftware.com>
+ <1436755753-7746-3-git-send-email-peter@hurleysoftware.com>
+ <20150724013544.GA13905@kroah.com>
+ <55C25701.8030305@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <mqdvbcu40sy.fsf@c203.arch.suse.de>
+Content-Disposition: inline
+In-Reply-To: <55C25701.8030305@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johannes Thumshirn <jthumshirn@suse.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andreas Werner <andreas.werner@men.de>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 08/05/2015 04:06 AM, Johannes Thumshirn wrote:
-> Peter Hurley <peter@hurleysoftware.com> writes:
+On Wed, Aug 05, 2015 at 02:33:37PM -0400, Peter Hurley wrote:
+> On 07/23/2015 09:35 PM, Greg Kroah-Hartman wrote:
+> > On Sun, Jul 12, 2015 at 10:49:08PM -0400, Peter Hurley wrote:
+> >> Introduce tty_debug() macro to output uniform debug information for
+> >> tty core debug messages (function name and tty name).
+> >>
+> >> Note: printk(KERN_DEBUG) is retained here over pr_debug() since
+> >> messages can be enabled in non-DEBUG builds.
+> > 
+> > But pr_debug() is the "standard" way to enable/disable debugging
+> > messages, so I'd really like to see that be used here.
 > 
->> On 08/04/2015 03:02 AM, Johannes Thumshirn wrote:
->>> Peter Hurley <peter@hurleysoftware.com> writes:
->>>> On 08/03/2015 09:58 AM, Johannes Thumshirn wrote:
->>>>> Fix panic caused by a race between men_z135_intr() and men_z135_set_termios().
->>>>>
->>>>> men_z135_intr() and men_z135_set_termios() both hold the struct uart_port::lock
->>>>> spinlock, but men_z135_intr() does a spin_lock_irqsave() and
->>>>> men_z135_set_termios() does a normal spin_lock(), which can lead to a deadlock
->>>>> when an interrupt is called while the lock is being helt by
->>>>> men_z135_set_termios().
->>>>
->>>>
->>>> The irq handler can and should use normal spin_lock()/unlock().
->>>
->>> I always thought an irq handler _must_ use the irqsave versions. Good to
->>> know that.
->>
->> Your irq handler does not need to protect itself from re-entrancy (by using
->> the same irq handler for different irqs) and your serial driver doesn't support
->> console (so can't be deadlocked by printk() usage either).
->>
+> Ok, I can do that; I'll roll Joe's suggestions in at that time.
 > 
-> So once we have console support (I don't know if this is planned at
-> all), we must go back to the irqsave variant?
+> > Even better, this is a tty device, so it should be using dev_dbg(),
+> > which gives us tons of good information built-in for the tty and can
+> > properly be parsed by userspace tools to know exactly what device caused
+> > what message at what point in time.
+> > 
+> > So I'll take this for now, but moving it to use dev_dbg() would be best
+> > eventually.
+> 
+> The issue with using dev_dbg is that (SysV) ptys are not devices.
 
-Depends on if the platform for this hardware always disables irqs for interrupt
-handlers. If it does, then the irqsave variant _in the interrupt handler_ is
-not required.
+True :(
 
+> However,
+> if you'd prefer, I could rework this macro to format output like dev_dbg;
+> ie., <driver> <tty name>: <fmt>
 
-> But looking at the driver
-> again I have the feeling that the locking could be made more fine
-> grained (if this makes sense) and I saw two possible races, please
-> correct me if I'm wrong.
-> 
-> men_z135_intr() reads the status register and saves a copy in struct
-> men_z135_port::stat_reg. The men_z135_handle_lsr() and
-> men_z135_handle_modem_status() functions use this stat_reg value to get
-> to the LSR and MSR registers. But in the meanwhile the content of the
-> registers could have been changed by men_z135_intr() again. Is this a
-> problem or am I on the wrong track here?
+That would be good, as that's what userspace is expecting the messages
+to look like.
 
-The irq handler itself can _never_ be re-entered (as long as the handler only
-handles one irq # for a given device). So the race(s) outlined above can never
-happen _regardless of which flavor spinlock is used_.
+thanks,
 
-Regards,
-Peter Hurley
-
-
->>>> The set_termios() method should used spin_lock_irq(); there's no need to save the
->>>> interrupt state because that method will never be called from interrupt context.
->>>>
->>>> So the 'flags' local can be dropped from the patch.
->>>
->>> Given that the irqsave variant isn't needed that sounds reasonable.
->>
->> It's for a different reason; irqs will _always_ be on when your driver's
->> set_termios() method is called. So you don't see to save the irq state, because
->> you know it's always on. That's why you can use the spin_lock_irq()/spin_unlock_irq()
->> version here.
->>
->>>> Also, the port lock is already initialized in uart_add_one_port() and should
->>>> not be initialized by the probe() function.
->>>
->>> OK, do you prefer (or better Greg and Jiri) prefer that change folded
->>> into this patch or an extra patch?
->>
->> Separate patch please.
-> 
-> OK.
-> 
->>
->> I assume this deadlock fix will need to be pushed to -stable as well,
->> yes?
-> 
-> I wasn't quite sure about this, I 1st had a CC stable for v4.0+ but
-> then removed it again before sending the patch. So I'll put it back in.
-> 
-> Thanks,
->         Johannes
-> 
+greg k-h
