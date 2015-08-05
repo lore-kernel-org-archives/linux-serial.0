@@ -1,90 +1,86 @@
-From: Peter Hung <hpeter@gmail.com>
-Subject: [PATCH 1/1] serial: 8250_pci: fix mode after S3/S4 resume for F81504/508/512
-Date: Wed,  5 Aug 2015 14:44:53 +0800
-Message-ID: <1438757093-10050-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Johannes Thumshirn <jthumshirn@suse.de>
+Subject: Re: [PATCH] tty: serial: men_z135_uart.c: Fix race between IRQ and set_termios()
+Date: Wed, 05 Aug 2015 10:06:05 +0200
+Message-ID: <mqdvbcu40sy.fsf@c203.arch.suse.de>
+References: <1438610285-1441-1-git-send-email-jthumshirn@suse.de>
+	<55BF893C.1000901@hurleysoftware.com>
+	<mqdbnenv8ml.fsf@c203.arch.suse.de>
+	<55C0D6DC.3020706@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55C0D6DC.3020706@hurleysoftware.com> (Peter Hurley's message of
+	"Tue, 04 Aug 2015 11:14:36 -0400")
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andreas Werner <andreas.werner@men.de>, Johannes Thumshirn <jthumshirn@suse.de>
 List-Id: linux-serial@vger.kernel.org
 
-Fix RS232/485 mode incorrect setting after S3/S4 resume for F81504/508/512
+Peter Hurley <peter@hurleysoftware.com> writes:
 
-We had add RS232/485 RTS control with fecf27a373f5. But when it
-resume from S3/S4, the mode register 0x40 + 0x08 * idx + 7 will
-rewrite to 0x01 (RS232 mode).
+> On 08/04/2015 03:02 AM, Johannes Thumshirn wrote:
+>> Peter Hurley <peter@hurleysoftware.com> writes:
+>>> On 08/03/2015 09:58 AM, Johannes Thumshirn wrote:
+>>>> Fix panic caused by a race between men_z135_intr() and men_z135_set_termios().
+>>>>
+>>>> men_z135_intr() and men_z135_set_termios() both hold the struct uart_port::lock
+>>>> spinlock, but men_z135_intr() does a spin_lock_irqsave() and
+>>>> men_z135_set_termios() does a normal spin_lock(), which can lead to a deadlock
+>>>> when an interrupt is called while the lock is being helt by
+>>>> men_z135_set_termios().
+>>>
+>>>
+>>> The irq handler can and should use normal spin_lock()/unlock().
+>> 
+>> I always thought an irq handler _must_ use the irqsave versions. Good to
+>> know that.
+>
+> Your irq handler does not need to protect itself from re-entrancy (by using
+> the same irq handler for different irqs) and your serial driver doesn't support
+> console (so can't be deadlocked by printk() usage either).
+>
 
-This patch will modify 2 sections.
+So once we have console support (I don't know if this is planned at
+all), we must go back to the irqsave variant? But looking at the driver
+again I have the feeling that the locking could be made more fine
+grained (if this makes sense) and I saw two possible races, please
+correct me if I'm wrong.
 
-One is pci_fintek_init(), if it called when first init, it will
-write mode register with 0x01. If it called from S3/S4 resume,
-it's will get the relative port data and pass it to
-pci_fintek_rs485_config() with NULL rs485 parameter.
+men_z135_intr() reads the status register and saves a copy in struct
+men_z135_port::stat_reg. The men_z135_handle_lsr() and
+men_z135_handle_modem_status() functions use this stat_reg value to get
+to the LSR and MSR registers. But in the meanwhile the content of the
+registers could have been changed by men_z135_intr() again. Is this a
+problem or am I on the wrong track here?
 
-The another modification is in pci_fintek_rs485_config(). It'll
-re-apply old configuration when the parameter rs485 is NULL.
+>>> The set_termios() method should used spin_lock_irq(); there's no need to save the
+>>> interrupt state because that method will never be called from interrupt context.
+>>>
+>>> So the 'flags' local can be dropped from the patch.
+>> 
+>> Given that the irqsave variant isn't needed that sounds reasonable.
+>
+> It's for a different reason; irqs will _always_ be on when your driver's
+> set_termios() method is called. So you don't see to save the irq state, because
+> you know it's always on. That's why you can use the spin_lock_irq()/spin_unlock_irq()
+> version here.
+>
+>>> Also, the port lock is already initialized in uart_add_one_port() and should
+>>> not be initialized by the probe() function.
+>> 
+>> OK, do you prefer (or better Greg and Jiri) prefer that change folded
+>> into this patch or an extra patch?
+>
+> Separate patch please.
 
-Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
----
- drivers/tty/serial/8250/8250_pci.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+OK.
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index e12e911..68042dd 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1705,7 +1705,9 @@ static int pci_fintek_rs485_config(struct uart_port *port,
- 
- 	pci_read_config_byte(pci_dev, 0x40 + 8 * *index + 7, &setting);
- 
--	if (rs485->flags & SER_RS485_ENABLED)
-+	if (!rs485)
-+		rs485 = &port->rs485;
-+	else if (rs485->flags & SER_RS485_ENABLED)
- 		memset(rs485->padding, 0, sizeof(rs485->padding));
- 	else
- 		memset(rs485, 0, sizeof(*rs485));
-@@ -1733,7 +1735,10 @@ static int pci_fintek_rs485_config(struct uart_port *port,
- 	}
- 
- 	pci_write_config_byte(pci_dev, 0x40 + 8 * *index + 7, setting);
--	port->rs485 = *rs485;
-+
-+	if (rs485 != &port->rs485)
-+		port->rs485 = *rs485;
-+
- 	return 0;
- }
- 
-@@ -1774,6 +1779,8 @@ static int pci_fintek_init(struct pci_dev *dev)
- 	u32 max_port, i;
- 	u32 bar_data[3];
- 	u8 config_base;
-+	struct serial_private *priv = pci_get_drvdata(dev);
-+	struct uart_8250_port *port;
- 
- 	switch (dev->device) {
- 	case 0x1104: /* 4 ports */
-@@ -1815,8 +1822,18 @@ static int pci_fintek_init(struct pci_dev *dev)
- 
- 		pci_write_config_byte(dev, config_base + 0x06, dev->irq);
- 
--		/* force init to RS232 Mode */
--		pci_write_config_byte(dev, config_base + 0x07, 0x01);
-+		if (priv) {
-+			/* re-apply RS232/485 mode when
-+			 * pciserial_resume_ports()
-+			 */
-+			port = serial8250_get_port(priv->line[i]);
-+			pci_fintek_rs485_config(&port->port, NULL);
-+		} else {
-+			/* First init without port data
-+			 * force init to RS232 Mode
-+			 */
-+			pci_write_config_byte(dev, config_base + 0x07, 0x01);
-+		}
- 	}
- 
- 	return max_port;
--- 
-1.9.1
+>
+> I assume this deadlock fix will need to be pushed to -stable as well,
+> yes?
+
+I wasn't quite sure about this, I 1st had a CC stable for v4.0+ but
+then removed it again before sending the patch. So I'll put it back in.
+
+Thanks,
+        Johannes
