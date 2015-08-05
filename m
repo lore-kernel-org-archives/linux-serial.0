@@ -1,66 +1,90 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: don't announce CIR serial ports
-Date: Tue, 04 Aug 2015 22:03:00 -0400
-Message-ID: <55C16ED4.7080604@hurleysoftware.com>
-References: <55BE8725.6090303@maciej.szmigiero.name> <55C0196C.7090308@hurleysoftware.com> <55C149E6.7040407@maciej.szmigiero.name>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Peter Hung <hpeter@gmail.com>
+Subject: [PATCH 1/1] serial: 8250_pci: fix mode after S3/S4 resume for F81504/508/512
+Date: Wed,  5 Aug 2015 14:44:53 +0800
+Message-ID: <1438757093-10050-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55C149E6.7040407@maciej.szmigiero.name>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel <linux-kernel@vger.kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 08/04/2015 07:25 PM, Maciej S. Szmigiero wrote:
-> Hi Peter,
-> 
-> Thanks for looking into it.
-> 
-> On 04.08.2015 03:46, Peter Hurley wrote:
->> Hi Maciej,
->>
->> On 08/02/2015 05:09 PM, Maciej S. Szmigiero wrote:
->>> CIR type serial ports aren't real serial ports.
->>> This is just a way to prevent legacy serial driver
->>> from probing and eventually binding some resources
->>> so don't announce them like normal serial ports.
->>
->> I'd like to keep some form of reporting so that we know the
->> port was properly probed; what about extending uart_report_port()
->> to including CIR + disabled status?
-> 
-> Currently the printed message looks like this:
-> "00:01: ttyS2 at I/O 0x3e8 (irq = 7, base_baud = 115200) is a CIR port".
-> 
-> I think it would be best to skip a device file name in this case,
-> since this is how user sees (and uses) a real serial port.
-> The message would be then:
-> "00:01 at I/O 0x3e8 (irq = 7, base_baud = 115200) is a CIR port".
-> 
-> The dev name will always be present since the only current
-> "source" of CIR ports is PNP 8250 driver which sets 
-> dev pointer uncondtionally.
-> 
->> Secondly, good catch! Because we should not be trying to
->> register a console on this port, nor driving modem signals.
->>
->> So maybe an early exit after uart_report_port?
-> 
-> All right, I will resubmit updated patch tomorrow.
+Fix RS232/485 mode incorrect setting after S3/S4 resume for F81504/508/512
 
-In re-reviewing this, I think the proper solution is actually not
-to add the uart port for a CIR port at all. It doesn't make
-sense because the tty cannot be changed by setserial/ioctl(TIOCSSERIAL),
-so the device node serves no purpose.
+We had add RS232/485 RTS control with fecf27a373f5. But when it
+resume from S3/S4, the mode register 0x40 + 0x08 * idx + 7 will
+rewrite to 0x01 (RS232 mode).
 
-This problem is really an artifact of the 8250 driver port management,
-and shouldn't involve the serial core at all.
+This patch will modify 2 sections.
 
-An additional benefit of this approach is that a simple one-line
-banner noting the port skip could be emitted instead from
-serial8250_register_8250_port().
+One is pci_fintek_init(), if it called when first init, it will
+write mode register with 0x01. If it called from S3/S4 resume,
+it's will get the relative port data and pass it to
+pci_fintek_rs485_config() with NULL rs485 parameter.
 
-Regards,
-Peter Hurley
+The another modification is in pci_fintek_rs485_config(). It'll
+re-apply old configuration when the parameter rs485 is NULL.
+
+Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index e12e911..68042dd 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1705,7 +1705,9 @@ static int pci_fintek_rs485_config(struct uart_port *port,
+ 
+ 	pci_read_config_byte(pci_dev, 0x40 + 8 * *index + 7, &setting);
+ 
+-	if (rs485->flags & SER_RS485_ENABLED)
++	if (!rs485)
++		rs485 = &port->rs485;
++	else if (rs485->flags & SER_RS485_ENABLED)
+ 		memset(rs485->padding, 0, sizeof(rs485->padding));
+ 	else
+ 		memset(rs485, 0, sizeof(*rs485));
+@@ -1733,7 +1735,10 @@ static int pci_fintek_rs485_config(struct uart_port *port,
+ 	}
+ 
+ 	pci_write_config_byte(pci_dev, 0x40 + 8 * *index + 7, setting);
+-	port->rs485 = *rs485;
++
++	if (rs485 != &port->rs485)
++		port->rs485 = *rs485;
++
+ 	return 0;
+ }
+ 
+@@ -1774,6 +1779,8 @@ static int pci_fintek_init(struct pci_dev *dev)
+ 	u32 max_port, i;
+ 	u32 bar_data[3];
+ 	u8 config_base;
++	struct serial_private *priv = pci_get_drvdata(dev);
++	struct uart_8250_port *port;
+ 
+ 	switch (dev->device) {
+ 	case 0x1104: /* 4 ports */
+@@ -1815,8 +1822,18 @@ static int pci_fintek_init(struct pci_dev *dev)
+ 
+ 		pci_write_config_byte(dev, config_base + 0x06, dev->irq);
+ 
+-		/* force init to RS232 Mode */
+-		pci_write_config_byte(dev, config_base + 0x07, 0x01);
++		if (priv) {
++			/* re-apply RS232/485 mode when
++			 * pciserial_resume_ports()
++			 */
++			port = serial8250_get_port(priv->line[i]);
++			pci_fintek_rs485_config(&port->port, NULL);
++		} else {
++			/* First init without port data
++			 * force init to RS232 Mode
++			 */
++			pci_write_config_byte(dev, config_base + 0x07, 0x01);
++		}
+ 	}
+ 
+ 	return max_port;
+-- 
+1.9.1
