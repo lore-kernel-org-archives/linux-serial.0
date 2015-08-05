@@ -1,43 +1,160 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 2/7] tty: core: Add tty_debug() for printk(KERN_DEBUG)
- messages
-Date: Wed, 05 Aug 2015 14:33:37 -0400
-Message-ID: <55C25701.8030305@hurleysoftware.com>
-References: <1436755753-7746-1-git-send-email-peter@hurleysoftware.com> <1436755753-7746-3-git-send-email-peter@hurleysoftware.com> <20150724013544.GA13905@kroah.com>
+Subject: Re: [PATCHv2] serial: don't register CIR serial ports
+Date: Wed, 05 Aug 2015 15:02:42 -0400
+Message-ID: <55C25DD2.4050707@hurleysoftware.com>
+References: <55C22F0B.5020803@maciej.szmigiero.name>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150724013544.GA13905@kroah.com>
+In-Reply-To: <55C22F0B.5020803@maciej.szmigiero.name>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 07/23/2015 09:35 PM, Greg Kroah-Hartman wrote:
-> On Sun, Jul 12, 2015 at 10:49:08PM -0400, Peter Hurley wrote:
->> Introduce tty_debug() macro to output uniform debug information for
->> tty core debug messages (function name and tty name).
->>
->> Note: printk(KERN_DEBUG) is retained here over pr_debug() since
->> messages can be enabled in non-DEBUG builds.
+On 08/05/2015 11:43 AM, Maciej S. Szmigiero wrote:
+> CIR type serial ports aren't real serial ports.
 > 
-> But pr_debug() is the "standard" way to enable/disable debugging
-> messages, so I'd really like to see that be used here.
-
-Ok, I can do that; I'll roll Joe's suggestions in at that time.
-
-> Even better, this is a tty device, so it should be using dev_dbg(),
-> which gives us tons of good information built-in for the tty and can
-> properly be parsed by userspace tools to know exactly what device caused
-> what message at what point in time.
+> This is just a way to prevent legacy 8250 serial
+> driver from probing and eventually binding some
+> resources.
 > 
-> So I'll take this for now, but moving it to use dev_dbg() would be best
-> eventually.
+> Since in current state such ports aren't providing
+> any real functionality and it is not possible
+> to change their type via setserial/ioctl(TIOCSSERIAL)
+> (due to UPF_FIXED_PORT flag set on them)
+> it is simpler and cleaner to not register them at all
+> with serial core.
 
-The issue with using dev_dbg is that (SysV) ptys are not devices. However,
-if you'd prefer, I could rework this macro to format output like dev_dbg;
-ie., <driver> <tty name>: <fmt>
+
+The only thing I think this patch is missing is either a comment
+or specific code in serial8250_register_ports() regarding not
+adding PORT_8250_CIR-type ports.
+
+Like either:
+
+static void __init
+serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+{
+	int i;
+
+	for (i = 0; i < nr_uarts; i++) {
+		struct uart_8250_port *up = &serial8250_ports[i];
+
++		/* PORT_8250_CIR-type ports must have non-NULL dev */
+		if (up->port.dev)
+			continue;
+
+		up->port.dev = dev;
+
+or:
+
+static void __init
+serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+{
+	int i;
+
+	for (i = 0; i < nr_uarts; i++) {
+		struct uart_8250_port *up = &serial8250_ports[i];
+
++		if (up->port.type == PORT_8250_CIR)
++			continue;
+
+		if (up->port.dev)
+			continue;
+
+		up->port.dev = dev;
 
 Regards,
 Peter Hurley
+
+> Print a short message in this case so it is known
+> to user what has happened.
+> 
+> This way checks for PORT_8250_CIR in serial port
+> callbacks can be removed too, since they won't
+> ever be called.
+> 
+> Signed-off-by: Maciej Szmigiero <mail@maciej.szmigiero.name>
+> ---
+> This replaces "serial: don't announce CIR serial ports"
+> submission.
+> 
+> Changes from v1: print message using dev_info()
+> 
+>  drivers/tty/serial/8250/8250_core.c |   37 +++++++++++++++++------------------
+>  1 files changed, 18 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index 37fff12..145b0b37 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -2129,9 +2129,6 @@ int serial8250_do_startup(struct uart_port *port)
+>  	unsigned char lsr, iir;
+>  	int retval;
+>  
+> -	if (port->type == PORT_8250_CIR)
+> -		return -ENODEV;
+> -
+>  	if (!port->fifosize)
+>  		port->fifosize = uart_config[port->type].fifo_size;
+>  	if (!up->tx_loadsz)
+> @@ -2858,14 +2855,8 @@ static void serial8250_release_port(struct uart_port *port)
+>  static int serial8250_request_port(struct uart_port *port)
+>  {
+>  	struct uart_8250_port *up = up_to_u8250p(port);
+> -	int ret;
+> -
+> -	if (port->type == PORT_8250_CIR)
+> -		return -ENODEV;
+> -
+> -	ret = serial8250_request_std_resource(up);
+>  
+> -	return ret;
+> +	return serial8250_request_std_resource(up);
+>  }
+>  
+>  static int fcr_get_rxtrig_bytes(struct uart_8250_port *up)
+> @@ -3013,9 +3004,6 @@ static void serial8250_config_port(struct uart_port *port, int flags)
+>  	struct uart_8250_port *up = up_to_u8250p(port);
+>  	int ret;
+>  
+> -	if (port->type == PORT_8250_CIR)
+> -		return;
+> -
+>  	/*
+>  	 * Find the region that we can probe for.  This in turn
+>  	 * tells us whether we can probe for the type of port.
+> @@ -3889,13 +3877,24 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+>  		if (up->dl_write)
+>  			uart->dl_write = up->dl_write;
+>  
+> -		if (serial8250_isa_config != NULL)
+> -			serial8250_isa_config(0, &uart->port,
+> -					&uart->capabilities);
+> +		if (uart->port.type != PORT_8250_CIR) {
+> +			if (serial8250_isa_config != NULL)
+> +				serial8250_isa_config(0, &uart->port,
+> +						&uart->capabilities);
+>  
+> -		ret = uart_add_one_port(&serial8250_reg, &uart->port);
+> -		if (ret == 0)
+> -			ret = uart->port.line;
+> +			ret = uart_add_one_port(&serial8250_reg,
+> +						&uart->port);
+> +			if (ret == 0)
+> +				ret = uart->port.line;
+> +		} else {
+> +			dev_info(uart->port.dev,
+> +				"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
+> +				uart->port.iobase,
+> +				(unsigned long long)uart->port.mapbase,
+> +				uart->port.irq);
+> +
+> +			ret = 0;
+> +		}
+>  	}
+>  	mutex_unlock(&serial_mutex);
+>  
+> 
