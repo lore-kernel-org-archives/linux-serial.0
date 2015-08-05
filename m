@@ -1,53 +1,40 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH] Fix data loss in cdc-acm
-Date: Wed, 05 Aug 2015 13:36:35 -0400
-Message-ID: <55C249A3.6030809@hurleysoftware.com>
-References: <55AC1883.4050605@svenbrauch.de> <20150720172546.GF20628@localhost> <55AD38E5.1090807@svenbrauch.de> <1437486195.3823.13.camel@suse.com> <55AEBD06.6020402@svenbrauch.de> <55AED708.903@hurleysoftware.com> <55AEE805.9050204@svenbrauch.de> <55B01554.90201@hurleysoftware.com> <55B01EDE.3050503@svenbrauch.de>
+From: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
+Subject: Re: g_serial hangs on write when the cable is disconnected
+Date: Wed, 5 Aug 2015 14:15:47 -0400 (EDT)
+Message-ID: <Pine.LNX.4.44L0.1508051411090.1713-100000@iolanthe.rowland.org>
+References: <20150805172640.GB25008@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <55B01EDE.3050503-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
+In-Reply-To: <20150805172640.GB25008-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
 Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
-Cc: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Toby Gray <toby.gray-BiNz9QiKYoNBDgjK7y7TUQ@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Cc: Laszlo Papp <lpapp-RoXCvvDuEio@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 07/22/2015 06:53 PM, Sven Brauch wrote:
-> Hi,
-> 
-> On 23/07/15 00:12, Peter Hurley wrote:
->> The premature unthrottle actually leads to the data loss but the throttling
->> with a mere 2K left is _way too late_.
-> Ok, yes, I think so too.
-> 
->> 10ms is a _really_ long time for a cpu not to attend to a kworker.
+On Wed, 5 Aug 2015, Greg KH wrote:
 
-I haven't forgotten about this problem and I still plan to look into why
-the long delay, particularly focusing on the scheduling latency from
-tty_flip_buffer_push() => flush_to_ldisc().
+> hm, wait, is this really the n_gsm line discipline?  Or is it something
+> else?
+> 
+> g_serial is the device side of a serial connection, there is no "cable
+> removed" notification that it even knows about, that has to come from
+> the gadget driver somehow, which you should listen for and then kick
+> your userspace program.
 
-Regards,
-Peter Hurley
+There is the gserial_disconnect() callback, which gets invoked when the 
+Vbus power (provided by the host) is removed.  It's a pretty good 
+indicator that the USB cable has been unplugged.
 
->> Which raises 2 questions:
->> 1. What are the termios settings of the tty receiving input? Is it 'raw'
->>    mode or typical terminal mode (icanon, echo, etc.) or something else?
-> In my test code, I open the tty like
->   fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NONBLOCK);
-> I don't make any other changes to the default settings. To be honest,
-> I'm not sure in which mode it is operating then (I was assuming raw, but
-> I might be wrong?).
-> 
->> 2. Are there RT threads that are hogging cpu time?
-> I can't see any, I think the only thing which occasionally goes to RT is
-> pulseaudio (but during at least some of the tests I wasn't even playing
-> audio, so that sounds very unplausible to me). I also cannot see a
-> correlation between failure rate and CPU load.
-> 
-> Best regards,
-> Sven
-> 
+I don't understand all the stuff that gserial_disconnect() does, but it 
+ought to be more or less equivalent to a "hangup" -- as the kerneldoc 
+says.  If it doesn't do what users expect, there's probably a bug 
+somewhere.
+
+Of course, it's possible that the callback does not get invoked in 
+Laszlo's case.  Then the question would be: Why not?
+
+Alan Stern
 
 --
 To unsubscribe from this list: send the line "unsubscribe linux-usb" in
