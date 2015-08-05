@@ -1,53 +1,54 @@
-From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Subject: Re: g_serial hangs on write when the cable is disconnected
-Date: Wed, 5 Aug 2015 10:26:40 -0700
-Message-ID: <20150805172640.GB25008@kroah.com>
-References: <CAOMwXhNwVKCK1+-q+fAgMc0ebpremXd+S1kUvZ9Ank-5BTMLCA@mail.gmail.com>
- <20150805145627.GA610@kroah.com>
- <CAOMwXhM7TNZAGOUAC=gcwjqTz8y7FGs0FRbJb4SQO+VfbzYJJA@mail.gmail.com>
- <20150805162923.GC21870@kroah.com>
- <20150805170927.20219.qmail@stuge.se>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH] Fix data loss in cdc-acm
+Date: Wed, 05 Aug 2015 13:36:35 -0400
+Message-ID: <55C249A3.6030809@hurleysoftware.com>
+References: <55AC1883.4050605@svenbrauch.de> <20150720172546.GF20628@localhost> <55AD38E5.1090807@svenbrauch.de> <1437486195.3823.13.camel@suse.com> <55AEBD06.6020402@svenbrauch.de> <55AED708.903@hurleysoftware.com> <55AEE805.9050204@svenbrauch.de> <55B01554.90201@hurleysoftware.com> <55B01EDE.3050503@svenbrauch.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150805170927.20219.qmail-Y+HMSxxDrH8@public.gmane.org>
+In-Reply-To: <55B01EDE.3050503-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
 Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Laszlo Papp <lpapp-RoXCvvDuEio@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
+Cc: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Toby Gray <toby.gray-BiNz9QiKYoNBDgjK7y7TUQ@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 05, 2015 at 07:09:27PM +0200, Peter Stuge wrote:
-> Greg KH wrote:
-> > > >>     int fd = open("/dev/ttyGS0", O_RDWR | O_NONBLOCK);
-> > > >
-> > > > This line discipline is very different from the "traditional" tty
-> > > > line discipline
-> ..
-> > this is a character device, with a very specific line discipline
-> > that works in a very specific way and assumes you know exactly how
-> > to talk to it and communicate with it properly.
+On 07/22/2015 06:53 PM, Sven Brauch wrote:
+> Hi,
 > 
-> If the character device is called tty* then I think it is appropriate
-> to expect that it (by default) behaves like a "traditional" tty device.
+> On 23/07/15 00:12, Peter Hurley wrote:
+>> The premature unthrottle actually leads to the data loss but the throttling
+>> with a mere 2K left is _way too late_.
+> Ok, yes, I think so too.
 > 
-> How the kernel implements this device internally (ldisc or no)
-> shouldn't matter to the user, and if it does I'd consider that a bug.
-> (Sadly unfixable, because public API.)
+>> 10ms is a _really_ long time for a cpu not to attend to a kworker.
+
+I haven't forgotten about this problem and I still plan to look into why
+the long delay, particularly focusing on the scheduling latency from
+tty_flip_buffer_push() => flush_to_ldisc().
+
+Regards,
+Peter Hurley
+
+>> Which raises 2 questions:
+>> 1. What are the termios settings of the tty receiving input? Is it 'raw'
+>>    mode or typical terminal mode (icanon, echo, etc.) or something else?
+> In my test code, I open the tty like
+>   fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NONBLOCK);
+> I don't make any other changes to the default settings. To be honest,
+> I'm not sure in which mode it is operating then (I was assuming raw, but
+> I might be wrong?).
 > 
-> => Rather than defending unexpected behavior, why not admit that the
-> name was poorly chosen and point to the device-specific requirements?
+>> 2. Are there RT threads that are hogging cpu time?
+> I can't see any, I think the only thing which occasionally goes to RT is
+> pulseaudio (but during at least some of the tests I wasn't even playing
+> audio, so that sounds very unplausible to me). I also cannot see a
+> correlation between failure rate and CPU load.
+> 
+> Best regards,
+> Sven
+> 
 
-hm, wait, is this really the n_gsm line discipline?  Or is it something
-else?
-
-g_serial is the device side of a serial connection, there is no "cable
-removed" notification that it even knows about, that has to come from
-the gadget driver somehow, which you should listen for and then kick
-your userspace program.
-
-Yeah, gadget devices are odd...
-
-greg k-h
 --
 To unsubscribe from this list: send the line "unsubscribe linux-usb" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
