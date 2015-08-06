@@ -1,37 +1,29 @@
-From: Johannes Thumshirn <jthumshirn@suse.de>
-Subject: [PATCH 2/2] tty: serial: men_z135_uart.c: Don't initialize port->lock
-Date: Thu,  6 Aug 2015 09:16:38 +0200
-Message-ID: <12fb311fcd1757b779ed0eed009c0eba3b2aa8c0.1438844880.git.jthumshirn@suse.de>
-References: <cover.1438844880.git.jthumshirn@suse.de>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCHv2 1/2] tty: serial: men_z135_uart.c: Fix race between
+ IRQ and set_termios()
+Date: Thu, 06 Aug 2015 07:29:18 -0400
+Message-ID: <55C3450E.8070107@hurleysoftware.com>
+References: <cover.1438844880.git.jthumshirn@suse.de> <535885237699310100f3e6804b3677495634042e.1438844880.git.jthumshirn@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1438844880.git.jthumshirn@suse.de>
-In-Reply-To: <cover.1438844880.git.jthumshirn@suse.de>
-References: <cover.1438844880.git.jthumshirn@suse.de>
+In-Reply-To: <535885237699310100f3e6804b3677495634042e.1438844880.git.jthumshirn@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Andreas Werner <andreas.werner@men.de>, Johannes Thumshirn <jthumshirn@suse.de>
+To: Johannes Thumshirn <jthumshirn@suse.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andreas Werner <andreas.werner@men.de>
 List-Id: linux-serial@vger.kernel.org
 
-port->lock get's initialized in uart_add_one_port(), no need to do it
-in men_z135_probe().
+On 08/06/2015 03:16 AM, Johannes Thumshirn wrote:
+> Fix panic caused by a race between men_z135_intr() and men_z135_set_termios().
+> 
+> men_z135_intr() and men_z135_set_termios() both hold the struct uart_port::lock
+> spinlock, but men_z135_intr() does a spin_lock_irqsave() and
+> men_z135_set_termios() does a normal spin_lock(), which can lead to a deadlock
+> when an interrupt is called while the lock is being helt by
+> men_z135_set_termios().
+> 
+> This was discovered using a insmod, hardware looppback send/receive, rmmod
+> stress test.
 
-Signed-off-by: Johannes Thumshirn <jthumshirn@suse.de>
-Cc: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/men_z135_uart.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-index 5a41b8fb..b90e7b3 100644
---- a/drivers/tty/serial/men_z135_uart.c
-+++ b/drivers/tty/serial/men_z135_uart.c
-@@ -839,7 +839,6 @@ static int men_z135_probe(struct mcb_device *mdev,
- 	uart->port.membase = NULL;
- 	uart->mdev = mdev;
- 
--	spin_lock_init(&uart->port.lock);
- 	spin_lock_init(&uart->lock);
- 
- 	err = uart_add_one_port(&men_z135_driver, &uart->port);
--- 
-2.4.6
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
