@@ -1,62 +1,55 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 3/3] serial: 8250: omap: restore registers on shutdown
-Date: Thu, 06 Aug 2015 14:31:27 +0200
-Message-ID: <55C3539F.4070403@linutronix.de>
-References: <87egjp2r4a.fsf@linutronix.de> <55BAC67E.1010400@hurleysoftware.com> <20150803160937.GA26497@linutronix.de> <55BF980E.20908@hurleysoftware.com> <55BF9CE0.4080107@linutronix.de> <55BFC1BA.5020605@hurleysoftware.com> <55C0A8F4.4010204@linutronix.de> <55C352A8.3070102@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [RFC PATCH v2 1/3] serial: 8250: Fix autoconfig_irq() to avoid
+ race conditions
+Date: Thu, 06 Aug 2015 08:53:36 -0400
+Message-ID: <55C358D0.2090605@hurleysoftware.com>
+References: <1438157443-19447-1-git-send-email-t-kageyama@cp.jp.nec.com> <1438157443-19447-2-git-send-email-t-kageyama@cp.jp.nec.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55C352A8.3070102@hurleysoftware.com>
+In-Reply-To: <1438157443-19447-2-git-send-email-t-kageyama@cp.jp.nec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: John Ogness <john.ogness@linutronix.de>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org, nsekhar@ti.com, nm@ti.com, linux-serial@vger.kernel.org, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "tglx@linutronix.de" <tglx@linutronix.de>
+Cc: "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 08/06/2015 02:27 PM, Peter Hurley wrote:
-> Hi Sebastian,
-
-Hi Peter,
-
-> On 08/04/2015 07:58 AM, Sebastian Andrzej Siewior wrote:
->> On 08/03/2015 09:32 PM, Peter Hurley wrote:
->>
->>>> You mean a function in 8250-dma API which does what I did just here
->>>> with the wait_event() and the wake_up in the callback? That way I could
->>>> move the termios_wait into the dma struct instead of keeping in the
->>>> omap specific part. I am also not sure if OMAP is the only one that may
->>>> hang here or the other people just didn't notice it yet.
->>>
->>> Exactly; and we need to fix DMA wrt x_char anyway.
->>>
->>> Going back to the dmaengine api, I think something like this might work
->>> (as a first approximation):
->>>
->>> 	dma_sync_wait(dma->txchan, dma->tx_cookie);
->>> 	dmaengine_pause(dma->txchan);
->>>
->>> 	/* remainder of set_termios */
->>>
->>> 	dmaengine_resume(dma->txchan);
->>>
->>> We could require 8250 core dma to support pause/resume.
->>
->> I would prefer the waitqueue approach.
->> You can't do this while holding the port lock. The lock is taken with
->> irqs off so may not see the transfer completing.
->> Why do you pause the channel? It may not work without an active
->> descriptor and a start without "resume" should work. Also you must
->> ensure that DMA's complete callback does not start another transfer if
->> there is something queued up (that is why I had the tx_running dance).
->> I am not sure if a transfer that is active and then paused will not
->> trigger the hang bug if we change the termios in between.
+On 07/29/2015 04:12 AM, Taichi Kageyama wrote:
+> The following race conditions can happen when a serial port is used
+> as console.
 > 
-> I'll look at/test this this weekend, ok?
-
-Sure. I'm currently re-spinning the patches so have everything in
-proper pieces. While at it I will take a look at x_char.
-
-> Regards,
-> Peter Hurley
+> Case1: CPU_B is used to detect an interrupt from a serial port,
+>        but it can have interrupts disabled during the waiting time.
+> Case2: CPU_B clears UART_IER just after CPU_A sets UART_IER and then
+>        a serial port may not make an interrupt.
+> Case3: CPU_A sets UART_IER just after CPU_B clears UART_IER.
+>        This is an unexpected behavior for serial8250_console_write().
 > 
-Sebastian
+> CPU_A [autoconfig_irq]      |  CPU_B [serial8250_console_write]
+> ----------------------------|---------------------------------------
+>                             |
+> probe_irq_on()              |  spin_lock_irqsave(&port->lock,)
+> serial_outp(,UART_IER,0x0f) |  serial_out(,UART_IER,0)
+> udelay(20);                 |  uart_console_write()
+> probe_irq_off()             |
+>                             |  spin_unlock_irqrestore(&port->lock,)
+> 
+> Case1 and 2 can make autoconfig_irq() failed.
+> In these cases, the console doesn't work in interrupt mode and
+> "input overrun" (which can make operation mistakes) can happen
+> on some systems. Especially in the Case1, It is known that the
+> problem happens with high rate every boot once it occurs
+> because the boot sequence is always almost same.
+> 
+> port mutex makes sure that the autoconfig operation is exclusive of
+> any other concurrent HW access except by the console operation.
+> console lock is required in autoconfig_irq().
+> 
+> Signed-off-by: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+> Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+
+Please resend this one patch to Greg as a non-RFC patch.
+
+Regards,
+Peter Hurley
