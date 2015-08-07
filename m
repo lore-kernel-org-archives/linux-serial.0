@@ -1,41 +1,157 @@
-From: Charles Manning <cdhmanning@gmail.com>
-Subject: Re: [PATCH 3/3] serial: 8250: omap: restore registers on shutdown
-Date: Fri, 7 Aug 2015 12:41:51 +1200
-Message-ID: <CAE21AQoATGZQHUUd3=+A1GZ2wt2vgJSmAUO=MQcnUP5cGK9g6g@mail.gmail.com>
-References: <87egjp2r4a.fsf@linutronix.de>
-	<55BAC67E.1010400@hurleysoftware.com>
-	<20150803160937.GA26497@linutronix.de>
-	<55BF980E.20908@hurleysoftware.com>
-	<55BF9CE0.4080107@linutronix.de>
-	<55BFC1BA.5020605@hurleysoftware.com>
-	<55C0A8F4.4010204@linutronix.de>
-	<55C352A8.3070102@hurleysoftware.com>
-	<55C3539F.4070403@linutronix.de>
-	<55C36846.8010104@linutronix.de>
-	<55C3A5E8.4030506@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] dma: omap-dma: add support for pause of non-cyclic transfers
+Date: Fri,  7 Aug 2015 10:41:57 +0200
+Message-ID: <1438936917-7254-1-git-send-email-bigeasy@linutronix.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55C3A5E8.4030506@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, John Ogness <john.ogness@linutronix.de>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org, nsekhar@ti.com, nm@ti.com, linux-serial@vger.kernel.org, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To: Vinod Koul <vinod.koul@intel.com>
+Cc: Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Russell King <rmk+kernel@arm.linux.org.uk>, Peter Ujfalusi <peter.ujfalusi@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 7, 2015 at 6:22 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> I agree; this is what we should do first because someone might want it
-> for backports.
+This DMA driver is used by 8250-omap on DRA7-evm. There is one
+requirement that is to pause a transfer. This is currently used on the RX
+side. It is possible that the UART HW aborted the RX (UART's RX-timeout)
+but the DMA controller starts the transfer shortly after.
+Before we can manually purge the FIFO we need to pause the transfer,
+check how many bytes it already received and terminate the transfer
+without it making any progress.
 
-Got an idea how far this can be ported back?
+>From testing on the TX side it seems that it is possible that we invoke
+pause once the transfer has completed which is indicated by the missing
+CCR_ENABLE bit but before the interrupt has been noticed. In that case the
+interrupt will come even after disabling it.
 
-I'm being hampered by severe performance issues on a
-beagleboneblack-like device (am335x) running on 3.18 kernel.
+The AM572x manual says that we have to wait for the CCR_RD_ACTIVE &
+CCR_WR_ACTIVE bits to be gone before programming it again here is the
+drain loop. Also it looks like without the drain the TX-transfer makes
+sometimes progress.
 
-I have a 1Mbaud link that is getting packets of about 22 bytes @800 Hz
-and old omap-serial is keeping up, but killing the CPU.
+One note: The pause + resume combo is broken because after resume the
+the complete transfer will be programmed again. That means the already
+transferred bytes (until the pause event) will be sent again. This is
+currently not important for my UART user because it does only pause +
+terminate.
 
-I'm considering backporting 8250_omap as a get out of jail.
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/dma/omap-dma.c | 54 ++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 41 insertions(+), 13 deletions(-)
 
-Opinions appreciated.
-
-Thanks.
+diff --git a/drivers/dma/omap-dma.c b/drivers/dma/omap-dma.c
+index 249445c8a4c6..6b8497203caf 100644
+--- a/drivers/dma/omap-dma.c
++++ b/drivers/dma/omap-dma.c
+@@ -299,7 +299,7 @@ static void omap_dma_start(struct omap_chan *c, struct omap_desc *d)
+ 	omap_dma_chan_write(c, CCR, d->ccr | CCR_ENABLE);
+ }
+ 
+-static void omap_dma_stop(struct omap_chan *c)
++static int omap_dma_stop(struct omap_chan *c)
+ {
+ 	struct omap_dmadev *od = to_omap_dma_dev(c->vc.chan.device);
+ 	uint32_t val;
+@@ -342,8 +342,26 @@ static void omap_dma_stop(struct omap_chan *c)
+ 
+ 		omap_dma_glbl_write(od, OCP_SYSCONFIG, sysconfig);
+ 	} else {
++		int i = 0;
++
++		if (!(val & CCR_ENABLE))
++			return -EINVAL;
++
+ 		val &= ~CCR_ENABLE;
+ 		omap_dma_chan_write(c, CCR, val);
++		do {
++			val = omap_dma_chan_read(c, CCR);
++			if (!(val & (CCR_RD_ACTIVE | CCR_WR_ACTIVE)))
++				break;
++			if (i > 100)
++				break;
++			udelay(5);
++		} while (1);
++
++		if (val & (CCR_RD_ACTIVE | CCR_WR_ACTIVE))
++			dev_err(c->vc.chan.device->dev,
++				"DMA drain did not complete on lch %d\n",
++				c->dma_ch);
+ 	}
+ 
+ 	mb();
+@@ -358,6 +376,7 @@ static void omap_dma_stop(struct omap_chan *c)
+ 
+ 		omap_dma_chan_write(c, CLNK_CTRL, val);
+ 	}
++	return 0;
+ }
+ 
+ static void omap_dma_start_sg(struct omap_chan *c, struct omap_desc *d,
+@@ -728,6 +747,8 @@ static enum dma_status omap_dma_tx_status(struct dma_chan *chan,
+ 	} else {
+ 		txstate->residue = 0;
+ 	}
++	if (ret == DMA_IN_PROGRESS && c->paused)
++		ret = DMA_PAUSED;
+ 	spin_unlock_irqrestore(&c->vc.lock, flags);
+ 
+ 	return ret;
+@@ -1053,28 +1074,33 @@ static int omap_dma_terminate_all(struct dma_chan *chan)
+ static int omap_dma_pause(struct dma_chan *chan)
+ {
+ 	struct omap_chan *c = to_omap_dma_chan(chan);
++	struct omap_dmadev *od = to_omap_dma_dev(chan->device);
++	unsigned long flags;
++	int ret = -EINVAL;
+ 
+-	/* Pause/Resume only allowed with cyclic mode */
+-	if (!c->cyclic)
+-		return -EINVAL;
++	spin_lock_irqsave(&od->irq_lock, flags);
+ 
+-	if (!c->paused) {
+-		omap_dma_stop(c);
+-		c->paused = true;
++	if (!c->paused && c->desc) {
++		ret = omap_dma_stop(c);
++		if (!ret)
++			c->paused = true;
+ 	}
+ 
+-	return 0;
++	spin_unlock_irqrestore(&od->irq_lock, flags);
++
++	return ret;
+ }
+ 
+ static int omap_dma_resume(struct dma_chan *chan)
+ {
+ 	struct omap_chan *c = to_omap_dma_chan(chan);
++	struct omap_dmadev *od = to_omap_dma_dev(chan->device);
++	unsigned long flags;
++	int ret = -EINVAL;
+ 
+-	/* Pause/Resume only allowed with cyclic mode */
+-	if (!c->cyclic)
+-		return -EINVAL;
++	spin_lock_irqsave(&od->irq_lock, flags);
+ 
+-	if (c->paused) {
++	if (c->paused && c->desc) {
+ 		mb();
+ 
+ 		/* Restore channel link register */
+@@ -1082,9 +1108,11 @@ static int omap_dma_resume(struct dma_chan *chan)
+ 
+ 		omap_dma_start(c, c->desc);
+ 		c->paused = false;
++		ret = 0;
+ 	}
++	spin_unlock_irqrestore(&od->irq_lock, flags);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int omap_dma_chan_init(struct omap_dmadev *od)
+-- 
+2.5.0
