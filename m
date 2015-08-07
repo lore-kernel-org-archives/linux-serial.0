@@ -1,124 +1,50 @@
-From: Juergen Borleis <jbe@pengutronix.de>
-Subject: [PATCH v4 2/2] serial: mxs-auart: keep the AUART unit in reset state when not in use
-Date: Fri,  7 Aug 2015 12:47:04 +0200
-Message-ID: <1438944424-9053-2-git-send-email-jbe@pengutronix.de>
-References: <1438944424-9053-1-git-send-email-jbe@pengutronix.de>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] dma: omap-dma: add support for pause of non-cyclic
+ transfers
+Date: Fri, 7 Aug 2015 11:55:46 +0100
+Message-ID: <20150807105546.GL7576@n2100.arm.linux.org.uk>
+References: <1438936917-7254-1-git-send-email-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1438944424-9053-1-git-send-email-jbe@pengutronix.de>
+Content-Disposition: inline
+In-Reply-To: <1438936917-7254-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Stefan Wahren <stefan.wahren@i2se.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org, Peter Hurley <peter@hurleysoftware.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Peter Ujfalusi <peter.ujfalusi@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-Whenever the UART device driver gets closed from userland, the driver
-disables the UART unit and then stops the clocks to save power.
+On Fri, Aug 07, 2015 at 10:41:57AM +0200, Sebastian Andrzej Siewior wrote:
+> This DMA driver is used by 8250-omap on DRA7-evm. There is one
+> requirement that is to pause a transfer. This is currently used on the RX
+> side. It is possible that the UART HW aborted the RX (UART's RX-timeout)
+> but the DMA controller starts the transfer shortly after.
+> Before we can manually purge the FIFO we need to pause the transfer,
+> check how many bytes it already received and terminate the transfer
+> without it making any progress.
+> 
+> >From testing on the TX side it seems that it is possible that we invoke
+> pause once the transfer has completed which is indicated by the missing
+> CCR_ENABLE bit but before the interrupt has been noticed. In that case the
+> interrupt will come even after disabling it.
 
-The bit which disabled the UART unit is described as:
+How do you cope with the OMAP DMA hardware clearing its FIFO when you
+pause it?
 
-=C2=A0"UART Enable. If this bit is set to 1, the UART is enabled. Data
-  transmission and reception occurs for the UART signals. When the
-  UART is disabled in the middle of transmission or reception, it
-  completes the current character before stopping."
+The problem is that on mem-to-device transfers, the DMA hardware can
+prefetch some data from memory into its FIFO before the device wants
+the data.  If you then disable the channel, the hardware clears the
+FIFO.
 
-The important part is the "it completes the current character". Wheneve=
-r
-a reception is ongoing when the UART gets disabled (including the clock
-off) the statemachine freezes and "remembers" this state on the next
-open() when re-enabling the unit's clock.
+It is unspecified whether the hardware updates the source address in
+this case, or by how much.  So it's pretty hard to undo the prefetching
+in software.
 
-In this case we end up receiving an additional bogus character
-immediately.
+The net result is: data loss.
 
-The solution in this change is to switch the AUART unit into its reset
-state on close() and only release it from its reset state on the next
-open().
+This is why I explicitly did not implement pause/resume for non-cyclic
+channels.
 
-Note: when the unit is also used as system console it is always 'in use=
-',
-so we cannot reset it on close().
-
-Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
----
- drivers/tty/serial/mxs-auart.c | 46 ++++++++++++++++++++++++++++++++++=
-+-------
- 1 file changed, 39 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-au=
-art.c
-index 7dc87a9..8d1cd15 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -858,6 +858,30 @@ static void mxs_auart_reset_deassert(struct uart_p=
-ort *u)
- 	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
- }
-=20
-+static void mxs_auart_reset_assert(struct uart_port *u)
-+{
-+	int i;
-+	u32 reg;
-+
-+	reg =3D readl(u->membase + AUART_CTRL0);
-+	/* if already in reset state, keep it untouched */
-+	if (reg & AUART_CTRL0_SFTRST)
-+		return;
-+
-+	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
-+	writel(AUART_CTRL0_SFTRST, u->membase + AUART_CTRL0_SET);
-+
-+	for (i =3D 0; i < 1000; i++) {
-+		reg =3D readl(u->membase + AUART_CTRL0);
-+		/* reset is finished when the clock is gated */
-+		if (reg & AUART_CTRL0_CLKGATE)
-+			return;
-+		udelay(10);
-+	}
-+
-+	dev_err(u->dev, "Failed to reset the unit.");
-+}
-+
- static int mxs_auart_startup(struct uart_port *u)
- {
- 	int ret;
-@@ -867,7 +891,13 @@ static int mxs_auart_startup(struct uart_port *u)
- 	if (ret)
- 		return ret;
-=20
--	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
-+	if (uart_console(u)) {
-+		writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_CLR);
-+	} else {
-+		/* reset the unit to a well known state */
-+		mxs_auart_reset_assert(u);
-+		mxs_auart_reset_deassert(u);
-+	}
-=20
- 	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_SET);
-=20
-@@ -899,12 +929,14 @@ static void mxs_auart_shutdown(struct uart_port *=
-u)
- 	if (auart_dma_enabled(s))
- 		mxs_auart_dma_exit(s);
-=20
--	writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_CLR);
--
--	writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
--			u->membase + AUART_INTR_CLR);
--
--	writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_SET);
-+	if (uart_console(u)) {
-+		writel(AUART_CTRL2_UARTEN, u->membase + AUART_CTRL2_CLR);
-+		writel(AUART_INTR_RXIEN | AUART_INTR_RTIEN | AUART_INTR_CTSMIEN,
-+				u->membase + AUART_INTR_CLR);
-+		writel(AUART_CTRL0_CLKGATE, u->membase + AUART_CTRL0_SET);
-+	} else {
-+		mxs_auart_reset_assert(u);
-+	}
-=20
- 	clk_disable_unprepare(s->clk);
- }
---=20
-2.4.6
+-- 
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
