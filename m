@@ -1,96 +1,49 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] dma: omap-dma: add support for pause of non-cyclic
- transfers
-Date: Fri, 7 Aug 2015 16:29:39 +0100
-Message-ID: <20150807152939.GQ7576@n2100.arm.linux.org.uk>
-References: <1438936917-7254-1-git-send-email-bigeasy@linutronix.de>
- <55C47DE1.9020902@ti.com>
- <55C48A1E.3070007@linutronix.de>
- <20150807132241.GN7576@n2100.arm.linux.org.uk>
- <55C4B5AE.10309@linutronix.de>
- <20150807135727.GP7576@n2100.arm.linux.org.uk>
- <55C4CA00.3060206@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v4 2/2] serial: mxs-auart: keep the AUART unit in reset
+ state when not in use
+Date: Fri, 07 Aug 2015 11:30:27 -0400
+Message-ID: <55C4CF13.90206@hurleysoftware.com>
+References: <1438944424-9053-1-git-send-email-jbe@pengutronix.de> <1438944424-9053-2-git-send-email-jbe@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55C4CA00.3060206@hurleysoftware.com>
+In-Reply-To: <1438944424-9053-2-git-send-email-jbe@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Greg KH <gregkh@linuxfoundation.org>
+To: Juergen Borleis <jbe@pengutronix.de>, linux-kernel@vger.kernel.org
+Cc: Stefan Wahren <stefan.wahren@i2se.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Jiri Slaby <jslaby@suse.cz>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 07, 2015 at 11:08:48AM -0400, Peter Hurley wrote:
-> [ + Greg KH ]
+On 08/07/2015 06:47 AM, Juergen Borleis wrote:
+> Whenever the UART device driver gets closed from userland, the driver
+> disables the UART unit and then stops the clocks to save power.
 > 
-> On 08/07/2015 09:57 AM, Russell King - ARM Linux wrote:
-> > As it is something that the driver has _not_ supported, you are clearly
-> > adding a feature to an existing driver.  It's not a bug fix.
-> > 
-> >>> If something else has been converted to pause channels and that is causing
-> >>> a problem, then _that_ conversion is where the bug lies, not the lack of
-> >>> support in the omap-dma.
+> The bit which disabled the UART unit is described as:
 > 
-> FWIW, the actual bug is the api that silently does nothing.
-
-Incorrect.
-
-static int omap_dma_pause(struct dma_chan *chan)
-{
-        struct omap_chan *c = to_omap_dma_chan(chan);
-
-        /* Pause/Resume only allowed with cyclic mode */
-        if (!c->cyclic)
-                return -EINVAL;
-
-Asking for the channel to be paused will return an error code indicating
-that the request failed.  That will be propagated back through to the
-return code of dmaengine_pause().
-
-If we look at what 8250-dma.c is doing:
-
-                if (dma->rx_running) {
-                        dmaengine_pause(dma->rxchan);
-
-It's 8250-dma.c which is silently _ignoring_ the return code, failing
-to check that the operation it requested worked.  Maybe this should be
-WARN_ON(dmaengine_pause(dma->rxchan)) or at least it should print a
-message?
-
-> > Right, so the patch which caused the regression is the one which arranged
-> > for the 8250-dma + omap-dma combination to work together, not the missing
-> > pause support in omap-dma.
+>  "UART Enable. If this bit is set to 1, the UART is enabled. Data
+>   transmission and reception occurs for the UART signals. When the
+>   UART is disabled in the middle of transmission or reception, it
+>   completes the current character before stopping."
 > 
-> That would be the original submission patch set for an entire driver,
-> the 8250_omap driver.
-
-Well, that's where the bug lies, and I don't agree with your assessment
-that it would mean reverting the whole thing.
-
-The binding between the two drivers is controlled via DT.  DT tells it
-which DMA controller and which DMA input to use.  So, as DMA is currently
-broken on this, the solution is to break that link so that 8250-omap goes
-back to using PIO only.
-
-> > As the binding of drivers is controlled by DT, you can disable the binding
-> > of these two drivers
+> The important part is the "it completes the current character". Whenever
+> a reception is ongoing when the UART gets disabled (including the clock
+> off) the statemachine freezes and "remembers" this state on the next
+> open() when re-enabling the unit's clock.
 > 
-> No. 8250 dma is not a stand-alone driver. Even if it were, how would you go
-> back and fix DTs in the wild?
+> In this case we end up receiving an additional bogus character
+> immediately.
+> 
+> The solution in this change is to switch the AUART unit into its reset
+> state on close() and only release it from its reset state on the next
+> open().
+> 
+> Note: when the unit is also used as system console it is always 'in use',
+> so we cannot reset it on close().
 
-Well, we have reached an impass then.
+The code is still a bit ackward but looks functional, so
 
-I'm not going to accept a feature addition to a driver as a stable patch
-without it being adequately tested over _several_ kernel revisions to
-ensure that we don't end up cocking up some driver which uses the DMA
-interfaces correctly.  It's too big a risk.
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 
-So, I guess that means that older kernels will just have to remain broken -
-all because the basic testing of the original code was never undertaken
-to ensure that basic stuff like reception of characters worked properly.
 
-Sorry, I have little sympathy here.
-
--- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
+PS - This mxs driver has the same problem as the i.MX driver.
+     The irq request and hardware init should be done in startup().
