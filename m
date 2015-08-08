@@ -1,8 +1,8 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+From: Greg KH <greg@kroah.com>
 Subject: Re: [PATCH 1/3] tty: serial: 8250_omap: do not use RX DMA if pause
  is not supported
-Date: Sat, 8 Aug 2015 10:57:54 +0100
-Message-ID: <20150808095753.GB7576@n2100.arm.linux.org.uk>
+Date: Sat, 8 Aug 2015 08:40:01 -0700
+Message-ID: <20150808154001.GB11851@kroah.com>
 References: <1438977619-15488-1-git-send-email-bigeasy@linutronix.de>
  <1438977619-15488-2-git-send-email-bigeasy@linutronix.de>
  <55C54D49.3090406@hurleysoftware.com>
@@ -14,36 +14,44 @@ Content-Disposition: inline
 In-Reply-To: <55C5CC95.6030901@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Peter Ujfalusi <peter.ujfalusi@ti.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Vinod Koul <vinod.koul@intel.com>, Russell King <rmk+kernel@arm.linux.org.uk>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Peter Ujfalusi <peter.ujfalusi@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
 On Sat, Aug 08, 2015 at 11:32:05AM +0200, Sebastian Andrzej Siewior wrote:
-> This might not happen at all. At 115200 I *never* encouraged this. Once
-> the FIFO is filled with less than RX-trigger size than the UART sends
-> the time-out interrupt and the DMA *never* completes.
+> On 08/08/2015 02:28 AM, Peter Hurley wrote:
+> >> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> >> index 0340ee6ba970..07a11e0935e4 100644
+> >> --- a/drivers/tty/serial/8250/8250_omap.c
+> >> +++ b/drivers/tty/serial/8250/8250_omap.c
+> >> @@ -769,7 +771,9 @@ static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
+> >>  		return;
+> >>  	}
+> >>  
+> >> -	dmaengine_pause(dma->rxchan);
+> >> +	ret = dmaengine_pause(dma->rxchan);
+> >> +	if (WARN_ON_ONCE(ret))
+> >> +		priv->rx_dma_broken = true;
+> > 
+> > No offense, Sebastian, but it boggles my mind that anyone could defend this
+> > as solid api design. We're in the middle of an interrupt handler and the
+> > slave dma driver is /just/ telling us now that it doesn't implement this
+> > functionality?!!?
+> 
+> This is the best thing I could come up with. But to be fair: This
+> happens once _very_ early in the process and is 100% reproducible. The
+> WARN_ON should trigger user attention.
 
-Careful with statements like that, they have a habbit of backfiring :)
+Never expect a _user_ to do anything with a WARN_ON except ignore it.
 
-It just needs the right timing - you need a character sequence which
-has a pause long enough to trigger the timeout, but short enough to
-get characters in between the UART deciding to report a timeout, and
-the DMA being terminated.
+WARN_ON is for developers when something really bad went wrong that you
+want to be notified so that you can fix the code to prevent that from
+ever happening again.
 
-You'll then be in the situation where the UART is receiving characters
-and using the DMA, but you've been interrupted to handle the RX timeout
-event.  Whether the UART resets the IIR in that situation to indicate
-something other than a RX timeout, I'm not sure - if it doesn't, then
-there's a race there (which from your behaviour at faster rates seems
-likely.)
+So this isn't ok, sorry, a user would not know what to do with this at
+all except email me asking why the driver is broken because a kernel
+"oops" just happened, when in reality, their hardware is broken in a way
+that you already know about when you wrote the patch.
 
-The more loaded the system, the longer an IRQ may take to be serviced
-(especially if there are interrupt handlers which aren't fast) and the
-bigger the window is for that to happen.  I've seen some long service
-times with USB with HID in older kernels (milliseconds), but that seems
-to have been fixed now - longest IRQ handling I'm now seeing is around
-500us.  Given 115200 baud, the character time is 87us, that's probably
-more than enough if you get the timing just right.
+You know better than this.
 
--- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
+greg k-h
