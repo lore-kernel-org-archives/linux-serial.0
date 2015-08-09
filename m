@@ -1,94 +1,77 @@
 From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH 5/5] drivers/tty: make serial 8250_lpc18xx.c explicitly non-modular
-Date: Sat, 8 Aug 2015 20:51:37 -0400
-Message-ID: <1439081497-14986-6-git-send-email-paul.gortmaker@windriver.com>
-References: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
+Subject: [PATCH 0/5] drivers/tty: make more bool drivers explicitly non-modular
+Date: Sat, 8 Aug 2015 20:51:32 -0400
+Message-ID: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-kernel@vger.kernel.org
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Joachim Eastwood <manabian@gmail.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joachim Eastwood <manabian@gmail.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The Kconfig currently controlling compilation of this code is:
+This second set of patches to drivers/tty steps outside of the serial
+dir, and an improved auditing finds two more serial drivers pretending
+to be modular that really are not.
 
-8250/Kconfig:config SERIAL_8250_LPC18XX
-8250/Kconfig:        bool "NXP LPC18xx/43xx serial port support"
+The reasoning for doing this is the same as the first set[1] of patches
+and is largely copied below:
 
-...meaning that it currently is not being built as a module by anyone.
+  In the previous merge window, we made changes to allow better
+  delineation between modular and non-modular code in commit
+  0fd972a7d91d6e15393c449492a04d94c0b89351 ("module: relocate module_init
+  from init.h to module.h").  This allows us to now ensure module code
+  looks modular and non-modular code does not accidentally look modular
+  without suffering build breakage.
+  
+  Here we target code that is, by nature of their Kconfig settings, only
+  available to be built-in, but implicitly presenting itself as being
+  possibly modular by way of using modular headers, macros, and functions.
+  
+  The goal here is to remove that illusion of modularity from these
+  drivers, but in a way that leaves the actual runtime unchanged.
+  In doing so, we remove code that has never been tested and adds
+  no value to the tree.  And we begin the process of expecting a
+  level of consistency between the Kconfig of a driver and the code
+  that the driver uses.
+  
+Build tested for allyesconfig on x86_64, and ARM for lpc81xx, and powerpc
+for hvc_console and mpsc, layered onto tty/tty-next as a baseline.
 
-Lets remove the modular code that is essentially orphaned, so that
-when reading the driver there is no doubt it is builtin-only.
+Paul.
 
-Since module_platform_driver() uses the same init level priority as
-builtin_platform_driver() the init ordering remains unchanged with
-this commit.
-
-Also note that MODULE_DEVICE_TABLE is a no-op for non-modular code.
-
-We leave some tags like MODULE_AUTHOR for documentation purposes.
+[1] https://lkml.kernel.org/r/1437530538-5078-1-git-send-email-paul.gortmaker@windriver.com
+--
 
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
 Cc: Joachim Eastwood <manabian@gmail.com>
-Cc: linux-serial@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
----
- drivers/tty/serial/8250/8250_lpc18xx.c | 19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-serial@vger.kernel.org
 
-diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial/8250/8250_lpc18xx.c
-index 99cd478851ff..f5112bee1ab6 100644
---- a/drivers/tty/serial/8250/8250_lpc18xx.c
-+++ b/drivers/tty/serial/8250/8250_lpc18xx.c
-@@ -15,7 +15,7 @@
- 
- #include <linux/clk.h>
- #include <linux/io.h>
--#include <linux/module.h>
-+#include <linux/init.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
- 
-@@ -198,33 +198,22 @@ dis_clk_reg:
- 	return ret;
- }
- 
--static int lpc18xx_serial_remove(struct platform_device *pdev)
--{
--	struct lpc18xx_uart_data *data = platform_get_drvdata(pdev);
--
--	serial8250_unregister_port(data->line);
--	clk_disable_unprepare(data->clk_uart);
--	clk_disable_unprepare(data->clk_reg);
--
--	return 0;
--}
--
- static const struct of_device_id lpc18xx_serial_match[] = {
- 	{ .compatible = "nxp,lpc1850-uart" },
- 	{ },
- };
--MODULE_DEVICE_TABLE(of, lpc18xx_serial_match);
- 
- static struct platform_driver lpc18xx_serial_driver = {
- 	.probe  = lpc18xx_serial_probe,
--	.remove = lpc18xx_serial_remove,
- 	.driver = {
- 		.name = "lpc18xx-uart",
- 		.of_match_table = lpc18xx_serial_match,
- 	},
- };
--module_platform_driver(lpc18xx_serial_driver);
-+builtin_platform_driver(lpc18xx_serial_driver);
- 
-+/*
- MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
- MODULE_DESCRIPTION("Serial port driver NXP LPC18xx/43xx devices");
- MODULE_LICENSE("GPL v2");
-+*/
+Paul Gortmaker (5):
+  drivers/tty: make pty.c slightly more explicitly non-modular
+  drivers/tty: make sysrq.c slightly more explicitly non-modular
+  drivers/tty: make hvc_console.c explicitly non-modular
+  drivers/tty: make serial/mpsc.c driver explicitly non-modular
+  drivers/tty: make serial 8250_lpc18xx.c explicitly non-modular
+
+ drivers/tty/hvc/hvc_console.c          | 18 +----------------
+ drivers/tty/pty.c                      |  7 +++++--
+ drivers/tty/serial/8250/8250_lpc18xx.c | 19 ++++--------------
+ drivers/tty/serial/mpsc.c              | 36 +++-------------------------------
+ drivers/tty/sysrq.c                    |  6 +++++-
+ 5 files changed, 18 insertions(+), 68 deletions(-)
+
 -- 
 2.5.0
