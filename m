@@ -1,77 +1,102 @@
 From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH 0/5] drivers/tty: make more bool drivers explicitly non-modular
-Date: Sat, 8 Aug 2015 20:51:32 -0400
-Message-ID: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
+Subject: [PATCH 4/5] drivers/tty: make serial/mpsc.c driver explicitly non-modular
+Date: Sat, 8 Aug 2015 20:51:36 -0400
+Message-ID: <1439081497-14986-5-git-send-email-paul.gortmaker@windriver.com>
+References: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joachim Eastwood <manabian@gmail.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This second set of patches to drivers/tty steps outside of the serial
-dir, and an improved auditing finds two more serial drivers pretending
-to be modular that really are not.
+The Kconfig for this driver is currently:
 
-The reasoning for doing this is the same as the first set[1] of patches
-and is largely copied below:
+config SERIAL_MPSC
+        bool "Marvell MPSC serial port support"
 
-  In the previous merge window, we made changes to allow better
-  delineation between modular and non-modular code in commit
-  0fd972a7d91d6e15393c449492a04d94c0b89351 ("module: relocate module_init
-  from init.h to module.h").  This allows us to now ensure module code
-  looks modular and non-modular code does not accidentally look modular
-  without suffering build breakage.
-  
-  Here we target code that is, by nature of their Kconfig settings, only
-  available to be built-in, but implicitly presenting itself as being
-  possibly modular by way of using modular headers, macros, and functions.
-  
-  The goal here is to remove that illusion of modularity from these
-  drivers, but in a way that leaves the actual runtime unchanged.
-  In doing so, we remove code that has never been tested and adds
-  no value to the tree.  And we begin the process of expecting a
-  level of consistency between the Kconfig of a driver and the code
-  that the driver uses.
-  
-Build tested for allyesconfig on x86_64, and ARM for lpc81xx, and powerpc
-for hvc_console and mpsc, layered onto tty/tty-next as a baseline.
+...meaning that it currently is not being built as a module by anyone.
+Lets remove the modular code that is essentially orphaned, so that
+when reading the driver there is no doubt it is builtin-only.
 
-Paul.
+Since module_init translates to device_initcall in the non-modular
+case, the init ordering remains unchanged with this commit.
 
-[1] https://lkml.kernel.org/r/1437530538-5078-1-git-send-email-paul.gortmaker@windriver.com
---
+We leave some tags like MODULE_AUTHOR for documentation purposes.
 
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Joachim Eastwood <manabian@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linuxppc-dev@lists.ozlabs.org
 Cc: linux-serial@vger.kernel.org
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
+ drivers/tty/serial/mpsc.c | 36 +++---------------------------------
+ 1 file changed, 3 insertions(+), 33 deletions(-)
 
-Paul Gortmaker (5):
-  drivers/tty: make pty.c slightly more explicitly non-modular
-  drivers/tty: make sysrq.c slightly more explicitly non-modular
-  drivers/tty: make hvc_console.c explicitly non-modular
-  drivers/tty: make serial/mpsc.c driver explicitly non-modular
-  drivers/tty: make serial 8250_lpc18xx.c explicitly non-modular
-
- drivers/tty/hvc/hvc_console.c          | 18 +----------------
- drivers/tty/pty.c                      |  7 +++++--
- drivers/tty/serial/8250/8250_lpc18xx.c | 19 ++++--------------
- drivers/tty/serial/mpsc.c              | 36 +++-------------------------------
- drivers/tty/sysrq.c                    |  6 +++++-
- 5 files changed, 18 insertions(+), 68 deletions(-)
-
+diff --git a/drivers/tty/serial/mpsc.c b/drivers/tty/serial/mpsc.c
+index 82bb6d1fe23b..edb32e3f1e84 100644
+--- a/drivers/tty/serial/mpsc.c
++++ b/drivers/tty/serial/mpsc.c
+@@ -55,8 +55,6 @@
+ #define SUPPORT_SYSRQ
+ #endif
+ 
+-#include <linux/module.h>
+-#include <linux/moduleparam.h>
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
+ #include <linux/ioport.h>
+@@ -2108,24 +2106,8 @@ static int mpsc_drv_probe(struct platform_device *dev)
+ 	return rc;
+ }
+ 
+-static int mpsc_drv_remove(struct platform_device *dev)
+-{
+-	pr_debug("mpsc_drv_exit: Removing MPSC %d\n", dev->id);
+-
+-	if (dev->id < MPSC_NUM_CTLRS) {
+-		uart_remove_one_port(&mpsc_reg, &mpsc_ports[dev->id].port);
+-		mpsc_release_port((struct uart_port *)
+-				&mpsc_ports[dev->id].port);
+-		mpsc_drv_unmap_regs(&mpsc_ports[dev->id]);
+-		return 0;
+-	} else {
+-		return -ENODEV;
+-	}
+-}
+-
+ static struct platform_driver mpsc_driver = {
+ 	.probe	= mpsc_drv_probe,
+-	.remove	= mpsc_drv_remove,
+ 	.driver	= {
+ 		.name	= MPSC_CTLR_NAME,
+ 	},
+@@ -2156,22 +2138,10 @@ static int __init mpsc_drv_init(void)
+ 
+ 	return rc;
+ }
++device_initcall(mpsc_drv_init);
+ 
+-static void __exit mpsc_drv_exit(void)
+-{
+-	platform_driver_unregister(&mpsc_driver);
+-	platform_driver_unregister(&mpsc_shared_driver);
+-	uart_unregister_driver(&mpsc_reg);
+-	memset(mpsc_ports, 0, sizeof(mpsc_ports));
+-	memset(&mpsc_shared_regs, 0, sizeof(mpsc_shared_regs));
+-}
+-
+-module_init(mpsc_drv_init);
+-module_exit(mpsc_drv_exit);
+-
++/*
+ MODULE_AUTHOR("Mark A. Greer <mgreer@mvista.com>");
+ MODULE_DESCRIPTION("Generic Marvell MPSC serial/UART driver");
+-MODULE_VERSION(MPSC_VERSION);
+ MODULE_LICENSE("GPL");
+-MODULE_ALIAS_CHARDEV_MAJOR(MPSC_MAJOR);
+-MODULE_ALIAS("platform:" MPSC_CTLR_NAME);
++*/
 -- 
 2.5.0
