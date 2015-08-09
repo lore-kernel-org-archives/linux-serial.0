@@ -1,102 +1,82 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH 4/5] drivers/tty: make serial/mpsc.c driver explicitly non-modular
-Date: Sat, 8 Aug 2015 20:51:36 -0400
-Message-ID: <1439081497-14986-5-git-send-email-paul.gortmaker@windriver.com>
-References: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [PATCH v5 05/11] drivers: PL011: refactor pl011_probe()
+Date: Sat, 8 Aug 2015 17:59:00 -0700
+Message-ID: <CAOZdJXVgRQZhEfYY9YdpiQ=n1D56yYL84s42V4hd2=YX2k48ZA@mail.gmail.com>
+References: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
+ <1432225584-4655-6-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1432225584-4655-6-git-send-email-andre.przywara@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, G Gregory <graeme.gregory@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <moorray3@wp.pl>, GregKH <gregkh@linuxfoundation.org>, nareshgbhat@gmail.com, mlangsdo@redhat.com, linux-serial@vger.kernel.org, rmk+kernel@arm.linux.org.uk, Jiri Slaby <jslaby@suse.cz>, dave.martin@arm.com, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-The Kconfig for this driver is currently:
+On Thu, May 21, 2015 at 9:26 AM, Andre Przywara <andre.przywara@arm.com> wrote:
+> +static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+> +{
+> +       struct uart_amba_port *uap;
+> +       struct vendor_data *vendor = id->data;
+> +       int portnr, ret;
+> +
+> +       portnr = pl011_find_free_port();
+> +       if (portnr < 0)
+> +               return portnr;
+> +
+> +       uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
+> +                          GFP_KERNEL);
+> +       if (!uap)
+> +               return -ENOMEM;
+> +
+> +       uap->clk = devm_clk_get(&dev->dev, NULL);
+> +       if (IS_ERR(uap->clk))
+> +               return PTR_ERR(uap->clk);
+> +
+> +       = vendor;
 
-config SERIAL_MPSC
-        bool "Marvell MPSC serial port support"
+I'm having trouble with this.  Specifically, I can't get SBSA early
+console to work, because uap->vendor is uninitialized when
+pl011_early_write() is called.
 
-...meaning that it currently is not being built as a module by anyone.
-Lets remove the modular code that is essentially orphaned, so that
-when reading the driver there is no doubt it is builtin-only.
+I don't have a non-SBSA system to test, but looking at the code, I'm
+not sure how early console is supposed to work any more.  In both SBSA
+and non-SBSA cases, uap->vendor is not initialized until the probe
+function is called.  Isn't that too late?  I thought early console was
+supposed to be running before the driver is probed.
 
-Since module_init translates to device_initcall in the non-modular
-case, the init ordering remains unchanged with this commit.
+If I make this change, then early console works on SBSA systems (with
+earlycon=pl011,<address>).  But of course, this only works for SBSA
+and breaks regular PL011.
 
-We leave some tags like MODULE_AUTHOR for documentation purposes.
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
----
- drivers/tty/serial/mpsc.c | 36 +++---------------------------------
- 1 file changed, 3 insertions(+), 33 deletions(-)
-
-diff --git a/drivers/tty/serial/mpsc.c b/drivers/tty/serial/mpsc.c
-index 82bb6d1fe23b..edb32e3f1e84 100644
---- a/drivers/tty/serial/mpsc.c
-+++ b/drivers/tty/serial/mpsc.c
-@@ -55,8 +55,6 @@
- #define SUPPORT_SYSRQ
- #endif
- 
--#include <linux/module.h>
--#include <linux/moduleparam.h>
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
- #include <linux/ioport.h>
-@@ -2108,24 +2106,8 @@ static int mpsc_drv_probe(struct platform_device *dev)
- 	return rc;
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2326,9 +2326,15 @@ static void pl011_early_write(struct console *con, const
+ static int __init pl011_early_console_setup(struct earlycon_device *device,
+                                            const char *opt)
+ {
++       struct uart_amba_port *uap =
++           container_of(&device->port, struct uart_amba_port, port);
++
+        if (!device->port.membase)
+                return -ENODEV;
++       if (!uap->vendor)
++               uap->vendor = &vendor_sbsa;
++
+        device->con->write = pl011_early_write;
+        return 0;
  }
- 
--static int mpsc_drv_remove(struct platform_device *dev)
--{
--	pr_debug("mpsc_drv_exit: Removing MPSC %d\n", dev->id);
--
--	if (dev->id < MPSC_NUM_CTLRS) {
--		uart_remove_one_port(&mpsc_reg, &mpsc_ports[dev->id].port);
--		mpsc_release_port((struct uart_port *)
--				&mpsc_ports[dev->id].port);
--		mpsc_drv_unmap_regs(&mpsc_ports[dev->id]);
--		return 0;
--	} else {
--		return -ENODEV;
--	}
--}
--
- static struct platform_driver mpsc_driver = {
- 	.probe	= mpsc_drv_probe,
--	.remove	= mpsc_drv_remove,
- 	.driver	= {
- 		.name	= MPSC_CTLR_NAME,
- 	},
-@@ -2156,22 +2138,10 @@ static int __init mpsc_drv_init(void)
- 
- 	return rc;
- }
-+device_initcall(mpsc_drv_init);
- 
--static void __exit mpsc_drv_exit(void)
--{
--	platform_driver_unregister(&mpsc_driver);
--	platform_driver_unregister(&mpsc_shared_driver);
--	uart_unregister_driver(&mpsc_reg);
--	memset(mpsc_ports, 0, sizeof(mpsc_ports));
--	memset(&mpsc_shared_regs, 0, sizeof(mpsc_shared_regs));
--}
--
--module_init(mpsc_drv_init);
--module_exit(mpsc_drv_exit);
--
-+/*
- MODULE_AUTHOR("Mark A. Greer <mgreer@mvista.com>");
- MODULE_DESCRIPTION("Generic Marvell MPSC serial/UART driver");
--MODULE_VERSION(MPSC_VERSION);
- MODULE_LICENSE("GPL");
--MODULE_ALIAS_CHARDEV_MAJOR(MPSC_MAJOR);
--MODULE_ALIAS("platform:" MPSC_CTLR_NAME);
-+*/
+
 -- 
-2.5.0
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project.
