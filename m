@@ -1,19 +1,18 @@
 From: Eduardo Valentin <edubezval@gmail.com>
-Subject: [PATCH 3/8] serial: imx: allow waking up on RTSD
-Date: Sun,  9 Aug 2015 11:19:04 -0700
-Message-ID: <1439144349-10494-4-git-send-email-edubezval@gmail.com>
+Subject: [PATCH 6/8] serial: imx: add a flag to indicate we are in the suspend path
+Date: Sun,  9 Aug 2015 11:19:07 -0700
+Message-ID: <1439144349-10494-7-git-send-email-edubezval@gmail.com>
 References: <1439144349-10494-1-git-send-email-edubezval@gmail.com>
-Return-path: <linux-pm-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1439144349-10494-1-git-send-email-edubezval@gmail.com>
-Sender: linux-pm-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Stevam <festevam@gmail.com>
 Cc: Linux PM <linux-pm@vger.kernel.org>, Eduardo Valentin <edubezval@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch sets RTSDEN bit when going into idle (Stop mode).
-We add the RTSDEN for the case RTS is sent from
-the remote connection. This way we allow the system
-to wakeup when RTS is received.
+This is a simple flag that gets set across prepare and complete
+callbacks in the suspend path. We the flag we may avoid
+runtime pm idling at the same time.
 
 Cc: Fabio Stevam <festevam@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -22,27 +21,53 @@ Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
 ---
- drivers/tty/serial/imx.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/tty/serial/imx.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 6c6da8c..70802be 100644
+index 494b182..def52e0 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1812,6 +1812,13 @@ static void serial_imx_enable_wakeup(struct imx_port *sport, bool on)
- 	else
- 		val &= ~UCR3_AWAKEN;
- 	writel(val, sport->port.membase + UCR3);
+@@ -219,6 +219,8 @@ struct imx_port {
+ 	wait_queue_head_t	dma_wait;
+ 	unsigned int		saved_reg[8];
+ 	bool			context_saved;
 +
-+	val = readl(sport->port.membase + UCR1);
-+	if (on)
-+		val |= UCR1_RTSDEN;
-+	else
-+		val &= ~UCR1_RTSDEN;
-+	writel(val, sport->port.membase + UCR1);
- }
++	bool			is_suspending;
+ };
  
- static int serial_imx_suspend(struct platform_device *dev, pm_message_t state)
+ struct imx_port_ucrs {
+@@ -1805,6 +1807,22 @@ static struct uart_driver imx_reg = {
+ 	.cons           = IMX_CONSOLE,
+ };
+ 
++static int serial_imx_prepare(struct device *dev)
++{
++	struct imx_port *sport = dev_get_drvdata(dev);
++
++	sport->is_suspending = true;
++
++	return 0;
++}
++
++static void serial_imx_complete(struct device *dev)
++{
++	struct imx_port *sport = dev_get_drvdata(dev);
++
++	sport->is_suspending = false;
++}
++
+ static void serial_imx_restore_context(struct imx_port *sport)
+ {
+ 	if (!sport->context_saved)
+@@ -2033,6 +2051,8 @@ static int serial_imx_remove(struct platform_device *pdev)
+ 
+ static const struct dev_pm_ops serial_imx_dev_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(serial_imx_suspend, serial_imx_resume)
++	.prepare        = serial_imx_prepare,
++	.complete       = serial_imx_complete,
+ };
+ 
+ static struct platform_driver serial_imx_driver = {
 -- 
 2.5.0
-
