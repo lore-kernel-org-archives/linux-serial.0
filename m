@@ -1,57 +1,94 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 1/3] tty: serial: 8250_omap: do not use RX DMA if pause
- is not supported
-Date: Sat, 8 Aug 2015 08:40:01 -0700
-Message-ID: <20150808154001.GB11851@kroah.com>
-References: <1438977619-15488-1-git-send-email-bigeasy@linutronix.de>
- <1438977619-15488-2-git-send-email-bigeasy@linutronix.de>
- <55C54D49.3090406@hurleysoftware.com>
- <55C5CC95.6030901@linutronix.de>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH 5/5] drivers/tty: make serial 8250_lpc18xx.c explicitly non-modular
+Date: Sat, 8 Aug 2015 20:51:37 -0400
+Message-ID: <1439081497-14986-6-git-send-email-paul.gortmaker@windriver.com>
+References: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55C5CC95.6030901@linutronix.de>
+In-Reply-To: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Vinod Koul <vinod.koul@intel.com>, Russell King <rmk+kernel@arm.linux.org.uk>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Peter Ujfalusi <peter.ujfalusi@ti.com>
+To: linux-kernel@vger.kernel.org
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Joachim Eastwood <manabian@gmail.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Aug 08, 2015 at 11:32:05AM +0200, Sebastian Andrzej Siewior wrote:
-> On 08/08/2015 02:28 AM, Peter Hurley wrote:
-> >> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> >> index 0340ee6ba970..07a11e0935e4 100644
-> >> --- a/drivers/tty/serial/8250/8250_omap.c
-> >> +++ b/drivers/tty/serial/8250/8250_omap.c
-> >> @@ -769,7 +771,9 @@ static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
-> >>  		return;
-> >>  	}
-> >>  
-> >> -	dmaengine_pause(dma->rxchan);
-> >> +	ret = dmaengine_pause(dma->rxchan);
-> >> +	if (WARN_ON_ONCE(ret))
-> >> +		priv->rx_dma_broken = true;
-> > 
-> > No offense, Sebastian, but it boggles my mind that anyone could defend this
-> > as solid api design. We're in the middle of an interrupt handler and the
-> > slave dma driver is /just/ telling us now that it doesn't implement this
-> > functionality?!!?
-> 
-> This is the best thing I could come up with. But to be fair: This
-> happens once _very_ early in the process and is 100% reproducible. The
-> WARN_ON should trigger user attention.
+The Kconfig currently controlling compilation of this code is:
 
-Never expect a _user_ to do anything with a WARN_ON except ignore it.
+8250/Kconfig:config SERIAL_8250_LPC18XX
+8250/Kconfig:        bool "NXP LPC18xx/43xx serial port support"
 
-WARN_ON is for developers when something really bad went wrong that you
-want to be notified so that you can fix the code to prevent that from
-ever happening again.
+...meaning that it currently is not being built as a module by anyone.
 
-So this isn't ok, sorry, a user would not know what to do with this at
-all except email me asking why the driver is broken because a kernel
-"oops" just happened, when in reality, their hardware is broken in a way
-that you already know about when you wrote the patch.
+Lets remove the modular code that is essentially orphaned, so that
+when reading the driver there is no doubt it is builtin-only.
 
-You know better than this.
+Since module_platform_driver() uses the same init level priority as
+builtin_platform_driver() the init ordering remains unchanged with
+this commit.
 
-greg k-h
+Also note that MODULE_DEVICE_TABLE is a no-op for non-modular code.
+
+We leave some tags like MODULE_AUTHOR for documentation purposes.
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Joachim Eastwood <manabian@gmail.com>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
+ drivers/tty/serial/8250/8250_lpc18xx.c | 19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial/8250/8250_lpc18xx.c
+index 99cd478851ff..f5112bee1ab6 100644
+--- a/drivers/tty/serial/8250/8250_lpc18xx.c
++++ b/drivers/tty/serial/8250/8250_lpc18xx.c
+@@ -15,7 +15,7 @@
+ 
+ #include <linux/clk.h>
+ #include <linux/io.h>
+-#include <linux/module.h>
++#include <linux/init.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ 
+@@ -198,33 +198,22 @@ dis_clk_reg:
+ 	return ret;
+ }
+ 
+-static int lpc18xx_serial_remove(struct platform_device *pdev)
+-{
+-	struct lpc18xx_uart_data *data = platform_get_drvdata(pdev);
+-
+-	serial8250_unregister_port(data->line);
+-	clk_disable_unprepare(data->clk_uart);
+-	clk_disable_unprepare(data->clk_reg);
+-
+-	return 0;
+-}
+-
+ static const struct of_device_id lpc18xx_serial_match[] = {
+ 	{ .compatible = "nxp,lpc1850-uart" },
+ 	{ },
+ };
+-MODULE_DEVICE_TABLE(of, lpc18xx_serial_match);
+ 
+ static struct platform_driver lpc18xx_serial_driver = {
+ 	.probe  = lpc18xx_serial_probe,
+-	.remove = lpc18xx_serial_remove,
+ 	.driver = {
+ 		.name = "lpc18xx-uart",
+ 		.of_match_table = lpc18xx_serial_match,
+ 	},
+ };
+-module_platform_driver(lpc18xx_serial_driver);
++builtin_platform_driver(lpc18xx_serial_driver);
+ 
++/*
+ MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
+ MODULE_DESCRIPTION("Serial port driver NXP LPC18xx/43xx devices");
+ MODULE_LICENSE("GPL v2");
++*/
+-- 
+2.5.0
