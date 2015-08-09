@@ -1,82 +1,89 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH v5 05/11] drivers: PL011: refactor pl011_probe()
-Date: Sat, 8 Aug 2015 17:59:00 -0700
-Message-ID: <CAOZdJXVgRQZhEfYY9YdpiQ=n1D56yYL84s42V4hd2=YX2k48ZA@mail.gmail.com>
-References: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
- <1432225584-4655-6-git-send-email-andre.przywara@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1432225584-4655-6-git-send-email-andre.przywara@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, G Gregory <graeme.gregory@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <moorray3@wp.pl>, GregKH <gregkh@linuxfoundation.org>, nareshgbhat@gmail.com, mlangsdo@redhat.com, linux-serial@vger.kernel.org, rmk+kernel@arm.linux.org.uk, Jiri Slaby <jslaby@suse.cz>, dave.martin@arm.com, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Eduardo Valentin <edubezval@gmail.com>
+Subject: [PATCH 1/8] serial: imx: remove unbalanced clk_prepare
+Date: Sun,  9 Aug 2015 11:19:02 -0700
+Message-ID: <1439144349-10494-2-git-send-email-edubezval@gmail.com>
+References: <1439144349-10494-1-git-send-email-edubezval@gmail.com>
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <1439144349-10494-1-git-send-email-edubezval@gmail.com>
+Sender: linux-pm-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Stevam <festevam@gmail.com>
+Cc: Linux PM <linux-pm@vger.kernel.org>, Eduardo Valentin <edubezval@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 21, 2015 at 9:26 AM, Andre Przywara <andre.przywara@arm.com> wrote:
-> +static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
-> +{
-> +       struct uart_amba_port *uap;
-> +       struct vendor_data *vendor = id->data;
-> +       int portnr, ret;
-> +
-> +       portnr = pl011_find_free_port();
-> +       if (portnr < 0)
-> +               return portnr;
-> +
-> +       uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
-> +                          GFP_KERNEL);
-> +       if (!uap)
-> +               return -ENOMEM;
-> +
-> +       uap->clk = devm_clk_get(&dev->dev, NULL);
-> +       if (IS_ERR(uap->clk))
-> +               return PTR_ERR(uap->clk);
-> +
-> +       = vendor;
+The current code attempts to prepare clk_per and clk_ipg
+before using the device. However, the result is an extra
+prepare call on each clock. Here is the output of uart
+clocks (only uart enabled and used as console):
 
-I'm having trouble with this.  Specifically, I can't get SBSA early
-console to work, because uap->vendor is uninitialized when
-pl011_early_write() is called.
+$  grep uart /sys/kernel/debug/clk/clk_summary
+ uart_serial           1            2    80000000          0 0
+       uart           1            2    66000000          0 0
 
-I don't have a non-SBSA system to test, but looking at the code, I'm
-not sure how early console is supposed to work any more.  In both SBSA
-and non-SBSA cases, uap->vendor is not initialized until the probe
-function is called.  Isn't that too late?  I thought early console was
-supposed to be running before the driver is probed.
+This patch balances the calls of prepares. The result is:
 
-If I make this change, then early console works on SBSA systems (with
-earlycon=pl011,<address>).  But of course, this only works for SBSA
-and breaks regular PL011.
+$  grep uart /sys/kernel/debug/clk/clk_summary
+ uart_serial           1            1    80000000          0 0
+       uart           1            1    66000000          0 0
 
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2326,9 +2326,15 @@ static void pl011_early_write(struct console *con, const
- static int __init pl011_early_console_setup(struct earlycon_device *device,
-                                            const char *opt)
- {
-+       struct uart_amba_port *uap =
-+           container_of(&device->port, struct uart_amba_port, port);
-+
-        if (!device->port.membase)
-                return -ENODEV;
-+       if (!uap->vendor)
-+               uap->vendor = &vendor_sbsa;
-+
-        device->con->write = pl011_early_write;
-        return 0;
+Cc: Fabio Stevam <festevam@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-pm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
+---
+ drivers/tty/serial/imx.c | 20 ++++++--------------
+ 1 file changed, 6 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 54fdc78..b53455d 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1624,12 +1624,12 @@ imx_console_write(struct console *co, const char *s, unsigned int count)
+ 	int locked = 1;
+ 	int retval;
+ 
+-	retval = clk_enable(sport->clk_per);
++	retval = clk_prepare_enable(sport->clk_per);
+ 	if (retval)
+ 		return;
+-	retval = clk_enable(sport->clk_ipg);
++	retval = clk_prepare_enable(sport->clk_ipg);
+ 	if (retval) {
+-		clk_disable(sport->clk_per);
++		clk_disable_unprepare(sport->clk_per);
+ 		return;
+ 	}
+ 
+@@ -1668,8 +1668,8 @@ imx_console_write(struct console *co, const char *s, unsigned int count)
+ 	if (locked)
+ 		spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+-	clk_disable(sport->clk_ipg);
+-	clk_disable(sport->clk_per);
++	clk_disable_unprepare(sport->clk_ipg);
++	clk_disable_unprepare(sport->clk_per);
  }
-
+ 
+ /*
+@@ -1770,15 +1770,7 @@ imx_console_setup(struct console *co, char *options)
+ 
+ 	retval = uart_set_options(&sport->port, co, baud, parity, bits, flow);
+ 
+-	clk_disable(sport->clk_ipg);
+-	if (retval) {
+-		clk_unprepare(sport->clk_ipg);
+-		goto error_console;
+-	}
+-
+-	retval = clk_prepare(sport->clk_per);
+-	if (retval)
+-		clk_disable_unprepare(sport->clk_ipg);
++	clk_disable_unprepare(sport->clk_ipg);
+ 
+ error_console:
+ 	return retval;
 -- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project.
+2.5.0
+
