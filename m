@@ -1,44 +1,31 @@
-From: =?UTF-8?Q?Janusz_U=c5=bcycki?= <j.uzycki@elpromaelectronics.com>
-Subject: Re: [PATCH RFC] serial: mxs-auart: fix baud rate range
-Date: Mon, 10 Aug 2015 19:01:27 +0200
-Message-ID: <55C8D8E7.9090103@elpromaelectronics.com>
-References: <1439208767-29152-1-git-send-email-stefan.wahren@i2se.com>
- <CAOMZO5CscLv+v=8QA-zchR3EeNogpwGRRARJo8qPROLwcBXTUg@mail.gmail.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 1/3] tty: serial: 8250_omap: do not use RX DMA if pause
+ is not supported
+Date: Mon, 10 Aug 2015 18:15:45 +0100
+Message-ID: <20150810171545.GC7576@n2100.arm.linux.org.uk>
+References: <1438977619-15488-1-git-send-email-bigeasy@linutronix.de>
+ <1438977619-15488-2-git-send-email-bigeasy@linutronix.de>
+ <55C890E2.50208@ti.com>
+ <55C8A06D.20309@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5CscLv+v=8QA-zchR3EeNogpwGRRARJo8qPROLwcBXTUg@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <55C8A06D.20309@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>, Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Janusz Uzycki <j.uzycki@elproma.com.pl>, Fabio Estevam <fabio.estevam@freescale.com>, Juergen Beisert <jbe@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Aug 10, 2015 at 09:00:29AM -0400, Peter Hurley wrote:
+> Russell seemed to think that the current dma operation was necessary information to
+> differentiate types of pause support, but I don't think that's required.
+> As Sebastian's omap-dma driver patch shows, partial pause support has more
+> to do with how it's being used.
 
+Do you think you can rewrite the first sentence above in gramatically
+correct English please, I'm failing to understand what you're saying.
 
-W dniu 2015-08-10 o 14:22, Fabio Estevam pisze:
-> On Mon, Aug 10, 2015 at 9:12 AM, Stefan Wahren <stefan.wahren@i2se.com> wrote:
->
->>          /* set baud rate */
->> -       baud = uart_get_baud_rate(u, termios, old, 0, u->uartclk);
->> +       baud_min = u->uartclk * 32 / 0x3fffc0;
->> +       baud_max = u->uartclk * 32 / 0xec;
->> +       baud = uart_get_baud_rate(u, termios, old, baud_min, baud_max);
-> Looks good. It would be nice to replace 0x3fffc0 and 0xec with defines though.
-
-I agree with Fabio.
-
-In addition let's look at the example for uartclk = 24MHz:
-baud_max = 3,254,237.29 => will be rounded down to 3,254,237bauds and it 
-is OK
-baud_min = 183.1 => will be rounded to 183 bauds. To avoid div=0x400971 
-it should be 184
-so DIV_ROUND_UP() macro could be used.
-
-best regards
-Janusz
-
->
-> Regards,
->
-> Fabio Estevam
+-- 
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
