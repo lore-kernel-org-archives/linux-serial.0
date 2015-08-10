@@ -1,37 +1,42 @@
-From: Joachim Eastwood <manabian@gmail.com>
-Subject: Re: [PATCH 5/5] drivers/tty: make serial 8250_lpc18xx.c explicitly non-modular
-Date: Mon, 10 Aug 2015 20:42:16 +0200
-Message-ID: <CAGhQ9Vxjymt4z32s3x2B8b6ypgn3Bzh1ncbqxqidfPyM2k87jw@mail.gmail.com>
-References: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
-	<1439081497-14986-6-git-send-email-paul.gortmaker@windriver.com>
+From: Noam Camus <noamc@ezchip.com>
+Subject: RE: [v2 1/3] serial: 8250_dw: Add support for big-endian MMIO
+ accesses
+Date: Mon, 10 Aug 2015 19:08:44 +0000
+Message-ID: <DB4PR02MB2726A3A761927DBF6A53B7BD6700@DB4PR02MB272.eurprd02.prod.outlook.com>
+References: <1437557699-25722-1-git-send-email-noamc@ezchip.com>
+ <1437886478-29273-1-git-send-email-noamc@ezchip.com>
+ <1437886478-29273-2-git-send-email-noamc@ezchip.com>
+ <20150803234326.GB5257@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439081497-14986-6-git-send-email-paul.gortmaker@windriver.com>
+In-Reply-To: <20150803234326.GB5257@kroah.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Greg KH <greg@kroah.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Paul,
+From: Greg KH [mailto:greg@kroah.com] 
+Sent: Tuesday, August 04, 2015 2:43 AM
 
-On 9 August 2015 at 02:51, Paul Gortmaker <paul.gortmaker@windriver.com> wrote:
-> The Kconfig currently controlling compilation of this code is:
->
-> 8250/Kconfig:config SERIAL_8250_LPC18XX
-> 8250/Kconfig:        bool "NXP LPC18xx/43xx serial port support"
->
-> ...meaning that it currently is not being built as a module by anyone.
->
-> Lets remove the modular code that is essentially orphaned, so that
-> when reading the driver there is no doubt it is builtin-only.
+> > -	writel(value, p->membase + (offset << p->regshift));
 
-The bool in KConfig is more or less a copy-paste mistake on my side. I
-really meant for this driver to be buildable as module and it builds
-just fine with 'm'.
+> Why drop this write?
+This was not dropped, it is now part of dw8250_serial_out32().
+Now it is called before updating last_mcr.
 
-Want me send a patch changing it to tristate or will you handle it?
+> > -			writel(value, p->membase + (UART_LCR << p->regshift));
+> > +			if (p->iotype == UPIO_MEM32BE)
+> > +				iowrite32be(value,
+> > +					p->membase + (UART_LCR << p->regshift));
+> > +			else
+> > +				writel(value,
+> > +					p->membase + (UART_LCR << p->regshift));
 
+> Shouldn't this be hidden behind some other type of accessor?  Why is this one writel() "special"?
 
-regards,
-Joachim Eastwood
+I will add inner level accessors into "struct dw8250_data" for in32/out32. new accessors will be used in few places in this driver that still uses writel/readl without considering iotype.
+
+Noam
