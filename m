@@ -1,50 +1,24 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH RFC] serial: mxs-auart: fix baud rate range
-Date: Mon, 10 Aug 2015 12:12:47 +0000
-Message-ID: <1439208767-29152-1-git-send-email-stefan.wahren@i2se.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH 5/8] serial: imx: save and restore context in the suspend path
+Date: Mon, 10 Aug 2015 09:17:55 -0300
+Message-ID: <CAOMZO5BZ+g=+yGXwRewYyiFfdpKxjD4tpLAB148-gv9HT=OyuQ@mail.gmail.com>
+References: <1439144349-10494-1-git-send-email-edubezval@gmail.com>
+	<1439144349-10494-6-git-send-email-edubezval@gmail.com>
+	<CAOMZO5D18DCBXYLA8Z36ZY3wezzS9Nh64d0KWZ==zcFMHaBpsA@mail.gmail.com>
+	<20150810040404.GA5943@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20150810040404.GA5943@localhost.localdomain>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Janusz Uzycki <j.uzycki@elproma.com.pl>, Fabio Estevam <fabio.estevam@freescale.com>, jbe@pengutronix.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
+To: Eduardo Valentin <edubezval@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linux PM <linux-pm@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Shenwei Wang <shenwei.wang@freescale.com>
 List-Id: linux-serial@vger.kernel.org
 
-Currently mxs-auart doesn't care correctly about the baud rate divisor.
-According to reference manual the baud rate divisor must be between
-0x000000EC and 0x003FFFC0. So calculate the possible baud rate range
-and use it for uart_get_baud_rate().
+On Mon, Aug 10, 2015 at 1:04 AM, Eduardo Valentin <edubezval@gmail.com> wrote:
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- drivers/tty/serial/mxs-auart.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+> OK. Do you know what is the status of that patch set?
+>
+> did it get accepted by any tree so far?
 
-Here is a userspace application to test the new baud rate range:
-
-https://gist.github.com/lategoodbye/f2d76134aa6c404cd92c
-
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 13cf773..afe617c 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -659,7 +659,7 @@ static void mxs_auart_settermios(struct uart_port *u,
- {
- 	struct mxs_auart_port *s = to_auart_port(u);
- 	u32 bm, ctrl, ctrl2, div;
--	unsigned int cflag, baud;
-+	unsigned int cflag, baud, baud_min, baud_max;
- 
- 	cflag = termios->c_cflag;
- 
-@@ -752,7 +752,9 @@ static void mxs_auart_settermios(struct uart_port *u,
- 	}
- 
- 	/* set baud rate */
--	baud = uart_get_baud_rate(u, termios, old, 0, u->uartclk);
-+	baud_min = u->uartclk * 32 / 0x3fffc0;
-+	baud_max = u->uartclk * 32 / 0xec;
-+	baud = uart_get_baud_rate(u, termios, old, baud_min, baud_max);
- 	div = u->uartclk * 32 / baud;
- 	ctrl |= AUART_LINECTRL_BAUD_DIVFRAC(div & 0x3F);
- 	ctrl |= AUART_LINECTRL_BAUD_DIVINT(div >> 6);
--- 
-1.7.9.5
+It is in linux-next.
