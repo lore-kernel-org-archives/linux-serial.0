@@ -1,78 +1,93 @@
-From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Subject: [PATCH v3] serial: 8250: Fix autoconfig_irq() to avoid race
- conditions
-Date: Mon, 10 Aug 2015 00:15:40 +0000
-Message-ID: <1439165707-2082-1-git-send-email-t-kageyama@cp.jp.nec.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH 5/8] serial: imx: save and restore context in the suspend path
+Date: Mon, 10 Aug 2015 00:30:18 -0300
+Message-ID: <CAOMZO5D18DCBXYLA8Z36ZY3wezzS9Nh64d0KWZ==zcFMHaBpsA@mail.gmail.com>
+References: <1439144349-10494-1-git-send-email-edubezval@gmail.com>
+	<1439144349-10494-6-git-send-email-edubezval@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: ja-JP
-Sender: linux-kernel-owner@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>
-Cc: Taichi Kageyama <t-kageyama@cp.jp.nec.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <1439144349-10494-6-git-send-email-edubezval@gmail.com>
+Sender: linux-pm-owner@vger.kernel.org
+To: Eduardo Valentin <edubezval@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linux PM <linux-pm@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Shenwei Wang <shenwei.wang@freescale.com>
 List-Id: linux-serial@vger.kernel.org
 
-The following race conditions can happen when a serial port is used
-as console.
+Hi Eduardo,
 
-Case1: CPU_B is used to detect an interrupt from a serial port,
-       but it can have interrupts disabled during the waiting time.
-Case2: CPU_B clears UART_IER just after CPU_A sets UART_IER and then
-       a serial port may not make an interrupt.
-Case3: CPU_A sets UART_IER just after CPU_B clears UART_IER.
-       This is an unexpected behavior for serial8250_console_write().
+On Sun, Aug 9, 2015 at 3:19 PM, Eduardo Valentin <edubezval@gmail.com> wrote:
+> This change teaches the imx serial driver to save its
+> context and restore it across suspend and resume path.
+> To do so, it introduces serial_imx_restore_context()
+> and serial_imx_save_context() functions. They use
+> a shadow set of registers to save key registers
+> and restore them accordingly. These functions can
+> be reused on other situations, when the device
+> context is lost.
+>
+> Cc: Fabio Stevam <festevam@gmail.com>
 
-CPU_A [autoconfig_irq]      |  CPU_B [serial8250_console_write]
-----------------------------|---------------------------------------
-                            |
-probe_irq_on()              |  spin_lock_irqsave(&port->lock,)
-serial_outp(,UART_IER,0x0f) |  serial_out(,UART_IER,0)
-udelay(20);                 |  uart_console_write()
-probe_irq_off()             |
-                            |  spin_unlock_irqrestore(&port->lock,)
+s/Stevam/Estevam (applies to all the patches)
 
-Case1 and 2 can make autoconfig_irq() failed.
-In these cases, the console doesn't work in interrupt mode and
-"input overrun" (which can make operation mistakes) can happen
-on some systems. Especially in the Case1, It is known that the
-problem happens with high rate every boot once it occurs
-because the boot sequence is always almost same.
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
+> ---
+>  drivers/tty/serial/imx.c | 34 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+>
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index a03855d..494b182 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -217,6 +217,8 @@ struct imx_port {
+>         unsigned int            tx_bytes;
+>         unsigned int            dma_tx_nents;
+>         wait_queue_head_t       dma_wait;
+> +       unsigned int            saved_reg[8];
+> +       bool                    context_saved;
+>  };
+>
+>  struct imx_port_ucrs {
+> @@ -1803,6 +1805,36 @@ static struct uart_driver imx_reg = {
+>         .cons           = IMX_CONSOLE,
+>  };
+>
+> +static void serial_imx_restore_context(struct imx_port *sport)
+> +{
+> +       if (!sport->context_saved)
+> +               return;
+> +
+> +       writel(sport->saved_reg[4], sport->port.membase + UFCR);
+> +       writel(sport->saved_reg[5], sport->port.membase + UBIR);
+> +       writel(sport->saved_reg[6], sport->port.membase + UBMR);
+> +       writel(sport->saved_reg[7], sport->port.membase + IMX21_UTS);
+> +       writel(sport->saved_reg[0], sport->port.membase + UCR1);
+> +       writel(sport->saved_reg[1] | 0x1, sport->port.membase + UCR2);
+> +       writel(sport->saved_reg[2], sport->port.membase + UCR3);
+> +       writel(sport->saved_reg[3], sport->port.membase + UCR4);
+> +       sport->context_saved = false;
+> +}
+> +
+> +static void serial_imx_save_context(struct imx_port *sport)
+> +{
+> +       /* Save necessary regs */
+> +       sport->saved_reg[0] = readl(sport->port.membase + UCR1);
+> +       sport->saved_reg[1] = readl(sport->port.membase + UCR2);
+> +       sport->saved_reg[2] = readl(sport->port.membase + UCR3);
+> +       sport->saved_reg[3] = readl(sport->port.membase + UCR4);
+> +       sport->saved_reg[4] = readl(sport->port.membase + UFCR);
+> +       sport->saved_reg[5] = readl(sport->port.membase + UBIR);
+> +       sport->saved_reg[6] = readl(sport->port.membase + UBMR);
+> +       sport->saved_reg[7] = readl(sport->port.membase + IMX21_UTS);
+> +       sport->context_saved = true;
+> +}
 
-port mutex makes sure that the autoconfig operation is exclusive of
-any other concurrent HW access except by the console operation.
-console lock is required in autoconfig_irq().
+This seems to be similar to what Shenwei posted earlier:
+http://lists.infradead.org/pipermail/linux-arm-kernel/2015-July/360841.html
 
-Signed-off-by: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/8250/8250_core.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Regards,
 
-diff --git v4.2-rc4.org/drivers/tty/serial/8250/8250_core.c v4.2-rc4.work/drivers/tty/serial/8250/8250_core.c
-index 37fff12..ed1e23e 100644
---- v4.2-rc4.org/drivers/tty/serial/8250/8250_core.c
-+++ v4.2-rc4.work/drivers/tty/serial/8250/8250_core.c
-@@ -1303,6 +1303,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 		inb_p(ICP);
- 	}
- 
-+	if (uart_console(port))
-+		console_lock();
-+
- 	/* forget possible initially masked and pending IRQ */
- 	probe_irq_off(probe_irq_on());
- 	save_mcr = serial_in(up, UART_MCR);
-@@ -1334,6 +1337,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	if (port->flags & UPF_FOURPORT)
- 		outb_p(save_ICP, ICP);
- 
-+	if (uart_console(port))
-+		console_unlock();
-+
- 	port->irq = (irq > 0) ? irq : 0;
- }
- 
--- 
-2.4.6
+Fabio Estevam
