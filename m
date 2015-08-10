@@ -1,31 +1,37 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 1/3] tty: serial: 8250_omap: do not use RX DMA if pause
- is not supported
-Date: Mon, 10 Aug 2015 18:15:45 +0100
-Message-ID: <20150810171545.GC7576@n2100.arm.linux.org.uk>
-References: <1438977619-15488-1-git-send-email-bigeasy@linutronix.de>
- <1438977619-15488-2-git-send-email-bigeasy@linutronix.de>
- <55C890E2.50208@ti.com>
- <55C8A06D.20309@hurleysoftware.com>
+From: Joachim Eastwood <manabian@gmail.com>
+Subject: Re: [PATCH 5/5] drivers/tty: make serial 8250_lpc18xx.c explicitly non-modular
+Date: Mon, 10 Aug 2015 20:42:16 +0200
+Message-ID: <CAGhQ9Vxjymt4z32s3x2B8b6ypgn3Bzh1ncbqxqidfPyM2k87jw@mail.gmail.com>
+References: <1439081497-14986-1-git-send-email-paul.gortmaker@windriver.com>
+	<1439081497-14986-6-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55C8A06D.20309@hurleysoftware.com>
+In-Reply-To: <1439081497-14986-6-git-send-email-paul.gortmaker@windriver.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Aug 10, 2015 at 09:00:29AM -0400, Peter Hurley wrote:
-> Russell seemed to think that the current dma operation was necessary information to
-> differentiate types of pause support, but I don't think that's required.
-> As Sebastian's omap-dma driver patch shows, partial pause support has more
-> to do with how it's being used.
+Hi Paul,
 
-Do you think you can rewrite the first sentence above in gramatically
-correct English please, I'm failing to understand what you're saying.
+On 9 August 2015 at 02:51, Paul Gortmaker <paul.gortmaker@windriver.com> wrote:
+> The Kconfig currently controlling compilation of this code is:
+>
+> 8250/Kconfig:config SERIAL_8250_LPC18XX
+> 8250/Kconfig:        bool "NXP LPC18xx/43xx serial port support"
+>
+> ...meaning that it currently is not being built as a module by anyone.
+>
+> Lets remove the modular code that is essentially orphaned, so that
+> when reading the driver there is no doubt it is builtin-only.
 
--- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
+The bool in KConfig is more or less a copy-paste mistake on my side. I
+really meant for this driver to be buildable as module and it builds
+just fine with 'm'.
+
+Want me send a patch changing it to tristate or will you handle it?
+
+
+regards,
+Joachim Eastwood
