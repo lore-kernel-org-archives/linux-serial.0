@@ -1,25 +1,122 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH] serial: mxs-auart: fix baud rate range
-Date: Tue, 11 Aug 2015 09:42:05 -0300
-Message-ID: <CAOMZO5A22528bp57G4RJbb3__mMXEEaiiHa+oUrZskuLRWqZDw@mail.gmail.com>
-References: <1439293561-7994-1-git-send-email-stefan.wahren@i2se.com>
+From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Subject: Re: [PATCH v3 3/3] dma: omap-dma: add support for pause of non-cyclic
+ transfers
+Date: Tue, 11 Aug 2015 15:43:19 +0300
+Message-ID: <55C9EDE7.9060909@ti.com>
+References: <1438977619-15488-1-git-send-email-bigeasy@linutronix.de>
+ <1438977619-15488-4-git-send-email-bigeasy@linutronix.de>
+ <55C9E464.2060404@ti.com> <20150811123057.GE7576@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439293561-7994-1-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <20150811123057.GE7576@n2100.arm.linux.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, =?UTF-8?Q?Janusz_U=C5=BCycki?= <j.uzycki@elpromaelectronics.com>, Fabio Estevam <fabio.estevam@freescale.com>, Juergen Beisert <jbe@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vinod Koul <vinod.koul@intel.com>, peter@hurleysoftware.com, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Aug 11, 2015 at 8:46 AM, Stefan Wahren <stefan.wahren@i2se.com> wrote:
-> Currently mxs-auart doesn't care correctly about the baud rate divisor.
-> According to reference manual the baud rate divisor must be between
-> 0x000000EC and 0x003FFFC0. So calculate the possible baud rate range
-> and use it for uart_get_baud_rate().
->
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+On 08/11/2015 03:30 PM, Russell King - ARM Linux wrote:
+> On Tue, Aug 11, 2015 at 03:02:44PM +0300, Peter Ujfalusi wrote:
+>> On 08/07/2015 11:00 PM, Sebastian Andrzej Siewior wrote:
+>>> +	/*
+>>> +	 * We do not allow DMA_MEM_TO_DEV transfers to be paused.
+>>> +	 * From the AM572x TRM, 16.1.4.18 Disabling a Channel During Tran=
+sfer:
+>>> +	 * "When a channel is disabled during a transfer, the channel und=
+ergoes
+>>> +	 * an abort, unless it is hardware-source-synchronized =E2=80=A6"=
+=2E
+>>> +	 * A source-synchronised channel is one where the fetching of dat=
+a is
+>>> +	 * under control of the device. In other words, a device-to-memor=
+y
+>>> +	 * transfer. So, a destination-synchronised channel (which would =
+be a
+>>> +	 * memory-to-device transfer) undergoes an abort if the the CCR_E=
+NABLE
+>>> +	 * bit is cleared.
+>>> +	 * From 16.1.4.20.4.6.2 Abort: "If an abort trigger occurs, the c=
+hannel
+>>> +	 * aborts immediately after completion of current read/write
+>>> +	 * transactions and then the FIFO is cleaned up." The term "clean=
+ed up"
+>>> +	 * is not defined. TI recommends to check that RD_ACTIVE and WR_A=
+CTIVE
+>>> +	 * are both clear _before_ disabling the channel, otherwise data =
+loss
+>>> +	 * will occur.
+>>> +	 * The problem is that if the channel is active, then device acti=
+vity
+>>> +	 * can result in DMA activity starting between reading those as b=
+oth
+>>> +	 * clear and the write to DMA_CCR to clear the enable bit hitting=
+ the
+>>> +	 * hardware. If the DMA hardware can't drain the data in its FIFO=
+ to the
+>>> +	 * destination, then data loss "might" occur (say if we write to =
+an UART
+>>> +	 * and the UART is not accepting any further data).
+>>
+>> I don't know if you have checked it, but probably the TX DMA could b=
+e also
+>> used when the PRZEFETCH is disabled for the channel? Just a guess
+>=20
+> The docs aren't very clear on that... and iirc Santosh's reply didn't
+> suggest that the prefetch bit had any influence on this behaviour.  G=
+iven
+> the wording in the documentation which seems to be quite explicit abo=
+ut
+> the conditions, and it omits talking about the prefetch bit, I can on=
+ly
+> assume that the prefetch bit has no influence over this behaviour.
+>=20
+> For example, what happens if the DMA to the device has started - the
+> device has raised its DMA request line.  The DMA controller has then =
+gone
+> to memory and has fetched some data and incremented the source addres=
+s.
+> Meanwhile, we've cleared the ENABLE bit.  What happens then?  Does th=
+e
+> DMA controller drain the read data to the device, or does it "clean u=
+p"
+> the FIFO by discarding the data?
 
-Reviewed-by: Fabio Estevam <fabio.estevam@freescale.com>
+Hrm, yes. If we do not have prefetch and the destination is using FIFO =
+- so
+DMA pushes multiple elemets per DMA request this might be the case. But=
+ I
+think - nothing backs this up - if the transfer is element syncronized =
+than we
+would not loose data if the prefetch is not enabled. If we have prefetc=
+h then
+the DMA is prefetching data to it's FIFO and an abort will just send th=
+e
+content of the FIFO to /dev/null (or something).
 
-Thanks
+> Given that the conditions under which the FIFO is drained to the
+> destination are very specific, and which explicitly excludes destinat=
+ion-
+> synchronised transfers, the only conclusion that's possible without
+> knowing the implementation intimately is that the FIFO is "cleaned up=
+"
+> which suggests that it's discarded rather than drained to the destina=
+tion.
+
+Yes, the wording is not explicit and this is also my take on the issue =
+- the
+content of the FIFO is just dropped after it finished the ongoing eleme=
+nt.
+
+> As this DMA controller is in all of the OMAP devices and similar, I
+> don't think we can rely on the behaviour of any one implementation
+> either - we don't know what the differences are between the
+> implementations in different generations of devices without TI provid=
+ing
+> more detailed documentation in this area across their various devices=
+=2E
+
+Yep. Let me try to get more information if I can.
+
+--=20
+P=C3=A9ter
