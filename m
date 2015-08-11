@@ -1,23 +1,18 @@
 From: Eduardo Valentin <edubezval@gmail.com>
-Subject: [PATCHv2 4/8] serial: imx: save and restore context in the suspend path
-Date: Mon, 10 Aug 2015 18:35:45 -0700
-Message-ID: <1439256949-626-5-git-send-email-edubezval@gmail.com>
+Subject: [PATCHv2 5/8] serial: imx: add a flag to indicate we are in the suspend path
+Date: Mon, 10 Aug 2015 18:35:46 -0700
+Message-ID: <1439256949-626-6-git-send-email-edubezval@gmail.com>
 References: <1439256949-626-1-git-send-email-edubezval@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pm-owner@vger.kernel.org>
 In-Reply-To: <1439256949-626-1-git-send-email-edubezval@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-pm-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Estevam <festevam@gmail.com>
 Cc: Sascha Hauer <s.hauer@pengutronix.de>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Eduardo Valentin <edubezval@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This change teaches the imx serial driver to save its
-context and restore it across suspend and resume path.
-To do so, it introduces serial_imx_restore_context()
-and serial_imx_save_context() functions. They use
-a shadow set of registers to save key registers
-and restore them accordingly. These functions can
-be reused on other situations, when the device
-context is lost.
+This is a simple flag that gets set across prepare and complete
+callbacks in the suspend path. We the flag we may avoid
+runtime pm idling at the same time.
 
 Cc: Fabio Estevam <festevam@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -26,98 +21,54 @@ Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
 ---
- drivers/tty/serial/imx.c | 58 ++++++++++++++++++++++++++++++------------------
- 1 file changed, 37 insertions(+), 21 deletions(-)
+ drivers/tty/serial/imx.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 167dea1..fe3d41c 100644
+index fe3d41c..50abb60 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -217,6 +217,7 @@ struct imx_port {
- 	unsigned int		dma_tx_nents;
+@@ -218,6 +218,8 @@ struct imx_port {
  	wait_queue_head_t	dma_wait;
  	unsigned int            saved_reg[10];
-+	bool			context_saved;
+ 	bool			context_saved;
++
++	bool			is_suspending;
  };
  
  struct imx_port_ucrs {
-@@ -1972,6 +1973,40 @@ static int serial_imx_remove(struct platform_device *pdev)
- 	return uart_remove_one_port(&imx_reg, &sport->port);
+@@ -2026,6 +2028,22 @@ static void serial_imx_enable_wakeup(struct imx_port *sport, bool on)
+ 	writel(val, sport->port.membase + UCR1);
  }
  
-+static void serial_imx_restore_context(struct imx_port *sport)
++static int serial_imx_prepare(struct device *dev)
 +{
-+	if (!sport->context_saved)
-+		return;
++	struct imx_port *sport = dev_get_drvdata(dev);
 +
-+	writel(sport->saved_reg[4], sport->port.membase + UFCR);
-+	writel(sport->saved_reg[5], sport->port.membase + UESC);
-+	writel(sport->saved_reg[6], sport->port.membase + UTIM);
-+	writel(sport->saved_reg[7], sport->port.membase + UBIR);
-+	writel(sport->saved_reg[8], sport->port.membase + UBMR);
-+	writel(sport->saved_reg[9], sport->port.membase + IMX21_UTS);
-+	writel(sport->saved_reg[0], sport->port.membase + UCR1);
-+	writel(sport->saved_reg[1] | UCR2_SRST, sport->port.membase + UCR2);
-+	writel(sport->saved_reg[2], sport->port.membase + UCR3);
-+	writel(sport->saved_reg[3], sport->port.membase + UCR4);
-+	sport->context_saved = false;
++	sport->is_suspending = true;
++
++	return 0;
 +}
 +
-+static void serial_imx_save_context(struct imx_port *sport)
++static void serial_imx_complete(struct device *dev)
 +{
-+	/* Save necessary regs */
-+	sport->saved_reg[0] = readl(sport->port.membase + UCR1);
-+	sport->saved_reg[1] = readl(sport->port.membase + UCR2);
-+	sport->saved_reg[2] = readl(sport->port.membase + UCR3);
-+	sport->saved_reg[3] = readl(sport->port.membase + UCR4);
-+	sport->saved_reg[4] = readl(sport->port.membase + UFCR);
-+	sport->saved_reg[5] = readl(sport->port.membase + UESC);
-+	sport->saved_reg[6] = readl(sport->port.membase + UTIM);
-+	sport->saved_reg[7] = readl(sport->port.membase + UBIR);
-+	sport->saved_reg[8] = readl(sport->port.membase + UBMR);
-+	sport->saved_reg[9] = readl(sport->port.membase + IMX21_UTS);
-+	sport->context_saved = true;
++	struct imx_port *sport = dev_get_drvdata(dev);
++
++	sport->is_suspending = false;
 +}
 +
- static void serial_imx_enable_wakeup(struct imx_port *sport, bool on)
+ static int imx_serial_port_suspend_noirq(struct device *dev)
  {
- 	unsigned int val;
-@@ -2001,17 +2036,7 @@ static int imx_serial_port_suspend_noirq(struct device *dev)
- 	if (ret)
- 		return ret;
+ 	struct platform_device *pdev = to_platform_device(dev);
+@@ -2091,6 +2109,8 @@ static const struct dev_pm_ops imx_serial_port_pm_ops = {
+ 	.resume_noirq = imx_serial_port_resume_noirq,
+ 	.suspend = imx_serial_port_suspend,
+ 	.resume = imx_serial_port_resume,
++	.prepare = serial_imx_prepare,
++	.complete = serial_imx_complete,
+ };
  
--	/* Save necessary regs */
--	sport->saved_reg[0] = readl(sport->port.membase + UCR1);
--	sport->saved_reg[1] = readl(sport->port.membase + UCR2);
--	sport->saved_reg[2] = readl(sport->port.membase + UCR3);
--	sport->saved_reg[3] = readl(sport->port.membase + UCR4);
--	sport->saved_reg[4] = readl(sport->port.membase + UFCR);
--	sport->saved_reg[5] = readl(sport->port.membase + UESC);
--	sport->saved_reg[6] = readl(sport->port.membase + UTIM);
--	sport->saved_reg[7] = readl(sport->port.membase + UBIR);
--	sport->saved_reg[8] = readl(sport->port.membase + UBMR);
--	sport->saved_reg[9] = readl(sport->port.membase + IMX21_UTS);
-+	serial_imx_save_context(sport);
- 
- 	clk_disable(sport->clk_ipg);
- 
-@@ -2028,16 +2053,7 @@ static int imx_serial_port_resume_noirq(struct device *dev)
- 	if (ret)
- 		return ret;
- 
--	writel(sport->saved_reg[4], sport->port.membase + UFCR);
--	writel(sport->saved_reg[5], sport->port.membase + UESC);
--	writel(sport->saved_reg[6], sport->port.membase + UTIM);
--	writel(sport->saved_reg[7], sport->port.membase + UBIR);
--	writel(sport->saved_reg[8], sport->port.membase + UBMR);
--	writel(sport->saved_reg[9], sport->port.membase + IMX21_UTS);
--	writel(sport->saved_reg[0], sport->port.membase + UCR1);
--	writel(sport->saved_reg[1] | UCR2_SRST, sport->port.membase + UCR2);
--	writel(sport->saved_reg[2], sport->port.membase + UCR3);
--	writel(sport->saved_reg[3], sport->port.membase + UCR4);
-+	serial_imx_restore_context(sport);
- 
- 	clk_disable(sport->clk_ipg);
- 
+ static struct platform_driver serial_imx_driver = {
 -- 
 2.5.0
+
