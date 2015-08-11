@@ -1,47 +1,62 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 2/3] dma: add __must_check annotation for dmaengine_pause()
-Date: Tue, 11 Aug 2015 14:34:29 +0200
-Message-ID: <55C9EBD5.3090203@linutronix.de>
-References: <1438977619-15488-1-git-send-email-bigeasy@linutronix.de> <1438977619-15488-3-git-send-email-bigeasy@linutronix.de> <20150811095852.GW11789@localhost> <20150811100617.GD7576@n2100.arm.linux.org.uk>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: earlycon issues in -next with amba-pl011 updates
+Date: Tue, 11 Aug 2015 13:40:43 +0100
+Message-ID: <20150811124043.GZ7557@n2100.arm.linux.org.uk>
+References: <20150810232312.GB10728@bivouac.eciton.net>
+ <55C94247.8020701@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150811100617.GD7576@n2100.arm.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Vinod Koul <vinod.koul@intel.com>
-Cc: peter@hurleysoftware.com, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Peter Ujfalusi <peter.ujfalusi@ti.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <55C94247.8020701@hurleysoftware.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: jun.nie@linaro.org, tyler.baker@linaro.org, linux-arm-kernel@lists.infradead.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 08/11/2015 12:06 PM, Russell King - ARM Linux wrote:
-> I think what people need to learn is that an API in the kernel which
-> returns an int _can_ fail - it returns an int so it _can_ return an
-> error code.  If it _can_ return an error code, there _will_ be
-> implementations which _do_.
-> 
-> If you don't check the return code, either your code doesn't care whether
-> the function was successful or not, or you're playing with fire.  This is
-> a prime example of playing with fire.
-> 
-> Let's leave the crappy userspace laziness with regard to error checking
-> to userspace, and keep it out of the kernel.
-> 
-> Yes, the DMA engine capabilities may not be sufficient to describe every
-> detail of DMA engines, but that's absolutely no reason to skimp on error
-> checking.  Had there been some kind of error checking at the site, this
-> problem would have been spotted before the 8250-omap driver was merged.
+On Mon, Aug 10, 2015 at 08:31:03PM -0400, Peter Hurley wrote:
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 2af09ab..fd54991 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2348,13 +2348,10 @@ static struct console amba_console = {
+>  
+>  static void pl011_putc(struct uart_port *port, int c)
+>  {
+> -	struct uart_amba_port *uap =
+> -	    container_of(port, struct uart_amba_port, port);
+> -
+> -	while (pl011_readw(uap, REG_FR) & UART01x_FR_TXFF)
+> +	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
+>  		;
+> -	pl011_writeb(uap, c, REG_DR);
+> -	while (pl011_readw(uap, REG_FR) & uap->fr_busy)
+> +	writeb(c, port->membase + UART01x_DR);
+> +	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
+>  		;
 
-Let me disable RX-DMA in 8250-omap code and push that stable. Then we
-won't need a special annotation for pause support because it remains
-off and is currently about one user. I browsed each driver in
-drivers/dma each one which does support pause supports it and all of
-them implement it unconditionally (ipu_idmac grabs a mutex first but
-this is another story).
-Adding error checking to 8250-omap like I have it in #1 and disabling
-RX-DMA in case pause fails looks be reasonable since there is nothing
-else that can be done I guess.
-Once we have the missing piece in omap-dma the RX-DMA can be enabled in
-8250-omap.
-Does this sound like a plan we can agree on?
+These loops are wrong.  Kernel coding style is that loops like this
+will use cpu_relax() in them, just like the driver used to.  This
+was introduced by:
 
-Sebastian
+commit 0d3c673e7881e691991b2a4745bd4f149603baa2
+Author: Rob Herring <robh@kernel.org>
+Date:   Fri Apr 18 17:19:57 2014 -0500
+
+    tty/serial: pl011: add generic earlycon support
+
+Also, the above readl()s should be readl_relaxed(), we don't need
+barriered reads or to hit the L2 cache on those reads in the above code.
+
+-- 
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
