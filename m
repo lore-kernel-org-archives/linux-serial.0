@@ -1,95 +1,96 @@
-From: Eduardo Valentin <edubezval@gmail.com>
-Subject: [PATCHv2 2/8] serial: imx: introduce serial_imx_enable_wakeup()
-Date: Mon, 10 Aug 2015 18:35:43 -0700
-Message-ID: <1439256949-626-3-git-send-email-edubezval@gmail.com>
-References: <1439256949-626-1-git-send-email-edubezval@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439256949-626-1-git-send-email-edubezval@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Estevam <festevam@gmail.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Eduardo Valentin <edubezval@gmail.com>
+From: Jun Nie <jun.nie@linaro.org>
+Subject: Re: earlycon issues in -next with amba-pl011 updates
+Date: Tue, 11 Aug 2015 09:48:24 +0800
+Message-ID: <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
+References: <20150810232312.GB10728@bivouac.eciton.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20150810232312.GB10728@bivouac.eciton.net>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Leif Lindholm <leif.lindholm@linaro.org>
+Cc: Tyler Baker <tyler.baker@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This change is a code reorganization. Here we introduce
-serial_imx_enable_wakeup() helper function to do
-the job of configuring and preparing wakeup sources
-on imx serial device. The idea is to allow other
-parts of the code to call this function whenever
-the device is known to go to idle.
+2015-08-11 7:23 GMT+08:00 Leif Lindholm <leif.lindholm@linaro.org>:
+> Hi all,
+>
+> The kernelci.org bot picked up a complete boot failure (no output past
+> UEFI stub) with next-20150806 and Tyler bisected it down to somewhere
+> in
+> 8cd90e5 uart: pl011: Add support to ZTE ZX296702 uart
+> 09dcc7d uart: pl011: Improve LCRH register access decision
+> 2c096a9 uart: pl011: Introduce register look up table
+> 7b753f3 uart: pl011: Introduce register accessor
+>
+> The issue only appears with earlycon on command line, for pl011
+> consoles.
+>
+> Some investigation shows that the cause lies with
+> commit 7b753f318d14 ("uart: pl011: Introduce register accessor")
+> and
+> commit 2c096a9eedc6 ("uart: pl011: Introduce register look up table")
+>
+> Specifically, the changes to pl011_putc() are incorrect:
+> The new pl011_ accessors take a (struct uart_amba_port *) input, but
+> pl011_putc() directly uses the incoming (struct uart_port *) for this.
+>
+> Apart from ending up with an unintended/incorrect UART base address,
+> the introduction of the lookup table for register offsets also means
+> the accessors try to dereference (struct uart_amba_port *)->reg_lut.
+>
+> The below is a hack that shows/resolves the issue, but some
+> refactoring of the original patches might be in order.
+>
+> /
+>     Leif
 
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
----
- arch/arm/boot/dts/Makefile |  1 +
- drivers/tty/serial/imx.c   | 22 ++++++++++++++--------
- 2 files changed, 15 insertions(+), 8 deletions(-)
+Leif,
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 821e015..d60b28f 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -330,6 +330,7 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
- 	imx6q-wandboard-revb1.dtb
- dtb-$(CONFIG_SOC_IMX6SL) += \
- 	imx6sl-evk.dtb \
-+	imx6sl-fox-p1.dtb \
- 	imx6sl-warp.dtb
- dtb-$(CONFIG_SOC_IMX6SX) += \
- 	imx6sx-sabreauto.dtb \
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index b27c232..3c2b0ac 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1972,6 +1972,18 @@ static int serial_imx_remove(struct platform_device *pdev)
- 	return uart_remove_one_port(&imx_reg, &sport->port);
- }
- 
-+static void serial_imx_enable_wakeup(struct imx_port *sport, bool on)
-+{
-+	unsigned int val;
-+
-+	val = readl(sport->port.membase + UCR3);
-+	if (on)
-+		val |= UCR3_AWAKEN;
-+	else
-+		val &= ~UCR3_AWAKEN;
-+	writel(val, sport->port.membase + UCR3);
-+}
-+
- static int imx_serial_port_suspend_noirq(struct device *dev)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
-@@ -2029,12 +2041,9 @@ static int imx_serial_port_suspend(struct device *dev)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct imx_port *sport = platform_get_drvdata(pdev);
--	unsigned int val;
- 
- 	/* enable wakeup from i.MX UART */
--	val = readl(sport->port.membase + UCR3);
--	val |= UCR3_AWAKEN;
--	writel(val, sport->port.membase + UCR3);
-+	serial_imx_enable_wakeup(sport, true);
- 
- 	uart_suspend_port(&imx_reg, &sport->port);
- 
-@@ -2045,12 +2054,9 @@ static int imx_serial_port_resume(struct device *dev)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct imx_port *sport = platform_get_drvdata(pdev);
--	unsigned int val;
- 
- 	/* disable wakeup from i.MX UART */
--	val = readl(sport->port.membase + UCR3);
--	val &= ~UCR3_AWAKEN;
--	writel(val, sport->port.membase + UCR3);
-+	serial_imx_enable_wakeup(sport, false);
- 
- 	uart_resume_port(&imx_reg, &sport->port);
- 
--- 
-2.5.0
+Sorry for the inconvenience. I do not have idea of early console till
+now and I always have debug console for early panic debug. Learned
+more from this issue.
+
+Suppose Peter's patch will resolve your issue.
+
+Jun
+
+>
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 2af09ab..452dbba 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2348,13 +2348,14 @@ static struct console amba_console = {
+>
+>  static void pl011_putc(struct uart_port *port, int c)
+>  {
+> -       struct uart_amba_port *uap =
+> -           container_of(port, struct uart_amba_port, port);
+> +       struct uart_amba_port uap;
+> +       uap.port = *port;
+> +       uap.reg_lut = arm_reg;
+>
+> -       while (pl011_readw(uap, REG_FR) & UART01x_FR_TXFF)
+> +       while (pl011_readw(&uap, REG_FR) & UART01x_FR_TXFF)
+>                 ;
+> -       pl011_writeb(uap, c, REG_DR);
+> -       while (pl011_readw(uap, REG_FR) & uap->fr_busy)
+> +       pl011_writeb(&uap, c, REG_DR);
+> +       while (pl011_readw(&uap, REG_FR) & UART01x_FR_BUSY)
+>                 ;
+>  }
+>
+> --
+> 2.1.4
+>
+>
+>
