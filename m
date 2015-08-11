@@ -1,68 +1,65 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [PATCH REPOST #2] serial/amba-pl011: Disable interrupts around TX softirq
-Date: Tue, 11 Aug 2015 10:47:11 +0100
-Message-ID: <1439286431-7602-1-git-send-email-Dave.Martin@arm.com>
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King <linux@arm.linux.org.uk>, Robin Murphy <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, popcorn mix <popcornmix@gmail.com>, stable <stable@vger.kernel.org>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 1/3] tty: serial: 8250_omap: do not use RX DMA if pause
+ is not supported
+Date: Tue, 11 Aug 2015 15:27:28 +0530
+Message-ID: <20150811095728.GV11789@localhost>
+References: <1438977619-15488-1-git-send-email-bigeasy@linutronix.de>
+ <1438977619-15488-2-git-send-email-bigeasy@linutronix.de>
+ <55C54D49.3090406@hurleysoftware.com>
+ <20150808090343.GY7576@n2100.arm.linux.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150808090343.GY7576@n2100.arm.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Peter Ujfalusi <peter.ujfalusi@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
-sufficient to inhibit pl011_int() from being triggered by a local
-IRQ and trying to re-take the same lock.  This can lead to
-deadlocks.
+On Sat, Aug 08, 2015 at 10:03:43AM +0100, Russell King - ARM Linux wrote:
+> On Fri, Aug 07, 2015 at 08:28:57PM -0400, Peter Hurley wrote:
+> > Even dma_get_slave_caps() returns _true_ for cmd_pause support; ok, that
+> > interface is pointless.
+> 
+> How about reporting that as a bug then, because if you look back in the
+> git history, as you are fully capable of, you will find that the slave
+> capability stuff went in _after_ omap-dma, and *many* DMA engine drivers
+> have not been updated.  Here, let me do _your_ work for you:
+> 
+> commit cb8cea513c80db1dfe2dce468d2d0772005bb9a1
+> Author: Maxime Ripard <maxime.ripard@free-electrons.com>
+> Date:   Mon Nov 17 14:42:04 2014 +0100
+> 
+>     dmaengine: Create a generic dma_slave_caps callback
+> 
+> commit 2dcdf570936168d488acf90be9b04a3d32dafce7
+> Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> Date:   Fri Sep 14 15:05:45 2012 +0300
+> 
+>     dmaengine: omap: Add support for pause/resume in cyclic dma mode
+> 
+> Oh look, omap-dma pre-dates the creation of dma_slave_caps by over two
+> years!
+> 
+> However, it's *not* as trivial as you think: the dma_slave_caps() call
+> has no knowledge whether a channel will be used in cyclic mode or not,
+> or which direction it will be used.  So, it really _can't_ report
+> whether pause mode is supported or not.  So actually, this is something
+> that can't be fixed trivially, and was a detail missed when the slave
+> caps was reviewed (I probably missed the review or missed the point.)
 
-This patch uses the _irq() locking variants instead to ensure that
-pl011_int() handling for a given port is deferred until any
-pl011_tx_softirq() work for that port is complete.
+The API queries the capabilities for a channel. So a channel has been
+allocated. BUT it would not imply the direction as that is descriptor based,
+so should we query the capabilities for a descriptor and use those in
+clients ?
 
+Also the current dma_slave_caps() has been moved to framework and reports
+based on driver callbacks.
+Now we have a hardware which supports pause for one direction only so we
+should model it bit differently
 
-Notes for stable:
+Thoughts... ??
 
-This patch fixes an issue that is fixed by the following upstream
-commit, which is a more substantial rewrite of the affected code,
-fixing multiple, mostly more minor issues:
-
-        1e84d22322ceed4767db1e5342c830dd60c8210f
-        serial/amba-pl011: Refactor and simplify TX FIFO handling
-
-The upstream patch was rejected for stable on the reasonable grounds
-that it was too big and complex a patch.  The original buggy code was
-merged in v4.1, and the rewrite was merged in v4.2, leaving only v4.1
-affected.
-
-
-This patch replaces the 1e84d22, for 4.1.x only.
-
-Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
-Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-Tested-by: Robin Murphy <robin.murphy@arm.com>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: stable <stable@vger.kernel.org> # 4.1.x
----
- drivers/tty/serial/amba-pl011.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl01=
-1.c
-index 763eb20..0cc622a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1360,9 +1360,9 @@ static void pl011_tx_softirq(struct work_struct *work=
-)
- =09struct uart_amba_port *uap =3D
- =09=09container_of(dwork, struct uart_amba_port, tx_softirq_work);
-=20
--=09spin_lock(&uap->port.lock);
-+=09spin_lock_irq(&uap->port.lock);
- =09while (pl011_tx_chars(uap)) ;
--=09spin_unlock(&uap->port.lock);
-+=09spin_unlock_irq(&uap->port.lock);
- }
-=20
- static void pl011_tx_irq_seen(struct uart_amba_port *uap)
---=20
-1.7.10.4
+-- 
+~Vinod
