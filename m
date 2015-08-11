@@ -1,18 +1,21 @@
 From: Eduardo Valentin <edubezval@gmail.com>
-Subject: [PATCHv2 5/8] serial: imx: add a flag to indicate we are in the suspend path
-Date: Mon, 10 Aug 2015 18:35:46 -0700
-Message-ID: <1439256949-626-6-git-send-email-edubezval@gmail.com>
+Subject: [PATCHv2 2/8] serial: imx: introduce serial_imx_enable_wakeup()
+Date: Mon, 10 Aug 2015 18:35:43 -0700
+Message-ID: <1439256949-626-3-git-send-email-edubezval@gmail.com>
 References: <1439256949-626-1-git-send-email-edubezval@gmail.com>
-Return-path: <linux-pm-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1439256949-626-1-git-send-email-edubezval@gmail.com>
-Sender: linux-pm-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Estevam <festevam@gmail.com>
 Cc: Sascha Hauer <s.hauer@pengutronix.de>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Eduardo Valentin <edubezval@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This is a simple flag that gets set across prepare and complete
-callbacks in the suspend path. We the flag we may avoid
-runtime pm idling at the same time.
+This change is a code reorganization. Here we introduce
+serial_imx_enable_wakeup() helper function to do
+the job of configuring and preparing wakeup sources
+on imx serial device. The idea is to allow other
+parts of the code to call this function whenever
+the device is known to go to idle.
 
 Cc: Fabio Estevam <festevam@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -21,54 +24,72 @@ Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
 ---
- drivers/tty/serial/imx.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ arch/arm/boot/dts/Makefile |  1 +
+ drivers/tty/serial/imx.c   | 22 ++++++++++++++--------
+ 2 files changed, 15 insertions(+), 8 deletions(-)
 
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 821e015..d60b28f 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -330,6 +330,7 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
+ 	imx6q-wandboard-revb1.dtb
+ dtb-$(CONFIG_SOC_IMX6SL) += \
+ 	imx6sl-evk.dtb \
++	imx6sl-fox-p1.dtb \
+ 	imx6sl-warp.dtb
+ dtb-$(CONFIG_SOC_IMX6SX) += \
+ 	imx6sx-sabreauto.dtb \
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index fe3d41c..50abb60 100644
+index b27c232..3c2b0ac 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -218,6 +218,8 @@ struct imx_port {
- 	wait_queue_head_t	dma_wait;
- 	unsigned int            saved_reg[10];
- 	bool			context_saved;
-+
-+	bool			is_suspending;
- };
- 
- struct imx_port_ucrs {
-@@ -2026,6 +2028,22 @@ static void serial_imx_enable_wakeup(struct imx_port *sport, bool on)
- 	writel(val, sport->port.membase + UCR1);
+@@ -1972,6 +1972,18 @@ static int serial_imx_remove(struct platform_device *pdev)
+ 	return uart_remove_one_port(&imx_reg, &sport->port);
  }
  
-+static int serial_imx_prepare(struct device *dev)
++static void serial_imx_enable_wakeup(struct imx_port *sport, bool on)
 +{
-+	struct imx_port *sport = dev_get_drvdata(dev);
++	unsigned int val;
 +
-+	sport->is_suspending = true;
-+
-+	return 0;
-+}
-+
-+static void serial_imx_complete(struct device *dev)
-+{
-+	struct imx_port *sport = dev_get_drvdata(dev);
-+
-+	sport->is_suspending = false;
++	val = readl(sport->port.membase + UCR3);
++	if (on)
++		val |= UCR3_AWAKEN;
++	else
++		val &= ~UCR3_AWAKEN;
++	writel(val, sport->port.membase + UCR3);
 +}
 +
  static int imx_serial_port_suspend_noirq(struct device *dev)
  {
  	struct platform_device *pdev = to_platform_device(dev);
-@@ -2091,6 +2109,8 @@ static const struct dev_pm_ops imx_serial_port_pm_ops = {
- 	.resume_noirq = imx_serial_port_resume_noirq,
- 	.suspend = imx_serial_port_suspend,
- 	.resume = imx_serial_port_resume,
-+	.prepare = serial_imx_prepare,
-+	.complete = serial_imx_complete,
- };
+@@ -2029,12 +2041,9 @@ static int imx_serial_port_suspend(struct device *dev)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct imx_port *sport = platform_get_drvdata(pdev);
+-	unsigned int val;
  
- static struct platform_driver serial_imx_driver = {
+ 	/* enable wakeup from i.MX UART */
+-	val = readl(sport->port.membase + UCR3);
+-	val |= UCR3_AWAKEN;
+-	writel(val, sport->port.membase + UCR3);
++	serial_imx_enable_wakeup(sport, true);
+ 
+ 	uart_suspend_port(&imx_reg, &sport->port);
+ 
+@@ -2045,12 +2054,9 @@ static int imx_serial_port_resume(struct device *dev)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct imx_port *sport = platform_get_drvdata(pdev);
+-	unsigned int val;
+ 
+ 	/* disable wakeup from i.MX UART */
+-	val = readl(sport->port.membase + UCR3);
+-	val &= ~UCR3_AWAKEN;
+-	writel(val, sport->port.membase + UCR3);
++	serial_imx_enable_wakeup(sport, false);
+ 
+ 	uart_resume_port(&imx_reg, &sport->port);
+ 
 -- 
 2.5.0
-
