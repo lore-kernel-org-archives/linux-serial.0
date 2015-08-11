@@ -1,83 +1,59 @@
-From: Leif Lindholm <leif.lindholm@linaro.org>
-Subject: Re: earlycon issues in -next with amba-pl011 updates
-Date: Tue, 11 Aug 2015 11:07:21 +0100
-Message-ID: <20150811100721.GE10728@bivouac.eciton.net>
-References: <20150810232312.GB10728@bivouac.eciton.net>
- <55C94247.8020701@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <55C94247.8020701@hurleysoftware.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: jun.nie@linaro.org, tyler.baker@linaro.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH] serial: mxs-auart: fix baud rate range
+Date: Tue, 11 Aug 2015 11:46:01 +0000
+Message-ID: <1439293561-7994-1-git-send-email-stefan.wahren@i2se.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, =?UTF-8?q?Janusz=20U=C5=BCycki?= <j.uzycki@elpromaelectronics.com>, Fabio Estevam <fabio.estevam@freescale.com>, jbe@pengutronix.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgUGV0ZXIsCgpPbiBNb24sIEF1ZyAxMCwgMjAxNSBhdCAwODozMTowM1BNIC0wNDAwLCBQZXRl
-ciBIdXJsZXkgd3JvdGU6Cj4gPiBUaGUgaXNzdWUgb25seSBhcHBlYXJzIHdpdGggZWFybHljb24g
-b24gY29tbWFuZCBsaW5lLCBmb3IgcGwwMTEKPiA+IGNvbnNvbGVzLgo+ID4gCj4gPiBTb21lIGlu
-dmVzdGlnYXRpb24gc2hvd3MgdGhhdCB0aGUgY2F1c2UgbGllcyB3aXRoCj4gPiBjb21taXQgN2I3
-NTNmMzE4ZDE0ICgidWFydDogcGwwMTE6IEludHJvZHVjZSByZWdpc3RlciBhY2Nlc3NvciIpCj4g
-PiBhbmQKPiA+IGNvbW1pdCAyYzA5NmE5ZWVkYzYgKCJ1YXJ0OiBwbDAxMTogSW50cm9kdWNlIHJl
-Z2lzdGVyIGxvb2sgdXAgdGFibGUiKQo+ID4gCj4gPiBTcGVjaWZpY2FsbHksIHRoZSBjaGFuZ2Vz
-IHRvIHBsMDExX3B1dGMoKSBhcmUgaW5jb3JyZWN0Ogo+ID4gVGhlIG5ldyBwbDAxMV8gYWNjZXNz
-b3JzIHRha2UgYSAoc3RydWN0IHVhcnRfYW1iYV9wb3J0ICopIGlucHV0LCBidXQKPiA+IHBsMDEx
-X3B1dGMoKSBkaXJlY3RseSB1c2VzIHRoZSBpbmNvbWluZyAoc3RydWN0IHVhcnRfcG9ydCAqKSBm
-b3IgdGhpcy4KPiA+IAo+ID4gQXBhcnQgZnJvbSBlbmRpbmcgdXAgd2l0aCBhbiB1bmludGVuZGVk
-L2luY29ycmVjdCBVQVJUIGJhc2UgYWRkcmVzcywKPiA+IHRoZSBpbnRyb2R1Y3Rpb24gb2YgdGhl
-IGxvb2t1cCB0YWJsZSBmb3IgcmVnaXN0ZXIgb2Zmc2V0cyBhbHNvIG1lYW5zCj4gPiB0aGUgYWNj
-ZXNzb3JzIHRyeSB0byBkZXJlZmVyZW5jZSAoc3RydWN0IHVhcnRfYW1iYV9wb3J0ICopLT5yZWdf
-bHV0Lgo+IAo+IAo+IFRoYW5rcyBmb3IgdGhlIGJ1ZyByZXBvcnQgYW5kIGJpc2VjdCwgYW5kIGFw
-b2xvZ2llcyBmb3IgdGhlIGJyZWFrYWdlOwo+IEkgc2hvdWxkIGhhdmUgY2F1Z2h0IHRoYXQgb24g
-cmV2aWV3LgoKSSB3b3VsZG4ndCBoYXZlIGZvdW5kIGl0IGlmIEkgZGlkbid0IGhhdmUgdGhlIGJv
-b3QgZmFpbHVyZSB0byB0cmFjawpkb3duLCBhbmQgSSdtIF9ub3RfIGdvaW5nIHRvIHRlbGwgeW91
-IGhvdyBsb25nIEkgc3BlbnQgZG9pbmcgdGhhdC4KIAo+IFdvdWxkIHlvdSBwbGVhc2UgdGVzdCB0
-aGUgcGF0Y2ggYmVsb3cgYW5kIHNlZSBpZiB0aGF0IHJlc29sdmVzIHRoZQo+IHByb2JsZW0gZm9y
-IHlvdT8KClllYWgsIHRoYXQncyBhIG1vcmUgc3RyYWlnaHRmb3J3YXJkIGZpeC4KCj4gUFMgLSBf
-Tk9UXyBldmVuIGNvbXBpbGUtdGVzdGVkLCBzb3JyeS4KPiAKPiAtLS0gPiUgLS0tCj4gU3ViamVj
-dDogW1BBVENIXSBzZXJpYWw6IHBsMDExOiBGaXggZWFybHljb24gcmVnaXN0ZXIgTFVUIGJyZWFr
-YWdlCj4gCj4gQ29tbWl0IDdiNzUzZjMxOGQxNCAoInVhcnQ6IHBsMDExOiBJbnRyb2R1Y2UgcmVn
-aXN0ZXIgYWNjZXNzb3IiKQo+IG1pc3Rha2VubHkgdXNlZCB0aGUgcmVnaXN0ZXIgTFVUIGkvbyBh
-Y2Nlc3NvcnMgZm9yIHRoZSBwbDAxMQo+IGVhcmx5Y29uLiBTaW5jZSB0aGUgcG9ydCBoYXMgbm90
-IGJlZW4gcHJvYmVkIGF0IGVhcmx5Y29uIHRpbWUsCj4gdGhlIHN0cnVjdCB1YXJ0X2FtYmFfcG9y
-dCAoYW5kIHJlZ2lzdGVyIExVVHMpIGFyZSB1bmluaXRpYWxpemVkLgo+IAo+IFVzZSBkaXJlY3Qg
-cmVnaXN0ZXIgYWRkcmVzc2luZyBmb3IgcGwwMTEgZWFybHljb247IG90aGVyIGgvdyBzdXBwb3J0
-ZWQKPiBieSB0aGUgYW1iYS1wbDAxMSBkcml2ZXIgc2hvdWxkIGRlY2xhcmUgYW4gYWx0ZXJuYXRl
-IGVhcmx5Y29uLgo+IAo+IENjOiBKdW4gTmllIDxqdW4ubmllQGxpbmFyby5vcmc+Cj4gU2lnbmVk
-LW9mZi1ieTogUGV0ZXIgSHVybGV5IDxwZXRlckBodXJsZXlzb2Z0d2FyZS5jb20+Cj4gLS0tCj4g
-IGRyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMgfCA5ICsrKy0tLS0tLQo+ICAxIGZpbGUg
-Y2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCA2IGRlbGV0aW9ucygtKQo+IAo+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2Ft
-YmEtcGwwMTEuYwo+IGluZGV4IDJhZjA5YWIuLmZkNTQ5OTEgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVy
-cy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYwo+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJh
-LXBsMDExLmMKPiBAQCAtMjM0OCwxMyArMjM0OCwxMCBAQCBzdGF0aWMgc3RydWN0IGNvbnNvbGUg
-YW1iYV9jb25zb2xlID0gewo+ICAKPiAgc3RhdGljIHZvaWQgcGwwMTFfcHV0YyhzdHJ1Y3QgdWFy
-dF9wb3J0ICpwb3J0LCBpbnQgYykKPiAgewo+IC0Jc3RydWN0IHVhcnRfYW1iYV9wb3J0ICp1YXAg
-PQo+IC0JICAgIGNvbnRhaW5lcl9vZihwb3J0LCBzdHJ1Y3QgdWFydF9hbWJhX3BvcnQsIHBvcnQp
-Owo+IC0KPiAtCXdoaWxlIChwbDAxMV9yZWFkdyh1YXAsIFJFR19GUikgJiBVQVJUMDF4X0ZSX1RY
-RkYpCj4gKwl3aGlsZSAocmVhZGwocG9ydC0+bWVtYmFzZSArIFVBUlQwMXhfRlIpICYgVUFSVDAx
-eF9GUl9UWEZGKQo+ICAJCTsKPiAtCXBsMDExX3dyaXRlYih1YXAsIGMsIFJFR19EUik7Cj4gLQl3
-aGlsZSAocGwwMTFfcmVhZHcodWFwLCBSRUdfRlIpICYgdWFwLT5mcl9idXN5KQo+ICsJd3JpdGVi
-KGMsIHBvcnQtPm1lbWJhc2UgKyBVQVJUMDF4X0RSKTsKPiArCXdoaWxlIChyZWFkbChwb3J0LT5t
-ZW1iYXNlICsgVUFSVDAxeF9GUikgJiBVQVJUMDF4X0ZSX0JVU1kpCj4gIAkJOwo+ICB9Cj4gIAo+
-IC0tIAo+IDIuNS4wCgpJdCB3b3JrcywgYnV0IGJ1aWxkcyB3aXRoOgpkcml2ZXJzL3R0eS9zZXJp
-YWwvYW1iYS1wbDAxMS5jOjMyOToxMzogd2FybmluZzog4oCYcGwwMTFfd3JpdGVi4oCZCmRlZmlu
-ZWQgYnV0IG5vdCB1c2VkIFstV3VudXNlZC1mdW5jdGlvbl0KIHN0YXRpYyB2b2lkIHBsMDExX3dy
-aXRlYihzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVhcCwgdTggdmFsLCBpbnQKIGluZGV4KQogICAg
-ICAgICAgICAgXgpJIHdhcyBkaXRoZXJpbmcgYWJvdXQgd2hldGhlciBoYXZpbmcgX3JlbGF4ZWQg
-YWNjZXNzb3JzIGluIHBvc3QgYm9vdApjb2RlIGFuZCBwbGFpbiBvbmVzIGluIGVhcmx5Y29uIHdh
-cyBhbiBpc3N1ZSwgYnV0IEkgZ3Vlc3MgaXQgZG9lc24ndAptYXR0ZXIgbXVjaC4KCi8KICAgIExl
-aWYKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4
-LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFk
-Lm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFy
-bS1rZXJuZWwK
+Currently mxs-auart doesn't care correctly about the baud rate divisor.
+According to reference manual the baud rate divisor must be between
+0x000000EC and 0x003FFFC0. So calculate the possible baud rate range
+and use it for uart_get_baud_rate().
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/tty/serial/mxs-auart.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+Changes since RFC:
+- use defines for baud rate divisor range suggested by Fabio Estevam
+- fix rounding issue with baud_min found by Janusz Uzycki
+
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 13cf773..9074a0b 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -100,6 +100,8 @@
+ #define AUART_CTRL2_TXE				(1 << 8)
+ #define AUART_CTRL2_UARTEN			(1 << 0)
+ 
++#define AUART_LINECTRL_BAUD_DIV_MAX		0x003fffc0
++#define AUART_LINECTRL_BAUD_DIV_MIN		0x000000ec
+ #define AUART_LINECTRL_BAUD_DIVINT_SHIFT	16
+ #define AUART_LINECTRL_BAUD_DIVINT_MASK		0xffff0000
+ #define AUART_LINECTRL_BAUD_DIVINT(v)		(((v) & 0xffff) << 16)
+@@ -659,7 +661,7 @@ static void mxs_auart_settermios(struct uart_port *u,
+ {
+ 	struct mxs_auart_port *s = to_auart_port(u);
+ 	u32 bm, ctrl, ctrl2, div;
+-	unsigned int cflag, baud;
++	unsigned int cflag, baud, baud_min, baud_max;
+ 
+ 	cflag = termios->c_cflag;
+ 
+@@ -752,7 +754,9 @@ static void mxs_auart_settermios(struct uart_port *u,
+ 	}
+ 
+ 	/* set baud rate */
+-	baud = uart_get_baud_rate(u, termios, old, 0, u->uartclk);
++	baud_min = DIV_ROUND_UP(u->uartclk * 32, AUART_LINECTRL_BAUD_DIV_MAX);
++	baud_max = u->uartclk * 32 / AUART_LINECTRL_BAUD_DIV_MIN;
++	baud = uart_get_baud_rate(u, termios, old, baud_min, baud_max);
+ 	div = u->uartclk * 32 / baud;
+ 	ctrl |= AUART_LINECTRL_BAUD_DIVFRAC(div & 0x3F);
+ 	ctrl |= AUART_LINECTRL_BAUD_DIVINT(div >> 6);
+-- 
+1.7.9.5
