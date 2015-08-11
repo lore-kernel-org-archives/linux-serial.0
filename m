@@ -1,75 +1,68 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH RFC] serial: mxs-auart: fix baud rate range
-Date: Tue, 11 Aug 2015 09:14:46 +0200 (CEST)
-Message-ID: <2067120832.94984.1439277287039.JavaMail.open-xchange@oxbsltgw08.schlund.de>
-References: <1439208767-29152-1-git-send-email-stefan.wahren@i2se.com> <CAOMZO5CscLv+v=8QA-zchR3EeNogpwGRRARJo8qPROLwcBXTUg@mail.gmail.com> <55C8D8E7.9090103@elpromaelectronics.com>
-Reply-To: Stefan Wahren <stefan.wahren@i2se.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55C8D8E7.9090103@elpromaelectronics.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>, =?UTF-8?Q?Janusz_U=C5=BCycki?= <j.uzycki@elpromaelectronics.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, Fabio Estevam <fabio.estevam@freescale.com>, Juergen Beisert <jbe@pengutronix.de>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [PATCH REPOST #2] serial/amba-pl011: Disable interrupts around TX softirq
+Date: Tue, 11 Aug 2015 10:47:11 +0100
+Message-ID: <1439286431-7602-1-git-send-email-Dave.Martin@arm.com>
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King <linux@arm.linux.org.uk>, Robin Murphy <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Jakub=20Kici=C5=84ski?= <moorray3@wp.pl>, Andrew Jackson <Andrew.Jackson@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Andre Przywara <Andre.Przywara@arm.com>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, popcorn mix <popcornmix@gmail.com>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Janusz,
+pl011_tx_softirq() currently uses spin_{,un}lock(), which are not
+sufficient to inhibit pl011_int() from being triggered by a local
+IRQ and trying to re-take the same lock.  This can lead to
+deadlocks.
 
-> Janusz U=C5=BCycki <j.uzycki@elpromaelectronics.com> hat am 10. Augus=
-t 2015 um
-> 19:01 geschrieben:
->
->
->
->
-> W dniu 2015-08-10 o 14:22, Fabio Estevam pisze:
-> > On Mon, Aug 10, 2015 at 9:12 AM, Stefan Wahren <stefan.wahren@i2se.=
-com>
-> > wrote:
-> >
-> >> /* set baud rate */
-> >> - baud =3D uart_get_baud_rate(u, termios, old, 0, u->uartclk);
-> >> + baud_min =3D u->uartclk * 32 / 0x3fffc0;
-> >> + baud_max =3D u->uartclk * 32 / 0xec;
-> >> + baud =3D uart_get_baud_rate(u, termios, old, baud_min, baud_max)=
-;
-> > Looks good. It would be nice to replace 0x3fffc0 and 0xec with defi=
-nes
-> > though.
->
-> I agree with Fabio.
+This patch uses the _irq() locking variants instead to ensure that
+pl011_int() handling for a given port is deferred until any
+pl011_tx_softirq() work for that port is complete.
 
-i will name them AUART_LINECTRL_BAUD_DIV_MIN and AUART_LINECTRL_BAUD_DI=
-V_MAX.
 
->
-> In addition let's look at the example for uartclk =3D 24MHz:
-> baud_max =3D 3,254,237.29 =3D> will be rounded down to 3,254,237bauds=
- and it
-> is OK
-> baud_min =3D 183.1 =3D> will be rounded to 183 bauds. To avoid div=3D=
-0x400971
-> it should be 184
-> so DIV_ROUND_UP() macro could be used.
+Notes for stable:
 
-Thanks for pointing out. I will fix that.
+This patch fixes an issue that is fixed by the following upstream
+commit, which is a more substantial rewrite of the affected code,
+fixing multiple, mostly more minor issues:
 
-Best regards
-Stefan
+        1e84d22322ceed4767db1e5342c830dd60c8210f
+        serial/amba-pl011: Refactor and simplify TX FIFO handling
 
->
-> best regards
-> Janusz
->
-> >
-> > Regards,
-> >
-> > Fabio Estevam
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kerne=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at http://www.tux.org/lkml/
+The upstream patch was rejected for stable on the reasonable grounds
+that it was too big and complex a patch.  The original buggy code was
+merged in v4.1, and the rewrite was merged in v4.2, leaving only v4.1
+affected.
+
+
+This patch replaces the 1e84d22, for 4.1.x only.
+
+Fixes: 734745caeb9f serial/amba-pl011: Activate TX IRQ passively
+Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+Tested-by: Robin Murphy <robin.murphy@arm.com>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: stable <stable@vger.kernel.org> # 4.1.x
+---
+ drivers/tty/serial/amba-pl011.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl01=
+1.c
+index 763eb20..0cc622a 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1360,9 +1360,9 @@ static void pl011_tx_softirq(struct work_struct *work=
+)
+ =09struct uart_amba_port *uap =3D
+ =09=09container_of(dwork, struct uart_amba_port, tx_softirq_work);
+=20
+-=09spin_lock(&uap->port.lock);
++=09spin_lock_irq(&uap->port.lock);
+ =09while (pl011_tx_chars(uap)) ;
+-=09spin_unlock(&uap->port.lock);
++=09spin_unlock_irq(&uap->port.lock);
+ }
+=20
+ static void pl011_tx_irq_seen(struct uart_amba_port *uap)
+--=20
+1.7.10.4
