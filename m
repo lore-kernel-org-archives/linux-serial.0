@@ -1,7 +1,7 @@
 From: Eduardo Valentin <edubezval@gmail.com>
-Subject: [PATCHv3 2/8] serial: imx: introduce serial_imx_enable_wakeup()
-Date: Tue, 11 Aug 2015 10:21:21 -0700
-Message-ID: <1439313687-28502-3-git-send-email-edubezval@gmail.com>
+Subject: [PATCHv3 7/8] serial: imx: add pm_qos request
+Date: Tue, 11 Aug 2015 10:21:26 -0700
+Message-ID: <1439313687-28502-8-git-send-email-edubezval@gmail.com>
 References: <1439313687-28502-1-git-send-email-edubezval@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1439313687-28502-1-git-send-email-edubezval@gmail.com>
@@ -10,12 +10,11 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Sascha Hauer <s.hauer@pengutronix.de>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Eduardo Valentin <edubezval@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This change is a code reorganization. Here we introduce
-serial_imx_enable_wakeup() helper function to do
-the job of configuring and preparing wakeup sources
-on imx serial device. The idea is to allow other
-parts of the code to call this function whenever
-the device is known to go to idle.
+This change introduces pm_qos requests in the imx serial driver.
+The idea is to skip deeper C-state in case we need a strict
+latency requirement in the uart port. The latency is
+computed based on the buffer size and the current baud rate.
+We schedule a work queue to set the pm qos requirement.
 
 Cc: Fabio Estevam <festevam@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -24,72 +23,98 @@ Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
 ---
- arch/arm/boot/dts/Makefile |  1 +
- drivers/tty/serial/imx.c   | 22 ++++++++++++++--------
- 2 files changed, 15 insertions(+), 8 deletions(-)
+ drivers/tty/serial/imx.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 821e015..d60b28f 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -330,6 +330,7 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
- 	imx6q-wandboard-revb1.dtb
- dtb-$(CONFIG_SOC_IMX6SL) += \
- 	imx6sl-evk.dtb \
-+	imx6sl-fox-p1.dtb \
- 	imx6sl-warp.dtb
- dtb-$(CONFIG_SOC_IMX6SX) += \
- 	imx6sx-sabreauto.dtb \
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index b27c232..3c2b0ac 100644
+index 9447a55..4aab9fc 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1972,6 +1972,18 @@ static int serial_imx_remove(struct platform_device *pdev)
- 	return uart_remove_one_port(&imx_reg, &sport->port);
+@@ -42,6 +42,7 @@
+ #include <linux/pm.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/pm_wakeup.h>
++#include <linux/pm_qos.h>
+ 
+ #include <asm/irq.h>
+ #include <linux/platform_data/serial-imx.h>
+@@ -223,6 +224,10 @@ struct imx_port {
+ 	bool			context_saved;
+ 
+ 	struct device		*dev;
++	struct pm_qos_request	pm_qos_request;
++	u32			latency;
++	u32			calc_latency;
++	struct work_struct	qos_work;
+ 	bool			is_suspending;
+ };
+ 
+@@ -1321,6 +1326,14 @@ static void imx_flush_buffer(struct uart_port *port)
+ 	pm_runtime_put_autosuspend(sport->dev);
  }
  
-+static void serial_imx_enable_wakeup(struct imx_port *sport, bool on)
++static void serial_imx_uart_qos_work(struct work_struct *work)
 +{
-+	unsigned int val;
++	struct imx_port *sport = container_of(work, struct imx_port,
++						qos_work);
 +
-+	val = readl(sport->port.membase + UCR3);
-+	if (on)
-+		val |= UCR3_AWAKEN;
-+	else
-+		val &= ~UCR3_AWAKEN;
-+	writel(val, sport->port.membase + UCR3);
++	pm_qos_update_request(&sport->pm_qos_request, sport->latency);
 +}
 +
- static int imx_serial_port_suspend_noirq(struct device *dev)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
-@@ -2029,12 +2041,9 @@ static int imx_serial_port_suspend(struct device *dev)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct imx_port *sport = platform_get_drvdata(pdev);
--	unsigned int val;
+ static void
+ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		   struct ktermios *old)
+@@ -1394,6 +1407,12 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
+ 	quot = uart_get_divisor(port, baud);
  
- 	/* enable wakeup from i.MX UART */
--	val = readl(sport->port.membase + UCR3);
--	val |= UCR3_AWAKEN;
--	writel(val, sport->port.membase + UCR3);
-+	serial_imx_enable_wakeup(sport, true);
++	/* calculate wakeup latency constraint */
++	sport->calc_latency = (USEC_PER_SEC * sport->port.fifosize) /
++								(baud / 8);
++	sport->latency = sport->calc_latency;
++	schedule_work(&sport->qos_work);
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
  
- 	uart_suspend_port(&imx_reg, &sport->port);
+ 	sport->port.read_status_mask = 0;
+@@ -2013,7 +2032,12 @@ static int serial_imx_probe(struct platform_device *pdev)
  
-@@ -2045,12 +2054,9 @@ static int imx_serial_port_resume(struct device *dev)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct imx_port *sport = platform_get_drvdata(pdev);
--	unsigned int val;
+ 	imx_ports[sport->port.line] = sport;
  
- 	/* disable wakeup from i.MX UART */
--	val = readl(sport->port.membase + UCR3);
--	val &= ~UCR3_AWAKEN;
--	writel(val, sport->port.membase + UCR3);
-+	serial_imx_enable_wakeup(sport, false);
++	sport->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
++	sport->calc_latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
+ 	sport->dev = &pdev->dev;
++	pm_qos_add_request(&sport->pm_qos_request, PM_QOS_CPU_DMA_LATENCY,
++			   sport->latency);
++	INIT_WORK(&sport->qos_work, serial_imx_uart_qos_work);
+ 	platform_set_drvdata(pdev, sport);
  
- 	uart_resume_port(&imx_reg, &sport->port);
+ 	device_init_wakeup(sport->dev, true);
+@@ -2043,6 +2067,7 @@ static int serial_imx_remove(struct platform_device *pdev)
+ 	clk_unprepare(sport->clk_per);
+ 	clk_unprepare(sport->clk_ipg);
+ 	ret = uart_remove_one_port(&imx_reg, &sport->port);
++	pm_qos_remove_request(&sport->pm_qos_request);
+ 	device_init_wakeup(&pdev->dev, false);
  
+ 	return ret;
+@@ -2121,6 +2146,8 @@ static int serial_imx_runtime_suspend(struct device *dev)
+ 	serial_imx_save_context(sport);
+ 	serial_imx_enable_wakeup(sport, true);
+ 
++	sport->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
++	schedule_work(&sport->qos_work);
+ 	clk_disable(sport->clk_per);
+ 	clk_disable(sport->clk_ipg);
+ 
+@@ -2142,6 +2169,8 @@ static int serial_imx_runtime_resume(struct device *dev)
+ 	}
+ 	serial_imx_enable_wakeup(sport, false);
+ 
++	sport->latency = sport->calc_latency;
++	schedule_work(&sport->qos_work);
+ 	serial_imx_restore_context(sport);
+ 
+ 	return 0;
 -- 
 2.5.0
