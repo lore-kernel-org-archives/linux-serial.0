@@ -1,88 +1,45 @@
-From: Eduardo Valentin <edubezval@gmail.com>
-Subject: [PATCHv3 1/8] serial: imx: remove unbalanced clk_prepare
-Date: Tue, 11 Aug 2015 10:21:20 -0700
-Message-ID: <1439313687-28502-2-git-send-email-edubezval@gmail.com>
-References: <1439313687-28502-1-git-send-email-edubezval@gmail.com>
+From: Su Kang Yin <cantona@cantona.net>
+Subject: [PATCH] serial: max310x: Fix out of bounds access
+Date: Wed, 12 Aug 2015 13:33:52 +0800
+Message-ID: <1439357632-14745-1-git-send-email-cantona@cantona.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439313687-28502-1-git-send-email-edubezval@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Estevam <festevam@gmail.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Eduardo Valentin <edubezval@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Su Kang Yin <cantona@cantona.net>
 List-Id: linux-serial@vger.kernel.org
 
-The current code attempts to prepare clk_per and clk_ipg
-before using the device. However, the result is an extra
-prepare call on each clock. Here is the output of uart
-clocks (only uart enabled and used as console):
+Max310x driver supports up to 4 UART devices but array size of
+"struct max310x_one" is set to 1. That leads to out of bounds
+access on UART port registration.
 
-$  grep uart /sys/kernel/debug/clk/clk_summary
- uart_serial           1            2    80000000          0 0
-       uart           1            2    66000000          0 0
-
-This patch balances the calls of prepares. The result is:
-
-$  grep uart /sys/kernel/debug/clk/clk_summary
- uart_serial           1            1    80000000          0 0
-       uart           1            1    66000000          0 0
-
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-pm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
+This patch fixed it by increase the array size to 4 which is
+maximum supported UART.
 ---
- drivers/tty/serial/imx.c | 20 ++++++--------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
+ drivers/tty/serial/max310x.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 9a248eb..b27c232 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1630,12 +1630,12 @@ imx_console_write(struct console *co, const char *s, unsigned int count)
- 	int locked = 1;
- 	int retval;
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 182549f..b523552 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -33,6 +33,9 @@
+ #define MAX310X_MAJOR			204
+ #define MAX310X_MINOR			209
  
--	retval = clk_enable(sport->clk_per);
-+	retval = clk_prepare_enable(sport->clk_per);
- 	if (retval)
- 		return;
--	retval = clk_enable(sport->clk_ipg);
-+	retval = clk_prepare_enable(sport->clk_ipg);
- 	if (retval) {
--		clk_disable(sport->clk_per);
-+		clk_disable_unprepare(sport->clk_per);
- 		return;
- 	}
++/* Maximum supported device */
++#define MAX_DEVICE			4
++
+ /* MAX310X register definitions */
+ #define MAX310X_RHR_REG			(0x00) /* RX FIFO */
+ #define MAX310X_THR_REG			(0x00) /* TX FIFO */
+@@ -273,7 +276,7 @@ struct max310x_port {
+ #ifdef CONFIG_GPIOLIB
+ 	struct gpio_chip	gpio;
+ #endif
+-	struct max310x_one	p[0];
++	struct max310x_one	p[MAX_DEVICE];
+ };
  
-@@ -1674,8 +1674,8 @@ imx_console_write(struct console *co, const char *s, unsigned int count)
- 	if (locked)
- 		spin_unlock_irqrestore(&sport->port.lock, flags);
- 
--	clk_disable(sport->clk_ipg);
--	clk_disable(sport->clk_per);
-+	clk_disable_unprepare(sport->clk_ipg);
-+	clk_disable_unprepare(sport->clk_per);
- }
- 
- /*
-@@ -1776,15 +1776,7 @@ imx_console_setup(struct console *co, char *options)
- 
- 	retval = uart_set_options(&sport->port, co, baud, parity, bits, flow);
- 
--	clk_disable(sport->clk_ipg);
--	if (retval) {
--		clk_unprepare(sport->clk_ipg);
--		goto error_console;
--	}
--
--	retval = clk_prepare(sport->clk_per);
--	if (retval)
--		clk_disable_unprepare(sport->clk_ipg);
-+	clk_disable_unprepare(sport->clk_ipg);
- 
- error_console:
- 	return retval;
+ static u8 max310x_port_read(struct uart_port *port, u8 reg)
 -- 
-2.5.0
+1.9.1
