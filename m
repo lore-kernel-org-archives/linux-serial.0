@@ -1,70 +1,60 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [v3 3/3] serial: 8250_dw: Add UPF_SKIP_TEST to flags depend on
- device tree
-Date: Wed, 12 Aug 2015 09:16:48 -0400
-Message-ID: <55CB4740.7070703@hurleysoftware.com>
-References: <1437886478-29273-1-git-send-email-noamc@ezchip.com> <1439378312-6463-1-git-send-email-noamc@ezchip.com> <1439378312-6463-2-git-send-email-noamc@ezchip.com> <1439378312-6463-3-git-send-email-noamc@ezchip.com> <1439378312-6463-4-git-send-email-noamc@ezchip.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2] serial: max310x: Fix out of bounds access
+Date: Wed, 12 Aug 2015 08:17:07 -0700
+Message-ID: <20150812151707.GB12397@kroah.com>
+References: <1439364125-19422-1-git-send-email-cantona@cantona.net>
+ <CABJLtPHPCw7VN+wG4ApDxB-ZM7wRz_1xHfpNLL4o4_80JYyKaQ@mail.gmail.com>
+ <1439372765.705411926@f362.i.mail.ru>
+ <CABJLtPG7gfR8VSVfzRgF8XgON7F-mhfMu7C2an0sfQYLBNiLpg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439378312-6463-4-git-send-email-noamc@ezchip.com>
+Content-Disposition: inline
+In-Reply-To: <CABJLtPG7gfR8VSVfzRgF8XgON7F-mhfMu7C2an0sfQYLBNiLpg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Noam Camus <noamc@ezchip.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, @codeaurora.orggalak@codeaurora.org, fransklaver@gmail.com, Alexey.Brodkin@synopsys.com, vgupta@synopsys.com
+To: Kang Yin Su <cantona@cantona.net>
+Cc: Alexander Shiyan <shc_work@mail.ru>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Noam,
+On Wed, Aug 12, 2015 at 07:50:25PM +0800, Kang Yin Su wrote:
+> On 12 August 2015 at 17:46, Alexander Shiyan <shc_work@mail.ru> wrote=
+:
+> >> =D0=A1=D1=80=D0=B5=D0=B4=D0=B0, 12 =D0=B0=D0=B2=D0=B3=D1=83=D1=81=D1=
+=82=D0=B0 2015, 15:36 +08:00 =D0=BE=D1=82 cantona <cantona@cantona.net>=
+:
+> >>
+> >>
+> >> added Alexander Shiyan < shc_work@mail.ru >.
+> >>
+> >> On 12 August 2015 at 15:22, Su Kang Yin  < cantona@cantona.net > w=
+rote:
+> >> >Max310x driver supports up to 4 UART devices but array size of
+> >> >"struct max310x_one" is set to 1. That leads to out of bounds
+> >> >access on UART port registration.
+> >> >
+> >> >This patch fixed it by increase the array size to 4 which is
+> >> >maximum supported UART.
+> >> >
+> >> >Signed-off-by: Su Kang Yin < cantona@cantona.net >
+> >> >---
+> > ...
+> >
+> > This seems incorrect. The number of ports is allocated dynamically =
+by:
+> > ...
+> > /* Alloc port structure */
+> > s =3D devm_kzalloc(dev, sizeof(*s) + sizeof(struct max310x_one) * d=
+evtype->nr, GFP_KERNEL);
+> > ...
+> >
+> > Thanks.
+> >
+> > ---
+> >
+>=20
+>=20
+> Oh, my bad.  But it looks confusing. So we must ensure "struct
+> max310x_one p[0]"  must the last element of "struct max310x_port".
 
-On 08/12/2015 07:18 AM, Noam Camus wrote:
-> From: Noam Camus <noamc@ezchip.com>
-> 
-> Add support for OF option "no-loopback-test"
-> 
-> use case: simulator which does not implements loopback test mode.
-
-I think Greg's question about the simulator still applies: why upstream this?
-The simulator is not even identified so how is someone supposed to know
-this workaround applies?
-
-The fact there are no in-tree DT users of this workaround argues against
-its acceptance.
-
-Regards,
-Peter Hurley
-
-
-> Signed-off-by: Noam Camus <noamc@ezchip.com>
-> ---
->  .../bindings/serial/snps-dw-apb-uart.txt           |    2 ++
->  drivers/tty/serial/8250/8250_dw.c                  |    3 +++
->  2 files changed, 5 insertions(+), 0 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-> index 289c40e..5d16047 100644
-> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
-> @@ -33,6 +33,8 @@ Optional properties:
->  - ri-override : Override the RI modem status signal. This signal will always be
->    reported as inactive instead of being obtained from the modem status register.
->    Define this if your serial port does not use this pin.
-> +- no-loopback-test: set to indicate that the port does not implements loopback
-> +  test mode
->  
->  Example:
->  
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 62f766a..0f397ae 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -394,6 +394,9 @@ static int dw8250_probe_of(struct uart_port *p,
->  		up->dma->txconf.dst_maxburst = p->fifosize / 4;
->  	}
->  
-> +	if (of_find_property(np, "no-loopback-test", NULL))
-> +		p->flags |= UPF_SKIP_TEST;
-> +
->  	if (!of_property_read_u32(np, "reg-shift", &val))
->  		p->regshift = val;
->  
-> 
+Yes, that is a very common pattern we use in the kernel.
