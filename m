@@ -1,49 +1,32 @@
-From: Su Kang Yin <cantona@cantona.net>
-Subject: [PATCH v2] serial: max310x: Fix out of bounds access
-Date: Wed, 12 Aug 2015 15:22:05 +0800
-Message-ID: <1439364125-19422-1-git-send-email-cantona@cantona.net>
+From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2Ml0gc2VyaWFsOiBtYXgzMTB4OiBGaXggb3V0IG9mIGJv?=
+ =?UTF-8?B?dW5kcyBhY2Nlc3M=?=
+Date: Wed, 12 Aug 2015 12:46:05 +0300
+Message-ID: <1439372765.705411926@f362.i.mail.ru>
+References: <1439364125-19422-1-git-send-email-cantona@cantona.net>
+ <CABJLtPHPCw7VN+wG4ApDxB-ZM7wRz_1xHfpNLL4o4_80JYyKaQ@mail.gmail.com>
+Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CABJLtPHPCw7VN+wG4ApDxB-ZM7wRz_1xHfpNLL4o4_80JYyKaQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Su Kang Yin <cantona@cantona.net>
+To: =?UTF-8?B?Y2FudG9uYQ==?= <cantona@cantona.net>
+Cc: =?UTF-8?B?SmlyaSBTbGFieQ==?= <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-Max310x driver supports up to 4 UART devices but array size of
-"struct max310x_one" is set to 1. That leads to out of bounds
-access on UART port registration.
-
-This patch fixed it by increase the array size to 4 which is
-maximum supported UART.
-
-Signed-off-by: Su Kang Yin <cantona@cantona.net>
----
-v2: add Signed-off-by: line.
-
- drivers/tty/serial/max310x.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 182549f..b523552 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -33,6 +33,9 @@
- #define MAX310X_MAJOR			204
- #define MAX310X_MINOR			209
- 
-+/* Maximum supported device */
-+#define MAX_DEVICE			4
-+
- /* MAX310X register definitions */
- #define MAX310X_RHR_REG			(0x00) /* RX FIFO */
- #define MAX310X_THR_REG			(0x00) /* TX FIFO */
-@@ -273,7 +276,7 @@ struct max310x_port {
- #ifdef CONFIG_GPIOLIB
- 	struct gpio_chip	gpio;
- #endif
--	struct max310x_one	p[0];
-+	struct max310x_one	p[MAX_DEVICE];
- };
- 
- static u8 max310x_port_read(struct uart_port *port, u8 reg)
--- 
-1.9.1
+PiDQodGA0LXQtNCwLCAxMiDQsNCy0LPRg9GB0YLQsCAyMDE1LCAxNTozNiArMDg6MDAg0L7RgiBj
+YW50b25hIDxjYW50b25hQGNhbnRvbmEubmV0PjoKPiAKPiAKPiBhZGRlZCBBbGV4YW5kZXIgU2hp
+eWFuIDwgc2hjX3dvcmtAbWFpbC5ydSA+Lgo+IAo+IE9uIDEyIEF1Z3VzdCAyMDE1IGF0IDE1OjIy
+LCBTdSBLYW5nIFlpbiAgPCBjYW50b25hQGNhbnRvbmEubmV0ID4gd3JvdGU6Cj4gPk1heDMxMHgg
+ZHJpdmVyIHN1cHBvcnRzIHVwIHRvIDQgVUFSVCBkZXZpY2VzIGJ1dCBhcnJheSBzaXplIG9mCj4g
+PiJzdHJ1Y3QgbWF4MzEweF9vbmUiIGlzIHNldCB0byAxLiBUaGF0IGxlYWRzIHRvIG91dCBvZiBi
+b3VuZHMKPiA+YWNjZXNzIG9uIFVBUlQgcG9ydCByZWdpc3RyYXRpb24uCj4gPgo+ID5UaGlzIHBh
+dGNoIGZpeGVkIGl0IGJ5IGluY3JlYXNlIHRoZSBhcnJheSBzaXplIHRvIDQgd2hpY2ggaXMKPiA+
+bWF4aW11bSBzdXBwb3J0ZWQgVUFSVC4KPiA+Cj4gPlNpZ25lZC1vZmYtYnk6IFN1IEthbmcgWWlu
+IDwgY2FudG9uYUBjYW50b25hLm5ldCA+Cj4gPi0tLQouLi4KClRoaXMgc2VlbXMgaW5jb3JyZWN0
+LiBUaGUgbnVtYmVyIG9mIHBvcnRzIGlzIGFsbG9jYXRlZCBkeW5hbWljYWxseSBieToKLi4uCi8q
+IEFsbG9jIHBvcnQgc3RydWN0dXJlICovCnMgPSBkZXZtX2t6YWxsb2MoZGV2LCBzaXplb2YoKnMp
+ICsgc2l6ZW9mKHN0cnVjdCBtYXgzMTB4X29uZSkgKiBkZXZ0eXBlLT5uciwgR0ZQX0tFUk5FTCk7
+Ci4uLgoKVGhhbmtzLgoKLS0tCgo=
