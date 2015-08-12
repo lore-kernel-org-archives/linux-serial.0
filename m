@@ -1,40 +1,99 @@
-From: Noam Camus <noamc@ezchip.com>
-Subject: RE: [v3 3/3] serial: 8250_dw: Add UPF_SKIP_TEST to flags depend on
- device tree
-Date: Wed, 12 Aug 2015 15:51:05 +0000
-Message-ID: <DB4PR02MB2722D091C4A40FC95B48070D67E0@DB4PR02MB272.eurprd02.prod.outlook.com>
-References: <1437886478-29273-1-git-send-email-noamc@ezchip.com>
- <1439378312-6463-1-git-send-email-noamc@ezchip.com>
- <1439378312-6463-2-git-send-email-noamc@ezchip.com>
- <1439378312-6463-3-git-send-email-noamc@ezchip.com>
- <1439378312-6463-4-git-send-email-noamc@ezchip.com>
- <55CB4740.7070703@hurleysoftware.com>
+From: Kevin Hilman <khilman@kernel.org>
+Subject: Re: [PATCHv2 6/8] serial: imx: add runtime pm support
+Date: Wed, 12 Aug 2015 12:32:09 -0700
+Message-ID: <7h1tf8pakm.fsf@deeprootsystems.com>
+References: <1439256949-626-1-git-send-email-edubezval@gmail.com>
+	<1439256949-626-7-git-send-email-edubezval@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55CB4740.7070703@hurleysoftware.com>
-Content-Language: en-US
+In-Reply-To: <1439256949-626-7-git-send-email-edubezval@gmail.com> (Eduardo
+	Valentin's message of "Mon, 10 Aug 2015 18:35:47 -0700")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "@codeaurora.orggalak@codeaurora.org" <IMCEAINVALID-+40codeaurora+2Eorggalak+40codeaurora+2Eorg@eurprd02.prod.outlook.com>, "fransklaver@gmail.com" <fransklaver@gmail.com>, "Alexey.Brodkin@synopsys.com" <Alexey.Brodkin@synopsys.com>, "vgupta@synopsys.com" <vgupta@synopsys.com>
+To: Eduardo Valentin <edubezval@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Estevam <festevam@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-PiBGcm9tOiBQZXRlciBIdXJsZXkgW21haWx0bzpwZXRlckBodXJsZXlzb2Z0d2FyZS5jb21dIA0K
-PiBTZW50OiBXZWRuZXNkYXksIEF1Z3VzdCAxMiwgMjAxNSA0OjE3IFBNDQoNCj4gSSB0aGluayBH
-cmVnJ3MgcXVlc3Rpb24gYWJvdXQgdGhlIHNpbXVsYXRvciBzdGlsbCBhcHBsaWVzOiB3aHkgdXBz
-dHJlYW0gdGhpcz8NCj4gVGhlIHNpbXVsYXRvciBpcyBub3QgZXZlbiBpZGVudGlmaWVkIHNvIGhv
-dyBpcyBzb21lb25lIHN1cHBvc2VkIHRvIGtub3cgdGhpcyB3b3JrYXJvdW5kIGFwcGxpZXM/DQoN
-Cj4gVGhlIGZhY3QgdGhlcmUgYXJlIG5vIGluLXRyZWUgRFQgdXNlcnMgb2YgdGhpcyB3b3JrYXJv
-dW5kIGFyZ3VlcyBhZ2FpbnN0IGl0cyBhY2NlcHRhbmNlLg0KDQpJIGFtIHVzaW5nIFVBUlQgcGVy
-aXBoZXJhbCBmb3IgU3lub3BzeXMgc2ltdWxhdG9yIHNhbWUgYXMgb25lIHVzZWQgYnkgYXJjaC9h
-cmMvcGxhdC1zaW0NCkkga25vdyB0aGlzIHBsYXRmb3JtIGRvIG5vdCB1c2UgQ09ORklHX1NFUklB
-TF84MjUwX0RXIGR1ZSB0byBzb21lIHByb2JsZW0gSSBzdXNwZWN0IGl0IGlzIHJlbGF0ZSB0byB0
-aGUgbG9vcCB0ZXN0Lg0KDQpNYXliZSBWaW5lZXQgR3VwdGEgb3IgQWxleGV5IEJyb2RraW4gZnJv
-bSBTeW5vcHN5cyB3aGljaCBhcmUgQ0MgaGVyZSBjYW4gY29tbWVudC4NCg0KU28gSXQganVzdCBo
-YXBwZW4gZm9yIG1lIHRvIGJlIGEgcGlvbmVlciB3aXRoIHRoaXMuDQoNCk1vcmUgdGhhbiB0aGF0
-ICJuby1sb29wYmFjay10ZXN0IiBpcyBhbiBvcHRpb24gYWxyZWFkeSBleGlzdCBmb3IgY29yZSA4
-MjUwLCBhbmQgc2luY2UgRFcgaXMgb25seSBhbiBleHRlbnNpb24gZm9yIHRoaXMgZHJpdmVyIGl0
-IHNob3VsZCBhbHNvIGJlbmVmaXQgZnJvbSB0aGlzIG9wdGlvbi4NCg0KSWYgYWxsIHRoaXMgaXMg
-eWV0IG5vdCBlbm91Z2gsIHNob3VsZCBJIHJlLXNlbmQgdGhpcyAicGF0Y2ggc2V0IiBhZ2FpbiB3
-aXRob3V0IHRoaXMgc3BlY2lmaWMgcGF0Y2g/DQoNClJlZ2FyZHMsDQpOb2FtIENhbXVzDQo=
+Eduardo Valentin <edubezval@gmail.com> writes:
+
+> This change introduces the runtime pm support on imx serial
+> driver. The objective is to be able to idle the uart
+> port whenever it is not in use while still being able
+> to wake it up when needed. The key changes in this patch are:
+> 1. Move the clock handling to runtime pm. Both, ipg and per,
+> are now handled in the suspend and resume callbacks. Only
+> enabling and disabling the clocks are handled in runtime
+> suspend and resume, so we are able to use runtime pm
+> in IRQ context.
+> 2. Clocks are prepared in probe and unprepared in remove,
+> so we do not need to prepare (may sleep) in runtime pm.
+> 3. We mark the device activity based on uart and console
+> callbacks. Whenever the device is needed and we want to
+> access registers, we runtime_pm_get and then mark its
+> last usage when we are done. This is done also across
+> IRQs and DMA callbacks.
+> 4. We reuse the infrastructure in place for suspend and
+> resume, so we do not need to redo wakeup configuration,
+> or context save and restore.
+>
+> After this change, the clocks are still sane, in the sense
+> of having balanced clock prepare and enable.
+>
+> Cc: Fabio Estevam <festevam@gmail.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
+
+[...]
+
+> +static int serial_imx_runtime_suspend(struct device *dev)
+> +{
+> +	struct imx_port *sport = dev_get_drvdata(dev);
+> +
+> +	if (!sport)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	* When using 'no_console_suspend', the console UART must not be
+> +	* suspended. Since driver suspend is managed by runtime suspend,
+> +	* preventing runtime suspend (by returning error) will keep device
+> +	* active during suspend.
+> +	*/
+> +	if (sport->is_suspending && !console_suspend_enabled &&
+> +	    uart_console(&sport->port))
+> +		return -EBUSY;
+> +
+> +	serial_imx_save_context(sport);
+> +	serial_imx_enable_wakeup(sport, true);
+> +
+> +	sport->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
+> +	schedule_work(&sport->qos_work);
+> +	clk_disable(sport->clk_per);
+> +	clk_disable(sport->clk_ipg);
+> +
+> +	return 0;
+> +}
+> +
+> +static int serial_imx_runtime_resume(struct device *dev)
+> +{
+> +	struct imx_port *sport = dev_get_drvdata(dev);
+> +
+> +	clk_enable(sport->clk_per);
+> +	clk_enable(sport->clk_ipg);
+> +	serial_imx_enable_wakeup(sport, false);
+> +
+> +	sport->latency = sport->calc_latency;
+> +	schedule_work(&sport->qos_work);
+> +	serial_imx_restore_context(sport);
+> +
+> +	return 0;
+> +}
+
+Looking at the clk usage in the_runtime_[suspend|resume] callbacks, did
+you consider using the runtime PM generic clock layer (pm_clk_*).  You
+can have a look at mach-shmobile for an example modern user of this, or
+mach-davinci for a legacy (pre-DT) way of using it.
+
+Kevin
