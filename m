@@ -1,60 +1,40 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2] serial: max310x: Fix out of bounds access
-Date: Wed, 12 Aug 2015 08:17:07 -0700
-Message-ID: <20150812151707.GB12397@kroah.com>
-References: <1439364125-19422-1-git-send-email-cantona@cantona.net>
- <CABJLtPHPCw7VN+wG4ApDxB-ZM7wRz_1xHfpNLL4o4_80JYyKaQ@mail.gmail.com>
- <1439372765.705411926@f362.i.mail.ru>
- <CABJLtPG7gfR8VSVfzRgF8XgON7F-mhfMu7C2an0sfQYLBNiLpg@mail.gmail.com>
+From: Noam Camus <noamc@ezchip.com>
+Subject: RE: [v3 3/3] serial: 8250_dw: Add UPF_SKIP_TEST to flags depend on
+ device tree
+Date: Wed, 12 Aug 2015 15:51:05 +0000
+Message-ID: <DB4PR02MB2722D091C4A40FC95B48070D67E0@DB4PR02MB272.eurprd02.prod.outlook.com>
+References: <1437886478-29273-1-git-send-email-noamc@ezchip.com>
+ <1439378312-6463-1-git-send-email-noamc@ezchip.com>
+ <1439378312-6463-2-git-send-email-noamc@ezchip.com>
+ <1439378312-6463-3-git-send-email-noamc@ezchip.com>
+ <1439378312-6463-4-git-send-email-noamc@ezchip.com>
+ <55CB4740.7070703@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CABJLtPG7gfR8VSVfzRgF8XgON7F-mhfMu7C2an0sfQYLBNiLpg@mail.gmail.com>
+In-Reply-To: <55CB4740.7070703@hurleysoftware.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kang Yin Su <cantona@cantona.net>
-Cc: Alexander Shiyan <shc_work@mail.ru>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "@codeaurora.orggalak@codeaurora.org" <IMCEAINVALID-+40codeaurora+2Eorggalak+40codeaurora+2Eorg@eurprd02.prod.outlook.com>, "fransklaver@gmail.com" <fransklaver@gmail.com>, "Alexey.Brodkin@synopsys.com" <Alexey.Brodkin@synopsys.com>, "vgupta@synopsys.com" <vgupta@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 12, 2015 at 07:50:25PM +0800, Kang Yin Su wrote:
-> On 12 August 2015 at 17:46, Alexander Shiyan <shc_work@mail.ru> wrote=
-:
-> >> =D0=A1=D1=80=D0=B5=D0=B4=D0=B0, 12 =D0=B0=D0=B2=D0=B3=D1=83=D1=81=D1=
-=82=D0=B0 2015, 15:36 +08:00 =D0=BE=D1=82 cantona <cantona@cantona.net>=
-:
-> >>
-> >>
-> >> added Alexander Shiyan < shc_work@mail.ru >.
-> >>
-> >> On 12 August 2015 at 15:22, Su Kang Yin  < cantona@cantona.net > w=
-rote:
-> >> >Max310x driver supports up to 4 UART devices but array size of
-> >> >"struct max310x_one" is set to 1. That leads to out of bounds
-> >> >access on UART port registration.
-> >> >
-> >> >This patch fixed it by increase the array size to 4 which is
-> >> >maximum supported UART.
-> >> >
-> >> >Signed-off-by: Su Kang Yin < cantona@cantona.net >
-> >> >---
-> > ...
-> >
-> > This seems incorrect. The number of ports is allocated dynamically =
-by:
-> > ...
-> > /* Alloc port structure */
-> > s =3D devm_kzalloc(dev, sizeof(*s) + sizeof(struct max310x_one) * d=
-evtype->nr, GFP_KERNEL);
-> > ...
-> >
-> > Thanks.
-> >
-> > ---
-> >
->=20
->=20
-> Oh, my bad.  But it looks confusing. So we must ensure "struct
-> max310x_one p[0]"  must the last element of "struct max310x_port".
-
-Yes, that is a very common pattern we use in the kernel.
+PiBGcm9tOiBQZXRlciBIdXJsZXkgW21haWx0bzpwZXRlckBodXJsZXlzb2Z0d2FyZS5jb21dIA0K
+PiBTZW50OiBXZWRuZXNkYXksIEF1Z3VzdCAxMiwgMjAxNSA0OjE3IFBNDQoNCj4gSSB0aGluayBH
+cmVnJ3MgcXVlc3Rpb24gYWJvdXQgdGhlIHNpbXVsYXRvciBzdGlsbCBhcHBsaWVzOiB3aHkgdXBz
+dHJlYW0gdGhpcz8NCj4gVGhlIHNpbXVsYXRvciBpcyBub3QgZXZlbiBpZGVudGlmaWVkIHNvIGhv
+dyBpcyBzb21lb25lIHN1cHBvc2VkIHRvIGtub3cgdGhpcyB3b3JrYXJvdW5kIGFwcGxpZXM/DQoN
+Cj4gVGhlIGZhY3QgdGhlcmUgYXJlIG5vIGluLXRyZWUgRFQgdXNlcnMgb2YgdGhpcyB3b3JrYXJv
+dW5kIGFyZ3VlcyBhZ2FpbnN0IGl0cyBhY2NlcHRhbmNlLg0KDQpJIGFtIHVzaW5nIFVBUlQgcGVy
+aXBoZXJhbCBmb3IgU3lub3BzeXMgc2ltdWxhdG9yIHNhbWUgYXMgb25lIHVzZWQgYnkgYXJjaC9h
+cmMvcGxhdC1zaW0NCkkga25vdyB0aGlzIHBsYXRmb3JtIGRvIG5vdCB1c2UgQ09ORklHX1NFUklB
+TF84MjUwX0RXIGR1ZSB0byBzb21lIHByb2JsZW0gSSBzdXNwZWN0IGl0IGlzIHJlbGF0ZSB0byB0
+aGUgbG9vcCB0ZXN0Lg0KDQpNYXliZSBWaW5lZXQgR3VwdGEgb3IgQWxleGV5IEJyb2RraW4gZnJv
+bSBTeW5vcHN5cyB3aGljaCBhcmUgQ0MgaGVyZSBjYW4gY29tbWVudC4NCg0KU28gSXQganVzdCBo
+YXBwZW4gZm9yIG1lIHRvIGJlIGEgcGlvbmVlciB3aXRoIHRoaXMuDQoNCk1vcmUgdGhhbiB0aGF0
+ICJuby1sb29wYmFjay10ZXN0IiBpcyBhbiBvcHRpb24gYWxyZWFkeSBleGlzdCBmb3IgY29yZSA4
+MjUwLCBhbmQgc2luY2UgRFcgaXMgb25seSBhbiBleHRlbnNpb24gZm9yIHRoaXMgZHJpdmVyIGl0
+IHNob3VsZCBhbHNvIGJlbmVmaXQgZnJvbSB0aGlzIG9wdGlvbi4NCg0KSWYgYWxsIHRoaXMgaXMg
+eWV0IG5vdCBlbm91Z2gsIHNob3VsZCBJIHJlLXNlbmQgdGhpcyAicGF0Y2ggc2V0IiBhZ2FpbiB3
+aXRob3V0IHRoaXMgc3BlY2lmaWMgcGF0Y2g/DQoNClJlZ2FyZHMsDQpOb2FtIENhbXVzDQo=
