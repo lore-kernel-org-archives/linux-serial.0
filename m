@@ -1,7 +1,7 @@
 From: Su Kang Yin <cantona@cantona.net>
-Subject: [PATCH] serial: max310x: Fix out of bounds access
-Date: Wed, 12 Aug 2015 13:33:52 +0800
-Message-ID: <1439357632-14745-1-git-send-email-cantona@cantona.net>
+Subject: [PATCH v2] serial: max310x: Fix out of bounds access
+Date: Wed, 12 Aug 2015 15:22:05 +0800
+Message-ID: <1439364125-19422-1-git-send-email-cantona@cantona.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -14,7 +14,11 @@ access on UART port registration.
 
 This patch fixed it by increase the array size to 4 which is
 maximum supported UART.
+
+Signed-off-by: Su Kang Yin <cantona@cantona.net>
 ---
+v2: add Signed-off-by: line.
+
  drivers/tty/serial/max310x.c | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
