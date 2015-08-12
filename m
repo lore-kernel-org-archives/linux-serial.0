@@ -1,32 +1,56 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2Ml0gc2VyaWFsOiBtYXgzMTB4OiBGaXggb3V0IG9mIGJv?=
- =?UTF-8?B?dW5kcyBhY2Nlc3M=?=
-Date: Wed, 12 Aug 2015 12:46:05 +0300
-Message-ID: <1439372765.705411926@f362.i.mail.ru>
+From: Kang Yin Su <cantona@cantona.net>
+Subject: Re: [PATCH v2] serial: max310x: Fix out of bounds access
+Date: Wed, 12 Aug 2015 19:50:25 +0800
+Message-ID: <CABJLtPG7gfR8VSVfzRgF8XgON7F-mhfMu7C2an0sfQYLBNiLpg@mail.gmail.com>
 References: <1439364125-19422-1-git-send-email-cantona@cantona.net>
- <CABJLtPHPCw7VN+wG4ApDxB-ZM7wRz_1xHfpNLL4o4_80JYyKaQ@mail.gmail.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+	<CABJLtPHPCw7VN+wG4ApDxB-ZM7wRz_1xHfpNLL4o4_80JYyKaQ@mail.gmail.com>
+	<1439372765.705411926@f362.i.mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CABJLtPHPCw7VN+wG4ApDxB-ZM7wRz_1xHfpNLL4o4_80JYyKaQ@mail.gmail.com>
+In-Reply-To: <1439372765.705411926@f362.i.mail.ru>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?B?Y2FudG9uYQ==?= <cantona@cantona.net>
-Cc: =?UTF-8?B?SmlyaSBTbGFieQ==?= <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-PiDQodGA0LXQtNCwLCAxMiDQsNCy0LPRg9GB0YLQsCAyMDE1LCAxNTozNiArMDg6MDAg0L7RgiBj
-YW50b25hIDxjYW50b25hQGNhbnRvbmEubmV0PjoKPiAKPiAKPiBhZGRlZCBBbGV4YW5kZXIgU2hp
-eWFuIDwgc2hjX3dvcmtAbWFpbC5ydSA+Lgo+IAo+IE9uIDEyIEF1Z3VzdCAyMDE1IGF0IDE1OjIy
-LCBTdSBLYW5nIFlpbiAgPCBjYW50b25hQGNhbnRvbmEubmV0ID4gd3JvdGU6Cj4gPk1heDMxMHgg
-ZHJpdmVyIHN1cHBvcnRzIHVwIHRvIDQgVUFSVCBkZXZpY2VzIGJ1dCBhcnJheSBzaXplIG9mCj4g
-PiJzdHJ1Y3QgbWF4MzEweF9vbmUiIGlzIHNldCB0byAxLiBUaGF0IGxlYWRzIHRvIG91dCBvZiBi
-b3VuZHMKPiA+YWNjZXNzIG9uIFVBUlQgcG9ydCByZWdpc3RyYXRpb24uCj4gPgo+ID5UaGlzIHBh
-dGNoIGZpeGVkIGl0IGJ5IGluY3JlYXNlIHRoZSBhcnJheSBzaXplIHRvIDQgd2hpY2ggaXMKPiA+
-bWF4aW11bSBzdXBwb3J0ZWQgVUFSVC4KPiA+Cj4gPlNpZ25lZC1vZmYtYnk6IFN1IEthbmcgWWlu
-IDwgY2FudG9uYUBjYW50b25hLm5ldCA+Cj4gPi0tLQouLi4KClRoaXMgc2VlbXMgaW5jb3JyZWN0
-LiBUaGUgbnVtYmVyIG9mIHBvcnRzIGlzIGFsbG9jYXRlZCBkeW5hbWljYWxseSBieToKLi4uCi8q
-IEFsbG9jIHBvcnQgc3RydWN0dXJlICovCnMgPSBkZXZtX2t6YWxsb2MoZGV2LCBzaXplb2YoKnMp
-ICsgc2l6ZW9mKHN0cnVjdCBtYXgzMTB4X29uZSkgKiBkZXZ0eXBlLT5uciwgR0ZQX0tFUk5FTCk7
-Ci4uLgoKVGhhbmtzLgoKLS0tCgo=
+On 12 August 2015 at 17:46, Alexander Shiyan <shc_work@mail.ru> wrote:
+>> =D0=A1=D1=80=D0=B5=D0=B4=D0=B0, 12 =D0=B0=D0=B2=D0=B3=D1=83=D1=81=D1=
+=82=D0=B0 2015, 15:36 +08:00 =D0=BE=D1=82 cantona <cantona@cantona.net>=
+:
+>>
+>>
+>> added Alexander Shiyan < shc_work@mail.ru >.
+>>
+>> On 12 August 2015 at 15:22, Su Kang Yin  < cantona@cantona.net > wro=
+te:
+>> >Max310x driver supports up to 4 UART devices but array size of
+>> >"struct max310x_one" is set to 1. That leads to out of bounds
+>> >access on UART port registration.
+>> >
+>> >This patch fixed it by increase the array size to 4 which is
+>> >maximum supported UART.
+>> >
+>> >Signed-off-by: Su Kang Yin < cantona@cantona.net >
+>> >---
+> ...
+>
+> This seems incorrect. The number of ports is allocated dynamically by=
+:
+> ...
+> /* Alloc port structure */
+> s =3D devm_kzalloc(dev, sizeof(*s) + sizeof(struct max310x_one) * dev=
+type->nr, GFP_KERNEL);
+> ...
+>
+> Thanks.
+>
+> ---
+>
+
+
+Oh, my bad.  But it looks confusing. So we must ensure "struct
+max310x_one p[0]"  must the last element of "struct max310x_port".
+
+Thanks.
