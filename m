@@ -1,143 +1,84 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [RFC 3/3] serial: 8250_omap: try to avoid IER_RDI with DMA
-Date: Fri, 14 Aug 2015 18:01:04 +0200
-Message-ID: <1439568064-7907-3-git-send-email-bigeasy@linutronix.de>
-References: <1439568064-7907-1-git-send-email-bigeasy@linutronix.de>
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3] serial: 8250: Fix autoconfig_irq() to avoid race
+ conditions
+Date: Fri, 14 Aug 2015 17:10:39 -0700
+Message-ID: <20150815001039.GA4885@kroah.com>
+References: <1439165707-2082-1-git-send-email-t-kageyama@cp.jp.nec.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439568064-7907-1-git-send-email-bigeasy@linutronix.de>
+Content-Disposition: inline
+In-Reply-To: <1439165707-2082-1-git-send-email-t-kageyama@cp.jp.nec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: peter@hurleysoftware.com
-Cc: linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+Cc: "tglx@linutronix.de" <tglx@linutronix.de>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-It has been observed on DRA7-evm that the UART triggers the interrupt and
-reading IIR says IIR_NO_INT. It seems that we receive data via RX-DMA
-but the interrupt is triggered anyway. I have hardly observed it on
-AM335x and not in *that* quantity. On DRA7-evm with continuous transfers
-at 3MBaud and CPU running at 1.5Ghz it is possible that the IRQ-core will
-close the UART interrupt after "some time" with "nobody cared".
+On Mon, Aug 10, 2015 at 12:15:40AM +0000, Taichi Kageyama wrote:
+> The following race conditions can happen when a serial port is used
+> as console.
+> 
+> Case1: CPU_B is used to detect an interrupt from a serial port,
+>        but it can have interrupts disabled during the waiting time.
+> Case2: CPU_B clears UART_IER just after CPU_A sets UART_IER and then
+>        a serial port may not make an interrupt.
+> Case3: CPU_A sets UART_IER just after CPU_B clears UART_IER.
+>        This is an unexpected behavior for serial8250_console_write().
+> 
+> CPU_A [autoconfig_irq]      |  CPU_B [serial8250_console_write]
+> ----------------------------|---------------------------------------
+>                             |
+> probe_irq_on()              |  spin_lock_irqsave(&port->lock,)
+> serial_outp(,UART_IER,0x0f) |  serial_out(,UART_IER,0)
+> udelay(20);                 |  uart_console_write()
+> probe_irq_off()             |
+>                             |  spin_unlock_irqrestore(&port->lock,)
+> 
+> Case1 and 2 can make autoconfig_irq() failed.
+> In these cases, the console doesn't work in interrupt mode and
+> "input overrun" (which can make operation mistakes) can happen
+> on some systems. Especially in the Case1, It is known that the
+> problem happens with high rate every boot once it occurs
+> because the boot sequence is always almost same.
+> 
+> port mutex makes sure that the autoconfig operation is exclusive of
+> any other concurrent HW access except by the console operation.
+> console lock is required in autoconfig_irq().
+> 
+> Signed-off-by: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+> Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/serial/8250/8250_core.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git v4.2-rc4.org/drivers/tty/serial/8250/8250_core.c v4.2-rc4.work/drivers/tty/serial/8250/8250_core.c
+> index 37fff12..ed1e23e 100644
+> --- v4.2-rc4.org/drivers/tty/serial/8250/8250_core.c
+> +++ v4.2-rc4.work/drivers/tty/serial/8250/8250_core.c
+> @@ -1303,6 +1303,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
+>  		inb_p(ICP);
+>  	}
+>  
+> +	if (uart_console(port))
+> +		console_lock();
+> +
+>  	/* forget possible initially masked and pending IRQ */
+>  	probe_irq_off(probe_irq_on());
+>  	save_mcr = serial_in(up, UART_MCR);
+> @@ -1334,6 +1337,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
+>  	if (port->flags & UPF_FOURPORT)
+>  		outb_p(save_ICP, ICP);
+>  
+> +	if (uart_console(port))
+> +		console_unlock();
+> +
+>  	port->irq = (irq > 0) ? irq : 0;
+>  }
 
-I've seen that by not enabling IER_RDI those spurious interrupts are not
-triggered. Also it seems that DMA and RDI cause the "timeout interrupt"
-which does not allow RX-DMA to be scheduled even if the FIFO reached the
-programmed RX threshold. However without RDI we don't get a notification
-if we have less than RX threshold bytes in the FIFO.
-This is where we have the rx_dma_wd timer. After programming the RX-DMA
-transfer wait HZ / 4 or 250ms for it to complete. If it does not
-complete in that time span we cancel the DMA transfer and enable RDI.
-RDI will trigger an UART interrupt in case we have bytes in the FIFO.
-Once we read bytes manually from the FIFO we enable RX-DMA again
-(without RDI) with the same 250ms timeout.
+This doesn't apply to my tty-next tree at all.  Can you please rebase it
+and resend?
 
-One downside with this approach is that latency sensitive protocols that
-transfer less than 48 bytes will have to wait 250ms to complete.
+thanks,
 
-Is there maybe a user interface where one could set small or bulk transfers?
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/tty/serial/8250/8250_omap.c | 33 ++++++++++++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 383f143b6b36..68d03553617b 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -113,6 +113,7 @@ struct omap8250_priv {
- 	struct uart_8250_dma omap8250_dma;
- 	spinlock_t rx_dma_lock;
- 	bool rx_dma_broken;
-+	struct timer_list rx_dma_wd;
- };
- 
- static u32 uart_read(struct uart_8250_port *up, u32 reg)
-@@ -599,6 +600,7 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 	return IRQ_RETVAL(ret);
- }
- 
-+static void omap8250_rx_dma_wd(unsigned long data);
- static int omap_8250_startup(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
-@@ -627,6 +629,10 @@ static int omap_8250_startup(struct uart_port *port)
- 			dev_warn_ratelimited(port->dev,
- 					     "failed to request DMA\n");
- 			up->dma = NULL;
-+		} else {
-+			init_timer(&priv->rx_dma_wd);
-+			priv->rx_dma_wd.function = omap8250_rx_dma_wd;
-+			priv->rx_dma_wd.data = (unsigned long) up;
- 		}
- 	}
- 
-@@ -635,7 +641,9 @@ static int omap_8250_startup(struct uart_port *port)
- 	if (ret < 0)
- 		goto err;
- 
--	up->ier = UART_IER_RLSI | UART_IER_RDI;
-+	up->ier = UART_IER_RLSI;
-+	if (!up->dma->rxchan)
-+		up->ier |= UART_IER_RDI;
- 	serial_out(up, UART_IER, up->ier);
- 
- #ifdef CONFIG_PM
-@@ -670,6 +678,8 @@ static void omap_8250_shutdown(struct uart_port *port)
- 	if (up->dma)
- 		up->dma->rx_dma(up, UART_IIR_RX_TIMEOUT);
- 
-+	del_timer_sync(&priv->rx_dma_wd);
-+
- 	pm_runtime_get_sync(port->dev);
- 
- 	serial_out(up, UART_OMAP_WER, 0);
-@@ -846,6 +856,9 @@ static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
- 	if (dma->rx_running)
- 		goto out;
- 
-+	if (p->ier & UART_IER_RDI)
-+		goto out;
-+
- 	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
- 					   dma->rx_size, DMA_DEV_TO_MEM,
- 					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
-@@ -864,6 +877,7 @@ static int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
- 				   dma->rx_size, DMA_FROM_DEVICE);
- 
- 	dma_async_issue_pending(dma->rxchan);
-+	mod_timer(&priv->rx_dma_wd, jiffies + HZ / 4);
- out:
- 	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
- 	return err;
-@@ -1044,6 +1058,9 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
- 		dma_err = omap_8250_rx_dma(up, iir);
- 		if (dma_err) {
- 			status = serial8250_rx_chars(up, status);
-+
-+			up->ier &= ~UART_IER_RDI;
-+			serial_port_out(port, UART_IER, up->ier);
- 			omap_8250_rx_dma(up, 0);
- 		}
- 	}
-@@ -1069,6 +1086,20 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
- 	return 1;
- }
- 
-+static void omap8250_rx_dma_wd(unsigned long data)
-+{
-+	struct uart_8250_port	*up = (void *) data;
-+	struct uart_port	*port = &up->port;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	omap_8250_rx_dma_flush(up);
-+	up->ier |= UART_IER_RDI;
-+	serial_port_out(port, UART_IER, up->ier);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
- static bool the_no_dma_filter_fn(struct dma_chan *chan, void *param)
- {
- 	return false;
--- 
-2.5.0
+greg k-h
