@@ -1,119 +1,134 @@
-From: Eduardo Valentin <edubezval@gmail.com>
-Subject: [PATCHv4 3/4] serial: imx: add pm_qos request
-Date: Fri, 14 Aug 2015 21:37:47 -0700
-Message-ID: <1439613468-22366-4-git-send-email-edubezval@gmail.com>
-References: <1439613468-22366-1-git-send-email-edubezval@gmail.com>
+From: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: [PATCHv3] serial: don't register CIR serial ports
+Date: Sat, 15 Aug 2015 19:25:35 +0200
+Message-ID: <55CF760F.50303@maciej.szmigiero.name>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439613468-22366-1-git-send-email-edubezval@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Estevam <festevam@gmail.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Eduardo Valentin <edubezval@gmail.com>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-This change introduces pm_qos requests in the imx serial driver.
-The idea is to skip deeper C-state in case we need a strict
-latency requirement in the uart port. The latency is
-computed based on the buffer size and the current baud rate.
-We schedule a work queue to set the pm qos requirement.
+CIR type serial ports aren't real serial ports.
 
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
+This is just a way to prevent legacy 8250 serial
+driver from probing and eventually binding some
+resources.
+
+Since in current state such ports aren't providing
+any real functionality and it is not possible
+to change their type via setserial/ioctl(TIOCSSERIAL)
+(due to UPF_FIXED_PORT flag set on them)
+it is simpler and cleaner to not register them at all
+with serial core.
+
+Print a short message in this case so it is known
+to user what has happened.
+
+This way checks for PORT_8250_CIR in serial port
+callbacks can be removed too, since they won't
+ever be called.
+
+Signed-off-by: Maciej Szmigiero <mail@maciej.szmigiero.name>
 ---
- drivers/tty/serial/imx.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+This replaces "serial: don't announce CIR serial ports"
+submission.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index d9ccf6b..24ed0fa 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -42,6 +42,7 @@
- #include <linux/pm.h>
- #include <linux/pm_runtime.h>
- #include <linux/pm_wakeup.h>
-+#include <linux/pm_qos.h>
+Changes from v1: print message using dev_info().
+
+Changes from v2: added specific code in
+serial8250_register_ports() regarding not adding
+PORT_8250_CIR-type ports, updated to changes in
+tty-testing branch.
+
+ drivers/tty/serial/8250/8250_core.c | 26 ++++++++++++++++++++------
+ drivers/tty/serial/8250/8250_port.c | 14 +-------------
+ 2 files changed, 21 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index cfbb9d7..2308ff8 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -569,6 +569,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+ 	for (i = 0; i < nr_uarts; i++) {
+ 		struct uart_8250_port *up = &serial8250_ports[i];
  
- #include <asm/irq.h>
- #include <linux/platform_data/serial-imx.h>
-@@ -222,6 +223,10 @@ struct imx_port {
- 	unsigned int            saved_reg[10];
- 	bool			context_saved;
++		if (up->port.type == PORT_8250_CIR)
++			continue;
++
+ 		if (up->port.dev)
+ 			continue;
  
-+	struct pm_qos_request	pm_qos_request;
-+	u32			latency;
-+	u32			calc_latency;
-+	struct work_struct	qos_work;
- 	bool			is_suspending;
- };
+@@ -1027,13 +1030,24 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 		if (up->dl_write)
+ 			uart->dl_write = up->dl_write;
  
-@@ -1320,6 +1325,14 @@ static void imx_flush_buffer(struct uart_port *port)
- 	pm_runtime_put_autosuspend(sport->port.dev);
+-		if (serial8250_isa_config != NULL)
+-			serial8250_isa_config(0, &uart->port,
+-					&uart->capabilities);
++		if (uart->port.type != PORT_8250_CIR) {
++			if (serial8250_isa_config != NULL)
++				serial8250_isa_config(0, &uart->port,
++						&uart->capabilities);
++
++			ret = uart_add_one_port(&serial8250_reg,
++						&uart->port);
++			if (ret == 0)
++				ret = uart->port.line;
++		} else {
++			dev_info(uart->port.dev,
++				"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
++				uart->port.iobase,
++				(unsigned long long)uart->port.mapbase,
++				uart->port.irq);
+ 
+-		ret = uart_add_one_port(&serial8250_reg, &uart->port);
+-		if (ret == 0)
+-			ret = uart->port.line;
++			ret = 0;
++		}
+ 	}
+ 	mutex_unlock(&serial_mutex);
+ 
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 54e6c8d..138a36f 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1799,9 +1799,6 @@ int serial8250_do_startup(struct uart_port *port)
+ 	unsigned char lsr, iir;
+ 	int retval;
+ 
+-	if (port->type == PORT_8250_CIR)
+-		return -ENODEV;
+-
+ 	if (!port->fifosize)
+ 		port->fifosize = uart_config[port->type].fifo_size;
+ 	if (!up->tx_loadsz)
+@@ -2505,14 +2502,8 @@ static void serial8250_release_port(struct uart_port *port)
+ static int serial8250_request_port(struct uart_port *port)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+-	int ret;
+-
+-	if (port->type == PORT_8250_CIR)
+-		return -ENODEV;
+ 
+-	ret = serial8250_request_std_resource(up);
+-
+-	return ret;
++	return serial8250_request_std_resource(up);
  }
  
-+static void serial_imx_uart_qos_work(struct work_struct *work)
-+{
-+	struct imx_port *sport = container_of(work, struct imx_port,
-+						qos_work);
-+
-+	pm_qos_update_request(&sport->pm_qos_request, sport->latency);
-+}
-+
- static void
- imx_set_termios(struct uart_port *port, struct ktermios *termios,
- 		   struct ktermios *old)
-@@ -1393,6 +1406,12 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
- 	quot = uart_get_divisor(port, baud);
+ static int fcr_get_rxtrig_bytes(struct uart_8250_port *up)
+@@ -2660,9 +2651,6 @@ static void serial8250_config_port(struct uart_port *port, int flags)
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	int ret;
  
-+	/* calculate wakeup latency constraint */
-+	sport->calc_latency = (USEC_PER_SEC * sport->port.fifosize) /
-+								(baud / 8);
-+	sport->latency = sport->calc_latency;
-+	schedule_work(&sport->qos_work);
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask = 0;
-@@ -2012,6 +2031,11 @@ static int serial_imx_probe(struct platform_device *pdev)
- 
- 	imx_ports[sport->port.line] = sport;
- 
-+	sport->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
-+	sport->calc_latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
-+	pm_qos_add_request(&sport->pm_qos_request, PM_QOS_CPU_DMA_LATENCY,
-+			   sport->latency);
-+	INIT_WORK(&sport->qos_work, serial_imx_uart_qos_work);
- 	platform_set_drvdata(pdev, sport);
- 
- 	device_init_wakeup(sport->port.dev, true);
-@@ -2041,6 +2065,7 @@ static int serial_imx_remove(struct platform_device *pdev)
- 	clk_unprepare(sport->clk_per);
- 	clk_unprepare(sport->clk_ipg);
- 	ret = uart_remove_one_port(&imx_reg, &sport->port);
-+	pm_qos_remove_request(&sport->pm_qos_request);
- 	device_init_wakeup(&pdev->dev, false);
- 
- 	return ret;
-@@ -2119,6 +2144,8 @@ static int serial_imx_runtime_suspend(struct device *dev)
- 	serial_imx_save_context(sport);
- 	serial_imx_enable_wakeup(sport, true);
- 
-+	sport->latency = PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE;
-+	schedule_work(&sport->qos_work);
- 	clk_disable(sport->clk_per);
- 	clk_disable(sport->clk_ipg);
- 
-@@ -2140,6 +2167,8 @@ static int serial_imx_runtime_resume(struct device *dev)
- 	}
- 	serial_imx_enable_wakeup(sport, false);
- 
-+	sport->latency = sport->calc_latency;
-+	schedule_work(&sport->qos_work);
- 	serial_imx_restore_context(sport);
- 
- 	return 0;
--- 
-2.5.0
+-	if (port->type == PORT_8250_CIR)
+-		return;
+-
+ 	/*
+ 	 * Find the region that we can probe for.  This in turn
+ 	 * tells us whether we can probe for the type of port.
