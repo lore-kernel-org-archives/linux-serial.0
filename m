@@ -1,87 +1,44 @@
-From: Anirudha Sarangi <anirudha.sarangi@xilinx.com>
-Subject: RE: [PATCH 2/4] serial: xuartps: Do not handle overrun errors under
- IGNPAR option
-Date: Mon, 17 Aug 2015 18:07:00 +0000
-Message-ID: <59506B47DEDD3943ABF9AC60020F4E2978D6EDC0@XAP-PVEXMBX02.xlnx.xilinx.com>
-References: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com>
- <41df6eb35d69801afa5b686a6974e3c3bf65178a.1439796149.git.michal.simek@xilinx.com>
- <55D20297.6010500@hurleysoftware.com>
- <59506B47DEDD3943ABF9AC60020F4E2978D6E7FF@XAP-PVEXMBX02.xlnx.xilinx.com>
- <55D20992.60302@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 4/4] serial: xuartps: Rewrite the interrupt handling logic
+Date: Mon, 17 Aug 2015 14:46:26 -0400
+Message-ID: <55D22C02.5000702@hurleysoftware.com>
+References: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com> <ead0c38140e815133a47797a2527229a2fc077c1.1439796149.git.michal.simek@xilinx.com> <55D2040F.1010205@hurleysoftware.com> <59506B47DEDD3943ABF9AC60020F4E2978D6E80A@XAP-PVEXMBX02.xlnx.xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55D20992.60302@hurleysoftware.com>
-Content-Language: en-US
+In-Reply-To: <59506B47DEDD3943ABF9AC60020F4E2978D6E80A@XAP-PVEXMBX02.xlnx.xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Michal Simek <michals@xilinx.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "monstr@monstr.eu" <monstr@monstr.eu>, Soren Brinkmann <sorenb@xilinx.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Anirudha Sarangi <anirudha.sarangi@xilinx.com>
+Cc: Michal Simek <michals@xilinx.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "monstr@monstr.eu" <monstr@monstr.eu>, Soren Brinkmann <sorenb@xilinx.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGV0ZXIgSHVybGV5
-IFttYWlsdG86cGV0ZXJAaHVybGV5c29mdHdhcmUuY29tXQ0KPiBTZW50OiBNb25kYXksIEF1Z3Vz
-dCAxNywgMjAxNSA5OjUwIFBNDQo+IFRvOiBBbmlydWRoYSBTYXJhbmdpOyBNaWNoYWwgU2ltZWsN
-Cj4gQ2M6IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IG1vbnN0ckBtb25zdHIuZXU7IFNv
-cmVuIEJyaW5rbWFubjsgSmlyaQ0KPiBTbGFieTsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9y
-ZzsgR3JlZyBLcm9haC1IYXJ0bWFuOyBsaW51eC1hcm0tDQo+IGtlcm5lbEBsaXN0cy5pbmZyYWRl
-YWQub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMi80XSBzZXJpYWw6IHh1YXJ0cHM6IERvIG5v
-dCBoYW5kbGUgb3ZlcnJ1biBlcnJvcnMgdW5kZXINCj4gSUdOUEFSIG9wdGlvbg0KPg0KPiBPbiAw
-OC8xNy8yMDE1IDExOjU4IEFNLCBBbmlydWRoYSBTYXJhbmdpIHdyb3RlOg0KPiA+IEhpLA0KPiA+
-DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IFBldGVyIEh1cmxl
-eSBbbWFpbHRvOnBldGVyQGh1cmxleXNvZnR3YXJlLmNvbV0NCj4gPj4gU2VudDogTW9uZGF5LCBB
-dWd1c3QgMTcsIDIwMTUgOToyMCBQTQ0KPiA+PiBUbzogTWljaGFsIFNpbWVrDQo+ID4+IENjOiBs
-aW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBtb25zdHJAbW9uc3RyLmV1OyBBbmlydWRoYSBT
-YXJhbmdpOw0KPiA+PiBTb3JlbiBCcmlua21hbm47IEppcmkgU2xhYnk7IGxpbnV4LXNlcmlhbEB2
-Z2VyLmtlcm5lbC5vcmc7IEdyZWcNCj4gPj4gS3JvYWgtSGFydG1hbjsgbGludXgtIGFybS1rZXJu
-ZWxAbGlzdHMuaW5mcmFkZWFkLm9yZw0KPiA+PiBTdWJqZWN0OiBSZTogW1BBVENIIDIvNF0gc2Vy
-aWFsOiB4dWFydHBzOiBEbyBub3QgaGFuZGxlIG92ZXJydW4NCj4gPj4gZXJyb3JzIHVuZGVyIElH
-TlBBUiBvcHRpb24NCj4gPj4NCj4gPj4gT24gMDgvMTcvMjAxNSAwMzoyMiBBTSwgTWljaGFsIFNp
-bWVrIHdyb3RlOg0KPiA+Pj4gRnJvbTogQW5pcnVkaGEgU2FyYW5naSA8YW5pcnVkaGEuc2FyYW5n
-aUB4aWxpbnguY29tPg0KPiA+Pj4NCj4gPj4+IFRoZSBleGlzdGluZyBpbXBsZW1lbnRhdGlvbiBp
-bmNsdWRlcyBvdmVycnVuIGVycm9ycyB1bmRlciBJR05QQVINCj4gPj4+IG9wdGlvbi4gVGhpcyBw
-YXRjaCBmaXhlcyBpdCBieSBpbmNsdWRpbmcgb25seSBwYXJpdHkgYW5kIGZyYW1pbmcNCj4gPj4+
-IGVycm9yIHVuZGVyIElHTlBBUiBvcHRpb24uDQo+ID4+DQo+ID4+IFRoZSBjb252ZW50aW9uIGFk
-b3B0ZWQgYnkgTGludXggc2VyaWFsIGRyaXZlcnMgaXMgdG8gaWdub3JlIG92ZXJydW4NCj4gPj4g
-ZXJyb3JzIGlmIGJvdGggSUdOUEFSIGFuZCBJR05CUksgYXJlIHNldC4NCj4gPj4NCj4gPiBJIGp1
-c3QgZm9sbG93ZWQgdGhlIHNldF90ZXJtaW9zIGRvY3VtZW50YXRpb24sIHdoaWNoIHNheXMgdGhh
-dCBJR05QQVIgaXMgZm9yDQo+IHBhcml0eSBhbmQgZnJhbWluZy4NCj4gPiBUaGUgY3VycmVudCBj
-b250cm9sbGVyIGRvZXMgbm90IHN1cHBvcnQgYnJlYWsgZGV0ZWN0aW9uIHJlbGlhYmx5Lg0KPiA+
-IFRoYXQgaXMgcHJvYmFibHkgd2h5IHdlIGRvbuKAmXQgaGF2ZSBJR05CUksuDQo+DQo+IE15IHBv
-aW50IGlzIGFib3V0IGhvdyBhIHVzZXItc3BhY2UgcHJvY2VzcyB0ZWxscyB0aGUgc2VyaWFsIGRy
-aXZlciB0byBpZ25vcmUNCj4gb3ZlcnJ1biBlcnJvcnMsIGFzIHdlbGwsIGFuZCBub3Qgc3BlY2lm
-aWNhbGx5IGFib3V0IGJyZWFrIGhhbmRsaW5nLg0KPg0KSSB1bmRlcnN0YW5kIGFuZCB0aGlzIHBh
-cnRpY3VsYXIgY2hhbmdlIGlzIG5vdCB2ZXJ5IGltcG9ydGFudCBpbiB0aGUgcGF0Y2ggc2V0Lg0K
-SSBjYW4gaGFwcGlseSByZW1vdmUgaXQuDQoNClJlZ2FyZHMNCkFuaXJ1ZGhhDQo+ID4NCj4gPiBS
-ZWdhcmRzDQo+ID4gQW5pcnVkaGENCj4gPg0KPiA+PiBSZWdhcmRzLA0KPiA+PiBQZXRlciBIdXJs
-ZXkNCj4gPj4NCj4gPj4+IFNpZ25lZC1vZmYtYnk6IEFuaXJ1ZGhhIFNhcmFuZ2kgPGFuaXJ1ZGhA
-eGlsaW54LmNvbT4NCj4gPj4+IFNpZ25lZC1vZmYtYnk6IE1pY2hhbCBTaW1layA8bWljaGFsLnNp
-bWVrQHhpbGlueC5jb20+DQo+ID4+PiAtLS0NCj4gPj4+DQo+ID4+PiAgZHJpdmVycy90dHkvc2Vy
-aWFsL3hpbGlueF91YXJ0cHMuYyB8IDIgKy0NCj4gPj4+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNl
-cnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gPj4+DQo+ID4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy90dHkvc2VyaWFsL3hpbGlueF91YXJ0cHMuYw0KPiA+Pj4gYi9kcml2ZXJzL3R0eS9zZXJpYWwv
-eGlsaW54X3VhcnRwcy5jDQo+ID4+PiBpbmRleCBhMzAyMDM0NGFjOWQuLmM0NDM3ZTg5MjlmZiAx
-MDA2NDQNCj4gPj4+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC94aWxpbnhfdWFydHBzLmMNCj4g
-Pj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC94aWxpbnhfdWFydHBzLmMNCj4gPj4+IEBAIC02
-OTEsNyArNjkxLDcgQEAgc3RhdGljIHZvaWQgY2Ruc191YXJ0X3NldF90ZXJtaW9zKHN0cnVjdA0K
-PiA+Pj4gdWFydF9wb3J0ICpwb3J0LA0KPiA+Pj4NCj4gPj4+ICAgICBpZiAodGVybWlvcy0+Y19p
-ZmxhZyAmIElHTlBBUikNCj4gPj4+ICAgICAgICAgICAgIHBvcnQtPmlnbm9yZV9zdGF0dXNfbWFz
-ayB8PSBDRE5TX1VBUlRfSVhSX1BBUklUWSB8DQo+ID4+PiAtICAgICAgICAgICAgICAgICAgIENE
-TlNfVUFSVF9JWFJfRlJBTUlORyB8DQo+ID4+IENETlNfVUFSVF9JWFJfT1ZFUlJVTjsNCj4gPj4+
-ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBDRE5TX1VBUlRfSVhSX0ZS
-QU1JTkc7DQo+ID4+Pg0KPiA+Pj4gICAgIC8qIGlnbm9yZSBhbGwgY2hhcmFjdGVycyBpZiBDUkVB
-RCBpcyBub3Qgc2V0ICovDQo+ID4+PiAgICAgaWYgKCh0ZXJtaW9zLT5jX2NmbGFnICYgQ1JFQUQp
-ID09IDApDQo+ID4+Pg0KPiA+DQo+ID4NCj4gPg0KPiA+IFRoaXMgZW1haWwgYW5kIGFueSBhdHRh
-Y2htZW50cyBhcmUgaW50ZW5kZWQgZm9yIHRoZSBzb2xlIHVzZSBvZiB0aGUgbmFtZWQNCj4gcmVj
-aXBpZW50KHMpIGFuZCBjb250YWluKHMpIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiB0aGF0IG1h
-eSBiZSBwcm9wcmlldGFyeSwNCj4gcHJpdmlsZWdlZCBvciBjb3B5cmlnaHRlZCB1bmRlciBhcHBs
-aWNhYmxlIGxhdy4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkDQo+IHJlY2lwaWVudCwgZG8g
-bm90IHJlYWQsIGNvcHksIG9yIGZvcndhcmQgdGhpcyBlbWFpbCBtZXNzYWdlIG9yIGFueSBhdHRh
-Y2htZW50cy4NCj4gRGVsZXRlIHRoaXMgZW1haWwgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRz
-IGltbWVkaWF0ZWx5Lg0KPiA+DQoNCg0KDQpUaGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMg
-YXJlIGludGVuZGVkIGZvciB0aGUgc29sZSB1c2Ugb2YgdGhlIG5hbWVkIHJlY2lwaWVudChzKSBh
-bmQgY29udGFpbihzKSBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gdGhhdCBtYXkgYmUgcHJvcHJp
-ZXRhcnksIHByaXZpbGVnZWQgb3IgY29weXJpZ2h0ZWQgdW5kZXIgYXBwbGljYWJsZSBsYXcuIElm
-IHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIGRvIG5vdCByZWFkLCBjb3B5LCBv
-ciBmb3J3YXJkIHRoaXMgZW1haWwgbWVzc2FnZSBvciBhbnkgYXR0YWNobWVudHMuIERlbGV0ZSB0
-aGlzIGVtYWlsIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBpbW1lZGlhdGVseS4NCg0K
+On 08/17/2015 12:00 PM, Anirudha Sarangi wrote:
+>> From: Peter Hurley [mailto:peter@hurleysoftware.com]
+>> On 08/17/2015 03:22 AM, Michal Simek wrote:
+>>> From: Anirudha Sarangi <anirudha.sarangi@xilinx.com>
+>>>
+>>> The existing interrupt handling logic has followins issues.
+>>> - Upon a parity error with default configuration, the control
+>>>   never comes out of the ISR thereby hanging Linux.
+>>> - The error handling logic around framing and parity error are buggy.
+>>>   There are chances that the errors will never be captured.
+>>> - The existing ISR is just too long.
+>>> This patch fixes all these concerns.
+>>
+>> This patch is unreviewable. Please break this down into multiple patches.
+>>
+> Thanks. Let me give a shot. It is just breaking the single big ISR that has both Rx and Tx in a single function into smaller ones.
+> Not sure how I will create smaller patches, but I will try and get back.
+
+I would start with a refactor patch that splits up the ISR but
+makes no other functional changes. Then add the bug fix patches.
+
+Regards,
+Peter Hurley
+
+ps - The email signature below is not appropriate for lkml.
+
+> 
+> This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
+> 
