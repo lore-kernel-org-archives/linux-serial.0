@@ -1,57 +1,50 @@
-From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Subject: Re: [PATCHv4 2/4] serial: imx: add runtime pm support
-Date: Mon, 17 Aug 2015 17:40:59 +0200
-Message-ID: <2095117.mcCCLIRizo@amdc1976>
-References: <1439613468-22366-1-git-send-email-edubezval@gmail.com>
- <1439613468-22366-3-git-send-email-edubezval@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 2/4] serial: xuartps: Do not handle overrun errors under
+ IGNPAR option
+Date: Mon, 17 Aug 2015 11:49:43 -0400
+Message-ID: <55D20297.6010500@hurleysoftware.com>
+References: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com> <41df6eb35d69801afa5b686a6974e3c3bf65178a.1439796149.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-reply-to: <1439613468-22366-3-git-send-email-edubezval@gmail.com>
-Sender: linux-pm-owner@vger.kernel.org
-To: Eduardo Valentin <edubezval@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Estevam <festevam@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <41df6eb35d69801afa5b686a6974e3c3bf65178a.1439796149.git.michal.simek@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, Anirudha Sarangi <anirudha.sarangi@xilinx.com>, =?UTF-8?B?U8O2cmVuIEJyaW5rbWFubg==?= <soren.brinkmann@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-
-Hi,
-
-On Friday, August 14, 2015 09:37:46 PM Eduardo Valentin wrote:
-> This change introduces the runtime pm support on imx serial
-> driver. The objective is to be able to idle the uart
-> port whenever it is not in use while still being able
-> to wake it up when needed. The key changes in this patch are:
-> 1. Move the clock handling to runtime pm. Both, ipg and per,
-> are now handled in the suspend and resume callbacks. Only
-> enabling and disabling the clocks are handled in runtime
-> suspend and resume, so we are able to use runtime pm
-> in IRQ context.
-> 2. Clocks are prepared in probe and unprepared in remove,
-> so we do not need to prepare (may sleep) in runtime pm.
-> 3. We mark the device activity based on uart and console
-> callbacks. Whenever the device is needed and we want to
-> access registers, we runtime_pm_get and then mark its
-> last usage when we are done. This is done also across
-> IRQs and DMA callbacks.
-> 4. We reuse the infrastructure in place for suspend and
-> resume, so we do not need to redo wakeup configuration,
-> or context save and restore.
+On 08/17/2015 03:22 AM, Michal Simek wrote:
+> From: Anirudha Sarangi <anirudha.sarangi@xilinx.com>
 > 
-> After this change, the clocks are still sane, in the sense
-> of having balanced clock prepare and enable.
+> The existing implementation includes overrun errors under IGNPAR
+> option. This patch fixes it by including only parity and framing
+> error under IGNPAR option.
 
-The clock changes in this patch seem to make this driver
-non-functional with CONFIG_PM=n.  Have you tested your
-changes with CONFIG_PM=n?
+The convention adopted by Linux serial drivers is to ignore overrun
+errors if both IGNPAR and IGNBRK are set.
 
-Generally the driver should not depend on PM support to
-enable its clocks.  We had this issue in few Exynos-specific
-drivers not that long time ago..
+Regards,
+Peter Hurley
 
-Best regards,
---
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
-
+> Signed-off-by: Anirudha Sarangi <anirudh@xilinx.com>
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> ---
+> 
+>  drivers/tty/serial/xilinx_uartps.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index a3020344ac9d..c4437e8929ff 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -691,7 +691,7 @@ static void cdns_uart_set_termios(struct uart_port *port,
+>  
+>  	if (termios->c_iflag & IGNPAR)
+>  		port->ignore_status_mask |= CDNS_UART_IXR_PARITY |
+> -			CDNS_UART_IXR_FRAMING | CDNS_UART_IXR_OVERRUN;
+> +					    CDNS_UART_IXR_FRAMING;
+>  
+>  	/* ignore all characters if CREAD is not set */
+>  	if ((termios->c_cflag & CREAD) == 0)
+> 
