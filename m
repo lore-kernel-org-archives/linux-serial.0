@@ -1,102 +1,86 @@
-From: Eduardo Valentin <edubezval@gmail.com>
-Subject: Re: [PATCHv4 2/4] serial: imx: add runtime pm support
-Date: Mon, 17 Aug 2015 17:28:25 -0700
-Message-ID: <20150818002823.GA11188@localhost.localdomain>
-References: <1439613468-22366-1-git-send-email-edubezval@gmail.com>
- <1439613468-22366-3-git-send-email-edubezval@gmail.com>
- <2095117.mcCCLIRizo@amdc1976>
+From: Anirudha Sarangi <anirudha.sarangi@xilinx.com>
+Subject: RE: [PATCH 1/4] serial: xuartps: Fix termios issue for enabling odd
+ parity
+Date: Mon, 17 Aug 2015 18:06:02 +0000
+Message-ID: <59506B47DEDD3943ABF9AC60020F4E2978D6EDB3@XAP-PVEXMBX02.xlnx.xilinx.com>
+References: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com>
+ <55D20017.4010008@hurleysoftware.com>
+ <59506B47DEDD3943ABF9AC60020F4E2978D6E7EA@XAP-PVEXMBX02.xlnx.xilinx.com>
+ <55D20AB4.4030405@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="VbJkn9YxBvnuCH5J"
-Return-path: <linux-pm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <2095117.mcCCLIRizo@amdc1976>
-Sender: linux-pm-owner@vger.kernel.org
-To: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Fabio Estevam <festevam@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, khilman@kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55D20AB4.4030405@hurleysoftware.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Michal Simek <michals@xilinx.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "monstr@monstr.eu" <monstr@monstr.eu>, Soren Brinkmann <sorenb@xilinx.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-
---VbJkn9YxBvnuCH5J
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Bartlomiej,
-
-On Mon, Aug 17, 2015 at 05:40:59PM +0200, Bartlomiej Zolnierkiewicz wrote:
->=20
-> Hi,
->=20
-> On Friday, August 14, 2015 09:37:46 PM Eduardo Valentin wrote:
-> > This change introduces the runtime pm support on imx serial
-> > driver. The objective is to be able to idle the uart
-> > port whenever it is not in use while still being able
-> > to wake it up when needed. The key changes in this patch are:
-> > 1. Move the clock handling to runtime pm. Both, ipg and per,
-> > are now handled in the suspend and resume callbacks. Only
-> > enabling and disabling the clocks are handled in runtime
-> > suspend and resume, so we are able to use runtime pm
-> > in IRQ context.
-> > 2. Clocks are prepared in probe and unprepared in remove,
-> > so we do not need to prepare (may sleep) in runtime pm.
-> > 3. We mark the device activity based on uart and console
-> > callbacks. Whenever the device is needed and we want to
-> > access registers, we runtime_pm_get and then mark its
-> > last usage when we are done. This is done also across
-> > IRQs and DMA callbacks.
-> > 4. We reuse the infrastructure in place for suspend and
-> > resume, so we do not need to redo wakeup configuration,
-> > or context save and restore.
-> >=20
-> > After this change, the clocks are still sane, in the sense
-> > of having balanced clock prepare and enable.
->=20
-> The clock changes in this patch seem to make this driver
-> non-functional with CONFIG_PM=3Dn.  Have you tested your
-> changes with CONFIG_PM=3Dn?
-
-This is a valid point. I tried it yes, but maybe because in my
-environment I had another user of the pll3_80m I did not see
-issues with PM=3Dn. Now after sanitizing my .config, executing
-the system with only the uart port / console as user of pll3_80m,
-I see the uart console hanging because the uart clocks get gated.
-
->=20
-> Generally the driver should not depend on PM support to
-> enable its clocks.  We had this issue in few Exynos-specific
-> drivers not that long time ago..
->=20
-
-No doubt here. I am checking the best way to cover for this case.
-Probably I will go for adding the support via the pm_clk*
-infrastructure, as already suggested by khilman.
-
-Thanks for spotting this.
-
-BR,
-
-> Best regards,
-> --
-> Bartlomiej Zolnierkiewicz
-> Samsung R&D Institute Poland
-> Samsung Electronics
->=20
-
---VbJkn9YxBvnuCH5J
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQEcBAEBAgAGBQJV0nwhAAoJEMLUO4d9pOJWCt8H/3sD5S/dHI/J/Awk/79pyDHW
-1wqmBi3XYWkBFKVU1hZRh6XzODSukgfOPo3S7OY5JrwYJjf+ewB0OxzOMNhoDwOu
-Ur9cUJF2aU5QjRtuyInNyQiJrjaepGQ+JR9rzbN33spdU6kaDMReCMGk+DolskO1
-rBKcQ+hCv+eI29Rr6lvXio9PO2eHNa1xMJmo9aQ2KBcGD9CXj0YxnVFYFWc8RfQ/
-NpB4kfvluWzQKp+WidJNhGXLLiX92WcmAjdm0JHNPg8mkvRlbcl5FyUwL3U8Toy6
-GKEG/s87MWJKVoPEhLifYfvZoCoUj3b4mgYyuJl/0eplhA8de8FePsRREe4hyFU=
-=FkG0
------END PGP SIGNATURE-----
-
---VbJkn9YxBvnuCH5J--
+SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGV0ZXIgSHVybGV5
+IFttYWlsdG86cGV0ZXJAaHVybGV5c29mdHdhcmUuY29tXQ0KPiBTZW50OiBNb25kYXksIEF1Z3Vz
+dCAxNywgMjAxNSA5OjU0IFBNDQo+IFRvOiBBbmlydWRoYSBTYXJhbmdpOyBNaWNoYWwgU2ltZWsN
+Cj4gQ2M6IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IG1vbnN0ckBtb25zdHIuZXU7IFNv
+cmVuIEJyaW5rbWFubjsgSmlyaQ0KPiBTbGFieTsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9y
+ZzsgR3JlZyBLcm9haC1IYXJ0bWFuOyBsaW51eC1hcm0tDQo+IGtlcm5lbEBsaXN0cy5pbmZyYWRl
+YWQub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMS80XSBzZXJpYWw6IHh1YXJ0cHM6IEZpeCB0
+ZXJtaW9zIGlzc3VlIGZvciBlbmFibGluZyBvZGQgcGFyaXR5DQo+DQo+IE9uIDA4LzE3LzIwMTUg
+MTE6NTUgQU0sIEFuaXJ1ZGhhIFNhcmFuZ2kgd3JvdGU6DQo+ID4gSGksDQo+ID4NCj4gPj4gLS0t
+LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogUGV0ZXIgSHVybGV5IFttYWlsdG86
+cGV0ZXJAaHVybGV5c29mdHdhcmUuY29tXQ0KPiA+PiBTZW50OiBNb25kYXksIEF1Z3VzdCAxNywg
+MjAxNSA5OjA5IFBNDQo+ID4+IFRvOiBNaWNoYWwgU2ltZWsNCj4gPj4gQ2M6IGxpbnV4LWtlcm5l
+bEB2Z2VyLmtlcm5lbC5vcmc7IG1vbnN0ckBtb25zdHIuZXU7IEFuaXJ1ZGhhIFNhcmFuZ2k7DQo+
+ID4+IFNvcmVuIEJyaW5rbWFubjsgSmlyaSBTbGFieTsgbGludXgtc2VyaWFsQHZnZXIua2VybmVs
+Lm9yZzsgR3JlZw0KPiA+PiBLcm9haC1IYXJ0bWFuOyBsaW51eC0gYXJtLWtlcm5lbEBsaXN0cy5p
+bmZyYWRlYWQub3JnDQo+ID4+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMS80XSBzZXJpYWw6IHh1YXJ0
+cHM6IEZpeCB0ZXJtaW9zIGlzc3VlIGZvcg0KPiA+PiBlbmFibGluZyBvZGQgcGFyaXR5DQo+ID4+
+DQo+ID4+IE9uIDA4LzE3LzIwMTUgMDM6MjIgQU0sIE1pY2hhbCBTaW1layB3cm90ZToNCj4gPj4+
+IEZyb206IEFuaXJ1ZGhhIFNhcmFuZ2kgPGFuaXJ1ZGhhLnNhcmFuZ2lAeGlsaW54LmNvbT4NCj4g
+Pj4+DQo+ID4+PiBFeGlzdGluZyBzZXRfdGVybWlvcyBkb2VzIG5vdCBoYW5kbGUgdGhlIG9wdGlv
+biBmb3IgZW5hYmxpbmcgb2RkDQo+ID4+PiBwYXJpdHkuIFRoaXMgcGF0Y2ggZml4ZXMgaXQuDQo+
+ID4+DQo+ID4+IE5BSy4gUEFST0REIGRvZXMgbm90IGVuYWJsZSBwYXJpdHkgZ2VuZXJhdGlvbiBv
+ciBkZXRlY3Rpb24uDQo+ID4+DQo+ID4gV2hhdCBpZiBzb21lb25lIGlzIHRyeWluZyB0byBjaGFu
+Z2UgZnJvbSBldmVuIHRvIG9kZCBwYXJpdHk/DQo+DQo+IElmIHVzZXJzcGFjZSB3YW50cyBvZGQg
+cGFyaXR5LCB0aGVuIGNfY2ZsYWcgbXVzdCBoYXZlIGJvdGggUEFSRU5CIGFuZCBQQVJPREQNCj4g
+c2V0Lg0KPg0KPiBKdXN0IFBBUk9ERCBkb2VzIG5vdGhpbmcuDQo+DQo+IEZyb20gU1VTIHY0LCBH
+ZW5lcmFsIFRlcm1pbmFsIEludGVyZmFjZSwgMTEuMi40IENvbnRyb2wgTW9kZXM7DQo+DQo+ICJJ
+ZiBQQVJFTkIgaXMgc2V0LCBwYXJpdHkgZ2VuZXJhdGlvbiBhbmQgZGV0ZWN0aW9uIHNoYWxsIGJl
+IGVuYWJsZWQgYW5kIGEgcGFyaXR5DQo+IGJpdCBpcyBhZGRlZCB0byBlYWNoIGJ5dGUuIElmIHBh
+cml0eSBpcyBlbmFibGVkLCBQQVJPREQgc2hhbGwgc3BlY2lmeSBvZGQgcGFyaXR5IGlmDQo+IHNl
+dDsgb3RoZXJ3aXNlLCBldmVuIHBhcml0eSBzaGFsbCBiZSB1c2VkLiINCj4NCj4NClRoYW5rcyBh
+IGxvdC4gSSB3aWxsIGluY29ycG9yYXRlIHRoZSBjaGFuZ2VzLg0KPg0KPiA+IEluIHRoaXMgY29u
+ZGl0aW9uYWwgY2FzZSwgd2Ugc2V0dXAgc29tZSByZWdpc3RlciBiaXQgZm9yIHRoZSBzYW1lLg0K
+PiA+IElzIHRoZSBhYm92ZSB1c2UgY2FzZSBub3QgYSB2YWxpZCBvbmU/DQo+ID4NCj4gPiBSZWdh
+cmRzDQo+ID4gQW5pcnVkaGENCj4gPg0KPiA+PiBSZWdhcmRzLA0KPiA+PiBQZXRlciBIdXJsZXkN
+Cj4gPj4NCj4gPj4+IFNpZ25lZC1vZmYtYnk6IEFuaXJ1ZGhhIFNhcmFuZ2kgPGFuaXJ1ZGhAeGls
+aW54LmNvbT4NCj4gPj4+IFNpZ25lZC1vZmYtYnk6IE1pY2hhbCBTaW1layA8bWljaGFsLnNpbWVr
+QHhpbGlueC5jb20+DQo+ID4+PiAtLS0NCj4gPj4+DQo+ID4+PiAgZHJpdmVycy90dHkvc2VyaWFs
+L3hpbGlueF91YXJ0cHMuYyB8IDIgKy0NCj4gPj4+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRp
+b24oKyksIDEgZGVsZXRpb24oLSkNCj4gPj4+DQo+ID4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90
+dHkvc2VyaWFsL3hpbGlueF91YXJ0cHMuYw0KPiA+Pj4gYi9kcml2ZXJzL3R0eS9zZXJpYWwveGls
+aW54X3VhcnRwcy5jDQo+ID4+PiBpbmRleCAwMDllMGRiYzEyZDIuLmEzMDIwMzQ0YWM5ZCAxMDA2
+NDQNCj4gPj4+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC94aWxpbnhfdWFydHBzLmMNCj4gPj4+
+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC94aWxpbnhfdWFydHBzLmMNCj4gPj4+IEBAIC03MjMs
+NyArNzIzLDcgQEAgc3RhdGljIHZvaWQgY2Ruc191YXJ0X3NldF90ZXJtaW9zKHN0cnVjdA0KPiA+
+Pj4gdWFydF9wb3J0DQo+ID4+ICpwb3J0LA0KPiA+Pj4gICAgIGVsc2UNCj4gPj4+ICAgICAgICAg
+ICAgIGN2YWwgfD0gQ0ROU19VQVJUX01SX1NUT1BNT0RFXzFfQklUOyAvKiAxIFNUT1AgYml0ICov
+DQo+ID4+Pg0KPiA+Pj4gLSAgIGlmICh0ZXJtaW9zLT5jX2NmbGFnICYgUEFSRU5CKSB7DQo+ID4+
+PiArICAgaWYgKCh0ZXJtaW9zLT5jX2NmbGFnICYgUEFSRU5CKSB8fCAodGVybWlvcy0+Y19jZmxh
+ZyAmIFBBUk9ERCkpDQo+ID4+PiArIHsNCj4gPj4+ICAgICAgICAgICAgIC8qIE1hcmsgb3IgU3Bh
+Y2UgcGFyaXR5ICovDQo+ID4+PiAgICAgICAgICAgICBpZiAodGVybWlvcy0+Y19jZmxhZyAmIENN
+U1BBUikgew0KPiA+Pj4gICAgICAgICAgICAgICAgICAgICBpZiAodGVybWlvcy0+Y19jZmxhZyAm
+IFBBUk9ERCkNCj4gPj4+DQo+ID4NCj4gPg0KPiA+DQo+ID4gVGhpcyBlbWFpbCBhbmQgYW55IGF0
+dGFjaG1lbnRzIGFyZSBpbnRlbmRlZCBmb3IgdGhlIHNvbGUgdXNlIG9mIHRoZSBuYW1lZA0KPiBy
+ZWNpcGllbnQocykgYW5kIGNvbnRhaW4ocykgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIHRoYXQg
+bWF5IGJlIHByb3ByaWV0YXJ5LA0KPiBwcml2aWxlZ2VkIG9yIGNvcHlyaWdodGVkIHVuZGVyIGFw
+cGxpY2FibGUgbGF3LiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQNCj4gcmVjaXBpZW50LCBk
+byBub3QgcmVhZCwgY29weSwgb3IgZm9yd2FyZCB0aGlzIGVtYWlsIG1lc3NhZ2Ugb3IgYW55IGF0
+dGFjaG1lbnRzLg0KPiBEZWxldGUgdGhpcyBlbWFpbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVu
+dHMgaW1tZWRpYXRlbHkuDQo+ID4NCg0KDQoNClRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50
+cyBhcmUgaW50ZW5kZWQgZm9yIHRoZSBzb2xlIHVzZSBvZiB0aGUgbmFtZWQgcmVjaXBpZW50KHMp
+IGFuZCBjb250YWluKHMpIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiB0aGF0IG1heSBiZSBwcm9w
+cmlldGFyeSwgcHJpdmlsZWdlZCBvciBjb3B5cmlnaHRlZCB1bmRlciBhcHBsaWNhYmxlIGxhdy4g
+SWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgZG8gbm90IHJlYWQsIGNvcHks
+IG9yIGZvcndhcmQgdGhpcyBlbWFpbCBtZXNzYWdlIG9yIGFueSBhdHRhY2htZW50cy4gRGVsZXRl
+IHRoaXMgZW1haWwgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGltbWVkaWF0ZWx5Lg0KDQo=
