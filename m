@@ -1,44 +1,41 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 4/4] serial: xuartps: Rewrite the interrupt handling logic
-Date: Mon, 17 Aug 2015 14:46:26 -0400
-Message-ID: <55D22C02.5000702@hurleysoftware.com>
-References: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com> <ead0c38140e815133a47797a2527229a2fc077c1.1439796149.git.michal.simek@xilinx.com> <55D2040F.1010205@hurleysoftware.com> <59506B47DEDD3943ABF9AC60020F4E2978D6E80A@XAP-PVEXMBX02.xlnx.xilinx.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v4] serial: 8250: Fix autoconfig_irq() to avoid race
+ conditions
+Date: Mon, 17 Aug 2015 21:22:48 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1508172122250.3873@nanos>
+References: <1439779518-31560-1-git-send-email-t-kageyama@cp.jp.nec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <59506B47DEDD3943ABF9AC60020F4E2978D6E80A@XAP-PVEXMBX02.xlnx.xilinx.com>
+In-Reply-To: <1439779518-31560-1-git-send-email-t-kageyama@cp.jp.nec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Anirudha Sarangi <anirudha.sarangi@xilinx.com>
-Cc: Michal Simek <michals@xilinx.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "monstr@monstr.eu" <monstr@monstr.eu>, Soren Brinkmann <sorenb@xilinx.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 08/17/2015 12:00 PM, Anirudha Sarangi wrote:
->> From: Peter Hurley [mailto:peter@hurleysoftware.com]
->> On 08/17/2015 03:22 AM, Michal Simek wrote:
->>> From: Anirudha Sarangi <anirudha.sarangi@xilinx.com>
->>>
->>> The existing interrupt handling logic has followins issues.
->>> - Upon a parity error with default configuration, the control
->>>   never comes out of the ISR thereby hanging Linux.
->>> - The error handling logic around framing and parity error are buggy.
->>>   There are chances that the errors will never be captured.
->>> - The existing ISR is just too long.
->>> This patch fixes all these concerns.
->>
->> This patch is unreviewable. Please break this down into multiple patches.
->>
-> Thanks. Let me give a shot. It is just breaking the single big ISR that has both Rx and Tx in a single function into smaller ones.
-> Not sure how I will create smaller patches, but I will try and get back.
+On Mon, 17 Aug 2015, Taichi Kageyama wrote:
+> diff --git tty-next.org/drivers/tty/serial/8250/8250_port.c tty-next.work/drivers/tty/serial/8250/8250_port.c
+> index 54e6c8d..9300b59 100644
+> --- tty-next.org/drivers/tty/serial/8250/8250_port.c
+> +++ tty-next.work/drivers/tty/serial/8250/8250_port.c
+> @@ -1238,6 +1238,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
+>  		inb_p(ICP);
+>  	}
+>  
+> +	if (uart_console(port))
+> +		console_lock();
+> +
+>  	/* forget possible initially masked and pending IRQ */
+>  	probe_irq_off(probe_irq_on());
+>  	save_mcr = serial_in(up, UART_MCR);
+> @@ -1269,6 +1272,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
+>  	if (port->flags & UPF_FOURPORT)
+>  		outb_p(save_ICP, ICP);
+>  
+> +	if (uart_console(port))
+> +		console_unlock();
+> +
+>  	port->irq = (irq > 0) ? irq : 0;
+>  }
 
-I would start with a refactor patch that splits up the ISR but
-makes no other functional changes. Then add the bug fix patches.
-
-Regards,
-Peter Hurley
-
-ps - The email signature below is not appropriate for lkml.
-
-> 
-> This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
-> 
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
