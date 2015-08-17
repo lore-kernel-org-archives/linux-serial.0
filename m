@@ -1,87 +1,42 @@
-From: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Subject: [PATCH v4] serial: 8250: Fix autoconfig_irq() to avoid race
- conditions
-Date: Mon, 17 Aug 2015 02:45:29 +0000
-Message-ID: <1439779518-31560-1-git-send-email-t-kageyama@cp.jp.nec.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: 8BIT
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH 2/4] serial: xuartps: Do not handle overrun errors under IGNPAR option
+Date: Mon, 17 Aug 2015 09:22:32 +0200
+Message-ID: <41df6eb35d69801afa5b686a6974e3c3bf65178a.1439796149.git.michal.simek@xilinx.com>
+References: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: ja-JP
+In-Reply-To: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com>
+In-Reply-To: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com>
+References: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>
-Cc: Taichi Kageyama <t-kageyama@cp.jp.nec.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.cz" <jslaby@suse.cz>, "prarit@redhat.com" <prarit@redhat.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu
+Cc: Anirudha Sarangi <anirudha.sarangi@xilinx.com>, =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The following race conditions can happen when a serial port is used
-as console.
+From: Anirudha Sarangi <anirudha.sarangi@xilinx.com>
 
-Case1: CPU_B is used to detect an interrupt from a serial port,
-       but it can have interrupts disabled during the waiting time.
-Case2: CPU_B clears UART_IER just after CPU_A sets UART_IER and then
-       a serial port may not make an interrupt.
-Case3: CPU_A sets UART_IER just after CPU_B clears UART_IER.
-       This is an unexpected behavior for serial8250_console_write().
+The existing implementation includes overrun errors under IGNPAR
+option. This patch fixes it by including only parity and framing
+error under IGNPAR option.
 
-CPU_A [autoconfig_irq]      |  CPU_B [serial8250_console_write]
-----------------------------|---------------------------------------
-                            |
-probe_irq_on()              |  spin_lock_irqsave(&port->lock,)
-serial_outp(,UART_IER,0x0f) |  serial_out(,UART_IER,0)
-udelay(20);                 |  uart_console_write()
-probe_irq_off()             |
-                            |  spin_unlock_irqrestore(&port->lock,)
-
-Case1 and 2 can make autoconfig_irq() failed.
-In these cases, the console doesn't work in interrupt mode and
-"input overrun" (which can make operation mistakes) can happen
-on some systems. Especially in the Case1, It is known that the
-problem happens with high rate every boot once it occurs
-because the boot sequence is always almost same.
-
-port mutex makes sure that the autoconfig operation is exclusive of
-any other concurrent HW access except by the console operation.
-console lock is required in autoconfig_irq().
-
-Signed-off-by: Taichi Kageyama <t-kageyama@cp.jp.nec.com>
-Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Anirudha Sarangi <anirudh@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
-Changes in v4:
- - Rebased on the top of tty-next
- - The file name was changed from 8250_core.c to 8250_port.c
-Changes in v3:
- - Removed RFC tag
-Changes in v2:
- - Updated commit log
- - Rebased on v4.2-rc4
 
- drivers/tty/serial/8250/8250_port.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/tty/serial/xilinx_uartps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git tty-next.org/drivers/tty/serial/8250/8250_port.c tty-next.work/drivers/tty/serial/8250/8250_port.c
-index 54e6c8d..9300b59 100644
---- tty-next.org/drivers/tty/serial/8250/8250_port.c
-+++ tty-next.work/drivers/tty/serial/8250/8250_port.c
-@@ -1238,6 +1238,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 		inb_p(ICP);
- 	}
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index a3020344ac9d..c4437e8929ff 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -691,7 +691,7 @@ static void cdns_uart_set_termios(struct uart_port *port,
  
-+	if (uart_console(port))
-+		console_lock();
-+
- 	/* forget possible initially masked and pending IRQ */
- 	probe_irq_off(probe_irq_on());
- 	save_mcr = serial_in(up, UART_MCR);
-@@ -1269,6 +1272,9 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	if (port->flags & UPF_FOURPORT)
- 		outb_p(save_ICP, ICP);
+ 	if (termios->c_iflag & IGNPAR)
+ 		port->ignore_status_mask |= CDNS_UART_IXR_PARITY |
+-			CDNS_UART_IXR_FRAMING | CDNS_UART_IXR_OVERRUN;
++					    CDNS_UART_IXR_FRAMING;
  
-+	if (uart_console(port))
-+		console_unlock();
-+
- 	port->irq = (irq > 0) ? irq : 0;
- }
- 
+ 	/* ignore all characters if CREAD is not set */
+ 	if ((termios->c_cflag & CREAD) == 0)
 -- 
-2.4.6
+2.3.5
