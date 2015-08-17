@@ -1,70 +1,95 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: earlycon issues in -next with amba-pl011 updates
-Date: Mon, 17 Aug 2015 12:04:16 -0400
-Message-ID: <55D20600.6050204@hurleysoftware.com>
-References: <20150810232312.GB10728@bivouac.eciton.net>
- <55C94247.8020701@hurleysoftware.com>
- <20150811124043.GZ7557@n2100.arm.linux.org.uk>
+Subject: Re: [PATCH 2/4] serial: xuartps: Do not handle overrun errors under
+ IGNPAR option
+Date: Mon, 17 Aug 2015 12:19:30 -0400
+Message-ID: <55D20992.60302@hurleysoftware.com>
+References: <5b154ba97bcd79e49e2131152eb2fc1761594a6c.1439796149.git.michal.simek@xilinx.com> <41df6eb35d69801afa5b686a6974e3c3bf65178a.1439796149.git.michal.simek@xilinx.com> <55D20297.6010500@hurleysoftware.com> <59506B47DEDD3943ABF9AC60020F4E2978D6E7FF@XAP-PVEXMBX02.xlnx.xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150811124043.GZ7557@n2100.arm.linux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: jun.nie@linaro.org, tyler.baker@linaro.org, linux-arm-kernel@lists.infradead.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <59506B47DEDD3943ABF9AC60020F4E2978D6E7FF@XAP-PVEXMBX02.xlnx.xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Anirudha Sarangi <anirudha.sarangi@xilinx.com>, Michal Simek <michals@xilinx.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "monstr@monstr.eu" <monstr@monstr.eu>, Soren Brinkmann <sorenb@xilinx.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 08/11/2015 08:40 AM, Russell King - ARM Linux wrote:
-> On Mon, Aug 10, 2015 at 08:31:03PM -0400, Peter Hurley wrote:
->> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
->> index 2af09ab..fd54991 100644
->> --- a/drivers/tty/serial/amba-pl011.c
->> +++ b/drivers/tty/serial/amba-pl011.c
->> @@ -2348,13 +2348,10 @@ static struct console amba_console = {
->>  
->>  static void pl011_putc(struct uart_port *port, int c)
->>  {
->> -	struct uart_amba_port *uap =
->> -	    container_of(port, struct uart_amba_port, port);
->> -
->> -	while (pl011_readw(uap, REG_FR) & UART01x_FR_TXFF)
->> +	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
->>  		;
->> -	pl011_writeb(uap, c, REG_DR);
->> -	while (pl011_readw(uap, REG_FR) & uap->fr_busy)
->> +	writeb(c, port->membase + UART01x_DR);
->> +	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
->>  		;
-> 
-> These loops are wrong.  Kernel coding style is that loops like this
-> will use cpu_relax() in them, just like the driver used to.  This
-> was introduced by:
-> 
-> commit 0d3c673e7881e691991b2a4745bd4f149603baa2
-> Author: Rob Herring <robh@kernel.org>
-> Date:   Fri Apr 18 17:19:57 2014 -0500
-> 
->     tty/serial: pl011: add generic earlycon support
-> 
-> Also, the above readl()s should be readl_relaxed(), we don't need
-> barriered reads or to hit the L2 cache on those reads in the above code.
+On 08/17/2015 11:58 AM, Anirudha Sarangi wrote:
+> Hi,
+>=20
+>> -----Original Message-----
+>> From: Peter Hurley [mailto:peter@hurleysoftware.com]
+>> Sent: Monday, August 17, 2015 9:20 PM
+>> To: Michal Simek
+>> Cc: linux-kernel@vger.kernel.org; monstr@monstr.eu; Anirudha Sarangi=
+; Soren
+>> Brinkmann; Jiri Slaby; linux-serial@vger.kernel.org; Greg Kroah-Hart=
+man; linux-
+>> arm-kernel@lists.infradead.org
+>> Subject: Re: [PATCH 2/4] serial: xuartps: Do not handle overrun erro=
+rs under
+>> IGNPAR option
+>>
+>> On 08/17/2015 03:22 AM, Michal Simek wrote:
+>>> From: Anirudha Sarangi <anirudha.sarangi@xilinx.com>
+>>>
+>>> The existing implementation includes overrun errors under IGNPAR
+>>> option. This patch fixes it by including only parity and framing er=
+ror
+>>> under IGNPAR option.
+>>
+>> The convention adopted by Linux serial drivers is to ignore overrun =
+errors if both
+>> IGNPAR and IGNBRK are set.
+>>
+> I just followed the set_termios documentation, which says that IGNPAR=
+ is for parity and framing.
+> The current controller does not support break detection reliably.
+> That is probably why we don=E2=80=99t have IGNBRK.
 
-This patch just reverts pl011 earlycon back to the existing mainline
-state.
+My point is about how a user-space process tells the serial driver to i=
+gnore
+overrun errors, as well, and not specifically about break handling.
 
-The amba-pl011 driver has many places where cpu_relax() is not used,
-so that seems like a good patch for -next during the 4.3-rc cycle.
-
-Similarly for read_relaxed() use in earlycon.
-
-Regards,
-Peter Hurley
+>=20
+> Regards
+> Anirudha
+>=20
+>> Regards,
+>> Peter Hurley
+>>
+>>> Signed-off-by: Anirudha Sarangi <anirudh@xilinx.com>
+>>> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+>>> ---
+>>>
+>>>  drivers/tty/serial/xilinx_uartps.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/tty/serial/xilinx_uartps.c
+>>> b/drivers/tty/serial/xilinx_uartps.c
+>>> index a3020344ac9d..c4437e8929ff 100644
+>>> --- a/drivers/tty/serial/xilinx_uartps.c
+>>> +++ b/drivers/tty/serial/xilinx_uartps.c
+>>> @@ -691,7 +691,7 @@ static void cdns_uart_set_termios(struct uart_p=
+ort
+>>> *port,
+>>>
+>>>     if (termios->c_iflag & IGNPAR)
+>>>             port->ignore_status_mask |=3D CDNS_UART_IXR_PARITY |
+>>> -                   CDNS_UART_IXR_FRAMING |
+>> CDNS_UART_IXR_OVERRUN;
+>>> +                                       CDNS_UART_IXR_FRAMING;
+>>>
+>>>     /* ignore all characters if CREAD is not set */
+>>>     if ((termios->c_cflag & CREAD) =3D=3D 0)
+>>>
+>=20
+>=20
+>=20
+> This email and any attachments are intended for the sole use of the n=
+amed recipient(s) and contain(s) confidential information that may be p=
+roprietary, privileged or copyrighted under applicable law. If you are =
+not the intended recipient, do not read, copy, or forward this email me=
+ssage or any attachments. Delete this email message and any attachments=
+ immediately.
+>=20
