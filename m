@@ -1,76 +1,81 @@
-From: california.l.sullivan@intel.com
-Subject: [PATCH RFC] serial: 8250: Handle invalid UART state
-Date: Wed, 19 Aug 2015 13:12:04 -0700
-Message-ID: <1440015124-28393-1-git-send-email-california.l.sullivan@intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH v2 0/5] drivers/tty: make more bool drivers explicitly
+ non-modular
+Date: Wed, 19 Aug 2015 17:48:04 -0400
+Message-ID: <1440020889-12120-1-git-send-email-paul.gortmaker@windriver.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, alan@linux.intel.com, darren.hart@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com, california.l.sullivan@intel.com, heikki.krogerus@intel.com, andriy.shevchenko@intel.com, arjan@linux.intel.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joachim Eastwood <manabian@gmail.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: California Sullivan <california.l.sullivan@intel.com>
+[v2: drop dead module code removal from 8250_lpc18xx.c ; instead convert it
+ from bool to tristate ; also add ack to hvc_console commit.]
 
-The debug UART on the Bay Trail is buggy and will sometimes enter a
-state where there is a Character Timeout interrupt, but the Data
-Ready bit in the Line Status Register is not set, despite there
-being data available in the FIFO. It stays in this state until the
-Receive Buffer is read. Because the 8250 driver does not read the
-Receive Buffer without the Data Ready bit being set, the UART is
-never read once we reach this point, and thus the Character Timeout
-interrupt is never cleared. This makes the driver spin in a loop
-causing multiple "too much work for irq" errors and eventually
-locking up entirely.
+This second set of patches to drivers/tty steps outside of the serial
+dir, and an improved auditing finds two more serial drivers pretending
+to be modular that really are not.
 
-This patch handles the invalid state by setting the Data Ready bit
-in the 'status' variable when the invalid state occurs. This allows
-the receive buffer to be read, which clears the interrupt
-identification register in the UART and brings us back to a correct
-state.
+The reasoning for doing this is the same as the first set[1] of patches
+and is largely copied below:
 
-After this patch was submitted for internal comment, a similar bug on
-the HSUARTs of the Bay Trail and Braswell platforms was pointed out.
-On those UARTs, the invalid state mentioned previously is reached for
-some amount of time, cauing the same "too much work for irq" messages,
-but not permanently locking up the UART. This patch has been confirmed
-to solve that issue as well.
+  In the previous merge window, we made changes to allow better
+  delineation between modular and non-modular code in commit
+  0fd972a7d91d6e15393c449492a04d94c0b89351 ("module: relocate module_init
+  from init.h to module.h").  This allows us to now ensure module code
+  looks modular and non-modular code does not accidentally look modular
+  without suffering build breakage.
+  
+  Here we target code that is, by nature of their Kconfig settings, only
+  available to be built-in, but implicitly presenting itself as being
+  possibly modular by way of using modular headers, macros, and functions.
+  
+  The goal here is to remove that illusion of modularity from these
+  drivers, but in a way that leaves the actual runtime unchanged.
+  In doing so, we remove code that has never been tested and adds
+  no value to the tree.  And we begin the process of expecting a
+  level of consistency between the Kconfig of a driver and the code
+  that the driver uses.
+  
+Build tested for allyesconfig on x86_64, and ARM for lpc81xx, and powerpc
+for hvc_console and mpsc, layered onto tty/tty-next as a baseline.
 
-We considered solving this by adding a new UART_BUG_ define and
-detecting the buggy UART by either identifying the processor or by
-adding a new PNP device ID to firmware. However, this solution
-would be more complex and have zero performance benefits, as the
-ISR would require a similar 'if' condition to detect and handle the
-bug.
+Paul.
 
-Our main concern with this fix is whether it having a Character
-Timeout with no Data Ready is an invalid state for all UARTs or
-just some. If other UARTs have a Character Timeout without
-immediately flipping the Data Ready bit in the Line Status Register
-for a good reason, setting the Data Ready bit in the 'status'
-variable could have unintended consequences.
+[1] https://lkml.kernel.org/r/1437530538-5078-1-git-send-email-paul.gortmaker@windriver.com
+--
 
-Signed-off-by: California Sullivan <california.l.sullivan@intel.com>
----
- drivers/tty/serial/8250/8250_core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Joachim Eastwood <manabian@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-serial@vger.kernel.org
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index ea1a8da..078b118 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1604,6 +1604,14 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 
- 	DEBUG_INTR("status = %x...", status);
- 
-+	/*
-+	 * Workaround for when there is a character timeout interrupt
-+	 * but the data ready bit is not set in the Line Status Register.
-+	 */
-+	if ((iir & UART_IIR_RX_TIMEOUT) &&
-+	    !(status & (UART_LSR_DR | UART_LSR_BI)))
-+		status |= UART_LSR_DR;
-+
- 	if (status & (UART_LSR_DR | UART_LSR_BI)) {
- 		if (up->dma)
- 			dma_err = up->dma->rx_dma(up, iir);
+Paul Gortmaker (5):
+  drivers/tty: make pty.c slightly more explicitly non-modular
+  drivers/tty: make sysrq.c slightly more explicitly non-modular
+  drivers/tty: make hvc_console.c explicitly non-modular
+  drivers/tty: make serial/mpsc.c driver explicitly non-modular
+  drivers/tty: make serial 8250_lpc18xx.c Kconfig a tristate
+
+ drivers/tty/hvc/hvc_console.c   | 18 +-----------------
+ drivers/tty/pty.c               |  7 +++++--
+ drivers/tty/serial/8250/Kconfig |  2 +-
+ drivers/tty/serial/mpsc.c       | 36 +++---------------------------------
+ drivers/tty/sysrq.c             |  6 +++++-
+ 5 files changed, 15 insertions(+), 54 deletions(-)
+
 -- 
-2.1.0
+2.5.0
