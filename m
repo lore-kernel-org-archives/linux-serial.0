@@ -1,35 +1,29 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: USB, TTY, char/misc, and Staging trees now closed for 4.3
-Date: Wed, 19 Aug 2015 07:52:23 -0700
-Message-ID: <20150819145223.GA20767@kroah.com>
+From: Albino B Neto <bino-sGOZH3hwPm2sTnJN9+BGXg@public.gmane.org>
+Subject: Re: USB, TTY, char/misc, and Staging trees now closed for 4.3
+Date: Wed, 19 Aug 2015 13:09:38 -0300
+Message-ID: <CAMu38xLbJhU85Ubiw-rOaNtxKNETd889b3VpZXmSzmdF+EC_-Q@mail.gmail.com>
+References: <20150819145223.GA20767@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-Content-Disposition: inline
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: devel@driverdev.osuosl.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150819145223.GA20767-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi all,
+2015-08-19 11:52 GMT-03:00 Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>:
+> Given that 4.2 will be out in a few days, it's time to close my trees
+> for new patches until 4.3-rc1 is out.
 
-Given that 4.2 will be out in a few days, it's time to close my trees
-for new patches until 4.3-rc1 is out.
+Ok
 
-Please feel free to send me patches for these trees, but note that I'll
-be ignoring them until 4.3-rc1 is out, at which point in time I'll start
-reviewing them again and applying them to the various places they
-belong.
-
-thanks,
-
-greg k-h
+-- 
+Albino B Neto
+"Debian. Freedom to code. Code to freedom!" faw
+twitter.com/b1n0anb
+gplus.to/AlbinoBNeto
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
