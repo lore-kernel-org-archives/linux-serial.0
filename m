@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 01/33] serial: sh-sci: Replace buggy big #ifdef by runtime logic
-Date: Fri, 21 Aug 2015 20:02:25 +0200
-Message-ID: <1440180177-6924-2-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 18/33] serial: sh-sci: Switch to dma_map_single() for DMA transmission
+Date: Fri, 21 Aug 2015 20:02:42 +0200
+Message-ID: <1440180177-6924-19-git-send-email-geert+renesas@glider.be>
 References: <1440180177-6924-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1440180177-6924-1-git-send-email-geert+renesas@glider.be>
@@ -10,197 +10,134 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, Yoshihiro Kaneko <ykaneko0929@gmail.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Wolfram Sang <wsa@the-dreams.de>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The #ifdef logic to clear SCxSR bits using RMW on SCIFA/SCIFB and SCIF
-variants with some SCIFA features (sh7705/SH7720/sh7721) has several
-drawbacks:
-  - It wasn't updated for newer R-Mobile variants (APE6),
-  - It doesn't correctly handle SoCs with both SCIF and SCIFA/B (e.g.
-    R-Car Gen2, but also legacy sh7723/sh7724),
-  - It doesn't play well with ARM multi-platform kernels: on R-Car Gen2,
-    SCIF/SCIFA/SCIFB/HSCIF were handled differently, depending on
-    whether r8a7740 or sh73a0 support was enabled or not,
-
-Replace the #ifdef logic by runtime logic to fix this.
-
-SCIFA/SCIFB and SCIF on sh7705/sh7720/sh7721 use RMW to clear error
-bits, other variants use plain stores, as before.
-
-Note that this changes behavior for SCIFA on sh7723/sh7724 (these SoCs
-have both SCIF and SCIFA), which didn't use RMW before.
+Simplify the DMA transmit code by using dma_map_single() instead of
+constantly modifying the single-entry scatterlist to match what's
+currently being transmitted.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
-Question: Can we simplify the logic and use RMW everywhere?
-We seem to have been using it fine with (H)SCIF on R-Car Gen2 running
-multi-platform kernels.
-
 v3:
-  - No changes,
-
-v2:
-  - No changes.
+  - New.
 ---
- drivers/tty/serial/sh-sci.c | 36 ++++++++++++++++++++++++++----------
- drivers/tty/serial/sh-sci.h | 33 ++++++++-------------------------
- 2 files changed, 34 insertions(+), 35 deletions(-)
+ drivers/tty/serial/sh-sci.c | 50 ++++++++++++++++++---------------------------
+ 1 file changed, 20 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 1b2f894bdc9e0e6e..b014fce1509d6535 100644
+index cb35c88645bb5784..5a528b8985052017 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -489,6 +489,22 @@ static void sci_port_disable(struct sci_port *sci_port)
- 	pm_runtime_put_sync(sci_port->port.dev);
- }
+@@ -109,8 +109,8 @@ struct sci_port {
+ 	dma_cookie_t			cookie_tx;
+ 	dma_cookie_t			cookie_rx[2];
+ 	dma_cookie_t			active_rx;
+-	struct scatterlist		sg_tx;
+-	unsigned int			sg_len_tx;
++	dma_addr_t			tx_dma_addr;
++	unsigned int			tx_dma_len;
+ 	struct scatterlist		sg_rx[2];
+ 	size_t				buf_len_rx;
+ 	struct sh_dmae_slave		param_tx;
+@@ -1280,10 +1280,10 @@ static void sci_dma_tx_complete(void *arg)
  
-+static void sci_clear_SCxSR(struct uart_port *port, unsigned int mask)
-+{
-+	if (port->type == PORT_SCI) {
-+		/* Just store the mask */
-+		serial_port_out(port, SCxSR, mask);
-+	} else if (to_sci_port(port)->overrun_mask == SCIFA_ORER) {
-+		/* SCIFA/SCIFB and SCIF on SH7705/SH7720/SH7721 */
-+		/* Only clear the status bits we want to clear */
-+		serial_port_out(port, SCxSR,
-+				serial_port_in(port, SCxSR) & mask);
-+	} else {
-+		/* Store the mask, clear parity/framing errors */
-+		serial_port_out(port, SCxSR, mask & ~(SCIF_FERC | SCIF_PERC));
-+	}
-+}
-+
- #if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_SH_SCI_CONSOLE)
+ 	spin_lock_irqsave(&port->lock, flags);
  
- #ifdef CONFIG_CONSOLE_POLL
-@@ -500,7 +516,7 @@ static int sci_poll_get_char(struct uart_port *port)
- 	do {
- 		status = serial_port_in(port, SCxSR);
- 		if (status & SCxSR_ERRORS(port)) {
--			serial_port_out(port, SCxSR, SCxSR_ERROR_CLEAR(port));
-+			sci_clear_SCxSR(port, SCxSR_ERROR_CLEAR(port));
- 			continue;
- 		}
- 		break;
-@@ -513,7 +529,7 @@ static int sci_poll_get_char(struct uart_port *port)
+-	xmit->tail += sg_dma_len(&s->sg_tx);
++	xmit->tail += s->tx_dma_len;
+ 	xmit->tail &= UART_XMIT_SIZE - 1;
  
- 	/* Dummy read */
- 	serial_port_in(port, SCxSR);
--	serial_port_out(port, SCxSR, SCxSR_RDxF_CLEAR(port));
-+	sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
+-	port->icount.tx += sg_dma_len(&s->sg_tx);
++	port->icount.tx += s->tx_dma_len;
  
- 	return c;
- }
-@@ -528,7 +544,7 @@ static void sci_poll_put_char(struct uart_port *port, unsigned char c)
- 	} while (!(status & SCxSR_TDxE(port)));
+ 	async_tx_ack(s->desc_tx);
+ 	s->desc_tx = NULL;
+@@ -1494,7 +1494,7 @@ static void work_fn_tx(struct work_struct *work)
+ 	struct dma_chan *chan = s->chan_tx;
+ 	struct uart_port *port = &s->port;
+ 	struct circ_buf *xmit = &port->state->xmit;
+-	struct scatterlist *sg = &s->sg_tx;
++	dma_addr_t buf;
  
- 	serial_port_out(port, SCxTDR, c);
--	serial_port_out(port, SCxSR, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
-+	sci_clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
- }
- #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE */
+ 	/*
+ 	 * DMA is idle now.
+@@ -1504,19 +1504,15 @@ static void work_fn_tx(struct work_struct *work)
+ 	 * consistent xmit buffer state.
+ 	 */
+ 	spin_lock_irq(&port->lock);
+-	sg->offset = xmit->tail & (UART_XMIT_SIZE - 1);
+-	sg_dma_address(sg) = (sg_dma_address(sg) & ~(UART_XMIT_SIZE - 1)) +
+-		sg->offset;
+-	sg_dma_len(sg) = min_t(unsigned int,
++	buf = s->tx_dma_addr + (xmit->tail & (UART_XMIT_SIZE - 1));
++	s->tx_dma_len = min_t(unsigned int,
+ 		CIRC_CNT(xmit->head, xmit->tail, UART_XMIT_SIZE),
+ 		CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE));
+ 	spin_unlock_irq(&port->lock);
  
-@@ -655,7 +671,7 @@ static void sci_transmit_chars(struct uart_port *port)
- 		port->icount.tx++;
- 	} while (--count > 0);
- 
--	serial_port_out(port, SCxSR, SCxSR_TDxE_CLEAR(port));
-+	sci_clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
- 
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
-@@ -666,7 +682,7 @@ static void sci_transmit_chars(struct uart_port *port)
- 
- 		if (port->type != PORT_SCI) {
- 			serial_port_in(port, SCxSR); /* Dummy read */
--			serial_port_out(port, SCxSR, SCxSR_TDxE_CLEAR(port));
-+			sci_clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
- 		}
- 
- 		ctrl |= SCSCR_TIE;
-@@ -750,7 +766,7 @@ static void sci_receive_chars(struct uart_port *port)
- 		}
- 
- 		serial_port_in(port, SCxSR); /* dummy read */
--		serial_port_out(port, SCxSR, SCxSR_RDxF_CLEAR(port));
-+		sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
- 
- 		copied += count;
- 		port->icount.rx += count;
-@@ -761,7 +777,7 @@ static void sci_receive_chars(struct uart_port *port)
- 		tty_flip_buffer_push(tport);
- 	} else {
- 		serial_port_in(port, SCxSR); /* dummy read */
--		serial_port_out(port, SCxSR, SCxSR_RDxF_CLEAR(port));
-+		sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
- 	}
- }
- 
-@@ -982,14 +998,14 @@ static irqreturn_t sci_er_interrupt(int irq, void *ptr)
- 		if (sci_handle_errors(port)) {
- 			/* discard character in rx buffer */
- 			serial_port_in(port, SCxSR);
--			serial_port_out(port, SCxSR, SCxSR_RDxF_CLEAR(port));
-+			sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
- 		}
- 	} else {
- 		sci_handle_fifo_overrun(port);
- 		sci_rx_interrupt(irq, ptr);
+-	BUG_ON(!sg_dma_len(sg));
+-
+-	desc = dmaengine_prep_slave_sg(chan,
+-			sg, s->sg_len_tx, DMA_MEM_TO_DEV,
+-			DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
++	desc = dmaengine_prep_slave_single(chan, buf, s->tx_dma_len,
++					   DMA_MEM_TO_DEV,
++					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+ 	if (!desc) {
+ 		dev_warn(port->dev, "Failed preparing Tx DMA descriptor\n");
+ 		/* switch to PIO */
+@@ -1524,7 +1520,8 @@ static void work_fn_tx(struct work_struct *work)
+ 		return;
  	}
  
--	serial_port_out(port, SCxSR, SCxSR_ERROR_CLEAR(port));
-+	sci_clear_SCxSR(port, SCxSR_ERROR_CLEAR(port));
+-	dma_sync_sg_for_device(chan->device->dev, sg, 1, DMA_TO_DEVICE);
++	dma_sync_single_for_device(chan->device->dev, buf, s->tx_dma_len,
++				   DMA_TO_DEVICE);
  
- 	/* Kick the transmission */
- 	sci_tx_interrupt(irq, ptr);
-@@ -1003,7 +1019,7 @@ static irqreturn_t sci_br_interrupt(int irq, void *ptr)
+ 	spin_lock_irq(&port->lock);
+ 	s->desc_tx = desc;
+@@ -1680,7 +1677,6 @@ static void sci_request_dma(struct uart_port *port)
+ 	struct sh_dmae_slave *param;
+ 	struct dma_chan *chan;
+ 	dma_cap_mask_t mask;
+-	int nent;
  
- 	/* Handle BREAKs */
- 	sci_handle_breaks(port);
--	serial_port_out(port, SCxSR, SCxSR_BREAK_CLEAR(port));
-+	sci_clear_SCxSR(port, SCxSR_BREAK_CLEAR(port));
+ 	dev_dbg(port->dev, "%s: port %d\n", __func__, port->line);
  
- 	return IRQ_HANDLED;
- }
-diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
-index 3393f67b4e843578..1e1edbd152673e8f 100644
---- a/drivers/tty/serial/sh-sci.h
-+++ b/drivers/tty/serial/sh-sci.h
-@@ -119,28 +119,11 @@ enum {
+@@ -1700,27 +1696,21 @@ static void sci_request_dma(struct uart_port *port)
+ 	dev_dbg(port->dev, "%s: TX: got channel %p\n", __func__, chan);
+ 	if (chan) {
+ 		s->chan_tx = chan;
+-		sg_init_table(&s->sg_tx, 1);
+ 		/* UART circular tx buffer is an aligned page. */
+-		BUG_ON((uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+-		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
+-			    UART_XMIT_SIZE,
+-			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
+-		nent = dma_map_sg(chan->device->dev, &s->sg_tx, 1,
+-				  DMA_TO_DEVICE);
+-		if (!nent) {
++		s->tx_dma_addr = dma_map_single(chan->device->dev,
++						port->state->xmit.buf,
++						UART_XMIT_SIZE,
++						DMA_TO_DEVICE);
++		if (dma_mapping_error(chan->device->dev, s->tx_dma_addr)) {
+ 			dev_warn(port->dev, "Failed mapping Tx DMA descriptor\n");
+ 			dma_release_channel(chan);
+ 			s->chan_tx = NULL;
+ 		} else {
+-			dev_dbg(port->dev, "%s: mapped %d@%p to %pad\n",
+-				__func__,
+-				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
+-				&sg_dma_address(&s->sg_tx));
++			dev_dbg(port->dev, "%s: mapped %lu@%p to %pad\n",
++				__func__, UART_XMIT_SIZE,
++				port->state->xmit.buf, &s->tx_dma_addr);
+ 		}
  
- #define SCxSR_ERRORS(port)	(to_sci_port(port)->error_mask)
- 
--#if defined(CONFIG_CPU_SUBTYPE_SH7705) || \
--    defined(CONFIG_CPU_SUBTYPE_SH7720) || \
--    defined(CONFIG_CPU_SUBTYPE_SH7721) || \
--    defined(CONFIG_ARCH_SH73A0) || \
--    defined(CONFIG_ARCH_R8A7740)
+-		s->sg_len_tx = nent;
 -
--# define SCxSR_RDxF_CLEAR(port) \
--	(serial_port_in(port, SCxSR) & SCIF_RDxF_CLEAR)
--# define SCxSR_ERROR_CLEAR(port) \
--	(serial_port_in(port, SCxSR) & SCIF_ERROR_CLEAR)
--# define SCxSR_TDxE_CLEAR(port) \
--	(serial_port_in(port, SCxSR) & SCIF_TDxE_CLEAR)
--# define SCxSR_BREAK_CLEAR(port) \
--	(serial_port_in(port, SCxSR) & SCIF_BREAK_CLEAR)
--#else
--# define SCxSR_RDxF_CLEAR(port) \
--	((((port)->type == PORT_SCI) ? SCI_RDxF_CLEAR : SCIF_RDxF_CLEAR) & 0xff)
--# define SCxSR_ERROR_CLEAR(port) \
--	((((port)->type == PORT_SCI) ? SCI_ERROR_CLEAR : SCIF_ERROR_CLEAR) & 0xff)
--# define SCxSR_TDxE_CLEAR(port) \
--	((((port)->type == PORT_SCI) ? SCI_TDxE_CLEAR : SCIF_TDxE_CLEAR) & 0xff)
--# define SCxSR_BREAK_CLEAR(port) \
--	((((port)->type == PORT_SCI) ? SCI_BREAK_CLEAR : SCIF_BREAK_CLEAR) & 0xff)
--#endif
--
-+#define SCxSR_RDxF_CLEAR(port) \
-+	(((port)->type == PORT_SCI) ? SCI_RDxF_CLEAR : SCIF_RDxF_CLEAR)
-+#define SCxSR_ERROR_CLEAR(port) \
-+	(((port)->type == PORT_SCI) ? SCI_ERROR_CLEAR : SCIF_ERROR_CLEAR)
-+#define SCxSR_TDxE_CLEAR(port) \
-+	(((port)->type == PORT_SCI) ? SCI_TDxE_CLEAR : SCIF_TDxE_CLEAR)
-+#define SCxSR_BREAK_CLEAR(port) \
-+	(((port)->type == PORT_SCI) ? SCI_BREAK_CLEAR : SCIF_BREAK_CLEAR)
+ 		INIT_WORK(&s->work_tx, work_fn_tx);
+ 	}
+ 
 -- 
 1.9.1
 
