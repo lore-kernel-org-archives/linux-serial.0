@@ -1,56 +1,44 @@
-From: Vinod Koul <vinod.koul@intel.com>
-Subject: Re: [PATCH 2/3] dma: add __must_check annotation for
- dmaengine_pause()
-Date: Fri, 21 Aug 2015 14:02:45 +0530
-Message-ID: <20150821083245.GM13546@localhost>
-References: <1438977619-15488-1-git-send-email-bigeasy@linutronix.de>
- <1438977619-15488-3-git-send-email-bigeasy@linutronix.de>
- <20150811095852.GW11789@localhost>
- <20150811100617.GD7576@n2100.arm.linux.org.uk>
- <55C9EBD5.3090203@linutronix.de>
+From: Noam Camus <noamc@ezchip.com>
+Subject: [v4 0/2] *** 8250_dw ***
+Date: Fri, 21 Aug 2015 13:33:41 +0300
+Message-ID: <1440153223-25712-1-git-send-email-noamc@ezchip.com>
+References: <1437886478-29273-1-git-send-email-noamc@ezchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55C9EBD5.3090203@linutronix.de>
+In-Reply-To: <1437886478-29273-1-git-send-email-noamc@ezchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, peter@hurleysoftware.com, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Peter Ujfalusi <peter.ujfalusi@ti.com>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, peter@hurleysoftware.com, fransklaver@gmail.com, Alexey.Brodkin@synopsys.com, vgupta@synopsys.com, Noam Camus <noamc@ezchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Aug 11, 2015 at 02:34:29PM +0200, Sebastian Andrzej Siewior wrote:
-> On 08/11/2015 12:06 PM, Russell King - ARM Linux wrote:
-> > I think what people need to learn is that an API in the kernel which
-> > returns an int _can_ fail - it returns an int so it _can_ return an
-> > error code.  If it _can_ return an error code, there _will_ be
-> > implementations which _do_.
-> > 
-> > If you don't check the return code, either your code doesn't care whether
-> > the function was successful or not, or you're playing with fire.  This is
-> > a prime example of playing with fire.
-> > 
-> > Let's leave the crappy userspace laziness with regard to error checking
-> > to userspace, and keep it out of the kernel.
-> > 
-> > Yes, the DMA engine capabilities may not be sufficient to describe every
-> > detail of DMA engines, but that's absolutely no reason to skimp on error
-> > checking.  Had there been some kind of error checking at the site, this
-> > problem would have been spotted before the 8250-omap driver was merged.
-> 
-> Let me disable RX-DMA in 8250-omap code and push that stable. Then we
-> won't need a special annotation for pause support because it remains
-> off and is currently about one user. I browsed each driver in
-> drivers/dma each one which does support pause supports it and all of
-> them implement it unconditionally (ipu_idmac grabs a mutex first but
-> this is another story).
-> Adding error checking to 8250-omap like I have it in #1 and disabling
-> RX-DMA in case pause fails looks be reasonable since there is nothing
-> else that can be done I guess.
-> Once we have the missing piece in omap-dma the RX-DMA can be enabled in
-> 8250-omap.
-> Does this sound like a plan we can agree on?
+From: Noam Camus <noamc@ezchip.com>
 
-Yes sounds good to me..
+v4 change
+Remove patch for skipping looptest through DT option.
+This is now handled in our simulator model.
+Thanks to Vineet Gupta from Synopsys for his help.
 
--- 
-~Vinod
+We are left with 2 patches which adds BIG endian support.
+
+V3 change:
+Use second level accessors for big/little endian port.
+The new accessors are now pointed from uart_port->private_data
+These accessors are initialized during driver probe().
+Driver shouldn't access directly to readl/writel but to
+these new second level accessors (first level is at uart_port).
+e.g. at dw8250_check_LCR() and dw8250_setup_port() I replaced such
+direct calls.
+
+V2 changes:
+1) better description for each commit.
+2) adding to CC list the device tree maintainer.
+3) rename dw8250_check_control() --> dw8250_check_LCR().
+4) remove bad patch of "add UPF_FIXED_TYPE to flags".
+
+Noam Camus (2):
+  serial: 8250_dw: Add support for big-endian MMIO accesses
+  serial: 8250_dw: dw8250_setup_port() use endianness aware read.
+
+ drivers/tty/serial/8250/8250_dw.c |   72 ++++++++++++++++++++++++++++++++-----
+ 1 files changed, 63 insertions(+), 9 deletions(-)
