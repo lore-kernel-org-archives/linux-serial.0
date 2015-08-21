@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC v3 2/4] serial: sh-sci: Get rid of the workqueue to handle receive DMA requests
-Date: Fri, 21 Aug 2015 20:25:44 +0200
-Message-ID: <1440181546-7334-3-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH/RFC v3 4/4] serial: sh-sci: Add DT support to DMA setup
+Date: Fri, 21 Aug 2015 20:25:46 +0200
+Message-ID: <1440181546-7334-5-git-send-email-geert+renesas@glider.be>
 References: <1440181546-7334-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1440181546-7334-1-git-send-email-geert+renesas@glider.be>
@@ -10,257 +10,151 @@ To: linux-sh@vger.kernel.org
 Cc: Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, Yoshihiro Kaneko <ykaneko0929@gmail.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Wolfram Sang <wsa@the-dreams.de>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The receive DMA workqueue function work_fn_rx() handles two things:
-  1. Reception of a full buffer on completion of a receive DMA request,
-  2. Reception of a partial buffer on receive DMA time-out.
-The workqueue is kicked by both the receive DMA completion handler, and
-by a timer to handle DMA time-out.
+Add support for obtaining DMA channel information from the device tree.
 
-As there are always two receive DMA requests active, it's possible that
-the receive DMA completion handler is called a second time before the
-workqueue function runs.
-
-As the time-out handler re-enables the receive interrupt, an interrupt
-may come in before time-out has been fully handled.
-
-Move part 1 into the receive DMA completion handler, and move part 2
-into the receive DMA time-out handler, to fix these race conditions.
+This requires switching from the legacy sh_dmae_slave structures with
+hardcoded channel numbers and the corresponding filter function to:
+  1. dma_request_slave_channel_compat(),
+       - On legacy platforms, dma_request_slave_channel_compat() uses
+	 the passed DMA channel numbers that originate from platform
+	 device data,
+       - On DT-based platforms, dma_request_slave_channel_compat() will
+	 retrieve the information from DT.
+  2. and the generic dmaengine_slave_config() configuration method,
+     which requires filling in DMA register ports and slave bus widths.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 ---
 v3:
-  - New.
+  - Moved to end of series, to avoid enabling broken DMA,
+
+v2:
+  - Add Acked-by.
 ---
- drivers/tty/serial/sh-sci.c | 165 ++++++++++++++++++++------------------------
- 1 file changed, 76 insertions(+), 89 deletions(-)
+ drivers/tty/serial/sh-sci.c | 78 +++++++++++++++++++++++++++------------------
+ 1 file changed, 47 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 0622cafaf1c71cab..0b6a367ac343221c 100644
+index b18e2e64f163ca48..c8a99be4d0175b23 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -115,7 +115,6 @@ struct sci_port {
- 	struct sh_dmae_slave		param_tx;
- 	struct sh_dmae_slave		param_rx;
+@@ -112,8 +112,6 @@ struct sci_port {
+ 	struct scatterlist		sg_rx[2];
+ 	void				*rx_buf[2];
+ 	size_t				buf_len_rx;
+-	struct sh_dmae_slave		param_tx;
+-	struct sh_dmae_slave		param_rx;
  	struct work_struct		work_tx;
--	struct work_struct		work_rx;
  	struct timer_list		rx_timer;
  	unsigned int			rx_timeout;
- #endif
-@@ -1336,10 +1335,29 @@ static int sci_dma_rx_find_active(struct sci_port *s)
- 	return -1;
+@@ -1618,17 +1616,6 @@ static void sci_break_ctl(struct uart_port *port, int break_state)
  }
  
-+static void sci_rx_dma_release(struct sci_port *s, bool enable_pio)
-+{
-+	struct dma_chan *chan = s->chan_rx;
-+	struct uart_port *port = &s->port;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	s->chan_rx = NULL;
-+	s->cookie_rx[0] = s->cookie_rx[1] = -EINVAL;
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	dmaengine_terminate_all(chan);
-+	dma_free_coherent(chan->device->dev, s->buf_len_rx * 2, s->rx_buf[0],
-+			  sg_dma_address(&s->sg_rx[0]));
-+	dma_release_channel(chan);
-+	if (enable_pio)
-+		sci_start_rx(port);
-+}
-+
- static void sci_dma_rx_complete(void *arg)
- {
- 	struct sci_port *s = arg;
- 	struct uart_port *port = &s->port;
-+	struct dma_async_tx_descriptor *desc;
- 	unsigned long flags;
- 	int active, count = 0;
- 
-@@ -1354,30 +1372,32 @@ static void sci_dma_rx_complete(void *arg)
- 
- 	mod_timer(&s->rx_timer, jiffies + s->rx_timeout);
- 
--	spin_unlock_irqrestore(&port->lock, flags);
--
- 	if (count)
- 		tty_flip_buffer_push(&port->state->port);
- 
--	schedule_work(&s->work_rx);
--}
-+	desc = dmaengine_prep_slave_sg(s->chan_rx, &s->sg_rx[active], 1,
-+				       DMA_DEV_TO_MEM,
-+				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
-+	if (!desc)
-+		goto fail;
- 
--static void sci_rx_dma_release(struct sci_port *s, bool enable_pio)
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+-static bool filter(struct dma_chan *chan, void *slave)
 -{
--	struct dma_chan *chan = s->chan_rx;
--	struct uart_port *port = &s->port;
--	unsigned long flags;
-+	desc->callback = sci_dma_rx_complete;
-+	desc->callback_param = s;
-+	s->cookie_rx[active] = dmaengine_submit(desc);
-+	if (dma_submit_error(s->cookie_rx[active]))
-+		goto fail;
- 
--	spin_lock_irqsave(&port->lock, flags);
--	s->chan_rx = NULL;
--	s->cookie_rx[0] = s->cookie_rx[1] = -EINVAL;
-+	s->active_rx = s->cookie_rx[!active];
-+
-+	dev_dbg(port->dev, "  cookie %d #%d, new active cookie %d\n",
-+		s->cookie_rx[active], active, s->active_rx);
- 	spin_unlock_irqrestore(&port->lock, flags);
--	dmaengine_terminate_all(chan);
--	dma_free_coherent(chan->device->dev, s->buf_len_rx * 2, s->rx_buf[0],
--			  sg_dma_address(&s->sg_rx[0]));
--	dma_release_channel(chan);
--	if (enable_pio)
--		sci_start_rx(port);
-+	return;
-+
-+fail:
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	dev_warn(port->dev, "Failed submitting Rx DMA descriptor\n");
-+	sci_rx_dma_release(s, true);
- }
- 
- static void sci_tx_dma_release(struct sci_port *s, bool enable_pio)
-@@ -1438,72 +1458,6 @@ fail:
- 	sci_rx_dma_release(s, true);
- }
- 
--static void work_fn_rx(struct work_struct *work)
--{
--	struct sci_port *s = container_of(work, struct sci_port, work_rx);
--	struct uart_port *port = &s->port;
--	struct dma_async_tx_descriptor *desc;
--	struct dma_tx_state state;
--	enum dma_status status;
--	unsigned long flags;
--	int new;
+-	struct sh_dmae_slave *param = slave;
 -
--	spin_lock_irqsave(&port->lock, flags);
--	new = sci_dma_rx_find_active(s);
--	if (new < 0) {
--		spin_unlock_irqrestore(&port->lock, flags);
--		return;
--	}
+-	dev_dbg(chan->device->dev, "%s: slave ID %d\n",
+-		__func__, param->shdma_slave.slave_id);
 -
--	status = dmaengine_tx_status(s->chan_rx, s->active_rx, &state);
--	if (status != DMA_COMPLETE) {
--		/* Handle incomplete DMA receive */
--		struct dma_chan *chan = s->chan_rx;
--		unsigned int read;
--		int count;
--
--		dmaengine_terminate_all(chan);
--		read = sg_dma_len(&s->sg_rx[new]) - state.residue;
--		dev_dbg(port->dev, "Read %u bytes with cookie %d\n", read,
--			s->active_rx);
--
--		if (read) {
--			count = sci_dma_rx_push(s, s->rx_buf[new], read);
--			if (count)
--				tty_flip_buffer_push(&port->state->port);
--		}
--
--		spin_unlock_irqrestore(&port->lock, flags);
--
--		sci_submit_rx(s);
--		return;
--	}
--
--	desc = dmaengine_prep_slave_sg(s->chan_rx, &s->sg_rx[new], 1,
--				       DMA_DEV_TO_MEM,
--				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
--	if (!desc)
--		goto fail;
--
--	desc->callback = sci_dma_rx_complete;
--	desc->callback_param = s;
--	s->cookie_rx[new] = dmaengine_submit(desc);
--	if (dma_submit_error(s->cookie_rx[new]))
--		goto fail;
--
--	s->active_rx = s->cookie_rx[!new];
--
--	dev_dbg(port->dev, "%s: cookie %d #%d, new active cookie %d\n",
--		__func__, s->cookie_rx[new], new, s->active_rx);
--	spin_unlock_irqrestore(&port->lock, flags);
--	return;
--
--fail:
--	spin_unlock_irqrestore(&port->lock, flags);
--	dev_warn(port->dev, "Failed submitting Rx DMA descriptor\n");
--	sci_rx_dma_release(s, true);
+-	chan->private = &param->shdma_slave;
+-	return true;
 -}
 -
- static void work_fn_tx(struct work_struct *work)
- {
- 	struct sci_port *s = container_of(work, struct sci_port, work_tx);
-@@ -1676,15 +1630,49 @@ static void rx_timer_fn(unsigned long arg)
+ static void rx_timer_fn(unsigned long arg)
  {
  	struct sci_port *s = (struct sci_port *)arg;
- 	struct uart_port *port = &s->port;
--	u16 scr = serial_port_in(port, SCSCR);
-+	struct dma_tx_state state;
-+	enum dma_status status;
-+	unsigned long flags;
-+	unsigned int read;
-+	int active, count;
-+	u16 scr;
- 
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	dev_dbg(port->dev, "DMA Rx timed out\n");
-+	scr = serial_port_in(port, SCSCR);
- 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
- 		scr &= ~SCSCR_RDRQE;
- 		enable_irq(s->irqs[SCIx_RXI_IRQ]);
- 	}
- 	serial_port_out(port, SCSCR, scr | SCSCR_RIE);
--	dev_dbg(port->dev, "DMA Rx timed out\n");
--	schedule_work(&s->work_rx);
-+
-+	active = sci_dma_rx_find_active(s);
-+	if (active < 0) {
-+		spin_unlock_irqrestore(&port->lock, flags);
-+		return;
-+	}
-+
-+	status = dmaengine_tx_status(s->chan_rx, s->active_rx, &state);
-+	if (status == DMA_COMPLETE)
-+		dev_dbg(port->dev, "Cookie %d #%d has already completed\n",
-+			s->active_rx, active);
-+
-+	/* Handle incomplete DMA receive */
-+	dmaengine_terminate_all(s->chan_rx);
-+	read = sg_dma_len(&s->sg_rx[active]) - state.residue;
-+	dev_dbg(port->dev, "Read %u bytes with cookie %d\n", read,
-+		s->active_rx);
-+
-+	if (read) {
-+		count = sci_dma_rx_push(s, s->rx_buf[active], read);
-+		if (count)
-+			tty_flip_buffer_push(&port->state->port);
-+	}
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	sci_submit_rx(s);
+@@ -1679,28 +1666,62 @@ static void rx_timer_fn(unsigned long arg)
+ 		sci_submit_rx(s);
  }
  
++static struct dma_chan *sci_request_dma_chan(struct uart_port *port,
++					     enum dma_transfer_direction dir,
++					     unsigned int id)
++{
++	dma_cap_mask_t mask;
++	struct dma_chan *chan;
++	struct dma_slave_config cfg;
++	int ret;
++
++	dma_cap_zero(mask);
++	dma_cap_set(DMA_SLAVE, mask);
++
++	chan = dma_request_slave_channel_compat(mask, shdma_chan_filter,
++					(void *)(unsigned long)id, port->dev,
++					dir == DMA_MEM_TO_DEV ? "tx" : "rx");
++	if (!chan) {
++		dev_warn(port->dev,
++			 "dma_request_slave_channel_compat failed\n");
++		return NULL;
++	}
++
++	memset(&cfg, 0, sizeof(cfg));
++	cfg.direction = dir;
++	if (dir == DMA_MEM_TO_DEV) {
++		cfg.dst_addr = port->mapbase +
++			(sci_getreg(port, SCxTDR)->offset << port->regshift);
++		cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
++	} else {
++		cfg.src_addr = port->mapbase +
++			(sci_getreg(port, SCxRDR)->offset << port->regshift);
++		cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
++	}
++
++	ret = dmaengine_slave_config(chan, &cfg);
++	if (ret) {
++		dev_warn(port->dev, "dmaengine_slave_config failed %d\n", ret);
++		dma_release_channel(chan);
++		return NULL;
++	}
++
++	return chan;
++}
++
  static void sci_request_dma(struct uart_port *port)
-@@ -1768,7 +1756,6 @@ static void sci_request_dma(struct uart_port *port)
- 			dma += s->buf_len_rx;
- 		}
+ {
+ 	struct sci_port *s = to_sci_port(port);
+-	struct sh_dmae_slave *param;
+ 	struct dma_chan *chan;
+-	dma_cap_mask_t mask;
  
--		INIT_WORK(&s->work_rx, work_fn_rx);
- 		setup_timer(&s->rx_timer, rx_timer_fn, (unsigned long)s);
+ 	dev_dbg(port->dev, "%s: port %d\n", __func__, port->line);
  
- 		sci_submit_rx(s);
+-	if (s->cfg->dma_slave_tx <= 0 || s->cfg->dma_slave_rx <= 0)
++	if (!port->dev->of_node &&
++	    (s->cfg->dma_slave_tx <= 0 || s->cfg->dma_slave_rx <= 0))
+ 		return;
+ 
+-	dma_cap_zero(mask);
+-	dma_cap_set(DMA_SLAVE, mask);
+-
+-	param = &s->param_tx;
+-
+-	/* Slave ID, e.g., SHDMA_SLAVE_SCIF0_TX */
+-	param->shdma_slave.slave_id = s->cfg->dma_slave_tx;
+-
+ 	s->cookie_tx = -EINVAL;
+-	chan = dma_request_channel(mask, filter, param);
++	chan = sci_request_dma_chan(port, DMA_MEM_TO_DEV, s->cfg->dma_slave_tx);
+ 	dev_dbg(port->dev, "%s: TX: got channel %p\n", __func__, chan);
+ 	if (chan) {
+ 		s->chan_tx = chan;
+@@ -1722,12 +1743,7 @@ static void sci_request_dma(struct uart_port *port)
+ 		INIT_WORK(&s->work_tx, work_fn_tx);
+ 	}
+ 
+-	param = &s->param_rx;
+-
+-	/* Slave ID, e.g., SHDMA_SLAVE_SCIF0_RX */
+-	param->shdma_slave.slave_id = s->cfg->dma_slave_rx;
+-
+-	chan = dma_request_channel(mask, filter, param);
++	chan = sci_request_dma_chan(port, DMA_DEV_TO_MEM, s->cfg->dma_slave_rx);
+ 	dev_dbg(port->dev, "%s: RX: got channel %p\n", __func__, chan);
+ 	if (chan) {
+ 		unsigned int i;
 -- 
 1.9.1
 
