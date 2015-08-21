@@ -1,40 +1,56 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [GIT PULL] TTY/Serial patches for 4.3-rc1
-Date: Thu, 20 Aug 2015 21:03:09 -0300
-Message-ID: <CAOMZO5Cqj7gSQ0ZW_rkUmF=orvj58uaSx+AmZWEUyp1dRDF9fg@mail.gmail.com>
-References: <20150820191121.GA24594@kroah.com>
-	<20150821095733.479a51aa@canb.auug.org.au>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 2/3] dma: add __must_check annotation for
+ dmaengine_pause()
+Date: Fri, 21 Aug 2015 14:02:45 +0530
+Message-ID: <20150821083245.GM13546@localhost>
+References: <1438977619-15488-1-git-send-email-bigeasy@linutronix.de>
+ <1438977619-15488-3-git-send-email-bigeasy@linutronix.de>
+ <20150811095852.GW11789@localhost>
+ <20150811100617.GD7576@n2100.arm.linux.org.uk>
+ <55C9EBD5.3090203@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150821095733.479a51aa@canb.auug.org.au>
+Content-Disposition: inline
+In-Reply-To: <55C9EBD5.3090203@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Eduardo Valentin <edubezval@gmail.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, peter@hurleysoftware.com, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, nsekhar@ti.com, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, john.ogness@linutronix.de, Peter Ujfalusi <peter.ujfalusi@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Stephen,
+On Tue, Aug 11, 2015 at 02:34:29PM +0200, Sebastian Andrzej Siewior wrote:
+> On 08/11/2015 12:06 PM, Russell King - ARM Linux wrote:
+> > I think what people need to learn is that an API in the kernel which
+> > returns an int _can_ fail - it returns an int so it _can_ return an
+> > error code.  If it _can_ return an error code, there _will_ be
+> > implementations which _do_.
+> > 
+> > If you don't check the return code, either your code doesn't care whether
+> > the function was successful or not, or you're playing with fire.  This is
+> > a prime example of playing with fire.
+> > 
+> > Let's leave the crappy userspace laziness with regard to error checking
+> > to userspace, and keep it out of the kernel.
+> > 
+> > Yes, the DMA engine capabilities may not be sufficient to describe every
+> > detail of DMA engines, but that's absolutely no reason to skimp on error
+> > checking.  Had there been some kind of error checking at the site, this
+> > problem would have been spotted before the 8250-omap driver was merged.
+> 
+> Let me disable RX-DMA in 8250-omap code and push that stable. Then we
+> won't need a special annotation for pause support because it remains
+> off and is currently about one user. I browsed each driver in
+> drivers/dma each one which does support pause supports it and all of
+> them implement it unconditionally (ipu_idmac grabs a mutex first but
+> this is another story).
+> Adding error checking to 8250-omap like I have it in #1 and disabling
+> RX-DMA in case pause fails looks be reasonable since there is nothing
+> else that can be done I guess.
+> Once we have the missing piece in omap-dma the RX-DMA can be enabled in
+> 8250-omap.
+> Does this sound like a plan we can agree on?
 
-On Thu, Aug 20, 2015 at 8:57 PM, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> Hi Greg,
->
-> On Thu, 20 Aug 2015 12:11:21 -0700 Greg KH <gregkh@linuxfoundation.org> wrote:
->>
->> All have been in linux-next with no reported issues.
->
-> Except see below.
->
->> Eduardo Valentin (4):
->>       serial: imx: introduce serial_imx_enable_wakeup()
->
-> I reported that this commit breaks the arm multi_v7_defconfig build and
-> I have seen no fix applied.
->
-> I have been applying the following patch for a few days but do not know
-> if it is the correct resolution:
+Yes sounds good to me..
 
-This is the correct solution as there is really no imx6sl-fox-p1.dts file.
-
-Regards,
-
-Fabio Estevam
+-- 
+~Vinod
