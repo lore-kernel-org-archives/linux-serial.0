@@ -1,67 +1,69 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC v3 0/4] serial: sh-sci: Add DT DMA support
-Date: Fri, 21 Aug 2015 20:25:42 +0200
-Message-ID: <1440181546-7334-1-git-send-email-geert+renesas@glider.be>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH/RFC v3 1/4] serial: sh-sci: Stop TX and RX on shutdown
+Date: Sat, 22 Aug 2015 02:17:50 +0300
+Message-ID: <1780221.Xost2UeeDz@avalon>
+References: <1440181546-7334-1-git-send-email-geert+renesas@glider.be> <1440181546-7334-2-git-send-email-geert+renesas@glider.be>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1440181546-7334-2-git-send-email-geert+renesas@glider.be>
 Sender: linux-sh-owner@vger.kernel.org
-To: linux-sh@vger.kernel.org
-Cc: Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, Yoshihiro Kaneko <ykaneko0929@gmail.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Wolfram Sang <wsa@the-dreams.de>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, Yoshihiro Kaneko <ykaneko0929@gmail.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Wolfram Sang <wsa@the-dreams.de>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-	Hi,
+Hi Geert,
 
-This patch series adds DT DMA support to the Renesas "SCI" serial driver
-on R-Car Gen2 SoCs.
-It depends on "[PATCH v3 00/33] serial: sh-sci: Miscellaneous
-and DMA Improvements", which contains preparatory patches that are
-considered stable.
+Thank you for the patch.
 
-Some of these patches have been sent before, cfr.
-  - [PATCH/RFC v2 00/29] serial: sh-sci: Miscellaneous and DMA
-    Improvements (http://www.spinics.net/lists/linux-sh/msg43567.html)
-  - [PATCH/RFC 0/8] serial: sh-sci: Add DT DMA support
-    (http://www.spinics.net/lists/linux-sh/msg42258.html)
+On Friday 21 August 2015 20:25:43 Geert Uytterhoeven wrote:
+> Make sure the transmitter and receiver are stopped when shutting down
+> the port, to avoid new RX DMA requests to arrive.
+> 
+> Inspired by a patch in the BSP by Koji Matsuoka
+> <koji.matsuoka.xm@renesas.com>.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v3:
+>   - No changes,
+> 
+> v2:
+>   - New.
+> ---
+>  drivers/tty/serial/sh-sci.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index d8b73e791a554823..0622cafaf1c71cab 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -1820,12 +1820,16 @@ static void sci_shutdown(struct uart_port *port)
+>  {
+>  	struct sci_port *s = to_sci_port(port);
+>  	unsigned long flags;
+> +	u16 scscr;
+> 
+>  	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
+> 
+>  	spin_lock_irqsave(&port->lock, flags);
+>  	sci_stop_rx(port);
+>  	sci_stop_tx(port);
+> +	scscr = serial_port_in(port, SCSCR);
+> +	scscr &= ~(SCSCR_TE | SCSCR_RE);
+> +	serial_port_out(port, SCSCR, scscr);
 
-Major change is the replacement of the one-byte DMA transfer on (H)SCIF
-by submitting receive DMA requests from the receive interrupt handler.
+Given that the register contains lots of interrupt enable bits, would it make 
+sense to just write it to 0 to disable everything ? I don't think we need to 
+keep any of the SCSCR bits across shutdown/startup.
 
-This was tested on r8a7791/koelsch, using SCIF, SCIFA, SCIFB, and HSCIF.
-It should work with and without CONFIG_HIGHMEM (thanks to Shimoda-san).
-There are still some known issues in case of overrun errors.
-
-For your convenience, I've also pushed this to
-git://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git#scif-dma-v3
-
-While it doesn't seem to be a hard requirement, I included the fixed
-version of "dmaengine: rcar-dmac: Fix residue reporting for pending
-descriptors".
-
-Note that SCI DMA support was originally written for SH-based systems,
-and was never fully wired up in platform code in mainline, so the risk
-for regressions is fairly small.
-
-Thanks for your comments!
-
-Geert Uytterhoeven (4):
-  serial: sh-sci: Stop TX and RX on shutdown
-  serial: sh-sci: Get rid of the workqueue to handle receive DMA
-    requests
-  serial: sh-sci: Submit RX DMA from RX interrupt on (H)SCIF
-  serial: sh-sci: Add DT support to DMA setup
-
- drivers/tty/serial/sh-sci.c | 254 +++++++++++++++++++++++---------------------
- 1 file changed, 133 insertions(+), 121 deletions(-)
+>  	spin_unlock_irqrestore(&port->lock, flags);
+> 
+>  	sci_free_dma(port);
 
 -- 
-1.9.1
+Regards,
 
-Gr{oetje,eeting}s,
+Laurent Pinchart
 
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
