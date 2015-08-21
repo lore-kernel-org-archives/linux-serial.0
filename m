@@ -1,83 +1,94 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 16/33] serial: sh-sci: Use correct device for DMA mapping with IOMMU
-Date: Fri, 21 Aug 2015 20:02:40 +0200
-Message-ID: <1440180177-6924-17-git-send-email-geert+renesas@glider.be>
-References: <1440180177-6924-1-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 00/33] serial: sh-sci: Miscellaneous and DMA Improvements
+Date: Fri, 21 Aug 2015 20:02:24 +0200
+Message-ID: <1440180177-6924-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1440180177-6924-1-git-send-email-geert+renesas@glider.be>
 Sender: linux-sh-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, Yoshihiro Kaneko <ykaneko0929@gmail.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Wolfram Sang <wsa@the-dreams.de>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-To function correctly in the presence of an IOMMU, the DMA buffers must
-be managed using the DMA channel's device instead of the platform
-device's device.
+	Hi,
 
-Make sure to free the DMA memory before releasing the channel, not
-after.
+This patch series contains several miscellaneous and DMA improvements
+for the Renesas "SCI" serial driver. The goal is to prepare for enabling
+DMA on DT-based R-Car Gen2 SoCs.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
----
-v3:
-  - Fix call to dma_sync_sg_for_device() which I missed before,
-  - Rebased on top of "serial: sh-sci: Handle DMA init failures inside
-    sci_request_dma()",
+This series contains preparatory patches that have been sent before
+(change logs in the individual patches), or are fairly simple, and thus
+considered safe for applying.
 
-v2:
-  - Add Acked-by.
----
- drivers/tty/serial/sh-sci.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+The "RFC" patches actually enabling DMA will be sent in a separate
+series ("[PATCH/RFC v3 0/4] serial: sh-sci: Add DT DMA support").
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index ea6ab6173ce9f239..9aa9720d7f09d10f 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1370,9 +1370,9 @@ static void sci_rx_dma_release(struct sci_port *s, bool enable_pio)
- 
- 	s->chan_rx = NULL;
- 	s->cookie_rx[0] = s->cookie_rx[1] = -EINVAL;
--	dma_release_channel(chan);
--	dma_free_coherent(port->dev, s->buf_len_rx * 2,
-+	dma_free_coherent(chan->device->dev, s->buf_len_rx * 2,
- 			  sg_virt(&s->sg_rx[0]), sg_dma_address(&s->sg_rx[0]));
-+	dma_release_channel(chan);
- 	if (enable_pio)
- 		sci_start_rx(port);
- }
-@@ -1523,7 +1523,7 @@ static void work_fn_tx(struct work_struct *work)
- 		return;
- 	}
- 
--	dma_sync_sg_for_device(port->dev, sg, 1, DMA_TO_DEVICE);
-+	dma_sync_sg_for_device(chan->device->dev, sg, 1, DMA_TO_DEVICE);
- 
- 	spin_lock_irq(&port->lock);
- 	s->desc_tx = desc;
-@@ -1705,7 +1705,8 @@ static void sci_request_dma(struct uart_port *port)
- 		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
- 			    UART_XMIT_SIZE,
- 			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
--		nent = dma_map_sg(port->dev, &s->sg_tx, 1, DMA_TO_DEVICE);
-+		nent = dma_map_sg(chan->device->dev, &s->sg_tx, 1,
-+				  DMA_TO_DEVICE);
- 		if (!nent) {
- 			dev_warn(port->dev, "Failed mapping Tx DMA descriptor\n");
- 			dma_release_channel(chan);
-@@ -1737,8 +1738,9 @@ static void sci_request_dma(struct uart_port *port)
- 		s->chan_rx = chan;
- 
- 		s->buf_len_rx = 2 * max(16, (int)port->fifosize);
--		buf[0] = dma_alloc_coherent(port->dev, s->buf_len_rx * 2,
--					    &dma[0], GFP_KERNEL);
-+		buf[0] = dma_alloc_coherent(chan->device->dev,
-+					    s->buf_len_rx * 2, &dma[0],
-+					    GFP_KERNEL);
- 
- 		if (!buf[0]) {
- 			dev_warn(port->dev,
+Note that SCI DMA support was originally written for SH-based systems,
+and was never fully wired up in platform code in mainline, so the risk
+for regressions is fairly small.
+
+Thanks!
+
+References:
+  - [PATCH/RFC v2 00/29] serial: sh-sci: Miscellaneous and DMA
+    Improvements (http://www.spinics.net/lists/linux-sh/msg43567.html)
+  - [PATCH/RFC 0/8] serial: sh-sci: Add DT DMA support
+    (http://www.spinics.net/lists/linux-sh/msg42258.html)
+  - [PATCH/RFC 00/13] serial: sh-sci: Cleanups and bug fixes
+    (http://www.spinics.net/lists/linux-serial/msg17122.html)
+
+Geert Uytterhoeven (29):
+  serial: sh-sci: Replace buggy big #ifdef by runtime logic
+  serial: sh-sci: Prevent compiler warnings on 64-bit
+  serial: sh-sci: Correct SCIF_ERROR_CLEAR for plain SCIF
+  serial: sh-sci: Use SCIF_DR instead of hardcoded literal 1
+  serial: sh-sci: Use SCSMR_CKS instead of hardcoded literal 3
+  serial: sh-sci: Drop path in reference to serial_core.c
+  serial: sh-sci: Improve readability of sampling rate configuration
+  serial: sh-sci: Make sci_irq_desc[] const
+  serial: sh-sci: Make sci_regmap[] const
+  serial: sh-sci: Remove useless memory allocation failure printks
+  serial: sh-sci: Remove bogus sci_handle_fifo_overrun() call on (H)SCIF
+  serial: sh-sci: Improve DMA error messages
+  serial: sh-sci: Improve comments for DMA timeout calculation
+  serial: sh-sci: Handle DMA init failures inside sci_request_dma()
+  serial: sh-sci: Use correct device for DMA mapping with IOMMU
+  serial: sh-sci: Use min_t()/max_t() instead of casts
+  serial: sh-sci: Switch to dma_map_single() for DMA transmission
+  serial: sh-sci: Fix TX buffer mapping leak
+  serial: sh-sci: Use DMA submission helpers instead of open-coding
+  serial: sh-sci: Switch to generic DMA residue handling
+  serial: sh-sci: Stop acknowledging DMA transmit completions
+  serial: sh-sci: Simplify sci_submit_rx() error handling
+  serial: sh-sci: Do not resubmit DMA descriptors
+  serial: sh-sci: Fix race condition between RX worker and cleanup
+  serial: sh-sci: Pass scatterlist to sci_dma_rx_push()
+  serial: sh-sci: Use tty_insert_flip_string() for DMA receive
+  serial: sh-sci: Use incrementing pointers instead of stack array
+  serial: sh-sci: Don't call sci_rx_interrupt() on error when using DMA
+  serial: sh-sci: Don't call sci_dma_rx_push() if no data has arrived
+
+Kazuya Mizuguchi (1):
+  serial: sh-sci: Fix exclusion of work_fn_rx and sci_dma_rx_complete
+
+Yoshihiro Shimoda (3):
+  serial: sh-sci: Return IRQ_HANDLED when overrun if detected
+  serial: sh-sci: Fix NULL pointer dereference if HIGHMEM is enabled
+  serial: sh-sci: Don't kick tx in sci_er_interrupt() when using DMA
+
+ drivers/tty/serial/Kconfig  |   2 +-
+ drivers/tty/serial/sh-sci.c | 416 ++++++++++++++++++++++++--------------------
+ drivers/tty/serial/sh-sci.h |  49 ++----
+ 3 files changed, 241 insertions(+), 226 deletions(-)
+
 -- 
 1.9.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
