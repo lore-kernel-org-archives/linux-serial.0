@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 18/33] serial: sh-sci: Switch to dma_map_single() for DMA transmission
-Date: Fri, 21 Aug 2015 20:02:42 +0200
-Message-ID: <1440180177-6924-19-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 12/33] serial: sh-sci: Return IRQ_HANDLED when overrun if detected
+Date: Fri, 21 Aug 2015 20:02:36 +0200
+Message-ID: <1440180177-6924-13-git-send-email-geert+renesas@glider.be>
 References: <1440180177-6924-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1440180177-6924-1-git-send-email-geert+renesas@glider.be>
@@ -10,134 +10,36 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, Yoshihiro Kaneko <ykaneko0929@gmail.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Wolfram Sang <wsa@the-dreams.de>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Simplify the DMA transmit code by using dma_map_single() instead of
-constantly modifying the single-entry scatterlist to match what's
-currently being transmitted.
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
+This patch fix an issue that the driver may cause "nobody cared" IRQ
+when this driver detects the overrun flag only.
+
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
 v3:
-  - New.
+  - Assimilated into my series.
 ---
- drivers/tty/serial/sh-sci.c | 50 ++++++++++++++++++---------------------------
- 1 file changed, 20 insertions(+), 30 deletions(-)
+ drivers/tty/serial/sh-sci.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index cb35c88645bb5784..5a528b8985052017 100644
+index 017b33cf5587e809..c4cb7a5a2b110753 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -109,8 +109,8 @@ struct sci_port {
- 	dma_cookie_t			cookie_tx;
- 	dma_cookie_t			cookie_rx[2];
- 	dma_cookie_t			active_rx;
--	struct scatterlist		sg_tx;
--	unsigned int			sg_len_tx;
-+	dma_addr_t			tx_dma_addr;
-+	unsigned int			tx_dma_len;
- 	struct scatterlist		sg_rx[2];
- 	size_t				buf_len_rx;
- 	struct sh_dmae_slave		param_tx;
-@@ -1280,10 +1280,10 @@ static void sci_dma_tx_complete(void *arg)
+@@ -1078,8 +1078,10 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 		ret = sci_br_interrupt(irq, ptr);
  
- 	spin_lock_irqsave(&port->lock, flags);
+ 	/* Overrun Interrupt */
+-	if (orer_status & s->overrun_mask)
++	if (orer_status & s->overrun_mask) {
+ 		sci_handle_fifo_overrun(port);
++		ret = IRQ_HANDLED;
++	}
  
--	xmit->tail += sg_dma_len(&s->sg_tx);
-+	xmit->tail += s->tx_dma_len;
- 	xmit->tail &= UART_XMIT_SIZE - 1;
- 
--	port->icount.tx += sg_dma_len(&s->sg_tx);
-+	port->icount.tx += s->tx_dma_len;
- 
- 	async_tx_ack(s->desc_tx);
- 	s->desc_tx = NULL;
-@@ -1494,7 +1494,7 @@ static void work_fn_tx(struct work_struct *work)
- 	struct dma_chan *chan = s->chan_tx;
- 	struct uart_port *port = &s->port;
- 	struct circ_buf *xmit = &port->state->xmit;
--	struct scatterlist *sg = &s->sg_tx;
-+	dma_addr_t buf;
- 
- 	/*
- 	 * DMA is idle now.
-@@ -1504,19 +1504,15 @@ static void work_fn_tx(struct work_struct *work)
- 	 * consistent xmit buffer state.
- 	 */
- 	spin_lock_irq(&port->lock);
--	sg->offset = xmit->tail & (UART_XMIT_SIZE - 1);
--	sg_dma_address(sg) = (sg_dma_address(sg) & ~(UART_XMIT_SIZE - 1)) +
--		sg->offset;
--	sg_dma_len(sg) = min_t(unsigned int,
-+	buf = s->tx_dma_addr + (xmit->tail & (UART_XMIT_SIZE - 1));
-+	s->tx_dma_len = min_t(unsigned int,
- 		CIRC_CNT(xmit->head, xmit->tail, UART_XMIT_SIZE),
- 		CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE));
- 	spin_unlock_irq(&port->lock);
- 
--	BUG_ON(!sg_dma_len(sg));
--
--	desc = dmaengine_prep_slave_sg(chan,
--			sg, s->sg_len_tx, DMA_MEM_TO_DEV,
--			DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
-+	desc = dmaengine_prep_slave_single(chan, buf, s->tx_dma_len,
-+					   DMA_MEM_TO_DEV,
-+					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
- 	if (!desc) {
- 		dev_warn(port->dev, "Failed preparing Tx DMA descriptor\n");
- 		/* switch to PIO */
-@@ -1524,7 +1520,8 @@ static void work_fn_tx(struct work_struct *work)
- 		return;
- 	}
- 
--	dma_sync_sg_for_device(chan->device->dev, sg, 1, DMA_TO_DEVICE);
-+	dma_sync_single_for_device(chan->device->dev, buf, s->tx_dma_len,
-+				   DMA_TO_DEVICE);
- 
- 	spin_lock_irq(&port->lock);
- 	s->desc_tx = desc;
-@@ -1680,7 +1677,6 @@ static void sci_request_dma(struct uart_port *port)
- 	struct sh_dmae_slave *param;
- 	struct dma_chan *chan;
- 	dma_cap_mask_t mask;
--	int nent;
- 
- 	dev_dbg(port->dev, "%s: port %d\n", __func__, port->line);
- 
-@@ -1700,27 +1696,21 @@ static void sci_request_dma(struct uart_port *port)
- 	dev_dbg(port->dev, "%s: TX: got channel %p\n", __func__, chan);
- 	if (chan) {
- 		s->chan_tx = chan;
--		sg_init_table(&s->sg_tx, 1);
- 		/* UART circular tx buffer is an aligned page. */
--		BUG_ON((uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
--		sg_set_page(&s->sg_tx, virt_to_page(port->state->xmit.buf),
--			    UART_XMIT_SIZE,
--			    (uintptr_t)port->state->xmit.buf & ~PAGE_MASK);
--		nent = dma_map_sg(chan->device->dev, &s->sg_tx, 1,
--				  DMA_TO_DEVICE);
--		if (!nent) {
-+		s->tx_dma_addr = dma_map_single(chan->device->dev,
-+						port->state->xmit.buf,
-+						UART_XMIT_SIZE,
-+						DMA_TO_DEVICE);
-+		if (dma_mapping_error(chan->device->dev, s->tx_dma_addr)) {
- 			dev_warn(port->dev, "Failed mapping Tx DMA descriptor\n");
- 			dma_release_channel(chan);
- 			s->chan_tx = NULL;
- 		} else {
--			dev_dbg(port->dev, "%s: mapped %d@%p to %pad\n",
--				__func__,
--				sg_dma_len(&s->sg_tx), port->state->xmit.buf,
--				&sg_dma_address(&s->sg_tx));
-+			dev_dbg(port->dev, "%s: mapped %lu@%p to %pad\n",
-+				__func__, UART_XMIT_SIZE,
-+				port->state->xmit.buf, &s->tx_dma_addr);
- 		}
- 
--		s->sg_len_tx = nent;
--
- 		INIT_WORK(&s->work_tx, work_fn_tx);
- 	}
- 
+ 	return ret;
+ }
 -- 
 1.9.1
 
