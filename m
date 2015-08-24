@@ -1,65 +1,98 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [GIT PULL] TTY/Serial patches for 4.3-rc1
-Date: Fri, 21 Aug 2015 22:44:34 -0700
-Message-ID: <20150822054434.GA6245@kroah.com>
-References: <20150820191121.GA24594@kroah.com>
- <20150821095733.479a51aa@canb.auug.org.au>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH RFC] serial: 8250: Handle invalid UART state
+Date: Mon, 24 Aug 2015 09:31:38 -0400
+Message-ID: <55DB1CBA.3070504@hurleysoftware.com>
+References: <1440015124-28393-1-git-send-email-california.l.sullivan@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150821095733.479a51aa@canb.auug.org.au>
+In-Reply-To: <1440015124-28393-1-git-send-email-california.l.sullivan@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Eduardo Valentin <edubezval@gmail.com>
+To: california.l.sullivan@intel.com, linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, alan@linux.intel.com, darren.hart@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com, heikki.krogerus@intel.com, andriy.shevchenko@intel.com, arjan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 21, 2015 at 09:57:33AM +1000, Stephen Rothwell wrote:
-> Hi Greg,
+On 08/19/2015 04:12 PM, california.l.sullivan@intel.com wrote:
+> From: California Sullivan <california.l.sullivan@intel.com>
 > 
-> On Thu, 20 Aug 2015 12:11:21 -0700 Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > All have been in linux-next with no reported issues.
+> The debug UART on the Bay Trail is buggy and will sometimes enter a
+> state where there is a Character Timeout interrupt, but the Data
+> Ready bit in the Line Status Register is not set, despite there
+> being data available in the FIFO. It stays in this state until the
+> Receive Buffer is read. Because the 8250 driver does not read the
+> Receive Buffer without the Data Ready bit being set, the UART is
+> never read once we reach this point, and thus the Character Timeout
+> interrupt is never cleared. This makes the driver spin in a loop
+> causing multiple "too much work for irq" errors and eventually
+> locking up entirely.
+
+LSR doesn't reflect the actual state of the fifo?
+So kgdb (CONSOLE_POLL) won't work on these platforms either, right?
+
+Does this happen with only a single byte in the fifo or is it any
+number of bytes under the fifo trigger?
+
+
+> This patch handles the invalid state by setting the Data Ready bit
+> in the 'status' variable when the invalid state occurs. This allows
+> the receive buffer to be read, which clears the interrupt
+> identification register in the UART and brings us back to a correct
+> state.
 > 
-> Except see below.
+> After this patch was submitted for internal comment, a similar bug on
+> the HSUARTs of the Bay Trail and Braswell platforms was pointed out.
+> On those UARTs, the invalid state mentioned previously is reached for
+> some amount of time, cauing the same "too much work for irq" messages,
+> but not permanently locking up the UART. This patch has been confirmed
+> to solve that issue as well.
 > 
-> > Eduardo Valentin (4):
-> >       serial: imx: introduce serial_imx_enable_wakeup()
+> We considered solving this by adding a new UART_BUG_ define and
+> detecting the buggy UART by either identifying the processor or by
+> adding a new PNP device ID to firmware. However, this solution
+> would be more complex and have zero performance benefits, as the
+> ISR would require a similar 'if' condition to detect and handle the
+> bug.
 > 
-> I reported that this commit breaks the arm multi_v7_defconfig build and
-> I have seen no fix applied.
-> 
-> I have been applying the following patch for a few days but do not know
-> if it is the correct resolution:
-> 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Tue, 18 Aug 2015 15:56:40 +1000
-> Subject: [PATCH] serial: imx: partial revert of "introduce serial_imx_enable_wakeup()"
-> 
-> This reverts the part of commit 189550b8644e that affects
-> arch/arm/boot/dts/Makefile
-> 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Our main concern with this fix is whether it having a Character
+> Timeout with no Data Ready is an invalid state for all UARTs or
+> just some. If other UARTs have a Character Timeout without
+> immediately flipping the Data Ready bit in the Line Status Register
+> for a good reason, setting the Data Ready bit in the 'status'
+> variable could have unintended consequences.
+
+I think there is every likelihood of spurious RX timeout interrupts
+tripping this patch, sorry.
+
+Unfortunately, I think UART_BUG_ is the only viable possibility.
+Or perhaps fixing the port type as PORT_8250 (thus disabling the fifos).
+
+Regards,
+Peter Hurley
+
+
+> Signed-off-by: California Sullivan <california.l.sullivan@intel.com>
 > ---
->  arch/arm/boot/dts/Makefile | 1 -
->  1 file changed, 1 deletion(-)
+>  drivers/tty/serial/8250/8250_core.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> index d3ee1f01ffc7..233159d2eaab 100644
-> --- a/arch/arm/boot/dts/Makefile
-> +++ b/arch/arm/boot/dts/Makefile
-> @@ -330,7 +330,6 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
->  	imx6q-wandboard-revb1.dtb
->  dtb-$(CONFIG_SOC_IMX6SL) += \
->  	imx6sl-evk.dtb \
-> -	imx6sl-fox-p1.dtb \
->  	imx6sl-warp.dtb
->  dtb-$(CONFIG_SOC_IMX6SX) += \
->  	imx6sx-sabreauto.dtb \
-> -- 
-> 2.5.0
-
-Ugh, you are right, sorry about that.  I can't add it to my tree at the
-moment, but can do so in a few weeks...
-
-greg k-h
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index ea1a8da..078b118 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -1604,6 +1604,14 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+>  
+>  	DEBUG_INTR("status = %x...", status);
+>  
+> +	/*
+> +	 * Workaround for when there is a character timeout interrupt
+> +	 * but the data ready bit is not set in the Line Status Register.
+> +	 */
+> +	if ((iir & UART_IIR_RX_TIMEOUT) &&
+> +	    !(status & (UART_LSR_DR | UART_LSR_BI)))
+> +		status |= UART_LSR_DR;
+> +
+>  	if (status & (UART_LSR_DR | UART_LSR_BI)) {
+>  		if (up->dma)
+>  			dma_err = up->dma->rx_dma(up, iir);
+> 
