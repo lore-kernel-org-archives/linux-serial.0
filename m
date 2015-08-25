@@ -1,67 +1,92 @@
-From: Andrey Konovalov <andreyknvl@google.com>
-Subject: Potential data race in uart_ioctl
-Date: Tue, 25 Aug 2015 14:17:22 +0200
-Message-ID: <CAAeHK+xPOrm4JMjmRL4Er+LU7Auh_+rSnNcbWniPOoQFMZaqfw@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH/RFC v3 1/4] serial: sh-sci: Stop TX and RX on shutdown
+Date: Tue, 25 Aug 2015 15:01:17 +0200
+Message-ID: <CAMuHMdUez4SK+-PDVw_DCqQeq8o6SL22jfSdpGg7=9cq2QZtQw@mail.gmail.com>
+References: <1440181546-7334-1-git-send-email-geert+renesas@glider.be>
+	<1440181546-7334-2-git-send-email-geert+renesas@glider.be>
+	<1780221.Xost2UeeDz@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Dmitry Vyukov <dvyukov@google.com>, Alexander Potapenko <glider@google.com>, Kostya Serebryany <kcc@google.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1780221.Xost2UeeDz@avalon>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Linux-sh list <linux-sh@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, Yoshihiro Kaneko <ykaneko0929@gmail.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>, Wolfram Sang <wsa@the-dreams.de>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi!
+Hi Laurent, Matsuoka-san,
 
-We are working on a dynamic data race detector for the Linux kernel
-called KernelThreadSanitizer (ktsan)
-(https://github.com/google/ktsan/wiki).
+On Sat, Aug 22, 2015 at 1:17 AM, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> On Friday 21 August 2015 20:25:43 Geert Uytterhoeven wrote:
+>> Make sure the transmitter and receiver are stopped when shutting down
+>> the port, to avoid new RX DMA requests to arrive.
+>>
+>> Inspired by a patch in the BSP by Koji Matsuoka
+>> <koji.matsuoka.xm@renesas.com>.
+>>
+>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-While booting the kernel (upstream revision 21bdb584af8c) we got a report:
+>> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+>> index d8b73e791a554823..0622cafaf1c71cab 100644
+>> --- a/drivers/tty/serial/sh-sci.c
+>> +++ b/drivers/tty/serial/sh-sci.c
+>> @@ -1820,12 +1820,16 @@ static void sci_shutdown(struct uart_port *port)
+>>  {
+>>       struct sci_port *s = to_sci_port(port);
+>>       unsigned long flags;
+>> +     u16 scscr;
+>>
+>>       dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
+>>
+>>       spin_lock_irqsave(&port->lock, flags);
+>>       sci_stop_rx(port);
+>>       sci_stop_tx(port);
+>> +     scscr = serial_port_in(port, SCSCR);
+>> +     scscr &= ~(SCSCR_TE | SCSCR_RE);
+>> +     serial_port_out(port, SCSCR, scscr);
+>
+> Given that the register contains lots of interrupt enable bits, would it make
+> sense to just write it to 0 to disable everything ? I don't think we need to
+> keep any of the SCSCR bits across shutdown/startup.
 
-==================================================================
-ThreadSanitizer: data-race in uart_ioctl
+I don't  know.
 
-Read of size 8 by thread T424 (K971):
- [<ffffffff81673c56>] uart_ioctl+0x36/0x11e0
-drivers/tty/serial/serial_core.c:1216
- [<ffffffff81643802>] tty_ioctl+0x4f2/0x11d0 drivers/tty/tty_io.c:2924
- [<     inlined    >] do_vfs_ioctl+0x44a/0x750 vfs_ioctl fs/ioctl.c:43
- [<ffffffff8127b0ca>] do_vfs_ioctl+0x44a/0x750 fs/ioctl.c:607
- [<     inlined    >] SyS_ioctl+0x79/0xa0 SYSC_ioctl fs/ioctl.c:622
- [<ffffffff8127b449>] SyS_ioctl+0x79/0xa0 fs/ioctl.c:613
- [<ffffffff81eae0ae>] entry_SYSCALL_64_fastpath+0x12/0x71
-arch/x86/entry/entry_64.S:186
-DBG: cpu = ffff88063fc1fe68
-DBG: cpu id = 0
+Actually this patch causes a problem on e.g. armadillo and kzm9g, where
+serial console output suddenly stops on halt/reboot:
 
-Previous write of size 8 by thread T422 (K970):
- [<ffffffff816737ef>] uart_open+0x12f/0x220
-drivers/tty/serial/serial_core.c:1629
- [<ffffffff81645be2>] tty_open+0x192/0x8f0 drivers/tty/tty_io.c:2105
- [<ffffffff812628fc>] chrdev_open+0x13c/0x290 fs/char_dev.c:388
- [<ffffffff812582fc>] do_dentry_open+0x3ac/0x550 fs/open.c:736
- [<ffffffff81259d68>] vfs_open+0xb8/0xe0 fs/open.c:853
- [<     inlined    >] path_openat+0x81c/0x2440 do_last fs/namei.c:3163
- [<ffffffff81272f1c>] path_openat+0x81c/0x2440 fs/namei.c:3295
- [<ffffffff8127656a>] do_filp_open+0xfa/0x170 fs/namei.c:3330
- [<ffffffff8125a243>] do_sys_open+0x183/0x2b0 fs/open.c:1025
- [<     inlined    >] SyS_open+0x35/0x50 SYSC_open fs/open.c:1043
- [<ffffffff8125a3a5>] SyS_open+0x35/0x50 fs/open.c:1038
- [<ffffffff81eae0ae>] entry_SYSCALL_64_fastpath+0x12/0x71
-arch/x86/entry/entry_64.S:186
-DBG: cpu = ffff88063fd1fe68
+| # halt
+|
+| Broadcast message from root@armadillo (ttySC1) (Tue Aug 25 14:52:35 2015):
+| The system is going down for system halt NOW!
+| INIT: Switching to runlevel: 0
+| INIT: Sending process
 
-DBG: addr: ffff8801d2a0ce88
-DBG: first offset: 0, second offset: 0
-DBG: T424 clock: {T424: 211057, T422: 275728}
-DBG: T422 clock: {T422: 275819}
-==================================================================
+After reverting, it continues again with:
 
-It seems that one thread reads and uses tty->driver_data while it's
-being initialized in another one. The second thread holds port->mutex,
-but the first one does a few accesses to tty->driver_data before
-locking it.
+| es the TERM signal
+| [info] Using makefile-style concurrent boot in runlevel 0.
+| [ ok ] Asking all remaining processes to terminate...done.
+| [ ok ] All processes ended within 1 seconds...done.
+| [ ok ] Stopping enhanced syslogd: rsyslogd.
+| [ ok ] Stopping NFS common utilities: idmapd statd.
+| rpcbind: rpcbind terminating on signal. Restart with "rpcbind -w"
+| [ ok ] Stopping rpcbind daemon....
+| [....] not deconfiguring network interfaces: network file systems
+still mounted.[war (warning).
+| [info] Saving the system clock.
+| [info] Hardware Clock updated to Tue Aug 25 14:56:18 CEST 2015.
+| [ ok ] Deactivating swap...done.
+| [info] Will now halt.
+| reboot: System halted
 
-Could you confirm if this is a real race?
+Gr{oetje,eeting}s,
 
-Thanks!
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
