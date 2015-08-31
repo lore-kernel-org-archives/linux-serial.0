@@ -1,68 +1,49 @@
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [GIT PULL] TTY/Serial patches for 4.3-rc1
-Date: Mon, 31 Aug 2015 09:19:42 +1000
-Message-ID: <20150831091942.439bb63c@canb.auug.org.au>
-References: <20150820191121.GA24594@kroah.com>
-	<20150821095733.479a51aa@canb.auug.org.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
+Subject: [PATCH] serial: core: prevent softlockups on slow consoles
+Date: Mon, 31 Aug 2015 16:34:16 +0200
+Message-ID: <1441031656-17959-1-git-send-email-vkuznets@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150821095733.479a51aa@canb.auug.org.au>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Eduardo Valentin <edubezval@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "K. Y. Srinivasan" <kys@microsoft.com>, Dexuan Cui <decui@microsoft.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Linus,
+Hyper-V serial port is very slow on multi-vCPU guest, this causes
+soflockups on intensive console writes. Touch nmi watchdog after putting
+every char on port to avoid the issue for all serial drivers, the overhead
+should be small.
 
-On Fri, 21 Aug 2015 09:57:33 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> On Thu, 20 Aug 2015 12:11:21 -0700 Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > All have been in linux-next with no reported issues.
-> 
-> Except see below.
-> 
-> > Eduardo Valentin (4):
-> >       serial: imx: introduce serial_imx_enable_wakeup()
-> 
-> I reported that this commit breaks the arm multi_v7_defconfig build and
-> I have seen no fix applied.
-> 
-> I have been applying the following patch for a few days but do not know
-> if it is the correct resolution:
+This is just a part of the fix: serial8250_console_write() disables irqs
+for all its execution time (which on such slow consoles can be dozens of
+seconds), it should be possible to observe devices being stuck on this
+CPU. We need to find a better way, e.g. do output in batches enabling irqs
+in between.
 
-Just a reminder that if you pull in Greg's tty tree before he returns
-from whereever he is, it need the patch below to fix the build.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 18 Aug 2015 15:56:40 +1000
-Subject: [PATCH] serial: imx: partial revert of "introduce serial_imx_enable_wakeup()"
-
-This reverts the part of commit 189550b8644e that affects
-arch/arm/boot/dts/Makefile
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/arm/boot/dts/Makefile | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index d3ee1f01ffc7..233159d2eaab 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -330,7 +330,6 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
- 	imx6q-wandboard-revb1.dtb
- dtb-$(CONFIG_SOC_IMX6SL) += \
- 	imx6sl-evk.dtb \
--	imx6sl-fox-p1.dtb \
- 	imx6sl-warp.dtb
- dtb-$(CONFIG_SOC_IMX6SX) += \
- 	imx6sx-sabreauto.dtb \
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index f368520..cc05785 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -33,7 +33,7 @@
+ #include <linux/serial.h> /* for serial_state and serial_icounter_struct */
+ #include <linux/serial_core.h>
+ #include <linux/delay.h>
+-#include <linux/mutex.h>
++#include <linux/nmi.h>
+ 
+ #include <asm/irq.h>
+ #include <asm/uaccess.h>
+@@ -1792,6 +1792,7 @@ void uart_console_write(struct uart_port *port, const char *s,
+ 		if (*s == '\n')
+ 			putchar(port, '\r');
+ 		putchar(port, *s);
++		touch_nmi_watchdog();
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(uart_console_write);
 -- 
-2.5.0
-
--- 
-Cheers,
-Stephen Rothwell                    sfr@canb.auug.org.au
+2.4.3
