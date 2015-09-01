@@ -1,49 +1,32 @@
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
-Subject: [PATCH] serial: core: prevent softlockups on slow consoles
-Date: Mon, 31 Aug 2015 16:34:16 +0200
-Message-ID: <1441031656-17959-1-git-send-email-vkuznets@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "K. Y. Srinivasan" <kys@microsoft.com>, Dexuan Cui <decui@microsoft.com>
+From: Josh Boyer <jwboyer@fedoraproject.org>
+Subject: Re: [RFC] firmware: annotate thou shalt not request fw on init or probe
+Date: Tue, 1 Sep 2015 13:28:27 -0400
+Message-ID: <CA+5PVA6toGj5iboTgK5Casy9vUAQC8SXYWKEx+ojwC51UEV0HA@mail.gmail.com>
+References: <1440811107-861-1-git-send-email-mcgrof@do-not-panic.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1440811107-861-1-git-send-email-mcgrof@do-not-panic.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: "Luis R. Rodriguez" <mcgrof@do-not-panic.com>
+Cc: Ming Lei <ming.lei@canonical.com>, Julia Lawall <julia.lawall@lip6.fr>, Linus Torvalds <torvalds@linux-foundation.org>, liam.r.girdwood@linux.intel.com, yang.jie@intel.com, Takashi Iwai <tiwai@suse.de>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, joonas.lahtinen@linux.intel.com, Tom Gundersen <teg@jklm.no>, Alexander Viro <viro@zeniv.linux.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Kay Sievers <kay@vrfy.org>, David Woodhouse <dwmw2@infradead.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>, yalin.wang2010@gmail.com, "Luis R. Rodriguez" <mcgrof@suse.com>, Jonathan Corbet <corbet@lwn.net>, Gilles Muller <Gilles.Muller@lip6.fr>, Nicolas Palix <nicolas.palix@imag.fr>, Michal Marek <mmarek@suse.com>, linux-doc@vger.kernel.org, cocci@systeme.lip6.fr, Alessandro Rubini <rubini@gnudd.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@su>
 List-Id: linux-serial@vger.kernel.org
 
-Hyper-V serial port is very slow on multi-vCPU guest, this causes
-soflockups on intensive console writes. Touch nmi watchdog after putting
-every char on port to avoid the issue for all serial drivers, the overhead
-should be small.
+On Fri, Aug 28, 2015 at 9:18 PM, Luis R. Rodriguez
+<mcgrof@do-not-panic.com> wrote:
+> From: "Luis R. Rodriguez" <mcgrof@suse.com>
+>
+> We are phasing out the usermode helper from the kernel,
+> systemd already ripped support for this a while ago, the
+> only remaining valid user is the Dell rbu driver. The
 
-This is just a part of the fix: serial8250_console_write() disables irqs
-for all its execution time (which on such slow consoles can be dozens of
-seconds), it should be possible to observe devices being stuck on this
-CPU. We need to find a better way, e.g. do output in batches enabling irqs
-in between.
+Actually, I don't think that is accurate any longer.  The Dell rbu
+driver certainly requires this, but it seems that the following
+drivers select FW_LOADER_USER_HELPER_FALLBACK as well:
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- drivers/tty/serial/serial_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+CONFIG_DRM_STI
+CONFIG_LEDS_LP55XX_COMMON
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index f368520..cc05785 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -33,7 +33,7 @@
- #include <linux/serial.h> /* for serial_state and serial_icounter_struct */
- #include <linux/serial_core.h>
- #include <linux/delay.h>
--#include <linux/mutex.h>
-+#include <linux/nmi.h>
- 
- #include <asm/irq.h>
- #include <asm/uaccess.h>
-@@ -1792,6 +1792,7 @@ void uart_console_write(struct uart_port *port, const char *s,
- 		if (*s == '\n')
- 			putchar(port, '\r');
- 		putchar(port, *s);
-+		touch_nmi_watchdog();
- 	}
- }
- EXPORT_SYMBOL_GPL(uart_console_write);
--- 
-2.4.3
+Why they do that, I have no idea.  It's kind of disappointing.
+
+josh
