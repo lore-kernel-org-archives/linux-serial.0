@@ -1,15 +1,16 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: Re: [PATCH v5 05/11] drivers: PL011: refactor pl011_probe()
-Date: Thu, 3 Sep 2015 17:54:22 +0100
-Message-ID: <55E87B3E.8070106@arm.com>
-References: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
- <1432225584-4655-6-git-send-email-andre.przywara@arm.com>
- <CAOZdJXVgRQZhEfYY9YdpiQ=n1D56yYL84s42V4hd2=YX2k48ZA@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: earlycon issues in -next with amba-pl011 updates
+Date: Thu, 3 Sep 2015 13:49:02 -0400
+Message-ID: <55E8880E.5080707@hurleysoftware.com>
+References: <20150810232312.GB10728@bivouac.eciton.net>
+ <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
+ <55E81F93.1020104@arm.com> <20150903155255.GA28336@kroah.com>
+ <55E87095.4030600@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAOZdJXVgRQZhEfYY9YdpiQ=n1D56yYL84s42V4hd2=YX2k48ZA@mail.gmail.com>
+In-Reply-To: <55E87095.4030600@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,85 +20,89 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Timur Tabi <timur@codeaurora.org>
-Cc: Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "graeme.gregory@linaro.org" <graeme.gregory@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <moorray3@wp.pl>, GregKH <gregkh@linuxfoundation.org>, "nareshgbhat@gmail.com" <nareshgbhat@gmail.com>, "mlangsdo@redhat.com" <mlangsdo@redhat.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "rmk+kernel@arm.linux.org.uk" <rmk+kernel@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <greg@kroah.com>
+Cc: Jun Nie <jun.nie@linaro.org>, Tyler Baker <tyler.baker@linaro.org>, linux-arm-kernel@lists.infradead.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Timur,
-
-(sorry for the delay, just found your email which arrived during my
-vacation)
-
-On 09/08/15 01:59, Timur Tabi wrote:
-> On Thu, May 21, 2015 at 9:26 AM, Andre Przywara <andre.przywara@arm.com> wrote:
->> +static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
->> +{
->> +       struct uart_amba_port *uap;
->> +       struct vendor_data *vendor = id->data;
->> +       int portnr, ret;
->> +
->> +       portnr = pl011_find_free_port();
->> +       if (portnr < 0)
->> +               return portnr;
->> +
->> +       uap = devm_kzalloc(&dev->dev, sizeof(struct uart_amba_port),
->> +                          GFP_KERNEL);
->> +       if (!uap)
->> +               return -ENOMEM;
->> +
->> +       uap->clk = devm_clk_get(&dev->dev, NULL);
->> +       if (IS_ERR(uap->clk))
->> +               return PTR_ERR(uap->clk);
->> +
->> +       = vendor;
+On 09/03/2015 12:08 PM, Marc Zyngier wrote:
+> On 03/09/15 16:52, Greg Kroah-Hartman wrote:
+>> On Thu, Sep 03, 2015 at 11:23:15AM +0100, Marc Zyngier wrote:
+>>> On 11/08/15 02:48, Jun Nie wrote:
+>>>> 2015-08-11 7:23 GMT+08:00 Leif Lindholm <leif.lindholm@linaro.org>:
+>>>>> Hi all,
+>>>>>
+>>>>> The kernelci.org bot picked up a complete boot failure (no output past
+>>>>> UEFI stub) with next-20150806 and Tyler bisected it down to somewhere
+>>>>> in
+>>>>> 8cd90e5 uart: pl011: Add support to ZTE ZX296702 uart
+>>>>> 09dcc7d uart: pl011: Improve LCRH register access decision
+>>>>> 2c096a9 uart: pl011: Introduce register look up table
+>>>>> 7b753f3 uart: pl011: Introduce register accessor
+>>>>>
+>>>>> The issue only appears with earlycon on command line, for pl011
+>>>>> consoles.
+>>>>>
+>>>>> Some investigation shows that the cause lies with
+>>>>> commit 7b753f318d14 ("uart: pl011: Introduce register accessor")
+>>>>> and
+>>>>> commit 2c096a9eedc6 ("uart: pl011: Introduce register look up table")
+>>>>>
+>>>>> Specifically, the changes to pl011_putc() are incorrect:
+>>>>> The new pl011_ accessors take a (struct uart_amba_port *) input, but
+>>>>> pl011_putc() directly uses the incoming (struct uart_port *) for this.
+>>>>>
+>>>>> Apart from ending up with an unintended/incorrect UART base address,
+>>>>> the introduction of the lookup table for register offsets also means
+>>>>> the accessors try to dereference (struct uart_amba_port *)->reg_lut.
+>>>>>
+>>>>> The below is a hack that shows/resolves the issue, but some
+>>>>> refactoring of the original patches might be in order.
+>>>>>
+>>>>> /
+>>>>>     Leif
+>>>>
+>>>> Leif,
+>>>>
+>>>> Sorry for the inconvenience. I do not have idea of early console till
+>>>> now and I always have debug console for early panic debug. Learned
+>>>> more from this issue.
+>>>>
+>>>> Suppose Peter's patch will resolve your issue.
+>>>
+>>> [+ Greg KH]
+>>>
+>>> So -next has now been broken for a while on a number of ARM platforms
+>>> because of this (they simply cannot boot), and no progress has been made
+>>> towards resolving this problem.
+>>>
+>>> Can we please drop this series (at least commits 7b753f3 and following)
+>>> from -next until is has been reworked and reviewed?
+>>
+>> I don't have any patches in my -next tree, everything is in Linus's tree
+>> now.  So if I've missed something, or need to revert something, please
+>> let me know specifcally what to do.
 > 
-> I'm having trouble with this.  Specifically, I can't get SBSA early
-> console to work, because uap->vendor is uninitialized when
-> pl011_early_write() is called.
+> Gahhh... Given that there is no obvious fix
 
-I don't get where pl011_early_write() would need any kind of PL011 struct.
-It only references structures defined in the serial core, so it's
-completely dumb MMIO writes and reads, using only the base address
-provided on the command line.
-Are you by any chance mixing up early console and the normal console? To
-me it looks like early console just uses the three tiny functions
-defined just before the declaration and it does not touch vendor at all,
-isn't it?
+Fix has been on list since Aug 10.
 
-As for the broken part, any chance you were testing -next, which has
-some patches that broke early console, as we learned today?[1]
+http://www.spinics.net/lists/linux-serial/msg18576.html
 
-Cheers,
-Andre.
-[1]:
-http://lists.infradead.org/pipermail/linux-arm-kernel/2015-September/367744.html
 
+> that the discussion has
+> stalled and that the author of the series is apparently away, the
+> following patches should be reverted:
 > 
-> I don't have a non-SBSA system to test, but looking at the code, I'm
-> not sure how early console is supposed to work any more.  In both SBSA
-> and non-SBSA cases, uap->vendor is not initialized until the probe
-> function is called.  Isn't that too late?  I thought early console was
-> supposed to be running before the driver is probed.
+> 8cd90e50d140 uart: pl011: Add support to ZTE ZX296702 uart
+> 09dcc7dfc05b uart: pl011: Improve LCRH register access decision
+> 2c096a9eedc6 uart: pl011: Introduce register look up table
+> 7b753f318d14 uart: pl011: Introduce register accessor
+> 534e14e2293d uart: pl011: Rename regs with enumeration
 > 
-> If I make this change, then early console works on SBSA systems (with
-> earlycon=pl011,<address>).  But of course, this only works for SBSA
-> and breaks regular PL011.
+> (7b753f318d14 being the one breaking everything, but it makes more sense
+> to revert the whole series until it is properly fixed and reviewed).
 > 
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -2326,9 +2326,15 @@ static void pl011_early_write(struct console *con, const
->  static int __init pl011_early_console_setup(struct earlycon_device *device,
->                                             const char *opt)
->  {
-> +       struct uart_amba_port *uap =
-> +           container_of(&device->port, struct uart_amba_port, port);
-> +
->         if (!device->port.membase)
->                 return -ENODEV;
-> +       if (!uap->vendor)
-> +               uap->vendor = &vendor_sbsa;
-> +
->         device->con->write = pl011_early_write;
->         return 0;
->  }
+> Thanks,
+> 
+> 	M.
 > 
