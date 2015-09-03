@@ -1,71 +1,81 @@
-From: Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [RFC] firmware: annotate thou shalt not request fw on init or
- probe
-Date: Thu, 3 Sep 2015 07:56:33 +0200 (CEST)
-Message-ID: <alpine.DEB.2.02.1509030753140.2037@localhost6.localdomain6>
-References: <1440811107-861-1-git-send-email-mcgrof@do-not-panic.com> <alpine.DEB.2.02.1508291812350.2057@localhost6.localdomain6> <20150903013533.GO8051@wotan.suse.de>
+From: Marc Zyngier <marc.zyngier@arm.com>
+Subject: Re: earlycon issues in -next with amba-pl011 updates
+Date: Thu, 03 Sep 2015 11:23:15 +0100
+Message-ID: <55E81F93.1020104@arm.com>
+References: <20150810232312.GB10728@bivouac.eciton.net>
+ <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20150903013533.GO8051@wotan.suse.de>
-Sender: linux-doc-owner@vger.kernel.org
-To: "Luis R. Rodriguez" <mcgrof@suse.com>
-Cc: Julia Lawall <julia.lawall@lip6.fr>, "Luis R. Rodriguez" <mcgrof@do-not-panic.com>, ming.lei@canonical.com, torvalds@linux-foundation.org, liam.r.girdwood@linux.intel.com, yang.jie@intel.com, tiwai@suse.de, dmitry.torokhov@gmail.com, joonas.lahtinen@linux.intel.com, teg@jklm.no, viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org, kay@vrfy.org, dwmw2@infradead.org, linux-kernel@vger.kernel.org, yalin.wang2010@gmail.com, Jonathan Corbet <corbet@lwn.net>, Gilles Muller <Gilles.Muller@lip6.fr>, Nicolas Palix <nicolas.palix@imag.fr>, Michal Marek <mmarek@suse.com>, linux-doc@vger.kernel.org, cocci@systeme.lip6.fr, Alessandro Rubini <rubini@gnudd.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Arend Van Spriel <arend@broadcom.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jun Nie <jun.nie@linaro.org>, Leif Lindholm <leif.lindholm@linaro.org>
+Cc: Greg Kroah-Hartman <greg@kroah.com>, Tyler Baker <tyler.baker@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On Thu, 3 Sep 2015, Luis R. Rodriguez wrote:
-
-> On Sat, Aug 29, 2015 at 06:18:20PM +0200, Julia Lawall wrote:
-> > > +@ defines_module_init exists @
-> > > +declarer name module_init;
-> > > +identifier init;
-> > > +@@
-> > > +
-> > > +module_init(init);
-> > > +
-> > > +@ has_probe depends on defines_module_init @
-> > > +identifier drv_calls, drv_probe;
-> > > +type bus_driver;
-> > > +identifier probe_op =~ "(probe)";
-> > > +@@
-> > > +
-> > > +bus_driver drv_calls = {
-> > > +	.probe_op = drv_probe,
-> > > +};
-> > 
-> > I'm not sure that this is enough.  For example, there is the macro
-> > platform_driver_probe that initializes probe fields.  There is likewise
-> > module_platform_driver, which is a top-level declaration that encapsulates
-> > the module_init and the definition of the module_init function, which in
-> > turn calls platform_driver_probe.  There is also module_platform_driver,
-> > which encapsulates the module_init, but not the initialization of the probe
-> > field.  Are you concerned with any of these cases?
+On 11/08/15 02:48, Jun Nie wrote:
+> 2015-08-11 7:23 GMT+08:00 Leif Lindholm <leif.lindholm@linaro.org>:
+>> Hi all,
+>>
+>> The kernelci.org bot picked up a complete boot failure (no output past
+>> UEFI stub) with next-20150806 and Tyler bisected it down to somewhere
+>> in
+>> 8cd90e5 uart: pl011: Add support to ZTE ZX296702 uart
+>> 09dcc7d uart: pl011: Improve LCRH register access decision
+>> 2c096a9 uart: pl011: Introduce register look up table
+>> 7b753f3 uart: pl011: Introduce register accessor
+>>
+>> The issue only appears with earlycon on command line, for pl011
+>> consoles.
+>>
+>> Some investigation shows that the cause lies with
+>> commit 7b753f318d14 ("uart: pl011: Introduce register accessor")
+>> and
+>> commit 2c096a9eedc6 ("uart: pl011: Introduce register look up table")
+>>
+>> Specifically, the changes to pl011_putc() are incorrect:
+>> The new pl011_ accessors take a (struct uart_amba_port *) input, but
+>> pl011_putc() directly uses the incoming (struct uart_port *) for this.
+>>
+>> Apart from ending up with an unintended/incorrect UART base address,
+>> the introduction of the lookup table for register offsets also means
+>> the accessors try to dereference (struct uart_amba_port *)->reg_lut.
+>>
+>> The below is a hack that shows/resolves the issue, but some
+>> refactoring of the original patches might be in order.
+>>
+>> /
+>>     Leif
 > 
-> Yes, and also it would seem this would only capture simple one level of
-> routine indirection, for instance if probe called bar() and it was within
-> bar() that the driver code called a fw request call, that would not be picked
-> up, correct?
-
-By default, Coccinelle is not interprocedural.  You can encode that in the 
-script, though.
-
-Probably the most convenient approach would be to start with the the call, 
-and then work backward to the entry point.  I have code to do this, if and 
-when it turns out to be useful.
-
-julia
-
-
-> If true then the hunt is yet even more complex. The discussion that prompted me
-> to send this is still unfolding though [0] and it seems we may want to allow
-> for these type of calls within probe in the end but in order to vet for drivers
-> that fw is available through the direct filesystem lookup we may need help from
-> userspace. As that discussion unfolds it will be good to keep in mind what
-> effort we'd need to hunt all users down for now.
+> Leif,
 > 
-> [0] http://lkml.kernel.org/r/CAB=NE6UBRa0K7=PomJzKxsoj4GzAqkYrkp=O+UfVvu2fwM25pA@mail.gmail.com
+> Sorry for the inconvenience. I do not have idea of early console till
+> now and I always have debug console for early panic debug. Learned
+> more from this issue.
 > 
->   Luis
-> 
+> Suppose Peter's patch will resolve your issue.
+
+[+ Greg KH]
+
+So -next has now been broken for a while on a number of ARM platforms
+because of this (they simply cannot boot), and no progress has been made
+towards resolving this problem.
+
+Can we please drop this series (at least commits 7b753f3 and following)
+from -next until is has been reworked and reviewed?
+
+
+Thanks,
+
+	M.
+-- 
+Jazz is not dead. It just smells funny...
