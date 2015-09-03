@@ -1,17 +1,16 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: earlycon issues in -next with amba-pl011 updates
-Date: Thu, 3 Sep 2015 14:03:37 -0400
-Message-ID: <55E88B79.5090804@hurleysoftware.com>
-References: <20150810232312.GB10728@bivouac.eciton.net>
- <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
- <55E81F93.1020104@arm.com> <20150903155255.GA28336@kroah.com>
- <55E87095.4030600@arm.com> <55E8880E.5080707@hurleysoftware.com>
- <20150903175327.GA29340@kroah.com>
+From: Timur Tabi <timur@tabi.org>
+Subject: Re: [PATCH v5 05/11] drivers: PL011: refactor pl011_probe()
+Date: Thu, 03 Sep 2015 13:09:40 -0500
+Message-ID: <55E88CE4.7080401@tabi.org>
+References: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
+ <1432225584-4655-6-git-send-email-andre.przywara@arm.com>
+ <CAOZdJXVgRQZhEfYY9YdpiQ=n1D56yYL84s42V4hd2=YX2k48ZA@mail.gmail.com>
+ <55E87B3E.8070106@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150903175327.GA29340@kroah.com>
+In-Reply-To: <55E87B3E.8070106@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,71 +20,24 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <greg@kroah.com>
-Cc: Marc Zyngier <marc.zyngier@arm.com>, Tyler Baker <tyler.baker@linaro.org>, Leif Lindholm <leif.lindholm@linaro.org>, linux-serial@vger.kernel.org, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "graeme.gregory@linaro.org" <graeme.gregory@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <moorray3@wp.pl>, GregKH <gregkh@linuxfoundation.org>, "nareshgbhat@gmail.com" <nareshgbhat@gmail.com>, "mlangsdo@redhat.com" <mlangsdo@redhat.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "rmk+kernel@arm.linux.org.uk" <rmk+kernel@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gMDkvMDMvMjAxNSAwMTo1MyBQTSwgR3JlZyBLcm9haC1IYXJ0bWFuIHdyb3RlOgo+IE9uIFRo
-dSwgU2VwIDAzLCAyMDE1IGF0IDAxOjQ5OjAyUE0gLTA0MDAsIFBldGVyIEh1cmxleSB3cm90ZToK
-Pj4gT24gMDkvMDMvMjAxNSAxMjowOCBQTSwgTWFyYyBaeW5naWVyIHdyb3RlOgo+Pj4gT24gMDMv
-MDkvMTUgMTY6NTIsIEdyZWcgS3JvYWgtSGFydG1hbiB3cm90ZToKPj4+PiBPbiBUaHUsIFNlcCAw
-MywgMjAxNSBhdCAxMToyMzoxNUFNICswMTAwLCBNYXJjIFp5bmdpZXIgd3JvdGU6Cj4+Pj4+IE9u
-IDExLzA4LzE1IDAyOjQ4LCBKdW4gTmllIHdyb3RlOgo+Pj4+Pj4gMjAxNS0wOC0xMSA3OjIzIEdN
-VCswODowMCBMZWlmIExpbmRob2xtIDxsZWlmLmxpbmRob2xtQGxpbmFyby5vcmc+Ogo+Pj4+Pj4+
-IEhpIGFsbCwKPj4+Pj4+Pgo+Pj4+Pj4+IFRoZSBrZXJuZWxjaS5vcmcgYm90IHBpY2tlZCB1cCBh
-IGNvbXBsZXRlIGJvb3QgZmFpbHVyZSAobm8gb3V0cHV0IHBhc3QKPj4+Pj4+PiBVRUZJIHN0dWIp
-IHdpdGggbmV4dC0yMDE1MDgwNiBhbmQgVHlsZXIgYmlzZWN0ZWQgaXQgZG93biB0byBzb21ld2hl
-cmUKPj4+Pj4+PiBpbgo+Pj4+Pj4+IDhjZDkwZTUgdWFydDogcGwwMTE6IEFkZCBzdXBwb3J0IHRv
-IFpURSBaWDI5NjcwMiB1YXJ0Cj4+Pj4+Pj4gMDlkY2M3ZCB1YXJ0OiBwbDAxMTogSW1wcm92ZSBM
-Q1JIIHJlZ2lzdGVyIGFjY2VzcyBkZWNpc2lvbgo+Pj4+Pj4+IDJjMDk2YTkgdWFydDogcGwwMTE6
-IEludHJvZHVjZSByZWdpc3RlciBsb29rIHVwIHRhYmxlCj4+Pj4+Pj4gN2I3NTNmMyB1YXJ0OiBw
-bDAxMTogSW50cm9kdWNlIHJlZ2lzdGVyIGFjY2Vzc29yCj4+Pj4+Pj4KPj4+Pj4+PiBUaGUgaXNz
-dWUgb25seSBhcHBlYXJzIHdpdGggZWFybHljb24gb24gY29tbWFuZCBsaW5lLCBmb3IgcGwwMTEK
-Pj4+Pj4+PiBjb25zb2xlcy4KPj4+Pj4+Pgo+Pj4+Pj4+IFNvbWUgaW52ZXN0aWdhdGlvbiBzaG93
-cyB0aGF0IHRoZSBjYXVzZSBsaWVzIHdpdGgKPj4+Pj4+PiBjb21taXQgN2I3NTNmMzE4ZDE0ICgi
-dWFydDogcGwwMTE6IEludHJvZHVjZSByZWdpc3RlciBhY2Nlc3NvciIpCj4+Pj4+Pj4gYW5kCj4+
-Pj4+Pj4gY29tbWl0IDJjMDk2YTllZWRjNiAoInVhcnQ6IHBsMDExOiBJbnRyb2R1Y2UgcmVnaXN0
-ZXIgbG9vayB1cCB0YWJsZSIpCj4+Pj4+Pj4KPj4+Pj4+PiBTcGVjaWZpY2FsbHksIHRoZSBjaGFu
-Z2VzIHRvIHBsMDExX3B1dGMoKSBhcmUgaW5jb3JyZWN0Ogo+Pj4+Pj4+IFRoZSBuZXcgcGwwMTFf
-IGFjY2Vzc29ycyB0YWtlIGEgKHN0cnVjdCB1YXJ0X2FtYmFfcG9ydCAqKSBpbnB1dCwgYnV0Cj4+
-Pj4+Pj4gcGwwMTFfcHV0YygpIGRpcmVjdGx5IHVzZXMgdGhlIGluY29taW5nIChzdHJ1Y3QgdWFy
-dF9wb3J0ICopIGZvciB0aGlzLgo+Pj4+Pj4+Cj4+Pj4+Pj4gQXBhcnQgZnJvbSBlbmRpbmcgdXAg
-d2l0aCBhbiB1bmludGVuZGVkL2luY29ycmVjdCBVQVJUIGJhc2UgYWRkcmVzcywKPj4+Pj4+PiB0
-aGUgaW50cm9kdWN0aW9uIG9mIHRoZSBsb29rdXAgdGFibGUgZm9yIHJlZ2lzdGVyIG9mZnNldHMg
-YWxzbyBtZWFucwo+Pj4+Pj4+IHRoZSBhY2Nlc3NvcnMgdHJ5IHRvIGRlcmVmZXJlbmNlIChzdHJ1
-Y3QgdWFydF9hbWJhX3BvcnQgKiktPnJlZ19sdXQuCj4+Pj4+Pj4KPj4+Pj4+PiBUaGUgYmVsb3cg
-aXMgYSBoYWNrIHRoYXQgc2hvd3MvcmVzb2x2ZXMgdGhlIGlzc3VlLCBidXQgc29tZQo+Pj4+Pj4+
-IHJlZmFjdG9yaW5nIG9mIHRoZSBvcmlnaW5hbCBwYXRjaGVzIG1pZ2h0IGJlIGluIG9yZGVyLgo+
-Pj4+Pj4+Cj4+Pj4+Pj4gLwo+Pj4+Pj4+ICAgICBMZWlmCj4+Pj4+Pgo+Pj4+Pj4gTGVpZiwKPj4+
-Pj4+Cj4+Pj4+PiBTb3JyeSBmb3IgdGhlIGluY29udmVuaWVuY2UuIEkgZG8gbm90IGhhdmUgaWRl
-YSBvZiBlYXJseSBjb25zb2xlIHRpbGwKPj4+Pj4+IG5vdyBhbmQgSSBhbHdheXMgaGF2ZSBkZWJ1
-ZyBjb25zb2xlIGZvciBlYXJseSBwYW5pYyBkZWJ1Zy4gTGVhcm5lZAo+Pj4+Pj4gbW9yZSBmcm9t
-IHRoaXMgaXNzdWUuCj4+Pj4+Pgo+Pj4+Pj4gU3VwcG9zZSBQZXRlcidzIHBhdGNoIHdpbGwgcmVz
-b2x2ZSB5b3VyIGlzc3VlLgo+Pj4+Pgo+Pj4+PiBbKyBHcmVnIEtIXQo+Pj4+Pgo+Pj4+PiBTbyAt
-bmV4dCBoYXMgbm93IGJlZW4gYnJva2VuIGZvciBhIHdoaWxlIG9uIGEgbnVtYmVyIG9mIEFSTSBw
-bGF0Zm9ybXMKPj4+Pj4gYmVjYXVzZSBvZiB0aGlzICh0aGV5IHNpbXBseSBjYW5ub3QgYm9vdCks
-IGFuZCBubyBwcm9ncmVzcyBoYXMgYmVlbiBtYWRlCj4+Pj4+IHRvd2FyZHMgcmVzb2x2aW5nIHRo
-aXMgcHJvYmxlbS4KPj4+Pj4KPj4+Pj4gQ2FuIHdlIHBsZWFzZSBkcm9wIHRoaXMgc2VyaWVzIChh
-dCBsZWFzdCBjb21taXRzIDdiNzUzZjMgYW5kIGZvbGxvd2luZykKPj4+Pj4gZnJvbSAtbmV4dCB1
-bnRpbCBpcyBoYXMgYmVlbiByZXdvcmtlZCBhbmQgcmV2aWV3ZWQ/Cj4+Pj4KPj4+PiBJIGRvbid0
-IGhhdmUgYW55IHBhdGNoZXMgaW4gbXkgLW5leHQgdHJlZSwgZXZlcnl0aGluZyBpcyBpbiBMaW51
-cydzIHRyZWUKPj4+PiBub3cuICBTbyBpZiBJJ3ZlIG1pc3NlZCBzb21ldGhpbmcsIG9yIG5lZWQg
-dG8gcmV2ZXJ0IHNvbWV0aGluZywgcGxlYXNlCj4+Pj4gbGV0IG1lIGtub3cgc3BlY2lmY2FsbHkg
-d2hhdCB0byBkby4KPj4+Cj4+PiBHYWhoaC4uLiBHaXZlbiB0aGF0IHRoZXJlIGlzIG5vIG9idmlv
-dXMgZml4Cj4+Cj4+IEZpeCBoYXMgYmVlbiBvbiBsaXN0IHNpbmNlIEF1ZyAxMC4KPj4KPj4gaHR0
-cDovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9saW51eC1zZXJpYWwvbXNnMTg1NzYuaHRtbAo+IAo+
-IE5vdyBpZiBvbmx5IHNvbWVvbmUgd291bGQgaGF2ZSBhdCBsZWFzdCBjb21waWxlIHRlc3RlZCBp
-dCA6KQoKT24gMDgvMTEvMjAxNSAwNjowNyBBTSwgTGVpZiBMaW5kaG9sbSB3cm90ZToKPiBJdCB3
-b3JrcywgYnV0IGJ1aWxkcyB3aXRoOgo+IGRyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmM6
-MzI5OjEzOiB3YXJuaW5nOiDigJhwbDAxMV93cml0ZWLigJkKPiBkZWZpbmVkIGJ1dCBub3QgdXNl
-ZCBbLVd1bnVzZWQtZnVuY3Rpb25dCj4gIHN0YXRpYyB2b2lkIHBsMDExX3dyaXRlYihzdHJ1Y3Qg
-dWFydF9hbWJhX3BvcnQgKnVhcCwgdTggdmFsLCBpbnQKPiAgaW5kZXgpCj4gICAgICAgICAgICAg
-IF4KPiBJIHdhcyBkaXRoZXJpbmcgYWJvdXQgd2hldGhlciBoYXZpbmcgX3JlbGF4ZWQgYWNjZXNz
-b3JzIGluIHBvc3QgYm9vdAo+IGNvZGUgYW5kIHBsYWluIG9uZXMgaW4gZWFybHljb24gd2FzIGFu
-IGlzc3VlLCBidXQgSSBndWVzcyBpdCBkb2Vzbid0Cj4gbWF0dGVyIG11Y2guCgpSdXNzZWxsIHdh
-bnRlZCBtZSB0byBkbyBhIGJ1bmNoIG9mIGltcHJvdmVtZW50cywgYnV0IEkgd3JvdGUgdGhhdApz
-aG91bGQgd2FpdCB1bnRpbCA0LjMtcmMgY3ljbGUuCgpSZWdhcmRzLApQZXRlciBIdXJsZXkKCgoK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJt
-LWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3Jn
-Cmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtl
-cm5lbAo=
+On 09/03/2015 11:54 AM, Andre Przywara wrote:
+
+> I don't get where pl011_early_write() would need any kind of PL011 struct.
+> It only references structures defined in the serial core, so it's
+> completely dumb MMIO writes and reads, using only the base address
+> provided on the command line.
+> Are you by any chance mixing up early console and the normal console? To
+> me it looks like early console just uses the three tiny functions
+> defined just before the declaration and it does not touch vendor at all,
+> isn't it?
+>
+> As for the broken part, any chance you were testing -next, which has
+> some patches that broke early console, as we learned today?[1]
+
+I have to apologize -- I forgot that I applied an internal patch that 
+modified this code, and the bug is in that patch, not yours.  Your code 
+is fine as is.
