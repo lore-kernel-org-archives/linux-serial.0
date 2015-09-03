@@ -1,17 +1,17 @@
-From: Peter Hurley <peter@hurleysoftware.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
 Subject: Re: earlycon issues in -next with amba-pl011 updates
-Date: Thu, 3 Sep 2015 14:15:24 -0400
-Message-ID: <55E88E3C.2010403@hurleysoftware.com>
+Date: Thu, 03 Sep 2015 19:16:28 +0100
+Message-ID: <55E88E7C.9040609@arm.com>
 References: <20150810232312.GB10728@bivouac.eciton.net>
  <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
  <55E81F93.1020104@arm.com> <20150903155255.GA28336@kroah.com>
  <55E87095.4030600@arm.com> <55E8880E.5080707@hurleysoftware.com>
- <55E88ABE.2090402@arm.com>
+ <20150903175327.GA29340@kroah.com> <55E88B79.5090804@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <55E88ABE.2090402@arm.com>
+In-Reply-To: <55E88B79.5090804@hurleysoftware.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,88 +21,81 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <greg@kroah.com>
+To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <greg@kroah.com>
 Cc: Jun Nie <jun.nie@linaro.org>, Tyler Baker <tyler.baker@linaro.org>, linux-arm-kernel@lists.infradead.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 09/03/2015 02:00 PM, Marc Zyngier wrote:
-> On 03/09/15 18:49, Peter Hurley wrote:
->> On 09/03/2015 12:08 PM, Marc Zyngier wrote:
->>> On 03/09/15 16:52, Greg Kroah-Hartman wrote:
->>>> On Thu, Sep 03, 2015 at 11:23:15AM +0100, Marc Zyngier wrote:
->>>>> On 11/08/15 02:48, Jun Nie wrote:
->>>>>> 2015-08-11 7:23 GMT+08:00 Leif Lindholm <leif.lindholm@linaro.org>:
->>>>>>> Hi all,
->>>>>>>
->>>>>>> The kernelci.org bot picked up a complete boot failure (no output past
->>>>>>> UEFI stub) with next-20150806 and Tyler bisected it down to somewhere
->>>>>>> in
->>>>>>> 8cd90e5 uart: pl011: Add support to ZTE ZX296702 uart
->>>>>>> 09dcc7d uart: pl011: Improve LCRH register access decision
->>>>>>> 2c096a9 uart: pl011: Introduce register look up table
->>>>>>> 7b753f3 uart: pl011: Introduce register accessor
->>>>>>>
->>>>>>> The issue only appears with earlycon on command line, for pl011
->>>>>>> consoles.
->>>>>>>
->>>>>>> Some investigation shows that the cause lies with
->>>>>>> commit 7b753f318d14 ("uart: pl011: Introduce register accessor")
->>>>>>> and
->>>>>>> commit 2c096a9eedc6 ("uart: pl011: Introduce register look up table")
->>>>>>>
->>>>>>> Specifically, the changes to pl011_putc() are incorrect:
->>>>>>> The new pl011_ accessors take a (struct uart_amba_port *) input, but
->>>>>>> pl011_putc() directly uses the incoming (struct uart_port *) for this.
->>>>>>>
->>>>>>> Apart from ending up with an unintended/incorrect UART base address,
->>>>>>> the introduction of the lookup table for register offsets also means
->>>>>>> the accessors try to dereference (struct uart_amba_port *)->reg_lut.
->>>>>>>
->>>>>>> The below is a hack that shows/resolves the issue, but some
->>>>>>> refactoring of the original patches might be in order.
->>>>>>>
->>>>>>> /
->>>>>>>     Leif
->>>>>>
->>>>>> Leif,
->>>>>>
->>>>>> Sorry for the inconvenience. I do not have idea of early console till
->>>>>> now and I always have debug console for early panic debug. Learned
->>>>>> more from this issue.
->>>>>>
->>>>>> Suppose Peter's patch will resolve your issue.
->>>>>
->>>>> [+ Greg KH]
->>>>>
->>>>> So -next has now been broken for a while on a number of ARM platforms
->>>>> because of this (they simply cannot boot), and no progress has been made
->>>>> towards resolving this problem.
->>>>>
->>>>> Can we please drop this series (at least commits 7b753f3 and following)
->>>>> from -next until is has been reworked and reviewed?
->>>>
->>>> I don't have any patches in my -next tree, everything is in Linus's tree
->>>> now.  So if I've missed something, or need to revert something, please
->>>> let me know specifcally what to do.
->>>
->>> Gahhh... Given that there is no obvious fix
->>
->> Fix has been on list since Aug 10.
->>
->> http://www.spinics.net/lists/linux-serial/msg18576.html
-> 
-> ... with both Leif and Russell outlining issues with this patch:
-> 
-> http://www.spinics.net/lists/linux-serial/msg18594.html
-> http://www.spinics.net/lists/linux-serial/msg18599.html
-
-Russell's suggestions were noted in my reply
-
-http://www.spinics.net/lists/linux-serial/msg18650.html
-
-> so maybe coming up with an updated series would have been a good move.
-
-Feel free to work from where I left off.
-
-Regards,
-Peter Hurley
+T24gMDMvMDkvMTUgMTk6MDMsIFBldGVyIEh1cmxleSB3cm90ZToKPiBPbiAwOS8wMy8yMDE1IDAx
+OjUzIFBNLCBHcmVnIEtyb2FoLUhhcnRtYW4gd3JvdGU6Cj4+IE9uIFRodSwgU2VwIDAzLCAyMDE1
+IGF0IDAxOjQ5OjAyUE0gLTA0MDAsIFBldGVyIEh1cmxleSB3cm90ZToKPj4+IE9uIDA5LzAzLzIw
+MTUgMTI6MDggUE0sIE1hcmMgWnluZ2llciB3cm90ZToKPj4+PiBPbiAwMy8wOS8xNSAxNjo1Miwg
+R3JlZyBLcm9haC1IYXJ0bWFuIHdyb3RlOgo+Pj4+PiBPbiBUaHUsIFNlcCAwMywgMjAxNSBhdCAx
+MToyMzoxNUFNICswMTAwLCBNYXJjIFp5bmdpZXIgd3JvdGU6Cj4+Pj4+PiBPbiAxMS8wOC8xNSAw
+Mjo0OCwgSnVuIE5pZSB3cm90ZToKPj4+Pj4+PiAyMDE1LTA4LTExIDc6MjMgR01UKzA4OjAwIExl
+aWYgTGluZGhvbG0gPGxlaWYubGluZGhvbG1AbGluYXJvLm9yZz46Cj4+Pj4+Pj4+IEhpIGFsbCwK
+Pj4+Pj4+Pj4KPj4+Pj4+Pj4gVGhlIGtlcm5lbGNpLm9yZyBib3QgcGlja2VkIHVwIGEgY29tcGxl
+dGUgYm9vdCBmYWlsdXJlIChubyBvdXRwdXQgcGFzdAo+Pj4+Pj4+PiBVRUZJIHN0dWIpIHdpdGgg
+bmV4dC0yMDE1MDgwNiBhbmQgVHlsZXIgYmlzZWN0ZWQgaXQgZG93biB0byBzb21ld2hlcmUKPj4+
+Pj4+Pj4gaW4KPj4+Pj4+Pj4gOGNkOTBlNSB1YXJ0OiBwbDAxMTogQWRkIHN1cHBvcnQgdG8gWlRF
+IFpYMjk2NzAyIHVhcnQKPj4+Pj4+Pj4gMDlkY2M3ZCB1YXJ0OiBwbDAxMTogSW1wcm92ZSBMQ1JI
+IHJlZ2lzdGVyIGFjY2VzcyBkZWNpc2lvbgo+Pj4+Pj4+PiAyYzA5NmE5IHVhcnQ6IHBsMDExOiBJ
+bnRyb2R1Y2UgcmVnaXN0ZXIgbG9vayB1cCB0YWJsZQo+Pj4+Pj4+PiA3Yjc1M2YzIHVhcnQ6IHBs
+MDExOiBJbnRyb2R1Y2UgcmVnaXN0ZXIgYWNjZXNzb3IKPj4+Pj4+Pj4KPj4+Pj4+Pj4gVGhlIGlz
+c3VlIG9ubHkgYXBwZWFycyB3aXRoIGVhcmx5Y29uIG9uIGNvbW1hbmQgbGluZSwgZm9yIHBsMDEx
+Cj4+Pj4+Pj4+IGNvbnNvbGVzLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBTb21lIGludmVzdGlnYXRpb24g
+c2hvd3MgdGhhdCB0aGUgY2F1c2UgbGllcyB3aXRoCj4+Pj4+Pj4+IGNvbW1pdCA3Yjc1M2YzMThk
+MTQgKCJ1YXJ0OiBwbDAxMTogSW50cm9kdWNlIHJlZ2lzdGVyIGFjY2Vzc29yIikKPj4+Pj4+Pj4g
+YW5kCj4+Pj4+Pj4+IGNvbW1pdCAyYzA5NmE5ZWVkYzYgKCJ1YXJ0OiBwbDAxMTogSW50cm9kdWNl
+IHJlZ2lzdGVyIGxvb2sgdXAgdGFibGUiKQo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBTcGVjaWZpY2FsbHks
+IHRoZSBjaGFuZ2VzIHRvIHBsMDExX3B1dGMoKSBhcmUgaW5jb3JyZWN0Ogo+Pj4+Pj4+PiBUaGUg
+bmV3IHBsMDExXyBhY2Nlc3NvcnMgdGFrZSBhIChzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKikgaW5w
+dXQsIGJ1dAo+Pj4+Pj4+PiBwbDAxMV9wdXRjKCkgZGlyZWN0bHkgdXNlcyB0aGUgaW5jb21pbmcg
+KHN0cnVjdCB1YXJ0X3BvcnQgKikgZm9yIHRoaXMuCj4+Pj4+Pj4+Cj4+Pj4+Pj4+IEFwYXJ0IGZy
+b20gZW5kaW5nIHVwIHdpdGggYW4gdW5pbnRlbmRlZC9pbmNvcnJlY3QgVUFSVCBiYXNlIGFkZHJl
+c3MsCj4+Pj4+Pj4+IHRoZSBpbnRyb2R1Y3Rpb24gb2YgdGhlIGxvb2t1cCB0YWJsZSBmb3IgcmVn
+aXN0ZXIgb2Zmc2V0cyBhbHNvIG1lYW5zCj4+Pj4+Pj4+IHRoZSBhY2Nlc3NvcnMgdHJ5IHRvIGRl
+cmVmZXJlbmNlIChzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKiktPnJlZ19sdXQuCj4+Pj4+Pj4+Cj4+
+Pj4+Pj4+IFRoZSBiZWxvdyBpcyBhIGhhY2sgdGhhdCBzaG93cy9yZXNvbHZlcyB0aGUgaXNzdWUs
+IGJ1dCBzb21lCj4+Pj4+Pj4+IHJlZmFjdG9yaW5nIG9mIHRoZSBvcmlnaW5hbCBwYXRjaGVzIG1p
+Z2h0IGJlIGluIG9yZGVyLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiAvCj4+Pj4+Pj4+ICAgICBMZWlmCj4+
+Pj4+Pj4KPj4+Pj4+PiBMZWlmLAo+Pj4+Pj4+Cj4+Pj4+Pj4gU29ycnkgZm9yIHRoZSBpbmNvbnZl
+bmllbmNlLiBJIGRvIG5vdCBoYXZlIGlkZWEgb2YgZWFybHkgY29uc29sZSB0aWxsCj4+Pj4+Pj4g
+bm93IGFuZCBJIGFsd2F5cyBoYXZlIGRlYnVnIGNvbnNvbGUgZm9yIGVhcmx5IHBhbmljIGRlYnVn
+LiBMZWFybmVkCj4+Pj4+Pj4gbW9yZSBmcm9tIHRoaXMgaXNzdWUuCj4+Pj4+Pj4KPj4+Pj4+PiBT
+dXBwb3NlIFBldGVyJ3MgcGF0Y2ggd2lsbCByZXNvbHZlIHlvdXIgaXNzdWUuCj4+Pj4+Pgo+Pj4+
+Pj4gWysgR3JlZyBLSF0KPj4+Pj4+Cj4+Pj4+PiBTbyAtbmV4dCBoYXMgbm93IGJlZW4gYnJva2Vu
+IGZvciBhIHdoaWxlIG9uIGEgbnVtYmVyIG9mIEFSTSBwbGF0Zm9ybXMKPj4+Pj4+IGJlY2F1c2Ug
+b2YgdGhpcyAodGhleSBzaW1wbHkgY2Fubm90IGJvb3QpLCBhbmQgbm8gcHJvZ3Jlc3MgaGFzIGJl
+ZW4gbWFkZQo+Pj4+Pj4gdG93YXJkcyByZXNvbHZpbmcgdGhpcyBwcm9ibGVtLgo+Pj4+Pj4KPj4+
+Pj4+IENhbiB3ZSBwbGVhc2UgZHJvcCB0aGlzIHNlcmllcyAoYXQgbGVhc3QgY29tbWl0cyA3Yjc1
+M2YzIGFuZCBmb2xsb3dpbmcpCj4+Pj4+PiBmcm9tIC1uZXh0IHVudGlsIGlzIGhhcyBiZWVuIHJl
+d29ya2VkIGFuZCByZXZpZXdlZD8KPj4+Pj4KPj4+Pj4gSSBkb24ndCBoYXZlIGFueSBwYXRjaGVz
+IGluIG15IC1uZXh0IHRyZWUsIGV2ZXJ5dGhpbmcgaXMgaW4gTGludXMncyB0cmVlCj4+Pj4+IG5v
+dy4gIFNvIGlmIEkndmUgbWlzc2VkIHNvbWV0aGluZywgb3IgbmVlZCB0byByZXZlcnQgc29tZXRo
+aW5nLCBwbGVhc2UKPj4+Pj4gbGV0IG1lIGtub3cgc3BlY2lmY2FsbHkgd2hhdCB0byBkby4KPj4+
+Pgo+Pj4+IEdhaGhoLi4uIEdpdmVuIHRoYXQgdGhlcmUgaXMgbm8gb2J2aW91cyBmaXgKPj4+Cj4+
+PiBGaXggaGFzIGJlZW4gb24gbGlzdCBzaW5jZSBBdWcgMTAuCj4+Pgo+Pj4gaHR0cDovL3d3dy5z
+cGluaWNzLm5ldC9saXN0cy9saW51eC1zZXJpYWwvbXNnMTg1NzYuaHRtbAo+Pgo+PiBOb3cgaWYg
+b25seSBzb21lb25lIHdvdWxkIGhhdmUgYXQgbGVhc3QgY29tcGlsZSB0ZXN0ZWQgaXQgOikKPiAK
+PiBPbiAwOC8xMS8yMDE1IDA2OjA3IEFNLCBMZWlmIExpbmRob2xtIHdyb3RlOgo+PiBJdCB3b3Jr
+cywgYnV0IGJ1aWxkcyB3aXRoOgo+PiBkcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jOjMy
+OToxMzogd2FybmluZzog4oCYcGwwMTFfd3JpdGVi4oCZCj4+IGRlZmluZWQgYnV0IG5vdCB1c2Vk
+IFstV3VudXNlZC1mdW5jdGlvbl0KPj4gIHN0YXRpYyB2b2lkIHBsMDExX3dyaXRlYihzdHJ1Y3Qg
+dWFydF9hbWJhX3BvcnQgKnVhcCwgdTggdmFsLCBpbnQKPj4gIGluZGV4KQo+PiAgICAgICAgICAg
+ICAgXgo+PiBJIHdhcyBkaXRoZXJpbmcgYWJvdXQgd2hldGhlciBoYXZpbmcgX3JlbGF4ZWQgYWNj
+ZXNzb3JzIGluIHBvc3QgYm9vdAo+PiBjb2RlIGFuZCBwbGFpbiBvbmVzIGluIGVhcmx5Y29uIHdh
+cyBhbiBpc3N1ZSwgYnV0IEkgZ3Vlc3MgaXQgZG9lc24ndAo+PiBtYXR0ZXIgbXVjaC4KPiAKPiBS
+dXNzZWxsIHdhbnRlZCBtZSB0byBkbyBhIGJ1bmNoIG9mIGltcHJvdmVtZW50cywgYnV0IEkgd3Jv
+dGUgdGhhdAo+IHNob3VsZCB3YWl0IHVudGlsIDQuMy1yYyBjeWNsZS4KCkl0IGlzIHdlbGwga25v
+d24gdGhhdCB3ZSBtZXJnZSAiaW1wcm92ZW1lbnRzIiBvdXRzaWRlIG9mIHRoZSBtZXJnZQp3aW5k
+b3cuIEFuZCB3aGF0IGFib3V0IHN0YXJ0aW5nIHdpdGggYSBzZXJpZXMgdGhhdCBpcyBhY3R1YWxs
+eSBiaXNlY3RhYmxlPwoKSXQgaXMgcXVpdGUgYXBwYXJlbnQgdGhhdCB0aGlzIGNvZGUgaGFzbid0
+IGJlZW4gdGVzdGVkIGVub3VnaCwgaGFzbid0CmJlZW4gcmV2aWV3ZWQgZW5vdWdoLCBhbmQgYnJl
+YWtzIGEgd2lkZSByYW5nZSBvZiBwbGF0Zm9ybXMgKGFsbW9zdAphbnl0aGluZyB0aGF0IHNpdHMg
+b24gYW5kIHVuZGVyIG15IGRlc2ssIFRCSCkuCgpUaGF0J3MgcmVhbGx5IGZvciBHcmVnIHRvIGRl
+Y2lkZSwgYnV0IEknbSBub3Qgb3Zlcmx5IGNvbmZpZGVudCB3aXRoIHRoZQpzdGF0ZSBvZiB0aGlz
+IHNlcmllcyBhcyBpdCBzdGFuZHMuCgpUaGFua3MsCgoJTS4KLS0gCkphenogaXMgbm90IGRlYWQu
+IEl0IGp1c3Qgc21lbGxzIGZ1bm55Li4uCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0t
+a2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFp
+bG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
