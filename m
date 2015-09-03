@@ -1,16 +1,17 @@
-From: Timur Tabi <timur@tabi.org>
-Subject: Re: [PATCH v5 05/11] drivers: PL011: refactor pl011_probe()
-Date: Thu, 03 Sep 2015 13:09:40 -0500
-Message-ID: <55E88CE4.7080401@tabi.org>
-References: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
- <1432225584-4655-6-git-send-email-andre.przywara@arm.com>
- <CAOZdJXVgRQZhEfYY9YdpiQ=n1D56yYL84s42V4hd2=YX2k48ZA@mail.gmail.com>
- <55E87B3E.8070106@arm.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: earlycon issues in -next with amba-pl011 updates
+Date: Thu, 3 Sep 2015 14:15:24 -0400
+Message-ID: <55E88E3C.2010403@hurleysoftware.com>
+References: <20150810232312.GB10728@bivouac.eciton.net>
+ <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
+ <55E81F93.1020104@arm.com> <20150903155255.GA28336@kroah.com>
+ <55E87095.4030600@arm.com> <55E8880E.5080707@hurleysoftware.com>
+ <55E88ABE.2090402@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <55E87B3E.8070106@arm.com>
+In-Reply-To: <55E88ABE.2090402@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,24 +21,88 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "graeme.gregory@linaro.org" <graeme.gregory@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <moorray3@wp.pl>, GregKH <gregkh@linuxfoundation.org>, "nareshgbhat@gmail.com" <nareshgbhat@gmail.com>, "mlangsdo@redhat.com" <mlangsdo@redhat.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "rmk+kernel@arm.linux.org.uk" <rmk+kernel@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.cz>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <greg@kroah.com>
+Cc: Jun Nie <jun.nie@linaro.org>, Tyler Baker <tyler.baker@linaro.org>, linux-arm-kernel@lists.infradead.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 09/03/2015 11:54 AM, Andre Przywara wrote:
+On 09/03/2015 02:00 PM, Marc Zyngier wrote:
+> On 03/09/15 18:49, Peter Hurley wrote:
+>> On 09/03/2015 12:08 PM, Marc Zyngier wrote:
+>>> On 03/09/15 16:52, Greg Kroah-Hartman wrote:
+>>>> On Thu, Sep 03, 2015 at 11:23:15AM +0100, Marc Zyngier wrote:
+>>>>> On 11/08/15 02:48, Jun Nie wrote:
+>>>>>> 2015-08-11 7:23 GMT+08:00 Leif Lindholm <leif.lindholm@linaro.org>:
+>>>>>>> Hi all,
+>>>>>>>
+>>>>>>> The kernelci.org bot picked up a complete boot failure (no output past
+>>>>>>> UEFI stub) with next-20150806 and Tyler bisected it down to somewhere
+>>>>>>> in
+>>>>>>> 8cd90e5 uart: pl011: Add support to ZTE ZX296702 uart
+>>>>>>> 09dcc7d uart: pl011: Improve LCRH register access decision
+>>>>>>> 2c096a9 uart: pl011: Introduce register look up table
+>>>>>>> 7b753f3 uart: pl011: Introduce register accessor
+>>>>>>>
+>>>>>>> The issue only appears with earlycon on command line, for pl011
+>>>>>>> consoles.
+>>>>>>>
+>>>>>>> Some investigation shows that the cause lies with
+>>>>>>> commit 7b753f318d14 ("uart: pl011: Introduce register accessor")
+>>>>>>> and
+>>>>>>> commit 2c096a9eedc6 ("uart: pl011: Introduce register look up table")
+>>>>>>>
+>>>>>>> Specifically, the changes to pl011_putc() are incorrect:
+>>>>>>> The new pl011_ accessors take a (struct uart_amba_port *) input, but
+>>>>>>> pl011_putc() directly uses the incoming (struct uart_port *) for this.
+>>>>>>>
+>>>>>>> Apart from ending up with an unintended/incorrect UART base address,
+>>>>>>> the introduction of the lookup table for register offsets also means
+>>>>>>> the accessors try to dereference (struct uart_amba_port *)->reg_lut.
+>>>>>>>
+>>>>>>> The below is a hack that shows/resolves the issue, but some
+>>>>>>> refactoring of the original patches might be in order.
+>>>>>>>
+>>>>>>> /
+>>>>>>>     Leif
+>>>>>>
+>>>>>> Leif,
+>>>>>>
+>>>>>> Sorry for the inconvenience. I do not have idea of early console till
+>>>>>> now and I always have debug console for early panic debug. Learned
+>>>>>> more from this issue.
+>>>>>>
+>>>>>> Suppose Peter's patch will resolve your issue.
+>>>>>
+>>>>> [+ Greg KH]
+>>>>>
+>>>>> So -next has now been broken for a while on a number of ARM platforms
+>>>>> because of this (they simply cannot boot), and no progress has been made
+>>>>> towards resolving this problem.
+>>>>>
+>>>>> Can we please drop this series (at least commits 7b753f3 and following)
+>>>>> from -next until is has been reworked and reviewed?
+>>>>
+>>>> I don't have any patches in my -next tree, everything is in Linus's tree
+>>>> now.  So if I've missed something, or need to revert something, please
+>>>> let me know specifcally what to do.
+>>>
+>>> Gahhh... Given that there is no obvious fix
+>>
+>> Fix has been on list since Aug 10.
+>>
+>> http://www.spinics.net/lists/linux-serial/msg18576.html
+> 
+> ... with both Leif and Russell outlining issues with this patch:
+> 
+> http://www.spinics.net/lists/linux-serial/msg18594.html
+> http://www.spinics.net/lists/linux-serial/msg18599.html
 
-> I don't get where pl011_early_write() would need any kind of PL011 struct.
-> It only references structures defined in the serial core, so it's
-> completely dumb MMIO writes and reads, using only the base address
-> provided on the command line.
-> Are you by any chance mixing up early console and the normal console? To
-> me it looks like early console just uses the three tiny functions
-> defined just before the declaration and it does not touch vendor at all,
-> isn't it?
->
-> As for the broken part, any chance you were testing -next, which has
-> some patches that broke early console, as we learned today?[1]
+Russell's suggestions were noted in my reply
 
-I have to apologize -- I forgot that I applied an internal patch that 
-modified this code, and the bug is in that patch, not yours.  Your code 
-is fine as is.
+http://www.spinics.net/lists/linux-serial/msg18650.html
+
+> so maybe coming up with an updated series would have been a good move.
+
+Feel free to work from where I left off.
+
+Regards,
+Peter Hurley
