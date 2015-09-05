@@ -1,18 +1,15 @@
-From: Will Deacon <will.deacon@arm.com>
+From: Jun Nie <jun.nie@linaro.org>
 Subject: Re: earlycon issues in -next with amba-pl011 updates
-Date: Fri, 4 Sep 2015 17:16:51 +0100
-Message-ID: <20150904161651.GE6190@arm.com>
+Date: Sat, 5 Sep 2015 22:42:03 +0800
+Message-ID: <CABymUCP4s+ePs-sphJkQ4b61EcNT51FQat2ADWoy1Tgww35GMg@mail.gmail.com>
 References: <20150810232312.GB10728@bivouac.eciton.net>
  <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
  <55E81F93.1020104@arm.com> <20150903155255.GA28336@kroah.com>
- <55E87095.4030600@arm.com> <20150904110651.GE4818@arm.com>
- <20150904161510.GA15055@kroah.com>
+ <55E87095.4030600@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary=f46d043c7c58154780051f010574
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20150904161510.GA15055@kroah.com>
+In-Reply-To: <55E87095.4030600@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,38 +19,161 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <greg@kroah.com>
-Cc: Marc Zyngier <Marc.Zyngier@arm.com>, Tyler Baker <tyler.baker@linaro.org>, Leif Lindholm <leif.lindholm@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jun Nie <jun.nie@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Greg Kroah-Hartman <greg@kroah.com>, Tyler Baker <tyler.baker@linaro.org>, linux-arm-kernel@lists.infradead.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 04, 2015 at 05:15:10PM +0100, Greg Kroah-Hartman wrote:
-> On Fri, Sep 04, 2015 at 12:06:52PM +0100, Will Deacon wrote:
-> > On Thu, Sep 03, 2015 at 05:08:53PM +0100, Marc Zyngier wrote:
-> > > Gahhh... Given that there is no obvious fix, that the discussion has
-> > > stalled and that the author of the series is apparently away, the
-> > > following patches should be reverted:
-> > > 
-> > > 8cd90e50d140 uart: pl011: Add support to ZTE ZX296702 uart
-> > > 09dcc7dfc05b uart: pl011: Improve LCRH register access decision
-> > > 2c096a9eedc6 uart: pl011: Introduce register look up table
-> > > 7b753f318d14 uart: pl011: Introduce register accessor
-> > > 534e14e2293d uart: pl011: Rename regs with enumeration
-> > > 
-> > > (7b753f318d14 being the one breaking everything, but it makes more sense
-> > > to revert the whole series until it is properly fixed and reviewed).
-> > 
-> > For the reverts (git revert 534e14e2293d~1..8cd90e50d140):
-> > 
-> >   Acked-by: Will Deacon <will.deacon@arm.com>
-> >   Tested-by: Will Deacon <will.deacon@arm.com>
-> > 
-> > We can discuss what could've and should've happened 'til we're blue in
-> > the face but, in the meantime, I'd like my serial console back.
-> > 
-> > Greg -- any chance you could send these for -rc1, please?
-> 
-> Ok, now reverted, I'll send the pull request later today.
+--f46d043c7c58154780051f010574
+Content-Type: text/plain; charset=UTF-8
 
-Brilliant, thanks Greg.
+2015-09-04 0:08 GMT+08:00 Marc Zyngier <marc.zyngier@arm.com>:
+> On 03/09/15 16:52, Greg Kroah-Hartman wrote:
+>> On Thu, Sep 03, 2015 at 11:23:15AM +0100, Marc Zyngier wrote:
+>>> On 11/08/15 02:48, Jun Nie wrote:
+>>>> 2015-08-11 7:23 GMT+08:00 Leif Lindholm <leif.lindholm@linaro.org>:
+>>>>> Hi all,
+>>>>>
+>>>>> The kernelci.org bot picked up a complete boot failure (no output past
+>>>>> UEFI stub) with next-20150806 and Tyler bisected it down to somewhere
+>>>>> in
+>>>>> 8cd90e5 uart: pl011: Add support to ZTE ZX296702 uart
+>>>>> 09dcc7d uart: pl011: Improve LCRH register access decision
+>>>>> 2c096a9 uart: pl011: Introduce register look up table
+>>>>> 7b753f3 uart: pl011: Introduce register accessor
+>>>>>
+>>>>> The issue only appears with earlycon on command line, for pl011
+>>>>> consoles.
+>>>>>
+>>>>> Some investigation shows that the cause lies with
+>>>>> commit 7b753f318d14 ("uart: pl011: Introduce register accessor")
+>>>>> and
+>>>>> commit 2c096a9eedc6 ("uart: pl011: Introduce register look up table")
+>>>>>
+>>>>> Specifically, the changes to pl011_putc() are incorrect:
+>>>>> The new pl011_ accessors take a (struct uart_amba_port *) input, but
+>>>>> pl011_putc() directly uses the incoming (struct uart_port *) for this.
+>>>>>
+>>>>> Apart from ending up with an unintended/incorrect UART base address,
+>>>>> the introduction of the lookup table for register offsets also means
+>>>>> the accessors try to dereference (struct uart_amba_port *)->reg_lut.
+>>>>>
+>>>>> The below is a hack that shows/resolves the issue, but some
+>>>>> refactoring of the original patches might be in order.
+>>>>>
+>>>>> /
+>>>>>     Leif
+>>>>
+>>>> Leif,
+>>>>
+>>>> Sorry for the inconvenience. I do not have idea of early console till
+>>>> now and I always have debug console for early panic debug. Learned
+>>>> more from this issue.
+>>>>
+>>>> Suppose Peter's patch will resolve your issue.
+>>>
+>>> [+ Greg KH]
+>>>
+>>> So -next has now been broken for a while on a number of ARM platforms
+>>> because of this (they simply cannot boot), and no progress has been made
+>>> towards resolving this problem.
+>>>
+>>> Can we please drop this series (at least commits 7b753f3 and following)
+>>> from -next until is has been reworked and reviewed?
+>>
+>> I don't have any patches in my -next tree, everything is in Linus's tree
+>> now.  So if I've missed something, or need to revert something, please
+>> let me know specifcally what to do.
+>
+> Gahhh... Given that there is no obvious fix, that the discussion has
+> stalled and that the author of the series is apparently away, the
+> following patches should be reverted:
 
-Will
+Marc,
+
+There had a patch from Peter that revert early console part, which I
+thought will be merged to mainline. It's my fault for not fix the bug
+on time. Also sorry for late response to you as I took three days
+leave.
+
+Could you help test attached patch? Thank you in advance!
+
+
+Greg,
+
+Would you please hold the merging of revert patches for one or two
+days so that the fix can be verified? Thank you!
+
+Jun
+
+
+>
+> 8cd90e50d140 uart: pl011: Add support to ZTE ZX296702 uart
+> 09dcc7dfc05b uart: pl011: Improve LCRH register access decision
+> 2c096a9eedc6 uart: pl011: Introduce register look up table
+> 7b753f318d14 uart: pl011: Introduce register accessor
+> 534e14e2293d uart: pl011: Rename regs with enumeration
+>
+> (7b753f318d14 being the one breaking everything, but it makes more sense
+> to revert the whole series until it is properly fixed and reviewed).
+>
+> Thanks,
+>
+>         M.
+> --
+> Jazz is not dead. It just smells funny...
+
+--f46d043c7c58154780051f010574
+Content-Type: text/x-patch; charset=US-ASCII;
+	name="0001-serial-pl011-Fix-earlycon-register-LUT-breakage.patch"
+Content-Disposition: attachment;
+	filename="0001-serial-pl011-Fix-earlycon-register-LUT-breakage.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_ie76iilb0
+
+RnJvbSBmZGYxZWQyMzQ2YjEyOTA0YmNkNjVhMTZlMzNjZTEyYzdkODRhMmM3IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBKdW4gTmllIDxqdW4ubmllQGxpbmFyby5vcmc+CkRhdGU6IFNh
+dCwgNSBTZXAgMjAxNSAyMjozMjo0MCArMDgwMApTdWJqZWN0OiBbUEFUQ0hdIHNlcmlhbDogcGww
+MTE6IEZpeCBlYXJseWNvbiByZWdpc3RlciBMVVQgYnJlYWthZ2UKCkNvbW1pdCA3Yjc1M2YzMThk
+MTQgKCJ1YXJ0OiBwbDAxMTogSW50cm9kdWNlIHJlZ2lzdGVyIGFjY2Vzc29yIikKbWlzdGFrZW5s
+eSB1c2VkIHRoZSByZWdpc3RlciBMVVQgaS9vIGFjY2Vzc29ycyBmb3IgdGhlIHBsMDExCmVhcmx5
+Y29uLiBTaW5jZSB0aGUgcG9ydCBoYXMgbm90IGJlZW4gcHJvYmVkIGF0IGVhcmx5Y29uIHRpbWUs
+CnRoZSBzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKGFuZCByZWdpc3RlciBMVVRzKSBhcmUgdW5pbml0
+aWFsaXplZC4KClVzZSBkaXJlY3QgcmVnaXN0ZXIgYWRkcmVzc2luZyBmb3IgcGwwMTEgZWFybHlj
+b247IG90aGVyIGgvdyBzdXBwb3J0ZWQKYnkgdGhlIGFtYmEtcGwwMTEgZHJpdmVyIHNob3VsZCBk
+ZWNsYXJlIGFuIGFsdGVybmF0ZSBlYXJseWNvbi4KClNpZ25lZC1vZmYtYnk6IFBldGVyIEh1cmxl
+eSA8cGV0ZXJAaHVybGV5c29mdHdhcmUuY29tPgpTaWduZWQtb2ZmLWJ5OiBKdW4gTmllIDxqdW4u
+bmllQGxpbmFyby5vcmc+Ci0tLQogZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYyB8IDEy
+ICsrKy0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlv
+bnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jIGIvZHJp
+dmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYwppbmRleCAyYWYwOWFiLi4yMjg5M2QwIDEwMDY0
+NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jCisrKyBiL2RyaXZlcnMvdHR5
+L3NlcmlhbC9hbWJhLXBsMDExLmMKQEAgLTMyNiwxMiArMzI2LDYgQEAgc3RhdGljIHZvaWQgcGww
+MTFfd3JpdGV3KHN0cnVjdCB1YXJ0X2FtYmFfcG9ydCAqdWFwLCBpbnQgdmFsLCBpbnQgaW5kZXgp
+CiAJd3JpdGV3X3JlbGF4ZWQodmFsLCB1YXAtPnBvcnQubWVtYmFzZSArIHVhcC0+cmVnX2x1dFtp
+bmRleF0pOwogfQogCi1zdGF0aWMgdm9pZCBwbDAxMV93cml0ZWIoc3RydWN0IHVhcnRfYW1iYV9w
+b3J0ICp1YXAsIHU4IHZhbCwgaW50IGluZGV4KQotewotCVdBUk5fT04oaW5kZXggPiBSRUdfTlIp
+OwotCXdyaXRlYl9yZWxheGVkKHZhbCwgdWFwLT5wb3J0Lm1lbWJhc2UgKyB1YXAtPnJlZ19sdXRb
+aW5kZXhdKTsKLX0KLQogLyoKICAqIFJlYWRzIHVwIHRvIDI1NiBjaGFyYWN0ZXJzIGZyb20gdGhl
+IEZJRk8gb3IgdW50aWwgaXQncyBlbXB0eSBhbmQKICAqIGluc2VydHMgdGhlbSBpbnRvIHRoZSBU
+VFkgbGF5ZXIuIFJldHVybnMgdGhlIG51bWJlciBvZiBjaGFyYWN0ZXJzCkBAIC0yMzUxLDEwICsy
+MzQ1LDEwIEBAIHN0YXRpYyB2b2lkIHBsMDExX3B1dGMoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwg
+aW50IGMpCiAJc3RydWN0IHVhcnRfYW1iYV9wb3J0ICp1YXAgPQogCSAgICBjb250YWluZXJfb2Yo
+cG9ydCwgc3RydWN0IHVhcnRfYW1iYV9wb3J0LCBwb3J0KTsKIAotCXdoaWxlIChwbDAxMV9yZWFk
+dyh1YXAsIFJFR19GUikgJiBVQVJUMDF4X0ZSX1RYRkYpCisJd2hpbGUgKHJlYWR3X3JlbGF4ZWQo
+cG9ydC0+bWVtYmFzZSArIFVBUlQwMXhfRlIpICYgVUFSVDAxeF9GUl9UWEZGKQogCQk7Ci0JcGww
+MTFfd3JpdGViKHVhcCwgYywgUkVHX0RSKTsKLQl3aGlsZSAocGwwMTFfcmVhZHcodWFwLCBSRUdf
+RlIpICYgdWFwLT5mcl9idXN5KQorCXdyaXRlYl9yZWxheGVkKGMsIHBvcnQtPm1lbWJhc2UgKyBV
+QVJUMDF4X0RSKTsKKwl3aGlsZSAocmVhZHdfcmVsYXhlZChwb3J0LT5tZW1iYXNlICsgVUFSVDAx
+eF9GUikgJiB1YXAtPmZyX2J1c3kpCiAJCTsKIH0KIAotLSAKMS45LjEKCg==
+--f46d043c7c58154780051f010574
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--f46d043c7c58154780051f010574--
