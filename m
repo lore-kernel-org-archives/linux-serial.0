@@ -1,94 +1,140 @@
-From: Jun Nie <jun.nie@linaro.org>
-Subject: Re: earlycon issues in -next with amba-pl011 updates
-Date: Sat, 5 Sep 2015 22:54:10 +0800
-Message-ID: <CABymUCPpbmDrTKo5rDcFurFyAByg3z9iPXoGGU=rXSyb651MKw@mail.gmail.com>
-References: <20150810232312.GB10728@bivouac.eciton.net>
- <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
- <55E81F93.1020104@arm.com> <20150903155255.GA28336@kroah.com>
- <55E87095.4030600@arm.com> <20150904110651.GE4818@arm.com>
- <20150904111318.GF21084@n2100.arm.linux.org.uk>
+From: Dexuan Cui <decui@microsoft.com>
+Subject: RE: [PATCH] serial: core: prevent softlockups on slow consoles
+Date: Sun, 6 Sep 2015 11:48:04 +0000
+Message-ID: <8dcca26a00c7451bba759391d5daae43@SIXPR30MB031.064d.mgd.msft.net>
+References: <1441031656-17959-1-git-send-email-vkuznets@redhat.com>
+ <20150904042039.GA3719@kroah.com> <87bndid52t.fsf@vitty.brq.redhat.com>
+ <20150904161014.GA8274@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150904111318.GF21084@n2100.arm.linux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <greg@kroah.com>, Tyler Baker <tyler.baker@linaro.org>, Will Deacon <will.deacon@arm.com>, Leif Lindholm <leif.lindholm@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20150904161014.GA8274@kroah.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc: Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, KY Srinivasan <kys@microsoft.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-2015-09-04 19:13 GMT+08:00 Russell King - ARM Linux <linux@arm.linux.org.uk>:
-> On Fri, Sep 04, 2015 at 12:06:52PM +0100, Will Deacon wrote:
->> On Thu, Sep 03, 2015 at 05:08:53PM +0100, Marc Zyngier wrote:
->> > On 03/09/15 16:52, Greg Kroah-Hartman wrote:
->> > > On Thu, Sep 03, 2015 at 11:23:15AM +0100, Marc Zyngier wrote:
->> > >> So -next has now been broken for a while on a number of ARM platforms
->> > >> because of this (they simply cannot boot), and no progress has been made
->> > >> towards resolving this problem.
->> > >>
->> > >> Can we please drop this series (at least commits 7b753f3 and following)
->> > >> from -next until is has been reworked and reviewed?
->> > >
->> > > I don't have any patches in my -next tree, everything is in Linus's tree
->> > > now.  So if I've missed something, or need to revert something, please
->> > > let me know specifcally what to do.
->> >
->> > Gahhh... Given that there is no obvious fix, that the discussion has
->> > stalled and that the author of the series is apparently away, the
->> > following patches should be reverted:
->> >
->> > 8cd90e50d140 uart: pl011: Add support to ZTE ZX296702 uart
->> > 09dcc7dfc05b uart: pl011: Improve LCRH register access decision
->> > 2c096a9eedc6 uart: pl011: Introduce register look up table
->> > 7b753f318d14 uart: pl011: Introduce register accessor
->> > 534e14e2293d uart: pl011: Rename regs with enumeration
->> >
->> > (7b753f318d14 being the one breaking everything, but it makes more sense
->> > to revert the whole series until it is properly fixed and reviewed).
->>
->> For the reverts (git revert 534e14e2293d~1..8cd90e50d140):
->>
->>   Acked-by: Will Deacon <will.deacon@arm.com>
->>   Tested-by: Will Deacon <will.deacon@arm.com>
->>
->> We can discuss what could've and should've happened 'til we're blue in
->> the face but, in the meantime, I'd like my serial console back.
->>
->> Greg -- any chance you could send these for -rc1, please?
+> -----Original Message-----
+> From: Greg Kroah-Hartman
+> Sent: Saturday, September 5, 2015 0:10
+> On Fri, Sep 04, 2015 at 09:19:38AM +0200, Vitaly Kuznetsov wrote:
+> > Greg Kroah-Hartman writes:
+> >
+> > > On Mon, Aug 31, 2015 at 04:34:16PM +0200, Vitaly Kuznetsov wrote:
+> > >> Hyper-V serial port is very slow on multi-vCPU guest, this causes
+> > >> soflockups on intensive console writes. Touch nmi watchdog after putting
+> > >> every char on port to avoid the issue for all serial drivers, the overhead
+> > >> should be small.
+> > >>
+> > >> This is just a part of the fix: serial8250_console_write() disables irqs
+> > >> for all its execution time (which on such slow consoles can be dozens of
+> > >> seconds), it should be possible to observe devices being stuck on this
+> > >> CPU. We need to find a better way, e.g. do output in batches enabling irqs
+> > >> in between.
+> > >>
+> > >> Signed-off-by: Vitaly Kuznetsov
+
+Thank you Vitaly for the help of trying to mitigate the issue!
+
+Please let me explain the "real" issue here since I investigated the same issue a
+few months ago.
+
+(Please see the below)
+
+> > >> ---
+> > >>  drivers/tty/serial/serial_core.c | 3 ++-
+> > >>  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >>
+> > >> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> > >> index f368520..cc05785 100644
+> > >> --- a/drivers/tty/serial/serial_core.c
+> > >> +++ b/drivers/tty/serial/serial_core.c
+> > >> @@ -33,7 +33,7 @@
+> > >>  #include <linux/serial.h> /* for serial_state and serial_icounter_struct */
+> > >>  #include <linux/serial_core.h>
+> > >>  #include <linux/delay.h>
+> > >> -#include <linux/mutex.h>
+> > >> +#include <linux/nmi.h>
+> > >>
+> > >>  #include <asm/irq.h>
+> > >>  #include <asm/uaccess.h>
+> > >> @@ -1792,6 +1792,7 @@ void uart_console_write(struct uart_port *port,
+> const char *s,
+> > >>                  if (*s == '\n')
+> > >>                          putchar(port, '\r');
+> > >>                  putchar(port, *s);
+> > >> +                touch_nmi_watchdog();
+> > >
+> > > I don't like this, please narrow this down to the real problem that your
+> > > hardware has here, the putchar function should not be this slow.  If it
+> > > is, something is wrong.
+> >
+> > I'm afraid this is really the case:
+> >
+> > 3)               |                                          serial8250_console_putchar() {
+> > 3)               |                                            wait_for_xmitr() {
+> > 3) # 3111.189 us |                                              io_serial_in();
+> > 3) # 3115.334 us |                                            }
+> > 3) # 2234.099 us |                                            io_serial_out();
+> > 3) # 5353.883 us |                                          }
+> >
+> > This is one char and I use local pipe for Hyper-V output. In case
+> > something like remote pipe is in use ...
+> >
+> > So I'm sorry, but I don't really understand the suggestion to 'narrow
+> > this down' - this is how slow Hyper-V serial's implementation is,
+> > io_serial_in() is just an inb() and io_serial_out() is an outb().
 >
-> Given the number of reviews the patches went through, I eventually came
-> to the conclusion that it would be far better if I were to write the
-> set of patches for the driver - but I haven't had a slot to do that.
-> I basically stopped reviewing them because I decided it wasn't worth
-> spending the time anymore on the series.  That wasn't an implicit
-> "I'm happy with the patch set" but more a "I've given up with this
-> patch set, it's still not up to scratch."
+> So a call to inb() and outb() really takes that long?  Again, this is
 
-Russell,
+Yes, if you're using a VM with many vCPUs, like 16 or 32 vCPUs.
+If you only use 1 vCPU, inb()/outb() is pretty fast as it should be.
+The more vCPU your VM has, the slower inb()/outb() can be.
+There is almost a linear relationship here...
 
-Thanks for your time for reviewing that patch set. I did made some
-mistake for the register naming for not understand your intention
-clearly. I thought reviewing out of date patches also made you
-desperate because I update patches frequently. Anyway, the existing
-merged patches are made per your suggestion except the bugs. Could you
-help comments for the below patch set even they are already merged? So
-that I can polish existing code or re-prepare those changes. Or you
-have other plan on supporting pl011 controller with different register
-mapping? Thanks for you any comments!
+> broken somewhere in the hypervisor, or you need to fix up the platform
+Yes, the serial emulation code in the host is broken for SMP guest.
 
-http://www.spinics.net/lists/linux-serial/msg18363.html
+Historically, usually Windows VM itself doesn't use the serial so much
+as Linux VM. The most important usage of the serial in Windows VM is
+windbg: a host debugger can connect to the VM by its (virtual) serial.
 
-Jun
+Windbg may use multiple consecutive ins/outs instructions, trying to
+exchange data faster between the host and Windows VM. In the host's
+serial emulation code, there is a software instruction emulator, which
+tries to "execute" the VM's ins/outs on behalf of the VM -- this way,
+there are fewer ins/outs intercepts to the hypervisor (in Intel CPU, it's
+called "VM exit") and the intercepts are forwarded to the host's serial
+emulation code.
 
+This optimization of reducing the number of the intercepts is probably
+good for the 6-years-ago old CPUs, but is pretty questionable for today's
+CPUs since the cost of the intercept has been reduced really a lot.
+
+A side effect of the software instruction emulator in the host's serial
+emulation code is: it triggers the need to pause the other vCPUs when
+emulating ins/outs, probably for the atomicity of accessing the
+memory(?). Unluckily it turns out pausing n vCPUs is expensive,
+especially when n is >8 and on relatively new faster CPUs.
+I suspect nobody ever tested the case of "vCPUS > 8" here.
+
+This is the cause of the slow serial issue here, AFAIK.
+
+> logic for inb() and outb() to properly kick the watchdog.  Perhaps
+> hyperv needs its own arch type for this kind of crud?
 >
-> --
-> FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-> according to speedtest.net.
+> Don't "paper over" the real issue here please.
+>
+> greg k-h
+
+I agree with Greg.
+
+AFAIK, the "slow serial console for SMP guest" issue should be fixed
+in Hyper-V 2016. Unluckily IMO there is no workaround for the
+current version of Hyper-V -- we'd better avoid outputting lots of
+messages by the serial console in a SMP Hyper-V VM with many vCPUs.
+
+Thanks,
+-- Dexuan
