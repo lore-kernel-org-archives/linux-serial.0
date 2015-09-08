@@ -1,35 +1,33 @@
-From: Mark Salter <msalter@redhat.com>
-Subject: Re: [Linaro-acpi] [RFC 3/5] acpi/serial: add DBG2 earlycon support
-Date: Tue, 08 Sep 2015 13:53:27 -0400
-Message-ID: <1441734807.5459.18.camel@redhat.com>
-References: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
-	 <1441716217-23786-4-git-send-email-leif.lindholm@linaro.org>
-	 <1441730339.5459.8.camel@redhat.com>
-	 <20150908171744.GQ10728@bivouac.eciton.net>
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: Re: [PATCH 0/3] serial: samsung: Fix UART status handling and other
+ fixes
+Date: Wed, 09 Sep 2015 08:47:33 +0900
+Message-ID: <55EF7395.2000702@samsung.com>
+References: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20150908171744.GQ10728@bivouac.eciton.net>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Leif Lindholm <leif.lindholm@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linaro-acpi@lists.linaro.org, jcm@redhat.com, torez@redhat.com, lv.zheng@intel.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robert Baldyga <r.baldyga@samsung.com>, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2015-09-08 at 18:17 +0100, Leif Lindholm wrote:
-> > >      */
-> > > -   if (!buf || !buf[0])
-> > > -           if (IS_ENABLED(CONFIG_OF_FLATTREE))
-> > > +   if (!buf || !buf[0]) {
-> > > +           if (!acpi_disabled)
-> > 
-> > How do we know for sure that "acpi" has been parsed before "earlycon"?
+On 08.09.2015 18:38, Robert Baldyga wrote:
+> Hello,
 > 
-> Because "arch" comes before "drivers" in kernel image link order.
-> *twitch*
-> Yes, not the best argument ever.
-> 
+> This patch set contains three patches: two minor fixes and one quite
+> important bugfix enabling UART status handling in DMA mode, which was
+> missing so far. It enables, among others, 'break' contition handling,
+> which is necessary if we want to use Magic SysRq. So this patch fixes
+> Magic SysRq handling for serial consoles using UART in DMA mode,
 
-I don't think that matters. Things are parsed in order they are
-found on cmdline (except for early vs late distinction).
+Is it even worth using UART for serial console in DMA mode? How many
+benefits it brings? Anyone measured real data?
 
+The patch which enabled DMA for all serial ports on Exynos4 uncovered
+some issues. That is one benefit... but was it worth it?
+
+Best regards,
+Krzysztof
