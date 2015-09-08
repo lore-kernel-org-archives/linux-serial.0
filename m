@@ -1,31 +1,49 @@
 From: Robert Baldyga <r.baldyga@samsung.com>
-Subject: [PATCH 0/3] serial: samsung: Fix UART status handling and other fixes
-Date: Tue, 08 Sep 2015 11:38:44 +0200
-Message-ID: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
+Subject: [PATCH 2/3] serial: samsung: remove unneded 'ignore_char' label
+Date: Tue, 08 Sep 2015 11:38:46 +0200
+Message-ID: <1441705127-24125-3-git-send-email-r.baldyga@samsung.com>
+References: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, k.kozlowski@samsung.com, Robert Baldyga <r.baldyga@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+This label does nothing special and we don't need to have it anymore.
 
-This patch set contains three patches: two minor fixes and one quite
-important bugfix enabling UART status handling in DMA mode, which was
-missing so far. It enables, among others, 'break' contition handling,
-which is necessary if we want to use Magic SysRq. So this patch fixes
-Magic SysRq handling for serial consoles using UART in DMA mode,
+Signed-off-by: Robert Baldyga <r.baldyga@samsung.com>
+---
+ drivers/tty/serial/samsung.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-Best regards,
-Robert Baldyga
-
-Robert Baldyga (3):
-  serial: samsung: remove unused 'irq' parameter
-  serial: samsung: remove unneded 'ignore_char' label
-  serial: samsung: Fix UART status handling in DMA mode
-
- drivers/tty/serial/samsung.c | 151 ++++++++++++++++++-------------------------
- 1 file changed, 64 insertions(+), 87 deletions(-)
-
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index fee764c..2b05194 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -676,7 +676,7 @@ static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
+ 				dbg("break!\n");
+ 				port->icount.brk++;
+ 				if (uart_handle_break(port))
+-					goto ignore_char;
++					continue;
+ 			}
+ 
+ 			if (uerstat & S3C2410_UERSTAT_FRAME)
+@@ -696,13 +696,10 @@ static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
+ 		}
+ 
+ 		if (uart_handle_sysrq_char(port, ch))
+-			goto ignore_char;
++			continue;
+ 
+ 		uart_insert_char(port, uerstat, S3C2410_UERSTAT_OVERRUN,
+ 				 ch, flag);
+-
+-ignore_char:
+-		continue;
+ 	}
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
 -- 
 1.9.1
