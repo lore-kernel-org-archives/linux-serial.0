@@ -1,95 +1,212 @@
-From: Huang Shijie <shijie.huang@arm.com>
-Subject: Re: [PATCH v2] serial: pl011: Fix earlycon register LUT breakage
-Date: Tue, 8 Sep 2015 16:31:47 +0800
-Message-ID: <20150908083147.GA15215@free64-pc.asiapac.arm.com>
-References: <1441468654-6923-1-git-send-email-jun.nie@linaro.org>
- <CABymUCPMSKPwqtivYMJa3n-2GWbjhM6u7KDOwD1ypJRCeLZo7Q@mail.gmail.com>
- <CABymUCN4tuNMC1m0AS36OZ9MVOa3HtH3mYC0s04LyUWVPxmZ4A@mail.gmail.com>
- <CABymUCNmY+txUSaJDXsn4hb5p=frT5uAN-6Y97t+b7g224dkvw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CABymUCNmY+txUSaJDXsn4hb5p=frT5uAN-6Y97t+b7g224dkvw@mail.gmail.com>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jun Nie <jun.nie@linaro.org>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Marc Zyngier <marc.zyngier@arm.com>, andre.przywara@arm.com, Andrew.Jackson@arm.com, Will Deacon <will.deacon@arm.com>, Leif Lindholm <leif.lindholm@linaro.org>, Jason Liu <jason.liu@linaro.org>, linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, Shawn Guo <shawn.guo@linaro.org>, "wan.zhijun" <wan.zhijun@zte.com.cn>, linux-arm-kernel@lists.infradead.org
+From: Robert Baldyga <r.baldyga@samsung.com>
+Subject: [PATCH 3/3] serial: samsung: Fix UART status handling in DMA mode
+Date: Tue, 08 Sep 2015 11:38:47 +0200
+Message-ID: <1441705127-24125-4-git-send-email-r.baldyga@samsung.com>
+References: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, k.kozlowski@samsung.com, Robert Baldyga <r.baldyga@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Sep 08, 2015 at 03:53:28PM +0800, Jun Nie wrote:
-> 2015-09-08 15:52 GMT+08:00 Jun Nie <jun.nie@linaro.org>:
-> > 2015-09-08 10:23 GMT+08:00 Jun Nie <jun.nie@linaro.org>:
-> >> 2015-09-05 23:57 GMT+08:00 Jun Nie <jun.nie@linaro.org>:
-> >>> Commit 7b753f318d14 ("uart: pl011: Introduce register accessor")
-> >>> mistakenly used the register LUT i/o accessors for the pl011
-> >>> earlycon. Since the port has not been probed at earlycon time,
-> >>> the struct uart_amba_port (and register LUTs) are uninitialized.
-> >>>
-> >>> Use direct register addressing for pl011 earlycon; other h/w supported
-> >>> by the amba-pl011 driver should declare an alternate earlycon.
-> >>>
-> >>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> >>> Signed-off-by: Jun Nie <jun.nie@linaro.org>
-> >>> ---
-> >>>  drivers/tty/serial/amba-pl011.c | 15 +++------------
-> >>>  1 file changed, 3 insertions(+), 12 deletions(-)
-> >>>
-> >>> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> >>> index 2af09ab..cce41e0 100644
-> >>> --- a/drivers/tty/serial/amba-pl011.c
-> >>> +++ b/drivers/tty/serial/amba-pl011.c
-> >>> @@ -326,12 +326,6 @@ static void pl011_writew(struct uart_amba_port *uap, int val, int index)
-> >>>         writew_relaxed(val, uap->port.membase + uap->reg_lut[index]);
-> >>>  }
-> >>>
-> >>> -static void pl011_writeb(struct uart_amba_port *uap, u8 val, int index)
-> >>> -{
-> >>> -       WARN_ON(index > REG_NR);
-> >>> -       writeb_relaxed(val, uap->port.membase + uap->reg_lut[index]);
-> >>> -}
-> >>> -
-> >>>  /*
-> >>>   * Reads up to 256 characters from the FIFO or until it's empty and
-> >>>   * inserts them into the TTY layer. Returns the number of characters
-> >>> @@ -2348,13 +2342,10 @@ static struct console amba_console = {
-> >>>
-> >>>  static void pl011_putc(struct uart_port *port, int c)
-> >>>  {
-> >>> -       struct uart_amba_port *uap =
-> >>> -           container_of(port, struct uart_amba_port, port);
-> >>> -
-> >>> -       while (pl011_readw(uap, REG_FR) & UART01x_FR_TXFF)
-> >>> +       while (readw_relaxed(port->membase + UART01x_FR) & UART01x_FR_TXFF)
-> >>>                 ;
-> >>> -       pl011_writeb(uap, c, REG_DR);
-> >>> -       while (pl011_readw(uap, REG_FR) & uap->fr_busy)
-> >>> +       writeb_relaxed(c, port->membase + UART01x_DR);
-> >>> +       while (readw_relaxed(port->membase + UART01x_FR) & UART01x_FR_BUSY)
-> >>>                 ;
-> >>>  }
-> >>>
-> >>> --
-> >>> 1.9.1
-> >>>
-> >>
-> >> Could anybody help test this earlycon patch on hardware with standard
-> >> pl011 serial? Your help is appreciated and valuable no matter the
-> >> previous patch set is carried on or reverted.
-> >> Thank you very much!
-> >>
-> >> Jun
-> 
-> cc linux-arm-kernel@lists.infradead.org in case someone may have
-> resource to help have a test. Thank you!
-I tested this patch with the ARM Juno-r1 board, it works.
+This patch fixes UART status handling in DMA mode. For this purpose we
+introduce s3c24xx_serial_rx_drain_fifo() function, which contains common
+RX handling code for both PIO mode and DMA mode (in case of interrupt).
 
-Tested-by: Huang Shijie <shijie.huang@arm.com>
+Thanks to this we have, among others, 'break' condition handling needed
+for Magic SysRq, which was missing in DMA mode so far. Since we can use
+UART in DMA mode as serial console, it's quite important improvement.
+
+This change additionally simplifies RX handling code, as we no longer
+need uart_rx_drain_fifo() function, so we can remove it.
+
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Robert Baldyga <r.baldyga@samsung.com>
+---
+ drivers/tty/serial/samsung.c | 142 +++++++++++++++++++------------------------
+ 1 file changed, 61 insertions(+), 81 deletions(-)
+
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 2b05194..007bc5f 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -388,29 +388,6 @@ static void s3c24xx_uart_copy_rx_to_tty(struct s3c24xx_uart_port *ourport,
+ static int s3c24xx_serial_rx_fifocnt(struct s3c24xx_uart_port *ourport,
+ 				     unsigned long ufstat);
+ 
+-static void uart_rx_drain_fifo(struct s3c24xx_uart_port *ourport)
+-{
+-	struct uart_port *port = &ourport->port;
+-	struct tty_port *tty = &port->state->port;
+-	unsigned int ch, ufstat;
+-	unsigned int count;
+-
+-	ufstat = rd_regl(port, S3C2410_UFSTAT);
+-	count = s3c24xx_serial_rx_fifocnt(ourport, ufstat);
+-
+-	if (!count)
+-		return;
+-
+-	while (count-- > 0) {
+-		ch = rd_regb(port, S3C2410_URXH);
+-
+-		ourport->port.icount.rx++;
+-		tty_insert_flip_char(tty, ch, TTY_NORMAL);
+-	}
+-
+-	tty_flip_buffer_push(tty);
+-}
+-
+ static void s3c24xx_serial_stop_rx(struct uart_port *port)
+ {
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+@@ -573,64 +550,12 @@ static void enable_rx_pio(struct s3c24xx_uart_port *ourport)
+ 	ourport->rx_mode = S3C24XX_RX_PIO;
+ }
+ 
+-static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
++static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport)
+ {
+-	unsigned int utrstat, ufstat, received;
+-	struct s3c24xx_uart_port *ourport = dev_id;
+-	struct uart_port *port = &ourport->port;
+-	struct s3c24xx_uart_dma *dma = ourport->dma;
+-	struct tty_struct *tty = tty_port_tty_get(&ourport->port.state->port);
+-	struct tty_port *t = &port->state->port;
+-	unsigned long flags;
+-	struct dma_tx_state state;
+-
+-	utrstat = rd_regl(port, S3C2410_UTRSTAT);
+-	ufstat = rd_regl(port, S3C2410_UFSTAT);
+-
+-	spin_lock_irqsave(&port->lock, flags);
+-
+-	if (!(utrstat & S3C2410_UTRSTAT_TIMEOUT)) {
+-		s3c64xx_start_rx_dma(ourport);
+-		if (ourport->rx_mode == S3C24XX_RX_PIO)
+-			enable_rx_dma(ourport);
+-		goto finish;
+-	}
+-
+-	if (ourport->rx_mode == S3C24XX_RX_DMA) {
+-		dmaengine_pause(dma->rx_chan);
+-		dmaengine_tx_status(dma->rx_chan, dma->rx_cookie, &state);
+-		dmaengine_terminate_all(dma->rx_chan);
+-		received = dma->rx_bytes_requested - state.residue;
+-		s3c24xx_uart_copy_rx_to_tty(ourport, t, received);
+-
+-		enable_rx_pio(ourport);
+-	}
+-
+-	uart_rx_drain_fifo(ourport);
+-
+-	if (tty) {
+-		tty_flip_buffer_push(t);
+-		tty_kref_put(tty);
+-	}
+-
+-	wr_regl(port, S3C2410_UTRSTAT, S3C2410_UTRSTAT_TIMEOUT);
+-
+-finish:
+-	spin_unlock_irqrestore(&port->lock, flags);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
+-{
+-	struct s3c24xx_uart_port *ourport = dev_id;
+ 	struct uart_port *port = &ourport->port;
+ 	unsigned int ufcon, ch, flag, ufstat, uerstat;
+-	unsigned long flags;
+ 	int max_count = port->fifosize;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+-
+ 	while (max_count-- > 0) {
+ 		ufcon = rd_regl(port, S3C2410_UFCON);
+ 		ufstat = rd_regl(port, S3C2410_UFSTAT);
+@@ -654,9 +579,7 @@ static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
+ 					ufcon |= S3C2410_UFCON_RESETRX;
+ 					wr_regl(port, S3C2410_UFCON, ufcon);
+ 					rx_enabled(port) = 1;
+-					spin_unlock_irqrestore(&port->lock,
+-							flags);
+-					goto out;
++					return;
+ 				}
+ 				continue;
+ 			}
+@@ -702,10 +625,67 @@ static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
+ 				 ch, flag);
+ 	}
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
+ 	tty_flip_buffer_push(&port->state->port);
++}
++
++static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
++{
++	unsigned int utrstat, ufstat, received;
++	struct s3c24xx_uart_port *ourport = dev_id;
++	struct uart_port *port = &ourport->port;
++	struct s3c24xx_uart_dma *dma = ourport->dma;
++	struct tty_struct *tty = tty_port_tty_get(&ourport->port.state->port);
++	struct tty_port *t = &port->state->port;
++	unsigned long flags;
++	struct dma_tx_state state;
++
++	utrstat = rd_regl(port, S3C2410_UTRSTAT);
++	ufstat = rd_regl(port, S3C2410_UFSTAT);
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	if (!(utrstat & S3C2410_UTRSTAT_TIMEOUT)) {
++		s3c64xx_start_rx_dma(ourport);
++		if (ourport->rx_mode == S3C24XX_RX_PIO)
++			enable_rx_dma(ourport);
++		goto finish;
++	}
++
++	if (ourport->rx_mode == S3C24XX_RX_DMA) {
++		dmaengine_pause(dma->rx_chan);
++		dmaengine_tx_status(dma->rx_chan, dma->rx_cookie, &state);
++		dmaengine_terminate_all(dma->rx_chan);
++		received = dma->rx_bytes_requested - state.residue;
++		s3c24xx_uart_copy_rx_to_tty(ourport, t, received);
++
++		enable_rx_pio(ourport);
++	}
++
++	s3c24xx_serial_rx_drain_fifo(ourport);
++
++	if (tty) {
++		tty_flip_buffer_push(t);
++		tty_kref_put(tty);
++	}
++
++	wr_regl(port, S3C2410_UTRSTAT, S3C2410_UTRSTAT_TIMEOUT);
++
++finish:
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
++{
++	struct s3c24xx_uart_port *ourport = dev_id;
++	struct uart_port *port = &ourport->port;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++	s3c24xx_serial_rx_drain_fifo(ourport);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+-out:
+ 	return IRQ_HANDLED;
+ }
+ 
+-- 
+1.9.1
