@@ -1,272 +1,111 @@
 From: Leif Lindholm <leif.lindholm@linaro.org>
-Subject: [RFC 4/5] tty/console: use SPCR table to define console
-Date: Tue,  8 Sep 2015 13:43:36 +0100
-Message-ID: <1441716217-23786-5-git-send-email-leif.lindholm@linaro.org>
+Subject: [RFC 1/5] arm64: move acpi/dt decision earlier in boot process
+Date: Tue,  8 Sep 2015 13:43:33 +0100
+Message-ID: <1441716217-23786-2-git-send-email-leif.lindholm@linaro.org>
 References: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
 In-Reply-To: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-acpi-owner@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: mark.rutland@arm.com, al.stone@linaro.org, torez@redhat.com, jcm@redhat.com, graeme.gregory@linaro.org, linaro-acpi@lists.linaro.org, lv.zheng@intel.com
 List-Id: linux-serial@vger.kernel.org
 
-From: Torez Smith <torez@redhat.com>
+In order to support selecting earlycon via either ACPI or DT, move
+the decision on whether to attempt ACPI configuration into the
+early_param handling. Then make acpi_boot_table_init() bail out if
+acpi_disabled.
 
-If console= is not added to the kernel command line, the console
-is not registered until much further into the booting process. This patch
-adds support to parse the SPCR ACPI table to pull console support out,
-then use the appropriate drivers to set up console support earlier in the
-boot process.
-
-Signed-off-by: Jon Masters <jcm@redhat.com>
-[rebased and cleaned up]
-Signed-off-by: Torez Smith <torez@redhat.com>
-[reworked to use _CRS, moved to drivers/acpi]
 Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
 ---
- drivers/acpi/console.c           | 157 +++++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/serial_core.c |  14 +++-
- include/linux/acpi.h             |  11 ++-
- 3 files changed, 179 insertions(+), 3 deletions(-)
+ arch/arm64/kernel/acpi.c | 53 +++++++++++++++++++++++++-----------------------
+ 1 file changed, 28 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/acpi/console.c b/drivers/acpi/console.c
-index a985890..02883a1 100644
---- a/drivers/acpi/console.c
-+++ b/drivers/acpi/console.c
-@@ -1,5 +1,6 @@
- /*
-  * Copyright (c) 2012, Intel Corporation
-+ * Copyright (c) 2015, Red Hat, Inc.
-  * Copyright (c) 2015, Linaro Ltd.
-  *
-  * This program is free software; you can redistribute it and/or modify
-@@ -12,11 +13,17 @@
- #define pr_fmt(fmt) "ACPI: " KBUILD_MODNAME ": " fmt
+diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
+index 19de753..b9a5623 100644
+--- a/arch/arm64/kernel/acpi.c
++++ b/arch/arm64/kernel/acpi.c
+@@ -39,6 +39,19 @@ EXPORT_SYMBOL(acpi_pci_disabled);
+ static bool param_acpi_off __initdata;
+ static bool param_acpi_force __initdata;
  
- #include <linux/acpi.h>
-+#include <linux/console.h>
- #include <linux/kernel.h>
- #include <linux/serial_core.h>
-+#include <linux/tty.h>
- 
- #define NUM_ELEMS(x) (sizeof(x) / sizeof(*x))
- 
-+static u64 acpi_serial_addr;
-+static struct acpi_device *acpi_serial_device;
-+static char *acpi_serial_options;
++static int __init dt_scan_depth1_nodes(unsigned long node,
++				       const char *uname, int depth,
++				       void *data)
++{
++	/*
++	 * Return 1 as soon as we encounter a node at depth 1 that is
++	 * not the /chosen node.
++	 */
++	if (depth == 1 && (strcmp(uname, "chosen") != 0))
++		return 1;
++	return 0;
++}
 +
- #ifdef CONFIG_SERIAL_EARLYCON
- static int use_earlycon __initdata;
- static int __init setup_acpi_earlycon(char *buf)
-@@ -101,3 +108,153 @@ int __init acpi_early_console_probe(void)
+ static int __init parse_acpi(char *arg)
+ {
+ 	if (!arg)
+@@ -52,22 +65,25 @@ static int __init parse_acpi(char *arg)
+ 	else
+ 		return -EINVAL;	/* Core will print when we return error */
+ 
+-	return 0;
+-}
+-early_param("acpi", parse_acpi);
++	/*
++	 * Enable ACPI instead of device tree unless
++	 * - ACPI has been disabled explicitly (acpi=off), or
++	 * - the device tree is not empty (it has more than just a /chosen node)
++	 *   and ACPI has not been force enabled (acpi=force)
++	 */
++	if (param_acpi_off ||
++	    (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
++		return 0;
+ 
+-static int __init dt_scan_depth1_nodes(unsigned long node,
+-				       const char *uname, int depth,
+-				       void *data)
+-{
+ 	/*
+-	 * Return 1 as soon as we encounter a node at depth 1 that is
+-	 * not the /chosen node.
++	 * ACPI is disabled at this point. Enable it in order to parse
++	 * the ACPI tables and carry out sanity checks
+ 	 */
+-	if (depth == 1 && (strcmp(uname, "chosen") != 0))
+-		return 1;
++	enable_acpi();
++
  	return 0;
  }
- #endif /* CONFIG_SERIAL_EARLYCON */
-+
-+/*
-+ * Parse the SPCR table. If we are not working with version 2 or
-+ * higher, bail.
-+ * Otherwise, pull out the baud rate and address to the console device.
-+ */
-+static int __init acpi_parse_spcr(struct acpi_table_header *table)
-+{
-+	struct acpi_table_spcr *spcr = (struct acpi_table_spcr *)table;
-+
-+	if (table->revision < 2)
-+		return -EOPNOTSUPP;
-+
-+	/* Handle possible alignment issues */
-+	memcpy(&acpi_serial_addr,
-+	       &spcr->serial_port.address, sizeof(acpi_serial_addr));
-+
-+	/*
-+	 * The baud rate the BIOS used for redirection. Valid values are....
-+	 *	3 = 9600
-+	 *	4 = 19200
-+	 *	6 = 57600
-+	 *	7 = 115200
-+	 *	0-2, 5, 8 - 255 = reserved
-+	*/
-+	switch (spcr->baud_rate) {
-+	case 3:
-+		acpi_serial_options = "9600";
-+		break;
-+	case 4:
-+		acpi_serial_options = "19200";
-+		break;
-+	case 6:
-+		acpi_serial_options = "57600";
-+		break;
-+	case 7:
-+		acpi_serial_options = "115200";
-+		break;
-+	default:
-+		acpi_serial_options = "";
-+		break;
-+	}
-+
-+	pr_info("SPCR serial device: 0x%llx (options: %s)\n",
-+	       acpi_serial_addr, acpi_serial_options);
-+
-+	return 0;
-+}
-+
-+/*
-+ * Parse an ACPI "Device" to determine if it represents the
-+ * data found in the SPCR table. If the associated Device has
-+ * and Address entry, and, that Address matches the one found
-+ * in our SPCR table, it's the entry we are interested in.
-+ *
-+ */
-+static acpi_status acpi_spcr_device_scan(acpi_handle handle,
-+					 u32 level, void *context, void **retv)
-+{
-+	unsigned long long addr = 0;
-+	struct acpi_buffer name_buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-+	acpi_status status = AE_OK;
-+	struct acpi_device *adev;
-+	struct list_head resource_list;
-+	struct resource_entry *rentry;
-+
-+	status = acpi_get_name(handle, ACPI_FULL_PATHNAME, &name_buffer);
-+	if (ACPI_FAILURE(status))
-+		return status;
-+
-+	adev = acpi_bus_get_acpi_device(handle);
-+	if (!adev) {
-+		pr_err("Err locating SPCR device from ACPI handle\n");
-+		return AE_OK; /* skip this one */
-+	}
-+
-+	/*
-+	 * Read device address from _CRS.
-+	 */
-+	INIT_LIST_HEAD(&resource_list);
-+	if (acpi_dev_get_resources(adev, &resource_list, NULL, NULL) <= 0)
-+		return AE_OK;
-+
-+	list_for_each_entry(rentry, &resource_list, node) {
-+		if (resource_type(rentry->res) == IORESOURCE_MEM)
-+			addr = rentry->res->start;
-+	}
-+	acpi_dev_free_resource_list(&resource_list);
-+
-+	if (addr == acpi_serial_addr) {
-+		acpi_serial_device = adev;
-+
-+		pr_info("SPCR serial console: %s (0x%llx)\n",
-+		       (char *)(name_buffer.pointer), addr);
-+
-+		return AE_OK; /* harmless to continue */
-+	}
-+
-+	/* continue */
-+	return AE_OK; /* continue */
-+}
-+
-+static int __init acpi_setup_spcr(void)
-+{
-+	if (0 != acpi_table_parse(ACPI_SIG_SPCR, acpi_parse_spcr)) {
-+		pr_warn("SPCR table not found - auto console disabled\n");
-+		return -ENODEV;
-+	}
-+
-+	acpi_walk_namespace(ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
-+			    ACPI_UINT32_MAX, acpi_spcr_device_scan,
-+			    NULL, NULL, NULL);
-+
-+	return 0;
-+}
-+
-+static int __init acpi_spcr_setup(void)
-+{
-+	/*
-+	 * If ACPI is enabled, scan the tables for
-+	 * automatic console configuration
-+	 */
-+	if (!acpi_disabled)
-+		acpi_setup_spcr();
-+
-+	return 0;
-+}
-+subsys_initcall_sync(acpi_spcr_setup);
-+
-+/**
-+ * acpi_console_check() - Check for and configure console from ACPI information
-+ * @adev - Pointer to device
-+ * @name - Name to use for preferred console without index. ex. "ttyS"
-+ * @index - Index to use for preferred console.
-+ *
-+ * Check if the given device matches the information provided in the SPCR table
-+ * If it does then register it as the preferred console and return TRUE.
-+ * Otherwise return FALSE.
-+ */
-+bool acpi_console_check(struct acpi_device *adev, char *name, int index)
-+{
-+	if (acpi_disabled || !adev || adev != acpi_serial_device
-+	    || console_set_on_cmdline)
-+		return false;
-+
-+	pr_info("adding preferred console [%s]\n", name);
-+
-+	return !add_preferred_console(name, index,
-+				      kstrdup(acpi_serial_options, GFP_KERNEL));
-+}
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 603d2cc..4b20bc6 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -34,6 +34,7 @@
- #include <linux/serial_core.h>
- #include <linux/delay.h>
- #include <linux/mutex.h>
-+#include <linux/acpi.h>
++early_param("acpi", parse_acpi);
  
- #include <asm/irq.h>
- #include <asm/uaccess.h>
-@@ -2696,9 +2697,18 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 		spin_lock_init(&uport->lock);
- 		lockdep_set_class(&uport->lock, &port_lock_key);
- 	}
--	if (uport->cons && uport->dev)
--		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
+ /*
+  * __acpi_map_table() will be called before page_init(), so early_ioremap()
+@@ -176,23 +192,10 @@ out:
+  */
+ void __init acpi_boot_table_init(void)
+ {
+-	/*
+-	 * Enable ACPI instead of device tree unless
+-	 * - ACPI has been disabled explicitly (acpi=off), or
+-	 * - the device tree is not empty (it has more than just a /chosen node)
+-	 *   and ACPI has not been force enabled (acpi=force)
+-	 */
+-	if (param_acpi_off ||
+-	    (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
++	if (acpi_disabled)
+ 		return;
  
-+	/*
-+	 * Support both open FW and ACPI access to console definitions.
-+	 * Both of_console_check() and acpi_console_check() will call
-+	 * add_preferred_console() if a console definition is found.
-+	 */
-+	if (uport->cons && uport->dev) {
-+		if (!acpi_console_check(ACPI_COMPANION(uport->dev),
-+					uport->cons->name, uport->line))
-+			of_console_check(uport->dev->of_node,
-+					 uport->cons->name, uport->line);
-+	}
- 	uart_configure_port(drv, state, uport);
- 
- 	num_groups = 2;
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 88cb9c1..f1b9a64 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -811,8 +811,17 @@ static inline struct acpi_device *acpi_get_next_child(struct device *dev,
- 
- #endif
- 
--#if defined(CONFIG_ACPI) && defined(CONFIG_SERIAL_EARLYCON)
-+#if defined(CONFIG_ACPI)
-+# if defined(CONFIG_SERIAL_EARLYCON)
- int __init acpi_early_console_probe(void);
-+# endif
-+bool acpi_console_check(struct acpi_device *adev, char *name, int index);
-+#else
-+static inline bool acpi_console_check(struct acpi_device *adev, char *name,
-+				      int index)
-+{
-+	return FALSE;
-+}
- #endif
- 
- #endif	/*_LINUX_ACPI_H*/
+ 	/*
+-	 * ACPI is disabled at this point. Enable it in order to parse
+-	 * the ACPI tables and carry out sanity checks
+-	 */
+-	enable_acpi();
+-
+-	/*
+ 	 * If ACPI tables are initialized and FADT sanity checks passed,
+ 	 * leave ACPI enabled and carry on booting; otherwise disable ACPI
+ 	 * on initialization error.
 -- 
 2.1.4
+
