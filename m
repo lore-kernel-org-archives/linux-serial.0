@@ -1,49 +1,36 @@
-From: Robert Baldyga <r.baldyga@samsung.com>
-Subject: [PATCH 2/3] serial: samsung: remove unneded 'ignore_char' label
-Date: Tue, 08 Sep 2015 11:38:46 +0200
-Message-ID: <1441705127-24125-3-git-send-email-r.baldyga@samsung.com>
-References: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
+From: Richard Watts <rrw@kynesim.co.uk>
+Subject: Re: [PATCH] tty: don't leak cdev in tty_cdev_add()
+Date: Tue, 08 Sep 2015 11:32:07 +0100
+Message-ID: <55EEB927.1080508@kynesim.co.uk>
+References: <1441631317-6238-1-git-send-email-chianglungyu@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
+In-Reply-To: <1441631317-6238-1-git-send-email-chianglungyu@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, k.kozlowski@samsung.com, Robert Baldyga <r.baldyga@samsung.com>
+To: Leon Yu <chianglungyu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This label does nothing special and we don't need to have it anymore.
 
-Signed-off-by: Robert Baldyga <r.baldyga@samsung.com>
----
- drivers/tty/serial/samsung.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index fee764c..2b05194 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -676,7 +676,7 @@ static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
- 				dbg("break!\n");
- 				port->icount.brk++;
- 				if (uart_handle_break(port))
--					goto ignore_char;
-+					continue;
- 			}
- 
- 			if (uerstat & S3C2410_UERSTAT_FRAME)
-@@ -696,13 +696,10 @@ static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
- 		}
- 
- 		if (uart_handle_sysrq_char(port, ch))
--			goto ignore_char;
-+			continue;
- 
- 		uart_insert_char(port, uerstat, S3C2410_UERSTAT_OVERRUN,
- 				 ch, flag);
--
--ignore_char:
--		continue;
- 	}
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
--- 
-1.9.1
+On 07/09/15 14:08, Leon Yu wrote:
+> Commit a3a10ce3429e ("Avoid usb reset crashes by making tty_io cdevs truly
+> dynamic") which mixes using cdev_alloc() and cdev_init() is problematic.
+> Subsequent call to cdev_init() after cdev_alloc() sets kobj release method
+> from cdev_dynamic_release() to cdev_default_release() and thus makes it
+> impossible to free allocated cdev.
+>
+> This patch also consolidates error path of cdev_add() as cdev can also leak
+> here if things went wrong.
+>
+> Signed-off-by: Leon Yu <chianglungyu@gmail.com>
+> Fixes: a3a10ce3429e ("Avoid usb reset crashes by making tty_io cdevs truly dynamic")
+
+  Oops! Apologies. Looks good to me - thank you.
+
+Acked-by: Richard Watts <rrw@kynesim.co.uk>
+
+
+
+Richard.
