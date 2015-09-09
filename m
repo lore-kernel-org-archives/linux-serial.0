@@ -1,48 +1,50 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [RFC 3/5] acpi/serial: add DBG2 earlycon support
-Date: Wed, 9 Sep 2015 10:36:59 +0100
-Message-ID: <20150909093659.GA15606@leverpostej>
-References: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
- <1441716217-23786-4-git-send-email-leif.lindholm@linaro.org>
- <20150908130951.GE20562@leverpostej>
- <20150908170307.GP10728@bivouac.eciton.net>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY driver revert for 4.3-rc1
+Date: Tue, 8 Sep 2015 21:36:21 -0700
+Message-ID: <20150909043621.GA4170@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20150908170307.GP10728@bivouac.eciton.net>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Leif Lindholm <leif.lindholm@linaro.org>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "al.stone@linaro.org" <al.stone@linaro.org>, "torez@redhat.com" <torez@redhat.com>, "jcm@redhat.com" <jcm@redhat.com>, "graeme.gregory@linaro.org" <graeme.gregory@linaro.org>, "linaro-acpi@lists.linaro.org" <linaro-acpi@lists.linaro.org>, "lv.zheng@intel.com" <lv.zheng@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-> > > +#ifdef CONFIG_SERIAL_EARLYCON
-> > > +static int use_earlycon __initdata;
-> > > +static int __init setup_acpi_earlycon(char *buf)
-> > > +{
-> > > +	if (!buf)
-> > > +		use_earlycon = 1;
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +early_param("earlycon", setup_acpi_earlycon);
-> > 
-> > It seems a shame to add this after folding the OF case into the earlycon
-> > code. What necessitates this being a separate early_param? Why is it too
-> > early to parse DBG2?
-> 
-> Currently, we don't even know where our ACPI tables are  at this point
-> (efi_init() is called two functions after parse_early_param() in
-> setup_arch). More specifically, because acpi_boot_table_init() is
-> called even later than that.
-> 
-> If we moved both of those earlier, we could drop the extra earlycon
-> param handling for ACPI. That would of course reduce the ability to
-> have dynamically configurable debug messages for both of these.
+The following changes since commit a4fdb2a46f617b8b2cd47acec026ec16532edbc6:
 
-Ok. Would you be able to put something in the commit message regarding
-the above, to make it clear why we need this multi-step dance (and why
-it's preferable to the alternative)?
+  Merge tag 'arm64-upstream' of git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux (2015-09-04 07:18:09 -0700)
 
-Mark.
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.3-rc1
+
+for you to fetch changes up to 0de6cfb9f314db230c47b2158e7725208b3b4728:
+
+  Revert "uart: pl011: Rename regs with enumeration" (2015-09-04 09:14:43 -0700)
+
+----------------------------------------------------------------
+TTY driver revert for 4.3-rc1
+
+Here are some reverts for some tty patches (specifically the pl011
+driver) that ended up breaking a bunch of machines (i.e. almost all of
+the ones with this chip.)  People are working on a fix for this, but in
+the meantime, it's best to just revert all 5 patches to restore people's
+serial consoles.
+
+These reverts have been in linux-next for many days now.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Greg Kroah-Hartman (5):
+      Revert "uart: pl011: Add support to ZTE ZX296702 uart"
+      Revert "uart: pl011: Improve LCRH register access decision"
+      Revert "uart: pl011: Introduce register look up table"
+      Revert "uart: pl011: Introduce register accessor"
+      Revert "uart: pl011: Rename regs with enumeration"
+
+ drivers/tty/serial/Kconfig      |   4 +-
+ drivers/tty/serial/amba-pl011.c | 503 ++++++++++------------------------------
+ include/linux/amba/serial.h     |  14 --
+ 3 files changed, 125 insertions(+), 396 deletions(-)
