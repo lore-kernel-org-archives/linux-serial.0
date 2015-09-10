@@ -1,113 +1,53 @@
-From: Greg Kroah-Hartman <greg@kroah.com>
-Subject: Re: earlycon issues in -next with amba-pl011 updates
-Date: Wed, 9 Sep 2015 12:54:02 -0700
-Message-ID: <20150909195402.GA7979@kroah.com>
-References: <20150810232312.GB10728@bivouac.eciton.net>
- <CABymUCNYrDxciKrfWhcTp_kJT1cQFEpEYCkaZ7-sgBiJmgXuyQ@mail.gmail.com>
- <55E81F93.1020104@arm.com> <20150903155255.GA28336@kroah.com>
- <55E87095.4030600@arm.com>
- <CABymUCP4s+ePs-sphJkQ4b61EcNT51FQat2ADWoy1Tgww35GMg@mail.gmail.com>
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: Re: [PATCH 0/3] serial: samsung: Fix UART status handling and other
+ fixes
+Date: Thu, 10 Sep 2015 09:23:39 +0900
+Message-ID: <55F0CD8B.8080403@samsung.com>
+References: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
+ <55EF7395.2000702@samsung.com> <55EFF898.7060205@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <CABymUCP4s+ePs-sphJkQ4b61EcNT51FQat2ADWoy1Tgww35GMg@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jun Nie <jun.nie@linaro.org>
-Cc: Marc Zyngier <marc.zyngier@arm.com>, Tyler Baker <tyler.baker@linaro.org>, linux-arm-kernel@lists.infradead.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-serial@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <55EFF898.7060205@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robert Baldyga <r.baldyga@samsung.com>, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Sep 05, 2015 at 10:42:03PM +0800, Jun Nie wrote:
-> 2015-09-04 0:08 GMT+08:00 Marc Zyngier <marc.zyngier@arm.com>:
-> > On 03/09/15 16:52, Greg Kroah-Hartman wrote:
-> >> On Thu, Sep 03, 2015 at 11:23:15AM +0100, Marc Zyngier wrote:
-> >>> On 11/08/15 02:48, Jun Nie wrote:
-> >>>> 2015-08-11 7:23 GMT+08:00 Leif Lindholm <leif.lindholm@linaro.org>:
-> >>>>> Hi all,
-> >>>>>
-> >>>>> The kernelci.org bot picked up a complete boot failure (no output past
-> >>>>> UEFI stub) with next-20150806 and Tyler bisected it down to somewhere
-> >>>>> in
-> >>>>> 8cd90e5 uart: pl011: Add support to ZTE ZX296702 uart
-> >>>>> 09dcc7d uart: pl011: Improve LCRH register access decision
-> >>>>> 2c096a9 uart: pl011: Introduce register look up table
-> >>>>> 7b753f3 uart: pl011: Introduce register accessor
-> >>>>>
-> >>>>> The issue only appears with earlycon on command line, for pl011
-> >>>>> consoles.
-> >>>>>
-> >>>>> Some investigation shows that the cause lies with
-> >>>>> commit 7b753f318d14 ("uart: pl011: Introduce register accessor")
-> >>>>> and
-> >>>>> commit 2c096a9eedc6 ("uart: pl011: Introduce register look up table")
-> >>>>>
-> >>>>> Specifically, the changes to pl011_putc() are incorrect:
-> >>>>> The new pl011_ accessors take a (struct uart_amba_port *) input, but
-> >>>>> pl011_putc() directly uses the incoming (struct uart_port *) for this.
-> >>>>>
-> >>>>> Apart from ending up with an unintended/incorrect UART base address,
-> >>>>> the introduction of the lookup table for register offsets also means
-> >>>>> the accessors try to dereference (struct uart_amba_port *)->reg_lut.
-> >>>>>
-> >>>>> The below is a hack that shows/resolves the issue, but some
-> >>>>> refactoring of the original patches might be in order.
-> >>>>>
-> >>>>> /
-> >>>>>     Leif
-> >>>>
-> >>>> Leif,
-> >>>>
-> >>>> Sorry for the inconvenience. I do not have idea of early console till
-> >>>> now and I always have debug console for early panic debug. Learned
-> >>>> more from this issue.
-> >>>>
-> >>>> Suppose Peter's patch will resolve your issue.
-> >>>
-> >>> [+ Greg KH]
-> >>>
-> >>> So -next has now been broken for a while on a number of ARM platforms
-> >>> because of this (they simply cannot boot), and no progress has been made
-> >>> towards resolving this problem.
-> >>>
-> >>> Can we please drop this series (at least commits 7b753f3 and following)
-> >>> from -next until is has been reworked and reviewed?
-> >>
-> >> I don't have any patches in my -next tree, everything is in Linus's tree
-> >> now.  So if I've missed something, or need to revert something, please
-> >> let me know specifcally what to do.
-> >
-> > Gahhh... Given that there is no obvious fix, that the discussion has
-> > stalled and that the author of the series is apparently away, the
-> > following patches should be reverted:
+On 09.09.2015 18:15, Robert Baldyga wrote:
+> On 09/09/2015 01:47 AM, Krzysztof Kozlowski wrote:
+>> On 08.09.2015 18:38, Robert Baldyga wrote:
+>>> Hello,
+>>>
+>>> This patch set contains three patches: two minor fixes and one quite
+>>> important bugfix enabling UART status handling in DMA mode, which was
+>>> missing so far. It enables, among others, 'break' contition handling,
+>>> which is necessary if we want to use Magic SysRq. So this patch fixes
+>>> Magic SysRq handling for serial consoles using UART in DMA mode,
+>>
+>> Is it even worth using UART for serial console in DMA mode? How many
+>> benefits it brings? Anyone measured real data?
+>>
+>> The patch which enabled DMA for all serial ports on Exynos4 uncovered
+>> some issues. That is one benefit... but was it worth it?
 > 
-> Marc,
-> 
-> There had a patch from Peter that revert early console part, which I
-> thought will be merged to mainline. It's my fault for not fix the bug
-> on time. Also sorry for late response to you as I took three days
-> leave.
-> 
-> Could you help test attached patch? Thank you in advance!
-> 
-> 
-> Greg,
-> 
-> Would you please hold the merging of revert patches for one or two
-> days so that the fix can be verified? Thank you!
+> Well, UART in DMA mode should work at least as good as in PIO, so there
+> is nothing wrong in having serial console configured in DMA. Sure, it
+> rather barely reduces number of interrupts while used as typical serial
+> console, but in some cases (eg. using zmodem) it can be more profitable.
 
-Given that this took way more than a few days, Linus now has the reverts
-in his tree.  Please feel free to resend the series, in a form that does
-not break people's machines, for inclusion in 4.4-rc1.
+That's some reason... and mentioned earlier testing of DMA which
+uncovered some interesting issues. :)
 
-thanks,
+> 
+> To be honest, I have no strong feeling about that. I've decided to
+> utilize new possibility opened by introducing DMA mode in serial driver,
+> so I've send patch enabling it for each port on Exynos4. But if it
+> turned out to be unneeded I will not insist on it.
 
-greg k-h
+I was just thinking loud... I don't have any data neither so let's go
+ahead with serial DMA.
+
+Best regards,
+Krzysztof
