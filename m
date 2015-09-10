@@ -1,56 +1,38 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH] tty/serial: at91: move ATMEL_MAX_UART
-Date: Thu, 10 Sep 2015 11:29:03 +0200
-Message-ID: <1441877343-20248-1-git-send-email-alexandre.belloni@free-electrons.com>
+From: Robert Baldyga <r.baldyga@samsung.com>
+Subject: Re: [PATCH 2/3] serial: samsung: remove unneded 'ignore_char' label
+Date: Thu, 10 Sep 2015 12:30:18 +0200
+Message-ID: <55F15BBA.7090609@samsung.com>
+References: <1441705127-24125-1-git-send-email-r.baldyga@samsung.com>
+ <1441705127-24125-3-git-send-email-r.baldyga@samsung.com>
+ <55F0CE80.3030400@samsung.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <55F0CE80.3030400@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com
 List-Id: linux-serial@vger.kernel.org
 
-Move ATMEL_MAX_UART from platform_data/atmel.h to atmel_serial.c as this is
-the only file using it and it is common practise from tty/serial drivers to
-define it directly in the driver file.
+On 09/10/2015 02:27 AM, Krzysztof Kozlowski wrote:
+> On 08.09.2015 18:38, Robert Baldyga wrote:
+>> This label does nothing special and we don't need to have it anymore.
+>>
+>> Signed-off-by: Robert Baldyga <r.baldyga@samsung.com>
+>> ---
+>>  drivers/tty/serial/samsung.c | 7 ++-----
+>>  1 file changed, 2 insertions(+), 5 deletions(-)
+> 
+> Label does nothing but it has a meaning. It serves as a comment - ignore
+> the character. So maybe:
+> 
+> -					goto ignore_char;
+> +					continue; /* Ignore character */
+> 
+> What do you think?
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- drivers/tty/serial/atmel_serial.c   | 6 ++++++
- include/linux/platform_data/atmel.h | 6 ------
- 2 files changed, 6 insertions(+), 6 deletions(-)
+Look good to me.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 5ca5cf3e9359..98c84038518e 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -112,6 +112,12 @@ struct atmel_uart_char {
- #define ATMEL_SERIAL_RINGSIZE 1024
- 
- /*
-+ * at91: 6 USARTs and one DBGU port (SAM9260)
-+ * avr32: 4
-+ */
-+#define ATMEL_MAX_UART		7
-+
-+/*
-  * We wrap our port structure around the generic uart_port.
-  */
- struct atmel_uart_port {
-diff --git a/include/linux/platform_data/atmel.h b/include/linux/platform_data/atmel.h
-index 527a85c61924..c4bc90bfebe0 100644
---- a/include/linux/platform_data/atmel.h
-+++ b/include/linux/platform_data/atmel.h
-@@ -19,12 +19,6 @@
- #include <linux/serial.h>
- #include <linux/platform_data/macb.h>
- 
--/*
-- * at91: 6 USARTs and one DBGU port (SAM9260)
-- * avr32: 4
-- */
--#define ATMEL_MAX_UART	7
--
-  /* USB Device */
- struct at91_udc_data {
- 	int	vbus_pin;		/* high == host powering us */
--- 
-2.1.4
+Thanks,
+Robert
