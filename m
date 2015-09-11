@@ -1,113 +1,68 @@
-From: Robert Baldyga <r.baldyga@samsung.com>
-Subject: Re: [PATCH v2 4/4] serial: samsung: Fix UART status handling in DMA
- mode
-Date: Fri, 11 Sep 2015 08:45:50 +0200
-Message-ID: <55F2789E.8010300@samsung.com>
-References: <1441892476-14273-1-git-send-email-r.baldyga@samsung.com>
- <1441892476-14273-5-git-send-email-r.baldyga@samsung.com>
- <55F26FBE.3060500@samsung.com> <55F27595.1080609@samsung.com>
- <55F2760B.2000600@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <55F2760B.2000600@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Krzysztof Kozlowski <k.kozlowski@samsung.com>, gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com
+From: kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org
+Subject: [PATCH 1/4] serial: of-serial: allow for a custom clock divider different from 16
+Date: Fri, 11 Sep 2015 12:20:50 +0000
+Message-ID: <1441974053-2630-2-git-send-email-kernel@martin.sperl.org>
+References: <1441974053-2630-1-git-send-email-kernel@martin.sperl.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1441974053-2630-1-git-send-email-kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 09/11/2015 08:34 AM, Krzysztof Kozlowski wrote:
-> On 11.09.2015 15:32, Robert Baldyga wrote:
->> On 09/11/2015 08:07 AM, Krzysztof Kozlowski wrote:
->>> On 10.09.2015 22:41, Robert Baldyga wrote:
->>>> This patch fixes UART status handling in DMA mode.
->>>
->>> I don't see any changes here. You did not respond to my comment neither.
->>>
->>> Code looks itself good... except a locking issue but I don't know what's
->>> the cause. It may be not related to the patchset and maybe just not all
->>> of issues are fixed yet. Anyway I'll describe it in 3/4.
->>>
->>> Best regards,
->>> Krzysztof
->>>
->>>> For this purpose we
->>>> use s3c24xx_serial_rx_drain_fifo() instead of uart_rx_drain_fifo(), which
->>>> does the same thing plus checks for special conditions (such as 'break').
->>>>
->>>> Thanks to this we have, for example, Magic SysRq handling, which was
->>>> missing in DMA mode so far. Since we can use UART in DMA mode as serial
->>>> console, this is a quite important improvement.
->>>>
->>>> This change additionally simplifies RX handling code, as we no longer
->>>> need uart_rx_drain_fifo() function, so we can remove it.
->>>>
->>>> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>>> Signed-off-by: Robert Baldyga <r.baldyga@samsung.com>
->>>> ---
->>>>  drivers/tty/serial/samsung.c | 30 +++---------------------------
->>>>  1 file changed, 3 insertions(+), 27 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
->>>> index 1d7dd86..d72cd73 100644
->>>> --- a/drivers/tty/serial/samsung.c
->>>> +++ b/drivers/tty/serial/samsung.c
->>>> @@ -385,32 +385,6 @@ static void s3c24xx_uart_copy_rx_to_tty(struct s3c24xx_uart_port *ourport,
->>>>  	}
->>>>  }
->>>>  
->>>> -static int s3c24xx_serial_rx_fifocnt(struct s3c24xx_uart_port *ourport,
->>>> -				     unsigned long ufstat);
->>>> -
->>>> -static void uart_rx_drain_fifo(struct s3c24xx_uart_port *ourport)
->>>> -{
->>>> -	struct uart_port *port = &ourport->port;
->>>> -	struct tty_port *tty = &port->state->port;
->>>> -	unsigned int ch, ufstat;
->>>> -	unsigned int count;
->>>> -
->>>> -	ufstat = rd_regl(port, S3C2410_UFSTAT);
->>>> -	count = s3c24xx_serial_rx_fifocnt(ourport, ufstat);
->>>> -
->>>> -	if (!count)
->>>> -		return;
->>>> -
->>>> -	while (count-- > 0) {
->>>> -		ch = rd_regb(port, S3C2410_URXH);
->>>> -
->>>> -		ourport->port.icount.rx++;
->>>> -		tty_insert_flip_char(tty, ch, TTY_NORMAL);
->>>> -	}
->>>> -
->>>> -	tty_flip_buffer_push(tty);
->>>> -}
->>>> -
->>>>  static void s3c24xx_serial_stop_rx(struct uart_port *port)
->>>>  {
->>>>  	struct s3c24xx_uart_port *ourport = to_ourport(port);
->>>> @@ -573,6 +547,8 @@ static void enable_rx_pio(struct s3c24xx_uart_port *ourport)
->>>>  	ourport->rx_mode = S3C24XX_RX_PIO;
->>>>  }
->>>>  
->>>> +static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport);
->>>> +
->>>>  static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
->>>>  {
->>>>  	unsigned int utrstat, ufstat, received;
->>>> @@ -606,7 +582,7 @@ static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
->>>>  		enable_rx_pio(ourport);
->>>>  	}
->>>>  
->>
->> The essence of change is here. We use another method for draining FIFO.
->> Instead of just putting them into tty buffer, we additionally check for
->> special conditions, and that's the improvement.
-> 
-> Hm? I was referring to my comment - I did not see any changes around
-> "fixes" in commit message.
+From: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
 
-Ohh, I see :p I will describe it better ;)
+The bcm2835 SOC has an auxiliary uart that is compatible to ns16550.
+the only difference is that it has an internal clock divider of 8
+instead of 16.
 
-Thanks,
-Robert
+The net result is that the baud-rate is twice the baud-rate requested.
+
+This patch allows to configure an alternate clock-divider in the
+device-tree, which then scales the clock coming from the clock
+framework to get scaled by 16/divider.
+
+Signed-off-by: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+---
+ drivers/tty/serial/of_serial.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index afae58a..2fcbfee 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -65,6 +65,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	struct resource resource;
+ 	struct device_node *np = ofdev->dev.of_node;
+ 	u32 clk, spd, prop;
++	u64 clk_scaled;
+ 	int ret;
+ 
+ 	memset(port, 0, sizeof *port);
+@@ -84,6 +85,19 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 
+ 		clk = clk_get_rate(info->clk);
+ 	}
++	/* a custom clock divider instead of the default 16
++	 * this (as of now) does not change the low level behaviour
++	 * but only scales the clock accordingly
++	 */
++	if (of_property_read_u32(np, "clock-divider", &spd) == 0) {
++		clk_scaled = (u64) clk * 16;
++		do_div(clk_scaled, spd);
++		dev_info(&ofdev->dev,
++			"scaling clock %uHz to %uHz to allow a clock divider of %u\n",
++			clk, (u32)clk_scaled, spd);
++		clk = (u32) clk_scaled;
++	}
++
+ 	/* If current-speed was set, then try not to change it. */
+ 	if (of_property_read_u32(np, "current-speed", &spd) == 0)
+ 		port->custom_divisor = clk / (16 * spd);
+-- 
+1.7.10.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
