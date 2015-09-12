@@ -1,76 +1,113 @@
 From: "Ivan T. Ivanov" <ivan.ivanov@linaro.org>
-Subject: [PATCH 7/7] tty: serial: msm: Remove 115.2 Kbps maximum baud rate limitation
-Date: Sat, 12 Sep 2015 16:02:14 +0300
-Message-ID: <1442062934-13449-8-git-send-email-ivan.ivanov@linaro.org>
+Subject: [PATCH 1/7] tty: serial: msm: Add mask value for UART_DM registers
+Date: Sat, 12 Sep 2015 16:02:08 +0300
+Message-ID: <1442062934-13449-2-git-send-email-ivan.ivanov@linaro.org>
 References: <1442062934-13449-1-git-send-email-ivan.ivanov@linaro.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1442062934-13449-1-git-send-email-ivan.ivanov@linaro.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Andy Gross <agross@codeaurora.org>
-Cc: David Brown <davidb@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Frank Rowand <frank.rowand@sonymobile.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Pramod Gurav <gpramod@codeaurora.org>, David Brown <davidb@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Frank Rowand <frank.rowand@sonymobile.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-UART controller is capable to perform transfers up to 4 Mbps.
-Remove artificial 115.2 Kbps limitation.
+From: Pramod Gurav <gpramod@codeaurora.org>
 
+The bit masks for RFR_LEVEL1 and STALE_TIMEOUT_MSB values in MR1 and
+IPR registers respectively are different for UART and UART_DM hardware
+cores. We have been using UART core mask values for these. Add the same
+for UART_DM core.
+
+There is no bit setting as UART_IPR_RXSTALE_LAST for UART_DM core so do
+it only for UART core.
+
+Signed-off-by: Pramod Gurav <gpramod@codeaurora.org>
+Reviewed-by: Stephen Boyd <sboyd@codeaurora.org>
 Signed-off-by: Ivan T. Ivanov <ivan.ivanov@linaro.org>
 ---
- drivers/tty/serial/msm_serial.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ drivers/tty/serial/msm_serial.c | 26 ++++++++++++++++++++------
+ drivers/tty/serial/msm_serial.h |  2 ++
+ 2 files changed, 22 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 3f975392ebc0..223514979685 100644
+index b73889c8ed4b..d08cfd3e1c3a 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -880,6 +880,7 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud)
- 		{    3, 0xdd,  8 },
- 		{    2, 0xee, 16 },
- 		{    1, 0xff, 31 },
-+		{    0, 0xff, 31 },
- 	};
+@@ -421,7 +421,7 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud)
 
- 	divisor = uart_get_divisor(port, baud);
-@@ -891,16 +892,29 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud)
- 	return entry; /* Default to smallest divider */
- }
-
--static int msm_set_baud_rate(struct uart_port *port, unsigned int baud)
-+static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
-+			     unsigned long *saved_flags)
+ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud)
  {
- 	unsigned int rxstale, watermark, mask;
+-	unsigned int rxstale, watermark;
++	unsigned int rxstale, watermark, mask;
  	struct msm_port *msm_port = UART_TO_MSM(port);
  	const struct msm_baud_map *entry;
-+	unsigned long flags;
 
- 	entry = msm_find_best_baud(port, baud);
-
- 	msm_write(port, entry->code, UART_CSR);
-
-+	if (baud > 460800)
-+		port->uartclk = baud * 16;
-+
-+	flags = *saved_flags;
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	clk_set_rate(msm_port->clk, port->uartclk);
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	*saved_flags = flags;
-+
+@@ -432,8 +432,15 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud)
  	/* RX stale watermark */
  	rxstale = entry->rxstale;
  	watermark = UART_IPR_STALE_LSB & rxstale;
-@@ -1024,8 +1038,8 @@ static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
- 		msm_stop_dma(port, dma);
+-	watermark |= UART_IPR_RXSTALE_LAST;
+-	watermark |= UART_IPR_STALE_TIMEOUT_MSB & (rxstale << 2);
++	if (msm_port->is_uartdm) {
++		mask = UART_DM_IPR_STALE_TIMEOUT_MSB;
++	} else {
++		watermark |= UART_IPR_RXSTALE_LAST;
++		mask = UART_IPR_STALE_TIMEOUT_MSB;
++	}
++
++	watermark |= mask & (rxstale << 2);
++
+ 	msm_write(port, watermark, UART_IPR);
 
- 	/* calculate and set baud rate */
--	baud = uart_get_baud_rate(port, termios, old, 300, 115200);
--	baud = msm_set_baud_rate(port, baud);
-+	baud = uart_get_baud_rate(port, termios, old, 300, 4000000);
-+	baud = msm_set_baud_rate(port, baud, &flags);
- 	if (tty_termios_baud_rate(termios))
- 		tty_termios_encode_baud_rate(termios, baud, baud);
+ 	/* set RX watermark */
+@@ -476,7 +483,7 @@ static void msm_init_clock(struct uart_port *port)
+ static int msm_startup(struct uart_port *port)
+ {
+ 	struct msm_port *msm_port = UART_TO_MSM(port);
+-	unsigned int data, rfr_level;
++	unsigned int data, rfr_level, mask;
+ 	int ret;
 
+ 	snprintf(msm_port->name, sizeof(msm_port->name),
+@@ -496,11 +503,18 @@ static int msm_startup(struct uart_port *port)
+
+ 	/* set automatic RFR level */
+ 	data = msm_read(port, UART_MR1);
+-	data &= ~UART_MR1_AUTO_RFR_LEVEL1;
++
++	if (msm_port->is_uartdm)
++		mask = UART_DM_MR1_AUTO_RFR_LEVEL1;
++	else
++		mask = UART_MR1_AUTO_RFR_LEVEL1;
++
++	data &= ~mask;
+ 	data &= ~UART_MR1_AUTO_RFR_LEVEL0;
+-	data |= UART_MR1_AUTO_RFR_LEVEL1 & (rfr_level << 2);
++	data |= mask & (rfr_level << 2);
+ 	data |= UART_MR1_AUTO_RFR_LEVEL0 & rfr_level;
+ 	msm_write(port, data, UART_MR1);
++
+ 	return 0;
+ }
+
+diff --git a/drivers/tty/serial/msm_serial.h b/drivers/tty/serial/msm_serial.h
+index 737f69fe7113..5b7722c3938b 100644
+--- a/drivers/tty/serial/msm_serial.h
++++ b/drivers/tty/serial/msm_serial.h
+@@ -20,6 +20,7 @@
+
+ #define UART_MR1_AUTO_RFR_LEVEL0	0x3F
+ #define UART_MR1_AUTO_RFR_LEVEL1	0x3FF00
++#define UART_DM_MR1_AUTO_RFR_LEVEL1	0xFFFFFF00
+ #define UART_MR1_RX_RDY_CTL    		(1 << 7)
+ #define UART_MR1_CTS_CTL       		(1 << 6)
+
+@@ -78,6 +79,7 @@
+ #define UART_IPR_RXSTALE_LAST		0x20
+ #define UART_IPR_STALE_LSB		0x1F
+ #define UART_IPR_STALE_TIMEOUT_MSB	0x3FF80
++#define UART_DM_IPR_STALE_TIMEOUT_MSB	0xFFFFFF80
+
+ #define UART_IPR	0x0018
+ #define UART_TFWR	0x001C
 --
 1.9.1
