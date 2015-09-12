@@ -1,50 +1,76 @@
-From: "Ivan T. Ivanov" <ivan.ivanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 0/7] tty: serial: msm: Add DMA support and fix bit definitions
-Date: Sat, 12 Sep 2015 16:02:07 +0300
-Message-ID: <1442062934-13449-1-git-send-email-ivan.ivanov@linaro.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andy Gross <agross-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Frank Rowand <frank.rowand-/MT0OVThwyLZJqsBc5GL+g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: "Ivan T. Ivanov" <ivan.ivanov@linaro.org>
+Subject: [PATCH 7/7] tty: serial: msm: Remove 115.2 Kbps maximum baud rate limitation
+Date: Sat, 12 Sep 2015 16:02:14 +0300
+Message-ID: <1442062934-13449-8-git-send-email-ivan.ivanov@linaro.org>
+References: <1442062934-13449-1-git-send-email-ivan.ivanov@linaro.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1442062934-13449-1-git-send-email-ivan.ivanov@linaro.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Andy Gross <agross@codeaurora.org>
+Cc: David Brown <davidb@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Frank Rowand <frank.rowand@sonymobile.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+UART controller is capable to perform transfers up to 4 Mbps.
+Remove artificial 115.2 Kbps limitation.
 
-Following patches add DMA support for UARTDM type of hardware.
+Signed-off-by: Ivan T. Ivanov <ivan.ivanov@linaro.org>
+---
+ drivers/tty/serial/msm_serial.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-Changes have been tested on UARTDM v1.3(APQ8064) and v1.4(APQ8016).
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 3f975392ebc0..223514979685 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -880,6 +880,7 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud)
+ 		{    3, 0xdd,  8 },
+ 		{    2, 0xee, 16 },
+ 		{    1, 0xff, 31 },
++		{    0, 0xff, 31 },
+ 	};
 
-Patches from Gurav were published long ago here[1], I just addressed
-remaining comments and coding style issues.
+ 	divisor = uart_get_divisor(port, baud);
+@@ -891,16 +892,29 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud)
+ 	return entry; /* Default to smallest divider */
+ }
 
-Any comments are welcome.
+-static int msm_set_baud_rate(struct uart_port *port, unsigned int baud)
++static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
++			     unsigned long *saved_flags)
+ {
+ 	unsigned int rxstale, watermark, mask;
+ 	struct msm_port *msm_port = UART_TO_MSM(port);
+ 	const struct msm_baud_map *entry;
++	unsigned long flags;
 
-Regards,
-Ivan
+ 	entry = msm_find_best_baud(port, baud);
 
-Ivan T. Ivanov (5):
-  tty: serial: msm: Fix command Stale Event Enable definition
-  tty: serial: msm: Add msm prefix to all driver functions
-  tty: serial: msm: Add TX DMA support
-  tty: serial: msm: Add RX DMA support
-  tty: serial: msm: Remove 115.2 Kbps maximum baud rate limitation
+ 	msm_write(port, entry->code, UART_CSR);
 
-Pramod Gurav (2):
-  tty: serial: msm: Add mask value for UART_DM registers
-  tty: serial: msm: replaces (1 << x) with BIT(x) macro
++	if (baud > 460800)
++		port->uartclk = baud * 16;
++
++	flags = *saved_flags;
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	clk_set_rate(msm_port->clk, port->uartclk);
++
++	spin_lock_irqsave(&port->lock, flags);
++	*saved_flags = flags;
++
+ 	/* RX stale watermark */
+ 	rxstale = entry->rxstale;
+ 	watermark = UART_IPR_STALE_LSB & rxstale;
+@@ -1024,8 +1038,8 @@ static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		msm_stop_dma(port, dma);
 
-[1] http://www.spinics.net/lists/linux-serial/msg16874.html
-
-
- .../devicetree/bindings/serial/qcom,msm-uartdm.txt |   6 +
- drivers/tty/serial/msm_serial.c                    | 616 +++++++++++++++++++--
- drivers/tty/serial/msm_serial.h                    |  55 +-
- 3 files changed, 604 insertions(+), 73 deletions(-)
+ 	/* calculate and set baud rate */
+-	baud = uart_get_baud_rate(port, termios, old, 300, 115200);
+-	baud = msm_set_baud_rate(port, baud);
++	baud = uart_get_baud_rate(port, termios, old, 300, 4000000);
++	baud = msm_set_baud_rate(port, baud, &flags);
+ 	if (tty_termios_baud_rate(termios))
+ 		tty_termios_encode_baud_rate(termios, baud, baud);
 
 --
 1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
