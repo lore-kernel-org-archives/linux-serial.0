@@ -1,46 +1,74 @@
-From: Robert Baldyga <r.baldyga@samsung.com>
-Subject: [PATCH v3 0/4] serial: samsung: Fix UART status handling and other
- fixes
-Date: Tue, 15 Sep 2015 14:48:56 +0200
-Message-ID: <1442321340-28167-1-git-send-email-r.baldyga@samsung.com>
+From: Mans Rullgard <mans@mansr.com>
+Subject: [PATCH] serial: 8250: simplify ralink/alchemy register remap selection
+Date: Tue, 15 Sep 2015 17:54:13 +0100
+Message-ID: <1442336054-18558-1-git-send-email-mans@mansr.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, k.kozlowski@samsung.com, Robert Baldyga <r.baldyga@samsung.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+Some SoCs, including Ralink/Mediatek and Alchemy Au1xxx, have a
+16550-like UART with a non-standard register layout.  These are
+supported by a simple mapping table in 8250_port.c  Rather than
+list every SoC type using this access mode in the ifdefs there,
+allow selecting the SERIAL_8250_RT288X Kconfig option with any
+system and default it to y for the known cases needing it.  The
+help text is reworded accordingly.
 
-This patch set contains four patches: two minor fixes and two patches
-fixing quite importatn bug which was missing UART status handling in
-DMA mode. It fixes, among others, 'break' contition handling, which is
-necessary if we want to use Magic SysRq. So this patch fixes Magic SysRq
-handling for serial consoles using UART in DMA mode,
+This change simplifies adding support for other SoCs also using
+the same UART.
 
-Best regards,
-Robert Baldyga
+The name of the option is a little misleading, but not knowing
+the true origin of this UART, it is as good a choice as any.
 
-Changelog:
+Signed-off-by: Mans Rullgard <mans@mansr.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 4 ++--
+ drivers/tty/serial/8250/Kconfig     | 9 +++++----
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
-v3:
-- better describe change in patch "Fix UART status handling in DMA mode"
-
-v2: https://lkml.org/lkml/2015/9/10/336
-- address comments from Krzysztof Kozlowski:
-  - add comment in patch removing 'ignore_char' label
-  - split patch "Fix UART status handling in DMA mode"
-    into two patches for better code readability
-
-v1: https://lkml.org/lkml/2015/9/8/190
-
-Robert Baldyga (4):
-  serial: samsung: remove unused 'irq' parameter
-  serial: samsung: remove unneded 'ignore_char' label
-  serial: samsung: introduce s3c24xx_serial_rx_drain_fifo() function
-  serial: samsung: Fix UART status handling in DMA mode
-
- drivers/tty/serial/samsung.c | 66 ++++++++++++++------------------------------
- 1 file changed, 21 insertions(+), 45 deletions(-)
-
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 54e6c8d..a2ff31c 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -276,7 +276,7 @@ static void default_serial_dl_write(struct uart_8250_port *up, int value)
+ 	serial_out(up, UART_DLM, value >> 8 & 0xff);
+ }
+ 
+-#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
++#ifdef CONFIG_SERIAL_8250_RT288X
+ 
+ /* Au1x00/RT288x UART hardware has a weird register layout */
+ static const s8 au_io_in_map[8] = {
+@@ -427,7 +427,7 @@ static void set_io_from_upio(struct uart_port *p)
+ 		p->serial_out = mem32be_serial_out;
+ 		break;
+ 
+-#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
++#ifdef CONFIG_SERIAL_8250_RT288X
+ 	case UPIO_AU:
+ 		p->serial_in = au_serial_in;
+ 		p->serial_out = au_serial_out;
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index e1de118..a51c75c 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -294,11 +294,12 @@ config SERIAL_8250_EM
+ 
+ config SERIAL_8250_RT288X
+ 	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
+-	depends on SERIAL_8250 && (SOC_RT288X || SOC_RT305X || SOC_RT3883 || SOC_MT7620)
++	depends on SERIAL_8250
++	default y if MIPS_ALCHEMY || SOC_RT288X || SOC_RT305X || SOC_RT3883 || SOC_MT7620
+ 	help
+-	  If you have a Ralink RT288x/RT305x SoC based board and want to use the
+-	  serial port, say Y to this option. The driver can handle up to 2 serial
+-	  ports. If unsure, say N.
++	  Selecting this option will add support for the alternate register
++	  layout used by Ralink RT288x/RT305x, Alchemy Au1xxx, and some others.
++	  If unsure, say N.
+ 
+ config SERIAL_8250_OMAP
+ 	tristate "Support for OMAP internal UART (8250 based driver)"
 -- 
-1.9.1
+2.5.2
