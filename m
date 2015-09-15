@@ -1,77 +1,49 @@
-From: Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [PATCH] serial: sccnxp: convert devm irq to non devm version
-Date: Mon, 14 Sep 2015 20:45:29 +0200 (CEST)
-Message-ID: <alpine.DEB.2.02.1509142045250.2048@localhost6.localdomain6>
-References: <1442151853-16186-1-git-send-email-Julia.Lawall@lip6.fr> <CAOMZO5BPUPW_DerteqxjMLRn-y8jaw149-3ogeq7OHO6uS=TFg@mail.gmail.com>
+From: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [RESEND PATCH] serial: 8250: Add OF earlycon support
+Date: Mon, 14 Sep 2015 19:56:03 -0500
+Message-ID: <20150915005603.GA20045@home.buserror.net>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5BPUPW_DerteqxjMLRn-y8jaw149-3ogeq7OHO6uS=TFg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Julia Lawall <Julia.Lawall@lip6.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel-janitors@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+This allows earlycon to be used without needing to specify the I/O
+address on the kernel command line, if linux,stdout-path is specified
+in the chosen node.
 
+Signed-off-by: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+---
+Sorry, forgot to include the mailing lists on previous sending.
 
-On Mon, 14 Sep 2015, Fabio Estevam wrote:
+ drivers/tty/serial/8250/8250_early.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> On Sun, Sep 13, 2015 at 10:44 AM, Julia Lawall <Julia.Lawall@lip6.fr> wrote:
-> 
-> > --- a/drivers/tty/serial/sccnxp.c
-> > +++ b/drivers/tty/serial/sccnxp.c
-> > @@ -963,11 +963,9 @@ static int sccnxp_probe(struct platform_device *pdev)
-> >         sccnxp_write(&s->port[0], SCCNXP_IMR_REG, 0);
-> >
-> >         if (!s->poll) {
-> > -               ret = devm_request_threaded_irq(&pdev->dev, s->irq, NULL,
-> > -                                               sccnxp_ist,
-> > -                                               IRQF_TRIGGER_FALLING |
-> > -                                               IRQF_ONESHOT,
-> > -                                               dev_name(&pdev->dev), s);
-> > +               ret = request_threaded_irq(s->irq, NULL, sccnxp_ist,
-> > +                                          IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-> > +                                          dev_name(&pdev->dev), s);
-> >                 if (!ret)
-> >                         return 0;
-> >
-> > @@ -994,7 +992,7 @@ static int sccnxp_remove(struct platform_device *pdev)
-> >         struct sccnxp_port *s = platform_get_drvdata(pdev);
-> >
-> >         if (!s->poll)
-> > -               devm_free_irq(&pdev->dev, s->irq, s);
-> > +               free_irq(s->irq, s);
-> 
-> Couldn't we just remove the devm_free_irq() and keep using
-> devm_request_threaded_irq()?
-> 
-> Like this:
-
-I assumed that if the person went to the trouble of putting it there, it 
-was because the interrupt handler needs some data that is freed later in 
-the remove function and interrupts have to be turned off at this point.  I 
-can look into it more though, but the interactions are not always easy to 
-spot.
-
-julia
-
-
-> 
-> --- a/drivers/tty/serial/sccnxp.c
-> +++ b/drivers/tty/serial/sccnxp.c
-> @@ -993,9 +993,7 @@ static int sccnxp_remove(struct platform_device *pdev)
->         int i;
->         struct sccnxp_port *s = platform_get_drvdata(pdev);
-> 
-> -       if (!s->poll)
-> -               devm_free_irq(&pdev->dev, s->irq, s);
-> -       else
-> +       if (s->poll)
->                 del_timer_sync(&s->timer);
-> 
->         for (i = 0; i < s->uart.nr; i++)
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index faed05f..ceb8579 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -29,6 +29,8 @@
+ #include <linux/tty.h>
+ #include <linux/init.h>
+ #include <linux/console.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
+ #include <linux/serial_reg.h>
+ #include <linux/serial.h>
+ #include <linux/serial_8250.h>
+@@ -152,3 +154,5 @@ int __init early_serial8250_setup(struct earlycon_device *device,
+ }
+ EARLYCON_DECLARE(uart8250, early_serial8250_setup);
+ EARLYCON_DECLARE(uart, early_serial8250_setup);
++OF_EARLYCON_DECLARE(ns16550, "ns16550", early_serial8250_setup);
++OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
+-- 
+2.1.4
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
