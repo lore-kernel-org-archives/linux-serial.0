@@ -1,8 +1,8 @@
 From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 Subject: Re: [PATCH v3 3/4] serial: samsung: introduce
  s3c24xx_serial_rx_drain_fifo() function
-Date: Thu, 17 Sep 2015 16:27:52 +0900
-Message-ID: <55FA6B78.9030402@samsung.com>
+Date: Thu, 17 Sep 2015 16:35:18 +0900
+Message-ID: <55FA6D36.5090600@samsung.com>
 References: <1442321340-28167-1-git-send-email-r.baldyga@samsung.com>
  <1442321340-28167-4-git-send-email-r.baldyga@samsung.com>
 Mime-Version: 1.0
@@ -26,9 +26,9 @@ On 15.09.2015 21:48, Robert Baldyga wrote:
 > ---
 >  drivers/tty/serial/samsung.c | 23 +++++++++++++----------
 >  1 file changed, 13 insertions(+), 10 deletions(-)
-> 
 
-Reviewed-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Thanks for splitting the code. It looks good but I don't feel
+experienced enough in the driver internals to give a review tag. :)
 
 Best regards,
 Krzysztof
