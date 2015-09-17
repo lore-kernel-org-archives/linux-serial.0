@@ -1,34 +1,104 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: Re: [PATCH v3 3/4] serial: samsung: introduce
- s3c24xx_serial_rx_drain_fifo() function
-Date: Thu, 17 Sep 2015 16:35:18 +0900
-Message-ID: <55FA6D36.5090600@samsung.com>
-References: <1442321340-28167-1-git-send-email-r.baldyga@samsung.com>
- <1442321340-28167-4-git-send-email-r.baldyga@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+From: Zhaoyang Huang <zhaoyang.huang@linaro.org>
+Subject: [PATCH] modify pl011 driver to let it work as wakeup source
+Date: Thu, 17 Sep 2015 16:31:56 +0800
+Message-ID: <1442478716-7377-1-git-send-email-zhaoyang.huang@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <1442321340-28167-4-git-send-email-r.baldyga@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robert Baldyga <r.baldyga@samsung.com>, gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com
+To: linux-pm@vger.kernel.org, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: amit.kucheria@linaro.org, sudeep.holla@arm.com, daniel.lezcano@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-On 15.09.2015 21:48, Robert Baldyga wrote:
-> This patch introduces s3c24xx_serial_rx_drain_fifo() which reads data
-> from RX FIFO and writes it to tty buffer. It also checks for special
-> conditions (such as 'break') and handles it. This function has been
-> separated from s3c24xx_serial_rx_chars_pio() as it contains code which
-> can be used also in DMA mode.
-> 
-> Signed-off-by: Robert Baldyga <r.baldyga@samsung.com>
-> ---
->  drivers/tty/serial/samsung.c | 23 +++++++++++++----------
->  1 file changed, 13 insertions(+), 10 deletions(-)
+the commit use the latest dev_pm_set_wake_irq API instead
+of the enable_irq_wake and IRQF_NO_SUSPEND to configure the
+ttyAMA device to work as the wakeup source
 
-Thanks for splitting the code. It looks good but I don't feel
-experienced enough in the driver internals to give a review tag. :)
+Signed-off-by: Zhaoyang Huang <zhaoyang.huang@linaro.org>
+---
+ drivers/tty/serial/amba-pl011.c |   47 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 46 insertions(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index fd27e98..1923b94 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -59,6 +59,11 @@
+ #include <linux/sizes.h>
+ #include <linux/io.h>
+ #include <linux/acpi.h>
++#include <linux/suspend.h>
++#include <linux/pm_wakeirq.h>
++#include <linux/irq.h>
++
++static struct device *uart_dev;
+ 
+ #define UART_NR			14
+ 
+@@ -2353,11 +2358,29 @@ static int pl011_register_port(struct uart_amba_port *uap)
+ 	return ret;
+ }
+ 
++struct uart_match {
++	struct uart_port *port;
++	struct uart_driver *driver;
++};
++
++static int match_uart_port(struct device *dev, void *data)
++{
++	struct uart_match *match = data;
++
++	dev_t devt = MKDEV(match->driver->major, match->driver->minor) +
++		match->port->line;
++
++	pr_info("the match data of ttyAMA0 is %d %d\n",
++			(int)devt, (int)dev->devt);
++
++	return dev->devt == devt; /* Actually, only one tty per port */
++}
+ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ {
+ 	struct uart_amba_port *uap;
+ 	struct vendor_data *vendor = id->data;
+ 	int portnr, ret;
++	struct uart_match match;
+ 
+ 	portnr = pl011_find_free_port();
+ 	if (portnr < 0)
+@@ -2387,13 +2410,35 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 
+ 	amba_set_drvdata(dev, uap);
+ 
+-	return pl011_register_port(uap);
++	ret = pl011_register_port(uap);
++
++	if (!of_find_property(dev->dev.of_node, "linux,wakeup", NULL)) {
++		uart_dev = NULL;
++		return ret;
++	}
++
++	match.port = &uap->port;
++	match.driver = &amba_reg;
++
++	uart_dev = device_find_child(&dev->dev, &match, match_uart_port);
++
++	if (uart_dev) {
++		device_init_wakeup(uart_dev, true);
++		dev_pm_set_wake_irq(uart_dev, uap->port.irq);
++	}
++
++	return ret;
+ }
+ 
+ static int pl011_remove(struct amba_device *dev)
+ {
+ 	struct uart_amba_port *uap = amba_get_drvdata(dev);
+ 
++	if (uart_dev) {
++		dev_pm_clear_wake_irq(uart_dev);
++		device_init_wakeup(uart_dev, false);
++	}
++
+ 	uart_remove_one_port(&amba_reg, &uap->port);
+ 	pl011_unregister_port(uap);
+ 	return 0;
+-- 
+1.7.9.5
