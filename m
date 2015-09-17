@@ -1,61 +1,34 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+From: Sudeep Holla <sudeep.holla@arm.com>
 Subject: Re: [PATCH] modify pl011 driver to let it work as wakeup source
-Date: Thu, 17 Sep 2015 11:31:26 +0100
-Message-ID: <20150917103126.GM21084@n2100.arm.linux.org.uk>
+Date: Thu, 17 Sep 2015 11:39:14 +0100
+Message-ID: <55FA9852.9030704@arm.com>
 References: <1442478716-7377-1-git-send-email-zhaoyang.huang@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pm-owner@vger.kernel.org>
-Content-Disposition: inline
 In-Reply-To: <1442478716-7377-1-git-send-email-zhaoyang.huang@linaro.org>
 Sender: linux-pm-owner@vger.kernel.org
-To: Zhaoyang Huang <zhaoyang.huang@linaro.org>
-Cc: linux-pm@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, amit.kucheria@linaro.org, sudeep.holla@arm.com, daniel.lezcano@linaro.org
+To: Zhaoyang Huang <zhaoyang.huang@linaro.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Sudeep Holla <sudeep.holla@arm.com>, "amit.kucheria@linaro.org" <amit.kucheria@linaro.org>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Sep 17, 2015 at 04:31:56PM +0800, Zhaoyang Huang wrote:
-> +struct uart_match {
-> +	struct uart_port *port;
-> +	struct uart_driver *driver;
-> +};
-> +
-> +static int match_uart_port(struct device *dev, void *data)
-> +{
-> +	struct uart_match *match = data;
-> +
-> +	dev_t devt = MKDEV(match->driver->major, match->driver->minor) +
-> +		match->port->line;
-> +
-> +	pr_info("the match data of ttyAMA0 is %d %d\n",
-> +			(int)devt, (int)dev->devt);
-> +
-> +	return dev->devt == devt; /* Actually, only one tty per port */
-> +}
-...
-> +	ret = pl011_register_port(uap);
-> +
-> +	if (!of_find_property(dev->dev.of_node, "linux,wakeup", NULL)) {
-> +		uart_dev = NULL;
-> +		return ret;
-> +	}
-> +
-> +	match.port = &uap->port;
-> +	match.driver = &amba_reg;
-> +
-> +	uart_dev = device_find_child(&dev->dev, &match, match_uart_port);
-> +
-> +	if (uart_dev) {
-> +		device_init_wakeup(uart_dev, true);
-> +		dev_pm_set_wake_irq(uart_dev, uap->port.irq);
-> +	}
-> +
-> +	return ret;
 
-I can only describe this code as a hack.  This looks like something
-which should be handled by generic infrastructure at an appropriate
-point (somewhere inside uart_add_one_port()), not by hacky code in
-each driver.
 
--- 
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+On 17/09/15 09:31, Zhaoyang Huang wrote:
+> the commit use the latest dev_pm_set_wake_irq API instead
+> of the enable_irq_wake and IRQF_NO_SUSPEND to configure the
+> ttyAMA device to work as the wakeup source
+>
+
+As I mentioned earlier[1], if this a based on Juno platform, then
+it gets NACK. Please add this feature when it's needed on a real
+platform on which hardware supports UART/PL011 as a wake source.
+
+Do you have any such platform to test ? On Juno, it can't be used as
+wakeup source.
+
+Regards,
+Sudeep
+
+[1] https://www.marc.info/?l=linux-pm&m=144239396227080&w=2
