@@ -1,80 +1,79 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: Re: [PATCH v13 4/5] uart: pl011: Improve LCRH register access decision
-Date: Fri, 18 Sep 2015 11:58:56 +0100
-Message-ID: <55FBEE70.9090004@arm.com>
-References: <1438328959-16177-1-git-send-email-jun.nie@linaro.org>
- <1438328959-16177-5-git-send-email-jun.nie@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1438328959-16177-5-git-send-email-jun.nie@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jun Nie <jun.nie@linaro.org>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, Andrew Jackson <Andrew.Jackson@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>
-Cc: "jason.liu@linaro.org" <jason.liu@linaro.org>, "wan.zhijun@zte.com.cn" <wan.zhijun@zte.com.cn>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v4 03/10] serial: sh-sci: Submit RX DMA from RX interrupt on (H)SCIF
+Date: Fri, 18 Sep 2015 13:08:26 +0200
+Message-ID: <1442574513-20648-4-git-send-email-geert+renesas@glider.be>
+References: <1442574513-20648-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1442574513-20648-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-sh-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Muhammad Hamza Farooq <mfarooq@visteon.com>, Magnus Damm <magnus.damm@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Nobuhiro Iwamatsu <iwamatsu@nigauri.org>, Yoshihiro Kaneko <ykaneko0929@gmail.com>, Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>, Koji Matsuoka <koji.matsuoka.xm@renesas.com>, Wolfram Sang <wsa@the-dreams.de>, Guennadi Liakhovetski <g.liakhovetski@gmx.de>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Jun,
+For DMA receive requests, the driver is only notified by DMA completion
+after the whole DMA request has been transferred.  If less data is
+received, it will stay stuck until more data arrives.  The driver
+handles this by setting up a timer handler from the receive interrupt,
+after reception of the first character.
 
-On 31/07/15 08:49, Jun Nie wrote:
-> Improve LCRH register access decision as ARM PL011 lcrh
-> register serve as both TX and RX, while other SOC may
-> implement TX and RX function with separated register.
-> 
-> Signed-off-by: Jun Nie <jun.nie@linaro.org>
-> ---
->  drivers/tty/serial/amba-pl011.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index e1f3bd5..017443d 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -249,6 +249,11 @@ struct uart_amba_port {
->  #endif
->  };
->  
-> +static bool is_implemented(struct uart_amba_port *uap, unsigned int reg)
-> +{
-> +	return uap->reg_lut[reg] != (u16)~0;
-> +}
-> +
+Unlike SCIFA and SCIFB, SCIF and HSCIF don't issue receive interrupts on
+reception of individual characters if a receive DMA request is in
+progress, so the timer is never set up.
 
-Just a nit: is_implemented sounds a bit too generic for me, could this
-be more specific like reg_is_implemented or the like?
+To fix receive DMA on SCIF and HSCIF, submit the receive DMA request
+from the receive interrupt handler instead.
+In some sense this is similar to the SCIFA/SCIFB behavior, where the
+RDRQE (Rx Data Transfer Request Enable) bit is also set from the receive
+interrupt handler.
 
-Other than that the patch looks good to me.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+v4:
+  - Dropped RFC status,
+  - Rebased on top of "[PATCH] serial: sh-sci: Shuffle functions
+    around", hence the forward declaration of sci_submit_rx() is no
+    longer needed, and the declared-but-never-defined compiler warning
+    if CONFIG_SERIAL_SH_SCI_DMA=n is gone.
 
-Cheers,
-Andre.
+v3:
+  - New, this replaces the one-byte DMA transfer from "[PATCH/RFC v2
+    28/29] serial: sh-sci: Add (H)SCIF DMA support".
+---
+ drivers/tty/serial/sh-sci.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
->  static unsigned int pl011_readw(struct uart_amba_port *uap, int index)
->  {
->  	WARN_ON(index > REG_NR);
-> @@ -1649,7 +1654,7 @@ static int pl011_hwinit(struct uart_port *port)
->  static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
->  {
->  	pl011_writew(uap, lcr_h, uap->lcrh_rx);
-> -	if (uap->lcrh_rx != uap->lcrh_tx) {
-> +	if (is_implemented(uap, REG_ST_LCRH_RX)) {
->  		int i;
->  		/*
->  		 * Wait 10 PCLKs before writing LCRH_TX register,
-> @@ -1784,7 +1789,7 @@ static void pl011_disable_uart(struct uart_amba_port *uap)
->  	 * disable break condition and fifos
->  	 */
->  	pl011_shutdown_channel(uap, uap->lcrh_rx);
-> -	if (uap->lcrh_rx != uap->lcrh_tx)
-> +	if (is_implemented(uap, REG_ST_LCRH_RX))
->  		pl011_shutdown_channel(uap, uap->lcrh_tx);
->  }
->  
-> 
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index eb2b369b1cf1be0b..02aaf4d213d9c280 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1317,7 +1317,8 @@ static void rx_timer_fn(unsigned long arg)
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+-	sci_submit_rx(s);
++	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
++		sci_submit_rx(s);
+ }
+ 
+ static void sci_request_dma(struct uart_port *port)
+@@ -1403,7 +1404,8 @@ static void sci_request_dma(struct uart_port *port)
+ 
+ 		setup_timer(&s->rx_timer, rx_timer_fn, (unsigned long)s);
+ 
+-		sci_submit_rx(s);
++		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
++			sci_submit_rx(s);
+ 	}
+ }
+ 
+@@ -1442,6 +1444,7 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ 			scr |= SCSCR_RDRQE;
+ 		} else {
+ 			scr &= ~SCSCR_RIE;
++			sci_submit_rx(s);
+ 		}
+ 		serial_port_out(port, SCSCR, scr);
+ 		/* Clear current interrupt */
+-- 
+1.9.1
+
