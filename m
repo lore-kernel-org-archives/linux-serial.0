@@ -1,48 +1,59 @@
-From: Andrzej Hajda <a.hajda@samsung.com>
-Subject: [PATCH 06/38] tty: serial: lpc32xx_hs: fix handling platform_get_irq
- result
-Date: Mon, 21 Sep 2015 15:33:38 +0200
-Message-ID: <1442842450-29769-7-git-send-email-a.hajda@samsung.com>
-References: <1442842450-29769-1-git-send-email-a.hajda@samsung.com>
+From: Sudeep Holla <sudeep.holla@arm.com>
+Subject: [PATCH 10/17] tty/serial: st-asc: drop the use of IRQF_NO_SUSPEND
+Date: Mon, 21 Sep 2015 16:47:06 +0100
+Message-ID: <1442850433-5903-11-git-send-email-sudeep.holla@arm.com>
+References: <1442850433-5903-1-git-send-email-sudeep.holla@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <1442842450-29769-1-git-send-email-a.hajda@samsung.com>
+In-Reply-To: <1442850433-5903-1-git-send-email-sudeep.holla@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Andrzej Hajda <a.hajda@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Sudeep Holla <sudeep.holla@arm.com>, Thomas Gleixner <tglx@linutronix.de>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, kernel@stlinux.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The function can return negative values.
+These drivers doesn't claim the serial device to be wakeup source. Even
+if it is, it needs to use enable_irq_wake or other related PM wakeup
+APIs to enable it.
 
-The problem has been detected using proposed semantic patch
-scripts/coccinelle/tests/unsigned_lesser_than_zero.cocci [1].
+This patch removes yet another misuse of IRQF_NO_SUSPEND.
 
-[1]: http://permalink.gmane.org/gmane.linux.kernel/2038576
-
-Signed-off-by: Andrzej Hajda <a.hajda@samsung.com>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@gmail.com>
+Cc: Maxime Coquelin <maxime.coquelin@st.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: kernel@stlinux.com
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 ---
- drivers/tty/serial/lpc32xx_hs.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/tty/serial/st-asc.c      | 2 +-
+ drivers/tty/serial/stm32-usart.c | 3 +--
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-index e92d7eb..7eb04ae 100644
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -691,12 +691,13 @@ static int serial_hs_lpc32xx_probe(struct platform_device *pdev)
- 	p->port.mapbase = res->start;
- 	p->port.membase = NULL;
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index d625664ce1b5..2d78cb3627ae 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -430,7 +430,7 @@ static void asc_break_ctl(struct uart_port *port, int break_state)
+  */
+ static int asc_startup(struct uart_port *port)
+ {
+-	if (request_irq(port->irq, asc_interrupt, IRQF_NO_SUSPEND,
++	if (request_irq(port->irq, asc_interrupt, 0,
+ 			asc_port_name(port), port)) {
+ 		dev_err(port->dev, "cannot allocate irq.\n");
+ 		return -ENODEV;
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index e3de9c6d2226..f89d1f79be18 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -322,8 +322,7 @@ static int stm32_startup(struct uart_port *port)
+ 	u32 val;
+ 	int ret;
  
--	p->port.irq = platform_get_irq(pdev, 0);
--	if (p->port.irq < 0) {
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0) {
- 		dev_err(&pdev->dev, "Error getting irq for HS UART port %d\n",
- 			uarts_registered);
--		return p->port.irq;
-+		return ret;
- 	}
-+	p->port.irq = ret;
+-	ret = request_irq(port->irq, stm32_interrupt, IRQF_NO_SUSPEND,
+-			  name, port);
++	ret = request_irq(port->irq, stm32_interrupt, 0, name, port);
+ 	if (ret)
+ 		return ret;
  
- 	p->port.iotype = UPIO_MEM32;
- 	p->port.uartclk = LPC32XX_MAIN_OSC_FREQ;
 -- 
 1.9.1
