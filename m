@@ -1,73 +1,42 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 0/4] bcm2835: enable auxiliary uart1
-Date: Mon, 21 Sep 2015 19:39:16 -0700
-Message-ID: <5600BF54.9090802@wwwdotorg.org>
+Subject: Re: [PATCH 3/4] serial: bcm2835: add auxiliary uart1 to device tree
+ of bcm2835
+Date: Mon, 21 Sep 2015 19:42:25 -0700
+Message-ID: <5600C011.8020402@wwwdotorg.org>
 References: <1441974053-2630-1-git-send-email-kernel@martin.sperl.org>
- <87r3m1jbmr.fsf@eliezer.anholt.net>
+ <1441974053-2630-4-git-send-email-kernel@martin.sperl.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <87r3m1jbmr.fsf-omZaPlIz5HhaEpDpdNBo/KxOck334EZe@public.gmane.org>
+In-Reply-To: <1441974053-2630-4-git-send-email-kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 09/14/2015 07:53 AM, Eric Anholt wrote:
-> kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org writes:
+On 09/11/2015 05:20 AM, kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org wrote:
+> From: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
 > 
->> From: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
->> 
->> The bcm2835 SOC contains an auxiliary uart, which is very close 
->> to the ns16550 with some differences.
->> 
->> The big difference is that the uart HW is not using an internal
->> divider of 16 but 8, which results in an effictive baud-rate
->> being twice the requested baud-rate.
->> 
->> The bcm2835-aux-uart is also special in such that it is
->> enabled/disabled by a gate in the clock, which is managed by the
->> clk-bcm2835-aux clock driver.
->> 
->> there are 2 options: * defining the clock-frequency property in
->> the device tree to 500k instead of 250k, but this keeps the HW
->> block disabled making the uart not work.
+> Add the auxiliary uart1 device to the device tree of the bcm2835 SOC.
 
-Why does this keep the HW block disabled?
+> diff --git a/arch/arm/boot/dts/bcm2835.dtsi b/arch/arm/boot/dts/bcm2835.dtsi
 
->> * defining a clock in the device tree, but this results in a baud
->> rate that is twice the requested baud-rate.
->> 
->> To address this this patch-set introduce a new property in the
->> device tree to define a clock divider other than 16.
->> 
->> This currently just scales the clock by a factor of 16/divider.
->> 
->> Note that the use of fixed-factor-clock has also been proposed as
->> a workarround, but this does not really describe the hw in the
->> device tree so another solution was needed that allows a correct
->> representation of the HW in the device tree.
-> 
-> I personally lean toward the fixed-factor-clock solution, but could
-> go either way.  Serial maintainers, what do you think?
+> +		uart1: uart@7e215040 {
+> +			compatible = "ns16550";
 
-The external fixed-factor-clock solution sounds more like a workaround
-than a real fix. It means that the UART driver isn't aware of what's
-going on and only "accidentally" works due to some manipulation of the
-clock values that it requests. That kind of thing almost always come
-back to bite you later.
+compatible should always include a precise HW-specific value; something
+like brcm,bcm2835-aux-uart. That way, if we find some other issue that
+needs working around on this HW in the future, all DTs will already
+contain the compatible value that SW needs in order to trigger that
+workaround. That's a generally true statement; i.e. irrespective of
+anything else in this series.
 
-Rather than adding a DT property to configure the internal clock
-divider, it seems best to add a new compatible value to the list it
-supports, and have that compatible value set up internal data that
-indicates divide-by-16 vs. divide-by-8. After all, the HW isn't 100%
-compatible with ns16550, so the DT should not say that it is. While
-the clock-divider property this series adds to the DT does solve the
-issue, it does not prevent an older piece of SW that predates this
-series, and hence which does not implement clock-divider, attempting
-to bind to this DT but fail to operate correctly since it doesn't know
-about the different divider.
+I don't believe "ns16550" should be in the compatible value for this
+device, since the device cannot be successfully driven by SW that only
+knows about a standard 16650 UART. SW must know about the different
+divider, and there is no possibility of SW knowing about that before
+this series.
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
