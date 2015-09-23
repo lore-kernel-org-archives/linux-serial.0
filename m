@@ -1,41 +1,56 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] serial: 8250: Add missing module license for 8250_base.ko
-Date: Wed, 23 Sep 2015 09:09:56 -0400
-Message-ID: <1443013796-8298-1-git-send-email-peter@hurleysoftware.com>
-References: <20150921202346.GA30262@earth.li>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150921202346.GA30262@earth.li>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Mikael Pettersson <mikpelinux@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Jonathan McDowell <noodles@earth.li>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH 3/4] serial: bcm2835: add auxiliary uart1 to device tree
+ of bcm2835
+Date: Wed, 23 Sep 2015 09:18:53 -0600
+Message-ID: <5602C2DD.20805@wwwdotorg.org>
+References: <1441974053-2630-1-git-send-email-kernel@martin.sperl.org>
+ <1441974053-2630-4-git-send-email-kernel@martin.sperl.org>
+ <5600C011.8020402@wwwdotorg.org> <5602788E.3070103@martin.sperl.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5602788E.3070103-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Jonathan McDowell <noodles@earth.li>
+On 09/23/2015 04:01 AM, Martin Sperl wrote:
+> On 22.09.2015 04:42, Stephen Warren wrote:
+>> On 09/11/2015 05:20 AM, kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org wrote:
+>>> From: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+>>>
+>>> Add the auxiliary uart1 device to the device tree of the bcm2835 SOC.
+>>
+>>> diff --git a/arch/arm/boot/dts/bcm2835.dtsi
+>>> b/arch/arm/boot/dts/bcm2835.dtsi
+>>
+>>> +        uart1: uart@7e215040 {
+>>> +            compatible = "ns16550";
+>>
+>> compatible should always include a precise HW-specific value; something
+>> like brcm,bcm2835-aux-uart. That way, if we find some other issue that
+>> needs working around on this HW in the future, all DTs will already
+>> contain the compatible value that SW needs in order to trigger that
+>> workaround. That's a generally true statement; i.e. irrespective of
+>> anything else in this series.
+>>
+>> I don't believe "ns16550" should be in the compatible value for this
+>> device, since the device cannot be successfully driven by SW that only
+>> knows about a standard 16650 UART. SW must know about the different
+>> divider, and there is no possibility of SW knowing about that before
+>> this series.
+>>
+>
+> OK - I will look into creating a separate driver then that uses the 8250
+> implementation as a basis...
 
-The split of the 8250 driver into a 8250_base/8250.ko resulted in a
-lack of a license for the 8250_base.ko module. This caused the module
-to fail to load and the kernel to be tainted. Add the appropriate
-MODULE_LICENSE to 8250_port.c, which is always compiled into
-8250_base.ko
-
-Reported-by: Mikael Pettersson <mikpelinux@gmail.com>
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
-[pjh: Added MODULE_DESCRIPTION(); resent patch email w/ proper $subject]
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/serial/8250/8250_port.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 54e6c8d..e34a37f 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2910,3 +2910,6 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
- }
- 
- #endif /* CONFIG_SERIAL_8250_CONSOLE */
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("8250/16x50 base port operations");
--- 
-2.5.3
+I expect all you need to do is add a new PORT_* value to the existing 
+driver (which then drives some new quirk setting re: the clock rate), 
+and add new entry for the compatible value in of_platform_serial_table[] 
+in drivers/tty/serial/of_serial.c to select the correct TYPE_*.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
