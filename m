@@ -1,56 +1,48 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 3/4] serial: bcm2835: add auxiliary uart1 to device tree
- of bcm2835
-Date: Wed, 23 Sep 2015 09:18:53 -0600
-Message-ID: <5602C2DD.20805@wwwdotorg.org>
-References: <1441974053-2630-1-git-send-email-kernel@martin.sperl.org>
- <1441974053-2630-4-git-send-email-kernel@martin.sperl.org>
- <5600C011.8020402@wwwdotorg.org> <5602788E.3070103@martin.sperl.org>
+From: G Gregory <graeme.gregory@linaro.org>
+Subject: Re: [RFC 0/5] console/acpi: add DBG2 and SPCR console configuration
+Date: Wed, 23 Sep 2015 16:45:35 +0100
+Message-ID: <20150923154535.GB2431@xora-yoga13-vm.xora.org.uk>
+References: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
+ <CACVXFVPEJb-RXLgU0V+HduoENquUs3oDGWsUtCvH+TOSRMYiUg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5602788E.3070103-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CACVXFVPEJb-RXLgU0V+HduoENquUs3oDGWsUtCvH+TOSRMYiUg@mail.gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Ming Lei <ming.lei@canonical.com>
+Cc: Leif Lindholm <leif.lindholm@linaro.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, Linux ACPI <linux-acpi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, al.stone@linaro.org, torez@redhat.com, Jon Masters <jcm@redhat.com>, linaro-acpi@lists.linaro.org, Lv Zheng <lv.zheng@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 09/23/2015 04:01 AM, Martin Sperl wrote:
-> On 22.09.2015 04:42, Stephen Warren wrote:
->> On 09/11/2015 05:20 AM, kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org wrote:
->>> From: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
->>>
->>> Add the auxiliary uart1 device to the device tree of the bcm2835 SOC.
->>
->>> diff --git a/arch/arm/boot/dts/bcm2835.dtsi
->>> b/arch/arm/boot/dts/bcm2835.dtsi
->>
->>> +        uart1: uart@7e215040 {
->>> +            compatible = "ns16550";
->>
->> compatible should always include a precise HW-specific value; something
->> like brcm,bcm2835-aux-uart. That way, if we find some other issue that
->> needs working around on this HW in the future, all DTs will already
->> contain the compatible value that SW needs in order to trigger that
->> workaround. That's a generally true statement; i.e. irrespective of
->> anything else in this series.
->>
->> I don't believe "ns16550" should be in the compatible value for this
->> device, since the device cannot be successfully driven by SW that only
->> knows about a standard 16650 UART. SW must know about the different
->> divider, and there is no possibility of SW knowing about that before
->> this series.
->>
->
-> OK - I will look into creating a separate driver then that uses the 8250
-> implementation as a basis...
+On Wed, Sep 23, 2015 at 03:38:20PM +0800, Ming Lei wrote:
+> Hi Leif,
+> 
+> 
+> On Tue, Sep 8, 2015 at 8:43 PM, Leif Lindholm <leif.lindholm@linaro.org> wrote:
+> > Support for configuring bootconsole and console via the ACPI tables
+> > DBG2 (Debug Port Table 2) [1] and SPCR (Serial Port Console Redirection
+> > Table) [2], defined by Microsoft, has been discussed on and off over the
+> > years.
+> >
+> > [1] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
+> > [2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
+> >
+> > Licensing concerns have prevented this happening in the past, but as of
+> > 10 August 2015, these tables have both been released also under OWF 1.0
+> > (http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0)
+> > which is think is noncontroversially GPL-compatible?
+> >
+> > This set is a first attempt at implementing this.
+> 
+> From distribution view, the patchset looks very useful.
+> 
+> I have one simple question, are there other candidates for conveying this kind
+> of information like what DBG2/SPCR does? Or are DBG2 and SPCR the
+> offical speficiations to do such things in ARM server industry?
+> 
 
-I expect all you need to do is add a new PORT_* value to the existing 
-driver (which then drives some new quirk setting re: the clock rate), 
-and add new entry for the compatible value in of_platform_serial_table[] 
-in drivers/tty/serial/of_serial.c to select the correct TYPE_*.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+They are mandated in the SBBR spec
+
+Graeme
+
+
