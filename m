@@ -1,49 +1,66 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH v5 02/11] drivers: PL011: refactor pl011_startup()
-Date: Thu, 24 Sep 2015 18:11:35 -0500
-Message-ID: <CAOZdJXVxDjkoCJsqE6zH_UEQcxp9T2fY1YTfV7zvWjXwwbziEw@mail.gmail.com>
-References: <1432225584-4655-1-git-send-email-andre.przywara@arm.com>
- <1432225584-4655-3-git-send-email-andre.przywara@arm.com>
+From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/7] tty: serial: msm: Add DMA support and fix bit definitions
+Date: Fri, 25 Sep 2015 00:27:19 +0100
+Message-ID: <560486D7.3090003@linaro.org>
+References: <1442062934-13449-1-git-send-email-ivan.ivanov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1432225584-4655-3-git-send-email-andre.przywara@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, G Gregory <graeme.gregory@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <moorray3@wp.pl>, GregKH <gregkh@linuxfoundation.org>, Naresh Bhat <nareshgbhat@gmail.com>, mlangsdo@redhat.com, linux-serial@vger.kernel.org, rmk+kernel@arm.linux.org.uk, Jiri Slaby <jslaby@suse.cz>, dave.martin@arm.com, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1442062934-13449-1-git-send-email-ivan.ivanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Ivan T. Ivanov" <ivan.ivanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Andy Gross <agross-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Frank Rowand <frank.rowand-/MT0OVThwyLZJqsBc5GL+g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 21, 2015 at 11:26 AM, Andre Przywara <andre.przywara@arm.com> wrote:
-> +static void pl011_enable_interrupts(struct uart_amba_port *uap)
-> +{
-> +       spin_lock_irq(&uap->port.lock);
-> +
-> +       /* Clear out any spuriously appearing RX interrupts */
-> +       writew(UART011_RTIS | UART011_RXIS,
-> +              uap->port.membase + UART011_ICR);
-> +       uap->im = UART011_RTIM;
-> +       if (!pl011_dma_rx_running(uap))
-> +               uap->im |= UART011_RXIM;
-> +       writew(uap->im, uap->port.membase + UART011_IMSC);
-> +       spin_unlock_irq(&uap->port.lock);
-> +}
 
-Shouldn't this function be using spin_lock_irqsave() and
-spin_unlock_irqrestore()?  If interrupts are generally disabled before
-calling this function, then they will be enabled by the
-spin_unlock_irq() call, and I don't think we want that.  This function
-is only supposed to enable pl011 interrupts, not all interrupts.
+Hi Ivan,
+On 12/09/15 14:02, Ivan T. Ivanov wrote:
+> Hi,
+>
+> Following patches add DMA support for UARTDM type of hardware.
+>
+> Changes have been tested on UARTDM v1.3(APQ8064) and v1.4(APQ8016).
+>
+> Patches from Gurav were published long ago here[1], I just addressed
+> remaining comments and coding style issues.
+>
+> Any comments are welcome.
+Looks like Magic Sysrq is broken with this patches.
 
--- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project.
+--srini
+>
+> Regards,
+> Ivan
+>
+> Ivan T. Ivanov (5):
+>    tty: serial: msm: Fix command Stale Event Enable definition
+>    tty: serial: msm: Add msm prefix to all driver functions
+>    tty: serial: msm: Add TX DMA support
+>    tty: serial: msm: Add RX DMA support
+>    tty: serial: msm: Remove 115.2 Kbps maximum baud rate limitation
+>
+> Pramod Gurav (2):
+>    tty: serial: msm: Add mask value for UART_DM registers
+>    tty: serial: msm: replaces (1 << x) with BIT(x) macro
+>
+> [1] http://www.spinics.net/lists/linux-serial/msg16874.html
+>
+>
+>   .../devicetree/bindings/serial/qcom,msm-uartdm.txt |   6 +
+>   drivers/tty/serial/msm_serial.c                    | 616 +++++++++++++++++++--
+>   drivers/tty/serial/msm_serial.h                    |  55 +-
+>   3 files changed, 604 insertions(+), 73 deletions(-)
+>
+> --
+> 1.9.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
