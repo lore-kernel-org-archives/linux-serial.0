@@ -1,65 +1,92 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH] Revert "serial: imx: remove unbalanced clk_prepare"
-Date: Sat, 26 Sep 2015 17:14:11 -0300
-Message-ID: <CAOMZO5D3KESbzcsWdf49FQh871aOU4NVkepADFDxNCJfnQ3KyQ@mail.gmail.com>
-References: <1439912592-14779-1-git-send-email-fabio.estevam@freescale.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH v2 0/5] drivers/tty: make more bool drivers explicitly
+ non-modular
+Date: Sat, 26 Sep 2015 18:53:47 -0400
+Message-ID: <20150926225347.GC1279@windriver.com>
+References: <1440020889-12120-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1439912592-14779-1-git-send-email-fabio.estevam@freescale.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Fabio Estevam <fabio.estevam@freescale.com>
-Cc: Eduardo Valentin <edubezval@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Sascha Hauer <kernel@pengutronix.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1440020889-12120-1-git-send-email-paul.gortmaker@windriver.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Joachim Eastwood <manabian@gmail.com>, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+[[PATCH v2 0/5] drivers/tty: make more bool drivers explicitly non-modular] On 19/08/2015 (Wed 17:48) Paul Gortmaker wrote:
 
-On Tue, Aug 18, 2015 at 12:43 PM, Fabio Estevam
-<fabio.estevam@freescale.com> wrote:
-> This reverts commit 9e7b399d6528eac33a6fbfceb2b92af209c3454d.
->
-> Commit ("9e7b399d6528ea") causes the following warning and sometimes
-> also hangs the system:
->
-> ------------[ cut here ]------------
->  WARNING: CPU: 0 PID: 0 at kernel/locking/mutex.c:868 mutex_trylock+0x20c/0x22c()
->  DEBUG_LOCKS_WARN_ON(in_interrupt())
->  Modules linked in:
-> CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.2.0-rc7-next-20150818-00001-g14418a6 #4
-> Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-> Backtrace:
-> [<80012f08>] (dump_backtrace) from [<800130a4>] (show_stack+0x18/0x1c)
-> r6:00000364 r5:00000000 r4:00000000 r3:00000000
-> [<8001308c>] (show_stack) from [<807902b8>] (dump_stack+0x88/0xa4)
-> [<80790230>] (dump_stack) from [<8002a604>] (warn_slowpath_common+0x80/0xbc)
-> r5:807945c4 r4:80ab3b50
-> [<8002a584>] (warn_slowpath_common) from [<8002a6e4>] (warn_slowpath_fmt+0x38/0x40)
-> r8:00000000 r7:8131100c r6:8054c3cc r5:8131300c r4:80b0a570
-> [<8002a6b0>] (warn_slowpath_fmt) from [<807945c4>] (mutex_trylock+0x20c/0x22c)
-> r3:8095d0d8 r2:8095ab28
-> [<807943b8>] (mutex_trylock) from [<8054c3cc>] (clk_prepare_lock+0x14/0xf4)
-> r7:8131100c r6:be3f0c80 r5:00000037 r4:be3f0c80
-> [<8054c3b8>] (clk_prepare_lock) from [<8054dbfc>] (clk_prepare+0x18/0x30)
-> r5:00000037 r4:be3f0c80
-> [<8054dbe4>] (clk_prepare) from [<8036a600>] (imx_console_write+0x30/0x244)
-> r4:812d0bc8 r3:8132b9a4
->
-> To reproduce the problem we only need to let the board idle for something
-> like 30 seconds.
->
-> Tested on a imx6q-sabresd.
->
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+> [v2: drop dead module code removal from 8250_lpc18xx.c ; instead convert it
+>  from bool to tristate ; also add ack to hvc_console commit.]
+> 
+> This second set of patches to drivers/tty steps outside of the serial
+> dir, and an improved auditing finds two more serial drivers pretending
+> to be modular that really are not.
 
-Could you please consider applying this one for 4.3-rc?
+Hi Greg -- wondering if this is still in your to-do queue.  I see the
+patches to drivers/char that I sent about the same time made it onto
+your char-testing branch but not these onto tty-testing.
 
-Thanks
+The reason I ask is that I've about a 1/2 dozen more similar patches
+that showed up once I started auditing non-x86 code.  I don't want to
+re-spam you with these along with the new ones, if these are still in
+your backlog for processing.
+
+Thanks,
+Paul.
+--
+
+> 
+> The reasoning for doing this is the same as the first set[1] of patches
+> and is largely copied below:
+> 
+>   In the previous merge window, we made changes to allow better
+>   delineation between modular and non-modular code in commit
+>   0fd972a7d91d6e15393c449492a04d94c0b89351 ("module: relocate module_init
+>   from init.h to module.h").  This allows us to now ensure module code
+>   looks modular and non-modular code does not accidentally look modular
+>   without suffering build breakage.
+>   
+>   Here we target code that is, by nature of their Kconfig settings, only
+>   available to be built-in, but implicitly presenting itself as being
+>   possibly modular by way of using modular headers, macros, and functions.
+>   
+>   The goal here is to remove that illusion of modularity from these
+>   drivers, but in a way that leaves the actual runtime unchanged.
+>   In doing so, we remove code that has never been tested and adds
+>   no value to the tree.  And we begin the process of expecting a
+>   level of consistency between the Kconfig of a driver and the code
+>   that the driver uses.
+>   
+> Build tested for allyesconfig on x86_64, and ARM for lpc81xx, and powerpc
+> for hvc_console and mpsc, layered onto tty/tty-next as a baseline.
+> 
+> Paul.
+> 
+> [1] https://lkml.kernel.org/r/1437530538-5078-1-git-send-email-paul.gortmaker@windriver.com
+> --
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: Joachim Eastwood <manabian@gmail.com>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: linux-serial@vger.kernel.org
+> 
+> Paul Gortmaker (5):
+>   drivers/tty: make pty.c slightly more explicitly non-modular
+>   drivers/tty: make sysrq.c slightly more explicitly non-modular
+>   drivers/tty: make hvc_console.c explicitly non-modular
+>   drivers/tty: make serial/mpsc.c driver explicitly non-modular
+>   drivers/tty: make serial 8250_lpc18xx.c Kconfig a tristate
+> 
+>  drivers/tty/hvc/hvc_console.c   | 18 +-----------------
+>  drivers/tty/pty.c               |  7 +++++--
+>  drivers/tty/serial/8250/Kconfig |  2 +-
+>  drivers/tty/serial/mpsc.c       | 36 +++---------------------------------
+>  drivers/tty/sysrq.c             |  6 +++++-
+>  5 files changed, 15 insertions(+), 54 deletions(-)
+> 
+> -- 
+> 2.5.0
+> 
