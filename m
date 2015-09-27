@@ -1,137 +1,43 @@
-From: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Subject: [PATCHv3][RESEND] serial: don't register CIR serial ports
-Date: Sun, 27 Sep 2015 16:25:56 +0200
-Message-ID: <5607FC74.20201@maciej.szmigiero.name>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 0/5] drivers/tty: make more bool drivers explicitly
+ non-modular
+Date: Sun, 27 Sep 2015 12:42:24 -0700
+Message-ID: <20150927194224.GA1055@kroah.com>
+References: <1440020889-12120-1-git-send-email-paul.gortmaker@windriver.com>
+ <20150926225347.GC1279@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150926225347.GC1279@windriver.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Joachim Eastwood <manabian@gmail.com>, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-CIR type serial ports aren't real serial ports.
+On Sat, Sep 26, 2015 at 06:53:47PM -0400, Paul Gortmaker wrote:
+> [[PATCH v2 0/5] drivers/tty: make more bool drivers explicitly non-modular] On 19/08/2015 (Wed 17:48) Paul Gortmaker wrote:
+> 
+> > [v2: drop dead module code removal from 8250_lpc18xx.c ; instead convert it
+> >  from bool to tristate ; also add ack to hvc_console commit.]
+> > 
+> > This second set of patches to drivers/tty steps outside of the serial
+> > dir, and an improved auditing finds two more serial drivers pretending
+> > to be modular that really are not.
+> 
+> Hi Greg -- wondering if this is still in your to-do queue.  I see the
+> patches to drivers/char that I sent about the same time made it onto
+> your char-testing branch but not these onto tty-testing.
 
-This is just a way to prevent legacy 8250 serial
-driver from probing and eventually binding some
-resources.
+Yes, they are in my queue, haven't caught up with tty patches yet :(
 
-Since in current state such ports aren't providing
-any real functionality and it is not possible
-to change their type via setserial/ioctl(TIOCSSERIAL)
-(due to UPF_FIXED_PORT flag set on them)
-it is simpler and cleaner to not register them at all
-with serial core.
+> The reason I ask is that I've about a 1/2 dozen more similar patches
+> that showed up once I started auditing non-x86 code.  I don't want to
+> re-spam you with these along with the new ones, if these are still in
+> your backlog for processing.
 
-Print a short message in this case so it is known
-to user what has happened.
+I can handle resends and other patches just fine, send away!
 
-This way checks for PORT_8250_CIR in serial port
-callbacks can be removed too, since they won't
-ever be called.
+thanks,
 
-Signed-off-by: Maciej Szmigiero <mail@maciej.szmigiero.name>
----
-This replaces "serial: don't announce CIR serial ports"
-submission.
-
-Changes from v1: print message using dev_info().
-
-Changes from v2: added specific code in
-serial8250_register_ports() regarding not adding
-PORT_8250_CIR-type ports, updated to changes in
-tty-testing branch.
-
-This is a resend of v3 without functional changes,
-just rebased to current tty-next.
-
- drivers/tty/serial/8250/8250_core.c | 26 ++++++++++++++++++++------
- drivers/tty/serial/8250/8250_port.c | 14 +-------------
- 2 files changed, 21 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 271d121..3912646 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -569,6 +569,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
- 	for (i = 0; i < nr_uarts; i++) {
- 		struct uart_8250_port *up = &serial8250_ports[i];
- 
-+		if (up->port.type == PORT_8250_CIR)
-+			continue;
-+
- 		if (up->port.dev)
- 			continue;
- 
-@@ -1027,13 +1030,24 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
- 		if (up->dl_write)
- 			uart->dl_write = up->dl_write;
- 
--		if (serial8250_isa_config != NULL)
--			serial8250_isa_config(0, &uart->port,
--					&uart->capabilities);
-+		if (uart->port.type != PORT_8250_CIR) {
-+			if (serial8250_isa_config != NULL)
-+				serial8250_isa_config(0, &uart->port,
-+						&uart->capabilities);
-+
-+			ret = uart_add_one_port(&serial8250_reg,
-+						&uart->port);
-+			if (ret == 0)
-+				ret = uart->port.line;
-+		} else {
-+			dev_info(uart->port.dev,
-+				"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
-+				uart->port.iobase,
-+				(unsigned long long)uart->port.mapbase,
-+				uart->port.irq);
- 
--		ret = uart_add_one_port(&serial8250_reg, &uart->port);
--		if (ret == 0)
--			ret = uart->port.line;
-+			ret = 0;
-+		}
- 	}
- 	mutex_unlock(&serial_mutex);
- 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 54e6c8d..138a36f 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1799,9 +1799,6 @@ int serial8250_do_startup(struct uart_port *port)
- 	unsigned char lsr, iir;
- 	int retval;
- 
--	if (port->type == PORT_8250_CIR)
--		return -ENODEV;
--
- 	if (!port->fifosize)
- 		port->fifosize = uart_config[port->type].fifo_size;
- 	if (!up->tx_loadsz)
-@@ -2505,14 +2502,8 @@ static void serial8250_release_port(struct uart_port *port)
- static int serial8250_request_port(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
--	int ret;
--
--	if (port->type == PORT_8250_CIR)
--		return -ENODEV;
- 
--	ret = serial8250_request_std_resource(up);
--
--	return ret;
-+	return serial8250_request_std_resource(up);
- }
- 
- static int fcr_get_rxtrig_bytes(struct uart_8250_port *up)
-@@ -2660,9 +2651,6 @@ static void serial8250_config_port(struct uart_port *port, int flags)
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	int ret;
- 
--	if (port->type == PORT_8250_CIR)
--		return;
--
- 	/*
- 	 * Find the region that we can probe for.  This in turn
- 	 * tells us whether we can probe for the type of port.
+greg k-h
