@@ -1,43 +1,38 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 0/5] drivers/tty: make more bool drivers explicitly
- non-modular
-Date: Sun, 27 Sep 2015 12:42:24 -0700
-Message-ID: <20150927194224.GA1055@kroah.com>
-References: <1440020889-12120-1-git-send-email-paul.gortmaker@windriver.com>
- <20150926225347.GC1279@windriver.com>
+From: "Ivan T. Ivanov" <ivan.ivanov@linaro.org>
+Subject: Re: [PATCH 0/7] tty: serial: msm: Add DMA support and fix bit
+ definitions
+Date: Mon, 28 Sep 2015 10:49:26 +0300
+Message-ID: <1443426566.2363.0.camel@linaro.org>
+References: <1442062934-13449-1-git-send-email-ivan.ivanov@linaro.org>
+	 <560486D7.3090003@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150926225347.GC1279@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Joachim Eastwood <manabian@gmail.com>, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <560486D7.3090003@linaro.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: Andy Gross <agross@codeaurora.org>, David Brown <davidb@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Frank Rowand <frank.rowand@sonymobile.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Sep 26, 2015 at 06:53:47PM -0400, Paul Gortmaker wrote:
-> [[PATCH v2 0/5] drivers/tty: make more bool drivers explicitly non-modular] On 19/08/2015 (Wed 17:48) Paul Gortmaker wrote:
-> 
-> > [v2: drop dead module code removal from 8250_lpc18xx.c ; instead convert it
-> >  from bool to tristate ; also add ack to hvc_console commit.]
+
+On Fri, 2015-09-25 at 00:27 +0100, Srinivas Kandagatla wrote:
+> Hi Ivan,
+> On 12/09/15 14:02, Ivan T. Ivanov wrote:
+> > Hi,
 > > 
-> > This second set of patches to drivers/tty steps outside of the serial
-> > dir, and an improved auditing finds two more serial drivers pretending
-> > to be modular that really are not.
-> 
-> Hi Greg -- wondering if this is still in your to-do queue.  I see the
-> patches to drivers/char that I sent about the same time made it onto
-> your char-testing branch but not these onto tty-testing.
+> > Following patches add DMA support for UARTDM type of hardware.
+> > 
+> > Changes have been tested on UARTDM v1.3(APQ8064) and v1.4(APQ8016).
+> > 
+> > Patches from Gurav were published long ago here[1], I just addressed
+> > remaining comments and coding style issues.
+> > 
+> > Any comments are welcome.
+> Looks like Magic Sysrq is broken with this patches.
 
-Yes, they are in my queue, haven't caught up with tty patches yet :(
 
-> The reason I ask is that I've about a 1/2 dozen more similar patches
-> that showed up once I started auditing non-x86 code.  I don't want to
-> re-spam you with these along with the new ones, if these are still in
-> your backlog for processing.
+Will check it shortly.
 
-I can handle resends and other patches just fine, send away!
-
-thanks,
-
-greg k-h
+Thanks,
+Ivan
