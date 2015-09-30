@@ -1,32 +1,37 @@
-From: "Ivan T. Ivanov" <iivanov.xz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 0/6] tty: serial: msm: Add DMA support and fix bit
- definitions
-Date: Wed, 30 Sep 2015 15:12:47 +0300
-Message-ID: <1443615167.2412.9.camel@gmail.com>
-References: <1443614906-2196-1-git-send-email-ivan.ivanov@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1443614906-2196-1-git-send-email-ivan.ivanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andy Gross <agross-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Frank Rowand <frank.rowand-/MT0OVThwyLZJqsBc5GL+g@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: "Ivan T. Ivanov" <ivan.ivanov@linaro.org>
+Subject: [PATCH v3 0/6] tty: serial: msm: Add DMA support and fix bit definitions
+Date: Wed, 30 Sep 2015 15:26:57 +0300
+Message-ID: <1443616023-28625-1-git-send-email-ivan.ivanov@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Gross <agross@codeaurora.org>
+Cc: David Brown <davidb@codeaurora.org>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Frank Rowand <frank.rowand@sonymobile.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+Hi,
 
-On Wed, 2015-09-30 at 15:08 +0300, Ivan T. Ivanov wrote:
-> Hi,
-> 
-> This is second version of patches which DMA support for UARTDM type
-> of hardware found in Qualcomm chip sets.
-> 
+This is the third version of patches which add DMA support for UARTDM type
+of hardware found in Qualcomm chip sets.
 
-Please ignore this patch set. Wrong set of changes.
+Changes since v0 (https://lkml.org/lkml/2015/9/12/108):
 
-Sorry,
-Ivan
+* Fixed SysRq issue reported by Srini.
+* Dropped [PATCH 3/7], because it did not make functional change.
+
+Ivan T. Ivanov (4):
+  tty: serial: msm: Add msm prefix to all driver functions
+  tty: serial: msm: Add TX DMA support
+  tty: serial: msm: Add RX DMA support
+  tty: serial: msm: Remove 115.2 Kbps maximum baud rate limitation
+
+Pramod Gurav (2):
+  tty: serial: msm: Add mask value for UART_DM registers
+  tty: serial: msm: replaces (1 << x) with BIT(x) macro
+
+ .../devicetree/bindings/serial/qcom,msm-uartdm.txt |   6 +
+ drivers/tty/serial/msm_serial.c                    | 622 +++++++++++++++++++--
+ drivers/tty/serial/msm_serial.h                    |  53 +-
+ 3 files changed, 607 insertions(+), 74 deletions(-)
+
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+1.9.1
