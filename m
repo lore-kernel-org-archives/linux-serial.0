@@ -1,116 +1,87 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH] Revert "serial: 8250_dma: don't bother DMA with small
- transfers"
-Date: Wed, 30 Sep 2015 16:11:55 -0400
-Message-ID: <560C420B.4030007@hurleysoftware.com>
-References: <1443617191-21013-1-git-send-email-frederic.danis@linux.intel.com>
- <560BE919.9020803@hurleysoftware.com>
- <1443622344.8361.304.camel@linux.intel.com>
+From: Andy Gross <agross@codeaurora.org>
+Subject: Re: [PATCH v2 4/6] tty: serial: msm: Add TX DMA support
+Date: Wed, 30 Sep 2015 15:24:37 -0500
+Message-ID: <20150930202437.GA18486@qualcomm.com>
+References: <1443614906-2196-1-git-send-email-ivan.ivanov@linaro.org>
+ <1443614906-2196-5-git-send-email-ivan.ivanov@linaro.org>
+ <20150930132919.GI10997@leverpostej>
+ <1443621086.2412.11.camel@linaro.org>
+ <20150930173201.GB745@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1443622344.8361.304.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150930173201.GB745@leverpostej>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: "Ivan T. Ivanov" <ivan.ivanov@linaro.org>, David Brown <davidb@codeaurora.org>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Frank Rowand <frank.rowand@sonymobile.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "linux-soc@vger.kernel.org" <linux-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-[ + Heikko ]
-
-On 09/30/2015 10:12 AM, Andy Shevchenko wrote:
-> On Wed, 2015-09-30 at 09:52 -0400, Peter Hurley wrote:
->> [ + Andy Shevchenko ]
->>
->> On 09/30/2015 08:46 AM, Frederic Danis wrote:
->>> This reverts commit 9119fba0cfeda6d415c9f068df66838a104b87cb.
->>
->> Hi Frederic,
->>
->> It's customary to mail the commit author in patches which revert
->> their work.
->>
->>> This commit prevents from sending "big" file using Bluetooth.
->>> When sending a lot of data quickly through the Bluetooth interface, 
->>> and
->>> after a variable amount of data sent, transfer fails with error:
->>>     kernel: [  415.247453] Bluetooth: hci0 hardware error 0x00
->>
->> Hmmm, was there any other information regarding why this happened?
+On Wed, Sep 30, 2015 at 06:32:01PM +0100, Mark Rutland wrote:
+> On Wed, Sep 30, 2015 at 02:51:26PM +0100, Ivan T. Ivanov wrote:
+> > 
+> > On Wed, 2015-09-30 at 14:29 +0100, Mark Rutland wrote:
+> > > On Wed, Sep 30, 2015 at 01:08:24PM +0100, Ivan T. Ivanov wrote:
+> > > > Add transmit DMA support for UARTDM type of controllers.
+> > > > 
+> > > > Tested on APQ8064, which have UARTDM v1.3 and ADM DMA engine
+> > > > and APQ8016, which have UARTDM v1.4 and BAM DMA engine.
+> > > > 
+> > > > Signed-off-by: Ivan T. Ivanov ivanov@linaro.org>
+> > > > ---
+> > > >  .../devicetree/bindings/serial/qcom,msm-uartdm.txt |   3 +
+> > > >  drivers/tty/serial/msm_serial.c                    | 312 +++++++++++++++++++--
+> > > >  drivers/tty/serial/msm_serial.h                    |   3 +
+> > > >  3 files changed, 294 insertions(+), 24 deletions(-)
+> > > > 
+> > > > diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+> > > > index a2114c217376..a600023d9ec1 100644
+> > > > --- a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+> > > > +++ b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+> > > > @@ -26,6 +26,9 @@ Required properties:
+> > > >  Optional properties:
+> > > >  - dmas: Should contain dma specifiers for transmit and receive channels
+> > > >  - dma-names: Should contain "tx" for transmit and "rx" for receive channels
+> > > > +- qcom,tx-crci: Identificator <u32> for Client Rate Control Interface to be
+> > > > +           used with TX DMA channel. Required when using DMA for transmission
+> > > > +           with UARTDM v1.3 and bellow.
+> > > 
+> > > This sounds like it belongs in the dma-specifier, and dealt with by the
+> > > DMA controller driver.
+> > > 
+> > > Why does the UART driver need to know about this?
+> > 
+> > CRCI information was part of the first version of ADM DMA engine driver
+> > bindings, but Andy remove it because some client devices are requiring
+> > more that one CRCI number. See here[1] and here [2].
+> > 
+> > Regards,
+> > Ivan
+> > 
+> > [1] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-January/314190.html
+> > [2] https://lkml.org/lkml/2015/8/19/19
 > 
-> Frederic informed us privately about this issue.
-
-Ok, except no one else knows that.
-
-Least of all Greg, since the revert wasn't even addressed to him either :/
-
-> I tried to hunt the
-> root cause but mostly (there was one observation but apparently seems
-> it is not related to this issue) nothing looks wrong.
+> This leaves me more confused. If different writes from the same agent
+> are being distinguished then it sounds like you actually have two
+> logical DMA channels.
 > 
->> Eg., did the driver mistakenly re-order i/o (DMA occurred after PIO)?
-> 
-> I have few tracing dumps which Frederic provides to me, but I couldn't
-> see such a problem. Maybe I missed it.
+> Could you elaborate on the qcom,ebi2-nand binding? From a brief read I'd
+> expect you to have "txrx" and "cmd" dmas, rather than describing the
+> CRCI information on the side.
 
-Ok.
+The ADM does have physical channels, but when you utilize those channels you may
+also need to describe the flow control used for specific transactions.  And this
+flow control has to be configured for that specific transaction, if you are
+interleaving different flow control origination/end points.
 
-> My commit 9119fba0cfed introduces interleaved IO (DMA/PIO) which makes
-> it like DMA -> PIO -> DMA -> ...
+In the case of nand, they actually use different flow controls on the same
+physical channel.  For UART/I2C/SPI, they use just one flow control identifier.
 
-I realize that. However interleaving DMA and PIO _must_ be supported
-by the platform to enable DMA for 8250 serial devices anway.
+I see your point at specifying these as logical channels.  That is certainly a
+possibility.  Then the ADM driver would just have to handle the logical channel
+allocation.  That would remove the need for the slave_config being sent.
 
-When Heikki added DMA support to the 8250 driver, he left out important
-functionality which requires interleaved DMA and PIO.
-
-When I fix that omission, platforms using DMA that shouldn't be are going
-to get broken anyway.
-
-Regards,
-Peter Hurley
-
->> Or, might there be some race condition in the dmaengine driver on 
->> this
->> platform?
-> 
-> There is [1] might be a clue, though I don't think it's directly
-> related.
-> 
-> [1] http://www.spinics.net/lists/linux-spi/msg01151.html
-> The change prevents interleaved DMA/PIO IO.
-> 
->>
->> Regards,
->> Peter Hurley
->>
->>> Found on T100TA.
->>>
->>> After reverting this commit, send works fine for any file size.
->>>
->>> Signed-off-by: Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->>> ---
->>>  drivers/tty/serial/8250/8250_dma.c | 4 ----
->>>  1 file changed, 4 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/8250/8250_dma.c 
->>> b/drivers/tty/serial/8250/8250_dma.c
->>> index 21d01a4..e508939 100644
->>> --- a/drivers/tty/serial/8250/8250_dma.c
->>> +++ b/drivers/tty/serial/8250/8250_dma.c
->>> @@ -80,10 +80,6 @@ int serial8250_tx_dma(struct uart_8250_port *p)
->>>  		return 0;
->>>  
->>>  	dma->tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, 
->>> UART_XMIT_SIZE);
->>> -	if (dma->tx_size < p->port.fifosize) {
->>> -		ret = -EINVAL;
->>> -		goto err;
->>> -	}
->>>  
->>>  	desc = dmaengine_prep_slave_single(dma->txchan,
->>>  					   dma->tx_addr + xmit
->>> ->tail,
->>>
->>
-> 
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
