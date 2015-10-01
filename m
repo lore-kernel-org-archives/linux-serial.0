@@ -1,202 +1,44 @@
-From: Hamza Farooq <hamzahfrq.sub-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] serial: tegra: handle rx race
-Date: Thu, 1 Oct 2015 11:30:54 +0200
-Message-ID: <CAJ--JmyA+NyTbj3_bSWVcJwsOiMS6ENWmjDvu9YtMjh5jurDqg@mail.gmail.com>
-References: <1443051326-1979-1-git-send-email-cfreeman@nvidia.com>
-	<5603C158.4000002@nvidia.com>
-	<20150925065840.GA13750@cfreeman-dt>
-	<56059B27.2060902@nvidia.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <56059B27.2060902-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Christopher Freeman <cfreeman-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH] Revert "serial: 8250_dma: don't bother DMA with small transfers"
+Date: Thu, 1 Oct 2015 12:44:55 +0200
+Message-ID: <15E8D395-71C7-44D2-82BB-5B6658872F55@holtmann.org>
+References: <1443617191-21013-1-git-send-email-frederic.danis@linux.intel.com> <560BE919.9020803@hurleysoftware.com> <1443622344.8361.304.camel@linux.intel.com> <560C420B.4030007@hurleysoftware.com> <1443689736.8361.322.camel@linux.intel.com>
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2104\))
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1443689736.8361.322.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Hi Andy,
 
-Sorry if I'm out of context. I saw this thread and found it very
-similar to the problem that we have fixed with the renesas sh-sci
-serial driver. We have made the two handlers (dma packet complete and
-timer expired) mutually exclusive by using spinlocks. Additionally,
-the race condition has been handled by not stopping the dma engine in
-timer expiry handler. If the both happen at the same time, let the dma
-packet complete handler push the data, by simply exiting the timer
-handler. If the interrupts are redirected to CPU in timer expiry
-handler, do it _only_ when you are sure no more data is coming in.
+>>>> It's customary to mail the commit author in patches which revert
+>>>> their work.
+>>>> 
+>>>>> This commit prevents from sending "big" file using Bluetooth.
+>>>>> When sending a lot of data quickly through the Bluetooth 
+>>>>> interface, 
+>>>>> and
+>>>>> after a variable amount of data sent, transfer fails with 
+>>>>> error:
+>>>>>    kernel: [  415.247453] Bluetooth: hci0 hardware error 0x00
+> 
+> Frederic, I forgot to ask how exactly the hw setup looks like?
+> 
+> The message above is not present in the kernel (the closest what I
+> found is 
+> 
+> drivers/bluetooth/btintel.c:98: BT_ERR("%s: Hardware error 0x%2.2x",
+> hdev->name, code);
+> 
+> which makes me think you have USB BT adapter attached to the same
+> machine. Am I wrong?
 
-The development history can be viewed at Geert Uytterhoeven's renesas
-drivers tree:
-https://git.kernel.org/cgit/linux/kernel/git/geert/renesas-drivers.git
+the Bluetooth core will generate that error in case the driver does not provide hdev->hw_error callback. We have not hocked that up for the UART driver yet. Look at net/bluetooth/hci_core.c to find the common error message.
 
-Interesting files are drivers/tty/serial/sh-sci and drivers/dma/sh/rcar-dmac.c
+Regards
 
-Cheers!
-
-On Fri, Sep 25, 2015 at 9:06 PM, Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
-> Hi Chris,
->
-> On 25/09/15 07:58, Christopher Freeman wrote:
->> Hi Jon,
->>
->> On 09-24 10:24 AM, Jon Hunter wrote:
->>> Hi Chris,
->>>
->>> Adding tegra maintainers ...
->>>
->>> On 24/09/15 00:35, Christopher Freeman wrote:
->>>> tegra_uart_rx_dma_complete (via DMA callback) and
->>>> tegra_uart_handle_rx_dma (via uart isr) can happen concurrently.
->>>> tegra_uart_rx_complete gives up the port lock temporarily to call
->>>> tty_flip_buffer_push.  Since tegra_uart_start_rx_dma has not been
->>>> called yet in that context, tegra_uart_handle_rx_dma has the chance
->>>> to operate on the same DMA cookie.  This allows for the same DMA
->>>> transaction to be processed twice.
->>>
->>> I had to recall why we had these two paths in the first place. My
->>> understanding is that the tegra_uart_rx_dma_complete() is called on
->>> completion of the dma transfer. The tegra_uart_handle_rx_dma() is called
->>> when we have received data but there has been a pause in the transfer,
->>> which could be an end of transfer, so we terminate the DMA and read
->>> whatever has been received.
->>>
->>> Can you provide more details on the scenario? I am guessing it is
->>> something like ...
->>>
->>> 1. EORD interrupt is triggered due to pause in data
->>> 2. ISR runs but before we terminate the DMA, more data is received and
->>>    the DMA completes.
->>> 3. ISR races with callback and we get duplicated data. I assume that
->>>    the ISR copies the data first.
->>>
->> The case is more like this:
->> 1. DMA interrupt "completes" DMA.  Schedules tasklet to do DMA callback
->> 2. DMA callback to uart starts to execute.  This will read data off the buffer
->> and restart the DMA.  This is done under spinlock.
->> 3. Some time during this callback, UART interrupt is raised for whatever
->> reason, EORD or character timeout.  UART waits to acquire port spinlock.
->> 4. DMA callback gives up spinlock after reading data, but before restarting DMA.
->> 5. UART isr gets spin lock and now reads the same DMA buffer because DMA has not
->> restarted and terminate_all, etc. will operate on the values from the last DMA.
->
-> Ok, thanks.
->
->>> It would be good to add a bit more details on the scenario and why we
->>> have these two paths to the changelog.
->>>
->>
->> I don't know the history, but I suppose the two exist to catch every reason why
->> we might want to read data in.  Theoretically we don't need the DMA callback and
->> can just rely on character timeout interrupt to handle DMA completion.  I
->> removed the DMA callback just now as a test and it didn't seem to have any ill
->> effects.  Perhaps there's a decrease in throughput?  Maybe we should put more
->> consideration into that.
->
-> Do you think so? What happens if we do not get the timeout until after
-> the buffer is filled? I would be concerned that we would drop some data.
->
->>>> The solution is to postpone tty_flip_buffer_push until after the next
->>>> DMA is started in both routines.  That way when the lock is released
->>>> in either context, the other context will operate on a new DMA
->>>> transaction.
->>>>
->>>> Signed-off-by: Christopher Freeman <cfreeman-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->>>> ---
->>>>  drivers/tty/serial/serial-tegra.c | 19 +++++++++----------
->>>>  1 file changed, 9 insertions(+), 10 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
->>>> index cf0133a..f9bd378 100644
->>>> --- a/drivers/tty/serial/serial-tegra.c
->>>> +++ b/drivers/tty/serial/serial-tegra.c
->>>> @@ -606,12 +606,6 @@ static void tegra_uart_rx_dma_complete(void *args)
->>>>     tegra_uart_copy_rx_to_tty(tup, port, count);
->>>>
->>>>     tegra_uart_handle_rx_pio(tup, port);
->>>> -   if (tty) {
->>>> -           spin_unlock_irqrestore(&u->lock, flags);
->>>> -           tty_flip_buffer_push(port);
->>>> -           spin_lock_irqsave(&u->lock, flags);
->>>> -           tty_kref_put(tty);
->>>> -   }
->>>>     tegra_uart_start_rx_dma(tup);
->>>
->>> With this change, tegra_uart_start_rx_dma() is called within the context
->>> of the spinlock (I am sure this is intentional). However,
->>> tegra_uart_start_rx_dma() calls dmaengine_prep_slave_single() and this
->>> calls tegra_dma_prep_slave_sg(). The problem is that
->>> tegra_dma_prep_slave_sg() *may* call kzalloc() to allocate memory. The
->>> allocation only happens if there is not a free dma descriptor available
->>> and if tegra_dma_prep_slave_sg() has been called once, you may get lucky.
->>>
->> This has been the case before this change so we've been getting lucky a lot.
->> Noted though.
->
-> Ah, yes you are right. Hmmm ... does not seem good.
->
->>> When we call dma_terminate_all() in the tegra_uart_handle_rx_dma(), this
->>> will call tegra_dma_abort_all() (apb-dma driver) and should set the
->>> cookie status to DMA_ERROR. Hence, I am wondering if adding the
->>> following could work, however, that's based upon some guess work of what
->>> the actual scenario you are seeing is, so not sure!
->>>
->>> diff --git a/drivers/tty/serial/serial-tegra.c
->>> b/drivers/tty/serial/serial-tegra.c
->>> index cf0133ae762d..b80b2d1201e2 100644
->>> --- a/drivers/tty/serial/serial-tegra.c
->>> +++ b/drivers/tty/serial/serial-tegra.c
->>> @@ -596,6 +596,11 @@ static void tegra_uart_rx_dma_complete(void *args)
->>>                 goto done;
->>>         }
->>>
->>> +       if (status == DMA_ERROR) {
->>> +               dev_dbg(tup->uport.dev, "RX DMA terminated\n");
->>> +               goto done;
->>> +       }
->>> +
->> This is actually pretty close to the first solution I came up with for the
->> issue.  It worked for me in all of the cases I saw. I'll paste below.
->>
->> diff --git a/drivers/tty/serial/serial-tegra.c
->> b/drivers/tty/serial/serial-tegra.c
->> index a4c034d..f4ed799 100644
->> --- a/drivers/tty/serial/serial-tegra.c
->> +++ b/drivers/tty/serial/serial-tegra.c
->> @@ -631,11 +631,20 @@ static void tegra_uart_handle_rx_dma(struct
->> tegra_uart_port *tup,
->>         struct tty_port *port = &tup->uport.state->port;
->>         struct uart_port *u = &tup->uport;
->>         unsigned int count;
->> +       enum dma_status status;
->>
->>         /* Deactivate flow control to stop sender */
->>         if (tup->rts_active)
->>                 set_rts(tup, false);
->>
->> +       status = dmaengine_tx_status(tup->rx_dma_chan, tup->rx_cookie, &state);
->> +
->> +       if (status == DMA_COMPLETE) {
->> +               dev_dbg(tup->uport.dev, "DMA was complete in ISR\n");
->> +               tty_kref_put(tty);
->> +               return;
->> +       }
->> +
->>         dmaengine_terminate_all(tup->rx_dma_chan);
->>         dmaengine_tx_status(tup->rx_dma_chan,  tup->rx_cookie, &state);
->>         async_tx_ack(tup->rx_dma_desc);
->>
->> I *think* you're right and that we should still check for DMA_ERROR in
->> rx_dma_complete.  I'm honestly a bit more fond of this approach so if it makes
->> sense then we can move forward with it instead.  But actually now I'm really
->> interested if we can be done with the rx_dma_complete callback completely!
->
-> Yes the above makes sense given the scenario you have reported.
->
-> Cheers
-> Jon
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-tegra" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Marcel
