@@ -1,44 +1,69 @@
-From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH] Revert "serial: 8250_dma: don't bother DMA with small transfers"
-Date: Thu, 1 Oct 2015 12:44:55 +0200
-Message-ID: <15E8D395-71C7-44D2-82BB-5B6658872F55@holtmann.org>
-References: <1443617191-21013-1-git-send-email-frederic.danis@linux.intel.com> <560BE919.9020803@hurleysoftware.com> <1443622344.8361.304.camel@linux.intel.com> <560C420B.4030007@hurleysoftware.com> <1443689736.8361.322.camel@linux.intel.com>
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2104\))
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1443689736.8361.322.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Scott Wood <scottwood@freescale.com>
+Subject: [PATCH] serial: Enable Freescale 16550 workaround on arm
+Date: Thu, 1 Oct 2015 19:16:16 -0500
+Message-ID: <20151002001616.GA3885@home.buserror.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-kernel@lists.infradead.org, Stuart Yoder <stuart.yoder@freescale.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
+The same serial hardware is present on LS2080A which is arm64, and
+LS1021A which is arm32, so don't limit the workaround to PPC.
 
->>>> It's customary to mail the commit author in patches which revert
->>>> their work.
->>>> 
->>>>> This commit prevents from sending "big" file using Bluetooth.
->>>>> When sending a lot of data quickly through the Bluetooth 
->>>>> interface, 
->>>>> and
->>>>> after a variable amount of data sent, transfer fails with 
->>>>> error:
->>>>>    kernel: [  415.247453] Bluetooth: hci0 hardware error 0x00
-> 
-> Frederic, I forgot to ask how exactly the hw setup looks like?
-> 
-> The message above is not present in the kernel (the closest what I
-> found is 
-> 
-> drivers/bluetooth/btintel.c:98: BT_ERR("%s: Hardware error 0x%2.2x",
-> hdev->name, code);
-> 
-> which makes me think you have USB BT adapter attached to the same
-> machine. Am I wrong?
+Unlike PPC which uses arch/powerpc/kernel/legacy_serial.c, the ARM
+targets use drivers/tty/serial/of_serial.c, so add the handle_irq
+override check there as well.
 
-the Bluetooth core will generate that error in case the driver does not provide hdev->hw_error callback. We have not hocked that up for the UART driver yet. Look at net/bluetooth/hci_core.c to find the common error message.
+Signed-off-by: Scott Wood <scottwood@freescale.com>
+---
+ drivers/tty/serial/8250/Kconfig | 4 ++--
+ drivers/tty/serial/of_serial.c  | 6 ++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-Regards
-
-Marcel
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index e1de118..5a2ae57 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -274,8 +274,8 @@ config SERIAL_8250_ACORN
+ 
+ config SERIAL_8250_FSL
+ 	bool
+-	depends on SERIAL_8250_CONSOLE && PPC_UDBG_16550
+-	default PPC
++	depends on SERIAL_8250_CONSOLE
++	default PPC || ARM || ARM64
+ 
+ config SERIAL_8250_DW
+ 	tristate "Support for Synopsys DesignWare 8250 quirks"
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
+index 6823df9..9cd0061 100644
+--- a/drivers/tty/serial/of_serial.c
++++ b/drivers/tty/serial/of_serial.c
+@@ -150,6 +150,12 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		break;
+ 	}
+ 
++#ifdef CONFIG_SERIAL_8250_FSL
++	if (of_device_is_compatible(np, "fsl,ns16550") ||
++	    of_device_is_compatible(np, "fsl,16550-FIFO64"))
++		port->handle_irq = fsl8250_handle_irq;
++#endif
++
+ 	return 0;
+ out:
+ 	if (info->clk)
+-- 
+2.1.4
