@@ -1,69 +1,74 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: [PATCH] serial: Enable Freescale 16550 workaround on arm
-Date: Thu, 1 Oct 2015 19:16:16 -0500
-Message-ID: <20151002001616.GA3885@home.buserror.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, Stuart Yoder <stuart.yoder@freescale.com>, linux-serial@vger.kernel.org
+From: Mans Rullgard <mans@mansr.com>
+Subject: [RESEND][PATCH] serial: 8250: simplify ralink/alchemy register remap selection
+Date: Fri,  2 Oct 2015 11:15:59 +0100
+Message-ID: <1443780960-6519-1-git-send-email-mans@mansr.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The same serial hardware is present on LS2080A which is arm64, and
-LS1021A which is arm32, so don't limit the workaround to PPC.
+Some SoCs, including Ralink/Mediatek and Alchemy Au1xxx, have a
+16550-like UART with a non-standard register layout.  These are
+supported by a simple mapping table in 8250_port.c  Rather than
+list every SoC type using this access mode in the ifdefs there,
+allow selecting the SERIAL_8250_RT288X Kconfig option with any
+system and default it to y for the known cases needing it.  The
+help text is reworded accordingly.
 
-Unlike PPC which uses arch/powerpc/kernel/legacy_serial.c, the ARM
-targets use drivers/tty/serial/of_serial.c, so add the handle_irq
-override check there as well.
+This change simplifies adding support for other SoCs also using
+the same UART.
 
-Signed-off-by: Scott Wood <scottwood@freescale.com>
+The name of the option is a little misleading, but not knowing
+the true origin of this UART, it is as good a choice as any.
+
+Signed-off-by: Mans Rullgard <mans@mansr.com>
 ---
- drivers/tty/serial/8250/Kconfig | 4 ++--
- drivers/tty/serial/of_serial.c  | 6 ++++++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 4 ++--
+ drivers/tty/serial/8250/Kconfig     | 9 +++++----
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 54e6c8d..a2ff31c 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -276,7 +276,7 @@ static void default_serial_dl_write(struct uart_8250_port *up, int value)
+ 	serial_out(up, UART_DLM, value >> 8 & 0xff);
+ }
+ 
+-#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
++#ifdef CONFIG_SERIAL_8250_RT288X
+ 
+ /* Au1x00/RT288x UART hardware has a weird register layout */
+ static const s8 au_io_in_map[8] = {
+@@ -427,7 +427,7 @@ static void set_io_from_upio(struct uart_port *p)
+ 		p->serial_out = mem32be_serial_out;
+ 		break;
+ 
+-#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
++#ifdef CONFIG_SERIAL_8250_RT288X
+ 	case UPIO_AU:
+ 		p->serial_in = au_serial_in;
+ 		p->serial_out = au_serial_out;
 diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index e1de118..5a2ae57 100644
+index e1de118..a51c75c 100644
 --- a/drivers/tty/serial/8250/Kconfig
 +++ b/drivers/tty/serial/8250/Kconfig
-@@ -274,8 +274,8 @@ config SERIAL_8250_ACORN
+@@ -294,11 +294,12 @@ config SERIAL_8250_EM
  
- config SERIAL_8250_FSL
- 	bool
--	depends on SERIAL_8250_CONSOLE && PPC_UDBG_16550
--	default PPC
-+	depends on SERIAL_8250_CONSOLE
-+	default PPC || ARM || ARM64
+ config SERIAL_8250_RT288X
+ 	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
+-	depends on SERIAL_8250 && (SOC_RT288X || SOC_RT305X || SOC_RT3883 || SOC_MT7620)
++	depends on SERIAL_8250
++	default y if MIPS_ALCHEMY || SOC_RT288X || SOC_RT305X || SOC_RT3883 || SOC_MT7620
+ 	help
+-	  If you have a Ralink RT288x/RT305x SoC based board and want to use the
+-	  serial port, say Y to this option. The driver can handle up to 2 serial
+-	  ports. If unsure, say N.
++	  Selecting this option will add support for the alternate register
++	  layout used by Ralink RT288x/RT305x, Alchemy Au1xxx, and some others.
++	  If unsure, say N.
  
- config SERIAL_8250_DW
- 	tristate "Support for Synopsys DesignWare 8250 quirks"
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 6823df9..9cd0061 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -150,6 +150,12 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		break;
- 	}
- 
-+#ifdef CONFIG_SERIAL_8250_FSL
-+	if (of_device_is_compatible(np, "fsl,ns16550") ||
-+	    of_device_is_compatible(np, "fsl,16550-FIFO64"))
-+		port->handle_irq = fsl8250_handle_irq;
-+#endif
-+
- 	return 0;
- out:
- 	if (info->clk)
+ config SERIAL_8250_OMAP
+ 	tristate "Support for OMAP internal UART (8250 based driver)"
 -- 
-2.1.4
+2.5.3
