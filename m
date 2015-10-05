@@ -1,23 +1,40 @@
-From: Bert Kenward <bkenward@solarflare.com>
-Subject: Re: [PATCH 11/15] sfc: don't call dma_supported
-Date: Mon, 5 Oct 2015 16:08:22 +0100
-Message-ID: <56129266.8070600@solarflare.com>
-References: <1443885579-7094-1-git-send-email-hch@lst.de>
- <1443885579-7094-12-git-send-email-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Andre Przywara <andre.przywara@arm.com>
+Subject: [PATCH] serial: atmel: fix compiler warning on address cast
+Date: Mon,  5 Oct 2015 18:00:52 +0100
+Message-ID: <1444064452-12285-1-git-send-email-andre.przywara@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1443885579-7094-12-git-send-email-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Andrew Morton <akpm@linux-foundation.org>, Don Fry <pcnet32@frontier.com>, Oliver Neukum <oneukum@suse.com>
-Cc: linux-net-drivers@solarflare.com, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, netdev@vger.kernel.org, linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 03/10/15 16:19, Christoph Hellwig wrote:
-> dma_set_mask already checks for a supported DMA mask before updating it,
-> the call to dma_supported is redundant.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+Turning on KVM and LPAE support on top of a multi_v7_defconfig will
+produce a compiler warning in the Atmel serial driver:
+drivers/tty/serial/atmel_serial.c: In function 'atmel_verify_port':
+drivers/tty/serial/atmel_serial.c:2299:6: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+  if ((void *)port->mapbase != ser->iomem_base)
+      ^
 
-Acked-by: Bert Kenward <bkenward@solarflare.com>
+Fix that by using the cast on the right hand side instead, as similar
+code already does in other drivers.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ drivers/tty/serial/atmel_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index cd30a45..28039ce 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2296,7 +2296,7 @@ static int atmel_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 		ret = -EINVAL;
+ 	if (port->uartclk / 16 != ser->baud_base)
+ 		ret = -EINVAL;
+-	if ((void *)port->mapbase != ser->iomem_base)
++	if (port->mapbase != (unsigned long)ser->iomem_base)
+ 		ret = -EINVAL;
+ 	if (port->iobase != ser->port)
+ 		ret = -EINVAL;
+-- 
+2.5.1
