@@ -1,76 +1,101 @@
-From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] sc16is7xx: null ptr check
-Date: Mon, 5 Oct 2015 09:10:04 +0100
-Message-ID: <20151005081004.GG12635@sirena.org.uk>
-References: <1441015287-14240-1-git-send-email-sean.nyekjaer@prevas.dk>
- <20151004202316.GV3982@pengutronix.de>
- <56120E09.7060702@prevas.dk>
- <20151005063127.GX3982@pengutronix.de>
+From: Florian Achleitner <achleitner.florian-JpyZg0bqyNJBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] sc16is7xx: Prevent TX buffer overrun, prevent crash
+Date: Mon, 5 Oct 2015 14:34:01 +0200
+Message-ID: <1553770.pceUAxXUCu@r90b40zn>
+References: <53467079.FOLVyveiGt@r90b40zn> <8914018.PpSVth2cIK@r90b40zn> <20151003195257.41864d89@laptop>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="wQkw7DhpL9hyPo7K"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20151005063127.GX3982-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+In-Reply-To: <20151003195257.41864d89@laptop>
 Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: Sean =?iso-8859-1?Q?Nyekj=E6r?= <sean.nyekjaer-rjjw5hvvQKZaa/9Udqfwiw@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3-5tc4TXWwyLM@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+Hi Jakub!
 
---wQkw7DhpL9hyPo7K
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Oct 05, 2015 at 08:31:28AM +0200, Uwe Kleine-K=F6nig wrote:
-
-> So in the broken case the device in question was bound to the
-> sc16is7xx driver because the compatible name was matched by the
-> id_table and not the of_match_table. My first thought was that in this
-> case the spi_device's dev->of_node should not be set, but after having
-> thought a bit more I think this is right.
-
-Yes, it's intended behaviour - the DT is buggy here.
-
-> But the .probe routine could be a tad more clever here:
-
-> 	devtype =3D of_device_get_match_data(&spi->dev);
-> 	if (!devtype) {
-> 		const struct spi_device_id *id_entry =3D spi_get_device_id(spi);
+On Saturday 03 October 2015 19:52:57 Jakub Kici=C5=84ski wrote:
+> Hi Florian!
 >=20
-> 		/* Do I need to check id_entry being !=3D NULL here? */
-> 		devtype =3D (struct sc16is7xx_devtype *)id_entry->driver_data;
-> 		flags =3D IRQF_TRIGGER_FALLING;
-> 	}
+> Thanks a lot for the submission.  Would you mind digging a little
+> deeper into this problem?  I think the root cause is that the SPI
+> read fails for some reason and our driver does not handle that
+> properly, i.e. we don't read 255, it's just a random/failure value.
+> Unfortunatelly I don't have any boards with this chip any more to
+> do any tests or development myself, so it's on you ;)
 
-That's pretty much a requirement - the driver should work no matter
-which binding method gets used, OF only drivers aren't great practice at
-the best of times and for off-SoC devices like this one it's definitely
-not appropriate.
+No problem, the board is still on the desk :)
 
-> Apart from that using "flags =3D IRQF_TRIGGER_FALLING" iff the device was
-> probed via spi_id_table is strange.
+> This driver initially supported only I2C and in I2C regmap code if
+> the read fails we will always get a zero value.  Therefore we felt
+> free to ignore in sc16is7xx_port_read() the return value of
+> regmap_read().
+>=20
+> Could you please run your tests again and see if perhaps the read is
+> failing?  In that case we should zero the return value from
+> sc16is7xx_port_read().
 
-That seems like an obvious bug.
+I added a dev_err in *_port_read,write,update and *_fifo_read,write. No=
+ regmap=20
+function returned an error in my test, but the 255 read value is still =
+there.
 
---wQkw7DhpL9hyPo7K
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+> I think from this thread:
+> https://lkml.org/lkml/2008/2/20/271
+> we can assume that zero-length writes are a valid use-case for SPI
+> and if so could you please test the driver for your SPI controller?
+> Perhaps the zero-length check should be placed in the SPI controller
+> driver?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+I digged a little deeper and did some measurements to support my idea.
+I think the reason for the 255 read is that the chip does not support t=
+he zero=20
+length write.=20
 
-iQEcBAEBCAAGBQJWEjBXAAoJECTWi3JdVIfQiIcH/i9tDKu+ht4ADXo8+nn4Ufc6
-VH2/QYSu+R65fEZUk4fie0+FUQ7gFRLRt4866zk4VBNTYOekG7mcO9PQMDLY5I6G
-rxe2TBptXmicg1yC2jiDfFSr2Gg7lO+hb5iICbKpJzQ1u+bavpPjZtE2l6nFgnDM
-+ABb1ogM0z3yyFAwE6RA5Bj98IzXltbZaFJlzLR1j+Ku8yF2uI/aRookTqaihMQl
-L2J6iWf+V4MYv+WIrpCuBDwh1E8ef08iN8P75kvM7M5kTRsPGKTjI0+TTVrY1y9W
-ZpK+yJbkjLDjtxWUiSULZviPqepHsgoMwoyIlFPL0NfTvlzxf8iBKpXl5PpDZ3E=
-=RlCL
------END PGP SIGNATURE-----
+The chip's SPI interface defines two sorts of frames. One for normal re=
+gister=20
+access, which is essentially an address followed by one byte of data, e=
+ither=20
+read or written.
 
---wQkw7DhpL9hyPo7K--
+The second type is for accessing the fifo. It has an address and two by=
+tes of=20
+data, by definition.=20
+
+If the master now issues a zero length write, it sends only the address=
+ byte,=20
+but the chip will expect two following data bytes, which do not arrive.=
+=20
+Instead it will consume the following frame. When this frame is the tx =
+fifo=20
+level read, the chip will not drive its SO line (still expecting a fifo=
+=20
+write), and the master reads 255. Now two bytes were clocked, and they =
+are=20
+back in sync. However, the value is crap.
+
+If my theorie is true, we would also have to make sure, that fifo acces=
+s is=20
+always two bytes to keep it synced. I will check this, and craft anothe=
+r=20
+patch, if neccessary.
+
+>=20
+> I am OK with adding the sanity checks but lets first get to the botto=
+m
+> of this!
+
+I agree. I split the patch in two parts, because I would vote for patch=
+ 1/2=20
+unconditionally, to prevent buffer overruns, whatever happens.=20
+And then, use patch 2/2 only if it is the right solution.
+>=20
+> Thanks!
+
+Thanks,
+=46lorian
+
 --
 To unsubscribe from this list: send the line "unsubscribe linux-spi" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
