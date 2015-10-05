@@ -1,40 +1,83 @@
-From: Andre Przywara <andre.przywara@arm.com>
-Subject: [PATCH] serial: atmel: fix compiler warning on address cast
-Date: Mon,  5 Oct 2015 18:00:52 +0100
-Message-ID: <1444064452-12285-1-git-send-email-andre.przywara@arm.com>
+From: Andreas Werner <andy@wernerandy.de>
+Subject: [PATCH] tty: serial: men_z135_uart.c: use mcb memory region size instead of hardcoded one
+Date: Mon,  5 Oct 2015 19:23:14 +0200
+Message-ID: <1444065794-22118-1-git-send-email-andy@wernerandy.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, morbidrsa@gmail.com, Andreas Werner <andy@wernerandy.de>
 List-Id: linux-serial@vger.kernel.org
 
-Turning on KVM and LPAE support on top of a multi_v7_defconfig will
-produce a compiler warning in the Atmel serial driver:
-drivers/tty/serial/atmel_serial.c: In function 'atmel_verify_port':
-drivers/tty/serial/atmel_serial.c:2299:6: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-  if ((void *)port->mapbase != ser->iomem_base)
-      ^
+There is no need to hardcode the MEN_Z135_MEM_SIZE. The MCB subsystem
+already knowns the size which is located in the chameleon table.
+MCB parse the chameleon table to get the resources of each IP and provide
+the mcb_request_mem function to get those resources.
 
-Fix that by using the cast on the right hand side instead, as similar
-code already does in other drivers.
+Use mcb_request_mem to get the resources. This function also takes care of
+the memory region naming allocated by the driver for each of the instances.
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Signed-off-by: Andreas Werner <andy@wernerandy.de>
 ---
- drivers/tty/serial/atmel_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/men_z135_uart.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index cd30a45..28039ce 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2296,7 +2296,7 @@ static int atmel_verify_port(struct uart_port *port, struct serial_struct *ser)
- 		ret = -EINVAL;
- 	if (port->uartclk / 16 != ser->baud_base)
- 		ret = -EINVAL;
--	if ((void *)port->mapbase != ser->iomem_base)
-+	if (port->mapbase != (unsigned long)ser->iomem_base)
- 		ret = -EINVAL;
- 	if (port->iobase != ser->port)
- 		ret = -EINVAL;
+diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
+index b90e7b3..3141aa2 100644
+--- a/drivers/tty/serial/men_z135_uart.c
++++ b/drivers/tty/serial/men_z135_uart.c
+@@ -35,8 +35,6 @@
+ #define MEN_Z135_BAUD_REG		0x810
+ #define MEN_Z135_TIMEOUT		0x814
+ 
+-#define MEN_Z135_MEM_SIZE		0x818
+-
+ #define IRQ_ID(x) ((x) & 0x1f)
+ 
+ #define MEN_Z135_IER_RXCIEN BIT(0)		/* RX Space IRQ */
+@@ -124,6 +122,7 @@ MODULE_PARM_DESC(rx_timeout, "RX timeout. "
+ struct men_z135_port {
+ 	struct uart_port port;
+ 	struct mcb_device *mdev;
++	struct resource *mem;
+ 	unsigned char *rxbuf;
+ 	u32 stat_reg;
+ 	spinlock_t lock;
+@@ -734,22 +733,30 @@ static const char *men_z135_type(struct uart_port *port)
+ 
+ static void men_z135_release_port(struct uart_port *port)
+ {
++	struct men_z135_port *uart = to_men_z135(port);
++
+ 	iounmap(port->membase);
+ 	port->membase = NULL;
+ 
+-	release_mem_region(port->mapbase, MEN_Z135_MEM_SIZE);
++	mcb_release_mem(uart->mem);
+ }
+ 
+ static int men_z135_request_port(struct uart_port *port)
+ {
+-	int size = MEN_Z135_MEM_SIZE;
++	struct men_z135_port *uart = to_men_z135(port);
++	struct mcb_device *mdev = uart->mdev;
++	struct resource *mem;
++
++	mem = mcb_request_mem(uart->mdev, dev_name(&mdev->dev));
++	if (IS_ERR(mem))
++		return PTR_ERR(mem);
+ 
+-	if (!request_mem_region(port->mapbase, size, "men_z135_port"))
+-		return -EBUSY;
++	port->mapbase = mem->start;
++	uart->mem = mem;
+ 
+-	port->membase = ioremap(port->mapbase, MEN_Z135_MEM_SIZE);
++	port->membase = ioremap(mem->start, resource_size(mem));
+ 	if (port->membase == NULL) {
+-		release_mem_region(port->mapbase, MEN_Z135_MEM_SIZE);
++		mcb_release_mem(mem);
+ 		return -ENOMEM;
+ 	}
+ 
 -- 
-2.5.1
+2.1.4
