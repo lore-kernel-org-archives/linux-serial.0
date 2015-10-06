@@ -1,141 +1,126 @@
-From: Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH] Revert "serial: 8250_dma: don't bother DMA with small
- transfers"
-Date: Tue, 6 Oct 2015 11:17:32 +0200
-Message-ID: <561391AC.8050905@linux.intel.com>
-References: <1443617191-21013-1-git-send-email-frederic.danis@linux.intel.com>
- <560BE919.9020803@hurleysoftware.com>
- <1443622344.8361.304.camel@linux.intel.com>
- <560C420B.4030007@hurleysoftware.com>
- <1443689736.8361.322.camel@linux.intel.com>
+From: JakubK <moorray3-5tc4TXWwyLM@public.gmane.org>
+Subject: Odp: Re: [PATCH v2 1/2] sc16is7xx: Prevent TX buffer overrun,
+ prevent crash
+Date: Tue, 06 Oct 2015 11:18:48 +0200
+Message-ID: <561391f8acb008.44475929@wp.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1443689736.8361.322.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-2
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Florian Achleitner <achleitner.florian-JpyZg0bqyNJBDgjK7y7TUQ@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-[ + Greg Kroah-Hartman ]
+Dnia Poniedzia=B3ek, 5 Pa=BCdziernika 2015 14:34 Florian Achleitner <ac=
+hleitner.florian-JpyZg0bqyNJBDgjK7y7TUQ@public.gmane.org> napisa=B3(a)
+> Hi Jakub!
+> =20
+> On Saturday 03 October 2015 19:52:57 Jakub Kici=F1ski wrote:
+> > Hi Florian!
+> >
+> > Thanks a lot for the submission.  Would you mind digging a little
+> > deeper into this problem?  I think the root cause is that the SPI
+> > read fails for some reason and our driver does not handle that
+> > properly, i.e. we don't read 255, it's just a random/failure value.
+> > Unfortunatelly I don't have any boards with this chip any more to
+> > do any tests or development myself, so it's on you ;)
+> =20
+> No problem, the board is still on the desk :)
+=20
+Thanks!
+=20
+> > This driver initially supported only I2C and in I2C regmap code if
+> > the read fails we will always get a zero value.  Therefore we felt
+> > free to ignore in sc16is7xx_port_read() the return value of
+> > regmap_read().
+> >
+> > Could you please run your tests again and see if perhaps the read i=
+s
+> > failing?  In that case we should zero the return value from
+> > sc16is7xx_port_read().
+> =20
+> I added a dev_err in *_port_read,write,update and *_fifo_read,write. =
+No regmap
+> function returned an error in my test, but the 255 read value is stil=
+l there.
+> =20
+> > I think from this thread:
+> > https://lkml.org/lkml/2008/2/20/271
+> > we can assume that zero-length writes are a valid use-case for SPI
+> > and if so could you please test the driver for your SPI controller?
+> > Perhaps the zero-length check should be placed in the SPI controlle=
+r
+> > driver?
+> =20
+> I digged a little deeper and did some measurements to support my idea=
+=2E
+> I think the reason for the 255 read is that the chip does not support=
+ the zero
+> length write.
+> =20
+> The chip's SPI interface defines two sorts of frames. One for normal =
+register
+> access, which is essentially an address followed by one byte of data,=
+ either
+> read or written.
+> =20
+> The second type is for accessing the fifo. It has an address and two =
+bytes of
+> data, by definition.
+> =20
+> If the master now issues a zero length write, it sends only the addre=
+ss byte,
+> but the chip will expect two following data bytes, which do not arriv=
+e.
+> Instead it will consume the following frame. When this frame is the t=
+x fifo
+> level read, the chip will not drive its SO line (still expecting a fi=
+fo
+> write), and the master reads 255. Now two bytes were clocked, and the=
+y are
+> back in sync. However, the value is crap.
+> =20
+> If my theorie is true, we would also have to make sure, that fifo acc=
+ess is
+> always two bytes to keep it synced. I will check this, and craft anot=
+her
+> patch, if neccessary.
+=20
+My knowledge about SPI is minimal but this sounds reasonable. I just wo=
+nder
+why we've never seen this issue before? If the address byte is treated =
+as data
+then we should see it received on the other side, did you observe that?
 
-On 01/10/2015 10:55, Andy Shevchenko wrote:
-> On Wed, 2015-09-30 at 16:11 -0400, Peter Hurley wrote:
->> [ + Heikko ]
->>
->> On 09/30/2015 10:12 AM, Andy Shevchenko wrote:
->>> On Wed, 2015-09-30 at 09:52 -0400, Peter Hurley wrote:
->>>> [ + Andy Shevchenko ]
->>>>
->>>> On 09/30/2015 08:46 AM, Frederic Danis wrote:
->>>>> This reverts commit 9119fba0cfeda6d415c9f068df66838a104b87cb.
->>>> Hi Frederic,
->>>>
->>>> It's customary to mail the commit author in patches which revert
->>>> their work.
->>>>
->>>>> This commit prevents from sending "big" file using Bluetooth.
->>>>> When sending a lot of data quickly through the Bluetooth
->>>>> interface,
->>>>> and
->>>>> after a variable amount of data sent, transfer fails with
->>>>> error:
->>>>>      kernel: [  415.247453] Bluetooth: hci0 hardware error 0x00
-> Frederic, I forgot to ask how exactly the hw setup looks like?
->
-> The message above is not present in the kernel (the closest what I
-> found is
->
-> drivers/bluetooth/btintel.c:98: BT_ERR("%s: Hardware error 0x%2.2x",
-> hdev->name, code);
->
-> which makes me think you have USB BT adapter attached to the same
-> machine. Am I wrong?
->
->>>> Hmmm, was there any other information regarding why this
->>>> happened?
->>> Frederic informed us privately about this issue.
->> Ok, except no one else knows that.
->>
->> Least of all Greg, since the revert wasn't even addressed to him
->> either :/
-> Agree, it's better to inform all parties about the problem.
->
->>> I tried to hunt the
->>> root cause but mostly (there was one observation but apparently
->>> seems
->>> it is not related to this issue) nothing looks wrong.
->>>
->>>> Eg., did the driver mistakenly re-order i/o (DMA occurred after
->>>> PIO)?
->>> I have few tracing dumps which Frederic provides to me, but I
->>> couldn't
->>> see such a problem. Maybe I missed it.
->> Ok.
->>
->>> My commit 9119fba0cfed introduces interleaved IO (DMA/PIO) which
->>> makes
->>> it like DMA -> PIO -> DMA -> ...
->> I realize that. However interleaving DMA and PIO _must_ be supported
->> by the platform to enable DMA for 8250 serial devices anway.
->>
->> When Heikki added DMA support to the 8250 driver, he left out
->> important
->> functionality which requires interleaved DMA and PIO.
->>
->> When I fix that omission, platforms using DMA that shouldn't be are
->> going
->> to get broken anyway.
->>
->> Regards,
->> Peter Hurley
->>
->>>> Or, might there be some race condition in the dmaengine driver on
->>>>
->>>> this
->>>> platform?
->>> There is [1] might be a clue, though I don't think it's directly
->>> related.
->>>
->>> [1] http://www.spinics.net/lists/linux-spi/msg01151.html
->>> The change prevents interleaved DMA/PIO IO.
->>>
->>>> Regards,
->>>> Peter Hurley
->>>>
->>>>> Found on T100TA.
->>>>>
->>>>> After reverting this commit, send works fine for any file size.
->>>>>
->>>>> Signed-off-by: Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->>>>> ---
->>>>>   drivers/tty/serial/8250/8250_dma.c | 4 ----
->>>>>   1 file changed, 4 deletions(-)
->>>>>
->>>>> diff --git a/drivers/tty/serial/8250/8250_dma.c
->>>>> b/drivers/tty/serial/8250/8250_dma.c
->>>>> index 21d01a4..e508939 100644
->>>>> --- a/drivers/tty/serial/8250/8250_dma.c
->>>>> +++ b/drivers/tty/serial/8250/8250_dma.c
->>>>> @@ -80,10 +80,6 @@ int serial8250_tx_dma(struct uart_8250_port
->>>>> *p)
->>>>>   		return 0;
->>>>>   
->>>>>   	dma->tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail,
->>>>>
->>>>> UART_XMIT_SIZE);
->>>>> -	if (dma->tx_size < p->port.fifosize) {
->>>>> -		ret = -EINVAL;
->>>>> -		goto err;
->>>>> -	}
->>>>>   
->>>>>   	desc = dmaengine_prep_slave_single(dma->txchan,
->>>>>   					   dma->tx_addr + xmit
->>>>> ->tail,
->>>>>
+> > I am OK with adding the sanity checks but lets first get to the bot=
+tom
+> > of this!
+> =20
+> I agree. I split the patch in two parts, because I would vote for pat=
+ch 1/2
+> unconditionally, to prevent buffer overruns, whatever happens.
+> And then, use patch 2/2 only if it is the right solution.
+=20
+I would personally move the zero checks of to_send to sc16is7xx_fifo_wr=
+ite()
+and just return early from there if to_send is zero. Even if this issue=
+ is
+somehow specific to your board/SPI controller we can treat this early r=
+eturn
+as an optimization :)
+=20
+As for the error check I would break out of the loop when we see the bo=
+gus value
+instead of just masking of the top bit. I think such value should not b=
+e trusted at all.
+
+Thanks,
+Jakub
 
 
--- 
-Frederic Danis                            Open Source Technology Center
-frederic.danis-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
