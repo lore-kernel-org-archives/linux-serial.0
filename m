@@ -1,87 +1,56 @@
-From: Mason <slash.tmp@free.fr>
-Subject: Re: [RESEND][PATCH] serial: 8250: simplify ralink/alchemy register
- remap selection
-Date: Tue, 6 Oct 2015 10:36:38 +0200
-Message-ID: <56138816.9030901@free.fr>
-References: <1443780960-6519-1-git-send-email-mans@mansr.com>
+From: Florian Achleitner <achleitner.florian-JpyZg0bqyNJBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] sc16is7xx: Prevent TX buffer overrun, prevent crash
+Date: Tue, 6 Oct 2015 10:41:46 +0200
+Message-ID: <2151687.RJUYUNn8g7@r90b40zn>
+References: <53467079.FOLVyveiGt@r90b40zn> <20151003195257.41864d89@laptop> <1553770.pceUAxXUCu@r90b40zn>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1443780960-6519-1-git-send-email-mans@mansr.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mans Rullgard <mans@mansr.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1553770.pceUAxXUCu@r90b40zn>
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3-5tc4TXWwyLM@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 02/10/2015 12:15, Mans Rullgard wrote:
-> Some SoCs, including Ralink/Mediatek and Alchemy Au1xxx, have a
-> 16550-like UART with a non-standard register layout.  These are
-> supported by a simple mapping table in 8250_port.c  Rather than
-> list every SoC type using this access mode in the ifdefs there,
-> allow selecting the SERIAL_8250_RT288X Kconfig option with any
-> system and default it to y for the known cases needing it.  The
-> help text is reworded accordingly.
+Hi,
+
+some news.
+On Monday 05 October 2015 14:34:01 Florian Achleitner wrote:
+> I digged a little deeper and did some measurements to support my idea.
+> I think the reason for the 255 read is that the chip does not support the
+> zero length write.
 > 
-> This change simplifies adding support for other SoCs also using
-> the same UART.
-
-I approve this change, as my platform (Sigma Designs Tango4) uses
-this UART.
-
-> The name of the option is a little misleading, but not knowing
-> the true origin of this UART, it is as good a choice as any.
-
-Now that you know the UART is probably a Palmchip IP block, would
-it make sense to rename the CONFIG option?
-(CONFIG_SERIAL_8250_PALMCHIP?)
-
-> Signed-off-by: Mans Rullgard <mans@mansr.com>
-> ---
->  drivers/tty/serial/8250/8250_port.c | 4 ++--
->  drivers/tty/serial/8250/Kconfig     | 9 +++++----
->  2 files changed, 7 insertions(+), 6 deletions(-)
+> The chip's SPI interface defines two sorts of frames. One for normal
+> register access, which is essentially an address followed by one byte of
+> data, either read or written.
 > 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 54e6c8d..a2ff31c 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -276,7 +276,7 @@ static void default_serial_dl_write(struct uart_8250_port *up, int value)
->  	serial_out(up, UART_DLM, value >> 8 & 0xff);
->  }
->  
-> -#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
-> +#ifdef CONFIG_SERIAL_8250_RT288X
->  
->  /* Au1x00/RT288x UART hardware has a weird register layout */
->  static const s8 au_io_in_map[8] = {
-> @@ -427,7 +427,7 @@ static void set_io_from_upio(struct uart_port *p)
->  		p->serial_out = mem32be_serial_out;
->  		break;
->  
-> -#if defined(CONFIG_MIPS_ALCHEMY) || defined(CONFIG_SERIAL_8250_RT288X)
-> +#ifdef CONFIG_SERIAL_8250_RT288X
->  	case UPIO_AU:
->  		p->serial_in = au_serial_in;
->  		p->serial_out = au_serial_out;
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index e1de118..a51c75c 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -294,11 +294,12 @@ config SERIAL_8250_EM
->  
->  config SERIAL_8250_RT288X
->  	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
-> -	depends on SERIAL_8250 && (SOC_RT288X || SOC_RT305X || SOC_RT3883 || SOC_MT7620)
-> +	depends on SERIAL_8250
-> +	default y if MIPS_ALCHEMY || SOC_RT288X || SOC_RT305X || SOC_RT3883 || SOC_MT7620
->  	help
-> -	  If you have a Ralink RT288x/RT305x SoC based board and want to use the
-> -	  serial port, say Y to this option. The driver can handle up to 2 serial
-> -	  ports. If unsure, say N.
-> +	  Selecting this option will add support for the alternate register
-> +	  layout used by Ralink RT288x/RT305x, Alchemy Au1xxx, and some others.
-> +	  If unsure, say N.
->  
->  config SERIAL_8250_OMAP
->  	tristate "Support for OMAP internal UART (8250 based driver)"
+> The second type is for accessing the fifo. It has an address and two bytes
+> of data, by definition.
+> 
+> If the master now issues a zero length write, it sends only the address
+> byte, but the chip will expect two following data bytes, which do not
+> arrive. Instead it will consume the following frame. When this frame is the
+> tx fifo level read, the chip will not drive its SO line (still expecting a
+> fifo write), and the master reads 255. Now two bytes were clocked, and they
+> are back in sync. However, the value is crap.
+> 
+> If my theorie is true, we would also have to make sure, that fifo access is
+> always two bytes to keep it synced. I will check this, and craft another
+> patch, if neccessary.
+
+My theorie is wrong with fifo frame lengths. Actually, they can be be of 
+arbitrary length and the SPI chip select (CS) terminates a frame. Thus, the 
+complete fifo can be filled at once, and single bytes can be written, as well.
+
+However, a zero-length write seems to confuse the chip. If I prevent it, 
+everything works.
+
+As already mentioned, all regmap operations return success.
+
+Florian
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
