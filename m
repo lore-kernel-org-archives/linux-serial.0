@@ -1,56 +1,53 @@
-From: Florian Achleitner <achleitner.florian-JpyZg0bqyNJBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] sc16is7xx: Prevent TX buffer overrun, prevent crash
-Date: Tue, 6 Oct 2015 10:41:46 +0200
-Message-ID: <2151687.RJUYUNn8g7@r90b40zn>
-References: <53467079.FOLVyveiGt@r90b40zn> <20151003195257.41864d89@laptop> <1553770.pceUAxXUCu@r90b40zn>
+From: Noam Camus <noamc@ezchip.com>
+Subject: [v7] *** 8250_dw ***
+Date: Tue, 6 Oct 2015 11:53:29 +0300
+Message-ID: <1444121610-11832-1-git-send-email-noamc@ezchip.com>
+References: <1444113590-19722-1-git-send-email-noamc@ezchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1553770.pceUAxXUCu@r90b40zn>
-Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jakub =?utf-8?B?S2ljacWEc2tp?= <moorray3-5tc4TXWwyLM@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Ringle <jringle-gkqdKIIuv0Hby3iVrkZq2A@public.gmane.org>, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1444113590-19722-1-git-send-email-noamc@ezchip.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, peter@hurleysoftware.com, fransklaver@gmail.com, Alexey.Brodkin@synopsys.com, vgupta@synopsys.com, Noam Camus <noamc@ezchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+From: Noam Camus <noamc@ezchip.com>
 
-some news.
-On Monday 05 October 2015 14:34:01 Florian Achleitner wrote:
-> I digged a little deeper and did some measurements to support my idea.
-> I think the reason for the 255 read is that the chip does not support the
-> zero length write.
-> 
-> The chip's SPI interface defines two sorts of frames. One for normal
-> register access, which is essentially an address followed by one byte of
-> data, either read or written.
-> 
-> The second type is for accessing the fifo. It has an address and two bytes
-> of data, by definition.
-> 
-> If the master now issues a zero length write, it sends only the address
-> byte, but the chip will expect two following data bytes, which do not
-> arrive. Instead it will consume the following frame. When this frame is the
-> tx fifo level read, the chip will not drive its SO line (still expecting a
-> fifo write), and the master reads 255. Now two bytes were clocked, and they
-> are back in sync. However, the value is crap.
-> 
-> If my theorie is true, we would also have to make sure, that fifo access is
-> always two bytes to keep it synced. I will check this, and craft another
-> patch, if neccessary.
+v7 change:
+Fix build warning due to redundant "const" qualifier at
+_dw8250_serial_in32be() signature.
 
-My theorie is wrong with fifo frame lengths. Actually, they can be be of 
-arbitrary length and the SPI chip select (CS) terminates a frame. Thus, the 
-complete fifo can be filled at once, and single bytes can be written, as well.
+v6 change:
+Adapt patch to latest version (nothing functional)
 
-However, a zero-length write seems to confuse the chip. If I prevent it, 
-everything works.
+v5 change:
+Two patches is now squashed into single one
 
-As already mentioned, all regmap operations return success.
+v4 change
+Remove patch for skipping looptest through DT option.
+This is now handled in our simulator model.
+Thanks to Vineet Gupta from Synopsys for his help.
 
-Florian
+We are left with 2 patches which adds BIG endian support.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-spi" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+V3 change:
+Use second level accessors for big/little endian port.
+The new accessors are now pointed from uart_port->private_data
+These accessors are initialized during driver probe().
+Driver shouldn't access directly to readl/writel but to
+these new second level accessors (first level is at uart_port).
+e.g. at dw8250_check_LCR() and dw8250_setup_port() I replaced such
+direct calls.
+
+V2 changes:
+1) better description for each commit.
+2) adding to CC list the device tree maintainer.
+3) rename dw8250_check_control() --> dw8250_check_LCR().
+4) remove bad patch of "add UPF_FIXED_TYPE to flags".
+
+Noam Camus (1):
+  serial: 8250_dw: Add support for big-endian MMIO accesses
+
+ drivers/tty/serial/8250/8250_dw.c |   72 ++++++++++++++++++++++++++++++++----
+ 1 files changed, 64 insertions(+), 8 deletions(-)
