@@ -1,80 +1,71 @@
-From: kbuild test robot <lkp@intel.com>
-Subject: Re: [v6] serial: 8250_dw: Add support for big-endian MMIO accesses
-Date: Tue, 6 Oct 2015 16:01:52 +0800
-Message-ID: <201510061616.n6BNnxpM%fengguang.wu@intel.com>
-References: <1444113590-19722-2-git-send-email-noamc@ezchip.com>
+From: Baruch Siach <baruch@tkos.co.il>
+Subject: Re: alloc_tty_driver fails with ENOMEM
+Date: Tue, 6 Oct 2015 11:03:46 +0300
+Message-ID: <20151006080345.GE2472@tarshish>
+References: <20151006064424.GD2472@tarshish>
+ <20151006075307.GA18449@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1444113590-19722-2-git-send-email-noamc@ezchip.com>
+In-Reply-To: <20151006075307.GA18449@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: kbuild-all@01.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, peter@hurleysoftware.com, fransklaver@gmail.com, Alexey.Brodkin@synopsys.com, vgupta@synopsys.com, Noam Camus <noamc@ezchip.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, debian-kernel@lists.debian.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Noam,
+Hi Greg,
 
-[auto build test WARNING on v4.3-rc4 -- if it's inappropriate base, please ignore]
+On Tue, Oct 06, 2015 at 08:53:07AM +0100, Greg KH wrote:
+> On Tue, Oct 06, 2015 at 09:44:24AM +0300, Baruch Siach wrote:
+> > Since upgrading to kernel version from 4.1.x to 4.2.1 on Debian testing I 
+> > am getting on my PC the following usbserial module init failure when 
+> > connecting my PC to the i.MX6 SabreSD FTDI USB/serial connector:
+> > 
+> > [39987.092021] usb 1-5.1: new full-speed USB device number 4 using ehci-pci
+> > [39987.190805] usb 1-5.1: New USB device found, idVendor=0403, idProduct=6001
+> > [39987.190810] usb 1-5.1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+> > [39987.190813] usb 1-5.1: Product: FT232R USB UART
+> > [39987.190817] usb 1-5.1: Manufacturer: FTDI
+> > [39987.190820] usb 1-5.1: SerialNumber: A903PDKT
+> > [39989.127918] systemd-udevd: page allocation failure: order:4, mode:0x2040d0
+> 
+> This shows that you have some serious memory issues happening here :(
 
-reproduce:
-        # apt-get install sparse
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF=-D__CHECK_ENDIAN__
+Which part is showing this? Is the order too high? Unusual mode?
 
+> > [39989.127923] CPU: 0 PID: 5856 Comm: systemd-udevd Not tainted 4.2.0-1-amd64 #1 Debian 4.2.1-2
+> > [39989.127925] Hardware name: Gigabyte Technology Co., Ltd. EP45-DS3/EP45-DS3, BIOS F5 06/18/2008
+> > [39989.127928]  0000000000000000 0000000000000004 ffffffff81548756 00000000002040d0
+> > [39989.127931]  ffffffff8115266f ffff88007feddb00 0000000000000000 0000000000000001
+> > [39989.127934]  0000000000000004 0000000000000040 ffff8800793ce7c0 00000000002040d0
+> > [39989.127937] Call Trace:
+> > [39989.127945]  [<ffffffff81548756>] ? dump_stack+0x40/0x50
+> > [39989.127951]  [<ffffffff8115266f>] ? warn_alloc_failed+0xcf/0x130
+> > [39989.127954]  [<ffffffff81155d74>] ? __alloc_pages_nodemask+0x2b4/0x9e0
+> 
+> As does this :(
+> 
+> What does 'free -h' show?
 
-sparse warnings: (new ones prefixed by >>)
+Here it is:
 
->> drivers/tty/serial/8250/8250_dw.c:214:27: sparse: incorrect type in argument 1 (different modifiers)
-   drivers/tty/serial/8250/8250_dw.c:214:27:    expected void [noderef] <asn:2>*<noident>
-   drivers/tty/serial/8250/8250_dw.c:214:27:    got void const [noderef] <asn:2>*addr
-   drivers/tty/serial/8250/8250_dw.c: In function '_dw8250_serial_in32be':
-   drivers/tty/serial/8250/8250_dw.c:214:20: warning: passing argument 1 of 'ioread32be' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     return ioread32be(addr);
-                       ^
-   In file included from arch/x86/include/asm/io.h:203:0,
-                    from arch/x86/include/asm/realmode.h:5,
-                    from arch/x86/include/asm/acpi.h:33,
-                    from arch/x86/include/asm/fixmap.h:19,
-                    from arch/x86/include/asm/apic.h:12,
-                    from arch/x86/include/asm/smp.h:12,
-                    from arch/x86/include/asm/mmzone_64.h:10,
-                    from arch/x86/include/asm/mmzone.h:4,
-                    from include/linux/mmzone.h:934,
-                    from include/linux/gfp.h:5,
-                    from include/linux/device.h:29,
-                    from drivers/tty/serial/8250/8250_dw.c:16:
-   include/asm-generic/iomap.h:32:21: note: expected 'void *' but argument is of type 'const void *'
-    extern unsigned int ioread32be(void __iomem *);
-                        ^
+              total        used        free      shared  buff/cache   available
+Mem:           2.0G        567M         77M         19M        1.3G        1.3G
+Swap:          4.8G         24M        4.7G
 
-vim +214 drivers/tty/serial/8250/8250_dw.c
+Looks quite normal to me.
 
-   198	}
-   199	
-   200	static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
-   201	{
-   202		unsigned int value = readl(p->membase + (offset << p->regshift));
-   203	
-   204		return dw8250_modify_msr(p, offset, value);
-   205	}
-   206	
-   207	static void _dw8250_serial_out32be(unsigned int value, void __iomem *addr)
-   208	{
-   209		iowrite32be(value, addr);
-   210	}
-   211	
-   212	static unsigned int _dw8250_serial_in32be(const void __iomem *addr)
-   213	{
- > 214		return ioread32be(addr);
-   215	}
-   216	
-   217	static void dw8250_serial_out32be(struct uart_port *p, int offset, int value)
-   218	{
-   219		iowrite32be(value, p->membase + (offset << p->regshift));
-   220		dw8250_check_LCR(p, offset, value);
-   221	}
-   222	
+> I don't think this is a USB issue, you are just hitting it for some odd
+> reason.
 
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+OK. Adding LKML. For reference, the original report is at 
+http://article.gmane.org/gmane.linux.usb.general/131878.
+
+Thanks,
+baruch
+
+-- 
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
