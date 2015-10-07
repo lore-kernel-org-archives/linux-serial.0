@@ -1,55 +1,56 @@
-From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v2] Revert "serial: 8250_dma: don't bother DMA with
- small transfers"
-Date: Tue, 06 Oct 2015 17:39:37 +0300
-Message-ID: <1444142377.8361.438.camel@linux.intel.com>
-References: <1444136920-17969-1-git-send-email-frederic.danis@linux.intel.com>
-	 <20151006135503.GA13250@kroah.com>
+From: Abylay Ospan <aospan@netup.ru>
+Subject: Re: [PATCH 08/15] netup_unidvb: use pci_set_dma_mask insted of pci_dma_supported
+Date: Wed, 7 Oct 2015 11:03:13 +0300
+Message-ID: <CAK3bHNXJp70C3DC8OPsKHmiTeLu-J70VKSfKwDgUd5F=uorEWw@mail.gmail.com>
+References: <1443885579-7094-1-git-send-email-hch@lst.de> <1443885579-7094-9-git-send-email-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20151006135503.GA13250-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1443885579-7094-9-git-send-email-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Don Fry <pcnet32@frontier.com>, Oliver Neukum <oneukum@suse.com>, linux-net-drivers@solarflare.com, dri-devel@lists.freedesktop.org, linux-media <linux-media@vger.kernel.org>, netdev@vger.kernel.org, linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2015-10-06 at 14:55 +0100, Greg KH wrote:
-> On Tue, Oct 06, 2015 at 03:08:40PM +0200, Frederic Danis wrote:
-> > This reverts commit 9119fba0cfeda6d415c9f068df66838a104b87cb.
-> > 
-> > This commit prevents from sending "big" file using Bluetooth.
-> > When sending a lot of data quickly through the Bluetooth interface, 
-> > and
-> > after a variable amount of data sent, transfer fails with error:
-> >     kernel: [  415.247453] Bluetooth: hci0 hardware error 0x00
-> > 
-> > Found on T100TA.
-> > 
-> > After reverting this commit, send works fine for any file size.
-> > 
-> > Signed-off-by: Frederic Danis <frederic.danis-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > ---
-> > v2: Re-send to correct people
-> > 
-> >  drivers/tty/serial/8250/8250_dma.c | 4 ----
-> >  1 file changed, 4 deletions(-)
-> 
-> Andy, any objections?
+Hello,
 
-No.
+Acked-by: Abylay Ospan <aospan@netup.ru>
 
-P.S. Unfortunately it's not easy to reproduce on our side, so I trust
-Frederic on this.
+thanks !
 
-> 
-> Frederic, don't you want to see this backported to 4.0 and newer?
-> 
-> thanks,
-> 
-> greg k-h
+2015-10-03 18:19 GMT+03:00 Christoph Hellwig <hch@lst.de>:
+> This ensures the dma mask that is supported by the driver is recorded
+> in the device structure.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/media/pci/netup_unidvb/netup_unidvb_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/media/pci/netup_unidvb/netup_unidvb_core.c b/drivers/media/pci/netup_unidvb/netup_unidvb_core.c
+> index 6d8bf627..511144f 100644
+> --- a/drivers/media/pci/netup_unidvb/netup_unidvb_core.c
+> +++ b/drivers/media/pci/netup_unidvb/netup_unidvb_core.c
+> @@ -809,7 +809,7 @@ static int netup_unidvb_initdev(struct pci_dev *pci_dev,
+>                 "%s(): board vendor 0x%x, revision 0x%x\n",
+>                 __func__, board_vendor, board_revision);
+>         pci_set_master(pci_dev);
+> -       if (!pci_dma_supported(pci_dev, 0xffffffff)) {
+> +       if (!pci_set_dma_mask(pci_dev, 0xffffffff)) {
+>                 dev_err(&pci_dev->dev,
+>                         "%s(): 32bit PCI DMA is not supported\n", __func__);
+>                 goto pci_detect_err;
+> --
+> 1.9.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-media" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+
 
 -- 
-Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Intel Finland Oy
+Abylay Ospan,
+NetUP Inc.
+http://www.netup.tv
