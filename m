@@ -1,13 +1,14 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: [PATCH v2] serial: Enable Freescale 16550 workaround on arm
-Date: Wed, 7 Oct 2015 17:31:21 -0500
-Message-ID: <1444257081-30491-1-git-send-email-scottwood@freescale.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2] serial: Enable Freescale 16550 workaround on arm
+Date: Thu, 08 Oct 2015 09:45:56 +0200
+Message-ID: <5847930.GvyTeTDb4p@wuerfel>
 References: <20151002001616.GA3885@home.buserror.net>
+ <1444257081-30491-1-git-send-email-scottwood@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20151002001616.GA3885@home.buserror.net>
+In-Reply-To: <1444257081-30491-1-git-send-email-scottwood@freescale.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,55 +18,19 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, Scott Wood <scottwood@freescale.com>, Arnd Bergmann <arnd@arndb.de>, Stuart Yoder <stuart.yoder@freescale.com>, linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Scott Wood <scottwood@freescale.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stuart Yoder <stuart.yoder@freescale.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The same serial hardware is present on LS2080A which is arm64, and
-LS1021A which is arm32, so don't limit the workaround to PPC.
+On Wednesday 07 October 2015 17:31:21 Scott Wood wrote:
+> The same serial hardware is present on LS2080A which is arm64, and
+> LS1021A which is arm32, so don't limit the workaround to PPC.
+> 
+> Unlike PPC which uses arch/powerpc/kernel/legacy_serial.c, the ARM
+> targets use drivers/tty/serial/of_serial.c, so add the handle_irq
+> override check there as well.
+> 
+> Signed-off-by: Scott Wood <scottwood@freescale.com>
+> 
 
-Unlike PPC which uses arch/powerpc/kernel/legacy_serial.c, the ARM
-targets use drivers/tty/serial/of_serial.c, so add the handle_irq
-override check there as well.
-
-Signed-off-by: Scott Wood <scottwood@freescale.com>
----
-v2: Use IS_ENABLED rather than ifdef
-
- drivers/tty/serial/8250/Kconfig | 4 ++--
- drivers/tty/serial/of_serial.c  | 5 +++++
- 2 files changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index e1de118..5a2ae57 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -274,8 +274,8 @@ config SERIAL_8250_ACORN
- 
- config SERIAL_8250_FSL
- 	bool
--	depends on SERIAL_8250_CONSOLE && PPC_UDBG_16550
--	default PPC
-+	depends on SERIAL_8250_CONSOLE
-+	default PPC || ARM || ARM64
- 
- config SERIAL_8250_DW
- 	tristate "Support for Synopsys DesignWare 8250 quirks"
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 6823df9..fe241bd 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -150,6 +150,11 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		break;
- 	}
- 
-+	if (IS_ENABLED(CONFIG_SERIAL_8250_FSL) &&
-+	    (of_device_is_compatible(np, "fsl,ns16550") ||
-+	     of_device_is_compatible(np, "fsl,16550-FIFO64")))
-+		port->handle_irq = fsl8250_handle_irq;
-+
- 	return 0;
- out:
- 	if (info->clk)
--- 
-2.1.4
+Acked-by: Arnd Bergmann <arnd@arndb.de>
