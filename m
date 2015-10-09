@@ -1,99 +1,109 @@
-From: Jon Hunter <jonathanh@nvidia.com>
-Subject: [PATCH 1/4] serial: tegra: Handle another RX race condition
-Date: Fri, 9 Oct 2015 14:49:59 +0100
-Message-ID: <1444398602-24020-2-git-send-email-jonathanh@nvidia.com>
+From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 2/4] serial: tegra: Remove unnecessary return statements
+Date: Fri, 9 Oct 2015 14:50:00 +0100
+Message-ID: <1444398602-24020-3-git-send-email-jonathanh@nvidia.com>
 References: <1444398602-24020-1-git-send-email-jonathanh@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1444398602-24020-1-git-send-email-jonathanh@nvidia.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Laxman Dewangan <ldewangan@nvidia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Stephen Warren <swarren@wwwdotorg.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1444398602-24020-1-git-send-email-jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Commit 853a699739fe ("serial: tegra: handle race condition on uart rx
-side") attempted to fix a race condition between the RX end of
-transmission interrupt and RX DMA completion callback. Despite this
-fix there is still another case where these two paths can race and
-result in duplicated data. The race condition is as follows:
+Some functions in the serial-tegra driver have unnecessary return
+statements at the end of a void function and so remove them.
 
-1. DMA completion interrupt occurs and schedules tasklet to call DMA
-   callback.
-2. DMA callback for the UART driver starts to execute. This will copy
-   the data from the DMA buffer and restart the DMA. This is done under
-   uart port spinlock.
-3. During the callback, UART interrupt is raised for end of receive. The
-   UART ISR runs and waits to acquire port spinlock held by the DMA
-   callback.
-4. DMA callback gives up spinlock after copying the data, but before
-   restarting DMA.
-5. UART ISR acquires the spin lock and reads the same DMA buffer because
-   DMA has not been restarted yet.
-
-The release of the spinlock during the DMA callback was introduced by
-commit 9b88748b362c ("tty: serial: tegra: drop uart_port->lock before
-calling tty_flip_buffer_push()") to fix a spinlock lock-up issue when
-calling tty_flip_buffer_push(). However, since then commit a9c3f68f3cd8
-("tty: Fix low_latency BUG") migrated tty_flip_buffer_push() to always
-use a workqueue, allowing tty_flip_buffer_push() to be called from
-within atomic sections. Therefore, we can remove the unlocking of the
-spinlock from the DMA callback and UART ISR and this will ensure that
-the race condition no longer occurs.
-
-Reported-by: Christopher Freeman <cfreeman@nvidia.com>
-Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/tty/serial/serial-tegra.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/tty/serial/serial-tegra.c | 11 -----------
+ 1 file changed, 11 deletions(-)
 
 diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index cf0133ae762d..38b49f447bd7 100644
+index 38b49f447bd7..42583484d4b2 100644
 --- a/drivers/tty/serial/serial-tegra.c
 +++ b/drivers/tty/serial/serial-tegra.c
-@@ -607,9 +607,7 @@ static void tegra_uart_rx_dma_complete(void *args)
- 
- 	tegra_uart_handle_rx_pio(tup, port);
- 	if (tty) {
--		spin_unlock_irqrestore(&u->lock, flags);
- 		tty_flip_buffer_push(port);
--		spin_lock_irqsave(&u->lock, flags);
- 		tty_kref_put(tty);
+@@ -186,7 +186,6 @@ static void set_rts(struct tegra_uart_port *tup, bool active)
+ 		tegra_uart_write(tup, mcr, UART_MCR);
+ 		tup->mcr_shadow = mcr;
  	}
- 	tegra_uart_start_rx_dma(tup);
-@@ -622,13 +620,11 @@ done:
- 	spin_unlock_irqrestore(&u->lock, flags);
+-	return;
  }
  
--static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup,
--		unsigned long *flags)
-+static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup)
- {
- 	struct dma_tx_state state;
- 	struct tty_struct *tty = tty_port_tty_get(&tup->uport.state->port);
- 	struct tty_port *port = &tup->uport.state->port;
--	struct uart_port *u = &tup->uport;
- 	unsigned int count;
+ static void set_dtr(struct tegra_uart_port *tup, bool active)
+@@ -202,7 +201,6 @@ static void set_dtr(struct tegra_uart_port *tup, bool active)
+ 		tegra_uart_write(tup, mcr, UART_MCR);
+ 		tup->mcr_shadow = mcr;
+ 	}
+-	return;
+ }
  
- 	/* Deactivate flow control to stop sender */
-@@ -645,9 +641,7 @@ static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup,
+ static void tegra_uart_set_mctrl(struct uart_port *u, unsigned int mctrl)
+@@ -217,7 +215,6 @@ static void tegra_uart_set_mctrl(struct uart_port *u, unsigned int mctrl)
  
- 	tegra_uart_handle_rx_pio(tup, port);
- 	if (tty) {
--		spin_unlock_irqrestore(&u->lock, *flags);
+ 	dtr_enable = !!(mctrl & TIOCM_DTR);
+ 	set_dtr(tup, dtr_enable);
+-	return;
+ }
+ 
+ static void tegra_uart_break_ctl(struct uart_port *u, int break_ctl)
+@@ -511,7 +508,6 @@ static void tegra_uart_stop_tx(struct uart_port *u)
+ 	async_tx_ack(tup->tx_dma_desc);
+ 	xmit->tail = (xmit->tail + count) & (UART_XMIT_SIZE - 1);
+ 	tup->tx_in_progress = 0;
+-	return;
+ }
+ 
+ static void tegra_uart_handle_tx_pio(struct tegra_uart_port *tup)
+@@ -523,7 +519,6 @@ static void tegra_uart_handle_tx_pio(struct tegra_uart_port *tup)
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(&tup->uport);
+ 	tegra_uart_start_next_tx(tup);
+-	return;
+ }
+ 
+ static void tegra_uart_handle_rx_pio(struct tegra_uart_port *tup,
+@@ -545,8 +540,6 @@ static void tegra_uart_handle_rx_pio(struct tegra_uart_port *tup,
+ 		if (!uart_handle_sysrq_char(&tup->uport, ch) && tty)
+ 			tty_insert_flip_char(tty, ch, flag);
+ 	} while (1);
+-
+-	return;
+ }
+ 
+ static void tegra_uart_copy_rx_to_tty(struct tegra_uart_port *tup,
+@@ -691,7 +684,6 @@ static void tegra_uart_handle_modem_signal_change(struct uart_port *u)
+ 	/* Will start/stop_tx accordingly */
+ 	if (msr & UART_MSR_DCTS)
+ 		uart_handle_cts_change(&tup->uport, msr & UART_MSR_CTS);
+-	return;
+ }
+ 
+ static irqreturn_t tegra_uart_isr(int irq, void *data)
+@@ -799,7 +791,6 @@ static void tegra_uart_stop_rx(struct uart_port *u)
  		tty_flip_buffer_push(port);
--		spin_lock_irqsave(&u->lock, *flags);
  		tty_kref_put(tty);
  	}
- 	tegra_uart_start_rx_dma(tup);
-@@ -714,7 +708,7 @@ static irqreturn_t tegra_uart_isr(int irq, void *data)
- 		iir = tegra_uart_read(tup, UART_IIR);
- 		if (iir & UART_IIR_NO_INT) {
- 			if (is_rx_int) {
--				tegra_uart_handle_rx_dma(tup, &flags);
-+				tegra_uart_handle_rx_dma(tup);
- 				if (tup->rx_in_progress) {
- 					ier = tup->ier_shadow;
- 					ier |= (UART_IER_RLSI | UART_IER_RTOIE |
+-	return;
+ }
+ 
+ static void tegra_uart_hw_deinit(struct tegra_uart_port *tup)
+@@ -1077,7 +1068,6 @@ static void tegra_uart_flush_buffer(struct uart_port *u)
+ 	tup->tx_bytes = 0;
+ 	if (tup->tx_dma_chan)
+ 		dmaengine_terminate_all(tup->tx_dma_chan);
+-	return;
+ }
+ 
+ static void tegra_uart_shutdown(struct uart_port *u)
+@@ -1217,7 +1207,6 @@ static void tegra_uart_set_termios(struct uart_port *u,
+ 	tegra_uart_read(tup, UART_IER);
+ 
+ 	spin_unlock_irqrestore(&u->lock, flags);
+-	return;
+ }
+ 
+ static const char *tegra_uart_type(struct uart_port *u)
 -- 
 2.1.4
