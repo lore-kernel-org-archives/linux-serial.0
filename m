@@ -1,74 +1,58 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 4.3-rc5
-Date: Sat, 10 Oct 2015 09:21:19 -0700
-Message-ID: <20151010162119.GA14385@kroah.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH 4/5] drivers/tty: make serial/mpsc.c driver explicitly
+ non-modular
+Date: Sat, 10 Oct 2015 15:18:03 -0400
+Message-ID: <20151010191802.GT14103@windriver.com>
+References: <1440020889-12120-1-git-send-email-paul.gortmaker@windriver.com>
+ <1440020889-12120-5-git-send-email-paul.gortmaker@windriver.com>
+ <20151009133832.GA19165@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <20151009133832.GA19165@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 9ffecb10283508260936b96022d4ee43a779=
-8b4c:
+[Re: [PATCH 4/5] drivers/tty: make serial/mpsc.c driver explicitly non-modular] On 09/10/2015 (Fri 15:38) Thierry Reding wrote:
 
-  Linux 4.3-rc3 (2015-09-27 07:50:08 -0400)
+> On Wed, Aug 19, 2015 at 05:48:08PM -0400, Paul Gortmaker wrote:
 
-are available in the git repository at:
+[...]
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tt=
-y-4.3-rc5
+> >  static struct platform_driver mpsc_driver = {
+> >  	.probe	= mpsc_drv_probe,
+> > -	.remove	= mpsc_drv_remove,
+> >  	.driver	= {
+> >  		.name	= MPSC_CTLR_NAME,
+> >  	},
+> 
+> I don't think this is right. The driver can always be unbound from the
+> device via sysfs, in which case it will now leak resources and leave
+> behind a dangling UART port.
 
-for you to fetch changes up to 0c55627167870255158db1cde0d28366f91c8872=
-:
+I suppose it does open the window for root to do something else stupid
+he shouldn't be doing anyway...
 
-  drivers/tty: require read access for controlling terminal (2015-10-04=
- 19:20:30 +0100)
+I think the right thing to do here is for me to send a follow on patch
+that does also set:
 
-----------------------------------------------------------------
-TTY/Serial driver fixes for 4.3-rc5
+	.suppress_bind_attrs = true
 
-Here are a few bug fixes for the tty core that resolve reported issues,
-and some serial driver fixes as well (including the much-reported imx
-driver problem.)
+in the above block, since this is a console device used on 2005 vintage
+74xx based powerpc embedded targets, and is essentially always used in
+conjunction with SERIAL_MPSC_CONSOLE=y -- there is no sane reason anyone
+would ever want to unbind the builtin driver and lose the console.
 
-All of these have been in linux-next with no reported problems.
+I'll send a follow on patch doing the above if folks are in agreement
+with the above logic.
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Thanks,
+Paul.
+--
 
-----------------------------------------------------------------
-Dmitry Vyukov (3):
-      tty: fix data race in flush_to_ldisc
-      tty: fix data race in tty_buffer_flush
-      tty: fix data race on tty_buffer.commit
-
-=46abio Estevam (1):
-      Revert "serial: imx: remove unbalanced clk_prepare"
-
-Jann Horn (1):
-      drivers/tty: require read access for controlling terminal
-
-Kosuke Tatsukawa (1):
-      tty: fix stall caused by missing memory barrier in drivers/tty/n_=
-tty.c
-
-Leon Yu (1):
-      tty: don't leak cdev in tty_cdev_add()
-
-Mans Rullgard (1):
-      serial: 8250: add uart_config entry for PORT_RT2880
-
-Uwe Kleine-K=F6nig (1):
-      serial: atmel: fix error path of probe function
-
- drivers/tty/n_tty.c                 | 15 +++++---------
- drivers/tty/serial/8250/8250_port.c |  8 ++++++++
- drivers/tty/serial/atmel_serial.c   |  2 +-
- drivers/tty/serial/imx.c            | 20 +++++++++++++------
- drivers/tty/tty_buffer.c            | 22 +++++++++++++++-----
- drivers/tty/tty_io.c                | 40 +++++++++++++++++++++++++++++=
-++------
- 6 files changed, 79 insertions(+), 28 deletions(-)
+> 
+> Thierry
