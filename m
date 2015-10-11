@@ -1,66 +1,55 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 3/7] usb: gadget: gserial: Privatize close_wait
-Date: Sat, 10 Oct 2015 16:09:28 -0400
-Message-ID: <56197078.6000405@hurleysoftware.com>
-References: <1444507257-7513-1-git-send-email-peter@hurleysoftware.com>
- <1444507257-7513-4-git-send-email-peter@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <1444507257-7513-4-git-send-email-peter@hurleysoftware.com>
-Sender: netdev-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felipe Balbi <balbi@ti.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, David Laight <David.Laight@aculab.com>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, David Miller <davem@davemloft.net>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 1/2] serial: at91, fix rs485 properties
+Date: Sun, 11 Oct 2015 15:22:44 +0200
+Message-ID: <1444569765-9081-1-git-send-email-jslaby@suse.cz>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Elen Song <elen.song@atmel.com>
 List-Id: linux-serial@vger.kernel.org
 
-[ forgot to addr Felipe here, sorry ]
+There is a misplaced bracket in atmel_init_rs485 which sets
+rs485-rx-during-tx and rs485-enabled-at-boot-time only if
+rs485-rts-delay is set in of.
 
-On 10/10/2015 04:00 PM, Peter Hurley wrote:
-> close_wait is no longer needed or provided by the tty core.
-> Move close_wait to struct gs_port.
-> 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/usb/gadget/function/u_serial.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/function/u_serial.c
-> index 7ee0579..42894f5 100644
-> --- a/drivers/usb/gadget/function/u_serial.c
-> +++ b/drivers/usb/gadget/function/u_serial.c
-> @@ -114,6 +114,7 @@ struct gs_port {
->  	struct gs_buf		port_write_buf;
->  	wait_queue_head_t	drain_wait;	/* wait while writes drain */
->  	bool                    write_busy;
-> +	wait_queue_head_t	close_wait;
->  
->  	/* REVISIT this state ... */
->  	struct usb_cdc_line_coding port_line_coding;	/* 8-N-1 etc */
-> @@ -884,7 +885,7 @@ static void gs_close(struct tty_struct *tty, struct file *file)
->  	pr_debug("gs_close: ttyGS%d (%p,%p) done!\n",
->  			port->port_num, tty, file);
->  
-> -	wake_up(&port->port.close_wait);
-> +	wake_up(&port->close_wait);
->  exit:
->  	spin_unlock_irq(&port->port_lock);
->  }
-> @@ -1044,6 +1045,7 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
->  	tty_port_init(&port->port);
->  	spin_lock_init(&port->port_lock);
->  	init_waitqueue_head(&port->drain_wait);
-> +	init_waitqueue_head(&port->close_wait);
->  
->  	tasklet_init(&port->push, gs_rx_push, (unsigned long) port);
->  
-> @@ -1074,7 +1076,7 @@ static void gserial_free_port(struct gs_port *port)
->  {
->  	tasklet_kill(&port->push);
->  	/* wait for old opens to finish */
-> -	wait_event(port->port.close_wait, gs_closed(port));
-> +	wait_event(port->close_wait, gs_closed(port));
->  	WARN_ON(port->port_usb != NULL);
->  	tty_port_destroy(&port->port);
->  	kfree(port);
-> 
+This is clearly a bug, so fix it by moving the bracket to the proper
+place.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Elen Song <elen.song@atmel.com>
+---
+ drivers/tty/serial/atmel_serial.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 473538ebbe8c..ad3e5768aab1 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1682,15 +1682,15 @@ static void atmel_init_rs485(struct uart_port *port,
+ 	struct atmel_uart_data *pdata = dev_get_platdata(&pdev->dev);
+ 
+ 	if (np) {
++		struct serial_rs485 *rs485conf = &port->rs485;
+ 		u32 rs485_delay[2];
+ 		/* rs485 properties */
+ 		if (of_property_read_u32_array(np, "rs485-rts-delay",
+ 					rs485_delay, 2) == 0) {
+-			struct serial_rs485 *rs485conf = &port->rs485;
+-
+ 			rs485conf->delay_rts_before_send = rs485_delay[0];
+ 			rs485conf->delay_rts_after_send = rs485_delay[1];
+ 			rs485conf->flags = 0;
++		}
+ 
+ 		if (of_get_property(np, "rs485-rx-during-tx", NULL))
+ 			rs485conf->flags |= SER_RS485_RX_DURING_TX;
+@@ -1698,7 +1698,6 @@ static void atmel_init_rs485(struct uart_port *port,
+ 		if (of_get_property(np, "linux,rs485-enabled-at-boot-time",
+ 								NULL))
+ 			rs485conf->flags |= SER_RS485_ENABLED;
+-		}
+ 	} else {
+ 		port->rs485       = pdata->rs485;
+ 	}
+-- 
+2.6.1
