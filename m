@@ -1,50 +1,55 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH] tty: disable unbind for old 74xx based serial/mpsc console
- port
-Date: Tue, 13 Oct 2015 19:06:30 -0400
-Message-ID: <1444777590-15674-1-git-send-email-paul.gortmaker@windriver.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Thierry Reding <thierry.reding@gmail.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linuxppc-dev@lists.ozlabs.org
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH] n_tty: Remove reader wakeups for TTY_BREAK/TTY_PARITY chars
+Date: Wed, 14 Oct 2015 07:52:27 -0400
+Message-ID: <1444823547-8064-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-V2UgcmVjZW50bHkgZ290IHJpZCBvZiBzb21lIG1vZHVsYXIgY29kZSBpbiB0aGlzIGRyaXZlciBh
-bmQgYWxzbwpnb3QgcmlkIG9mIHRoZSB1bnVzZWQgIi5yZW1vdmUiIGZ1bmN0aW9uIGF0IHRoZSBz
-YW1lIHRpbWUuICBUaGllcnJ5Cm5vdGVkIHRoYXQgaXQgd2FzIGhvd2V2ZXIgcG9zc2libGUgdG8g
-Zm9yY2UgdGhlIHJlbW92ZSB0aHJvdWdoIHRoZQpiaW5kL3VuYmluZCBpbnRlcmZhY2UuCgpTaW5j
-ZSB0aGlzIGlzIGEgY29uc29sZSBkZXZpY2UgdXNlZCBvbiAyMDA1IHZpbnRhZ2UgNzR4eCBiYXNl
-ZApwb3dlcnBjIGVtYmVkZGVkIHRhcmdldHMsIGFuZCBpcyBlc3NlbnRpYWxseSBhbHdheXMgdXNl
-ZCBpbgpjb25qdW5jdGlvbiB3aXRoIFNFUklBTF9NUFNDX0NPTlNPTEU9eSAtLSB0aGVyZSBpcyBu
-byBzYW5lIHJlYXNvbgphbnlvbmUgd291bGQgZXZlciB3YW50IHRvIHVuYmluZCB0aGUgYnVpbHRp
-biBkcml2ZXIgYW5kIGxvc2UgdGhlCmNvbnNvbGUuICBTbyB3ZSBqdXN0IGV4cGxpY2l0bHkgYmxv
-Y2sgYmluZC91bmJpbmQgb3BlcmF0aW9ucyBhbmQKcHJldmVudCByb290IGZyb20gc2hvb3Rpbmcg
-dGhlbXNlbHZlcyBpbiB0aGUgZm9vdC4KCkNjOiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBs
-aW51eGZvdW5kYXRpb24ub3JnPgpDYzogSmlyaSBTbGFieSA8anNsYWJ5QHN1c2UuY29tPgpDYzog
-VGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4KQ2M6IGxpbnV4LXNlcmlh
-bEB2Z2VyLmtlcm5lbC5vcmcKQ2M6IGxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnClNpZ25l
-ZC1vZmYtYnk6IFBhdWwgR29ydG1ha2VyIDxwYXVsLmdvcnRtYWtlckB3aW5kcml2ZXIuY29tPgot
-LS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9tcHNjLmMgfCAzICsrLQogMSBmaWxlIGNoYW5nZWQsIDIg
-aW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3Nl
-cmlhbC9tcHNjLmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbXBzYy5jCmluZGV4IDJmNDNhNThjYjM5
-Mi4uY2FkZmQxY2ZhZTJiIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvbXBzYy5jCisr
-KyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9tcHNjLmMKQEAgLTIxMDksNyArMjEwOSw4IEBAIHN0YXRp
-YyBpbnQgbXBzY19kcnZfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqZGV2KQogc3RhdGlj
-IHN0cnVjdCBwbGF0Zm9ybV9kcml2ZXIgbXBzY19kcml2ZXIgPSB7CiAJLnByb2JlCT0gbXBzY19k
-cnZfcHJvYmUsCiAJLmRyaXZlcgk9IHsKLQkJLm5hbWUJPSBNUFNDX0NUTFJfTkFNRSwKKwkJLm5h
-bWUJCQk9IE1QU0NfQ1RMUl9OQU1FLAorCQkuc3VwcHJlc3NfYmluZF9hdHRycwk9IHRydWUsCiAJ
-fSwKIH07CiAKLS0gCjIuNi4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpMaW51eHBwYy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5v
-emxhYnMub3JnCmh0dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
+Waking the reader immediately upon receipt of TTY_BREAK or TTY_PARITY
+chars has no effect on the outcome of read():
+1. Only non-canonical/EXTPROC mode applies since canonical mode
+   will not return data until a line termination is received anyway
+2. EXTPROC mode - the reader will always be woken by the input worker
+3. Non-canonical modes
+   a. MIN == 0, TIME == 0
+   b. MIN == 0, TIME > 0
+   c. MIN > 0, TIME > 0
+      minimum_to_wake is always 1 in these modes so the reader will always
+      be woken by the input worker
+   d. MIN > 0, TIME == 0
+      although the reader will not be woken by the input worker unless the
+      minimum data is received, the reader would not otherwise have
+      returned the received data
+
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/n_tty.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index bd383c4..53ba0d6 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1180,8 +1180,6 @@ static void n_tty_receive_break(struct tty_struct *tty)
+ 		put_tty_queue('\0', ldata);
+ 	}
+ 	put_tty_queue('\0', ldata);
+-	if (waitqueue_active(&tty->read_wait))
+-		wake_up_interruptible_poll(&tty->read_wait, POLLIN);
+ }
+ 
+ /**
+@@ -1238,8 +1236,6 @@ static void n_tty_receive_parity_error(struct tty_struct *tty, unsigned char c)
+ 			put_tty_queue('\0', ldata);
+ 	} else
+ 		put_tty_queue(c, ldata);
+-	if (waitqueue_active(&tty->read_wait))
+-		wake_up_interruptible_poll(&tty->read_wait, POLLIN);
+ }
+ 
+ static void
+-- 
+2.6.1
