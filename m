@@ -1,671 +1,274 @@
-From: "H. Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
-Subject: Re: [PATCH v3 3/3] misc: Add w2sg0004 gps receiver driver
-Date: Fri, 16 Oct 2015 20:15:50 +0200
-Message-ID: <85389082-8473-43AB-AB86-7C0E8330E8EE@goldelico.com>
-References: <cover.1445018912.git.hns@goldelico.com> <c53ab7a3ca68f8b9f802c1ea799d72e1cb04a1eb.1445018913.git.hns@goldelico.com>
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v3 1/3] tty: serial core: provide a method to search uart
+ by phandle
+Date: Fri, 16 Oct 2015 19:39:00 +0100
+Message-ID: <20151016183900.GF4039@leverpostej>
+References: <cover.1445018912.git.hns@goldelico.com>
+ <c46694357c903d8791f07e2ec287c684832056a5.1445018913.git.hns@goldelico.com>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <c53ab7a3ca68f8b9f802c1ea799d72e1cb04a1eb.1445018913.git.hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>
-Cc: Sergei Zviagintsev <sergei-E844GTqJAzo@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marek Belisko <marek-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <c46694357c903d8791f07e2ec287c684832056a5.1445018913.git.hns@goldelico.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, Sergei Zviagintsev <sergei@s15v.net>, Peter Hurley <peter@hurleysoftware.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Sebastian Reichel <sre@kernel.org>, NeilBrown <neil@brown.name>, Grant Likely <grant.likely@linaro.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Marek Belisko <marek@goldelico.com>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On Fri, Oct 16, 2015 at 08:08:33PM +0200, H. Nikolaus Schaller wrote:
+> 1. add uart_ports to a search list as soon as they are registered
+> 2. provide a function to search an uart_port by phandle. This copies the
+>    mechanism how devm_usb_get_phy_by_phandle() works
+> 3. add a bindings document how serial slaves should use this feature
+> 4. add Documentation how serla slaves work in general
 
-Am 16.10.2015 um 20:08 schrieb H. Nikolaus Schaller <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>:
+I thought maintainers preferred the child node approach to the phandle
+approach, and this series comes with no rationale (nor change log,
+despite being 'v3').
 
-> Add driver for Wi2Wi W2SG0004/84 GPS module connected through uart.
-> Use uart slave + notification hooks to glue with tty and turn on/off the
-> module. Detect if the module is turned on (sends data) but should be off,
-> e.g. if already turned on during boot.
-> 
-> Additionally, rfkill block/unblock can be used to control an external LNA
-> (and power down the module if not needed).
-> 
-> The driver concept is based on code developed by NeilBrown <neilb-l3A5Bk7waGM@public.gmane.org>
-> but simplified and adapted to use the serial slave API.
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
+I don't understand. What is going on here?
+
+Mark.
+
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 > ---
-> .../devicetree/bindings/misc/wi2wi,w2sg0004.txt    |  18 +
-> .../devicetree/bindings/vendor-prefixes.txt        |   1 +
-> drivers/misc/Kconfig                               |  18 +
-> drivers/misc/Makefile                              |   1 +
-> drivers/misc/w2sg0004.c                            | 443 +++++++++++++++++++++
-> drivers/tty/serial/serial_core.c                   |  25 +-
-^^^sorry this change is garbage from patch editing^^^
-> include/linux/w2sg0004.h                           |  27 ++
-> 7 files changed, 522 insertions(+), 11 deletions(-)
-> create mode 100644 Documentation/devicetree/bindings/misc/wi2wi,w2sg0004.txt
-> create mode 100644 drivers/misc/w2sg0004.c
-> create mode 100644 include/linux/w2sg0004.h
+>  .../devicetree/bindings/serial/slaves.txt          |  16 +++
+>  Documentation/serial/slaves.txt                    |  36 +++++++
+>  drivers/tty/serial/serial_core.c                   | 107 +++++++++++++++++++++
+>  include/linux/serial_core.h                        |  10 ++
+>  4 files changed, 169 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/slaves.txt
+>  create mode 100644 Documentation/serial/slaves.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/misc/wi2wi,w2sg0004.txt b/Documentation/devicetree/bindings/misc/wi2wi,w2sg0004.txt
+> diff --git a/Documentation/devicetree/bindings/serial/slaves.txt b/Documentation/devicetree/bindings/serial/slaves.txt
 > new file mode 100644
-> index 0000000..ef0d6d5
+> index 0000000..353b87f
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/misc/wi2wi,w2sg0004.txt
-> @@ -0,0 +1,18 @@
-> +Wi2Wi GPS module connected through UART
+> +++ b/Documentation/devicetree/bindings/serial/slaves.txt
+> @@ -0,0 +1,16 @@
+> +Device-Tree bindings for UART slave devices
 > +
-> +Required properties:
-> +- compatible: wi2wi,w2sg0004 or wi2wi,w2sg0084
-> +- on-off-gpio: the GPIO that controls the module's on-off toggle input
-> +- uart: the uart we are connected to (provides DTR for power control)
+> +A node describing a slave device defines a phandle to reference the UART
+> +the device is connected to. In the (unexpected) case of two or more UARTs
+> +a list of phandles can be specified.
 > +
-> +Optional properties:
-> +- lna-suppy: an (optional) LNA regulator that is enabled together with the GPS receiver
+> +properties:
+> +	- uart: (list of) phandle(s) of UART(s) the device is connected to
+> +
 > +
 > +example:
 > +
-> +        gps_receiver: w2sg0004 {
-> +                compatible = "wi2wi,w2sg0004";
-> +                lna-supply = <&vsim>;	/* LNA regulator */
-> +                on-off-gpio = <&gpio5 17 0>;	/* GPIO_145: trigger for turning on/off w2sg0004 */
-> +                uart = <&uart1>;	/* we are a slave of uart1 */
-> +        }
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> index 82d2ac9..a778eb5 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> @@ -230,6 +230,7 @@ via	VIA Technologies, Inc.
-> virtio	Virtual I/O Device Specification, developed by the OASIS consortium
-> voipac	Voipac Technologies s.r.o.
-> wexler	Wexler
-> +wi2wi	Wi2Wi, Inc.
-> winbond Winbond Electronics corp.
-> wlf	Wolfson Microelectronics
-> wm	Wondermedia Technologies, Inc.
-> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-> index ccccc29..1279faf 100644
-> --- a/drivers/misc/Kconfig
-> +++ b/drivers/misc/Kconfig
-> @@ -537,4 +537,22 @@ source "drivers/misc/mic/Kconfig"
-> source "drivers/misc/genwqe/Kconfig"
-> source "drivers/misc/echo/Kconfig"
-> source "drivers/misc/cxl/Kconfig"
-> +
-> +menu "GTA04 misc hardware support"
-> +
-> +config W2SG0004
-> +	tristate "W2SG0004 on/off control"
-> +	depends on GPIOLIB
-> +	help
-> +	  Enable on/off control of W2SG0004 GPS to allow powering up/down if
-> +	  the /dev/tty$n is opened/closed.
-> +	  It also provides a rfkill gps node to control the LNA power.
-> +
-> +config W2SG0004_DEBUG
-> +	bool "W2SG0004 on/off debugging"
-> +	depends on W2SG0004
-> +	help
-> +	  Enable driver debugging mode of W2SG0004 GPS.
-> +
-> +endmenu
-> endmenu
-> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-> index 537d7f3..a153a89 100644
-> --- a/drivers/misc/Makefile
-> +++ b/drivers/misc/Makefile
-> @@ -54,5 +54,6 @@ obj-$(CONFIG_SRAM)		+= sram.o
-> obj-y				+= mic/
-> obj-$(CONFIG_GENWQE)		+= genwqe/
-> obj-$(CONFIG_ECHO)		+= echo/
-> +obj-$(CONFIG_W2SG0004)		+= w2sg0004.o
-> obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
-> obj-$(CONFIG_CXL_BASE)		+= cxl/
-> diff --git a/drivers/misc/w2sg0004.c b/drivers/misc/w2sg0004.c
+> +	gps {
+> +		compatible = "wi2wi,w2sg0004";
+> +		uart = <&uart1>;
+> +	};
+> diff --git a/Documentation/serial/slaves.txt b/Documentation/serial/slaves.txt
 > new file mode 100644
-> index 0000000..6aadf44
+> index 0000000..6f8d44d
 > --- /dev/null
-> +++ b/drivers/misc/w2sg0004.c
-> @@ -0,0 +1,443 @@
-> +/*
-> + * w2sg0004.c
-> + * Driver for power controlling the w2sg0004/w2sg0084 GPS receiver.
-> + *
-> + * This receiver has an ON/OFF pin which must be toggled to
-> + * turn the device 'on' of 'off'.  A high->low->high toggle
-> + * will switch the device on if it is off, and off if it is on.
-> + *
-> + * To enable receiving on/off requests we register with the
-> + * UART power management notifications.
-> + *
-> + * It is not possible to directly detect the state of the device.
-> + * However when it is on it will send characters on a UART line
-> + * regularly.
-> + *
-> + * To detect that the power state is out of sync (e.g. if GPS
-> + * was enabled before a reboot), we register for UART data received
-> + * notifications.
-> + *
-> + * In addition we register as a rfkill client so that we can
-> + * control the LNA power.
-> + *
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/sched.h>
-> +#include <linux/irq.h>
-> +#include <linux/slab.h>
-> +#include <linux/err.h>
-> +#include <linux/delay.h>
-> +#include <linux/of.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/of_gpio.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/w2sg0004.h>
-> +#include <linux/workqueue.h>
-> +#include <linux/rfkill.h>
-> +#include <linux/serial_core.h>
-> +
-> +#ifdef CONFIG_W2SG0004_DEBUG
-> +#undef pr_debug
-> +#define pr_debug printk
-> +#endif
-> +
-> +/*
-> + * There seems to be restrictions on how quickly we can toggle the
-> + * on/off line.  data sheets says "two rtc ticks", whatever that means.
-> + * If we do it too soon it doesn't work.
-> + * So we have a state machine which uses the common work queue to ensure
-> + * clean transitions.
-> + * When a change is requested we record that request and only act on it
-> + * once the previous change has completed.
-> + * A change involves a 10ms low pulse, and a 990ms raised level, so only
-> + * one change per second.
-> + */
-> +
-> +enum w2sg_state {
-> +	W2SG_IDLE,	/* is not changing state */
-> +	W2SG_PULSE,	/* activate on/off impulse */
-> +	W2SG_NOPULSE	/* deactivate on/off impulse */
-> +};
-> +
-> +struct w2sg_data {
-> +	struct		rfkill *rf_kill;
-> +	struct		regulator *lna_regulator;
-> +	int		lna_blocked;	/* rfkill block gps active */
-> +	int		lna_is_off;	/* LNA is currently off */
-> +	int		is_on;		/* current state (0/1) */
-> +	unsigned long	last_toggle;
-> +	unsigned long	backoff;	/* time to wait since last_toggle */
-> +	int		on_off_gpio;	/* the on-off gpio number */
-> +	struct uart_port *uart;		/* the drvdata of the uart or tty */
-> +	enum w2sg_state	state;
-> +	int		requested;	/* requested state (0/1) */
-> +	int		suspended;
-> +	spinlock_t	lock;
-> +	struct delayed_work work;
-> +};
-> +
-> +static int w2sg_data_set_lna_power(struct w2sg_data *data)
-> +{
-> +	int ret = 0;
-> +	int off = data->suspended || !data->requested || data->lna_blocked;
-> +
-> +	pr_debug("%s: %s\n", __func__, off ? "off" : "on");
-> +
-> +	if (off != data->lna_is_off) {
-> +		data->lna_is_off = off;
-> +		if (!IS_ERR_OR_NULL(data->lna_regulator)) {
-> +			if (off)
-> +				regulator_disable(data->lna_regulator);
-> +			else
-> +				ret = regulator_enable(data->lna_regulator);
-> +		}
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static void w2sg_data_set_power(void *pdata, int val)
-> +{
-> +	struct w2sg_data *data = (struct w2sg_data *) pdata;
-> +	unsigned long flags;
-> +
-> +	pr_debug("%s to %d (%d)\n", __func__, val, data->requested);
-> +
-> +	spin_lock_irqsave(&data->lock, flags);
-> +
-> +	if (val && !data->requested) {
-> +		data->requested = true;
-> +	} else if (!val && data->requested) {
-> +		data->backoff = HZ;
-> +		data->requested = false;
-> +	} else
-> +		goto unlock;
-> +
-> +	pr_debug("w2sg scheduled for %d\n", data->requested);
-> +
-> +	if (!data->suspended)
-> +		schedule_delayed_work(&data->work, 0);
-> +unlock:
-> +	spin_unlock_irqrestore(&data->lock, flags);
-> +}
-> +
-> +/* called each time data is received by the host (i.e. sent by the w2sg0004) */
-> +
-> +static int rx_notification(void *pdata, unsigned int *c)
-> +{
-> +	struct w2sg_data *data = (struct w2sg_data *) pdata;
-> +	unsigned long flags;
-> +
-> +	if (!data->requested && !data->is_on) {
-> +		/* we have received a RX signal while GPS should be off */
-> +		pr_debug("%02x!", *c);
-> +
-> +		if ((data->state == W2SG_IDLE) &&
-> +		    time_after(jiffies,
-> +		    data->last_toggle + data->backoff)) {
-> +			/* Should be off by now, time to toggle again */
-> +			pr_debug("w2sg has sent data although it should be off!\n");
-> +			data->is_on = true;
-> +			data->backoff *= 2;
-> +			spin_lock_irqsave(&data->lock, flags);
-> +			if (!data->suspended)
-> +				schedule_delayed_work(&data->work, 0);
-> +			spin_unlock_irqrestore(&data->lock, flags);
-> +		}
-> +	}
-> +	return 0;	/* forward to tty */
-> +}
-> +
-> +/* called by uart modem control line changes (DTR) */
-> +
-> +static int w2sg_mctrl(void *pdata, int val)
-> +{
-> +	pr_debug("%s(...,%x)\n", __func__, val);
-> +	val = (val & TIOCM_DTR) != 0;	/* DTR controls power on/off */
-> +	w2sg_data_set_power((struct w2sg_data *) pdata, val);
-> +	return 0;
-> +}
-> +
-> +/* try to toggle the power state by sending a pulse to the on-off GPIO */
-> +
-> +static void toggle_work(struct work_struct *work)
-> +{
-> +	struct w2sg_data *data = container_of(work, struct w2sg_data,
-> +					      work.work);
-> +
-> +	switch (data->state) {
-> +	case W2SG_IDLE:
-> +		spin_lock_irq(&data->lock);
-> +		if (data->requested == data->is_on) {
-> +			spin_unlock_irq(&data->lock);
-> +			return;
-> +		}
-> +		spin_unlock_irq(&data->lock);
-> +		w2sg_data_set_lna_power(data);	/* update LNA power state */
-> +		gpio_set_value_cansleep(data->on_off_gpio, 0);
-> +		data->state = W2SG_PULSE;
-> +
-> +		pr_debug("w2sg: power gpio ON\n");
-> +
-> +		schedule_delayed_work(&data->work,
-> +				      msecs_to_jiffies(10));
-> +		break;
-> +
-> +	case W2SG_PULSE:
-> +		gpio_set_value_cansleep(data->on_off_gpio, 1);
-> +		data->last_toggle = jiffies;
-> +		data->state = W2SG_NOPULSE;
-> +		data->is_on = !data->is_on;
-> +
-> +		pr_debug("w2sg: power gpio OFF\n");
-> +
-> +		schedule_delayed_work(&data->work,
-> +				      msecs_to_jiffies(10));
-> +		break;
-> +
-> +	case W2SG_NOPULSE:
-> +		data->state = W2SG_IDLE;
-> +		pr_debug("w2sg: idle\n");
-> +
-> +		break;
-> +
-> +	}
-> +}
-> +
-> +static int w2sg_data_rfkill_set_block(void *pdata, bool blocked)
-> +{
-> +	struct w2sg_data *data = pdata;
-> +
-> +	pr_debug("%s: blocked: %d\n", __func__, blocked);
-> +
-> +	data->lna_blocked = blocked;
-> +
-> +	return w2sg_data_set_lna_power(data);
-> +}
-> +
-> +static struct rfkill_ops w2sg_data0004_rfkill_ops = {
-> +	.set_block = w2sg_data_rfkill_set_block,
-> +};
-> +
-> +static int w2sg_data_probe(struct platform_device *pdev)
-> +{
-> +	struct w2sg_pdata *pdata = dev_get_platdata(&pdev->dev);
-> +	struct w2sg_data *data;
-> +	struct rfkill *rf_kill;
-> +	int err;
-> +
-> +	pr_debug("%s()\n", __func__);
-> +
-> +	if (pdev->dev.of_node) {
-> +		struct device *dev = &pdev->dev;
-> +		enum of_gpio_flags flags;
-> +
-> +		pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-> +		if (!pdata)
-> +			return -ENOMEM;
-> +
-> +		pdata->on_off_gpio = of_get_named_gpio_flags(dev->of_node,
-> +							     "on-off-gpio", 0,
-> +							     &flags);
-> +
-> +		if (pdata->on_off_gpio == -EPROBE_DEFER)
-> +			return -EPROBE_DEFER;	/* defer until we have all gpios */
-> +
-> +		pdata->lna_regulator = devm_regulator_get_optional(dev, "lna");
-> +
-> +		pr_debug("%s() lna_regulator = %p\n", __func__, pdata->lna_regulator);
-> +
-> +		pdev->dev.platform_data = pdata;
-> +	}
-> +
-> +	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-> +	if (data == NULL)
-> +		return -ENOMEM;
-> +
-> +	data->lna_regulator = pdata->lna_regulator;
-> +	data->lna_blocked = true;
-> +	data->lna_is_off = true;
-> +
-> +	data->on_off_gpio = pdata->on_off_gpio;
-> +
-> +	data->is_on = false;
-> +	data->requested = false;
-> +	data->state = W2SG_IDLE;
-> +	data->last_toggle = jiffies;
-> +	data->backoff = HZ;
-> +
-> +#ifdef CONFIG_OF
-> +	data->uart = devm_serial_get_uart_by_phandle(&pdev->dev, "uart", 0);
-> +	if (IS_ERR(data->uart)) {
-> +		if (PTR_ERR(data->uart) == -EPROBE_DEFER)
-> +			return -EPROBE_DEFER;	/* we can't probe yet */
-> +		data->uart = NULL;	/* no UART */
-> +		}
-> +#endif
-> +
-> +	INIT_DELAYED_WORK(&data->work, toggle_work);
-> +	spin_lock_init(&data->lock);
-> +
-> +	err = devm_gpio_request(&pdev->dev, data->on_off_gpio, "w2sg0004-on-off");
-> +	if (err < 0)
-> +		goto out;
-> +
-> +	gpio_direction_output(data->on_off_gpio, false);
-> +
-> +	if (data->uart) {
-> +		struct ktermios termios = {
-> +			.c_iflag = IGNBRK,
-> +			.c_oflag = 0,
-> +			.c_cflag = B9600 | CS8,
-> +			.c_lflag = 0,
-> +			.c_line = 0,
-> +			.c_ispeed = 9600,
-> +			.c_ospeed = 9600
-> +		};
-> +		uart_register_slave(data->uart, data);
-> +		uart_register_mctrl_notification(data->uart, w2sg_mctrl);
-> +		uart_register_rx_notification(data->uart, rx_notification,
-> +					      &termios);
-> +	}
-> +
-> +	rf_kill = rfkill_alloc("GPS", &pdev->dev, RFKILL_TYPE_GPS,
-> +				&w2sg_data0004_rfkill_ops, data);
-> +	if (rf_kill == NULL) {
-> +		err = -ENOMEM;
-> +		goto err_rfkill;
-> +	}
-> +
-> +	err = rfkill_register(rf_kill);
-> +	if (err) {
-> +		dev_err(&pdev->dev, "Cannot register rfkill device\n");
-> +		goto err_rfkill;
-> +	}
-> +
-> +	data->rf_kill = rf_kill;
-> +
-> +	platform_set_drvdata(pdev, data);
-> +
-> +	pr_debug("w2sg0004 probed\n");
-> +
-> +#ifdef CONFIG_W2SG0004_DEBUG
-> +	/* turn on for debugging rx notifications */
-> +	pr_debug("w2sg power gpio ON\n");
-> +	gpio_set_value_cansleep(data->on_off_gpio, 1);
-> +	mdelay(100);
-> +	pr_debug("w2sg power gpio OFF\n");
-> +	gpio_set_value_cansleep(data->on_off_gpio, 0);
-> +	mdelay(300);
-> +#endif
-> +
-> +	/* if we won't receive mctrl notifications, turn on.
-> +	 * otherwise keep off until DTR is asserted through mctrl.
-> +	 */
-> +
-> +	w2sg_data_set_power(data, !data->uart);
-> +
-> +	return 0;
-> +
-> +err_rfkill:
-> +	rfkill_destroy(rf_kill);
-> +out:
-> +	return err;
-> +}
-> +
-> +static int w2sg_data_remove(struct platform_device *pdev)
-> +{
-> +	struct w2sg_data *data = platform_get_drvdata(pdev);
-> +
-> +	cancel_delayed_work_sync(&data->work);
-> +
-> +	if (data->uart) {
-> +		uart_register_rx_notification(data->uart, NULL, NULL);
-> +		uart_register_slave(data->uart, NULL);
-> +	}
-> +	return 0;
-> +}
-> +
-> +static int w2sg_data_suspend(struct device *dev)
-> +{
-> +	struct w2sg_data *data = dev_get_drvdata(dev);
-> +
-> +	spin_lock_irq(&data->lock);
-> +	data->suspended = true;
-> +	spin_unlock_irq(&data->lock);
-> +
-> +	cancel_delayed_work_sync(&data->work);
-> +
-> +	w2sg_data_set_lna_power(data);	/* shuts down if needed */
-> +
-> +	if (data->state == W2SG_PULSE) {
-> +		msleep(10);
-> +		gpio_set_value_cansleep(data->on_off_gpio, 1);
-> +		data->last_toggle = jiffies;
-> +		data->is_on = !data->is_on;
-> +		data->state = W2SG_NOPULSE;
-> +	}
-> +
-> +	if (data->state == W2SG_NOPULSE) {
-> +		msleep(10);
-> +		data->state = W2SG_IDLE;
-> +	}
-> +
-> +	if (data->is_on) {
-> +		pr_info("GPS off for suspend %d %d %d\n", data->requested,
-> +			data->is_on, data->lna_is_off);
-> +
-> +		gpio_set_value_cansleep(data->on_off_gpio, 0);
-> +		msleep(10);
-> +		gpio_set_value_cansleep(data->on_off_gpio, 1);
-> +		data->is_on = 0;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int w2sg_data_resume(struct device *dev)
-> +{
-> +	struct w2sg_data *data = dev_get_drvdata(dev);
-> +
-> +	spin_lock_irq(&data->lock);
-> +	data->suspended = false;
-> +	spin_unlock_irq(&data->lock);
-> +
-> +	pr_info("GPS resuming %d %d %d\n", data->requested,
-> +		data->is_on, data->lna_is_off);
-> +
-> +	schedule_delayed_work(&data->work, 0);	/* enables LNA if needed */
-> +
-> +	return 0;
-> +}
-> +
-> +#if defined(CONFIG_OF)
-> +static const struct of_device_id w2sg0004_of_match[] = {
-> +	{ .compatible = "wi2wi,w2sg0004" },
-> +	{ .compatible = "wi2wi,w2sg0084" },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, w2sg0004_of_match);
-> +#endif
-> +
-> +SIMPLE_DEV_PM_OPS(w2sg_pm_ops, w2sg_data_suspend, w2sg_data_resume);
-> +
-> +static struct platform_driver w2sg_data_driver = {
-> +	.probe		= w2sg_data_probe,
-> +	.remove		= w2sg_data_remove,
-> +	.driver = {
-> +		.name	= "w2sg0004",
-> +		.owner	= THIS_MODULE,
-> +		.pm	= &w2sg_pm_ops,
-> +		.of_match_table = of_match_ptr(w2sg0004_of_match)
-> +	},
-> +};
-> +
-> +module_platform_driver(w2sg_data_driver);
-> +
-> +MODULE_ALIAS("w2sg0004");
-> +
-> +MODULE_AUTHOR("NeilBrown <neilb-l3A5Bk7waGM@public.gmane.org>");
-> +MODULE_DESCRIPTION("w2sg0004 GPS power management driver");
-> +MODULE_LICENSE("GPL v2");
-VVVsorry this change is garbage from patch editingVVV
+> +++ b/Documentation/serial/slaves.txt
+> @@ -0,0 +1,36 @@
+> +UART slave device support
+> +
+> +A remote device connected to a RS232 interface is usually power controlled by the DTR line.
+> +The DTR line is managed automatically by the UART driver for open() and close() syscalls
+> +and on demand by tcsetattr().
+> +
+> +With embedded devices, the serial peripheral might be directly and always connected to the UART
+> +and there might be no physical DTR line involved. Power control (on/off) has to be done by some
+> +chip specific device driver (which we call "UART slave") through some mechanisms (I2C, GPIOs etc.)
+> +not related to the serial interface. Some devices do not explicitly tell their power state except
+> +by sending or not sending data to the UART. In such a case the device driver must be able to monitor
+> +data activity. The role of the device driver is to encapsulate such power control in a single place.
+> +
+> +This patch series allows to support such drivers by providing:
+> +* a mechanism that a slave driver can identify the UART instance it is connected to
+> +* a mechanism that UART slave drivers can register to be notified
+> +* notfications for DTR (and other modem control) state changes
+> +* notifications that the UART has received some data from the UART
+> +
+> +A slave device simply adds a phandle reference to the UART it is connected to, e.g.
+> +
+> +	gps {
+> +		compatible = "wi2wi,w2sg0004";
+> +		uart = <&uart1>;
+> +	};
+> +
+> +The slave driver calls devm_serial_get_uart_by_phandle() to identify the uart driver.
+> +This API follows the concept of devm_usb_get_phy_by_phandle().
+> +
+> +A slave device driver registers itself with serial_register_slave() to receive notifications.
+> +Notification handler callbacks can be registered by serial_register_mctrl_notification() and
+> +serial_register_rx_notification(). If an UART has registered a NULL slave or a NULL handler,
+> +no notifications are sent.
+> +
+> +RX notification handlers can define a ktermios during setup and the handler function can modify
+> +or decide to throw away each character that is passed upwards.
 > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index b731100..c8ae0dd 100644
+> index 603d2cc..9caa33e 100644
 > --- a/drivers/tty/serial/serial_core.c
 > +++ b/drivers/tty/serial/serial_core.c
-> @@ -177,7 +177,7 @@ void uart_register_slave(struct uart_port *uport, void *slave)
-> EXPORT_SYMBOL_GPL(uart_register_slave);
-> 
-> void uart_register_mctrl_notification(struct uart_port *uport,
-> -		int (*function)(void *slave, int state))
-> +			int (*function)(void *slave, int state))
-> {
-> 	uport->mctrl_notification = function;
-> }
-> @@ -208,14 +208,14 @@ void uart_register_rx_notification(struct uart_port *uport,
-> 			retval = uport->ops->startup(uport);
-> 			if (retval == 0 && termios) {
-> 				int hw_stopped;
-> -				/*
-> -				 * Initialise the hardware port settings.
-> -				 */
-> +/*
-> + * Initialise the hardware port settings.
-> + */
-> 				uport->ops->set_termios(uport, termios, NULL);
-> 
-> -				/*
-> -				 * Set modem status enables based on termios cflag
-> -				 */
-> +/*
-> + * Set modem status enables based on termios cflag
-> + */
-> 				spin_lock_irq(&uport->lock);
-> 				if (termios->c_cflag & CRTSCTS)
-> 					uport->status |= UPSTAT_CTS_ENABLE;
-> @@ -227,11 +227,13 @@ void uart_register_rx_notification(struct uart_port *uport,
-> 				else
-> 					uport->status |= UPSTAT_DCD_ENABLE;
-> 
-> -				/* reset sw-assisted CTS flow control based on (possibly) new mode */
-> +/*
-> + * reset sw-assisted CTS flow control based on (possibly) new mode
-> + */
-> 				hw_stopped = uport->hw_stopped;
-> 				uport->hw_stopped = uart_softcts_mode(uport) &&
-> -					!(uport->ops->get_mctrl(uport)
-> -						& TIOCM_CTS);
-> +					!(uport->ops->get_mctrl(uport) &
-> +						TIOCM_CTS);
-> 				if (uport->hw_stopped) {
-> 					if (!hw_stopped)
-> 						uport->ops->stop_tx(uport);
-> @@ -432,7 +434,8 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
-> 			uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
-> 		/*
-> 		 * if we have a slave that has registered for rx_notifications
-> -		 * we do not shut down the uart port to be able to monitor the device
-> +		 * we do not shut down the uart port to be able to monitor the
-> +		 * device
-> 		 */
-> 		if (!uport->rx_notification)
-> 			uart_port_shutdown(port);
-^^^sorry this change is garbage from patch editing^^^
-> diff --git a/include/linux/w2sg0004.h b/include/linux/w2sg0004.h
-> new file mode 100644
-> index 0000000..ad0c4a1
-> --- /dev/null
-> +++ b/include/linux/w2sg0004.h
-> @@ -0,0 +1,27 @@
-> +/*
-> + * UART slave to allow ON/OFF control of w2sg0004 GPS receiver.
+> @@ -38,6 +38,36 @@
+>  #include <asm/irq.h>
+>  #include <asm/uaccess.h>
+>  
+> +static LIST_HEAD(uart_list);
+> +static DEFINE_SPINLOCK(uart_lock);
+> +
+> +/* same concept as __of_usb_find_phy */
+> +static struct uart_port *__of_serial_find_uart(struct device_node *node)
+> +{
+> +	struct uart_port  *uart;
+> +
+> +	if (!of_device_is_available(node))
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	list_for_each_entry(uart, &uart_list, head) {
+> +		if (node != uart->dev->of_node)
+> +			continue;
+> +
+> +		return uart;
+> +	}
+> +
+> +	return ERR_PTR(-EPROBE_DEFER);
+> +}
+> +
+> +static void devm_serial_uart_release(struct device *dev, void *res)
+> +{
+> +	struct uart_port *uart = *(struct uart_port **)res;
+> +
+> +	/* FIXME: I don't understand the serial subsystem well enough
+> +	 * to know if we should call serial_put_uart(uart); here
+> +	 */
+> +}
+> +
+>  /*
+>   * This is used to lock changes in serial line configuration.
+>   */
+> @@ -64,6 +94,79 @@ static int uart_dcd_enabled(struct uart_port *uport)
+>  	return !!(uport->status & UPSTAT_DCD_ENABLE);
+>  }
+>  
+> +/**
+> + * devm_serial_get_uart_by_phandle - find the uart by phandle
+> + * @dev - device that requests this uart
+> + * @phandle - name of the property holding the uart phandle value
+> + * @index - the index of the uart
 > + *
-> + * Copyright (C) 2011 Neil Brown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>
+> + * Returns the uart_port associated with the given phandle value,
+> + * after getting a refcount to it, -ENODEV if there is no such uart or
+> + * -EPROBE_DEFER if there is a phandle to the uart, but the device is
+> + * not yet loaded. While at that, it also associates the device with
+> + * the uart using devres. On driver detach, release function is invoked
+> + * on the devres data, then, devres data is freed.
 > + *
-> + * This program is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU General Public License
-> + * version 2 as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful, but
-> + * WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-> + * General Public License for more details.
+> + * For use by tty host and peripheral drivers.
 > + */
 > +
+> +/* same concept as devm_usb_get_phy_by_phandle() */
+> +
+> +struct uart_port *devm_serial_get_uart_by_phandle(struct device *dev,
+> +		const char *phandle, u8 index)
+> +{
+> +	struct uart_port  *uart = ERR_PTR(-ENOMEM), **ptr;
+> +	unsigned long   flags;
+> +	struct device_node *node;
+> +
+> +	if (!dev->of_node) {
+> +		dev_err(dev, "device does not have a device node entry\n");
+> +		return ERR_PTR(-EINVAL);
+> +	}
+> +
+> +	node = of_parse_phandle(dev->of_node, phandle, index);
+> +	if (!node) {
+> +		dev_err(dev, "failed to get %s phandle in %s node\n", phandle,
+> +			dev->of_node->full_name);
+> +		return ERR_PTR(-ENODEV);
+> +	}
+> +
+> +	ptr = devres_alloc(devm_serial_uart_release, sizeof(*ptr), GFP_KERNEL);
+> +	if (!ptr) {
+> +		dev_err(dev, "failed to allocate memory for devres\n");
+> +		goto err0;
+> +	}
+> +
+> +	spin_lock_irqsave(&uart_lock, flags);
+> +
+> +	uart = __of_serial_find_uart(node);
+> +	if (IS_ERR(uart)) {
+> +		devres_free(ptr);
+> +		goto err1;
+> +	}
+> +
+> +	if (!try_module_get(uart->dev->driver->owner)) {
+> +		uart = ERR_PTR(-ENODEV);
+> +		devres_free(ptr);
+> +		goto err1;
+> +	}
+> +
+> +	*ptr = uart;
+> +	devres_add(dev, ptr);
+> +
+> +	get_device(uart->dev);
+> +
+> +err1:
+> +	spin_unlock_irqrestore(&uart_lock, flags);
+> +
+> +err0:
+> +	of_node_put(node);
+> +
+> +	return uart;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_serial_get_uart_by_phandle);
 > +
 > +
-> +#ifndef __LINUX_W2SG0004_H
-> +#define __LINUX_W2SG0004_H
+>  /*
+>   * This routine is used by the interrupt handler to schedule processing in
+>   * the software interrupt portion of the driver.
+> @@ -2733,6 +2836,8 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+>  	 */
+>  	uport->flags &= ~UPF_DEAD;
+>  
+> +	list_add_tail(&uport->head, &uart_list);
 > +
-> +#include <linux/regulator/consumer.h>
+>   out:
+>  	mutex_unlock(&port->mutex);
+>  	mutex_unlock(&port_mutex);
+> @@ -2764,6 +2869,8 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+>  
+>  	mutex_lock(&port_mutex);
+>  
+> +	list_del(&uport->head);
 > +
-> +struct w2sg_pdata {
-> +	struct regulator *lna_regulator;	/* enable LNA power */
-> +	int	on_off_gpio;	/*  on-off input of the GPS module */
-> +};
-> +#endif /* __LINUX_W2SG0004_H */
+>  	/*
+>  	 * Mark the port "dead" - this prevents any opens from
+>  	 * succeeding while we shut down the port.
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index 297d4fa..d7a2e15 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -247,6 +247,7 @@ struct uart_port {
+>  	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
+>  	struct serial_rs485     rs485;
+>  	void			*private_data;		/* generic platform data pointer */
+> +	struct list_head	head;			/* uarts list (lookup by phandle) */
+>  };
+>  
+>  static inline int serial_port_in(struct uart_port *up, int offset)
+> @@ -475,4 +476,13 @@ static inline int uart_handle_break(struct uart_port *port)
+>  					 (cflag) & CRTSCTS || \
+>  					 !((cflag) & CLOCAL))
+>  
+> +/*
+> + * Helper functions for UART slave drivers
+> + */
+> +
+> +/* find UART by phandle (e.g. with 'uart = <&uart2>;' then call as
+> + * devm_serial_get_uart_by_phandle(dev, "uart", 0);
+> + */
+> +extern struct uart_port *devm_serial_get_uart_by_phandle(struct device *dev,
+> +		const char *phandle, u8 index);
+>  #endif /* LINUX_SERIAL_CORE_H */
 > -- 
 > 2.5.1
 > 
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
