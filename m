@@ -1,28 +1,32 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/7] tty: Remove ASYNC_CLOSING checks in open()/hangup()
- methods
-Date: Sat, 17 Oct 2015 21:13:21 -0700
-Message-ID: <20151018041321.GA8229@kroah.com>
-References: <1444507257-7513-1-git-send-email-peter@hurleysoftware.com>
- <1444507257-7513-3-git-send-email-peter@hurleysoftware.com>
+From: Noam Camus <noamc@ezchip.com>
+Subject: RE: [v7] serial: 8250_dw: Add support for big-endian MMIO accesses
+Date: Sun, 18 Oct 2015 05:30:23 +0000
+Message-ID: <DB5PR02MB11415C0130C759F96183C0E0D63B0@DB5PR02MB1141.eurprd02.prod.outlook.com>
+References: <1444113590-19722-1-git-send-email-noamc@ezchip.com>
+ <1444121610-11832-1-git-send-email-noamc@ezchip.com>
+ <1444121610-11832-2-git-send-email-noamc@ezchip.com>
+ <20151018040614.GA15152@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1444507257-7513-3-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <20151018040614.GA15152@kroah.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, David Laight <David.Laight@aculab.com>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, David Miller <davem@davemloft.net>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "fransklaver@gmail.com" <fransklaver@gmail.com>, "Alexey.Brodkin@synopsys.com" <Alexey.Brodkin@synopsys.com>, "vgupta@synopsys.com" <vgupta@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Oct 10, 2015 at 04:00:52PM -0400, Peter Hurley wrote:
-> 
-> Note: The ASYNC_CLOSING flag state is still maintained since several
-> bitrotting drivers use it for (dubious) other purposes.
+> From: Greg KH [mailto:gregkh@linuxfoundation.org] 
+> Sent: Sunday, October 18, 2015 7:06 AM
 
-I think we should drop it, it's pointless and no one ever actually does
-anything with it.
+> This patch still doesn't apply at all to my tty-next branch, what are you making it against?
+
+> Please fix it up and resend.
+
+The patch is against v4.3-rc4
+I will update to rc5
 
 thanks,
 
-greg k-h
+Noam Camus
