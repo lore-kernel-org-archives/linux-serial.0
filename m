@@ -1,54 +1,61 @@
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH] serial: 8250_uniphier: fix dl_read and dl_write functions
-Date: Mon, 19 Oct 2015 13:37:55 +0900
-Message-ID: <1445229475-23201-1-git-send-email-yamada.masahiro@socionext.com>
+Subject: [PATCH 2/2] serial: earlycon: allow to specify uartclk in earlycon kernel-parameter
+Date: Mon, 19 Oct 2015 14:40:24 +0900
+Message-ID: <1445233224-23150-3-git-send-email-yamada.masahiro@socionext.com>
+References: <1445233224-23150-1-git-send-email-yamada.masahiro@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1445233224-23150-1-git-send-email-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-The register offset must be shifted by regshift, otherwise the
-baudrate is not set.  I missed the issue probably because the
-divisor register was already set by the boot loader.
+The input clock frequency varies from device to device, but the
+earlycon uses the fixed frequency (BASE_BAUD * 16).  It makes
+impossible to set the correct divisor to the register.
 
-Fixes: 1a8d2903cb6a ("serial: 8250_uniphier: add UniPhier serial driver")
+This commit allows to specify the input clock frequency from the
+kernel-parameter.
+
+[Example]
+
+    earlycon=uart8250,mmio32,0x43fb0000,115200,12288000
+
+The input clock frequency (12288000, in this case) should be specified
+after the baudrate.  If not specified, the default (BASE_BAUD * 16) is
+used.
+
 Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 ---
 
-Hi Greg,
+ drivers/tty/serial/earlycon.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Please apply this simple fix for Linux 4.3.
-
-Thanks,
-Masahiro
-
-
- drivers/tty/serial/8250/8250_uniphier.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-index d11621e..245edbb 100644
---- a/drivers/tty/serial/8250/8250_uniphier.c
-+++ b/drivers/tty/serial/8250/8250_uniphier.c
-@@ -115,12 +115,16 @@ static void uniphier_serial_out(struct uart_port *p, int offset, int value)
-  */
- static int uniphier_serial_dl_read(struct uart_8250_port *up)
- {
--	return readl(up->port.membase + UNIPHIER_UART_DLR);
-+	int offset = UNIPHIER_UART_DLR << up->port.regshift;
-+
-+	return readl(up->port.membase + offset);
- }
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 07f7393..8030765 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -95,6 +95,13 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 		length = min(strcspn(options, " ") + 1,
+ 			     (size_t)(sizeof(device->options)));
+ 		strlcpy(device->options, options, length);
++		options = strchr(options, ',');
++		if (options) {
++			options++;
++			port->uartclk = simple_strtoul(options, NULL, 0);
++		}
++		if (!port->uartclk)
++			port->uartclk = BASE_BAUD * 16;
+ 	}
  
- static void uniphier_serial_dl_write(struct uart_8250_port *up, int value)
- {
--	writel(value, up->port.membase + UNIPHIER_UART_DLR);
-+	int offset = UNIPHIER_UART_DLR << up->port.regshift;
-+
-+	writel(value, up->port.membase + offset);
- }
+ 	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM16 ||
+@@ -122,7 +129,6 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+ 	if (buf && !parse_options(&early_console_dev, buf))
+ 		buf = NULL;
  
- static int uniphier_of_serial_setup(struct device *dev, struct uart_port *port,
+-	port->uartclk = BASE_BAUD * 16;
+ 	if (port->mapbase)
+ 		port->membase = earlycon_map(port->mapbase, 64);
+ 
 -- 
 1.9.1
