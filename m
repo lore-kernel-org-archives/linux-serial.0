@@ -1,46 +1,73 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] serial: sh-sci: Add device tree bindings for r8a7793
-Date: Mon, 19 Oct 2015 14:31:49 +0200
-Message-ID: <1445257909-4914-1-git-send-email-geert+renesas@glider.be>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] tty/serial: make early console depend on SERIAL_CORE=y
+Date: Mon, 19 Oct 2015 14:56:59 +0200
+Message-ID: <4727600.4io7e2HWRP@wuerfel>
+References: <1445206009-12275-1-git-send-email-paul.gortmaker@windriver.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1445206009-12275-1-git-send-email-paul.gortmaker@windriver.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+On Sunday 18 October 2015 18:06:48 Paul Gortmaker wrote:
+> On an powerpc allmodconfig build, the following is seen:
+> 
+> paul@builder:~/git/linux-head$ make O=../ppc-build -j30 > /dev/null
+> drivers/built-in.o: In function `.setup_earlycon':
+> (.init.text+0x5b00): undefined reference to `.uart_parse_earlycon'
+> make[1]: *** [vmlinux] Error 1
+> 
+> Since uart_parse_earlycon lives in serial_core.c we need to ensure
+> it is built in if early console is to be used.
 
-Also replaces "R-Car M2" with "R-Car M2-W" to avoid confusion.
+I saw the same thing and came up with a different fix
 
-Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Acked-by: Simon Horman <horms+renesas@verge.net.au>
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- .../devicetree/bindings/serial/renesas,sci-serial.txt        | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Peter Hurley <peter@hurleysoftware.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+> ---
+> 
+> [A google shows this cropped up in April of this year; I guess it wasn't
+>  completely fixed?
+>  http://lists.infradead.org/pipermail/linux-arm-kernel/2015-April/336954.html
+>  FWIW, I was testing on tty/tty-testing pulled today, from Greg  ]
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index 73f825e5e6448815..ce23378064227775 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -15,10 +15,14 @@ Required properties:
-     - "renesas,scifa-r8a7790" for R8A7790 (R-Car H2) SCIFA compatible UART.
-     - "renesas,scifb-r8a7790" for R8A7790 (R-Car H2) SCIFB compatible UART.
-     - "renesas,hscif-r8a7790" for R8A7790 (R-Car H2) HSCIF compatible UART.
--    - "renesas,scif-r8a7791" for R8A7791 (R-Car M2) SCIF compatible UART.
--    - "renesas,scifa-r8a7791" for R8A7791 (R-Car M2) SCIFA compatible UART.
--    - "renesas,scifb-r8a7791" for R8A7791 (R-Car M2) SCIFB compatible UART.
--    - "renesas,hscif-r8a7791" for R8A7791 (R-Car M2) HSCIF compatible UART.
-+    - "renesas,scif-r8a7791" for R8A7791 (R-Car M2-W) SCIF compatible UART.
-+    - "renesas,scifa-r8a7791" for R8A7791 (R-Car M2-W) SCIFA compatible UART.
-+    - "renesas,scifb-r8a7791" for R8A7791 (R-Car M2-W) SCIFB compatible UART.
-+    - "renesas,hscif-r8a7791" for R8A7791 (R-Car M2-W) HSCIF compatible UART.
-+    - "renesas,scif-r8a7793" for R8A7793 (R-Car M2-N) SCIF compatible UART.
-+    - "renesas,scifa-r8a7793" for R8A7793 (R-Car M2-N) SCIFA compatible UART.
-+    - "renesas,scifb-r8a7793" for R8A7793 (R-Car M2-N) SCIFB compatible UART.
-+    - "renesas,hscif-r8a7793" for R8A7793 (R-Car M2-N) HSCIF compatible UART.
-     - "renesas,scif-r8a7794" for R8A7794 (R-Car E2) SCIF compatible UART.
-     - "renesas,scifa-r8a7794" for R8A7794 (R-Car E2) SCIFA compatible UART.
-     - "renesas,scifb-r8a7794" for R8A7794 (R-Car E2) SCIFB compatible UART.
--- 
-1.9.1
+The new problem was clearly caused by 1d59b382f1c4 ("serial: fsl_lpuart:
+add earlycon support"), which selects SERIAL_EARLYCON but not
+SERIAL_CORE_CONSOLE.
+
+However, the way I read Peter's patch from the URL you provided,
+it seems that it is supposed to work without my patch, so I'm not
+sure.
+
+	Arnd
+
+>From 8b8704525b47ba3287de2d7ff89a53e3e335f9d8 Mon Sep 17 00:00:00 2001
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Mon, 19 Oct 2015 13:02:08 +0200
+Subject: [PATCH] serial: fsl-lpuart: select SERIAL_CORE_CONSOLE
+
+drivers/built-in.o: In function `setup_earlycon':
+:(.init.text+0x2c4c): undefined reference to `uart_parse_earlycon'
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 1aec4404062d..f1a4f9eccc44 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1540,6 +1540,7 @@ config SERIAL_FSL_LPUART
+ 	depends on HAS_DMA
+ 	select SERIAL_CORE
+ 	select SERIAL_EARLYCON
++	select SERIAL_CORE_CONSOLE
+ 	help
+ 	  Support for the on-chip lpuart on some Freescale SOCs.
+ 
