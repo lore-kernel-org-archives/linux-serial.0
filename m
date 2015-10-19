@@ -1,75 +1,77 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 1/2] serial: support register interface with 16-bit stride
- for console
-Date: Mon, 19 Oct 2015 15:50:04 -0400
-Message-ID: <5625496C.90507@hurleysoftware.com>
-References: <1445233224-23150-1-git-send-email-yamada.masahiro@socionext.com>
- <1445233224-23150-2-git-send-email-yamada.masahiro@socionext.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH 4/5] drivers/tty/serial: make msm_serial.c explicitly
+ non-modular
+Date: Mon, 19 Oct 2015 16:19:16 -0400
+Message-ID: <20151019201916.GF26878@windriver.com>
+References: <1445206878-12455-1-git-send-email-paul.gortmaker@windriver.com>
+ <1445206878-12455-5-git-send-email-paul.gortmaker@windriver.com>
+ <56254819.6030809@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1445233224-23150-2-git-send-email-yamada.masahiro@socionext.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>, linux-api@vger.kernel.org, linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, Wang Long <long.wanglong@huawei.com>, Noam Camus <noamc@ezchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Eddie Huang <eddie.huang@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <56254819.6030809@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Andy Gross <agross@codeaurora.org>, David Brown <davidb@codeaurora.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 10/19/2015 01:40 AM, Masahiro Yamada wrote:
-> Currently, 8-bit (MMIO) and 32-bit (MMIO32) strides are supported for
-> the 8250 console, but 16-bit (MMIO16) stride is not.  The 8250 UART
-> device on my board has 16-bit stride (reg-shift = <1>) and I am eager
-> to use earlycon with it.
+[Re: [PATCH 4/5] drivers/tty/serial: make msm_serial.c explicitly non-modular] On 19/10/2015 (Mon 12:44) Stephen Boyd wrote:
+
+> On 10/18/2015 03:21 PM, Paul Gortmaker wrote:
+> > The Kconfig currently controlling compilation of this code is:
+> >
+> > drivers/tty/serial/Kconfig:config SERIAL_MSM
+> > drivers/tty/serial/Kconfig:     bool "MSM on-chip serial port support"
+> >
+> > ...meaning that it currently is not being built as a module by anyone.
+> >
+> > Lets remove the modular code that is essentially orphaned, so that
+> > when reading the driver there is no doubt it is builtin-only.
+> >
+> > We explicitly disallow a driver unbind, since that doesn't have a
+> > sensible use case anyway, and it allows us to drop the ".remove"
+> > code for non-modular drivers.
+> >
+> > Since module_init translates to device_initcall in the non-modular
+> > case, the init ordering remains unchanged with this commit.
+> >
+> > We don't replace module.h with init.h since the file already has that.
+> >
+> > We also delete the MODULE_LICENSE tag etc. since all that information
+> > is already contained at the top of the file in the comments.
+> >
+> > Cc: Kumar Gala <galak@codeaurora.org>
+> > Cc: Andy Gross <agross@codeaurora.org>
+> > Cc: David Brown <davidb@codeaurora.org>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Jiri Slaby <jslaby@suse.com>
+> > Cc: linux-arm-msm@vger.kernel.org
+> > Cc: linux-soc@vger.kernel.org
+> > Cc: linux-serial@vger.kernel.org
+> > Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+> > ---
 > 
-> Refer to arch/arm/boot/dts/uniphier-support-card.dtsi:
+> I'd prefer we make the Kconfig a tristate. I'll test out that
+> configuration today, but I don't see why it wouldn't work.
+
+Sure, if you want to do that then great; as I've said in other threads,
+it simply doesn't scale for me to be expanding functionality in these
+kinds of commits, since there are 300+ of them and I can't do much more
+than just make the code consistent with the Makefile/Kconfig behaviour
+and still get through them all.
+
+When I see a tristate patch for it appear in -next I will drop this.
+Or if Greg wants to merge the series w/o this one patch, that is fine
+too -- basically whatever works for Greg, since he's got the larger
+burden here, maintaining all these different things that he does.
+
+Thanks,
+Paul.
+--
+
 > 
->         serialsc: uart@000b0000 {
->                 compatible = "ns16550a";
->                 reg = <0x000b0000 0x20>;
->                 clock-frequency = <12288000>;
->                 reg-shift = <1>;
->         };
+> -- 
+> Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+> a Linux Foundation Collaborative Project
 > 
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-> ---
-> 
->  Documentation/kernel-parameters.txt  |  9 +++++----
->  drivers/tty/serial/8250/8250_early.c |  5 +++++
->  drivers/tty/serial/8250/8250_port.c  | 20 ++++++++++++++++++++
->  drivers/tty/serial/earlycon.c        | 15 +++++++++++----
->  drivers/tty/serial/serial_core.c     |  9 +++++++--
->  include/linux/serial_core.h          |  1 +
->  include/uapi/linux/serial.h          |  9 +++++----
->  7 files changed, 54 insertions(+), 14 deletions(-)
-> 
-
-[...]
-
-> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-> index 25331f9..1d20d9c 100644
-> --- a/include/uapi/linux/serial.h
-> +++ b/include/uapi/linux/serial.h
-> @@ -65,10 +65,11 @@ struct serial_struct {
->  #define SERIAL_IO_PORT	0
->  #define SERIAL_IO_HUB6	1
->  #define SERIAL_IO_MEM	2
-> -#define SERIAL_IO_MEM32	  3
-> -#define SERIAL_IO_AU	  4
-> -#define SERIAL_IO_TSI	  5
-> -#define SERIAL_IO_MEM32BE 6
-> +#define SERIAL_IO_MEM16	3
-> +#define SERIAL_IO_MEM32	  4
-> +#define SERIAL_IO_AU	  5
-> +#define SERIAL_IO_TSI	  6
-> +#define SERIAL_IO_MEM32BE 7
-
-The existing values cannot be re-defined since they're userspace visible.
-
-Regards,
-Peter Hurley
-
-
->  #define UART_CLEAR_FIFO		0x01
->  #define UART_USE_FIFO		0x02
-> 
-
