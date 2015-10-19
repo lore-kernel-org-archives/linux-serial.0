@@ -1,61 +1,31 @@
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH 2/2] serial: earlycon: allow to specify uartclk in earlycon kernel-parameter
-Date: Mon, 19 Oct 2015 14:40:24 +0900
-Message-ID: <1445233224-23150-3-git-send-email-yamada.masahiro@socionext.com>
-References: <1445233224-23150-1-git-send-email-yamada.masahiro@socionext.com>
+Subject: [PATCH 0/2] serial: console: add two features
+Date: Mon, 19 Oct 2015 14:40:22 +0900
+Message-ID: <1445233224-23150-1-git-send-email-yamada.masahiro@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1445233224-23150-1-git-send-email-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>, linux-api@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, Wang Long <long.wanglong@huawei.com>, Noam Camus <noamc@ezchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Eddie Huang <eddie.huang@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-The input clock frequency varies from device to device, but the
-earlycon uses the fixed frequency (BASE_BAUD * 16).  It makes
-impossible to set the correct divisor to the register.
+1/2: add MMIO16 register interface support
+2/2: allow to input clock frequency from kernel parameter
 
-This commit allows to specify the input clock frequency from the
-kernel-parameter.
 
-[Example]
 
-    earlycon=uart8250,mmio32,0x43fb0000,115200,12288000
+Masahiro Yamada (2):
+  serial: support register interface with 16-bit stride for console
+  serial: earlycon: allow to specify uartclk in earlycon
+    kernel-parameter
 
-The input clock frequency (12288000, in this case) should be specified
-after the baudrate.  If not specified, the default (BASE_BAUD * 16) is
-used.
+ Documentation/kernel-parameters.txt  |  9 +++++----
+ drivers/tty/serial/8250/8250_early.c |  5 +++++
+ drivers/tty/serial/8250/8250_port.c  | 20 ++++++++++++++++++++
+ drivers/tty/serial/earlycon.c        | 23 ++++++++++++++++++-----
+ drivers/tty/serial/serial_core.c     |  9 +++++++--
+ include/linux/serial_core.h          |  1 +
+ include/uapi/linux/serial.h          |  9 +++++----
+ 7 files changed, 61 insertions(+), 15 deletions(-)
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
-
- drivers/tty/serial/earlycon.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 07f7393..8030765 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -95,6 +95,13 @@ static int __init parse_options(struct earlycon_device *device, char *options)
- 		length = min(strcspn(options, " ") + 1,
- 			     (size_t)(sizeof(device->options)));
- 		strlcpy(device->options, options, length);
-+		options = strchr(options, ',');
-+		if (options) {
-+			options++;
-+			port->uartclk = simple_strtoul(options, NULL, 0);
-+		}
-+		if (!port->uartclk)
-+			port->uartclk = BASE_BAUD * 16;
- 	}
- 
- 	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM16 ||
-@@ -122,7 +129,6 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
- 	if (buf && !parse_options(&early_console_dev, buf))
- 		buf = NULL;
- 
--	port->uartclk = BASE_BAUD * 16;
- 	if (port->mapbase)
- 		port->membase = earlycon_map(port->mapbase, 64);
- 
 -- 
 1.9.1
