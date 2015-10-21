@@ -1,56 +1,89 @@
-From: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Which is better to specify console, "console= " or "stdout-path"
- ?
-Date: Wed, 21 Oct 2015 14:06:14 +0100
-Message-ID: <56278DC6.8090601@arm.com>
-References: <CAK7LNAS9uBJ1cVmGBKae3W0tk8Siu1yeXOaeN6Kz11cksMqtsg@mail.gmail.com>
- <562753A6.3070107@arm.com> <56278911.9050704@hurleysoftware.com>
- <56278AFD.8000505@arm.com> <56278CF3.9010400@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: console vs earlycon ?
+Date: Wed, 21 Oct 2015 09:20:38 -0400
+Message-ID: <56279126.8080506@hurleysoftware.com>
+References: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <56278CF3.9010400-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Cc: Rob Herring <robh@kernel.org>, Stefan Agner <stefan@agner.ch>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+On 10/21/2015 04:21 AM, Masahiro Yamada wrote:
+> Hi.
+> 
+> 
+> 
+> 
+> I think there are three places where console could be enabled.
+> 
+> [1] earlycon
+> 
+> Each driver entry is declared with
+> EARLYCON_DECLARE()  or OF_EARLYCON_DECLARE()
+> 
+> 
+> 
+> [2] console_init()
+> 
+> Each entry is declared with  console_initcall()
+> 
+> 
+> 
+> [3]  when driver is probed
+> The console is usually enabled at this point
+> unless some special treatment is done.
+> 
+> 
+> 
+> 
+> My question is about [2].
+
+For 8250 sub-drivers, the console_initcall() is only for legacy
+platforms, and not for 8250 ports added via serial8250_register_8250_port().
+
+In this contexts, legacy platforms are:
+1. early_serial_setup()
+2. platforms that define SERIAL_PORT_DFNS (eg., ISA ports)
 
 
-On 21/10/15 14:02, Peter Hurley wrote:
-> On 10/21/2015 08:54 AM, Sudeep Holla wrote:
->> On 21/10/15 13:46, Peter Hurley wrote:
+At the point where console_initcall() occurs, the 8250 core has _not_
+been initialized (ie., serial8250_init() has _not_ run).
 
-[..]
 
->>> Be aware that options specified via /chosen/stdout-path are
->>> currently ignored by earlycon. There were some hiccups getting the
->>> initial support upstream; when 4.4 hits mainline, I'll resubmit
->>> my series that implements the of_serial i/o properties and
->>> options passthrough to earlycon setup.
->>>
->>
->> Yes I am aware of that.
->
-> The others to which my email was addressed might not know that.
->
 
-True, good that you pointed it out.
+> I am using 8250-ish UART device.
+> 
+> 
+> I noticed univ8250_console_match() and univ8250_console_setup()
+> always fail at the point of [2] unless early_serial_setup() has been
+> called in advance;
+> however, it looks like early_serial_setup() is only used for old platforms.
+> 
+> So, console cannot be enabled at [2] for modern platforms.
 
->> IIUC it's in -next now and works fine for me.
->
-> Well, the fix in -next doesn't actually do anything wrt earlycon baud
-> rate; those changes were part of a larger series that depends on
-> the fix in -next.
->
+Since console_init() => console_initcall() occurs before almost everything,
+it's not practical to use for probed drivers.
 
-Ah ok.
 
--- 
+> My questions are:
+> 
+>  -  Given that earlycon can be now available for major architectures such ARM,
+>      [2] will be deprecated at some point in the future?
+
+PPC and x86 platforms still rely on console_init() so it will be some time
+before this disappears.
+
+>  - I am implementing  earlycon  for my own UART driver.
+>    Is it meaningless to implement  console_initcall()  as well as earlycon?
+
+Probed drivers should only implement earlycon and console. 8250 sub-drivers
+should only implement earlycon and/or console if the base 8250 earlycon and/or
+console are not operational.
+
 Regards,
-Sudeep
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Peter Hurley
