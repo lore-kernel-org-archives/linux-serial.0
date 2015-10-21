@@ -1,52 +1,36 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH 0/3] Add AMBA bus probing support to ACPI
-Date: Thu, 22 Oct 2015 00:29:53 +0200
-Message-ID: <CAJZ5v0g8ce-_+6yA26CZpNq6XvYw5qVhhu6hB0vxnnWbHEhNHA@mail.gmail.com>
-References: <1443609530-21524-1-git-send-email-graeme.gregory@linaro.org>
-	<5627C041.6090001@redhat.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: console vs earlycon ?
+Date: Thu, 22 Oct 2015 00:54:28 +0200
+Message-ID: <4134303.BAT7dSJRN3@wuerfel>
+References: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com> <3890353.0icCv0Zeuq@wuerfel> <5627E679.1050207@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5627C041.6090001@redhat.com>
+In-Reply-To: <5627E679.1050207@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Al Stone <ahs3@redhat.com>
-Cc: Graeme Gregory <graeme.gregory@linaro.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, shannon.zhao@linaro.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Peter Hurley <peter@hurleysoftware.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Stefan Agner <stefan@agner.ch>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 21, 2015 at 6:41 PM, Al Stone <ahs3@redhat.com> wrote:
-> On 09/30/2015 04:38 AM, Graeme Gregory wrote:
->> As discussed when Shannon Zhao sent a patch to add platform_device support
->> to pl061 driver. Russel and other maintainers prefered that ACPI learned
->> how to create AMBA devices rather than converting/adding platform_device
->> support to AMBA drivers.
->>
->> http://comments.gmane.org/gmane.linux.ports.arm.kernel/431364
->>
->> 1) Adds basic AMBA device probing support to ACPI, it uses a whitelist of
->> device IDs as the number of AMBA devices is limited. Currently the two ids
->> present are those used in QEMU for arm64.
->>
->> 2) Adds the plumbing into ACPI probe sequence.
->>
->> 3) From ACPI pl011 is only defined (SBSA document) to be in SBSA mode which has
->> reduced functionality. There may be a better method to do this that I have
->> overlooked.
->>
->> Thanks
->>
->> Graeme
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
-> Any comments on these patches?  It's been awful quiet....
+On Wednesday 21 October 2015 15:24:41 Peter Hurley wrote:
+> On 10/21/2015 03:00 PM, Arnd Bergmann wrote:
 
-That's because of my limited review bandwidth.
+> > Yes, I see this as a tradeoff: we want the console to be as early as
+> > possible in order to report boot-time errors to the user, but not so early
+> > to require hacks that can cause problems themselves. earlycon has to
+> > do some scary stuff and is relatively recent, while the hacks
+> > necessary for console_init() are much older and better tested.
+> 
+> I assume you mean the hacks necessary to get _earlycon_ working at
+> console_init() time, because the hacks necessary to get non-8250
+> serial consoles working at console_init() would be extensive and
+> brand new.
+> 
 
-I'm kind of in the middle of travel now, sorry about that.
+No, I was just being slow and assumed that the 51 drivers that come with
+a console_initcall() do something in there to actually start the console,
+but you are right that most of them don't actually do that. They just
+call register_console() and wait for the device to show up later.
 
-Thanks,
-Rafael
+	Arnd
