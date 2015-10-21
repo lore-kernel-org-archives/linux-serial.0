@@ -1,97 +1,106 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v2 2/2] serial: earlycon: allow to specify uartclk in
- earlycon kernel-parameter
-Date: Thu, 22 Oct 2015 00:31:05 +0900
-Message-ID: <CAK7LNAQaQjyDiL1+vbHNJRh8nnn9p9Jp1Ru4yn+MX5JzChKawg@mail.gmail.com>
-References: <1445312189-28876-1-git-send-email-yamada.masahiro@socionext.com>
-	<1445312189-28876-3-git-send-email-yamada.masahiro@socionext.com>
-	<5626491A.8040908@hurleysoftware.com>
-	<CAK7LNAQYbg4L9dX4riQ8Zb_NN7pbhx60aXwb4rZJgdTz-pocsQ@mail.gmail.com>
-	<562784AB.4040709@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: console vs earlycon ?
+Date: Wed, 21 Oct 2015 11:32:15 -0400
+Message-ID: <5627AFFF.6060900@hurleysoftware.com>
+References: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
+ <5490682.zH2vAEO2id@wuerfel> <562798EB.7060202@hurleysoftware.com>
+ <4963882.HSXu6hF7zO@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <562784AB.4040709@hurleysoftware.com>
+In-Reply-To: <4963882.HSXu6hF7zO@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Rob Herring <robh@kernel.org>, Stefan Agner <stefan@agner.ch>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Stefan Agner <stefan@agner.ch>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter.
-
-
-2015-10-21 21:27 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
-> On 10/20/2015 09:20 PM, Masahiro Yamada wrote:
->> Hi Peter,
->> (+ Rob Herring, Stefan Agner)
->>
->> 2015-10-20 23:00 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
->>> On 10/19/2015 11:36 PM, Masahiro Yamada wrote:
->>>> The input clock frequency varies from device to device, but the
->>>> earlycon uses the fixed frequency (BASE_BAUD * 16).  It makes
->>>> impossible to set the correct divisor to the register.
+On 10/21/2015 10:13 AM, Arnd Bergmann wrote:
+> On Wednesday 21 October 2015 09:53:47 Peter Hurley wrote:
+>> On 10/21/2015 06:36 AM, Arnd Bergmann wrote:
+>>> On Wednesday 21 October 2015 18:30:05 Masahiro Yamada wrote:
+>>>>>
+>>>>>> I am trying to implement OF_EARLYCON_DECLARE() for that.
+>>>>>>
+>>>>>> I was just wondering if console_initcall() should work as well.
+>>>>>>
+>>>>>>
+>>>>>> As I said, I noticed the console_initcall() in 8250_core.c
+>>>>>> only works on very limited platforms.
+>>>>>
+>>>>> It works with all those that use of_serial.c, right?
+>>>>
+>>>> I doubt it.
+>>>>
+>>>>
+>>>> I have a board with a pure 8250-compat device working.
+>>>> (  compatible = "ns16550a")
+>>>> It uses of_serial.c, of course.
+>>>>
+>>>>
+>>>> As far as I tested, it would never enable the console at console_init().
 >>>
->>> So the bootloader hasn't setup the serial port?
+>>> Ok, that sounds like a bug. Peter and others have changed that code
+>>> a lot in the last year. I wonder if this has never worked then or
+>>> if it has regressed.
 >>
->> It does.
->> I use U-boot and the serial port is already set up by U-boot.
->>
->>
->> But, earlycon setup functions update hardware registers.
->> See  early_serial8250_setup(), ingenic_early_console_setup(), etc.
->>
->>
->> Without port->uartclk set to a valid value,
->> the init code in earlycon setup does not make sense.
->>
->>
->> What I want to clarify is,
->> what should we do in the earlycon setup function?
->>
->> Currently, I see
->>  [1] set device->con->write callback
->>  [2] initialize UART port registers
->>
->>
->> For [2], we need to know baudrate and input clock frequency.
->> (and the latter is missing, that's why my patch is here.)
->>
->>
->> In order to be independent of a boot loader, we also need
->>   [3]  pinctrl (pin-muxing)
->>
->> But, it is difficult to handle pinctrl in the earlycon framework.
->>
->>
->> If we depend on a boot loader, [2] is meaningless.   [1] is enough.
->
-> The 8250 earlycon doesn't try to initialize the hardware (other than
-> masking interrupts) if the baud rate is uninitialized
-> (!device->baud in early_serial8250_setup()).
->
+>> No, not a bug. console_init() is only for legacy platforms, not for
+>> probed drivers.
+> 
+> Ah, I had no idea we were moving in this direction.
 
-Right.
+I would not say this was a conscious design decision, but rather an
+outcome of getting-something-working-without-breaking-existing-usage.
 
-If it is always correct to preserve the initialization done by boot-loader,
-the following code in 8250_early.c does not make sense.
+My main focus with earlycon/console has been to try to reduce and
+generalize the existing code.
 
-Delete?
+> So I guess the idea
+> is not to add another for_each_compatible_node() loop when we already have
+> two places (earlycon and tty) in the code that do this?
+
+I wouldn't want to do that just because, but rather only to enable some
+functionality that doesn't work now.
+
+FWIW, console_init() is basically a hack. The dummy color console
+registration is a good example of the gymnastics made necessary by
+console_init().
+
+OTOH, I don't like the reverse-linkage that exists now between
+serial core and OF (ie., of_console_check()). And now ACPI wants to
+recapitulate that design. :/
 
 
-        divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * device->baud);
-        c = serial8250_early_in(port, UART_LCR);
-        serial8250_early_out(port, UART_LCR, c | UART_LCR_DLAB);
-        serial8250_early_out(port, UART_DLL, divisor & 0xff);
-        serial8250_early_out(port, UART_DLM, (divisor >> 8) & 0xff);
-        serial8250_early_out(port, UART_LCR, c & ~UART_LCR_DLAB);
+>>> * arch/powerpc/kernel/legacy_serial.c does everything we need, but
+>>>   does not live in architecture independent code and does a few
+>>>   things that we probably don't need or want there. It relies
+>>>   on scanning the device tree for known UART device nodes before
+>>>   the platform devices are added.
+>>>
+>>> * for console_initcall() to do the right thing, we want both the
+>>>   ttyS devices to get added early for console=ttyS1 to work, as well
+>>>   as having the preferred console work based on the stdout-property.
+>>>
+>>> * we parse the /chosen/stdout-path property in drivers/of/base and
+>>>   store the device node pointer in the global 'of_stdout' variable,
+>>>   but do not use it until the uart is added by the tty driver
+>>>   and calls of_console_check() to add the default console device.
+>>
+>> I'm assuming the issue with trying to get console_init() working
+>> is because the dummy color console causes the earlycon to be disabled?
+> 
+> I don't think so.
+> 
+> My line of thinking was more about usability: earlycon requires that
+> you edit the kernel command line at the moment, while console_init()
+> doesn't require any user interaction and just uses the stdout-path.
+> 
+> I guess we could enable earlycon using a Kconfig symbol if we want
+> to, or make it a per-architecture decision whether it's enabled even
+> in the absence of the command line flag.
 
+Ah, I see. You want to start the stdout-path console at console_init()
+time.
 
-
-
-
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Regards,
+Peter Hurley
