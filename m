@@ -1,71 +1,47 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: console vs earlycon ?
-Date: Wed, 21 Oct 2015 10:57:07 +0200
-Message-ID: <5490668.HV7UIzY6eu@wuerfel>
-References: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
+From: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: Which is better to specify console, "console= " or "stdout-path"
+ ?
+Date: Wed, 21 Oct 2015 09:58:14 +0100
+Message-ID: <562753A6.3070107@arm.com>
+References: <CAK7LNAS9uBJ1cVmGBKae3W0tk8Siu1yeXOaeN6Kz11cksMqtsg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Stefan Agner <stefan@agner.ch>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAK7LNAS9uBJ1cVmGBKae3W0tk8Siu1yeXOaeN6Kz11cksMqtsg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday 21 October 2015 17:21:07 Masahiro Yamada wrote:
+
+
+On 21/10/15 06:09, Masahiro Yamada wrote:
 > Hi.
-> 
-> 
-> 
-> 
-> I think there are three places where console could be enabled.
-> 
-> [1] earlycon
-> 
-> Each driver entry is declared with
-> EARLYCON_DECLARE()  or OF_EARLYCON_DECLARE()
-> 
-> 
-> 
-> [2] console_init()
-> 
-> Each entry is declared with  console_initcall()
-> 
-> 
-> 
-> [3]  when driver is probed
-> The console is usually enabled at this point
-> unless some special treatment is done.
-> 
-> 
-> 
-> 
-> My question is about [2].
-> 
-> I am using 8250-ish UART device.
-> 
-> 
-> I noticed univ8250_console_match() and univ8250_console_setup()
-> always fail at the point of [2] unless early_serial_setup() has been
-> called in advance;
-> however, it looks like early_serial_setup() is only used for old platforms.
-> 
-> So, console cannot be enabled at [2] for modern platforms.
-> 
-> 
-> My questions are:
-> 
->  -  Given that earlycon can be now available for major architectures such ARM,
->      [2] will be deprecated at some point in the future?
-> 
->  - I am implementing  earlycon  for my own UART driver.
->    Is it meaningless to implement  console_initcall()  as well as earlycon?
+>
+>
+> I think there exist two ways to specify the console port and baudrate.
+>
+>
+> [1] Specify console in bootargs
+>
+>    chosen {
+>          bootargs = "console=ttyS0,115200";
+>    };
+>
+>
+> [2] Specify stdout-path
+>
+>     chosen {
+>           stdout-path = "serial0:115200n8";
 
-I would still do both. We don't enable earlycon by default at the moment,
-and I'd say things should remain working with just console_initcall().
+This will work for even early/boot console, so this is better than
+option [1]
 
-How closely related to 8250 is your hardware? If it's not all that different,
-you should probably reuse the existing driver.
-
-	Arnd
+-- 
+Regards,
+Sudeep
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
