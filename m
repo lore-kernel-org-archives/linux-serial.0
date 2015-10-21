@@ -1,122 +1,135 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: console vs earlycon ?
-Date: Wed, 21 Oct 2015 18:30:05 +0900
-Message-ID: <CAK7LNATniscPQ_vLMg91PWbMVSdoXtJYGL9nicsn49=ULQ-oAw@mail.gmail.com>
-References: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
-	<5490668.HV7UIzY6eu@wuerfel>
-	<CAK7LNASkAsi59dtmrVX2MjNqgTAiGJ8rrtV3VqO2FJ0JaHzfpQ@mail.gmail.com>
-	<14202684.GgqlkWAZA0@wuerfel>
+From: Oliver Neukum <oneukum@suse.com>
+Subject: Re: [PATCH] Fix data loss in cdc-acm
+Date: Wed, 21 Oct 2015 12:12:32 +0200
+Message-ID: <1445422352.2246.22.camel@suse.com>
+References: <55AC1883.4050605@svenbrauch.de>
+	 <20150720172546.GF20628@localhost> <55AD38E5.1090807@svenbrauch.de>
+	 <1437486195.3823.13.camel@suse.com> <55AEBD06.6020402@svenbrauch.de>
+	 <55AED708.903@hurleysoftware.com> <55AEE805.9050204@svenbrauch.de>
+	 <55B01554.90201@hurleysoftware.com> <55B01EDE.3050503@svenbrauch.de>
+	 <55C249A3.6030809@hurleysoftware.com> <562684F4.1020501@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <14202684.GgqlkWAZA0@wuerfel>
+In-Reply-To: <562684F4.1020501@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Stefan Agner <stefan@agner.ch>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Peter Hurley <peter@hurleysoftware.com>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Johan Hovold <johan@kernel.org>, Sven Brauch <mail@svenbrauch.de>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Toby Gray <toby.gray@realvnc.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
+On Tue, 2015-10-20 at 14:16 -0400, Peter Hurley wrote:
+> ECHO is on by default and the cdc-acm driver does not implement the
+> put_char() and flush_chars() tty driver methods, which made the
+> problem
+> _way worse_, since every echoed char is sent as it's own URB.
 
+That can be fixed. How can I test this? Will the tty layer use write()
+and put_char()?
 
-2015-10-21 18:19 GMT+09:00 Arnd Bergmann <arnd@arndb.de>:
-> On Wednesday 21 October 2015 18:09:33 Masahiro Yamada wrote:
->> Hi Arnd,
->>
->>
->> 2015-10-21 17:57 GMT+09:00 Arnd Bergmann <arnd@arndb.de>:
->> > On Wednesday 21 October 2015 17:21:07 Masahiro Yamada wrote:
->> >> Hi.
->> >>
->> >>
->> >>
->> >>
->> >> I think there are three places where console could be enabled.
->> >>
->> >> [1] earlycon
->> >>
->> >> Each driver entry is declared with
->> >> EARLYCON_DECLARE()  or OF_EARLYCON_DECLARE()
->> >>
->> >>
->> >>
->> >> [2] console_init()
->> >>
->> >> Each entry is declared with  console_initcall()
->> >>
->> >>
->> >>
->> >> [3]  when driver is probed
->> >> The console is usually enabled at this point
->> >> unless some special treatment is done.
->> >>
->> >>
->> >>
->> >>
->> >> My question is about [2].
->> >>
->> >> I am using 8250-ish UART device.
->> >>
->> >>
->> >> I noticed univ8250_console_match() and univ8250_console_setup()
->> >> always fail at the point of [2] unless early_serial_setup() has been
->> >> called in advance;
->> >> however, it looks like early_serial_setup() is only used for old platforms.
->> >>
->> >> So, console cannot be enabled at [2] for modern platforms.
->> >>
->> >>
->> >> My questions are:
->> >>
->> >>  -  Given that earlycon can be now available for major architectures such ARM,
->> >>      [2] will be deprecated at some point in the future?
->> >>
->> >>  - I am implementing  earlycon  for my own UART driver.
->> >>    Is it meaningless to implement  console_initcall()  as well as earlycon?
->> >
->> > I would still do both. We don't enable earlycon by default at the moment,
->> > and I'd say things should remain working with just console_initcall().
->> >
->> > How closely related to 8250 is your hardware? If it's not all that different,
->> > you should probably reuse the existing driver.
->>
->>
->> Very close.
->> It is already in the mainline.
->>
->> drivers/tty/serial/8250/8250_uniphier.c
->>
->> The core parts are shared with 8250_core.c
->
-> Ok, but I guess no close enough that it makes sense to use drivers/serial/of_serial.c
+	Regards
+		Oliver
 
-Right.
+>From ac75a2c9ea67ec22c704a6bcaa30e6fc415d64d3 Mon Sep 17 00:00:00 2001
+From: Oliver Neukum <oneukum@suse.com>
+Date: Wed, 21 Oct 2015 12:10:07 +0200
+Subject: [PATCH] cdc-acm: implement put_char() and flush_chars()
 
+This should cut down latencies and waste if the tty layer writes single bytes.
 
->
->> I am trying to implement OF_EARLYCON_DECLARE() for that.
->>
->> I was just wondering if console_initcall() should work as well.
->>
->>
->> As I said, I noticed the console_initcall() in 8250_core.c
->> only works on very limited platforms.
->
-> It works with all those that use of_serial.c, right?
+Signed-off-by: Oliver Neukum >oneukum@suse.com>
+---
+ drivers/usb/class/cdc-acm.c | 58 +++++++++++++++++++++++++++++++++++++++++++++
+ drivers/usb/class/cdc-acm.h |  1 +
+ 2 files changed, 59 insertions(+)
 
-I doubt it.
-
-
-I have a board with a pure 8250-compat device working.
-(  compatible = "ns16550a")
-It uses of_serial.c, of course.
-
-
-As far as I tested, it would never enable the console at console_init().
-
-The console is enabled when the UART driver is probed.
-(or earlycon if "earlycon" is specified in the kernel-parameter.)
-
-
+diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
+index b30e742..262f179 100644
+--- a/drivers/usb/class/cdc-acm.c
++++ b/drivers/usb/class/cdc-acm.c
+@@ -725,6 +725,62 @@ static int acm_tty_write(struct tty_struct *tty,
+ 	return count;
+ }
+ 
++static void acm_tty_flush_chars(struct tty_struct *tty)
++{
++	struct acm *acm = tty->driver_data;
++	struct acm_wb *cur = acm->putbuffer;
++	int err;
++	unsigned long flags;
++
++	acm->putbuffer = NULL;
++	err = usb_autopm_get_interface_async(acm->control);
++	spin_lock_irqsave(&acm->write_lock, flags);
++	if (err < 0) {
++		cur->use = 0;
++		goto out;
++	}
++
++	if (acm->susp_count) {
++		usb_anchor_urb(cur->urb, &acm->delayed);
++		goto out;
++	}
++
++	acm_start_wb(acm, cur);
++out:
++	spin_unlock_irqrestore(&acm->write_lock, flags);
++	return;
++}
++
++static int acm_tty_put_char(struct tty_struct *tty, unsigned char ch)
++{
++	struct acm *acm = tty->driver_data;
++	struct acm_wb *cur;
++	int wbn;
++	unsigned long flags;
++
++overflow:
++	cur = acm->putbuffer;
++	if (!cur) {
++		spin_lock_irqsave(&acm->write_lock, flags);
++		wbn = acm_wb_alloc(acm);
++		if (wbn >= 0) {
++			cur = &acm->wb[wbn];
++			acm->putbuffer = cur;
++		}
++		spin_unlock_irqrestore(&acm->write_lock, flags);
++		if (!cur)
++			return 0;
++	}
++
++	if (cur->len == acm->writesize) {
++		acm_tty_flush_chars(tty);
++		goto overflow;
++	}
++
++	cur->buf[cur->len++] = ch;
++	return 1;
++}
++
+ static int acm_tty_write_room(struct tty_struct *tty)
+ {
+ 	struct acm *acm = tty->driver_data;
+@@ -1888,6 +1944,8 @@ static const struct tty_operations acm_ops = {
+ 	.cleanup =		acm_tty_cleanup,
+ 	.hangup =		acm_tty_hangup,
+ 	.write =		acm_tty_write,
++	.put_char =		acm_tty_put_char,
++	.flush_chars =		acm_tty_flush_chars,
+ 	.write_room =		acm_tty_write_room,
+ 	.ioctl =		acm_tty_ioctl,
+ 	.throttle =		acm_tty_throttle,
+diff --git a/drivers/usb/class/cdc-acm.h b/drivers/usb/class/cdc-acm.h
+index dd9af38..648a6f7 100644
+--- a/drivers/usb/class/cdc-acm.h
++++ b/drivers/usb/class/cdc-acm.h
+@@ -94,6 +94,7 @@ struct acm {
+ 	unsigned long read_urbs_free;
+ 	struct urb *read_urbs[ACM_NR];
+ 	struct acm_rb read_buffers[ACM_NR];
++	struct acm_wb *putbuffer;			/* for acm_tty_put_char() */
+ 	int rx_buflimit;
+ 	int rx_endpoint;
+ 	spinlock_t read_lock;
 -- 
-Best Regards
-Masahiro Yamada
+2.1.4
