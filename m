@@ -1,64 +1,90 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH] Fix data loss in cdc-acm
-Date: Tue, 20 Oct 2015 14:16:20 -0400
-Message-ID: <562684F4.1020501@hurleysoftware.com>
-References: <55AC1883.4050605@svenbrauch.de>
- <20150720172546.GF20628@localhost> <55AD38E5.1090807@svenbrauch.de>
- <1437486195.3823.13.camel@suse.com> <55AEBD06.6020402@svenbrauch.de>
- <55AED708.903@hurleysoftware.com> <55AEE805.9050204@svenbrauch.de>
- <55B01554.90201@hurleysoftware.com> <55B01EDE.3050503@svenbrauch.de>
- <55C249A3.6030809@hurleysoftware.com>
+From: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Subject: Re: [PATCH 0/5] drivers/tty: make more bool drivers explicitly
+ non-modular
+Date: Tue, 20 Oct 2015 20:20:07 -0400
+Message-ID: <20151021002007.GA4588@windriver.com>
+References: <1445206878-12455-1-git-send-email-paul.gortmaker@windriver.com>
+ <20151020151052.GI3421@piout.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <55C249A3.6030809-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>, Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Toby Gray <toby.gray-BiNz9QiKYoNBDgjK7y7TUQ@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20151020151052.GI3421-m++hUPXGwpdeoWH0uzbU5w@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Andy Gross <agross-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Anton Blanchard <anton-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 08/05/2015 01:36 PM, Peter Hurley wrote:
-> On 07/22/2015 06:53 PM, Sven Brauch wrote:
->> On 23/07/15 00:12, Peter Hurley wrote:
->>> The premature unthrottle actually leads to the data loss but the throttling
->>> with a mere 2K left is _way too late_.
->> Ok, yes, I think so too.
->>
->>> 10ms is a _really_ long time for a cpu not to attend to a kworker.
+[Re: [PATCH 0/5] drivers/tty: make more bool drivers explicitly non-modular] On 20/10/2015 (Tue 17:10) Alexandre Belloni wrote:
+
+> On 18/10/2015 at 18:21:13 -0400, Paul Gortmaker wrote :
+> > The one common thread here for all the patches is that we also
+> > scrap the .remove functions which would only be used for module
+> > unload (impossible) and driver unbind.  For the drivers here, there
+> > doesn't seem to be a sensible unbind use case (vs. e.g. a multiport
+> > PCI ethernet driver where one port is unbound and passed through to
+> > a kvm guest or similar).  Hence we just explicitly disallow any
+> > driver unbind operations to help prevent root from doing something
+> > illogical to the machine that they could have done previously.
+> > 
+> > We've already done this for drivers/tty/serial/mpsc.c previously.
+> > 
+> > Build tested for allmodconfig on ARM64 and powerpc for tty/tty-testing.
+> > 
 > 
-> I haven't forgotten about this problem and I still plan to look into why
-> the long delay, particularly focusing on the scheduling latency from
-> tty_flip_buffer_push() => flush_to_ldisc().
+> So, how does this actually build test atmel_serial?
 
-I made some changes wrt which CPU is scheduled for the flush_to_ldisc()
-input worker, which should reduce the kworker latency. The changes are
-on the tty-next branch of Greg's tty.git tree; please test at your earliest
-convenience.
+Not sure why this should be a surprise;  I build test it exactly like this:
 
+paul@builder-02:~/git/linux-head$ echo $ARCH
+arm64
+paul@builder-02:~/git/linux-head$ echo $CROSS_COMPILE 
+aarch64-linux-gnu-
+paul@builder-02:~/git/linux-head$ make O=../arm-build/  drivers/tty/serial/atmel_serial.o
+make[1]: Entering directory '/home/paul/git/arm-build'
+arch/arm64/Makefile:25: LSE atomics not supported by binutils
+  CHK     include/config/kernel.release
+  Using /home/paul/git/linux-head as source for kernel
+  GEN     ./Makefile
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
 
->>> 1. What are the termios settings of the tty receiving input? Is it 'raw'
->>>    mode or typical terminal mode (icanon, echo, etc.) or something else?
->> In my test code, I open the tty like
->>   fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NONBLOCK);
->> I don't make any other changes to the default settings. To be honest,
->> I'm not sure in which mode it is operating then (I was assuming raw, but
->> I might be wrong?).
+[...]
 
-ECHO is on by default and the cdc-acm driver does not implement the
-put_char() and flush_chars() tty driver methods, which made the problem
-_way worse_, since every echoed char is sent as it's own URB.
+  HOSTCC  scripts/sign-file
+  HOSTCC  scripts/extract-cert
+  CC      drivers/tty/serial/atmel_serial.o
+make[1]: Leaving directory '/home/paul/git/arm-build'
+paul@builder-02:~/git/linux-head$ 
 
-Since echoing is performed by the input worker, this seems the likely
-cause for the significant delay in ldisc processing.
+It did build; no warning/error.  Would you call it an invalid build test?
 
-Echo processing should probably be performed by a separate kworker rather
-than by the input kworker.
+> 
+> A proper solution would be to actually make it a tristate and allow
+> building as a module. I think it currently fails because of
+> console_initcall() but that is certainly fixable.
 
-Regards,
-Peter Hurley
+Well, as per other threads on this topic, if people want to extend
+the functionality to support tristate, then great.  But please do
+not confuse that with existing functionality which is clearly non
+modular in this case.
 
+Thanks,
+Paul.
 --
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+> 
+> 
+> -- 
+> Alexandre Belloni, Free Electrons
+> Embedded Linux, Kernel and Android engineering
+> http://free-electrons.com
