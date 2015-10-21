@@ -1,54 +1,52 @@
-From: Al Stone <ahs3@redhat.com>
-Subject: Re: [PATCH 0/3] Add AMBA bus probing support to ACPI
-Date: Wed, 21 Oct 2015 10:41:37 -0600
-Message-ID: <5627C041.6090001@redhat.com>
-References: <1443609530-21524-1-git-send-email-graeme.gregory@linaro.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: console vs earlycon ?
+Date: Wed, 21 Oct 2015 21:00:24 +0200
+Message-ID: <3890353.0icCv0Zeuq@wuerfel>
+References: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com> <4963882.HSXu6hF7zO@wuerfel> <5627AFFF.6060900@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1443609530-21524-1-git-send-email-graeme.gregory@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Graeme Gregory <graeme.gregory@linaro.org>, linux-acpi@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, shannon.zhao@linaro.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5627AFFF.6060900@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Stefan Agner <stefan@agner.ch>, linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 09/30/2015 04:38 AM, Graeme Gregory wrote:
-> As discussed when Shannon Zhao sent a patch to add platform_device support
-> to pl061 driver. Russel and other maintainers prefered that ACPI learned
-> how to create AMBA devices rather than converting/adding platform_device
-> support to AMBA drivers.
+On Wednesday 21 October 2015 11:32:15 Peter Hurley wrote:
+> On 10/21/2015 10:13 AM, Arnd Bergmann wrote:
+> > On Wednesday 21 October 2015 09:53:47 Peter Hurley wrote:
+> > 
+> > Ah, I had no idea we were moving in this direction.
 > 
-> http://comments.gmane.org/gmane.linux.ports.arm.kernel/431364
+> I would not say this was a conscious design decision, but rather an
+> outcome of getting-something-working-without-breaking-existing-usage.
 > 
-> 1) Adds basic AMBA device probing support to ACPI, it uses a whitelist of
-> device IDs as the number of AMBA devices is limited. Currently the two ids
-> present are those used in QEMU for arm64.
-> 
-> 2) Adds the plumbing into ACPI probe sequence.
-> 
-> 3) From ACPI pl011 is only defined (SBSA document) to be in SBSA mode which has
-> reduced functionality. There may be a better method to do this that I have
-> overlooked.
-> 
-> Thanks
-> 
-> Graeme
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+> My main focus with earlycon/console has been to try to reduce and
+> generalize the existing code.
 
-Any comments on these patches?  It's been awful quiet....
+Ok.
 
--- 
-ciao,
-al
------------------------------------
-Al Stone
-Software Engineer
-Red Hat, Inc.
-ahs3@redhat.com
------------------------------------
+> >> I'm assuming the issue with trying to get console_init() working
+> >> is because the dummy color console causes the earlycon to be disabled?
+> > 
+> > I don't think so.
+> > 
+> > My line of thinking was more about usability: earlycon requires that
+> > you edit the kernel command line at the moment, while console_init()
+> > doesn't require any user interaction and just uses the stdout-path.
+> > 
+> > I guess we could enable earlycon using a Kconfig symbol if we want
+> > to, or make it a per-architecture decision whether it's enabled even
+> > in the absence of the command line flag.
+> 
+> Ah, I see. You want to start the stdout-path console at console_init()
+> time.
+
+Yes, I see this as a tradeoff: we want the console to be as early as
+possible in order to report boot-time errors to the user, but not so early
+to require hacks that can cause problems themselves. earlycon has to
+do some scary stuff and is relatively recent, while the hacks
+necessary for console_init() are much older and better tested.
+
+	Arnd
