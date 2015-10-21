@@ -1,75 +1,71 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH 0/5] drivers/tty: make more bool drivers explicitly
- non-modular
-Date: Wed, 21 Oct 2015 10:38:12 +0200
-Message-ID: <20151021083812.GL3421@piout.net>
-References: <1445206878-12455-1-git-send-email-paul.gortmaker@windriver.com>
- <20151020151052.GI3421@piout.net>
- <20151021002007.GA4588@windriver.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: console vs earlycon ?
+Date: Wed, 21 Oct 2015 10:57:07 +0200
+Message-ID: <5490668.HV7UIzY6eu@wuerfel>
+References: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20151021002007.GA4588@windriver.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-soc@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, linux-arm-msm@vger.kernel.org, Andy Gross <agross@codeaurora.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, linux-mediatek@lists.infradead.org, Anton Blanchard <anton@samba.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, David Brown <davidb@codeaurora.org>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Stefan Agner <stefan@agner.ch>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 20/10/2015 at 20:20:07 -0400, Paul Gortmaker wrote :
-> [Re: [PATCH 0/5] drivers/tty: make more bool drivers explicitly non-modular] On 20/10/2015 (Tue 17:10) Alexandre Belloni wrote:
+On Wednesday 21 October 2015 17:21:07 Masahiro Yamada wrote:
+> Hi.
 > 
-> > On 18/10/2015 at 18:21:13 -0400, Paul Gortmaker wrote :
-> > > The one common thread here for all the patches is that we also
-> > > scrap the .remove functions which would only be used for module
-> > > unload (impossible) and driver unbind.  For the drivers here, there
-> > > doesn't seem to be a sensible unbind use case (vs. e.g. a multiport
-> > > PCI ethernet driver where one port is unbound and passed through to
-> > > a kvm guest or similar).  Hence we just explicitly disallow any
-> > > driver unbind operations to help prevent root from doing something
-> > > illogical to the machine that they could have done previously.
-> > > 
-> > > We've already done this for drivers/tty/serial/mpsc.c previously.
-> > > 
-> > > Build tested for allmodconfig on ARM64 and powerpc for tty/tty-testing.
-> > > 
-> > 
-> > So, how does this actually build test atmel_serial?
 > 
-> Not sure why this should be a surprise;  I build test it exactly like this:
 > 
+> 
+> I think there are three places where console could be enabled.
+> 
+> [1] earlycon
+> 
+> Each driver entry is declared with
+> EARLYCON_DECLARE()  or OF_EARLYCON_DECLARE()
+> 
+> 
+> 
+> [2] console_init()
+> 
+> Each entry is declared with  console_initcall()
+> 
+> 
+> 
+> [3]  when driver is probed
+> The console is usually enabled at this point
+> unless some special treatment is done.
+> 
+> 
+> 
+> 
+> My question is about [2].
+> 
+> I am using 8250-ish UART device.
+> 
+> 
+> I noticed univ8250_console_match() and univ8250_console_setup()
+> always fail at the point of [2] unless early_serial_setup() has been
+> called in advance;
+> however, it looks like early_serial_setup() is only used for old platforms.
+> 
+> So, console cannot be enabled at [2] for modern platforms.
+> 
+> 
+> My questions are:
+> 
+>  -  Given that earlycon can be now available for major architectures such ARM,
+>      [2] will be deprecated at some point in the future?
+> 
+>  - I am implementing  earlycon  for my own UART driver.
+>    Is it meaningless to implement  console_initcall()  as well as earlycon?
 
-CONFIG_SERIAL_ATMEL is not selected by allmodconfig on arm64 or powerpc
-so this is not explaining how you build tested atmel_serial.
+I would still do both. We don't enable earlycon by default at the moment,
+and I'd say things should remain working with just console_initcall().
 
-> paul@builder-02:~/git/linux-head$ echo $ARCH
-> arm64
-> paul@builder-02:~/git/linux-head$ echo $CROSS_COMPILE 
-> aarch64-linux-gnu-
-> paul@builder-02:~/git/linux-head$ make O=../arm-build/  drivers/tty/serial/atmel_serial.o
-> make[1]: Entering directory '/home/paul/git/arm-build'
-> arch/arm64/Makefile:25: LSE atomics not supported by binutils
->   CHK     include/config/kernel.release
->   Using /home/paul/git/linux-head as source for kernel
->   GEN     ./Makefile
->   CHK     include/generated/uapi/linux/version.h
->   CHK     include/generated/utsrelease.h
-> 
-> [...]
-> 
->   HOSTCC  scripts/sign-file
->   HOSTCC  scripts/extract-cert
->   CC      drivers/tty/serial/atmel_serial.o
-> make[1]: Leaving directory '/home/paul/git/arm-build'
-> paul@builder-02:~/git/linux-head$ 
-> 
-> It did build; no warning/error.  Would you call it an invalid build test?
-> 
+How closely related to 8250 is your hardware? If it's not all that different,
+you should probably reuse the existing driver.
 
-What you describe is a different test. I end up with 4 warnings when
-doing that on my machine.
-
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+	Arnd
