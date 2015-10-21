@@ -1,80 +1,48 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 2/2] serial: earlycon: allow to specify uartclk in
- earlycon kernel-parameter
-Date: Wed, 21 Oct 2015 08:27:23 -0400
-Message-ID: <562784AB.4040709@hurleysoftware.com>
-References: <1445312189-28876-1-git-send-email-yamada.masahiro@socionext.com>
- <1445312189-28876-3-git-send-email-yamada.masahiro@socionext.com>
- <5626491A.8040908@hurleysoftware.com>
- <CAK7LNAQYbg4L9dX4riQ8Zb_NN7pbhx60aXwb4rZJgdTz-pocsQ@mail.gmail.com>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: Which is better to specify console, "console= " or "stdout-path"
+ ?
+Date: Wed, 21 Oct 2015 08:46:09 -0400
+Message-ID: <56278911.9050704@hurleysoftware.com>
+References: <CAK7LNAS9uBJ1cVmGBKae3W0tk8Siu1yeXOaeN6Kz11cksMqtsg@mail.gmail.com>
+ <562753A6.3070107@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK7LNAQYbg4L9dX4riQ8Zb_NN7pbhx60aXwb4rZJgdTz-pocsQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>, Rob Herring <robh@kernel.org>, Stefan Agner <stefan@agner.ch>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <562753A6.3070107-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 10/20/2015 09:20 PM, Masahiro Yamada wrote:
-> Hi Peter,
-> (+ Rob Herring, Stefan Agner)
-> 
-> 2015-10-20 23:00 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
->> On 10/19/2015 11:36 PM, Masahiro Yamada wrote:
->>> The input clock frequency varies from device to device, but the
->>> earlycon uses the fixed frequency (BASE_BAUD * 16).  It makes
->>> impossible to set the correct divisor to the register.
+On 10/21/2015 04:58 AM, Sudeep Holla wrote:
+> On 21/10/15 06:09, Masahiro Yamada wrote:
+>> I think there exist two ways to specify the console port and baudrate.
 >>
->> So the bootloader hasn't setup the serial port?
+>>
+>> [1] Specify console in bootargs
+>>
+>>    chosen {
+>>          bootargs = "console=ttyS0,115200";
+>>    };
+>>
+>>
+>> [2] Specify stdout-path
+>>
+>>     chosen {
+>>           stdout-path = "serial0:115200n8";
 > 
-> It does.
-> I use U-boot and the serial port is already set up by U-boot.
-> 
-> 
-> But, earlycon setup functions update hardware registers.
-> See  early_serial8250_setup(), ingenic_early_console_setup(), etc.
-> 
-> 
-> Without port->uartclk set to a valid value,
-> the init code in earlycon setup does not make sense.
-> 
-> 
-> What I want to clarify is,
-> what should we do in the earlycon setup function?
-> 
-> Currently, I see
->  [1] set device->con->write callback
->  [2] initialize UART port registers
-> 
-> 
-> For [2], we need to know baudrate and input clock frequency.
-> (and the latter is missing, that's why my patch is here.)
-> 
-> 
-> In order to be independent of a boot loader, we also need
->   [3]  pinctrl (pin-muxing)
-> 
-> But, it is difficult to handle pinctrl in the earlycon framework.
-> 
-> 
-> If we depend on a boot loader, [2] is meaningless.   [1] is enough.
+> This will work for even early/boot console, so this is better than
+> option [1]
 
-The 8250 earlycon doesn't try to initialize the hardware (other than
-masking interrupts) if the baud rate is uninitialized
-(!device->baud in early_serial8250_setup()).
-
-Rather than initializing the h/w to a default of 115200 in
-ingenic_early_console_setup() when device->baud == 0, it should just
-mask interrupts. That way the bootloader initialization will be
-preserved when the options are unspecified on the command line, such as:
-
-	earlycon=jz4740_uart,mmio32,0x43fb0000
-
+Be aware that options specified via /chosen/stdout-path are
+currently ignored by earlycon. There were some hiccups getting the
+initial support upstream; when 4.4 hits mainline, I'll resubmit
+my series that implements the of_serial i/o properties and
+options passthrough to earlycon setup.
 
 Regards,
 Peter Hurley
-
-PS - Apologies for not reviewing the Ingenic 8250 driver at submission
-time.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
