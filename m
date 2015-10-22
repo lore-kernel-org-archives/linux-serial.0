@@ -1,46 +1,127 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v2 2/2] serial: earlycon: allow to specify uartclk in
- earlycon kernel-parameter
-Date: Thu, 22 Oct 2015 12:58:31 +0900
-Message-ID: <CAK7LNAT-3Obf1QN4CZ2L83Vsf8iTB1OizRBCgvN4KFROy8Xoug@mail.gmail.com>
-References: <1445312189-28876-1-git-send-email-yamada.masahiro@socionext.com>
-	<1445312189-28876-3-git-send-email-yamada.masahiro@socionext.com>
-	<5626491A.8040908@hurleysoftware.com>
-	<CAK7LNAQYbg4L9dX4riQ8Zb_NN7pbhx60aXwb4rZJgdTz-pocsQ@mail.gmail.com>
-	<562784AB.4040709@hurleysoftware.com>
-	<CAK7LNAQaQjyDiL1+vbHNJRh8nnn9p9Jp1Ru4yn+MX5JzChKawg@mail.gmail.com>
-	<5627B0DC.6000700@hurleysoftware.com>
+From: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
+Subject: Re: Which is better to specify console, "console= " or "stdout-path" ?
+Date: Thu, 22 Oct 2015 13:20:50 +0900
+Message-ID: <CAK7LNASqjd_Xf53WKa=Ogesf80HQzEoKEyVtw-BMh7JF=jq+xQ@mail.gmail.com>
+References: <CAK7LNAS9uBJ1cVmGBKae3W0tk8Siu1yeXOaeN6Kz11cksMqtsg@mail.gmail.com>
+	<562753A6.3070107@arm.com>
+	<56278911.9050704@hurleysoftware.com>
+	<CAK7LNAQ_+_9K-y7bmpdGwcH2u4uqJhJhON1Ew4OvzSSa-amyvw@mail.gmail.com>
+	<5627BCBC.5040701@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5627B0DC.6000700@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Rob Herring <robh@kernel.org>, Stefan Agner <stefan@agner.ch>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5627BCBC.5040701-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Peter,
 
-2015-10-22 0:35 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
-> Hi Masahiro,
+2015-10-22 1:26 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+> On 10/21/2015 11:38 AM, Masahiro Yamada wrote:
+>> Hi Peter.
+>>
+>> 2015-10-21 21:46 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+>>> On 10/21/2015 04:58 AM, Sudeep Holla wrote:
+>>>> On 21/10/15 06:09, Masahiro Yamada wrote:
+>>>>> I think there exist two ways to specify the console port and baudrate.
+>>>>>
+>>>>>
+>>>>> [1] Specify console in bootargs
+>>>>>
+>>>>>    chosen {
+>>>>>          bootargs = "console=ttyS0,115200";
+>>>>>    };
+>>>>>
+>>>>>
+>>>>> [2] Specify stdout-path
+>>>>>
+>>>>>     chosen {
+>>>>>           stdout-path = "serial0:115200n8";
+>>>>
+>>>> This will work for even early/boot console, so this is better than
+>>>> option [1]
+>>>
+>>> Be aware that options specified via /chosen/stdout-path are
+>>> currently ignored by earlycon. There were some hiccups getting the
+>>> initial support upstream; when 4.4 hits mainline, I'll resubmit
+>>> my series that implements the of_serial i/o properties and
+>>> options passthrough to earlycon setup.
+>>
+>>
+>> As I said in another thread ("serial: earlycon: allow to specify
+>> uartclk in earlycon kernel-parameter"),
+>> stdout-path can pass dev->baud, but not port->uartclk.
 >
-> On 10/21/2015 11:31 AM, Masahiro Yamada wrote:
->> If it is always correct to preserve the initialization done by boot-loader,
->> the following code in 8250_early.c does not make sense.
+> That's true but I'm not seeing in that thread where you wrote that?
+
+Sorry, I made you confused.  I was talking about the kernel parameter (console=)
+in the thread.
+
+> My replies there were specific to uartclk on the kernel command line,
+> which isn't necessary if the bootloader has already initialized the
+> uart.
 >
-> It's not always correct to preserve the initialization by the bootloader.
-> For example, on my legacy x86 workstation, the bootloader does not
-> initialize the h/w so when I want 8250 earlycon, I must specify the
-> baud rate.
+>> It is usually specified "clocks" phandle, but
+>> clk is not ready at the point of earlycon.
+>>
+>> It seems impossible to set up the baudrate even if the options are passed.
+>
+> It's difficult to understand what you're trying to do when I can't
+> see the code you're referring to.  For example, I only recently
+> understood that you're talking about a earlycon implementation
+> that you're working on and not the 8250 earlycon itself.
 
-So, the input clock on the machine matches the following macro.
+Sorry again for making you confused.
 
-#define BASE_BAUD (1843200/16)
+I was talking both.
+
+Now I am tackling on some ARM board porting.
 
 
-For ARM boards, we should depend on a boot loader.
-Is this what you mean?
+The board has a pure 8250 family device (compatible = "ns16550a") on it.
+
+In addition, there exist 8250-variant IPs inside the SoC.
+(this is similar to 8250, but slightly different.
+drivers/tty/serial/8250/8250_uniphier.c)
+
+
+What I want to do is:
+  [1] To use  drivers/tty/serial/8250/8250_early.c  for the on-board ns16550a.
+  [2] To implement my own EARLYCON_DECLARE() in
+drivers/tty/serial/8250/8250_uniphier.c
+
+
+
+> If you look at other non-8250 earlycons, you'll see they all ignore
+> the baud rate, on the assumption the bootloader already set it up.
+
+OK, I will do so for [2].
+
+
+> The 8250 earlycon is a little different because legacy platforms
+> do not initialize the uart.
+
+
+Make sense.
+
+For legacy platforms, earlycon initializes the uart,
+assuming the hard-coded "port->uartclk = BASE_BAUD * 16"
+is the value.
+
+
+For embedded boards such as ARM, the boot-loader should initialize the UART
+and the earlycon should preserve it because port->uartclk varies from
+board to board.
+(For example, the ns16550a on my board expects   BASE_BAUD is 1228000,
+but it does not match the one in include/asm-generic/serial.h )
+
 
 -- 
 Best Regards
 Masahiro Yamada
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
