@@ -1,49 +1,41 @@
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: RE: [PATCH] serial: sh-sci: Fix length of scatterlist
-Date: Thu, 22 Oct 2015 06:36:23 +0000
-Message-ID: <SG2PR06MB09190B2BB9A0912EC0BCEBE3D8270@SG2PR06MB0919.apcprd06.prod.outlook.com>
-References: <1445343502-4436-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdVNeSMnFqRxxqmP+v8PBVnzoh3sdyMyqt_3=USoL=09Vw@mail.gmail.com>
+Subject: [PATCH] serial: sh-sci: Fix length of scatterlist
+Date: Thu, 22 Oct 2015 15:41:26 +0900
+Message-ID: <1445496086-5972-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdVNeSMnFqRxxqmP+v8PBVnzoh3sdyMyqt_3=USoL=09Vw@mail.gmail.com>
-Content-Language: ja-JP
-Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Greg KH <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: linux-sh@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgR2VlcnQtc2FuLA0KDQo+IFNlbnQ6IFR1ZXNkYXksIE9jdG9iZXIgMjAsIDIwMTUgOToyMiBQ
-TQ0KPiANCj4gSGkgU2hpbW9kYS1zYW4sDQo+IA0KPiBPbiBUdWUsIE9jdCAyMCwgMjAxNSBhdCAy
-OjE4IFBNLCBZb3NoaWhpcm8gU2hpbW9kYQ0KPiA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNh
-cy5jb20+IHdyb3RlOg0KPiA+IFRoaXMgcGF0Y2ggZml4ZXMgYW4gaXNzdWUgdGhhdCB0aGUgImxl
-bmd0aCIgb2Ygc2NhdHRlcmxpc3Qgc2hvdWxkIGJlDQo+ID4gc2V0IHVzaW5nIHNoX2RtYV9sZW5n
-dGgoKS4gT3RoZXJ3aXNlLCBhIGRtYWVuZ2luZSBkcml2ZXIgY2Fubm90IHdvcmsNCj4gDQo+IHNn
-X2RtYV9sZW4oKT8NCg0KVGhhbmsgeW91IGZvciB0aGUgcG9pbnQuIEkgd2lsbCBmaXggaXQuDQoN
-Cj4gPiBjb3JyZWN0bHkgaWYgQ09ORklHX05FRURfU0dfRE1BX0xFTkdUSD15Lg0KPiA+DQo+ID4g
-Rml4ZXM6IDdiMzlkOTAxODQgKHNlcmlhbDogc2gtc2NpOiBGaXggTlVMTCBwb2ludGVyIGRlcmVm
-ZXJlbmNlIGlmIEhJR0hNRU0gaXMgZW5hYmxlZCkNCj4gPiBTaWduZWQtb2ZmLWJ5OiBZb3NoaWhp
-cm8gU2hpbW9kYSA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+DQo+ID4gLS0tDQo+
-ID4gIGRyaXZlcnMvdHR5L3NlcmlhbC9zaC1zY2kuYyB8IDIgKy0NCj4gPiAgMSBmaWxlIGNoYW5n
-ZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy90dHkvc2VyaWFsL3NoLXNjaS5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3NoLXNjaS5j
-DQo+ID4gaW5kZXggOTYwZTUwYS4uMjg0YTg3MiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3R0
-eS9zZXJpYWwvc2gtc2NpLmMNCj4gPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvc2gtc2NpLmMN
-Cj4gPiBAQCAtMTQzNyw3ICsxNDM3LDcgQEAgc3RhdGljIHZvaWQgc2NpX3JlcXVlc3RfZG1hKHN0
-cnVjdCB1YXJ0X3BvcnQgKnBvcnQpDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgc2dfaW5p
-dF90YWJsZShzZywgMSk7DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgcy0+cnhfYnVmW2ld
-ID0gYnVmOw0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIHNnX2RtYV9hZGRyZXNzKHNnKSA9
-IGRtYTsNCj4gPiAtICAgICAgICAgICAgICAgICAgICAgICBzZy0+bGVuZ3RoID0gcy0+YnVmX2xl
-bl9yeDsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBzZ19kbWFfbGVuZ3RoKHNnKSA9IHMt
-PmJ1Zl9sZW5fcng7DQo+IA0KPiBUaGVyZSdzIG5vIGRlZmluaXRpb24gZm9yICJzZ19kbWFfbGVu
-Z3RoIiBpbiBteSB0cmVlPz8gc2dfZG1hX2xlbigpPw0KDQpPb3BzISBUaGFuayB5b3UgZm9yIHRo
-ZSBwb2ludC4gSSB3aWxsIGZpeCBpdC4NCg0KQmVzdCByZWdhcmRzLA0KWW9zaGloaXJvIFNoaW1v
-ZGENCg0KPiBHcntvZXRqZSxlZXRpbmd9cywNCj4gDQo+ICAgICAgICAgICAgICAgICAgICAgICAg
-IEdlZXJ0DQo+IA0KPiAtLQ0KPiBHZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBsb3RzIG9m
-IExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4LW02OGsub3JnDQo+IA0KPiBJbiBwZXJz
-b25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVjaG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBh
-IGhhY2tlci4gQnV0DQo+IHdoZW4gSSdtIHRhbGtpbmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNh
-eSAicHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxpa2UgdGhhdC4NCj4gICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxkcw0K
+This patch fixes an issue that the "length" of scatterlist should be
+set using sg_dma_len(). Otherwise, a dmaengine driver cannot work
+correctly if CONFIG_NEED_SG_DMA_LENGTH=y.
+
+Fixes: 7b39d90184 (serial: sh-sci: Fix NULL pointer dereference if HIGHMEM is enabled)
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ Changes from v1:
+  - Fix using implicit declaration of function "sg_dma_length".
+
+ drivers/tty/serial/sh-sci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 960e50a..51c7507 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1437,7 +1437,7 @@ static void sci_request_dma(struct uart_port *port)
+ 			sg_init_table(sg, 1);
+ 			s->rx_buf[i] = buf;
+ 			sg_dma_address(sg) = dma;
+-			sg->length = s->buf_len_rx;
++			sg_dma_len(sg) = s->buf_len_rx;
+ 
+ 			buf += s->buf_len_rx;
+ 			dma += s->buf_len_rx;
+-- 
+1.9.1
+
