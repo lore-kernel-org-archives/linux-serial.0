@@ -1,106 +1,49 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: console vs earlycon ?
-Date: Thu, 22 Oct 2015 13:47:21 +0900
-Message-ID: <CAK7LNAQhjLAgeiUSXvFfBzmdSzmy=fuTp7BKiGOaQTjbAZbR9A@mail.gmail.com>
-References: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
-	<56279126.8080506@hurleysoftware.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH] serial: sh-sci: Fix length of scatterlist
+Date: Thu, 22 Oct 2015 06:36:23 +0000
+Message-ID: <SG2PR06MB09190B2BB9A0912EC0BCEBE3D8270@SG2PR06MB0919.apcprd06.prod.outlook.com>
+References: <1445343502-4436-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdVNeSMnFqRxxqmP+v8PBVnzoh3sdyMyqt_3=USoL=09Vw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56279126.8080506@hurleysoftware.com>
+In-Reply-To: <CAMuHMdVNeSMnFqRxxqmP+v8PBVnzoh3sdyMyqt_3=USoL=09Vw@mail.gmail.com>
+Content-Language: ja-JP
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Stefan Agner <stefan@agner.ch>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg KH <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter
-
-2015-10-21 22:20 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
-> On 10/21/2015 04:21 AM, Masahiro Yamada wrote:
->> Hi.
->>
->>
->>
->>
->> I think there are three places where console could be enabled.
->>
->> [1] earlycon
->>
->> Each driver entry is declared with
->> EARLYCON_DECLARE()  or OF_EARLYCON_DECLARE()
->>
->>
->>
->> [2] console_init()
->>
->> Each entry is declared with  console_initcall()
->>
->>
->>
->> [3]  when driver is probed
->> The console is usually enabled at this point
->> unless some special treatment is done.
->>
->>
->>
->>
->> My question is about [2].
->
-> For 8250 sub-drivers, the console_initcall() is only for legacy
-> platforms, and not for 8250 ports added via serial8250_register_8250_port().
->
-> In this contexts, legacy platforms are:
-> 1. early_serial_setup()
-> 2. platforms that define SERIAL_PORT_DFNS (eg., ISA ports)
->
->
-> At the point where console_initcall() occurs, the 8250 core has _not_
-> been initialized (ie., serial8250_init() has _not_ run).
->
->
->
->> I am using 8250-ish UART device.
->>
->>
->> I noticed univ8250_console_match() and univ8250_console_setup()
->> always fail at the point of [2] unless early_serial_setup() has been
->> called in advance;
->> however, it looks like early_serial_setup() is only used for old platforms.
->>
->> So, console cannot be enabled at [2] for modern platforms.
->
-> Since console_init() => console_initcall() occurs before almost everything,
-> it's not practical to use for probed drivers.
->
->
->> My questions are:
->>
->>  -  Given that earlycon can be now available for major architectures such ARM,
->>      [2] will be deprecated at some point in the future?
->
-> PPC and x86 platforms still rely on console_init() so it will be some time
-> before this disappears.
->
->>  - I am implementing  earlycon  for my own UART driver.
->>    Is it meaningless to implement  console_initcall()  as well as earlycon?
->
-> Probed drivers should only implement earlycon and console. 8250 sub-drivers
-> should only implement earlycon and/or console if the base 8250 earlycon and/or
-> console are not operational.
-
-Sorry, let me to be sure a bit.
-
-Which does "console" in this context mean
-  - console_initcall
-  - console enabled when the driver is probed
-
-I am assuming the latter.
-
-
-Thanks,
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+SGkgR2VlcnQtc2FuLA0KDQo+IFNlbnQ6IFR1ZXNkYXksIE9jdG9iZXIgMjAsIDIwMTUgOToyMiBQ
+TQ0KPiANCj4gSGkgU2hpbW9kYS1zYW4sDQo+IA0KPiBPbiBUdWUsIE9jdCAyMCwgMjAxNSBhdCAy
+OjE4IFBNLCBZb3NoaWhpcm8gU2hpbW9kYQ0KPiA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNh
+cy5jb20+IHdyb3RlOg0KPiA+IFRoaXMgcGF0Y2ggZml4ZXMgYW4gaXNzdWUgdGhhdCB0aGUgImxl
+bmd0aCIgb2Ygc2NhdHRlcmxpc3Qgc2hvdWxkIGJlDQo+ID4gc2V0IHVzaW5nIHNoX2RtYV9sZW5n
+dGgoKS4gT3RoZXJ3aXNlLCBhIGRtYWVuZ2luZSBkcml2ZXIgY2Fubm90IHdvcmsNCj4gDQo+IHNn
+X2RtYV9sZW4oKT8NCg0KVGhhbmsgeW91IGZvciB0aGUgcG9pbnQuIEkgd2lsbCBmaXggaXQuDQoN
+Cj4gPiBjb3JyZWN0bHkgaWYgQ09ORklHX05FRURfU0dfRE1BX0xFTkdUSD15Lg0KPiA+DQo+ID4g
+Rml4ZXM6IDdiMzlkOTAxODQgKHNlcmlhbDogc2gtc2NpOiBGaXggTlVMTCBwb2ludGVyIGRlcmVm
+ZXJlbmNlIGlmIEhJR0hNRU0gaXMgZW5hYmxlZCkNCj4gPiBTaWduZWQtb2ZmLWJ5OiBZb3NoaWhp
+cm8gU2hpbW9kYSA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+DQo+ID4gLS0tDQo+
+ID4gIGRyaXZlcnMvdHR5L3NlcmlhbC9zaC1zY2kuYyB8IDIgKy0NCj4gPiAgMSBmaWxlIGNoYW5n
+ZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy90dHkvc2VyaWFsL3NoLXNjaS5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3NoLXNjaS5j
+DQo+ID4gaW5kZXggOTYwZTUwYS4uMjg0YTg3MiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3R0
+eS9zZXJpYWwvc2gtc2NpLmMNCj4gPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvc2gtc2NpLmMN
+Cj4gPiBAQCAtMTQzNyw3ICsxNDM3LDcgQEAgc3RhdGljIHZvaWQgc2NpX3JlcXVlc3RfZG1hKHN0
+cnVjdCB1YXJ0X3BvcnQgKnBvcnQpDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgc2dfaW5p
+dF90YWJsZShzZywgMSk7DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgcy0+cnhfYnVmW2ld
+ID0gYnVmOw0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIHNnX2RtYV9hZGRyZXNzKHNnKSA9
+IGRtYTsNCj4gPiAtICAgICAgICAgICAgICAgICAgICAgICBzZy0+bGVuZ3RoID0gcy0+YnVmX2xl
+bl9yeDsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBzZ19kbWFfbGVuZ3RoKHNnKSA9IHMt
+PmJ1Zl9sZW5fcng7DQo+IA0KPiBUaGVyZSdzIG5vIGRlZmluaXRpb24gZm9yICJzZ19kbWFfbGVu
+Z3RoIiBpbiBteSB0cmVlPz8gc2dfZG1hX2xlbigpPw0KDQpPb3BzISBUaGFuayB5b3UgZm9yIHRo
+ZSBwb2ludC4gSSB3aWxsIGZpeCBpdC4NCg0KQmVzdCByZWdhcmRzLA0KWW9zaGloaXJvIFNoaW1v
+ZGENCg0KPiBHcntvZXRqZSxlZXRpbmd9cywNCj4gDQo+ICAgICAgICAgICAgICAgICAgICAgICAg
+IEdlZXJ0DQo+IA0KPiAtLQ0KPiBHZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBsb3RzIG9m
+IExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4LW02OGsub3JnDQo+IA0KPiBJbiBwZXJz
+b25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVjaG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBh
+IGhhY2tlci4gQnV0DQo+IHdoZW4gSSdtIHRhbGtpbmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNh
+eSAicHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxpa2UgdGhhdC4NCj4gICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxkcw0K
