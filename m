@@ -1,127 +1,106 @@
-From: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
-Subject: Re: Which is better to specify console, "console= " or "stdout-path" ?
-Date: Thu, 22 Oct 2015 13:20:50 +0900
-Message-ID: <CAK7LNASqjd_Xf53WKa=Ogesf80HQzEoKEyVtw-BMh7JF=jq+xQ@mail.gmail.com>
-References: <CAK7LNAS9uBJ1cVmGBKae3W0tk8Siu1yeXOaeN6Kz11cksMqtsg@mail.gmail.com>
-	<562753A6.3070107@arm.com>
-	<56278911.9050704@hurleysoftware.com>
-	<CAK7LNAQ_+_9K-y7bmpdGwcH2u4uqJhJhON1Ew4OvzSSa-amyvw@mail.gmail.com>
-	<5627BCBC.5040701@hurleysoftware.com>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: Re: console vs earlycon ?
+Date: Thu, 22 Oct 2015 13:47:21 +0900
+Message-ID: <CAK7LNAQhjLAgeiUSXvFfBzmdSzmy=fuTp7BKiGOaQTjbAZbR9A@mail.gmail.com>
+References: <CAK7LNARem16fTim8Ds_y8ezMusz_aRtv6c59KoxyC0rLV-RBWw@mail.gmail.com>
+	<56279126.8080506@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5627BCBC.5040701-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <56279126.8080506@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Stefan Agner <stefan@agner.ch>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
+Hi Peter
 
-2015-10-22 1:26 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
-> On 10/21/2015 11:38 AM, Masahiro Yamada wrote:
->> Hi Peter.
->>
->> 2015-10-21 21:46 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
->>> On 10/21/2015 04:58 AM, Sudeep Holla wrote:
->>>> On 21/10/15 06:09, Masahiro Yamada wrote:
->>>>> I think there exist two ways to specify the console port and baudrate.
->>>>>
->>>>>
->>>>> [1] Specify console in bootargs
->>>>>
->>>>>    chosen {
->>>>>          bootargs = "console=ttyS0,115200";
->>>>>    };
->>>>>
->>>>>
->>>>> [2] Specify stdout-path
->>>>>
->>>>>     chosen {
->>>>>           stdout-path = "serial0:115200n8";
->>>>
->>>> This will work for even early/boot console, so this is better than
->>>> option [1]
->>>
->>> Be aware that options specified via /chosen/stdout-path are
->>> currently ignored by earlycon. There were some hiccups getting the
->>> initial support upstream; when 4.4 hits mainline, I'll resubmit
->>> my series that implements the of_serial i/o properties and
->>> options passthrough to earlycon setup.
+2015-10-21 22:20 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
+> On 10/21/2015 04:21 AM, Masahiro Yamada wrote:
+>> Hi.
 >>
 >>
->> As I said in another thread ("serial: earlycon: allow to specify
->> uartclk in earlycon kernel-parameter"),
->> stdout-path can pass dev->baud, but not port->uartclk.
+>>
+>>
+>> I think there are three places where console could be enabled.
+>>
+>> [1] earlycon
+>>
+>> Each driver entry is declared with
+>> EARLYCON_DECLARE()  or OF_EARLYCON_DECLARE()
+>>
+>>
+>>
+>> [2] console_init()
+>>
+>> Each entry is declared with  console_initcall()
+>>
+>>
+>>
+>> [3]  when driver is probed
+>> The console is usually enabled at this point
+>> unless some special treatment is done.
+>>
+>>
+>>
+>>
+>> My question is about [2].
 >
-> That's true but I'm not seeing in that thread where you wrote that?
-
-Sorry, I made you confused.  I was talking about the kernel parameter (console=)
-in the thread.
-
-> My replies there were specific to uartclk on the kernel command line,
-> which isn't necessary if the bootloader has already initialized the
-> uart.
+> For 8250 sub-drivers, the console_initcall() is only for legacy
+> platforms, and not for 8250 ports added via serial8250_register_8250_port().
 >
->> It is usually specified "clocks" phandle, but
->> clk is not ready at the point of earlycon.
+> In this contexts, legacy platforms are:
+> 1. early_serial_setup()
+> 2. platforms that define SERIAL_PORT_DFNS (eg., ISA ports)
+>
+>
+> At the point where console_initcall() occurs, the 8250 core has _not_
+> been initialized (ie., serial8250_init() has _not_ run).
+>
+>
+>
+>> I am using 8250-ish UART device.
 >>
->> It seems impossible to set up the baudrate even if the options are passed.
+>>
+>> I noticed univ8250_console_match() and univ8250_console_setup()
+>> always fail at the point of [2] unless early_serial_setup() has been
+>> called in advance;
+>> however, it looks like early_serial_setup() is only used for old platforms.
+>>
+>> So, console cannot be enabled at [2] for modern platforms.
 >
-> It's difficult to understand what you're trying to do when I can't
-> see the code you're referring to.  For example, I only recently
-> understood that you're talking about a earlycon implementation
-> that you're working on and not the 8250 earlycon itself.
+> Since console_init() => console_initcall() occurs before almost everything,
+> it's not practical to use for probed drivers.
+>
+>
+>> My questions are:
+>>
+>>  -  Given that earlycon can be now available for major architectures such ARM,
+>>      [2] will be deprecated at some point in the future?
+>
+> PPC and x86 platforms still rely on console_init() so it will be some time
+> before this disappears.
+>
+>>  - I am implementing  earlycon  for my own UART driver.
+>>    Is it meaningless to implement  console_initcall()  as well as earlycon?
+>
+> Probed drivers should only implement earlycon and console. 8250 sub-drivers
+> should only implement earlycon and/or console if the base 8250 earlycon and/or
+> console are not operational.
 
-Sorry again for making you confused.
+Sorry, let me to be sure a bit.
 
-I was talking both.
+Which does "console" in this context mean
+  - console_initcall
+  - console enabled when the driver is probed
 
-Now I am tackling on some ARM board porting.
-
-
-The board has a pure 8250 family device (compatible = "ns16550a") on it.
-
-In addition, there exist 8250-variant IPs inside the SoC.
-(this is similar to 8250, but slightly different.
-drivers/tty/serial/8250/8250_uniphier.c)
-
-
-What I want to do is:
-  [1] To use  drivers/tty/serial/8250/8250_early.c  for the on-board ns16550a.
-  [2] To implement my own EARLYCON_DECLARE() in
-drivers/tty/serial/8250/8250_uniphier.c
-
-
-
-> If you look at other non-8250 earlycons, you'll see they all ignore
-> the baud rate, on the assumption the bootloader already set it up.
-
-OK, I will do so for [2].
+I am assuming the latter.
 
 
-> The 8250 earlycon is a little different because legacy platforms
-> do not initialize the uart.
+Thanks,
 
-
-Make sense.
-
-For legacy platforms, earlycon initializes the uart,
-assuming the hard-coded "port->uartclk = BASE_BAUD * 16"
-is the value.
-
-
-For embedded boards such as ARM, the boot-loader should initialize the UART
-and the earlycon should preserve it because port->uartclk varies from
-board to board.
-(For example, the ns16550a on my board expects   BASE_BAUD is 1228000,
-but it does not match the one in include/asm-generic/serial.h )
 
 
 -- 
 Best Regards
 Masahiro Yamada
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
