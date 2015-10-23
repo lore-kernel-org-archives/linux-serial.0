@@ -1,57 +1,45 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] Revert "serial: amba-pl011: fix incorrect integer size in
- pl011_fifo_to_tty()"
-Date: Fri, 23 Oct 2015 13:49:06 -0400
-Message-ID: <562A7312.5030501@hurleysoftware.com>
-References: <1445594400-29095-1-git-send-email-shijie.huang@arm.com>
- <20151023103056.GI4801@e103592.cambridge.arm.com>
- <562A297A.9030204@codeaurora.org>
- <20151023133403.GI4796@e103592.cambridge.arm.com> <562A544D.7080506@tabi.org>
- <20151023160246.GM4796@e103592.cambridge.arm.com>
- <562A6296.3070600@codeaurora.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 4.3-rc7
+Date: Fri, 23 Oct 2015 14:26:24 -0700
+Message-ID: <20151023212624.GA5097@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <562A6296.3070600@codeaurora.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Timur Tabi <timur@codeaurora.org>, Dave P Martin <Dave.Martin@arm.com>
-Cc: Huang Shijie <shijie.huang@arm.com>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 10/23/2015 12:38 PM, Timur Tabi wrote:
-> On 10/23/2015 11:02 AM, Dave P Martin wrote:
->> I'm pretty sure CREAD should default to enabled[1], and that usually
->> software won't modify it.
->>
->> Assuming that this is indeed the problem, it's possible that another bug
->> in the pl011 driver is wrongly clearing this flag.  Sadly I don't have
->> time to look at the code again just now ...:(
-> 
-> Perhaps, but !CREAD is definitely broken without this patch.  So if the driver really is clearing CREAD somewhere else, then that's where the real bug is.
-> 
->>
->> Could be interesting to stick some BUG_ON(!CREAD) in the driver to
->> try and track down where that's coming from.
-> 
-> CREAD is disabled by default when opening the console.  You need to explicitly set it in the termios structure.
+The following changes since commit 25cb62b76430a91cc6195f902e61c2cb84ade622:
 
-No; the initial termios structure for all serial core-based drivers has
-CREAD set:
+  Linux 4.3-rc5 (2015-10-11 11:09:45 -0700)
 
-pl011_probe
-   pl011_register_port
-      uart_register_driver
-         ...
-         normal->init_termios.c_cflag = .... | CREAD | ....;
+are available in the git repository at:
 
-Regards,
-Peter Hurley
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.3-rc7
+
+for you to fetch changes up to f235f664a8afabccf863a5dee4777d2d7b676fda:
+
+  fbcon: initialize blink interval before calling fb_set_par (2015-10-17 22:00:39 -0700)
+
+----------------------------------------------------------------
+tty/serial fixes for 4.3-rc7
+
+Here are two fixes that resolve reported issues, one with the 8250
+driver, and the other with the generic fbcon driver.
+
+Both have been in linux-next for a while.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Frederic Danis (1):
+      Revert "serial: 8250_dma: don't bother DMA with small transfers"
+
+Scot Doyle (1):
+      fbcon: initialize blink interval before calling fb_set_par
+
+ drivers/tty/serial/8250/8250_dma.c | 4 ----
+ drivers/video/console/fbcon.c      | 1 +
+ 2 files changed, 1 insertion(+), 4 deletions(-)
