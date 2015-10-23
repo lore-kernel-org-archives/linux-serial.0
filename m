@@ -1,67 +1,73 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: Re: [PATCH] Revert "serial: amba-pl011: fix incorrect integer size
- in pl011_fifo_to_tty()"
-Date: Fri, 23 Oct 2015 11:31:00 +0100
-Message-ID: <20151023103056.GI4801@e103592.cambridge.arm.com>
-References: <1445594400-29095-1-git-send-email-shijie.huang@arm.com>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: Re: [PATCH v2 2/2] serial: earlycon: allow to specify uartclk in
+ earlycon kernel-parameter
+Date: Fri, 23 Oct 2015 20:15:33 +0900
+Message-ID: <CAK7LNARFOzkBVabThTOyZc28F2Kyt3fXnbJTWO632D1yUdg4oQ@mail.gmail.com>
+References: <1445312189-28876-1-git-send-email-yamada.masahiro@socionext.com>
+	<1445312189-28876-3-git-send-email-yamada.masahiro@socionext.com>
+	<5626491A.8040908@hurleysoftware.com>
+	<CAK7LNAQYbg4L9dX4riQ8Zb_NN7pbhx60aXwb4rZJgdTz-pocsQ@mail.gmail.com>
+	<CAL_JsqL2MjN9_K5tBOEAnM7j5SXzipXXcBMUyyUacaFnpVOOJw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1445594400-29095-1-git-send-email-shijie.huang@arm.com>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Huang Shijie <shijie.huang@arm.com>
-Cc: gregkh@linuxfoundation.org, timur@codeaurora.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAL_JsqL2MjN9_K5tBOEAnM7j5SXzipXXcBMUyyUacaFnpVOOJw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Stefan Agner <stefan@agner.ch>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Oct 23, 2015 at 06:00:00PM +0800, Huang Shijie wrote:
-> The commit 71a5cd8a4 makes the console hang for some times.
-> This reverts commit 71a5cd8a4a2602a6e9010b557a23af0a54df87b6.
+2015-10-23 0:34 GMT+09:00 Rob Herring <robh@kernel.org>:
+> On Tue, Oct 20, 2015 at 8:20 PM, Masahiro Yamada
+> <yamada.masahiro@socionext.com> wrote:
+>> Hi Peter,
+>> (+ Rob Herring, Stefan Agner)
+>>
+>> 2015-10-20 23:00 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
+>>> On 10/19/2015 11:36 PM, Masahiro Yamada wrote:
+>>>> The input clock frequency varies from device to device, but the
+>>>> earlycon uses the fixed frequency (BASE_BAUD * 16).  It makes
+>>>> impossible to set the correct divisor to the register.
+>>>
+>>> So the bootloader hasn't setup the serial port?
+>>
+>> It does.
+>> I use U-boot and the serial port is already set up by U-boot.
+>
+> This problem is now moving into u-boot which is using DT for configuration.
+>
+>> But, earlycon setup functions update hardware registers.
+>> See  early_serial8250_setup(), ingenic_early_console_setup(), etc.
+>>
+>>
+>> Without port->uartclk set to a valid value,
+>> the init code in earlycon setup does not make sense.
+>>
+>>
+>> What I want to clarify is,
+>> what should we do in the earlycon setup function?
+>>
+>> Currently, I see
+>>  [1] set device->con->write callback
+>>  [2] initialize UART port registers
+>>
+>>
+>> For [2], we need to know baudrate and input clock frequency.
+>> (and the latter is missing, that's why my patch is here.)
+>
+> I'm missing context of what you did, but it needs to be parse-able
+> from a flattened tree. My suggestion would be use clock-frequency
+> property in the uart node. We should be able to parse that. This came
+> up with u-boot as well[1].
 
-What hangs?  Input?  Output?  Both?
+Right.
 
-Is CREAD set on the terminal?  If only input hangs, it's possible CREAD
-is not set and we were previously getting away with it, though I can't
-easily see why it should be unset...
+But, I think things have been going wrong
+since SPL started to parse a device tree.
 
-Cheers
----Dave
 
-> 
-> Signed-off-by: Huang Shijie <shijie.huang@arm.com>
-> ---
->  drivers/tty/serial/amba-pl011.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 899a771..fd27e98 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -191,8 +191,8 @@ struct uart_amba_port {
->   */
->  static int pl011_fifo_to_tty(struct uart_amba_port *uap)
->  {
-> -	u16 status;
-> -	unsigned int ch, flag, max_count = 256;
-> +	u16 status, ch;
-> +	unsigned int flag, max_count = 256;
->  	int fifotaken = 0;
->  
->  	while (max_count--) {
-> -- 
-> 2.1.4
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+
+-- 
+Best Regards
+Masahiro Yamada
