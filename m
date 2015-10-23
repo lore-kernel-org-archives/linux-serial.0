@@ -1,41 +1,85 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH] Revert "serial: amba-pl011: fix incorrect integer size in
- pl011_fifo_to_tty()"
-Date: Fri, 23 Oct 2015 07:35:06 -0500
-Message-ID: <562A297A.9030204@codeaurora.org>
-References: <1445594400-29095-1-git-send-email-shijie.huang@arm.com>
- <20151023103056.GI4801@e103592.cambridge.arm.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] serial: 8250_early: do not save and restore IER in write
+ callback
+Date: Fri, 23 Oct 2015 08:45:53 -0400
+Message-ID: <562A2C01.4070006@hurleysoftware.com>
+References: <1445502100-10860-1-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20151023103056.GI4801@e103592.cambridge.arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Dave Martin <Dave.Martin@arm.com>, Huang Shijie <shijie.huang@arm.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1445502100-10860-1-git-send-email-yamada.masahiro@socionext.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org
+Cc: Vineet Gupta <Vineet.Gupta1@synopsys.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org, Eddie Huang <eddie.huang@mediatek.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-Dave Martin wrote:
->> >The commit 71a5cd8a4 makes the console hang for some times.
->> >This reverts commit 71a5cd8a4a2602a6e9010b557a23af0a54df87b6.
-> What hangs?  Input?  Output?  Both?
->
-> Is CREAD set on the terminal?  If only input hangs, it's possible CREAD
-> is not set and we were previously getting away with it, though I can't
-> easily see why it should be unset...
+On 10/22/2015 04:21 AM, Masahiro Yamada wrote:
+> The IER has already been masked in early_serial8250_setup(), there is
+> no reason to save and restore it every time early_serial8250_write()
+> is called.
+> 
+> Let wait_for_xmitr() melt into serial_putc().
 
-Dave is right, the revert doesn't make any sense. Huang has a user-space 
-bug.  Please check to see if CREAD is set.  I'm pretty sure it isn't.
+Both of these changes are ok with me, but please split this into
+2 patches so reverting either one in case of regression is trivial.
 
--- 
-Sent by an employee of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the
-Code Aurora Forum, hosted by The Linux Foundation.
+Regards,
+Peter Hurley
+
+> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> ---
+> 
+>  drivers/tty/serial/8250/8250_early.c | 20 ++------------------
+>  1 file changed, 2 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+> index 7aff3d8..19aca19 100644
+> --- a/drivers/tty/serial/8250/8250_early.c
+> +++ b/drivers/tty/serial/8250/8250_early.c
+> @@ -76,21 +76,17 @@ static void __init serial8250_early_out(struct uart_port *port, int offset, int
+>  
+>  #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
+>  
+> -static void __init wait_for_xmitr(struct uart_port *port)
+> +static void __init serial_putc(struct uart_port *port, int c)
+>  {
+>  	unsigned int status;
+>  
+>  	for (;;) {
+>  		status = serial8250_early_in(port, UART_LSR);
+>  		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
+> -			return;
+> +			break;
+>  		cpu_relax();
+>  	}
+> -}
+>  
+> -static void __init serial_putc(struct uart_port *port, int c)
+> -{
+> -	wait_for_xmitr(port);
+>  	serial8250_early_out(port, UART_TX, c);
+>  }
+>  
+> @@ -99,20 +95,8 @@ static void __init early_serial8250_write(struct console *console,
+>  {
+>  	struct earlycon_device *device = console->data;
+>  	struct uart_port *port = &device->port;
+> -	unsigned int ier;
+> -
+> -	/* Save the IER and disable interrupts preserving the UUE bit */
+> -	ier = serial8250_early_in(port, UART_IER);
+> -	if (ier)
+> -		serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
+>  
+>  	uart_console_write(port, s, count, serial_putc);
+> -
+> -	/* Wait for transmitter to become empty and restore the IER */
+> -	wait_for_xmitr(port);
+> -
+> -	if (ier)
+> -		serial8250_early_out(port, UART_IER, ier);
+>  }
+>  
+>  static void __init init_port(struct earlycon_device *device)
+> 
