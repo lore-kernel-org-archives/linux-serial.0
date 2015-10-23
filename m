@@ -1,76 +1,64 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] of/fdt: fix error checking for earlycon address
-Date: Fri, 23 Oct 2015 09:15:22 -0400
-Message-ID: <562A32EA.20808@hurleysoftware.com>
-References: <1445600840-26749-1-git-send-email-yamada.masahiro@socionext.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: [PATCH 2/2] serial: 8250_ingenic: allow to be independent of SERIAL_8250_CONSOLE
+Date: Fri, 23 Oct 2015 22:31:16 +0900
+Message-ID: <1445607076-14135-2-git-send-email-yamada.masahiro@socionext.com>
+References: <1445607076-14135-1-git-send-email-yamada.masahiro@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1445600840-26749-1-git-send-email-yamada.masahiro@socionext.com>
+In-Reply-To: <1445607076-14135-1-git-send-email-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>, devicetree@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>, linux-serial@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Ley Foon Tan <lftan@altera.com>
+To: linux-serial@vger.kernel.org
+Cc: Paul Burton <paul.burton@imgtec.com>, Peter Hurley <peter@hurleysoftware.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Joachim Eastwood <manabian@gmail.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, John Crispin <blogic@openwrt.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Masahiro,
+This UART driver should not depend on the console.  They should be
+orthogonal.
 
-On 10/23/2015 07:47 AM, Masahiro Yamada wrote:
-> fdt_translate_address() returns OF_BAD_ADDR on error.  It is defined as
-> a u64 value, so the variable "addr" should be defined as u64 as well.
+Surround the earlycon code with CONFIG_SERIAL_EARLYCON conditional
+and rip off "depends on SERIAL_8250_CONSOLE".
 
-Good catch.
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+---
 
-I would prefer if fdt_translate_address() returned resource_size_t (which
-is the proper type for handling addresses as integers) and that type
-was propagated through early_init_dt_scan_chosen_serial => of_setup_earlycon.
-
-Regards,
-Peter Hurley
+Currently, SERIAL_8250_FSL also depends on SERIAL_8250_CONSOLE,
+but I doubt its necessity.
 
 
-PS - It seems that there is a new user of fdt_translate_address() in the
-nios arch:
+ drivers/tty/serial/8250/8250_ingenic.c | 2 ++
+ drivers/tty/serial/8250/Kconfig        | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-commit e8bf5bc776edef44777b13b2eb4461d653519bae
-Author: Ley Foon Tan <lftan@altera.com>
-Date:   Tue Feb 10 23:21:08 2015 +0800
-
-    nios2: add early printk support
-    
-    Signed-off-by: Ley Foon Tan <lftan@altera.com>
-
-I've copied the author as that should have been an earlycon in the
-altera uart driver(s) rather than early_printk. Oh well.
-
-
-> Fixes: fb11ffe74c79 ("of/fdt: add FDT serial scanning for earlycon")
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-> ---
-> 
->  drivers/of/fdt.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index 9fc3568..196e449 100644
-> --- a/drivers/of/fdt.c
-> +++ b/drivers/of/fdt.c
-> @@ -822,14 +822,15 @@ static int __init early_init_dt_scan_chosen_serial(void)
->  		return -ENODEV;
->  
->  	while (match->compatible[0]) {
-> -		unsigned long addr;
-> +		u64 addr;
-> +
->  		if (fdt_node_check_compatible(fdt, offset, match->compatible)) {
->  			match++;
->  			continue;
->  		}
->  
->  		addr = fdt_translate_address(fdt, offset);
-> -		if (!addr)
-> +		if (addr == OF_BAD_ADDR)
->  			return -ENXIO;
->  
->  		of_setup_earlycon(addr, match->data);
-> 
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+index 7c1e4be..44633ee 100644
+--- a/drivers/tty/serial/8250/8250_ingenic.c
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -34,6 +34,7 @@ struct ingenic_uart_data {
+ 
+ #define UART_FCR_UME	BIT(4)
+ 
++#ifdef CONFIG_SERIAL_EARLYCON
+ static struct earlycon_device *early_device;
+ 
+ static uint8_t __init early_in(struct uart_port *port, int offset)
+@@ -126,6 +127,7 @@ OF_EARLYCON_DECLARE(jz4775_uart, "ingenic,jz4775-uart",
+ EARLYCON_DECLARE(jz4780_uart, ingenic_early_console_setup);
+ OF_EARLYCON_DECLARE(jz4780_uart, "ingenic,jz4780-uart",
+ 		    ingenic_early_console_setup);
++#endif /* CONFIG_SERIAL_EARLYCON */
+ 
+ static void ingenic_uart_serial_out(struct uart_port *p, int offset, int value)
+ {
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 960da95..6f62934 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -360,7 +360,7 @@ config SERIAL_8250_UNIPHIER
+ 
+ config SERIAL_8250_INGENIC
+ 	bool "Support for Ingenic SoC serial ports"
+-	depends on SERIAL_8250_CONSOLE && OF_FLATTREE
++	depends on OF_FLATTREE
+ 	select LIBFDT
+ 	help
+ 	  If you have a system using an Ingenic SoC and wish to make use of
+-- 
+1.9.1
