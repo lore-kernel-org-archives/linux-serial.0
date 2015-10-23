@@ -1,45 +1,39 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 4.3-rc7
-Date: Fri, 23 Oct 2015 14:26:24 -0700
-Message-ID: <20151023212624.GA5097@kroah.com>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [PATCH v13 5/5] uart: pl011: Add support to ZTE ZX296702 uart
+Date: Fri, 23 Oct 2015 16:54:34 -0500
+Message-ID: <CAOZdJXUjZLKkUYScD7oDTMuRUtAEJ6=DopmE4n6Vb9zyv+_viA@mail.gmail.com>
+References: <1438328959-16177-1-git-send-email-jun.nie@linaro.org>
+ <1438328959-16177-6-git-send-email-jun.nie@linaro.org>
+ <55FC16A2.5070207@arm.com>
+ <CABymUCOA3oG7Hq83hDyQ_uisQHeipoHshcWONWTtjxKvikzjsQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CABymUCOA3oG7Hq83hDyQ_uisQHeipoHshcWONWTtjxKvikzjsQ@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jun Nie <jun.nie@linaro.org>
+Cc: "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "jason.liu@linaro.org" <jason.liu@linaro.org>, Andre Przywara <andre.przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "wan.zhijun@zte.com.cn" <wan.zhijun@zte.com.cn>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 25cb62b76430a91cc6195f902e61c2cb84ade622:
+On Sat, Sep 19, 2015 at 1:54 AM, Jun Nie <jun.nie@linaro.org> wrote:
+>
+> I am not sure the silicon designer's plan on the UART IP. Different
+> silicon team have different decision on the IP choice. So I guess
+> future ZTE SOC may reuse ZTE UART per people assignment.
 
-  Linux 4.3-rc5 (2015-10-11 11:09:45 -0700)
+I would rather see this as a separate driver.  I think this patch
+pollutes the amba-pl011.c driver too much.
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.3-rc7
-
-for you to fetch changes up to f235f664a8afabccf863a5dee4777d2d7b676fda:
-
-  fbcon: initialize blink interval before calling fb_set_par (2015-10-17 22:00:39 -0700)
-
-----------------------------------------------------------------
-tty/serial fixes for 4.3-rc7
-
-Here are two fixes that resolve reported issues, one with the 8250
-driver, and the other with the generic fbcon driver.
-
-Both have been in linux-next for a while.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Frederic Danis (1):
-      Revert "serial: 8250_dma: don't bother DMA with small transfers"
-
-Scot Doyle (1):
-      fbcon: initialize blink interval before calling fb_set_par
-
- drivers/tty/serial/8250/8250_dma.c | 4 ----
- drivers/video/console/fbcon.c      | 1 +
- 2 files changed, 1 insertion(+), 4 deletions(-)
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project.
