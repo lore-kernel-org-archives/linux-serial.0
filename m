@@ -1,85 +1,76 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: 8250_early: do not save and restore IER in write
- callback
-Date: Fri, 23 Oct 2015 08:45:53 -0400
-Message-ID: <562A2C01.4070006@hurleysoftware.com>
-References: <1445502100-10860-1-git-send-email-yamada.masahiro@socionext.com>
+Subject: Re: [PATCH] of/fdt: fix error checking for earlycon address
+Date: Fri, 23 Oct 2015 09:15:22 -0400
+Message-ID: <562A32EA.20808@hurleysoftware.com>
+References: <1445600840-26749-1-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1445502100-10860-1-git-send-email-yamada.masahiro@socionext.com>
+In-Reply-To: <1445600840-26749-1-git-send-email-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org
-Cc: Vineet Gupta <Vineet.Gupta1@synopsys.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org, Eddie Huang <eddie.huang@mediatek.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Masahiro Yamada <yamada.masahiro@socionext.com>, devicetree@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>, linux-serial@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Ley Foon Tan <lftan@altera.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/22/2015 04:21 AM, Masahiro Yamada wrote:
-> The IER has already been masked in early_serial8250_setup(), there is
-> no reason to save and restore it every time early_serial8250_write()
-> is called.
-> 
-> Let wait_for_xmitr() melt into serial_putc().
+Hi Masahiro,
 
-Both of these changes are ok with me, but please split this into
-2 patches so reverting either one in case of regression is trivial.
+On 10/23/2015 07:47 AM, Masahiro Yamada wrote:
+> fdt_translate_address() returns OF_BAD_ADDR on error.  It is defined as
+> a u64 value, so the variable "addr" should be defined as u64 as well.
+
+Good catch.
+
+I would prefer if fdt_translate_address() returned resource_size_t (which
+is the proper type for handling addresses as integers) and that type
+was propagated through early_init_dt_scan_chosen_serial => of_setup_earlycon.
 
 Regards,
 Peter Hurley
 
+
+PS - It seems that there is a new user of fdt_translate_address() in the
+nios arch:
+
+commit e8bf5bc776edef44777b13b2eb4461d653519bae
+Author: Ley Foon Tan <lftan@altera.com>
+Date:   Tue Feb 10 23:21:08 2015 +0800
+
+    nios2: add early printk support
+    
+    Signed-off-by: Ley Foon Tan <lftan@altera.com>
+
+I've copied the author as that should have been an earlycon in the
+altera uart driver(s) rather than early_printk. Oh well.
+
+
+> Fixes: fb11ffe74c79 ("of/fdt: add FDT serial scanning for earlycon")
 > Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 > ---
 > 
->  drivers/tty/serial/8250/8250_early.c | 20 ++------------------
->  1 file changed, 2 insertions(+), 18 deletions(-)
+>  drivers/of/fdt.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-> index 7aff3d8..19aca19 100644
-> --- a/drivers/tty/serial/8250/8250_early.c
-> +++ b/drivers/tty/serial/8250/8250_early.c
-> @@ -76,21 +76,17 @@ static void __init serial8250_early_out(struct uart_port *port, int offset, int
+> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> index 9fc3568..196e449 100644
+> --- a/drivers/of/fdt.c
+> +++ b/drivers/of/fdt.c
+> @@ -822,14 +822,15 @@ static int __init early_init_dt_scan_chosen_serial(void)
+>  		return -ENODEV;
 >  
->  #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
+>  	while (match->compatible[0]) {
+> -		unsigned long addr;
+> +		u64 addr;
+> +
+>  		if (fdt_node_check_compatible(fdt, offset, match->compatible)) {
+>  			match++;
+>  			continue;
+>  		}
 >  
-> -static void __init wait_for_xmitr(struct uart_port *port)
-> +static void __init serial_putc(struct uart_port *port, int c)
->  {
->  	unsigned int status;
+>  		addr = fdt_translate_address(fdt, offset);
+> -		if (!addr)
+> +		if (addr == OF_BAD_ADDR)
+>  			return -ENXIO;
 >  
->  	for (;;) {
->  		status = serial8250_early_in(port, UART_LSR);
->  		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
-> -			return;
-> +			break;
->  		cpu_relax();
->  	}
-> -}
->  
-> -static void __init serial_putc(struct uart_port *port, int c)
-> -{
-> -	wait_for_xmitr(port);
->  	serial8250_early_out(port, UART_TX, c);
->  }
->  
-> @@ -99,20 +95,8 @@ static void __init early_serial8250_write(struct console *console,
->  {
->  	struct earlycon_device *device = console->data;
->  	struct uart_port *port = &device->port;
-> -	unsigned int ier;
-> -
-> -	/* Save the IER and disable interrupts preserving the UUE bit */
-> -	ier = serial8250_early_in(port, UART_IER);
-> -	if (ier)
-> -		serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
->  
->  	uart_console_write(port, s, count, serial_putc);
-> -
-> -	/* Wait for transmitter to become empty and restore the IER */
-> -	wait_for_xmitr(port);
-> -
-> -	if (ier)
-> -		serial8250_early_out(port, UART_IER, ier);
->  }
->  
->  static void __init init_port(struct earlycon_device *device)
+>  		of_setup_earlycon(addr, match->data);
 > 
