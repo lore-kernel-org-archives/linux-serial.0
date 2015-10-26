@@ -1,288 +1,88 @@
-From: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
-Subject: [PATCH v3] serial: support 16-bit register interface for console
-Date: Mon, 26 Oct 2015 13:11:02 +0900
-Message-ID: <1445832662-23250-1-git-send-email-yamada.masahiro@socionext.com>
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+From: Huang Shijie <shijie.huang@arm.com>
+Subject: Re: [PATCH] Revert "serial: amba-pl011: fix incorrect integer size
+ in pl011_fifo_to_tty()"
+Date: Mon, 26 Oct 2015 13:47:01 +0800
+Message-ID: <20151026054700.GC7305@arm.com>
+References: <1445594400-29095-1-git-send-email-shijie.huang@arm.com>
+ <20151023103056.GI4801@e103592.cambridge.arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20151023103056.GI4801@e103592.cambridge.arm.com>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Dave Martin <Dave.Martin@arm.com>
+Cc: gregkh@linuxfoundation.org, timur@codeaurora.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Currently, 8-bit (MMIO) and 32-bit (MMIO32) register interfaces are
-supported for the 8250 console, but the 16-bit (MMIO16) is not.
-The 8250 UART device on my board is connected to a 16-bit bus
-and my main motivation is to use earlycon with it.
-(Refer to arch/arm/boot/dts/uniphier-support-card.dtsi)
+The 10/23/2015 11:31, Dave Martin wrote:
+> On Fri, Oct 23, 2015 at 06:00:00PM +0800, Huang Shijie wrote:
+> > The commit 71a5cd8a4 makes the console hang for some times.
+> > This reverts commit 71a5cd8a4a2602a6e9010b557a23af0a54df87b6.
+>
+> What hangs?  Input?  Output?  Both?
+>
+> Is CREAD set on the terminal?  If only input hangs, it's possible CREAD
+> is not set and we were previously getting away with it, though I can't
+> easily see why it should be unset...
+I think the hang is not caused by this patch: 71a5cd8a4a2602a6e9.
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
----
+I tried to bisect the linux-next today, but i still cannot find the root cause,
+the following is the log from bisect:
 
-Changes in v3:
-  - Adjust of_platform_serial_setup(), univ8250_console_match()
-    for UPIO_MEM16
+ =============================================
+git bisect start
+# bad: [6dcf94ff0c9e28e5790799e53641dd256745f425] Add linux-next specific files for 20151022
+git bisect bad 6dcf94ff0c9e28e5790799e53641dd256745f425
+# good: [7379047d5585187d1288486d4627873170d0005a] Linux 4.3-rc6
+git bisect good 7379047d5585187d1288486d4627873170d0005a
+# good: [c3d1cd2b1e542e5ba6a844fd40fa5e62a896cfc2] Merge remote-tracking branch 'block/for-next'
+git bisect good c3d1cd2b1e542e5ba6a844fd40fa5e62a896cfc2
+# good: [c3af8a28f43315fc46753465a4e77e5619dd9f30] staging: IB/hfi1: use TASK_COMM_LEN in hfi1_ctxtdata
+git bisect good c3af8a28f43315fc46753465a4e77e5619dd9f30
+# good: [41783383487fc80d2acdd78fb9133d441371510b] Merge remote-tracking branch 'driver-core/driver-core-next'
+git bisect good 41783383487fc80d2acdd78fb9133d441371510b
+# good: [1709035022efcdcf316010592537de2033335e4e] Merge remote-tracking branch 'target-merge/for-next-merge'
+git bisect good 1709035022efcdcf316010592537de2033335e4e
+# good: [641e7642617127da14e683da8ec690d8404ea83f] rbtree-clarify-documentation-of-rbtree_postorder_for_each_entry_safe-fix
+git bisect good 641e7642617127da14e683da8ec690d8404ea83f
+# bad: [a1a15239a59287d6d56cf43e84d3cc878bca828f] Merge remote-tracking branch 'clk/clk-next'
+git bisect bad a1a15239a59287d6d56cf43e84d3cc878bca828f
+# bad: [87fd47bb754496a1ba005fca022eee1b30b3cee9] Merge remote-tracking branch 'pwm/for-next'
+git bisect bad 87fd47bb754496a1ba005fca022eee1b30b3cee9
+# good: [ec879f1272283c040bc70e1a1fff5edbb547be59] pinctrl: baytrail: Fix compilation warnings when !CONFIG_PM
+git bisect good ec879f1272283c040bc70e1a1fff5edbb547be59
+# good: [f32517bf1ae0a2de72b3f27200233bd3ad65bfeb] gpio: pca953x: support ACPI devices found on Galileo Gen2
+git bisect good f32517bf1ae0a2de72b3f27200233bd3ad65bfeb
+# good: [677b2ff4afd9996eabefc9472c701211b4b49e87] gpio: add a real time compliance checklist
+git bisect good 677b2ff4afd9996eabefc9472c701211b4b49e87
+# good: [2b8b0ef354cc055f855d8cb86aeae9089517fba7] pwm: atmel-hlcdc: add sama5d2 SoC support.
+git bisect good 2b8b0ef354cc055f855d8cb86aeae9089517fba7
+# bad: [8706693e4ee14eb6051be8caa9850312d843b88f] Merge remote-tracking branch 'gpio/for-next'
+git bisect bad 8706693e4ee14eb6051be8caa9850312d843b88f
+# good: [d629f2b585cb766ed9732008976d029cb5d5e584] virtio: introduce avail cache
+git bisect good d629f2b585cb766ed9732008976d029cb5d5e584
+# bad: [fb4e51e2df938f7f7e3ec3c198beb2d449e2f548] Merge remote-tracking branch 'vhost/linux-next'
+git bisect bad fb4e51e2df938f7f7e3ec3c198beb2d449e2f548
+# good: [cd5c6b35041cc595ff722226fb80450b9368dbbc] Merge remote-tracking branch 'pinctrl/for-next'
+git bisect good cd5c6b35041cc595ff722226fb80450b9368dbbc
+# first bad commit: [fb4e51e2df938f7f7e3ec3c198beb2d449e2f548] Merge remote-tracking branch 'vhost/linux-next'
 
-Changes in v2:
-  - Do not change userspace-exported macros
+ =============================================
+ thanks
+ Huang Shijie
 
- Documentation/kernel-parameters.txt  |  9 +++++----
- drivers/tty/serial/8250/8250_core.c  |  7 ++++---
- drivers/tty/serial/8250/8250_early.c |  5 +++++
- drivers/tty/serial/8250/8250_port.c  | 20 ++++++++++++++++++++
- drivers/tty/serial/earlycon.c        | 15 +++++++++++----
- drivers/tty/serial/of_serial.c       |  3 +++
- drivers/tty/serial/serial_core.c     |  9 +++++++--
- include/linux/serial_core.h          |  1 +
- include/uapi/linux/serial.h          |  1 +
- 9 files changed, 57 insertions(+), 13 deletions(-)
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 22a4b68..761f08c 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -720,16 +720,17 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 
- 		uart[8250],io,<addr>[,options]
- 		uart[8250],mmio,<addr>[,options]
-+		uart[8250],mmio16,<addr>[,options]
- 		uart[8250],mmio32,<addr>[,options]
- 		uart[8250],0x<addr>[,options]
- 			Start an early, polled-mode console on the 8250/16550
- 			UART at the specified I/O port or MMIO address,
- 			switching to the matching ttyS device later.
- 			MMIO inter-register address stride is either 8-bit
--			(mmio) or 32-bit (mmio32).
--			If none of [io|mmio|mmio32], <addr> is assumed to be
--			equivalent to 'mmio'. 'options' are specified in the
--			same format described for ttyS above; if unspecified,
-+			(mmio), 16-bit (mmio16), or 32-bit (mmio32).
-+			If none of [io|mmio|mmio16|mmio32], <addr> is assumed
-+			to be equivalent to 'mmio'. 'options' are specified in
-+			the same format described for ttyS above; if unspecified,
- 			the h/w is not re-initialized.
- 
- 		hvc<n>	Use the hypervisor console device <n>. This is for
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 271d121..a643867 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -617,7 +617,7 @@ static int univ8250_console_setup(struct console *co, char *options)
-  *	@options: ptr to option string from console command line
-  *
-  *	Only attempts to match console command lines of the form:
-- *	    console=uart[8250],io|mmio|mmio32,<addr>[,<options>]
-+ *	    console=uart[8250],io|mmio|mmio16|mmio32,<addr>[,<options>]
-  *	    console=uart[8250],0x<addr>[,<options>]
-  *	This form is used to register an initial earlycon boot console and
-  *	replace it with the serial8250_console at 8250 driver init.
-@@ -647,8 +647,9 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
- 
- 		if (port->iotype != iotype)
- 			continue;
--		if ((iotype == UPIO_MEM || iotype == UPIO_MEM32) &&
--		    (port->mapbase != addr))
-+		if ((iotype == UPIO_MEM || iotype == UPIO_MEM16 ||
-+		     iotype == UPIO_MEM32 || iotype == UPIO_MEM32BE)
-+		    && (port->mapbase != addr))
- 			continue;
- 		if (iotype == UPIO_PORT && port->iobase != addr)
- 			continue;
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index faed05f..7aff3d8 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -40,6 +40,8 @@ static unsigned int __init serial8250_early_in(struct uart_port *port, int offse
- 	switch (port->iotype) {
- 	case UPIO_MEM:
- 		return readb(port->membase + offset);
-+	case UPIO_MEM16:
-+		return readw(port->membase + (offset << 1));
- 	case UPIO_MEM32:
- 		return readl(port->membase + (offset << 2));
- 	case UPIO_MEM32BE:
-@@ -57,6 +59,9 @@ static void __init serial8250_early_out(struct uart_port *port, int offset, int
- 	case UPIO_MEM:
- 		writeb(value, port->membase + offset);
- 		break;
-+	case UPIO_MEM16:
-+		writew(value, port->membase + (offset << 1));
-+		break;
- 	case UPIO_MEM32:
- 		writel(value, port->membase + (offset << 2));
- 		break;
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 0bbf340..f976948 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -368,6 +368,18 @@ static void mem_serial_out(struct uart_port *p, int offset, int value)
- 	writeb(value, p->membase + offset);
- }
- 
-+static void mem16_serial_out(struct uart_port *p, int offset, int value)
-+{
-+	offset = offset << p->regshift;
-+	writew(value, p->membase + offset);
-+}
-+
-+static unsigned int mem16_serial_in(struct uart_port *p, int offset)
-+{
-+	offset = offset << p->regshift;
-+	return readw(p->membase + offset);
-+}
-+
- static void mem32_serial_out(struct uart_port *p, int offset, int value)
- {
- 	offset = offset << p->regshift;
-@@ -425,6 +437,11 @@ static void set_io_from_upio(struct uart_port *p)
- 		p->serial_out = mem_serial_out;
- 		break;
- 
-+	case UPIO_MEM16:
-+		p->serial_in = mem16_serial_in;
-+		p->serial_out = mem16_serial_out;
-+		break;
-+
- 	case UPIO_MEM32:
- 		p->serial_in = mem32_serial_in;
- 		p->serial_out = mem32_serial_out;
-@@ -459,6 +476,7 @@ serial_port_out_sync(struct uart_port *p, int offset, int value)
- {
- 	switch (p->iotype) {
- 	case UPIO_MEM:
-+	case UPIO_MEM16:
- 	case UPIO_MEM32:
- 	case UPIO_MEM32BE:
- 	case UPIO_AU:
-@@ -2447,6 +2465,7 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
- 	case UPIO_TSI:
- 	case UPIO_MEM32:
- 	case UPIO_MEM32BE:
-+	case UPIO_MEM16:
- 	case UPIO_MEM:
- 		if (!port->mapbase)
- 			break;
-@@ -2484,6 +2503,7 @@ static void serial8250_release_std_resource(struct uart_8250_port *up)
- 	case UPIO_TSI:
- 	case UPIO_MEM32:
- 	case UPIO_MEM32BE:
-+	case UPIO_MEM16:
- 	case UPIO_MEM:
- 		if (!port->mapbase)
- 			break;
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index f096360..07f7393 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -71,10 +71,16 @@ static int __init parse_options(struct earlycon_device *device, char *options)
- 		return -EINVAL;
- 
- 	switch (port->iotype) {
-+	case UPIO_MEM:
-+		port->mapbase = addr;
-+		break;
-+	case UPIO_MEM16:
-+		port->regshift = 1;
-+		port->mapbase = addr;
-+		break;
- 	case UPIO_MEM32:
- 	case UPIO_MEM32BE:
--		port->regshift = 2;	/* fall-through */
--	case UPIO_MEM:
-+		port->regshift = 2;
- 		port->mapbase = addr;
- 		break;
- 	case UPIO_PORT:
-@@ -91,10 +97,11 @@ static int __init parse_options(struct earlycon_device *device, char *options)
- 		strlcpy(device->options, options, length);
- 	}
- 
--	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32 ||
--	    port->iotype == UPIO_MEM32BE)
-+	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM16 ||
-+	    port->iotype == UPIO_MEM32 || port->iotype == UPIO_MEM32BE)
- 		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
- 			(port->iotype == UPIO_MEM) ? "" :
-+			(port->iotype == UPIO_MEM16) ? "16" :
- 			(port->iotype == UPIO_MEM32) ? "32" : "32be",
- 			(unsigned long long)port->mapbase,
- 			device->options);
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 354b88f..2ef3096 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -118,6 +118,9 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		case 1:
- 			port->iotype = UPIO_MEM;
- 			break;
-+		case 2:
-+			port->iotype = UPIO_MEM16;
-+			break;
- 		case 4:
- 			port->iotype = of_device_is_big_endian(np) ?
- 				       UPIO_MEM32BE : UPIO_MEM32;
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 603d2cc..325acce 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1819,8 +1819,8 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
-  *	@options: ptr for <options> field; NULL if not present (out)
-  *
-  *	Decodes earlycon kernel command line parameters of the form
-- *	   earlycon=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
-- *	   console=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
-+ *	   earlycon=<name>,io|mmio|mmio16|mmio32|mmio32be,<addr>,<options>
-+ *	   console=<name>,io|mmio|mmio16|mmio32|mmio32be,<addr>,<options>
-  *
-  *	The optional form
-  *	   earlycon=<name>,0x<addr>,<options>
-@@ -1835,6 +1835,9 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
- 	if (strncmp(p, "mmio,", 5) == 0) {
- 		*iotype = UPIO_MEM;
- 		p += 5;
-+	} else if (strncmp(p, "mmio16,", 7) == 0) {
-+		*iotype = UPIO_MEM16;
-+		p += 7;
- 	} else if (strncmp(p, "mmio32,", 7) == 0) {
- 		*iotype = UPIO_MEM32;
- 		p += 7;
-@@ -2183,6 +2186,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
- 			 "I/O 0x%lx offset 0x%x", port->iobase, port->hub6);
- 		break;
- 	case UPIO_MEM:
-+	case UPIO_MEM16:
- 	case UPIO_MEM32:
- 	case UPIO_MEM32BE:
- 	case UPIO_AU:
-@@ -2828,6 +2832,7 @@ int uart_match_port(struct uart_port *port1, struct uart_port *port2)
- 		return (port1->iobase == port2->iobase) &&
- 		       (port1->hub6   == port2->hub6);
- 	case UPIO_MEM:
-+	case UPIO_MEM16:
- 	case UPIO_MEM32:
- 	case UPIO_MEM32BE:
- 	case UPIO_AU:
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 297d4fa..35aa87b 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -150,6 +150,7 @@ struct uart_port {
- #define UPIO_AU			(SERIAL_IO_AU)		/* Au1x00 and RT288x type IO */
- #define UPIO_TSI		(SERIAL_IO_TSI)		/* Tsi108/109 type IO */
- #define UPIO_MEM32BE		(SERIAL_IO_MEM32BE)	/* 32b big endian */
-+#define UPIO_MEM16		(SERIAL_IO_MEM16)	/* 16b little endian */
- 
- 	unsigned int		read_status_mask;	/* driver specific */
- 	unsigned int		ignore_status_mask;	/* driver specific */
-diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-index 25331f9..5d59c3e 100644
---- a/include/uapi/linux/serial.h
-+++ b/include/uapi/linux/serial.h
-@@ -69,6 +69,7 @@ struct serial_struct {
- #define SERIAL_IO_AU	  4
- #define SERIAL_IO_TSI	  5
- #define SERIAL_IO_MEM32BE 6
-+#define SERIAL_IO_MEM16	7
- 
- #define UART_CLEAR_FIFO		0x01
- #define UART_USE_FIFO		0x02
--- 
-1.9.1
+
+________________________________
+
+-- IMPORTANT NOTICE: The contents of this email and any attachments are confidential and may also be privileged. If you are not the intended recipient, please notify the sender immediately and do not disclose the contents to any other person, use it for any purpose, or store or copy the information in any medium. Thank you.
