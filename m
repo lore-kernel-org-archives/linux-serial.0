@@ -1,7 +1,7 @@
 From: Denys Vlasenko <dvlasenk@redhat.com>
-Subject: [PATCH 1/8] cyclades: Deinline cyy_readb, save 368 bytes
-Date: Tue, 27 Oct 2015 17:39:55 +0100
-Message-ID: <1445964002-10093-2-git-send-email-dvlasenk@redhat.com>
+Subject: [PATCH 4/8] isicom: Deinline WaitTillCardIsFree, save 1120 bytes
+Date: Tue, 27 Oct 2015 17:39:58 +0100
+Message-ID: <1445964002-10093-5-git-send-email-dvlasenk@redhat.com>
 References: <1445964002-10093-1-git-send-email-dvlasenk@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1445964002-10093-1-git-send-email-dvlasenk@redhat.com>
@@ -10,7 +10,7 @@ To: linux-kernel@vger.kernel.org
 Cc: Denys Vlasenko <dvlasenk@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This function compiles to 32 bytes of machine code.
+This function compiles to 96 bytes of machine code.
 
 Signed-off-by: Denys Vlasenko <dvlasenk@redhat.com>
 CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -18,21 +18,21 @@ CC: Peter Hurley <peter@hurleysoftware.com>
 CC: Jiri Slaby <jslaby@suse.com>
 CC: linux-serial@vger.kernel.org
 ---
- drivers/tty/cyclades.c | 2 +-
+ drivers/tty/isicom.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
-index 87f6578..cf81fbc 100644
---- a/drivers/tty/cyclades.c
-+++ b/drivers/tty/cyclades.c
-@@ -299,7 +299,7 @@ static inline void cyy_writeb(struct cyclades_port *port, u32 reg, u8 val)
- 	cy_writeb(port->u.cyy.base_addr + (reg << card->bus_index), val);
- }
+diff --git a/drivers/tty/isicom.c b/drivers/tty/isicom.c
+index 2054427..c7698fb 100644
+--- a/drivers/tty/isicom.c
++++ b/drivers/tty/isicom.c
+@@ -220,7 +220,7 @@ static struct isi_port  isi_ports[PORT_COUNT];
+  *	it wants to talk.
+  */
  
--static inline u8 cyy_readb(struct cyclades_port *port, u32 reg)
-+static u8 cyy_readb(struct cyclades_port *port, u32 reg)
+-static inline int WaitTillCardIsFree(unsigned long base)
++static int WaitTillCardIsFree(unsigned long base)
  {
- 	struct cyclades_card *card = port->card;
- 
+ 	unsigned int count = 0;
+ 	unsigned int a = in_atomic(); /* do we run under spinlock? */
 -- 
 1.8.1.4
