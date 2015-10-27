@@ -1,83 +1,101 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 2/2] serial: 8250_ingenic: allow to be independent of
- SERIAL_8250_CONSOLE
-Date: Tue, 27 Oct 2015 10:20:06 -0400
-Message-ID: <562F8816.4030504@hurleysoftware.com>
-References: <1445607076-14135-1-git-send-email-yamada.masahiro@socionext.com>
- <1445607076-14135-2-git-send-email-yamada.masahiro@socionext.com>
+From: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
+Subject: implement put_char() in cdc-acm
+Date: Tue, 27 Oct 2015 16:07:59 +0100
+Message-ID: <1445958479.2043.6.camel@suse.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1445607076-14135-2-git-send-email-yamada.masahiro@socionext.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org
-Cc: Paul Burton <paul.burton@imgtec.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Joachim Eastwood <manabian@gmail.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, John Crispin <blogic@openwrt.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>
+Content-Type: multipart/mixed; boundary="=-WMPP5oFSU8BqBwdAPERI"
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/23/2015 09:31 AM, Masahiro Yamada wrote:
-> This UART driver should not depend on the console.  They should be
-> orthogonal.
-> 
-> Surround the earlycon code with CONFIG_SERIAL_EARLYCON conditional
-> and rip off "depends on SERIAL_8250_CONSOLE".
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+--=-WMPP5oFSU8BqBwdAPERI
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
-PS - While reviewing this patch, I noticed another problem in the
-Ingenic earlycon; see below.
+Hi,
 
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-> ---
-> 
-> Currently, SERIAL_8250_FSL also depends on SERIAL_8250_CONSOLE,
-> but I doubt its necessity.
-> 
-> 
->  drivers/tty/serial/8250/8250_ingenic.c | 2 ++
->  drivers/tty/serial/8250/Kconfig        | 2 +-
->  2 files changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-> index 7c1e4be..44633ee 100644
-> --- a/drivers/tty/serial/8250/8250_ingenic.c
-> +++ b/drivers/tty/serial/8250/8250_ingenic.c
-> @@ -34,6 +34,7 @@ struct ingenic_uart_data {
->  
->  #define UART_FCR_UME	BIT(4)
->  
-> +#ifdef CONFIG_SERIAL_EARLYCON
+the theory that the lack of support for put_char() is a
+major contributor to character loss in cdc-acm can be tested.
+Sven, could you test the attached patch? It implements
+the support.
+
+	Regards
+		Oliver
 
 
->  static struct earlycon_device *early_device;
+--=-WMPP5oFSU8BqBwdAPERI
+Content-Disposition: attachment;
+	filename="0001-cdc-acm-implement-put_char-and-flush_chars.patch"
+Content-Type: text/x-patch; name="0001-cdc-acm-implement-put_char-and-flush_chars.patch";
+	charset="UTF-8"
+Content-Transfer-Encoding: base64
 
-The earlycon setup should not be saving the earlycon_device *;
-see early_8250serial_write() for how to deref from console to port.
+RnJvbSBmMzg3MWE3NmQ3ZTI4NzZiMGU2YWQ2NmFlZTkxMDg1ZWNmOWIyNzg1IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBPbGl2ZXIgTmV1a3VtIDxvbmV1a3VtQHN1c2UuY29tPgpEYXRl
+OiBXZWQsIDIxIE9jdCAyMDE1IDEyOjEwOjA3ICswMjAwClN1YmplY3Q6IFtQQVRDSF0gY2RjLWFj
+bTogaW1wbGVtZW50IHB1dF9jaGFyKCkgYW5kIGZsdXNoX2NoYXJzKCkKClRoaXMgc2hvdWxkIGN1
+dCBkb3duIGxhdGVuY2llcyBhbmQgd2FzdGUgaWYgdGhlIHR0eSBsYXllciB3cml0ZXMgc2luZ2xl
+IGJ5dGVzLgoKU2lnbmVkLW9mZi1ieTogT2xpdmVyIE5ldWt1bSA+b25ldWt1bUBzdXNlLmNvbT4K
+LS0tCiBkcml2ZXJzL3VzYi9jbGFzcy9jZGMtYWNtLmMgfCA2NyArKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysKIGRyaXZlcnMvdXNiL2NsYXNzL2NkYy1hY20uaCB8
+ICAxICsKIDIgZmlsZXMgY2hhbmdlZCwgNjggaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvdXNiL2NsYXNzL2NkYy1hY20uYyBiL2RyaXZlcnMvdXNiL2NsYXNzL2NkYy1hY20uYwpp
+bmRleCBiMzBlNzQyLi4xY2IzMTI0IDEwMDY0NAotLS0gYS9kcml2ZXJzL3VzYi9jbGFzcy9jZGMt
+YWNtLmMKKysrIGIvZHJpdmVycy91c2IvY2xhc3MvY2RjLWFjbS5jCkBAIC03MTIsOSArNzEyLDIw
+IEBAIHN0YXRpYyBpbnQgYWNtX3R0eV93cml0ZShzdHJ1Y3QgdHR5X3N0cnVjdCAqdHR5LAogCX0K
+IAogCWlmIChhY20tPnN1c3BfY291bnQpIHsKKwkJaWYgKGFjbS0+cHV0YnVmZmVyKSB7CisJCQkv
+KiBub3cgdG8gcHJlc2VydmUgb3JkZXIgKi8KKwkJCXVzYl9hbmNob3JfdXJiKGFjbS0+cHV0YnVm
+ZmVyLT51cmIsICZhY20tPmRlbGF5ZWQpOworCQkJYWNtLT5wdXRidWZmZXIgPSBOVUxMOworCQl9
+CiAJCXVzYl9hbmNob3JfdXJiKHdiLT51cmIsICZhY20tPmRlbGF5ZWQpOwogCQlzcGluX3VubG9j
+a19pcnFyZXN0b3JlKCZhY20tPndyaXRlX2xvY2ssIGZsYWdzKTsKIAkJcmV0dXJuIGNvdW50Owor
+CX0gZWxzZSB7CisJCWlmIChhY20tPnB1dGJ1ZmZlcikgeworCQkJLyogYXQgdGhpcyBwb2ludCB0
+aGVyZSBpcyBubyBnb29kIHdheSB0byBoYW5kbGUgZXJyb3JzICovCisJCQlhY21fc3RhcnRfd2Io
+YWNtLCBhY20tPnB1dGJ1ZmZlcik7CisJCQlhY20tPnB1dGJ1ZmZlciA9IE5VTEw7CisJCX0KIAl9
+CiAKIAlzdGF0ID0gYWNtX3N0YXJ0X3diKGFjbSwgd2IpOwpAQCAtNzI1LDYgKzczNiw2MCBAQCBz
+dGF0aWMgaW50IGFjbV90dHlfd3JpdGUoc3RydWN0IHR0eV9zdHJ1Y3QgKnR0eSwKIAlyZXR1cm4g
+Y291bnQ7CiB9CiAKK3N0YXRpYyB2b2lkIGFjbV90dHlfZmx1c2hfY2hhcnMoc3RydWN0IHR0eV9z
+dHJ1Y3QgKnR0eSkKK3sKKwlzdHJ1Y3QgYWNtICphY20gPSB0dHktPmRyaXZlcl9kYXRhOworCXN0
+cnVjdCBhY21fd2IgKmN1ciA9IGFjbS0+cHV0YnVmZmVyOworCWludCBlcnI7CisJdW5zaWduZWQg
+bG9uZyBmbGFnczsKKworCWFjbS0+cHV0YnVmZmVyID0gTlVMTDsKKwllcnIgPSB1c2JfYXV0b3Bt
+X2dldF9pbnRlcmZhY2VfYXN5bmMoYWNtLT5jb250cm9sKTsKKwlzcGluX2xvY2tfaXJxc2F2ZSgm
+YWNtLT53cml0ZV9sb2NrLCBmbGFncyk7CisJaWYgKGVyciA8IDApIHsKKwkJY3VyLT51c2UgPSAw
+OworCQlnb3RvIG91dDsKKwl9CisKKwlpZiAoYWNtLT5zdXNwX2NvdW50KQorCQl1c2JfYW5jaG9y
+X3VyYihjdXItPnVyYiwgJmFjbS0+ZGVsYXllZCk7CisJZWxzZQorCQlhY21fc3RhcnRfd2IoYWNt
+LCBjdXIpOworb3V0OgorCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmFjbS0+d3JpdGVfbG9jaywg
+ZmxhZ3MpOworCXJldHVybjsKK30KKworc3RhdGljIGludCBhY21fdHR5X3B1dF9jaGFyKHN0cnVj
+dCB0dHlfc3RydWN0ICp0dHksIHVuc2lnbmVkIGNoYXIgY2gpCit7CisJc3RydWN0IGFjbSAqYWNt
+ID0gdHR5LT5kcml2ZXJfZGF0YTsKKwlzdHJ1Y3QgYWNtX3diICpjdXI7CisJaW50IHdibjsKKwl1
+bnNpZ25lZCBsb25nIGZsYWdzOworCitvdmVyZmxvdzoKKwljdXIgPSBhY20tPnB1dGJ1ZmZlcjsK
+KwlpZiAoIWN1cikgeworCQlzcGluX2xvY2tfaXJxc2F2ZSgmYWNtLT53cml0ZV9sb2NrLCBmbGFn
+cyk7CisJCXdibiA9IGFjbV93Yl9hbGxvYyhhY20pOworCQlpZiAod2JuID49IDApIHsKKwkJCWN1
+ciA9ICZhY20tPndiW3dibl07CisJCQlhY20tPnB1dGJ1ZmZlciA9IGN1cjsKKwkJfQorCQlzcGlu
+X3VubG9ja19pcnFyZXN0b3JlKCZhY20tPndyaXRlX2xvY2ssIGZsYWdzKTsKKwkJaWYgKCFjdXIp
+CisJCQlyZXR1cm4gMDsKKwl9CisKKwlpZiAoY3VyLT5sZW4gPT0gYWNtLT53cml0ZXNpemUpIHsK
+KwkJYWNtX3R0eV9mbHVzaF9jaGFycyh0dHkpOworCQlnb3RvIG92ZXJmbG93OworCX0KKworCWN1
+ci0+YnVmW2N1ci0+bGVuKytdID0gY2g7CisJcmV0dXJuIDE7Cit9CisKIHN0YXRpYyBpbnQgYWNt
+X3R0eV93cml0ZV9yb29tKHN0cnVjdCB0dHlfc3RydWN0ICp0dHkpCiB7CiAJc3RydWN0IGFjbSAq
+YWNtID0gdHR5LT5kcml2ZXJfZGF0YTsKQEAgLTE4ODgsNiArMTk1Myw4IEBAIHN0YXRpYyBjb25z
+dCBzdHJ1Y3QgdHR5X29wZXJhdGlvbnMgYWNtX29wcyA9IHsKIAkuY2xlYW51cCA9CQlhY21fdHR5
+X2NsZWFudXAsCiAJLmhhbmd1cCA9CQlhY21fdHR5X2hhbmd1cCwKIAkud3JpdGUgPQkJYWNtX3R0
+eV93cml0ZSwKKwkucHV0X2NoYXIgPQkJYWNtX3R0eV9wdXRfY2hhciwKKwkuZmx1c2hfY2hhcnMg
+PQkJYWNtX3R0eV9mbHVzaF9jaGFycywKIAkud3JpdGVfcm9vbSA9CQlhY21fdHR5X3dyaXRlX3Jv
+b20sCiAJLmlvY3RsID0JCWFjbV90dHlfaW9jdGwsCiAJLnRocm90dGxlID0JCWFjbV90dHlfdGhy
+b3R0bGUsCmRpZmYgLS1naXQgYS9kcml2ZXJzL3VzYi9jbGFzcy9jZGMtYWNtLmggYi9kcml2ZXJz
+L3VzYi9jbGFzcy9jZGMtYWNtLmgKaW5kZXggZGQ5YWYzOC4uNjQ4YTZmNyAxMDA2NDQKLS0tIGEv
+ZHJpdmVycy91c2IvY2xhc3MvY2RjLWFjbS5oCisrKyBiL2RyaXZlcnMvdXNiL2NsYXNzL2NkYy1h
+Y20uaApAQCAtOTQsNiArOTQsNyBAQCBzdHJ1Y3QgYWNtIHsKIAl1bnNpZ25lZCBsb25nIHJlYWRf
+dXJic19mcmVlOwogCXN0cnVjdCB1cmIgKnJlYWRfdXJic1tBQ01fTlJdOwogCXN0cnVjdCBhY21f
+cmIgcmVhZF9idWZmZXJzW0FDTV9OUl07CisJc3RydWN0IGFjbV93YiAqcHV0YnVmZmVyOwkJCS8q
+IGZvciBhY21fdHR5X3B1dF9jaGFyKCkgKi8KIAlpbnQgcnhfYnVmbGltaXQ7CiAJaW50IHJ4X2Vu
+ZHBvaW50OwogCXNwaW5sb2NrX3QgcmVhZF9sb2NrOwotLSAKMi4xLjQKCg==
 
-Regards,
-Peter Hurley
 
+--=-WMPP5oFSU8BqBwdAPERI--
 
->  static uint8_t __init early_in(struct uart_port *port, int offset)
-> @@ -126,6 +127,7 @@ OF_EARLYCON_DECLARE(jz4775_uart, "ingenic,jz4775-uart",
->  EARLYCON_DECLARE(jz4780_uart, ingenic_early_console_setup);
->  OF_EARLYCON_DECLARE(jz4780_uart, "ingenic,jz4780-uart",
->  		    ingenic_early_console_setup);
-> +#endif /* CONFIG_SERIAL_EARLYCON */
->  
->  static void ingenic_uart_serial_out(struct uart_port *p, int offset, int value)
->  {
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index 960da95..6f62934 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -360,7 +360,7 @@ config SERIAL_8250_UNIPHIER
->  
->  config SERIAL_8250_INGENIC
->  	bool "Support for Ingenic SoC serial ports"
-> -	depends on SERIAL_8250_CONSOLE && OF_FLATTREE
-> +	depends on OF_FLATTREE
->  	select LIBFDT
->  	help
->  	  If you have a system using an Ingenic SoC and wish to make use of
-> 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
