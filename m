@@ -1,30 +1,38 @@
 From: Denys Vlasenko <dvlasenk@redhat.com>
-Subject: [PATCH 0/8] drivers/tty/: Deinline functions when it saves at least 300 bytes per function
-Date: Tue, 27 Oct 2015 17:39:54 +0100
-Message-ID: <1445964002-10093-1-git-send-email-dvlasenk@redhat.com>
+Subject: [PATCH 1/8] cyclades: Deinline cyy_readb, save 368 bytes
+Date: Tue, 27 Oct 2015 17:39:55 +0100
+Message-ID: <1445964002-10093-2-git-send-email-dvlasenk@redhat.com>
+References: <1445964002-10093-1-git-send-email-dvlasenk@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1445964002-10093-1-git-send-email-dvlasenk@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
-Cc: Denys Vlasenko <dvlasenk@redhat.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Cc: Denys Vlasenko <dvlasenk@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Denys Vlasenko (8):
-  tty/cyclades.c: Deinline cyy_readb, save 368 bytes
-  tty/cyclades.c: Deinline cyy_writeb, save 880 bytes
-  tty/cyclades.c: Deinline serial_paranoia_check, save 304 bytes
-  tty/isicom.c: Deinline WaitTillCardIsFree, save 1120 bytes
-  tty/serial/bcm63xx_uart.c: Deinline wait_for_xmitr, save 374 bytes
-  tty/serial/jsm/jsm_neo.c: Deinline neo_parse_isr, save 688 bytes
-  tty/serial/serial_core.c: Deinline uart_update_mctrl, save 304 bytes
-  tty/tty_ldisc.c: Deinline tty_ldisc_put, save 368 bytes
+This function compiles to 32 bytes of machine code.
 
- drivers/tty/cyclades.c            | 6 +++---
- drivers/tty/isicom.c              | 2 +-
- drivers/tty/serial/bcm63xx_uart.c | 2 +-
- drivers/tty/serial/jsm/jsm_neo.c  | 2 +-
- drivers/tty/serial/serial_core.c  | 2 +-
- drivers/tty/tty_ldisc.c           | 2 +-
- 6 files changed, 8 insertions(+), 8 deletions(-)
+Signed-off-by: Denys Vlasenko <dvlasenk@redhat.com>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Peter Hurley <peter@hurleysoftware.com>
+CC: Jiri Slaby <jslaby@suse.com>
+CC: linux-serial@vger.kernel.org
+---
+ drivers/tty/cyclades.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
+index 87f6578..cf81fbc 100644
+--- a/drivers/tty/cyclades.c
++++ b/drivers/tty/cyclades.c
+@@ -299,7 +299,7 @@ static inline void cyy_writeb(struct cyclades_port *port, u32 reg, u8 val)
+ 	cy_writeb(port->u.cyy.base_addr + (reg << card->bus_index), val);
+ }
+ 
+-static inline u8 cyy_readb(struct cyclades_port *port, u32 reg)
++static u8 cyy_readb(struct cyclades_port *port, u32 reg)
+ {
+ 	struct cyclades_card *card = port->card;
+ 
 -- 
 1.8.1.4
