@@ -1,55 +1,46 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v13 5/5] uart: pl011: Add support to ZTE ZX296702 uart
-Date: Tue, 27 Oct 2015 09:31:13 -0400
-Message-ID: <562F7CA1.5080100@hurleysoftware.com>
-References: <1438328959-16177-1-git-send-email-jun.nie@linaro.org>
- <1438328959-16177-6-git-send-email-jun.nie@linaro.org>
- <55FC16A2.5070207@arm.com>
- <CABymUCOA3oG7Hq83hDyQ_uisQHeipoHshcWONWTtjxKvikzjsQ@mail.gmail.com>
- <CAOZdJXUjZLKkUYScD7oDTMuRUtAEJ6=DopmE4n6Vb9zyv+_viA@mail.gmail.com>
- <CABymUCORU9CDD64Rdw2VX0kLSe6E1zY9iZCap5xittoVFwbOtw@mail.gmail.com>
- <562AFBD5.3050508@codeaurora.org>
- <CABymUCMAc59SCBnji8bcHkYzuFMbA3GMZL0Cv6ReuK=27kBW4Q@mail.gmail.com>
+Subject: Re: [PATCH v3] serial: support 16-bit register interface for console
+Date: Tue, 27 Oct 2015 09:53:02 -0400
+Message-ID: <562F81BE.3000502@hurleysoftware.com>
+References: <1445832662-23250-1-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CABymUCMAc59SCBnji8bcHkYzuFMbA3GMZL0Cv6ReuK=27kBW4Q@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jun Nie <jun.nie@linaro.org>, Timur Tabi <timur@codeaurora.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: "jason.liu@linaro.org" <jason.liu@linaro.org>, Andre Przywara <andre.przywara@arm.com>, Andrew Jackson <Andrew.Jackson@arm.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "shawn.guo@linaro.org" <shawn.guo@linaro.org>, "wan.zhijun@zte.com.cn" <wan.zhijun@zte.com.cn>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1445832662-23250-1-git-send-email-yamada.masahiro@socionext.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Rob Herring <robh@kernel.org>, Kevin Cernekee <cernekee@gmail.com>, linux-api@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/25/2015 09:27 PM, Jun Nie wrote:
-> 2015-10-24 11:32 GMT+08:00 Timur Tabi <timur@codeaurora.org>:
->> Jun Nie wrote:
->>>
->>> I am OK to add a new driver for ZTE UART if no other's objection
->>> though I do not agree you. Without this last patch, other patches are
->>> just for minor refactor for register access.
->>
->>
->> In that case, my vote is to drop the whole patchset.  Just copy/paste the
->> amba-pl011 driver and make whatever changes you need.  That sort of thing
->> happens all the time.
-> 
-> Greg, Peter & Russell,
-> 
-> What's your opinion on this separate UART driver suggestion?
+Hi Masahiro,
 
-That's crazy; fork the driver simply because the register i/o addresses
-are different? No.
+On 10/26/2015 12:11 AM, Masahiro Yamada wrote:
+> Currently, 8-bit (MMIO) and 32-bit (MMIO32) register interfaces are
+> supported for the 8250 console, but the 16-bit (MMIO16) is not.
+> The 8250 UART device on my board is connected to a 16-bit bus
+> and my main motivation is to use earlycon with it.
+> (Refer to arch/arm/boot/dts/uniphier-support-card.dtsi)
 
-On the contrary, this patchset directly triggered important improvements to
-both this driver and the ARM arch.
+As I noted in reviewing v2, the patch hunk below does not apply.
+You must rebase your changes on top of Greg's tty-next tree.
 
 Regards,
 Peter Hurley
+
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 603d2cc..325acce 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1819,8 +1819,8 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+>   *	@options: ptr for <options> field; NULL if not present (out)
+>   *
+>   *	Decodes earlycon kernel command line parameters of the form
+> - *	   earlycon=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
+> - *	   console=<name>,io|mmio|mmio32|mmio32be,<addr>,<options>
+> + *	   earlycon=<name>,io|mmio|mmio16|mmio32|mmio32be,<addr>,<options>
+> + *	   console=<name>,io|mmio|mmio16|mmio32|mmio32be,<addr>,<options>
+>   *
+>   *	The optional form
+>   *	   earlycon=<name>,0x<addr>,<options>
+
