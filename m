@@ -1,100 +1,65 @@
-From: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
-Subject: implement put_char() in cdc-acm
-Date: Tue, 27 Oct 2015 16:07:59 +0100
-Message-ID: <1445958479.2043.6.camel@suse.com>
+From: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
+Subject: Re: implement put_char() in cdc-acm
+Date: Tue, 27 Oct 2015 16:45:12 +0100
+Message-ID: <562F9C08.6050105@svenbrauch.de>
+References: <1445958479.2043.6.camel@suse.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="=-WMPP5oFSU8BqBwdAPERI"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="ifAh49fGP3CObuoQNM2eSw442KF5M9sgk"
 Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1445958479.2043.6.camel-IBi9RG/b67k@public.gmane.org>
 Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
+To: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
 Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ifAh49fGP3CObuoQNM2eSw442KF5M9sgk
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
---=-WMPP5oFSU8BqBwdAPERI
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Hey Oliver,
 
-Hi,
+On 27/10/15 16:07, Oliver Neukum wrote:
+> the theory that the lack of support for put_char() is a
+> major contributor to character loss in cdc-acm can be tested.
+> Sven, could you test the attached patch? It implements
+> the support.
+Thanks a lot for caring about this. I applied the patch to a plain linux
+4.2 tree, but unfortunately I couldn't see any improvements. Applying
+the patch I originally sent to the list for comparison still fixed the
+issue.
 
-the theory that the lack of support for put_char() is a
-major contributor to character loss in cdc-acm can be tested.
-Sven, could you test the attached patch? It implements
-the support.
-
-	Regards
-		Oliver
-
-
---=-WMPP5oFSU8BqBwdAPERI
-Content-Disposition: attachment;
-	filename="0001-cdc-acm-implement-put_char-and-flush_chars.patch"
-Content-Type: text/x-patch; name="0001-cdc-acm-implement-put_char-and-flush_chars.patch";
-	charset="UTF-8"
-Content-Transfer-Encoding: base64
-
-RnJvbSBmMzg3MWE3NmQ3ZTI4NzZiMGU2YWQ2NmFlZTkxMDg1ZWNmOWIyNzg1IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBPbGl2ZXIgTmV1a3VtIDxvbmV1a3VtQHN1c2UuY29tPgpEYXRl
-OiBXZWQsIDIxIE9jdCAyMDE1IDEyOjEwOjA3ICswMjAwClN1YmplY3Q6IFtQQVRDSF0gY2RjLWFj
-bTogaW1wbGVtZW50IHB1dF9jaGFyKCkgYW5kIGZsdXNoX2NoYXJzKCkKClRoaXMgc2hvdWxkIGN1
-dCBkb3duIGxhdGVuY2llcyBhbmQgd2FzdGUgaWYgdGhlIHR0eSBsYXllciB3cml0ZXMgc2luZ2xl
-IGJ5dGVzLgoKU2lnbmVkLW9mZi1ieTogT2xpdmVyIE5ldWt1bSA+b25ldWt1bUBzdXNlLmNvbT4K
-LS0tCiBkcml2ZXJzL3VzYi9jbGFzcy9jZGMtYWNtLmMgfCA2NyArKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysKIGRyaXZlcnMvdXNiL2NsYXNzL2NkYy1hY20uaCB8
-ICAxICsKIDIgZmlsZXMgY2hhbmdlZCwgNjggaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvdXNiL2NsYXNzL2NkYy1hY20uYyBiL2RyaXZlcnMvdXNiL2NsYXNzL2NkYy1hY20uYwpp
-bmRleCBiMzBlNzQyLi4xY2IzMTI0IDEwMDY0NAotLS0gYS9kcml2ZXJzL3VzYi9jbGFzcy9jZGMt
-YWNtLmMKKysrIGIvZHJpdmVycy91c2IvY2xhc3MvY2RjLWFjbS5jCkBAIC03MTIsOSArNzEyLDIw
-IEBAIHN0YXRpYyBpbnQgYWNtX3R0eV93cml0ZShzdHJ1Y3QgdHR5X3N0cnVjdCAqdHR5LAogCX0K
-IAogCWlmIChhY20tPnN1c3BfY291bnQpIHsKKwkJaWYgKGFjbS0+cHV0YnVmZmVyKSB7CisJCQkv
-KiBub3cgdG8gcHJlc2VydmUgb3JkZXIgKi8KKwkJCXVzYl9hbmNob3JfdXJiKGFjbS0+cHV0YnVm
-ZmVyLT51cmIsICZhY20tPmRlbGF5ZWQpOworCQkJYWNtLT5wdXRidWZmZXIgPSBOVUxMOworCQl9
-CiAJCXVzYl9hbmNob3JfdXJiKHdiLT51cmIsICZhY20tPmRlbGF5ZWQpOwogCQlzcGluX3VubG9j
-a19pcnFyZXN0b3JlKCZhY20tPndyaXRlX2xvY2ssIGZsYWdzKTsKIAkJcmV0dXJuIGNvdW50Owor
-CX0gZWxzZSB7CisJCWlmIChhY20tPnB1dGJ1ZmZlcikgeworCQkJLyogYXQgdGhpcyBwb2ludCB0
-aGVyZSBpcyBubyBnb29kIHdheSB0byBoYW5kbGUgZXJyb3JzICovCisJCQlhY21fc3RhcnRfd2Io
-YWNtLCBhY20tPnB1dGJ1ZmZlcik7CisJCQlhY20tPnB1dGJ1ZmZlciA9IE5VTEw7CisJCX0KIAl9
-CiAKIAlzdGF0ID0gYWNtX3N0YXJ0X3diKGFjbSwgd2IpOwpAQCAtNzI1LDYgKzczNiw2MCBAQCBz
-dGF0aWMgaW50IGFjbV90dHlfd3JpdGUoc3RydWN0IHR0eV9zdHJ1Y3QgKnR0eSwKIAlyZXR1cm4g
-Y291bnQ7CiB9CiAKK3N0YXRpYyB2b2lkIGFjbV90dHlfZmx1c2hfY2hhcnMoc3RydWN0IHR0eV9z
-dHJ1Y3QgKnR0eSkKK3sKKwlzdHJ1Y3QgYWNtICphY20gPSB0dHktPmRyaXZlcl9kYXRhOworCXN0
-cnVjdCBhY21fd2IgKmN1ciA9IGFjbS0+cHV0YnVmZmVyOworCWludCBlcnI7CisJdW5zaWduZWQg
-bG9uZyBmbGFnczsKKworCWFjbS0+cHV0YnVmZmVyID0gTlVMTDsKKwllcnIgPSB1c2JfYXV0b3Bt
-X2dldF9pbnRlcmZhY2VfYXN5bmMoYWNtLT5jb250cm9sKTsKKwlzcGluX2xvY2tfaXJxc2F2ZSgm
-YWNtLT53cml0ZV9sb2NrLCBmbGFncyk7CisJaWYgKGVyciA8IDApIHsKKwkJY3VyLT51c2UgPSAw
-OworCQlnb3RvIG91dDsKKwl9CisKKwlpZiAoYWNtLT5zdXNwX2NvdW50KQorCQl1c2JfYW5jaG9y
-X3VyYihjdXItPnVyYiwgJmFjbS0+ZGVsYXllZCk7CisJZWxzZQorCQlhY21fc3RhcnRfd2IoYWNt
-LCBjdXIpOworb3V0OgorCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmFjbS0+d3JpdGVfbG9jaywg
-ZmxhZ3MpOworCXJldHVybjsKK30KKworc3RhdGljIGludCBhY21fdHR5X3B1dF9jaGFyKHN0cnVj
-dCB0dHlfc3RydWN0ICp0dHksIHVuc2lnbmVkIGNoYXIgY2gpCit7CisJc3RydWN0IGFjbSAqYWNt
-ID0gdHR5LT5kcml2ZXJfZGF0YTsKKwlzdHJ1Y3QgYWNtX3diICpjdXI7CisJaW50IHdibjsKKwl1
-bnNpZ25lZCBsb25nIGZsYWdzOworCitvdmVyZmxvdzoKKwljdXIgPSBhY20tPnB1dGJ1ZmZlcjsK
-KwlpZiAoIWN1cikgeworCQlzcGluX2xvY2tfaXJxc2F2ZSgmYWNtLT53cml0ZV9sb2NrLCBmbGFn
-cyk7CisJCXdibiA9IGFjbV93Yl9hbGxvYyhhY20pOworCQlpZiAod2JuID49IDApIHsKKwkJCWN1
-ciA9ICZhY20tPndiW3dibl07CisJCQlhY20tPnB1dGJ1ZmZlciA9IGN1cjsKKwkJfQorCQlzcGlu
-X3VubG9ja19pcnFyZXN0b3JlKCZhY20tPndyaXRlX2xvY2ssIGZsYWdzKTsKKwkJaWYgKCFjdXIp
-CisJCQlyZXR1cm4gMDsKKwl9CisKKwlpZiAoY3VyLT5sZW4gPT0gYWNtLT53cml0ZXNpemUpIHsK
-KwkJYWNtX3R0eV9mbHVzaF9jaGFycyh0dHkpOworCQlnb3RvIG92ZXJmbG93OworCX0KKworCWN1
-ci0+YnVmW2N1ci0+bGVuKytdID0gY2g7CisJcmV0dXJuIDE7Cit9CisKIHN0YXRpYyBpbnQgYWNt
-X3R0eV93cml0ZV9yb29tKHN0cnVjdCB0dHlfc3RydWN0ICp0dHkpCiB7CiAJc3RydWN0IGFjbSAq
-YWNtID0gdHR5LT5kcml2ZXJfZGF0YTsKQEAgLTE4ODgsNiArMTk1Myw4IEBAIHN0YXRpYyBjb25z
-dCBzdHJ1Y3QgdHR5X29wZXJhdGlvbnMgYWNtX29wcyA9IHsKIAkuY2xlYW51cCA9CQlhY21fdHR5
-X2NsZWFudXAsCiAJLmhhbmd1cCA9CQlhY21fdHR5X2hhbmd1cCwKIAkud3JpdGUgPQkJYWNtX3R0
-eV93cml0ZSwKKwkucHV0X2NoYXIgPQkJYWNtX3R0eV9wdXRfY2hhciwKKwkuZmx1c2hfY2hhcnMg
-PQkJYWNtX3R0eV9mbHVzaF9jaGFycywKIAkud3JpdGVfcm9vbSA9CQlhY21fdHR5X3dyaXRlX3Jv
-b20sCiAJLmlvY3RsID0JCWFjbV90dHlfaW9jdGwsCiAJLnRocm90dGxlID0JCWFjbV90dHlfdGhy
-b3R0bGUsCmRpZmYgLS1naXQgYS9kcml2ZXJzL3VzYi9jbGFzcy9jZGMtYWNtLmggYi9kcml2ZXJz
-L3VzYi9jbGFzcy9jZGMtYWNtLmgKaW5kZXggZGQ5YWYzOC4uNjQ4YTZmNyAxMDA2NDQKLS0tIGEv
-ZHJpdmVycy91c2IvY2xhc3MvY2RjLWFjbS5oCisrKyBiL2RyaXZlcnMvdXNiL2NsYXNzL2NkYy1h
-Y20uaApAQCAtOTQsNiArOTQsNyBAQCBzdHJ1Y3QgYWNtIHsKIAl1bnNpZ25lZCBsb25nIHJlYWRf
-dXJic19mcmVlOwogCXN0cnVjdCB1cmIgKnJlYWRfdXJic1tBQ01fTlJdOwogCXN0cnVjdCBhY21f
-cmIgcmVhZF9idWZmZXJzW0FDTV9OUl07CisJc3RydWN0IGFjbV93YiAqcHV0YnVmZmVyOwkJCS8q
-IGZvciBhY21fdHR5X3B1dF9jaGFyKCkgKi8KIAlpbnQgcnhfYnVmbGltaXQ7CiAJaW50IHJ4X2Vu
-ZHBvaW50OwogCXNwaW5sb2NrX3QgcmVhZF9sb2NrOwotLSAKMi4xLjQKCg==
+Best regards,
+Sven
 
 
---=-WMPP5oFSU8BqBwdAPERI--
 
+--ifAh49fGP3CObuoQNM2eSw442KF5M9sgk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBCAAGBQJWL5wLAAoJEGjKjjjEuz9LFdIQAKT4hKwXVh95a8ckGgHuA4Q5
+ZotZx4YDSBzhxoVQKzSnc0vwPvCGzmVZelCRY0Fkjs1Bzee1mrMcx8ScwxbA15j5
+bPk+TgbDkmTqHIm5pMgr+bUt9DTlnV+bthbKzy9d1+tXo5x7dBPrO83bu3u5QHeP
+xbeeUPe3+wtcFkFEfHR2uIYCHZRR23mfPHsmI9QuhDNtnwqSEV75zXykbiwVYI3V
+1j9hspjQPkSkdLHrvKRrnYxOP9iz+eegzg4eOd43gGZzi3isfRu2WGCs2laNxs1C
+5Fhm0yAdqNpovMhrzrZOPyAIOwnpfkKMauftcZIcp+e9c6iVQWO/FYdi9CIufEHk
+v/nzaLgbmLvb8vFR6bz8z8dUze2GWQiKtaW8t3Vm63w1iGjzEKqb4GXw7YWHf/E5
+tTGr7R3NrXSwCel0gVox7btfdEZwHAIn+PXXZjyl1jMn9r+mz8PaqWbfHAsqCd6h
+eQusArQUJ5KL42Cu6DlBIusfT33yOXGn8RTiLIbUx0/401U55IBtBJZmEpLbEWfP
+dY+r5zsTSdzrQNhlu3EvKZuJibQ84eNgtftTuiT0vJMD69zu/5sSaClG9XTYND9X
+V4AYz9zvQnbZ0ie1u4TvrPWqdZC5OvPhIgivpFv/wCA3gxrKVzlOhDDgXIs9Kzdp
+W+dcw3mFg8xpOQ7myGRw
+=C+dg
+-----END PGP SIGNATURE-----
+
+--ifAh49fGP3CObuoQNM2eSw442KF5M9sgk--
 --
 To unsubscribe from this list: send the line "unsubscribe linux-usb" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
