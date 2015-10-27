@@ -1,38 +1,48 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 0/8] drivers/tty/: Deinline functions when it saves at
- least 300 bytes per function
-Date: Tue, 27 Oct 2015 13:00:05 -0400
-Message-ID: <562FAD95.9080600@hurleysoftware.com>
-References: <1445964002-10093-1-git-send-email-dvlasenk@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Denys Vlasenko <dvlasenk@redhat.com>
+Subject: [PATCH 00/15] drivers/tty/: Deinline smaller/less used functions
+Date: Tue, 27 Oct 2015 18:46:32 +0100
+Message-ID: <1445968007-12616-1-git-send-email-dvlasenk@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1445964002-10093-1-git-send-email-dvlasenk@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Denys Vlasenko <dvlasenk@redhat.com>, linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Denys Vlasenko <dvlasenk@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 10/27/2015 12:39 PM, Denys Vlasenko wrote:
-> Denys Vlasenko (8):
->   tty/cyclades.c: Deinline cyy_readb, save 368 bytes
->   tty/cyclades.c: Deinline cyy_writeb, save 880 bytes
->   tty/cyclades.c: Deinline serial_paranoia_check, save 304 bytes
->   tty/isicom.c: Deinline WaitTillCardIsFree, save 1120 bytes
->   tty/serial/bcm63xx_uart.c: Deinline wait_for_xmitr, save 374 bytes
->   tty/serial/jsm/jsm_neo.c: Deinline neo_parse_isr, save 688 bytes
->   tty/serial/serial_core.c: Deinline uart_update_mctrl, save 304 bytes
->   tty/tty_ldisc.c: Deinline tty_ldisc_put, save 368 bytes
-> 
->  drivers/tty/cyclades.c            | 6 +++---
->  drivers/tty/isicom.c              | 2 +-
->  drivers/tty/serial/bcm63xx_uart.c | 2 +-
->  drivers/tty/serial/jsm/jsm_neo.c  | 2 +-
->  drivers/tty/serial/serial_core.c  | 2 +-
->  drivers/tty/tty_ldisc.c           | 2 +-
->  6 files changed, 8 insertions(+), 8 deletions(-)
+For Peter's review.
+(Pater, I removed a few patches which looked most problematic)
 
-For series,
+Denys Vlasenko (15):
+  cyclades: Deinline cyz_is_loaded, save 240 bytes
+  isicom: Deinline drop_dtr, save 112 bytes
+  tty: Deinline n_tty_receive_char_inline, save 224 bytes
+  serial/fsl_lpuart: Deinline lpuart_transmit_buffer, save 176 bytes
+  serial/m32r_sio: Deinline wait_for_xmitr, save 165 bytes
+  serial/men_z135_uart: Deinline men_z135_reg_clr, save 176 bytes
+  serial/msm_serial: Deinline wait_for_xmitr, save 165 bytes
+  serial/omap-serial: Deinline wait_for_xmitr, save 165 bytes
+  serial/pxa: Deinline wait_for_xmitr, save 165 bytes
+  serial/sprd_serial: Deinline wait_for_xmitr, save 165 bytes
+  serial/sunsu: Deinline wait_for_xmitr, save 165 bytes
+  serial/vt8500_serial: Deinline wait_for_xmitr, save 165 bytes
+  tty: Deinline __ldsem_down_read_nested, save 128 bytes
+  tty: Deinline __ldsem_down_write_nested, save 128 bytes
+  vt: Deinline save_screen, save 238 bytes
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+ drivers/tty/cyclades.c             | 2 +-
+ drivers/tty/isicom.c               | 2 +-
+ drivers/tty/n_tty.c                | 2 +-
+ drivers/tty/serial/fsl_lpuart.c    | 2 +-
+ drivers/tty/serial/m32r_sio.c      | 2 +-
+ drivers/tty/serial/men_z135_uart.c | 2 +-
+ drivers/tty/serial/msm_serial.c    | 2 +-
+ drivers/tty/serial/omap-serial.c   | 2 +-
+ drivers/tty/serial/pxa.c           | 2 +-
+ drivers/tty/serial/sprd_serial.c   | 2 +-
+ drivers/tty/serial/sunsu.c         | 2 +-
+ drivers/tty/serial/vt8500_serial.c | 2 +-
+ drivers/tty/tty_ldsem.c            | 4 ++--
+ drivers/tty/vt/vt.c                | 2 +-
+ 14 files changed, 15 insertions(+), 15 deletions(-)
+
+-- 
+1.8.1.4
