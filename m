@@ -1,65 +1,23 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 1/2] serial: 8250_early: do not save and restore IER in
- write callback
-Date: Tue, 27 Oct 2015 09:54:34 -0400
-Message-ID: <562F821A.90509@hurleysoftware.com>
-References: <1445660265-13668-1-git-send-email-yamada.masahiro@socionext.com>
- <1445660265-13668-2-git-send-email-yamada.masahiro@socionext.com>
+Subject: Re: [PATCH 1/2] serial: 8250_ingenic: delete redundant "select
+ SERIAL_EARLYCON"
+Date: Tue, 27 Oct 2015 10:15:57 -0400
+Message-ID: <562F871D.4060401@hurleysoftware.com>
+References: <1445607076-14135-1-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1445660265-13668-2-git-send-email-yamada.masahiro@socionext.com>
+In-Reply-To: <1445607076-14135-1-git-send-email-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org
-Cc: Vineet Gupta <Vineet.Gupta1@synopsys.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Paul Burton <paul.burton@imgtec.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Joachim Eastwood <manabian@gmail.com>, John Crispin <blogic@openwrt.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Masahiro,
-
-On 10/24/2015 12:17 AM, Masahiro Yamada wrote:
-> The IER has already been masked in early_serial8250_setup(), there is
-> no reason to save and restore it every time early_serial8250_write()
-> is called.
+On 10/23/2015 09:31 AM, Masahiro Yamada wrote:
+> SERIAL_8250_INGENIC depends on SERIAL_8250_CONSOLE, which already
+> selects SERIAL_EARLYCON.
 > 
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-> ---
-> 
->  drivers/tty/serial/8250/8250_early.c | 12 ------------
->  1 file changed, 12 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-> index 7aff3d8..559b681 100644
-> --- a/drivers/tty/serial/8250/8250_early.c
-> +++ b/drivers/tty/serial/8250/8250_early.c
-> @@ -99,20 +99,8 @@ static void __init early_serial8250_write(struct console *console,
->  {
->  	struct earlycon_device *device = console->data;
->  	struct uart_port *port = &device->port;
-> -	unsigned int ier;
-> -
-> -	/* Save the IER and disable interrupts preserving the UUE bit */
-> -	ier = serial8250_early_in(port, UART_IER);
-> -	if (ier)
-> -		serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
->  
->  	uart_console_write(port, s, count, serial_putc);
+> This line is redundant.
 
-
-
-> -
-> -	/* Wait for transmitter to become empty and restore the IER */
-> -	wait_for_xmitr(port);
-
-This wait_for_xmitr() change needs to be in patch 2/2.
-
-Regards,
-Peter Hurley
-
-> -
-> -	if (ier)
-> -		serial8250_early_out(port, UART_IER, ier);
->  }
->  
->  static void __init init_port(struct earlycon_device *device)
-> 
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
