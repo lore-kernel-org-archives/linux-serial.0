@@ -1,7 +1,7 @@
 From: Denys Vlasenko <dvlasenk@redhat.com>
-Subject: [PATCH 07/15] serial/msm_serial: Deinline wait_for_xmitr, save 165 bytes
-Date: Tue, 27 Oct 2015 18:46:39 +0100
-Message-ID: <1445968007-12616-8-git-send-email-dvlasenk@redhat.com>
+Subject: [PATCH 04/15] serial/fsl_lpuart: Deinline lpuart_transmit_buffer, save 176 bytes
+Date: Tue, 27 Oct 2015 18:46:36 +0100
+Message-ID: <1445968007-12616-5-git-send-email-dvlasenk@redhat.com>
 References: <1445968007-12616-1-git-send-email-dvlasenk@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1445968007-12616-1-git-send-email-dvlasenk@redhat.com>
@@ -10,7 +10,7 @@ To: linux-kernel@vger.kernel.org
 Cc: Denys Vlasenko <dvlasenk@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This function compiles to 141 bytes of machine code.
+This function compiles to 172 bytes of machine code.
 
 Signed-off-by: Denys Vlasenko <dvlasenk@redhat.com>
 CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -18,21 +18,21 @@ CC: Peter Hurley <peter@hurleysoftware.com>
 CC: Jiri Slaby <jslaby@suse.com>
 CC: linux-serial@vger.kernel.org
 ---
- drivers/tty/serial/msm_serial.c | 2 +-
+ drivers/tty/serial/fsl_lpuart.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index b73889c..da6f6e4 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -57,7 +57,7 @@ struct msm_port {
- 	bool			break_detected;
- };
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 08ce76f..ac26303 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -527,7 +527,7 @@ static inline void lpuart_prepare_rx(struct lpuart_port *sport)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ }
  
--static inline void wait_for_xmitr(struct uart_port *port)
-+static void wait_for_xmitr(struct uart_port *port)
+-static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
++static void lpuart_transmit_buffer(struct lpuart_port *sport)
  {
- 	while (!(msm_read(port, UART_SR) & UART_SR_TX_EMPTY)) {
- 		if (msm_read(port, UART_ISR) & UART_ISR_TX_READY)
+ 	struct circ_buf *xmit = &sport->port.state->xmit;
+ 
 -- 
 1.8.1.4
