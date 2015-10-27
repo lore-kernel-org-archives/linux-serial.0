@@ -1,7 +1,7 @@
 From: Denys Vlasenko <dvlasenk@redhat.com>
-Subject: [PATCH 8/8] tty/tty_ldisc: Deinline tty_ldisc_put, save 368 bytes
-Date: Tue, 27 Oct 2015 17:40:02 +0100
-Message-ID: <1445964002-10093-9-git-send-email-dvlasenk@redhat.com>
+Subject: [PATCH 6/8] serial/jsm: Deinline neo_parse_isr, save 688 bytes
+Date: Tue, 27 Oct 2015 17:40:00 +0100
+Message-ID: <1445964002-10093-7-git-send-email-dvlasenk@redhat.com>
 References: <1445964002-10093-1-git-send-email-dvlasenk@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1445964002-10093-1-git-send-email-dvlasenk@redhat.com>
@@ -10,7 +10,7 @@ To: linux-kernel@vger.kernel.org
 Cc: Denys Vlasenko <dvlasenk@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This function compiles to 72 bytes of machine code.
+This function compiles to 811 bytes of machine code.
 
 Signed-off-by: Denys Vlasenko <dvlasenk@redhat.com>
 CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -18,21 +18,21 @@ CC: Peter Hurley <peter@hurleysoftware.com>
 CC: Jiri Slaby <jslaby@suse.com>
 CC: linux-serial@vger.kernel.org
 ---
- drivers/tty/tty_ldisc.c | 2 +-
+ drivers/tty/serial/jsm/jsm_neo.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 71750cb..14c4ad8 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -185,7 +185,7 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
-  *
-  *	Complement of tty_ldisc_get().
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index 932b2ac..c6fdd63 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -714,7 +714,7 @@ static void neo_clear_break(struct jsm_channel *ch)
+ /*
+  * Parse the ISR register.
   */
--static inline void tty_ldisc_put(struct tty_ldisc *ld)
-+static void tty_ldisc_put(struct tty_ldisc *ld)
+-static inline void neo_parse_isr(struct jsm_board *brd, u32 port)
++static void neo_parse_isr(struct jsm_board *brd, u32 port)
  {
- 	if (WARN_ON_ONCE(!ld))
- 		return;
+ 	struct jsm_channel *ch;
+ 	u8 isr;
 -- 
 1.8.1.4
