@@ -1,68 +1,38 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v2 1/2] serial: 8250_early: do not save and restore IER in
- write callback
-Date: Wed, 28 Oct 2015 12:27:02 +0900
-Message-ID: <CAK7LNASy6Y_Jqqw6JhTdxMy7Nc35PytWSeqHCM8UybrVYp1mnw@mail.gmail.com>
-References: <1445660265-13668-1-git-send-email-yamada.masahiro@socionext.com>
-	<1445660265-13668-2-git-send-email-yamada.masahiro@socionext.com>
-	<562F821A.90509@hurleysoftware.com>
+From: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
+Subject: Re: [PATCH v3] serial: support 16-bit register interface for console
+Date: Wed, 28 Oct 2015 12:29:41 +0900
+Message-ID: <CAK7LNAQ_uVAQUL3Z3eX13ZPYOgN8b6FOodgizWoQBzmAweAcDA@mail.gmail.com>
+References: <1445832662-23250-1-git-send-email-yamada.masahiro@socionext.com>
+	<562F81BE.3000502@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <562F821A.90509@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <562F81BE.3000502-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
 Hi Peter,
 
-2015-10-27 22:54 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
+2015-10-27 22:53 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
 > Hi Masahiro,
 >
-> On 10/24/2015 12:17 AM, Masahiro Yamada wrote:
->> The IER has already been masked in early_serial8250_setup(), there is
->> no reason to save and restore it every time early_serial8250_write()
->> is called.
->>
->> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
->> ---
->>
->>  drivers/tty/serial/8250/8250_early.c | 12 ------------
->>  1 file changed, 12 deletions(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
->> index 7aff3d8..559b681 100644
->> --- a/drivers/tty/serial/8250/8250_early.c
->> +++ b/drivers/tty/serial/8250/8250_early.c
->> @@ -99,20 +99,8 @@ static void __init early_serial8250_write(struct console *console,
->>  {
->>       struct earlycon_device *device = console->data;
->>       struct uart_port *port = &device->port;
->> -     unsigned int ier;
->> -
->> -     /* Save the IER and disable interrupts preserving the UUE bit */
->> -     ier = serial8250_early_in(port, UART_IER);
->> -     if (ier)
->> -             serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
->>
->>       uart_console_write(port, s, count, serial_putc);
+> On 10/26/2015 12:11 AM, Masahiro Yamada wrote:
+>> Currently, 8-bit (MMIO) and 32-bit (MMIO32) register interfaces are
+>> supported for the 8250 console, but the 16-bit (MMIO16) is not.
+>> The 8250 UART device on my board is connected to a 16-bit bus
+>> and my main motivation is to use earlycon with it.
+>> (Refer to arch/arm/boot/dts/uniphier-support-card.dtsi)
 >
->
->
->> -
->> -     /* Wait for transmitter to become empty and restore the IER */
->> -     wait_for_xmitr(port);
->
-> This wait_for_xmitr() change needs to be in patch 2/2.
+> As I noted in reviewing v2, the patch hunk below does not apply.
+> You must rebase your changes on top of Greg's tty-next tree.
 >
 
 
-Why?
+Sorry, I missed your comment on v2.
 
-We no longer restore the IER.
-We no longer have to wait here, either.
-
+I will send v4.
 
 
 -- 
