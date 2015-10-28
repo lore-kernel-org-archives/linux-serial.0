@@ -1,87 +1,135 @@
-From: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
-Subject: Re: implement put_char() in cdc-acm
-Date: Wed, 28 Oct 2015 16:53:46 +0100
-Message-ID: <5630EF8A.8060904@svenbrauch.de>
-References: <1445958479.2043.6.camel@suse.com>
- <562F9C08.6050105@svenbrauch.de> <1446030280.15140.10.camel@suse.com>
- <5630BE5E.6040204@hurleysoftware.com>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: Which is better to specify console, "console= " or "stdout-path"
+ ?
+Date: Wed, 28 Oct 2015 12:00:01 -0400
+Message-ID: <5630F101.1080803@hurleysoftware.com>
+References: <CAK7LNAS9uBJ1cVmGBKae3W0tk8Siu1yeXOaeN6Kz11cksMqtsg@mail.gmail.com>
+ <562753A6.3070107@arm.com> <56278911.9050704@hurleysoftware.com>
+ <CAK7LNAQ_+_9K-y7bmpdGwcH2u4uqJhJhON1Ew4OvzSSa-amyvw@mail.gmail.com>
+ <5627BCBC.5040701@hurleysoftware.com>
+ <CAK7LNASqjd_Xf53WKa=Ogesf80HQzEoKEyVtw-BMh7JF=jq+xQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="Rnw2fofwh76JCOiPUVxSgE6t92bXJ7TRc"
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5630BE5E.6040204-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAK7LNASqjd_Xf53WKa=Ogesf80HQzEoKEyVtw-BMh7JF=jq+xQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
+Cc: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Rnw2fofwh76JCOiPUVxSgE6t92bXJ7TRc
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Hi Masahiro,
 
-Hey,
+On 10/22/2015 12:20 AM, Masahiro Yamada wrote:
+> 2015-10-22 1:26 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+>> On 10/21/2015 11:38 AM, Masahiro Yamada wrote:
+>>> 2015-10-21 21:46 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+>>>> On 10/21/2015 04:58 AM, Sudeep Holla wrote:
+>>>>> On 21/10/15 06:09, Masahiro Yamada wrote:
+>>>>>> I think there exist two ways to specify the console port and baudrate.
+>>>>>>
+>>>>>>
+>>>>>> [1] Specify console in bootargs
+>>>>>>
+>>>>>>    chosen {
+>>>>>>          bootargs = "console=ttyS0,115200";
+>>>>>>    };
+>>>>>>
+>>>>>>
+>>>>>> [2] Specify stdout-path
+>>>>>>
+>>>>>>     chosen {
+>>>>>>           stdout-path = "serial0:115200n8";
+>>>>>
+>>>>> This will work for even early/boot console, so this is better than
+>>>>> option [1]
+>>>>
+>>>> Be aware that options specified via /chosen/stdout-path are
+>>>> currently ignored by earlycon. There were some hiccups getting the
+>>>> initial support upstream; when 4.4 hits mainline, I'll resubmit
+>>>> my series that implements the of_serial i/o properties and
+>>>> options passthrough to earlycon setup.
+>>>
+>>>
+>>> As I said in another thread ("serial: earlycon: allow to specify
+>>> uartclk in earlycon kernel-parameter"),
+>>> stdout-path can pass dev->baud, but not port->uartclk.
+>>
+>> That's true but I'm not seeing in that thread where you wrote that?
+> 
+> Sorry, I made you confused.  I was talking about the kernel parameter (console=)
+> in the thread.
+> 
+>> My replies there were specific to uartclk on the kernel command line,
+>> which isn't necessary if the bootloader has already initialized the
+>> uart.
+>>
+>>> It is usually specified "clocks" phandle, but
+>>> clk is not ready at the point of earlycon.
+>>>
+>>> It seems impossible to set up the baudrate even if the options are passed.
+>>
+>> It's difficult to understand what you're trying to do when I can't
+>> see the code you're referring to.  For example, I only recently
+>> understood that you're talking about a earlycon implementation
+>> that you're working on and not the 8250 earlycon itself.
+> 
+> Sorry again for making you confused.
+> 
+> I was talking both.
+> 
+> Now I am tackling on some ARM board porting.
+> 
+> 
+> The board has a pure 8250 family device (compatible = "ns16550a") on it.
+> 
+> In addition, there exist 8250-variant IPs inside the SoC.
+> (this is similar to 8250, but slightly different.
+> drivers/tty/serial/8250/8250_uniphier.c)
+> 
+> 
+> What I want to do is:
+>   [1] To use  drivers/tty/serial/8250/8250_early.c  for the on-board ns16550a.
+>   [2] To implement my own EARLYCON_DECLARE() in
+> drivers/tty/serial/8250/8250_uniphier.c
+> 
+> 
+> 
+>> If you look at other non-8250 earlycons, you'll see they all ignore
+>> the baud rate, on the assumption the bootloader already set it up.
+> 
+> OK, I will do so for [2].
+> 
+> 
+>> The 8250 earlycon is a little different because legacy platforms
+>> do not initialize the uart.
+> 
+> 
+> Make sense.
+> 
+> For legacy platforms, earlycon initializes the uart,
+> assuming the hard-coded "port->uartclk = BASE_BAUD * 16"
+> is the value.
+> 
+> 
+> For embedded boards such as ARM, the boot-loader should initialize the UART
+> and the earlycon should preserve it because port->uartclk varies from
+> board to board.
+> (For example, the ns16550a on my board expects   BASE_BAUD is 1228000,
+> but it does not match the one in include/asm-generic/serial.h )
 
-On 28/10/15 13:23, Peter Hurley wrote:
-> Sven, please test Oliver's patch on that tree.
-I will do as soon as I get around to it, I hope on the weekend.
+I want to clarify one point: if you have a configuration for which the
+earlycon uart is not initialized by the bootloader (or boot prom), then
+we can add a way for the ASoC init to set BASE_BAUD. This was done for
+the ARC arch, but I would like to use this as a last resort for the ARM
+arch.
 
-> Lastly, please confirm your test method/termios settings (iow, are
-> you using a reproducer or just 'cat big_file > /dev/ttyACM1')
-Sorry, what exactly do you mean by "reproducer"? I have a
-microcontroller which acquires and transmits the data on the device end
-of the USB connection. The data flows from device to host.
+An example configuration I can envision that would require this solution
+is u-boot's so-called 'falcon mode' without devicetree (or boot prom).
 
-> I would much rather rework URB flow + unthrottle, as I previously
-> outlined in the original thread instead of introducing another
-> buffering layer.
-=46rom my non-kernel-dev point of view, this seems the way to go if the
-strategy in my patch (technical flaws aside) is not acceptable.
-Everything else, i.e. larger buffers or less delay, will certainly be a
-welcome improvement but still does not guarantee data delivery.
-
-A very similar patch, by the way, was already submitted a few years ago
-[1] but not accepted for similar reasons as brought up here (I only
-found that thread later on). That patch has a more elegant
-implementation than mine, so you might prefer reviving that, if it
-becomes relevant.
-
-I will be happy to test any fixes which come up, although I can't
-promise I can get around to do it immediately.
-
-Thanks and best regards,
-Sven
-
-_______________
-[1] https://marc.info/?l=3Dlinux-kernel&m=3D130754754705303&w=3D2
-
-
---Rnw2fofwh76JCOiPUVxSgE6t92bXJ7TRc
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBCAAGBQJWMO+KAAoJEGjKjjjEuz9LZIYP/RntkRmca7B1dbd7csEGs9Nv
-gbPOyZBf+XgnyxeUqIcuIU0PaXFeVnYU1ZXmHRyP5SUt45wcOJoR3HEMO40/PrnR
-ptNmNuJEJDvzeoOnOpvZk3FVyhtanyXMRRAOnQnRwMhgokjdGtdDfVb6gHxZdz1V
-RSoq1z30OmpT/Gw2yXyjo/lHHib6LsVcWAqMbI5ezFmD0WZuNpRoGuebC22Dujen
-klJJ4EBAuZuYePcRUsWaCEB9gX13p2LZB6QkiGew4LGc/943dmpTRtgc1JPyYDZJ
-HFMWaOzFzhJVrw1eZq3bL3QByS9BLuV2kxYhdBwTqnpfpcdXU4Fz4/ESZwV5m/AF
-1Yq66z9mHwwd/CFRmiwmPRtCmdldLAWCF7EsU/s6TQZzcHgXON/43LumpzRXnM2Y
-TO6DTxKLG+nfGu4Fgptd/R7j1wc1UqzQ4WbKWtvxPlH7++W7hLr2ezzcXCu1+3dt
-uhbHDvyB7LAidJ2nnR80YrTV1/8VTDIFJd3mNFlCLVuZB2xAeGFEHN/a1gBOF+hU
-5DD4bxefN5y1NEioHAN/2InUr382bcoh9XhoHMR/MYmjigsjvpdA1nsOKDJ5KcSZ
-xZJSqSwNOII97sDJH8IptVfsfPJ4XaB18LyBn2EsRnNR8AoBbvyLGJDNVU191DEB
-8vG1gEaFXtvrB99mL585
-=SJ8k
------END PGP SIGNATURE-----
-
---Rnw2fofwh76JCOiPUVxSgE6t92bXJ7TRc--
+Regards,
+Peter Hurley
 --
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
