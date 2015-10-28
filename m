@@ -1,30 +1,60 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: implement put_char() in cdc-acm
-Date: Wed, 28 Oct 2015 08:49:56 -0400
-Message-ID: <5630C474.300@hurleysoftware.com>
-References: <1445958479.2043.6.camel@suse.com>
- <562F9C08.6050105@svenbrauch.de> <1446030280.15140.10.camel@suse.com>
- <5630BE5E.6040204@hurleysoftware.com> <1446035622.15140.17.camel@suse.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] tty: serial: sa1100.c: use UPIO_MEM rather than
+ SERIAL_IO_MEM
+Date: Wed, 28 Oct 2015 09:45:14 -0400
+Message-ID: <5630D16A.1020604@hurleysoftware.com>
+References: <saurabh.truth@gmail.com>
+ <1445932017-4136-1-git-send-email-saurabh.truth@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1446035622.15140.17.camel-IBi9RG/b67k@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
-Cc: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1445932017-4136-1-git-send-email-saurabh.truth@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Saurabh Sengar <saurabh.truth@gmail.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 10/28/2015 08:33 AM, Oliver Neukum wrote:
-> Peter, do you think I ought to upstream the support for put_char() ?
+Hi Saurabh,
 
-Yes, but I owe you a test jig to validate it first. I'll do my best
-to get that to you today.
+On 10/27/2015 03:46 AM, Saurabh Sengar wrote:
+> use UPIO_MEM rather then SERIAL_IO_MEM.
+> both have the same value
+> 
+> Signed-off-by: Saurabh Sengar <saurabh.truth@gmail.com>
+> ---
+>  drivers/tty/serial/sa1100.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+> index fd3d132..283c7e0 100644
+> --- a/drivers/tty/serial/sa1100.c
+> +++ b/drivers/tty/serial/sa1100.c
+> @@ -579,7 +579,7 @@ sa1100_verify_port(struct uart_port *port, struct serial_struct *ser)
+>  		ret = -EINVAL;
+>  	if (sport->port.irq != ser->irq)
+>  		ret = -EINVAL;
+> -	if (ser->io_type != SERIAL_IO_MEM)
+> +	if (ser->io_type != UPIO_MEM)
+
+SERIAL_IO_* io_type defines are the appropriate constants for the
+struct serial_struct::io_type field. Both are defined in the
+uapi header, include/uapi/linux/serial.h
+
+UPIO_* io_type defines are the appropriate constants for the
+struct uart_port::io_type field. Both are defined in the kernel
+header, include/kernel/serial_core.h
+
+I defined the UPIO_* io_types in terms of SERIAL_IO_* because
+userspace breakage was occurring as contributors were changing
+the UPIO_* constant values.
+
 
 Regards,
 Peter Hurley
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+>  		ret = -EINVAL;
+>  	if (sport->port.uartclk / 16 != ser->baud_base)
+>  		ret = -EINVAL;
+> 
