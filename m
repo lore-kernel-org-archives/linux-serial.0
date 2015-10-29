@@ -1,113 +1,56 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH] serial: 8250_uniphier: add earlycon support
-Date: Thu, 29 Oct 2015 10:49:27 +0900
-Message-ID: <CAK7LNATGWRwitQVNsiFiiojE3JLYdO6DPY74LSbJ3jw4mg6HdQ@mail.gmail.com>
-References: <1445503154-14340-1-git-send-email-yamada.masahiro@socionext.com>
-	<5630E7DC.3050506@hurleysoftware.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH] of/fdt: fix error checking for earlycon address
+Date: Wed, 28 Oct 2015 23:07:38 -0500
+Message-ID: <CAL_JsqKGOw-Mk=87Fsw+NsbaKR2TDFoJZE-DeVfyxDPRN45o5g@mail.gmail.com>
+References: <1445600840-26749-1-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5630E7DC.3050506@hurleysoftware.com>
+In-Reply-To: <1445600840-26749-1-git-send-email-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Jiri Slaby <jslaby@suse.com>
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Frank Rowand <frowand.list@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Grant Likely <grant.likely@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
-
-
-
->>
->> +#if IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE)
+On Fri, Oct 23, 2015 at 6:47 AM, Masahiro Yamada
+<yamada.masahiro@socionext.com> wrote:
+> fdt_translate_address() returns OF_BAD_ADDR on error.  It is defined as
+> a u64 value, so the variable "addr" should be defined as u64 as well.
 >
-> #ifdef CONFIG_SERIAL_8250_CONSOLE
+> Fixes: fb11ffe74c79 ("of/fdt: add FDT serial scanning for earlycon")
+> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 
-I am OK with this change because this CONFIG is boolean.
+Applied, thanks.
 
+Rob
 
-I still believe
-
-#if IS_ENABLED(CONFIG_FOO)
-
-is a nice shorthand for
-
-#if defined(CONFIG_FOO) || defined(CONFIG_FOO_MODULE)
-
-when CONFIG_FOO is tristate.
-
-
-
-
-
->> +static int __init uniphier_early_console_setup(struct earlycon_device *device,
->> +                                            const char *options)
->> +{
->> +     if (!device->port.membase)
->> +             return -ENODEV;
->> +
->> +     /* This hardware always expects MMIO32 register interface. */
->> +     device->port.iotype = UPIO_MEM32;
->> +     device->port.regshift = 2;
->> +
->> +     /*
->> +      * Do not touch the divisor register in early_serial8250_setup();
->> +      * we assume it has been initialized by a boot loader.
->> +      */
->> +     device->baud = 0;
->> +
->> +     return early_serial8250_setup(device, options);
->> +}
->> +OF_EARLYCON_DECLARE(uniphier_uart, "socionext,uniphier-uart",
->> +                 uniphier_early_console_setup);
+> ---
 >
-> Please change the earlycon name to just "uniphier" or "uniphier8250"; eg.,
+>  drivers/of/fdt.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 >
-> OF_EARLYCON_DECLARE(uniphier, "socionext,uniphier-uart",
->                     uniphier_early_console_setup);
+> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> index 9fc3568..196e449 100644
+> --- a/drivers/of/fdt.c
+> +++ b/drivers/of/fdt.c
+> @@ -822,14 +822,15 @@ static int __init early_init_dt_scan_chosen_serial(void)
+>                 return -ENODEV;
 >
+>         while (match->compatible[0]) {
+> -               unsigned long addr;
+> +               u64 addr;
+> +
+>                 if (fdt_node_check_compatible(fdt, offset, match->compatible)) {
+>                         match++;
+>                         continue;
+>                 }
 >
-> My earlycon series merges OF_EARLYCON_DECLARE() => EARLYCON_DECLARE()
-> and "uniphier" is simpler on the command line.
+>                 addr = fdt_translate_address(fdt, offset);
+> -               if (!addr)
+> +               if (addr == OF_BAD_ADDR)
+>                         return -ENXIO;
 >
-
-I am also OK with this change, too.
-
-But I still see  some *_serial and *_uart are used
-in EARLYCON_DECLARE.
-
-yamada@beagle:~/workspace/linux/drivers/tty$ git grep -e
-'EARLYCON_DECLARE(.*_uart'
-serial/8250/8250_ingenic.c:EARLYCON_DECLARE(jz4740_uart,
-ingenic_early_console_setup);
-serial/8250/8250_ingenic.c:OF_EARLYCON_DECLARE(jz4740_uart,
-"ingenic,jz4740-uart",
-serial/8250/8250_ingenic.c:EARLYCON_DECLARE(jz4775_uart,
-ingenic_early_console_setup);
-serial/8250/8250_ingenic.c:OF_EARLYCON_DECLARE(jz4775_uart,
-"ingenic,jz4775-uart",
-serial/8250/8250_ingenic.c:EARLYCON_DECLARE(jz4780_uart,
-ingenic_early_console_setup);
-serial/8250/8250_ingenic.c:OF_EARLYCON_DECLARE(jz4780_uart,
-"ingenic,jz4780-uart",
-serial/arc_uart.c:EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
-serial/arc_uart.c:OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart",
-arc_early_console_setup);
-serial/bcm63xx_uart.c:OF_EARLYCON_DECLARE(bcm63xx_uart,
-"brcm,bcm6345-uart", bcm_early_console_setup);
-yamada@beagle:~/workspace/linux/drivers/tty$ git grep -e
-'EARLYCON_DECLARE(.*_serial'
-serial/8250/8250_early.c:EARLYCON_DECLARE(uart8250, early_serial8250_setup);
-serial/8250/8250_early.c:EARLYCON_DECLARE(uart, early_serial8250_setup);
-serial/msm_serial.c:EARLYCON_DECLARE(msm_serial,
-msm_serial_early_console_setup);
-serial/msm_serial.c:OF_EARLYCON_DECLARE(msm_serial, "qcom,msm-uart",
-serial/msm_serial.c:EARLYCON_DECLARE(msm_serial_dm,
-msm_serial_early_console_setup_dm);
-serial/msm_serial.c:OF_EARLYCON_DECLARE(msm_serial_dm, "qcom,msm-uartdm",
-serial/sprd_serial.c:EARLYCON_DECLARE(sprd_serial, sprd_early_console_setup);
-serial/sprd_serial.c:OF_EARLYCON_DECLARE(sprd_serial, "sprd,sc9836-uart",
-
-
--- 
-Best Regards
-Masahiro Yamada
+>                 of_setup_earlycon(addr, match->data);
+> --
+> 1.9.1
+>
