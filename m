@@ -1,81 +1,45 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v2 1/2] serial: 8250_early: do not save and restore IER in
- write callback
-Date: Thu, 29 Oct 2015 14:21:45 +0900
-Message-ID: <CAK7LNAROoAhD=cFG6OdDTpP1xc8zoqbczF4mouv4d00kpORHJQ@mail.gmail.com>
-References: <1445660265-13668-1-git-send-email-yamada.masahiro@socionext.com>
-	<1445660265-13668-2-git-send-email-yamada.masahiro@socionext.com>
-	<562F821A.90509@hurleysoftware.com>
-	<CAK7LNASy6Y_Jqqw6JhTdxMy7Nc35PytWSeqHCM8UybrVYp1mnw@mail.gmail.com>
-	<5630DD75.30805@hurleysoftware.com>
+From: Shannon Zhao <shannon.zhao@linaro.org>
+Subject: Re: [PATCH 0/3] Add AMBA bus probing support to ACPI
+Date: Thu, 29 Oct 2015 22:47:22 +0800
+Message-ID: <5632317A.40607@linaro.org>
+References: <1443609530-21524-1-git-send-email-graeme.gregory@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5630DD75.30805@hurleysoftware.com>
+In-Reply-To: <1443609530-21524-1-git-send-email-graeme.gregory@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-serial@vger.kernel.org, Vineet Gupta <Vineet.Gupta1@synopsys.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Graeme Gregory <graeme.gregory@linaro.org>, linux-acpi@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Shannon Zhao <zhaoshenglong@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-2015-10-28 23:36 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
-> On 10/27/2015 11:27 PM, Masahiro Yamada wrote:
->> Hi Peter,
->>
->> 2015-10-27 22:54 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
->>> Hi Masahiro,
->>>
->>> On 10/24/2015 12:17 AM, Masahiro Yamada wrote:
->>>> The IER has already been masked in early_serial8250_setup(), there is
->>>> no reason to save and restore it every time early_serial8250_write()
->>>> is called.
->>>>
->>>> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
->>>> ---
->>>>
->>>>  drivers/tty/serial/8250/8250_early.c | 12 ------------
->>>>  1 file changed, 12 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
->>>> index 7aff3d8..559b681 100644
->>>> --- a/drivers/tty/serial/8250/8250_early.c
->>>> +++ b/drivers/tty/serial/8250/8250_early.c
->>>> @@ -99,20 +99,8 @@ static void __init early_serial8250_write(struct console *console,
->>>>  {
->>>>       struct earlycon_device *device = console->data;
->>>>       struct uart_port *port = &device->port;
->>>> -     unsigned int ier;
->>>> -
->>>> -     /* Save the IER and disable interrupts preserving the UUE bit */
->>>> -     ier = serial8250_early_in(port, UART_IER);
->>>> -     if (ier)
->>>> -             serial8250_early_out(port, UART_IER, ier & UART_IER_UUE);
->>>>
->>>>       uart_console_write(port, s, count, serial_putc);
->>>
->>>
->>>
->>>> -
->>>> -     /* Wait for transmitter to become empty and restore the IER */
->>>> -     wait_for_xmitr(port);
->>>
->>> This wait_for_xmitr() change needs to be in patch 2/2.
->>>
->>
->>
->> Why?
+
+
+On 2015/9/30 18:38, Graeme Gregory wrote:
+> As discussed when Shannon Zhao sent a patch to add platform_device support
+> to pl061 driver. Russel and other maintainers prefered that ACPI learned
+> how to create AMBA devices rather than converting/adding platform_device
+> support to AMBA drivers.
 >
-> Because if someone reports a regression bisected to this commit,
-> we won't know if the regression is because we're not saving/restoring IER
-> or because the transmitter is still running.
+> http://comments.gmane.org/gmane.linux.ports.arm.kernel/431364
 >
+> 1) Adds basic AMBA device probing support to ACPI, it uses a whitelist of
+> device IDs as the number of AMBA devices is limited. Currently the two ids
+> present are those used in QEMU for arm64.
+>
+> 2) Adds the plumbing into ACPI probe sequence.
+>
+> 3) From ACPI pl011 is only defined (SBSA document) to be in SBSA mode which has
+> reduced functionality. There may be a better method to do this that I have
+> overlooked.
+>
+Thanks. I test this patchset with PL061 on QEMU for arm64 through below 
+patchset[1]. It works well.
 
-Good point.
+Tested-by: Shannon Zhao <shannon.zhao@linaro.org>
 
-I will send v3.
-Thanks!
-
-
+[1] 
+https://git.linaro.org/people/shannon.zhao/qemu.git/shortlog/refs/heads/PowerButton_v2
 
 -- 
-Best Regards
-Masahiro Yamada
+Shannon
