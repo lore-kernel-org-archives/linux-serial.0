@@ -1,42 +1,93 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH DRAFT 1/2] drivers: serial: PL011: refactor register access
-Date: Mon, 2 Nov 2015 07:44:26 -0600
-Message-ID: <563768BA.8080109@codeaurora.org>
-References: <1446467042-24494-1-git-send-email-andre.przywara@arm.com>
- <1446467042-24494-2-git-send-email-andre.przywara@arm.com>
- <563764B7.6040202@codeaurora.org> <563767C9.7050206@arm.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 3/3] serial: sh-sci: Add calculation recive margin for HSCIF
+Date: Mon, 2 Nov 2015 14:56:13 +0100
+Message-ID: <CAMuHMdUmChU0G1RcDOtSbCwzRZ9LTcQfZwjiSKBKVGhiAqjn1w@mail.gmail.com>
+References: <1405321800-18114-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
+	<1405321800-18114-3-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <563767C9.7050206@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>, Jun Nie <jun.nie@linaro.org>, Peter Hurley <peter@hurleysoftware.com>
-Cc: Andrew.Jackson@arm.com, Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1405321800-18114-3-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Cc: Linux-sh list <linux-sh@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Simon Horman <horms+renesas@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Andre Przywara wrote:
-> This patch doesn't, I was just enumerating possible extensions which
-> will become much easier now that we don't have to patch every single
-> call site for such a change (to give rationale for this refactoring).
-> Changing the access width is now a simple change in those two functions,
-> and since you have the struct uart_amba_port available, you can access
-> any field in there to determine your desired access width.
+Hi Iwamatsu-san,
+
+On Mon, Jul 14, 2014 at 9:10 AM, Nobuhiro Iwamatsu
+<nobuhiro.iwamatsu.yj@renesas.com> wrote:
+> When the error of the same bit rate is detected, we will need to select
+> the recive margin is large. Current code holds the minimum error, it does
+> not have to check the recive margin. This adds this calculation.
 >
-> As it says on the tin: it's a draft. Feel free to extend it to a proper
-> series;-)
+> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
 
-Actually, we already have a patch that does just that, so I'll post it.
+I know this patch was applied a while ago.
 
--- 
-Sent by an employee of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the
-Code Aurora Forum, hosted by The Linux Foundation.
+> ---
+>  drivers/tty/serial/sh-sci.c | 77 ++++++++++++++++++++++++++++++++++-----------
+>  1 file changed, 59 insertions(+), 18 deletions(-)
+>
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 7f571a8..d879c0c 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -1783,13 +1783,30 @@ static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
+>         return ((freq + 16 * bps) / (32 * bps) - 1);
+>  }
+>
+> +/* calculate frame length from SMR */
+> +static int sci_baud_calc_frame_len(unsigned int smr_val)
+> +{
+> +       int len = 10;
+> +
+> +       if (smr_val & SCSMR_CHR)
+> +               len--;
+> +       if (smr_val & SCSMR_PE)
+> +               len++;
+> +       if (smr_val & SCSMR_STOP)
+> +               len++;
+> +
+> +       return len;
+> +}
+
+The above function isn't needed...
+
+>  /* calculate sample rate, BRR, and clock select for HSCIF */
+>  static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
+>                                 int *brr, unsigned int *srr,
+> -                               unsigned int *cks)
+> +                               unsigned int *cks, int frame_len)
+
+... because the new "frame_len" parameter is unused...
+
+> @@ -1858,8 +1907,9 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+>         baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
+>         if (likely(baud && port->uartclk)) {
+>                 if (s->cfg->type == PORT_HSCIF) {
+> +                       int frame_len = sci_baud_calc_frame_len(smr_val);
+
+... hence calculating this isn't needed.
+
+>                         sci_baud_calc_hscif(baud, port->uartclk, &t, &srr,
+> -                                           &cks);
+> +                                           &cks, frame_len);
+>                 } else {
+>                         t = sci_scbrr_calc(s, baud, port->uartclk);
+>                         for (cks = 0; t >= 256 && cks <= 3; cks++)
+
+Is there some follow-up patch missing?
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
