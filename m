@@ -1,67 +1,49 @@
-From: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
-Subject: Re: implement put_char() in cdc-acm
-Date: Mon, 2 Nov 2015 21:27:29 +0100
-Message-ID: <5637C731.20409@svenbrauch.de>
-References: <1445958479.2043.6.camel@suse.com>
- <562F9C08.6050105@svenbrauch.de> <1446030280.15140.10.camel@suse.com>
- <5630BE5E.6040204@hurleysoftware.com> <1446035622.15140.17.camel@suse.com>
- <563667D9.9080401@svenbrauch.de> <1446463972.25345.24.camel@suse.com>
+From: Niklas Cassel <nks@flawful.org>
+Subject: Re: [PATCH -next] serial: etraxfs-uart: Fix crash
+Date: Mon, 2 Nov 2015 22:13:25 +0100
+Message-ID: <5637D1F5.2090608@flawful.org>
+References: <1446431576-4385-1-git-send-email-linux@roeck-us.net>
+ <20151102073755.GN4931@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="vTIkERICRWQXEEW3JO52keIRuul5br1u7"
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1446463972.25345.24.camel-IBi9RG/b67k@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
-Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20151102073755.GN4931@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Guenter Roeck <linux@roeck-us.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---vTIkERICRWQXEEW3JO52keIRuul5br1u7
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-
-On 02/11/15 12:32, Oliver Neukum wrote:
-> given this test I will submit the patch.
-Mind you, I don't know if the improvement is due to your patch or other
-things. I didn't test the new kernel without your patch; should I?
-
-> Sven, can you ramp up the buffers in the manner Peter suggested
-> and retest? It looks like the throttling code isn't perfect yet,
-> but a larger buffer may make its performance good enough.
-I'll try as soon as possible, but I'm sceptical. That still doesn't
-guarantee that no data is lost, which feels bad to me.
-
-Thanks and best regards,
-Sven
 
 
---vTIkERICRWQXEEW3JO52keIRuul5br1u7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+On 11/02/2015 08:37 AM, Uwe Kleine-K=C3=B6nig wrote:
+>> The function call in the etraxfs-uart driver was not renamed,
+>> possibly due to interference with commit 7b9c5162c182 ("serial:
+>> etraxfs-uart: use mctrl_gpio helpers for handling modem signals").
+> Yes. BTW, 7b9c5162c182 looks broken, too, because the interrupt handl=
+ing
+> is missing.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+The only drivers including serial_mctrl_gpio.h is atmel_serial.c,
+clps711x.c, mxs-auart.c and etraxfs-uart.c
 
-iQIcBAEBCAAGBQJWN8c0AAoJEGjKjjjEuz9L+F4P/jKYqnbhptzzPcGaUgP+vU2z
-39p4F4XRghErySzGUnrKFwydO6ZhHHZz0BCZX7cfFo++2mgE7XNIAkz+VNvHwAKK
-AR6s/5IhZHvOwjOyrywhErx4Zlq5PVbJ9n8ogFfMFtJKSJRz4DWXt18FCtHUFXaw
-SsA4eIpXEHWN8jX+6XjPdnPtQ6H4PAhOYuJz5wWk1N2wID7N3ke8APxl/HpNAtgj
-YzoGponLil8xzWyFm6rQF4GTMTduBwKDifYg0y350odXWaNXKGTINGf1yCScvlbn
-V0jaky5HmqFDiCQ5n/vfsCEOni7cSEAJh8EzqDByoq4QDJCtHHer59Pn8oWTVl1r
-kRGzCA6ZPa7yG2Cwy3UxLCwC/fwKliSxtmBT3GpNHRPUDXDA/BM5eQRRBW56xy6j
-B3VQqjGLXsvSUqJpqHfV1Usz3J8NjsAgrwyUCroHIVRZ1jJuZvM/z4ozuIk7lO9o
-WANQHaCtjRVy2Ry3odYcfwZr3v2wRCS+mw0QtvSRNHikp847FdE5xmPv9+mHDuFF
-yuVweCtWWTvCkh9MAl1DwBj+1FtlW8tVuEJ2M9iT+4zeTRoikYm+bLWm0OMVZ9hU
-oys4fcMuirt3ekk+smwEH9+M7tbTwrwwCitmdhSJhTeOJ84Dad08eXPFt0FRgGPs
-4i94xgKuijrfsT5RUInm
-=VbmK
------END PGP SIGNATURE-----
+etraxfs commit
+7b9c5162c182 ("serial: etraxfs-uart: use mctrl_gpio helpers for handlin=
+g modem signals")
+is heavily influenced by
+62b0a1b3e759 ("serial: clps711x: Use mctrl_gpio helpers for handling mo=
+dem signals")
 
---vTIkERICRWQXEEW3JO52keIRuul5br1u7--
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+a driver which also appears to lack mctrl irq setup/handling.
+
+
+Uwe, are you going to convert all serial drivers that includes serial_m=
+ctrl_gpio.h to
+use the new mctrl_gpio_init? (which also sets up irqs)
+
+Since mctrl gpios are optional in the device tree, I guess mctrl_gpio_i=
+nit handles if
+they are missing. So even if etraxfs-uart.c currently lacks mctrl irq s=
+etup/handling,
+if we migrate it to use the new mctrl_gpio_init, we will get this autom=
+atically?
