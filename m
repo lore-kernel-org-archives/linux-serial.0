@@ -1,93 +1,62 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 3/3] serial: sh-sci: Add calculation recive margin for HSCIF
-Date: Mon, 2 Nov 2015 14:56:13 +0100
-Message-ID: <CAMuHMdUmChU0G1RcDOtSbCwzRZ9LTcQfZwjiSKBKVGhiAqjn1w@mail.gmail.com>
-References: <1405321800-18114-1-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
-	<1405321800-18114-3-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH -next] serial: etraxfs-uart: Fix crash
+Date: Mon, 2 Nov 2015 06:29:36 -0800
+Message-ID: <56377350.7040005@roeck-us.net>
+References: <1446431576-4385-1-git-send-email-linux@roeck-us.net>
+ <20151102073755.GN4931@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1405321800-18114-3-git-send-email-nobuhiro.iwamatsu.yj@renesas.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-Cc: Linux-sh list <linux-sh@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Simon Horman <horms+renesas@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>
+Content-Type: text/plain; charset=windows-1252;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20151102073755.GN4931@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Niklas Cassel <nks@flawful.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Iwamatsu-san,
-
-On Mon, Jul 14, 2014 at 9:10 AM, Nobuhiro Iwamatsu
-<nobuhiro.iwamatsu.yj@renesas.com> wrote:
-> When the error of the same bit rate is detected, we will need to select
-> the recive margin is large. Current code holds the minimum error, it does
-> not have to check the recive margin. This adds this calculation.
+On 11/01/2015 11:37 PM, Uwe Kleine-K=F6nig wrote:
+> Hello,
 >
-> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
-
-I know this patch was applied a while ago.
-
-> ---
->  drivers/tty/serial/sh-sci.c | 77 ++++++++++++++++++++++++++++++++++-----------
->  1 file changed, 59 insertions(+), 18 deletions(-)
+> On Sun, Nov 01, 2015 at 06:32:56PM -0800, Guenter Roeck wrote:
+>> Since commit 7d8c70d8048c ("serial: mctrl-gpio: rename init function=
+"),
+>> crisv32 either do not build or crash as follows.
+>>
+>> Unable to handle kernel NULL pointer dereference
+>> Linux 4.3.0-rc7-next-20151101 #1 Sun Nov 1 11:41:28 PST 2015
+>> ...
+>> Call Trace: [<c0004a0e>] show_stack+0x0/0x9e
+>> [<c004c0c0>] printk+0x0/0x2c
+>> [<c00059d4>] show_registers+0x14a/0x1c2
+>> [<c004c0c0>] printk+0x0/0x2c
+>> [<c0004b52>] die_if_kernel+0x7c/0x9e
+>> [<c0005346>] do_page_fault+0x32e/0x3e6
+>> [<c01dc59c>] of_get_property+0x0/0x2c
+>> [<c01e0558>] of_irq_parse_raw+0x12a/0x376
+>> [<c01dc59c>] of_get_property+0x0/0x2c
+>> [<c0053aca>] get_page_from_freelist+0x73e/0x856
+>> [<c01dc59c>] of_get_property+0x0/0x2c
+>> [<c0008912>] d_mmu_refill+0x10a/0x112
+>> [<c01b488c>] devm_kmalloc+0x40/0x56
+>> [<c01b47d0>] add_dr+0xc/0x1c
+>> [<c01b4800>] devm_add_action+0x2/0x4e
+>> [<c01abdbc>] mctrl_gpio_init_noauto+0x1c/0x76
+>> [<c01abf9e>] mctrl_gpio_init+0x22/0x110
 >
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 7f571a8..d879c0c 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -1783,13 +1783,30 @@ static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
->         return ((freq + 16 * bps) / (32 * bps) - 1);
->  }
+> There should be a warning at compile time about mismatching parameter=
+s.
 >
-> +/* calculate frame length from SMR */
-> +static int sci_baud_calc_frame_len(unsigned int smr_val)
-> +{
-> +       int len = 10;
-> +
-> +       if (smr_val & SCSMR_CHR)
-> +               len--;
-> +       if (smr_val & SCSMR_PE)
-> +               len++;
-> +       if (smr_val & SCSMR_STOP)
-> +               len++;
-> +
-> +       return len;
-> +}
+>> The function call in the etraxfs-uart driver was not renamed,
+>> possibly due to interference with commit 7b9c5162c182 ("serial:
+>> etraxfs-uart: use mctrl_gpio helpers for handling modem signals").
+>
+> Yes. BTW, 7b9c5162c182 looks broken, too, because the interrupt handl=
+ing
+> is missing.
+>
 
-The above function isn't needed...
+I can not comment on that; all I can say is that it works for me with q=
+emu.
 
->  /* calculate sample rate, BRR, and clock select for HSCIF */
->  static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq,
->                                 int *brr, unsigned int *srr,
-> -                               unsigned int *cks)
-> +                               unsigned int *cks, int frame_len)
-
-... because the new "frame_len" parameter is unused...
-
-> @@ -1858,8 +1907,9 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
->         baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
->         if (likely(baud && port->uartclk)) {
->                 if (s->cfg->type == PORT_HSCIF) {
-> +                       int frame_len = sci_baud_calc_frame_len(smr_val);
-
-... hence calculating this isn't needed.
-
->                         sci_baud_calc_hscif(baud, port->uartclk, &t, &srr,
-> -                                           &cks);
-> +                                           &cks, frame_len);
->                 } else {
->                         t = sci_scbrr_calc(s, baud, port->uartclk);
->                         for (cks = 0; t >= 256 && cks <= 3; cks++)
-
-Is there some follow-up patch missing?
-
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Guenter
