@@ -1,62 +1,44 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH -next] serial: etraxfs-uart: Fix crash
-Date: Mon, 2 Nov 2015 06:29:36 -0800
-Message-ID: <56377350.7040005@roeck-us.net>
-References: <1446431576-4385-1-git-send-email-linux@roeck-us.net>
- <20151102073755.GN4931@pengutronix.de>
+From: Alexander Shi <alexandershi@nanometrics.ca>
+Subject: Unreliable register being read in max310x UART driver
+Date: Mon, 2 Nov 2015 10:30:18 -0500
+Message-ID: <CAESxSQs8f56+EsMtoJLJJGkfRfzGQ+RsCFs2AWP6yG9O0NqdMQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252;
-	format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151102073755.GN4931@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Niklas Cassel <nks@flawful.org>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: James Nuss <jamesnuss@nanometrics.ca>, shc_work@mail.ru
 List-Id: linux-serial@vger.kernel.org
 
-On 11/01/2015 11:37 PM, Uwe Kleine-K=F6nig wrote:
-> Hello,
->
-> On Sun, Nov 01, 2015 at 06:32:56PM -0800, Guenter Roeck wrote:
->> Since commit 7d8c70d8048c ("serial: mctrl-gpio: rename init function=
-"),
->> crisv32 either do not build or crash as follows.
->>
->> Unable to handle kernel NULL pointer dereference
->> Linux 4.3.0-rc7-next-20151101 #1 Sun Nov 1 11:41:28 PST 2015
->> ...
->> Call Trace: [<c0004a0e>] show_stack+0x0/0x9e
->> [<c004c0c0>] printk+0x0/0x2c
->> [<c00059d4>] show_registers+0x14a/0x1c2
->> [<c004c0c0>] printk+0x0/0x2c
->> [<c0004b52>] die_if_kernel+0x7c/0x9e
->> [<c0005346>] do_page_fault+0x32e/0x3e6
->> [<c01dc59c>] of_get_property+0x0/0x2c
->> [<c01e0558>] of_irq_parse_raw+0x12a/0x376
->> [<c01dc59c>] of_get_property+0x0/0x2c
->> [<c0053aca>] get_page_from_freelist+0x73e/0x856
->> [<c01dc59c>] of_get_property+0x0/0x2c
->> [<c0008912>] d_mmu_refill+0x10a/0x112
->> [<c01b488c>] devm_kmalloc+0x40/0x56
->> [<c01b47d0>] add_dr+0xc/0x1c
->> [<c01b4800>] devm_add_action+0x2/0x4e
->> [<c01abdbc>] mctrl_gpio_init_noauto+0x1c/0x76
->> [<c01abf9e>] mctrl_gpio_init+0x22/0x110
->
-> There should be a warning at compile time about mismatching parameter=
-s.
->
->> The function call in the etraxfs-uart driver was not renamed,
->> possibly due to interference with commit 7b9c5162c182 ("serial:
->> etraxfs-uart: use mctrl_gpio helpers for handling modem signals").
->
-> Yes. BTW, 7b9c5162c182 looks broken, too, because the interrupt handl=
-ing
-> is missing.
->
+Hello all,
 
-I can not comment on that; all I can say is that it works for me with q=
-emu.
 
-Guenter
+
+The datasheet for MAX3107 UART
+(http://datasheets.maximintegrated.com/en/ds/MAX3107.pdf) was updated
+in February 2015 with a notice that the RxFIFOLvl register may be
+inaccurate if read while being updated. The respective max310x.c
+driver actively makes use of the RxFIFOLvl register, but has not been
+updated since the notice was posted. Does anyone have a workaround to
+this bug?
+
+
+
+The notice was phrased as follows:
+
+=E2=80=9CThe RxFIFOLvl register represents the current number of words =
+in the
+receive FIFO whenever the receive UART is idle. When the receive UART
+actively receives characters, the value in this register can sometimes
+be inaccurate if this register is read at the same time that the
+receive UART updates the receive FIFO. To manage the receive FIFO even
+when the receive UART is active, do not use this register to determine
+receive FIFO state. Use the RFIFOEmptyInt bit, the RxTrgInt bit, and
+the RTimeOut bit instead.=E2=80=9D
+
+
+
+Thanks,
+
+Alex
