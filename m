@@ -1,42 +1,65 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFVucmVsaWFibGUgcmVnaXN0ZXIgYmVpbmcgcmVhZCBpbiBtYXgzMTB4?=
- =?UTF-8?B?IFVBUlQgZHJpdmVy?=
-Date: Tue, 03 Nov 2015 10:27:23 +0300
-Message-ID: <1446535643.874287476@f26.i.mail.ru>
-References: <CAESxSQttZTWe8byjD+0u34=NtsnFysWfLBTmyTKGCBmpHQPaTA@mail.gmail.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
+Subject: Re: implement put_char() in cdc-acm
+Date: Tue, 3 Nov 2015 11:13:15 +0100
+Message-ID: <563888BB.2080601@svenbrauch.de>
+References: <1445958479.2043.6.camel@suse.com>
+ <562F9C08.6050105@svenbrauch.de> <1446030280.15140.10.camel@suse.com>
+ <5630BE5E.6040204@hurleysoftware.com> <1446035622.15140.17.camel@suse.com>
+ <563667D9.9080401@svenbrauch.de> <1446463972.25345.24.camel@suse.com>
+ <5637C731.20409@svenbrauch.de> <1446541094.27681.2.camel@suse.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAESxSQttZTWe8byjD+0u34=NtsnFysWfLBTmyTKGCBmpHQPaTA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?B?QWxleGFuZGVyIFNoaQ==?= <alexandershi@nanometrics.ca>
-Cc: =?UTF-8?B?SmFtZXMgTnVzcw==?= <jamesnuss@nanometrics.ca>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="ulIrq8wQWKiHQ15SaHCBcBfasS6sgj37V"
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1446541094.27681.2.camel-IBi9RG/b67k@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
+Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-SGVsbG8uCgo+INCf0L7QvdC10LTQtdC70YzQvdC40LosICAyINC90L7Rj9Cx0YDRjyAyMDE1LCAx
-MDoyNCAtMDU6MDAg0L7RgiBBbGV4YW5kZXIgU2hpIDxhbGV4YW5kZXJzaGlAbmFub21ldHJpY3Mu
-Y2E+Ogo+IAo+IEhlbGxvIGFsbCwKPiDCoAo+IFRoZSBkYXRhc2hlZXQgZm9yIE1BWDMxMDcgVUFS
-VCAoIGh0dHA6Ly9kYXRhc2hlZXRzLm1heGltaW50ZWdyYXRlZC5jb20vZW4vZHMvTUFYMzEwNy5w
-ZGYgKSB3YXMgdXBkYXRlZCBpbiBGZWJydWFyeSAyMDE1IHdpdGggYSBub3RpY2UgdGhhdCB0aGUg
-UnhGSUZPTHZsIHJlZ2lzdGVyIG1heSBiZSBpbmFjY3VyYXRlIGlmIHJlYWQgd2hpbGUgYmVpbmcg
-dXBkYXRlZC4gVGhlIHJlc3BlY3RpdmUgbWF4MzEweC5jIGRyaXZlciBpbiB0aGUga2VybmVsIGFj
-dGl2ZWx5IG1ha2VzIHVzZSBvZiB0aGUgUnhGSUZPTHZsIHJlZ2lzdGVyLCBidXQgaGFzIG5vdCBi
-ZWVuIHVwZGF0ZWQgc2luY2UgdGhlIG5vdGljZSB3YXMgcG9zdGVkLiBEb2VzIGFueW9uZSBoYXZl
-IGEgd29ya2Fyb3VuZCB0byB0aGlzIGJ1Zz8KPiDCoAo+IFRoZSBub3RpY2Ugd2FzIHBocmFzZWQg
-YXMgZm9sbG93czoKPiDigJxUaGUgUnhGSUZPTHZsIHJlZ2lzdGVyIHJlcHJlc2VudHMgdGhlIGN1
-cnJlbnQgbnVtYmVyIG9mIHdvcmRzIGluIHRoZSByZWNlaXZlIEZJRk8gd2hlbmV2ZXIgdGhlIHJl
-Y2VpdmUgVUFSVCBpcyBpZGxlLiBXaGVuIHRoZSByZWNlaXZlIFVBUlQgYWN0aXZlbHkgcmVjZWl2
-ZXMgY2hhcmFjdGVycywgdGhlIHZhbHVlIGluIHRoaXMgcmVnaXN0ZXIgY2FuIHNvbWV0aW1lcyBi
-ZSBpbmFjY3VyYXRlIGlmIHRoaXMgcmVnaXN0ZXIgaXMgcmVhZCBhdCB0aGUgc2FtZSB0aW1lIHRo
-YXQgdGhlIHJlY2VpdmUgVUFSVCB1cGRhdGVzIHRoZSByZWNlaXZlIEZJRk8uIFRvIG1hbmFnZSB0
-aGUgcmVjZWl2ZSBGSUZPIGV2ZW4gd2hlbiB0aGUgcmVjZWl2ZSBVQVJUIGlzIGFjdGl2ZSwgZG8g
-bm90IHVzZSB0aGlzIHJlZ2lzdGVyIHRvIGRldGVybWluZSByZWNlaXZlIEZJRk8gc3RhdGUuIFVz
-ZSB0aGUgUkZJRk9FbXB0eUludCBiaXQsIHRoZSBSeFRyZ0ludCBiaXQsIGFuZCB0aGUgUlRpbWVP
-dXQgYml0IGluc3RlYWQu4oCdCj4gwqAKPiBUaGFua3MsCj4gQWxleAoKT24gbXkgb3BpbmlvbiB0
-aGlzIHNob3VsZCBub3QgYmUgYSBwcm9ibGVtLgpUaGUgUlggaW50ZXJydXB0IHdpbGwgYmUgdHJp
-Z2dlcmVkIG9uY2UgYWdhaW4gaWYgd2UgbG9zdCBSWCBsZXZlbCB2YWx1ZS4KQW55d2F5LCB5b3Ug
-Y2FuIGFkZCBvbmUgY2hlY2sgYWZ0ZXIgcmVhZGluZyByeGZpZm9sdmwgcmVnaXN0ZXI6CiAgaWYg
-KCEoaXN0cyAmIE1BWDMxMFhfSVJRX1JYRU1QVFlfQklUKSkKICAgIHJ4bGVuID0gMTsKClRoYW5r
-cy4KLS0tCgo=
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ulIrq8wQWKiHQ15SaHCBcBfasS6sgj37V
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+On 03/11/15 09:58, Oliver Neukum wrote:
+> Basically
+> your device is special by doing implied flow control
+> when the host stops requesting data.
+Hmm, ok, interesting. But isn't that what always happens for USB bulk
+transfers, which is always the transport layer for the driver in question=
+?
+
+Regards,
+Sven
+
+
+--ulIrq8wQWKiHQ15SaHCBcBfasS6sgj37V
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBCAAGBQJWOIi7AAoJEGjKjjjEuz9LGNAP/AmLgLYO9uUG2zEHn11I9Abw
++H2BWmuHKt7XQf6YmvYOdnXK5miPULlCCBSWOeXgRfvl08wf4jbdJx2wZh5yxTPt
+lfElg4ajJlI6uY7S1rJ3OLoqP3vuCVYyuHmC2pD7GszgYN2h67YKwf3z10YJiNSD
+N2HL9M8jtHkjpmhgzWFA3ObK+oQZegIgGizNxLH2YenojQAD3SxlgnCGSV28MCfK
+atXgPQN4PZ7QNfPmOKVllNjD15WoUd+zZP2viHPmkhpRekeVnZBCALPcUGF+Xwso
+DBIGGQvgCLPzckLRHYxiJjpVnB8GET5iC60qGJW8RUxj5GF4uTysRB+/QSl0WREW
+Sj10avtPBZU1HA8CTNZIeJNXB2h0aOXToKgeiLlCpHtS/cv8K4JIbhWL3oJcQEeg
+0zmaVLNRJf2mAqJ9+Ba3jAqiLmayGjsUJbM+g+Y6lj83w3d0Ssso6jzdATjfJ9Ui
+yccAKQwuOq+Yl7MvGv3qvNejPSC9ZjzN9NJrUaogoci2nXmjFG7DxSeStCEAVHaV
+azS/hC7jsACeCe5ygTeYTUw7yHo4dItLsIU895tVtUws49Q47/b+5lIUiU1eorcg
+9wg4+3B3Oqw/AeFIGGroJnRj+NGN8OnwMAJHQoQWE13xmfP6fGhadtOHJkQrUFoq
+G6iqF0qPaKbzg59TVnkh
+=w5zP
+-----END PGP SIGNATURE-----
+
+--ulIrq8wQWKiHQ15SaHCBcBfasS6sgj37V--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
