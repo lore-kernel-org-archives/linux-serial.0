@@ -1,17 +1,15 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 10/11] tty: amba-pl011: add support for 32-bit register
- access
-Date: Tue, 3 Nov 2015 16:19:39 +0000
-Message-ID: <20151103161939.GB8644@n2100.arm.linux.org.uk>
-References: <20151103134349.GV8644@n2100.arm.linux.org.uk>
- <E1Ztcw4-0007Ct-PP@rmk-PC.arm.linux.org.uk>
- <5638CB41.1000807@codeaurora.org>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [PATCH 2/2] serial: amba-pl011: abstract register accessors
+Date: Tue, 3 Nov 2015 10:43:24 -0600
+Message-ID: <5638E42C.3050108@codeaurora.org>
+References: <1446562867-5693-1-git-send-email-timur@codeaurora.org>
+ <1446562867-5693-2-git-send-email-timur@codeaurora.org>
+ <20151103161206.GA8644@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <5638CB41.1000807@codeaurora.org>
+In-Reply-To: <20151103161206.GA8644@n2100.arm.linux.org.uk>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,36 +19,58 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Timur Tabi <timur@codeaurora.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: peter@hurleysoftware.com, andre.przywara@arm.com, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, linux-serial@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>, jslaby@suse.com, jun.nie@linaro.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Nov 03, 2015 at 08:57:05AM -0600, Timur Tabi wrote:
-> Russell King wrote:
-> >-	return readw(uap->port.membase + pl011_reg_to_offset(uap, reg));
-> >+	void __iomem *addr = uap->port.membase + pl011_reg_to_offset(uap, reg);
-> >+
-> >+	return uap->access_32b ? readl(addr) : readw(addr);
-> 
-> Ok, ignore my previous email.  I just noticed this.
-> 
-> This version is fine, except that it now performs a runtime check for every
-> I/O access.  Isn't that too much overhead?  access_32b will always be either
-> True or False for the life of the entire SOC.
+Russell King - ARM Linux wrote:
+> Thanks for pointing that out... that's a mistake in my patches.  It's
+> very difficult to see how we could ever support earlyconsole on ZTE
+> without massively overhauling the earlycon stuff.  I'll undo the
+> changes there in my series.
 
-It's a balance between a few more branches and killing six registers
-(r0 - r3, ip, lr) on every register access due to a function call.
-If GCC was a reasonable compiler, it could be done without incuring
-any branches, merely by using conditional instructions, but GCC on
-ARM really sucks - it wants to reload the base address, offset and
-access_32b flag on every device access despite the struct being
-marked const.  You'll get the same with your approach when adding
-the register offsets, but it'll be worse - the compiler will have to
-also reload the function pointer as well on every access.
+How about a command-line option for earlycon?  We do this on our kernel 
+for now:
 
-So, my gut feeling is that my approach is better than the function
-pointer call, especially with modern CPUs with branch prediction.
+earlycon=pl011,0x3blabla,sbsa32
+
+And then in pl011_early_console_setup(), device->con->write is set to 
+either pl011_early_write or to pl011_early_write_sbsa32, which looks 
+like this:
+
+static void pl011_putc_sbsa32(struct uart_port *port, int c)
+{
+         while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
+                 cpu_relax();
+         writel(c, port->membase + UART01x_DR);
+         while (!(readl(port->membase + UART01x_FR) & UART011_FR_TXFE))
+                 cpu_relax();
+}
+
+
+static void pl011_early_write_sbsa32(struct console *con, const char *s, 
+unsigned n)
+{
+         struct earlycon_device *dev = con->data;
+
+         uart_console_write(&dev->port, s, n, pl011_putc_sbsa32);
+}
+
+I would have added this to my patch, but I specifically didn't want to 
+add any new functionality.
+
+> Now, as for this patch...
+>
+>> >  	unsigned int (*get_fifosize)(struct amba_device *dev);
+>> >+	u16 (*regreadw)(const void __iomem *addr);
+>> >+	void (*regwritew)(u16 val, void __iomem *addr);
+>> >+	void (*regwriteb)(u8 val, void __iomem *addr);
+> regwriteb() is used nowhere in this patch.
+
+Sorry, I could have sworn I deleted that.  Should I bother posting a 
+version 2, since your patch is better?
 
 -- 
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+Sent by an employee of the Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the
+Code Aurora Forum, hosted by The Linux Foundation.
