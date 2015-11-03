@@ -1,41 +1,37 @@
-From: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
-Subject: Re: implement put_char() in cdc-acm
-Date: Tue, 03 Nov 2015 11:19:43 +0100
-Message-ID: <1446545983.27681.17.camel@suse.com>
-References: <1445958479.2043.6.camel@suse.com>
-	 <562F9C08.6050105@svenbrauch.de> <1446030280.15140.10.camel@suse.com>
-	 <5630BE5E.6040204@hurleysoftware.com> <1446035622.15140.17.camel@suse.com>
-	 <563667D9.9080401@svenbrauch.de> <1446463972.25345.24.camel@suse.com>
-	 <5637C731.20409@svenbrauch.de> <1446541094.27681.2.camel@suse.com>
-	 <563888BB.2080601@svenbrauch.de>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH DRAFT 0/2] Sketch for ZTE ZX296702 UART integration
+Date: Tue, 3 Nov 2015 13:43:49 +0000
+Message-ID: <20151103134349.GV8644@n2100.arm.linux.org.uk>
+References: <1446467042-24494-1-git-send-email-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <563888BB.2080601-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
-Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1446467042-24494-1-git-send-email-andre.przywara@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Andrew.Jackson@arm.com, Timur Tabi <timur@tabi.org>, linux-serial@vger.kernel.org, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2015-11-03 at 11:13 +0100, Sven Brauch wrote:
-> On 03/11/15 09:58, Oliver Neukum wrote:
-> > Basically
-> > your device is special by doing implied flow control
-> > when the host stops requesting data.
-> Hmm, ok, interesting. But isn't that what always happens for USB bulk
-> transfers, which is always the transport layer for the driver in question?
+NAK for both patches.
 
-Usual communications devices have a channel, like a phone line, on
-the other side, through which data keeps coming. You cannot just
-stop transferring from the device to the host and hope to preserve
-all data.
+I'm not happy with these patches since they totally ignore all the
+comments I made during the last rounds of trying to add this.  That
+disgusts me.
 
-	Regards
-		Oliver
+So, I'm working on a replacement set of patches which does this the
+right way, and I'll post them later today or early tomorrow, depending
+on when I get them tested on the Versatile / Juno platforms.
 
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
