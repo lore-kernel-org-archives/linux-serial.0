@@ -1,11 +1,16 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: [PATCH 1/2] serial: amba-pl011: use cpu_relax when polling registers
-Date: Tue,  3 Nov 2015 09:01:06 -0600
-Message-ID: <1446562867-5693-1-git-send-email-timur@codeaurora.org>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH 01/11] tty: amba-pl011: add register accessor functions
+Date: Tue, 3 Nov 2015 15:18:58 +0000
+Message-ID: <20151103151858.GZ8644@n2100.arm.linux.org.uk>
+References: <20151103134349.GV8644@n2100.arm.linux.org.uk>
+ <E1ZtcvK-0007Bt-91@rmk-PC.arm.linux.org.uk>
+ <5638CA7D.8000404@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <5638CA7D.8000404@codeaurora.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -15,72 +20,49 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Andrew.Jackson@arm.com, andre.przywara@arm.com, jun.nie@linaro.org, peter@hurleysoftware.com, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <greg@kroah.com>, jslaby@suse.com
+To: Timur Tabi <timur@codeaurora.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Busy loops that poll on a register should call cpu_relax().  On some
-architectures, it can lower CPU power consumption or yield to a
-hyperthreaded twin processor.  It also serves as a compiler barrier,
-so it can replace barrier() calls.
+On Tue, Nov 03, 2015 at 08:53:49AM -0600, Timur Tabi wrote:
+> Russell King wrote:
+> >+static unsigned int pl011_read(void __iomem *base, unsigned int reg)
+> >+{
+> >+	return readw(base + reg);
+> >+}
+> >+
+> >+static void pl011_write(unsigned int val, void __iomem *base, unsigned int reg)
+> >+{
+> >+	writew(val, base + reg);
+> >+}
+> 
+> This has the same problem as the original, in that it doesn't support the
+> SBSA subtype 13.
+> 
+> I'll post my version soon that addresses this.  Maybe you can consider it as
+> a replacement for your patch 1/11.
 
-Signed-off-by: Timur Tabi <timur@codeaurora.org>
----
- drivers/tty/serial/amba-pl011.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+(I know you've already replied saying to ignore this, but I'm going to
+reply to this anyway.)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 005de8c..164bd65 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1076,7 +1076,7 @@ static void pl011_dma_shutdown(struct uart_amba_port *uap)
- 
- 	/* Disable RX and TX DMA */
- 	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_BUSY)
--		barrier();
-+		cpu_relax();
- 
- 	spin_lock_irq(&uap->port.lock);
- 	uap->dmacr &= ~(UART011_DMAONERR | UART011_RXDMAE | UART011_TXDMAE);
-@@ -1520,7 +1520,7 @@ static void pl011_put_poll_char(struct uart_port *port,
- 	    container_of(port, struct uart_amba_port, port);
- 
- 	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF)
--		barrier();
-+		cpu_relax();
- 
- 	writew(ch, uap->port.membase + UART01x_DR);
- }
-@@ -2053,7 +2053,7 @@ static void pl011_console_putchar(struct uart_port *port, int ch)
- 	    container_of(port, struct uart_amba_port, port);
- 
- 	while (readw(uap->port.membase + UART01x_FR) & UART01x_FR_TXFF)
--		barrier();
-+		cpu_relax();
- 	writew(ch, uap->port.membase + UART01x_DR);
- }
- 
-@@ -2093,6 +2093,7 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
- 	 */
- 	do {
- 		status = readw(uap->port.membase + UART01x_FR);
-+		cpu_relax();
- 	} while (status & UART01x_FR_BUSY);
- 	if (!uap->vendor->always_enabled)
- 		writew(old_cr, uap->port.membase + UART011_CR);
-@@ -2205,10 +2206,10 @@ static struct console amba_console = {
- static void pl011_putc(struct uart_port *port, int c)
- {
- 	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
--		barrier();
-+		cpu_relax();
- 	writel(c, port->membase + UART01x_DR);
- 	while (!(readl(port->membase + UART01x_FR) & UART011_FR_TXFE))
--		barrier();
-+		cpu_relax();
- }
- 
- static void pl011_early_write(struct console *con, const char *s, unsigned n)
+This is one step in a series of single transformations to the code,
+where this one merely replaces readw()/writew() with a local accessor
+function.  Adding other changes into this patch would mean that it's
+no longer a single transformation.
+
+This "single transformation" theme applies across every patch in this
+series, and IMHO shows how the addition of ZTE should have been done
+in the first place: a series of single transformations, each one being
+fairly obvious and easy to review.
+
+Yes, it produces a bigger patch set, but it means that if there's a
+problem with one of the transformations, the whole work doesn't need
+to be reverted.  Eg, you'll notice that the more "dodgy" changes (such
+as removing register offset entries) are done towards the end of the
+series meaning that if there's a problem removing those, either a
+single patch can be reverted, or the series can be reverted back to
+that point and the benefit of the previous patches isn't lost.
+
 -- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project.
+FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
