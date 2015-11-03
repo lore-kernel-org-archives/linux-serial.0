@@ -1,8 +1,7 @@
 From: Russell King <rmk+kernel@arm.linux.org.uk>
-Subject: [PATCH 09/11] tty: amba-pl011: remove ST micro registers from
- standard table
-Date: Tue, 03 Nov 2015 14:51:39 +0000
-Message-ID: <E1Ztcvz-0007Cn-LO@rmk-PC.arm.linux.org.uk>
+Subject: [PATCH 10/11] tty: amba-pl011: add support for 32-bit register access
+Date: Tue, 03 Nov 2015 14:51:44 +0000
+Message-ID: <E1Ztcw4-0007Ct-PP@rmk-PC.arm.linux.org.uk>
 References: <20151103134349.GV8644@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,42 +22,73 @@ To: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc: Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, Timur Tabi <timur@tabi.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Remove the ST micro registers from the standard table.  These registers
-should never be accessed in non-ST micro variants.
+Add support for 32-bit register accesses to the AMBA PL011 UART.  This
+is needed for ZTE UARTs, which require 32-bit accesses as opposed to
+the more normal 16-bit accesses.
 
 Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
 ---
- drivers/tty/serial/amba-pl011.c | 11 -----------
- 1 file changed, 11 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 85c455c60e12..4cb282a377c0 100644
+index 4cb282a377c0..8f5f82039346 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -75,8 +75,6 @@
+@@ -93,6 +93,7 @@ static u16 pl011_std_offsets[REG_ARRAY_SIZE] = {
+ struct vendor_data {
+ 	const u16		*reg_offset;
+ 	unsigned int		ifls;
++	bool			access_32b;
+ 	bool			oversampling;
+ 	bool			dma_threshold;
+ 	bool			cts_event_workaround;
+@@ -214,6 +215,7 @@ struct uart_amba_port {
+ 	unsigned int		fifosize;	/* vendor-specific */
+ 	unsigned int		old_cr;		/* state during shutdown */
+ 	bool			autorts;
++	bool			access_32b;
+ 	unsigned int		fixed_baud;	/* vendor-set fixed baud rate */
+ 	char			type[12];
+ #ifdef CONFIG_DMA_ENGINE
+@@ -235,13 +237,20 @@ static unsigned int pl011_reg_to_offset(const struct uart_amba_port *uap,
+ static unsigned int pl011_read(const struct uart_amba_port *uap,
+ 	unsigned int reg)
+ {
+-	return readw(uap->port.membase + pl011_reg_to_offset(uap, reg));
++	void __iomem *addr = uap->port.membase + pl011_reg_to_offset(uap, reg);
++
++	return uap->access_32b ? readl(addr) : readw(addr);
+ }
  
- static u16 pl011_std_offsets[REG_ARRAY_SIZE] = {
- 	[REG_DR] = UART01x_DR,
--	[REG_ST_DMAWM] = ST_UART011_DMAWM,
--	[REG_ST_TIMEOUT] = ST_UART011_TIMEOUT,
- 	[REG_FR] = UART01x_FR,
- 	[REG_LCRH_RX] = UART011_LCRH,
- 	[REG_LCRH_TX] = UART011_LCRH,
-@@ -89,15 +87,6 @@ static u16 pl011_std_offsets[REG_ARRAY_SIZE] = {
- 	[REG_MIS] = UART011_MIS,
- 	[REG_ICR] = UART011_ICR,
- 	[REG_DMACR] = UART011_DMACR,
--	[REG_ST_XFCR] = ST_UART011_XFCR,
--	[REG_ST_XON1] = ST_UART011_XON1,
--	[REG_ST_XON2] = ST_UART011_XON2,
--	[REG_ST_XOFF1] = ST_UART011_XOFF1,
--	[REG_ST_XOFF2] = ST_UART011_XOFF2,
--	[REG_ST_ITCR] = ST_UART011_ITCR,
--	[REG_ST_ITIP] = ST_UART011_ITIP,
--	[REG_ST_ABCR] = ST_UART011_ABCR,
--	[REG_ST_ABIMSC] = ST_UART011_ABIMSC,
- };
+ static void pl011_write(unsigned int val, const struct uart_amba_port *uap,
+ 	unsigned int reg)
+ {
+-	writew(val, uap->port.membase + pl011_reg_to_offset(uap, reg));
++	void __iomem *addr = uap->port.membase + pl011_reg_to_offset(uap, reg);
++
++	if (uap->access_32b)
++		writel(val, addr);
++	else
++		writew(val, addr);
+ }
  
- /* There is by now at least one vendor with differing details, so handle it */
+ /*
+@@ -2438,6 +2447,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 		return PTR_ERR(uap->clk);
+ 
+ 	uap->reg_offset = vendor->reg_offset;
++	uap->access_32b = vendor->access_32b;
+ 	uap->vendor = vendor;
+ 	uap->fifosize = vendor->get_fifosize(dev);
+ 	uap->port.irq = dev->irq[0];
+@@ -2518,6 +2528,7 @@ static int sbsa_uart_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	uap->reg_offset	= vendor_sbsa.reg_offset;
++	uap->access_32b = vendor_sbsa.access_32b;
+ 	uap->vendor	= &vendor_sbsa;
+ 	uap->fifosize	= 32;
+ 	uap->port.irq	= platform_get_irq(pdev, 0);
 -- 
 2.1.0
