@@ -1,69 +1,46 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH -next] serial: etraxfs-uart: Fix crash
-Date: Mon, 2 Nov 2015 22:29:33 +0100
-Message-ID: <20151102212933.GB4931@pengutronix.de>
-References: <1446431576-4385-1-git-send-email-linux@roeck-us.net>
- <20151102073755.GN4931@pengutronix.de>
- <5637D1F5.2090608@flawful.org>
+From: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
+Subject: Re: implement put_char() in cdc-acm
+Date: Tue, 03 Nov 2015 09:58:14 +0100
+Message-ID: <1446541094.27681.2.camel@suse.com>
+References: <1445958479.2043.6.camel@suse.com>
+	 <562F9C08.6050105@svenbrauch.de> <1446030280.15140.10.camel@suse.com>
+	 <5630BE5E.6040204@hurleysoftware.com> <1446035622.15140.17.camel@suse.com>
+	 <563667D9.9080401@svenbrauch.de> <1446463972.25345.24.camel@suse.com>
+	 <5637C731.20409@svenbrauch.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5637D1F5.2090608@flawful.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Niklas Cassel <nks@flawful.org>
-Cc: Guenter Roeck <linux@roeck-us.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5637C731.20409-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sven Brauch <mail-ITmcY+a7/CDoK6nBLMlh1Q@public.gmane.org>
+Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Helo Niklas,
+On Mon, 2015-11-02 at 21:27 +0100, Sven Brauch wrote:
+> On 02/11/15 12:32, Oliver Neukum wrote:
+> > given this test I will submit the patch.
+> Mind you, I don't know if the improvement is due to your patch or other
+> things. I didn't test the new kernel without your patch; should I?
 
-On Mon, Nov 02, 2015 at 10:13:25PM +0100, Niklas Cassel wrote:
-> On 11/02/2015 08:37 AM, Uwe Kleine-K=F6nig wrote:
-> >> The function call in the etraxfs-uart driver was not renamed,
-> >> possibly due to interference with commit 7b9c5162c182 ("serial:
-> >> etraxfs-uart: use mctrl_gpio helpers for handling modem signals").
-> > Yes. BTW, 7b9c5162c182 looks broken, too, because the interrupt han=
-dling
-> > is missing.
->=20
-> The only drivers including serial_mctrl_gpio.h is atmel_serial.c,
-> clps711x.c, mxs-auart.c and etraxfs-uart.c
->=20
-> etraxfs commit
-> 7b9c5162c182 ("serial: etraxfs-uart: use mctrl_gpio helpers for handl=
-ing modem signals")
-> is heavily influenced by
-> 62b0a1b3e759 ("serial: clps711x: Use mctrl_gpio helpers for handling =
-modem signals")
->=20
-> a driver which also appears to lack mctrl irq setup/handling.
->=20
->=20
-> Uwe, are you going to convert all serial drivers that includes serial=
-_mctrl_gpio.h to
-> use the new mctrl_gpio_init? (which also sets up irqs)
-That is the plan. For drivers like mxs-auart (that do irq handling) thi=
-s
-is just simplification. When the irq handling is missing converting to
-the new mctrl_gpio_init might introduce regressions because it does
-request_irq which might fail.
+If you find the time. But testing with enlarged buffers is
+more important.
 
-> Since mctrl gpios are optional in the device tree, I guess mctrl_gpio=
-_init handles if
-> they are missing. So even if etraxfs-uart.c currently lacks mctrl irq=
- setup/handling,
-> if we migrate it to use the new mctrl_gpio_init, we will get this aut=
-omatically?
-Right, if there are no gpios specified (new and old) mctrl_gpio is a
-nop.
+> > Sven, can you ramp up the buffers in the manner Peter suggested
+> > and retest? It looks like the throttling code isn't perfect yet,
+> > but a larger buffer may make its performance good enough.
+> I'll try as soon as possible, but I'm sceptical. That still doesn't
+> guarantee that no data is lost, which feels bad to me.
 
-Best regards
-Uwe
+That cannot be guaranteed on a remote line. Basically
+your device is special by doing implied flow control
+when the host stops requesting data.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
+	Regards
+		Oliver
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
