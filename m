@@ -1,7 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH 9/9] tty: xuartps: Only handle RX IRQs when RX is enabled
-Date: Tue, 3 Nov 2015 16:20:50 -0800
-Message-ID: <1446596450-20918-10-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH 3/9] tty: xuartps: Always enable transmitter in start_tx
+Date: Tue, 3 Nov 2015 16:20:44 -0800
+Message-ID: <1446596450-20918-4-git-send-email-soren.brinkmann@xilinx.com>
 References: <1446596450-20918-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,100 +12,37 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-Ignore RX-related interrupts if RX is not enabled.
+start_tx must start transmitting characters. Regardless of the state of
+the circular buffer, always enable the transmitter hardware.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/tty/serial/xilinx_uartps.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 149868cc003c..76a060a68934 100644
+index dc1987f3dc0a..5edd1efca015 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -161,6 +161,7 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
-  * @pclk:		APB clock
-  * @baud:		Current baud rate
-  * @clk_rate_change_nb:	Notifier block for clock changes
-+ * @flags:		Driver flags
-  */
- struct cdns_uart {
- 	struct uart_port	*port;
-@@ -168,7 +169,11 @@ struct cdns_uart {
- 	struct clk		*pclk;
- 	unsigned int		baud;
- 	struct notifier_block	clk_rate_change_nb;
-+	u32			flags;
- };
-+
-+#define CDNS_FLAG_RX_ENABLED	BIT(0)
-+
- #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
- 		clk_rate_change_nb);
- 
-@@ -262,6 +267,7 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
- static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+@@ -512,9 +512,6 @@ static void cdns_uart_start_tx(struct uart_port *port)
  {
- 	struct uart_port *port = (struct uart_port *)dev_id;
-+	struct cdns_uart *cdns_uart = port->private_data;
- 	unsigned long flags;
- 	unsigned int isrstatus, numbytes;
+ 	unsigned int status, numbytes = port->fifosize;
  
-@@ -272,7 +278,8 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
- 	 */
- 	isrstatus = readl(port->membase + CDNS_UART_ISR_OFFSET);
- 
--	cdns_uart_handle_rx(port, isrstatus);
-+	if (cdns_uart->flags & CDNS_FLAG_RX_ENABLED)
-+		cdns_uart_handle_rx(port, isrstatus);
- 
- 	/* Dispatch an appropriate handler */
- 	if ((isrstatus & CDNS_UART_IXR_TXEMPTY) == CDNS_UART_IXR_TXEMPTY) {
-@@ -576,11 +583,13 @@ static void cdns_uart_stop_tx(struct uart_port *port)
- static void cdns_uart_stop_rx(struct uart_port *port)
- {
- 	unsigned int regval;
-+	struct cdns_uart *cdns_uart = port->private_data;
- 
- 	regval = readl(port->membase + CDNS_UART_CR_OFFSET);
- 	regval |= CDNS_UART_CR_RX_DIS;
- 	/* Disable the receiver */
- 	writel(regval, port->membase + CDNS_UART_CR_OFFSET);
-+	cdns_uart->flags &= ~CDNS_FLAG_RX_ENABLED;
- }
- 
- /**
-@@ -761,6 +770,7 @@ static int cdns_uart_startup(struct uart_port *port)
- {
- 	unsigned long flags;
- 	unsigned int retval = 0, status = 0;
-+	struct cdns_uart *cdns_uart = port->private_data;
- 
- 	retval = request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME,
- 								(void *)port);
-@@ -787,6 +797,7 @@ static int cdns_uart_startup(struct uart_port *port)
- 	status &= CDNS_UART_CR_RX_DIS;
- 	status |= CDNS_UART_CR_RX_EN;
+-	if (uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port))
+-		return;
+-
+ 	/*
+ 	 * Set the TX enable bit and clear the TX disable bit to enable the
+ 	 * transmitter.
+@@ -524,6 +521,9 @@ static void cdns_uart_start_tx(struct uart_port *port)
+ 	status |= CDNS_UART_CR_TX_EN;
  	writel(status, port->membase + CDNS_UART_CR_OFFSET);
-+	cdns_uart->flags |= CDNS_FLAG_RX_ENABLED;
  
- 	/* Set the Mode Register with normal mode,8 data bits,1 stop bit,
- 	 * no parity.
-@@ -830,6 +841,7 @@ static void cdns_uart_shutdown(struct uart_port *port)
- {
- 	int status;
- 	unsigned long flags;
-+	struct cdns_uart *cdns_uart = port->private_data;
- 
- 	spin_lock_irqsave(&port->lock, flags);
- 
-@@ -841,6 +853,7 @@ static void cdns_uart_shutdown(struct uart_port *port)
- 	/* Disable the TX and RX */
- 	writel(CDNS_UART_CR_TX_DIS | CDNS_UART_CR_RX_DIS,
- 			port->membase + CDNS_UART_CR_OFFSET);
-+	cdns_uart->flags &= ~CDNS_FLAG_RX_ENABLED;
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
++	if (uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port))
++		return;
++
+ 	while (numbytes-- && ((readl(port->membase + CDNS_UART_SR_OFFSET) &
+ 				CDNS_UART_SR_TXFULL)) != CDNS_UART_SR_TXFULL) {
+ 		/* Break if no more data available in the UART buffer */
 -- 
 2.6.2.3.ga463a5b
