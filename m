@@ -1,58 +1,58 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH 7/9] tty: xuartps: Acquire port lock for shutdown
-Date: Tue, 3 Nov 2015 16:20:48 -0800
-Message-ID: <1446596450-20918-8-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH 1/9] tty: xuartps: Beautify read-modify writes
+Date: Tue, 3 Nov 2015 16:20:42 -0800
+Message-ID: <1446596450-20918-2-git-send-email-soren.brinkmann@xilinx.com>
 References: <1446596450-20918-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1446596450-20918-1-git-send-email-soren.brinkmann@xilinx.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-Shutting down the UART port can happen while console operations are in
-progress. Holding the port lock serializes these operations and avoids
-the UART HW to be disabled in the middle of console prints.
+Non-functional, formatting changes to ease reading the code.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/tty/serial/xilinx_uartps.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 544ea13e2e93..4904eec37621 100644
+index 009e0dbc12d2..50d4082d2354 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -823,6 +823,9 @@ static int cdns_uart_startup(struct uart_port *port)
- static void cdns_uart_shutdown(struct uart_port *port)
- {
- 	int status;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
+@@ -515,12 +515,14 @@ static void cdns_uart_start_tx(struct uart_port *port)
+ 	if (uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port))
+ 		return;
  
- 	/* Disable interrupts */
- 	status = readl(port->membase + CDNS_UART_IMR_OFFSET);
-@@ -832,6 +835,9 @@ static void cdns_uart_shutdown(struct uart_port *port)
- 	/* Disable the TX and RX */
- 	writel(CDNS_UART_CR_TX_DIS | CDNS_UART_CR_RX_DIS,
- 			port->membase + CDNS_UART_CR_OFFSET);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
- 	free_irq(port->irq, port);
- }
+-	status = readl(port->membase + CDNS_UART_CR_OFFSET);
+-	/* Set the TX enable bit and clear the TX disable bit to enable the
++	/*
++	 * Set the TX enable bit and clear the TX disable bit to enable the
+ 	 * transmitter.
+ 	 */
+-	writel((status & ~CDNS_UART_CR_TX_DIS) | CDNS_UART_CR_TX_EN,
+-			port->membase + CDNS_UART_CR_OFFSET);
++	status = readl(port->membase + CDNS_UART_CR_OFFSET);
++	status &= ~CDNS_UART_CR_TX_DIS;
++	status |= CDNS_UART_CR_TX_EN;
++	writel(status, port->membase + CDNS_UART_CR_OFFSET);
  
+ 	while (numbytes-- && ((readl(port->membase + CDNS_UART_SR_OFFSET) &
+ 				CDNS_UART_SR_TXFULL)) != CDNS_UART_SR_TXFULL) {
+@@ -1123,8 +1125,9 @@ static void cdns_uart_console_write(struct console *co, const char *s,
+ 	 * clear the TX disable bit to enable the transmitter.
+ 	 */
+ 	ctrl = readl(port->membase + CDNS_UART_CR_OFFSET);
+-	writel((ctrl & ~CDNS_UART_CR_TX_DIS) | CDNS_UART_CR_TX_EN,
+-			port->membase + CDNS_UART_CR_OFFSET);
++	ctrl &= ~CDNS_UART_CR_TX_DIS;
++	ctrl |= CDNS_UART_CR_TX_EN;
++	writel(ctrl, port->membase + CDNS_UART_CR_OFFSET);
+ 
+ 	uart_console_write(port, s, count, cdns_uart_console_putchar);
+ 	cdns_uart_console_wait_tx(port);
 -- 
 2.6.2.3.ga463a5b
