@@ -1,85 +1,50 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH 2/9] tty: xuartps: Use spinlock to serialize HW access
-Date: Tue, 3 Nov 2015 16:20:43 -0800
-Message-ID: <1446596450-20918-3-git-send-email-soren.brinkmann@xilinx.com>
-References: <1446596450-20918-1-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH 0/9] tty: xuartps: Fix lock ups
+Date: Tue, 3 Nov 2015 16:20:41 -0800
+Message-ID: <1446596450-20918-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1446596450-20918-1-git-send-email-soren.brinkmann@xilinx.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-Instead of disabling the IRQ, use the spin lock to serialize accesses to
-the HW. This protects the driver from interference of non-IRQ callbacks
-with each other and makes the driver more consistent in its
-serialization method.
+Hi,
 
-Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
----
- drivers/tty/serial/xilinx_uartps.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+I recently found my system locking up under some conditions. I dug
+through the code a bit and the result is this collections of various
+changes. Some of it may not be required and has just been created out o=
+f
+half-baked theories and re-reading the documentation. The actual failin=
+g
+scenarios seem to be:
+ - RX IRQ conditions are handled while the receiver is disabled, leavin=
+g
+   the driver in an infinite loop
+ - console_put_char seems to be interrupted by uart_shutdown disabling
+   the transmitter while/just before printing
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 50d4082d2354..dc1987f3dc0a 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -947,10 +947,9 @@ static int cdns_uart_poll_get_char(struct uart_port *port)
- {
- 	u32 imr;
- 	int c;
-+	unsigned long flags;
- 
--	/* Disable all interrupts */
--	imr = readl(port->membase + CDNS_UART_IMR_OFFSET);
--	writel(imr, port->membase + CDNS_UART_IDR_OFFSET);
-+	spin_lock_irqsave(&port->lock, flags);
- 
- 	/* Check if FIFO is empty */
- 	if (readl(port->membase + CDNS_UART_SR_OFFSET) & CDNS_UART_SR_RXEMPTY)
-@@ -959,8 +958,7 @@ static int cdns_uart_poll_get_char(struct uart_port *port)
- 		c = (unsigned char) readl(
- 					port->membase + CDNS_UART_FIFO_OFFSET);
- 
--	/* Enable interrupts */
--	writel(imr, port->membase + CDNS_UART_IER_OFFSET);
-+	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	return c;
- }
-@@ -968,10 +966,9 @@ static int cdns_uart_poll_get_char(struct uart_port *port)
- static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
- {
- 	u32 imr;
-+	unsigned long flags;
- 
--	/* Disable all interrupts */
--	imr = readl(port->membase + CDNS_UART_IMR_OFFSET);
--	writel(imr, port->membase + CDNS_UART_IDR_OFFSET);
-+	spin_lock_irqsave(&port->lock, flags);
- 
- 	/* Wait until FIFO is empty */
- 	while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
-@@ -986,8 +983,7 @@ static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
- 				CDNS_UART_SR_TXEMPTY))
- 		cpu_relax();
- 
--	/* Enable interrupts */
--	writel(imr, port->membase + CDNS_UART_IER_OFFSET);
-+	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	return;
- }
--- 
+I.e. overall I tried to serialize all operations using the port lock to
+avoid such interaction.
+
+	S=C3=B6ren
+
+S=C3=B6ren Brinkmann (9):
+  tty: xuartps: Beautify read-modify writes
+  tty: xuartps: Use spinlock to serialize HW access
+  tty: xuartps: Always enable transmitter in start_tx
+  tty: xuartps: Clear interrupt status register in shutdown
+  tty: xuartps: Improve startup function
+  tty: xuartps: Keep lock for whole ISR
+  tty: xuartps: Acquire port lock for shutdown
+  tty: xuartps: Move RX path into helper function
+  tty: xuartps: Only handle RX IRQs when RX is enabled
+
+ drivers/tty/serial/xilinx_uartps.c | 129 ++++++++++++++++++++++-------=
+--------
+ 1 file changed, 78 insertions(+), 51 deletions(-)
+
+--=20
 2.6.2.3.ga463a5b
