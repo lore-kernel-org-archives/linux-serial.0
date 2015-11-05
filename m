@@ -1,57 +1,118 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 11/11] tty: amba-pl011: add support for ZTE UART
- (EXPERIMENTAL)
-Date: Thu, 5 Nov 2015 10:54:58 +0100
-Message-ID: <CACRpkdbb6WUzRxV9HUgAjiDqgYafsQ9F90pnS6E4jO55zygxmQ@mail.gmail.com>
-References: <20151103134349.GV8644@n2100.arm.linux.org.uk>
- <E1Ztcw9-0007Cz-TX@rmk-PC.arm.linux.org.uk>
- <CACRpkdbMUTUTJvCZXusMHDO4oqhXwo1DT8=h67ej9GSoDR5jvw@mail.gmail.com>
- <20151105092703.GN8644@n2100.arm.linux.org.uk>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] serial: 8250_uniphier: add earlycon support
+Date: Thu, 5 Nov 2015 11:48:00 -0500
+Message-ID: <563B8840.9060109@hurleysoftware.com>
+References: <1445503154-14340-1-git-send-email-yamada.masahiro@socionext.com>
+ <5630E7DC.3050506@hurleysoftware.com>
+ <CAK7LNATGWRwitQVNsiFiiojE3JLYdO6DPY74LSbJ3jw4mg6HdQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20151105092703.GN8644@n2100.arm.linux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Andrew.Jackson@arm.com, Timur Tabi <timur@tabi.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAK7LNATGWRwitQVNsiFiiojE3JLYdO6DPY74LSbJ3jw4mg6HdQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Nov 5, 2015 at 10:27 AM, Russell King - ARM Linux
-<linux@arm.linux.org.uk> wrote:
-> On Thu, Nov 05, 2015 at 09:28:23AM +0100, Linus Walleij wrote:
->> On Tue, Nov 3, 2015 at 3:51 PM, Russell King
->> <rmk+kernel@arm.linux.org.uk> wrote:
->>
->> > Add (incomplete) support for the ZTE UART to the AMBA PL011 driver.
->> > This is similar to the ARM and ST variants, except it has a different
->> > register address layout, and requires 32-bit accesses to the registers.
->> > Use the newly introduced register tables and access size support to
->> > cope with these differences.
->> >
->> > Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
->>
->> I applied the whole series, 1-11 and tested on Ux500 (ST Micro variant)
->> and on the ARM RealView PB11MPCore.
->>
->> It works like a charm. I also like the looks of this transformation.
->> Tested-by: Linus Walleij <linus.walleij@linaro.org>
->
-> As I mentioned, the change in pl011_putc() needs undoing (I've already
-> modified that in my series).  Also, I'll try switching to the relaxed
-> accessors and checking that.  Thanks for the tested-by though, can I
-> assume that you're happy I add that even with the pl011_putc() change
-> undone?
+Hi Masahiro,
 
-Sure. I'm pretty sure that doesn't change much.
+Apologies for the delay in reply; I didn't see the lower part of your email.
 
-Yours,
-Linus Walleij
+
+On 10/28/2015 09:49 PM, Masahiro Yamada wrote:
+>>> +#if IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE)
+>>
+>> #ifdef CONFIG_SERIAL_8250_CONSOLE
+> 
+> I am OK with this change because this CONFIG is boolean.
+> 
+> 
+> I still believe
+> 
+> #if IS_ENABLED(CONFIG_FOO)
+> 
+> is a nice shorthand for
+> 
+> #if defined(CONFIG_FOO) || defined(CONFIG_FOO_MODULE)
+> 
+> when CONFIG_FOO is tristate.
+
+I agree.
+
+
+>>> +static int __init uniphier_early_console_setup(struct earlycon_device *device,
+>>> +                                            const char *options)
+>>> +{
+>>> +     if (!device->port.membase)
+>>> +             return -ENODEV;
+>>> +
+>>> +     /* This hardware always expects MMIO32 register interface. */
+>>> +     device->port.iotype = UPIO_MEM32;
+>>> +     device->port.regshift = 2;
+>>> +
+>>> +     /*
+>>> +      * Do not touch the divisor register in early_serial8250_setup();
+>>> +      * we assume it has been initialized by a boot loader.
+>>> +      */
+>>> +     device->baud = 0;
+>>> +
+>>> +     return early_serial8250_setup(device, options);
+>>> +}
+>>> +OF_EARLYCON_DECLARE(uniphier_uart, "socionext,uniphier-uart",
+>>> +                 uniphier_early_console_setup);
+>>
+>> Please change the earlycon name to just "uniphier" or "uniphier8250"; eg.,
+>>
+>> OF_EARLYCON_DECLARE(uniphier, "socionext,uniphier-uart",
+>>                     uniphier_early_console_setup);
+>>
+>>
+>> My earlycon series merges OF_EARLYCON_DECLARE() => EARLYCON_DECLARE()
+>> and "uniphier" is simpler on the command line.
+>>
+> 
+> I am also OK with this change, too.
+> 
+> But I still see  some *_serial and *_uart are used
+> in EARLYCON_DECLARE.
+> 
+> yamada@beagle:~/workspace/linux/drivers/tty$ git grep -e
+> 'EARLYCON_DECLARE(.*_uart'
+> serial/8250/8250_ingenic.c:EARLYCON_DECLARE(jz4740_uart,
+> ingenic_early_console_setup);
+> serial/8250/8250_ingenic.c:OF_EARLYCON_DECLARE(jz4740_uart,
+> "ingenic,jz4740-uart",
+> serial/8250/8250_ingenic.c:EARLYCON_DECLARE(jz4775_uart,
+> ingenic_early_console_setup);
+> serial/8250/8250_ingenic.c:OF_EARLYCON_DECLARE(jz4775_uart,
+> "ingenic,jz4775-uart",
+> serial/8250/8250_ingenic.c:EARLYCON_DECLARE(jz4780_uart,
+> ingenic_early_console_setup);
+> serial/8250/8250_ingenic.c:OF_EARLYCON_DECLARE(jz4780_uart,
+> "ingenic,jz4780-uart",
+> serial/arc_uart.c:EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
+> serial/arc_uart.c:OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart",
+> arc_early_console_setup);
+> serial/bcm63xx_uart.c:OF_EARLYCON_DECLARE(bcm63xx_uart,
+> "brcm,bcm6345-uart", bcm_early_console_setup);
+> yamada@beagle:~/workspace/linux/drivers/tty$ git grep -e
+> 'EARLYCON_DECLARE(.*_serial'
+> serial/8250/8250_early.c:EARLYCON_DECLARE(uart8250, early_serial8250_setup);
+> serial/8250/8250_early.c:EARLYCON_DECLARE(uart, early_serial8250_setup);
+> serial/msm_serial.c:EARLYCON_DECLARE(msm_serial,
+> msm_serial_early_console_setup);
+> serial/msm_serial.c:OF_EARLYCON_DECLARE(msm_serial, "qcom,msm-uart",
+> serial/msm_serial.c:EARLYCON_DECLARE(msm_serial_dm,
+> msm_serial_early_console_setup_dm);
+> serial/msm_serial.c:OF_EARLYCON_DECLARE(msm_serial_dm, "qcom,msm-uartdm",
+> serial/sprd_serial.c:EARLYCON_DECLARE(sprd_serial, sprd_early_console_setup);
+> serial/sprd_serial.c:OF_EARLYCON_DECLARE(sprd_serial, "sprd,sc9836-uart",
+
+This brings up an important point: the names for EARLYCON_DECLARE() should not
+be changed after being in at least one kernel release, since this would cause
+existing command line setups to fail.
+
+Regards,
+Peter Hurley
+ 
