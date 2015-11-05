@@ -1,7 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH v2 01/10] tty: xuartps: Beautify read-modify writes
-Date: Wed, 4 Nov 2015 23:21:10 -0800
-Message-ID: <1446708079-1105-2-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH v2 10/10] tty: xuartps: Cleanup: Reformat if-else
+Date: Wed, 4 Nov 2015 23:21:19 -0800
+Message-ID: <1446708079-1105-11-git-send-email-soren.brinkmann@xilinx.com>
 References: <1446708079-1105-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,47 +21,169 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-arm-kernel@lists.infradead.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Non-functional, formatting changes to ease reading the code.
+Convert an if-else into the more common early return on error, reducing
+the indent level of the happy path.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+v2:
+ - added this patch
+---
+ drivers/tty/serial/xilinx_uartps.c | 124 ++++++++++++++++++-------------------
+ 1 file changed, 62 insertions(+), 62 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 009e0dbc12d2..50d4082d2354 100644
+index 413229661f5d..aed8a31f3399 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -515,12 +515,14 @@ static void cdns_uart_start_tx(struct uart_port *port)
- 	if (uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port))
- 		return;
+@@ -203,58 +203,55 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
+ 	isrstatus &= port->read_status_mask;
+ 	isrstatus &= ~port->ignore_status_mask;
  
--	status = readl(port->membase + CDNS_UART_CR_OFFSET);
--	/* Set the TX enable bit and clear the TX disable bit to enable the
+-	if ((isrstatus & CDNS_UART_IXR_TOUT) ||
+-		(isrstatus & CDNS_UART_IXR_RXTRIG)) {
+-		/* Receive Timeout Interrupt */
+-		while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
+-					CDNS_UART_SR_RXEMPTY)) {
+-			u32 data;
+-			char status = TTY_NORMAL;
+-
+-			data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
+-
+-			/* Non-NULL byte after BREAK is garbage (99%) */
+-			if (data && (port->read_status_mask &
+-						CDNS_UART_IXR_BRK)) {
+-				port->read_status_mask &= ~CDNS_UART_IXR_BRK;
+-				port->icount.brk++;
+-				if (uart_handle_break(port))
+-					continue;
+-			}
++	if (!(isrstatus & (CDNS_UART_IXR_TOUT | CDNS_UART_IXR_RXTRIG)))
++		return;
++
++	while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
++				CDNS_UART_SR_RXEMPTY)) {
++		u32 data;
++		char status = TTY_NORMAL;
++
++		data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
++
++		/* Non-NULL byte after BREAK is garbage (99%) */
++		if (data && (port->read_status_mask & CDNS_UART_IXR_BRK)) {
++			port->read_status_mask &= ~CDNS_UART_IXR_BRK;
++			port->icount.brk++;
++			if (uart_handle_break(port))
++				continue;
++		}
+ 
+ #ifdef SUPPORT_SYSRQ
+-			/*
+-			 * uart_handle_sysrq_char() doesn't work if
+-			 * spinlocked, for some reason
+-			 */
+-			 if (port->sysrq) {
+-				spin_unlock(&port->lock);
+-				if (uart_handle_sysrq_char(port,
+-							(unsigned char)data)) {
+-					spin_lock(&port->lock);
+-					continue;
+-				}
++		/*
++		 * uart_handle_sysrq_char() doesn't work if
++		 * spinlocked, for some reason
++		 */
++		 if (port->sysrq) {
++			spin_unlock(&port->lock);
++			if (uart_handle_sysrq_char(port, data)) {
+ 				spin_lock(&port->lock);
++				continue;
+ 			}
++			spin_lock(&port->lock);
++		}
+ #endif
+ 
+-			port->icount.rx++;
+-
+-			if (isrstatus & CDNS_UART_IXR_PARITY) {
+-				port->icount.parity++;
+-				status = TTY_PARITY;
+-			} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
+-				port->icount.frame++;
+-				status = TTY_FRAME;
+-			} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
+-				port->icount.overrun++;
+-			}
++		port->icount.rx++;
+ 
+-			uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
+-					 data, status);
++		if (isrstatus & CDNS_UART_IXR_PARITY) {
++			port->icount.parity++;
++			status = TTY_PARITY;
++		} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
++			port->icount.frame++;
++			status = TTY_FRAME;
++		} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
++			port->icount.overrun++;
+ 		}
+-		tty_flip_buffer_push(&port->state->port);
++
++		uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
++				 data, status);
+ 	}
++	tty_flip_buffer_push(&port->state->port);
+ }
+ 
+ /**
+@@ -1431,27 +1428,30 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
+ 		rc = -ENODEV;
+ 		goto err_out_notif_unreg;
+-	} else {
+-		/* Register the port.
+-		 * This function also registers this device with the tty layer
+-		 * and triggers invocation of the config_port() entry point.
+-		 */
+-		port->mapbase = res->start;
+-		port->irq = irq;
+-		port->dev = &pdev->dev;
+-		port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
+-		port->private_data = cdns_uart_data;
+-		cdns_uart_data->port = port;
+-		platform_set_drvdata(pdev, port);
+-		rc = uart_add_one_port(&cdns_uart_uart_driver, port);
+-		if (rc) {
+-			dev_err(&pdev->dev,
+-				"uart_add_one_port() failed; err=%i\n", rc);
+-			goto err_out_notif_unreg;
+-		}
+-		return 0;
+ 	}
+ 
 +	/*
-+	 * Set the TX enable bit and clear the TX disable bit to enable the
- 	 * transmitter.
- 	 */
--	writel((status & ~CDNS_UART_CR_TX_DIS) | CDNS_UART_CR_TX_EN,
--			port->membase + CDNS_UART_CR_OFFSET);
-+	status = readl(port->membase + CDNS_UART_CR_OFFSET);
-+	status &= ~CDNS_UART_CR_TX_DIS;
-+	status |= CDNS_UART_CR_TX_EN;
-+	writel(status, port->membase + CDNS_UART_CR_OFFSET);
- 
- 	while (numbytes-- && ((readl(port->membase + CDNS_UART_SR_OFFSET) &
- 				CDNS_UART_SR_TXFULL)) != CDNS_UART_SR_TXFULL) {
-@@ -1123,8 +1125,9 @@ static void cdns_uart_console_write(struct console *co, const char *s,
- 	 * clear the TX disable bit to enable the transmitter.
- 	 */
- 	ctrl = readl(port->membase + CDNS_UART_CR_OFFSET);
--	writel((ctrl & ~CDNS_UART_CR_TX_DIS) | CDNS_UART_CR_TX_EN,
--			port->membase + CDNS_UART_CR_OFFSET);
-+	ctrl &= ~CDNS_UART_CR_TX_DIS;
-+	ctrl |= CDNS_UART_CR_TX_EN;
-+	writel(ctrl, port->membase + CDNS_UART_CR_OFFSET);
- 
- 	uart_console_write(port, s, count, cdns_uart_console_putchar);
- 	cdns_uart_console_wait_tx(port);
++	 * Register the port.
++	 * This function also registers this device with the tty layer
++	 * and triggers invocation of the config_port() entry point.
++	 */
++	port->mapbase = res->start;
++	port->irq = irq;
++	port->dev = &pdev->dev;
++	port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
++	port->private_data = cdns_uart_data;
++	cdns_uart_data->port = port;
++	platform_set_drvdata(pdev, port);
++
++	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
++	if (rc) {
++		dev_err(&pdev->dev,
++			"uart_add_one_port() failed; err=%i\n", rc);
++		goto err_out_notif_unreg;
++	}
++
++	return 0;
++
+ err_out_notif_unreg:
+ #ifdef CONFIG_COMMON_CLK
+ 	clk_notifier_unregister(cdns_uart_data->uartclk,
 -- 
 2.6.2.3.ga463a5b
