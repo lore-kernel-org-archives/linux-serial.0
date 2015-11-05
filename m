@@ -1,7 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH v2 10/10] tty: xuartps: Cleanup: Reformat if-else
-Date: Wed, 4 Nov 2015 23:21:19 -0800
-Message-ID: <1446708079-1105-11-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH v2 02/10] tty: xuartps: Use spinlock to serialize HW access
+Date: Wed, 4 Nov 2015 23:21:11 -0800
+Message-ID: <1446708079-1105-3-git-send-email-soren.brinkmann@xilinx.com>
 References: <1446708079-1105-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,169 +21,70 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-arm-kernel@lists.infradead.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Convert an if-else into the more common early return on error, reducing
-the indent level of the happy path.
+Instead of disabling the IRQ, use the spin lock to serialize accesses to
+the HW. This protects the driver from interference of non-IRQ callbacks
+with each other and makes the driver more consistent in its
+serialization method.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
 v2:
- - added this patch
+ - remove unused variable
 ---
- drivers/tty/serial/xilinx_uartps.c | 124 ++++++++++++++++++-------------------
- 1 file changed, 62 insertions(+), 62 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 413229661f5d..aed8a31f3399 100644
+index 50d4082d2354..2c98c357d9a0 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -203,58 +203,55 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
- 	isrstatus &= port->read_status_mask;
- 	isrstatus &= ~port->ignore_status_mask;
+@@ -945,12 +945,10 @@ static void cdns_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ #ifdef CONFIG_CONSOLE_POLL
+ static int cdns_uart_poll_get_char(struct uart_port *port)
+ {
+-	u32 imr;
+ 	int c;
++	unsigned long flags;
  
--	if ((isrstatus & CDNS_UART_IXR_TOUT) ||
--		(isrstatus & CDNS_UART_IXR_RXTRIG)) {
--		/* Receive Timeout Interrupt */
--		while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
--					CDNS_UART_SR_RXEMPTY)) {
--			u32 data;
--			char status = TTY_NORMAL;
--
--			data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
--
--			/* Non-NULL byte after BREAK is garbage (99%) */
--			if (data && (port->read_status_mask &
--						CDNS_UART_IXR_BRK)) {
--				port->read_status_mask &= ~CDNS_UART_IXR_BRK;
--				port->icount.brk++;
--				if (uart_handle_break(port))
--					continue;
--			}
-+	if (!(isrstatus & (CDNS_UART_IXR_TOUT | CDNS_UART_IXR_RXTRIG)))
-+		return;
-+
-+	while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
-+				CDNS_UART_SR_RXEMPTY)) {
-+		u32 data;
-+		char status = TTY_NORMAL;
-+
-+		data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
-+
-+		/* Non-NULL byte after BREAK is garbage (99%) */
-+		if (data && (port->read_status_mask & CDNS_UART_IXR_BRK)) {
-+			port->read_status_mask &= ~CDNS_UART_IXR_BRK;
-+			port->icount.brk++;
-+			if (uart_handle_break(port))
-+				continue;
-+		}
+-	/* Disable all interrupts */
+-	imr = readl(port->membase + CDNS_UART_IMR_OFFSET);
+-	writel(imr, port->membase + CDNS_UART_IDR_OFFSET);
++	spin_lock_irqsave(&port->lock, flags);
  
- #ifdef SUPPORT_SYSRQ
--			/*
--			 * uart_handle_sysrq_char() doesn't work if
--			 * spinlocked, for some reason
--			 */
--			 if (port->sysrq) {
--				spin_unlock(&port->lock);
--				if (uart_handle_sysrq_char(port,
--							(unsigned char)data)) {
--					spin_lock(&port->lock);
--					continue;
--				}
-+		/*
-+		 * uart_handle_sysrq_char() doesn't work if
-+		 * spinlocked, for some reason
-+		 */
-+		 if (port->sysrq) {
-+			spin_unlock(&port->lock);
-+			if (uart_handle_sysrq_char(port, data)) {
- 				spin_lock(&port->lock);
-+				continue;
- 			}
-+			spin_lock(&port->lock);
-+		}
- #endif
+ 	/* Check if FIFO is empty */
+ 	if (readl(port->membase + CDNS_UART_SR_OFFSET) & CDNS_UART_SR_RXEMPTY)
+@@ -959,19 +957,16 @@ static int cdns_uart_poll_get_char(struct uart_port *port)
+ 		c = (unsigned char) readl(
+ 					port->membase + CDNS_UART_FIFO_OFFSET);
  
--			port->icount.rx++;
--
--			if (isrstatus & CDNS_UART_IXR_PARITY) {
--				port->icount.parity++;
--				status = TTY_PARITY;
--			} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
--				port->icount.frame++;
--				status = TTY_FRAME;
--			} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
--				port->icount.overrun++;
--			}
-+		port->icount.rx++;
+-	/* Enable interrupts */
+-	writel(imr, port->membase + CDNS_UART_IER_OFFSET);
++	spin_unlock_irqrestore(&port->lock, flags);
  
--			uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
--					 data, status);
-+		if (isrstatus & CDNS_UART_IXR_PARITY) {
-+			port->icount.parity++;
-+			status = TTY_PARITY;
-+		} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
-+			port->icount.frame++;
-+			status = TTY_FRAME;
-+		} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
-+			port->icount.overrun++;
- 		}
--		tty_flip_buffer_push(&port->state->port);
-+
-+		uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
-+				 data, status);
- 	}
-+	tty_flip_buffer_push(&port->state->port);
+ 	return c;
  }
  
- /**
-@@ -1431,27 +1428,30 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
- 		rc = -ENODEV;
- 		goto err_out_notif_unreg;
--	} else {
--		/* Register the port.
--		 * This function also registers this device with the tty layer
--		 * and triggers invocation of the config_port() entry point.
--		 */
--		port->mapbase = res->start;
--		port->irq = irq;
--		port->dev = &pdev->dev;
--		port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
--		port->private_data = cdns_uart_data;
--		cdns_uart_data->port = port;
--		platform_set_drvdata(pdev, port);
--		rc = uart_add_one_port(&cdns_uart_uart_driver, port);
--		if (rc) {
--			dev_err(&pdev->dev,
--				"uart_add_one_port() failed; err=%i\n", rc);
--			goto err_out_notif_unreg;
--		}
--		return 0;
- 	}
+ static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
+ {
+-	u32 imr;
++	unsigned long flags;
  
-+	/*
-+	 * Register the port.
-+	 * This function also registers this device with the tty layer
-+	 * and triggers invocation of the config_port() entry point.
-+	 */
-+	port->mapbase = res->start;
-+	port->irq = irq;
-+	port->dev = &pdev->dev;
-+	port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
-+	port->private_data = cdns_uart_data;
-+	cdns_uart_data->port = port;
-+	platform_set_drvdata(pdev, port);
-+
-+	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
-+	if (rc) {
-+		dev_err(&pdev->dev,
-+			"uart_add_one_port() failed; err=%i\n", rc);
-+		goto err_out_notif_unreg;
-+	}
-+
-+	return 0;
-+
- err_out_notif_unreg:
- #ifdef CONFIG_COMMON_CLK
- 	clk_notifier_unregister(cdns_uart_data->uartclk,
+-	/* Disable all interrupts */
+-	imr = readl(port->membase + CDNS_UART_IMR_OFFSET);
+-	writel(imr, port->membase + CDNS_UART_IDR_OFFSET);
++	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	/* Wait until FIFO is empty */
+ 	while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
+@@ -986,8 +981,7 @@ static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
+ 				CDNS_UART_SR_TXEMPTY))
+ 		cpu_relax();
+ 
+-	/* Enable interrupts */
+-	writel(imr, port->membase + CDNS_UART_IER_OFFSET);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	return;
+ }
 -- 
 2.6.2.3.ga463a5b
