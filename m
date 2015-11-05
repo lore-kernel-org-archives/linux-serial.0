@@ -1,53 +1,78 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 10/11] tty: amba-pl011: add support for 32-bit register
- access
-Date: Wed, 4 Nov 2015 23:46:25 -0500
-Message-ID: <563ADF21.8000405@hurleysoftware.com>
-References: <20151103134349.GV8644@n2100.arm.linux.org.uk>
- <E1Ztcw4-0007Ct-PP@rmk-PC.arm.linux.org.uk> <5638CB41.1000807@codeaurora.org>
- <20151103161939.GB8644@n2100.arm.linux.org.uk>
+From: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Subject: [PATCH v2 05/10] tty: xuartps: Improve startup function
+Date: Wed, 4 Nov 2015 23:21:14 -0800
+Message-ID: <1446708079-1105-6-git-send-email-soren.brinkmann@xilinx.com>
+References: <1446708079-1105-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20151103161939.GB8644@n2100.arm.linux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Timur Tabi <timur@codeaurora.org>
-Cc: Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1446708079-1105-1-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 11/03/2015 11:19 AM, Russell King - ARM Linux wrote:
-> On Tue, Nov 03, 2015 at 08:57:05AM -0600, Timur Tabi wrote:
->> Russell King wrote:
->>> -	return readw(uap->port.membase + pl011_reg_to_offset(uap, reg));
->>> +	void __iomem *addr = uap->port.membase + pl011_reg_to_offset(uap, reg);
->>> +
->>> +	return uap->access_32b ? readl(addr) : readw(addr);
->>
->> Ok, ignore my previous email.  I just noticed this.
->>
->> This version is fine, except that it now performs a runtime check for every
->> I/O access.  Isn't that too much overhead?  access_32b will always be either
->> True or False for the life of the entire SOC.
-> 
-> It's a balance between a few more branches and killing six registers
-> (r0 - r3, ip, lr) on every register access due to a function call.
-> If GCC was a reasonable compiler, it could be done without incuring
-> any branches, merely by using conditional instructions, but GCC on
-> ARM really sucks - it wants to reload the base address, offset and
-> access_32b flag on every device access despite the struct being
-> marked const.
+The startup function is supposed to initialize the UART for receiving.
+Hence, don't enable the TX part. Also, protect HW accesses with the port
+lock.
 
-The compiler reloads are probably due to the barriers in readw()/writew();
-I think the relaxed i/o accessor variants avoid the reloads.
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+---
+ drivers/tty/serial/xilinx_uartps.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-Regards,
-Peter Hurley
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index b7fc30639292..167e0f4bcf7a 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -755,6 +755,7 @@ static void cdns_uart_set_termios(struct uart_port *port,
+  */
+ static int cdns_uart_startup(struct uart_port *port)
+ {
++	unsigned long flags;
+ 	unsigned int retval = 0, status = 0;
+ 
+ 	retval = request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME,
+@@ -762,6 +763,8 @@ static int cdns_uart_startup(struct uart_port *port)
+ 	if (retval)
+ 		return retval;
+ 
++	spin_lock_irqsave(&port->lock, flags);
++
+ 	/* Disable the TX and RX */
+ 	writel(CDNS_UART_CR_TX_DIS | CDNS_UART_CR_RX_DIS,
+ 			port->membase + CDNS_UART_CR_OFFSET);
+@@ -772,15 +775,14 @@ static int cdns_uart_startup(struct uart_port *port)
+ 	writel(CDNS_UART_CR_TXRST | CDNS_UART_CR_RXRST,
+ 			port->membase + CDNS_UART_CR_OFFSET);
+ 
+-	status = readl(port->membase + CDNS_UART_CR_OFFSET);
+-
+-	/* Clear the RX disable and TX disable bits and then set the TX enable
+-	 * bit and RX enable bit to enable the transmitter and receiver.
++	/*
++	 * Clear the RX disable bit and then set the RX enable bit to enable
++	 * the receiver.
+ 	 */
+-	writel((status & ~(CDNS_UART_CR_TX_DIS | CDNS_UART_CR_RX_DIS))
+-			| (CDNS_UART_CR_TX_EN | CDNS_UART_CR_RX_EN |
+-			CDNS_UART_CR_STOPBRK),
+-			port->membase + CDNS_UART_CR_OFFSET);
++	status = readl(port->membase + CDNS_UART_CR_OFFSET);
++	status &= CDNS_UART_CR_RX_DIS;
++	status |= CDNS_UART_CR_RX_EN;
++	writel(status, port->membase + CDNS_UART_CR_OFFSET);
+ 
+ 	/* Set the Mode Register with normal mode,8 data bits,1 stop bit,
+ 	 * no parity.
+@@ -811,6 +813,8 @@ static int cdns_uart_startup(struct uart_port *port)
+ 		CDNS_UART_IXR_RXTRIG | CDNS_UART_IXR_TOUT,
+ 		port->membase + CDNS_UART_IER_OFFSET);
+ 
++	spin_unlock_irqrestore(&port->lock, flags);
++
+ 	return retval;
+ }
+ 
+-- 
+2.6.2.3.ga463a5b
