@@ -1,118 +1,100 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: 8250_uniphier: add earlycon support
-Date: Thu, 5 Nov 2015 11:48:00 -0500
-Message-ID: <563B8840.9060109@hurleysoftware.com>
-References: <1445503154-14340-1-git-send-email-yamada.masahiro@socionext.com>
- <5630E7DC.3050506@hurleysoftware.com>
- <CAK7LNATGWRwitQVNsiFiiojE3JLYdO6DPY74LSbJ3jw4mg6HdQ@mail.gmail.com>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [PATCH 05/11] tty: amba-pl011: add register lookup table
+Date: Thu, 5 Nov 2015 18:00:08 -0600
+Message-ID: <563BED88.3040101@codeaurora.org>
+References: <20151103134349.GV8644@n2100.arm.linux.org.uk>
+ <E1Ztcve-0007CO-UO@rmk-PC.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK7LNATGWRwitQVNsiFiiojE3JLYdO6DPY74LSbJ3jw4mg6HdQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Jiri Slaby <jslaby@suse.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <E1Ztcve-0007CO-UO@rmk-PC.arm.linux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King <rmk+kernel@arm.linux.org.uk>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, Timur Tabi <timur@tabi.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Masahiro,
+On 11/03/2015 08:51 AM, Russell King wrote:
+>   enum {
+> -	REG_DR = UART01x_DR,
+> -	REG_ST_DMAWM = ST_UART011_DMAWM,
+> -	REG_ST_TIMEOUT = ST_UART011_TIMEOUT,
+> -	REG_FR = UART01x_FR,
+> -	REG_ST_LCRH_RX = ST_UART011_LCRH_RX,
+> -	REG_IBRD = UART011_IBRD,
+> -	REG_FBRD = UART011_FBRD,
+> -	REG_LCRH = UART011_LCRH,
+> -	REG_ST_LCRH_TX = ST_UART011_LCRH_TX,
+> -	REG_CR = UART011_CR,
+> -	REG_IFLS = UART011_IFLS,
+> -	REG_IMSC = UART011_IMSC,
+> -	REG_RIS = UART011_RIS,
+> -	REG_MIS = UART011_MIS,
+> -	REG_ICR = UART011_ICR,
+> -	REG_DMACR = UART011_DMACR,
+> -	REG_ST_XFCR = ST_UART011_XFCR,
+> -	REG_ST_XON1 = ST_UART011_XON1,
+> -	REG_ST_XON2 = ST_UART011_XON2,
+> -	REG_ST_XOFF1 = ST_UART011_XOFF1,
+> -	REG_ST_XOFF2 = ST_UART011_XOFF2,
+> -	REG_ST_ITCR = ST_UART011_ITCR,
+> -	REG_ST_ITIP = ST_UART011_ITIP,
+> -	REG_ST_ABCR = ST_UART011_ABCR,
+> -	REG_ST_ABIMSC = ST_UART011_ABIMSC,
+> +	REG_DR,
+> +	REG_ST_DMAWM,
+> +	REG_ST_TIMEOUT,
+> +	REG_FR,
+> +	REG_ST_LCRH_RX,
+> +	REG_IBRD,
+> +	REG_FBRD,
+> +	REG_LCRH,
+> +	REG_ST_LCRH_TX,
+> +	REG_CR,
+> +	REG_IFLS,
+> +	REG_IMSC,
+> +	REG_RIS,
+> +	REG_MIS,
+> +	REG_ICR,
+> +	REG_DMACR,
+> +	REG_ST_XFCR,
+> +	REG_ST_XON1,
+> +	REG_ST_XON2,
+> +	REG_ST_XOFF1,
+> +	REG_ST_XOFF2,
+> +	REG_ST_ITCR,
+> +	REG_ST_ITIP,
+> +	REG_ST_ABCR,
+> +	REG_ST_ABIMSC,
+> +
+> +	/* The size of the array - must be last */
+> +	REG_ARRAY_SIZE,
+>   };
 
-Apologies for the delay in reply; I didn't see the lower part of your email.
+This breaks early console because REG_DR and REG_FR are now enums 
+instead of an actual register offset, and so
 
+static void pl011_putc(struct uart_port *port, int c)
+{
+	while (readl(port->membase + REG_FR) & UART01x_FR_TXFF)
+		;
+	writeb(c, port->membase + REG_DR);
+	while (readl(port->membase + REG_FR) & UART01x_FR_BUSY)
+		;
+}
 
-On 10/28/2015 09:49 PM, Masahiro Yamada wrote:
->>> +#if IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE)
->>
->> #ifdef CONFIG_SERIAL_8250_CONSOLE
-> 
-> I am OK with this change because this CONFIG is boolean.
-> 
-> 
-> I still believe
-> 
-> #if IS_ENABLED(CONFIG_FOO)
-> 
-> is a nice shorthand for
-> 
-> #if defined(CONFIG_FOO) || defined(CONFIG_FOO_MODULE)
-> 
-> when CONFIG_FOO is tristate.
+is wrong.  I get alignment violations because REG_FR is equal to 3 
+instead of 0x18.
 
-I agree.
-
-
->>> +static int __init uniphier_early_console_setup(struct earlycon_device *device,
->>> +                                            const char *options)
->>> +{
->>> +     if (!device->port.membase)
->>> +             return -ENODEV;
->>> +
->>> +     /* This hardware always expects MMIO32 register interface. */
->>> +     device->port.iotype = UPIO_MEM32;
->>> +     device->port.regshift = 2;
->>> +
->>> +     /*
->>> +      * Do not touch the divisor register in early_serial8250_setup();
->>> +      * we assume it has been initialized by a boot loader.
->>> +      */
->>> +     device->baud = 0;
->>> +
->>> +     return early_serial8250_setup(device, options);
->>> +}
->>> +OF_EARLYCON_DECLARE(uniphier_uart, "socionext,uniphier-uart",
->>> +                 uniphier_early_console_setup);
->>
->> Please change the earlycon name to just "uniphier" or "uniphier8250"; eg.,
->>
->> OF_EARLYCON_DECLARE(uniphier, "socionext,uniphier-uart",
->>                     uniphier_early_console_setup);
->>
->>
->> My earlycon series merges OF_EARLYCON_DECLARE() => EARLYCON_DECLARE()
->> and "uniphier" is simpler on the command line.
->>
-> 
-> I am also OK with this change, too.
-> 
-> But I still see  some *_serial and *_uart are used
-> in EARLYCON_DECLARE.
-> 
-> yamada@beagle:~/workspace/linux/drivers/tty$ git grep -e
-> 'EARLYCON_DECLARE(.*_uart'
-> serial/8250/8250_ingenic.c:EARLYCON_DECLARE(jz4740_uart,
-> ingenic_early_console_setup);
-> serial/8250/8250_ingenic.c:OF_EARLYCON_DECLARE(jz4740_uart,
-> "ingenic,jz4740-uart",
-> serial/8250/8250_ingenic.c:EARLYCON_DECLARE(jz4775_uart,
-> ingenic_early_console_setup);
-> serial/8250/8250_ingenic.c:OF_EARLYCON_DECLARE(jz4775_uart,
-> "ingenic,jz4775-uart",
-> serial/8250/8250_ingenic.c:EARLYCON_DECLARE(jz4780_uart,
-> ingenic_early_console_setup);
-> serial/8250/8250_ingenic.c:OF_EARLYCON_DECLARE(jz4780_uart,
-> "ingenic,jz4780-uart",
-> serial/arc_uart.c:EARLYCON_DECLARE(arc_uart, arc_early_console_setup);
-> serial/arc_uart.c:OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart",
-> arc_early_console_setup);
-> serial/bcm63xx_uart.c:OF_EARLYCON_DECLARE(bcm63xx_uart,
-> "brcm,bcm6345-uart", bcm_early_console_setup);
-> yamada@beagle:~/workspace/linux/drivers/tty$ git grep -e
-> 'EARLYCON_DECLARE(.*_serial'
-> serial/8250/8250_early.c:EARLYCON_DECLARE(uart8250, early_serial8250_setup);
-> serial/8250/8250_early.c:EARLYCON_DECLARE(uart, early_serial8250_setup);
-> serial/msm_serial.c:EARLYCON_DECLARE(msm_serial,
-> msm_serial_early_console_setup);
-> serial/msm_serial.c:OF_EARLYCON_DECLARE(msm_serial, "qcom,msm-uart",
-> serial/msm_serial.c:EARLYCON_DECLARE(msm_serial_dm,
-> msm_serial_early_console_setup_dm);
-> serial/msm_serial.c:OF_EARLYCON_DECLARE(msm_serial_dm, "qcom,msm-uartdm",
-> serial/sprd_serial.c:EARLYCON_DECLARE(sprd_serial, sprd_early_console_setup);
-> serial/sprd_serial.c:OF_EARLYCON_DECLARE(sprd_serial, "sprd,sc9836-uart",
-
-This brings up an important point: the names for EARLYCON_DECLARE() should not
-be changed after being in at least one kernel release, since this would cause
-existing command line setups to fail.
-
-Regards,
-Peter Hurley
- 
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
