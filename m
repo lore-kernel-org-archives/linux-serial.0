@@ -1,88 +1,74 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: [PATCH] tty: amba-pl011: add support for 32-bit register access for
- earlycon
-Date: Fri,  6 Nov 2015 18:18:23 -0600
-Message-ID: <1446855503-25881-1-git-send-email-timur@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Andrew.Jackson@arm.com, andre.przywara@arm.com, jun.nie@linaro.org, peter@hurleysoftware.com, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <greg@kroah.com>, jslaby@suse.com, rmk+kernel@arm.linux.org.uk
+From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Subject: [PATCH v2 1/3] tty: Introduce UART_CAP_HW485
+Date: Sat,  7 Nov 2015 13:09:34 +0300
+Message-ID: <1446890976-1817-1-git-send-email-matwey@sai.msu.ru>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: "Matwey V. Kornilov" <matwey@sai.msu.ru>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, matwey.kornilov@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-Add support the "mmio32" earlycon option for the pl011 device.  If
-specified in the earlycon parameter, all reads/writes to pl011 registers
-during early console will use 32-bit accessors.  Normally the function
-uses 8-bit writes.
+Introduce new capability UART_CAP_HW485 to mark 8250 UARTs which have
+hardware support of line direction control.
 
-Normal console uses the "access_32b" field of the vendor data structure
-to determine whether the registers needs 32-bit accessors.  Early console
-is used before the vendor data is available, so we need a different
-mechanism to choose the accessor.
-
-Example:
-
-	earlycon=pl011,mmio32,0x3ced1000
-
-Signed-off-by: Timur Tabi <timur@codeaurora.org>
+Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
 ---
+Changes since v1:
+ - Commit message has been wrapped
 
-This patch applies on top of Russell's 12-part amba-pl011.c patchset.
+ drivers/tty/serial/8250/8250.h         | 1 +
+ drivers/tty/serial/8250/8250_fintek.c  | 1 +
+ drivers/tty/serial/8250/8250_lpc18xx.c | 1 +
+ drivers/tty/serial/8250/8250_pci.c     | 1 +
+ 4 files changed, 4 insertions(+)
 
- Documentation/kernel-parameters.txt | 5 ++++-
- drivers/tty/serial/amba-pl011.c     | 9 ++++++---
- 2 files changed, 10 insertions(+), 4 deletions(-)
-
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 22a4b68..2436f62 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -992,10 +992,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 			unspecified, the h/w is not initialized.
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index d54dcd8..92a4f47 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -69,6 +69,7 @@ struct serial8250_config {
+ 	unsigned int	flags;
+ };
  
- 		pl011,<addr>
-+		pl011,mmio32,<addr>
- 			Start an early, polled-mode console on a pl011 serial
- 			port at the specified address. The pl011 serial port
- 			must already be setup and configured. Options are not
--			yet supported.
-+			yet supported.  If 'mmio32' is specified, then only
-+			the driver will use only 32-bit accessors to read/write
-+			the device registers.
++#define UART_CAP_HW485	(1 << 7)	/* UART has hardware direction control for RS485 */
+ #define UART_CAP_FIFO	(1 << 8)	/* UART has FIFO */
+ #define UART_CAP_EFR	(1 << 9)	/* UART has EFR */
+ #define UART_CAP_SLEEP	(1 << 10)	/* UART has IER sleep */
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 8947439..f2831a8 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -208,6 +208,7 @@ fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+ 	uart.port.iobase = pnp_port_start(dev, 0);
+ 	uart.port.iotype = UPIO_PORT;
+ 	uart.port.rs485_config = fintek_8250_rs485_config;
++	uart.capabilities = UART_CAP_HW485;
  
- 		msm_serial,<addr>
- 			Start an early, polled-mode console on an msm serial
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 373b152..6643ed9 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2301,10 +2301,13 @@ static struct console amba_console = {
+ 	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
+ 	if (pnp_irq_flags(dev, 0) & IORESOURCE_IRQ_SHAREABLE)
+diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial/8250/8250_lpc18xx.c
+index 99cd478..9d30276 100644
+--- a/drivers/tty/serial/8250/8250_lpc18xx.c
++++ b/drivers/tty/serial/8250/8250_lpc18xx.c
+@@ -175,6 +175,7 @@ static int lpc18xx_serial_probe(struct platform_device *pdev)
+ 	uart.port.private_data = data;
+ 	uart.port.rs485_config = lpc18xx_rs485_config;
+ 	uart.port.serial_out = lpc18xx_uart_serial_out;
++	uart.capabilities = UART_CAP_HW485;
  
- static void pl011_putc(struct uart_port *port, int c)
- {
--	while (readl(port->membase + REG_FR) & UART01x_FR_TXFF)
-+	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
- 		;
--	writeb(c, port->membase + REG_DR);
--	while (readl(port->membase + REG_FR) & UART01x_FR_BUSY)
-+	if (port->iotype == UPIO_MEM32)
-+		writel(c, port->membase + UART01x_DR);
-+	else
-+		writeb(c, port->membase + UART01x_DR);
-+	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
- 		;
- }
+ 	uart.dma = &data->dma;
+ 	uart.dma->rxconf.src_maxburst = 1;
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 4097f3f..c7c0ae9 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1599,6 +1599,7 @@ static int pci_fintek_setup(struct serial_private *priv,
+ 	port->port.iotype = UPIO_PORT;
+ 	port->port.iobase = iobase;
+ 	port->port.rs485_config = pci_fintek_rs485_config;
++	port->capabilities = UART_CAP_HW485;
  
+ 	data = devm_kzalloc(&pdev->dev, sizeof(u8), GFP_KERNEL);
+ 	if (!data)
 -- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project.
+2.6.2
