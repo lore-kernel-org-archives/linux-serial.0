@@ -1,117 +1,58 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 1/3] tty: Introduce UART_CAP_HW485
-Date: Sat, 7 Nov 2015 17:04:43 -0500
-Message-ID: <563E757B.8000900@hurleysoftware.com>
-References: <1446890976-1817-1-git-send-email-matwey@sai.msu.ru>
- <563DED05.9010004@hurleysoftware.com>
- <CAJs94EZ7ivHR0RQt2AfUy-6OmeeUNyQQ3izT5fzwmM5R8Kpf8Q@mail.gmail.com>
- <563E1997.40306@hurleysoftware.com>
- <CAJs94EZWank18fbZKyJzqdEeVLA3zAWvBjK9rxDr1SXTq5P34A@mail.gmail.com>
+Subject: Re: [PATCH] tty: amba-pl011: add options to earlycon for 32-bit reg
+ access
+Date: Sat, 7 Nov 2015 17:36:34 -0500
+Message-ID: <563E7CF2.60609@hurleysoftware.com>
+References: <1446770267-26749-1-git-send-email-timur@codeaurora.org>
+ <563C07C8.9060506@hurleysoftware.com> <563C09BB.9030706@codeaurora.org>
+ <563C1409.4070804@hurleysoftware.com> <563CF8AF.50808@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAJs94EZWank18fbZKyJzqdEeVLA3zAWvBjK9rxDr1SXTq5P34A@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <563CF8AF.50808@codeaurora.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Timur Tabi <timur@codeaurora.org>
+Cc: andre.przywara@arm.com, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, rmk+kernel@arm.linux.org.uk, jun.nie@linaro.or, linux-serial@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 11/07/2015 04:10 PM, Matwey V. Kornilov wrote:
-> 2015-11-07 18:32 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
->> On 11/07/2015 07:39 AM, Matwey V. Kornilov wrote:
->>> 2015-11-07 15:22 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
->>>> On 11/07/2015 05:09 AM, Matwey V. Kornilov wrote:
->>>>> Introduce new capability UART_CAP_HW485 to mark 8250 UARTs which have
->>>>> hardware support of line direction control.
->>>>
->>>> Since capabilities are not exported to user-space, how will user-space
->>>> know if the port only provides emulated 485 (eg., where only HW485 is
->>>> acceptable)?
->>>
->>> I cannot imagine the case when user really has to care about
->>> implementation details.
->>> In both cases the user will be provided with the consistent API
->>> (TIOCGRS485/TIOCSRS485 ioctls) resulting into the same behavior.
->>> Could you please expand your question?
+On 11/06/2015 01:59 PM, Timur Tabi wrote:
+> On 11/05/2015 08:44 PM, Peter Hurley wrote:
+>> Or better yet, for sbsa32 earlycon, just use the existing port type constructs.
+>> So,
 >>
->> Well, the entire serial core is a 'consistent' API but yet we
->> still report to user-space what the port type is. Same with lspci
->> and lsusb.
+>>     earlycon=pl011,mmio32,0x3ced1000
+>>
+>> which will set port->iotype to UPIO_MEM32, which in turn can be used to select
+>> the correct i/o width in pl011_putc().
 > 
-> Yes, that is correct.
-> I mean if you want the knowledge about HW485 be provided to the
-> user-space via some ioctl, then I cannot understand what application
-> is going to do with it.
-> It has single one option: use provided RS485 if it needs RS485, it
-> cannot purchase and install other hardware in runtime.
-> But I think we could add new read-only flag to struct serial_rs485,
-> say SER_RS485_SOFTWARE then user will know that software emulation is
-> being used.
-> Would it be ok?
+> That's a great idea.  But why aren't we using it for pl011_write()?
 
-Yes, something like that would be fine.
+I'll note that when I review Russell's v2 series, if necessary.
+What is the plan to introduce the SBSA32 support? After the ACPI support is
+upstreamed?
 
 Regards,
 Peter Hurley
 
 
->>>>> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
->>>>> ---
->>>>> Changes since v1:
->>>>>  - Commit message has been wrapped
->>>>>
->>>>>  drivers/tty/serial/8250/8250.h         | 1 +
->>>>>  drivers/tty/serial/8250/8250_fintek.c  | 1 +
->>>>>  drivers/tty/serial/8250/8250_lpc18xx.c | 1 +
->>>>>  drivers/tty/serial/8250/8250_pci.c     | 1 +
->>>>>  4 files changed, 4 insertions(+)
->>>>>
->>>>> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
->>>>> index d54dcd8..92a4f47 100644
->>>>> --- a/drivers/tty/serial/8250/8250.h
->>>>> +++ b/drivers/tty/serial/8250/8250.h
->>>>> @@ -69,6 +69,7 @@ struct serial8250_config {
->>>>>       unsigned int    flags;
->>>>>  };
->>>>>
->>>>> +#define UART_CAP_HW485       (1 << 7)        /* UART has hardware direction control for RS485 */
->>>>>  #define UART_CAP_FIFO        (1 << 8)        /* UART has FIFO */
->>>>>  #define UART_CAP_EFR (1 << 9)        /* UART has EFR */
->>>>>  #define UART_CAP_SLEEP       (1 << 10)       /* UART has IER sleep */
->>>>> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
->>>>> index 8947439..f2831a8 100644
->>>>> --- a/drivers/tty/serial/8250/8250_fintek.c
->>>>> +++ b/drivers/tty/serial/8250/8250_fintek.c
->>>>> @@ -208,6 +208,7 @@ fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
->>>>>       uart.port.iobase = pnp_port_start(dev, 0);
->>>>>       uart.port.iotype = UPIO_PORT;
->>>>>       uart.port.rs485_config = fintek_8250_rs485_config;
->>>>> +     uart.capabilities = UART_CAP_HW485;
->>>>>
->>>>>       uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
->>>>>       if (pnp_irq_flags(dev, 0) & IORESOURCE_IRQ_SHAREABLE)
->>>>> diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial/8250/8250_lpc18xx.c
->>>>> index 99cd478..9d30276 100644
->>>>> --- a/drivers/tty/serial/8250/8250_lpc18xx.c
->>>>> +++ b/drivers/tty/serial/8250/8250_lpc18xx.c
->>>>> @@ -175,6 +175,7 @@ static int lpc18xx_serial_probe(struct platform_device *pdev)
->>>>>       uart.port.private_data = data;
->>>>>       uart.port.rs485_config = lpc18xx_rs485_config;
->>>>>       uart.port.serial_out = lpc18xx_uart_serial_out;
->>>>> +     uart.capabilities = UART_CAP_HW485;
->>>>>
->>>>>       uart.dma = &data->dma;
->>>>>       uart.dma->rxconf.src_maxburst = 1;
->>>>> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
->>>>> index 4097f3f..c7c0ae9 100644
->>>>> --- a/drivers/tty/serial/8250/8250_pci.c
->>>>> +++ b/drivers/tty/serial/8250/8250_pci.c
->>>>> @@ -1599,6 +1599,7 @@ static int pci_fintek_setup(struct serial_private *priv,
->>>>>       port->port.iotype = UPIO_PORT;
->>>>>       port->port.iobase = iobase;
->>>>>       port->port.rs485_config = pci_fintek_rs485_config;
->>>>> +     port->capabilities = UART_CAP_HW485;
->>>>>
->>>>>       data = devm_kzalloc(&pdev->dev, sizeof(u8), GFP_KERNEL);
->>>>>       if (!data)
+> static void pl011_write(unsigned int val, const struct uart_amba_port *uap,
+>     unsigned int reg)
+> {
+>     void __iomem *addr = uap->port.membase + pl011_reg_to_offset(uap, reg);
+> 
+>     if (uap->port.iotype == UPIO_MEM32)
+>         writel(val, addr);
+>     else
+>         writew(val, addr);
+> }
+> 
+> 
