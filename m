@@ -1,121 +1,94 @@
-From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: Re: [PATCH v2 3/3] tty: Add software emulated RS485 support for 8250
-Date: Sun, 8 Nov 2015 13:52:19 +0300
-Message-ID: <CAJs94EaWQSqqUzqRoXO=vfBCf7CE+0Gt8C5-zGOB=t6ND0bSBg@mail.gmail.com>
-References: <1446890976-1817-1-git-send-email-matwey@sai.msu.ru>
- <1446890976-1817-3-git-send-email-matwey@sai.msu.ru> <563E20DE.7000209@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH 0/4] Replace tty->closing
+Date: Sun,  8 Nov 2015 17:02:49 -0500
+Message-ID: <1447020173-32207-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <563E20DE.7000209@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, Karsten Keil <isdn@linux-pingi.de>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Mikael Starvik <starvik@axis.com>, Jiri Kosina <jikos@kernel.org>, David Sterba <dsterba@suse.com>, Mark Hounschell <markh@compro.net>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-2015-11-07 19:03 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
-> Hi Matwey,
->
-> On 11/07/2015 05:09 AM, Matwey V. Kornilov wrote:
->> Implementation of software emulation of RS485 direction handling is based
->> on omap-serial driver.  It is acts as the following. At transmission start,
->> RTS is set (if required) and receiver is off (if required). At transmission
->> stop, RTS is set (if required) and fifo is flushed.
->
-> Comments below.
->
->> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
->> ---
->>  drivers/tty/serial/8250/8250_port.c | 32 ++++++++++++++++++++++++++++++++
->>  1 file changed, 32 insertions(+)
->>
->> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
->> index 52d82d2..a9291f7 100644
->> --- a/drivers/tty/serial/8250/8250_port.c
->> +++ b/drivers/tty/serial/8250/8250_port.c
->> @@ -559,7 +559,37 @@ static void serial8250_rpm_put_tx(struct uart_8250_port *p)
->>       pm_runtime_mark_last_busy(p->port.dev);
->>       pm_runtime_put_autosuspend(p->port.dev);
->>  }
->
-> Newline req'd here.
->
->> +static void serial8250_stop_rx(struct uart_port *port);
->
-> You can eliminate this forward decl by relocating serial8250_stop_rx() to here
-> (in a separate patch).
->
->> +static void serial8250_rs485_start_tx(struct uart_8250_port *p)
->> +{
->> +     if (p->capabilities & UART_CAP_HW485 || !(p->port.rs485.flags & SER_RS485_ENABLED))
->> +             return;
->> +
->> +     if (p->port.rs485.flags & SER_RS485_RTS_ON_SEND) {
->> +             serial_port_out(&p->port, UART_MCR, UART_MCR_RTS);
->> +             if (p->port.rs485.delay_rts_before_send > 0)
->> +                     mdelay(p->port.rs485.delay_rts_before_send);
->
-> So irqs are off for x msecs, and this cpu can't be used for anything else now?
-> I think this needs to be solved differently; maybe with a timer?
+Hi Greg,
 
-Call of serial8250_start_tx is wrapped with spin_lock_irq in serial_core.c:2154
-I've tried to use msleep instead of mdelay but got "BUG: scheduling
-while atomic".
+This series cleans up a messy and poorly documented mechanism required
+at tty final close to prevent drivers from crashing after h/w shutdown.
 
->
->> +     }
->> +     if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
->> +             serial8250_stop_rx(&p->port);
->> +}
->
-> Newline req'd here.
->
->> +static void serial8250_rs485_stop_tx(struct uart_8250_port *p)
->> +{
->> +     if (p->capabilities & UART_CAP_HW485 || !(p->port.rs485.flags & SER_RS485_ENABLED))
->> +             return;
->>
->> +     if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND) {
->> +             if (p->port.rs485.delay_rts_after_send > 0)
->> +                     mdelay(p->port.rs485.delay_rts_after_send);
->
-> Same issue with irqs off.
->
->> +             serial_port_out(&p->port, UART_MCR, UART_MCR_RTS);
->> +     }
->> +     /*
->> +     * Empty the RX FIFO, we are not interested in anything
->> +     * received during the half-duplex transmission.
->> +     */
->> +     if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
->> +             serial8250_clear_fifos(p);
->> +}
->>  /*
->>   * IER sleep support.  UARTs which have EFRs need the "extended
->>   * capability" bit enabled.  Note that on XR16C850s, we need to
->> @@ -1309,6 +1339,7 @@ static void serial8250_stop_tx(struct uart_port *port)
->>               up->acr |= UART_ACR_TXDIS;
->>               serial_icr_write(up, UART_ACR, up->acr);
->>       }
->> +     serial8250_rs485_stop_tx(up);
->>       serial8250_rpm_put(up);
->>  }
->>
->> @@ -1317,6 +1348,7 @@ static void serial8250_start_tx(struct uart_port *port)
->>       struct uart_8250_port *up = up_to_u8250p(port);
->>
->>       serial8250_rpm_get_tx(up);
->> +     serial8250_rs485_start_tx(up);
->>
->>       if (up->dma && !up->dma->tx_dma(up))
->>               return;
->>
->
+Without special handling, N_TTY echoing will cause driver i/o requests
+_after_ h/w shutdown, which typically crashes the driver. Currently,
+the tty_struct::closing flag triggers this special handling. However,
+this mechanism is error-prone and subject to driver misuse.
+
+This series replaces tty->closing with a ldisc-specific interface,
+tty_ldisc_closing(), and implements this interface for N_TTY.
+For tty drivers which use tty_port_close_start(), this change eliminates
+the last vestige of direct driver<->ldisc interaction. The few tty drivers
+which open-code the close() method still use [1] tty_ldisc_closing() directly.
+
+The tty driver is aware final close for the tty is commencing because the
+tty->count == 1 in the close() method. On final close, the following is
+also true:
+1. port->count == 1. tty drivers which ref count the port, use the
+   --port->count == 0 as a substitute condition for final close.
+2. final close is occurring as a result of the last in-use file descriptor
+   release. Consequently, there will be no read/poll/ioctl in-progress.
+3. the line discipline instance will be stopped and destroyed immediately
+   after the tty driver completes the close() method
+4. the tty itself will be unrefed immediately after the line discipline
+   instance is destroyed.
+
+Thus, the ldisc and tty buffers need only be flushed once, as any data
+received by the tty driver after the flush but before h/w shutdown will
+be deleted when the line discipline instance is destroyed.
+No new echoes will occur after the ldisc flush because the echo buffer
+is also flushed and new input (which otherwise might generate echoes) is
+ignored while closing. This series removes the extra tty_ldisc_flush()
+being performed by most drivers after h/w shutdown.
+
+Additionally, the ldisc closing state need not be reset since the line
+discipline instance is being destroyed, so no interface is provided to reset
+closing.
 
 
+[1] tty drivers which open-code the close() method
+drivers/staging/dgnc/dgnc_tty.c
+drivers/staging/dgap/dgap.c
+drivers/tty/hvc/hvsi.c
+drivers/tty/serial/68328serial.c
+drivers/tty/serial/crisv10.c
+drivers/isdn/i4l/isdn_tty.c
+drivers/s390/char/con3215.c
+
+
+Regards,
+
+Peter Hurley (4):
+  tty: rocket: Remove private close_wait
+  n_tty: Ignore all read data when closing
+  tty: Abstract and encapsulate tty->closing behavior
+  tty: Remove drivers' extra tty_ldisc_flush()
+
+ drivers/char/pcmcia/synclink_cs.c |  3 ---
+ drivers/isdn/i4l/isdn_tty.c       |  2 +-
+ drivers/s390/char/con3215.c       |  3 +--
+ drivers/staging/dgap/dgap.c       |  4 +---
+ drivers/staging/dgnc/dgnc_tty.c   |  4 +---
+ drivers/tty/amiserial.c           |  2 --
+ drivers/tty/hvc/hvsi.c            |  2 +-
+ drivers/tty/ipwireless/tty.c      |  1 -
+ drivers/tty/n_tty.c               | 15 +++++++++++----
+ drivers/tty/rocket.c              |  5 -----
+ drivers/tty/rocket_int.h          |  1 -
+ drivers/tty/serial/68328serial.c  |  3 +--
+ drivers/tty/serial/crisv10.c      |  3 +--
+ drivers/tty/serial/serial_core.c  |  3 ---
+ drivers/tty/synclink.c            |  1 -
+ drivers/tty/synclink_gt.c         |  1 -
+ drivers/tty/synclinkmp.c          |  1 -
+ drivers/tty/tty_ldisc.c           | 19 +++++++++++++++++++
+ drivers/tty/tty_port.c            |  5 +----
+ include/linux/tty.h               |  2 +-
+ include/linux/tty_ldisc.h         |  9 +++++++++
+ 21 files changed, 48 insertions(+), 41 deletions(-)
 
 -- 
-With best regards,
-Matwey V. Kornilov.
-Sternberg Astronomical Institute, Lomonosov Moscow State University, Russia
-119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
+2.6.3
