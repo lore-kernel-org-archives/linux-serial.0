@@ -1,144 +1,74 @@
-From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: Re: [PATCH v2 3/3] tty: Add software emulated RS485 support for 8250
-Date: Mon, 9 Nov 2015 18:45:05 +0300
-Message-ID: <CAJs94EYKgNg3qWTyVg4AiJ8nFWgerCOmj5sH+vPGwwyEgp3Rjg@mail.gmail.com>
-References: <1446890976-1817-1-git-send-email-matwey@sai.msu.ru>
- <1446890976-1817-3-git-send-email-matwey@sai.msu.ru> <563E20DE.7000209@hurleysoftware.com>
- <CAJs94EaWQSqqUzqRoXO=vfBCf7CE+0Gt8C5-zGOB=t6ND0bSBg@mail.gmail.com> <5640B071.8000806@hurleysoftware.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 12/13] [media] omap3isp: Support for deferred probing when requesting DMA channel
+Date: Mon, 09 Nov 2015 21:50:12 +0200
+Message-ID: <11319647.puY9n5DpsR@avalon>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com> <1432646768-12532-13-git-send-email-peter.ujfalusi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5640B071.8000806@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <1432646768-12532-13-git-send-email-peter.ujfalusi@ti.com>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Cc: vinod.koul@intel.com, tony@atomide.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dan.j.williams@intel.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-mmc@vger.kernel.org, linux-crypto@vger.kernel.org, linux-spi@vger.kernel.org, linux-media@vger.kernel.org, alsa-devel@alsa-project.org, Mauro Carvalho Chehab <mchehab@osg.samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-2015-11-09 17:40 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
-> On 11/08/2015 05:52 AM, Matwey V. Kornilov wrote:
->> 2015-11-07 19:03 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
->>> Hi Matwey,
->>>
->>> On 11/07/2015 05:09 AM, Matwey V. Kornilov wrote:
->>>> Implementation of software emulation of RS485 direction handling is based
->>>> on omap-serial driver.  It is acts as the following. At transmission start,
->>>> RTS is set (if required) and receiver is off (if required). At transmission
->>>> stop, RTS is set (if required) and fifo is flushed.
->>>
->>> Comments below.
->>>
->>>> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
->>>> ---
->>>>  drivers/tty/serial/8250/8250_port.c | 32 ++++++++++++++++++++++++++++++++
->>>>  1 file changed, 32 insertions(+)
->>>>
->>>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
->>>> index 52d82d2..a9291f7 100644
->>>> --- a/drivers/tty/serial/8250/8250_port.c
->>>> +++ b/drivers/tty/serial/8250/8250_port.c
->>>> @@ -559,7 +559,37 @@ static void serial8250_rpm_put_tx(struct uart_8250_port *p)
->>>>       pm_runtime_mark_last_busy(p->port.dev);
->>>>       pm_runtime_put_autosuspend(p->port.dev);
->>>>  }
->>>
->>> Newline req'd here.
->>>
->>>> +static void serial8250_stop_rx(struct uart_port *port);
->>>
->>> You can eliminate this forward decl by relocating serial8250_stop_rx() to here
->>> (in a separate patch).
->>>
->>>> +static void serial8250_rs485_start_tx(struct uart_8250_port *p)
->>>> +{
->>>> +     if (p->capabilities & UART_CAP_HW485 || !(p->port.rs485.flags & SER_RS485_ENABLED))
->>>> +             return;
->>>> +
->>>> +     if (p->port.rs485.flags & SER_RS485_RTS_ON_SEND) {
->>>> +             serial_port_out(&p->port, UART_MCR, UART_MCR_RTS);
->>>> +             if (p->port.rs485.delay_rts_before_send > 0)
->>>> +                     mdelay(p->port.rs485.delay_rts_before_send);
->>>
->>> So irqs are off for x msecs, and this cpu can't be used for anything else now?
->>> I think this needs to be solved differently; maybe with a timer?
->>
->> Call of serial8250_start_tx is wrapped with spin_lock_irq in serial_core.c:2154
->
-> Yep, which is why I pointed out "irqs are off for x msecs".
->
->> I've tried to use msleep instead of mdelay but got "BUG: scheduling
->> while atomic".
->
-> Right, can't sleep while irqs are off, which is why I suggested something
-> like a timer.
+Hi Peter,
 
-I am not sure that understand you correctly. Do you think that the
-following would be ok?
+Thank you for the patch.
 
-wait_queue_head_t wait;
-init_waitqueue_head(&wait);
-wait_event_timeout(wait, 0, p->port.rs485.delay_rts_before_send * HZ / 1000);
+What happened to this patch series ? It looks like 
+dma_request_slave_channel_compat_reason() isn't in mainline, so I can't apply 
+this patch.
 
->
-> Regards,
-> Peter Hurley
->
->>>> +     }
->>>> +     if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
->>>> +             serial8250_stop_rx(&p->port);
->>>> +}
->>>
->>> Newline req'd here.
->>>
->>>> +static void serial8250_rs485_stop_tx(struct uart_8250_port *p)
->>>> +{
->>>> +     if (p->capabilities & UART_CAP_HW485 || !(p->port.rs485.flags & SER_RS485_ENABLED))
->>>> +             return;
->>>>
->>>> +     if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND) {
->>>> +             if (p->port.rs485.delay_rts_after_send > 0)
->>>> +                     mdelay(p->port.rs485.delay_rts_after_send);
->>>
->>> Same issue with irqs off.
->>>
->>>> +             serial_port_out(&p->port, UART_MCR, UART_MCR_RTS);
->>>> +     }
->>>> +     /*
->>>> +     * Empty the RX FIFO, we are not interested in anything
->>>> +     * received during the half-duplex transmission.
->>>> +     */
->>>> +     if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
->>>> +             serial8250_clear_fifos(p);
->>>> +}
->>>>  /*
->>>>   * IER sleep support.  UARTs which have EFRs need the "extended
->>>>   * capability" bit enabled.  Note that on XR16C850s, we need to
->>>> @@ -1309,6 +1339,7 @@ static void serial8250_stop_tx(struct uart_port *port)
->>>>               up->acr |= UART_ACR_TXDIS;
->>>>               serial_icr_write(up, UART_ACR, up->acr);
->>>>       }
->>>> +     serial8250_rs485_stop_tx(up);
->>>>       serial8250_rpm_put(up);
->>>>  }
->>>>
->>>> @@ -1317,6 +1348,7 @@ static void serial8250_start_tx(struct uart_port *port)
->>>>       struct uart_8250_port *up = up_to_u8250p(port);
->>>>
->>>>       serial8250_rpm_get_tx(up);
->>>> +     serial8250_rs485_start_tx(up);
->>>>
->>>>       if (up->dma && !up->dma->tx_dma(up))
->>>>               return;
->>>>
->>>
->>
->>
->>
->
+I'll mark this patch as deferred in patchwork, please resubmit it if you 
+resubmit the series (and by the look of it the issue you're trying to fix 
+still exists, so it would be nice if you could get it eventually fixed).
 
-
+On Tuesday 26 May 2015 16:26:07 Peter Ujfalusi wrote:
+> Switch to use ma_request_slave_channel_compat_reason() to request the DMA
+> channel. Only fall back to pio mode if the error code returned is not
+> -EPROBE_DEFER, otherwise return from the probe with the -EPROBE_DEFER.
+> 
+> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> CC: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> CC: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+> ---
+>  drivers/media/platform/omap3isp/isphist.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/media/platform/omap3isp/isphist.c
+> b/drivers/media/platform/omap3isp/isphist.c index
+> 7138b043a4aa..e690ca13af0e 100644
+> --- a/drivers/media/platform/omap3isp/isphist.c
+> +++ b/drivers/media/platform/omap3isp/isphist.c
+> @@ -499,14 +499,20 @@ int omap3isp_hist_init(struct isp_device *isp)
+>  		if (res)
+>  			sig = res->start;
+> 
+> -		hist->dma_ch = dma_request_slave_channel_compat(mask,
+> +		hist->dma_ch = dma_request_slave_channel_compat_reason(mask,
+>  				omap_dma_filter_fn, &sig, isp->dev, "hist");
+> -		if (!hist->dma_ch)
+> +		if (IS_ERR(hist->dma_ch)) {
+> +			ret = PTR_ERR(hist->dma_ch);
+> +			if (ret == -EPROBE_DEFER)
+> +				return ret;
+> +
+> +			hist->dma_ch = NULL;
+>  			dev_warn(isp->dev,
+>  				 "hist: DMA channel request failed, using PIO\n");
+> -		else
+> +		} else {
+>  			dev_dbg(isp->dev, "hist: using DMA channel %s\n",
+>  				dma_chan_name(hist->dma_ch));
+> +		}
+>  	}
+> 
+>  	hist->ops = &hist_ops;
 
 -- 
-With best regards,
-Matwey V. Kornilov.
-Sternberg Astronomical Institute, Lomonosov Moscow State University, Russia
-119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
+Regards,
+
+Laurent Pinchart
+
