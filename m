@@ -1,134 +1,128 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 4/4] tty: Remove drivers' extra tty_ldisc_flush()
-Date: Mon,  9 Nov 2015 07:15:53 -0500
-Message-ID: <1447071353-2961-5-git-send-email-peter@hurleysoftware.com>
-References: <1447020173-32207-1-git-send-email-peter@hurleysoftware.com>
- <1447071353-2961-1-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH v2 3/3] tty: Add software emulated RS485 support for 8250
+Date: Mon, 9 Nov 2015 09:40:49 -0500
+Message-ID: <5640B071.8000806@hurleysoftware.com>
+References: <1446890976-1817-1-git-send-email-matwey@sai.msu.ru>
+ <1446890976-1817-3-git-send-email-matwey@sai.msu.ru>
+ <563E20DE.7000209@hurleysoftware.com>
+ <CAJs94EaWQSqqUzqRoXO=vfBCf7CE+0Gt8C5-zGOB=t6ND0bSBg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1447071353-2961-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <CAJs94EaWQSqqUzqRoXO=vfBCf7CE+0Gt8C5-zGOB=t6ND0bSBg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, Johannes Stezenbach <js@sig21.net>, Karsten Keil <isdn@linux-pingi.de>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Mikael Starvik <starvik@axis.com>, Jiri Kosina <jikos@kernel.org>, David Sterba <dsterba@suse.com>, Mark Hounschell <markh@compro.net>, Peter Hurley <peter@hurleysoftware.com>
+To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-The tty_port_close_start() helper already flushes the tty and ldisc
-buffers on final close; tty drivers which use this helper need not
-repeat tty_ldisc_flush().
+On 11/08/2015 05:52 AM, Matwey V. Kornilov wrote:
+> 2015-11-07 19:03 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
+>> Hi Matwey,
+>>
+>> On 11/07/2015 05:09 AM, Matwey V. Kornilov wrote:
+>>> Implementation of software emulation of RS485 direction handling is based
+>>> on omap-serial driver.  It is acts as the following. At transmission start,
+>>> RTS is set (if required) and receiver is off (if required). At transmission
+>>> stop, RTS is set (if required) and fifo is flushed.
+>>
+>> Comments below.
+>>
+>>> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
+>>> ---
+>>>  drivers/tty/serial/8250/8250_port.c | 32 ++++++++++++++++++++++++++++++++
+>>>  1 file changed, 32 insertions(+)
+>>>
+>>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+>>> index 52d82d2..a9291f7 100644
+>>> --- a/drivers/tty/serial/8250/8250_port.c
+>>> +++ b/drivers/tty/serial/8250/8250_port.c
+>>> @@ -559,7 +559,37 @@ static void serial8250_rpm_put_tx(struct uart_8250_port *p)
+>>>       pm_runtime_mark_last_busy(p->port.dev);
+>>>       pm_runtime_put_autosuspend(p->port.dev);
+>>>  }
+>>
+>> Newline req'd here.
+>>
+>>> +static void serial8250_stop_rx(struct uart_port *port);
+>>
+>> You can eliminate this forward decl by relocating serial8250_stop_rx() to here
+>> (in a separate patch).
+>>
+>>> +static void serial8250_rs485_start_tx(struct uart_8250_port *p)
+>>> +{
+>>> +     if (p->capabilities & UART_CAP_HW485 || !(p->port.rs485.flags & SER_RS485_ENABLED))
+>>> +             return;
+>>> +
+>>> +     if (p->port.rs485.flags & SER_RS485_RTS_ON_SEND) {
+>>> +             serial_port_out(&p->port, UART_MCR, UART_MCR_RTS);
+>>> +             if (p->port.rs485.delay_rts_before_send > 0)
+>>> +                     mdelay(p->port.rs485.delay_rts_before_send);
+>>
+>> So irqs are off for x msecs, and this cpu can't be used for anything else now?
+>> I think this needs to be solved differently; maybe with a timer?
+> 
+> Call of serial8250_start_tx is wrapped with spin_lock_irq in serial_core.c:2154
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/char/pcmcia/synclink_cs.c | 3 ---
- drivers/tty/amiserial.c           | 2 --
- drivers/tty/rocket.c              | 2 --
- drivers/tty/serial/serial_core.c  | 2 --
- drivers/tty/synclink.c            | 1 -
- drivers/tty/synclink_gt.c         | 1 -
- drivers/tty/synclinkmp.c          | 1 -
- drivers/tty/tty_port.c            | 2 --
- 8 files changed, 14 deletions(-)
+Yep, which is why I pointed out "irqs are off for x msecs".
 
-diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
-index 45df4bf..3f74677 100644
---- a/drivers/char/pcmcia/synclink_cs.c
-+++ b/drivers/char/pcmcia/synclink_cs.c
-@@ -2354,10 +2354,7 @@ static void mgslpc_close(struct tty_struct *tty, struct file * filp)
- 		mgslpc_wait_until_sent(tty, info->timeout);
- 
- 	mgslpc_flush_buffer(tty);
--
--	tty_ldisc_flush(tty);
- 	shutdown(info, tty);
--	
- 	tty_port_close_end(port, tty);
- 	tty_port_tty_set(port, NULL);
- cleanup:
-diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index 2caaf5a..bffc0a4 100644
---- a/drivers/tty/amiserial.c
-+++ b/drivers/tty/amiserial.c
-@@ -1420,8 +1420,6 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
- 	}
- 	shutdown(tty, state);
- 	rs_flush_buffer(tty);
--		
--	tty_ldisc_flush(tty);
- 	port->tty = NULL;
- 
- 	tty_port_close_end(port, tty);
-diff --git a/drivers/tty/rocket.c b/drivers/tty/rocket.c
-index a6b5ce0..5905200 100644
---- a/drivers/tty/rocket.c
-+++ b/drivers/tty/rocket.c
-@@ -1022,8 +1022,6 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
- 		sClrDTR(cp);
- 
- 	rp_flush_buffer(tty);
--		
--	tty_ldisc_flush(tty);
- 
- 	clear_bit((info->aiop * 8) + info->chan, (void *) &xmit_flags[info->board]);
- 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index db27a40..418587f 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1439,8 +1439,6 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	wake_up_interruptible(&port->open_wait);
- 
- 	mutex_unlock(&port->mutex);
--
--	tty_ldisc_flush(tty);
- }
- 
- static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
-diff --git a/drivers/tty/synclink.c b/drivers/tty/synclink.c
-index 6188059..1334498 100644
---- a/drivers/tty/synclink.c
-+++ b/drivers/tty/synclink.c
-@@ -3099,7 +3099,6 @@ static void mgsl_close(struct tty_struct *tty, struct file * filp)
-  	if (info->port.flags & ASYNC_INITIALIZED)
-  		mgsl_wait_until_sent(tty, info->timeout);
- 	mgsl_flush_buffer(tty);
--	tty_ldisc_flush(tty);
- 	shutdown(info);
- 	mutex_unlock(&info->port.mutex);
- 
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index 5505ea8..1987fb4 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -729,7 +729,6 @@ static void close(struct tty_struct *tty, struct file *filp)
-  	if (info->port.flags & ASYNC_INITIALIZED)
-  		wait_until_sent(tty, info->timeout);
- 	flush_buffer(tty);
--	tty_ldisc_flush(tty);
- 
- 	shutdown(info);
- 	mutex_unlock(&info->port.mutex);
-diff --git a/drivers/tty/synclinkmp.c b/drivers/tty/synclinkmp.c
-index fb00a06..fb17dac 100644
---- a/drivers/tty/synclinkmp.c
-+++ b/drivers/tty/synclinkmp.c
-@@ -816,7 +816,6 @@ static void close(struct tty_struct *tty, struct file *filp)
-  		wait_until_sent(tty, info->timeout);
- 
- 	flush_buffer(tty);
--	tty_ldisc_flush(tty);
- 	shutdown(info);
- 	mutex_unlock(&info->port.mutex);
- 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index ecb6435..c30525a 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -503,8 +503,6 @@ void tty_port_close_end(struct tty_port *port, struct tty_struct *tty)
- {
- 	unsigned long flags;
- 
--	tty_ldisc_flush(tty);
--
- 	spin_lock_irqsave(&port->lock, flags);
- 
- 	if (port->blocked_open) {
--- 
-2.6.3
+> I've tried to use msleep instead of mdelay but got "BUG: scheduling
+> while atomic".
+
+Right, can't sleep while irqs are off, which is why I suggested something
+like a timer.
+
+Regards,
+Peter Hurley
+
+>>> +     }
+>>> +     if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
+>>> +             serial8250_stop_rx(&p->port);
+>>> +}
+>>
+>> Newline req'd here.
+>>
+>>> +static void serial8250_rs485_stop_tx(struct uart_8250_port *p)
+>>> +{
+>>> +     if (p->capabilities & UART_CAP_HW485 || !(p->port.rs485.flags & SER_RS485_ENABLED))
+>>> +             return;
+>>>
+>>> +     if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND) {
+>>> +             if (p->port.rs485.delay_rts_after_send > 0)
+>>> +                     mdelay(p->port.rs485.delay_rts_after_send);
+>>
+>> Same issue with irqs off.
+>>
+>>> +             serial_port_out(&p->port, UART_MCR, UART_MCR_RTS);
+>>> +     }
+>>> +     /*
+>>> +     * Empty the RX FIFO, we are not interested in anything
+>>> +     * received during the half-duplex transmission.
+>>> +     */
+>>> +     if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
+>>> +             serial8250_clear_fifos(p);
+>>> +}
+>>>  /*
+>>>   * IER sleep support.  UARTs which have EFRs need the "extended
+>>>   * capability" bit enabled.  Note that on XR16C850s, we need to
+>>> @@ -1309,6 +1339,7 @@ static void serial8250_stop_tx(struct uart_port *port)
+>>>               up->acr |= UART_ACR_TXDIS;
+>>>               serial_icr_write(up, UART_ACR, up->acr);
+>>>       }
+>>> +     serial8250_rs485_stop_tx(up);
+>>>       serial8250_rpm_put(up);
+>>>  }
+>>>
+>>> @@ -1317,6 +1348,7 @@ static void serial8250_start_tx(struct uart_port *port)
+>>>       struct uart_8250_port *up = up_to_u8250p(port);
+>>>
+>>>       serial8250_rpm_get_tx(up);
+>>> +     serial8250_rs485_start_tx(up);
+>>>
+>>>       if (up->dma && !up->dma->tx_dma(up))
+>>>               return;
+>>>
+>>
+> 
+> 
+> 
