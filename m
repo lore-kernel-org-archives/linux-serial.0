@@ -1,104 +1,99 @@
-From: Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 12/13] [media] omap3isp: Support for deferred probing when
- requesting DMA channel
-Date: Tue, 10 Nov 2015 09:56:17 +0200
-Message-ID: <5641A321.2070209@ti.com>
-References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
- <1432646768-12532-13-git-send-email-peter.ujfalusi@ti.com>
- <11319647.puY9n5DpsR@avalon>
+From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Subject: Re: [PATCH v2 3/3] tty: Add software emulated RS485 support for 8250
+Date: Tue, 10 Nov 2015 14:35:59 +0300
+Message-ID: <CAJs94EbGsjAfvpj3hgZO7DtkVz00-YYx+bzQQgO9C2cb70QHVQ@mail.gmail.com>
+References: <1446890976-1817-1-git-send-email-matwey@sai.msu.ru>
+ <1446890976-1817-3-git-send-email-matwey@sai.msu.ru> <563E20DE.7000209@hurleysoftware.com>
+ <CAJs94EaWQSqqUzqRoXO=vfBCf7CE+0Gt8C5-zGOB=t6ND0bSBg@mail.gmail.com>
+ <5640B071.8000806@hurleysoftware.com> <CAJs94EYKgNg3qWTyVg4AiJ8nFWgerCOmj5sH+vPGwwyEgp3Rjg@mail.gmail.com>
+ <56411088.9050304@hurleysoftware.com> <CAJs94EZO6KP-3jWPAM-OqMc2rxekxojYbvssAjb3fvybS0-RtA@mail.gmail.com>
+ <56411896.6060801@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <11319647.puY9n5DpsR@avalon>
-Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <56411896.6060801@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Laurent,
-
-On 11/09/2015 09:50 PM, Laurent Pinchart wrote:
-> Hi Peter,
->=20
-> Thank you for the patch.
->=20
-> What happened to this patch series ? It looks like=20
-> dma_request_slave_channel_compat_reason() isn't in mainline, so I can=
-'t apply=20
-> this patch.
->=20
-> I'll mark this patch as deferred in patchwork, please resubmit it if =
-you=20
-> resubmit the series
-
-The original series - containing this patch - generated a bit of discus=
-sion
-and it seams that I will need to do bigger change in the dmaengine API
-compared to this.
-I think this patch can be dropped as the dmaengine changes will not go =
-in as
-they were.
-
-(and by the look of it the issue you're trying to fix
-> still exists, so it would be nice if you could get it eventually fixe=
-d).
-
-Yes, the issue still valid for the OMAP/DaVinci driver the series was t=
-ouching.
-
-I will try to send a new series in the coming weeks.
-
-Thanks,
-P=E9ter
->=20
-> On Tuesday 26 May 2015 16:26:07 Peter Ujfalusi wrote:
->> Switch to use ma_request_slave_channel_compat_reason() to request th=
-e DMA
->> channel. Only fall back to pio mode if the error code returned is no=
-t
->> -EPROBE_DEFER, otherwise return from the probe with the -EPROBE_DEFE=
-R.
+2015-11-10 1:05 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
+> On 11/09/2015 04:43 PM, Matwey V. Kornilov wrote:
+>> 2015-11-10 0:30 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
+>>> On 11/09/2015 10:45 AM, Matwey V. Kornilov wrote:
+>>>> 2015-11-09 17:40 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
+>>>>> On 11/08/2015 05:52 AM, Matwey V. Kornilov wrote:
+>>>>>> 2015-11-07 19:03 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
+>>>>>>> On 11/07/2015 05:09 AM, Matwey V. Kornilov wrote:
+>>>
+>>> [...]
+>>>
+>>>>>>>> +static void serial8250_rs485_start_tx(struct uart_8250_port *p)
+>>>>>>>> +{
+>>>>>>>> +     if (p->capabilities & UART_CAP_HW485 || !(p->port.rs485.flags & SER_RS485_ENABLED))
+>>>>>>>> +             return;
+>>>>>>>> +
+>>>>>>>> +     if (p->port.rs485.flags & SER_RS485_RTS_ON_SEND) {
+>>>>>>>> +             serial_port_out(&p->port, UART_MCR, UART_MCR_RTS);
+>>>>>>>> +             if (p->port.rs485.delay_rts_before_send > 0)
+>>>>>>>> +                     mdelay(p->port.rs485.delay_rts_before_send);
+>>>>>>>
+>>>>>>> So irqs are off for x msecs, and this cpu can't be used for anything else now?
+>>>>>>> I think this needs to be solved differently; maybe with a timer?
+>>>>>>
+>>>>>> Call of serial8250_start_tx is wrapped with spin_lock_irq in serial_core.c:2154
+>>>>>
+>>>>> Yep, which is why I pointed out "irqs are off for x msecs".
+>>>>>
+>>>>>> I've tried to use msleep instead of mdelay but got "BUG: scheduling
+>>>>>> while atomic".
+>>>>>
+>>>>> Right, can't sleep while irqs are off, which is why I suggested something
+>>>>> like a timer.
+>>>>
+>>>> I am not sure that understand you correctly. Do you think that the
+>>>> following would be ok?
+>>>>
+>>>> wait_queue_head_t wait;
+>>>> init_waitqueue_head(&wait);
+>>>> wait_event_timeout(wait, 0, p->port.rs485.delay_rts_before_send * HZ / 1000);
+>>>
+>>> Except for spinning, there is no way to wait-in-place with irqs off.
+>>>
+>>> You'll need to do something more complex, like
+>>> 1. raise RTS
+>>> 2. start a timer _and return early without starting tx_
+>>> 3. timer goes off, handler actually starts tx
+>>>
 >>
->> Signed-off-by: Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>
->> CC: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->> CC: Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>
->> ---
->>  drivers/media/platform/omap3isp/isphist.c | 12 +++++++++---
->>  1 file changed, 9 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/media/platform/omap3isp/isphist.c
->> b/drivers/media/platform/omap3isp/isphist.c index
->> 7138b043a4aa..e690ca13af0e 100644
->> --- a/drivers/media/platform/omap3isp/isphist.c
->> +++ b/drivers/media/platform/omap3isp/isphist.c
->> @@ -499,14 +499,20 @@ int omap3isp_hist_init(struct isp_device *isp)
->>  		if (res)
->>  			sig =3D res->start;
->>
->> -		hist->dma_ch =3D dma_request_slave_channel_compat(mask,
->> +		hist->dma_ch =3D dma_request_slave_channel_compat_reason(mask,
->>  				omap_dma_filter_fn, &sig, isp->dev, "hist");
->> -		if (!hist->dma_ch)
->> +		if (IS_ERR(hist->dma_ch)) {
->> +			ret =3D PTR_ERR(hist->dma_ch);
->> +			if (ret =3D=3D -EPROBE_DEFER)
->> +				return ret;
->> +
->> +			hist->dma_ch =3D NULL;
->>  			dev_warn(isp->dev,
->>  				 "hist: DMA channel request failed, using PIO\n");
->> -		else
->> +		} else {
->>  			dev_dbg(isp->dev, "hist: using DMA channel %s\n",
->>  				dma_chan_name(hist->dma_ch));
->> +		}
->>  	}
->>
->>  	hist->ops =3D &hist_ops;
->=20
+>> I think this could lead to race conditions.
+>> AFAIU when the kernel calls ops->start_tx(uport) and the function
+>> returns, then it is supposed that the tx has been started.
+>
+> No; start_tx() must cause tx to become started, but tx does not
+> have to have _already_ started when start_tx() returns.
+>
+> It would be very inefficient for start_tx() to _guarantee_ tx has
+> already started _before_ returning. Note the 8250 driver merely
+> writes to IER (which could be buffered and bridged).
+>
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-spi" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thank you, now this is becoming clear to me.
+
+>> And that could be not true, if the timer is used.
+>
+> It's true that using a timer will be more complex with more state
+> to manage, but being unable to service interrupts with this cpu for
+> milliseconds is unacceptable.
+>
+> Regards,
+> Peter Hurley
+>
+
+
+
+-- 
+With best regards,
+Matwey V. Kornilov.
+Sternberg Astronomical Institute, Lomonosov Moscow State University, Russia
+119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
