@@ -1,34 +1,33 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: linux-next: Tree for Nov 10 (8250_mid.c)
-Date: Tue, 10 Nov 2015 10:12:26 -0800
-Message-ID: <5642338A.1000502@infradead.org>
-References: <20151110131914.297a5e60@canb.auug.org.au>
+From: Andi Kleen <andi@firstfloor.org>
+Subject: Re: 4.3 serial driver crashes with console shortly after boot
+Date: Tue, 10 Nov 2015 23:39:58 +0100
+Message-ID: <20151110223957.GI3533@two.firstfloor.org>
+References: <20151110002939.GG3533@two.firstfloor.org>
+ <56414DE9.20707@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151110131914.297a5e60@canb.auug.org.au>
+Content-Disposition: inline
+In-Reply-To: <56414DE9.20707@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Andi Kleen <andi@firstfloor.org>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 11/09/15 18:19, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Please do *not* add any material intended for v4.5 to your linux-next
-> included branches until after v4.4-rc1 has been released.
-> 
-> Changes since 20151109:
-> 
+> I've just tried to reproduce this without success on my current
+> tree which has some additional patches I just posted this am. They weren't
+> intended to fix crashes but they directly impact the area of concern. Could
+> you try these three?
+>
+> [PATCH v2 2/4] n_tty: Ignore all read data when closing
+> [PATCH v2 3/4] tty: Abstract and encapsulate tty->closing behavior
+> [PATCH v2 4/4] tty: Remove drivers' extra tty_ldisc_flush()
+>
+Applying the three patches fixes the crash. 
+I haven't tried to figure out which one did the trick.
 
-on x86_64:
+Thanks,
 
-drivers/built-in.o: In function `mid8250_set_termios':
-8250_mid.c:(.text+0x10169a): undefined reference to `rational_best_approximation'
-
-CONFIG_RATIONAL is not enabled.  Just need to select it I think.
-
-
+-Andi
 -- 
-~Randy
+ak@linux.intel.com -- Speaking for myself only.
