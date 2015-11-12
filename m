@@ -1,66 +1,68 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 3/3] tty: Add software emulated RS485 support for 8250
-Date: Thu, 12 Nov 2015 08:35:18 -0500
-Message-ID: <56449596.5020109@hurleysoftware.com>
-References: <1446890976-1817-1-git-send-email-matwey@sai.msu.ru>
- <1446890976-1817-3-git-send-email-matwey@sai.msu.ru>
- <56421759.8070103@hurleysoftware.com>
- <CAJs94EZnJi+s-pkLGFZNg9rV5v-Ky6veWk4vYFN2mTi7f12pVA@mail.gmail.com>
+From: DengChao <chao.deng@linaro.org>
+Subject: [PATCH V1] serial:bfin-uart:Remove 'struct timeval'
+Date: Thu, 12 Nov 2015 21:45:47 +0800
+Message-ID: <1447335947-14877-1-git-send-email-chao.deng@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAJs94EZnJi+s-pkLGFZNg9rV5v-Ky6veWk4vYFN2mTi7f12pVA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <y2038-bounces@lists.linaro.org>
+List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
+ <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
+List-Archive: <http://lists.linaro.org/pipermail/y2038/>
+List-Post: <mailto:y2038@lists.linaro.org>
+List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
+List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
+ <mailto:y2038-request@lists.linaro.org?subject=subscribe>
+Errors-To: y2038-bounces@lists.linaro.org
+Sender: "Y2038" <y2038-bounces@lists.linaro.org>
+To: sonic.zhang@analog.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: y2038@lists.linaro.org, chao.deng@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-On 11/12/2015 07:34 AM, Matwey V. Kornilov wrote:
-> 2015-11-10 19:12 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
->> On 11/07/2015 05:09 AM, Matwey V. Kornilov wrote:
->>> Implementation of software emulation of RS485 direction handling is based
->>> on omap-serial driver.  It is acts as the following. At transmission start,
->>> RTS is set (if required) and receiver is off (if required). At transmission
->>> stop, RTS is set (if required) and fifo is flushed.
->>>
->>> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
->>> ---
->>>  drivers/tty/serial/8250/8250_port.c | 32 ++++++++++++++++++++++++++++++++
->>>  1 file changed, 32 insertions(+)
->>>
->>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
->>> index 52d82d2..a9291f7 100644
->>> --- a/drivers/tty/serial/8250/8250_port.c
->>> +++ b/drivers/tty/serial/8250/8250_port.c
->>> @@ -559,7 +559,37 @@ static void serial8250_rpm_put_tx(struct uart_8250_port *p)
->>>       pm_runtime_mark_last_busy(p->port.dev);
->>>       pm_runtime_put_autosuspend(p->port.dev);
->>>  }
->>> +static void serial8250_stop_rx(struct uart_port *port);
->>> +static void serial8250_rs485_start_tx(struct uart_8250_port *p)
->>> +{
->>> +     if (p->capabilities & UART_CAP_HW485 || !(p->port.rs485.flags & SER_RS485_ENABLED))
->>> +             return;
->>> +
->>> +     if (p->port.rs485.flags & SER_RS485_RTS_ON_SEND) {
->>> +             serial_port_out(&p->port, UART_MCR, UART_MCR_RTS);
->>
->> The SER_RS485_RTS_ON_SEND bit is supposed to be the logic level of RTS,
->> so RTS should be driven to either 0 or 1 here (not just to 1).
-> 
-> By the way, I've found that p->mcr caches MCR inconsistently. Is it
-> supposed to be so? Or p->mcr is not for caching?
-
-Not for caching; it's for modal settings (eg., AFE) that the 8250 port
-driver needs to merge in when changing mctrl bits (DTR/RTS/etc).
-
-The serial core caches the mctrl bits in uart_port->mctrl, but IMO
-it would be simpler to always set/clear RTS here (rather than like
-the omap-serial driver where it checks the gpio value first).
-
-Is the assumption that userspace will not perform conflicting
-operations, such as ioctl(TIOCMSET) or ioctl(TCSETSx), with RS485 enabled?
-
-Regards,
-Peter Hurley
+VGhlIGJmaW4tdWFydCBjb2RlIHVzZXMgcmVhbCB0aW1lIHdpdGggc3RydWN0IHRpbWV2YWwuIFRo
+aXMgd2lsbApjYXVzZSBwcm9ibGVtcyBvbiAzMi1iaXQgYXJjaGl0ZWN0dXJlcyBpbiAyMDM4IHdo
+ZW4gdGltZV90Cm92ZXJmbG93cy4KU2luY2UgdGhlIGNvZGUganVzdCBuZWVkcyBkZWx0YSB2YWx1
+ZSBvZiB0aW1lLCBpdCBpcyBub3QKbmVjZXNzYXJ5IHRvIHJlY29yZCB0aGVtIGluIHJlYWwgdGlt
+ZS4KVGhpcyBwYXRjaCBjaGFuZ2VzIHRoZSBjb2RlIHRvIHVzZSB0aGUgbW9ub3RvbmljIHRpbWUg
+aW5zdGVhZCwKcmVwbGFjZXMgc3RydWN0IHRpbWV2YWwgYW5kIGRvX2dldHRpbWVvZmRheSgpIHdp
+dGggdTY0IGFuZAprdGltZV9nZXRfbnMoKS4KClNpZ25lZC1vZmYtYnk6IERlbmdDaGFvIDxjaGFv
+LmRlbmdAbGluYXJvLm9yZz4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvYmZpbl91YXJ0LmMgfCAy
+OSArKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDEzIGluc2Vy
+dGlvbnMoKyksIDE2IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3Nlcmlh
+bC9iZmluX3VhcnQuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9iZmluX3VhcnQuYwppbmRleCBhZTNj
+Zjk0Li4xMjcwY2M0IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvYmZpbl91YXJ0LmMK
+KysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2JmaW5fdWFydC5jCkBAIC0yMTMsNyArMjEzLDcgQEAg
+c3RhdGljIHZvaWQgYmZpbl9zZXJpYWxfc3RvcF9yeChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQog
+c3RhdGljIHZvaWQgYmZpbl9zZXJpYWxfcnhfY2hhcnMoc3RydWN0IGJmaW5fc2VyaWFsX3BvcnQg
+KnVhcnQpCiB7CiAJdW5zaWduZWQgaW50IHN0YXR1cywgY2gsIGZsZzsKLQlzdGF0aWMgc3RydWN0
+IHRpbWV2YWwgYW5vbWFseV9zdGFydCA9IHsgLnR2X3NlYyA9IDAgfTsKKwlzdGF0aWMgdTY0IGFu
+b21hbHlfc3RhcnQ7CiAKIAlzdGF0dXMgPSBVQVJUX0dFVF9MU1IodWFydCk7CiAJVUFSVF9DTEVB
+Ul9MU1IodWFydCk7CkBAIC0yNDYsMjcgKzI0NiwyNCBAQCBzdGF0aWMgdm9pZCBiZmluX3Nlcmlh
+bF9yeF9jaGFycyhzdHJ1Y3QgYmZpbl9zZXJpYWxfcG9ydCAqdWFydCkKIAkJICogY2hhcmFjdGVy
+IHRpbWUgKy8tIHNvbWUgcGVyY2VudC4gIFNvIDEuNSBzb3VuZHMgZ29vZC4gIEFsbCBvdGhlcgog
+CQkgKiBCbGFja2ZpbiBmYW1pbGllcyBvcGVyYXRlIHByb3Blcmx5LiAgV29vLgogCQkgKi8KLQkJ
+aWYgKGFub21hbHlfc3RhcnQudHZfc2VjKSB7Ci0JCQlzdHJ1Y3QgdGltZXZhbCBjdXJyOwotCQkJ
+c3VzZWNvbmRzX3QgdXNlY3M7CisJCWlmIChhbm9tYWx5X3N0YXJ0ID4gMCkgeworCQkJdTY0IGN1
+cnIsIG5zZWNzLCB0aHJlc2hvbGRfbnM7CiAKIAkJCWlmICgofmNoICYgKH5jaCArIDEpKSAmIDB4
+ZmYpCiAJCQkJZ290byBrbm93bl9nb29kX2NoYXI7CiAKLQkJCWRvX2dldHRpbWVvZmRheSgmY3Vy
+cik7Ci0JCQlpZiAoY3Vyci50dl9zZWMgLSBhbm9tYWx5X3N0YXJ0LnR2X3NlYyA+IDEpCisJCQlj
+dXJyID0ga3RpbWVfZ2V0X25zKCk7CisJCQluc2VjcyA9IGN1cnIgLSBhbm9tYWx5X3N0YXJ0Owor
+CQkJaWYgKG5zZWNzID4+IDMyKQogCQkJCWdvdG8ga25vd25fZ29vZF9jaGFyOwotCi0JCQl1c2Vj
+cyA9IDA7Ci0JCQlpZiAoY3Vyci50dl9zZWMgIT0gYW5vbWFseV9zdGFydC50dl9zZWMpCi0JCQkJ
+dXNlY3MgKz0gVVNFQ19QRVJfU0VDOwotCQkJdXNlY3MgKz0gY3Vyci50dl91c2VjIC0gYW5vbWFs
+eV9zdGFydC50dl91c2VjOwotCi0JCQlpZiAodXNlY3MgPiBVQVJUX0dFVF9BTk9NQUxZX1RIUkVT
+SE9MRCh1YXJ0KSkKKworCQkJdGhyZXNob2xkX25zID0gVUFSVF9HRVRfQU5PTUFMWV9USFJFU0hP
+TEQodWFydCkKKwkJCQkJCQkqIE5TRUNfUEVSX1VTRUM7CisJCQlpZiAobnNlY3MgPiB0aHJlc2hv
+bGRfbnMpCiAJCQkJZ290byBrbm93bl9nb29kX2NoYXI7CiAKIAkJCWlmIChjaCkKLQkJCQlhbm9t
+YWx5X3N0YXJ0LnR2X3NlYyA9IDA7CisJCQkJYW5vbWFseV9zdGFydCA9IDA7CiAJCQllbHNlCiAJ
+CQkJYW5vbWFseV9zdGFydCA9IGN1cnI7CiAKQEAgLTI3NCwxNCArMjcxLDE0IEBAIHN0YXRpYyB2
+b2lkIGJmaW5fc2VyaWFsX3J4X2NoYXJzKHN0cnVjdCBiZmluX3NlcmlhbF9wb3J0ICp1YXJ0KQog
+CiAga25vd25fZ29vZF9jaGFyOgogCQkJc3RhdHVzICY9IH5CSTsKLQkJCWFub21hbHlfc3RhcnQu
+dHZfc2VjID0gMDsKKwkJCWFub21hbHlfc3RhcnQgPSAwOwogCQl9CiAJfQogCiAJaWYgKHN0YXR1
+cyAmIEJJKSB7CiAJCWlmIChBTk9NQUxZXzA1MDAwMzYzKQogCQkJaWYgKGJmaW5fcmV2aWQoKSA8
+IDUpCi0JCQkJZG9fZ2V0dGltZW9mZGF5KCZhbm9tYWx5X3N0YXJ0KTsKKwkJCQlhbm9tYWx5X3N0
+YXJ0ID0ga3RpbWVfZ2V0X25zKCk7CiAJCXVhcnQtPnBvcnQuaWNvdW50LmJyaysrOwogCQlpZiAo
+dWFydF9oYW5kbGVfYnJlYWsoJnVhcnQtPnBvcnQpKQogCQkJZ290byBpZ25vcmVfY2hhcjsKLS0g
+CjEuOS4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpZ
+MjAzOCBtYWlsaW5nIGxpc3QKWTIwMzhAbGlzdHMubGluYXJvLm9yZwpodHRwczovL2xpc3RzLmxp
+bmFyby5vcmcvbWFpbG1hbi9saXN0aW5mby95MjAzOAo=
