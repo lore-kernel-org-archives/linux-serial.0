@@ -1,68 +1,29 @@
-From: DengChao <chao.deng@linaro.org>
-Subject: [PATCH V1] serial:bfin-uart:Remove 'struct timeval'
-Date: Thu, 12 Nov 2015 21:45:47 +0800
-Message-ID: <1447335947-14877-1-git-send-email-chao.deng@linaro.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [Y2038] [PATCH V1] serial:bfin-uart:Remove 'struct timeval'
+Date: Thu, 12 Nov 2015 14:49:56 +0100
+Message-ID: <4649363.jeEbMAWnTU@wuerfel>
+References: <1447335947-14877-1-git-send-email-chao.deng@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <y2038-bounces@lists.linaro.org>
-List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
-List-Archive: <http://lists.linaro.org/pipermail/y2038/>
-List-Post: <mailto:y2038@lists.linaro.org>
-List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
-List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=subscribe>
-Errors-To: y2038-bounces@lists.linaro.org
-Sender: "Y2038" <y2038-bounces@lists.linaro.org>
-To: sonic.zhang@analog.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: y2038@lists.linaro.org, chao.deng@linaro.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1447335947-14877-1-git-send-email-chao.deng@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: y2038@lists.linaro.org
+Cc: DengChao <chao.deng@linaro.org>, sonic.zhang@analog.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-VGhlIGJmaW4tdWFydCBjb2RlIHVzZXMgcmVhbCB0aW1lIHdpdGggc3RydWN0IHRpbWV2YWwuIFRo
-aXMgd2lsbApjYXVzZSBwcm9ibGVtcyBvbiAzMi1iaXQgYXJjaGl0ZWN0dXJlcyBpbiAyMDM4IHdo
-ZW4gdGltZV90Cm92ZXJmbG93cy4KU2luY2UgdGhlIGNvZGUganVzdCBuZWVkcyBkZWx0YSB2YWx1
-ZSBvZiB0aW1lLCBpdCBpcyBub3QKbmVjZXNzYXJ5IHRvIHJlY29yZCB0aGVtIGluIHJlYWwgdGlt
-ZS4KVGhpcyBwYXRjaCBjaGFuZ2VzIHRoZSBjb2RlIHRvIHVzZSB0aGUgbW9ub3RvbmljIHRpbWUg
-aW5zdGVhZCwKcmVwbGFjZXMgc3RydWN0IHRpbWV2YWwgYW5kIGRvX2dldHRpbWVvZmRheSgpIHdp
-dGggdTY0IGFuZAprdGltZV9nZXRfbnMoKS4KClNpZ25lZC1vZmYtYnk6IERlbmdDaGFvIDxjaGFv
-LmRlbmdAbGluYXJvLm9yZz4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvYmZpbl91YXJ0LmMgfCAy
-OSArKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDEzIGluc2Vy
-dGlvbnMoKyksIDE2IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3Nlcmlh
-bC9iZmluX3VhcnQuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9iZmluX3VhcnQuYwppbmRleCBhZTNj
-Zjk0Li4xMjcwY2M0IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvYmZpbl91YXJ0LmMK
-KysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2JmaW5fdWFydC5jCkBAIC0yMTMsNyArMjEzLDcgQEAg
-c3RhdGljIHZvaWQgYmZpbl9zZXJpYWxfc3RvcF9yeChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQog
-c3RhdGljIHZvaWQgYmZpbl9zZXJpYWxfcnhfY2hhcnMoc3RydWN0IGJmaW5fc2VyaWFsX3BvcnQg
-KnVhcnQpCiB7CiAJdW5zaWduZWQgaW50IHN0YXR1cywgY2gsIGZsZzsKLQlzdGF0aWMgc3RydWN0
-IHRpbWV2YWwgYW5vbWFseV9zdGFydCA9IHsgLnR2X3NlYyA9IDAgfTsKKwlzdGF0aWMgdTY0IGFu
-b21hbHlfc3RhcnQ7CiAKIAlzdGF0dXMgPSBVQVJUX0dFVF9MU1IodWFydCk7CiAJVUFSVF9DTEVB
-Ul9MU1IodWFydCk7CkBAIC0yNDYsMjcgKzI0NiwyNCBAQCBzdGF0aWMgdm9pZCBiZmluX3Nlcmlh
-bF9yeF9jaGFycyhzdHJ1Y3QgYmZpbl9zZXJpYWxfcG9ydCAqdWFydCkKIAkJICogY2hhcmFjdGVy
-IHRpbWUgKy8tIHNvbWUgcGVyY2VudC4gIFNvIDEuNSBzb3VuZHMgZ29vZC4gIEFsbCBvdGhlcgog
-CQkgKiBCbGFja2ZpbiBmYW1pbGllcyBvcGVyYXRlIHByb3Blcmx5LiAgV29vLgogCQkgKi8KLQkJ
-aWYgKGFub21hbHlfc3RhcnQudHZfc2VjKSB7Ci0JCQlzdHJ1Y3QgdGltZXZhbCBjdXJyOwotCQkJ
-c3VzZWNvbmRzX3QgdXNlY3M7CisJCWlmIChhbm9tYWx5X3N0YXJ0ID4gMCkgeworCQkJdTY0IGN1
-cnIsIG5zZWNzLCB0aHJlc2hvbGRfbnM7CiAKIAkJCWlmICgofmNoICYgKH5jaCArIDEpKSAmIDB4
-ZmYpCiAJCQkJZ290byBrbm93bl9nb29kX2NoYXI7CiAKLQkJCWRvX2dldHRpbWVvZmRheSgmY3Vy
-cik7Ci0JCQlpZiAoY3Vyci50dl9zZWMgLSBhbm9tYWx5X3N0YXJ0LnR2X3NlYyA+IDEpCisJCQlj
-dXJyID0ga3RpbWVfZ2V0X25zKCk7CisJCQluc2VjcyA9IGN1cnIgLSBhbm9tYWx5X3N0YXJ0Owor
-CQkJaWYgKG5zZWNzID4+IDMyKQogCQkJCWdvdG8ga25vd25fZ29vZF9jaGFyOwotCi0JCQl1c2Vj
-cyA9IDA7Ci0JCQlpZiAoY3Vyci50dl9zZWMgIT0gYW5vbWFseV9zdGFydC50dl9zZWMpCi0JCQkJ
-dXNlY3MgKz0gVVNFQ19QRVJfU0VDOwotCQkJdXNlY3MgKz0gY3Vyci50dl91c2VjIC0gYW5vbWFs
-eV9zdGFydC50dl91c2VjOwotCi0JCQlpZiAodXNlY3MgPiBVQVJUX0dFVF9BTk9NQUxZX1RIUkVT
-SE9MRCh1YXJ0KSkKKworCQkJdGhyZXNob2xkX25zID0gVUFSVF9HRVRfQU5PTUFMWV9USFJFU0hP
-TEQodWFydCkKKwkJCQkJCQkqIE5TRUNfUEVSX1VTRUM7CisJCQlpZiAobnNlY3MgPiB0aHJlc2hv
-bGRfbnMpCiAJCQkJZ290byBrbm93bl9nb29kX2NoYXI7CiAKIAkJCWlmIChjaCkKLQkJCQlhbm9t
-YWx5X3N0YXJ0LnR2X3NlYyA9IDA7CisJCQkJYW5vbWFseV9zdGFydCA9IDA7CiAJCQllbHNlCiAJ
-CQkJYW5vbWFseV9zdGFydCA9IGN1cnI7CiAKQEAgLTI3NCwxNCArMjcxLDE0IEBAIHN0YXRpYyB2
-b2lkIGJmaW5fc2VyaWFsX3J4X2NoYXJzKHN0cnVjdCBiZmluX3NlcmlhbF9wb3J0ICp1YXJ0KQog
-CiAga25vd25fZ29vZF9jaGFyOgogCQkJc3RhdHVzICY9IH5CSTsKLQkJCWFub21hbHlfc3RhcnQu
-dHZfc2VjID0gMDsKKwkJCWFub21hbHlfc3RhcnQgPSAwOwogCQl9CiAJfQogCiAJaWYgKHN0YXR1
-cyAmIEJJKSB7CiAJCWlmIChBTk9NQUxZXzA1MDAwMzYzKQogCQkJaWYgKGJmaW5fcmV2aWQoKSA8
-IDUpCi0JCQkJZG9fZ2V0dGltZW9mZGF5KCZhbm9tYWx5X3N0YXJ0KTsKKwkJCQlhbm9tYWx5X3N0
-YXJ0ID0ga3RpbWVfZ2V0X25zKCk7CiAJCXVhcnQtPnBvcnQuaWNvdW50LmJyaysrOwogCQlpZiAo
-dWFydF9oYW5kbGVfYnJlYWsoJnVhcnQtPnBvcnQpKQogCQkJZ290byBpZ25vcmVfY2hhcjsKLS0g
-CjEuOS4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpZ
-MjAzOCBtYWlsaW5nIGxpc3QKWTIwMzhAbGlzdHMubGluYXJvLm9yZwpodHRwczovL2xpc3RzLmxp
-bmFyby5vcmcvbWFpbG1hbi9saXN0aW5mby95MjAzOAo=
+On Thursday 12 November 2015 21:45:47 DengChao wrote:
+> The bfin-uart code uses real time with struct timeval. This will
+> cause problems on 32-bit architectures in 2038 when time_t
+> overflows.
+> Since the code just needs delta value of time, it is not
+> necessary to record them in real time.
+> This patch changes the code to use the monotonic time instead,
+> replaces struct timeval and do_gettimeofday() with u64 and
+> ktime_get_ns().
+> 
+> Signed-off-by: DengChao <chao.deng@linaro.org>
+> 
+
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
