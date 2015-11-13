@@ -1,50 +1,35 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
 Subject: Re: [PATCH v3 2/5] tty: Introduce SER_RS485_SOFTWARE read-only flag
  for struct serial_rs485
-Date: Thu, 12 Nov 2015 19:57:07 +0000
-Message-ID: <20151112195707.5e9cb1d8@lxorguk.ukuu.org.uk>
+Date: Fri, 13 Nov 2015 02:41:55 +0200
+Message-ID: <CAHp75Vdv-ycJfgA2xkjS2SrvL8N2vvrBMS-2d4ibBg-yvZying@mail.gmail.com>
 References: <1447338836-8785-1-git-send-email-matwey@sai.msu.ru>
 	<1447338836-8785-3-git-send-email-matwey@sai.msu.ru>
+	<20151112195707.5e9cb1d8@lxorguk.ukuu.org.uk>
+	<5644F4F2.2080408@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1447338836-8785-3-git-send-email-matwey@sai.msu.ru>
+In-Reply-To: <5644F4F2.2080408@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, peter@hurleysoftware.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "Matwey V. Kornilov" <matwey@sai.msu.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 12 Nov 2015 17:33:53 +0300
-"Matwey V. Kornilov" <matwey@sai.msu.ru> wrote:
+On Thu, Nov 12, 2015 at 10:22 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> On 11/12/2015 02:57 PM, One Thousand Gnomes wrote:
 
-> This flag is supposed to be used by uart drivers using software rs485 direction control.
-> 
-> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
-> ---
->  include/uapi/linux/serial.h | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-> index 25331f9..95b15ca 100644
-> --- a/include/uapi/linux/serial.h
-> +++ b/include/uapi/linux/serial.h
-> @@ -121,6 +121,9 @@ struct serial_rs485 {
->  #define SER_RS485_RTS_AFTER_SEND	(1 << 2)	/* Logical level for
->  							   RTS pin after sent*/
->  #define SER_RS485_RX_DURING_TX		(1 << 4)
-> +#define SER_RS485_SOFTWARE		(1 << 5)	/* Software
-> +							   implementation is
-> +							   being used */
+> An illustrative (kernel-space) example is the mess that is dmaengine_pause().
+> Some DMA implementations provide the means to stop and restart DMA without
+> losing data and some DMA implementations do not. Unfortunately, some
+> advertise they support dmaengine_pause() but only for lossy uses like audio.
+> Because the api hides this, the query interface for pause support is
+> useless.
 
-I've only got one question here - why do we need this flag. Why does the
-application care whether the timer is in the kernel or in the chip. In
-particular think about cases where some combinations of features require
-software fallback and others don't. What would the flag indicate then.
+The DMA pause() call means only pause with possibility to resume.
+There is a resume() call as well. Any driver which treats pause() as a
+complete stop is buggy driver and should be fixed.
 
-The patches look nice but I'd strongly favour not having a software flag.
-It should never matter as the kernel API is the same in all cases and we
-should therefore discourage application code from trying to know things
-it doesn't need to worry about.
-
-Alan
+-- 
+With Best Regards,
+Andy Shevchenko
