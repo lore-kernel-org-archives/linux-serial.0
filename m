@@ -1,46 +1,60 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v3 2/5] tty: Introduce SER_RS485_SOFTWARE read-only flag
- for struct serial_rs485
-Date: Fri, 13 Nov 2015 03:26:01 +0200
-Message-ID: <CAHp75VcoJh51ai_35vB_V7exyFwRT0NjKcs=a0TAdaU8+FuzwA@mail.gmail.com>
-References: <1447338836-8785-1-git-send-email-matwey@sai.msu.ru>
-	<1447338836-8785-3-git-send-email-matwey@sai.msu.ru>
-	<20151112195707.5e9cb1d8@lxorguk.ukuu.org.uk>
-	<5644F4F2.2080408@hurleysoftware.com>
-	<CAHp75Vdv-ycJfgA2xkjS2SrvL8N2vvrBMS-2d4ibBg-yvZying@mail.gmail.com>
-	<564538B4.20402@hurleysoftware.com>
+Subject: Re: [PATCH] serial: 8250_mid: Add missing dependency
+Date: Fri, 13 Nov 2015 03:31:04 +0200
+Message-ID: <CAHp75VescZjQWaP8ROmLEzxhKc=k0udFpfjWXm7qxxm_NxL9-w@mail.gmail.com>
+References: <1447334483-126186-1-git-send-email-heikki.krogerus@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <564538B4.20402@hurleysoftware.com>
+In-Reply-To: <1447334483-126186-1-git-send-email-heikki.krogerus@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "Matwey V. Kornilov" <matwey@sai.msu.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Stephen Rothwell <sfr@canb.auug.org.au>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Nov 13, 2015 at 3:11 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 11/12/2015 07:41 PM, Andy Shevchenko wrote:
->> On Thu, Nov 12, 2015 at 10:22 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
->>> On 11/12/2015 02:57 PM, One Thousand Gnomes wrote:
->>
->>> An illustrative (kernel-space) example is the mess that is dmaengine_pause().
->>> Some DMA implementations provide the means to stop and restart DMA without
->>> losing data and some DMA implementations do not. Unfortunately, some
->>> advertise they support dmaengine_pause() but only for lossy uses like audio.
->>> Because the api hides this, the query interface for pause support is
->>> useless.
->>
->> The DMA pause() call means only pause with possibility to resume.
->> There is a resume() call as well. Any driver which treats pause() as a
->> complete stop is buggy driver and should be fixed.
+On Thu, Nov 12, 2015 at 3:21 PM, Heikki Krogerus
+<heikki.krogerus@linux.intel.com> wrote:
+> 8250_mid uses rational_best_approximation() function, so the
+> driver needs to select CONFIG_RATIONAL option.
 >
-> How about pause _without_ the possibility to resume?
+> This fixes build error when CONFIG_RATIONAL is not enabled:
 >
-> https://groups.google.com/d/msg/linux.kernel/Abe0hfGcgsw/H0se55wC558J
+> drivers/built-in.o: In function `mid8250_set_termios':
+> 8250_mid.c:(.text+0x10169a): undefined reference to `rational_best_approximation'
+>
 
-Briefly what I got from the thread that Russel shows similar view on
-the API, so that's why he was objecting to add pause/resume calls for
-a specific hardware.
+Oh, man, I have the same fix in my local tree for weeks ;-)
+
+Acked-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> ---
+>  drivers/tty/serial/8250/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+> index e6f5e12..6412f14 100644
+> --- a/drivers/tty/serial/8250/Kconfig
+> +++ b/drivers/tty/serial/8250/Kconfig
+> @@ -373,6 +373,7 @@ config SERIAL_8250_MID
+>         depends on SERIAL_8250 && PCI
+>         select HSU_DMA if SERIAL_8250_DMA
+>         select HSU_DMA_PCI if X86_INTEL_MID
+> +       select RATIONAL
+>         help
+>           Selecting this option will enable handling of the extra features
+>           present on the UART found on Intel Medfield SOC and various other
+> --
+> 2.6.2
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+
+
 
 -- 
 With Best Regards,
