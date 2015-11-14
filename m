@@ -1,64 +1,62 @@
-From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH v3 2/5] tty: Introduce SER_RS485_SOFTWARE read-only flag
  for struct serial_rs485
-Date: Fri, 13 Nov 2015 23:03:26 +0300
-Message-ID: <CAJs94EZeLPo-8aeFB69MgZEgtAP5a6zf-jdM9JOf+K6yL0hiWQ@mail.gmail.com>
+Date: Sat, 14 Nov 2015 15:25:36 +0000
+Message-ID: <20151114152536.693d964c@lxorguk.ukuu.org.uk>
 References: <1447338836-8785-1-git-send-email-matwey@sai.msu.ru>
- <1447338836-8785-3-git-send-email-matwey@sai.msu.ru> <20151112195707.5e9cb1d8@lxorguk.ukuu.org.uk>
+	<1447338836-8785-3-git-send-email-matwey@sai.msu.ru>
+	<20151112195707.5e9cb1d8@lxorguk.ukuu.org.uk>
+	<5644F4F2.2080408@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151112195707.5e9cb1d8@lxorguk.ukuu.org.uk>
+In-Reply-To: <5644F4F2.2080408@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, Peter Hurley <peter@hurleysoftware.com>, linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: "Matwey V. Kornilov" <matwey@sai.msu.ru>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-2015-11-12 22:57 GMT+03:00 One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>:
-> On Thu, 12 Nov 2015 17:33:53 +0300
-> "Matwey V. Kornilov" <matwey@sai.msu.ru> wrote:
->
->> This flag is supposed to be used by uart drivers using software rs485 direction control.
->>
->> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
->> ---
->>  include/uapi/linux/serial.h | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
->> index 25331f9..95b15ca 100644
->> --- a/include/uapi/linux/serial.h
->> +++ b/include/uapi/linux/serial.h
->> @@ -121,6 +121,9 @@ struct serial_rs485 {
->>  #define SER_RS485_RTS_AFTER_SEND     (1 << 2)        /* Logical level for
->>                                                          RTS pin after sent*/
->>  #define SER_RS485_RX_DURING_TX               (1 << 4)
->> +#define SER_RS485_SOFTWARE           (1 << 5)        /* Software
->> +                                                        implementation is
->> +                                                        being used */
->
-> I've only got one question here - why do we need this flag. Why does the
-> application care whether the timer is in the kernel or in the chip. In
-> particular think about cases where some combinations of features require
-> software fallback and others don't. What would the flag indicate then.
->
+> I specifically asked for it.
+> 
+> I can think of 2 reasons that userspace wants to know:
+> 1. Because the characteristics of the software emulation are unacceptable so
+>    the application wants to terminate w/error rather than continue.
 
-Peter asked for it, I respect his experience.
-Only two lines are required to implement this, so it is easy to add,
-easy to drop.
+But that could equally be true of hardware. In fact your software
+emulation is going to behave vastly better than many of the hardware ones.
 
-> The patches look nice but I'd strongly favour not having a software flag.
-> It should never matter as the kernel API is the same in all cases and we
-> should therefore discourage application code from trying to know things
-> it doesn't need to worry about.
->
-> Alan
->
+> 2. Because userspace will use different values for h/w vs. s/w. For example,
+>    right now, the emulation will raise/lower RTS prematurely when tx ends if
+>    the rts-after-send timer is 0.
 
+That's a bug then. It should be fixed as part of the merge or future
+patches - if they are not providing that emulation then they ought to do
+so and at least adjust the timing based on the baud rate so you don't
+have to spin polling the 16x50 uart to check the last bit fell out of the
+register.
 
+I'd have no problem with an API that was about asking what features are
+available : both hardware and software - but the software flag seems to
+make no sense at all. Software doesn't imply anything about quality or
+feature set. If there is something the emulation cannot support then
+there should be a flag indicating that feature is not supported, not a
+flag saying software (which means nothing - as it may be supported in
+future, or may differ by uart etc).
 
--- 
-With best regards,
-Matwey V. Kornilov.
-Sternberg Astronomical Institute, Lomonosov Moscow State University, Russia
-119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
+It's also not "easy to drop". If it ever goes in we are stuck with a
+pointless impossible to correctly set flag for all eternity.
+
+Please explain the correct setting for this flag when a device driver
+uses hardware or software or a mix according to what the silicon is
+capable of and what values are requested ? How will an application use the
+flag meaningfully. Please explain what will happen if someone discovers a
+silicon bug and in a future 4.x release turns an implementation from
+hardware to software - will they have to lie about the flag to avoid
+breaking their application code - that strikes me as a bad thing.
+
+At the very least the above should be clearly explained in the
+documentation and patch covering notes - and if nobody can explain those
+then IMHO the flag is broken.
+
+Alan
