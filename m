@@ -1,7 +1,7 @@
 From: Russell King <rmk+kernel@arm.linux.org.uk>
-Subject: [PATCH 12/12] tty: amba-pl011: switch to using relaxed IO accessors
-Date: Mon, 16 Nov 2015 17:41:02 +0000
-Message-ID: <E1ZyNm2-0003kQ-Oh@rmk-PC.arm.linux.org.uk>
+Subject: [PATCH 11/12] tty: amba-pl011: add support for ZTE UART (EXPERIMENTAL)
+Date: Mon, 16 Nov 2015 17:40:57 +0000
+Message-ID: <E1ZyNlx-0003kG-Ju@rmk-PC.arm.linux.org.uk>
 References: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,40 +22,80 @@ To: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc: Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, Timur Tabi <timur@tabi.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Using relaxed IO accessors allows GCC to better optimise this code
-as we eliminate the heavy memory barriers - for example, GCC can now
-cache the address of a register across a read-modify-write sequence,
-rather than reloading the base address, offset and access size flag.
+Add (incomplete) support for the ZTE UART to the AMBA PL011 driver.
+This is similar to the ARM and ST variants, except it has a different
+register address layout, and requires 32-bit accesses to the registers.
+Use the newly introduced register tables and access size support to
+cope with these differences.
 
 Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
 ---
- drivers/tty/serial/amba-pl011.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 23 +++++++++++++++++++++++
+ include/linux/amba/serial.h     | 18 ++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 54c6c88a71a3..a7d7ab05dc64 100644
+index 3470a1e67bbc..54c6c88a71a3 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -262,7 +262,7 @@ static unsigned int pl011_read(const struct uart_amba_port *uap,
- {
- 	void __iomem *addr = uap->port.membase + pl011_reg_to_offset(uap, reg);
+@@ -171,6 +171,29 @@ static struct vendor_data vendor_st = {
+ 	.get_fifosize		= get_fifosize_st,
+ };
  
--	return uap->access_32b ? readl(addr) : readw(addr);
-+	return uap->access_32b ? readl_relaxed(addr) : readw_relaxed(addr);
- }
++static const u16 pl011_zte_offsets[REG_ARRAY_SIZE] = {
++	[REG_DR] = ZX_UART011_DR,
++	[REG_FR] = ZX_UART011_FR,
++	[REG_LCRH_RX] = ZX_UART011_LCRH,
++	[REG_LCRH_TX] = ZX_UART011_LCRH,
++	[REG_IBRD] = ZX_UART011_IBRD,
++	[REG_FBRD] = ZX_UART011_FBRD,
++	[REG_CR] = ZX_UART011_CR,
++	[REG_IFLS] = ZX_UART011_IFLS,
++	[REG_IMSC] = ZX_UART011_IMSC,
++	[REG_RIS] = ZX_UART011_RIS,
++	[REG_MIS] = ZX_UART011_MIS,
++	[REG_ICR] = ZX_UART011_ICR,
++	[REG_DMACR] = ZX_UART011_DMACR,
++};
++
++static struct vendor_data vendor_zte = {
++	.reg_offset		= pl011_zte_offsets,
++	.access_32b		= true,
++	.ifls			= UART011_IFLS_RX4_8|UART011_IFLS_TX4_8,
++	.get_fifosize		= get_fifosize_arm,
++};
++
+ /* Deals with DMA transactions */
  
- static void pl011_write(unsigned int val, const struct uart_amba_port *uap,
-@@ -271,9 +271,9 @@ static void pl011_write(unsigned int val, const struct uart_amba_port *uap,
- 	void __iomem *addr = uap->port.membase + pl011_reg_to_offset(uap, reg);
+ struct pl011_sgbuf {
+diff --git a/include/linux/amba/serial.h b/include/linux/amba/serial.h
+index 0ddb5c02ad8b..d76a19ba2cff 100644
+--- a/include/linux/amba/serial.h
++++ b/include/linux/amba/serial.h
+@@ -65,6 +65,24 @@
+ #define ST_UART011_ABCR		0x100	/* Autobaud control register. */
+ #define ST_UART011_ABIMSC	0x15C	/* Autobaud interrupt mask/clear register. */
  
- 	if (uap->access_32b)
--		writel(val, addr);
-+		writel_relaxed(val, addr);
- 	else
--		writew(val, addr);
-+		writew_relaxed(val, addr);
- }
- 
- /*
++/*
++ * ZTE UART register offsets.  This UART has a radically different address
++ * allocation from the ARM and ST variants, so we list all registers here.
++ * We assume unlisted registers do not exist.
++ */
++#define ZX_UART011_DR		0x04
++#define ZX_UART011_FR		0x14
++#define ZX_UART011_IBRD		0x24
++#define ZX_UART011_FBRD		0x28
++#define ZX_UART011_LCRH		0x30
++#define ZX_UART011_CR		0x34
++#define ZX_UART011_IFLS		0x38
++#define ZX_UART011_IMSC		0x40
++#define ZX_UART011_RIS		0x44
++#define ZX_UART011_MIS		0x48
++#define ZX_UART011_ICR		0x4c
++#define ZX_UART011_DMACR	0x50
++
+ #define UART011_DR_OE		(1 << 11)
+ #define UART011_DR_BE		(1 << 10)
+ #define UART011_DR_PE		(1 << 9)
 -- 
 2.1.0
