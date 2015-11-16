@@ -1,68 +1,73 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: Linux 4.4-rc1
-Date: Sun, 15 Nov 2015 21:27:56 -0800
-Message-ID: <20151116052756.GA1546@roeck-us.net>
-References: <CA+55aFz8NHGxf0cvgQOVAmB=i+g+egty_j6nMYc1YBv4tXAvxg@mail.gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial: imx: fix a possible NULL dereference
+Date: Mon, 16 Nov 2015 13:14:45 +0100
+Message-ID: <20151116121445.GC22022@pengutronix.de>
+References: <1447314381-31145-1-git-send-email-clabbe.montjoie@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CA+55aFz8NHGxf0cvgQOVAmB=i+g+egty_j6nMYc1YBv4tXAvxg@mail.gmail.com>
+In-Reply-To: <1447314381-31145-1-git-send-email-clabbe.montjoie@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org
+To: LABBE Corentin <clabbe.montjoie@gmail.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Nov 15, 2015 at 05:24:37PM -0800, Linus Torvalds wrote:
-> So it's Sunday, two weeks has passed, and so 4.4-rc1 is out there and
-> the merge window is closed.
-> 
-> As usual, the full shortlog is much too big to post, so appended is
-> the usual shortlog of just my merges, which just shows who I did pulls
-> from, with a very short comment on each merge.
-> 
-> Just looking at the patch itself, things look fairly normal at a high
-> level, possibly a bit more driver-heavy than usual with about 75% of
-> the patch being drivers, and 10% being architecture updates. The
-> remaining 15% is documentation, filesystem, core networking (as
-> opposed to network drivers), tooling and some core infrastructure.
-> 
-> The driver changes are all over, although staging, networking and GPU
-> drivers stand out (and those three areas account for over half of the
-> driver changes - roughly 40% of the whole patch).
-> 
-> On the architecture side, ARM (when counting both 32-bit and 64-bit)
-> accounts for about half the changes, with x86, powerpc, mips, chris
-> and s390 accounting for the other half.
-> 
-> Go out and test.
-> 
-Build results:
-	total: 144 pass: 143 fail: 1
-Failed builds:
-	cris:allnoconfig
+Hello,
 
-Qemu test results:
-	total: 95 pass: 94 fail: 1
-Failed tests:
-	cris:crisv32_defconfig
+On Thu, Nov 12, 2015 at 08:46:21AM +0100, LABBE Corentin wrote:
+> of_match_device could return NULL, and so cause a NULL pointer
+> dereference later.
+>=20
+> Signed-off-by: LABBE Corentin <clabbe.montjoie@gmail.com>
+> ---
+>  drivers/tty/serial/imx.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 016e4be..22e91f7 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1857,8 +1857,7 @@ static int serial_imx_probe_dt(struct imx_port =
+*sport,
+>  		struct platform_device *pdev)
+>  {
+>  	struct device_node *np =3D pdev->dev.of_node;
+> -	const struct of_device_id *of_id =3D
+> -			of_match_device(imx_uart_dt_ids, &pdev->dev);
+> +	const struct of_device_id *of_id;
+>  	int ret;
+> =20
+>  	if (!np)
+> @@ -1878,6 +1877,9 @@ static int serial_imx_probe_dt(struct imx_port =
+*sport,
+>  	if (of_get_property(np, "fsl,dte-mode", NULL))
+>  		sport->dte_mode =3D 1;
+> =20
+> +	of_id =3D of_match_device(imx_uart_dt_ids, &pdev->dev);
+> +	if (!of_id)
+> +		return -ENODEV;
+>  	sport->devdata =3D of_id->data;
+> =20
+>  	return 0;
 
-cris:allnoconfig fails to build because of section mismatches, which is now
-fatal with allnoconfig builds (since 47490ec141b9, "modpost: Add flag -E for
-making section mismatches fatal"). Proposed patches to fix the problems are
-available at [1] and [2]. Other allnoconfig builds (untested by me) probably
-fail as well, though.
+I'd do something like:
 
-The cris:crisv32_defconfig qemu test crashes because of interference between
-commit 7d8c70d8048c ("serial: mctrl-gpio: rename init function") and commit
-7b9c5162c182 ("serial: etraxfs-uart: use mctrl_gpio helpers for handling
-modem signals"). A proposed patch is available at [3].
+-	if (!np)
++	sport->devdata =3D of_device_get_match_data(&pdev->dev);
++	if (!sport->devdata)
+ 		/* no device tree device */
+ 		return 1;
 
-Further details are available at http://server.roeck-us.net:8010/builders.
+instead.
 
-Guenter
+Best regards
+Uwe
 
----
-[1] https://patchwork.kernel.org/patch/7592471/
-[2] https://patchwork.kernel.org/patch/7592461/
-[3] https://patchwork.kernel.org/patch/7533041/
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
