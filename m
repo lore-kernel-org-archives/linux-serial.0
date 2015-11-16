@@ -1,38 +1,42 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 3/6] serial: mid8250: select CONFIG_RATIONAL
-Date: Mon, 16 Nov 2015 18:05:09 +0100
-Message-ID: <28108741.gZodRCNg2d@wuerfel>
-References: <1447688894-2936779-1-git-send-email-arnd@arndb.de> <1447688894-2936779-4-git-send-email-arnd@arndb.de> <1447692962.31665.145.camel@linux.intel.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: [PATCH 00/12] Prepare amba-pl011 for ZTE UART support
+Date: Mon, 16 Nov 2015 17:39:35 +0000
+Message-ID: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1447692962.31665.145.camel@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, Timur Tabi <timur@tabi.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Monday 16 November 2015 18:56:02 Andy Shevchenko wrote:
-> On Mon, 2015-11-16 at 16:48 +0100, Arnd Bergmann wrote:
-> > The Intel MID support got split out from the PCI 8250 driver,
-> > and that now causes a build error when no other driver selects
-> > CONFIG_RATIONAL:
-> 
-> Already published.
-> https://lkml.org/lkml/2015/11/12/272
-> 
-> It's not first time you send patches that already have been published.
-> 
-> I think you use some testing automation which doesn't take into
-> consideration what is sent in mailing lists.
+This series is a re-posting of the updates to the AMBA PL011 primecell
+serial port.
 
-Correct, it also ignores whatever patches other people have in private
-git trees, in their mail clients or in their heads.
+ZTE UARTs differ from the ARM version in two ways: the address layout
+of the register set is substantially different, and the register access
+size needs to be 32-bit.
 
-I try to send patches for things that break either on the first
-day they are broken so mine comes first, or I wait a while to see
-if a fix ends up in linux-next to give everyone else a chance to
-get their patch into next so I can catch it on a rebase.
+This series converts the driver to use a lookup table to address the
+first point, and switches to use a flag to indicate the access size.
+We also switch the driver to use relaxed accessors, which is safe as
+none of these are responsible for DMA configuration.
 
-	Arnd
+ drivers/tty/serial/amba-pl011.c | 335 ++++++++++++++++++++++++++--------------
+ drivers/tty/serial/amba-pl011.h |  34 ++++
+ include/linux/amba/serial.h     |  18 +++
+ 3 files changed, 269 insertions(+), 118 deletions(-)
+
+-- 
+FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
