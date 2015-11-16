@@ -1,11 +1,14 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: [PATCH 00/12] Prepare amba-pl011 for ZTE UART support
-Date: Mon, 16 Nov 2015 17:39:35 +0000
-Message-ID: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
+From: Russell King <rmk+kernel@arm.linux.org.uk>
+Subject: [PATCH 03/12] tty: amba-pl011: add helper to detect split LCRH
+ register
+Date: Mon, 16 Nov 2015 17:40:15 +0000
+Message-ID: <E1ZyNlH-0003jU-Lb@rmk-PC.arm.linux.org.uk>
+References: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
 Content-Disposition: inline
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
@@ -17,26 +20,45 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, Timur Tabi <timur@tabi.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, Timur Tabi <timur@tabi.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-This series is a re-posting of the updates to the AMBA PL011 primecell
-serial port.
+Add a helper to detect the split LCRH register found on ST variants.
 
-ZTE UARTs differ from the ARM version in two ways: the address layout
-of the register set is substantially different, and the register access
-size needs to be 32-bit.
+Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
+---
+ drivers/tty/serial/amba-pl011.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-This series converts the driver to use a lookup table to address the
-first point, and switches to use a flag to indicate the access size.
-We also switch the driver to use relaxed accessors, which is safe as
-none of these are responsible for DMA configuration.
-
- drivers/tty/serial/amba-pl011.c | 335 ++++++++++++++++++++++++++--------------
- drivers/tty/serial/amba-pl011.h |  34 ++++
- include/linux/amba/serial.h     |  18 +++
- 3 files changed, 269 insertions(+), 118 deletions(-)
-
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 0e7f045b8f4f..c9ae0a144f10 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1576,10 +1576,15 @@ static int pl011_hwinit(struct uart_port *port)
+ 	return 0;
+ }
+ 
++static bool pl011_split_lcrh(const struct uart_amba_port *uap)
++{
++	return uap->lcrh_rx != uap->lcrh_tx;
++}
++
+ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
+ {
+ 	pl011_write(lcr_h, uap, uap->lcrh_rx);
+-	if (uap->lcrh_rx != uap->lcrh_tx) {
++	if (pl011_split_lcrh(uap)) {
+ 		int i;
+ 		/*
+ 		 * Wait 10 PCLKs before writing LCRH_TX register,
+@@ -1713,7 +1718,7 @@ static void pl011_disable_uart(struct uart_amba_port *uap)
+ 	 * disable break condition and fifos
+ 	 */
+ 	pl011_shutdown_channel(uap, uap->lcrh_rx);
+-	if (uap->lcrh_rx != uap->lcrh_tx)
++	if (pl011_split_lcrh(uap))
+ 		pl011_shutdown_channel(uap, uap->lcrh_tx);
+ }
+ 
 -- 
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+2.1.0
