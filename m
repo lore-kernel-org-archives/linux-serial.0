@@ -1,83 +1,68 @@
 From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH -next] serial: etraxfs-uart: Fix crash
-Date: Sun, 15 Nov 2015 16:42:40 -0800
-Message-ID: <56492680.5040208@roeck-us.net>
-References: <1446431576-4385-1-git-send-email-linux@roeck-us.net>
- <20151102073755.GN4931@pengutronix.de> <5637D1F5.2090608@flawful.org>
- <20151102212933.GB4931@pengutronix.de> <56491B2F.30300@flawful.org>
+Subject: Re: Linux 4.4-rc1
+Date: Sun, 15 Nov 2015 21:27:56 -0800
+Message-ID: <20151116052756.GA1546@roeck-us.net>
+References: <CA+55aFz8NHGxf0cvgQOVAmB=i+g+egty_j6nMYc1YBv4tXAvxg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56491B2F.30300@flawful.org>
+Content-Disposition: inline
+In-Reply-To: <CA+55aFz8NHGxf0cvgQOVAmB=i+g+egty_j6nMYc1YBv4tXAvxg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Niklas Cassel <nks@flawful.org>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 11/15/2015 03:54 PM, Niklas Cassel wrote:
-> I think that Guenter's patch should be merged asap.
-> Right now the bug it fixes stops us from boot testing in qemu.
->
+On Sun, Nov 15, 2015 at 05:24:37PM -0800, Linus Torvalds wrote:
+> So it's Sunday, two weeks has passed, and so 4.4-rc1 is out there and
+> the merge window is closed.
+> 
+> As usual, the full shortlog is much too big to post, so appended is
+> the usual shortlog of just my merges, which just shows who I did pulls
+> from, with a very short comment on each merge.
+> 
+> Just looking at the patch itself, things look fairly normal at a high
+> level, possibly a bit more driver-heavy than usual with about 75% of
+> the patch being drivers, and 10% being architecture updates. The
+> remaining 15% is documentation, filesystem, core networking (as
+> opposed to network drivers), tooling and some core infrastructure.
+> 
+> The driver changes are all over, although staging, networking and GPU
+> drivers stand out (and those three areas account for over half of the
+> driver changes - roughly 40% of the whole patch).
+> 
+> On the architecture side, ARM (when counting both 32-bit and 64-bit)
+> accounts for about half the changes, with x86, powerpc, mips, chris
+> and s390 accounting for the other half.
+> 
+> Go out and test.
+> 
+Build results:
+	total: 144 pass: 143 fail: 1
+Failed builds:
+	cris:allnoconfig
 
-I'll send out a build (failure) report after -rc1 is out.
-Maybe that will create enough visibility to get the patch accepted
-(or officially Nacked).
+Qemu test results:
+	total: 95 pass: 94 fail: 1
+Failed tests:
+	cris:crisv32_defconfig
+
+cris:allnoconfig fails to build because of section mismatches, which is now
+fatal with allnoconfig builds (since 47490ec141b9, "modpost: Add flag -E for
+making section mismatches fatal"). Proposed patches to fix the problems are
+available at [1] and [2]. Other allnoconfig builds (untested by me) probably
+fail as well, though.
+
+The cris:crisv32_defconfig qemu test crashes because of interference between
+commit 7d8c70d8048c ("serial: mctrl-gpio: rename init function") and commit
+7b9c5162c182 ("serial: etraxfs-uart: use mctrl_gpio helpers for handling
+modem signals"). A proposed patch is available at [3].
+
+Further details are available at http://server.roeck-us.net:8010/builders.
 
 Guenter
 
-> For the broken mctrl irq handling part, when Uwe
-> has converted mxs-auart to use the generic irq init,
-> I can do the same for etraxfs + make sure that it gets tested
-> properly on real hardware.
->
-> On 11/02/2015 10:29 PM, Uwe Kleine-K=C3=B6nig wrote:
->> Helo Niklas,
->>
->> On Mon, Nov 02, 2015 at 10:13:25PM +0100, Niklas Cassel wrote:
->>> On 11/02/2015 08:37 AM, Uwe Kleine-K=C3=B6nig wrote:
->>>>> The function call in the etraxfs-uart driver was not renamed,
->>>>> possibly due to interference with commit 7b9c5162c182 ("serial:
->>>>> etraxfs-uart: use mctrl_gpio helpers for handling modem signals")=
-=2E
->>>> Yes. BTW, 7b9c5162c182 looks broken, too, because the interrupt ha=
-ndling
->>>> is missing.
->>> The only drivers including serial_mctrl_gpio.h is atmel_serial.c,
->>> clps711x.c, mxs-auart.c and etraxfs-uart.c
->>>
->>> etraxfs commit
->>> 7b9c5162c182 ("serial: etraxfs-uart: use mctrl_gpio helpers for han=
-dling modem signals")
->>> is heavily influenced by
->>> 62b0a1b3e759 ("serial: clps711x: Use mctrl_gpio helpers for handlin=
-g modem signals")
->>>
->>> a driver which also appears to lack mctrl irq setup/handling.
->>>
->>>
->>> Uwe, are you going to convert all serial drivers that includes seri=
-al_mctrl_gpio.h to
->>> use the new mctrl_gpio_init? (which also sets up irqs)
->> That is the plan. For drivers like mxs-auart (that do irq handling) =
-this
->> is just simplification. When the irq handling is missing converting =
-to
->> the new mctrl_gpio_init might introduce regressions because it does
->> request_irq which might fail.
->>
->>> Since mctrl gpios are optional in the device tree, I guess mctrl_gp=
-io_init handles if
->>> they are missing. So even if etraxfs-uart.c currently lacks mctrl i=
-rq setup/handling,
->>> if we migrate it to use the new mctrl_gpio_init, we will get this a=
-utomatically?
->> Right, if there are no gpios specified (new and old) mctrl_gpio is a
->> nop.
->>
->> Best regards
->> Uwe
->>
->
->
+---
+[1] https://patchwork.kernel.org/patch/7592471/
+[2] https://patchwork.kernel.org/patch/7592461/
+[3] https://patchwork.kernel.org/patch/7533041/
