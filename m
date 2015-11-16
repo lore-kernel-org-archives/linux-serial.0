@@ -1,90 +1,107 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5/6] serial: of: CONFIG_SERIAL_8250 is always set
-Date: Mon, 16 Nov 2015 16:48:13 +0100
-Message-ID: <1447688894-2936779-6-git-send-email-arnd@arndb.de>
+Subject: [PATCH 6/6] serial: 8250: move of_serial code to 8250 directory
+Date: Mon, 16 Nov 2015 16:48:14 +0100
+Message-ID: <1447688894-2936779-7-git-send-email-arnd@arndb.de>
 References: <1447688894-2936779-1-git-send-email-arnd@arndb.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1447688894-2936779-1-git-send-email-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The only other user of this code was the nwp-serial driver, but that
-is now gone, so we can remove a couple of #ifdef statments in this
-driver.
+As the of-serial driver is now 8250 specific, we can move the
+file to a more appropriate place in teh 8250 subdirectory and
+adapt the Kconfig help text and file name.
+
+I'm leaving the CONFIG_SERIAL_OF_PLATFORM symbol unchanged
+to avoid breaking user configuration files unnecessarily.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/tty/serial/of_serial.c | 18 ------------------
- 1 file changed, 18 deletions(-)
+ drivers/tty/serial/{of_serial.c => 8250/8250_of.c} |  0
+ drivers/tty/serial/8250/Kconfig                    |  9 +++++++++
+ drivers/tty/serial/8250/Makefile                   |  1 +
+ drivers/tty/serial/Kconfig                         | 10 ----------
+ drivers/tty/serial/Makefile                        |  1 -
+ 5 files changed, 10 insertions(+), 11 deletions(-)
+ rename drivers/tty/serial/{of_serial.c => 8250/8250_of.c} (100%)
 
-diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/of_serial.c
-index 276c804e7eb4..7044eb2be91b 100644
---- a/drivers/tty/serial/of_serial.c
-+++ b/drivers/tty/serial/of_serial.c
-@@ -21,10 +21,6 @@
- #include <linux/nwpserial.h>
- #include <linux/clk.h>
+diff --git a/drivers/tty/serial/of_serial.c b/drivers/tty/serial/8250/8250_of.c
+similarity index 100%
+rename from drivers/tty/serial/of_serial.c
+rename to drivers/tty/serial/8250/8250_of.c
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 6412f1455beb..f8507d718dd4 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -378,3 +378,12 @@ config SERIAL_8250_MID
+ 	  Selecting this option will enable handling of the extra features
+ 	  present on the UART found on Intel Medfield SOC and various other
+ 	  Intel platforms.
++
++config SERIAL_OF_PLATFORM
++	tristate "Devicetree based probing for 8250 ports"
++	depends on SERIAL_8250 && OF
++	help
++	  This option is used for all 8250 compatible serial ports that
++	  are probed through devicetree, including Open Firmware based
++	  PowerPC systems and embedded systems on architectures using the
++	  flattened device tree format.
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index e177f8681ada..4ecb80d3549a 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -28,5 +28,6 @@ obj-$(CONFIG_SERIAL_8250_MT6577)	+= 8250_mtk.o
+ obj-$(CONFIG_SERIAL_8250_UNIPHIER)	+= 8250_uniphier.o
+ obj-$(CONFIG_SERIAL_8250_INGENIC)	+= 8250_ingenic.o
+ obj-$(CONFIG_SERIAL_8250_MID)		+= 8250_mid.o
++obj-$(CONFIG_SERIAL_8250_OF)		+= 8250_of.o
  
--#ifdef CONFIG_SERIAL_8250_MODULE
--#define CONFIG_SERIAL_8250 CONFIG_SERIAL_8250_MODULE
--#endif
+ CFLAGS_8250_ingenic.o += -I$(srctree)/scripts/dtc/libfdt
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index a9c2200fd528..6879a5785be7 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1094,16 +1094,6 @@ config SERIAL_NETX_CONSOLE
+ 	  If you have enabled the serial port on the Hilscher NetX SoC
+ 	  you can make it the console by answering Y to this option.
+ 
+-config SERIAL_OF_PLATFORM
+-	tristate "Serial port on Open Firmware platform bus"
+-	depends on OF
+-	depends on SERIAL_8250
+-	help
+-	  If you have a PowerPC based system that has serial ports
+-	  on a platform specific bus, you should enable this option.
+-	  Currently, only 8250 compatible ports are supported, but
+-	  others can easily be added.
 -
- #include "8250/8250.h"
- 
- struct of_serial_info {
-@@ -195,7 +191,6 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 		goto out;
- 
- 	switch (port_type) {
--#ifdef CONFIG_SERIAL_8250
- 	case PORT_8250 ... PORT_MAX_8250:
- 	{
- 		struct uart_8250_port port8250;
-@@ -212,7 +207,6 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 		ret = serial8250_register_8250_port(&port8250);
- 		break;
- 	}
--#endif
- 	default:
- 		/* need to add code for these */
- 	case PORT_UNKNOWN:
-@@ -240,11 +234,9 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
- {
- 	struct of_serial_info *info = platform_get_drvdata(ofdev);
- 	switch (info->type) {
--#ifdef CONFIG_SERIAL_8250
- 	case PORT_8250 ... PORT_MAX_8250:
- 		serial8250_unregister_port(info->line);
- 		break;
--#endif
- 	default:
- 		/* need to add code for these */
- 		break;
-@@ -257,7 +249,6 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
- }
- 
- #ifdef CONFIG_PM_SLEEP
--#ifdef CONFIG_SERIAL_8250
- static void of_serial_suspend_8250(struct of_serial_info *info)
- {
- 	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
-@@ -278,15 +269,6 @@ static void of_serial_resume_8250(struct of_serial_info *info)
- 
- 	serial8250_resume_port(info->line);
- }
--#else
--static inline void of_serial_suspend_8250(struct of_serial_info *info)
--{
--}
--
--static inline void of_serial_resume_8250(struct of_serial_info *info)
--{
--}
--#endif
- 
- static int of_serial_suspend(struct device *dev)
- {
+ config SERIAL_OMAP
+ 	tristate "OMAP serial port support"
+ 	depends on ARCH_OMAP2PLUS
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index ee8893317433..b391c9b31960 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -63,7 +63,6 @@ obj-$(CONFIG_SERIAL_ATMEL) += atmel_serial.o
+ obj-$(CONFIG_SERIAL_UARTLITE) += uartlite.o
+ obj-$(CONFIG_SERIAL_MSM) += msm_serial.o
+ obj-$(CONFIG_SERIAL_NETX) += netx-serial.o
+-obj-$(CONFIG_SERIAL_OF_PLATFORM) += of_serial.o
+ obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
+ obj-$(CONFIG_SERIAL_KS8695) += serial_ks8695.o
+ obj-$(CONFIG_SERIAL_OMAP) += omap-serial.o
 -- 
 2.1.0.rc2
