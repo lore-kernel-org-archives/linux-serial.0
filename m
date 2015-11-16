@@ -1,49 +1,54 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 0/6] serial: fixes and cleanups
-Date: Mon, 16 Nov 2015 16:48:08 +0100
-Message-ID: <1447688894-2936779-1-git-send-email-arnd@arndb.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH 3/6] serial: mid8250: select CONFIG_RATIONAL
+Date: Mon, 16 Nov 2015 16:48:11 +0100
+Message-ID: <1447688894-2936779-4-git-send-email-arnd@arndb.de>
+References: <1447688894-2936779-1-git-send-email-arnd@arndb.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1447688894-2936779-1-git-send-email-arnd@arndb.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Scott Wood <scottwood@freescale.com>, Stefan Agner <stefan@agner.ch>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Benjamin Krill <ben@codiert.org>, linuxppc-dev@lists.ozlabs.org
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-I've had these patches sitting in my randconfig branch for a while,
-but have now gotten around to sending them. The first three are
-bug fixes for harmless problems that have shown up recently,
-so they should go into 4.4.
+The Intel MID support got split out from the PCI 8250 driver,
+and that now causes a build error when no other driver selects
+CONFIG_RATIONAL:
 
-The other three are part of a cleanup that we've been meaning
-to do for a while but that is not urgent at all.
+drivers/built-in.o: In function `mid8250_set_termios':
+(.text+0x77418): undefined reference to `rational_best_approximation'
 
-Arnd Bergmann (6):
-  serial: export fsl8250_handle_irq
-  serial: fsl-lpuart: move SERIAL_EARLYCON dependency to console
-  serial: mid8250: select CONFIG_RATIONAL
-  serial: remove NWP serial support
-  serial: of: CONFIG_SERIAL_8250 is always set
-  serial: 8250: move of_serial code to 8250 directory
+This adds an explicit 'select' like the combined driver had before.
 
- drivers/tty/serial/8250/8250_fsl.c                 |   1 +
- drivers/tty/serial/{of_serial.c => 8250/8250_of.c} |  32 --
- drivers/tty/serial/8250/Kconfig                    |  10 +
- drivers/tty/serial/8250/Makefile                   |   1 +
- drivers/tty/serial/Kconfig                         |  29 +-
- drivers/tty/serial/Makefile                        |   2 -
- drivers/tty/serial/nwpserial.c                     | 477 ---------------------
- include/linux/nwpserial.h                          |  18 -
- include/uapi/linux/serial_core.h                   |   2 +-
- 9 files changed, 14 insertions(+), 558 deletions(-)
- rename drivers/tty/serial/{of_serial.c => 8250/8250_of.c} (92%)
- delete mode 100644 drivers/tty/serial/nwpserial.c
- delete mode 100644 include/linux/nwpserial.h
-
--- 
-2.1.0.rc2
-
-Cc: Scott Wood <scottwood@freescale.com>
-Cc: Stefan Agner <stefan@agner.ch>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
 Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Benjamin Krill <ben@codiert.org>
-Cc: linuxppc-dev@lists.ozlabs.org
+---
+ drivers/tty/serial/8250/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index e6f5e12a2d83..6412f1455beb 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -373,6 +373,7 @@ config SERIAL_8250_MID
+ 	depends on SERIAL_8250 && PCI
+ 	select HSU_DMA if SERIAL_8250_DMA
+ 	select HSU_DMA_PCI if X86_INTEL_MID
++	select RATIONAL
+ 	help
+ 	  Selecting this option will enable handling of the extra features
+ 	  present on the UART found on Intel Medfield SOC and various other
+-- 
+2.1.0.rc2
