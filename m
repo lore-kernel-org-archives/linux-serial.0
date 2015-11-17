@@ -1,60 +1,53 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: Re: [PATCH 2/6] serial: fsl-lpuart: move SERIAL_EARLYCON dependency
- to console
-Date: Mon, 16 Nov 2015 16:29:06 -0800
-Message-ID: <8865948bb89ad128dae91aca9437c581@agner.ch>
-References: <1447688894-2936779-1-git-send-email-arnd@arndb.de>
- <1447688894-2936779-3-git-send-email-arnd@arndb.de>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: MFD device driver on top of UART/RS232
+Date: Tue, 17 Nov 2015 08:53:30 +0100
+Message-ID: <20151117075330.GJ8526@pengutronix.de>
+References: <564A035A.3050108@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1447688894-2936779-3-git-send-email-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-embedded-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <564A035A.3050108@gmail.com>
+Sender: linux-embedded-owner@vger.kernel.org
+To: Andrey Vostrikov <av.linux.dev@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-embedded@vger.kernel.org, NeilBrown <neil@brown.name>
 List-Id: linux-serial@vger.kernel.org
 
-FWIW,
+Hi Andrey,
 
-Acked-by: Stefan Agner <stefan@agner.ch>
++Cc NeilBrown <neil@brown.name>
 
-On 2015-11-16 07:48, Arnd Bergmann wrote:
-> The newly added earlycon support for lpuart adds a
-> 'select SERIAL_EARLYCON' statement for the tty driver, but that
-> only uses earlycon when console support is present, and otherwise
-> results in a pointless build error:
+On Mon, Nov 16, 2015 at 07:24:58PM +0300, Andrey Vostrikov wrote:
+> Hi,
 > 
-> drivers/built-in.o: In function `setup_earlycon':
-> :(.init.text+0x2c4c): undefined reference to `uart_parse_earlycon'
+> I have an embedded system with microcontroller connected via
+> UART/RS232 port. This microcontroller implements several low-level
+> functions that need to be exposed as device drivers in other
+> subsystems (watchdog, LEDs, HWMON, firmware read/write).
 > 
-> This changes the Kconfig statement to only select the earlycon
-> code if the console is also enabled, like all the other drivers
-> do already.
+> I checked many drivers implemented in the kernel, searched through
+> mail list archives and it looks like there are three different ways to
+> solve this task:
+> A) most of the devices that are connected using UART have user space
+> program that configures and manages it (either directly or with help
+> of dedicated line discipline, SLIP, SL-CAN, etc)
+> B) serio - mostly used for input devices
+> C) direct use of UART port taking control from serial_core.
 > 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 1d59b382f1c4 ("serial: fsl_lpuart: add earlycon support")
-> Cc: Stefan Agner <stefan@agner.ch>
-> ---
->  drivers/tty/serial/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 1aec4404062d..dbb8ac6afd40 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1539,13 +1539,13 @@ config SERIAL_FSL_LPUART
->  	tristate "Freescale lpuart serial port support"
->  	depends on HAS_DMA
->  	select SERIAL_CORE
-> -	select SERIAL_EARLYCON
->  	help
->  	  Support for the on-chip lpuart on some Freescale SOCs.
->  
->  config SERIAL_FSL_LPUART_CONSOLE
->  	bool "Console on Freescale lpuart serial port"
->  	depends on SERIAL_FSL_LPUART=y
-> +	select SERIAL_EARLYCON
->  	select SERIAL_CORE_CONSOLE
->  	help
->  	  If you have enabled the lpuart serial port on the Freescale SoCs,
+> The best match I have found so far is MFD driver for Atmel
+> Microcontroller on iPaq h3xxx (drivers/mfd/ipaq-micro.c) that follows
+> concept "C)"
+
+There's also D) TTY slave device support: https://lkml.org/lkml/2015/3/18/40
+
+Unfortunately this hasn't made it to mainline yet and it seems the
+parties lost interest after some lengthy discussion of device tree phandles
+vs. subnodes, but I think this is what you're looking for.
+
+Sascha
+
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
