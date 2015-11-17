@@ -1,94 +1,48 @@
-From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: Re: [PATCH v3 5/5] tty: Add software emulated RS485 support for 8250
-Date: Tue, 17 Nov 2015 13:25:36 +0300
-Message-ID: <CAJs94Eb=ioh4fFiU41LfaN1jhq8fWwDA9-cV=pvpOcVC65vdFw@mail.gmail.com>
-References: <1447338836-8785-1-git-send-email-matwey@sai.msu.ru>
- <1447338836-8785-6-git-send-email-matwey@sai.msu.ru> <20151117092442.GL22022@pengutronix.de>
+From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] [media] move media platform data to
+ linux/platform_data/media
+Date: Tue, 17 Nov 2015 10:37:08 +0000
+Message-ID: <20151117103708.GL31303@sirena.org.uk>
+References: <4d99e49726942dc4d6a6ee1debf6665b2b47908b.1447751746.git.mchehab@osg.samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151117092442.GL22022@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, Peter Hurley <peter@hurleysoftware.com>, linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="AQNmCumFClRcGgHG"
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <4d99e49726942dc4d6a6ee1debf6665b2b47908b.1447751746.git.mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>
+Cc: Linux Media Mailing List <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mauro Carvalho Chehab <mchehab-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Acked-by: Arnd Bergmann" <arnd-r2nGTMty4D4@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Daniel Mack <daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org>, Haojian Zhuang <haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robert Jarzmik <robert.jarzmik-GANU6spQydw@public.gmane.org>, Daniel Ribeiro <drwyrm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Stefan Schmidt <stefan-WB6LKoYH/xlAfugRpC6u6w@public.gmane.org>, Harald Welte <laforge-WB6LKoYH/xlAfugRpC6u6w@public.gmane.org>, Tomas Cech <sleep_walker-IBi9RG/b67k@public.gmane.org>, Sergey Lapin <slapin-9cOl001CZnBAfugRpC6u6w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Guennadi Liakhovetski <g.liakhovetski-Mmb7MZpHnFY@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj@>
 List-Id: linux-serial@vger.kernel.org
 
-2015-11-17 12:24 GMT+03:00 Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengu=
-tronix.de>:
-> Hello,
->
-> On Thu, Nov 12, 2015 at 05:33:56PM +0300, Matwey V. Kornilov wrote:
->> +static void serial8250_start_tx(struct uart_port *port)
->> +{
->> +     struct uart_8250_port *up =3D up_to_u8250p(port);
->> +     __u32 delay;
->> +
->> +     serial8250_rpm_get_tx(up);
->> +
->> +     if (timer_pending(&up->rs485_start_tx_timer))
->> +             return;
->
-> I think this is wrong (or at least suboptimal). The .start_tx callbac=
-k
-> can be called even if transmission is already ongoing. In this case y=
-ou
-> don't want to restart the rs485_start_tx_timer.
 
-If I understand you correctly, this maybe suboptimal but not wrong.
-Calling .start_tx during transmission will lead to call
-serial8250_rs485_start_tx which will return 0 because RTS is already
-in proper state, and then __start_tx will be called immediately. Just
-as it happens now.
+--AQNmCumFClRcGgHG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
->
->> +     if ((delay =3D serial8250_rs485_start_tx(up))) {
->> +             mod_timer(&up->rs485_start_tx_timer, jiffies + delay *=
- HZ / 1000);
->> +     } else {
->> +             __start_tx(port);
->> +     }
->> +}
->> +
->> [...]
->> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250=
-=2Eh
->> index faa0e03..c4905e7 100644
->> --- a/include/linux/serial_8250.h
->> +++ b/include/linux/serial_8250.h
->> @@ -86,6 +86,8 @@ struct uart_8250_ops {
->>  struct uart_8250_port {
->>       struct uart_port        port;
->>       struct timer_list       timer;          /* "no irq" timer */
->> +     struct timer_list       rs485_start_tx_timer; /* "rs485 start =
-tx" timer */
->> +     struct timer_list       rs485_stop_tx_timer; /* "rs485 stop tx=
-" timer */
->
-> Do you really need two timers here? At each point in time there shoul=
-d
-> only be at most one of them active.
+On Tue, Nov 17, 2015 at 07:15:59AM -0200, Mauro Carvalho Chehab wrote:
+> Now that media has its own subdirectory inside platform_data,
+> let's move the headers that are already there to such subdir.
 
-You are right, only one is active. Having two timers is implicit way
-to store the state ('starting' or 'stopping'). I don't think that this
-is the worst way.
+Acked-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
->
-> Best regards
-> Uwe
->
-> --
-> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig   =
-         |
-> Industrial Linux Solutions                 | http://www.pengutronix.d=
-e/  |
->
+--AQNmCumFClRcGgHG
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
+iQEcBAEBCAAGBQJWSwNTAAoJECTWi3JdVIfQ4KQH/jRi+u9vkGEn+1iMaGVdyCee
+J9U0tvtwOAlMOWV4MZJ6mINHE6nw6FQwEly8DLanBOkj9MtPKoiHejzPT9KPG5zl
+8895O9NAhgLh4DFi8rsoMsBx1lwK3YM0mXgdmRQxlkOkMcJd/7AsApobMen5IbwN
+q/7pMetyDSg9nRAcUQgRu2uJJLJpWmkDP/LgRCfYQDJtqQPDE/x9mEf1fAZ1QJ44
+gFxTJqlb6VUKa0K7puMfcNLmSaedJYx7DanpbiRGobzT+Zdi6dv+99nOcJsPqp3b
+kRRC2FU6gIrzJIO7kyUssJSxzPehZGP/LP8SSU0lHL3BZ5+VIsNemzMAJv+hsiA=
+=fW+n
+-----END PGP SIGNATURE-----
 
---=20
-With best regards,
-Matwey V. Kornilov.
-Sternberg Astronomical Institute, Lomonosov Moscow State University, Ru=
-ssia
-119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
+--AQNmCumFClRcGgHG--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
