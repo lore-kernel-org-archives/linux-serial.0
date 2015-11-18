@@ -1,59 +1,63 @@
-From: Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [PATCH 8/9] ARM: meson: serial: ensure tx irq on if more work to do
-Date: Wed, 18 Nov 2015 14:41:18 +0000
-Message-ID: <1447857679-30158-9-git-send-email-ben.dooks@codethink.co.uk>
-References: <1447857679-30158-1-git-send-email-ben.dooks@codethink.co.uk>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 02/13] dmaengine: Introduce dma_request_slave_channel_compat_reason()
+Date: Wed, 18 Nov 2015 16:07:42 +0100
+Message-ID: <6358656.jIv3GGCCXu@wuerfel>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com> <6347063.Gd6coh6hX8@wuerfel> <564C8E1F.8010501@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1447857679-30158-1-git-send-email-ben.dooks@codethink.co.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: edward.cragg@codethink.co.uk
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-meson@googlegroups.com, linux-kernel@codethink.co.uk, Ben Dooks <ben.dooks@codethink.co.uk>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, carlo@caione.org, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <564C8E1F.8010501@ti.com>
+Sender: linux-crypto-owner@vger.kernel.org
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Cc: Vinod Koul <vinod.koul@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Tony Lindgren <tony@atomide.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Linux MMC List <linux-mmc@vger.kernel.org>, linux-crypto@vger.kernel.org, linux-spi <linux-spi@vger.kernel.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, ALSA Development Mailing List <alsa-devel@alsa-project.org>
 List-Id: linux-serial@vger.kernel.org
 
-The tx_stop() call turns the interrupt off, but the tx_start() does not
-check if the interrupt is enabled. Switch it back on if there is more
-work to do.
+On Wednesday 18 November 2015 16:41:35 Peter Ujfalusi wrote:
+> On 11/18/2015 04:29 PM, Arnd Bergmann wrote:
+> > On Wednesday 18 November 2015 16:21:26 Peter Ujfalusi wrote:
+> >> 2. non slave channel requests, where only the functionality matters, like
+> >> memcpy, interleaved, memset, etc.
+> >> We could have a simple:
+> >> dma_request_channel(mask);
+> >>
+> >> But looking at the drivers using dmaengine legacy dma_request_channel() API:
+> >> Some sets DMA_INTERRUPT or DMA_PRIVATE or DMA_SG along with DMA_SLAVE:
+> >> drivers/misc/carma/carma-fpga.c                 DMA_INTERRUPT|DMA_SLAVE|DMA_SG
+> >> drivers/misc/carma/carma-fpga-program.c         DMA_MEMCPY|DMA_SLAVE|DMA_SG
+> >> drivers/media/platform/soc_camera/mx3_camera.c  DMA_SLAVE|DMA_PRIVATE
+> >> sound/soc/intel/common/sst-firmware.c           DMA_SLAVE|DMA_MEMCPY
+> >>
+> >> as examples.
+> >> Not sure how valid are these...
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
----
- drivers/tty/serial/meson_uart.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+I just had a look myself. carma has been removed fortunately in linux-next,
+so we don't have to worry about that any more.
 
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index 12436cc..6c36526 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -144,6 +144,7 @@ static void meson_uart_start_tx(struct uart_port *port)
- {
- 	struct circ_buf *xmit = &port->state->xmit;
- 	unsigned int ch;
-+	u32 val;
- 
- 	if (uart_tx_stopped(port)) {
- 		meson_uart_stop_tx(port);
-@@ -167,6 +168,12 @@ static void meson_uart_start_tx(struct uart_port *port)
- 		port->icount.tx++;
- 	}
- 
-+	if (!uart_circ_empty(xmit)) {
-+		val = readl(port->membase + AML_UART_CONTROL);
-+		val |= AML_UART_TX_INT_EN;
-+		writel(val, port->membase + AML_UART_CONTROL);
-+	}
-+
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
- }
--- 
-2.6.2
+I assume that the sst-firmware.c case is a mistake, it should just use a
+plain DMA_SLAVE and not DMA_MEMCPY.
+
+Aside from these, everyone else uses either DMA_CYCLIC in addition to
+DMA_SLAVE, which seems valid, or they use DMA_PRIVATE, which I think is
+redundant in slave drivers and can be removed.
+
+> > It's usually not much harder to separate out the legacy case from
+> > the normal dma_request_slave_channel_reason(), so those drivers don't
+> > really need to use the unified compat API.
+> 
+> The current dma_request_slave_channel()/_reason() is not the 'legacy' API.
+> Currently there is no way to get the reason why the dma channel request fails
+> when using the _compat() version of the API, which is used by drivers which
+> can be used in DT or in legacy mode as well. Sure, they all could have local
+> if(){}else{} for handling this, but it is not a nice thing.
+> 
+> As it was discussed instead of adding the _reason() version for the _compat
+> call, we should simplify the dmaengine API for getting the channel and at the
+> same time we will have ERR_PTR returned instead of NULL.
+
+What I meant was that we don't need to handle them with the unified
+simple interface. The users of DMA_CYCLIC can just keep using
+an internal helper that only deals with the legacy case, or use
+dma_request_slave() or whatever is the new API for the DT case.
+
+	Arnd
