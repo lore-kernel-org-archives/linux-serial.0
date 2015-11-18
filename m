@@ -1,8 +1,7 @@
 From: Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [PATCH 3/9] ARM: meson: serial: tx_empty fails to check for
- transmitter busy
-Date: Wed, 18 Nov 2015 14:41:13 +0000
-Message-ID: <1447857679-30158-4-git-send-email-ben.dooks@codethink.co.uk>
+Subject: [PATCH 5/9] ARM: meson: serial: only disable tx irq on stop
+Date: Wed, 18 Nov 2015 14:41:15 +0000
+Message-ID: <1447857679-30158-6-git-send-email-ben.dooks@codethink.co.uk>
 References: <1447857679-30158-1-git-send-email-ben.dooks@codethink.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,40 +21,41 @@ To: edward.cragg@codethink.co.uk
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-meson@googlegroups.com, linux-kernel@codethink.co.uk, Ben Dooks <ben.dooks@codethink.co.uk>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, carlo@caione.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The tx_empty() uart_op should only return empty if both the transmit fifo
-and the transmit state-machine are both idle. Add a test for the hardware's
-XMIT_BUSY flag.
+Since disabling the transmit state machine still allows characters to
+be transmitted when written to the UART write FIFO, simply disable the
+transmit interrupt when the UART port is stopped.
 
-Note, this is possibly related to an issue where the port is being shutdown
-with paritally transmitted characters in it.
+This has not shown an improvement with the console issues when running
+systemd, but seems like it should be done.
 
 Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
-Reported-by: Edward Cragg <edward.cragg@codethink.co.uk>
+Reported-by: Edward Cragg <ed.cragg@codethink.co.uk>
 ---
- drivers/tty/serial/meson_uart.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+---
+ drivers/tty/serial/meson_uart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index b87eb97..54d1b95 100644
+index c7bad2b..9327efd 100644
 --- a/drivers/tty/serial/meson_uart.c
 +++ b/drivers/tty/serial/meson_uart.c
-@@ -57,6 +57,7 @@
- #define AML_UART_RX_EMPTY		BIT(20)
- #define AML_UART_TX_FULL		BIT(21)
- #define AML_UART_TX_EMPTY		BIT(22)
-+#define AML_UART_XMIT_BUSY		BIT(25)
- #define AML_UART_ERR			(AML_UART_PARITY_ERR | \
- 					 AML_UART_FRAME_ERR  | \
- 					 AML_UART_TX_FIFO_WERR)
-@@ -100,7 +101,8 @@ static unsigned int meson_uart_tx_empty(struct uart_port *port)
+@@ -110,7 +110,7 @@ static void meson_uart_stop_tx(struct uart_port *port)
  	u32 val;
  
- 	val = readl(port->membase + AML_UART_STATUS);
--	return (val & AML_UART_TX_EMPTY) ? TIOCSER_TEMT : 0;
-+	val &= (AML_UART_TX_EMPTY | AML_UART_XMIT_BUSY);
-+	return (val == AML_UART_TX_EMPTY) ? TIOCSER_TEMT : 0;
+ 	val = readl(port->membase + AML_UART_CONTROL);
+-	val &= ~AML_UART_TX_EN;
++	val &= ~AML_UART_TX_INT_EN;
+ 	writel(val, port->membase + AML_UART_CONTROL);
  }
  
- static void meson_uart_stop_tx(struct uart_port *port)
+@@ -133,7 +133,7 @@ static void meson_uart_shutdown(struct uart_port *port)
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	val = readl(port->membase + AML_UART_CONTROL);
+-	val &= ~(AML_UART_RX_EN | AML_UART_TX_EN);
++	val &= ~AML_UART_RX_EN;
+ 	val &= ~(AML_UART_RX_INT_EN | AML_UART_TX_INT_EN);
+ 	writel(val, port->membase + AML_UART_CONTROL);
+ 
 -- 
 2.6.2
