@@ -1,7 +1,8 @@
 From: Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [PATCH 5/9] ARM: meson: serial: only disable tx irq on stop
-Date: Wed, 18 Nov 2015 14:41:15 +0000
-Message-ID: <1447857679-30158-6-git-send-email-ben.dooks@codethink.co.uk>
+Subject: [PATCH 7/9] ARM: meson: serial: disable rx/tx irqs during console
+ write
+Date: Wed, 18 Nov 2015 14:41:17 +0000
+Message-ID: <1447857679-30158-8-git-send-email-ben.dooks@codethink.co.uk>
 References: <1447857679-30158-1-git-send-email-ben.dooks@codethink.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,41 +22,44 @@ To: edward.cragg@codethink.co.uk
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-meson@googlegroups.com, linux-kernel@codethink.co.uk, Ben Dooks <ben.dooks@codethink.co.uk>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, carlo@caione.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Since disabling the transmit state machine still allows characters to
-be transmitted when written to the UART write FIFO, simply disable the
-transmit interrupt when the UART port is stopped.
+As an attempt to stop issues with bad console output, ensure that both the
+rx and tx interrupts are disabled during the console write to avoid any
+problems with console and non-console being called together.
 
-This has not shown an improvement with the console issues when running
-systemd, but seems like it should be done.
+This should help with the SMP case as it should stop other cores being
+signalled during the console write.
 
 Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
-Reported-by: Edward Cragg <ed.cragg@codethink.co.uk>
 ---
----
- drivers/tty/serial/meson_uart.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/meson_uart.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index c7bad2b..9327efd 100644
+index d3f2c96..12436cc 100644
 --- a/drivers/tty/serial/meson_uart.c
 +++ b/drivers/tty/serial/meson_uart.c
-@@ -110,7 +110,7 @@ static void meson_uart_stop_tx(struct uart_port *port)
- 	u32 val;
+@@ -472,7 +472,7 @@ static void meson_serial_console_write(struct console *co, const char *s,
+ 	struct uart_port *port;
+ 	unsigned long flags;
+ 	int locked;
+-	u32 val;
++	u32 val, tmp;
+ 
+ 	port = meson_ports[co->index];
+ 	if (!port)
+@@ -489,9 +489,12 @@ static void meson_serial_console_write(struct console *co, const char *s,
+ 	}
  
  	val = readl(port->membase + AML_UART_CONTROL);
--	val &= ~AML_UART_TX_EN;
-+	val &= ~AML_UART_TX_INT_EN;
- 	writel(val, port->membase + AML_UART_CONTROL);
- }
+-	writel(val | AML_UART_TX_EN, port->membase + AML_UART_CONTROL);
++	val |= AML_UART_TX_EN;
++	tmp = val & ~(AML_UART_TX_INT_EN | AML_UART_RX_INT_EN);
++	writel(tmp, port->membase + AML_UART_CONTROL);
  
-@@ -133,7 +133,7 @@ static void meson_uart_shutdown(struct uart_port *port)
- 	spin_lock_irqsave(&port->lock, flags);
+ 	uart_console_write(port, s, count, meson_console_putchar);
++	writel(val, port->membase + AML_UART_CONTROL);
  
- 	val = readl(port->membase + AML_UART_CONTROL);
--	val &= ~(AML_UART_RX_EN | AML_UART_TX_EN);
-+	val &= ~AML_UART_RX_EN;
- 	val &= ~(AML_UART_RX_INT_EN | AML_UART_TX_INT_EN);
- 	writel(val, port->membase + AML_UART_CONTROL);
- 
+ 	if (locked)
+ 		spin_unlock(&port->lock);
 -- 
 2.6.2
