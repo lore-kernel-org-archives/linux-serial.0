@@ -1,8 +1,8 @@
 From: Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [PATCH 7/9] ARM: meson: serial: disable rx/tx irqs during console
- write
-Date: Wed, 18 Nov 2015 14:41:17 +0000
-Message-ID: <1447857679-30158-8-git-send-email-ben.dooks@codethink.co.uk>
+Subject: [PATCH 6/9] ARM: meson: serial: use meson_uart_tx_empty() to wait for
+ empty
+Date: Wed, 18 Nov 2015 14:41:16 +0000
+Message-ID: <1447857679-30158-7-git-send-email-ben.dooks@codethink.co.uk>
 References: <1447857679-30158-1-git-send-email-ben.dooks@codethink.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,44 +22,27 @@ To: edward.cragg@codethink.co.uk
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-meson@googlegroups.com, linux-kernel@codethink.co.uk, Ben Dooks <ben.dooks@codethink.co.uk>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, carlo@caione.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-As an attempt to stop issues with bad console output, ensure that both the
-rx and tx interrupts are disabled during the console write to avoid any
-problems with console and non-console being called together.
-
-This should help with the SMP case as it should stop other cores being
-signalled during the console write.
+Use the meson_uart_tx_empty() instead of a direct read of the status
+register. This is easier to read and will ensure the UART's transmit
+state machine is idle when trying to update the baud rate.
 
 Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
 ---
- drivers/tty/serial/meson_uart.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/meson_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index d3f2c96..12436cc 100644
+index 9327efd..d3f2c96 100644
 --- a/drivers/tty/serial/meson_uart.c
 +++ b/drivers/tty/serial/meson_uart.c
-@@ -472,7 +472,7 @@ static void meson_serial_console_write(struct console *co, const char *s,
- 	struct uart_port *port;
- 	unsigned long flags;
- 	int locked;
--	u32 val;
-+	u32 val, tmp;
+@@ -285,7 +285,7 @@ static void meson_uart_change_speed(struct uart_port *port, unsigned long baud)
+ {
+ 	u32 val;
  
- 	port = meson_ports[co->index];
- 	if (!port)
-@@ -489,9 +489,12 @@ static void meson_serial_console_write(struct console *co, const char *s,
- 	}
+-	while (!(readl(port->membase + AML_UART_STATUS) & AML_UART_TX_EMPTY))
++	while (!meson_uart_tx_empty(port))
+ 		cpu_relax();
  
- 	val = readl(port->membase + AML_UART_CONTROL);
--	writel(val | AML_UART_TX_EN, port->membase + AML_UART_CONTROL);
-+	val |= AML_UART_TX_EN;
-+	tmp = val & ~(AML_UART_TX_INT_EN | AML_UART_RX_INT_EN);
-+	writel(tmp, port->membase + AML_UART_CONTROL);
- 
- 	uart_console_write(port, s, count, meson_console_putchar);
-+	writel(val, port->membase + AML_UART_CONTROL);
- 
- 	if (locked)
- 		spin_unlock(&port->lock);
+ 	val = readl(port->membase + AML_UART_REG5);
 -- 
 2.6.2
