@@ -1,52 +1,74 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 01/25] serial: sh-sci: Update DT binding documentation for
- external clock input
-Date: Thu, 19 Nov 2015 21:33:01 +0100
-Message-ID: <CAMuHMdX4ToefbBLR6o2AMuzCMoKcYo9XRZOzHJzgtQn552vmNg@mail.gmail.com>
-References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
-	<1447958344-836-2-git-send-email-geert+renesas@glider.be>
-	<1756365.Ijac5ApxcA@avalon>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 08/25] serial: sh-sci: Make unsigned values in sci_baud_calc_hscif() unsigned
+Date: Thu, 19 Nov 2015 22:36:13 +0200
+Message-ID: <1636784.2d3bsCa4Hn@avalon>
+References: <1447958344-836-1-git-send-email-geert+renesas@glider.be> <1447958344-836-9-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1756365.Ijac5ApxcA@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1447958344-836-9-git-send-email-geert+renesas@glider.be>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Laurent,
+Hi Geert,
 
-On Thu, Nov 19, 2015 at 9:19 PM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> On Thursday 19 November 2015 19:38:40 Geert Uytterhoeven wrote:
->> diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->> b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt index
->> 2c9e6b8477e92792..8efc9b6f35637fbb 100644
->> --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->> +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->> @@ -43,6 +43,9 @@ Required properties:
->>    - clocks: Must contain a phandle and clock-specifier pair for each entry
->>      in clock-names.
->>    - clock-names: Must contain "fck" for the SCIx UART functional clock.
->> +    On (H)SCI(F) and some SCIFA, an additional clock may be specified:
->
-> Could you list the SCIFA variants that support external clocks ?
+Thank you for the patch.
 
-The list is in the commit description of "[PATCH 19/25] serial: sh-sci: Add
-support for optional external (H)SCK input": sh7723, sh7724, and r8a7740.
+On Thursday 19 November 2015 19:38:47 Geert Uytterhoeven wrote:
+> Move the -1 offset of br to the assignment to *brr, so br cannot become
+> negative anymore, and update the clamp() call. Now all unsigned values
+> in sci_baud_calc_hscif() can become unsigned.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/tty/serial/sh-sci.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 9442961a198378c7..fba1e1eea15dc3a1 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -1870,7 +1870,8 @@ static unsigned int sci_scbrr_calc(struct sci_port *s,
+> unsigned int bps, static void sci_baud_calc_hscif(unsigned int bps,
+> unsigned long freq, int *brr, unsigned int *srr, unsigned int *cks)
+>  {
+> -	int sr, c, br, err, recv_margin;
+> +	unsigned int sr, br, c;
+> +	int err, recv_margin;
+>  	int min_err = 1000; /* 100% */
+>  	int recv_max_margin = 0;
+> 
+> @@ -1880,9 +1881,9 @@ static void sci_baud_calc_hscif(unsigned int bps,
+> unsigned long freq, int *brr, for (c = 0; c <= 3; c++) {
+>  			/* integerized formulas from HSCIF documentation */
+>  			br = DIV_ROUND_CLOSEST(freq, (sr *
+> -					      (1 << (2 * c + 1)) * bps)) - 1;
+> -			br = clamp(br, 0, 255);
+> -			err = DIV_ROUND_CLOSEST(freq, ((br + 1) * bps * sr *
+> +					      (1 << (2 * c + 1)) * bps));
+> +			br = clamp(br, 1U, 256U);
+> +			err = DIV_ROUND_CLOSEST(freq, (br * bps * sr *
+>  					       (1 << (2 * c + 1)) / 1000)) -
+>  					       1000;
 
-Note that the list is probably incomplete, so I don't know if it's that useful
-to have it in the binding docs. Especially as I haven't verified yet that it
-actually works ;-)
+While you're at it you can remove the parentheses around the second argument 
+to DIV_ROUND_CLOSEST, they're not needed.
 
-Gr{oetje,eeting}s,
+>  			/* Calc recv margin
+> @@ -1908,7 +1909,7 @@ static void sci_baud_calc_hscif(unsigned int bps,
+> unsigned long freq, int *brr, else
+>  				continue;
+> 
+> -			*brr = br;
+> +			*brr = br - 1;
+>  			*srr = sr - 1;
+>  			*cks = c;
+>  		}
 
-                        Geert
+-- 
+Regards,
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Laurent Pinchart
