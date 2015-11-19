@@ -1,56 +1,64 @@
 From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 02/25] serial: sh-sci: Update DT binding documentation for BRG support
-Date: Thu, 19 Nov 2015 23:13:37 +0200
-Message-ID: <3455553.NW0SflpMPP@avalon>
-References: <1447958344-836-1-git-send-email-geert+renesas@glider.be> <1577961.dn1fd8r35p@avalon> <CAMuHMdWHbc1kK7MipyZ_M_C6gPyPqvC4H35eZLXQezjbQNK2Jw@mail.gmail.com>
+Subject: Re: [PATCH 01/25] serial: sh-sci: Update DT binding documentation for external clock input
+Date: Thu, 19 Nov 2015 23:17:57 +0200
+Message-ID: <1492878.6yAAhNSnGb@avalon>
+References: <1447958344-836-1-git-send-email-geert+renesas@glider.be> <2241755.f72hngpPkv@avalon> <CAMuHMdUnT2zCnj9QBVgxJaHV2fk5iuc7cxq=fh+fVTv3toOVaQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAMuHMdWHbc1kK7MipyZ_M_C6gPyPqvC4H35eZLXQezjbQNK2Jw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAMuHMdUnT2zCnj9QBVgxJaHV2fk5iuc7cxq=fh+fVTv3toOVaQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
 Hi Geert,
 
-On Thursday 19 November 2015 21:44:27 Geert Uytterhoeven wrote:
-> On Thu, Nov 19, 2015 at 9:26 PM, Laurent Pinchart wrote:
-> > On Thursday 19 November 2015 19:38:41 Geert Uytterhoeven wrote:
-> >> Amend the DT bindings to include the optional clock sources for the Baud
-> >> Rate Generator for External Clock (BRG), as found on some SCIF variants
-> >> and on HSCIF.
+On Thursday 19 November 2015 21:39:50 Geert Uytterhoeven wrote:
+> On Thu, Nov 19, 2015 at 9:27 PM, Laurent Pinchart wrote:
+> > On Thursday 19 November 2015 22:19:14 Laurent Pinchart wrote:
+> >> On Thursday 19 November 2015 19:38:40 Geert Uytterhoeven wrote:
+> >> > Amend the DT bindings to include the optional external clock on
+> >> > (H)SCI(F) and some SCIFA, where this pin can serve as a clock input,
+> >> > depending on board wiring.
+> >> > 
+> >> > --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> >> > +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> >> > 
+> >> > @@ -43,6 +43,9 @@ Required properties:
+> >> >    - clocks: Must contain a phandle and clock-specifier pair for each
+> >> >      entry in clock-names.
+> >> >    - clock-names: Must contain "fck" for the SCIx UART functional
+> >> >    clock.
+> >> > +    On (H)SCI(F) and some SCIFA, an additional clock may be specified:
+> >>
+> >> Could you list the SCIFA variants that support external clocks ?
 > >> 
-> >> --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-> >> +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-> >> 
-> >> @@ -46,6 +46,12 @@ Required properties:
-> >>      On (H)SCI(F) and some SCIFA, an additional clock may be specified:
-> >>        - "hsck" for the optional external clock input (on HSCIF),
-> >>        - "sck" for the optional external clock input (on other variants).
-> >> 
-> >> +    On UARTs equipped with a Baud Rate Generator for External Clock
-> >> (BRG)
-> >> +    (some SCIF and HSCIF), additional clocks may be specified:
-> >> +      - "int_clk" for the optional internal clock source for the
-> >> frequency
-> >> +     divider (typically the (AXI or SHwy) bus clock),
+> >> > +      - "hsck" for the optional external clock input (on HSCIF),
+> >> > +      - "sck" for the optional external clock input (on other
+> >> > variants).
 > > 
-> > Isn't this always the same clock as the SCIF functional clock ?
+> > Additionally, those clocks are used as inputs to the baud rate generator
+> > for external clocks, as the ones listed in patch 02/25 in this series.
+> > I'd merge the two patches and clarify the wording.
 > 
-> (On R-Car Gen2/3)
+> "SCK" predates the BRG, it even exists on SCI in H8/300.
 > 
-> No, SCIF uses different parents for fck (p) and int_clk (zs).
+> That SCK is used as input to the BRG is just an artefact of how the BRG was
+> added to the SCIF. The BRG is just muxed with the existing SCK to form a
+> clock input, which is muxed with the BRR clock through the SCSCR.CKEx bits.
+> And the BRG itself can choose between SCIF_CLK and INT_CLK.
+> 
+> Hence that's why I split it in two parts.
 
-Right, my bad.
+It makes sense with the explanation.
 
-Should we rename "int_clk" to something that makes it explicit that the clock 
-is used as the BRG-EC input ? Maybe brg_clk, int_brg, int_brg_clk ? We 
-probably don't need to keep the _clk suffix as it's quite evident that a clock 
-name refers to a clock.
-
-> HSCIF uses the same parents though (zs).
+I think some of the patches should be clarified to mention BRG-EC (or whatever 
+you want to call it) instead of just BRG, as otherwise it's very easy to 
+confuse the two BRGs. The (H)SCK clock is an input to the internal BRG, while 
+the SCIF_CLK and INT_CLK are inputs to the BRG-EC. Without clarification the 
+DT bindings and the code can be hard to understand.
 
 -- 
 Regards,
