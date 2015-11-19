@@ -1,13 +1,13 @@
 From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 23/25] arm64: renesas: r8a7795 dtsi: Add BRG support for (H)SCIF
-Date: Thu, 19 Nov 2015 23:07:33 +0200
-Message-ID: <6606020.G1vmRDrqTj@avalon>
-References: <1447958344-836-1-git-send-email-geert+renesas@glider.be> <1447958344-836-24-git-send-email-geert+renesas@glider.be>
+Subject: Re: [PATCH 00/25] serial: sh-sci: Add external clock and BRG Support
+Date: Thu, 19 Nov 2015 23:08:55 +0200
+Message-ID: <1662323.uZlFXR9U2a@avalon>
+References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1447958344-836-24-git-send-email-geert+renesas@glider.be>
+In-Reply-To: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
 Sender: linux-sh-owner@vger.kernel.org
 To: Geert Uytterhoeven <geert+renesas@glider.be>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -15,195 +15,104 @@ List-Id: linux-serial@vger.kernel.org
 
 Hi Geert,
 
-Thank you for the patch.
+Thank you for the patches.
 
-On Thursday 19 November 2015 19:39:02 Geert Uytterhoeven wrote:
-> Add the device node for the external SCIF_CLK.
-> The presence of the SCIF_CLK crystal and its clock frequency depend on
-> the actual board.
-> 
-> Add the two optional clock sources (ZS_CLK and SCIF_CLK for the internal
-> resp. external clock) for the Baud Rate Generator for External Clock
-> (BRG) to all SCIF and HSCIF device nodes.
-> 
-> This increases the range and accuracy of supported baud rates on
-> (H)SCIF.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  arch/arm64/boot/dts/renesas/r8a7795.dtsi | 74 +++++++++++++++++++----------
->  1 file changed, 52 insertions(+), 22 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/renesas/r8a7795.dtsi
-> b/arch/arm64/boot/dts/renesas/r8a7795.dtsi index
-> 53a2a8fb42b7480c..25900761cfde201e 100644
-> --- a/arch/arm64/boot/dts/renesas/r8a7795.dtsi
-> +++ b/arch/arm64/boot/dts/renesas/r8a7795.dtsi
-> @@ -84,6 +84,14 @@
->  		status = "disabled";
->  	};
-> 
-> +	/* External SCIF clock - to be overridden by boards that provide it */
-> +	scif_clk: scif {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <0>;
-> +		status = "disabled";
-> +	};
+For patches 3-6, 13, 15-16 and 22 and 24,
 
-I have mixed feelings about this. Defining an external clock that isn't 
-present on the board isn't very clean, even more so when the clock has such a 
-generic name. Wouldn't it be better to let board files define the clock when 
-they need it ? I know it would require board files to override the clocks and 
-clock-names property too. Maybe we need to extend the DTS syntax to allow 
-extending list properties instead of overriding them completely ?
+Reviewed-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
->  	soc {
->  		compatible = "simple-bus";
->  		interrupt-parent = <&gic>;
-> @@ -362,8 +370,10 @@
->  			compatible = "renesas,hscif-r8a7795", "renesas,hscif";
->  			reg = <0 0xe6540000 0 96>;
->  			interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 520>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 520>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac1 0x31>, <&dmac1 0x30>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -374,8 +384,10 @@
->  			compatible = "renesas,hscif-r8a7795", "renesas,hscif";
->  			reg = <0 0xe6550000 0 96>;
->  			interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 519>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 519>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac1 0x33>, <&dmac1 0x32>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -386,8 +398,10 @@
->  			compatible = "renesas,hscif-r8a7795", "renesas,hscif";
->  			reg = <0 0xe6560000 0 96>;
->  			interrupts = <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 518>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 518>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac1 0x35>, <&dmac1 0x34>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -398,8 +412,10 @@
->  			compatible = "renesas,hscif-r8a7795", "renesas,hscif";
->  			reg = <0 0xe66a0000 0 96>;
->  			interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 517>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 517>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac0 0x37>, <&dmac0 0x36>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -410,8 +426,10 @@
->  			compatible = "renesas,hscif-r8a7795", "renesas,hscif";
->  			reg = <0 0xe66b0000 0 96>;
->  			interrupts = <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 516>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 516>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac0 0x39>, <&dmac0 0x38>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -422,8 +440,10 @@
->  			compatible = "renesas,scif-r8a7795", "renesas,scif";
->  			reg = <0 0xe6e60000 0 64>;
->  			interrupts = <GIC_SPI 152 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 207>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 207>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac1 0x51>, <&dmac1 0x50>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -434,8 +454,10 @@
->  			compatible = "renesas,scif-r8a7795", "renesas,scif";
->  			reg = <0 0xe6e68000 0 64>;
->  			interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 206>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 206>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac1 0x53>, <&dmac1 0x52>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -446,8 +468,10 @@
->  			compatible = "renesas,scif-r8a7795", "renesas,scif";
->  			reg = <0 0xe6e88000 0 64>;
->  			interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 310>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 310>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac1 0x13>, <&dmac1 0x12>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -458,8 +482,10 @@
->  			compatible = "renesas,scif-r8a7795", "renesas,scif";
->  			reg = <0 0xe6c50000 0 64>;
->  			interrupts = <GIC_SPI 23 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 204>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 204>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac0 0x57>, <&dmac0 0x56>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -470,8 +496,10 @@
->  			compatible = "renesas,scif-r8a7795", "renesas,scif";
->  			reg = <0 0xe6c40000 0 64>;
->  			interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 203>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 203>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac0 0x59>, <&dmac0 0x58>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
-> @@ -482,8 +510,10 @@
->  			compatible = "renesas,scif-r8a7795", "renesas,scif";
->  			reg = <0 0xe6f30000 0 64>;
->  			interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
-> -			clocks = <&cpg CPG_MOD 202>;
-> -			clock-names = "fck";
-> +			clocks = <&cpg CPG_MOD 202>,
-> +				 <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-> +				 <&scif_clk>;
-> +			clock-names = "fck", "int_clk", "scif_clk";
->  			dmas = <&dmac1 0x5b>, <&dmac1 0x5a>;
->  			dma-names = "tx", "rx";
->  			power-domains = <&cpg>;
+I'm not sure I'd bother with patch 25/25, but I'm not against merging it 
+either. I'd be surprised if the serial driver still worked at all on SH :-)
+
+On Thursday 19 November 2015 19:38:39 Geert Uytterhoeven wrote:
+> 	Hi,
+> 
+> This patch series adds support to the Renesas SCI serial driver for
+>   - the optional external clock on (H)SCI(F) and some SCIFA, where this
+>     pin can serve as a clock input,
+>   - the optional clock sources for the Baud Rate Generator for External
+>     Clock (BRG), as found on some SCIF variants and on HSCIF.
+
+Could you briefly explain (and even better in a source code comment) how you 
+handle baud rate calculation with the chained BRGs ?
+
+> Using external clocks increases the range and accuracy of supported baud
+> rates. Please see the descriptions of the DTS patches for more detailed
+> information regarding the impact on the supported platforms.
+> 
+> For now this supports r8a7791/koelsch and r8a7795/salvator-x only, which
+> have an external SCIF_CLK running at 14.7456 MHz.
+> Support for other R-Car platforms will be added later.
+> 
+> Testing:
+>   - The Baud Rate Generator for External Clock (BRG) was tested with
+>     SCIF and HSCIF on r8a7791/koelsch and r8a7795/salvator-x,
+>   - The external clock input on (H)SCK was tested on r8a7795/salvator-x
+>     by feeding an external clock signal to (H)SCIF1,
+>   - Various bit rates were monitored using a SmartScope,
+>   - Regression testing was done on Renesas ARM platforms that use SCIFA
+>     as the console (r8a73a4/ape6evm, r8a7740/armadillo, and
+>     sh73a0/kzm9g).
+> 
+> Dependencies:
+>   - This series depends on the series "[PATCH v2 00/16] serial: sh-sci:
+>     Clock Cleanups",
+>   - The SH patch 25 depends on the "serial: sh-sci" patches in this
+>     series,
+>   - The DTS patches 21-24 can be applied independently, once the DT
+>     binding patches 1-2 are accepted,
+>   - r8a7791/r8a7795 has a runtime dependency on series "[PATCH 0/2]
+>     pinctrl: sh-pfc: r8a7791/r8a7795: Add SCIF_CLK support",
+>   - r8a7795 also depends on
+>        - platform support in e.g. renesas-drivers-2015-11-17-v4.4-rc1,
+>        - "[PATCH] pinctrl: sh-pfc: r8a7795: Add HSCIF pins, groups, and
+> 	 functions",
+>        - "[PATCH] arm64: renesas: r8a7795 dtsi: Add all HSCIF nodes".
+>   - Legacy SH has a runtime dependency on:
+>       - series "[PATCH 0/2] drivers: sh: clk: Cleanup clock API",
+> 
+> Thanks for your comments!
+> 
+> Geert Uytterhoeven (25):
+>   serial: sh-sci: Update DT binding documentation for external clock
+>     input
+>   serial: sh-sci: Update DT binding documentation for BRG support
+>   serial: sh-sci: Drop useless check for zero sampling_rate
+>   serial: sh-sci: Grammar s/Get ... for/Get ... from/
+>   serial: sh-sci: Drop unused frame_len parameter for
+>     sci_baud_calc_hscif()
+>   serial: sh-sci: Don't overwrite clock selection in
+>     serial_console_write()
+>   serial: sh-sci: Convert from clk_get() to devm_clk_get()
+>   serial: sh-sci: Make unsigned values in sci_baud_calc_hscif() unsigned
+>   serial: sh-sci: Avoid overflow in sci_baud_calc_hscif()
+>   serial: sh-sci: Improve bit rate error calculation for HSCIF
+>   serial: sh-sci: Avoid calculating the receive margin for HSCIF
+>   serial: sh-sci: Merge sci_scbrr_calc() and sci_baud_calc_hscif()
+>   serial: sh-sci: Take into account sampling rate for max baud rate
+>   serial: sh-sci: Add BRG register definitions
+>   serial: sh-sci: Replace struct sci_port_info by type/regtype encoding
+>   serial: sh-sci: Correct SCIF type on RZ/A1H
+>   serial: sh-sci: Correct SCIF type on R-Car for BRG
+>   serial: sh-sci: Prepare for multiple clocks and baud rate generators
+>   serial: sh-sci: Add support for optional external (H)SCK input
+>   serial: sh-sci: Add support for optional BRG on (H)SCIF
+>   ARM: shmobile: r8a7791 dtsi: Add BRG support for (H)SCIF
+>   ARM: shmobile: koelsch dts: Enable SCIF_CLK frequency and pins
+>   arm64: renesas: r8a7795 dtsi: Add BRG support for (H)SCIF
+>   arm64: renesas: salvator-x dts: Enable SCIF_CLK frequency and pins
+>   sh: sh7734: Correct SCIF type for BRG
+> 
+>  .../bindings/serial/renesas,sci-serial.txt         |   9 +
+>  arch/arm/boot/dts/r8a7791-koelsch.dts              |  13 +
+>  arch/arm/boot/dts/r8a7791.dtsi                     |  54 ++-
+>  arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts |  12 +
+>  arch/arm64/boot/dts/renesas/r8a7795.dtsi           |  74 ++-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7734.c             |  12 +-
+>  drivers/tty/serial/sh-sci.c                        | 530 ++++++++++++------
+>  drivers/tty/serial/sh-sci.h                        |   5 +
+>  include/linux/serial_sci.h                         |   1 +
+>  9 files changed, 508 insertions(+), 202 deletions(-)
 
 -- 
 Regards,
