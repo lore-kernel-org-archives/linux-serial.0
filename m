@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 11/16] ARM: shmobile: r8a7791 dtsi: Rename the serial port clock to fck
-Date: Thu, 19 Nov 2015 19:36:08 +0100
-Message-ID: <1447958173-543-12-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v2 02/16] sh: Rename sci_ick and sci_fck clock to fck
+Date: Thu, 19 Nov 2015 19:35:59 +0100
+Message-ID: <1447958173-543-3-git-send-email-geert+renesas@glider.be>
 References: <1447958173-543-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1447958173-543-1-git-send-email-geert+renesas@glider.be>
@@ -12,8 +12,10 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-The clock is really the device functional clock, not the interface
-clock. Rename it.
+The SCI driver requires a functional clock named "fck" and falls back to
+"sci_ick" or "sci_fck" when the "fck" clock doesn't exist. To allow
+removal of the fallback code rename the sci_ick and sci_fck clocks to
+fck for all SH platforms.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Simon Horman <horms+renesas@verge.net.au>
@@ -22,175 +24,229 @@ Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 v2:
   - Add Acked-by.
 ---
- arch/arm/boot/dts/r8a7791.dtsi | 36 ++++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
+ arch/sh/kernel/cpu/sh2a/clock-sh7264.c |  9 ++++++++-
+ arch/sh/kernel/cpu/sh2a/clock-sh7269.c | 16 ++++++++--------
+ arch/sh/kernel/cpu/sh4a/clock-sh7343.c |  8 ++++----
+ arch/sh/kernel/cpu/sh4a/clock-sh7366.c |  6 +++---
+ arch/sh/kernel/cpu/sh4a/clock-sh7723.c | 12 ++++++------
+ arch/sh/kernel/cpu/sh4a/clock-sh7734.c | 12 ++++++------
+ arch/sh/kernel/cpu/sh4a/clock-sh7757.c |  6 +++---
+ arch/sh/kernel/cpu/sh4a/clock-sh7785.c | 12 ++++++------
+ arch/sh/kernel/cpu/sh4a/clock-sh7786.c | 12 ++++++------
+ arch/sh/kernel/cpu/sh4a/clock-shx3.c   |  8 ++++----
+ 10 files changed, 54 insertions(+), 47 deletions(-)
 
-diff --git a/arch/arm/boot/dts/r8a7791.dtsi b/arch/arm/boot/dts/r8a7791.dtsi
-index d79102c0e7d346b1..684120a0a479a8d0 100644
---- a/arch/arm/boot/dts/r8a7791.dtsi
-+++ b/arch/arm/boot/dts/r8a7791.dtsi
-@@ -563,7 +563,7 @@
- 		reg = <0 0xe6c40000 0 64>;
- 		interrupts = <0 144 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7791_CLK_SCIFA0>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x21>, <&dmac0 0x22>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -575,7 +575,7 @@
- 		reg = <0 0xe6c50000 0 64>;
- 		interrupts = <0 145 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7791_CLK_SCIFA1>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x25>, <&dmac0 0x26>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -587,7 +587,7 @@
- 		reg = <0 0xe6c60000 0 64>;
- 		interrupts = <0 151 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7791_CLK_SCIFA2>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x27>, <&dmac0 0x28>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -599,7 +599,7 @@
- 		reg = <0 0xe6c70000 0 64>;
- 		interrupts = <0 29 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp11_clks R8A7791_CLK_SCIFA3>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x1b>, <&dmac0 0x1c>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -611,7 +611,7 @@
- 		reg = <0 0xe6c78000 0 64>;
- 		interrupts = <0 30 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp11_clks R8A7791_CLK_SCIFA4>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x1f>, <&dmac0 0x20>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -623,7 +623,7 @@
- 		reg = <0 0xe6c80000 0 64>;
- 		interrupts = <0 31 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp11_clks R8A7791_CLK_SCIFA5>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x23>, <&dmac0 0x24>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -635,7 +635,7 @@
- 		reg = <0 0xe6c20000 0 64>;
- 		interrupts = <0 148 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7791_CLK_SCIFB0>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x3d>, <&dmac0 0x3e>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -647,7 +647,7 @@
- 		reg = <0 0xe6c30000 0 64>;
- 		interrupts = <0 149 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7791_CLK_SCIFB1>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x19>, <&dmac0 0x1a>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -659,7 +659,7 @@
- 		reg = <0 0xe6ce0000 0 64>;
- 		interrupts = <0 150 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7791_CLK_SCIFB2>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x1d>, <&dmac0 0x1e>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -671,7 +671,7 @@
- 		reg = <0 0xe6e60000 0 64>;
- 		interrupts = <0 152 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7791_CLK_SCIF0>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x29>, <&dmac0 0x2a>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -683,7 +683,7 @@
- 		reg = <0 0xe6e68000 0 64>;
- 		interrupts = <0 153 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7791_CLK_SCIF1>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x2d>, <&dmac0 0x2e>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -695,7 +695,7 @@
- 		reg = <0 0xe6e58000 0 64>;
- 		interrupts = <0 22 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7791_CLK_SCIF2>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x2b>, <&dmac0 0x2c>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -707,7 +707,7 @@
- 		reg = <0 0xe6ea8000 0 64>;
- 		interrupts = <0 23 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7791_CLK_SCIF3>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x2f>, <&dmac0 0x30>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -719,7 +719,7 @@
- 		reg = <0 0xe6ee0000 0 64>;
- 		interrupts = <0 24 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7791_CLK_SCIF4>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0xfb>, <&dmac0 0xfc>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -731,7 +731,7 @@
- 		reg = <0 0xe6ee8000 0 64>;
- 		interrupts = <0 25 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7791_CLK_SCIF5>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0xfd>, <&dmac0 0xfe>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -743,7 +743,7 @@
- 		reg = <0 0xe62c0000 0 96>;
- 		interrupts = <0 154 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7791_CLK_HSCIF0>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x39>, <&dmac0 0x3a>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -755,7 +755,7 @@
- 		reg = <0 0xe62c8000 0 96>;
- 		interrupts = <0 155 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7791_CLK_HSCIF1>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x4d>, <&dmac0 0x4e>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
-@@ -767,7 +767,7 @@
- 		reg = <0 0xe62d0000 0 96>;
- 		interrupts = <0 21 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7791_CLK_HSCIF2>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		dmas = <&dmac0 0x3b>, <&dmac0 0x3c>;
- 		dma-names = "tx", "rx";
- 		power-domains = <&cpg_clocks>;
+diff --git a/arch/sh/kernel/cpu/sh2a/clock-sh7264.c b/arch/sh/kernel/cpu/sh2a/clock-sh7264.c
+index 8638fba6cd7fbf08..7e06e39b095864d1 100644
+--- a/arch/sh/kernel/cpu/sh2a/clock-sh7264.c
++++ b/arch/sh/kernel/cpu/sh2a/clock-sh7264.c
+@@ -115,7 +115,14 @@ static struct clk_lookup lookups[] = {
+ 	CLKDEV_CON_ID("peripheral_clk", &div4_clks[DIV4_P]),
+ 
+ 	/* MSTP clocks */
+-	CLKDEV_CON_ID("sci_ick", &mstp_clks[MSTP77]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP77]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP77]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP77]),
++	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP77]),
++	CLKDEV_ICK_ID("fck", "sh-sci.4", &mstp_clks[MSTP77]),
++	CLKDEV_ICK_ID("fck", "sh-sci.5", &mstp_clks[MSTP77]),
++	CLKDEV_ICK_ID("fck", "sh-sci.6", &mstp_clks[MSTP77]),
++	CLKDEV_ICK_ID("fck", "sh-sci.7", &mstp_clks[MSTP77]),
+ 	CLKDEV_CON_ID("vdc3", &mstp_clks[MSTP74]),
+ 	CLKDEV_ICK_ID("fck", "sh-cmt-16.0", &mstp_clks[MSTP72]),
+ 	CLKDEV_CON_ID("usb0", &mstp_clks[MSTP60]),
+diff --git a/arch/sh/kernel/cpu/sh2a/clock-sh7269.c b/arch/sh/kernel/cpu/sh2a/clock-sh7269.c
+index f8a5c2abdfb3caa1..663a97bed554ec5c 100644
+--- a/arch/sh/kernel/cpu/sh2a/clock-sh7269.c
++++ b/arch/sh/kernel/cpu/sh2a/clock-sh7269.c
+@@ -150,14 +150,14 @@ static struct clk_lookup lookups[] = {
+ 	CLKDEV_CON_ID("bus_clk", &div4_clks[DIV4_B]),
+ 
+ 	/* MSTP clocks */
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP47]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP46]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP45]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[MSTP44]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.4", &mstp_clks[MSTP43]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.5", &mstp_clks[MSTP42]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.6", &mstp_clks[MSTP41]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.7", &mstp_clks[MSTP40]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP47]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP46]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP45]),
++	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP44]),
++	CLKDEV_ICK_ID("fck", "sh-sci.4", &mstp_clks[MSTP43]),
++	CLKDEV_ICK_ID("fck", "sh-sci.5", &mstp_clks[MSTP42]),
++	CLKDEV_ICK_ID("fck", "sh-sci.6", &mstp_clks[MSTP41]),
++	CLKDEV_ICK_ID("fck", "sh-sci.7", &mstp_clks[MSTP40]),
+ 	CLKDEV_ICK_ID("fck", "sh-cmt-16.0", &mstp_clks[MSTP72]),
+ 	CLKDEV_CON_ID("usb0", &mstp_clks[MSTP60]),
+ 	CLKDEV_ICK_ID("fck", "sh-mtu2", &mstp_clks[MSTP35]),
+diff --git a/arch/sh/kernel/cpu/sh4a/clock-sh7343.c b/arch/sh/kernel/cpu/sh4a/clock-sh7343.c
+index 9edc06c02dcf1b9c..a907ee2388bfce50 100644
+--- a/arch/sh/kernel/cpu/sh4a/clock-sh7343.c
++++ b/arch/sh/kernel/cpu/sh4a/clock-sh7343.c
+@@ -232,10 +232,10 @@ static struct clk_lookup lookups[] = {
+ 	CLKDEV_CON_ID("mfi0", &mstp_clks[MSTP011]),
+ 	CLKDEV_CON_ID("flctl0", &mstp_clks[MSTP010]),
+ 
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP007]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP006]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP005]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[MSTP004]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP007]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP006]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP005]),
++	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP004]),
+ 
+ 	CLKDEV_CON_ID("sio0", &mstp_clks[MSTP003]),
+ 	CLKDEV_CON_ID("siof0", &mstp_clks[MSTP002]),
+diff --git a/arch/sh/kernel/cpu/sh4a/clock-sh7366.c b/arch/sh/kernel/cpu/sh4a/clock-sh7366.c
+index 955b9add78106360..ac9854179dee88f0 100644
+--- a/arch/sh/kernel/cpu/sh4a/clock-sh7366.c
++++ b/arch/sh/kernel/cpu/sh4a/clock-sh7366.c
+@@ -230,9 +230,9 @@ static struct clk_lookup lookups[] = {
+ 	CLKDEV_CON_ID("mfi0", &mstp_clks[MSTP011]),
+ 	CLKDEV_CON_ID("flctl0", &mstp_clks[MSTP010]),
+ 
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP007]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP006]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP005]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP007]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP006]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP005]),
+ 
+ 	CLKDEV_CON_ID("msiof0", &mstp_clks[MSTP002]),
+ 	CLKDEV_CON_ID("sbr0", &mstp_clks[MSTP001]),
+diff --git a/arch/sh/kernel/cpu/sh4a/clock-sh7723.c b/arch/sh/kernel/cpu/sh4a/clock-sh7723.c
+index ccbcab550df24efc..fe844222f3f6ae5c 100644
+--- a/arch/sh/kernel/cpu/sh4a/clock-sh7723.c
++++ b/arch/sh/kernel/cpu/sh4a/clock-sh7723.c
+@@ -267,12 +267,12 @@ static struct clk_lookup lookups[] = {
+ 	CLKDEV_ICK_ID("fck", "sh-tmu.0", &mstp_clks[HWBLK_TMU0]),
+ 	CLKDEV_ICK_ID("fck", "sh-tmu.1", &mstp_clks[HWBLK_TMU1]),
+ 
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[HWBLK_SCIF0]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[HWBLK_SCIF1]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[HWBLK_SCIF2]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[HWBLK_SCIF3]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.4", &mstp_clks[HWBLK_SCIF4]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.5", &mstp_clks[HWBLK_SCIF5]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[HWBLK_SCIF0]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[HWBLK_SCIF1]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[HWBLK_SCIF2]),
++	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[HWBLK_SCIF3]),
++	CLKDEV_ICK_ID("fck", "sh-sci.4", &mstp_clks[HWBLK_SCIF4]),
++	CLKDEV_ICK_ID("fck", "sh-sci.5", &mstp_clks[HWBLK_SCIF5]),
+ 
+ 	CLKDEV_DEV_ID("sh_mobile_lcdc_fb.0", &mstp_clks[HWBLK_LCDC]),
+ };
+diff --git a/arch/sh/kernel/cpu/sh4a/clock-sh7734.c b/arch/sh/kernel/cpu/sh4a/clock-sh7734.c
+index 7f54bf2f453d7a7b..354dcac5e4cd9938 100644
+--- a/arch/sh/kernel/cpu/sh4a/clock-sh7734.c
++++ b/arch/sh/kernel/cpu/sh4a/clock-sh7734.c
+@@ -194,12 +194,12 @@ static struct clk_lookup lookups[] = {
+ 	/* MSTP32 clocks */
+ 	CLKDEV_DEV_ID("i2c-sh7734.0", &mstp_clks[MSTP030]),
+ 	CLKDEV_DEV_ID("i2c-sh7734.1", &mstp_clks[MSTP029]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP026]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP025]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP024]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[MSTP023]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.4", &mstp_clks[MSTP022]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.5", &mstp_clks[MSTP021]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP026]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP025]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP024]),
++	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP023]),
++	CLKDEV_ICK_ID("fck", "sh-sci.4", &mstp_clks[MSTP022]),
++	CLKDEV_ICK_ID("fck", "sh-sci.5", &mstp_clks[MSTP021]),
+ 	CLKDEV_CON_ID("hscif", &mstp_clks[MSTP019]),
+ 	CLKDEV_ICK_ID("fck", "sh-tmu.0", &mstp_clks[MSTP016]),
+ 	CLKDEV_ICK_ID("fck", "sh-tmu.1", &mstp_clks[MSTP015]),
+diff --git a/arch/sh/kernel/cpu/sh4a/clock-sh7757.c b/arch/sh/kernel/cpu/sh4a/clock-sh7757.c
+index e40ec2c97ad199c9..b10af2ae9f350908 100644
+--- a/arch/sh/kernel/cpu/sh4a/clock-sh7757.c
++++ b/arch/sh/kernel/cpu/sh4a/clock-sh7757.c
+@@ -125,9 +125,9 @@ static struct clk_lookup lookups[] = {
+ 
+ 	CLKDEV_ICK_ID("fck", "sh-tmu.0", &mstp_clks[MSTP113]),
+ 	CLKDEV_ICK_ID("fck", "sh-tmu.1", &mstp_clks[MSTP114]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP112]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP111]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP110]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP112]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP111]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP110]),
+ 
+ 	CLKDEV_CON_ID("usb_fck", &mstp_clks[MSTP103]),
+ 	CLKDEV_DEV_ID("renesas_usbhs.0", &mstp_clks[MSTP102]),
+diff --git a/arch/sh/kernel/cpu/sh4a/clock-sh7785.c b/arch/sh/kernel/cpu/sh4a/clock-sh7785.c
+index 8eb6e62340c950bd..1aafd5496752f7f1 100644
+--- a/arch/sh/kernel/cpu/sh4a/clock-sh7785.c
++++ b/arch/sh/kernel/cpu/sh4a/clock-sh7785.c
+@@ -132,12 +132,12 @@ static struct clk_lookup lookups[] = {
+ 	CLKDEV_CON_ID("cpu_clk", &div4_clks[DIV4_I]),
+ 
+ 	/* MSTP32 clocks */
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.5", &mstp_clks[MSTP029]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.4", &mstp_clks[MSTP028]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[MSTP027]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP026]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP025]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP024]),
++	CLKDEV_ICK_ID("fck", "sh-sci.5", &mstp_clks[MSTP029]),
++	CLKDEV_ICK_ID("fck", "sh-sci.4", &mstp_clks[MSTP028]),
++	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP027]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP026]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP025]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP024]),
+ 
+ 	CLKDEV_CON_ID("ssi1_fck", &mstp_clks[MSTP021]),
+ 	CLKDEV_CON_ID("ssi0_fck", &mstp_clks[MSTP020]),
+diff --git a/arch/sh/kernel/cpu/sh4a/clock-sh7786.c b/arch/sh/kernel/cpu/sh4a/clock-sh7786.c
+index 5e50e7ebeff089b9..ac3dcfe5d303d134 100644
+--- a/arch/sh/kernel/cpu/sh4a/clock-sh7786.c
++++ b/arch/sh/kernel/cpu/sh4a/clock-sh7786.c
+@@ -139,12 +139,12 @@ static struct clk_lookup lookups[] = {
+ 	CLKDEV_CON_ID("cpu_clk", &div4_clks[DIV4_I]),
+ 
+ 	/* MSTP32 clocks */
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.5", &mstp_clks[MSTP029]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.4", &mstp_clks[MSTP028]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[MSTP027]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP026]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP025]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP024]),
++	CLKDEV_ICK_ID("fck", "sh-sci.5", &mstp_clks[MSTP029]),
++	CLKDEV_ICK_ID("fck", "sh-sci.4", &mstp_clks[MSTP028]),
++	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP027]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP026]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP025]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP024]),
+ 
+ 	CLKDEV_CON_ID("ssi3_fck", &mstp_clks[MSTP023]),
+ 	CLKDEV_CON_ID("ssi2_fck", &mstp_clks[MSTP022]),
+diff --git a/arch/sh/kernel/cpu/sh4a/clock-shx3.c b/arch/sh/kernel/cpu/sh4a/clock-shx3.c
+index 605221d1448a19a7..b1bdbc3cbc219af8 100644
+--- a/arch/sh/kernel/cpu/sh4a/clock-shx3.c
++++ b/arch/sh/kernel/cpu/sh4a/clock-shx3.c
+@@ -114,10 +114,10 @@ static struct clk_lookup lookups[] = {
+ 	CLKDEV_CON_ID("cpu_clk", &div4_clks[DIV4_I]),
+ 
+ 	/* MSTP32 clocks */
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[MSTP027]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP026]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP025]),
+-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP024]),
++	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP027]),
++	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP026]),
++	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP025]),
++	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP024]),
+ 
+ 	CLKDEV_CON_ID("h8ex_fck", &mstp_clks[MSTP003]),
+ 	CLKDEV_CON_ID("csm_fck", &mstp_clks[MSTP002]),
 -- 
 1.9.1
 
