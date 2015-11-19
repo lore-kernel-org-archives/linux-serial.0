@@ -1,11 +1,13 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATH RESEND v2 00/10] tty: xuartps: Fix lock ups
-Date: Thu, 19 Nov 2015 12:02:14 -0800
-Message-ID: <1447963344-16266-1-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATH RESEND v2 01/10] tty: xuartps: Beautify read-modify writes
+Date: Thu, 19 Nov 2015 12:02:15 -0800
+Message-ID: <1447963344-16266-2-git-send-email-soren.brinkmann@xilinx.com>
+References: <1447963344-16266-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1447963344-16266-1-git-send-email-soren.brinkmann@xilinx.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,35 +21,47 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-arm-kernel@lists.infradead.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-SGksCgpJIGd1ZXNzIHRoaXMgc2VyaWVzIGdvdCBwcm9iYWJseSBsb3N0IGR1cmluZyB0aGUgbWVy
-Z2Ugd2luZG93LiBIZW5jZSwgSQpyZXNlbmQgdGhlIHBhdGNoZXMuCgpUaGlzIGlzIHYyLCBob3Bl
-ZnVsbHkgd2l0aG91dCBhbnkgYnVpbGQgaXNzdWVzLiBUaGUgY2hhbmdlcyBhcmUgdGhlIHNhbWUK
-YXMgYmVmb3JlLCBqdXN0IHRoZSB3YXJuaW5nIHJlcG9ydGVkIGJ5IGtidWlsZCB0ZXN0IHJvYm90
-IGFib3V0IHVudXNlZAp2YXJpYWJsZXMgaGF2ZSBiZWVuIGZpeGVkLiBBbmQsIEkgYWRkZWQgb25l
-IG1vcmUgcGF0Y2ggd2l0aCBzb21lCmNsZWFudXAvcmVmYWN0b3JpbmcuCgpJIHJlY2VudGx5IGZv
-dW5kIG15IHN5c3RlbSBsb2NraW5nIHVwIHVuZGVyIHNvbWUgY29uZGl0aW9ucy4gSSBkdWcKdGhy
-b3VnaCB0aGUgY29kZSBhIGJpdCBhbmQgdGhlIHJlc3VsdCBpcyB0aGlzIGNvbGxlY3Rpb25zIG9m
-IHZhcmlvdXMKY2hhbmdlcy4gU29tZSBvZiBpdCBtYXkgbm90IGJlIHJlcXVpcmVkIGFuZCBoYXMg
-anVzdCBiZWVuIGNyZWF0ZWQgb3V0IG9mCmhhbGYtYmFrZWQgdGhlb3JpZXMgYW5kIHJlLXJlYWRp
-bmcgdGhlIGRvY3VtZW50YXRpb24uIFRoZSBhY3R1YWwgZmFpbGluZwpzY2VuYXJpb3Mgc2VlbSB0
-byBiZToKIC0gUlggSVJRIGNvbmRpdGlvbnMgYXJlIGhhbmRsZWQgd2hpbGUgdGhlIHJlY2VpdmVy
-IGlzIGRpc2FibGVkLCBsZWF2aW5nCiAgIHRoZSBkcml2ZXIgaW4gYW4gaW5maW5pdGUgbG9vcAog
-LSBjb25zb2xlX3B1dF9jaGFyIHNlZW1zIHRvIGJlIGludGVycnVwdGVkIGJ5IHVhcnRfc2h1dGRv
-d24gZGlzYWJsaW5nCiAgIHRoZSB0cmFuc21pdHRlciB3aGlsZS9qdXN0IGJlZm9yZSBwcmludGlu
-ZwoKSS5lLiBvdmVyYWxsIEkgdHJpZWQgdG8gc2VyaWFsaXplIGFsbCBvcGVyYXRpb25zIHVzaW5n
-IHRoZSBwb3J0IGxvY2sgdG8KYXZvaWQgc3VjaCBpbnRlcmFjdGlvbi4KCglUaGFua3MsCglTw7Zy
-ZW4KClPDtnJlbiBCcmlua21hbm4gKDEwKToKICB0dHk6IHh1YXJ0cHM6IEJlYXV0aWZ5IHJlYWQt
-bW9kaWZ5IHdyaXRlcwogIHR0eTogeHVhcnRwczogVXNlIHNwaW5sb2NrIHRvIHNlcmlhbGl6ZSBI
-VyBhY2Nlc3MKICB0dHk6IHh1YXJ0cHM6IEFsd2F5cyBlbmFibGUgdHJhbnNtaXR0ZXIgaW4gc3Rh
-cnRfdHgKICB0dHk6IHh1YXJ0cHM6IENsZWFyIGludGVycnVwdCBzdGF0dXMgcmVnaXN0ZXIgaW4g
-c2h1dGRvd24KICB0dHk6IHh1YXJ0cHM6IEltcHJvdmUgc3RhcnR1cCBmdW5jdGlvbgogIHR0eTog
-eHVhcnRwczogS2VlcCBsb2NrIGZvciB3aG9sZSBJU1IKICB0dHk6IHh1YXJ0cHM6IEFjcXVpcmUg
-cG9ydCBsb2NrIGZvciBzaHV0ZG93bgogIHR0eTogeHVhcnRwczogTW92ZSBSWCBwYXRoIGludG8g
-aGVscGVyIGZ1bmN0aW9uCiAgdHR5OiB4dWFydHBzOiBPbmx5IGhhbmRsZSBSWCBJUlFzIHdoZW4g
-UlggaXMgZW5hYmxlZAogIHR0eTogeHVhcnRwczogQ2xlYW51cDogUmVmb3JtYXQgaWYtZWxzZQoK
-IGRyaXZlcnMvdHR5L3NlcmlhbC94aWxpbnhfdWFydHBzLmMgfCAyNDcgKysrKysrKysrKysrKysr
-KysrKystLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDEzNiBpbnNlcnRpb25zKCsp
-LCAxMTEgZGVsZXRpb25zKC0pCgotLSAKMi42LjMuMy5nOWJiOTk2YQoKCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGlu
-ZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMu
-aW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+Non-functional, formatting changes to ease reading the code.
+
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+---
+ drivers/tty/serial/xilinx_uartps.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 009e0dbc12d2..50d4082d2354 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -515,12 +515,14 @@ static void cdns_uart_start_tx(struct uart_port *port)
+ 	if (uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port))
+ 		return;
+ 
+-	status = readl(port->membase + CDNS_UART_CR_OFFSET);
+-	/* Set the TX enable bit and clear the TX disable bit to enable the
++	/*
++	 * Set the TX enable bit and clear the TX disable bit to enable the
+ 	 * transmitter.
+ 	 */
+-	writel((status & ~CDNS_UART_CR_TX_DIS) | CDNS_UART_CR_TX_EN,
+-			port->membase + CDNS_UART_CR_OFFSET);
++	status = readl(port->membase + CDNS_UART_CR_OFFSET);
++	status &= ~CDNS_UART_CR_TX_DIS;
++	status |= CDNS_UART_CR_TX_EN;
++	writel(status, port->membase + CDNS_UART_CR_OFFSET);
+ 
+ 	while (numbytes-- && ((readl(port->membase + CDNS_UART_SR_OFFSET) &
+ 				CDNS_UART_SR_TXFULL)) != CDNS_UART_SR_TXFULL) {
+@@ -1123,8 +1125,9 @@ static void cdns_uart_console_write(struct console *co, const char *s,
+ 	 * clear the TX disable bit to enable the transmitter.
+ 	 */
+ 	ctrl = readl(port->membase + CDNS_UART_CR_OFFSET);
+-	writel((ctrl & ~CDNS_UART_CR_TX_DIS) | CDNS_UART_CR_TX_EN,
+-			port->membase + CDNS_UART_CR_OFFSET);
++	ctrl &= ~CDNS_UART_CR_TX_DIS;
++	ctrl |= CDNS_UART_CR_TX_EN;
++	writel(ctrl, port->membase + CDNS_UART_CR_OFFSET);
+ 
+ 	uart_console_write(port, s, count, cdns_uart_console_putchar);
+ 	cdns_uart_console_wait_tx(port);
+-- 
+2.6.3.3.g9bb996a
