@@ -1,59 +1,68 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 08/25] serial: sh-sci: Make unsigned values in sci_baud_calc_hscif() unsigned
-Date: Thu, 19 Nov 2015 19:38:47 +0100
-Message-ID: <1447958344-836-9-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 24/25] arm64: renesas: salvator-x dts: Enable SCIF_CLK frequency and pins
+Date: Thu, 19 Nov 2015 19:39:03 +0100
+Message-ID: <1447958344-836-25-git-send-email-geert+renesas@glider.be>
 References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Move the -1 offset of br to the assignment to *brr, so br cannot become
-negative anymore, and update the clamp() call. Now all unsigned values
-in sci_baud_calc_hscif() can become unsigned.
+Add and enable the external crystal for the SCIF_CLK and its pinctrl, to
+be used by the Baud Rate Generator for External Clock (BRG) on (H)SCIF.
+
+This increases the range and accuracy of supported baud rates:
+  - SCIF:
+      - Supports now 50, 230400, 460800, 500000, and 921600 bps,
+      - Perfect match for standard 50-460800, and 9216000 bps.
+  - HSCIF:
+      - Supports now 50, 75, and 110 bps,
+      - Perfect match for standard 50-460800, and 9216000 bps.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 9442961a198378c7..fba1e1eea15dc3a1 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1870,7 +1870,8 @@ static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
- static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
- 				unsigned int *srr, unsigned int *cks)
- {
--	int sr, c, br, err, recv_margin;
-+	unsigned int sr, br, c;
-+	int err, recv_margin;
- 	int min_err = 1000; /* 100% */
- 	int recv_max_margin = 0;
+diff --git a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+index afbd5256806e7014..0b38fecb1c5d75e9 100644
+--- a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
++++ b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+@@ -127,6 +127,9 @@
+ };
  
-@@ -1880,9 +1881,9 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
- 		for (c = 0; c <= 3; c++) {
- 			/* integerized formulas from HSCIF documentation */
- 			br = DIV_ROUND_CLOSEST(freq, (sr *
--					      (1 << (2 * c + 1)) * bps)) - 1;
--			br = clamp(br, 0, 255);
--			err = DIV_ROUND_CLOSEST(freq, ((br + 1) * bps * sr *
-+					      (1 << (2 * c + 1)) * bps));
-+			br = clamp(br, 1U, 256U);
-+			err = DIV_ROUND_CLOSEST(freq, (br * bps * sr *
- 					       (1 << (2 * c + 1)) / 1000)) -
- 					       1000;
- 			/* Calc recv margin
-@@ -1908,7 +1909,7 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
- 			else
- 				continue;
+ &pfc {
++	pinctrl-0 = <&scif_clk_pins>;
++	pinctrl-names = "default";
++
+ 	scif1_pins: scif1 {
+ 		renesas,groups = "scif1_data_a", "scif1_ctrl";
+ 		renesas,function = "scif1";
+@@ -135,6 +138,10 @@
+ 		renesas,groups = "scif2_data_a";
+ 		renesas,function = "scif2";
+ 	};
++	scif_clk_pins: scif_clk {
++		renesas,groups = "scif_clk_a";
++		renesas,function = "scif_clk";
++	};
  
--			*brr = br;
-+			*brr = br - 1;
- 			*srr = sr - 1;
- 			*cks = c;
- 		}
+ 	i2c2_pins: i2c2 {
+ 		renesas,groups = "i2c2_a";
+@@ -172,6 +179,11 @@
+ 	status = "okay";
+ };
+ 
++&scif_clk {
++	clock-frequency = <14745600>;
++	status = "okay";
++};
++
+ &rcar_sound {
+ 	pinctrl-0 = <&sound_pins &sound_clk_pins>;
+ 	pinctrl-names = "default";
 -- 
 1.9.1
+
