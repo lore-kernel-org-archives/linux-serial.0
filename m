@@ -1,13 +1,11 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATH RESEND v2 05/10] tty: xuartps: Improve startup function
-Date: Thu, 19 Nov 2015 12:02:19 -0800
-Message-ID: <1447963344-16266-6-git-send-email-soren.brinkmann@xilinx.com>
-References: <1447963344-16266-1-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATH RESEND v2 00/10] tty: xuartps: Fix lock ups
+Date: Thu, 19 Nov 2015 12:02:14 -0800
+Message-ID: <1447963344-16266-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1447963344-16266-1-git-send-email-soren.brinkmann@xilinx.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,67 +19,35 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-arm-kernel@lists.infradead.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The startup function is supposed to initialize the UART for receiving.
-Hence, don't enable the TX part. Also, protect HW accesses with the port
-lock.
-
-Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
----
- drivers/tty/serial/xilinx_uartps.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index b7fc30639292..167e0f4bcf7a 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -755,6 +755,7 @@ static void cdns_uart_set_termios(struct uart_port *port,
-  */
- static int cdns_uart_startup(struct uart_port *port)
- {
-+	unsigned long flags;
- 	unsigned int retval = 0, status = 0;
- 
- 	retval = request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME,
-@@ -762,6 +763,8 @@ static int cdns_uart_startup(struct uart_port *port)
- 	if (retval)
- 		return retval;
- 
-+	spin_lock_irqsave(&port->lock, flags);
-+
- 	/* Disable the TX and RX */
- 	writel(CDNS_UART_CR_TX_DIS | CDNS_UART_CR_RX_DIS,
- 			port->membase + CDNS_UART_CR_OFFSET);
-@@ -772,15 +775,14 @@ static int cdns_uart_startup(struct uart_port *port)
- 	writel(CDNS_UART_CR_TXRST | CDNS_UART_CR_RXRST,
- 			port->membase + CDNS_UART_CR_OFFSET);
- 
--	status = readl(port->membase + CDNS_UART_CR_OFFSET);
--
--	/* Clear the RX disable and TX disable bits and then set the TX enable
--	 * bit and RX enable bit to enable the transmitter and receiver.
-+	/*
-+	 * Clear the RX disable bit and then set the RX enable bit to enable
-+	 * the receiver.
- 	 */
--	writel((status & ~(CDNS_UART_CR_TX_DIS | CDNS_UART_CR_RX_DIS))
--			| (CDNS_UART_CR_TX_EN | CDNS_UART_CR_RX_EN |
--			CDNS_UART_CR_STOPBRK),
--			port->membase + CDNS_UART_CR_OFFSET);
-+	status = readl(port->membase + CDNS_UART_CR_OFFSET);
-+	status &= CDNS_UART_CR_RX_DIS;
-+	status |= CDNS_UART_CR_RX_EN;
-+	writel(status, port->membase + CDNS_UART_CR_OFFSET);
- 
- 	/* Set the Mode Register with normal mode,8 data bits,1 stop bit,
- 	 * no parity.
-@@ -811,6 +813,8 @@ static int cdns_uart_startup(struct uart_port *port)
- 		CDNS_UART_IXR_RXTRIG | CDNS_UART_IXR_TOUT,
- 		port->membase + CDNS_UART_IER_OFFSET);
- 
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
- 	return retval;
- }
- 
--- 
-2.6.3.3.g9bb996a
+SGksCgpJIGd1ZXNzIHRoaXMgc2VyaWVzIGdvdCBwcm9iYWJseSBsb3N0IGR1cmluZyB0aGUgbWVy
+Z2Ugd2luZG93LiBIZW5jZSwgSQpyZXNlbmQgdGhlIHBhdGNoZXMuCgpUaGlzIGlzIHYyLCBob3Bl
+ZnVsbHkgd2l0aG91dCBhbnkgYnVpbGQgaXNzdWVzLiBUaGUgY2hhbmdlcyBhcmUgdGhlIHNhbWUK
+YXMgYmVmb3JlLCBqdXN0IHRoZSB3YXJuaW5nIHJlcG9ydGVkIGJ5IGtidWlsZCB0ZXN0IHJvYm90
+IGFib3V0IHVudXNlZAp2YXJpYWJsZXMgaGF2ZSBiZWVuIGZpeGVkLiBBbmQsIEkgYWRkZWQgb25l
+IG1vcmUgcGF0Y2ggd2l0aCBzb21lCmNsZWFudXAvcmVmYWN0b3JpbmcuCgpJIHJlY2VudGx5IGZv
+dW5kIG15IHN5c3RlbSBsb2NraW5nIHVwIHVuZGVyIHNvbWUgY29uZGl0aW9ucy4gSSBkdWcKdGhy
+b3VnaCB0aGUgY29kZSBhIGJpdCBhbmQgdGhlIHJlc3VsdCBpcyB0aGlzIGNvbGxlY3Rpb25zIG9m
+IHZhcmlvdXMKY2hhbmdlcy4gU29tZSBvZiBpdCBtYXkgbm90IGJlIHJlcXVpcmVkIGFuZCBoYXMg
+anVzdCBiZWVuIGNyZWF0ZWQgb3V0IG9mCmhhbGYtYmFrZWQgdGhlb3JpZXMgYW5kIHJlLXJlYWRp
+bmcgdGhlIGRvY3VtZW50YXRpb24uIFRoZSBhY3R1YWwgZmFpbGluZwpzY2VuYXJpb3Mgc2VlbSB0
+byBiZToKIC0gUlggSVJRIGNvbmRpdGlvbnMgYXJlIGhhbmRsZWQgd2hpbGUgdGhlIHJlY2VpdmVy
+IGlzIGRpc2FibGVkLCBsZWF2aW5nCiAgIHRoZSBkcml2ZXIgaW4gYW4gaW5maW5pdGUgbG9vcAog
+LSBjb25zb2xlX3B1dF9jaGFyIHNlZW1zIHRvIGJlIGludGVycnVwdGVkIGJ5IHVhcnRfc2h1dGRv
+d24gZGlzYWJsaW5nCiAgIHRoZSB0cmFuc21pdHRlciB3aGlsZS9qdXN0IGJlZm9yZSBwcmludGlu
+ZwoKSS5lLiBvdmVyYWxsIEkgdHJpZWQgdG8gc2VyaWFsaXplIGFsbCBvcGVyYXRpb25zIHVzaW5n
+IHRoZSBwb3J0IGxvY2sgdG8KYXZvaWQgc3VjaCBpbnRlcmFjdGlvbi4KCglUaGFua3MsCglTw7Zy
+ZW4KClPDtnJlbiBCcmlua21hbm4gKDEwKToKICB0dHk6IHh1YXJ0cHM6IEJlYXV0aWZ5IHJlYWQt
+bW9kaWZ5IHdyaXRlcwogIHR0eTogeHVhcnRwczogVXNlIHNwaW5sb2NrIHRvIHNlcmlhbGl6ZSBI
+VyBhY2Nlc3MKICB0dHk6IHh1YXJ0cHM6IEFsd2F5cyBlbmFibGUgdHJhbnNtaXR0ZXIgaW4gc3Rh
+cnRfdHgKICB0dHk6IHh1YXJ0cHM6IENsZWFyIGludGVycnVwdCBzdGF0dXMgcmVnaXN0ZXIgaW4g
+c2h1dGRvd24KICB0dHk6IHh1YXJ0cHM6IEltcHJvdmUgc3RhcnR1cCBmdW5jdGlvbgogIHR0eTog
+eHVhcnRwczogS2VlcCBsb2NrIGZvciB3aG9sZSBJU1IKICB0dHk6IHh1YXJ0cHM6IEFjcXVpcmUg
+cG9ydCBsb2NrIGZvciBzaHV0ZG93bgogIHR0eTogeHVhcnRwczogTW92ZSBSWCBwYXRoIGludG8g
+aGVscGVyIGZ1bmN0aW9uCiAgdHR5OiB4dWFydHBzOiBPbmx5IGhhbmRsZSBSWCBJUlFzIHdoZW4g
+UlggaXMgZW5hYmxlZAogIHR0eTogeHVhcnRwczogQ2xlYW51cDogUmVmb3JtYXQgaWYtZWxzZQoK
+IGRyaXZlcnMvdHR5L3NlcmlhbC94aWxpbnhfdWFydHBzLmMgfCAyNDcgKysrKysrKysrKysrKysr
+KysrKystLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDEzNiBpbnNlcnRpb25zKCsp
+LCAxMTEgZGVsZXRpb25zKC0pCgotLSAKMi42LjMuMy5nOWJiOTk2YQoKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGlu
+ZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMu
+aW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
