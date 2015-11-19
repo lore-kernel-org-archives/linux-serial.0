@@ -1,8 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATH RESEND v2 09/10] tty: xuartps: Only handle RX IRQs when RX is
- enabled
-Date: Thu, 19 Nov 2015 12:02:23 -0800
-Message-ID: <1447963344-16266-10-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATH RESEND v2 10/10] tty: xuartps: Cleanup: Reformat if-else
+Date: Thu, 19 Nov 2015 12:02:24 -0800
+Message-ID: <1447963344-16266-11-git-send-email-soren.brinkmann@xilinx.com>
 References: <1447963344-16266-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,100 +21,169 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-arm-kernel@lists.infradead.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Ignore RX-related interrupts if RX is not enabled.
+Convert an if-else into the more common early return on error, reducing
+the indent level of the happy path.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+v2:
+ - added this patch
+---
+ drivers/tty/serial/xilinx_uartps.c | 124 ++++++++++++++++++-------------------
+ 1 file changed, 62 insertions(+), 62 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index aa1176e6661a..413229661f5d 100644
+index 413229661f5d..aed8a31f3399 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -161,6 +161,7 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
-  * @pclk:		APB clock
-  * @baud:		Current baud rate
-  * @clk_rate_change_nb:	Notifier block for clock changes
-+ * @flags:		Driver flags
-  */
- struct cdns_uart {
- 	struct uart_port	*port;
-@@ -168,7 +169,11 @@ struct cdns_uart {
- 	struct clk		*pclk;
- 	unsigned int		baud;
- 	struct notifier_block	clk_rate_change_nb;
-+	u32			flags;
- };
+@@ -203,58 +203,55 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
+ 	isrstatus &= port->read_status_mask;
+ 	isrstatus &= ~port->ignore_status_mask;
+ 
+-	if ((isrstatus & CDNS_UART_IXR_TOUT) ||
+-		(isrstatus & CDNS_UART_IXR_RXTRIG)) {
+-		/* Receive Timeout Interrupt */
+-		while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
+-					CDNS_UART_SR_RXEMPTY)) {
+-			u32 data;
+-			char status = TTY_NORMAL;
+-
+-			data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
+-
+-			/* Non-NULL byte after BREAK is garbage (99%) */
+-			if (data && (port->read_status_mask &
+-						CDNS_UART_IXR_BRK)) {
+-				port->read_status_mask &= ~CDNS_UART_IXR_BRK;
+-				port->icount.brk++;
+-				if (uart_handle_break(port))
+-					continue;
+-			}
++	if (!(isrstatus & (CDNS_UART_IXR_TOUT | CDNS_UART_IXR_RXTRIG)))
++		return;
 +
-+#define CDNS_FLAG_RX_ENABLED	BIT(0)
++	while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
++				CDNS_UART_SR_RXEMPTY)) {
++		u32 data;
++		char status = TTY_NORMAL;
 +
- #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
- 		clk_rate_change_nb);
++		data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
++
++		/* Non-NULL byte after BREAK is garbage (99%) */
++		if (data && (port->read_status_mask & CDNS_UART_IXR_BRK)) {
++			port->read_status_mask &= ~CDNS_UART_IXR_BRK;
++			port->icount.brk++;
++			if (uart_handle_break(port))
++				continue;
++		}
  
-@@ -262,6 +267,7 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
- static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
- {
- 	struct uart_port *port = (struct uart_port *)dev_id;
-+	struct cdns_uart *cdns_uart = port->private_data;
- 	unsigned long flags;
- 	unsigned int isrstatus, numbytes;
+ #ifdef SUPPORT_SYSRQ
+-			/*
+-			 * uart_handle_sysrq_char() doesn't work if
+-			 * spinlocked, for some reason
+-			 */
+-			 if (port->sysrq) {
+-				spin_unlock(&port->lock);
+-				if (uart_handle_sysrq_char(port,
+-							(unsigned char)data)) {
+-					spin_lock(&port->lock);
+-					continue;
+-				}
++		/*
++		 * uart_handle_sysrq_char() doesn't work if
++		 * spinlocked, for some reason
++		 */
++		 if (port->sysrq) {
++			spin_unlock(&port->lock);
++			if (uart_handle_sysrq_char(port, data)) {
+ 				spin_lock(&port->lock);
++				continue;
+ 			}
++			spin_lock(&port->lock);
++		}
+ #endif
  
-@@ -272,7 +278,8 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
- 	 */
- 	isrstatus = readl(port->membase + CDNS_UART_ISR_OFFSET);
+-			port->icount.rx++;
+-
+-			if (isrstatus & CDNS_UART_IXR_PARITY) {
+-				port->icount.parity++;
+-				status = TTY_PARITY;
+-			} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
+-				port->icount.frame++;
+-				status = TTY_FRAME;
+-			} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
+-				port->icount.overrun++;
+-			}
++		port->icount.rx++;
  
--	cdns_uart_handle_rx(port, isrstatus);
-+	if (cdns_uart->flags & CDNS_FLAG_RX_ENABLED)
-+		cdns_uart_handle_rx(port, isrstatus);
- 
- 	/* Dispatch an appropriate handler */
- 	if ((isrstatus & CDNS_UART_IXR_TXEMPTY) == CDNS_UART_IXR_TXEMPTY) {
-@@ -576,11 +583,13 @@ static void cdns_uart_stop_tx(struct uart_port *port)
- static void cdns_uart_stop_rx(struct uart_port *port)
- {
- 	unsigned int regval;
-+	struct cdns_uart *cdns_uart = port->private_data;
- 
- 	regval = readl(port->membase + CDNS_UART_CR_OFFSET);
- 	regval |= CDNS_UART_CR_RX_DIS;
- 	/* Disable the receiver */
- 	writel(regval, port->membase + CDNS_UART_CR_OFFSET);
-+	cdns_uart->flags &= ~CDNS_FLAG_RX_ENABLED;
+-			uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
+-					 data, status);
++		if (isrstatus & CDNS_UART_IXR_PARITY) {
++			port->icount.parity++;
++			status = TTY_PARITY;
++		} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
++			port->icount.frame++;
++			status = TTY_FRAME;
++		} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
++			port->icount.overrun++;
+ 		}
+-		tty_flip_buffer_push(&port->state->port);
++
++		uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
++				 data, status);
+ 	}
++	tty_flip_buffer_push(&port->state->port);
  }
  
  /**
-@@ -761,6 +770,7 @@ static int cdns_uart_startup(struct uart_port *port)
- {
- 	unsigned long flags;
- 	unsigned int retval = 0, status = 0;
-+	struct cdns_uart *cdns_uart = port->private_data;
+@@ -1431,27 +1428,30 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
+ 		rc = -ENODEV;
+ 		goto err_out_notif_unreg;
+-	} else {
+-		/* Register the port.
+-		 * This function also registers this device with the tty layer
+-		 * and triggers invocation of the config_port() entry point.
+-		 */
+-		port->mapbase = res->start;
+-		port->irq = irq;
+-		port->dev = &pdev->dev;
+-		port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
+-		port->private_data = cdns_uart_data;
+-		cdns_uart_data->port = port;
+-		platform_set_drvdata(pdev, port);
+-		rc = uart_add_one_port(&cdns_uart_uart_driver, port);
+-		if (rc) {
+-			dev_err(&pdev->dev,
+-				"uart_add_one_port() failed; err=%i\n", rc);
+-			goto err_out_notif_unreg;
+-		}
+-		return 0;
+ 	}
  
- 	retval = request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME,
- 								(void *)port);
-@@ -787,6 +797,7 @@ static int cdns_uart_startup(struct uart_port *port)
- 	status &= CDNS_UART_CR_RX_DIS;
- 	status |= CDNS_UART_CR_RX_EN;
- 	writel(status, port->membase + CDNS_UART_CR_OFFSET);
-+	cdns_uart->flags |= CDNS_FLAG_RX_ENABLED;
- 
- 	/* Set the Mode Register with normal mode,8 data bits,1 stop bit,
- 	 * no parity.
-@@ -830,6 +841,7 @@ static void cdns_uart_shutdown(struct uart_port *port)
- {
- 	int status;
- 	unsigned long flags;
-+	struct cdns_uart *cdns_uart = port->private_data;
- 
- 	spin_lock_irqsave(&port->lock, flags);
- 
-@@ -841,6 +853,7 @@ static void cdns_uart_shutdown(struct uart_port *port)
- 	/* Disable the TX and RX */
- 	writel(CDNS_UART_CR_TX_DIS | CDNS_UART_CR_RX_DIS,
- 			port->membase + CDNS_UART_CR_OFFSET);
-+	cdns_uart->flags &= ~CDNS_FLAG_RX_ENABLED;
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
++	/*
++	 * Register the port.
++	 * This function also registers this device with the tty layer
++	 * and triggers invocation of the config_port() entry point.
++	 */
++	port->mapbase = res->start;
++	port->irq = irq;
++	port->dev = &pdev->dev;
++	port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
++	port->private_data = cdns_uart_data;
++	cdns_uart_data->port = port;
++	platform_set_drvdata(pdev, port);
++
++	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
++	if (rc) {
++		dev_err(&pdev->dev,
++			"uart_add_one_port() failed; err=%i\n", rc);
++		goto err_out_notif_unreg;
++	}
++
++	return 0;
++
+ err_out_notif_unreg:
+ #ifdef CONFIG_COMMON_CLK
+ 	clk_notifier_unregister(cdns_uart_data->uartclk,
 -- 
 2.6.3.3.g9bb996a
