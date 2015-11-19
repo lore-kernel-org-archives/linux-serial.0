@@ -1,76 +1,70 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 07/25] serial: sh-sci: Convert from clk_get() to devm_clk_get()
-Date: Thu, 19 Nov 2015 22:38:34 +0200
-Message-ID: <3399561.8ERHTtILhO@avalon>
-References: <1447958344-836-1-git-send-email-geert+renesas@glider.be> <1447958344-836-8-git-send-email-geert+renesas@glider.be>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH 01/25] serial: sh-sci: Update DT binding documentation for
+ external clock input
+Date: Thu, 19 Nov 2015 21:39:50 +0100
+Message-ID: <CAMuHMdUnT2zCnj9QBVgxJaHV2fk5iuc7cxq=fh+fVTv3toOVaQ@mail.gmail.com>
+References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
+	<1447958344-836-2-git-send-email-geert+renesas@glider.be>
+	<1756365.Ijac5ApxcA@avalon>
+	<2241755.f72hngpPkv@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1447958344-836-8-git-send-email-geert+renesas@glider.be>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <2241755.f72hngpPkv@avalon>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
+On Thu, Nov 19, 2015 at 9:27 PM, Laurent Pinchart
+<laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
+> On Thursday 19 November 2015 22:19:14 Laurent Pinchart wrote:
+>> On Thursday 19 November 2015 19:38:40 Geert Uytterhoeven wrote:
+>> > Amend the DT bindings to include the optional external clock on
+>> > (H)SCI(F) and some SCIFA, where this pin can serve as a clock input,
+>> > depending on board wiring.
 
-Thank for the patch.
+>> > --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+>> > +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+>> >
+>> > @@ -43,6 +43,9 @@ Required properties:
+>> >    - clocks: Must contain a phandle and clock-specifier pair for each
+>> >    entry
+>> >
+>> >      in clock-names.
+>> >
+>> >    - clock-names: Must contain "fck" for the SCIx UART functional clock.
+>> >
+>> > +    On (H)SCI(F) and some SCIFA, an additional clock may be specified:
+>> Could you list the SCIFA variants that support external clocks ?
+>>
+>> > +      - "hsck" for the optional external clock input (on HSCIF),
+>> > +      - "sck" for the optional external clock input (on other variants).
+>
+> Additionally, those clocks are used as inputs to the baud rate generator for
+> external clocks, as the ones listed in patch 02/25 in this series. I'd merge
+> the two patches and clarify the wording.
 
-On Thursday 19 November 2015 19:38:46 Geert Uytterhoeven wrote:
-> Transfer clock cleanup handling to the core device management code.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/tty/serial/sh-sci.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index cba51da604253db6..9442961a198378c7 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -2216,7 +2216,7 @@ static struct uart_ops sci_uart_ops = {
->  static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
->  {
->  	/* Get the SCI functional clock. It's called "fck" on ARM. */
-> -	sci_port->fclk = clk_get(dev, "fck");
-> +	sci_port->fclk = devm_clk_get(dev, "fck");
+"SCK" predates the BRG, it even exists on SCI in H8/300.
 
-Have you tested what happens if you unbind the device from the driver while 
-userspace has the serial port open ?
+That SCK is used as input to the BRG is just an artefact of how the BRG was
+added to the SCIF. The BRG is just muxed with the existing SCK to form a clock
+input, which is muxed with the BRR clock through the SCSCR.CKEx bits.
+And the BRG itself can choose between SCIF_CLK and INT_CLK.
 
->  	if (PTR_ERR(sci_port->fclk) == -EPROBE_DEFER)
->  		return -EPROBE_DEFER;
->  	if (!IS_ERR(sci_port->fclk))
-> @@ -2226,7 +2226,7 @@ static int sci_init_clocks(struct sci_port *sci_port,
-> struct device *dev) * But it used to be called "sci_ick", and we need to
-> maintain DT * backward compatibility.
->  	 */
-> -	sci_port->fclk = clk_get(dev, "sci_ick");
-> +	sci_port->fclk = devm_clk_get(dev, "sci_ick");
->  	if (PTR_ERR(sci_port->fclk) == -EPROBE_DEFER)
->  		return -EPROBE_DEFER;
->  	if (!IS_ERR(sci_port->fclk))
-> @@ -2236,7 +2236,7 @@ static int sci_init_clocks(struct sci_port *sci_port,
-> struct device *dev) * Not all SH platforms declare a clock lookup entry for
-> SCI devices, * in which case we need to get the global "peripheral_clk"
-> clock. */
-> -	sci_port->fclk = clk_get(dev, "peripheral_clk");
-> +	sci_port->fclk = devm_clk_get(dev, "peripheral_clk");
->  	if (!IS_ERR(sci_port->fclk))
->  		return 0;
-> 
-> @@ -2395,8 +2395,6 @@ static int sci_init_single(struct platform_device
-> *dev,
-> 
->  static void sci_cleanup_single(struct sci_port *port)
->  {
-> -	clk_put(port->fclk);
-> -
->  	pm_runtime_disable(port->port.dev);
->  }
+Hence that's why I split it in two parts.
 
--- 
-Regards,
+Gr{oetje,eeting}s,
 
-Laurent Pinchart
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
