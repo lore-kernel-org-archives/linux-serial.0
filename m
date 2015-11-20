@@ -1,41 +1,30 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH 00/25] serial: sh-sci: Add external clock and BRG Support
-Date: Fri, 20 Nov 2015 10:07:31 +0100
-Message-ID: <CAMuHMdVA60R_Cz=tLQzkBuM4yqZj=xRmnga807EV2CumqUhpyg@mail.gmail.com>
+Date: Fri, 20 Nov 2015 10:09:24 +0100
+Message-ID: <CAMuHMdVGni+uTcFzMwnjJ2R_K-FiHpzeEioMMmqwXzdnOYu30g@mail.gmail.com>
 References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
-	<1662323.uZlFXR9U2a@avalon>
-	<CAMuHMdUVu40bOoau8AwLnzd+MWLsNODGDazyAeN1jpZordvi9Q@mail.gmail.com>
-	<11872773.MUvOKIUXMO@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <11872773.MUvOKIUXMO@avalon>
+In-Reply-To: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Laurent,
+On Thu, Nov 19, 2015 at 7:38 PM, Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+> This patch series adds support to the Renesas SCI serial driver for
+>   - the optional external clock on (H)SCI(F) and some SCIFA, where this
+>     pin can serve as a clock input,
+>   - the optional clock sources for the Baud Rate Generator for External
+>     Clock (BRG), as found on some SCIF variants and on HSCIF.
+> Using external clocks increases the range and accuracy of supported baud
+> rates. Please see the descriptions of the DTS patches for more detailed
+> information regarding the impact on the supported platforms.
 
-On Fri, Nov 20, 2015 at 9:58 AM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> On Friday 20 November 2015 09:22:16 Geert Uytterhoeven wrote:
->> On Thu, Nov 19, 2015 at 10:08 PM, Laurent Pinchart wrote:
->> > Could you briefly explain (and even better in a source code comment) how
->> > you handle baud rate calculation with the chained BRGs ?
->>
->> I'll do that. Note that there's no chaining of BRGs, only muxing (so yes, it
->> needs more clarification ;-).
->
-> Really ? I thought the BRG-EC was one possible input for the internal BRG ?
-> Does it bypass the internal BRG ? Or do you configure the internal BRG to not
-> divide the clock when using the BRG-EC ?
-
-Yes, it's bypassed.
-
-Cfr. SCSCR.CKE[1:0].
-'00' means internal BRG (although the docs state P divided by 1/4/16/64),
-'10' means SCK or SC_CLK (SCIF_CLK/INT_CLK).
+For the consumers: I've pushed this (incl. the dependencies and a few
+WIP patches) to the scif-brg branch of my renesas-drivers repo.
 
 Gr{oetje,eeting}s,
 
