@@ -1,51 +1,48 @@
-From: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 02/13] dmaengine: Introduce dma_request_slave_channel_compat_reason()
-Date: Fri, 20 Nov 2015 16:08:47 +0200
-Message-ID: <CAHp75VcEb1OP=mTQEAuQ6G_RswPCfvG4UzcFG+NBfJxABZVBcA@mail.gmail.com>
-References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
-	<4533695.7ZVFN1S94o@wuerfel>
-	<564EF502.6040708@ti.com>
-	<6118451.vaLZWOZEF5@wuerfel>
-	<CAHp75VdoHqPMNGFfz4mPhX+Lw+vxgiyqFS8j5+kQ9Z9CHt=OTA@mail.gmail.com>
-	<564F1253.4000800@ti.com>
+From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
+Subject: Re: [PATCH v2 1/3] serial: xuartps: Spliting the ISR into smaller
+ routines.
+Date: Fri, 20 Nov 2015 06:43:48 -0800
+Message-ID: <20151120144348.GS32017@xsjsorenbubuntu>
+References: <1448026478-22131-1-git-send-email-navam@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <564F1253.4000800-l0cyMroinI0@public.gmane.org>
-Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, dmaengine <dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MMC List <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-crypto <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-spi <linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Media Mailing List <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ALSA Development Mailing List <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1448026478-22131-1-git-send-email-navam@xilinx.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Nava kishore Manne <nava.manne@xilinx.com>
+Cc: Nava kishore Manne <navam@xilinx.com>, anirudh@xilinx.com, linux-kernel@vger.kernel.org, michal.simek@xilinx.com, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Nov 20, 2015 at 2:30 PM, Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org> wrote:
-> On 11/20/2015 02:24 PM, Andy Shevchenko wrote:
->> On Fri, Nov 20, 2015 at 12:58 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
->>> On Friday 20 November 2015 12:25:06 Peter Ujfalusi wrote:
->>>> On 11/19/2015 01:25 PM, Arnd Bergmann wrote:
->>
->>> Another idea would be to remove the filter function from struct dma_chan_map
->>> and pass the map through platform data
->>
->> Why not unified device properties?
->
-> Is this some Windows/ACPI feature?
-
-Nope.
-
-Check drivers/base/property.c
-
-> Quick search gives mostly MSDN and
-> Windows10 related links.
->
-> We only need dma_chan_map for platforms which has not been converted to DT and
-> still using legacy boot. Or platforms which can still boot in legacy mode. In
-> DT/ACPI mode we do not need this map at all.
-
-
--- 
-With Best Regards,
-Andy Shevchenko
---
-To unsubscribe from this list: send the line "unsubscribe linux-spi" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gRnJpLCAyMDE1LTExLTIwIGF0IDA3OjA0UE0gKzA1MzAsIE5hdmEga2lzaG9yZSBNYW5uZSB3
+cm90ZToKPiBCcmVha2luZyB0aGUgc2luZ2xlIGJpZyBJU1IgdGhhdCBoYXMgYm90aCBSeCBhbmQg
+VHgKPiBpbiBhIHNpbmdsZSBmdW5jdGlvbiBpbnRvIHNtYWxsZXIgb25lcwo+IAo+IFNpZ25lZC1v
+ZmYtYnk6IE5hdmEga2lzaG9yZSBNYW5uZSA8bmF2YW1AeGlsaW54LmNvbT4KPiAtLS0KPiBDaGFu
+Z2VzIGZvciB2MjoKPiAJLS1TcGxpdHMgdXAgdGhlIElTUiB3aXRob3V0IGFueSBmdW5jdGlvbmFs
+IGNoYW5nZXMgYXMgc3VnZ2VzdGVkCj4gCWJ5IFBldGVyIEh1cmxleQo+IAo+ICBkcml2ZXJzL3R0
+eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jIHwgMjQ3ICsrKysrKysrKysrKysrKysrKysrLS0tLS0t
+LS0tLS0tLS0tLS0KPiAgMSBmaWxlIGNoYW5nZWQsIDEzNSBpbnNlcnRpb25zKCspLCAxMTIgZGVs
+ZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC94aWxpbnhfdWFy
+dHBzLmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jCj4gaW5kZXggMDA5ZTBk
+Yi4uMmUxYjBhOCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRw
+cy5jCj4gKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL3hpbGlueF91YXJ0cHMuYwo+IEBAIC0xNzIs
+NiArMTcyLDkgQEAgc3RydWN0IGNkbnNfdWFydCB7Cj4gICNkZWZpbmUgdG9fY2Ruc191YXJ0KF9u
+YikgY29udGFpbmVyX29mKF9uYiwgc3RydWN0IGNkbnNfdWFydCwgXAo+ICAJCWNsa19yYXRlX2No
+YW5nZV9uYik7Cj4gIAo+ICtzdGF0aWMgdm9pZCBjZG5zX3VhcnRfaGFuZGxlX3R4KHZvaWQgKmRl
+dl9pZCk7Cj4gK3N0YXRpYyB2b2lkIGNkbnNfdWFydF9oYW5kbGVfcngodm9pZCAqZGV2X2lkLCB1
+bnNpZ25lZCBpbnQgaXNyc3RhdHVzKTsKCkNhbid0IHlvdSBqdXN0IG1vdmUgdGhlc2UgZnVuY3Rp
+b25zIGhlcmUgaW5zdGVhZCBvZiBhZGRpbmcgcHJvdG90eXBlcwpoZXJlPyBBbHNvLCB0aGlzIGlz
+IGxpa2VseSB0byBjb25mbGljdCB3aXRoCmh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE1LzExLzE5
+LzYyMgoKCVPDtnJlbgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0
+cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGlu
+Zm8vbGludXgtYXJtLWtlcm5lbAo=
