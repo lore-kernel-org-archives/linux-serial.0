@@ -1,69 +1,70 @@
-From: Nava kishore Manne <nava.manne@xilinx.com>
-Subject: [PATCH v2 3/3] serial: xuartps: Do not enable parity error interrupt
-Date: Fri, 20 Nov 2015 19:04:38 +0530
-Message-ID: <1448026478-22131-3-git-send-email-navam@xilinx.com>
-References: <1448026478-22131-1-git-send-email-navam@xilinx.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH 02/13] dmaengine: Introduce dma_request_slave_channel_compat_reason()
+Date: Fri, 20 Nov 2015 14:48:20 +0100
+Message-ID: <5158930.I1IPZa4jtW@wuerfel>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com> <6118451.vaLZWOZEF5@wuerfel> <564F1773.9030006@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1448026478-22131-1-git-send-email-navam@xilinx.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: jslaby@suse.com, michal.simek@xilinx.com, soren.brinkmann@xilinx.com, anirudh@xilinx.com
-Cc: Nava kishore Manne <navam@xilinx.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <564F1773.9030006-l0cyMroinI0@public.gmane.org>
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>
+Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MMC List <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-spi <linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Media Mailing List <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ALSA Development Mailing List <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-The patch makes changes not to enable parity error interrupt.
-With the current implementation, each parity error results in
-two distinct interrupts (almost always). The first one is normal
-parity error interrupt with no data in the fifo and the second one
-is a proper Rx interrupt with the received data in the fifo. By
-disabling parity error interrupt we still ensure handling of
-parity errors as for the Rx fifo interrupt the parity error still
-shows up in the interrupt status register. Considering the fact
-that the by default INPCK and IGNPAR are not set, this is the
-optimal implementation for parity error handling.
+On Friday 20 November 2015 14:52:03 Peter Ujfalusi wrote:
+> 
+> >> For legacy the filter function is pretty much needed to handle the differences
+> >> between the platforms as not all of them does the filtering in a same way. So
+> >> the first type of map would be feasible IMHO.
+> > 
+> > It certainly makes the transition to a map table much easier.
+> 
+> And the aim anyway is to convert everything to DT, right?
 
-Signed-off-by: Nava kishore Manne <navam@xilinx.com>
----
-Changes for v2:
-		--None
+We won't be able to do that. Some architectures (avr32 and sh for instance)
+use the dmaengine API but will likely never support DT. On ARM, at
+least sa1100 is in the same category, probably also ep93xx and portions
+of pxa, omap1 and davinci.
 
- drivers/tty/serial/xilinx_uartps.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+> > int dmam_register_platform_map(struct device *dev, dma_filter_fn filter, struct dma_chan_map *map)
+> > {
+> >       struct dma_map_list *list = kmalloc(sizeof(*list), GFP_KERNEL);
+> > 
+> >       if (!list)
+> >               return -ENOMEM;
+> > 
+> >       list->dev = dev;
+> >       list->filter = filter;
+> >       list->map = map;
+> > 
+> >       mutex_lock(&dma_map_mutex);
+> >       list_add(&dma_map_list, &list->node);
+> >       mutex_unlock(&dma_map_mutex);
+> > }
+> > 
+> > Now we can completely remove the dependency on the filter function definition
+> > from platform code and slave drivers.
+> 
+> Sounds feasible for OMAP and daVinci and for others as well. I think 
+> I would go with this if someone asks my opinion 
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 4d71478..082e7f7 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -824,8 +824,18 @@ static int cdns_uart_startup(struct uart_port *port)
- 	writel(readl(port->membase + CDNS_UART_ISR_OFFSET),
- 			port->membase + CDNS_UART_ISR_OFFSET);
- 
--	/* Set the Interrupt Registers with desired interrupts */
--	writel(CDNS_UART_IXR_TXEMPTY | CDNS_UART_IXR_PARITY |
-+	/*
-+	 * Set the Interrupt Registers with desired interrupts. Do not
-+	 * enable parity error interrupt for the following reason:
-+	 * When parity error interrupt is enabled, each Rx parity error always
-+	 * results in 2 events. The first one being parity error interrupt
-+	 * and the second one with a proper Rx interrupt with the incoming data.
-+	 * Disabling parity error interrupt ensures better handling of parity
-+	 * error events. With this change, for a parity error case, we get a
-+	 * Rx interrupt with parity error set in ISR register and we still
-+	 * handle parity errors in the desired way.
-+	 */
-+	writel(CDNS_UART_IXR_TXEMPTY |
- 		CDNS_UART_IXR_FRAMING | CDNS_UART_IXR_OVERRUN |
- 		CDNS_UART_IXR_RXTRIG | CDNS_UART_IXR_TOUT,
- 		port->membase + CDNS_UART_IER_OFFSET);
--- 
-2.1.2
+Ok.
+
+> The core change to add the new API + the dma_map support should be pretty
+> straight forward. It can live alongside with the old API and we can phase out
+> the users of the old one.
+> The legacy support would need more time since we need to modify the arch codes
+> and the corresponding DMA drivers to get the map registered, but after that
+> the remaining drivers can be converted to use the new API.
+
+Right. It's not urgent and as long as we agree on the overall approach, we can
+always do the platform support first and wait for the following merge window
+before moving over the slave drivers.
+
+	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
