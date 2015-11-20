@@ -1,74 +1,82 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 01/25] serial: sh-sci: Update DT binding documentation for
- external clock input
-Date: Fri, 20 Nov 2015 09:00:13 +0100
-Message-ID: <CAMuHMdUtvCLed4wReYUin3rT-H+psmgg=SiiwinNTa-430RD1w@mail.gmail.com>
+Subject: Re: [PATCH 23/25] arm64: renesas: r8a7795 dtsi: Add BRG support for (H)SCIF
+Date: Fri, 20 Nov 2015 09:17:11 +0100
+Message-ID: <CAMuHMdXVuaWj_y6mLMi7+r5yXO2dn4i3k+Vr5qPrNc36sHWsWg@mail.gmail.com>
 References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
-	<2241755.f72hngpPkv@avalon>
-	<CAMuHMdUnT2zCnj9QBVgxJaHV2fk5iuc7cxq=fh+fVTv3toOVaQ@mail.gmail.com>
-	<1492878.6yAAhNSnGb@avalon>
+	<1447958344-836-24-git-send-email-geert+renesas@glider.be>
+	<6606020.G1vmRDrqTj@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1492878.6yAAhNSnGb@avalon>
-Sender: linux-sh-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <6606020.G1vmRDrqTj@avalon>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
 Hi Laurent,
 
-On Thu, Nov 19, 2015 at 10:17 PM, Laurent Pinchart
+On Thu, Nov 19, 2015 at 10:07 PM, Laurent Pinchart
 <laurent.pinchart@ideasonboard.com> wrote:
-> On Thursday 19 November 2015 21:39:50 Geert Uytterhoeven wrote:
->> On Thu, Nov 19, 2015 at 9:27 PM, Laurent Pinchart wrote:
->> > On Thursday 19 November 2015 22:19:14 Laurent Pinchart wrote:
->> >> On Thursday 19 November 2015 19:38:40 Geert Uytterhoeven wrote:
->> >> > Amend the DT bindings to include the optional external clock on
->> >> > (H)SCI(F) and some SCIFA, where this pin can serve as a clock input,
->> >> > depending on board wiring.
->> >> >
->> >> > --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->> >> > +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->> >> >
->> >> > @@ -43,6 +43,9 @@ Required properties:
->> >> >    - clocks: Must contain a phandle and clock-specifier pair for each
->> >> >      entry in clock-names.
->> >> >    - clock-names: Must contain "fck" for the SCIx UART functional
->> >> >    clock.
->> >> > +    On (H)SCI(F) and some SCIFA, an additional clock may be specified:
->> >>
->> >> Could you list the SCIFA variants that support external clocks ?
->> >>
->> >> > +      - "hsck" for the optional external clock input (on HSCIF),
->> >> > +      - "sck" for the optional external clock input (on other
->> >> > variants).
->> >
->> > Additionally, those clocks are used as inputs to the baud rate generator
->> > for external clocks, as the ones listed in patch 02/25 in this series.
->> > I'd merge the two patches and clarify the wording.
+> On Thursday 19 November 2015 19:39:02 Geert Uytterhoeven wrote:
+>> Add the device node for the external SCIF_CLK.
+>> The presence of the SCIF_CLK crystal and its clock frequency depend on
+>> the actual board.
 >>
->> "SCK" predates the BRG, it even exists on SCI in H8/300.
+>> Add the two optional clock sources (ZS_CLK and SCIF_CLK for the internal
+>> resp. external clock) for the Baud Rate Generator for External Clock
+>> (BRG) to all SCIF and HSCIF device nodes.
 >>
->> That SCK is used as input to the BRG is just an artefact of how the BRG was
->> added to the SCIF. The BRG is just muxed with the existing SCK to form a
->> clock input, which is muxed with the BRR clock through the SCSCR.CKEx bits.
->> And the BRG itself can choose between SCIF_CLK and INT_CLK.
+>> This increases the range and accuracy of supported baud rates on
+>> (H)SCIF.
 >>
->> Hence that's why I split it in two parts.
+>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>> ---
+>>  arch/arm64/boot/dts/renesas/r8a7795.dtsi | 74 +++++++++++++++++++----------
+>>  1 file changed, 52 insertions(+), 22 deletions(-)
+>>
+>> diff --git a/arch/arm64/boot/dts/renesas/r8a7795.dtsi
+>> b/arch/arm64/boot/dts/renesas/r8a7795.dtsi index
+>> 53a2a8fb42b7480c..25900761cfde201e 100644
+>> --- a/arch/arm64/boot/dts/renesas/r8a7795.dtsi
+>> +++ b/arch/arm64/boot/dts/renesas/r8a7795.dtsi
+>> @@ -84,6 +84,14 @@
+>>               status = "disabled";
+>>       };
+>>
+>> +     /* External SCIF clock - to be overridden by boards that provide it */
+>> +     scif_clk: scif {
+>> +             compatible = "fixed-clock";
+>> +             #clock-cells = <0>;
+>> +             clock-frequency = <0>;
+>> +             status = "disabled";
+>> +     };
 >
-> It makes sense with the explanation.
->
-> I think some of the patches should be clarified to mention BRG-EC (or whatever
-> you want to call it) instead of just BRG, as otherwise it's very easy to
-> confuse the two BRGs. The (H)SCK clock is an input to the internal BRG, while
-> the SCIF_CLK and INT_CLK are inputs to the BRG-EC. Without clarification the
-> DT bindings and the code can be hard to understand.
+> I have mixed feelings about this. Defining an external clock that isn't
+> present on the board isn't very clean, even more so when the clock has such a
 
-The (H)SCK clock is not an input to the internal BRG: it's used directly as the
-sampling clock.
+We have precedence of optional external clocks (can_clk, audio_clk_*).
+The SoC datasheet clearly calls it "scif_clk", so that makes it an ABI, IMHO.
 
-I'll add more clarification...
+> generic name. Wouldn't it be better to let board files define the clock when
+> they need it ? I know it would require board files to override the clocks and
+> clock-names property too. Maybe we need to extend the DTS syntax to allow
+> extending list properties instead of overriding them completely ?
+
+As scif_clk is shared between all (H)SCIF instances, that would mean overriding
+the clock and clock-names for all of them, which is quite a tedious task.
+Most boards seem to provide a SCIF_CLK, to allow having "perfect" standard
+baud rates.
+
+Combined all of the above, I think it's sufficiently generic to keep
+it that way.
+
+Note that it's different for (H)SCK: these are per-(H)SCIF inputs, and depend
+even more on board layout. Adding individual zero-frequency clock nodes for
+them would preclude e.g. connecting all (H)SCK inputs to the same crystal.
+Hence I didn't add them, and you do have to override all clocks and
+clock-names of a node if you want to add an (H)SCK clock input (been there,
+done that for testing; long live DT overlays).
 
 Gr{oetje,eeting}s,
 
