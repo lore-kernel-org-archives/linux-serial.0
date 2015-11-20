@@ -1,144 +1,45 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 18/25] serial: sh-sci: Prepare for multiple clocks and
- baud rate generators
-Date: Fri, 20 Nov 2015 16:17:13 +0100
-Message-ID: <CAMuHMdX8_nPwmH_i71yhEGzA1vGUfOEu7Da=i44iZKfaNcNb-Q@mail.gmail.com>
-References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
-	<3383903.1R72kZGx62@avalon>
-	<CAMuHMdWZVZ-iVRKOjzszoJiBMxC-p=OTGWRb-EYHFV=eC3DiWQ@mail.gmail.com>
-	<2396575.drsjxiqpHR@avalon>
+From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
+Subject: Re: [PATH RESEND v2 03/10] tty: xuartps: Always enable transmitter
+ in start_tx
+Date: Fri, 20 Nov 2015 07:28:49 -0800
+Message-ID: <20151120152849.GU32017@xsjsorenbubuntu>
+References: <1447963344-16266-1-git-send-email-soren.brinkmann@xilinx.com>
+ <1447963344-16266-4-git-send-email-soren.brinkmann@xilinx.com>
+ <564F0E75.5020100@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2396575.drsjxiqpHR@avalon>
+Content-Disposition: inline
+In-Reply-To: <564F0E75.5020100@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Laurent,
+Hi Peter,
 
-On Fri, Nov 20, 2015 at 3:47 PM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> On Friday 20 November 2015 08:52:19 Geert Uytterhoeven wrote:
->> On Thu, Nov 19, 2015 at 10:04 PM, Laurent Pinchart wrote:
->> > On Thursday 19 November 2015 19:38:57 Geert Uytterhoeven wrote:
->> >> Refactor the clock and baud rate parameter code to ease adding support
->> >> for multiple clocks and baud rate generators later.
->> >> sci_scbrr_calc() now returns the bit rate error, so it can be compared
->> >> to the bit rate error for other baud rate generators.
->> >>
->> >> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->> >> ---
->> >>
->> >>  drivers/tty/serial/sh-sci.c | 176 +++++++++++++++++++++++++-------------
->> >>  1 file changed, 120 insertions(+), 56 deletions(-)
->> >>
->> >> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
->> >> index 726c96d5a511c222..12800e52f41953dc 100644
->> >> --- a/drivers/tty/serial/sh-sci.c
->> >> +++ b/drivers/tty/serial/sh-sci.c
->> >> @@ -2252,33 +2301,48 @@ static struct uart_ops sci_uart_ops = {
->> >>  static int sci_init_clocks(struct sci_port *sci_port, struct device
->> >>  *dev)
->> >>  {
->> >> -     /* Get the SCI functional clock. It's called "fck" on ARM. */
->> >> -     sci_port->fclk = devm_clk_get(dev, "fck");
->> >> -     if (PTR_ERR(sci_port->fclk) == -EPROBE_DEFER)
->> >> -             return -EPROBE_DEFER;
->> >> -     if (!IS_ERR(sci_port->fclk))
->> >> -             return 0;
->> >> +     const char *clk_names[] = {
->> >> +             [SCI_FCK] = "fck",
->> >> +     };
->> >> +     struct clk *clk;
->> >> +     unsigned int i;
->> >>
->> >> -     /*
->> >> -      * But it used to be called "sci_ick", and we need to maintain DT
->> >> -      * backward compatibility.
->> >> -      */
->> >> -     sci_port->fclk = devm_clk_get(dev, "sci_ick");
->> >> -     if (PTR_ERR(sci_port->fclk) == -EPROBE_DEFER)
->> >> -             return -EPROBE_DEFER;
->> >> -     if (!IS_ERR(sci_port->fclk))
->> >> -             return 0;
->> >> +     for (i = 0; i < SCI_NUM_CLKS; i++) {
->> >> +             clk = devm_clk_get(dev, clk_names[i]);
->> >> +             if (PTR_ERR(clk) == -EPROBE_DEFER)
->> >> +                     return -EPROBE_DEFER;
->> >>
->> >> -     /*
->> >> -      * Not all SH platforms declare a clock lookup entry for SCI
->> >> devices,
->> >> -      * in which case we need to get the global "peripheral_clk" clock.
->> >> -      */
->> >> -     sci_port->fclk = devm_clk_get(dev, "peripheral_clk");
->> >> -     if (!IS_ERR(sci_port->fclk))
->> >> -             return 0;
->> >> +             if (IS_ERR(clk) && i == SCI_FCK) {
->> >> +                     /*
->> >> +                      * "fck" used to be called "sci_ick", and we need
->> >> to
->> >> +                      * maintain DT backward compatibility.
->> >> +                      */
->> >> +                     clk = devm_clk_get(dev, "sci_ick");
->> >> +                     if (PTR_ERR(clk) == -EPROBE_DEFER)
->> >> +                             return -EPROBE_DEFER;
->> >> +
->> >> +                     if (!IS_ERR(clk))
->> >> +                             goto found;
->> >> +
->> >> +                     /*
->> >> +                      * Not all SH platforms declare a clock lookup
->> >> entry
->> >> +                      * for SCI devices, in which case we need to get
->> >> the
->> >> +                      * global "peripheral_clk" clock.
->> >> +                      */
->> >> +                     clk = devm_clk_get(dev, "peripheral_clk");
->> >> +                     if (!IS_ERR(clk))
->> >> +                             goto found;
->> >> +
->> >> +                     dev_err(dev, "failed to get functional clock\n");
->> >> +                     return PTR_ERR(clk);
->> >> +             }
->> >>
->> >> -     dev_err(dev, "failed to get functional clock\n");
->> >> -     return PTR_ERR(sci_port->fclk);
->> >> +found:
->> >> +             if (!IS_ERR(clk))
->> >> +                     dev_dbg(dev, "clk %u is %pC rate %pCr\n", i, clk,
->> >> clk);
->> >> +             sci_port->clks[i] = IS_ERR(clk) ? NULL : clk;
->> >
->> > Isn't it an issue that we can't tell apart the case where there is no
->> > clock specified in DT and the case where we can't get the clock due to
->> > another error ?
->>
->> All failures here are for optional clocks.
->> If the real failure is that the clock wasn't specified (or misspelled) in
->> DT, it should have been detected during the integration phase.
->
-> There could be cases where the clock is correctly specified in DT but can't be
-> retrieved due to a runtime error. I suppose that's mostly theoretical in our
-> case though. Maybe a dev_dbg for the error case could be useful too ? Can we
-> tell the case where the clock is not specified in DT apart from other errors
-> (-EPROBE_DEFER aside as that case is already handled) ?
+On Fri, 2015-11-20 at 07:13AM -0500, Peter Hurley wrote:
+>=20
+>=20
+> On 11/19/2015 03:02 PM, Soren Brinkmann wrote:
+> > start_tx must start transmitting characters. Regardless of the stat=
+e of
+> > the circular buffer, always enable the transmitter hardware.
+>=20
+> Why?
+>=20
+> Does cdns_uart_stop_tx() actually stop the transmitter so that
+> data remains in the transmitter?
 
-If the clock is not in clock/clock-names in DT, the error is definitely -ENOENT.
+Well, I saw my system freezing and the cause seemed to be that the UART
+receiver and/or transmitters were disabled while the system was trying
+to print. Hence, I started questioning all locations touching the
+transmitter/receiver enable. I read the docs in
+https://www.kernel.org/doc/Documentation/serial/driver, which simply
+says "Start transmitting characters." for start_tx(). Hence, I thought,
+this function is probably supposed to just do that and start the
+transmitter. I'll test whether this patch can be dropped.
 
-If the clock is specified in DT, it has a phandle to a clock node. If that
-clock hasn't been instantiated yet, the error is EPROBE_DEFER.
-Which means there are no other possible error values, right?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+	Thanks,
+	S=C3=B6ren
