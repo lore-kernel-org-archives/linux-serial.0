@@ -1,197 +1,155 @@
-From: Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 02/13] dmaengine: Introduce
- dma_request_slave_channel_compat_reason()
-Date: Fri, 20 Nov 2015 14:52:03 +0200
-Message-ID: <564F1773.9030006@ti.com>
-References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
- <4533695.7ZVFN1S94o@wuerfel> <564EF502.6040708@ti.com>
- <6118451.vaLZWOZEF5@wuerfel>
+From: Nava kishore Manne <nava.manne@xilinx.com>
+Subject: [PATCH v2 2/3] serial: xuartps: Rewrite the interrupt handling logic
+Date: Fri, 20 Nov 2015 19:04:37 +0530
+Message-ID: <1448026478-22131-2-git-send-email-navam@xilinx.com>
+References: <1448026478-22131-1-git-send-email-navam@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <6118451.vaLZWOZEF5@wuerfel>
-Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MMC List <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-spi <linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Media Mailing List <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ALSA Development Mailing List <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1448026478-22131-1-git-send-email-navam@xilinx.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: jslaby@suse.com, michal.simek@xilinx.com, soren.brinkmann@xilinx.com, anirudh@xilinx.com
+Cc: Nava kishore Manne <navam@xilinx.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 11/20/2015 12:58 PM, Arnd Bergmann wrote:
->>> That way the vast majority of drivers can use one of the two nice i=
-nterfaces
->>> and the rest can be converted to use __dma_request_chan().
->>>
->>> On a related topic, we had in the past considered providing a way f=
-or
->>> platform code to register a lookup table of some sort, to associate
->>> a device/name pair with a configuration. That would let us use the
->>> simplified dma_request_slavechan(dev, name) pair everywhere. We cou=
-ld
->>> use the same method that we have for clk_register_clkdevs() or
->>> pinctrl_register_map().
->>>
->>> Something like either
->>>
->>> static struct dma_chan_map myplatform_dma_map[] =3D {
->>> 	{ .devname =3D "omap-aes0", .slave =3D "tx", .filter =3D omap_dma_=
-filter_fn, .arg =3D (void *)65, },
->>> 	{ .devname =3D "omap-aes0", .slave =3D "rx", .filter =3D omap_dma_=
-filter_fn, .arg =3D (void *)66, },
->>> };
->>>
->>> or
->>>
->>> static struct dma_chan_map myplatform_dma_map[] =3D {
->>> 	{ .devname =3D "omap-aes0", .slave =3D "tx", .master =3D "omap-dma=
--engine0", .req =3D 65, },
->>> 	{ .devname =3D "omap-aes0", .slave =3D "rx", .master =3D "omap-dma=
--engine0", .req =3D 66, },
->>
->> sa11x0-dma expects the fn_param as string :o
->=20
-> Some of them do, but the new API requires changes in both the DMA mas=
-ter and
-> slave drivers, so that could be changed if we wanted to, or we just a=
-llow=20
-> both methods indefinitely and let sa11x0-dma pass the filterfn+data r=
-ather than
-> a number.
+The existing interrupt handling logic has followins issues.
+- Upon a parity error with default configuration, the control
+  never comes out of the ISR thereby hanging Linux.
+- The error handling logic around framing and parity error are buggy.
+  There are chances that the errors will never be captured.
+This patch fixes all these concerns.
 
-Hrm, I would say that we need to push everyone to use the new API. sa11=
-x0
-should not be a big deal to fix IMHO and other users should be reasonab=
-ly
-simple to convert.
+Signed-off-by: Nava kishore Manne <navam@xilinx.com>
+---
+Changes for v2:
+	--Add required changes after spliting the ISR as suggested by
+	Peter Hurley.
 
->>> };
->>
->> Basically we are deprecating the use of IORESOURCE_DMA?
->=20
-> I thought we already had ;-)
+ drivers/tty/serial/xilinx_uartps.c | 64 ++++++++++++++++++--------------------
+ 1 file changed, 31 insertions(+), 33 deletions(-)
 
-=46or DT boot, yes. Not for the legacy boot.
-
->> For legacy the filter function is pretty much needed to handle the d=
-ifferences
->> between the platforms as not all of them does the filtering in a sam=
-e way. So
->> the first type of map would be feasible IMHO.
->=20
-> It certainly makes the transition to a map table much easier.
-
-And the aim anyway is to convert everything to DT, right?
-
->>> we could even allow a combination of the two, so the simple case ju=
-st specifies
->>> master and req number, which requires changes to the dmaengine driv=
-er, but we could
->>> also do a mass-conversion to the .filter/.arg variant.
->>
->> This will get rid of the need for the fn and fn_param parameters whe=
-n
->> requesting dma channel, but it will not get rid of the exported func=
-tion from
->> the dma engine drivers since in arch code we need to have visibility=
- to the
->> filter_fn.
->=20
-> Correct. A lot of dmaengine drivers already need to be built-in so th=
-e platform
-> code can put a pointer to the filter function, so it would not be wor=
-se for them.
->=20
-> Another idea would be to remove the filter function from struct dma_c=
-han_map
-> and pass the map through platform data to the dmaengine driver, which=
- then
-> registers it to the core along with the mask. Something like:
->=20
-> /* platform code */
-> static struct dma_chan_map oma_dma_map[] =3D {
->  	{ .devname =3D "omap-aes0", .slave =3D "tx", .arg =3D (void *)65, }=
-,
->  	{ .devname =3D "omap-aes0", .slave =3D "rx", .arg =3D (void *)66, }=
-,
-> 	...
-> 	{},
-> };
->=20
-> static struct omap_system_dma_plat_info dma_plat_info __initdata =3D =
-{
-> 	.dma_map =3D &oma_dma_map,
-> 	...
-> };     =20
->=20
-> machine_init(void)
-> {
-> 	...
-> 	platform_device_register_data(NULL, "omap-dma-engine", 0, &dma_plat_=
-info, sizeof(dma_plat_info);
-> 	...
-> }
->=20
-> /* dmaengine driver */
->=20
-> static int omap_dma_probe(struct platform_device *pdev)
-> {
-> 	struct omap_system_dma_plat_info *pdata =3D dev_get_platdata(&pdev->=
-dev);
-> 	...
->=20
-> 	dmam_register_platform_map(&pdev->dev, omap_dma_filter_fn, pdata->dm=
-a_map);
-> }
->=20
-> /* dmaengine core */
->=20
-> struct dma_map_list {
-> 	struct list_head node;
-> 	struct device *master;
-> 	dma_filter_fn filter;
-> 	struct dma_chan_map *map;
-> };
->=20
-> static LIST_HEAD(dma_map_list);
-> static DEFINE_MUTEX(dma_map_mutex);
->=20
-> int dmam_register_platform_map(struct device *dev, dma_filter_fn filt=
-er, struct dma_chan_map *map)
-> {
-> 	struct dma_map_list *list =3D kmalloc(sizeof(*list), GFP_KERNEL);
->=20
-> 	if (!list)
-> 		return -ENOMEM;
->=20
-> 	list->dev =3D dev;
-> 	list->filter =3D filter;
-> 	list->map =3D map;
->=20
-> 	mutex_lock(&dma_map_mutex);
-> 	list_add(&dma_map_list, &list->node);
-> 	mutex_unlock(&dma_map_mutex);
-> }
->=20
-> Now we can completely remove the dependency on the filter function de=
-finition
-> from platform code and slave drivers.
-
-Sounds feasible for OMAP and daVinci and for others as well. I think ;)
-I would go with this if someone asks my opinion :D
-
-The core change to add the new API + the dma_map support should be pret=
-ty
-straight forward. It can live alongside with the old API and we can pha=
-se out
-the users of the old one.
-The legacy support would need more time since we need to modify the arc=
-h codes
-and the corresponding DMA drivers to get the map registered, but after =
-that
-the remaining drivers can be converted to use the new API.
-
---=20
-P=E9ter
---
-To unsubscribe from this list: send the line "unsubscribe linux-spi" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 2e1b0a8..4d71478 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -191,9 +191,10 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	/* Read the interrupt status register to determine which
+-	 * interrupt(s) is/are active.
++	 * interrupt(s) is/are active and clear them.
+ 	 */
+ 	isrstatus = readl(port->membase + CDNS_UART_ISR_OFFSET);
++	writel(isrstatus, port->membase + CDNS_UART_ISR_OFFSET);
+ 
+ 	if (isrstatus & CDNS_UART_IXR_TXEMPTY) {
+ 		cdns_uart_handle_tx(dev_id);
+@@ -202,8 +203,6 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ 	if (isrstatus & CDNS_UART_IXR_MASK)
+ 		cdns_uart_handle_rx(dev_id, isrstatus);
+ 
+-	writel(isrstatus, port->membase + CDNS_UART_ISR_OFFSET);
+-
+ 	/* be sure to release the lock and tty before leaving */
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+@@ -354,37 +353,32 @@ static void cdns_uart_handle_rx(void *dev_id, unsigned int isrstatus)
+ {
+ 	struct uart_port *port = (struct uart_port *)dev_id;
+ 	unsigned int data;
++	unsigned int framerrprocessed = 0;
+ 	char status = TTY_NORMAL;
+ 
+-	/*
+-	 * There is no hardware break detection, so we interpret framing
+-	 * error with all-zeros data as a break sequence. Most of the time,
+-	 * there's another non-zero byte at the end of the sequence.
+-	 */
+-	if (isrstatus & CDNS_UART_IXR_FRAMING) {
+-		while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
+-			CDNS_UART_SR_RXEMPTY)) {
+-			if (!readl(port->membase + CDNS_UART_FIFO_OFFSET)) {
++	while ((readl(port->membase + CDNS_UART_SR_OFFSET) &
++		CDNS_UART_SR_RXEMPTY) != CDNS_UART_SR_RXEMPTY) {
++		data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
++		port->icount.rx++;
++
++		/*
++		 * There is no hardware break detection, so we interpret framing
++		 * error with all-zeros data as a break sequence. Most of the
++		 * time, there's another non-zero byte at the end of the
++		 * sequence.
++		 */
++		if (isrstatus & CDNS_UART_IXR_FRAMING) {
++			if (!data) {
+ 				port->read_status_mask |= CDNS_UART_IXR_BRK;
+-				isrstatus &= ~CDNS_UART_IXR_FRAMING;
++				framerrprocessed = 1;
++				continue;
+ 			}
+ 		}
+-		writel(CDNS_UART_IXR_FRAMING,
+-			port->membase + CDNS_UART_ISR_OFFSET);
+-	}
+ 
+-	/* drop byte with parity error if IGNPAR specified */
+-	if (isrstatus & port->ignore_status_mask & CDNS_UART_IXR_PARITY)
+-		isrstatus &= ~(CDNS_UART_IXR_RXTRIG | CDNS_UART_IXR_TOUT);
+-
+-	isrstatus &= port->read_status_mask;
+-	isrstatus &= ~port->ignore_status_mask;
+-	if ((isrstatus & CDNS_UART_IXR_TOUT) ||
+-		(isrstatus & CDNS_UART_IXR_RXTRIG)) {
+-		/* Receive Timeout Interrupt */
+-		while ((readl(port->membase + CDNS_UART_SR_OFFSET) &
+-			CDNS_UART_SR_RXEMPTY) != CDNS_UART_SR_RXEMPTY) {
+-			data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
++		isrstatus &= port->read_status_mask;
++		isrstatus &= ~port->ignore_status_mask;
++		if ((isrstatus & CDNS_UART_IXR_TOUT) ||
++			(isrstatus & CDNS_UART_IXR_RXTRIG)) {
+ 
+ 			/* Non-NULL byte after BREAK is garbage (99%) */
+ 			if (data && (port->read_status_mask
+@@ -416,21 +410,25 @@ static void cdns_uart_handle_rx(void *dev_id, unsigned int isrstatus)
+ 			if (isrstatus & CDNS_UART_IXR_PARITY) {
+ 				port->icount.parity++;
+ 				status = TTY_PARITY;
+-			} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
++			}
++			if (isrstatus & CDNS_UART_IXR_FRAMING) {
+ 				port->icount.frame++;
+ 				status = TTY_FRAME;
+-			} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
++			}
++			if (isrstatus & CDNS_UART_IXR_OVERRUN) {
+ 				port->icount.overrun++;
++				tty_insert_flip_char(&port->state->port, 0,
++								TTY_OVERRUN);
+ 			}
+ 
+-			uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
+-								data, status);
++			tty_insert_flip_char(&port->state->port, data, status);
+ 		}
++	}
+ 		spin_unlock(&port->lock);
+ 		tty_flip_buffer_push(&port->state->port);
+ 		spin_lock(&port->lock);
+ }
+-}
++
+ #ifdef CONFIG_COMMON_CLK
+ /**
+  * cdns_uart_clk_notitifer_cb - Clock notifier callback
+-- 
+2.1.2
