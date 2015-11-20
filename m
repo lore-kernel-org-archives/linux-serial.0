@@ -1,66 +1,38 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATH RESEND v2 03/10] tty: xuartps: Always enable transmitter in
- start_tx
-Date: Fri, 20 Nov 2015 07:13:41 -0500
-Message-ID: <564F0E75.5020100@hurleysoftware.com>
-References: <1447963344-16266-1-git-send-email-soren.brinkmann@xilinx.com>
- <1447963344-16266-4-git-send-email-soren.brinkmann@xilinx.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 02/13] dmaengine: Introduce
+	dma_request_slave_channel_compat_reason()
+Date: Fri, 20 Nov 2015 14:24:06 +0200
+Message-ID: <CAHp75VdoHqPMNGFfz4mPhX+Lw+vxgiyqFS8j5+kQ9Z9CHt=OTA@mail.gmail.com>
+References: <1432646768-12532-1-git-send-email-peter.ujfalusi@ti.com>
+ <4533695.7ZVFN1S94o@wuerfel> <564EF502.6040708@ti.com>
+ <6118451.vaLZWOZEF5@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1447963344-16266-4-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Soren Brinkmann <soren.brinkmann@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <alsa-devel-bounces@alsa-project.org>
+In-Reply-To: <6118451.vaLZWOZEF5@wuerfel>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, ALSA Development Mailing List <alsa-devel@alsa-project.org>, Vinod Koul <vinod.koul@intel.com>, Linux MMC List <linux-mmc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-spi <linux-spi@vger.kernel.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tony Lindgren <tony@atomide.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-crypto <linux-crypto@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, Linux Media Mailing List <linux-media@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+On Fri, Nov 20, 2015 at 12:58 PM, Arnd Bergmann <arnd@arndb.de> wrote:
+> On Friday 20 November 2015 12:25:06 Peter Ujfalusi wrote:
+>> On 11/19/2015 01:25 PM, Arnd Bergmann wrote:
 
+> Another idea would be to remove the filter function from struct dma_chan_map
+> and pass the map through platform data
 
-On 11/19/2015 03:02 PM, Soren Brinkmann wrote:
-> start_tx must start transmitting characters. Regardless of the state of
-> the circular buffer, always enable the transmitter hardware.
+Why not unified device properties?
 
-Why?
-
-Does cdns_uart_stop_tx() actually stop the transmitter so that
-data remains in the transmitter?
-
-> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index 2c98c357d9a0..df6778d17949 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -512,9 +512,6 @@ static void cdns_uart_start_tx(struct uart_port *port)
->  {
->  	unsigned int status, numbytes = port->fifosize;
->  
-> -	if (uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port))
-> -		return;
-
-The test for tx stopped needs to remain; otherwise, transmission will
-restart even if the tty has been stopped (for example by userspace
-or IXON software flow control).
-
-Regards,
-Peter Hurley
-
-> -
->  	/*
->  	 * Set the TX enable bit and clear the TX disable bit to enable the
->  	 * transmitter.
-> @@ -524,6 +521,9 @@ static void cdns_uart_start_tx(struct uart_port *port)
->  	status |= CDNS_UART_CR_TX_EN;
->  	writel(status, port->membase + CDNS_UART_CR_OFFSET);
->  
-> +	if (uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port))
-> +		return;
-> +
->  	while (numbytes-- && ((readl(port->membase + CDNS_UART_SR_OFFSET) &
->  				CDNS_UART_SR_TXFULL)) != CDNS_UART_SR_TXFULL) {
->  		/* Break if no more data available in the UART buffer */
-> 
+-- 
+With Best Regards,
+Andy Shevchenko
