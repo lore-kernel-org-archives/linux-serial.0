@@ -1,98 +1,38 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: earlycon: Add missing spinlock initialization
-Date: Fri, 27 Nov 2015 21:15:45 -0500
-Message-ID: <56590E51.5010704@hurleysoftware.com>
-References: <1448619228-28839-1-git-send-email-geert+renesas@glider.be>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: The console log is doubled if earlycon is enabled
+Date: Sun, 29 Nov 2015 04:30:37 +0200
+Message-ID: <CAHp75Ven8H1DYuTYcWRpt4rTxhS=P5r7VJ2ajpK8H7j+rgbMYg@mail.gmail.com>
+References: <CAK7LNAT5L2uxJ6i-QEYqw9qFLyvADu_E0F5VVTOPqyHbLodTCg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1448619228-28839-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-sh-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAK7LNAT5L2uxJ6i-QEYqw9qFLyvADu_E0F5VVTOPqyHbLodTCg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robherring2@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 11/27/2015 05:13 AM, Geert Uytterhoeven wrote:
-> If an earlycon console driver needs to acquire the uart_port.lock
-> spinlock for serial console output, and CONFIG_DEBUG_SPINLOCK=y:
-> 
->     BUG: spinlock bad magic on CPU#0, swapper/0
->      lock: sci_ports+0x0/0x3480, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
->     CPU: 0 PID: 0 Comm: swapper Not tainted 4.4.0-rc2-koelsch-g62ea5edf143bb1d0-dirty #2083
->     Hardware name: Generic R8A7791 (Flattened Device Tree)
->     [<c00173a0>] (unwind_backtrace) from [<c0013094>] (show_stack+0x10/0x14)
->     [<c0013094>] (show_stack) from [<c01f2338>] (dump_stack+0x70/0x8c)
->     [<c01f2338>] (dump_stack) from [<c00702d8>] (do_raw_spin_lock+0x20/0x190)
->     [<c00702d8>] (do_raw_spin_lock) from [<c0267590>] (serial_console_write+0x4c/0x130)
->     [<c0267590>] (serial_console_write) from [<c00734c4>] (call_console_drivers.constprop.13+0xc8/0xec)
->     [<c00734c4>] (call_console_drivers.constprop.13) from [<c0074ef0>] (console_unlock+0x354/0x440)
->     [<c0074ef0>] (console_unlock) from [<c0075bb4>] (register_console+0x2a0/0x394)
->     [<c0075bb4>] (register_console) from [<c06cb750>] (of_setup_earlycon+0x90/0xa4)
->     [<c06cb750>] (of_setup_earlycon) from [<c06cfb60>] (setup_of_earlycon+0x118/0x13c)
->     [<c06cfb60>] (setup_of_earlycon) from [<c06b34ac>] (do_early_param+0x64/0xb4)
->     [<c06b34ac>] (do_early_param) from [<c00472c0>] (parse_args+0x254/0x350)
->     [<c00472c0>] (parse_args) from [<c06b3860>] (parse_early_options+0x2c/0x3c)
->     [<c06b3860>] (parse_early_options) from [<c06b389c>] (parse_early_param+0x2c/0x40)
->     [<c06b389c>] (parse_early_param) from [<c06b5b08>] (setup_arch+0x520/0xaf0)
->     [<c06b5b08>] (setup_arch) from [<c06b3948>] (start_kernel+0x94/0x370)
->     [<c06b3948>] (start_kernel) from [<40008090>] (0x40008090)
-> 
-> Initialize the spinlock in of_setup_earlycon() and register_earlycon(),
-> to fix this for both DT-based and legacy earlycon.  If the driver would
-> reinitialize the spinlock again, this is harmless, as it's allowed to
-> reinitialize an unlocked spinlock.
+On Fri, Nov 27, 2015 at 12:21 PM, Masahiro Yamada
+<yamada.masahiro@socionext.com> wrote:
+> Hi,
+>
+>
+> If I add "earlycon" to the kernel parameter, the log message
+> on the earlycon is also displayed to the regular console.
+> In other words, the same log messages are displayed twice.
+>
+> I noticed this problem on v4.4-rc1.
+> It has not been fixed in the mainline yet, I think.
+>
+> Anybody who has a clue?
+> (I have not done git-bisect yet.)
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Does adding the following line in
+drivers/tty/serial/8250/8250_early.c:: early_serial8250_setup() fix
+the issue?
 
-> Alternatives are:
->   - Drivers having an early_serial_console_write() that only performs
->     the core functionality of serial_console_write(), without acquiring
->     the lock (which may be unsafe, depending on the hardware),
->   - Drivers initializing the spinlock in their private earlycon setup
->     functions.
-> 
-> As uart_port is owned by generic serial_core, and uart_port.lock is
-> initialized by uart_add_one_port() for the normal case, this can better
-> be handled in the earlycon core.
+device->con->flags &= ~CON_PRINTBUFFER;
 
-Just to be clear here: the uart_port used by the earlycon is unrelated
-to the eventual uart_port instanced by the driver (which may provide
-the console that replaces the earlycon).
-
-That means the spinlocks won't prevent concurrent h/w programming between
-the earlycon and the driver.
-
-Regards,
-Peter Hurley
-
-
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> Tested on arm32 (r8a7791/koelsch) and arm64 (r8a7795/salvator-x).
-> 
->  drivers/tty/serial/earlycon.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index f09636083426d5fc..b5b2f2be6be7c613 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -115,6 +115,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
->  	if (buf && !parse_options(&early_console_dev, buf))
->  		buf = NULL;
->  
-> +	spin_lock_init(&port->lock);
->  	port->uartclk = BASE_BAUD * 16;
->  	if (port->mapbase)
->  		port->membase = earlycon_map(port->mapbase, 64);
-> @@ -202,6 +203,7 @@ int __init of_setup_earlycon(unsigned long addr,
->  	int err;
->  	struct uart_port *port = &early_console_dev.port;
->  
-> +	spin_lock_init(&port->lock);
->  	port->iotype = UPIO_MEM;
->  	port->mapbase = addr;
->  	port->uartclk = BASE_BAUD * 16;
-> 
-
+-- 
+With Best Regards,
+Andy Shevchenko
