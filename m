@@ -1,38 +1,36 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: The console log is doubled if earlycon is enabled
-Date: Sun, 29 Nov 2015 04:30:37 +0200
-Message-ID: <CAHp75Ven8H1DYuTYcWRpt4rTxhS=P5r7VJ2ajpK8H7j+rgbMYg@mail.gmail.com>
-References: <CAK7LNAT5L2uxJ6i-QEYqw9qFLyvADu_E0F5VVTOPqyHbLodTCg@mail.gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 1/1] serial: imx: fix a possible NULL dereference
+Date: Sun, 29 Nov 2015 18:03:03 +0100
+Message-ID: <20151129170303.GD10431@pengutronix.de>
+References: <1448375817-16189-1-git-send-email-clabbe.montjoie@gmail.com>
+ <1448375817-16189-2-git-send-email-clabbe.montjoie@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK7LNAT5L2uxJ6i-QEYqw9qFLyvADu_E0F5VVTOPqyHbLodTCg@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1448375817-16189-2-git-send-email-clabbe.montjoie@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robherring2@gmail.com>
+To: LABBE Corentin <clabbe.montjoie@gmail.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Nov 27, 2015 at 12:21 PM, Masahiro Yamada
-<yamada.masahiro@socionext.com> wrote:
-> Hi,
->
->
-> If I add "earlycon" to the kernel parameter, the log message
-> on the earlycon is also displayed to the regular console.
-> In other words, the same log messages are displayed twice.
->
-> I noticed this problem on v4.4-rc1.
-> It has not been fixed in the mainline yet, I think.
->
-> Anybody who has a clue?
-> (I have not done git-bisect yet.)
+On Tue, Nov 24, 2015 at 03:36:57PM +0100, LABBE Corentin wrote:
+> of_match_device could return NULL, and so cause a NULL pointer
+> dereference later.
+> Even if the probability of this case is very low, fixing it made
+> static analyzers happy.
+> Solving this with of_device_get_match_data made also code simplier.
+>=20
+> Signed-off-by: LABBE Corentin <clabbe.montjoie@gmail.com>
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-Does adding the following line in
-drivers/tty/serial/8250/8250_early.c:: early_serial8250_setup() fix
-the issue?
+Thanks
+Uwe
 
-device->con->flags &= ~CON_PRINTBUFFER;
-
--- 
-With Best Regards,
-Andy Shevchenko
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
