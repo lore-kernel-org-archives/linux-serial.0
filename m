@@ -1,83 +1,115 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: The console log is doubled if earlycon is enabled
-Date: Mon, 30 Nov 2015 14:53:49 +0900
-Message-ID: <CAK7LNARFa8Q1t6RwwQVhTrtXJxnJBQw8QHnbpfNfHouEiGdK0w@mail.gmail.com>
-References: <CAK7LNAT5L2uxJ6i-QEYqw9qFLyvADu_E0F5VVTOPqyHbLodTCg@mail.gmail.com>
-	<20151128000451.GB22297@kroah.com>
+From: Paul Burton <paul.burton@imgtec.com>
+Subject: [PATCH 01/28] serial: earlycon: allow MEM32 I/O for DT earlycon
+Date: Mon, 30 Nov 2015 16:21:26 +0000
+Message-ID: <1448900513-20856-2-git-send-email-paul.burton@imgtec.com>
+References: <1448900513-20856-1-git-send-email-paul.burton@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151128000451.GB22297@kroah.com>
+In-Reply-To: <1448900513-20856-1-git-send-email-paul.burton@imgtec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robherring2@gmail.com>
+To: linux-mips@linux-mips.org
+Cc: Paul Burton <paul.burton@imgtec.com>, devicetree@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-2015-11-28 9:04 GMT+09:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
-> On Fri, Nov 27, 2015 at 07:21:06PM +0900, Masahiro Yamada wrote:
->> Hi,
->>
->>
->> If I add "earlycon" to the kernel parameter, the log message
->> on the earlycon is also displayed to the regular console.
->> In other words, the same log messages are displayed twice.
->>
->> I noticed this problem on v4.4-rc1.
->> It has not been fixed in the mainline yet, I think.
->>
->> Anybody who has a clue?
->> (I have not done git-bisect yet.)
->
-> Can you do 'git bisect'?
+Read the reg-io-width property when earlycon is setup via device tree,
+and set the I/O type to UPIO_MEM32 when 4 is read. This behaviour
+matches that of the of_serial driver, and is needed for DT configured
+earlycon on the MIPS Boston board.
 
+Note that this is only possible when CONFIG_LIBFDT is enabled, but
+enabling it everywhere seems like overkill. Thus systems that need this
+functionality should select CONFIG_LIBFDT for themselves.
 
-The same problem happened on v4.3.
-(I think I just did not notice the problem before.)
+Signed-off-by: Paul Burton <paul.burton@imgtec.com>
+---
 
-So, the bad commit is not in the last merge window.
+ drivers/of/fdt.c              |  2 +-
+ drivers/tty/serial/Makefile   |  1 +
+ drivers/tty/serial/earlycon.c | 15 ++++++++++++++-
+ include/linux/serial_core.h   |  2 +-
+ 4 files changed, 17 insertions(+), 3 deletions(-)
 
-
-
-I also noticed the double-log happens depending on
-how the console is specified.
-
-
-[1]  Good case: both regular console and earlycon are specified via bootargs.
-
-chosen {
-         bootargs = "console=ttyS0,115200 earlycon=uniphier,mmio32,0x54006800";
-};
-
-
-[2] Bad case: regular console is given by stdout-path and earlycon is specified
-               with parameters in bootargs.
-
-chosen {
-        bootargs = "earlycon=uniphier,mmio32,0x54006800";
-        stdout-path = "serial0:115200n8";
-};
-
-The early boot log is doubled.
-
-
-[3] Bad case: regular console is given by stdout-path and
-              earlycon is given without parameters in bootargs
-
-chosen {
-        bootargs = "earlycon";
-        stdout-path = "serial0:115200n8";
-};
-
-The early boot log is doubled.
-
-
-
-
-According to the experiment results,
-it looks like earlycon does not get along with stdout-path.
-
-
-
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index d243029..71c7f0d 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -833,7 +833,7 @@ static int __init early_init_dt_scan_chosen_serial(void)
+ 		if (addr == OF_BAD_ADDR)
+ 			return -ENXIO;
+ 
+-		of_setup_earlycon(addr, match->data);
++		of_setup_earlycon(fdt, offset, addr, match->data);
+ 		return 0;
+ 	}
+ 	return -ENODEV;
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 5ab4111..1d290d6 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -7,6 +7,7 @@ obj-$(CONFIG_SERIAL_21285) += 21285.o
+ 
+ obj-$(CONFIG_SERIAL_EARLYCON) += earlycon.o
+ obj-$(CONFIG_SERIAL_EARLYCON_ARM_SEMIHOST) += earlycon-arm-semihost.o
++CFLAGS_earlycon.o += -I$(srctree)/scripts/dtc/libfdt
+ 
+ # These Sparc drivers have to appear before others such as 8250
+ # which share ttySx minor node space.  Otherwise console device
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index f096360..2b936a7 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -17,6 +17,7 @@
+ #include <linux/kernel.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
++#include <linux/libfdt.h>
+ #include <linux/serial_core.h>
+ #include <linux/sizes.h>
+ #include <linux/mod_devicetable.h>
+@@ -196,17 +197,29 @@ static int __init param_setup_earlycon(char *buf)
+ }
+ early_param("earlycon", param_setup_earlycon);
+ 
+-int __init of_setup_earlycon(unsigned long addr,
++int __init of_setup_earlycon(const void *fdt, int offset, unsigned long addr,
+ 			     int (*setup)(struct earlycon_device *, const char *))
+ {
+ 	int err;
+ 	struct uart_port *port = &early_console_dev.port;
++	const __be32 *prop;
+ 
+ 	port->iotype = UPIO_MEM;
+ 	port->mapbase = addr;
+ 	port->uartclk = BASE_BAUD * 16;
+ 	port->membase = earlycon_map(addr, SZ_4K);
+ 
++	if (config_enabled(CONFIG_LIBFDT)) {
++		prop = fdt_getprop(fdt, offset, "reg-io-width", NULL);
++		if (prop) {
++			switch (be32_to_cpup(prop)) {
++			case 4:
++				port->iotype = UPIO_MEM32;
++				break;
++			}
++		}
++	}
++
+ 	early_console_dev.con->data = &early_console_dev;
+ 	err = setup(&early_console_dev, NULL);
+ 	if (err < 0)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 297d4fa..aa375f1 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -345,7 +345,7 @@ struct earlycon_id {
+ } __aligned(32);
+ 
+ extern int setup_earlycon(char *buf);
+-extern int of_setup_earlycon(unsigned long addr,
++extern int of_setup_earlycon(const void *fdt, int offset, unsigned long addr,
+ 			     int (*setup)(struct earlycon_device *, const char *));
+ 
+ #define EARLYCON_DECLARE(_name, func)					\
 -- 
-Best Regards
-Masahiro Yamada
+2.6.2
