@@ -1,62 +1,47 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 00/28] MIPS Boston board support
-Date: Mon, 30 Nov 2015 16:34:13 +0000
-Message-ID: <20151130163413.GB1929@sirena.org.uk>
-References: <1448900513-20856-1-git-send-email-paul.burton@imgtec.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: The console log is doubled if earlycon is enabled
+Date: Mon, 30 Nov 2015 09:10:34 -0800
+Message-ID: <20151130171034.GA14366@kroah.com>
+References: <CAK7LNAT5L2uxJ6i-QEYqw9qFLyvADu_E0F5VVTOPqyHbLodTCg@mail.gmail.com>
+ <20151128000451.GB22297@kroah.com>
+ <CAK7LNARFa8Q1t6RwwQVhTrtXJxnJBQw8QHnbpfNfHouEiGdK0w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="pI6hLdwVzam1XFuA"
-Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1448900513-20856-1-git-send-email-paul.burton@imgtec.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Paul Burton <paul.burton@imgtec.com>
-Cc: linux-mips@linux-mips.org, Arnd Bergmann <arnd@arndb.de>, Joshua Kinard <kumba@gentoo.org>, Alessandro Zummo <a.zummo@towertech.it>, Jiri Slaby <jslaby@suse.com>, Bjorn Helgaas <bhelgaas@google.com>, Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>, Linus Walleij <linus.walleij@linaro.org>, Kumar Gala <galak@codeaurora.org>, Yijing Wang <wangyijing@huawei.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, John Crispin <blogic@openwrt.org>, Jayachandran C <jchandra@broadcom.com>, linux-spi@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, Ray Jui <rjui@broadcom.com>, Richard Cochran <richardcochran@gmail.com>, Tejun Heo <tj@kernel.org>, Michal Simek <michal.simek@xilinx.com>, Andrew
+In-Reply-To: <CAK7LNARFa8Q1t6RwwQVhTrtXJxnJBQw8QHnbpfNfHouEiGdK0w@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robherring2@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Nov 30, 2015 at 02:53:49PM +0900, Masahiro Yamada wrote:
+> 2015-11-28 9:04 GMT+09:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+> > On Fri, Nov 27, 2015 at 07:21:06PM +0900, Masahiro Yamada wrote:
+> >> Hi,
+> >>
+> >>
+> >> If I add "earlycon" to the kernel parameter, the log message
+> >> on the earlycon is also displayed to the regular console.
+> >> In other words, the same log messages are displayed twice.
+> >>
+> >> I noticed this problem on v4.4-rc1.
+> >> It has not been fixed in the mainline yet, I think.
+> >>
+> >> Anybody who has a clue?
+> >> (I have not done git-bisect yet.)
+> >
+> > Can you do 'git bisect'?
+> 
+> 
+> The same problem happened on v4.3.
+> (I think I just did not notice the problem before.)
+> 
+> So, the bad commit is not in the last merge window.
 
---pI6hLdwVzam1XFuA
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Is it ok for 4.2?  4.1?  Finding out where this started to "fail" would
+be good to know...
 
-On Mon, Nov 30, 2015 at 04:21:25PM +0000, Paul Burton wrote:
-> This series introduces support for the Imagination Technologies MIPS
-> Boston development board. Boston is an FPGA-based development board
-> akin to the much older Malta board, built around a Xilinx FPGA running
-> a MIPS CPU & other logic including a PCIe root port connected to an
-> Intel EG20T Platform Controller Hub. This provides a base set of
-> peripherals including SATA, USB, SD/MMC, ethernet, I2C & GPIOs. PCIe
-> slots are also present for expansion.
+thanks,
 
-This is an insanely big CC list :(
-
-What are the interdependencies here - does this really need to be one
-patch series or can the individual driver changes go in separately?  The
-latter is more normal, usually rather than a single patch series we just
-have each driver sent by itself since that's usually easier to handle
-and avoids the massive CC lists.
-
---pI6hLdwVzam1XFuA
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJWXHqEAAoJECTWi3JdVIfQJSUH/iIgPfd2b5fhUdpCuloKrkzo
-ez7mkxbm3A2j3pKg0G57M4IEOD1UHHBQdACn9Gn38+UCLVdK2VoDpY+xxpf0bUbB
-aWm0a1vnjxwyTW5lSEkeR0i6EzMuFliUJnIsdv9yrmwUdm8Z0zJTYaLRm2rKsgR3
-kQLDe+kzzuf3qKW0mVcOL8y4rb/keG79c35wSXn4heWbFL7FCAUmVZ0bhcOkeLP+
-O9T7D/fqnlT4+gOvBBlglzHBjWY8JUYJiccHFfccRZJ3hOO973bHQi8QcGhS06C3
-LFww/Secx7tTiUXfdXo5sD0dAJwN7mG8sBrYAmZPBcW1TYn6wzCxFMK9XkLVA9k=
-=7ym9
------END PGP SIGNATURE-----
-
---pI6hLdwVzam1XFuA--
+greg k-h
