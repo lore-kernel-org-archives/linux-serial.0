@@ -1,23 +1,20 @@
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
 Subject: Re: The console log is doubled if earlycon is enabled
-Date: Mon, 30 Nov 2015 11:27:41 +0900
-Message-ID: <CAK7LNATW2EtdKYWUOrFgynoyHP9k5gh9dAMzgUM3HwYTN=eNHQ@mail.gmail.com>
+Date: Mon, 30 Nov 2015 14:53:49 +0900
+Message-ID: <CAK7LNARFa8Q1t6RwwQVhTrtXJxnJBQw8QHnbpfNfHouEiGdK0w@mail.gmail.com>
 References: <CAK7LNAT5L2uxJ6i-QEYqw9qFLyvADu_E0F5VVTOPqyHbLodTCg@mail.gmail.com>
-	<CAHp75Ven8H1DYuTYcWRpt4rTxhS=P5r7VJ2ajpK8H7j+rgbMYg@mail.gmail.com>
+	<20151128000451.GB22297@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Ven8H1DYuTYcWRpt4rTxhS=P5r7VJ2ajpK8H7j+rgbMYg@mail.gmail.com>
+In-Reply-To: <20151128000451.GB22297@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robherring2@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robherring2@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
-
-2015-11-29 11:30 GMT+09:00 Andy Shevchenko <andy.shevchenko@gmail.com>:
-> On Fri, Nov 27, 2015 at 12:21 PM, Masahiro Yamada
-> <yamada.masahiro@socionext.com> wrote:
+2015-11-28 9:04 GMT+09:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+> On Fri, Nov 27, 2015 at 07:21:06PM +0900, Masahiro Yamada wrote:
 >> Hi,
 >>
 >>
@@ -31,14 +28,54 @@ Hi Andy,
 >> Anybody who has a clue?
 >> (I have not done git-bisect yet.)
 >
-> Does adding the following line in
-> drivers/tty/serial/8250/8250_early.c:: early_serial8250_setup() fix
-> the issue?
->
-> device->con->flags &= ~CON_PRINTBUFFER;
+> Can you do 'git bisect'?
 
 
-No. I tried that, but it did not fix the problem.
+The same problem happened on v4.3.
+(I think I just did not notice the problem before.)
+
+So, the bad commit is not in the last merge window.
+
+
+
+I also noticed the double-log happens depending on
+how the console is specified.
+
+
+[1]  Good case: both regular console and earlycon are specified via bootargs.
+
+chosen {
+         bootargs = "console=ttyS0,115200 earlycon=uniphier,mmio32,0x54006800";
+};
+
+
+[2] Bad case: regular console is given by stdout-path and earlycon is specified
+               with parameters in bootargs.
+
+chosen {
+        bootargs = "earlycon=uniphier,mmio32,0x54006800";
+        stdout-path = "serial0:115200n8";
+};
+
+The early boot log is doubled.
+
+
+[3] Bad case: regular console is given by stdout-path and
+              earlycon is given without parameters in bootargs
+
+chosen {
+        bootargs = "earlycon";
+        stdout-path = "serial0:115200n8";
+};
+
+The early boot log is doubled.
+
+
+
+
+According to the experiment results,
+it looks like earlycon does not get along with stdout-path.
+
 
 
 -- 
