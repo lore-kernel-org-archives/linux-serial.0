@@ -1,11 +1,11 @@
 From: Peter Hung <hpeter@gmail.com>
-Subject: [PATCH 1/1] serial: 8250_pci: Fix real serial port count for F81504/508/512
-Date: Tue,  1 Dec 2015 14:51:09 +0800
-Message-ID: <1448952669-7769-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Subject: [PATCH RESEND 1/1] serial: 8250_pci: Fix real serial port count for F81504/508/512
+Date: Tue,  1 Dec 2015 14:54:41 +0800
+Message-ID: <1448952881-7871-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: slaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
 Fix real serial port count for F81504/508/512 with multi-function mode.
