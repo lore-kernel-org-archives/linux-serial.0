@@ -1,54 +1,94 @@
 From: Graeme Gregory <gg@slimlogic.co.uk>
-Subject: Re: [PATCH 2/3] ACPI: scan add call to probe amba devices
-Date: Tue, 1 Dec 2015 12:16:51 +0000
-Message-ID: <20151201121627.GA4036@xora-haswell.xora.org.uk>
+Subject: Re: [PATCH 3/3] serial: amba-pl011: add ACPI support to AMBA probe
+Date: Tue, 1 Dec 2015 12:21:00 +0000
+Message-ID: <20151201122100.GB4036@xora-haswell.xora.org.uk>
 References: <1443609530-21524-1-git-send-email-graeme.gregory@linaro.org>
- <1443609530-21524-3-git-send-email-graeme.gregory@linaro.org>
- <8504062.kEYB5C4QA7@vostro.rjw.lan>
+ <1443609530-21524-4-git-send-email-graeme.gregory@linaro.org>
+ <14968240.IklpWf8GZo@vostro.rjw.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <8504062.kEYB5C4QA7@vostro.rjw.lan>
+In-Reply-To: <14968240.IklpWf8GZo@vostro.rjw.lan>
 Sender: linux-acpi-owner@vger.kernel.org
 To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Graeme Gregory <graeme.gregory@linaro.org>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, shannon.zhao@linaro.org, Len Brown <lenb@kernel.org>, Russell King <linux@arm.linux.org.uk>
+Cc: Graeme Gregory <graeme.gregory@linaro.org>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, shannon.zhao@linaro.org, Len Brown <lenb@kernel.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Dec 01, 2015 at 03:16:53AM +0100, Rafael J. Wysocki wrote:
-> On Wednesday, September 30, 2015 11:38:49 AM Graeme Gregory wrote:
-> > Call the amba device creation function in the default enumeration path,
-> > this is the same location platform devices are probed.
-> 
-> First, I'm sorry for the glacially slow response here.
-> 
+On Tue, Dec 01, 2015 at 03:21:47AM +0100, Rafael J. Wysocki wrote:
+> On Wednesday, September 30, 2015 11:38:50 AM Graeme Gregory wrote:
+> > In ACPI this device is only defined in SBSA mode so
+> > if we are probing from ACPI use this mode.
+> > 
 > > Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
 > > Cc: Len Brown <lenb@kernel.org>
 > > Cc: Russell King <linux@arm.linux.org.uk>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > > Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
 > > ---
-> >  drivers/acpi/scan.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >  drivers/tty/serial/amba-pl011.c | 32 +++++++++++++++++++++-----------
+> >  1 file changed, 21 insertions(+), 11 deletions(-)
 > > 
-> > diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> > index f834b8c..aa3184e 100644
-> > --- a/drivers/acpi/scan.c
-> > +++ b/drivers/acpi/scan.c
-> > @@ -1633,8 +1633,10 @@ static void acpi_default_enumeration(struct acpi_device *device)
-> >  	acpi_dev_get_resources(device, &resource_list, acpi_check_spi_i2c_slave,
-> >  			       &is_spi_i2c_slave);
-> >  	acpi_dev_free_resource_list(&resource_list);
-> > -	if (!is_spi_i2c_slave)
-> > +	if (!is_spi_i2c_slave) {
-> > +		acpi_create_amba_device(device);
+> > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> > index fd27e98..55209aa 100644
+> > --- a/drivers/tty/serial/amba-pl011.c
+> > +++ b/drivers/tty/serial/amba-pl011.c
+> > @@ -2368,18 +2368,28 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+> >  	if (!uap)
+> >  		return -ENOMEM;
+> >  
+> > -	uap->clk = devm_clk_get(&dev->dev, NULL);
+> > -	if (IS_ERR(uap->clk))
+> > -		return PTR_ERR(uap->clk);
+> > -
+> > -	uap->vendor = vendor;
+> > -	uap->lcrh_rx = vendor->lcrh_rx;
+> > -	uap->lcrh_tx = vendor->lcrh_tx;
+> > -	uap->fifosize = vendor->get_fifosize(dev);
+> > +	/* ACPI only defines SBSA variant */
+> > +	if (!ACPI_COMPANION(&dev->dev)) {
 > 
-> Do you really have to add this here?
+> It would read more straightforward if you did
 > 
-> It would be much cleaner to use a new scan handler instead.
+> 	if (ACPI_COMPANION(&dev->dev)) {
+> 		<handle the ACPI case>
+> 	} else {
+> 		<handle the non-ACPI case>
+> 	}
 > 
 
-I can certainly look into doing that, I cannot from a quick scan see any
-reason not too. I just didn't think of it.
+This was something I debated about whether to put the ACPI case or the
+common case first. I can certainly reverse it.
+
+> > +		uap->clk = devm_clk_get(&dev->dev, NULL);
+> > +		if (IS_ERR(uap->clk))
+> > +			return PTR_ERR(uap->clk);
+> > +
+> > +		uap->vendor = vendor;
+> > +		uap->lcrh_rx = vendor->lcrh_rx;
+> > +		uap->lcrh_tx = vendor->lcrh_tx;
+> > +		uap->fifosize = vendor->get_fifosize(dev);
+> > +		uap->port.ops = &amba_pl011_pops;
+> > +		snprintf(uap->type, sizeof(uap->type), "PL011 rev%u",
+> > +				amba_rev(dev));
+> > +	 } else {
+> > +		uap->vendor	= &vendor_sbsa;
+> > +		uap->fifosize	= 32;
+> > +		uap->port.ops	= &sbsa_uart_pops;
+> > +		uap->fixed_baud = 115200;
+> > +
+> > +		snprintf(uap->type, sizeof(uap->type), "SBSA");
+> 
+> This looks sort of heavy-handed.
+> 
+> Is this the only possible configuration of the device in the ACPI case?
+> 
+
+As far as I can tell yes, but ARM haven't actually published a document
+to state that as fact.
+
+This does replace the platform_probe that Russel was unhappy about for
+the ACPI case.
 
 Graeme
 
