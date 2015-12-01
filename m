@@ -1,33 +1,54 @@
-From: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 03/10] dt-bindings: document the MPS2 UART bindings
-Date: Tue, 01 Dec 2015 11:35:28 +0000
-Message-ID: <565D8600.4040105@arm.com>
-References: <1448447621-17900-1-git-send-email-vladimir.murzin@arm.com> <1448447621-17900-4-git-send-email-vladimir.murzin@arm.com> <20151125200729.GJ30473@rob-hp-laptop>
+From: Graeme Gregory <gg@slimlogic.co.uk>
+Subject: Re: [PATCH 2/3] ACPI: scan add call to probe amba devices
+Date: Tue, 1 Dec 2015 12:16:51 +0000
+Message-ID: <20151201121627.GA4036@xora-haswell.xora.org.uk>
+References: <1443609530-21524-1-git-send-email-graeme.gregory@linaro.org>
+ <1443609530-21524-3-git-send-email-graeme.gregory@linaro.org>
+ <8504062.kEYB5C4QA7@vostro.rjw.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20151125200729.GJ30473@rob-hp-laptop>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: arnd-r2nGTMty4D4@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, afaerber-l3A5Bk7waGM@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Mark.Rutland-5wv7dgnIgG8@public.gmane.org, Pawel.Moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <8504062.kEYB5C4QA7@vostro.rjw.lan>
+Sender: linux-acpi-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Graeme Gregory <graeme.gregory@linaro.org>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, shannon.zhao@linaro.org, Len Brown <lenb@kernel.org>, Russell King <linux@arm.linux.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On 25/11/15 20:07, Rob Herring wrote:
-> On Wed, Nov 25, 2015 at 10:33:34AM +0000, Vladimir Murzin wrote:
->> This adds documentation of device tree bindings for the
->> UART found on ARM MPS2 platform
->>
->> Signed-off-by: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+On Tue, Dec 01, 2015 at 03:16:53AM +0100, Rafael J. Wysocki wrote:
+> On Wednesday, September 30, 2015 11:38:49 AM Graeme Gregory wrote:
+> > Call the amba device creation function in the default enumeration path,
+> > this is the same location platform devices are probed.
 > 
-> Why did ARM invent a new UART?
-
-It is not something new and it was inherited from MPS (version 1) and I
-can only guess why it was there in a first place ;)
-
+> First, I'm sorry for the glacially slow response here.
 > 
-> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+> > Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+> > Cc: Len Brown <lenb@kernel.org>
+> > Cc: Russell King <linux@arm.linux.org.uk>
+> > Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
+> > ---
+> >  drivers/acpi/scan.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> > index f834b8c..aa3184e 100644
+> > --- a/drivers/acpi/scan.c
+> > +++ b/drivers/acpi/scan.c
+> > @@ -1633,8 +1633,10 @@ static void acpi_default_enumeration(struct acpi_device *device)
+> >  	acpi_dev_get_resources(device, &resource_list, acpi_check_spi_i2c_slave,
+> >  			       &is_spi_i2c_slave);
+> >  	acpi_dev_free_resource_list(&resource_list);
+> > -	if (!is_spi_i2c_slave)
+> > +	if (!is_spi_i2c_slave) {
+> > +		acpi_create_amba_device(device);
+> 
+> Do you really have to add this here?
+> 
+> It would be much cleaner to use a new scan handler instead.
+> 
 
-Thanks for your time.
+I can certainly look into doing that, I cannot from a quick scan see any
+reason not too. I just didn't think of it.
 
-Vladimir
+Graeme
+
