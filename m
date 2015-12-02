@@ -1,56 +1,109 @@
-From: Nava kishore Manne <nava.manne@xilinx.com>
-Subject: RE: [PATCH v2 1/3] serial: xuartps: Spliting the ISR into smaller
- routines.
-Date: Wed, 2 Dec 2015 05:32:14 +0000
-Message-ID: <C89496FEAE474D468F30D558A9468D9F25949EBB@XAP-PVEXMBX01.xlnx.xilinx.com>
-References: <1448026478-22131-1-git-send-email-navam@xilinx.com>
- <20151120144348.GS32017@xsjsorenbubuntu>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151120144348.GS32017@xsjsorenbubuntu>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Soren Brinkmann <sorenb@xilinx.com>
-Cc: "jslaby@suse.com" <jslaby@suse.com>, Michal Simek <michals@xilinx.com>, Anirudha Sarangi <anirudh@xilinx.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v1 00/10] Support for Cortex-M Prototyping System
+Date: Wed,  2 Dec 2015 09:33:00 +0000
+Message-ID: <1449048790-25859-1-git-send-email-vladimir.murzin@arm.com>
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: arnd-r2nGTMty4D4@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, afaerber-l3A5Bk7waGM@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: Mark.Rutland-5wv7dgnIgG8@public.gmane.org, Pawel.Moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU8O2cmVuIEJyaW5rbWFu
-biBbbWFpbHRvOnNvcmVuLmJyaW5rbWFubkB4aWxpbnguY29tXQ0KPiBTZW50OiBGcmlkYXksIE5v
-dmVtYmVyIDIwLCAyMDE1IDg6MTQgUE0NCj4gVG86IE5hdmEga2lzaG9yZSBNYW5uZQ0KPiBDYzog
-anNsYWJ5QHN1c2UuY29tOyBNaWNoYWwgU2ltZWs7IEFuaXJ1ZGhhIFNhcmFuZ2k7IGxpbnV4LQ0K
-PiBzZXJpYWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
-ZC5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJuZWwub3JnOyBOYXZhIGtpc2hvcmUgTWFu
-bmUNCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MiAxLzNdIHNlcmlhbDogeHVhcnRwczogU3BsaXRp
-bmcgdGhlIElTUiBpbnRvIHNtYWxsZXINCj4gcm91dGluZXMuDQo+IA0KPiBPbiBGcmksIDIwMTUt
-MTEtMjAgYXQgMDc6MDRQTSArMDUzMCwgTmF2YSBraXNob3JlIE1hbm5lIHdyb3RlOg0KPiA+IEJy
-ZWFraW5nIHRoZSBzaW5nbGUgYmlnIElTUiB0aGF0IGhhcyBib3RoIFJ4IGFuZCBUeCBpbiBhIHNp
-bmdsZQ0KPiA+IGZ1bmN0aW9uIGludG8gc21hbGxlciBvbmVzDQo+ID4NCj4gPiBTaWduZWQtb2Zm
-LWJ5OiBOYXZhIGtpc2hvcmUgTWFubmUgPG5hdmFtQHhpbGlueC5jb20+DQo+ID4gLS0tDQo+ID4g
-Q2hhbmdlcyBmb3IgdjI6DQo+ID4gCS0tU3BsaXRzIHVwIHRoZSBJU1Igd2l0aG91dCBhbnkgZnVu
-Y3Rpb25hbCBjaGFuZ2VzIGFzIHN1Z2dlc3RlZA0KPiA+IAlieSBQZXRlciBIdXJsZXkNCj4gPg0K
-PiA+ICBkcml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jIHwgMjQ3DQo+ID4gKysrKysr
-KysrKysrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTM1
-IGluc2VydGlvbnMoKyksIDExMiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9k
-cml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jDQo+ID4gYi9kcml2ZXJzL3R0eS9zZXJp
-YWwveGlsaW54X3VhcnRwcy5jDQo+ID4gaW5kZXggMDA5ZTBkYi4uMmUxYjBhOCAxMDA2NDQNCj4g
-PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jDQo+ID4gKysrIGIvZHJp
-dmVycy90dHkvc2VyaWFsL3hpbGlueF91YXJ0cHMuYw0KPiA+IEBAIC0xNzIsNiArMTcyLDkgQEAg
-c3RydWN0IGNkbnNfdWFydCB7ICAjZGVmaW5lIHRvX2NkbnNfdWFydChfbmIpDQo+ID4gY29udGFp
-bmVyX29mKF9uYiwgc3RydWN0IGNkbnNfdWFydCwgXA0KPiA+ICAJCWNsa19yYXRlX2NoYW5nZV9u
-Yik7DQo+ID4NCj4gPiArc3RhdGljIHZvaWQgY2Ruc191YXJ0X2hhbmRsZV90eCh2b2lkICpkZXZf
-aWQpOyBzdGF0aWMgdm9pZA0KPiA+ICtjZG5zX3VhcnRfaGFuZGxlX3J4KHZvaWQgKmRldl9pZCwg
-dW5zaWduZWQgaW50IGlzcnN0YXR1cyk7DQo+IA0KPiBDYW4ndCB5b3UganVzdCBtb3ZlIHRoZXNl
-IGZ1bmN0aW9ucyBoZXJlIGluc3RlYWQgb2YgYWRkaW5nIHByb3RvdHlwZXMgaGVyZT8NCg0KSW5p
-dGlhbGx5IEkgY3JlYXRlZCB0aGUgcGF0Y2ggd2l0aG91dCBhZGRpbmcgcHJvdG90eXBlcyBidXQg
-dGhhdCBwYXRjaCB3YXMgdW5yZWFkYWJsZQ0KRHVlIHRvIHRoZSBjb21tb24gbGluZXMgb2YgY29k
-ZSBiL3cgdGhlIGZ1bmN0aW9ucyBzbyBjcmVhdGVkIHRoZSBwcm90b3R5cGVzIHRvIG1ha2UgdGhl
-IA0KUGF0Y2ggbW9yZSByZWFkYWJsZSBhcyBzdWdnZXN0ZWQgYnkgUGV0ZXIuDQoNCldpbGwgYWRk
-IG9uZSBtb3JlIHBhdGNoIGluIHRoZSBuZXh0IHNlcmllcyB0byBnZXQgcmlkIG9mIHRoZSBwcm90
-b3R5cGVzLg0KDQo+IEFsc28sIHRoaXMgaXMgbGlrZWx5IHRvIGNvbmZsaWN0IHdpdGgNCj4gaHR0
-cHM6Ly9sa21sLm9yZy9sa21sLzIwMTUvMTEvMTkvNjIyDQoNClllcyBJIGFncmVlIGwgc2VlIHRo
-YXQgbm8gY29tbWVudHMgZm9yIHlvdXIgc2VyaWVzIG9mIHBhdGNoZXMgYXMgb2Ygbm93Li4uDQpM
-ZXQgbWUga25vdyB3aGV0aGVyIEkgc2hvdWxkIHdhaXQgdW50aWwgeW91ciBwYXRjaGVzIGdvdCBh
-cHBsaWVkIG9yIHlvdSB3YW50IG1lIHRvIHNlbmQgdGhlIG5leHQgdmVyc2lvbiANCk9mIG15IHBh
-dGNoZXMuLi4NCg0KUmVnYXJkcywNCk5hdmFraXNob3JlLg0KDQo+IA0KPiAJU8O2cmVuDQo=
+Hi,
+
+This patch series provide the basic support for running ucLinux on V2M-MPS2
+platform.
+
+With these patches applied ucLinux can be run on both HW and FVP models
+with Cortex-M3/M4/M7 configurations.
+
+Board description:
+
+http://infocenter.arm.com/help/topic/com.arm.doc.100112_0100_03_en/arm_vers=
+atile_express_cortex_m_prototyping_system_(v2m_mps2)_technical_reference_ma=
+nual_100112_0100_03_en.pdf
+
+Application notes (cover Cortex-M3/M4/M7):
+
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0385a/DAI0385A_cortex_m=
+3_on_v2m_mps2.pdf
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0386a/DAI0386A_cortex_m=
+4_on_v2m_mps2.pdf
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0399a/DAI0399A_cortex_m=
+7_on_v2m_mps2.pdf
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0400a/DAI0400A_cortex_m=
+7_on_v2m_mps2.pdf
+
+Cortex-M System Design Kit (referenced as CMDK from documents above):
+
+http://infocenter.arm.com/help/topic/com.arm.doc.ddi0479c/DDI0479C_cortex_m=
+_system_design_kit_r1p0_trm.pdf
+
+I'd be happy to hear any feedback/comments on this series (especially on ua=
+rt
+since I'm not sure I got it right)!
+
+Changelog:
+
+  RFC -> v1:
+      - dropped RFC tag
+      - rebased on 4.4-rc3
+      - added Acks from Rob
+      - updated mps2-timer per Daniel
+      - fixed build failures reported by 0-DAY kernel test infrastructure
+
+Thanks!
+
+Vladimir Murzin (10):
+  dt-bindings: document the MPS2 timer bindings
+  clockevents/drivers: add MPS2 Timer driver
+  dt-bindings: document the MPS2 UART bindings
+  serial: mps2-uart: add MPS2 UART driver
+  serial: mps2-uart: add support for early console
+  ARM: mps2: introduce MPS2 platform
+  ARM: mps2: add low-level debug support
+  ARM: configs: add MPS2 defconfig
+  ARM: dts: introduce MPS2 AN385/AN386
+  ARM: dts: introduce MPS2 AN399/AN400
+
+ .../devicetree/bindings/serial/arm,mps2-uart.txt   |   22 +
+ .../devicetree/bindings/timer/arm,mps2-timer.txt   |   28 +
+ arch/arm/Kconfig                                   |    8 +
+ arch/arm/Kconfig.debug                             |   12 +-
+ arch/arm/Makefile                                  |    1 +
+ arch/arm/boot/dts/Makefile                         |    3 +
+ arch/arm/boot/dts/mps2-an385.dts                   |   90 +++
+ arch/arm/boot/dts/mps2-an399.dts                   |   92 +++
+ arch/arm/boot/dts/mps2.dtsi                        |  227 +++++++
+ arch/arm/configs/mps2_defconfig                    |  112 ++++
+ arch/arm/include/debug/mps2.S                      |   27 +
+ arch/arm/mach-mps2/Makefile                        |    1 +
+ arch/arm/mach-mps2/Makefile.boot                   |    3 +
+ arch/arm/mach-mps2/dtmachine.c                     |   21 +
+ drivers/clocksource/Kconfig                        |    5 +
+ drivers/clocksource/Makefile                       |    1 +
+ drivers/clocksource/mps2-timer.c                   |  277 +++++++++
+ drivers/tty/serial/Kconfig                         |   13 +
+ drivers/tty/serial/Makefile                        |    1 +
+ drivers/tty/serial/mps2-uart.c                     |  626 ++++++++++++++++=
+++++
+ include/uapi/linux/serial_core.h                   |    3 +
+ 21 files changed, 1572 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.=
+txt
+ create mode 100644 Documentation/devicetree/bindings/timer/arm,mps2-timer.=
+txt
+ create mode 100644 arch/arm/boot/dts/mps2-an385.dts
+ create mode 100644 arch/arm/boot/dts/mps2-an399.dts
+ create mode 100644 arch/arm/boot/dts/mps2.dtsi
+ create mode 100644 arch/arm/configs/mps2_defconfig
+ create mode 100644 arch/arm/include/debug/mps2.S
+ create mode 100644 arch/arm/mach-mps2/Makefile
+ create mode 100644 arch/arm/mach-mps2/Makefile.boot
+ create mode 100644 arch/arm/mach-mps2/dtmachine.c
+ create mode 100644 drivers/clocksource/mps2-timer.c
+ create mode 100644 drivers/tty/serial/mps2-uart.c
+
+--=20
+1.7.9.5
