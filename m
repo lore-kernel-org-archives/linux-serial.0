@@ -1,61 +1,56 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH 3/3] serial: amba-pl011: add ACPI support to AMBA probe
-Date: Wed, 02 Dec 2015 02:25:30 +0100
-Message-ID: <2178575.bCf8IHH3MB@vostro.rjw.lan>
-References: <1443609530-21524-1-git-send-email-graeme.gregory@linaro.org> <14968240.IklpWf8GZo@vostro.rjw.lan> <20151201122100.GB4036@xora-haswell.xora.org.uk>
+From: Nava kishore Manne <nava.manne@xilinx.com>
+Subject: RE: [PATCH v2 1/3] serial: xuartps: Spliting the ISR into smaller
+ routines.
+Date: Wed, 2 Dec 2015 05:32:14 +0000
+Message-ID: <C89496FEAE474D468F30D558A9468D9F25949EBB@XAP-PVEXMBX01.xlnx.xilinx.com>
+References: <1448026478-22131-1-git-send-email-navam@xilinx.com>
+ <20151120144348.GS32017@xsjsorenbubuntu>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20151201122100.GB4036@xora-haswell.xora.org.uk>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Graeme Gregory <gg@slimlogic.co.uk>
-Cc: Graeme Gregory <graeme.gregory@linaro.org>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, shannon.zhao@linaro.org, Len Brown <lenb@kernel.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20151120144348.GS32017@xsjsorenbubuntu>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Soren Brinkmann <sorenb@xilinx.com>
+Cc: "jslaby@suse.com" <jslaby@suse.com>, Michal Simek <michals@xilinx.com>, Anirudha Sarangi <anirudh@xilinx.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday, December 01, 2015 12:21:00 PM Graeme Gregory wrote:
-> On Tue, Dec 01, 2015 at 03:21:47AM +0100, Rafael J. Wysocki wrote:
-> > On Wednesday, September 30, 2015 11:38:50 AM Graeme Gregory wrote:
-> > > In ACPI this device is only defined in SBSA mode so
-> > > if we are probing from ACPI use this mode.
-
-[cut]
-
-> > > +		uap->clk = devm_clk_get(&dev->dev, NULL);
-> > > +		if (IS_ERR(uap->clk))
-> > > +			return PTR_ERR(uap->clk);
-> > > +
-> > > +		uap->vendor = vendor;
-> > > +		uap->lcrh_rx = vendor->lcrh_rx;
-> > > +		uap->lcrh_tx = vendor->lcrh_tx;
-> > > +		uap->fifosize = vendor->get_fifosize(dev);
-> > > +		uap->port.ops = &amba_pl011_pops;
-> > > +		snprintf(uap->type, sizeof(uap->type), "PL011 rev%u",
-> > > +				amba_rev(dev));
-> > > +	 } else {
-> > > +		uap->vendor	= &vendor_sbsa;
-> > > +		uap->fifosize	= 32;
-> > > +		uap->port.ops	= &sbsa_uart_pops;
-> > > +		uap->fixed_baud = 115200;
-> > > +
-> > > +		snprintf(uap->type, sizeof(uap->type), "SBSA");
-> > 
-> > This looks sort of heavy-handed.
-> > 
-> > Is this the only possible configuration of the device in the ACPI case?
-> > 
-> 
-> As far as I can tell yes, but ARM haven't actually published a document
-> to state that as fact.
-
-At least a comment explaining what kind of information this is based on would
-be useful.  Otherwise one has to wonder where this is coming from.
-
-> This does replace the platform_probe that Russel was unhappy about for
-> the ACPI case.
-
-I can't really comment on that.
-
-Thanks,
-Rafael
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU8O2cmVuIEJyaW5rbWFu
+biBbbWFpbHRvOnNvcmVuLmJyaW5rbWFubkB4aWxpbnguY29tXQ0KPiBTZW50OiBGcmlkYXksIE5v
+dmVtYmVyIDIwLCAyMDE1IDg6MTQgUE0NCj4gVG86IE5hdmEga2lzaG9yZSBNYW5uZQ0KPiBDYzog
+anNsYWJ5QHN1c2UuY29tOyBNaWNoYWwgU2ltZWs7IEFuaXJ1ZGhhIFNhcmFuZ2k7IGxpbnV4LQ0K
+PiBzZXJpYWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
+ZC5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJuZWwub3JnOyBOYXZhIGtpc2hvcmUgTWFu
+bmUNCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MiAxLzNdIHNlcmlhbDogeHVhcnRwczogU3BsaXRp
+bmcgdGhlIElTUiBpbnRvIHNtYWxsZXINCj4gcm91dGluZXMuDQo+IA0KPiBPbiBGcmksIDIwMTUt
+MTEtMjAgYXQgMDc6MDRQTSArMDUzMCwgTmF2YSBraXNob3JlIE1hbm5lIHdyb3RlOg0KPiA+IEJy
+ZWFraW5nIHRoZSBzaW5nbGUgYmlnIElTUiB0aGF0IGhhcyBib3RoIFJ4IGFuZCBUeCBpbiBhIHNp
+bmdsZQ0KPiA+IGZ1bmN0aW9uIGludG8gc21hbGxlciBvbmVzDQo+ID4NCj4gPiBTaWduZWQtb2Zm
+LWJ5OiBOYXZhIGtpc2hvcmUgTWFubmUgPG5hdmFtQHhpbGlueC5jb20+DQo+ID4gLS0tDQo+ID4g
+Q2hhbmdlcyBmb3IgdjI6DQo+ID4gCS0tU3BsaXRzIHVwIHRoZSBJU1Igd2l0aG91dCBhbnkgZnVu
+Y3Rpb25hbCBjaGFuZ2VzIGFzIHN1Z2dlc3RlZA0KPiA+IAlieSBQZXRlciBIdXJsZXkNCj4gPg0K
+PiA+ICBkcml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jIHwgMjQ3DQo+ID4gKysrKysr
+KysrKysrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTM1
+IGluc2VydGlvbnMoKyksIDExMiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jDQo+ID4gYi9kcml2ZXJzL3R0eS9zZXJp
+YWwveGlsaW54X3VhcnRwcy5jDQo+ID4gaW5kZXggMDA5ZTBkYi4uMmUxYjBhOCAxMDA2NDQNCj4g
+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jDQo+ID4gKysrIGIvZHJp
+dmVycy90dHkvc2VyaWFsL3hpbGlueF91YXJ0cHMuYw0KPiA+IEBAIC0xNzIsNiArMTcyLDkgQEAg
+c3RydWN0IGNkbnNfdWFydCB7ICAjZGVmaW5lIHRvX2NkbnNfdWFydChfbmIpDQo+ID4gY29udGFp
+bmVyX29mKF9uYiwgc3RydWN0IGNkbnNfdWFydCwgXA0KPiA+ICAJCWNsa19yYXRlX2NoYW5nZV9u
+Yik7DQo+ID4NCj4gPiArc3RhdGljIHZvaWQgY2Ruc191YXJ0X2hhbmRsZV90eCh2b2lkICpkZXZf
+aWQpOyBzdGF0aWMgdm9pZA0KPiA+ICtjZG5zX3VhcnRfaGFuZGxlX3J4KHZvaWQgKmRldl9pZCwg
+dW5zaWduZWQgaW50IGlzcnN0YXR1cyk7DQo+IA0KPiBDYW4ndCB5b3UganVzdCBtb3ZlIHRoZXNl
+IGZ1bmN0aW9ucyBoZXJlIGluc3RlYWQgb2YgYWRkaW5nIHByb3RvdHlwZXMgaGVyZT8NCg0KSW5p
+dGlhbGx5IEkgY3JlYXRlZCB0aGUgcGF0Y2ggd2l0aG91dCBhZGRpbmcgcHJvdG90eXBlcyBidXQg
+dGhhdCBwYXRjaCB3YXMgdW5yZWFkYWJsZQ0KRHVlIHRvIHRoZSBjb21tb24gbGluZXMgb2YgY29k
+ZSBiL3cgdGhlIGZ1bmN0aW9ucyBzbyBjcmVhdGVkIHRoZSBwcm90b3R5cGVzIHRvIG1ha2UgdGhl
+IA0KUGF0Y2ggbW9yZSByZWFkYWJsZSBhcyBzdWdnZXN0ZWQgYnkgUGV0ZXIuDQoNCldpbGwgYWRk
+IG9uZSBtb3JlIHBhdGNoIGluIHRoZSBuZXh0IHNlcmllcyB0byBnZXQgcmlkIG9mIHRoZSBwcm90
+b3R5cGVzLg0KDQo+IEFsc28sIHRoaXMgaXMgbGlrZWx5IHRvIGNvbmZsaWN0IHdpdGgNCj4gaHR0
+cHM6Ly9sa21sLm9yZy9sa21sLzIwMTUvMTEvMTkvNjIyDQoNClllcyBJIGFncmVlIGwgc2VlIHRo
+YXQgbm8gY29tbWVudHMgZm9yIHlvdXIgc2VyaWVzIG9mIHBhdGNoZXMgYXMgb2Ygbm93Li4uDQpM
+ZXQgbWUga25vdyB3aGV0aGVyIEkgc2hvdWxkIHdhaXQgdW50aWwgeW91ciBwYXRjaGVzIGdvdCBh
+cHBsaWVkIG9yIHlvdSB3YW50IG1lIHRvIHNlbmQgdGhlIG5leHQgdmVyc2lvbiANCk9mIG15IHBh
+dGNoZXMuLi4NCg0KUmVnYXJkcywNCk5hdmFraXNob3JlLg0KDQo+IA0KPiAJU8O2cmVuDQo=
