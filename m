@@ -1,52 +1,57 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH 2/9] 8250/Kconfig: add config option
- CONFIG_SERIAL_8250_AMD
-Date: Fri, 4 Dec 2015 12:11:14 +0100
-Message-ID: <20151204111114.GC21177@pd.tnic>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH 8/9] Documentation: Add ivrs_acpihid kernel parameter
+	description
+Date: Fri, 4 Dec 2015 13:21:50 +0100
+Message-ID: <20151204122149.GD21177@pd.tnic>
 References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
- <1449199466-6081-3-git-send-email-annie.wang@amd.com>
+	<1449199466-6081-9-git-send-email-annie.wang@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1449199466-6081-3-git-send-email-annie.wang@amd.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Wang Hongcheng <annie.wang@amd.com>
-Cc: Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Tony Li <tony.li@amd.com>
+In-Reply-To: <1449199466-6081-9-git-send-email-annie.wang-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Wang Hongcheng <annie.wang-5C7GfCeVMHo@public.gmane.org>
+Cc: Tony Li <tony.li-5C7GfCeVMHo@public.gmane.org>, Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Huang Rui <ray.huang-5C7GfCeVMHo@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Ken Xue <ken.xue-5C7GfCeVMHo@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Dec 04, 2015 at 11:24:19AM +0800, Wang Hongcheng wrote:
-> Add config option  CONFIG_SERIAL_8250_AMD in use of AMD carrizo.
-> Because carrizo's UART DMA device is an amba device, it selects
-> ARM_AMBA option. Anything uses amba devices must select ARM_AMBA.
+On Fri, Dec 04, 2015 at 11:24:25AM +0800, Wang Hongcheng wrote:
+> From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 > 
-> Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
+> Add ivrs_acpihid kernel parameter description,
+> like ivrs_acpihid[00:14.5]=AMD0020:0.
+> 
+> Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 > ---
->  drivers/tty/serial/8250/Kconfig | 8 ++++++++
->  1 file changed, 8 insertions(+)
+>  Documentation/kernel-parameters.txt | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index 6412f14..d9717c1 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -378,3 +378,11 @@ config SERIAL_8250_MID
->  	  Selecting this option will enable handling of the extra features
->  	  present on the UART found on Intel Medfield SOC and various other
->  	  Intel platforms.
-> +
-> +config SERIAL_8250_AMD
-> +        bool "AMD carrizo serial port support"
-> +        depends on SERIAL_8250
-> +	select ARM_AMBA
-> +        help
-> +           If you have a Carrizo  based board and want to use the
-> +           serial port, say Y to this option. If unsure, say N.
+> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+> index 742f69d..5c364c6 100644
+> --- a/Documentation/kernel-parameters.txt
+> +++ b/Documentation/kernel-parameters.txt
+> @@ -1680,6 +1680,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+>  			PCI device 00:14.0 write the parameter as:
+>  				ivrs_hpet[0]=00:14.0
+>  
+> +	ivrs_acpihid	[HW,X86_64]
+> +			Provide an override to the ACPI-HID:UID<->DEVICE-ID
+> +			mapping provided in the IVRS ACPI table. For
+> +			example, to map UART-HID:UID AMD0020:0 to
+> +			PCI device 00:14.5 write the parameter as:
+> +				ivrs_acpihid[00:14.5]=AMD0020:0
 
-Please do not use "Carrizo" in any user-visible text because the vendors
-and their marketing departments naming are confusing us to hell already.
-Use F15h, models 0x60-0x6F (I believe CZ is this range but I'm not sure
-myself anymore either) so that people *actually* can know what kind of
-CPU it is by looking at /proc/cpuinfo.
+What is that parameter needed for? Can't you deduce the mapping from the
+hardware?
 
 -- 
 Regards/Gruss,
