@@ -1,32 +1,39 @@
-From: "Wan, Vincent" <Vincent.Wan@amd.com>
-Subject: RE: [PATCH 8/9] Documentation: Add ivrs_acpihid kernel parameter
- description
-Date: Fri, 4 Dec 2015 13:19:35 +0000
-Message-ID: <DM3PR1201MB10232DEAF03CAAE29D21FC1AE60C0@DM3PR1201MB1023.namprd12.prod.outlook.com>
-References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
- <1449199466-6081-9-git-send-email-annie.wang@amd.com>
- <20151204122149.GD21177@pd.tnic>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151204122149.GD21177@pd.tnic>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Borislav Petkov <bp@alien8.de>, "Wang, Annie" <Annie.Wang@amd.com>
-Cc: Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Huang, Ray" <Ray.Huang@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, "Li, Tony" <Tony.Li@amd.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: sh-sci: Fix length of scatterlist
+Date: Fri,  4 Dec 2015 15:21:19 +0100
+Message-ID: <1449238879-31169-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-PiA+ICsJaXZyc19hY3BpaGlkCVtIVyxYODZfNjRdDQo+ID4gKwkJCVByb3ZpZGUgYW4gb3ZlcnJp
-ZGUgdG8gdGhlIEFDUEktSElEOlVJRDwtPkRFVklDRS1JRA0KPiA+ICsJCQltYXBwaW5nIHByb3Zp
-ZGVkIGluIHRoZSBJVlJTIEFDUEkgdGFibGUuIEZvcg0KPiA+ICsJCQlleGFtcGxlLCB0byBtYXAg
-VUFSVC1ISUQ6VUlEIEFNRDAwMjA6MCB0bw0KPiA+ICsJCQlQQ0kgZGV2aWNlIDAwOjE0LjUgd3Jp
-dGUgdGhlIHBhcmFtZXRlciBhczoNCj4gPiArCQkJCWl2cnNfYWNwaWhpZFswMDoxNC41XT1BTUQw
-MDIwOjANCj4gDQo+IFdoYXQgaXMgdGhhdCBwYXJhbWV0ZXIgbmVlZGVkIGZvcj8gQ2FuJ3QgeW91
-IGRlZHVjZSB0aGUgbWFwcGluZyBmcm9tIHRoZQ0KPiBoYXJkd2FyZT8NCg0KSXQgaXMgdmVyeSBs
-aWtlIGl2cnNfaW9hcGljLyBpdnJzX2hwZXQsIHdoaWNoIGNhbiBvdmVycmlkZSB0aGUgZGVkaWNh
-dGVkIEJERiBpZCBtYXBwZWQgdG8gSElEOlVJRCB0aGF0IHdhcyByZXBvcnRlZCBmcm9tIEJJT1Mn
-cyBJVkhEIGVudHJ5Lg0KSWYgQklPUyBkaWQgbm90IHJlcG9ydCBhIHJpZ2h0IEJERiwgd2UgY2Fu
-IHJlc29ydCB0byB0aGlzIHBhcmFtZXRlciB0byBjb3JyZWN0IGl0Lg0KDQo+IA0KPiAtLQ0KPiBS
-ZWdhcmRzL0dydXNzLA0KPiAgICAgQm9yaXMuDQo+IA0KPiBFQ08gdGlwICMxMDE6IFRyaW0geW91
-ciBtYWlscyB3aGVuIHlvdSByZXBseS4NCg==
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+
+This patch fixes an issue that the "length" of scatterlist should be
+set using sg_dma_len(). Otherwise, a dmaengine driver cannot work
+correctly if CONFIG_NEED_SG_DMA_LENGTH=y.
+
+Fixes: 7b39d90184 (serial: sh-sci: Fix NULL pointer dereference if HIGHMEM is enabled)
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/tty/serial/sh-sci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 960e50a97558cff5..51c7507b0444957b 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1437,7 +1437,7 @@ static void sci_request_dma(struct uart_port *port)
+ 			sg_init_table(sg, 1);
+ 			s->rx_buf[i] = buf;
+ 			sg_dma_address(sg) = dma;
+-			sg->length = s->buf_len_rx;
++			sg_dma_len(sg) = s->buf_len_rx;
+ 
+ 			buf += s->buf_len_rx;
+ 			dma += s->buf_len_rx;
+-- 
+1.9.1
+
