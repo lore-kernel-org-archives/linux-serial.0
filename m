@@ -1,42 +1,56 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH 8/9] Documentation: Add ivrs_acpihid kernel parameter
- description
-Date: Fri, 4 Dec 2015 15:38:03 +0100
-Message-ID: <20151204143803.GH21177@pd.tnic>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 6/9] dmaengine:pl330: set segment_boundary_mask =
+ 0cffffffff
+Date: Fri, 4 Dec 2015 14:59:11 +0000
+Message-ID: <5661AA3F.6080101@arm.com>
 References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
- <1449199466-6081-9-git-send-email-annie.wang@amd.com>
- <20151204122149.GD21177@pd.tnic>
- <DM3PR1201MB10232DEAF03CAAE29D21FC1AE60C0@DM3PR1201MB1023.namprd12.prod.outlook.com>
+ <1449199466-6081-7-git-send-email-annie.wang@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <DM3PR1201MB10232DEAF03CAAE29D21FC1AE60C0@DM3PR1201MB1023.namprd12.prod.outlook.com>
+In-Reply-To: <1449199466-6081-7-git-send-email-annie.wang@amd.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: "Wan, Vincent" <Vincent.Wan@amd.com>
-Cc: "Wang, Annie" <Annie.Wang@amd.com>, Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Huang, Ray" <Ray.Huang@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, "Li, Tony" <Tony.Li@amd.com>
+To: Wang Hongcheng <annie.wang@amd.com>, Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Tony Li <tony.li@amd.com>, Wan Zongshun <Vincent.Wan@amd.com>, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Huang Rui <ray.huang@amd.com>, Borislav Petkov <bp@alien8.de>, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, Ken Xue <ken.xue@amd.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Dec 04, 2015 at 01:19:35PM +0000, Wan, Vincent wrote:
-> > > +	ivrs_acpihid	[HW,X86_64]
-> > > +			Provide an override to the ACPI-HID:UID<->DEVICE-ID
-> > > +			mapping provided in the IVRS ACPI table. For
-> > > +			example, to map UART-HID:UID AMD0020:0 to
-> > > +			PCI device 00:14.5 write the parameter as:
-> > > +				ivrs_acpihid[00:14.5]=AMD0020:0
-> > 
-> > What is that parameter needed for? Can't you deduce the mapping from the
-> > hardware?
-> 
-> It is very like ivrs_ioapic/ ivrs_hpet, which can override the dedicated BDF id mapped to HID:UID that was reported from BIOS's IVHD entry.
-> If BIOS did not report a right BDF, we can resort to this parameter to correct it.
+On 04/12/15 03:24, Wang Hongcheng wrote:
+> Because amd iommu and software iommu need this mask.For example,
+> if we use software iommu without this mask, we will
+> get 'Out of SW-IOMMU space' error, when calling swiotlb_map_page
+> function.
 
-Please add a verbose, human-readable explanation to the text so that
-people know what it is for. The text above is hard to parse even for
-insiders.
+The commit title doesn't match the code, but either way this patch 
+should now be unnecessary: 002edb6f6f2a ("dma-mapping: tidy up dma_parms 
+default handling") resolves the problem at its source, and is already in 
+4.4-rc1.
 
--- 
-Regards/Gruss,
-    Boris.
+(Incidentally, it was specifically the same PL330/SWIOTLB combination 
+that led to that patch in the first place)
 
-ECO tip #101: Trim your mails when you reply.
+Robin.
+
+> Signed-off-by: Wan Zongshun <Vincent.Wan@amd.com>
+> Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
+> ---
+>   drivers/dma/pl330.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
+> index 9d7af0d..fb46fdf 100644
+> --- a/drivers/dma/pl330.c
+> +++ b/drivers/dma/pl330.c
+> @@ -2966,6 +2966,10 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
+>   	if (ret)
+>   		dev_err(&adev->dev, "unable to set the seg size\n");
+>
+> +	dev_info(&adev->dev, "set the seg boundary\n");
+> +	ret = dma_set_seg_boundary(&adev->dev, 0xffffffff);
+> +	if (ret)
+> +		dev_err(&adev->dev, "unable to set the seg boundary\n");
+>
+>   	dev_info(&adev->dev,
+>   		 "Loaded driver for PL330 DMAC-%x\n", adev->periphid);
+>
+
