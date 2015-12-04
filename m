@@ -1,66 +1,45 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH 3/3] serial: amba-pl011: add ACPI support to AMBA probe
-Date: Thu, 3 Dec 2015 14:06:27 -0600
-Message-ID: <CAOZdJXXWyYsn5g4S=L_gkPSRaANwB3=UMazdQHq5Jv4b7oQZpg@mail.gmail.com>
-References: <1443609530-21524-1-git-send-email-graeme.gregory@linaro.org>
-	<1443609530-21524-4-git-send-email-graeme.gregory@linaro.org>
+From: Wang Hongcheng <annie.wang@amd.com>
+Subject: [PATCH 8/9] Documentation: Add ivrs_acpihid kernel parameter description
+Date: Fri, 4 Dec 2015 11:24:25 +0800
+Message-ID: <1449199466-6081-9-git-send-email-annie.wang@amd.com>
+References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1443609530-21524-4-git-send-email-graeme.gregory@linaro.org>
+In-Reply-To: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Graeme Gregory <graeme.gregory@linaro.org>
-Cc: linux-acpi@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, shannon.zhao@linaro.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, Borislav Petkov <bp@alien8.de>, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Tony Li <tony.li@amd.com>, Wan Zongshun <Vincent.Wan@amd.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Sep 30, 2015 at 5:38 AM, Graeme Gregory
-<graeme.gregory@linaro.org> wrote:
+From: Wan Zongshun <Vincent.Wan@amd.com>
 
-> @@ -2368,18 +2368,28 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
->         if (!uap)
->                 return -ENOMEM;
->
-> -       uap->clk = devm_clk_get(&dev->dev, NULL);
-> -       if (IS_ERR(uap->clk))
-> -               return PTR_ERR(uap->clk);
-> -
-> -       uap->vendor = vendor;
-> -       uap->lcrh_rx = vendor->lcrh_rx;
-> -       uap->lcrh_tx = vendor->lcrh_tx;
-> -       uap->fifosize = vendor->get_fifosize(dev);
-> +       /* ACPI only defines SBSA variant */
-> +       if (!ACPI_COMPANION(&dev->dev)) {
-> +               uap->clk = devm_clk_get(&dev->dev, NULL);
-> +               if (IS_ERR(uap->clk))
-> +                       return PTR_ERR(uap->clk);
-> +
-> +               uap->vendor = vendor;
-> +               uap->lcrh_rx = vendor->lcrh_rx;
-> +               uap->lcrh_tx = vendor->lcrh_tx;
-> +               uap->fifosize = vendor->get_fifosize(dev);
-> +               uap->port.ops = &amba_pl011_pops;
-> +               snprintf(uap->type, sizeof(uap->type), "PL011 rev%u",
-> +                               amba_rev(dev));
-> +        } else {
-> +               uap->vendor     = &vendor_sbsa;
-> +               uap->fifosize   = 32;
-> +               uap->port.ops   = &sbsa_uart_pops;
-> +               uap->fixed_baud = 115200;
-> +
-> +               snprintf(uap->type, sizeof(uap->type), "SBSA");
-> +       }
->         uap->port.irq = dev->irq[0];
-> -       uap->port.ops = &amba_pl011_pops;
-> -
-> -       snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
+Add ivrs_acpihid kernel parameter description,
+like ivrs_acpihid[00:14.5]=AMD0020:0.
 
-I'm confused.  We already have ACPI support in amba-pl011 driver, and
-pl011_probe() is never called on an SBSA system.  That's what
-sbsa_uart_probe() is for.  You even added this patch:
+Signed-off-by: Wan Zongshun <Vincent.Wan@amd.com>
+---
+ Documentation/kernel-parameters.txt | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-        drivers: PL011: add ACPI probing for SBSA UART
-
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 742f69d..5c364c6 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -1680,6 +1680,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			PCI device 00:14.0 write the parameter as:
+ 				ivrs_hpet[0]=00:14.0
+ 
++	ivrs_acpihid	[HW,X86_64]
++			Provide an override to the ACPI-HID:UID<->DEVICE-ID
++			mapping provided in the IVRS ACPI table. For
++			example, to map UART-HID:UID AMD0020:0 to
++			PCI device 00:14.5 write the parameter as:
++				ivrs_acpihid[00:14.5]=AMD0020:0
++
+ 	js=		[HW,JOY] Analog joystick
+ 			See Documentation/input/joystick.txt.
+ 
 -- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project.
+1.9.1
+
