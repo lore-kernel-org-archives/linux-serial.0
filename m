@@ -1,55 +1,55 @@
-From: G Gregory <graeme.gregory@linaro.org>
-Subject: Re: [PATCH 1/9] ACPI: Add support for AMBA bus type
-Date: Fri, 4 Dec 2015 10:23:57 +0000
-Message-ID: <CAGCh1+=KXUGwdpFWG6+bywoPcy8aQ3uDWmvxuAjZYG6De_-irA@mail.gmail.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH 2/9] 8250/Kconfig: add config option
+ CONFIG_SERIAL_8250_AMD
+Date: Fri, 4 Dec 2015 12:11:14 +0100
+Message-ID: <20151204111114.GC21177@pd.tnic>
 References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
-	<1449199466-6081-2-git-send-email-annie.wang@amd.com>
-	<20151204085023.GE1593@lahna.fi.intel.com>
-	<20151204091738.GA6572@hr-amur2>
-	<56616021.3050704@huawei.com>
-	<CAGCh1+mteHUM-MPjxhgu_sXbBQdz1fLAfAHYOo9rp-cxyt8dkw@mail.gmail.com>
-	<20151204102012.GA6789@hr-amur2>
+ <1449199466-6081-3-git-send-email-annie.wang@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20151204102012.GA6789@hr-amur2>
+Content-Disposition: inline
+In-Reply-To: <1449199466-6081-3-git-send-email-annie.wang@amd.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Huang Rui <ray.huang@amd.com>
-Cc: Hanjun Guo <guohanjun@huawei.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Wang Hongcheng <annie.wang@amd.com>, Vinod Koul <vinod.koul@intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, Borislav Petkov <bp@alien8.de>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Tony Li <tony.li@amd.com>
+To: Wang Hongcheng <annie.wang@amd.com>
+Cc: Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Tony Li <tony.li@amd.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 4 December 2015 at 10:20, Huang Rui <ray.huang@amd.com> wrote:
-> On Fri, Dec 04, 2015 at 09:59:28AM +0000, G Gregory wrote:
->> On 4 December 2015 at 09:42, Hanjun Guo <guohanjun@huawei.com> wrote:
->> > On 2015/12/4 17:17, Huang Rui wrote:
->> >> On Fri, Dec 04, 2015 at 10:50:23AM +0200, Mika Westerberg wrote:
->> >>> On Fri, Dec 04, 2015 at 11:24:18AM +0800, Wang Hongcheng wrote:
->> >>>> From: Huang Rui <ray.huang@amd.com>
->> >>>>
->> >>>> Inspired by acpi platform bus type, to make driver "porting" more
->> >>>> straightforward, this patch introduces ACPI support to the AMBA bus
->> >>>> type. Instead of writing ACPI "glue" drivers for the exiting AMBA
->> >>>> drivers.
->> >>> Hmm, isn't there already similar patch series bringing AMBA ACPI
->> >>> support?
->> >>>
->> >>> https://lkml.org/lkml/2015/9/30/394
->> >> Err, I see the patch for the first time...
->> >>
->> >> But looks like it isn't accepted till now. Will he continue to work on
->> >> it?
->> >
->> > Sure, Graeme is working on the updated version now :)
->> >
->> Yes, as Hanjun said I am planning a v2. I've just been caught up in
->> other business this week and probably next week.
->>
->
-> OK, thanks to clarify it. Could you please take care of AMD use case
-> that we need a configurable fix_rate clk, periphid, and platform data?
->
-I will take a look at your patch in detail when I redo my series.
+On Fri, Dec 04, 2015 at 11:24:19AM +0800, Wang Hongcheng wrote:
+> Add config option  CONFIG_SERIAL_8250_AMD in use of AMD carrizo.
+> Because carrizo's UART DMA device is an amba device, it selects
+> ARM_AMBA option. Anything uses amba devices must select ARM_AMBA.
+> 
+> Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
+> ---
+>  drivers/tty/serial/8250/Kconfig | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+> index 6412f14..d9717c1 100644
+> --- a/drivers/tty/serial/8250/Kconfig
+> +++ b/drivers/tty/serial/8250/Kconfig
+> @@ -378,3 +378,11 @@ config SERIAL_8250_MID
+>  	  Selecting this option will enable handling of the extra features
+>  	  present on the UART found on Intel Medfield SOC and various other
+>  	  Intel platforms.
+> +
+> +config SERIAL_8250_AMD
+> +        bool "AMD carrizo serial port support"
+> +        depends on SERIAL_8250
+> +	select ARM_AMBA
+> +        help
+> +           If you have a Carrizo  based board and want to use the
+> +           serial port, say Y to this option. If unsure, say N.
 
-Thanks
+Please do not use "Carrizo" in any user-visible text because the vendors
+and their marketing departments naming are confusing us to hell already.
+Use F15h, models 0x60-0x6F (I believe CZ is this range but I'm not sure
+myself anymore either) so that people *actually* can know what kind of
+CPU it is by looking at /proc/cpuinfo.
 
-Graeme
+-- 
+Regards/Gruss,
+    Boris.
+
+ECO tip #101: Trim your mails when you reply.
