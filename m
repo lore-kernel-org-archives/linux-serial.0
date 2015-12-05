@@ -1,22 +1,23 @@
-From: Moritz Fischer <moritz.fischer@ettus.com>
-Subject: Re: [PATCH LINUX v3 01/10] tty: xuartps: Beautify read-modify writes
-Date: Sat, 5 Dec 2015 09:23:25 -0800
-Message-ID: <CAAtXAHfAyAoY5qPmJzXjYiys9Fc3NaUFbs7FauVT9=Tufo+nSQ@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH LINUX v3 07/10] tty: xuartps: Acquire port lock for
+ shutdown
+Date: Sat, 5 Dec 2015 12:23:46 -0500
+Message-ID: <56631DA2.5050402@hurleysoftware.com>
 References: <1448161172-19717-1-git-send-email-soren.brinkmann@xilinx.com>
-	<1448161172-19717-2-git-send-email-soren.brinkmann@xilinx.com>
-	<56631938.1030905@hurleysoftware.com>
+ <1448161172-19717-8-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56631938.1030905@hurleysoftware.com>
+In-Reply-To: <1448161172-19717-8-git-send-email-soren.brinkmann@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Soren Brinkmann <soren.brinkmann@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+To: Soren Brinkmann <soren.brinkmann@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Dec 5, 2015 at 9:04 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 11/21/2015 09:59 PM, Soren Brinkmann wrote:
->> Non-functional, formatting changes to ease reading the code.
->
-> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-Reviewed-by: Moritz Fischer <moritz.fischer@ettus.com
+On 11/21/2015 09:59 PM, Soren Brinkmann wrote:
+> Shutting down the UART port can happen while console operations are in
+> progress. Holding the port lock serializes these operations and avoids
+> the UART HW to be disabled in the middle of console prints.
+
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
