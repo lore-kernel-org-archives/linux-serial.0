@@ -1,27 +1,20 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 1/3] tty: Move serial8250_stop_rx in front of
- serial8250_start_tx
-Date: Sat, 5 Dec 2015 08:06:49 -0800
-Message-ID: <20151205160649.GA529@kroah.com>
-References: <1449312891-1846-1-git-send-email-matwey@sai.msu.ru>
- <1449312891-1846-2-git-send-email-matwey@sai.msu.ru>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH LINUX v3 01/10] tty: xuartps: Beautify read-modify writes
+Date: Sat, 5 Dec 2015 12:04:56 -0500
+Message-ID: <56631938.1030905@hurleysoftware.com>
+References: <1448161172-19717-1-git-send-email-soren.brinkmann@xilinx.com>
+ <1448161172-19717-2-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1449312891-1846-2-git-send-email-matwey@sai.msu.ru>
+In-Reply-To: <1448161172-19717-2-git-send-email-soren.brinkmann@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: jslaby@suse.com, peter@hurleysoftware.com, andy.shevchenko@gmail.com, gnomes@lxorguk.ukuu.org.uk, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Soren Brinkmann <soren.brinkmann@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Dec 05, 2015 at 01:54:49PM +0300, Matwey V. Kornilov wrote:
-> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
+On 11/21/2015 09:59 PM, Soren Brinkmann wrote:
+> Non-functional, formatting changes to ease reading the code.
 
-Why?
-
-Please say so in the changelog.
-
-thanks,
-
-greg k-h
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
