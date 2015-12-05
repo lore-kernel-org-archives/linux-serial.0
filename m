@@ -1,35 +1,35 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH 00/12] Prepare amba-pl011 for ZTE UART support
-Date: Sat, 5 Dec 2015 13:06:18 -0600
-Message-ID: <566335AA.9040604@codeaurora.org>
-References: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
- <566331D7.7010105@hurleysoftware.com>
+From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
+Subject: Re: [PATCH LINUX v3 05/10] tty: xuartps: Improve startup function
+Date: Sat, 5 Dec 2015 13:47:09 -0800
+Message-ID: <20151205214709.GM4900@xsjsorenbubuntu>
+References: <1448161172-19717-1-git-send-email-soren.brinkmann@xilinx.com>
+ <1448161172-19717-6-git-send-email-soren.brinkmann@xilinx.com>
+ <56631D1E.8050406@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <566331D7.7010105@hurleysoftware.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Peter Hurley <peter@hurleysoftware.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andre Przywara <andre.przywara@arm.com>, Jun Nie <jun.nie@linaro.org>, Andrew.Jackson@arm.com, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <56631D1E.8050406@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Peter Hurley wrote:
-> Just a heads-up: this series has merge conflicts with Timur's
-> "serial: amba-pl011: use cpu_relax when polling registers"
+On Sat, 2015-12-05 at 12:21PM -0500, Peter Hurley wrote:
+> On 11/21/2015 09:59 PM, Soren Brinkmann wrote:
+> > The startup function is supposed to initialize the UART for receivi=
+ng.
+> > Hence, don't enable the TX part. Also, protect HW accesses with the=
+ port
+> > lock.
+>=20
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+>=20
+> NB: the request_irq() should be _after_ h/w programming, otherwise an
+> interrupt could be triggered and in-progress before the h/w has been
+> setup.
 
-I'd be happy to fix and re-submit that patch after all of these other 
-patches have been applied.
+Thanks for pointing that out. I'll patch that.
 
--- 
-Sent by an employee of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the
-Code Aurora Forum, hosted by The Linux Foundation.
+	S=C3=B6ren
