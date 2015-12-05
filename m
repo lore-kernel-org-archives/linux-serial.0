@@ -1,95 +1,50 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH LINUX v3 00/10] tty: xuartps: Fix lock ups
-Date: Sat, 5 Dec 2015 12:49:07 -0500
-Message-ID: <56632393.8090809@hurleysoftware.com>
-References: <1448161172-19717-1-git-send-email-soren.brinkmann@xilinx.com>
+Subject: Re: [PATCH 00/12] Prepare amba-pl011 for ZTE UART support
+Date: Sat, 5 Dec 2015 13:49:59 -0500
+Message-ID: <566331D7.7010105@hurleysoftware.com>
+References: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1448161172-19717-1-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Soren Brinkmann <soren.brinkmann@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@tabi.org>
+Cc: Andre Przywara <andre.przywara@arm.com>, Jun Nie <jun.nie@linaro.org>, Andrew.Jackson@arm.com, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 11/21/2015 09:59 PM, Soren Brinkmann wrote:
-> Hi,
->=20
-> here is v3 of this series. It's largely the same as before, but I
-> adjusted 'tty: xuartps: Don't consider circular buffer when enabling
-> transmitter' according to Peter's suggestions.
+On 11/16/2015 12:39 PM, Russell King - ARM Linux wrote:
+> This series is a re-posting of the updates to the AMBA PL011 primecell
+> serial port.
+> 
+> ZTE UARTs differ from the ARM version in two ways: the address layout
+> of the register set is substantially different, and the register access
+> size needs to be 32-bit.
+> 
+> This series converts the driver to use a lookup table to address the
+> first point, and switches to use a flag to indicate the access size.
+> We also switch the driver to use relaxed accessors, which is safe as
+> none of these are responsible for DMA configuration.
 
-In reviewing this series, I thought the _OFFSET suffix for every regist=
-er
-address to be excessive. I would refactor all that out; IOW,
+For series,
 
--	isrstatus =3D readl(port->membase + CDNS_UART_ISR_OFFSET);
-+	isrstatus =3D readl(port->membase + CDNS_UART_ISR);
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 
+I made some individual notes for stuff that could/should be fixed with
+follow-up patches.
 
-> I also spent some time trying to get Peter's test for flow control an=
-d
-> xchar running. The xchar thing fails and will need some more work, bu=
-t I
-> think in general it should be possible to get it to work.
-> The flow control test passes:
->=20
-> root@Xilinx-ZC1751-DC1:~# ./flow /dev/ttyPS0
-> Test flow control on /dev/ttyPS0
-> begin test1
-> patterns sent: 223  recvd: 208
-> read distribution: 1   =3D 0
->                    2+  =3D 0
->                    4+  =3D 0
->                    8+  =3D 0
->                   16+  =3D 0
->                   32+  =3D 643
->                   64+  =3D 0
->                  128+  =3D 0
->                  256+  =3D 0
->                  512+  =3D 0
-> PASSED
+Greg,
 
-This distribution looks like this exactly because the xchar test is
-failing. IOW, this driver isn't performing soft flow control (^S,^Q)
-like it should.
+Just a heads-up: this series has merge conflicts with Timur's
+"serial: amba-pl011: use cpu_relax when polling registers"
 
 Regards,
 Peter Hurley
-
-> root@Xilinx-ZC1751-DC1:~# ./flow /dev/ttyPS1
-> Test flow control on /dev/ttyPS1
-> begin test1
-> patterns sent: 223  recvd: 208
-> read distribution: 1   =3D 0
->                    2+  =3D 0
->                    4+  =3D 0
->                    8+  =3D 0
->                   16+  =3D 0
->                   32+  =3D 643
->                   64+  =3D 0
->                  128+  =3D 0
->                  256+  =3D 0
->                  512+  =3D 0
-> PASSED
->=20
-> 	S=C3=B6ren
->=20
-> S=C3=B6ren Brinkmann (10):
->   tty: xuartps: Beautify read-modify writes
->   tty: xuartps: Use spinlock to serialize HW access
->   tty: xuartps: Don't consider circular buffer when enabling transmit=
-ter
->   tty: xuartps: Clear interrupt status register in shutdown
->   tty: xuartps: Improve startup function
->   tty: xuartps: Keep lock for whole ISR
->   tty: xuartps: Acquire port lock for shutdown
->   tty: xuartps: Move RX path into helper function
->   tty: xuartps: Only handle RX IRQs when RX is enabled
->   tty: xuartps: Cleanup: Reformat if-else
->=20
->  drivers/tty/serial/xilinx_uartps.c | 246 +++++++++++++++++++++------=
-----------
->  1 file changed, 137 insertions(+), 109 deletions(-)
->=20
