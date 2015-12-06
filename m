@@ -1,78 +1,108 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH LINUX v4 12/13] tty: xuartps: Improve sysrq handling
-Date: Sat, 5 Dec 2015 20:39:28 -0800
-Message-ID: <1449376769-13369-13-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH LINUX v4 09/13] tty: xuartps: Move RX path into helper function
+Date: Sat, 5 Dec 2015 20:39:25 -0800
+Message-ID: <1449376769-13369-10-git-send-email-soren.brinkmann@xilinx.com>
 References: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Moritz Fischer <moritz.fischer@ettus.com>, Peter Hurley <peter@hurleysoftware.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Moritz Fischer <moritz.fischer@ettus.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-Handling magic sysrq included dropping a lock to avoid a deadlock that
-happened when cdns_uart_console_write tried to acquire a lock in the
-from the sysrq code path. By making the acquisition of the lock in
-cdns_uart_console_write depending on port->sysrq, cdns_uart_handle_rx can be
-simplified to simply call uart_handle_sysrq.
+Move RX-related IRQ handling into a helper function.
+Fixes a problem where every char received after a parity or frame error
+in the current isr will also be tagged as a parity or frame error.
 
-Suggested-by: Peter Hurley <peter@hurleysoftware.com>
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 ---
 v4:
- - added this patch
+ - added Peter's additional information to the commit message (thx)
 ---
- drivers/tty/serial/xilinx_uartps.c | 20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 50 +++++++++++++++++++++-----------------
+ 1 file changed, 28 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 7afab0c36528..3b8d15fa5959 100644
+index 80248cb46bf6..3780d1cf207e 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -221,20 +221,8 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
- 				continue;
+@@ -172,28 +172,8 @@ struct cdns_uart {
+ #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
+ 		clk_rate_change_nb);
+ 
+-/**
+- * cdns_uart_isr - Interrupt handler
+- * @irq: Irq number
+- * @dev_id: Id of the port
+- *
+- * Return: IRQHANDLED
+- */
+-static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
++static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
+ {
+-	struct uart_port *port = (struct uart_port *)dev_id;
+-	unsigned long flags;
+-	unsigned int isrstatus, numbytes;
+-	unsigned int data;
+-	char status = TTY_NORMAL;
+-
+-	spin_lock_irqsave(&port->lock, flags);
+-
+-	/* Read the interrupt status register to determine which
+-	 * interrupt(s) is/are active.
+-	 */
+-	isrstatus = readl(port->membase + CDNS_UART_ISR_OFFSET);
+-
+ 	/*
+ 	 * There is no hardware break detection, so we interpret framing
+ 	 * error with all-zeros data as a break sequence. Most of the time,
+@@ -223,6 +203,9 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ 		/* Receive Timeout Interrupt */
+ 		while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
+ 					CDNS_UART_SR_RXEMPTY)) {
++			u32 data;
++			char status = TTY_NORMAL;
++
+ 			data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
+ 
+ 			/* Non-NULL byte after BREAK is garbage (99%) */
+@@ -263,10 +246,33 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ 			}
+ 
+ 			uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
+-					data, status);
++					 data, status);
  		}
+ 		tty_flip_buffer_push(&port->state->port);
+ 	}
++}
++
++/**
++ * cdns_uart_isr - Interrupt handler
++ * @irq: Irq number
++ * @dev_id: Id of the port
++ *
++ * Return: IRQHANDLED
++ */
++static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
++{
++	struct uart_port *port = (struct uart_port *)dev_id;
++	unsigned long flags;
++	unsigned int isrstatus, numbytes;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	/* Read the interrupt status register to determine which
++	 * interrupt(s) is/are active.
++	 */
++	isrstatus = readl(port->membase + CDNS_UART_ISR_OFFSET);
++
++	cdns_uart_handle_rx(port, isrstatus);
  
--#ifdef SUPPORT_SYSRQ
--		/*
--		 * uart_handle_sysrq_char() doesn't work if
--		 * spinlocked, for some reason
--		 */
--		 if (port->sysrq) {
--			spin_unlock(&port->lock);
--			if (uart_handle_sysrq_char(port, data)) {
--				spin_lock(&port->lock);
--				continue;
--			}
--			spin_lock(&port->lock);
--		}
--#endif
-+		if (uart_handle_sysrq_char(port, data))
-+			continue;
- 
- 		port->icount.rx++;
- 
-@@ -1121,7 +1109,9 @@ static void cdns_uart_console_write(struct console *co, const char *s,
- 	unsigned int imr, ctrl;
- 	int locked = 1;
- 
--	if (oops_in_progress)
-+	if (port->sysrq)
-+		locked = 0;
-+	else if (oops_in_progress)
- 		locked = spin_trylock_irqsave(&port->lock, flags);
- 	else
- 		spin_lock_irqsave(&port->lock, flags);
+ 	/* Dispatch an appropriate handler */
+ 	if ((isrstatus & CDNS_UART_IXR_TXEMPTY) == CDNS_UART_IXR_TXEMPTY) {
 -- 
 2.6.3.3.g9bb996a
