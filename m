@@ -1,7 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH LINUX v4 06/13] tty: xuartps: Move request_irq to after setting up the HW
-Date: Sat, 5 Dec 2015 20:39:22 -0800
-Message-ID: <1449376769-13369-7-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH LINUX v4 07/13] tty: xuartps: Keep lock for whole ISR
+Date: Sat, 5 Dec 2015 20:39:23 -0800
+Message-ID: <1449376769-13369-8-git-send-email-soren.brinkmann@xilinx.com>
 References: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,46 +12,27 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Moritz Fischer <moritz.fischer@ettus.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-Request_irq() should be _after_ h/w programming, otherwise an
-interrupt could be triggered and in-progress before the h/w has been
-setup.
+The RX path in the interrupt handler released a lock unnecessarily.
 
-Reported-by: Peter Hurley <peter@hurleysoftware.com>
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 ---
-v4:
- - this patch has been added. Thanks to Peter for pointing it out and providing
-   commit message
----
- drivers/tty/serial/xilinx_uartps.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 6ffd3bbe3e18..1e9053656610 100644
+index 1e9053656610..62224a58056b 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -759,12 +759,7 @@ static void cdns_uart_set_termios(struct uart_port *port,
- static int cdns_uart_startup(struct uart_port *port)
- {
- 	unsigned long flags;
--	unsigned int retval = 0, status = 0;
--
--	retval = request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME,
--								(void *)port);
--	if (retval)
--		return retval;
-+	unsigned int status = 0;
+@@ -265,9 +265,7 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ 			uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
+ 					data, status);
+ 		}
+-		spin_unlock(&port->lock);
+ 		tty_flip_buffer_push(&port->state->port);
+-		spin_lock(&port->lock);
+ 	}
  
- 	spin_lock_irqsave(&port->lock, flags);
- 
-@@ -818,7 +813,7 @@ static int cdns_uart_startup(struct uart_port *port)
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
--	return retval;
-+	return request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME, port);
- }
- 
- /**
+ 	/* Dispatch an appropriate handler */
 -- 
 2.6.3.3.g9bb996a
