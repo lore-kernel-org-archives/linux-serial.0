@@ -1,11 +1,14 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH LINUX v4 00/13] tty: xuartps: Fix lock ups
-Date: Sat, 5 Dec 2015 20:39:16 -0800
-Message-ID: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH LINUX v4 02/13] tty: xuartps: Use spinlock to serialize HW
+ access
+Date: Sat, 5 Dec 2015 20:39:18 -0800
+Message-ID: <1449376769-13369-3-git-send-email-soren.brinkmann@xilinx.com>
+References: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,34 +22,68 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Moritz Fischer <moritz.fischer@ettus.com>, Peter Hurley <peter@hurleysoftware.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-SGksCgpJIHBpY2tlZCB1cCBhbGwgdGhlIHJldmlldyB0YWdzIGZyb20gUGV0ZXIgYW5kIE1vcml0
-eiBhbmQgYWRkcmVzc2VkClBldGVyJ3MgY29tbWVudHMuCk1vc3QgcGF0Y2hlcyBhcmUgdW5jaGFu
-Z2VkIGJ1dCBJIGFkZGVkIHRoZSBpbmZvIFBldGVyIHN1Z2dlc3RlZC9wcm92aWRlZAp0byBzb21l
-IGNvbW1pdCBtZXNzYWdlcy4KVGhlIHBhdGNoZXMgInR0eTogeHVhcnRwczogTW92ZSByZXF1ZXN0
-X2lycSB0byBhZnRlciBzZXR0aW5nIHVwIHRoZSBIVyIsCiJ0dHk6IHh1YXJ0cHM6IEltcHJvdmUg
-c3lzcnEgaGFuZGxpbmciIGFuZCAidHR5OiB4dWFydHBzOiBSZW1vdmUKJ19PRkZTRVQnIHN1ZmZp
-eCBmcm9tICNkZWZpbmVzIiBhcmUgbmV3LCBpbXBsZW1lbnRpbmcgdGhlIHN1Z2dlc3Rpb25zClBl
-dGVyIG1hZGUgaW4gdGhlIHYzIHJldmlldyAoaHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMTUvMTEv
-MjEvMTcyKS4KSSBwcmV0dHkgbXVjaCByZXdyb3RlICJ0dHk6IHh1YXJ0cHM6IFJlZmFjdG9yIElS
-USBoYW5kbGluZyIgKHdhczogInR0eToKeHVhcnRwczogT25seSBoYW5kbGUgUlggSVJRcyB3aGVu
-IFJYIGlzIGVuYWJsZWQiKS4gSW5zdGVhZCBvZiBhZGRpbmcgYQpmbGFnLCB3ZSBub3cgZGlzYWJs
-ZS9lbmFibGUgdGhlIFJYIGludGVycnVwdHMgdG9nZXRoZXIgd2l0aCB0aGUKcmVjZWl2ZXIuIFRo
-YXQgc2hvdWxkIHByZXZlbnQgdGhlIFJYIGxvY2sgdXBzIEkgc2F3LgoKCVRoYW5rcywKCVPDtnJl
-bgoKU8O2cmVuIEJyaW5rbWFubiAoMTMpOgogIHR0eTogeHVhcnRwczogQmVhdXRpZnkgcmVhZC1t
-b2RpZnkgd3JpdGVzCiAgdHR5OiB4dWFydHBzOiBVc2Ugc3BpbmxvY2sgdG8gc2VyaWFsaXplIEhX
-IGFjY2VzcwogIHR0eTogeHVhcnRwczogRG9uJ3QgY29uc2lkZXIgY2lyY3VsYXIgYnVmZmVyIHdo
-ZW4gZW5hYmxpbmcgdHJhbnNtaXR0ZXIKICB0dHk6IHh1YXJ0cHM6IENsZWFyIGludGVycnVwdCBz
-dGF0dXMgcmVnaXN0ZXIgaW4gc2h1dGRvd24KICB0dHk6IHh1YXJ0cHM6IEltcHJvdmUgc3RhcnR1
-cCBmdW5jdGlvbgogIHR0eTogeHVhcnRwczogTW92ZSByZXF1ZXN0X2lycSB0byBhZnRlciBzZXR0
-aW5nIHVwIHRoZSBIVwogIHR0eTogeHVhcnRwczogS2VlcCBsb2NrIGZvciB3aG9sZSBJU1IKICB0
-dHk6IHh1YXJ0cHM6IEFjcXVpcmUgcG9ydCBsb2NrIGZvciBzaHV0ZG93bgogIHR0eTogeHVhcnRw
-czogTW92ZSBSWCBwYXRoIGludG8gaGVscGVyIGZ1bmN0aW9uCiAgdHR5OiB4dWFydHBzOiBSZWZh
-Y3RvciBJUlEgaGFuZGxpbmcKICB0dHk6IHh1YXJ0cHM6IENsZWFudXA6IFJlZm9ybWF0IGlmLWVs
-c2UKICB0dHk6IHh1YXJ0cHM6IEltcHJvdmUgc3lzcnEgaGFuZGxpbmcKICB0dHk6IHh1YXJ0cHM6
-IFJlbW92ZSAnX09GRlNFVCcgc3VmZml4IGZyb20gI2RlZmluZXMKCiBkcml2ZXJzL3R0eS9zZXJp
-YWwveGlsaW54X3VhcnRwcy5jIHwgNDUxICsrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0t
-LS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAyMjQgaW5zZXJ0aW9ucygrKSwgMjI3IGRlbGV0aW9ucygt
-KQoKLS0gCjIuNi4zLjMuZzliYjk5NmEKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0t
-a2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+Instead of disabling the IRQ, use the spin lock to serialize accesses to
+the HW. This protects the driver from interference of non-IRQ callbacks
+with each other and makes the driver more consistent in its
+serialization method.
+
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/serial/xilinx_uartps.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 50d4082d2354..2c98c357d9a0 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -945,12 +945,10 @@ static void cdns_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ #ifdef CONFIG_CONSOLE_POLL
+ static int cdns_uart_poll_get_char(struct uart_port *port)
+ {
+-	u32 imr;
+ 	int c;
++	unsigned long flags;
+ 
+-	/* Disable all interrupts */
+-	imr = readl(port->membase + CDNS_UART_IMR_OFFSET);
+-	writel(imr, port->membase + CDNS_UART_IDR_OFFSET);
++	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	/* Check if FIFO is empty */
+ 	if (readl(port->membase + CDNS_UART_SR_OFFSET) & CDNS_UART_SR_RXEMPTY)
+@@ -959,19 +957,16 @@ static int cdns_uart_poll_get_char(struct uart_port *port)
+ 		c = (unsigned char) readl(
+ 					port->membase + CDNS_UART_FIFO_OFFSET);
+ 
+-	/* Enable interrupts */
+-	writel(imr, port->membase + CDNS_UART_IER_OFFSET);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	return c;
+ }
+ 
+ static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
+ {
+-	u32 imr;
++	unsigned long flags;
+ 
+-	/* Disable all interrupts */
+-	imr = readl(port->membase + CDNS_UART_IMR_OFFSET);
+-	writel(imr, port->membase + CDNS_UART_IDR_OFFSET);
++	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	/* Wait until FIFO is empty */
+ 	while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
+@@ -986,8 +981,7 @@ static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
+ 				CDNS_UART_SR_TXEMPTY))
+ 		cpu_relax();
+ 
+-	/* Enable interrupts */
+-	writel(imr, port->membase + CDNS_UART_IER_OFFSET);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	return;
+ }
+-- 
+2.6.3.3.g9bb996a
