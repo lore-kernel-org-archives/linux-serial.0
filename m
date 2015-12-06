@@ -1,46 +1,57 @@
-From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
-Subject: Re: [PATCH LINUX v3 09/10] tty: xuartps: Only handle RX IRQs when RX
- is enabled
-Date: Sat, 5 Dec 2015 14:19:12 -0800
-Message-ID: <20151205221912.GP4900@xsjsorenbubuntu>
-References: <1448161172-19717-1-git-send-email-soren.brinkmann@xilinx.com>
- <1448161172-19717-10-git-send-email-soren.brinkmann@xilinx.com>
- <56632231.6000000@hurleysoftware.com>
+From: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Subject: [PATCH LINUX v4 06/13] tty: xuartps: Move request_irq to after setting up the HW
+Date: Sat, 5 Dec 2015 20:39:22 -0800
+Message-ID: <1449376769-13369-7-git-send-email-soren.brinkmann@xilinx.com>
+References: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <56632231.6000000@hurleysoftware.com>
+In-Reply-To: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Moritz Fischer <moritz.fischer@ettus.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, 2015-12-05 at 12:43PM -0500, Peter Hurley wrote:
-> On 11/21/2015 09:59 PM, Soren Brinkmann wrote:
-> > Ignore RX-related interrupts if RX is not enabled.
->=20
-> This doesn't look like a safe approach; fast-forward a couple of year=
-s and
-> some is trying to add some feature but can't figure out why no data i=
-s
-> arriving...
->=20
-> What is this trying to solve?
+Request_irq() should be _after_ h/w programming, otherwise an
+interrupt could be triggered and in-progress before the h/w has been
+setup.
 
-I definitely saw two kinds of lock ups. One was on the TX side, that th=
-e
-system tried to print with the transmitter disabled.
+Reported-by: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+---
+v4:
+ - this patch has been added. Thanks to Peter for pointing it out and providing
+   commit message
+---
+ drivers/tty/serial/xilinx_uartps.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-The other on the RX side. I don't recall the details, but the system wa=
-s
-stuck in some RX-related function waiting for data while the receiver
-was disabled. I think my explanation was that some IRQ condition become=
-s
-true and is dispatched to the RX handler even though the receiver isn't
-enabled.
-I guess a better way for solving this would be to disable the IRQs that
-call the RX handler when the receiver is disabled.
-
-	S=C3=B6ren
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 6ffd3bbe3e18..1e9053656610 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -759,12 +759,7 @@ static void cdns_uart_set_termios(struct uart_port *port,
+ static int cdns_uart_startup(struct uart_port *port)
+ {
+ 	unsigned long flags;
+-	unsigned int retval = 0, status = 0;
+-
+-	retval = request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME,
+-								(void *)port);
+-	if (retval)
+-		return retval;
++	unsigned int status = 0;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+@@ -818,7 +813,7 @@ static int cdns_uart_startup(struct uart_port *port)
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+-	return retval;
++	return request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME, port);
+ }
+ 
+ /**
+-- 
+2.6.3.3.g9bb996a
