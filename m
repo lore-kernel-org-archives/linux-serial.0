@@ -1,50 +1,186 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH LINUX v4 08/13] tty: xuartps: Acquire port lock for shutdown
-Date: Sat, 5 Dec 2015 20:39:24 -0800
-Message-ID: <1449376769-13369-9-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH LINUX v4 11/13] tty: xuartps: Cleanup: Reformat if-else
+Date: Sat, 5 Dec 2015 20:39:27 -0800
+Message-ID: <1449376769-13369-12-git-send-email-soren.brinkmann@xilinx.com>
 References: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Moritz Fischer <moritz.fischer@ettus.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>
+Cc: Moritz Fischer <moritz.fischer@ettus.com>, Peter Hurley <peter@hurleysoftware.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Shutting down the UART port can happen while console operations are in
-progress. Holding the port lock serializes these operations and avoids
-the UART HW to be disabled in the middle of console prints.
+Convert an if-else into the more common early return on error, reducing
+the indent level of the happy path.
 
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/tty/serial/xilinx_uartps.c | 124 ++++++++++++++++++-------------------
+ 1 file changed, 62 insertions(+), 62 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 62224a58056b..80248cb46bf6 100644
+index 1229bb3a275e..7afab0c36528 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -821,6 +821,9 @@ static int cdns_uart_startup(struct uart_port *port)
- static void cdns_uart_shutdown(struct uart_port *port)
- {
- 	int status;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
+@@ -203,58 +203,55 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
+ 	isrstatus &= port->read_status_mask;
+ 	isrstatus &= ~port->ignore_status_mask;
  
- 	/* Disable interrupts */
- 	status = readl(port->membase + CDNS_UART_IMR_OFFSET);
-@@ -830,6 +833,9 @@ static void cdns_uart_shutdown(struct uart_port *port)
- 	/* Disable the TX and RX */
- 	writel(CDNS_UART_CR_TX_DIS | CDNS_UART_CR_RX_DIS,
- 			port->membase + CDNS_UART_CR_OFFSET);
+-	if ((isrstatus & CDNS_UART_IXR_TOUT) ||
+-		(isrstatus & CDNS_UART_IXR_RXTRIG)) {
+-		/* Receive Timeout Interrupt */
+-		while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
+-					CDNS_UART_SR_RXEMPTY)) {
+-			u32 data;
+-			char status = TTY_NORMAL;
+-
+-			data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
+-
+-			/* Non-NULL byte after BREAK is garbage (99%) */
+-			if (data && (port->read_status_mask &
+-						CDNS_UART_IXR_BRK)) {
+-				port->read_status_mask &= ~CDNS_UART_IXR_BRK;
+-				port->icount.brk++;
+-				if (uart_handle_break(port))
+-					continue;
+-			}
++	if (!(isrstatus & (CDNS_UART_IXR_TOUT | CDNS_UART_IXR_RXTRIG)))
++		return;
 +
-+	spin_unlock_irqrestore(&port->lock, flags);
++	while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
++				CDNS_UART_SR_RXEMPTY)) {
++		u32 data;
++		char status = TTY_NORMAL;
 +
- 	free_irq(port->irq, port);
++		data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
++
++		/* Non-NULL byte after BREAK is garbage (99%) */
++		if (data && (port->read_status_mask & CDNS_UART_IXR_BRK)) {
++			port->read_status_mask &= ~CDNS_UART_IXR_BRK;
++			port->icount.brk++;
++			if (uart_handle_break(port))
++				continue;
++		}
+ 
+ #ifdef SUPPORT_SYSRQ
+-			/*
+-			 * uart_handle_sysrq_char() doesn't work if
+-			 * spinlocked, for some reason
+-			 */
+-			 if (port->sysrq) {
+-				spin_unlock(&port->lock);
+-				if (uart_handle_sysrq_char(port,
+-							(unsigned char)data)) {
+-					spin_lock(&port->lock);
+-					continue;
+-				}
++		/*
++		 * uart_handle_sysrq_char() doesn't work if
++		 * spinlocked, for some reason
++		 */
++		 if (port->sysrq) {
++			spin_unlock(&port->lock);
++			if (uart_handle_sysrq_char(port, data)) {
+ 				spin_lock(&port->lock);
++				continue;
+ 			}
++			spin_lock(&port->lock);
++		}
+ #endif
+ 
+-			port->icount.rx++;
+-
+-			if (isrstatus & CDNS_UART_IXR_PARITY) {
+-				port->icount.parity++;
+-				status = TTY_PARITY;
+-			} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
+-				port->icount.frame++;
+-				status = TTY_FRAME;
+-			} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
+-				port->icount.overrun++;
+-			}
++		port->icount.rx++;
+ 
+-			uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
+-					 data, status);
++		if (isrstatus & CDNS_UART_IXR_PARITY) {
++			port->icount.parity++;
++			status = TTY_PARITY;
++		} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
++			port->icount.frame++;
++			status = TTY_FRAME;
++		} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
++			port->icount.overrun++;
+ 		}
+-		tty_flip_buffer_push(&port->state->port);
++
++		uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
++				 data, status);
+ 	}
++	tty_flip_buffer_push(&port->state->port);
  }
  
+ /**
+@@ -1422,27 +1419,30 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
+ 		rc = -ENODEV;
+ 		goto err_out_notif_unreg;
+-	} else {
+-		/* Register the port.
+-		 * This function also registers this device with the tty layer
+-		 * and triggers invocation of the config_port() entry point.
+-		 */
+-		port->mapbase = res->start;
+-		port->irq = irq;
+-		port->dev = &pdev->dev;
+-		port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
+-		port->private_data = cdns_uart_data;
+-		cdns_uart_data->port = port;
+-		platform_set_drvdata(pdev, port);
+-		rc = uart_add_one_port(&cdns_uart_uart_driver, port);
+-		if (rc) {
+-			dev_err(&pdev->dev,
+-				"uart_add_one_port() failed; err=%i\n", rc);
+-			goto err_out_notif_unreg;
+-		}
+-		return 0;
+ 	}
+ 
++	/*
++	 * Register the port.
++	 * This function also registers this device with the tty layer
++	 * and triggers invocation of the config_port() entry point.
++	 */
++	port->mapbase = res->start;
++	port->irq = irq;
++	port->dev = &pdev->dev;
++	port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
++	port->private_data = cdns_uart_data;
++	cdns_uart_data->port = port;
++	platform_set_drvdata(pdev, port);
++
++	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
++	if (rc) {
++		dev_err(&pdev->dev,
++			"uart_add_one_port() failed; err=%i\n", rc);
++		goto err_out_notif_unreg;
++	}
++
++	return 0;
++
+ err_out_notif_unreg:
+ #ifdef CONFIG_COMMON_CLK
+ 	clk_notifier_unregister(cdns_uart_data->uartclk,
 -- 
 2.6.3.3.g9bb996a
