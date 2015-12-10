@@ -1,87 +1,87 @@
-From: "Wang, Annie" <Annie.Wang@amd.com>
-Subject: RE: [PATCH 4/9] dmaengine: pl330: add new items for pl330 private
- data
-Date: Thu, 10 Dec 2015 06:38:09 +0000
-Message-ID: <BLUPR12MB0433B81BB0AEB2D84505B55881E90@BLUPR12MB0433.namprd12.prod.outlook.com>
-References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
- <1449199466-6081-5-git-send-email-annie.wang@amd.com>
- <20151210040909.GM1854@localhost>
+From: Noam Camus <noamc@ezchip.com>
+Subject: RE: [PATCH-v8] serial: 8250_dw: Add support for big-endian MMIO
+ accesses
+Date: Thu, 10 Dec 2015 07:26:42 +0000
+Message-ID: <DB5PR02MB1141B69C5E327950511F4590D6E90@DB5PR02MB1141.eurprd02.prod.outlook.com>
+References: <1444113590-19722-1-git-send-email-noamc@ezchip.com>
+ <1445158908-9610-1-git-send-email-noamc@ezchip.com>
+ <20151209131939.GA14285@kuha.fi.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20151210040909.GM1854@localhost>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20151209131939.GA14285@kuha.fi.intel.com>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Vinod Koul <vinod.koul@intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Borislav Petkov <bp@alien8.de>, "Huang, Ray" <Ray.Huang@amd.com>, "Wan, Vincent" <Vincent.Wan@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, "Li, Tony" <Tony.Li@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "fransklaver@gmail.com" <fransklaver@gmail.com>, "Alexey.Brodkin@synopsys.com" <Alexey.Brodkin@synopsys.com>, "vgupta@synopsys.com" <vgupta@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
 
->-----Original Message-----
->From: Vinod Koul [mailto:vinod.koul@intel.com]
->Sent: Thursday, December 10, 2015 12:09 PM
->To: Wang, Annie
->Cc: Mika Westerberg; Joerg Roedel; Greg Kroah-Hartman; Rafael J. Wysocki;
->linux-acpi@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
->serial@vger.kernel.org; dmaengine@vger.kernel.org; iommu@lists.linux-
->foundation.org; Borislav Petkov; Huang, Ray; Wan, Vincent; Xue, Ken; Li, Tony
->Subject: Re: [PATCH 4/9] dmaengine: pl330: add new items for pl330 private data
->
->On Fri, Dec 04, 2015 at 11:24:21AM +0800, Wang Hongcheng wrote:
->> has_no_cap_mask means this device has no preset cap mask.
->> mcbuf_sz means bytes to allocate for MC buffer.
->
->MC ?
-Size of MicroCode buffers for each channel. I will update the comment.
-
->> flags is for irq sharing, default is non-shared, in AMD Carrizo, pl330
->> shares IRQ with its corresponding UART device.
->>
->> Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
->> ---
->>  drivers/acpi/acpi_apd.c    | 13 ++++++++++++-
->>  drivers/dma/pl330.c        | 19 +++++++++++++------
->>  include/linux/amba/pl330.h |  3 +++
->>  3 files changed, 28 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c index
->> eb3316a..7a582f5 100644
->> --- a/drivers/acpi/acpi_apd.c
->> +++ b/drivers/acpi/acpi_apd.c
->> @@ -21,6 +21,7 @@
->>  #include <linux/amba/bus.h>
->>  #include <linux/kernel.h>
->>  #include <linux/sizes.h>
->> +#include <linux/amba/pl330.h>
->>  #include <linux/interrupt.h>
->>
->>  #include "internal.h"
->> @@ -35,6 +36,16 @@ struct apd_private_data;
->>  #define ACPI_APD_SYSFS	BIT(0)
->>  #define ACPI_APD_PM	BIT(1)
->>
->> +static u8 peri_id[2] = { 0, 1 };
->> +
->> +static struct dma_pl330_platdata amd_pl330 = {
->> +	.nr_valid_peri = 2,
->> +	.peri_id = peri_id,
->> +	.has_no_cap_mask = true,
->> +	.mcbuf_sz = 0,
->> +	.flags = IRQF_SHARED,
->> +};
->
->Why not DT or ACPI for this?
->
->--
->~Vinod
-
-We choose to use private data, as pl330 already has  struct dma_pl330_platdata. 
-Physically DMA share ACPI device with UART, however, BIOS believes DMA and UART is one device.
-We can't  get irq share info from ACPI. And we don't use DT. 
-
-Regards,
-Annie
+>From: Heikki Krogerus [mailto:heikki.krogerus@linux.intel.com] 
+>Sent: Wednesday, December 09, 2015 3:20 PM
 
 
+>> @@ -171,7 +174,8 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
+>>  			if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
+>>  				return;
+>>  			dw8250_force_idle(p);
+>> -			writel(value, p->membase + (UART_LCR << p->regshift));
+>> +			d->serial_out(value,
+>> +				      p->membase + (UART_LCR << p->regshift));
+>>  		}
 
+>.. The way I see it, this is the only place where you would really need the new private serial_in/out hooks, so why not just check the >iotype here and based on that use writeb/writel/iowrite32be or what ever ..
 
+In previous versions (V2) Greg dis-liked using iotype here this is why I added the private serial_in/serial_out
+
+>>  static void dw8250_setup_port(struct uart_port *p)  {
+>>  	struct uart_8250_port *up = up_to_u8250p(p);
+>> +	struct dw8250_data *d = p->private_data;
+>>  	u32 reg;
+>>  
+>>  	/*
+>>  	 * If the Component Version Register returns zero, we know that
+>>  	 * ADDITIONAL_FEATURES are not enabled. No need to go any further.
+>>  	 */
+>> -	reg = readl(p->membase + DW_UART_UCV);
+>> +	reg = d->serial_in(p->membase + DW_UART_UCV);
+>>  	if (!reg)
+>>  		return;
+>>  
+>>  	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
+>>  		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
+>>  
+>> -	reg = readl(p->membase + DW_UART_CPR);
+>> +	reg = d->serial_in(p->membase + DW_UART_CPR);
+>>  	if (!reg)
+>>  		return;
+
+>.. Here you could as well replace the direct readl calls with serial_port_in calls.
+Again, if you meant here for using iotype it was rejected.
+
+>> @@ -390,9 +434,19 @@ static int dw8250_probe(struct platform_device 
+>> *pdev)
+>>  
+>>  	err = device_property_read_u32(p->dev, "reg-io-width", &val);
+>>  	if (!err && val == 4) {
+>> -		p->iotype = UPIO_MEM32;
+>> -		p->serial_in = dw8250_serial_in32;
+>> -		p->serial_out = dw8250_serial_out32;
+>> +		p->iotype = of_device_is_big_endian(p->dev->of_node) ?
+>> +			    UPIO_MEM32BE : UPIO_MEM32;
+
+>If this has to be tied to DT, do this check in dw8250_quirks.
+Thanks , I will move this to dw8250_quirks.
+
+>>  	dw8250_quirks(p, data);
+>>  
+>> +	data->serial_in = _dw8250_serial_in32;
+>> +	data->serial_out = _dw8250_serial_out32;
+
+>I don't think I understand what is going on here? You would never actually even use _dw8250_serial_in32be/out32be, no?
+
+>Maybe I'm misunderstanding something.
+This is a default in case  where "reg-io-width != 4".
+What is the case you see that they are not used? (_dw8250_serial_in32be is used from dw8250_setup_port just few lines below)
+
+-Noam
