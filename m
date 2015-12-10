@@ -1,42 +1,77 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 00/28] MIPS Boston board support
-Date: Thu, 10 Dec 2015 17:26:31 +0100
-Message-ID: <CACRpkdb2YhSbaYUXh4Dz7juObHxmWLc8Gj6UmkJ=Nv69UNfaPA@mail.gmail.com>
-References: <1448900513-20856-1-git-send-email-paul.burton@imgtec.com>
-        <20151130163413.GB1929@sirena.org.uk>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH LINUX v4 06/13] tty: xuartps: Move request_irq to after
+ setting up the HW
+Date: Thu, 10 Dec 2015 13:41:06 -0800
+Message-ID: <5669F172.6020503@hurleysoftware.com>
+References: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
+ <1449376769-13369-7-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20151130163413.GB1929@sirena.org.uk>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Mark Brown <broonie@kernel.org>
-Cc: Paul Burton <paul.burton@imgtec.com>, Linux MIPS <linux-mips@linux-mips.org>, Arnd Bergmann <arnd@arndb.de>, Joshua Kinard <kumba@gentoo.org>, Alessandro Zummo <a.zummo@towertech.it>, Jiri Slaby <jslaby@suse.com>, Bjorn Helgaas <bhelgaas@google.com>, Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>, Kumar Gala <galak@codeaurora.org>, Yijing Wang <wangyijing@huawei.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, John Crispin <blogic@openwrt.org>, Jayachandran C <jchandra@broadcom.com>, "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Ray Jui <rjui@broadcom.com>, Richard Cochran <richardcochran@gmail.com>, Tejun Heo <tj@kernel.org>, Michal
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1449376769-13369-7-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Moritz Fischer <moritz.fischer@ettus.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Nov 30, 2015 at 5:34 PM, Mark Brown <broonie@kernel.org> wrote:
-> On Mon, Nov 30, 2015 at 04:21:25PM +0000, Paul Burton wrote:
->> This series introduces support for the Imagination Technologies MIPS
->> Boston development board. Boston is an FPGA-based development board
->> akin to the much older Malta board, built around a Xilinx FPGA running
->> a MIPS CPU & other logic including a PCIe root port connected to an
->> Intel EG20T Platform Controller Hub. This provides a base set of
->> peripherals including SATA, USB, SD/MMC, ethernet, I2C & GPIOs. PCIe
->> slots are also present for expansion.
->
-> This is an insanely big CC list :(
->
-> What are the interdependencies here - does this really need to be one
-> patch series or can the individual driver changes go in separately?
+On 12/05/2015 08:39 PM, Soren Brinkmann wrote:
+> Request_irq() should be _after_ h/w programming, otherwise an
+> interrupt could be triggered and in-progress before the h/w has been
+> setup.
 
-I took the two GPIO patches and ran off with them at least.
+Slight misunderstanding. My fault; I should have been more explicit.
 
-Yours,
-Linus Walleij
+1. Any setup necessary for the isr not to be confused and misdirect spurious
+   interrupts (or hang) should be before installing the isr with request_irq()
+   None of this code should trigger an interrupt.
+2. Clear pending interrupts
+3. Install the isr with request_irq()
+4. Enable interrupts
+
+For extra safety, first disable interrupts before starting h/w programming.
+
+I would do the v5 series in the same order as the v3 series only up to
+what I reviewed. Then do another series with the remainder plus new changes, ok?
+
+Regards,
+Peter Hurley
+
+> Reported-by: Peter Hurley <peter@hurleysoftware.com>
+> Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+> ---
+> v4:
+>  - this patch has been added. Thanks to Peter for pointing it out and providing
+>    commit message
+> ---
+>  drivers/tty/serial/xilinx_uartps.c | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index 6ffd3bbe3e18..1e9053656610 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -759,12 +759,7 @@ static void cdns_uart_set_termios(struct uart_port *port,
+>  static int cdns_uart_startup(struct uart_port *port)
+>  {
+>  	unsigned long flags;
+> -	unsigned int retval = 0, status = 0;
+> -
+> -	retval = request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME,
+> -								(void *)port);
+> -	if (retval)
+> -		return retval;
+> +	unsigned int status = 0;
+>  
+>  	spin_lock_irqsave(&port->lock, flags);
+>  
+> @@ -818,7 +813,7 @@ static int cdns_uart_startup(struct uart_port *port)
+>  
+>  	spin_unlock_irqrestore(&port->lock, flags);
+>  
+> -	return retval;
+> +	return request_irq(port->irq, cdns_uart_isr, 0, CDNS_UART_NAME, port);
+>  }
+>  
+>  /**
+> 
