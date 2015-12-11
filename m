@@ -1,35 +1,34 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 4/9] dmaengine: pl330: add new items for pl330 private data
-Date: Fri, 11 Dec 2015 15:56:38 +0200
-Message-ID: <CAHp75Vf1pt5YvkxmwKGvJjjuJ9xF1y4M1XYEx_yGfUHpeA7iUA@mail.gmail.com>
-References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
-	<1449199466-6081-5-git-send-email-annie.wang@amd.com>
-	<20151210040909.GM1854@localhost>
-	<BLUPR12MB0433B81BB0AEB2D84505B55881E90@BLUPR12MB0433.namprd12.prod.outlook.com>
-	<20151211092909.GW1854@localhost>
+From: Bjorn Andersson <bjorn@kryo.se>
+Subject: Re: [PATCH] serial: earlycon: Initialize uart_port spinlock
+Date: Fri, 11 Dec 2015 08:28:27 -0800
+Message-ID: <CAJAp7Ogv-2y2WTewtYK0JwEYvNkh+u8U91MfxpPLoz__bcsT2Q@mail.gmail.com>
+References: <1449796126-14906-1-git-send-email-bjorn.andersson@sonymobile.com>
+	<CAL_Jsq+Tam+vo46LvPUqJ_o6EueBsYJ4RQx=3MbhD+AZTNHNWg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20151211092909.GW1854@localhost>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Vinod Koul <vinod.koul@intel.com>
-Cc: "Wang, Annie" <Annie.Wang@amd.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Borislav Petkov <bp@alien8.de>, "Huang, Ray" <Ray.Huang@amd.com>, "Wan, Vincent" <Vincent.Wan@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, "Li, Tony" <Tony.Li@amd.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAL_Jsq+Tam+vo46LvPUqJ_o6EueBsYJ4RQx=3MbhD+AZTNHNWg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Bjorn Andersson <bjorn.andersson@sonymobile.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Dec 11, 2015 at 11:29 AM, Vinod Koul <vinod.koul@intel.com> wrote:
-> On Thu, Dec 10, 2015 at 06:38:09AM +0000, Wang, Annie wrote:
->> >
->> >Why not DT or ACPI for this?
->> >
->> We choose to use private data, as pl330 already has  struct dma_pl330_platdata.
->> Physically DMA share ACPI device with UART, however, BIOS believes DMA and UART is one device.
->> We can't  get irq share info from ACPI. And we don't use DT.
+On Thu, Dec 10, 2015 at 6:35 PM, Rob Herring <robh@kernel.org> wrote:
+> On Thu, Dec 10, 2015 at 7:08 PM, Bjorn Andersson
+> <bjorn.andersson@sonymobile.com> wrote:
+>> Initialize the uart_port spinlock of earlycon to avoid the BUG() when
+>> booting with spinlock debug enabled.
 >>
-> That should be then a MFD device
+>> Signed-off-by: Bjorn Andersson <bjorn.andersson@sonymobile.com>
+>
+> Same patch[1] should already be in Greg's queue.
+>
+> Rob
+>
+> [1] https://lkml.org/lkml/2015/11/27/165
+>
 
-And for me seems like acpi_amba and drivers shall utilize unified
-device property API.
+Thanks, missed that one.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Regards,
+Bjorn
