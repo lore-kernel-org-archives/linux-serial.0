@@ -1,7 +1,7 @@
 From: Noam Camus <noamc@ezchip.com>
-Subject: [PATCH v9 2/3] serial: 8250_dw: Add support for big-endian MMIO accesses
-Date: Sat, 12 Dec 2015 19:18:26 +0200
-Message-ID: <1449940707-17633-3-git-send-email-noamc@ezchip.com>
+Subject: [PATCH v9 3/3] serial: 8250_dw: Do not use readl/writel before checking port iotype
+Date: Sat, 12 Dec 2015 19:18:27 +0200
+Message-ID: <1449940707-17633-4-git-send-email-noamc@ezchip.com>
 References: <1449940707-17633-1-git-send-email-noamc@ezchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -14,56 +14,50 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Noam Camus <noamc@ezchip.com>
 
-Add support for UPIO_MEM32BE in addition to UPIO_MEM32.
-
-For big endian we use 2 new accessors similar to little endian,
-called dw8250_serial_out32be() and dw8250_serial_in32be().
+Direct call to readl()/writel() is checked against iotype
+and in case of UPIO_MEM32BE we use ioread32be()/iowrite32be()
+instead of them.
 
 Signed-off-by: Noam Camus <noamc@ezchip.com>
 ---
- drivers/tty/serial/8250/8250_dw.c |   23 +++++++++++++++++++++++
- 1 files changed, 23 insertions(+), 0 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c |   12 ++++++++++--
+ 1 files changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index ffe5e0c..92c4a9b 100644
+index 92c4a9b..30810ac 100644
 --- a/drivers/tty/serial/8250/8250_dw.c
 +++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -182,6 +182,24 @@ static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
- 	return dw8250_modify_msr(p, offset, value);
- }
- 
-+static void dw8250_serial_out32be(struct uart_port *p, int offset, int value)
-+{
-+	struct dw8250_data *d = p->private_data;
-+
-+	iowrite32be(value, p->membase + (offset << p->regshift));
-+
-+	if (offset == UART_LCR && !d->uart_16550_compatible)
-+		dw8250_check_lcr(p, value);
-+}
-+
-+static unsigned int dw8250_serial_in32be(struct uart_port *p, int offset)
-+{
-+       unsigned int value = ioread32be(p->membase + (offset << p->regshift));
-+
-+       return dw8250_modify_msr(p, offset, value);
-+}
-+
-+
- static int dw8250_handle_irq(struct uart_port *p)
- {
- 	struct dw8250_data *d = p->private_data;
-@@ -276,6 +294,11 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- 			data->skip_autocfg = true;
- 		}
+@@ -114,6 +114,8 @@ static void dw8250_check_lcr(struct uart_port *p, int value)
+ #else
+ 		if (p->iotype == UPIO_MEM32)
+ 			writel(value, offset);
++		else if (p->iotype == UPIO_MEM32BE)
++			iowrite32be(value, offset);
+ 		else
+ 			writeb(value, offset);
  #endif
-+		if (of_device_is_big_endian(p->dev->of_node)) {
-+			p->iotype = UPIO_MEM32BE;
-+			p->serial_in = dw8250_serial_in32be;
-+			p->serial_out = dw8250_serial_out32be;
-+		}
- 	} else if (has_acpi_companion(p->dev)) {
- 		p->iotype = UPIO_MEM32;
- 		p->regshift = 2;
+@@ -327,14 +329,20 @@ static void dw8250_setup_port(struct uart_port *p)
+ 	 * If the Component Version Register returns zero, we know that
+ 	 * ADDITIONAL_FEATURES are not enabled. No need to go any further.
+ 	 */
+-	reg = readl(p->membase + DW_UART_UCV);
++	if (p->iotype == UPIO_MEM32BE)
++		reg = ioread32be(p->membase + DW_UART_UCV);
++	else
++		reg = readl(p->membase + DW_UART_UCV);
+ 	if (!reg)
+ 		return;
+ 
+ 	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
+ 		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
+ 
+-	reg = readl(p->membase + DW_UART_CPR);
++	if (p->iotype == UPIO_MEM32BE)
++		reg = ioread32be(p->membase + DW_UART_CPR);
++	else
++		reg = readl(p->membase + DW_UART_CPR);
+ 	if (!reg)
+ 		return;
+ 
 -- 
 1.7.1
