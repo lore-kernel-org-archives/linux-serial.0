@@ -1,55 +1,95 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 00/25] serial: sh-sci: Add external clock and BRG Support
-Date: Sun, 13 Dec 2015 10:09:58 +0100
-Message-ID: <CAMuHMdUtkyUbVDNBcrUVWj=FE=tO8x522Krk2c4q-7UAXe=P0g@mail.gmail.com>
-References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
-	<CAMuHMdVGni+uTcFzMwnjJ2R_K-FiHpzeEioMMmqwXzdnOYu30g@mail.gmail.com>
-	<20151213064348.GC16326@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: DengChao <chao.deng@linaro.org>
+Subject: [PATCH] serial:bfin-uart:Remove 'struct timeval'
+Date: Sun, 13 Dec 2015 18:14:57 +0800
+Message-ID: <1450001697-5015-1-git-send-email-chao.deng@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151213064348.GC16326@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: sonic.zhang@analog.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: chao.deng@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+The bfin-uart code uses real time with struct timeval. This will
+cause problems on 32-bit architectures in 2038 when time_t
+overflows.
+Since the code just needs delta value of time, it is not
+necessary to record them in real time.
+This patch changes the code to use the monotonic time instead,
+replaces struct timeval and do_gettimeofday() with u64 and
+ktime_get_ns().
 
-On Sun, Dec 13, 2015 at 7:43 AM, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> On Fri, Nov 20, 2015 at 10:09:24AM +0100, Geert Uytterhoeven wrote:
->> On Thu, Nov 19, 2015 at 7:38 PM, Geert Uytterhoeven
->> <geert+renesas@glider.be> wrote:
->> > This patch series adds support to the Renesas SCI serial driver for
->> >   - the optional external clock on (H)SCI(F) and some SCIFA, where this
->> >     pin can serve as a clock input,
->> >   - the optional clock sources for the Baud Rate Generator for External
->> >     Clock (BRG), as found on some SCIF variants and on HSCIF.
->> > Using external clocks increases the range and accuracy of supported baud
->> > rates. Please see the descriptions of the DTS patches for more detailed
->> > information regarding the impact on the supported platforms.
->>
->> For the consumers: I've pushed this (incl. the dependencies and a few
->> WIP patches) to the scif-brg branch of my renesas-drivers repo.
->
-> I don't know what I can do with this series given the dependancies, but
-> if it helps, you can add:
->         Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> to the serial patches and take them through what ever tree you want to.
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: DengChao <chao.deng@linaro.org>
+---
+ drivers/tty/serial/bfin_uart.c | 29 +++++++++++++----------------
+ 1 file changed, 13 insertions(+), 16 deletions(-)
 
-Thanks for your ackes, they make (my) life a bit simpler!
-
-I was going to post an updated version tomorrow. I will include a list of
-merge options.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+index ae3cf94..1270cc4 100644
+--- a/drivers/tty/serial/bfin_uart.c
++++ b/drivers/tty/serial/bfin_uart.c
+@@ -213,7 +213,7 @@ static void bfin_serial_stop_rx(struct uart_port *port)
+ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+ {
+ 	unsigned int status, ch, flg;
+-	static struct timeval anomaly_start = { .tv_sec = 0 };
++	static u64 anomaly_start;
+ 
+ 	status = UART_GET_LSR(uart);
+ 	UART_CLEAR_LSR(uart);
+@@ -246,27 +246,24 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+ 		 * character time +/- some percent.  So 1.5 sounds good.  All other
+ 		 * Blackfin families operate properly.  Woo.
+ 		 */
+-		if (anomaly_start.tv_sec) {
+-			struct timeval curr;
+-			suseconds_t usecs;
++		if (anomaly_start > 0) {
++			u64 curr, nsecs, threshold_ns;
+ 
+ 			if ((~ch & (~ch + 1)) & 0xff)
+ 				goto known_good_char;
+ 
+-			do_gettimeofday(&curr);
+-			if (curr.tv_sec - anomaly_start.tv_sec > 1)
++			curr = ktime_get_ns();
++			nsecs = curr - anomaly_start;
++			if (nsecs >> 32)
+ 				goto known_good_char;
+-
+-			usecs = 0;
+-			if (curr.tv_sec != anomaly_start.tv_sec)
+-				usecs += USEC_PER_SEC;
+-			usecs += curr.tv_usec - anomaly_start.tv_usec;
+-
+-			if (usecs > UART_GET_ANOMALY_THRESHOLD(uart))
++
++			threshold_ns = UART_GET_ANOMALY_THRESHOLD(uart)
++							* NSEC_PER_USEC;
++			if (nsecs > threshold_ns)
+ 				goto known_good_char;
+ 
+ 			if (ch)
+-				anomaly_start.tv_sec = 0;
++				anomaly_start = 0;
+ 			else
+ 				anomaly_start = curr;
+ 
+@@ -274,14 +271,14 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
+ 
+  known_good_char:
+ 			status &= ~BI;
+-			anomaly_start.tv_sec = 0;
++			anomaly_start = 0;
+ 		}
+ 	}
+ 
+ 	if (status & BI) {
+ 		if (ANOMALY_05000363)
+ 			if (bfin_revid() < 5)
+-				do_gettimeofday(&anomaly_start);
++				anomaly_start = ktime_get_ns();
+ 		uart->port.icount.brk++;
+ 		if (uart_handle_break(&uart->port))
+ 			goto ignore_char;
+-- 
+1.9.1
