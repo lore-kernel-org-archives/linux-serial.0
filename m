@@ -1,95 +1,44 @@
-From: DengChao <chao.deng@linaro.org>
-Subject: [PATCH] serial:bfin-uart:Remove 'struct timeval'
-Date: Sun, 13 Dec 2015 18:14:57 +0800
-Message-ID: <1450001697-5015-1-git-send-email-chao.deng@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: sonic.zhang@analog.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: chao.deng@linaro.org
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [PATCH] tty: amba-pl011: add support for 32-bit register access
+ for earlycon
+Date: Sun, 13 Dec 2015 09:34:20 -0600
+Message-ID: <566D8FFC.7080704@codeaurora.org>
+References: <1446855503-25881-1-git-send-email-timur@codeaurora.org>
+ <20151213060643.GA30667@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20151213060643.GA30667@kroah.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <greg@kroah.com>
+Cc: peter@hurleysoftware.com, andre.przywara@arm.com, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, linux-serial@vger.kernel.org, jslaby@suse.com, rmk+kernel@arm.linux.org.uk, jun.nie@linaro.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The bfin-uart code uses real time with struct timeval. This will
-cause problems on 32-bit architectures in 2038 when time_t
-overflows.
-Since the code just needs delta value of time, it is not
-necessary to record them in real time.
-This patch changes the code to use the monotonic time instead,
-replaces struct timeval and do_gettimeofday() with u64 and
-ktime_get_ns().
+Greg Kroah-Hartman wrote:
+>> >
+>> >Example:
+>> >
+>> >	earlycon=pl011,mmio32,0x3ced1000
+>> >
+>> >Signed-off-by: Timur Tabi<timur@codeaurora.org>
+>> >---
+>> >
+>> >This patch applies on top of Russell's 12-part amba-pl011.c patchset.
+> Which I didn't apply, so can you resend this after he resends his?
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: DengChao <chao.deng@linaro.org>
----
- drivers/tty/serial/bfin_uart.c | 29 +++++++++++++----------------
- 1 file changed, 13 insertions(+), 16 deletions(-)
+Yes, I will resend all of my pl011-releated patches after Russell's 
+patches are reworked and accepted.
 
-diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
-index ae3cf94..1270cc4 100644
---- a/drivers/tty/serial/bfin_uart.c
-+++ b/drivers/tty/serial/bfin_uart.c
-@@ -213,7 +213,7 @@ static void bfin_serial_stop_rx(struct uart_port *port)
- static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
- {
- 	unsigned int status, ch, flg;
--	static struct timeval anomaly_start = { .tv_sec = 0 };
-+	static u64 anomaly_start;
- 
- 	status = UART_GET_LSR(uart);
- 	UART_CLEAR_LSR(uart);
-@@ -246,27 +246,24 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
- 		 * character time +/- some percent.  So 1.5 sounds good.  All other
- 		 * Blackfin families operate properly.  Woo.
- 		 */
--		if (anomaly_start.tv_sec) {
--			struct timeval curr;
--			suseconds_t usecs;
-+		if (anomaly_start > 0) {
-+			u64 curr, nsecs, threshold_ns;
- 
- 			if ((~ch & (~ch + 1)) & 0xff)
- 				goto known_good_char;
- 
--			do_gettimeofday(&curr);
--			if (curr.tv_sec - anomaly_start.tv_sec > 1)
-+			curr = ktime_get_ns();
-+			nsecs = curr - anomaly_start;
-+			if (nsecs >> 32)
- 				goto known_good_char;
--
--			usecs = 0;
--			if (curr.tv_sec != anomaly_start.tv_sec)
--				usecs += USEC_PER_SEC;
--			usecs += curr.tv_usec - anomaly_start.tv_usec;
--
--			if (usecs > UART_GET_ANOMALY_THRESHOLD(uart))
-+
-+			threshold_ns = UART_GET_ANOMALY_THRESHOLD(uart)
-+							* NSEC_PER_USEC;
-+			if (nsecs > threshold_ns)
- 				goto known_good_char;
- 
- 			if (ch)
--				anomaly_start.tv_sec = 0;
-+				anomaly_start = 0;
- 			else
- 				anomaly_start = curr;
- 
-@@ -274,14 +271,14 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
- 
-  known_good_char:
- 			status &= ~BI;
--			anomaly_start.tv_sec = 0;
-+			anomaly_start = 0;
- 		}
- 	}
- 
- 	if (status & BI) {
- 		if (ANOMALY_05000363)
- 			if (bfin_revid() < 5)
--				do_gettimeofday(&anomaly_start);
-+				anomaly_start = ktime_get_ns();
- 		uart->port.icount.brk++;
- 		if (uart_handle_break(&uart->port))
- 			goto ignore_char;
 -- 
-1.9.1
+Sent by an employee of the Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the
+Code Aurora Forum, hosted by The Linux Foundation.
