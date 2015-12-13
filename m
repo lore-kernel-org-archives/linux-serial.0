@@ -1,200 +1,55 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 6/9] drivers: tty: 68328serial.c: Use tabs for indentation
-Date: Sat, 12 Dec 2015 23:09:28 -0800
-Message-ID: <20151213070928.GA16722@kroah.com>
-References: <1449830170-15096-1-git-send-email-frederik.voelkel@fau.de>
- <1449830170-15096-7-git-send-email-frederik.voelkel@fau.de>
- <20151213070800.GA3832@kroah.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 00/25] serial: sh-sci: Add external clock and BRG Support
+Date: Sun, 13 Dec 2015 10:09:58 +0100
+Message-ID: <CAMuHMdUtkyUbVDNBcrUVWj=FE=tO8x522Krk2c4q-7UAXe=P0g@mail.gmail.com>
+References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
+	<CAMuHMdVGni+uTcFzMwnjJ2R_K-FiHpzeEioMMmqwXzdnOYu30g@mail.gmail.com>
+	<20151213064348.GC16326@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20151213070800.GA3832@kroah.com>
+In-Reply-To: <20151213064348.GC16326@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Frederik =?iso-8859-1?Q?V=F6lkel?= <frederik.voelkel@fau.de>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-kernel@i4.cs.fau.de, Lukas Braun <lukas.braun@fau.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Dec 12, 2015 at 11:08:00PM -0800, Greg KH wrote:
-> On Fri, Dec 11, 2015 at 11:36:06AM +0100, Frederik V=F6lkel wrote:
-> > The patch replaces the spaces used for indentation at some points w=
-ith
-> > tabs.
-> >=20
-> > Signed-off-by: Frederik V=F6lkel <frederik.voelkel@fau.de>
-> > Signed-off-by: Lukas Braun <lukas.braun@fau.de>
-> > ---
-> >  drivers/tty/serial/68328serial.c | 82 ++++++++++++++++++++--------=
-------------
-> >  1 file changed, 41 insertions(+), 41 deletions(-)
-> >=20
-> > diff --git a/drivers/tty/serial/68328serial.c b/drivers/tty/serial/=
-68328serial.c
-> > index 0982c1a..22f52e0 100644
-> > --- a/drivers/tty/serial/68328serial.c
-> > +++ b/drivers/tty/serial/68328serial.c
-> > @@ -228,17 +228,17 @@ static int rs_put_char(char ch)
-> >  	unsigned long flags;
-> >  	int loops =3D 0;
-> > =20
-> > -        local_irq_save(flags);
-> > +	local_irq_save(flags);
-> > =20
-> >  	while (!(UTX & UTX_TX_AVAIL) && (loops < 1000)) {
-> > -        	loops++;
-> > -        	udelay(5);
-> > -        }
-> > +		loops++;
-> > +		udelay(5);
-> > +	}
-> > =20
-> >  	UTX_TXDATA =3D ch;
-> > -        udelay(5);
-> > -        local_irq_restore(flags);
-> > -        return 1;
-> > +	udelay(5);
-> > +	local_irq_restore(flags);
-> > +	return 1;
-> >  }
-> > =20
-> >  static void rs_start(struct tty_struct *tty)
-> > @@ -268,7 +268,7 @@ static void receive_chars(struct m68k_serial *i=
-nfo, unsigned short rx)
-> > =20
-> >  	/*
-> >  	 * This do { } while() loop will get ALL chars out of Rx FIFO=20
-> > -         */
-> > +	 */
-> >  #ifndef CONFIG_XCOPILOT_BUGS
-> >  	do {
-> >  #endif=09
-> > @@ -400,7 +400,7 @@ static int startup(struct m68k_serial *info, st=
-ruct tty_struct *tty)
-> >  	 */
-> >  #ifdef USE_INTS
-> >  	uart->ustcnt =3D USTCNT_UEN | USTCNT_RXEN |=20
-> > -                 USTCNT_RX_INTR_MASK | USTCNT_TX_INTR_MASK;
-> > +		USTCNT_RX_INTR_MASK | USTCNT_TX_INTR_MASK;
-> >  #else
-> >  	uart->ustcnt =3D USTCNT_UEN | USTCNT_RXEN | USTCNT_RX_INTR_MASK;
-> >  #endif
-> > @@ -473,24 +473,24 @@ struct {
-> >  };
-> >  #else
-> >   hw_baud_table[18] =3D {
-> > -                 {0, 0}, /* 0 */
-> > -                 {0, 0}, /* 50 */
-> > -                 {0, 0}, /* 75 */
-> > -                 {0, 0}, /* 110 */
-> > -                 {0, 0}, /* 134 */
-> > -                 {0, 0}, /* 150 */
-> > -                 {0, 0}, /* 200 */
-> > -                 {0, 0}, /* 300 */
-> > -                 {7, 0x26}, /* 600 */
-> > -                 {6, 0x26}, /* 1200 */
-> > -                 {0, 0}, /* 1800 */
-> > -                 {5, 0x26}, /* 2400 */
-> > -                 {4, 0x26}, /* 4800 */
-> > -                 {3, 0x26}, /* 9600 */
-> > -                 {2, 0x26}, /* 19200 */
-> > -                 {1, 0x26}, /* 38400 */
-> > -                 {0, 0x26}, /* 57600 */
-> > -                 {1, 0x38}, /* 115200 */
-> > +	{0, 0}, /* 0 */
-> > +	{0, 0}, /* 50 */
-> > +	{0, 0}, /* 75 */
-> > +	{0, 0}, /* 110 */
-> > +	{0, 0}, /* 134 */
-> > +	{0, 0}, /* 150 */
-> > +	{0, 0}, /* 200 */
-> > +	{0, 0}, /* 300 */
-> > +	{7, 0x26}, /* 600 */
-> > +	{6, 0x26}, /* 1200 */
-> > +	{0, 0}, /* 1800 */
-> > +	{5, 0x26}, /* 2400 */
-> > +	{4, 0x26}, /* 4800 */
-> > +	{3, 0x26}, /* 9600 */
-> > +	{2, 0x26}, /* 19200 */
-> > +	{1, 0x26}, /* 38400 */
-> > +	{0, 0x26}, /* 57600 */
-> > +	{1, 0x38}, /* 115200 */
-> >  };=20
-> >  #endif
-> >  /* rate =3D 1036800 / ((65 - prescale) * (1<<divider)) */
-> > @@ -516,9 +516,9 @@ static void change_speed(struct m68k_serial *in=
-fo, struct tty_struct *tty)
-> >  	uart->ustcnt =3D ustcnt & ~USTCNT_TXEN;
-> > =20
-> >  	i =3D cflag & CBAUD;
-> > -        if (i & CBAUDEX) {
-> > -                i =3D (i & ~CBAUDEX) + B38400;
-> > -        }
-> > +	if (i & CBAUDEX) {
-> > +		i =3D (i & ~CBAUDEX) + B38400;
-> > +	}
-> > =20
-> >  	uart->ubaud =3D PUT_FIELD(UBAUD_DIVIDE,    hw_baud_table[i].divis=
-or) |=20
-> >  		PUT_FIELD(UBAUD_PRESCALER, hw_baud_table[i].prescale);
-> > @@ -907,16 +907,16 @@ static int get_lsr_info(struct m68k_serial *i=
-nfo, unsigned int *value)
-> >  static void send_break(struct m68k_serial *info, unsigned int dura=
-tion)
-> >  {
-> >  	m68328_uart *uart =3D &uart_addr[info->line];
-> > -        unsigned long flags;
-> > -        if (!info->port)
-> > -                return;
-> > -        local_irq_save(flags);
-> > +	unsigned long flags;
-> > +	if (!info->port)
-> > +		return;
-> > +	local_irq_save(flags);
-> >  #ifdef USE_INTS=09
-> >  	uart->utx.w |=3D UTX_SEND_BREAK;
-> >  	msleep_interruptible(duration);
-> >  	uart->utx.w &=3D ~UTX_SEND_BREAK;
-> >  #endif	=09
-> > -        local_irq_restore(flags);
-> > +	local_irq_restore(flags);
-> >  }
-> > =20
-> >  static int rs_ioctl(struct tty_struct *tty,
-> > @@ -1206,7 +1206,7 @@ rs68328_init(void)
-> >  			    rs_interrupt,
-> >  			    0,
-> >  			    "M68328_UART", info))
-> > -                panic("Unable to attach 68328 serial interrupt\n")=
-;
-> > +		panic("Unable to attach 68328 serial interrupt\n");
-> > =20
-> >  	    tty_port_link_device(&info->tport, serial_driver, i);
-> >  	}
-> > @@ -1295,11 +1295,11 @@ void m68328_console_write (struct console *=
-co, const char *str,
-> >  {
-> >  	if (!m68328_console_initted)
-> >  		m68328_set_baud();
-> > -    while (count--) {
-> > -        if (*str =3D=3D '\n')
-> > -           rs_put_char('\r');
-> > -        rs_put_char(*str++);
-> > -    }
-> > +	while (count--) {
-> > +		if (*str =3D=3D '\n')
-> > +		    rs_put_char('\r');
-> > +	rs_put_char(*str++);
->=20
-> This line should also be indented one more tab, right?
->=20
-> > +	}
->=20
-> Please fix up and resend.
+Hi Greg,
 
-And resend the rest of the patches in this series, I stopped applying
-them here, but applied the previous ones.
+On Sun, Dec 13, 2015 at 7:43 AM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Fri, Nov 20, 2015 at 10:09:24AM +0100, Geert Uytterhoeven wrote:
+>> On Thu, Nov 19, 2015 at 7:38 PM, Geert Uytterhoeven
+>> <geert+renesas@glider.be> wrote:
+>> > This patch series adds support to the Renesas SCI serial driver for
+>> >   - the optional external clock on (H)SCI(F) and some SCIFA, where this
+>> >     pin can serve as a clock input,
+>> >   - the optional clock sources for the Baud Rate Generator for External
+>> >     Clock (BRG), as found on some SCIF variants and on HSCIF.
+>> > Using external clocks increases the range and accuracy of supported baud
+>> > rates. Please see the descriptions of the DTS patches for more detailed
+>> > information regarding the impact on the supported platforms.
+>>
+>> For the consumers: I've pushed this (incl. the dependencies and a few
+>> WIP patches) to the scif-brg branch of my renesas-drivers repo.
+>
+> I don't know what I can do with this series given the dependancies, but
+> if it helps, you can add:
+>         Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> to the serial patches and take them through what ever tree you want to.
 
-thanks,
+Thanks for your ackes, they make (my) life a bit simpler!
 
-greg k-h
+I was going to post an updated version tomorrow. I will include a list of
+merge options.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
