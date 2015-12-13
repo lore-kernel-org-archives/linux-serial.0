@@ -1,35 +1,38 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 00/12] Prepare amba-pl011 for ZTE UART support
-Date: Sat, 12 Dec 2015 22:36:39 -0800
-Message-ID: <20151213063639.GA6476@kroah.com>
-References: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
- <566331D7.7010105@hurleysoftware.com>
- <566335AA.9040604@codeaurora.org>
+Subject: Re: [PATCH v2 01/16] serial: sh-sci: Drop the interface clock
+Date: Sat, 12 Dec 2015 22:42:37 -0800
+Message-ID: <20151213064237.GA16326@kroah.com>
+References: <1447958173-543-1-git-send-email-geert+renesas@glider.be>
+ <1447958173-543-2-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <566335AA.9040604@codeaurora.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Timur Tabi <timur@codeaurora.org>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew.Jackson@arm.com, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1447958173-543-2-git-send-email-geert+renesas@glider.be>
+Sender: linux-sh-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Dec 05, 2015 at 01:06:18PM -0600, Timur Tabi wrote:
-> Peter Hurley wrote:
-> >Just a heads-up: this series has merge conflicts with Timur's
-> >"serial: amba-pl011: use cpu_relax when polling registers"
+On Thu, Nov 19, 2015 at 07:35:58PM +0100, Geert Uytterhoeven wrote:
+> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 > 
-> I'd be happy to fix and re-submit that patch after all of these other
-> patches have been applied.
+> As no platform defines an interface clock the SCI driver always falls
+> back to a clock named "peripheral_clk".
+>   - On SH platforms that clock is the base clock for the SCI functional
+>     clock and has the same frequency,
+>   - On ARM platforms that clock doesn't exist, and clk_get() will return
+>     the default clock for the device.
+> We can thus make the functional clock mandatory and drop the interface
+> clock.
+> 
+> EPROBE_DEFER is handled for clocks that may be referenced from DT (i.e.
+> "fck" and deprecated "sci_ick").
+> 
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+> Acked-by: Simon Horman <horms+renesas@verge.net.au>
+> [geert: Handle EPROBE_DEFER, reformat description, break long comment line]
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Please do.
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
