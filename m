@@ -1,124 +1,95 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 3/7] ARM: shmobile: r8a7790 dtsi: Add SCIF fallback compatibility strings
-Date: Mon, 14 Dec 2015 19:57:51 +0100
-Message-ID: <1450119475-1183-4-git-send-email-geert+renesas@glider.be>
-References: <1450119475-1183-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1450119475-1183-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-sh-owner@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH v3 06/12] ARM: shmobile: r8a7778 dtsi: Rename the serial port clock to fck
+Date: Mon, 14 Dec 2015 19:58:00 +0100
+Message-ID: <1450119486-1285-7-git-send-email-geert+renesas@glider.be>
+References: <1450119486-1285-1-git-send-email-geert+renesas@glider.be>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1450119486-1285-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>
+Cc: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- arch/arm/boot/dts/r8a7790.dtsi | 30 ++++++++++++++++++++----------
- 1 file changed, 20 insertions(+), 10 deletions(-)
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-diff --git a/arch/arm/boot/dts/r8a7790.dtsi b/arch/arm/boot/dts/r8a7790.dtsi
-index c6f083c9345d9269..de65cb731fa5e801 100644
---- a/arch/arm/boot/dts/r8a7790.dtsi
-+++ b/arch/arm/boot/dts/r8a7790.dtsi
-@@ -581,7 +581,8 @@
+The clock is really the device functional clock, not the interface
+clock. Rename it.
+
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Acked-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+---
+v3:
+  - No changes,
+
+v2:
+  - Add Acked-by.
+---
+ arch/arm/boot/dts/r8a7778.dtsi | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/boot/dts/r8a7778.dtsi b/arch/arm/boot/dts/r8a7778.dtsi
+index 2786af1b89790e4c..3e9c9d2f28deaf20 100644
+--- a/arch/arm/boot/dts/r8a7778.dtsi
++++ b/arch/arm/boot/dts/r8a7778.dtsi
+@@ -301,7 +301,7 @@
+ 		reg = <0xffe40000 0x100>;
+ 		interrupts = <0 70 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp0_clks R8A7778_CLK_SCIF0>;
+-		clock-names = "sci_ick";
++		clock-names = "fck";
+ 		power-domains = <&cpg_clocks>;
+ 		status = "disabled";
  	};
- 
- 	scifa0: serial@e6c40000 {
--		compatible = "renesas,scifa-r8a7790", "renesas,scifa";
-+		compatible = "renesas,scifa-r8a7790",
-+			     "renesas,rcar-gen2-scifa", "renesas,scifa";
- 		reg = <0 0xe6c40000 0 64>;
- 		interrupts = <0 144 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7790_CLK_SCIFA0>;
-@@ -593,7 +594,8 @@
+@@ -312,7 +312,7 @@
+ 		reg = <0xffe41000 0x100>;
+ 		interrupts = <0 71 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp0_clks R8A7778_CLK_SCIF1>;
+-		clock-names = "sci_ick";
++		clock-names = "fck";
+ 		power-domains = <&cpg_clocks>;
+ 		status = "disabled";
  	};
- 
- 	scifa1: serial@e6c50000 {
--		compatible = "renesas,scifa-r8a7790", "renesas,scifa";
-+		compatible = "renesas,scifa-r8a7790",
-+			     "renesas,rcar-gen2-scifa", "renesas,scifa";
- 		reg = <0 0xe6c50000 0 64>;
- 		interrupts = <0 145 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7790_CLK_SCIFA1>;
-@@ -605,7 +607,8 @@
+@@ -323,7 +323,7 @@
+ 		reg = <0xffe42000 0x100>;
+ 		interrupts = <0 72 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp0_clks R8A7778_CLK_SCIF2>;
+-		clock-names = "sci_ick";
++		clock-names = "fck";
+ 		power-domains = <&cpg_clocks>;
+ 		status = "disabled";
  	};
- 
- 	scifa2: serial@e6c60000 {
--		compatible = "renesas,scifa-r8a7790", "renesas,scifa";
-+		compatible = "renesas,scifa-r8a7790",
-+			     "renesas,rcar-gen2-scifa", "renesas,scifa";
- 		reg = <0 0xe6c60000 0 64>;
- 		interrupts = <0 151 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7790_CLK_SCIFA2>;
-@@ -617,7 +620,8 @@
+@@ -334,7 +334,7 @@
+ 		reg = <0xffe43000 0x100>;
+ 		interrupts = <0 73 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp0_clks R8A7778_CLK_SCIF3>;
+-		clock-names = "sci_ick";
++		clock-names = "fck";
+ 		power-domains = <&cpg_clocks>;
+ 		status = "disabled";
  	};
- 
- 	scifb0: serial@e6c20000 {
--		compatible = "renesas,scifb-r8a7790", "renesas,scifb";
-+		compatible = "renesas,scifb-r8a7790",
-+			     "renesas,rcar-gen2-scifb", "renesas,scifb";
- 		reg = <0 0xe6c20000 0 64>;
- 		interrupts = <0 148 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7790_CLK_SCIFB0>;
-@@ -629,7 +633,8 @@
+@@ -345,7 +345,7 @@
+ 		reg = <0xffe44000 0x100>;
+ 		interrupts = <0 74 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp0_clks R8A7778_CLK_SCIF4>;
+-		clock-names = "sci_ick";
++		clock-names = "fck";
+ 		power-domains = <&cpg_clocks>;
+ 		status = "disabled";
  	};
- 
- 	scifb1: serial@e6c30000 {
--		compatible = "renesas,scifb-r8a7790", "renesas,scifb";
-+		compatible = "renesas,scifb-r8a7790",
-+			     "renesas,rcar-gen2-scifb", "renesas,scifb";
- 		reg = <0 0xe6c30000 0 64>;
- 		interrupts = <0 149 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7790_CLK_SCIFB1>;
-@@ -641,7 +646,8 @@
+@@ -356,7 +356,7 @@
+ 		reg = <0xffe45000 0x100>;
+ 		interrupts = <0 75 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp0_clks R8A7778_CLK_SCIF5>;
+-		clock-names = "sci_ick";
++		clock-names = "fck";
+ 		power-domains = <&cpg_clocks>;
+ 		status = "disabled";
  	};
- 
- 	scifb2: serial@e6ce0000 {
--		compatible = "renesas,scifb-r8a7790", "renesas,scifb";
-+		compatible = "renesas,scifb-r8a7790",
-+			     "renesas,rcar-gen2-scifb", "renesas,scifb";
- 		reg = <0 0xe6ce0000 0 64>;
- 		interrupts = <0 150 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7790_CLK_SCIFB2>;
-@@ -653,7 +659,8 @@
- 	};
- 
- 	scif0: serial@e6e60000 {
--		compatible = "renesas,scif-r8a7790", "renesas,scif";
-+		compatible = "renesas,scif-r8a7790", "renesas,rcar-gen2-scif",
-+			     "renesas,scif";
- 		reg = <0 0xe6e60000 0 64>;
- 		interrupts = <0 152 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7790_CLK_SCIF0>;
-@@ -665,7 +672,8 @@
- 	};
- 
- 	scif1: serial@e6e68000 {
--		compatible = "renesas,scif-r8a7790", "renesas,scif";
-+		compatible = "renesas,scif-r8a7790", "renesas,rcar-gen2-scif",
-+			     "renesas,scif";
- 		reg = <0 0xe6e68000 0 64>;
- 		interrupts = <0 153 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7790_CLK_SCIF1>;
-@@ -677,7 +685,8 @@
- 	};
- 
- 	hscif0: serial@e62c0000 {
--		compatible = "renesas,hscif-r8a7790", "renesas,hscif";
-+		compatible = "renesas,hscif-r8a7790",
-+			     "renesas,rcar-gen2-hscif", "renesas,hscif";
- 		reg = <0 0xe62c0000 0 96>;
- 		interrupts = <0 154 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7790_CLK_HSCIF0>;
-@@ -689,7 +698,8 @@
- 	};
- 
- 	hscif1: serial@e62c8000 {
--		compatible = "renesas,hscif-r8a7790", "renesas,hscif";
-+		compatible = "renesas,hscif-r8a7790",
-+			     "renesas,rcar-gen2-hscif", "renesas,hscif";
- 		reg = <0 0xe62c8000 0 96>;
- 		interrupts = <0 155 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp7_clks R8A7790_CLK_HSCIF1>;
 -- 
 1.9.1
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
