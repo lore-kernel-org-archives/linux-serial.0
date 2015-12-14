@@ -1,54 +1,91 @@
-From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Subject: Re: [PATCH v2 01/16] serial: sh-sci: Drop the interface clock
-Date: Mon, 14 Dec 2015 17:16:28 +0900
-Message-ID: <20151214081628.GF9929@verge.net.au>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v2 00/16] serial: sh-sci: Clock Cleanups
+Date: Mon, 14 Dec 2015 09:31:30 +0100
+Message-ID: <CAMuHMdXwYr3RKhdbB6tpY-A=g6z_Lo3d79fL8AWqLXzL8q6jiA@mail.gmail.com>
 References: <1447958173-543-1-git-send-email-geert+renesas@glider.be>
- <1447958173-543-2-git-send-email-geert+renesas@glider.be>
- <20151213064237.GA16326@kroah.com>
- <20151214081540.GD9929@verge.net.au>
+	<20151214081547.GE9929@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20151214081540.GD9929-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20151214081547.GE9929@verge.net.au>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Dec 14, 2015 at 05:15:40PM +0900, Simon Horman wrote:
-> Hi Greg,
-> 
-> On Sat, Dec 12, 2015 at 10:42:37PM -0800, Greg Kroah-Hartman wrote:
-> > On Thu, Nov 19, 2015 at 07:35:58PM +0100, Geert Uytterhoeven wrote:
-> > > From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> > > 
-> > > As no platform defines an interface clock the SCI driver always falls
-> > > back to a clock named "peripheral_clk".
-> > >   - On SH platforms that clock is the base clock for the SCI functional
-> > >     clock and has the same frequency,
-> > >   - On ARM platforms that clock doesn't exist, and clk_get() will return
-> > >     the default clock for the device.
-> > > We can thus make the functional clock mandatory and drop the interface
-> > > clock.
-> > > 
-> > > EPROBE_DEFER is handled for clocks that may be referenced from DT (i.e.
-> > > "fck" and deprecated "sci_ick").
-> > > 
-> > > Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> > > Acked-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-> > > [geert: Handle EPROBE_DEFER, reformat description, break long comment line]
-> > > Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-> > 
-> > Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-> 
-> If its not too much trouble I would prefer if you took this into the serial
-> tree.
+Hi Simon,
 
-Sorry, I meant to can this email rather than sent it.
-Please ignore the above!!!
+On Mon, Dec 14, 2015 at 9:15 AM, Simon Horman <horms@verge.net.au> wrote:
+> On Thu, Nov 19, 2015 at 07:35:57PM +0100, Geert Uytterhoeven wrote:
+>> The SCI driver currently handles two clocks, an interface clock named
+>> sci_ick and a functional clock named sci_fck. Studying the datasheets of
+>> the SH and ARM SoCs that incorportate (H)SCI(F)([AB]) instances showed
+>> (un)surprisingly that the hardware doesn't have a separate controllable
+>> interface clock.
+>>
+>> All the platforms that declare an interface clock for the SCI set it to
+>> the clock used as the SCI functional clock. The two clocks can thus be
+>> merged on the driver side, which is what this patch series does. The
+>> resulting clock is called "fck", and all H8/300, SH and ARM users (both
+>> DT and non-DT) are fixed to name their SCI clocks appropriately.
+>>
+>> Support for the "sci_ick" name is kept in the sh-sci driver to ensure DT
+>> backward compatibility, and support for the "peripheral_clk" clock to
+>> not break SH platforms that don't declare device-specific SCI clocks.
+>> The latter can be removed when all SH platforms will declare their SCI
+>> clocks properly.
+>>
+>> This series serves as a preparatory clock cleanup for the SCI baud rate
+>> generator clock support series. I decided to keep it separate as this
+>> series has more stringent internal dependencies:
+>
+> I have tentatively queued up patch 1 as a driver change for v4.5
+> with Greg's Ack. I plan to send a pull request to the ARM SoC maintainers
+> some time this week.
+>
+>>   - The SH patches 2-3 depend on patch 1,
+>
+> I have tentatively queued these up on top of patch 1 as sh changes for v4.5.
+> I intend to send a pull request to Linus once patch 1 hits his tree
+> via the ARM SoC tree. If all goes well that will likely be in v4.5-rc1 or rc2.
+>
+>>   - The DT patches 4-15 depend on patch 1,
+>
+> I have tentatively queued up the ARM patches up as (ARM) cleanup
+> patches for v4.5 and the ARM64 patch as ARM64 cleanup patches for v4.5.
+> They are based on patch 1. I plan to send a pull request for them
+> to the ARM SoC maintainers later this week.
+>
+> I have queued these up in cleanup rather than the dt arm64-dt branches as
+> they have dependencies not already present there (patch 1) and at this
+> stage of the merge-cycle I would like to keep the dt branches as simple as
+> possible.
+>
+>>   - Cleanup patch 16 depends on SH patch 2.
+>
+> I have tentatively queued this up as a driver change for v4.6 with
+> Greg's Ack. I plan to send a pull request to the ARM SoC maintainers
+> after rebasing on v4.5-rc1 or rc2 assuming that patch 1 is present there.
+>
+> Can you confirm that patch 16 only depends on patch 2?
+
+Yes it does.
+
+(seems I got confused myself, due to Laurent having it at the end of the
+ series ;-)
+
+> I have not queued up the h8300 patch. I believe that one is for Sato-san.
+
+Note that it depends on patch 1. Hence if Sato-san doesn't provide his
+Acked-by, it cannot go in before v4.6.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
