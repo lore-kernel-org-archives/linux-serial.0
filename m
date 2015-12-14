@@ -1,23 +1,32 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 0/4] Replace tty->closing
-Date: Sun, 13 Dec 2015 20:02:46 -0800
-Message-ID: <20151214040246.GA2026@kroah.com>
-References: <1447020173-32207-1-git-send-email-peter@hurleysoftware.com>
- <1447071353-2961-1-git-send-email-peter@hurleysoftware.com>
- <566E0A64.4080509@hurleysoftware.com>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH] serial: sh-sci: Add device tree support for r8a779[23]
+Date: Mon, 14 Dec 2015 15:27:22 +0900
+Message-ID: <20151214062722.GH18143@verge.net.au>
+References: <1448587224-8633-1-git-send-email-horms+renesas@verge.net.au>
+ <20151213065250.GA2230@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <566E0A64.4080509@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, Johannes Stezenbach <js@sig21.net>, Karsten Keil <isdn@linux-pingi.de>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Mikael Starvik <starvik@axis.com>, Jiri Kosina <jikos@kernel.org>, David Sterba <dsterba@suse.com>, Mark Hounschell <markh@compro.net>
+In-Reply-To: <20151213065250.GA2230@kroah.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Dec 13, 2015 at 04:16:36PM -0800, Peter Hurley wrote:
-> Greg,
+On Sat, Dec 12, 2015 at 10:52:50PM -0800, Greg Kroah-Hartman wrote:
+> On Fri, Nov 27, 2015 at 10:20:24AM +0900, Simon Horman wrote:
+> > Simply document new compat strings.
+> > There appears to be no need for a driver updates.
+> > 
+> > Also update the name of the r8a7791 to M2-W: the name changed a while back.
+> > 
+> > Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
 > 
-> Would you drop these 4 patches from tty-testing please?
+> Doesn't apply to my tree :(
 
-Now dropped.
+I'm a little confused.
+
+The tty-next branch of the tty tree seems to be v4.4-rc5.
+And the patch seems to apply there. Please let me know what
+I should be using as a base.
