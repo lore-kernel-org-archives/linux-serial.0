@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 05/12] ARM: shmobile: r8a7740 dtsi: Rename the serial port clock to fck
-Date: Mon, 14 Dec 2015 19:57:59 +0100
-Message-ID: <1450119486-1285-6-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 03/12] ARM: shmobile: r7s72100 dtsi: Rename the serial port clock to fck
+Date: Mon, 14 Dec 2015 19:57:57 +0100
+Message-ID: <1450119486-1285-4-git-send-email-geert+renesas@glider.be>
 References: <1450119486-1285-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1450119486-1285-1-git-send-email-geert+renesas@glider.be>
@@ -25,92 +25,83 @@ v3:
 v2:
   - Add Acked-by.
 ---
- arch/arm/boot/dts/r8a7740.dtsi | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ arch/arm/boot/dts/r7s72100.dtsi | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/r8a7740.dtsi b/arch/arm/boot/dts/r8a7740.dtsi
-index 6ef954766eef740f..dcd46ab125bcbb80 100644
---- a/arch/arm/boot/dts/r8a7740.dtsi
-+++ b/arch/arm/boot/dts/r8a7740.dtsi
-@@ -213,7 +213,7 @@
- 		reg = <0xe6c40000 0x100>;
- 		interrupts = <0 100 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7740_CLK_SCIFA0>;
+diff --git a/arch/arm/boot/dts/r7s72100.dtsi b/arch/arm/boot/dts/r7s72100.dtsi
+index 4657d7fb5bceede5..0c3b9e341ce7fd8e 100644
+--- a/arch/arm/boot/dts/r7s72100.dtsi
++++ b/arch/arm/boot/dts/r7s72100.dtsi
+@@ -157,7 +157,7 @@
+ 			     <0 192 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <0 189 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp4_clks R7S72100_CLK_SCIF0>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
+ 		power-domains = <&cpg_clocks>;
  		status = "disabled";
  	};
-@@ -223,7 +223,7 @@
- 		reg = <0xe6c50000 0x100>;
- 		interrupts = <0 101 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7740_CLK_SCIFA1>;
+@@ -170,7 +170,7 @@
+ 			     <0 196 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <0 193 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp4_clks R7S72100_CLK_SCIF1>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
+ 		power-domains = <&cpg_clocks>;
  		status = "disabled";
  	};
-@@ -233,7 +233,7 @@
- 		reg = <0xe6c60000 0x100>;
- 		interrupts = <0 102 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7740_CLK_SCIFA2>;
+@@ -183,7 +183,7 @@
+ 			     <0 200 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <0 197 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp4_clks R7S72100_CLK_SCIF2>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
+ 		power-domains = <&cpg_clocks>;
  		status = "disabled";
  	};
-@@ -243,7 +243,7 @@
- 		reg = <0xe6c70000 0x100>;
- 		interrupts = <0 103 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7740_CLK_SCIFA3>;
+@@ -196,7 +196,7 @@
+ 			     <0 204 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <0 201 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp4_clks R7S72100_CLK_SCIF3>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
+ 		power-domains = <&cpg_clocks>;
  		status = "disabled";
  	};
-@@ -253,7 +253,7 @@
- 		reg = <0xe6c80000 0x100>;
- 		interrupts = <0 104 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7740_CLK_SCIFA4>;
+@@ -209,7 +209,7 @@
+ 			     <0 208 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <0 205 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp4_clks R7S72100_CLK_SCIF4>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
+ 		power-domains = <&cpg_clocks>;
  		status = "disabled";
  	};
-@@ -263,7 +263,7 @@
- 		reg = <0xe6cb0000 0x100>;
- 		interrupts = <0 105 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7740_CLK_SCIFA5>;
+@@ -222,7 +222,7 @@
+ 			     <0 212 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <0 209 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp4_clks R7S72100_CLK_SCIF5>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
+ 		power-domains = <&cpg_clocks>;
  		status = "disabled";
  	};
-@@ -273,7 +273,7 @@
- 		reg = <0xe6cc0000 0x100>;
- 		interrupts = <0 106 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7740_CLK_SCIFA6>;
+@@ -235,7 +235,7 @@
+ 			     <0 216 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <0 213 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp4_clks R7S72100_CLK_SCIF6>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
+ 		power-domains = <&cpg_clocks>;
  		status = "disabled";
  	};
-@@ -283,7 +283,7 @@
- 		reg = <0xe6cd0000 0x100>;
- 		interrupts = <0 107 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7740_CLK_SCIFA7>;
+@@ -248,7 +248,7 @@
+ 			     <0 220 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <0 217 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp4_clks R7S72100_CLK_SCIF7>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
- 	};
-@@ -293,7 +293,7 @@
- 		reg = <0xe6c30000 0x100>;
- 		interrupts = <0 108 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks R8A7740_CLK_SCIFB>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
+ 		power-domains = <&cpg_clocks>;
  		status = "disabled";
  	};
 -- 
