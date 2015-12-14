@@ -1,102 +1,101 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 07/25] serial: sh-sci: Convert from clk_get() to devm_clk_get()
-Date: Mon, 14 Dec 2015 17:47:26 +0200
-Message-ID: <6019540.MWUM70YBzM@avalon>
-References: <1447958344-836-1-git-send-email-geert+renesas@glider.be> <1466956.fL4LZVx6Ru@avalon> <CAMuHMdXPNziFbEDvn6VwXrQY4mftpwkyOojzkwCNqvBqFOTWCg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdXPNziFbEDvn6VwXrQY4mftpwkyOojzkwCNqvBqFOTWCg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PM list <linux-pm@vger.kernel.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v3 13/27] serial: sh-sci: Improve bit rate error calculation for HSCIF
+Date: Mon, 14 Dec 2015 19:57:22 +0100
+Message-ID: <1450119456-964-14-git-send-email-geert+renesas@glider.be>
+References: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-sh-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
+The algorithm to find the best parameters for the requested bit rate
+calculates the relative bit rate error, using "(br * scrate) / 1000".
+For small "br * scrate", this has two problems:
+  - The quotient may be zero, leading to a division by zero error,
+  - This may introduce a large rounding error.
+Switch from relative to absolute bit rate error calculation to fix this.
 
-On Monday 14 December 2015 11:34:11 Geert Uytterhoeven wrote:
-> On Sun, Dec 13, 2015 at 8:39 PM, Laurent Pinchart wrote:
-> > On Thursday 10 December 2015 13:30:18 Geert Uytterhoeven wrote:
-> >> On Thu, Nov 19, 2015 at 9:38 PM, Laurent Pinchart wrote:
-> >> > On Thursday 19 November 2015 19:38:46 Geert Uytterhoeven wrote:
-> >> >> Transfer clock cleanup handling to the core device management code.
-> >> >> 
-> >> >> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> >> >> ---
-> >> >> 
-> >> >>  drivers/tty/serial/sh-sci.c | 8 +++-----
-> >> >>  1 file changed, 3 insertions(+), 5 deletions(-)
-> >> >> 
-> >> >> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> >> >> index cba51da604253db6..9442961a198378c7 100644
-> >> >> --- a/drivers/tty/serial/sh-sci.c
-> >> >> +++ b/drivers/tty/serial/sh-sci.c
-> >> >> @@ -2216,7 +2216,7 @@ static struct uart_ops sci_uart_ops = {
-> >> >> 
-> >> >>  static int sci_init_clocks(struct sci_port *sci_port, struct device
-> >> >>  *dev)
-> >> >>  {
-> >> >>       /* Get the SCI functional clock. It's called "fck" on ARM. */
-> >> >> -     sci_port->fclk = clk_get(dev, "fck");
-> >> >> +     sci_port->fclk = devm_clk_get(dev, "fck");
-> >> > 
-> >> > Have you tested what happens if you unbind the device from the driver
-> >> > while userspace has the serial port open ?
-> >> 
-> >> Yes I have. And I didn't notice any user-visible behavioral differences.
-> >> 
-> >> There is a small ordering difference, though: with clk_get() and
-> >> clk_put(), the explicit clk_put() is done before removing the device from
-> >> its PM
-> >> 
-> >> Domain (which involces another call to clk_put() on the module clock):
-> >>     device_release_driver
-> >>         __device_release_driver
-> >>             platform_drv_remove
-> >>                 sci_remove
-> >>                     sci_cleanup_single
-> >>                         __clk_put
-> >>                 genpd_dev_pm_detach
-> >>                     pm_genpd_remove_device
-> >>                         pm_clk_destroy
-> >>                             __pm_clk_remove
-> >>                                 __clk_put
-> >> 
-> >> When using devm_clk_get(), the managed cleanup is done after the device
-> >> has been removed from its PM Domain:
-> >>     device_release_driver
-> >>         __device_release_driver
-> >>             platform_drv_remove
-> >>                 genpd_dev_pm_detach
-> >>                     pm_genpd_remove_device
-> >>                         pm_clk_destroy
-> >>                             __pm_clk_remove
-> >>                                 __clk_put
-> >>             release_nodes
-> >>                 __clk_put
-> >> 
-> >> This shouldn't make a difference, and applies to all other drivers using
-> >> devm_*(), and devices that are part of a PM Domain.
-> > 
-> > I was more concerned about the clk_disable_unprepare() calls. The function
-> > is called through the uart pm handler which is called when closing the
-> > uart (uart_close()). It's a bit difficult to follow the dynamic code
-> > paths as I'm not very familiar with the framework, but I was concerned
-> > that the would end up calling clk_disable_unprepare() on a clock for
-> > which we have no reference anymore. What prevents clk_disable_unprepare()
-> > from being called in the close path after the device has been unbound ?
-> > And what ensures that the clocks get unprepared when unbinding the device
-> > if the port is held open by a userspace process ?
-> 
-> Both questions are answered by uart_hangup():
->   - uart_hangup() sets port->count to zero, hence uart_close() returns early
-> (second return statement), long before it would call the uart pm handler.
-> - uart_hangup() calls uart_change_pm(state, UART_PM_STATE_OFF);
+The default baud rate generator values can be removed, as there will
+always be one set of values that gives the smallest absolute error.
 
-Thank you for making me slightly wiser :-)
+Print the best set of values when debugging.
 
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+v3:
+  - Add Acked-by,
+  - Update for rename of intermediates to "prediv" and "scrate".
+---
+ drivers/tty/serial/sh-sci.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index c490c51d6032786b..306497ee5c326d19 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1867,12 +1867,13 @@ static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
+ }
+ 
+ /* calculate sample rate, BRR, and clock select for HSCIF */
+-static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
++static void sci_baud_calc_hscif(struct sci_port *s, unsigned int bps,
++				unsigned long freq, int *brr,
+ 				unsigned int *srr, unsigned int *cks)
+ {
+ 	unsigned int sr, br, prediv, scrate, c;
+ 	int err, recv_margin;
+-	int min_err = 1000; /* 100% */
++	int min_err = INT_MAX;
+ 	int recv_max_margin = 0;
+ 
+ 	/* Find the combination of sample rate and clock select with the
+@@ -1886,7 +1887,7 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
+ 			 * We need to calculate:
+ 			 *
+ 			 *     br = freq / (prediv * bps) clamped to [1..256]
+-			 *     err = (freq / (br * prediv * bps / 1000)) - 1000
++			 *     err = freq / (br * prediv) - bps
+ 			 *
+ 			 * Watch out for overflow when calculating the desired
+ 			 * sampling clock rate!
+@@ -1897,8 +1898,7 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
+ 			scrate = prediv * bps;
+ 			br = DIV_ROUND_CLOSEST(freq, scrate);
+ 			br = clamp(br, 1U, 256U);
+-			err = DIV_ROUND_CLOSEST(freq, (br * scrate) / 1000) -
+-			      1000;
++			err = DIV_ROUND_CLOSEST(freq, br * prediv) - bps;
+ 			/* Calc recv margin
+ 			 * M: Receive margin (%)
+ 			 * N: Ratio of bit rate to clock (N = sampling rate)
+@@ -1928,13 +1928,8 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
+ 		}
+ 	}
+ 
+-	if (min_err == 1000) {
+-		WARN_ON(1);
+-		/* use defaults */
+-		*brr = 255;
+-		*srr = 15;
+-		*cks = 0;
+-	}
++	dev_dbg(s->port.dev, "BRR: %u%+d bps using N %u SR %u cks %u\n", bps,
++		min_err, *brr, *srr + 1, *cks);
+ }
+ 
+ static void sci_reset(struct uart_port *port)
+@@ -1984,7 +1979,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
+ 	if (likely(baud && port->uartclk)) {
+ 		if (s->cfg->type == PORT_HSCIF) {
+-			sci_baud_calc_hscif(baud, port->uartclk, &t, &srr,
++			sci_baud_calc_hscif(s, baud, port->uartclk, &t, &srr,
+ 					    &cks);
+ 		} else {
+ 			t = sci_scbrr_calc(s, baud, port->uartclk);
 -- 
-Regards,
+1.9.1
 
-Laurent Pinchart
