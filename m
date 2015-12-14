@@ -1,89 +1,110 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v2 00/16] serial: sh-sci: Clock Cleanups
-Date: Mon, 14 Dec 2015 18:11:19 +0900
-Message-ID: <20151214091118.GA20278@verge.net.au>
-References: <1447958173-543-1-git-send-email-geert+renesas@glider.be>
- <20151214081547.GE9929@verge.net.au>
- <CAMuHMdXwYr3RKhdbB6tpY-A=g6z_Lo3d79fL8AWqLXzL8q6jiA@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 07/25] serial: sh-sci: Convert from clk_get() to devm_clk_get()
+Date: Mon, 14 Dec 2015 11:34:11 +0100
+Message-ID: <CAMuHMdXPNziFbEDvn6VwXrQY4mftpwkyOojzkwCNqvBqFOTWCg@mail.gmail.com>
+References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
+	<3399561.8ERHTtILhO@avalon>
+	<CAMuHMdXn4xa-0wfL8DXbhzfsPwymT5XXBR70eSL-OF5Fv67+mg@mail.gmail.com>
+	<1466956.fL4LZVx6Ru@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdXwYr3RKhdbB6tpY-A=g6z_Lo3d79fL8AWqLXzL8q6jiA@mail.gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1466956.fL4LZVx6Ru@avalon>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PM list <linux-pm@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Dec 14, 2015 at 09:31:30AM +0100, Geert Uytterhoeven wrote:
-> Hi Simon,
-> 
-> On Mon, Dec 14, 2015 at 9:15 AM, Simon Horman <horms@verge.net.au> wrote:
-> > On Thu, Nov 19, 2015 at 07:35:57PM +0100, Geert Uytterhoeven wrote:
-> >> The SCI driver currently handles two clocks, an interface clock named
-> >> sci_ick and a functional clock named sci_fck. Studying the datasheets of
-> >> the SH and ARM SoCs that incorportate (H)SCI(F)([AB]) instances showed
-> >> (un)surprisingly that the hardware doesn't have a separate controllable
-> >> interface clock.
-> >>
-> >> All the platforms that declare an interface clock for the SCI set it to
-> >> the clock used as the SCI functional clock. The two clocks can thus be
-> >> merged on the driver side, which is what this patch series does. The
-> >> resulting clock is called "fck", and all H8/300, SH and ARM users (both
-> >> DT and non-DT) are fixed to name their SCI clocks appropriately.
-> >>
-> >> Support for the "sci_ick" name is kept in the sh-sci driver to ensure DT
-> >> backward compatibility, and support for the "peripheral_clk" clock to
-> >> not break SH platforms that don't declare device-specific SCI clocks.
-> >> The latter can be removed when all SH platforms will declare their SCI
-> >> clocks properly.
-> >>
-> >> This series serves as a preparatory clock cleanup for the SCI baud rate
-> >> generator clock support series. I decided to keep it separate as this
-> >> series has more stringent internal dependencies:
-> >
-> > I have tentatively queued up patch 1 as a driver change for v4.5
-> > with Greg's Ack. I plan to send a pull request to the ARM SoC maintainers
-> > some time this week.
-> >
-> >>   - The SH patches 2-3 depend on patch 1,
-> >
-> > I have tentatively queued these up on top of patch 1 as sh changes for v4.5.
-> > I intend to send a pull request to Linus once patch 1 hits his tree
-> > via the ARM SoC tree. If all goes well that will likely be in v4.5-rc1 or rc2.
-> >
-> >>   - The DT patches 4-15 depend on patch 1,
-> >
-> > I have tentatively queued up the ARM patches up as (ARM) cleanup
-> > patches for v4.5 and the ARM64 patch as ARM64 cleanup patches for v4.5.
-> > They are based on patch 1. I plan to send a pull request for them
-> > to the ARM SoC maintainers later this week.
-> >
-> > I have queued these up in cleanup rather than the dt arm64-dt branches as
-> > they have dependencies not already present there (patch 1) and at this
-> > stage of the merge-cycle I would like to keep the dt branches as simple as
-> > possible.
-> >
-> >>   - Cleanup patch 16 depends on SH patch 2.
-> >
-> > I have tentatively queued this up as a driver change for v4.6 with
-> > Greg's Ack. I plan to send a pull request to the ARM SoC maintainers
-> > after rebasing on v4.5-rc1 or rc2 assuming that patch 1 is present there.
-> >
-> > Can you confirm that patch 16 only depends on patch 2?
-> 
-> Yes it does.
-> 
-> (seems I got confused myself, due to Laurent having it at the end of the
->  series ;-)
-> 
-> > I have not queued up the h8300 patch. I believe that one is for Sato-san.
-> 
-> Note that it depends on patch 1. Hence if Sato-san doesn't provide his
-> Acked-by, it cannot go in before v4.6.
+Hi Laurent,
 
-Right, but it doesn't block anything, right?
+On Sun, Dec 13, 2015 at 8:39 PM, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> On Thursday 10 December 2015 13:30:18 Geert Uytterhoeven wrote:
+>> On Thu, Nov 19, 2015 at 9:38 PM, Laurent Pinchart wrote:
+>> > On Thursday 19 November 2015 19:38:46 Geert Uytterhoeven wrote:
+>> >> Transfer clock cleanup handling to the core device management code.
+>> >>
+>> >> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>> >> ---
+>> >>
+>> >>  drivers/tty/serial/sh-sci.c | 8 +++-----
+>> >>  1 file changed, 3 insertions(+), 5 deletions(-)
+>> >>
+>> >> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+>> >> index cba51da604253db6..9442961a198378c7 100644
+>> >> --- a/drivers/tty/serial/sh-sci.c
+>> >> +++ b/drivers/tty/serial/sh-sci.c
+>> >> @@ -2216,7 +2216,7 @@ static struct uart_ops sci_uart_ops = {
+>> >>
+>> >>  static int sci_init_clocks(struct sci_port *sci_port, struct device
+>> >>  *dev)
+>> >>  {
+>> >>
+>> >>       /* Get the SCI functional clock. It's called "fck" on ARM. */
+>> >>
+>> >> -     sci_port->fclk = clk_get(dev, "fck");
+>> >> +     sci_port->fclk = devm_clk_get(dev, "fck");
+>> >
+>> > Have you tested what happens if you unbind the device from the driver
+>> > while userspace has the serial port open ?
+>>
+>> Yes I have. And I didn't notice any user-visible behavioral differences.
+>>
+>> There is a small ordering difference, though: with clk_get() and clk_put(),
+>> the explicit clk_put() is done before removing the device from its PM
+>> Domain (which involces another call to clk_put() on the module clock):
+>>
+>>     device_release_driver
+>>         __device_release_driver
+>>             platform_drv_remove
+>>                 sci_remove
+>>                     sci_cleanup_single
+>>                         __clk_put
+>>                 genpd_dev_pm_detach
+>>                     pm_genpd_remove_device
+>>                         pm_clk_destroy
+>>                             __pm_clk_remove
+>>                                 __clk_put
+>>
+>> When using devm_clk_get(), the managed cleanup is done after the device has
+>> been removed from its PM Domain:
+>>
+>>     device_release_driver
+>>         __device_release_driver
+>>             platform_drv_remove
+>>                 genpd_dev_pm_detach
+>>                     pm_genpd_remove_device
+>>                         pm_clk_destroy
+>>                             __pm_clk_remove
+>>                                 __clk_put
+>>             release_nodes
+>>                 __clk_put
+>>
+>> This shouldn't make a difference, and applies to all other drivers using
+>> devm_*(), and devices that are part of a PM Domain.
+>
+> I was more concerned about the clk_disable_unprepare() calls. The function is
+> called through the uart pm handler which is called when closing the uart
+> (uart_close()). It's a bit difficult to follow the dynamic code paths as I'm
+> not very familiar with the framework, but I was concerned that the would end
+> up calling clk_disable_unprepare() on a clock for which we have no reference
+> anymore. What prevents clk_disable_unprepare() from being called in the close
+> path after the device has been unbound ? And what ensures that the clocks get
+> unprepared when unbinding the device if the port is held open by a userspace
+> process ?
 
+Both questions are answered by uart_hangup():
+  - uart_hangup() sets port->count to zero, hence uart_close() returns early
+    (second return statement), long before it would call the uart pm handler.
+  - uart_hangup() calls uart_change_pm(state, UART_PM_STATE_OFF);
 
-As discussed on IRC a little earlier, I have _not_ queued up the patches
-in the manner describe above. Instead I'm waiting for you to repost.
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
