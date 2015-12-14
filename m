@@ -1,221 +1,171 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 00/27] serial: sh-sci: External Clock Support
-Date: Mon, 14 Dec 2015 19:57:09 +0100
-Message-ID: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 23/27] serial: sh-sci: Add support for optional BRG on (H)SCIF
+Date: Mon, 14 Dec 2015 19:57:32 +0100
+Message-ID: <1450119456-964-24-git-send-email-geert+renesas@glider.be>
+References: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
 Sender: linux-sh-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>
 Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-	Hi Greg, Simon, Magnus, Sato-san,
+Add support for using the Baud Rate Generator for External Clock (BRG), as
+found on some SCIF and HSCIF variants, to provide the sampling clock.
+This can improve baud rate range and accuracy.
 
-This patch series contains several patches for the Renesas SCI serial
-driver:
-  - Clean up the naming of clocks in the driver and its DT bindings,
-  - Add support for the optional external clock on (H)SCI(F) and some
-    SCIFA, where this pin can serve as a clock input,
-  - Add support for the optional clock sources for the Baud Rate
-    Generator for External Clock (BRG), as found on some SCIF variants
-    and on HSCIF.
-Using external clocks increases the range and accuracy of supported baud
-rates.
-
-This series is an updated version of the core (driver) changes of two
-series I sent before:
-  - [PATCH v2 00/16] serial: sh-sci: Clock Cleanups
-    (http://www.spinics.net/lists/linux-serial/msg19762.html)
-  - [PATCH 00/25] serial: sh-sci: Add external clock and BRG Support
-    (https://lkml.org/lkml/2015/11/19/550)
-To reduce (cross) dependencies, I split off the integration (DTS)
-patches into separate series:
-  - "[PATCH 0/7] ARM: shmobile: dtsi: Add SCIF fallback compatibility
-     strings",
-  - "[PATCH v3 00/12] ARM: shmobile: dtsi: Rename the serial port
-     clock to fck",
-  - "[PATCH v2 0/7] ARM: shmobile: dtsi: Add BRG support for (H)SCIF",
-  - "[PATCH v2 0/9] ARM: shmobile: dts: Enable SCIF_CLK frequency and
-    pins".
-As the SH architecture is orphaned, and the risk of conflicts is small,
-I have bundled all SH-specific changes with the core changes.  This
-reduces dependencies, too.
-
-Changes compared to previous submission (more detailed information in
-the individual patches):
-  - Add fallback compatibility strings for R-Car Gen1, Gen2, Gen3, which
-    allows the driver to match on (less) family-specific instead of
-    (more) SoC-specific compatible values,
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+v3:
+  - Add Acked-by,
+  - Terminate loop over sampling rates on perfect match,
   - Rename "int_clk" to "brg_int", "SCI_INT_CLK" to "SCI_BRG_INT",
-  - Terminate loops over sampling rates on perfect matches,
-  - Many comments and clarifications in patch descriptions,
-  - Add Acked-by, Reviewed-by.
+  - Add comment that the BRG divides the internal/external clock,
+  - Reword patch description, using sampling clock source.
+---
+ drivers/tty/serial/sh-sci.c | 85 ++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 80 insertions(+), 5 deletions(-)
 
-
-This series consists of several parts:
-  - The first four patches update DT binding documentation.
-    The first patch also updates the driver, and is a hard dependency
-    for the integration (DTS) patches, and for the SH patches.
-
-    [01/27] serial: sh-sci: Drop the interface clock
-    [02/27] serial: sh-sci: Add fallback compatibility strings (NEW)
-    [03/27] serial: sh-sci: Update DT binding documentation for external
-			    clock input
-    [04/27] serial: sh-sci: Update DT binding documentation for BRG
-			    support
-
-  - Patches 5-23 update the driver only, and add external clock and BRG
-    support.
-
-    [05/27] serial: sh-sci: Drop useless check for zero
-    [06/27] serial: sh-sci: Grammar s/Get ... for/Get ... from/
-    [07/27] serial: sh-sci: Use existing local variable in
-			    sci_parse_dt() (NEW)
-    [08/27] serial: sh-sci: Drop unused frame_len parameter for
-			    sci_baud_calc_hscif()
-    [09/27] serial: sh-sci: Don't overwrite clock selection in
-			    serial_console_write()
-    [10/27] serial: sh-sci: Convert from clk_get() to devm_clk_get()
-    [11/27] serial: sh-sci: Make unsigned values in
-			    sci_baud_calc_hscif() unsigned
-    [12/27] serial: sh-sci: Avoid overflow in sci_baud_calc_hscif()
-    [13/27] serial: sh-sci: Improve bit rate error calculation for
-			    HSCIF
-    [14/27] serial: sh-sci: Avoid calculating the receive margin for
-			    HSCIF
-    [15/27] serial: sh-sci: Merge sci_scbrr_calc() and
-			    sci_baud_calc_hscif()
-    [16/27] serial: sh-sci: Take into account sampling rate for max baud
-			    rate
-    [17/27] serial: sh-sci: Add BRG register definitions
-    [18/27] serial: sh-sci: Replace struct sci_port_info by type/regtype
-			    encoding
-    [19/27] serial: sh-sci: Correct SCIF type on RZ/A1H
-    [20/27] serial: sh-sci: Correct SCIF type on R-Car for BRG
-    [21/27] serial: sh-sci: Prepare for multiple sampling clock sources
-    [22/27] serial: sh-sci: Add support for optional external (H)SCK
-			    input
-    [23/27] serial: sh-sci: Add support for optional BRG on H)SCIF
-
-  - Patches 24-26 update the SH architecture.
-    Patches 24 and 25 have a hard dependency on patch 1.
-    Patch 26 has a hard dependency on patch 17.
-
-    [24/27] sh: Rename sci_ick and sci_fck clock to fck
-    [25/27] sh: Remove sci_ick clock alias
-    [26/27] sh: sh7734: Correct SCIF type for BRG
-
-  - Patch 27 has a hard dependency on patch 24.
-
-    [27/27] serial: sh-sci: Drop the sci_fck clock fallback
-
-Testing:
-  - The Baud Rate Generator for External Clock (BRG) was tested on
-      - R-Car Gen1 (r8a7778/bockw, r8a7779/marzen, on SCIF),
-      - R-Car Gen2 (r8a7791/koelsch, on SCIF and HSCIF),
-      - R-Car Gen3 (r8a7795/salvator-x, on SCIF and HSCIF),
-  - The external clock input on (H)SCK was tested on
-      - R-Car Gen3 (r8a7795/salvator-x, on SCIF and HSCIF),
-  - Regression testing was done on Renesas ARM platforms that use SCIFA
-    as the console (r8a73a4/ape6evm, r8a7740/armadillo, and
-    sh73a0/kzm9g),
-  - You can find more testing-related information in the final
-    integration series.
-
-Merge strategy:
-  - This series applies to v4.4-rc1,
-  - It would be good if at least the first 4 patches end up in v4.5, as
-    they contain DT bindings, and a hard dependency for some DTS
-    updates,
-  - If the 3 SH patches 24-26, and patch 27 go in together, this can be
-    done in the same release. Else the SH patches may have to wait for
-    v4.6, and patch 27 for v4.7.
-  - Greg has provided his ack for most patches (minus the SH-specific,
-    and the 2 new patches), and is OK for the patches going in through
-    another tree, so these could go in through Simon's tree as well,
-      - If these patches go in through Greg's tree, the DTS updates with
-	a hard dependency on the first patch have to wait for v4.6,
-      - If these patches go in through Simon's tree, the DTS updates
-	with a hard dependency on the first patch can go in v4.5, too,
-  - Note that some of the DTS updates have to wait for v4.6 due to other
-    dependencies (pinctrl, more info in the integration series),
-  - Note that there are a few unrelated sh-sci fixes floating around.
-    I think these should go through Greg's tree anyway (they are
-    unrelated, and I don't think these cause conflicts).
-
-Greg/Simon, what do you think?
-
-I've also pushed this series (against v4.4-rc1) to the
-topic/scif-clk-sck-brg-core-v3 branch of my renesas-drivers git
-repository at
-https://git.kernel.org/cgit/linux/kernel/git/geert/renesas-drivers.git
-
-For testing, you best use the renesas-drivers-2015-12-14-v4.4-rc5 tag,
-as it includes the integration part.
-
-Thanks for applying!
-
-Geert Uytterhoeven (23):
-  serial: sh-sci: Add fallback compatibility strings
-  serial: sh-sci: Update DT binding documentation for external clock
-    input
-  serial: sh-sci: Update DT binding documentation for BRG support
-  serial: sh-sci: Drop useless check for zero sampling_rate
-  serial: sh-sci: Grammar s/Get ... for/Get ... from/
-  serial: sh-sci: Use existing local variable in sci_parse_dt()
-  serial: sh-sci: Drop unused frame_len parameter for
-    sci_baud_calc_hscif()
-  serial: sh-sci: Don't overwrite clock selection in
-    serial_console_write()
-  serial: sh-sci: Convert from clk_get() to devm_clk_get()
-  serial: sh-sci: Make unsigned values in sci_baud_calc_hscif() unsigned
-  serial: sh-sci: Avoid overflow in sci_baud_calc_hscif()
-  serial: sh-sci: Improve bit rate error calculation for HSCIF
-  serial: sh-sci: Avoid calculating the receive margin for HSCIF
-  serial: sh-sci: Merge sci_scbrr_calc() and sci_baud_calc_hscif()
-  serial: sh-sci: Take into account sampling rate for max baud rate
-  serial: sh-sci: Add BRG register definitions
-  serial: sh-sci: Replace struct sci_port_info by type/regtype encoding
-  serial: sh-sci: Correct SCIF type on RZ/A1H
-  serial: sh-sci: Correct SCIF type on R-Car for BRG
-  serial: sh-sci: Prepare for multiple sampling clock sources
-  serial: sh-sci: Add support for optional external (H)SCK input
-  serial: sh-sci: Add support for optional BRG on (H)SCIF
-  sh: sh7734: Correct SCIF type for BRG
-
-Laurent Pinchart (4):
-  serial: sh-sci: Drop the interface clock
-  sh: Rename sci_ick and sci_fck clock to fck
-  sh: Remove sci_ick clock alias
-  serial: sh-sci: Drop the sci_fck clock fallback
-
- .../bindings/serial/renesas,sci-serial.txt         |  32 +-
- arch/sh/kernel/cpu/clock-cpg.c                     |   1 -
- arch/sh/kernel/cpu/sh2a/clock-sh7264.c             |   9 +-
- arch/sh/kernel/cpu/sh2a/clock-sh7269.c             |  16 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7343.c             |   8 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7366.c             |   6 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7723.c             |  12 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7734.c             |  12 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7757.c             |   6 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7785.c             |  12 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7786.c             |  12 +-
- arch/sh/kernel/cpu/sh4a/clock-shx3.c               |   8 +-
- arch/sh/kernel/cpu/sh4a/setup-sh7734.c             |  12 +-
- drivers/tty/serial/sh-sci.c                        | 555 +++++++++++++++------
- drivers/tty/serial/sh-sci.h                        |  10 +
- include/linux/serial_sci.h                         |   1 +
- 16 files changed, 500 insertions(+), 212 deletions(-)
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 229162481fd67b9d..4ff5d0cf812688ff 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -80,6 +80,8 @@ enum {
+ enum SCI_CLKS {
+ 	SCI_FCK,		/* Functional Clock */
+ 	SCI_SCK,		/* Optional External Clock */
++	SCI_BRG_INT,		/* Optional BRG Internal Clock Source */
++	SCI_SCIF_CLK,		/* Optional BRG External Clock Source */
+ 	SCI_NUM_CLKS
+ };
+ 
+@@ -1958,6 +1960,43 @@ static int sci_sck_calc(struct sci_port *s, unsigned int bps,
+ 	return min_err;
+ }
+ 
++static int sci_brg_calc(struct sci_port *s, unsigned int bps,
++			unsigned long freq, unsigned int *dlr,
++			unsigned int *srr)
++{
++	unsigned int min_sr, max_sr, sr, dl;
++	int err, min_err = INT_MAX;
++
++	if (s->sampling_rate) {
++		/* SCIF has a fixed sampling rate */
++		min_sr = max_sr = s->sampling_rate / 2;
++	} else {
++		/* HSCIF has a variable 1/(8..32) sampling rate */
++		min_sr = 8;
++		max_sr = 32;
++	}
++
++	for (sr = max_sr; sr >= min_sr; sr--) {
++		dl = DIV_ROUND_CLOSEST(freq, sr * bps);
++		dl = clamp(dl, 1U, 65535U);
++
++		err = DIV_ROUND_CLOSEST(freq, sr * dl) - bps;
++		if (abs(err) >= abs(min_err))
++			continue;
++
++		min_err = err;
++		*dlr = dl;
++		*srr = sr - 1;
++
++		if (!err)
++			break;
++	}
++
++	dev_dbg(s->port.dev, "BRG: %u%+d bps using DL %u SR %u\n", bps,
++		min_err, *dlr, *srr + 1);
++	return min_err;
++}
++
+ /* calculate sample rate, BRR, and clock select */
+ static int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
+ 			  unsigned int *brr, unsigned int *srr,
+@@ -2053,8 +2092,8 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			    struct ktermios *old)
+ {
+ 	unsigned int baud, smr_val = 0, scr_val = 0, i;
+-	unsigned int brr = 255, cks = 0, srr = 15, sccks = 0;
+-	unsigned int brr1 = 255, cks1 = 0, srr1 = 15;
++	unsigned int brr = 255, cks = 0, srr = 15, dl = 0, sccks = 0;
++	unsigned int brr1 = 255, cks1 = 0, srr1 = 15, dl1 = 0;
+ 	struct sci_port *s = to_sci_port(port);
+ 	const struct plat_sci_reg *reg;
+ 	int min_err = INT_MAX, err;
+@@ -2111,6 +2150,38 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		}
+ 	}
+ 
++	/* Optional BRG Frequency Divided External Clock */
++	if (s->clk_rates[SCI_SCIF_CLK] && sci_getreg(port, SCDL)->size) {
++		err = sci_brg_calc(s, baud, s->clk_rates[SCI_SCIF_CLK], &dl1,
++				   &srr1);
++		if (abs(err) < abs(min_err)) {
++			best_clk = SCI_SCIF_CLK;
++			scr_val = SCSCR_CKE1;
++			sccks = 0;
++			min_err = err;
++			dl = dl1;
++			srr = srr1;
++			if (!err)
++				goto done;
++		}
++	}
++
++	/* Optional BRG Frequency Divided Internal Clock */
++	if (s->clk_rates[SCI_BRG_INT] && sci_getreg(port, SCDL)->size) {
++		err = sci_brg_calc(s, baud, s->clk_rates[SCI_BRG_INT], &dl1,
++				   &srr1);
++		if (abs(err) < abs(min_err)) {
++			best_clk = SCI_BRG_INT;
++			scr_val = SCSCR_CKE1;
++			sccks = SCCKS_XIN;
++			min_err = err;
++			dl = dl1;
++			srr = srr1;
++			if (!min_err)
++				goto done;
++		}
++	}
++
+ 	/* Divided Functional Clock using standard Bit Rate Register */
+ 	err = sci_scbrr_calc(s, baud, &brr1, &srr1, &cks1);
+ 	if (abs(err) < abs(min_err)) {
+@@ -2133,8 +2204,10 @@ done:
+ 	 * Program the optional External Baud Rate Generator (BRG) first.
+ 	 * It controls the mux to select (H)SCK or frequency divided clock.
+ 	 */
+-	if (best_clk >= 0 && sci_getreg(port, SCCKS)->size)
++	if (best_clk >= 0 && sci_getreg(port, SCCKS)->size) {
++		serial_port_out(port, SCDL, dl);
+ 		serial_port_out(port, SCCKS, sccks);
++	}
+ 
+ 	sci_reset(port);
+ 
+@@ -2143,8 +2216,8 @@ done:
+ 	if (best_clk >= 0) {
+ 		smr_val |= cks;
+ 		dev_dbg(port->dev,
+-			 "SCR 0x%x SMR 0x%x BRR %u CKS 0x%x SRR %u\n",
+-			 scr_val, smr_val, brr, sccks, srr);
++			 "SCR 0x%x SMR 0x%x BRR %u CKS 0x%x DL %u SRR %u\n",
++			 scr_val, smr_val, brr, sccks, dl, srr);
+ 		serial_port_out(port, SCSCR, scr_val);
+ 		serial_port_out(port, SCSMR, smr_val);
+ 		serial_port_out(port, SCBRR, brr);
+@@ -2382,6 +2455,8 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
+ 	const char *clk_names[] = {
+ 		[SCI_FCK] = "fck",
+ 		[SCI_SCK] = "sck",
++		[SCI_BRG_INT] = "brg_int",
++		[SCI_SCIF_CLK] = "scif_clk",
+ 	};
+ 	struct clk *clk;
+ 	unsigned int i;
 -- 
 1.9.1
 
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
