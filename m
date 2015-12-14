@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 27/27] serial: sh-sci: Drop the sci_fck clock fallback
-Date: Mon, 14 Dec 2015 19:57:36 +0100
-Message-ID: <1450119456-964-28-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 25/27] sh: Remove sci_ick clock alias
+Date: Mon, 14 Dec 2015 19:57:34 +0100
+Message-ID: <1450119456-964-26-git-send-email-geert+renesas@glider.be>
 References: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
@@ -12,44 +12,35 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-All platforms that used to define an sci_fck clock have now switched to
-the fck name. Remove the fallback code.
+The sh-sci driver falls back to the peripheral clock if the sci_ick
+clock doesn't exist. There's thus no need to create an alias for the
+peripheral clock named sci_ick.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Simon Horman <horms+renesas@verge.net.au>
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Do NOT apply until "sh: Rename sci_ick and sci_fck clock to fck" has
-been applied!
-
 v3:
-  - Add Acked-by,
-  - Moved after BRG sh-sci patches to remove dependency of BRG patches
-    on SH patches,
+  - No changes,
 
 v2:
   - Add Acked-by.
 ---
- drivers/tty/serial/sh-sci.c | 5 -----
- 1 file changed, 5 deletions(-)
+ arch/sh/kernel/cpu/clock-cpg.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 4ff5d0cf812688ff..6571f4d944c26297 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2481,11 +2481,6 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
- 			if (!IS_ERR(clk))
- 				goto found;
+diff --git a/arch/sh/kernel/cpu/clock-cpg.c b/arch/sh/kernel/cpu/clock-cpg.c
+index 8525a671266fe149..786c0769b4c393b5 100644
+--- a/arch/sh/kernel/cpu/clock-cpg.c
++++ b/arch/sh/kernel/cpu/clock-cpg.c
+@@ -63,7 +63,6 @@ int __init __deprecated cpg_clk_init(void)
+ 	clk_add_alias("fck", "sh-mtu2", "peripheral_clk", NULL);
+ 	clk_add_alias("fck", "sh-cmt-16.0", "peripheral_clk", NULL);
+ 	clk_add_alias("fck", "sh-cmt-32.0", "peripheral_clk", NULL);
+-	clk_add_alias("sci_ick", NULL, "peripheral_clk", NULL);
  
--			/* SH has historically named the clock "sci_fck". */
--			clk = devm_clk_get(dev, "sci_fck");
--			if (!IS_ERR(clk))
--				goto found;
--
- 			/*
- 			 * Not all SH platforms declare a clock lookup entry
- 			 * for SCI devices, in which case we need to get the
+ 	return ret;
+ }
 -- 
 1.9.1
 
