@@ -1,122 +1,101 @@
-From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH v3 02/12] ARM: shmobile: sh73a0 dtsi: Rename the serial port clock to fck
-Date: Mon, 14 Dec 2015 19:57:56 +0100
-Message-ID: <1450119486-1285-3-git-send-email-geert+renesas@glider.be>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v3 01/12] h8300: dts: Rename the serial port clock to fck
+Date: Mon, 14 Dec 2015 19:57:55 +0100
+Message-ID: <1450119486-1285-2-git-send-email-geert+renesas@glider.be>
 References: <1450119486-1285-1-git-send-email-geert+renesas@glider.be>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1450119486-1285-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>
-Cc: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1450119486-1285-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
-
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
 The clock is really the device functional clock, not the interface
 clock. Rename it.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Acked-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 ---
 v3:
-  - No changes,
+  - Add Acked-by,
 
 v2:
-  - Add Acked-by.
+  - New.
 ---
- arch/arm/boot/dts/sh73a0.dtsi | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ arch/h8300/boot/dts/edosk2674.dts  | 6 +++---
+ arch/h8300/boot/dts/h8300h_sim.dts | 4 ++--
+ arch/h8300/boot/dts/h8s_sim.dts    | 4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/sh73a0.dtsi b/arch/arm/boot/dts/sh73a0.dtsi
-index 3a6056f9f0d23f17..866ee5de09454d14 100644
---- a/arch/arm/boot/dts/sh73a0.dtsi
-+++ b/arch/arm/boot/dts/sh73a0.dtsi
-@@ -359,7 +359,7 @@
- 		reg = <0xe6c40000 0x100>;
- 		interrupts = <0 72 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA0>;
+diff --git a/arch/h8300/boot/dts/edosk2674.dts b/arch/h8300/boot/dts/edosk2674.dts
+index 4ce9fa874a577e55..6ae884bf66a5268c 100644
+--- a/arch/h8300/boot/dts/edosk2674.dts
++++ b/arch/h8300/boot/dts/edosk2674.dts
+@@ -88,20 +88,20 @@
+ 		reg = <0xffff78 8>;
+ 		interrupts = <88 0>, <89 0>, <90 0>, <91 0>;
+ 		clocks = <&fclk>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
  	};
-@@ -369,7 +369,7 @@
- 		reg = <0xe6c50000 0x100>;
- 		interrupts = <0 73 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA1>;
+ 	sci1: serial@ffff80 {
+ 		compatible = "renesas,sci";
+ 		reg = <0xffff80 8>;
+ 		interrupts = <92 0>, <93 0>, <94 0>, <95 0>;
+ 		clocks = <&fclk>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
  	};
-@@ -379,7 +379,7 @@
- 		reg = <0xe6c60000 0x100>;
- 		interrupts = <0 74 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA2>;
+ 	sci2: serial@ffff88 {
+ 		compatible = "renesas,sci";
+ 		reg = <0xffff88 8>;
+ 		interrupts = <96 0>, <97 0>, <98 0>, <99 0>;
+ 		clocks = <&fclk>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
  	};
-@@ -389,7 +389,7 @@
- 		reg = <0xe6c70000 0x100>;
- 		interrupts = <0 75 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA3>;
+ };
+diff --git a/arch/h8300/boot/dts/h8300h_sim.dts b/arch/h8300/boot/dts/h8300h_sim.dts
+index 545bfb57af9a9f2e..9c733d920f1f0dc3 100644
+--- a/arch/h8300/boot/dts/h8300h_sim.dts
++++ b/arch/h8300/boot/dts/h8300h_sim.dts
+@@ -83,7 +83,7 @@
+ 		reg = <0xffffb0 8>;
+ 		interrupts = <52 0>, <53 0>, <54 0>, <55 0>;
+ 		clocks = <&fclk>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
  	};
-@@ -399,7 +399,7 @@
- 		reg = <0xe6c80000 0x100>;
- 		interrupts = <0 78 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA4>;
+ 
+ 	sci1: serial@ffffb8 {
+@@ -91,6 +91,6 @@
+ 		reg = <0xffffb8 8>;
+ 		interrupts = <56 0>, <57 0>, <58 0>, <59 0>;
+ 		clocks = <&fclk>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
  	};
-@@ -409,7 +409,7 @@
- 		reg = <0xe6cb0000 0x100>;
- 		interrupts = <0 79 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA5>;
+ };
+diff --git a/arch/h8300/boot/dts/h8s_sim.dts b/arch/h8300/boot/dts/h8s_sim.dts
+index bcedba5a3ce7e8ae..97e1f4b17ef067d5 100644
+--- a/arch/h8300/boot/dts/h8s_sim.dts
++++ b/arch/h8300/boot/dts/h8s_sim.dts
+@@ -87,13 +87,13 @@
+ 		reg = <0xffff78 8>;
+ 		interrupts = <88 0>, <89 0>, <90 0>, <91 0>;
+ 		clocks = <&fclk>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
  	};
-@@ -419,7 +419,7 @@
- 		reg = <0xe6cc0000 0x100>;
- 		interrupts = <0 156 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp3_clks SH73A0_CLK_SCIFA6>;
+ 	sci1: serial@ffff80 {
+ 		compatible = "renesas,sci";
+ 		reg = <0xffff80 8>;
+ 		interrupts = <92 0>, <93 0>, <94 0>, <95 0>;
+ 		clocks = <&fclk>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
  	};
-@@ -429,7 +429,7 @@
- 		reg = <0xe6cd0000 0x100>;
- 		interrupts = <0 143 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA7>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
- 	};
-@@ -439,7 +439,7 @@
- 		reg = <0xe6c30000 0x100>;
- 		interrupts = <0 80 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp2_clks SH73A0_CLK_SCIFB>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
- 	};
+ };
 -- 
 1.9.1
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
