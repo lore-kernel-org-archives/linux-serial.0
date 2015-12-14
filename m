@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 6/9] ARM: shmobile: marzen dts: Enable SCIF_CLK frequency and pins
-Date: Mon, 14 Dec 2015 19:58:21 +0100
-Message-ID: <1450119504-1517-7-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v2 3/9] ARM: shmobile: gose dts: Enable SCIF_CLK frequency and pins
+Date: Mon, 14 Dec 2015 19:58:18 +0100
+Message-ID: <1450119504-1517-4-git-send-email-geert+renesas@glider.be>
 References: <1450119504-1517-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1450119504-1517-1-git-send-email-geert+renesas@glider.be>
@@ -17,41 +17,42 @@ This increases the range and accuracy of supported baud rates.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
-Based on schematics, tested with remote access.
+Untested, based on (non)differences in U-Boot sources between koelsch
+and gose.
 
 v2:
   - New.
 ---
- arch/arm/boot/dts/r8a7779-marzen.dts | 13 +++++++++++++
+ arch/arm/boot/dts/r8a7793-gose.dts | 13 +++++++++++++
  1 file changed, 13 insertions(+)
 
-diff --git a/arch/arm/boot/dts/r8a7779-marzen.dts b/arch/arm/boot/dts/r8a7779-marzen.dts
-index fe396c8d58db7986..e111d35d02aebe19 100644
---- a/arch/arm/boot/dts/r8a7779-marzen.dts
-+++ b/arch/arm/boot/dts/r8a7779-marzen.dts
-@@ -165,6 +165,9 @@
+diff --git a/arch/arm/boot/dts/r8a7793-gose.dts b/arch/arm/boot/dts/r8a7793-gose.dts
+index 3e3122490650d140..077ab9423f5e17d6 100644
+--- a/arch/arm/boot/dts/r8a7793-gose.dts
++++ b/arch/arm/boot/dts/r8a7793-gose.dts
+@@ -38,6 +38,9 @@
  };
  
  &pfc {
 +	pinctrl-0 = <&scif_clk_pins>;
 +	pinctrl-names = "default";
 +
- 	du_pins: du {
- 		du0 {
- 			renesas,groups = "du0_rgb888", "du0_sync_1", "du0_clk_out_0";
-@@ -176,6 +179,11 @@
- 		};
+ 	scif0_pins: serial0 {
+ 		renesas,groups = "scif0_data_d";
+ 		renesas,function = "scif0";
+@@ -48,6 +51,11 @@
+ 		renesas,function = "scif1";
  	};
  
 +	scif_clk_pins: scif_clk {
-+		renesas,groups = "scif_clk_b";
++		renesas,groups = "scif_clk";
 +		renesas,function = "scif_clk";
 +	};
 +
- 	ethernet_pins: ethernet {
- 		intc {
- 			renesas,groups = "intc_irq1_b";
-@@ -222,6 +230,11 @@
+ 	ether_pins: ether {
+ 		renesas,groups = "eth_link", "eth_mdio", "eth_rmii";
+ 		renesas,function = "eth";
+@@ -98,6 +106,11 @@
  	status = "okay";
  };
  
@@ -60,8 +61,8 @@ index fe396c8d58db7986..e111d35d02aebe19 100644
 +	status = "okay";
 +};
 +
- &sdhi0 {
- 	pinctrl-0 = <&sdhi0_pins>;
+ &qspi {
+ 	pinctrl-0 = <&qspi_pins>;
  	pinctrl-names = "default";
 -- 
 1.9.1
