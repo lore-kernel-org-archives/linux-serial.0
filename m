@@ -1,110 +1,89 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 07/25] serial: sh-sci: Convert from clk_get() to devm_clk_get()
-Date: Mon, 14 Dec 2015 11:34:11 +0100
-Message-ID: <CAMuHMdXPNziFbEDvn6VwXrQY4mftpwkyOojzkwCNqvBqFOTWCg@mail.gmail.com>
-References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
-	<3399561.8ERHTtILhO@avalon>
-	<CAMuHMdXn4xa-0wfL8DXbhzfsPwymT5XXBR70eSL-OF5Fv67+mg@mail.gmail.com>
-	<1466956.fL4LZVx6Ru@avalon>
+From: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v1 02/10] clockevents/drivers: add MPS2 Timer driver
+Date: Mon, 14 Dec 2015 14:36:18 +0100
+Message-ID: <566EC5D2.9050005@linaro.org>
+References: <1449048790-25859-1-git-send-email-vladimir.murzin@arm.com>
+ <1449048790-25859-3-git-send-email-vladimir.murzin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1466956.fL4LZVx6Ru@avalon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PM list <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1449048790-25859-3-git-send-email-vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, afaerber-l3A5Bk7waGM@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: Mark.Rutland-5wv7dgnIgG8@public.gmane.org, Pawel.Moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Laurent,
-
-On Sun, Dec 13, 2015 at 8:39 PM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> On Thursday 10 December 2015 13:30:18 Geert Uytterhoeven wrote:
->> On Thu, Nov 19, 2015 at 9:38 PM, Laurent Pinchart wrote:
->> > On Thursday 19 November 2015 19:38:46 Geert Uytterhoeven wrote:
->> >> Transfer clock cleanup handling to the core device management code.
->> >>
->> >> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->> >> ---
->> >>
->> >>  drivers/tty/serial/sh-sci.c | 8 +++-----
->> >>  1 file changed, 3 insertions(+), 5 deletions(-)
->> >>
->> >> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
->> >> index cba51da604253db6..9442961a198378c7 100644
->> >> --- a/drivers/tty/serial/sh-sci.c
->> >> +++ b/drivers/tty/serial/sh-sci.c
->> >> @@ -2216,7 +2216,7 @@ static struct uart_ops sci_uart_ops = {
->> >>
->> >>  static int sci_init_clocks(struct sci_port *sci_port, struct device
->> >>  *dev)
->> >>  {
->> >>
->> >>       /* Get the SCI functional clock. It's called "fck" on ARM. */
->> >>
->> >> -     sci_port->fclk = clk_get(dev, "fck");
->> >> +     sci_port->fclk = devm_clk_get(dev, "fck");
->> >
->> > Have you tested what happens if you unbind the device from the driver
->> > while userspace has the serial port open ?
->>
->> Yes I have. And I didn't notice any user-visible behavioral differences.
->>
->> There is a small ordering difference, though: with clk_get() and clk_put(),
->> the explicit clk_put() is done before removing the device from its PM
->> Domain (which involces another call to clk_put() on the module clock):
->>
->>     device_release_driver
->>         __device_release_driver
->>             platform_drv_remove
->>                 sci_remove
->>                     sci_cleanup_single
->>                         __clk_put
->>                 genpd_dev_pm_detach
->>                     pm_genpd_remove_device
->>                         pm_clk_destroy
->>                             __pm_clk_remove
->>                                 __clk_put
->>
->> When using devm_clk_get(), the managed cleanup is done after the device has
->> been removed from its PM Domain:
->>
->>     device_release_driver
->>         __device_release_driver
->>             platform_drv_remove
->>                 genpd_dev_pm_detach
->>                     pm_genpd_remove_device
->>                         pm_clk_destroy
->>                             __pm_clk_remove
->>                                 __clk_put
->>             release_nodes
->>                 __clk_put
->>
->> This shouldn't make a difference, and applies to all other drivers using
->> devm_*(), and devices that are part of a PM Domain.
+On 12/02/2015 10:33 AM, Vladimir Murzin wrote:
+> MPS2 platform has simple 32 bits general purpose countdown timers.
 >
-> I was more concerned about the clk_disable_unprepare() calls. The function is
-> called through the uart pm handler which is called when closing the uart
-> (uart_close()). It's a bit difficult to follow the dynamic code paths as I'm
-> not very familiar with the framework, but I was concerned that the would end
-> up calling clk_disable_unprepare() on a clock for which we have no reference
-> anymore. What prevents clk_disable_unprepare() from being called in the close
-> path after the device has been unbound ? And what ensures that the clocks get
-> unprepared when unbinding the device if the port is held open by a userspace
-> process ?
+> The driver uses the first detected timer as a clocksource and the res=
+t
+> of the timers as a clockevent
+>
+> Signed-off-by: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+> ---
 
-Both questions are answered by uart_hangup():
-  - uart_hangup() sets port->count to zero, hence uart_close() returns early
-    (second return statement), long before it would call the uart pm handler.
-  - uart_hangup() calls uart_change_pm(state, UART_PM_STATE_OFF);
+[ ... ]
 
-Gr{oetje,eeting}s,
+> +static void clockevent_mps2_writel(u32 val, struct clock_event_devic=
+e *c, u32 offset)
+> +{
+> +	writel(val, to_mps2_clkevt(c)->reg + offset);
+> +}
 
-                        Geert
+Is it possible to use writel_relaxed here ?
+
+[ ... ]
+
+> +static int mps2_timer_set_periodic(struct clock_event_device *ce)
+> +{
+> +	u32 clock_count_per_tick =3D to_mps2_clkevt(ce)->clock_count_per_ti=
+ck;
+> +
+> +	clockevent_mps2_writel(clock_count_per_tick, ce, TIMER_RELOAD);
+> +	clockevent_mps2_writel(clock_count_per_tick, ce, TIMER_VALUE);
+> +	clockevent_mps2_writel(TIMER_CTRL_IE | TIMER_CTRL_ENABLE, ce, TIMER=
+_CTRL);
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t mps2_timer_interrupt(int irq, void *dev_id)
+> +{
+> +	struct clockevent_mps2 *ce =3D dev_id;
+> +	u32 status =3D readl(ce->reg + TIMER_INT);
+> +
+> +	if (!status) {
+> +		pr_warn("spuirous interrupt\n");
+
+typo: 'spurious'
+
+[ ... ]
+
+> +	ce =3D kzalloc(sizeof(struct clockevent_mps2), GFP_KERNEL);
+> +	if (!ce) {
+> +		ret =3D -ENOMEM;
+> +		pr_err("failed to allocate clockevent: %d\n", ret);
+
+There is already a stack trace in the kernel when an allocation fails.
+
+With the above fixed:
+
+Acked-by: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+
+
+--=20
+  <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software fo=
+r ARM SoCs
+
+=46ollow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
