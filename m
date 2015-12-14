@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 26/27] sh: sh7734: Correct SCIF type for BRG
-Date: Mon, 14 Dec 2015 19:57:35 +0100
-Message-ID: <1450119456-964-27-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 11/27] serial: sh-sci: Make unsigned values in sci_baud_calc_hscif() unsigned
+Date: Mon, 14 Dec 2015 19:57:20 +0100
+Message-ID: <1450119456-964-12-git-send-email-geert+renesas@glider.be>
 References: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
@@ -10,80 +10,55 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.n
 Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The SCIF variant in the sh7734 SoC is not the common "SH-4(A)" variant,
-but a derivative with added "Baud Rate Generator for External Clock"
-(BRG). Correct the regtype value in platform data to fix this.
+Move the -1 offset of br to the assignment to *brr, so br cannot become
+negative anymore, and update the clamp() call. Now all unsigned values
+in sci_baud_calc_hscif() can become unsigned.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Untested due to lack of hardware.
-This shouldn't make any difference until the additional clocks are
-provided by the platform.
-
 v3:
-  - No changes.
+  - Add Acked-by.
 ---
- arch/sh/kernel/cpu/sh4a/setup-sh7734.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/tty/serial/sh-sci.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7734.c b/arch/sh/kernel/cpu/sh4a/setup-sh7734.c
-index f617bcb734dfeb76..69b8a50310d9a23f 100644
---- a/arch/sh/kernel/cpu/sh4a/setup-sh7734.c
-+++ b/arch/sh/kernel/cpu/sh4a/setup-sh7734.c
-@@ -28,7 +28,7 @@ static struct plat_sci_port scif0_platform_data = {
- 	.flags          = UPF_BOOT_AUTOCONF,
- 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
- 	.type           = PORT_SCIF,
--	.regtype        = SCIx_SH4_SCIF_REGTYPE,
-+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
- };
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index b9eb4b525c0a7571..77e0a582da44947f 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1870,7 +1870,8 @@ static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
+ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
+ 				unsigned int *srr, unsigned int *cks)
+ {
+-	int sr, c, br, err, recv_margin;
++	unsigned int sr, br, c;
++	int err, recv_margin;
+ 	int min_err = 1000; /* 100% */
+ 	int recv_max_margin = 0;
  
- static struct resource scif0_resources[] = {
-@@ -50,7 +50,7 @@ static struct plat_sci_port scif1_platform_data = {
- 	.flags          = UPF_BOOT_AUTOCONF,
- 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
- 	.type           = PORT_SCIF,
--	.regtype        = SCIx_SH4_SCIF_REGTYPE,
-+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
- };
+@@ -1880,9 +1881,9 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
+ 		for (c = 0; c <= 3; c++) {
+ 			/* integerized formulas from HSCIF documentation */
+ 			br = DIV_ROUND_CLOSEST(freq, (sr *
+-					      (1 << (2 * c + 1)) * bps)) - 1;
+-			br = clamp(br, 0, 255);
+-			err = DIV_ROUND_CLOSEST(freq, ((br + 1) * bps * sr *
++					      (1 << (2 * c + 1)) * bps));
++			br = clamp(br, 1U, 256U);
++			err = DIV_ROUND_CLOSEST(freq, (br * bps * sr *
+ 					       (1 << (2 * c + 1)) / 1000)) -
+ 					       1000;
+ 			/* Calc recv margin
+@@ -1908,7 +1909,7 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
+ 			else
+ 				continue;
  
- static struct resource scif1_resources[] = {
-@@ -72,7 +72,7 @@ static struct plat_sci_port scif2_platform_data = {
- 	.flags          = UPF_BOOT_AUTOCONF,
- 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
- 	.type           = PORT_SCIF,
--	.regtype        = SCIx_SH4_SCIF_REGTYPE,
-+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
- };
- 
- static struct resource scif2_resources[] = {
-@@ -94,7 +94,7 @@ static struct plat_sci_port scif3_platform_data = {
- 	.flags          = UPF_BOOT_AUTOCONF,
- 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE | SCSCR_TOIE,
- 	.type           = PORT_SCIF,
--	.regtype        = SCIx_SH4_SCIF_REGTYPE,
-+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
- };
- 
- static struct resource scif3_resources[] = {
-@@ -116,7 +116,7 @@ static struct plat_sci_port scif4_platform_data = {
- 	.flags          = UPF_BOOT_AUTOCONF,
- 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
- 	.type           = PORT_SCIF,
--	.regtype        = SCIx_SH4_SCIF_REGTYPE,
-+	.regtype        = SCIx_SH4_SCIF_BRG_REGTYPE,
- };
- 
- static struct resource scif4_resources[] = {
-@@ -138,7 +138,7 @@ static struct plat_sci_port scif5_platform_data = {
- 	.flags          = UPF_BOOT_AUTOCONF,
- 	.scscr          = SCSCR_RE | SCSCR_TE | SCSCR_REIE,
- 	.type           = PORT_SCIF,
--	.regtype		= SCIx_SH4_SCIF_REGTYPE,
-+	.regtype	= SCIx_SH4_SCIF_BRG_REGTYPE,
- };
- 
- static struct resource scif5_resources[] = {
+-			*brr = br;
++			*brr = br - 1;
+ 			*srr = sr - 1;
+ 			*cks = c;
+ 		}
 -- 
 1.9.1
 
