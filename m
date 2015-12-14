@@ -1,95 +1,102 @@
-From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH v3 07/12] ARM: shmobile: r8a7779 dtsi: Rename the serial port clock to fck
-Date: Mon, 14 Dec 2015 19:58:01 +0100
-Message-ID: <1450119486-1285-8-git-send-email-geert+renesas@glider.be>
-References: <1450119486-1285-1-git-send-email-geert+renesas@glider.be>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1450119486-1285-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>
-Cc: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2 3/7] ARM: shmobile: r8a7790 dtsi: Add BRG support for (H)SCIF
+Date: Mon, 14 Dec 2015 19:58:11 +0100
+Message-ID: <1450119495-1416-4-git-send-email-geert+renesas@glider.be>
+References: <1450119495-1416-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1450119495-1416-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-sh-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Add the device node for the external SCIF_CLK.
+The presence of the SCIF_CLK crystal and its clock frequency depends on
+the actual board.
 
-The clock is really the device functional clock, not the interface
-clock. Rename it.
+Add the two optional clock sources (ZS_CLK and SCIF_CLK for the internal
+resp. external clock) for the Baud Rate Generator for External Clock
+(BRG) to all SCIF and HSCIF device nodes.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Acked-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+This increases the range and accuracy of supported baud rates on
+(H)SCIF.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
-v3:
-  - No changes,
-
 v2:
-  - Add Acked-by.
+  - New.
 ---
- arch/arm/boot/dts/r8a7779.dtsi | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/arm/boot/dts/r8a7790.dtsi | 29 +++++++++++++++++++++--------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/r8a7779.dtsi b/arch/arm/boot/dts/r8a7779.dtsi
-index 4afd8b12f8694c13..aa71cd234ac4dd3e 100644
---- a/arch/arm/boot/dts/r8a7779.dtsi
-+++ b/arch/arm/boot/dts/r8a7779.dtsi
-@@ -216,7 +216,7 @@
- 		reg = <0xffe40000 0x100>;
- 		interrupts = <0 88 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp0_clks R8A7779_CLK_SCIF0>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
+diff --git a/arch/arm/boot/dts/r8a7790.dtsi b/arch/arm/boot/dts/r8a7790.dtsi
+index cb3d9b8790d2dfdb..ec71d89f16db1eec 100644
+--- a/arch/arm/boot/dts/r8a7790.dtsi
++++ b/arch/arm/boot/dts/r8a7790.dtsi
+@@ -663,8 +663,9 @@
+ 			     "renesas,scif";
+ 		reg = <0 0xe6e60000 0 64>;
+ 		interrupts = <0 152 IRQ_TYPE_LEVEL_HIGH>;
+-		clocks = <&mstp7_clks R8A7790_CLK_SCIF0>;
+-		clock-names = "fck";
++		clocks = <&mstp7_clks R8A7790_CLK_SCIF0>, <&zs_clk>,
++			 <&scif_clk>;
++		clock-names = "fck", "brg_int", "scif_clk";
+ 		dmas = <&dmac0 0x29>, <&dmac0 0x2a>;
+ 		dma-names = "tx", "rx";
  		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -227,7 +227,7 @@
- 		reg = <0xffe41000 0x100>;
- 		interrupts = <0 89 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp0_clks R8A7779_CLK_SCIF1>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
+@@ -676,8 +677,9 @@
+ 			     "renesas,scif";
+ 		reg = <0 0xe6e68000 0 64>;
+ 		interrupts = <0 153 IRQ_TYPE_LEVEL_HIGH>;
+-		clocks = <&mstp7_clks R8A7790_CLK_SCIF1>;
+-		clock-names = "fck";
++		clocks = <&mstp7_clks R8A7790_CLK_SCIF1>, <&zs_clk>,
++			 <&scif_clk>;
++		clock-names = "fck", "brg_int", "scif_clk";
+ 		dmas = <&dmac0 0x2d>, <&dmac0 0x2e>;
+ 		dma-names = "tx", "rx";
  		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -238,7 +238,7 @@
- 		reg = <0xffe42000 0x100>;
- 		interrupts = <0 90 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp0_clks R8A7779_CLK_SCIF2>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
+@@ -689,8 +691,9 @@
+ 			     "renesas,rcar-gen2-hscif", "renesas,hscif";
+ 		reg = <0 0xe62c0000 0 96>;
+ 		interrupts = <0 154 IRQ_TYPE_LEVEL_HIGH>;
+-		clocks = <&mstp7_clks R8A7790_CLK_HSCIF0>;
+-		clock-names = "fck";
++		clocks = <&mstp7_clks R8A7790_CLK_HSCIF0>, <&zs_clk>,
++			 <&scif_clk>;
++		clock-names = "fck", "brg_int", "scif_clk";
+ 		dmas = <&dmac0 0x39>, <&dmac0 0x3a>;
+ 		dma-names = "tx", "rx";
  		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -249,7 +249,7 @@
- 		reg = <0xffe43000 0x100>;
- 		interrupts = <0 91 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp0_clks R8A7779_CLK_SCIF3>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
+@@ -702,8 +705,9 @@
+ 			     "renesas,rcar-gen2-hscif", "renesas,hscif";
+ 		reg = <0 0xe62c8000 0 96>;
+ 		interrupts = <0 155 IRQ_TYPE_LEVEL_HIGH>;
+-		clocks = <&mstp7_clks R8A7790_CLK_HSCIF1>;
+-		clock-names = "fck";
++		clocks = <&mstp7_clks R8A7790_CLK_HSCIF1>, <&zs_clk>,
++			 <&scif_clk>;
++		clock-names = "fck", "brg_int", "scif_clk";
+ 		dmas = <&dmac0 0x4d>, <&dmac0 0x4e>;
+ 		dma-names = "tx", "rx";
  		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -260,7 +260,7 @@
- 		reg = <0xffe44000 0x100>;
- 		interrupts = <0 92 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp0_clks R8A7779_CLK_SCIF4>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -271,7 +271,7 @@
- 		reg = <0xffe45000 0x100>;
- 		interrupts = <0 93 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp0_clks R8A7779_CLK_SCIF5>;
--		clock-names = "sci_ick";
-+		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
+@@ -992,6 +996,15 @@
+ 			clock-output-names = "audio_clk_c";
+ 		};
+ 
++		/* External SCIF clock */
++		scif_clk: scif {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			/* This value must be overridden by the board. */
++			clock-frequency = <0>;
++			status = "disabled";
++		};
++
+ 		/* External USB clock - can be overridden by the board */
+ 		usb_extal_clk: usb_extal_clk {
+ 			compatible = "fixed-clock";
 -- 
 1.9.1
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
