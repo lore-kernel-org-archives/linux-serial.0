@@ -1,46 +1,64 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 25/27] sh: Remove sci_ick clock alias
-Date: Mon, 14 Dec 2015 19:57:34 +0100
-Message-ID: <1450119456-964-26-git-send-email-geert+renesas@glider.be>
+From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH v3 20/27] serial: sh-sci: Correct SCIF type on R-Car for BRG
+Date: Mon, 14 Dec 2015 19:57:29 +0100
+Message-ID: <1450119456-964-21-git-send-email-geert+renesas@glider.be>
 References: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-sh-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1450119456-964-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+The "renesas,scif" compatible value is currently used for the SCIF
+variant in all Renesas SoCs of the R-Car family.  However, the variant
+used in the R-Car family is not the common "SH-4(A)" variant, but a
+derivative with added "Baud Rate Generator for External Clock" (BRG),
+which is also present in sh7734.
 
-The sh-sci driver falls back to the peripheral clock if the sci_ick
-clock doesn't exist. There's thus no need to create an alias for the
-peripheral clock named sci_ick.
+Use the family-specific SCIF compatible values for R-Car Gen1, Gen2, and
+Gen3 SoCs to differentiate.  The "renesas,scif" compatible value can
+still be used as a common denominator for SCIF variants with the
+"SH-4(A)" register layout (i.e. ignoring the "Serial Extension Mode
+Register" (SCEMR) and the new BRG-specific registers).
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Acked-by: Simon Horman <horms+renesas@verge.net.au>
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 ---
 v3:
-  - No changes,
-
-v2:
-  - Add Acked-by.
+  - Add Acked-by,
+  - Use family-specific instead of SoC-specific compatible values.
 ---
- arch/sh/kernel/cpu/clock-cpg.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/sh-sci.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/sh/kernel/cpu/clock-cpg.c b/arch/sh/kernel/cpu/clock-cpg.c
-index 8525a671266fe149..786c0769b4c393b5 100644
---- a/arch/sh/kernel/cpu/clock-cpg.c
-+++ b/arch/sh/kernel/cpu/clock-cpg.c
-@@ -63,7 +63,6 @@ int __init __deprecated cpg_clk_init(void)
- 	clk_add_alias("fck", "sh-mtu2", "peripheral_clk", NULL);
- 	clk_add_alias("fck", "sh-cmt-16.0", "peripheral_clk", NULL);
- 	clk_add_alias("fck", "sh-cmt-32.0", "peripheral_clk", NULL);
--	clk_add_alias("sci_ick", NULL, "peripheral_clk", NULL);
- 
- 	return ret;
- }
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 5b8504bfd42e9906..a202e4e40b8adafb 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2625,6 +2625,17 @@ static const struct of_device_id of_sci_match[] = {
+ 		.compatible = "renesas,scif-r7s72100",
+ 		.data = SCI_OF_DATA(PORT_SCIF, SCIx_SH2_SCIF_FIFODATA_REGTYPE),
+ 	},
++	/* Family-specific types */
++	{
++		.compatible = "renesas,rcar-gen1-scif",
++		.data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
++	}, {
++		.compatible = "renesas,rcar-gen2-scif",
++		.data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
++	}, {
++		.compatible = "renesas,rcar-gen3-scif",
++		.data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
++	},
+ 	/* Generic types */
+ 	{
+ 		.compatible = "renesas,scif",
 -- 
 1.9.1
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
