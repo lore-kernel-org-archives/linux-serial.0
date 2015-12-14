@@ -1,77 +1,76 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 02/27] serial: sh-sci: Add fallback compatibility strings
-Date: Mon, 14 Dec 2015 19:57:11 +0100
-Message-ID: <1450119456-964-3-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 12/27] serial: sh-sci: Avoid overflow in sci_baud_calc_hscif()
+Date: Mon, 14 Dec 2015 19:57:21 +0100
+Message-ID: <1450119456-964-13-git-send-email-geert+renesas@glider.be>
 References: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
 Sender: linux-sh-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, devicetree@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Add fallback compatibility strings for R-Car Gen1, Gen2, and Gen3.
-This is in keeping with the fallback scheme being adopted wherever
-appropriate for drivers for Renesas SoCs.
+If bps >= 1048576, the multiplication of the predivider and "bps" will
+overflow, and both br and err will contain bogus values.
+Skip the current and all higher clock select predividers when overflow
+is detected.  Simplify the calculations using intermediates while we're
+at it.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: devicetree@vger.kernel.org
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
 v3:
-  - New.
+  - Add Acked-by,
+  - Rename intermediates to "prediv" and "scrate",
+  - Add a comment explaining the calculation and possible overflow.
 ---
- .../devicetree/bindings/serial/renesas,sci-serial.txt   | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/tty/serial/sh-sci.c | 25 +++++++++++++++++++------
+ 1 file changed, 19 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index 2c9e6b8477e92792..7091213f02513cda 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -2,7 +2,7 @@
- 
- Required properties:
- 
--  - compatible: Must contain one of the following:
-+  - compatible: Must contain one or more of the following:
- 
-     - "renesas,scif-r7s72100" for R7S72100 (RZ/A1H) SCIF compatible UART.
-     - "renesas,scifa-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFA compatible UART.
-@@ -27,6 +27,14 @@ Required properties:
-     - "renesas,hscif-r8a7795" for R8A7795 (R-Car H3) HSCIF compatible UART.
-     - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
-     - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible UART.
-+    - "renesas,rcar-gen1-scif" for R-Car Gen1 SCIF compatible UART,
-+    - "renesas,rcar-gen2-scif" for R-Car Gen2 SCIF compatible UART,
-+    - "renesas,rcar-gen3-scif" for R-Car Gen3 SCIF compatible UART,
-+    - "renesas,rcar-gen2-scifa" for R-Car Gen2 SCIFA compatible UART,
-+    - "renesas,rcar-gen2-scifb" for R-Car Gen2 SCIFB compatible UART,
-+    - "renesas,rcar-gen1-hscif" for R-Car Gen1 HSCIF compatible UART,
-+    - "renesas,rcar-gen2-hscif" for R-Car Gen2 HSCIF compatible UART,
-+    - "renesas,rcar-gen3-hscif" for R-Car Gen3 HSCIF compatible UART,
-     - "renesas,scif" for generic SCIF compatible UART.
-     - "renesas,scifa" for generic SCIFA compatible UART.
-     - "renesas,scifb" for generic SCIFB compatible UART.
-@@ -34,8 +42,8 @@ Required properties:
-     - "renesas,sci" for generic SCI compatible UART.
- 
-     When compatible with the generic version, nodes must list the
--    SoC-specific version corresponding to the platform first followed by the
--    generic version.
-+    SoC-specific version corresponding to the platform first, followed by the
-+    family-specific and/or generic versions.
- 
-   - reg: Base address and length of the I/O registers used by the UART.
-   - interrupts: Must contain an interrupt-specifier for the SCIx interrupt.
-@@ -58,7 +66,8 @@ Example:
- 	};
- 
- 	scifa0: serial@e6c40000 {
--		compatible = "renesas,scifa-r8a7790", "renesas,scifa";
-+		compatible = "renesas,scifa-r8a7790",
-+			     "renesas,rcar-gen2-scifa", "renesas,scifa";
- 		reg = <0 0xe6c40000 0 64>;
- 		interrupt-parent = <&gic>;
- 		interrupts = <0 144 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 77e0a582da44947f..c490c51d6032786b 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1870,7 +1870,7 @@ static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
+ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
+ 				unsigned int *srr, unsigned int *cks)
+ {
+-	unsigned int sr, br, c;
++	unsigned int sr, br, prediv, scrate, c;
+ 	int err, recv_margin;
+ 	int min_err = 1000; /* 100% */
+ 	int recv_max_margin = 0;
+@@ -1880,12 +1880,25 @@ static void sci_baud_calc_hscif(unsigned int bps, unsigned long freq, int *brr,
+ 	for (sr = 8; sr <= 32; sr++) {
+ 		for (c = 0; c <= 3; c++) {
+ 			/* integerized formulas from HSCIF documentation */
+-			br = DIV_ROUND_CLOSEST(freq, (sr *
+-					      (1 << (2 * c + 1)) * bps));
++			prediv = sr * (1 << (2 * c + 1));
++
++			/*
++			 * We need to calculate:
++			 *
++			 *     br = freq / (prediv * bps) clamped to [1..256]
++			 *     err = (freq / (br * prediv * bps / 1000)) - 1000
++			 *
++			 * Watch out for overflow when calculating the desired
++			 * sampling clock rate!
++			 */
++			if (bps > UINT_MAX / prediv)
++				break;
++
++			scrate = prediv * bps;
++			br = DIV_ROUND_CLOSEST(freq, scrate);
+ 			br = clamp(br, 1U, 256U);
+-			err = DIV_ROUND_CLOSEST(freq, (br * bps * sr *
+-					       (1 << (2 * c + 1)) / 1000)) -
+-					       1000;
++			err = DIV_ROUND_CLOSEST(freq, (br * scrate) / 1000) -
++			      1000;
+ 			/* Calc recv margin
+ 			 * M: Receive margin (%)
+ 			 * N: Ratio of bit rate to clock (N = sampling rate)
 -- 
 1.9.1
 
