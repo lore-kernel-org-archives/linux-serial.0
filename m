@@ -1,63 +1,129 @@
-From: Ken Moffat <zarniwhoop@ntlworld.com>
-Subject: Re: [PATCH 0/9] Fix checkpatch errors
-Date: Sun, 13 Dec 2015 20:31:17 +0000
-Message-ID: <20151213203117.GA1012@milliways>
-References: <1449830170-15096-1-git-send-email-frederik.voelkel@fau.de>
- <20151213070622.GA13621@kroah.com>
- <20151213174429.GB11792@faumail.uni-erlangen.de>
- <87poyamczv.fsf@gmail.com>
- <20151213182604.GC11792@faumail.uni-erlangen.de>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v2 0/4] Replace tty->closing
+Date: Sun, 13 Dec 2015 16:16:36 -0800
+Message-ID: <566E0A64.4080509@hurleysoftware.com>
+References: <1447020173-32207-1-git-send-email-peter@hurleysoftware.com>
+ <1447071353-2961-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20151213182604.GC11792@faumail.uni-erlangen.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Frederik <frederik.voelkel@fau.de>
-Cc: Nicolai Stange <nicstange@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-kernel@i4.cs.fau.de, lukas.braun@fau.de
+Content-Transfer-Encoding: 7bit
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <1447071353-2961-1-git-send-email-peter@hurleysoftware.com>
+Sender: netdev-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, Johannes Stezenbach <js@sig21.net>, Karsten Keil <isdn@linux-pingi.de>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Mikael Starvik <starvik@axis.com>, Jiri Kosina <jikos@kernel.org>, David Sterba <dsterba@suse.com>, Mark Hounschell <markh@compro.net>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Dec 13, 2015 at 07:26:04PM +0100, Frederik wrote:
-> On Sun, 13. Dec 19:15, Nicolai Stange wrote:
-> > Frederik <frederik.voelkel@fau.de> writes:
-> >=20
-> > W/o your series applied (so line numbering might be slightly
-> > different), checkpatch.pl says:
-> >=20
-> >   ERROR: trailing whitespace
-> >   #270: FILE: -:270:
-> >   +^I * This do { } while() loop will get ALL chars out of Rx FIFO =
-$
-> >=20
-> > AFAICS, your patch [7/9] ("drivers: tty: 68328serial.c: remove trai=
-ling
-> > whitespaces") doesn't fix this one.
-> >=20
-> > In good old regexp tradition, the '$' sign denotes the end of line.=
- So,
-> > there is a single space after "FIFO" and before the end of line.
-> >=20
-> > If you happen to be Emacs users, consider trying out whitespace-mod=
-e.
-> > If not, try to find another way to make your editor visualize white=
-space
-> > somehow.
->=20
-> Oh right I see. We will fix that and resend.
->=20
-> Thank you!
-If you are using vim, I have the following in my .vimrc.  It was
-originally posted here many years ago.  Seems to work on all my x86
-boxes, but AFAIR it didn't work on a ppc, so might not work on other
-architectures.
+Greg,
 
-"for redundant whitespace, from Jeremy Kerr via Olof Johanson
-highlight RedundantWhitespace ctermbg=3Dred guibg=3Dred
-match RedundantWhitespace /\s\+$\| \+\ze\t/
+Would you drop these 4 patches from tty-testing please?
 
-HTH
 
-=C4=B8en
---=20
-This email was written using 100% recycled letters.
+On 11/09/2015 04:15 AM, Peter Hurley wrote:
+> Hi Greg,
+> 
+> This series cleans up a messy and poorly documented mechanism required
+> at tty final close to prevent drivers from crashing after h/w shutdown.
+> 
+> Without special handling, N_TTY echoing will cause driver i/o requests
+> _after_ h/w shutdown, which typically crashes the driver. Currently,
+> the tty_struct::closing flag triggers this special handling. However,
+> this mechanism is error-prone and subject to driver misuse.
+> 
+> This series replaces tty->closing with a ldisc-specific interface,
+> tty_ldisc_closing(), and implements this interface for N_TTY.
+> For tty drivers which use tty_port_close_start(), this change eliminates
+> the last vestige of direct driver<->ldisc interaction. The few tty drivers
+> which open-code the close() method [1] still use tty_ldisc_closing() directly.
+> 
+> The tty driver is aware final close for the tty has commenced because the
+> tty->count == 1 in the close() method. On final close, the following is
+> also true:
+> 1. port->count == 1. tty drivers which ref count the port, use the
+>    --port->count == 0 as a substitute condition for final close.
+
+I overlooked the implications of a blocked open here.
+
+Since a blocked open drops the port count while blocking, a port count of 1
+is not equivalent to a tty count of 1 at tty_release() time. So even though
+the port is shutting down, the extra tty count held by the blocking open
+will keep the ldisc instance from being destructed; iow, a port count of 1
+does _not_ imply final tty close.
+
+For the blocked open itself, this would not be a problem because the open
+will error out anyway, drop the tty count and cause final close. (And, oddly,
+trigger a second port shutdown which I need to consider the implications of.)
+
+However, there is a very small race window where a third process might be
+able to successfully reopen the tty, but now would have a dead-stick
+ldisc instance (because this series does not reset the ldisc instance back
+to the not closing state).
+
+Regards,
+Peter Hurley
+
+
+> 2. final close is occurring as a result of the last in-use file descriptor
+>    release. Consequently, there will be no read/poll/ioctl in-progress.
+> 3. the line discipline instance will be stopped and destroyed immediately
+>    after the tty driver completes the close() method
+> 4. the tty itself will be unrefed immediately after the line discipline
+>    instance is destroyed.
+> 
+> Thus, the ldisc and tty buffers need only be flushed once, as any data
+> received by the tty driver after the flush but before h/w shutdown will
+> be deleted when the line discipline instance is destroyed.
+> No new echoes will occur after the ldisc flush because the echo buffer
+> is also flushed and new input (which otherwise might generate echoes) is
+> ignored while closing. This series removes the extra tty_ldisc_flush()
+> being performed by most drivers after h/w shutdown.
+> 
+> Additionally, the ldisc closing state need not be reset since the line
+> discipline instance is being destroyed, so no interface is provided to reset
+> closing.
+> 
+> 
+> [1] tty drivers which open-code the close() method
+> drivers/staging/dgnc/dgnc_tty.c
+> drivers/staging/dgap/dgap.c
+> drivers/tty/hvc/hvsi.c
+> drivers/tty/serial/68328serial.c
+> drivers/tty/serial/crisv10.c
+> drivers/isdn/i4l/isdn_tty.c
+> drivers/s390/char/con3215.c
+> 
+> Changes to v2:
+> * Fixed tty_ldisc_closing() ld use found by Johannes Stezenbach <js@sig21.net>
+> 
+> 
+> Regards,
+> 
+> Peter Hurley (4):
+>   tty: rocket: Remove private close_wait
+>   n_tty: Ignore all read data when closing
+>   tty: Abstract and encapsulate tty->closing behavior
+>   tty: Remove drivers' extra tty_ldisc_flush()
+> 
+>  drivers/char/pcmcia/synclink_cs.c |  3 ---
+>  drivers/isdn/i4l/isdn_tty.c       |  2 +-
+>  drivers/s390/char/con3215.c       |  3 +--
+>  drivers/staging/dgap/dgap.c       |  4 +---
+>  drivers/staging/dgnc/dgnc_tty.c   |  4 +---
+>  drivers/tty/amiserial.c           |  2 --
+>  drivers/tty/hvc/hvsi.c            |  2 +-
+>  drivers/tty/ipwireless/tty.c      |  1 -
+>  drivers/tty/n_tty.c               | 15 +++++++++++----
+>  drivers/tty/rocket.c              |  5 -----
+>  drivers/tty/rocket_int.h          |  1 -
+>  drivers/tty/serial/68328serial.c  |  3 +--
+>  drivers/tty/serial/crisv10.c      |  3 +--
+>  drivers/tty/serial/serial_core.c  |  3 ---
+>  drivers/tty/synclink.c            |  1 -
+>  drivers/tty/synclink_gt.c         |  1 -
+>  drivers/tty/synclinkmp.c          |  1 -
+>  drivers/tty/tty_ldisc.c           | 20 ++++++++++++++++++++
+>  drivers/tty/tty_port.c            |  5 +----
+>  include/linux/tty.h               |  2 +-
+>  include/linux/tty_ldisc.h         |  9 +++++++++
+>  21 files changed, 49 insertions(+), 41 deletions(-)
+> 
