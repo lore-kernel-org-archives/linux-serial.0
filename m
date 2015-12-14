@@ -1,47 +1,49 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 05/27] serial: sh-sci: Drop useless check for zero sampling_rate
-Date: Mon, 14 Dec 2015 19:57:14 +0100
-Message-ID: <1450119456-964-6-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 03/27] serial: sh-sci: Update DT binding documentation for external clock input
+Date: Mon, 14 Dec 2015 19:57:12 +0100
+Message-ID: <1450119456-964-4-git-send-email-geert+renesas@glider.be>
 References: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
 Sender: linux-sh-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-sci_port.sampling_rate is always non-zero, except for HSCIF, which uses
-sci_baud_calc_hscif() instead of sci_scbrr_calc().
+Amend the DT bindings to include the optional external clock on
+(H)SCI(F) and some SCIFA, where this pin can serve as a clock input,
+depending on board wiring.
+
+Clarify the use of the divided functional clock as a source for the
+sampling clock.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org
 ---
 v3:
-  - Add Reviewed-by, Acked-by,
+  - Add Acked-by,
+  - Clarify the use of the divided functional clock.
 ---
- drivers/tty/serial/sh-sci.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index cc6fa55231ba3536..dfee7a2f51f147d1 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1863,13 +1863,7 @@ static void sci_shutdown(struct uart_port *port)
- static unsigned int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
- 				   unsigned long freq)
- {
--	if (s->sampling_rate)
--		return DIV_ROUND_CLOSEST(freq, s->sampling_rate * bps) - 1;
--
--	/* Warn, but use a safe default */
--	WARN_ON(1);
--
--	return ((freq + 16 * bps) / (32 * bps) - 1);
-+	return DIV_ROUND_CLOSEST(freq, s->sampling_rate * bps) - 1;
- }
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index 7091213f02513cda..31cc0631ef7ca22d 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -51,6 +51,11 @@ Required properties:
+   - clocks: Must contain a phandle and clock-specifier pair for each entry
+     in clock-names.
+   - clock-names: Must contain "fck" for the SCIx UART functional clock.
++    Apart from the divided functional clock, there may be other possible
++    sources for the sampling clock, depending on SCIx variant.
++    On (H)SCI(F) and some SCIFA, an additional clock may be specified:
++      - "hsck" for the optional external clock input (on HSCIF),
++      - "sck" for the optional external clock input (on other variants).
  
- /* calculate frame length from SMR */
+ Note: Each enabled SCIx UART should have an alias correctly numbered in the
+ "aliases" node.
 -- 
 1.9.1
 
