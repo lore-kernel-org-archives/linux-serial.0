@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 14/27] serial: sh-sci: Avoid calculating the receive margin for HSCIF
-Date: Mon, 14 Dec 2015 19:57:23 +0100
-Message-ID: <1450119456-964-15-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v3 10/27] serial: sh-sci: Convert from clk_get() to devm_clk_get()
+Date: Mon, 14 Dec 2015 19:57:19 +0100
+Message-ID: <1450119456-964-11-git-send-email-geert+renesas@glider.be>
 References: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1450119456-964-1-git-send-email-geert+renesas@glider.be>
@@ -10,104 +10,67 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.n
 Cc: linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-When assuming D = 0.5 and F = 0, maximizing the receive margin M is
-equivalent to maximizing the sample rate N.
-
-Hence there's no need to calculate the receive margin, as we can obtain
-the same result by iterating over all possible sample rates in reverse
-order, and skipping parameter sets that don't provide a lower bit rate
-error.
+Transfer clock cleanup handling to the core device management code.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
 v3:
   - Add Acked-by,
-  - Rebased,
-  - Terminate loop over sampling rates on perfect match.
+  - Convert "sci_fck", as its removal has been moved after the BRG
+    patches.
 ---
- drivers/tty/serial/sh-sci.c | 51 +++++++++++++++++++++------------------------
- 1 file changed, 24 insertions(+), 27 deletions(-)
+ drivers/tty/serial/sh-sci.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 306497ee5c326d19..c3a193616484a62c 100644
+index 136ad2f633413cbc..b9eb4b525c0a7571 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1872,13 +1872,24 @@ static void sci_baud_calc_hscif(struct sci_port *s, unsigned int bps,
- 				unsigned int *srr, unsigned int *cks)
+@@ -2216,7 +2216,7 @@ static struct uart_ops sci_uart_ops = {
+ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
  {
- 	unsigned int sr, br, prediv, scrate, c;
--	int err, recv_margin;
--	int min_err = INT_MAX;
--	int recv_max_margin = 0;
-+	int err, min_err = INT_MAX;
+ 	/* Get the SCI functional clock. It's called "fck" on ARM. */
+-	sci_port->fclk = clk_get(dev, "fck");
++	sci_port->fclk = devm_clk_get(dev, "fck");
+ 	if (PTR_ERR(sci_port->fclk) == -EPROBE_DEFER)
+ 		return -EPROBE_DEFER;
+ 	if (!IS_ERR(sci_port->fclk))
+@@ -2226,14 +2226,14 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
+ 	 * But it used to be called "sci_ick", and we need to maintain DT
+ 	 * backward compatibility.
+ 	 */
+-	sci_port->fclk = clk_get(dev, "sci_ick");
++	sci_port->fclk = devm_clk_get(dev, "sci_ick");
+ 	if (PTR_ERR(sci_port->fclk) == -EPROBE_DEFER)
+ 		return -EPROBE_DEFER;
+ 	if (!IS_ERR(sci_port->fclk))
+ 		return 0;
  
--	/* Find the combination of sample rate and clock select with the
--	   smallest deviation from the desired baud rate. */
--	for (sr = 8; sr <= 32; sr++) {
-+	/*
-+	 * Find the combination of sample rate and clock select with the
-+	 * smallest deviation from the desired baud rate.
-+	 * Prefer high sample rates to maximise the receive margin.
-+	 *
-+	 * M: Receive margin (%)
-+	 * N: Ratio of bit rate to clock (N = sampling rate)
-+	 * D: Clock duty (D = 0 to 1.0)
-+	 * L: Frame length (L = 9 to 12)
-+	 * F: Absolute value of clock frequency deviation
-+	 *
-+	 *  M = |(0.5 - 1 / 2 * N) - ((L - 0.5) * F) -
-+	 *      (|D - 0.5| / N * (1 + F))|
-+	 *  NOTE: Usually, treat D for 0.5, F is 0 by this calculation.
-+	 */
-+	for (sr = 32; sr >= 8; sr--) {
- 		for (c = 0; c <= 3; c++) {
- 			/* integerized formulas from HSCIF documentation */
- 			prediv = sr * (1 << (2 * c + 1));
-@@ -1898,36 +1909,22 @@ static void sci_baud_calc_hscif(struct sci_port *s, unsigned int bps,
- 			scrate = prediv * bps;
- 			br = DIV_ROUND_CLOSEST(freq, scrate);
- 			br = clamp(br, 1U, 256U);
-+
- 			err = DIV_ROUND_CLOSEST(freq, br * prediv) - bps;
--			/* Calc recv margin
--			 * M: Receive margin (%)
--			 * N: Ratio of bit rate to clock (N = sampling rate)
--			 * D: Clock duty (D = 0 to 1.0)
--			 * L: Frame length (L = 9 to 12)
--			 * F: Absolute value of clock frequency deviation
--			 *
--			 *  M = |(0.5 - 1 / 2 * N) - ((L - 0.5) * F) -
--			 *      (|D - 0.5| / N * (1 + F))|
--			 *  NOTE: Usually, treat D for 0.5, F is 0 by this
--			 *        calculation.
--			 */
--			recv_margin = abs((500 -
--					DIV_ROUND_CLOSEST(1000, sr << 1)) / 10);
--			if (abs(min_err) > abs(err)) {
--				min_err = err;
--				recv_max_margin = recv_margin;
--			} else if ((min_err == err) &&
--				   (recv_margin > recv_max_margin))
--				recv_max_margin = recv_margin;
--			else
-+			if (abs(err) >= abs(min_err))
- 				continue;
+ 	/* SH has historically named the clock "sci_fck". */
+-	sci_port->fclk = clk_get(dev, "sci_fck");
++	sci_port->fclk = devm_clk_get(dev, "sci_fck");
+ 	if (!IS_ERR(sci_port->fclk))
+ 		return 0;
  
-+			min_err = err;
- 			*brr = br - 1;
- 			*srr = sr - 1;
- 			*cks = c;
-+
-+			if (!err)
-+				goto found;
- 		}
- 	}
+@@ -2241,7 +2241,7 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
+ 	 * Not all SH platforms declare a clock lookup entry for SCI devices,
+ 	 * in which case we need to get the global "peripheral_clk" clock.
+ 	 */
+-	sci_port->fclk = clk_get(dev, "peripheral_clk");
++	sci_port->fclk = devm_clk_get(dev, "peripheral_clk");
+ 	if (!IS_ERR(sci_port->fclk))
+ 		return 0;
  
-+found:
- 	dev_dbg(s->port.dev, "BRR: %u%+d bps using N %u SR %u cks %u\n", bps,
- 		min_err, *brr, *srr + 1, *cks);
+@@ -2400,8 +2400,6 @@ static int sci_init_single(struct platform_device *dev,
+ 
+ static void sci_cleanup_single(struct sci_port *port)
+ {
+-	clk_put(port->fclk);
+-
+ 	pm_runtime_disable(port->port.dev);
  }
+ 
 -- 
 1.9.1
 
