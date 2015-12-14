@@ -1,125 +1,73 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 2/7] ARM: shmobile: r8a7779 dtsi: Add BRG support for SCIF
-Date: Mon, 14 Dec 2015 19:58:10 +0100
-Message-ID: <1450119495-1416-3-git-send-email-geert+renesas@glider.be>
-References: <1450119495-1416-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1450119495-1416-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-sh-owner@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH v2 7/9] ARM: shmobile: porter dts: Enable SCIF_CLK frequency and pins
+Date: Mon, 14 Dec 2015 19:58:22 +0100
+Message-ID: <1450119504-1517-8-git-send-email-geert+renesas@glider.be>
+References: <1450119504-1517-1-git-send-email-geert+renesas@glider.be>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1450119504-1517-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add the device node for the external SCIF_CLK.
-The presence of the SCIF_CLK crystal and its clock frequency depends on
-the actual board.
+Add and enable the external crystal for the SCIF_CLK and its pinctrl, to
+be used by the Baud Rate Generator for External Clock (BRG) on (H)SCIF.
 
-Add the two optional clock sources (S1 and SCIF_CLK for the internal
-resp. external clock) for the Baud Rate Generator for External Clock
-(BRG) to all SCIF device nodes.
+This increases the range and accuracy of supported baud rates.
 
-This increases the range and accuracy of supported baud rates on SCIF.
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 ---
+Untested, based on hardware manual.
+
+Note that U-Boot doesn't use SCIF_CLK on porter, like salvator-x, but
+unlike all other supported R-Car Gen2 boards.
+
 v2:
   - New.
 ---
- arch/arm/boot/dts/r8a7779.dtsi | 39 +++++++++++++++++++++++++++------------
- 1 file changed, 27 insertions(+), 12 deletions(-)
+ arch/arm/boot/dts/r8a7791-porter.dts | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/arch/arm/boot/dts/r8a7779.dtsi b/arch/arm/boot/dts/r8a7779.dtsi
-index aa71cd234ac4dd3e..bdb39e657589c86c 100644
---- a/arch/arm/boot/dts/r8a7779.dtsi
-+++ b/arch/arm/boot/dts/r8a7779.dtsi
-@@ -215,8 +215,9 @@
- 			     "renesas,scif";
- 		reg = <0xffe40000 0x100>;
- 		interrupts = <0 88 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&mstp0_clks R8A7779_CLK_SCIF0>;
--		clock-names = "fck";
-+		clocks = <&mstp0_clks R8A7779_CLK_SCIF0>,
-+			 <&cpg_clocks R8A7779_CLK_S1>, <&scif_clk>;
-+		clock-names = "fck", "brg_int", "scif_clk";
- 		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -226,8 +227,9 @@
- 			     "renesas,scif";
- 		reg = <0xffe41000 0x100>;
- 		interrupts = <0 89 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&mstp0_clks R8A7779_CLK_SCIF1>;
--		clock-names = "fck";
-+		clocks = <&mstp0_clks R8A7779_CLK_SCIF1>,
-+			 <&cpg_clocks R8A7779_CLK_S1>, <&scif_clk>;
-+		clock-names = "fck", "brg_int", "scif_clk";
- 		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -237,8 +239,9 @@
- 			     "renesas,scif";
- 		reg = <0xffe42000 0x100>;
- 		interrupts = <0 90 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&mstp0_clks R8A7779_CLK_SCIF2>;
--		clock-names = "fck";
-+		clocks = <&mstp0_clks R8A7779_CLK_SCIF2>,
-+			 <&cpg_clocks R8A7779_CLK_S1>, <&scif_clk>;
-+		clock-names = "fck", "brg_int", "scif_clk";
- 		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -248,8 +251,9 @@
- 			     "renesas,scif";
- 		reg = <0xffe43000 0x100>;
- 		interrupts = <0 91 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&mstp0_clks R8A7779_CLK_SCIF3>;
--		clock-names = "fck";
-+		clocks = <&mstp0_clks R8A7779_CLK_SCIF3>,
-+			 <&cpg_clocks R8A7779_CLK_S1>, <&scif_clk>;
-+		clock-names = "fck", "brg_int", "scif_clk";
- 		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -259,8 +263,9 @@
- 			     "renesas,scif";
- 		reg = <0xffe44000 0x100>;
- 		interrupts = <0 92 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&mstp0_clks R8A7779_CLK_SCIF4>;
--		clock-names = "fck";
-+		clocks = <&mstp0_clks R8A7779_CLK_SCIF4>,
-+			 <&cpg_clocks R8A7779_CLK_S1>, <&scif_clk>;
-+		clock-names = "fck", "brg_int", "scif_clk";
- 		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -270,8 +275,9 @@
- 			     "renesas,scif";
- 		reg = <0xffe45000 0x100>;
- 		interrupts = <0 93 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&mstp0_clks R8A7779_CLK_SCIF5>;
--		clock-names = "fck";
-+		clocks = <&mstp0_clks R8A7779_CLK_SCIF5>,
-+			 <&cpg_clocks R8A7779_CLK_S1>, <&scif_clk>;
-+		clock-names = "fck", "brg_int", "scif_clk";
- 		power-domains = <&cpg_clocks>;
- 		status = "disabled";
- 	};
-@@ -447,6 +453,15 @@
- 			clock-output-names = "extal";
- 		};
+diff --git a/arch/arm/boot/dts/r8a7791-porter.dts b/arch/arm/boot/dts/r8a7791-porter.dts
+index 71ba7b6b3a337cd9..b93016896378c350 100644
+--- a/arch/arm/boot/dts/r8a7791-porter.dts
++++ b/arch/arm/boot/dts/r8a7791-porter.dts
+@@ -85,11 +85,19 @@
+ };
  
-+		/* External SCIF clock */
-+		scif_clk: scif {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			/* This value must be overridden by the board. */
-+			clock-frequency = <0>;
-+			status = "disabled";
-+		};
+ &pfc {
++	pinctrl-0 = <&scif_clk_pins>;
++	pinctrl-names = "default";
 +
- 		/* Special CPG clocks */
- 		cpg_clocks: clocks@ffc80000 {
- 			compatible = "renesas,r8a7779-cpg-clocks";
+ 	scif0_pins: serial0 {
+ 		renesas,groups = "scif0_data_d";
+ 		renesas,function = "scif0";
+ 	};
+ 
++	scif_clk_pins: scif_clk {
++		renesas,groups = "scif_clk";
++		renesas,function = "scif_clk";
++	};
++
+ 	ether_pins: ether {
+ 		renesas,groups = "eth_link", "eth_mdio", "eth_rmii";
+ 		renesas,function = "eth";
+@@ -148,6 +156,11 @@
+ 	status = "okay";
+ };
+ 
++&scif_clk {
++	clock-frequency = <14745600>;
++	status = "okay";
++};
++
+ &ether {
+ 	pinctrl-0 = <&ether_pins &phy1_pins>;
+ 	pinctrl-names = "default";
 -- 
 1.9.1
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
