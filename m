@@ -1,49 +1,102 @@
-From: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v1 02/10] clockevents/drivers: add MPS2 Timer driver
-Date: Mon, 14 Dec 2015 07:56:29 -0600
-Message-ID: <CAL_Jsq+MhvV5BFw+x3TWTDheSpgWHjHjO02+D4V4swr493HXrg@mail.gmail.com>
-References: <1449048790-25859-1-git-send-email-vladimir.murzin@arm.com> <1449048790-25859-3-git-send-email-vladimir.murzin@arm.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 07/25] serial: sh-sci: Convert from clk_get() to devm_clk_get()
+Date: Mon, 14 Dec 2015 17:47:26 +0200
+Message-ID: <6019540.MWUM70YBzM@avalon>
+References: <1447958344-836-1-git-send-email-geert+renesas@glider.be> <1466956.fL4LZVx6Ru@avalon> <CAMuHMdXPNziFbEDvn6VwXrQY4mftpwkyOojzkwCNqvBqFOTWCg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1449048790-25859-3-git-send-email-vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TbrhsbdSgBK9A@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdXPNziFbEDvn6VwXrQY4mftpwkyOojzkwCNqvBqFOTWCg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PM list <linux-pm@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Dec 2, 2015 at 3:33 AM, Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org> wrote:
-> MPS2 platform has simple 32 bits general purpose countdown timers.
->
-> The driver uses the first detected timer as a clocksource and the rest
-> of the timers as a clockevent
->
-> Signed-off-by: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/clocksource/Kconfig      |    5 +
->  drivers/clocksource/Makefile     |    1 +
->  drivers/clocksource/mps2-timer.c |  277 ++++++++++++++++++++++++++++++++++++++
->  3 files changed, 283 insertions(+)
->  create mode 100644 drivers/clocksource/mps2-timer.c
->
-> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-> index 2eb5f0e..8bca09c 100644
-> --- a/drivers/clocksource/Kconfig
-> +++ b/drivers/clocksource/Kconfig
-> @@ -137,6 +137,11 @@ config CLKSRC_STM32
->         depends on OF && ARM && (ARCH_STM32 || COMPILE_TEST)
->         select CLKSRC_MMIO
->
-> +config CLKSRC_MPS2
-> +       bool "Clocksource for MPS2 SoCs" if COMPILE_TEST
-> +       depends on OF && ARM
+Hi Geert,
 
-Does this really depend on both of these for COMPILE_TEST?
+On Monday 14 December 2015 11:34:11 Geert Uytterhoeven wrote:
+> On Sun, Dec 13, 2015 at 8:39 PM, Laurent Pinchart wrote:
+> > On Thursday 10 December 2015 13:30:18 Geert Uytterhoeven wrote:
+> >> On Thu, Nov 19, 2015 at 9:38 PM, Laurent Pinchart wrote:
+> >> > On Thursday 19 November 2015 19:38:46 Geert Uytterhoeven wrote:
+> >> >> Transfer clock cleanup handling to the core device management code.
+> >> >> 
+> >> >> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> >> >> ---
+> >> >> 
+> >> >>  drivers/tty/serial/sh-sci.c | 8 +++-----
+> >> >>  1 file changed, 3 insertions(+), 5 deletions(-)
+> >> >> 
+> >> >> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> >> >> index cba51da604253db6..9442961a198378c7 100644
+> >> >> --- a/drivers/tty/serial/sh-sci.c
+> >> >> +++ b/drivers/tty/serial/sh-sci.c
+> >> >> @@ -2216,7 +2216,7 @@ static struct uart_ops sci_uart_ops = {
+> >> >> 
+> >> >>  static int sci_init_clocks(struct sci_port *sci_port, struct device
+> >> >>  *dev)
+> >> >>  {
+> >> >>       /* Get the SCI functional clock. It's called "fck" on ARM. */
+> >> >> -     sci_port->fclk = clk_get(dev, "fck");
+> >> >> +     sci_port->fclk = devm_clk_get(dev, "fck");
+> >> > 
+> >> > Have you tested what happens if you unbind the device from the driver
+> >> > while userspace has the serial port open ?
+> >> 
+> >> Yes I have. And I didn't notice any user-visible behavioral differences.
+> >> 
+> >> There is a small ordering difference, though: with clk_get() and
+> >> clk_put(), the explicit clk_put() is done before removing the device from
+> >> its PM
+> >> 
+> >> Domain (which involces another call to clk_put() on the module clock):
+> >>     device_release_driver
+> >>         __device_release_driver
+> >>             platform_drv_remove
+> >>                 sci_remove
+> >>                     sci_cleanup_single
+> >>                         __clk_put
+> >>                 genpd_dev_pm_detach
+> >>                     pm_genpd_remove_device
+> >>                         pm_clk_destroy
+> >>                             __pm_clk_remove
+> >>                                 __clk_put
+> >> 
+> >> When using devm_clk_get(), the managed cleanup is done after the device
+> >> has been removed from its PM Domain:
+> >>     device_release_driver
+> >>         __device_release_driver
+> >>             platform_drv_remove
+> >>                 genpd_dev_pm_detach
+> >>                     pm_genpd_remove_device
+> >>                         pm_clk_destroy
+> >>                             __pm_clk_remove
+> >>                                 __clk_put
+> >>             release_nodes
+> >>                 __clk_put
+> >> 
+> >> This shouldn't make a difference, and applies to all other drivers using
+> >> devm_*(), and devices that are part of a PM Domain.
+> > 
+> > I was more concerned about the clk_disable_unprepare() calls. The function
+> > is called through the uart pm handler which is called when closing the
+> > uart (uart_close()). It's a bit difficult to follow the dynamic code
+> > paths as I'm not very familiar with the framework, but I was concerned
+> > that the would end up calling clk_disable_unprepare() on a clock for
+> > which we have no reference anymore. What prevents clk_disable_unprepare()
+> > from being called in the close path after the device has been unbound ?
+> > And what ensures that the clocks get unprepared when unbinding the device
+> > if the port is held open by a userspace process ?
+> 
+> Both questions are answered by uart_hangup():
+>   - uart_hangup() sets port->count to zero, hence uart_close() returns early
+> (second return statement), long before it would call the uart pm handler.
+> - uart_hangup() calls uart_change_pm(state, UART_PM_STATE_OFF);
 
-You need to select CLKSRC_OF rather than CLKSRC_MMIO as well.
+Thank you for making me slightly wiser :-)
 
-Rob
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Regards,
+
+Laurent Pinchart
