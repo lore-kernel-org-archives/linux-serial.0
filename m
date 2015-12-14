@@ -1,23 +1,23 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 03/12] ARM: shmobile: r7s72100 dtsi: Rename the serial port clock to fck
-Date: Mon, 14 Dec 2015 19:57:57 +0100
-Message-ID: <1450119486-1285-4-git-send-email-geert+renesas@glider.be>
+From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH v3 02/12] ARM: shmobile: sh73a0 dtsi: Rename the serial port clock to fck
+Date: Mon, 14 Dec 2015 19:57:56 +0100
+Message-ID: <1450119486-1285-3-git-send-email-geert+renesas@glider.be>
 References: <1450119486-1285-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1450119486-1285-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-sh-owner@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1450119486-1285-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>
+Cc: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
 The clock is really the device functional clock, not the interface
 clock. Rename it.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Acked-by: Simon Horman <horms+renesas@verge.net.au>
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Acked-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 ---
 v3:
   - No changes,
@@ -25,85 +25,98 @@ v3:
 v2:
   - Add Acked-by.
 ---
- arch/arm/boot/dts/r7s72100.dtsi | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ arch/arm/boot/dts/sh73a0.dtsi | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/arch/arm/boot/dts/r7s72100.dtsi b/arch/arm/boot/dts/r7s72100.dtsi
-index 4657d7fb5bceede5..0c3b9e341ce7fd8e 100644
---- a/arch/arm/boot/dts/r7s72100.dtsi
-+++ b/arch/arm/boot/dts/r7s72100.dtsi
-@@ -157,7 +157,7 @@
- 			     <0 192 IRQ_TYPE_LEVEL_HIGH>,
- 			     <0 189 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp4_clks R7S72100_CLK_SCIF0>;
+diff --git a/arch/arm/boot/dts/sh73a0.dtsi b/arch/arm/boot/dts/sh73a0.dtsi
+index 3a6056f9f0d23f17..866ee5de09454d14 100644
+--- a/arch/arm/boot/dts/sh73a0.dtsi
++++ b/arch/arm/boot/dts/sh73a0.dtsi
+@@ -359,7 +359,7 @@
+ 		reg = <0xe6c40000 0x100>;
+ 		interrupts = <0 72 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA0>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
+ 		power-domains = <&pd_a3sp>;
  		status = "disabled";
  	};
-@@ -170,7 +170,7 @@
- 			     <0 196 IRQ_TYPE_LEVEL_HIGH>,
- 			     <0 193 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp4_clks R7S72100_CLK_SCIF1>;
+@@ -369,7 +369,7 @@
+ 		reg = <0xe6c50000 0x100>;
+ 		interrupts = <0 73 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA1>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
+ 		power-domains = <&pd_a3sp>;
  		status = "disabled";
  	};
-@@ -183,7 +183,7 @@
- 			     <0 200 IRQ_TYPE_LEVEL_HIGH>,
- 			     <0 197 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp4_clks R7S72100_CLK_SCIF2>;
+@@ -379,7 +379,7 @@
+ 		reg = <0xe6c60000 0x100>;
+ 		interrupts = <0 74 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA2>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
+ 		power-domains = <&pd_a3sp>;
  		status = "disabled";
  	};
-@@ -196,7 +196,7 @@
- 			     <0 204 IRQ_TYPE_LEVEL_HIGH>,
- 			     <0 201 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp4_clks R7S72100_CLK_SCIF3>;
+@@ -389,7 +389,7 @@
+ 		reg = <0xe6c70000 0x100>;
+ 		interrupts = <0 75 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA3>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
+ 		power-domains = <&pd_a3sp>;
  		status = "disabled";
  	};
-@@ -209,7 +209,7 @@
- 			     <0 208 IRQ_TYPE_LEVEL_HIGH>,
- 			     <0 205 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp4_clks R7S72100_CLK_SCIF4>;
+@@ -399,7 +399,7 @@
+ 		reg = <0xe6c80000 0x100>;
+ 		interrupts = <0 78 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA4>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
+ 		power-domains = <&pd_a3sp>;
  		status = "disabled";
  	};
-@@ -222,7 +222,7 @@
- 			     <0 212 IRQ_TYPE_LEVEL_HIGH>,
- 			     <0 209 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp4_clks R7S72100_CLK_SCIF5>;
+@@ -409,7 +409,7 @@
+ 		reg = <0xe6cb0000 0x100>;
+ 		interrupts = <0 79 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA5>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
+ 		power-domains = <&pd_a3sp>;
  		status = "disabled";
  	};
-@@ -235,7 +235,7 @@
- 			     <0 216 IRQ_TYPE_LEVEL_HIGH>,
- 			     <0 213 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp4_clks R7S72100_CLK_SCIF6>;
+@@ -419,7 +419,7 @@
+ 		reg = <0xe6cc0000 0x100>;
+ 		interrupts = <0 156 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp3_clks SH73A0_CLK_SCIFA6>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
+ 		power-domains = <&pd_a3sp>;
  		status = "disabled";
  	};
-@@ -248,7 +248,7 @@
- 			     <0 220 IRQ_TYPE_LEVEL_HIGH>,
- 			     <0 217 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&mstp4_clks R7S72100_CLK_SCIF7>;
+@@ -429,7 +429,7 @@
+ 		reg = <0xe6cd0000 0x100>;
+ 		interrupts = <0 143 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp2_clks SH73A0_CLK_SCIFA7>;
 -		clock-names = "sci_ick";
 +		clock-names = "fck";
- 		power-domains = <&cpg_clocks>;
+ 		power-domains = <&pd_a3sp>;
+ 		status = "disabled";
+ 	};
+@@ -439,7 +439,7 @@
+ 		reg = <0xe6c30000 0x100>;
+ 		interrupts = <0 80 IRQ_TYPE_LEVEL_HIGH>;
+ 		clocks = <&mstp2_clks SH73A0_CLK_SCIFB>;
+-		clock-names = "sci_ick";
++		clock-names = "fck";
+ 		power-domains = <&pd_a3sp>;
  		status = "disabled";
  	};
 -- 
 1.9.1
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
