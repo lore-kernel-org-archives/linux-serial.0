@@ -1,54 +1,66 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v5] serial: support for 16550A serial ports on LP-8x4x
-Date: Tue, 15 Dec 2015 22:51:20 +0100
-Message-ID: <1970812.j9fZPC5F1b@wuerfel>
-References: <1397668667-27328-1-git-send-email-ynvich@gmail.com> <1450213494-21884-1-git-send-email-ynvich@gmail.com>
+From: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Subject: Re: [PATCH 0/5] drivers/tty: make more bool drivers explicitly
+ non-modular
+Date: Tue, 15 Dec 2015 17:29:50 -0500
+Message-ID: <20151215222950.GH2772@windriver.com>
+References: <1445206878-12455-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1450213494-21884-1-git-send-email-ynvich@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sergei Ianovich <ynvich@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Scott Wood <scottwood@freescale.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Paul Burton <paul.burton@imgtec.com>, Joachim Eastwood <manabian@gmail.com>, Mans Rullgard <mans@mansr.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, Peter Hurley <peter@hurleysoftware.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>open list:
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1445206878-12455-1-git-send-email-paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Anton Blanchard <anton-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Andy Gross <agross-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday 16 December 2015 00:04:45 Sergei Ianovich wrote:
-> index 0000000..5f9a4c1
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/lp8x4x-serial.txt
-> @@ -0,0 +1,35 @@
-> +UART ports on ICP DAS LP-8x4x
-> +
-> +ICP DAS LP-8x4x contains three additional serial ports interfaced via
-> +Analog Devices ADM213EA chips in addition to 3 serial ports on PXA CPU.
-> +
-> +Required properties:
-> +- compatible : should be "icpdas,uart-lp8x4x"
+[[PATCH 0/5] drivers/tty: make more bool drivers explicitly non-modular] On 18/10/2015 (Sun 18:21) Paul Gortmaker wrote:
 
-Compatible strings should not include a 'x' wildcard like this, better use
-the specific chip name.
+> This next set of patches to drivers/tty fixes up more drivers that would
+> perhaps appear modular when looking at the code, but are controlled by
+> a bool Kconfig.  We make sure they don't look modular and get rid
+> of module related code in the drivers that would never be used.
 
-Also, it sounds like you named them after the board vendor, which sounds
-wrong as the vendor part of the compatible string should be the whoever
-made that part (analog?)
+[...]
 
-> +- reg : should provide 16 byte man IO memory region and 1 byte region for
-> +       termios
-> +
-> +- interrupts : should provide interrupt
-> +
-> +- interrupt-parent : should provide a link to interrupt controller either
-> +                    explicitly or implicitly from a parent node
+> Paul Gortmaker (5):
+>   drivers/tty: make hvc/hvc_vio.c explicitly non-modular
+>   drivers/tty: make ehv_bytechan.c explicitly non-modular
+>   drivers/tty/serial: make serial/atmel_serial.c explicitly non-modular
+>   drivers/tty/serial: make msm_serial.c explicitly non-modular
+>   drivers/tty/serial: make 8250/8250_mtk.c explicitly non-modular
 
-interrupt-parent should be an optional property, or you can leave it out,
-as this is a standard property that can always be there when there is 
-interrupts.
+Hi Greg,
 
-> +Examples (from pxa27x-lp8x4x.dts):
-> +
-> +               uart@9050 {
+You've merged the #3 atmel patch and #5 the 8250_mtk patch; the msm_serial
+patch (#4) is no longer applicable since the authors changed it to tristate.
 
-By convention, the name should be 'serial', not 'uart'.
+That leaves the top two patches; both for PPC hardware.  Did you skip
+those because you wanted them pushed through the powerpc tree?
 
-	Arnd.
+If so, that is fine, I can do that.  Just let me know.
+
+Thanks,
+Paul.
+--
+
+> 
+>  drivers/tty/ehv_bytechan.c         | 40 +++------------------------------
+>  drivers/tty/hvc/hvc_vio.c          | 29 ++++--------------------
+>  drivers/tty/serial/8250/8250_mtk.c | 35 ++++++-----------------------
+>  drivers/tty/serial/atmel_serial.c  | 45 ++++----------------------------------
+>  drivers/tty/serial/msm_serial.c    | 30 ++++---------------------
+>  5 files changed, 22 insertions(+), 157 deletions(-)
+> 
+> -- 
+> 2.6.1
+> 
