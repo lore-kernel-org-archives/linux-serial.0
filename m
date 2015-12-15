@@ -1,71 +1,60 @@
-From: Aya Mahfouz <mahfouz.saif.elyazal@gmail.com>
-Subject: [PATCH] tty: serial: constify psc_ops structs
-Date: Tue, 15 Dec 2015 01:45:16 +0200
-Message-ID: <20151214234516.GA6052@waves>
+From: Peter Hung <hpeter@gmail.com>
+Subject: Re: [PATCH RESEND 1/1] serial: 8250_pci: Fix real serial port count
+ for F81504/508/512
+Date: Tue, 15 Dec 2015 10:56:08 +0800
+Message-ID: <566F8148.5020600@gmail.com>
+References: <1448952881-7871-1-git-send-email-hpeter+linux_kernel@gmail.com>
+ <CAHp75Vd45Wogz83L8tB7XdvYO1bfn9C4sc3sHgr1Vskka-X3fw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <CAHp75Vd45Wogz83L8tB7XdvYO1bfn9C4sc3sHgr1Vskka-X3fw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Julia Lawall <Julia.Lawall@lip6.fr>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, tom_tsai@fintek.com.tw, Peter H <peter_hong@fintek.com.tw>, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Constifies psc_ops structures in tty's serial
-port driver since they are not modified after
-their initialization.
+Hello,
 
-Detected and found using Coccinelle.
+Andy Shevchenko =E6=96=BC 2015/12/13 =E4=B8=8A=E5=8D=88 09:08 =E5=AF=AB=
+=E9=81=93:
+> On Tue, Dec 1, 2015 at 8:54 AM, Peter Hung <hpeter@gmail.com> wrote:
 
-Suggested-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Aya Mahfouz <mahfouz.saif.elyazal@gmail.com>
----
- drivers/tty/serial/mpc52xx_uart.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> First of all, maybe you can consider to split this part of the driver
+> to separate one? (Like we did for 8250_mid.c). It seems 8250_pci is
+> too bloated. But it's just an idea, maybe for future.
 
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 8c3e513..3970d6a 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -346,7 +346,7 @@ static irqreturn_t mpc52xx_psc_handle_irq(struct uart_port *port)
- 	return mpc5xxx_uart_process_int(port);
- }
- 
--static struct psc_ops mpc52xx_psc_ops = {
-+static const struct psc_ops mpc52xx_psc_ops = {
- 	.fifo_init = mpc52xx_psc_fifo_init,
- 	.raw_rx_rdy = mpc52xx_psc_raw_rx_rdy,
- 	.raw_tx_rdy = mpc52xx_psc_raw_tx_rdy,
-@@ -376,7 +376,7 @@ static struct psc_ops mpc52xx_psc_ops = {
- 	.get_mr1 = mpc52xx_psc_get_mr1,
- };
- 
--static struct psc_ops mpc5200b_psc_ops = {
-+static const struct psc_ops mpc5200b_psc_ops = {
- 	.fifo_init = mpc52xx_psc_fifo_init,
- 	.raw_rx_rdy = mpc52xx_psc_raw_rx_rdy,
- 	.raw_tx_rdy = mpc52xx_psc_raw_tx_rdy,
-@@ -969,7 +969,7 @@ static u8 mpc5125_psc_get_mr1(struct uart_port *port)
- 	return in_8(&PSC_5125(port)->mr1);
- }
- 
--static struct psc_ops mpc5125_psc_ops = {
-+static const struct psc_ops mpc5125_psc_ops = {
- 	.fifo_init = mpc5125_psc_fifo_init,
- 	.raw_rx_rdy = mpc5125_psc_raw_rx_rdy,
- 	.raw_tx_rdy = mpc5125_psc_raw_tx_rdy,
-@@ -1004,7 +1004,7 @@ static struct psc_ops mpc5125_psc_ops = {
- 	.get_mr1 = mpc5125_psc_get_mr1,
- };
- 
--static struct psc_ops mpc512x_psc_ops = {
-+static const struct psc_ops mpc512x_psc_ops = {
- 	.fifo_init = mpc512x_psc_fifo_init,
- 	.raw_rx_rdy = mpc512x_psc_raw_rx_rdy,
- 	.raw_tx_rdy = mpc512x_psc_raw_tx_rdy,
--- 
-2.4.3
+It's a good idea. Our PCI-to-UART device is a multifunctional
+(GPIO/UART) board, I need try to split it from 8250_pci.c to
+implements all functions.
 
+>>
+>> +/* The device is multi-function with UART & GPIO */
+>> +static u8 fintek_gpio_mapping[] =3D {2, 3, 8, 9, 10, 11};
+>
+> Clearly you have bit combination here
+> Bit 1: 1
+> Bit 3: 1
+>
+> So, mask as 0x0a shall cover this IIAC.
 
--- 
-Kind Regards,
-Aya Saif El-yazal Mahfouz
+IMO, It maybe wrong. If we checked only with 0x0a mask,
+the 0x06 & 0x07 will be passed.
+
+I had try with k-map to reduce from 0~11 (12~15 for don't care).
+The final boolean value is a + c b(bar) for a is MSB.
+
+>> -       config_base =3D 0x40 + 0x08 * idx;
+>> +       switch (pdev->device) {
+>> +       case 0x1104: /* 4 ports */
+>
+> Maybe you can introduce constants for IDs.
+
+I'll make the magic numbers with #define marco.
+
+Thanks for your advices.
+--=20
+With Best Regards,
+Peter Hung
