@@ -1,69 +1,73 @@
 From: Anton Wuerfel <anton.wuerfel@fau.de>
-Subject: [PATCH 05/11] tty: serial: 8250: Remove else after return
-Date: Wed, 16 Dec 2015 16:36:11 +0100
-Message-ID: <1450280177-4460-6-git-send-email-anton.wuerfel@fau.de>
+Subject: [PATCH 09/11] tty: serial: 8250: Fix multi-line strings
+Date: Wed, 16 Dec 2015 16:36:15 +0100
+Message-ID: <1450280177-4460-10-git-send-email-anton.wuerfel@fau.de>
 References: <1450280177-4460-1-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
 In-Reply-To: <1450280177-4460-1-git-send-email-anton.wuerfel@fau.de>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-parisc-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Peter Hurley <peter@hurleysoftware.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, Desmond Liu <desmondl@broadcom.com>, Wang Long <long.wanglong@huawei.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Peter Hung <hpeter@gmail.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Adam Lee <adam.lee@canonical.com>, "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, Mans Rullgard <mans@mansr.com>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Anton Wuerfel <anto>
 List-Id: linux-serial@vger.kernel.org
 
-This patch fixes checkpatch warnings about unnecessary else blocks afte=
-r
-return statements.
+Merged user-visible multi-line strings into a single line according to =
+the
+Linux Kernel Coding Style, which allows user-visible strings to exceed =
+the
+maximum line length of 80 characters. The main reason for this is to
+facilitate grepping for these strings.
+However, some strings were ignored in this patch, because the use of
+format specifiers breaks the ability to grep anyway.
 
 Signed-off-by: Anton W=C3=BCrfel <anton.wuerfel@fau.de>
 Signed-off-by: Phillip Raffeck <phillip.raffeck@fau.de>
 CC: linux-kernel@i4.cs.fau.de
 ---
- drivers/tty/serial/8250/8250_pci.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 3 +--
+ drivers/tty/serial/8250/serial_cs.c | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
-50/8250_pci.c
-index 41508a5..3bc0303 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -806,10 +806,10 @@ static int pci_netmos_9900_numports(struct pci_de=
-v *dev)
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8=
+250/8250_core.c
+index 3c29530..2b3731f 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1174,8 +1174,7 @@ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Generic 8250/16x50 serial driver");
 =20
- 	pi =3D (c & 0xff);
+ module_param(share_irqs, uint, 0644);
+-MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 dev=
+ices"
+-	" (unsafe)");
++MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 dev=
+ices (unsafe)");
 =20
--	if (pi =3D=3D 2) {
-+	if (pi =3D=3D 2)
- 		return 1;
--	} else if ((pi =3D=3D 0) &&
--			   (dev->device =3D=3D PCI_DEVICE_ID_NETMOS_9900)) {
-+
-+	if ((pi =3D=3D 0) && (dev->device =3D=3D PCI_DEVICE_ID_NETMOS_9900)) =
-{
- 		/* two possibilities: 0x30ps encodes number of parallel and
- 		 * serial ports, or 0x1000 indicates *something*. This is not
- 		 * immediately obvious, since the 2s1p+4s configuration seems
-@@ -817,12 +817,11 @@ static int pci_netmos_9900_numports(struct pci_de=
-v *dev)
- 		 * advertising the same function 3 as the 4s+2s1p config.
- 		 */
- 		sub_serports =3D dev->subsystem_device & 0xf;
--		if (sub_serports > 0) {
-+		if (sub_serports > 0)
- 			return sub_serports;
--		} else {
--			dev_err(&dev->dev, "NetMos/Mostech serial driver ignoring port on a=
-mbiguous config.\n");
--			return 0;
--		}
-+
-+		dev_err(&dev->dev, "NetMos/Mostech serial driver ignoring port on am=
-biguous config.\n");
-+		return 0;
+ module_param(nr_uarts, uint, 0644);
+ MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __=
+MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
+diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8=
+250/serial_cs.c
+index a4bdcf6..65d341d 100644
+--- a/drivers/tty/serial/8250/serial_cs.c
++++ b/drivers/tty/serial/8250/serial_cs.c
+@@ -535,8 +535,7 @@ static int multi_config(struct pcmcia_device *link)
+ 		info->multi =3D 2;
+ 		if (pcmcia_loop_config(link, multi_config_check_notpicky,
+ 				       &base2)) {
+-			dev_warn(&link->dev, "no usable port range "
+-			       "found, giving up\n");
++			dev_warn(&link->dev, "no usable port range found, giving up\n");
+ 			return -ENODEV;
+ 		}
  	}
-=20
- 	moan_device("unknown NetMos/Mostech program interface", dev);
 --=20
 1.9.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-parisc"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
