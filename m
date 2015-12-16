@@ -1,60 +1,101 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH LINUX v4 06/13] tty: xuartps: Move request_irq to after
- setting up the HW
-Date: Wed, 16 Dec 2015 06:37:57 -0800
-Message-ID: <56717745.3060306@hurleysoftware.com>
-References: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
- <1449376769-13369-7-git-send-email-soren.brinkmann@xilinx.com>
- <5669F172.6020503@hurleysoftware.com> <20151215154136.GU3358@xsjsorenbubuntu>
- <5670A1B6.6050708@hurleysoftware.com> <20151216090339.GX3358@xsjsorenbubuntu>
+From: =?UTF-8?q?Frederik=20V=C3=B6lkel?= <frederik.voelkel@fau.de>
+Subject: [PATCH v2 3/4] drivers: tty: 68328serial.c: Use use same indentation for switch/case
+Date: Wed, 16 Dec 2015 16:17:00 +0100
+Message-ID: <1450279021-17154-4-git-send-email-frederik.voelkel@fau.de>
+References: <1449830170-15096-1-git-send-email-frederik.voelkel@fau.de>
+ <1450279021-17154-1-git-send-email-frederik.voelkel@fau.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151216090339.GX3358@xsjsorenbubuntu>
+In-Reply-To: <1450279021-17154-1-git-send-email-frederik.voelkel@fau.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?S=c3=b6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Moritz Fischer <moritz.fischer@ettus.com>
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, lukas.braun@fau.de, linux-kernel@i4.cs.fau.de, =?UTF-8?q?Frederik=20V=C3=B6lkel?= <frederik.voelkel@fau.de>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/16/2015 01:03 AM, S=C3=B6ren Brinkmann wrote:
-> On Tue, 2015-12-15 at 03:26PM -0800, Peter Hurley wrote:
->> On 12/15/2015 07:41 AM, S=C3=B6ren Brinkmann wrote:
->>> On Thu, 2015-12-10 at 01:41PM -0800, Peter Hurley wrote:
->>>> On 12/05/2015 08:39 PM, Soren Brinkmann wrote:
->>>>> Request_irq() should be _after_ h/w programming, otherwise an
->>>>> interrupt could be triggered and in-progress before the h/w has b=
-een
->>>>> setup.
->>>>
->>>> Slight misunderstanding. My fault; I should have been more explici=
-t.
->>>>
->>>> 1. Any setup necessary for the isr not to be confused and misdirec=
-t spurious
->>>>    interrupts (or hang) should be before installing the isr with r=
-equest_irq()
->>>>    None of this code should trigger an interrupt.
->>>> 2. Clear pending interrupts
->>>> 3. Install the isr with request_irq()
->>>> 4. Enable interrupts
->>>
->>> Isn't that what the startup function is doing now - more or less. I
->>> think 3 and 4 are swapped to release the lock and then do the
->>> request_irq, but I believe that should be OK.
->>> The startup function configures the HW. Clears the ISR. Enables the
->>> intended IRQs and then does the request_irq call.
->>
->> If the driver enables interrupts before installing the isr with requ=
-est_irq()
->> and an interrupt occurs there will the no handler to catch it and EO=
-I the
->> device.
->=20
-> Really? Shouldn't the IRQ be masked in the interrupt controller until
-> everything is in place?
+This patch fixes an indentation checkpatch error so switch and case
+have the same indentation.
 
-Sorry, I'm used to shared interrupts, where that isn't the case.
+Signed-off-by: Frederik V=C3=B6lkel <frederik.voelkel@fau.de>
+Signed-off-by: Lukas Braun <lukas.braun@fau.de>
+---
+ drivers/tty/serial/68328serial.c | 60 ++++++++++++++++++++------------=
+--------
+ 1 file changed, 30 insertions(+), 30 deletions(-)
 
-Regards,
-Peter Hurley
+diff --git a/drivers/tty/serial/68328serial.c b/drivers/tty/serial/6832=
+8serial.c
+index f7f9b7e..c0bd3a6 100644
+--- a/drivers/tty/serial/68328serial.c
++++ b/drivers/tty/serial/68328serial.c
+@@ -936,37 +936,37 @@ static int rs_ioctl(struct tty_struct *tty,
+ 	}
+=20
+ 	switch (cmd) {
+-		case TCSBRK:	/* SVID version: non-zero arg --> no break */
+-			retval =3D tty_check_change(tty);
+-			if (retval)
+-				return retval;
+-			tty_wait_until_sent(tty, 0);
+-			if (!arg)
+-				send_break(info, 250);	/* 1/4 second */
+-			return 0;
+-		case TCSBRKP:	/* support for POSIX tcsendbreak() */
+-			retval =3D tty_check_change(tty);
+-			if (retval)
+-				return retval;
+-			tty_wait_until_sent(tty, 0);
+-			send_break(info, arg ? arg*(100) : 250);
+-			return 0;
+-		case TIOCGSERIAL:
+-			return get_serial_info(info,
++	case TCSBRK:	/* SVID version: non-zero arg --> no break */
++		retval =3D tty_check_change(tty);
++		if (retval)
++			return retval;
++		tty_wait_until_sent(tty, 0);
++		if (!arg)
++			send_break(info, 250);	/* 1/4 second */
++		return 0;
++	case TCSBRKP:	/* support for POSIX tcsendbreak() */
++		retval =3D tty_check_change(tty);
++		if (retval)
++			return retval;
++		tty_wait_until_sent(tty, 0);
++		send_break(info, arg ? arg*(100) : 250);
++		return 0;
++	case TIOCGSERIAL:
++		return get_serial_info(info,
++			       (struct serial_struct *) arg);
++	case TIOCSSERIAL:
++		return set_serial_info(info, tty,
+ 				       (struct serial_struct *) arg);
+-		case TIOCSSERIAL:
+-			return set_serial_info(info, tty,
+-					       (struct serial_struct *) arg);
+-		case TIOCSERGETLSR: /* Get line status register */
+-			return get_lsr_info(info, (unsigned int *) arg);
+-		case TIOCSERGSTRUCT:
+-			if (copy_to_user((struct m68k_serial *) arg,
+-				    info, sizeof(struct m68k_serial)))
+-				return -EFAULT;
+-			return 0;
+-		default:
+-			return -ENOIOCTLCMD;
+-		}
++	case TIOCSERGETLSR: /* Get line status register */
++		return get_lsr_info(info, (unsigned int *) arg);
++	case TIOCSERGSTRUCT:
++		if (copy_to_user((struct m68k_serial *) arg,
++			    info, sizeof(struct m68k_serial)))
++			return -EFAULT;
++		return 0;
++	default:
++		return -ENOIOCTLCMD;
++	}
+ 	return 0;
+ }
+=20
+--=20
+1.9.1
