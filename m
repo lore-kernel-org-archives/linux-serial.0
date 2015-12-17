@@ -1,58 +1,64 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty: amba-pl011: add support for 32-bit register access
- for earlycon
-Date: Thu, 17 Dec 2015 09:06:39 -0800
-Message-ID: <5672EB9F.805@hurleysoftware.com>
-References: <1446855503-25881-1-git-send-email-timur@codeaurora.org>
- <20151213060643.GA30667@kroah.com>
- <CAOZdJXVz5Bm2-XBNjoU6uh=i2E0Mq915entU+rz-MqD8F4C=xQ@mail.gmail.com>
- <20151217162736.GA5897@kroah.com> <5672E73C.20601@codeaurora.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
+Date: Thu, 17 Dec 2015 09:21:43 -0800
+Message-ID: <20151217172143.GA20049@kroah.com>
+References: <5672D18E.8000301@laposte.net>
+ <5672E2CF.6080705@hurleysoftware.com>
+ <5672E76A.3010506@laposte.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <5672E73C.20601@codeaurora.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Timur Tabi <timur@codeaurora.org>, Greg Kroah-Hartman <greg@kroah.com>
-Cc: Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew Jackson <Andrew.Jackson@arm.com>, cov@codeaurora.org, linux-serial@vger.kernel.org, jslaby@suse.com, Russell King <rmk+kernel@arm.linux.org.uk>, Jun Nie <jun.nie@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5672E76A.3010506@laposte.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Frias <sf84@laposte.net>
+Cc: Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, mason <slash.tmp@free.fr>, =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/17/2015 08:47 AM, Timur Tabi wrote:
-> Greg Kroah-Hartman wrote:
->>> >There was some disagreement about the usage of
->>> >access_32b vs uap->port.iotype for determining whether we need 32-bit
->>> >accessors or not.
->> There was?  I missed that, please send follow-on patches to resolve the
->> issue if there is one.
+On Thu, Dec 17, 2015 at 05:48:42PM +0100, Sebastian Frias wrote:
+> On 12/17/2015 05:29 PM, Peter Hurley wrote:
+> >On 12/17/2015 07:15 AM, Sebastian Frias wrote:
+> >>---
+> >>
+> >>I think there are a few minor bugs on the 8250 UART code.
+> >>
+> >>Below you can find a patch with a proposed solution.
+> >>
+> >>In a nutshell:
+> >>- probe_baud from 87515772c33ee8a0cc08d984a7d2401eeff074cd was
+> >>converted into probe_port so that it reads all the parameters that
+> >>uart_set_options require (namely baud, parity, bits, flow).
+> >>- reading/writing to UART_DLL/UART_DLM directly are converted to
+> >>using the read_dl/write_dl callbacks.
+> >>- the port is always probed if there are no options (*).
+> >
+> >Because I don't want to probe the port at all.
+> >
+> >But must when using the
+> >	earlycon=ttyS0,....
+> >
+> >command-line (because the original hack expects that behavior).
 > 
-> I can submit a patch that provides an alternative implementation, but I'm pretty sure Russell won't like it.
+> Ok, we are using:
 > 
-> For reference:
+> "console=ttyS0 earlyprintk"
 > 
-> http://www.spinics.net/lists/linux-serial/msg19710.html
+> and the 8250 (with CONFIG_SERIAL_8250_RT288X=y) driver.
 > 
-> Russell said that UPIO_MEM is supposed to be literally only 8-bit access, but then Peter Hurley posted this:
-> 
-> http://www.spinics.net/lists/linux-serial/msg19930.html
-> 
-> which you applied.  So my patch would remove access_32b and use UPIO_MEM32/UPIO_MEM instead.  It would be a little weird having both patches in your tree, I guess.
+> The hardware is setup prior to Linux boot.
+> We don't want Linux to change the UART settings, just to pick up whatever
+> settings the UART has and take over UART.
 
-I think it'll be ok if you just send a patch to use UPIO_MEM32
-instead; I think that situation mostly had to do with inertia
-and not wanting to rebase a series like that (which I can
-appreciate).
+Don't do that :)
+Linux can't "know" what happened before it started to the hardware and
+expect to work properly.
 
-The worst that happens is Russell objects, but I think there's a
-good case for the simpler UPIO_MEM32 usage, which plays nice
-with earlycon.
+> How do you suggest we do that? Right now, since it does not probe, it just
+> messes up the UART config setup before booting Linux.
 
-Regards,
-Peter Hurley
+pass in the same settings as you previously set up, that way there is no
+change.
+
+thanks,
+
+greg k-h
