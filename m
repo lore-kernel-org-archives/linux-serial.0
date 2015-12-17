@@ -1,56 +1,26 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 08/11] tty: serial: 8250: Add parentheses to macro
-Date: Thu, 17 Dec 2015 17:16:41 +0200
-Message-ID: <1450365401.30729.142.camel@linux.intel.com>
-References: <1450280177-4460-1-git-send-email-anton.wuerfel@fau.de>
-	 <1450280177-4460-9-git-send-email-anton.wuerfel@fau.de>
+From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
+Date: Thu, 17 Dec 2015 15:23:55 +0000
+Message-ID: <yw1xwpsdcd4k.fsf@unicorn.mansr.com>
+References: <5672D18E.8000301@laposte.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1450280177-4460-9-git-send-email-anton.wuerfel@fau.de>
+In-Reply-To: <5672D18E.8000301@laposte.net> (Sebastian Frias's message of
+	"Thu, 17 Dec 2015 16:15:26 +0100")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Anton Wuerfel <anton.wuerfel@fau.de>, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Peter Hurley <peter@hurleysoftware.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, Desmond Liu <desmondl@broadcom.com>, Wang Long <long.wanglong@huawei.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Peter Hung <hpeter@gmail.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Adam Lee <adam.lee@canonical.com>, "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, Mans Rullgard <mans@mansr.com>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Phillip Raffeck <phillip.raffeck@fau.de>
+To: Sebastian Frias <sf84@laposte.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, mason <slash.tmp@free.fr>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2015-12-16 at 16:36 +0100, Anton Wuerfel wrote:
-> This patch fixes a checkpatch warning caused by missing parentheses
-> in the definition of a macro.
->=20
-> Signed-off-by: Anton W=C3=BCrfel <anton.wuerfel@fau.de>
-> Signed-off-by: Phillip Raffeck <phillip.raffeck@fau.de>
-> CC: linux-kernel@i4.cs.fau.de
-> ---
-> =C2=A0drivers/tty/serial/8250/8250_core.c | 2 +-
-> =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_core.c
-> b/drivers/tty/serial/8250/8250_core.c
-> index 67147b2..3c29530 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -686,7 +686,7 @@ static int __init univ8250_console_init(void)
-> =C2=A0}
-> =C2=A0console_initcall(univ8250_console_init);
-> =C2=A0
-> -#define SERIAL8250_CONSOLE	&univ8250_console
-> +#define SERIAL8250_CONSOLE	(&univ8250_console)
+Sebastian Frias <sf84@laposte.net> writes:
 
-What about the rest of the drivers under drivers/tty/serial?
+> - reading/writing to UART_DLL/UART_DLM directly are converted to usin=
+g
+> the read_dl/write_dl callbacks.
 
-What do you propose to do with, for example, the following
-
-drivers/tty/serial/cpm_uart/cpm_uart_core.c:1392:#define
-CPM_UART_CONSOLE=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0&cpm_scc_uart=
-_console
-drivers/tty/serial/cpm_uart/cpm_uart_core.c:1394:#define
-CPM_UART_CONSOLE=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0NULL
-
-> =C2=A0#else
-> =C2=A0#define SERIAL8250_CONSOLE	NULL
-> =C2=A0#endif
+This should be an obvious fix.  Please send that as a separate patch.
 
 --=20
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+M=E5ns Rullg=E5rd
