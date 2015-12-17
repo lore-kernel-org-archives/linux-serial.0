@@ -1,70 +1,64 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 06/11] tty: serial: 8250: Move EXPORT_SYMBOL to function
-Date: Wed, 16 Dec 2015 09:06:47 -0800
-Message-ID: <56719A27.4060102@hurleysoftware.com>
-References: <1450280177-4460-1-git-send-email-anton.wuerfel@fau.de>
- <1450280177-4460-7-git-send-email-anton.wuerfel@fau.de>
+From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
+Subject: Re: [PATCH LINUX v4 06/13] tty: xuartps: Move request_irq to after
+ setting up the HW
+Date: Thu, 17 Dec 2015 02:00:00 -0800
+Message-ID: <20151217100000.GO3358@xsjsorenbubuntu>
+References: <1449376769-13369-1-git-send-email-soren.brinkmann@xilinx.com>
+ <1449376769-13369-7-git-send-email-soren.brinkmann@xilinx.com>
+ <5669F172.6020503@hurleysoftware.com>
+ <20151215154136.GU3358@xsjsorenbubuntu>
+ <5670A1B6.6050708@hurleysoftware.com>
+ <20151216090339.GX3358@xsjsorenbubuntu>
+ <56717745.3060306@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <1450280177-4460-7-git-send-email-anton.wuerfel@fau.de>
-Sender: linux-parisc-owner@vger.kernel.org
-To: Anton Wuerfel <anton.wuerfel@fau.de>, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, Desmond Liu <desmondl@broadcom.com>, Wang Long <long.wanglong@huawei.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Peter Hung <hpeter@gmail.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Adam Lee <adam.lee@canonical.com>, "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, Mans Rullgard <mans@mansr.com>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Phillip Raffeck <phillip.raffeck@fau.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <56717745.3060306@hurleysoftware.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Moritz Fischer <moritz.fischer@ettus.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 12/16/2015 07:36 AM, Anton Wuerfel wrote:
-> This patch moves EXPORT_SYMBOL macros directly after the definition o=
-f
-> the corresponding symbol to remove checkpatch warnings.
-
-Ok.
-
-
-> Signed-off-by: Anton W=C3=BCrfel <anton.wuerfel@fau.de>
-> Signed-off-by: Phillip Raffeck <phillip.raffeck@fau.de>
-> CC: linux-kernel@i4.cs.fau.de
-> ---
->  drivers/tty/serial/8250/8250_core.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial=
-/8250/8250_core.c
-> index 89a20c9..67147b2 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -764,6 +764,7 @@ void serial8250_suspend_port(int line)
-> =20
->  	uart_suspend_port(&serial8250_reg, port);
->  }
-> +EXPORT_SYMBOL(serial8250_suspend_port);
-> =20
->  /**
->   *	serial8250_resume_port - resume one serial port
-> @@ -789,6 +790,7 @@ void serial8250_resume_port(int line)
->  	}
->  	uart_resume_port(&serial8250_reg, port);
->  }
-> +EXPORT_SYMBOL(serial8250_resume_port);
-> =20
->  /*
->   * Register a set of serial devices attached to a platform device.  =
-The
-> @@ -1168,9 +1170,6 @@ static void __exit serial8250_exit(void)
->  module_init(serial8250_init);
->  module_exit(serial8250_exit);
-> =20
-> -EXPORT_SYMBOL(serial8250_suspend_port);
-> -EXPORT_SYMBOL(serial8250_resume_port);
-> -
->  MODULE_LICENSE("GPL");
->  MODULE_DESCRIPTION("Generic 8250/16x50 serial driver");
-> =20
->=20
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-parisc"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gV2VkLCAyMDE1LTEyLTE2IGF0IDA2OjM3QU0gLTA4MDAsIFBldGVyIEh1cmxleSB3cm90ZToK
+PiBPbiAxMi8xNi8yMDE1IDAxOjAzIEFNLCBTw7ZyZW4gQnJpbmttYW5uIHdyb3RlOgo+ID4gT24g
+VHVlLCAyMDE1LTEyLTE1IGF0IDAzOjI2UE0gLTA4MDAsIFBldGVyIEh1cmxleSB3cm90ZToKPiA+
+PiBPbiAxMi8xNS8yMDE1IDA3OjQxIEFNLCBTw7ZyZW4gQnJpbmttYW5uIHdyb3RlOgo+ID4+PiBP
+biBUaHUsIDIwMTUtMTItMTAgYXQgMDE6NDFQTSAtMDgwMCwgUGV0ZXIgSHVybGV5IHdyb3RlOgo+
+ID4+Pj4gT24gMTIvMDUvMjAxNSAwODozOSBQTSwgU29yZW4gQnJpbmttYW5uIHdyb3RlOgo+ID4+
+Pj4+IFJlcXVlc3RfaXJxKCkgc2hvdWxkIGJlIF9hZnRlcl8gaC93IHByb2dyYW1taW5nLCBvdGhl
+cndpc2UgYW4KPiA+Pj4+PiBpbnRlcnJ1cHQgY291bGQgYmUgdHJpZ2dlcmVkIGFuZCBpbi1wcm9n
+cmVzcyBiZWZvcmUgdGhlIGgvdyBoYXMgYmVlbgo+ID4+Pj4+IHNldHVwLgo+ID4+Pj4KPiA+Pj4+
+IFNsaWdodCBtaXN1bmRlcnN0YW5kaW5nLiBNeSBmYXVsdDsgSSBzaG91bGQgaGF2ZSBiZWVuIG1v
+cmUgZXhwbGljaXQuCj4gPj4+Pgo+ID4+Pj4gMS4gQW55IHNldHVwIG5lY2Vzc2FyeSBmb3IgdGhl
+IGlzciBub3QgdG8gYmUgY29uZnVzZWQgYW5kIG1pc2RpcmVjdCBzcHVyaW91cwo+ID4+Pj4gICAg
+aW50ZXJydXB0cyAob3IgaGFuZykgc2hvdWxkIGJlIGJlZm9yZSBpbnN0YWxsaW5nIHRoZSBpc3Ig
+d2l0aCByZXF1ZXN0X2lycSgpCj4gPj4+PiAgICBOb25lIG9mIHRoaXMgY29kZSBzaG91bGQgdHJp
+Z2dlciBhbiBpbnRlcnJ1cHQuCj4gPj4+PiAyLiBDbGVhciBwZW5kaW5nIGludGVycnVwdHMKPiA+
+Pj4+IDMuIEluc3RhbGwgdGhlIGlzciB3aXRoIHJlcXVlc3RfaXJxKCkKPiA+Pj4+IDQuIEVuYWJs
+ZSBpbnRlcnJ1cHRzCj4gPj4+Cj4gPj4+IElzbid0IHRoYXQgd2hhdCB0aGUgc3RhcnR1cCBmdW5j
+dGlvbiBpcyBkb2luZyBub3cgLSBtb3JlIG9yIGxlc3MuIEkKPiA+Pj4gdGhpbmsgMyBhbmQgNCBh
+cmUgc3dhcHBlZCB0byByZWxlYXNlIHRoZSBsb2NrIGFuZCB0aGVuIGRvIHRoZQo+ID4+PiByZXF1
+ZXN0X2lycSwgYnV0IEkgYmVsaWV2ZSB0aGF0IHNob3VsZCBiZSBPSy4KPiA+Pj4gVGhlIHN0YXJ0
+dXAgZnVuY3Rpb24gY29uZmlndXJlcyB0aGUgSFcuIENsZWFycyB0aGUgSVNSLiBFbmFibGVzIHRo
+ZQo+ID4+PiBpbnRlbmRlZCBJUlFzIGFuZCB0aGVuIGRvZXMgdGhlIHJlcXVlc3RfaXJxIGNhbGwu
+Cj4gPj4KPiA+PiBJZiB0aGUgZHJpdmVyIGVuYWJsZXMgaW50ZXJydXB0cyBiZWZvcmUgaW5zdGFs
+bGluZyB0aGUgaXNyIHdpdGggcmVxdWVzdF9pcnEoKQo+ID4+IGFuZCBhbiBpbnRlcnJ1cHQgb2Nj
+dXJzIHRoZXJlIHdpbGwgdGhlIG5vIGhhbmRsZXIgdG8gY2F0Y2ggaXQgYW5kIEVPSSB0aGUKPiA+
+PiBkZXZpY2UuCj4gPiAKPiA+IFJlYWxseT8gU2hvdWxkbid0IHRoZSBJUlEgYmUgbWFza2VkIGlu
+IHRoZSBpbnRlcnJ1cHQgY29udHJvbGxlciB1bnRpbAo+ID4gZXZlcnl0aGluZyBpcyBpbiBwbGFj
+ZT8KPiAKPiBTb3JyeSwgSSdtIHVzZWQgdG8gc2hhcmVkIGludGVycnVwdHMsIHdoZXJlIHRoYXQg
+aXNuJ3QgdGhlIGNhc2UuCgpBaGgsIEkgZGlkbid0IGhhdmUgdG8gZGVhbCB3aXRoIHN1Y2ggY2Fz
+ZXMgeWV0LiBNYWtlcyBzZW5zZSB0aG91Z2guCgoJVGhhbmtzLAoJU8O2cmVuCgpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1h
+aWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xp
+c3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
