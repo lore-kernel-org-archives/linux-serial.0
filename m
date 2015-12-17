@@ -1,71 +1,53 @@
 From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH] serial: atmel: header file for MODULE_DEVICE_TABLE
-Date: Thu, 17 Dec 2015 10:02:00 -0500
-Message-ID: <20151217150200.GW2772@windriver.com>
-References: <1450355148-18996-1-git-send-email-sudipm.mukherjee@gmail.com>
+Subject: [PATCH] drivers/tty/serial: delete unused MODULE_DEVICE_TABLE from atmel_serial.c
+Date: Thu, 17 Dec 2015 10:05:46 -0500
+Message-ID: <1450364746-815-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1450355148-18996-1-git-send-email-sudipm.mukherjee@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sudip Mukherjee <sudip@vectorindia.org>
 List-Id: linux-serial@vger.kernel.org
 
-[[PATCH] serial: atmel: header file for MODULE_DEVICE_TABLE] On 17/12/2015 (Thu 17:55) Sudip Mukherjee wrote:
+In commit c39dfebc7798956fd2140ae6321786ff35da30c3 ("drivers/tty/serial:
+make serial/atmel_serial.c explicitly non-modular") we removed the code
+relating to modular support since it currently only supports built in.
 
-> mips allmodconfig fails with the error:
-> 
-> drivers/tty/serial/atmel_serial.c:192:1: warning: data definition has no type or storage class
->  MODULE_DEVICE_TABLE(of, atmel_serial_dt_ids);
->  ^
+However, when redoing my build coverage for mips allmodconfig, which
+sets CONFIG_OF, I noticed a remaining line that needs to be removed,
+else we will get a build failure for an undefined module macro.
 
-Yes, unfortunately I noticed the same thing when redoing my mips
-build coverage.
+Unfortunately this didn't appear for any of the other arch I tested
+more frequently, such as ARM.
 
-> drivers/tty/serial/atmel_serial.c:192:1: error: type defaults to 'int' in declaration of 'MODULE_DEVICE_TABLE' [-Werror=implicit-int]
-> drivers/tty/serial/atmel_serial.c:192:1: warning: parameter names (without types) in function declaration
-> 
-> commit c39dfebc7798 has made the driver non-modular and removed the
-> header file and it is now compiled as a builtin driver. But since
-> CONFIG_OF is defined for mips so we need the definition of
-> MODULE_DEVICE_TABLE to compile successfully.
+Since MODULE_DEVICE_TABLE is a no-op for non-modular code, we can just
+remove the offending line.
 
-No, this isn't the right fix.  We just delete the offending line.
-I'll send the proper patch in a minute, once I add a reported by
-line to it.
+Fixes: c39dfebc7798 ("drivers/tty/serial: make serial/atmel_serial.c explicitly non-modular")
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sudip Mukherjee <sudip@vectorindia.org>
+Reported-by: Sudip Mukherjee <sudip@vectorindia.org>
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
+ drivers/tty/serial/atmel_serial.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Paul.
---
-
-> 
-> Fixes: c39dfebc7798 ("drivers/tty/serial: make serial/atmel_serial.c explicitly non-modular")
-> Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
-> Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
-> ---
-> 
-> build log with next-20151217 is at:
-> https://travis-ci.org/sudipm-mukherjee/parport/jobs/97388463
-> 
-> Log contains another error with gpio, patch for that has been separately
-> submitted.
-> 
->  drivers/tty/serial/atmel_serial.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 50e785a..e9a2fa4 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -47,6 +47,7 @@
->  #include <linux/err.h>
->  #include <linux/irq.h>
->  #include <linux/suspend.h>
-> +#include <linux/module.h>
->  
->  #include <asm/io.h>
->  #include <asm/ioctls.h>
-> -- 
-> 1.9.1
-> 
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 50e785a0ea73..1c0884d8ef32 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -188,8 +188,6 @@ static const struct of_device_id atmel_serial_dt_ids[] = {
+ 	{ .compatible = "atmel,at91sam9260-usart" },
+ 	{ /* sentinel */ }
+ };
+-
+-MODULE_DEVICE_TABLE(of, atmel_serial_dt_ids);
+ #endif
+ 
+ static inline struct atmel_uart_port *
+-- 
+2.6.1
