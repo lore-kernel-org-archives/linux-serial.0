@@ -1,248 +1,88 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
-Date: Thu, 17 Dec 2015 09:48:56 -0800
-Message-ID: <5672F588.8070503@hurleysoftware.com>
-References: <5672D18E.8000301@laposte.net>
- <5672E2CF.6080705@hurleysoftware.com> <5672E76A.3010506@laposte.net>
+From: Sebastian Frias <sf84@laposte.net>
+Subject: Re: [PATCH] use callbacks to access UART_DLL/UART_DLM
+Date: Thu, 17 Dec 2015 19:07:05 +0100
+Message-ID: <5672F9C9.1010601@laposte.net>
+References: <5672D89A.4090307@laposte.net> <yw1xoadpcbbn.fsf@unicorn.mansr.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=windows-1252;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5672E76A.3010506@laposte.net>
+In-Reply-To: <yw1xoadpcbbn.fsf@unicorn.mansr.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Frias <sf84@laposte.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, mason <slash.tmp@free.fr>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
+To: =?windows-1252?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Magnus Damm <damm@opensource.se>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Mason <slash.tmp@free.fr>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sebastian,
-
-On 12/17/2015 08:48 AM, Sebastian Frias wrote:
-> On 12/17/2015 05:29 PM, Peter Hurley wrote:
->> On 12/17/2015 07:15 AM, Sebastian Frias wrote:
->>> ---
->>>
->>> I think there are a few minor bugs on the 8250 UART code.
->>>
->>> Below you can find a patch with a proposed solution.
->>>
->>> In a nutshell:
->>> - probe_baud from 87515772c33ee8a0cc08d984a7d2401eeff074cd was
->>> converted into probe_port so that it reads all the parameters that
->>> uart_set_options require (namely baud, parity, bits, flow).
->>> - reading/writing to UART_DLL/UART_DLM directly are converted to
->>> using the read_dl/write_dl callbacks.
->>> - the port is always probed if there are no options (*).
+On 12/17/2015 05:02 PM, M=E5ns Rullg=E5rd wrote:
+> Sebastian Frias <sf84@laposte.net> writes:
+>
+>> ---
+>> resending as plain-text
+>> ---
+>>    drivers/tty/serial/8250/8250_core.c |   17 +++++++----------
+>>    1 file changed, 7 insertions(+), 10 deletions(-)
 >>
->> Because I don't want to probe the port at all.
+>> diff --git a/drivers/tty/serial/8250/8250_core.c
+>> b/drivers/tty/serial/8250/8250_core.c
+>> index 2c46a21..9ca863c 100644
+>> --- a/drivers/tty/serial/8250/8250_core.c
+>> +++ b/drivers/tty/serial/8250/8250_core.c
+>> @@ -791,22 +791,19 @@ static int size_fifo(struct uart_8250_port *up=
+)
+>>     */
+>>    static unsigned int autoconfig_read_divisor_id(struct uart_8250_p=
+ort *p)
+>
+> What tree are you working against?  Current mainline has that functio=
+n
+> in 8250_port.c.
+
+Sorry, wrong patch. On mainline is about the same, I'll post it.
+
+>
+>>    {
+>> -    unsigned char old_dll, old_dlm, old_lcr;
+>> +    unsigned char old_lcr;
+>>        unsigned int id;
+>> +    unsigned int old_dl;
+>
+> Your patch is messed up.  Consider using "git send-email" instead.
+
+I don't know what happened there, thanks for the suggestion.
+
+>
+>>        old_lcr =3D serial_in(p, UART_LCR);
+>> -    serial_out(p, UART_LCR, UART_LCR_CONF_MODE_A);
+>> -
+>> -    old_dll =3D serial_in(p, UART_DLL);
+>> -    old_dlm =3D serial_in(p, UART_DLM);
 >>
->> But must when using the
->>     earlycon=ttyS0,....
-
-Sorry, ignore this. I meant "console=uart"
-
->> command-line (because the original hack expects that behavior).
-> 
-> Ok, we are using:
-> 
-> "console=ttyS0 earlyprintk"
-> 
-> and the 8250 (with CONFIG_SERIAL_8250_RT288X=y) driver.
-> 
-> The hardware is setup prior to Linux boot.
-> We don't want Linux to change the UART settings, just to pick up whatever settings the UART has and take over UART.
-> 
-> How do you suggest we do that? Right now, since it does not probe, it just messes up the UART config setup before booting Linux.
-> 
-> While on the subject, do you think you could explain the difference (or similarity) between:
-> - "console=ttyS0"
-> - "console=uart"
-> - "earlycon=uart"
-> and how they relate to "earlyprintk" (if at all)?
-> 
-> Maybe some of those options are soon to be deprecated and we'd like to stick with the standard and future-proof way.
-
-All of the above choices are future-proof because kernel command
-line options are considered userspace.
-
-So
-
-  "console=ttyS0" w/o options    always initializes the h/w to 9600n81
-  "earlycon=uart" w/o options    starts a bootconsole w/o initializing the h/w
-  "console=uart" w/o options     starts a bootconsole w/o initializing the h/w,
-                                 then replaces that bootconsole with a regular
-                                 console (whatever ttySn matched that port)
-                                 In this case, the port is probed to discover
-                                 the h/w settings. Those also become the initial
-                                 settings for the /dev/ttySn device.
-
-earlyprintk is implemented by arch-specific code, whereas earlycon is implemented
-by the serial driver code.
-
-Since earlyprintk is implemented in the arch code, it can be tweaked for
-earlier use than early param parsing. There were some patches earlier this
-year for x86 to initialize earlyprintk very early; not sure if they were
-ever upstreamed. On ARM, earlyprintk is debug_ll.
-
-Feel free to submit regular patches; reading the divisor via the 8250 port
-driver is definitely a good idea.
-
-Not to sure about probing for other than baud though; do you really want
-7 data bits and even parity?  Or are you just trying to get enable h/w
-flow?
-
-Regards,
-Peter Hurley
-
->>> (*): I'm not sure why commit 87515772c33ee8a0cc08d984a7d2401eeff074cd
->>> makes a difference in that regard, especially considering the commit
->>> log states that if there are no options, the hardware is assumed to
->>> be already initialised. Since uart_set_options is always called, the
->>> current hardware setup could be overwritten with different parameters
->>> if the actual hardware is not probed.
->>>
->>> ---
->>>   drivers/tty/serial/8250/8250_core.c |   84 ++++++++++++++++++++++++++---------
->>>   1 file changed, 63 insertions(+), 21 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
->>> index 2c46a21..624667f 100644
->>> --- a/drivers/tty/serial/8250/8250_core.c
->>> +++ b/drivers/tty/serial/8250/8250_core.c
->>> @@ -791,22 +791,19 @@ static int size_fifo(struct uart_8250_port *up)
->>>    */
->>>   static unsigned int autoconfig_read_divisor_id(struct uart_8250_port *p)
->>>   {
->>> -    unsigned char old_dll, old_dlm, old_lcr;
->>> +    unsigned char old_lcr;
->>>       unsigned int id;
->>> +    unsigned int old_dl;
->>>
->>>       old_lcr = serial_in(p, UART_LCR);
->>> -    serial_out(p, UART_LCR, UART_LCR_CONF_MODE_A);
->>> -
->>> -    old_dll = serial_in(p, UART_DLL);
->>> -    old_dlm = serial_in(p, UART_DLM);
->>>
->>> -    serial_out(p, UART_DLL, 0);
->>> -    serial_out(p, UART_DLM, 0);
->>> +    serial_out(p, UART_LCR, UART_LCR_CONF_MODE_A);
->>>
->>> -    id = serial_in(p, UART_DLL) | serial_in(p, UART_DLM) << 8;
->>> +    old_dl = serial_dl_read(p);
->>> +    serial_dl_write(p, 0);
->>> +    id = serial_dl_read(p);
->>> +    serial_dl_write(p, old_dl);
->>>
->>> -    serial_out(p, UART_DLL, old_dll);
->>> -    serial_out(p, UART_DLM, old_dlm);
->>>       serial_out(p, UART_LCR, old_lcr);
->>>
->>>       return id;
->>> @@ -3440,22 +3437,67 @@ static void univ8250_console_write(struct console *co, const char *s,
->>>       serial8250_console_write(up, s, count);
->>>   }
->>>
->>> -static unsigned int probe_baud(struct uart_port *port)
->>> +static int probe_port(struct uart_port *port, int *parity, int *bits, int *flow)
->>>   {
->>> -    unsigned char lcr, dll, dlm;
->>> +    struct uart_8250_port *up = up_to_u8250p(port);
->>> +    unsigned char lcr, efr;
->>>       unsigned int quot;
->>>
->>>       lcr = serial_port_in(port, UART_LCR);
->>>       serial_port_out(port, UART_LCR, lcr | UART_LCR_DLAB);
->>> -    dll = serial_port_in(port, UART_DLL);
->>> -    dlm = serial_port_in(port, UART_DLM);
->>> +    quot = serial_dl_read(up);
->>> +    serial_port_out(port, UART_LCR, UART_LCR_CONF_MODE_B);
->>> +    if (port->flags & UPF_EXAR_EFR)
->>> +        efr = serial_port_in(port, UART_XR_EFR);
->>> +    else
->>> +        efr = serial_port_in(port, UART_EFR);
->>>       serial_port_out(port, UART_LCR, lcr);
->>>
->>> -    quot = (dlm << 8) | dll;
->>> -    return (port->uartclk / 16) / quot;
->>> +//word length select mask
->>> +#define WLS_MASK (0x3)
->>> +//parity enable
->>> +#define PEN (0x8)
->>> +//even parity select
->>> +#define EPS (0x10)
->>> +
->>> +    switch (lcr & WLS_MASK) {
->>> +    case 0: // 5bits
->>> +    case 1: // 6bits
->>> +        // Not supported by drivers/tty/serial/serial_core.c:uart_set_options() anyway
->>> +        WARN(true, "%s: probed uart word length (%u bits) is not supported by uart_set_options()\n", __FUNCTION__, (lcr & WLS_MASK) ? 5 : 6 );
->>> +        break;
->>> +    case 2: // 7bits
->>> +        *bits = 7;
->>> +        break;
->>> +    case 3: // 8bits
->>> +        *bits = 8;
->>> +        break;
->>> +    };
->>> +
->>> +    if (lcr & PEN)
->>> +    {
->>> +        if (lcr & EPS)
->>> +            *parity = 'e';
->>> +        else
->>> +            *parity = 'o';
->>> +    }
->>> +    else
->>> +        *parity = 'n';
->>> +
->>> +    if (efr & UART_EFR_CTS)
->>> +        *flow = 'r';
->>> +    else
->>> +        *flow = 'n';
->>> +
->>> +    if (quot)
->>> +        return (port->uartclk / 16) / quot;
->>> +    else
->>> +        WARN(true, "%s: quot is zero!\n", __FUNCTION__);
->>> +
->>> +    return -1;
->>>   }
->>>
->>> -static int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
->>> +static int serial8250_console_setup(struct uart_port *port, char *options)
->>>   {
->>>       int baud = 9600;
->>>       int bits = 8;
->>> @@ -3467,8 +3509,8 @@ static int serial8250_console_setup(struct uart_port *port, char *options, bool
->>>
->>>       if (options)
->>>           uart_parse_options(options, &baud, &parity, &bits, &flow);
->>> -    else if (probe)
->>> -        baud = probe_baud(port);
->>> +    else
->>> +        baud = probe_port(port, &parity, &bits, &flow);
->>>
->>>       return uart_set_options(port, port->cons, baud, parity, bits, flow);
->>>   }
->>> @@ -3488,7 +3530,7 @@ static int univ8250_console_setup(struct console *co, char *options)
->>>       /* link port to console */
->>>       port->cons = co;
->>>
->>> -    return serial8250_console_setup(port, options, false);
->>> +    return serial8250_console_setup(port, options);
->>>   }
->>>
->>>   /**
->>> @@ -3537,7 +3579,7 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
->>>
->>>           co->index = i;
->>>           port->cons = co;
->>> -        return serial8250_console_setup(port, options, true);
->>> +        return serial8250_console_setup(port, options);
->>>       }
->>>
->>>       return -ENODEV;
->>> -- 
->>> 1.7.10.4
->>>
+>> -    serial_out(p, UART_DLL, 0);
+>> -    serial_out(p, UART_DLM, 0);
+>> +    serial_out(p, UART_LCR, UART_LCR_CONF_MODE_A);
 >>
+>> -    id =3D serial_in(p, UART_DLL) | serial_in(p, UART_DLM) << 8;
+>> +    old_dl =3D serial_dl_read(p);
+>> +    serial_dl_write(p, 0);
+>> +    id =3D serial_dl_read(p);
+>> +    serial_dl_write(p, old_dl);
+>>
+>> -    serial_out(p, UART_DLL, old_dll);
+>> -    serial_out(p, UART_DLM, old_dlm);
+>>        serial_out(p, UART_LCR, old_lcr);
+>>
+>>        return id;
+>> --
+>
+> If you left the blank lines alone, the patch would end up much easier=
+ to
+> understand.  In this diff, some of the lines listed as added or remov=
+ed
+> have actually not changed, and that's not immediately obvious.
+>
+
+The old code had some blank lines, which I suppose were there for clari=
+ty.
+I attempted to follow the same idea.
+But I don't mind changing the code as you wish.
