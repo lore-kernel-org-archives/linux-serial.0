@@ -1,47 +1,75 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH] tty: amba-pl011: add support for 32-bit register access
- for earlycon
-Date: Thu, 17 Dec 2015 09:55:30 -0600
-Message-ID: <CAOZdJXVz5Bm2-XBNjoU6uh=i2E0Mq915entU+rz-MqD8F4C=xQ@mail.gmail.com>
-References: <1446855503-25881-1-git-send-email-timur@codeaurora.org>
- <20151213060643.GA30667@kroah.com>
+From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+Subject: Re: [PATCH] use callbacks to access UART_DLL/UART_DLM
+Date: Thu, 17 Dec 2015 16:02:52 +0000
+Message-ID: <yw1xoadpcbbn.fsf@unicorn.mansr.com>
+References: <5672D89A.4090307@laposte.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20151213060643.GA30667@kroah.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <greg@kroah.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Timur Tabi <timur@codeaurora.org>, Andrew Jackson <Andrew.Jackson@arm.com>, cov@codeaurora.org, linux-serial@vger.kernel.org, jslaby@suse.com, Russell King <rmk+kernel@arm.linux.org.uk>, Jun Nie <jun.nie@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5672D89A.4090307@laposte.net> (Sebastian Frias's message of
+	"Thu, 17 Dec 2015 16:45:30 +0100")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Frias <sf84@laposte.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Magnus Damm <damm@opensource.se>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Mason <slash.tmp@free.fr>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Dec 13, 2015 at 12:06 AM, Greg Kroah-Hartman <greg@kroah.com> wrote:
+Sebastian Frias <sf84@laposte.net> writes:
 
->> Example:
->>
->>       earlycon=pl011,mmio32,0x3ced1000
->>
->> Signed-off-by: Timur Tabi <timur@codeaurora.org>
->> ---
->>
->> This patch applies on top of Russell's 12-part amba-pl011.c patchset.
+> ---
+> resending as plain-text
+> ---
+>   drivers/tty/serial/8250/8250_core.c |   17 +++++++----------
+>   1 file changed, 7 insertions(+), 10 deletions(-)
 >
-> Which I didn't apply, so can you resend this after he resends his?
+> diff --git a/drivers/tty/serial/8250/8250_core.c=20
+> b/drivers/tty/serial/8250/8250_core.c
+> index 2c46a21..9ca863c 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -791,22 +791,19 @@ static int size_fifo(struct uart_8250_port *up)
+>    */
+>   static unsigned int autoconfig_read_divisor_id(struct uart_8250_por=
+t *p)
 
-I see that some of Russell's patches are now in tty-next.  Does that
-make them official?  There was some disagreement about the usage of
-access_32b vs uap->port.iotype for determining whether we need 32-bit
-accessors or not.
+What tree are you working against?  Current mainline has that function
+in 8250_port.c.
 
--- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project.
+>   {
+> -    unsigned char old_dll, old_dlm, old_lcr;
+> +    unsigned char old_lcr;
+>       unsigned int id;
+> +    unsigned int old_dl;
+
+Your patch is messed up.  Consider using "git send-email" instead.
+
+>       old_lcr =3D serial_in(p, UART_LCR);
+> -    serial_out(p, UART_LCR, UART_LCR_CONF_MODE_A);
+> -
+> -    old_dll =3D serial_in(p, UART_DLL);
+> -    old_dlm =3D serial_in(p, UART_DLM);
+>
+> -    serial_out(p, UART_DLL, 0);
+> -    serial_out(p, UART_DLM, 0);
+> +    serial_out(p, UART_LCR, UART_LCR_CONF_MODE_A);
+>
+> -    id =3D serial_in(p, UART_DLL) | serial_in(p, UART_DLM) << 8;
+> +    old_dl =3D serial_dl_read(p);
+> +    serial_dl_write(p, 0);
+> +    id =3D serial_dl_read(p);
+> +    serial_dl_write(p, old_dl);
+>
+> -    serial_out(p, UART_DLL, old_dll);
+> -    serial_out(p, UART_DLM, old_dlm);
+>       serial_out(p, UART_LCR, old_lcr);
+>
+>       return id;
+> --=20
+
+If you left the blank lines alone, the patch would end up much easier t=
+o
+understand.  In this diff, some of the lines listed as added or removed
+have actually not changed, and that's not immediately obvious.
+
+--=20
+M=E5ns Rullg=E5rd
