@@ -1,8 +1,8 @@
 From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: [PATCH v2 06/11] tty: serial: 8250: Move EXPORT_SYMBOL to
  function
-Date: Fri, 18 Dec 2015 07:38:01 -0800
-Message-ID: <56742859.5040303@hurleysoftware.com>
+Date: Fri, 18 Dec 2015 07:41:14 -0800
+Message-ID: <5674291A.5000409@hurleysoftware.com>
 References: <1450437723-2978-1-git-send-email-anton.wuerfel@fau.de>
  <1450437723-2978-7-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
