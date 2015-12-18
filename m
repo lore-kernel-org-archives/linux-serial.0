@@ -1,96 +1,192 @@
 From: Anton Wuerfel <anton.wuerfel@fau.de>
-Subject: [PATCH v2 00/11] tty: serial: 8250: Fix checkpatch warnings
-Date: Fri, 18 Dec 2015 12:21:52 +0100
-Message-ID: <1450437723-2978-1-git-send-email-anton.wuerfel@fau.de>
+Subject: [PATCH v2 10/11] tty: serial: 8250: Replace printk by pr_*
+Date: Fri, 18 Dec 2015 12:22:02 +0100
+Message-ID: <1450437723-2978-11-git-send-email-anton.wuerfel@fau.de>
+References: <1450437723-2978-1-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-Sender: linux-parisc-owner@vger.kernel.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1450437723-2978-1-git-send-email-anton.wuerfel@fau.de>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Peter Hurley <peter@hurleysoftware.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, Desmond Liu <desmondl@broadcom.com>, Wang Long <long.wanglong@huawei.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Peter Hung <hpeter@gmail.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Adam Lee <adam.lee@canonical.com>, "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, Mans Rullgard <mans@mansr.com>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Anton Wuerfel <anto>
 List-Id: linux-serial@vger.kernel.org
 
-Hello Peter,
+This patch replaces printk by the corresponding variant of pr_* in orde=
+r to
+fix checkpatch warnings. This comes with a slight change in behaviour a=
+s
+pr_debug is configurable via CONFIG_DYNAMIC_DEBUG, whereas
+printk(KERN_DEBUG ...) is not.
 
-thanks for your feedback. We updated the patches according to your remarks.
+Signed-off-by: Anton W=C3=BCrfel <anton.wuerfel@fau.de>
+Signed-off-by: Phillip Raffeck <phillip.raffeck@fau.de>
+CC: linux-kernel@i4.cs.fau.de
+---
+ drivers/tty/serial/8250/8250_core.c  |  5 ++---
+ drivers/tty/serial/8250/8250_gsc.c   |  6 ++----
+ drivers/tty/serial/8250/8250_hp300.c | 18 +++++++++---------
+ drivers/tty/serial/8250/8250_pnp.c   |  6 +++---
+ drivers/tty/serial/8250/8250_port.c  |  3 +--
+ 5 files changed, 17 insertions(+), 21 deletions(-)
 
-Regards,
-Phillip Raffeck
-Anton Wuerfel
-
-This patch set fixes several checkpatch warnings in tty/serial/8250.
-
-Patch 1/11:  Adds missing spaces (mainly to function/macro headers)
-Patch 2/11:  Replace spaces with tabs wherever possible
-Patch 3/11:  Slight patch which moves an opening curly brace
-Patch 4/11:  Fixes multiline comment style
-Patch 5/11:  Removes else blocks after return statements
-Patch 6/11:  Slight patch which moves EXPORT_SYMBOL macro to correct position
-Patch 7/11:  Slight patch which removes an unneccessary line continuation
-Patch 8/11:  Slight patch which adds parentheses to a macro definition
-Patch 9/11:  Merges user-visible multiline strings to a single line
-Patch 10/11: Replaces printk by corresponding variant of pr_*
-Patch 11/11: Fixes code indentation
-
-Remaining checkpatch warnings after applying this patch series:
-
--line over 80 characters
-	This error mostly occurs in serial_cs.c, which contains long-lined
-	macro calls. However, splitting these calls into multiple lines would
-	not increase readability.
-
--externs should be avoided in .c files
-	This occurs in 8250_hp300.c. There is no corresponding header file
-	the extern statement could be moved to. It could be moved to 8250.h
-	but this would affect other .c files.
-
--Use #include <linux/*.h> instead of <asm/*.h>
-	This warning has been left open for more experienced kernel hackers.
-	This patch series is about style issues. We do not intend to alter
-	the code behavior.
-
--struct uart_ops should normally be const
-	This warning only occurs in 8250_core.c. The corresponding struct
-	cannot be declared as const because it is altered in
-	serial8250_isa_init_ports(). Maybe a checkpatch exception should
-	be added for this particular warning.
-
--quoted string split across lines
-	These strings were ignored because they otherwise would exceed
-	80 characters in a single line. These particular strings use
-	format specifiers, which break the ability to grep for them anyway.
-
-Anton Wuerfel (11):
-Phillip Raffeck (11):
-  tty: serial: 8250: Fix whitespace errors
-  tty: serial: 8250: Replace spaces with tabs
-  tty: serial: 8250: Fix braces after struct
-  tty: serial: 8250: Fix multiline comment style
-  tty: serial: 8250: Remove else after return
-  tty: serial: 8250: Move EXPORT_SYMBOL to function
-  tty: serial: 8250: Fix line continuation warning
-  tty: serial: 8250: Add parentheses to macro
-  tty: serial: 8250: Fix multi-line strings
-  tty: serial: 8250: Replace printk by pr_*
-  tty: serial: 8250: Fix indentation warnings
-
- drivers/tty/serial/8250/8250_accent.c        |  2 +-
- drivers/tty/serial/8250/8250_acorn.c         |  2 +-
- drivers/tty/serial/8250/8250_boca.c          |  2 +-
- drivers/tty/serial/8250/8250_core.c          | 15 ++---
- drivers/tty/serial/8250/8250_exar_st16c554.c |  2 +-
- drivers/tty/serial/8250/8250_fourport.c      |  2 +-
- drivers/tty/serial/8250/8250_gsc.c           |  6 +-
- drivers/tty/serial/8250/8250_hp300.c         | 25 ++++----
- drivers/tty/serial/8250/8250_hub6.c          |  2 +-
- drivers/tty/serial/8250/8250_ingenic.c       | 12 ++--
- drivers/tty/serial/8250/8250_pci.c           | 49 +++++++--------
- drivers/tty/serial/8250/8250_pnp.c           | 16 ++---
- drivers/tty/serial/8250/8250_port.c          | 50 ++++++++--------
- drivers/tty/serial/8250/serial_cs.c          | 89 +++++++++++++++-------------
- 14 files changed, 142 insertions(+), 132 deletions(-)
-
--- 
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8=
+250/8250_core.c
+index b60b58b..d6b4906 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1094,9 +1094,8 @@ static int __init serial8250_init(void)
+=20
+ 	serial8250_isa_init_ports();
+=20
+-	printk(KERN_INFO "Serial: 8250/16550 driver, "
+-		"%d ports, IRQ sharing %sabled\n", nr_uarts,
+-		share_irqs ? "en" : "dis");
++	pr_info("Serial: 8250/16550 driver, %d ports, IRQ sharing %sabled\n",
++		nr_uarts, share_irqs ? "en" : "dis");
+=20
+ #ifdef CONFIG_SPARC
+ 	ret =3D sunserial_register_minors(&serial8250_reg, UART_NR);
+diff --git a/drivers/tty/serial/8250/8250_gsc.c b/drivers/tty/serial/82=
+50/8250_gsc.c
+index 2e3ea1a..a9b63d0 100644
+--- a/drivers/tty/serial/8250/8250_gsc.c
++++ b/drivers/tty/serial/8250/8250_gsc.c
+@@ -42,8 +42,7 @@ static int __init serial_init_chip(struct parisc_devi=
+ce *dev)
+ 		 * the user what they're missing.
+ 		 */
+ 		if (parisc_parent(dev)->id.hw_type !=3D HPHW_IOA)
+-			printk(KERN_INFO
+-				"Serial: device 0x%llx not configured.\n"
++			pr_info("Serial: device 0x%llx not configured.\n"
+ 				"Enable support for Wax, Lasi, Asp or Dino.\n",
+ 				(unsigned long long)dev->hpa.start);
+ 		return -ENODEV;
+@@ -66,8 +65,7 @@ static int __init serial_init_chip(struct parisc_devi=
+ce *dev)
+=20
+ 	err =3D serial8250_register_8250_port(&uart);
+ 	if (err < 0) {
+-		printk(KERN_WARNING
+-			"serial8250_register_8250_port returned error %d\n", err);
++		pr_warn("serial8250_register_8250_port returned error %d\n", err);
+ 		iounmap(uart.port.membase);
+ 		return err;
+ 	}
+diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/=
+8250/8250_hp300.c
+index cf566bb..9123e31 100644
+--- a/drivers/tty/serial/8250/8250_hp300.c
++++ b/drivers/tty/serial/8250/8250_hp300.c
+@@ -110,7 +110,7 @@ int __init hp300_setup_serial_console(void)
+ 	/* Check for APCI console */
+ 	if (scode =3D=3D 256) {
+ #ifdef CONFIG_HPAPCI
+-		printk(KERN_INFO "Serial console is HP APCI 1\n");
++		pr_info("Serial console is HP APCI 1\n");
+=20
+ 		port.uartclk =3D HPAPCI_BAUD_BASE * 16;
+ 		port.mapbase =3D (FRODO_BASE + FRODO_APCI_OFFSET(1));
+@@ -118,7 +118,7 @@ int __init hp300_setup_serial_console(void)
+ 		port.regshift =3D 2;
+ 		add_preferred_console("ttyS", port.line, "9600n8");
+ #else
+-		printk(KERN_WARNING "Serial console is APCI but support is disabled =
+(CONFIG_HPAPCI)!\n");
++		pr_warn("Serial console is APCI but support is disabled (CONFIG_HPAP=
+CI)!\n");
+ 		return 0;
+ #endif
+ 	} else {
+@@ -127,7 +127,7 @@ int __init hp300_setup_serial_console(void)
+ 		if (!pa)
+ 			return 0;
+=20
+-		printk(KERN_INFO "Serial console is HP DCA at select code %d\n", sco=
+de);
++		pr_info("Serial console is HP DCA at select code %d\n", scode);
+=20
+ 		port.uartclk =3D HPDCA_BAUD_BASE * 16;
+ 		port.mapbase =3D (pa + UART_OFFSET);
+@@ -141,13 +141,13 @@ int __init hp300_setup_serial_console(void)
+ 		if (DIO_ID(pa + DIO_VIRADDRBASE) & 0x80)
+ 			add_preferred_console("ttyS", port.line, "9600n8");
+ #else
+-		printk(KERN_WARNING "Serial console is DCA but support is disabled (=
+CONFIG_HPDCA)!\n");
++		pr_warn("Serial console is DCA but support is disabled (CONFIG_HPDCA=
+)!\n");
+ 		return 0;
+ #endif
+ 	}
+=20
+ 	if (early_serial_setup(&port) < 0)
+-		printk(KERN_WARNING "hp300_setup_serial_console(): early_serial_setu=
+p() failed.\n");
++		pr_warn("hp300_setup_serial_console(): early_serial_setup() failed.\=
+n");
+ 	return 0;
+ }
+ #endif /* CONFIG_SERIAL_8250_CONSOLE */
+@@ -179,8 +179,8 @@ static int hpdca_init_one(struct dio_dev *d,
+ 	line =3D serial8250_register_8250_port(&uart);
+=20
+ 	if (line < 0) {
+-		printk(KERN_NOTICE "8250_hp300: register_serial() DCA scode %d"
+-		       " irq %d failed\n", d->scode, uart.port.irq);
++		pr_notice("8250_hp300: register_serial() DCA scode %d irq %d failed\=
+n",
++			  d->scode, uart.port.irq);
+ 		return -ENOMEM;
+ 	}
+=20
+@@ -260,8 +260,8 @@ static int __init hp300_8250_init(void)
+ 		line =3D serial8250_register_8250_port(&uart);
+=20
+ 		if (line < 0) {
+-			printk(KERN_NOTICE "8250_hp300: register_serial() APCI"
+-			       " %d irq %d failed\n", i, uart.port.irq);
++			pr_notice("8250_hp300: register_serial() APCI %d irq %d failed\n",
++				  i, uart.port.irq);
+ 			kfree(port);
+ 			continue;
+ 		}
+diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/82=
+50/8250_pnp.c
+index ffa7354..1ed67e0 100644
+--- a/drivers/tty/serial/8250/8250_pnp.c
++++ b/drivers/tty/serial/8250/8250_pnp.c
+@@ -465,9 +465,9 @@ serial_pnp_probe(struct pnp_dev *dev, const struct =
+pnp_device_id *dev_id)
+ 		return -ENODEV;
+=20
+ #ifdef SERIAL_DEBUG_PNP
+-	printk(KERN_DEBUG
+-		"Setup PNP port: port %x, mem 0x%lx, irq %d, type %d\n",
+-		       uart.port.iobase, uart.port.mapbase, uart.port.irq, uart.port=
+=2Eiotype);
++	pr_debug("Setup PNP port: port %x, mem 0x%lx, irq %d, type %d\n",
++		 uart.port.iobase, uart.port.mapbase,
++		 uart.port.irq, uart.port.iotype);
+ #endif
+ 	if (flags & CIR_PORT) {
+ 		uart.port.flags |=3D UPF_FIXED_PORT | UPF_FIXED_TYPE;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
+250/8250_port.c
+index 99f709c..343d050 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1222,8 +1222,7 @@ static void autoconfig(struct uart_8250_port *up)
+ out_lock:
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 	if (up->capabilities !=3D old_capabilities) {
+-		printk(KERN_WARNING
+-		       "ttyS%d: detected caps %08x should be %08x\n",
++		pr_warn("ttyS%d: detected caps %08x should be %08x\n",
+ 		       serial_index(port), old_capabilities,
+ 		       up->capabilities);
+ 	}
+--=20
 1.9.1
-
