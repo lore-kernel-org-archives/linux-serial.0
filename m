@@ -1,68 +1,42 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: "Shevchenko, Andriy" <andriy.shevchenko@intel.com>
 Subject: Re: [PATCH v2 10/11] tty: serial: 8250: Replace printk by pr_*
-Date: Fri, 18 Dec 2015 14:32:06 +0200
-Message-ID: <1450441926.30729.208.camel@linux.intel.com>
+Date: Fri, 18 Dec 2015 12:42:08 +0000
+Message-ID: <1450442546.30729.217.camel@intel.com>
 References: <1450437723-2978-1-git-send-email-anton.wuerfel@fau.de>
 	 <1450437723-2978-11-git-send-email-anton.wuerfel@fau.de>
+	 <1450441926.30729.208.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <1450437723-2978-11-git-send-email-anton.wuerfel@fau.de>
-Sender: linux-parisc-owner@vger.kernel.org
-To: Anton Wuerfel <anton.wuerfel@fau.de>, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Peter Hurley <peter@hurleysoftware.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, Desmond Liu <desmondl@broadcom.com>, Wang Long <long.wanglong@huawei.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Peter Hung <hpeter@gmail.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Adam Lee <adam.lee@canonical.com>, "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, Mans Rullgard <mans@mansr.com>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Phillip Raffeck <phillip.raffeck@fau.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1450441926.30729.208.camel@linux.intel.com>
+Content-Language: en-US
+Content-ID: <D5138F88F01CC442A0FE8033D57E7980@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "anton.wuerfel@fau.de" <anton.wuerfel@fau.de>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "mail@maciej.szmigiero.name" <mail@maciej.szmigiero.name>, "desmondl@broadcom.com" <desmondl@broadcom.com>, "Zha, Qipeng" <qipeng.zha@intel.com>, "heikki.krogerus@linux.intel.com" <heikki.krogerus@linux.intel.com>, "long.wanglong@huawei.com" <long.wanglong@huawei.com>, "soeren.grunewald@desy.de" <soeren.grunewald@desy.de>, "deller@gmx.de" <deller@gmx.de>, "jslaby@suse.com" <jslaby@suse.com>, "phillip.raffeck@fau.de" <phillip.raffeck@fau.de>, "paul.burton@imgtec.com" <paul.burton@imgtec.com>, "hpeter@gmail.com" <hpeter@gmail.com>, "ralf@linux-mips.org" <ralf@linux-mips.org>, "linux-kernel@i4.cs.fau.de" <linux-kernel@i4.cs.fau.de>, "mans@mansr.com" <mans@mansr.com>, "adam.lee@canonical.com" <adam.lee@canonical.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jejb@parisc-linux.org" <jejb@par>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2015-12-18 at 12:22 +0100, Anton Wuerfel wrote:
-
-
->  This comes with a slight change in behaviour as
-> pr_debug is configurable via CONFIG_DYNAMIC_DEBUG, whereas
-> printk(KERN_DEBUG ...) is not.
-
---- a/drivers/tty/serial/8250/8250_pnp.c
-> +++ b/drivers/tty/serial/8250/8250_pnp.c
-> @@ -465,9 +465,9 @@ serial_pnp_probe(struct pnp_dev *dev, const
-> struct pnp_device_id *dev_id)
-> =C2=A0		return -ENODEV;
-> =C2=A0
-> =C2=A0#ifdef SERIAL_DEBUG_PNP
-> -	printk(KERN_DEBUG
-
-I think it's not okay.
-
-The rationale to have printk(KERN_DEBUG =E2=80=A6) here is to allow a
-compilation with support of those messages independently on
-DYNAMIC_DEBUG.
-
-If you want to switch to DYNAMIC_DEBUG you have to carefully check what
-is done under=C2=A0SERIAL_DEBUG_PNP.
-
-git grep on current linux-next shows that SERIAL_DEBUG_PNP is an
-orphan.
-
-So, I would suggest to remove #ifdef.
-
-> -		"Setup PNP port: port %x, mem 0x%lx, irq %d, type
-> %d\n",
-> -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0uart.port.iobase, uart.p=
-ort.mapbase,
-> uart.port.irq, uart.port.iotype);
-> +	pr_debug("Setup PNP port: port %x, mem 0x%lx, irq %d, type
-> %d\n",
-> +		=C2=A0uart.port.iobase, uart.port.mapbase,
-> +		=C2=A0uart.port.irq, uart.port.iotype);
-> =C2=A0#endif
->=20
-
-
---=20
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-parisc"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gRnJpLCAyMDE1LTEyLTE4IGF0IDE0OjMyICswMjAwLCBBbmR5IFNoZXZjaGVua28gd3JvdGU6
+DQo+IE9uIEZyaSwgMjAxNS0xMi0xOCBhdCAxMjoyMiArMDEwMCwgQW50b24gV3VlcmZlbCB3cm90
+ZToNCj4gDQo+IA0KPiA+IMKgVGhpcyBjb21lcyB3aXRoIGEgc2xpZ2h0IGNoYW5nZSBpbiBiZWhh
+dmlvdXIgYXMNCj4gPiBwcl9kZWJ1ZyBpcyBjb25maWd1cmFibGUgdmlhIENPTkZJR19EWU5BTUlD
+X0RFQlVHLCB3aGVyZWFzDQo+ID4gcHJpbnRrKEtFUk5fREVCVUcgLi4uKSBpcyBub3QuDQo+IA0K
+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX3BucC5jDQo+ID4gKysrIGIvZHJp
+dmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wbnAuYw0KPiA+IEBAIC00NjUsOSArNDY1LDkgQEAg
+c2VyaWFsX3BucF9wcm9iZShzdHJ1Y3QgcG5wX2RldiAqZGV2LCBjb25zdA0KPiA+IHN0cnVjdCBw
+bnBfZGV2aWNlX2lkICpkZXZfaWQpDQoNCk9uZSBtb3JlIHRoaW5nIGp1c3Qgbm90aWNlZCB0aGF0
+IGlzIC0+cHJvYmUoKSBmdW5jdGlvbiB3aGVyZSB5b3UgaGF2ZQ0Kc3RydWN0IGRldmljZSBkZWZp
+bmVkLCBpdCBtaWdodCBiZSB3b3J0aCB0byBjaGFuZ2UgdG8gZGV2XyogbWFjcm9zDQppbnN0ZWFk
+IG9mIHByXyBhdCB0aGUgc2FtZSB0aW1lIGZvciBzb21lIGZ1bmN0aW9ucy4NCg0KU28sIGhlcmUg
+aXQgd291bGQgYmUgZGV2X2RiZygmZGV2LT5kZXYsIOKApikgSSBzdXBwb3NlLg0KDQoNCi0tIA0K
+QW5keSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hldmNoZW5rb0BpbnRlbC5jb20+DQpJbnRlbCBGaW5s
+YW5kIE95DQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0KSW50ZWwgRmlubGFuZCBPeQpSZWdpc3RlcmVkIEFkZHJlc3M6
+IFBMIDI4MSwgMDAxODEgSGVsc2lua2kgCkJ1c2luZXNzIElkZW50aXR5IENvZGU6IDAzNTc2MDYg
+LSA0IApEb21pY2lsZWQgaW4gSGVsc2lua2kgCgpUaGlzIGUtbWFpbCBhbmQgYW55IGF0dGFjaG1l
+bnRzIG1heSBjb250YWluIGNvbmZpZGVudGlhbCBtYXRlcmlhbCBmb3IKdGhlIHNvbGUgdXNlIG9m
+IHRoZSBpbnRlbmRlZCByZWNpcGllbnQocykuIEFueSByZXZpZXcgb3IgZGlzdHJpYnV0aW9uCmJ5
+IG90aGVycyBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5k
+ZWQKcmVjaXBpZW50LCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgYWxsIGNv
+cGllcy4K
