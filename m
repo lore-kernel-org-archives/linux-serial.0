@@ -1,64 +1,96 @@
-From: Sebastian Frias <sf84@laposte.net>
-Subject: [PATCH v2] use callbacks to access UART_DLL/UART_DLM
-Date: Fri, 18 Dec 2015 11:46:21 +0100
-Message-ID: <5673E3FD.8080001@laposte.net>
-References: <5672D89A.4090307@laposte.net> <yw1xoadpcbbn.fsf@unicorn.mansr.com> <5672F9C9.1010601@laposte.net>
+From: Anton Wuerfel <anton.wuerfel@fau.de>
+Subject: [PATCH v2 00/11] tty: serial: 8250: Fix checkpatch warnings
+Date: Fri, 18 Dec 2015 12:21:52 +0100
+Message-ID: <1450437723-2978-1-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5672F9C9.1010601@laposte.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>
-Cc: =?windows-1252?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Mason <slash.tmp@free.fr>, Jon Anders Haugum <jonah@omegav.ntnu.no>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+Sender: linux-parisc-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Peter Hurley <peter@hurleysoftware.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, Desmond Liu <desmondl@broadcom.com>, Wang Long <long.wanglong@huawei.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Peter Hung <hpeter@gmail.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Adam Lee <adam.lee@canonical.com>, "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, Mans Rullgard <mans@mansr.com>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Anton Wuerfel <anto>
 List-Id: linux-serial@vger.kernel.org
 
----
+Hello Peter,
 
-Some UART HW has a single register combining UART_DLL/UART_DLM
-(this was probably forgotten in the change that introduced the
-callbacks, commit b32b19b8ffc05cbd3bf91c65e205f6a912ca15d9)
+thanks for your feedback. We updated the patches according to your remarks.
 
-Fixes: b32b19b8ffc0
+Regards,
+Phillip Raffeck
+Anton Wuerfel
 
-Signed-off-by: Sebastian Frias <sf84@laposte.net>
----
-  drivers/tty/serial/8250/8250_port.c |   17 ++++++-----------
-  1 file changed, 6 insertions(+), 11 deletions(-)
+This patch set fixes several checkpatch warnings in tty/serial/8250.
 
-diff --git a/drivers/tty/serial/8250/8250_port.c 
-b/drivers/tty/serial/8250/8250_port.c
-index 52d82d2..827eb6f 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -713,22 +713,17 @@ static int size_fifo(struct uart_8250_port *up)
-   */
-  static unsigned int autoconfig_read_divisor_id(struct uart_8250_port *p)
-  {
--	unsigned char old_dll, old_dlm, old_lcr;
-+	unsigned char old_lcr;
-  	unsigned int id;
-+	unsigned int old_dl;
+Patch 1/11:  Adds missing spaces (mainly to function/macro headers)
+Patch 2/11:  Replace spaces with tabs wherever possible
+Patch 3/11:  Slight patch which moves an opening curly brace
+Patch 4/11:  Fixes multiline comment style
+Patch 5/11:  Removes else blocks after return statements
+Patch 6/11:  Slight patch which moves EXPORT_SYMBOL macro to correct position
+Patch 7/11:  Slight patch which removes an unneccessary line continuation
+Patch 8/11:  Slight patch which adds parentheses to a macro definition
+Patch 9/11:  Merges user-visible multiline strings to a single line
+Patch 10/11: Replaces printk by corresponding variant of pr_*
+Patch 11/11: Fixes code indentation
 
-  	old_lcr = serial_in(p, UART_LCR);
-  	serial_out(p, UART_LCR, UART_LCR_CONF_MODE_A);
-+	old_dl = serial_dl_read(p);
-+	serial_dl_write(p, 0);
-+	id = serial_dl_read(p);
-+	serial_dl_write(p, old_dl);
+Remaining checkpatch warnings after applying this patch series:
 
--	old_dll = serial_in(p, UART_DLL);
--	old_dlm = serial_in(p, UART_DLM);
--
--	serial_out(p, UART_DLL, 0);
--	serial_out(p, UART_DLM, 0);
--
--	id = serial_in(p, UART_DLL) | serial_in(p, UART_DLM) << 8;
--
--	serial_out(p, UART_DLL, old_dll);
--	serial_out(p, UART_DLM, old_dlm);
-  	serial_out(p, UART_LCR, old_lcr);
+-line over 80 characters
+	This error mostly occurs in serial_cs.c, which contains long-lined
+	macro calls. However, splitting these calls into multiple lines would
+	not increase readability.
 
-  	return id;
+-externs should be avoided in .c files
+	This occurs in 8250_hp300.c. There is no corresponding header file
+	the extern statement could be moved to. It could be moved to 8250.h
+	but this would affect other .c files.
+
+-Use #include <linux/*.h> instead of <asm/*.h>
+	This warning has been left open for more experienced kernel hackers.
+	This patch series is about style issues. We do not intend to alter
+	the code behavior.
+
+-struct uart_ops should normally be const
+	This warning only occurs in 8250_core.c. The corresponding struct
+	cannot be declared as const because it is altered in
+	serial8250_isa_init_ports(). Maybe a checkpatch exception should
+	be added for this particular warning.
+
+-quoted string split across lines
+	These strings were ignored because they otherwise would exceed
+	80 characters in a single line. These particular strings use
+	format specifiers, which break the ability to grep for them anyway.
+
+Anton Wuerfel (11):
+Phillip Raffeck (11):
+  tty: serial: 8250: Fix whitespace errors
+  tty: serial: 8250: Replace spaces with tabs
+  tty: serial: 8250: Fix braces after struct
+  tty: serial: 8250: Fix multiline comment style
+  tty: serial: 8250: Remove else after return
+  tty: serial: 8250: Move EXPORT_SYMBOL to function
+  tty: serial: 8250: Fix line continuation warning
+  tty: serial: 8250: Add parentheses to macro
+  tty: serial: 8250: Fix multi-line strings
+  tty: serial: 8250: Replace printk by pr_*
+  tty: serial: 8250: Fix indentation warnings
+
+ drivers/tty/serial/8250/8250_accent.c        |  2 +-
+ drivers/tty/serial/8250/8250_acorn.c         |  2 +-
+ drivers/tty/serial/8250/8250_boca.c          |  2 +-
+ drivers/tty/serial/8250/8250_core.c          | 15 ++---
+ drivers/tty/serial/8250/8250_exar_st16c554.c |  2 +-
+ drivers/tty/serial/8250/8250_fourport.c      |  2 +-
+ drivers/tty/serial/8250/8250_gsc.c           |  6 +-
+ drivers/tty/serial/8250/8250_hp300.c         | 25 ++++----
+ drivers/tty/serial/8250/8250_hub6.c          |  2 +-
+ drivers/tty/serial/8250/8250_ingenic.c       | 12 ++--
+ drivers/tty/serial/8250/8250_pci.c           | 49 +++++++--------
+ drivers/tty/serial/8250/8250_pnp.c           | 16 ++---
+ drivers/tty/serial/8250/8250_port.c          | 50 ++++++++--------
+ drivers/tty/serial/8250/serial_cs.c          | 89 +++++++++++++++-------------
+ 14 files changed, 142 insertions(+), 132 deletions(-)
+
 -- 
-1.7.10.4
+1.9.1
+
