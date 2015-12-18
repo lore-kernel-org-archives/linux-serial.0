@@ -1,42 +1,64 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 0/7] ARM: shmobile: dtsi: Add SCIF fallback compatibility
- strings
-Date: Fri, 18 Dec 2015 12:20:12 +0900
-Message-ID: <20151218032011.GA9704@verge.net.au>
-References: <1450119475-1183-1-git-send-email-geert+renesas@glider.be>
+From: Sebastian Frias <sf84@laposte.net>
+Subject: [PATCH v2] use callbacks to access UART_DLL/UART_DLM
+Date: Fri, 18 Dec 2015 11:46:21 +0100
+Message-ID: <5673E3FD.8080001@laposte.net>
+References: <5672D89A.4090307@laposte.net> <yw1xoadpcbbn.fsf@unicorn.mansr.com> <5672F9C9.1010601@laposte.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1450119475-1183-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-sh-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5672F9C9.1010601@laposte.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>
+Cc: =?windows-1252?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Mason <slash.tmp@free.fr>, Jon Anders Haugum <jonah@omegav.ntnu.no>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Dec 14, 2015 at 07:57:48PM +0100, Geert Uytterhoeven wrote:
-> 	Hi Simon, Magnus,
-> 
-> This patch series adds fallback compatibility strings for SCIF and HSCIF
-> to the DTS files for R-Car Gen1, Gen2, and Gen3, as defined in
-> "[PATCH v3 02/27] serial: sh-sci: Add fallback compatibility strings" of
-> series "[PATCH v3 00/27] serial: sh-sci: External Clock Support".
-> This will allow the sh-sci driver to match on family-specific compatible
-> values to enable BGR support later.
-> 
-> Note that fallback compatibility strings for SCIFA/SCIFB are not added
-> yet.
-> 
-> Dependencies:
->   - This series is against renesas-devel-20151214-v4.4-rc5,
->   - It can be applied independently, as soon as the aforementioned DT
->     binding patch has been accepted,
->   - Later series depend on this:
->       - "[PATCH v3 00/12] ARM: shmobile: dtsi: Rename the serial port
-> 	 clock to fck",
->       - "[PATCH v2 0/7] ARM: shmobile: dtsi: Add BRG support for (H)SCIF",
->       - "[PATCH v2 0/9] ARM: shmobile: dts: Enable SCIF_CLK frequency and
-> 	 pins".
+---
 
-I have marked this and the above series as deferred pending
-acceptance of the driver changes.
+Some UART HW has a single register combining UART_DLL/UART_DLM
+(this was probably forgotten in the change that introduced the
+callbacks, commit b32b19b8ffc05cbd3bf91c65e205f6a912ca15d9)
+
+Fixes: b32b19b8ffc0
+
+Signed-off-by: Sebastian Frias <sf84@laposte.net>
+---
+  drivers/tty/serial/8250/8250_port.c |   17 ++++++-----------
+  1 file changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c 
+b/drivers/tty/serial/8250/8250_port.c
+index 52d82d2..827eb6f 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -713,22 +713,17 @@ static int size_fifo(struct uart_8250_port *up)
+   */
+  static unsigned int autoconfig_read_divisor_id(struct uart_8250_port *p)
+  {
+-	unsigned char old_dll, old_dlm, old_lcr;
++	unsigned char old_lcr;
+  	unsigned int id;
++	unsigned int old_dl;
+
+  	old_lcr = serial_in(p, UART_LCR);
+  	serial_out(p, UART_LCR, UART_LCR_CONF_MODE_A);
++	old_dl = serial_dl_read(p);
++	serial_dl_write(p, 0);
++	id = serial_dl_read(p);
++	serial_dl_write(p, old_dl);
+
+-	old_dll = serial_in(p, UART_DLL);
+-	old_dlm = serial_in(p, UART_DLM);
+-
+-	serial_out(p, UART_DLL, 0);
+-	serial_out(p, UART_DLM, 0);
+-
+-	id = serial_in(p, UART_DLL) | serial_in(p, UART_DLM) << 8;
+-
+-	serial_out(p, UART_DLL, old_dll);
+-	serial_out(p, UART_DLM, old_dlm);
+  	serial_out(p, UART_LCR, old_lcr);
+
+  	return id;
+-- 
+1.7.10.4
