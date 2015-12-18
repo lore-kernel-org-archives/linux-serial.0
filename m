@@ -1,21 +1,21 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 07/11] tty: serial: 8250: Fix line continuation warning
-Date: Fri, 18 Dec 2015 07:41:48 -0800
-Message-ID: <5674293C.9090902@hurleysoftware.com>
+Subject: Re: [PATCH v2 08/11] tty: serial: 8250: Add parentheses to macro
+Date: Fri, 18 Dec 2015 07:43:52 -0800
+Message-ID: <567429B8.2050707@hurleysoftware.com>
 References: <1450437723-2978-1-git-send-email-anton.wuerfel@fau.de>
- <1450437723-2978-8-git-send-email-anton.wuerfel@fau.de>
+ <1450437723-2978-9-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1450437723-2978-8-git-send-email-anton.wuerfel@fau.de>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <1450437723-2978-9-git-send-email-anton.wuerfel@fau.de>
+Sender: linux-parisc-owner@vger.kernel.org
 To: Anton Wuerfel <anton.wuerfel@fau.de>
 Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, Desmond Liu <desmondl@broadcom.com>, Wang Long <long.wanglong@huawei.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Peter Hung <hpeter@gmail.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Adam Lee <adam.lee@canonical.com>, "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, Mans Rullgard <mans@mansr.com>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Phillip Raffeck <phillip.raffe>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/18/2015 03:21 AM, Anton Wuerfel wrote:
-> Fixed checkpatch warning about an unnecessary line continuation in a
-> multi-line variable assignment.
+On 12/18/2015 03:22 AM, Anton Wuerfel wrote:
+> This patch fixes a checkpatch warning caused by missing parentheses
+> in the definition of a macro.
 
 Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
