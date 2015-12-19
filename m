@@ -1,48 +1,29 @@
 From: Sergei Ianovich <ynvich@gmail.com>
-Subject: Re: [PATCH v4 1/2] serial: rewrite pxa2xx-uart to use 8250_core
-Date: Sat, 19 Dec 2015 23:12:35 +0300
-Message-ID: <1450555955.15911.14.camel@gmail.com>
-References: <1387309071-22382-1-git-send-email-ynvich@gmail.com>
-	 <1449700088-28076-1-git-send-email-ynvich@gmail.com>
-	 <1449700088-28076-2-git-send-email-ynvich@gmail.com>
-	 <8737uyhaji.fsf@belgarion.home> <87y4cqfu2j.fsf@belgarion.home>
-	 <1450550792.15911.5.camel@gmail.com> <87twnefd67.fsf@belgarion.home>
+Subject: Re: [PATCH v5] serial: support for 16550A serial ports on LP-8x4x
+Date: Sun, 20 Dec 2015 00:42:15 +0300
+Message-ID: <1450561335.15911.17.camel@gmail.com>
+References: <1397668667-27328-1-git-send-email-ynvich@gmail.com>
+	 <1450213494-21884-1-git-send-email-ynvich@gmail.com>
+	 <1970812.j9fZPC5F1b@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <87twnefd67.fsf@belgarion.home>
+In-Reply-To: <1970812.j9fZPC5F1b@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robert Jarzmik <robert.jarzmik@free.fr>
-Cc: linux-kernel@vger.kernel.org, Kevin Hilman <khilman@linaro.org>, Arnd Bergmann <arnd@arndb.de>, "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-kernel@vger.kernel.org, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Scott Wood <scottwood@freescale.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Paul Burton <paul.burton@imgtec.com>, Joachim Eastwood <manabian@gmail.com>, Mans Rullgard <mans@mansr.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, Peter Hurley <peter@hurleysoftware.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>open list:
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, 2015-12-19 at 20:31 +0100, Robert Jarzmik wrote:
-> Sergei Ianovich <ynvich@gmail.com> writes:
-> Thanks for spotting this. This is caused by a change in the latest
-> > version of the patch (SERIAL_8250_PXA instead of SERIAL_PXA). This
-> > change could be reverted.
-> Actually I'm against the revert.
-> The name change looks very good to me, please keep it.
+On Tue, 2015-12-15 at 22:51 +0100, Arnd Bergmann wrote:
+> On Wednesday 16 December 2015 00:04:45 Sergei Ianovich wrote:
+> > +Examples (from pxa27x-lp8x4x.dts):
+> > +
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0uart@9050 {
+>=20
+> By convention, the name should be 'serial', not 'uart'.
+>=20
 
-Is it worth adding an error if CONFIG_SERIAL_PXA is defined? Or is there
-any other way of preventing this patch launching Linus' "flag days" as
-Russel King named it?
-
-I understand that people are afraid of taking this patch. If it starts
-causing troubles at runtime, it will be difficult to diagnose. There
-will be no console for most people. So it is probably good idea to fail
-at boot time.
-
-> > > But that can be handled in an subsequent patch to keep your acks
-> > > and
-> > > reviews.
-> > I will respin the patch. Please comment on the acks and reviews.
-> > They
-> > were made at an earlier version of the patch. That version no longer
-> > applies. Can the updated version carry on the flags?
-> I don't get you. If you mean keeping CONFIG_SERIAL_8250_PXA, then yes,
-> please
-> keep it.
-
-I mean should the patch be re-revied and re-acked?
+arch/arm/boot/dts/pxa2xx.dtsi uses 'uart'. Should I change the names in
+the patch with dts file for LP-8xx?
