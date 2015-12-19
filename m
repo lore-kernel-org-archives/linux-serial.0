@@ -1,63 +1,40 @@
-From: Wills Wang <wills.wang@live.com>
-Subject: [PATCH] sc16is7xx: fix incorrect register bits macro
-Date: Sat, 19 Dec 2015 19:20:06 +0800
-Message-ID: <BLU436-SMTP214949663591D40091B8468FFE20@phx.gbl>
+From: Robert Jarzmik <robert.jarzmik@free.fr>
+Subject: Re: [PATCH v4 1/2] serial: rewrite pxa2xx-uart to use 8250_core
+Date: Sat, 19 Dec 2015 13:45:21 +0100
+Message-ID: <8737uyhaji.fsf@belgarion.home>
+References: <1387309071-22382-1-git-send-email-ynvich@gmail.com>
+	<1449700088-28076-1-git-send-email-ynvich@gmail.com>
+	<1449700088-28076-2-git-send-email-ynvich@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jringle@gridpoint.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Wills Wang <wills.wang@live.com>
+To: Sergei Ianovich <ynvich@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, James Cameron <quozl@laptop.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Rob Herring <robh@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Kevin Hilman <khilman@linaro.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, Paul Gortmaker <paul.gortmaker@windriver.com>, Scott Wood <scottwood@freescale.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Paul Burton <paul.burton@imgtec.com>, Joachim Eastwood <manabian@gmail.com>, Mans Rullgard <mans@mansr.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, linux-arm-k
 List-Id: linux-serial@vger.kernel.org
 
-In datasheet, Modem Status Register MSR[4-5] reflect the modem pins
-CTS/DSR/RI/CD signal state.
+Sergei Ianovich <ynvich@gmail.com> writes:
 
-Signed-off-by: Wills Wang <wills.wang@live.com>
----
- drivers/tty/serial/sc16is7xx.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+> pxa2xx-uart was a separate uart platform driver. It was declaring
+> the same device names and numbers as 8250 driver. As a result,
+> it was impossible to use 8250 driver on PXA SoCs.
+>
+> Upon closer examination pxa2xx-uart turned out to be a clone of
+> 8250_core driver.
+>
+> Workaround for Erratum #19 according to Marvel(R) PXA270M Processor
+> Specification Update (April 19, 2010) is dropped. 8250_core reads
+> from FIFO immediately after checking DR bit in LSR.
+>
+> Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
+> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Reviewed-by: James Cameron <quozl@laptop.org>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index edb5305..9d18c24 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -196,14 +196,14 @@
- 						  * or (IO6)
- 						  * - only on 75x/76x
- 						  */
--#define SC16IS7XX_MSR_CTS_BIT		(1 << 0) /* CTS */
--#define SC16IS7XX_MSR_DSR_BIT		(1 << 1) /* DSR (IO4)
-+#define SC16IS7XX_MSR_CTS_BIT		(1 << 4) /* CTS */
-+#define SC16IS7XX_MSR_DSR_BIT		(1 << 5) /* DSR (IO4)
- 						  * - only on 75x/76x
- 						  */
--#define SC16IS7XX_MSR_RI_BIT		(1 << 2) /* RI (IO7)
-+#define SC16IS7XX_MSR_RI_BIT		(1 << 6) /* RI (IO7)
- 						  * - only on 75x/76x
- 						  */
--#define SC16IS7XX_MSR_CD_BIT		(1 << 3) /* CD (IO6)
-+#define SC16IS7XX_MSR_CD_BIT		(1 << 7) /* CD (IO6)
- 						  * - only on 75x/76x
- 						  */
- #define SC16IS7XX_MSR_DELTA_MASK	0x0F     /* Any of the delta bits! */
-@@ -240,7 +240,7 @@
- 
- /* IOControl register bits (Only 750/760) */
- #define SC16IS7XX_IOCONTROL_LATCH_BIT	(1 << 0) /* Enable input latching */
--#define SC16IS7XX_IOCONTROL_GPIO_BIT	(1 << 1) /* Enable GPIO[7:4] */
-+#define SC16IS7XX_IOCONTROL_MODEM_BIT	(1 << 1) /* Enable GPIO[7:4] as modem pins */
- #define SC16IS7XX_IOCONTROL_SRESET_BIT	(1 << 3) /* Software Reset */
- 
- /* EFCR register bits */
-@@ -674,7 +674,7 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- 		case SC16IS7XX_IIR_CTSRTS_SRC:
- 			msr = sc16is7xx_port_read(port, SC16IS7XX_MSR_REG);
- 			uart_handle_cts_change(port,
--					       !!(msr & SC16IS7XX_MSR_CTS_BIT));
-+					       !!(msr & SC16IS7XX_MSR_DCTS_BIT));
- 			break;
- 		case SC16IS7XX_IIR_THRI_SRC:
- 			sc16is7xx_handle_tx(port);
--- 
-1.9.1
+I was wondering if this should go through pxa tree, or through serial tree ?
+
+Cheers.
+
+--
+Robert
