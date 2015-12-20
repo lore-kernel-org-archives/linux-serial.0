@@ -1,63 +1,70 @@
-From: Wills Wang <wills.wang@live.com>
-Subject: [PATCH v2] sc16is7xx: fix incorrect register bits macro
-Date: Sun, 20 Dec 2015 12:55:23 +0800
-Message-ID: <BLU436-SMTP8780F773CD9AE53BF764D6FFE30@phx.gbl>
+From: Sergei Ianovich <ynvich@gmail.com>
+Subject: Re: [PATCH v4 1/2] serial: rewrite pxa2xx-uart to use 8250_core
+Date: Sun, 20 Dec 2015 14:24:25 +0300
+Message-ID: <1450610665.15911.53.camel@gmail.com>
+References: <1387309071-22382-1-git-send-email-ynvich@gmail.com>
+	 <1449700088-28076-1-git-send-email-ynvich@gmail.com>
+	 <1449700088-28076-2-git-send-email-ynvich@gmail.com>
+	 <8737uyhaji.fsf@belgarion.home> <87y4cqfu2j.fsf@belgarion.home>
+	 <1450550792.15911.5.camel@gmail.com> <87twnefd67.fsf@belgarion.home>
+	 <1450555955.15911.14.camel@gmail.com> <87poy2f2xw.fsf@belgarion.home>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <87poy2f2xw.fsf@belgarion.home>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jringle@gridpoint.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Wills Wang <wills.wang@live.com>
+To: Robert Jarzmik <robert.jarzmik@free.fr>, Kevin Hilman <khilman@linaro.org>, Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, linux-kernel@vger.kernel.org, "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-In datasheet, Modem Status Register MSR[4-7] reflect the modem pins
-CTS/DSR/RI/CD signal state.
+On Sun, 2015-12-20 at 00:12 +0100, Robert Jarzmik wrote:
+> Sergei Ianovich <ynvich@gmail.com> writes:
+>=20
+> > On Sat, 2015-12-19 at 20:31 +0100, Robert Jarzmik wrote:
+> > > Sergei Ianovich <ynvich@gmail.com> writes:
+> > > Thanks for spotting this. This is caused by a change in the lates=
+t
+> > > > version of the patch (SERIAL_8250_PXA instead of SERIAL_PXA).
+> > > > This
+> > > > change could be reverted.
+> > > Actually I'm against the revert.
+> > > The name change looks very good to me, please keep it.
+> >=20
+> > Is it worth adding an error if CONFIG_SERIAL_PXA is defined?
+> I don't think so.
 
-Signed-off-by: Wills Wang <wills.wang@live.com>
----
- drivers/tty/serial/sc16is7xx.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+=2E..
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index edb5305..9d18c24 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -196,14 +196,14 @@
- 						  * or (IO6)
- 						  * - only on 75x/76x
- 						  */
--#define SC16IS7XX_MSR_CTS_BIT		(1 << 0) /* CTS */
--#define SC16IS7XX_MSR_DSR_BIT		(1 << 1) /* DSR (IO4)
-+#define SC16IS7XX_MSR_CTS_BIT		(1 << 4) /* CTS */
-+#define SC16IS7XX_MSR_DSR_BIT		(1 << 5) /* DSR (IO4)
- 						  * - only on 75x/76x
- 						  */
--#define SC16IS7XX_MSR_RI_BIT		(1 << 2) /* RI (IO7)
-+#define SC16IS7XX_MSR_RI_BIT		(1 << 6) /* RI (IO7)
- 						  * - only on 75x/76x
- 						  */
--#define SC16IS7XX_MSR_CD_BIT		(1 << 3) /* CD (IO6)
-+#define SC16IS7XX_MSR_CD_BIT		(1 << 7) /* CD (IO6)
- 						  * - only on 75x/76x
- 						  */
- #define SC16IS7XX_MSR_DELTA_MASK	0x0F     /* Any of the delta bits! */
-@@ -240,7 +240,7 @@
- 
- /* IOControl register bits (Only 750/760) */
- #define SC16IS7XX_IOCONTROL_LATCH_BIT	(1 << 0) /* Enable input latching */
--#define SC16IS7XX_IOCONTROL_GPIO_BIT	(1 << 1) /* Enable GPIO[7:4] */
-+#define SC16IS7XX_IOCONTROL_MODEM_BIT	(1 << 1) /* Enable GPIO[7:4] as modem pins */
- #define SC16IS7XX_IOCONTROL_SRESET_BIT	(1 << 3) /* Software Reset */
- 
- /* EFCR register bits */
-@@ -674,7 +674,7 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- 		case SC16IS7XX_IIR_CTSRTS_SRC:
- 			msr = sc16is7xx_port_read(port, SC16IS7XX_MSR_REG);
- 			uart_handle_cts_change(port,
--					       !!(msr & SC16IS7XX_MSR_CTS_BIT));
-+					       !!(msr & SC16IS7XX_MSR_DCTS_BIT));
- 			break;
- 		case SC16IS7XX_IIR_THRI_SRC:
- 			sc16is7xx_handle_tx(port);
--- 
-1.9.1
+>=20
+> > I understand that people are afraid of taking this patch. If it
+> > starts
+> > causing troubles at runtime, it will be difficult to diagnose. Ther=
+e
+> > will be no console for most people. So it is probably good idea to
+> > fail
+> > at boot time.
+> Who are "the people" ?=20
+
+I think "the people" are at least Greg Kroah-Hartman and=C2=A0Russell K=
+ing.
+
+> If it's about something already written in a mailing
+> list, please point me to it so that it can help me think about it.
+
+http://lists.infradead.org/pipermail/linux-arm-kernel/2013-December/216=
+7
+73.html
+
+I can explain why I think so. Greg acked the patch, but hasn't merged i=
+t
+since then. He has good reasons for this most probably. Russell's
+comment pointed by the link seems to be the reason.
+
+I think the problem raised by Russell could be addressed. My best guess
+is compile time error, despite your comment above.
+
+I have one more plan. For transition period, we can introduce a
+temporary Kconfig option SERIAL_8250_PXA_OFF, and fail at build time if
+neither SERIAL_8250_PXA nor SERIAL_8250_PXA_OFF is set. This way all
+interested parties will be notified of this driver update.
