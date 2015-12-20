@@ -1,44 +1,37 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH RESEND 1/1] serial: 8250_pci: Fix real serial port count
- for F81504/508/512
-Date: Sun, 20 Dec 2015 19:16:16 +0200
-Message-ID: <CAHp75VdB0DnAz7TvsrqELJFLd6d9CT+4rjEyzJP7YcH5um_-oA@mail.gmail.com>
-References: <1448952881-7871-1-git-send-email-hpeter+linux_kernel@gmail.com>
-	<CAHp75Vd45Wogz83L8tB7XdvYO1bfn9C4sc3sHgr1Vskka-X3fw@mail.gmail.com>
-	<566F8148.5020600@gmail.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH v3] serial: 8250: add gpio support to exar
+Date: Sun, 20 Dec 2015 22:58:41 +0530
+Message-ID: <20151220172841.GB8471@sudip-laptop>
+References: <1450617891-26167-1-git-send-email-sudipm.mukherjee@gmail.com>
+ <20151220164353.6ef29f77@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <566F8148.5020600@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20151220164353.6ef29f77@lxorguk.ukuu.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hung <hpeter@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, tom_tsai@fintek.com.tw, Peter H <peter_hong@fintek.com.tw>, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Dec 15, 2015 at 4:56 AM, Peter Hung <hpeter@gmail.com> wrote:
-> Andy Shevchenko =E6=96=BC 2015/12/13 =E4=B8=8A=E5=8D=88 09:08 =E5=AF=AB=
-=E9=81=93:
->>
->> On Tue, Dec 1, 2015 at 8:54 AM, Peter Hung <hpeter@gmail.com> wrote:
->>> +/* The device is multi-function with UART & GPIO */
->>> +static u8 fintek_gpio_mapping[] =3D {2, 3, 8, 9, 10, 11};
->>
->>
->> Clearly you have bit combination here
->> Bit 1: 1
->> Bit 3: 1
->>
->> So, mask as 0x0a shall cover this IIAC.
->
->
-> IMO, It maybe wrong. If we checked only with 0x0a mask,
-> the 0x06 & 0x07 will be passed.
+On Sun, Dec 20, 2015 at 04:43:53PM +0000, One Thousand Gnomes wrote:
+> > v3: Alan commented on v2, few things like NULL check, name of the gpio chip,
+> > moving some more code into the gpio code. He also commented on it being
+> > a separate module, but since this will not be needed by someone who is not
+> > using Exar chip, and even those who are using, some of them may not need it.
+> > This is optional for only those who wants to use the gpio capability of that
+> > chip. So kept it as a separate module. Waiting for your comments on that.
+> 
+> That doesn't work because you reference the methods in it so it will
+> always be dragged in. You would have to make the exar driver an MFD that
+> provided a serial and a gpio binding to fix that up I think, or instead
+> of having the serial driver call into your gpio driver (thus forcing the
+> module into memory) you would have the serial driver create a platform
+> device or similar that the GPIO device bound to.
 
-Ah, yes, it will be a bit more than just one check, something like:
-(x & 0x0a) && (x & 0x0e !=3D 6)
+So then should I rewrite it as MFD or should it be like the way you
+suggested in the other mail to have it as bool in the Kconfig and combine
+the file with 8250_pci.c when the symbol is selected?
 
-
---=20
-With Best Regards,
-Andy Shevchenko
+regards
+sudip
