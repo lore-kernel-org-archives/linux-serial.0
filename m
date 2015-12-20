@@ -1,184 +1,111 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v9 1/3] serial: 8250_dw: Avoid serial_outx code duplicate
- with new dw8250_check_lcr()
-Date: Sun, 20 Dec 2015 18:45:39 +0200
-Message-ID: <CAHp75Vfw8h36y-bjTBjhvnhsoZpqA8L_Go7_SrBcjBeNTAc48w@mail.gmail.com>
-References: <1449940707-17633-1-git-send-email-noamc@ezchip.com>
-	<1449940707-17633-2-git-send-email-noamc@ezchip.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH v3] serial: 8250: add gpio support to exar
+Date: Sun, 20 Dec 2015 22:41:04 +0530
+Message-ID: <20151220171104.GA8471@sudip-laptop>
+References: <1450617891-26167-1-git-send-email-sudipm.mukherjee@gmail.com>
+ <CAHp75Vfn_mr0hW71xsTCvDGX87ktPaN2E1TVTNjdbxR83-nxcg@mail.gmail.com>
+ <20151220144722.GA26499@sudip-pc>
+ <20151220164131.46fb25ee@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1449940707-17633-2-git-send-email-noamc@ezchip.com>
+Content-Disposition: inline
+In-Reply-To: <20151220164131.46fb25ee@lxorguk.ukuu.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Noam Camus <noamc@ezchip.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, vgupta@synopsys.com, Alexey Brodkin <Alexey.Brodkin@synopsys.com>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Dec 12, 2015 at 7:18 PM, Noam Camus <noamc@ezchip.com> wrote:
-> From: Noam Camus <noamc@ezchip.com>
->
-> With the help of Heikki we take common code that
-> makes sure LCR write wasn't ignored and put it in new function called
-> dw8250_check_lcr(). This function serves 3 serial_out routines:
-> dw8250_serial_out(), dw8250_serial_out32(), and dw8250_serial_outq().
->
-> This patch only brings better code reuse.
->
-> Signed-off-by: Noam Camus <noamc@ezchip.com>
-> Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Sun, Dec 20, 2015 at 04:41:31PM +0000, One Thousand Gnomes wrote:
+> On Sun, 20 Dec 2015 20:17:22 +0530
+> Sudip Mukherjee <sudipm.mukherjee@gmail.com> wrote:
+> 
+> > On Sun, Dec 20, 2015 at 04:18:17PM +0200, Andy Shevchenko wrote:
+> > > On Sun, Dec 20, 2015 at 3:24 PM, Sudip Mukherjee
+> > > <sudipm.mukherjee@gmail.com> wrote:
+> > > > Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+> > > > can be controlled using gpio interface.
+> > > > Add support to use these pins and select GPIO_SYSFS also so that these
+> > > > pins can be used from the userspace through sysfs.
+> > > >
+> > > > Tested-by: Rob Groner <rgroner@rtd.com>
+> > > > Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+> > > 
+> > Hi Andy,
+> > Thanks for the review. Just a few doubts below.
+> > 
+> > > > @@ -0,0 +1,261 @@
+> > > > +/*
+> > > > + * GPIO driver for Exar XR17V35X chip
+> > > > + *
+> > > > + * Copyright (C) 2015 Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+> > > > + *
+> > > > + * This program is free software; you can redistribute it and/or modify
+> > > > + * it under the terms of the GNU General Public License version 2 as
+> > > > + * published by the Free Software Foundation.
+> > > > + */
+> > <snip>
+> > > > +
+> > > > +err_destroy:
+> > > > +       mutex_unlock(&exar_mtx);
+> > > > +       mutex_destroy(&exar_gpio->lock);
+> > > > +err_unmap:
+> > > > +       iounmap(p);
+> > > 
+> > > pci_iounmap?
+> > 
+> > I thought about pci_iounmap but I saw that most of the code in
+> > 8250_pci.c is using iounmap, so i went in favor of the majority.
+> > Will change it.
+> > 
+> > > 
+> > > > +       return ret;
+> > > > +}
+> > > > +EXPORT_SYMBOL(xr17v35x_gpio_init);
+> > > > +
+> > > 
+> > > > +static void __exit exar_gpio_exit(void)
+> > > > +{
+> > > > +}
+> > > > +
+> > > > +module_exit(exar_gpio_exit);
+> > > > +
+> > > > +static int __init exar_gpio_init(void)
+> > > > +{
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +module_init(exar_gpio_init);
+> > > > +
+> > > 
+> > > Useless for now. You are using it as a library.
+> > 
+> > Main doubt here. If I do not give the module_init() and module_exit()
+> > then what entry do i keep in the Kconfig? In this v3, it is kept as
+> > tristate. Should that be bool then? 
+> 
+> If you are linking it into the driver you don't need the module_init/exit
+> gpio_init/exit methods. Your Kconfig becomes a bool and you combine the
+> file into the driver based upon that bool.
 
-All three fine by me:
-Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+But isn't it better to have the gpio code separete from the 8250 code?
+But how do i combine a file? is it like:
 
-> ---
->  drivers/tty/serial/8250/8250_dw.c |   91 +++++++++++++++++--------------------
->  1 files changed, 42 insertions(+), 49 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index a5d319e..ffe5e0c 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -95,25 +95,43 @@ static void dw8250_force_idle(struct uart_port *p)
->         (void)p->serial_in(p, UART_RX);
->  }
->
-> -static void dw8250_serial_out(struct uart_port *p, int offset, int value)
-> +static void dw8250_check_lcr(struct uart_port *p, int value)
->  {
-> -       writeb(value, p->membase + (offset << p->regshift));
-> +       void __iomem *offset = p->membase + (UART_LCR << p->regshift);
-> +       int tries = 1000;
->
->         /* Make sure LCR write wasn't ignored */
-> -       if (offset == UART_LCR) {
-> -               int tries = 1000;
-> -               while (tries--) {
-> -                       unsigned int lcr = p->serial_in(p, UART_LCR);
-> -                       if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
-> -                               return;
-> -                       dw8250_force_idle(p);
-> -                       writeb(value, p->membase + (UART_LCR << p->regshift));
-> -               }
-> -               /*
-> -                * FIXME: this deadlocks if port->lock is already held
-> -                * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> -                */
-> +       while (tries--) {
-> +               unsigned int lcr = p->serial_in(p, UART_LCR);
-> +
-> +               if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
-> +                       return;
-> +
-> +               dw8250_force_idle(p);
-> +
-> +#ifdef CONFIG_64BIT
-> +               __raw_writeq(value & 0xff, offset);
-> +#else
-> +               if (p->iotype == UPIO_MEM32)
-> +                       writel(value, offset);
-> +               else
-> +                       writeb(value, offset);
-> +#endif
->         }
-> +       /*
-> +        * FIXME: this deadlocks if port->lock is already held
-> +        * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> +        */
-> +}
-> +
-> +static void dw8250_serial_out(struct uart_port *p, int offset, int value)
-> +{
-> +       struct dw8250_data *d = p->private_data;
-> +
-> +       writeb(value, p->membase + (offset << p->regshift));
-> +
-> +       if (offset == UART_LCR && !d->uart_16550_compatible)
-> +               dw8250_check_lcr(p, value);
->  }
->
->  static unsigned int dw8250_serial_in(struct uart_port *p, int offset)
-> @@ -135,49 +153,26 @@ static unsigned int dw8250_serial_inq(struct uart_port *p, int offset)
->
->  static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
->  {
-> +       struct dw8250_data *d = p->private_data;
-> +
->         value &= 0xff;
->         __raw_writeq(value, p->membase + (offset << p->regshift));
->         /* Read back to ensure register write ordering. */
->         __raw_readq(p->membase + (UART_LCR << p->regshift));
->
-> -       /* Make sure LCR write wasn't ignored */
-> -       if (offset == UART_LCR) {
-> -               int tries = 1000;
-> -               while (tries--) {
-> -                       unsigned int lcr = p->serial_in(p, UART_LCR);
-> -                       if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
-> -                               return;
-> -                       dw8250_force_idle(p);
-> -                       __raw_writeq(value & 0xff,
-> -                                    p->membase + (UART_LCR << p->regshift));
-> -               }
-> -               /*
-> -                * FIXME: this deadlocks if port->lock is already held
-> -                * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> -                */
-> -       }
-> +       if (offset == UART_LCR && !d->uart_16550_compatible)
-> +               dw8250_check_lcr(p, value);
->  }
->  #endif /* CONFIG_64BIT */
->
->  static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
->  {
-> +       struct dw8250_data *d = p->private_data;
-> +
->         writel(value, p->membase + (offset << p->regshift));
->
-> -       /* Make sure LCR write wasn't ignored */
-> -       if (offset == UART_LCR) {
-> -               int tries = 1000;
-> -               while (tries--) {
-> -                       unsigned int lcr = p->serial_in(p, UART_LCR);
-> -                       if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
-> -                               return;
-> -                       dw8250_force_idle(p);
-> -                       writel(value, p->membase + (UART_LCR << p->regshift));
-> -               }
-> -               /*
-> -                * FIXME: this deadlocks if port->lock is already held
-> -                * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> -                */
-> -       }
-> +       if (offset == UART_LCR && !d->uart_16550_compatible)
-> +               dw8250_check_lcr(p, value);
->  }
->
->  static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
-> @@ -463,10 +458,8 @@ static int dw8250_probe(struct platform_device *pdev)
->         dw8250_quirks(p, data);
->
->         /* If the Busy Functionality is not implemented, don't handle it */
-> -       if (data->uart_16550_compatible) {
-> -               p->serial_out = NULL;
-> +       if (data->uart_16550_compatible)
->                 p->handle_irq = NULL;
-> -       }
->
->         if (!data->skip_autocfg)
->                 dw8250_setup_port(p);
-> --
-> 1.7.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+#ifdef SERIAL_8250_EXAR_GPIO
+#include "8250_gpio.c"
+#endif
+
+or should it be:
+
+#ifdef SERIAL_8250_EXAR_GPIO
+
+all c code
+
+#endif
+
+regards
+sudip
 
 
-
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+> Alan
