@@ -1,37 +1,48 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH v3] serial: 8250: add gpio support to exar
-Date: Sun, 20 Dec 2015 22:58:41 +0530
-Message-ID: <20151220172841.GB8471@sudip-laptop>
+Date: Sun, 20 Dec 2015 17:28:51 +0000
+Message-ID: <20151220172851.1b560da8@lxorguk.ukuu.org.uk>
 References: <1450617891-26167-1-git-send-email-sudipm.mukherjee@gmail.com>
- <20151220164353.6ef29f77@lxorguk.ukuu.org.uk>
+	<CAHp75Vfn_mr0hW71xsTCvDGX87ktPaN2E1TVTNjdbxR83-nxcg@mail.gmail.com>
+	<20151220144722.GA26499@sudip-pc>
+	<20151220164131.46fb25ee@lxorguk.ukuu.org.uk>
+	<20151220171104.GA8471@sudip-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20151220164353.6ef29f77@lxorguk.ukuu.org.uk>
+In-Reply-To: <20151220171104.GA8471@sudip-laptop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Dec 20, 2015 at 04:43:53PM +0000, One Thousand Gnomes wrote:
-> > v3: Alan commented on v2, few things like NULL check, name of the gpio chip,
-> > moving some more code into the gpio code. He also commented on it being
-> > a separate module, but since this will not be needed by someone who is not
-> > using Exar chip, and even those who are using, some of them may not need it.
-> > This is optional for only those who wants to use the gpio capability of that
-> > chip. So kept it as a separate module. Waiting for your comments on that.
+> > If you are linking it into the driver you don't need the module_init/exit
+> > gpio_init/exit methods. Your Kconfig becomes a bool and you combine the
+> > file into the driver based upon that bool.
 > 
-> That doesn't work because you reference the methods in it so it will
-> always be dragged in. You would have to make the exar driver an MFD that
-> provided a serial and a gpio binding to fix that up I think, or instead
-> of having the serial driver call into your gpio driver (thus forcing the
-> module into memory) you would have the serial driver create a platform
-> device or similar that the GPIO device bound to.
+> But isn't it better to have the gpio code separete from the 8250 code?
+> But how do i combine a file? is it like:
+> 
+> #ifdef SERIAL_8250_EXAR_GPIO
+> #include "8250_gpio.c"
+> #endif
+> 
+> or should it be:
+> 
+> #ifdef SERIAL_8250_EXAR_GPIO
+> 
+> all c code
+> 
+> #endif
 
-So then should I rewrite it as MFD or should it be like the way you
-suggested in the other mail to have it as bool in the Kconfig and combine
-the file with 8250_pci.c when the symbol is selected?
+Neither of the above. Take a look how other parts of the kernel combine
+multiple files into a single module. It's supported by the
+Kconfig/Makefile system, and they will get linked together as a single
+binary while being separate sources.
 
-regards
-sudip
+For an example look at drivers/tty/ipwireless
+
+
+
+Alan
