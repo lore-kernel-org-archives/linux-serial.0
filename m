@@ -1,74 +1,68 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH v2 3/3] serial: amba-pl011: add ACPI support to AMBA probe
-Date: Mon, 21 Dec 2015 17:49:57 +0300
-Message-ID: <1450709399-7246-4-git-send-email-aleksey.makarov@linaro.org>
-References: <1450709399-7246-1-git-send-email-aleksey.makarov@linaro.org>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH v3] serial: 8250: add gpio support to exar
+Date: Mon, 21 Dec 2015 20:49:51 +0530
+Message-ID: <20151221151904.GA23780@sudip-pc>
+References: <1450617891-26167-1-git-send-email-sudipm.mukherjee@gmail.com>
+ <20151220164353.6ef29f77@lxorguk.ukuu.org.uk>
+ <20151220172841.GB8471@sudip-laptop>
+ <20151220174208.1447d2f3@lxorguk.ukuu.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1450709399-7246-1-git-send-email-aleksey.makarov@linaro.org>
+Content-Disposition: inline
+In-Reply-To: <20151220174208.1447d2f3@lxorguk.ukuu.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-acpi@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Shannon Zhao <shannon.zhao@linaro.org>, Jiri Slaby <jslaby@suse.com>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Graeme Gregory <graeme.gregory@linaro.org>
+On Sun, Dec 20, 2015 at 05:42:08PM +0000, One Thousand Gnomes wrote:
+> > So then should I rewrite it as MFD or should it be like the way you
+> > suggested in the other mail to have it as bool in the Kconfig and combine
+> > the file with 8250_pci.c when the symbol is selected?
+> 
+> Yes although I'm really not sure which is the best approach of the two.
 
-In ACPI this device is only defined in SBSA mode so
-if we are coming from ACPI use this mode.
+Hi Alan and Andy,
+I was trying like:
 
-Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
----
- drivers/tty/serial/amba-pl011.c | 37 ++++++++++++++++++++++++++-----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 899a771..766ce4f 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2368,18 +2368,33 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	if (!uap)
- 		return -ENOMEM;
- 
--	uap->clk = devm_clk_get(&dev->dev, NULL);
--	if (IS_ERR(uap->clk))
--		return PTR_ERR(uap->clk);
--
--	uap->vendor = vendor;
--	uap->lcrh_rx = vendor->lcrh_rx;
--	uap->lcrh_tx = vendor->lcrh_tx;
--	uap->fifosize = vendor->get_fifosize(dev);
--	uap->port.irq = dev->irq[0];
--	uap->port.ops = &amba_pl011_pops;
-+	/* ACPI only defines SBSA variant */
-+	if (ACPI_COMPANION(&dev->dev)) {
-+		/*
-+		 * According to ARM ARMH0011 is currently the only mapping
-+		 * of pl011 in ACPI and it's mapped to SBSA UART mode
-+		 */
-+		uap->vendor	= &vendor_sbsa;
-+		uap->fifosize	= 32;
-+		uap->port.ops	= &sbsa_uart_pops;
-+		uap->fixed_baud = 115200;
- 
--	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
-+		snprintf(uap->type, sizeof(uap->type), "SBSA");
-+	} else {
-+		uap->clk = devm_clk_get(&dev->dev, NULL);
-+		if (IS_ERR(uap->clk))
-+			return PTR_ERR(uap->clk);
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 6412f14..ec3d287 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -378,3 +378,11 @@ config SERIAL_8250_MID
+ 	  Selecting this option will enable handling of the extra features
+ 	  present on the UART found on Intel Medfield SOC and various other
+ 	  Intel platforms.
 +
-+		uap->vendor = vendor;
-+		uap->lcrh_rx = vendor->lcrh_rx;
-+		uap->lcrh_tx = vendor->lcrh_tx;
-+		uap->fifosize = vendor->get_fifosize(dev);
-+		uap->port.ops = &amba_pl011_pops;
++config SERIAL_8250_EXAR_GPIO
++	bool "Support for GPIO pins on XR17V352/354/358"
++	depends on SERIAL_8250_PCI && GPIOLIB
++	select GPIO_SYSFS
++	help
++	  Selecting this option will enable handling of GPIO pins present
++	  on Exar XR17V352/354/358 chips.
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index e177f86..1d0fce0 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -28,5 +28,8 @@ obj-$(CONFIG_SERIAL_8250_MT6577)	+= 8250_mtk.o
+ obj-$(CONFIG_SERIAL_8250_UNIPHIER)	+= 8250_uniphier.o
+ obj-$(CONFIG_SERIAL_8250_INGENIC)	+= 8250_ingenic.o
+ obj-$(CONFIG_SERIAL_8250_MID)		+= 8250_mid.o
++obj-$(CONFIG_SERIAL_8250_EXAR_GPIO)	+= exar_gpio.o
++exar_gpio-y				:= 8250_pci.o 8250_gpio.o
 +
-+		snprintf(uap->type, sizeof(uap->type), "PL011 rev%u",
-+				amba_rev(dev));
-+	}
-+	uap->port.irq = dev->irq[0];
  
- 	ret = pl011_setup_port(&dev->dev, uap, &dev->res, portnr);
- 	if (ret)
--- 
-2.6.4
+ CFLAGS_8250_ingenic.o += -I$(srctree)/scripts/dtc/libfdt
+
+
+But I am getting:
+ERROR: "xr17v35x_gpio_exit" [drivers/tty/serial/8250/8250_pci.ko] undefined!
+ERROR: "xr17v35x_gpio_init" [drivers/tty/serial/8250/8250_pci.ko] undefined!
+
+I will need little hint for the Makefile, please. Its clear that i have
+messed up.
+
+regards
+sudip
