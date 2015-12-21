@@ -1,46 +1,47 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v5 2/3] tty: Add software emulated RS485 support for 8250
-Date: Sun, 20 Dec 2015 20:13:27 +0200
-Message-ID: <CAHp75VeVKscH8k-ehDyiGx3+zF6hToRMXGWMp6YzMSvL+5SOfg@mail.gmail.com>
-References: <1449919416-1980-1-git-send-email-matwey@sai.msu.ru>
-	<1449919416-1980-3-git-send-email-matwey@sai.msu.ru>
-	<CAHp75VcJaJnEMA04Xit4JxzLs+VQtsE0_j-MAf_S=_ERh0AxgQ@mail.gmail.com>
-	<CAJs94Ea-gz8GAL6Sx4A4RqBVPKs-Z=gvk+9KiaGLt-TJM3s92Q@mail.gmail.com>
+From: Jon Masters <jonathan@jonmasters.org>
+Subject: Re: The console log is doubled if earlycon is enabled
+Date: Mon, 21 Dec 2015 02:54:39 -0500
+Message-ID: <5677B03F.1030506@jonmasters.org>
+References: <CAK7LNAT5L2uxJ6i-QEYqw9qFLyvADu_E0F5VVTOPqyHbLodTCg@mail.gmail.com> <20151128000451.GB22297@kroah.com> <CAK7LNARFa8Q1t6RwwQVhTrtXJxnJBQw8QHnbpfNfHouEiGdK0w@mail.gmail.com> <20151130171034.GA14366@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAJs94Ea-gz8GAL6Sx4A4RqBVPKs-Z=gvk+9KiaGLt-TJM3s92Q@mail.gmail.com>
+In-Reply-To: <20151130171034.GA14366@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robherring2@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Dec 20, 2015 at 8:11 PM, Matwey V. Kornilov <matwey@sai.msu.ru> wrote:
-> 2015-12-20 19:41 GMT+03:00 Andy Shevchenko <andy.shevchenko@gmail.com>:
->> On Sat, Dec 12, 2015 at 1:23 PM, Matwey V. Kornilov <matwey@sai.msu.ru> wrote:
->>> Implementation of software emulation of RS485 direction handling is based
->>> on omap_serial driver.
->>> Before and after transmission RTS is set to the appropriate value.
+On 11/30/15, 12:10 PM, Greg Kroah-Hartman wrote:
+> On Mon, Nov 30, 2015 at 02:53:49PM +0900, Masahiro Yamada wrote:
+>> 2015-11-28 9:04 GMT+09:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+>>> On Fri, Nov 27, 2015 at 07:21:06PM +0900, Masahiro Yamada wrote:
+>>>> Hi,
+>>>>
+>>>>
+>>>> If I add "earlycon" to the kernel parameter, the log message
+>>>> on the earlycon is also displayed to the regular console.
+>>>> In other words, the same log messages are displayed twice.
+>>>>
+>>>> I noticed this problem on v4.4-rc1.
+>>>> It has not been fixed in the mainline yet, I think.
+>>>>
+>>>> Anybody who has a clue?
+>>>> (I have not done git-bisect yet.)
 >>>
->>> Note that before calling serial8250_em485_init the caller has to
->>> ensure that UART will interrupt when shift register empty. Otherwise,
->>> emultaion cannot be used.
->>>
->>> Both serial8250_em485_init and serial8250_em485_destroy are
->>> idempotent functions.
+>>> Can you do 'git bisect'?
 >>
->> Just nitpick suggesting to rename both struct and field:
 >>
->> struct uart_8250_rs485em *rs485em;
+>> The same problem happened on v4.3.
+>> (I think I just did not notice the problem before.)
+>>
+>> So, the bad commit is not in the last merge window.
 >
-> Why not
->
-> struct uart_8250_em485 *em485;
->
-> to be consistent with function name suffix?
+> Is it ok for 4.2?  4.1?  Finding out where this started to "fail" would
+> be good to know...
 
-I'm fine with that as well.
+Just as a data point, on our internal systems earlycon is known good in 
+combination with regular console (provided by SPCR ACPI patch) on 4.2.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Jon.
