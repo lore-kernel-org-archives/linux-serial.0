@@ -1,61 +1,53 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 01/25] serial: sh-sci: Update DT binding documentation for
- external clock input
-Date: Mon, 21 Dec 2015 15:20:34 +0100
-Message-ID: <CAMuHMdV30XBQDvbDFnF1f23zrKt8_=5cX9XNJ8WFcKQS9Kkp-w@mail.gmail.com>
-References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
-	<1447958344-836-2-git-send-email-geert+renesas@glider.be>
-	<1756365.Ijac5ApxcA@avalon>
-	<CAMuHMdX4ToefbBLR6o2AMuzCMoKcYo9XRZOzHJzgtQn552vmNg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAMuHMdX4ToefbBLR6o2AMuzCMoKcYo9XRZOzHJzgtQn552vmNg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: [PATCH v2 0/3] Add AMBA bus probing support to ACPI
+Date: Mon, 21 Dec 2015 17:49:54 +0300
+Message-ID: <1450709399-7246-1-git-send-email-aleksey.makarov@linaro.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: linux-acpi@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Shannon Zhao <shannon.zhao@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Nov 19, 2015 at 9:33 PM, Geert Uytterhoeven
-<geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> wrote:
-> On Thu, Nov 19, 2015 at 9:19 PM, Laurent Pinchart
-> <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
->> On Thursday 19 November 2015 19:38:40 Geert Uytterhoeven wrote:
->>> diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->>> b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt index
->>> 2c9e6b8477e92792..8efc9b6f35637fbb 100644
->>> --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->>> +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->>> @@ -43,6 +43,9 @@ Required properties:
->>>    - clocks: Must contain a phandle and clock-specifier pair for each entry
->>>      in clock-names.
->>>    - clock-names: Must contain "fck" for the SCIx UART functional clock.
->>> +    On (H)SCI(F) and some SCIFA, an additional clock may be specified:
->>
->> Could you list the SCIFA variants that support external clocks ?
->
-> The list is in the commit description of "[PATCH 19/25] serial: sh-sci: Add
-> support for optional external (H)SCK input": sh7723, sh7724, and r8a7740.
->
-> Note that the list is probably incomplete, so I don't know if it's that useful
-> to have it in the binding docs. Especially as I haven't verified yet that it
-> actually works ;-)
+As discussed when Shannon Zhao sent a patch to add platform_device support
+to pl061 driver. Russel and other maintainers prefered that ACPI learned
+how to create AMBA devices rather than converting/adding platform_device
+support to AMBA drivers.
 
-For the record: on r8a7740, this feature is not available on SCIFA instances
-2-7. The sole pins providing access to SCIFA_SCK[01] are muxed for Ethernet use
-on r8a7740/armadillo. So it's unlikely I'll be able to support and test this.
+http://comments.gmane.org/gmane.linux.ports.arm.kernel/431364
 
-Gr{oetje,eeting}s,
+1) Adds basic AMBA device probing support to ACPI, it uses a whitelist of
+device IDs as the number of AMBA devices is limited. Currently the two ids
+present are those used in QEMU for arm64.
 
-                        Geert
+2) Adds the plumbing into ACPI probe sequence.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+3) From ACPI pl011 is only defined (SBSA document) to be in SBSA mode which has
+reduced functionality. There may be a better method to do this that I have
+overlooked.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+v2:
+- A new ACPI scan handler for AMBA devices has been implemented
+- The order of `if` branches in amba-pl011.c has been changed
+- A couple of `static`s have been added
+- The compilation of the acpi_amba.c unit has made conditional
+- A comment on SBSA UART has been added
+
+v1:
+https://lkml.kernel.org/g/1443609530-21524-1-git-send-email-graeme.gregory@linaro.org
+
+Graeme Gregory (3):
+  ACPI: amba bus probing support
+  ACPI: scan add in amba probing
+  serial: amba-pl011: add ACPI support to AMBA probe
+
+ drivers/acpi/Makefile           |   1 +
+ drivers/acpi/acpi_amba.c        | 149 ++++++++++++++++++++++++++++++++++++++++
+ drivers/acpi/internal.h         |   5 ++
+ drivers/acpi/scan.c             |   1 +
+ drivers/tty/serial/amba-pl011.c |  37 +++++++---
+ 5 files changed, 182 insertions(+), 11 deletions(-)
+ create mode 100644 drivers/acpi/acpi_amba.c
+
+-- 
+2.6.4
+
