@@ -1,47 +1,61 @@
-From: Jon Masters <jonathan@jonmasters.org>
-Subject: Re: The console log is doubled if earlycon is enabled
-Date: Mon, 21 Dec 2015 02:54:39 -0500
-Message-ID: <5677B03F.1030506@jonmasters.org>
-References: <CAK7LNAT5L2uxJ6i-QEYqw9qFLyvADu_E0F5VVTOPqyHbLodTCg@mail.gmail.com> <20151128000451.GB22297@kroah.com> <CAK7LNARFa8Q1t6RwwQVhTrtXJxnJBQw8QHnbpfNfHouEiGdK0w@mail.gmail.com> <20151130171034.GA14366@kroah.com>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH 01/25] serial: sh-sci: Update DT binding documentation for
+ external clock input
+Date: Mon, 21 Dec 2015 15:20:34 +0100
+Message-ID: <CAMuHMdV30XBQDvbDFnF1f23zrKt8_=5cX9XNJ8WFcKQS9Kkp-w@mail.gmail.com>
+References: <1447958344-836-1-git-send-email-geert+renesas@glider.be>
+	<1447958344-836-2-git-send-email-geert+renesas@glider.be>
+	<1756365.Ijac5ApxcA@avalon>
+	<CAMuHMdX4ToefbBLR6o2AMuzCMoKcYo9XRZOzHJzgtQn552vmNg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151130171034.GA14366@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robherring2@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAMuHMdX4ToefbBLR6o2AMuzCMoKcYo9XRZOzHJzgtQn552vmNg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 11/30/15, 12:10 PM, Greg Kroah-Hartman wrote:
-> On Mon, Nov 30, 2015 at 02:53:49PM +0900, Masahiro Yamada wrote:
->> 2015-11-28 9:04 GMT+09:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
->>> On Fri, Nov 27, 2015 at 07:21:06PM +0900, Masahiro Yamada wrote:
->>>> Hi,
->>>>
->>>>
->>>> If I add "earlycon" to the kernel parameter, the log message
->>>> on the earlycon is also displayed to the regular console.
->>>> In other words, the same log messages are displayed twice.
->>>>
->>>> I noticed this problem on v4.4-rc1.
->>>> It has not been fixed in the mainline yet, I think.
->>>>
->>>> Anybody who has a clue?
->>>> (I have not done git-bisect yet.)
->>>
->>> Can you do 'git bisect'?
+On Thu, Nov 19, 2015 at 9:33 PM, Geert Uytterhoeven
+<geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> wrote:
+> On Thu, Nov 19, 2015 at 9:19 PM, Laurent Pinchart
+> <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
+>> On Thursday 19 November 2015 19:38:40 Geert Uytterhoeven wrote:
+>>> diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+>>> b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt index
+>>> 2c9e6b8477e92792..8efc9b6f35637fbb 100644
+>>> --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+>>> +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+>>> @@ -43,6 +43,9 @@ Required properties:
+>>>    - clocks: Must contain a phandle and clock-specifier pair for each entry
+>>>      in clock-names.
+>>>    - clock-names: Must contain "fck" for the SCIx UART functional clock.
+>>> +    On (H)SCI(F) and some SCIFA, an additional clock may be specified:
 >>
->>
->> The same problem happened on v4.3.
->> (I think I just did not notice the problem before.)
->>
->> So, the bad commit is not in the last merge window.
+>> Could you list the SCIFA variants that support external clocks ?
 >
-> Is it ok for 4.2?  4.1?  Finding out where this started to "fail" would
-> be good to know...
+> The list is in the commit description of "[PATCH 19/25] serial: sh-sci: Add
+> support for optional external (H)SCK input": sh7723, sh7724, and r8a7740.
+>
+> Note that the list is probably incomplete, so I don't know if it's that useful
+> to have it in the binding docs. Especially as I haven't verified yet that it
+> actually works ;-)
 
-Just as a data point, on our internal systems earlycon is known good in 
-combination with regular console (provided by SPCR ACPI patch) on 4.2.
+For the record: on r8a7740, this feature is not available on SCIFA instances
+2-7. The sole pins providing access to SCIFA_SCK[01] are muxed for Ethernet use
+on r8a7740/armadillo. So it's unlikely I'll be able to support and test this.
 
-Jon.
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
