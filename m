@@ -1,98 +1,70 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH 2/2] serial: 8250_ingenic: allow to be independent of SERIAL_8250_CONSOLE
-Date: Mon, 21 Dec 2015 15:15:59 -0500
-Message-ID: <CAP=VYLqu8bkiUrARY3J2gxEpcTiQJSCOQXAkNPiDWgFXiW1E_Q@mail.gmail.com>
-References: <1445607076-14135-1-git-send-email-yamada.masahiro@socionext.com>
- <1445607076-14135-2-git-send-email-yamada.masahiro@socionext.com> <562F8816.4030504@hurleysoftware.com>
+From: G Gregory <graeme.gregory@linaro.org>
+Subject: Re: [PATCH v2 3/3] serial: amba-pl011: add ACPI support to AMBA probe
+Date: Mon, 21 Dec 2015 21:02:34 +0000
+Message-ID: <CAGCh1+mVXSPPPuFOC-F+JMvd2NUNgwKg_rThYS=VyLDT3jSyug@mail.gmail.com>
+References: <1450709399-7246-1-git-send-email-aleksey.makarov@linaro.org>
+	<1450709399-7246-4-git-send-email-aleksey.makarov@linaro.org>
+	<CAHp75VcLGTMemaDyezgtxjtPa+tEUGm8ULJE8feY8FX4FEqU6g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <562F8816.4030504@hurleysoftware.com>
+In-Reply-To: <CAHp75VcLGTMemaDyezgtxjtPa+tEUGm8ULJE8feY8FX4FEqU6g@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org, Paul Burton <paul.burton@imgtec.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Joachim Eastwood <manabian@gmail.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, John Crispin <blogic@openwrt.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Shannon Zhao <shannon.zhao@linaro.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Oct 27, 2015 at 10:20 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 10/23/2015 09:31 AM, Masahiro Yamada wrote:
->> This UART driver should not depend on the console.  They should be
->> orthogonal.
+On 21 December 2015 at 18:11, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> On Mon, Dec 21, 2015 at 4:49 PM, Aleksey Makarov
+> <aleksey.makarov@linaro.org> wrote:
+>> From: Graeme Gregory <graeme.gregory@linaro.org>
 >>
->> Surround the earlycon code with CONFIG_SERIAL_EARLYCON conditional
->> and rip off "depends on SERIAL_8250_CONSOLE".
-
-The recent merge of this patch to linux-next allows me to build this driver
-for ARM, which in turn trips my local "bool Kconfig driver using modular
-functions" test failure.
-
-Any thoughts whether people care if this driver gets moved to tristate
-vs. having the unused modular code ripped out?
-
-Paul.
---
-
->
-> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
->
-> PS - While reviewing this patch, I noticed another problem in the
-> Ingenic earlycon; see below.
->
->> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+>> In ACPI this device is only defined in SBSA mode so
+>> if we are coming from ACPI use this mode.
+>>
+>> Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
+>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
 >> ---
+>>  drivers/tty/serial/amba-pl011.c | 37 ++++++++++++++++++++++++++-----------
+>>  1 file changed, 26 insertions(+), 11 deletions(-)
 >>
->> Currently, SERIAL_8250_FSL also depends on SERIAL_8250_CONSOLE,
->> but I doubt its necessity.
+>> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+>> index 899a771..766ce4f 100644
+>> --- a/drivers/tty/serial/amba-pl011.c
+>> +++ b/drivers/tty/serial/amba-pl011.c
+>> @@ -2368,18 +2368,33 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>>         if (!uap)
+>>                 return -ENOMEM;
 >>
->>
->>  drivers/tty/serial/8250/8250_ingenic.c | 2 ++
->>  drivers/tty/serial/8250/Kconfig        | 2 +-
->>  2 files changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
->> index 7c1e4be..44633ee 100644
->> --- a/drivers/tty/serial/8250/8250_ingenic.c
->> +++ b/drivers/tty/serial/8250/8250_ingenic.c
->> @@ -34,6 +34,7 @@ struct ingenic_uart_data {
->>
->>  #define UART_FCR_UME BIT(4)
->>
->> +#ifdef CONFIG_SERIAL_EARLYCON
+>> -       uap->clk = devm_clk_get(&dev->dev, NULL);
+>> -       if (IS_ERR(uap->clk))
+>> -               return PTR_ERR(uap->clk);
+>> -
+>> -       uap->vendor = vendor;
+>> -       uap->lcrh_rx = vendor->lcrh_rx;
+>> -       uap->lcrh_tx = vendor->lcrh_tx;
+>> -       uap->fifosize = vendor->get_fifosize(dev);
+>> -       uap->port.irq = dev->irq[0];
+>> -       uap->port.ops = &amba_pl011_pops;
+>> +       /* ACPI only defines SBSA variant */
+>> +       if (ACPI_COMPANION(&dev->dev)) {
 >
+> has_acpi_companion()
 >
->>  static struct earlycon_device *early_device;
+>> +               /*
+>> +                * According to ARM ARMH0011 is currently the only mapping
+>> +                * of pl011 in ACPI and it's mapped to SBSA UART mode
+>> +                */
+>> +               uap->vendor     = &vendor_sbsa;
+>> +               uap->fifosize   = 32;
+>> +               uap->port.ops   = &sbsa_uart_pops;
+>> +               uap->fixed_baud = 115200;
 >
-> The earlycon setup should not be saving the earlycon_device *;
-> see early_8250serial_write() for how to deref from console to port.
+> Shouldn't you match by ID and provide the custom values if any?
+> On the other hand have you checked if it's possible to use _DSD in this case?
 >
-> Regards,
-> Peter Hurley
->
->
->>  static uint8_t __init early_in(struct uart_port *port, int offset)
->> @@ -126,6 +127,7 @@ OF_EARLYCON_DECLARE(jz4775_uart, "ingenic,jz4775-uart",
->>  EARLYCON_DECLARE(jz4780_uart, ingenic_early_console_setup);
->>  OF_EARLYCON_DECLARE(jz4780_uart, "ingenic,jz4780-uart",
->>                   ingenic_early_console_setup);
->> +#endif /* CONFIG_SERIAL_EARLYCON */
->>
->>  static void ingenic_uart_serial_out(struct uart_port *p, int offset, int value)
->>  {
->> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
->> index 960da95..6f62934 100644
->> --- a/drivers/tty/serial/8250/Kconfig
->> +++ b/drivers/tty/serial/8250/Kconfig
->> @@ -360,7 +360,7 @@ config SERIAL_8250_UNIPHIER
->>
->>  config SERIAL_8250_INGENIC
->>       bool "Support for Ingenic SoC serial ports"
->> -     depends on SERIAL_8250_CONSOLE && OF_FLATTREE
->> +     depends on OF_FLATTREE
->>       select LIBFDT
->>       help
->>         If you have a system using an Ingenic SoC and wish to make use of
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+So far I have not seen any use of SBSA UART other than this in real
+life. I am a little opposed to providing complexity people are not
+going to use.
+
+Graeme
