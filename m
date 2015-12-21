@@ -1,93 +1,98 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v3] serial: 8250: add gpio support to exar
-Date: Mon, 21 Dec 2015 20:28:51 +0200
-Message-ID: <CAHp75VfF_f=4MFmk9D1eLYanVyQyr+Fr8RBY81Pw+dyGZ7e0xw@mail.gmail.com>
-References: <1450617891-26167-1-git-send-email-sudipm.mukherjee@gmail.com>
-	<20151220164353.6ef29f77@lxorguk.ukuu.org.uk>
-	<20151220172841.GB8471@sudip-laptop>
-	<20151220174208.1447d2f3@lxorguk.ukuu.org.uk>
-	<20151221151904.GA23780@sudip-pc>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH 2/2] serial: 8250_ingenic: allow to be independent of SERIAL_8250_CONSOLE
+Date: Mon, 21 Dec 2015 15:15:59 -0500
+Message-ID: <CAP=VYLqu8bkiUrARY3J2gxEpcTiQJSCOQXAkNPiDWgFXiW1E_Q@mail.gmail.com>
+References: <1445607076-14135-1-git-send-email-yamada.masahiro@socionext.com>
+ <1445607076-14135-2-git-send-email-yamada.masahiro@socionext.com> <562F8816.4030504@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151221151904.GA23780@sudip-pc>
+In-Reply-To: <562F8816.4030504@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org, Paul Burton <paul.burton@imgtec.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Joachim Eastwood <manabian@gmail.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, John Crispin <blogic@openwrt.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Dec 21, 2015 at 5:19 PM, Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
+On Tue, Oct 27, 2015 at 10:20 AM, Peter Hurley <peter@hurleysoftware.com> wrote:
+> On 10/23/2015 09:31 AM, Masahiro Yamada wrote:
+>> This UART driver should not depend on the console.  They should be
+>> orthogonal.
+>>
+>> Surround the earlycon code with CONFIG_SERIAL_EARLYCON conditional
+>> and rip off "depends on SERIAL_8250_CONSOLE".
 
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/825=
-0/Kconfig
-> index 6412f14..ec3d287 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -378,3 +378,11 @@ config SERIAL_8250_MID
->           Selecting this option will enable handling of the extra fea=
-tures
->           present on the UART found on Intel Medfield SOC and various=
- other
->           Intel platforms.
-> +
-> +config SERIAL_8250_EXAR_GPIO
-> +       bool "Support for GPIO pins on XR17V352/354/358"
-> +       depends on SERIAL_8250_PCI && GPIOLIB
-> +       select GPIO_SYSFS
-> +       help
-> +         Selecting this option will enable handling of GPIO pins pre=
-sent
-> +         on Exar XR17V352/354/358 chips.
-> diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/82=
-50/Makefile
-> index e177f86..1d0fce0 100644
-> --- a/drivers/tty/serial/8250/Makefile
-> +++ b/drivers/tty/serial/8250/Makefile
-> @@ -28,5 +28,8 @@ obj-$(CONFIG_SERIAL_8250_MT6577)      +=3D 8250_mtk=
-=2Eo
->  obj-$(CONFIG_SERIAL_8250_UNIPHIER)     +=3D 8250_uniphier.o
->  obj-$(CONFIG_SERIAL_8250_INGENIC)      +=3D 8250_ingenic.o
->  obj-$(CONFIG_SERIAL_8250_MID)          +=3D 8250_mid.o
-> +obj-$(CONFIG_SERIAL_8250_EXAR_GPIO)    +=3D exar_gpio.o
-> +exar_gpio-y                            :=3D 8250_pci.o 8250_gpio.o
-> +
+The recent merge of this patch to linux-next allows me to build this driver
+for ARM, which in turn trips my local "bool Kconfig driver using modular
+functions" test failure.
+
+Any thoughts whether people care if this driver gets moved to tristate
+vs. having the unused modular code ripped out?
+
+Paul.
+--
+
 >
->  CFLAGS_8250_ingenic.o +=3D -I$(srctree)/scripts/dtc/libfdt
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+>
+> PS - While reviewing this patch, I noticed another problem in the
+> Ingenic earlycon; see below.
+>
+>> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+>> ---
+>>
+>> Currently, SERIAL_8250_FSL also depends on SERIAL_8250_CONSOLE,
+>> but I doubt its necessity.
+>>
+>>
+>>  drivers/tty/serial/8250/8250_ingenic.c | 2 ++
+>>  drivers/tty/serial/8250/Kconfig        | 2 +-
+>>  2 files changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+>> index 7c1e4be..44633ee 100644
+>> --- a/drivers/tty/serial/8250/8250_ingenic.c
+>> +++ b/drivers/tty/serial/8250/8250_ingenic.c
+>> @@ -34,6 +34,7 @@ struct ingenic_uart_data {
+>>
+>>  #define UART_FCR_UME BIT(4)
+>>
+>> +#ifdef CONFIG_SERIAL_EARLYCON
 >
 >
-> But I am getting:
-> ERROR: "xr17v35x_gpio_exit" [drivers/tty/serial/8250/8250_pci.ko] und=
-efined!
-> ERROR: "xr17v35x_gpio_init" [drivers/tty/serial/8250/8250_pci.ko] und=
-efined!
+>>  static struct earlycon_device *early_device;
 >
-> I will need little hint for the Makefile, please. Its clear that i ha=
-ve
-> messed up.
-
-Yes, read my previous mail.
-
-There are at least two approaches:
- - use 8250_pci, etc as a library (see example: 8250_mid.c)
- - force 8250_pci to use external libraries in some cases (seems your a=
-pproach)
-
-In the latter you have to extend 8250_pci and rename it. I have no
-idea if Greg or anyone else gives a green light for that.
-
-Something like this (forget syntax of ifs in Makefile though
-obj-(=E2=80=A68250_PCI) +=3D 8250_pci.o
-obj-8250_pci =3D 8250_pci_orig.o
-ifneq (=E2=80=A6EXAR_GPIO,)
-obj-8250_pci +=3D exar_gpio.o
-endif
-
-But what I can recommend is to split exar parts out of 8250_pci first
-to a separate driver, do your part as a part of that new driver.
-Of course better to gather maintainer's opinion first.
-
---=20
-With Best Regards,
-Andy Shevchenko
+> The earlycon setup should not be saving the earlycon_device *;
+> see early_8250serial_write() for how to deref from console to port.
+>
+> Regards,
+> Peter Hurley
+>
+>
+>>  static uint8_t __init early_in(struct uart_port *port, int offset)
+>> @@ -126,6 +127,7 @@ OF_EARLYCON_DECLARE(jz4775_uart, "ingenic,jz4775-uart",
+>>  EARLYCON_DECLARE(jz4780_uart, ingenic_early_console_setup);
+>>  OF_EARLYCON_DECLARE(jz4780_uart, "ingenic,jz4780-uart",
+>>                   ingenic_early_console_setup);
+>> +#endif /* CONFIG_SERIAL_EARLYCON */
+>>
+>>  static void ingenic_uart_serial_out(struct uart_port *p, int offset, int value)
+>>  {
+>> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+>> index 960da95..6f62934 100644
+>> --- a/drivers/tty/serial/8250/Kconfig
+>> +++ b/drivers/tty/serial/8250/Kconfig
+>> @@ -360,7 +360,7 @@ config SERIAL_8250_UNIPHIER
+>>
+>>  config SERIAL_8250_INGENIC
+>>       bool "Support for Ingenic SoC serial ports"
+>> -     depends on SERIAL_8250_CONSOLE && OF_FLATTREE
+>> +     depends on OF_FLATTREE
+>>       select LIBFDT
+>>       help
+>>         If you have a system using an Ingenic SoC and wish to make use of
+>>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
