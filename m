@@ -1,39 +1,65 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH v9 1/3] serial: 8250_dw: Avoid serial_outx code duplicate
- with new dw8250_check_lcr()
-Date: Tue, 22 Dec 2015 10:57:21 +0200
-Message-ID: <20151222085720.GA3005@kuha.fi.intel.com>
-References: <1449940707-17633-1-git-send-email-noamc@ezchip.com>
- <1449940707-17633-2-git-send-email-noamc@ezchip.com>
+From: Wills Wang <wills.wang@live.com>
+Subject: [PATCH] sc16is7xx: don't need "uart_handle_cts_change"
+Date: Tue, 22 Dec 2015 17:19:56 +0800
+Message-ID: <BLU436-SMTP55A9A43327DDAAAAA42012FFE50@phx.gbl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1449940707-17633-2-git-send-email-noamc@ezchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Noam Camus <noamc@ezchip.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com, vgupta@synopsys.com, Alexey.Brodkin@synopsys.com, jslaby@suse.com, peter@hurleysoftware.com
+To: jringle@gridpoint.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Wills Wang <wills.wang@live.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Dec 12, 2015 at 07:18:25PM +0200, Noam Camus wrote:
-> From: Noam Camus <noamc@ezchip.com>
-> 
-> With the help of Heikki we take common code that
-> makes sure LCR write wasn't ignored and put it in new function called
-> dw8250_check_lcr(). This function serves 3 serial_out routines:
-> dw8250_serial_out(), dw8250_serial_out32(), and dw8250_serial_outq().
-> 
-> This patch only brings better code reuse.
-> 
-> Signed-off-by: Noam Camus <noamc@ezchip.com>
-> Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+SC16is7xx has feature for auto hardware flow control using RTS/CTS,
+so we don't need "uart_handle_cts_change" to invoke "start_tx/stop_tx"
+for flow control.
 
-For all tree:
+In addition, for software CTS, interrupt "SC16IS7XX_IIR_CTSRTS_SRC"
+just report the nCTS change of state from active(low) to inactive(high),
+driver don't know when the state of nCTS change from incactive to active,
+so can't resume the transmission when a peer device is again ready and
+re-assert nRTS signal.
+---
+ drivers/tty/serial/sc16is7xx.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-
-
-Thanks,
-
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 9d18c24..d19a7ba 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -653,7 +653,7 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+ 	struct uart_port *port = &s->p[portno].port;
+ 
+ 	do {
+-		unsigned int iir, msr, rxlen;
++		unsigned int iir, rxlen;
+ 
+ 		iir = sc16is7xx_port_read(port, SC16IS7XX_IIR_REG);
+ 		if (iir & SC16IS7XX_IIR_NO_INT_BIT)
+@@ -670,12 +670,6 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+ 			if (rxlen)
+ 				sc16is7xx_handle_rx(port, rxlen, iir);
+ 			break;
+-
+-		case SC16IS7XX_IIR_CTSRTS_SRC:
+-			msr = sc16is7xx_port_read(port, SC16IS7XX_MSR_REG);
+-			uart_handle_cts_change(port,
+-					       !!(msr & SC16IS7XX_MSR_DCTS_BIT));
+-			break;
+ 		case SC16IS7XX_IIR_THRI_SRC:
+ 			sc16is7xx_handle_tx(port);
+ 			break;
+@@ -993,9 +987,8 @@ static int sc16is7xx_startup(struct uart_port *port)
+ 			      SC16IS7XX_EFCR_TXDISABLE_BIT,
+ 			      0);
+ 
+-	/* Enable RX, TX, CTS change interrupts */
+-	val = SC16IS7XX_IER_RDI_BIT | SC16IS7XX_IER_THRI_BIT |
+-	      SC16IS7XX_IER_CTSI_BIT;
++	/* Enable RX, TX interrupts */
++	val = SC16IS7XX_IER_RDI_BIT | SC16IS7XX_IER_THRI_BIT;
+ 	sc16is7xx_port_write(port, SC16IS7XX_IER_REG, val);
+ 
+ 	return 0;
 -- 
-heikki
+1.9.1
