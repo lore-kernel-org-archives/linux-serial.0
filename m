@@ -1,237 +1,113 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: Re: [PATCH v3 1/3] ACPI: amba bus probing support
-Date: Tue, 22 Dec 2015 01:54:47 +0200
-Message-ID: <56789147.8070602@mleia.com>
-References: <1450716100-13688-1-git-send-email-aleksey.makarov@linaro.org> <1450716100-13688-2-git-send-email-aleksey.makarov@linaro.org>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH v3] serial: 8250: add gpio support to exar
+Date: Tue, 22 Dec 2015 09:57:07 +0530
+Message-ID: <20151222042707.GA3250@sudip-pc>
+References: <1450617891-26167-1-git-send-email-sudipm.mukherjee@gmail.com>
+ <20151220164353.6ef29f77@lxorguk.ukuu.org.uk>
+ <20151220172841.GB8471@sudip-laptop>
+ <20151220174208.1447d2f3@lxorguk.ukuu.org.uk>
+ <20151221151904.GA23780@sudip-pc>
+ <CAHp75VfF_f=4MFmk9D1eLYanVyQyr+Fr8RBY81Pw+dyGZ7e0xw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1450716100-13688-2-git-send-email-aleksey.makarov@linaro.org>
+Content-Disposition: inline
+In-Reply-To: <CAHp75VfF_f=4MFmk9D1eLYanVyQyr+Fr8RBY81Pw+dyGZ7e0xw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
-Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Shannon Zhao <shannon.zhao@linaro.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On Mon, Dec 21, 2015 at 08:28:51PM +0200, Andy Shevchenko wrote:
+> On Mon, Dec 21, 2015 at 5:19 PM, Sudip Mukherjee
+> <sudipm.mukherjee@gmail.com> wrote:
+>=20
+> > diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8=
+250/Kconfig
+> > index 6412f14..ec3d287 100644
+> > --- a/drivers/tty/serial/8250/Kconfig
+> > +++ b/drivers/tty/serial/8250/Kconfig
+> > @@ -378,3 +378,11 @@ config SERIAL_8250_MID
+> >           Selecting this option will enable handling of the extra f=
+eatures
+> >           present on the UART found on Intel Medfield SOC and vario=
+us other
+> >           Intel platforms.
+> > +
+> > +config SERIAL_8250_EXAR_GPIO
+> > +       bool "Support for GPIO pins on XR17V352/354/358"
+> > +       depends on SERIAL_8250_PCI && GPIOLIB
+> > +       select GPIO_SYSFS
+> > +       help
+> > +         Selecting this option will enable handling of GPIO pins p=
+resent
+> > +         on Exar XR17V352/354/358 chips.
+> > diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/=
+8250/Makefile
+> > index e177f86..1d0fce0 100644
+> > --- a/drivers/tty/serial/8250/Makefile
+> > +++ b/drivers/tty/serial/8250/Makefile
+> > @@ -28,5 +28,8 @@ obj-$(CONFIG_SERIAL_8250_MT6577)      +=3D 8250_m=
+tk.o
+> >  obj-$(CONFIG_SERIAL_8250_UNIPHIER)     +=3D 8250_uniphier.o
+> >  obj-$(CONFIG_SERIAL_8250_INGENIC)      +=3D 8250_ingenic.o
+> >  obj-$(CONFIG_SERIAL_8250_MID)          +=3D 8250_mid.o
+> > +obj-$(CONFIG_SERIAL_8250_EXAR_GPIO)    +=3D exar_gpio.o
+> > +exar_gpio-y                            :=3D 8250_pci.o 8250_gpio.o
+> > +
+> >
+> >  CFLAGS_8250_ingenic.o +=3D -I$(srctree)/scripts/dtc/libfdt
+> >
+> >
+> > But I am getting:
+> > ERROR: "xr17v35x_gpio_exit" [drivers/tty/serial/8250/8250_pci.ko] u=
+ndefined!
+> > ERROR: "xr17v35x_gpio_init" [drivers/tty/serial/8250/8250_pci.ko] u=
+ndefined!
+> >
+> > I will need little hint for the Makefile, please. Its clear that i =
+have
+> > messed up.
+>=20
+> Yes, read my previous mail.
+>=20
+> There are at least two approaches:
+>  - use 8250_pci, etc as a library (see example: 8250_mid.c)
+>  - force 8250_pci to use external libraries in some cases (seems your=
+ approach)
+>=20
+> In the latter you have to extend 8250_pci and rename it. I have no
+> idea if Greg or anyone else gives a green light for that.
 
-On 21.12.2015 18:41, Aleksey Makarov wrote:
-> From: Graeme Gregory <graeme.gregory@linaro.org>
-> 
-> On ARM64 some devices use the AMBA device and not the platform bus for
-> probing so add support for this. Uses a dummy clock for apb_pclk as ACPI
-> does not have a suitable clock representation and to keep the core
-> AMBA bus code unchanged between probing methods.
-> 
-> Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-> ---
->  drivers/acpi/Makefile    |   1 +
->  drivers/acpi/acpi_amba.c | 149 +++++++++++++++++++++++++++++++++++++++++++++++
->  drivers/acpi/internal.h  |   5 ++
->  3 files changed, 155 insertions(+)
->  create mode 100644 drivers/acpi/acpi_amba.c
-> 
-> diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-> index 675eaf3..3cf732f 100644
-> --- a/drivers/acpi/Makefile
-> +++ b/drivers/acpi/Makefile
-> @@ -43,6 +43,7 @@ acpi-y				+= pci_root.o pci_link.o pci_irq.o
->  acpi-y				+= acpi_lpss.o acpi_apd.o
->  acpi-y				+= acpi_platform.o
->  acpi-y				+= acpi_pnp.o
-> +acpi-$(CONFIG_ARM_AMBA)	+= acpi_amba.o
->  acpi-y				+= int340x_thermal.o
->  acpi-y				+= power.o
->  acpi-y				+= event.o
-> diff --git a/drivers/acpi/acpi_amba.c b/drivers/acpi/acpi_amba.c
-> new file mode 100644
-> index 0000000..ebc8913
-> --- /dev/null
-> +++ b/drivers/acpi/acpi_amba.c
-> @@ -0,0 +1,149 @@
-> +
-> +/*
-> + * ACPI support for platform bus type.
-> + *
-> + * Copyright (C) 2015, Linaro Ltd
-> + * Authors: Graeme Gregory <graeme.gregory@linaro.org>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/amba/bus.h>
-> +#include <linux/clkdev.h>
-> +#include <linux/clk-provider.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/ioport.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +
-> +#include "internal.h"
-> +
-> +static const struct acpi_device_id amba_id_list[] = {
-> +	{"ARMH0011", 0}, /* PL011 SBSA Uart */
-> +	{"ARMH0061", 0}, /* PL061 GPIO Device */
-> +	{"", 0},
-> +};
-> +
-> +static struct clk *amba_dummy_clk;
-> +
-> +static void amba_register_dummy_clk(void)
-> +{
-> +	struct clk *clk;
-> +
-> +	/* If clock already registered */
-> +	if (amba_dummy_clk)
-> +		return;
-> +
-> +	clk = clk_register_fixed_rate(NULL, "apb_pclk", NULL, CLK_IS_ROOT, 0);
-> +	clk_register_clkdev(clk, "apb_pclk", NULL);
-> +
-> +	amba_dummy_clk = clk;
-> +}
-> +
-> +static int amba_handler_attach(struct acpi_device *adev,
-> +				const struct acpi_device_id *id)
-> +{
-> +	struct amba_device *dev = NULL;
-> +	struct acpi_device *acpi_parent;
-> +	struct resource_entry *rentry;
-> +	struct list_head resource_list;
-> +	struct resource *resources = NULL;
-> +	bool address_found = false;
-> +	int ret, count, irq_no = 0;
-> +
-> +	/* If the ACPI node already has a physical device attached, skip it. */
-> +	if (adev->physical_node_count)
-> +		return 0;
-> +
-> +	amba_register_dummy_clk();
+I am sure Greg will give a big red light for this. :)
 
-Since it is a single time dummy clock registration, may be it is better
-to move it to acpi_amba_init() or somewhere else? I understand that
-"apb_pclk" is wanted, but I'm not sure that this driver should serve as
-a clock provider.
+>=20
+> Something like this (forget syntax of ifs in Makefile though
+> obj-(=E2=80=A68250_PCI) +=3D 8250_pci.o
+> obj-8250_pci =3D 8250_pci_orig.o
+> ifneq (=E2=80=A6EXAR_GPIO,)
+> obj-8250_pci +=3D exar_gpio.o
+> endif
+>=20
+> But what I can recommend is to split exar parts out of 8250_pci first
+> to a separate driver, do your part as a part of that new driver.
 
-> +	dev = amba_device_alloc(NULL, 0, 0);
-> +	if (!dev) {
-> +		pr_err("%s(): amba_device_alloc() failed for %s\n",
-> +		       __func__, dev_name(&adev->dev));
-> +		return 0;
-> +	}
-> +
-> +	INIT_LIST_HEAD(&resource_list);
-> +	count = acpi_dev_get_resources(adev, &resource_list, NULL, NULL);
-> +	if (count < 0) {
-> +		return 0;
-> +	} else if (count > 0) {
+Ok, same approach what 8250_mid.c has done. But in the initial design
+discussions Greg was against the idea of having it as a separate driver=
+=2E
 
-if you return from one of two if-branches, please don't use if-else nesting
-for another one.
+> Of course better to gather maintainer's opinion first.
 
-> +		resources = kmalloc_array(count, sizeof(struct resource),
-> +				    GFP_KERNEL);
+Greg, can you please give some idea here about the best way to approach=
+=2E..
+I personally think, having it as a module with the minor changes that
+Alan and Andy has suggested is the best approach. The only downside is
+that the module gets loaded even if the device is not there. But for
+arguments sake, the module will be enabled in the config only if someon=
+e
+is interested to build it. Everyone has the option to disable it if
+required.
 
-resources is never used and it is never freed, why do you allocate it?
-
-> +		if (!resources) {
-> +			acpi_dev_free_resource_list(&resource_list);
-> +			return 0;
-
-return -ENOMEM; seems to be more appropriate here.
-
-> +		}
-> +		count = 0;
-> +		list_for_each_entry(rentry, &resource_list, node) {
-> +			switch (resource_type(rentry->res)) {
-> +			case IORESOURCE_MEM:
-> +				if (!address_found) {
-> +					dev->res = *rentry->res;
-> +					address_found = true;
-> +				}
-> +				break;
-> +			case IORESOURCE_IRQ:
-> +				if (irq_no < AMBA_NR_IRQS)
-> +					dev->irq[irq_no++] = rentry->res->start;
-> +				break;
-> +			default:
-> +				dev_warn(&adev->dev, "Invalid resource\n");
-> +			}
-> +		}
-> +		acpi_dev_free_resource_list(&resource_list);
-> +	}
-> +
-> +	/*
-> +	 * If the ACPI node has a parent and that parent has a physical device
-> +	 * attached to it, that physical device should be the parent of the
-> +	 * platform device we are about to create.
-> +	 */
-> +	dev->dev.parent = NULL;
-> +	acpi_parent = adev->parent;
-> +	if (acpi_parent) {
-> +		struct acpi_device_physical_node *entry;
-> +		struct list_head *list;
-> +
-> +		mutex_lock(&acpi_parent->physical_node_lock);
-> +		list = &acpi_parent->physical_node_list;
-> +		if (!list_empty(list)) {
-> +			entry = list_first_entry(list,
-> +					struct acpi_device_physical_node,
-> +					node);
-> +			dev->dev.parent = entry->dev;
-> +		}
-> +		mutex_unlock(&acpi_parent->physical_node_lock);
-> +	}
-> +
-> +	dev_set_name(&dev->dev, "%s", dev_name(&adev->dev));
-> +	ACPI_COMPANION_SET(&dev->dev, adev);
-> +
-> +	ret = amba_device_add(dev, &iomem_resource);
-> +	if (ret) {
-> +		pr_err("%s(): amba_device_add() failed (%d) for %s\n",
-> +		       __func__, ret, dev_name(&adev->dev));
-> +		goto err_free;
-> +	}
-> +
-> +	return 1;
-> +
-> +err_free:
-> +	amba_device_put(dev);
-> +	return 0;
-> +}
-> +
-> +static struct acpi_scan_handler amba_handler = {
-> +	.ids = amba_id_list,
-> +	.attach = amba_handler_attach,
-> +};
-> +
-> +void __init acpi_amba_init(void)
-> +{
-> +	acpi_scan_add_handler(&amba_handler);
-> +}
-> diff --git a/drivers/acpi/internal.h b/drivers/acpi/internal.h
-> index 11d87bf..9d58f0c 100644
-> --- a/drivers/acpi/internal.h
-> +++ b/drivers/acpi/internal.h
-> @@ -29,6 +29,11 @@ void acpi_processor_init(void);
->  void acpi_platform_init(void);
->  void acpi_pnp_init(void);
->  void acpi_int340x_thermal_init(void);
-> +#ifdef CONFIG_ARM_AMBA
-> +void acpi_amba_init(void);
-> +#else
-> +static inline void acpi_amba_init(void) {}
-> +#endif
->  int acpi_sysfs_init(void);
->  void acpi_container_init(void);
->  void acpi_memory_hotplug_init(void);
-> 
-
---
-With best wishes,
-Vladimir
+regards
+sudip
