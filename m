@@ -1,66 +1,155 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH v3] serial: 8250: add gpio support to exar
-Date: Tue, 22 Dec 2015 16:07:28 +0530
-Message-ID: <20151222103728.GA30453@sudip-pc>
-References: <1450617891-26167-1-git-send-email-sudipm.mukherjee@gmail.com>
- <20151220164353.6ef29f77@lxorguk.ukuu.org.uk>
- <20151220172841.GB8471@sudip-laptop>
- <20151220174208.1447d2f3@lxorguk.ukuu.org.uk>
- <20151221151904.GA23780@sudip-pc>
- <CAHp75VfF_f=4MFmk9D1eLYanVyQyr+Fr8RBY81Pw+dyGZ7e0xw@mail.gmail.com>
- <20151222042707.GA3250@sudip-pc>
- <CAHp75VfU74zvwBef682bVqL-aSYVRYeEyPjyarE_KRyLr+8NQw@mail.gmail.com>
- <20151222100859.GA24622@sudip-pc>
- <CAHp75Ve_Hsj9YbV3bQ16qRQrVRo+HE2RJukuH=Mpq5AVLzhaDw@mail.gmail.com>
+From: Sebastian Frias <sf84@laposte.net>
+Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
+Date: Tue, 22 Dec 2015 18:56:23 +0100
+Message-ID: <56798EC7.1030804@laposte.net>
+References: <5672D18E.8000301@laposte.net> <5672E2CF.6080705@hurleysoftware.com> <5672E76A.3010506@laposte.net> <5672F588.8070503@hurleysoftware.com> <5672FD35.5070609@laposte.net> <56731689.70702@hurleysoftware.com> <56740FC3.50302@laposte.net> <5674204C.1000907@hurleysoftware.com> <56782DE5.7090708@laposte.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHp75Ve_Hsj9YbV3bQ16qRQrVRo+HE2RJukuH=Mpq5AVLzhaDw@mail.gmail.com>
+In-Reply-To: <56782DE5.7090708@laposte.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, mason <slash.tmp@free.fr>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Dec 22, 2015 at 12:15:18PM +0200, Andy Shevchenko wrote:
-> On Tue, Dec 22, 2015 at 12:08 PM, Sudip Mukherjee
-> <sudipm.mukherjee@gmail.com> wrote:
-> > On Tue, Dec 22, 2015 at 11:58:17AM +0200, Andy Shevchenko wrote:
-> 
-> >> > The only downside is
-> >> > that the module gets loaded even if the device is not there.
-> >>
-> >> How is that?
-> >
-> > Alan explained that in https://lkml.org/lkml/2015/12/20/103
-> >
-> > Quoting from his mail "you reference the methods in it so it will
-> > always be dragged in".
-> >
-> > And I wanted to verify that so I tested today morning after removing the
-> > card from my local system and after booting I saw having 8250_gpi loaded.
-> 
-> Ah, it is in case "exar as a library".
-> 
-> In case "exar as a separate driver" other way around: it will drag
-> methods from 8250_pci if any.
+On 12/21/2015 05:50 PM, Sebastian Frias wrote:
+>> You need to use the format documented in
+>> Documentation/kernel-parameters.text:
+>>
+>>     console=    [KNL] Output console device and options.
+>>
+>>         uart[8250],io,<addr>[,options]
+>>         uart[8250],mmio,<addr>[,options]
+>>         uart[8250],mmio16,<addr>[,options]
+>>         uart[8250],mmio32,<addr>[,options]
+>>         uart[8250],0x<addr>[,options]
+>>             Start an early, polled-mode console on the 8250/16550
+>>             UART at the specified I/O port or MMIO address,
+>>             switching to the matching ttyS device later.
+>>             MMIO inter-register address stride is either 8-bit
+>>             (mmio), 16-bit (mmio16), or 32-bit (mmio32).
+>>             If none of [io|mmio|mmio16|mmio32], <addr> is assumed
+>>             to be equivalent to 'mmio'. 'options' are specified in
+>>             the same format described for ttyS above; if unspecified,
+>>             the h/w is not re-initialized.
+>>
+>> The iotype and the uart address are not options.
+>
+> Do you mean they are mandatory?
+> How do they relate to the keys present on the DT? Because the device is
+> already described in the DT:
+>
+>          uart: serial@10700 {
+>              compatible = "ralink,rt2880-uart";
+>              reg = <0x10700 0x30>;
+>              interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
+>              clock-frequency = <7372800>;
+>              reg-shift = <2>;
+>          };
+>
+> Are we supposed to duplicate such information (ie: addr) in the
+> commandline as well?
+>
 
-Yes. Now we have many different options:
+By the way, I tried using the following command line 
+'console=uart,mmio32,0x10700,115200n8r mem=256M earlyprintk debug 
+ignore_loglevel' but I think I'm still missing something regarding this, 
+because it does not work, here's a log of Linux 4.1.13+:
 
-1) the way i submited v1, 8250_gpio is a separate module, init() and
-exit() are referenced from 8250_pci(). Downside - module will be loaded
-even if hardware is not there.
 
-2) Separate 8250_exar driver which uses 8250_pci as library. Reason to
-avoid - Greg was initially against this idea of having it as a separate
-driver.
+1: [arch/arm/kernel/setup.c:932] setup_arch(): r1 = 0xf34, r2 = 
+0x803b3b50, cmdline ''
+1: [arch/arm/kernel/devtree.c:195] arch_get_next_mach(): infoBegin 
+0xc024faac, mdesc 0xc024faac
+1: [arch/arm/kernel/devtree.c:195] arch_get_next_mach(): infoBegin 
+0xc024faac, mdesc 0xc024fb14
+1: [drivers/of/fdt.c:106] of_fdt_is_compatible(): sigma,tango4 vs 
+sigma,vantage-1172
+1: [arch/arm/kernel/devtree.c:195] arch_get_next_mach(): infoBegin 
+0xc024faac, mdesc 0xc024fb7c
+1: [drivers/of/fdt.c:749] of_flat_dt_match_machine(): Machine model: 
+Sigma Designs SMP8758 Vantage-1172 Rev E1
+1: [arch/arm/kernel/devtree.c:256] setup_machine_fdt(): about to call 
+early_init_dt_scan_nodes
+1: [drivers/of/fdt.c:1057] early_init_dt_scan_nodes(): bootcmdline ''
+1: [drivers/of/fdt.c:1062] early_init_dt_scan_nodes(): bootcmdline after 
+of_scan_flat_dt 'console=uart,mmio32,0x10700,115200n8r mem=256M 
+earlyprintk debug ignore_loglevel'
+1: [arch/arm/kernel/setup.c:946] setup_arch(): using DT at r2
+1: [arch/arm/kernel/setup.c:949] setup_arch(): machine name Sigma Tango DT
+1: [arch/arm/kernel/setup.c:967] setup_arch(): before parse_early_param
+1: [init/main.c:468] parse_early_param(): bootcmdline 
+'console=uart,mmio32,0x10700,115200n8r mem=256M earlyprintk debug 
+ignore_loglevel'
+1: [init/main.c:473] parse_early_param(): mark
+1: [init/main.c:428] do_early_param(): enter with: 'console' 
+'uart,mmio32,0x10700,115200n8r'
+1: [init/main.c:446] do_early_param(): 'earlycon', setup_func 0xc024b868
+1: [drivers/tty/serial/earlycon.c:214] param_setup_earlycon(): 
+'uart,mmio32,0x10700,115200n8r'
+1: [drivers/tty/serial/earlycon.c:181] setup_earlycon(): 
+'uart,mmio32,0x10700,115200n8r'
+1: [drivers/tty/serial/earlycon.c:132] register_earlycon(): 
+'mmio32,0x10700,115200n8r' 'uart'
+1: [drivers/tty/serial/earlycon.c:86] parse_options(): 
+'mmio32,0x10700,115200n8r'
+1: [drivers/tty/serial/earlycon.c:91] parse_options(): addr 0x00010700, 
+options '115200n8r'
+1: [drivers/tty/serial/earlycon.c:117] parse_options(): Early serial 
+console at MMIO32 0x10700 (options '115200n8r')
+1: [drivers/tty/serial/earlycon.c:138] register_earlycon(): '(null)'
+1: [drivers/tty/serial/earlycon.c:62] earlycon_map(): paddr 0x00010700 
+size 64
 
-3) Like Alan suggested, having something like a platform driver and
-8250_gpio will bind to that.
+As you can see, now that the options are more complete, the match for 
+"earlycon" succeeds, but it does not work, the last log is in 
+earlycon_map() function.
+When using just "console=uart", the "earlycon" match will fail but a 
+match for "earlyprink" will succeed. That one will hook printch() from 
+the arch-dependent code to a somewhat simpler 'earlycon' 
+(arch/arm/kernel/early_printk.c).
 
-I am waiting for Greg's signal on these three and I wont be surprised if
-he comes out with another fourth idea which will solve it in a most simple
-way. :)
+I think the code is the same on mainline.
 
-regards
-sudip
+Also, regarding my previous question about using a HW described in DT 
+for earlycon, I noticed there's a of_setup_earlycon() in 
+drivers/tty/serial/earlycon.c but that is hooked to 
+drivers/of/fdt.c:setup_of_earlycon() which is not called. I do have 
+CONFIG_SERIAL_EARLYCON=y.
+
+I also have a similar issue (ie: get blocked right after the call to 
+earlycon_map function, log is obviously different from above) if attempt 
+to use of_setup_earlycon.
+My DT has roughly:
+
+	aliases {
+		serial0 = &uart;
+	};
+
+	chosen {
+	       bootargs = "earlycon console mem=256M earlyprintk debug 
+ignore_loglevel";
+	       stdout-path = "serial0:115200n8";
+	};
+
+	uart: serial@10700 {
+		compatible = "ralink,rt2880-uart";
+		reg = <0x10700 0x30>;
+		interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
+		clock-frequency = <7372800>;
+		reg-shift = <2>;
+	};
+
+
+and then I hack drivers/tty/serial/8250/8250_early.c by adding:
+
+	OF_EARLYCON_DECLARE(rt2880, "ralink,rt2880-uart", early_serial8250_setup);
+
+at the end of the file, trying to mimic commit 
+d05f15707bb7659d2b863fafa1a918f286d74a63
+
+I'm still trying to figure out the right bootargs, so that's why both 
+"earlycon" and "console" are there. Suggestions welcome.
+
+Thanks in advance and Merry Christmas!
