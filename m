@@ -1,155 +1,79 @@
-From: Sebastian Frias <sf84@laposte.net>
-Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
-Date: Tue, 22 Dec 2015 18:56:23 +0100
-Message-ID: <56798EC7.1030804@laposte.net>
-References: <5672D18E.8000301@laposte.net> <5672E2CF.6080705@hurleysoftware.com> <5672E76A.3010506@laposte.net> <5672F588.8070503@hurleysoftware.com> <5672FD35.5070609@laposte.net> <56731689.70702@hurleysoftware.com> <56740FC3.50302@laposte.net> <5674204C.1000907@hurleysoftware.com> <56782DE5.7090708@laposte.net>
+From: Robert Jarzmik <robert.jarzmik@free.fr>
+Subject: Re: [PATCH v4 1/2] serial: rewrite pxa2xx-uart to use 8250_core
+Date: Tue, 22 Dec 2015 20:27:05 +0100
+Message-ID: <87a8p2ffna.fsf@belgarion.home>
+References: <1387309071-22382-1-git-send-email-ynvich@gmail.com>
+	<1449700088-28076-1-git-send-email-ynvich@gmail.com>
+	<1449700088-28076-2-git-send-email-ynvich@gmail.com>
+	<8737uyhaji.fsf@belgarion.home> <87y4cqfu2j.fsf@belgarion.home>
+	<1450550792.15911.5.camel@gmail.com> <87twnefd67.fsf@belgarion.home>
+	<1450555955.15911.14.camel@gmail.com> <87poy2f2xw.fsf@belgarion.home>
+	<1450610665.15911.53.camel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56782DE5.7090708@laposte.net>
+In-Reply-To: <1450610665.15911.53.camel@gmail.com> (Sergei Ianovich's message
+	of "Sun, 20 Dec 2015 14:24:25 +0300")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, mason <slash.tmp@free.fr>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
+To: Sergei Ianovich <ynvich@gmail.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Kevin Hilman <khilman@linaro.org>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/21/2015 05:50 PM, Sebastian Frias wrote:
->> You need to use the format documented in
->> Documentation/kernel-parameters.text:
->>
->>     console=    [KNL] Output console device and options.
->>
->>         uart[8250],io,<addr>[,options]
->>         uart[8250],mmio,<addr>[,options]
->>         uart[8250],mmio16,<addr>[,options]
->>         uart[8250],mmio32,<addr>[,options]
->>         uart[8250],0x<addr>[,options]
->>             Start an early, polled-mode console on the 8250/16550
->>             UART at the specified I/O port or MMIO address,
->>             switching to the matching ttyS device later.
->>             MMIO inter-register address stride is either 8-bit
->>             (mmio), 16-bit (mmio16), or 32-bit (mmio32).
->>             If none of [io|mmio|mmio16|mmio32], <addr> is assumed
->>             to be equivalent to 'mmio'. 'options' are specified in
->>             the same format described for ttyS above; if unspecified,
->>             the h/w is not re-initialized.
->>
->> The iotype and the uart address are not options.
+Sergei Ianovich <ynvich@gmail.com> writes:
+
+> On Sun, 2015-12-20 at 00:12 +0100, Robert Jarzmik wrote:
+>> Sergei Ianovich <ynvich@gmail.com> writes:
+>> 
+>> > On Sat, 2015-12-19 at 20:31 +0100, Robert Jarzmik wrote:
+>> > I understand that people are afraid of taking this patch. If it
+>> > starts
+>> > causing troubles at runtime, it will be difficult to diagnose. There
+>> > will be no console for most people. So it is probably good idea to
+>> > fail
+>> > at boot time.
+>> If it's about something already written in a mailing
+>> list, please point me to it so that it can help me think about it.
 >
-> Do you mean they are mandatory?
-> How do they relate to the keys present on the DT? Because the device is
-> already described in the DT:
+> http://lists.infradead.org/pipermail/linux-arm-kernel/2013-December/2167
+> 73.html
 >
->          uart: serial@10700 {
->              compatible = "ralink,rt2880-uart";
->              reg = <0x10700 0x30>;
->              interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
->              clock-frequency = <7372800>;
->              reg-shift = <2>;
->          };
->
-> Are we supposed to duplicate such information (ie: addr) in the
-> commandline as well?
->
+> I can explain why I think so. Greg acked the patch, but hasn't merged it
+> since then. He has good reasons for this most probably. Russell's
+> comment pointed by the link seems to be the reason.
 
-By the way, I tried using the following command line 
-'console=uart,mmio32,0x10700,115200n8r mem=256M earlyprintk debug 
-ignore_loglevel' but I think I'm still missing something regarding this, 
-because it does not work, here's a log of Linux 4.1.13+:
+> I think the problem raised by Russell could be addressed. My best guess
+> is compile time error, despite your comment above.
+I re-read carefully Russell's answer in [1].
 
+What Russell asked is that for a period of time, the old pxa serial code and the
+new will be in the kernel, so that maintainers have the option to switch over to
+the old drivers/tty/serial/pxa.c if the new 8250 based version breaks their
+userspace getty.
 
-1: [arch/arm/kernel/setup.c:932] setup_arch(): r1 = 0xf34, r2 = 
-0x803b3b50, cmdline ''
-1: [arch/arm/kernel/devtree.c:195] arch_get_next_mach(): infoBegin 
-0xc024faac, mdesc 0xc024faac
-1: [arch/arm/kernel/devtree.c:195] arch_get_next_mach(): infoBegin 
-0xc024faac, mdesc 0xc024fb14
-1: [drivers/of/fdt.c:106] of_fdt_is_compatible(): sigma,tango4 vs 
-sigma,vantage-1172
-1: [arch/arm/kernel/devtree.c:195] arch_get_next_mach(): infoBegin 
-0xc024faac, mdesc 0xc024fb7c
-1: [drivers/of/fdt.c:749] of_flat_dt_match_machine(): Machine model: 
-Sigma Designs SMP8758 Vantage-1172 Rev E1
-1: [arch/arm/kernel/devtree.c:256] setup_machine_fdt(): about to call 
-early_init_dt_scan_nodes
-1: [drivers/of/fdt.c:1057] early_init_dt_scan_nodes(): bootcmdline ''
-1: [drivers/of/fdt.c:1062] early_init_dt_scan_nodes(): bootcmdline after 
-of_scan_flat_dt 'console=uart,mmio32,0x10700,115200n8r mem=256M 
-earlyprintk debug ignore_loglevel'
-1: [arch/arm/kernel/setup.c:946] setup_arch(): using DT at r2
-1: [arch/arm/kernel/setup.c:949] setup_arch(): machine name Sigma Tango DT
-1: [arch/arm/kernel/setup.c:967] setup_arch(): before parse_early_param
-1: [init/main.c:468] parse_early_param(): bootcmdline 
-'console=uart,mmio32,0x10700,115200n8r mem=256M earlyprintk debug 
-ignore_loglevel'
-1: [init/main.c:473] parse_early_param(): mark
-1: [init/main.c:428] do_early_param(): enter with: 'console' 
-'uart,mmio32,0x10700,115200n8r'
-1: [init/main.c:446] do_early_param(): 'earlycon', setup_func 0xc024b868
-1: [drivers/tty/serial/earlycon.c:214] param_setup_earlycon(): 
-'uart,mmio32,0x10700,115200n8r'
-1: [drivers/tty/serial/earlycon.c:181] setup_earlycon(): 
-'uart,mmio32,0x10700,115200n8r'
-1: [drivers/tty/serial/earlycon.c:132] register_earlycon(): 
-'mmio32,0x10700,115200n8r' 'uart'
-1: [drivers/tty/serial/earlycon.c:86] parse_options(): 
-'mmio32,0x10700,115200n8r'
-1: [drivers/tty/serial/earlycon.c:91] parse_options(): addr 0x00010700, 
-options '115200n8r'
-1: [drivers/tty/serial/earlycon.c:117] parse_options(): Early serial 
-console at MMIO32 0x10700 (options '115200n8r')
-1: [drivers/tty/serial/earlycon.c:138] register_earlycon(): '(null)'
-1: [drivers/tty/serial/earlycon.c:62] earlycon_map(): paddr 0x00010700 
-size 64
+Then, once the transition is done, and that for a period (let's say 1 year) no
+maintainer had complained while its defconfig was switched over to the new 8520
+version, then and only then you will remove drivers/tty/serial/pxa.c.
 
-As you can see, now that the options are more complete, the match for 
-"earlycon" succeeds, but it does not work, the last log is in 
-earlycon_map() function.
-When using just "console=uart", the "earlycon" match will fail but a 
-match for "earlyprink" will succeed. That one will hook printch() from 
-the arch-dependent code to a somewhat simpler 'earlycon' 
-(arch/arm/kernel/early_printk.c).
+> I have one more plan. For transition period, we can introduce a
+> temporary Kconfig option SERIAL_8250_PXA_OFF, and fail at build time if
+> neither SERIAL_8250_PXA nor SERIAL_8250_PXA_OFF is set. This way all
+> interested parties will be notified of this driver update.
+No, I'd like to stick with Russell's original plan :
+ - phase 1: both SERIAL_8250_PXA and SERIAL_PXA exist in KConfig
+            both are selectable
+            This lasts one year or something like that
+ - phase 2: remove SERIAL_PXA from KConfig and drivers/tty/serial/pxa.c
 
-I think the code is the same on mainline.
+This means a different patch from the one acked by Greg, and a new serie of
+acks. The diffstat will be way worse (as you won't have the -970 for pxa.c), but
+in the end it will end up on that -970.
 
-Also, regarding my previous question about using a HW described in DT 
-for earlycon, I noticed there's a of_setup_earlycon() in 
-drivers/tty/serial/earlycon.c but that is hooked to 
-drivers/of/fdt.c:setup_of_earlycon() which is not called. I do have 
-CONFIG_SERIAL_EARLYCON=y.
+That sounds like a good transition plan to me.
 
-I also have a similar issue (ie: get blocked right after the call to 
-earlycon_map function, log is obviously different from above) if attempt 
-to use of_setup_earlycon.
-My DT has roughly:
+Cheers.
 
-	aliases {
-		serial0 = &uart;
-	};
+-- 
+Robert
 
-	chosen {
-	       bootargs = "earlycon console mem=256M earlyprintk debug 
-ignore_loglevel";
-	       stdout-path = "serial0:115200n8";
-	};
-
-	uart: serial@10700 {
-		compatible = "ralink,rt2880-uart";
-		reg = <0x10700 0x30>;
-		interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
-		clock-frequency = <7372800>;
-		reg-shift = <2>;
-	};
-
-
-and then I hack drivers/tty/serial/8250/8250_early.c by adding:
-
-	OF_EARLYCON_DECLARE(rt2880, "ralink,rt2880-uart", early_serial8250_setup);
-
-at the end of the file, trying to mimic commit 
-d05f15707bb7659d2b863fafa1a918f286d74a63
-
-I'm still trying to figure out the right bootargs, so that's why both 
-"earlycon" and "console" are there. Suggestions welcome.
-
-Thanks in advance and Merry Christmas!
+[1]
+http://lists.infradead.org/pipermail/linux-arm-kernel/2013-December/216773.html
