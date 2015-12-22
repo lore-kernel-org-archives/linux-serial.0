@@ -1,65 +1,47 @@
-From: Wills Wang <wills.wang@live.com>
-Subject: [PATCH] sc16is7xx: don't need "uart_handle_cts_change"
-Date: Tue, 22 Dec 2015 17:19:56 +0800
-Message-ID: <BLU436-SMTP55A9A43327DDAAAAA42012FFE50@phx.gbl>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v3 1/3] ACPI: amba bus probing support
+Date: Tue, 22 Dec 2015 11:47:15 +0200
+Message-ID: <CAHp75VfiUJymwxxHxr-Cw3cSBDfVBm1aj=T5o+=1G4CcACq5kw@mail.gmail.com>
+References: <1450716100-13688-1-git-send-email-aleksey.makarov@linaro.org>
+	<1450716100-13688-2-git-send-email-aleksey.makarov@linaro.org>
+	<56789147.8070602@mleia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: jringle@gridpoint.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Wills Wang <wills.wang@live.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <56789147.8070602@mleia.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Vladimir Zapolskiy <vz@mleia.com>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shannon Zhao <shannon.zhao@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-SC16is7xx has feature for auto hardware flow control using RTS/CTS,
-so we don't need "uart_handle_cts_change" to invoke "start_tx/stop_tx"
-for flow control.
+On Tue, Dec 22, 2015 at 1:54 AM, Vladimir Zapolskiy <vz@mleia.com> wrote:
+> On 21.12.2015 18:41, Aleksey Makarov wrote:
 
-In addition, for software CTS, interrupt "SC16IS7XX_IIR_CTSRTS_SRC"
-just report the nCTS change of state from active(low) to inactive(high),
-driver don't know when the state of nCTS change from incactive to active,
-so can't resume the transmission when a peer device is again ready and
-re-assert nRTS signal.
----
- drivers/tty/serial/sc16is7xx.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+>> +static int amba_handler_attach(struct acpi_device *adev,
+>> +                             const struct acpi_device_id *id)
+>> +{
+>> +     struct amba_device *dev = NULL;
+>> +     struct acpi_device *acpi_parent;
+>> +     struct resource_entry *rentry;
+>> +     struct list_head resource_list;
+>> +     struct resource *resources = NULL;
+>> +     bool address_found = false;
+>> +     int ret, count, irq_no = 0;
+>> +
+>> +     /* If the ACPI node already has a physical device attached, skip it. */
+>> +     if (adev->physical_node_count)
+>> +             return 0;
+>> +
+>> +     amba_register_dummy_clk();
+>
+> Since it is a single time dummy clock registration, may be it is better
+> to move it to acpi_amba_init() or somewhere else? I understand that
+> "apb_pclk" is wanted, but I'm not sure that this driver should serve as
+> a clock provider.
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 9d18c24..d19a7ba 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -653,7 +653,7 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- 	struct uart_port *port = &s->p[portno].port;
- 
- 	do {
--		unsigned int iir, msr, rxlen;
-+		unsigned int iir, rxlen;
- 
- 		iir = sc16is7xx_port_read(port, SC16IS7XX_IIR_REG);
- 		if (iir & SC16IS7XX_IIR_NO_INT_BIT)
-@@ -670,12 +670,6 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- 			if (rxlen)
- 				sc16is7xx_handle_rx(port, rxlen, iir);
- 			break;
--
--		case SC16IS7XX_IIR_CTSRTS_SRC:
--			msr = sc16is7xx_port_read(port, SC16IS7XX_MSR_REG);
--			uart_handle_cts_change(port,
--					       !!(msr & SC16IS7XX_MSR_DCTS_BIT));
--			break;
- 		case SC16IS7XX_IIR_THRI_SRC:
- 			sc16is7xx_handle_tx(port);
- 			break;
-@@ -993,9 +987,8 @@ static int sc16is7xx_startup(struct uart_port *port)
- 			      SC16IS7XX_EFCR_TXDISABLE_BIT,
- 			      0);
- 
--	/* Enable RX, TX, CTS change interrupts */
--	val = SC16IS7XX_IER_RDI_BIT | SC16IS7XX_IER_THRI_BIT |
--	      SC16IS7XX_IER_CTSI_BIT;
-+	/* Enable RX, TX interrupts */
-+	val = SC16IS7XX_IER_RDI_BIT | SC16IS7XX_IER_THRI_BIT;
- 	sc16is7xx_port_write(port, SC16IS7XX_IER_REG, val);
- 
- 	return 0;
+Depends on actual hardware topology. Intel HW has few drivers that are
+clock providers because they are really ones.
+
 -- 
-1.9.1
+With Best Regards,
+Andy Shevchenko
