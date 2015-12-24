@@ -1,19 +1,11 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 05/12] tty: amba-pl011: add register lookup table
-Date: Thu, 24 Dec 2015 15:40:27 +0000
-Message-ID: <20151224154027.GH8644@n2100.arm.linux.org.uk>
-References: <20151116173935.GQ8644@n2100.arm.linux.org.uk>
- <E1ZyNlS-0003jg-46@rmk-PC.arm.linux.org.uk>
- <20151224065437.GA18445@robwan01-pc.asiapac.arm.com>
- <CAOZdJXWmBYrjgC2GcY2NSeuJ2MAuwvtYVLP9AvTMkLUWsi9DhQ@mail.gmail.com>
- <20151224150552.GF8644@n2100.arm.linux.org.uk>
- <CAOZdJXXdMHG7c9yDTo+oh7uNPCmH_Mc08s5YCoL3j--7uj5Mow@mail.gmail.com>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: [PATCH 1/2] tty: amba-pl011: fix earlycon register offsets
+Date: Thu, 24 Dec 2015 09:49:48 -0600
+Message-ID: <1450972189-22639-1-git-send-email-timur@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <CAOZdJXXdMHG7c9yDTo+oh7uNPCmH_Mc08s5YCoL3j--7uj5Mow@mail.gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -23,32 +15,37 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Timur Tabi <timur@codeaurora.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Andrew Jackson <Andrew.Jackson@arm.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Huang Shijie <shijie.huang@arm.com>, Jiri Slaby <jslaby@suse.com>, Jun Nie <jun.nie@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Greg Kroah-Hartman <greg@kroah.com>, Russell King <rmk+kernel@arm.linux.org.uk>, andre.przywara@arm.com, Linus Walleij <linus.walleij@linaro.org>, andrew.jackson@arm.com, jslaby@suse.com, jun.nie@linaro.org, shijie.huang@arm.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, peter@hurleysoftware.com
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Dec 24, 2015 at 09:35:52AM -0600, Timur Tabi wrote:
-> On Thu, Dec 24, 2015 at 9:05 AM, Russell King - ARM Linux
-> <linux@arm.linux.org.uk> wrote:
-> > On Thu, Dec 24, 2015 at 09:03:12AM -0600, Timur Tabi wrote:
-> >> On Thu, Dec 24, 2015 at 12:54 AM, Huang Shijie <shijie.huang@arm.com> wrote:
-> >> > My kernel cmdline:
-> >> >   console=ttyAMA0,115200 earlycon=pl011,0x7ff80000 root=/dev/sda1 rootwait verbose debug sky2.mac_address=0x00,0x02,0xF7,0x00,0x63,0x3C dtb=r1a57.dtb
-> >>
-> >> earlycon is broken with Russell's patches.  My patch fixes it, but
-> >> only for standard pl011 devices.
-> >
-> > No, it shouldn't be.  Earlycon uses pl011_putc() which remains exactly
-> > the same as it was before these patches.
-> 
->         while (readl(port->membase + REG_FR) & UART01x_FR_TXFF)
-> 
-> is broken because REG_FR is equal to 1.
+The REG_x macros are indices into a table, not register offsets.  Since
+earlycon does not have access to the vendor data, we can currently only
+support standard ARM PL011 devices.
 
-Patch 4, which changes to the REG_* stuff, does not (explicitly) touch
-this because it _will_ break stuff.
+Signed-off-by: Timur Tabi <timur@codeaurora.org>
+---
+ drivers/tty/serial/amba-pl011.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index f6ad383..06f827a 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2302,10 +2302,10 @@ static struct console amba_console = {
+ 
+ static void pl011_putc(struct uart_port *port, int c)
+ {
+-	while (readl(port->membase + REG_FR) & UART01x_FR_TXFF)
++	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
+ 		;
+-	writeb(c, port->membase + REG_DR);
+-	while (readl(port->membase + REG_FR) & UART01x_FR_BUSY)
++	writeb(c, port->membase + UART01x_DR);
++	while (readl(port->membase + UART01x_FR) & UART011_FR_BUSY)
+ 		;
+ }
+ 
 -- 
-RMK's Patch system: http://www.arm.linux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project.
