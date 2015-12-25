@@ -1,7 +1,7 @@
 From: Huang Shijie <shijie.huang@arm.com>
 Subject: Re: [PATCH 1/2] tty: amba-pl011: fix earlycon register offsets
-Date: Fri, 25 Dec 2015 01:46:50 +0000
-Message-ID: <20151225014649.GA26561@robwan01-pc.asiapac.arm.com>
+Date: Fri, 25 Dec 2015 01:56:41 +0000
+Message-ID: <20151225015640.GB26561@robwan01-pc.asiapac.arm.com>
 References: <1450972189-22639-1-git-send-email-timur@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -47,8 +47,12 @@ On Thu, Dec 24, 2015 at 09:49:48AM -0600, Timur Tabi wrote:
 > -     while (readl(port->membase + REG_FR) & UART01x_FR_BUSY)
 > +     writeb(c, port->membase + UART01x_DR);
 > +     while (readl(port->membase + UART01x_FR) & UART011_FR_BUSY)
-We will meet the compiler error, since there is no UART011_FR_BUSY.
-Please test it before you send it out :)
+I changed the UART011_FR_BUSY with UART01x_FR_BUSY, the console is okay
+now.
+
+So after you change the UART011_FR_BUSY to UART01x_FR_BUSY in the next
+version, please add my test-by :
+      Tested-by: Huang Shijie <shijie.huang@arm.com>
 
 thanks
 Huang Shijie
