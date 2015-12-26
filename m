@@ -1,59 +1,108 @@
-From: Huang Shijie <shijie.huang@arm.com>
-Subject: Re: [PATCH 1/2] tty: amba-pl011: fix earlycon register offsets
-Date: Fri, 25 Dec 2015 01:56:41 +0000
-Message-ID: <20151225015640.GB26561@robwan01-pc.asiapac.arm.com>
-References: <1450972189-22639-1-git-send-email-timur@codeaurora.org>
+From: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Subject: [PATCH LINUX v5 8/8] tty: xuartps: Move RX path into helper function
+Date: Sat, 26 Dec 2015 02:43:56 -0800
+Message-ID: <1451126636-13699-9-git-send-email-soren.brinkmann@xilinx.com>
+References: <1451126636-13699-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1450972189-22639-1-git-send-email-timur@codeaurora.org>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Timur Tabi <timur@codeaurora.org>
-Cc: peter@hurleysoftware.com, Greg Kroah-Hartman <greg@kroah.com>, Linus Walleij <linus.walleij@linaro.org>, andrew.jackson@arm.com, andre.przywara@arm.com, linux-serial@vger.kernel.org, jslaby@suse.com, Russell King <rmk+kernel@arm.linux.org.uk>, jun.nie@linaro.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1451126636-13699-1-git-send-email-soren.brinkmann@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Moritz Fischer <moritz.fischer@ettus.com>, Soren Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Dec 24, 2015 at 09:49:48AM -0600, Timur Tabi wrote:
-> The REG_x macros are indices into a table, not register offsets.  Since
-> earlycon does not have access to the vendor data, we can currently only
-> support standard ARM PL011 devices.
->
-> Signed-off-by: Timur Tabi <timur@codeaurora.org>
-> ---
->  drivers/tty/serial/amba-pl011.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index f6ad383..06f827a 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -2302,10 +2302,10 @@ static struct console amba_console = {
->
->  static void pl011_putc(struct uart_port *port, int c)
->  {
-> -     while (readl(port->membase + REG_FR) & UART01x_FR_TXFF)
-> +     while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
->               ;
-> -     writeb(c, port->membase + REG_DR);
-> -     while (readl(port->membase + REG_FR) & UART01x_FR_BUSY)
-> +     writeb(c, port->membase + UART01x_DR);
-> +     while (readl(port->membase + UART01x_FR) & UART011_FR_BUSY)
-I changed the UART011_FR_BUSY with UART01x_FR_BUSY, the console is okay
-now.
+Move RX-related IRQ handling into a helper function.
+Fixes a problem where every char received after a parity or frame error
+in the current isr will also be tagged as a parity or frame error.
 
-So after you change the UART011_FR_BUSY to UART01x_FR_BUSY in the next
-version, please add my test-by :
-      Tested-by: Huang Shijie <shijie.huang@arm.com>
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+---
+v4:
+ - added Peter's additional information to the commit message (thx)
+---
+ drivers/tty/serial/xilinx_uartps.c | 50 +++++++++++++++++++++-----------------
+ 1 file changed, 28 insertions(+), 22 deletions(-)
 
-thanks
-Huang Shijie
-IMPORTANT NOTICE: The contents of this email and any attachments are confidential and may also be privileged. If you are not the intended recipient, please notify the sender immediately and do not disclose the contents to any other person, use it for any purpose, or store or copy the information in any medium. Thank you.
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index f3ac69387b0a..db9e23eaf300 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -172,28 +172,8 @@ struct cdns_uart {
+ #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
+ 		clk_rate_change_nb);
+ 
+-/**
+- * cdns_uart_isr - Interrupt handler
+- * @irq: Irq number
+- * @dev_id: Id of the port
+- *
+- * Return: IRQHANDLED
+- */
+-static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
++static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
+ {
+-	struct uart_port *port = (struct uart_port *)dev_id;
+-	unsigned long flags;
+-	unsigned int isrstatus, numbytes;
+-	unsigned int data;
+-	char status = TTY_NORMAL;
+-
+-	spin_lock_irqsave(&port->lock, flags);
+-
+-	/* Read the interrupt status register to determine which
+-	 * interrupt(s) is/are active.
+-	 */
+-	isrstatus = readl(port->membase + CDNS_UART_ISR_OFFSET);
+-
+ 	/*
+ 	 * There is no hardware break detection, so we interpret framing
+ 	 * error with all-zeros data as a break sequence. Most of the time,
+@@ -223,6 +203,9 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ 		/* Receive Timeout Interrupt */
+ 		while (!(readl(port->membase + CDNS_UART_SR_OFFSET) &
+ 					CDNS_UART_SR_RXEMPTY)) {
++			u32 data;
++			char status = TTY_NORMAL;
++
+ 			data = readl(port->membase + CDNS_UART_FIFO_OFFSET);
+ 
+ 			/* Non-NULL byte after BREAK is garbage (99%) */
+@@ -263,10 +246,33 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ 			}
+ 
+ 			uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
+-					data, status);
++					 data, status);
+ 		}
+ 		tty_flip_buffer_push(&port->state->port);
+ 	}
++}
++
++/**
++ * cdns_uart_isr - Interrupt handler
++ * @irq: Irq number
++ * @dev_id: Id of the port
++ *
++ * Return: IRQHANDLED
++ */
++static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
++{
++	struct uart_port *port = (struct uart_port *)dev_id;
++	unsigned long flags;
++	unsigned int isrstatus, numbytes;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	/* Read the interrupt status register to determine which
++	 * interrupt(s) is/are active.
++	 */
++	isrstatus = readl(port->membase + CDNS_UART_ISR_OFFSET);
++
++	cdns_uart_handle_rx(port, isrstatus);
+ 
+ 	/* Dispatch an appropriate handler */
+ 	if ((isrstatus & CDNS_UART_IXR_TXEMPTY) == CDNS_UART_IXR_TXEMPTY) {
+-- 
+2.6.3.3.g9bb996a
