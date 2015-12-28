@@ -1,41 +1,41 @@
-From: Geliang Tang <geliangtang@163.com>
-Subject: [PATCH 7/9 v2] serial: 8250_pci: use to_pci_dev()
-Date: Sun, 27 Dec 2015 22:29:42 +0800
-Message-ID: <0754dad194ad16a45814bf3f58214702d0e6bac4.1451224485.git.geliangtang@163.com>
-References: <CAHp75Vd1i4Pidw11ddMwtfvvtLk3cCuUMfg8Q8v-FPsOkbMhag@mail.gmail.com>
+From: Peter Hung <hpeter@gmail.com>
+Subject: Re: [PATCH RESEND 1/1] serial: 8250_pci: Fix real serial port count
+ for F81504/508/512
+Date: Mon, 28 Dec 2015 11:42:51 +0800
+Message-ID: <5680AFBB.3080108@gmail.com>
+References: <1448952881-7871-1-git-send-email-hpeter+linux_kernel@gmail.com>
+ <CAHp75Vd45Wogz83L8tB7XdvYO1bfn9C4sc3sHgr1Vskka-X3fw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Vd1i4Pidw11ddMwtfvvtLk3cCuUMfg8Q8v-FPsOkbMhag@mail.gmail.com>
+In-Reply-To: <CAHp75Vd45Wogz83L8tB7XdvYO1bfn9C4sc3sHgr1Vskka-X3fw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Geliang Tang <geliangtang@163.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, jslaby@suse.com, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, tom_tsai@fintek.com.tw, Peter H <peter_hong@fintek.com.tw>, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Use to_pci_dev() instead of open-coding it.
+Hi Greg,
 
-Signed-off-by: Geliang Tang <geliangtang@163.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-Changes in v2:
- - Made it first line in this block.
----
- drivers/tty/serial/8250/8250_pci.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Andy Shevchenko =E6=96=BC 2015/12/13 =E4=B8=8A=E5=8D=88 09:08 =E5=AF=AB=
+=E9=81=93:
+> First of all, maybe you can consider to split this part of the driver
+> to separate one? (Like we did for 8250_mid.c). It seems 8250_pci is
+> too bloated. But it's just an idea, maybe for future.
+>
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 4097f3f..75182c9 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1536,10 +1536,9 @@ pci_brcm_trumanage_setup(struct serial_private *priv,
- static int pci_fintek_rs485_config(struct uart_port *port,
- 			       struct serial_rs485 *rs485)
- {
-+	struct pci_dev *pci_dev = to_pci_dev(port->dev);
- 	u8 setting;
- 	u8 *index = (u8 *) port->private_data;
--	struct pci_dev *pci_dev = container_of(port->dev, struct pci_dev,
--						dev);
- 
- 	pci_read_config_byte(pci_dev, 0x40 + 8 * *index + 7, &setting);
- 
--- 
-2.5.0
+Did you have reviewed this patch? Please skip this patch if not
+reviewed.
+
+The F81504/508/512 is multi-function card. It contains
+Serial/GPIO functions. It maybe enlarge the scale of 8250_pci.c and
+make it less maintainable if we add GPIOLIB support into 8250_pci.c
+
+Could I split the F81504/508/512 driver from 8250_pci.c into a
+new module file and implements GPIOLIB?
+
+Thanks
+--=20
+With Best Regards,
+Peter Hung
