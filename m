@@ -1,94 +1,75 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [git pull/resend] serial: sh-sci: External Clock Support for v4.5
-Date: Wed, 30 Dec 2015 11:40:48 +0100
-Message-ID: <1451472048-25592-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Simon Horman <horms+renesas@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Subject: [PATCH] serial: imx: fix dcd interrupt firing during probe
+Date: Thu, 31 Dec 2015 04:12:45 +0100
+Message-ID: <1451531565-1233-1-git-send-email-marcel.ziswiler@toradex.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Marcel Ziswiler <marcel.ziswiler@toradex.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
 List-Id: linux-serial@vger.kernel.org
 
-	Hi Greg,
-
-The following changes since commit 8005c49d9aea74d382f474ce11afbbc7d7130bec:
-
-  Linux 4.4-rc1 (2015-11-15 17:00:27 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git scif-clk-sck-brg-for-v4.5
-
-for you to fetch changes up to 192d367f218d0cd94aa9b5059992e4aa19ec5b36:
-
-  serial: sh-sci: Drop the sci_fck clock fallback (2015-12-17 11:19:12 +0100)
-
-Summary:
-  - Clean up the naming of clocks in the sh-sci driver and its DT bindings,
-  - Add support for the optional external clock on (H)SCI(F), where this pin
-    can serve as a clock input,
-  - Add support for the optional clock sources for the Baud Rate
-    Generator for External Clock (BRG), as found on some SCIF variants
-    and on HSCIF.
-
-Thanks for pulling!
-
-----------------------------------------------------------------
-Geert Uytterhoeven (23):
-      serial: sh-sci: Add fallback compatibility strings
-      serial: sh-sci: Update DT binding documentation for external clock input
-      serial: sh-sci: Update DT binding documentation for BRG support
-      serial: sh-sci: Drop useless check for zero sampling_rate
-      serial: sh-sci: Grammar s/Get ... for/Get ... from/
-      serial: sh-sci: Use existing local variable in sci_parse_dt()
-      serial: sh-sci: Drop unused frame_len parameter for sci_baud_calc_hscif()
-      serial: sh-sci: Don't overwrite clock selection in serial_console_write()
-      serial: sh-sci: Convert from clk_get() to devm_clk_get()
-      serial: sh-sci: Make unsigned values in sci_baud_calc_hscif() unsigned
-      serial: sh-sci: Avoid overflow in sci_baud_calc_hscif()
-      serial: sh-sci: Improve bit rate error calculation for HSCIF
-      serial: sh-sci: Avoid calculating the receive margin for HSCIF
-      serial: sh-sci: Merge sci_scbrr_calc() and sci_baud_calc_hscif()
-      serial: sh-sci: Take into account sampling rate for max baud rate
-      serial: sh-sci: Add BRG register definitions
-      serial: sh-sci: Replace struct sci_port_info by type/regtype encoding
-      serial: sh-sci: Correct SCIF type on RZ/A1H
-      serial: sh-sci: Correct SCIF type on R-Car for BRG
-      serial: sh-sci: Prepare for multiple sampling clock sources
-      serial: sh-sci: Add support for optional external (H)SCK input
-      serial: sh-sci: Add support for optional BRG on (H)SCIF
-      sh: sh7734: Correct SCIF type for BRG
-
-Laurent Pinchart (4):
-      serial: sh-sci: Drop the interface clock
-      sh: Rename sci_ick and sci_fck clock to fck
-      sh: Remove sci_ick clock alias
-      serial: sh-sci: Drop the sci_fck clock fallback
-
- .../bindings/serial/renesas,sci-serial.txt         |  32 +-
- arch/sh/kernel/cpu/clock-cpg.c                     |   1 -
- arch/sh/kernel/cpu/sh2a/clock-sh7264.c             |   9 +-
- arch/sh/kernel/cpu/sh2a/clock-sh7269.c             |  16 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7343.c             |   8 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7366.c             |   6 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7723.c             |  12 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7734.c             |  12 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7757.c             |   6 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7785.c             |  12 +-
- arch/sh/kernel/cpu/sh4a/clock-sh7786.c             |  12 +-
- arch/sh/kernel/cpu/sh4a/clock-shx3.c               |   8 +-
- arch/sh/kernel/cpu/sh4a/setup-sh7734.c             |  12 +-
- drivers/tty/serial/sh-sci.c                        | 555 +++++++++++++++------
- drivers/tty/serial/sh-sci.h                        |  10 +
- include/linux/serial_sci.h                         |   1 +
- 16 files changed, 500 insertions(+), 212 deletions(-)
-
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
+Q29udGludWluZyBvbiB0aGUgQXBhbGlzIGlNWDYgbWFpbmxpbmluZyB3b3JrIHN0YXJ0ZWQgYnkg
+UGV0ciDFoHRldGlhciBJCm5vdGljZWQgdGhhdCBpdCBvbmx5IGJvb3RzIHdoZW4gcmVib290aW5n
+IGZyb20gTlhQJ3MgZG93bnN0cmVhbSAzLjE0LjI4Cmtlcm5lbCBvciBtYWlubGluZSBvdGhlcndp
+c2UgKGUuZy4gd2hlbiBjb2xkIGJvb3RlZCkgSSBkaWQgbm90IGdldCBhbnkKc2VyaWFsIGRlYnVn
+IG91dHB1dCBhdCBhbGwuIEVuYWJsaW5nIGVhcmx5cHJpbnRrIEkgZ290IHRoZSBmb2xsb3dpbmc6
+CgpbICAgIDEuMTM2ODA2XSBJTkZPOiB0cnlpbmcgdG8gcmVnaXN0ZXIgbm9uLXN0YXRpYyBrZXku
+ClsgICAgMS4xMzY4NzFdIDIwMjAwMDAuc2VyaWFsOiB0dHlteGMwIGF0IE1NSU8gMHgyMDIwMDAw
+IChpcnEgPSAyNSwKYmFzZV9iYXVkID0gNTAwMDAwMCkgaXMgYSBJTVgKWyAgICAxLjE1MDY1MV0g
+dGhlIGNvZGUgaXMgZmluZSBidXQgbmVlZHMgbG9ja2RlcCBhbm5vdGF0aW9uLgpbICAgIDEuMTUw
+NjUzXSB0dXJuaW5nIG9mZiB0aGUgbG9ja2luZyBjb3JyZWN0bmVzcyB2YWxpZGF0b3IuClsgICAg
+MS4xNTA2NjRdIENQVTogMCBQSUQ6IDAgQ29tbTogc3dhcHBlci8wIE5vdCB0YWludGVkIDQuNC4w
+LXJjNi0KbmV4dC0yMDE1MTIyMy0wMDAwMi1nNjAwOGYzMC1kaXJ0eSAjMjcKWyAgICAxLjE1MDY2
+OF0gSGFyZHdhcmUgbmFtZTogRnJlZXNjYWxlIGkuTVg2IFF1YWQvRHVhbExpdGUgKERldmljZQpU
+cmVlKQpbICAgIDEuMTUwNjc1XSBCYWNrdHJhY2U6ClsgICAgMS4xNTA3MDFdIFs8YzAxMGM0NWM+
+XSAoZHVtcF9iYWNrdHJhY2UpIGZyb20gWzxjMDEwYzY1ND5dCihzaG93X3N0YWNrKzB4MTgvMHgx
+YykKWyAgICAxLjE1MDcyMl0gIHI3OjAwMDAwMDAwIHI2OmMwZDIwODQ4IHI1OjAwMDAwMDAwIHI0
+OjAwMDAwMDAwClsgICAgMS4xNTA3MzldIFs8YzAxMGM2M2M+XSAoc2hvd19zdGFjaykgZnJvbSBb
+PGMwM2RhZGNjPl0KKGR1bXBfc3RhY2srMHg4Yy8weGE0KQpbICAgIDEuMTUwNzYwXSBbPGMwM2Rh
+ZDQwPl0gKGR1bXBfc3RhY2spIGZyb20gWzxjMDE2YjYwYz5dCihfX2xvY2tfYWNxdWlyZSsweDFk
+ODgvMHgxZWI0KQpbICAgIDEuMTUwNzc0XSAgcjc6MDAwMDAwMDAgcjY6YzBkMDYzZjggcjU6YzE1
+NWY4MzQgcjQ6ZTUwM2JjMjAKWyAgICAxLjE1MDc4NV0gWzxjMDE2OTg4ND5dIChfX2xvY2tfYWNx
+dWlyZSkgZnJvbSBbPGMwMTZiZjU0Pl0KKGxvY2tfYWNxdWlyZSsweDc0LzB4OTQpClsgICAgMS4x
+NTA4MDNdICByMTA6YzBkNmViNWUgcjk6ZTU5N2IzMDAgcjg6MDAwMDAwMTkgcjc6MDAwMDAwMDEK
+cjY6MDAwMDAwMDEgcjU6NjAwMDAxOTMKWyAgICAxLjE1MDgwOF0gIHI0OjAwMDAwMDAwClsgICAg
+MS4xNTA4MjFdIFs8YzAxNmJlZTA+XSAobG9ja19hY3F1aXJlKSBmcm9tIFs8YzA4ZDQ5ZDQ+XQoo
+X3Jhd19zcGluX2xvY2tfaXJxc2F2ZSsweDQwLzB4NTQpClsgICAgMS4xNTA4MzRdICByNzowMDAw
+NTJjOCByNjpjMDQ4MTQ3MCByNTo0MDAwMDE5MyByNDplNTAzYmMxMApbICAgIDEuMTUwODUyXSBb
+PGMwOGQ0OTk0Pl0gKF9yYXdfc3Bpbl9sb2NrX2lycXNhdmUpIGZyb20gWzxjMDQ4MTQ3MD5dCihp
+bXhfcnhpbnQrMHgyMC8weDJhNCkKWyAgICAxLjE1MDg2Ml0gIHI2OjAwMDAwMDAwIHI1OjAwMDA1
+MmQwIHI0OmU1MDNiYzEwClsgICAgMS4xNTA4NzRdIFs8YzA0ODE0NTA+XSAoaW14X3J4aW50KSBm
+cm9tIFs8YzA0ODI1NDA+XQooaW14X2ludCsweDE3MC8weDFmNCkKCkRlYnVnZ2luZyBhIGxpdHRs
+ZSBmdXJ0aGVyIEkgbm90aWNlZCB0aGlzIGFjdHVhbGx5IGhhcHBlbmluZyBhZnRlcgpjYWxsaW5n
+IGRldm1fcmVxdWVzdF9pcnEoKSBkdXJpbmcgc2VyaWFsX2lteF9wcm9iZSgpIGV2ZW4gYmVmb3Jl
+CnVhcnRfYWRkX29uZV9wb3J0KCkgZGlkIGluaXRpYWxpc2UgdGhlIHNwaW5fbG9jayBhY3F1aXJl
+ZCBpbgppbXhfcnhpbnQoKS4gVHVybnMgb3V0IHRoZSBkYXRhIGNhcnJpZXIgZGV0ZWN0IGludGVy
+cnVwdCBmaXJlZAppbW1lZGlhdGVseSB1cG9uIHJlcXVlc3RpbmcgaW50ZXJydXB0cy4gVGhpcyBw
+YXRjaCBmaXhlcyB0aGlzIGJ5CmV4cGxpY2l0bHkgZGlzYWJsaW5nIGRhdGEgY2FycmllciBkZXRl
+Y3QgYmVmb3JlIHJlcXVlc3RpbmcgaW50ZXJydXB0cy4KClNpZ25lZC1vZmYtYnk6IE1hcmNlbCBa
+aXN3aWxlciA8bWFyY2VsLnppc3dpbGVyQHRvcmFkZXguY29tPgoKLS0tCgogZHJpdmVycy90dHkv
+c2VyaWFsL2lteC5jIHwgNSArKysrKwogMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQoK
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3Nlcmlh
+bC9pbXguYwppbmRleCA5MzYyZjU0Yy4uYjE1ODhmOSAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkv
+c2VyaWFsL2lteC5jCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwpAQCAtMjAzMiw2ICsy
+MDMyLDExIEBAIHN0YXRpYyBpbnQgc2VyaWFsX2lteF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2
+aWNlICpwZGV2KQogCQkgVUNSMV9UWE1QVFlFTiB8IFVDUjFfUlRTREVOKTsKIAl3cml0ZWxfcmVs
+YXhlZChyZWcsIHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IxKTsKIAorCS8qIERpc2FibGUgZGF0
+YSBjYXJyaWVyIGRldGVjdCBiZWZvcmUgcmVxdWVzdGluZyBpbnRlcnJ1cHRzICovCisJcmVnID0g
+cmVhZGxfcmVsYXhlZChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMyk7CisJcmVnICY9IH4oVUNS
+M19EQ0QpOworCXdyaXRlbF9yZWxheGVkKHJlZywgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjMp
+OworCiAJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKHNwb3J0LT5jbGtfaXBnKTsKIAogCS8qCi0tIAoy
+LjUuMAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxp
+bnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFk
+ZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4
+LWFybS1rZXJuZWwK
