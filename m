@@ -1,75 +1,46 @@
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Subject: [PATCH] serial: imx: fix dcd interrupt firing during probe
-Date: Thu, 31 Dec 2015 04:12:45 +0100
-Message-ID: <1451531565-1233-1-git-send-email-marcel.ziswiler@toradex.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH] drivers/tty/serial: delete unused MODULE_DEVICE_TABLE
+ from atmel_serial.c
+Date: Sat, 2 Jan 2016 13:17:41 +0530
+Message-ID: <20160102074740.GA11430@sudip-pc>
+References: <1450364746-815-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Marcel Ziswiler <marcel.ziswiler@toradex.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1450364746-815-1-git-send-email-paul.gortmaker@windriver.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sudip Mukherjee <sudip@vectorindia.org>
 List-Id: linux-serial@vger.kernel.org
 
-Q29udGludWluZyBvbiB0aGUgQXBhbGlzIGlNWDYgbWFpbmxpbmluZyB3b3JrIHN0YXJ0ZWQgYnkg
-UGV0ciDFoHRldGlhciBJCm5vdGljZWQgdGhhdCBpdCBvbmx5IGJvb3RzIHdoZW4gcmVib290aW5n
-IGZyb20gTlhQJ3MgZG93bnN0cmVhbSAzLjE0LjI4Cmtlcm5lbCBvciBtYWlubGluZSBvdGhlcndp
-c2UgKGUuZy4gd2hlbiBjb2xkIGJvb3RlZCkgSSBkaWQgbm90IGdldCBhbnkKc2VyaWFsIGRlYnVn
-IG91dHB1dCBhdCBhbGwuIEVuYWJsaW5nIGVhcmx5cHJpbnRrIEkgZ290IHRoZSBmb2xsb3dpbmc6
-CgpbICAgIDEuMTM2ODA2XSBJTkZPOiB0cnlpbmcgdG8gcmVnaXN0ZXIgbm9uLXN0YXRpYyBrZXku
-ClsgICAgMS4xMzY4NzFdIDIwMjAwMDAuc2VyaWFsOiB0dHlteGMwIGF0IE1NSU8gMHgyMDIwMDAw
-IChpcnEgPSAyNSwKYmFzZV9iYXVkID0gNTAwMDAwMCkgaXMgYSBJTVgKWyAgICAxLjE1MDY1MV0g
-dGhlIGNvZGUgaXMgZmluZSBidXQgbmVlZHMgbG9ja2RlcCBhbm5vdGF0aW9uLgpbICAgIDEuMTUw
-NjUzXSB0dXJuaW5nIG9mZiB0aGUgbG9ja2luZyBjb3JyZWN0bmVzcyB2YWxpZGF0b3IuClsgICAg
-MS4xNTA2NjRdIENQVTogMCBQSUQ6IDAgQ29tbTogc3dhcHBlci8wIE5vdCB0YWludGVkIDQuNC4w
-LXJjNi0KbmV4dC0yMDE1MTIyMy0wMDAwMi1nNjAwOGYzMC1kaXJ0eSAjMjcKWyAgICAxLjE1MDY2
-OF0gSGFyZHdhcmUgbmFtZTogRnJlZXNjYWxlIGkuTVg2IFF1YWQvRHVhbExpdGUgKERldmljZQpU
-cmVlKQpbICAgIDEuMTUwNjc1XSBCYWNrdHJhY2U6ClsgICAgMS4xNTA3MDFdIFs8YzAxMGM0NWM+
-XSAoZHVtcF9iYWNrdHJhY2UpIGZyb20gWzxjMDEwYzY1ND5dCihzaG93X3N0YWNrKzB4MTgvMHgx
-YykKWyAgICAxLjE1MDcyMl0gIHI3OjAwMDAwMDAwIHI2OmMwZDIwODQ4IHI1OjAwMDAwMDAwIHI0
-OjAwMDAwMDAwClsgICAgMS4xNTA3MzldIFs8YzAxMGM2M2M+XSAoc2hvd19zdGFjaykgZnJvbSBb
-PGMwM2RhZGNjPl0KKGR1bXBfc3RhY2srMHg4Yy8weGE0KQpbICAgIDEuMTUwNzYwXSBbPGMwM2Rh
-ZDQwPl0gKGR1bXBfc3RhY2spIGZyb20gWzxjMDE2YjYwYz5dCihfX2xvY2tfYWNxdWlyZSsweDFk
-ODgvMHgxZWI0KQpbICAgIDEuMTUwNzc0XSAgcjc6MDAwMDAwMDAgcjY6YzBkMDYzZjggcjU6YzE1
-NWY4MzQgcjQ6ZTUwM2JjMjAKWyAgICAxLjE1MDc4NV0gWzxjMDE2OTg4ND5dIChfX2xvY2tfYWNx
-dWlyZSkgZnJvbSBbPGMwMTZiZjU0Pl0KKGxvY2tfYWNxdWlyZSsweDc0LzB4OTQpClsgICAgMS4x
-NTA4MDNdICByMTA6YzBkNmViNWUgcjk6ZTU5N2IzMDAgcjg6MDAwMDAwMTkgcjc6MDAwMDAwMDEK
-cjY6MDAwMDAwMDEgcjU6NjAwMDAxOTMKWyAgICAxLjE1MDgwOF0gIHI0OjAwMDAwMDAwClsgICAg
-MS4xNTA4MjFdIFs8YzAxNmJlZTA+XSAobG9ja19hY3F1aXJlKSBmcm9tIFs8YzA4ZDQ5ZDQ+XQoo
-X3Jhd19zcGluX2xvY2tfaXJxc2F2ZSsweDQwLzB4NTQpClsgICAgMS4xNTA4MzRdICByNzowMDAw
-NTJjOCByNjpjMDQ4MTQ3MCByNTo0MDAwMDE5MyByNDplNTAzYmMxMApbICAgIDEuMTUwODUyXSBb
-PGMwOGQ0OTk0Pl0gKF9yYXdfc3Bpbl9sb2NrX2lycXNhdmUpIGZyb20gWzxjMDQ4MTQ3MD5dCihp
-bXhfcnhpbnQrMHgyMC8weDJhNCkKWyAgICAxLjE1MDg2Ml0gIHI2OjAwMDAwMDAwIHI1OjAwMDA1
-MmQwIHI0OmU1MDNiYzEwClsgICAgMS4xNTA4NzRdIFs8YzA0ODE0NTA+XSAoaW14X3J4aW50KSBm
-cm9tIFs8YzA0ODI1NDA+XQooaW14X2ludCsweDE3MC8weDFmNCkKCkRlYnVnZ2luZyBhIGxpdHRs
-ZSBmdXJ0aGVyIEkgbm90aWNlZCB0aGlzIGFjdHVhbGx5IGhhcHBlbmluZyBhZnRlcgpjYWxsaW5n
-IGRldm1fcmVxdWVzdF9pcnEoKSBkdXJpbmcgc2VyaWFsX2lteF9wcm9iZSgpIGV2ZW4gYmVmb3Jl
-CnVhcnRfYWRkX29uZV9wb3J0KCkgZGlkIGluaXRpYWxpc2UgdGhlIHNwaW5fbG9jayBhY3F1aXJl
-ZCBpbgppbXhfcnhpbnQoKS4gVHVybnMgb3V0IHRoZSBkYXRhIGNhcnJpZXIgZGV0ZWN0IGludGVy
-cnVwdCBmaXJlZAppbW1lZGlhdGVseSB1cG9uIHJlcXVlc3RpbmcgaW50ZXJydXB0cy4gVGhpcyBw
-YXRjaCBmaXhlcyB0aGlzIGJ5CmV4cGxpY2l0bHkgZGlzYWJsaW5nIGRhdGEgY2FycmllciBkZXRl
-Y3QgYmVmb3JlIHJlcXVlc3RpbmcgaW50ZXJydXB0cy4KClNpZ25lZC1vZmYtYnk6IE1hcmNlbCBa
-aXN3aWxlciA8bWFyY2VsLnppc3dpbGVyQHRvcmFkZXguY29tPgoKLS0tCgogZHJpdmVycy90dHkv
-c2VyaWFsL2lteC5jIHwgNSArKysrKwogMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQoK
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3Nlcmlh
-bC9pbXguYwppbmRleCA5MzYyZjU0Yy4uYjE1ODhmOSAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkv
-c2VyaWFsL2lteC5jCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwpAQCAtMjAzMiw2ICsy
-MDMyLDExIEBAIHN0YXRpYyBpbnQgc2VyaWFsX2lteF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2
-aWNlICpwZGV2KQogCQkgVUNSMV9UWE1QVFlFTiB8IFVDUjFfUlRTREVOKTsKIAl3cml0ZWxfcmVs
-YXhlZChyZWcsIHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IxKTsKIAorCS8qIERpc2FibGUgZGF0
-YSBjYXJyaWVyIGRldGVjdCBiZWZvcmUgcmVxdWVzdGluZyBpbnRlcnJ1cHRzICovCisJcmVnID0g
-cmVhZGxfcmVsYXhlZChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMyk7CisJcmVnICY9IH4oVUNS
-M19EQ0QpOworCXdyaXRlbF9yZWxheGVkKHJlZywgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjMp
-OworCiAJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKHNwb3J0LT5jbGtfaXBnKTsKIAogCS8qCi0tIAoy
-LjUuMAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxp
-bnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFk
-ZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4
-LWFybS1rZXJuZWwK
+On Thu, Dec 17, 2015 at 10:05:46AM -0500, Paul Gortmaker wrote:
+> In commit c39dfebc7798956fd2140ae6321786ff35da30c3 ("drivers/tty/serial:
+> make serial/atmel_serial.c explicitly non-modular") we removed the code
+> relating to modular support since it currently only supports built in.
+> 
+> However, when redoing my build coverage for mips allmodconfig, which
+> sets CONFIG_OF, I noticed a remaining line that needs to be removed,
+> else we will get a build failure for an undefined module macro.
+> 
+> Unfortunately this didn't appear for any of the other arch I tested
+> more frequently, such as ARM.
+> 
+> Since MODULE_DEVICE_TABLE is a no-op for non-modular code, we can just
+> remove the offending line.
+> 
+> Fixes: c39dfebc7798 ("drivers/tty/serial: make serial/atmel_serial.c explicitly non-modular")
+> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: linux-serial@vger.kernel.org
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Sudip Mukherjee <sudip@vectorindia.org>
+> Reported-by: Sudip Mukherjee <sudip@vectorindia.org>
+> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+> ---
+
+I think this has not yet landed in linux-next. next-20151231 still
+fails.
+
+regards
+sudip
