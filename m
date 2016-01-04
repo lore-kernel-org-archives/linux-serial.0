@@ -1,203 +1,139 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 3/6] ACPI: add 2 parameters to function acpi dma
- controller register
-Date: Mon, 4 Jan 2016 16:36:10 +0200
-Message-ID: <CAHp75Vd3Z8Cz8QYb+mP0tTJodZ+8zk+ZhAw2Bs4=J0VyoC3Q2Q@mail.gmail.com>
+Subject: Re: [PATCH 4/6] dmaengine: pl330: add new items for pl330 private data
+Date: Mon, 4 Jan 2016 16:38:56 +0200
+Message-ID: <CAHp75Ve9Jsd0wQjfF-3s90hxwowQE5vmQE=0s8D6RNBOKs8kgw@mail.gmail.com>
 References: <1451885501-2710-1-git-send-email-annie.wang@amd.com>
-	<1451885501-2710-4-git-send-email-annie.wang@amd.com>
+	<1451885501-2710-5-git-send-email-annie.wang@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1451885501-2710-4-git-send-email-annie.wang@amd.com>
+In-Reply-To: <1451885501-2710-5-git-send-email-annie.wang@amd.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: Wang Hongcheng <annie.wang@amd.com>
 Cc: Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Borislav Petkov <bp@alien8.de>, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Tony Li <tony.li@amd.com>, Xiangliang Yu <Xiangliang.Yu@amd.com>
 List-Id: linux-serial@vger.kernel.org
 
 On Mon, Jan 4, 2016 at 7:31 AM, Wang Hongcheng <annie.wang@amd.com> wrote:
-> As CSRT table will not always work, 2 arguments, base_request_line
-> and num are added to acpi dma controller register
-> as another way to get device request line.
-
-Please, check my comments below.
-
+> mcbuf_sz means bytes to allocate for MicroCode buffer.
+> flags is for irq sharing, default is non-shared, in AMD
+> Carrizo, pl330 shares IRQ with its corresponding UART device.
 >
 > Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
 > ---
->  drivers/dma/acpi-dma.c    | 25 ++++++++++++++++++++-----
->  drivers/dma/dw/platform.c |  2 +-
->  include/linux/acpi_dma.h  |  6 ++++++
->  3 files changed, 27 insertions(+), 6 deletions(-)
+>  drivers/acpi/acpi_apd.c    | 17 +++++++++++++++++
+>  drivers/dma/pl330.c        |  9 ++++++++-
+>  include/linux/amba/pl330.h |  2 ++
+>  3 files changed, 27 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/dma/acpi-dma.c b/drivers/dma/acpi-dma.c
-> index 16d0daa..e2c27c3 100644
-> --- a/drivers/dma/acpi-dma.c
-> +++ b/drivers/dma/acpi-dma.c
-> @@ -105,7 +105,7 @@ static int acpi_dma_parse_resource_group(const struct acpi_csrt_group *grp,
->   * We are using this table to get the request line range of the specific DMA
->   * controller to be used later.
->   */
-> -static void acpi_dma_parse_csrt(struct acpi_device *adev, struct acpi_dma *adma)
-> +static int acpi_dma_parse_csrt(struct acpi_device *adev, struct acpi_dma *adma)
->  {
->         struct acpi_csrt_group *grp, *end;
->         struct acpi_table_csrt *csrt;
-> @@ -117,7 +117,7 @@ static void acpi_dma_parse_csrt(struct acpi_device *adev, struct acpi_dma *adma)
->         if (ACPI_FAILURE(status)) {
->                 if (status != AE_NOT_FOUND)
->                         dev_warn(&adev->dev, "failed to get the CSRT table\n");
-> -               return;
-> +               return -ENOENT;
->         }
+> diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
+> index 9520daf..4d71a65 100644
+> --- a/drivers/acpi/acpi_apd.c
+> +++ b/drivers/acpi/acpi_apd.c
+> @@ -20,6 +20,9 @@
+>  #include <linux/pm.h>
+>  #include <linux/amba/bus.h>
+>  #include <linux/dma-mapping.h>
+> +#include <linux/dmaengine.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/amba/pl330.h>
 >
->         grp = (struct acpi_csrt_group *)(csrt + 1);
-> @@ -128,11 +128,12 @@ static void acpi_dma_parse_csrt(struct acpi_device *adev, struct acpi_dma *adma)
->                 if (ret < 0) {
->                         dev_warn(&adev->dev,
->                                  "error in parsing resource group\n");
-> -                       return;
-> +                       return -EINVAL;
->                 }
+>  #include "internal.h"
 >
->                 grp = (struct acpi_csrt_group *)((void *)grp + grp->length);
->         }
-> +       return 0;
->  }
+> @@ -33,6 +36,14 @@ struct apd_private_data;
+>  #define ACPI_APD_SYSFS BIT(0)
+>  #define ACPI_APD_PM    BIT(1)
 >
-
-Good.
-
->  /**
-> @@ -140,6 +141,8 @@ static void acpi_dma_parse_csrt(struct acpi_device *adev, struct acpi_dma *adma)
->   * @dev:               struct device of DMA controller
->   * @acpi_dma_xlate:    translation function which converts a dma specifier
->   *                     into a dma_chan structure
-> + * @base_request_line:  device request line base
-> + * @num:                device request line range
-
-Not ok.
-
->   * @data               pointer to controller specific data to be used by
->   *                     translation function
->   *
-> @@ -152,10 +155,13 @@ static void acpi_dma_parse_csrt(struct acpi_device *adev, struct acpi_dma *adma)
->  int acpi_dma_controller_register(struct device *dev,
->                 struct dma_chan *(*acpi_dma_xlate)
->                 (struct acpi_dma_spec *, struct acpi_dma *),
-> +               unsigned short base_request_line,
-> +               unsigned short num,
-
-Add them after void *data
-
->                 void *data)
-
->  {
->         struct acpi_device *adev;
->         struct acpi_dma *adma;
-> +       int ret;
->
->         if (!dev || !acpi_dma_xlate)
->                 return -EINVAL;
-> @@ -173,7 +179,12 @@ int acpi_dma_controller_register(struct device *dev,
->         adma->acpi_dma_xlate = acpi_dma_xlate;
->         adma->data = data;
->
-> -       acpi_dma_parse_csrt(adev, adma);
-> +       ret = acpi_dma_parse_csrt(adev, adma);
+> +static u8 peri_id[2] = { 0, 1 };
 > +
-
-> +       if (ret < 0) {
-> +               adma->base_request_line = base_request_line;
-> +               adma->end_request_line = base_request_line + num;
-> +       }
-
-No need to assign parameters there.
-Create a new function and call it as a fallback of acpi_dma_parse_csrt();
-
-ret = acpi_dma_parse_csrt();
-if (ret)
- acpi_dma_assign_request_line();
-
-> @@ -236,6 +247,8 @@ static void devm_acpi_dma_release(struct device *dev, void *res)
->  int devm_acpi_dma_controller_register(struct device *dev,
->                 struct dma_chan *(*acpi_dma_xlate)
->                 (struct acpi_dma_spec *, struct acpi_dma *),
-> +               unsigned short base_request_line,
-> +               unsigned short num,
-
-After *data.
-
->                 void *data)
->  {
->         void *res;
-> @@ -245,7 +258,9 @@ int devm_acpi_dma_controller_register(struct device *dev,
->         if (!res)
->                 return -ENOMEM;
+> +static struct dma_pl330_platdata amd_pl330 = {
+> +       .nr_valid_peri = 2,
+> +       .peri_id = peri_id,
+> +       .mcbuf_sz = 0,
+> +       .flags = IRQF_SHARED,
+> +};
+>  /**
+>   * struct apd_device_desc - a descriptor for apd device
+>   * @flags: device flags like %ACPI_APD_SYSFS, %ACPI_APD_PM
+> @@ -150,6 +161,12 @@ static int acpi_apd_setup_quirks(struct apd_private_data *pdata)
+>                 goto amba_register_err;
 >
-> -       ret = acpi_dma_controller_register(dev, acpi_dma_xlate, data);
-> +       ret = acpi_dma_controller_register(dev, acpi_dma_xlate,
-> +                                          base_request_line,
-> +                                          num, data);
-
-Ditto.
-
->         if (ret) {
->                 devres_free(res);
->                 return ret;
-> diff --git a/drivers/dma/dw/platform.c b/drivers/dma/dw/platform.c
-> index 68a4815..54b898d 100644
-> --- a/drivers/dma/dw/platform.c
-> +++ b/drivers/dma/dw/platform.c
-> @@ -88,7 +88,7 @@ static void dw_dma_acpi_controller_register(struct dw_dma *dw)
->         info->filter_fn = dw_dma_acpi_filter;
+>         kfree(resource);
+> +
+> +       dma_cap_set(DMA_MEMCPY, amd_pl330.cap_mask);
+> +       dma_cap_set(DMA_SLAVE, amd_pl330.cap_mask);
+> +       dma_cap_set(DMA_CYCLIC, amd_pl330.cap_mask);
+> +       dma_cap_set(DMA_PRIVATE, amd_pl330.cap_mask);
+> +
+>         return 0;
 >
->         ret = devm_acpi_dma_controller_register(dev, acpi_dma_simple_xlate,
-> -                                               info);
-> +                                               0, 0, info);
-
-Ditto.
-
->         if (ret)
->                 dev_err(dev, "could not register acpi_dma_controller\n");
->  }
-> diff --git a/include/linux/acpi_dma.h b/include/linux/acpi_dma.h
-> index 329436d..d90febe 100644
-> --- a/include/linux/acpi_dma.h
-> +++ b/include/linux/acpi_dma.h
-> @@ -62,11 +62,15 @@ struct acpi_dma_filter_info {
->  int acpi_dma_controller_register(struct device *dev,
->                 struct dma_chan *(*acpi_dma_xlate)
->                 (struct acpi_dma_spec *, struct acpi_dma *),
-> +               unsigned short base_request_line,
-> +               unsigned short num,
-
-Ditto.
-
->                 void *data);
->  int acpi_dma_controller_free(struct device *dev);
->  int devm_acpi_dma_controller_register(struct device *dev,
->                 struct dma_chan *(*acpi_dma_xlate)
->                 (struct acpi_dma_spec *, struct acpi_dma *),
-> +               unsigned short base_request_line,
-> +               unsigned short num,
-
-Ditto.
-
->                 void *data);
->  void devm_acpi_dma_controller_free(struct device *dev);
+>  amba_register_err:
+> diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
+> index 17ee758..5e5fb46 100644
+> --- a/drivers/dma/pl330.c
+> +++ b/drivers/dma/pl330.c
+> @@ -26,6 +26,8 @@
+>  #include <linux/scatterlist.h>
+>  #include <linux/of.h>
+>  #include <linux/of_dma.h>
+> +#include <linux/acpi.h>
+> +#include <linux/acpi_dma.h>
+>  #include <linux/err.h>
+>  #include <linux/pm_runtime.h>
 >
-> @@ -82,6 +86,8 @@ struct dma_chan *acpi_dma_simple_xlate(struct acpi_dma_spec *dma_spec,
->  static inline int acpi_dma_controller_register(struct device *dev,
->                 struct dma_chan *(*acpi_dma_xlate)
->                 (struct acpi_dma_spec *, struct acpi_dma *),
-> +               unsigned short base_request_line,
-> +               unsigned short num,
->                 void *data)
+> @@ -488,6 +490,9 @@ struct pl330_dmac {
+>         /* Peripheral channels connected to this DMAC */
+>         unsigned int num_peripherals;
+>         struct dma_pl330_chan *peripherals; /* keep at end */
+> +
+> +       /*IRQ register flags */
 
-Ditto.
++Space '/* '
 
->  {
->         return -ENODEV;
+> +       unsigned int flags;
+
+irq_flags
+
+>  };
+>
+>  struct dma_pl330_desc {
+> @@ -2800,6 +2805,8 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
+>
+>         pl330->mcbufsz = pdat ? pdat->mcbuf_sz : 0;
+>
+> +       pl330->flags = pdat ? pdat->flags : IRQF_TRIGGER_NONE;
+> +
+>         res = &adev->res;
+>         pl330->base = devm_ioremap_resource(&adev->dev, res);
+>         if (IS_ERR(pl330->base))
+> @@ -2811,7 +2818,7 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
+>                 irq = adev->irq[i];
+>                 if (irq) {
+>                         ret = devm_request_irq(&adev->dev, irq,
+> -                                              pl330_irq_handler, 0,
+> +                                              pl330_irq_handler, pl330->flags,
+>                                                dev_name(&adev->dev), pl330);
+>                         if (ret)
+>                                 return ret;
+> diff --git a/include/linux/amba/pl330.h b/include/linux/amba/pl330.h
+> index fe93758..cdc80f0 100644
+> --- a/include/linux/amba/pl330.h
+> +++ b/include/linux/amba/pl330.h
+> @@ -29,6 +29,8 @@ struct dma_pl330_platdata {
+>         dma_cap_mask_t cap_mask;
+>         /* Bytes to allocate for MC buffer */
+>         unsigned mcbuf_sz;
+> +       /*flags for irq sharing, default is non-shared*/
+
+Spaces '/* */'
+
+> +       unsigned flags;
+
+irq_flags
+
+>  };
+
+>
+>  extern bool pl330_filter(struct dma_chan *chan, void *param);
 > --
 > 1.9.1
 >
