@@ -1,42 +1,92 @@
-From: Greg Ungerer <gerg@uclinux.org>
-Subject: Re: [PATCH] serial: Remove 68328 driver
-Date: Mon, 4 Jan 2016 21:10:07 +1000
-Message-ID: <568A530F.8020807@uclinux.org>
-References: <1449830170-15096-1-git-send-email-frederik.voelkel@fau.de>
- <1450438103-1059-1-git-send-email-frederik.voelkel@fau.de>
- <CAMuHMdW6r_QszpXTj1FLtOfjzPqDCU7UcF6OT+7MgW8uo01KYA@mail.gmail.com>
- <5689FD36.4020609@westnet.com.au>
- <20160104103031.655b6f61@lxorguk.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160104103031.655b6f61@lxorguk.ukuu.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Linux/m68k <linux-m68k@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, =?UTF-8?Q?Frederik_V=c3=b6lkel?= <frederik.voelkel@fau.de>, Jiri Slaby <jslaby@suse.com>, Greg KH <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-kernel@i4.cs.fau.de, Lukas Braun <lukas.braun@fau.de>, uClinux development list <uclinux-dev@uclinux.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 3/5] serial: sh-sci: Use premultiplier to handle half sampling rate
+Date: Mon,  4 Jan 2016 14:45:20 +0100
+Message-ID: <1451915122-30219-4-git-send-email-geert+renesas@glider.be>
+References: <1451915122-30219-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1451915122-30219-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-sh-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Simon Horman <horms+renesas@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-On 04/01/16 20:30, One Thousand Gnomes wrote:
-> On Mon, 4 Jan 2016 15:03:50 +1000
-> Greg Ungerer <gregungerer@westnet.com.au> wrote:
->
->> If 68328serial.c is removed is there any point keeping the
->> architecture support for 68328 platforms?
->>
->> The 68328serial.c provides pretty much the only type of console
->> that can be used on these devices. They are largely useless
->> without this
->
-> Probably we should - unless someone wants to stand up and say "actually
-> I'm using this with current kernels, need it, and I'll maintain it"
->
-> Somehow I doubt anyone is.
+On SCIx variants different from HSCIF, the bit rate is equal to the
+sampling clock rate divided by half the sampling rate. Currently this is
+handled by dividing the sampling rate by two, which was OK as it was
+always even.
 
-Yep, I suspect you are right.
-I can't even remember the last time a patch or improvement
-for 68328 came past me. Same goes for 68360 cpu/platform
-as well.
+Replace halving the sampling rate by premultiplying the base clock
+frequency by 2, to accommodate odd sampling rates on SCIFA/SCIFB later.
 
-Regards
-Greg
+Replace the shift value in the BRG divider calculation by a
+premultiplication of the base clock frequency too, for consistency.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/tty/serial/sh-sci.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index e8d6fa77e11208d4..f3c2a89a9550add9 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1934,9 +1934,11 @@ static int sci_sck_calc(struct sci_port *s, unsigned int bps,
+ 	unsigned int min_sr, max_sr, sr;
+ 	int err, min_err = INT_MAX;
+ 
++	if (s->port.type != PORT_HSCIF)
++		freq *= 2;
+ 	if (s->sampling_rate) {
+ 		/* SCI(F) has a fixed sampling rate */
+-		min_sr = max_sr = s->sampling_rate / 2;
++		min_sr = max_sr = s->sampling_rate;
+ 	} else {
+ 		/* HSCIF has a variable 1/(8..32) sampling rate */
+ 		min_sr = 8;
+@@ -1967,9 +1969,11 @@ static int sci_brg_calc(struct sci_port *s, unsigned int bps,
+ 	unsigned int min_sr, max_sr, sr, dl;
+ 	int err, min_err = INT_MAX;
+ 
++	if (s->port.type != PORT_HSCIF)
++		freq *= 2;
+ 	if (s->sampling_rate) {
+ 		/* SCIF has a fixed sampling rate */
+-		min_sr = max_sr = s->sampling_rate / 2;
++		min_sr = max_sr = s->sampling_rate;
+ 	} else {
+ 		/* HSCIF has a variable 1/(8..32) sampling rate */
+ 		min_sr = 8;
+@@ -2002,18 +2006,18 @@ static int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
+ 			  unsigned int *brr, unsigned int *srr,
+ 			  unsigned int *cks)
+ {
+-	unsigned int min_sr, max_sr, shift, sr, br, prediv, scrate, c;
++	unsigned int min_sr, max_sr, sr, br, prediv, scrate, c;
+ 	unsigned long freq = s->clk_rates[SCI_FCK];
+ 	int err, min_err = INT_MAX;
+ 
++	if (s->port.type != PORT_HSCIF)
++		freq *= 2;
+ 	if (s->sampling_rate) {
+ 		min_sr = max_sr = s->sampling_rate;
+-		shift = 0;
+ 	} else {
+ 		/* HSCIF has a variable sample rate */
+ 		min_sr = 8;
+ 		max_sr = 32;
+-		shift = 1;
+ 	}
+ 
+ 	/*
+@@ -2034,7 +2038,7 @@ static int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
+ 	for (sr = max_sr; sr >= min_sr; sr--) {
+ 		for (c = 0; c <= 3; c++) {
+ 			/* integerized formulas from HSCIF documentation */
+-			prediv = sr * (1 << (2 * c + shift));
++			prediv = sr * (1 << (2 * c + 1));
+ 
+ 			/*
+ 			 * We need to calculate:
+-- 
+1.9.1
+
