@@ -1,14 +1,13 @@
 From: kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH 4/6] dmaengine: pl330: add new items for pl330 private
- data
-Date: Mon, 4 Jan 2016 13:43:31 +0800
-Message-ID: <201601041321.VfNTPznW%fengguang.wu@intel.com>
-References: <1451885501-2710-5-git-send-email-annie.wang@amd.com>
+Subject: Re: [PATCH 6/6] Serial:8250: New Port Type PORT_AMD_8250
+Date: Mon, 4 Jan 2016 13:47:47 +0800
+Message-ID: <201601041302.iTnKIr0A%fengguang.wu@intel.com>
+References: <1451885501-2710-7-git-send-email-annie.wang@amd.com>
 Mime-Version: 1.0
 Content-Type: multipart/mixed; boundary="bp/iNruPH9dso1Pn"
 Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1451885501-2710-5-git-send-email-annie.wang@amd.com>
+In-Reply-To: <1451885501-2710-7-git-send-email-annie.wang@amd.com>
 Sender: linux-acpi-owner@vger.kernel.org
 Cc: kbuild-all@01.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, Borislav Petkov <bp@alien8.de>, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Tony Li <tony.li@amd.com>, Xiangliang Yu <Xiangliang.Yu@amd.com>, Wang Hongcheng <annie.wang@amd.com>
 List-Id: linux-serial@vger.kernel.org
@@ -32,37 +31,44 @@ reproduce:
 
 All warnings (new ones prefixed by >>):
 
->> drivers/acpi/acpi_apd.c:41:34: warning: 'amd_pl330' defined but not used [-Wunused-variable]
-    static struct dma_pl330_platdata amd_pl330 = {
+   drivers/acpi/acpi_apd.c:42:34: warning: 'amd_pl330' defined but not used [-Wunused-variable]
+    static struct dma_pl330_platdata amd_pl330[] = {
                                      ^
+>> drivers/acpi/acpi_apd.c:61:32: warning: 'amd_dw8250' defined but not used [-Wunused-variable]
+    static struct plat_dw8250_data amd_dw8250 = {
+                                   ^
 
-vim +/amd_pl330 +41 drivers/acpi/acpi_apd.c
+vim +/amd_dw8250 +61 drivers/acpi/acpi_apd.c
 
-    25	#include <linux/amba/pl330.h>
-    26	
-    27	#include "internal.h"
-    28	
-    29	ACPI_MODULE_NAME("acpi_apd");
-    30	struct apd_private_data;
-    31	
-    32	/**
-    33	 * ACPI_APD_SYSFS : add device attributes in sysfs
-    34	 * ACPI_APD_PM : attach power domain to device
-    35	 */
-    36	#define ACPI_APD_SYSFS	BIT(0)
-    37	#define ACPI_APD_PM	BIT(1)
-    38	
-    39	static u8 peri_id[2] = { 0, 1 };
-    40	
-  > 41	static struct dma_pl330_platdata amd_pl330 = {
-    42		.nr_valid_peri = 2,
-    43		.peri_id = peri_id,
-    44		.mcbuf_sz = 0,
-    45		.flags = IRQF_SHARED,
-    46	};
-    47	/**
-    48	 * struct apd_device_desc - a descriptor for apd device
-    49	 * @flags: device flags like %ACPI_APD_SYSFS, %ACPI_APD_PM
+    36	 */
+    37	#define ACPI_APD_SYSFS	BIT(0)
+    38	#define ACPI_APD_PM	BIT(1)
+    39	
+    40	static u8 peri_id[2] = { 0, 1 };
+    41	
+  > 42	static struct dma_pl330_platdata amd_pl330[] = {
+    43		{
+    44			.nr_valid_peri = 2,
+    45			.peri_id = peri_id,
+    46			.mcbuf_sz = 0,
+    47			.flags = IRQF_SHARED,
+    48			.base_request_line = 1,
+    49			.num = 0,
+    50		},
+    51		{
+    52			.nr_valid_peri = 2,
+    53			.peri_id = peri_id,
+    54			.mcbuf_sz = 0,
+    55			.flags = IRQF_SHARED,
+    56			.base_request_line = 2,
+    57			.num = 0,
+    58		}
+    59	};
+    60	
+  > 61	static struct plat_dw8250_data amd_dw8250 = {
+    62		.has_pl330_dma = 1,
+    63	};
+    64	
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
@@ -73,7 +79,7 @@ Content-Type: application/octet-stream
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICPUFilYAAy5jb25maWcAlFxfd+M2rn/vp/CZ3ofdh+lkMmk6e+7JAy3RNteSyIiUE+dF
+H4sICAgHilYAAy5jb25maWcAlFxfd+M2rn/vp/CZ3ofdh+lkMmk6e+7JAy3RNteSyIiUE+dF
 J008bc7mz9w4aWe+/QVAySIpKO32oRMBIEWCIPADSPnHH36cideXp4frl7ub6/v777Pfdo+7
 5+uX3e3sy9397n9nuZ5V2s1krtxPIFzcPb5++/Dt82l7ejI7+enkp6P3zzefZ+vd8+PufpY9
 PX65++0V2t89Pf7w4w+ZrhZqCaJz5c6+94+X1Dp6Hh5UZV3dZE7pqs1lpnNZD0wj60UrN7Jy
