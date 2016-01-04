@@ -1,66 +1,58 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] serial: imx: Fix suspend / resume.
-Date: Mon, 4 Jan 2016 19:10:14 +0000
-Message-ID: <20160104191014.GN19062@n2100.arm.linux.org.uk>
-References: <20160104182206.10852.47155.stgit@localhost>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH] drivers/tty/serial: delete unused MODULE_DEVICE_TABLE
+ from atmel_serial.c
+Date: Mon, 4 Jan 2016 15:43:25 -0500
+Message-ID: <20160104204324.GP12458@windriver.com>
+References: <1450364746-815-1-git-send-email-paul.gortmaker@windriver.com>
+ <20160102074740.GA11430@sudip-pc>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160104182206.10852.47155.stgit@localhost>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Martin Fuzzey <mfuzzey@parkeon.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20160102074740.GA11430@sudip-pc>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sudip Mukherjee <sudip@vectorindia.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 04, 2016 at 07:22:06PM +0100, Martin Fuzzey wrote:
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 016e4be..16a551b 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -2071,13 +2071,13 @@ static int imx_serial_port_suspend_noirq(struct device *dev)
->  	struct imx_port *sport = platform_get_drvdata(pdev);
->  	int ret;
->  
-> -	ret = clk_enable(sport->clk_ipg);
-> +	ret = clk_prepare_enable(sport->clk_ipg);
->  	if (ret)
->  		return ret;
->  
->  	serial_imx_save_context(sport);
->  
-> -	clk_disable(sport->clk_ipg);
-> +	clk_disable_unprepare(sport->clk_ipg);
+[Re: [PATCH] drivers/tty/serial: delete unused MODULE_DEVICE_TABLE from atmel_serial.c] On 02/01/2016 (Sat 13:17) Sudip Mukherjee wrote:
 
-NAK.  If this is _noirq, then it's a context which can't sleep.  Therefore,
-calling functions that do sleep is not permitted.
+> On Thu, Dec 17, 2015 at 10:05:46AM -0500, Paul Gortmaker wrote:
+> > In commit c39dfebc7798956fd2140ae6321786ff35da30c3 ("drivers/tty/serial:
+> > make serial/atmel_serial.c explicitly non-modular") we removed the code
+> > relating to modular support since it currently only supports built in.
+> > 
+> > However, when redoing my build coverage for mips allmodconfig, which
+> > sets CONFIG_OF, I noticed a remaining line that needs to be removed,
+> > else we will get a build failure for an undefined module macro.
+> > 
+> > Unfortunately this didn't appear for any of the other arch I tested
+> > more frequently, such as ARM.
+> > 
+> > Since MODULE_DEVICE_TABLE is a no-op for non-modular code, we can just
+> > remove the offending line.
+> > 
+> > Fixes: c39dfebc7798 ("drivers/tty/serial: make serial/atmel_serial.c explicitly non-modular")
+> > Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+> > Cc: Jiri Slaby <jslaby@suse.com>
+> > Cc: linux-serial@vger.kernel.org
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Sudip Mukherjee <sudip@vectorindia.org>
+> > Reported-by: Sudip Mukherjee <sudip@vectorindia.org>
+> > Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+> > ---
+> 
+> I think this has not yet landed in linux-next. next-20151231 still
+> fails.
 
-> @@ -2088,13 +2088,13 @@ static int imx_serial_port_resume_noirq(struct device *dev)
->  	struct imx_port *sport = platform_get_drvdata(pdev);
->  	int ret;
->  
-> -	ret = clk_enable(sport->clk_ipg);
-> +	ret = clk_prepare_enable(sport->clk_ipg);
->  	if (ret)
->  		return ret;
->  
->  	serial_imx_restore_context(sport);
->  
-> -	clk_disable(sport->clk_ipg);
-> +	clk_disable_unprepare(sport->clk_ipg);
+Greg has a lot of irons in the fire, and it is also the season where a
+lot of people have unplugged for the last two weeks to be with family,
+friends, etc, so lets be patient.
 
-Ditto.
+Thanks,
+Paul.
+--
 
--- 
-RMK's Patch system: http://www.arm.linux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+> 
+> regards
+> sudip
