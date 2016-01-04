@@ -1,124 +1,226 @@
 From: Wang Hongcheng <annie.wang@amd.com>
-Subject: [PATCH 4/6] dmaengine: pl330: add new items for pl330 private data
-Date: Mon, 4 Jan 2016 13:31:39 +0800
-Message-ID: <1451885501-2710-5-git-send-email-annie.wang@amd.com>
+Subject: [PATCH 2/6] ACPI: create setup_quirk in acpi_apd
+Date: Mon, 4 Jan 2016 13:31:37 +0800
+Message-ID: <1451885501-2710-3-git-send-email-annie.wang@amd.com>
 References: <1451885501-2710-1-git-send-email-annie.wang@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1451885501-2710-1-git-send-email-annie.wang@amd.com>
-Sender: linux-acpi-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Andy Shevchenko <andy.shevchenko@gmail.com>, Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
 Cc: linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, Borislav Petkov <bp@alien8.de>, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Tony Li <tony.li@amd.com>, Xiangliang Yu <Xiangliang.Yu@amd.com>, Wang Hongcheng <annie.wang@amd.com>
 List-Id: linux-serial@vger.kernel.org
 
-mcbuf_sz means bytes to allocate for MicroCode buffer.
-flags is for irq sharing, default is non-shared, in AMD
-Carrizo, pl330 shares IRQ with its corresponding UART device.
+The post_setup hook of AMD0020 device will create an amba device as
+the child of a previously created platform device.
 
 Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
 ---
- drivers/acpi/acpi_apd.c    | 17 +++++++++++++++++
- drivers/dma/pl330.c        |  9 ++++++++-
- include/linux/amba/pl330.h |  2 ++
- 3 files changed, 27 insertions(+), 1 deletion(-)
+ drivers/acpi/acpi_apd.c | 131 ++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 121 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
-index 9520daf..4d71a65 100644
+index a450e7a..9520daf 100644
 --- a/drivers/acpi/acpi_apd.c
 +++ b/drivers/acpi/acpi_apd.c
-@@ -20,6 +20,9 @@
+@@ -3,7 +3,8 @@
+  *
+  * Copyright (c) 2014,2015 AMD Corporation.
+  * Authors: Ken Xue <Ken.Xue@amd.com>
+- *	Wu, Jeff <Jeff.Wu@amd.com>
++ *          Jeff Wu <15618388108@163.com>
++ *          Wang Hongcheng <Annie.Wang@amd.com>
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -17,6 +18,8 @@
+ #include <linux/acpi.h>
+ #include <linux/err.h>
  #include <linux/pm.h>
- #include <linux/amba/bus.h>
- #include <linux/dma-mapping.h>
-+#include <linux/dmaengine.h>
-+#include <linux/interrupt.h>
-+#include <linux/amba/pl330.h>
++#include <linux/amba/bus.h>
++#include <linux/dma-mapping.h>
  
  #include "internal.h"
  
-@@ -33,6 +36,14 @@ struct apd_private_data;
- #define ACPI_APD_SYSFS	BIT(0)
- #define ACPI_APD_PM	BIT(1)
+@@ -36,19 +39,23 @@ struct apd_private_data;
+  * @fixed_clk_rate: fixed rate input clock source for acpi device;
+  *			0 means no fixed rate input clock source
+  * @setup: a hook routine to set device resource during create platform device
+- *
++ * @post_setup: an additional hook routine
+  * Device description defined as acpi_device_id.driver_data
+  */
+ struct apd_device_desc {
+ 	unsigned int flags;
+ 	unsigned int fixed_clk_rate;
++	unsigned int base_offset;
++	unsigned int periphid;
+ 	int (*setup)(struct apd_private_data *pdata);
++	int (*post_setup)(struct apd_private_data *pdata);
+ };
  
-+static u8 peri_id[2] = { 0, 1 };
-+
-+static struct dma_pl330_platdata amd_pl330 = {
-+	.nr_valid_peri = 2,
-+	.peri_id = peri_id,
-+	.mcbuf_sz = 0,
-+	.flags = IRQF_SHARED,
-+};
- /**
-  * struct apd_device_desc - a descriptor for apd device
-  * @flags: device flags like %ACPI_APD_SYSFS, %ACPI_APD_PM
-@@ -150,6 +161,12 @@ static int acpi_apd_setup_quirks(struct apd_private_data *pdata)
- 		goto amba_register_err;
+ struct apd_private_data {
+ 	struct clk *clk;
+ 	struct acpi_device *adev;
+ 	const struct apd_device_desc *dev_desc;
++	struct platform_device *pdev;
+ };
  
- 	kfree(resource);
-+
-+	dma_cap_set(DMA_MEMCPY, amd_pl330.cap_mask);
-+	dma_cap_set(DMA_SLAVE, amd_pl330.cap_mask);
-+	dma_cap_set(DMA_CYCLIC, amd_pl330.cap_mask);
-+	dma_cap_set(DMA_PRIVATE, amd_pl330.cap_mask);
-+
+ #ifdef CONFIG_X86_AMD_PLATFORM_DEVICE
+@@ -71,6 +78,100 @@ static int acpi_apd_setup(struct apd_private_data *pdata)
  	return 0;
+ }
  
- amba_register_err:
-diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-index 17ee758..5e5fb46 100644
---- a/drivers/dma/pl330.c
-+++ b/drivers/dma/pl330.c
-@@ -26,6 +26,8 @@
- #include <linux/scatterlist.h>
- #include <linux/of.h>
- #include <linux/of_dma.h>
-+#include <linux/acpi.h>
-+#include <linux/acpi_dma.h>
- #include <linux/err.h>
- #include <linux/pm_runtime.h>
- 
-@@ -488,6 +490,9 @@ struct pl330_dmac {
- 	/* Peripheral channels connected to this DMAC */
- 	unsigned int num_peripherals;
- 	struct dma_pl330_chan *peripherals; /* keep at end */
++#ifdef CONFIG_SERIAL_8250_AMD
++static int acpi_apd_setup_quirks(struct apd_private_data *pdata)
++{
++	struct amba_device *amba_dev = NULL;
++	struct platform_device *pdev = pdata->pdev;
++	struct resource *presource, *resource = NULL;
++	int count = 0;
++	int ret = 0;
++	unsigned int i;
++	unsigned int irq[AMBA_NR_IRQS];
++	struct clk *clk = ERR_PTR(-ENODEV);
++	char amba_devname[100];
 +
-+	/*IRQ register flags */
-+	unsigned int flags;
++	resource = kzalloc(sizeof(*resource), GFP_KERNEL);
++	if (!resource)
++		goto resource_alloc_err;
++
++	presource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	resource->parent = presource;
++
++	/*
++	 * The memory address of AMD pl330 has an offset of ACPI
++	 * mem resource.
++	 */
++	resource->start += presource->start + pdata->dev_desc->base_offset;
++	resource->end = presource->end;
++
++	presource = pdev->resource;
++	for (i = 0; i < resource_size(presource); i++) {
++		if (presource[i].flags & IORESOURCE_IRQ)
++			irq[count++] = presource[i].start;
++	}
++
++	sprintf(amba_devname, "%s%s", dev_name(&pdev->dev), "DMA");
++
++	amba_dev = amba_device_alloc(amba_devname,
++				     resource->start,
++				     resource_size(resource));
++
++	if (!amba_dev)
++		goto amba_alloc_err;
++
++	amba_dev->dev.coherent_dma_mask
++		= acpi_dma_supported(ACPI_COMPANION(&pdev->dev)) ? DMA_BIT_MASK(64) : 0;
++	amba_dev->dev.fwnode = acpi_fwnode_handle(ACPI_COMPANION(&pdev->dev));
++
++	amba_dev->dev.parent = &pdev->dev;
++	amba_dev->periphid = pdata->dev_desc->periphid;
++
++	WARN_ON_ONCE(count > AMBA_NR_IRQS);
++
++	for (i = 0; i < count; i++)
++		amba_dev->irq[i] = irq[i];
++
++	clk = clk_register_fixed_rate(&amba_dev->dev,
++				      dev_name(&amba_dev->dev),
++				      NULL, CLK_IS_ROOT,
++				      pdata->dev_desc->fixed_clk_rate);
++	if (IS_ERR_OR_NULL(clk))
++		goto amba_register_err;
++
++	ret = clk_register_clkdev(clk, "apb_pclk",
++				  dev_name(&amba_dev->dev));
++	if (ret)
++		goto amba_register_err;
++
++	amba_dev->dev.init_name = NULL;
++	ret = amba_device_add(amba_dev, resource);
++	if (ret)
++		goto amba_register_err;
++
++	kfree(resource);
++	return 0;
++
++amba_register_err:
++	amba_device_put(amba_dev);
++
++amba_alloc_err:
++	kfree(resource);
++
++resource_alloc_err:
++	dev_info(&pdev->dev, "AMBA device created failed.\n");
++	return 0;
++}
++
++#else
++
++static int acpi_apd_setup_quirks(struct apd_private_data *pdata)
++{
++	return 0;
++}
++
++#endif
++
+ static struct apd_device_desc cz_i2c_desc = {
+ 	.setup = acpi_apd_setup,
+ 	.fixed_clk_rate = 133000000,
+@@ -78,7 +179,10 @@ static struct apd_device_desc cz_i2c_desc = {
+ 
+ static struct apd_device_desc cz_uart_desc = {
+ 	.setup = acpi_apd_setup,
++	.post_setup = acpi_apd_setup_quirks,
+ 	.fixed_clk_rate = 48000000,
++	.periphid = 0x00041330,
++	.base_offset = SZ_4K,
  };
  
- struct dma_pl330_desc {
-@@ -2800,6 +2805,8 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
+ #else
+@@ -88,11 +192,11 @@ static struct apd_device_desc cz_uart_desc = {
+ #endif /* CONFIG_X86_AMD_PLATFORM_DEVICE */
  
- 	pl330->mcbufsz = pdat ? pdat->mcbuf_sz : 0;
+ /**
+-* Create platform device during acpi scan attach handle.
+-* Return value > 0 on success of creating device.
+-*/
++ * Create platform device during acpi scan attach handle.
++ * Return value > 0 on success of creating device.
++ */
+ static int acpi_apd_create_device(struct acpi_device *adev,
+-				   const struct acpi_device_id *id)
++				  const struct acpi_device_id *id)
+ {
+ 	const struct apd_device_desc *dev_desc = (void *)id->driver_data;
+ 	struct apd_private_data *pdata;
+@@ -118,14 +222,21 @@ static int acpi_apd_create_device(struct acpi_device *adev,
+ 	}
  
-+	pl330->flags = pdat ? pdat->flags : IRQF_TRIGGER_NONE;
+ 	adev->driver_data = pdata;
+-	pdev = acpi_create_platform_device(adev);
+-	if (!IS_ERR_OR_NULL(pdev))
+-		return 1;
+ 
++	pdev = acpi_create_platform_device(adev);
+ 	ret = PTR_ERR(pdev);
+-	adev->driver_data = NULL;
++	if (IS_ERR_OR_NULL(pdev))
++		goto err_out;
 +
- 	res = &adev->res;
- 	pl330->base = devm_ioremap_resource(&adev->dev, res);
- 	if (IS_ERR(pl330->base))
-@@ -2811,7 +2818,7 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
- 		irq = adev->irq[i];
- 		if (irq) {
- 			ret = devm_request_irq(&adev->dev, irq,
--					       pl330_irq_handler, 0,
-+					       pl330_irq_handler, pl330->flags,
- 					       dev_name(&adev->dev), pl330);
- 			if (ret)
- 				return ret;
-diff --git a/include/linux/amba/pl330.h b/include/linux/amba/pl330.h
-index fe93758..cdc80f0 100644
---- a/include/linux/amba/pl330.h
-+++ b/include/linux/amba/pl330.h
-@@ -29,6 +29,8 @@ struct dma_pl330_platdata {
- 	dma_cap_mask_t cap_mask;
- 	/* Bytes to allocate for MC buffer */
- 	unsigned mcbuf_sz;
-+	/*flags for irq sharing, default is non-shared*/
-+	unsigned flags;
- };
++	if (dev_desc->post_setup) {
++		pdata->pdev = pdev;
++		dev_desc->post_setup(pdata);
++	}
++
++	return ret;
  
- extern bool pl330_filter(struct dma_chan *chan, void *param);
+  err_out:
++	adev->driver_data = NULL;
+ 	kfree(pdata);
+ 	return ret;
+ }
 -- 
 1.9.1
-
