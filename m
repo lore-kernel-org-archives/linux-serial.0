@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 4/5] serial: sh-sci: Use a bitmask to indicate supported sampling rates
-Date: Mon,  4 Jan 2016 14:45:21 +0100
-Message-ID: <1451915122-30219-5-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 5/5] serial: sh-sci: Add support for SCIFA/SCIFB variable sampling rates
+Date: Mon,  4 Jan 2016 14:45:22 +0100
+Message-ID: <1451915122-30219-6-git-send-email-geert+renesas@glider.be>
 References: <1451915122-30219-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1451915122-30219-1-git-send-email-geert+renesas@glider.be>
@@ -10,189 +10,97 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Simon Horman <horms+renesas@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Replace the single sampling rate and special handling for HSCIF's
-variable sampling rates by a bitmask and a custom iterator.
-This prepares for the advent of SCIFA/SCIFB's sparse variable sampling
-rates.
+Add support for sparse variable sampling rates on SCIFA and SCIFB.
+According to the datasheet, sampling rate 1/5 needs a small quirk to
+avoid corrupting the first byte received.
+
+This increases the range and accuracy of supported baud rates.
+E.g. on r8a7791/koelsch:
+  - Supports now 134, 150, and standard 500000-4000000 bps,
+  - Perfect match for 134, 150, 500000, 1000000, 2000000, and 4000000
+    bps,
+  - Accuracy has increased for most standard bps values.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 66 +++++++++++++++++++--------------------------
- 1 file changed, 27 insertions(+), 39 deletions(-)
+Tested on:
+  - r8a7791/koelsch (Fully tested on SCIFA and SCIFB),
+  - r8a7740/armadillo (Fully tested on SCIFA and SCIFB),
+  - sh73a0/kzm9g (Fully tested on SCIFA only, no easy access to SCIFB),
+  - r8a73a4/ape6evm (SCIFA/FTDI console at 460800 bps, no easy access to
+    SCIFB).
+---
+ drivers/tty/serial/sh-sci.c | 29 +++++++++++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index f3c2a89a9550add9..17188fc4b1b32439 100644
+index 17188fc4b1b32439..4f638c480c5b270a 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -85,6 +85,18 @@ enum SCI_CLKS {
- 	SCI_NUM_CLKS
- };
+@@ -89,6 +89,10 @@ enum SCI_CLKS {
+ #define SCI_SR(x)		BIT((x) - 1)
+ #define SCI_SR_RANGE(x, y)	GENMASK((y) - 1, (x) - 1)
  
-+/* Bit x set means sampling rate x + 1 is supported */
-+#define SCI_SR(x)		BIT((x) - 1)
-+#define SCI_SR_RANGE(x, y)	GENMASK((y) - 1, (x) - 1)
++#define SCI_SR_SCIFAB		SCI_SR(5) | SCI_SR(7) | SCI_SR(11) | \
++				SCI_SR(13) | SCI_SR(16) | SCI_SR(17) | \
++				SCI_SR(19) | SCI_SR(27)
 +
-+#define min_sr(_port)		ffs((_port)->sampling_rate_mask)
-+#define max_sr(_port)		fls((_port)->sampling_rate_mask)
-+
-+/* Iterate over all supported sampling rates, from high to low */
-+#define for_each_sr(_sr, _port)						\
-+	for ((_sr) = max_sr(_port); (_sr) >= min_sr(_port); (_sr)--)	\
-+		if ((_port)->sampling_rate_mask & SCI_SR((_sr)))
-+
- struct sci_port {
- 	struct uart_port	port;
+ #define min_sr(_port)		ffs((_port)->sampling_rate_mask)
+ #define max_sr(_port)		fls((_port)->sampling_rate_mask)
  
-@@ -94,7 +106,7 @@ struct sci_port {
- 	unsigned int		overrun_mask;
- 	unsigned int		error_mask;
- 	unsigned int		error_clear;
--	unsigned int		sampling_rate;
-+	unsigned int		sampling_rate_mask;
- 	resource_size_t		reg_size;
+@@ -2206,6 +2210,17 @@ done:
+ 	uart_update_timeout(port, termios->c_cflag, baud);
  
- 	/* Break timer */
-@@ -1931,21 +1943,13 @@ static int sci_sck_calc(struct sci_port *s, unsigned int bps,
- 			unsigned int *srr)
- {
- 	unsigned long freq = s->clk_rates[SCI_SCK];
--	unsigned int min_sr, max_sr, sr;
- 	int err, min_err = INT_MAX;
-+	unsigned int sr;
+ 	if (best_clk >= 0) {
++		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
++			switch (srr + 1) {
++			case 5:  smr_val |= SCSMR_SRC_5;  break;
++			case 7:  smr_val |= SCSMR_SRC_7;  break;
++			case 11: smr_val |= SCSMR_SRC_11; break;
++			case 13: smr_val |= SCSMR_SRC_13; break;
++			case 16: smr_val |= SCSMR_SRC_16; break;
++			case 17: smr_val |= SCSMR_SRC_17; break;
++			case 19: smr_val |= SCSMR_SRC_19; break;
++			case 27: smr_val |= SCSMR_SRC_27; break;
++			}
+ 		smr_val |= cks;
+ 		dev_dbg(port->dev,
+ 			 "SCR 0x%x SMR 0x%x BRR %u CKS 0x%x DL %u SRR %u\n",
+@@ -2254,6 +2269,16 @@ done:
+ 	scr_val |= s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0);
+ 	dev_dbg(port->dev, "SCSCR 0x%x\n", scr_val);
+ 	serial_port_out(port, SCSCR, scr_val);
++	if ((srr + 1 == 5) &&
++	    (port->type == PORT_SCIFA || port->type == PORT_SCIFB)) {
++		/*
++		 * In asynchronous mode, when the sampling rate is 1/5, first
++		 * received data may become invalid on some SCIFA and SCIFB.
++		 * To avoid this problem wait more than 1 serial data time (1
++		 * bit time x serial data number) after setting SCSCR.RE = 1.
++		 */
++		udelay(DIV_ROUND_UP(10 * 1000000, baud));
++	}
  
- 	if (s->port.type != PORT_HSCIF)
- 		freq *= 2;
--	if (s->sampling_rate) {
--		/* SCI(F) has a fixed sampling rate */
--		min_sr = max_sr = s->sampling_rate;
--	} else {
--		/* HSCIF has a variable 1/(8..32) sampling rate */
--		min_sr = 8;
--		max_sr = 32;
--	}
- 
--	for (sr = max_sr; sr >= min_sr; sr--) {
-+	for_each_sr(sr, s) {
- 		err = DIV_ROUND_CLOSEST(freq, sr) - bps;
- 		if (abs(err) >= abs(min_err))
- 			continue;
-@@ -1966,21 +1970,13 @@ static int sci_brg_calc(struct sci_port *s, unsigned int bps,
- 			unsigned long freq, unsigned int *dlr,
- 			unsigned int *srr)
- {
--	unsigned int min_sr, max_sr, sr, dl;
- 	int err, min_err = INT_MAX;
-+	unsigned int sr, dl;
- 
- 	if (s->port.type != PORT_HSCIF)
- 		freq *= 2;
--	if (s->sampling_rate) {
--		/* SCIF has a fixed sampling rate */
--		min_sr = max_sr = s->sampling_rate;
--	} else {
--		/* HSCIF has a variable 1/(8..32) sampling rate */
--		min_sr = 8;
--		max_sr = 32;
--	}
- 
--	for (sr = max_sr; sr >= min_sr; sr--) {
-+	for_each_sr(sr, s) {
- 		dl = DIV_ROUND_CLOSEST(freq, sr * bps);
- 		dl = clamp(dl, 1U, 65535U);
- 
-@@ -2006,19 +2002,12 @@ static int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
- 			  unsigned int *brr, unsigned int *srr,
- 			  unsigned int *cks)
- {
--	unsigned int min_sr, max_sr, sr, br, prediv, scrate, c;
- 	unsigned long freq = s->clk_rates[SCI_FCK];
-+	unsigned int sr, br, prediv, scrate, c;
- 	int err, min_err = INT_MAX;
- 
- 	if (s->port.type != PORT_HSCIF)
- 		freq *= 2;
--	if (s->sampling_rate) {
--		min_sr = max_sr = s->sampling_rate;
--	} else {
--		/* HSCIF has a variable sample rate */
--		min_sr = 8;
--		max_sr = 32;
--	}
- 
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
  	/*
- 	 * Find the combination of sample rate and clock select with the
-@@ -2035,7 +2024,7 @@ static int sci_scbrr_calc(struct sci_port *s, unsigned int bps,
- 	 *      (|D - 0.5| / N * (1 + F))|
- 	 *  NOTE: Usually, treat D for 0.5, F is 0 by this calculation.
- 	 */
--	for (sr = max_sr; sr >= min_sr; sr--) {
-+	for_each_sr(sr, s) {
- 		for (c = 0; c <= 3; c++) {
- 			/* integerized formulas from HSCIF documentation */
- 			prediv = sr * (1 << (2 * c + 1));
-@@ -2129,8 +2118,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	for (i = 0; i < SCI_NUM_CLKS; i++)
- 		max_freq = max(max_freq, s->clk_rates[i]);
- 
--	baud = uart_get_baud_rate(port, termios, old, 0,
--				  max_freq / max(s->sampling_rate, 8U));
-+	baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
- 	if (!baud)
- 		goto done;
- 
-@@ -2562,37 +2550,37 @@ static int sci_init_single(struct platform_device *dev,
+@@ -2550,7 +2575,7 @@ static int sci_init_single(struct platform_device *dev,
  		port->fifosize = 256;
  		sci_port->overrun_reg = SCxSR;
  		sci_port->overrun_mask = SCIFA_ORER;
--		sci_port->sampling_rate = 16;
-+		sci_port->sampling_rate_mask = SCI_SR(16);
+-		sci_port->sampling_rate_mask = SCI_SR(16);
++		sci_port->sampling_rate_mask = SCI_SR_SCIFAB;
  		break;
  	case PORT_HSCIF:
  		port->fifosize = 128;
- 		sci_port->overrun_reg = SCLSR;
- 		sci_port->overrun_mask = SCLSR_ORER;
--		sci_port->sampling_rate = 0;
-+		sci_port->sampling_rate_mask = SCI_SR_RANGE(8, 32);
- 		break;
- 	case PORT_SCIFA:
+@@ -2562,7 +2587,7 @@ static int sci_init_single(struct platform_device *dev,
  		port->fifosize = 64;
  		sci_port->overrun_reg = SCxSR;
  		sci_port->overrun_mask = SCIFA_ORER;
--		sci_port->sampling_rate = 16;
-+		sci_port->sampling_rate_mask = SCI_SR(16);
+-		sci_port->sampling_rate_mask = SCI_SR(16);
++		sci_port->sampling_rate_mask = SCI_SR_SCIFAB;
  		break;
  	case PORT_SCIF:
  		port->fifosize = 16;
- 		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE) {
- 			sci_port->overrun_reg = SCxSR;
- 			sci_port->overrun_mask = SCIFA_ORER;
--			sci_port->sampling_rate = 16;
-+			sci_port->sampling_rate_mask = SCI_SR(16);
- 		} else {
- 			sci_port->overrun_reg = SCLSR;
- 			sci_port->overrun_mask = SCLSR_ORER;
--			sci_port->sampling_rate = 32;
-+			sci_port->sampling_rate_mask = SCI_SR(32);
- 		}
- 		break;
- 	default:
- 		port->fifosize = 1;
- 		sci_port->overrun_reg = SCxSR;
- 		sci_port->overrun_mask = SCI_ORER;
--		sci_port->sampling_rate = 32;
-+		sci_port->sampling_rate_mask = SCI_SR(32);
- 		break;
- 	}
- 
-@@ -2601,7 +2589,7 @@ static int sci_init_single(struct platform_device *dev,
- 	 * data override the sampling rate for now.
- 	 */
- 	if (p->sampling_rate)
--		sci_port->sampling_rate = p->sampling_rate;
-+		sci_port->sampling_rate_mask = SCI_SR(p->sampling_rate);
- 
- 	if (!early) {
- 		ret = sci_init_clocks(sci_port, &dev->dev);
 -- 
 1.9.1
 
