@@ -1,145 +1,67 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 4/6] dmaengine: pl330: add new items for pl330 private data
-Date: Mon, 4 Jan 2016 16:38:56 +0200
-Message-ID: <CAHp75Ve9Jsd0wQjfF-3s90hxwowQE5vmQE=0s8D6RNBOKs8kgw@mail.gmail.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH 1/6] 8250/Kconfig: add config option
+ CONFIG_SERIAL_8250_AMD
+Date: Mon, 4 Jan 2016 15:41:18 +0100
+Message-ID: <20160104144118.GJ22941@pd.tnic>
 References: <1451885501-2710-1-git-send-email-annie.wang@amd.com>
-	<1451885501-2710-5-git-send-email-annie.wang@amd.com>
+ <1451885501-2710-2-git-send-email-annie.wang@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1451885501-2710-5-git-send-email-annie.wang@amd.com>
+Content-Disposition: inline
+In-Reply-To: <1451885501-2710-2-git-send-email-annie.wang@amd.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: Wang Hongcheng <annie.wang@amd.com>
-Cc: Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Borislav Petkov <bp@alien8.de>, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Tony Li <tony.li@amd.com>, Xiangliang Yu <Xiangliang.Yu@amd.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, Tony Li <tony.li@amd.com>, Xiangliang Yu <Xiangliang.Yu@amd.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 4, 2016 at 7:31 AM, Wang Hongcheng <annie.wang@amd.com> wrote:
-> mcbuf_sz means bytes to allocate for MicroCode buffer.
-> flags is for irq sharing, default is non-shared, in AMD
-> Carrizo, pl330 shares IRQ with its corresponding UART device.
->
+On Mon, Jan 04, 2016 at 01:31:36PM +0800, Wang Hongcheng wrote:
+> Add config option  CONFIG_SERIAL_8250_AMD in use of AMD carrizo.
+> Because carrizo's UART DMA device is an amba device, it selects
+> ARM_AMBA option. Anything uses amba devices must select ARM_AMBA.
+> 
 > Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
 > ---
->  drivers/acpi/acpi_apd.c    | 17 +++++++++++++++++
->  drivers/dma/pl330.c        |  9 ++++++++-
->  include/linux/amba/pl330.h |  2 ++
->  3 files changed, 27 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
-> index 9520daf..4d71a65 100644
-> --- a/drivers/acpi/acpi_apd.c
-> +++ b/drivers/acpi/acpi_apd.c
-> @@ -20,6 +20,9 @@
->  #include <linux/pm.h>
->  #include <linux/amba/bus.h>
->  #include <linux/dma-mapping.h>
-> +#include <linux/dmaengine.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/amba/pl330.h>
->
->  #include "internal.h"
->
-> @@ -33,6 +36,14 @@ struct apd_private_data;
->  #define ACPI_APD_SYSFS BIT(0)
->  #define ACPI_APD_PM    BIT(1)
->
-> +static u8 peri_id[2] = { 0, 1 };
+>  drivers/tty/serial/8250/Kconfig | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+> index 6412f14..c9ebc31 100644
+> --- a/drivers/tty/serial/8250/Kconfig
+> +++ b/drivers/tty/serial/8250/Kconfig
+> @@ -378,3 +378,11 @@ config SERIAL_8250_MID
+>  	  Selecting this option will enable handling of the extra features
+>  	  present on the UART found on Intel Medfield SOC and various other
+>  	  Intel platforms.
 > +
-> +static struct dma_pl330_platdata amd_pl330 = {
-> +       .nr_valid_peri = 2,
-> +       .peri_id = peri_id,
-> +       .mcbuf_sz = 0,
-> +       .flags = IRQF_SHARED,
-> +};
->  /**
->   * struct apd_device_desc - a descriptor for apd device
->   * @flags: device flags like %ACPI_APD_SYSFS, %ACPI_APD_PM
-> @@ -150,6 +161,12 @@ static int acpi_apd_setup_quirks(struct apd_private_data *pdata)
->                 goto amba_register_err;
->
->         kfree(resource);
-> +
-> +       dma_cap_set(DMA_MEMCPY, amd_pl330.cap_mask);
-> +       dma_cap_set(DMA_SLAVE, amd_pl330.cap_mask);
-> +       dma_cap_set(DMA_CYCLIC, amd_pl330.cap_mask);
-> +       dma_cap_set(DMA_PRIVATE, amd_pl330.cap_mask);
-> +
->         return 0;
->
->  amba_register_err:
-> diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-> index 17ee758..5e5fb46 100644
-> --- a/drivers/dma/pl330.c
-> +++ b/drivers/dma/pl330.c
-> @@ -26,6 +26,8 @@
->  #include <linux/scatterlist.h>
->  #include <linux/of.h>
->  #include <linux/of_dma.h>
-> +#include <linux/acpi.h>
-> +#include <linux/acpi_dma.h>
->  #include <linux/err.h>
->  #include <linux/pm_runtime.h>
->
-> @@ -488,6 +490,9 @@ struct pl330_dmac {
->         /* Peripheral channels connected to this DMAC */
->         unsigned int num_peripherals;
->         struct dma_pl330_chan *peripherals; /* keep at end */
-> +
-> +       /*IRQ register flags */
+> +config SERIAL_8250_AMD
+> +	bool "AMD carrizo serial port support"
+> +	depends on SERIAL_8250
+> +	select ARM_AMBA
+> +	help
+> +	  If you have a Family 15h, models 0x60-0x6F based board and want to
+> +	  use the serial port, say Y to this option. If unsure, say N.
 
-+Space '/* '
+Hmm, so you're adding this config option here only to have
+acpi_apd_setup_quirks() defined in an already AMD-specific compilation
+unit drivers/acpi/acpi_apd.c.
 
-> +       unsigned int flags;
+So why not make drivers/acpi/acpi_apd.c depend on CPU_SUP_AMD
+and this way it is automatically enabled on AMD and then check
+family/model/stepping when assigning that
 
-irq_flags
++       .post_setup = acpi_apd_setup_quirks,
 
->  };
->
->  struct dma_pl330_desc {
-> @@ -2800,6 +2805,8 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
->
->         pl330->mcbufsz = pdat ? pdat->mcbuf_sz : 0;
->
-> +       pl330->flags = pdat ? pdat->flags : IRQF_TRIGGER_NONE;
-> +
->         res = &adev->res;
->         pl330->base = devm_ioremap_resource(&adev->dev, res);
->         if (IS_ERR(pl330->base))
-> @@ -2811,7 +2818,7 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
->                 irq = adev->irq[i];
->                 if (irq) {
->                         ret = devm_request_irq(&adev->dev, irq,
-> -                                              pl330_irq_handler, 0,
-> +                                              pl330_irq_handler, pl330->flags,
->                                                dev_name(&adev->dev), pl330);
->                         if (ret)
->                                 return ret;
-> diff --git a/include/linux/amba/pl330.h b/include/linux/amba/pl330.h
-> index fe93758..cdc80f0 100644
-> --- a/include/linux/amba/pl330.h
-> +++ b/include/linux/amba/pl330.h
-> @@ -29,6 +29,8 @@ struct dma_pl330_platdata {
->         dma_cap_mask_t cap_mask;
->         /* Bytes to allocate for MC buffer */
->         unsigned mcbuf_sz;
-> +       /*flags for irq sharing, default is non-shared*/
+thing?
 
-Spaces '/* */'
+You need it only on F15h, models 0x60.. only so you don't really need
+the config option when you can find out on what hardware you're running
+without the user having to configure the kernel.
 
-> +       unsigned flags;
-
-irq_flags
-
->  };
-
->
->  extern bool pl330_filter(struct dma_chan *chan, void *param);
-> --
-> 1.9.1
->
-
-
+Hmmm?
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Regards/Gruss,
+    Boris.
+
+ECO tip #101: Trim your mails when you reply.
