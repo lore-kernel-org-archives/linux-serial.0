@@ -1,11 +1,14 @@
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Subject: [PATCH] serial: imx: Fix suspend / resume.
-Date: Mon, 04 Jan 2016 19:22:06 +0100
-Message-ID: <20160104182206.10852.47155.stgit@localhost>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] serial: imx: Fix suspend / resume.
+Date: Mon, 4 Jan 2016 19:10:14 +0000
+Message-ID: <20160104191014.GN19062@n2100.arm.linux.org.uk>
+References: <20160104182206.10852.47155.stgit@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20160104182206.10852.47155.stgit@localhost>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -15,82 +18,49 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: Martin Fuzzey <mfuzzey@parkeon.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Suspend fails due to unprepared clock:
+On Mon, Jan 04, 2016 at 07:22:06PM +0100, Martin Fuzzey wrote:
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 016e4be..16a551b 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -2071,13 +2071,13 @@ static int imx_serial_port_suspend_noirq(struct device *dev)
+>  	struct imx_port *sport = platform_get_drvdata(pdev);
+>  	int ret;
+>  
+> -	ret = clk_enable(sport->clk_ipg);
+> +	ret = clk_prepare_enable(sport->clk_ipg);
+>  	if (ret)
+>  		return ret;
+>  
+>  	serial_imx_save_context(sport);
+>  
+> -	clk_disable(sport->clk_ipg);
+> +	clk_disable_unprepare(sport->clk_ipg);
 
-[  638.794563] PM: Syncing filesystems ... done.
-[  638.878902] Freezing user space processes ... (elapsed 0.002 seconds) done.
-[  638.888454] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
-[  638.996697] PM: suspend of devices complete after 97.200 msecs
-[  639.002611] PM: suspend devices took 0.100 seconds
-[  639.013020] PM: late suspend of devices complete after 2.288 msecs
-[  639.021486] ------------[ cut here ]------------
-[  639.026147] WARNING: CPU: 0 PID: 488 at drivers/clk/clk.c:732 clk_core_enable+0xc0/0x12c()
-[  639.034413] Modules linked in:
-[  639.037490] CPU: 0 PID: 488 Comm: system_server Tainted: G        W       4.4.0-rc5-pknbsp-svn2214-atag-v4.4-rc5-121-gebfd9cb #1304
-[  639.049312] Hardware name: Freescale i.MX53 (Device Tree Support)
-[  639.055444] [<c0016d54>] (unwind_backtrace) from [<c00140f8>] (show_stack+0x20/0x24)
-[  639.063199] [<c00140f8>] (show_stack) from [<c02c99a0>] (dump_stack+0x20/0x28)
-[  639.070442] [<c02c99a0>] (dump_stack) from [<c0024ca8>] (warn_slowpath_common+0x88/0xc0)
-[  639.078541] [<c0024ca8>] (warn_slowpath_common) from [<c0024d0c>] (warn_slowpath_null+0x2c/0x34)
-[  639.087332] [<c0024d0c>] (warn_slowpath_null) from [<c05171e8>] (clk_core_enable+0xc0/0x12c)
-[  639.095777] [<c05171e8>] (clk_core_enable) from [<c05172f8>] (clk_enable+0x2c/0x40)
-[  639.103441] [<c05172f8>] (clk_enable) from [<c0349880>] (imx_serial_port_suspend_noirq+0x20/0xe0)
-[  639.112336] [<c0349880>] (imx_serial_port_suspend_noirq) from [<c03a26a0>] (dpm_run_callback+0x68/0x16c)
-[  639.121825] [<c03a26a0>] (dpm_run_callback) from [<c03a2898>] (__device_suspend_noirq+0xf4/0x22c)
-[  639.130705] [<c03a2898>] (__device_suspend_noirq) from [<c03a4b0c>] (dpm_suspend_noirq+0x148/0x30c)
-[  639.139764] [<c03a4b0c>] (dpm_suspend_noirq) from [<c00511d4>] (suspend_devices_and_enter+0x2e8/0x6a4)
-[  639.149078] [<c00511d4>] (suspend_devices_and_enter) from [<c00518a0>] (pm_suspend+0x310/0x4b8)
-[  639.157782] [<c00518a0>] (pm_suspend) from [<c00500ec>] (state_store+0x7c/0xcc)
-[  639.165099] [<c00500ec>] (state_store) from [<c02cb6dc>] (kobj_attr_store+0x1c/0x28)
-[  639.172858] [<c02cb6dc>] (kobj_attr_store) from [<c01633d4>] (sysfs_kf_write+0x54/0x58)
-[  639.180871] [<c01633d4>] (sysfs_kf_write) from [<c01629b4>] (kernfs_fop_write+0x100/0x1c8)
-[  639.189152] [<c01629b4>] (kernfs_fop_write) from [<c00fb8b8>] (__vfs_write+0x3c/0xe8)
-[  639.196991] [<c00fb8b8>] (__vfs_write) from [<c00fc810>] (vfs_write+0xa4/0x160)
-[  639.204307] [<c00fc810>] (vfs_write) from [<c00fcac4>] (SyS_write+0x4c/0x98)
-[  639.211363] [<c00fcac4>] (SyS_write) from [<c0010760>] (ret_fast_syscall+0x0/0x3c)
+NAK.  If this is _noirq, then it's a context which can't sleep.  Therefore,
+calling functions that do sleep is not permitted.
 
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
----
- drivers/tty/serial/imx.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> @@ -2088,13 +2088,13 @@ static int imx_serial_port_resume_noirq(struct device *dev)
+>  	struct imx_port *sport = platform_get_drvdata(pdev);
+>  	int ret;
+>  
+> -	ret = clk_enable(sport->clk_ipg);
+> +	ret = clk_prepare_enable(sport->clk_ipg);
+>  	if (ret)
+>  		return ret;
+>  
+>  	serial_imx_restore_context(sport);
+>  
+> -	clk_disable(sport->clk_ipg);
+> +	clk_disable_unprepare(sport->clk_ipg);
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 016e4be..16a551b 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -2071,13 +2071,13 @@ static int imx_serial_port_suspend_noirq(struct device *dev)
- 	struct imx_port *sport = platform_get_drvdata(pdev);
- 	int ret;
- 
--	ret = clk_enable(sport->clk_ipg);
-+	ret = clk_prepare_enable(sport->clk_ipg);
- 	if (ret)
- 		return ret;
- 
- 	serial_imx_save_context(sport);
- 
--	clk_disable(sport->clk_ipg);
-+	clk_disable_unprepare(sport->clk_ipg);
- 
- 	return 0;
- }
-@@ -2088,13 +2088,13 @@ static int imx_serial_port_resume_noirq(struct device *dev)
- 	struct imx_port *sport = platform_get_drvdata(pdev);
- 	int ret;
- 
--	ret = clk_enable(sport->clk_ipg);
-+	ret = clk_prepare_enable(sport->clk_ipg);
- 	if (ret)
- 		return ret;
- 
- 	serial_imx_restore_context(sport);
- 
--	clk_disable(sport->clk_ipg);
-+	clk_disable_unprepare(sport->clk_ipg);
- 
- 	return 0;
- }
+Ditto.
+
+-- 
+RMK's Patch system: http://www.arm.linux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
