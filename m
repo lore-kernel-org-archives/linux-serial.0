@@ -1,57 +1,73 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH] drivers/tty/serial: delete unused MODULE_DEVICE_TABLE
- from atmel_serial.c
-Date: Tue, 5 Jan 2016 12:33:17 +0530
-Message-ID: <20160105070317.GA32311@sudip-pc>
-References: <1450364746-815-1-git-send-email-paul.gortmaker@windriver.com>
- <20160102074740.GA11430@sudip-pc>
- <20160104204324.GP12458@windriver.com>
+From: G Gregory <graeme.gregory@linaro.org>
+Subject: Re: [PATCH v4 3/3] serial: amba-pl011: add ACPI support to AMBA probe
+Date: Tue, 5 Jan 2016 08:55:25 +0000
+Message-ID: <CAGCh1+ksWFLkE8Y_a5SW98tpgGBWdVH5TYJAoS17EExuPd65oQ@mail.gmail.com>
+References: <1450880383-29560-1-git-send-email-aleksey.makarov@linaro.org>
+	<1450880383-29560-4-git-send-email-aleksey.makarov@linaro.org>
+	<CAOZdJXUpjWi7Dy=GFi7_58FqD_UZxxrw_QKJ4sdHLKVOLCyNAA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160104204324.GP12458@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sudip Mukherjee <sudip@vectorindia.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <CAOZdJXUpjWi7Dy=GFi7_58FqD_UZxxrw_QKJ4sdHLKVOLCyNAA@mail.gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Timur Tabi <timur@codeaurora.org>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, lkml <linux-kernel@vger.kernel.org>, Vladimir Zapolskiy <vz@mleia.com>, Shannon Zhao <shannon.zhao@linaro.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 04, 2016 at 03:43:25PM -0500, Paul Gortmaker wrote:
-> [Re: [PATCH] drivers/tty/serial: delete unused MODULE_DEVICE_TABLE from atmel_serial.c] On 02/01/2016 (Sat 13:17) Sudip Mukherjee wrote:
-> 
-> > On Thu, Dec 17, 2015 at 10:05:46AM -0500, Paul Gortmaker wrote:
-> > > In commit c39dfebc7798956fd2140ae6321786ff35da30c3 ("drivers/tty/serial:
-> > > make serial/atmel_serial.c explicitly non-modular") we removed the code
-> > > relating to modular support since it currently only supports built in.
-> > > 
-> > > However, when redoing my build coverage for mips allmodconfig, which
-> > > sets CONFIG_OF, I noticed a remaining line that needs to be removed,
-> > > else we will get a build failure for an undefined module macro.
-> > > 
-> > > Unfortunately this didn't appear for any of the other arch I tested
-> > > more frequently, such as ARM.
-> > > 
-> > > Since MODULE_DEVICE_TABLE is a no-op for non-modular code, we can just
-> > > remove the offending line.
-> > > 
-> > > Fixes: c39dfebc7798 ("drivers/tty/serial: make serial/atmel_serial.c explicitly non-modular")
-> > > Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-> > > Cc: Jiri Slaby <jslaby@suse.com>
-> > > Cc: linux-serial@vger.kernel.org
-> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Cc: Sudip Mukherjee <sudip@vectorindia.org>
-> > > Reported-by: Sudip Mukherjee <sudip@vectorindia.org>
-> > > Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-> > > ---
-> > 
-> > I think this has not yet landed in linux-next. next-20151231 still
-> > fails.
-> 
-> Greg has a lot of irons in the fire, and it is also the season where a
-> lot of people have unplugged for the last two weeks to be with family,
-> friends, etc, so lets be patient.
+On 4 January 2016 at 23:13, Timur Tabi <timur@codeaurora.org> wrote:
+> On Wed, Dec 23, 2015 at 8:19 AM, Aleksey Makarov
+> <aleksey.makarov@linaro.org> wrote:
+>> From: Graeme Gregory <graeme.gregory@linaro.org>
+>>
+>> In ACPI this device is only defined in SBSA mode so
+>> if we are coming from ACPI use this mode.
+>>
+>> Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
+>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+>> ---
+>>  drivers/tty/serial/amba-pl011.c | 37 ++++++++++++++++++++++++++-----------
+>>  1 file changed, 26 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+>> index 899a771..974cb9e 100644
+>> --- a/drivers/tty/serial/amba-pl011.c
+>> +++ b/drivers/tty/serial/amba-pl011.c
+>> @@ -2368,18 +2368,33 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+>>         if (!uap)
+>>                 return -ENOMEM;
+>>
+>> -       uap->clk = devm_clk_get(&dev->dev, NULL);
+>> -       if (IS_ERR(uap->clk))
+>> -               return PTR_ERR(uap->clk);
+>> -
+>> -       uap->vendor = vendor;
+>> -       uap->lcrh_rx = vendor->lcrh_rx;
+>> -       uap->lcrh_tx = vendor->lcrh_tx;
+>> -       uap->fifosize = vendor->get_fifosize(dev);
+>> -       uap->port.irq = dev->irq[0];
+>> -       uap->port.ops = &amba_pl011_pops;
+>> +       /* ACPI only defines SBSA variant */
+>> +       if (has_acpi_companion(&dev->dev)) {
+>> +               /*
+>> +                * According to ARM ARMH0011 is currently the only mapping
+>> +                * of pl011 in ACPI and it's mapped to SBSA UART mode
+>> +                */
+>> +               uap->vendor     = &vendor_sbsa;
+>> +               uap->fifosize   = 32;
+>> +               uap->port.ops   = &sbsa_uart_pops;
+>> +               uap->fixed_baud = 115200;
+>
+> I'm confused by this patch.  We already have code like this in
+> tty-next, in the form of sbsa_uart_probe():
+>
+> https://kernel.googlesource.com/pub/scm/linux/kernel/git/gregkh/tty/+/tty-next/drivers/tty/serial/amba-pl011.c#2553
+>
+Because Russell expressed unhappiness at that code existing. So this
+is an alternative method to do same thing with ACPI.
 
-Ohhh .. sorry , i didn't notice it will go through Greg.
+If the "arm,sbsa-uart" id was added to drivers/of/platform.c as an
+AMBA id then the same could be done for DT as well.
 
-regards
-sudip
+Ultimately this patch is optional depending on maintainers opinion!
+
+Graeme
