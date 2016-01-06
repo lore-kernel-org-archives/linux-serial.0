@@ -1,51 +1,94 @@
-From: Graeme Gregory <gg@slimlogic.co.uk>
-Subject: Re: [PATCH v4 3/3] serial: amba-pl011: add ACPI support to AMBA probe
-Date: Wed, 6 Jan 2016 11:03:50 +0000
-Message-ID: <20160106110350.GB3599@xora-haswell.xora.org.uk>
-References: <1450880383-29560-1-git-send-email-aleksey.makarov@linaro.org>
- <1450880383-29560-4-git-send-email-aleksey.makarov@linaro.org>
- <CAOZdJXUpjWi7Dy=GFi7_58FqD_UZxxrw_QKJ4sdHLKVOLCyNAA@mail.gmail.com>
- <CAGCh1+ksWFLkE8Y_a5SW98tpgGBWdVH5TYJAoS17EExuPd65oQ@mail.gmail.com>
- <568BEDEC.5010101@codeaurora.org>
+From: <Paul.Thacker@microchip.com>
+Subject: Re: [PATCH v2 10/14] serial: pic32_uart: Add PIC32 UART driver
+Date: Wed, 6 Jan 2016 22:00:43 +0000
+Message-ID: <F2D704DDA6AE8B4A87FF87509480F4A449E46187@CHN-SV-EXMX01.mchp-main.com>
+References: <1450133093-7053-1-git-send-email-joshua.henderson@microchip.com>
+        <1450133093-7053-11-git-send-email-joshua.henderson@microchip.com>
+ <20160105204322.2dc5ab3f@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <568BEDEC.5010101@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Timur Tabi <timur@codeaurora.org>
-Cc: G Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Andy Shevchenko <andy.shevchenko@gmail.com>, lkml <linux-kernel@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, Aleksey Makarov <aleksey.makarov@linaro.org>, Shannon Zhao <shannon.zhao@linaro.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Vladimir Zapolskiy <vz@mleia.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Language: en-US
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: gnomes@lxorguk.ukuu.org.uk, Joshua.Henderson@microchip.com
+Cc: linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, ralf@linux-mips.org, Andrei.Pistirica@microchip.com, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-api@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 05, 2016 at 10:23:08AM -0600, Timur Tabi wrote:
-> G Gregory wrote:
-> >>>I'm confused by this patch.  We already have code like this in
-> >>>tty-next, in the form of sbsa_uart_probe():
-> >>>
-> >>>https://kernel.googlesource.com/pub/scm/linux/kernel/git/gregkh/tty/+/tty-next/drivers/tty/serial/amba-pl011.c#2553
-> >>>
-> >Because Russell expressed unhappiness at that code existing. So this
-> >is an alternative method to do same thing with ACPI.
-> 
-> FYI, this patch doesn't apply on tty-next as-is, so it would need to be
-> updated anyway.  Then again, considering the latest drama with that driver,
-> who knows what it will look like?
-> 
-> >If the "arm,sbsa-uart" id was added to drivers/of/platform.c as an
-> >AMBA id then the same could be done for DT as well.
-> >
-> >Ultimately this patch is optional depending on maintainers opinion!
-> 
-> So with this patch, what is the difference between sbsa_uart_probe and
-> pl011_probe?  Shouldn't the patch also remove sbsa_uart_probe?
-> 
+On 01/05/2016 03:50 PM, One Thousand Gnomes wrote:
+>
+>> +#define PIC32_SDEV_NAME		"ttyS"
+>> +#define PIC32_SDEV_MAJOR	TTY_MAJOR
+>> +#define PIC32_SDEV_MINOR	64
+>
+> No. Same goes for you as every one of the forty other people a year who
+> try and claim their console is ttyS. If it's not an 8250 it isn't.
+>
+> ttyS is the 8250, use dynamic major and minor and a different name.
 
-One is for amba_device and one is for platform_device and one maintainer
-indicated displeasure at platfrom device being in an AMBA driver. So we would
-like some guidance from maintainers what direction they would like to take.
+Ok. Is there a naming convention documented anywhere? How about ttyPIC?
 
-We can either drop this patch and leave situation as is (and remove
-ARMH0011 from scan handler) or add followup patches to also convert DT
-usage of sbsa-uart to amba_device.
+>
+>
+>> +/* serial core request to change current uart setting */
+>> +static void pic32_uart_set_termios(struct uart_port *port,
+>> +				   struct ktermios *new,
+>> +				   struct ktermios *old)
+>> +{
+>
+> You need to clear any termios features requested but not supported. In
+> your case that appears to be CMSPAR, as you don't seem to support
+> mark/space parity.
 
-Graeme
+Ack.
+
+>
+> Similarly if you only support 8N1 or 7E1/7O1 you need to force the CSIZE
+> bits to match what you ended up setting the UART to do.
+
+Ack.
+
+>
+>> +	/* update baud */
+>> +	baud = uart_get_baud_rate(port, new, old, 0, port->uartclk / 16);
+>> +	quot = uart_get_divisor(port, baud) - 1;
+>> +	pic32_uart_write(quot, sport, PIC32_UART_BRG);
+>> +	uart_update_timeout(port, new->c_cflag, baud);
+>
+> See the 8250 driver for an example: you probably need to write back the
+> actual rate you got.
+
+Ack.
+
+>
+>> +/* serial core request to release uart iomem */
+>> +static void pic32_uart_release_port(struct uart_port *port)
+>> +{
+>> +	struct platform_device *pdev = to_platform_device(port->dev);
+>> +	struct resource *res_mem;
+>> +	unsigned int res_size;
+>
+> resource_size_t for resources. Or you could just avoid the pointless
+> variable in the first place 8)
+
+Pointless variable removed.
+
+>
+> Other oddments - things like kasprintf() returns should be checked
+
+Ack.
+
+>
+>
+> Alan
+
+Thanks,
+Paul
