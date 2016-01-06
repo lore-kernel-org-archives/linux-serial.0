@@ -1,79 +1,34 @@
-From: "Wang, Annie" <Annie.Wang@amd.com>
-Subject: RE: [PATCH 1/6] 8250/Kconfig: add config option
- CONFIG_SERIAL_8250_AMD
-Date: Wed, 6 Jan 2016 02:08:18 +0000
-Message-ID: <BLUPR12MB0433ABAC5C5D27D3FD0F4BF381F40@BLUPR12MB0433.namprd12.prod.outlook.com>
-References: <1451885501-2710-1-git-send-email-annie.wang@amd.com>
- <1451885501-2710-2-git-send-email-annie.wang@amd.com>
- <20160104144118.GJ22941@pd.tnic>
+From: Greg Kroah-Hartman <greg@kroah.com>
+Subject: Re: [PATCH 1/2] [v2] tty: amba-pl011: fix earlycon register offsets
+Date: Tue, 5 Jan 2016 18:43:38 -0800
+Message-ID: <20160106024338.GA20633@kroah.com>
+References: <1451943462-27818-1-git-send-email-timur@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20160104144118.GJ22941@pd.tnic>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "Huang, Ray" <Ray.Huang@amd.com>, "Wan, Vincent" <Vincent.Wan@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "Li, Tony" <Tony.Li@amd.com>, "Yu, Xiangliang" <Xiangliang.Yu@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1451943462-27818-1-git-send-email-timur@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Timur Tabi <timur@codeaurora.org>
+Cc: Russell King <rmk+kernel@arm.linux.org.uk>, andre.przywara@arm.com, Linus Walleij <linus.walleij@linaro.org>, jslaby@suse.com, jun.nie@linaro.org, shijie.huang@arm.com, peter@hurleysoftware.com, andrew.jackson@arm.com, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-SGkgQm9yaXMsDQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEJvcmlzbGF2
-IFBldGtvdiBbbWFpbHRvOmJwQGFsaWVuOC5kZV0NCj5TZW50OiBNb25kYXksIEphbnVhcnkgMDQs
-IDIwMTYgMTA6NDEgUE0NCj5UbzogV2FuZywgQW5uaWUNCj5DYzogQW5keSBTaGV2Y2hlbmtvOyBW
-aW5vZCBLb3VsOyBNaWthIFdlc3RlcmJlcmc7IEdyZWcgS3JvYWgtSGFydG1hbjsgUmFmYWVsDQo+
-Si4gV3lzb2NraTsgbGludXgtYWNwaUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2Vy
-Lmtlcm5lbC5vcmc7IGxpbnV4LQ0KPnNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7IGRtYWVuZ2luZUB2
-Z2VyLmtlcm5lbC5vcmc7IEh1YW5nLCBSYXk7IFdhbiwgVmluY2VudDsNCj5YdWUsIEtlbjsgUm9i
-aW4gTXVycGh5OyBHcmFlbWUgR3JlZ29yeTsgTGksIFRvbnk7IFl1LCBYaWFuZ2xpYW5nDQo+U3Vi
-amVjdDogUmU6IFtQQVRDSCAxLzZdIDgyNTAvS2NvbmZpZzogYWRkIGNvbmZpZyBvcHRpb24NCj5D
-T05GSUdfU0VSSUFMXzgyNTBfQU1EDQo+DQo+T24gTW9uLCBKYW4gMDQsIDIwMTYgYXQgMDE6MzE6
-MzZQTSArMDgwMCwgV2FuZyBIb25nY2hlbmcgd3JvdGU6DQo+PiBBZGQgY29uZmlnIG9wdGlvbiAg
-Q09ORklHX1NFUklBTF84MjUwX0FNRCBpbiB1c2Ugb2YgQU1EIGNhcnJpem8uDQo+PiBCZWNhdXNl
-IGNhcnJpem8ncyBVQVJUIERNQSBkZXZpY2UgaXMgYW4gYW1iYSBkZXZpY2UsIGl0IHNlbGVjdHMN
-Cj4+IEFSTV9BTUJBIG9wdGlvbi4gQW55dGhpbmcgdXNlcyBhbWJhIGRldmljZXMgbXVzdCBzZWxl
-Y3QgQVJNX0FNQkEuDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogV2FuZyBIb25nY2hlbmcgPGFubmll
-LndhbmdAYW1kLmNvbT4NCj4+IC0tLQ0KPj4gIGRyaXZlcnMvdHR5L3NlcmlhbC84MjUwL0tjb25m
-aWcgfCA4ICsrKysrKysrDQo+PiAgMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKQ0KPj4N
-Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC9LY29uZmlnDQo+PiBiL2Ry
-aXZlcnMvdHR5L3NlcmlhbC84MjUwL0tjb25maWcgaW5kZXggNjQxMmYxNC4uYzllYmMzMSAxMDA2
-NDQNCj4+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwL0tjb25maWcNCj4+ICsrKyBiL2Ry
-aXZlcnMvdHR5L3NlcmlhbC84MjUwL0tjb25maWcNCj4+IEBAIC0zNzgsMyArMzc4LDExIEBAIGNv
-bmZpZyBTRVJJQUxfODI1MF9NSUQNCj4+ICAJICBTZWxlY3RpbmcgdGhpcyBvcHRpb24gd2lsbCBl
-bmFibGUgaGFuZGxpbmcgb2YgdGhlIGV4dHJhIGZlYXR1cmVzDQo+PiAgCSAgcHJlc2VudCBvbiB0
-aGUgVUFSVCBmb3VuZCBvbiBJbnRlbCBNZWRmaWVsZCBTT0MgYW5kIHZhcmlvdXMgb3RoZXINCj4+
-ICAJICBJbnRlbCBwbGF0Zm9ybXMuDQo+PiArDQo+PiArY29uZmlnIFNFUklBTF84MjUwX0FNRA0K
-Pj4gKwlib29sICJBTUQgY2Fycml6byBzZXJpYWwgcG9ydCBzdXBwb3J0Ig0KPj4gKwlkZXBlbmRz
-IG9uIFNFUklBTF84MjUwDQo+PiArCXNlbGVjdCBBUk1fQU1CQQ0KPj4gKwloZWxwDQo+PiArCSAg
-SWYgeW91IGhhdmUgYSBGYW1pbHkgMTVoLCBtb2RlbHMgMHg2MC0weDZGIGJhc2VkIGJvYXJkIGFu
-ZCB3YW50IHRvDQo+PiArCSAgdXNlIHRoZSBzZXJpYWwgcG9ydCwgc2F5IFkgdG8gdGhpcyBvcHRp
-b24uIElmIHVuc3VyZSwgc2F5IE4uDQo+DQo+SG1tLCBzbyB5b3UncmUgYWRkaW5nIHRoaXMgY29u
-ZmlnIG9wdGlvbiBoZXJlIG9ubHkgdG8gaGF2ZQ0KPmFjcGlfYXBkX3NldHVwX3F1aXJrcygpIGRl
-ZmluZWQgaW4gYW4gYWxyZWFkeSBBTUQtc3BlY2lmaWMgY29tcGlsYXRpb24gdW5pdA0KPmRyaXZl
-cnMvYWNwaS9hY3BpX2FwZC5jLg0KPg0KDQpIb3cgYWJvdXQgSSBhZGQgc2VsZWN0IEFSTV9BTUJB
-IGFuZCBTRVJJQUxfODI1MCBpbiBhcmNoL3g4Ni9LY29uZmlnPw0KDQpkaWZmIC0tZ2l0IGEvYXJj
-aC94ODYvS2NvbmZpZyBiL2FyY2gveDg2L0tjb25maWcNCmluZGV4IGRiMzYyMmYuLjBmZTY2NTcg
-MTAwNjQ0DQotLS0gYS9hcmNoL3g4Ni9LY29uZmlnDQorKysgYi9hcmNoL3g4Ni9LY29uZmlnDQpA
-QCAtNTM3LDExICs1MzcsMTUgQEAgY29uZmlnIFg4Nl9BTURfUExBVEZPUk1fREVWSUNFDQogICAg
-ICAgIGRlcGVuZHMgb24gQUNQSQ0KICAgICAgICBzZWxlY3QgQ09NTU9OX0NMSw0KICAgICAgICBz
-ZWxlY3QgUElOQ1RSTA0KKyAgICAgICBzZWxlY3QgU0VSSUFMXzgyNTANCisgICAgICAgc2VsZWN0
-IEFSTV9BTUJBDQogICAgICAgIC0tLWhlbHAtLS0NCiAgICAgICAgICBTZWxlY3QgdG8gaW50ZXJw
-cmV0IEFNRCBzcGVjaWZpYyBBQ1BJIGRldmljZSB0byBwbGF0Zm9ybSBkZXZpY2UNCiAgICAgICAg
-ICBzdWNoIGFzIEkyQywgVUFSVCwgR1BJTyBmb3VuZCBvbiBBTUQgQ2Fycml6byBhbmQgbGF0ZXIg
-Y2hpcHNldHMuDQogICAgICAgICAgSTJDIGFuZCBVQVJUIGRlcGVuZCBvbiBDT01NT05fQ0xLIHRv
-IHNldCBjbG9jay4gR1BJTyBkcml2ZXIgaXMNCi0gICAgICAgICBpbXBsZW1lbnRlZCB1bmRlciBQ
-SU5DVFJMIHN1YnN5c3RlbS4NCisgICAgICAgICBpbXBsZW1lbnRlZCB1bmRlciBQSU5DVFJMIHN1
-YnN5c3RlbS4gQ2Fycml6bydzIFVBUlQgaXMgaW1wbGVtZW50ZWQNCisgICAgICAgICB1bmRlciBT
-RVJJQUxfODI1MC4gQ2Fycml6bydzIFVBUlQgRE1BIGRldmljZSBpcyBhbiBhbWJhIGRldmljZSwN
-CisgICAgICAgICBpdCBzZWxlY3RzIEFSTV9BTUJBIG9wdGlvbi4NCg0KIGNvbmZpZyBJT1NGX01C
-SQ0KICAgICAgICB0cmlzdGF0ZSAiSW50ZWwgU29DIElPU0YgU2lkZWJhbmQgc3VwcG9ydCBmb3Ig
-U29DIHBsYXRmb3JtcyINCi0tDQoNCj5TbyB3aHkgbm90IG1ha2UgZHJpdmVycy9hY3BpL2FjcGlf
-YXBkLmMgZGVwZW5kIG9uIENQVV9TVVBfQU1EIGFuZCB0aGlzIHdheQ0KPml0IGlzIGF1dG9tYXRp
-Y2FsbHkgZW5hYmxlZCBvbiBBTUQgYW5kIHRoZW4gY2hlY2sgZmFtaWx5L21vZGVsL3N0ZXBwaW5n
-IHdoZW4NCj5hc3NpZ25pbmcgdGhhdA0KPg0KPisgICAgICAgLnBvc3Rfc2V0dXAgPSBhY3BpX2Fw
-ZF9zZXR1cF9xdWlya3MsDQo+DQo+dGhpbmc/DQo+DQo+WW91IG5lZWQgaXQgb25seSBvbiBGMTVo
-LCBtb2RlbHMgMHg2MC4uIG9ubHkgc28geW91IGRvbid0IHJlYWxseSBuZWVkIHRoZSBjb25maWcN
-Cj5vcHRpb24gd2hlbiB5b3UgY2FuIGZpbmQgb3V0IG9uIHdoYXQgaGFyZHdhcmUgeW91J3JlIHJ1
-bm5pbmcgd2l0aG91dCB0aGUgdXNlcg0KPmhhdmluZyB0byBjb25maWd1cmUgdGhlIGtlcm5lbC4N
-Cj4NCj5IbW1tPw0KDQpDUFVfU1VQX0FNRCBpcyBvbmx5IGNvbmZpZ3VyZWQgaW4gWDg2IGFyY2gu
-IEFNRCBmdXR1cmUgIEFSTTY0IHByb2Nlc3NvcnMgbWF5DQphbHNvIG5lZWQgYWNwaSB0byBwbGF0
-Zm9ybSBzdXBwb3J0LiANCiAgDQoNCg==
+On Mon, Jan 04, 2016 at 03:37:41PM -0600, Timur Tabi wrote:
+> From: Russell King <rmk+kernel@arm.linux.org.uk>
+> 
+> The REG_x macros are indices into a table, not register offsets.  Since earlycon
+> does not have access to the vendor data, we can currently only support standard
+> ARM PL011 devices.
+> 
+> Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
+> Tested-by: Huang Shijie <shijie.huang@arm.com>
+> Signed-off-by: Timur Tabi <timur@codeaurora.org>
+> ---
+>  drivers/tty/serial/amba-pl011.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+
+What changed in v2?
+
+thanks,
+
+greg k-h
