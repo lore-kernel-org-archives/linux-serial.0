@@ -1,150 +1,69 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 1/2] tty: amba-pl011: fix earlycon register offsets
-Date: Wed, 6 Jan 2016 10:07:00 +0000
-Message-ID: <20160106100700.GA19062@n2100.arm.linux.org.uk>
-References: <1450972189-22639-1-git-send-email-timur@codeaurora.org>
- <20151224164723.GK8644@n2100.arm.linux.org.uk>
- <CAPKp9ubdS+R8U-W+LxYEp_sGxZVBDGBJ48+N7Pw3k9A+=F4pww@mail.gmail.com>
- <20160105123018.GU19062@n2100.arm.linux.org.uk>
- <20160106024302.GA20634@kroah.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH 1/6] 8250/Kconfig: add config option
+ CONFIG_SERIAL_8250_AMD
+Date: Wed, 6 Jan 2016 11:46:02 +0100
+Message-ID: <20160106104602.GA19507@pd.tnic>
+References: <1451885501-2710-1-git-send-email-annie.wang@amd.com>
+ <1451885501-2710-2-git-send-email-annie.wang@amd.com>
+ <20160104144118.GJ22941@pd.tnic>
+ <BLUPR12MB0433ABAC5C5D27D3FD0F4BF381F40@BLUPR12MB0433.namprd12.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160106024302.GA20634@kroah.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <greg@kroah.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, andre.przywara@arm.com, Timur Tabi <timur@codeaurora.org>, andrew.jackson@arm.com, linux-serial@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, shijie.huang@arm.com, jslaby@suse.com, jun.nie@linaro.org, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <BLUPR12MB0433ABAC5C5D27D3FD0F4BF381F40@BLUPR12MB0433.namprd12.prod.outlook.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: "Wang, Annie" <Annie.Wang@amd.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "Huang, Ray" <Ray.Huang@amd.com>, "Wan, Vincent" <Vincent.Wan@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "Li, Tony" <Tony.Li@amd.com>, "Yu, Xiangliang" <Xiangliang.Yu@amd.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 05, 2016 at 06:43:02PM -0800, Greg Kroah-Hartman wrote:
-> On Tue, Jan 05, 2016 at 12:30:19PM +0000, Russell King - ARM Linux wrote:
-> > On Tue, Jan 05, 2016 at 12:12:31PM +0000, Sudeep Holla wrote:
-> > > Hi Russell,
-> > > 
-> > > On Thu, Dec 24, 2015 at 4:47 PM, Russell King - ARM Linux
-> > > <linux@arm.linux.org.uk> wrote:
-> > > > On Thu, Dec 24, 2015 at 09:49:48AM -0600, Timur Tabi wrote:
-> > > >> The REG_x macros are indices into a table, not register offsets.  Since
-> > > >> earlycon does not have access to the vendor data, we can currently only
-> > > >> support standard ARM PL011 devices.
-> > > >>
-> > > >> Signed-off-by: Timur Tabi <timur@codeaurora.org>
-> > > >
-> > > > Please credit me with the change; this was obviously a change I made
-> > > > when I posted the updated patches, which Greg had failed to take
-> > > > instead of the original set.  Thanks.
-> > > >
-> > > 
-> > > I don't see this patch in linux-next. Without this it fails to boot(panics) on
-> > > ARM64 when earlycon is enabled.
-> > 
-> > I guess that's the way 4.4 is going to be then, because GregKH has not
-> > been anywhere near "responsive" during the last cycle, but he did say
-> > yesterday (in response to questions about driver model stuff) that he's
-> > closed his trees for the merge window last week.
-> > 
-> > All in all, this situation is entirely GregKH's making, as he took the
-> > wrong set of patches, and has yet to respond to _any_ of the resulting
-> > mails about it... I guess GregKH knows what he's doing as he's one of
-> > the top (and vocal) kernel developers far more than I do, so I guess he
-> > has his reasons for crapping up the AMBA PL011 driver...
+On Wed, Jan 06, 2016 at 02:08:18AM +0000, Wang, Annie wrote:
+> How about I add select ARM_AMBA and SERIAL_8250 in arch/x86/Kconfig?
+
+Yeah, select sounds good in that case, except in that particular case ...
+
 > 
-> "plenty of time"?  I see Timur's patches to fix this were sent on
-> December 24th.  Then fixed up and resent on January 4th. I see nothing
-> in my todo queue that were sent earlier to resolve any of this horrid
-> mess.
-> 
-> So yes, I haven't done anything with the Jan 04 patch, given that it's
-> been 24 hours since it was sent, that's totally reasonable.
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index db3622f..0fe6657 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -537,11 +537,15 @@ config X86_AMD_PLATFORM_DEVICE
+>         depends on ACPI
+>         select COMMON_CLK
+>         select PINCTRL
+> +       select SERIAL_8250
+> +       select ARM_AMBA
 
-The first series of 11 patches was sent on November 3rd.  The problem at
-the root of this issue was discovered on the very same day, and is a part
-of the thread.  People reviewed and tested it, and other comments were
-made.
+... that's a X86_AMD_PLATFORM_DEVICE which selects ARM thing? i.e.,
+ARM_AMBA. Can that even work?
 
-These were addressed, and the next series of 12 patches were sent on the
-16th November.
+[ Rant on the side: And that ARM_AMBA thing has, of course, no effing
+  help text. Dammit, people need to start explaining those cryptic
+  abbreviations. Somewhere in the code I found "Advanced Microcontroller
+  Bus Architecture". This is clearly suboptimal. ]
 
-On the 12th November, you decided it was time to pick up the first series
-of patches and ignore the second series, despite the comments against the
-first series indicating that there were problems.
+So why does the X86 platform device need to select the AMBA crap?
 
-It was only realised on the 24th that you'd picked up the wrong set of
-patches.
+>         ---help---
+>           Select to interpret AMD specific ACPI device to platform device
+>           such as I2C, UART, GPIO found on AMD Carrizo and later chipsets.
+>           I2C and UART depend on COMMON_CLK to set clock. GPIO driver is
+> -         implemented under PINCTRL subsystem.
+> +         implemented under PINCTRL subsystem. Carrizo's UART is implemented
+> +         under SERIAL_8250. Carrizo's UART DMA device is an amba device,
+> +         it selects ARM_AMBA option.
 
-> You all were throwing huge numbers of patches here for this tiny driver
-> and digging through the mess was a major pain.
+As I already said before, please refrain from using platform names like
+Carrizo because people have no clue what those are. Only the marketing
+people do. Use CPU family + models instead.
 
-That statement is doing nothing but trying to deflect the blame for
-this mistake on to other people.
+> CPU_SUP_AMD is only configured in X86 arch. AMD future  ARM64 processors may
+> also need acpi to platform support.
 
-11 or 12 patches is not "huge numbers of patches" and a driver of 2600
-lines is not "tiny".  In total, it's _only_ 11 + 12 patches.  That is
-not "huge" by any sense of the word.
-
-What would you prefer?  One patch making multiple changes?  Aren't we
-always telling people to split up their changes?  I guess you're
-different because of your patch load...
-
-> Turned out I guessed
-> wrong, and asked for a patch to fix up the mess once that was
-> determined.
-
-I don't see why there should've been any guessing.  One series of 11
-patches posted on 3rd November vs a second series of 12 patches posted
-on the 16th November.  Later date, one more patch.  How could there
-have been any guessing?
-
-> That didn't arrive until the yesterday in a format that
-> might be acceptable.  Quite a while after this all was determined to be
-> "broken".
-
-The original patch set was found to be broken on the 3rd November, and
-there's emails to prove it.
-
-> If you all think you could do better with the patch load you all were
-> throwing at me, well, good for you.  It's mighty easy to complain when
-> it isn't your inbox...  And I really don't care at all about this little
-> driver, you all do, and yet you all can't agree what to do about it, so
-> to somehow claim that I know better is a joke.
-
-Right, so what you're saying is that you're overloaded, and can't cope
-with the amount of work that you've chosen to take on.  The one thing
-that's missing from your message is to ask whether someone is willing
-to take on maintanence of the driver.  Well, that's an interesting
-subject, because in theory, I _never_ delegated maintanence and patch
-handling to anyone else:
-
-ARM PRIMECELL UART PL010 AND PL011 DRIVERS
-M:      Russell King <linux@arm.linux.org.uk>
-S:      Maintained
-F:      drivers/tty/serial/amba-pl01*.c
-F:      include/linux/amba/serial.h
-
-but someone decided "I own drivers/tty..., so all patches _must_
-come through me" which is a frequent pattern I've seen forming over
-the years that we've had the kernel in SCMs.
-
-So, I guess the answer is for me to take back responsibility for
-merging patches for this driver and send pull requests for it
-directly to Linus.
-
-Please merge what you have, and when it's merged, I'll resolve the
-differences between what you have merged and what _should_ have been
-merged.  I'll send fixes directly to Linus, and from then on I'll be
-looking after this driver.
+So this code is going to be shared between X86 and ARM64?
 
 -- 
-RMK's Patch system: http://www.arm.linux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+Regards/Gruss,
+    Boris.
+
+ECO tip #101: Trim your mails when you reply.
