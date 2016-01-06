@@ -1,32 +1,31 @@
-From: Timur Tabi <timur@codeaurora.org>
+From: Greg Kroah-Hartman <greg@kroah.com>
 Subject: Re: [PATCH 1/2] [v2] tty: amba-pl011: fix earlycon register offsets
-Date: Tue, 5 Jan 2016 20:46:11 -0600
-Message-ID: <568C7FF3.20804@codeaurora.org>
+Date: Tue, 5 Jan 2016 18:51:11 -0800
+Message-ID: <20160106025111.GA1045@kroah.com>
 References: <1451943462-27818-1-git-send-email-timur@codeaurora.org>
  <20160106024338.GA20633@kroah.com>
+ <568C7FF3.20804@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20160106024338.GA20633@kroah.com>
+Content-Disposition: inline
+In-Reply-To: <568C7FF3.20804@codeaurora.org>
 Sender: linux-arm-msm-owner@vger.kernel.org
-To: Greg Kroah-Hartman <greg@kroah.com>
+To: Timur Tabi <timur@codeaurora.org>
 Cc: Russell King <rmk+kernel@arm.linux.org.uk>, andre.przywara@arm.com, Linus Walleij <linus.walleij@linaro.org>, jslaby@suse.com, jun.nie@linaro.org, shijie.huang@arm.com, peter@hurleysoftware.com, andrew.jackson@arm.com, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Greg Kroah-Hartman wrote:
->> >Signed-off-by: Russell King<rmk+kernel@arm.linux.org.uk>
->> >Tested-by: Huang Shijie<shijie.huang@arm.com>
->> >Signed-off-by: Timur Tabi<timur@codeaurora.org>
->> >---
->> >  drivers/tty/serial/amba-pl011.c | 6 +++---
->> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> What changed in v2?
+On Tue, Jan 05, 2016 at 08:46:11PM -0600, Timur Tabi wrote:
+> Greg Kroah-Hartman wrote:
+> >>>Signed-off-by: Russell King<rmk+kernel@arm.linux.org.uk>
+> >>>Tested-by: Huang Shijie<shijie.huang@arm.com>
+> >>>Signed-off-by: Timur Tabi<timur@codeaurora.org>
+> >>>---
+> >>>  drivers/tty/serial/amba-pl011.c | 6 +++---
+> >>>  1 file changed, 3 insertions(+), 3 deletions(-)
+> >What changed in v2?
+> 
+> I fixed a typo with a macro name (UART01x_FR_BUSY instead of
+> UART011_FR_BUSY).
 
-I fixed a typo with a macro name (UART01x_FR_BUSY instead of 
-UART011_FR_BUSY).
-
--- 
-Sent by an employee of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the
-Code Aurora Forum, hosted by The Linux Foundation.
+Please always document this below the --- line, you know this...
