@@ -1,53 +1,63 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH v2 10/14] serial: pic32_uart: Add PIC32 UART driver
-Date: Wed, 6 Jan 2016 22:32:47 +0000
-Message-ID: <20160106223247.409a1d2b@lxorguk.ukuu.org.uk>
-References: <1450133093-7053-1-git-send-email-joshua.henderson@microchip.com>
-        <1450133093-7053-11-git-send-email-joshua.henderson@microchip.com>
-        <20160105204322.2dc5ab3f@lxorguk.ukuu.org.uk>
-        <F2D704DDA6AE8B4A87FF87509480F4A449E46187@CHN-SV-EXMX01.mchp-main.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <F2D704DDA6AE8B4A87FF87509480F4A449E46187@CHN-SV-EXMX01.mchp-main.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Paul.Thacker@microchip.com
-Cc: Joshua.Henderson@microchip.com, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, ralf@linux-mips.org, Andrei.Pistirica@microchip.com, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-api@vger.kernel.org
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH -next] serial: 8250: Fix serial port driver for OF platform devices
+Date: Wed,  6 Jan 2016 16:23:41 -0800
+Message-ID: <1452126221-1253-1-git-send-email-linux@roeck-us.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 6 Jan 2016 22:00:43 +0000
-<Paul.Thacker@microchip.com> wrote:
+Commit afd7f88f1577 ("serial: 8250: move of_serial code to 8250 directory")
+moved the serial port driver for Open Firmware platform devices from one
+directory to another, but a mixup in Kconfig options resulted in the driver
+never being built. This results in runtime failures for some xtensa,
+openrisc, and powerpc configurations.
 
-> On 01/05/2016 03:50 PM, One Thousand Gnomes wrote:
-> >
-> >> +#define PIC32_SDEV_NAME		"ttyS"
-> >> +#define PIC32_SDEV_MAJOR	TTY_MAJOR
-> >> +#define PIC32_SDEV_MINOR	64
-> >
-> > No. Same goes for you as every one of the forty other people a year who
-> > try and claim their console is ttyS. If it's not an 8250 it isn't.
-> >
-> > ttyS is the 8250, use dynamic major and minor and a different name.
-> 
-> Ok. Is there a naming convention documented anywhere? How about ttyPIC?
+Fixes: afd7f88f1577 ("serial: 8250: move of_serial code to 8250 directory")
+Cc: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+It might make sense to merge this patch with the commit introducing the problem.
 
-We used to document it but the document was always stale. ttyPIC sounds
-fine providing nobody else is using it (and I don't think they are but
-grep is your friend). We enforce the rule because in the early days lots
-of people re-used ttyS for their chip. Then their chip grew an external
-bus or turned into a SoC and a 16x50 got added and it all broke.
+ drivers/tty/serial/8250/8250_of.c | 3 +--
+ drivers/tty/serial/8250/Kconfig   | 5 +++++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-ttyPIC ought to be fine because even if you get new PIC devices with a
-different uart you aren't likely to have both of the PIC cores on the
-same device.
-
-Alan
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index d66fd24f87cf..33021c1f7d55 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -18,10 +18,9 @@
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
+-#include <linux/nwpserial.h>
+ #include <linux/clk.h>
+ 
+-#include "8250/8250.h"
++#include "8250.h"
+ 
+ struct of_serial_info {
+ 	struct clk *clk;
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index b03cb5175113..e5ab94e381fb 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -378,9 +378,14 @@ config SERIAL_8250_MID
+ 	  present on the UART found on Intel Medfield SOC and various other
+ 	  Intel platforms.
+ 
++config SERIAL_8250_OF
++	tristate
++	depends on SERIAL_8250 && OF
++
+ config SERIAL_OF_PLATFORM
+ 	tristate "Devicetree based probing for 8250 ports"
+ 	depends on SERIAL_8250 && OF
++	select SERIAL_8250_OF
+ 	help
+ 	  This option is used for all 8250 compatible serial ports that
+ 	  are probed through devicetree, including Open Firmware based
+-- 
+2.1.4
