@@ -1,176 +1,45 @@
-From: Greg Kroah-Hartman <greg@kroah.com>
-Subject: Re: [PATCH 1/2] tty: amba-pl011: fix earlycon register offsets
-Date: Wed, 6 Jan 2016 21:17:54 -0800
-Message-ID: <20160107051754.GA22106@kroah.com>
-References: <1450972189-22639-1-git-send-email-timur@codeaurora.org>
- <20151224164723.GK8644@n2100.arm.linux.org.uk>
- <CAPKp9ubdS+R8U-W+LxYEp_sGxZVBDGBJ48+N7Pw3k9A+=F4pww@mail.gmail.com>
- <20160105123018.GU19062@n2100.arm.linux.org.uk>
- <20160106024302.GA20634@kroah.com>
- <20160106100700.GA19062@n2100.arm.linux.org.uk>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 2/2] tty: amba-pl011: use iotype instead of access_32b to
+ track 32-bit I/O
+Date: Thu, 7 Jan 2016 09:09:00 +0100
+Message-ID: <CAMuHMdX5cPFU45bvnUkxhPf3qvw6fsoL_UBzt_qb_aHkMCtqVw@mail.gmail.com>
+References: <1451943462-27818-1-git-send-email-timur@codeaurora.org>
+	<1451943462-27818-2-git-send-email-timur@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20160106100700.GA19062@n2100.arm.linux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Peter Hurley <peter@hurleysoftware.com>, andre.przywara@arm.com, Timur Tabi <timur@codeaurora.org>, andrew.jackson@arm.com, linux-serial@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, shijie.huang@arm.com, jslaby@suse.com, jun.nie@linaro.org, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1451943462-27818-2-git-send-email-timur@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Timur Tabi <timur@codeaurora.org>
+Cc: Greg Kroah-Hartman <greg@kroah.com>, Russell King <rmk+kernel@arm.linux.org.uk>, Andre Przywara <andre.przywara@arm.com>, Linus Walleij <linus.walleij@linaro.org>, Jiri Slaby <jslaby@suse.com>, jun.nie@linaro.org, shijie.huang@arm.com, Peter Hurley <peter@hurleysoftware.com>, andrew.jackson@arm.com, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 06, 2016 at 10:07:00AM +0000, Russell King - ARM Linux wrote:
-> On Tue, Jan 05, 2016 at 06:43:02PM -0800, Greg Kroah-Hartman wrote:
-> > On Tue, Jan 05, 2016 at 12:30:19PM +0000, Russell King - ARM Linux wrote:
-> > > On Tue, Jan 05, 2016 at 12:12:31PM +0000, Sudeep Holla wrote:
-> > > > Hi Russell,
-> > > > 
-> > > > On Thu, Dec 24, 2015 at 4:47 PM, Russell King - ARM Linux
-> > > > <linux@arm.linux.org.uk> wrote:
-> > > > > On Thu, Dec 24, 2015 at 09:49:48AM -0600, Timur Tabi wrote:
-> > > > >> The REG_x macros are indices into a table, not register offsets.  Since
-> > > > >> earlycon does not have access to the vendor data, we can currently only
-> > > > >> support standard ARM PL011 devices.
-> > > > >>
-> > > > >> Signed-off-by: Timur Tabi <timur@codeaurora.org>
-> > > > >
-> > > > > Please credit me with the change; this was obviously a change I made
-> > > > > when I posted the updated patches, which Greg had failed to take
-> > > > > instead of the original set.  Thanks.
-> > > > >
-> > > > 
-> > > > I don't see this patch in linux-next. Without this it fails to boot(panics) on
-> > > > ARM64 when earlycon is enabled.
-> > > 
-> > > I guess that's the way 4.4 is going to be then, because GregKH has not
-> > > been anywhere near "responsive" during the last cycle, but he did say
-> > > yesterday (in response to questions about driver model stuff) that he's
-> > > closed his trees for the merge window last week.
-> > > 
-> > > All in all, this situation is entirely GregKH's making, as he took the
-> > > wrong set of patches, and has yet to respond to _any_ of the resulting
-> > > mails about it... I guess GregKH knows what he's doing as he's one of
-> > > the top (and vocal) kernel developers far more than I do, so I guess he
-> > > has his reasons for crapping up the AMBA PL011 driver...
-> > 
-> > "plenty of time"?  I see Timur's patches to fix this were sent on
-> > December 24th.  Then fixed up and resent on January 4th. I see nothing
-> > in my todo queue that were sent earlier to resolve any of this horrid
-> > mess.
-> > 
-> > So yes, I haven't done anything with the Jan 04 patch, given that it's
-> > been 24 hours since it was sent, that's totally reasonable.
-> 
-> The first series of 11 patches was sent on November 3rd.  The problem at
-> the root of this issue was discovered on the very same day, and is a part
-> of the thread.  People reviewed and tested it, and other comments were
-> made.
-> 
-> These were addressed, and the next series of 12 patches were sent on the
-> 16th November.
-> 
-> On the 12th November, you decided it was time to pick up the first series
-> of patches and ignore the second series, despite the comments against the
-> first series indicating that there were problems.
-> 
-> It was only realised on the 24th that you'd picked up the wrong set of
-> patches.
-> 
-> > You all were throwing huge numbers of patches here for this tiny driver
-> > and digging through the mess was a major pain.
-> 
-> That statement is doing nothing but trying to deflect the blame for
-> this mistake on to other people.
-> 
-> 11 or 12 patches is not "huge numbers of patches" and a driver of 2600
-> lines is not "tiny".  In total, it's _only_ 11 + 12 patches.  That is
-> not "huge" by any sense of the word.
-> 
-> What would you prefer?  One patch making multiple changes?  Aren't we
-> always telling people to split up their changes?  I guess you're
-> different because of your patch load...
+On Mon, Jan 4, 2016 at 10:37 PM, Timur Tabi <timur@codeaurora.org> wrote:
+> --- a/Documentation/kernel-parameters.txt
+> +++ b/Documentation/kernel-parameters.txt
+> @@ -995,10 +995,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+>                         unspecified, the h/w is not initialized.
+>
+>                 pl011,<addr>
+> +               pl011,mmio32,<addr>
+>                         Start an early, polled-mode console on a pl011 serial
+>                         port at the specified address. The pl011 serial port
+>                         must already be setup and configured. Options are not
+> -                       yet supported.
+> +                       yet supported.  If 'mmio32' is specified, then only
 
-There were more than just these two series of patches for this driver
-floating around in my todo queue, there were competing sets of patches
-from Timur and you and I thought I had applied the correct one.  I get
-things wrong sometimes, but after I did it took a long time for a fix to
-show up.  Yes, due to the hollidays, I get it, I've been very busy with
-non-kernel-stuff for the past months and I'm way behind as well.
+Bogus "only"
 
-And don't be snarky about splitting up patches, that wasn't the issue
-here.
+> +                       the driver will use only 32-bit accessors to read/write
+> +                       the device registers.
 
-> > Turned out I guessed
-> > wrong, and asked for a patch to fix up the mess once that was
-> > determined.
-> 
-> I don't see why there should've been any guessing.  One series of 11
-> patches posted on 3rd November vs a second series of 12 patches posted
-> on the 16th November.  Later date, one more patch.  How could there
-> have been any guessing?
+Gr{oetje,eeting}s,
 
-I don't remember, sorry, but something confused me, I got it wrong,
-sorry.  First time for 2015, not too bad :)
+                        Geert
 
-> > If you all think you could do better with the patch load you all were
-> > throwing at me, well, good for you.  It's mighty easy to complain when
-> > it isn't your inbox...  And I really don't care at all about this little
-> > driver, you all do, and yet you all can't agree what to do about it, so
-> > to somehow claim that I know better is a joke.
-> 
-> Right, so what you're saying is that you're overloaded, and can't cope
-> with the amount of work that you've chosen to take on.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Again, I had real-world things keeping me from doing a lot of kernel
-patch review for the past few months, so I got behind, sorry.
-
-> The one thing that's missing from your message is to ask whether
-> someone is willing to take on maintanence of the driver.  Well, that's
-> an interesting subject, because in theory, I _never_ delegated
-> maintanence and patch handling to anyone else:
-> 
-> ARM PRIMECELL UART PL010 AND PL011 DRIVERS
-> M:      Russell King <linux@arm.linux.org.uk>
-> S:      Maintained
-> F:      drivers/tty/serial/amba-pl01*.c
-> F:      include/linux/amba/serial.h
-> 
-> but someone decided "I own drivers/tty..., so all patches _must_
-> come through me" which is a frequent pattern I've seen forming over
-> the years that we've had the kernel in SCMs.
-
-"decided"?  Hah, as if, that happened many years ago, that's nothing new
-at all, you didn't suddenly realize this, again, stop it with the snark.
-
-> So, I guess the answer is for me to take back responsibility for
-> merging patches for this driver and send pull requests for it
-> directly to Linus.
-
-That's not how kernel development works, sorry, you know this.  I'll
-gladly just ignore all amba-pl01* patches except when you bundle them up
-and forward them on to me.  In fact, I'll take pull requests as well,
-just send them on to me please whenever you feel they are ready for
-inclusion.
-
-And good luck trying to get Linus to take pull requests for a single
-driver, that sure doesn't scale :)
-
-> Please merge what you have, and when it's merged, I'll resolve the
-> differences between what you have merged and what _should_ have been
-> merged.  I'll send fixes directly to Linus, and from then on I'll be
-> looking after this driver.
-
-I've merged the fixes now, and only have one old patch from Timur about
-adding cpu_relax to the driver, and there's some random AMBA bus patches
-that touch it as well, which comments from the "ARM developers" have
-been asked for, but don't seem to be happening for some odd reason...
-
-greg k-h
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
