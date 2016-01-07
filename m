@@ -1,38 +1,71 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 3/6] ACPI: add 2 parameters to function acpi dma
- controller register
-Date: Thu, 7 Jan 2016 12:08:50 +0200
-Message-ID: <CAHp75Vd6mWOy4qZk0uqHeurA5Mk4xX1qSSTa-fbWobCSpUo6zw@mail.gmail.com>
-References: <1451885501-2710-1-git-send-email-annie.wang@amd.com>
-	<1451885501-2710-4-git-send-email-annie.wang@amd.com>
-	<20160104144534.GB1770@lahna.fi.intel.com>
-	<BLUPR12MB0433A702DB5903D6A20232B781F40@BLUPR12MB0433.namprd12.prod.outlook.com>
-	<20160107095238.GY1770@lahna.fi.intel.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH -next] serial: 8250: Fix serial port driver for OF platform devices
+Date: Thu, 07 Jan 2016 11:38:19 +0100
+Message-ID: <2974067.q2HTWq3S3v@wuerfel>
+References: <1452126221-1253-1-git-send-email-linux@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160107095238.GY1770@lahna.fi.intel.com>
+In-Reply-To: <1452126221-1253-1-git-send-email-linux@roeck-us.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: "Wang, Annie" <Annie.Wang@amd.com>, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, Borislav Petkov <bp@alien8.de>, "Huang, Ray" <Ray.Huang@amd.com>, "Wan, Vincent" <Vincent.Wan@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "Li, Tony" <Tony.Li@amd.com>, "Yu, Xiangliang" <Xiangliang.Yu@amd.com>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 7, 2016 at 11:52 AM, Mika Westerberg
-<mika.westerberg@linux.intel.com> wrote:
-> On Wed, Jan 06, 2016 at 06:46:37AM +0000, Wang, Annie wrote:
->> Acpi_dma_xlate  mainly converts an  acpi_dma  structure into a dma_chan structure.
->> Without proper request line, wrong acpi_dma structure may be get.
->>
->> And as Andy says in http://article.gmane.org/gmane.linux.kernel.iommu/11675
->> How about add a hook into acpi_dma_controller_register?
->
-> Hmm, you can pass custom data in acpi_dma_controller_register() which
-> will be assigned to adma->data. If you put your request line
-> information there, I think your custom acpi_dma_xlate() should be able
-> to use that information to find proper channel, no?
+On Wednesday 06 January 2016 16:23:41 Guenter Roeck wrote:
+> Commit afd7f88f1577 ("serial: 8250: move of_serial code to 8250 directory")
+> moved the serial port driver for Open Firmware platform devices from one
+> directory to another, but a mixup in Kconfig options resulted in the driver
+> never being built. This results in runtime failures for some xtensa,
+> openrisc, and powerpc configurations.
+> 
+> Fixes: afd7f88f1577 ("serial: 8250: move of_serial code to 8250 directory")
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+> It might make sense to merge this patch with the commit introducing the problem.
 
-I like Mika's idea, so, please, go this way if there is no impediment.
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+>  drivers/tty/serial/8250/8250_of.c | 3 +--
+>  drivers/tty/serial/8250/Kconfig   | 5 +++++
+>  2 files changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+> index d66fd24f87cf..33021c1f7d55 100644
+> --- a/drivers/tty/serial/8250/8250_of.c
+> +++ b/drivers/tty/serial/8250/8250_of.c
+> @@ -18,10 +18,9 @@
+>  #include <linux/of_address.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+> -#include <linux/nwpserial.h>
+>  #include <linux/clk.h>
+>  
+> -#include "8250/8250.h"
+> +#include "8250.h"
+>  
+>  struct of_serial_info {
+>  	struct clk *clk;
+> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+> index b03cb5175113..e5ab94e381fb 100644
+> --- a/drivers/tty/serial/8250/Kconfig
+> +++ b/drivers/tty/serial/8250/Kconfig
+> @@ -378,9 +378,14 @@ config SERIAL_8250_MID
+>  	  present on the UART found on Intel Medfield SOC and various other
+>  	  Intel platforms.
+>  
+> +config SERIAL_8250_OF
+> +	tristate
+> +	depends on SERIAL_8250 && OF
+> +
+>  config SERIAL_OF_PLATFORM
+>  	tristate "Devicetree based probing for 8250 ports"
+>  	depends on SERIAL_8250 && OF
+> +	select SERIAL_8250_OF
+>  	help
+>  	  This option is used for all 8250 compatible serial ports that
+>  	  are probed through devicetree, including Open Firmware based
+> 
