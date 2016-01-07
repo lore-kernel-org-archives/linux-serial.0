@@ -1,71 +1,82 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH -next] serial: 8250: Fix serial port driver for OF platform devices
-Date: Thu, 07 Jan 2016 11:38:19 +0100
-Message-ID: <2974067.q2HTWq3S3v@wuerfel>
-References: <1452126221-1253-1-git-send-email-linux@roeck-us.net>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: plug a use-after-free in TIOCGETD ioctl
+Date: Thu, 7 Jan 2016 08:14:18 -0800
+Message-ID: <20160107161418.GA28297@kroah.com>
+References: <1452178680-30284-1-git-send-email-mguzik@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1452126221-1253-1-git-send-email-linux@roeck-us.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1452178680-30284-1-git-send-email-mguzik@redhat.com>
+Sender: stable-owner@vger.kernel.org
+To: Mateusz Guzik <mguzik@redhat.com>, Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.com>, stable@vger.kernel.org, linux-kernel@vger.kernel.org, security@kernel.org, milos@redhat.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday 06 January 2016 16:23:41 Guenter Roeck wrote:
-> Commit afd7f88f1577 ("serial: 8250: move of_serial code to 8250 directory")
-> moved the serial port driver for Open Firmware platform devices from one
-> directory to another, but a mixup in Kconfig options resulted in the driver
-> never being built. This results in runtime failures for some xtensa,
-> openrisc, and powerpc configurations.
+Adding Peter and linux-serial to the list here, as Peter has been doing
+a ton of work in this area...
+
+Peter, does this seem sane with the tty locking rules?
+
+thanks,
+
+greg k-h
+
+On Thu, Jan 07, 2016 at 03:58:00PM +0100, Mateusz Guzik wrote:
+> When the line discipline is being changed, the old one is freed.
+> However, the handler for TIOCGETD would dereference it without taking
+> any locks, in effect possibly reading freed memory.
 > 
-> Fixes: afd7f88f1577 ("serial: 8250: move of_serial code to 8250 directory")
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> Line discipline changes are protected with tty lock. Use it on reader
+> side as well.
+> 
+> CVE: CVE-2016-0723
+> Found-by: Milos Vyletel <milos@redhat.com>
+> Signed-off-by: Mateusz Guzik <mguzik@redhat.com>
 > ---
-> It might make sense to merge this patch with the commit introducing the problem.
-
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-
+>  drivers/tty/tty_io.c | 23 ++++++++++++++++++++++-
+>  1 file changed, 22 insertions(+), 1 deletion(-)
 > 
->  drivers/tty/serial/8250/8250_of.c | 3 +--
->  drivers/tty/serial/8250/Kconfig   | 5 +++++
->  2 files changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-> index d66fd24f87cf..33021c1f7d55 100644
-> --- a/drivers/tty/serial/8250/8250_of.c
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -18,10 +18,9 @@
->  #include <linux/of_address.h>
->  #include <linux/of_irq.h>
->  #include <linux/of_platform.h>
-> -#include <linux/nwpserial.h>
->  #include <linux/clk.h>
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 892c923..1b10469 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -2626,6 +2626,27 @@ static int tiocgsid(struct tty_struct *tty, struct tty_struct *real_tty, pid_t _
+>  }
 >  
-> -#include "8250/8250.h"
-> +#include "8250.h"
->  
->  struct of_serial_info {
->  	struct clk *clk;
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index b03cb5175113..e5ab94e381fb 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -378,9 +378,14 @@ config SERIAL_8250_MID
->  	  present on the UART found on Intel Medfield SOC and various other
->  	  Intel platforms.
->  
-> +config SERIAL_8250_OF
-> +	tristate
-> +	depends on SERIAL_8250 && OF
+>  /**
+> + *	tiocgetd	-	get line discipline
+> + *	@tty: tty device
+> + *	@p: pointer to returned line discipline
+> + *
+> + *	Get the line discipline associated with the tty.
+> + *
+> + *	Locking: none
+> + */
 > +
->  config SERIAL_OF_PLATFORM
->  	tristate "Devicetree based probing for 8250 ports"
->  	depends on SERIAL_8250 && OF
-> +	select SERIAL_8250_OF
->  	help
->  	  This option is used for all 8250 compatible serial ports that
->  	  are probed through devicetree, including Open Firmware based
-> 
+> +static int tiocgetd(struct tty_struct *tty, int __user *p)
+> +{
+> +	int ldisc;
+> +
+> +	tty_lock(tty);
+> +	ldisc = tty->ldisc->ops->num;
+> +	tty_unlock(tty);
+> +
+> +	return put_user(ldisc, p);
+> +}
+> +
+> +/**
+>   *	tiocsetd	-	set line discipline
+>   *	@tty: tty device
+>   *	@p: pointer to user data
+> @@ -2874,7 +2895,7 @@ long tty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+>  	case TIOCGSID:
+>  		return tiocgsid(tty, real_tty, p);
+>  	case TIOCGETD:
+> -		return put_user(tty->ldisc->ops->num, (int __user *)p);
+> +		return tiocgetd(tty, p);
+>  	case TIOCSETD:
+>  		return tiocsetd(tty, p);
+>  	case TIOCVHANGUP:
+> -- 
+> 1.8.3.1
