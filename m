@@ -1,40 +1,43 @@
-From: kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org
-Subject: [PATCH V2 0/2] serial: bcm2835: add bcm2835 auxiliar uart driver
-Date: Sat,  9 Jan 2016 13:07:31 +0000
-Message-ID: <1452344854-2576-1-git-send-email-kernel@martin.sperl.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH -next] tty/serial: atmel: Include module.h to fix build failure
+Date: Sat,  9 Jan 2016 10:15:35 -0800
+Message-ID: <1452363335-2535-1-git-send-email-linux@roeck-us.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, Paul Gortmaker <paul.gortmaker@windriver.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+If serial/atmel_serial.c is compiled with devicetree enabled, the
+following build error is observed.
 
-This patch series adds the bcm2835aux uart driver, which is created
-as a wrapper arround the 8250 driver (based on recommendations by
-Stephen Warren)
+drivers/tty/serial/atmel_serial.c:192:1: warning:
+	data definition has no type or storage class
+drivers/tty/serial/atmel_serial.c:192:1: error:
+	type defaults to 'int' in declaration of 'MODULE_DEVICE_TABLE'
+drivers/tty/serial/atmel_serial.c:192:1: warning:
+	parameter names (without types) in function declaration
 
-The device tree patch itself is not included yet because this
-patch requires the clk-bcm2835aux driver, which is right now only
-in clk-next, but should become available with 4.5.
+MODULE_DEVICE_TABLE is used to specify devicetree compatibilities.
 
-Martin Sperl (2):
-  dt/bindings: serial: bcm2835: add binding documentation for
-    bcm2835-aux-uart
-  serial: bcm2835: add driver for bcm2835-aux-uart
+Fixes: c39dfebc7798 ("drivers/tty/serial: make serial/atmel_serial.c explicitly non-modular")
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/tty/serial/atmel_serial.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- .../bindings/serial/brcm,bcm2835-aux-uart.txt      |   18 +++
- drivers/tty/serial/8250/8250_bcm2835aux.c          |  143 ++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig                    |    8 ++
- drivers/tty/serial/8250/Makefile                   |    1 +
- 4 files changed, 170 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
- create mode 100644 drivers/tty/serial/8250/8250_bcm2835aux.c
-
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 50e785a0ea73..71c385b09db8 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -22,6 +22,7 @@
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  *
+  */
++#include <linux/module.h>
+ #include <linux/tty.h>
+ #include <linux/ioport.h>
+ #include <linux/slab.h>
 -- 
-1.7.10.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.1.4
