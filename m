@@ -1,36 +1,41 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 7/9] tty: Allow unreadable mess to be > 80 chars
-Date: Sun, 10 Jan 2016 14:43:07 -0800
-Message-ID: <1452465789-4039-7-git-send-email-peter@hurleysoftware.com>
-References: <1452465789-4039-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1452465789-4039-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH 5/9] tty: Fix GPF in flush_to_ldisc(), part 2
+Date: Sun, 10 Jan 2016 14:45:27 -0800
+Message-ID: <1452465935-4151-10-git-send-email-peter@hurleysoftware.com>
+References: <1452465935-4151-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1452465935-4151-1-git-send-email-peter@hurleysoftware.com>
+Sender: stable-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+commit 9ce119f318ba ("tty: Fix GPF in flush_to_ldisc()") fixed a
+GPF caused by a line discipline which does not define a receive_buf()
+method.
+
+However, the vt driver (and speakup driver also) pushes selection
+data directly to the line discipline receive_buf() method via
+tty_ldisc_receive_buf(). Fix the same problem in tty_ldisc_receive_buf().
+
+Cc: <stable@vger.kernel.org>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/tty_port.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ include/linux/tty.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 846ed48..a76aec2 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -510,10 +510,8 @@ void tty_port_close_end(struct tty_port *port, struct tty_struct *tty)
- 
- 	if (port->blocked_open) {
- 		spin_unlock_irqrestore(&port->lock, flags);
--		if (port->close_delay) {
--			msleep_interruptible(
--				jiffies_to_msecs(port->close_delay));
--		}
-+		if (port->close_delay)
-+			msleep_interruptible(jiffies_to_msecs(port->close_delay));
- 		spin_lock_irqsave(&port->lock, flags);
- 		wake_up_interruptible(&port->open_wait);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index dea7d54..03e4015 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -579,7 +579,7 @@ static inline int tty_ldisc_receive_buf(struct tty_ldisc *ld, unsigned char *p,
+ 		count = ld->ops->receive_buf2(ld->tty, p, f, count);
+ 	else {
+ 		count = min_t(int, count, ld->tty->receive_room);
+-		if (count)
++		if (count && ld->ops->receive_buf)
+ 			ld->ops->receive_buf(ld->tty, p, f, count);
  	}
+ 	return count;
 -- 
 2.7.0
