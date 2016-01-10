@@ -1,99 +1,127 @@
-From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-Subject: Re: [PATCH V2 0/2] serial: bcm2835: add bcm2835 auxiliar uart
- driver
-Date: Sun, 10 Jan 2016 22:17:25 +0100 (CET)
-Message-ID: <1993851391.472790.ea76ff5f-f5e1-40e8-bbff-544f1cd5a3c3.open-xchange@email.1und1.de>
-References: <1452344854-2576-1-git-send-email-kernel@martin.sperl.org>
- <1057226922.507844.cb24b396-67be-4b7b-9938-7cb30ef4fe05.open-xchange@email.1und1.de>
- <46FD7886-510C-4F0F-A039-500D5438207B@martin.sperl.org>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: RFC: out-of-tree tty driver breakage (changing ASYNC_ bits)
+Date: Sun, 10 Jan 2016 13:42:44 -0800
+Message-ID: <5692D054.7050203@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <46FD7886-510C-4F0F-A039-500D5438207B-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux kernel <linux-kernel@vger.kernel.org>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
+The tty/serial core uses 5 bits in the tty_port.flags field to
+manage state. They are:
 
-> Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org> hat am 10. Januar 2016 um 16:4=
-5
-> geschrieben:
->
->
->
-> > On 10.01.2016, at 16:05, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org> wro=
-te:
-> >
-> > Hi Martin,
-> >
-> >> kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org hat am 9. Januar 2016 um 14:07 geschrieben=
-:
-> >>
-> >>
-> >> From: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
-> >>
-> >> This patch series adds the bcm2835aux uart driver, which is create=
-d
-> >> as a wrapper arround the 8250 driver (based on recommendations by
-> >> Stephen Warren)
-> >>
-> >> The device tree patch itself is not included yet because this
-> >> patch requires the clk-bcm2835aux driver, which is right now only
-> >> in clk-next, but should become available with 4.5.
-> >
-> > it doesn't make sense without the device tree patch. IMHO it's okay=
- as long
-> > as
-> > you point out the dependency and set the node status to disable.
->
-> I agree in principle, but it is the same as with the spi-bcm2835aux d=
-river,
-> where I had provided a patch to the dt, that still has not been appli=
-ed
-> yet, but with the driver itself already in the kernel.
+ASYNCB_INITIALIZED
+ASYNCB_SUSPENDED
+ASYNCB_NORMAL_ACTIVE
+- and -
+ASYNCB_CTS_FLOW
+ASYNCB_CHECK_CD
 
-Please provide a new version, because it won't apply anymore. It increa=
-se the
-chance of more testing.
+Unfortunately, updates to this field (tty_port.flags) are often
+non-atomic. Additionally, the field is visible to/modifiable by
+userspace (the first 3 bits above are not modifiable by userspace
+though). Lastly, the multi-bit ASYNC_SPD_ bitfield is in this
+tty_port.flags field as well.
 
->
-> Also the reorganisation of the dt to support the bcm2836 makes this
-> another moving target.
->
-> The other concern is that we would need to use defines included
-> from "dt-bindings/clock/bcm2835aux.h=E2=80=9D and without those the d=
-t will not
-> work.
+What needs to happen is the tty/serial core needs to update its
+state transitions atomically. I want to re-define the above 5 flags
+into a separate field in the tty_port structure and designate new
+symbols for these bits. The base patch that does this is inlined
+below.
 
-AFAIK there has been a discussion about such a problem.
+This will break out-of-tree drivers but I don't really see a
+realistic alternative. Also, I think the new symbol prefix ASY_ isn't
+great and I'd like to get some suggestions.
 
->
-> For the record: this is what would be required:
-> uart1: uart@7e215040 {
-> compatible =3D "brcm,bcm2835-aux-uart";
-> reg =3D <0x7e215040 0x40>;
-> interrupts =3D <1 29>;
-> clocks =3D <&aux BCM2835_AUX_CLOCK_UART>;
-> status =3D "disabled";
-> };
->
-> I can respin the whole patchset to include this as well if you tell m=
-e to.
+Regards,
+Peter Hurley
 
-I think we should wait for a rpi maintainer's response about that. No n=
-eed to
-hurry.
+--- >% ---
+Subject: [PATCH] tty: Define ASYNC_ replacement bits
 
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Prepare for relocating kernel private state bits out of tty_port::flags
+field; tty_port::flags field is not atomic and can become corrupted
+by concurrent updates. It also suffers from the complication of sharing
+in a userspace-visible field which must be masked.
+
+Define new tty_port::iflags field and new, substitute bit definitions
+for the former ASYNC_* flags.
+---
+ include/linux/tty.h            | 16 +++++++++++++++-
+ include/uapi/linux/tty_flags.h |  9 ++++++++-
+ 2 files changed, 23 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 3b09f23..4170eed 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -228,7 +228,8 @@ struct tty_port {
+ 	int			count;		/* Usage count */
+ 	wait_queue_head_t	open_wait;	/* Open waiters */
+ 	wait_queue_head_t	delta_msr_wait;	/* Modem status change */
+-	unsigned long		flags;		/* TTY flags ASY_*/
++	unsigned long		flags;		/* User TTY flags ASYNC_ */
++	unsigned long		iflags;		/* Kernel internal flags ASY_ */
+ 	unsigned char		console:1,	/* port is a console */
+ 				low_latency:1;	/* optional: tune for latency */
+ 	struct mutex		mutex;		/* Locking */
+@@ -242,6 +243,19 @@ struct tty_port {
+ 	struct kref		kref;		/* Ref counter */
+ };
+ 
++/* tty_port::iflags bits -- use atomic bit ops */
++#define ASY_ON			0	/* device is initialized */
++#define ASY_SUSPENDED		1	/* device is suspended */
++#define ASY_ACTIVE		2	/* device is open */
++
++/*
++ * uart drivers: use the uart_port::status field and the UPSTAT_* defines
++ * for s/w-based flow control steering and carrier detection status
++ */
++#define ASY_CTS_FLOW		3	/* h/w flow control enabled */
++#define ASY_CHECK_CD		4	/* carrier detect enabled */
++
++
+ /*
+  * Where all of the state associated with a tty is kept while the tty
+  * is open.  Since the termios state should be kept even if the tty
+diff --git a/include/uapi/linux/tty_flags.h b/include/uapi/linux/tty_flags.h
+index 072e41e..b004201 100644
+--- a/include/uapi/linux/tty_flags.h
++++ b/include/uapi/linux/tty_flags.h
+@@ -32,7 +32,12 @@
+ #define ASYNCB_MAGIC_MULTIPLIER	16 /* Use special CLK or divisor */
+ #define ASYNCB_LAST_USER	16
+ 
+-/* Internal flags used only by kernel */
++/*
++ * Internal flags used only by kernel (read-only)
++ *
++ * WARNING: These flags are no longer used and have been superceded by the
++ *	    private ASY_* flags in the iflags field (and not userspace-visible)
++ */
+ #define ASYNCB_INITIALIZED	31 /* Serial port was initialized */
+ #define ASYNCB_SUSPENDED	30 /* Serial port is suspended */
+ #define ASYNCB_NORMAL_ACTIVE	29 /* Normal device is active */
+@@ -44,6 +49,7 @@
+ #define ASYNCB_CONS_FLOW	23 /* flow control for console  */
+ #define ASYNCB_FIRST_KERNEL	22
+ 
++/* Masks */
+ #define ASYNC_HUP_NOTIFY	(1U << ASYNCB_HUP_NOTIFY)
+ #define ASYNC_SUSPENDED		(1U << ASYNCB_SUSPENDED)
+ #define ASYNC_FOURPORT		(1U << ASYNCB_FOURPORT)
+@@ -72,6 +78,7 @@
+ #define ASYNC_SPD_WARP		(ASYNC_SPD_HI|ASYNC_SPD_SHI)
+ #define ASYNC_SPD_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
+ 
++/* These flags are no longer used (and were always masked from userspace) */
+ #define ASYNC_INITIALIZED	(1U << ASYNCB_INITIALIZED)
+ #define ASYNC_NORMAL_ACTIVE	(1U << ASYNCB_NORMAL_ACTIVE)
+ #define ASYNC_BOOT_AUTOCONF	(1U << ASYNCB_BOOT_AUTOCONF)
+-- 
+2.7.0
