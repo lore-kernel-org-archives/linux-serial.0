@@ -1,93 +1,164 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 2/3] isdn: Remove ASYNC_CLOSING
-Date: Sun, 10 Jan 2016 14:51:39 -0800
-Message-ID: <1452466300-4372-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 3/3] tty: Remove ASYNC_CLOSING
+Date: Sun, 10 Jan 2016 14:51:40 -0800
+Message-ID: <1452466300-4372-4-git-send-email-peter@hurleysoftware.com>
 References: <1449956976-4784-1-git-send-email-peter@hurleysoftware.com>
  <1452466300-4372-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1452466300-4372-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Karsten Keil <isdn@linux-pingi.de>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-s390@vger.kernel.org, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, linux-cris-kernel@axis.com, Samuel Ortiz <samuel@sortiz.org>, "David S. Miller" <davem@davemloft.net>
 List-Id: linux-serial@vger.kernel.org
 
-The tty core no longer provides ASYNC_CLOSING. Use private flag for
-same purpose, which is to disable AT-emulator output (why this is
-necessary is not clear).
+The tty core no longer provides nor uses ASYNC_CLOSING; remove from
+tty_port_close_start() and tty_port_close_end() as well as tty drivers
+which open-code these state changes. Unfortunately, even though the
+bit is masked from userspace, its inclusion in a uapi header precludes
+removing the macro.
 
-Cc: Karsten Keil <isdn@linux-pingi.de>
+Cc: Martin Schwidefsky <schwidefsky@de.ibm.com>
+Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
+Cc: linux-s390@vger.kernel.org
+Cc: Mikael Starvik <starvik@axis.com>
+Cc: Jesper Nilsson <jesper.nilsson@axis.com>
+Cc: linux-cris-kernel@axis.com
+Cc: Samuel Ortiz <samuel@sortiz.org>
+Cc: "David S. Miller" <davem@davemloft.net>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/isdn/i4l/isdn_tty.c | 12 ++++++------
- include/linux/isdn.h        |  1 +
- 2 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/s390/char/con3215.c      | 3 +--
+ drivers/tty/rocket.c             | 2 +-
+ drivers/tty/serial/68328serial.c | 3 +--
+ drivers/tty/serial/crisv10.c     | 3 +--
+ drivers/tty/serial/serial_core.c | 1 -
+ drivers/tty/tty_port.c           | 3 +--
+ net/irda/ircomm/ircomm_tty.c     | 4 ----
+ 7 files changed, 5 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/isdn/i4l/isdn_tty.c b/drivers/isdn/i4l/isdn_tty.c
-index 1a53b93..1dad65d 100644
---- a/drivers/isdn/i4l/isdn_tty.c
-+++ b/drivers/isdn/i4l/isdn_tty.c
-@@ -1572,7 +1572,7 @@ isdn_tty_close(struct tty_struct *tty, struct file *filp)
- #endif
+diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
+index 0fc3fe5..d19d030 100644
+--- a/drivers/s390/char/con3215.c
++++ b/drivers/s390/char/con3215.c
+@@ -643,7 +643,6 @@ static void raw3215_shutdown(struct raw3215_info *raw)
+ 	if ((raw->flags & RAW3215_WORKING) ||
+ 	    raw->queued_write != NULL ||
+ 	    raw->queued_read != NULL) {
+-		raw->port.flags |= ASYNC_CLOSING;
+ 		add_wait_queue(&raw->empty_wait, &wait);
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		spin_unlock_irqrestore(get_ccwdev_lock(raw->cdev), flags);
+@@ -651,7 +650,7 @@ static void raw3215_shutdown(struct raw3215_info *raw)
+ 		spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
+ 		remove_wait_queue(&raw->empty_wait, &wait);
+ 		set_current_state(TASK_RUNNING);
+-		raw->port.flags &= ~(ASYNC_INITIALIZED | ASYNC_CLOSING);
++		raw->port.flags &= ~ASYNC_INITIALIZED;
+ 	}
+ 	spin_unlock_irqrestore(get_ccwdev_lock(raw->cdev), flags);
+ }
+diff --git a/drivers/tty/rocket.c b/drivers/tty/rocket.c
+index 2ab3b6f..0b802cd 100644
+--- a/drivers/tty/rocket.c
++++ b/drivers/tty/rocket.c
+@@ -1042,7 +1042,7 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
+ 		}
+ 	}
+ 	spin_lock_irq(&port->lock);
+-	info->port.flags &= ~(ASYNC_INITIALIZED | ASYNC_CLOSING | ASYNC_NORMAL_ACTIVE);
++	info->port.flags &= ~(ASYNC_INITIALIZED | ASYNC_NORMAL_ACTIVE);
+ 	tty->closing = 0;
+ 	spin_unlock_irq(&port->lock);
+ 	mutex_unlock(&port->mutex);
+diff --git a/drivers/tty/serial/68328serial.c b/drivers/tty/serial/68328serial.c
+index 3804b41..81c3cd9 100644
+--- a/drivers/tty/serial/68328serial.c
++++ b/drivers/tty/serial/68328serial.c
+@@ -1028,7 +1028,6 @@ static void rs_close(struct tty_struct *tty, struct file *filp)
+ 		local_irq_restore(flags);
  		return;
  	}
 -	port->flags |= ASYNC_CLOSING;
-+	info->closing = 1;
- 
- 	tty->closing = 1;
  	/*
-@@ -1603,6 +1603,7 @@ isdn_tty_close(struct tty_struct *tty, struct file *filp)
- 	info->ncarrier = 0;
+ 	 * Now we wait for the transmit buffer to clear; and we notify 
+ 	 * the line discipline to only process XON/XOFF characters.
+@@ -1058,7 +1057,7 @@ static void rs_close(struct tty_struct *tty, struct file *filp)
+ 			msleep_interruptible(jiffies_to_msecs(port->close_delay));
+ 		wake_up_interruptible(&port->open_wait);
+ 	}
+-	port->flags &= ~(ASYNC_NORMAL_ACTIVE|ASYNC_CLOSING);
++	port->flags &= ~ASYNC_NORMAL_ACTIVE;
+ 	local_irq_restore(flags);
+ }
  
- 	tty_port_close_end(port, tty);
-+	info->closing = 0;
- #ifdef ISDN_DEBUG_MODEM_OPEN
- 	printk(KERN_DEBUG "isdn_tty_close normal exit\n");
- #endif
-@@ -2236,7 +2237,7 @@ isdn_tty_at_cout(char *msg, modem_info *info)
- 	l = strlen(msg);
- 
- 	spin_lock_irqsave(&info->readlock, flags);
--	if (port->flags & ASYNC_CLOSING) {
-+	if (info->closing) {
- 		spin_unlock_irqrestore(&info->readlock, flags);
+diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
+index df740c5..8e10172 100644
+--- a/drivers/tty/serial/crisv10.c
++++ b/drivers/tty/serial/crisv10.c
+@@ -3610,7 +3610,6 @@ rs_close(struct tty_struct *tty, struct file * filp)
+ 		local_irq_restore(flags);
  		return;
  	}
-@@ -2386,13 +2387,12 @@ isdn_tty_modem_result(int code, modem_info *info)
- 	case RESULT_NO_CARRIER:
- #ifdef ISDN_DEBUG_MODEM_HUP
- 		printk(KERN_DEBUG "modem_result: NO CARRIER %d %d\n",
--		       (info->port.flags & ASYNC_CLOSING),
--		       (!info->port.tty));
-+		       info->closing, !info->port.tty);
- #endif
- 		m->mdmreg[REG_RINGCNT] = 0;
- 		del_timer(&info->nc_timer);
- 		info->ncarrier = 0;
--		if ((info->port.flags & ASYNC_CLOSING) || (!info->port.tty))
-+		if (info->closing || !info->port.tty)
- 			return;
- 
- #ifdef CONFIG_ISDN_AUDIO
-@@ -2525,7 +2525,7 @@ isdn_tty_modem_result(int code, modem_info *info)
- 		}
+-	info->port.flags |= ASYNC_CLOSING;
+ 	/*
+ 	 * Now we wait for the transmit buffer to clear; and we notify
+ 	 * the line discipline to only process XON/XOFF characters.
+@@ -3649,7 +3648,7 @@ rs_close(struct tty_struct *tty, struct file * filp)
+ 			schedule_timeout_interruptible(info->port.close_delay);
+ 		wake_up_interruptible(&info->port.open_wait);
  	}
- 	if (code == RESULT_NO_CARRIER) {
--		if ((info->port.flags & ASYNC_CLOSING) || (!info->port.tty))
-+		if (info->closing || (!info->port.tty))
- 			return;
+-	info->port.flags &= ~(ASYNC_NORMAL_ACTIVE|ASYNC_CLOSING);
++	info->port.flags &= ~ASYNC_NORMAL_ACTIVE;
+ 	local_irq_restore(flags);
  
- 		if (info->port.flags & ASYNC_CHECK_CD)
-diff --git a/include/linux/isdn.h b/include/linux/isdn.h
-index 1e9a0f2..df97c84 100644
---- a/include/linux/isdn.h
-+++ b/include/linux/isdn.h
-@@ -319,6 +319,7 @@ typedef struct modem_info {
-   int                   online;          /* 1 = B-Channel is up, drop data */
- 					 /* 2 = B-Channel is up, deliver d.*/
-   int                   dialing;         /* Dial in progress or ATA        */
-+  int                   closing;
-   int                   rcvsched;        /* Receive needs schedule         */
-   int                   isdn_driver;	 /* Index to isdn-driver           */
-   int                   isdn_channel;    /* Index to isdn-channel          */
+ 	/* port closed */
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 0baa231..bdff7fe 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1423,7 +1423,6 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+ 	 * Wake up anyone trying to open this port.
+ 	 */
+ 	clear_bit(ASYNCB_NORMAL_ACTIVE, &port->flags);
+-	clear_bit(ASYNCB_CLOSING, &port->flags);
+ 	spin_unlock_irq(&port->lock);
+ 	wake_up_interruptible(&port->open_wait);
+ 
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 1fbba8e..101a8c2 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -476,7 +476,6 @@ int tty_port_close_start(struct tty_port *port,
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ 		return 0;
+ 	}
+-	set_bit(ASYNCB_CLOSING, &port->flags);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	tty->closing = 1;
+@@ -515,7 +514,7 @@ void tty_port_close_end(struct tty_port *port, struct tty_struct *tty)
+ 		spin_lock_irqsave(&port->lock, flags);
+ 		wake_up_interruptible(&port->open_wait);
+ 	}
+-	port->flags &= ~(ASYNC_NORMAL_ACTIVE | ASYNC_CLOSING);
++	port->flags &= ~ASYNC_NORMAL_ACTIVE;
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ EXPORT_SYMBOL(tty_port_close_end);
+diff --git a/net/irda/ircomm/ircomm_tty.c b/net/irda/ircomm/ircomm_tty.c
+index 1776fe5..da126ee 100644
+--- a/net/irda/ircomm/ircomm_tty.c
++++ b/net/irda/ircomm/ircomm_tty.c
+@@ -1267,10 +1267,6 @@ static void ircomm_tty_line_info(struct ircomm_tty_cb *self, struct seq_file *m)
+ 		seq_printf(m, "%cASYNC_LOW_LATENCY", sep);
+ 		sep = '|';
+ 	}
+-	if (self->port.flags & ASYNC_CLOSING) {
+-		seq_printf(m, "%cASYNC_CLOSING", sep);
+-		sep = '|';
+-	}
+ 	if (self->port.flags & ASYNC_NORMAL_ACTIVE) {
+ 		seq_printf(m, "%cASYNC_NORMAL_ACTIVE", sep);
+ 		sep = '|';
 -- 
 2.7.0
