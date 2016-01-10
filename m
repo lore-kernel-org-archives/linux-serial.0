@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 4/9] staging: dgap: Remove redundant write_wait wakeups
-Date: Sun, 10 Jan 2016 14:43:04 -0800
-Message-ID: <1452465789-4039-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 7/9] tty: Allow unreadable mess to be > 80 chars
+Date: Sun, 10 Jan 2016 14:43:07 -0800
+Message-ID: <1452465789-4039-7-git-send-email-peter@hurleysoftware.com>
 References: <1452465789-4039-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1452465789-4039-1-git-send-email-peter@hurleysoftware.com>
@@ -10,37 +10,27 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Waking the write_wait queue is exactly what tty_wakeup() does;
-remove the open-coded wakeups.
-
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/staging/dgap/dgap.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/tty/tty_port.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/dgap/dgap.c b/drivers/staging/dgap/dgap.c
-index dfbae21..5413ed8 100644
---- a/drivers/staging/dgap/dgap.c
-+++ b/drivers/staging/dgap/dgap.c
-@@ -3155,8 +3155,6 @@ static void dgap_tty_flush_buffer(struct tty_struct *tty)
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 846ed48..a76aec2 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -510,10 +510,8 @@ void tty_port_close_end(struct tty_port *port, struct tty_struct *tty)
  
- 	spin_unlock_irqrestore(&ch->ch_lock, lock_flags2);
- 	spin_unlock_irqrestore(&bd->bd_lock, lock_flags);
--	if (waitqueue_active(&tty->write_wait))
--		wake_up_interruptible(&tty->write_wait);
- 	tty_wakeup(tty);
- }
- 
-@@ -4953,10 +4951,6 @@ static int dgap_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
- 			ch->ch_pun.un_flags &= ~(UN_LOW | UN_EMPTY);
- 			wake_up_interruptible(&ch->ch_pun.un_flags_wait);
- 		}
--		if (waitqueue_active(&tty->write_wait))
--			wake_up_interruptible(&tty->write_wait);
--
--		/* Can't hold any locks when calling tty_wakeup! */
- 		spin_unlock_irqrestore(&ch->ch_lock, lock_flags2);
- 		spin_unlock_irqrestore(&bd->bd_lock, lock_flags);
- 		tty_wakeup(tty);
+ 	if (port->blocked_open) {
+ 		spin_unlock_irqrestore(&port->lock, flags);
+-		if (port->close_delay) {
+-			msleep_interruptible(
+-				jiffies_to_msecs(port->close_delay));
+-		}
++		if (port->close_delay)
++			msleep_interruptible(jiffies_to_msecs(port->close_delay));
+ 		spin_lock_irqsave(&port->lock, flags);
+ 		wake_up_interruptible(&port->open_wait);
+ 	}
 -- 
 2.7.0
