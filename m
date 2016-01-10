@@ -1,54 +1,41 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 1/9] tty: rocket: Remove private close_wait
-Date: Sun, 10 Jan 2016 14:43:01 -0800
-Message-ID: <1452465789-4039-1-git-send-email-peter@hurleysoftware.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH 5/9] tty: Fix GPF in flush_to_ldisc(), part 2
+Date: Sun, 10 Jan 2016 14:43:05 -0800
+Message-ID: <1452465789-4039-5-git-send-email-peter@hurleysoftware.com>
+References: <1452465789-4039-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1452465789-4039-1-git-send-email-peter@hurleysoftware.com>
+Sender: stable-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This driver's private completion variable, close_wait, is no longer
-used for wait since "tty: Remove ASYNC_CLOSING checks in open()/hangup";
-remove.
+commit 9ce119f318ba ("tty: Fix GPF in flush_to_ldisc()") fixed a
+GPF caused by a line discipline which does not define a receive_buf()
+method.
 
+However, the vt driver (and speakup driver also) pushes selection
+data directly to the line discipline receive_buf() method via
+tty_ldisc_receive_buf(). Fix the same problem in tty_ldisc_receive_buf().
+
+Cc: <stable@vger.kernel.org>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/rocket.c     | 2 --
- drivers/tty/rocket_int.h | 1 -
- 2 files changed, 3 deletions(-)
+ include/linux/tty.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/rocket.c b/drivers/tty/rocket.c
-index f624b93..9dd02da 100644
---- a/drivers/tty/rocket.c
-+++ b/drivers/tty/rocket.c
-@@ -643,7 +643,6 @@ static void init_r_port(int board, int aiop, int chan, struct pci_dev *pci_dev)
- 	info->chan = chan;
- 	tty_port_init(&info->port);
- 	info->port.ops = &rocket_port_ops;
--	init_completion(&info->close_wait);
- 	info->flags &= ~ROCKET_MODE_MASK;
- 	switch (pc104[board][line]) {
- 	case 422:
-@@ -1049,7 +1048,6 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
- 	mutex_unlock(&port->mutex);
- 	tty_port_tty_set(port, NULL);
- 
--	complete_all(&info->close_wait);
- 	atomic_dec(&rp_num_ports_open);
- 
- #ifdef ROCKET_DEBUG_OPEN
-diff --git a/drivers/tty/rocket_int.h b/drivers/tty/rocket_int.h
-index 67e0f1e..ef1e1be 100644
---- a/drivers/tty/rocket_int.h
-+++ b/drivers/tty/rocket_int.h
-@@ -1144,7 +1144,6 @@ struct r_port {
- 	int read_status_mask;
- 	int cps;
- 
--	struct completion close_wait;	/* Not yet matching the core */
- 	spinlock_t slock;
- 	struct mutex write_mtx;
- };
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index dea7d54..03e4015 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -579,7 +579,7 @@ static inline int tty_ldisc_receive_buf(struct tty_ldisc *ld, unsigned char *p,
+ 		count = ld->ops->receive_buf2(ld->tty, p, f, count);
+ 	else {
+ 		count = min_t(int, count, ld->tty->receive_room);
+-		if (count)
++		if (count && ld->ops->receive_buf)
+ 			ld->ops->receive_buf(ld->tty, p, f, count);
+ 	}
+ 	return count;
 -- 
 2.7.0
