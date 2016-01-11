@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 7/8] serial: core: Unfold < 80 char lines
-Date: Sun, 10 Jan 2016 20:24:01 -0800
-Message-ID: <1452486242-7297-8-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 8/8] serial: core: Perform RTS signalling before soft flow ctrl
+Date: Sun, 10 Jan 2016 20:24:02 -0800
+Message-ID: <1452486242-7297-9-git-send-email-peter@hurleysoftware.com>
 References: <1452486242-7297-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1452486242-7297-1-git-send-email-peter@hurleysoftware.com>
@@ -10,46 +10,47 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
+When throttling, time is of the essence; try RTS signalling before
+soft flow control, which will take longer.
+
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/serial_core.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/tty/serial/serial_core.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 530b892..3031982 100644
+index 3031982..0baa231 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -1686,17 +1686,13 @@ static void uart_line_info(struct seq_file *m, struct uart_driver *drv, int i)
- 		seq_printf(m, " tx:%d rx:%d",
- 				uport->icount.tx, uport->icount.rx);
- 		if (uport->icount.frame)
--			seq_printf(m, " fe:%d",
--				uport->icount.frame);
-+			seq_printf(m, " fe:%d",	uport->icount.frame);
- 		if (uport->icount.parity)
--			seq_printf(m, " pe:%d",
--				uport->icount.parity);
-+			seq_printf(m, " pe:%d",	uport->icount.parity);
- 		if (uport->icount.brk)
--			seq_printf(m, " brk:%d",
--				uport->icount.brk);
-+			seq_printf(m, " brk:%d", uport->icount.brk);
- 		if (uport->icount.overrun)
--			seq_printf(m, " oe:%d",
--				uport->icount.overrun);
-+			seq_printf(m, " oe:%d", uport->icount.overrun);
+@@ -641,11 +641,11 @@ static void uart_throttle(struct tty_struct *tty)
+ 		mask &= ~port->status;
+ 	}
  
- #define INFOBIT(bit, str) \
- 	if (uport->mctrl & (bit)) \
-@@ -1731,8 +1727,7 @@ static int uart_proc_show(struct seq_file *m, void *v)
- 	struct uart_driver *drv = ttydrv->driver_state;
- 	int i;
+-	if (mask & UPSTAT_AUTOXOFF)
+-		uart_send_xchar(tty, STOP_CHAR(tty));
+-
+ 	if (mask & UPSTAT_AUTORTS)
+ 		uart_clear_mctrl(port, TIOCM_RTS);
++
++	if (mask & UPSTAT_AUTOXOFF)
++		uart_send_xchar(tty, STOP_CHAR(tty));
+ }
  
--	seq_printf(m, "serinfo:1.0 driver%s%s revision:%s\n",
--			"", "", "");
-+	seq_printf(m, "serinfo:1.0 driver%s%s revision:%s\n", "", "", "");
- 	for (i = 0; i < drv->nr; i++)
- 		uart_line_info(m, drv, i);
- 	return 0;
+ static void uart_unthrottle(struct tty_struct *tty)
+@@ -664,11 +664,11 @@ static void uart_unthrottle(struct tty_struct *tty)
+ 		mask &= ~port->status;
+ 	}
+ 
+-	if (mask & UPSTAT_AUTOXOFF)
+-		uart_send_xchar(tty, START_CHAR(tty));
+-
+ 	if (mask & UPSTAT_AUTORTS)
+ 		uart_set_mctrl(port, TIOCM_RTS);
++
++	if (mask & UPSTAT_AUTOXOFF)
++		uart_send_xchar(tty, START_CHAR(tty));
+ }
+ 
+ static void uart_get_info(struct tty_port *port, struct serial_struct *retinfo)
 -- 
 2.7.0
