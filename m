@@ -1,75 +1,45 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH -next] tty/serial: atmel: Include module.h to fix build
- failure
-Date: Mon, 11 Jan 2016 17:04:27 +0530
-Message-ID: <20160111113427.GA17846@sudip-pc>
-References: <1452363335-2535-1-git-send-email-linux@roeck-us.net>
- <20160109182908.GB29967@kroah.com>
- <20160111083536.GB8070@sudip-pc>
- <20160111111101.GA18945@roeck-us.net>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH V2 1/2] dt/bindings: serial: bcm2835: add binding documentation for bcm2835-aux-uart
+Date: Mon, 11 Jan 2016 13:21:17 +0100
+Message-ID: <4288762.bCLxQBDvy4@wuerfel>
+References: <1452344854-2576-1-git-send-email-kernel@martin.sperl.org> <10159898.8xe3rmYdEi@wuerfel> <175E89CE-581C-48AB-B7FF-6E9A41B033D5@martin.sperl.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160111111101.GA18945@roeck-us.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <175E89CE-581C-48AB-B7FF-6E9A41B033D5-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 11, 2016 at 03:11:01AM -0800, Guenter Roeck wrote:
-> On Mon, Jan 11, 2016 at 02:05:36PM +0530, Sudip Mukherjee wrote:
-> > On Sat, Jan 09, 2016 at 10:29:08AM -0800, Greg Kroah-Hartman wrote:
-> > > On Sat, Jan 09, 2016 at 10:15:35AM -0800, Guenter Roeck wrote:
-> > > > If serial/atmel_serial.c is compiled with devicetree enabled, the
-> > > > following build error is observed.
-> > > > 
-> > > > drivers/tty/serial/atmel_serial.c:192:1: warning:
-> > > > 	data definition has no type or storage class
-> > > > drivers/tty/serial/atmel_serial.c:192:1: error:
-> > > > 	type defaults to 'int' in declaration of 'MODULE_DEVICE_TABLE'
-> > > > drivers/tty/serial/atmel_serial.c:192:1: warning:
-> > > > 	parameter names (without types) in function declaration
-> > > > 
-> > > > MODULE_DEVICE_TABLE is used to specify devicetree compatibilities.
-> > > > 
-> > > > Fixes: c39dfebc7798 ("drivers/tty/serial: make serial/atmel_serial.c explicitly non-modular")
-> > > > Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
-> > > > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > > > ---
-> > > >  drivers/tty/serial/atmel_serial.c | 1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > 
-> > > This hit my tree last night already with commit
-> > > 041497eb721ddbdc1e690316976dd8ba7bc136a2, so all should be fine in the
-> > > next linux-next release.
-> > 
-> > Hi Guenter,
-> > Just a thought. It has happended many times that we both have sent
-> > patches to fix the same build fail. Maybe your patch got applied and
-> > mine came late or maybe mine was applied and you came late. But I think
-> > if we have a separate mailing list where people interested to fix and
-> > monitor build failures will be members and we Cc that list whenever we
-> > send patch for build fail and then in that case we will know that
-> > someone else has already sent a patch for this failure and we can invest
-> > the time in some other problem.
-> > 
+On Sunday 10 January 2016 11:49:19 Martin Sperl wrote:
+> The existing dts arch/arm/boot/dts/bcm2835.dtsi already contains:
+>                 uart0: uart@7e201000 {
+>                         compatible = "brcm,bcm2835-pl011", "arm,pl011", "arm,primecell";
+>                         reg = <0x7e201000 0x1000>;
+>                         interrupts = <2 25>;
+>                         clocks = <&clocks BCM2835_CLOCK_UART>,
+>                                  <&clocks BCM2835_CLOCK_VPU>;
+>                         clock-names = "uartclk", "apb_pclk";
+>                         arm,primecell-periphid = <0x00241011>;
+>                 };
+> for the primary uart.
 > 
-> Hi Sudip,
+> So I was just following that example and would hesitate to
+> use a different nomenclature in the same file (even though I
+> saw serial examples elsewhere).
 > 
-> I agree, it would make sense to have a build(/runtime?)-fixes-only mailing
-> list. Question though is how to limit noise on such a list
+> I guess this is a more general thing that needs to get resolved.
+> 
+> If you tell me to re-spin the patch because of this then I can do that,
+> but that would not solve the issue with uart0.
 
-The list can be moderated for non-subscribers. We both can be admin and
-can approve the mails if it is relevant to this list. Due to our
-timezones atleast one of us will be always available to approve mails.
+Please just add another patch to rename the existing uarts appropriately
+first, then add this one on top with the correct name.
 
-> and, of course, > where and how to set it up. Any thoughts ?
-
-since the list is kernel related, i think the best place should be
-vger.kernel.org but I have no idea how or whom to approach to have a
-list there. Maybe Greg can guide.
-And if that is not possible then there are many alternatives.
-
-regards
-sudip
+	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
