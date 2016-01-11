@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 2/9] n_tty: Ignore all read data when closing
-Date: Sun, 10 Jan 2016 20:36:09 -0800
-Message-ID: <1452486976-7594-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 1/9] tty: rocket: Remove private close_wait
+Date: Sun, 10 Jan 2016 20:36:08 -0800
+Message-ID: <1452486976-7594-2-git-send-email-peter@hurleysoftware.com>
 References: <1452486976-7594-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1452486976-7594-1-git-send-email-peter@hurleysoftware.com>
@@ -10,27 +10,47 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-On final port close (and thus final tty close), only output flow
-control requests in the input data should be processed. Ignore all
-other input data, including parity errors, overruns and breaks.
+This driver's private completion variable, close_wait, is no longer
+used for wait since "tty: Remove ASYNC_CLOSING checks in open()/hangup";
+remove.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/n_tty.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/tty/rocket.c     | 2 --
+ drivers/tty/rocket_int.h | 1 -
+ 2 files changed, 3 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index fad365a..fb76a7d 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1524,8 +1524,6 @@ n_tty_receive_buf_closing(struct tty_struct *tty, const unsigned char *cp,
- 			flag = *fp++;
- 		if (likely(flag == TTY_NORMAL))
- 			n_tty_receive_char_closing(tty, *cp++);
--		else
--			n_tty_receive_char_flagged(tty, *cp++, flag);
- 	}
- }
+diff --git a/drivers/tty/rocket.c b/drivers/tty/rocket.c
+index f624b93..9dd02da 100644
+--- a/drivers/tty/rocket.c
++++ b/drivers/tty/rocket.c
+@@ -643,7 +643,6 @@ static void init_r_port(int board, int aiop, int chan, struct pci_dev *pci_dev)
+ 	info->chan = chan;
+ 	tty_port_init(&info->port);
+ 	info->port.ops = &rocket_port_ops;
+-	init_completion(&info->close_wait);
+ 	info->flags &= ~ROCKET_MODE_MASK;
+ 	switch (pc104[board][line]) {
+ 	case 422:
+@@ -1049,7 +1048,6 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
+ 	mutex_unlock(&port->mutex);
+ 	tty_port_tty_set(port, NULL);
  
+-	complete_all(&info->close_wait);
+ 	atomic_dec(&rp_num_ports_open);
+ 
+ #ifdef ROCKET_DEBUG_OPEN
+diff --git a/drivers/tty/rocket_int.h b/drivers/tty/rocket_int.h
+index 67e0f1e..ef1e1be 100644
+--- a/drivers/tty/rocket_int.h
++++ b/drivers/tty/rocket_int.h
+@@ -1144,7 +1144,6 @@ struct r_port {
+ 	int read_status_mask;
+ 	int cps;
+ 
+-	struct completion close_wait;	/* Not yet matching the core */
+ 	spinlock_t slock;
+ 	struct mutex write_mtx;
+ };
 -- 
 2.7.0
