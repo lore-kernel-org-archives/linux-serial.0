@@ -1,38 +1,43 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: RFC: out-of-tree tty driver breakage (changing ASYNC_ bits)
-Date: Mon, 11 Jan 2016 08:24:13 -0800
-Message-ID: <5693D72D.6050501@hurleysoftware.com>
-References: <5692D054.7050203@hurleysoftware.com>
- <20160111044204.GB12741@kroah.com> <n70j5g$sem$1@ger.gmane.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH] kgdb: depends on VT
+Date: Mon, 11 Jan 2016 18:31:08 +0100
+Message-ID: <1452533468-16022-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <n70j5g$sem$1@ger.gmane.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Grant Edwards <grant.b.edwards@gmail.com>, linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>
+To: jason.wessel@windriver.com
+Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 01/11/2016 07:53 AM, Grant Edwards wrote:
-> On 2016-01-11, Greg KH <gregkh@linuxfoundation.org> wrote:
->> On Sun, Jan 10, 2016 at 01:42:44PM -0800, Peter Hurley wrote:
->>
->>> This will break out-of-tree drivers but I don't really see a
->>> realistic alternative. Also, I think the new symbol prefix ASY_ isn't
->>> great and I'd like to get some suggestions.
->>
->> Don't worry about breaking out-of-tree drivers, that's fine.
-> 
-> One request from this maintainer of several out-of-tree drivers: if
-> you break something, break it such that it won't compile.  It would be
-> nice to avoid changes that break functionality but still compile
-> without warning.
+With VT=n, the kernel build fails with:
+drivers/built-in.o: In function `kgdboc_pre_exp_handler':
+kgdboc.c:(.text+0x7b5aa): undefined reference to `fg_console'
+kgdboc.c:(.text+0x7b5ce): undefined reference to `vc_cons'
+kgdboc.c:(.text+0x7b5d5): undefined reference to `vc_cons'
 
-I was in the process of writing how I can't remove ASYNC_INITIALIZED, et.al
-from the uapi header, when I realized that I can just guard them with
-#ifndef _KERNEL_ which will trigger the requisite out-of-tree build
-break.
+kgdboc.o is built when KGDB_SERIAL_CONSOLE is set. So make
+KGDB_SERIAL_CONSOLE depend on HW_CONSOLE which includes those symbols.
 
-Regards,
-Peter Hurley
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Reported-by: "Jim Davis" <jim.epost@gmail.com>
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Cc: <kgdb-bugreport@lists.sourceforge.net>
+Cc: <linux-serial@vger.kernel.org>
+---
+ lib/Kconfig.kgdb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/Kconfig.kgdb b/lib/Kconfig.kgdb
+index c635a107a7de..533f912638ed 100644
+--- a/lib/Kconfig.kgdb
++++ b/lib/Kconfig.kgdb
+@@ -22,7 +22,7 @@ config KGDB_SERIAL_CONSOLE
+ 	tristate "KGDB: use kgdb over the serial console"
+ 	select CONSOLE_POLL
+ 	select MAGIC_SYSRQ
+-	depends on TTY
++	depends on TTY && HW_CONSOLE
+ 	default y
+ 	help
+ 	  Share a serial console with kgdb. Sysrq-g must be used
+-- 
+2.7.0
