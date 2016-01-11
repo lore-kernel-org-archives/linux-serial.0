@@ -1,38 +1,46 @@
-From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH] serial: sh-sci: Add device tree support for r8a7792
-Date: Mon, 11 Jan 2016 10:39:20 +0900
-Message-ID: <1452476360-20972-1-git-send-email-horms+renesas@verge.net.au>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Magnus Damm <magnus.damm@gmail.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Simon Horman <horms+renesas@verge.net.au>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH v2 0/8] Misc serial cleanups
+Date: Sun, 10 Jan 2016 20:23:54 -0800
+Message-ID: <1452486242-7297-1-git-send-email-peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Simply document new compat strings.
-There appears to be no need for a driver updates.
+Hi Greg,
 
-Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+Apologies for the earlier mixed series; this is the proper series.
+This series contains accumulated cleanups for the serial core.
 
----
-* Broken out of a larger patch the remainder of which has
-  already been accepted into tty-next
----
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
- 1 file changed, 2 insertions(+)
+Several of these patches were in earlier series that were not applied
+so I split the simpler ones into this series to form a basis for
+follow-on series (especially the "Fix unsafe uart port access" series
+and another that addresses the tty_port->flags problem).
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index 401b1b33c2c4..528c3b90f23c 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -19,6 +19,8 @@ Required properties:
-     - "renesas,scifa-r8a7791" for R8A7791 (R-Car M2-W) SCIFA compatible UART.
-     - "renesas,scifb-r8a7791" for R8A7791 (R-Car M2-W) SCIFB compatible UART.
-     - "renesas,hscif-r8a7791" for R8A7791 (R-Car M2-W) HSCIF compatible UART.
-+    - "renesas,scif-r8a7792" for R8A7792 (R-Car V2H) SCIF compatible UART.
-+    - "renesas,hscif-r8a7792" for R8A7792 (R-Car V2H) HSCIF compatible UART.
-     - "renesas,scif-r8a7793" for R8A7793 (R-Car M2-N) SCIF compatible UART.
-     - "renesas,scifa-r8a7793" for R8A7793 (R-Car M2-N) SCIFA compatible UART.
-     - "renesas,scifb-r8a7793" for R8A7793 (R-Car M2-N) SCIFB compatible UART.
+Regards,
+
+Regards,
+
+Peter Hurley (8):
+  serial: core: Fold __uart_put_char() into caller
+  serial: core: Fold do_uart_get_info() into caller
+  serial: core: Use tty->index for port # in debug messages
+  serial: Fix ASYNC_* => UPF_* flags misuse
+  serial: core: Cleanup uart_open() exit
+  serial: core: Remove cast from void ptr in uart_open()
+  serial: core: Unfold < 80 char lines
+  serial: core: Perform RTS signalling before soft flow ctrl
+
+ arch/alpha/include/asm/serial.h      |  8 ++--
+ arch/frv/include/asm/serial.h        |  2 +-
+ arch/m68k/include/asm/serial.h       |  8 ++--
+ arch/mips/pmcs-msp71xx/msp_serial.c  |  2 +-
+ arch/mn10300/include/asm/serial.h    | 10 ++---
+ arch/xtensa/platforms/xt2000/setup.c |  2 +-
+ drivers/tty/serial/serial_core.c     | 71 ++++++++++++++----------------------
+ drivers/tty/serial/serial_ks8695.c   |  2 +-
+ 8 files changed, 44 insertions(+), 61 deletions(-)
+
 -- 
-2.7.0.rc3.207.g0ac5344
-
+2.7.0
