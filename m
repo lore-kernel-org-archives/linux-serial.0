@@ -1,43 +1,21 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH] kgdb: depends on VT
-Date: Mon, 11 Jan 2016 18:31:08 +0100
-Message-ID: <1452533468-16022-1-git-send-email-jslaby@suse.cz>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] serial: Remove 68328 driver
+Date: Mon, 11 Jan 2016 09:53:58 -0800
+Message-ID: <5693EC36.1020000@hurleysoftware.com>
+References: <1449830170-15096-1-git-send-email-frederik.voelkel@fau.de>
+ <1450438103-1059-1-git-send-email-frederik.voelkel@fau.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1450438103-1059-1-git-send-email-frederik.voelkel@fau.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jason.wessel@windriver.com
-Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+To: =?UTF-8?Q?Frederik_V=c3=b6lkel?= <frederik.voelkel@fau.de>, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-kernel@i4.cs.fau.de, Lukas Braun <lukas.braun@fau.de>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@vger.kernel.org, uclinux-dev@uclinux.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Ungerer <gregungerer@westnet.com.au>
 List-Id: linux-serial@vger.kernel.org
 
-With VT=n, the kernel build fails with:
-drivers/built-in.o: In function `kgdboc_pre_exp_handler':
-kgdboc.c:(.text+0x7b5aa): undefined reference to `fg_console'
-kgdboc.c:(.text+0x7b5ce): undefined reference to `vc_cons'
-kgdboc.c:(.text+0x7b5d5): undefined reference to `vc_cons'
+On 12/18/2015 03:28 AM, Frederik V=C3=B6lkel wrote:
+> It's old, messy and mostly unmaintained.
+> Remove it as suggested by Peter Hurley and Alan.
 
-kgdboc.o is built when KGDB_SERIAL_CONSOLE is set. So make
-KGDB_SERIAL_CONSOLE depend on HW_CONSOLE which includes those symbols.
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Reported-by: "Jim Davis" <jim.epost@gmail.com>
-Cc: Jason Wessel <jason.wessel@windriver.com>
-Cc: <kgdb-bugreport@lists.sourceforge.net>
-Cc: <linux-serial@vger.kernel.org>
----
- lib/Kconfig.kgdb | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/lib/Kconfig.kgdb b/lib/Kconfig.kgdb
-index c635a107a7de..533f912638ed 100644
---- a/lib/Kconfig.kgdb
-+++ b/lib/Kconfig.kgdb
-@@ -22,7 +22,7 @@ config KGDB_SERIAL_CONSOLE
- 	tristate "KGDB: use kgdb over the serial console"
- 	select CONSOLE_POLL
- 	select MAGIC_SYSRQ
--	depends on TTY
-+	depends on TTY && HW_CONSOLE
- 	default y
- 	help
- 	  Share a serial console with kgdb. Sysrq-g must be used
--- 
-2.7.0
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
