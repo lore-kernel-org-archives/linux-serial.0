@@ -1,116 +1,68 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v2 6/9] tty: Unify receive_buf() code paths
-Date: Sun, 10 Jan 2016 20:36:13 -0800
-Message-ID: <1452486976-7594-7-git-send-email-peter@hurleysoftware.com>
-References: <1452486976-7594-1-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v2 0/9] Misc tty fixes & cleanups
+Date: Sun, 10 Jan 2016 20:36:07 -0800
+Message-ID: <1452486976-7594-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1452486976-7594-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Instead of two distinct code branches for receive_buf() handling,
-use tty_ldisc_receive_buf() as the single code path.
+Hi Greg,
 
-Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
----
- drivers/tty/tty_buffer.c | 39 ++++++++++++++++++++++++++++-----------
- include/linux/tty.h      | 16 ++--------------
- 2 files changed, 30 insertions(+), 25 deletions(-)
+Again, apologies for the mixed series; this is the other series.
+This series contains accumulated cleanups for the tty core and drivers.
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 3cd31e0..a946e49 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -435,25 +435,42 @@ int tty_prepare_flip_string(struct tty_port *port, unsigned char **chars,
- }
- EXPORT_SYMBOL_GPL(tty_prepare_flip_string);
- 
-+/**
-+ *	tty_ldisc_receive_buf		-	forward data to line discipline
-+ *	@ld:	line discipline to process input
-+ *	@p:	char buffer
-+ *	@f:	TTY_* flags buffer
-+ *	@count:	number of bytes to process
-+ *
-+ *	Callers other than flush_to_ldisc() need to exclude the kworker
-+ *	from concurrent use of the line discipline, see paste_selection().
-+ *
-+ *	Returns the number of bytes not processed
-+ */
-+int tty_ldisc_receive_buf(struct tty_ldisc *ld, unsigned char *p,
-+			  char *f, int count)
-+{
-+	if (ld->ops->receive_buf2)
-+		count = ld->ops->receive_buf2(ld->tty, p, f, count);
-+	else {
-+		count = min_t(int, count, ld->tty->receive_room);
-+		if (count && ld->ops->receive_buf)
-+			ld->ops->receive_buf(ld->tty, p, f, count);
-+	}
-+	return count;
-+}
-+EXPORT_SYMBOL_GPL(tty_ldisc_receive_buf);
- 
- static int
--receive_buf(struct tty_struct *tty, struct tty_buffer *head, int count)
-+receive_buf(struct tty_ldisc *ld, struct tty_buffer *head, int count)
- {
--	struct tty_ldisc *disc = tty->ldisc;
- 	unsigned char *p = char_buf_ptr(head, head->read);
- 	char	      *f = NULL;
- 
- 	if (~head->flags & TTYB_NORMAL)
- 		f = flag_buf_ptr(head, head->read);
- 
--	if (disc->ops->receive_buf2)
--		count = disc->ops->receive_buf2(tty, p, f, count);
--	else {
--		count = min_t(int, count, tty->receive_room);
--		if (count && disc->ops->receive_buf)
--			disc->ops->receive_buf(tty, p, f, count);
--	}
--	return count;
-+	return tty_ldisc_receive_buf(ld, p, f, count);
- }
- 
- /**
-@@ -514,7 +531,7 @@ static void flush_to_ldisc(struct work_struct *work)
- 			continue;
- 		}
- 
--		count = receive_buf(tty, head, count);
-+		count = receive_buf(disc, head, count);
- 		if (!count)
- 			break;
- 		head->read += count;
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 03e4015..3b09f23 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -571,20 +571,8 @@ extern int tty_ldisc_setup(struct tty_struct *tty, struct tty_struct *o_tty);
- extern void tty_ldisc_release(struct tty_struct *tty);
- extern void tty_ldisc_init(struct tty_struct *tty);
- extern void tty_ldisc_deinit(struct tty_struct *tty);
--
--static inline int tty_ldisc_receive_buf(struct tty_ldisc *ld, unsigned char *p,
--					char *f, int count)
--{
--	if (ld->ops->receive_buf2)
--		count = ld->ops->receive_buf2(ld->tty, p, f, count);
--	else {
--		count = min_t(int, count, ld->tty->receive_room);
--		if (count && ld->ops->receive_buf)
--			ld->ops->receive_buf(ld->tty, p, f, count);
--	}
--	return count;
--}
--
-+extern int tty_ldisc_receive_buf(struct tty_ldisc *ld, unsigned char *p,
-+				 char *f, int count);
- 
- /* n_tty.c */
- extern void n_tty_inherit_ops(struct tty_ldisc_ops *ops);
+Regards,
+
+Peter Hurley (9):
+  tty: rocket: Remove private close_wait
+  n_tty: Ignore all read data when closing
+  ia64: Pin controlling tty for unaligned fault message
+  staging: dgap: Remove redundant write_wait wakeups
+  tty: Fix GPF in flush_to_ldisc(), part 2
+  tty: Unify receive_buf() code paths
+  tty: Allow unreadable mess to be > 80 chars
+  tty: Use termios c_*flag macros
+  tty: Use test_bit() with tty->flags
+
+ arch/ia64/hp/sim/simserial.c         |  2 +-
+ arch/ia64/kernel/unaligned.c         |  7 +++++--
+ drivers/char/pcmcia/synclink_cs.c    | 23 +++++++++------------
+ drivers/isdn/i4l/isdn_tty.c          |  6 +++---
+ drivers/mmc/card/sdio_uart.c         | 14 ++++++-------
+ drivers/s390/char/tty3270.c          |  4 ++--
+ drivers/staging/dgap/dgap.c          | 10 ++-------
+ drivers/staging/dgnc/dgnc_tty.c      |  4 ++--
+ drivers/tty/amiserial.c              | 28 ++++++++++----------------
+ drivers/tty/cyclades.c               | 14 ++++++-------
+ drivers/tty/isicom.c                 |  3 +--
+ drivers/tty/mxser.c                  | 10 ++++-----
+ drivers/tty/n_gsm.c                  |  6 +++---
+ drivers/tty/n_tty.c                  |  2 --
+ drivers/tty/pty.c                    |  3 +--
+ drivers/tty/rocket.c                 | 10 ++++-----
+ drivers/tty/rocket_int.h             |  1 -
+ drivers/tty/serial/68328serial.c     |  6 ++----
+ drivers/tty/serial/crisv10.c         | 22 +++++++++-----------
+ drivers/tty/serial/jsm/jsm_tty.c     |  3 +--
+ drivers/tty/serial/serial_core.c     | 26 +++++++++++-------------
+ drivers/tty/synclink.c               | 27 ++++++++++---------------
+ drivers/tty/synclink_gt.c            | 23 +++++++++------------
+ drivers/tty/synclinkmp.c             | 23 +++++++++------------
+ drivers/tty/tty_buffer.c             | 39 ++++++++++++++++++++++++++----------
+ drivers/tty/tty_ioctl.c              | 12 +++++------
+ drivers/tty/tty_port.c               | 10 ++++-----
+ drivers/usb/serial/cypress_m8.c      |  3 +--
+ drivers/usb/serial/digi_acceleport.c |  8 ++++----
+ drivers/usb/serial/io_edgeport.c     |  4 ++--
+ drivers/usb/serial/mct_u232.c        |  2 +-
+ drivers/usb/serial/mos7720.c         |  4 ++--
+ drivers/usb/serial/mos7840.c         |  4 ++--
+ include/linux/tty.h                  | 16 ++-------------
+ net/irda/ircomm/ircomm_tty.c         | 11 +++++-----
+ net/irda/ircomm/ircomm_tty_ioctl.c   | 19 +++++++-----------
+ 36 files changed, 178 insertions(+), 231 deletions(-)
+
 -- 
 2.7.0
