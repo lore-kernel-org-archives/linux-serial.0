@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
-Date: Mon, 11 Jan 2016 11:06:36 -0800
-Message-ID: <5693FD3C.5080601@hurleysoftware.com>
+Date: Mon, 11 Jan 2016 11:57:42 -0800
+Message-ID: <56940936.6050807@hurleysoftware.com>
 References: <5672D18E.8000301@laposte.net>
  <5672E2CF.6080705@hurleysoftware.com> <5672E76A.3010506@laposte.net>
  <5672F588.8070503@hurleysoftware.com> <5672FD35.5070609@laposte.net>
@@ -9,129 +9,128 @@ References: <5672D18E.8000301@laposte.net>
  <5674204C.1000907@hurleysoftware.com> <56782DE5.7090708@laposte.net>
  <56798EC7.1030804@laposte.net> <5693C52B.90003@laposte.net>
  <5693D41E.8050601@hurleysoftware.com> <5693ECBA.50003@laposte.net>
+ <5693FD3C.5080601@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5693ECBA.50003@laposte.net>
+In-Reply-To: <5693FD3C.5080601@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Sebastian Frias <sf84@laposte.net>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, mason <slash.tmp@free.fr>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/11/2016 09:56 AM, Sebastian Frias wrote:
-> Hi Peter,
+On 01/11/2016 11:06 AM, Peter Hurley wrote:
+> On 01/11/2016 09:56 AM, Sebastian Frias wrote:
+>> On 01/11/2016 05:11 PM, Peter Hurley wrote:
+>>> On 01/11/2016 07:07 AM, Sebastian Frias wrote:
+>>>> On 12/22/2015 06:56 PM, Sebastian Frias wrote:
+
+[...]
+
+>> 2) What would it take to make the "rt2880" work with the 8250
+>> earlycon? I mean, it is already pretty much supported in there, what
+>> would be missing? (I don't see why it blocks on earlycon_map) And
+>> would it be worth doing?
 > 
-> On 01/11/2016 05:11 PM, Peter Hurley wrote:
->> On 01/11/2016 07:07 AM, Sebastian Frias wrote:
->>> On 12/22/2015 06:56 PM, Sebastian Frias wrote:
->>>>
->>>>       OF_EARLYCON_DECLARE(rt2880, "ralink,rt2880-uart",
->>>> early_serial8250_setup);
->>
->> There is no support for this uart in 8250 earlycon; the registers
->> need remapped.
+> The rt2880 does not have the same register locations as a 8250.
+> The 8250 port driver remaps all register accesses with a LUT.
 > 
-> Ok, two questions then:
-> 1) If the UART is not supported on 8250 earlycon, what is the
-> suggested/advised solution? Using just "earlyprintk"?
+> Adding support would be trivial.
 
-I don't have enough information to suggest what you "should" use
-here.
+Please test.
 
-Is this going to be a shipping product?
-Is it single-core?
-etc.
+--- >% ---
+Subject: [PATCH] serial: 8250: Add Au1x00/RT288x earlycon support
 
-And what is your purpose for outputting early boot information
-before loading the serial driver which does provide console output?
+Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+---
+ drivers/tty/serial/8250/8250_early.c | 52 ++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/serial_reg.h      | 13 +++++++++
+ 2 files changed, 65 insertions(+)
 
-
-> 2) What would it take to make the "rt2880" work with the 8250
-> earlycon? I mean, it is already pretty much supported in there, what
-> would be missing? (I don't see why it blocks on earlycon_map) And
-> would it be worth doing?
-
-The rt2880 does not have the same register locations as a 8250.
-The 8250 port driver remaps all register accesses with a LUT.
-
-Adding support would be trivial.
-
->>>> at the end of the file, trying to mimic commit
->>>> d05f15707bb7659d2b863fafa1a918f286d74a63
->>>>
->>>> I'm still trying to figure out the right bootargs, so that's why both
->>>> "earlycon" and "console" are there. Suggestions welcome.
->>
->> Just 'earlycon' triggers the attempted registration of earlycon matching the
->> compatible string of the stdout-path node.
->>
->> The empty 'console' in bootargs is doing nothing.
-> 
-> Ok, thanks.
-> 
-> So, just to recap.
-> We would like to understand what is the right way of doing this:
-> 
-> - we are using 8250 (rt288x variant) UART: CONFIG_SERIAL_8250_RT288X=y
-> - the UART hardware is setup prior to Linux boot
-> - we don't want Linux to change the UART settings, just to pick up
-> whatever settings the UART has and take over the UART. 
-> There were two replies to that, one by Greg Kroah-Hartman
-> (http://www.spinics.net/lists/linux-serial/msg20278.html) and one by
-> you, where you suggested we use "console=uart", but as I reported
-> (http://www.spinics.net/lists/linux-serial/msg20307.html) it does not
-> work, you replied that iotype and mmio are not optional but mandatory
-> (http://www.spinics.net/lists/linux-serial/msg20310.html), and I
-> wondered if it was really necessary to duplicate data that is already
-> on the DT among other questions
-
-At the time, I didn't know you were describing your h/w with DT.
-
-If you use the console command line (console= or earlycon=) to start
-an earlycon, then the uart address and iotype are mandatory.
-For this usage, earlycon matching is attempted with every EARLYCON_DECLARE().
-
-If you use plain "earlycon" on the command line, that will attempt to
-register the uart described by stdout-path in DT. For this usage,
-earlycon matching is attempted with the compatible string of every
-OF_EARLYCON_DECLARE().
-
-> (http://www.spinics.net/lists/linux-serial/msg20383.html), like how
-> are DT described drivers supposed to interact with the
-> "console="/"earlycon=" commandlines
-
-They don't; those are orthogonal.
-
->, or, the contradiction between
-> "console=ttyS0" means '9600n81' and "if unspecified [the uart
-> options], the h/w is not re-initialized"> 
-
-I thought I was clear on that: "console=ttyS0" initializes the h/w
-to 9600n81 *because there are already existing users that must not break*.
-
-"console=uart,..." probes the h/w
-*because there are already existing users that must not break *
-
-> So, for us, it is still not clear what is the recommended way of
-> achieving our goal above, and it seems it is not clear what does
-> "console=ttyS0" is supposed to do, hardcode ('9600n81') or probe
-> ('the h/w is not re-initialized')
-
-The DT way will be simplest at this point because you won't
-have to write console handover matching for "console=rt288x,..."
-
-With DT (ie, stdout-path) earlycon, when a serial driver loads,
-an attempt is made to cross-reference any existing console with
-the node that is loading and will do a console takeover from
-a running earlycon for a matching uart node.
-
-There is a bug with DT earlycon though.
-If you have a dummy console that loads, the DT earlycon is
-disabled at that point because boot consoles are disabled when
-"real" consoles load.
-
-> Any help will be appreciated.
-
-Regards,
-Peter Hurley
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index af62131..307fb23 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -145,3 +145,55 @@ EARLYCON_DECLARE(uart8250, early_serial8250_setup);
+ EARLYCON_DECLARE(uart, early_serial8250_setup);
+ OF_EARLYCON_DECLARE(ns16550, "ns16550", early_serial8250_setup);
+ OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
++
++
++#ifdef CONFIG_SERIAL_8250_RT288X
++
++static void __init rt288x_putc(struct uart_port *port, int c)
++{
++	unsigned int status;
++
++	serial8250_early_out(port, AU1x00_TX, c);
++
++	for (;;) {
++		status = serial8250_early_in(port, AU1x00_LSR);
++		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
++			break;
++		cpu_relax();
++	}
++}
++
++static void __init early_rt288x_write(struct console *console,
++				      const char *s, unsigned int count)
++{
++	struct earlycon_device *device = console->data;
++	struct uart_port *port = &device->port;
++
++	uart_console_write(port, s, count, rt288x_putc);
++}
++
++static int __init early_rt288x_setup(struct earlycon_device *device,
++				     const char *options)
++{
++	struct uart_port *port = &device->port;
++	unsigned int ier;
++
++	if (!(device->port.membase || device->port.iobase))
++		return -ENODEV;
++
++	/* Don't support direct init or any line-setting options */
++	if (device->baud)
++		return -EINVAL;
++
++	/* assume the device was initialized, only mask interrupts */
++	ier = serial8250_early_in(port, AU1x00_IER);
++	serial8250_early_out(port, AU1x00_IER, ier);
++
++	device->con->write = early_rt288x_write;
++	return 0;
++}
++
++EARLYCON_DECLARE(rt288x, early_rt288x_setup);
++OF_EARLYCON_DECLARE(rt288x, "ralink,rt2880-uart", early_rt288x_setup);
++
++#endif /* CONFIG_SERIAL_8250_RT288X */
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index 1e5ac4e7..4d068ac 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -376,5 +376,18 @@
+ #define UART_EXAR_TXTRG		0x0a	/* Tx FIFO trigger level write-only */
+ #define UART_EXAR_RXTRG		0x0b	/* Rx FIFO trigger level write-only */
+ 
++/*
++ * Register offsets for Au1x00/RT288x 8250-workalikes
++ */
++#define AU1x00_RX	0
++#define AU1x00_TX	1
++#define AU1x00_IER	2
++#define AU1x00_IIR	3
++#define AU1x00_FCR	4
++#define AU1x00_LCR	5
++#define AU1x00_MCR	6
++#define AU1x00_LSR	7
++#define AU1x00_MSR	8
++
+ #endif /* _LINUX_SERIAL_REG_H */
+ 
+-- 
+2.7.0
