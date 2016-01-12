@@ -1,7 +1,7 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 3/4] TTY: serial/m32r_sio, remove debug macros
-Date: Tue, 12 Jan 2016 10:59:08 +0100
-Message-ID: <1452592749-25150-3-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 4/4] TTY: serial/m32r_sio, remove unused members
+Date: Tue, 12 Jan 2016 10:59:09 +0100
+Message-ID: <1452592749-25150-4-git-send-email-jslaby@suse.cz>
 References: <1452592749-25150-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1452592749-25150-1-git-send-email-jslaby@suse.cz>
@@ -10,86 +10,92 @@ To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-DEBUG_AUTOCONF is unused.
+struct uart_sio_port has a lots of unused members. Some of them are
+set to some constant but never read. Remove all those.
 
-Switch DEBUG_INTR to pr_debug. This is only enabled with DEBUG or
-dynamic debug when explicitly asked for.
+This includes removal of uart_ops->pm handler as we never handle pm
+(pm was never set).
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/m32r_sio.c | 25 +++++--------------------
- 1 file changed, 5 insertions(+), 20 deletions(-)
+ drivers/tty/serial/m32r_sio.c | 33 ---------------------------------
+ 1 file changed, 33 deletions(-)
 
 diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
-index 835b5697a455..6b1303505667 100644
+index 6b1303505667..68765f7c2645 100644
 --- a/drivers/tty/serial/m32r_sio.c
 +++ b/drivers/tty/serial/m32r_sio.c
-@@ -49,21 +49,6 @@
- #include <linux/serial_core.h>
- #include "m32r_sio_reg.h"
- 
--/*
-- * Debugging.
-- */
--#if 0
--#define DEBUG_AUTOCONF(fmt...)	printk(fmt)
--#else
--#define DEBUG_AUTOCONF(fmt...)	do { } while (0)
--#endif
+@@ -75,19 +75,7 @@ struct uart_sio_port {
+ 	struct uart_port	port;
+ 	struct timer_list	timer;		/* "no irq" timer */
+ 	struct list_head	list;		/* ports on this IRQ */
+-	unsigned short		rev;
+-	unsigned char		acr;
+ 	unsigned char		ier;
+-	unsigned char		lcr;
+-	unsigned char		mcr_mask;	/* mask of user bits */
+-	unsigned char		mcr_force;	/* mask of forced bits */
+-	unsigned char		lsr_break_flag;
 -
--#if 0
--#define DEBUG_INTR(fmt...)	printk(fmt)
--#else
--#define DEBUG_INTR(fmt...)	do { } while (0)
--#endif
+-	/*
+-	 * We provide a per-port pm hook.
+-	 */
+-	void			(*pm)(struct uart_port *port,
+-				      unsigned int state, unsigned int old);
+ };
+ 
+ struct irq_info {
+@@ -312,12 +300,6 @@ static void receive_chars(struct uart_sio_port *up, int *status)
+ 			 */
+ 			*status &= up->port.read_status_mask;
+ 
+-			if (up->port.line == up->port.cons->index) {
+-				/* Recover the break flag from console xmit */
+-				*status |= up->lsr_break_flag;
+-				up->lsr_break_flag = 0;
+-			}
 -
- #define PASS_LIMIT	256
- 
- /* Standard COM flags */
-@@ -334,7 +319,7 @@ static void receive_chars(struct uart_sio_port *up, int *status)
- 			}
- 
  			if (*status & UART_LSR_BI) {
--				DEBUG_INTR("handling break....");
-+				pr_debug("handling break....\n");
+ 				pr_debug("handling break....\n");
  				flag = TTY_BREAK;
- 			} else if (*status & UART_LSR_PE)
- 				flag = TTY_PARITY;
-@@ -395,7 +380,7 @@ static void transmit_chars(struct uart_sio_port *up)
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(&up->port);
+@@ -749,20 +731,9 @@ static void m32r_sio_set_termios(struct uart_port *port,
  
--	DEBUG_INTR("THRE...");
-+	pr_debug("THRE...\n");
+ 	serial_out(up, UART_IER, up->ier);
  
- 	if (uart_circ_empty(xmit))
- 		m32r_sio_stop_tx(&up->port);
-@@ -407,7 +392,7 @@ static void transmit_chars(struct uart_sio_port *up)
- static inline void m32r_sio_handle_port(struct uart_sio_port *up,
- 	unsigned int status)
- {
--	DEBUG_INTR("status = %x...", status);
-+	pr_debug("status = %x...\n", status);
+-	up->lcr = cval;					/* Save LCR */
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+ }
  
- 	if (status & 0x04)
- 		receive_chars(up, &status);
-@@ -435,7 +420,7 @@ static irqreturn_t m32r_sio_interrupt(int irq, void *dev_id)
- 	struct list_head *l, *end = NULL;
- 	int pass_counter = 0;
+-static void m32r_sio_pm(struct uart_port *port, unsigned int state,
+-	unsigned int oldstate)
+-{
+-	struct uart_sio_port *up =
+-		container_of(port, struct uart_sio_port, port);
+-
+-	if (up->pm)
+-		up->pm(port, state, oldstate);
+-}
+-
+ /*
+  * Resource handling.  This is complicated by the fact that resources
+  * depend on the port type.  Maybe we should be claiming the standard
+@@ -899,7 +870,6 @@ static struct uart_ops m32r_sio_pops = {
+ 	.startup	= m32r_sio_startup,
+ 	.shutdown	= m32r_sio_shutdown,
+ 	.set_termios	= m32r_sio_set_termios,
+-	.pm		= m32r_sio_pm,
+ 	.release_port	= m32r_sio_release_port,
+ 	.request_port	= m32r_sio_request_port,
+ 	.config_port	= m32r_sio_config_port,
+@@ -944,9 +914,6 @@ static void __init m32r_sio_register_ports(struct uart_driver *drv)
+ 		init_timer(&up->timer);
+ 		up->timer.function = m32r_sio_timeout;
  
--	DEBUG_INTR("m32r_sio_interrupt(%d)...", irq);
-+	pr_debug("m32r_sio_interrupt(%d)...\n", irq);
- 
- #ifdef CONFIG_SERIAL_M32R_PLDSIO
- //	if (irq == PLD_IRQ_SIO0_SND)
-@@ -475,7 +460,7 @@ static irqreturn_t m32r_sio_interrupt(int irq, void *dev_id)
- 
- 	spin_unlock(&i->lock);
- 
--	DEBUG_INTR("end.\n");
-+	pr_debug("end.\n");
- 
- 	return IRQ_HANDLED;
+-		up->mcr_mask = ~0;
+-		up->mcr_force = 0;
+-
+ 		uart_add_one_port(drv, &up->port);
+ 	}
  }
 -- 
 2.7.0
