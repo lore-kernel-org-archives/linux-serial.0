@@ -1,57 +1,49 @@
-From: Sebastian Frias <sf84@laposte.net>
-Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
-Date: Tue, 12 Jan 2016 15:22:25 +0100
-Message-ID: <56950C21.3010805@laposte.net>
-References: <5672D18E.8000301@laposte.net> <5672E2CF.6080705@hurleysoftware.com> <5672E76A.3010506@laposte.net> <5672F588.8070503@hurleysoftware.com> <5672FD35.5070609@laposte.net> <56731689.70702@hurleysoftware.com> <56740FC3.50302@laposte.net> <5674204C.1000907@hurleysoftware.com> <56782DE5.7090708@laposte.net> <56798EC7.1030804@laposte.net> <5693C52B.90003@laposte.net> <5693D41E.8050601@hurleysoftware.com> <5693ECBA.50003@laposte.net> <5693FD3C.5080601@hurleysoftware.com> <5694C94B.3090405@free.fr>
+From: Christopher Covington <cov@codeaurora.org>
+Subject: Re: [RFC 0/5] console/acpi: add DBG2 and SPCR console configuration
+Date: Tue, 12 Jan 2016 10:14:09 -0500
+Message-ID: <56951841.4010101@codeaurora.org>
+References: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5694C94B.3090405@free.fr>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mason <slash.tmp@free.fr>, Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Mans Rullgard <mans@mansr.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Leif Lindholm <leif.lindholm@linaro.org>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, graeme.gregory@linaro.org
+Cc: mark.rutland@arm.com, al.stone@linaro.org, linaro-acpi@lists.linaro.org, jcm@redhat.com, torez@redhat.com, lv.zheng@intel.com, Timur Tabi <timur@quicinc.com>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/12/2016 10:37 AM, Mason wrote:
-> On 11/01/2016 20:06, Peter Hurley wrote:
->
->> I don't have enough information to suggest what you "should" use
->> here.
->>
->> Is this going to be a shipping product?
->> Is it single-core?
->> etc.
->>
->> And what is your purpose for outputting early boot information
->> before loading the serial driver which does provide console output?
->
-> I'm not sure exactly which board Sebastian has in mind, but I've been
-> using the SERIAL_8250_RT288X driver on my Tango4 board.
+Hi,
 
-For the record, I'm using a SoC emulator, and thus do not have a 
-bootloader per se and there are a bunch of other things that I cannot 
-count on.
-The emulator has the UART pre-setup, so I just need Linux to take over 
-without changing the parameters.
-Ideally, I would like to have the same image of Linux+DT to start in any 
-instance of the emulator or real chips, regardless of the clock ratios, 
-that's why I sort of need Linux to not change the UART speed, which is 
-quite tricky because there are no clock generators in the emulator.
+On 09/08/2015 08:43 AM, Leif Lindholm wrote:
+> Support for configuring bootconsole and console via the ACPI tables
+> DBG2 (Debug Port Table 2) [1] and SPCR (Serial Port Console Redirection
+> Table) [2], defined by Microsoft, has been discussed on and off over the
+> years.
+> 
+> [1] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
+> [2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
+> 
+> Licensing concerns have prevented this happening in the past, but as of
+> 10 August 2015, these tables have both been released also under OWF 1.0
+> (http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0)
+> which is think is noncontroversially GPL-compatible?
+> 
+> This set is a first attempt at implementing this.
+> 
+> Submitting as an RFC since the SPCR handling currently depends on the
+> console driver being initialized after subsystem initcalls. Workaround
+> to enable testing surrounding infrastructure in 5/5, _really_ not
+> intended to be merged.
+> (Suggestions for acceptable ways of working around this appreciated.)
 
-NOTE: on my tree I'm using the patch I previously submitted here, so 
-Linux is probing the UART so it works for all my cases, but I would like 
-to go back to a standard tree.
+What's required for this to graduate from RFC status? Is anyone working
+on it?
 
->
-> Note: calling the UART driver "Au1x00/RT288x" is a bit of a misnomer,
-> as these are names of SoCs using that distinct register layout.
-> The actual IP is probably the 16550-compatible Palmchip BK-3103.
-> https://sites.google.com/a/palmchiptech.com/palmchiptech/product-services/hardware-services/ip-cores/bk-3103
-> (Not sure that this website is legitimate, though.)
->
-> When I need earlyprintk support, I use this patch from Mans:
-> http://thread.gmane.org/gmane.linux.kernel/2081016
->
-> Regards.
->
+Thanks,
+Christopher Covington
+
+-- 
+Qualcomm Innovation Center, Inc.
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
