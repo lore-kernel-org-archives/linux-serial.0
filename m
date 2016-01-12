@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v4 11/11] serial: 8250_omap: Add omap8250 earlycon
-Date: Tue, 12 Jan 2016 11:41:12 -0800
-Message-ID: <1452627672-9482-12-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v4 10/11] of: earlycon: Log more helpful message if stdout-path node not found
+Date: Tue, 12 Jan 2016 11:41:11 -0800
+Message-ID: <1452627672-9482-11-git-send-email-peter@hurleysoftware.com>
 References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
  <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,66 +11,37 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Masahiro Yamada <yamada.mas
 Cc: Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, Sebastian Frias <sf84@laposte.net>, Paul Burton <paul.burton@imgtec.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add DT earlycon for 8250_omap driver. This boot console is included
-for kernels built with CONFIG_SERIAL_EARLYCON=y, CONFIG_OF=y,
-CONFIG_SERIAL_8250_OMAP=y, and CONFIG_OF_EARLY_FLATTREE=y.
-
-This boot console is enabled with the command line option "earlycon"
-(without "=<name>...") when the DT 'stdout-path' property matches a
-compatible uart. For example,
-
-/ {
-   chosen {
-        stdout-path = "serial0:115200";
-   };
-
-   ....
-
-   aliases {
-        serial0 = &uart0;
-   };
-
-   ....
-
-   ocp : ocp {
-        uart0 : serial@44e09000 {
-             compatible = "ti,omap3-uart";
-        }
-   };
-};
+Earlycon may fail to initialize for a variety of reasons, most of
+which log the default early param message. If the stdout-path node is
+not found, log the path which was not found (and suppress the
+default early param message).
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/8250/8250_early.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/of/fdt.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index e7cdc0c..d1f6310 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -201,3 +201,23 @@ EARLYCON_DECLARE(rt288x, early_rt288x_setup);
- OF_EARLYCON_DECLARE(rt288x, "ralink,rt2880-uart", early_rt288x_setup);
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 918809e..e2295b2 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -820,11 +820,14 @@ static int __init early_init_dt_scan_chosen_serial(void)
+ 	q = strchrnul(p, ':');
+ 	if (*q != '\0')
+ 		options = q + 1;
++	l = q - p;
  
- #endif /* CONFIG_SERIAL_8250_RT288X */
-+
-+#ifdef CONFIG_SERIAL_8250_OMAP
-+
-+static int __init early_omap8250_setup(struct earlycon_device *device,
-+				       const char *options)
-+{
-+	struct uart_port *port = &device->port;
-+
-+	if (!(device->port.membase || device->port.iobase))
-+		return -ENODEV;
-+
-+	port->regshift = 2;
-+	device->con->write = early_serial8250_write;
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(omap8250, "ti,omap2-uart", early_omap8250_setup);
-+OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
-+OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
-+#endif
+ 	/* Get the node specified by stdout-path */
+-	offset = fdt_path_offset_namelen(fdt, p, q - p);
+-	if (offset < 0)
+-		return -ENODEV;
++	offset = fdt_path_offset_namelen(fdt, p, l);
++	if (offset < 0) {
++		pr_warn("earlycon: stdout-path %.*s not found\n", l, p);
++		return 0;
++	}
+ 
+ 	for (match = __earlycon_table; match < __earlycon_table_end; match++) {
+ 		if (!match->compatible[0])
 -- 
 2.7.0
