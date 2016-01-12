@@ -1,70 +1,89 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
-Date: Tue, 12 Jan 2016 11:47:26 -0800
-Message-ID: <5695584E.3040902@hurleysoftware.com>
-References: <5672D18E.8000301@laposte.net>
- <5672E2CF.6080705@hurleysoftware.com> <5672E76A.3010506@laposte.net>
- <5672F588.8070503@hurleysoftware.com> <5672FD35.5070609@laposte.net>
- <56731689.70702@hurleysoftware.com> <56740FC3.50302@laposte.net>
- <5674204C.1000907@hurleysoftware.com> <56782DE5.7090708@laposte.net>
- <56798EC7.1030804@laposte.net> <5693C52B.90003@laposte.net>
- <5693D41E.8050601@hurleysoftware.com> <5693ECBA.50003@laposte.net>
- <5693FD3C.5080601@hurleysoftware.com> <5694C94B.3090405@free.fr>
- <56950C21.3010805@laposte.net>
+Subject: Re: [PATCH v4 11/11] serial: 8250_omap: Add omap8250 earlycon
+Date: Tue, 12 Jan 2016 11:51:29 -0800
+Message-ID: <56955941.1080701@hurleysoftware.com>
+References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
+ <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
+ <1452627672-9482-12-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56950C21.3010805@laposte.net>
+In-Reply-To: <1452627672-9482-12-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Frias <sf84@laposte.net>
-Cc: Mason <slash.tmp@free.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Mans Rullgard <mans@mansr.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, Sebastian Frias <sf84@laposte.net>, Paul Burton <paul.burton@imgtec.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/12/2016 06:22 AM, Sebastian Frias wrote:
-> On 01/12/2016 10:37 AM, Mason wrote:
->> On 11/01/2016 20:06, Peter Hurley wrote:
->>
->>> I don't have enough information to suggest what you "should" use
->>> here.
->>>
->>> Is this going to be a shipping product?
->>> Is it single-core?
->>> etc.
->>>
->>> And what is your purpose for outputting early boot information
->>> before loading the serial driver which does provide console output?
->>
->> I'm not sure exactly which board Sebastian has in mind, but I've been
->> using the SERIAL_8250_RT288X driver on my Tango4 board.
+Wasn't planning on sending this patch just yet, but oh well.
+
+On 01/12/2016 11:41 AM, Peter Hurley wrote:
+> Add DT earlycon for 8250_omap driver. This boot console is included
+> for kernels built with CONFIG_SERIAL_EARLYCON=y, CONFIG_OF=y,
+> CONFIG_SERIAL_8250_OMAP=y, and CONFIG_OF_EARLY_FLATTREE=y.
 > 
-> For the record, I'm using a SoC emulator, and thus do not have a bootloader per se and there are a bunch of other things that I cannot count on.
-> The emulator has the UART pre-setup, so I just need Linux to take over without changing the parameters.
-> Ideally, I would like to have the same image of Linux+DT to start in any instance of the emulator or real chips, regardless of the clock ratios, that's why I sort of need Linux to not change the UART speed, which is quite tricky because there are no clock generators in the emulator.
+> This boot console is enabled with the command line option "earlycon"
+> (without "=<name>...") when the DT 'stdout-path' property matches a
+> compatible uart. For example,
+> 
+> / {
+>    chosen {
+>         stdout-path = "serial0:115200";
+>    };
+> 
+>    ....
+> 
+>    aliases {
+>         serial0 = &uart0;
+>    };
+> 
+>    ....
+> 
+>    ocp : ocp {
+>         uart0 : serial@44e09000 {
+>              compatible = "ti,omap3-uart";
+>         }
+>    };
+> };
+> 
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/serial/8250/8250_early.c | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+> index e7cdc0c..d1f6310 100644
+> --- a/drivers/tty/serial/8250/8250_early.c
+> +++ b/drivers/tty/serial/8250/8250_early.c
+> @@ -201,3 +201,23 @@ EARLYCON_DECLARE(rt288x, early_rt288x_setup);
+>  OF_EARLYCON_DECLARE(rt288x, "ralink,rt2880-uart", early_rt288x_setup);
+>  
+>  #endif /* CONFIG_SERIAL_8250_RT288X */
 
-Got it, thanks for the info.
-Please test the series I just cc'd you on plus the patch I sent
-you yesterday.
-
-That should get you an earlycon up and running on that simulator;
-let me know if it doesn't and we'll go from there.
-
-> NOTE: on my tree I'm using the patch I previously submitted here, so Linux is probing the UART so it works for all my cases, but I would like to go back to a standard tree.
-
-I expect that patch to go into -next sometime during the 4.5-rc cycle.
-
+This patch may not apply because the context is sitting on top of
+unsubmitted code. Sorry.
 
 Regards,
 Peter Hurley
 
->> Note: calling the UART driver "Au1x00/RT288x" is a bit of a misnomer,
->> as these are names of SoCs using that distinct register layout.
->> The actual IP is probably the 16550-compatible Palmchip BK-3103.
->> https://sites.google.com/a/palmchiptech.com/palmchiptech/product-services/hardware-services/ip-cores/bk-3103
->> (Not sure that this website is legitimate, though.)
->>
->> When I need earlyprintk support, I use this patch from Mans:
->> http://thread.gmane.org/gmane.linux.kernel/2081016
->>
->> Regards.
->>
+> +
+> +#ifdef CONFIG_SERIAL_8250_OMAP
+> +
+> +static int __init early_omap8250_setup(struct earlycon_device *device,
+> +				       const char *options)
+> +{
+> +	struct uart_port *port = &device->port;
+> +
+> +	if (!(device->port.membase || device->port.iobase))
+> +		return -ENODEV;
+> +
+> +	port->regshift = 2;
+> +	device->con->write = early_serial8250_write;
+> +	return 0;
+> +}
+> +
+> +OF_EARLYCON_DECLARE(omap8250, "ti,omap2-uart", early_omap8250_setup);
+> +OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
+> +OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
+> +#endif
+> 
