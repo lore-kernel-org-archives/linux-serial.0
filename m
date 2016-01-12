@@ -1,7 +1,7 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH LINUX 4/6] tty: xuartps: Improve sysrq handling
-Date: Mon, 11 Jan 2016 17:41:39 -0800
-Message-ID: <1452562901-17848-5-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH LINUX 6/6] tty: xuartps: Consolidate TX handling
+Date: Mon, 11 Jan 2016 17:41:41 -0800
+Message-ID: <1452562901-17848-7-git-send-email-soren.brinkmann@xilinx.com>
 References: <1452562901-17848-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,58 +21,153 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Peter Hurley <peter@hurleysoftware.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Handling magic sysrq included dropping a lock to avoid a deadlock that
-happened when cdns_uart_console_write tried to acquire a lock in the
-from the sysrq code path. By making the acquisition of the lock in
-cdns_uart_console_write depending on port->sysrq, cdns_uart_handle_rx can be
-simplified to simply call uart_handle_sysrq.
+start_tx and the ISR used largely identical code to transmit data.
+Consolidate that in one place.
 
-Suggested-by: Peter Hurley <peter@hurleysoftware.com>
 Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
 ---
-v4:
- - added this patch
----
- drivers/tty/serial/xilinx_uartps.c | 20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 97 ++++++++++++++++----------------------
+ 1 file changed, 40 insertions(+), 57 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 8014dd3c6d55..0eecba88298f 100644
+index 3ff6e3c2347c..131a3117fbbb 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -220,20 +220,8 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
- 				continue;
- 		}
+@@ -239,6 +239,41 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
+ 	tty_flip_buffer_push(&port->state->port);
+ }
  
--#ifdef SUPPORT_SYSRQ
--		/*
--		 * uart_handle_sysrq_char() doesn't work if
--		 * spinlocked, for some reason
--		 */
--		 if (port->sysrq) {
--			spin_unlock(&port->lock);
--			if (uart_handle_sysrq_char(port, data)) {
--				spin_lock(&port->lock);
--				continue;
++static void cdns_uart_handle_tx(struct uart_port *port)
++{
++	unsigned int numbytes;
++
++	if (uart_circ_empty(&port->state->xmit)) {
++		writel(CDNS_UART_IXR_TXEMPTY, port->membase + CDNS_UART_IDR);
++		return;
++	}
++
++	numbytes = port->fifosize;
++	while (numbytes && !uart_circ_empty(&port->state->xmit) &&
++	       !(readl(port->membase + CDNS_UART_SR) & CDNS_UART_SR_TXFULL)) {
++		/*
++		 * Get the data from the UART circular buffer
++		 * and write it to the cdns_uart's TX_FIFO
++		 * register.
++		 */
++		writel(port->state->xmit.buf[port->state->xmit.tail],
++			port->membase + CDNS_UART_FIFO);
++		port->icount.tx++;
++
++		/*
++		 * Adjust the tail of the UART buffer and wrap
++		 * the buffer if it reaches limit.
++		 */
++		port->state->xmit.tail =
++			(port->state->xmit.tail + 1) & (UART_XMIT_SIZE - 1);
++
++		numbytes--;
++	}
++
++	if (uart_circ_chars_pending(&port->state->xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++}
++
+ /**
+  * cdns_uart_isr - Interrupt handler
+  * @irq: Irq number
+@@ -250,7 +285,7 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ {
+ 	struct uart_port *port = (struct uart_port *)dev_id;
+ 	unsigned long flags;
+-	unsigned int isrstatus, numbytes;
++	unsigned int isrstatus;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+@@ -262,40 +297,8 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ 	if (isrstatus & CDNS_UART_RX_IRQS)
+ 		cdns_uart_handle_rx(port, isrstatus);
+ 
+-	/* Dispatch an appropriate handler */
+-	if ((isrstatus & CDNS_UART_IXR_TXEMPTY) == CDNS_UART_IXR_TXEMPTY) {
+-		if (uart_circ_empty(&port->state->xmit)) {
+-			writel(CDNS_UART_IXR_TXEMPTY,
+-					port->membase + CDNS_UART_IDR);
+-		} else {
+-			numbytes = port->fifosize;
+-			/* Break if no more data available in the UART buffer */
+-			while (numbytes--) {
+-				if (uart_circ_empty(&port->state->xmit))
+-					break;
+-				/* Get the data from the UART circular buffer
+-				 * and write it to the cdns_uart's TX_FIFO
+-				 * register.
+-				 */
+-				writel(port->state->xmit.buf[
+-						port->state->xmit.tail],
+-					port->membase + CDNS_UART_FIFO);
+-
+-				port->icount.tx++;
+-
+-				/* Adjust the tail of the UART buffer and wrap
+-				 * the buffer if it reaches limit.
+-				 */
+-				port->state->xmit.tail =
+-					(port->state->xmit.tail + 1) &
+-						(UART_XMIT_SIZE - 1);
 -			}
--			spin_lock(&port->lock);
+-
+-			if (uart_circ_chars_pending(
+-					&port->state->xmit) < WAKEUP_CHARS)
+-				uart_write_wakeup(port);
 -		}
--#endif
-+		if (uart_handle_sysrq_char(port, data))
-+			continue;
+-	}
++	if ((isrstatus & CDNS_UART_IXR_TXEMPTY) == CDNS_UART_IXR_TXEMPTY)
++		cdns_uart_handle_tx(port);
  
- 		port->icount.rx++;
+ 	writel(isrstatus, port->membase + CDNS_UART_ISR);
  
-@@ -1128,7 +1116,9 @@ static void cdns_uart_console_write(struct console *co, const char *s,
- 	unsigned int imr, ctrl;
- 	int locked = 1;
+@@ -502,7 +505,7 @@ static int cdns_uart_clk_notifier_cb(struct notifier_block *nb,
+  */
+ static void cdns_uart_start_tx(struct uart_port *port)
+ {
+-	unsigned int status, numbytes = port->fifosize;
++	unsigned int status;
  
--	if (oops_in_progress)
-+	if (port->sysrq)
-+		locked = 0;
-+	else if (oops_in_progress)
- 		locked = spin_trylock_irqsave(&port->lock, flags);
- 	else
- 		spin_lock_irqsave(&port->lock, flags);
+ 	if (uart_tx_stopped(port))
+ 		return;
+@@ -519,31 +522,11 @@ static void cdns_uart_start_tx(struct uart_port *port)
+ 	if (uart_circ_empty(&port->state->xmit))
+ 		return;
+ 
+-	while (numbytes-- && ((readl(port->membase + CDNS_UART_SR) &
+-				CDNS_UART_SR_TXFULL)) != CDNS_UART_SR_TXFULL) {
+-		/* Break if no more data available in the UART buffer */
+-		if (uart_circ_empty(&port->state->xmit))
+-			break;
+-
+-		/* Get the data from the UART circular buffer and
+-		 * write it to the cdns_uart's TX_FIFO register.
+-		 */
+-		writel(port->state->xmit.buf[port->state->xmit.tail],
+-				port->membase + CDNS_UART_FIFO);
+-		port->icount.tx++;
++	cdns_uart_handle_tx(port);
+ 
+-		/* Adjust the tail of the UART buffer and wrap
+-		 * the buffer if it reaches limit.
+-		 */
+-		port->state->xmit.tail = (port->state->xmit.tail + 1) &
+-					(UART_XMIT_SIZE - 1);
+-	}
+ 	writel(CDNS_UART_IXR_TXEMPTY, port->membase + CDNS_UART_ISR);
+ 	/* Enable the TX Empty interrupt */
+ 	writel(CDNS_UART_IXR_TXEMPTY, port->membase + CDNS_UART_IER);
+-
+-	if (uart_circ_chars_pending(&port->state->xmit) < WAKEUP_CHARS)
+-		uart_write_wakeup(port);
+ }
+ 
+ /**
 -- 
 2.7.0.3.g497ea1e
