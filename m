@@ -1,11 +1,13 @@
 From: Soren Brinkmann <soren.brinkmann@xilinx.com>
-Subject: [PATCH LINUX 0/6] Second part of xuartps fixes
-Date: Mon, 11 Jan 2016 17:41:35 -0800
-Message-ID: <1452562901-17848-1-git-send-email-soren.brinkmann@xilinx.com>
+Subject: [PATCH LINUX 4/6] tty: xuartps: Improve sysrq handling
+Date: Mon, 11 Jan 2016 17:41:39 -0800
+Message-ID: <1452562901-17848-5-git-send-email-soren.brinkmann@xilinx.com>
+References: <1452562901-17848-1-git-send-email-soren.brinkmann@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1452562901-17848-1-git-send-email-soren.brinkmann@xilinx.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,22 +21,58 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Peter Hurley <peter@hurleysoftware.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, Soren Brinkmann <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-SGksCgp0aGlzIGlzIHRoZSBzZWNvbmQgcGFydCBvZiBmaXhlcyBmb3IgeHVhcnRwcyB0aGF0IGV2
-b2x2ZWQgZnJvbSB0aGlzCnNlcmllczogaHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMTUvMTIvMjYv
-MjYuCgpUaGlzIHNlcmllcywgb2J2aW91c2x5LCBkZXBlbmRzIG9uIHRoZSBwYXRjaGVzIG1lbnRp
-b25lZCBhYm92ZS4gSXQKaW5jbHVkZXMgc2V2ZXJhbCBtaW5vciBpbXByb3ZlbWVudHMgYW5kIHJl
-ZmFjdG9yaW5nIGFuZCB0aGUgcmVmYWN0b3JpbmcKb2YgdGhlIElSUSBtYW5hZ2VtZW50LCB3aGlj
-aCBwcmV2ZW50cyBsb2NrIHVwcyB0aGF0IGNvdWxkIGhhcHBlbiB3aGVuClJYLXJlbGF0ZWQgSVJR
-cyBmaXJlZCB3aGlsZSB0aGUgcmVjZWl2ZXIgd2FzIGRpc2FibGVkLgoKCVRoYW5rcywKCVPDtnJl
-bgoKU8O2cmVuIEJyaW5rbWFubiAoNik6CiAgdHR5OiB4dWFydHBzOiBNb3ZlIHJlcXVlc3RfaXJx
-IHRvIGFmdGVyIHNldHRpbmcgdXAgdGhlIEhXCiAgdHR5OiB4dWFydHBzOiBSZWZhY3RvciBJUlEg
-aGFuZGxpbmcKICB0dHk6IHh1YXJ0cHM6IENsZWFudXA6IFJlZm9ybWF0IGlmLWVsc2UKICB0dHk6
-IHh1YXJ0cHM6IEltcHJvdmUgc3lzcnEgaGFuZGxpbmcKICB0dHk6IHh1YXJ0cHM6IFJlbW92ZSAn
-X09GRlNFVCcgc3VmZml4IGZyb20gI2RlZmluZXMKICB0dHk6IHh1YXJ0cHM6IENvbnNvbGlkYXRl
-IFRYIGhhbmRsaW5nCgogZHJpdmVycy90dHkvc2VyaWFsL3hpbGlueF91YXJ0cHMuYyB8IDQ2MCAr
-KysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMjE2
-IGluc2VydGlvbnMoKyksIDI0NCBkZWxldGlvbnMoLSkKCi0tIAoyLjcuMC4zLmc0OTdlYTFlCgoK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJt
-LWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3Jn
-Cmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtl
-cm5lbAo=
+Handling magic sysrq included dropping a lock to avoid a deadlock that
+happened when cdns_uart_console_write tried to acquire a lock in the
+from the sysrq code path. By making the acquisition of the lock in
+cdns_uart_console_write depending on port->sysrq, cdns_uart_handle_rx can be
+simplified to simply call uart_handle_sysrq.
+
+Suggested-by: Peter Hurley <peter@hurleysoftware.com>
+Signed-off-by: Soren Brinkmann <soren.brinkmann@xilinx.com>
+---
+v4:
+ - added this patch
+---
+ drivers/tty/serial/xilinx_uartps.c | 20 +++++---------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 8014dd3c6d55..0eecba88298f 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -220,20 +220,8 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
+ 				continue;
+ 		}
+ 
+-#ifdef SUPPORT_SYSRQ
+-		/*
+-		 * uart_handle_sysrq_char() doesn't work if
+-		 * spinlocked, for some reason
+-		 */
+-		 if (port->sysrq) {
+-			spin_unlock(&port->lock);
+-			if (uart_handle_sysrq_char(port, data)) {
+-				spin_lock(&port->lock);
+-				continue;
+-			}
+-			spin_lock(&port->lock);
+-		}
+-#endif
++		if (uart_handle_sysrq_char(port, data))
++			continue;
+ 
+ 		port->icount.rx++;
+ 
+@@ -1128,7 +1116,9 @@ static void cdns_uart_console_write(struct console *co, const char *s,
+ 	unsigned int imr, ctrl;
+ 	int locked = 1;
+ 
+-	if (oops_in_progress)
++	if (port->sysrq)
++		locked = 0;
++	else if (oops_in_progress)
+ 		locked = spin_trylock_irqsave(&port->lock, flags);
+ 	else
+ 		spin_lock_irqsave(&port->lock, flags);
+-- 
+2.7.0.3.g497ea1e
