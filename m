@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v4 08/11] serial: earlycon: Show the earlycon "driver" in banner
-Date: Tue, 12 Jan 2016 11:41:09 -0800
-Message-ID: <1452627672-9482-9-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v4 03/11] of: earlycon: Fixup earlycon console name and index
+Date: Tue, 12 Jan 2016 11:41:04 -0800
+Message-ID: <1452627672-9482-4-git-send-email-peter@hurleysoftware.com>
 References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
  <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,41 +11,67 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Masahiro Yamada <yamada.mas
 Cc: Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, Sebastian Frias <sf84@laposte.net>, Paul Burton <paul.burton@imgtec.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Output the earlycon "driver" from the just-parsed console 'name'
+Use the console name embedded in the OF earlycon table by the
+OF_EARLYCON_DECLARE() macro to initialize the struct console 'name'
 and 'index' fields.
 
-NB: ->mapbase is a resource_size_t so use %pa format specifier
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/tty/serial/earlycon.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/of/fdt.c              | 2 +-
+ drivers/tty/serial/earlycon.c | 6 +++---
+ include/linux/serial_core.h   | 3 +--
+ 3 files changed, 5 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 1686118..ec14595 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -838,7 +838,7 @@ static int __init early_init_dt_scan_chosen_serial(void)
+ 		if (addr == OF_BAD_ADDR)
+ 			return -ENXIO;
+ 
+-		of_setup_earlycon(addr, match->setup);
++		of_setup_earlycon(addr, match);
+ 		return 0;
+ 	}
+ 	return -ENODEV;
 diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 10a2ae3..0acb60d 100644
+index 90b064f..47e54de 100644
 --- a/drivers/tty/serial/earlycon.c
 +++ b/drivers/tty/serial/earlycon.c
-@@ -79,16 +79,16 @@ static void __init earlycon_init(struct earlycon_device *device,
+@@ -218,7 +218,7 @@ early_param("earlycon", param_setup_earlycon);
+ #ifdef CONFIG_OF_EARLY_FLATTREE
  
- 	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM16 ||
- 	    port->iotype == UPIO_MEM32 || port->iotype == UPIO_MEM32BE)
--		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
-+		pr_info("%s%d at MMIO%s %pa (options '%s')\n",
-+			earlycon->name, earlycon->index,
- 			(port->iotype == UPIO_MEM) ? "" :
- 			(port->iotype == UPIO_MEM16) ? "16" :
- 			(port->iotype == UPIO_MEM32) ? "32" : "32be",
--			(unsigned long long)port->mapbase,
--			device->options);
-+			&port->mapbase, device->options);
- 	else
--		pr_info("Early serial console at I/O port 0x%lx (options '%s')\n",
--			port->iobase,
--			device->options);
-+		pr_info("%s%d at I/O port 0x%lx (options '%s')\n",
-+			earlycon->name, earlycon->index,
-+			port->iobase, device->options);
- }
+ int __init of_setup_earlycon(unsigned long addr,
+-			     int (*setup)(struct earlycon_device *, const char *))
++			     const struct earlycon_id *match)
+ {
+ 	int err;
+ 	struct uart_port *port = &early_console_dev.port;
+@@ -229,8 +229,8 @@ int __init of_setup_earlycon(unsigned long addr,
+ 	port->uartclk = BASE_BAUD * 16;
+ 	port->membase = earlycon_map(addr, SZ_4K);
  
- static int __init parse_options(struct earlycon_device *device, char *options)
+-	early_console_dev.con->data = &early_console_dev;
+-	err = setup(&early_console_dev, NULL);
++	earlycon_init(&early_console_dev, match->name);
++	err = match->setup(&early_console_dev, NULL);
+ 	if (err < 0)
+ 		return err;
+ 	if (!early_console_dev.con->write)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 25e0514..63fdb55 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -359,8 +359,7 @@ extern const struct earlycon_id __earlycon_table_end[];
+ #define EARLYCON_DECLARE(_name, fn)	OF_EARLYCON_DECLARE(_name, "", fn)
+ 
+ extern int setup_earlycon(char *buf);
+-extern int of_setup_earlycon(unsigned long addr,
+-			     int (*setup)(struct earlycon_device *, const char *));
++extern int of_setup_earlycon(unsigned long addr, const struct earlycon_id *match);
+ 
+ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 				   struct console *c);
 -- 
 2.7.0
