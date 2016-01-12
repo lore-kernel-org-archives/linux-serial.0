@@ -1,49 +1,122 @@
-From: Christopher Covington <cov@codeaurora.org>
-Subject: Re: [RFC 0/5] console/acpi: add DBG2 and SPCR console configuration
-Date: Tue, 12 Jan 2016 10:14:09 -0500
-Message-ID: <56951841.4010101@codeaurora.org>
-References: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH 2/3] serial: 8250_early: Add support for regshift
+Date: Tue, 12 Jan 2016 08:15:45 -0800
+Message-ID: <569526B1.3030000@hurleysoftware.com>
+References: <1452594809-17972-1-git-send-email-jonathanh@nvidia.com>
+ <1452594809-17972-3-git-send-email-jonathanh@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Leif Lindholm <leif.lindholm@linaro.org>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, graeme.gregory@linaro.org
-Cc: mark.rutland@arm.com, al.stone@linaro.org, linaro-acpi@lists.linaro.org, jcm@redhat.com, torez@redhat.com, lv.zheng@intel.com, Timur Tabi <timur@quicinc.com>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1452594809-17972-3-git-send-email-jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Hi Jon,
 
-On 09/08/2015 08:43 AM, Leif Lindholm wrote:
-> Support for configuring bootconsole and console via the ACPI tables
-> DBG2 (Debug Port Table 2) [1] and SPCR (Serial Port Console Redirection
-> Table) [2], defined by Microsoft, has been discussed on and off over the
-> years.
+On 01/12/2016 02:33 AM, Jon Hunter wrote:
+> The 8250 early console assumes a default regshift for each iotype. This
+> does not work for all devices. For example, Tegra UARTs use a iotype of
+> UPIO_MEM with a regshift of 2 because the registers are 32-bit aligned
+> and permit byte access.
 > 
-> [1] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
-> [2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
+> If the regshift is specified (for example, via device-tree), then use the
+> value provided and otherwise revert to the defaults assumed for each
+> iotype.
 > 
-> Licensing concerns have prevented this happening in the past, but as of
-> 10 August 2015, these tables have both been released also under OWF 1.0
-> (http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0)
-> which is think is noncontroversially GPL-compatible?
+> Signed-off-by: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> Please note that today for Tegra, early console is supported by passing
+> the boot parameter "earlycon=uart8250,mmio32,0xXXXXXXXX". While this works
+> and we could use UPIO_MEM32 for tegra, this would mean changing all the
+> DT source files for Tegra to add the "reg-io-width" property. IMO it seems
+> better to make early console for 8250 work in the same way as the normal
+> 8250 console and support regshift.
 > 
-> This set is a first attempt at implementing this.
+>  drivers/tty/serial/8250/8250_early.c | 36 ++++++++++++++++++++++++++----------
+>  1 file changed, 26 insertions(+), 10 deletions(-)
 > 
-> Submitting as an RFC since the SPCR handling currently depends on the
-> console driver being initialized after subsystem initcalls. Workaround
-> to enable testing surrounding infrastructure in 5/5, _really_ not
-> intended to be merged.
-> (Suggestions for acceptable ways of working around this appreciated.)
+> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+> index af62131af21e..758054957788 100644
+> --- a/drivers/tty/serial/8250/8250_early.c
+> +++ b/drivers/tty/serial/8250/8250_early.c
+> @@ -41,15 +41,15 @@ static unsigned int __init serial8250_early_in(struct uart_port *port, int offse
+>  {
+>  	switch (port->iotype) {
+>  	case UPIO_MEM:
+> -		return readb(port->membase + offset);
+> +		return readb(port->membase + (offset << port->regshift));
+>  	case UPIO_MEM16:
+> -		return readw(port->membase + (offset << 1));
+> +		return readw(port->membase + (offset << port->regshift));
+>  	case UPIO_MEM32:
+> -		return readl(port->membase + (offset << 2));
+> +		return readl(port->membase + (offset << port->regshift));
+>  	case UPIO_MEM32BE:
+> -		return ioread32be(port->membase + (offset << 2));
+> +		return ioread32be(port->membase + (offset << port->regshift));
+>  	case UPIO_PORT:
+> -		return inb(port->iobase + offset);
+> +		return inb(port->iobase + (offset << port->regshift));
+>  	default:
+>  		return 0;
+>  	}
+> @@ -59,19 +59,19 @@ static void __init serial8250_early_out(struct uart_port *port, int offset, int
+>  {
+>  	switch (port->iotype) {
+>  	case UPIO_MEM:
+> -		writeb(value, port->membase + offset);
+> +		writeb(value, port->membase + (offset << port->regshift));
+>  		break;
+>  	case UPIO_MEM16:
+> -		writew(value, port->membase + (offset << 1));
+> +		writew(value, port->membase + (offset << port->regshift));
+>  		break;
+>  	case UPIO_MEM32:
+> -		writel(value, port->membase + (offset << 2));
+> +		writel(value, port->membase + (offset << port->regshift));
+>  		break;
+>  	case UPIO_MEM32BE:
+> -		iowrite32be(value, port->membase + (offset << 2));
+> +		iowrite32be(value, port->membase + (offset << port->regshift));
+>  		break;
+>  	case UPIO_PORT:
+> -		outb(value, port->iobase + offset);
+> +		outb(value, port->iobase + (offset << port->regshift));
+>  		break;
+>  	}
+>  }
+> @@ -128,6 +128,22 @@ int __init early_serial8250_setup(struct earlycon_device *device,
+>  	if (!(device->port.membase || device->port.iobase))
+>  		return -ENODEV;
+>  
+> +	/*
+> +	 * If regshift is not specified, then assume the
+> +	 * following defaults for the below iotypes.
+> +	 */
+> +	if (!device->port.regshift) {
+> +		switch (device->port.iotype) {
+> +		case UPIO_MEM16:
+> +			device->port.regshift = 1;
+> +			break;
+> +		case UPIO_MEM32:
+> +		case UPIO_MEM32BE:
+> +			device->port.regshift = 2;
+> +			break;
+> +		}
+> +	}
 
-What's required for this to graduate from RFC status? Is anyone working
-on it?
+Since the earlycon command line parsing sets port->regshift, the only possible
+path requiring defaults would be DT, but 8250 DT should not have default
+regshift based on the iotype; the 8250 port driver doesn't.
 
-Thanks,
-Christopher Covington
+Regards,
+Peter Hurley
 
--- 
-Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+> +
+>  	if (!device->baud) {
+>  		struct uart_port *port = &device->port;
+>  		unsigned int ier;
+> 
