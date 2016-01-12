@@ -1,111 +1,149 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 2/4] TTY: serial/m32r_sio, simplify old_serial_port
-Date: Tue, 12 Jan 2016 10:59:07 +0100
-Message-ID: <1452592749-25150-2-git-send-email-jslaby@suse.cz>
-References: <1452592749-25150-1-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 1/4] TTY: serial/m32r_sio, disband m32r_sio.h
+Date: Tue, 12 Jan 2016 10:59:06 +0100
+Message-ID: <1452592749-25150-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1452592749-25150-1-git-send-email-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-The only variables in old_serial_port are port and irq. So make
-old_serial_port contain only those two and move the initialization of
-the rest to the place where old_serial_port is actually read.
+The only needed information from the header is struct old_serial_port.
+Move it to m32r_sio.c, make it const and anonymous. And kill the rest
+from the header as it is dead stuff.
 
-Also get rid of SERIAL_PORT_DFNS. It is ugly and having the
-initializer where it belongs makes more sense. Finally, use already
-defined UART_NR in the loop.
+Given m32r_sio_suspend_port and m32r_sio_resume_port are local to
+m32r_sio.c and unused, kill them from .c too.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/m32r_sio.c | 57 ++++++++++++-------------------------------
- 1 file changed, 15 insertions(+), 42 deletions(-)
+ drivers/tty/serial/m32r_sio.c | 37 +++++++++-----------------------
+ drivers/tty/serial/m32r_sio.h | 49 -------------------------------------------
+ 2 files changed, 10 insertions(+), 76 deletions(-)
+ delete mode 100644 drivers/tty/serial/m32r_sio.h
 
 diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
-index 3c76ffc2d10a..835b5697a455 100644
+index 0eeb64f2499c..3c76ffc2d10a 100644
 --- a/drivers/tty/serial/m32r_sio.c
 +++ b/drivers/tty/serial/m32r_sio.c
-@@ -66,48 +66,22 @@
+@@ -47,7 +47,6 @@
+ #define BAUD_RATE	115200
  
- #define PASS_LIMIT	256
+ #include <linux/serial_core.h>
+-#include "m32r_sio.h"
+ #include "m32r_sio_reg.h"
  
--#define BASE_BAUD	115200
--
- /* Standard COM flags */
- #define STD_COM_FLAGS (UPF_BOOT_AUTOCONF | UPF_SKIP_TEST)
+ /*
+@@ -98,7 +97,16 @@
  
--/*
-- * SERIAL_PORT_DFNS tells us about built-in ports that have no
-- * standard enumeration mechanism.   Platforms that can find all
-- * serial ports via mechanisms like ACPI or PCI need not supply it.
+ #endif /* !CONFIG_PLAT_USRV */
+ 
+-static struct old_serial_port old_serial_port[] = {
++static const struct {
++	unsigned int uart;
++	unsigned int baud_base;
++	unsigned int port;
++	unsigned int irq;
++	unsigned int flags;
++	unsigned char io_type;
++	unsigned char __iomem *iomem_base;
++	unsigned short iomem_reg_shift;
++} old_serial_port[] = {
+ 	SERIAL_PORT_DFNS
+ };
+ 
+@@ -1112,28 +1120,6 @@ static struct uart_driver m32r_sio_reg = {
+ 	.cons			= M32R_SIO_CONSOLE,
+ };
+ 
+-/**
+- *	m32r_sio_suspend_port - suspend one serial port
+- *	@line: serial line number
+- *
+- *	Suspend one serial port.
 - */
--#if defined(CONFIG_PLAT_USRV)
+-void m32r_sio_suspend_port(int line)
+-{
+-	uart_suspend_port(&m32r_sio_reg, &m32r_sio_ports[line].port);
+-}
 -
--#define SERIAL_PORT_DFNS						\
--       /* UART  CLK     PORT   IRQ            FLAGS */			\
--	{ 0, BASE_BAUD, 0x3F8, PLD_IRQ_UART0, STD_COM_FLAGS }, /* ttyS0 */ \
--	{ 0, BASE_BAUD, 0x2F8, PLD_IRQ_UART1, STD_COM_FLAGS }, /* ttyS1 */
+-/**
+- *	m32r_sio_resume_port - resume one serial port
+- *	@line: serial line number
+- *
+- *	Resume one serial port.
+- */
+-void m32r_sio_resume_port(int line)
+-{
+-	uart_resume_port(&m32r_sio_reg, &m32r_sio_ports[line].port);
+-}
 -
--#else /* !CONFIG_PLAT_USRV */
+ static int __init m32r_sio_init(void)
+ {
+ 	int ret, i;
+@@ -1163,8 +1149,5 @@ static void __exit m32r_sio_exit(void)
+ module_init(m32r_sio_init);
+ module_exit(m32r_sio_exit);
+ 
+-EXPORT_SYMBOL(m32r_sio_suspend_port);
+-EXPORT_SYMBOL(m32r_sio_resume_port);
 -
--#if defined(CONFIG_SERIAL_M32R_PLDSIO)
--#define SERIAL_PORT_DFNS						\
--	{ 0, BASE_BAUD, ((unsigned long)PLD_ESIO0CR), PLD_IRQ_SIO0_RCV,	\
--	  STD_COM_FLAGS }, /* ttyS0 */
--#else
--#define SERIAL_PORT_DFNS						\
--	{ 0, BASE_BAUD, M32R_SIO_OFFSET, M32R_IRQ_SIO0_R,		\
--	  STD_COM_FLAGS }, /* ttyS0 */
--#endif
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Generic M32R SIO serial driver");
+diff --git a/drivers/tty/serial/m32r_sio.h b/drivers/tty/serial/m32r_sio.h
+deleted file mode 100644
+index 8129824496c6..000000000000
+--- a/drivers/tty/serial/m32r_sio.h
++++ /dev/null
+@@ -1,49 +0,0 @@
+-/*
+- *  m32r_sio.h
+- *
+- *  Driver for M32R serial ports
+- *
+- *  Based on drivers/char/serial.c, by Linus Torvalds, Theodore Ts'o.
+- *  Based on drivers/serial/8250.h.
+- *
+- *  Copyright (C) 2001  Russell King.
+- *  Copyright (C) 2004  Hirokazu Takata <takata at linux-m32r.org>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- */
 -
--#endif /* !CONFIG_PLAT_USRV */
+-#include <linux/pci.h>
 -
- static const struct {
+-struct m32r_sio_probe {
+-	struct module	*owner;
+-	int		(*pci_init_one)(struct pci_dev *dev);
+-	void		(*pci_remove_one)(struct pci_dev *dev);
+-	void		(*pnp_init)(void);
+-};
+-
+-int m32r_sio_register_probe(struct m32r_sio_probe *probe);
+-void m32r_sio_unregister_probe(struct m32r_sio_probe *probe);
+-void m32r_sio_get_irq_map(unsigned int *map);
+-void m32r_sio_suspend_port(int line);
+-void m32r_sio_resume_port(int line);
+-
+-struct old_serial_port {
 -	unsigned int uart;
 -	unsigned int baud_base;
- 	unsigned int port;
- 	unsigned int irq;
+-	unsigned int port;
+-	unsigned int irq;
 -	unsigned int flags;
 -	unsigned char io_type;
 -	unsigned char __iomem *iomem_base;
 -	unsigned short iomem_reg_shift;
- } old_serial_port[] = {
--	SERIAL_PORT_DFNS
-+#if defined(CONFIG_PLAT_USRV)
-+	/* PORT  IRQ            FLAGS */
-+	{ 0x3F8, PLD_IRQ_UART0 }, /* ttyS0 */
-+	{ 0x2F8, PLD_IRQ_UART1 }, /* ttyS1 */
-+#elif defined(CONFIG_SERIAL_M32R_PLDSIO)
-+	{ ((unsigned long)PLD_ESIO0CR), PLD_IRQ_SIO0_RCV }, /* ttyS0 */
-+#else
-+	{ M32R_SIO_OFFSET, M32R_IRQ_SIO0_R }, /* ttyS0 */
-+#endif
- };
- 
- #define UART_NR	ARRAY_SIZE(old_serial_port)
-@@ -959,15 +933,14 @@ static void __init m32r_sio_init_ports(void)
- 		return;
- 	first = 0;
- 
--	for (i = 0, up = m32r_sio_ports; i < ARRAY_SIZE(old_serial_port);
--	     i++, up++) {
-+	for (i = 0, up = m32r_sio_ports; i < UART_NR; i++, up++) {
- 		up->port.iobase   = old_serial_port[i].port;
- 		up->port.irq      = irq_canonicalize(old_serial_port[i].irq);
--		up->port.uartclk  = old_serial_port[i].baud_base * 16;
--		up->port.flags    = old_serial_port[i].flags;
--		up->port.membase  = old_serial_port[i].iomem_base;
--		up->port.iotype   = old_serial_port[i].io_type;
--		up->port.regshift = old_serial_port[i].iomem_reg_shift;
-+		up->port.uartclk  = BAUD_RATE * 16;
-+		up->port.flags    = STD_COM_FLAGS;
-+		up->port.membase  = 0;
-+		up->port.iotype   = 0;
-+		up->port.regshift = 0;
- 		up->port.ops      = &m32r_sio_pops;
- 	}
- }
+-};
+-
+-#define _INLINE_ inline
+-
+-#define PROBE_RSA	(1 << 0)
+-#define PROBE_ANY	(~0)
+-
+-#define HIGH_BITS_OFFSET ((sizeof(long)-sizeof(int))*8)
 -- 
 2.7.0
