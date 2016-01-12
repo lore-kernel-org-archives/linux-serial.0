@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v4 05/11] of: earlycon: Initialize port fields from DT properties
-Date: Tue, 12 Jan 2016 11:41:06 -0800
-Message-ID: <1452627672-9482-6-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v4 07/11] serial: earlycon: Common log banner for command line and DT
+Date: Tue, 12 Jan 2016 11:41:08 -0800
+Message-ID: <1452627672-9482-8-git-send-email-peter@hurleysoftware.com>
 References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
  <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,107 +11,65 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Masahiro Yamada <yamada.mas
 Cc: Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, Sebastian Frias <sf84@laposte.net>, Paul Burton <paul.burton@imgtec.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Read the optional "reg-offset", "reg-shift", "reg-io-width" and endianness
-properties and initialize the respective struct uart_port field if found.
-
-NB: These bindings are common to several drivers and the values merely
-indicate the default value; the registering earlycon setup() method can
-simply override the values if required.
+Refactor the command line earlycon banner into earlycon_init() so
+both earlycon startup methods output an info banner.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/of/fdt.c              |  2 +-
- drivers/tty/serial/earlycon.c | 34 ++++++++++++++++++++++++++++++++++
- include/linux/serial_core.h   |  1 +
- 3 files changed, 36 insertions(+), 1 deletion(-)
+ drivers/tty/serial/earlycon.c | 27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index cfd3b35..e8fd54a 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -839,7 +839,7 @@ static int __init early_init_dt_scan_chosen_serial(void)
- 		if (addr == OF_BAD_ADDR)
- 			return -ENXIO;
- 
--		of_setup_earlycon(addr, match, options);
-+		of_setup_earlycon(addr, match, offset, options);
- 		return 0;
- 	}
- 	return -ENODEV;
 diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 7509ee34d..03eac4a 100644
+index 4182185..10a2ae3 100644
 --- a/drivers/tty/serial/earlycon.c
 +++ b/drivers/tty/serial/earlycon.c
-@@ -20,6 +20,10 @@
- #include <linux/serial_core.h>
- #include <linux/sizes.h>
- 
-+#ifdef CONFIG_OF_EARLY_FLATTREE
-+#include <linux/of_fdt.h>
-+#endif
-+
- #ifdef CONFIG_FIX_EARLYCON_MEM
- #include <asm/fixmap.h>
- #endif
-@@ -219,10 +223,13 @@ early_param("earlycon", param_setup_earlycon);
- 
- int __init of_setup_earlycon(unsigned long addr,
- 			     const struct earlycon_id *match,
-+			     unsigned long node,
- 			     const char *options)
+@@ -62,6 +62,7 @@ static void __init earlycon_init(struct earlycon_device *device,
+ 				 const char *name)
  {
- 	int err;
- 	struct uart_port *port = &early_console_dev.port;
-+	const __be32 *val;
-+	bool big_endian;
+ 	struct console *earlycon = device->con;
++	struct uart_port *port = &device->port;
+ 	const char *s;
+ 	size_t len;
  
- 	spin_lock_init(&port->lock);
- 	port->iotype = UPIO_MEM;
-@@ -230,6 +237,33 @@ int __init of_setup_earlycon(unsigned long addr,
- 	port->uartclk = BASE_BAUD * 16;
- 	port->membase = earlycon_map(addr, SZ_4K);
- 
-+	val = of_get_flat_dt_prop(node, "reg-offset", NULL);
-+	if (val)
-+		port->mapbase += be32_to_cpu(*val);
-+	val = of_get_flat_dt_prop(node, "reg-shift", NULL);
-+	if (val)
-+		port->regshift = be32_to_cpu(*val);
-+	big_endian = of_get_flat_dt_prop(node, "big-endian", NULL) != NULL ||
-+		(IS_ENABLED(CONFIG_CPU_BIG_ENDIAN) &&
-+		 of_get_flat_dt_prop(node, "native-endian", NULL) != NULL);
-+	val = of_get_flat_dt_prop(node, "reg-io-width", NULL);
-+	if (val) {
-+		switch (be32_to_cpu(*val)) {
-+		case 1:
-+			port->iotype = UPIO_MEM;
-+			break;
-+		case 2:
-+			port->iotype = UPIO_MEM16;
-+			break;
-+		case 4:
-+			port->iotype = (big_endian) ? UPIO_MEM32BE : UPIO_MEM32;
-+			break;
-+		default:
-+			pr_warn("[%s] unsupported reg-io-width\n", match->name);
-+			return -EINVAL;
-+		}
-+	}
+@@ -75,6 +76,19 @@ static void __init earlycon_init(struct earlycon_device *device,
+ 	len = s - name;
+ 	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
+ 	earlycon->data = &early_console_dev;
 +
- 	if (options) {
- 		strlcpy(early_console_dev.options, options,
- 			sizeof(early_console_dev.options));
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 62a4df0..6d1bed8 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -360,6 +360,7 @@ extern const struct earlycon_id __earlycon_table_end[];
++	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM16 ||
++	    port->iotype == UPIO_MEM32 || port->iotype == UPIO_MEM32BE)
++		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
++			(port->iotype == UPIO_MEM) ? "" :
++			(port->iotype == UPIO_MEM16) ? "16" :
++			(port->iotype == UPIO_MEM32) ? "32" : "32be",
++			(unsigned long long)port->mapbase,
++			device->options);
++	else
++		pr_info("Early serial console at I/O port 0x%lx (options '%s')\n",
++			port->iobase,
++			device->options);
+ }
  
- extern int setup_earlycon(char *buf);
- extern int of_setup_earlycon(unsigned long addr, const struct earlycon_id *match,
-+			     unsigned long node,
- 			     const char *options);
+ static int __init parse_options(struct earlycon_device *device, char *options)
+@@ -113,19 +127,6 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 		strlcpy(device->options, options, length);
+ 	}
  
- struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+-	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM16 ||
+-	    port->iotype == UPIO_MEM32 || port->iotype == UPIO_MEM32BE)
+-		pr_info("Early serial console at MMIO%s 0x%llx (options '%s')\n",
+-			(port->iotype == UPIO_MEM) ? "" :
+-			(port->iotype == UPIO_MEM16) ? "16" :
+-			(port->iotype == UPIO_MEM32) ? "32" : "32be",
+-			(unsigned long long)port->mapbase,
+-			device->options);
+-	else
+-		pr_info("Early serial console at I/O port 0x%lx (options '%s')\n",
+-			port->iobase,
+-			device->options);
+-
+ 	return 0;
+ }
+ 
 -- 
 2.7.0
