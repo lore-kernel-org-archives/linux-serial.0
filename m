@@ -1,60 +1,44 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 1/3] TTY: serial/mpsc, stop leaking mappings
-Date: Tue, 12 Jan 2016 10:49:32 +0100
-Message-ID: <1452592174-24805-1-git-send-email-jslaby@suse.cz>
+Subject: [PATCH 3/3] TTY: serial/mpsc, remove unused fields
+Date: Tue, 12 Jan 2016 10:49:34 +0100
+Message-ID: <1452592174-24805-3-git-send-email-jslaby@suse.cz>
+References: <1452592174-24805-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1452592174-24805-1-git-send-email-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-When mpsc_routing_base, sdma_intr_base, mpsc_base, sdma_base, and
-brg_base are mapped, they are never unmapped. The condition in the
-free paths is always 'if (!XXX_base) { unmap }'. Fix it by inverting
-the condition.
+c_iflag and c_cflag are set, but unused. Remove.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/mpsc.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/mpsc.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
 diff --git a/drivers/tty/serial/mpsc.c b/drivers/tty/serial/mpsc.c
-index cadfd1cfae2b..363772992acc 100644
+index 44a23113f469..4a3021bcc859 100644
 --- a/drivers/tty/serial/mpsc.c
 +++ b/drivers/tty/serial/mpsc.c
-@@ -1870,12 +1870,12 @@ static int mpsc_shared_map_regs(struct platform_device *pd)
+@@ -137,8 +137,6 @@ struct mpsc_port_info {
+ 	/* Internal driver state for this ctlr */
+ 	u8 ready;
+ 	u8 rcv_data;
+-	tcflag_t c_iflag;	/* save termios->c_iflag */
+-	tcflag_t c_cflag;	/* save termios->c_cflag */
  
- static void mpsc_shared_unmap_regs(void)
- {
--	if (!mpsc_shared_regs.mpsc_routing_base) {
-+	if (mpsc_shared_regs.mpsc_routing_base) {
- 		iounmap(mpsc_shared_regs.mpsc_routing_base);
- 		release_mem_region(mpsc_shared_regs.mpsc_routing_base_p,
- 				MPSC_ROUTING_REG_BLOCK_SIZE);
- 	}
--	if (!mpsc_shared_regs.sdma_intr_base) {
-+	if (mpsc_shared_regs.sdma_intr_base) {
- 		iounmap(mpsc_shared_regs.sdma_intr_base);
- 		release_mem_region(mpsc_shared_regs.sdma_intr_base_p,
- 				MPSC_SDMA_INTR_REG_BLOCK_SIZE);
-@@ -2011,15 +2011,15 @@ err:
+ 	/* Info passed in from platform */
+ 	u8 mirror_regs;		/* Need to mirror regs? */
+@@ -1407,9 +1405,6 @@ static void mpsc_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	ulong flags;
+ 	u32 chr_bits, stop_bits, par;
  
- static void mpsc_drv_unmap_regs(struct mpsc_port_info *pi)
- {
--	if (!pi->mpsc_base) {
-+	if (pi->mpsc_base) {
- 		iounmap(pi->mpsc_base);
- 		release_mem_region(pi->mpsc_base_p, MPSC_REG_BLOCK_SIZE);
- 	}
--	if (!pi->sdma_base) {
-+	if (pi->sdma_base) {
- 		iounmap(pi->sdma_base);
- 		release_mem_region(pi->sdma_base_p, MPSC_SDMA_REG_BLOCK_SIZE);
- 	}
--	if (!pi->brg_base) {
-+	if (pi->brg_base) {
- 		iounmap(pi->brg_base);
- 		release_mem_region(pi->brg_base_p, MPSC_BRG_REG_BLOCK_SIZE);
- 	}
+-	pi->c_iflag = termios->c_iflag;
+-	pi->c_cflag = termios->c_cflag;
+-
+ 	switch (termios->c_cflag & CSIZE) {
+ 	case CS5:
+ 		chr_bits = MPSC_MPCR_CL_5;
 -- 
 2.7.0
