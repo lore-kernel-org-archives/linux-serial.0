@@ -1,52 +1,38 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
-Date: Wed, 13 Jan 2016 19:15:43 +0000
-Message-ID: <20160113191542.GA12086@leverpostej>
-References: <20150511013540.5709.93626.stgit@notabene.brown>
- <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com>
- <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] serial/omap: mark wait_for_xmitr as __maybe_unused
+Date: Wed, 13 Jan 2016 21:59:23 +0100
+Message-ID: <4282250.XA5neaP6kR@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: List for communicating with real GTA04 owners <gta04-owner@goldelico.com>, tomeu@tomeuvizoso.net, NeilBrown <neil@brown.name>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robherring2@gmail.com>, Pavel Machek <pavel@ucw.cz>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Marek Belisko <marek@goldelico.com>
+To: linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Denys Vlasenko <dvlasenk@redhat.com>, Peter Hurley <peter@hurleysoftware.com>, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 12, 2016 at 02:28:00PM +0100, H. Nikolaus Schaller wrote:
-> Hi Tomeu,
-> 
-> Am 12.01.2016 um 14:06 schrieb Tomeu Vizoso <tomeu@tomeuvizoso.net>:
-> 
-> > On 11 May 2015 at 03:56, NeilBrown <neil@brown.name> wrote:
-> >> Hi all,
-> >> here is version 4 of my "UART slave device" patch set, previously
-> >> known as "tty slave devices".
-> > 
-> > Hi Neil,
-> > 
-> > do you (or someone else) have plans to continue this work in the short
-> > or medium term?
-> 
-> yes, there is something in our upstreaming pipeline. This one works for us on top of 4.4.0:
-> 
-> <http://git.goldelico.com/?p=gta04-kernel.git;a=shortlog;h=refs/heads/work/hns/misc/w2sg-tty-slave2-v4>
-> 
-> There is one point still to be solved: the exact style of the DT bindings.
-> 
-> We have an idea how a driver can implement two different styles (child node AND phandle)
-> so that it is up to the DTS developer to use the one that best fits into the existing DTS.
+The wait_for_xmitr() function is only used if CONFIG_CONSOLE_POLL
+or CONFIG_SERIAL_OMAP_CONSOLE are set, but when both are disabled,
+the compiler warns about it being unused:
 
->From my perspective as a binding maintainer, and as I stated before, the
-child node approach made the most sense and was most consistent with the
-way we handle other devices.
+drivers/tty/serial/omap-serial.c:1168:13: warning: 'wait_for_xmitr' defined but not used [-Wunused-func
 
-I don't understand what the benefit of supporting two styles of
-description would be, relative to the maintenance cost. Nor do I
-understand your fixation with the phandle approach, given it has been
-repeatedly disagreed with by binding maintainers.
+We could add more #ifdefs to work around it, but adding __maybe_unused
+seems nicer.
 
-Thanks,
-Mark.
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 2172076d2399 ("serial/omap-serial: Deinline wait_for_xmitr, save 165 bytes")
+
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index b645f9228ed7..1434c7febc99 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1165,7 +1165,7 @@ serial_omap_type(struct uart_port *port)
+ 
+ #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
+ 
+-static void wait_for_xmitr(struct uart_omap_port *up)
++static void __maybe_unused wait_for_xmitr(struct uart_omap_port *up)
+ {
+ 	unsigned int status, tmout = 10000;
+ 
