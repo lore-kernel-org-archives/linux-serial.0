@@ -1,44 +1,52 @@
-From: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Subject: Re: [PATCH 0/4] UART slave device support - version 4
-Date: Wed, 13 Jan 2016 20:00:04 +0100
-Message-ID: <20160113190004.GB9821@amd>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
+Date: Wed, 13 Jan 2016 19:15:43 +0000
+Message-ID: <20160113191542.GA12086@leverpostej>
 References: <20150511013540.5709.93626.stgit@notabene.brown>
  <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com>
- <87lh7u8p3b.fsf@notabene.neil.brown.name>
+ <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <87lh7u8p3b.fsf-wvvUuzkyo1HefUI2i7LXDhCRmIWqnp/j@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>
-Cc: Tomeu Vizoso <tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, GTA04 owners <gta04-owner-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: List for communicating with real GTA04 owners <gta04-owner@goldelico.com>, tomeu@tomeuvizoso.net, NeilBrown <neil@brown.name>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robherring2@gmail.com>, Pavel Machek <pavel@ucw.cz>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Marek Belisko <marek@goldelico.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed 2016-01-13 08:28:24, NeilBrown wrote:
-> On Wed, Jan 13 2016, Tomeu Vizoso wrote:
+On Tue, Jan 12, 2016 at 02:28:00PM +0100, H. Nikolaus Schaller wrote:
+> Hi Tomeu,
 > 
-> > On 11 May 2015 at 03:56, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org> wrote:
+> Am 12.01.2016 um 14:06 schrieb Tomeu Vizoso <tomeu@tomeuvizoso.net>:
+> 
+> > On 11 May 2015 at 03:56, NeilBrown <neil@brown.name> wrote:
 > >> Hi all,
-> >>  here is version 4 of my "UART slave device" patch set, previously
-> >>  known as "tty slave devices".
-> >
+> >> here is version 4 of my "UART slave device" patch set, previously
+> >> known as "tty slave devices".
+> > 
 > > Hi Neil,
-> >
+> > 
 > > do you (or someone else) have plans to continue this work in the short
 > > or medium term?
-> >
 > 
-> I personally have no current plans.  Too many other interesting things
-> to do and my interest in the hardware is in the waning phase.
+> yes, there is something in our upstreaming pipeline. This one works for us on top of 4.4.0:
+> 
+> <http://git.goldelico.com/?p=gta04-kernel.git;a=shortlog;h=refs/heads/work/hns/misc/w2sg-tty-slave2-v4>
+> 
+> There is one point still to be solved: the exact style of the DT bindings.
+> 
+> We have an idea how a driver can implement two different styles (child node AND phandle)
+> so that it is up to the DTS developer to use the one that best fits into the existing DTS.
 
-Can we convince you to play with N900? Your python stuff should still
-work, it has keyboard, and we have calls working now ;-).		Pavel
+>From my perspective as a binding maintainer, and as I stated before, the
+child node approach made the most sense and was most consistent with the
+way we handle other devices.
 
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I don't understand what the benefit of supporting two styles of
+description would be, relative to the maintenance cost. Nor do I
+understand your fixation with the phandle approach, given it has been
+repeatedly disagreed with by binding maintainers.
+
+Thanks,
+Mark.
