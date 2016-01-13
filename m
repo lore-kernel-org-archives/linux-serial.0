@@ -1,45 +1,62 @@
-From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v4 00/11] Earlycon cleanup
-Date: Tue, 12 Jan 2016 17:52:58 -0600
-Message-ID: <CAL_JsqKmXtUg+QspirBQw80bh7GC4JnrUZojrY0-twzpE-xeVw@mail.gmail.com>
-References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com> <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
+From: Al Stone <al.stone@linaro.org>
+Subject: Re: [RFC 0/5] console/acpi: add DBG2 and SPCR console configuration
+Date: Tue, 12 Jan 2016 17:07:49 -0700
+Message-ID: <56959555.6090705@linaro.org>
+References: <1441716217-23786-1-git-send-email-leif.lindholm@linaro.org>
+ <56951841.4010101@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Masahiro Yamada <yamada.masahiro@socionext.com>, Grant Likely <grant.likely@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, Sebastian Frias <sf84@laposte.net>, Paul Burton <paul.burton@imgtec.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <56951841.4010101@codeaurora.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Christopher Covington <cov@codeaurora.org>, Leif Lindholm <leif.lindholm@linaro.org>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, graeme.gregory@linaro.org
+Cc: mark.rutland@arm.com, linaro-acpi@lists.linaro.org, jcm@redhat.com, torez@redhat.com, lv.zheng@intel.com, Timur Tabi <timur@quicinc.com>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 12, 2016 at 1:41 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> Hi Greg, Grant & Rob,
->
-> This patch series is a rebase of the v3 from April last year.
->
-> This patch series builds on my earlier "Extensible console matching &
-> direct earlycon" to add several useful features to earlycon:
-> * Proper port i/o configuration from DT node with of_serial properties
->   (such as reg-io-width, reg-shift and reg-offset, and endianness)
-> * Proper console name & index initialization from earlycon name
->   (for both command line and DT-defined earlycons)
-> * Support for DT 'stdout-path' options pass-through to earlycon setup
-> * Improved log messages for troubleshooting
-> * Support for multiple OF earlycon declarations so different
->   compatible strings can specify the same OF earlycon
->
-> * Changes from v3
->   - Added 32-bit big-endian support
->   - Removed the omap8250 earlycon (will follow later)
->
->
-> Rob has expressed a desire to have the DT parts live in drivers/of/fdt.c
-> The problem with this approach is two-fold. Firstly, the number of required
-> parameters quickly becomes ugly (base address, io reg width, io reg offset,
-> io reg stride, endianness, earlycon name). Secondly, drivers are already
-> requiring access to alternate DT properties, like clocks, to initialize
-> earlycons, and this requirement will continue.
+On 01/12/2016 08:14 AM, Christopher Covington wrote:
+> Hi,
+> 
+> On 09/08/2015 08:43 AM, Leif Lindholm wrote:
+>> Support for configuring bootconsole and console via the ACPI tables
+>> DBG2 (Debug Port Table 2) [1] and SPCR (Serial Port Console Redirection
+>> Table) [2], defined by Microsoft, has been discussed on and off over the
+>> years.
+>>
+>> [1] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
+>> [2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
+>>
+>> Licensing concerns have prevented this happening in the past, but as of
+>> 10 August 2015, these tables have both been released also under OWF 1.0
+>> (http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0)
+>> which is think is noncontroversially GPL-compatible?
+>>
+>> This set is a first attempt at implementing this.
+>>
+>> Submitting as an RFC since the SPCR handling currently depends on the
+>> console driver being initialized after subsystem initcalls. Workaround
+>> to enable testing surrounding infrastructure in 5/5, _really_ not
+>> intended to be merged.
+>> (Suggestions for acceptable ways of working around this appreciated.)
+> 
+> What's required for this to graduate from RFC status? Is anyone working
+> on it?
+> 
+> Thanks,
+> Christopher Covington
+> 
 
-I dislike ugliness more. So other than my one nit, for the series:
+Well, we have asked Aleksey Makarov <aleksy.makarov@linaro.org> to pick
+this task up from Leif within Linaro.  Perhaps drop him a line and see
+if the two of you can collaborate on this somehow?  I think it just needs
+nudging and a bit of TLC to get it past being an RFC.
 
-Acked-by: Rob Herring <robh@kernel.org>
+-- 
+ciao,
+al
+-----------------------------------
+Al Stone
+Software Engineer
+Linaro Enterprise Group
+al.stone@linaro.org
+-----------------------------------
