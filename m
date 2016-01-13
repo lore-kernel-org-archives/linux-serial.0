@@ -1,71 +1,51 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
-Date: Wed, 13 Jan 2016 08:34:07 -0800
-Message-ID: <56967C7F.4060705@hurleysoftware.com>
-References: <5672D18E.8000301@laposte.net>
- <5672E2CF.6080705@hurleysoftware.com> <5672E76A.3010506@laposte.net>
- <5672F588.8070503@hurleysoftware.com> <5672FD35.5070609@laposte.net>
- <56731689.70702@hurleysoftware.com> <56740FC3.50302@laposte.net>
- <5674204C.1000907@hurleysoftware.com> <56782DE5.7090708@laposte.net>
- <56798EC7.1030804@laposte.net> <5693C52B.90003@laposte.net>
- <5693D41E.8050601@hurleysoftware.com> <5693ECBA.50003@laposte.net>
- <5693FD3C.5080601@hurleysoftware.com> <5694C94B.3090405@free.fr>
- <56950C21.3010805@laposte.net> <5695584E.3040902@hurleysoftware.com>
- <5696317C.4020709@laposte.net>
+Subject: Re: [PATCH v4 05/11] of: earlycon: Initialize port fields from DT
+ properties
+Date: Wed, 13 Jan 2016 08:35:40 -0800
+Message-ID: <56967CDC.6040706@hurleysoftware.com>
+References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
+ <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
+ <1452627672-9482-6-git-send-email-peter@hurleysoftware.com>
+ <CAL_JsqJiKfT5nu6vatU4U3kv7dfs5vx8QEW6mS0=Qj4iX4CE8w@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5696317C.4020709@laposte.net>
+In-Reply-To: <CAL_JsqJiKfT5nu6vatU4U3kv7dfs5vx8QEW6mS0=Qj4iX4CE8w@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Frias <sf84@laposte.net>
-Cc: Mason <slash.tmp@free.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Mans Rullgard <mans@mansr.com>
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Masahiro Yamada <yamada.masahiro@socionext.com>, Grant Likely <grant.likely@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, Sebastian Frias <sf84@laposte.net>, Paul Burton <paul.burton@imgtec.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/13/2016 03:14 AM, Sebastian Frias wrote:
-> Hi Peter,
-> 
-> On 01/12/2016 08:47 PM, Peter Hurley wrote:
->> On 01/12/2016 06:22 AM, Sebastian Frias wrote:
->>>
->>> For the record, I'm using a SoC emulator, and thus do not have a bootloader per se and there are a bunch of other things that I cannot count on.
->>> The emulator has the UART pre-setup, so I just need Linux to take over without changing the parameters.
->>> Ideally, I would like to have the same image of Linux+DT to start in any instance of the emulator or real chips, regardless of the clock ratios, that's why I sort of need Linux to not change the UART speed, which is quite tricky because there are no clock generators in the emulator.
+On 01/12/2016 03:49 PM, Rob Herring wrote:
+> On Tue, Jan 12, 2016 at 1:41 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>> Read the optional "reg-offset", "reg-shift", "reg-io-width" and endianness
+>> properties and initialize the respective struct uart_port field if found.
 >>
->> Got it, thanks for the info.
->> Please test the series I just cc'd you on plus the patch I sent
->> you yesterday.
+>> NB: These bindings are common to several drivers and the values merely
+>> indicate the default value; the registering earlycon setup() method can
+>> simply override the values if required.
 >>
->> That should get you an earlycon up and running on that simulator;
->> let me know if it doesn't and we'll go from there.
+>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+>> ---
 > 
-> Ok, thanks.
-> I will try as soon as we finish rebasing our changes on top of
-> "mainline" (or HEAD, or is it "-next"? I don't know how you guys call
-> the most recent code base for Linux)
+>> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+>> index 7509ee34d..03eac4a 100644
+>> --- a/drivers/tty/serial/earlycon.c
+>> +++ b/drivers/tty/serial/earlycon.c
+>> @@ -20,6 +20,10 @@
+>>  #include <linux/serial_core.h>
+>>  #include <linux/sizes.h>
+>>
+>> +#ifdef CONFIG_OF_EARLY_FLATTREE
+>> +#include <linux/of_fdt.h>
+>> +#endif
+> 
+> I think you don't need the ifdef around this.
+> 
+>> +
+>>  #ifdef CONFIG_FIX_EARLYCON_MEM
+>>  #include <asm/fixmap.h>
+>>  #endif
 
-The basic tree organization is
-
-   Linus's tree  <---- linux-next[date]  <----- maintainers' trees
-   (mainline)          (next)                   (eg., Greg's tty tree)
-
-The patches I sent you (along with any required modifications during the
-review cycle) are based on the tty-next branch in Greg's tty tree here
-git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-
-As of this email, Greg's tree is based on Linus's 4.4-rc6 which should
-be stable enough for you to test these patches on.
-
-> Actually, I tried yesterday on a 4.1.13 but
-> "[drivers/tty/serial/earlycon.c:62] earlycon_map()" was still the
-> last message I got, just as with the OF_EARLYCON_DECLARE hack I had
-> previously talk about, and so I would like to test on the same
-> conditions than you, mainline.
-
-So just to confirm, you applied "8250: Add Au1x00/RT288x earlycon support"
-to 4.1.13 and the earlycon didn't come up when you used the kernel
-command line option like so:
-
-	earlycon=rt288x,mmio32,0x10700
-
-Is that correct?
+Ok, will take care of that.
