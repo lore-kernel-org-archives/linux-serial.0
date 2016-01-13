@@ -1,105 +1,106 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH -next] tty/serial: atmel: Include module.h to fix build
- failure
-Date: Tue, 12 Jan 2016 21:44:10 -0800
-Message-ID: <1452663850.8586.3.camel@perches.com>
-References: <1452363335-2535-1-git-send-email-linux@roeck-us.net>
-	 <20160109182908.GB29967@kroah.com> <20160111083536.GB8070@sudip-pc>
-	 <20160111111101.GA18945@roeck-us.net> <5693C553.7050400@windriver.com>
-	 <5695E207.9080309@roeck-us.net>
+From: Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH v4 11/11] serial: 8250_omap: Add omap8250 earlycon
+Date: Wed, 13 Jan 2016 09:19:53 +0000
+Message-ID: <569616B9.1090504@nvidia.com>
+References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
+ <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
+ <1452627672-9482-12-git-send-email-peter@hurleysoftware.com>
+ <56955941.1080701@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5695E207.9080309@roeck-us.net>
+In-Reply-To: <56955941.1080701@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>, Paul Gortmaker <paul.gortmaker@windriver.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, postmaster <postmaster@vger.kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Sebastian Frias <sf84@laposte.net>, Paul Burton <paul.burton@imgtec.com>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2016-01-12 at 21:35 -0800, Guenter Roeck wrote:
-> On 01/11/2016 07:08 AM, Paul Gortmaker wrote:
-> > On 2016-01-11 06:11 AM, Guenter Roeck wrote:
-> > > On Mon, Jan 11, 2016 at 02:05:36PM +0530, Sudip Mukherjee wrote:
-> > > > On Sat, Jan 09, 2016 at 10:29:08AM -0800, Greg Kroah-Hartman wr=
-ote:
-> > > > > On Sat, Jan 09, 2016 at 10:15:35AM -0800, Guenter Roeck wrote=
-:
-> > > > > > If serial/atmel_serial.c is compiled with devicetree enable=
-d, the
-> > > > > > following build error is observed.
-> > > > > >=20
-> > > > > > drivers/tty/serial/atmel_serial.c:192:1: warning:
-> > > > > > 	data definition has no type or storage class
-> > > > > > drivers/tty/serial/atmel_serial.c:192:1: error:
-> > > > > > 	type defaults to 'int' in declaration of 'MODULE_DEVICE_TA=
-BLE'
-> > > > > > drivers/tty/serial/atmel_serial.c:192:1: warning:
-> > > > > > 	parameter names (without types) in function declaration
-> > > > > >=20
-> > > > > > MODULE_DEVICE_TABLE is used to specify devicetree compatibi=
-lities.
-> > > > > >=20
-> > > > > > Fixes: c39dfebc7798 ("drivers/tty/serial: make serial/atmel=
-_serial.c explicitly non-modular")
-> > > > > > Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
-> > > > > > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > > > > > ---
-> > > > > > =A0 drivers/tty/serial/atmel_serial.c | 1 +
-> > > > > > =A0 1 file changed, 1 insertion(+)
-> > > > >=20
-> > > > > This hit my tree last night already with commit
-> > > > > 041497eb721ddbdc1e690316976dd8ba7bc136a2, so all should be fi=
-ne in the
-> > > > > next linux-next release.
-> > > >=20
-> > > > Hi Guenter,
-> > > > Just a thought. It has happended many times that we both have s=
-ent
-> > > > patches to fix the same build fail. Maybe your patch got applie=
-d and
-> > > > mine came late or maybe mine was applied and you came late. But=
- I think
-> > > > if we have a separate mailing list where people interested to f=
-ix and
-> > > > monitor build failures will be members and we Cc that list when=
-ever we
-> > > > send patch for build fail and then in that case we will know th=
-at
-> > > > someone else has already sent a patch for this failure and we c=
-an invest
-> > > > the time in some other problem.
-> > > >=20
-> > >=20
-> > > Hi Sudip,
-> > >=20
-> > > I agree, it would make sense to have a build(/runtime?)-fixes-onl=
-y mailing
-> > > list. Question though is how to limit noise on such a list and, o=
-f course,
-> > > where and how to set it up. Any thoughts ?
-> >=20
-> > Since most (all?) of these kind of fails are on linux-next, why not
->=20
-> Most or many, but not all.
->=20
-> > do what everyone else does, and report the fail there and/or ensure
-> > the fix is cc'd there?=A0=A0=A0Before I waste time trying to fix st=
-h on
-> > linux-next, I always google for the error msg and many times that
-> > leads me to a lkml or linux-next post where it was reported and
-> > fixed already.
->=20
-> Many times, Sudip and I end up fixing problems literally in parallel,
-> and it happened quite often lately that we do send patches in paralle=
-l.
-> Even if I do a Google search for an error message, it happens quite
-> often that I get no results, yet the fix is already out there on
-> some list.
->=20
-> Sudip, one option would be to set up a semi-private mailing list.
-> My build tests now have a dedicated virtual host (kerneltests.org).
-> I could set up a managed list there.
 
-Perhaps it'd be better to have something like linux-build-failures@vger=
-=2Ekernel.org
+On 12/01/16 19:51, Peter Hurley wrote:
+> Wasn't planning on sending this patch just yet, but oh well.
+> 
+> On 01/12/2016 11:41 AM, Peter Hurley wrote:
+>> Add DT earlycon for 8250_omap driver. This boot console is included
+>> for kernels built with CONFIG_SERIAL_EARLYCON=y, CONFIG_OF=y,
+>> CONFIG_SERIAL_8250_OMAP=y, and CONFIG_OF_EARLY_FLATTREE=y.
+>>
+>> This boot console is enabled with the command line option "earlycon"
+>> (without "=<name>...") when the DT 'stdout-path' property matches a
+>> compatible uart. For example,
+>>
+>> / {
+>>    chosen {
+>>         stdout-path = "serial0:115200";
+>>    };
+>>
+>>    ....
+>>
+>>    aliases {
+>>         serial0 = &uart0;
+>>    };
+>>
+>>    ....
+>>
+>>    ocp : ocp {
+>>         uart0 : serial@44e09000 {
+>>              compatible = "ti,omap3-uart";
+>>         }
+>>    };
+>> };
+>>
+>> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+>> ---
+>>  drivers/tty/serial/8250/8250_early.c | 20 ++++++++++++++++++++
+>>  1 file changed, 20 insertions(+)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+>> index e7cdc0c..d1f6310 100644
+>> --- a/drivers/tty/serial/8250/8250_early.c
+>> +++ b/drivers/tty/serial/8250/8250_early.c
+>> @@ -201,3 +201,23 @@ EARLYCON_DECLARE(rt288x, early_rt288x_setup);
+>>  OF_EARLYCON_DECLARE(rt288x, "ralink,rt2880-uart", early_rt288x_setup);
+>>  
+>>  #endif /* CONFIG_SERIAL_8250_RT288X */
+> 
+> This patch may not apply because the context is sitting on top of
+> unsubmitted code. Sorry.
+> 
+> Regards,
+> Peter Hurley
+> 
+>> +
+>> +#ifdef CONFIG_SERIAL_8250_OMAP
+>> +
+>> +static int __init early_omap8250_setup(struct earlycon_device *device,
+>> +				       const char *options)
+>> +{
+>> +	struct uart_port *port = &device->port;
+>> +
+>> +	if (!(device->port.membase || device->port.iobase))
+>> +		return -ENODEV;
+>> +
+>> +	port->regshift = 2;
+>> +	device->con->write = early_serial8250_write;
+>> +	return 0;
+>> +}
+
+I see you did not mean to send this out, but would the above still be
+necessary with my patch [0]? I am wondering if with my patch you can
+just add the below OF_EARLYCON_DECLARE() for OMAP?
+
+>> +OF_EARLYCON_DECLARE(omap8250, "ti,omap2-uart", early_omap8250_setup);
+>> +OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
+>> +OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
+>> +#endif
+
+If so, would it make sense to include my patches [0] and [1] with this
+series, or would you prefer that I just rebase on top of this? I see
+that you have already made the same change that I made in patch 2 of my
+series.
+
+Cheers
+Jon
+
+[0] http://marc.info/?l=linux-serial&m=145259482325332&w=2
+[1] http://marc.info/?l=linux-serial&m=145259482825342&w=2
