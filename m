@@ -1,69 +1,47 @@
-From: Sebastian Frias <sf84@laposte.net>
-Subject: Re: [RFC PATCH] always probe UART HW when options are not specified
-Date: Wed, 13 Jan 2016 12:14:04 +0100
-Message-ID: <5696317C.4020709@laposte.net>
-References: <5672D18E.8000301@laposte.net> <5672E2CF.6080705@hurleysoftware.com> <5672E76A.3010506@laposte.net> <5672F588.8070503@hurleysoftware.com> <5672FD35.5070609@laposte.net> <56731689.70702@hurleysoftware.com> <56740FC3.50302@laposte.net> <5674204C.1000907@hurleysoftware.com> <56782DE5.7090708@laposte.net> <56798EC7.1030804@laposte.net> <5693C52B.90003@laposte.net> <5693D41E.8050601@hurleysoftware.com> <5693ECBA.50003@laposte.net> <5693FD3C.5080601@hurleysoftware.com> <5694C94B.3090405@free.fr> <56950C21.3010805@laposte.net> <5695584E.3040902@hurleysoftware.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH -next] tty/serial: atmel: Include module.h to fix build
+ failure
+Date: Wed, 13 Jan 2016 05:06:22 -0800
+Message-ID: <56964BCE.2000006@roeck-us.net>
+References: <1452363335-2535-1-git-send-email-linux@roeck-us.net>
+ <20160109182908.GB29967@kroah.com> <20160111083536.GB8070@sudip-pc>
+ <20160111111101.GA18945@roeck-us.net> <5693C553.7050400@windriver.com>
+ <5695E207.9080309@roeck-us.net> <1452663850.8586.3.camel@perches.com>
+ <20160113103246.GB26117@sudip-pc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5695584E.3040902@hurleysoftware.com>
+In-Reply-To: <20160113103246.GB26117@sudip-pc>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Mason <slash.tmp@free.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Mans Rullgard <mans@mansr.com>
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Joe Perches <joe@perches.com>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, postmaster <postmaster@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
-
-On 01/12/2016 08:47 PM, Peter Hurley wrote:
-> On 01/12/2016 06:22 AM, Sebastian Frias wrote:
+On 01/13/2016 02:32 AM, Sudip Mukherjee wrote:
+> On Tue, Jan 12, 2016 at 09:44:10PM -0800, Joe Perches wrote:
+>> On Tue, 2016-01-12 at 21:35 -0800, Guenter Roeck wrote:
+>>> On 01/11/2016 07:08 AM, Paul Gortmaker wrote:
+>>>> On 2016-01-11 06:11 AM, Guenter Roeck wrote:
+>>>>> On Mon, Jan 11, 2016 at 02:05:36PM +0530, Sudip Mukherjee wrote:
+>>>>>> On Sat, Jan 09, 2016 at 10:29:08AM -0800, Greg Kroah-Hartman wrote:
+>>>>>>> On Sat, Jan 09, 2016 at 10:15:35AM -0800, Guenter Roeck wrote:
+>>>>>>>> If serial/atmel_serial.c is compiled with devicetree enabled, the
+> <snip>
+>>>
+>>> Sudip, one option would be to set up a semi-private mailing list.
+>>> My build tests now have a dedicated virtual host (kerneltests.org).
+>>> I could set up a managed list there.
 >>
->> For the record, I'm using a SoC emulator, and thus do not have a bootloader per se and there are a bunch of other things that I cannot count on.
->> The emulator has the UART pre-setup, so I just need Linux to take over without changing the parameters.
->> Ideally, I would like to have the same image of Linux+DT to start in any instance of the emulator or real chips, regardless of the clock ratios, that's why I sort of need Linux to not change the UART speed, which is quite tricky because there are no clock generators in the emulator.
+>> Perhaps it'd be better to have something like linux-build-failures@vger.kernel.org
 >
-> Got it, thanks for the info.
-> Please test the series I just cc'd you on plus the patch I sent
-> you yesterday.
+> yes, much better. But if me and Guenter are the only two members of that
+> list then it will not look nice. :)
 >
-> That should get you an earlycon up and running on that simulator;
-> let me know if it doesn't and we'll go from there.
 
-Ok, thanks.
-I will try as soon as we finish rebasing our changes on top of 
-"mainline" (or HEAD, or is it "-next"? I don't know how you guys call 
-the most recent code base for Linux)
+Let's see if we can get someone to create a list on vger.kernel.org
+(plus an instance of patchwork). If that doesn't work out we can fall back
+to kerneltests.org.
 
-Actually, I tried yesterday on a 4.1.13 but 
-"[drivers/tty/serial/earlycon.c:62] earlycon_map()" was still the last 
-message I got, just as with the OF_EARLYCON_DECLARE hack I had 
-previously talk about, and so I would like to test on the same 
-conditions than you, mainline.
-
->
->> NOTE: on my tree I'm using the patch I previously submitted here, so Linux is probing the UART so it works for all my cases, but I would like to go back to a standard tree.
->
-> I expect that patch to go into -next sometime during the 4.5-rc cycle.
-
-Sounds good!
 Thanks,
-
-Sebastian
-
->
->
-> Regards,
-> Peter Hurley
->
->>> Note: calling the UART driver "Au1x00/RT288x" is a bit of a misnomer,
->>> as these are names of SoCs using that distinct register layout.
->>> The actual IP is probably the 16550-compatible Palmchip BK-3103.
->>> https://sites.google.com/a/palmchiptech.com/palmchiptech/product-services/hardware-services/ip-cores/bk-3103
->>> (Not sure that this website is legitimate, though.)
->>>
->>> When I need earlyprintk support, I use this patch from Mans:
->>> http://thread.gmane.org/gmane.linux.kernel/2081016
->>>
->>> Regards.
->>>
->
+Guenter
