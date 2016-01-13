@@ -1,63 +1,70 @@
 From: Anton Wuerfel <anton.wuerfel@fau.de>
-Subject: [PATCH v6 11/15] tty: serial: 8250: Remove SERIAL_DEBUG_PNP macro
-Date: Wed, 13 Jan 2016 22:29:17 +0100
-Message-ID: <1452720561-28443-12-git-send-email-anton.wuerfel@fau.de>
+Subject: [PATCH v6 05/15] tty: serial: 8250: Remove else after return
+Date: Wed, 13 Jan 2016 22:29:11 +0100
+Message-ID: <1452720561-28443-6-git-send-email-anton.wuerfel@fau.de>
 References: <1452720561-28443-1-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1452720561-28443-1-git-send-email-anton.wuerfel@fau.de>
-Sender: linux-parisc-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Joachim Eastwood <manabian@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Phillip Raffeck <phillip.raffeck@fau.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hung <hpeter@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, =?UTF-8?q?Anton=20W=C3=BCrfel?= <anton.wuerfel@fau.de>
+Cc: Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Joachim Eastwood <manabian@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Phillip Raffeck <phillip.raffeck@fau.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hung <hpeter@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Anton Wuerfel <anton.wuerfel@fau.de>
 List-Id: linux-serial@vger.kernel.org
 
-=46rom: Phillip Raffeck <phillip.raffeck@fau.de>
+This patch fixes checkpatch warnings about unnecessary else blocks afte=
+r
+return statements.
 
-This patch removes the macro SERIAL_DEBUG_PNP, which is used to enable
-debugging at compile time.
-As SERIAL_DEBUG_PNP is an orphan, the corresponding #ifdef is removed.
-To keep the ability to enable debugging at compile time,
-the call to printk(KERN_DEBUG ...) is replaced by a corresponding
-call to dev_dbg(), which is configurable via CONFIG_DYNAMIC_DEBUG.
-
-Signed-off-by: Phillip Raffeck <phillip.raffeck@fau.de>
 Signed-off-by: Anton W=C3=BCrfel <anton.wuerfel@fau.de>
+Signed-off-by: Phillip Raffeck <phillip.raffeck@fau.de>
 Cc: linux-kernel@i4.cs.fau.de
 ---
- drivers/tty/serial/8250/8250_pnp.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/8250/8250_pci.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/82=
-50/8250_pnp.c
-index 00846a7..0c32c59 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -464,11 +464,11 @@ serial_pnp_probe(struct pnp_dev *dev, const struc=
-t pnp_device_id *dev_id)
- 	} else
- 		return -ENODEV;
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
+50/8250_pci.c
+index 534ca18..8543719 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -805,10 +805,10 @@ static int pci_netmos_9900_numports(struct pci_de=
+v *dev)
 =20
--#ifdef SERIAL_DEBUG_PNP
--	printk(KERN_DEBUG
--		"Setup PNP port: port %x, mem 0x%lx, irq %d, type %d\n",
--		       uart.port.iobase, uart.port.mapbase, uart.port.irq, uart.port=
-=2Eiotype);
--#endif
-+	dev_dbg(&dev->dev,
-+		 "Setup PNP port: port %x, mem 0x%lx, irq %d, type %d\n",
-+		 uart.port.iobase, uart.port.mapbase,
-+		 uart.port.irq, uart.port.iotype);
+ 	pi =3D (c & 0xff);
+=20
+-	if (pi =3D=3D 2) {
++	if (pi =3D=3D 2)
+ 		return 1;
+-	} else if ((pi =3D=3D 0) &&
+-			   (dev->device =3D=3D PCI_DEVICE_ID_NETMOS_9900)) {
 +
- 	if (flags & CIR_PORT) {
- 		uart.port.flags |=3D UPF_FIXED_PORT | UPF_FIXED_TYPE;
- 		uart.port.type =3D PORT_8250_CIR;
++	if ((pi =3D=3D 0) && (dev->device =3D=3D PCI_DEVICE_ID_NETMOS_9900)) =
+{
+ 		/* two possibilities: 0x30ps encodes number of parallel and
+ 		 * serial ports, or 0x1000 indicates *something*. This is not
+ 		 * immediately obvious, since the 2s1p+4s configuration seems
+@@ -816,12 +816,12 @@ static int pci_netmos_9900_numports(struct pci_de=
+v *dev)
+ 		 * advertising the same function 3 as the 4s+2s1p config.
+ 		 */
+ 		sub_serports =3D dev->subsystem_device & 0xf;
+-		if (sub_serports > 0) {
++		if (sub_serports > 0)
+ 			return sub_serports;
+-		} else {
+-			dev_err(&dev->dev, "NetMos/Mostech serial driver ignoring port on a=
+mbiguous config.\n");
+-			return 0;
+-		}
++
++		dev_err(&dev->dev,
++			"NetMos/Mostech serial driver ignoring port on ambiguous config.\n"=
+);
++		return 0;
+ 	}
+=20
+ 	moan_device("unknown NetMos/Mostech program interface", dev);
 --=20
 1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-parisc"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
