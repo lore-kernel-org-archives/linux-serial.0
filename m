@@ -1,38 +1,117 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] serial/omap: mark wait_for_xmitr as __maybe_unused
-Date: Wed, 13 Jan 2016 21:59:23 +0100
-Message-ID: <4282250.XA5neaP6kR@wuerfel>
+From: Anton Wuerfel <anton.wuerfel@fau.de>
+Subject: [PATCH v6 00/15] tty: serial: 8250: Fix checkpatch warnings
+Date: Wed, 13 Jan 2016 22:29:06 +0100
+Message-ID: <1452720561-28443-1-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Denys Vlasenko <dvlasenk@redhat.com>, Peter Hurley <peter@hurleysoftware.com>, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Joachim Eastwood <manabian@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Phillip Raffeck <phillip.raffeck@fau.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hung <hpeter@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Anton Wuerfel <anton.wuerfel@fau.de>
 List-Id: linux-serial@vger.kernel.org
 
-The wait_for_xmitr() function is only used if CONFIG_CONSOLE_POLL
-or CONFIG_SERIAL_OMAP_CONSOLE are set, but when both are disabled,
-the compiler warns about it being unused:
+Hello Andy,
 
-drivers/tty/serial/omap-serial.c:1168:13: warning: 'wait_for_xmitr' defined but not used [-Wunused-func
+> Also, please thin out the Cc list, I would recommend remove just
+> ordinary commiters (with maybe few exceptions) and leave maintainers. 
+> Moreover some addresses are bounced.
+I thinned out the Cc list and left over only maintainers and major
+contributors to the code.
 
-We could add more #ifdefs to work around it, but adding __maybe_unused
-seems nicer.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Fixes: 2172076d2399 ("serial/omap-serial: Deinline wait_for_xmitr, save 165 bytes")
-
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index b645f9228ed7..1434c7febc99 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1165,7 +1165,7 @@ serial_omap_type(struct uart_port *port)
+> Yep!
+> However, you forgot to fix switch-case as well.
+Phillip and me are kind of git magicians. We can make code disappear during
+rebase :-) The piece of code was part of a commit, but it never made it into
+the final patch file.
  
- #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
- 
--static void wait_for_xmitr(struct uart_omap_port *up)
-+static void __maybe_unused wait_for_xmitr(struct uart_omap_port *up)
- {
- 	unsigned int status, tmout = 10000;
- 
+I hope, there are no major issues with our patch set.
+
+Regards,
+Anton Wuerfel
+Phillip Raffeck
+
+This patch set fixes several checkpatch warnings in tty/serial/8250.
+
+Patch 1/15:  Adds missing spaces (mainly to function/macro headers)
+Patch 2/15:  Replace spaces with tabs wherever possible
+Patch 3/15:  Slight patch which moves an opening curly brace
+Patch 4/15:  Fixes multiline comment style
+Patch 5/15:  Removes else blocks after return statements
+Patch 6/15:  Slight patch which moves EXPORT_SYMBOL macro to correct
+position
+Patch 7/15:  Slight patch which removes an unneccessary line continuation
+Patch 8/15:  Slight patch which adds parentheses to a macro definition
+Patch 9/15:  Merges user-visible multiline strings to a single line
+Patch 10/15: Replace printk by dev_* or pr_* where appropriate
+Patch 11/15: Remove orphaned debug macro
+Patch 12/15: Fix warnings in dev_dbg by adding two casts
+Patch 13/15: Fixes code indentation
+Patch 14/15: Add a generic port macro
+Patch 15/15: Refactor a switch/case statement
+
+Remaining checkpatch warnings after applying this patch series:
+
+-line over 80 characters
+	This error mostly occurs in serial_cs.c, which contains long-lined
+	macro calls. However, splitting these calls into multiple lines would
+	not increase readability.
+
+-externs should be avoided in .c files
+	This occurs in 8250_hp300.c. There is no corresponding header file
+	the extern statement could be moved to. It could be moved to 8250.h
+	but this would affect other .c files.
+
+-Use #include <linux/*.h> instead of <asm/*.h>
+	This warning has been left open for more experienced kernel hackers.
+	This patch series is about style issues. We do not intend to alter
+	the code behavior.
+-struct uart_ops should normally be const
+	This warning only occurs in 8250_core.c. The corresponding struct
+	cannot be declared as const because it is altered in
+	serial8250_isa_init_ports(). Maybe a checkpatch exception should
+	be added for this particular warning.
+
+-quoted string split across lines
+	These strings were ignored because they otherwise would exceed
+	80 characters in a single line. These particular strings use
+	format specifiers, which break the ability to grep for them anyway.
+
+Anton Wuerfel (15):
+Phillip Raffeck (15):
+  tty: serial: 8250: Fix whitespace errors
+  tty: serial: 8250: Replace spaces with tabs
+  tty: serial: 8250: Fix braces after struct
+  tty: serial: 8250: Fix multiline comment style
+  tty: serial: 8250: Remove else after return
+  tty: serial: 8250: Move EXPORT_SYMBOL to function
+  tty: serial: 8250: Fix line continuation warning
+  tty: serial: 8250: Add parentheses to macro
+  tty: serial: 8250: Fix multi-line strings
+  tty: serial: 8250: Correct conversion specifiers
+  tty: serial: 8250: Merge duplicate conditions
+  tty: serial: 8250: Fix indentation warnings
+  tty: serial: 8250: Add generic port init macro
+  tty: serial: 8250: Suitably replace printk
+  tty: serial: 8250: Remove SERIAL_DEBUG_PNP macro
+
+ drivers/tty/serial/8250/8250.h               | 12 ++++
+ drivers/tty/serial/8250/8250_accent.c        | 13 +---
+ drivers/tty/serial/8250/8250_acorn.c         |  2 +-
+ drivers/tty/serial/8250/8250_boca.c          | 41 ++++++-------
+ drivers/tty/serial/8250/8250_core.c          | 15 ++---
+ drivers/tty/serial/8250/8250_exar_st16c554.c | 17 ++----
+ drivers/tty/serial/8250/8250_fourport.c      | 28 ++++-----
+ drivers/tty/serial/8250/8250_gsc.c           |  7 ++-
+ drivers/tty/serial/8250/8250_hp300.c         | 27 +++++----
+ drivers/tty/serial/8250/8250_hub6.c          |  2 +-
+ drivers/tty/serial/8250/8250_ingenic.c       | 12 ++--
+ drivers/tty/serial/8250/8250_pci.c           | 60 ++++++++++---------
+ drivers/tty/serial/8250/8250_pnp.c           | 28 +++++----
+ drivers/tty/serial/8250/8250_port.c          | 47 ++++++++-------
+ drivers/tty/serial/8250/serial_cs.c          | 90 +++++++++++++++-------------
+ 15 files changed, 203 insertions(+), 198 deletions(-)
+
+-- 
+1.9.1
+
