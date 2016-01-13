@@ -1,7 +1,7 @@
 From: Jon Hunter <jonathanh@nvidia.com>
 Subject: Re: [PATCH v4 11/11] serial: 8250_omap: Add omap8250 earlycon
-Date: Wed, 13 Jan 2016 09:57:24 +0000
-Message-ID: <56961F84.4050409@nvidia.com>
+Date: Wed, 13 Jan 2016 10:09:19 +0000
+Message-ID: <5696224F.7050907@nvidia.com>
 References: <1428515119-25248-1-git-send-email-peter@hurleysoftware.com>
  <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
  <1452627672-9482-12-git-send-email-peter@hurleysoftware.com>
@@ -91,12 +91,9 @@ On 13/01/16 09:19, Jon Hunter wrote:
 > necessary with my patch [0]? I am wondering if with my patch you can
 > just add the below OF_EARLYCON_DECLARE() for OMAP?
 
-And replace early_omap8250_setup with early_serial8250_setup, in the
-below that is.
-
->>> +OF_EARLYCON_DECLARE(omap8250, "ti,omap2-uart", early_omap8250_setup);
->>> +OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
->>> +OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
->>> +#endif
+Sorry, I see that you have also already made the changes I have in patch
+[0]. However, still curious why you need the above for OMAP?
 
 Jon
+
+[0] http://marc.info/?l=linux-serial&m=145259482325332&w=2
