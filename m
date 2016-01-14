@@ -1,126 +1,46 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v6 12/15] tty: serial: 8250: Correct conversion
- specifiers
-Date: Thu, 14 Jan 2016 11:31:24 +0200
-Message-ID: <1452763884.2521.23.camel@linux.intel.com>
-References: <1452720561-28443-1-git-send-email-anton.wuerfel@fau.de>
-	 <1452720561-28443-13-git-send-email-anton.wuerfel@fau.de>
+From: Ralf Baechle <ralf@linux-mips.org>
+Subject: Re: [PATCH v5 02/14] irqchip: irq-pic32-evic: Add support for PIC32
+ interrupt controller
+Date: Thu, 14 Jan 2016 12:12:13 +0100
+Message-ID: <20160114111213.GC28942@linux-mips.org>
+References: <1452734299-460-1-git-send-email-joshua.henderson@microchip.com>
+ <1452734299-460-3-git-send-email-joshua.henderson@microchip.com>
+ <alpine.DEB.2.11.1601140901210.3575@nanos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <1452720561-28443-13-git-send-email-anton.wuerfel@fau.de>
-Sender: linux-parisc-owner@vger.kernel.org
-To: Anton Wuerfel <anton.wuerfel@fau.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Joachim Eastwood <manabian@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Phillip Raffeck <phillip.raffeck@fau.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hung <hpeter@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel <linux-kernel@i4.cs.fau.de>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.11.1601140901210.3575@nanos>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Joshua Henderson <joshua.henderson@microchip.com>, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, Cristian Birsan <cristian.birsan@microchip.com>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Purna Chandra Mandal <purna.mandal@microchip.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, linux-clk@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, Andrei Pistirica <andrei.pistirica@microchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-api@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>, Jean Delvare <jdelvare@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Cornel
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2016-01-13 at 22:29 +0100, Anton Wuerfel wrote:
-> This patch fixes compiler warnings about wrong conversion specifiers=C2=
-=A0
+On Thu, Jan 14, 2016 at 09:10:09AM +0100, Thomas Gleixner wrote:
 
-This patch obviously doesn't _fix_warnings_, rather changes specifiers
-to get it consistent with argument.
+> I like that approach.
+> 
+> So except for the nit in pic32_set_type_edge() this looks good. It's pretty
+> clear now what the code does and how the hardware works.
+> 
+> Thanks for following up!
 
-> used
-> in a debug output in 8250_pnp.c. The precise warning is:
+So I take that for an ack.  I still haven't seen any acks or comments for
+the patches:
 
-Usually there is no need to cite all lines=E2=80=A6
+     4/14      drivers/clk
+     8/14      drivers/pinctrl
+    10/14      drivers/serial
+    12/14      drivers/mmc
 
->=20
-> drivers/tty/serial/8250/8250_pnp.c: In function =E2=80=98serial_pnp_p=
-robe=E2=80=99:
-> include/linux/dynamic_debug.h:64:16: warning: format =E2=80=98%x=E2=80=
-=99 expects
-> argument
-> of [...]
+Of this series.  Ping?
 
-OK.
-
->=20
-> include/linux/dynamic_debug.h:84:2: note: in expansion of macro
-> =E2=80=98DEFINE_DYNAMIC_DEBUG_METADATA=E2=80=99
->=20
-> include/linux/device.h:1179:2: note: in expansion of macro
-> =E2=80=98dynamic_dev_dbg=E2=80=99
-
-Redundant.
-
->=20
-> drivers/tty/serial/8250/8250_pnp.c:467:2: note: in expansion of macro
-> =E2=80=98dev_dbg=E2=80=99
-> =C2=A0 dev_dbg(&dev->dev,
-> =C2=A0 ^
-> include/linux/dynamic_debug.h:64:16: warning: format =E2=80=98%lx=E2=80=
-=99 expects
-> argument
-> of [...]
-
-OK.
-
->=20
-> include/linux/dynamic_debug.h:84:2: note: in expansion of macro
-> =E2=80=98DEFINE_DYNAMIC_DEBUG_METADATA=E2=80=99
->=20
-> include/linux/device.h:1179:2: note: in expansion of macro
-> =E2=80=98dynamic_dev_dbg=E2=80=99
-
-Redundant.
-
->=20
-> drivers/tty/serial/8250/8250_pnp.c:467:2: note: in expansion of macro
-> =E2=80=98dev_dbg=E2=80=99
-> =C2=A0 dev_dbg(&dev->dev,
-> =C2=A0 ^
->=20
-> Those warnings never got triggered, because the command was nested
-> in an #ifdef, which is removed by a patch of this series.
->=20
-> Signed-off-by: Anton W=C3=BCrfel <anton.wuerfel@fau.de>
-> Signed-off-by: Phillip Raffeck <phillip.raffeck@fau.de>
-> Cc: linux-kernel@i4.cs.fau.de
-> ---
-> =C2=A0drivers/tty/serial/8250/8250_pnp.c | 4 ++--
-> =C2=A01 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_pnp.c
-> b/drivers/tty/serial/8250/8250_pnp.c
-> index 0c32c59..92f4412 100644
-> --- a/drivers/tty/serial/8250/8250_pnp.c
-> +++ b/drivers/tty/serial/8250/8250_pnp.c
-> @@ -465,8 +465,8 @@ serial_pnp_probe(struct pnp_dev *dev, const
-> struct pnp_device_id *dev_id)
-> =C2=A0		return -ENODEV;
-> =C2=A0
-> =C2=A0	dev_dbg(&dev->dev,
-> -		=C2=A0"Setup PNP port: port %x, mem 0x%lx, irq %d, type
-> %d\n",
-> -		=C2=A0uart.port.iobase, uart.port.mapbase,
-> +		=C2=A0"Setup PNP port: port %lx, mem 0x%lx, irq %d, type
-> %d\n",
-> +		=C2=A0uart.port.iobase, (unsigned long)uart.port.mapbase,
-
-This approach is not fully correct. In Linux kernel we have %p
-extensions to cover some custom types such as resource_size_t, of which
-mapbase is.
-
-Thus,
-
-"Setup PNP port: port %lx, mem %pa, irq %d, type %d\n",
-uart.port.iobase, &uart.port.mapbase,
-
-looks better.
-
-> =C2=A0		=C2=A0uart.port.irq, uart.port.iotype);
-> =C2=A0
-> =C2=A0	if (flags & CIR_PORT) {
-
---=20
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-parisc"=
- in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+  Ralf
