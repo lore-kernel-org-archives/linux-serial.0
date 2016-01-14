@@ -1,245 +1,168 @@
-From: "Wang, Annie" <Annie.Wang@amd.com>
-Subject: RE: [PATCH 6/6] Serial:8250: New Port Type PORT_AMD_8250
-Date: Thu, 14 Jan 2016 06:23:20 +0000
-Message-ID: <BLUPR12MB043309237B1E48533D4E4B3C81CC0@BLUPR12MB0433.namprd12.prod.outlook.com>
-References: <1451885501-2710-1-git-send-email-annie.wang@amd.com>
- <1451885501-2710-7-git-send-email-annie.wang@amd.com>
- <20160105120137.GA19451@kuha.fi.intel.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v6 00/15] tty: serial: 8250: Fix checkpatch warnings
+Date: Thu, 14 Jan 2016 11:13:00 +0200
+Message-ID: <1452762780.2521.20.camel@linux.intel.com>
+References: <1452720561-28443-1-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20160105120137.GA19451@kuha.fi.intel.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, Borislav Petkov <bp@alien8.de>, "Huang, Ray" <Ray.Huang@amd.com>, "Wan, Vincent" <Vincent.Wan@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "Li, Tony" <Tony.Li@amd.com>, "Yu, Xiangliang" <Xiangliang.Yu@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <1452720561-28443-1-git-send-email-anton.wuerfel@fau.de>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Anton Wuerfel <anton.wuerfel@fau.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Joachim Eastwood <manabian@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Phillip Raffeck <phillip.raffeck@fau.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hung <hpeter@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de
 List-Id: linux-serial@vger.kernel.org
 
-Hi Heikki,
+On Wed, 2016-01-13 at 22:29 +0100, Anton Wuerfel wrote:
+> Hello Andy,
+>=20
+> > Also, please thin out the Cc list, I would recommend remove just
+> > ordinary commiters (with maybe few exceptions) and leave
+> > maintainers.=C2=A0
+> > Moreover some addresses are bounced.
+> I thinned out the Cc list and left over only maintainers and major
+> contributors to the code.
+>=20
+> > Yep!
+> > However, you forgot to fix switch-case as well.
+> Phillip and me are kind of git magicians. We can make code disappear
+> during
+> rebase :-) The piece of code was part of a commit, but it never made
+> it into
+> the final patch file.
+> =C2=A0
+> I hope, there are no major issues with our patch set.
 
->-----Original Message-----
->From: Heikki Krogerus [mailto:heikki.krogerus@linux.intel.com]
->Sent: Tuesday, January 05, 2016 8:02 PM
->To: Wang, Annie
->Cc: Andy Shevchenko; Vinod Koul; Mika Westerberg; Greg Kroah-Hartman; Rafael
->J. Wysocki; linux-acpi@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
->serial@vger.kernel.org; dmaengine@vger.kernel.org; Borislav Petkov; Huang,
->Ray; Wan, Vincent; Xue, Ken; Robin Murphy; Graeme Gregory; Li, Tony; Yu,
->Xiangliang
->Subject: Re: [PATCH 6/6] Serial:8250: New Port Type PORT_AMD_8250
->
->Hi Hongcheng,
->
->My comments below..
->
->On Mon, Jan 04, 2016 at 01:31:41PM +0800, Wang Hongcheng wrote:
->> Set a new port type for AMD Carrizo.  Add has_pl330_dma to 8250_dw's
->> private data and init fcr,ier as well as dma rx size.
->>
->> Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
->> ---
->>  drivers/acpi/acpi_apd.c               | 11 +++++++++++
->>  drivers/tty/serial/8250/8250_dw.c     | 15 +++++++++++++++
->>  drivers/tty/serial/8250/8250_port.c   |  9 +++++++++
->>  include/linux/platform_data/8250-dw.h |  8 ++++++++
->>  include/uapi/linux/serial_core.h      |  3 ++-
->>  include/uapi/linux/serial_reg.h       |  1 +
->>  6 files changed, 46 insertions(+), 1 deletion(-)  create mode 100644
->> include/linux/platform_data/8250-dw.h
->>
->> diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c index
->> 1f16cca..e8e43fb 100644
->> --- a/drivers/acpi/acpi_apd.c
->> +++ b/drivers/acpi/acpi_apd.c
->> @@ -23,6 +23,7 @@
->>  #include <linux/dmaengine.h>
->>  #include <linux/interrupt.h>
->>  #include <linux/amba/pl330.h>
->> +#include <linux/platform_data/8250-dw.h>
->>
->>  #include "internal.h"
->>
->> @@ -56,6 +57,11 @@ static struct dma_pl330_platdata amd_pl330[] = {
->>  		.num = 0,
->>  	}
->>  };
->> +
->> +static struct plat_dw8250_data amd_dw8250 = {
->> +	.has_pl330_dma = 1,
->> +};
->
->Why do you need this? Can't you identify this platform in 8250_dw.c based on the
->ACPI ID?
->
->>  /**
->>   * struct apd_device_desc - a descriptor for apd device
->>   * @flags: device flags like %ACPI_APD_SYSFS, %ACPI_APD_PM @@ -115,6
->> +121,11 @@ static int acpi_apd_setup_quirks(struct apd_private_data *pdata)
->>  	char amba_devname[100];
->>  	int devnum;
->>
->> +	ret = platform_device_add_data(pdev, &amd_dw8250,
->> +				       sizeof(amd_dw8250));
->> +	if (ret)
->> +		goto resource_alloc_err;
->> +
->>  	resource = kzalloc(sizeof(*resource), GFP_KERNEL);
->>  	if (!resource)
->>  		goto resource_alloc_err;
->
->The above needs to be separated to its own patch in any case.
->
->
->> diff --git a/drivers/tty/serial/8250/8250_dw.c
->> b/drivers/tty/serial/8250/8250_dw.c
->> index a5d319e..e7d9f01 100644
->> --- a/drivers/tty/serial/8250/8250_dw.c
->> +++ b/drivers/tty/serial/8250/8250_dw.c
->> @@ -27,6 +27,7 @@
->>  #include <linux/clk.h>
->>  #include <linux/reset.h>
->>  #include <linux/pm_runtime.h>
->> +#include <linux/platform_data/8250-dw.h>
->>
->>  #include <asm/byteorder.h>
->>
->> @@ -66,6 +67,7 @@ struct dw8250_data {
->>
->>  	unsigned int		skip_autocfg:1;
->>  	unsigned int		uart_16550_compatible:1;
->> +	unsigned int		has_pl330_dma:1;
->
->I don't think there is any use for this flag. You can do all the platform specific
->tricks in a single quirk that you add to dw8250_quirks()..
->
->>  };
->>
->>  #define BYT_PRV_CLK			0x800
->> @@ -303,6 +305,7 @@ static void dw8250_quirks(struct uart_port *p,
->> struct dw8250_data *data)  static void dw8250_setup_port(struct
->> uart_port *p)  {
->>  	struct uart_8250_port *up = up_to_u8250p(p);
->> +	struct dw8250_data *data = p->private_data;
->>  	u32 reg;
->>
->>  	/*
->> @@ -326,6 +329,14 @@ static void dw8250_setup_port(struct uart_port *p)
->>  		p->flags |= UPF_FIXED_TYPE;
->>  		p->fifosize = DW_UART_CPR_FIFO_SIZE(reg);
->>  		up->capabilities = UART_CAP_FIFO;
->> +		if (data->has_pl330_dma) {
->> +			p->type = PORT_AMD_8250;
->> +
->> +			up->ier |= UART_IER_PTIME | UART_IER_THRI |
->> +				UART_IER_RLSI | UART_IER_RDI;
->> +			up->fcr |= UART_FCR_R_TRIG_10 |
->UART_FCR_T_TRIG_11;
->> +			up->tx_loadsz = p->fifosize / 2;
->
->So these need to be set in the quirk. Btw, now up->ier and up->fcr will just be
->forgotten when serial8250_register_8250_port() is called.
->
->The UART_IER_PTIME needs to be set based on THRE_MODE. Add a flag for that
->instead of the "has_pl330_dma", and set it in this function based on the
->THRE_MODE bit in CPR. Then I think the correct place to fix
->up->ier is actually our up->set_termios hook.
->
->> +		}
->>  	}
->>
->>  	if (reg & DW_UART_CPR_AFCE_MODE)
->> @@ -339,6 +350,7 @@ static int dw8250_probe(struct platform_device *pdev)
->>  	int irq = platform_get_irq(pdev, 0);
->>  	struct uart_port *p = &uart.port;
->>  	struct dw8250_data *data;
->> +	struct plat_dw8250_data *pdata = dev_get_platdata(&pdev->dev);
->>  	int err;
->>  	u32 val;
->>
->> @@ -468,6 +480,7 @@ static int dw8250_probe(struct platform_device *pdev)
->>  		p->handle_irq = NULL;
->>  	}
->>
->> +	data->has_pl330_dma = pdata ? pdata->has_pl330_dma : 0;
->>  	if (!data->skip_autocfg)
->>  		dw8250_setup_port(p);
->>
->> @@ -475,6 +488,8 @@ static int dw8250_probe(struct platform_device *pdev)
->>  	if (p->fifosize) {
->>  		data->dma.rxconf.src_maxburst = p->fifosize / 4;
->>  		data->dma.txconf.dst_maxburst = p->fifosize / 4;
->> +		data->dma.rx_size
->> +			= data->has_pl330_dma ? (p->fifosize / 2 + 2) : 0;
->
->This you also need to set in the quirk.
+There are comments regarding patch 12, otherwise FWIW:
 
-Yes, I wil set that in the quirk.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
->
->>  		uart.dma = &data->dma;
->>  	}
->>
->> diff --git a/drivers/tty/serial/8250/8250_port.c
->> b/drivers/tty/serial/8250/8250_port.c
->> index 52d82d2..b89a326 100644
->> --- a/drivers/tty/serial/8250/8250_port.c
->> +++ b/drivers/tty/serial/8250/8250_port.c
->> @@ -269,6 +269,15 @@ configured less than Maximum supported fifo bytes */
->>  		.rxtrig_bytes	= {1, 4, 8, 14},
->>  		.flags		= UART_CAP_FIFO,
->>  	},
->> +	[PORT_AMD_8250] = {
->> +		.name		= "AMD_8250",
->> +		.fifo_size	= 256,
->> +		.tx_loadsz	= 128,
->> +		.fcr		= UART_FCR_ENABLE_FIFO |
->UART_FCR_R_TRIG_10 |
->> +				UART_FCR_T_TRIG_11,
->> +		.rxtrig_bytes	= {1, 4, 8},
->> +		.flags		= UART_CAP_FIFO,
->> +	},
->
->There is no use for this new type. In fact, there is no use for any new types. If we
->need to modify fcr for example, we can do that in a custom up->startup or up-
->>set_termios hook.
->
->>  };
->>
->>  /* Uart divisor latch read */
->> diff --git a/include/linux/platform_data/8250-dw.h
->> b/include/linux/platform_data/8250-dw.h
->> new file mode 100644
->> index 0000000..97cdb9d
->> --- /dev/null
->> +++ b/include/linux/platform_data/8250-dw.h
->> @@ -0,0 +1,8 @@
->> +#ifndef _PLATFORM_DATA_8250_DW_H
->> +#define _PLATFORM_DATA_8250_DW_H
->> +
->> +struct plat_dw8250_data {
->> +	unsigned int has_pl330_dma:1;
->> +};
->> +
->> +#endif
->
->Let's not add any new driver specific platform data files unless we absolutely have
->to. In this case there is no need for it. If you really need to deliver this kind of
->detail to the driver, you need to deliver it to the driver with build-in device
->property. So instead of
->platform_device_add_data() you should use device_add_property_set().
->Or actually, in linux-next there is already helper for platform bus called
->platform_device_add_properties().
->
->But I don't think there is any need for this kind of detail. You can just identify your
->platform in 8250_dw.c based on the ACPI ID, no?
 
-Agree.
+>=20
+> Regards,
+> Anton Wuerfel
+> Phillip Raffeck
+>=20
+> This patch set fixes several checkpatch warnings in tty/serial/8250.
+>=20
+> Patch 1/15:=C2=A0=C2=A0Adds missing spaces (mainly to function/macro =
+headers)
+> Patch 2/15:=C2=A0=C2=A0Replace spaces with tabs wherever possible
+> Patch 3/15:=C2=A0=C2=A0Slight patch which moves an opening curly brac=
+e
+> Patch 4/15:=C2=A0=C2=A0Fixes multiline comment style
+> Patch 5/15:=C2=A0=C2=A0Removes else blocks after return statements
+> Patch 6/15:=C2=A0=C2=A0Slight patch which moves EXPORT_SYMBOL macro t=
+o correct
+> position
+> Patch 7/15:=C2=A0=C2=A0Slight patch which removes an unneccessary lin=
+e
+> continuation
+> Patch 8/15:=C2=A0=C2=A0Slight patch which adds parentheses to a macro
+> definition
+> Patch 9/15:=C2=A0=C2=A0Merges user-visible multiline strings to a sin=
+gle line
+> Patch 10/15: Replace printk by dev_* or pr_* where appropriate
+> Patch 11/15: Remove orphaned debug macro
+> Patch 12/15: Fix warnings in dev_dbg by adding two casts
+> Patch 13/15: Fixes code indentation
+> Patch 14/15: Add a generic port macro
+> Patch 15/15: Refactor a switch/case statement
+>=20
+> Remaining checkpatch warnings after applying this patch series:
+>=20
+> -line over 80 characters
+> 	This error mostly occurs in serial_cs.c, which contains long-
+> lined
+> 	macro calls. However, splitting these calls into multiple lines
+> would
+> 	not increase readability.
+>=20
+> -externs should be avoided in .c files
+> 	This occurs in 8250_hp300.c. There is no corresponding header
+> file
+> 	the extern statement could be moved to. It could be moved to
+> 8250.h
+> 	but this would affect other .c files.
+>=20
+> -Use #include <linux/*.h> instead of <asm/*.h>
+> 	This warning has been left open for more experienced kernel
+> hackers.
+> 	This patch series is about style issues. We do not intend to
+> alter
+> 	the code behavior.
+> -struct uart_ops should normally be const
+> 	This warning only occurs in 8250_core.c. The corresponding
+> struct
+> 	cannot be declared as const because it is altered in
+> 	serial8250_isa_init_ports(). Maybe a checkpatch exception
+> should
+> 	be added for this particular warning.
+>=20
+> -quoted string split across lines
+> 	These strings were ignored because they otherwise would exceed
+> 	80 characters in a single line. These particular strings use
+> 	format specifiers, which break the ability to grep for them
+> anyway.
+>=20
+> Anton Wuerfel (15):
+> Phillip Raffeck (15):
+> =C2=A0 tty: serial: 8250: Fix whitespace errors
+> =C2=A0 tty: serial: 8250: Replace spaces with tabs
+> =C2=A0 tty: serial: 8250: Fix braces after struct
+> =C2=A0 tty: serial: 8250: Fix multiline comment style
+> =C2=A0 tty: serial: 8250: Remove else after return
+> =C2=A0 tty: serial: 8250: Move EXPORT_SYMBOL to function
+> =C2=A0 tty: serial: 8250: Fix line continuation warning
+> =C2=A0 tty: serial: 8250: Add parentheses to macro
+> =C2=A0 tty: serial: 8250: Fix multi-line strings
+> =C2=A0 tty: serial: 8250: Correct conversion specifiers
+> =C2=A0 tty: serial: 8250: Merge duplicate conditions
+> =C2=A0 tty: serial: 8250: Fix indentation warnings
+> =C2=A0 tty: serial: 8250: Add generic port init macro
+> =C2=A0 tty: serial: 8250: Suitably replace printk
+> =C2=A0 tty: serial: 8250: Remove SERIAL_DEBUG_PNP macro
+>=20
+> =C2=A0drivers/tty/serial/8250/8250.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 12 ++++
+> =C2=A0drivers/tty/serial/8250/8250_accent.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0| 13 +---
+> =C2=A0drivers/tty/serial/8250/8250_acorn.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A02 +-
+> =C2=A0drivers/tty/serial/8250/8250_boca.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 41 ++++++-------
+> =C2=A0drivers/tty/serial/8250/8250_core.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 15 ++---
+> =C2=A0drivers/tty/serial/8250/8250_exar_st16c554.c | 17 ++----
+> =C2=A0drivers/tty/serial/8250/8250_fourport.c=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0| 28 ++++-----
+> =C2=A0drivers/tty/serial/8250/8250_gsc.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A07 ++-
+> =C2=A0drivers/tty/serial/8250/8250_hp300.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0| 27 +++++----
+> =C2=A0drivers/tty/serial/8250/8250_hub6.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A02 +-
+> =C2=A0drivers/tty/serial/8250/8250_ingenic.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0| 12 ++--
+> =C2=A0drivers/tty/serial/8250/8250_pci.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 60 ++++++++++------
+> ---
+> =C2=A0drivers/tty/serial/8250/8250_pnp.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 28 +++++----
+> =C2=A0drivers/tty/serial/8250/8250_port.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 47 ++++++++-------
+> =C2=A0drivers/tty/serial/8250/serial_cs.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 90 +++++++++++++++---
+> ----------
+> =C2=A015 files changed, 203 insertions(+), 198 deletions(-)
+>=20
 
-The uart and uart dma could work well, if I just set dma.rx_size in dw8250_quirks. 
+--=20
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
 
-Thank you for your comments.  
-
-Regards,
-Hongcheng(Annie)
-
+--
+To unsubscribe from this list: send the line "unsubscribe linux-parisc"=
+ in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
