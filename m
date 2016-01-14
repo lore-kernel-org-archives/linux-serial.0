@@ -1,7 +1,7 @@
 From: Anton Wuerfel <anton.wuerfel@fau.de>
-Subject: [PATCH v7 09/15] tty: serial: 8250: Fix multi-line strings
-Date: Thu, 14 Jan 2016 16:08:18 +0100
-Message-ID: <1452784104-30840-10-git-send-email-anton.wuerfel@fau.de>
+Subject: [PATCH v7 08/15] tty: serial: 8250: Add parentheses to macro
+Date: Thu, 14 Jan 2016 16:08:17 +0100
+Message-ID: <1452784104-30840-9-git-send-email-anton.wuerfel@fau.de>
 References: <1452784104-30840-1-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -13,57 +13,47 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Joachim Eastwood <manabian@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Phillip Raffeck <phillip.raffeck@fau.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hung <hpeter@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Anton Wuerfel <anton.wuerfel@fau.de>
 List-Id: linux-serial@vger.kernel.org
 
-Merged user-visible multi-line strings into a single line according to =
-the
-Linux Kernel Coding Style, which allows user-visible strings to exceed =
-the
-maximum line length of 80 characters. The main reason for this is to
-facilitate grepping for these strings.
-However, some strings were ignored in this patch, because the use of
-format specifiers breaks the ability to grep anyway.
+This patch fixes a checkpatch warning caused by missing parentheses
+in the definition of a macro.
+=46urthermore redundant parentheses are removed in an assignment.
 
 Signed-off-by: Anton W=C3=BCrfel <anton.wuerfel@fau.de>
 Signed-off-by: Phillip Raffeck <phillip.raffeck@fau.de>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: linux-kernel@i4.cs.fau.de
 ---
- drivers/tty/serial/8250/8250_core.c | 3 +--
- drivers/tty/serial/8250/serial_cs.c | 4 ++--
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 2 +-
+ drivers/tty/serial/8250/8250_pci.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8=
 250/8250_core.c
-index d042ad5..b60b58b 100644
+index 15082ae..d042ad5 100644
 --- a/drivers/tty/serial/8250/8250_core.c
 +++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1173,8 +1173,7 @@ MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Generic 8250/16x50 serial driver");
+@@ -686,7 +686,7 @@ static int __init univ8250_console_init(void)
+ }
+ console_initcall(univ8250_console_init);
 =20
- module_param(share_irqs, uint, 0644);
--MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 dev=
-ices"
--	" (unsafe)");
-+MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 dev=
-ices (unsafe)");
+-#define SERIAL8250_CONSOLE	&univ8250_console
++#define SERIAL8250_CONSOLE	(&univ8250_console)
+ #else
+ #define SERIAL8250_CONSOLE	NULL
+ #endif
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
+50/8250_pci.c
+index 8543719..fbd4222 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -803,7 +803,7 @@ static int pci_netmos_9900_numports(struct pci_dev =
+*dev)
+ 	unsigned int pi;
+ 	unsigned short sub_serports;
 =20
- module_param(nr_uarts, uint, 0644);
- MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __=
-MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
-diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8=
-250/serial_cs.c
-index 2b7309d..933c268 100644
---- a/drivers/tty/serial/8250/serial_cs.c
-+++ b/drivers/tty/serial/8250/serial_cs.c
-@@ -533,8 +533,8 @@ static int multi_config(struct pcmcia_device *link)
- 		info->multi =3D 2;
- 		if (pcmcia_loop_config(link, multi_config_check_notpicky,
- 				       &base2)) {
--			dev_warn(&link->dev, "no usable port range "
--			       "found, giving up\n");
-+			dev_warn(&link->dev,
-+				 "no usable port range found, giving up\n");
- 			return -ENODEV;
- 		}
- 	}
+-	pi =3D (c & 0xff);
++	pi =3D c & 0xff;
+=20
+ 	if (pi =3D=3D 2)
+ 		return 1;
 --=20
 1.9.1
