@@ -1,1203 +1,245 @@
-From: Joshua Henderson <joshua.henderson@microchip.com>
-Subject: [PATCH v5 10/14] serial: pic32_uart: Add PIC32 UART driver
-Date: Wed, 13 Jan 2016 18:15:43 -0700
-Message-ID: <1452734299-460-11-git-send-email-joshua.henderson@microchip.com>
-References: <1452734299-460-1-git-send-email-joshua.henderson@microchip.com>
+From: "Wang, Annie" <Annie.Wang@amd.com>
+Subject: RE: [PATCH 6/6] Serial:8250: New Port Type PORT_AMD_8250
+Date: Thu, 14 Jan 2016 06:23:20 +0000
+Message-ID: <BLUPR12MB043309237B1E48533D4E4B3C81CC0@BLUPR12MB0433.namprd12.prod.outlook.com>
+References: <1451885501-2710-1-git-send-email-annie.wang@amd.com>
+ <1451885501-2710-7-git-send-email-annie.wang@amd.com>
+ <20160105120137.GA19451@kuha.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1452734299-460-1-git-send-email-joshua.henderson@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-mips@linux-mips.org, ralf@linux-mips.org, Andrei Pistirica <andrei.pistirica@microchip.com>, Joshua Henderson <joshua.henderson@microchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-api@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20160105120137.GA19451@kuha.fi.intel.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, Borislav Petkov <bp@alien8.de>, "Huang, Ray" <Ray.Huang@amd.com>, "Wan, Vincent" <Vincent.Wan@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, Robin Murphy <robin.murphy@arm.com>, Graeme Gregory <gg@slimlogic.co.uk>, "Li, Tony" <Tony.Li@amd.com>, "Yu, Xiangliang" <Xiangliang.Yu@amd.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Andrei Pistirica <andrei.pistirica@microchip.com>
+Hi Heikki,
 
-This adds UART and a serial console driver for Microchip PIC32 class
-devices.
+>-----Original Message-----
+>From: Heikki Krogerus [mailto:heikki.krogerus@linux.intel.com]
+>Sent: Tuesday, January 05, 2016 8:02 PM
+>To: Wang, Annie
+>Cc: Andy Shevchenko; Vinod Koul; Mika Westerberg; Greg Kroah-Hartman; Rafael
+>J. Wysocki; linux-acpi@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
+>serial@vger.kernel.org; dmaengine@vger.kernel.org; Borislav Petkov; Huang,
+>Ray; Wan, Vincent; Xue, Ken; Robin Murphy; Graeme Gregory; Li, Tony; Yu,
+>Xiangliang
+>Subject: Re: [PATCH 6/6] Serial:8250: New Port Type PORT_AMD_8250
+>
+>Hi Hongcheng,
+>
+>My comments below..
+>
+>On Mon, Jan 04, 2016 at 01:31:41PM +0800, Wang Hongcheng wrote:
+>> Set a new port type for AMD Carrizo.  Add has_pl330_dma to 8250_dw's
+>> private data and init fcr,ier as well as dma rx size.
+>>
+>> Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
+>> ---
+>>  drivers/acpi/acpi_apd.c               | 11 +++++++++++
+>>  drivers/tty/serial/8250/8250_dw.c     | 15 +++++++++++++++
+>>  drivers/tty/serial/8250/8250_port.c   |  9 +++++++++
+>>  include/linux/platform_data/8250-dw.h |  8 ++++++++
+>>  include/uapi/linux/serial_core.h      |  3 ++-
+>>  include/uapi/linux/serial_reg.h       |  1 +
+>>  6 files changed, 46 insertions(+), 1 deletion(-)  create mode 100644
+>> include/linux/platform_data/8250-dw.h
+>>
+>> diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c index
+>> 1f16cca..e8e43fb 100644
+>> --- a/drivers/acpi/acpi_apd.c
+>> +++ b/drivers/acpi/acpi_apd.c
+>> @@ -23,6 +23,7 @@
+>>  #include <linux/dmaengine.h>
+>>  #include <linux/interrupt.h>
+>>  #include <linux/amba/pl330.h>
+>> +#include <linux/platform_data/8250-dw.h>
+>>
+>>  #include "internal.h"
+>>
+>> @@ -56,6 +57,11 @@ static struct dma_pl330_platdata amd_pl330[] = {
+>>  		.num = 0,
+>>  	}
+>>  };
+>> +
+>> +static struct plat_dw8250_data amd_dw8250 = {
+>> +	.has_pl330_dma = 1,
+>> +};
+>
+>Why do you need this? Can't you identify this platform in 8250_dw.c based on the
+>ACPI ID?
+>
+>>  /**
+>>   * struct apd_device_desc - a descriptor for apd device
+>>   * @flags: device flags like %ACPI_APD_SYSFS, %ACPI_APD_PM @@ -115,6
+>> +121,11 @@ static int acpi_apd_setup_quirks(struct apd_private_data *pdata)
+>>  	char amba_devname[100];
+>>  	int devnum;
+>>
+>> +	ret = platform_device_add_data(pdev, &amd_dw8250,
+>> +				       sizeof(amd_dw8250));
+>> +	if (ret)
+>> +		goto resource_alloc_err;
+>> +
+>>  	resource = kzalloc(sizeof(*resource), GFP_KERNEL);
+>>  	if (!resource)
+>>  		goto resource_alloc_err;
+>
+>The above needs to be separated to its own patch in any case.
+>
+>
+>> diff --git a/drivers/tty/serial/8250/8250_dw.c
+>> b/drivers/tty/serial/8250/8250_dw.c
+>> index a5d319e..e7d9f01 100644
+>> --- a/drivers/tty/serial/8250/8250_dw.c
+>> +++ b/drivers/tty/serial/8250/8250_dw.c
+>> @@ -27,6 +27,7 @@
+>>  #include <linux/clk.h>
+>>  #include <linux/reset.h>
+>>  #include <linux/pm_runtime.h>
+>> +#include <linux/platform_data/8250-dw.h>
+>>
+>>  #include <asm/byteorder.h>
+>>
+>> @@ -66,6 +67,7 @@ struct dw8250_data {
+>>
+>>  	unsigned int		skip_autocfg:1;
+>>  	unsigned int		uart_16550_compatible:1;
+>> +	unsigned int		has_pl330_dma:1;
+>
+>I don't think there is any use for this flag. You can do all the platform specific
+>tricks in a single quirk that you add to dw8250_quirks()..
+>
+>>  };
+>>
+>>  #define BYT_PRV_CLK			0x800
+>> @@ -303,6 +305,7 @@ static void dw8250_quirks(struct uart_port *p,
+>> struct dw8250_data *data)  static void dw8250_setup_port(struct
+>> uart_port *p)  {
+>>  	struct uart_8250_port *up = up_to_u8250p(p);
+>> +	struct dw8250_data *data = p->private_data;
+>>  	u32 reg;
+>>
+>>  	/*
+>> @@ -326,6 +329,14 @@ static void dw8250_setup_port(struct uart_port *p)
+>>  		p->flags |= UPF_FIXED_TYPE;
+>>  		p->fifosize = DW_UART_CPR_FIFO_SIZE(reg);
+>>  		up->capabilities = UART_CAP_FIFO;
+>> +		if (data->has_pl330_dma) {
+>> +			p->type = PORT_AMD_8250;
+>> +
+>> +			up->ier |= UART_IER_PTIME | UART_IER_THRI |
+>> +				UART_IER_RLSI | UART_IER_RDI;
+>> +			up->fcr |= UART_FCR_R_TRIG_10 |
+>UART_FCR_T_TRIG_11;
+>> +			up->tx_loadsz = p->fifosize / 2;
+>
+>So these need to be set in the quirk. Btw, now up->ier and up->fcr will just be
+>forgotten when serial8250_register_8250_port() is called.
+>
+>The UART_IER_PTIME needs to be set based on THRE_MODE. Add a flag for that
+>instead of the "has_pl330_dma", and set it in this function based on the
+>THRE_MODE bit in CPR. Then I think the correct place to fix
+>up->ier is actually our up->set_termios hook.
+>
+>> +		}
+>>  	}
+>>
+>>  	if (reg & DW_UART_CPR_AFCE_MODE)
+>> @@ -339,6 +350,7 @@ static int dw8250_probe(struct platform_device *pdev)
+>>  	int irq = platform_get_irq(pdev, 0);
+>>  	struct uart_port *p = &uart.port;
+>>  	struct dw8250_data *data;
+>> +	struct plat_dw8250_data *pdata = dev_get_platdata(&pdev->dev);
+>>  	int err;
+>>  	u32 val;
+>>
+>> @@ -468,6 +480,7 @@ static int dw8250_probe(struct platform_device *pdev)
+>>  		p->handle_irq = NULL;
+>>  	}
+>>
+>> +	data->has_pl330_dma = pdata ? pdata->has_pl330_dma : 0;
+>>  	if (!data->skip_autocfg)
+>>  		dw8250_setup_port(p);
+>>
+>> @@ -475,6 +488,8 @@ static int dw8250_probe(struct platform_device *pdev)
+>>  	if (p->fifosize) {
+>>  		data->dma.rxconf.src_maxburst = p->fifosize / 4;
+>>  		data->dma.txconf.dst_maxburst = p->fifosize / 4;
+>> +		data->dma.rx_size
+>> +			= data->has_pl330_dma ? (p->fifosize / 2 + 2) : 0;
+>
+>This you also need to set in the quirk.
 
-Signed-off-by: Andrei Pistirica <andrei.pistirica@microchip.com>
-Signed-off-by: Joshua Henderson <joshua.henderson@microchip.com>
-Cc: Ralf Baechle <ralf@linux-mips.org>
----
-Changes since v4:
-	- Clean up irq alloc on failure
-	- Fix rework regression with handling failure in probe
-Changes since v3: None
-Changes since v2:
-	- Use dynamic major/minor and ttyPIC* instead of ttyS*
-	- Remove unused header files
-	- Refactor register read/write functions
-	- Reorder arguments to readl/writel functions
-	- Add missing initializations to termios
-	- Fix clk enable/disable mismatch
-Changes since v1:
-	- Rename all instances of "USART" to "UART"
-	- Remove unecessary uart-has-rtscts support
----
- drivers/tty/serial/Kconfig       |   21 +
- drivers/tty/serial/Makefile      |    1 +
- drivers/tty/serial/pic32_uart.c  |  960 ++++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/pic32_uart.h  |  126 +++++
- include/uapi/linux/serial_core.h |    3 +
- 5 files changed, 1111 insertions(+)
- create mode 100644 drivers/tty/serial/pic32_uart.c
- create mode 100644 drivers/tty/serial/pic32_uart.h
+Yes, I wil set that in the quirk.
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index f38beb2..8853b1e 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -901,6 +901,27 @@ config SERIAL_SGI_L1_CONSOLE
- 		controller serial port as your console (you want this!),
- 		say Y.  Otherwise, say N.
- 
-+config SERIAL_PIC32
-+	tristate "Microchip PIC32 serial support"
-+	depends on MACH_PIC32
-+	select SERIAL_CORE
-+	help
-+	  If you have a PIC32, this driver supports the serial ports.
-+
-+	  Say Y or M to use PIC32 serial ports, otherwise say N. Note that
-+	  to use a serial port as a console, this must be included in kernel and
-+	  not as a module.
-+
-+config SERIAL_PIC32_CONSOLE
-+	bool "PIC32 serial console support"
-+	depends on SERIAL_PIC32
-+	select SERIAL_CORE_CONSOLE
-+	help
-+	  If you have a PIC32, this driver supports the putting a console on one
-+	  of the serial ports.
-+
-+	  Say Y to use the PIC32 console, otherwise say N.
-+
- config SERIAL_MPC52xx
- 	tristate "Freescale MPC52xx/MPC512x family PSC serial support"
- 	depends on PPC_MPC52xx || PPC_MPC512x
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 5ab4111..bc5e354 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -93,6 +93,7 @@ obj-$(CONFIG_SERIAL_CONEXANT_DIGICOLOR)	+= digicolor-usart.o
- obj-$(CONFIG_SERIAL_MEN_Z135)	+= men_z135_uart.o
- obj-$(CONFIG_SERIAL_SPRD) += sprd_serial.o
- obj-$(CONFIG_SERIAL_STM32)	+= stm32-usart.o
-+obj-$(CONFIG_SERIAL_PIC32)	+= pic32_uart.o
- 
- # GPIOLIB helpers for modem control lines
- obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
-diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-new file mode 100644
-index 0000000..62a43bf
---- /dev/null
-+++ b/drivers/tty/serial/pic32_uart.c
-@@ -0,0 +1,960 @@
-+/*
-+ * PIC32 Integrated Serial Driver.
-+ *
-+ * Copyright (C) 2015 Microchip Technology, Inc.
-+ *
-+ * Authors:
-+ *   Sorin-Andrei Pistirica <andrei.pistirica@microchip.com>
-+ *
-+ * Licensed under GPLv2 or later.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/platform_device.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/of_irq.h>
-+#include <linux/of_gpio.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/console.h>
-+#include <linux/clk.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
-+#include <linux/serial_core.h>
-+#include <linux/delay.h>
-+
-+#include <asm/mach-pic32/pic32.h>
-+#include "pic32_uart.h"
-+
-+/* UART name and device definitions */
-+#define PIC32_DEV_NAME		"pic32-uart"
-+#define PIC32_MAX_UARTS		6
-+#define PIC32_SDEV_NAME		"ttyPIC"
-+
-+/* pic32_sport pointer for console use */
-+static struct pic32_sport *pic32_sports[PIC32_MAX_UARTS];
-+
-+static inline void pic32_wait_deplete_txbuf(struct pic32_sport *sport)
-+{
-+	/* wait for tx empty, otherwise chars will be lost or corrupted */
-+	while (!(pic32_uart_readl(sport, PIC32_UART_STA) & PIC32_UART_STA_TRMT))
-+		udelay(1);
-+}
-+
-+static inline int pic32_enable_clock(struct pic32_sport *sport)
-+{
-+	int ret = clk_prepare_enable(sport->clk);
-+
-+	if (ret)
-+		return ret;
-+
-+	sport->ref_clk++;
-+	return 0;
-+}
-+
-+static inline void pic32_disable_clock(struct pic32_sport *sport)
-+{
-+	sport->ref_clk--;
-+	clk_disable_unprepare(sport->clk);
-+}
-+
-+/* serial core request to check if uart tx buffer is empty */
-+static unsigned int pic32_uart_tx_empty(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+	u32 val = pic32_uart_readl(sport, PIC32_UART_STA);
-+
-+	return (val & PIC32_UART_STA_TRMT) ? 1 : 0;
-+}
-+
-+/* serial core request to set UART outputs */
-+static void pic32_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+
-+	/* set loopback mode */
-+	if (mctrl & TIOCM_LOOP)
-+		pic32_uart_writel(sport, PIC32_SET(PIC32_UART_MODE),
-+					PIC32_UART_MODE_LPBK);
-+	else
-+		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_LPBK);
-+}
-+
-+/* get the state of CTS input pin for this port */
-+static unsigned int get_cts_state(struct pic32_sport *sport)
-+{
-+	/* read and invert UxCTS */
-+	if (gpio_is_valid(sport->cts_gpio))
-+		return !gpio_get_value(sport->cts_gpio);
-+
-+	return 1;
-+}
-+
-+/* serial core request to return the state of misc UART input pins */
-+static unsigned int pic32_uart_get_mctrl(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+	unsigned int mctrl = 0;
-+
-+	if (!sport->hw_flow_ctrl)
-+		mctrl |= TIOCM_CTS;
-+	else if (get_cts_state(sport))
-+		mctrl |= TIOCM_CTS;
-+
-+	/* DSR and CD are not supported in PIC32, so return 1
-+	 * RI is not supported in PIC32, so return 0
-+	 */
-+	mctrl |= TIOCM_CD;
-+	mctrl |= TIOCM_DSR;
-+
-+	return mctrl;
-+}
-+
-+/* stop tx and start tx are not called in pairs, therefore a flag indicates
-+ * the status of irq to control the irq-depth.
-+ */
-+static inline void pic32_uart_irqtxen(struct pic32_sport *sport, u8 en)
-+{
-+	if (en && !tx_irq_enabled(sport)) {
-+		enable_irq(sport->irq_tx);
-+		tx_irq_enabled(sport) = 1;
-+	} else if (!en && tx_irq_enabled(sport)) {
-+		/* use disable_irq_nosync() and not disable_irq() to avoid self
-+		 * imposed deadlock by not waiting for irq handler to end,
-+		 * since this callback is called from interrupt context.
-+		 */
-+		disable_irq_nosync(sport->irq_tx);
-+		tx_irq_enabled(sport) = 0;
-+	}
-+}
-+
-+/* serial core request to disable tx ASAP (used for flow control) */
-+static void pic32_uart_stop_tx(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+
-+	if (!(pic32_uart_readl(sport, PIC32_UART_MODE) & PIC32_UART_MODE_ON))
-+		return;
-+
-+	if (!(pic32_uart_readl(sport, PIC32_UART_STA) & PIC32_UART_STA_UTXEN))
-+		return;
-+
-+	/* wait for tx empty */
-+	pic32_wait_deplete_txbuf(sport);
-+
-+	pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_STA),
-+				PIC32_UART_STA_UTXEN);
-+	pic32_uart_irqtxen(sport, 0);
-+}
-+
-+/* serial core request to (re)enable tx */
-+static void pic32_uart_start_tx(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+
-+	pic32_uart_irqtxen(sport, 1);
-+	pic32_uart_writel(sport, PIC32_SET(PIC32_UART_STA),
-+				PIC32_UART_STA_UTXEN);
-+}
-+
-+/* serial core request to stop rx, called before port shutdown */
-+static void pic32_uart_stop_rx(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+
-+	/* disable rx interrupts */
-+	disable_irq(sport->irq_rx);
-+
-+	/* receiver Enable bit OFF */
-+	pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_STA),
-+				PIC32_UART_STA_URXEN);
-+}
-+
-+/* serial core request to start/stop emitting break char */
-+static void pic32_uart_break_ctl(struct uart_port *port, int ctl)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	if (ctl)
-+		pic32_uart_writel(sport, PIC32_SET(PIC32_UART_STA),
-+					PIC32_UART_STA_UTXBRK);
-+	else
-+		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_STA),
-+					PIC32_UART_STA_UTXBRK);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+/* get port type in string format */
-+static const char *pic32_uart_type(struct uart_port *port)
-+{
-+	return (port->type == PORT_PIC32) ? PIC32_DEV_NAME : NULL;
-+}
-+
-+/* read all chars in rx fifo and send them to core */
-+static void pic32_uart_do_rx(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+	struct tty_port *tty;
-+	unsigned int max_count;
-+
-+	/* limit number of char read in interrupt, should not be
-+	 * higher than fifo size anyway since we're much faster than
-+	 * serial port
-+	 */
-+	max_count = PIC32_UART_RX_FIFO_DEPTH;
-+
-+	spin_lock(&port->lock);
-+
-+	tty = &port->state->port;
-+
-+	do {
-+		u32 sta_reg, c;
-+		char flag;
-+
-+		/* get overrun/fifo empty information from status register */
-+		sta_reg = pic32_uart_readl(sport, PIC32_UART_STA);
-+		if (unlikely(sta_reg & PIC32_UART_STA_OERR)) {
-+
-+			/* fifo reset is required to clear interrupt */
-+			pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_STA),
-+						PIC32_UART_STA_OERR);
-+
-+			port->icount.overrun++;
-+			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
-+		}
-+
-+		/* Can at least one more character can be read? */
-+		if (!(sta_reg & PIC32_UART_STA_URXDA))
-+			break;
-+
-+		/* read the character and increment the rx counter */
-+		c = pic32_uart_readl(sport, PIC32_UART_RX);
-+
-+		port->icount.rx++;
-+		flag = TTY_NORMAL;
-+		c &= 0xff;
-+
-+		if (unlikely((sta_reg & PIC32_UART_STA_PERR) ||
-+			     (sta_reg & PIC32_UART_STA_FERR))) {
-+
-+			/* do stats first */
-+			if (sta_reg & PIC32_UART_STA_PERR)
-+				port->icount.parity++;
-+			if (sta_reg & PIC32_UART_STA_FERR)
-+				port->icount.frame++;
-+
-+			/* update flag wrt read_status_mask */
-+			sta_reg &= port->read_status_mask;
-+
-+			if (sta_reg & PIC32_UART_STA_FERR)
-+				flag = TTY_FRAME;
-+			if (sta_reg & PIC32_UART_STA_PERR)
-+				flag = TTY_PARITY;
-+		}
-+
-+		if (uart_handle_sysrq_char(port, c))
-+			continue;
-+
-+		if ((sta_reg & port->ignore_status_mask) == 0)
-+			tty_insert_flip_char(tty, c, flag);
-+
-+	} while (--max_count);
-+
-+	spin_unlock(&port->lock);
-+
-+	tty_flip_buffer_push(tty);
-+}
-+
-+/* fill tx fifo with chars to send, stop when fifo is about to be full
-+ * or when all chars have been sent.
-+ */
-+static void pic32_uart_do_tx(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+	struct circ_buf *xmit = &port->state->xmit;
-+	unsigned int max_count = PIC32_UART_TX_FIFO_DEPTH;
-+
-+	if (port->x_char) {
-+		pic32_uart_writel(sport, PIC32_UART_TX, port->x_char);
-+		port->icount.tx++;
-+		port->x_char = 0;
-+		return;
-+	}
-+
-+	if (uart_tx_stopped(port)) {
-+		pic32_uart_stop_tx(port);
-+		return;
-+	}
-+
-+	if (uart_circ_empty(xmit))
-+		goto txq_empty;
-+
-+	/* keep stuffing chars into uart tx buffer
-+	 * 1) until uart fifo is full
-+	 * or
-+	 * 2) until the circ buffer is empty
-+	 * (all chars have been sent)
-+	 * or
-+	 * 3) until the max count is reached
-+	 * (prevents lingering here for too long in certain cases)
-+	 */
-+	while (!(PIC32_UART_STA_UTXBF &
-+		pic32_uart_readl(sport, PIC32_UART_STA))) {
-+		unsigned int c = xmit->buf[xmit->tail];
-+
-+		pic32_uart_writel(sport, PIC32_UART_TX, c);
-+
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		port->icount.tx++;
-+		if (uart_circ_empty(xmit))
-+			break;
-+		if (--max_count == 0)
-+			break;
-+	}
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+
-+	if (uart_circ_empty(xmit))
-+		goto txq_empty;
-+
-+	return;
-+
-+txq_empty:
-+	pic32_uart_irqtxen(sport, 0);
-+}
-+
-+/* RX interrupt handler */
-+static irqreturn_t pic32_uart_rx_interrupt(int irq, void *dev_id)
-+{
-+	struct uart_port *port = dev_id;
-+
-+	pic32_uart_do_rx(port);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/* TX interrupt handler */
-+static irqreturn_t pic32_uart_tx_interrupt(int irq, void *dev_id)
-+{
-+	struct uart_port *port = dev_id;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	pic32_uart_do_tx(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/* FAULT interrupt handler */
-+static irqreturn_t pic32_uart_fault_interrupt(int irq, void *dev_id)
-+{
-+	/* do nothing: pic32_uart_do_rx() handles faults. */
-+	return IRQ_HANDLED;
-+}
-+
-+/* enable rx & tx operation on uart */
-+static void pic32_uart_en_and_unmask(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+
-+	pic32_uart_writel(sport, PIC32_SET(PIC32_UART_STA),
-+				PIC32_UART_STA_UTXEN | PIC32_UART_STA_URXEN);
-+	pic32_uart_writel(sport, PIC32_SET(PIC32_UART_MODE),
-+				PIC32_UART_MODE_ON);
-+}
-+
-+/* disable rx & tx operation on uart */
-+static void pic32_uart_dsbl_and_mask(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+
-+	/* wait for tx empty, otherwise chars will be lost or corrupted */
-+	pic32_wait_deplete_txbuf(sport);
-+
-+	pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_STA),
-+				PIC32_UART_STA_UTXEN | PIC32_UART_STA_URXEN);
-+	pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+				PIC32_UART_MODE_ON);
-+}
-+
-+/* serial core request to initialize uart and start rx operation */
-+static int pic32_uart_startup(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+	u32 dflt_baud = (port->uartclk / PIC32_UART_DFLT_BRATE / 16) - 1;
-+	unsigned long flags;
-+	int ret;
-+
-+	local_irq_save(flags);
-+
-+	ret = pic32_enable_clock(sport);
-+	if (ret) {
-+		local_irq_restore(flags);
-+		goto out_done;
-+	}
-+
-+	/* clear status and mode registers */
-+	pic32_uart_writel(sport, PIC32_UART_MODE, 0);
-+	pic32_uart_writel(sport, PIC32_UART_STA, 0);
-+
-+	/* disable uart and mask all interrupts */
-+	pic32_uart_dsbl_and_mask(port);
-+
-+	/* set default baud */
-+	pic32_uart_writel(sport, PIC32_UART_BRG, dflt_baud);
-+
-+	local_irq_restore(flags);
-+
-+	/* Each UART of a PIC32 has three interrupts therefore,
-+	 * we setup driver to register the 3 irqs for the device.
-+	 *
-+	 * For each irq request_irq() is called with interrupt disabled.
-+	 * And the irq is enabled as soon as we are ready to handle them.
-+	 */
-+	tx_irq_enabled(sport) = 0;
-+
-+	sport->irq_fault_name = kasprintf(GFP_KERNEL, "%s%d-fault",
-+					  pic32_uart_type(port),
-+					  sport->idx);
-+	if (!sport->irq_fault_name) {
-+		dev_err(port->dev, "%s: kasprintf err!", __func__);
-+		ret = -ENOMEM;
-+		goto out_done;
-+	}
-+	irq_set_status_flags(sport->irq_fault, IRQ_NOAUTOEN);
-+	ret = request_irq(sport->irq_fault, pic32_uart_fault_interrupt,
-+			  sport->irqflags_fault, sport->irq_fault_name, port);
-+	if (ret) {
-+		dev_err(port->dev, "%s: request irq(%d) err! ret:%d name:%s\n",
-+			__func__, sport->irq_fault, ret,
-+			pic32_uart_type(port));
-+		goto out_f;
-+	}
-+
-+	sport->irq_rx_name = kasprintf(GFP_KERNEL, "%s%d-rx",
-+				       pic32_uart_type(port),
-+				       sport->idx);
-+	if (!sport->irq_rx_name) {
-+		dev_err(port->dev, "%s: kasprintf err!", __func__);
-+		kfree(sport->irq_fault_name);
-+		ret = -ENOMEM;
-+		goto out_f;
-+	}
-+	irq_set_status_flags(sport->irq_rx, IRQ_NOAUTOEN);
-+	ret = request_irq(sport->irq_rx, pic32_uart_rx_interrupt,
-+			  sport->irqflags_rx, sport->irq_rx_name, port);
-+	if (ret) {
-+		dev_err(port->dev, "%s: request irq(%d) err! ret:%d name:%s\n",
-+			__func__, sport->irq_rx, ret,
-+			pic32_uart_type(port));
-+		goto out_r;
-+	}
-+
-+	sport->irq_tx_name = kasprintf(GFP_KERNEL, "%s%d-tx",
-+				       pic32_uart_type(port),
-+				       sport->idx);
-+	if (!sport->irq_tx_name) {
-+		dev_err(port->dev, "%s: kasprintf err!", __func__);
-+		ret = -ENOMEM;
-+		goto out_r;
-+	}
-+	irq_set_status_flags(sport->irq_tx, IRQ_NOAUTOEN);
-+	ret = request_irq(sport->irq_tx, pic32_uart_tx_interrupt,
-+			  sport->irqflags_tx, sport->irq_tx_name, port);
-+	if (ret) {
-+		dev_err(port->dev, "%s: request irq(%d) err! ret:%d name:%s\n",
-+			__func__, sport->irq_tx, ret,
-+			pic32_uart_type(port));
-+		goto out_t;
-+	}
-+
-+	local_irq_save(flags);
-+
-+	/* set rx interrupt on first receive */
-+	pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_STA),
-+			PIC32_UART_STA_URXISEL1 | PIC32_UART_STA_URXISEL0);
-+
-+	/* set interrupt on empty */
-+	pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_STA),
-+			PIC32_UART_STA_UTXISEL1);
-+
-+	/* enable all interrupts and eanable uart */
-+	pic32_uart_en_and_unmask(port);
-+
-+	enable_irq(sport->irq_rx);
-+
-+	return 0;
-+
-+out_t:
-+	kfree(sport->irq_tx_name);
-+	free_irq(sport->irq_tx, sport);
-+out_r:
-+	kfree(sport->irq_rx_name);
-+	free_irq(sport->irq_rx, sport);
-+out_f:
-+	kfree(sport->irq_fault_name);
-+	free_irq(sport->irq_fault, sport);
-+out_done:
-+	return ret;
-+}
-+
-+/* serial core request to flush & disable uart */
-+static void pic32_uart_shutdown(struct uart_port *port)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+	unsigned long flags;
-+
-+	/* disable uart */
-+	spin_lock_irqsave(&port->lock, flags);
-+	pic32_uart_dsbl_and_mask(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	pic32_disable_clock(sport);
-+
-+	/* free all 3 interrupts for this UART */
-+	free_irq(sport->irq_fault, port);
-+	free_irq(sport->irq_tx, port);
-+	free_irq(sport->irq_rx, port);
-+}
-+
-+/* serial core request to change current uart setting */
-+static void pic32_uart_set_termios(struct uart_port *port,
-+				   struct ktermios *new,
-+				   struct ktermios *old)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+	unsigned int baud;
-+	unsigned int quot;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	/* disable uart and mask all interrupts while changing speed */
-+	pic32_uart_dsbl_and_mask(port);
-+
-+	/* stop bit options */
-+	if (new->c_cflag & CSTOPB)
-+		pic32_uart_writel(sport, PIC32_SET(PIC32_UART_MODE),
-+					PIC32_UART_MODE_STSEL);
-+	else
-+		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_STSEL);
-+
-+	/* parity options */
-+	if (new->c_cflag & PARENB) {
-+		if (new->c_cflag & PARODD) {
-+			pic32_uart_writel(sport, PIC32_SET(PIC32_UART_MODE),
-+					PIC32_UART_MODE_PDSEL1);
-+			pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_PDSEL0);
-+		} else {
-+			pic32_uart_writel(sport, PIC32_SET(PIC32_UART_MODE),
-+					PIC32_UART_MODE_PDSEL0);
-+			pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_PDSEL1);
-+		}
-+	} else {
-+		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_PDSEL1 |
-+					PIC32_UART_MODE_PDSEL0);
-+	}
-+	/* if hw flow ctrl, then the pins must be specified in device tree */
-+	if ((new->c_cflag & CRTSCTS) && sport->hw_flow_ctrl) {
-+		/* enable hardware flow control */
-+		pic32_uart_writel(sport, PIC32_SET(PIC32_UART_MODE),
-+					PIC32_UART_MODE_UEN1);
-+		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_UEN0);
-+		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_RTSMD);
-+	} else {
-+		/* disable hardware flow control */
-+		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_UEN1);
-+		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_UEN0);
-+		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_MODE),
-+					PIC32_UART_MODE_RTSMD);
-+	}
-+
-+	/* Always 8-bit */
-+	new->c_cflag |= CS8;
-+
-+	/* Mark/Space parity is not supported */
-+	new->c_cflag &= ~CMSPAR;
-+
-+	/* update baud */
-+	baud = uart_get_baud_rate(port, new, old, 0, port->uartclk / 16);
-+	quot = uart_get_divisor(port, baud) - 1;
-+	pic32_uart_writel(sport, PIC32_UART_BRG, quot);
-+	uart_update_timeout(port, new->c_cflag, baud);
-+
-+	if (tty_termios_baud_rate(new))
-+		tty_termios_encode_baud_rate(new, baud, baud);
-+
-+	/* enable uart */
-+	pic32_uart_en_and_unmask(port);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+/* serial core request to claim uart iomem */
-+static int pic32_uart_request_port(struct uart_port *port)
-+{
-+	struct platform_device *pdev = to_platform_device(port->dev);
-+	struct resource *res_mem;
-+
-+	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (unlikely(!res_mem))
-+		return -EINVAL;
-+
-+	if (!request_mem_region(port->mapbase, resource_size(res_mem),
-+				"pic32_uart_mem"))
-+		return -EBUSY;
-+
-+	port->membase = devm_ioremap_nocache(port->dev, port->mapbase,
-+						resource_size(res_mem));
-+	if (!port->membase) {
-+		dev_err(port->dev, "Unable to map registers\n");
-+		release_mem_region(port->mapbase, resource_size(res_mem));
-+		return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+/* serial core request to release uart iomem */
-+static void pic32_uart_release_port(struct uart_port *port)
-+{
-+	struct platform_device *pdev = to_platform_device(port->dev);
-+	struct resource *res_mem;
-+	unsigned int res_size;
-+
-+	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (unlikely(!res_mem))
-+		return;
-+	res_size = resource_size(res_mem);
-+
-+	release_mem_region(port->mapbase, res_size);
-+}
-+
-+/* serial core request to do any port required auto-configuration */
-+static void pic32_uart_config_port(struct uart_port *port, int flags)
-+{
-+	if (flags & UART_CONFIG_TYPE) {
-+		if (pic32_uart_request_port(port))
-+			return;
-+		port->type = PORT_PIC32;
-+	}
-+}
-+
-+/* serial core request to check that port information in serinfo are suitable */
-+static int pic32_uart_verify_port(struct uart_port *port,
-+				  struct serial_struct *serinfo)
-+{
-+	if (port->type != PORT_PIC32)
-+		return -EINVAL;
-+	if (port->irq != serinfo->irq)
-+		return -EINVAL;
-+	if (port->iotype != serinfo->io_type)
-+		return -EINVAL;
-+	if (port->mapbase != (unsigned long)serinfo->iomem_base)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+/* serial core callbacks */
-+static const struct uart_ops pic32_uart_ops = {
-+	.tx_empty	= pic32_uart_tx_empty,
-+	.get_mctrl	= pic32_uart_get_mctrl,
-+	.set_mctrl	= pic32_uart_set_mctrl,
-+	.start_tx	= pic32_uart_start_tx,
-+	.stop_tx	= pic32_uart_stop_tx,
-+	.stop_rx	= pic32_uart_stop_rx,
-+	.break_ctl	= pic32_uart_break_ctl,
-+	.startup	= pic32_uart_startup,
-+	.shutdown	= pic32_uart_shutdown,
-+	.set_termios	= pic32_uart_set_termios,
-+	.type		= pic32_uart_type,
-+	.release_port	= pic32_uart_release_port,
-+	.request_port	= pic32_uart_request_port,
-+	.config_port	= pic32_uart_config_port,
-+	.verify_port	= pic32_uart_verify_port,
-+};
-+
-+#ifdef CONFIG_SERIAL_PIC32_CONSOLE
-+/* output given char */
-+static void pic32_console_putchar(struct uart_port *port, int ch)
-+{
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+
-+	if (!(pic32_uart_readl(sport, PIC32_UART_MODE) & PIC32_UART_MODE_ON))
-+		return;
-+
-+	if (!(pic32_uart_readl(sport, PIC32_UART_STA) & PIC32_UART_STA_UTXEN))
-+		return;
-+
-+	/* wait for tx empty */
-+	pic32_wait_deplete_txbuf(sport);
-+
-+	pic32_uart_writel(sport, PIC32_UART_TX, ch & 0xff);
-+}
-+
-+/* console core request to output given string */
-+static void pic32_console_write(struct console *co, const char *s,
-+				unsigned int count)
-+{
-+	struct pic32_sport *sport = pic32_sports[co->index];
-+	struct uart_port *port = pic32_get_port(sport);
-+
-+	/* call uart helper to deal with \r\n */
-+	uart_console_write(port, s, count, pic32_console_putchar);
-+}
-+
-+/* console core request to setup given console, find matching uart
-+ * port and setup it.
-+ */
-+static int pic32_console_setup(struct console *co, char *options)
-+{
-+	struct pic32_sport *sport;
-+	struct uart_port *port = NULL;
-+	int baud = 115200;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
-+	int ret = 0;
-+
-+	if (unlikely(co->index < 0 || co->index >= PIC32_MAX_UARTS))
-+		return -ENODEV;
-+
-+	sport = pic32_sports[co->index];
-+	if (!sport)
-+		return -ENODEV;
-+	port = pic32_get_port(sport);
-+
-+	ret = pic32_enable_clock(sport);
-+	if (ret)
-+		return ret;
-+
-+	if (options)
-+		uart_parse_options(options, &baud, &parity, &bits, &flow);
-+
-+	return uart_set_options(port, co, baud, parity, bits, flow);
-+}
-+
-+static struct uart_driver pic32_uart_driver;
-+static struct console pic32_console = {
-+	.name		= PIC32_SDEV_NAME,
-+	.write		= pic32_console_write,
-+	.device		= uart_console_device,
-+	.setup		= pic32_console_setup,
-+	.flags		= CON_PRINTBUFFER,
-+	.index		= -1,
-+	.data		= &pic32_uart_driver,
-+};
-+#define PIC32_SCONSOLE (&pic32_console)
-+
-+static int __init pic32_console_init(void)
-+{
-+	register_console(&pic32_console);
-+	return 0;
-+}
-+console_initcall(pic32_console_init);
-+
-+static inline bool is_pic32_console_port(struct uart_port *port)
-+{
-+	return port->cons && port->cons->index == port->line;
-+}
-+
-+/*
-+ * Late console initialization.
-+ */
-+static int __init pic32_late_console_init(void)
-+{
-+	if (!(pic32_console.flags & CON_ENABLED))
-+		register_console(&pic32_console);
-+
-+	return 0;
-+}
-+
-+core_initcall(pic32_late_console_init);
-+
-+#else
-+#define PIC32_SCONSOLE NULL
-+#endif
-+
-+static struct uart_driver pic32_uart_driver = {
-+	.owner			= THIS_MODULE,
-+	.driver_name		= PIC32_DEV_NAME,
-+	.dev_name		= PIC32_SDEV_NAME,
-+	.nr			= PIC32_MAX_UARTS,
-+	.cons			= PIC32_SCONSOLE,
-+};
-+
-+static int pic32_uart_probe(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct pic32_sport *sport;
-+	int uart_idx = 0;
-+	struct resource *res_mem;
-+	struct uart_port *port;
-+	int ret;
-+
-+	uart_idx = of_alias_get_id(np, "serial");
-+	if (uart_idx < 0 || uart_idx >= PIC32_MAX_UARTS)
-+		return -EINVAL;
-+
-+	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res_mem)
-+		return -EINVAL;
-+
-+	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
-+	if (!sport)
-+		return -ENOMEM;
-+
-+	sport->idx		= uart_idx;
-+	sport->irq_fault	= irq_of_parse_and_map(np, 0);
-+	sport->irqflags_fault	= IRQF_NO_THREAD;
-+	sport->irq_rx		= irq_of_parse_and_map(np, 1);
-+	sport->irqflags_rx	= IRQF_NO_THREAD;
-+	sport->irq_tx		= irq_of_parse_and_map(np, 2);
-+	sport->irqflags_tx	= IRQF_NO_THREAD;
-+	sport->clk		= devm_clk_get(&pdev->dev, NULL);
-+	sport->cts_gpio		= -EINVAL;
-+	sport->dev		= &pdev->dev;
-+
-+	/* Hardware flow control: gpios
-+	 * !Note: Basically, CTS is needed for reading the status.
-+	 */
-+	sport->hw_flow_ctrl = false;
-+	sport->cts_gpio = of_get_named_gpio(np, "cts-gpios", 0);
-+	if (gpio_is_valid(sport->cts_gpio)) {
-+		sport->hw_flow_ctrl = true;
-+
-+		ret = devm_gpio_request(sport->dev,
-+					sport->cts_gpio, "CTS");
-+		if (ret) {
-+			dev_err(&pdev->dev,
-+				"error requesting CTS GPIO\n");
-+			goto err;
-+		}
-+
-+		ret = gpio_direction_input(sport->cts_gpio);
-+		if (ret) {
-+			dev_err(&pdev->dev, "error setting CTS GPIO\n");
-+			goto err;
-+		}
-+	}
-+
-+	pic32_sports[uart_idx] = sport;
-+	port = &sport->port;
-+	memset(port, 0, sizeof(*port));
-+	port->iotype	= UPIO_MEM;
-+	port->mapbase	= res_mem->start;
-+	port->ops	= &pic32_uart_ops;
-+	port->flags	= UPF_BOOT_AUTOCONF;
-+	port->dev	= &pdev->dev;
-+	port->fifosize	= PIC32_UART_TX_FIFO_DEPTH;
-+	port->uartclk	= clk_get_rate(sport->clk);
-+	port->line	= uart_idx;
-+
-+	ret = uart_add_one_port(&pic32_uart_driver, port);
-+	if (ret) {
-+		port->membase = NULL;
-+		dev_err(port->dev, "%s: uart add port error!\n", __func__);
-+		goto err;
-+	}
-+
-+#ifdef CONFIG_SERIAL_PIC32_CONSOLE
-+	if (is_pic32_console_port(port) &&
-+	    (pic32_console.flags & CON_ENABLED)) {
-+		/* The peripheral clock has been enabled by console_setup,
-+		 * so disable it till the port is used.
-+		 */
-+		pic32_disable_clock(sport);
-+	}
-+#endif
-+
-+	platform_set_drvdata(pdev, port);
-+
-+	dev_info(&pdev->dev, "%s: uart(%d) driver initialized.\n",
-+		 __func__, uart_idx);
-+
-+	return 0;
-+err:
-+	/* automatic unroll of sport and gpios */
-+	return ret;
-+}
-+
-+static int pic32_uart_remove(struct platform_device *pdev)
-+{
-+	struct uart_port *port = platform_get_drvdata(pdev);
-+	struct pic32_sport *sport = to_pic32_sport(port);
-+
-+	uart_remove_one_port(&pic32_uart_driver, port);
-+	pic32_disable_clock(sport);
-+	platform_set_drvdata(pdev, NULL);
-+	pic32_sports[sport->idx] = NULL;
-+
-+	/* automatic unroll of sport and gpios */
-+	return 0;
-+}
-+
-+static const struct of_device_id pic32_serial_dt_ids[] = {
-+	{ .compatible = "microchip,pic32mzda-uart" },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, pic32_serial_dt_ids);
-+
-+static struct platform_driver pic32_uart_platform_driver = {
-+	.probe		= pic32_uart_probe,
-+	.remove		= pic32_uart_remove,
-+	.driver		= {
-+		.name	= PIC32_DEV_NAME,
-+		.of_match_table	= of_match_ptr(pic32_serial_dt_ids),
-+	},
-+};
-+
-+static int __init pic32_uart_init(void)
-+{
-+	int ret;
-+
-+	ret = uart_register_driver(&pic32_uart_driver);
-+	if (ret) {
-+		pr_err("failed to register %s:%d\n",
-+		       pic32_uart_driver.driver_name, ret);
-+		return ret;
-+	}
-+
-+	ret = platform_driver_register(&pic32_uart_platform_driver);
-+	if (ret) {
-+		pr_err("fail to register pic32 uart\n");
-+		uart_unregister_driver(&pic32_uart_driver);
-+	}
-+
-+	return ret;
-+}
-+arch_initcall(pic32_uart_init);
-+
-+static void __exit pic32_uart_exit(void)
-+{
-+#ifdef CONFIG_SERIAL_PIC32_CONSOLE
-+	unregister_console(&pic32_console);
-+#endif
-+	platform_driver_unregister(&pic32_uart_platform_driver);
-+	uart_unregister_driver(&pic32_uart_driver);
-+}
-+module_exit(pic32_uart_exit);
-+
-+MODULE_AUTHOR("Sorin-Andrei Pistirica <andrei.pistirica@microchip.com>");
-+MODULE_DESCRIPTION("Microchip PIC32 integrated serial port driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/tty/serial/pic32_uart.h b/drivers/tty/serial/pic32_uart.h
-new file mode 100644
-index 0000000..ec379da
---- /dev/null
-+++ b/drivers/tty/serial/pic32_uart.h
-@@ -0,0 +1,126 @@
-+/*
-+ * PIC32 Integrated Serial Driver.
-+ *
-+ * Copyright (C) 2015 Microchip Technology, Inc.
-+ *
-+ * Authors:
-+ *   Sorin-Andrei Pistirica <andrei.pistirica@microchip.com>
-+ *
-+ * Licensed under GPLv2 or later.
-+ */
-+#ifndef __DT_PIC32_UART_H__
-+#define __DT_PIC32_UART_H__
-+
-+#define PIC32_UART_DFLT_BRATE		(9600)
-+#define PIC32_UART_TX_FIFO_DEPTH	(8)
-+#define PIC32_UART_RX_FIFO_DEPTH	(8)
-+
-+#define PIC32_UART_MODE		0x00
-+#define PIC32_UART_STA		0x10
-+#define PIC32_UART_TX		0x20
-+#define PIC32_UART_RX		0x30
-+#define PIC32_UART_BRG		0x40
-+
-+struct pic32_console_opt {
-+	int baud;
-+	int parity;
-+	int bits;
-+	int flow;
-+};
-+
-+/* struct pic32_sport - pic32 serial port descriptor
-+ * @port: uart port descriptor
-+ * @idx: port index
-+ * @irq_fault: virtual fault interrupt number
-+ * @irqflags_fault: flags related to fault irq
-+ * @irq_fault_name: irq fault name
-+ * @irq_rx: virtual rx interrupt number
-+ * @irqflags_rx: flags related to rx irq
-+ * @irq_rx_name: irq rx name
-+ * @irq_tx: virtual tx interrupt number
-+ * @irqflags_tx: : flags related to tx irq
-+ * @irq_tx_name: irq tx name
-+ * @cts_gpio: clear to send gpio
-+ * @dev: device descriptor
-+ **/
-+struct pic32_sport {
-+	struct uart_port port;
-+	struct pic32_console_opt opt;
-+	int idx;
-+
-+	int irq_fault;
-+	int irqflags_fault;
-+	const char *irq_fault_name;
-+	int irq_rx;
-+	int irqflags_rx;
-+	const char *irq_rx_name;
-+	int irq_tx;
-+	int irqflags_tx;
-+	const char *irq_tx_name;
-+	u8 enable_tx_irq;
-+
-+	bool hw_flow_ctrl;
-+	int cts_gpio;
-+
-+	int ref_clk;
-+	struct clk *clk;
-+
-+	struct device *dev;
-+};
-+#define to_pic32_sport(c) container_of(c, struct pic32_sport, port)
-+#define pic32_get_port(sport) (&sport->port)
-+#define pic32_get_opt(sport) (&sport->opt)
-+#define tx_irq_enabled(sport) (sport->enable_tx_irq)
-+
-+static inline void pic32_uart_writel(struct pic32_sport *sport,
-+					u32 reg, u32 val)
-+{
-+	struct uart_port *port = pic32_get_port(sport);
-+
-+	__raw_writel(val, port->membase + reg);
-+}
-+
-+static inline u32 pic32_uart_readl(struct pic32_sport *sport, u32 reg)
-+{
-+	struct uart_port *port = pic32_get_port(sport);
-+
-+	return	__raw_readl(port->membase + reg);
-+}
-+
-+/* pic32 uart mode register bits */
-+#define PIC32_UART_MODE_ON        BIT(15)
-+#define PIC32_UART_MODE_FRZ       BIT(14)
-+#define PIC32_UART_MODE_SIDL      BIT(13)
-+#define PIC32_UART_MODE_IREN      BIT(12)
-+#define PIC32_UART_MODE_RTSMD     BIT(11)
-+#define PIC32_UART_MODE_RESV1     BIT(10)
-+#define PIC32_UART_MODE_UEN1      BIT(9)
-+#define PIC32_UART_MODE_UEN0      BIT(8)
-+#define PIC32_UART_MODE_WAKE      BIT(7)
-+#define PIC32_UART_MODE_LPBK      BIT(6)
-+#define PIC32_UART_MODE_ABAUD     BIT(5)
-+#define PIC32_UART_MODE_RXINV     BIT(4)
-+#define PIC32_UART_MODE_BRGH      BIT(3)
-+#define PIC32_UART_MODE_PDSEL1    BIT(2)
-+#define PIC32_UART_MODE_PDSEL0    BIT(1)
-+#define PIC32_UART_MODE_STSEL     BIT(0)
-+
-+/* pic32 uart status register bits */
-+#define PIC32_UART_STA_UTXISEL1   BIT(15)
-+#define PIC32_UART_STA_UTXISEL0   BIT(14)
-+#define PIC32_UART_STA_UTXINV     BIT(13)
-+#define PIC32_UART_STA_URXEN      BIT(12)
-+#define PIC32_UART_STA_UTXBRK     BIT(11)
-+#define PIC32_UART_STA_UTXEN      BIT(10)
-+#define PIC32_UART_STA_UTXBF      BIT(9)
-+#define PIC32_UART_STA_TRMT       BIT(8)
-+#define PIC32_UART_STA_URXISEL1   BIT(7)
-+#define PIC32_UART_STA_URXISEL0   BIT(6)
-+#define PIC32_UART_STA_ADDEN      BIT(5)
-+#define PIC32_UART_STA_RIDLE      BIT(4)
-+#define PIC32_UART_STA_PERR       BIT(3)
-+#define PIC32_UART_STA_FERR       BIT(2)
-+#define PIC32_UART_STA_OERR       BIT(1)
-+#define PIC32_UART_STA_URXDA      BIT(0)
-+
-+#endif /* __DT_PIC32_UART_H__ */
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 93ba148..9df0a98 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -261,4 +261,7 @@
- /* STM32 USART */
- #define PORT_STM32	113
- 
-+/* Microchip PIC32 UART */
-+#define PORT_PIC32	114
-+
- #endif /* _UAPILINUX_SERIAL_CORE_H */
--- 
-1.7.9.5
+>
+>>  		uart.dma = &data->dma;
+>>  	}
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_port.c
+>> b/drivers/tty/serial/8250/8250_port.c
+>> index 52d82d2..b89a326 100644
+>> --- a/drivers/tty/serial/8250/8250_port.c
+>> +++ b/drivers/tty/serial/8250/8250_port.c
+>> @@ -269,6 +269,15 @@ configured less than Maximum supported fifo bytes */
+>>  		.rxtrig_bytes	= {1, 4, 8, 14},
+>>  		.flags		= UART_CAP_FIFO,
+>>  	},
+>> +	[PORT_AMD_8250] = {
+>> +		.name		= "AMD_8250",
+>> +		.fifo_size	= 256,
+>> +		.tx_loadsz	= 128,
+>> +		.fcr		= UART_FCR_ENABLE_FIFO |
+>UART_FCR_R_TRIG_10 |
+>> +				UART_FCR_T_TRIG_11,
+>> +		.rxtrig_bytes	= {1, 4, 8},
+>> +		.flags		= UART_CAP_FIFO,
+>> +	},
+>
+>There is no use for this new type. In fact, there is no use for any new types. If we
+>need to modify fcr for example, we can do that in a custom up->startup or up-
+>>set_termios hook.
+>
+>>  };
+>>
+>>  /* Uart divisor latch read */
+>> diff --git a/include/linux/platform_data/8250-dw.h
+>> b/include/linux/platform_data/8250-dw.h
+>> new file mode 100644
+>> index 0000000..97cdb9d
+>> --- /dev/null
+>> +++ b/include/linux/platform_data/8250-dw.h
+>> @@ -0,0 +1,8 @@
+>> +#ifndef _PLATFORM_DATA_8250_DW_H
+>> +#define _PLATFORM_DATA_8250_DW_H
+>> +
+>> +struct plat_dw8250_data {
+>> +	unsigned int has_pl330_dma:1;
+>> +};
+>> +
+>> +#endif
+>
+>Let's not add any new driver specific platform data files unless we absolutely have
+>to. In this case there is no need for it. If you really need to deliver this kind of
+>detail to the driver, you need to deliver it to the driver with build-in device
+>property. So instead of
+>platform_device_add_data() you should use device_add_property_set().
+>Or actually, in linux-next there is already helper for platform bus called
+>platform_device_add_properties().
+>
+>But I don't think there is any need for this kind of detail. You can just identify your
+>platform in 8250_dw.c based on the ACPI ID, no?
+
+Agree.
+
+The uart and uart dma could work well, if I just set dma.rx_size in dw8250_quirks. 
+
+Thank you for your comments.  
+
+Regards,
+Hongcheng(Annie)
+
