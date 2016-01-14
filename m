@@ -1,7 +1,7 @@
 From: Anton Wuerfel <anton.wuerfel@fau.de>
-Subject: [PATCH v7 12/15] tty: serial: 8250: Correct conversion specifiers
-Date: Thu, 14 Jan 2016 16:08:21 +0100
-Message-ID: <1452784104-30840-13-git-send-email-anton.wuerfel@fau.de>
+Subject: [PATCH v7 11/15] tty: serial: 8250: Remove SERIAL_DEBUG_PNP macro
+Date: Thu, 14 Jan 2016 16:08:20 +0100
+Message-ID: <1452784104-30840-12-git-send-email-anton.wuerfel@fau.de>
 References: <1452784104-30840-1-git-send-email-anton.wuerfel@fau.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -10,58 +10,49 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1452784104-30840-1-git-send-email-anton.wuerfel@fau.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Joachim Eastwood <manabian@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Phillip Raffeck <phillip.raffeck@fau.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hung <hpeter@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, Anton Wuerfel <anton.wuerfel@fau.de>
+Cc: Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Joachim Eastwood <manabian@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Phillip Raffeck <phillip.raffeck@fau.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hung <hpeter@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kernel@i4.cs.fau.de, =?UTF-8?q?Anton=20W=C3=BCrfel?= <anton.wuerfel@fau.de>
 List-Id: linux-serial@vger.kernel.org
 
-This patch fixes compiler warnings about wrong conversion specifiers us=
-ed
-in a debug output in 8250_pnp.c. The precise warning is:
+=46rom: Phillip Raffeck <phillip.raffeck@fau.de>
 
-drivers/tty/serial/8250/8250_pnp.c: In function =E2=80=98serial_pnp_pro=
-be=E2=80=99:
-include/linux/dynamic_debug.h:64:16: warning: format =E2=80=98%x=E2=80=99=
- expects argument
-of [...]
+This patch removes the macro SERIAL_DEBUG_PNP, which is used to enable
+debugging at compile time.
+As SERIAL_DEBUG_PNP is an orphan, the corresponding #ifdef is removed.
+To keep the ability to enable debugging at compile time,
+the call to printk(KERN_DEBUG ...) is replaced by a corresponding
+call to dev_dbg(), which is configurable via CONFIG_DYNAMIC_DEBUG.
 
-drivers/tty/serial/8250/8250_pnp.c:467:2: note: in expansion of macro
-=E2=80=98dev_dbg=E2=80=99
-  dev_dbg(&dev->dev,
-  ^
-include/linux/dynamic_debug.h:64:16: warning: format =E2=80=98%lx=E2=80=
-=99 expects argument
-of [...]
-
-drivers/tty/serial/8250/8250_pnp.c:467:2: note: in expansion of macro
-=E2=80=98dev_dbg=E2=80=99
-  dev_dbg(&dev->dev,
-  ^
-
-Those warnings never got triggered, because the command was nested
-in an #ifdef, which is removed by a patch of this series.
-
-Signed-off-by: Anton W=C3=BCrfel <anton.wuerfel@fau.de>
 Signed-off-by: Phillip Raffeck <phillip.raffeck@fau.de>
+Signed-off-by: Anton W=C3=BCrfel <anton.wuerfel@fau.de>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: linux-kernel@i4.cs.fau.de
 ---
- drivers/tty/serial/8250/8250_pnp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_pnp.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/82=
 50/8250_pnp.c
-index 0c32c59..b2d163c 100644
+index 00846a7..0c32c59 100644
 --- a/drivers/tty/serial/8250/8250_pnp.c
 +++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -465,8 +465,8 @@ serial_pnp_probe(struct pnp_dev *dev, const struct =
-pnp_device_id *dev_id)
+@@ -464,11 +464,11 @@ serial_pnp_probe(struct pnp_dev *dev, const struc=
+t pnp_device_id *dev_id)
+ 	} else
  		return -ENODEV;
 =20
- 	dev_dbg(&dev->dev,
--		 "Setup PNP port: port %x, mem 0x%lx, irq %d, type %d\n",
--		 uart.port.iobase, uart.port.mapbase,
-+		 "Setup PNP port: port %lx, mem %pa, irq %d, type %d\n",
-+		 uart.port.iobase, &uart.port.mapbase,
- 		 uart.port.irq, uart.port.iotype);
-=20
+-#ifdef SERIAL_DEBUG_PNP
+-	printk(KERN_DEBUG
+-		"Setup PNP port: port %x, mem 0x%lx, irq %d, type %d\n",
+-		       uart.port.iobase, uart.port.mapbase, uart.port.irq, uart.port=
+=2Eiotype);
+-#endif
++	dev_dbg(&dev->dev,
++		 "Setup PNP port: port %x, mem 0x%lx, irq %d, type %d\n",
++		 uart.port.iobase, uart.port.mapbase,
++		 uart.port.irq, uart.port.iotype);
++
  	if (flags & CIR_PORT) {
+ 		uart.port.flags |=3D UPF_FIXED_PORT | UPF_FIXED_TYPE;
+ 		uart.port.type =3D PORT_8250_CIR;
 --=20
 1.9.1
