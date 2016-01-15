@@ -1,118 +1,199 @@
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
+From: Mark Rutland <mark.rutland@arm.com>
 Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
-Date: Fri, 15 Jan 2016 17:08:00 +0100
-Message-ID: <CB69F6F0-B40B-47D1-B175-8401F43288C5@goldelico.com>
-References: <20150511013540.5709.93626.stgit@notabene.brown> <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com> <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com> <20160113191542.GA12086@leverpostej> <1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com> <20160115110106.GA3262@leverpostej> <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com> <569913A1.80606@cogentembedded.com>
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+Date: Fri, 15 Jan 2016 16:12:29 +0000
+Message-ID: <20160115161229.GN3262@leverpostej>
+References: <20150511013540.5709.93626.stgit@notabene.brown>
+ <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com>
+ <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
+ <20160113191542.GA12086@leverpostej>
+ <1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com>
+ <20160115110106.GA3262@leverpostej>
+ <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <569913A1.80606@cogentembedded.com>
+Content-Disposition: inline
+In-Reply-To: <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andrey Vostrikov <andrey.vostrikov@cogentembedded.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, List for communicating with real GTA04 owners <gta04-owner@goldelico.com>, tomeu@tomeuvizoso.net, NeilBrown <neil@brown.name>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robherring2@gmail.com>, Pavel Machek <pavel@ucw.cz>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Marek Belisko <marek@goldelico.com>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: List for communicating with real GTA04 owners <gta04-owner@goldelico.com>, tomeu@tomeuvizoso.net, NeilBrown <neil@brown.name>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robherring2@gmail.com>, Pavel Machek <pavel@ucw.cz>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Marek Belisko <marek@goldelico.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andrey,
-ah that is fine to learn about another project that needs some solution (however it will look like).
-
-Am 15.01.2016 um 16:43 schrieb Andrey Vostrikov <andrey.vostrikov@cogentembedded.com>:
-
-> Hi Nikolaus,
+On Fri, Jan 15, 2016 at 04:05:45PM +0100, H. Nikolaus Schaller wrote:
+> Hi Mark,
 > 
-> H. Nikolaus Schaller wrote:
->> And IMHO nobody has described that he/she needs a solution to model the*data*  relationship
->> for devices connected behind a tty port.
+> Am 15.01.2016 um 12:01 schrieb Mark Rutland <mark.rutland@arm.com>:
 > 
-> I am not sure if my case fits *data* relationship or not in this case. Some time ago I asked about state of your patches.
-> In my case I have supervising microcontroller unit (MCU) that is connected to one of UARTs on SoC.
+> > On Fri, Jan 15, 2016 at 10:34:51AM +0100, H. Nikolaus Schaller wrote:
+> >> Hi Mark,
+> >> 
+> >> Am 13.01.2016 um 20:15 schrieb Mark Rutland <mark.rutland@arm.com>:
+> >> 
+> >>> On Tue, Jan 12, 2016 at 02:28:00PM +0100, H. Nikolaus Schaller wrote:
+> >>>> There is one point still to be solved: the exact style of the DT bindings.
+> >>>> 
+> >>>> We have an idea how a driver can implement two different styles (child node AND phandle)
+> >>>> so that it is up to the DTS developer to use the one that best fits into the existing DTS.
+> >>> 
+> >>> From my perspective as a binding maintainer, and as I stated before, the
+> >>> child node approach made the most sense and was most consistent with the
+> >> 
+> >>> way we handle other devices.
+> >> 
+> >> I simply don't see that this is the most common way other devices are handled.
+> >> 
+> >> I find many counter-examples which use phandles:
+> >> * gpios
+> >> * regulators
+> >> * iio channels used by other drivers (e.g. iio-hwmon)
+> >> * phy devices
+> >> * timers
+> >> * pwms
+> >> * interrupts
+> >> * dma
+> > 
+> > As was previously described to you, in these cases phandles are used
+> > when these are _resources_ used by another device, not for the main
+> > programmer-visible interface to the device.
 > 
-> This MCU implements several functions that will be implemented as MFD driver:
-> - watchdog and system reset
-> - NVMEM EEPROM
-> - HWMON sensors
-> - Input/power button
-> - and similar low level functions
+> Ah, I think I finally begin to understand the rule you are following:
 > 
-> So in my case DTS binding looks like:
+> 	If a device's data interface can be seen in user space, this interface
+> 	is sort of a "main interface" and must be modelled in DT by a
+> 	parent-child relationship.
+
+No, you have misunderstood. This has _nothing_ to do with userspace.
+
+This has everything to do with the "programmer's interface" as you would
+find documented in a TRM -- effectively where a driver would communicate
+with the device (e.g. MMIO/SPI/I2C registers).
+
+[...]
+
+> Now I also think I better understand what you meant by "main interface"
+> a while ago.
 > 
-> &uart3 {
-> 	mcu {
-> 		line-speed = <baud rate>;
-> 		watchdog {
-> 			timeout = <ms>;
-> 			...other params...
-> 		};
-> 		eeprom {
-> 			#address-cells
-> 			#size-cells
-> 			cell1 : cell@1 {
-> 				reg = <1 2>;
-> 			};
-> 			cell2 : cell@2 {
-> 				reg = <2 1>;
-> 			};
-> 		};
-> 		hwmon {
-> 			sensors-list = "voltage", "current", etc...;
-> 		}
-> 	}
-> }
-
-With my proposal it would just become
-
-/ {
-	themcu: mcu {
-		uart = <&uart3>;
-		line-speed = <baud rate>;
-		watchdog {
-			timeout = <ms>;
-			...other params...
-		};
-		eeprom {
-			#address-cells
-			#size-cells
-			cell1 : cell@1 {
-				reg = <1 2>;
-			};
-			cell2 : cell@2 {
-				reg = <2 1>;
-			};
-		};
-		hwmon {
-			sensors-list = "voltage", "current", etc...;
-		}
-	}
-};
-
-Which is almost the same. Except that it allows to move your mcu node whereever you like and easily allows to change the interface to connect to a different device by
-
-&themcu {
-	uart = <&uart1>;
-};
-
-With the subnode style you would need some tricks to get the driver instance for uart3 disabled, although it is possible (everything is possible - just easier or more difficult).
-
+> For me, when looking into a chip data sheet, the main interface is a sometimes
+> arbitrary. Or when viewing it through device driver implementors glasses
+> I may end up with a different main interface.
 > 
-> This MCU receives commands and notifies MFD driver about events via UART protocol.
-> It looks like not really a slave though, more like a partnership from data flow point of view.
+> From the hardware schematics, I can't read which interface is "main". I can
+> only read which components and signals are connected. So the information
+> what is "main" must come from somewhere else, but not the hardware.
+> 
+> You appear to have a definition based on Linux user space interfaces
+> which is distinct from mine and at least explains why the discussion takes
+> so long and we don't come to a common view.
 
-Yes!. That is why I started to question the term "slave".
+This is nothing to do with userspace.
 
-And yes, this is the second use case I am aware of: a device that just *uses" the UART to do its works and there is no /dev/tty involved.
+Admittedly, on a device which has multiple slave interfaces, "main" is
+arbitrary. If I've followed correctly, that's not the cae here.
+
+> > Conceptually, A UART slave is far closer to SPI or I2C, where the slave
+> > is represented as a sub-node.
+> 
+> Only if you have the goal to describe the data/command path ("main interface")
+> in DT.
+
+This is the way devices are described in DT -- walking from the root to
+a leaf you follow the path from the CPU to a slave interface.
+
+Some things don't have slave interfaces (e.g. fixed-clocks), but still
+need to be referred to, so those still get placed in the DT. There are
+arguments to be had w.r.t. their placement, but that's another
+discussion entirely.
+
+> I mentioned it several times: USB-PHYs use the phandle approach to attach
+> a single PHY to the usb controller, although there is usually some ULPI-"bus"
+> interface (12 parallel wires) between. And the PHY is clearly more "slave" than
+> the usb controller, isn't it?
+
+Some PHYs have additional interfaces, so their CPU-visible slave
+interface is described. This necessitates the phandle reference in the
+general case.
+
+> But with phandle, the usb controller is a _resource_ for the PHY. So would
+> you say this is wrong?
+
+Not entirely.
+
+> This is the design pattern (for DT and drivers) we have copied for our tty-slave
+> proposal.
+
+We have plenty of other ways of describing relationships today. The
+existence of one style (and its continued support for ABI reasons) does
+not mean that it's a style we want to proliferate.
 
 > 
-> There is no user space code involved in this case as whole interactions are between drivers (just a kick to open /dev/ttyXXX using sys_open, as there is no way to start probe on uart_slave bus and assign line discipline).
+> > I wasn't aware of any instances of timers being referred to by phandle
+> > by other devices -- that seems distinctly odd. Where do you see that
+> > happening.
+> 
+> I found it in connection with dmtimer / pwm on OMAP3. May be a rare exception
+> and that may be a special type of OMAP timers.
 
-Exactly this is what we want to provide as API for the drivers by our patches to serial-core.c. 
+I took a quick look and couldn't spot where that happened. I take it
+the timer was a "ti,omap3430-timer"? Or have I misunderstood?
 
-We want to allow such a "partner" device to take a line-speed property e.g. from its DT node (or a 9600 constant as for our GPS chip) and ask the UART driver to set the required clocks. Or to get the driver notified that someone has opened the /dev/tty* etc. So make it possible to use some UART from another driver.
+What referenced it by phandle? In which dt?
 
-In the long run it should be possible to use the UART even if there is no /dev/tty client or interface in user-space but that is something not perfectly working (there is some initialization race in the tty/serial subsystem we have not yet understood).
+> >> * mcbsp (see e.g. http://lxr.free-electrons.com/source/arch/arm/boot/dts/omap3-n900.dts#L127)
+> > 
+> > Subsystem type bindings are more of a special case, and regardless the
+> > components have nodes in the relevant portions of the DT.
+> 
+> > 
+> >> * mmc-pwr-seq-simple (which does not even describe a physical piece of hardware)
+> > 
+> > If this is so different, how is it relevant?
+> 
+> It could as well be subnode of the affected mmc interface or mmc-slave, but obviously it
+> isn't grouped there, and uses a phandle to refer to its &mmc "master".
+> 
+> Its function is quite similar what we need for our GPS chip: control power sequences
+> of a remote device.
 
-As you see, I have a driver-specific standpoint (and not coming from user space).
+That may fit your one particular use-case, but for UART slaves generally
+we should have a kernel driver (which can do more than a trivial
+power-up), at which point you need a node, and the separate sequence
+node is useless.
 
-Thanks for sharing this example.
+> >> All of them define the provider in one node. And refer to it by a phandle in another node
+> >> where they are used.
+> >> 
+> >> So I see a lot of provider-consumer relationships modeled by phandles but not by child nodes.
+> > 
+> > I agree that provider-consumer type relationships are typically
+> > described in this manner.
+> 
+> Ok.
+> 
+> > 
+> > However, master-slave relationships are not.
+> 
+> It looks as if you see a significant difference between provider-consumer and master-slave
+> relationship which I was not sure of which applies to what and where you make the distinction.
+> 
+> By the way: what exactly makes the UART on the SoC side "master" and the UART on the connected
+> device a "slave" (except the user-space view)?
 
-BR,
-Nikolaus
+Typically a "slave" accepts commands, and won't send commands of its own
+accord. This case is admittedly fuzzier given that a UART slave could
+send a stream of bytes at any point, but that's data.
+
+The distinction is really that the UART slave won't control other
+devices -- you can think of the entire path of the CPU to the UART as
+the master.
+
+> UARTs per se have no master-slave roles and are symmetrical (contrary to SPI and I2C where it
+> is well defined). Rather, both are formally DTE connected by a null-modem.
+> 
+> This is another substantial difference between UART and I2C/SPI besides addressability.
+
+Sure, except for the fact that the device attached to the UART logically
+follows a "slave" role. The rest of the system would be usable without
+it, and it assert no control over anything else.
+
+Thanks,
+Mark.
