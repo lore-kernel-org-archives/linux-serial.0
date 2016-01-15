@@ -1,7 +1,7 @@
 From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
 Subject: Re: [PATCH v6 2/3] tty: Add software emulated RS485 support for 8250
-Date: Fri, 15 Jan 2016 23:01:04 +0300
-Message-ID: <CAJs94EYv-oVh1pOSU4ZqigMDQiSHL8gPzeJy_4J=csydgncuqg@mail.gmail.com>
+Date: Fri, 15 Jan 2016 23:20:43 +0300
+Message-ID: <CAJs94EZ670AZRukTa=n9sOLgTw30EaSs58PJ+z49P7H7jCTPYQ@mail.gmail.com>
 References: <1450722379-13438-1-git-send-email-matwey@sai.msu.ru>
  <1450722379-13438-3-git-send-email-matwey@sai.msu.ru> <56991AE5.50503@hurleysoftware.com>
  <CAJs94Ea3MfLOniYEe39MisTdV=0pZ2CsRR5PBnCbanLU5ng5GQ@mail.gmail.com> <56994C4F.7040008@hurleysoftware.com>
@@ -145,10 +145,6 @@ List-Id: linux-serial@vger.kernel.org
 >
 > I know; that doesn't mean it's ok.
 >
-
-What do you suggest? Run __stop_tx as a tasklet? I am not sure whether
-it introduces races or not.
-
 >
 >>>> +     init_timer(&p->em485->start_tx_timer);
 >>>> +     p->em485->start_tx_timer.function = serial8250_em485_handle_start_tx;
@@ -189,6 +185,17 @@ it introduces races or not.
 >  *      ....
 >  */
 >
+
+I would like to provide init and destroy and left the rest for user.
+The reason is simple.
+When serial8250_em485_init is called a driver has to enable interrupt
+on empty shift register and probably disable it after
+serial8250_em485_destroy.
+And I believe that the driver knows better how to do it
+transactionally and correctly.
+The 8250_omap doesn't do that just because it enables the interrupt
+normally on start and always keep it enabled.
+
 >
 >
 >>>> +     kfree(p->em485);
@@ -274,10 +281,6 @@ it introduces races or not.
 > And __stop_tx() is already inlined in 3 places, which really doesn't
 > need inlining either -- a call/ret is nothing compared to device i/o.
 >
-
-Ok then, probably I am biased with my C++ experience and I am used to
-think that compiler considers `inline` only as a hint.
-
 >
 > Regards,
 > Peter Hurley
