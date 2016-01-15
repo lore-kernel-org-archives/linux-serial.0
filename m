@@ -1,309 +1,293 @@
-From: "H. Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
-Date: Fri, 15 Jan 2016 20:16:14 +0100
-Message-ID: <14EFA4A2-C691-41C7-B89F-38C14081DE77@goldelico.com>
-References: <20150511013540.5709.93626.stgit@notabene.brown> <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com> <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com> <20160113191542.GA12086@leverpostej> <1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com> <20160115110106.GA3262@leverpostej> <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com> <20160115161229.GN3262@leverpostej>
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
+Date: Fri, 15 Jan 2016 11:23:10 -0800
+Message-ID: <5699471E.3010702@hurleysoftware.com>
+References: <20150511013540.5709.93626.stgit@notabene.brown>
+ <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com>
+ <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
+ <20160113191542.GA12086@leverpostej>
+ <1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com>
+ <20160115110106.GA3262@leverpostej>
+ <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com>
+ <569913A1.80606@cogentembedded.com>
+ <CB69F6F0-B40B-47D1-B175-8401F43288C5@goldelico.com>
+ <56992959.2020204@hurleysoftware.com>
+ <572D2BBD-1CB4-4048-87AE-23DE16AC2AD4@goldelico.com>
+ <56992FCB.3030101@hurleysoftware.com>
+ <69FAE2F5-25D1-4E5E-9FED-FC86773269D6@goldelico.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160115161229.GN3262@leverpostej>
+In-Reply-To: <69FAE2F5-25D1-4E5E-9FED-FC86773269D6-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: List for communicating with real GTA04 owners <gta04-owner-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Marek Belisko <marek-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
+To: "H. Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
+Cc: Andrey Vostrikov <andrey.vostrikov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, List for communicating with real GTA04 owners <gta04-owner-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Marek Belisko <marek-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-
-Am 15.01.2016 um 17:12 schrieb Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>:
-
-> On Fri, Jan 15, 2016 at 04:05:45PM +0100, H. Nikolaus Schaller wrote:
->> Hi Mark,
->> 
->> Am 15.01.2016 um 12:01 schrieb Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>:
->> 
->>> On Fri, Jan 15, 2016 at 10:34:51AM +0100, H. Nikolaus Schaller wrote:
->>>> Hi Mark,
->>>> 
->>>> Am 13.01.2016 um 20:15 schrieb Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>:
->>>> 
->>>>> On Tue, Jan 12, 2016 at 02:28:00PM +0100, H. Nikolaus Schaller wrote:
->>>>>> There is one point still to be solved: the exact style of the DT bindings.
->>>>>> 
->>>>>> We have an idea how a driver can implement two different styles (child node AND phandle)
->>>>>> so that it is up to the DTS developer to use the one that best fits into the existing DTS.
->>>>> 
->>>>> From my perspective as a binding maintainer, and as I stated before, the
->>>>> child node approach made the most sense and was most consistent with the
->>>> 
->>>>> way we handle other devices.
->>>> 
->>>> I simply don't see that this is the most common way other devices are handled.
->>>> 
->>>> I find many counter-examples which use phandles:
->>>> * gpios
->>>> * regulators
->>>> * iio channels used by other drivers (e.g. iio-hwmon)
->>>> * phy devices
->>>> * timers
->>>> * pwms
->>>> * interrupts
->>>> * dma
->>> 
->>> As was previously described to you, in these cases phandles are used
->>> when these are _resources_ used by another device, not for the main
->>> programmer-visible interface to the device.
->> 
->> Ah, I think I finally begin to understand the rule you are following:
->> 
->> 	If a device's data interface can be seen in user space, this interface
->> 	is sort of a "main interface" and must be modelled in DT by a
->> 	parent-child relationship.
+On 01/15/2016 09:58 AM, H. Nikolaus Schaller wrote:
 > 
-> No, you have misunderstood. This has _nothing_ to do with userspace.
-
-Obviously.
-
+> Am 15.01.2016 um 18:43 schrieb Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
 > 
-> This has everything to do with the "programmer's interface" as you would
-> find documented in a TRM -- effectively where a driver would communicate
-> with the device (e.g. MMIO/SPI/I2C registers).
-
-What does that have to do with DT descriptions?
-
-I think we agree that as long as the driver can acquire a handle to the interface
-chip (UART, I2C controller etc.) through some driver API, it can communicate
-(and encapsulate) everything described by the TRM.
-
-I may have a special case that my devices have no programming interface.
-
-GPS simply starts to send NMEA records (ASCII) and Bluetooth protocol is
-a user-space daemon.
-
-So the driver does not want to touch the data. Or generate/consume it. Or write
-commands (although it could, since it knows the UART driver instance).
-
-For a typical I2C driver this is different. It reads/writes specific registers by telling
-the I2C controller (master / parent) to do that on an address specified by the
-child DT node.
-
+>> On 01/15/2016 09:32 AM, H. Nikolaus Schaller wrote:
+>>> Hi Peter,
+>>>
+>>> Am 15.01.2016 um 18:16 schrieb Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+>>>
+>>>> On 01/15/2016 08:08 AM, H. Nikolaus Schaller wrote:
+>>>>> Hi Andrey,
+>>>>> ah that is fine to learn about another project that needs some solution (however it will look like).
+>>>>>
+>>>>> Am 15.01.2016 um 16:43 schrieb Andrey Vostrikov <andrey.vostrikov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>:
+>>>>>
+>>>>>> Hi Nikolaus,
+>>>>>>
+>>>>>> H. Nikolaus Schaller wrote:
+>>>>>>> And IMHO nobody has described that he/she needs a solution to model the*data*  relationship
+>>>>>>> for devices connected behind a tty port.
+>>>>>>
+>>>>>> I am not sure if my case fits *data* relationship or not in this case. Some time ago I asked about state of your patches.
+>>>>>> In my case I have supervising microcontroller unit (MCU) that is connected to one of UARTs on SoC.
+>>>>>>
+>>>>>> This MCU implements several functions that will be implemented as MFD driver:
+>>>>>> - watchdog and system reset
+>>>>>> - NVMEM EEPROM
+>>>>>> - HWMON sensors
+>>>>>> - Input/power button
+>>>>>> - and similar low level functions
+>>>>>>
+>>>>>> So in my case DTS binding looks like:
+>>>>>>
+>>>>>> &uart3 {
+>>>>>> 	mcu {
+>>>>>> 		line-speed = <baud rate>;
+>>>>>> 		watchdog {
+>>>>>> 			timeout = <ms>;
+>>>>>> 			...other params...
+>>>>>> 		};
+>>>>>> 		eeprom {
+>>>>>> 			#address-cells
+>>>>>> 			#size-cells
+>>>>>> 			cell1 : cell@1 {
+>>>>>> 				reg = <1 2>;
+>>>>>> 			};
+>>>>>> 			cell2 : cell@2 {
+>>>>>> 				reg = <2 1>;
+>>>>>> 			};
+>>>>>> 		};
+>>>>>> 		hwmon {
+>>>>>> 			sensors-list = "voltage", "current", etc...;
+>>>>>> 		}
+>>>>>> 	}
+>>>>>> }
+>>>>>
+>>>>> With my proposal it would just become
+>>>>>
+>>>>> / {
+>>>>> 	themcu: mcu {
+>>>>> 		uart = <&uart3>;
+>>>>> 		line-speed = <baud rate>;
+>>>>> 		watchdog {
+>>>>> 			timeout = <ms>;
+>>>>> 			...other params...
+>>>>> 		};
+>>>>> 		eeprom {
+>>>>> 			#address-cells
+>>>>> 			#size-cells
+>>>>> 			cell1 : cell@1 {
+>>>>> 				reg = <1 2>;
+>>>>> 			};
+>>>>> 			cell2 : cell@2 {
+>>>>> 				reg = <2 1>;
+>>>>> 			};
+>>>>> 		};
+>>>>> 		hwmon {
+>>>>> 			sensors-list = "voltage", "current", etc...;
+>>>>> 		}
+>>>>> 	}
+>>>>> };
+>>>>>
+>>>>> Which is almost the same. Except that it allows to move your mcu node whereever you like and easily allows to change the interface to connect to a different device by
+>>>>>
+>>>>> &themcu {
+>>>>> 	uart = <&uart1>;
+>>>>> };
+>>>>>
+>>>>> With the subnode style you would need some tricks to get the driver instance for uart3 disabled, although it is possible (everything is possible - just easier or more difficult).
+>>>>>
+>>>>>>
+>>>>>> This MCU receives commands and notifies MFD driver about events via UART protocol.
+>>>>>> It looks like not really a slave though, more like a partnership from data flow point of view.
+>>>>>
+>>>>> Yes!. That is why I started to question the term "slave".
+>>>>>
+>>>>> And yes, this is the second use case I am aware of: a device that just *uses" the UART to do its works and there is no /dev/tty involved.
+>>>>>
+>>>>>>
+>>>>>> There is no user space code involved in this case as whole interactions are between drivers (just a kick to open /dev/ttyXXX using sys_open, as there is no way to start probe on uart_slave bus and assign line discipline).
+>>>>>
+>>>>> Exactly this is what we want to provide as API for the drivers by our patches to serial-core.c. 
+>>>>>
+>>>>> We want to allow such a "partner" device to take a line-speed property e.g. from its DT node (or a 9600 constant as for our GPS chip) and ask the UART driver to set the required clocks. Or to get the driver notified that someone has opened the /dev/tty* etc. So make it possible to use some UART from another driver.
+>>>>>
+>>>>> In the long run it should be possible to use the UART even if there is no /dev/tty client or interface in user-space but that is something not perfectly working (there is some initialization race in the tty/serial subsystem we have not yet understood).
+>>>>>
+>>>>> As you see, I have a driver-specific standpoint (and not coming from user space).
+>>>>>
+>>>>> Thanks for sharing this example.
+>>>>
+>>>>
+>>>> I'd like to see the exemplar slave driver be something more complicated than
+>>>> trivial on-off, before hacking in junk into the serial core.
+>>>>
+>>>> As it stands, this gps could be supported on any uart driver that implements
+>>>> mctrl gpios (which is trivial with the serial mctrl gpio helpers).
+>>>
+>>> in the GPS case basic mctrl is not enough because the "partner" driver must get meta-data
+>>> that there is data activity. This is something mctrl can't provide.
+>>
+>> A binary state is hardly "meta-data". What is the purpose of the rx notification?
 > 
-> [...]
+> the GPS chip can send data when it is not expected.
+
+So?
+
+> The bit tells that there is data activity on the data line (RX). Hence I call this "meta-data"
+> because it is condensed information about other data..
+
+Again, why does it matter? What do you do with it?
+To workaround defective h/w design missing power sense?
+
+I'd rather see a more fully-featured exemplar, to prove that this interface is
+sufficiently complete.
+
+
+>>> And the GPS chip does not need a simple gpio state to power on/off but an on/off toggle impulse.
+>>
+>> Genericity. If this chip needs such a state mechanism, then that should be reflected
+>> generically in gpio support, and we're back to trivial mctrl.
 > 
->> Now I also think I better understand what you meant by "main interface"
->> a while ago.
->> 
->> For me, when looking into a chip data sheet, the main interface is a sometimes
->> arbitrary. Or when viewing it through device driver implementors glasses
->> I may end up with a different main interface.
->> 
->> From the hardware schematics, I can't read which interface is "main". I can
->> only read which components and signals are connected. So the information
->> what is "main" must come from somewhere else, but not the hardware.
->> 
->> You appear to have a definition based on Linux user space interfaces
->> which is distinct from mine and at least explains why the discussion takes
->> so long and we don't come to a common view.
+> Argh... Sorry.
 > 
-> This is nothing to do with userspace.
+> Should a swiss army knife GPIO driver be the solution for everything that a driver can do by simply
+> *using* a GPIO?
+
+If gpio can support heartbeat, certainly it can support momentary switch?
+
+
+> BTW: we did have a proposal back tree years that made the GPS driver present itself as
+> a gpio controller with a single gpio.
 > 
-> Admittedly, on a device which has multiple slave interfaces, "main" is
-> arbitrary. If I've followed correctly, that's not the cae here.
-
-No, we have a single data path and a single power control line.
-
-So the power control line is the "main" interface (described in the TRM of the chip).
-
-And the driver just needs to know that data is coming out of the chip. It does not
-need to know which data.
-
-As said, the purpose of this driver is to control power of the chip by monitoring data
-stream, controlling the power control input through a gpio and not to modify or use
-the data channel like it would be for SPI or I2C.
-
-For example for a touch screen controller the driver sends commands over I2C
-and receives position data. This is translated into input events. Power on/off
-is usually another I2C command.
-
-It is a completely different situation and supports my view that devices
-connected to UARTs should not necessarily be modeled like I2C and SPI
-slaves (where there are explicit master / slave roles).
-
+> We called that "virtual gpio". Then we would simply connect the gps driver's
+> virtual power control gpio to a gpio-mctrl (or dtr-gpio).
 > 
->>> Conceptually, A UART slave is far closer to SPI or I2C, where the slave
->>> is represented as a sub-node.
->> 
->> Only if you have the goal to describe the data/command path ("main interface")
->> in DT.
+> This was rejected because a virtual gpio is not a piece of hardware. And the device/driver
+> is *not* a gpio.
+
+I don't care about things not related to uart.
+
+
+>>> In our case there are no mctrl gpios (omap) but part of our driver proposal is just to
+>>> forward changes of the mctrl bits to the partner driver.
+>>
+>> Please feel free to submit patches for mctrl gpios for the omap-serial driver.
 > 
-> This is the way devices are described in DT -- walking from the root to
-> a leaf you follow the path from the CPU to a slave interface.
-
-Ok, that is a new piece of DT design guidelines.
-
-But again which path do you exactly mean? User-Data path? Address path?
-Command path? Electrical paths? Power enable path? They may not be the same.
-
+> Well, I don't necessarily need mctrl gpios. I need to get RX data activity notifications in addition.
 > 
-> Some things don't have slave interfaces (e.g. fixed-clocks), but still
-> need to be referred to, so those still get placed in the DT. There are
-> arguments to be had w.r.t. their placement, but that's another
-> discussion entirely.
+> BTW: with our patch you can easily add a generic mctrl driver that works for all serial
+> drivers. A sketch implementation (tied to a specific gpio based RS232 device) is here:
 > 
->> I mentioned it several times: USB-PHYs use the phandle approach to attach
->> a single PHY to the usb controller, although there is usually some ULPI-"bus"
->> interface (12 parallel wires) between. And the PHY is clearly more "slave" than
->> the usb controller, isn't it?
+> <http://git.goldelico.com/?p=gta04-kernel.git;a=blob;f=Documentation/devicetree/bindings/misc/ti%2Ctrs3386.txt;h=0e39ed1a47df9bb7bc747fca66548ff982b19cc5>
 > 
-> Some PHYs have additional interfaces, so their CPU-visible slave
-> interface is described. This necessitates the phandle reference in the
-> general case.
+> Then it is not necessary to implement mctrl for different uart drivers.
 
+Not really. Look at how the imx driver uses mctrl gpios.
+Generic support would need to allow the gpio state to vary from the mctrl state.
+
+
+>>>> Not that I'm against uart slave device support, just that I don't think hacks
+>>>> is the way to go about it.
+>>>>
+>>>> What I'd like to see is a split of the serial core into a tty driver and a
+>>>> standalone device abstraction. Anything else is just workarounds.
+>>
+>> I think you misunderstand what I mean by "standalone device abstraction"; let me
+>> be clearer: "standalone UART device abstraction".
 > 
->> But with phandle, the usb controller is a _resource_ for the PHY. So would
->> you say this is wrong?
+> Hm. Sorry, but I still don't understand what you mean and don't know what I should
+> abstract. Can you please give an example?
+
+How will this support a Bluetooth uart slave without a userspace tool?
+One that needs to load firmware.
+
+How will it support multiple channels over the same uart to different
+slaves (ala TI's Shared Transport)?
+
+A uart slave driver should load independently and open a serial device
+(optionally exclusively) and operate without userspace/tty at all.
+
+
+>>> Here (was rebased from what I had submitted to LKML a while ago):
+>>>
+>>> 1. serial core (two patches add API for any such partner drivers)
+>>>
+>>> http://git.goldelico.com/?p=gta04-kernel.git;a=commit;h=c75ab51483e56afe08f56de104b5ed3fa1d6b0e8
+>>> http://git.goldelico.com/?p=gta04-kernel.git;a=commit;h=f910d951fcf816fce3261814d7f8c46ac6b35e68
+>>>
+>>> 2. standalone driver example (using the new API)
+>>>
+>>> http://git.goldelico.com/?p=gta04-kernel.git;a=commit;h=4fd1dbd4e915d741dddd264d6f87396e72351b3a
+>>>
+>>> BR and thanks,
+>>> Nikolaus
+>>>
+>>
 > 
-> Not entirely.
+> Did you look into these patches to understand what we propose?
+
+Yes.
+
+The open-coding of uart initialization in uart_register_rx_notification()
+was particularly ugly. That's a good example of what needs abstracting.
+
+And why does the generic concept of rx_notification() imply that the slave
+device does not expect shutdown when commanded? That seems very specific to
+the broken h/w design of this device, and not what most slave device drivers
+would expect. Not that I'm suggesting you refine this approach.
+
+And the whole idea of not performing device shutdown when commanded is broken.
+
+Maybe some of this design was outlined in the cover letter?
+
+
+On 10/16/2015 11:08 AM, H. Nikolaus Schaller wrote:
+> H. Nikolaus Schaller (3):
+>   tty: serial core: provide a method to search uart by phandle
+>   tty: serial_core: add hooks for uart slave drivers
+>   misc: Add w2sg0004 gps receiver driver
 > 
->> This is the design pattern (for DT and drivers) we have copied for our tty-slave
->> proposal.
-> 
-> We have plenty of other ways of describing relationships today. The
-> existence of one style (and its continued support for ABI reasons) does
-> not mean that it's a style we want to proliferate.
-
-Is there a description about all these style rules? It is really difficult to get them
-written down by such lengthy discussions.
-
-> 
->> 
->>> I wasn't aware of any instances of timers being referred to by phandle
->>> by other devices -- that seems distinctly odd. Where do you see that
->>> happening.
->> 
->> I found it in connection with dmtimer / pwm on OMAP3. May be a rare exception
->> and that may be a special type of OMAP timers.
-> 
-> I took a quick look and couldn't spot where that happened. I take it
-> the timer was a "ti,omap3430-timer"? Or have I misunderstood?
-> 
-> What referenced it by phandle? In which dt?
-
-Ah, it is "ti,timer" and not general "timer" introduced recently:
-
-<https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/tree/Documentation/devicetree/bindings/pwm/pwm-omap-dmtimer.txt>
-
-My flaw.
-
-> 
->>>> * mcbsp (see e.g. http://lxr.free-electrons.com/source/arch/arm/boot/dts/omap3-n900.dts#L127)
->>> 
->>> Subsystem type bindings are more of a special case, and regardless the
->>> components have nodes in the relevant portions of the DT.
->> 
->>> 
->>>> * mmc-pwr-seq-simple (which does not even describe a physical piece of hardware)
->>> 
->>> If this is so different, how is it relevant?
->> 
->> It could as well be subnode of the affected mmc interface or mmc-slave, but obviously it
->> isn't grouped there, and uses a phandle to refer to its &mmc "master".
->> 
->> Its function is quite similar what we need for our GPS chip: control power sequences
->> of a remote device.
-> 
-> That may fit your one particular use-case, but for UART slaves generally
-> we should have a kernel driver (which can do more than a trivial
-> power-up), at which point you need a node, and the separate sequence
-> node is useless.
-
-What we need is similar, the solution is of course not exactly the same.
-
-But why does the DT node have to move (except adding properties)
-if the kernel driver does more complex things? It already needs to know
-the relationship to the remote device for trivial tasks.
-
-> 
->>>> All of them define the provider in one node. And refer to it by a phandle in another node
->>>> where they are used.
->>>> 
->>>> So I see a lot of provider-consumer relationships modeled by phandles but not by child nodes.
->>> 
->>> I agree that provider-consumer type relationships are typically
->>> described in this manner.
->> 
->> Ok.
->> 
->>> 
->>> However, master-slave relationships are not.
->> 
->> It looks as if you see a significant difference between provider-consumer and master-slave
->> relationship which I was not sure of which applies to what and where you make the distinction.
->> 
->> By the way: what exactly makes the UART on the SoC side "master" and the UART on the connected
->> device a "slave" (except the user-space view)?
-> 
-> Typically a "slave" accepts commands, and won't send commands of its own
-> accord. This case is admittedly fuzzier given that a UART slave could
-> send a stream of bytes at any point, but that's data.
-
-It could not only, it does in our case. Which is the main reason why we need a dedicated
-driver.
-
-And there are no standardized UART slave commands. Well, GSM07.07 to some extent.
-But that is a protocol handled by user space daemons. And commands are completely
-mixed with data so that there are escape characters etc.
-
-> 
-> The distinction is really that the UART slave won't control other
-> devices -- you can think of the entire path of the CPU to the UART as
-> the master.
-
-What if there is a plain old terminal device hard wired to the UART?
-
-Here, I would see the user typing commands as "the master" :)
-And the data flow is from device to UART to CPU.
-
-Or if the device is an MCU that is connected to a getty login port?
-
-So IMHO we have introduced much of the problem by thinking in "UART slave" categories.
-
-UART seems indeed to be a different beast, because it is more a "partner" thing.
-
-More like a subsystem (maybe audio/sound?) connected to the main CPU by means
-of the UART.
-
-> 
->> UARTs per se have no master-slave roles and are symmetrical (contrary to SPI and I2C where it
->> is well defined). Rather, both are formally DTE connected by a null-modem.
->> 
->> This is another substantial difference between UART and I2C/SPI besides addressability.
-> 
-> Sure, except for the fact that the device attached to the UART logically
-> follows a "slave" role. The rest of the system would be usable without
-> it, and it assert no control over anything else.
-
-Ok, if you take this view, it is indeed sort of a subordinate. Nothing happens if the
-user does not press the power-on button :)
-
-Also to be considered is that the UART is also unusable without the device being
-powered on or a partner device being connected.
-
-But we are back to discuss solutions and details and not requirements which makes
-this a non-ending story because it is more confusing than bringing it to the key factors.
-
-And please give me some links where all these DT styles and rules are written down.
-It would make it easier to develop something that fits, without lengthy discussions.
-
-Or to separately discuss rules.
-
-And, may I repeat my question what I can do to convince you to accept a practical
-solution? What could go wrong if you would accept the phandle approach? Which
-known UART topic would it not solve or make impossible to solve?
-
-BR and thanks,
-Nikolaus
+>  .../devicetree/bindings/misc/wi2wi,w2sg0004.txt    |  18 +
+>  .../devicetree/bindings/serial/slaves.txt          |  16 +
+>  .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+>  Documentation/serial/slaves.txt                    |  36 ++
+>  drivers/misc/Kconfig                               |  18 +
+>  drivers/misc/Makefile                              |   1 +
+>  drivers/misc/w2sg0004.c                            | 443 +++++++++++++++++++++
+>  drivers/tty/serial/serial_core.c                   | 214 +++++++++-
+>  include/linux/serial_core.h                        |  25 +-
+>  include/linux/w2sg0004.h                           |  27 ++
+>  10 files changed, 793 insertions(+), 6 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/misc/wi2wi,w2sg0004.txt
+>  create mode 100644 Documentation/devicetree/bindings/serial/slaves.txt
+>  create mode 100644 Documentation/serial/slaves.txt
+>  create mode 100644 drivers/misc/w2sg0004.c
+>  create mode 100644 include/linux/w2sg0004.h
 
 
+Hmmm, nope.
+
+Regards,
+Peter Hurley
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
