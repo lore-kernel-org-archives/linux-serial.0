@@ -1,94 +1,61 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: [PATCH] [v2] serial: amba-pl011: use cpu_relax when polling registers
-Date: Fri, 15 Jan 2016 14:32:20 -0600
-Message-ID: <1452889940-19594-1-git-send-email-timur@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Greg Kroah-Hartman <greg@kroah.com>, Russell King <rmk+kernel@arm.linux.org.uk>, Andrew.Jackson@arm.com, andre.przywara@arm.com, jun.nie@linaro.org, peter@hurleysoftware.com, Linus Walleij <linus.walleij@linaro.org>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
+Date: Fri, 15 Jan 2016 21:35:22 +0100
+Message-ID: <2F29C78B-8895-4065-A7D9-19F40BA3BF16@goldelico.com>
+References: <20150511013540.5709.93626.stgit@notabene.brown> <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com> <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com> <20160113191542.GA12086@leverpostej> <1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com> <20160115194022.GA8371@amd>
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160115194022.GA8371@amd>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Mark Rutland <mark.rutland@arm.com>, List for communicating with real GTA04 owners <gta04-owner@goldelico.com>, tomeu@tomeuvizoso.net, NeilBrown <neil@brown.name>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robherring2@gmail.com>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Marek Belisko <marek@goldelico.com>
 List-Id: linux-serial@vger.kernel.org
 
-Busy loops that poll on a register should call cpu_relax().  On some
-architectures, it can lower CPU power consumption or yield to a
-hyperthreaded twin processor.  It also serves as a compiler barrier,
-so it can replace barrier() calls.
 
-Signed-off-by: Timur Tabi <timur@codeaurora.org>
----
+Am 15.01.2016 um 20:40 schrieb Pavel Machek <pavel@ucw.cz>:
 
-v2: rebased to latest code
+> On Fri 2016-01-15 10:34:51, H. Nikolaus Schaller wrote:
+>> Hi Mark,
+>> 
+>> Am 13.01.2016 um 20:15 schrieb Mark Rutland <mark.rutland@arm.com>:
+>> 
+>>> On Tue, Jan 12, 2016 at 02:28:00PM +0100, H. Nikolaus Schaller wrote:
+>>>> Hi Tomeu,
+>>>> 
+>>>> Am 12.01.2016 um 14:06 schrieb Tomeu Vizoso <tomeu@tomeuvizoso.net>:
+>>>> 
+>>>>> On 11 May 2015 at 03:56, NeilBrown <neil@brown.name> wrote:
+>>>>>> Hi all,
+>>>>>> here is version 4 of my "UART slave device" patch set, previously
+>>>>>> known as "tty slave devices".
+>>>>> 
+>>>>> Hi Neil,
+>>>>> 
+>>>>> do you (or someone else) have plans to continue this work in the short
+>>>>> or medium term?
+>>>> 
+>>>> yes, there is something in our upstreaming pipeline. This one works for us on top of 4.4.0:
+>>>> 
+>>>> <http://git.goldelico.com/?p=gta04-kernel.git;a=shortlog;h=refs/heads/work/hns/misc/w2sg-tty-slave2-v4>
+>>>> 
+>>>> There is one point still to be solved: the exact style of the DT bindings.
+>>>> 
+>>>> We have an idea how a driver can implement two different styles (child node AND phandle)
+>>>> so that it is up to the DTS developer to use the one that best fits into the existing DTS.
+>>> 
+>>> From my perspective as a binding maintainer, and as I stated before, the
+>>> child node approach made the most sense and was most consistent with the
+>> 
+>>> way we handle other devices.
+>> 
+>> I simply don't see that this is the most common way other devices
+>> are handled.
+> 
+> You promised to shut up once maintainers speak, that happened, and you
+> did not shut up. Just do it now.
 
- drivers/tty/serial/amba-pl011.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+Nobody has asked for your unqualified and not helpful comments.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index c0da0cc..69b5acd 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1167,7 +1167,7 @@ static void pl011_dma_shutdown(struct uart_amba_port *uap)
- 
- 	/* Disable RX and TX DMA */
- 	while (pl011_read(uap, REG_FR) & UART01x_FR_BUSY)
--		barrier();
-+		cpu_relax();
- 
- 	spin_lock_irq(&uap->port.lock);
- 	uap->dmacr &= ~(UART011_DMAONERR | UART011_RXDMAE | UART011_TXDMAE);
-@@ -1611,7 +1611,7 @@ static void pl011_put_poll_char(struct uart_port *port,
- 	    container_of(port, struct uart_amba_port, port);
- 
- 	while (pl011_read(uap, REG_FR) & UART01x_FR_TXFF)
--		barrier();
-+		cpu_relax();
- 
- 	pl011_write(ch, uap, REG_DR);
- }
-@@ -2150,7 +2150,7 @@ static void pl011_console_putchar(struct uart_port *port, int ch)
- 	    container_of(port, struct uart_amba_port, port);
- 
- 	while (pl011_read(uap, REG_FR) & UART01x_FR_TXFF)
--		barrier();
-+		cpu_relax();
- 	pl011_write(ch, uap, REG_DR);
- }
- 
-@@ -2158,7 +2158,7 @@ static void
- pl011_console_write(struct console *co, const char *s, unsigned int count)
- {
- 	struct uart_amba_port *uap = amba_ports[co->index];
--	unsigned int status, old_cr = 0, new_cr;
-+	unsigned int old_cr = 0, new_cr;
- 	unsigned long flags;
- 	int locked = 1;
- 
-@@ -2188,9 +2188,8 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
- 	 *	Finally, wait for transmitter to become empty
- 	 *	and restore the TCR
- 	 */
--	do {
--		status = pl011_read(uap, REG_FR);
--	} while (status & UART01x_FR_BUSY);
-+	while (pl011_read(uap, REG_FR) & UART01x_FR_BUSY)
-+		cpu_relax();
- 	if (!uap->vendor->always_enabled)
- 		pl011_write(old_cr, uap, REG_CR);
- 
-@@ -2302,13 +2301,13 @@ static struct console amba_console = {
- static void pl011_putc(struct uart_port *port, int c)
- {
- 	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
--		;
-+		cpu_relax();
- 	if (port->iotype == UPIO_MEM32)
- 		writel(c, port->membase + UART01x_DR);
- 	else
- 		writeb(c, port->membase + UART01x_DR);
- 	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
--		;
-+		cpu_relax();
- }
- 
- static void pl011_early_write(struct console *con, const char *s, unsigned n)
--- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project.
+So please shut up yourself and stop to disturb Free Software projects.
