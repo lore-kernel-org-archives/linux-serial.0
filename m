@@ -1,199 +1,387 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
-Date: Fri, 15 Jan 2016 16:12:29 +0000
-Message-ID: <20160115161229.GN3262@leverpostej>
-References: <20150511013540.5709.93626.stgit@notabene.brown>
- <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com>
- <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
- <20160113191542.GA12086@leverpostej>
- <1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com>
- <20160115110106.GA3262@leverpostej>
- <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v6 2/3] tty: Add software emulated RS485 support for 8250
+Date: Fri, 15 Jan 2016 08:14:29 -0800
+Message-ID: <56991AE5.50503@hurleysoftware.com>
+References: <1450722379-13438-1-git-send-email-matwey@sai.msu.ru>
+ <1450722379-13438-3-git-send-email-matwey@sai.msu.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com>
+In-Reply-To: <1450722379-13438-3-git-send-email-matwey@sai.msu.ru>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: List for communicating with real GTA04 owners <gta04-owner@goldelico.com>, tomeu@tomeuvizoso.net, NeilBrown <neil@brown.name>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robherring2@gmail.com>, Pavel Machek <pavel@ucw.cz>, linux-serial@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Marek Belisko <marek@goldelico.com>
+To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, andy.shevchenko@gmail.com, gnomes@lxorguk.ukuu.org.uk, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jan 15, 2016 at 04:05:45PM +0100, H. Nikolaus Schaller wrote:
-> Hi Mark,
+On 12/21/2015 10:26 AM, Matwey V. Kornilov wrote:
+> Implementation of software emulation of RS485 direction handling is based
+> on omap_serial driver.
+> Before and after transmission RTS is set to the appropriate value.
 > 
-> Am 15.01.2016 um 12:01 schrieb Mark Rutland <mark.rutland@arm.com>:
+> Note that before calling serial8250_em485_init the caller has to
+> ensure that UART will interrupt when shift register empty. Otherwise,
+> emultaion cannot be used.
 > 
-> > On Fri, Jan 15, 2016 at 10:34:51AM +0100, H. Nikolaus Schaller wrote:
-> >> Hi Mark,
-> >> 
-> >> Am 13.01.2016 um 20:15 schrieb Mark Rutland <mark.rutland@arm.com>:
-> >> 
-> >>> On Tue, Jan 12, 2016 at 02:28:00PM +0100, H. Nikolaus Schaller wrote:
-> >>>> There is one point still to be solved: the exact style of the DT bindings.
-> >>>> 
-> >>>> We have an idea how a driver can implement two different styles (child node AND phandle)
-> >>>> so that it is up to the DTS developer to use the one that best fits into the existing DTS.
-> >>> 
-> >>> From my perspective as a binding maintainer, and as I stated before, the
-> >>> child node approach made the most sense and was most consistent with the
-> >> 
-> >>> way we handle other devices.
-> >> 
-> >> I simply don't see that this is the most common way other devices are handled.
-> >> 
-> >> I find many counter-examples which use phandles:
-> >> * gpios
-> >> * regulators
-> >> * iio channels used by other drivers (e.g. iio-hwmon)
-> >> * phy devices
-> >> * timers
-> >> * pwms
-> >> * interrupts
-> >> * dma
-> > 
-> > As was previously described to you, in these cases phandles are used
-> > when these are _resources_ used by another device, not for the main
-> > programmer-visible interface to the device.
+> Both serial8250_em485_init and serial8250_em485_destroy are
+> idempotent functions.
+
+Apologies for the long delay; comments below.
+
+> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
+> ---
+>  drivers/tty/serial/8250/8250.h      |   6 ++
+>  drivers/tty/serial/8250/8250_port.c | 161 +++++++++++++++++++++++++++++++++++-
+>  include/linux/serial_8250.h         |   7 ++
+>  3 files changed, 170 insertions(+), 4 deletions(-)
 > 
-> Ah, I think I finally begin to understand the rule you are following:
+> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+> index d54dcd8..0189cb3 100644
+> --- a/drivers/tty/serial/8250/8250.h
+> +++ b/drivers/tty/serial/8250/8250.h
+> @@ -117,6 +117,12 @@ static inline void serial_dl_write(struct uart_8250_port *up, int value)
+>  struct uart_8250_port *serial8250_get_port(int line);
+>  void serial8250_rpm_get(struct uart_8250_port *p);
+>  void serial8250_rpm_put(struct uart_8250_port *p);
+> +int serial8250_em485_init(struct uart_8250_port *p);
+> +void serial8250_em485_destroy(struct uart_8250_port *p);
+> +static inline bool serial8250_em485_enabled(struct uart_8250_port *p)
+> +{
+> +	return p->em485 && (p->port.rs485.flags & SER_RS485_ENABLED);
+
+Under what circumstances is p->em485 != NULL but
+(p->port.rs485.flags & SER_RS485_ENABLED) is true?
+
+ISTM, p->em485 is necessary and sufficient to determine if em485 is enabled.
+
+In which case, this function can be eliminated and callers can be reduced to
+
+	if (p->em485)
+		....
+
+> +}
+>  
+>  #if defined(__alpha__) && !defined(CONFIG_PCI)
+>  /*
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 8ad0b2d..d67a848 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -37,6 +37,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/uaccess.h>
+>  #include <linux/pm_runtime.h>
+> +#include <linux/timer.h>
+>  
+>  #include <asm/io.h>
+>  #include <asm/irq.h>
+> @@ -504,6 +505,31 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
+>  	}
+>  }
+>  
+> +static inline void serial8250_em485_rts_on_send(struct uart_8250_port *p)
+
+Only one call site, so please drop inline.
+
+
+> +{
+> +	unsigned char mcr = serial_in(p, UART_MCR);
+> +
+> +	if (p->port.rs485.flags & SER_RS485_RTS_ON_SEND)
+> +		mcr |= UART_MCR_RTS;
+> +	else
+> +		mcr &= ~UART_MCR_RTS;
+> +	serial_out(p, UART_MCR, mcr);
+> +}
+> +
+> +static inline void serial8250_em485_rts_after_send(struct uart_8250_port *p)
+
+Doesn't really need to be inline.
+
+
+> +{
+> +	unsigned char mcr = serial_in(p, UART_MCR);
+> +
+> +	if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
+> +		mcr |= UART_MCR_RTS;
+> +	else
+> +		mcr &= ~UART_MCR_RTS;
+> +	serial_out(p, UART_MCR, mcr);
+> +}
+> +
+> +static void serial8250_em485_handle_start_tx(unsigned long arg);
+> +static void serial8250_em485_handle_stop_tx(unsigned long arg);
+> +
+>  void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
+>  {
+>  	serial8250_clear_fifos(p);
+> @@ -528,6 +554,42 @@ void serial8250_rpm_put(struct uart_8250_port *p)
+>  }
+>  EXPORT_SYMBOL_GPL(serial8250_rpm_put);
+>  
+> +int serial8250_em485_init(struct uart_8250_port *p)
+> +{
+> +	if (p->em485 != NULL)
+> +		return 0;
+> +
+> +	p->em485 = kmalloc(sizeof(struct uart_8250_em485), GFP_KERNEL);
+> +	if (p->em485 == NULL)
+> +		return -ENOMEM;
+> +
+> +	init_timer(&p->em485->stop_tx_timer);
+> +	p->em485->stop_tx_timer.function = serial8250_em485_handle_stop_tx;
+> +	p->em485->stop_tx_timer.data = (unsigned long)p;
+> +	p->em485->stop_tx_timer.flags |= TIMER_IRQSAFE;
+
+Not sure this is going to fly; this would be the only user of TIMER_IRQSAFE
+(which was specifically introduced to workaround workqueue issues and not
+meant for general use).
+
+
+> +	init_timer(&p->em485->start_tx_timer);
+> +	p->em485->start_tx_timer.function = serial8250_em485_handle_start_tx;
+> +	p->em485->start_tx_timer.data = (unsigned long)p;
+> +	p->em485->start_tx_timer.flags |= TIMER_IRQSAFE;
+> +
+> +	serial8250_em485_rts_after_send(p);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(serial8250_em485_init);
+
+Newline.
+
+> +void serial8250_em485_destroy(struct uart_8250_port *p)
+> +{
+> +	if (p->em485 == NULL)
+> +		return;
+> +
+> +	del_timer_sync(&p->em485->start_tx_timer);
+> +	del_timer_sync(&p->em485->stop_tx_timer);
+
+What keeps start_tx() from restarting a new timer right here?
+
+> +	kfree(p->em485);
+> +	p->em485 = NULL;
+> +}
+> +EXPORT_SYMBOL_GPL(serial8250_em485_destroy);
+> +
+>  /*
+>   * These two wrappers ensure that enable_runtime_pm_tx() can be called more than
+>   * once and disable_runtime_pm_tx() will still disable RPM because the fifo is
+> @@ -1293,7 +1355,61 @@ static void serial8250_stop_rx(struct uart_port *port)
+>  	serial8250_rpm_put(up);
+>  }
+>  
+> -static inline void __stop_tx(struct uart_8250_port *p)
+> +static __u32 __start_tx_rs485(struct uart_8250_port *p)
+          ^^^^^
+No need to preserve the userspace type here.
+
+The double underline leader in an identifier is typically used to distinguish
+an unlocked version from a locked version. I don't think it's necessary here
+or any of the other newly-introduced functions.
+
+
+> +{
+> +	if (!serial8250_em485_enabled(p))
+> +		return 0;
+
+Already checked that em485 was enabled in lone caller.
+
+
+> +	if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
+> +		serial8250_stop_rx(&p->port);
+> +
+> +	del_timer_sync(&p->em485->stop_tx_timer);
+> +
+> +	if (!!(p->port.rs485.flags & SER_RS485_RTS_ON_SEND) != !!(serial_in(p, UART_MCR) & UART_MCR_RTS)) {
+
+Line too long. And just one negation is sufficient, ie.
+
+	if (!(....) !=
+	    !(....)) {
+
+> +		serial8250_em485_rts_on_send(p);
+> +		return p->port.rs485.delay_rts_before_send;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static inline void __do_stop_tx_rs485(struct uart_8250_port *p)
+
+Does this really need to be inline?
+
+> +{
+> +	if (!serial8250_em485_enabled(p))
+> +		return;
+> +
+> +	serial8250_em485_rts_after_send(p);
+> +	/*
+> +	* Empty the RX FIFO, we are not interested in anything
+> +	* received during the half-duplex transmission.
+> +	*/
+
+Malformed block comment.
+
+	/*
+	 *
+	 *
+	 */
+
+> +	if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
+> +		serial8250_clear_fifos(p);
+> +}
+> +
+> +static void serial8250_em485_handle_stop_tx(unsigned long arg)
+> +{
+> +	struct uart_8250_port *p = (struct uart_8250_port *)arg;
+> +
+> +	__do_stop_tx_rs485(p);
+> +}
+> +
+> +static inline void __stop_tx_rs485(struct uart_8250_port *p)
+
+Single caller so drop inline.
+
+> +{
+> +	if (!serial8250_em485_enabled(p))
+> +		return;
+> +
+> +	del_timer_sync(&p->em485->start_tx_timer);
+> +
+> +	/* __do_stop_tx_rs485 is going to set RTS according to config AND flush RX FIFO if required */
+
+Block comment.
+
+> +	if (p->port.rs485.delay_rts_after_send > 0) {
+> +		mod_timer(&p->em485->stop_tx_timer, jiffies + p->port.rs485.delay_rts_after_send * HZ / 1000);
+
+Line too long; please re-format.
+This is one problem with overly long identifiers.
+
+> +	} else {
+> +		__do_stop_tx_rs485(p);
+> +	}
+> +}
+> +
+> +static inline void __do_stop_tx(struct uart_8250_port *p)
+>  {
+>  	if (p->ier & UART_IER_THRI) {
+>  		p->ier &= ~UART_IER_THRI;
+> @@ -1302,6 +1418,21 @@ static inline void __stop_tx(struct uart_8250_port *p)
+>  	}
+>  }
+>  
+> +static inline void __stop_tx(struct uart_8250_port *p)
+> +{
+> +	if (serial8250_em485_enabled(p)) {
+> +		unsigned char lsr = serial_in(p, UART_LSR);
+> +	/* To provide required timeing and allow FIFO transfer,
+> +	 * __stop_tx_rs485 must be called only when both FIFO and shift register
+> +	 * are empty. It is for device driver to enable interrupt on TEMT.
+> +	 */
+
+Block indent.
+
+This code path should cancel start timer also.
+
+> +		if (!((lsr & UART_LSR_TEMT) && (lsr & UART_LSR_THRE)))
+
+		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
+
+> +			return;
+> +	}
+> +	__do_stop_tx(p);
+> +	__stop_tx_rs485(p);
+> +}
+> +
+>  static void serial8250_stop_tx(struct uart_port *port)
+>  {
+>  	struct uart_8250_port *up = up_to_u8250p(port);
+> @@ -1319,12 +1450,10 @@ static void serial8250_stop_tx(struct uart_port *port)
+>  	serial8250_rpm_put(up);
+>  }
+>  
+> -static void serial8250_start_tx(struct uart_port *port)
+> +static inline void __start_tx(struct uart_port *port)
+>  {
+>  	struct uart_8250_port *up = up_to_u8250p(port);
+>  
+> -	serial8250_rpm_get_tx(up);
+> -
+>  	if (up->dma && !up->dma->tx_dma(up))
+>  		return;
+>  
+> @@ -1350,6 +1479,30 @@ static void serial8250_start_tx(struct uart_port *port)
+>  	}
+>  }
+>  
+> +static void serial8250_em485_handle_start_tx(unsigned long arg)
+> +{
+> +	struct uart_8250_port *p = (struct uart_8250_port *)arg;
+> +
+> +	__start_tx(&p->port);
+> +}
+> +
+> +static void serial8250_start_tx(struct uart_port *port)
+> +{
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+> +	__u32 delay;
+
+	int delay;
+
+> +
+> +	serial8250_rpm_get_tx(up);
+> +
+> +	if (up->em485 && timer_pending(&up->em485->start_tx_timer))
+> +		return;
+> +
+> +	if (up->em485 && (delay = __start_tx_rs485(up))) {
+
+No assignment in conditional please.
+
+> +		mod_timer(&up->em485->start_tx_timer, jiffies + delay * HZ / 1000);
+> +	} else {
+> +		__start_tx(port);
+> +	}
+
+Generally, braces aren't used for single statement if..else.
+That probably won't apply here after removing the assignment-in-conditional,
+but I thought it worth mentioning just so you know.
+
+Regards,
+Peter Hurley
+
+> +}
+> +
+>  static void serial8250_throttle(struct uart_port *port)
+>  {
+>  	port->throttle(port);
+> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+> index faa0e03..71516ec 100644
+> --- a/include/linux/serial_8250.h
+> +++ b/include/linux/serial_8250.h
+> @@ -76,6 +76,11 @@ struct uart_8250_ops {
+>  	void		(*release_irq)(struct uart_8250_port *);
+>  };
+>  
+> +struct uart_8250_em485 {
+> +	struct timer_list	start_tx_timer; /* "rs485 start tx" timer */
+> +	struct timer_list	stop_tx_timer; /* "rs485 stop tx" timer */
+> +};
+> +
+>  /*
+>   * This should be used by drivers which want to register
+>   * their own 8250 ports without registering their own
+> @@ -122,6 +127,8 @@ struct uart_8250_port {
+>  	/* 8250 specific callbacks */
+>  	int			(*dl_read)(struct uart_8250_port *);
+>  	void			(*dl_write)(struct uart_8250_port *, int);
+> +
+> +	struct uart_8250_em485 *em485;
+>  };
+>  
+>  static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
 > 
-> 	If a device's data interface can be seen in user space, this interface
-> 	is sort of a "main interface" and must be modelled in DT by a
-> 	parent-child relationship.
-
-No, you have misunderstood. This has _nothing_ to do with userspace.
-
-This has everything to do with the "programmer's interface" as you would
-find documented in a TRM -- effectively where a driver would communicate
-with the device (e.g. MMIO/SPI/I2C registers).
-
-[...]
-
-> Now I also think I better understand what you meant by "main interface"
-> a while ago.
-> 
-> For me, when looking into a chip data sheet, the main interface is a sometimes
-> arbitrary. Or when viewing it through device driver implementors glasses
-> I may end up with a different main interface.
-> 
-> From the hardware schematics, I can't read which interface is "main". I can
-> only read which components and signals are connected. So the information
-> what is "main" must come from somewhere else, but not the hardware.
-> 
-> You appear to have a definition based on Linux user space interfaces
-> which is distinct from mine and at least explains why the discussion takes
-> so long and we don't come to a common view.
-
-This is nothing to do with userspace.
-
-Admittedly, on a device which has multiple slave interfaces, "main" is
-arbitrary. If I've followed correctly, that's not the cae here.
-
-> > Conceptually, A UART slave is far closer to SPI or I2C, where the slave
-> > is represented as a sub-node.
-> 
-> Only if you have the goal to describe the data/command path ("main interface")
-> in DT.
-
-This is the way devices are described in DT -- walking from the root to
-a leaf you follow the path from the CPU to a slave interface.
-
-Some things don't have slave interfaces (e.g. fixed-clocks), but still
-need to be referred to, so those still get placed in the DT. There are
-arguments to be had w.r.t. their placement, but that's another
-discussion entirely.
-
-> I mentioned it several times: USB-PHYs use the phandle approach to attach
-> a single PHY to the usb controller, although there is usually some ULPI-"bus"
-> interface (12 parallel wires) between. And the PHY is clearly more "slave" than
-> the usb controller, isn't it?
-
-Some PHYs have additional interfaces, so their CPU-visible slave
-interface is described. This necessitates the phandle reference in the
-general case.
-
-> But with phandle, the usb controller is a _resource_ for the PHY. So would
-> you say this is wrong?
-
-Not entirely.
-
-> This is the design pattern (for DT and drivers) we have copied for our tty-slave
-> proposal.
-
-We have plenty of other ways of describing relationships today. The
-existence of one style (and its continued support for ABI reasons) does
-not mean that it's a style we want to proliferate.
-
-> 
-> > I wasn't aware of any instances of timers being referred to by phandle
-> > by other devices -- that seems distinctly odd. Where do you see that
-> > happening.
-> 
-> I found it in connection with dmtimer / pwm on OMAP3. May be a rare exception
-> and that may be a special type of OMAP timers.
-
-I took a quick look and couldn't spot where that happened. I take it
-the timer was a "ti,omap3430-timer"? Or have I misunderstood?
-
-What referenced it by phandle? In which dt?
-
-> >> * mcbsp (see e.g. http://lxr.free-electrons.com/source/arch/arm/boot/dts/omap3-n900.dts#L127)
-> > 
-> > Subsystem type bindings are more of a special case, and regardless the
-> > components have nodes in the relevant portions of the DT.
-> 
-> > 
-> >> * mmc-pwr-seq-simple (which does not even describe a physical piece of hardware)
-> > 
-> > If this is so different, how is it relevant?
-> 
-> It could as well be subnode of the affected mmc interface or mmc-slave, but obviously it
-> isn't grouped there, and uses a phandle to refer to its &mmc "master".
-> 
-> Its function is quite similar what we need for our GPS chip: control power sequences
-> of a remote device.
-
-That may fit your one particular use-case, but for UART slaves generally
-we should have a kernel driver (which can do more than a trivial
-power-up), at which point you need a node, and the separate sequence
-node is useless.
-
-> >> All of them define the provider in one node. And refer to it by a phandle in another node
-> >> where they are used.
-> >> 
-> >> So I see a lot of provider-consumer relationships modeled by phandles but not by child nodes.
-> > 
-> > I agree that provider-consumer type relationships are typically
-> > described in this manner.
-> 
-> Ok.
-> 
-> > 
-> > However, master-slave relationships are not.
-> 
-> It looks as if you see a significant difference between provider-consumer and master-slave
-> relationship which I was not sure of which applies to what and where you make the distinction.
-> 
-> By the way: what exactly makes the UART on the SoC side "master" and the UART on the connected
-> device a "slave" (except the user-space view)?
-
-Typically a "slave" accepts commands, and won't send commands of its own
-accord. This case is admittedly fuzzier given that a UART slave could
-send a stream of bytes at any point, but that's data.
-
-The distinction is really that the UART slave won't control other
-devices -- you can think of the entire path of the CPU to the UART as
-the master.
-
-> UARTs per se have no master-slave roles and are symmetrical (contrary to SPI and I2C where it
-> is well defined). Rather, both are formally DTE connected by a null-modem.
-> 
-> This is another substantial difference between UART and I2C/SPI besides addressability.
-
-Sure, except for the fact that the device attached to the UART logically
-follows a "slave" role. The rest of the system would be usable without
-it, and it assert no control over anything else.
-
-Thanks,
-Mark.
