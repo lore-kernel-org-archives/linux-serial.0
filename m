@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH v5 03/11] of: earlycon: Fixup earlycon console name and index
-Date: Sat, 16 Jan 2016 13:37:16 -0800
-Message-ID: <1452980244-20512-4-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH v5 02/11] serial: earlycon: Fixup earlycon console name and index
+Date: Sat, 16 Jan 2016 13:37:15 -0800
+Message-ID: <1452980244-20512-3-git-send-email-peter@hurleysoftware.com>
 References: <1452627672-9482-1-git-send-email-peter@hurleysoftware.com>
  <1452980244-20512-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -11,68 +11,77 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh@kernel.or
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, Paul Burton <paul.burton@imgtec.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Frias <sf84@laposte.net>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Use the console name embedded in the OF earlycon table by the
-OF_EARLYCON_DECLARE() macro to initialize the struct console 'name'
-and 'index' fields.
+Properly initialize the struct console 'name' and 'index' fields for
+the registering earlycon. For earlycons w/o trailing numerals, the
+index is set to 0; otherwise, the index is set to the value of the
+trailing numeral. For example, the 'exynos4210' earlycon name == "exynos"
+and index == 4210. Earlycons with embedded numerals will have all
+non-trailing numerals as part of the name; for example, the 's3c2412'
+earlycon name == "s3c" and index == 2412.
+
+This ackward scheme was initially added for the uart8250 earlycon;
+adopt this scheme for the other earlycon "drivers".
+
+Introduce earlycon_init() which performs the string scanning and
+initializes the name and index fields; encapsulate the other console
+field initializations within.
 
 Acked-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/of/fdt.c              | 2 +-
- drivers/tty/serial/earlycon.c | 6 +++---
- include/linux/serial_core.h   | 3 +--
- 3 files changed, 5 insertions(+), 6 deletions(-)
+ drivers/tty/serial/earlycon.c | 25 ++++++++++++++++++++++---
+ 1 file changed, 22 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 1686118..ec14595 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -838,7 +838,7 @@ static int __init early_init_dt_scan_chosen_serial(void)
- 		if (addr == OF_BAD_ADDR)
- 			return -ENXIO;
- 
--		of_setup_earlycon(addr, match->setup);
-+		of_setup_earlycon(addr, match);
- 		return 0;
- 	}
- 	return -ENODEV;
 diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 0da5698..f4b5490 100644
+index 765bce6..0da5698 100644
 --- a/drivers/tty/serial/earlycon.c
 +++ b/drivers/tty/serial/earlycon.c
-@@ -216,7 +216,7 @@ static int __init param_setup_earlycon(char *buf)
- early_param("earlycon", param_setup_earlycon);
+@@ -27,9 +27,9 @@
+ #include <asm/serial.h>
  
- int __init of_setup_earlycon(unsigned long addr,
--			     int (*setup)(struct earlycon_device *, const char *))
-+			     const struct earlycon_id *match)
+ static struct console early_con = {
+-	.name =		"uart", /* 8250 console switch requires this name */
++	.name =		"uart",		/* fixed up at earlycon registration */
+ 	.flags =	CON_PRINTBUFFER | CON_BOOT,
+-	.index =	-1,
++	.index =	0,
+ };
+ 
+ static struct earlycon_device early_console_dev = {
+@@ -53,6 +53,25 @@ static void __iomem * __init earlycon_map(unsigned long paddr, size_t size)
+ 	return base;
+ }
+ 
++static void __init earlycon_init(struct earlycon_device *device,
++				 const char *name)
++{
++	struct console *earlycon = device->con;
++	const char *s;
++	size_t len;
++
++	/* scan backwards from end of string for first non-numeral */
++	for (s = name + strlen(name);
++	     s > name && s[-1] >= '0' && s[-1] <= '9';
++	     s--)
++		;
++	if (*s)
++		earlycon->index = simple_strtoul(s, NULL, 10);
++	len = s - name;
++	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
++	earlycon->data = &early_console_dev;
++}
++
+ static int __init parse_options(struct earlycon_device *device, char *options)
  {
- 	int err;
- 	struct uart_port *port = &early_console_dev.port;
-@@ -227,8 +227,8 @@ int __init of_setup_earlycon(unsigned long addr,
- 	port->uartclk = BASE_BAUD * 16;
- 	port->membase = earlycon_map(addr, SZ_4K);
+ 	struct uart_port *port = &device->port;
+@@ -119,7 +138,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+ 	if (port->mapbase)
+ 		port->membase = earlycon_map(port->mapbase, 64);
  
 -	early_console_dev.con->data = &early_console_dev;
--	err = setup(&early_console_dev, NULL);
 +	earlycon_init(&early_console_dev, match->name);
-+	err = match->setup(&early_console_dev, NULL);
+ 	err = match->setup(&early_console_dev, buf);
  	if (err < 0)
  		return err;
- 	if (!early_console_dev.con->write)
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 25e0514..63fdb55 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -359,8 +359,7 @@ extern const struct earlycon_id __earlycon_table_end[];
- #define EARLYCON_DECLARE(_name, fn)	OF_EARLYCON_DECLARE(_name, "", fn)
- 
- extern int setup_earlycon(char *buf);
--extern int of_setup_earlycon(unsigned long addr,
--			     int (*setup)(struct earlycon_device *, const char *));
-+extern int of_setup_earlycon(unsigned long addr, const struct earlycon_id *match);
- 
- struct uart_port *uart_get_console(struct uart_port *ports, int nr,
- 				   struct console *c);
 -- 
 2.7.0
