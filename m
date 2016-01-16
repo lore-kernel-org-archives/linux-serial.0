@@ -1,20 +1,20 @@
 From: kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH v5 05/11] of: earlycon: Initialize port fields from DT
- properties
-Date: Sun, 17 Jan 2016 05:54:40 +0800
-Message-ID: <201601170514.bkJqTMJP%fengguang.wu@intel.com>
-References: <1452980244-20512-6-git-send-email-peter@hurleysoftware.com>
+Subject: Re: [PATCH v5 06/11] of: earlycon: Move address translation to
+ of_setup_earlycon()
+Date: Sun, 17 Jan 2016 06:02:18 +0800
+Message-ID: <201601170608.Hf7cR8Ec%fengguang.wu@intel.com>
+References: <1452980244-20512-7-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="+QahgC5+KEYLbs62"
+Content-Type: multipart/mixed; boundary="u3/rZRmxL6MmkK24"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1452980244-20512-6-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <1452980244-20512-7-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
 Cc: kbuild-all@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh@kernel.org>, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, Paul Burton <paul.burton@imgtec.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Frias <sf84@laposte.net>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
 
---+QahgC5+KEYLbs62
+--u3/rZRmxL6MmkK24
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -31,58 +31,55 @@ reproduce:
         # save the attached .config to linux build tree
         make ARCH=x86_64 
 
-All error/warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
    drivers/tty/serial/earlycon.c: In function 'of_setup_earlycon':
->> drivers/tty/serial/earlycon.c:235:8: error: implicit declaration of function 'of_get_flat_dt_prop' [-Werror=implicit-function-declaration]
+>> drivers/tty/serial/earlycon.c:232:9: error: implicit declaration of function 'of_flat_dt_translate_address' [-Werror=implicit-function-declaration]
+     addr = of_flat_dt_translate_address(node);
+            ^
+   drivers/tty/serial/earlycon.c:241:8: error: implicit declaration of function 'of_get_flat_dt_prop' [-Werror=implicit-function-declaration]
      val = of_get_flat_dt_prop(node, "reg-offset", NULL);
            ^
->> drivers/tty/serial/earlycon.c:235:6: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+   drivers/tty/serial/earlycon.c:241:6: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
      val = of_get_flat_dt_prop(node, "reg-offset", NULL);
          ^
-   drivers/tty/serial/earlycon.c:238:6: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+   drivers/tty/serial/earlycon.c:244:6: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
      val = of_get_flat_dt_prop(node, "reg-shift", NULL);
          ^
->> drivers/tty/serial/earlycon.c:241:61: warning: comparison between pointer and integer
+   drivers/tty/serial/earlycon.c:247:61: warning: comparison between pointer and integer
      big_endian = of_get_flat_dt_prop(node, "big-endian", NULL) != NULL ||
                                                                 ^
-   drivers/tty/serial/earlycon.c:243:53: warning: comparison between pointer and integer
+   drivers/tty/serial/earlycon.c:249:53: warning: comparison between pointer and integer
        of_get_flat_dt_prop(node, "native-endian", NULL) != NULL);
                                                         ^
-   drivers/tty/serial/earlycon.c:244:6: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+   drivers/tty/serial/earlycon.c:250:6: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
      val = of_get_flat_dt_prop(node, "reg-io-width", NULL);
          ^
    cc1: some warnings being treated as errors
 
-vim +/of_get_flat_dt_prop +235 drivers/tty/serial/earlycon.c
+vim +/of_flat_dt_translate_address +232 drivers/tty/serial/earlycon.c
 
-   229		spin_lock_init(&port->lock);
-   230		port->iotype = UPIO_MEM;
-   231		port->mapbase = addr;
-   232		port->uartclk = BASE_BAUD * 16;
-   233		port->membase = earlycon_map(addr, SZ_4K);
-   234	
- > 235		val = of_get_flat_dt_prop(node, "reg-offset", NULL);
-   236		if (val)
-   237			port->mapbase += be32_to_cpu(*val);
-   238		val = of_get_flat_dt_prop(node, "reg-shift", NULL);
-   239		if (val)
-   240			port->regshift = be32_to_cpu(*val);
- > 241		big_endian = of_get_flat_dt_prop(node, "big-endian", NULL) != NULL ||
-   242			(IS_ENABLED(CONFIG_CPU_BIG_ENDIAN) &&
-   243			 of_get_flat_dt_prop(node, "native-endian", NULL) != NULL);
-   244		val = of_get_flat_dt_prop(node, "reg-io-width", NULL);
+   226		const __be32 *val;
+   227		bool big_endian;
+   228		u64 addr;
+   229	
+   230		spin_lock_init(&port->lock);
+   231		port->iotype = UPIO_MEM;
+ > 232		addr = of_flat_dt_translate_address(node);
+   233		if (addr == OF_BAD_ADDR) {
+   234			pr_warn("[%s] bad address\n", match->name);
+   235			return -ENXIO;
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---+QahgC5+KEYLbs62
+--u3/rZRmxL6MmkK24
 Content-Type: application/octet-stream
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICBa7mlYAAy5jb25maWcAlDzLdty2kvt8BY8zi3sXjvWyLJ85WqBJsBtpgqAJsNXShkeR
+H4sICOO7mlYAAy5jb25maWcAlDzLdty2kvt8BY8zi3sXjvWyLJ85WqBJsBtpgqAJsNXShkeR
 6ETnypJH3cq1/36qALIJgEXdmSySdFXhXe8q6tdffk3Y6/752+3+4e728fFn8mf31L3c7rv7
 5OvDY/ffSaaSUpmEZ8L8BsTFw9Prjw8/Ls7b87Pk7Lez347ev9ydJ+vu5al7TNLnp68Pf77C
 +Ifnp19+/SVVZS6WQLoQ5vLn8HNrRwe/xx+i1KZuUiNU2WY8VRmvR2TF67zlG14aDYSGF21T
@@ -478,4 +475,4 @@ OVNHxO7goc89cG36oqryIAaRRLKrFMbjcIV7X6Y2CN9zWkMm0FO+Pjp8GyjNEO7vmsTLki74
 cBKjQ5HUMunPP+Z8hABh//iY86oEYQt8YbR7NEkELEM2TYLxMe3ZB2976MfIKx3dwmQ4M9+s
 AT1ffOiZ5gg8P/mYGw77FXrWJKxcHNgAaMjix3AIZntoDVP8gMJHx5beLQH5f1kbv7okRQEA
 
---+QahgC5+KEYLbs62--
+--u3/rZRmxL6MmkK24--
