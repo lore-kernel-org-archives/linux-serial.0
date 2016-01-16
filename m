@@ -1,102 +1,485 @@
-From: Vostrikov Andrey <andrey.vostrikov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
-Date: Sat, 16 Jan 2016 10:34:45 +0300
-Message-ID: <744620565.20160116103445@cogentembedded.com>
-References: <20150511013540.5709.93626.stgit@notabene.brown>
-  <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com>
-  <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
-  <20160113191542.GA12086@leverpostej>
-  <1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com>
-  <20160115110106.GA3262@leverpostej>
-  <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com>
-  <569913A1.80606@cogentembedded.com>
-  <CB69F6F0-B40B-47D1-B175-8401F43288C5@goldelico.com>
-  <56992959.2020204@hurleysoftware.com>
-  <CAL_JsqL=Wotz4FuoV7PULfZNfSV=S_q0iOzkckVA3NDDzMdfZQ@mail.gmail.com>
-Reply-To: Vostrikov Andrey <andrey.vostrikov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
+From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Subject: Re: [PATCH v6 2/3] tty: Add software emulated RS485 support for 8250
+Date: Sat, 16 Jan 2016 11:12:33 +0300
+Message-ID: <CAJs94EZwneXs1S5EpaqV8dcYNw1rjSiC0XqLjS5cLu1t=F2DJQ@mail.gmail.com>
+References: <1450722379-13438-1-git-send-email-matwey@sai.msu.ru>
+ <1450722379-13438-3-git-send-email-matwey@sai.msu.ru> <56991AE5.50503@hurleysoftware.com>
+ <CAJs94Ea3MfLOniYEe39MisTdV=0pZ2CsRR5PBnCbanLU5ng5GQ@mail.gmail.com>
+ <56994C4F.7040008@hurleysoftware.com> <CAJs94EYv-oVh1pOSU4ZqigMDQiSHL8gPzeJy_4J=csydgncuqg@mail.gmail.com>
+ <CAJs94EbL6iRLE3=09vFDwRc=MvaORj0D_SuDuDP2F4k=AL-+Rw@mail.gmail.com> <56996FE5.8020604@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAL_JsqL=Wotz4FuoV7PULfZNfSV=S_q0iOzkckVA3NDDzMdfZQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "H. Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, List for communicating with real GTA04 owners <gta04-owner-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Marek Belisko <marek-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <56996FE5.8020604@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Rob.
-
-> On Fri, Jan 15, 2016 at 11:16 AM, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org> wrote:
->> On 01/15/2016 08:08 AM, H. Nikolaus Schaller wrote:
->>> Hi Andrey,
->>> ah that is fine to learn about another project that needs some solution (however it will look like).
->>>
->>> Am 15.01.2016 um 16:43 schrieb Andrey Vostrikov <andrey.vostrikov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>:
->>>
->>>> Hi Nikolaus,
+2016-01-16 1:17 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
+> On 01/15/2016 01:16 PM, Matwey V. Kornilov wrote:
+>> 2016-01-15 23:01 GMT+03:00 Matwey V. Kornilov <matwey@sai.msu.ru>:
+>>> 2016-01-15 22:45 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
+>>>> On 01/15/2016 10:42 AM, Matwey V. Kornilov wrote:
+>>>>> 2016-01-15 19:14 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
+>>>>>> On 12/21/2015 10:26 AM, Matwey V. Kornilov wrote:
+>>>>>>> Implementation of software emulation of RS485 direction handling is based
+>>>>>>> on omap_serial driver.
+>>>>>>> Before and after transmission RTS is set to the appropriate value.
+>>>>>>>
+>>>>>>> Note that before calling serial8250_em485_init the caller has to
+>>>>>>> ensure that UART will interrupt when shift register empty. Otherwise,
+>>>>>>> emultaion cannot be used.
+>>>>>>>
+>>>>>>> Both serial8250_em485_init and serial8250_em485_destroy are
+>>>>>>> idempotent functions.
+>>>>>>
+>>>>>> Apologies for the long delay; comments below.
+>>>>>>
+>>>>>>> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
+>>>>>>> ---
+>>>>>>>  drivers/tty/serial/8250/8250.h      |   6 ++
+>>>>>>>  drivers/tty/serial/8250/8250_port.c | 161 +++++++++++++++++++++++++++++++++++-
+>>>>>>>  include/linux/serial_8250.h         |   7 ++
+>>>>>>>  3 files changed, 170 insertions(+), 4 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+>>>>>>> index d54dcd8..0189cb3 100644
+>>>>>>> --- a/drivers/tty/serial/8250/8250.h
+>>>>>>> +++ b/drivers/tty/serial/8250/8250.h
+>>>>>>> @@ -117,6 +117,12 @@ static inline void serial_dl_write(struct uart_8250_port *up, int value)
+>>>>>>>  struct uart_8250_port *serial8250_get_port(int line);
+>>>>>>>  void serial8250_rpm_get(struct uart_8250_port *p);
+>>>>>>>  void serial8250_rpm_put(struct uart_8250_port *p);
+>>>>>>> +int serial8250_em485_init(struct uart_8250_port *p);
+>>>>>>> +void serial8250_em485_destroy(struct uart_8250_port *p);
+>>>>>>> +static inline bool serial8250_em485_enabled(struct uart_8250_port *p)
+>>>>>>> +{
+>>>>>>> +     return p->em485 && (p->port.rs485.flags & SER_RS485_ENABLED);
+>>>>>>
+>>>>>> Under what circumstances is p->em485 != NULL but
+>>>>>> (p->port.rs485.flags & SER_RS485_ENABLED) is true?
+>>>>>>
+>>>>>> ISTM, p->em485 is necessary and sufficient to determine if em485 is enabled.
+>>>>>>
+>>>>>> In which case, this function can be eliminated and callers can be reduced to
+>>>>>>
+>>>>>>         if (p->em485)
+>>>>>>                 ....
+>>>>>>
+>>>>>>> +}
+>>>>>>>
+>>>>>>>  #if defined(__alpha__) && !defined(CONFIG_PCI)
+>>>>>>>  /*
+>>>>>>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+>>>>>>> index 8ad0b2d..d67a848 100644
+>>>>>>> --- a/drivers/tty/serial/8250/8250_port.c
+>>>>>>> +++ b/drivers/tty/serial/8250/8250_port.c
+>>>>>>> @@ -37,6 +37,7 @@
+>>>>>>>  #include <linux/slab.h>
+>>>>>>>  #include <linux/uaccess.h>
+>>>>>>>  #include <linux/pm_runtime.h>
+>>>>>>> +#include <linux/timer.h>
+>>>>>>>
+>>>>>>>  #include <asm/io.h>
+>>>>>>>  #include <asm/irq.h>
+>>>>>>> @@ -504,6 +505,31 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
+>>>>>>>       }
+>>>>>>>  }
+>>>>>>>
+>>>>>>> +static inline void serial8250_em485_rts_on_send(struct uart_8250_port *p)
+>>>>>>
+>>>>>> Only one call site, so please drop inline.
+>>>>>>
+>>>>>>
+>>>>>>> +{
+>>>>>>> +     unsigned char mcr = serial_in(p, UART_MCR);
+>>>>>>> +
+>>>>>>> +     if (p->port.rs485.flags & SER_RS485_RTS_ON_SEND)
+>>>>>>> +             mcr |= UART_MCR_RTS;
+>>>>>>> +     else
+>>>>>>> +             mcr &= ~UART_MCR_RTS;
+>>>>>>> +     serial_out(p, UART_MCR, mcr);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static inline void serial8250_em485_rts_after_send(struct uart_8250_port *p)
+>>>>>>
+>>>>>> Doesn't really need to be inline.
+>>>>>>
+>>>>>>
+>>>>>>> +{
+>>>>>>> +     unsigned char mcr = serial_in(p, UART_MCR);
+>>>>>>> +
+>>>>>>> +     if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
+>>>>>>> +             mcr |= UART_MCR_RTS;
+>>>>>>> +     else
+>>>>>>> +             mcr &= ~UART_MCR_RTS;
+>>>>>>> +     serial_out(p, UART_MCR, mcr);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static void serial8250_em485_handle_start_tx(unsigned long arg);
+>>>>>>> +static void serial8250_em485_handle_stop_tx(unsigned long arg);
+>>>>>>> +
+>>>>>>>  void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
+>>>>>>>  {
+>>>>>>>       serial8250_clear_fifos(p);
+>>>>>>> @@ -528,6 +554,42 @@ void serial8250_rpm_put(struct uart_8250_port *p)
+>>>>>>>  }
+>>>>>>>  EXPORT_SYMBOL_GPL(serial8250_rpm_put);
+>>>>>>>
+>>>>>>> +int serial8250_em485_init(struct uart_8250_port *p)
+>>>>>>> +{
+>>>>>>> +     if (p->em485 != NULL)
+>>>>>>> +             return 0;
+>>>>>>> +
+>>>>>>> +     p->em485 = kmalloc(sizeof(struct uart_8250_em485), GFP_KERNEL);
+>>>>>>> +     if (p->em485 == NULL)
+>>>>>>> +             return -ENOMEM;
+>>>>>>> +
+>>>>>>> +     init_timer(&p->em485->stop_tx_timer);
+>>>>>>> +     p->em485->stop_tx_timer.function = serial8250_em485_handle_stop_tx;
+>>>>>>> +     p->em485->stop_tx_timer.data = (unsigned long)p;
+>>>>>>> +     p->em485->stop_tx_timer.flags |= TIMER_IRQSAFE;
+>>>>>>
+>>>>>> Not sure this is going to fly; this would be the only user of TIMER_IRQSAFE
+>>>>>> (which was specifically introduced to workaround workqueue issues and not
+>>>>>> meant for general use).
+>>>>>
+>>>>> This is required to call del_timer_sync(&p->em485->start_tx_timer);
+>>>>> from __stop_tx_rs485
 >>>>
->>>> H. Nikolaus Schaller wrote:
-
-> [...]
-
->>>> There is no user space code involved in this case as whole interactions are between drivers (just a kick to open /dev/ttyXXX using sys_open, as there is no way to start probe on uart_slave bus and assign line discipline).
+>>>> I know; that doesn't mean it's ok.
+>>>>
 >>>
->>> Exactly this is what we want to provide as API for the drivers by our patches to serial-core.c.
->>>
->>> We want to allow such a "partner" device to take a line-speed property e.g. from its DT node (or a 9600 constant as for our GPS chip) and ask the UART driver to set the required clocks. Or to get the driver notified that someone has opened the /dev/tty* etc. So make it possible to use some UART from another driver.
->>>
->>> In the long run it should be possible to use the UART even if there is no /dev/tty client or interface in user-space but that is something not perfectly working (there is some initialization race in the tty/serial subsystem we have not yet understood).
->>>
->>> As you see, I have a driver-specific standpoint (and not coming from user space).
->>>
->>> Thanks for sharing this example.
+>>> What do you suggest? Run __stop_tx as a tasklet? I am not sure whether
+>>> it introduces races or not.
 >>
->>
->> I'd like to see the exemplar slave driver be something more complicated than
->> trivial on-off, before hacking in junk into the serial core.
->>
->> As it stands, this gps could be supported on any uart driver that implements
->> mctrl gpios (which is trivial with the serial mctrl gpio helpers).
->>
->> Not that I'm against uart slave device support, just that I don't think hacks
->> is the way to go about it.
+>> Would it be fine to use workqueues instead of timers? I mean
+>> schedule_delayed_work and cancel_delayed_work_sync.
+>> They use same timers with TIMER_IRQSAFE under the hood.
+>> Or it is better to allocate separate work queue in order to achieve
+>> better latency than shared system wq can provide?
+>
+> I think just del_timer() and locking with the port lock should be
+> sufficient; timer + irq handler is nothing new.
+>
 
-> I assume line disciplines seemed a good solution at the time, but they
-> seem like a hack to me.
-What would be best implementation in following use case:
-- there are several microcontrollers/devices that use same protocol on top of UART (<STX>-<DATA>-<CRC>-<ETX>)
-- microcontoller could provide several functions to system, e.g. watchdog, HWMON etc., that not require user space interaction
-- there are several implementations of firmware that use different commands/events transferred as <DATA> and different <CRC> algorithms installed on several HW variants
+Do I understand correctly, that internals of
+serial8250_em485_handle_stop_tx and serial8250_em485_handle_start_tx
+should be wrapped with port->lock in order to ensure that they are not
+running during the call going to run del_timer?
 
-If we take picture from Nikolaus's email:
-device <--> uart <--> serial-core <-- new hooks ---> device driver <---> protocol interfaces
-
-It would be nice to have a layer such as line discipline between serial core and device driver to use high level API to transfer data via UART.
-But current implementation of line disciplines is intended to be used from user space and via tty layer.
-
->> What I'd like to see is a split of the serial core into a tty driver and a
->> standalone device abstraction. Anything else is just workarounds.
-
-> +1 on that. We need a proper subsystem for in kernel drivers of
-> connected UART devices.
-
-Yes, such implementation will help. There is a need for interface like UART BUS that will probe devices without user space.
-Serial I/O for input subsystem defines new type of bus and uses dedicated line discipline, but it still unable to start driver by itself and requires call from 'inputattach' to open port, assign line discipline and go to forever wait on 'read'.
-
-> The kernel is where all the work is, not the DT bindings, so we should
-> spend our time on the kernel side. There's already a fairly clean
-> split between serial core and tty layer, so it should be possible to
-> use serial core without too much surgery to all the UART drivers.
-
-> Rob
+>
+>>>>>>> +     init_timer(&p->em485->start_tx_timer);
+>>>>>>> +     p->em485->start_tx_timer.function = serial8250_em485_handle_start_tx;
+>>>>>>> +     p->em485->start_tx_timer.data = (unsigned long)p;
+>>>>>>> +     p->em485->start_tx_timer.flags |= TIMER_IRQSAFE;
+>>>>>>> +
+>>>>>>> +     serial8250_em485_rts_after_send(p);
+>>>>>>> +
+>>>>>>> +     return 0;
+>>>>>>> +}
+>>>>>>> +EXPORT_SYMBOL_GPL(serial8250_em485_init);
+>>>>>>
+>>>>>> Newline.
+>>>>>>
+>>>>>>> +void serial8250_em485_destroy(struct uart_8250_port *p)
+>>>>>>> +{
+>>>>>>> +     if (p->em485 == NULL)
+>>>>>>> +             return;
+>>>>>>> +
+>>>>>>> +     del_timer_sync(&p->em485->start_tx_timer);
+>>>>>>> +     del_timer_sync(&p->em485->stop_tx_timer);
+>>>>>>
+>>>>>> What keeps start_tx() from restarting a new timer right here?
+>>>>>
+>>>>> Both start_tx and rs485_config (which calls destroy) are wrapped with
+>>>>> port->lock in serial_core.c
+>>>>
+>>>> Ahh, missed that.
+>>>>
+>>>> Maybe it would be better simply to implement the config_rs485()
+>>>> generically, and just call it from the omap_8250 config_rs485().
+>>>>
+>>>> And put a note about the locking in a function comment header
+>>>>
+>>>> /**
+>>>>  *      serial8250_config_em485()       -       rs485 config helper
+>>>>  *
+>>>>  *      ....
+>>>>  */
+>>>>
+>>>>
+>>>>
+>>>>>>> +     kfree(p->em485);
+>>>>>>> +     p->em485 = NULL;
+>>>>>>> +}
+>>>>>>> +EXPORT_SYMBOL_GPL(serial8250_em485_destroy);
+>>>>>>> +
+>>>>>>>  /*
+>>>>>>>   * These two wrappers ensure that enable_runtime_pm_tx() can be called more than
+>>>>>>>   * once and disable_runtime_pm_tx() will still disable RPM because the fifo is
+>>>>>>> @@ -1293,7 +1355,61 @@ static void serial8250_stop_rx(struct uart_port *port)
+>>>>>>>       serial8250_rpm_put(up);
+>>>>>>>  }
+>>>>>>>
+>>>>>>> -static inline void __stop_tx(struct uart_8250_port *p)
+>>>>>>> +static __u32 __start_tx_rs485(struct uart_8250_port *p)
+>>>>>>           ^^^^^
+>>>>>> No need to preserve the userspace type here.
+>>>>>>
+>>>>>> The double underline leader in an identifier is typically used to distinguish
+>>>>>> an unlocked version from a locked version. I don't think it's necessary here
+>>>>>> or any of the other newly-introduced functions.
+>>>>>
+>>>>> I use double __ for consistency with __start_tx. Now I have:
+>>>>>
+>>>>>         if (up->em485)
+>>>>>                 __start_tx_rs485(port);
+>>>>>         else
+>>>>>                 __start_tx(port);
+>>>>
+>>>> But __start_tx() is labelled that way to differentiate it from being identified
+>>>> as the start_tx() handler (which is serial8250_start_tx()). IOW, contributors
+>>>> unfamiliar with the 8250 driver itself won't become confused when grepping
+>>>> for start_tx (or at least the idea is to minimize that confusion).
+>>>>
+>>>> start_tx_rs485() doesn't need differentiation, so doesn't require the
+>>>> double __ leader.
+>>>>
+>>>> FWIW, this is consistent and typical elsewhere in the kernel.
+>>>>
+>>>>
+>>>>>>> +{
+>>>>>>> +     if (!serial8250_em485_enabled(p))
+>>>>>>> +             return 0;
+>>>>>>
+>>>>>> Already checked that em485 was enabled in lone caller.
+>>>>>>
+>>>>>>
+>>>>>>> +     if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
+>>>>>>> +             serial8250_stop_rx(&p->port);
+>>>>>>> +
+>>>>>>> +     del_timer_sync(&p->em485->stop_tx_timer);
+>>>>>>> +
+>>>>>>> +     if (!!(p->port.rs485.flags & SER_RS485_RTS_ON_SEND) != !!(serial_in(p, UART_MCR) & UART_MCR_RTS)) {
+>>>>>>
+>>>>>> Line too long. And just one negation is sufficient, ie.
+>>>>>>
+>>>>>>         if (!(....) !=
+>>>>>>             !(....)) {
+>>>>>>
+>>>>>
+>>>>> I would like to keep the double negation, in my opinion it is more
+>>>>> clear to the reader and I believe that the compiler is able to
+>>>>> optimize it.
+>>>>>
+>>>>>>> +             serial8250_em485_rts_on_send(p);
+>>>>>>> +             return p->port.rs485.delay_rts_before_send;
+>>>>>>> +     }
+>>>>>>> +
+>>>>>>> +     return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static inline void __do_stop_tx_rs485(struct uart_8250_port *p)
+>>>>>>
+>>>>>> Does this really need to be inline?
+>>>>>>
+>>>>>
+>>>>> Why not?
+>>>>
+>>>> The expected yardstick for inline is some demonstrable speed improvement;
+>>>> otherwise, size is favored.
+>>>>
+>>>> And __stop_tx() is already inlined in 3 places, which really doesn't
+>>>> need inlining either -- a call/ret is nothing compared to device i/o.
+>>>>
+>>>
+>>> Ok then, probably I am biased with my C++ experience and I am used to
+>>> think that compiler considers `inline` only as a hint.
+>>>
+>>>>
+>>>> Regards,
+>>>> Peter Hurley
+>>>>
+>>>>>>> +{
+>>>>>>> +     if (!serial8250_em485_enabled(p))
+>>>>>>> +             return;
+>>>>>>> +
+>>>>>>> +     serial8250_em485_rts_after_send(p);
+>>>>>>> +     /*
+>>>>>>> +     * Empty the RX FIFO, we are not interested in anything
+>>>>>>> +     * received during the half-duplex transmission.
+>>>>>>> +     */
+>>>>>>
+>>>>>> Malformed block comment.
+>>>>>>
+>>>>>>         /*
+>>>>>>          *
+>>>>>>          *
+>>>>>>          */
+>>>>>>
+>>>>>>> +     if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
+>>>>>>> +             serial8250_clear_fifos(p);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static void serial8250_em485_handle_stop_tx(unsigned long arg)
+>>>>>>> +{
+>>>>>>> +     struct uart_8250_port *p = (struct uart_8250_port *)arg;
+>>>>>>> +
+>>>>>>> +     __do_stop_tx_rs485(p);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static inline void __stop_tx_rs485(struct uart_8250_port *p)
+>>>>>>
+>>>>>> Single caller so drop inline.
+>>>>>>
+>>>>>>> +{
+>>>>>>> +     if (!serial8250_em485_enabled(p))
+>>>>>>> +             return;
+>>>>>>> +
+>>>>>>> +     del_timer_sync(&p->em485->start_tx_timer);
+>>>>>>> +
+>>>>>>> +     /* __do_stop_tx_rs485 is going to set RTS according to config AND flush RX FIFO if required */
+>>>>>>
+>>>>>> Block comment.
+>>>>>>
+>>>>>>> +     if (p->port.rs485.delay_rts_after_send > 0) {
+>>>>>>> +             mod_timer(&p->em485->stop_tx_timer, jiffies + p->port.rs485.delay_rts_after_send * HZ / 1000);
+>>>>>>
+>>>>>> Line too long; please re-format.
+>>>>>> This is one problem with overly long identifiers.
+>>>>>>
+>>>>>>> +     } else {
+>>>>>>> +             __do_stop_tx_rs485(p);
+>>>>>>> +     }
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static inline void __do_stop_tx(struct uart_8250_port *p)
+>>>>>>>  {
+>>>>>>>       if (p->ier & UART_IER_THRI) {
+>>>>>>>               p->ier &= ~UART_IER_THRI;
+>>>>>>> @@ -1302,6 +1418,21 @@ static inline void __stop_tx(struct uart_8250_port *p)
+>>>>>>>       }
+>>>>>>>  }
+>>>>>>>
+>>>>>>> +static inline void __stop_tx(struct uart_8250_port *p)
+>>>>>>> +{
+>>>>>>> +     if (serial8250_em485_enabled(p)) {
+>>>>>>> +             unsigned char lsr = serial_in(p, UART_LSR);
+>>>>>>> +     /* To provide required timeing and allow FIFO transfer,
+>>>>>>> +      * __stop_tx_rs485 must be called only when both FIFO and shift register
+>>>>>>> +      * are empty. It is for device driver to enable interrupt on TEMT.
+>>>>>>> +      */
+>>>>>>
+>>>>>> Block indent.
+>>>>>>
+>>>>>> This code path should cancel start timer also.
+>>>>>>
+>>>>>>> +             if (!((lsr & UART_LSR_TEMT) && (lsr & UART_LSR_THRE)))
+>>>>>>
+>>>>>>                 if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
+>>>>>>
+>>>>>>> +                     return;
+>>>>>>> +     }
+>>>>>>> +     __do_stop_tx(p);
+>>>>>>> +     __stop_tx_rs485(p);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>>  static void serial8250_stop_tx(struct uart_port *port)
+>>>>>>>  {
+>>>>>>>       struct uart_8250_port *up = up_to_u8250p(port);
+>>>>>>> @@ -1319,12 +1450,10 @@ static void serial8250_stop_tx(struct uart_port *port)
+>>>>>>>       serial8250_rpm_put(up);
+>>>>>>>  }
+>>>>>>>
+>>>>>>> -static void serial8250_start_tx(struct uart_port *port)
+>>>>>>> +static inline void __start_tx(struct uart_port *port)
+>>>>>>>  {
+>>>>>>>       struct uart_8250_port *up = up_to_u8250p(port);
+>>>>>>>
+>>>>>>> -     serial8250_rpm_get_tx(up);
+>>>>>>> -
+>>>>>>>       if (up->dma && !up->dma->tx_dma(up))
+>>>>>>>               return;
+>>>>>>>
+>>>>>>> @@ -1350,6 +1479,30 @@ static void serial8250_start_tx(struct uart_port *port)
+>>>>>>>       }
+>>>>>>>  }
+>>>>>>>
+>>>>>>> +static void serial8250_em485_handle_start_tx(unsigned long arg)
+>>>>>>> +{
+>>>>>>> +     struct uart_8250_port *p = (struct uart_8250_port *)arg;
+>>>>>>> +
+>>>>>>> +     __start_tx(&p->port);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static void serial8250_start_tx(struct uart_port *port)
+>>>>>>> +{
+>>>>>>> +     struct uart_8250_port *up = up_to_u8250p(port);
+>>>>>>> +     __u32 delay;
+>>>>>>
+>>>>>>         int delay;
+>>>>>>
+>>>>>>> +
+>>>>>>> +     serial8250_rpm_get_tx(up);
+>>>>>>> +
+>>>>>>> +     if (up->em485 && timer_pending(&up->em485->start_tx_timer))
+>>>>>>> +             return;
+>>>>>>> +
+>>>>>>> +     if (up->em485 && (delay = __start_tx_rs485(up))) {
+>>>>>>
+>>>>>> No assignment in conditional please.
+>>>>>>
+>>>>>>> +             mod_timer(&up->em485->start_tx_timer, jiffies + delay * HZ / 1000);
+>>>>>>> +     } else {
+>>>>>>> +             __start_tx(port);
+>>>>>>> +     }
+>>>>>>
+>>>>>> Generally, braces aren't used for single statement if..else.
+>>>>>> That probably won't apply here after removing the assignment-in-conditional,
+>>>>>> but I thought it worth mentioning just so you know.
+>>>>>>
+>>>>>> Regards,
+>>>>>> Peter Hurley
+>>>>>>
+>>>>>>> +}
+>>>>>>> +
+>>>>>>>  static void serial8250_throttle(struct uart_port *port)
+>>>>>>>  {
+>>>>>>>       port->throttle(port);
+>>>>>>> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+>>>>>>> index faa0e03..71516ec 100644
+>>>>>>> --- a/include/linux/serial_8250.h
+>>>>>>> +++ b/include/linux/serial_8250.h
+>>>>>>> @@ -76,6 +76,11 @@ struct uart_8250_ops {
+>>>>>>>       void            (*release_irq)(struct uart_8250_port *);
+>>>>>>>  };
+>>>>>>>
+>>>>>>> +struct uart_8250_em485 {
+>>>>>>> +     struct timer_list       start_tx_timer; /* "rs485 start tx" timer */
+>>>>>>> +     struct timer_list       stop_tx_timer; /* "rs485 stop tx" timer */
+>>>>>>> +};
+>>>>>>> +
+>>>>>>>  /*
+>>>>>>>   * This should be used by drivers which want to register
+>>>>>>>   * their own 8250 ports without registering their own
+>>>>>>> @@ -122,6 +127,8 @@ struct uart_8250_port {
+>>>>>>>       /* 8250 specific callbacks */
+>>>>>>>       int                     (*dl_read)(struct uart_8250_port *);
+>>>>>>>       void                    (*dl_write)(struct uart_8250_port *, int);
+>>>>>>> +
+>>>>>>> +     struct uart_8250_em485 *em485;
+>>>>>>>  };
+>>>>>>>
+>>>>>>>  static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
+>>>>>>>
+>
 
 
 
 -- 
-Best regards,
-Andrey Vostrikov
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+With best regards,
+Matwey V. Kornilov.
+Sternberg Astronomical Institute, Lomonosov Moscow State University, Russia
+119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
