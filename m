@@ -1,230 +1,424 @@
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
-Date: Mon, 18 Jan 2016 12:52:36 +0100
-Message-ID: <33A6D692-DC52-4E66-8FF9-D295EA29D98A@goldelico.com>
-References: <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com> <20160113191542.GA12086@leverpostej> <1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com> <20160115110106.GA3262@leverpostej> <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com> <569913A1.80606@cogentembedded.com> <CB69F6F0-B40B-47D1-B175-8401F43288C5@goldelico.com> <56992959.2020204@hurleysoftware.com> <CAL_JsqL=Wotz4FuoV7PULfZNfSV=S_q0iOzkckVA3NDDzMdfZQ@mail.gmail.com> <744620565.20160116103445@cogentembedded.com> <20160116233157.GA7774@rob-hp-laptop> <3D5F35D7-31B5-4E68-875F-7DD492EF0316@goldelico.com> <20160117141912.4aa2e46c@lxorguk.ukuu.org.uk> <1D5F146E-D347-453B-9158-8D269F8DA99C@goldelico.com> <20160117193849.69d00c28@lxorguk.ukuu.org.uk> <37DCE36D-0A5E-41C5-BDA4-857DCF9F2DD1@goldelico.com> <569CA8B1.3080706@cogente
- mbedded.com>
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <569CA8B1.3080706@cogentembedded.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andrey Vostrikov <andrey.vostrikov@cogentembedded.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Rob Herring <robh@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robherring2@gmail.com>, List for communicating with real GTA04 owners <gta04-owner@goldelico.com>, tomeu@tomeuvizoso.net, NeilBrown <neil@brown.name>, Arnd Bergmann <arnd@arndb.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.cz>, Marek Belisko <marek@goldelico.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH v4] serial: 8250: add gpio support to exar
+Date: Mon, 18 Jan 2016 17:40:38 +0530
+Message-ID: <1453119038-11741-1-git-send-email-sudipm.mukherjee@gmail.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, gnomes@lxorguk.ukuu.org.uk, andy.shevchenko@gmail.com, Rob Groner <rgroner@rtd.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+can be controlled using gpio interface.
+Add support to use these pins.
 
-Am 18.01.2016 um 09:56 schrieb Andrey Vostrikov <andrey.vostrikov@cogentembedded.com>:
+Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+---
 
-> Hi,
-> 
-> H. Nikolaus Schaller wrote:
->> Hi Alan,
->> 
->> Am 17.01.2016 um 20:38 schrieb One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>:
->> 
->>>> 3. mechanism to open/close the UART by the peer driver (for power management of the
->>>> UART), even if it there is a user-space tty client for the same UART which might or might
->>>> not be open at any time. Manage that in an optimal way.
->>> Power management doesn't have to go via the uart layer. You can even
->>> manage it via the existing sysfs power interfaces (and some Android
->>> devices do in fact do exactly that either by controlling the uart pm or
->>> using a gpio line). Not pretty either but means people are only peeing
->>> in their own backyard. What goes into the kernel costs *everyone*, what
->>> goes in device user space costs only the perpetrator.
->>> 
->>> It would help to rewind and understand what your needs are not what your
->>> implementation as it stands is. Why can't you just use hciattach like
->>> everyone else ? Improving the PM logic by refining the existing hci
->>> ldisc to be power smart so everyone benefits from any improvement might
->>> be a useful other discussion.
->> I have not counted how often I have explained that, but I am happy to do it
->> again.
->> 
->> * the GTA04 device is an open hackable smartphone platform where power saving is highest priority
->> * the platform includes the kernel, but we don't want to prescribe any specific user space (i.e. we can't assume that a specific daemon exists or can't modify it)
->> * the wi2wi,w2sg0084 chip is a GPS chip (it does not understand HCI protocol, it just sends NMEA records if powered on)
->> * we want to provide NMEA data through /dev/ttyO1 (it uses an OMAP UART) because a tty port is the most common interface for GPS devices (e.g. a bluetooth GPS mouse is also presented as a tty)
->> * we want the chip to automatically power up as soon (but not before) as any gps client opens /dev/ttyO1 (or activates the DTR mctrl)
->> * we want the chip to automatically power down if no process uses /dev/ttyO1 any more
->> 
->> The standard logic of GPS daemons and applications is to receive
->> NMEA records through some serial /dev/tty.
->> 
->> Please tell me how power on/off management can be done without intercepting
->> somewhere in the kernel that /dev/ttyO1 is opened/closed (which is not the same
->> as suspend/resume).
->> 
->> Secondly, the chip has a very special logic that it may end up in the opposite
->> power state than the kernel driver thinks. Especially after boot it simply can not
->> know the state. The chip might be powered up/send records or might not.
->> 
->> A driver can only detect such a discrepancy if it thinks the GPS chip is powered off,
->> but there is still data coming through the UART.
->> 
->> Please tell me how this situation can be detected without monitoring the data stream
->> in the kernel going to /dev/ttyO1 - from the UART behind it - even if /dev/ttyO1 is closed.
->> 
->> This are *our* requirements.
->> 
->> Other people think that our approach helps to solve their driver architecture as well
->> and have added their requirements on top. This is why I attempt to make the API
->> more general than just for our own use-cases.
-> In my case, I have an MCU that sits behind UART and provides several low-level functions, that should be exposed via well-known API (Watchdog, NVMEM, HWMON, LEDs, input, etc)
-> * MCU is connected via dedicated UART on SoC.
-> * port should not be exposed to user space via tty layer (impossible now, as soon as port driver is registered, tty layer will create /dev/tty* device for it)
+Hi Rob,
+Can you please test this driver. You have tested the previous versions.
 
-That is what I want to optionally disable in uart_add_one_port().
+v4: Alan's suggestion won, used platform device to bind to the gpio
+driver. Looks like that is the best option among all the alternatives.
+GPIO driver is totally separate now and doesnot loads if the
+hardware is not connected. Cc-ing GPIO people also for their comments,
+previous versions didnot have Cc to GPIO.
 
-> * MCU should be probed as soon as possible without 'open' call from user space that is usually done by 'Xattach' app/daemon
+v3: Alan commented on v2, few things like NULL check, name of the gpio
+chip, moving some more code into the gpio code. He also commented on it
+being a separate module, but since this will not be needed by someone who
+is not using Exar chip, and even those who are using, some of them may
+not need it. This is optional for only those who wants to use the gpio
+capability of that chip. So kept it as a separate module.
 
-in our proposed solution some uart peer is probed as early as possible. It then tries to attach to the UART. If the UART has not yet been successfully probed, a -EPROBE_DEFER is returned and the MCU probe can be deferred as well. This does not need an open() call from user space to work.
+v2: v1 had problems with build, reported by 0day bot.
 
-> * it is needed to configure UART speed and have some abstraction layer for data transfer (same as line discipline, but in kernel only)
-> 
-> As there is no concept as UART BUS (even if it is point to point) there is no way right now to make this happen.
-> Just a thought, would it be a good idea to use 'device_type' attribute in device tree to differentiate port type, i.e. whether it should be treated as normal serial port or as UART BUS?
-> for example:
-> uart1 {
->    device_type = "serial";
->    ...
-> };
-> uart2 {
->    device_type = "serial_bus";
->    ..
-> };
+ drivers/gpio/Kconfig                |   7 ++
+ drivers/gpio/Makefile               |   1 +
+ drivers/tty/serial/8250/8250_gpio.c | 243 ++++++++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pci.c  |  41 +++++-
+ 4 files changed, 291 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/tty/serial/8250/8250_gpio.c
 
-My proposal for this will be something like (I haven't decided myself on this)
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index b18bea0..1294d8d 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -983,6 +983,13 @@ config GPIO_SODAVILLE
+ 	help
+ 	  Say Y here to support Intel Sodaville GPIO.
+ 
++config GPIO_EXAR
++	tristate "Support for GPIO pins on XR17V352/354/358"
++	depends on SERIAL_8250_PCI
++	help
++	  Selecting this option will enable handling of GPIO pins present
++	  on Exar XR17V352/354/358 chips.
++
+ endmenu
+ 
+ menu "SPI GPIO expanders"
+diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
+index 986dbd8..68efdb5 100644
+--- a/drivers/gpio/Makefile
++++ b/drivers/gpio/Makefile
+@@ -37,6 +37,7 @@ obj-$(CONFIG_GPIO_DWAPB)	+= gpio-dwapb.o
+ obj-$(CONFIG_GPIO_EM)		+= gpio-em.o
+ obj-$(CONFIG_GPIO_EP93XX)	+= gpio-ep93xx.o
+ obj-$(CONFIG_GPIO_ETRAXFS)	+= gpio-etraxfs.o
++obj-$(CONFIG_GPIO_EXAR)		+= gpio-exar.o
+ obj-$(CONFIG_GPIO_F7188X)	+= gpio-f7188x.o
+ obj-$(CONFIG_GPIO_GE_FPGA)	+= gpio-ge.o
+ obj-$(CONFIG_GPIO_GRGPIO)	+= gpio-grgpio.o
+diff --git a/drivers/tty/serial/8250/8250_gpio.c b/drivers/tty/serial/8250/8250_gpio.c
+new file mode 100644
+index 0000000..44511de
+--- /dev/null
++++ b/drivers/tty/serial/8250/8250_gpio.c
+@@ -0,0 +1,243 @@
++/*
++ * GPIO driver for Exar XR17V35X chip
++ *
++ * Copyright (C) 2015 Sudip Mukherjee <sudipm.mukherjee@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/device.h>
++#include <linux/pci.h>
++#include <linux/gpio.h>
++#include "8250.h"
++
++#define EXAR_OFFSET_MPIOLVL_LO 0x90
++#define EXAR_OFFSET_MPIOSEL_LO 0x93
++#define EXAR_OFFSET_MPIOLVL_HI 0x96
++#define EXAR_OFFSET_MPIOSEL_HI 0x99
++
++static LIST_HEAD(exar_list);
++static DEFINE_MUTEX(exar_mtx); /* lock while manipulating the list */
++
++struct exar_gpio_chip {
++	struct gpio_chip gpio_chip;
++	struct mutex lock;
++	struct uart_8250_port *port;
++	struct list_head list;
++	int index;
++	void __iomem *regs;
++	char name[16];
++};
++
++#define to_exar_chip(n) container_of(n, struct exar_gpio_chip, gpio_chip)
++
++static inline unsigned int read_exar_reg(struct exar_gpio_chip *chip,
++					 int offset)
++{
++	dev_dbg(chip->gpio_chip.dev, "%s regs=%p offset=%x\n", __func__,
++		chip->regs, offset);
++	return readb(chip->regs + offset);
++}
++
++static inline void write_exar_reg(struct exar_gpio_chip *chip, int offset,
++				  int value)
++{
++	dev_dbg(chip->gpio_chip.dev,
++		"%s regs=%p value=%x offset=%x\n", __func__, chip->regs,
++		value, offset);
++	writeb(value, chip->regs + offset);
++}
++
++void xr17v35x_gpio_exit(struct uart_8250_port *port)
++{
++	struct exar_gpio_chip *exar_gpio, *exar_pos_e, *exar_temp_e;
++
++	if (!port || !port->port.private_data)
++		return;
++
++	exar_gpio = port->port.private_data;
++	mutex_lock(&exar_mtx);
++	list_for_each_entry_safe(exar_pos_e, exar_temp_e, &exar_list, list) {
++		if (exar_pos_e->index == exar_gpio->index) {
++			list_del(&exar_pos_e->list);
++			break;
++		}
++	}
++	mutex_unlock(&exar_mtx);
++
++	gpiochip_remove(&exar_gpio->gpio_chip);
++	mutex_destroy(&exar_gpio->lock);
++	iounmap(exar_gpio->regs);
++}
++EXPORT_SYMBOL(xr17v35x_gpio_exit);
++
++static void exar_set(struct gpio_chip *chip, unsigned int reg,
++		     unsigned int offset, int val)
++{
++	struct exar_gpio_chip *exar_gpio = to_exar_chip(chip);
++	int temp;
++
++	mutex_lock(&exar_gpio->lock);
++	temp = read_exar_reg(exar_gpio, reg);
++	temp &= ~(1 << offset);
++	temp |= val << offset;
++	write_exar_reg(exar_gpio, reg, temp);
++	mutex_unlock(&exar_gpio->lock);
++}
++
++static int exar_direction_output(struct gpio_chip *chip, unsigned int offset,
++				 int value)
++{
++	if (offset < 8)
++		exar_set(chip, EXAR_OFFSET_MPIOSEL_LO, 0, offset);
++	else
++		exar_set(chip, EXAR_OFFSET_MPIOSEL_HI, 0, offset - 8);
++	return 0;
++}
++
++static int exar_direction_input(struct gpio_chip *chip, unsigned int offset)
++{
++	if (offset < 8)
++		exar_set(chip, EXAR_OFFSET_MPIOSEL_LO, 1, offset);
++	else
++		exar_set(chip, EXAR_OFFSET_MPIOSEL_HI, 1, offset - 8);
++	return 0;
++}
++
++static int exar_get(struct gpio_chip *chip, unsigned int reg)
++{
++	struct exar_gpio_chip *exar_gpio = to_exar_chip(chip);
++	int value;
++
++	if (!exar_gpio)
++		return -ENODEV;
++
++	mutex_lock(&exar_gpio->lock);
++	value = read_exar_reg(exar_gpio, reg);
++	mutex_unlock(&exar_gpio->lock);
++
++	return value;
++}
++
++static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
++{
++	int value;
++
++	if (offset < 8) {
++		value = exar_get(chip, EXAR_OFFSET_MPIOSEL_LO);
++	} else {
++		value = exar_get(chip, EXAR_OFFSET_MPIOSEL_HI);
++		offset -= 8;
++	}
++
++	if (value > 0) {
++		value >>= offset;
++		value &= 0x01;
++	}
++
++	return value;
++}
++
++static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
++{
++	int value;
++
++	if (offset < 8) {
++		value = exar_get(chip, EXAR_OFFSET_MPIOLVL_LO);
++	} else {
++		value = exar_get(chip, EXAR_OFFSET_MPIOLVL_HI);
++		offset -= 8;
++	}
++
++	if (value > 0) {
++		value >>= offset;
++		value &= 0x01;
++	}
++
++	return value;
++}
++
++static void exar_set_value(struct gpio_chip *chip, unsigned int offset,
++			   int value)
++{
++	if (offset < 8)
++		exar_set(chip, EXAR_OFFSET_MPIOLVL_LO, value, offset);
++	else
++		exar_set(chip, EXAR_OFFSET_MPIOLVL_HI, value, offset - 8);
++}
++
++int xr17v35x_gpio_init(struct pci_dev *dev, struct uart_8250_port *port,
++		       int idx)
++{
++	struct exar_gpio_chip *exar_gpio, *exar_temp;
++	void __iomem *p;
++	int index = 1;
++	int ret;
++
++	if (idx != 0)
++		return 0;
++
++	if (dev->vendor != PCI_VENDOR_ID_EXAR)
++		return 0;
++
++	exar_gpio = devm_kzalloc(&dev->dev, sizeof(*exar_gpio), GFP_KERNEL);
++	if (!exar_gpio)
++		return -ENOMEM;
++
++	p = pci_ioremap_bar(dev, 0);
++	if (!p)
++		return -ENOMEM;
++
++	mutex_init(&exar_gpio->lock);
++	INIT_LIST_HEAD(&exar_gpio->list);
++
++	mutex_lock(&exar_mtx);
++	/* find the first unused index */
++	list_for_each_entry(exar_temp, &exar_list, list) {
++		if (exar_temp->index == index)
++			index++;
++	}
++
++	sprintf(exar_gpio->name, "exar_gpio%d", index);
++	exar_gpio->gpio_chip.label = exar_gpio->name;
++	exar_gpio->gpio_chip.dev = &dev->dev;
++	exar_gpio->gpio_chip.direction_output = exar_direction_output;
++	exar_gpio->gpio_chip.direction_input = exar_direction_input;
++	exar_gpio->gpio_chip.get_direction = exar_get_direction;
++	exar_gpio->gpio_chip.get = exar_get_value;
++	exar_gpio->gpio_chip.set = exar_set_value;
++	exar_gpio->gpio_chip.base = -1;
++	exar_gpio->gpio_chip.ngpio = 16;
++	exar_gpio->gpio_chip.owner = THIS_MODULE;
++	exar_gpio->regs = p;
++	exar_gpio->index = index;
++
++	ret = gpiochip_add(&exar_gpio->gpio_chip);
++	if (ret)
++		goto err_destroy;
++
++	exar_gpio->port = port;
++	port->port.private_data = exar_gpio;
++
++	list_add_tail(&exar_gpio->list, &exar_list);
++	mutex_unlock(&exar_mtx);
++
++	return 0;
++
++err_destroy:
++	mutex_unlock(&exar_mtx);
++	mutex_destroy(&exar_gpio->lock);
++	pci_iounmap(dev, p);
++	return ret;
++}
++EXPORT_SYMBOL(xr17v35x_gpio_init);
++
++MODULE_DESCRIPTION("Exar GPIO driver");
++MODULE_AUTHOR("Sudip Mukherjee <sudipm.mukherjee@gmail.com>");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 4097f3f..5c03d5c 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1764,12 +1764,25 @@ xr17v35x_has_slave(struct serial_private *priv)
+ 	        (dev_id == PCI_DEVICE_ID_EXAR_XR17V8358));
+ }
+ 
++static void pci_xr17v35x_exit(struct pci_dev *dev)
++{
++	struct serial_private *priv = pci_get_drvdata(dev);
++	struct uart_8250_port *port = serial8250_get_port(priv->line[0]);
++	struct platform_device *pdev = port->port.private_data;
++
++	if (pdev) {
++		platform_device_unregister(pdev);
++		port->port.private_data = NULL;
++	}
++}
++
+ static int
+ pci_xr17v35x_setup(struct serial_private *priv,
+ 		  const struct pciserial_board *board,
+ 		  struct uart_8250_port *port, int idx)
+ {
+ 	u8 __iomem *p;
++	int ret;
+ 
+ 	p = pci_ioremap_bar(priv->dev, 0);
+ 	if (p == NULL)
+@@ -1807,7 +1820,28 @@ pci_xr17v35x_setup(struct serial_private *priv,
+ 	writeb(128, p + UART_EXAR_RXTRG);
+ 	iounmap(p);
+ 
+-	return pci_default_setup(priv, board, port, idx);
++	ret = pci_default_setup(priv, board, port, idx);
++	if (ret)
++		return ret;
++
++	if (idx == 0) {
++		struct platform_device *device;
++
++		device = platform_device_alloc("gpio_exar",
++					       PLATFORM_DEVID_AUTO);
++		if (!device)
++			return -ENOMEM;
++
++		if (platform_device_add(device) < 0) {
++			platform_device_put(device);
++			return -ENODEV;
++		}
++
++		port->port.private_data = device;
++		platform_set_drvdata(device, priv->dev);
++	}
++
++	return 0;
+ }
+ 
+ #define PCI_DEVICE_ID_COMMTECH_4222PCI335 0x0004
+@@ -2407,6 +2441,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_xr17v35x_setup,
++		.exit		= pci_xr17v35x_exit,
+ 	},
+ 	{
+ 		.vendor = PCI_VENDOR_ID_EXAR,
+@@ -2414,6 +2449,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_xr17v35x_setup,
++		.exit		= pci_xr17v35x_exit,
+ 	},
+ 	{
+ 		.vendor = PCI_VENDOR_ID_EXAR,
+@@ -2421,6 +2457,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_xr17v35x_setup,
++		.exit		= pci_xr17v35x_exit,
+ 	},
+ 	{
+ 		.vendor = PCI_VENDOR_ID_EXAR,
+@@ -2428,6 +2465,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_xr17v35x_setup,
++		.exit		= pci_xr17v35x_exit,
+ 	},
+ 	{
+ 		.vendor = PCI_VENDOR_ID_EXAR,
+@@ -2435,6 +2473,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_xr17v35x_setup,
++		.exit		= pci_xr17v35x_exit,
+ 	},
+ 	/*
+ 	 * Xircom cards
+-- 
+1.9.1
 
-uart2 {
-	hide-tty-port;
-};
-
-or
-
-uart2 {
-	peer-mode;
-};
-
-or
-
-uart2 {
-	dedicated;
-};
-
-but the result is the same and the exact property name and value can be discussed later on.
-
-> 
->>> The 8686 is already working in serial mode  with no kernel hackery on
->>> other boards.
->> You appear to mix the chips we are talking about. We have the w2sg0084 gps
->> chip and a w2cbw003, which is a combo of an 8686 and a CSR BT serial device.
->> 
->> Both chips need somehow to be powered on or off if not used. Ideally automatically
->> at the moment no user space client is using them any more. For the bluetooth side
->> the moment to power off is when a hciattach is killed.
->> 
->> Other 8686 boards appear not to have such critical power restrictions and then they
->> just leave power on.
->> 
->>>> For the GPS chip I am only interested in mctrl and if characters are received. But
->>>> I still want them to arrive at user space through a standard tty interface. So a solution
->>>> that does not interwork and cooperate with the tty layer is not a useable solution for
->>>> my requirements.
->>> Why does it matter how they arrive so long as your user space can
->>> interpret it correctly. Or is your user space some proprietary blob you
->>> can't change ?
->> No, the opposite: it can be any open source application, which by principle
->> could be changed in any way. But we can't because we as the hardware
->> platform+kernel developers have no (and don't want to have) control over
->> the the user space. So we have to fit into the standards of the user space.
->> 
->>> Them arriving by a tty interface is fine - no issue with that providing
->>> it doesn't need to mess up core code.
->> You appear to assume that the tty port is always open and there is
->> a background daemon running.
->> 
->> Here, we need to solve the problem to power down the chip if NO
->> tty port is open any more.
->> 
->> We simply don't see a solution for this outside the kernel and inside without
->> touching the UART code. Although there have been many very skilled
->> developers involved in the past 3 years to get what we need into the
->> mainline kernel. There had been proposals for approx. 3 or 4 different
->> architectures which were all rejected for good reasons and the current
->> one is the one which tries to overcome all known objections and of
->> course raises new questions.
->> 
->>>> The reason appears to sit here:
->>>> 
->>>> http://lxr.free-electrons.com/source/drivers/tty/serial/serial_core.c#L2725
->>>> 
->>>> This means that as soon as some UART is successfully probed, a new tty
->>>> interface is created for it. So we simply have to optionally disable it. This is
->>>> described by requirement 6.
->>> You can just report EBUSY in your open method. You don't need to touch
->>> the serial core layer. It's quite sufficient to do
->>> 
->>> 	if (busy)
->>> 		return -EBUSY;
->>> 
->>> at the top of your uart open method.
->> Hm. I am not writing a new UART driver or touch them. I am using the existing
->> ones (omap-serial). They all call this uart_add_one_port() in their probe() function.
->> 
->> If I would modify just omap-serial, people would for sure complain that the solution
->> is not generic enough.
->> 
->>>> UART drivers we have and work with any of them. This is why I think
->>>> serial-core and struct uart_port is the right level. Even if it looks like a hack.
->>> Your "looks like" instinct is IMHO bang on - looks like a hack, is a
->>> hack.
->> It is not *my* instinct that says "looks like". It was:
->> 
->> 1. meant to be read as "Even if it looks like a hack to the uninformed reader of the patch"
->> 2. it was said by some reviewer
->> 
->> For me it is not a hack, it is a well thought logical consequence of the requirements
->> combined with the current code architecture as it exists (which often looks like a hack to me)
->> and the goal to make changes as non-intrusive as possible.
->> 
->>> It's also unnecessary as you can hide it in your open method if you
->>> must do that.
->> Creating tty ports is not *my* open method. It is part of the way all system
->> UARTs are initialized. So I can't handle this case in *my* open method, because
->> I have none that is tty_port related.
->> 
->>>> So please wait until I have updated the patch set of our proposal. Then you
->>>> can see that we do not directly touch the tty layer.
->>> The uart layer is part of the tty layer. It's just a glue library to make
->>> writing some tty drivers a bit easier.
->> Yes, and exactly that is helpful to solve this problem. We attach only to the
->> glue layer and everything is done.
->> 
->>> It's tied deeply to the tty_port
->>> implementation. One day it might even cease to exist replaced by more
->>> generic tty_port helpers.
->> Is there a concrete plan to change that? Is anyone working on it now?
->> 
->> If not, I would not worry about this, because it is not specific to the problem
->> we want to solve today (to be precise: since 3 years).
->> 
->> But even if it is changed, there must always be some glue between UARTs
->> and tty_port helpers. So it can't disappear - it can only change in structure..
->> 
->>> The tty layer is also an *abstract* concept. There is no real world tie
->>> between physical collections of shift registers that dribble bits to one
->>> another and tty devices in the kernel. You only need a tty driver for
->>> certain types of user interaction.
->> And we need it to process the GPS data by standard applications and tools.
->> 
->> BR,
->> Nikolaus
->> 
-> Best regards,
-> Andrey
-
-BR,
-Nikolaus
