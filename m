@@ -1,7 +1,7 @@
 From: Peter Hung <hpeter@gmail.com>
-Subject: [PATCH 1/3] serial: 8250_pci: Remove Fintek PCIE UART driver
-Date: Tue, 19 Jan 2016 10:41:04 +0800
-Message-ID: <1453171266-15874-2-git-send-email-hpeter+linux_kernel@gmail.com>
+Subject: [PATCH 2/3] 8250_fintek_pci: Add Fintek PCIE UART driver
+Date: Tue, 19 Jan 2016 10:41:05 +0800
+Message-ID: <1453171266-15874-3-git-send-email-hpeter+linux_kernel@gmail.com>
 References: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
@@ -10,252 +10,475 @@ To: gregkh@linuxfoundation.org, jslaby@suse.com
 Cc: andriy.shevchenko@linux.intel.com, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, yamada.masahiro@socionext.com, mans@mansr.com, scottwood@freescale.com, paul.burton@imgtec.com, paul.gortmaker@windriver.com, matthias.bgg@gmail.com, manabian@gmail.com, peter.ujfalusi@ti.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Remove Fintek F81504/508/512 PCIE-to-UART device driver from 8250_pci.c
+Add Fintek F81504/508/512 PCIE-to-UART driver 8250_fintek_pci.c
+
+Our device driver had already merge into 8250_pci.c, but it's only
+implemented basic UART function. This patch will add new file
+8250_fintek_pci.c to implements serial ports and high baudrate
+functions.
 
 Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
 ---
- drivers/tty/serial/8250/8250_pci.c | 201 -------------------------------------
- 1 file changed, 201 deletions(-)
+ drivers/tty/serial/8250/8250_fintek_pci.c | 417 ++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig           |   9 +
+ drivers/tty/serial/8250/Makefile          |   1 +
+ 3 files changed, 427 insertions(+)
+ create mode 100644 drivers/tty/serial/8250/8250_fintek_pci.c
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 4097f3f..0eeb4a3 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1527,156 +1527,6 @@ pci_brcm_trumanage_setup(struct serial_private *priv,
- 	return ret;
- }
+diff --git a/drivers/tty/serial/8250/8250_fintek_pci.c b/drivers/tty/serial/8250/8250_fintek_pci.c
+new file mode 100644
+index 0000000..5d9ea01a
+--- /dev/null
++++ b/drivers/tty/serial/8250/8250_fintek_pci.c
+@@ -0,0 +1,417 @@
++/*
++ *  Base port operations for Fintek F81504/508/512 PCI-to-UARTs 16550A-type
++ *  serial ports
++ */
++#include <linux/pci.h>
++#include <linux/serial_8250.h>
++#include <linux/module.h>
++#include "8250.h"
++
++#define FINTEK_VID		0x1c29
++#define FINTEK_F81504		0x1104
++#define FINTEK_F81508		0x1108
++#define FINTEK_F81512		0x1112
++
++#define FINTEK_MAX_PORT		12
++#define DRIVER_NAME		"f81504_serial"
++#define DEV_DESC		"Fintek F81504/508/512 PCIE-to-UART"
++
++#define UART_START_ADDR		0x40
++#define UART_MODE_OFFSET	0x07
++#define UART_OFFSET		0x08
++
++/* RTS will control by MCR if this bit is 0 */
++#define RTS_CONTROL_BY_HW	BIT(4)
++/* only worked with FINTEK_RTS_CONTROL_BY_HW on */
++#define RTS_INVERT		BIT(5)
++
++#define CLOCK_RATE_MASK		0xc0
++#define CLKSEL_1DOT846_MHZ	0x00
++#define CLKSEL_18DOT46_MHZ	0x40
++#define CLKSEL_24_MHZ		0x80
++#define CLKSEL_14DOT77_MHZ	0xc0
++
++#define IRQSEL_REG		0xb8
++
++static u32 baudrate_table[] = { 1500000, 1152000, 921600 };
++static u8 clock_table[] = { CLKSEL_24_MHZ, CLKSEL_18DOT46_MHZ,
++		CLKSEL_14DOT77_MHZ };
++
++struct f81504_pci_private {
++	int line[FINTEK_MAX_PORT];
++	u32 uart_count;
++};
++
++/* We should do proper H/W transceiver setting before change to RS485 mode */
++static int f81504_rs485_config(struct uart_port *port,
++			       struct serial_rs485 *rs485)
++{
++	u8 setting;
++	u8 *index = (u8 *)port->private_data;
++	struct pci_dev *pci_dev = container_of(port->dev, struct pci_dev, dev);
++
++	pci_read_config_byte(pci_dev, UART_START_ADDR + UART_OFFSET * *index +
++			UART_MODE_OFFSET, &setting);
++
++	if (!rs485)
++		rs485 = &port->rs485;
++	else if (rs485->flags & SER_RS485_ENABLED)
++		memset(rs485->padding, 0, sizeof(rs485->padding));
++	else
++		memset(rs485, 0, sizeof(*rs485));
++
++	/* F81504/508/512 not support RTS delay before or after send */
++	rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND;
++
++	if (rs485->flags & SER_RS485_ENABLED) {
++		/* Enable RTS H/W control mode */
++		setting |= RTS_CONTROL_BY_HW;
++
++		if (rs485->flags & SER_RS485_RTS_ON_SEND) {
++			/* RTS driving high on TX */
++			setting &= ~RTS_INVERT;
++		} else {
++			/* RTS driving low on TX */
++			setting |= RTS_INVERT;
++		}
++
++		rs485->delay_rts_after_send = 0;
++		rs485->delay_rts_before_send = 0;
++	} else {
++		/* Disable RTS H/W control mode */
++		setting &= ~(RTS_CONTROL_BY_HW | RTS_INVERT);
++	}
++
++	pci_write_config_byte(pci_dev, UART_START_ADDR + UART_OFFSET * *index +
++			UART_MODE_OFFSET, setting);
++
++	if (rs485 != &port->rs485)
++		port->rs485 = *rs485;
++
++	return 0;
++}
++
++static int f81504_check_baudrate(u32 baud, int *idx)
++{
++	size_t index;
++	u32 quot, rem;
++
++	for (index = 0; index < ARRAY_SIZE(baudrate_table); ++index) {
++		/* Clock source must largeer than desire baudrate */
++		if (baud > baudrate_table[index])
++			continue;
++
++		quot = DIV_ROUND_CLOSEST(baudrate_table[index], baud);
++		/* find divisible clock source */
++		rem = baudrate_table[index] % baud;
++
++		if (quot && !rem) {
++			if (idx)
++				*idx = index;
++			return 0;
++		}
++	}
++
++	return -EINVAL;
++}
++
++static void f81504_set_termios(struct uart_port *port,
++		struct ktermios *termios, struct ktermios *old)
++{
++	struct pci_dev *dev = container_of(port->dev, struct pci_dev, dev);
++	unsigned int baud = tty_termios_baud_rate(termios);
++	u8 tmp, *offset = (u8 *)port->private_data;
++	int i;
++
++	do {
++		/* read current clock source (masked with CLOCK_RATE_MASK) */
++		pci_read_config_byte(dev, UART_START_ADDR + *offset *
++				UART_OFFSET, &tmp);
++
++		if (baud <= 115200) {
++			/*
++			 * direct use 1.8432MHz when baudrate smaller then or
++			 * equal 115200bps
++			 */
++			port->uartclk = 115200 * 16;
++			pci_write_config_byte(dev, UART_START_ADDR + *offset *
++					UART_OFFSET, tmp & ~CLOCK_RATE_MASK);
++			break;
++		}
++
++		if (!f81504_check_baudrate(baud, &i)) {
++			/* had optimize value */
++			port->uartclk = baudrate_table[i] * 16;
++			tmp = (tmp & ~CLOCK_RATE_MASK) | clock_table[i];
++			pci_write_config_byte(dev, UART_START_ADDR + *offset *
++					UART_OFFSET, tmp);
++			break;
++		}
++
++		if (old && !f81504_check_baudrate(tty_termios_baud_rate(old),
++				NULL)) {
++			/*
++			 * If it can't found suitable clock source but had old
++			 * accpetable baudrate, we'll use it
++			 */
++			baud = tty_termios_baud_rate(old);
++		} else {
++			/*
++			 * If it can't found suitable clock source and not old
++			 * config, we'll direct set 115200bps for future use
++			 */
++			baud = 115200;
++		}
++
++		if (tty_termios_baud_rate(termios))
++			tty_termios_encode_baud_rate(termios, baud, baud);
++	} while (1);
++
++	serial8250_do_set_termios(port, termios, old);
++}
++
++static int f81504_register_port(struct pci_dev *dev, unsigned long address,
++				int idx)
++{
++	struct uart_8250_port port;
++	u8 *data;
++
++	memset(&port, 0, sizeof(port));
++
++	data = devm_kzalloc(&dev->dev, sizeof(u8), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	*data = idx;
++	port.port.iotype = UPIO_PORT;
++	port.port.mapbase = 0;
++	port.port.membase = NULL;
++	port.port.regshift = 0;
++	port.port.irq = dev->irq;
++	port.port.flags = UPF_SKIP_TEST | UPF_FIXED_TYPE | UPF_BOOT_AUTOCONF |
++			UPF_SHARE_IRQ;
++	port.port.uartclk = 115200 * 16;
++	port.port.dev = &dev->dev;
++	port.port.iobase = address;
++	port.port.type = PORT_16550A;
++	port.port.fifosize = 128;
++	port.tx_loadsz = 32;
++	port.port.private_data = data;	/* save current idx */
++	port.port.set_termios = f81504_set_termios;
++	port.port.rs485_config = f81504_rs485_config;
++
++	return serial8250_register_8250_port(&port);
++}
++
++static int f81504_port_init(struct pci_dev *dev)
++{
++	size_t i;
++	u32 max_port, iobase;
++	u32 bar_data[3];
++	u16 tmp;
++	u8 config_base;
++	struct f81504_pci_private *priv = pci_get_drvdata(dev);
++	struct uart_8250_port *port;
++
++	switch (dev->device) {
++	case FINTEK_F81504: /* 4 ports */
++	case FINTEK_F81508: /* 8 ports */
++		max_port = dev->device & 0xff;
++		break;
++	case FINTEK_F81512: /* 12 ports */
++		max_port = 12;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	/* Get the UART IO address dispatch from the BIOS */
++	pci_read_config_dword(dev, 0x24, &bar_data[0]);
++	pci_read_config_dword(dev, 0x20, &bar_data[1]);
++	pci_read_config_dword(dev, 0x1c, &bar_data[2]);
++
++	/* Compatible for newer step IC */
++	pci_read_config_word(dev, IRQSEL_REG, &tmp);
++	tmp |= BIT(8);
++	pci_write_config_word(dev, IRQSEL_REG, tmp);
++
++	for (i = 0; i < max_port; ++i) {
++		/* UART0 configuration offset start from 0x40 */
++		config_base = UART_START_ADDR + UART_OFFSET * i;
++
++		/* Calculate Real IO Port */
++		iobase = (bar_data[i / 4] & 0xffffffe0) + (i % 4) * 8;
++
++		/* Enable UART I/O port */
++		pci_write_config_byte(dev, config_base + 0x00, 0x01);
++
++		/* Select 128-byte FIFO and 8x FIFO threshold */
++		pci_write_config_byte(dev, config_base + 0x01, 0x33);
++
++		/* LSB UART */
++		pci_write_config_byte(dev, config_base + 0x04,
++				(u8)(iobase & 0xff));
++
++		/* MSB UART */
++		pci_write_config_byte(dev, config_base + 0x05,
++				(u8)((iobase & 0xff00) >> 8));
++
++		pci_write_config_byte(dev, config_base + 0x06, dev->irq);
++
++		/* First init. force init to RS232 Mode */
++		pci_write_config_byte(dev, config_base + 0x07, 0x01);
++	}
++
++	if (!priv)
++		return 0;
++
++	/* re-apply RS232/485 mode when f81504_resume() */
++	for (i = 0; i < priv->uart_count; ++i) {
++		port = serial8250_get_port(priv->line[i]);
++		f81504_rs485_config(&port->port, NULL);
++	}
++
++	return 0;
++}
++
++static int f81504_probe(struct pci_dev *dev, const struct pci_device_id
++				*dev_id)
++{
++	int status;
++	size_t i;
++	u16 iobase;
++	u8 tmp;
++	struct f81504_pci_private *priv;
++
++	status = pci_enable_device(dev);
++	if (status)
++		return status;
++
++	/* Init PCI Configuration Space */
++	status = f81504_port_init(dev);
++	if (status)
++		return status;
++
++	priv = devm_kzalloc(&dev->dev, sizeof(struct f81504_pci_private),
++				GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	pci_set_drvdata(dev, priv);
++
++	/* Generate UART Ports */
++	for (i = 0; i < dev_id->driver_data; ++i) {
++		/* Check UART is enabled */
++		pci_read_config_byte(dev, UART_START_ADDR + i * UART_OFFSET,
++					&tmp);
++		if (!tmp)
++			continue;
++
++		/* Get UART IO Address */
++		pci_read_config_word(dev, UART_START_ADDR + i * UART_OFFSET +
++					4, &iobase);
++
++		/* Register to serial port */
++		priv->line[priv->uart_count] = f81504_register_port(dev,
++								iobase, i);
++		++priv->uart_count;
++	}
++
++	return 0;
++}
++
++static void f81504_remove(struct pci_dev *dev)
++{
++	struct f81504_pci_private *priv = pci_get_drvdata(dev);
++	size_t i;
++
++	for (i = 0; i < priv->uart_count; ++i) {
++		if (priv->line[i] < 0)
++			continue;
++
++		serial8250_unregister_port(priv->line[i]);
++	}
++
++	pci_disable_device(dev);
++}
++
++#ifdef CONFIG_PM
++static int f81504_suspend(struct pci_dev *dev, pm_message_t state)
++{
++	size_t i;
++	int status;
++	struct f81504_pci_private *priv = pci_get_drvdata(dev);
++
++	status = pci_save_state(dev);
++	if (status)
++		return status;
++
++	status = pci_set_power_state(dev, pci_choose_state(dev, state));
++	if (status)
++		return status;
++
++	for (i = 0; i < priv->uart_count; ++i) {
++		if (priv->line[i] < 0)
++			continue;
++
++		serial8250_suspend_port(priv->line[i]);
++	}
++
++	return 0;
++}
++
++static int f81504_resume(struct pci_dev *dev)
++{
++	size_t i;
++	int status;
++	struct f81504_pci_private *priv = pci_get_drvdata(dev);
++
++	status = pci_set_power_state(dev, PCI_D0);
++	if (status)
++		return status;
++
++	pci_restore_state(dev);
++
++	/* Init PCI Configuration Space */
++	status = f81504_port_init(dev);
++	if (status)
++		return status;
++
++	for (i = 0; i < priv->uart_count; ++i) {
++		if (priv->line[i] < 0)
++			continue;
++
++		serial8250_resume_port(priv->line[i]);
++	}
++
++	return 0;
++}
++#else
++#define f81504_suspend NULL
++#define f81504_resume NULL
++#endif
++
++static const struct pci_device_id f81504_dev_table[] = {
++	/* Fintek PCI serial cards */
++	{PCI_DEVICE(FINTEK_VID, FINTEK_F81504), .driver_data = 4},
++	{PCI_DEVICE(FINTEK_VID, FINTEK_F81508), .driver_data = 8},
++	{PCI_DEVICE(FINTEK_VID, FINTEK_F81512), .driver_data = 12},
++	{}
++};
++
++MODULE_DEVICE_TABLE(pci, f81504_dev_table);
++
++static struct pci_driver f81504_driver = {
++	.name = DRIVER_NAME,
++	.probe = f81504_probe,
++	.remove = f81504_remove,
++	.suspend = f81504_suspend,
++	.resume = f81504_resume,
++	.id_table = f81504_dev_table,
++};
++
++module_pci_driver(f81504_driver);
++
++MODULE_DESCRIPTION(DEV_DESC);
++MODULE_AUTHOR("Peter Hong <Peter_Hong@fintek.com.tw>");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index b03cb517..0533a6b 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -116,6 +116,15 @@ config SERIAL_8250_PCI
+ 	  Note that serial ports on NetMos 9835 Multi-I/O cards are handled
+ 	  by the parport_serial driver, enabled with CONFIG_PARPORT_SERIAL.
  
--/* RTS will control by MCR if this bit is 0 */
--#define FINTEK_RTS_CONTROL_BY_HW	BIT(4)
--/* only worked with FINTEK_RTS_CONTROL_BY_HW on */
--#define FINTEK_RTS_INVERT		BIT(5)
--
--/* We should do proper H/W transceiver setting before change to RS485 mode */
--static int pci_fintek_rs485_config(struct uart_port *port,
--			       struct serial_rs485 *rs485)
--{
--	u8 setting;
--	u8 *index = (u8 *) port->private_data;
--	struct pci_dev *pci_dev = container_of(port->dev, struct pci_dev,
--						dev);
--
--	pci_read_config_byte(pci_dev, 0x40 + 8 * *index + 7, &setting);
--
--	if (!rs485)
--		rs485 = &port->rs485;
--	else if (rs485->flags & SER_RS485_ENABLED)
--		memset(rs485->padding, 0, sizeof(rs485->padding));
--	else
--		memset(rs485, 0, sizeof(*rs485));
--
--	/* F81504/508/512 not support RTS delay before or after send */
--	rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND;
--
--	if (rs485->flags & SER_RS485_ENABLED) {
--		/* Enable RTS H/W control mode */
--		setting |= FINTEK_RTS_CONTROL_BY_HW;
--
--		if (rs485->flags & SER_RS485_RTS_ON_SEND) {
--			/* RTS driving high on TX */
--			setting &= ~FINTEK_RTS_INVERT;
--		} else {
--			/* RTS driving low on TX */
--			setting |= FINTEK_RTS_INVERT;
--		}
--
--		rs485->delay_rts_after_send = 0;
--		rs485->delay_rts_before_send = 0;
--	} else {
--		/* Disable RTS H/W control mode */
--		setting &= ~(FINTEK_RTS_CONTROL_BY_HW | FINTEK_RTS_INVERT);
--	}
--
--	pci_write_config_byte(pci_dev, 0x40 + 8 * *index + 7, setting);
--
--	if (rs485 != &port->rs485)
--		port->rs485 = *rs485;
--
--	return 0;
--}
--
--static int pci_fintek_setup(struct serial_private *priv,
--			    const struct pciserial_board *board,
--			    struct uart_8250_port *port, int idx)
--{
--	struct pci_dev *pdev = priv->dev;
--	u8 *data;
--	u8 config_base;
--	u16 iobase;
--
--	config_base = 0x40 + 0x08 * idx;
--
--	/* Get the io address from configuration space */
--	pci_read_config_word(pdev, config_base + 4, &iobase);
--
--	dev_dbg(&pdev->dev, "%s: idx=%d iobase=0x%x", __func__, idx, iobase);
--
--	port->port.iotype = UPIO_PORT;
--	port->port.iobase = iobase;
--	port->port.rs485_config = pci_fintek_rs485_config;
--
--	data = devm_kzalloc(&pdev->dev, sizeof(u8), GFP_KERNEL);
--	if (!data)
--		return -ENOMEM;
--
--	/* preserve index in PCI configuration space */
--	*data = idx;
--	port->port.private_data = data;
--
--	return 0;
--}
--
--static int pci_fintek_init(struct pci_dev *dev)
--{
--	unsigned long iobase;
--	u32 max_port, i;
--	u32 bar_data[3];
--	u8 config_base;
--	struct serial_private *priv = pci_get_drvdata(dev);
--	struct uart_8250_port *port;
--
--	switch (dev->device) {
--	case 0x1104: /* 4 ports */
--	case 0x1108: /* 8 ports */
--		max_port = dev->device & 0xff;
--		break;
--	case 0x1112: /* 12 ports */
--		max_port = 12;
--		break;
--	default:
--		return -EINVAL;
--	}
--
--	/* Get the io address dispatch from the BIOS */
--	pci_read_config_dword(dev, 0x24, &bar_data[0]);
--	pci_read_config_dword(dev, 0x20, &bar_data[1]);
--	pci_read_config_dword(dev, 0x1c, &bar_data[2]);
--
--	for (i = 0; i < max_port; ++i) {
--		/* UART0 configuration offset start from 0x40 */
--		config_base = 0x40 + 0x08 * i;
--
--		/* Calculate Real IO Port */
--		iobase = (bar_data[i / 4] & 0xffffffe0) + (i % 4) * 8;
--
--		/* Enable UART I/O port */
--		pci_write_config_byte(dev, config_base + 0x00, 0x01);
--
--		/* Select 128-byte FIFO and 8x FIFO threshold */
--		pci_write_config_byte(dev, config_base + 0x01, 0x33);
--
--		/* LSB UART */
--		pci_write_config_byte(dev, config_base + 0x04,
--				(u8)(iobase & 0xff));
--
--		/* MSB UART */
--		pci_write_config_byte(dev, config_base + 0x05,
--				(u8)((iobase & 0xff00) >> 8));
--
--		pci_write_config_byte(dev, config_base + 0x06, dev->irq);
--
--		if (priv) {
--			/* re-apply RS232/485 mode when
--			 * pciserial_resume_ports()
--			 */
--			port = serial8250_get_port(priv->line[i]);
--			pci_fintek_rs485_config(&port->port, NULL);
--		} else {
--			/* First init without port data
--			 * force init to RS232 Mode
--			 */
--			pci_write_config_byte(dev, config_base + 0x07, 0x01);
--		}
--	}
--
--	return max_port;
--}
--
- static int skip_tx_en_setup(struct serial_private *priv,
- 			const struct pciserial_board *board,
- 			struct uart_8250_port *port, int idx)
-@@ -2707,31 +2557,6 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= pci_brcm_trumanage_setup,
- 	},
--	{
--		.vendor		= 0x1c29,
--		.device		= 0x1104,
--		.subvendor	= PCI_ANY_ID,
--		.subdevice	= PCI_ANY_ID,
--		.setup		= pci_fintek_setup,
--		.init		= pci_fintek_init,
--	},
--	{
--		.vendor		= 0x1c29,
--		.device		= 0x1108,
--		.subvendor	= PCI_ANY_ID,
--		.subdevice	= PCI_ANY_ID,
--		.setup		= pci_fintek_setup,
--		.init		= pci_fintek_init,
--	},
--	{
--		.vendor		= 0x1c29,
--		.device		= 0x1112,
--		.subvendor	= PCI_ANY_ID,
--		.subdevice	= PCI_ANY_ID,
--		.setup		= pci_fintek_setup,
--		.init		= pci_fintek_init,
--	},
--
- 	/*
- 	 * Default "match everything" terminator entry
- 	 */
-@@ -2933,9 +2758,6 @@ enum pci_board_num_t {
- 	pbn_omegapci,
- 	pbn_NETMOS9900_2s_115200,
- 	pbn_brcm_trumanage,
--	pbn_fintek_4,
--	pbn_fintek_8,
--	pbn_fintek_12,
- 	pbn_wch384_4,
- 	pbn_pericom_PI7C9X7951,
- 	pbn_pericom_PI7C9X7952,
-@@ -3738,24 +3560,6 @@ static struct pciserial_board pci_boards[] = {
- 		.reg_shift	= 2,
- 		.base_baud	= 115200,
- 	},
--	[pbn_fintek_4] = {
--		.num_ports	= 4,
--		.uart_offset	= 8,
--		.base_baud	= 115200,
--		.first_offset	= 0x40,
--	},
--	[pbn_fintek_8] = {
--		.num_ports	= 8,
--		.uart_offset	= 8,
--		.base_baud	= 115200,
--		.first_offset	= 0x40,
--	},
--	[pbn_fintek_12] = {
--		.num_ports	= 12,
--		.uart_offset	= 8,
--		.base_baud	= 115200,
--		.first_offset	= 0x40,
--	},
- 	[pbn_wch384_4] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 4,
-@@ -5581,11 +5385,6 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		0,
- 		0, pbn_exar_XR17V358 },
- 
--	/* Fintek PCI serial cards */
--	{ PCI_DEVICE(0x1c29, 0x1104), .driver_data = pbn_fintek_4 },
--	{ PCI_DEVICE(0x1c29, 0x1108), .driver_data = pbn_fintek_8 },
--	{ PCI_DEVICE(0x1c29, 0x1112), .driver_data = pbn_fintek_12 },
--
- 	/*
- 	 * These entries match devices with class COMMUNICATION_SERIAL,
- 	 * COMMUNICATION_MODEM or COMMUNICATION_MULTISERIAL
++config SERIAL_8250_FINTEK_PCI
++        tristate "Fintek F81504/508/512 PCI-E to Multi Serial Ports support"
++        depends on SERIAL_8250 && PCI
++        default m
++        help
++          This driver works for Fintek F81504/508/512 PCIE-to-UART/GPIO
++          multi-function device. We'll use GPIOLIB interface to control
++          GPIOs if your card vendor reserve some pin as gpio.
++
+ config SERIAL_8250_HP300
+ 	tristate
+ 	depends on SERIAL_8250 && HP300
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index b9b9bca..83ed91f 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_SERIAL_8250)		+= 8250.o 8250_base.o
+ 8250_base-$(CONFIG_SERIAL_8250_DMA)	+= 8250_dma.o
+ obj-$(CONFIG_SERIAL_8250_GSC)		+= 8250_gsc.o
+ obj-$(CONFIG_SERIAL_8250_PCI)		+= 8250_pci.o
++obj-$(CONFIG_SERIAL_8250_FINTEK_PCI)	+= 8250_fintek_pci.o
+ obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
+ obj-$(CONFIG_SERIAL_8250_CS)		+= serial_cs.o
+ obj-$(CONFIG_SERIAL_8250_ACORN)		+= 8250_acorn.o
 -- 
 1.9.1
