@@ -1,35 +1,42 @@
-From: =?utf-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
-Subject: Re: [PATCH LINUX v5 0/8] tty: xuartps: Fix lock ups
-Date: Mon, 18 Jan 2016 16:27:51 -0800
-Message-ID: <20160119002751.GD6491@xsjsorenbubuntu>
-References: <1451126636-13699-1-git-send-email-soren.brinkmann@xilinx.com>
- <5691F7C6.5050107@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Peter Hung <hpeter@gmail.com>
+Subject: [PATCH 0/3] 8250: Split Fintek PCIE to UART to independent file
+Date: Tue, 19 Jan 2016 10:41:03 +0800
+Message-ID: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5691F7C6.5050107@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Moritz Fischer <moritz.fischer@ettus.com>
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: andriy.shevchenko@linux.intel.com, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, yamada.masahiro@socionext.com, mans@mansr.com, scottwood@freescale.com, paul.burton@imgtec.com, paul.gortmaker@windriver.com, matthias.bgg@gmail.com, manabian@gmail.com, peter.ujfalusi@ti.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, 2016-01-09 at 10:18PM -0800, Peter Hurley wrote:
-> On 12/26/2015 02:43 AM, Soren Brinkmann wrote:
-> > Hi,
-> >=20
-> > as requested by Peter, this is the first part of my series which ha=
-s the
-> > patches reviewed by Peter. I'll submit the second part separately. =
-There
-> > are no new changes within the patches.
->=20
-> Thanks. Looks good.
+Fintek F81504/508/512 is a multi-functional PCIE device. It contains
+GPIO and serial port with high baudrate & RTS auto direction for RS485.
 
-Thanks, Peter.
+The serial ports support from 50bps to 1.5Mbps with Linux baudrate
+define excluding 1.0Mbps due to not support 16MHz clock source.
 
-Greg, would you pick these up please? Or is anything missing?
+IC function list:
+	F81504: Max 2x8 GPIOs and max 4 serial ports
+			port2/3 are multi-function
+	F81508: Max 6x8 GPIOs and max 8 serial ports
+			port2/3 are multi-function, port8/9/10/11 are gpio only
+	F81512: Max 6x8 GPIOs and max 12 serial ports
+			port2/3/8/9/10/11 are multi-function
 
-	Thanks,
-	S=C3=B6ren
+We'll spilt from 8250_pci.c to new file 8250_fintek_pci.c and make it
+as a kernel module with first & second patch, implements GPIOLIB with
+third patch. 
+
+Peter Hung (3):
+  serial: 8250_pci: Remove Fintek PCIE UART driver
+  8250_fintek_pci: Add Fintek PCIE UART driver
+  8250_fintek_pci: Add GPIOLIB support
+
+ drivers/tty/serial/8250/8250_fintek_pci.c | 767 ++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pci.c        | 201 --------
+ drivers/tty/serial/8250/Kconfig           |   9 +
+ drivers/tty/serial/8250/Makefile          |   1 +
+ 4 files changed, 777 insertions(+), 201 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_fintek_pci.c
+
+-- 
+1.9.1
