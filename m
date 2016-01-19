@@ -1,50 +1,82 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH LINUX v5 0/8] tty: xuartps: Fix lock ups
-Date: Mon, 18 Jan 2016 19:22:36 -0800
-Message-ID: <20160119032236.GA28769@kroah.com>
-References: <1451126636-13699-1-git-send-email-soren.brinkmann@xilinx.com>
- <5691F7C6.5050107@hurleysoftware.com>
- <20160119002751.GD6491@xsjsorenbubuntu>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH 0/3] 8250: Split Fintek PCIE to UART to independent file
+Date: Mon, 18 Jan 2016 22:56:50 -0500
+Message-ID: <20160119035649.GA1696@windriver.com>
+References: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160119002751.GD6491@xsjsorenbubuntu>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?iso-8859-1?Q?S=F6ren?= Brinkmann <soren.brinkmann@xilinx.com>
-Cc: Moritz Fischer <moritz.fischer@ettus.com>, Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hung <hpeter@gmail.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, yamada.masahiro@socionext.com, mans@mansr.com, scottwood@freescale.com, paul.burton@imgtec.com, matthias.bgg@gmail.com, manabian@gmail.com, peter.ujfalusi@ti.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 18, 2016 at 04:27:51PM -0800, S=F6ren Brinkmann wrote:
-> On Sat, 2016-01-09 at 10:18PM -0800, Peter Hurley wrote:
-> > On 12/26/2015 02:43 AM, Soren Brinkmann wrote:
-> > > Hi,
-> > > =
+[[PATCH 0/3] 8250: Split Fintek PCIE to UART to independent file] On 19/01/2016 (Tue 10:41) Peter Hung wrote:
 
-> > > as requested by Peter, this is the first part of my series which has =
-the
-> > > patches reviewed by Peter. I'll submit the second part separately. Th=
-ere
-> > > are no new changes within the patches.
-> > =
+> Fintek F81504/508/512 is a multi-functional PCIE device. It contains
+> GPIO and serial port with high baudrate & RTS auto direction for RS485.
+> 
 
-> > Thanks. Looks good.
-> =
+Some general high level comments (meaning I've not looked at the code in
+detail, but have looked at this series) and I wonder about some issues:
 
-> Thanks, Peter.
-> =
+> The serial ports support from 50bps to 1.5Mbps with Linux baudrate
+> define excluding 1.0Mbps due to not support 16MHz clock source.
 
-> Greg, would you pick these up please? Or is anything missing?
+How does this differ from what was achieved or possible with the old way
+of things?  What was the limitation in the existing 8250 code sharing
+that required Fintek code to fork and become independent? 
 
-I will, after the 4.5-rc1 kernel is out, thanks.
+How much code was just copied 8250 boilerplate vs. being a new
+implementation?  The diffstat shows approx 500 lines of new code.  What
+does that add vs. just copying?
 
-greg k-h
+Don't get me wrong -- forking workarounds for buggy hardware into
+smaller workaround files and/or Kconfigs can be a win for everyone else,
+but we should be clear on why we do them.
+
+> 
+> IC function list:
+> 	F81504: Max 2x8 GPIOs and max 4 serial ports
+> 			port2/3 are multi-function
+> 	F81508: Max 6x8 GPIOs and max 8 serial ports
+> 			port2/3 are multi-function, port8/9/10/11 are gpio only
+> 	F81512: Max 6x8 GPIOs and max 12 serial ports
+> 			port2/3/8/9/10/11 are multi-function
+> 
+> We'll spilt from 8250_pci.c to new file 8250_fintek_pci.c and make it
+> as a kernel module with first & second patch, implements GPIOLIB with
+> third patch. 
+
+> 
+> Peter Hung (3):
+>   serial: 8250_pci: Remove Fintek PCIE UART driver
+
+If someone had 8250 (PCI) builtin before, and Fintek stops working,
+they will most guaranteed bisect to this commit above where you remove
+support.  That is less than ideal.  We try to avoid code deletions or
+Kconfig addtions that will be obvious bisect magnets.
+
+>   8250_fintek_pci: Add Fintek PCIE UART driver
+
+This creates a new Kconfig var. which is default=m.  How does that work
+if people were using these for built-in early console support in the
+past?  Are these cards universal, or should it be default=m if (...)
+based on a Kconfig where this hardware exists?
+
+>   8250_fintek_pci: Add GPIOLIB support
+
+What does this add?  The commit log is not at all clear.  Leaving me to
+ask if it does belong in the core PCI support code at all?  I honestly
+don't know, since I don't know the hardware details here.  The commit
+long logs could go a long way to closing this knowledge gap if the 0/N
+listed the shortcomings and the 3/3 here indicated what the GPIO magic
+had managed to add.
+
+Again, this may be obvious to others, but the long logs should try and
+give a hint to people on the fringe who maybe don't have all the
+specific Fintek hardware details when reading the logs.
+
+P.
