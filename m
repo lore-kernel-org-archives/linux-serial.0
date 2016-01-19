@@ -1,435 +1,94 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH v5] serial: 8250: add gpio support to exar
-Date: Tue, 19 Jan 2016 11:36:35 +0530
-Message-ID: <1453183595-17996-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-gpio-owner@vger.kernel.org>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, gnomes@lxorguk.ukuu.org.uk, andy.shevchenko@gmail.com, Rob Groner <rgroner@rtd.com>
+From: Andreas Kemnade <andreas@kemnade.info>
+Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
+Date: Tue, 19 Jan 2016 07:32:31 +0100
+Message-ID: <20160119073231.19f16f28@kemnade.info>
+References: <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
+	<20160113191542.GA12086@leverpostej>
+	<1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com>
+	<20160115110106.GA3262@leverpostej>
+	<69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com>
+	<569913A1.80606@cogentembedded.com>
+	<CB69F6F0-B40B-47D1-B175-8401F43288C5@goldelico.com>
+	<56992959.2020204@hurleysoftware.com>
+	<CAL_JsqL=Wotz4FuoV7PULfZNfSV=S_q0iOzkckVA3NDDzMdfZQ@mail.gmail.com>
+	<744620565.20160116103445@cogentembedded.com>
+	<20160116233157.GA7774@rob-hp-laptop>
+	<3D5F35D7-31B5-4E68-875F-7DD492EF0316@goldelico.com>
+	<20160117141912.4aa2e46c@lxorguk.ukuu.org.uk>
+	<1D5F146E-D347-453B-9158-8D269F8DA99C@goldelico.com>
+	<20160117193849.69d00c28@lxorguk.ukuu.org.uk>
+	<37DCE36D-0A5E-41C5-BDA4-857DCF9F2DD1@goldelico.com>
+	<20160118111926.0882b422@lxorguk.ukuu.org.uk>
+	<07F3B6C0-0C87-478C-B6DD-5C0EECB42D0D@goldelico.com>
+	<20160118220319.051c9cc0@lxorguk.ukuu.org.uk>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/OYnXFMivLR=1xwRbTpNqEea"; protocol="application/pgp-signature"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160118220319.051c9cc0@lxorguk.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: "H. Nikolaus Schaller" <hns@goldelico.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Vostrikov Andrey <andrey.vostrikov@cogentembedded.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, List for communicating with real GTA04 owners <gta04-owner@goldelico.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robherring2@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, NeilBrown <neil@brown.name>, Marek Belisko <marek@goldelico.com>, Jiri Slaby <jslaby@suse.cz>, tomeu@tomeuvizoso.net
 List-Id: linux-serial@vger.kernel.org
 
-Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
-can be controlled using gpio interface.
-Add support to use these pins.
+--Sig_/OYnXFMivLR=1xwRbTpNqEea
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
----
+On Mon, 18 Jan 2016 22:03:19 +0000
+One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk> wrote:
 
-v5: I messed up v4 while sending.
+> > > Your user space can do it (as most Android does).
+> >=20
+> > How can it do it in automatically in a standardized way without need fo=
+r daemon support?
+>=20
+> You don't need to - it can be device specific. In Android it usually is.
+> I've never understood why low end devices don't also abstract user space
+> descriptions of power control into DT nodes as well as kernel properties ?
+>=20
+Well, on these android devices, they are only intended to run android and
+have another abstraction layer where you can hide things.
+If doing actions on opening or closing a tty should not be implemented in
+kernel space, then an alternative I see would be to at least have proper
+rfkill support for bluetooth and gps in kernel. Then userspace can at least
+can talk to a standardised interface. So userspace just has to implement
+generic things.
 
-v4: Alan's suggestion won, used platform device to bind to the gpio
-driver. Looks like that is the best option among all the alternatives.
-GPIO driver is totally separate now and doesnot loads if the
-hardware is not connected. Cc-ing GPIO people also for their comments,
-previous versions didnot have Cc to GPIO.
+That would mean for the kernel drivers needed:
 
-v3: Alan commented on v2, few things like NULL check, name of the gpio
-chip, moving some more code into the gpio code. He also commented on it
-being a separate module, but since this will not be needed by someone who
-is not using Exar chip, and even those who are using, some of them may
-not need it. This is optional for only those who wants to use the gpio
-capability of that chip. So kept it as a separate module.
 
-v2: v1 had problems with build, reported by 0day bot.
+W2CBW003/bluetooth:
+   map the rfkill to just a simple regulator
 
- drivers/gpio/Kconfig               |   7 +
- drivers/gpio/Makefile              |   1 +
- drivers/gpio/gpio-exar.c           | 255 +++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_pci.c |  41 +++++-
- 4 files changed, 303 insertions(+), 1 deletion(-)
- create mode 100644 drivers/gpio/gpio-exar.c
+W2SG0004/gps:
+   being notified about incoming data
+     a) the nice way: getting it from the tty/tty_port layer
+ 	(but requiring changes at generic kernel code)
+        or
+     b) the ugly way:
+        remux the data line as a gpio and simply look for state
+        changes during rfkill call (probably only during unblock)
+	The first characters after power on would probably be lost
+        toggle a gpio depending on the desired and detected state
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index c88dd24..d45f16e 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -986,6 +986,13 @@ config GPIO_SODAVILLE
- 	help
- 	  Say Y here to support Intel Sodaville GPIO.
- 
-+config GPIO_EXAR
-+	tristate "Support for GPIO pins on XR17V352/354/358"
-+	depends on SERIAL_8250_PCI
-+	help
-+	  Selecting this option will enable handling of GPIO pins present
-+	  on Exar XR17V352/354/358 chips.
-+
- endmenu
- 
- menu "SPI GPIO expanders"
-diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
-index ece7d7c..3c7c849 100644
---- a/drivers/gpio/Makefile
-+++ b/drivers/gpio/Makefile
-@@ -38,6 +38,7 @@ obj-$(CONFIG_GPIO_DWAPB)	+= gpio-dwapb.o
- obj-$(CONFIG_GPIO_EM)		+= gpio-em.o
- obj-$(CONFIG_GPIO_EP93XX)	+= gpio-ep93xx.o
- obj-$(CONFIG_GPIO_ETRAXFS)	+= gpio-etraxfs.o
-+obj-$(CONFIG_GPIO_EXAR)		+= gpio-exar.o
- obj-$(CONFIG_GPIO_F7188X)	+= gpio-f7188x.o
- obj-$(CONFIG_GPIO_GE_FPGA)	+= gpio-ge.o
- obj-$(CONFIG_GPIO_GRGPIO)	+= gpio-grgpio.o
-diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-new file mode 100644
-index 0000000..494405d
---- /dev/null
-+++ b/drivers/gpio/gpio-exar.c
-@@ -0,0 +1,255 @@
-+/*
-+ * GPIO driver for Exar XR17V35X chip
-+ *
-+ * Copyright (C) 2015 Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+#include <linux/platform_device.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/device.h>
-+#include <linux/pci.h>
-+#include <linux/gpio.h>
-+
-+#define EXAR_OFFSET_MPIOLVL_LO 0x90
-+#define EXAR_OFFSET_MPIOSEL_LO 0x93
-+#define EXAR_OFFSET_MPIOLVL_HI 0x96
-+#define EXAR_OFFSET_MPIOSEL_HI 0x99
-+
-+static LIST_HEAD(exar_list);
-+static DEFINE_MUTEX(exar_mtx); /* lock while manipulating the list */
-+
-+struct exar_gpio_chip {
-+	struct gpio_chip gpio_chip;
-+	struct mutex lock;
-+	struct list_head list;
-+	int index;
-+	void __iomem *regs;
-+	char name[16];
-+};
-+
-+#define to_exar_chip(n) container_of(n, struct exar_gpio_chip, gpio_chip)
-+
-+static inline unsigned int read_exar_reg(struct exar_gpio_chip *chip,
-+					 int offset)
-+{
-+	pr_debug("%s regs=%p offset=%x\n", __func__, chip->regs, offset);
-+	return readb(chip->regs + offset);
-+}
-+
-+static inline void write_exar_reg(struct exar_gpio_chip *chip, int offset,
-+				  int value)
-+{
-+	pr_debug("%s regs=%p value=%x offset=%x\n", __func__, chip->regs,
-+		 value, offset);
-+	writeb(value, chip->regs + offset);
-+}
-+
-+static void exar_set(struct gpio_chip *chip, unsigned int reg, int val,
-+		     unsigned int offset)
-+{
-+	struct exar_gpio_chip *exar_gpio = to_exar_chip(chip);
-+	int temp;
-+
-+	mutex_lock(&exar_gpio->lock);
-+	temp = read_exar_reg(exar_gpio, reg);
-+	temp &= ~(1 << offset);
-+	temp |= val << offset;
-+	write_exar_reg(exar_gpio, reg, temp);
-+	mutex_unlock(&exar_gpio->lock);
-+}
-+
-+static int exar_direction_output(struct gpio_chip *chip, unsigned int offset,
-+				 int value)
-+{
-+	if (offset < 8)
-+		exar_set(chip, EXAR_OFFSET_MPIOSEL_LO, 0, offset);
-+	else
-+		exar_set(chip, EXAR_OFFSET_MPIOSEL_HI, 0, offset - 8);
-+	return 0;
-+}
-+
-+static int exar_direction_input(struct gpio_chip *chip, unsigned int offset)
-+{
-+	if (offset < 8)
-+		exar_set(chip, EXAR_OFFSET_MPIOSEL_LO, 1, offset);
-+	else
-+		exar_set(chip, EXAR_OFFSET_MPIOSEL_HI, 1, offset - 8);
-+	return 0;
-+}
-+
-+static int exar_get(struct gpio_chip *chip, unsigned int reg)
-+{
-+	int value;
-+	struct exar_gpio_chip *exar_gpio = to_exar_chip(chip);
-+
-+	if (!exar_gpio) {
-+		pr_err("%s exar_gpio is NULL\n", __func__);
-+		return -ENOMEM;
-+	}
-+
-+	mutex_lock(&exar_gpio->lock);
-+	value = read_exar_reg(exar_gpio, reg);
-+	mutex_unlock(&exar_gpio->lock);
-+
-+	return value;
-+}
-+
-+static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
-+{
-+	int val;
-+
-+	if (offset < 8) {
-+		val = exar_get(chip, EXAR_OFFSET_MPIOSEL_LO);
-+	} else {
-+		val = exar_get(chip, EXAR_OFFSET_MPIOSEL_HI);
-+		offset -= 8;
-+	}
-+
-+	if (val > 0) {
-+		val >>= offset;
-+		val &= 0x01;
-+	}
-+
-+	return val;
-+}
-+
-+static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
-+{
-+	int val;
-+
-+	if (offset < 8) {
-+		val = exar_get(chip, EXAR_OFFSET_MPIOLVL_LO);
-+	} else {
-+		val = exar_get(chip, EXAR_OFFSET_MPIOLVL_HI);
-+		offset -= 8;
-+	}
-+	val >>= offset;
-+	val &= 0x01;
-+
-+	return val;
-+}
-+
-+static void exar_set_value(struct gpio_chip *chip, unsigned int offset,
-+			   int value)
-+{
-+	if (offset < 8)
-+		exar_set(chip, EXAR_OFFSET_MPIOLVL_LO, value, offset);
-+	else
-+		exar_set(chip, EXAR_OFFSET_MPIOLVL_HI, value, offset - 8);
-+}
-+
-+static int gpio_exar_probe(struct platform_device *pdev)
-+{
-+	struct pci_dev *dev = platform_get_drvdata(pdev);
-+	struct exar_gpio_chip *exar_gpio, *exar_temp;
-+	void __iomem *p;
-+	int index = 1;
-+	int ret;
-+
-+	if (dev->vendor != PCI_VENDOR_ID_EXAR)
-+		return -ENODEV;
-+
-+	p = pci_ioremap_bar(dev, 0);
-+	if (!p)
-+		return -ENOMEM;
-+
-+	exar_gpio = devm_kzalloc(&dev->dev, sizeof(*exar_gpio), GFP_KERNEL);
-+	if (!exar_gpio) {
-+		ret = -ENOMEM;
-+		goto err_unmap;
-+	}
-+
-+	mutex_init(&exar_gpio->lock);
-+	INIT_LIST_HEAD(&exar_gpio->list);
-+
-+	mutex_lock(&exar_mtx);
-+	/* find the first unused index */
-+	list_for_each_entry(exar_temp, &exar_list, list) {
-+		if (exar_temp->index == index) {
-+			index++;
-+			continue;
-+		}
-+	}
-+
-+	sprintf(exar_gpio->name, "exar_gpio%d", index);
-+	exar_gpio->gpio_chip.label = exar_gpio->name;
-+	exar_gpio->gpio_chip.parent = &dev->dev;
-+	exar_gpio->gpio_chip.direction_output = exar_direction_output;
-+	exar_gpio->gpio_chip.direction_input = exar_direction_input;
-+	exar_gpio->gpio_chip.get_direction = exar_get_direction;
-+	exar_gpio->gpio_chip.get = exar_get_value;
-+	exar_gpio->gpio_chip.set = exar_set_value;
-+	exar_gpio->gpio_chip.base = -1;
-+	exar_gpio->gpio_chip.ngpio = 16;
-+	exar_gpio->gpio_chip.owner = THIS_MODULE;
-+	exar_gpio->regs = p;
-+	exar_gpio->index = index;
-+
-+	ret = gpiochip_add(&exar_gpio->gpio_chip);
-+	if (ret)
-+		goto err_destroy;
-+
-+	list_add_tail(&exar_gpio->list, &exar_list);
-+	mutex_unlock(&exar_mtx);
-+
-+	platform_set_drvdata(pdev, exar_gpio);
-+
-+	return 0;
-+
-+err_destroy:
-+	mutex_unlock(&exar_mtx);
-+	mutex_destroy(&exar_gpio->lock);
-+err_unmap:
-+	iounmap(p);
-+	return ret;
-+}
-+
-+static int gpio_exar_remove(struct platform_device *pdev)
-+{
-+	struct exar_gpio_chip *exar_gpio, *exar_temp1, *exar_temp2;
-+
-+	exar_gpio = platform_get_drvdata(pdev);
-+
-+	mutex_lock(&exar_mtx);
-+	list_for_each_entry_safe(exar_temp1, exar_temp2, &exar_list, list) {
-+		if (exar_temp1->index == exar_gpio->index) {
-+			list_del(&exar_temp1->list);
-+			break;
-+		}
-+	}
-+	mutex_unlock(&exar_mtx);
-+
-+	gpiochip_remove(&exar_gpio->gpio_chip);
-+	mutex_destroy(&exar_gpio->lock);
-+	iounmap(exar_gpio->regs);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver gpio_exar_driver = {
-+	.probe	= gpio_exar_probe,
-+	.remove	= gpio_exar_remove,
-+	.driver	= {
-+		.name = "gpio_exar",
-+	},
-+};
-+
-+static const struct platform_device_id gpio_exar_id[] = {
-+	{ "gpio_exar", 0},
-+	{ },
-+};
-+
-+MODULE_DEVICE_TABLE(platform, gpio_exar_id);
-+
-+module_platform_driver(gpio_exar_driver)
-+
-+MODULE_DESCRIPTION("Exar GPIO driver");
-+MODULE_AUTHOR("Sudip Mukherjee <sudipm.mukherjee@gmail.com>");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 4097f3f..5c03d5c 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1764,12 +1764,25 @@ xr17v35x_has_slave(struct serial_private *priv)
- 	        (dev_id == PCI_DEVICE_ID_EXAR_XR17V8358));
- }
- 
-+static void pci_xr17v35x_exit(struct pci_dev *dev)
-+{
-+	struct serial_private *priv = pci_get_drvdata(dev);
-+	struct uart_8250_port *port = serial8250_get_port(priv->line[0]);
-+	struct platform_device *pdev = port->port.private_data;
-+
-+	if (pdev) {
-+		platform_device_unregister(pdev);
-+		port->port.private_data = NULL;
-+	}
-+}
-+
- static int
- pci_xr17v35x_setup(struct serial_private *priv,
- 		  const struct pciserial_board *board,
- 		  struct uart_8250_port *port, int idx)
- {
- 	u8 __iomem *p;
-+	int ret;
- 
- 	p = pci_ioremap_bar(priv->dev, 0);
- 	if (p == NULL)
-@@ -1807,7 +1820,28 @@ pci_xr17v35x_setup(struct serial_private *priv,
- 	writeb(128, p + UART_EXAR_RXTRG);
- 	iounmap(p);
- 
--	return pci_default_setup(priv, board, port, idx);
-+	ret = pci_default_setup(priv, board, port, idx);
-+	if (ret)
-+		return ret;
-+
-+	if (idx == 0) {
-+		struct platform_device *device;
-+
-+		device = platform_device_alloc("gpio_exar",
-+					       PLATFORM_DEVID_AUTO);
-+		if (!device)
-+			return -ENOMEM;
-+
-+		if (platform_device_add(device) < 0) {
-+			platform_device_put(device);
-+			return -ENODEV;
-+		}
-+
-+		port->port.private_data = device;
-+		platform_set_drvdata(device, priv->dev);
-+	}
-+
-+	return 0;
- }
- 
- #define PCI_DEVICE_ID_COMMTECH_4222PCI335 0x0004
-@@ -2407,6 +2441,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= pci_xr17v35x_setup,
-+		.exit		= pci_xr17v35x_exit,
- 	},
- 	{
- 		.vendor = PCI_VENDOR_ID_EXAR,
-@@ -2414,6 +2449,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= pci_xr17v35x_setup,
-+		.exit		= pci_xr17v35x_exit,
- 	},
- 	{
- 		.vendor = PCI_VENDOR_ID_EXAR,
-@@ -2421,6 +2457,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= pci_xr17v35x_setup,
-+		.exit		= pci_xr17v35x_exit,
- 	},
- 	{
- 		.vendor = PCI_VENDOR_ID_EXAR,
-@@ -2428,6 +2465,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= pci_xr17v35x_setup,
-+		.exit		= pci_xr17v35x_exit,
- 	},
- 	{
- 		.vendor = PCI_VENDOR_ID_EXAR,
-@@ -2435,6 +2473,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= pci_xr17v35x_setup,
-+		.exit		= pci_xr17v35x_exit,
- 	},
- 	/*
- 	 * Xircom cards
--- 
-1.9.1
+Regards,
+Andreas
 
+--Sig_/OYnXFMivLR=1xwRbTpNqEea
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJWndjQAAoJEGGrpYhZ30HuNYUIAKnyBMwr340yNFiGbNcALLak
+1/zp9u0OWq2/3fWTUrw353Gnzn+wvEfuqqSIliDqN9N9Dbr5S8oGiOcDBTreOsUT
+P2CX6OZco/CpM4HPc2zDn1vLdX3BoWN8qEA97osPgJ41M5wXvctnOu1Vcl2j8MMl
+y9dWGyQUS0jQ2G5Dt8dy8+gLKQmXtVnaAS6eiYgq4OqD7TeZAZq+PmG/M6AhZazL
+8UJiGZpf0gr66wcRn5jQrcAm6K7aqqqfeDya9Rx3ZBkteL9/ObY6D2PC77NY8wxW
+tEbPU2jpKdFUFezCZnUnpoSvmlbmqoZS+/vlg62e9mBed8tn36x2BqsLgG4769k=
+=mECg
+-----END PGP SIGNATURE-----
+
+--Sig_/OYnXFMivLR=1xwRbTpNqEea--
