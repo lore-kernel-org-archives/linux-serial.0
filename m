@@ -1,338 +1,55 @@
-From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: [PATCH v7 2/3] tty: Add software emulated RS485 support for 8250
-Date: Tue, 19 Jan 2016 23:33:16 +0300
-Message-ID: <1453235597-5078-3-git-send-email-matwey@sai.msu.ru>
-References: <1453235597-5078-1-git-send-email-matwey@sai.msu.ru>
+From: Peter Hung <hpeter@gmail.com>
+Subject: Re: [PATCH 0/3] 8250: Split Fintek PCIE to UART to independent file
+Date: Wed, 20 Jan 2016 10:59:28 +0800
+Message-ID: <569EF810.1000304@gmail.com>
+References: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
+ <20160119035649.GA1696@windriver.com> <569DF7C3.5050306@gmail.com>
+ <20160119123327.3b519062@lxorguk.ukuu.org.uk>
+ <1453209684.2521.115.camel@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1453235597-5078-1-git-send-email-matwey@sai.msu.ru>
+In-Reply-To: <1453209684.2521.115.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, peter@hurleysoftware.com, andy.shevchenko@gmail.com, gnomes@lxorguk.ukuu.org.uk
-Cc: "Matwey V. Kornilov" <matwey@sai.msu.ru>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, gregkh@linuxfoundation.org, jslaby@suse.com, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, yamada.masahiro@socionext.com, mans@mansr.com, scottwood@freescale.com, paul.burton@imgtec.com, matthias.bgg@gmail.com, manabian@gmail.com, peter.ujfalusi@ti.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Implementation of software emulation of RS485 direction handling is based
-on omap_serial driver.
-Before and after transmission RTS is set to the appropriate value.
+Hi Andy, Alan
 
-Note that before calling serial8250_em485_init the caller has to
-ensure that UART will interrupt when shift register empty. Otherwise,
-emultaion cannot be used.
+Andy Shevchenko =E6=96=BC 2016/1/19 =E4=B8=8B=E5=8D=88 09:21 =E5=AF=AB=E9=
+=81=93:
+>> Your device is multi-function. Create an MFD driver for it. Make the
+>> 8250 driver bind to the MFD, and provide your own baud rate methods
+>> within the standard 8250 layer
+>
+> Ouch, somehow I missed this one!
+>
+> Peter, Alan's suggestion is really worth to try.
+>
 
-Both serial8250_em485_init and serial8250_em485_destroy are
-idempotent functions.
+Thanks for point this. It seems good to probe on MFD driver, them MFD
+register platform devices to invoke platform driver to initialize
+sub-parts. I'll try to survey first.
 
-Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
----
- drivers/tty/serial/8250/8250.h      |   2 +
- drivers/tty/serial/8250/8250_port.c | 211 +++++++++++++++++++++++++++++++++++-
- include/linux/serial_8250.h         |   8 ++
- 3 files changed, 217 insertions(+), 4 deletions(-)
+But I had a new question, If I really do it with MFD subsystem, it'll
+split into 3 parts, MFD probe(driver/mfd) / GPIO (driver/gpio) / UART
+(drivers/tty/serial/8250). It'll cross more than 2 subsystems and=20
+maintainers How should I do to organize the patches?
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index d54dcd8..ce587c0 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -117,6 +117,8 @@ static inline void serial_dl_write(struct uart_8250_port *up, int value)
- struct uart_8250_port *serial8250_get_port(int line);
- void serial8250_rpm_get(struct uart_8250_port *p);
- void serial8250_rpm_put(struct uart_8250_port *p);
-+int serial8250_em485_init(struct uart_8250_port *p);
-+void serial8250_em485_destroy(struct uart_8250_port *p);
- 
- #if defined(__alpha__) && !defined(CONFIG_PCI)
- /*
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index b82fcae..f9442e8 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -37,6 +37,7 @@
- #include <linux/slab.h>
- #include <linux/uaccess.h>
- #include <linux/pm_runtime.h>
-+#include <linux/timer.h>
- 
- #include <asm/io.h>
- #include <asm/irq.h>
-@@ -522,6 +523,20 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
- 	}
- }
- 
-+static inline void serial8250_em485_rts_after_send(struct uart_8250_port *p)
-+{
-+	unsigned char mcr = serial_in(p, UART_MCR);
-+
-+	if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
-+		mcr |= UART_MCR_RTS;
-+	else
-+		mcr &= ~UART_MCR_RTS;
-+	serial_out(p, UART_MCR, mcr);
-+}
-+
-+static void serial8250_em485_handle_start_tx(unsigned long arg);
-+static void serial8250_em485_handle_stop_tx(unsigned long arg);
-+
- void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
- {
- 	serial8250_clear_fifos(p);
-@@ -546,6 +561,72 @@ void serial8250_rpm_put(struct uart_8250_port *p)
- }
- EXPORT_SYMBOL_GPL(serial8250_rpm_put);
- 
-+/**
-+ *	serial8250_em485_init - put uart_8250_port into rs485 emulating
-+ *	@p: uart_8250_port port instance
-+ *
-+ *	The function is used to start rs485 software emulating on the
-+ *	uart_8250_port @p. Namely, RTS is switched before/after transmission.
-+ *	The function is idempotent, so it is safe to call it multiple times.
-+ *
-+ *	The caller MUST enable interrupt on empty shift register before
-+ *	calling serial8250_em485_init. This interrupt is not a part of
-+ *	8250 standard, but implementation defined.
-+ *
-+ *	The function is supposed to be called from .rs485_config callback
-+ *	or from any other callback protected with p->port.lock spinlock.
-+ *
-+ *	The return value is negative error code or 0 on succes.
-+ *
-+ *	See also serial8250_em485_destroy
-+ */
-+int serial8250_em485_init(struct uart_8250_port *p)
-+{
-+	if (p->em485 != NULL)
-+		return 0;
-+
-+	p->em485 = kmalloc(sizeof(struct uart_8250_em485), GFP_KERNEL);
-+	if (p->em485 == NULL)
-+		return -ENOMEM;
-+
-+	setup_timer(&p->em485->stop_tx_timer,
-+		serial8250_em485_handle_stop_tx, (unsigned long)p);
-+	setup_timer(&p->em485->start_tx_timer,
-+		serial8250_em485_handle_start_tx, (unsigned long)p);
-+	p->em485->active_timer = NULL;
-+
-+	serial8250_em485_rts_after_send(p);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(serial8250_em485_init);
-+
-+/**
-+ *	serial8250_em485_destroy - put uart_8250_port into normal state
-+ *	@p: uart_8250_port port instance
-+ *
-+ *	The function is used to stop rs485 software emulating on the
-+ *	uart_8250_port @p. The function is idempotent, so it is safe to
-+ *	call it multiple times.
-+ *
-+ *	The function is supposed to be called from rs485_config callback
-+ *	or from any other callback protected with p->port.lock spinlock.
-+ *
-+ *	See also serial8250_em485_init
-+ */
-+void serial8250_em485_destroy(struct uart_8250_port *p)
-+{
-+	if (p->em485 == NULL)
-+		return;
-+
-+	del_timer(&p->em485->start_tx_timer);
-+	del_timer(&p->em485->stop_tx_timer);
-+
-+	kfree(p->em485);
-+	p->em485 = NULL;
-+}
-+EXPORT_SYMBOL_GPL(serial8250_em485_destroy);
-+
- /*
-  * These two wrappers ensure that enable_runtime_pm_tx() can be called more than
-  * once and disable_runtime_pm_tx() will still disable RPM because the fifo is
-@@ -1317,7 +1398,52 @@ static void serial8250_stop_rx(struct uart_port *port)
- 	serial8250_rpm_put(up);
- }
- 
--static inline void __stop_tx(struct uart_8250_port *p)
-+static void __do_stop_tx_rs485(struct uart_8250_port *p)
-+{
-+	if (!p->em485)
-+		return;
-+
-+	serial8250_em485_rts_after_send(p);
-+	/*
-+	 * Empty the RX FIFO, we are not interested in anything
-+	 * received during the half-duplex transmission.
-+	 */
-+	if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
-+		serial8250_clear_fifos(p);
-+}
-+
-+static void serial8250_em485_handle_stop_tx(unsigned long arg)
-+{
-+	struct uart_8250_port *p = (struct uart_8250_port *)arg;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&p->port.lock, flags);
-+	if (p->em485 &&
-+	    p->em485->active_timer == &p->em485->stop_tx_timer) {
-+		__do_stop_tx_rs485(p);
-+		p->em485->active_timer = NULL;
-+	}
-+	spin_unlock_irqrestore(&p->port.lock, flags);
-+}
-+
-+static void __stop_tx_rs485(struct uart_8250_port *p)
-+{
-+	if (!p->em485)
-+		return;
-+
-+	/* __do_stop_tx_rs485 is going to set RTS according to config
-+	 * AND flush RX FIFO if required
-+	 */
-+	if (p->port.rs485.delay_rts_after_send > 0) {
-+		p->em485->active_timer = &p->em485->stop_tx_timer;
-+		mod_timer(&p->em485->stop_tx_timer, jiffies +
-+			p->port.rs485.delay_rts_after_send * HZ / 1000);
-+	} else {
-+		__do_stop_tx_rs485(p);
-+	}
-+}
-+
-+static inline void __do_stop_tx(struct uart_8250_port *p)
- {
- 	if (p->ier & UART_IER_THRI) {
- 		p->ier &= ~UART_IER_THRI;
-@@ -1326,6 +1452,24 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 	}
- }
- 
-+static inline void __stop_tx(struct uart_8250_port *p)
-+{
-+	if (p->em485) {
-+		unsigned char lsr = serial_in(p, UART_LSR);
-+		/* To provide required timeing and allow FIFO transfer,
-+		 * __stop_tx_rs485 must be called only when both FIFO and shift register
-+		 * are empty. It is for device driver to enable interrupt on TEMT.
-+		 */
-+		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
-+			return;
-+
-+		del_timer(&p->em485->start_tx_timer);
-+		p->em485->active_timer = NULL;
-+	}
-+	__do_stop_tx(p);
-+	__stop_tx_rs485(p);
-+}
-+
- static void serial8250_stop_tx(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
-@@ -1343,12 +1487,10 @@ static void serial8250_stop_tx(struct uart_port *port)
- 	serial8250_rpm_put(up);
- }
- 
--static void serial8250_start_tx(struct uart_port *port)
-+static inline void __start_tx(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 
--	serial8250_rpm_get_tx(up);
--
- 	if (up->dma && !up->dma->tx_dma(up))
- 		return;
- 
-@@ -1374,6 +1516,67 @@ static void serial8250_start_tx(struct uart_port *port)
- 	}
- }
- 
-+static inline void start_tx_rs485(struct uart_port *port)
-+{
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+	unsigned char mcr;
-+
-+	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
-+		serial8250_stop_rx(&up->port);
-+
-+	del_timer(&up->em485->stop_tx_timer);
-+	up->em485->active_timer = NULL;
-+
-+	mcr = serial_in(up, UART_MCR);
-+	if (!!(up->port.rs485.flags & SER_RS485_RTS_ON_SEND) !=
-+	    !!(mcr & UART_MCR_RTS)) {
-+		if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND)
-+			mcr |= UART_MCR_RTS;
-+		else
-+			mcr &= ~UART_MCR_RTS;
-+		serial_out(up, UART_MCR, mcr);
-+
-+		if (up->port.rs485.delay_rts_before_send > 0) {
-+			up->em485->active_timer = &up->em485->start_tx_timer;
-+			mod_timer(&up->em485->start_tx_timer, jiffies +
-+				up->port.rs485.delay_rts_before_send * HZ / 1000);
-+			return;
-+		}
-+	}
-+
-+	__start_tx(port);
-+}
-+
-+static void serial8250_em485_handle_start_tx(unsigned long arg)
-+{
-+	struct uart_8250_port *p = (struct uart_8250_port *)arg;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&p->port.lock, flags);
-+	if (p->em485 &&
-+	    p->em485->active_timer == &p->em485->start_tx_timer) {
-+		__start_tx(&p->port);
-+		p->em485->active_timer = NULL;
-+	}
-+	spin_unlock_irqrestore(&p->port.lock, flags);
-+}
-+
-+static void serial8250_start_tx(struct uart_port *port)
-+{
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+
-+	serial8250_rpm_get_tx(up);
-+
-+	if (up->em485 &&
-+	    up->em485->active_timer == &up->em485->start_tx_timer)
-+		return;
-+
-+	if (up->em485)
-+		start_tx_rs485(port);
-+	else
-+		__start_tx(port);
-+}
-+
- static void serial8250_throttle(struct uart_port *port)
- {
- 	port->throttle(port);
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index faa0e03..4348797 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -76,6 +76,12 @@ struct uart_8250_ops {
- 	void		(*release_irq)(struct uart_8250_port *);
- };
- 
-+struct uart_8250_em485 {
-+	struct timer_list	start_tx_timer; /* "rs485 start tx" timer */
-+	struct timer_list	stop_tx_timer;  /* "rs485 stop tx" timer */
-+	struct timer_list	*active_timer;  /* pointer to active timer */
-+};
-+
- /*
-  * This should be used by drivers which want to register
-  * their own 8250 ports without registering their own
-@@ -122,6 +128,8 @@ struct uart_8250_port {
- 	/* 8250 specific callbacks */
- 	int			(*dl_read)(struct uart_8250_port *);
- 	void			(*dl_write)(struct uart_8250_port *, int);
-+
-+	struct uart_8250_em485 *em485;
- };
- 
- static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
--- 
-2.7.0
+=46or examples, I should remove the probe function in 8250_pci.c and
+move it to new MFD file. It should organize it in the same patch as Pau=
+l
+said, but this patch will need 2 subsystem maintainer to do with the
+same patch, it seems weird.
+
+Andy had cc "[PATCH v5] serial: 8250: add gpio support to exar" to me,
+could I use the same way to do GPIOLIB? First add a platform driver
+for F81504 gpio and add platform device into 8250_pci.c? It seems to
+be good and simple to implement.
+
+--=20
+With Best Regards,
+Peter Hung
