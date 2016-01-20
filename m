@@ -1,75 +1,63 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH 0/3] 8250: Split Fintek PCIE to UART to independent file
-Date: Wed, 20 Jan 2016 11:52:14 +0530
-Message-ID: <20160120062214.GB3747@sudip-pc>
-References: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
- <20160119035649.GA1696@windriver.com>
- <569DF7C3.5050306@gmail.com>
- <20160119123327.3b519062@lxorguk.ukuu.org.uk>
- <1453209684.2521.115.camel@linux.intel.com>
- <569EF810.1000304@gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH -next] tty/serial: atmel: Include module.h to fix build
+ failure
+Date: Tue, 19 Jan 2016 22:27:12 -0800
+Message-ID: <569F28C0.9050605@roeck-us.net>
+References: <20160109182908.GB29967@kroah.com>
+ <20160111083536.GB8070@sudip-pc> <20160111111101.GA18945@roeck-us.net>
+ <5693C553.7050400@windriver.com> <5695E207.9080309@roeck-us.net>
+ <1452663850.8586.3.camel@perches.com> <20160113103246.GB26117@sudip-pc>
+ <569D1496.5080402@roeck-us.net> <20160118170423.GA25394@sudip-laptop>
+ <569D1E2E.4070209@roeck-us.net> <20160120055123.GA3747@sudip-pc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <569EF810.1000304@gmail.com>
+In-Reply-To: <20160120055123.GA3747@sudip-pc>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hung <hpeter@gmail.com>, Rob Groner <rgroner@rtd.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Paul Gortmaker <paul.gortmaker@windriver.com>, gregkh@linuxfoundation.org, jslaby@suse.com, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, yamada.masahiro@socionext.com, mans@mansr.com, scottwood@freescale.com, paul.burton@imgtec.com, matthias.bgg@gmail.com, manabian@gmail.com, peter.ujfalusi@ti.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Joe Perches <joe@perches.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, postmaster <postmaster@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 20, 2016 at 10:59:28AM +0800, Peter Hung wrote:
-> Hi Andy, Alan
->=20
-> Andy Shevchenko =E6=96=BC 2016/1/19 =E4=B8=8B=E5=8D=88 09:21 =E5=AF=AB=
-=E9=81=93:
-> >>Your device is multi-function. Create an MFD driver for it. Make th=
-e
-> >>8250 driver bind to the MFD, and provide your own baud rate methods
-> >>within the standard 8250 layer
-> >
-> >Ouch, somehow I missed this one!
-> >
-> >Peter, Alan's suggestion is really worth to try.
-> >
->=20
-> Thanks for point this. It seems good to probe on MFD driver, them MFD
-> register platform devices to invoke platform driver to initialize
-> sub-parts. I'll try to survey first.
->=20
-> But I had a new question, If I really do it with MFD subsystem, it'll
-> split into 3 parts, MFD probe(driver/mfd) / GPIO (driver/gpio) / UART
-> (drivers/tty/serial/8250). It'll cross more than 2 subsystems and
-> maintainers How should I do to organize the patches?
->=20
-> For examples, I should remove the probe function in 8250_pci.c and
-> move it to new MFD file. It should organize it in the same patch as P=
-aul
-> said, but this patch will need 2 subsystem maintainer to do with the
-> same patch, it seems weird.
->=20
-> Andy had cc "[PATCH v5] serial: 8250: add gpio support to exar" to me=
-,
-> could I use the same way to do GPIOLIB? First add a platform driver
-> for F81504 gpio and add platform device into 8250_pci.c? It seems to
-> be good and simple to implement.
+On 01/19/2016 09:51 PM, Sudip Mukherjee wrote:
+> On Mon, Jan 18, 2016 at 09:17:34AM -0800, Guenter Roeck wrote:
+>> On 01/18/2016 09:04 AM, Sudip Mukherjee wrote:
+>>> On Mon, Jan 18, 2016 at 08:36:38AM -0800, Guenter Roeck wrote:
+>>>> On 01/13/2016 02:32 AM, Sudip Mukherjee wrote:
+>>>>> On Tue, Jan 12, 2016 at 09:44:10PM -0800, Joe Perches wrote:
+>>>>>> On Tue, 2016-01-12 at 21:35 -0800, Guenter Roeck wrote:
+>>>>>>> On 01/11/2016 07:08 AM, Paul Gortmaker wrote:
+>>>>>>>> On 2016-01-11 06:11 AM, Guenter Roeck wrote:
+>>>>>>>>> On Mon, Jan 11, 2016 at 02:05:36PM +0530, Sudip Mukherjee wrote:
+>>>>>>>>>> On Sat, Jan 09, 2016 at 10:29:08AM -0800, Greg Kroah-Hartman wrote:
+>>>>>>>>>>> On Sat, Jan 09, 2016 at 10:15:35AM -0800, Guenter Roeck wrote:
+>>>>>>>>>>>> If serial/atmel_serial.c is compiled with devicetree enabled, the
+>>>>> <snip>
+>>>>>>>
+>>>>>>> Sudip, one option would be to set up a semi-private mailing list.
+>>>>>>> My build tests now have a dedicated virtual host (kerneltests.org).
+>>>>>>> I could set up a managed list there.
+>>>>>>
+>>>>>> Perhaps it'd be better to have something like linux-build-failures@vger.kernel.org
+>>>>>
+>>>>> yes, much better. But if me and Guenter are the only two members of that
+>>>>> list then it will not look nice. :)
+>>>>>
+>>>>
+>>>> How about just using kernel-testers@vger.kernel.org ? That list already exists and,
+>>>> for all practical purposes, has been abandoned.
+>>>
+>>> Great. I am subscribing to it.
+>>>
+>>
+>> Let's check on the list first. I'll send am e-mail.
+>
+> I guess no reply means we can use the list...
+>
 
-+ Rob
+Let's wait until tomorrow; then I'll try to reach the vger majordomo maintainer again
+as well as the vger postmaster. We'll need something from there - at the very least
+we'll need to get a new list owner. Of course, it would help if someone listening in
+to this thread knows how to contact an actual person controlling vger.kernel.org.
 
-Your hardware and my hardware both are almost same, so I guess the
-discussion and the decision will apply to both of us.
-And to have it as MFD, we can have a look at sm501.c it has serial and
-gpio both.
-But my personal opinion, if we move out the serial port related code
-into a new driver (a new Kconfig symbol) userspace of many system will
-break if this new symbol is not enabled by the distributions. But in th=
-e
-way I have done the new symbol needs to be enabled only if the user
-wants to use the GPIO capability. If that is not enabled GPIO cannot be
-used but it will never break the serial port related code for them.
-I think we should give a thought to that before splitting out the codes
-from 8250_pci.
-
-regards
-sudip
+Guenter
