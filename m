@@ -1,71 +1,49 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH -next] tty/serial: atmel: Include module.h to fix build
- failure
-Date: Wed, 20 Jan 2016 12:02:32 +0530
-Message-ID: <20160120063232.GA4217@sudip-pc>
-References: <20160111111101.GA18945@roeck-us.net>
- <5693C553.7050400@windriver.com>
- <5695E207.9080309@roeck-us.net>
- <1452663850.8586.3.camel@perches.com>
- <20160113103246.GB26117@sudip-pc>
- <569D1496.5080402@roeck-us.net>
- <20160118170423.GA25394@sudip-laptop>
- <569D1E2E.4070209@roeck-us.net>
- <20160120055123.GA3747@sudip-pc>
- <569F28C0.9050605@roeck-us.net>
+From: Peter Hung <hpeter@gmail.com>
+Subject: Re: [PATCH 0/3] 8250: Split Fintek PCIE to UART to independent file
+Date: Wed, 20 Jan 2016 16:24:36 +0800
+Message-ID: <569F4444.3040104@gmail.com>
+References: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
+ <20160119035649.GA1696@windriver.com> <569DF7C3.5050306@gmail.com>
+ <20160119123327.3b519062@lxorguk.ukuu.org.uk>
+ <1453209684.2521.115.camel@linux.intel.com> <569EF810.1000304@gmail.com>
+ <20160120062214.GB3747@sudip-pc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <569F28C0.9050605@roeck-us.net>
+In-Reply-To: <20160120062214.GB3747@sudip-pc>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Joe Perches <joe@perches.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, postmaster <postmaster@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Rob Groner <rgroner@rtd.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Paul Gortmaker <paul.gortmaker@windriver.com>, gregkh@linuxfoundation.org, jslaby@suse.com, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, yamada.masahiro@socionext.com, mans@mansr.com, scottwood@freescale.com, paul.burton@imgtec.com, matthias.bgg@gmail.com, manabian@gmail.com, peter.ujfalusi@ti.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 19, 2016 at 10:27:12PM -0800, Guenter Roeck wrote:
-> On 01/19/2016 09:51 PM, Sudip Mukherjee wrote:
-> >On Mon, Jan 18, 2016 at 09:17:34AM -0800, Guenter Roeck wrote:
-> >>On 01/18/2016 09:04 AM, Sudip Mukherjee wrote:
-> >>>On Mon, Jan 18, 2016 at 08:36:38AM -0800, Guenter Roeck wrote:
-> >>>>On 01/13/2016 02:32 AM, Sudip Mukherjee wrote:
-> >>>>>On Tue, Jan 12, 2016 at 09:44:10PM -0800, Joe Perches wrote:
-> >>>>>>On Tue, 2016-01-12 at 21:35 -0800, Guenter Roeck wrote:
-> >>>>>>>On 01/11/2016 07:08 AM, Paul Gortmaker wrote:
-> >>>>>>>>On 2016-01-11 06:11 AM, Guenter Roeck wrote:
-> >>>>>>>>>On Mon, Jan 11, 2016 at 02:05:36PM +0530, Sudip Mukherjee wrote:
-> >>>>>>>>>>On Sat, Jan 09, 2016 at 10:29:08AM -0800, Greg Kroah-Hartman wrote:
-> >>>>>>>>>>>On Sat, Jan 09, 2016 at 10:15:35AM -0800, Guenter Roeck wrote:
-> >>>>>>>>>>>>If serial/atmel_serial.c is compiled with devicetree enabled, the
-> >>>>><snip>
-> >>>>>>>
-> >>>>>>>Sudip, one option would be to set up a semi-private mailing list.
-> >>>>>>>My build tests now have a dedicated virtual host (kerneltests.org).
-> >>>>>>>I could set up a managed list there.
-> >>>>>>
-> >>>>>>Perhaps it'd be better to have something like linux-build-failures@vger.kernel.org
-> >>>>>
-> >>>>>yes, much better. But if me and Guenter are the only two members of that
-> >>>>>list then it will not look nice. :)
-> >>>>>
-> >>>>
-> >>>>How about just using kernel-testers@vger.kernel.org ? That list already exists and,
-> >>>>for all practical purposes, has been abandoned.
-> >>>
-> >>>Great. I am subscribing to it.
-> >>>
-> >>
-> >>Let's check on the list first. I'll send am e-mail.
-> >
-> >I guess no reply means we can use the list...
-> >
-> 
-> Let's wait until tomorrow; then I'll try to reach the vger majordomo maintainer again
-> as well as the vger postmaster. We'll need something from there - at the very least
-> we'll need to get a new list owner. Of course, it would help if someone listening in
-> to this thread knows how to contact an actual person controlling vger.kernel.org.
+Hi Sudip,
 
-Try reaching "David S. Miller" <davem@davemloft.net>
+Sudip Mukherjee =E6=96=BC 2016/1/20 =E4=B8=8B=E5=8D=88 02:22 =E5=AF=AB=E9=
+=81=93:
+> On Wed, Jan 20, 2016 at 10:59:28AM +0800, Peter Hung wrote:
 
-regards
-sudip
+> But my personal opinion, if we move out the serial port related code
+> into a new driver (a new Kconfig symbol) userspace of many system wil=
+l
+> break if this new symbol is not enabled by the distributions. But in =
+the
+> way I have done the new symbol needs to be enabled only if the user
+> wants to use the GPIO capability. If that is not enabled GPIO cannot =
+be
+> used but it will never break the serial port related code for them.
+> I think we should give a thought to that before splitting out the cod=
+es
+> from 8250_pci.
+
+I agree with your opinion. I'm trying to implement GPIO with 2 ways,
+One is like yours, add platform_device with in 8250_pci.c and implement
+GPIOLIB platform driver with in 'driver/gpio", and the other is trying
+split out from 8250_pci.c to MFD.
+
+In my personal opinion, the first method is less impact with compatible
+old system.
+--=20
+With Best Regards,
+Peter Hung
