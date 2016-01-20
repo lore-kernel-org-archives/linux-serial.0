@@ -1,49 +1,43 @@
-From: Peter Hung <hpeter@gmail.com>
-Subject: Re: [PATCH 0/3] 8250: Split Fintek PCIE to UART to independent file
-Date: Wed, 20 Jan 2016 16:24:36 +0800
-Message-ID: <569F4444.3040104@gmail.com>
-References: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
- <20160119035649.GA1696@windriver.com> <569DF7C3.5050306@gmail.com>
- <20160119123327.3b519062@lxorguk.ukuu.org.uk>
- <1453209684.2521.115.camel@linux.intel.com> <569EF810.1000304@gmail.com>
- <20160120062214.GB3747@sudip-pc>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] serial: amba-pl011: mark vendor_zte as __maybe_unused
+Date: Wed, 20 Jan 2016 11:40:03 +0100
+Message-ID: <1973012.CU51qOk9Kt@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160120062214.GB3747@sudip-pc>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Rob Groner <rgroner@rtd.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Paul Gortmaker <paul.gortmaker@windriver.com>, gregkh@linuxfoundation.org, jslaby@suse.com, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, yamada.masahiro@socionext.com, mans@mansr.com, scottwood@freescale.com, paul.burton@imgtec.com, matthias.bgg@gmail.com, manabian@gmail.com, peter.ujfalusi@ti.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, peter_hong@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: gregkh@linuxfoundation.org, Russell King <rmk@arm.linux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Jun Nie <jun.nie@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sudip,
+The pl011 driver has gone back and forth on the definition of the
+ZTE specific variation of the hardware definitions, but the
+current state is that the vendor definition is left in place
+yet unused:
 
-Sudip Mukherjee =E6=96=BC 2016/1/20 =E4=B8=8B=E5=8D=88 02:22 =E5=AF=AB=E9=
-=81=93:
-> On Wed, Jan 20, 2016 at 10:59:28AM +0800, Peter Hung wrote:
+drivers/tty/serial/amba-pl011.c:190:27: warning: 'vendor_zte' defined but not used [-Wunused-variable]
 
-> But my personal opinion, if we move out the serial port related code
-> into a new driver (a new Kconfig symbol) userspace of many system wil=
-l
-> break if this new symbol is not enabled by the distributions. But in =
-the
-> way I have done the new symbol needs to be enabled only if the user
-> wants to use the GPIO capability. If that is not enabled GPIO cannot =
-be
-> used but it will never break the serial port related code for them.
-> I think we should give a thought to that before splitting out the cod=
-es
-> from 8250_pci.
+I don't know what the plan forward is to get this code to work,
+but the current behavior is a bit annoying as we get a warning
+whenever we build this driver.
 
-I agree with your opinion. I'm trying to implement GPIO with 2 ways,
-One is like yours, add platform_device with in 8250_pci.c and implement
-GPIOLIB platform driver with in 'driver/gpio", and the other is trying
-split out from 8250_pci.c to MFD.
+This patch does not help us to make it work, but at least
+shuts up the warning.
 
-In my personal opinion, the first method is less impact with compatible
-old system.
---=20
-With Best Regards,
-Peter Hung
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 7ec758718920 ("tty: amba-pl011: add support for ZTE UART (EXPERIMENTAL)")
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index c0da0ccbbcf5..4cdfe8f806df 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -187,7 +187,7 @@ static const u16 pl011_zte_offsets[REG_ARRAY_SIZE] = {
+ 	[REG_DMACR] = ZX_UART011_DMACR,
+ };
+ 
+-static struct vendor_data vendor_zte = {
++static struct vendor_data vendor_zte __maybe_unused = {
+ 	.reg_offset		= pl011_zte_offsets,
+ 	.access_32b		= true,
+ 	.ifls			= UART011_IFLS_RX4_8|UART011_IFLS_TX4_8,
