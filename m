@@ -1,51 +1,59 @@
-From: Jun Nie <jun.nie@linaro.org>
-Subject: Re: [PATCH] serial: amba-pl011: mark vendor_zte as __maybe_unused
-Date: Thu, 21 Jan 2016 10:34:53 +0800
-Message-ID: <CABymUCMwgcEHDBEHCy=4E2bLbDdqQ+KO3ijB0Rz-m0uczWne7Q@mail.gmail.com>
-References: <1973012.CU51qOk9Kt@wuerfel>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: Re: [PATCH] 8250: uniphier: allow modular build with 8250 console
+Date: Thu, 21 Jan 2016 20:39:03 +0900
+Message-ID: <CAK7LNATVtLk6UTh+r9JTZrKq-veEXetDdRutZ_=zQOd-WyAO0g@mail.gmail.com>
+References: <3965359.aMgb8o9MaG@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1973012.CU51qOk9Kt@wuerfel>
+In-Reply-To: <3965359.aMgb8o9MaG@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Russell King <rmk@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-2016-01-20 18:40 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
-> The pl011 driver has gone back and forth on the definition of the
-> ZTE specific variation of the hardware definitions, but the
-> current state is that the vendor definition is left in place
-> yet unused:
+Hi Arnd,
+
+
+2016-01-14 7:33 GMT+09:00 Arnd Bergmann <arnd@arndb.de>:
+> The recently added uniphier 8250 port driver supports early console
+> probing, and it supports being built as a module, but the combination
+> of the two fails to link:
 >
-> drivers/tty/serial/amba-pl011.c:190:27: warning: 'vendor_zte' defined but not used [-Wunused-variable]
+> ERROR: "early_serial8250_setup" [drivers/tty/serial/8250/8250_uniphier.ko] undefined!
 >
-> I don't know what the plan forward is to get this code to work,
-> but the current behavior is a bit annoying as we get a warning
-> whenever we build this driver.
->
-> This patch does not help us to make it work, but at least
-> shuts up the warning.
+> Given that earlycon support in a loadable module makes no sense,
+> making that code conditional on 'MODULE' is a correct solution.
 >
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 7ec758718920 ("tty: amba-pl011: add support for ZTE UART (EXPERIMENTAL)")
+> Fixes: b8d20e06eaad ("serial: 8250_uniphier: add earlycon support")
 >
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index c0da0ccbbcf5..4cdfe8f806df 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -187,7 +187,7 @@ static const u16 pl011_zte_offsets[REG_ARRAY_SIZE] = {
->         [REG_DMACR] = ZX_UART011_DMACR,
+> diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+> index bab6b3ae2540..1b7bd26555b7 100644
+> --- a/drivers/tty/serial/8250/8250_uniphier.c
+> +++ b/drivers/tty/serial/8250/8250_uniphier.c
+> @@ -35,7 +35,7 @@ struct uniphier8250_priv {
+>         spinlock_t atomic_write_lock;
 >  };
 >
-> -static struct vendor_data vendor_zte = {
-> +static struct vendor_data vendor_zte __maybe_unused = {
->         .reg_offset             = pl011_zte_offsets,
->         .access_32b             = true,
->         .ifls                   = UART011_IFLS_RX4_8|UART011_IFLS_TX4_8,
+> -#ifdef CONFIG_SERIAL_8250_CONSOLE
+> +#if defined(CONFIG_SERIAL_8250_CONSOLE) && !defined(MODULE)
+>  static int __init uniphier_early_console_setup(struct earlycon_device *device,
+>                                                const char *options)
+>  {
+>
 >
 
-Thanks for handling this. I am OK with the patch. Will prepare a patch
-to make ZTE uart work after Timur's pending pl011 patch is merged.
 
-Jun
+If my patch (https://patchwork.kernel.org/patch/8029331/) is accepted,
+this build error will be fixed as well.  But I doubt it is accepted soon...
+
+So, I am OK with this workaround to fix "make allmodconfig".
+
+Acked-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
