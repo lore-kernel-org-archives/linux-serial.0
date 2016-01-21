@@ -1,60 +1,51 @@
-From: Vostrikov Andrey <andrey.vostrikov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
-Date: Wed, 20 Jan 2016 23:09:39 +0300
-Message-ID: <691920039.20160120230939@cogentembedded.com>
-References: <20150511013540.5709.93626.stgit@notabene.brown>
-  <CAAObsKD7-02HVUosXVwqcH6HyGEGYJ9jdNepuNhLiiL+ujO5iw@mail.gmail.com>
-  <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
-  <20160113191542.GA12086@leverpostej>
-  <1CD6CA14-AE4F-444F-A9A2-CF9B9485F2DC@goldelico.com>
-  <20160115110106.GA3262@leverpostej>
-  <69F8E1E5-EF49-4C8E-88E9-973F82F7102E@goldelico.com>
-  <569913A1.80606@cogentembedded.com>
-  <CB69F6F0-B40B-47D1-B175-8401F43288C5@goldelico.com>
-  <56992959.2020204@hurleysoftware.com>
-  <CAL_JsqL=Wotz4FuoV7PULfZNfSV=S_q0iOzkckVA3NDDzMdfZQ@mail.gmail.com>
-  <744620565.20160116103445@cogentembedded.com>
-  <CAKdAkRQh7xSgOXERhA8EjXEfX5m-PTTjiv757X7FYxK=bhfpww@mail.gmail.com>
-Reply-To: Vostrikov Andrey <andrey.vostrikov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
+From: Jun Nie <jun.nie@linaro.org>
+Subject: Re: [PATCH] serial: amba-pl011: mark vendor_zte as __maybe_unused
+Date: Thu, 21 Jan 2016 10:34:53 +0800
+Message-ID: <CABymUCMwgcEHDBEHCy=4E2bLbDdqQ+KO3ijB0Rz-m0uczWne7Q@mail.gmail.com>
+References: <1973012.CU51qOk9Kt@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAKdAkRQh7xSgOXERhA8EjXEfX5m-PTTjiv757X7FYxK=bhfpww-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "H. Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, List for communicating with real GTA04 owners <gta04-owner-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Tomeu Vizoso <tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Marek Belisko <marek-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1973012.CU51qOk9Kt@wuerfel>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Russell King <rmk@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Dmitry.
+2016-01-20 18:40 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
+> The pl011 driver has gone back and forth on the definition of the
+> ZTE specific variation of the hardware definitions, but the
+> current state is that the vendor definition is left in place
+> yet unused:
+>
+> drivers/tty/serial/amba-pl011.c:190:27: warning: 'vendor_zte' defined but not used [-Wunused-variable]
+>
+> I don't know what the plan forward is to get this code to work,
+> but the current behavior is a bit annoying as we get a warning
+> whenever we build this driver.
+>
+> This patch does not help us to make it work, but at least
+> shuts up the warning.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: 7ec758718920 ("tty: amba-pl011: add support for ZTE UART (EXPERIMENTAL)")
+>
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index c0da0ccbbcf5..4cdfe8f806df 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -187,7 +187,7 @@ static const u16 pl011_zte_offsets[REG_ARRAY_SIZE] = {
+>         [REG_DMACR] = ZX_UART011_DMACR,
+>  };
+>
+> -static struct vendor_data vendor_zte = {
+> +static struct vendor_data vendor_zte __maybe_unused = {
+>         .reg_offset             = pl011_zte_offsets,
+>         .access_32b             = true,
+>         .ifls                   = UART011_IFLS_RX4_8|UART011_IFLS_TX4_8,
+>
 
-> On Fri, Jan 15, 2016 at 11:34 PM, Vostrikov Andrey
-> <andrey.vostrikov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org> wrote:
->>
->> Yes, such implementation will help. There is a need for interface like UART BUS that will probe devices without user space.
->> Serial I/O for input subsystem defines new type of bus and uses dedicated line discipline, but it still unable to start driver by itself and requires call from 'inputattach' to open port, assign line discipline and go to forever wait on 'read'.
+Thanks for handling this. I am OK with the patch. Will prepare a patch
+to make ZTE uart work after Timur's pending pl011 patch is merged.
 
-> That was done mainly because almost none of the serial protocols could
-> be auto-probed, so device initialization/setup was moved out of kernel
-> and thus we have the separate line discipline and inputattach utility.
-
-This  is understandable for "dummy" devices like mice, that only
-report input events.
-
-But  in  case there is "intellectual" MCU, that must reply on specific
-commands  with specific response - it could be auto-probed. Especially
-when it is hardwired. Unfortunately, there  is  no  API  to  do  it.
-Opening  port and attaching line discipline  from  kernel  side
-does  not  look good. The only example is '/dev/console', which is
-implemented that way.
-
-> Thanks.
-
--- 
-Best regards,
-Andrey Vostrikov
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Jun
