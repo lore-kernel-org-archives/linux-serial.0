@@ -1,35 +1,63 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 2/4] tty: serial: 8250: add optional spinlock arg to
- serial8250_rx_chars
-Date: Fri, 22 Jan 2016 08:18:53 -0800
-Message-ID: <56A2566D.6010408@hurleysoftware.com>
-References: <877fj1rjs0.fsf@linutronix.de>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: [PATCH REPOST] tty: serial: 8250: omap: restore registers on shutdown
+Date: Fri, 22 Jan 2016 17:28:34 +0100
+Message-ID: <87vb6llgst.fsf@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <877fj1rjs0.fsf@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>, gregkh@linuxfoundation.org
-Cc: vinod.koul@intel.com, dan.j.williams@intel.com, bigeasy@linutronix.de, tony@atomide.com, nsekhar@ti.com, peter.ujfalusi@ti.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: peter@hurleysoftware.com, bigeasy@linutronix.de, tony@atomide.com, nsekhar@ti.com, peter.ujfalusi@ti.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi John,
+If DMA is active during a shutdown, a delayed restore of the
+registers may be pending. The restore must be performed after
+the DMA is stopped, otherwise the delayed restore remains
+pending and will fire upon the first DMA TX complete of a
+totally different serial session.
 
-On 01/22/2016 02:27 AM, John Ogness wrote:
-> serial8250_rx_chars() must be called from interrupt context and with
-> the port lock held. The port lock is released temporarily within that
-> function to call tty_flip_buffer_push(). However, there may be other
-> drivers that need to synchronize the tty_flip_buffer_push() call within
-> serial8250_rx_chars() with other contexts. Since the port lock cannot
-> be used for this synchronization, an optional spinlock argument is added.
-> If non-NULL, this will be locked during the tty_flip_buffer_push() call.
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+---
+ This patch was originally posted and discussed here:
+ http://lkml.kernel.org/r/87egjp2r4a.fsf@linutronix.de
 
-I removed the port lock drop-claim in serial8250_rx_chars in patch
-"serial: 8250: Remove low_latency workaround" (Greg has this patch in his
-inbox but not in next because of the merge window).
+ The patch was not accepted because Peter expressed dissatisfaction with
+ the entire deferred implementation. (This patch fixes a bug in that
+ implementation.) However, no alternative solution was determined and the
+ bug continues to exist.
 
-IOW, you can drop this patch.
+ Although we can certainly continue to debate about an alternate solution
+ to the deferred implementation, I think it makes sense to at least fix
+ the existing bug until an alternative exists.
 
-Regards,
-Peter Hurley
+ The bug can be easily produced with a `kill -9` on a process transmitting
+ on the serial port.
+
+ patch against next-20160122
+
+ drivers/tty/serial/8250/8250_omap.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index a2c0734..0ffec67 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -664,9 +664,15 @@ static void omap_8250_shutdown(struct uart_port *port)
+ 	up->ier = 0;
+ 	serial_out(up, UART_IER, 0);
+ 
+-	if (up->dma)
++	if (up->dma) {
+ 		serial8250_release_dma(up);
+ 
++		if (priv->delayed_restore) {
++			priv->delayed_restore = 0;
++			omap8250_restore_regs(up);
++		}
++	}
++
+ 	/*
+ 	 * Disable break condition and FIFOs
+ 	 */
+-- 
+1.7.10.4
