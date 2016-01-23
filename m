@@ -1,60 +1,77 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v7 3/3] tty: 8250_omap: Use software emulated RS485
- direction control
-Date: Sat, 23 Jan 2016 17:20:27 +0200
-Message-ID: <CAHp75Vch_CDNdRpK1perqZuvK894t+cYi6KY8chb7xfF3p7kYQ@mail.gmail.com>
-References: <1453235597-5078-1-git-send-email-matwey@sai.msu.ru>
-	<1453235597-5078-4-git-send-email-matwey@sai.msu.ru>
+From: One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Subject: Re: [Gta04-owner] [PATCH 0/4] UART slave device support - version 4
+Date: Sat, 23 Jan 2016 17:28:30 +0000
+Message-ID: <20160123172830.51933d2d@lxorguk.ukuu.org.uk>
+References: <481E05A9-A192-438D-B092-D7700B30BBC4@goldelico.com>
+	<744620565.20160116103445@cogentembedded.com>
+	<20160116233157.GA7774@rob-hp-laptop>
+	<3D5F35D7-31B5-4E68-875F-7DD492EF0316@goldelico.com>
+	<20160117141912.4aa2e46c@lxorguk.ukuu.org.uk>
+	<1D5F146E-D347-453B-9158-8D269F8DA99C@goldelico.com>
+	<20160117193849.69d00c28@lxorguk.ukuu.org.uk>
+	<37DCE36D-0A5E-41C5-BDA4-857DCF9F2DD1@goldelico.com>
+	<20160118111926.0882b422@lxorguk.ukuu.org.uk>
+	<07F3B6C0-0C87-478C-B6DD-5C0EECB42D0D@goldelico.com>
+	<20160118220319.051c9cc0@lxorguk.ukuu.org.uk>
+	<C1E6AFE7-1EF2-4C70-8BE2-82F5CD7DDE22@goldelico.com>
+	<9E37C552-361C-4A54-980E-E3BFFF834302@goldelico.com>
+	<20160120174610.1c64239a@lxorguk.ukuu.org.uk>
+	<39B850CE-E381-4D3B-BD0A-84AFE7DAEEDF@goldelico.com>
+	<CAAObsKB4oFeM9Cjet5z+vz0S1M8RZ3jFt03b38KXq+sh6f5EwA@mail.gmail.com>
+	<20160122201229.5df0bb2d@lxorguk.ukuu.org.uk>
+	<DF404071-9FD0-4B33-B1B5-EC14192655E7@goldelico.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1453235597-5078-4-git-send-email-matwey@sai.msu.ru>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <DF404071-9FD0-4B33-B1B5-EC14192655E7-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "H. Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
+Cc: Tomeu Vizoso <tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Vostrikov Andrey <andrey.vostrikov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, List for communicating with real GTA04 owners <gta04-owner-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Marek Belisko <marek-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 19, 2016 at 10:33 PM, Matwey V. Kornilov <matwey@sai.msu.ru> wrote:
-> Use software emulated RS485 direction control to provide RS485 API existed in
-> omap_serial driver. Note that 8250_omap issues interrupt on shift register
-> empty which is single prerequesite for using software emulated RS485.
+> > There is lots of stuff we probe and bind via user space - most things
+> > these days in fact. That's much of why we have notifiers and udev. It's
+> > frequently a win in flexibility, security and configurability to do stuff
+> > via user daemons. We do it for example with all the volume management,
+> > raid and disk encryption.  
+> 
+> Because volumes are something users really want to configure. They
+> can change their hardware configuration every now and then. And
+> there are removable media to be considered.
+
+Like USB bluetooth dongles, like systems with external SPI ports, or plug
+in SPI devices, or plug in gps devices on other interfaces ?
+
+> In our UART cases the underlaying hardware can't be reconfigured. So
+> there is no need to load this burden of config to the user.
+
+Plenty of uarts it can be or the BT can be muxed with other device
+endpoints.
+
+> For BT or GPS I just want it to work the same on all devices (independently
+> on how the specific chip is connected). Kernel should unify such things.
+> Or it would not be a Un(iplexed)ix.
+
+I think you are confusing Unix and Multics.
+
+Unix is nothing to do with Linux and Unix was about creating a beautiful
+system not by having a huge crap filled kernel, but by having only the
+minimum necessary in the kernel. Unix was not about what was put in but
+what was left out.
+
+"We used to sit around in the Unix Room saying, 'What can we throw out?
+Why is there this option?" - Doug McIlroy
+
+GPS is a train wreck for commonality. Most GPS requires custom binary
+only user space code often obfuscated in order to meet the regulations
+governing GPS technology to stop third parties using it for missile
+guidance.
 
 
-> +static int omap_8250_rs485_config(struct uart_port *port, struct serial_rs485 *rs485)
-> +{
-> +       struct uart_8250_port *up = up_to_u8250p(port);
-> +
-> +       /* Clamp the delays to [0, 100ms] */
+Alan
 
-It's not exactly clamping but rather cutting extra as I can see below.
-
-> +       rs485->delay_rts_before_send = min(rs485->delay_rts_before_send, 100U);
-> +       rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send, 100U);
-
-> +       /* Both serial8250_em485_* functions are idempotent */
-
-Better to decode what functions do you mean here.
-
-> +       if (rs485->flags & SER_RS485_ENABLED) {
-> +               int ret = serial8250_em485_init(up);
-> +               if (ret) {
-> +                       rs485->flags &= ~SER_RS485_ENABLED;
-> +                       port->rs485.flags &= ~SER_RS485_ENABLED;
-> +               }
-
-> +               return ret;
-> +       } else
-
-You have to do } else { in multi-line branches, but luckily there is
-redundant else keyword.
-
-And checkpatch.pl doesn't tell you anything?
-
-> +               serial8250_em485_destroy(up);
-> +
-> +       return 0;
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
