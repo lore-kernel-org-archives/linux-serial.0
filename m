@@ -1,347 +1,269 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 2/3] ACPI: parse SPCR and enable matching console
-Date: Mon, 25 Jan 2016 08:32:07 -0800
-Message-ID: <56A64E07.10106@hurleysoftware.com>
-References: <1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org>
- <1453722324-22407-3-git-send-email-aleksey.makarov@linaro.org>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH] tty/serial: at91: Use atmel_port consistently
+Date: Mon, 25 Jan 2016 18:29:30 +0100
+Message-ID: <56A65B7A.3040409@atmel.com>
+References: <1452817319-9309-1-git-send-email-kyle.roeschley@ni.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1453722324-22407-3-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Graeme Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Len Brown <lenb@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1452817319-9309-1-git-send-email-kyle.roeschley@ni.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Kyle Roeschley <kyle.roeschley@ni.com>, gregkh@linuxfoundation.org
+Cc: linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, jslaby@suse.com
 List-Id: linux-serial@vger.kernel.org
 
-On 01/25/2016 03:45 AM, Aleksey Makarov wrote:
-> 'ARM Server Base Boot Requiremets' [1] mention SPCR
-> (Serial Port Console Redirection Table) [2] as a mandatory ACPI table
-> that specifies the configuration of serial console.
-> 
-> Parse this table and check if any registered console match
-> the description.  If it does, enable that console.
-> 
-> To implement that, introduce a new member
-> int (*acpi_match)(struct console *, struct acpi_table_spcr *)
-> of struct console.  It allows drivers to check if they provide
-> a matching console device.
+Le 15/01/2016 01:21, Kyle Roeschley a =E9crit :
+> From: Jaeden Amero <jaeden.amero@ni.com>
+> =
 
-Many, many platform proms with all sorts of binary table layout are already
-supported by the existing console infrastructure. Why is ACPI different, that
-requires extensive (and messy) changes to console initialization?
+> In all functions other than atmel_serial_probe_fifos,
+> atmel_serial_probe, and atmel_console_init, the name "port" is used to
+> refer to an instance of struct uart_port. In many of these functions,
+> "atmel_port" is used to refer to an instance of struct atmel_uart_port.
+> =
 
+> We make the use of the name "port" consistent by making
+> atmel_serial_probe_fifos, atmel_serial_probe, and atmel_console_init
+> use "atmel_port" to refer to an instance of struct atmel_uart_port
+> instead of the previous name of "port".
+> =
 
-How is this going to work with earlycon?
+> Signed-off-by: Jaeden Amero <jaeden.amero@ni.com>
+> Signed-off-by: Kyle Roeschley <kyle.roeschley@ni.com>
+> Acked-by: Karthik Manamcheri <karthik.manamcheri@ni.com>
 
+I agree with this as this rename is useful and prevents confusion.
 
-This commit log is missing the reasoning behind adding locks, refactoring
-into delete_from_console_list(), and retry loops.
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 
+Thanks, bye.
 
-> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
-> [2] http://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
-> 
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
 > ---
->  arch/arm64/Kconfig      |  1 +
->  drivers/acpi/Kconfig    |  3 ++
->  drivers/acpi/Makefile   |  1 +
->  drivers/acpi/spcr.c     | 85 +++++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/console.h | 12 +++++++
->  kernel/printk/printk.c  | 82 +++++++++++++++++++++++++++++++++++++----------
->  6 files changed, 167 insertions(+), 17 deletions(-)
->  create mode 100644 drivers/acpi/spcr.c
-> 
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 573bebc..bf31e3c 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -4,6 +4,7 @@ config ARM64
->  	select ACPI_GENERIC_GSI if ACPI
->  	select ACPI_PCI_HOST_GENERIC if ACPI
->  	select ACPI_REDUCED_HARDWARE_ONLY if ACPI
-> +	select ACPI_SPCR_TABLE if ACPI
->  	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
->  	select ARCH_HAS_ELF_RANDOMIZE
->  	select ARCH_HAS_GCOV_PROFILE_ALL
-> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-> index e315061..142a338 100644
-> --- a/drivers/acpi/Kconfig
-> +++ b/drivers/acpi/Kconfig
-> @@ -60,6 +60,9 @@ config ACPI_CCA_REQUIRED
->  config IORT_TABLE
->  	bool
->  
-> +config ACPI_SPCR_TABLE
-> +	bool
-> +
->  config ACPI_DEBUGGER
->  	bool "AML debugger interface (EXPERIMENTAL)"
->  	select ACPI_DEBUG
-> diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-> index 265eb90..8316859 100644
-> --- a/drivers/acpi/Makefile
-> +++ b/drivers/acpi/Makefile
-> @@ -81,6 +81,7 @@ obj-$(CONFIG_ACPI_CUSTOM_METHOD)+= custom_method.o
->  obj-$(CONFIG_ACPI_BGRT)		+= bgrt.o
->  obj-$(CONFIG_ACPI_CPPC_LIB)	+= cppc_acpi.o
->  obj-$(CONFIG_IORT_TABLE) 	+= iort.o
-> +obj-$(CONFIG_ACPI_SPCR_TABLE)	+= spcr.o
->  
->  # processor has its own "processor." module_param namespace
->  processor-y			:= processor_driver.o
-> diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-> new file mode 100644
-> index 0000000..ccb19a0
-> --- /dev/null
-> +++ b/drivers/acpi/spcr.c
-> @@ -0,0 +1,85 @@
-> +/*
-> + * Copyright (c) 2012, Intel Corporation
-> + * Copyright (c) 2015, Red Hat, Inc.
-> + * Copyright (c) 2015, 2016 Linaro Ltd.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + */
-> +
-> +#define pr_fmt(fmt) "ACPI: SPCR: " fmt
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/console.h>
-> +#include <linux/kernel.h>
-> +
-> +static struct acpi_table_spcr *spcr_table;
-> +
-> +int console_acpi_match(struct console *c, char **options)
-> +{
-> +	int err;
-> +
-> +	if (!c->acpi_match)
-> +		return -ENODEV;
-> +
-> +	if (!spcr_table)
-> +		return -EAGAIN;
-> +
-> +	err = c->acpi_match(c, spcr_table);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	if (options) {
-> +		switch (spcr_table->baud_rate) {
-> +		case 3:
-> +			*options = "9600";
-> +			break;
-> +		case 4:
-> +			*options = "19200";
-> +			break;
-> +		case 6:
-> +			*options = "57600";
-> +			break;
-> +		case 7:
-> +			*options = "115200";
-> +			break;
-> +		default:
-> +			*options = "";
-> +			break;
-> +		}
-> +	}
-> +
-> +	return err;
-> +}
-> +
-> +static int __init spcr_table_detect(void)
-> +{
-> +	struct acpi_table_header *table;
-> +	acpi_status status;
-> +
-> +	if (acpi_disabled)
-> +		return -ENODEV;
-> +
-> +	status = acpi_get_table(ACPI_SIG_SPCR, 0, &table);
-> +	if (ACPI_FAILURE(status)) {
-> +		const char *msg = acpi_format_exception(status);
-> +
-> +		pr_err("Failed to get table, %s\n", msg);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (table->revision < 2)
-> +		return -EOPNOTSUPP;
-> +
-> +	spcr_table = (struct acpi_table_spcr *)table;
-> +
-> +	pr_info("Console at 0x%016llx\n", spcr_table->serial_port.address);
-> +
-> +	acpi_register_consoles_try_again();
-> +
-> +	return 0;
-> +}
-> +
-> +arch_initcall(spcr_table_detect);
-> diff --git a/include/linux/console.h b/include/linux/console.h
-> index bd19434..94d0bd8 100644
-> --- a/include/linux/console.h
-> +++ b/include/linux/console.h
-> @@ -117,6 +117,7 @@ static inline int con_debug_leave(void)
->  #define CON_BRL		(32) /* Used for a braille device */
->  #define CON_EXTENDED	(64) /* Use the extended output format a la /dev/kmsg */
->  
-> +struct acpi_table_spcr;
->  struct console {
->  	char	name[16];
->  	void	(*write)(struct console *, const char *, unsigned);
-> @@ -125,6 +126,7 @@ struct console {
->  	void	(*unblank)(void);
->  	int	(*setup)(struct console *, char *);
->  	int	(*match)(struct console *, char *name, int idx, char *options);
-> +	int	(*acpi_match)(struct console *, struct acpi_table_spcr *);
->  	short	flags;
->  	short	index;
->  	int	cflag;
-> @@ -132,6 +134,16 @@ struct console {
->  	struct	 console *next;
->  };
->  
-> +#ifdef CONFIG_ACPI
-> +int console_acpi_match(struct console *c, char **options);
-> +#else
-> +static inline int console_acpi_match(struct console *c, char **options)
-> +{
-> +	return -ENODEV;
-> +}
-> +#endif
-> +void acpi_register_consoles_try_again(void);
-> +
->  /*
->   * for_each_console() allows you to iterate on each console
->   */
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 37e531f..3cf8cba 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -2430,6 +2430,25 @@ static int __init keep_bootcon_setup(char *str)
->  
->  early_param("keep_bootcon", keep_bootcon_setup);
->  
-> +static DEFINE_MUTEX(acpi_consoles_delayed_mutex);
-> +static struct console *acpi_consoles_delayed;
-> +
-> +void acpi_register_consoles_try_again(void)
-> +{
-> +	mutex_lock(&acpi_consoles_delayed_mutex);
-> +	while (acpi_consoles_delayed) {
-> +
-> +		struct console *c = acpi_consoles_delayed;
-> +
-> +		acpi_consoles_delayed = acpi_consoles_delayed->next;
-> +
-> +		mutex_unlock(&acpi_consoles_delayed_mutex);
-> +		register_console(c);
-> +		mutex_lock(&acpi_consoles_delayed_mutex);
-> +	}
-> +	mutex_unlock(&acpi_consoles_delayed_mutex);
-> +}
+>  drivers/tty/serial/atmel_serial.c | 81 ++++++++++++++++++++-------------=
+------
+>  1 file changed, 41 insertions(+), 40 deletions(-)
+> =
 
-Why is this necessary? There is no mention of this hack in the
-commit log.
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel=
+_serial.c
+> index 1c0884d..a809119 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2478,13 +2478,13 @@ static int __init atmel_console_init(void)
+>  		struct atmel_uart_data *pdata =3D
+>  			dev_get_platdata(&atmel_default_console_device->dev);
+>  		int id =3D pdata->num;
+> -		struct atmel_uart_port *port =3D &atmel_ports[id];
+> +		struct atmel_uart_port *atmel_port =3D &atmel_ports[id];
+>  =
 
+> -		port->backup_imr =3D 0;
+> -		port->uart.line =3D id;
+> +		atmel_port->backup_imr =3D 0;
+> +		atmel_port->uart.line =3D id;
+>  =
 
-> +
->  /*
->   * The console driver calls this routine during kernel initialization
->   * to register the console printing procedure with printk() and to
-> @@ -2538,8 +2557,30 @@ void register_console(struct console *newcon)
->  		break;
->  	}
->  
-> -	if (!(newcon->flags & CON_ENABLED))
-> -		return;
-> +	if (!(newcon->flags & CON_ENABLED)) {
-> +		char *opts;
-> +		int err;
-> +
-> +		if (newcon->index < 0)
-> +			newcon->index = 0;
-> +
-> +		err = console_acpi_match(newcon, &opts);
-> +
-> +		if (err == -EAGAIN) {
-> +			mutex_lock(&acpi_consoles_delayed_mutex);
-> +			newcon->next = acpi_consoles_delayed;
-> +			acpi_consoles_delayed = newcon;
-> +			mutex_unlock(&acpi_consoles_delayed_mutex);
-> +			return;
-> +		} else if (err < 0) {
-> +			return;
-> +		} else {
-> +			if (newcon->setup && newcon->setup(newcon, opts) != 0)
-> +				return;
-> +			newcon->flags |= CON_ENABLED | CON_CONSDEV;
-> +			preferred_console = true;
-> +		}
-> +	}
->  
->  	/*
->  	 * If we have a bootconsole, and are switching to a real console,
-> @@ -2612,34 +2653,41 @@ void register_console(struct console *newcon)
->  }
->  EXPORT_SYMBOL(register_console);
->  
-> +static int delete_from_console_list(struct console **list, struct console *c)
-> +{
-> +	while (*list) {
-> +		struct console *cur = *list;
-> +
-> +		if (cur == c) {
-> +			*list = cur->next;
-> +			return 0;
-> +		}
-> +		list = &cur->next;
-> +	}
-> +	return 1;
-> +}
-> +
->  int unregister_console(struct console *console)
+>  		add_preferred_console(ATMEL_DEVICENAME, id, NULL);
+> -		ret =3D atmel_init_port(port, atmel_default_console_device);
+> +		ret =3D atmel_init_port(atmel_port, atmel_default_console_device);
+>  		if (ret)
+>  			return ret;
+>  		register_console(&atmel_console);
+> @@ -2599,23 +2599,23 @@ static int atmel_serial_resume(struct platform_de=
+vice *pdev)
+>  #define atmel_serial_resume NULL
+>  #endif
+>  =
+
+> -static void atmel_serial_probe_fifos(struct atmel_uart_port *port,
+> +static void atmel_serial_probe_fifos(struct atmel_uart_port *atmel_port,
+>  				     struct platform_device *pdev)
 >  {
-> -        struct console *a, *b;
->  	int res;
->  
->  	pr_info("%sconsole [%s%d] disabled\n",
->  		(console->flags & CON_BOOT) ? "boot" : "" ,
->  		console->name, console->index);
->  
-> +	mutex_lock(&acpi_consoles_delayed_mutex);
-> +	res = delete_from_console_list(&acpi_consoles_delayed, console);
-> +	mutex_unlock(&acpi_consoles_delayed_mutex);
-> +	if (res == 0)
-> +		return res;
-> +
->  	res = _braille_unregister_console(console);
->  	if (res)
->  		return res;
->  
-> -	res = 1;
->  	console_lock();
-> -	if (console_drivers == console) {
-> -		console_drivers=console->next;
-> -		res = 0;
-> -	} else if (console_drivers) {
-> -		for (a=console_drivers->next, b=console_drivers ;
-> -		     a; b=a, a=b->next) {
-> -			if (a == console) {
-> -				b->next = a->next;
-> -				res = 0;
-> -				break;
-> -			}
-> -		}
-> -	}
-> +
-> +	res = delete_from_console_list(&console_drivers, console);
->  
->  	if (!res && (console->flags & CON_EXTENDED))
->  		nr_ext_console_drivers--;
-> 
+> -	port->fifo_size =3D 0;
+> -	port->rts_low =3D 0;
+> -	port->rts_high =3D 0;
+> +	atmel_port->fifo_size =3D 0;
+> +	atmel_port->rts_low =3D 0;
+> +	atmel_port->rts_high =3D 0;
+>  =
+
+>  	if (of_property_read_u32(pdev->dev.of_node,
+>  				 "atmel,fifo-size",
+> -				 &port->fifo_size))
+> +				 &atmel_port->fifo_size))
+>  		return;
+>  =
+
+> -	if (!port->fifo_size)
+> +	if (!atmel_port->fifo_size)
+>  		return;
+>  =
+
+> -	if (port->fifo_size < ATMEL_MIN_FIFO_SIZE) {
+> -		port->fifo_size =3D 0;
+> +	if (atmel_port->fifo_size < ATMEL_MIN_FIFO_SIZE) {
+> +		atmel_port->fifo_size =3D 0;
+>  		dev_err(&pdev->dev, "Invalid FIFO size\n");
+>  		return;
+>  	}
+> @@ -2628,22 +2628,22 @@ static void atmel_serial_probe_fifos(struct atmel=
+_uart_port *port,
+>  	 * Threshold to a reasonably high value respecting this 16 data
+>  	 * empirical rule when possible.
+>  	 */
+> -	port->rts_high =3D max_t(int, port->fifo_size >> 1,
+> -			       port->fifo_size - ATMEL_RTS_HIGH_OFFSET);
+> -	port->rts_low  =3D max_t(int, port->fifo_size >> 2,
+> -			       port->fifo_size - ATMEL_RTS_LOW_OFFSET);
+> +	atmel_port->rts_high =3D max_t(int, atmel_port->fifo_size >> 1,
+> +			       atmel_port->fifo_size - ATMEL_RTS_HIGH_OFFSET);
+> +	atmel_port->rts_low  =3D max_t(int, atmel_port->fifo_size >> 2,
+> +			       atmel_port->fifo_size - ATMEL_RTS_LOW_OFFSET);
+>  =
+
+>  	dev_info(&pdev->dev, "Using FIFO (%u data)\n",
+> -		 port->fifo_size);
+> +		 atmel_port->fifo_size);
+>  	dev_dbg(&pdev->dev, "RTS High Threshold : %2u data\n",
+> -		port->rts_high);
+> +		atmel_port->rts_high);
+>  	dev_dbg(&pdev->dev, "RTS Low Threshold  : %2u data\n",
+> -		port->rts_low);
+> +		atmel_port->rts_low);
+>  }
+>  =
+
+>  static int atmel_serial_probe(struct platform_device *pdev)
+>  {
+> -	struct atmel_uart_port *port;
+> +	struct atmel_uart_port *atmel_port;
+>  	struct device_node *np =3D pdev->dev.of_node;
+>  	struct atmel_uart_data *pdata =3D dev_get_platdata(&pdev->dev);
+>  	void *data;
+> @@ -2674,14 +2674,14 @@ static int atmel_serial_probe(struct platform_dev=
+ice *pdev)
+>  		goto err;
+>  	}
+>  =
+
+> -	port =3D &atmel_ports[ret];
+> -	port->backup_imr =3D 0;
+> -	port->uart.line =3D ret;
+> -	atmel_serial_probe_fifos(port, pdev);
+> +	ateml_port =3D &atmel_ports[ret];
+> +	atmel_port->backup_imr =3D 0;
+> +	atmel_port->uart.line =3D ret;
+> +	atmel_serial_probe_fifos(atmel_port, pdev);
+>  =
+
+> -	spin_lock_init(&port->lock_suspended);
+> +	spin_lock_init(&atmel_port->lock_suspended);
+>  =
+
+> -	ret =3D atmel_init_port(port, pdev);
+> +	ret =3D atmel_init_port(atmel_port, pdev);
+>  	if (ret)
+>  		goto err_clear_bit;
+>  =
+
+> @@ -2691,34 +2691,34 @@ static int atmel_serial_probe(struct platform_dev=
+ice *pdev)
+>  		goto err_clear_bit;
+>  	}
+>  =
+
+> -	if (!atmel_use_pdc_rx(&port->uart)) {
+> +	if (!atmel_use_pdc_rx(&atmel_port->uart)) {
+>  		ret =3D -ENOMEM;
+>  		data =3D kmalloc(sizeof(struct atmel_uart_char)
+>  				* ATMEL_SERIAL_RINGSIZE, GFP_KERNEL);
+>  		if (!data)
+>  			goto err_alloc_ring;
+> -		port->rx_ring.buf =3D data;
+> +		atmel_port->rx_ring.buf =3D data;
+>  	}
+>  =
+
+> -	rs485_enabled =3D port->uart.rs485.flags & SER_RS485_ENABLED;
+> +	rs485_enabled =3D atmel_port->uart.rs485.flags & SER_RS485_ENABLED;
+>  =
+
+> -	ret =3D uart_add_one_port(&atmel_uart, &port->uart);
+> +	ret =3D uart_add_one_port(&atmel_uart, &atmel_port->uart);
+>  	if (ret)
+>  		goto err_add_port;
+>  =
+
+>  #ifdef CONFIG_SERIAL_ATMEL_CONSOLE
+> -	if (atmel_is_console_port(&port->uart)
+> +	if (atmel_is_console_port(&atmel_port->uart)
+>  			&& ATMEL_CONSOLE_DEVICE->flags & CON_ENABLED) {
+>  		/*
+>  		 * The serial core enabled the clock for us, so undo
+>  		 * the clk_prepare_enable() in atmel_console_setup()
+>  		 */
+> -		clk_disable_unprepare(port->clk);
+> +		clk_disable_unprepare(atmel_port->clk);
+>  	}
+>  #endif
+>  =
+
+>  	device_init_wakeup(&pdev->dev, 1);
+> -	platform_set_drvdata(pdev, port);
+> +	platform_set_drvdata(pdev, atmel_port);
+>  =
+
+>  	/*
+>  	 * The peripheral clock has been disabled by atmel_init_port():
+> @@ -2727,9 +2727,10 @@ static int atmel_serial_probe(struct platform_devi=
+ce *pdev)
+>  	clk_prepare_enable(port->clk);
+>  =
+
+>  	if (rs485_enabled) {
+> -		atmel_uart_writel(&port->uart, ATMEL_US_MR,
+> +		atmel_uart_writel(&atmel_port->uart, ATMEL_US_MR,
+>  				  ATMEL_US_USMODE_NORMAL);
+> -		atmel_uart_writel(&port->uart, ATMEL_US_CR, ATMEL_US_RTSEN);
+> +		atmel_uart_writel(&atmel_port->uart, ATMEL_US_CR,
+> +				  ATMEL_US_RTSEN);
+>  	}
+>  =
+
+>  	/*
+> @@ -2746,12 +2747,12 @@ static int atmel_serial_probe(struct platform_dev=
+ice *pdev)
+>  	return 0;
+>  =
+
+>  err_add_port:
+> -	kfree(port->rx_ring.buf);
+> -	port->rx_ring.buf =3D NULL;
+> +	kfree(atmel_port->rx_ring.buf);
+> +	atmel_port->rx_ring.buf =3D NULL;
+>  err_alloc_ring:
+> -	if (!atmel_is_console_port(&port->uart)) {
+> -		clk_put(port->clk);
+> -		port->clk =3D NULL;
+> +	if (!atmel_is_console_port(&atmel_port->uart)) {
+> +		clk_put(atmel_port->clk);
+> +		atmel_port->clk =3D NULL;
+>  	}
+>  err_clear_bit:
+>  	clear_bit(port->uart.line, atmel_ports_in_use);
+> =
+
+
+
+-- =
+
+Nicolas Ferre
