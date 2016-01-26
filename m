@@ -1,98 +1,71 @@
-From: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
-Subject: Re: [PATCH] 8250: uniphier: allow modular build with 8250 console
-Date: Tue, 26 Jan 2016 10:48:53 +0900
-Message-ID: <CAK7LNAQoqS0mwkyR9pTJVEDjWYDuhWQYqrMJxWSRQ-bwk51FXw@mail.gmail.com>
-References: <3965359.aMgb8o9MaG@wuerfel>
-	<CAK7LNATVtLk6UTh+r9JTZrKq-veEXetDdRutZ_=zQOd-WyAO0g@mail.gmail.com>
-	<4548262.MV5j98YUVi@wuerfel>
-	<CAL_JsqKCnxenDN-5OP1yqAyyW1-cuhs47CeosAj12hr89e6CrA@mail.gmail.com>
-	<CAK7LNARo+rpKVDAY_h9vPKh_1vteYgjNS=nf0ukz2ThzPNxvmg@mail.gmail.com>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH 2/2] serial: atmel: add support for new UART version
+Date: Tue, 26 Jan 2016 11:25:32 +0100
+Message-ID: <56A7499C.8090109@atmel.com>
+References: <201601260224.Djb6afTp%fengguang.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAK7LNARo+rpKVDAY_h9vPKh_1vteYgjNS=nf0ukz2ThzPNxvmg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <201601260224.Djb6afTp%fengguang.wu@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: kbuild test robot <lkp@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: kbuild-all@01.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, davidm@egauge.net
 List-Id: linux-serial@vger.kernel.org
 
-Just for clarification:
+Le 25/01/2016 19:34, kbuild test robot a =E9crit :
+> Hi Nicolas,
+>=20
+> [auto build test ERROR on usb/usb-testing]
+> [also build test ERROR on v4.5-rc1 next-20160125]
+> [if your patch is applied to the wrong git tree, please drop us a not=
+e to help improving the system]
+>=20
+> url:    https://github.com/0day-ci/linux/commits/Nicolas-Ferre/serial=
+-atmel-trivial-clean-the-IP-version-decoding-code/20160126-014116
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.gi=
+t usb-testing
+> config: i386-allmodconfig (attached as .config)
+> reproduce:
+>         # save the attached .config to linux build tree
+>         make ARCH=3Di386=20
+>=20
+> All errors (new ones prefixed by >>):
+>=20
+>    drivers/tty/serial/atmel_serial.c: In function 'atmel_get_ip_name'=
+:
+>>> drivers/tty/serial/atmel_serial.c:1717:2: error: 'new_uart' undecla=
+red (first use in this function)
 
-The build error was fixed by another patch
-(https://patchwork.kernel.org/patch/8082931/)
+Sorry for this dumb error and the associated noise!
 
-So, this one is unneeded.
+I send a v2 immediately.
 
-
-
-2016-01-22 1:50 GMT+09:00 Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>:
-> Hi Rob.
->
->
-> 2016-01-21 23:09 GMT+09:00 Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
->> On Thu, Jan 21, 2016 at 6:21 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
->>> On Thursday 21 January 2016 20:39:03 Masahiro Yamada wrote:
->>>> 2016-01-14 7:33 GMT+09:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
->>>> > The recently added uniphier 8250 port driver supports early console
->>>> > probing, and it supports being built as a module, but the combination
->>>> > of the two fails to link:
->>>> >
->>>> > ERROR: "early_serial8250_setup" [drivers/tty/serial/8250/8250_uniphier.ko] undefined!
->>>> >
->>>> > Given that earlycon support in a loadable module makes no sense,
->>>> > making that code conditional on 'MODULE' is a correct solution.
->>>> >
->>>> > Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
->>>> > Fixes: b8d20e06eaad ("serial: 8250_uniphier: add earlycon support")
->>>> >
->>>> > diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
->>>> > index bab6b3ae2540..1b7bd26555b7 100644
->>>> > --- a/drivers/tty/serial/8250/8250_uniphier.c
->>>> > +++ b/drivers/tty/serial/8250/8250_uniphier.c
->>>> > @@ -35,7 +35,7 @@ struct uniphier8250_priv {
->>>> >         spinlock_t atomic_write_lock;
->>>> >  };
->>>> >
->>>> > -#ifdef CONFIG_SERIAL_8250_CONSOLE
->>>> > +#if defined(CONFIG_SERIAL_8250_CONSOLE) && !defined(MODULE)
->>>> >  static int __init uniphier_early_console_setup(struct earlycon_device *device,
->>>> >                                                const char *options)
->>>> >  {
->>>> >
->>>> >
->>>>
->>>>
->>>> If my patch (https://patchwork.kernel.org/patch/8029331/) is accepted,
->>>> this build error will be fixed as well.  But I doubt it is accepted soon...
->>>>
->>>> So, I am OK with this workaround to fix "make allmodconfig".
->>>>
->>>> Acked-by: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
->>>>
->>>
->>> Good point. Adding the DT maintainers to Cc. Guys, any chance of you
->>> picking up Masahiro's patch for 4.5?
->>
->> I will if you can update the commit log with the details here about it
->> fixing an actual problem.
->
-> I did so in v2.
->
-> Thanks!
->
->
->
->
-> --
-> Best Regards
-> Masahiro Yamada
+>      new_uart =3D 0x55415254; /* UART */
+>      ^
+>    drivers/tty/serial/atmel_serial.c:1717:2: note: each undeclared id=
+entifier is reported only once for each function it appears in
+>=20
+> vim +/new_uart +1717 drivers/tty/serial/atmel_serial.c
+>=20
+>   1711		int name =3D atmel_uart_readl(port, ATMEL_US_NAME);
+>   1712		u32 version;
+>   1713		u32 usart, dbgu_uart;
+>   1714		/* ASCII decoding for IP version */
+>   1715		usart =3D 0x55534152;	/* USAR(T) */
+>   1716		dbgu_uart =3D 0x44424755;	/* DBGU */
+>> 1717		new_uart =3D 0x55415254;	/* UART */
+>   1718=09
+>   1719		atmel_port->has_hw_timer =3D false;
+>   1720=09
+>=20
+> ---
+> 0-DAY kernel test infrastructure                Open Source Technolog=
+y Center
+> https://lists.01.org/pipermail/kbuild-all                   Intel Cor=
+poration
+>=20
 
 
-
--- 
-Best Regards
-Masahiro Yamada
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--=20
+Nicolas Ferre
