@@ -1,131 +1,98 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] serial: imx: fix dcd interrupt firing during probe
-Date: Mon, 25 Jan 2016 11:30:07 -0800
-Message-ID: <56A677BF.7040808@hurleysoftware.com>
-References: <1451531565-1233-1-git-send-email-marcel.ziswiler@toradex.com>
- <d2768fb8b08ac6ab71fc4e20582a0fd4@agner.ch>
+From: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
+Subject: Re: [PATCH] 8250: uniphier: allow modular build with 8250 console
+Date: Tue, 26 Jan 2016 10:48:53 +0900
+Message-ID: <CAK7LNAQoqS0mwkyR9pTJVEDjWYDuhWQYqrMJxWSRQ-bwk51FXw@mail.gmail.com>
+References: <3965359.aMgb8o9MaG@wuerfel>
+	<CAK7LNATVtLk6UTh+r9JTZrKq-veEXetDdRutZ_=zQOd-WyAO0g@mail.gmail.com>
+	<4548262.MV5j98YUVi@wuerfel>
+	<CAL_JsqKCnxenDN-5OP1yqAyyW1-cuhs47CeosAj12hr89e6CrA@mail.gmail.com>
+	<CAK7LNARo+rpKVDAY_h9vPKh_1vteYgjNS=nf0ukz2ThzPNxvmg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d2768fb8b08ac6ab71fc4e20582a0fd4@agner.ch>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Agner <stefan@agner.ch>, Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>, linux-arm-kernel@lists.infradead.org, Lucas Stach <l.stach@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAK7LNARo+rpKVDAY_h9vPKh_1vteYgjNS=nf0ukz2ThzPNxvmg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 01/25/2016 09:50 AM, Stefan Agner wrote:
-> Hi Marcel,
->=20
-> [also added Lucas]
->=20
-> On 2015-12-30 19:12, Marcel Ziswiler wrote:
->> Continuing on the Apalis iMX6 mainlining work started by Petr =C5=A0=
-tetiar I
->> noticed that it only boots when rebooting from NXP's downstream 3.14=
-=2E28
->> kernel or mainline otherwise (e.g. when cold booted) I did not get a=
-ny
->> serial debug output at all. Enabling earlyprintk I got the following=
-:
->>
->> [    1.136806] INFO: trying to register non-static key.
->> [    1.136871] 2020000.serial: ttymxc0 at MMIO 0x2020000 (irq =3D 25=
-,
->> base_baud =3D 5000000) is a IMX
->> [    1.150651] the code is fine but needs lockdep annotation.
->> [    1.150653] turning off the locking correctness validator.
->> [    1.150664] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.4.0-rc6-
->> next-20151223-00002-g6008f30-dirty #27
->> [    1.150668] Hardware name: Freescale i.MX6 Quad/DualLite (Device
->> Tree)
->> [    1.150675] Backtrace:
->> [    1.150701] [<c010c45c>] (dump_backtrace) from [<c010c654>]
->> (show_stack+0x18/0x1c)
->> [    1.150722]  r7:00000000 r6:c0d20848 r5:00000000 r4:00000000
->> [    1.150739] [<c010c63c>] (show_stack) from [<c03dadcc>]
->> (dump_stack+0x8c/0xa4)
->> [    1.150760] [<c03dad40>] (dump_stack) from [<c016b60c>]
->> (__lock_acquire+0x1d88/0x1eb4)
->> [    1.150774]  r7:00000000 r6:c0d063f8 r5:c155f834 r4:e503bc20
->> [    1.150785] [<c0169884>] (__lock_acquire) from [<c016bf54>]
->> (lock_acquire+0x74/0x94)
->> [    1.150803]  r10:c0d6eb5e r9:e597b300 r8:00000019 r7:00000001
->> r6:00000001 r5:60000193
->> [    1.150808]  r4:00000000
->> [    1.150821] [<c016bee0>] (lock_acquire) from [<c08d49d4>]
->> (_raw_spin_lock_irqsave+0x40/0x54)
->> [    1.150834]  r7:000052c8 r6:c0481470 r5:40000193 r4:e503bc10
->> [    1.150852] [<c08d4994>] (_raw_spin_lock_irqsave) from [<c0481470=
->]
->> (imx_rxint+0x20/0x2a4)
->> [    1.150862]  r6:00000000 r5:000052d0 r4:e503bc10
->> [    1.150874] [<c0481450>] (imx_rxint) from [<c0482540>]
->> (imx_int+0x170/0x1f4)
->>
->> Debugging a little further I noticed this actually happening after
->> calling devm_request_irq() during serial_imx_probe() even before
->> uart_add_one_port()
+Just for clarification:
 
-The imx driver is in the minority by claiming the irq @ probe time.
-The vast majority of uart drivers claim the irq in their startup() meth=
-ods.
+The build error was fixed by another patch
+(https://patchwork.kernel.org/patch/8082931/)
 
-Regards,
-Peter Hurley
+So, this one is unneeded.
 
 
->> did initialise the spin_lock acquired in
->> imx_rxint(). Turns out the data carrier detect interrupt fired
->> immediately upon requesting interrupts. This patch fixes this by
->> explicitly disabling data carrier detect before requesting interrupt=
-s.
->=20
-> I actually hit a very similar issue on the Colibri iMX6 and hence loo=
-ked
-> into this too. In our downstream tree, I fixed it in imx_startup, whi=
-ch
-> is probably the wrong place actually...
->=20
+
+2016-01-22 1:50 GMT+09:00 Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>:
+> Hi Rob.
+>
+>
+> 2016-01-21 23:09 GMT+09:00 Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
+>> On Thu, Jan 21, 2016 at 6:21 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+>>> On Thursday 21 January 2016 20:39:03 Masahiro Yamada wrote:
+>>>> 2016-01-14 7:33 GMT+09:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
+>>>> > The recently added uniphier 8250 port driver supports early console
+>>>> > probing, and it supports being built as a module, but the combination
+>>>> > of the two fails to link:
+>>>> >
+>>>> > ERROR: "early_serial8250_setup" [drivers/tty/serial/8250/8250_uniphier.ko] undefined!
+>>>> >
+>>>> > Given that earlycon support in a loadable module makes no sense,
+>>>> > making that code conditional on 'MODULE' is a correct solution.
+>>>> >
+>>>> > Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+>>>> > Fixes: b8d20e06eaad ("serial: 8250_uniphier: add earlycon support")
+>>>> >
+>>>> > diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+>>>> > index bab6b3ae2540..1b7bd26555b7 100644
+>>>> > --- a/drivers/tty/serial/8250/8250_uniphier.c
+>>>> > +++ b/drivers/tty/serial/8250/8250_uniphier.c
+>>>> > @@ -35,7 +35,7 @@ struct uniphier8250_priv {
+>>>> >         spinlock_t atomic_write_lock;
+>>>> >  };
+>>>> >
+>>>> > -#ifdef CONFIG_SERIAL_8250_CONSOLE
+>>>> > +#if defined(CONFIG_SERIAL_8250_CONSOLE) && !defined(MODULE)
+>>>> >  static int __init uniphier_early_console_setup(struct earlycon_device *device,
+>>>> >                                                const char *options)
+>>>> >  {
+>>>> >
+>>>> >
+>>>>
+>>>>
+>>>> If my patch (https://patchwork.kernel.org/patch/8029331/) is accepted,
+>>>> this build error will be fixed as well.  But I doubt it is accepted soon...
+>>>>
+>>>> So, I am OK with this workaround to fix "make allmodconfig".
+>>>>
+>>>> Acked-by: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>
+>>>>
+>>>
+>>> Good point. Adding the DT maintainers to Cc. Guys, any chance of you
+>>> picking up Masahiro's patch for 4.5?
 >>
->> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
->>
->> ---
->>
->>  drivers/tty/serial/imx.c | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->> index 9362f54c..b1588f9 100644
->> --- a/drivers/tty/serial/imx.c
->> +++ b/drivers/tty/serial/imx.c
->> @@ -2032,6 +2032,11 @@ static int serial_imx_probe(struct platform_d=
-evice *pdev)
->>  		 UCR1_TXMPTYEN | UCR1_RTSDEN);
->>  	writel_relaxed(reg, sport->port.membase + UCR1);
->> =20
->> +	/* Disable data carrier detect before requesting interrupts */
->> +	reg =3D readl_relaxed(sport->port.membase + UCR3);
->> +	reg &=3D ~(UCR3_DCD);
->> +	writel_relaxed(reg, sport->port.membase + UCR3);
->> +
->=20
-> Note that UCR3_DCD has a different meaning in DCE mode. As a DCE, the
-> bit should be kept 1 (we assume that the carrier is detected by
-> default...)
->=20
-> The dte_mode bit should be initialized at that point, hence just maki=
-ng
-> that code conditional should account for that.
->=20
-> What I also noticed is that the RI signal suffers the very same issue=
-=2E
-> We do not use the signal on our Colibri board, but we should disable
-> that interrupt too.
->=20
+>> I will if you can update the commit log with the details here about it
+>> fixing an actual problem.
+>
+> I did so in v2.
+>
+> Thanks!
+>
+>
+>
+>
 > --
-> Stefan
->=20
->>  	clk_disable_unprepare(sport->clk_ipg);
->> =20
->>  	/*
+> Best Regards
+> Masahiro Yamada
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
