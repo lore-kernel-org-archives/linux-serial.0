@@ -1,114 +1,64 @@
-From: Martin Fuzzey <mfuzzey-mB3Nsq4MPf1BDgjK7y7TUQ@public.gmane.org>
-Subject: Re: Serial ports with non connected RTS/CTS
-Date: Wed, 27 Jan 2016 12:33:32 +0100
-Message-ID: <56A8AB0C.8010407@parkeon.com>
-References: <56A89C48.1040604@parkeon.com>
- <20160127115817.79e384b1@ipc1.ka-ro>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH 0/3] ACPI: parse the SPCR table
+Date: Wed, 27 Jan 2016 15:17:52 +0300
+Message-ID: <56A8B570.2060501@linaro.org>
+References: <1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org>
+ <56A6494E.3090303@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160127115817.79e384b1-VjFSrY7JcPWvSplVBqRQBQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW-bxm8fMRDkQLDiMYJYoSAnRvVK+yQ3ZXh@public.gmane.org>
-Cc: "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <56A6494E.3090303@hurleysoftware.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, linux-acpi@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Graeme Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
-
-On 27/01/16 11:58, Lothar Wa=C3=9Fmann wrote:
->
-> If a driver has no support for RTS/CTS (e.g. due to the missing
-> fsl,uart-has-rtscts property for i.MX UARTs) then trying to enable HW
-> flowcontrol via the TCETS ioctl should fail (as is the case with the
-> i.MX serial driver).
-> Thus it should be impossible to enable crtscts if the serial driver h=
-as
-> no RTC/CTS support without any need for userspace to know about the
-> HW details.
-
-It doesn't do that for me [kernel 4.4]
-
-The stty command to activate rtscts does return an error if the hardwar=
-e=20
-doesn't support it.
-
-# stty -F /dev/ttymxc1 crtscts
-stty: /dev/ttymxc1: unable to perform all requested operations
-
-But the TCETS ioctl  itselfdoes not fail:
-
-ioctl(0, SNDCTL_TMR_STOP or TCSETSW, {B115200 -opost -isig -icanon -ech=
-o=20
-=2E..}) =3D 0
-ioctl(0, SNDCTL_TMR_TIMEBASE or TCGETS, {B115200 -opost -isig -icanon=20
--echo ...}) =3D 0
-ioctl(0, SNDCTL_TMR_TIMEBASE or TCGETS, {B115200 -opost -isig -icanon=20
--echo ...}) =3D 0
-write(2, "stty: ", 6stty: )                   =3D 6
-write(2, "/dev/ttymxc1: unable to perform "..., 56/dev/ttymxc1: unable=20
-to perform all requested operations) =3D 56
 
 
-The error message is because stty does a TCGETS afterwards and errors i=
-f=20
-the result is different to that requested.
+On 01/25/2016 07:11 PM, Peter Hurley wrote:
+> On 01/25/2016 03:45 AM, Aleksey Makarov wrote:
+>> This patchset is based on the patchset by Leif Lindholm [1]
+>>
+>> 'ARM Server Base Boot Requirements' [2] mention SPCR=20
+>> (Serial Port Console Redirection Table) [3] as a mandatory
+>> ACPI table that specifies the configuration of serial console.
+>>
+>> Licensing concerns have prevented implementing it in the past, but a=
+s of
+>> 10 August 2015, these tables have both been released also under=20
+>> OWF 1.0 [4].
+>=20
+> This license has a patent retaliation provision, which makes it
+> incompatible with GPLv2.
+>=20
+> *If the license applies to this code*, then this patch set does not
+> meet the criteria for submission.
 
-slattach does not compare the requested and actual configuaration
+The license applies not to this code but to the document describing the=
+ tables.
 
+Here is an excerpt from it:
 
-The kernel code in the imx driver is:
-static void
-imx_set_termios(struct uart_port *port, struct ktermios *termios,
-            struct ktermios *old)
-{
-=2E..
-     if (termios->c_cflag & CRTSCTS) {
-         if (sport->have_rtscts) {
-             ucr2 &=3D ~UCR2_IRTS;
+  Patent Notice:
+  Microsoft is making certain patent rights available for implementatio=
+ns of this specification under two options:
+  1)  Microsoft=E2=80=99s Community Promise, available at
+  http://www.microsoft.com/openspecifications/en/us/programs/community-=
+promise/default.aspx; or
+  2)  The Open Web Foundation Final Specification Agreement Version 1.0=
+ ("OWF 1.0")
+  as of October 1, 2012, available at http://www.openwebfoundation.org/=
+legal/the-owf-1-0-agreements/owfa-1-0.=20
 
-             if (port->rs485.flags & SER_RS485_ENABLED) {
-                 /*
-                  * RTS is mandatory for rs485 operation, so keep
-                  * it under manual control and keep transmitter
-                  * disabled.
-                  */
-                 if (!(port->rs485.flags &
-                       SER_RS485_RTS_AFTER_SEND))
-                     ucr2 |=3D UCR2_CTS;
-             } else {
-                 ucr2 |=3D UCR2_CTSC;
-             }
-         } else {
-             termios->c_cflag &=3D ~CRTSCTS;
-         }
-     } else if (port->rs485.flags & SER_RS485_ENABLED)
+I believe that it means that the patch set meets the criteria for submi=
+ssion.  Am I right?
 
-
-So requesting RTSCTS if the hardware doesn't support it does not=20
-generate an error but the bit is reset in the termios structure.
-
-This makes sense to me. Userspace can ask for something - the driver=20
-does it's best and reports to userspace what it actually did.
-It's then up to userspace to decide if that's acceptable.
-
-And indeed "man termios" :
-
-"Note that *tcsetattr*() returns success if /any/ of the requested=20
-changes could be successfully carried out. Therefore, when making=20
-multiple changes it may be necessary to follow this call with a further=
-=20
-call to *tcgetattr*() to check that all changes have been performed=20
-successfully. "
-
-
-
-Martin
-
+Thank you
+Aleksey Makarov
 
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+To unsubscribe from this list: send the line "unsubscribe linux-acpi" i=
 n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
