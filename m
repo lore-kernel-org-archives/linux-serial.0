@@ -1,84 +1,61 @@
-From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-Subject: Re: [RESEND PATCH v2] ARM: debug: add support for Palmchip BK-310x
- UART
-Date: Wed, 27 Jan 2016 00:44:44 +0000
-Message-ID: <yw1x1t93lukj.fsf@unicorn.mansr.com>
-References: <569CA203.6050001@sigmadesigns.com> <7h60yfn9c6.fsf@baylibre.com>
+From: Martin Fuzzey <mfuzzey-mB3Nsq4MPf1BDgjK7y7TUQ@public.gmane.org>
+Subject: Serial ports with non connected RTS/CTS
+Date: Wed, 27 Jan 2016 11:30:32 +0100
+Message-ID: <56A89C48.1040604@parkeon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <7h60yfn9c6.fsf@baylibre.com> (Kevin Hilman's message of "Tue, 26
- Jan 2016 16:40:25 -0800")
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Kevin Hilman <khilman@baylibre.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, arm-soc <arm@kernel.org>, linux-serial <linux-serial@vger.kernel.org>, Sebastian Frias <sebastian_frias@sigmadesigns.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Kevin Hilman <khilman@baylibre.com> writes:
+Hi all,
 
-> Marc Gonzalez <marc_gonzalez@sigmadesigns.com> writes:
->
->> From: Mans Rullgard <mans@mansr.com>
->>
->> Some SoCs use a Palmchip BK-310x UART which is mostly 16550 compatible
->> but with a different register layout.
->
-> ... because UART register layout is where we really need innovation. ;)
->
->> While this UART has previously
->> only been supported in MIPS based chips (Alchemy, Ralink), the ARM based
->> SMP87xx series from Sigma Designs also uses it.
->>
->> This patch allows the debug console to work with this type of UART.
->>
->> Signed-off-by: Mans Rullgard <mans@mansr.com>
->> Signed-off-by: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
->
-> It appears this was previously acked by Arnd also?
-> https://lkml.org/lkml/2015/11/9/116
->
->> ---
->> Peter, this is the patch I've been using on Tango for earlyprintk suppor=
-t.
->> arm-soc, this is just the Nov 8 patch with my Signed-off-by tag.
->> ---
->>  arch/arm/Kconfig.debug            |  9 +++++++++
->>  arch/arm/include/debug/palmchip.S | 11 +++++++++++
->>  2 files changed, 20 insertions(+)
->>  create mode 100644 arch/arm/include/debug/palmchip.S
->>
->> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
->> index 259c0ca9c99a..708aa9150c00 100644
->> --- a/arch/arm/Kconfig.debug
->> +++ b/arch/arm/Kconfig.debug
->> @@ -1304,6 +1304,7 @@ config DEBUG_SIRFSOC_UART
->>  config DEBUG_LL_INCLUDE
->>  	string
->>  	default "debug/sa1100.S" if DEBUG_SA1100
->> +	default "debug/palmchip.S" if DEBUG_UART_8250_PALMCHIP
->
-> minor nit: We're trying (not always with great success) to keep various
-> parts of this file sorted alphanumerically.  Can you please insert the
-> new entries accordingly?
+currently, at least for 8250 based serial ports using of_serial, there 
+is no way of indicating that the RTS / CTS lines, although supported by 
+the UART, are not actually connected on the board.
 
-It has to precede the regular 8250 entry so as to take precedence over
-that.
+This means that userspace needs to know about this and not use the 
+CRTSCTS termios flag (otherwise no data is sent).
 
-> Otherwise looks good to me,
->
-> Acked-by: Kevin Hilman <khilman@baylibre.com>
->
-> Kevin
+This is currently the case for Debian stattach for example (nettools 
+1.60) which unconditionally uses CRTSCTS (but the busybox version of 
+slattach has a "-F" option that can be used to disable CRTSCTS).
 
--- =
+Would it not be better to allow this situation to be described in the 
+device tree?
 
-M=E5ns Rullg=E5rd
+Such an option already exists for the imx UART (""fsl,uart-has-rtscts")
+
+of_serial already has the "auto-flow-control" DT property but, as stated 
+in the documentation:
+     "The  driver is allowed to detect support for the capability even 
+without this  property."
+
+In the past there was a (since reverted) property "has-hw-flow-control"
+See
+     06aa82e "serial: uart: add hw flow control support configuration"
+     a6eec92 " Revert "serial: uart: add hw flow control support 
+configuration"
+
+However that just provided another (redundant) way of *activating* 
+hardware flow control and did not allow it to be disactivated.
+
+Would a new DT property "no-rtscts" to do this be acceptable?
+
+I think it would have to be a negative property to avoid breaking old 
+device trees.
+
+Since there seems to have been some to and fro on this issue I thought 
+it would be a good idea to discuss before writing the patch...
+
+Regards,
+
+Martin
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
