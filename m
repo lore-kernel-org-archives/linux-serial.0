@@ -1,69 +1,101 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 0/3] ACPI: parse the SPCR table
-Date: Wed, 27 Jan 2016 13:45:59 +0000
-Message-ID: <20160127134559.1065a45f@lxorguk.ukuu.org.uk>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH 2/3] ACPI: parse SPCR and enable matching console
+Date: Wed, 27 Jan 2016 16:57:34 +0300
+Message-ID: <56A8CCCE.2080509@linaro.org>
 References: <1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org>
-	<56A6494E.3090303@hurleysoftware.com>
-	<56A8B570.2060501@linaro.org>
+ <1453722324-22407-3-git-send-email-aleksey.makarov@linaro.org>
+ <56A64E07.10106@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56A8B570.2060501@linaro.org>
+In-Reply-To: <56A64E07.10106@hurleysoftware.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Graeme Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>
+To: Peter Hurley <peter@hurleysoftware.com>, linux-acpi@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Graeme Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 27 Jan 2016 15:17:52 +0300
-Aleksey Makarov <aleksey.makarov@linaro.org> wrote:
 
-> On 01/25/2016 07:11 PM, Peter Hurley wrote:
-> > On 01/25/2016 03:45 AM, Aleksey Makarov wrote: =20
-> >> This patchset is based on the patchset by Leif Lindholm [1]
-> >>
-> >> 'ARM Server Base Boot Requirements' [2] mention SPCR=20
-> >> (Serial Port Console Redirection Table) [3] as a mandatory
-> >> ACPI table that specifies the configuration of serial console.
-> >>
-> >> Licensing concerns have prevented implementing it in the past, but=
- as of
-> >> 10 August 2015, these tables have both been released also under=20
-> >> OWF 1.0 [4]. =20
-> >=20
-> > This license has a patent retaliation provision, which makes it
-> > incompatible with GPLv2.
-> >=20
-> > *If the license applies to this code*, then this patch set does not
-> > meet the criteria for submission. =20
->=20
-> The license applies not to this code but to the document describing t=
-he tables.
->=20
-> Here is an excerpt from it:
->=20
->   Patent Notice:
->   Microsoft is making certain patent rights available for implementat=
-ions of this specification under two options:
->   1)  Microsoft=E2=80=99s Community Promise, available at
->   http://www.microsoft.com/openspecifications/en/us/programs/communit=
-y-promise/default.aspx; or
->   2)  The Open Web Foundation Final Specification Agreement Version 1=
-=2E0 ("OWF 1.0")
->   as of October 1, 2012, available at http://www.openwebfoundation.or=
-g/legal/the-owf-1-0-agreements/owfa-1-0.=20
->=20
-> I believe that it means that the patch set meets the criteria for sub=
-mission.  Am I right?
 
-This is not a forum for legal advice. I would suggest that Linaro
-discusses it privately with the Linux Foundation and Linus and does so
-under attorney-client privilege. The Linux Foundation does have some
-reasons to exist.
+On 01/25/2016 07:32 PM, Peter Hurley wrote:
+> On 01/25/2016 03:45 AM, Aleksey Makarov wrote:
+>> 'ARM Server Base Boot Requiremets' [1] mention SPCR (Serial Port
+>> Console Redirection Table) [2] as a mandatory ACPI table that
+>> specifies the configuration of serial console.
+>> 
+>> Parse this table and check if any registered console match the
+>> description.  If it does, enable that console.
+>> 
+>> To implement that, introduce a new member int (*acpi_match)(struct
+>> console *, struct acpi_table_spcr *) of struct console.  It allows
+>> drivers to check if they provide a matching console device.
+> 
+> Many, many platform proms with all sorts of binary table layout are
+> already supported by the existing console infrastructure. Why is ACPI
+> different, that requires extensive (and messy) changes to console
+> initialization?
 
-Alan
---
-To unsubscribe from this list: send the line "unsubscribe linux-acpi" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Without this patch, when linux calls register_console(), that function
+checks if any console has been enabled so far. 1) If not, it enables the
+console being registered. 2) If there exists any enabled console, it
+looks at the console_cmdline array. That array holds a list of
+consoles that user wishes to enable. There are two ways to append
+an item to that list: first is to pass "console=..." option in command
+line and second is to call add_preferred_console(char *name, int idx,
+char *options). As it is clear from the signature, the function
+requires the name of the driver (like "ttyS") and the line id. On the
+other hand, the SPCR ACPI table describes console by specifying the
+address of it's registers or PCI Device ID / PCI Vendor ID or PCI Bus
+Number / PCI Device Number. So to use this function we would need to
+have a method to translate this info to the name of terminal and line
+index. I could not figure out any way to do that.
+
+In the initial version of the patch after getting the reference to the
+SPCR ACPI table the full tree of ACPI devices was searched to find any
+device with the same address.  When uart_add_one_port() was called
+to register a new serial port, the ACPI companion of this port was
+compared to the found device. If it was the same device, the code
+called add_preferred_console() (the terminal name and line index are
+known in uart_add_one_port()).
+
+This original approach had two problems: 
+
+    1) It works with the SPCR tables that describe consoles only by
+the address of the registers. I do not think that consoles that are
+described by PCI info will appear in the near future, but decided to
+implement this in a generic way. I would like to discuss if this
+decision was good.
+
+    2) Wrong order of initialization.  Many console drivers have already
+been registered by the time uart_add_one_port() adds an item to the
+console_cmdline array.  There is a similar problem with my
+implementation,  but having a dedicated acpi_match() callback I
+believe made it simpler to circumwent.
+
+That's why I believe we need to add a new funcion pointer to struct
+console. On the other hand, I do not understand which existing
+structure you are referring.
+
+> How is this going to work with earlycon?
+
+If an earlycon that matches SPCR is being registered, the code will enable it.
+While it is harmless. Even so I will check for earlycon in the next version
+of the patch set, thank you.
+
+> This commit log is missing the reasoning behind adding locks,
+> refactoring into delete_from_console_list(), and retry loops.
+
+I will add this to the next verion of the series.
+
+Thank you
+Aleksey Makarov
+
+
+>> [1]
+>> http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+>>
+>> [2] http://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
+>> 
+>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+
+[ .. ]
