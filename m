@@ -1,64 +1,51 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Re: [PATCH 0/3] ACPI: parse the SPCR table
-Date: Wed, 27 Jan 2016 15:17:52 +0300
-Message-ID: <56A8B570.2060501@linaro.org>
-References: <1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org>
- <56A6494E.3090303@hurleysoftware.com>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 03/15] dmaengine: dw: rename masters to reflect actual
+ topology
+Date: Wed, 27 Jan 2016 12:47:28 +0000
+Message-ID: <20160127124728.GM6042@sirena.org.uk>
+References: <1453663322-14474-1-git-send-email-mans@mansr.com>
+ <1453663322-14474-4-git-send-email-mans@mansr.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56A6494E.3090303@hurleysoftware.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, linux-acpi@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Graeme Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="vdqwC0msT4ilQ2it"
+Return-path: <linux-ide-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1453663322-14474-4-git-send-email-mans@mansr.com>
+Sender: linux-ide-owner@vger.kernel.org
+To: Mans Rullgard <mans@mansr.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Tejun Heo <tj@kernel.org>, Dan Williams <dan.j.williams@intel.com>, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org, linux-ide@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 
+--vdqwC0msT4ilQ2it
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 01/25/2016 07:11 PM, Peter Hurley wrote:
-> On 01/25/2016 03:45 AM, Aleksey Makarov wrote:
->> This patchset is based on the patchset by Leif Lindholm [1]
->>
->> 'ARM Server Base Boot Requirements' [2] mention SPCR=20
->> (Serial Port Console Redirection Table) [3] as a mandatory
->> ACPI table that specifies the configuration of serial console.
->>
->> Licensing concerns have prevented implementing it in the past, but a=
-s of
->> 10 August 2015, these tables have both been released also under=20
->> OWF 1.0 [4].
+On Sun, Jan 24, 2016 at 07:21:50PM +0000, Mans Rullgard wrote:
+> From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 >=20
-> This license has a patent retaliation provision, which makes it
-> incompatible with GPLv2.
->=20
-> *If the license applies to this code*, then this patch set does not
-> meet the criteria for submission.
+> The source and destination masters are reflecting buses or their layers to
+> where the different devices can be connected. The patch changes the master
+> names to reflect which one is related to which independently on the trans=
+fer
+> direction.
 
-The license applies not to this code but to the document describing the=
- tables.
+Acked-by: Mark Brown <broonie@kernel.org>
 
-Here is an excerpt from it:
+--vdqwC0msT4ilQ2it
+Content-Type: application/pgp-signature; name="signature.asc"
 
-  Patent Notice:
-  Microsoft is making certain patent rights available for implementatio=
-ns of this specification under two options:
-  1)  Microsoft=E2=80=99s Community Promise, available at
-  http://www.microsoft.com/openspecifications/en/us/programs/community-=
-promise/default.aspx; or
-  2)  The Open Web Foundation Final Specification Agreement Version 1.0=
- ("OWF 1.0")
-  as of October 1, 2012, available at http://www.openwebfoundation.org/=
-legal/the-owf-1-0-agreements/owfa-1-0.=20
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-I believe that it means that the patch set meets the criteria for submi=
-ssion.  Am I right?
+iQEcBAEBCAAGBQJWqLxfAAoJECTWi3JdVIfQfrUH/0xxvyT4TCQ1uidDSVHY61/o
+UnFfWQxuPn45knqyPT9RxxZlUSBtXyp9FCvgDT4CnXmZOxa808JC9r8PGgu7G5wV
+Qej5oJaJOtK7TVaxJHkfvo7sn/D3sjwrr9oEV75oqAWW7ZQA4uav4V/Vk0c8IWKu
+Gdih9px5/e5ES2mTexPBDuH6OxqqoyRY883lPuE8hsNnxPV7Bhw2Vq5jASrwzRkn
+PZRrpodGf93bvME+Ng3DKwYujpSF+To5bMxDS7MoQ+9rDBtQY0h0ELq/axTQB8G2
+otMkKf2AW8WxqjnLFC/SUQ7AsPsdBy8c+bFnWQS1hRkdY1uYnncU7CclDkpw3UA=
+=IEOK
+-----END PGP SIGNATURE-----
 
-Thank you
-Aleksey Makarov
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-acpi" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--vdqwC0msT4ilQ2it--
