@@ -1,29 +1,73 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH v5 10/14] serial: pic32_uart: Add PIC32 UART driver
-Date: Tue, 26 Jan 2016 09:33:22 -0800
-Message-ID: <20160126173322.GA1664@kroah.com>
-References: <1452734299-460-1-git-send-email-joshua.henderson@microchip.com>
- <1452734299-460-11-git-send-email-joshua.henderson@microchip.com>
- <56A7A729.10008@microchip.com>
+From: Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [RESEND PATCH v2] ARM: debug: add support for Palmchip BK-310x
+ UART
+Date: Tue, 26 Jan 2016 16:40:25 -0800
+Message-ID: <7h60yfn9c6.fsf@baylibre.com>
+References: <569CA203.6050001@sigmadesigns.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <56A7A729.10008-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joshua Henderson <joshua.henderson-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Andrei Pistirica <andrei.pistirica-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <569CA203.6050001@sigmadesigns.com> (Marc Gonzalez's message of
+ "Mon, 18 Jan 2016 09:27:47 +0100")
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
+Cc: Mans Rullgard <mans@mansr.com>, Peter Hurley <peter@hurleysoftware.com>, arm-soc <arm@kernel.org>, linux-serial <linux-serial@vger.kernel.org>, Sebastian Frias <sebastian_frias@sigmadesigns.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 26, 2016 at 10:04:41AM -0700, Joshua Henderson wrote:
-> Hi Greg and Jiri,
-> 
-> Ping!  Need an ack for this or pull it upstream.
+Marc Gonzalez <marc_gonzalez@sigmadesigns.com> writes:
 
-The merge window _just_ ended, please give us a chance to catch up on
-patches to be reviewed.  There's no reason you need a response for this
-right away, it can't be merged until 4.6-rc1, right?
+> From: Mans Rullgard <mans@mansr.com>
+>
+> Some SoCs use a Palmchip BK-310x UART which is mostly 16550 compatible
+> but with a different register layout.
 
-thanks,
+... because UART register layout is where we really need innovation. ;)
 
-greg k-h
+> While this UART has previously
+> only been supported in MIPS based chips (Alchemy, Ralink), the ARM based
+> SMP87xx series from Sigma Designs also uses it.
+>
+> This patch allows the debug console to work with this type of UART.
+>
+> Signed-off-by: Mans Rullgard <mans@mansr.com>
+> Signed-off-by: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
+
+It appears this was previously acked by Arnd also?  https://lkml.org/lkml/2015/11/9/116
+
+> ---
+> Peter, this is the patch I've been using on Tango for earlyprintk support.
+> arm-soc, this is just the Nov 8 patch with my Signed-off-by tag.
+> ---
+>  arch/arm/Kconfig.debug            |  9 +++++++++
+>  arch/arm/include/debug/palmchip.S | 11 +++++++++++
+>  2 files changed, 20 insertions(+)
+>  create mode 100644 arch/arm/include/debug/palmchip.S
+>
+> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+> index 259c0ca9c99a..708aa9150c00 100644
+> --- a/arch/arm/Kconfig.debug
+> +++ b/arch/arm/Kconfig.debug
+> @@ -1304,6 +1304,7 @@ config DEBUG_SIRFSOC_UART
+>  config DEBUG_LL_INCLUDE
+>  	string
+>  	default "debug/sa1100.S" if DEBUG_SA1100
+> +	default "debug/palmchip.S" if DEBUG_UART_8250_PALMCHIP
+
+minor nit: We're trying (not always with great success) to keep various
+parts of this file sorted alphanumerically.  Can you please insert the
+new entries accordingly?
+
+Otherwise looks good to me,
+
+Acked-by: Kevin Hilman <khilman@baylibre.com>
+
+Kevin
