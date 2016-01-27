@@ -1,81 +1,112 @@
-From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW-bxm8fMRDkQLDiMYJYoSAnRvVK+yQ3ZXh@public.gmane.org>
+From: Martin Fuzzey <mfuzzey-mB3Nsq4MPf1BDgjK7y7TUQ@public.gmane.org>
 Subject: Re: Serial ports with non connected RTS/CTS
-Date: Wed, 27 Jan 2016 11:58:17 +0100
-Message-ID: <20160127115817.79e384b1@ipc1.ka-ro>
+Date: Wed, 27 Jan 2016 12:33:32 +0100
+Message-ID: <56A8AB0C.8010407@parkeon.com>
 References: <56A89C48.1040604@parkeon.com>
+ <20160127115817.79e384b1@ipc1.ka-ro>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <56A89C48.1040604-mB3Nsq4MPf1BDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <20160127115817.79e384b1-VjFSrY7JcPWvSplVBqRQBQ@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Martin Fuzzey <mfuzzey-mB3Nsq4MPf1BDgjK7y7TUQ@public.gmane.org>
+To: =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW-bxm8fMRDkQLDiMYJYoSAnRvVK+yQ3ZXh@public.gmane.org>
 Cc: "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
 Hi,
 
-On Wed, 27 Jan 2016 11:30:32 +0100 Martin Fuzzey wrote:
-> Hi all,
->=20
-> currently, at least for 8250 based serial ports using of_serial, ther=
+On 27/01/16 11:58, Lothar Wa=C3=9Fmann wrote:
+>
+> If a driver has no support for RTS/CTS (e.g. due to the missing
+> fsl,uart-has-rtscts property for i.MX UARTs) then trying to enable HW
+> flowcontrol via the TCETS ioctl should fail (as is the case with the
+> i.MX serial driver).
+> Thus it should be impossible to enable crtscts if the serial driver h=
+as
+> no RTC/CTS support without any need for userspace to know about the
+> HW details.
+
+It doesn't do that for me [kernel 4.4]
+
+The stty command to activate rtscts does return an error if the hardwar=
 e=20
-> is no way of indicating that the RTS / CTS lines, although supported =
-by=20
-> the UART, are not actually connected on the board.
->=20
-> This means that userspace needs to know about this and not use the=20
-> CRTSCTS termios flag (otherwise no data is sent).
->=20
-> This is currently the case for Debian stattach for example (nettools=20
-> 1.60) which unconditionally uses CRTSCTS (but the busybox version of=20
-> slattach has a "-F" option that can be used to disable CRTSCTS).
->=20
-> Would it not be better to allow this situation to be described in the=
-=20
-> device tree?
->=20
-> Such an option already exists for the imx UART (""fsl,uart-has-rtscts=
-")
->=20
-> of_serial already has the "auto-flow-control" DT property but, as sta=
-ted=20
-> in the documentation:
->      "The  driver is allowed to detect support for the capability eve=
-n=20
-> without this  property."
->=20
-> In the past there was a (since reverted) property "has-hw-flow-contro=
-l"
-> See
->      06aa82e "serial: uart: add hw flow control support configuration=
-"
->      a6eec92 " Revert "serial: uart: add hw flow control support=20
-> configuration"
->=20
-> However that just provided another (redundant) way of *activating*=20
-> hardware flow control and did not allow it to be disactivated.
->=20
-> Would a new DT property "no-rtscts" to do this be acceptable?
->=20
-> I think it would have to be a negative property to avoid breaking old=
-=20
-> device trees.
->=20
-> Since there seems to have been some to and fro on this issue I though=
-t=20
-> it would be a good idea to discuss before writing the patch...
->=20
-If a driver has no support for RTS/CTS (e.g. due to the missing
-fsl,uart-has-rtscts property for i.MX UARTs) then trying to enable HW
-flowcontrol via the TCETS ioctl should fail (as is the case with the
-i.MX serial driver).
-Thus it should be impossible to enable crtscts if the serial driver has
-no RTC/CTS support without any need for userspace to know about the
-HW details.
+doesn't support it.
+
+# stty -F /dev/ttymxc1 crtscts
+stty: /dev/ttymxc1: unable to perform all requested operations
+
+But the TCETS ioctl  itselfdoes not fail:
+
+ioctl(0, SNDCTL_TMR_STOP or TCSETSW, {B115200 -opost -isig -icanon -ech=
+o=20
+=2E..}) =3D 0
+ioctl(0, SNDCTL_TMR_TIMEBASE or TCGETS, {B115200 -opost -isig -icanon=20
+-echo ...}) =3D 0
+ioctl(0, SNDCTL_TMR_TIMEBASE or TCGETS, {B115200 -opost -isig -icanon=20
+-echo ...}) =3D 0
+write(2, "stty: ", 6stty: )                   =3D 6
+write(2, "/dev/ttymxc1: unable to perform "..., 56/dev/ttymxc1: unable=20
+to perform all requested operations) =3D 56
 
 
-Lothar Wa=C3=9Fmann
+The error message is because stty does a TCGETS afterwards and errors i=
+f=20
+the result is different to that requested.
+
+slattach does not compare the requested and actual configuaration
+
+
+The kernel code in the imx driver is:
+static void
+imx_set_termios(struct uart_port *port, struct ktermios *termios,
+            struct ktermios *old)
+{
+=2E..
+     if (termios->c_cflag & CRTSCTS) {
+         if (sport->have_rtscts) {
+             ucr2 &=3D ~UCR2_IRTS;
+
+             if (port->rs485.flags & SER_RS485_ENABLED) {
+                 /*
+                  * RTS is mandatory for rs485 operation, so keep
+                  * it under manual control and keep transmitter
+                  * disabled.
+                  */
+                 if (!(port->rs485.flags &
+                       SER_RS485_RTS_AFTER_SEND))
+                     ucr2 |=3D UCR2_CTS;
+             } else {
+                 ucr2 |=3D UCR2_CTSC;
+             }
+         } else {
+             termios->c_cflag &=3D ~CRTSCTS;
+         }
+     } else if (port->rs485.flags & SER_RS485_ENABLED)
+
+
+So requesting RTSCTS if the hardware doesn't support it does not=20
+generate an error but the bit is reset in the termios structure.
+
+This makes sense to me. Userspace can ask for something - the driver=20
+does it's best and reports to userspace what it actually did.
+It's then up to userspace to decide if that's acceptable.
+
+And indeed "man termios" :
+
+"Note that *tcsetattr*() returns success if /any/ of the requested=20
+changes could be successfully carried out. Therefore, when making=20
+multiple changes it may be necessary to follow this call with a further=
+=20
+call to *tcgetattr*() to check that all changes have been performed=20
+successfully. "
+
+
+
+Martin
+
+
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" i=
 n
