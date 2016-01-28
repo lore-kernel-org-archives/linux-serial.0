@@ -1,127 +1,75 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 2/3] ACPI: parse SPCR and enable matching console
-Date: Wed, 27 Jan 2016 16:45:22 -0800
-Message-ID: <56A964A2.9040802@hurleysoftware.com>
-References: <1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org>
- <1453722324-22407-3-git-send-email-aleksey.makarov@linaro.org>
- <56A64E07.10106@hurleysoftware.com> <56A8CCCE.2080509@linaro.org>
+From: Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>
+Subject: Re: [PATCH V2 1/2] dt/bindings: serial: bcm2835: add binding documentation for bcm2835-aux-uart
+Date: Wed, 27 Jan 2016 22:39:54 -0800
+Message-ID: <87y4bacimd.fsf@eliezer.anholt.net>
+References: <1452344854-2576-1-git-send-email-kernel@martin.sperl.org> <4288762.bCLxQBDvy4@wuerfel> <6035A0DD-AD61-48F7-B641-272BB23F3CD8@martin.sperl.org> <4799423.86Gz9JKjiK@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56A8CCCE.2080509@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Graeme Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Len Brown <lenb@kernel.org>
+Content-Type: multipart/signed; boundary="=-=-=";
+	micalg=pgp-sha512; protocol="application/pgp-signature"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <4799423.86Gz9JKjiK@wuerfel>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 01/27/2016 05:57 AM, Aleksey Makarov wrote:
-> 
-> 
-> On 01/25/2016 07:32 PM, Peter Hurley wrote:
->> On 01/25/2016 03:45 AM, Aleksey Makarov wrote:
->>> 'ARM Server Base Boot Requiremets' [1] mention SPCR (Serial Port
->>> Console Redirection Table) [2] as a mandatory ACPI table that
->>> specifies the configuration of serial console.
->>>
->>> Parse this table and check if any registered console match the
->>> description.  If it does, enable that console.
->>>
->>> To implement that, introduce a new member int (*acpi_match)(struct
->>> console *, struct acpi_table_spcr *) of struct console.  It allows
->>> drivers to check if they provide a matching console device.
->>
->> Many, many platform proms with all sorts of binary table layout are
->> already supported by the existing console infrastructure. Why is ACPI
->> different, that requires extensive (and messy) changes to console
->> initialization?
-> 
-> Without this patch, when linux calls register_console(), that function
-> checks if any console has been enabled so far. 1) If not, it enables the
-> console being registered. 2) If there exists any enabled console, it
-> looks at the console_cmdline array. That array holds a list of
-> consoles that user wishes to enable. There are two ways to append
-> an item to that list: first is to pass "console=..." option in command
-> line and second is to call add_preferred_console(char *name, int idx,
-> char *options). As it is clear from the signature, the function
-> requires the name of the driver (like "ttyS") and the line id. On the
-> other hand, the SPCR ACPI table describes console by specifying the
-> address of it's registers or PCI Device ID / PCI Vendor ID or PCI Bus
-> Number / PCI Device Number. So to use this function we would need to
-> have a method to translate this info to the name of terminal and line
-> index. I could not figure out any way to do that.
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-I'm not sure how this answers my question.
+Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> writes:
 
-Which existing drivers/arch setup have you studied to conclude that
-the existing console mechanisms don't work? Have you actually looked
-at the in-tree callers of add_preferred_console()?
+> On Monday 11 January 2016 14:57:46 Martin Sperl wrote:
+>> > On 11.01.2016, at 13:21, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+>> >=20
+>> > Please just add another patch to rename the existing uarts appropriate=
+ly
+>> > first, then add this one on top with the correct name.
+>>=20
+>> I can do that with the next incarnation of the patch.
+>>=20
+>> But would that not break dt-source files, that refer to uart0?
+>> Is this not considered an API change as well or does this only apply
+>> to the binary files?
+>
+> To clarify: I meant you should change the node name, not the label.
+>
+> The label is not part of the dtb data that gets passed to the kernel
+> and can have any value, including "uart0".
+>
+> The node name is part of the dtb and should follow common naming
+> conventions (per ePAPR), but the kernel doesn't actually care, so
+> it won't break anything.
+>
+> There are cases where a bootloader relies on a particular node name
+> in order to find a device node and patch its properties, but I don't
+> think this is the case here.
 
+Confirmed, the booloader source I have doesn't do anything with uart
+nodes.
 
-> In the initial version of the patch after getting the reference to the
-> SPCR ACPI table the full tree of ACPI devices was searched to find any
-> device with the same address.  When uart_add_one_port() was called
-> to register a new serial port, the ACPI companion of this port was
-> compared to the found device. If it was the same device, the code
-> called add_preferred_console() (the terminal name and line index are
-> known in uart_add_one_port()).
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Yeah, I wasn't a fan of that.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-But I think it was a bad choice to pick SPCR as table format, in the
-first place. At least DBG2 has the actual ACPI device identifier :/
-
-
-> This original approach had two problems: 
-> 
->     1) It works with the SPCR tables that describe consoles only by
-> the address of the registers. I do not think that consoles that are
-> described by PCI info will appear in the near future, but decided to
-> implement this in a generic way. I would like to discuss if this
-> decision was good.
-> 
->     2) Wrong order of initialization.  Many console drivers have already
-> been registered by the time uart_add_one_port() adds an item to the
-> console_cmdline array.  There is a similar problem with my
-> implementation,  but having a dedicated acpi_match() callback I
-> believe made it simpler to circumwent.
-
-I don't see how the "wrong order of initialization" and the need for
-acpi_match() correlate. What do you mean by "wrong order"? What is the
-"right order"?
-
-
-> That's why I believe we need to add a new funcion pointer to struct
-> console. On the other hand, I do not understand which existing
-> structure you are referring.
-> 
->> How is this going to work with earlycon?
-> 
-> If an earlycon that matches SPCR is being registered, the code will enable it.
-
-I think you should review how and when an earlycon is specified, initialized
-and registered before you conclude that this will magically work.
-
-
-> While it is harmless. Even so I will check for earlycon in the next version
-> of the patch set, thank you.
-> 
->> This commit log is missing the reasoning behind adding locks,
->> refactoring into delete_from_console_list(), and retry loops.
-> 
-> I will add this to the next verion of the series.
-> 
-> Thank you
-> Aleksey Makarov
-> 
-> 
->>> [1]
->>> http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
->>>
->>> [2] http://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
->>>
->>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-> 
-> [ .. ]
-> 
-
+iQIcBAEBCgAGBQJWqbe6AAoJELXWKTbR/J7o0jEP/3Z3edblFHKMYdQhW7IzjwFz
+rxLumUCmB7/DAH7BY8p+z24+z621TAujvlm4hNE4IyDQawUIBHRng5c3aO0cgV0z
+Zqbyww8IGzk6FzlJEWsmgmH2d+q9Q8JPGs/me3hlgGtgOfdu83VcXewsQ0hCyZl+
+kxEbAr8qOQ1bquVAhE/X+Nh9KM/elwb5w6r9GQ8lfRIhXN0hUWagwV0F81rb336k
+M05vnypnOm2mmtcU9Tg/rP7OiRnpSs/kGhyXiFcSn9DuRPr0mntBinSgbpldEpcc
+LAIsyEdxdEWPZurdWbRGbjHG+udfWCdqQfuaVCldwsOnzMQQqG8WY8IZoyoP2Jr3
+lCHssEt6sLg/5sFEKAG2A02V15QCrHkApJ3RnH79TzmUfbmanmwoFrRbOt/5HcO+
+gftldn3ByAW4qrTEPVdW7gk0WwZMkU/VT/1p+5bE5j7ulh3GAfu5OWlzBV5ZJl6V
+0yi+fec8D4aLxnQ0uWYyjsVALUYDsKU9maj49lJwwDE0tdrL5Gn4EJYRrM2N3HSo
+iDmltkGjiSCSm7iHm32mLPdiPTxbS9T/kG7g5YdOAlC0v8zxzqCK+MhBJ9uxHRlL
+tSPH0J7+0QhZac4lq/8iNVElifv2wTbTksUqBtExARJ1If+tgihtLkoHSrlfTogi
+dS/yv4OTalgnUWCnWdR2
+=FcJx
+-----END PGP SIGNATURE-----
+--=-=-=--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
