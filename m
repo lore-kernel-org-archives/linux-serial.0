@@ -1,148 +1,175 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH V2 2/4] gpio: gpio-f81504: Add Fintek F81504/508/512
- PCIE-to-UART/GPIO GPIOLIB support
-Date: Thu, 28 Jan 2016 14:03:04 +0200
-Message-ID: <1453982584.2521.285.camel@linux.intel.com>
-References: <1453972838-30268-1-git-send-email-hpeter+linux_kernel@gmail.com>
-	 <1453972838-30268-3-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH 2/3] ACPI: parse SPCR and enable matching console
+Date: Thu, 28 Jan 2016 16:23:43 +0300
+Message-ID: <56AA165F.4010200@linaro.org>
+References: <1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org>
+ <1453722324-22407-3-git-send-email-aleksey.makarov@linaro.org>
+ <56A64E07.10106@hurleysoftware.com> <56A8CCCE.2080509@linaro.org>
+ <56A964A2.9040802@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1453972838-30268-3-git-send-email-hpeter+linux_kernel@gmail.com>
+In-Reply-To: <56A964A2.9040802@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hung <hpeter@gmail.com>, linus.walleij@linaro.org, gnurou@gmail.com, gregkh@linuxfoundation.org, paul.gortmaker@windriver.com, lee.jones@linaro.org, jslaby@suse.com, peter_hong@fintek.com.tw
-Cc: heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, manabian@gmail.com, scottwood@freescale.com, yamada.masahiro@socionext.com, paul.burton@imgtec.com, mans@mansr.com, matthias.bgg@gmail.com, ralf@linux-mips.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, tom_tsai@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: Peter Hurley <peter@hurleysoftware.com>, linux-acpi@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Graeme Gregory <graeme.gregory@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2016-01-28 at 17:20 +0800, Peter Hung wrote:
-> This driver is GPIOLIB driver for F81504/508/512, it'll handle the
-> GPIOLIB operation of this device. This module will depend on
-> MFD_FINTEK_F81504_CORE.
->=20
 
 
+On 01/28/2016 03:45 AM, Peter Hurley wrote:
+> On 01/27/2016 05:57 AM, Aleksey Makarov wrote:
+>>
+>>
+>> On 01/25/2016 07:32 PM, Peter Hurley wrote:
+>>> On 01/25/2016 03:45 AM, Aleksey Makarov wrote:
+>>>> 'ARM Server Base Boot Requiremets' [1] mention SPCR (Serial Port
+>>>> Console Redirection Table) [2] as a mandatory ACPI table that
+>>>> specifies the configuration of serial console.
+>>>>
+>>>> Parse this table and check if any registered console match the
+>>>> description.  If it does, enable that console.
+>>>>
+>>>> To implement that, introduce a new member int (*acpi_match)(struct
+>>>> console *, struct acpi_table_spcr *) of struct console.  It allows
+>>>> drivers to check if they provide a matching console device.
+>>>
+>>> Many, many platform proms with all sorts of binary table layout are
+>>> already supported by the existing console infrastructure. Why is ACPI
+>>> different, that requires extensive (and messy) changes to console
+>>> initialization?
+>>
+>> Without this patch, when linux calls register_console(), that function
+>> checks if any console has been enabled so far. 1) If not, it enables the
+>> console being registered. 2) If there exists any enabled console, it
+>> looks at the console_cmdline array. That array holds a list of
+>> consoles that user wishes to enable. There are two ways to append
+>> an item to that list: first is to pass "console=..." option in command
+>> line and second is to call add_preferred_console(char *name, int idx,
+>> char *options). As it is clear from the signature, the function
+>> requires the name of the driver (like "ttyS") and the line id. On the
+>> other hand, the SPCR ACPI table describes console by specifying the
+>> address of it's registers or PCI Device ID / PCI Vendor ID or PCI Bus
+>> Number / PCI Device Number. So to use this function we would need to
+>> have a method to translate this info to the name of terminal and line
+>> index. I could not figure out any way to do that.
+> 
+> I'm not sure how this answers my question.
 
-> +	/*
-> +	=C2=A0* The GPIO default driven mode for this device is open-
-> drain. The
-> +	=C2=A0* GPIOLIB had no change GPIO mode API currently. So we
-> leave the
-> +	=C2=A0* Push-Pull code below.
-> +	=C2=A0*
-> +	=C2=A0* pci_read_config_byte(dev, GPIO_START_ADDR + idx *
-> GPIO_SET_OFFSET +
-> +	=C2=A0*			GPIO_DRIVE_EN_OFFSET, &tmp);
-> +	=C2=A0* pci_write_config_byte(dev, GPIO_START_ADDR + idx *
-> GPIO_SET_OFFSET +
-> +	=C2=A0*			GPIO_DRIVE_EN_OFFSET, tmp |
-> BIT(gpio_num));
-> +	=C2=A0*/
-> +
-> +	/* set output data */
-> +	tmp =3D inb(priv->gpio_ioaddr + gc->idx);
+It does not.  For the actual answer please scroll down.
 
-ioread8 is a bit better since it automatically works with IO space and
-MMIO. But if you are certain you will always have the address in IO
-space, you can disregard this comment.
+> Which existing drivers/arch setup have you studied to conclude that
+> the existing console mechanisms don't work? 
 
-> +static int f81504_gpio_probe(struct platform_device *pdev)
-> +{
-> +	int status;
-> +	struct f81504_gpio_chip *gc;
-> +	void *data =3D dev_get_platdata(&pdev->dev);
-> +	u8 gpio_idx =3D *(u8 *)data;
-> +	char *name;
-> +
-> +	if (gpio_idx >=3D ARRAY_SIZE(fintek_gpio_mapping)) {
-> +		dev_err(&pdev->dev, "%s: gpio_idx:%d out of
-> range.\n",
-> +				__func__, gpio_idx);
-> +		return -ENODEV;
-> +	}
-> +
-> +	gc =3D devm_kzalloc(&pdev->dev, sizeof(*gc), GFP_KERNEL);
-> +	if (!gc)
-> +		return -ENOMEM;
-> +
->=20
+I studied how add_preferred_console() is used in drivers/of/base.c,
+grepped the tree for it and studied each instance.
+Almost everything I see is dumb calls to this 
+function with hardcoded tty name and line index.  I don't see 
+how this can help.
 
-> +	kfree(data);
+> Have you actually looked
+> at the in-tree callers of add_preferred_console()?
 
-What the heck?
+Yes I have. It looks like you are implying that there is some drivers/arch
+setup that would help to implement this correctly. Could you please
+give me a reference to it?
 
+>> In the initial version of the patch after getting the reference to the
+>> SPCR ACPI table the full tree of ACPI devices was searched to find any
+>> device with the same address.  When uart_add_one_port() was called
+>> to register a new serial port, the ACPI companion of this port was
+>> compared to the found device. If it was the same device, the code
+>> called add_preferred_console() (the terminal name and line index are
+>> known in uart_add_one_port()).
+> 
+> Yeah, I wasn't a fan of that.
+> 
+> But I think it was a bad choice to pick SPCR as table format, in the
+> first place. At least DBG2 has the actual ACPI device identifier :/
 
-> +	mutex_init(&gc->locker);
-> +	platform_set_drvdata(pdev, gc);
-> +
-> +	name =3D devm_kzalloc(&pdev->dev, FINTEK_GPIO_NAME_LEN,
-> GFP_KERNEL);
-> +	if (!name)
-> +		return -ENOMEM;
-> +
-> +	/* This will display like as GPIO-1x */
-> +	sprintf(name, "%s-%dx", FINTEK_GPIO_DISPLAY, gpio_idx);
-> +
-> +	gc->chip.owner =3D THIS_MODULE;
-> +	gc->chip.label =3D name;
-> +	gc->chip.ngpio =3D 8;
-> +	gc->chip.dev =3D &pdev->dev;
-> +	gc->chip.get =3D f81504_gpio_get;
-> +	gc->chip.set =3D f81504_gpio_set;
-> +	gc->chip.direction_input =3D f81504_gpio_direction_in;
-> +	gc->chip.direction_output =3D f81504_gpio_direction_out;
-> +	gc->chip.get_direction =3D f81504_gpio_get_direction;
-> +	gc->chip.can_sleep =3D 1;
-> +	gc->chip.base =3D -1;
-> +	gc->idx =3D gpio_idx;
-> +
->=20
+I am working on parsing DBG2 to implement earlycon based on 
+info from it.  As I understand,
+- SPCR specifies which existing console should be enabled (= made preferred).
+- DBG2 specifies how kernel can add a new earlycon to the system.
+These are two differend subsystems and both make sense.
 
-> +	status =3D gpiochip_add(&gc->chip);
-> +	if (status) {
-> +		dev_err(&pdev->dev, "%s: gpiochip_add failed: %d\n",
-> __func__,
-> +				status);
-> +		return -ENOMEM;
+Also I don't understand how having (optional) ACPI device identifier
+in DBG2 table can help to implement earlycon introduction.
 
-You ignored the status.
+>> This original approach had two problems: 
+>>
+>>     1) It works with the SPCR tables that describe consoles only by
+>> the address of the registers. I do not think that consoles that are
+>> described by PCI info will appear in the near future, but decided to
+>> implement this in a generic way. I would like to discuss if this
+>> decision was good.
+>>
+>>     2) Wrong order of initialization.  Many console drivers have already
+>> been registered by the time uart_add_one_port() adds an item to the
+>> console_cmdline array.  There is a similar problem with my
+>> implementation,  but having a dedicated acpi_match() callback I
+>> believe made it simpler to circumwent.
+> 
+> I don't see how the "wrong order of initialization" and the need for
+> acpi_match() correlate. What do you mean by "wrong order"? What is the
+> "right order"?
 
-> +	}
-> +
-> +	return 0;
+There is a race between initialization/registration of consoles and 
+parsing SPCR table.  By the time the console is registered we should 
+have SPCR table parsed and add_preferred_console() called.
 
-Perhaps just
-return gpiochip_add(); ?
+In the original submission add_preferred_console() was called from
+uart registration code, that requires to parse ACPI table very early
+(and nobody can say how early, because uarts can be registered very
+early.  pl011 is initialized with arch_initcall() for example).
 
-> +}
-> +
-> +static int f81504_gpio_remove(struct platform_device *pdev)
-> +{
-> +	struct f81504_gpio_chip *gc =3D platform_get_drvdata(pdev);
-> +
-> +	gpiochip_remove(&gc->chip);
-> +	return 0;
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(f81504_gpio_pm_ops, f81504_gpio_suspend,
-> +		f81504_gpio_resume);
-> +
-> +static struct platform_driver f81504_gpio_driver =3D {
-> +	.driver =3D {
-> +		.name	=3D F81504_GPIO_NAME,
-> +		.owner	=3D THIS_MODULE,
-> +		.pm=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D &f81504_gpio_pm_ops,
-> +	},
-> +	.probe		=3D f81504_gpio_probe,
-> +	.remove		=3D f81504_gpio_remove,
-> +};
-> +
-> +module_platform_driver(f81504_gpio_driver);
-> +
-> +MODULE_AUTHOR("Peter Hong <Peter_Hong@fintek.com.tw>");
-> +MODULE_DESCRIPTION("Fintek F81504/508/512 PCIE GPIOLIB driver");
-> +MODULE_LICENSE("GPL");
+I decided to fix this with retrying registration of consoles after
+ACPI is parsed.  I do not like it either, but it is the simplest 
+solution I could suggest.  But it's quite difficult do implement 
+such deferring code in the uart registration and, more important,
+it is wrong as there may be non-uart consoles.
 
---=20
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+So acpi_match() is a part of registration retrying mechanism and
+the right place for it is at console registration.
+
+>> That's why I believe we need to add a new funcion pointer to struct
+>> console. On the other hand, I do not understand which existing
+>> structure you are referring.
+>>
+>>> How is this going to work with earlycon?
+>>
+>> If an earlycon that matches SPCR is being registered, the code will enable it.
+> 
+> I think you should review how and when an earlycon is specified, initialized
+> and registered before you conclude that this will magically work.
+
+I reviewed that again and the only issue that I can imagine is that
+ACPI can not make earlycon preferred.  Is it that you are afraid of?
+I believe it should not.  What problems do you see?
+
+Thank you
+Aleksey Makarov
+
+>> While it is harmless. Even so I will check for earlycon in the next version
+>> of the patch set, thank you.
+>>
+>>> This commit log is missing the reasoning behind adding locks,
+>>> refactoring into delete_from_console_list(), and retry loops.
+>>
+>> I will add this to the next verion of the series.
+>>
+>> Thank you
+>> Aleksey Makarov
+>>
+>>
+>>>> [1]
+>>>> http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+>>>>
+>>>> [2] http://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
+>>>>
+>>>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+>>
+>> [ .. ]
+>>
+> 
