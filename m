@@ -1,83 +1,53 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 9/9] tty: Use test_bit() with tty->flags
-Date: Thu, 28 Jan 2016 14:22:16 -0800
-Message-ID: <20160128222216.GA13513@kroah.com>
-References: <1452486976-7594-1-git-send-email-peter@hurleysoftware.com>
- <1452486976-7594-10-git-send-email-peter@hurleysoftware.com>
- <20160128221329.GA6427@kroah.com>
- <56AA93D7.50002@hurleysoftware.com>
+From: Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>
+Subject: Re: [PATCH V3 2/4] dt/bindings: serial: bcm2835: add binding documentation for bcm2835-aux-uart
+Date: Thu, 28 Jan 2016 14:25:43 -0800
+Message-ID: <87k2mtfijc.fsf@eliezer.anholt.net>
+References: <1453032932-2512-1-git-send-email-kernel@martin.sperl.org> <1453032932-2512-3-git-send-email-kernel@martin.sperl.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <56AA93D7.50002@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: multipart/signed; boundary="=-=-=";
+	micalg=pgp-sha512; protocol="application/pgp-signature"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1453032932-2512-3-git-send-email-kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Lee Jones <lee-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 28, 2016 at 02:19:03PM -0800, Peter Hurley wrote:
-> On 01/28/2016 02:13 PM, Greg Kroah-Hartman wrote:
-> > On Sun, Jan 10, 2016 at 08:36:16PM -0800, Peter Hurley wrote:
-> >> tty->flags are handled with atomic bit ops; use test_bit() treewide.
-> >>
-> >> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> >> ---
-> >>  arch/ia64/hp/sim/simserial.c       | 2 +-
-> >>  drivers/char/pcmcia/synclink_cs.c  | 2 +-
-> >>  drivers/isdn/i4l/isdn_tty.c        | 6 +++---
-> >>  drivers/s390/char/tty3270.c        | 4 ++--
-> >>  drivers/staging/dgap/dgap.c        | 2 +-
-> >>  drivers/staging/dgnc/dgnc_tty.c    | 2 +-
-> >>  drivers/tty/amiserial.c            | 6 +++---
-> >>  drivers/tty/serial/68328serial.c   | 2 +-
-> >>  drivers/tty/serial/crisv10.c       | 4 ++--
-> >>  drivers/tty/serial/serial_core.c   | 6 +++---
-> >>  drivers/tty/synclink.c             | 4 ++--
-> >>  drivers/tty/synclink_gt.c          | 4 ++--
-> >>  drivers/tty/synclinkmp.c           | 4 ++--
-> >>  drivers/tty/tty_port.c             | 2 +-
-> >>  net/irda/ircomm/ircomm_tty_ioctl.c | 6 +++---
-> >>  15 files changed, 28 insertions(+), 28 deletions(-)
-> >>
-> >> diff --git a/arch/ia64/hp/sim/simserial.c b/arch/ia64/hp/sim/simserial.c
-> >> index e70cade..2ab9ba6 100644
-> >> --- a/arch/ia64/hp/sim/simserial.c
-> >> +++ b/arch/ia64/hp/sim/simserial.c
-> >> @@ -300,7 +300,7 @@ static int rs_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
-> >>  	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
-> >>  	    (cmd != TIOCSERCONFIG) && (cmd != TIOCSERGSTRUCT) &&
-> >>  	    (cmd != TIOCMIWAIT)) {
-> >> -		if (tty->flags & (1 << TTY_IO_ERROR))
-> >> +		if (test_bit(TTY_IO_ERROR, &tty->flags))
-> > 
-> > I thought you were going to wrap these up in a tty_*() macro instead of
-> > open-coding it everywhere?  That way you can change how those
-> > bits/features are represented in the future, which is what I thought you
-> > wanted to do?
-> 
-> I wasn't going to do that for tty->flags, just for tty_port->flags.
+--=-=-=
+Content-Type: text/plain
 
-Ah, ok, my mistake.
+kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org writes:
 
-> > Even if you don't want to do that, something like:
-> > 
-> > static inline int tty_is_io_error(struct tty_struct *tty)
-> > {
-> > 	return test_bit(TTY_IO_ERROR, &tty->flags);
-> > }
-> > 
-> > and then this patch would just be:
-> > 		if (tty_is_io_error(tty))
-> > 
-> > Or something like that, I'm not sold on the name, I'm sure you can pick
-> > a better one :)
-> >
-> > Sound reasonable?
-> 
-> But I agree that seems better; I can certainly do something like that.
-> I think just tty_io_error().
+> From: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
+>
+> Add binding documentation for the bcm2835-aux-uart driver.
+>
+> Signed-off-by: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
 
-That would be great, thanks.
+Acked-by: Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>
 
-greg k-h
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJWqpVnAAoJELXWKTbR/J7oor4P/A1RZekKpdBR3pts3jhP3arW
+SHWzbJV6+aA2ZpDyLERNSYwuCIA52lkL7aJ6JUUt0ksJamEhERrR+pntpQ3bUCIU
+Z6FANA8M2JZJ6W66kZr5vf1I6ELJzG2wHJvK7HD4SYx/+k6v12aNez4oEQ0brGd+
+kISYilp+2EDhLRNStxRo40k6hMX9EO860dZehoEFsykpIFasmYB+WdwgEZ374ucY
+CWmX/m+u2L2mLSM4b94USZfx77KYNJh65HzKpQMFo8eooZFoaQGeb2HMv8FTLSkC
+PgzmxHEKmyHo2lczlgPJHeRCdMH11at6U3AHZ7B73phd4OVrqprVsWi923iNHSuE
+cxr/K3OrPcQZmVouvnAGQW7MKzyR94XXn5EQqSGSD3RJU7aqWvkeLMdCDJ7xDbo3
+HP3cRT/u4MOcBFtVFrOARjuuAJocnQGM7aUPn4X2mgR1w6zU/43LO5zRKUi0WKfx
+y7i9vDcyxbF658fFIBRiMPjg2PS4lwqCiqqAfp+8UyMyZVsi3S0JOVixFqH6SAgx
+ojsITG1wMvLVBxM5lozHjwpJWWRn0Tsl+79nDX4LwxTFt6p9eDdvG6alEMnf5p2+
+145iOfc5hxAUneZtkw0Pj5c0pqDOFiG0FxYhFBmbve6rbNQlwR1Zi1jdCOi15NPO
+Rbfo7Pfj65+kzSSz2v0k
+=6aFs
+-----END PGP SIGNATURE-----
+--=-=-=--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
