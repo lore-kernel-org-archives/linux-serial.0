@@ -1,110 +1,85 @@
-From: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
-Subject: Re: [RESEND PATCH v2] ARM: debug: add support for Palmchip BK-310x
- UART
-Date: Fri, 29 Jan 2016 17:58:14 +0100
-Message-ID: <56AB9A26.4060007@sigmadesigns.com>
-References: <569CA203.6050001@sigmadesigns.com> <7h60yfn9c6.fsf@baylibre.com>
- <yw1x1t93lukj.fsf@unicorn.mansr.com>
- <56AB96D4.9040202@sigmadesigns.com>
- <yw1xtwlwib2x.fsf@unicorn.mansr.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 0/3] 8250: Split Fintek PCIE to UART to independent file
+Date: Fri, 29 Jan 2016 23:08:08 +0530
+Message-ID: <20160129173808.GB18826@sudip-laptop>
+References: <1453171266-15874-1-git-send-email-hpeter+linux_kernel@gmail.com>
+ <20160119035649.GA1696@windriver.com>
+ <569DF7C3.5050306@gmail.com>
+ <20160119123327.3b519062@lxorguk.ukuu.org.uk>
+ <1453209684.2521.115.camel@linux.intel.com>
+ <569EF810.1000304@gmail.com>
+ <20160120062214.GB3747@sudip-pc>
+ <569F4444.3040104@gmail.com>
+ <20160122105350.GA7023@sudip-pc>
+ <CAHp75Vfk686mhCL4U83vxM4JL_Tn8kTxf960zru2d6wvj3QGpA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <yw1xtwlwib2x.fsf@unicorn.mansr.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Mans Rullgard <mans@mansr.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Kevin Hilman <khilman@baylibre.com>, arm-soc <arm@kernel.org>, linux-serial <linux-serial@vger.kernel.org>, Sebastian Frias <sebastian_frias@sigmadesigns.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vfk686mhCL4U83vxM4JL_Tn8kTxf960zru2d6wvj3QGpA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Peter Hung <hpeter@gmail.com>, Rob Groner <rgroner@rtd.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, soeren.grunewald@desy.de, Wang YanQing <udknight@gmail.com>, adam.lee@canonical.com, Arnd Bergmann <arnd@arndb.de>, Masahiro Yamada <yamada.masahiro@socionext.com>, =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>, scottwood@freescale.com, Paul Burton <paul.burton@imgtec.com>, Matthias Brugger <matthias.bgg@gmail.com>, Joachim Eastwood <manabian@gmail.com>, Peter Ujfalusi <peter.ujfalusi@ti.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.or
 List-Id: linux-serial@vger.kernel.org
 
-On 29/01/2016 17:50, M=E5ns Rullg=E5rd wrote:
+On Fri, Jan 22, 2016 at 03:44:16PM +0200, Andy Shevchenko wrote:
+> On Fri, Jan 22, 2016 at 12:53 PM, Sudip Mukherjee
+> <sudipm.mukherjee@gmail.com> wrote:
+> > On Wed, Jan 20, 2016 at 04:24:36PM +0800, Peter Hung wrote:
+> >> Hi Sudip,
+> >>
+> >> Sudip Mukherjee =E6=96=BC 2016/1/20 =E4=B8=8B=E5=8D=88 02:22 =E5=AF=
+=AB=E9=81=93:
+> >> >On Wed, Jan 20, 2016 at 10:59:28AM +0800, Peter Hung wrote:
+> >>
+> >> >But my personal opinion, if we move out the serial port related c=
+ode
+> >> >into a new driver (a new Kconfig symbol) userspace of many system=
+ will
+> >> >break if this new symbol is not enabled by the distributions. But=
+ in the
+> >> >way I have done the new symbol needs to be enabled only if the us=
+er
+> >> >wants to use the GPIO capability. If that is not enabled GPIO can=
+not be
+> >> >used but it will never break the serial port related code for the=
+m.
+> >> >I think we should give a thought to that before splitting out the=
+ codes
+> >> >from 8250_pci.
+> >>
+> >> I agree with your opinion. I'm trying to implement GPIO with 2 way=
+s,
+> >> One is like yours, add platform_device with in 8250_pci.c and impl=
+ement
+> >> GPIOLIB platform driver with in 'driver/gpio", and the other is tr=
+ying
+> >> split out from 8250_pci.c to MFD.
+> >>
+> >> In my personal opinion, the first method is less impact with compa=
+tible
+> >> old system.
+> >
+> > Looks like no one else is in support of our opinion. Fair enough, I=
+ will
+> > split out the related code from 8250_pci and create the MFD driver =
+this
+> > weekend for my hardware.
+>=20
+> Yeah, MFD looks preferable.
+>=20
+> Btw, don't forget to backlist your devices in 8250_pci since they
+> quite possible provide a PCI class which is used by 8250_pci driver
+> for default enumeration.
 
-> Marc Gonzalez <marc_gonzalez@sigmadesigns.com> writes:
-> =
+One doubt. If I have understood correctly the main reason you have aske=
+d
+me to split the code out of 8250_pci so that the size reduces. But
+pci_xr17v35x_setup() is also used by another card which has
+PCI_VENDOR_ID_COMMTECH. So even if I create a separate file for exar ca=
+rds,
+almost identical function will still remain in 8250_pci.
 
->> On 27/01/2016 01:44, M=E5ns Rullg=E5rd wrote:
->>
->>> Kevin Hilman <khilman@baylibre.com> writes:
->>>
->>>> Marc Gonzalez <marc_gonzalez@sigmadesigns.com> writes:
->>>>
->>>>> From: Mans Rullgard <mans@mansr.com>
->>>>>
->>>>> Some SoCs use a Palmchip BK-310x UART which is mostly 16550 compatible
->>>>> but with a different register layout.
->>>>
->>>> ... because UART register layout is where we really need innovation. ;)
->>>>
->>>>> While this UART has previously
->>>>> only been supported in MIPS based chips (Alchemy, Ralink), the ARM ba=
-sed
->>>>> SMP87xx series from Sigma Designs also uses it.
->>>>>
->>>>> This patch allows the debug console to work with this type of UART.
->>>>>
->>>>> Signed-off-by: Mans Rullgard <mans@mansr.com>
->>>>> Signed-off-by: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
->>>>
->>>> It appears this was previously acked by Arnd also?
->>>> https://lkml.org/lkml/2015/11/9/116
->>>>
->>>>> ---
->>>>> Peter, this is the patch I've been using on Tango for earlyprintk sup=
-port.
->>>>> arm-soc, this is just the Nov 8 patch with my Signed-off-by tag.
->>>>> ---
->>>>>  arch/arm/Kconfig.debug            |  9 +++++++++
->>>>>  arch/arm/include/debug/palmchip.S | 11 +++++++++++
->>>>>  2 files changed, 20 insertions(+)
->>>>>  create mode 100644 arch/arm/include/debug/palmchip.S
->>>>>
->>>>> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
->>>>> index 259c0ca9c99a..708aa9150c00 100644
->>>>> --- a/arch/arm/Kconfig.debug
->>>>> +++ b/arch/arm/Kconfig.debug
->>>>> @@ -1304,6 +1304,7 @@ config DEBUG_SIRFSOC_UART
->>>>>  config DEBUG_LL_INCLUDE
->>>>>  	string
->>>>>  	default "debug/sa1100.S" if DEBUG_SA1100
->>>>> +	default "debug/palmchip.S" if DEBUG_UART_8250_PALMCHIP
->>>>
->>>> minor nit: We're trying (not always with great success) to keep various
->>>> parts of this file sorted alphanumerically.  Can you please insert the
->>>> new entries accordingly?
->>>
->>> It has to precede the regular 8250 entry so as to take precedence over
->>> that.
->>
->> <confused> Are you all talking about these 2 lines:
->>
->> 	default "debug/palmchip.S" if DEBUG_UART_8250_PALMCHIP
->> 	default "debug/8250.S" if DEBUG_LL_UART_8250 || DEBUG_UART_8250
->>
->> default "debug/palmchip.S" is supposed to come before default "debug/825=
-0.S" ?
->>
->> Because, in my config, there is no DEBUG_LL_UART_8250 to be seen, and
->> # CONFIG_DEBUG_UART_8250 is not set
-> =
-
-> CONFIG_DEBUG_LL_UART_8250=3Dy here.  In fact DEBUG_UART_8250_PALMCHIP
-> depends on "DEBUG_LL_UART_8250 || DEBUG_UART_8250" so one of those
-> *must* be set for any of this to matter.
-
-Doh! I was looking at a config where earlyprintk isn't enabled... o_O
-
-config DEBUG_UART_8250_PALMCHIP
-	bool "8250 UART is Palmchip BK-310x"
-	depends on DEBUG_LL_UART_8250 || DEBUG_UART_8250
-
-OK, I understand now. Thanks.
-
-Regards.
+regards
+sudip
