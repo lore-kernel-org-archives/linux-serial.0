@@ -1,124 +1,93 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [PATCH 0/4] serial: omap: robustify for high speed transfers
-Date: Fri, 29 Jan 2016 17:35:54 +0100
-Message-ID: <87y4b85onp.fsf@linutronix.de>
-References: <87lh7hrjsg.fsf@linutronix.de>
-	<56A66FCB.1000507@hurleysoftware.com>
+From: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
+Subject: Re: [RESEND PATCH v2] ARM: debug: add support for Palmchip BK-310x
+ UART
+Date: Fri, 29 Jan 2016 17:44:04 +0100
+Message-ID: <56AB96D4.9040202@sigmadesigns.com>
+References: <569CA203.6050001@sigmadesigns.com> <7h60yfn9c6.fsf@baylibre.com>
+ <yw1x1t93lukj.fsf@unicorn.mansr.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56A66FCB.1000507@hurleysoftware.com> (Peter Hurley's message of
-	"Mon, 25 Jan 2016 10:56:11 -0800")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: gregkh@linuxfoundation.org, vinod.koul@intel.com, dan.j.williams@intel.com, bigeasy@linutronix.de, tony@atomide.com, nsekhar@ti.com, peter.ujfalusi@ti.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <yw1x1t93lukj.fsf@unicorn.mansr.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Mans Rullgard <mans@mansr.com>, Kevin Hilman <khilman@baylibre.com>
+Cc: Sebastian Frias <sebastian_frias@sigmadesigns.com>, arm-soc <arm@kernel.org>, linux-serial <linux-serial@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
+On 27/01/2016 01:44, M=E5ns Rullg=E5rd wrote:
 
-On 2016-01-25, Peter Hurley <peter@hurleysoftware.com> wrote:
->> The DMA-enabled OMAP UART driver in its current form queues 48 bytes
->> for a DMA-RX transfer. After the transfer is complete, a new transfer
->> of 48 bytes is queued. The DMA completion callback runs in tasklet
->> context, so a reschedule with context switch is required for the
->> completion to be processed and the next 48 bytes to be queued.
->> 
->> When running at a high speed such as 3Mbit, the CPU has 128us between
->> when the DMA hardware transfer completes and when the DMA hardware
->> must be fully prepared for the next transfer. For an embedded board
->> running applications, this does not give the CPU much time. If the
->> UART is using hardware flow control, this situation results in a
->> dramatic decrease in real transfer speeds. If flow control is not
->> used, the CPU will almost certainly be forced to drop data.
->
-> I'm not convinced by this logic at all.
-> Tasklets are not affected by the scheduler because they run in softirq.
-> Or is this -RT?
+> Kevin Hilman <khilman@baylibre.com> writes:
+> =
 
-Softirq runs as SCHED_OTHER. It is quite easy to create a scenario where
-DMA completion tasklets for this driver are not being serviced fast
-enough.
+>> Marc Gonzalez <marc_gonzalez@sigmadesigns.com> writes:
+>>
+>>> From: Mans Rullgard <mans@mansr.com>
+>>>
+>>> Some SoCs use a Palmchip BK-310x UART which is mostly 16550 compatible
+>>> but with a different register layout.
+>>
+>> ... because UART register layout is where we really need innovation. ;)
+>>
+>>> While this UART has previously
+>>> only been supported in MIPS based chips (Alchemy, Ralink), the ARM based
+>>> SMP87xx series from Sigma Designs also uses it.
+>>>
+>>> This patch allows the debug console to work with this type of UART.
+>>>
+>>> Signed-off-by: Mans Rullgard <mans@mansr.com>
+>>> Signed-off-by: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
+>>
+>> It appears this was previously acked by Arnd also?
+>> https://lkml.org/lkml/2015/11/9/116
+>>
+>>> ---
+>>> Peter, this is the patch I've been using on Tango for earlyprintk suppo=
+rt.
+>>> arm-soc, this is just the Nov 8 patch with my Signed-off-by tag.
+>>> ---
+>>>  arch/arm/Kconfig.debug            |  9 +++++++++
+>>>  arch/arm/include/debug/palmchip.S | 11 +++++++++++
+>>>  2 files changed, 20 insertions(+)
+>>>  create mode 100644 arch/arm/include/debug/palmchip.S
+>>>
+>>> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+>>> index 259c0ca9c99a..708aa9150c00 100644
+>>> --- a/arch/arm/Kconfig.debug
+>>> +++ b/arch/arm/Kconfig.debug
+>>> @@ -1304,6 +1304,7 @@ config DEBUG_SIRFSOC_UART
+>>>  config DEBUG_LL_INCLUDE
+>>>  	string
+>>>  	default "debug/sa1100.S" if DEBUG_SA1100
+>>> +	default "debug/palmchip.S" if DEBUG_UART_8250_PALMCHIP
+>>
+>> minor nit: We're trying (not always with great success) to keep various
+>> parts of this file sorted alphanumerically.  Can you please insert the
+>> new entries accordingly?
+> =
 
-> I'm not seeing this problem on other platforms at this baud rate,
+> It has to precede the regular 8250 entry so as to take precedence over
+> that.
 
-Do you run 3Mbit on other platforms without hardware flow control? I
-mention this because turning on hardware flow control can cover up the
-driver shortcomings by slowing down the transfers. What good is 3Mbit
-hardware if the driver never lets it get above 500Kbit on bulk
-transfers?
+<confused> Are you all talking about these 2 lines:
 
-> and on this platform, all I see is lockups with DMA.
+	default "debug/palmchip.S" if DEBUG_UART_8250_PALMCHIP
+	default "debug/8250.S" if DEBUG_LL_UART_8250 || DEBUG_UART_8250
 
-I have seen (and fixed) interesting issues with the AM335x eDMA, but I
-have not experienced lockups in any of my testing. I'd be curious how
-you trigger that.
+default "debug/palmchip.S" is supposed to come before default "debug/8250.S=
+" ?
 
-> What is the test setup to reproduce these results?
+Because, in my config, there is no DEBUG_LL_UART_8250 to be seen, and
+# CONFIG_DEBUG_UART_8250 is not set
 
-Two Beaglebone boards connected via ttyS1. ttyS1's are set to raw mode
-at 3Mbit.
+So I don't see how the order might cause a problem in that case?
 
-sender:   cat bigfile > /dev/ttyS1
-receiver: cat /dev/ttyS1 > bigfile
-
-I am working on creating concrete examples that demonstrate not only
-that this patch series reduces system load (and thus can increase
-throughput on heavy system loads with hardware flow control), but also
-that it is able to handle baud rates without data loss well beyond the
-current implementation when no flow control is used.
-
-I wanted to wait until I had all the results before answering your
-email. But I'm getting caught up in other tasks right now, so it may
-take a few more weeks.
-
->> This patch series modifies the UART driver to use cyclic DMA transfers
->> with a growable ring buffer to accommodate baud rates. The ring buffer is
->> large enough to hold at least 1s of RX-data. 
->> (At 3Mbit that is 367KiB.)
->
-> Math slightly off because the frame is typically 10 bits, not 8.
-
-I was thinking 8 was the minimal frame size. Thanks for pointing that
-out. A frame can contain 7-12 bits so I will modify the code to create a
-buffer appropriate for the UART settings. At 3Mbit with 5n1 the driver
-would require a 419KiB ring buffer (8929 DMA periods of 48 bytes).
-
->> In order to ensure that data in the ring buffer is not overwritten before
->> being processed by the tty layer, a hrtimer is used as a watchdog.
->
-> How'd it go from "We're just missing 128us window" to "This holds 1s
-> of data"?
-
-First, you need to recognize that DMA completion tasklets can be delayed
-significantly due to interrupt loads or rtprio processes (even on non-RT
-systems). And at 3Mbit we are talking about >12000 interrupts per
-second!
-
-When using cyclic transfers, the only real concern is that the DMA
-overwrites data in the ring buffer before the CPU has processed it due
-to tasklet delays. That is what the hrtimer watchdog is for.
-
-Assuming the DMA is zooming along at full speed, the watchdog must be
-able to trigger before the ring buffer can fill up. If the watchdog sees
-the ring buffer is getting full, it pauses the DMA engine. But with
-cyclic DMA we never know if the DMA is zooming or sitting idle. So even
-on an idle system, the watchdog must assume DMA zooming and continually
-fire to check the status.
-
-I chose 1 second buffer sizes and set the watchdog to fire at half
-that. On an idle system you will see at most 2 new interrupts per second
-due to this patch series. I thought that would be an acceptable trade
-off. Whether the watchdog should fire at 50% buffer full or say 90%
-buffer full is something that could be debated. But to answer your
-question, the big ring buffer is really to keep the watchdog interrupts
-low frequency.
-
-> And with a latency hit this bad, you'll never get the data to the
-> process because the tty buffer kworker will buffer-overflow too and
-> its much more susceptible to timing latency (although not as bad now
-> that it's exclusively on the unbounded workqueue).
-
-Yes, you are correct. But I think that is a problem that should be
-addressed at the tty layer.
-
-John Ogness
+Regards.
