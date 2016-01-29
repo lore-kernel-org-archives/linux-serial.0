@@ -1,42 +1,52 @@
-From: Peter Hung <hpeter@gmail.com>
-Subject: Re: [PATCH V2 4/4] serial: 8250_pci: Remove Fintek F81504/508/512
- UART driver
-Date: Fri, 29 Jan 2016 16:20:01 +0800
-Message-ID: <56AB20B1.9030609@gmail.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH V2 1/4] mfd: f81504-core: Add Fintek F81504/508/512
+ PCIE-to-UART/GPIO core support
+Date: Fri, 29 Jan 2016 08:21:48 +0000
+Message-ID: <20160129082148.GR3368@x1>
 References: <1453972838-30268-1-git-send-email-hpeter+linux_kernel@gmail.com>
- <1453972838-30268-5-git-send-email-hpeter+linux_kernel@gmail.com>
- <1453982657.2521.287.camel@linux.intel.com>
+ <1453972838-30268-2-git-send-email-hpeter+linux_kernel@gmail.com>
+ <1453982106.2521.279.camel@linux.intel.com>
+ <56AAFD88.2060505@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1453982657.2521.287.camel@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <56AAFD88.2060505@gmail.com>
 Sender: linux-gpio-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linus.walleij@linaro.org, gnurou@gmail.com, gregkh@linuxfoundation.org, paul.gortmaker@windriver.com, lee.jones@linaro.org, jslaby@suse.com, peter_hong@fintek.com.tw
-Cc: heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, manabian@gmail.com, scottwood@freescale.com, yamada.masahiro@socionext.com, paul.burton@imgtec.com, mans@mansr.com, matthias.bgg@gmail.com, ralf@linux-mips.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, tom_tsai@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
+To: Peter Hung <hpeter@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linus.walleij@linaro.org, gnurou@gmail.com, gregkh@linuxfoundation.org, paul.gortmaker@windriver.com, jslaby@suse.com, peter_hong@fintek.com.tw, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, manabian@gmail.com, scottwood@freescale.com, yamada.masahiro@socionext.com, paul.burton@imgtec.com, mans@mansr.com, matthias.bgg@gmail.com, ralf@linux-mips.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, tom_tsai@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
+On Fri, 29 Jan 2016, Peter Hung wrote:
+> >>+obj-$(CONFIG_MFD_FINTEK_F81504_CORE)	+=3D f81504-core.o
+> >
+> >I think '_' is better than '-'. What I saw and usually do is '_' for
+> >regular source modules and '-' for the resulting objects when they h=
+ave
+> >more than one file.
+>=20
+> I used f81504_core.c originally, but I found most of files are named
+> xxx-ooo.c when I try to modify makefile. Should I change it to
+> f81504_core.c ??
 
-Andy Shevchenko =E6=96=BC 2016/1/28 =E4=B8=8B=E5=8D=88 08:04 =E5=AF=AB=E9=
-=81=93:
-> On Thu, 2016-01-28 at 17:20 +0800, Peter Hung wrote:
->> -	/* Fintek PCI serial cards */
->> -	{ PCI_DEVICE(0x1c29, 0x1104), .driver_data =3D pbn_fintek_4 },
->> -	{ PCI_DEVICE(0x1c29, 0x1108), .driver_data =3D pbn_fintek_8 },
->> -	{ PCI_DEVICE(0x1c29, 0x1112), .driver_data =3D pbn_fintek_12
->> },
->
-> Shouldn't you blacklist them in 8250_pci?
->
+I prefer '-' in MFD.
 
-You are referring to add blacklist instead of remove F81504/508/512
-code? or add blacklist and remove code?
+> >>+#define F81504_DEV_DESC		"Fintek F81504/508/512 PCIE-
+> >>to-UART core"
+> >
+> >Do you need this definition? Is it used more than once?
+>=20
+> ok, I'll direct use the string without define.
+
+Please rid all of the {DEV_NAME,DEV_DEC} defines, they only serve to
+obfuscate code.
 
 --=20
-With Best Regards,
-Peter Hung
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
 --
 To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
 n
