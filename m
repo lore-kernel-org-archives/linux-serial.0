@@ -1,7 +1,7 @@
 From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: [PATCH 08/10] MAINTAINERS: Extend dts entry for ARM64 mvebu files
-Date: Tue,  2 Feb 2016 19:07:46 +0100
-Message-ID: <1454436468-4241-9-git-send-email-gregory.clement@free-electrons.com>
+Subject: [PATCH 10/10] arm64: defconfig: enable Armada 3700 related config
+Date: Tue,  2 Feb 2016 19:07:48 +0100
+Message-ID: <1454436468-4241-11-git-send-email-gregory.clement@free-electrons.com>
 References: <1454436468-4241-1-git-send-email-gregory.clement@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1454436468-4241-1-git-send-email-gregory.clement@free-electrons.com>
@@ -10,25 +10,51 @@ To: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Extend the mvebu entry to ARM64 device tree sources.
+This patch enables the configuration for the Armada 3700 family and for
+the related driver it uses.
 
 Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
 Reviewed-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
 ---
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/configs/defconfig | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 30aca4aa5467..ad49b62c5abc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1279,6 +1279,7 @@ F:	arch/arm/mach-mvebu/
- F:	drivers/rtc/rtc-armada38x.c
- F:	arch/arm/boot/dts/armada*
- F:	arch/arm/boot/dts/kirkwood*
-+F:	arch/arm64/boot/dts/marvell/armada*
- 
- 
- ARM/Marvell Berlin SoC support
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 18ca9fb9e65f..f7f3ce09ead0 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -31,6 +31,7 @@ CONFIG_MODULES=y
+ CONFIG_MODULE_UNLOAD=y
+ # CONFIG_BLK_DEV_BSG is not set
+ # CONFIG_IOSCHED_DEADLINE is not set
++CONFIG_ARCH_ARMADA_3700=y
+ CONFIG_ARCH_BCM_IPROC=y
+ CONFIG_ARCH_BERLIN=y
+ CONFIG_ARCH_EXYNOS7=y
+@@ -93,6 +94,7 @@ CONFIG_ATA=y
+ CONFIG_SATA_AHCI=y
+ CONFIG_SATA_AHCI_PLATFORM=y
+ CONFIG_AHCI_CEVA=y
++CONFIG_AHCI_MVEBU=y
+ CONFIG_AHCI_XGENE=y
+ CONFIG_SATA_RCAR=y
+ CONFIG_PATA_PLATFORM=y
+@@ -132,6 +134,7 @@ CONFIG_SERIAL_MSM_CONSOLE=y
+ CONFIG_SERIAL_OF_PLATFORM=y
+ CONFIG_SERIAL_XILINX_PS_UART=y
+ CONFIG_SERIAL_XILINX_PS_UART_CONSOLE=y
++CONFIG_SERIAL_MVEBU_UART=y
+ CONFIG_VIRTIO_CONSOLE=y
+ # CONFIG_HW_RANDOM is not set
+ CONFIG_I2C=y
+@@ -162,6 +165,8 @@ CONFIG_SND_SOC=y
+ CONFIG_SND_SOC_RCAR=y
+ CONFIG_SND_SOC_AK4613=y
+ CONFIG_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_XHCI_PLATFORM=y
+ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_EHCI_HCD_PLATFORM=y
+ CONFIG_USB_OHCI_HCD=y
 -- 
 2.5.0
