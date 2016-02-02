@@ -1,64 +1,44 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+From: Mark Rutland <mark.rutland@arm.com>
 Subject: Re: [PATCH 01/10] serial: mvebu-uart: initial support for
  Armada-3700 serial port
-Date: Tue, 2 Feb 2016 18:19:35 +0000
-Message-ID: <20160202181935.19b4ab7e@lxorguk.ukuu.org.uk>
+Date: Tue, 2 Feb 2016 18:21:10 +0000
+Message-ID: <20160202182109.GC29778@leverpostej>
 References: <1454436468-4241-1-git-send-email-gregory.clement@free-electrons.com>
-	<1454436468-4241-2-git-send-email-gregory.clement@free-electrons.com>
+ <1454436468-4241-2-git-send-email-gregory.clement@free-electrons.com>
+ <20160202181929.GB29778@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1454436468-4241-2-git-send-email-gregory.clement@free-electrons.com>
+Content-Disposition: inline
+In-Reply-To: <20160202181929.GB29778@leverpostej>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Wilson Ding <dingwei@marvell.com>, Nadav Haklai <nadavh@marvell.com>
+Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Wilson Ding <dingwei@marvell.com>, Nadav Haklai <nadavh@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, Feb 02, 2016 at 06:19:29PM +0000, Mark Rutland wrote:
+> On Tue, Feb 02, 2016 at 07:07:39PM +0100, Gregory CLEMENT wrote:
+> > From: Wilson Ding <dingwei@marvell.com>
+> > 
+> > Armada-3700's uart is a simple serial port, which doesn't
+> > support. Configuring the modem control lines. The uart port has a 32
+> > bytes Tx FIFO and a 64 bytes Rx FIFO
+> > 
+> > The uart driver implements the uart core operations. It also support the
+> > system (early) console based on Armada-3700's serial port.
+> >
+> > Known Issue:
+> > 
+> > The uart driver currently doesn't support clock programming, which means
+> > the baud-rate stays with the default value configured by the bootloader
+> > at boot time
+> 
+> This looks like any other early console.
+> 
+> Why does this not use the earlycon infrastructure?
 
-> +static void mvebu_uart_set_termios(struct uart_port *port,
-> +				   struct ktermios *termios,
-> +				   struct ktermios *old)
-> +{
-> +	unsigned long flags;
-> +	unsigned int baud;
-> +
-> +	spin_lock_irqsave(&port->lock, flags);
-> +
-> +	port->read_status_mask = STAT_RX_RDY | STAT_OVR_ERR |
-> +		STAT_TX_RDY | STAT_TX_FIFO_FUL;
-> +
-> +	if (termios->c_iflag & INPCK)
-> +		port->read_status_mask |= STAT_FRM_ERR | STAT_PAR_ERR;
-> +
-> +	port->ignore_status_mask = 0;
-> +	if (termios->c_iflag & IGNPAR)
-> +		port->ignore_status_mask |=
-> +			STAT_FRM_ERR | STAT_PAR_ERR | STAT_OVR_ERR;
-> +
-> +	if ((termios->c_cflag & CREAD) == 0)
-> +		port->ignore_status_mask |= STAT_RX_RDY | STAT_BRK_ERR;
+Ah, it does, and I misread the diff quite badly.
 
-If you don't support parity or charactive size then you should be forcing
-those bits in the tty->termios so that the caller sees what settings they
-get. tty_termios_copy_hw is close to what you need except that you can
-support IGNPAR.
+Apologies for the noise.
 
-You also want to provide the actual baud rate chosen (see how 8250.c does
-it using tty_termios_encode_baud_rate().
-
-
-> +static struct uart_driver mvebu_uart_driver = {
-> +	.owner			= THIS_MODULE,
-> +	.driver_name		= "serial",
-> +	.dev_name		= "ttyS",
-> +	.major			= TTY_MAJOR,
-> +	.minor			= 64,
-
-NAK
-
-TTY_MAJOR 64+ is the 8250 driver and ttyS is the 8250 driver name. You
-should be using a dynamic major (0) for all new drivers and you need to
-pick a different and unused ttyXXX format name.
-
-Alan
+Mark.
