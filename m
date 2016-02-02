@@ -1,174 +1,134 @@
-From: Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: Re: [PATCH v2 02/10] clockevents/drivers: add MPS2 Timer driver
-Date: Tue, 02 Feb 2016 14:06:59 +0000
-Message-ID: <56B0B803.8010003@arm.com>
-References: <1454413199-26573-1-git-send-email-vladimir.murzin@arm.com>
- <1454413199-26573-3-git-send-email-vladimir.murzin@arm.com>
- <alpine.DEB.2.11.1602021351440.25254@nanos>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <alpine.DEB.2.11.1602021351440.25254@nanos>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux@arm.linux.org.uk, pawel.moll@arm.com, arnd@arndb.de, ijc+devicetree@hellion.org.uk, gregkh@linuxfoundation.org, daniel.lezcano@linaro.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, andy.shevchenko@gmail.com, galak@codeaurora.org, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de, linux-api@vger.kernel.org, jslaby@suse.cz, linux-arm-kernel@lists.infradead.org
+From: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Subject: [PATCH 00/10] Add support for the Armada 3700 SoC an mvebu ARM64 based
+Date: Tue,  2 Feb 2016 19:07:38 +0100
+Message-ID: <1454436468-4241-1-git-send-email-gregory.clement@free-electrons.com>
+Return-path: <linux-ide-owner@vger.kernel.org>
+Sender: linux-ide-owner@vger.kernel.org
+To: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 02/02/16 13:04, Thomas Gleixner wrote:
-> On Tue, 2 Feb 2016, Vladimir Murzin wrote:
->> +static int __init mps2_clockevent_init(struct device_node *np)
->> +{
->> +	void __iomem *base;
->> +	struct clk *clk;
->> +	struct clockevent_mps2 *ce;
->> +	u32 rate;
->> +	int irq, ret;
->> +	const char *name = "mps2-clkevt";
->> +
->> +	ret = of_property_read_u32(np, "clock-frequency", &rate);
->> +	if (ret) {
->> +		clk = of_clk_get(np, 0);
->> +		if (IS_ERR(clk)) {
->> +			ret = PTR_ERR(clk);
->> +			pr_err("failed to get clock for clockevent: %d\n", ret);
->> +			goto err_clk_get;
->> +		}
->> +
->> +		ret = clk_prepare_enable(clk);
->> +		if (ret) {
->> +			pr_err("failed to enable clock for clockevent: %d\n", ret);
->> +			clk_put(clk);
->> +			goto err_clk_enable;
->> +		}
->> +
->> +		rate = clk_get_rate(clk);
->> +	}
-> 
-> So in case that "clock-frequency" is available in DT, what enables and
-> configures the clock?
+Hi,
 
-They are fixed-clock, so I ended up this *cough* mess *cough* shortcut.
-I'd be glad if you share your thoughts what is preferred way to cope
-with it (is it worth to do at all?)
+This series introduce the support of the Armada 3700 family: it is the
+first ARM64 SoC of the mvebu family submitted to the mainline!
 
-> 
->> +err_ia_alloc:
->> +	kfree(ce);
->> +err_ce_alloc:
->> +err_get_irq:
->> +	iounmap(base);
->> +err_iomap:
->> +	clk_disable_unprepare(clk);
-> 
-> clk is not initialized when "clock-frequency" is available in DT. The compiler
-> should have told you ....
+Currently there are two members of the Armada 3700 family, the only
+difference is the number of core: the Armada 3710 comes with one
+Cortex-A53 whereas the Armada 3720 comes with 2 Cortex-A53. In this
+series we enabled only the minimum to boot, pinctrl and clock tree
+will come soon.
 
-Shame on me, I've completely messed it up :( Thanks for pointing at it,
-I'll fix this an other places you pointed at...
+Besides this the patches are pretty usual:
 
-> 
->> +err_clk_enable:
->> +	clk_put(clk);
-> 
-> Put without get ....
+The first patch introduces a new serial driver for the uart used on
+this SoC. The driver remains simple even if the hardware is capable of
+doing more.
 
-or double clk_put() if clk_prepare_enable() failed... shame, shame, shame
+The second one adapts the ahci driver to support the Armada 3700 SoC.
+The forth patch updates the binding documentation with the new
+compatible string.
 
-> 
->> +static int __init mps2_clocksource_init(struct device_node *np)
->> +{
->> +	void __iomem *base;
->> +	struct clk *clk;
->> +	u32 rate;
->> +	int ret;
->> +	const char *name = "mps2-clksrc";
->> +
->> +	ret = of_property_read_u32(np, "clock-frequency", &rate);
->> +	if (ret) {
->> +		clk = of_clk_get(np, 0);
->> +		if (IS_ERR(clk)) {
->> +			ret = PTR_ERR(clk);
->> +			pr_err("failed to get clock for clocksource: %d\n", ret);
->> +			goto err_clk_get;
->> +		}
->> +
->> +		ret = clk_prepare_enable(clk);
->> +		if (ret) {
->> +			pr_err("failed to enable clock for clocksource: %d\n", ret);
->> +			clk_put(clk);
->> +			goto err_clk_enable;
->> +		}
->> +
->> +		rate = clk_get_rate(clk);
->> +	}
-> 
-> Same problem as above.
-> 
->> +err_clocksource_init:
->> +	iounmap(base);
->> +err_iomap:
->> +	clk_disable_unprepare(clk);
-> 
-> Ditto.
-> 
->> +err_clk_enable:
->> +	clk_put(clk);
-> 
-> Ditto.
-> 
->> +err_clk_get:
->> +	return ret;
->> +}
->> +
->> +static void __init mps2_timer_init(struct device_node *np)
->> +{
->> +	static int has_clocksource, has_clockevent;
->> +	int ret;
->> +
->> +	if (!has_clocksource) {
->> +		ret = mps2_clocksource_init(np);
->> +		if (!ret) {
->> +			has_clocksource = 1;
->> +			return;
->> +		}
->> +	}
->> +
->> +	if (!has_clockevent) {
->> +		ret = mps2_clockevent_init(np);
->> +		if (!ret) {
->> +			has_clockevent = 1;
->> +			return;
->> +		}
->> +	}
-> 
-> You take randomly the first timer as clocksource and the second one as
-> clockevent. If clocksource init fails, you try to install it as clockevent.
-> 
-> Sorry, but I really cannot follow the logic here.
-> 
+The third patch adds a new entry Kconfig entry for this SoC family.
 
-It has been done as a response on Daniel's comment [1]. I'm quite happy
-to get known what init sequence is expected here.
+I took the opportunity of this series to tidy up the Marvell related
+files in the binding documentation with the fifth patch.
 
-[1]
-http://lists.infradead.org/pipermail/linux-arm-kernel/2015-November/388223.html
+The sixth patch introduces the compatible string for the SoCs of the
+Armada 3700 family.
 
-Thanks for your time, Thomas!
+The seventh patch could be considered as the bulk of this series: it
+adds the device tree files for the Armada 3700 SoCs and for the
+reference board.
 
-Vladimir
+With the introduction of this new family the MAINTAINERS file, the
+Marvell README and the ARM64 defconfig files have to be updated: it is
+the purpose of the last 3 patches.
 
-> Thanks,
-> 
-> 	tglx
-> 
-> 
-> 
+The first two patches could be taken directly by the maintainer of
+their respective subsystem as there is no dependency at all with the
+rest of the series. I think that the rest of the series should go
+through the arm-soc maintainer but in doubt I also added the ARM64
+maintainer as suggested by get_maintainer.pl. Actually all the patches
+are independents.
+
+Thanks,
+
+Gregory
+
+Gregory CLEMENT (8):
+  arm64: add Armada 3700 architecture entry
+  Documentation: dt-bindings: Add a new compatible for the Armada 3700
+  Documentation: dt: Tidy up the Marvell related files
+  devicetree: bindings: add DT binding for the Marvell Armada 3700 SoC
+    family
+  arm64: dts: add the Marvell Armada 3700 family and a development board
+  MAINTAINERS: Extend dts entry for ARM64 mvebu files
+  Documentation: arm: update supported Marvell EBU processors
+  arm64: defconfig: enable Armada 3700 related config
+
+Lior Amsalem (1):
+  ata: ahci_mvebu: add support for Armada 3700 variant
+
+Wilson Ding (1):
+  serial: mvebu-uart: initial support for Armada-3700 serial port
+
+ Documentation/arm/Marvell/README                   |  13 +
+ .../arm/{ => marvell}/armada-370-xp-pmsu.txt       |   0
+ .../bindings/arm/{ => marvell}/armada-370-xp.txt   |   0
+ .../bindings/arm/{ => marvell}/armada-375.txt      |   0
+ .../bindings/arm/marvell/armada-37xx.txt           |  17 +
+ .../{ => marvell}/armada-380-mpcore-soc-ctrl.txt   |   0
+ .../bindings/arm/{ => marvell}/armada-38x.txt      |   0
+ .../bindings/arm/{ => marvell}/armada-39x.txt      |   0
+ .../arm/{ => marvell}/armada-cpu-reset.txt         |   0
+ .../arm/{ => marvell}/coherency-fabric.txt         |   0
+ .../bindings/arm/{ => marvell}/kirkwood.txt        |   0
+ .../bindings/arm/{ => marvell}/marvell,berlin.txt  |   0
+ .../bindings/arm/{ => marvell}/marvell,dove.txt    |   0
+ .../arm/{ => marvell}/marvell,kirkwood.txt         |   0
+ .../arm/{ => marvell}/mvebu-cpu-config.txt         |   0
+ .../arm/{ => marvell}/mvebu-system-controller.txt  |   0
+ .../devicetree/bindings/ata/ahci-platform.txt      |   1 +
+ .../devicetree/bindings/tty/serial/mvebu-uart.txt  |  13 +
+ Documentation/kernel-parameters.txt                |   6 +
+ MAINTAINERS                                        |   1 +
+ arch/arm64/Kconfig.platforms                       |   6 +
+ arch/arm64/boot/dts/marvell/Makefile               |   4 +
+ arch/arm64/boot/dts/marvell/armada-371x.dtsi       |  53 ++
+ arch/arm64/boot/dts/marvell/armada-3720-db.dts     |  87 +++
+ arch/arm64/boot/dts/marvell/armada-372x.dtsi       |  63 ++
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi       | 131 +++++
+ arch/arm64/configs/defconfig                       |   5 +
+ drivers/ata/Kconfig                                |   2 +-
+ drivers/ata/ahci_mvebu.c                           |  14 +-
+ drivers/tty/serial/Kconfig                         |  22 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/mvebu-uart.c                    | 649 +++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 33 files changed, 1085 insertions(+), 6 deletions(-)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-370-xp-pmsu.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-370-xp.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-375.txt (100%)
+ create mode 100644 Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-380-mpcore-soc-ctrl.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-38x.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-39x.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-cpu-reset.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/coherency-fabric.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/kirkwood.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/marvell,berlin.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/marvell,dove.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/marvell,kirkwood.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/mvebu-cpu-config.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/mvebu-system-controller.txt (100%)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-371x.dtsi
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-db.dts
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-372x.dtsi
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+ create mode 100644 drivers/tty/serial/mvebu-uart.c
+
+-- 
+2.5.0
+
