@@ -1,13 +1,11 @@
 From: Jeremy McNicoll <jmcnicol@redhat.com>
-Subject: [PATCH] tty: Add support for PCIe WCH382 2S multi-IO card
-Date: Tue,  2 Feb 2016 13:00:45 -0800
-Message-ID: <1454446845-18739-2-git-send-email-jmcnicol@redhat.com>
-References: <1454446845-18739-1-git-send-email-jmcnicol@redhat.com>
+Subject: Dual Serial PCIe WCH382 Support
+Date: Tue,  2 Feb 2016 13:00:44 -0800
+Message-ID: <1454446845-18739-1-git-send-email-jmcnicol@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <1454446845-18739-1-git-send-email-jmcnicol@redhat.com>
 List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
  <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
 List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
@@ -21,73 +19,44 @@ To: devel@linuxdriverproject.org
 Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-WCH382 2S board is a PCIe card with 2 DB9 COM ports detected as
-Serial controller: Device 1c00:3253 (rev 10) (prog-if 05 [16850])
 
-Signed-off-by: Jeremy McNicoll <jmcnicol@redhat.com>
----
- drivers/tty/serial/8250/8250_pci.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+This change adds support for the IOCrest WCH382 dual serial PCIe card.
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index e71ec78..7cd6f9a 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1941,6 +1941,7 @@ pci_wch_ch38x_setup(struct serial_private *priv,
- #define PCIE_VENDOR_ID_WCH		0x1c00
- #define PCIE_DEVICE_ID_WCH_CH382_2S1P	0x3250
- #define PCIE_DEVICE_ID_WCH_CH384_4S	0x3470
-+#define PCIE_DEVICE_ID_WCH_CH382_2S	0x3253
- 
- #define PCI_VENDOR_ID_PERICOM			0x12D8
- #define PCI_DEVICE_ID_PERICOM_PI7C9X7951	0x7951
-@@ -2637,6 +2638,14 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= pci_wch_ch353_setup,
- 	},
-+	/* WCH CH382 2S card (16850 clone) */
-+	{
-+		.vendor         = PCIE_VENDOR_ID_WCH,
-+		.device         = PCIE_DEVICE_ID_WCH_CH382_2S,
-+		.subvendor      = PCI_ANY_ID,
-+		.subdevice      = PCI_ANY_ID,
-+		.setup          = pci_wch_ch38x_setup,
-+	},
- 	/* WCH CH382 2S1P card (16850 clone) */
- 	{
- 		.vendor         = PCIE_VENDOR_ID_WCH,
-@@ -2955,6 +2964,7 @@ enum pci_board_num_t {
- 	pbn_fintek_4,
- 	pbn_fintek_8,
- 	pbn_fintek_12,
-+	pbn_wch382_2,
- 	pbn_wch384_4,
- 	pbn_pericom_PI7C9X7951,
- 	pbn_pericom_PI7C9X7952,
-@@ -3775,6 +3785,13 @@ static struct pciserial_board pci_boards[] = {
- 		.base_baud	= 115200,
- 		.first_offset	= 0x40,
- 	},
-+	[pbn_wch382_2] = {
-+		.flags		= FL_BASE0,
-+		.num_ports	= 2,
-+		.base_baud	= 115200,
-+		.uart_offset	= 8,
-+		.first_offset	= 0xC0,
-+	},
- 	[pbn_wch384_4] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 4,
-@@ -5574,6 +5591,10 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		PCI_ANY_ID, PCI_ANY_ID,
- 		0, 0, pbn_b0_bt_2_115200 },
- 
-+	{	PCIE_VENDOR_ID_WCH, PCIE_DEVICE_ID_WCH_CH382_2S,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0, pbn_wch382_2 },
-+
- 	{	PCIE_VENDOR_ID_WCH, PCIE_DEVICE_ID_WCH_CH384_4S,
- 		PCI_ANY_ID, PCI_ANY_ID,
- 		0, 0, pbn_wch384_4 },
+LSPCI:
+-----
+
+03:00.0 Serial controller: Device 1c00:3253 (rev 10) (prog-if 05 [16850])
+	Subsystem: Device 1c00:3253
+	Flags: fast devsel, IRQ 16
+	I/O ports at 2000 [size=256]
+	Memory at c0000000 (32-bit, prefetchable) [size=32K]
+	I/O ports at 2100 [size=4]
+	Expansion ROM at aa000000 [disabled] [size=32K]
+	Capabilities: [60] Power Management version 3
+	Capabilities: [68] MSI: Enable- Count=1/32 Maskable+ 64bit+
+	Capabilities: [80] Express Legacy Endpoint, MSI 00
+	Capabilities: [100] Advanced Error Reporting
+
+
+Unfortunately I couldn't find the vendor's refrence manuals.  All
+I could find where pointers to this:
+   http://www.wch-ic.com/download/list.asp?id=126
+but that link is dead.  If someone has a copy of the reference sheet /
+programmers guide for this I would greatly appreciate it sent my way.
+
+Testing:
+  -verified minicom can communicate a various speeds using each RS-232 port
+     through a NULL modem cable.
+  -grub serial doesn't seem to work, but I didn't really dig into it.
+  -kernel boot console works, which is the only thing I was after.
+  -Link to the one I used: http://www.iocrest.com/en/product_details276.html
+
+
+Jeremy McNicoll (1):
+  tty: Add support for PCIe WCH382 2S multi-IO card
+
+ drivers/tty/serial/8250/8250_pci.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
 -- 
 2.6.1
