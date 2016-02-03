@@ -1,75 +1,42 @@
-From: Marcin Wojtas <mw@semihalf.com>
-Subject: Re: [PATCH 01/10] serial: mvebu-uart: initial support for Armada-3700
- serial port
-Date: Wed, 3 Feb 2016 09:05:55 +0100
-Message-ID: <CAPv3WKfGX2dVDu2zWG4gdEMf0vO-X+NMerh9PzNDjzLBDSQcUA@mail.gmail.com>
-References: <1454436468-4241-1-git-send-email-gregory.clement@free-electrons.com>
-	<1454436468-4241-2-git-send-email-gregory.clement@free-electrons.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH 03/10] arm64: add Armada 3700 architecture entry
+Date: Wed, 03 Feb 2016 10:11:18 +0100
+Message-ID: <4284367.sAeqrVzAbo@wuerfel>
+References: <1454436468-4241-1-git-send-email-gregory.clement@free-electrons.com> <20160203142451.41381ff6@xhacker> <87k2mm5itx.fsf@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-ide-owner@vger.kernel.org>
-In-Reply-To: <1454436468-4241-2-git-send-email-gregory.clement@free-electrons.com>
-Sender: linux-ide-owner@vger.kernel.org
-To: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-ide@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Nadav Haklai <nadavh@marvell.com>, Hans de Goede <hdegoede@redhat.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Tejun Heo <tj@kernel.org>, Wilson Ding <dingwei@marvell.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <87k2mm5itx.fsf-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Jisheng Zhang <jszhang-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Gregory
+On Wednesday 03 February 2016 08:55:22 Gregory CLEMENT wrote:
+> >> 
+> >> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+> >> index 21074f674bde..7da341f7b90d 100644
+> >> --- a/arch/arm64/Kconfig.platforms
+> >> +++ b/arch/arm64/Kconfig.platforms
+> >> @@ -1,5 +1,11 @@
+> >>  menu "Platform selection"
+> >>  
+> >> +config ARCH_ARMADA_3700
+> >
+> > Would it be better to use ARCH_MVEBU? IMHO, there will be more ARMv8 SoCs
+> > from our EBU, do we plan to add one CONFIG_ARMADA_yyzz for each SoC?
+> 
+> Not for each SoC but for each family, yes. As we did for the other mvebu
+> SoC families.
+> 
 
-> +
-> +static int mvebu_uart_startup(struct uart_port *port)
-> +{
-> +       int ret;
-> +
-> +       writel(CTRL_TXFIFO_RST | CTRL_RXFIFO_RST,
-> +              port->membase + UART_CTRL);
-> +       udelay(1);
-> +       writel(CTRL_RX_INT, port->membase + UART_CTRL);
-> +
-> +       ret = request_irq(port->irq, mvebu_uart_isr, port->irqflags, "serial",
-> +                         port);
-> +       if (ret) {
-> +               dev_err(port->dev, "failed to request irq\n");
-> +               return ret;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
+We tend to use a little more general config strings for arm64 than we have
+for arm32. I think just using ARCH_MVEBU is fine here, no need to list
+the 3700 series separately.
 
-> +static int mvebu_uart_probe(struct platform_device *pdev)
-> +{
-> +       struct resource *reg = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +       struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-> +       struct uart_port *port;
-> +       struct mvebu_uart_data *data;
-> +       int ret;
-> +
-> +       if (!reg || !irq) {
-> +               dev_err(&pdev->dev, "no registers/irq defined\n");
-> +               return -EINVAL;
-> +       }
-> +
-> +       port = &mvebu_uart_ports[0];
-> +
-> +       spin_lock_init(&port->lock);
-> +
-> +       port->dev        = &pdev->dev;
-> +       port->type       = PORT_MVEBU;
-> +       port->ops        = &mvebu_uart_ops;
-> +       port->regshift   = 0;
-> +
-> +       port->fifosize   = 32;
-> +       port->iotype     = UPIO_MEM32;
-> +       port->flags      = UPF_FIXED_PORT;
-> +       port->line       = 0; /* single port: force line number to  0 */
-> +
-> +       port->irq        = irq->start;
-> +       port->irqflags   = 0;
-
-Please use port->irqflags = IRQF_SHARED;
-As ubuntu opens multiple consoles A3700 can't boot to it (only to
-buildroot with single console).
-
-Best regards,
-Marcin
+	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
