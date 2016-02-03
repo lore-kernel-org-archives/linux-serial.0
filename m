@@ -1,94 +1,83 @@
 From: Gregory CLEMENT <gregory.clement@free-electrons.com>
 Subject: Re: [PATCH 01/10] serial: mvebu-uart: initial support for Armada-3700 serial port
-Date: Wed, 03 Feb 2016 17:43:59 +0100
-Message-ID: <87io254ucw.fsf@free-electrons.com>
+Date: Wed, 03 Feb 2016 17:56:56 +0100
+Message-ID: <87egct4trb.fsf@free-electrons.com>
 References: <1454436468-4241-1-git-send-email-gregory.clement@free-electrons.com>
 	<1454436468-4241-2-git-send-email-gregory.clement@free-electrons.com>
-	<CAPv3WKfGX2dVDu2zWG4gdEMf0vO-X+NMerh9PzNDjzLBDSQcUA@mail.gmail.com>
+	<20160202182842.GD29778@leverpostej>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAPv3WKfGX2dVDu2zWG4gdEMf0vO-X+NMerh9PzNDjzLBDSQcUA@mail.gmail.com>
-	(Marcin Wojtas's message of "Wed, 3 Feb 2016 09:05:55 +0100")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marcin Wojtas <mw@semihalf.com>
-Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-ide@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Nadav Haklai <nadavh@marvell.com>, Hans de Goede <hdegoede@redhat.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Tejun Heo <tj@kernel.org>, Wilson Ding <dingwei@marvell.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <linux-ide-owner@vger.kernel.org>
+In-Reply-To: <20160202182842.GD29778@leverpostej> (Mark Rutland's message of
+	"Tue, 2 Feb 2016 18:28:42 +0000")
+Sender: linux-ide-owner@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Wilson Ding <dingwei@marvell.com>, Nadav Haklai <nadavh@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Marcin,
+Hi Mark,
 =20
- On mer., f=C3=A9vr. 03 2016, Marcin Wojtas <mw@semihalf.com> wrote:
+ On mar., f=C3=A9vr. 02 2016, Mark Rutland <mark.rutland@arm.com> wrote=
+:
 
-> Hi Gregory
+>> diff --git a/Documentation/devicetree/bindings/tty/serial/mvebu-uart=
+=2Etxt b/Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+>> new file mode 100644
+>> index 000000000000..6087defd9f93
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+>> @@ -0,0 +1,13 @@
+>> +* Marvell UART : Non standard UART used in some of Marvell EBU SoCs=
+ (e.g., Armada-3700)
+>> +
+>> +Required properties:
+>> +- compatible: "marvell,armada-3700-uart"
+>> +- reg: offset and length of the register set for the device.
+>> +- interrupts: device interrupt
+>> +
+>> +Example:
+>> +	serial@12000 {
+>> +		compatible =3D "marvell,armada-3700-uart";
+>> +		reg =3D <0x12000 0x400>;
+>> +		interrupts =3D <43>;
+>> +	};
 >
->> +
->> +static int mvebu_uart_startup(struct uart_port *port)
->> +{
->> +       int ret;
->> +
->> +       writel(CTRL_TXFIFO_RST | CTRL_RXFIFO_RST,
->> +              port->membase + UART_CTRL);
->> +       udelay(1);
->> +       writel(CTRL_RX_INT, port->membase + UART_CTRL);
->> +
->> +       ret =3D request_irq(port->irq, mvebu_uart_isr, port->irqflag=
-s, "serial",
->> +                         port);
->> +       if (ret) {
->> +               dev_err(port->dev, "failed to request irq\n");
->> +               return ret;
->> +       }
->> +
->> +       return 0;
->> +}
->> +
->
->> +static int mvebu_uart_probe(struct platform_device *pdev)
->> +{
->> +       struct resource *reg =3D platform_get_resource(pdev, IORESOU=
-RCE_MEM, 0);
->> +       struct resource *irq =3D platform_get_resource(pdev, IORESOU=
-RCE_IRQ, 0);
->> +       struct uart_port *port;
->> +       struct mvebu_uart_data *data;
->> +       int ret;
->> +
->> +       if (!reg || !irq) {
->> +               dev_err(&pdev->dev, "no registers/irq defined\n");
->> +               return -EINVAL;
->> +       }
->> +
->> +       port =3D &mvebu_uart_ports[0];
->> +
->> +       spin_lock_init(&port->lock);
->> +
->> +       port->dev        =3D &pdev->dev;
->> +       port->type       =3D PORT_MVEBU;
->> +       port->ops        =3D &mvebu_uart_ops;
->> +       port->regshift   =3D 0;
->> +
->> +       port->fifosize   =3D 32;
->> +       port->iotype     =3D UPIO_MEM32;
->> +       port->flags      =3D UPF_FIXED_PORT;
->> +       port->line       =3D 0; /* single port: force line number to=
-  0 */
->> +
->> +       port->irq        =3D irq->start;
->> +       port->irqflags   =3D 0;
->
-> Please use port->irqflags =3D IRQF_SHARED;
-> As ubuntu opens multiple consoles A3700 can't boot to it (only to
-> buildroot with single console).
+> There are no external clock inputs?
 
-But this irq is not shared, this looks like a hack hidding the real
-issue.
+Right, even if we don't use it in the driver we should ad it in the
+binding because there is an external clock input.
+
+>
+>> diff --git a/Documentation/kernel-parameters.txt b/Documentation/ker=
+nel-parameters.txt
+>> index 87d40a72f6a1..198f6bd56e84 100644
+>> --- a/Documentation/kernel-parameters.txt
+>> +++ b/Documentation/kernel-parameters.txt
+>> @@ -1058,6 +1058,12 @@ bytes respectively. Such letter suffixes can =
+also be entirely omitted.
+>>  			A valid base address must be provided, and the serial
+>>  			port must already be setup and configured.
+>> =20
+>> +		mvebu_uart,<addr>
+>> +			Start an early, polled-mode console on an some mvebu
+>> +			SoC (as the Armada-3700) serial port at the specified
+>> +			address. The serial port must already be setup and
+>> +			configured. Options are not yet supported.
+>> +
+>
+> Does the the mvebu UART vary between platforms at all?
+
+I am not sure to undersatnd your question.
+
+If you asked about the UART used on the other mvebu SoCs then my answer
+is: on all the other mvebu SoC until now third party IPs were used. Thi=
+s
+one is the first one dedicated to an mevbu SoC and currently only used
+on Armada 3700 but I don't know what are the plan for the future mvebu
+SoCs.
 
 Gregory
-
->
-> Best regards,
-> Marcin
 
 --=20
 Gregory Clement, Free Electrons
