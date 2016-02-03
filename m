@@ -1,50 +1,97 @@
 From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH 01/10] serial: mvebu-uart: initial support for Armada-3700
- serial port
-Date: Wed, 03 Feb 2016 17:36:01 +0100
-Message-ID: <87mvrh4uq6.fsf@free-electrons.com>
+Subject: Re: [PATCH 01/10] serial: mvebu-uart: initial support for Armada-3700 serial port
+Date: Wed, 03 Feb 2016 17:43:59 +0100
+Message-ID: <87io254ucw.fsf@free-electrons.com>
 References: <1454436468-4241-1-git-send-email-gregory.clement@free-electrons.com>
- <1454436468-4241-2-git-send-email-gregory.clement@free-electrons.com>
- <5687888.WDl8xbENFR@wuerfel>
+	<1454436468-4241-2-git-send-email-gregory.clement@free-electrons.com>
+	<CAPv3WKfGX2dVDu2zWG4gdEMf0vO-X+NMerh9PzNDjzLBDSQcUA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <5687888.WDl8xbENFR@wuerfel> (Arnd Bergmann's message of "Tue, 02
- Feb 2016 22:07:17 +0100")
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-ide@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Jiri Slaby <jslaby@suse.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Nadav Haklai <nadavh@marvell.com>, Hans de Goede <hdegoede@redhat.com>, devicetree@vger.kernel.org, arm@kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tejun Heo <tj@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Wilson Ding <dingwei@marvell.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAPv3WKfGX2dVDu2zWG4gdEMf0vO-X+NMerh9PzNDjzLBDSQcUA@mail.gmail.com>
+	(Marcin Wojtas's message of "Wed, 3 Feb 2016 09:05:55 +0100")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Marcin Wojtas <mw@semihalf.com>
+Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-ide@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Nadav Haklai <nadavh@marvell.com>, Hans de Goede <hdegoede@redhat.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Tejun Heo <tj@kernel.org>, Wilson Ding <dingwei@marvell.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgQXJuZCwKIAogT24gbWFyLiwgZsOpdnIuIDAyIDIwMTYsIEFybmQgQmVyZ21hbm4gPGFybmRA
-YXJuZGIuZGU+IHdyb3RlOgoKPiBPbiBUdWVzZGF5IDAyIEZlYnJ1YXJ5IDIwMTYgMTk6MDc6Mzkg
-R3JlZ29yeSBDTEVNRU5UIHdyb3RlOgo+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJp
-YWwvS2NvbmZpZyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnCj4+IGluZGV4IDM5NzIxZWM0
-ZjQxNS4uYjI5MWY5MzRkNTFiIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvS2Nv
-bmZpZwo+PiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvS2NvbmZpZwo+PiBAQCAtMTYwNiw2ICsx
-NjA2LDI4IEBAIGNvbmZpZyBTRVJJQUxfU1RNMzJfQ09OU09MRQo+PiAgCWRlcGVuZHMgb24gU0VS
-SUFMX1NUTTMyPXkKPj4gIAlzZWxlY3QgU0VSSUFMX0NPUkVfQ09OU09MRQo+PiAgCj4+ICtjb25m
-aWcgU0VSSUFMX01WRUJVX1VBUlQKPj4gKwlib29sICJNYXJ2ZWxsIEVCVSBzZXJpYWwgcG9ydCBz
-dXBwb3J0Igo+Cj4gQ291bGQgdGhpcyBiZSBhIGxvYWRhYmxlIG1vZHVsZT8KCkkgZG9uJ3Qgc2Vl
-IGFueSByZWFzb24gdG8gbm90IGJlaW5nIGFibGUgdG8gdXNlIGl0IGFzIGEgbW9kdWxlLiBCdXQg
-SQpkaWRuJ3QgdGVzdCBpdCBiZWNhdXNlIGN1cnJlbnRseSB0ZSBzZXJpYWwgcG9ydCBpcyB0aGUg
-b25seSB3YXkgcm8KY2ltbXVuaWNhdGUgd2l0aCB0aGUgYm9hcmQuCgo+Cj4+ICtjb25maWcgU0VS
-SUFMX01WRUJVX0NPTlNPTEUKPj4gKwlib29sICJDb25zb2xlIG9uIE1hcnZlbGwgRUJVIHNlcmlh
-bCBwb3J0Igo+PiArCWRlcGVuZHMgb24gU0VSSUFMX01WRUJVX1VBUlQKPgo+IElmIHllcywgdGhp
-cyB3b3VsZCBiZWNvbWUgCj4KPiAJZGVwZW5kcyBvbiBTRVJJQUxfTVZFQlVfVUFSVD15CgpPSywg
-bGV0J3MgdHJ5IHRvIGVuYWJsZSBpdC4KClRoYW5rcywKCkdyZWdvcnkKCj4KPiAJQXJuZAo+Cgot
-LSAKR3JlZ29yeSBDbGVtZW50LCBGcmVlIEVsZWN0cm9ucwpLZXJuZWwsIGRyaXZlcnMsIHJlYWwt
-dGltZSBhbmQgZW1iZWRkZWQgTGludXgKZGV2ZWxvcG1lbnQsIGNvbnN1bHRpbmcsIHRyYWluaW5n
-IGFuZCBzdXBwb3J0LgpodHRwOi8vZnJlZS1lbGVjdHJvbnMuY29tCgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcg
-bGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmlu
-ZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+Hi Marcin,
+=20
+ On mer., f=C3=A9vr. 03 2016, Marcin Wojtas <mw@semihalf.com> wrote:
+
+> Hi Gregory
+>
+>> +
+>> +static int mvebu_uart_startup(struct uart_port *port)
+>> +{
+>> +       int ret;
+>> +
+>> +       writel(CTRL_TXFIFO_RST | CTRL_RXFIFO_RST,
+>> +              port->membase + UART_CTRL);
+>> +       udelay(1);
+>> +       writel(CTRL_RX_INT, port->membase + UART_CTRL);
+>> +
+>> +       ret =3D request_irq(port->irq, mvebu_uart_isr, port->irqflag=
+s, "serial",
+>> +                         port);
+>> +       if (ret) {
+>> +               dev_err(port->dev, "failed to request irq\n");
+>> +               return ret;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>
+>> +static int mvebu_uart_probe(struct platform_device *pdev)
+>> +{
+>> +       struct resource *reg =3D platform_get_resource(pdev, IORESOU=
+RCE_MEM, 0);
+>> +       struct resource *irq =3D platform_get_resource(pdev, IORESOU=
+RCE_IRQ, 0);
+>> +       struct uart_port *port;
+>> +       struct mvebu_uart_data *data;
+>> +       int ret;
+>> +
+>> +       if (!reg || !irq) {
+>> +               dev_err(&pdev->dev, "no registers/irq defined\n");
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       port =3D &mvebu_uart_ports[0];
+>> +
+>> +       spin_lock_init(&port->lock);
+>> +
+>> +       port->dev        =3D &pdev->dev;
+>> +       port->type       =3D PORT_MVEBU;
+>> +       port->ops        =3D &mvebu_uart_ops;
+>> +       port->regshift   =3D 0;
+>> +
+>> +       port->fifosize   =3D 32;
+>> +       port->iotype     =3D UPIO_MEM32;
+>> +       port->flags      =3D UPF_FIXED_PORT;
+>> +       port->line       =3D 0; /* single port: force line number to=
+  0 */
+>> +
+>> +       port->irq        =3D irq->start;
+>> +       port->irqflags   =3D 0;
+>
+> Please use port->irqflags =3D IRQF_SHARED;
+> As ubuntu opens multiple consoles A3700 can't boot to it (only to
+> buildroot with single console).
+
+But this irq is not shared, this looks like a hack hidding the real
+issue.
+
+Gregory
+
+>
+> Best regards,
+> Marcin
+
+--=20
+Gregory Clement, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
