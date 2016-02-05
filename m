@@ -1,8 +1,8 @@
 From: =?UTF-8?q?Jakob=20=C3=98stergaard=20Jensen?=
 	<jakob.jensen.91@gmail.com>
-Subject: [PATCH] tty: serial: jsm_tty: fixed redundant variable issue.
-Date: Fri,  5 Feb 2016 14:22:56 +0100
-Message-ID: <1454678576-2232-1-git-send-email-jakob.jensen.91@gmail.com>
+Subject: [PATCH v2] tty: serial: jsm_tty: fixed redundant variable issue.
+Date: Fri,  5 Feb 2016 15:21:03 +0100
+Message-ID: <1454682063-3630-1-git-send-email-jakob.jensen.91@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
@@ -16,12 +16,12 @@ List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: Jakob =C3=98stergaard Jensen <jakob.jensen.91@gmail.com>
 ---
- drivers/tty/serial/jsm/jsm_tty.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/tty/serial/jsm/jsm_tty.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/=
 jsm_tty.c
-index 524e86a..8ac669b 100644
+index 524e86a..723169a 100644
 --- a/drivers/tty/serial/jsm/jsm_tty.c
 +++ b/drivers/tty/serial/jsm/jsm_tty.c
 @@ -529,7 +529,6 @@ void jsm_input(struct jsm_channel *ch)
@@ -39,7 +39,8 @@ index 524e86a..8ac669b 100644
 -	n =3D len;
 =20
  	/*
- 	 * n now contains the most amount of data we can copy,
+-	 * n now contains the most amount of data we can copy,
++	 * len now contains the most amount of data we can copy,
  	 * bounded either by the flip buffer size or the amount
  	 * of data the card actually has pending...
  	 */
