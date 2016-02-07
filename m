@@ -1,78 +1,35 @@
-From: =?UTF-8?q?Jakob=20=C3=98stergaard=20Jensen?=
-	<jakob.jensen.91@gmail.com>
-Subject: [PATCH v3] tty: serial: jsm_tty: fixed redundant variable issue.
-Date: Sun,  7 Feb 2016 12:36:12 +0100
-Message-ID: <1454844972-23207-1-git-send-email-jakob.jensen.91@gmail.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH v5] serial: 8250: add gpio support to exar
+Date: Sun, 07 Feb 2016 19:24:15 +0530
+Message-ID: <56B74C87.3080301@gmail.com>
+References: <1453183595-17996-1-git-send-email-sudipm.mukherjee@gmail.com> <20160207064407.GA24131@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: cascardo@linux.vnet.ibm.com, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, =?UTF-8?q?Jakob=20=C3=98stergaard=20Jensen?= <jakob.jensen.91@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160207064407.GA24131@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, andy.shevchenko@gmail.com, Rob Groner <rgroner@rtd.com>
 List-Id: linux-serial@vger.kernel.org
 
-The variable "len" gets assigned once and it's value copied to
-"n", which is then used for the rest of the function.
+On Sunday 07 February 2016 12:14 PM, Greg Kroah-Hartman wrote:
+> On Tue, Jan 19, 2016 at 11:36:35AM +0530, Sudip Mukherjee wrote:
+>> Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+>> can be controlled using gpio interface.
+>> Add support to use these pins.
+>>
+>> Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+>> ---
+>
+> I need an ack from the gpio maintainer before I can take this.
+>
+> Or was it going to be reworked again?
 
-This patch fixes the unnecessary variable reassignment by using "len"
-throughout the function instead.
+I have not yet started with the rework, but Andy wants me to split out 
+the exar related code from 8250_pci and create its own driver. But at 
+the initial discussion you were against having a separate driver for it.
+what will you suggest?
 
-Signed-off-by: Jakob =C3=98stergaard Jensen <jakob.jensen.91@gmail.com>
----
-v2: Changed variable name in comment to reflect code change.
-v3: Wrote proper patch description.
-
- drivers/tty/serial/jsm/jsm_tty.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/=
-jsm_tty.c
-index 524e86a..723169a 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -529,7 +529,6 @@ void jsm_input(struct jsm_channel *ch)
- 	int data_len;
- 	unsigned long lock_flags;
- 	int len =3D 0;
--	int n =3D 0;
- 	int s =3D 0;
- 	int i =3D 0;
-=20
-@@ -598,16 +597,15 @@ void jsm_input(struct jsm_channel *ch)
- 	jsm_dbg(READ, &ch->ch_bd->pci_dev, "start 2\n");
-=20
- 	len =3D tty_buffer_request_room(port, data_len);
--	n =3D len;
-=20
- 	/*
--	 * n now contains the most amount of data we can copy,
-+	 * len now contains the most amount of data we can copy,
- 	 * bounded either by the flip buffer size or the amount
- 	 * of data the card actually has pending...
- 	 */
--	while (n) {
-+	while (len) {
- 		s =3D ((head >=3D tail) ? head : RQUEUESIZE) - tail;
--		s =3D min(s, n);
-+		s =3D min(s, len);
-=20
- 		if (s <=3D 0)
- 			break;
-@@ -638,7 +636,7 @@ void jsm_input(struct jsm_channel *ch)
- 			tty_insert_flip_string(port, ch->ch_rqueue + tail, s);
- 		}
- 		tail +=3D s;
--		n -=3D s;
-+		len -=3D s;
- 		/* Flip queue if needed */
- 		tail &=3D rmask;
- 	}
---=20
-2.5.0
-
---
-To unsubscribe from this list: send the line "unsubscribe kernel-janito=
-rs" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+regards
+sudip
