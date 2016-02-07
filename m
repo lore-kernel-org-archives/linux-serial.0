@@ -1,70 +1,43 @@
-From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>
-Subject: [PATCH] tty: serial: meson: Implement earlycon support
-Date: Sun,  7 Feb 2016 21:57:15 +0100
-Message-ID: <1454878635-24396-1-git-send-email-afaerber@suse.de>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v5] serial: 8250: add gpio support to exar
+Date: Sun, 7 Feb 2016 13:35:28 -0800
+Message-ID: <20160207213528.GA2018@kroah.com>
+References: <1453183595-17996-1-git-send-email-sudipm.mukherjee@gmail.com>
+ <20160207064407.GA24131@kroah.com>
+ <56B74C87.3080301@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-doc-owner@vger.kernel.org>
-Sender: linux-doc-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Carlo Caione <carlo@caione.org>, =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <56B74C87.3080301@gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, andy.shevchenko@gmail.com, Rob Groner <rgroner@rtd.com>
 List-Id: linux-serial@vger.kernel.org
 
-Reuse the existing console write implementation for implementing
-DT-based and command-line-based earlycon support.
+On Sun, Feb 07, 2016 at 07:24:15PM +0530, Sudip Mukherjee wrote:
+> On Sunday 07 February 2016 12:14 PM, Greg Kroah-Hartman wrote:
+> >On Tue, Jan 19, 2016 at 11:36:35AM +0530, Sudip Mukherjee wrote:
+> >>Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+> >>can be controlled using gpio interface.
+> >>Add support to use these pins.
+> >>
+> >>Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+> >>---
+> >
+> >I need an ack from the gpio maintainer before I can take this.
+> >
+> >Or was it going to be reworked again?
+> 
+> I have not yet started with the rework, but Andy wants me to split out the
+> exar related code from 8250_pci and create its own driver. But at the
+> initial discussion you were against having a separate driver for it.
+> what will you suggest?
 
-Signed-off-by: Andreas F=C3=A4rber <afaerber@suse.de>
----
- Documentation/kernel-parameters.txt |  6 ++++++
- drivers/tty/serial/meson_uart.c     | 13 +++++++++++++
- 2 files changed, 19 insertions(+)
+I don't remember what my initial suggestion was at all, sorry.  But I
+like what Peter was doing with the other tty driver splitout, so that
+might be the correct thing to do here.
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel=
--parameters.txt
-index 602065c..90801ac 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -1030,6 +1030,12 @@ Such letter suffixes can also be entirely omitte=
-d.
- 			the driver will use only 32-bit accessors to read/write
- 			the device registers.
-=20
-+		meson_serial,<addr>
-+			Start an early, polled-mode console on a meson serial
-+			port at the specified address. The serial port must
-+			already be setup and configured. Options are not yet
-+			supported.
-+
- 		msm_serial,<addr>
- 			Start an early, polled-mode console on an msm serial
- 			port at the specified address. The serial port
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson=
-_uart.c
-index b12a37b..6f89567 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -548,6 +548,19 @@ static int __init meson_serial_console_init(void)
- }
- console_initcall(meson_serial_console_init);
-=20
-+static int __init
-+meson_serial_early_console_setup(struct earlycon_device *device, const=
- char *opt)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->con->write =3D meson_serial_console_write;
-+	return 0;
-+}
-+EARLYCON_DECLARE(meson_serial, meson_serial_early_console_setup);
-+OF_EARLYCON_DECLARE(meson_serial, "amlogic,meson-uart",
-+		    meson_serial_early_console_setup);
-+
- #define MESON_SERIAL_CONSOLE	(&meson_serial_console)
- #else
- #define MESON_SERIAL_CONSOLE	NULL
---=20
-2.6.2
+thanks,
 
+greg k-h
