@@ -1,48 +1,78 @@
-From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH v2 03/12] serial: mvebu-uart: initial support for Armada-3700 serial port
-Date: Sun, 07 Feb 2016 12:16:55 +0100
-Message-ID: <87a8nc3h3s.fsf@free-electrons.com>
-References: <1454524889-9207-1-git-send-email-gregory.clement@free-electrons.com>
-	<1454524889-9207-4-git-send-email-gregory.clement@free-electrons.com>
-	<20160207071747.GA14010@kroah.com>
+From: =?UTF-8?q?Jakob=20=C3=98stergaard=20Jensen?=
+	<jakob.jensen.91@gmail.com>
+Subject: [PATCH v3] tty: serial: jsm_tty: fixed redundant variable issue.
+Date: Sun,  7 Feb 2016 12:36:12 +0100
+Message-ID: <1454844972-23207-1-git-send-email-jakob.jensen.91@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160207071747.GA14010@kroah.com> (Greg Kroah-Hartman's message
-	of "Sat, 6 Feb 2016 23:17:47 -0800")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>, Wilson Ding <dingwei@marvell.com>
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: cascardo@linux.vnet.ibm.com, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, =?UTF-8?q?Jakob=20=C3=98stergaard=20Jensen?= <jakob.jensen.91@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+The variable "len" gets assigned once and it's value copied to
+"n", which is then used for the rest of the function.
+
+This patch fixes the unnecessary variable reassignment by using "len"
+throughout the function instead.
+
+Signed-off-by: Jakob =C3=98stergaard Jensen <jakob.jensen.91@gmail.com>
+---
+v2: Changed variable name in comment to reflect code change.
+v3: Wrote proper patch description.
+
+ drivers/tty/serial/jsm/jsm_tty.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/=
+jsm_tty.c
+index 524e86a..723169a 100644
+--- a/drivers/tty/serial/jsm/jsm_tty.c
++++ b/drivers/tty/serial/jsm/jsm_tty.c
+@@ -529,7 +529,6 @@ void jsm_input(struct jsm_channel *ch)
+ 	int data_len;
+ 	unsigned long lock_flags;
+ 	int len =3D 0;
+-	int n =3D 0;
+ 	int s =3D 0;
+ 	int i =3D 0;
 =20
- On dim., f=C3=A9vr. 07 2016, Greg Kroah-Hartman <gregkh@linuxfoundatio=
-n.org> wrote:
-
-> On Wed, Feb 03, 2016 at 07:41:20PM +0100, Gregory CLEMENT wrote:
->> +static struct console mvebu_uart_console =3D {
->> +	.name	=3D "ttyS",
->
-> You aren't ttyS, that's a reserved name for a different chip, please =
-use
-> a new name and major/minor numbers.
-
-Oh sorry, I changed the ttyS to ttyMV in the uart_driver struct but I
-forgot the console. I will fix it in next version.
-
-Thanks,
-
-Gregory
-
->
-> thanks,
->
-> greg k-h
-
+@@ -598,16 +597,15 @@ void jsm_input(struct jsm_channel *ch)
+ 	jsm_dbg(READ, &ch->ch_bd->pci_dev, "start 2\n");
+=20
+ 	len =3D tty_buffer_request_room(port, data_len);
+-	n =3D len;
+=20
+ 	/*
+-	 * n now contains the most amount of data we can copy,
++	 * len now contains the most amount of data we can copy,
+ 	 * bounded either by the flip buffer size or the amount
+ 	 * of data the card actually has pending...
+ 	 */
+-	while (n) {
++	while (len) {
+ 		s =3D ((head >=3D tail) ? head : RQUEUESIZE) - tail;
+-		s =3D min(s, n);
++		s =3D min(s, len);
+=20
+ 		if (s <=3D 0)
+ 			break;
+@@ -638,7 +636,7 @@ void jsm_input(struct jsm_channel *ch)
+ 			tty_insert_flip_string(port, ch->ch_rqueue + tail, s);
+ 		}
+ 		tail +=3D s;
+-		n -=3D s;
++		len -=3D s;
+ 		/* Flip queue if needed */
+ 		tail &=3D rmask;
+ 	}
 --=20
-Gregory Clement, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+2.5.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe kernel-janito=
+rs" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
