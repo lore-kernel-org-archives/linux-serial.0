@@ -1,46 +1,36 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v6 00/12] Earlycon cleanup
-Date: Sat, 6 Feb 2016 22:08:45 -0800
-Message-ID: <20160207060845.GA26035@kroah.com>
-References: <1452980244-20512-1-git-send-email-peter@hurleysoftware.com>
- <1452986629-17210-1-git-send-email-peter@hurleysoftware.com>
- <56B4693C.8070301@nvidia.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2] tty: serial: jsm_tty: fixed redundant variable issue.
+Date: Sat, 6 Feb 2016 22:14:00 -0800
+Message-ID: <20160207061400.GA30939@kroah.com>
+References: <1454682063-3630-1-git-send-email-jakob.jensen.91@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <kernel-janitors-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <56B4693C.8070301@nvidia.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jon Hunter <jonathanh@nvidia.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, Paul Burton <paul.burton@imgtec.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Sebastian Frias <sf84@laposte.net>
+In-Reply-To: <1454682063-3630-1-git-send-email-jakob.jensen.91@gmail.com>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Jakob =?iso-8859-1?Q?=D8stergaard?= Jensen <jakob.jensen.91@gmail.com>
+Cc: cascardo@linux.vnet.ibm.com, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 05, 2016 at 09:19:56AM +0000, Jon Hunter wrote:
-> Hi all,
-> 
-> On 16/01/16 23:23, Peter Hurley wrote:
-> > Hi Greg, Grant & Rob,
-> > 
-> > This patch series is a rebase of the v3 from April last year.
-> > 
-> > This patch series builds on my earlier "Extensible console matching &
-> > direct earlycon" to add several useful features to earlycon:
-> > * Proper port i/o configuration from DT node with of_serial properties
-> >   (such as reg-io-width, reg-shift and reg-offset, and endianness)
-> > * Proper console name & index initialization from earlycon name
-> >   (for both command line and DT-defined earlycons)
-> > * Support for DT 'stdout-path' options pass-through to earlycon setup
-> > * Improved log messages for troubleshooting
-> > * Support for multiple OF earlycon declarations so different
-> >   compatible strings can specify the same OF earlycon
-> 
-> I just wanted to check the status of this series. I have not seen it
-> appear in -next yet. I was waiting for this to get merged so that I can
-> enable earlycon via DT for Tegra.
+On Fri, Feb 05, 2016 at 03:21:03PM +0100, Jakob =D8stergaard Jensen wro=
+te:
+> Fixes unnecessary variable reassignment to a new redundant variable.
+>=20
+> Signed-off-by: Jakob =D8stergaard Jensen <jakob.jensen.91@gmail.com>
+> ---
+>  drivers/tty/serial/jsm/jsm_tty.c | 10 ++++------
+>  1 file changed, 4 insertions(+), 6 deletions(-)
 
-Now in my testing branch, if all goes well, will show up in -next in a
-few days.
+What changed in v2?  Please always be specific.  I'll drop this, please
+resend v3 and describe what changed in the proper way.
 
 thanks,
 
 greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe kernel-janito=
+rs" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
