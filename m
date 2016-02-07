@@ -1,56 +1,28 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] sc16is7xx: don't need "uart_handle_cts_change"
-Date: Sat, 6 Feb 2016 22:46:08 -0800
-Message-ID: <20160207064608.GB24131@kroah.com>
-References: <BLU436-SMTP55A9A43327DDAAAAA42012FFE50@phx.gbl>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH v5 10/14] serial: pic32_uart: Add PIC32 UART driver
+Date: Sat, 6 Feb 2016 23:04:36 -0800
+Message-ID: <20160207070436.GA11518@kroah.com>
+References: <1452734299-460-1-git-send-email-joshua.henderson@microchip.com>
+ <1452734299-460-11-git-send-email-joshua.henderson@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <BLU436-SMTP55A9A43327DDAAAAA42012FFE50@phx.gbl>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Wills Wang <wills.wang@live.com>
-Cc: jringle@gridpoint.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+In-Reply-To: <1452734299-460-11-git-send-email-joshua.henderson-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joshua Henderson <joshua.henderson-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Andrei Pistirica <andrei.pistirica-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Dec 22, 2015 at 05:19:56PM +0800, Wills Wang wrote:
-> SC16is7xx has feature for auto hardware flow control using RTS/CTS,
-> so we don't need "uart_handle_cts_change" to invoke "start_tx/stop_tx"
-> for flow control.
+On Wed, Jan 13, 2016 at 06:15:43PM -0700, Joshua Henderson wrote:
+> From: Andrei Pistirica <andrei.pistirica-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
 > 
-> In addition, for software CTS, interrupt "SC16IS7XX_IIR_CTSRTS_SRC"
-> just report the nCTS change of state from active(low) to inactive(high),
-> driver don't know when the state of nCTS change from incactive to active,
-> so can't resume the transmission when a peer device is again ready and
-> re-assert nRTS signal.
+> This adds UART and a serial console driver for Microchip PIC32 class
+> devices.
+> 
+> Signed-off-by: Andrei Pistirica <andrei.pistirica-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+> Signed-off-by: Joshua Henderson <joshua.henderson-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+> Cc: Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
 > ---
->  drivers/tty/serial/sc16is7xx.c | 13 +++----------
->  1 file changed, 3 insertions(+), 10 deletions(-)
 
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- Your patch does not have a Signed-off-by: line.  Please read the
-  kernel file, Documentation/SubmittingPatches and resend it after
-  adding that line.  Note, the line needs to be in the body of the
-  email, before the patch, not at the bottom of the patch or in the
-  email signature.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
