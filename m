@@ -1,76 +1,41 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH 2/2] serial: 8250: fix building Ingenic with SERIAL_8250=m
-Date: Mon, 8 Feb 2016 11:45:44 -0500
-Message-ID: <20160208164543.GY23093@windriver.com>
-References: <1454935947-2743255-1-git-send-email-arnd@arndb.de>
- <1454935947-2743255-2-git-send-email-arnd@arndb.de>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH v2 04/10] serial: mps2-uart: add MPS2 UART driver
+Date: Mon, 8 Feb 2016 08:52:26 -0800
+Message-ID: <20160208165226.GA11593@kroah.com>
+References: <1454413199-26573-1-git-send-email-vladimir.murzin@arm.com>
+ <1454413199-26573-5-git-send-email-vladimir.murzin@arm.com>
+ <20160207071154.GA32017@kroah.com>
+ <56B87928.7020803@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1454935947-2743255-2-git-send-email-arnd@arndb.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Eddie Huang <eddie.huang@mediatek.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <56B87928.7020803-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+Cc: arnd-r2nGTMty4D4@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-[[PATCH 2/2] serial: 8250: fix building Ingenic with SERIAL_8250=m] On 08/02/2016 (Mon 13:51) Arnd Bergmann wrote:
-
-> The Ingenic 8250 driver has a 'bool' Kconfig symbol, but that
-> breaks when SERIAL_8250 is a loadable module:
+On Mon, Feb 08, 2016 at 11:16:56AM +0000, Vladimir Murzin wrote:
+> On 07/02/16 07:11, Greg KH wrote:
+> >> +
+> >> +#define SERIAL_NAME "ttyS"
+> > 
+> > You can't be "ttyS", there's already a serial port named that, please
+> > use a unique name and a new major/minor number (dynamic ideally).
+> > 
 > 
-> drivers/tty/built-in.o: In function `ingenic_uart_probe':
-> 8250_ingenic.c:(.text+0x1c1a0): undefined reference to `serial8250_register_8250_port'
+> Hi Greg,
 > 
-> This changes the symbol to a 'tristate', plus a dependency on
+> I did s/ttyMPS/ttyS per your request for v1 [1]. I'm fine to change it
+> back if you prefer that, but I'd be glad to know what I've been missing?
+> 
+> [1] https://lkml.org/lkml/2015/12/13/8
 
-Note that Greg just queued a patch yesterday (but sent in 2015) that
-removed what was the dead modular code.
+Yeah, I was wrong, sorry about that, my fault.
 
-It could also depend on SERIAL_8250=y to resolve the build issue you
-found, if nobody cares about having modular SOC console UART drivers.
-
-Either way, I don't have issue with it being tristate vs bool, but if
-you do go with tristate, then my patch will have to be dropped/reverted.
-
-Paul.
+greg k-h
 --
-
-> SERIAL_8250, which makes it work again. Unlike the other
-> soc-specific backends, this one has no dependency on an
-> architecture or a platform. I'm adding a dependency on
-> MIPS || COMPILE_TEST as well here, to avoid showing the driver
-> on architectures that are not interested in it.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/tty/serial/8250/Kconfig | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index 6ae0fae4f796..13c63b14179f 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -384,8 +384,8 @@ config SERIAL_8250_UNIPHIER
->  	  serial ports, say Y to this option. If unsure, say N.
->  
->  config SERIAL_8250_INGENIC
-> -	bool "Support for Ingenic SoC serial ports"
-> -	depends on OF_FLATTREE
-> +	tristate "Support for Ingenic SoC serial ports"
-> +	depends on SERIAL_8250 && OF_FLATTREE && (MIPS || COMPILE_TEST)
->  	select LIBFDT
->  	help
->  	  If you have a system using an Ingenic SoC and wish to make use of
-> -- 
-> 2.7.0
-> 
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
