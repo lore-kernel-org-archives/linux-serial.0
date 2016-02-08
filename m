@@ -1,52 +1,34 @@
 From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: [PATCH v3 02/12] irqchip: armada-370-xp: do not enable it by default
- when ARCH_MVEBU is selected
-Date: Mon,  8 Feb 2016 18:14:10 +0100
-Message-ID: <1454951660-13289-3-git-send-email-gregory.clement@free-electrons.com>
+Subject: [PATCH v3 10/12] MAINTAINERS: Extend dts entry for ARM64 mvebu files
+Date: Mon,  8 Feb 2016 18:14:18 +0100
+Message-ID: <1454951660-13289-11-git-send-email-gregory.clement@free-electrons.com>
 References: <1454951660-13289-1-git-send-email-gregory.clement@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1454951660-13289-1-git-send-email-gregory.clement@free-electrons.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-ide@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Omri Itach <omrii@marvell.com>, linux-kernel@vger.kernel.org, Nadav Haklai <nadavh@marvell.com>, Hans de Goede <hdegoede@redhat.com>, Lior Amsalem <alior@marvell.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Tejun Heo <tj@kernel.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
-The irq-armada-370-xp driver can only be built for ARM 32 bits. The mvebu
-family had grown with a new ARM64 SoC which will also select the
-ARCH_MEVBU configuration. Since "ARM: mvebu: use the ARMADA_370_XP_IRQ
-option", the ARM32 mvebu SoC directly select this new option. Selecting
-it by default when ARCH_MEVBU is selected is no more needed.
-
-This patch removes this dependency, thanks to this, a kernel for ARM64
-mvebu SoC can be built without error due this driver.
+Extend the mvebu entry to ARM64 device tree sources.
 
 Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Reviewed-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
 ---
- drivers/irqchip/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index e2cab879d641..b6e7e86a57e1 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -62,7 +62,6 @@ config ARM_VIC_NR
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 30aca4aa5467..ad49b62c5abc 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1279,6 +1279,7 @@ F:	arch/arm/mach-mvebu/
+ F:	drivers/rtc/rtc-armada38x.c
+ F:	arch/arm/boot/dts/armada*
+ F:	arch/arm/boot/dts/kirkwood*
++F:	arch/arm64/boot/dts/marvell/armada*
  
- config ARMADA_370_XP_IRQ
- 	bool
--	default y if ARCH_MVEBU
- 	select GENERIC_IRQ_CHIP
  
- config ATMEL_AIC_IRQ
+ ARM/Marvell Berlin SoC support
 -- 
 2.5.0
