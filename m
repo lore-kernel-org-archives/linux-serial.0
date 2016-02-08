@@ -1,47 +1,62 @@
-From: Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: Re: [PATCH v2 04/10] serial: mps2-uart: add MPS2 UART driver
-Date: Mon, 08 Feb 2016 17:17:57 +0000
-Message-ID: <56B8CDC5.5010504@arm.com>
-References: <1454413199-26573-1-git-send-email-vladimir.murzin@arm.com> <1454413199-26573-5-git-send-email-vladimir.murzin@arm.com> <20160207071154.GA32017@kroah.com> <56B87928.7020803@arm.com> <20160208165226.GA11593@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+From: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Subject: [PATCH v3 04/12] ata: ahci_mvebu: add support for Armada 3700 variant
+Date: Mon,  8 Feb 2016 18:14:12 +0100
+Message-ID: <1454951660-13289-5-git-send-email-gregory.clement@free-electrons.com>
+References: <1454951660-13289-1-git-send-email-gregory.clement@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160208165226.GA11593@kroah.com>
+In-Reply-To: <1454951660-13289-1-git-send-email-gregory.clement@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: arnd@arndb.de, linux@arm.linux.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, u.kleine-koenig@pengutronix.de, andy.shevchenko@gmail.com, mark.rutland@arm.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, jslaby@suse.cz, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-api@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 08/02/16 16:52, Greg KH wrote:
-> On Mon, Feb 08, 2016 at 11:16:56AM +0000, Vladimir Murzin wrote:
->> On 07/02/16 07:11, Greg KH wrote:
->>>> +
->>>> +#define SERIAL_NAME "ttyS"
->>>
->>> You can't be "ttyS", there's already a serial port named that, please
->>> use a unique name and a new major/minor number (dynamic ideally).
->>>
->>
->> Hi Greg,
->>
->> I did s/ttyMPS/ttyS per your request for v1 [1]. I'm fine to change it
->> back if you prefer that, but I'd be glad to know what I've been missing?
->>
->> [1] https://lkml.org/lkml/2015/12/13/8
-> 
-> Yeah, I was wrong, sorry about that, my fault.
-> 
+From: Lior Amsalem <alior@marvell.com>
 
-I got -EDOUBT from my parser. What should I stick with "ttyS" or "ttyMPS"?
+The main difference in the new Armada 3700 is that no address
+decoding needs to take place in the driver probe.
 
-P.S.
-Any chance you could look at the rest of the patch?
+[gregory.clement@free-electrons.com: reformulate the commit log]
 
-Cheers
-Vladimir
+Signed-off-by: Lior Amsalem <alior@marvell.com>
+Reviewed-by: Nadav Haklai <nadavh@marvell.com>
+Tested-by: Nadav Haklai <nadavh@marvell.com>
+Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+---
+ drivers/ata/ahci_mvebu.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-> greg k-h
-> 
-> 
-> 
+diff --git a/drivers/ata/ahci_mvebu.c b/drivers/ata/ahci_mvebu.c
+index f7a7fa81740e..de7128d81e9c 100644
+--- a/drivers/ata/ahci_mvebu.c
++++ b/drivers/ata/ahci_mvebu.c
+@@ -112,12 +112,15 @@ static int ahci_mvebu_probe(struct platform_device *pdev)
+ 	if (rc)
+ 		return rc;
+ 
+-	dram = mv_mbus_dram_info();
+-	if (!dram)
+-		return -ENODEV;
++	if (of_device_is_compatible(pdev->dev.of_node,
++				    "marvell,armada-380-ahci")) {
++		dram = mv_mbus_dram_info();
++		if (!dram)
++			return -ENODEV;
+ 
+-	ahci_mvebu_mbus_config(hpriv, dram);
+-	ahci_mvebu_regret_option(hpriv);
++		ahci_mvebu_mbus_config(hpriv, dram);
++		ahci_mvebu_regret_option(hpriv);
++	}
+ 
+ 	rc = ahci_platform_init_host(pdev, hpriv, &ahci_mvebu_port_info,
+ 				     &ahci_platform_sht);
+@@ -133,6 +136,7 @@ disable_resources:
+ 
+ static const struct of_device_id ahci_mvebu_of_match[] = {
+ 	{ .compatible = "marvell,armada-380-ahci", },
++	{ .compatible = "marvell,armada-3700-ahci", },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, ahci_mvebu_of_match);
+-- 
+2.5.0
