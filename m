@@ -1,57 +1,50 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH v2 04/10] serial: mps2-uart: add MPS2 UART driver
-Date: Mon, 8 Feb 2016 09:28:31 -0800
-Message-ID: <20160208172831.GB6715@kroah.com>
-References: <1454413199-26573-1-git-send-email-vladimir.murzin@arm.com>
- <1454413199-26573-5-git-send-email-vladimir.murzin@arm.com>
- <20160207071154.GA32017@kroah.com>
- <56B87928.7020803@arm.com>
- <20160208165226.GA11593@kroah.com>
- <56B8CDC5.5010504@arm.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 2/2] serial: 8250: fix building Ingenic with SERIAL_8250=m
+Date: Mon, 08 Feb 2016 22:45:07 +0100
+Message-ID: <2444356.TvhDejDUJL@wuerfel>
+References: <1454935947-2743255-1-git-send-email-arnd@arndb.de> <1454935947-2743255-2-git-send-email-arnd@arndb.de> <20160208164543.GY23093@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <56B8CDC5.5010504-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Cc: arnd-r2nGTMty4D4@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jslaby-AlSwsSmVLrQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160208164543.GY23093@windriver.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, Eddie Huang <eddie.huang@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Feb 08, 2016 at 05:17:57PM +0000, Vladimir Murzin wrote:
-> On 08/02/16 16:52, Greg KH wrote:
-> > On Mon, Feb 08, 2016 at 11:16:56AM +0000, Vladimir Murzin wrote:
-> >> On 07/02/16 07:11, Greg KH wrote:
-> >>>> +
-> >>>> +#define SERIAL_NAME "ttyS"
-> >>>
-> >>> You can't be "ttyS", there's already a serial port named that, please
-> >>> use a unique name and a new major/minor number (dynamic ideally).
-> >>>
-> >>
-> >> Hi Greg,
-> >>
-> >> I did s/ttyMPS/ttyS per your request for v1 [1]. I'm fine to change it
-> >> back if you prefer that, but I'd be glad to know what I've been missing?
-> >>
-> >> [1] https://lkml.org/lkml/2015/12/13/8
-> > 
-> > Yeah, I was wrong, sorry about that, my fault.
-> > 
+On Monday 08 February 2016 11:45:44 Paul Gortmaker wrote:
+> [[PATCH 2/2] serial: 8250: fix building Ingenic with SERIAL_8250=m] On 08/02/2016 (Mon 13:51) Arnd Bergmann wrote:
 > 
-> I got -EDOUBT from my parser. What should I stick with "ttyS" or "ttyMPS"?
+> > The Ingenic 8250 driver has a 'bool' Kconfig symbol, but that
+> > breaks when SERIAL_8250 is a loadable module:
+> > 
+> > drivers/tty/built-in.o: In function `ingenic_uart_probe':
+> > 8250_ingenic.c:(.text+0x1c1a0): undefined reference to `serial8250_register_8250_port'
+> > 
+> > This changes the symbol to a 'tristate', plus a dependency on
+> 
+> Note that Greg just queued a patch yesterday (but sent in 2015) that
+> removed what was the dead modular code.
+> 
+> It could also depend on SERIAL_8250=y to resolve the build issue you
+> found, if nobody cares about having modular SOC console UART drivers.
 
-Please use ttyMPS.
+All other UART drivers can be modules, no need for this to be an
+exception I think. Having it depend on SERIAL_8250=y would make the
+driver disabled on 'allmodconfig', which is a bit counterproductive for
+the purpose of allmodconfig. I don't think anyone actually cares about
+the driver being runtime loaded on real hardware.
 
-> P.S.
-> Any chance you could look at the rest of the patch?
+> Either way, I don't have issue with it being tristate vs bool, but if
+> you do go with tristate, then my patch will have to be dropped/reverted.
 
-It's long gone from my queue, sorry, you'll have to resend it.
+Fine with me too.
 
-thanks,
+I also now saw in the randconfig builds that the driver is missing an #include
+<linux/module.h>, which I guess is going to be there after reverting your
+patch.
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I'll send a new series.
+
+	Arnd
