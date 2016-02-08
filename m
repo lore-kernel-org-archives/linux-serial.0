@@ -1,96 +1,165 @@
-From: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
-Subject: Re: [PATCH 1/2] serial: 8250: fix building mediatek with SERIAL_8250=m
-Date: Mon, 8 Feb 2016 11:55:35 -0500
-Message-ID: <20160208165535.GZ23093@windriver.com>
-References: <1454935947-2743255-1-git-send-email-arnd@arndb.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1454935947-2743255-1-git-send-email-arnd-r2nGTMty4D4@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Matt Redfearn <matt.redfearn-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Eddie Huang <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Subject: [PATCH v3 00/12] Add support for the Armada 3700 SoC an mvebu ARM64 based
+Date: Mon,  8 Feb 2016 18:14:08 +0100
+Message-ID: <1454951660-13289-1-git-send-email-gregory.clement@free-electrons.com>
+Return-path: <linux-ide-owner@vger.kernel.org>
+Sender: linux-ide-owner@vger.kernel.org
+To: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
-[[PATCH 1/2] serial: 8250: fix building mediatek with SERIAL_8250=m] On 08/02/2016 (Mon 13:51) Arnd Bergmann wrote:
+This series introduce the support of the Armada 3700 family: it is the
+first ARM64 SoC of the mvebu family submitted to the mainline!
 
-> The Mediatek 8250 driver has a 'bool' Kconfig symbol, but that
-> breaks when SERIAL_8250 is a loadable module:
-> 
-> drivers/tty/built-in.o: In function `mtk8250_set_termios':
-> 8250_ingenic.c:(.text+0x1bee8): undefined reference to `serial8250_do_set_termios'
-> 8250_ingenic.c:(.text+0x1bf10): undefined reference to `uart_get_baud_rate'
-> 8250_ingenic.c:(.text+0x1c09c): undefined reference to `uart_get_divisor'
-> drivers/tty/built-in.o: In function `mtk8250_do_pm':
-> 8250_ingenic.c:(.text+0x1c0d0): undefined reference to `serial8250_do_pm'
-> drivers/tty/built-in.o: In function `mtk8250_probe':
-> 8250_ingenic.c:(.text+0x1c2e4): undefined reference to `serial8250_register_8250_port'
-> serial/8250/8250_mtk.c:287:242: error: data definition has no type or storage class [-Werror]
-> serial/8250/8250_mtk.c:287:122: error: 'mtk8250_platform_driver_init' defined but not used [-Werror=unused-function]
+Currently there are two members of the Armada 3700 family, the only
+difference is the number of core: the Armada 3710 comes with one
+Cortex-A53 whereas the Armada 3720 comes with 2 Cortex-A53. In this
+series we enabled only the minimum to boot, pinctrl and clock tree
+will come soon.
 
-Probably should drop the ingenic lines above ; assuming they are make -j N
-related and that mtk doesn't depend on or build ingenic.
+The changes in this third version are very small (see the changelog).
 
-> 
-> This changes the symbol to a 'tristate', so the dependency on
-> SERIAL_8250 also works when that is set to 'm'.
-> To actually build the driver, we also need to include <linux/module.h>.
-> 
-> Note that the driver uses builtin_platform_driver() and implements
-> no .remove() callback, so unloading the module is not possible.
+The first two patches patches are here to be able to use the the
+ARCH_MVEBU for the Armada 3700 SoCs. The first ones is only here to
+have standalone series but it comes from Thomas Petazzoni's series:
+http://thread.gmane.org/gmane.linux.ports.arm.kernel/472625
 
-But this is due to d72d391c126e0ffd3047c06c4bef4d795853d5d5.  So again,
-I'm not sure what this achives vs. just making it depend on having
-SERIAL_8250=y as a trivial fix for the one build issue.
+The third patch introduces a new serial driver for the uart used on
+this SoC. The driver remains simple even if the hardware is capable of
+doing more.
 
-If you really see a use case for tristate, then the above should be
-reverted before adding your conversion to tristate I think.
+The forth one adapts the ahci driver to support the Armada 3700 SoC.
+The forth patch updates the binding documentation with the new
+compatible string.
 
-Paul.
---
+The fifth patch adds a new entry Kconfig entry for this SoC family.
 
-> 
-> Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> ---
->  drivers/tty/serial/8250/8250_mtk.c | 1 +
->  drivers/tty/serial/8250/Kconfig    | 2 +-
->  2 files changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> index 9038843cadc7..7e9242a5ddfe 100644
-> --- a/drivers/tty/serial/8250/8250_mtk.c
-> +++ b/drivers/tty/serial/8250/8250_mtk.c
-> @@ -19,6 +19,7 @@
->  #include <linux/init.h>
->  #include <linux/of_irq.h>
->  #include <linux/of_platform.h>
-> +#include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/serial_8250.h>
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index 67ad6b0d595b..6ae0fae4f796 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -370,7 +370,7 @@ config SERIAL_8250_LPC18XX
->  	  serial port, say Y to this option. If unsure, say Y.
->  
->  config SERIAL_8250_MT6577
-> -	bool "Mediatek serial port support"
-> +	tristate "Mediatek serial port support"
->  	depends on SERIAL_8250 && ARCH_MEDIATEK
->  	help
->  	  If you have a Mediatek based board and want to use the
-> -- 
-> 2.7.0
-> 
+I took the opportunity of this series to tidy up the Marvell related
+files in the binding documentation with the seventh patch.
+
+The eighth patch introduces the compatible string for the SoCs of the
+Armada 3700 family.
+
+The ninth patch could be considered as the bulk of this series: it
+adds the device tree files for the Armada 3700 SoCs and for the
+reference board.
+
+With the introduction of this new family the MAINTAINERS file, the
+Marvell README and the ARM64 defconfig files have to be updated: it is
+the purpose of the last 3 patches.
+
+The patches 3 and 4 could be taken directly by the maintainer of their
+respective subsystem as there is no dependency at all with the rest of
+the series. I think that the rest of the series should go through the
+arm-soc maintainer but in doubt I also added the ARM64 maintainer as
+suggested by get_maintainer.pl.
+
+Thanks,
+
+Gregory
+
+Changelog:
+v1 -> v2
+- Added Rob acked-by on patches 3, 6 and 7
+- Used armada3700_uart instead of mvebu_uart for the uart driver:
+  suggested by Mark
+- In mvebu-uart, do not use anymore TTY_MAJOR, or ttyS, but dynamic
+  major and ttyMV: pointed by Alan
+- Use tty_termios_copy_hw in mvebu_uart_set_termios: suggested by Alan
+- Use ARCH_MVEBU instead of creating ARCH_ARMADA_3700: suggested by
+  Jisheng
+- Added a new irqchip pacthes to fix build on ARM64 when ARCH_MVEBU is
+  selected
+- Removed marvell,armada3700 from the device tree binding and directly
+  used marvell,armada3710 for common feature: pointed by Rob
+- Fix memory node with coorect size in armada-3720-db.dts: suggested
+  by Mark
+
+v2 -> v3
+- Renamed the remaining ttyS into ttyMV: reported by Greg KH
+- Fixed the order of the compatible in the example of the binding
+  documentation: pointed by Rob
+- Fix a typo in Kconfig entry: pointed by Thomas Petazzoni
+
+Gregory CLEMENT (9):
+  irqchip: armada-370-xp: do not enable it by default when ARCH_MVEBU is
+    selected
+  arm64: add mvebu architecture entry
+  Documentation: dt-bindings: Add a new compatible for the Armada 3700
+  Documentation: dt: Tidy up the Marvell related files
+  devicetree: bindings: add DT binding for the Marvell Armada 3700 SoC
+    family
+  arm64: dts: add the Marvell Armada 3700 family and a development board
+  MAINTAINERS: Extend dts entry for ARM64 mvebu files
+  Documentation: arm: update supported Marvell EBU processors
+  arm64: defconfig: enable Armada 3700 related config
+
+Lior Amsalem (1):
+  ata: ahci_mvebu: add support for Armada 3700 variant
+
+Thomas Petazzoni (1):
+  irqchip: armada-370-xp: add Kconfig option for the driver
+
+Wilson Ding (1):
+  serial: mvebu-uart: initial support for Armada-3700 serial port
+
+ Documentation/arm/Marvell/README                   |  13 +
+ .../arm/{ => marvell}/armada-370-xp-pmsu.txt       |   0
+ .../bindings/arm/{ => marvell}/armada-370-xp.txt   |   0
+ .../bindings/arm/{ => marvell}/armada-375.txt      |   0
+ .../bindings/arm/marvell/armada-37xx.txt           |  16 +
+ .../{ => marvell}/armada-380-mpcore-soc-ctrl.txt   |   0
+ .../bindings/arm/{ => marvell}/armada-38x.txt      |   0
+ .../bindings/arm/{ => marvell}/armada-39x.txt      |   0
+ .../arm/{ => marvell}/armada-cpu-reset.txt         |   0
+ .../arm/{ => marvell}/coherency-fabric.txt         |   0
+ .../bindings/arm/{ => marvell}/kirkwood.txt        |   0
+ .../bindings/arm/{ => marvell}/marvell,berlin.txt  |   0
+ .../bindings/arm/{ => marvell}/marvell,dove.txt    |   0
+ .../arm/{ => marvell}/marvell,kirkwood.txt         |   0
+ .../arm/{ => marvell}/mvebu-cpu-config.txt         |   0
+ .../arm/{ => marvell}/mvebu-system-controller.txt  |   0
+ .../devicetree/bindings/ata/ahci-platform.txt      |   1 +
+ .../devicetree/bindings/tty/serial/mvebu-uart.txt  |  13 +
+ Documentation/kernel-parameters.txt                |   6 +
+ MAINTAINERS                                        |   1 +
+ arch/arm64/Kconfig.platforms                       |   6 +
+ arch/arm64/boot/dts/marvell/Makefile               |   4 +
+ arch/arm64/boot/dts/marvell/armada-371x.dtsi       |  53 ++
+ arch/arm64/boot/dts/marvell/armada-3720-db.dts     |  86 +++
+ arch/arm64/boot/dts/marvell/armada-372x.dtsi       |  63 ++
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi       | 131 +++++
+ arch/arm64/configs/defconfig                       |   5 +
+ drivers/ata/ahci_mvebu.c                           |  14 +-
+ drivers/irqchip/Kconfig                            |   4 +
+ drivers/irqchip/Makefile                           |   2 +-
+ drivers/tty/serial/Kconfig                         |  22 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/mvebu-uart.c                    | 650 +++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 34 files changed, 1088 insertions(+), 6 deletions(-)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-370-xp-pmsu.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-370-xp.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-375.txt (100%)
+ create mode 100644 Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-380-mpcore-soc-ctrl.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-38x.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-39x.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-cpu-reset.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/coherency-fabric.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/kirkwood.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/marvell,berlin.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/marvell,dove.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/marvell,kirkwood.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/mvebu-cpu-config.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/mvebu-system-controller.txt (100%)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-371x.dtsi
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-db.dts
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-372x.dtsi
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+ create mode 100644 drivers/tty/serial/mvebu-uart.c
+
+-- 
+2.5.0
+
