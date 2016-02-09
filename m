@@ -1,36 +1,57 @@
-From: Martin Sperl <kernel-TqfNSX0MhmxHKSADF0wUEw@public.gmane.org>
-Subject: Re: serial: bcm2835: add driver for bcm2835-aux-uart
-Date: Tue, 9 Feb 2016 12:15:46 +0100
-Message-ID: <56B9CA62.9070207@martin.sperl.org>
-References: <20160208182055.GA18802@mwanda>
+From: kernel@martin.sperl.org
+Subject: [PATCH] serial: bcm2835: fix unsigned int issue with irq
+Date: Tue,  9 Feb 2016 11:47:16 +0000
+Message-ID: <1455018437-2405-1-git-send-email-kernel@martin.sperl.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20160208182055.GA18802@mwanda>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rpi-kernel>,
- <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rpi-kernel/>
-List-Post: <mailto:linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel>,
- <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "linux-rpi-kernel" <linux-rpi-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: linux-rpi-kernel <linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: dan.carpenter@oracle.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>, linux-serial@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Cc: Martin Sperl <kernel@martin.sperl.org>
 List-Id: linux-serial@vger.kernel.org
 
+From: Martin Sperl <kernel@martin.sperl.org>
 
+Fixes error condition check when requesting the irq,
+that would not trigger because of uart_port.irq being
+defined as unsigned int.
 
-On 08.02.2016 19:20, Dan Carpenter wrote:
-> Hello Martin Sperl,
->
-> The patch bdc5f3009580: "serial: bcm2835: add driver for
-> bcm2835-aux-uart" from Jan 17, 2016, leads to the following static
-> checker warning:
->
-> 	drivers/tty/serial/8250/8250_bcm2835aux.c:63 bcm2835aux_serial_probe()
-> 	warn: unsigned 'data->uart.port.irq' is never less than zero.
+Reported by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Martin Sperl <kernel@martin.sperl.org>
+---
+ drivers/tty/serial/8250/8250_bcm2835aux.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-thanks - will fix that
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+index ecf89f1..e10f124 100644
+--- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -59,12 +59,12 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/* get the interrupt */
+-	data->uart.port.irq = platform_get_irq(pdev, 0);
+-	if (data->uart.port.irq < 0) {
+-		dev_err(&pdev->dev, "irq not found - %i",
+-			data->uart.port.irq);
+-		return data->uart.port.irq;
++	ret = platform_get_irq(pdev, 0);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "irq not found - %i", ret);
++		return ret;
+ 	}
++	data->uart.port.irq = ret;
+ 
+ 	/* map the main registers */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-- 
+1.7.10.4
