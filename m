@@ -1,51 +1,156 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v8 0/3] tty: Introduce software RS485 direction control
- support
-Date: Wed, 10 Feb 2016 08:28:10 -0800
-Message-ID: <56BB651A.4040803@hurleysoftware.com>
-References: <1454350162-1840-1-git-send-email-matwey@sai.msu.ru>
- <56BB5FE7.30009@hurleysoftware.com>
- <CAJs94EYjwViCA7=8ecXj2FOLwBT5C9Lt_pOfc1-ardL0TQ4yDg@mail.gmail.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: serial: clk: bcm2835: Strange effects when using aux-uart in
+ console
+Date: Wed, 10 Feb 2016 18:21:31 +0100
+Message-ID: <56BB719B.8070007@i2se.com>
+References: <A5F427B7-9B78-4892-9722-69418C4D0C10@martin.sperl.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAJs94EYjwViCA7=8ecXj2FOLwBT5C9Lt_pOfc1-ardL0TQ4yDg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-clk-owner@vger.kernel.org>
+In-Reply-To: <A5F427B7-9B78-4892-9722-69418C4D0C10@martin.sperl.org>
+Sender: linux-clk-owner@vger.kernel.org
+To: Martin Sperl <kernel@martin.sperl.org>
+Cc: linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>, Eric Anholt <eric@anholt.net>
 List-Id: linux-serial@vger.kernel.org
 
-On 02/10/2016 08:24 AM, Matwey V. Kornilov wrote:
-> 2016-02-10 19:05 GMT+03:00 Peter Hurley <peter@hurleysoftware.com>:
->> Hi Matwey,
->>
->> On 02/01/2016 10:09 AM, Matwey V. Kornilov wrote:
->>> Changes from v7:
->>>  - rework comments to follow guidelines
->>>  - minor style changes
->>> Changes from v6:
->>>  - minor style changes
->>>  - timers are not IRQSAFE now
->>> Changes from v5:
->>>  - rs485_emul variable has been renamed to em485 to follow function names convention
->>> Changes from v4:
->>>  - Add commit message to 1/3
->>> Changes from v3:
->>>  - Completely redesigned.
->>> Changes from v2:
->>>  - Introduced SER_RS485_SOFTWARE to show that software implementation is being used
->>>  - serial8250_rs485_config is located as required
->>>  - Timers are used to implement delay_before and delay_after timeouts
->>>
->>> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
->>
->> The holdup here is that I'd like to unit test this, which is 3rd on my todo list.
->> Should be done before the end of the week which will be soon enough
->> for this series to make linux-next.
-> 
-> Hi Peter,
-> 
-> Is something required from me?
+Hi,
 
-Not unless my tests identify a problem. I'll let you know.
+Am 10.02.2016 um 16:12 schrieb Martin Sperl:
+> Hi!
+>
+> I got a strange effect when using the auxiliar UART as the logging co=
+nsole:
+>
+> The kernel is configured for drivers/tty/serial/8250/8250_bcm2835aux.=
+c to
+> get linked into the main kernel (requires also 8250.c to be linked in=
+).
+>
+> As long as I boot using the main UART (PL011) in the kernel parameter=
+s:
+>   earlyprintk consoleblank=3D0 console=3DttyAMA0 root=3D/dev/mmcblk0p=
+2 rootwait
+>
+> Everything works fine - early_printk works and normal logging works a=
+s well.
+> Both configured ttys (/dev/ttyAMA0 and /dev/ttyS0) in /etc/initttab
+> work fine.
+>
+> Now when I switch the console to use the auxiliar UART
+> (which right now does not support early_printk) like this:
+>   earlyprintk consoleblank=3D0 console=3DttyS0,115200n1 root=3D/dev/m=
+mcblk0p2 rootwait
+>
+> I get the situation where:
+> * u-boot starts and writes to the main UART
+> * Kernel boots using early_printk logging to the main UART until we g=
+et to:
+>   [    2.657090] bootconsole [earlycon0] disabled
+> * then we see the earlyprintk buffer dumped on the aux-uart
+> * then booting continues and logging happens on the aux-uart:
+>   [    2.657090] bootconsole [earlycon0] disabled
+>   [    2.662673] 20201000.serial: ttyAMA0 at MMIO 0x20201000 (irq =3D=
+ 81, base_baud =3D 0) is a PL011 rev2
+>   [    2.663793] console [ttyS0] disabled
+>   [    2.663899] 20215040.serial: ttyS0 at MMIO 0x0 (irq =3D 53, base=
+_baud =3D 31224999) is a 16550
+>   [    3.384166] console [ttyS0] enabled
+> * everything works fine and I get networking and everything up
+>   [....] Starting NTP server: ntpd. ok
+>   [....] Starting OpenBSD Secure Shell server: sshd. ok
+>   My IP address is 10.10.10.41 ::127.0.0.1
+>
+>   Raspbian GNU/Linux 7 raspcm.intern.sperl.org ttyS0
+> * I can even log in via SSH and networking works.
+>   Note that I have the getty for ttyAMA0 disabled in inittab
+> * when I then enable the tty on the main UART like this:
+>   root@raspcm:~# /sbin/getty -a root -L ttyAMA0 115200 vt100
+> * I get the following:
+>   [   72.962845] uart-pl011 20201000.serial: no DMA platform data
+> * the system freezes=E2=80=A6
+> * sometimes I still get the following on the auxiliar UART before the=
+ system =E2=80=9Ccrashes":
+>   (at least when starting the tty from inittab)
+>   [   73.072985] bcm2835-clk 20101000.cprman: plld: couldn't lock PLL
+>   [   73.079132] ------------[ cut here ]------------
+>   [   73.083848] WARNING: CPU: 0 PID: 2329 at drivers/clk/clk.c:680 c=
+lk_core_disable+0x34/0xf0()
+>   [   73.093067] ---[ end trace 416e78cea88f5fb5 ]---
+>   [   73.097848] ------------[ cut here ]------------
+>   [   73.102616] WARNING: CPU: 0 PID: 2329 at drivers/clk/clk.c:575 c=
+lk_core_unprepare+0x34/0x110()
+>   [   73.112219] ---[ end trace 416e78cea88f5fb6 ]---
+>
+> A similar effect I get when using stty:=20
+>   root@raspcm:~# stty -F /dev/ttyAMA0
+>   [  128.878127] uart-pl011 20201000.serial: no DMA platform data
+>   speed 9600 baud; line =3D 0;
+>   -brkint -imaxbel
+> Then the system freezes.
+>
+> As if the plld does not lock - even if it (probably) is already locke=
+d.
+>
+> Or the message actually comes from bcm2835_clock_wait_busy which also
+> produces this message - so maybe we should better identify the messag=
+e.
+>
+> Note that the same also applies if I remove earlyprintk with
+> the only difference being that I do not get the initial boot
+> messages on the main UART.
+> (at that time only: "Uncompressing Linux... done, booting the kernel.=
+=E2=80=9D
+> shows on the main uart after u-boot start..)
+>
+> Unfortunately it is only possible to really test this on a
+> rpi-Compute module, as only there we can expose both uarts
+> on distinct GPIOs at the same time:
+>   GPIO 14: level=3D1 fsel=3D4 alt=3D0 func=3DTXD0
+>   GPIO 15: level=3D1 fsel=3D4 alt=3D0 func=3DRXD0
+>   GPIO 32: level=3D1 fsel=3D2 alt=3D5 func=3DTXD1
+>   GPIO 33: level=3D1 fsel=3D2 alt=3D5 func=3DRXD1
+>
+> Here the commits I have used based on spi/for-next (based on 4.4.0)
+> with the patches (* prefix) for the driver for aux-uart
+> added separately as they are not in the tree I have used:
+> * a96f6c7 serial: bcm2835: add driver for bcm2835-aux-uart
+> * 464e876 clk: bcm2835: Add bindings for the auxiliary peripheral clo=
+ck gates.
+> * 1af1b28 clk: bcm2835: Add a driver for the auxiliary peripheral clo=
+ck gates.
+> ece19b8 Merge remote-tracking branch 'spi/fix/loopback' into spi-linu=
+s
+> 887e6a3 Merge tag 'spi-v4.5' into spi-linus
+> ebea7c0 spi: fix counting in spi-loopback-test code
+> cabeea9 Merge remote-tracking branches 'spi/topic/sun4i', 'spi/topic/=
+topcliff-pc
+> 4f95307 Merge remote-tracking branches 'spi/topic/overlay', 'spi/topi=
+c/pxa2xx',
+> 41d5a70 Merge remote-tracking branches 'spi/topic/lm70llp', 'spi/topi=
+c/loopback'
+> 635b9b2 Merge remote-tracking branches 'spi/topic/dw', 'spi/topic/dw-=
+mid', 'spi/
+> 3c27892 Merge remote-tracking branches 'spi/topic/bcm63xx', 'spi/topi=
+c/butterfly
+> 9b17e80 Merge remote-tracking branch 'spi/topic/sunxi' into spi-next
+> 174c211 Merge remote-tracking branch 'spi/topic/core' into spi-next
+> f30f072 Merge remote-tracking branch 'spi/fix/mtk' into spi-linus
+> afd2ff9 Linux 4.4
+>
+> Maybe someone has gotten any idea?
+
+this sounds like an issue i had with the compute module here:
+
+http://permalink.gmane.org/gmane.linux.kernel.rpi/2197
+
+Unfortunately i don't have the cm anymore.
+
+Maybe you can try this downstream patch:
+
+https://github.com/raspberrypi/linux/commit/09041f7ccbd1cde792edae91c41=
+266886d5d1382
+
+Regards
+
+
