@@ -1,120 +1,137 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH V2 2/4] gpio: gpio-f81504: Add Fintek F81504/508/512
- PCIE-to-UART/GPIO GPIOLIB support
-Date: Wed, 10 Feb 2016 10:08:22 +0100
-Message-ID: <CACRpkdZ7DAP6a8scUSGxNBdAMHjtRUOcOYbEB15PK1QHBdQdUA@mail.gmail.com>
-References: <1453972838-30268-1-git-send-email-hpeter+linux_kernel@gmail.com>
-	<1453972838-30268-3-git-send-email-hpeter+linux_kernel@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <1453972838-30268-3-git-send-email-hpeter+linux_kernel@gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Peter Hung <hpeter@gmail.com>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.com>, Peter H <peter_hong@fintek.com.tw>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, soeren.grunewald@desy.de, Wang YanQing <udknight@gmail.com>, Adam Lee <adam.lee@canonical.com>, Arnd Bergmann <arnd@arndb.de>, Joachim Eastwood <manabian@gmail.com>, Scott Wood <scottwood@freescale.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Paul Burton <paul.burton@imgtec.com>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>, Matthias Brugger <matthias.bgg@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-gpio@vger.kernel.o
+From: Martin Sperl <kernel@martin.sperl.org>
+Subject: serial: clk: bcm2835: Strange effects when using aux-uart in console
+Date: Wed, 10 Feb 2016 16:12:05 +0100
+Message-ID: <A5F427B7-9B78-4892-9722-69418C4D0C10@martin.sperl.org>
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2104\))
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-clk-owner@vger.kernel.org>
+Sender: linux-clk-owner@vger.kernel.org
+To: linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>
+Cc: Eric Anholt <eric@anholt.net>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 28, 2016 at 10:20 AM, Peter Hung <hpeter@gmail.com> wrote:
+Hi!
 
-> This driver is GPIOLIB driver for F81504/508/512, it'll handle the
-> GPIOLIB operation of this device. This module will depend on
-> MFD_FINTEK_F81504_CORE.
->
-> IC function list:
->     F81504: Max 2x8 GPIOs and max 4 serial ports
->         port2/3 are multi-function
->     F81508: Max 6x8 GPIOs and max 8 serial ports
->         port2/3 are multi-function, port8/9/10/11 are gpio only
->     F81512: Max 6x8 GPIOs and max 12 serial ports
->         port2/3/8/9/10/11 are multi-function
->
-> GPIO register:
-> PCI Configuration space:
->     F0h: bit0~5: Enable GPIO0~5
->          bit6~7: Reserve
->     F3h: bit0~5: Multi-Functional Flag (0:GPIO/1:UART)
->          bit0: UART2 pin out for UART2 / GPIO0
->          bit1: UART3 pin out for UART3 / GPIO1
->          bit2: UART8 pin out for UART8 / GPIO2
->          bit3: UART9 pin out for UART9 / GPIO3
->          bit4: UART10 pin out for UART10 / GPIO4
->          bit5: UART11 pin out for UART11 / GPIO5
->          bit6~7: Reserve
->     F1h: IO address (LSB)
->     F2h: IO address (MSB)
->     F8h + 8 * set: Direction control (bitwise)
->          bitx: 0 - Input mode
->          bitx: 1 - Output mode
->     F9h + 8 * set: Drive ability control (bitwise)
->          bitx: 0 - Open drain (default)
->          bitx: 1 - Push Pull
->          In this driver, we only implements open drain mode.
->
-> IO space:
->     (IO base + 0~5): GPIO-0x~5x in/out value (bitwise)
->
-> Suggested-by: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
+I got a strange effect when using the auxiliar UART as the logging cons=
+ole:
 
-Overall a very nice and interesting patch set.
+The kernel is configured for drivers/tty/serial/8250/8250_bcm2835aux.c =
+to
+get linked into the main kernel (requires also 8250.c to be linked in).
 
-> +++ b/drivers/gpio/gpio-f81504.c
-(...)
-> +#include <linux/platform_device.h>
-> +#include <linux/gpio.h>
+As long as I boot using the main UART (PL011) in the kernel parameters:
+  earlyprintk consoleblank=3D0 console=3DttyAMA0 root=3D/dev/mmcblk0p2 =
+rootwait
 
-Drivers should just
-#include <linux/gpio/driver.h>
+Everything works fine - early_printk works and normal logging works as =
+well.
+Both configured ttys (/dev/ttyAMA0 and /dev/ttyS0) in /etc/initttab
+work fine.
 
-> +static struct f81504_gpio_chip *gpio_to_f81504_chip(struct gpio_chip *chip)
-> +{
-> +       return container_of(chip, struct f81504_gpio_chip, chip);
-> +}
+Now when I switch the console to use the auxiliar UART
+(which right now does not support early_printk) like this:
+  earlyprintk consoleblank=3D0 console=3DttyS0,115200n1 root=3D/dev/mmc=
+blk0p2 rootwait
 
-Avoid this construction in new code.
+I get the situation where:
+* u-boot starts and writes to the main UART
+* Kernel boots using early_printk logging to the main UART until we get=
+ to:
+  [    2.657090] bootconsole [earlycon0] disabled
+* then we see the earlyprintk buffer dumped on the aux-uart
+* then booting continues and logging happens on the aux-uart:
+  [    2.657090] bootconsole [earlycon0] disabled
+  [    2.662673] 20201000.serial: ttyAMA0 at MMIO 0x20201000 (irq =3D 8=
+1, base_baud =3D 0) is a PL011 rev2
+  [    2.663793] console [ttyS0] disabled
+  [    2.663899] 20215040.serial: ttyS0 at MMIO 0x0 (irq =3D 53, base_b=
+aud =3D 31224999) is a 16550
+  [    3.384166] console [ttyS0] enabled
+* everything works fine and I get networking and everything up
+  [....] Starting NTP server: ntpd. ok
+  [....] Starting OpenBSD Secure Shell server: sshd. ok
+  My IP address is 10.10.10.41 ::127.0.0.1
 
-Use gpiochip_get_data(chip) everywhere that gpio_to_f81504_chip()
-is used and register the gpiochip with gpiochip_add_data()
-and the code will be simpler.
+  Raspbian GNU/Linux 7 raspcm.intern.sperl.org ttyS0
+* I can even log in via SSH and networking works.
+  Note that I have the getty for ttyAMA0 disabled in inittab
+* when I then enable the tty on the main UART like this:
+  root@raspcm:~# /sbin/getty -a root -L ttyAMA0 115200 vt100
+* I get the following:
+  [   72.962845] uart-pl011 20201000.serial: no DMA platform data
+* the system freezes=E2=80=A6
+* sometimes I still get the following on the auxiliar UART before the s=
+ystem =E2=80=9Ccrashes":
+  (at least when starting the tty from inittab)
+  [   73.072985] bcm2835-clk 20101000.cprman: plld: couldn't lock PLL
+  [   73.079132] ------------[ cut here ]------------
+  [   73.083848] WARNING: CPU: 0 PID: 2329 at drivers/clk/clk.c:680 clk=
+_core_disable+0x34/0xf0()
+  [   73.093067] ---[ end trace 416e78cea88f5fb5 ]---
+  [   73.097848] ------------[ cut here ]------------
+  [   73.102616] WARNING: CPU: 0 PID: 2329 at drivers/clk/clk.c:575 clk=
+_core_unprepare+0x34/0x110()
+  [   73.112219] ---[ end trace 416e78cea88f5fb6 ]---
 
-See any other driver in drivers/gpio for examples, I converted them
-all.
+A similar effect I get when using stty:=20
+  root@raspcm:~# stty -F /dev/ttyAMA0
+  [  128.878127] uart-pl011 20201000.serial: no DMA platform data
+  speed 9600 baud; line =3D 0;
+  -brkint -imaxbel
+Then the system freezes.
 
-> +static int f81504_gpio_get_direction(struct gpio_chip *chip, unsigned offset)
-> +{
-> +       u8 tmp;
-> +       struct f81504_gpio_chip *gc = gpio_to_f81504_chip(chip);
-> +       struct platform_device *pdev = to_platform_device(chip->dev);
-> +       struct pci_dev *pci_dev = to_pci_dev(pdev->dev.parent);
-> +
-> +       mutex_lock(&gc->locker);
-> +       pci_read_config_byte(pci_dev, F81504_GPIO_START_ADDR + gc->idx *
-> +                       F81504_GPIO_SET_OFFSET, &tmp);
-> +       mutex_unlock(&gc->locker);
-> +
-> +       if (tmp & BIT(offset))
-> +               return GPIOF_DIR_OUT;
-> +
-> +       return GPIOF_DIR_IN;
-> +}
+As if the plld does not lock - even if it (probably) is already locked.
 
-Do not use GPIOF* flags in driver code, these are for the consumer
-API. Just return 0/1.
+Or the message actually comes from bcm2835_clock_wait_busy which also
+produces this message - so maybe we should better identify the message.
 
-> +       status = gpiochip_add(&gc->chip);
+Note that the same also applies if I remove earlyprintk with
+the only difference being that I do not get the initial boot
+messages on the main UART.
+(at that time only: "Uncompressing Linux... done, booting the kernel.=E2=
+=80=9D
+shows on the main uart after u-boot start..)
 
-As mentioned, use gpiochip_add_data(&gc->chip, gc);
+Unfortunately it is only possible to really test this on a
+rpi-Compute module, as only there we can expose both uarts
+on distinct GPIOs at the same time:
+  GPIO 14: level=3D1 fsel=3D4 alt=3D0 func=3DTXD0
+  GPIO 15: level=3D1 fsel=3D4 alt=3D0 func=3DRXD0
+  GPIO 32: level=3D1 fsel=3D2 alt=3D5 func=3DTXD1
+  GPIO 33: level=3D1 fsel=3D2 alt=3D5 func=3DRXD1
 
+Here the commits I have used based on spi/for-next (based on 4.4.0)
+with the patches (* prefix) for the driver for aux-uart
+added separately as they are not in the tree I have used:
+* a96f6c7 serial: bcm2835: add driver for bcm2835-aux-uart
+* 464e876 clk: bcm2835: Add bindings for the auxiliary peripheral clock=
+ gates.
+* 1af1b28 clk: bcm2835: Add a driver for the auxiliary peripheral clock=
+ gates.
+ece19b8 Merge remote-tracking branch 'spi/fix/loopback' into spi-linus
+887e6a3 Merge tag 'spi-v4.5' into spi-linus
+ebea7c0 spi: fix counting in spi-loopback-test code
+cabeea9 Merge remote-tracking branches 'spi/topic/sun4i', 'spi/topic/to=
+pcliff-pc
+4f95307 Merge remote-tracking branches 'spi/topic/overlay', 'spi/topic/=
+pxa2xx',
+41d5a70 Merge remote-tracking branches 'spi/topic/lm70llp', 'spi/topic/=
+loopback'
+635b9b2 Merge remote-tracking branches 'spi/topic/dw', 'spi/topic/dw-mi=
+d', 'spi/
+3c27892 Merge remote-tracking branches 'spi/topic/bcm63xx', 'spi/topic/=
+butterfly
+9b17e80 Merge remote-tracking branch 'spi/topic/sunxi' into spi-next
+174c211 Merge remote-tracking branch 'spi/topic/core' into spi-next
+f30f072 Merge remote-tracking branch 'spi/fix/mtk' into spi-linus
+afd2ff9 Linux 4.4
 
-> +static struct platform_driver f81504_gpio_driver = {
-> +       .driver = {
-> +               .name   = F81504_GPIO_NAME,
-> +               .owner  = THIS_MODULE,
+Maybe someone has gotten any idea?
 
-I saw coccinelle was already complaining about this.
+In the meantime I will try to reproduce on a 4.5-rc3 based branch.
 
-Looking forward to v3!
+Thanks,
+	Martin
 
-Yours,
-Linus Walleij
+ 
