@@ -1,64 +1,63 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH v2 6/6] serial: 8250/ingenic: fix building with SERIAL_8250=m
-Date: Thu, 11 Feb 2016 16:41:32 +0100
-Message-ID: <1455205297-1021302-7-git-send-email-arnd@arndb.de>
-References: <1455205297-1021302-1-git-send-email-arnd@arndb.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455205297-1021302-1-git-send-email-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 3/7] spi: omap2-mcspi: Fix PM regression with deferred
+ probe for pm_runtime_reinit
+Date: Thu, 11 Feb 2016 15:52:55 +0000
+Message-ID: <20160211155255.GA1953@sirena.org.uk>
+References: <1455145370-20301-1-git-send-email-tony@atomide.com>
+ <1455145370-20301-4-git-send-email-tony@atomide.com>
+ <20160211115128.GF13270@sirena.org.uk>
+ <20160211150806.GS19432@atomide.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="k1lZvvs/B4yU6o8G"
+Return-path: <linux-i2c-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160211150806.GS19432@atomide.com>
+Sender: linux-i2c-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>, Kevin Hilman <khilman@baylibre.com>, Nishanth Menon <nm@ti.com>, "Rafael J . Wysocki" <rafael@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Tero Kristo <t-kristo@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Wolfram Sang <wsa@the-dreams.de>
 List-Id: linux-serial@vger.kernel.org
 
-The Ingenic 8250 driver has a 'bool' Kconfig symbol, but that
-breaks when SERIAL_8250 is a loadable module:
 
-drivers/tty/built-in.o: In function `ingenic_uart_probe':
-8250_ingenic.c:(.text+0x1c1a0): undefined reference to `serial8250_register_8250_port'
+--k1lZvvs/B4yU6o8G
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-This changes the symbol to a 'tristate', plus a dependency on
-SERIAL_8250, which makes it work again. Unlike the other
-soc-specific backends, this one has no dependency on an
-architecture or a platform. I'm adding a dependency on
-MIPS || COMPILE_TEST as well here, to avoid showing the driver
-on architectures that are not interested in it.
+On Thu, Feb 11, 2016 at 07:08:06AM -0800, Tony Lindgren wrote:
+> * Mark Brown <broonie@kernel.org> [160211 03:52]:
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/tty/serial/8250/8250_ingenic.c | 2 +-
- drivers/tty/serial/8250/Kconfig        | 7 ++++---
- 2 files changed, 5 insertions(+), 4 deletions(-)
+> > Why, I'm not seeing any dependencies here?  I'd also expect to be seeing
+> > an awful lot more changes like this, this shouldn't be an OMAP thing -
+> > do we need to fix the core API and then roll out the transition in a
+> > different way?
 
-diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-index 97b78558caed..b0677f610863 100644
---- a/drivers/tty/serial/8250/8250_ingenic.c
-+++ b/drivers/tty/serial/8250/8250_ingenic.c
-@@ -48,7 +48,7 @@ static const struct of_device_id of_match[];
- #define UART_MCR_MDCE	BIT(7)
- #define UART_MCR_FCM	BIT(6)
- 
--#ifdef CONFIG_SERIAL_EARLYCON
-+#if defined(CONFIG_SERIAL_EARLYCON) && !defined(MODULE)
- static struct earlycon_device *early_device;
- 
- static uint8_t __init early_in(struct uart_port *port, int offset)
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 6ae0fae4f796..32df7d5a1733 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -384,9 +384,10 @@ config SERIAL_8250_UNIPHIER
- 	  serial ports, say Y to this option. If unsure, say N.
- 
- config SERIAL_8250_INGENIC
--	bool "Support for Ingenic SoC serial ports"
--	depends on OF_FLATTREE
--	select LIBFDT
-+	tristate "Support for Ingenic SoC serial ports"
-+	depends on SERIAL_8250
-+	depends on (OF_FLATTREE && SERIAL_8250_CONSOLE) || !SERIAL_8250_CONSOLE
-+	depends on MIPS || COMPILE_TEST
- 	help
- 	  If you have a system using an Ingenic SoC and wish to make use of
- 	  its UARTs, say Y to this option. If unsure, say N.
--- 
-2.7.0
+> Please feel free to pick up this one if you have other fixes
+> lined up, nothing stopping that.
+
+I'll take it myself unless there is a strong reason to merge it as part
+of another series.
+
+> There will be likely more fixes like this to make drivers follow
+> the PM runtime API documentation. These were just the initial
+> ones that were obvious.
+
+This does sound like there's been a change in the interface compared to
+what users are actually doing - is this an actual problem or is it just
+a divergence from docs?
+
+--k1lZvvs/B4yU6o8G
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJWvK5WAAoJECTWi3JdVIfQE7QH/3g03VkdaXgc2bDPCzrmonTA
+y2oDDu1KuPFAZ51kG7Lv6oBOErT0IeqtBa81h/RVV9Mwfq4dhezSoOA0CrB8NN8K
+frG7VzvivMz+qqeu2wj2KIJdtlZIdkn4qr4iKQPQ561NY7l3h7apM6CKeX1j+xiJ
+43DL6DK9YUDwLTqs6Ti91bRoSZZ7kaWOazwv4UbjdgD2wIxBBk5ADLpHUTScd+va
+UPFoxo3ePs6S10LujriLF1Afq8/pV7Xg3v0mib26sp4Ccg4LBrzGZPYgKj7xTiO1
+HloVZPizcXel9tIpfJ9wuF95+pR/1Jr7RlQ8aDBxcBPzYuSIKiwVIaqGcMJ7m+8=
+=7zKN
+-----END PGP SIGNATURE-----
+
+--k1lZvvs/B4yU6o8G--
