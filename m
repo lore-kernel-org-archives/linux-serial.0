@@ -1,128 +1,80 @@
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH 1/7] mmc: omap_hsmmc: Fix PM regression with deferred
- probe for pm_runtime_reinit
-Date: Thu, 11 Feb 2016 11:18:34 +0100
-Message-ID: <CAPDyKFpAcsfLgtu93P45fTEg11MjdGwREcyeGSS7vt6GWbNu_w@mail.gmail.com>
-References: <1455145370-20301-1-git-send-email-tony@atomide.com>
-	<1455145370-20301-2-git-send-email-tony@atomide.com>
+From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Subject: Re: [PATCH] tty/serial: digicolor: Fix bad usage of IS_ERR_VALUE
+Date: Thu, 11 Feb 2016 10:46:50 +0000
+Message-ID: <20160211104650.GU10826@n2100.arm.linux.org.uk>
+References: <1455030539-10798-1-git-send-email-linux@roeck-us.net>
+ <4571887.rTPndCnv20@wuerfel>
+ <56BAA27A.9050605@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <1455145370-20301-2-git-send-email-tony@atomide.com>
-Sender: linux-i2c-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: linux-omap <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-mmc <linux-mmc@vger.kernel.org>, Alan Stern <stern@rowland.harvard.edu>, Kevin Hilman <khilman@baylibre.com>, Nishanth Menon <nm@ti.com>, "Rafael J . Wysocki" <rafael@kernel.org>, Tero Kristo <t-kristo@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, linux-serial@vger.kernel.org, "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>, Mark Brown <broonie@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Wolfram Sang <wsa@the-dreams.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <kernel-testers-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <56BAA27A.9050605-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Sender: kernel-testers-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Baruch Siach <baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, kernel-testers-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 11 February 2016 at 00:02, Tony Lindgren <tony@atomide.com> wrote:
-> Commit 5de85b9d57ab ("PM / runtime: Re-init runtime PM states at probe
-> error and driver unbind") introduced pm_runtime_reinit() that is used
-> to reinitialize PM runtime after -EPROBE_DEFER. This allows shutting
-> down the device after a failed probe.
->
-> However, for drivers using pm_runtime_use_autosuspend() this can cause
-> a state where suspend callback is never called after -EPROBE_DEFER.
-> On the following device driver probe, hardware state is different from
-> the PM runtime state causing omap_device to produce the following
-> error:
->
-> omap_device_enable() called from invalid state 1
->
-> And with omap_device and omap hardware being picky for PM, this will
-> block any deeper idle states in hardware.
->
-> The solution is to fix the drivers to follow the PM runtime documentation:
->
-> 1. For sections of code that needs the device disabled, use
->    pm_runtime_put_sync_suspend() if pm_runtime_set_autosuspend() has
->    been set.
->
-> 2. For driver exit code, use pm_runtime_dont_use_autosuspend() before
->    pm_runtime_put_sync() if pm_runtime_use_autosuspend() has been
->    set.
->
-> Fixes: 5de85b9d57ab ("PM / runtime: Re-init runtime PM states at probe
-> error and driver unbind")
-> Cc: linux-mmc@vger.kernel.org
-> Cc: Alan Stern <stern@rowland.harvard.edu>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc: Nishanth Menon <nm@ti.com>
-> Cc: Rafael J. Wysocki <rafael@kernel.org>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Tero Kristo <t-kristo@ti.com>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->
-> Ulf, I'd like to merge this along with other related fixes via the
-> ARM SoC tree if no objections, please review and ack if this look OK
-> to you.
+On Tue, Feb 09, 2016 at 06:37:46PM -0800, Guenter Roeck wrote:
+> On 02/09/2016 07:26 AM, Arnd Bergmann wrote:
+> >On Tuesday 09 February 2016 07:08:59 Guenter Roeck wrote:
+> >>IS_ERR_VALUE() assumes that its parameter is an unsigned long.
+> >>It can not be used to check if an unsigned int reflects an error.
+> >>Doing so can result in the following build warning.
+> >>
+> >>drivers/tty/serial/digicolor-usart.c: In function =E2=80=98digicolo=
+r_uart_probe=E2=80=99:
+> >>include/linux/err.h:21:38: warning:
+> >>         comparison is always false due to limited range of data ty=
+pe
+> >>drivers/tty/serial/digicolor-usart.c:485:6: note:
+> >>         in expansion of macro =E2=80=98IS_ERR_VALUE=E2=80=99
+> >>
+> >>If that warning is seen, an error return from platform_get_irq() is=
+ missed.
+> >>
+> >>
+> >
+> >The patch looks correct to me, but what compiler version and which k=
+ernel
+> >tree is it that triggered the warning?
+> >
+> >Andrzej Hajda just modified the definition of IS_ERR_VALUE(), and th=
+e
+> >changes are still under discussion, but I don't see that warning wit=
+h
+> >any of the versions.
+> >
+> I see it with gcc 5.1 and 5.2 (and W=3D1). I did not see / notice And=
+rzej's patch.
+>=20
+> I agree that fixing the problem in IS_ERR_VALUE() is preferrable.
 
-I have some other omap_hsmmc patches queued for 4.6, so I prefer to
-send this via my mmc tree.
+I disagree.  What happens if (eg) you decide to do this:
 
-I guess that's okay as well!?
+	u8 irq;
 
->
-> ---
->  drivers/mmc/host/omap_hsmmc.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/mmc/host/omap_hsmmc.c b/drivers/mmc/host/omap_hsmmc.c
-> index b6639ea..32bc112 100644
-> --- a/drivers/mmc/host/omap_hsmmc.c
-> +++ b/drivers/mmc/host/omap_hsmmc.c
-> @@ -1247,7 +1247,7 @@ static int omap_hsmmc_switch_opcond(struct omap_hsmmc_host *host, int vdd)
->         int ret;
->
->         /* Disable the clocks */
-> -       pm_runtime_put_sync(host->dev);
-> +       pm_runtime_put_sync_suspend(host->dev);
+	irq =3D platform_get_irq(...);
+	if (IS_ERR_VALUE(irq))
+		...
 
-This has no effect.
+is that the fault of IS_ERR_VALUE() that it will never be true?  No, it=
+'s
+a programming error in the caller, because the caller is using the wron=
+g
+type here - in fact, you can't do anything in IS_ERR_VALUE() to correct
+that.
 
-The mmc core holds a runtime PM usage count for the device anyway, so
-the clock won't be disabled.
-Please remove this change from the patch.
+The same is true if you assign an error value to an unsigned int: the
+problem is in the caller, not in IS_ERR_VALUE().
 
->         if (host->dbclk)
->                 clk_disable_unprepare(host->dbclk);
->
-> @@ -2232,6 +2232,7 @@ err_irq:
->                 dma_release_channel(host->tx_chan);
->         if (host->rx_chan)
->                 dma_release_channel(host->rx_chan);
-> +       pm_runtime_dont_use_autosuspend(host->dev);
->         pm_runtime_put_sync(host->dev);
->         pm_runtime_disable(host->dev);
->         if (host->dbclk)
-> @@ -2253,6 +2254,7 @@ static int omap_hsmmc_remove(struct platform_device *pdev)
->         dma_release_channel(host->tx_chan);
->         dma_release_channel(host->rx_chan);
->
-> +       pm_runtime_dont_use_autosuspend(host->dev);
->         pm_runtime_put_sync(host->dev);
->         pm_runtime_disable(host->dev);
->         device_init_wakeup(&pdev->dev, false);
-> @@ -2285,7 +2287,7 @@ static int omap_hsmmc_suspend(struct device *dev)
->         if (host->dbclk)
->                 clk_disable_unprepare(host->dbclk);
->
-> -       pm_runtime_put_sync(host->dev);
-> +       pm_runtime_put_sync_suspend(host->dev);
+What would be preferable is if there was some way IS_ERR_VALUE() could
+detect if it's used on something that isn't at least a short, and is
+signed, but I suspect coccinelle can do that much better than trying to
+work out some way to get the C compiler to check that.
 
-This has no effect, as the PM core prevents runtime suspend during the
-system PM phase.
-It does so, by increasing the runtime PM usage count
-(pm_runtime_get_noresume()).
-
-Please remove this change from patch.
-
->         return 0;
->  }
->
-> --
-> 2.7.0
->
-
-Kind regards
-Uffe
+--=20
+RMK's Patch system: http://www.arm.linux.org.uk/developer/patches/
+=46TTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
