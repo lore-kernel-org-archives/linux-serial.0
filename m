@@ -1,61 +1,116 @@
-From: =?UTF-8?B?0JjQu9GM0Y/RgSDQk9Cw0YHQsNC90L7Qsg==?=
-	<torso.nafi@gmail.com>
-Subject: Re: [PATCH v8 3/3] tty: 8250_omap: Use software emulated RS485
- direction control
-Date: Thu, 11 Feb 2016 19:40:14 +0300
-Message-ID: <CAEo2pzv-kSy+34JzC1hOxMLX_j2EB1KkiHsao5Tpm2cKVz9Qrg@mail.gmail.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 1/7] mmc: omap_hsmmc: Fix PM regression with deferred
+ probe for pm_runtime_reinit
+Date: Thu, 11 Feb 2016 09:26:32 -0800
+Message-ID: <20160211172632.GT19432@atomide.com>
+References: <1455145370-20301-1-git-send-email-tony@atomide.com>
+ <1455145370-20301-2-git-send-email-tony@atomide.com>
+ <CAPDyKFpAcsfLgtu93P45fTEg11MjdGwREcyeGSS7vt6GWbNu_w@mail.gmail.com>
+ <20160211150240.GR19432@atomide.com>
+ <CAPDyKFo4Jyjwyvr3P5VHfDhQ87K9mnR01N-NtKz-yx2ycnfOLg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, gnomes@lxorguk.ukuu.org.uk, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-i2c-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAPDyKFo4Jyjwyvr3P5VHfDhQ87K9mnR01N-NtKz-yx2ycnfOLg@mail.gmail.com>
+Sender: linux-i2c-owner@vger.kernel.org
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: linux-omap <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-mmc <linux-mmc@vger.kernel.org>, Alan Stern <stern@rowland.harvard.edu>, Kevin Hilman <khilman@baylibre.com>, Nishanth Menon <nm@ti.com>, "Rafael J . Wysocki" <rafael@kernel.org>, Tero Kristo <t-kristo@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, linux-serial@vger.kernel.org, "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>, Mark Brown <broonie@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Wolfram Sang <wsa@the-dreams.de>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+* Ulf Hansson <ulf.hansson@linaro.org> [160211 07:14]:
+> On 11 February 2016 at 16:02, Tony Lindgren <tony@atomide.com> wrote:
+> > * Ulf Hansson <ulf.hansson@linaro.org> [160211 02:19]:
+> >> On 11 February 2016 at 00:02, Tony Lindgren <tony@atomide.com> wrote:
+> >> >
+> >> > Ulf, I'd like to merge this along with other related fixes via the
+> >> > ARM SoC tree if no objections, please review and ack if this look OK
+> >> > to you.
+> >>
+> >> I have some other omap_hsmmc patches queued for 4.6, so I prefer to
+> >> send this via my mmc tree.
+> >>
+> >> I guess that's okay as well!?
+> >
+> > Naturally yes, please go ahead thanks!
+> 
+> Okay!
+> 
+> BTW, did you notice my other comments to the patch?
+> 
+> I can fix them before applying, unless you want to send a v2?
 
-2016-02-01 21:09 GMT+03:00 "Matwey V. Kornilov" <matwey@sai.msu.ru>:
-> +static int omap_8250_rs485_config(struct uart_port *port,
-> +                                 struct serial_rs485 *rs485)
-> +{
-> +       struct uart_8250_port *up = up_to_u8250p(port);
-> +
-> +       /* Clamp the delays to [0, 100ms] */
-> +       rs485->delay_rts_before_send = min(rs485->delay_rts_before_send, 100U);
-> +       rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send, 100U);
-> +
-> +       port->rs485 = *rs485;
-> +
-> +       /*
-> +        * Both serial8250_em485_init and serial8250_em485_destroy
-> +        * are idempotent
-> +        */
-> +       if (rs485->flags & SER_RS485_ENABLED) {
-> +               int ret = serial8250_em485_init(up);
-> +
-> +               if (ret) {
-> +                       rs485->flags &= ~SER_RS485_ENABLED;
-> +                       port->rs485.flags &= ~SER_RS485_ENABLED;
-> +               }
-> +               return ret;
-> +       }
-> +
-> +       serial8250_em485_destroy(up);
-> +
-> +       return 0;
-> +}
+Oh sorry, no I missed the rest of your comments again, I really
+need to recalibrate my reading habits obviously if I keep
+missing comments on regular basis..
 
-I think that an invocation of serial8250_em485_destroy() should be
-performed inside omap8250_remove() as well. However there is a catch -
-serial8250_get_port() is only reserved for suspend-resume power
-management operations, and I am aware of no other means how to supply
-an uart_8250_port to serial8250_em485_destroy() at that point.
-
-Similarly, I got no idea on how to implement handling
-"linux,rs485-enabled-at-boot-time" property without using
-serial8250_get_port() directly (well, honestly I could try invoking
-the corresponding ioctl somehow, but that's gonna be plain ugly at
-least).
+You comments make sense to me. Below is the patch with only
+minimal changes. Seems to work just fine and hit off mode for
+suspend too.
 
 Regards,
-Ilyas G.
+
+Tony
+
+8< -------------------
+>From eb3c93421f01fb6198f76127262a92b527dd214c Mon Sep 17 00:00:00 2001
+From: Tony Lindgren <tony@atomide.com>
+Date: Tue, 9 Feb 2016 09:31:10 -0800
+Subject: [PATCH] mmc: omap_hsmmc: Fix PM regression with deferred probe for
+ pm_runtime_reinit
+
+Commit 5de85b9d57ab ("PM / runtime: Re-init runtime PM states at probe
+error and driver unbind") introduced pm_runtime_reinit() that is used
+to reinitialize PM runtime after -EPROBE_DEFER. This allows shutting
+down the device after a failed probe.
+
+However, for drivers using pm_runtime_use_autosuspend() this can cause
+a state where suspend callback is never called after -EPROBE_DEFER.
+On the following device driver probe, hardware state is different from
+the PM runtime state causing omap_device to produce the following
+error:
+
+omap_device_enable() called from invalid state 1
+
+And with omap_device and omap hardware being picky for PM, this will
+block any deeper idle states in hardware.
+
+The solution is to fix the drivers to follow the PM runtime documentation:
+
+1. For sections of code that needs the device disabled, use
+   pm_runtime_put_sync_suspend() if pm_runtime_set_autosuspend() has
+   been set.
+
+2. For driver exit code, use pm_runtime_dont_use_autosuspend() before
+   pm_runtime_put_sync() if pm_runtime_use_autosuspend() has been
+   set.
+
+Fixes: 5de85b9d57ab ("PM / runtime: Re-init runtime PM states at probe
+error and driver unbind")
+Cc: linux-mmc@vger.kernel.org
+Cc: Alan Stern <stern@rowland.harvard.edu>
+Cc: Kevin Hilman <khilman@baylibre.com>
+Cc: Nishanth Menon <nm@ti.com>
+Cc: Rafael J. Wysocki <rafael@kernel.org>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Tero Kristo <t-kristo@ti.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+
+--- a/drivers/mmc/host/omap_hsmmc.c
++++ b/drivers/mmc/host/omap_hsmmc.c
+@@ -2232,6 +2232,7 @@ err_irq:
+ 		dma_release_channel(host->tx_chan);
+ 	if (host->rx_chan)
+ 		dma_release_channel(host->rx_chan);
++	pm_runtime_dont_use_autosuspend(host->dev);
+ 	pm_runtime_put_sync(host->dev);
+ 	pm_runtime_disable(host->dev);
+ 	if (host->dbclk)
+@@ -2253,6 +2254,7 @@ static int omap_hsmmc_remove(struct platform_device *pdev)
+ 	dma_release_channel(host->tx_chan);
+ 	dma_release_channel(host->rx_chan);
+ 
++	pm_runtime_dont_use_autosuspend(host->dev);
+ 	pm_runtime_put_sync(host->dev);
+ 	pm_runtime_disable(host->dev);
+ 	device_init_wakeup(&pdev->dev, false);
