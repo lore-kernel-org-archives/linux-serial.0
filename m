@@ -1,39 +1,42 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 0/4] serial: omap: robustify for high speed transfers
-Date: Thu, 11 Feb 2016 13:00:50 -0800
-Message-ID: <20160211210050.GY19432@atomide.com>
-References: <87lh7hrjsg.fsf@linutronix.de>
- <56A66FCB.1000507@hurleysoftware.com>
- <87y4b85onp.fsf@linutronix.de>
- <56B15603.80807@hurleysoftware.com>
- <87wpqbihel.fsf@linutronix.de>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v2 5/6] serial: 8250/mediatek: fix building with
+ SERIAL_8250=m
+Date: Fri, 12 Feb 2016 00:14:14 +0100
+Message-ID: <56BD15C6.6040006@gmail.com>
+References: <1455205297-1021302-1-git-send-email-arnd@arndb.de>
+ <1455205297-1021302-6-git-send-email-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <87wpqbihel.fsf@linutronix.de>
+In-Reply-To: <1455205297-1021302-6-git-send-email-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Peter Hurley <peter@hurleysoftware.com>, gregkh@linuxfoundation.org, vinod.koul@intel.com, dan.j.williams@intel.com, bigeasy@linutronix.de, nsekhar@ti.com, peter.ujfalusi@ti.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-kernel@lists.infradead.org, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Sascha Hauer <s.hauer@pengutronix.de>, Eddie Huang <eddie.huang@mediatek.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, linux-mediatek@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
 
-* John Ogness <john.ogness@linutronix.de> [160211 04:04]:
-> 
-> At these speeds, nearly every DMA interrupt is accompanied by a spurious
-> UART interrupt. So, sadly, the interrupts are doubled.
-> 
-> It is on my TODO list to verify if the spurious UART interrupts exactly
-> match the recently added [0] spurious interrupt detection in omap-intc.
 
-If you're seeing spurious interrupts you may want try adding
-a flush of posted write at the end of the 8250_omap interrupt
-handler. Basically read back some register from the 8250. This
-has fixed so far pretty much all the spurious IRQ issues for
-omaps using the drivers/irqchip/irq-omap-intc.c, meaning omap3
-and am335x and ti81xx variants too most likely.
+On 11/02/16 16:41, Arnd Bergmann wrote:
+> The Mediatek 8250 driver has a 'bool' Kconfig symbol, but that
+> breaks when SERIAL_8250 is a loadable module:
+>
+> drivers/tty/built-in.o: In function `mtk8250_set_termios':
+> :(.text+0x1bee8): undefined reference to `serial8250_do_set_termios'
+> :(.text+0x1bf10): undefined reference to `uart_get_baud_rate'
+> :(.text+0x1c09c): undefined reference to `uart_get_divisor'
+> drivers/tty/built-in.o: In function `mtk8250_do_pm':
+> :(.text+0x1c0d0): undefined reference to `serial8250_do_pm'
+> drivers/tty/built-in.o: In function `mtk8250_probe':
+> :(.text+0x1c2e4): undefined reference to `serial8250_register_8250_port'
+> serial/8250/8250_mtk.c:287:242: error: data definition has no type or storage class [-Werror]
+> serial/8250/8250_mtk.c:287:122: error: 'mtk8250_platform_driver_init' defined but not used [-Werror=unused-function]
+>
+> This changes the symbol to a 'tristate', so the dependency on
+> SERIAL_8250 also works when that is set to 'm'.
+> To actually build the driver, we also need to include <linux/module.h>.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
 
-Regards,
-
-Tony
+Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
