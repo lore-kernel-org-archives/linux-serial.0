@@ -1,65 +1,55 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v2 4/6] serial: 8250/uniphier: fix modular build
-Date: Fri, 12 Feb 2016 18:37:08 +0900
-Message-ID: <CAK7LNAR8fJWPubucjw28gAPpF-4yvVMWZZ0F3j6VN4whGF9Yhw@mail.gmail.com>
-References: <1455205297-1021302-1-git-send-email-arnd@arndb.de>
-	<1455205297-1021302-5-git-send-email-arnd@arndb.de>
+From: =?UTF-8?B?0JjQu9GM0Y/RgSDQk9Cw0YHQsNC90L7Qsg==?=
+	<torso.nafi@gmail.com>
+Subject: Re: [PATCH v8 3/3] tty: 8250_omap: Use software emulated RS485
+ direction control
+Date: Fri, 12 Feb 2016 12:39:39 +0300
+Message-ID: <CAEo2pzsRdhqiFiHOc8BxFsiJwJ9WTru3dGaWgfssJLWQ5FCTyg@mail.gmail.com>
+References: <CAEo2pzv-kSy+34JzC1hOxMLX_j2EB1KkiHsao5Tpm2cKVz9Qrg@mail.gmail.com>
+	<CAJs94EZNi=g5D08c9-m0aGQFTDUSksaJNsrcT6RYsyd_az75Qg@mail.gmail.com>
+	<CAEo2pzs7mTUFpUGvsyrzt5cYPXsWLiBLaoQ==SypBm5fKjkFjA@mail.gmail.com>
+	<CAJs94Ea-3Lvfmh=72EOnDhXKawBfBbM3Ue2tuW-OLemXSFTZfA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455205297-1021302-5-git-send-email-arnd@arndb.de>
+In-Reply-To: <CAJs94Ea-3Lvfmh=72EOnDhXKawBfBbM3Ue2tuW-OLemXSFTZfA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
-
-
-
-
-2016-02-12 0:41 GMT+09:00 Arnd Bergmann <arnd@arndb.de>:
-> The newly added uniphier serial port driver fails to build as
-> a loadable module when the base 8250 driver is built-in and
-> its console support enabled:
+2016-02-12 10:57 GMT+03:00 Matwey V. Kornilov <matwey@sai.msu.ru>:
+> up->em485 is always pointer, however you are right, that
+> serial8250_em485_init stores pointer to up when the timers are inited.
+> More complex issue here that serial8250_em485_init need to set RTS to
+> proper state and probably can't do that before
+> serial8250_register_8250_port. So omap8250_probe should directly or
+> indirectly use serial8250_get_port(priv->line) after
+> serial8250_register_8250_port. As for me, possible solution could be
+> to add a wrapper:
 >
-> ERROR: "early_serial8250_setup" [drivers/tty/serial/8250/8250_uniphier.ko] undefined!
+> int serial8250_em485_init_by_line(int line) {
+>     struct uart_8250_port *uart = &serial8250_ports[line];
+>     int ret;
+>     unsigned long flags;
 >
-> This changes the driver to only provide the early console support
-> if it is built-in itself as well.
+>     spin_lock_irqsave(&uart->port.lock, flags);
+>     ret = serial8250_em485_init(uart).
+>     spin_unlock_irqrestore(&uart->port.lock, flags);
 >
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/tty/serial/8250/8250_uniphier.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-> index bab6b3ae2540..1b7bd26555b7 100644
-> --- a/drivers/tty/serial/8250/8250_uniphier.c
-> +++ b/drivers/tty/serial/8250/8250_uniphier.c
-> @@ -35,7 +35,7 @@ struct uniphier8250_priv {
->         spinlock_t atomic_write_lock;
->  };
->
-> -#ifdef CONFIG_SERIAL_8250_CONSOLE
-> +#if defined(CONFIG_SERIAL_8250_CONSOLE) && !defined(MODULE)
->  static int __init uniphier_early_console_setup(struct earlycon_device *device,
->                                                const char *options)
->  {
-> --
-> 2.7.0
->
+>     return ret;
+> }
 
-I noticed commit 2eaa790989e03900298ad24f77f1086dbbc1aebd
-revived this link error, but I am not happy with seeing
-this patch again and again.
+Also, I noticed that in 8250_core.c the em485 tx handlers change the
+MCR register itself. But in the case when RTS signal is itself
+emulated, say by flipping a GPIO, a more generic approach would be
+necessary, such as get_mctrl/set_mctrl, so that the use of helpers in
+serial_mctrl_gpio.c is straightforward.
+
+For example, in our design the RS232<->RS485 direction switch is
+driven by a pin which cannot be pinmuxed as UART RTS but can be a
+GPIO. Since it is already in production, making incompatible changes
+to the design (and getting away with it) is not inherently feasible.
 
 
-Can you check this patch?
-https://patchwork.kernel.org/patch/8289231/
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Regards,
+Ilyas G.
