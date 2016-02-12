@@ -1,82 +1,92 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 8/9] serial: 8250: add acpi_match
-Date: Fri, 12 Feb 2016 10:56:33 -0800
-Message-ID: <20160212185633.GC10095@kroah.com>
-References: <1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org>
- <1455299022-11641-9-git-send-email-aleksey.makarov@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1455299022-11641-9-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Mark Salter <msalter@redhat.com>, Jiri Slaby <jslaby@suse.com>
+From: Martin Sperl <kernel@martin.sperl.org>
+Subject: Re: serial: clk: bcm2835: Strange effects when using aux-uart in console
+Date: Fri, 12 Feb 2016 20:44:25 +0100
+Message-ID: <6CD3FC59-BA17-43D9-897C-A2D122D26EF8@martin.sperl.org>
+References: <A5F427B7-9B78-4892-9722-69418C4D0C10@martin.sperl.org> <56BC895E.2010108@sperl.org> <1617009200.323700.219000a8-c162-4594-aacc-a7e9894518b2.open-xchange@email.1und1.de> <662D2FB2-B088-4CFC-8416-A4F35BBAD7DD@sperl.org> <F7A2533A-D64C-4187-ABD4-416C446D1637@martin.sperl.org>
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2104\))
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-clk-owner@vger.kernel.org>
+In-Reply-To: <F7A2533A-D64C-4187-ABD4-416C446D1637@martin.sperl.org>
+Sender: linux-clk-owner@vger.kernel.org
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Eric Anholt <eric@anholt.net>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>, linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 12, 2016 at 08:43:39PM +0300, Aleksey Makarov wrote:
-> From: Mark Salter <msalter@redhat.com>
-> 
-> Add an implementation of acpi_match() to the 8250 driver.
-> It allows console to check if it matches the console specified by
-> ACPI SPCR table.
-> 
-> Signed-off-by: Mark Salter <msalter@redhat.com>
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-> ---
->  drivers/tty/serial/8250/8250_core.c | 23 +++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 7775221..059338a 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -40,6 +40,7 @@
->  #ifdef CONFIG_SPARC
->  #include <linux/sunserialcore.h>
->  #endif
-> +#include <linux/acpi.h>
->  
->  #include <asm/irq.h>
->  
-> @@ -669,12 +670,34 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
->  	return -ENODEV;
->  }
->  
-> +static int __init univ8250_console_acpi_match(struct console *co,
-> +					      struct acpi_table_spcr *spcr)
-> +{
-> +	int index = co->index >= 0 ? co->index : 0;
-> +	struct uart_port *port = &serial8250_ports[index].port;
-> +
-> +	if (spcr->interface_type != ACPI_DBG2_16550_SUBSET &&
-> +	    spcr->interface_type != ACPI_DBG2_16550_COMPATIBLE)
-> +		return -ENODEV;
-> +
-> +	if (spcr->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY &&
-> +	    spcr->serial_port.address == (u64)port->mapbase)
-> +		return 0;
-> +
-> +	if (spcr->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_IO &&
-> +	    spcr->serial_port.address == (u64)port->iobase)
-> +		return 0;
-> +
-> +	return -ENODEV;
-> +}
 
-Ick, I don't like this, you are doing almost the same thing that
-univ8250_console_match does, yet you have to know the internals of the
-acpi_table_spcr structure, which is insane (again, do you want to do
-this for every firmware type?)
+> On 12.02.2016, at 18:34, Martin Sperl <kernel@martin.sperl.org> wrote=
+:
+>=20
+> The screen is still blinking and UART does not work.
+> Maybe the driver is not able to handle the =E2=80=9Cremapping=E2=80=9D
+> of registers to a different range and is touching ram
+> used by the FW?
+>=20
+> The only solution that I found is using fixed clocks
+> in the device-tree (which is not what we intended:
+> / {
+>                clk_uart0: clock@3 {
+>                        compatible =3D "fixed-clock";
+>                        reg =3D <3>;
+>                        #clock-cells =3D <0>;
+>                        clock-output-names =3D "uart0_pclk";
+>                        clock-frequency =3D <3000000>;
+>                };
+>=20
+>                clk_apb_p: clock@4 {
+>                        compatible =3D "fixed-clock";
+>                        reg =3D <4>;
+>                        #clock-cells =3D <0>;
+>                        clock-output-names =3D "apb_pclk";
+>                        clock-frequency =3D <126000000>;
+>                };
+> };
+> &uart0 {
+>        clocks =3D <&clk_uart0 &clk_apb_p>;
+> };
+>=20
+> (so I have ruled out that the amba-pl011 writes to
+> the wrong addresses).
+>=20
+> So as far as I can tell it is only clock related
+> and when the new clock-framework is used it fails...
 
-Isn't this something that resources are supposed to handle for us?  What
-happened to getting this type of information from the firmware in a
-non-firmware-specific way to pass to the drivers?  Please work on that
-instead, then you don't have to modify each and every single driver you
-want to work with your system, they will all "just work" automagically.
+So the issue is triggered as soon as the plld_per
+pll divider gets disabled/reenabled.
 
-Please redo this series, as it is, I don't like it at all.
+This happens because the clk_hw.core.prepare_count
+drops down to 0 and then unprepare is called.
 
-thanks,
+So we need to increase the ref-count for the pll
+and pll_dividers to at least 1 so that these never
+get disabled - at least for now until we can come
+up with a better contract with the firmware.
 
-greg k-h
+Obviously this may impact other drivers as well
+where a pll is used for the first time - if nothing
+else uses it and the clock gets released, then
+the clock would trigger a unprepare of the whole
+branch of the clock tree.
+
+The question is: how can we solve it in an acceptable
+manner?
+
+Do we need a driver that just holds a reference to
+those clocks? Or should we just prepare the clock
+after registering it in clk-bcm2835.c?
+
+As for why does this not show up when compiled in?
+It seems that in that case the amba_pl011 driver
+never gets removed and then probed again.
+
+This is possibly related to the optional use of DMA,
+with the amba-pl011 driver that retries the install,
+which is not supported on the bcm2835 - at least that
+is what the datasheet says. And DMA is (probably) not
+enabled during the early boot stages, so it does not
+fail once when it tries to register DMA.
+
+Thanks,
+	Martin
+
+
