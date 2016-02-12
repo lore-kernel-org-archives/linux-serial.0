@@ -1,55 +1,75 @@
-From: =?UTF-8?B?0JjQu9GM0Y/RgSDQk9Cw0YHQsNC90L7Qsg==?=
-	<torso.nafi@gmail.com>
-Subject: Re: [PATCH v8 3/3] tty: 8250_omap: Use software emulated RS485
- direction control
-Date: Fri, 12 Feb 2016 12:39:39 +0300
-Message-ID: <CAEo2pzsRdhqiFiHOc8BxFsiJwJ9WTru3dGaWgfssJLWQ5FCTyg@mail.gmail.com>
-References: <CAEo2pzv-kSy+34JzC1hOxMLX_j2EB1KkiHsao5Tpm2cKVz9Qrg@mail.gmail.com>
-	<CAJs94EZNi=g5D08c9-m0aGQFTDUSksaJNsrcT6RYsyd_az75Qg@mail.gmail.com>
-	<CAEo2pzs7mTUFpUGvsyrzt5cYPXsWLiBLaoQ==SypBm5fKjkFjA@mail.gmail.com>
-	<CAJs94Ea-3Lvfmh=72EOnDhXKawBfBbM3Ue2tuW-OLemXSFTZfA@mail.gmail.com>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: Re: [PATCH v2 5/6] serial: 8250/mediatek: fix building with SERIAL_8250=m
+Date: Fri, 12 Feb 2016 18:43:05 +0900
+Message-ID: <CAK7LNAS5oNd8hdjS6+mYoPhNVTaGzAjc4SvnSmP1f_pDeHTFDg@mail.gmail.com>
+References: <1455205297-1021302-1-git-send-email-arnd@arndb.de>
+	<1455205297-1021302-6-git-send-email-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAJs94Ea-3Lvfmh=72EOnDhXKawBfBbM3Ue2tuW-OLemXSFTZfA@mail.gmail.com>
+In-Reply-To: <1455205297-1021302-6-git-send-email-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Eddie Huang <eddie.huang@mediatek.com>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-2016-02-12 10:57 GMT+03:00 Matwey V. Kornilov <matwey@sai.msu.ru>:
-> up->em485 is always pointer, however you are right, that
-> serial8250_em485_init stores pointer to up when the timers are inited.
-> More complex issue here that serial8250_em485_init need to set RTS to
-> proper state and probably can't do that before
-> serial8250_register_8250_port. So omap8250_probe should directly or
-> indirectly use serial8250_get_port(priv->line) after
-> serial8250_register_8250_port. As for me, possible solution could be
-> to add a wrapper:
+Hi Arnd,
+
+
+2016-02-12 0:41 GMT+09:00 Arnd Bergmann <arnd@arndb.de>:
+> The Mediatek 8250 driver has a 'bool' Kconfig symbol, but that
+> breaks when SERIAL_8250 is a loadable module:
 >
-> int serial8250_em485_init_by_line(int line) {
->     struct uart_8250_port *uart = &serial8250_ports[line];
->     int ret;
->     unsigned long flags;
+> drivers/tty/built-in.o: In function `mtk8250_set_termios':
+> :(.text+0x1bee8): undefined reference to `serial8250_do_set_termios'
+> :(.text+0x1bf10): undefined reference to `uart_get_baud_rate'
+> :(.text+0x1c09c): undefined reference to `uart_get_divisor'
+> drivers/tty/built-in.o: In function `mtk8250_do_pm':
+> :(.text+0x1c0d0): undefined reference to `serial8250_do_pm'
+> drivers/tty/built-in.o: In function `mtk8250_probe':
+> :(.text+0x1c2e4): undefined reference to `serial8250_register_8250_port'
+> serial/8250/8250_mtk.c:287:242: error: data definition has no type or storage class [-Werror]
+> serial/8250/8250_mtk.c:287:122: error: 'mtk8250_platform_driver_init' defined but not used [-Werror=unused-function]
 >
->     spin_lock_irqsave(&uart->port.lock, flags);
->     ret = serial8250_em485_init(uart).
->     spin_unlock_irqrestore(&uart->port.lock, flags);
+> This changes the symbol to a 'tristate', so the dependency on
+> SERIAL_8250 also works when that is set to 'm'.
+> To actually build the driver, we also need to include <linux/module.h>.
 >
->     return ret;
-> }
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/tty/serial/8250/8250_mtk.c | 3 ++-
+>  drivers/tty/serial/8250/Kconfig    | 2 +-
+>  2 files changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index 6ecc6e3e82dc..55be90c1d85e 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/module.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+> +#include <linux/module.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/serial_8250.h>
+> @@ -303,7 +304,7 @@ static struct platform_driver mtk8250_platform_driver = {
+>  };
+>  module_platform_driver(mtk8250_platform_driver);
+>
+> -#ifdef CONFIG_SERIAL_8250_CONSOLE
+> +#if defined(CONFIG_SERIAL_8250_CONSOLE) && !defined(MODULE)
+>  static int __init early_mtk8250_setup(struct earlycon_device *device,
+>                                         const char *options)
+>  {
 
-Also, I noticed that in 8250_core.c the em485 tx handlers change the
-MCR register itself. But in the case when RTS signal is itself
-emulated, say by flipping a GPIO, a more generic approach would be
-necessary, such as get_mctrl/set_mctrl, so that the use of helpers in
-serial_mctrl_gpio.c is straightforward.
 
-For example, in our design the RS232<->RS485 direction switch is
-driven by a pin which cannot be pinmuxed as UART RTS but can be a
-GPIO. Since it is already in production, making incompatible changes
-to the design (and getting away with it) is not inherently feasible.
+As mentioned in 4/6, this hunk might become unneeded if
+https://patchwork.kernel.org/patch/8289231/
+is accepted.
 
 
-Regards,
-Ilyas G.
+
+-- 
+Best Regards
+Masahiro Yamada
