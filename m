@@ -1,92 +1,69 @@
-From: Martin Sperl <kernel@martin.sperl.org>
-Subject: Re: serial: clk: bcm2835: Strange effects when using aux-uart in console
-Date: Fri, 12 Feb 2016 20:44:25 +0100
-Message-ID: <6CD3FC59-BA17-43D9-897C-A2D122D26EF8@martin.sperl.org>
-References: <A5F427B7-9B78-4892-9722-69418C4D0C10@martin.sperl.org> <56BC895E.2010108@sperl.org> <1617009200.323700.219000a8-c162-4594-aacc-a7e9894518b2.open-xchange@email.1und1.de> <662D2FB2-B088-4CFC-8416-A4F35BBAD7DD@sperl.org> <F7A2533A-D64C-4187-ABD4-416C446D1637@martin.sperl.org>
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2104\))
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-clk-owner@vger.kernel.org>
-In-Reply-To: <F7A2533A-D64C-4187-ABD4-416C446D1637@martin.sperl.org>
-Sender: linux-clk-owner@vger.kernel.org
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Eric Anholt <eric@anholt.net>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>, linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>
+From: "Moore, Robert" <robert.moore@intel.com>
+Subject: RE: [PATCH v2 6/9] ACPI: add definition of DBG2 subtypes
+Date: Fri, 12 Feb 2016 22:47:19 +0000
+Message-ID: <94F2FBAB4432B54E8AACC7DFDE6C92E37DA9BA10@ORSMSX112.amr.corp.intel.com>
+References: <1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org>
+ <1455299022-11641-7-git-send-email-aleksey.makarov@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1455299022-11641-7-git-send-email-aleksey.makarov@linaro.org>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, "Zheng, Lv" <lv.zheng@intel.com>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, Len Brown <lenb@kernel.org>, "devel@acpica.org" <devel@acpica.org>
 List-Id: linux-serial@vger.kernel.org
 
-
-> On 12.02.2016, at 18:34, Martin Sperl <kernel@martin.sperl.org> wrote=
-:
->=20
-> The screen is still blinking and UART does not work.
-> Maybe the driver is not able to handle the =E2=80=9Cremapping=E2=80=9D
-> of registers to a different range and is touching ram
-> used by the FW?
->=20
-> The only solution that I found is using fixed clocks
-> in the device-tree (which is not what we intended:
-> / {
->                clk_uart0: clock@3 {
->                        compatible =3D "fixed-clock";
->                        reg =3D <3>;
->                        #clock-cells =3D <0>;
->                        clock-output-names =3D "uart0_pclk";
->                        clock-frequency =3D <3000000>;
->                };
->=20
->                clk_apb_p: clock@4 {
->                        compatible =3D "fixed-clock";
->                        reg =3D <4>;
->                        #clock-cells =3D <0>;
->                        clock-output-names =3D "apb_pclk";
->                        clock-frequency =3D <126000000>;
->                };
-> };
-> &uart0 {
->        clocks =3D <&clk_uart0 &clk_apb_p>;
-> };
->=20
-> (so I have ruled out that the amba-pl011 writes to
-> the wrong addresses).
->=20
-> So as far as I can tell it is only clock related
-> and when the new clock-framework is used it fails...
-
-So the issue is triggered as soon as the plld_per
-pll divider gets disabled/reenabled.
-
-This happens because the clk_hw.core.prepare_count
-drops down to 0 and then unprepare is called.
-
-So we need to increase the ref-count for the pll
-and pll_dividers to at least 1 so that these never
-get disabled - at least for now until we can come
-up with a better contract with the firmware.
-
-Obviously this may impact other drivers as well
-where a pll is used for the first time - if nothing
-else uses it and the clock gets released, then
-the clock would trigger a unprepare of the whole
-branch of the clock tree.
-
-The question is: how can we solve it in an acceptable
-manner?
-
-Do we need a driver that just holds a reference to
-those clocks? Or should we just prepare the clock
-after registering it in clk-bcm2835.c?
-
-As for why does this not show up when compiled in?
-It seems that in that case the amba_pl011 driver
-never gets removed and then probed again.
-
-This is possibly related to the optional use of DMA,
-with the amba-pl011 driver that retries the install,
-which is not supported on the bcm2835 - at least that
-is what the datasheet says. And DMA is (probably) not
-enabled during the early boot stages, so it does not
-fail once when it tries to register DMA.
-
+OK, we'll take these for the next release of ACPICA.
 Thanks,
-	Martin
+Bob
 
+
+> -----Original Message-----
+> From: Aleksey Makarov [mailto:aleksey.makarov@linaro.org]
+> Sent: Friday, February 12, 2016 9:44 AM
+> To: linux-acpi@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; Aleksey Makarov; Russell King; Greg Kroah-
+> Hartman; Rafael J . Wysocki; Leif Lindholm; Graeme Gregory; Al Stone;
+> Christopher Covington; Moore, Robert; Zheng, Lv; Wysocki, Rafael J; Len
+> Brown; devel@acpica.org
+> Subject: [PATCH v2 6/9] ACPI: add definition of DBG2 subtypes
+> 
+> The recent version of Microsoft Debug Port Table 2 (DBG2) [1] specifies
+> additional serial debug port subtypes.  These constants are also referred
+> by Serial Port Console Redirection Table (SPCR) [2]
+> 
+> Add these constants.
+> 
+> [1] https://msdn.microsoft.com/en-
+> us/library/windows/hardware/dn639131(v=vs.85).aspx
+> [2] https://msdn.microsoft.com/en-
+> us/library/windows/hardware/dn639132(v=vs.85).aspx
+> 
+> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+> Tested-by: Christopher Covington <cov@codeaurora.org>
+> ---
+>  include/acpi/actbl2.h | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h index
+> a4ef625..e9930ab 100644
+> --- a/include/acpi/actbl2.h
+> +++ b/include/acpi/actbl2.h
+> @@ -371,6 +371,11 @@ struct acpi_dbg2_device {
+> 
+>  #define ACPI_DBG2_16550_COMPATIBLE  0x0000
+>  #define ACPI_DBG2_16550_SUBSET      0x0001
+> +#define ACPI_DBG2_ARM_PL011         0x0003
+> +#define ACPI_DBG2_ARM_SBSA_32BIT    0x000d
+> +#define ACPI_DBG2_ARM_SBSA_GENERIC  0x000e
+> +#define ACPI_DBG2_ARM_DCC           0x000f
+> +#define ACPI_DBG2_BCM2835           0x0010
+> 
+>  #define ACPI_DBG2_1394_STANDARD     0x0000
+> 
+> --
+> 2.7.0
 
