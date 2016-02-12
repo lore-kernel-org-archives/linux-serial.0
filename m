@@ -1,63 +1,124 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 4/7] serial: 8250_omap: Fix PM regression with deferred
- probe for pm_runtime_reinit
-Date: Thu, 11 Feb 2016 19:17:13 -0800
-Message-ID: <20160212031713.GB10157@kroah.com>
-References: <1455145370-20301-1-git-send-email-tony@atomide.com>
- <1455145370-20301-5-git-send-email-tony@atomide.com>
+From: Andrzej Hajda <a.hajda@samsung.com>
+Subject: Re: [PATCH] tty/serial: digicolor: Fix bad usage of IS_ERR_VALUE
+Date: Fri, 12 Feb 2016 07:38:51 +0100
+Message-ID: <56BD7DFB.10608@samsung.com>
+References: <1455030539-10798-1-git-send-email-linux@roeck-us.net>
+ <4571887.rTPndCnv20@wuerfel> <56BAA27A.9050605@roeck-us.net>
+ <2606061.l722KO95iI@wuerfel> <56BC022B.7030004@roeck-us.net>
+ <56BC2DF7.20803@samsung.com> <20160211153243.GA3076@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-mmc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1455145370-20301-5-git-send-email-tony@atomide.com>
-Sender: linux-mmc-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>, Kevin Hilman <khilman@baylibre.com>, Nishanth Menon <nm@ti.com>, Peter Hurley <peter@hurleysoftware.com>, "Rafael J . Wysocki" <rafael@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Tero Kristo <t-kristo@ti.com>, linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org, Mark Brown <broonie@kernel.org>, Wolfram Sang <wsa@the-dreams.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <20160211153243.GA3076@roeck-us.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Baruch Siach <baruch@tkos.co.il>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, kernel-testers@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Feb 10, 2016 at 03:02:47PM -0800, Tony Lindgren wrote:
-> Commit 5de85b9d57ab ("PM / runtime: Re-init runtime PM states at probe
-> error and driver unbind") introduced pm_runtime_reinit() that is used
-> to reinitialize PM runtime after -EPROBE_DEFER. This allows shutting
-> down the device after a failed probe.
-> 
-> However, for drivers using pm_runtime_use_autosuspend() this can cause
-> a state where suspend callback is never called after -EPROBE_DEFER.
-> On the following device driver probe, hardware state is different from
-> the PM runtime state causing omap_device to produce the following
-> error:
-> 
-> omap_device_enable() called from invalid state 1
-> 
-> And with omap_device and omap hardware being picky for PM, this will
-> block any deeper idle states in hardware.
-> 
-> The solution is to fix the drivers to follow the PM runtime documentation:
-> 
-> 1. For sections of code that needs the device disabled, use
->    pm_runtime_put_sync_suspend() if pm_runtime_set_autosuspend() has
->    been set.
-> 
-> 2. For driver exit code, use pm_runtime_dont_use_autosuspend() before
->    pm_runtime_put_sync() if pm_runtime_use_autosuspend() has been
->    set.
-> 
-> Fixes: 5de85b9d57ab ("PM / runtime: Re-init runtime PM states at probe
-> error and driver unbind")
-> Cc: linux-serial@vger.kernel.org
-> Cc: Alan Stern <stern@rowland.harvard.edu>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc: Nishanth Menon <nm@ti.com>
-> Cc: Peter Hurley <peter@hurleysoftware.com>
-> Cc: Rafael J. Wysocki <rafael@kernel.org>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Tero Kristo <t-kristo@ti.com>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
-> 
-> Greg & Peter, I'd like to merge this along with other related fixes
-> via the ARM SoC tree if no objections, please review and ack if this
-> look OK to you.
+On 02/11/2016 04:32 PM, Guenter Roeck wrote:
+> On Thu, Feb 11, 2016 at 07:45:11AM +0100, Andrzej Hajda wrote:
+>> On 02/11/2016 04:38 AM, Guenter Roeck wrote:
+>>> On 02/10/2016 07:21 AM, Arnd Bergmann wrote:
+>>>> On Tuesday 09 February 2016 18:37:46 Guenter Roeck wrote:
+>>>>> On 02/09/2016 07:26 AM, Arnd Bergmann wrote:
+>>>>>> On Tuesday 09 February 2016 07:08:59 Guenter Roeck wrote:
+>>>>>>> IS_ERR_VALUE() assumes that its parameter is an unsigned long.
+>>>>>>> It can not be used to check if an unsigned int reflects an erro=
+r.
+>>>>>>> Doing so can result in the following build warning.
+>>>>>>>
+>>>>>>> drivers/tty/serial/digicolor-usart.c: In function =E2=80=98digi=
+color_uart_probe=E2=80=99:
+>>>>>>> include/linux/err.h:21:38: warning:
+>>>>>>>           comparison is always false due to limited range of da=
+ta type
+>>>>>>> drivers/tty/serial/digicolor-usart.c:485:6: note:
+>>>>>>>           in expansion of macro =E2=80=98IS_ERR_VALUE=E2=80=99
+>>>>>>>
+>>>>>>> If that warning is seen, an error return from platform_get_irq(=
+) is missed.
+>>>>>>>
+>>>>>>>
+>>>>>> The patch looks correct to me, but what compiler version and whi=
+ch kernel
+>>>>>> tree is it that triggered the warning?
+>>>>>>
+>>>>>> Andrzej Hajda just modified the definition of IS_ERR_VALUE(), an=
+d the
+>>>>>> changes are still under discussion, but I don't see that warning=
+ with
+>>>>>> any of the versions.
+>>>>>>
+>>>>> I see it with gcc 5.1 and 5.2 (and W=3D1). I did not see / notice=
+ Andrzej's patch.
+>>>>>
+>>>>> I agree that fixing the problem in IS_ERR_VALUE() is preferrable.
+>>>>>
+>>>>>
+>>>> Ah, W=3D1 explains it. We are still debating about the proper solu=
+tion. Al Viro
+>>>> pointed out that most users of IS_ERR_VALUE() shouldn't be using i=
+t at all,
+>>>> so your patch is probably best here after all.
+>>>>
+>>> Yes, after looking into it some more I agree. Coccinelle should be =
+able to handle
+>>> most of the conversions automatically. I actually tried to write a =
+script, just
+>>> for the fun of it, but it misses some of the problem cases in patch=
+ mode.
+>>> Maybe I get it working tonight.
+>>>
+>>> Guenter
+>>>
+>> Maybe it can be helpful. The script which classifies all IS_ERR_VALU=
+E
+>> usages as
+>> correct, signed, incorrect and unknown (cocci was not able to detect=
+ type).
+>> Adding patch mode should be quite simple.
+>>
+>> // Options: --all-includes --include
+>> include/uapi/linux/netfilter_ipv6/ip6_tables.h --include
+>> include/uapi/linux/netfilter_ipv4/ip_tables.h --include
+>> include/uapi/linux/netfilter_arp/arp_tables.h --include
+>> include/uapi/linux/netfilter/x_tables.h --include include/linux/mm_t=
+ypes.h
+>>
+>> virtual context
+>> virtual report
+>>
+>> @r@
+>> typedef bool, u8, u16, u32, u64, s8, s16, s32, s64, __u64, dma_addr_=
+t,
+>> Elf32_Addr, Elf64_Addr;
+>> {unsigned long, size_t} ev;
+>> {short, int, long, s16, s32, ssize_t} ew;
+>> {char, unsigned char, unsigned short, unsigned int, long long, unsig=
+ned
+>> long long, bool, u8, u16, u32, u64, s64, __u64, dma_addr_t, Elf32_Ad=
+dr,
+>> Elf64_Addr} ei;
+>> expression eu;
+>> position p;
+>> @@
+>>
+>> IS_ERR_VALUE(\(ev \| ew \| ei \| eu \))@p
+>>
+>> @script:python depends on report@
+>> p << r.p =3D [];
+>> ev << r.ev =3D "";
+>> ew << r.ew =3D "";
+>> ei << r.ei =3D "";
+>> eu << r.eu =3D "";
+> This doesn't work for me; it bails out at the assignments. If I remov=
+e
+> the assignments, it does not report anything.
+>
+> Any idea what might be wrong ?
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Old version of spatch. Default values are supported since 1.0.3.
+
+Regards
+Andrzej
