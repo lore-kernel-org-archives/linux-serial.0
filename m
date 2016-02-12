@@ -1,62 +1,59 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v2 6/6] serial: 8250/ingenic: fix building with SERIAL_8250=m
-Date: Fri, 12 Feb 2016 18:45:58 +0900
-Message-ID: <CAK7LNAT3xxJut0Dqu_Cy4CAVc1foBN93+nGhSFo=qOtjRhYjGw@mail.gmail.com>
-References: <1455205297-1021302-1-git-send-email-arnd@arndb.de>
-	<1455205297-1021302-7-git-send-email-arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] earlycon: rework common framework for earlycon declarations
+Date: Fri, 12 Feb 2016 11:05:55 +0100
+Message-ID: <4230998.Zt9XrE8YSr@wuerfel>
+References: <1455269296-5009-1-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455205297-1021302-7-git-send-email-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <1455269296-5009-1-git-send-email-yamada.masahiro@socionext.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Greg KH <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
-
-
-2016-02-12 0:41 GMT+09:00 Arnd Bergmann <arnd@arndb.de>:
-> The Ingenic 8250 driver has a 'bool' Kconfig symbol, but that
-> breaks when SERIAL_8250 is a loadable module:
->
-> drivers/tty/built-in.o: In function `ingenic_uart_probe':
-> 8250_ingenic.c:(.text+0x1c1a0): undefined reference to `serial8250_register_8250_port'
->
-> This changes the symbol to a 'tristate', plus a dependency on
-> SERIAL_8250, which makes it work again. Unlike the other
-> soc-specific backends, this one has no dependency on an
-> architecture or a platform. I'm adding a dependency on
-> MIPS || COMPILE_TEST as well here, to avoid showing the driver
-> on architectures that are not interested in it.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+On Friday 12 February 2016 18:28:16 Masahiro Yamada wrote:
+> Commit 71f50c6d9a22 ("of: drop symbols declared by _OF_DECLARE() from
+> modules") fixed the link error introduced by commit b8d20e06eaad
+> ("serial: 8250_uniphier: add earlycon support").
+> 
+> After commit 2eaa790989e0 ("earlycon: Use common framework for
+> earlycon declarations") was applied, the link error came back
+> because the commit reworked OF_EARLYCON_DECLARE() to not use
+> _OF_DECLARE().
+> 
+> This commit reworks OF_EARLYCON_DECLARE() again based on
+> _OF_DECLARE().  My motivations are:
+> 
+>  - Fix the link error in a generic way (without patching
+>    drivers/tty/serial/8250/8250_uniphier.c)
+> 
+>  - Delete struct earlycon_id.  This struct is re-inventing the wheel;
+>    the fields "name", "compatible", "setup" can be implemented in
+>    struct of_device_id as other framework do.
+> 
+> The difference between OF_EARLYCON_DECLARE() and other users of
+> _OF_DECLARE is that OF_EARLYCON_DECLARE() needs to fill the "name"
+> field of struct of_device_id.  To make it easier, a new macro
+> _OF_DECLARE_WITH_NAME() has been added.  It fills the name field
+> with the given argument.  On the other hand, _OF_DECLARE() sets the
+> "name" field to a null string; this is the same behavior as before.
+> 
+> Fixes: 2eaa790989e0 ("earlycon: Use common framework for earlycon declarations")
+> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 > ---
->  drivers/tty/serial/8250/8250_ingenic.c | 2 +-
->  drivers/tty/serial/8250/Kconfig        | 7 ++++---
->  2 files changed, 5 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-> index 97b78558caed..b0677f610863 100644
-> --- a/drivers/tty/serial/8250/8250_ingenic.c
-> +++ b/drivers/tty/serial/8250/8250_ingenic.c
-> @@ -48,7 +48,7 @@ static const struct of_device_id of_match[];
->  #define UART_MCR_MDCE  BIT(7)
->  #define UART_MCR_FCM   BIT(6)
->
-> -#ifdef CONFIG_SERIAL_EARLYCON
-> +#if defined(CONFIG_SERIAL_EARLYCON) && !defined(MODULE)
->  static struct earlycon_device *early_device;
->
->  static uint8_t __init early_in(struct uart_port *port, int offset)
+> 
+> I confirmed this patch can apply onto "next-20160212" tag of linux-next.
+> 
+> In order to apply it onto the "tty-next" branch of TTY subsytem,
+> Grag will have to pull v4.5-rc3 in.
 
+I think this is the right approach, and I can include it in my 8250
+series when I resend it, and rebase the other patches on top of it
+to simplify them.
 
-The same comment applies here as 5/6.
+Peter, since you did the change "earlycon: Use common framework for
+earlycon declarations", are you ok with the new version?
 
-
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+	Arnd
