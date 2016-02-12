@@ -1,285 +1,89 @@
-From: Mathieu OTHACEHE <m.othacehe@gmail.com>
-Subject: [PATCH] serial: 8250_pci: add MOXA Smartio MUE boards support
-Date: Fri, 12 Feb 2016 19:28:50 +0100
-Message-ID: <1455301730-24333-1-git-send-email-m.othacehe@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, anton.wuerfel@fau.de, phillip.raffeck@fau.de, heikki.krogerus@linux.intel.com, hpeter@gmail.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, JBeulich@suse.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Mathieu OTHACEHE <m.othacehe@gmail.com>
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [PATCH 2/7] i2c: omap: Fix PM regression with deferred probe for
+ pm_runtime_reinit
+Date: Fri, 12 Feb 2016 19:43:36 +0100
+Message-ID: <20160212184335.GF1520@katana>
+References: <1455145370-20301-1-git-send-email-tony@atomide.com>
+ <1455145370-20301-3-git-send-email-tony@atomide.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="7cm2iqirTL37Ot+N"
+Return-path: <linux-i2c-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1455145370-20301-3-git-send-email-tony@atomide.com>
+Sender: linux-i2c-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>, Kevin Hilman <khilman@baylibre.com>, Nishanth Menon <nm@ti.com>, "Rafael J . Wysocki" <rafael@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Tero Kristo <t-kristo@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, Mark Brown <broonie@kernel.org>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add support for :
 
-- CP-102E: 2 ports RS232 PCIE card
-- CP-102EL: 2 ports RS232 PCIE card
-- CP-132EL: 2 ports RS422/485 PCIE card
-- CP-114EL: 4 ports RS232/422/485 PCIE card
-- CP-104EL-A: 4 ports RS232 PCIE card
-- CP-168EL-A: 8 ports RS232 PCIE card
-- CP-118EL-A: 8 ports RS232/422/485 PCIE card
-- CP-118E-A: 8 ports RS422/485 PCIE card
-- CP-138E-A: 8 ports RS422/485 PCIE card
-- CP-134EL-A: 4 ports RS422/485 PCIE card
-- CP-116E-A (A): 8 ports RS232/422/485 PCIE card
-- CP-116E-A (B): 8 ports RS232/422/485 PCIE card
+--7cm2iqirTL37Ot+N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Mathieu OTHACEHE <m.othacehe@gmail.com>
----
+On Wed, Feb 10, 2016 at 03:02:45PM -0800, Tony Lindgren wrote:
+> Commit 5de85b9d57ab ("PM / runtime: Re-init runtime PM states at probe
+> error and driver unbind") introduced pm_runtime_reinit() that is used
+> to reinitialize PM runtime after -EPROBE_DEFER. This allows shutting
+> down the device after a failed probe.
+>=20
+> However, for drivers using pm_runtime_use_autosuspend() this can cause
+> a state where suspend callback is never called after -EPROBE_DEFER.
+> On the following device driver probe, hardware state is different from
+> the PM runtime state causing omap_device to produce the following
+> error:
+>=20
+> omap_device_enable() called from invalid state 1
+>=20
+> And with omap_device and omap hardware being picky for PM, this will
+> block any deeper idle states in hardware.
+>=20
+> The solution is to fix the drivers to follow the PM runtime documentation:
+>=20
+> 1. For sections of code that needs the device disabled, use
+>    pm_runtime_put_sync_suspend() if pm_runtime_set_autosuspend() has
+>    been set.
+>=20
+> 2. For driver exit code, use pm_runtime_dont_use_autosuspend() before
+>    pm_runtime_put_sync() if pm_runtime_use_autosuspend() has been
+>    set.
+>=20
+> Fixes: 5de85b9d57ab ("PM / runtime: Re-init runtime PM states at probe
+> error and driver unbind")
+> Cc: linux-i2c@vger.kernel.org
+> Cc: Alan Stern <stern@rowland.harvard.edu>
+> Cc: Kevin Hilman <khilman@baylibre.com>
+> Cc: Nishanth Menon <nm@ti.com>
+> Cc: Rafael J. Wysocki <rafael@kernel.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Tero Kristo <t-kristo@ti.com>
+> Cc: Wolfram Sang <wsa@the-dreams.de>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 
-Hi,
+Applied to for-current, thanks!
 
-This patch add support for MOXA Smartio MUE boards to 8250 driver.
-I already submitted an independant driver based on the vendor one :
 
-https://lkml.org/lkml/2016/2/1/720
+--7cm2iqirTL37Ot+N
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-But as Andy pointed out, it seems to be a better idea to add this support
-directly in 8250 driver.
-I was able to test this patch on a CP-168EL-A on PC.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-Mathieu
+iQIcBAEBAgAGBQJWvifXAAoJEBQN5MwUoCm2u3gP/0siHYGbBX7efB637S6GialN
+ufvgD31ukWw1xebwQy02EEi2d4/JU/Th2XkhulqC435TEbC2KaDKurauJ++iXIeC
+qJX8tYaiZDT2w+OEzRAheoUsGBeF6bVbSUX1kLNJwXRDKBh2OOm4apr363F2xp/F
+l3asdMzvthXLw38oxB/YpC5baHKNcIz59aWJKtdMmTreobvZ9ygU40iNtJsaGjdE
+8UbAXFt2Ncf3vNAzVLwGfcMfxl/zbnSdSgj0VInmNe3Akt3MLo6bZZcseaky7u8q
+AU6SqCrk/xr1mWi9pJBKCEqYzCMspqYOapHpa6f8uLaaTQCpUDUzWgxrbN95CTSb
+FkWW4kDrc2GSHAACs7cv5uNNqbAuLmmUarej82V96VIqATPpIHYJq4bpot5EjH8K
+99/2rsVAgZuHGw4j7/AuuV64FmAnTUwsVGA59VGKQIpi8Ew/Xyl3+8HFECYhl7Y/
+dnxyEI4TGnAwbhgmcw/Zt4idlw9YBtuFAELAkqcFU0qMyFDm7Pm3Bz+8KaW2Dx5J
+ZBX99K1zStqVS+sBoRN1bmZgDcdAh4qAxrwgnivJlxG9I+I4WqumcqsQDbnpRqE2
+5M+noBKtdByQKdEgcSVmUv4LQVPFan5Jqh4kQ6FDkc+gAA4KBOLN5fyC20mWmZoV
+hQkZTE6ZbbccnGLlhkX3
+=Jr//
+-----END PGP SIGNATURE-----
 
- drivers/tty/serial/8250/8250_pci.c | 193 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 193 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 8f8d5c5..67c1028 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1862,6 +1862,25 @@ pci_wch_ch38x_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
- }
- 
-+static int pci_mxupcie_setup(struct serial_private *priv,
-+			     const struct pciserial_board *board,
-+			     struct uart_8250_port *port, int idx)
-+{
-+	unsigned int bar, offset;
-+
-+	/*
-+	 * MOXA Smartio MUE boards with 4 ports have
-+	 * a different offset for port #3
-+	 */
-+	if (idx == 3) {
-+		bar = FL_GET_BASE(board->flags);
-+		offset = 7 * board->uart_offset;
-+		return setup_port(priv, port, bar, offset, board->reg_shift);
-+	} else {
-+		return pci_default_setup(priv, board, port, idx);
-+	}
-+}
-+
- #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
- #define PCI_DEVICE_ID_OCTPRO		0x0001
-@@ -1927,6 +1946,19 @@ pci_wch_ch38x_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_PERICOM_PI7C9X7954	0x7954
- #define PCI_DEVICE_ID_PERICOM_PI7C9X7958	0x7958
- 
-+#define	PCI_DEVICE_ID_MOXA_CP102E	0x1024
-+#define	PCI_DEVICE_ID_MOXA_CP102EL	0x1025
-+#define	PCI_DEVICE_ID_MOXA_CP132EL	0x1322
-+#define	PCI_DEVICE_ID_MOXA_CP114EL	0x1144
-+#define	PCI_DEVICE_ID_MOXA_CP104EL_A	0x1045
-+#define	PCI_DEVICE_ID_MOXA_CP168EL_A	0x1683
-+#define	PCI_DEVICE_ID_MOXA_CP118EL_A	0x1182
-+#define	PCI_DEVICE_ID_MOXA_CP118E_A_I	0x1183
-+#define	PCI_DEVICE_ID_MOXA_CP138E_A	0x1381
-+#define	PCI_DEVICE_ID_MOXA_CP134EL_A	0x1342
-+#define	PCI_DEVICE_ID_MOXA_CP116E_A_A	0x1160
-+#define	PCI_DEVICE_ID_MOXA_CP116E_A_B	0x1161
-+
- /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1588	0x1588
-@@ -2727,6 +2759,30 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
- 		.setup		= pci_fintek_setup,
- 		.init		= pci_fintek_init,
- 	},
-+	/*
-+	 * MOXA Smartio MUE 4 ports boards
-+	 */
-+	{
-+		.vendor		= PCI_VENDOR_ID_MOXA,
-+		.device		= PCI_DEVICE_ID_MOXA_CP114EL,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= pci_mxupcie_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_MOXA,
-+		.device		= PCI_DEVICE_ID_MOXA_CP104EL_A,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= pci_mxupcie_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_MOXA,
-+		.device		= PCI_DEVICE_ID_MOXA_CP134EL_A,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.setup		= pci_mxupcie_setup,
-+	},
- 
- 	/*
- 	 * Default "match everything" terminator entry
-@@ -2938,6 +2994,19 @@ enum pci_board_num_t {
- 	pbn_pericom_PI7C9X7952,
- 	pbn_pericom_PI7C9X7954,
- 	pbn_pericom_PI7C9X7958,
-+	pbn_moxa_CP102E,
-+	pbn_moxa_CP102EL,
-+	pbn_moxa_CP132EL,
-+	pbn_moxa_CP114EL,
-+	pbn_moxa_CP104EL_A,
-+	pbn_moxa_CP168EL_A,
-+	pbn_moxa_CP118EL_A,
-+	pbn_moxa_CP118E_A_I,
-+	pbn_moxa_CP138E_A,
-+	pbn_moxa_CP134EL_A,
-+	pbn_moxa_CP116E_A_A,
-+	pbn_moxa_CP116E_A_B
-+
- };
- 
- /*
-@@ -3794,6 +3863,81 @@ static struct pciserial_board pci_boards[] = {
- 		.base_baud      = 921600,
- 		.uart_offset	= 0x8,
- 	},
-+	/*
-+	 * MOXA Smartio MUE boards
-+	 */
-+	[pbn_moxa_CP102E] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 2,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP102EL] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 2,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP132EL] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 2,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP114EL] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 4,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP104EL_A] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 4,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP168EL_A] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 8,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP118EL_A] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 8,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP118E_A_I] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 8,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP138E_A] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 8,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP134EL_A] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 4,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP116E_A_A] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 8,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
-+	[pbn_moxa_CP116E_A_B] = {
-+		.flags          = FL_BASE1,
-+		.num_ports      = 8,
-+		.base_baud      = 921600,
-+		.uart_offset	= 0x200,
-+	},
- };
- 
- static const struct pci_device_id blacklist[] = {
-@@ -5604,6 +5748,55 @@ static struct pci_device_id serial_pci_tbl[] = {
- 	{ PCI_DEVICE(0x1c29, 0x1108), .driver_data = pbn_fintek_8 },
- 	{ PCI_DEVICE(0x1c29, 0x1112), .driver_data = pbn_fintek_12 },
- 
-+	/* MOXA Smartio MUE PCI serial cards */
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP102E,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP102E },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP102EL,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP102EL },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP132EL,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP132EL },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP114EL,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP114EL },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP104EL_A,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP104EL_A },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP168EL_A,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP168EL_A },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP118EL_A,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP118EL_A },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP118E_A_I,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP118E_A_I },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP138E_A,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP138E_A },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP134EL_A,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP134EL_A },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_A,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP116E_A_A },
-+	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_B,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0,
-+		0, pbn_moxa_CP116E_A_B },
- 	/*
- 	 * These entries match devices with class COMMUNICATION_SERIAL,
- 	 * COMMUNICATION_MODEM or COMMUNICATION_MULTISERIAL
--- 
-2.7.0
+--7cm2iqirTL37Ot+N--
