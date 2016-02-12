@@ -1,42 +1,76 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v2 5/6] serial: 8250/mediatek: fix building with
- SERIAL_8250=m
-Date: Fri, 12 Feb 2016 00:14:14 +0100
-Message-ID: <56BD15C6.6040006@gmail.com>
-References: <1455205297-1021302-1-git-send-email-arnd@arndb.de>
- <1455205297-1021302-6-git-send-email-arnd@arndb.de>
+From: Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH 6/7] ARM: OMAP2+: Improve omap_device error for driver writers
+Date: Thu, 11 Feb 2016 17:13:23 -0800
+Message-ID: <7hfuwy6898.fsf@baylibre.com>
+References: <1455145370-20301-1-git-send-email-tony@atomide.com>
+	<1455145370-20301-7-git-send-email-tony@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455205297-1021302-6-git-send-email-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Sascha Hauer <s.hauer@pengutronix.de>, Eddie Huang <eddie.huang@mediatek.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, linux-mediatek@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <1455145370-20301-7-git-send-email-tony@atomide.com> (Tony
+	Lindgren's message of "Wed, 10 Feb 2016 15:02:49 -0800")
+Sender: linux-mmc-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alan Stern <stern@rowland.harvard.edu>, Nishanth Menon <nm@ti.com>, "Rafael J . Wysocki" <rafael@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Tero Kristo <t-kristo@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, Mark Brown <broonie@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Wolfram Sang <wsa@the-dreams.de>
 List-Id: linux-serial@vger.kernel.org
 
+Tony Lindgren <tony@atomide.com> writes:
 
+> Drivers using pm_runtime_use_autosuspend() may not get disabled after
+> -EPROBE_DEFER. On the following device driver probe, hardware state
+> is different from the PM runtime state causing omap_device to produce
+> the following error:
+>
+> omap_device_enable() called from invalid state 1
+>
+> And with omap_device and omap hardware being picky for PM, this will
+> block any deeper idle states in hardware.
+>
+> Let's add a proper error message so driver writers can easily fix
+> their drivers for PM.
+>
+> In general, the solution is to fix the drivers to follow the PM
+> runtime documentation:
+>
+> 1. For sections of code that needs the device disabled, use
+>    pm_runtime_put_sync_suspend() if pm_runtime_set_autosuspend() has
+>    been set.
+>
+> 2. For driver exit code, use pm_runtime_dont_use_autosuspend() before
+>    pm_runtime_put_sync() if pm_runtime_use_autosuspend() has been
+>    set.
+>
+> Let's not return with 0 from _od_runtime_resume() as that will
+> eventually lead into new drivers with broken PM runtime that will
+> block deeper idle states on omaps.
+>
+> Cc: Alan Stern <stern@rowland.harvard.edu>
+> Cc: Kevin Hilman <khilman@baylibre.com>
+> Cc: Nishanth Menon <nm@ti.com>
+> Cc: Rafael J. Wysocki <rafael@kernel.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Tero Kristo <t-kristo@ti.com>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 
-On 11/02/16 16:41, Arnd Bergmann wrote:
-> The Mediatek 8250 driver has a 'bool' Kconfig symbol, but that
-> breaks when SERIAL_8250 is a loadable module:
->
-> drivers/tty/built-in.o: In function `mtk8250_set_termios':
-> :(.text+0x1bee8): undefined reference to `serial8250_do_set_termios'
-> :(.text+0x1bf10): undefined reference to `uart_get_baud_rate'
-> :(.text+0x1c09c): undefined reference to `uart_get_divisor'
-> drivers/tty/built-in.o: In function `mtk8250_do_pm':
-> :(.text+0x1c0d0): undefined reference to `serial8250_do_pm'
-> drivers/tty/built-in.o: In function `mtk8250_probe':
-> :(.text+0x1c2e4): undefined reference to `serial8250_register_8250_port'
-> serial/8250/8250_mtk.c:287:242: error: data definition has no type or storage class [-Werror]
-> serial/8250/8250_mtk.c:287:122: error: 'mtk8250_platform_driver_init' defined but not used [-Werror=unused-function]
->
-> This changes the symbol to a 'tristate', so the dependency on
-> SERIAL_8250 also works when that is set to 'm'.
-> To actually build the driver, we also need to include <linux/module.h>.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Kevin Hilman <khilman@baylibre.com>
+
 > ---
-
-Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
+>  arch/arm/mach-omap2/omap_device.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/arm/mach-omap2/omap_device.c b/arch/arm/mach-omap2/omap_device.c
+> index 0437537..ebd8369 100644
+> --- a/arch/arm/mach-omap2/omap_device.c
+> +++ b/arch/arm/mach-omap2/omap_device.c
+> @@ -602,8 +602,10 @@ static int _od_runtime_resume(struct device *dev)
+>  	int ret;
+>  
+>  	ret = omap_device_enable(pdev);
+> -	if (ret)
+> +	if (ret) {
+> +		dev_err(dev, "use pm_runtime_put_sync_suspend() in driver?\n");
+>  		return ret;
+> +	}
+>  
+>  	return pm_generic_runtime_resume(dev);
+>  }
