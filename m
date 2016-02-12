@@ -1,90 +1,115 @@
 From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH v2 0/9] ACPI: parse the SPCR table
-Date: Fri, 12 Feb 2016 20:43:31 +0300
-Message-ID: <1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org>
+Subject: [PATCH v2 1/9] printk: fix name and type of some variables
+Date: Fri, 12 Feb 2016 20:43:32 +0300
+Message-ID: <1455299022-11641-2-git-send-email-aleksey.makarov@linaro.org>
+References: <1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-acpi@vger.kernel.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patchset is based on the patchset by Leif Lindholm [1]
+The variable preferred_console is used only inside register_console()
+and its semantics is boolean.  It is negative when no console has been
+made preferred.
 
-'ARM Server Base Boot Requirements' [2] mentions SPCR (Serial Port
-Console Redirection Table) [3] as a mandatory ACPI table that
-specifies the configuration of serial console.
+The variable selected_console holds an index into the console_cmdline
+array, pointing to the console that was made preferred.
 
-SPCR support is included in QEMU's ARM mach-virt since 2.4 release.
+Rename the variables:
+selected_console -> preferred_console
+preferred_console -> has_preferred
+and make the new has_preferred local static bool.
 
-Parse the SPCR table and check if any registered console matches the
-description.  If it does, enable that console.
+This is a preparatory patch.  To introduce selection with
+ACPI SPCR table we should decide which value (old) preferred_console
+should hold in the case when the console was set by ACPI.
 
-Also add an implementation of this member function to the pl011 and 8250
-drivers, fix a minor issue in printk.c and use SPCR to tell if SBSA serial
-driver should use 32-bit access to registers.
-To be able to access SPCR table each time any console is registered
-change __init to __ref for early_acpi_os_unmap_memory()
-and introduce acpi_table_parse2() in separate patches.
+Renaming was suggested by Peter Hurley
 
-The patchset should be applied to tty-next.
+Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Tested-by: Christopher Covington <cov@codeaurora.org>
+---
+ kernel/printk/printk.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-v2:
-- don't use SPCR if user specified console in command line
-- fix initialization order of newcon->index = 0
-- rename some variables at printk.c (Joe Perches, Peter Hurley)
-- enable ACPI_SPCR_TABLE in a separate patch (Andy Shevchenko)
-- remove the retry loop for console registering (Peter Hurley).
-  Instead, obtain SPCR with acpi_get_table().  That works after
-  call to acpi_early_init() i. e. in any *_initcall()
-- describe design decision behind introducing acpi_match() (Peter Hurley)
-- fix compilation for x86 + ACPI (Graeme Gregory)
-- introduce DBG2 constants in a separate patch (Andy Shevchenko)
-- fix a typo in DBG2 constants (Andy Shevchenko)
-- add ACPI_DBG2_ARM_SBSA_32BIT constant (Christopher Covington)
-- add support for ACPI_DBG2_ARM_SBSA_* consoles (Christopher Covington)
-- add documentation for functions
-- add a patch that uses SPCR to find if SBSA serial driver should use 32-bit
-  accessor functions (Christopher Covington)
-- change __init to __ref for early_acpi_os_unmap_memory() in a separate patch
-- introduce acpi_table_parse2() in a separate patch
-- fix fetching the SPCR table early (Mark Salter)
-- add a patch from Mark Salter that introduces support for matching 8250-based
-  consoles
-
-v1:
-https://lkml.kernel.org/g/1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org
-
-[1] https://lkml.kernel.org/g/1441716217-23786-1-git-send-email-leif.lindholm@linaro.org
-[2] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
-[3] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
-
-Aleksey Makarov (8):
-  printk: fix name and type of some variables
-  ACPI: Change __init to __ref for early_acpi_os_unmap_memory()
-  ACPI: introduce acpi_table_parse2()
-  ACPI: parse SPCR and enable matching console
-  ACPI: enable ACPI_SPCR_TABLE on ARM64
-  ACPI: add definition of DBG2 subtypes
-  serial: pl011: add acpi_match
-  serial: pl011: use SPCR to setup 32-bit access
-
-Mark Salter (1):
-  serial: 8250: add acpi_match
-
- arch/arm64/Kconfig                  |   1 +
- drivers/acpi/Kconfig                |   3 +
- drivers/acpi/Makefile               |   1 +
- drivers/acpi/osl.c                  |   6 +-
- drivers/acpi/spcr.c                 | 106 ++++++++++++++++++++++++++++++++++++
- drivers/acpi/tables.c               |  49 ++++++++++++++---
- drivers/tty/serial/8250/8250_core.c |  23 ++++++++
- drivers/tty/serial/amba-pl011.c     |  24 ++++++++
- include/acpi/actbl2.h               |   5 ++
- include/linux/acpi.h                |   8 +++
- include/linux/console.h             |  17 ++++++
- kernel/printk/printk.c              |  40 ++++++++++----
- 12 files changed, 264 insertions(+), 19 deletions(-)
- create mode 100644 drivers/acpi/spcr.c
-
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index c963ba5..0cc9542 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -143,7 +143,6 @@ static struct console *exclusive_console;
+ 
+ static struct console_cmdline console_cmdline[MAX_CMDLINECONSOLES];
+ 
+-static int selected_console = -1;
+ static int preferred_console = -1;
+ int console_set_on_cmdline;
+ EXPORT_SYMBOL(console_set_on_cmdline);
+@@ -1997,14 +1996,14 @@ static int __add_preferred_console(char *name, int idx, char *options,
+ 	     i++, c++) {
+ 		if (strcmp(c->name, name) == 0 && c->index == idx) {
+ 			if (!brl_options)
+-				selected_console = i;
++				preferred_console = i;
+ 			return 0;
+ 		}
+ 	}
+ 	if (i == MAX_CMDLINECONSOLES)
+ 		return -E2BIG;
+ 	if (!brl_options)
+-		selected_console = i;
++		preferred_console = i;
+ 	strlcpy(c->name, name, sizeof(c->name));
+ 	c->options = options;
+ 	braille_set_options(c, brl_options);
+@@ -2490,6 +2489,7 @@ void register_console(struct console *newcon)
+ 	unsigned long flags;
+ 	struct console *bcon = NULL;
+ 	struct console_cmdline *c;
++	static bool has_preferred;
+ 
+ 	if (console_drivers)
+ 		for_each_console(bcon)
+@@ -2516,15 +2516,15 @@ void register_console(struct console *newcon)
+ 	if (console_drivers && console_drivers->flags & CON_BOOT)
+ 		bcon = console_drivers;
+ 
+-	if (preferred_console < 0 || bcon || !console_drivers)
+-		preferred_console = selected_console;
++	if (!has_preferred || bcon || !console_drivers)
++		has_preferred = preferred_console >= 0;
+ 
+ 	/*
+ 	 *	See if we want to use this console driver. If we
+ 	 *	didn't select a console we take the first one
+ 	 *	that registers here.
+ 	 */
+-	if (preferred_console < 0) {
++	if (!has_preferred) {
+ 		if (newcon->index < 0)
+ 			newcon->index = 0;
+ 		if (newcon->setup == NULL ||
+@@ -2532,7 +2532,7 @@ void register_console(struct console *newcon)
+ 			newcon->flags |= CON_ENABLED;
+ 			if (newcon->device) {
+ 				newcon->flags |= CON_CONSDEV;
+-				preferred_console = 0;
++				has_preferred = true;
+ 			}
+ 		}
+ 	}
+@@ -2565,9 +2565,9 @@ void register_console(struct console *newcon)
+ 		}
+ 
+ 		newcon->flags |= CON_ENABLED;
+-		if (i == selected_console) {
++		if (i == preferred_console) {
+ 			newcon->flags |= CON_CONSDEV;
+-			preferred_console = selected_console;
++			has_preferred = true;
+ 		}
+ 		break;
+ 	}
 -- 
 2.7.0
