@@ -1,57 +1,45 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH v2 4/6] serial: 8250/uniphier: fix modular build
-Date: Fri, 12 Feb 2016 19:38:42 +0900
-Message-ID: <CAK7LNATEhZuqkMaEONu7tDBzWnTqS527c0N0vuOKRJuPeeQSDA@mail.gmail.com>
-References: <1455205297-1021302-1-git-send-email-arnd@arndb.de>
-	<1455205297-1021302-5-git-send-email-arnd@arndb.de>
-	<CAK7LNAR8fJWPubucjw28gAPpF-4yvVMWZZ0F3j6VN4whGF9Yhw@mail.gmail.com>
-	<3557175.oOjJgCHd2P@wuerfel>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3557175.oOjJgCHd2P@wuerfel>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+From: Martin Sperl <martin@sperl.org>
+Subject: Re: serial: clk: bcm2835: Strange effects when using aux-uart in console
+Date: Fri, 12 Feb 2016 12:56:09 +0100
+Message-ID: <662D2FB2-B088-4CFC-8416-A4F35BBAD7DD@sperl.org>
+References: <A5F427B7-9B78-4892-9722-69418C4D0C10@martin.sperl.org> <56BC895E.2010108@sperl.org> <1617009200.323700.219000a8-c162-4594-aacc-a7e9894518b2.open-xchange@email.1und1.de>
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2104\))
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-clk-owner@vger.kernel.org>
+In-Reply-To: <1617009200.323700.219000a8-c162-4594-aacc-a7e9894518b2.open-xchange@email.1und1.de>
+Sender: linux-clk-owner@vger.kernel.org
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Eric Anholt <eric@anholt.net>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>, linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
 
+> On 11.02.2016, at 18:55, Stefan Wahren <stefan.wahren@i2se.com> wrote:
+> I think the reason for this behavior can be found in the uart-pl011 driver which
+> plays with the clocks.
+> 
+I will look into the why and share what I find...
 
-2016-02-12 19:07 GMT+09:00 Arnd Bergmann <arnd@arndb.de>:
-> On Friday 12 February 2016 18:37:08 Masahiro Yamada wrote:
->> >  };
->> >
->> > -#ifdef CONFIG_SERIAL_8250_CONSOLE
->> > +#if defined(CONFIG_SERIAL_8250_CONSOLE) && !defined(MODULE)
->> >  static int __init uniphier_early_console_setup(struct earlycon_device *device,
->> >                                                const char *options)
->> >  {
->> > --
->> > 2.7.0
->> >
->>
->> I noticed commit 2eaa790989e03900298ad24f77f1086dbbc1aebd
->> revived this link error, but I am not happy with seeing
->> this patch again and again.
->>
->>
->> Can you check this patch?
->> https://patchwork.kernel.org/patch/8289231/
->>
->>
->>
->
-> Yes, I think your patch is nicer than mine. Let's see what the others
-> think, then I can resend my remaining patches on top of yours.
+> According to the clock tree "plld" seems to be critical and shouldn't be
+> disabled?
 
-OK, thanks!
+Then we may need to avoid this - but as far as I can tell
+the amba-pl011 driver only disables the clock in error cases
+(or when shutting down).
+Maybe we just need to disable the shutdown of the plld?
 
-I noticed some typos, so I've posted v2.
-(no change in code-diff).
+>> Is this maybe related to the uart0_pclk, uart1_pclk, apb_pclk
+>> clocks created and registered in bcm2835_init_clocks?
+> 
+> Related or not i think we should get the rid off them.
 
+A quick test shows that an empty bcm2835_init_clocks
+does not change the basic kernel-boot behavior and everything
+seems to work.
 
+So we probably should remove it in:
+* arch/arm/mach-bcm/board_bcm2835.c (call)
+* drivers/clk/bcm/clk-bcm2835.c (function definition)
 
--- 
-Best Regards
-Masahiro Yamada
+Martin
+
