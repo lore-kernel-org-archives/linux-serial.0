@@ -1,64 +1,63 @@
 From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH v2 7/9] serial: pl011: add acpi_match
-Date: Fri, 12 Feb 2016 20:43:38 +0300
-Message-ID: <1455299022-11641-8-git-send-email-aleksey.makarov@linaro.org>
+Subject: [PATCH v2 2/9] ACPI: Change __init to __ref for
+ early_acpi_os_unmap_memory()
+Date: Fri, 12 Feb 2016 20:43:33 +0300
+Message-ID: <1455299022-11641-3-git-send-email-aleksey.makarov@linaro.org>
 References: <1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org>
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Aleksey Makarov <aleksey.makarov@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add an implementation of acpi_match() to the pl011 driver.
-It allows console to check if it matches the console specified by
-ACPI SPCR table.
+early_acpi_os_unmap_memory() is marked as __init because it calls
+__acpi_unmap_table(), but only when acpi_gbl_permanent_mmap is not set.
+
+acpi_gbl_permanent_mmap is set in __init acpi_early_init()
+so it is safe to call early_acpi_os_unmap_memory() from anywhere
+
+We need this function to be non-__init because we need access to
+some tables at unpredictable time--it may be before or after
+acpi_gbl_permanent_mmap is set.  For example, SPCR (Serial Port Console
+Redirection) table is needed each time a new console is registered.
+It can be quite early (console_initcall) or when a module is inserted.
+When this table accessed before acpi_gbl_permanent_mmap is set,
+the pointer should be unmapped.  This is exactly what this function
+does.
 
 Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-Tested-by: Christopher Covington <cov@codeaurora.org>
 ---
- drivers/tty/serial/amba-pl011.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/acpi/osl.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 500232a..f613bff 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2285,12 +2285,34 @@ static int __init pl011_console_setup(struct console *co, char *options)
- 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
+diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
+index 67da6fb..8a552cd 100644
+--- a/drivers/acpi/osl.c
++++ b/drivers/acpi/osl.c
+@@ -497,7 +497,11 @@ void __ref acpi_os_unmap_memory(void *virt, acpi_size size)
  }
+ EXPORT_SYMBOL_GPL(acpi_os_unmap_memory);
  
-+static int __init pl011_console_acpi_match(struct console *co,
-+					   struct acpi_table_spcr *spcr)
-+{
-+	struct uart_amba_port *uap = amba_ports[co->index < 0 ? 0 : co->index];
-+
-+	if (uap->vendor->access_32b) {
-+		if (spcr->interface_type != ACPI_DBG2_ARM_SBSA_32BIT)
-+			return -ENODEV;
-+	} else {
-+		if (spcr->interface_type != ACPI_DBG2_ARM_PL011 &&
-+		    spcr->interface_type != ACPI_DBG2_ARM_SBSA_GENERIC)
-+			return -ENODEV;
-+	}
-+
-+	if (spcr->serial_port.space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY ||
-+	    spcr->serial_port.address != (u64)uap->port.mapbase)
-+		return -ENODEV;
-+
-+	return 0;
-+}
-+
- static struct uart_driver amba_reg;
- static struct console amba_console = {
- 	.name		= "ttyAMA",
- 	.write		= pl011_console_write,
- 	.device		= uart_console_device,
- 	.setup		= pl011_console_setup,
-+	.acpi_match	= pl011_console_acpi_match,
- 	.flags		= CON_PRINTBUFFER,
- 	.index		= -1,
- 	.data		= &amba_reg,
+-void __init early_acpi_os_unmap_memory(void __iomem *virt, acpi_size size)
++/*
++ * acpi_gbl_permanent_mmap is set in __init acpi_early_init()
++ * so it is safe to call early_acpi_os_unmap_memory() from anywhere
++ */
++void __ref early_acpi_os_unmap_memory(void __iomem *virt, acpi_size size)
+ {
+ 	if (!acpi_gbl_permanent_mmap)
+ 		__acpi_unmap_table(virt, size);
 -- 
 2.7.0
-
