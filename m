@@ -1,53 +1,38 @@
-From: Andrzej Hajda <a.hajda@samsung.com>
-Subject: [PATCH 5/7] serial: clps711x: fix IS_ERR_VALUE usage
-Date: Mon, 15 Feb 2016 15:35:23 +0100
-Message-ID: <1455546925-22119-6-git-send-email-a.hajda@samsung.com>
-References: <1455546925-22119-1-git-send-email-a.hajda@samsung.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH 2/3] serial: xuartps: Enable OF earlycon support
+Date: Mon, 15 Feb 2016 17:05:18 +0100
+Message-ID: <23ab10a19b21df2ef17a5bb6ce2a70d2d3fd3551.1455552315.git.michal.simek@xilinx.com>
+References: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <1455546925-22119-1-git-send-email-a.hajda@samsung.com>
+In-Reply-To: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com>
+In-Reply-To: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com>
+References: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Andrzej Hajda <a.hajda@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Nicolas Pitre <nicolas.pitre@linaro.org>
+Cc: =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>, monstr@monstr.eu, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-IS_ERR_VALUE macro should be used only with unsigned long type.
-For signed types comparison 'ret < 0' should be used.
+Support early console setup via DT for all listed compatible strings.
 
-The patch follows conclusion from discussion on LKML [1][2].
-
-[1]: http://permalink.gmane.org/gmane.linux.kernel/2120927
-[2]: http://permalink.gmane.org/gmane.linux.kernel/2150581
-
-Signed-off-by: Andrzej Hajda <a.hajda@samsung.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
- drivers/tty/serial/clps711x.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
-index b3a4e0c..0096ebe 100644
---- a/drivers/tty/serial/clps711x.c
-+++ b/drivers/tty/serial/clps711x.c
-@@ -467,13 +467,15 @@ static int uart_clps711x_probe(struct platform_device *pdev)
- 	if (IS_ERR(s->port.membase))
- 		return PTR_ERR(s->port.membase);
+ drivers/tty/serial/xilinx_uartps.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 009e0dbc12d2..6f5657766815 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1094,6 +1094,9 @@ static int __init cdns_early_console_setup(struct earlycon_device *device,
+ 	return 0;
+ }
+ EARLYCON_DECLARE(cdns, cdns_early_console_setup);
++OF_EARLYCON_DECLARE(cdns_a, "xlnx,xuartps", cdns_early_console_setup);
++OF_EARLYCON_DECLARE(cdns_b, "cdns,uart-r1p8", cdns_early_console_setup);
++OF_EARLYCON_DECLARE(cdns_c, "cdns,uart-r1p12", cdns_early_console_setup);
  
--	s->port.irq = platform_get_irq(pdev, 0);
--	if (IS_ERR_VALUE(s->port.irq))
--		return s->port.irq;
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		return ret;
-+	s->port.irq = ret;
- 
--	s->rx_irq = platform_get_irq(pdev, 1);
--	if (IS_ERR_VALUE(s->rx_irq))
--		return s->rx_irq;
-+	ret = platform_get_irq(pdev, 1);
-+	if (ret < 0)
-+		return ret;
-+	s->rx_irq = ret;
- 
- 	if (!np) {
- 		char syscon_name[9];
+ /**
+  * cdns_uart_console_write - perform write operation
 -- 
 1.9.1
