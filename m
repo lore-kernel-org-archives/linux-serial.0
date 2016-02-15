@@ -1,245 +1,86 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250_pci: add MOXA Smartio MUE boards support
-Date: Mon, 15 Feb 2016 15:54:14 +0200
-Message-ID: <1455544454.31169.120.camel@linux.intel.com>
-References: <1455301730-24333-1-git-send-email-m.othacehe@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455301730-24333-1-git-send-email-m.othacehe@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mathieu OTHACEHE <m.othacehe@gmail.com>, gregkh@linuxfoundation.org, jslaby@suse.com, anton.wuerfel@fau.de, phillip.raffeck@fau.de, heikki.krogerus@linux.intel.com, hpeter@gmail.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, JBeulich@suse.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Andrzej Hajda <a.hajda@samsung.com>
+Subject: [PATCH 0/7] fix IS_ERR_VALUE usage
+Date: Mon, 15 Feb 2016 15:35:18 +0100
+Message-ID: <1455546925-22119-1-git-send-email-a.hajda@samsung.com>
+Return-path: <linux-mips-bounce@linux-mips.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: linux-kernel@vger.kernel.org
+Cc: Andrzej Hajda <a.hajda@samsung.com>, coreteam@netfilter.org, linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org, linux-media@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org, netfilter-devel@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2016-02-12 at 19:28 +0100, Mathieu OTHACEHE wrote:
-> Add support for :
->=20
-> - CP-102E: 2 ports RS232 PCIE card
-> - CP-102EL: 2 ports RS232 PCIE card
-> - CP-132EL: 2 ports RS422/485 PCIE card
-> - CP-114EL: 4 ports RS232/422/485 PCIE card
-> - CP-104EL-A: 4 ports RS232 PCIE card
-> - CP-168EL-A: 8 ports RS232 PCIE card
-> - CP-118EL-A: 8 ports RS232/422/485 PCIE card
-> - CP-118E-A: 8 ports RS422/485 PCIE card
-> - CP-138E-A: 8 ports RS422/485 PCIE card
-> - CP-134EL-A: 4 ports RS422/485 PCIE card
-> - CP-116E-A (A): 8 ports RS232/422/485 PCIE card
-> - CP-116E-A (B): 8 ports RS232/422/485 PCIE card
->=20
-> Signed-off-by: Mathieu OTHACEHE <m.othacehe@gmail.com>
-> ---
->=20
-> Hi,
->=20
-> This patch add support for MOXA Smartio MUE boards to 8250 driver.
-> I already submitted an independant driver based on the vendor one :
->=20
-> https://lkml.org/lkml/2016/2/1/720
->=20
-> But as Andy pointed out, it seems to be a better idea to add this
-> support
-> directly in 8250 driver.
+Hi,
 
-Yes, something like this. It would be even better to have something
-like 8250_moxa.c at some point. I don't know if it worth to do right
-now.
+This small set of independent patches tries to fix incorrect
+IS_ERR_VALUE macro usage. It fixes most usages leading to errors
+as described in [1]. It also follows conclusion from the discussion
+[1][2] - IS_ERR_VALUE should be used only with unsigned long type,
+signed types should use comparison 'ret < 0'.
 
-See my comments below.
+The patchset does not fix errors present in net/ethernet/freescale
+and soc/fsq/qe drivers - these drivers mixes different types:
+dma_addr_t, u32, unsigned long, fixing it properly seems to me more
+challenging, maybe maintainers or brave volunteers can look it.
 
-> I was able to test this patch on a CP-168EL-A on PC.
->=20
-> Mathieu
->=20
-> =C2=A0drivers/tty/serial/8250/8250_pci.c | 193
-> +++++++++++++++++++++++++++++++++++++
-> =C2=A01 file changed, 193 insertions(+)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_pci.c
-> b/drivers/tty/serial/8250/8250_pci.c
-> index 8f8d5c5..67c1028 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1862,6 +1862,25 @@ pci_wch_ch38x_setup(struct serial_private
-> *priv,
-> =C2=A0	return pci_default_setup(priv, board, port, idx);
-> =C2=A0}
-> =C2=A0
-> +static int pci_mxupcie_setup(struct serial_private *priv,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0const struct pciserial_board *board=
-,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct uart_8250_port *port, int id=
-x)
-> +{
-> +	unsigned int bar, offset;
-> +
-> +	/*
-> +	=C2=A0* MOXA Smartio MUE boards with 4 ports have
-> +	=C2=A0* a different offset for port #3
-> +	=C2=A0*/
-> +	if (idx =3D=3D 3) {
-> +		bar =3D FL_GET_BASE(board->flags);
-> +		offset =3D 7 * board->uart_offset;
-> +		return setup_port(priv, port, bar, offset, board-
-> >reg_shift);
-> +	} else {
-> +		return pci_default_setup(priv, board, port, idx);
-> +	}
-> +}
+The list of missing fixes:
+drivers/net/ethernet/freescale/fs_enet/mac-scc.c:149:36-37: WARNING: incorrect argument type in IS_ERR_VALUE(fep -> ring_mem_addr)
+drivers/net/ethernet/freescale/ucc_geth.c:2237:48-49: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> tx_bd_ring_offset [ j ])
+drivers/net/ethernet/freescale/ucc_geth.c:2314:48-49: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> rx_bd_ring_offset [ j ])
+drivers/net/ethernet/freescale/ucc_geth.c:2524:44-45: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> tx_glbl_pram_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2544:45-46: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> thread_dat_tx_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2571:46-47: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> send_q_mem_reg_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2612:42-43: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> scheduler_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2659:54-55: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> tx_fw_statistics_pram_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2696:44-45: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> rx_glbl_pram_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2715:45-46: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> thread_dat_rx_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2736:54-55: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> rx_fw_statistics_pram_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2756:53-54: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> rx_irq_coalescing_tbl_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2822:44-45: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> rx_bd_qs_tbl_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:2908:47-48: WARNING: incorrect argument type in IS_ERR_VALUE(ugeth -> exf_glbl_param_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:292:36-37: WARNING: incorrect argument type in IS_ERR_VALUE(init_enet_offset)
+drivers/net/ethernet/freescale/ucc_geth.c:3042:39-40: WARNING: incorrect argument type in IS_ERR_VALUE(init_enet_pram_offset)
+drivers/soc/fsl/qe/ucc_fast.c:271:60-61: WARNING: incorrect argument type in IS_ERR_VALUE(uccf -> ucc_fast_tx_virtual_fifo_base_offset)
+drivers/soc/fsl/qe/ucc_fast.c:284:60-61: WARNING: incorrect argument type in IS_ERR_VALUE(uccf -> ucc_fast_rx_virtual_fifo_base_offset)
+drivers/soc/fsl/qe/ucc_slow.c:186:38-39: WARNING: incorrect argument type in IS_ERR_VALUE(uccs -> us_pram_offset)
+drivers/soc/fsl/qe/ucc_slow.c:213:38-39: WARNING: incorrect argument type in IS_ERR_VALUE(uccs -> rx_base_offset)
+drivers/soc/fsl/qe/ucc_slow.c:224:38-39: WARNING: incorrect argument type in IS_ERR_VALUE(uccs -> tx_base_offset)
+drivers/net/ethernet/freescale/fs_enet/mac-fcc.c:110:35-36: WARNING: unknown argument type in IS_ERR_VALUE(fpi -> dpram_offset)
 
-So, looks like it would be pretty simple to have it in a separate file.
+[1]: http://permalink.gmane.org/gmane.linux.kernel/2120927
+[2]: http://permalink.gmane.org/gmane.linux.kernel/2150581
 
-> +
-> =C2=A0#define PCI_VENDOR_ID_SBSMODULARIO	0x124B
-> =C2=A0#define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
-> =C2=A0#define PCI_DEVICE_ID_OCTPRO		0x0001
-> @@ -1927,6 +1946,19 @@ pci_wch_ch38x_setup(struct serial_private
-> *priv,
-> =C2=A0#define PCI_DEVICE_ID_PERICOM_PI7C9X7954	0x7954
-> =C2=A0#define PCI_DEVICE_ID_PERICOM_PI7C9X7958	0x7958
-> =C2=A0
-> +#define	PCI_DEVICE_ID_MOXA_CP102E	0x1024
-> +#define	PCI_DEVICE_ID_MOXA_CP102EL	0x1025
-> +#define	PCI_DEVICE_ID_MOXA_CP132EL	0x1322
-> +#define	PCI_DEVICE_ID_MOXA_CP114EL	0x1144
-> +#define	PCI_DEVICE_ID_MOXA_CP104EL_A	0x1045
-> +#define	PCI_DEVICE_ID_MOXA_CP168EL_A	0x1683
-> +#define	PCI_DEVICE_ID_MOXA_CP118EL_A	0x1182
-> +#define	PCI_DEVICE_ID_MOXA_CP118E_A_I	0x1183
-> +#define	PCI_DEVICE_ID_MOXA_CP138E_A	0x1381
-> +#define	PCI_DEVICE_ID_MOXA_CP134EL_A	0x1342
-> +#define	PCI_DEVICE_ID_MOXA_CP116E_A_A	0x1160
-> +#define	PCI_DEVICE_ID_MOXA_CP116E_A_B	0x1161
-
-But you can keep this sorted by IDs, right?
+Regards
+Andrzej
 
 
-> @@ -2938,6 +2994,19 @@ enum pci_board_num_t {
-> =C2=A0	pbn_pericom_PI7C9X7952,
-> =C2=A0	pbn_pericom_PI7C9X7954,
-> =C2=A0	pbn_pericom_PI7C9X7958,
->=20
+Andrzej Hajda (7):
+  netfilter: fix IS_ERR_VALUE usage
+  MIPS: module: fix incorrect IS_ERR_VALUE macro usages
+  drivers: char: mem: fix IS_ERROR_VALUE usage
+  atmel-isi: fix IS_ERR_VALUE usage
+  serial: clps711x: fix IS_ERR_VALUE usage
+  fbdev: exynos: fix IS_ERR_VALUE usage
+  usb: gadget: fsl_qe_udc: fix IS_ERR_VALUE usage
 
-> +	pbn_moxa_CP102E,
-> +	pbn_moxa_CP102EL,
-> +	pbn_moxa_CP132EL,
-> +	pbn_moxa_CP114EL,
-> +	pbn_moxa_CP104EL_A,
-> +	pbn_moxa_CP168EL_A,
-> +	pbn_moxa_CP118EL_A,
-> +	pbn_moxa_CP118E_A_I,
-> +	pbn_moxa_CP138E_A,
-> +	pbn_moxa_CP134EL_A,
-> +	pbn_moxa_CP116E_A_A,
-> +	pbn_moxa_CP116E_A_B
+ arch/mips/kernel/module-rela.c                |  2 +-
+ arch/mips/kernel/module.c                     |  2 +-
+ drivers/char/mem.c                            |  2 +-
+ drivers/media/platform/soc_camera/atmel-isi.c |  4 ++--
+ drivers/tty/serial/clps711x.c                 | 14 ++++++++------
+ drivers/usb/gadget/udc/fsl_qe_udc.c           |  2 +-
+ drivers/video/fbdev/exynos/exynos_mipi_dsi.c  |  6 +++---
+ include/linux/netfilter/x_tables.h            |  6 +++---
+ net/ipv4/netfilter/arp_tables.c               | 11 +++++++----
+ net/ipv4/netfilter/ip_tables.c                | 12 ++++++++----
+ net/ipv6/netfilter/ip6_tables.c               | 13 +++++++++----
+ 11 files changed, 44 insertions(+), 30 deletions(-)
 
-This part seems too verbose. You have similarities in the bunch of
-boards.
-
-+
-> =C2=A0};
-> =C2=A0
-> =C2=A0/*
-> @@ -3794,6 +3863,81 @@ static struct pciserial_board pci_boards[] =3D=
- {
-> =C2=A0		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> =C2=A0		.uart_offset	=3D 0x8,
-> =C2=A0	},
-> +	/*
-> +	=C2=A0* MOXA Smartio MUE boards
-> +	=C2=A0*/
-> +	[pbn_moxa_CP102E] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 2,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP102EL] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 2,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP132EL] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 2,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP114EL] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 4,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP104EL_A] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 4,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP168EL_A] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 8,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP118EL_A] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 8,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP118E_A_I] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 8,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP138E_A] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 8,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP134EL_A] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 4,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP116E_A_A] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 8,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-> +	},
-> +	[pbn_moxa_CP116E_A_B] =3D {
-> +		.flags=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=3D FL_BASE1,
-> +		.num_ports=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 8,
-> +		.base_baud=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 921600,
-> +		.uart_offset	=3D 0x200,
-
-So, I see only 3. Only difference is a number of ports.
-
-So, if you go with 8250_moxa.c you may use your private structure to
-keep only what is needed.
-
-
---=20
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+-- 
+1.9.1
