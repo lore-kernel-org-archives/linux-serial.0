@@ -1,103 +1,52 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH v3 0/5] ACPI: parse the SPCR table
-Date: Mon, 15 Feb 2016 21:05:24 +0300
-Message-ID: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
+From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Subject: [PATCH v1] tty: serial: 8250: Cleanup p->em485 in serial8250_unregister_port
+Date: Mon, 15 Feb 2016 21:42:12 +0300
+Message-ID: <1455561732-1738-1-git-send-email-matwey@sai.msu.ru>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, peter@hurleysoftware.com, andy.shevchenko@gmail.com, gnomes@lxorguk.ukuu.org.uk
+Cc: "Matwey V. Kornilov" <matwey@sai.msu.ru>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This patchset is based on the patchset by Leif Lindholm [1]
+Formally, currently there is no memory leak, but if
+serial8250_ports[line] is reused with other 8250 driver, then em485
+will be already activated and it will cause issues.
 
-'ARM Server Base Boot Requirements' [2] mentions SPCR (Serial Port
-Console Redirection Table) [3] as a mandatory ACPI table that
-specifies the configuration of serial console.
+Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
+Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
+---
+Hi Peter,
 
-SPCR support is included in QEMU's ARM mach-virt since 2.4 release.
+There is an issue with my previous patch. Under specific circumstances,
+the emulation can be enabled for drivers which don't want (and support) it.
+Unfortunately, I can't test this patch because kgdb over 8250_omap console
+is the single one option for me on BBB. This patch testing involves
+8250_omap module unloading and then inspecting serial8250_ports.
+You say that you are preparing some unit-tests. Could you include a test
+for this specific issue? And then probably this patch has to be applied.
 
-Introduce a new function acpi_console_check().  At the uart port
-registration, this function checks if the ACPI SPCR table specifies
-its argument of type struct uart_port to be a console
-and if so calls add_preferred_console().
+ drivers/tty/serial/8250/8250_core.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Use SPCR to tell if SBSA serial driver should use 32-bit access to registers.
-
-To be able to access SPCR table each time any console is registered
-change __init to __ref for early_acpi_os_unmap_memory().
-
-The patchset should be applied to tty-next.
-
-v3:
-Greg Kroah-Hartman did not like v2 so I have rewritten this patchset:
-
-- drop acpi_match() member of struct console
-- drop implementations of this member for pl011 and 8250
-- drop the patch that renames some vars in printk.c as it is not needed anymore
-- drpo patch that introduces system wide acpi_table_parse2().
-  Instead introduce a custom acpi_table_parse_spcr() in spcr.c
-
-Instead of introducing a new match_acpi() member of struct console,
-this patchset introduces a new function acpi_console_check().
-This function is called when a new uart is registered at serial_core.c
-the same way OF code checks for console.  If the registered uart is the
-console specified by SPCR table, this function calls add_preferred_console()
-
-The restrictions of this approach are:
-
-- only serial consoles can be set up
-- only consoles specified by the memory/io address can be set up
-  (SPCR can specify devices by PCI id/PCI address)
-
-v2:
-https://lkml.kernel.org/g/1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org
-- don't use SPCR if user specified console in command line
-- fix initialization order of newcon->index = 0
-- rename some variables at printk.c (Joe Perches, Peter Hurley)
-- enable ACPI_SPCR_TABLE in a separate patch (Andy Shevchenko)
-- remove the retry loop for console registering (Peter Hurley).
-  Instead, obtain SPCR with acpi_get_table().  That works after
-  call to acpi_early_init() i. e. in any *_initcall()
-- describe design decision behind introducing acpi_match() (Peter Hurley)
-- fix compilation for x86 + ACPI (Graeme Gregory)
-- introduce DBG2 constants in a separate patch (Andy Shevchenko)
-- fix a typo in DBG2 constants (Andy Shevchenko)
-- add ACPI_DBG2_ARM_SBSA_32BIT constant (Christopher Covington)
-- add support for ACPI_DBG2_ARM_SBSA_* consoles (Christopher Covington)
-- add documentation for functions
-- add a patch that uses SPCR to find if SBSA serial driver should use 32-bit
-  accessor functions (Christopher Covington)
-- change __init to __ref for early_acpi_os_unmap_memory() in a separate patch
-- introduce acpi_table_parse2() in a separate patch
-- fix fetching the SPCR table early (Mark Salter)
-- add a patch from Mark Salter that introduces support for matching 8250-based
-  consoles
-
-v1:
-https://lkml.kernel.org/g/1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org
-
-[1] https://lkml.kernel.org/g/1441716217-23786-1-git-send-email-leif.lindholm@linaro.org
-[2] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
-[3] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
-
-Aleksey Makarov (5):
-  ACPI: change __init to __ref for early_acpi_os_unmap_memory()
-  ACPI: parse SPCR and enable matching console
-  ACPI: enable ACPI_SPCR_TABLE on ARM64
-  ACPI: add definition of DBG2 subtypes
-  serial: pl011: use SPCR to setup 32-bit access
-
- arch/arm64/Kconfig               |   1 +
- drivers/acpi/Kconfig             |   3 +
- drivers/acpi/Makefile            |   1 +
- drivers/acpi/osl.c               |   6 +-
- drivers/acpi/spcr.c              | 122 +++++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/amba-pl011.c  |   2 +
- drivers/tty/serial/serial_core.c |  14 ++++-
- include/acpi/actbl2.h            |   5 ++
- include/linux/acpi.h             |  15 +++++
- 9 files changed, 166 insertions(+), 3 deletions(-)
- create mode 100644 drivers/acpi/spcr.c
-
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index c9720a9..a242881 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1068,6 +1068,15 @@ void serial8250_unregister_port(int line)
+ 	struct uart_8250_port *uart = &serial8250_ports[line];
+ 
+ 	mutex_lock(&serial_mutex);
++
++	if (uart->em485) {
++		unsigned long flags;
++
++		spin_lock_irqsave(&uart->port.lock, flags);
++		serial8250_em485_destroy(uart);
++		spin_unlock_irqrestore(&uart->port.lock, flags);
++	}
++
+ 	uart_remove_one_port(&serial8250_reg, &uart->port);
+ 	if (serial8250_isa_devs) {
+ 		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
 -- 
-2.7.1
+2.7.0
