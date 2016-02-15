@@ -1,38 +1,51 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH 2/3] serial: xuartps: Enable OF earlycon support
-Date: Mon, 15 Feb 2016 17:05:18 +0100
-Message-ID: <23ab10a19b21df2ef17a5bb6ce2a70d2d3fd3551.1455552315.git.michal.simek@xilinx.com>
-References: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: [PATCH v3 1/5] ACPI: change __init to __ref for early_acpi_os_unmap_memory()
+Date: Mon, 15 Feb 2016 21:05:25 +0300
+Message-ID: <1455559532-8305-2-git-send-email-aleksey.makarov@linaro.org>
+References: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com>
-In-Reply-To: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com>
-References: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com>
+In-Reply-To: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Nicolas Pitre <nicolas.pitre@linaro.org>
-Cc: =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>, monstr@monstr.eu, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: linux-acpi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Support early console setup via DT for all listed compatible strings.
+early_acpi_os_unmap_memory() is marked as __init because it calls
+__acpi_unmap_table(), but only when acpi_gbl_permanent_mmap is not set.
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+acpi_gbl_permanent_mmap is set in __init acpi_early_init()
+so it is safe to call early_acpi_os_unmap_memory() from anywhere
+
+We need this function to be non-__init because we need access to
+some tables at unpredictable time--it may be before or after
+acpi_gbl_permanent_mmap is set.  For example, SPCR (Serial Port Console
+Redirection) table is needed each time a new console is registered.
+It can be quite early (console_initcall) or when a module is inserted.
+When this table accessed before acpi_gbl_permanent_mmap is set,
+the pointer should be unmapped.  This is exactly what this function
+does.
+
+Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
 ---
+ drivers/acpi/osl.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
- drivers/tty/serial/xilinx_uartps.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 009e0dbc12d2..6f5657766815 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1094,6 +1094,9 @@ static int __init cdns_early_console_setup(struct earlycon_device *device,
- 	return 0;
+diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
+index 67da6fb..8a552cd 100644
+--- a/drivers/acpi/osl.c
++++ b/drivers/acpi/osl.c
+@@ -497,7 +497,11 @@ void __ref acpi_os_unmap_memory(void *virt, acpi_size size)
  }
- EARLYCON_DECLARE(cdns, cdns_early_console_setup);
-+OF_EARLYCON_DECLARE(cdns_a, "xlnx,xuartps", cdns_early_console_setup);
-+OF_EARLYCON_DECLARE(cdns_b, "cdns,uart-r1p8", cdns_early_console_setup);
-+OF_EARLYCON_DECLARE(cdns_c, "cdns,uart-r1p12", cdns_early_console_setup);
+ EXPORT_SYMBOL_GPL(acpi_os_unmap_memory);
  
- /**
-  * cdns_uart_console_write - perform write operation
+-void __init early_acpi_os_unmap_memory(void __iomem *virt, acpi_size size)
++/*
++ * acpi_gbl_permanent_mmap is set in __init acpi_early_init()
++ * so it is safe to call early_acpi_os_unmap_memory() from anywhere
++ */
++void __ref early_acpi_os_unmap_memory(void __iomem *virt, acpi_size size)
+ {
+ 	if (!acpi_gbl_permanent_mmap)
+ 		__acpi_unmap_table(virt, size);
 -- 
-1.9.1
+2.7.1
