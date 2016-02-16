@@ -1,405 +1,808 @@
 From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: [PATCH v4 09/12] arm64: dts: add the Marvell Armada 3700 family and a development board
-Date: Tue, 16 Feb 2016 19:14:59 +0100
-Message-ID: <1455646502-23834-10-git-send-email-gregory.clement@free-electrons.com>
+Subject: [PATCH v4 03/12] serial: mvebu-uart: initial support for Armada-3700
+ serial port
+Date: Tue, 16 Feb 2016 19:14:53 +0100
+Message-ID: <1455646502-23834-4-git-send-email-gregory.clement@free-electrons.com>
 References: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-ide@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Omri Itach <omrii@marvell.com>, linux-kernel@vger.kernel.org, Nadav Haklai <nadavh@marvell.com>, Hans de Goede <hdegoede@redhat.com>, Lior Amsalem <alior@marvell.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Tejun Heo <tj@kernel.org>, Wilson Ding <dingwei@marvell.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Add initial dtsi files to support Marvell Armada 3700 SoC with Cortex-A53
-CPUs. There are two members in this family: the Armada 3710 (Single CPU)
-and the Armada 3720 (Dual CPUs).
+From: Wilson Ding <dingwei@marvell.com>
 
-It also adds a dts file for the Marvell Armada 3720 DB board.
+Armada-3700's uart is a simple serial port, which doesn't
+support. Configuring the modem control lines. The uart port has a 32
+bytes Tx FIFO and a 64 bytes Rx FIFO
 
+The uart driver implements the uart core operations. It also support the
+system (early) console based on Armada-3700's serial port.
+
+Known Issue:
+
+The uart driver currently doesn't support clock programming, which means
+the baud-rate stays with the default value configured by the bootloader
+at boot time
+
+[gregory.clement@free-electrons.com: Rewrite many part which are too long
+to enumerate]
+
+Signed-off-by: Wilson Ding <dingwei@marvell.com>
+Signed-off-by: Nadav Haklai <nadavh@marvell.com>
 Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/Makefile           |   4 +
- arch/arm64/boot/dts/marvell/armada-371x.dtsi   |  53 ++++++++++
- arch/arm64/boot/dts/marvell/armada-3720-db.dts |  86 ++++++++++++++++
- arch/arm64/boot/dts/marvell/armada-372x.dtsi   |  63 ++++++++++++
- arch/arm64/boot/dts/marvell/armada-37xx.dtsi   | 131 +++++++++++++++++++++++++
- 5 files changed, 337 insertions(+)
- create mode 100644 arch/arm64/boot/dts/marvell/armada-371x.dtsi
- create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-db.dts
- create mode 100644 arch/arm64/boot/dts/marvell/armada-372x.dtsi
- create mode 100644 arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+ .../devicetree/bindings/tty/serial/mvebu-uart.txt  |  13 +
+ Documentation/kernel-parameters.txt                |   6 +
+ drivers/tty/serial/Kconfig                         |  22 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/mvebu-uart.c                    | 650 +++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 6 files changed, 695 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+ create mode 100644 drivers/tty/serial/mvebu-uart.c
 
-diff --git a/arch/arm64/boot/dts/marvell/Makefile b/arch/arm64/boot/dts/marvell/Makefile
-index 348f4db4f313..2114af8d312d 100644
---- a/arch/arm64/boot/dts/marvell/Makefile
-+++ b/arch/arm64/boot/dts/marvell/Makefile
-@@ -1,6 +1,10 @@
-+# Berlin SoC Family
- dtb-$(CONFIG_ARCH_BERLIN) += berlin4ct-dmp.dtb
- dtb-$(CONFIG_ARCH_BERLIN) += berlin4ct-stb.dtb
+diff --git a/Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt b/Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+new file mode 100644
+index 000000000000..6087defd9f93
+--- /dev/null
++++ b/Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+@@ -0,0 +1,13 @@
++* Marvell UART : Non standard UART used in some of Marvell EBU SoCs (e.g., Armada-3700)
++
++Required properties:
++- compatible: "marvell,armada-3700-uart"
++- reg: offset and length of the register set for the device.
++- interrupts: device interrupt
++
++Example:
++	serial@12000 {
++		compatible = "marvell,armada-3700-uart";
++		reg = <0x12000 0x400>;
++		interrupts = <43>;
++	};
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 87d40a72f6a1..ea0aba48d616 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -1058,6 +1058,12 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			A valid base address must be provided, and the serial
+ 			port must already be setup and configured.
  
-+# Mvebu SoC Family
-+dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-db.dtb
++		armada3700_uart,<addr>
++			Start an early, polled-mode console on the
++			Armada 3700 serial port at the specified
++			address. The serial port must already be setup
++			and configured. Options are not yet supported.
 +
- always		:= $(dtb-y)
- subdir-y	:= $(dts-dirs)
- clean-files	:= *.dtb
-diff --git a/arch/arm64/boot/dts/marvell/armada-371x.dtsi b/arch/arm64/boot/dts/marvell/armada-371x.dtsi
+ 	earlyprintk=	[X86,SH,BLACKFIN,ARM,M68k]
+ 			earlyprintk=vga
+ 			earlyprintk=efi
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 39721ec4f415..b291f934d51b 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1606,6 +1606,28 @@ config SERIAL_STM32_CONSOLE
+ 	depends on SERIAL_STM32=y
+ 	select SERIAL_CORE_CONSOLE
+ 
++config SERIAL_MVEBU_UART
++	bool "Marvell EBU serial port support"
++	select SERIAL_CORE
++	help
++	  This driver is for Marvell EBU SoC's UART. If you have a machine
++	  based on the Armada-3700 SoC and wish to use the on-board serial
++	  port,
++	  say 'Y' here.
++	  Otherwise, say 'N'.
++
++config SERIAL_MVEBU_CONSOLE
++	bool "Console on Marvell EBU serial port"
++	depends on SERIAL_MVEBU_UART
++	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
++	default y
++	help
++	  Say 'Y' here if you wish to use Armada-3700 UART as the system console.
++	  (the system console is the device which receives all kernel messages
++	  and warnings and which allows logins in single user mode)
++	  Otherwise, say 'N'.
++
+ endmenu
+ 
+ config SERIAL_MCTRL_GPIO
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index b391c9b31960..988167595330 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -91,6 +91,7 @@ obj-$(CONFIG_SERIAL_CONEXANT_DIGICOLOR)	+= digicolor-usart.o
+ obj-$(CONFIG_SERIAL_MEN_Z135)	+= men_z135_uart.o
+ obj-$(CONFIG_SERIAL_SPRD) += sprd_serial.o
+ obj-$(CONFIG_SERIAL_STM32)	+= stm32-usart.o
++obj-$(CONFIG_SERIAL_MVEBU_UART)	+= mvebu-uart.o
+ 
+ # GPIOLIB helpers for modem control lines
+ obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
 new file mode 100644
-index 000000000000..c9e5325b8ac3
+index 000000000000..0ff27818bb87
 --- /dev/null
-+++ b/arch/arm64/boot/dts/marvell/armada-371x.dtsi
-@@ -0,0 +1,53 @@
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -0,0 +1,650 @@
 +/*
-+ * Device Tree Include file for Marvell Armada 371x family of SoCs
-+ * (also named 88F3710)
-+ *
-+ * Copyright (C) 2016 Marvell
-+ *
-+ * Gregory CLEMENT <gregory.clement@free-electrons.com>
-+ *
-+ * This file is dual-licensed: you can use it either under the terms
-+ * of the GPL or the X11 license, at your option. Note that this dual
-+ * licensing only applies to this file, and not this project as a
-+ * whole.
-+ *
-+ *  a) This file is free software; you can redistribute it and/or
-+ *     modify it under the terms of the GNU General Public License as
-+ *     published by the Free Software Foundation; either version 2 of the
-+ *     License, or (at your option) any later version.
-+ *
-+ *     This file is distributed in the hope that it will be useful
-+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *     GNU General Public License for more details.
-+ *
-+ * Or, alternatively
-+ *
-+ *  b) Permission is hereby granted, free of charge, to any person
-+ *     obtaining a copy of this software and associated documentation
-+ *     files (the "Software"), to deal in the Software without
-+ *     restriction, including without limitation the rights to use
-+ *     copy, modify, merge, publish, distribute, sublicense, and/or
-+ *     sell copies of the Software, and to permit persons to whom the
-+ *     Software is furnished to do so, subject to the following
-+ *     conditions:
-+ *
-+ *     The above copyright notice and this permission notice shall be
-+ *     included in all copies or substantial portions of the Software.
-+ *
-+ *     THE SOFTWARE IS PROVIDED , WITHOUT WARRANTY OF ANY KIND
-+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
-+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-+ *     OTHER DEALINGS IN THE SOFTWARE.
-+ */
++* ***************************************************************************
++* Copyright (C) 2015 Marvell International Ltd.
++* ***************************************************************************
++* This program is free software: you can redistribute it and/or modify it
++* under the terms of the GNU General Public License as published by the Free
++* Software Foundation, either version 2 of the License, or any later version.
++*
++* This program is distributed in the hope that it will be useful,
++* but WITHOUT ANY WARRANTY; without even the implied warranty of
++* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++* GNU General Public License for more details.
++*
++* You should have received a copy of the GNU General Public License
++* along with this program.  If not, see <http://www.gnu.org/licenses/>.
++* ***************************************************************************
++*/
 +
-+#include "armada-37xx.dtsi"
++#include <linux/clk.h>
++#include <linux/console.h>
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/iopoll.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_address.h>
++#include <linux/of_device.h>
++#include <linux/of_irq.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/serial.h>
++#include <linux/serial_core.h>
++#include <linux/slab.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
 +
-+/ {
-+	model = "Marvell Armada 3710 SoC";
-+	compatible = "marvell,armada3710", "marvell,armada3700";
-+};
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-db.dts b/arch/arm64/boot/dts/marvell/armada-3720-db.dts
-new file mode 100644
-index 000000000000..359050154511
---- /dev/null
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-db.dts
-@@ -0,0 +1,86 @@
-+/*
-+ * Device Tree file for Marvell Armada 3720 development board
-+ * (DB-88F3720-DDR3)
-+ * Copyright (C) 2016 Marvell
-+ *
-+ * Gregory CLEMENT <gregory.clement@free-electrons.com>
-+ *
-+ * This file is dual-licensed: you can use it either under the terms
-+ * of the GPL or the X11 license, at your option. Note that this dual
-+ * licensing only applies to this file, and not this project as a
-+ * whole.
-+ *
-+ *  a) This file is free software; you can redistribute it and/or
-+ *     modify it under the terms of the GNU General Public License as
-+ *     published by the Free Software Foundation; either version 2 of the
-+ *     License, or (at your option) any later version.
-+ *
-+ *     This file is distributed in the hope that it will be useful
-+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *     GNU General Public License for more details.
-+ *
-+ * Or, alternatively
-+ *
-+ *  b) Permission is hereby granted, free of charge, to any person
-+ *     obtaining a copy of this software and associated documentation
-+ *     files (the "Software"), to deal in the Software without
-+ *     restriction, including without limitation the rights to use
-+ *     copy, modify, merge, publish, distribute, sublicense, and/or
-+ *     sell copies of the Software, and to permit persons to whom the
-+ *     Software is furnished to do so, subject to the following
-+ *     conditions:
-+ *
-+ *     The above copyright notice and this permission notice shall be
-+ *     included in all copies or substantial portions of the Software.
-+ *
-+ *     THE SOFTWARE IS PROVIDED , WITHOUT WARRANTY OF ANY KIND
-+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
-+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-+ *     OTHER DEALINGS IN THE SOFTWARE.
-+ */
++/* Register Map */
++#define UART_RBR		0x00
++#define  RBR_BRK_DET		BIT(15)
++#define  RBR_FRM_ERR_DET	BIT(14)
++#define  RBR_PAR_ERR_DET	BIT(13)
++#define  RBR_OVR_ERR_DET	BIT(12)
 +
-+/dts-v1/;
++#define UART_TSH		0x04
 +
-+#include "armada-372x.dtsi"
++#define UART_CTRL		0x08
++#define  CTRL_SOFT_RST		BIT(31)
++#define  CTRL_TXFIFO_RST	BIT(15)
++#define  CTRL_RXFIFO_RST	BIT(14)
++#define  CTRL_ST_MIRR_EN	BIT(13)
++#define  CTRL_LPBK_EN		BIT(12)
++#define  CTRL_SND_BRK_SEQ	BIT(11)
++#define  CTRL_PAR_EN		BIT(10)
++#define  CTRL_TWO_STOP		BIT(9)
++#define  CTRL_TX_HFL_INT	BIT(8)
++#define  CTRL_RX_HFL_INT	BIT(7)
++#define  CTRL_TX_EMP_INT	BIT(6)
++#define  CTRL_TX_RDY_INT	BIT(5)
++#define  CTRL_RX_RDY_INT	BIT(4)
++#define  CTRL_BRK_DET_INT	BIT(3)
++#define  CTRL_FRM_ERR_INT	BIT(2)
++#define  CTRL_PAR_ERR_INT	BIT(1)
++#define  CTRL_OVR_ERR_INT	BIT(0)
++#define  CTRL_RX_INT			(CTRL_RX_RDY_INT | CTRL_BRK_DET_INT |\
++	CTRL_FRM_ERR_INT | CTRL_PAR_ERR_INT | CTRL_OVR_ERR_INT)
 +
-+/ {
-+	model = "Marvell Armada 3720 Development Board DB-88F3720-DDR3";
-+	compatible = "marvell,armada-3720-db", "marvell,armada3720", "marvell,armada3710";
++#define UART_STAT		0x0c
++#define  STAT_TX_FIFO_EMP	BIT(13)
++#define  STAT_RX_FIFO_EMP	BIT(12)
++#define  STAT_TX_FIFO_FUL	BIT(11)
++#define  STAT_TX_FIFO_HFL	BIT(10)
++#define  STAT_RX_TOGL		BIT(9)
++#define  STAT_RX_FIFO_FUL	BIT(8)
++#define  STAT_RX_FIFO_HFL	BIT(7)
++#define  STAT_TX_EMP		BIT(6)
++#define  STAT_TX_RDY		BIT(5)
++#define  STAT_RX_RDY		BIT(4)
++#define  STAT_BRK_DET		BIT(3)
++#define  STAT_FRM_ERR		BIT(2)
++#define  STAT_PAR_ERR		BIT(1)
++#define  STAT_OVR_ERR		BIT(0)
++#define  STAT_BRK_ERR		(STAT_BRK_DET | STAT_FRM_ERR | STAT_FRM_ERR\
++				 | STAT_PAR_ERR | STAT_OVR_ERR)
 +
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
++#define UART_BRDV		0x10
 +
-+	memory {
-+		device_type = "memory";
-+		reg = <0x00000000 0x00000000 0x00000000 0x20000000>;
-+	};
++#define MVEBU_NR_UARTS		1
 +
-+	soc {
-+		internal-regs {
-+			/*
-+			* Exported on the micro USB connector CON32
-+			* through an FTDI
-+			*/
-+			uart0: serial@12000 {
-+				status = "okay";
-+			};
++#define MVEBU_UART_TYPE		"mvebu-uart"
 +
-+			/* CON31 */
-+			usb3@58000 {
-+				status = "okay";
-+			};
++static struct uart_port mvebu_uart_ports[MVEBU_NR_UARTS];
 +
-+			/* CON3 */
-+			sata@e0000 {
-+			       status = "okay";
-+			};
-+		};
-+	};
++struct mvebu_uart_data {
++	struct uart_port *port;
++	struct clk       *clk;
 +};
 +
-diff --git a/arch/arm64/boot/dts/marvell/armada-372x.dtsi b/arch/arm64/boot/dts/marvell/armada-372x.dtsi
-new file mode 100644
-index 000000000000..f292a00ce97c
---- /dev/null
-+++ b/arch/arm64/boot/dts/marvell/armada-372x.dtsi
-@@ -0,0 +1,63 @@
++/* Core UART Driver Operations */
++static unsigned int mvebu_uart_tx_empty(struct uart_port *port)
++{
++	unsigned long flags;
++	unsigned int st;
++
++	spin_lock_irqsave(&port->lock, flags);
++	st = readl(port->membase + UART_STAT);
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	return (st & STAT_TX_FIFO_EMP) ? TIOCSER_TEMT : 0;
++}
++
++static unsigned int mvebu_uart_get_mctrl(struct uart_port *port)
++{
++	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
++}
++
++static void mvebu_uart_set_mctrl(struct uart_port *port,
++				 unsigned int mctrl)
++{
 +/*
-+ * Device Tree Include file for Marvell Armada 372x family of SoCs
-+ * (also named 88F3720)
-+ *
-+ * Copyright (C) 2016 Marvell
-+ *
-+ * Gregory CLEMENT <gregory.clement@free-electrons.com>
-+ *
-+ * This file is dual-licensed: you can use it either under the terms
-+ * of the GPL or the X11 license, at your option. Note that this dual
-+ * licensing only applies to this file, and not this project as a
-+ * whole.
-+ *
-+ *  a) This file is free software; you can redistribute it and/or
-+ *     modify it under the terms of the GNU General Public License as
-+ *     published by the Free Software Foundation; either version 2 of the
-+ *     License, or (at your option) any later version.
-+ *
-+ *     This file is distributed in the hope that it will be useful
-+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *     GNU General Public License for more details.
-+ *
-+ * Or, alternatively
-+ *
-+ *  b) Permission is hereby granted, free of charge, to any person
-+ *     obtaining a copy of this software and associated documentation
-+ *     files (the "Software"), to deal in the Software without
-+ *     restriction, including without limitation the rights to use
-+ *     copy, modify, merge, publish, distribute, sublicense, and/or
-+ *     sell copies of the Software, and to permit persons to whom the
-+ *     Software is furnished to do so, subject to the following
-+ *     conditions:
-+ *
-+ *     The above copyright notice and this permission notice shall be
-+ *     included in all copies or substantial portions of the Software.
-+ *
-+ *     THE SOFTWARE IS PROVIDED , WITHOUT WARRANTY OF ANY KIND
-+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
-+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-+ *     OTHER DEALINGS IN THE SOFTWARE.
++ * Even if we do not support configuring the modem control lines, this
++ * function must be proided to the serial core
 + */
++}
 +
-+#include "armada-37xx.dtsi"
++static void mvebu_uart_stop_tx(struct uart_port *port)
++{
++	unsigned int ctl = readl(port->membase + UART_CTRL);
 +
-+/ {
-+	model = "Marvell Armada 3720 SoC";
-+	compatible = "marvell,armada3720", "marvell,armada3710";
++	ctl &= ~CTRL_TX_RDY_INT;
++	writel(ctl, port->membase + UART_CTRL);
++}
 +
-+	cpus {
-+		cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53","arm,armv8";
-+			reg = <0x1>;
-+			enable-method = "psci";
-+		};
-+	};
++static void mvebu_uart_start_tx(struct uart_port *port)
++{
++	unsigned int ctl = readl(port->membase + UART_CTRL);
 +
++	ctl |= CTRL_TX_RDY_INT;
++	writel(ctl, port->membase + UART_CTRL);
++}
++
++static void mvebu_uart_stop_rx(struct uart_port *port)
++{
++	unsigned int ctl = readl(port->membase + UART_CTRL);
++
++	ctl &= ~CTRL_RX_INT;
++	writel(ctl, port->membase + UART_CTRL);
++}
++
++static void mvebu_uart_break_ctl(struct uart_port *port, int brk)
++{
++	unsigned int ctl;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++	ctl = readl(port->membase + UART_CTRL);
++	if (brk == -1)
++		ctl |= CTRL_SND_BRK_SEQ;
++	else
++		ctl &= ~CTRL_SND_BRK_SEQ;
++	writel(ctl, port->membase + UART_CTRL);
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static void mvebu_uart_rx_chars(struct uart_port *port, unsigned int status)
++{
++	struct tty_port *tport = &port->state->port;
++	unsigned char ch = 0;
++	char flag = 0;
++
++	do {
++		if (status & STAT_RX_RDY) {
++			ch = readl(port->membase + UART_RBR);
++			ch &= 0xff;
++			flag = TTY_NORMAL;
++			port->icount.rx++;
++
++			if (status & STAT_PAR_ERR)
++				port->icount.parity++;
++		}
++
++		if (status & STAT_BRK_DET) {
++			port->icount.brk++;
++			status &= ~(STAT_FRM_ERR | STAT_PAR_ERR);
++			if (uart_handle_break(port))
++				goto ignore_char;
++		}
++
++		if (status & STAT_OVR_ERR)
++			port->icount.overrun++;
++
++		if (status & STAT_FRM_ERR)
++			port->icount.frame++;
++
++		if (uart_handle_sysrq_char(port, ch))
++			goto ignore_char;
++
++		if (status & port->ignore_status_mask & STAT_PAR_ERR)
++			status &= ~STAT_RX_RDY;
++
++		status &= port->read_status_mask;
++
++		if (status & STAT_PAR_ERR)
++			flag = TTY_PARITY;
++
++		status &= ~port->ignore_status_mask;
++
++		if (status & STAT_RX_RDY)
++			tty_insert_flip_char(tport, ch, flag);
++
++		if (status & STAT_BRK_DET)
++			tty_insert_flip_char(tport, 0, TTY_BREAK);
++
++		if (status & STAT_FRM_ERR)
++			tty_insert_flip_char(tport, 0, TTY_FRAME);
++
++		if (status & STAT_OVR_ERR)
++			tty_insert_flip_char(tport, 0, TTY_OVERRUN);
++
++ignore_char:
++		status = readl(port->membase + UART_STAT);
++	} while (status & (STAT_RX_RDY | STAT_BRK_DET));
++
++	tty_flip_buffer_push(tport);
++}
++
++static void mvebu_uart_tx_chars(struct uart_port *port, unsigned int status)
++{
++	struct circ_buf *xmit = &port->state->xmit;
++	unsigned int count;
++	unsigned int st;
++
++	if (port->x_char) {
++		writel(port->x_char, port->membase + UART_TSH);
++		port->icount.tx++;
++		port->x_char = 0;
++		return;
++	}
++
++	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
++		mvebu_uart_stop_tx(port);
++		return;
++	}
++
++	for (count = 0; count < port->fifosize; count++) {
++		writel(xmit->buf[xmit->tail], port->membase + UART_TSH);
++		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
++		port->icount.tx++;
++
++		if (uart_circ_empty(xmit))
++			break;
++
++		st = readl(port->membase + UART_STAT);
++		if (st & STAT_TX_FIFO_FUL)
++			break;
++	}
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++
++	if (uart_circ_empty(xmit))
++		mvebu_uart_stop_tx(port);
++}
++
++static irqreturn_t mvebu_uart_isr(int irq, void *dev_id)
++{
++	struct uart_port *port = (struct uart_port *)dev_id;
++	unsigned int st = readl(port->membase + UART_STAT);
++
++	if (st & (STAT_RX_RDY | STAT_OVR_ERR | STAT_FRM_ERR | STAT_BRK_DET))
++		mvebu_uart_rx_chars(port, st);
++
++	if (st & STAT_TX_RDY)
++		mvebu_uart_tx_chars(port, st);
++
++	return IRQ_HANDLED;
++}
++
++static int mvebu_uart_startup(struct uart_port *port)
++{
++	int ret;
++
++	writel(CTRL_TXFIFO_RST | CTRL_RXFIFO_RST,
++	       port->membase + UART_CTRL);
++	udelay(1);
++	writel(CTRL_RX_INT, port->membase + UART_CTRL);
++
++	ret = request_irq(port->irq, mvebu_uart_isr, port->irqflags, "serial",
++			  port);
++	if (ret) {
++		dev_err(port->dev, "failed to request irq\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static void mvebu_uart_shutdown(struct uart_port *port)
++{
++	writel(0, port->membase + UART_CTRL);
++}
++
++static void mvebu_uart_set_termios(struct uart_port *port,
++				   struct ktermios *termios,
++				   struct ktermios *old)
++{
++	unsigned long flags;
++	unsigned int baud;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	port->read_status_mask = STAT_RX_RDY | STAT_OVR_ERR |
++		STAT_TX_RDY | STAT_TX_FIFO_FUL;
++
++	if (termios->c_iflag & INPCK)
++		port->read_status_mask |= STAT_FRM_ERR | STAT_PAR_ERR;
++
++	port->ignore_status_mask = 0;
++	if (termios->c_iflag & IGNPAR)
++		port->ignore_status_mask |=
++			STAT_FRM_ERR | STAT_PAR_ERR | STAT_OVR_ERR;
++
++	if ((termios->c_cflag & CREAD) == 0)
++		port->ignore_status_mask |= STAT_RX_RDY | STAT_BRK_ERR;
++
++	if (old)
++		tty_termios_copy_hw(termios, old);
++
++	baud = uart_get_baud_rate(port, termios, old, 0, 460800);
++	uart_update_timeout(port, termios->c_cflag, baud);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static const char *mvebu_uart_type(struct uart_port *port)
++{
++	return MVEBU_UART_TYPE;
++}
++
++static void mvebu_uart_release_port(struct uart_port *port)
++{
++	/* Nothing to do here */
++}
++
++static int mvebu_uart_request_port(struct uart_port *port)
++{
++	return 0;
++}
++
++#ifdef CONFIG_CONSOLE_POLL
++static int mvebu_uart_get_poll_char(struct uart_port *port)
++{
++	unsigned int st = readl(port->membase + UART_STAT);
++
++	if (!(st & STAT_RX_RDY))
++		return NO_POLL_CHAR;
++
++	return readl(port->membase + UART_RBR);
++}
++
++static void mvebu_uart_put_poll_char(struct uart_port *port, unsigned char c)
++{
++	unsigned int st;
++
++	for (;;) {
++		st = readl(port->membase + UART_STAT);
++
++		if (!(st & STAT_TX_FIFO_FUL))
++			break;
++
++		udelay(1);
++	}
++
++	writel(c, port->membase + UART_TSH);
++}
++#endif
++
++static const struct uart_ops mvebu_uart_ops = {
++	.tx_empty	= mvebu_uart_tx_empty,
++	.set_mctrl	= mvebu_uart_set_mctrl,
++	.get_mctrl	= mvebu_uart_get_mctrl,
++	.stop_tx	= mvebu_uart_stop_tx,
++	.start_tx	= mvebu_uart_start_tx,
++	.stop_rx	= mvebu_uart_stop_rx,
++	.break_ctl	= mvebu_uart_break_ctl,
++	.startup	= mvebu_uart_startup,
++	.shutdown	= mvebu_uart_shutdown,
++	.set_termios	= mvebu_uart_set_termios,
++	.type		= mvebu_uart_type,
++	.release_port	= mvebu_uart_release_port,
++	.request_port	= mvebu_uart_request_port,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char	= mvebu_uart_get_poll_char,
++	.poll_put_char	= mvebu_uart_put_poll_char,
++#endif
 +};
-diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-new file mode 100644
-index 000000000000..ba9df7ff2a72
---- /dev/null
-+++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-@@ -0,0 +1,131 @@
-+/*
-+ * Device Tree Include file for Marvell Armada 37xx family of SoCs.
-+ *
-+ * Copyright (C) 2016 Marvell
-+ *
-+ * Gregory CLEMENT <gregory.clement@free-electrons.com>
-+ *
-+ * This file is dual-licensed: you can use it either under the terms
-+ * of the GPL or the X11 license, at your option. Note that this dual
-+ * licensing only applies to this file, and not this project as a
-+ * whole.
-+ *
-+ *  a) This file is free software; you can redistribute it and/or
-+ *     modify it under the terms of the GNU General Public License as
-+ *     published by the Free Software Foundation; either version 2 of the
-+ *     License, or (at your option) any later version.
-+ *
-+ *     This file is distributed in the hope that it will be useful
-+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *     GNU General Public License for more details.
-+ *
-+ * Or, alternatively
-+ *
-+ *  b) Permission is hereby granted, free of charge, to any person
-+ *     obtaining a copy of this software and associated documentation
-+ *     files (the "Software"), to deal in the Software without
-+ *     restriction, including without limitation the rights to use
-+ *     copy, modify, merge, publish, distribute, sublicense, and/or
-+ *     sell copies of the Software, and to permit persons to whom the
-+ *     Software is furnished to do so, subject to the following
-+ *     conditions:
-+ *
-+ *     The above copyright notice and this permission notice shall be
-+ *     included in all copies or substantial portions of the Software.
-+ *
-+ *     THE SOFTWARE IS PROVIDED , WITHOUT WARRANTY OF ANY KIND
-+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
-+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-+ *     OTHER DEALINGS IN THE SOFTWARE.
-+ */
 +
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
++/* Console Driver Operations  */
 +
-+/ {
-+	model = "Marvell Armada 37xx SoC";
-+	compatible = "marvell,armada3700";
-+	interrupt-parent = <&gic>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
++#ifdef CONFIG_SERIAL_MVEBU_CONSOLE
++/* Early Console */
++static void mvebu_uart_putc(struct uart_port *port, int c)
++{
++	unsigned int st;
 +
-+	aliases {
-+		serial0 = &uart0;
-+	};
++	for (;;) {
++		st = readl(port->membase + UART_STAT);
++		if (!(st & STAT_TX_FIFO_FUL))
++			break;
++	}
 +
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53", "arm,armv8";
-+			reg = <0>;
-+			enable-method = "psci";
-+		};
-+	};
++	writel(c, port->membase + UART_TSH);
 +
-+	psci {
-+		compatible = "arm,psci-0.2";
-+		method = "smc";
-+	};
++	for (;;) {
++		st = readl(port->membase + UART_STAT);
++		if (st & STAT_TX_FIFO_EMP)
++			break;
++	}
++}
 +
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupts = <GIC_PPI 13
-+			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>,
-+			     <GIC_PPI 14
-+			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>,
-+			     <GIC_PPI 11
-+			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>,
-+			     <GIC_PPI 10
-+			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
-+	};
++static void mvebu_uart_putc_early_write(struct console *con,
++					const char *s,
++					unsigned n)
++{
++	struct earlycon_device *dev = con->data;
 +
-+	soc {
-+		compatible = "simple-bus";
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
++	uart_console_write(&dev->port, s, n, mvebu_uart_putc);
++}
 +
-+		internal-regs {
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			compatible = "simple-bus";
-+			/* 32M internal register @ 0xd000_0000 */
-+			ranges = <0x0 0x0 0xd0000000 0x2000000>;
++static int __init
++mvebu_uart_early_console_setup(struct earlycon_device *device,
++			       const char *opt)
++{
++	if (!device->port.membase)
++		return -ENODEV;
 +
-+			uart0: serial@12000 {
-+				compatible = "marvell,armada-3700-uart";
-+				reg = <0x12000 0x400>;
-+				interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
-+				status = "disabled";
-+			};
++	device->con->write = mvebu_uart_putc_early_write;
 +
-+			usb3@58000 {
-+				compatible = "generic-xhci";
-+				reg = <0x58000 0x4000>;
-+				interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
-+				status = "disabled";
-+			};
++	return 0;
++}
 +
-+			sata@e0000 {
-+				compatible = "marvell,armada-3700-ahci";
-+				reg = <0xe0000 0x2000>;
-+				interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
-+				status = "disabled";
-+			};
++EARLYCON_DECLARE(ar3700_uart, mvebu_uart_early_console_setup);
++OF_EARLYCON_DECLARE(ar3700_uart, "marvell,armada-3700-uart",
++		    mvebu_uart_early_console_setup);
 +
-+			gic: interrupt-controller@1d00000 {
-+				compatible = "arm,gic-v3";
-+				#interrupt-cells = <3>;
-+				interrupt-controller;
-+				reg = <0x1d00000 0x10000>, /* GICD */
-+				      <0x1d40000 0x40000>; /* GICR */
-+			};
-+		};
-+	};
++static void wait_for_xmitr(struct uart_port *port)
++{
++	u32 val;
++
++	readl_poll_timeout_atomic(port->membase + UART_STAT, val,
++				  (val & STAT_TX_EMP), 1, 10000);
++}
++
++static void mvebu_uart_console_putchar(struct uart_port *port, int ch)
++{
++	wait_for_xmitr(port);
++	writel(ch, port->membase + UART_TSH);
++}
++
++static void mvebu_uart_console_write(struct console *co, const char *s,
++				     unsigned int count)
++{
++	struct uart_port *port = &mvebu_uart_ports[co->index];
++	unsigned long flags;
++	unsigned int ier;
++	int locked = 1;
++
++	if (oops_in_progress)
++		locked = spin_trylock_irqsave(&port->lock, flags);
++	else
++		spin_lock_irqsave(&port->lock, flags);
++
++	ier = readl(port->membase + UART_CTRL) &
++		(CTRL_RX_INT | CTRL_TX_RDY_INT);
++	writel(0, port->membase + UART_CTRL);
++
++	uart_console_write(port, s, count, mvebu_uart_console_putchar);
++
++	wait_for_xmitr(port);
++
++	if (ier)
++		writel(ier, port->membase + UART_CTRL);
++
++	if (locked)
++		spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static int mvebu_uart_console_setup(struct console *co, char *options)
++{
++	struct uart_port *port;
++	int baud = 9600;
++	int bits = 8;
++	int parity = 'n';
++	int flow = 'n';
++
++	if (co->index < 0 || co->index >= MVEBU_NR_UARTS)
++		return -EINVAL;
++
++	port = &mvebu_uart_ports[co->index];
++
++	if (!port->mapbase || !port->membase) {
++		pr_debug("console on ttyMV%i not present\n", co->index);
++		return -ENODEV;
++	}
++
++	if (options)
++		uart_parse_options(options, &baud, &parity, &bits, &flow);
++
++	return uart_set_options(port, co, baud, parity, bits, flow);
++}
++
++static struct uart_driver mvebu_uart_driver;
++
++static struct console mvebu_uart_console = {
++	.name	= "ttyMV",
++	.write	= mvebu_uart_console_write,
++	.device	= uart_console_device,
++	.setup	= mvebu_uart_console_setup,
++	.flags	= CON_PRINTBUFFER,
++	.index	= -1,
++	.data	= &mvebu_uart_driver,
 +};
++
++static int __init mvebu_uart_console_init(void)
++{
++	register_console(&mvebu_uart_console);
++	return 0;
++}
++
++console_initcall(mvebu_uart_console_init);
++
++
++#endif /* CONFIG_SERIAL_MVEBU_CONSOLE */
++
++static struct uart_driver mvebu_uart_driver = {
++	.owner			= THIS_MODULE,
++	.driver_name		= "mvebu_serial",
++	.dev_name		= "ttyMV",
++	.nr			= MVEBU_NR_UARTS,
++#ifdef CONFIG_SERIAL_MVEBU_CONSOLE
++	.cons			= &mvebu_uart_console,
++#endif
++};
++
++static int mvebu_uart_probe(struct platform_device *pdev)
++{
++	struct resource *reg = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++	struct uart_port *port;
++	struct mvebu_uart_data *data;
++	int ret;
++
++	if (!reg || !irq) {
++		dev_err(&pdev->dev, "no registers/irq defined\n");
++		return -EINVAL;
++	}
++
++	port = &mvebu_uart_ports[0];
++
++	spin_lock_init(&port->lock);
++
++	port->dev        = &pdev->dev;
++	port->type       = PORT_MVEBU;
++	port->ops        = &mvebu_uart_ops;
++	port->regshift   = 0;
++
++	port->fifosize   = 32;
++	port->iotype     = UPIO_MEM32;
++	port->flags      = UPF_FIXED_PORT;
++	port->line       = 0; /* single port: force line number to  0 */
++
++	port->irq        = irq->start;
++	port->irqflags   = 0;
++	port->mapbase    = reg->start;
++
++	port->membase = devm_ioremap_resource(&pdev->dev, reg);
++	if (IS_ERR(port->membase))
++		return -PTR_ERR(port->membase);
++
++	data = devm_kzalloc(&pdev->dev, sizeof(struct mvebu_uart_data),
++			    GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	data->port = port;
++
++	port->private_data = data;
++	platform_set_drvdata(pdev, data);
++
++	ret = uart_add_one_port(&mvebu_uart_driver, port);
++	if (ret)
++		return ret;
++	return 0;
++}
++
++static int mvebu_uart_remove(struct platform_device *pdev)
++{
++	struct mvebu_uart_data *data = platform_get_drvdata(pdev);
++
++	uart_remove_one_port(&mvebu_uart_driver, data->port);
++	data->port->private_data = NULL;
++	data->port->mapbase      = 0;
++	return 0;
++}
++
++/* Match table for of_platform binding */
++static const struct of_device_id mvebu_uart_of_match[] = {
++	{ .compatible = "marvell,armada-3700-uart", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, mvebu_uart_of_match);
++
++static struct platform_driver mvebu_uart_platform_driver = {
++	.probe	= mvebu_uart_probe,
++	.remove	= mvebu_uart_remove,
++	.driver	= {
++		.owner	= THIS_MODULE,
++		.name  = "mvebu-uart",
++		.of_match_table = of_match_ptr(mvebu_uart_of_match),
++	},
++};
++
++static int __init mvebu_uart_init(void)
++{
++	int ret;
++
++	ret = uart_register_driver(&mvebu_uart_driver);
++	if (ret)
++		return ret;
++
++	ret = platform_driver_register(&mvebu_uart_platform_driver);
++	if (ret)
++		uart_unregister_driver(&mvebu_uart_driver);
++
++	return ret;
++}
++
++static void __exit mvebu_uart_exit(void)
++{
++	platform_driver_unregister(&mvebu_uart_platform_driver);
++	uart_unregister_driver(&mvebu_uart_driver);
++}
++
++arch_initcall(mvebu_uart_init);
++module_exit(mvebu_uart_exit);
++
++MODULE_AUTHOR("Wilson Ding <dingwei@marvell.com>");
++MODULE_DESCRIPTION("Marvell Armada-3700 Serial Driver");
++MODULE_LICENSE("GPL");
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index 3e5d757407fb..e513a4ee369b 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -261,4 +261,7 @@
+ /* STM32 USART */
+ #define PORT_STM32	113
+ 
++/* MVEBU UART */
++#define PORT_MVEBU	114
++
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
 -- 
 2.5.0
