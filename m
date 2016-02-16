@@ -1,52 +1,52 @@
-From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: [PATCH v1] tty: serial: 8250: Cleanup p->em485 in serial8250_unregister_port
-Date: Mon, 15 Feb 2016 21:42:12 +0300
-Message-ID: <1455561732-1738-1-git-send-email-matwey@sai.msu.ru>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, peter@hurleysoftware.com, andy.shevchenko@gmail.com, gnomes@lxorguk.ukuu.org.uk
-Cc: "Matwey V. Kornilov" <matwey@sai.msu.ru>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Jisheng Zhang <jszhang@marvell.com>
+Subject: Re: [PATCH v3 05/12] arm64: add mvebu architecture entry
+Date: Tue, 16 Feb 2016 14:12:12 +0800
+Message-ID: <20160216141212.00f037e5@xhacker>
+References: <1454951660-13289-1-git-send-email-gregory.clement@free-electrons.com>
+	<1454951660-13289-6-git-send-email-gregory.clement@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-ide-owner@vger.kernel.org>
+In-Reply-To: <1454951660-13289-6-git-send-email-gregory.clement@free-electrons.com>
+Sender: linux-ide-owner@vger.kernel.org
+To: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-ide@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Omri Itach <omrii@marvell.com>, linux-kernel@vger.kernel.org, Nadav Haklai <nadavh@marvell.com>, Hans de Goede <hdegoede@redhat.com>, Lior Amsalem <alior@marvell.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Tejun Heo <tj@kernel.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Formally, currently there is no memory leak, but if
-serial8250_ports[line] is reused with other 8250 driver, then em485
-will be already activated and it will cause issues.
+Dear Gregory,
 
-Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
-Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
----
-Hi Peter,
+On Mon, 8 Feb 2016 18:14:13 +0100 Gregory CLEMENT wrote:
 
-There is an issue with my previous patch. Under specific circumstances,
-the emulation can be enabled for drivers which don't want (and support) it.
-Unfortunately, I can't test this patch because kgdb over 8250_omap console
-is the single one option for me on BBB. This patch testing involves
-8250_omap module unloading and then inspecting serial8250_ports.
-You say that you are preparing some unit-tests. Could you include a test
-for this specific issue? And then probably this patch has to be applied.
+> The Armada 3700 is an mvebu ARM64 SoC using one or two Cortex-A53 cores
+> depending of the variant.
+> 
+> Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+> Reviewed-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+> ---
+>  arch/arm64/Kconfig.platforms | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+> index 21074f674bde..c621e69ed170 100644
+> --- a/arch/arm64/Kconfig.platforms
+> +++ b/arch/arm64/Kconfig.platforms
+> @@ -1,5 +1,11 @@
+>  menu "Platform selection"
+>  
+> +config ARCH_MVEBU
 
- drivers/tty/serial/8250/8250_core.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+it's better to keep ARCH_YYZZ sorted in alphabetic order
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index c9720a9..a242881 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1068,6 +1068,15 @@ void serial8250_unregister_port(int line)
- 	struct uart_8250_port *uart = &serial8250_ports[line];
- 
- 	mutex_lock(&serial_mutex);
-+
-+	if (uart->em485) {
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&uart->port.lock, flags);
-+		serial8250_em485_destroy(uart);
-+		spin_unlock_irqrestore(&uart->port.lock, flags);
-+	}
-+
- 	uart_remove_one_port(&serial8250_reg, &uart->port);
- 	if (serial8250_isa_devs) {
- 		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
--- 
-2.7.0
+Thanks,
+Jisheng
+
+> +	bool "Marvell EBU SoC Family"
+> +	help
+> +	  This enables support for Marvell EBU family such as the
+> +	  Armada 3700 SoC family.
+> +
+>  config ARCH_BCM_IPROC
+>  	bool "Broadcom iProc SoC Family"
+>  	help
+
