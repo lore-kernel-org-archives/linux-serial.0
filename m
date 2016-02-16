@@ -1,67 +1,49 @@
 From: Vladimir Murzin <vladimir.murzin@arm.com>
 Subject: Re: [PATCH v3 09/10] ARM: dts: introduce MPS2 AN385/AN386
-Date: Tue, 16 Feb 2016 15:37:31 +0000
-Message-ID: <56C3423B.5070307@arm.com>
-References: <1455617295-23736-1-git-send-email-vladimir.murzin@arm.com>	<1455617295-23736-10-git-send-email-vladimir.murzin@arm.com> <CACRpkdafDhT=1uJssVNAW+g05eXbRC1xUL+O0+SxcpdczUX0vQ@mail.gmail.com>
+Date: Tue, 16 Feb 2016 16:10:14 +0000
+Message-ID: <56C349E6.2000002@arm.com>
+References: <1455617295-23736-1-git-send-email-vladimir.murzin@arm.com> <1455617295-23736-10-git-send-email-vladimir.murzin@arm.com> <7562697.iiO7rmWd7c@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdafDhT=1uJssVNAW+g05eXbRC1xUL+O0+SxcpdczUX0vQ@mail.gmail.com>
+In-Reply-To: <7562697.iiO7rmWd7c@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Greg KH <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?B?UGF3ZcWCIE1vbGw=?= <pawel.moll@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Jiri Slaby <jslaby@suse.cz>, Rob Herring <robh+dt@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, daniel.lezcano@linaro.org, tglx@linutronix.de, u.kleine-koenig@pengutronix.de, mark.rutland@arm.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, jslaby@suse.cz, robh+dt@kernel.org, andy.shevchenko@gmail.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-api@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 16/02/16 15:17, Linus Walleij wrote:
-> On Tue, Feb 16, 2016 at 11:08 AM, Vladimir Murzin
-> <vladimir.murzin@arm.com> wrote:
-> 
->> Application Notes 385 and 386 shares the same memory map and features
->> except the CPU is used. AN385 is supplied with Cortex-M3 CPU and AN386
->> is supplied with Cortex-M4.
+On 16/02/16 11:01, Arnd Bergmann wrote:
+> On Tuesday 16 February 2016 10:08:14 Vladimir Murzin wrote:
+>> +
+>> +       ethernet@40200000 {
+>> +               compatible = "smsc,lan9220", "smsc,lan9115";
+>> +               reg = <0x40200000 0x10000>;
+>> +               interrupts = <13>;
+>> +               interrupt-parent = <&nvic>;
+>> +               smsc,irq-active-high;
+>> +       };
+>> +};
+>> +
 >>
->> Signed-off-by: Vladimir Murzin <vladimir.murzin@arm.com>
-> (...)
->> +               fpgaio {
->> +                       compatible = "syscon", "simple-mfd";
->> +                       reg = <0x40028000 0x10>;
->> +
->> +                       led@0 {
->> +                               compatible = "register-bit-led";
->> +                               offset = <0x0>;
->> +                               mask = <0x01>;
->> +                               label = "userled:0";
->> +                               linux,default-trigger = "heartbeat";
->> +                               default-state = "on";
->> +                       };
->> +
->> +                       led@1 {
->> +                               compatible = "register-bit-led";
->> +                               offset = <0x0>;
->> +                               mask = <0x02>;
->> +                               label = "userled:1";
->> +                               linux,default-trigger = "usr";
->> +                               default-state = "off";
->> +                       };
->> +               };
 > 
-> Thanks for using this. I worked hard to massage this into the
-> core.
+> This node seems slightly misplaced. Is there some external bus interface
+> that this is connected to? The address suggests that it should be somewhere
+> below the /soc node, and you probably want to list the external bus
+> interface with a "ranges" property that identifies the addresses visibile
+> there, and put the external chip under there.
 > 
 
-Thank you for pushing it, it cost me couple of minutes to make these
-tiny leds alive :)
+I might messed it up since the MAC/PHY connects to the same 16-bit
+interface as the 16MB PSRAM external memory and both connected via AHB.
 
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> 
+Not sure how it should be expressed, so some help form DT camp would be
+appreciated.
 
-Cheers!
-
+Cheers
 Vladimir
 
-> Yours,
-> Linus Walleij
+> 	Arnd
 > 
 > 
 > 
