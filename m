@@ -1,67 +1,173 @@
 From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: [PATCH v4 01/12] irqchip: armada-370-xp: add Kconfig option for the driver
-Date: Tue, 16 Feb 2016 19:14:51 +0100
-Message-ID: <1455646502-23834-2-git-send-email-gregory.clement@free-electrons.com>
-References: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
+Subject: [PATCH v4 00/12] Add support for the Armada 3700 SoC an mvebu ARM64 based
+Date: Tue, 16 Feb 2016 19:14:50 +0100
+Message-ID: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
 Return-path: <linux-ide-owner@vger.kernel.org>
-In-Reply-To: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
 Sender: linux-ide-owner@vger.kernel.org
 To: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+This series introduce the support of the Armada 3700 family: it is the
+first ARM64 SoC of the mvebu family submitted to the mainline!
 
-Instead of building the irq-armada-370-xp driver directly when
-CONFIG_ARCH_MVEBU is enabled, this commit introduces an intermediate
-CONFIG_ARMADA_370_XP_IRQ hidden Kconfig option.
+Currently there are two members of the Armada 3700 family, the only
+difference is the number of core: the Armada 3710 comes with one
+Cortex-A53 whereas the Armada 3720 comes with 2 Cortex-A53. In this
+series we enabled only the minimum to boot, pinctrl and clock tree
+will come soon.
 
-This allows this option to select other interrupt-related Kconfig
-options (which will be needed in follow-up commits) rather than having
-such selects done from arch/arm/mach-<foo>/.
+The changes in this forth version are even smaller than the former one
+(see the changelog).
 
-Signed-off-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
----
- drivers/irqchip/Kconfig  | 5 +++++
- drivers/irqchip/Makefile | 2 +-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+The first two patches patches are here to be able to use the the
+ARCH_MVEBU for the Armada 3700 SoCs. The first ones is only here to
+have standalone series but it comes from Thomas Petazzoni's series:
+http://thread.gmane.org/gmane.linux.ports.arm.kernel/472625
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index 715923d5236c..e2cab879d641 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -60,6 +60,11 @@ config ARM_VIC_NR
- 	  The maximum number of VICs available in the system, for
- 	  power management.
- 
-+config ARMADA_370_XP_IRQ
-+	bool
-+	default y if ARCH_MVEBU
-+	select GENERIC_IRQ_CHIP
-+
- config ATMEL_AIC_IRQ
- 	bool
- 	select GENERIC_IRQ_CHIP
-diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
-index 18caacb60d58..30dba044d0b8 100644
---- a/drivers/irqchip/Makefile
-+++ b/drivers/irqchip/Makefile
-@@ -5,7 +5,6 @@ obj-$(CONFIG_ARCH_BCM2835)		+= irq-bcm2836.o
- obj-$(CONFIG_ARCH_EXYNOS)		+= exynos-combiner.o
- obj-$(CONFIG_ARCH_HIP04)		+= irq-hip04.o
- obj-$(CONFIG_ARCH_MMP)			+= irq-mmp.o
--obj-$(CONFIG_ARCH_MVEBU)		+= irq-armada-370-xp.o
- obj-$(CONFIG_IRQ_MXS)			+= irq-mxs.o
- obj-$(CONFIG_ARCH_TEGRA)		+= irq-tegra.o
- obj-$(CONFIG_ARCH_S3C24XX)		+= irq-s3c24xx.o
-@@ -28,6 +27,7 @@ obj-$(CONFIG_ARM_GIC_V3_ITS)		+= irq-gic-v3-its.o irq-gic-v3-its-pci-msi.o irq-g
- obj-$(CONFIG_HISILICON_IRQ_MBIGEN)	+= irq-mbigen.o
- obj-$(CONFIG_ARM_NVIC)			+= irq-nvic.o
- obj-$(CONFIG_ARM_VIC)			+= irq-vic.o
-+obj-$(CONFIG_ARMADA_370_XP_IRQ)		+= irq-armada-370-xp.o
- obj-$(CONFIG_ATMEL_AIC_IRQ)		+= irq-atmel-aic-common.o irq-atmel-aic.o
- obj-$(CONFIG_ATMEL_AIC5_IRQ)	+= irq-atmel-aic-common.o irq-atmel-aic5.o
- obj-$(CONFIG_I8259)			+= irq-i8259.o
+The third patch introduces a new serial driver for the uart used on
+this SoC. The driver remains simple even if the hardware is capable of
+doing more.
+
+The forth one adapts the ahci driver to support the Armada 3700 SoC.
+The forth patch updates the binding documentation with the new
+compatible string.
+
+The fifth patch adds a new entry Kconfig entry for this SoC family.
+
+I took the opportunity of this series to tidy up the Marvell related
+files in the binding documentation with the seventh patch.
+
+The eighth patch introduces the compatible string for the SoCs of the
+Armada 3700 family.
+
+The ninth patch could be considered as the bulk of this series: it
+adds the device tree files for the Armada 3700 SoCs and for the
+reference board.
+
+With the introduction of this new family the MAINTAINERS file, the
+Marvell README and the ARM64 defconfig files have to be updated: it is
+the purpose of the last 3 patches.
+
+The patches 3 and 4 could be taken directly by the maintainer of their
+respective subsystem as there is no dependency at all with the rest of
+the series. I think that the rest of the series should go through the
+arm-soc maintainer but in doubt I also added the ARM64 maintainer as
+suggested by get_maintainer.pl.
+
+Thanks,
+
+Gregory
+
+Changelog:
+v3 -> v4
+- Preserved alphabetical order in arch/arm64/Kconfig.platforms file,
+  suggested by Jisheng
+- Added Rob acked-by on patch 8
+- Fix driver_name field in the uart_driver struct: use "mvebu_serial"
+  instead of "serial"
+
+v2 -> v3
+- Renamed the remaining ttyS into ttyMV: reported by Greg KH
+- Fixed the order of the compatible in the example of the binding
+  documentation: pointed by Rob
+- Fix a typo in Kconfig entry: pointed by Thomas Petazzoni
+
+v1 -> v2
+- Added Rob acked-by on patches 3, 6 and 7
+- Used armada3700_uart instead of mvebu_uart for the uart driver:
+  suggested by Mark
+- In mvebu-uart, do not use anymore TTY_MAJOR, or ttyS, but dynamic
+  major and ttyMV: pointed by Alan
+- Use tty_termios_copy_hw in mvebu_uart_set_termios: suggested by Alan
+- Use ARCH_MVEBU instead of creating ARCH_ARMADA_3700: suggested by
+  Jisheng
+- Added a new irqchip pacthes to fix build on ARM64 when ARCH_MVEBU is
+  selected
+- Removed marvell,armada3700 from the device tree binding and directly
+  used marvell,armada3710 for common feature: pointed by Rob
+- Fix memory node with coorect size in armada-3720-db.dts: suggested
+  by Mark
+
+Gregory CLEMENT (9):
+  irqchip: armada-370-xp: do not enable it by default when ARCH_MVEBU is
+    selected
+  arm64: add mvebu architecture entry
+  Documentation: dt-bindings: Add a new compatible for the Armada 3700
+  Documentation: dt: Tidy up the Marvell related files
+  devicetree: bindings: add DT binding for the Marvell Armada 3700 SoC
+    family
+  arm64: dts: add the Marvell Armada 3700 family and a development board
+  MAINTAINERS: Extend dts entry for ARM64 mvebu files
+  Documentation: arm: update supported Marvell EBU processors
+  arm64: defconfig: enable Armada 3700 related config
+
+Lior Amsalem (1):
+  ata: ahci_mvebu: add support for Armada 3700 variant
+
+Thomas Petazzoni (1):
+  irqchip: armada-370-xp: add Kconfig option for the driver
+
+Wilson Ding (1):
+  serial: mvebu-uart: initial support for Armada-3700 serial port
+
+ Documentation/arm/Marvell/README                   |  13 +
+ .../arm/{ => marvell}/armada-370-xp-pmsu.txt       |   0
+ .../bindings/arm/{ => marvell}/armada-370-xp.txt   |   0
+ .../bindings/arm/{ => marvell}/armada-375.txt      |   0
+ .../bindings/arm/marvell/armada-37xx.txt           |  16 +
+ .../{ => marvell}/armada-380-mpcore-soc-ctrl.txt   |   0
+ .../bindings/arm/{ => marvell}/armada-38x.txt      |   0
+ .../bindings/arm/{ => marvell}/armada-39x.txt      |   0
+ .../arm/{ => marvell}/armada-cpu-reset.txt         |   0
+ .../arm/{ => marvell}/coherency-fabric.txt         |   0
+ .../bindings/arm/{ => marvell}/kirkwood.txt        |   0
+ .../bindings/arm/{ => marvell}/marvell,berlin.txt  |   0
+ .../bindings/arm/{ => marvell}/marvell,dove.txt    |   0
+ .../arm/{ => marvell}/marvell,kirkwood.txt         |   0
+ .../arm/{ => marvell}/mvebu-cpu-config.txt         |   0
+ .../arm/{ => marvell}/mvebu-system-controller.txt  |   0
+ .../devicetree/bindings/ata/ahci-platform.txt      |   1 +
+ .../devicetree/bindings/tty/serial/mvebu-uart.txt  |  13 +
+ Documentation/kernel-parameters.txt                |   6 +
+ MAINTAINERS                                        |   1 +
+ arch/arm64/Kconfig.platforms                       |   6 +
+ arch/arm64/boot/dts/marvell/Makefile               |   4 +
+ arch/arm64/boot/dts/marvell/armada-371x.dtsi       |  53 ++
+ arch/arm64/boot/dts/marvell/armada-3720-db.dts     |  86 +++
+ arch/arm64/boot/dts/marvell/armada-372x.dtsi       |  63 ++
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi       | 131 +++++
+ arch/arm64/configs/defconfig                       |   5 +
+ drivers/ata/ahci_mvebu.c                           |  14 +-
+ drivers/irqchip/Kconfig                            |   4 +
+ drivers/irqchip/Makefile                           |   2 +-
+ drivers/tty/serial/Kconfig                         |  22 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/mvebu-uart.c                    | 650 +++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 34 files changed, 1088 insertions(+), 6 deletions(-)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-370-xp-pmsu.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-370-xp.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-375.txt (100%)
+ create mode 100644 Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-380-mpcore-soc-ctrl.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-38x.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-39x.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/armada-cpu-reset.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/coherency-fabric.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/kirkwood.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/marvell,berlin.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/marvell,dove.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/marvell,kirkwood.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/mvebu-cpu-config.txt (100%)
+ rename Documentation/devicetree/bindings/arm/{ => marvell}/mvebu-system-controller.txt (100%)
+ create mode 100644 Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-371x.dtsi
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-db.dts
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-372x.dtsi
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+ create mode 100644 drivers/tty/serial/mvebu-uart.c
+
 -- 
 2.5.0
 
