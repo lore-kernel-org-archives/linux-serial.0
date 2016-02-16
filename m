@@ -1,8 +1,7 @@
 From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: [PATCH v4 02/12] irqchip: armada-370-xp: do not enable it by default
- when ARCH_MVEBU is selected
-Date: Tue, 16 Feb 2016 19:14:52 +0100
-Message-ID: <1455646502-23834-3-git-send-email-gregory.clement@free-electrons.com>
+Subject: [PATCH v4 04/12] ata: ahci_mvebu: add support for Armada 3700 variant
+Date: Tue, 16 Feb 2016 19:14:54 +0100
+Message-ID: <1455646502-23834-5-git-send-email-gregory.clement@free-electrons.com>
 References: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,31 +21,53 @@ To: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian
 Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-ide@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Omri Itach <omrii@marvell.com>, linux-kernel@vger.kernel.org, Nadav Haklai <nadavh@marvell.com>, Hans de Goede <hdegoede@redhat.com>, Lior Amsalem <alior@marvell.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Tejun Heo <tj@kernel.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The irq-armada-370-xp driver can only be built for ARM 32 bits. The mvebu
-family had grown with a new ARM64 SoC which will also select the
-ARCH_MEVBU configuration. Since "ARM: mvebu: use the ARMADA_370_XP_IRQ
-option", the ARM32 mvebu SoC directly select this new option. Selecting
-it by default when ARCH_MEVBU is selected is no more needed.
+From: Lior Amsalem <alior@marvell.com>
 
-This patch removes this dependency, thanks to this, a kernel for ARM64
-mvebu SoC can be built without error due this driver.
+The main difference in the new Armada 3700 is that no address
+decoding needs to take place in the driver probe.
 
+[gregory.clement@free-electrons.com: reformulate the commit log]
+
+Signed-off-by: Lior Amsalem <alior@marvell.com>
+Reviewed-by: Nadav Haklai <nadavh@marvell.com>
+Tested-by: Nadav Haklai <nadavh@marvell.com>
 Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
 ---
- drivers/irqchip/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/ata/ahci_mvebu.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index e2cab879d641..b6e7e86a57e1 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -62,7 +62,6 @@ config ARM_VIC_NR
+diff --git a/drivers/ata/ahci_mvebu.c b/drivers/ata/ahci_mvebu.c
+index f7a7fa81740e..de7128d81e9c 100644
+--- a/drivers/ata/ahci_mvebu.c
++++ b/drivers/ata/ahci_mvebu.c
+@@ -112,12 +112,15 @@ static int ahci_mvebu_probe(struct platform_device *pdev)
+ 	if (rc)
+ 		return rc;
  
- config ARMADA_370_XP_IRQ
- 	bool
--	default y if ARCH_MVEBU
- 	select GENERIC_IRQ_CHIP
+-	dram = mv_mbus_dram_info();
+-	if (!dram)
+-		return -ENODEV;
++	if (of_device_is_compatible(pdev->dev.of_node,
++				    "marvell,armada-380-ahci")) {
++		dram = mv_mbus_dram_info();
++		if (!dram)
++			return -ENODEV;
  
- config ATMEL_AIC_IRQ
+-	ahci_mvebu_mbus_config(hpriv, dram);
+-	ahci_mvebu_regret_option(hpriv);
++		ahci_mvebu_mbus_config(hpriv, dram);
++		ahci_mvebu_regret_option(hpriv);
++	}
+ 
+ 	rc = ahci_platform_init_host(pdev, hpriv, &ahci_mvebu_port_info,
+ 				     &ahci_platform_sht);
+@@ -133,6 +136,7 @@ disable_resources:
+ 
+ static const struct of_device_id ahci_mvebu_of_match[] = {
+ 	{ .compatible = "marvell,armada-380-ahci", },
++	{ .compatible = "marvell,armada-3700-ahci", },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, ahci_mvebu_of_match);
 -- 
 2.5.0
