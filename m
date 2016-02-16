@@ -1,58 +1,67 @@
-From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 09/10] ARM: dts: introduce MPS2 AN385/AN386
-Date: Tue, 16 Feb 2016 16:17:31 +0100
-Message-ID: <CACRpkdafDhT=1uJssVNAW+g05eXbRC1xUL+O0+SxcpdczUX0vQ@mail.gmail.com>
-References: <1455617295-23736-1-git-send-email-vladimir.murzin@arm.com>
-	<1455617295-23736-10-git-send-email-vladimir.murzin@arm.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH V3 2/4] gpio: gpio-f81504: Add Fintek F81504/508/512
+ PCIE-to-UART/GPIO GPIOLIB support
+Date: Tue, 16 Feb 2016 16:22:41 +0100
+Message-ID: <CACRpkdYODcp5P7QT1b-9HNjA1j4X_UAVs+AfCgjfgpjAA2PnWQ@mail.gmail.com>
+References: <1455605710-3724-1-git-send-email-hpeter+linux_kernel@gmail.com>
+	<1455605710-3724-3-git-send-email-hpeter+linux_kernel@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1455617295-23736-10-git-send-email-vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, =?UTF-8?Q?Pawe=C5=82_Moll?= <pawel.moll-5wv7dgnIgG8@public.gmane.org>, "ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org" <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel@vger.k>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1455605710-3724-3-git-send-email-hpeter+linux_kernel@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hung <hpeter@gmail.com>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter H <peter_hong@fintek.com.tw>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Wang YanQing <udknight@gmail.com>, Adam Lee <adam.lee@canonical.com>, Arnd Bergmann <arnd@arndb.de>, Joachim Eastwood <manabian@gmail.com>, Scott Wood <scottwood@freescale.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Paul Burton <paul.burton@imgtec.com>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>, Matthias Brugger <matthias.bgg@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, linux-kernel@vger
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Feb 16, 2016 at 11:08 AM, Vladimir Murzin
-<vladimir.murzin-5wv7dgnIgG8@public.gmane.org> wrote:
+On Tue, Feb 16, 2016 at 7:55 AM, Peter Hung <hpeter@gmail.com> wrote:
 
-> Application Notes 385 and 386 shares the same memory map and features
-> except the CPU is used. AN385 is supplied with Cortex-M3 CPU and AN386
-> is supplied with Cortex-M4.
+> This driver is GPIOLIB driver for F81504/508/512, it'll handle the
+> GPIOLIB operation of this device. This module will depend on
+> MFD_FINTEK_F81504_CORE.
 >
-> Signed-off-by: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-(...)
-> +               fpgaio {
-> +                       compatible = "syscon", "simple-mfd";
-> +                       reg = <0x40028000 0x10>;
-> +
-> +                       led@0 {
-> +                               compatible = "register-bit-led";
-> +                               offset = <0x0>;
-> +                               mask = <0x01>;
-> +                               label = "userled:0";
-> +                               linux,default-trigger = "heartbeat";
-> +                               default-state = "on";
-> +                       };
-> +
-> +                       led@1 {
-> +                               compatible = "register-bit-led";
-> +                               offset = <0x0>;
-> +                               mask = <0x02>;
-> +                               label = "userled:1";
-> +                               linux,default-trigger = "usr";
-> +                               default-state = "off";
-> +                       };
-> +               };
+> IC function list:
+>     F81504: Max 2x8 GPIOs and max 4 serial ports
+>         port2/3 are multi-function
+>     F81508: Max 6x8 GPIOs and max 8 serial ports
+>         port2/3 are multi-function, port8/9/10/11 are gpio only
+>     F81512: Max 6x8 GPIOs and max 12 serial ports
+>         port2/3/8/9/10/11 are multi-function
+>
+> GPIO register:
+> PCI Configuration space:
+>     F0h: bit0~5: Enable GPIO0~5
+>          bit6~7: Reserve
+>     F3h: bit0~5: Multi-Functional Flag (0:GPIO/1:UART)
+>          bit0: UART2 pin out for UART2 / GPIO0
+>          bit1: UART3 pin out for UART3 / GPIO1
+>          bit2: UART8 pin out for UART8 / GPIO2
+>          bit3: UART9 pin out for UART9 / GPIO3
+>          bit4: UART10 pin out for UART10 / GPIO4
+>          bit5: UART11 pin out for UART11 / GPIO5
+>          bit6~7: Reserve
+>     F1h: IO address (LSB)
+>     F2h: IO address (MSB)
+>     F8h + 8 * set: Direction control (bitwise)
+>          bitx: 0 - Input mode
+>          bitx: 1 - Output mode
+>     F9h + 8 * set: Drive ability control (bitwise)
+>          bitx: 0 - Open drain (default)
+>          bitx: 1 - Push Pull
+>          In this driver, we only implements open drain mode.
+>
+> IO space:
+>     (IO base + 0~5): GPIO-0x~5x in/out value (bitwise)
+>
+> Suggested-by: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Peter Hung <hpeter+linux_kernel@gmail.com>
 
-Thanks for using this. I worked hard to massage this into the
-core.
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-Reviewed-by: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+It's fine with me if this is queued in MFD, serial or whatever tree, or
+we can wait until the MFD parts are in and take it for the next merge
+window.
 
 Yours,
 Linus Walleij
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
