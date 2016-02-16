@@ -1,218 +1,84 @@
-From: Jisheng Zhang <jszhang@marvell.com>
-Subject: Re: [PATCH v3 09/12] arm64: dts: add the Marvell Armada 3700 family
- and a development board
-Date: Tue, 16 Feb 2016 14:16:27 +0800
-Message-ID: <20160216141627.78ec94bd@xhacker>
-References: <1454951660-13289-1-git-send-email-gregory.clement@free-electrons.com>
-	<1454951660-13289-10-git-send-email-gregory.clement@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-ide-owner@vger.kernel.org>
-In-Reply-To: <1454951660-13289-10-git-send-email-gregory.clement@free-electrons.com>
-Sender: linux-ide-owner@vger.kernel.org
-To: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-ide@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Omri Itach <omrii@marvell.com>, linux-kernel@vger.kernel.org, Nadav Haklai <nadavh@marvell.com>, Hans de Goede <hdegoede@redhat.com>, Lior Amsalem <alior@marvell.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Tejun Heo <tj@kernel.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
+From: Peter Hung <hpeter@gmail.com>
+Subject: [PATCH V3 0/4] Transform Fintek PCIE driver from 8250 to MFD
+Date: Tue, 16 Feb 2016 14:55:06 +0800
+Message-ID: <1455605710-3724-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: linus.walleij@linaro.org, gnurou@gmail.com, gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com, paul.gortmaker@windriver.com, lee.jones@linaro.org, jslaby@suse.com, gnomes@lxorguk.ukuu.org.uk, peter_hong@fintek.com.tw
+Cc: heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, manabian@gmail.com, scottwood@freescale.com, yamada.masahiro@socionext.com, paul.burton@imgtec.com, mans@mansr.com, matthias.bgg@gmail.com, ralf@linux-mips.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, tom_tsai@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Dear Gregory,
-On Mon, 8 Feb 2016 18:14:17 +0100 Gregory CLEMENT wrote:
+The Fintek F81504/508/512 is a multi-function PCIE devices.
+IC function list:
+    F81504: Max 2x8 GPIOs and max 4 serial ports
+        port2/3 are multi-function
+    F81508: Max 6x8 GPIOs and max 8 serial ports
+        port2/3 are multi-function, port8/9/10/11 are gpio only
+    F81512: Max 6x8 GPIOs and max 12 serial ports
+        port2/3/8/9/10/11 are multi-function
 
-> Add initial dtsi files to support Marvell Armada 3700 SoC with Cortex-A53
-> CPUs. There are two members in this family: the Armada 3710 (Single CPU)
-> and the Armada 3720 (Dual CPUs).
-> 
-> It also adds a dts file for the Marvell Armada 3720 DB board.
-> 
-> Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
-> ---
->  arch/arm64/boot/dts/marvell/Makefile           |   4 +
->  arch/arm64/boot/dts/marvell/armada-371x.dtsi   |  53 ++++++++++
->  arch/arm64/boot/dts/marvell/armada-3720-db.dts |  86 ++++++++++++++++
->  arch/arm64/boot/dts/marvell/armada-372x.dtsi   |  63 ++++++++++++
->  arch/arm64/boot/dts/marvell/armada-37xx.dtsi   | 131 +++++++++++++++++++++++++
->  5 files changed, 337 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/marvell/armada-371x.dtsi
->  create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-db.dts
->  create mode 100644 arch/arm64/boot/dts/marvell/armada-372x.dtsi
->  create mode 100644 arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/marvell/Makefile b/arch/arm64/boot/dts/marvell/Makefile
-> index 348f4db4f313..2114af8d312d 100644
-> --- a/arch/arm64/boot/dts/marvell/Makefile
-> +++ b/arch/arm64/boot/dts/marvell/Makefile
-> @@ -1,6 +1,10 @@
-> +# Berlin SoC Family
->  dtb-$(CONFIG_ARCH_BERLIN) += berlin4ct-dmp.dtb
->  dtb-$(CONFIG_ARCH_BERLIN) += berlin4ct-stb.dtb
->  
-> +# Mvebu SoC Family
-> +dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-db.dtb
-> +
->  always		:= $(dtb-y)
->  subdir-y	:= $(dts-dirs)
->  clean-files	:= *.dtb
-> diff --git a/arch/arm64/boot/dts/marvell/armada-371x.dtsi b/arch/arm64/boot/dts/marvell/armada-371x.dtsi
-> new file mode 100644
-> index 000000000000..c9e5325b8ac3
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/marvell/armada-371x.dtsi
-> @@ -0,0 +1,53 @@
-> +/*
-> + * Device Tree Include file for Marvell Armada 371x family of SoCs
-> + * (also named 88F3710)
-> + *
-> + * Copyright (C) 2016 Marvell
+It had implemented in 8250_pci.c with basic serial port function.
+We want to complete it. Alan & Andy recommend us to rewrite and
+spilt our driver with MFD architecture.
+https://lkml.org/lkml/2016/1/19/288
 
-Is it better to Add full Marvell company name, eg. Marvell Technology Group Ltd.
+Paul recommed us do less code deletion to avoid confusing problem when
+bisect.
+https://lkml.org/lkml/2016/1/18/646
 
-> + *
-> + * Gregory CLEMENT <gregory.clement@free-electrons.com>
+So we'll do this with following patches.
+    1. Add MFD core driver.
+    2. Add GPIOLIB driver.
+    3. Add serial port driver.
+    4. Remove old driver in 8250_pci.c and add it to blacklist
 
-What does this mean? in copyright holder list or just author? Is it better
-to add "Author:" prefix or something else?
+It can be workable when applied patches 1~3. After apply patch 4,
+the device will control by F81504 MFD core driver.
 
+Changelog:
+V3:
+    1. Refactoring gpio-f81504.c with new API
+       (Suggested by Linus Walleij).
+    2. Fix wrong kfree in gpio-f81504.c (Suggested by Andy Shevchenko).
+    3. Get PCI resource by pci_resource_start() instead of getting PCI
+       resource from BAR of PCI configuration space (Suggested by Alan).
 
-[...]
+V2:
+    1. Split F81504/508/512 from 8250_pci.c to MFD, It'll add 3 new files
+       1. drivers/mfd/f81504-core.c
+       2. drivers/gpio/gpio-f81504.c
+       3. drivers/tty/serial/8250/8250_f81504.c
 
-> diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> new file mode 100644
-> index 000000000000..ba9df7ff2a72
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> @@ -0,0 +1,131 @@
-> +/*
-> + * Device Tree Include file for Marvell Armada 37xx family of SoCs.
-> + *
-> + * Copyright (C) 2016 Marvell
-> + *
-> + * Gregory CLEMENT <gregory.clement@free-electrons.com>
-> + *
-> + * This file is dual-licensed: you can use it either under the terms
-> + * of the GPL or the X11 license, at your option. Note that this dual
-> + * licensing only applies to this file, and not this project as a
-> + * whole.
-> + *
-> + *  a) This file is free software; you can redistribute it and/or
-> + *     modify it under the terms of the GNU General Public License as
-> + *     published by the Free Software Foundation; either version 2 of the
-> + *     License, or (at your option) any later version.
-> + *
-> + *     This file is distributed in the hope that it will be useful
-> + *     but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *     GNU General Public License for more details.
-> + *
-> + * Or, alternatively
-> + *
-> + *  b) Permission is hereby granted, free of charge, to any person
-> + *     obtaining a copy of this software and associated documentation
-> + *     files (the "Software"), to deal in the Software without
-> + *     restriction, including without limitation the rights to use
-> + *     copy, modify, merge, publish, distribute, sublicense, and/or
-> + *     sell copies of the Software, and to permit persons to whom the
-> + *     Software is furnished to do so, subject to the following
-> + *     conditions:
-> + *
-> + *     The above copyright notice and this permission notice shall be
-> + *     included in all copies or substantial portions of the Software.
-> + *
-> + *     THE SOFTWARE IS PROVIDED , WITHOUT WARRANTY OF ANY KIND
-> + *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-> + *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-> + *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-> + *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
-> + *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-> + *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-> + *     OTHER DEALINGS IN THE SOFTWARE.
-> + */
-> +
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +/ {
-> +	model = "Marvell Armada 37xx SoC";
-> +	compatible = "marvell,armada3700";
-> +	interrupt-parent = <&gic>;
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +
-> +	aliases {
-> +		serial0 = &uart0;
-> +	};
-> +
-> +	cpus {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53", "arm,armv8";
-> +			reg = <0>;
-> +			enable-method = "psci";
-> +		};
-> +	};
-> +
-> +	psci {
-> +		compatible = "arm,psci-0.2";
-> +		method = "smc";
-> +	};
-> +
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupts = <GIC_PPI 13
-> +			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>,
-> +			     <GIC_PPI 14
-> +			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>,
-> +			     <GIC_PPI 11
-> +			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>,
-> +			     <GIC_PPI 10
-> +			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
-> +	};
-> +
-> +	soc {
-> +		compatible = "simple-bus";
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		ranges;
-> +
-> +		internal-regs {
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			compatible = "simple-bus";
-> +			/* 32M internal register @ 0xd000_0000 */
-> +			ranges = <0x0 0x0 0xd0000000 0x2000000>;
-> +
-> +			uart0: serial@12000 {
-> +				compatible = "marvell,armada-3700-uart";
-> +				reg = <0x12000 0x400>;
-> +				interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
-> +				status = "disabled";
-> +			};
-> +
-> +			usb3@58000 {
-> +				compatible = "generic-xhci";
-> +				reg = <0x58000 0x4000>;
-> +				interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
-> +				status = "disabled";
-> +			};
-> +
-> +			sata@e0000 {
-> +				compatible = "marvell,armada-3700-ahci";
-> +				reg = <0xe0000 0x2000>;
-> +				interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
-> +				status = "disabled";
-> +			};
-> +
-> +			gic: interrupt-controller@1d00000 {
-> +				compatible = "arm,gic-v3";
-> +				#interrupt-cells = <3>;
-> +				interrupt-controller;
-> +				reg = <0x1d00000 0x10000>, /* GICD */
-> +				      <0x1d40000 0x40000>; /* GICR */
+V1:
+    1. Split F81504/508/512 from 8250_pci.c to 8250_fintek_pci.c.
+       Alan & Andy recommend me to rewrite as MFD architecture.
 
-There's no GICC, GICV, GICH?
+Peter Hung (4):
+  mfd: f81504-core: Add Fintek F81504/508/512 PCIE-to-UART/GPIO core
+    support
+  gpio: gpio-f81504: Add Fintek F81504/508/512 PCIE-to-UART/GPIO GPIOLIB
+    support
+  8250: 8250_f81504: Add Fintek F81504/508/512 PCIE-to-UART/GPIO UART
+    support
+  serial: 8250_pci: Remove Fintek F81504/508/512 UART driver
 
-> +			};
-> +		};
-> +	};
-> +};
+ drivers/gpio/Kconfig                  |  10 +
+ drivers/gpio/Makefile                 |   1 +
+ drivers/gpio/gpio-f81504.c            | 241 ++++++++++++++++++++++++
+ drivers/mfd/Kconfig                   |  12 ++
+ drivers/mfd/Makefile                  |   2 +
+ drivers/mfd/f81504-core.c             | 336 ++++++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_f81504.c | 254 +++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pci.c    | 206 +--------------------
+ drivers/tty/serial/8250/Kconfig       |  11 ++
+ drivers/tty/serial/8250/Makefile      |   1 +
+ include/linux/mfd/f81504.h            |  52 ++++++
+ 11 files changed, 925 insertions(+), 201 deletions(-)
+ create mode 100644 drivers/gpio/gpio-f81504.c
+ create mode 100644 drivers/mfd/f81504-core.c
+ create mode 100644 drivers/tty/serial/8250/8250_f81504.c
+ create mode 100644 include/linux/mfd/f81504.h
+
+-- 
+1.9.1
 
