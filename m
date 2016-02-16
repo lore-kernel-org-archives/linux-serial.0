@@ -1,37 +1,28 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v3 00/10] Support for Cortex-M Prototyping System
-Date: Tue, 16 Feb 2016 12:05:37 +0100
-Message-ID: <22011981.Gqc7zXAZ81@wuerfel>
-References: <1455617295-23736-1-git-send-email-vladimir.murzin@arm.com>
+Subject: Re: [PATCH 2/3] serial: xuartps: Enable OF earlycon support
+Date: Tue, 16 Feb 2016 12:54:06 +0100
+Message-ID: <7244827.meF4e5ZIpB@wuerfel>
+References: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com> <23ab10a19b21df2ef17a5bb6ce2a70d2d3fd3551.1455552315.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455617295-23736-1-git-send-email-vladimir.murzin@arm.com>
+In-Reply-To: <23ab10a19b21df2ef17a5bb6ce2a70d2d3fd3551.1455552315.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vladimir Murzin <vladimir.murzin@arm.com>
-Cc: linux@arm.linux.org.uk, gregkh@linuxfoundation.org, daniel.lezcano@linaro.org, tglx@linutronix.de, u.kleine-koenig@pengutronix.de, mark.rutland@arm.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, jslaby@suse.cz, robh+dt@kernel.org, andy.shevchenko@gmail.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-api@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Liviu Dudau <liviu.dudau@arm.com>, Sudeep Holla <sudeep.holla@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Michal Simek <michal.simek@xilinx.com>, Nicolas Pitre <nicolas.pitre@linaro.org>, monstr@monstr.eu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, =?ISO-8859-1?Q?S=F6ren?= Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday 16 February 2016 10:08:05 Vladimir Murzin wrote:
-> Hi,
+On Monday 15 February 2016 17:05:18 Michal Simek wrote:
+> Support early console setup via DT for all listed compatible strings.
 > 
-> This patch series provide the basic support for running ucLinux on V2M-MPS2
-> platform.
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> ---
 > 
-> With these patches applied ucLinux can be run on both HW and FVP models
-> with Cortex-M3/M4/M7 configurations.
 
-Looks very nice overall now. I have mentioned a few details that I noticed
-but no show-stoppers.
+I'd suggest we take the whole series through arm-soc, as the third patch
+depends on this second one.
 
-Most important question for me is how this is going to be maintained
-in the long run. Can you add a patch to list the added files in
-MAINTAINERS?
-
-My preference from the arm-soc perspective would be to get pull requests for
-this together with vexpress and juno through the existing maintainers
-(Liviu, Sudeep, Lorenzo), and have you send your patches to them. Does
-that work for you all?
+Greg, is this ok for you?
 
 	Arnd
