@@ -1,73 +1,21 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2] serial: earlycon: rework common framework for earlycon
- declarations
-Date: Tue, 16 Feb 2016 17:31:48 -0800
-Message-ID: <56C3CD84.9000504@hurleysoftware.com>
-References: <1455273394-27350-1-git-send-email-yamada.masahiro@socionext.com>
- <56BDF799.1030505@hurleysoftware.com>
- <CAK7LNAS_vietwRRFnH3YhbWSzjRFP4U6rjftYek1KQ3ips2ZSQ@mail.gmail.com>
+From: Al Viro <viro@ZenIV.linux.org.uk>
+Subject: Re: [PATCH 5/7] serial: clps711x: fix IS_ERR_VALUE usage
+Date: Wed, 17 Feb 2016 02:33:44 +0000
+Message-ID: <20160217023344.GJ17997@ZenIV.linux.org.uk>
+References: <1455546925-22119-1-git-send-email-a.hajda@samsung.com>
+ <1455546925-22119-6-git-send-email-a.hajda@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <CAK7LNAS_vietwRRFnH3YhbWSzjRFP4U6rjftYek1KQ3ips2ZSQ@mail.gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>, Greg KH <gregkh@linuxfoundation.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-arch@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1455546925-22119-6-git-send-email-a.hajda@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andrzej Hajda <a.hajda@samsung.com>
+Cc: linux-kernel@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 02/12/2016 08:30 AM, Masahiro Yamada wrote:
-> Hi Peter,
-> 
-> 
-> 2016-02-13 0:17 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
->> On 02/12/2016 02:36 AM, Masahiro Yamada wrote:
->>> Commit 71f50c6d9a22 ("of: drop symbols declared by _OF_DECLARE() from
->>> modules") fixed the link error introduced by commit b8d20e06eaad
->>> ("serial: 8250_uniphier: add earlycon support").
->>>
->>> After commit 2eaa790989e0 ("earlycon: Use common framework for
->>> earlycon declarations") was applied, the link error came back
->>> because the commit reworked OF_EARLYCON_DECLARE() to not use
->>> _OF_DECLARE().
->>
->> What link error are you getting?
-> 
-> The combination of CONFIG_SERIAL_8250_CONSOLE=y
-> and CONFIG_SERIAL_8250_UNIPHIER=m causes a link error.
-> 
-> 
-> 
->>
->>> This commit reworks OF_EARLYCON_DECLARE() again based on
->>> _OF_DECLARE().  My motivations are:
->>>
->>>  - Fix the link error in a generic way (without patching
->>>    drivers/tty/serial/8250/8250_uniphier.c)
->>>
->>>  - Delete struct earlycon_id.  This struct is re-inventing the wheel;
->>>    the fields "name", "compatible", "setup" can be implemented in
->>>    struct of_device_id as other frameworks do.
->>
->> This patch basically reverts the common framework.
->> What happens when not building with OF? Does it still declare the
->> earlycon table?
-> 
-> Ah, I missed this.  (sigh)
-> 
-> Earlycon must still work without OF.
-> My way only works with OF.
-> 
-> I really screwed up.  Sorry.
+On Mon, Feb 15, 2016 at 03:35:23PM +0100, Andrzej Hajda wrote:
+> IS_ERR_VALUE macro should be used only with unsigned long type.
+> For signed types comparison 'ret < 0' should be used.
 
-Hi Masahiro,
-
-No big deal.
-
-We need to come up with a better way to enable earlycon builds and
-opt-in by driver than the current method. Breaking builds with earlycon
-support has happened several times in the last couple of years so
-it's not just you.
-
-Regards,
-Peter Hurley
+ACK
