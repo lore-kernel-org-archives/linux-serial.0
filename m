@@ -1,65 +1,51 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH v3 5/5] serial: 8250/mediatek: fix building with SERIAL_8250=m
-Date: Wed, 17 Feb 2016 16:02:35 +0100
-Message-ID: <1455721357-4008289-6-git-send-email-arnd@arndb.de>
-References: <1455721357-4008289-1-git-send-email-arnd@arndb.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455721357-4008289-1-git-send-email-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Eddie Huang <eddie.huang@mediatek.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Martin Sperl <kernel@martin.sperl.org>, Paul Burton <paul.burton@imgtec.com>, Mans Rullgard <mans@mansr.com>, Scott Wood <scottwood@freescale.com>, linux-mediatek@lists.infradead.org
+From: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Subject: Re: [PATCH v4 00/12] Add support for the Armada 3700 SoC an mvebu ARM64 based
+Date: Wed, 17 Feb 2016 17:03:15 +0100
+Message-ID: <87a8mzs4sc.fsf@free-electrons.com>
+References: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
+	<2699923.cugyhCaCQy@wuerfel>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-ide-owner@vger.kernel.org>
+In-Reply-To: <2699923.cugyhCaCQy@wuerfel> (Arnd Bergmann's message of "Tue, 16
+	Feb 2016 22:22:11 +0100")
+Sender: linux-ide-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
-The Mediatek 8250 driver has a 'bool' Kconfig symbol, but that
-breaks when SERIAL_8250 is a loadable module:
+Hi Arnd,
+=20
+ On mar., f=C3=A9vr. 16 2016, Arnd Bergmann <arnd@arndb.de> wrote:
 
-drivers/tty/built-in.o: In function `mtk8250_set_termios':
-:(.text+0x1bee8): undefined reference to `serial8250_do_set_termios'
-:(.text+0x1bf10): undefined reference to `uart_get_baud_rate'
-:(.text+0x1c09c): undefined reference to `uart_get_divisor'
-drivers/tty/built-in.o: In function `mtk8250_do_pm':
-:(.text+0x1c0d0): undefined reference to `serial8250_do_pm'
-drivers/tty/built-in.o: In function `mtk8250_probe':
-:(.text+0x1c2e4): undefined reference to `serial8250_register_8250_port'
-serial/8250/8250_mtk.c:287:242: error: data definition has no type or storage class [-Werror]
-serial/8250/8250_mtk.c:287:122: error: 'mtk8250_platform_driver_init' defined but not used [-Werror=unused-function]
+> On Tuesday 16 February 2016 19:14:50 Gregory CLEMENT wrote:
+>> This series introduce the support of the Armada 3700 family: it is t=
+he
+>> first ARM64 SoC of the mvebu family submitted to the mainline!
+>>=20
+>> Currently there are two members of the Armada 3700 family, the only
+>> difference is the number of core: the Armada 3710 comes with one
+>> Cortex-A53 whereas the Armada 3720 comes with 2 Cortex-A53. In this
+>> series we enabled only the minimum to boot, pinctrl and clock tree
+>> will come soon.
+>>=20
+>
+> Whole series
+>
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-This changes the symbol to a 'tristate', so the dependency on
-SERIAL_8250 also works when that is set to 'm'.
-To actually build the driver, we also need to include <linux/module.h>.
+Great!
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
----
- drivers/tty/serial/8250/8250_mtk.c | 2 +-
- drivers/tty/serial/8250/Kconfig    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+I am going to do a first pull requests for the mvebu arm64. Let me know
+if I do it correctly.
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index 6ecc6e3e82dc..a0294f3de4f8 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -303,7 +303,7 @@ static struct platform_driver mtk8250_platform_driver = {
- };
- module_platform_driver(mtk8250_platform_driver);
- 
--#ifdef CONFIG_SERIAL_8250_CONSOLE
-+#if defined(CONFIG_SERIAL_8250_CONSOLE) && !defined(MODULE)
- static int __init early_mtk8250_setup(struct earlycon_device *device,
- 					const char *options)
- {
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 1b0638511ac1..c45a02a7f9e2 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -370,7 +370,7 @@ config SERIAL_8250_LPC18XX
- 	  serial port, say Y to this option. If unsure, say Y.
- 
- config SERIAL_8250_MT6577
--	bool "Mediatek serial port support"
-+	tristate "Mediatek serial port support"
- 	depends on SERIAL_8250 && ARCH_MEDIATEK
- 	help
- 	  If you have a Mediatek based board and want to use the
--- 
-2.7.0
+Thanks,
+
+Gregory
+
+--=20
+Gregory Clement, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
