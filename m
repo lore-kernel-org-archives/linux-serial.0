@@ -1,51 +1,117 @@
-From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH v4 00/12] Add support for the Armada 3700 SoC an mvebu ARM64 based
-Date: Wed, 17 Feb 2016 17:03:15 +0100
-Message-ID: <87a8mzs4sc.fsf@free-electrons.com>
-References: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
-	<2699923.cugyhCaCQy@wuerfel>
+From: Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: Re: [PATCH v3 09/10] ARM: dts: introduce MPS2 AN385/AN386
+Date: Wed, 17 Feb 2016 16:48:44 +0000
+Message-ID: <56C4A46C.50506@arm.com>
+References: <1455617295-23736-1-git-send-email-vladimir.murzin@arm.com> <1455617295-23736-10-git-send-email-vladimir.murzin@arm.com> <7562697.iiO7rmWd7c@wuerfel> <56C349E6.2000002@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-ide-owner@vger.kernel.org>
-In-Reply-To: <2699923.cugyhCaCQy@wuerfel> (Arnd Bergmann's message of "Tue, 16
-	Feb 2016 22:22:11 +0100")
-Sender: linux-ide-owner@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <56C349E6.2000002@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux@arm.linux.org.uk, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, gregkh@linuxfoundation.org, daniel.lezcano@linaro.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, andy.shevchenko@gmail.com, galak@codeaurora.org, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de, tglx@linutronix.de, linux-api@vger.kernel.org, jslaby@suse.cz, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
-=20
- On mar., f=C3=A9vr. 16 2016, Arnd Bergmann <arnd@arndb.de> wrote:
+On 16/02/16 16:10, Vladimir Murzin wrote:
+> On 16/02/16 11:01, Arnd Bergmann wrote:
+>> On Tuesday 16 February 2016 10:08:14 Vladimir Murzin wrote:
+>>> +
+>>> +       ethernet@40200000 {
+>>> +               compatible = "smsc,lan9220", "smsc,lan9115";
+>>> +               reg = <0x40200000 0x10000>;
+>>> +               interrupts = <13>;
+>>> +               interrupt-parent = <&nvic>;
+>>> +               smsc,irq-active-high;
+>>> +       };
+>>> +};
+>>> +
+>>>
+>>
+>> This node seems slightly misplaced. Is there some external bus interface
+>> that this is connected to? The address suggests that it should be somewhere
+>> below the /soc node, and you probably want to list the external bus
+>> interface with a "ranges" property that identifies the addresses visibile
+>> there, and put the external chip under there.
+>>
+> 
+> I might messed it up since the MAC/PHY connects to the same 16-bit
+> interface as the 16MB PSRAM external memory and both connected via AHB.
+> 
+> Not sure how it should be expressed, so some help form DT camp would be
+> appreciated.
 
-> On Tuesday 16 February 2016 19:14:50 Gregory CLEMENT wrote:
->> This series introduce the support of the Armada 3700 family: it is t=
-he
->> first ARM64 SoC of the mvebu family submitted to the mainline!
->>=20
->> Currently there are two members of the Armada 3700 family, the only
->> difference is the number of core: the Armada 3710 comes with one
->> Cortex-A53 whereas the Armada 3720 comes with 2 Cortex-A53. In this
->> series we enabled only the minimum to boot, pinctrl and clock tree
->> will come soon.
->>=20
->
-> Whole series
->
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
+Arnd,
 
-Great!
+Does following fixup address your point on where/how ethernet node
+should be placed?
 
-I am going to do a first pull requests for the mvebu arm64. Let me know
-if I do it correctly.
+diff --git a/arch/arm/boot/dts/mps2-an385.dts b/arch/arm/boot/dts/an385.dts
+index 976f86d..50c8d24 100644
+--- a/arch/arm/boot/dts/mps2-an385.dts
++++ b/arch/arm/boot/dts/mps2-an385.dts
+@@ -63,14 +63,10 @@
+ 		device_type = "memory";
+ 		reg = <0x21000000 0x1000000>;
+ 	};
++};
 
-Thanks,
+-	ethernet@40200000 {
+-		compatible = "smsc,lan9220", "smsc,lan9115";
+-		reg = <0x40200000 0x10000>;
+-		interrupts = <13>;
+-		interrupt-parent = <&nvic>;
+-		smsc,irq-active-high;
+-	};
++&mb {
++	ranges = <0 0x40200000 0x10000>;
+ };
 
-Gregory
+ &uart0 {
+diff --git a/arch/arm/boot/dts/mps2.dtsi b/arch/arm/boot/dts/mps2.dtsi
+index 5d2c539..1673472 100644
+--- a/arch/arm/boot/dts/mps2.dtsi
++++ b/arch/arm/boot/dts/mps2.dtsi
+@@ -223,5 +223,21 @@
+ 				default-state = "off";
+ 			};
+ 		};
++
++	};
++
++	mb: smb {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		ethernet@0 {
++			compatible = "smsc,lan9220", "smsc,lan9115";
++			reg = <0x0 0x10000>;
++			interrupts = <13>;
++			interrupt-parent = <&nvic>;
++			smsc,irq-active-high;
++		};
+ 	};
+ };
 
---=20
-Gregory Clement, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+Cheers
+Vladimir
+
+> 
+> Cheers
+> Vladimir
+> 
+>> 	Arnd
+>>
+>>
+>>
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
+> 
+> 
