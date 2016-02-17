@@ -1,42 +1,73 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v4 03/12] serial: mvebu-uart: initial support for Armada-3700 serial port
-Date: Tue, 16 Feb 2016 22:35:14 +0100
-Message-ID: <2634634.yW5ZfZDXSz@wuerfel>
-References: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com> <3647094.zzYms58VAY@wuerfel> <20160216222706.6b1d3375@free-electrons.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v2] serial: earlycon: rework common framework for earlycon
+ declarations
+Date: Tue, 16 Feb 2016 17:31:48 -0800
+Message-ID: <56C3CD84.9000504@hurleysoftware.com>
+References: <1455273394-27350-1-git-send-email-yamada.masahiro@socionext.com>
+ <56BDF799.1030505@hurleysoftware.com>
+ <CAK7LNAS_vietwRRFnH3YhbWSzjRFP4U6rjftYek1KQ3ips2ZSQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-ide-owner@vger.kernel.org>
-In-Reply-To: <20160216222706.6b1d3375@free-electrons.com>
-Sender: linux-ide-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Mark Rutland <mark.rutland@arm.com>, Andrew Lunn <andrew@lunn.ch>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Nadav Haklai <nadavh@marvell.com>, linux-ide@vger.kernel.org, Lior Amsalem <alior@marvell.com>, Jonathan Corbet <corbet@lwn.net>, arm@kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, Omri Itach <omrii@marvell.com>, Hans de Goede <hdegoede@redhat.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Tejun Heo <tj@kernel.org>, Wilson Ding <dingwei@marvell.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <CAK7LNAS_vietwRRFnH3YhbWSzjRFP4U6rjftYek1KQ3ips2ZSQ@mail.gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>, Greg KH <gregkh@linuxfoundation.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-arch@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday 16 February 2016 22:27:06 Thomas Petazzoni wrote:
-> Arnd,
+On 02/12/2016 08:30 AM, Masahiro Yamada wrote:
+> Hi Peter,
 > 
-> On Tue, 16 Feb 2016 22:20:51 +0100, Arnd Bergmann wrote:
 > 
-> > > +config SERIAL_MVEBU_CONSOLE
-> > > +       bool "Console on Marvell EBU serial port"
-> > > +       depends on SERIAL_MVEBU_UART
-> > 
-> > then this one must become
-> > 
-> >       depends on SERIAL_MVEBU_UART
-> > 
-> > so it does not get enabled if the driver is not builtin.
+> 2016-02-13 0:17 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
+>> On 02/12/2016 02:36 AM, Masahiro Yamada wrote:
+>>> Commit 71f50c6d9a22 ("of: drop symbols declared by _OF_DECLARE() from
+>>> modules") fixed the link error introduced by commit b8d20e06eaad
+>>> ("serial: 8250_uniphier: add earlycon support").
+>>>
+>>> After commit 2eaa790989e0 ("earlycon: Use common framework for
+>>> earlycon declarations") was applied, the link error came back
+>>> because the commit reworked OF_EARLYCON_DECLARE() to not use
+>>> _OF_DECLARE().
+>>
+>> What link error are you getting?
 > 
-> Hm, what's the different between "depends on SERIAL_MVEBU_UART" and
-> "depends on SERIAL_MVEBU_UART" ? Is it the late time that causes my
-> eyes to misunderstand what you mean, or some typo on your side ? 
+> The combination of CONFIG_SERIAL_8250_CONSOLE=y
+> and CONFIG_SERIAL_8250_UNIPHIER=m causes a link error.
 > 
+> 
+> 
+>>
+>>> This commit reworks OF_EARLYCON_DECLARE() again based on
+>>> _OF_DECLARE().  My motivations are:
+>>>
+>>>  - Fix the link error in a generic way (without patching
+>>>    drivers/tty/serial/8250/8250_uniphier.c)
+>>>
+>>>  - Delete struct earlycon_id.  This struct is re-inventing the wheel;
+>>>    the fields "name", "compatible", "setup" can be implemented in
+>>>    struct of_device_id as other frameworks do.
+>>
+>> This patch basically reverts the common framework.
+>> What happens when not building with OF? Does it still declare the
+>> earlycon table?
+> 
+> Ah, I missed this.  (sigh)
+> 
+> Earlycon must still work without OF.
+> My way only works with OF.
+> 
+> I really screwed up.  Sorry.
 
+Hi Masahiro,
 
-typo: I meant
+No big deal.
 
-	depends on SERIAL_MVEBU_UART=y
+We need to come up with a better way to enable earlycon builds and
+opt-in by driver than the current method. Breaking builds with earlycon
+support has happened several times in the last couple of years so
+it's not just you.
 
-
-	Arnd
+Regards,
+Peter Hurley
