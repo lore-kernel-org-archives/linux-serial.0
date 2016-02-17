@@ -1,120 +1,152 @@
-From: "Zheng, Lv" <lv.zheng@intel.com>
-Subject: RE: [PATCH v3 1/5] ACPI: change __init to __ref for
- early_acpi_os_unmap_memory()
-Date: Wed, 17 Feb 2016 02:51:51 +0000
-Message-ID: <1AE640813FDE7649BE1B193DEA596E883BB4BDCF@SHSMSX101.ccr.corp.intel.com>
-References: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
- <1455559532-8305-2-git-send-email-aleksey.makarov@linaro.org>
- <1AE640813FDE7649BE1B193DEA596E883BB4BDBB@SHSMSX101.ccr.corp.intel.com>
+From: Peter Hung <hpeter@gmail.com>
+Subject: Re: [PATCH V3 3/4] 8250: 8250_f81504: Add Fintek F81504/508/512
+ PCIE-to-UART/GPIO UART support
+Date: Wed, 17 Feb 2016 17:30:15 +0800
+Message-ID: <56C43DA7.9080400@gmail.com>
+References: <1455605710-3724-1-git-send-email-hpeter+linux_kernel@gmail.com>
+ <1455605710-3724-4-git-send-email-hpeter+linux_kernel@gmail.com>
+ <1455613899.31169.149.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1AE640813FDE7649BE1B193DEA596E883BB4BDBB@SHSMSX101.ccr.corp.intel.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: "Zheng, Lv" <lv.zheng@intel.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Len Brown <lenb@kernel.org>
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1455613899.31169.149.camel@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linus.walleij@linaro.org, gnurou@gmail.com, gregkh@linuxfoundation.org, paul.gortmaker@windriver.com, lee.jones@linaro.org, jslaby@suse.com, gnomes@lxorguk.ukuu.org.uk, peter_hong@fintek.com.tw
+Cc: heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, soeren.grunewald@desy.de, udknight@gmail.com, adam.lee@canonical.com, arnd@arndb.de, manabian@gmail.com, scottwood@freescale.com, yamada.masahiro@socionext.com, paul.burton@imgtec.com, mans@mansr.com, matthias.bgg@gmail.com, ralf@linux-mips.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, tom_tsai@fintek.com.tw, Peter Hung <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Hi Andy,
 
-> From: linux-acpi-owner@vger.kernel.org [mailto:linux-acpi-
-> owner@vger.kernel.org] On Behalf Of Zheng, Lv
-> Subject: RE: [PATCH v3 1/5] ACPI: change __init to __ref for
-> early_acpi_os_unmap_memory()
-> 
-> Hi,
-> 
-> > -----Original Message-----
-> > From: linux-acpi-owner@vger.kernel.org [mailto:linux-acpi-
-> > owner@vger.kernel.org] On Behalf Of Aleksey Makarov
-> > Sent: Tuesday, February 16, 2016 2:05 AM
-> > To: linux-acpi@vger.kernel.org
-> > Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; linux-arm-
-> > kernel@lists.infradead.org; Aleksey Makarov <aleksey.makarov@linaro.org>;
-> > Russell King <linux@arm.linux.org.uk>; Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org>; Rafael J . Wysocki <rjw@rjwysocki.net>; Leif
-> > Lindholm <leif.lindholm@linaro.org>; Graeme Gregory
-> > <graeme.gregory@linaro.org>; Al Stone <ahs3@redhat.com>; Christopher
-> > Covington <cov@codeaurora.org>; Len Brown <lenb@kernel.org>
-> > Subject: [PATCH v3 1/5] ACPI: change __init to __ref for
-> > early_acpi_os_unmap_memory()
-> >
-> > early_acpi_os_unmap_memory() is marked as __init because it calls
-> > __acpi_unmap_table(), but only when acpi_gbl_permanent_mmap is not set.
-> >
-> > acpi_gbl_permanent_mmap is set in __init acpi_early_init()
-> > so it is safe to call early_acpi_os_unmap_memory() from anywhere
-> >
-> > We need this function to be non-__init because we need access to
-> > some tables at unpredictable time--it may be before or after
-> > acpi_gbl_permanent_mmap is set.  For example, SPCR (Serial Port Console
-> > Redirection) table is needed each time a new console is registered.
-> > It can be quite early (console_initcall) or when a module is inserted.
-> > When this table accessed before acpi_gbl_permanent_mmap is set,
-> > the pointer should be unmapped.  This is exactly what this function
-> > does.
-> [Lv Zheng]
-> Why don't you use another API instead of early_acpi_os_unmap_memory() in
-> case you want to unmap things in any cases.
-> acpi_os_unmap_memory() should be the one to match this purpose.
-> It checks acpi_gbl_ppermanent_mmap in acpi_os_unmap_iomem().
-> And in fact early_acpi_os_unmap_memory() should be removed.
-[Lv Zheng] 
-One more thing is:
-If you can't switch your driver to use acpi_os_unmap_memory() instead of early_acpi_os_unmap_memory(),
-then it implies that your driver does have a defect.
+Andy Shevchenko =E6=96=BC 2016/2/16 =E4=B8=8B=E5=8D=88 05:11 =E5=AF=AB=E9=
+=81=93:
+> On Tue, 2016-02-16 at 14:55 +0800, Peter Hung wrote:
+>> +static u32 baudrate_table[] =3D { 1500000, 1152000, 921600 };
+>> +static u8 clock_table[] =3D { F81504_CLKSEL_24_MHZ,
+>> F81504_CLKSEL_18DOT46_MHZ,
+>> +				F81504_CLKSEL_14DOT77_MHZ };
+>
+> I suggest to replace DOT by _.
 
-There is an early bootup requirement in Linux.
-Maps acquired during the early stage should be freed by the driver during the early stage.
-And the driver should re-acquire the memory map after booting.
+ok
 
-This is because, during early bootup stage, there are only limited slots available for drivers to map memory.
-So by changing __init to __ref here, you probably will hide many such defects.
-And solving issues in this way doesn't seem to be an improvement.
+>> +/* We should do proper H/W transceiver setting before change to
+>> RS485 mode */
+>> +static int f81504_rs485_config(struct uart_port *port,
+>> +			       struct serial_rs485 *rs485)
+>> +{
+>> +	u8 setting;
+>> +	u8 *index =3D (u8 *) port->private_data;
+>
+> private_data is a type of void *, therefore no need to have an explic=
+it
+> casting.
 
-Thanks and best regards
--Lv
+ok
 
-> 
-> Thanks and best regards
-> -Lv
-> 
-> >
-> > Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-> > ---
-> >  drivers/acpi/osl.c | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
-> > index 67da6fb..8a552cd 100644
-> > --- a/drivers/acpi/osl.c
-> > +++ b/drivers/acpi/osl.c
-> > @@ -497,7 +497,11 @@ void __ref acpi_os_unmap_memory(void *virt,
-> > acpi_size size)
-> >  }
-> >  EXPORT_SYMBOL_GPL(acpi_os_unmap_memory);
-> >
-> > -void __init early_acpi_os_unmap_memory(void __iomem *virt, acpi_size
-> size)
-> > +/*
-> > + * acpi_gbl_permanent_mmap is set in __init acpi_early_init()
-> > + * so it is safe to call early_acpi_os_unmap_memory() from anywhere
-> > + */
-> > +void __ref early_acpi_os_unmap_memory(void __iomem *virt, acpi_size
-> size)
-> >  {
-> >  	if (!acpi_gbl_permanent_mmap)
-> >  		__acpi_unmap_table(virt, size);
-> > --
-> > 2.7.1
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+>> +static int f81504_check_baudrate(u32 baud, size_t *idx)
+>> +{
+>> +	size_t index;
+>> +	u32 quot, rem;
+>> +
+>> +	for (index =3D 0; index < ARRAY_SIZE(baudrate_table); ++index)
+>
+> Post-increment is also okay.
+>
+>> {
+>> +		/* Clock source must largeer than desire baudrate */
+>> +		if (baud > baudrate_table[index])
+>> +			continue;
+>> +
+>> +		quot =3D DIV_ROUND_CLOSEST(baudrate_table[index],
+>> baud);
+>
+> So, how quot is used and is it possible to set, for example, baud rat=
+e
+> as 1000000 or 576000?
+
+The IC don't support B1000000 due to no 16MHz clock source.
+
+The quot & rem is only use for compare, and it's must be not 0
+when the code run to calculate DIV_ROUND_CLOSEST. So quot
+is a redundancy here.
+
+This function will find the suitable clock source for future use.
+We'll pass suitable baud rate * 16 to port->uartclk for
+serial8250_do_set_termios() to do advance divider operations.
+
+I'll rewrite this section with remove quot and direct check
+the "baudrate_table[index] % baud" divisible.
+
+
+>> +	u8 tmp, *offset =3D (u8 *) port->private_data;
+>
+> Same for provate_data as above.
+
+ok
+
+
+>> +			/*
+>> +			 * direct use 1.8432MHz when baudrate
+>> smaller then or
+>> +			 * equal 115200bps
+>
+> Check your style of comments in a _whole_ your series.
+
+ok
+
+
+>> +			/*
+>> +			 * If it can't found suitable clock source
+>> but had old
+>> +			 * accpetable baudrate, we'll use it
+>
+> Typo: acceptable.
+> Baudrate ->  baud rate.
+
+ok
+
+>> +	port.port.private_data =3D data;	/* save current idx */
+>
+> Not sure you need to allocate memory for that at all, or maybe use a
+> struct with one member (for now).
+>
+
+We just pass the index of PCI configuration space currently. So
+I just set a allocated u8 memory to private data. We'll maintain
+current method.
+
+
+>> +static SIMPLE_DEV_PM_OPS(f81504_serial_pm_ops,
+>> f81504_serial_suspend,
+>> +		f81504_serial_resume);
+>> +
+>> +static struct platform_driver f81504_serial_driver =3D {
+>> +	.driver =3D {
+>> +		.name	=3D F81504_SERIAL_NAME,
+>> +		.owner	=3D THIS_MODULE,
+>
+> You perhaps don't need this. Check the rest of the modules.
+
+ok
+
+
+>> +config SERIAL_8250_F81504
+>> +        tristate "Fintek F81504/508/512 16550 PCIE device support"
+>> if EXPERT
+>> +        depends on SERIAL_8250 && MFD_FINTEK_F81504_CORE
+>> +        default SERIAL_8250
+>> +        select RATIONAL
+>
+> It seems RATIONAL API is not used here.
+>
+
+This driver hadn't use RATIONAL API. I'll remove it.
+
+
+Thanks for your advice.
+--=20
+With Best Regards,
+Peter Hung
