@@ -1,235 +1,42 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 2/5] ACPI: parse SPCR and enable matching console
-Date: Thu, 18 Feb 2016 14:19:18 -0800
-Message-ID: <56C64366.2070702@hurleysoftware.com>
-References: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
- <1455559532-8305-3-git-send-email-aleksey.makarov@linaro.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v1] tty: serial: Use GFP_ATOMIC instead of GFP_KERNEL in
+ serial8250_em485_init()
+Date: Thu, 18 Feb 2016 15:47:18 -0800
+Message-ID: <20160218234718.GB4517@kroah.com>
+References: <1455821240-5842-1-git-send-email-matwey@sai.msu.ru>
+ <CAHp75VdLfOpsA-owMzOTJoo_iFmWiJjzC1p-NaqRO9LHcWu1Pg@mail.gmail.com>
+ <CAJs94EbEOnQg0bQ8s-YD-AQfpKatovwyv81hJSbPpxy1RGhBBQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455559532-8305-3-git-send-email-aleksey.makarov@linaro.org>
+Content-Disposition: inline
+In-Reply-To: <CAJs94EbEOnQg0bQ8s-YD-AQfpKatovwyv81hJSbPpxy1RGhBBQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
-Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
+To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?utf-8?B?0JjQu9GM0Y/RgSDQk9Cw0YHQsNC90L7Qsg==?= <torso.nafi@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 02/15/2016 10:05 AM, Aleksey Makarov wrote:
-> 'ARM Server Base Boot Requiremets' [1] mentions SPCR (Serial Port
-> Console Redirection Table) [2] as a mandatory ACPI table that
-> specifies the configuration of serial console.
+On Thu, Feb 18, 2016 at 11:29:07PM +0300, Matwey V. Kornilov wrote:
+> 2016-02-18 23:21 GMT+03:00 Andy Shevchenko <andy.shevchenko@gmail.com>:
+> > On Thu, Feb 18, 2016 at 8:47 PM, Matwey V. Kornilov <matwey@sai.msu.ru> wrote:
+> >> serial8250_em485_init() is supposed to be protected with
+> >> p->port.lock spinlock.
+> >> This may lead to issues when kmalloc sleeps, so it is better to use
+> >> GFP_ATOMIC in this spinlocked context.
+> >>
+> >> Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
+> >> Reported-by: <torso.nafi@gmail.com>
+> >
+> > Hmm... Can't we put Cyrillic characters to tags as name of a person?
 > 
-> Parse this table and check if any registered console match the
-> description.  If it does, enable that console.
-> 
-> Introduce a new function acpi_console_check().  At the uart port
-> registration, this function checks if the ACPI SPCR table specifies
-> its argument of type struct uart_port to be a console
-> and if so calls add_preferred_console().
-> 
-> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
-> [2] http://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
-> 
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-> ---
->  drivers/acpi/Kconfig             |  3 ++
->  drivers/acpi/Makefile            |  1 +
->  drivers/acpi/spcr.c              | 97 ++++++++++++++++++++++++++++++++++++++++
->  drivers/tty/serial/serial_core.c | 14 +++++-
->  include/linux/acpi.h             | 10 +++++
->  5 files changed, 123 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/acpi/spcr.c
-> 
-> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-> index 65fb483..5611eb6 100644
-> --- a/drivers/acpi/Kconfig
-> +++ b/drivers/acpi/Kconfig
-> @@ -77,6 +77,9 @@ config ACPI_DEBUGGER_USER
->  
->  endif
->  
-> +config ACPI_SPCR_TABLE
-> +	bool
-> +
->  config ACPI_SLEEP
->  	bool
->  	depends on SUSPEND || HIBERNATION
-> diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-> index 346101c..708b143 100644
-> --- a/drivers/acpi/Makefile
-> +++ b/drivers/acpi/Makefile
-> @@ -81,6 +81,7 @@ obj-$(CONFIG_ACPI_EC_DEBUGFS)	+= ec_sys.o
->  obj-$(CONFIG_ACPI_CUSTOM_METHOD)+= custom_method.o
->  obj-$(CONFIG_ACPI_BGRT)		+= bgrt.o
->  obj-$(CONFIG_ACPI_CPPC_LIB)	+= cppc_acpi.o
-> +obj-$(CONFIG_ACPI_SPCR_TABLE)	+= spcr.o
->  obj-$(CONFIG_ACPI_DEBUGGER_USER) += acpi_dbg.o
->  
->  # processor has its own "processor." module_param namespace
-> diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-> new file mode 100644
-> index 0000000..a1eca91
-> --- /dev/null
-> +++ b/drivers/acpi/spcr.c
-> @@ -0,0 +1,97 @@
-> +/*
-> + * Copyright (c) 2012, Intel Corporation
-> + * Copyright (c) 2015, Red Hat, Inc.
-> + * Copyright (c) 2015, 2016 Linaro Ltd.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + */
-> +
-> +#define pr_fmt(fmt) "ACPI: SPCR: " fmt
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/console.h>
-> +#include <linux/kernel.h>
-> +#include <linux/serial_core.h>
-> +
-> +static int acpi_table_parse_spcr(int (*handler)(struct acpi_table_spcr *table,
-> +						void *data), void *data)
-> +{
-> +	struct acpi_table_spcr *table = NULL;
-> +	acpi_size table_size;
-> +	acpi_status status;
-> +	int err;
-> +
-> +	status = acpi_get_table_with_size(ACPI_SIG_SPCR, 0,
-> +					  (struct acpi_table_header **)&table,
-> +					  &table_size);
-> +
-> +	if (ACPI_FAILURE(status))
-> +		return -ENODEV;
-> +
-> +	err = handler(table, data);
-> +
-> +	early_acpi_os_unmap_memory(table, table_size);
-> +
-> +	return err;
-> +}
-> +
-> +static int spcr_table_handler_check(struct acpi_table_spcr *table, void *data)
-> +{
-> +	struct uart_port *uport = data;
-> +	char *options;
-> +
-> +	if (table->header.revision < 2)
-> +		return -EOPNOTSUPP;
-> +
-> +	switch (table->baud_rate) {
-> +	case 3:
-> +		options = "9600";
-> +		break;
-> +	case 4:
-> +		options = "19200";
-> +		break;
-> +	case 6:
-> +		options = "57600";
-> +		break;
-> +	case 7:
-> +		options = "115200";
-> +		break;
-> +	default:
-> +		options = "";
-> +		break;
-> +	}
-> +
-> +	if ((table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY &&
-> +	     table->serial_port.address == (u64)uport->mapbase) ||
-> +	    (table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_IO &&
-> +	     table->serial_port.address == (u64)uport->iobase)) {
-> +		pr_info("adding preferred console [%s%d]\n", uport->cons->name,
-> +			uport->line);
-> +		add_preferred_console(uport->cons->name, uport->line, options);
-> +		return 1;
-> +
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * acpi_console_check - Check if uart matches the console specified by SPCR.
-> + *
-> + * @uport:	uart port to check
-> + *
-> + * This function checks if the ACPI SPCR table specifies @uport to be a console
-> + * and if so calls add_preferred_console()
-> + *
-> + * Return: a non-error value if the console matches.
-> + */
-> +bool acpi_console_check(struct uart_port *uport)
-> +{
-> +	if (acpi_disabled || console_set_on_cmdline)
-> +		return false;
-> +
-> +	return acpi_table_parse_spcr(spcr_table_handler_check, uport) > 0;
-> +}
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index a126a60..459ab54 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -34,6 +34,7 @@
->  #include <linux/serial_core.h>
->  #include <linux/delay.h>
->  #include <linux/mutex.h>
-> +#include <linux/acpi.h>
->  
->  #include <asm/irq.h>
->  #include <asm/uaccess.h>
-> @@ -2654,8 +2655,17 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
->  		spin_lock_init(&uport->lock);
->  		lockdep_set_class(&uport->lock, &port_lock_key);
->  	}
-> -	if (uport->cons && uport->dev)
-> -		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
-> +
-> +	/*
-> +	 * Support both open FW and ACPI access to console definitions.
-> +	 * Both of_console_check() and acpi_console_check() will call
-> +	 * add_preferred_console() if a console definition is found.
-> +	 */
-> +	if (uport->cons && uport->dev) {
-> +		if (!acpi_console_check(uport))
-> +			of_console_check(uport->dev->of_node, uport->cons->name,
-> +					 uport->line);
+> I am afraid non-ASCII will break something eventually. I think it
+> would be better to ask Ilias to put his name in proper latin
+> transcription here.
 
-of_console_check() is not a good model for enabling a console.
-It's a hack with several shortcomings (and bugs) that is tolerated here
-because of its broad applicability to a wide range of platforms and drivers.
+Why, we accept non-ASCII names all the time, why would we not do so?
 
-I specifically added console matching to enable exactly this kind of
-console-selection-via-firmware. Please use that facility.
+Please fix up and resend.
 
-Regards,
-Peter Hurley
+thansk,
 
-
-> +	}
->  
->  	uart_configure_port(drv, state, uport);
->  
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 06ed7e5..ea0c297 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -1004,4 +1004,14 @@ static inline struct fwnode_handle *acpi_get_next_subnode(struct device *dev,
->  #define acpi_probe_device_table(t)	({ int __r = 0; __r;})
->  #endif
->  
-> +struct uart_port;
-> +#ifdef CONFIG_ACPI_SPCR_TABLE
-> +bool acpi_console_check(struct uart_port *uport);
-> +#else
-> +static inline bool acpi_console_check(struct uart_port *uport)
-> +{
-> +	return FALSE;
-> +}
-> +#endif
-> +
->  #endif	/*_LINUX_ACPI_H*/
-> 
+greg k-h
