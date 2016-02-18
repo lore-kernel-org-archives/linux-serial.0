@@ -1,70 +1,59 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH 2/3] serial: xuartps: Enable OF earlycon support
-Date: Thu, 18 Feb 2016 09:01:36 +0100
-Message-ID: <56C57A60.4070600@xilinx.com>
-References: <67c9013fc61f53515934b54847a05df8b8e1504a.1455552315.git.michal.simek@xilinx.com>
- <23ab10a19b21df2ef17a5bb6ce2a70d2d3fd3551.1455552315.git.michal.simek@xilinx.com>
- <56C34F65.1040506@hurleysoftware.com>
+From: Jakub Kicinski <moorray3@wp.pl>
+Subject: Re: [PATCH] sc16is7xx: switch to threaded irq for fixing RT issues
+Date: Thu, 18 Feb 2016 08:46:34 +0000
+Message-ID: <20160218084634.017c3ab4@laptop>
+References: <1455523133-29895-1-git-send-email-sean.nyekjaer@prevas.dk>
+	<20160215220810.11529101@laptop>
+	<56C2D1A7.1030908@prevas.dk>
+	<20160216210250.34c2f07f@laptop>
+	<56C41FA5.4010605@prevas.dk>
+	<20160217215427.0263dbbc@laptop>
+	<20160217232546.GA4009@jcartwri.amer.corp.natinst.com>
+	<56C572E4.20906@prevas.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <56C34F65.1040506@hurleysoftware.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Peter Hurley <peter@hurleysoftware.com>, Michal Simek <michal.simek@xilinx.com>, linux-arm-kernel@lists.infradead.org, Arnd
- Bergmann <arnd@arndb.de>, Nicolas Pitre <nicolas.pitre@linaro.org>
-Cc: monstr@monstr.eu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, =?UTF-8?Q?S=c3=b6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <56C572E4.20906@prevas.dk>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Sean =?UTF-8?B?Tnlla2rDpnI=?= <sean.nyekjaer@prevas.dk>
+Cc: Josh Cartwright <joshc@ni.com>, linux-serial@vger.kernel.org, kubakici@wp.pl, linux-rt-users@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
+On Thu, 18 Feb 2016 08:29:40 +0100, Sean Nyekj=C3=A6r wrote:
+> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc=
+16is7xx.c
+> > index e78fa99..1bb5c0e 100644
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> > @@ -1257,7 +1257,7 @@ static int sc16is7xx_probe(struct device *dev=
+,
+> >  =20
+> >   	/* Setup interrupt */
+> >   	ret =3D devm_request_irq(dev, irq, sc16is7xx_irq,
+> > -			       IRQF_ONESHOT | flags, dev_name(dev), s);
+> > +			       flags, dev_name(dev), s);
+> >   	if (!ret)
+> >   		return 0;
+> > =20
+> Wow, nice that you CC'd the RT guys :-)
+>=20
+> Josh that was it, it runs without deadlocks now :-D
+>=20
+> Thank you.
+>=20
+> Jakub, is this fix ok? Who is making this into a PATCH?
 
-On 16.2.2016 17:33, Peter Hurley wrote:
-> Hi Michal,
-> 
-> On 02/15/2016 08:05 AM, Michal Simek wrote:
->> Support early console setup via DT for all listed compatible strings.
->>
->> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
->> ---
->>
->>  drivers/tty/serial/xilinx_uartps.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
->> index 009e0dbc12d2..6f5657766815 100644
->> --- a/drivers/tty/serial/xilinx_uartps.c
->> +++ b/drivers/tty/serial/xilinx_uartps.c
->> @@ -1094,6 +1094,9 @@ static int __init cdns_early_console_setup(struct earlycon_device *device,
->>  	return 0;
->>  }
->>  EARLYCON_DECLARE(cdns, cdns_early_console_setup);
->> +OF_EARLYCON_DECLARE(cdns_a, "xlnx,xuartps", cdns_early_console_setup);
->> +OF_EARLYCON_DECLARE(cdns_b, "cdns,uart-r1p8", cdns_early_console_setup);
->> +OF_EARLYCON_DECLARE(cdns_c, "cdns,uart-r1p12", cdns_early_console_setup);
-> 
-> Earlycon now shares a common framework in linux-next.
-> 
-> The EARLYCON_DECLARE() can be deleted and the OF_EARLYCON_DECLARE()
-> can all share the same earlycon name. iow,
-> 
-> -EARLYCON_DECLARE(cdns, cdns_early_console_setup);
-> +OF_EARLYCON_DECLARE(cdns, "xlnx,xuartps", cdns_early_console_setup);
-> +OF_EARLYCON_DECLARE(cdns, "cdns,uart-r1p8", cdns_early_console_setup);
-> +OF_EARLYCON_DECLARE(cdns, "cdns,uart-r1p12", cdns_early_console_setup);
+Yes, in fact similar patch circulated at some point but the author
+flaked out before it was ready for merging.
 
-I have sent v2 and I have tested it. All looks good. Thanks for pointing
-me to that change.
-BTW: Is it normal that when earlycon support is enabled that the bootlog
-is copied again? All what was printed before bootconsole [xxx] disabled
-is printed twice. Or is this just bug in our driver?
+Josh could you submit officially?  Please CC stable for 4.1+.
+=46ixes: 9e6f4ca3e567 ("sc16is7xx: use kthread_worker for tx_work and i=
+rq")
 
-Thanks,
-Michal
+Thanks a lot!
+--
+To unsubscribe from this list: send the line "unsubscribe linux-rt-user=
+s" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
