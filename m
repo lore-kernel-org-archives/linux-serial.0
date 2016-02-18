@@ -1,59 +1,46 @@
-From: Jakub Kicinski <moorray3@wp.pl>
-Subject: Re: [PATCH] sc16is7xx: switch to threaded irq for fixing RT issues
-Date: Thu, 18 Feb 2016 08:46:34 +0000
-Message-ID: <20160218084634.017c3ab4@laptop>
-References: <1455523133-29895-1-git-send-email-sean.nyekjaer@prevas.dk>
-	<20160215220810.11529101@laptop>
-	<56C2D1A7.1030908@prevas.dk>
-	<20160216210250.34c2f07f@laptop>
-	<56C41FA5.4010605@prevas.dk>
-	<20160217215427.0263dbbc@laptop>
-	<20160217232546.GA4009@jcartwri.amer.corp.natinst.com>
-	<56C572E4.20906@prevas.dk>
+From: =?UTF-8?B?0JjQu9GM0Y/RgSDQk9Cw0YHQsNC90L7Qsg==?=
+	<torso.nafi@gmail.com>
+Subject: Re: [PATCH v8 3/3] tty: 8250_omap: Use software emulated RS485
+ direction control
+Date: Thu, 18 Feb 2016 12:46:40 +0300
+Message-ID: <CAEo2pzsRf++Yaexn2K=RTu=NJs6GwC=6DXC50a=Xv92FO8N7Vg@mail.gmail.com>
+References: <CAEo2pzv-kSy+34JzC1hOxMLX_j2EB1KkiHsao5Tpm2cKVz9Qrg@mail.gmail.com>
+	<CAJs94EZNi=g5D08c9-m0aGQFTDUSksaJNsrcT6RYsyd_az75Qg@mail.gmail.com>
+	<CAEo2pzs7mTUFpUGvsyrzt5cYPXsWLiBLaoQ==SypBm5fKjkFjA@mail.gmail.com>
+	<CAJs94Ea-3Lvfmh=72EOnDhXKawBfBbM3Ue2tuW-OLemXSFTZfA@mail.gmail.com>
+	<CAEo2pzsRdhqiFiHOc8BxFsiJwJ9WTru3dGaWgfssJLWQ5FCTyg@mail.gmail.com>
+	<CAEo2pzsqo5Zp99n9GKD3e1_f_+YErJiRHc=rQy7HPvmQ92iM3A@mail.gmail.com>
+	<CAEo2pzu60tmME7N07X+OyGHpDnxT9VnzNDO2SZ9qRGu5zKpWuA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-In-Reply-To: <56C572E4.20906@prevas.dk>
-Sender: linux-rt-users-owner@vger.kernel.org
-To: Sean =?UTF-8?B?Tnlla2rDpnI=?= <sean.nyekjaer@prevas.dk>
-Cc: Josh Cartwright <joshc@ni.com>, linux-serial@vger.kernel.org, kubakici@wp.pl, linux-rt-users@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAEo2pzu60tmME7N07X+OyGHpDnxT9VnzNDO2SZ9qRGu5zKpWuA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 18 Feb 2016 08:29:40 +0100, Sean Nyekj=C3=A6r wrote:
-> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc=
-16is7xx.c
-> > index e78fa99..1bb5c0e 100644
-> > --- a/drivers/tty/serial/sc16is7xx.c
-> > +++ b/drivers/tty/serial/sc16is7xx.c
-> > @@ -1257,7 +1257,7 @@ static int sc16is7xx_probe(struct device *dev=
-,
-> >  =20
-> >   	/* Setup interrupt */
-> >   	ret =3D devm_request_irq(dev, irq, sc16is7xx_irq,
-> > -			       IRQF_ONESHOT | flags, dev_name(dev), s);
-> > +			       flags, dev_name(dev), s);
-> >   	if (!ret)
-> >   		return 0;
-> > =20
-> Wow, nice that you CC'd the RT guys :-)
->=20
-> Josh that was it, it runs without deadlocks now :-D
->=20
-> Thank you.
->=20
-> Jakub, is this fix ok? Who is making this into a PATCH?
+2016-02-18 10:18 GMT+03:00 =D0=98=D0=BB=D1=8C=D1=8F=D1=81 =D0=93=D0=B0=D1=
+=81=D0=B0=D0=BD=D0=BE=D0=B2 <torso.nafi@gmail.com>:
+> Also, forgot to mention that if serial8250_em485_init is called not
+> upon uart startup but elsewhere (upon port register for example), and
+> em485 is set, serial8250_do_startup should call
+> serial8250_em485_rts_after_send, or else RTS might be in wrong state
+> whenever the port device is opened, making it impossible to receive
+> data through RTS-controlled RS232<->RS485 hardware converters.
 
-Yes, in fact similar patch circulated at some point but the author
-flaked out before it was ready for merging.
+Just found out that it doesn't help. Actually, it is the behavior of
+tty_open function to call tty_port_block_til_ready after startup, and
+of the latter - to set RTS via ioctl if baud is not zero - both of
+which cannot be overriden within the scope of the 8250 framework. The
+reason this works in legacy omap_serial is that my GPIO which is used
+to emulate RTS is not tied to mctrl there, so the call of
+tty_port_block_til_ready does not affect its state.
 
-Josh could you submit officially?  Please CC stable for 4.1+.
-=46ixes: 9e6f4ca3e567 ("sc16is7xx: use kthread_worker for tx_work and i=
-rq")
+Therefore, a check for SER_RS485_ENABLED needs to be introduced to
+tty_port_block_til_ready.
 
-Thanks a lot!
---
-To unsubscribe from this list: send the line "unsubscribe linux-rt-user=
-s" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+Regards,
+Ilyas G.
