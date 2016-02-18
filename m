@@ -1,269 +1,235 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 1/5] ACPI: change __init to __ref for
- early_acpi_os_unmap_memory()
-Date: Thu, 18 Feb 2016 14:03:33 -0800
-Message-ID: <56C63FB5.2030907@hurleysoftware.com>
+Subject: Re: [PATCH v3 2/5] ACPI: parse SPCR and enable matching console
+Date: Thu, 18 Feb 2016 14:19:18 -0800
+Message-ID: <56C64366.2070702@hurleysoftware.com>
 References: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
- <1455559532-8305-2-git-send-email-aleksey.makarov@linaro.org>
- <1AE640813FDE7649BE1B193DEA596E883BB4BDBB@SHSMSX101.ccr.corp.intel.com>
- <1AE640813FDE7649BE1B193DEA596E883BB4BDCF@SHSMSX101.ccr.corp.intel.com>
- <56C470C5.2080203@linaro.org>
- <1AE640813FDE7649BE1B193DEA596E883BB4D2DA@SHSMSX101.ccr.corp.intel.com>
+ <1455559532-8305-3-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1AE640813FDE7649BE1B193DEA596E883BB4D2DA@SHSMSX101.ccr.corp.intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: "Zheng, Lv" <lv.zheng@intel.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Len Brown <lenb@kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1455559532-8305-3-git-send-email-aleksey.makarov@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 02/17/2016 07:36 PM, Zheng, Lv wrote:
-> Hi,
+On 02/15/2016 10:05 AM, Aleksey Makarov wrote:
+> 'ARM Server Base Boot Requiremets' [1] mentions SPCR (Serial Port
+> Console Redirection Table) [2] as a mandatory ACPI table that
+> specifies the configuration of serial console.
 > 
->> From: Aleksey Makarov [mailto:aleksey.makarov@linaro.org]
->> Subject: Re: [PATCH v3 1/5] ACPI: change __init to __ref for
->> early_acpi_os_unmap_memory()
->>
->> Hi Lv,
->>
->> Thank you for review.
->>
->> On 02/17/2016 05:51 AM, Zheng, Lv wrote:
->>
->> [..]
->>
->>>>> early_acpi_os_unmap_memory() is marked as __init because it calls
->>>>> __acpi_unmap_table(), but only when acpi_gbl_permanent_mmap is not
->> set.
->>>>>
->>>>> acpi_gbl_permanent_mmap is set in __init acpi_early_init()
->>>>> so it is safe to call early_acpi_os_unmap_memory() from anywhere
->>>>>
->>>>> We need this function to be non-__init because we need access to
->>>>> some tables at unpredictable time--it may be before or after
->>>>> acpi_gbl_permanent_mmap is set.  For example, SPCR (Serial Port Console
->>>>> Redirection) table is needed each time a new console is registered.
->>>>> It can be quite early (console_initcall) or when a module is inserted.
->>>>> When this table accessed before acpi_gbl_permanent_mmap is set,
->>>>> the pointer should be unmapped.  This is exactly what this function
->>>>> does.
->>>> [Lv Zheng]
->>>> Why don't you use another API instead of early_acpi_os_unmap_memory()
->> in
->>>> case you want to unmap things in any cases.
->>>> acpi_os_unmap_memory() should be the one to match this purpose.
->>>> It checks acpi_gbl_ppermanent_mmap in acpi_os_unmap_iomem().
->>
->> As far as I understand, there exist two steps in ACPI initialization:
->>
->> 1. Before acpi_gbl_permanent_mmap is set, tables received with
->> acpi_get_table_with_size()
->>    are mapped by early_memremap().  If a subsystem gets such a pointer it
->> should be unmapped.
->>
->> 2  After acpi_gbl_permanent_mmap is set this pointer should not be unmapped
->> at all.
->>
-> [Lv Zheng] 
-> This statement is wrong, this should be:
-> As long as there is a __reference__ to the mapped table, the pointer should not be unmapped.
-> In fact, we have a series to introduce acpi_put_table() to achieve this.
-> So your argument is wrong from very first point.
+> Parse this table and check if any registered console match the
+> description.  If it does, enable that console.
 > 
->> That exactly what early_acpi_os_unmap_memory() does--it checks
->> acpi_gbl_permanent_mmap.
->> If I had used acpi_os_unmap_memory() after acpi_gbl_permanent_mmap had
->> been set,
->> it would have tried to free that pointer with an oops (actually, I checked that
->> and got that oops).
->>
->> So using acpi_os_unmap_memory() is not an option here, but
->> early_acpi_os_unmap_memory()
->> match perfectly.
-> [Lv Zheng] 
-> I don't think so.
-> For definition block tables, we know for sure there will always be references, until "Unload" opcode is invoked by the AML interpreter.
-> But for the data tables, OSPMs should use them in this way:
-> 1. map the table
-> 2. parse the table and convert it to OS specific structures
-> 3. unmap the table
-> This helps to shrink virtual memory address space usages.
+> Introduce a new function acpi_console_check().  At the uart port
+> registration, this function checks if the ACPI SPCR table specifies
+> its argument of type struct uart_port to be a console
+> and if so calls add_preferred_console().
 > 
-> So from this point of view, all data tables should be unmapped right after being parsed.
-> Why do you need the map to be persistent in the kernel address space?
-> You can always map a small table, but what if the table size is very big?
+> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+> [2] http://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
 > 
->>
->>>> And in fact early_acpi_os_unmap_memory() should be removed.
->>
->> I don't think so -- I have explained why.  It does different thing.
->> Probably it (and/or other functions in that api) should be renamed.
->>
-> [Lv Zheng] 
-> Just let me ask one more question.
-> eary_acpi_os_unmap_memory() is not used inside of ACPICA.
-> How ACPICA can work with just acpi_os_unmap_memory()?
-> You can check drivers/acpi/tbxxx.c.
-> Especially: acpi_tb_release_temp_table() and the code invoking it.
+> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+> ---
+>  drivers/acpi/Kconfig             |  3 ++
+>  drivers/acpi/Makefile            |  1 +
+>  drivers/acpi/spcr.c              | 97 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/tty/serial/serial_core.c | 14 +++++-
+>  include/linux/acpi.h             | 10 +++++
+>  5 files changed, 123 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/acpi/spcr.c
 > 
->>> [Lv Zheng]
->>> One more thing is:
->>> If you can't switch your driver to use acpi_os_unmap_memory() instead of
->> early_acpi_os_unmap_memory(),
->>> then it implies that your driver does have a defect.
->>
->> I still don't understand what defect, sorry.
-> [Lv Zheng] 
-> If you can't ensure this sequence for using the data tables:
-> 1. map the table
-> 2. parse the table and convert it to OS specific structure
-> 3. unmap the table
-> It implies there is a bug in the driver or a bug in the ACPI subsystem core.
+> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+> index 65fb483..5611eb6 100644
+> --- a/drivers/acpi/Kconfig
+> +++ b/drivers/acpi/Kconfig
+> @@ -77,6 +77,9 @@ config ACPI_DEBUGGER_USER
+>  
+>  endif
+>  
+> +config ACPI_SPCR_TABLE
+> +	bool
+> +
+>  config ACPI_SLEEP
+>  	bool
+>  	depends on SUSPEND || HIBERNATION
+> diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
+> index 346101c..708b143 100644
+> --- a/drivers/acpi/Makefile
+> +++ b/drivers/acpi/Makefile
+> @@ -81,6 +81,7 @@ obj-$(CONFIG_ACPI_EC_DEBUGFS)	+= ec_sys.o
+>  obj-$(CONFIG_ACPI_CUSTOM_METHOD)+= custom_method.o
+>  obj-$(CONFIG_ACPI_BGRT)		+= bgrt.o
+>  obj-$(CONFIG_ACPI_CPPC_LIB)	+= cppc_acpi.o
+> +obj-$(CONFIG_ACPI_SPCR_TABLE)	+= spcr.o
+>  obj-$(CONFIG_ACPI_DEBUGGER_USER) += acpi_dbg.o
+>  
+>  # processor has its own "processor." module_param namespace
+> diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+> new file mode 100644
+> index 0000000..a1eca91
+> --- /dev/null
+> +++ b/drivers/acpi/spcr.c
+> @@ -0,0 +1,97 @@
+> +/*
+> + * Copyright (c) 2012, Intel Corporation
+> + * Copyright (c) 2015, Red Hat, Inc.
+> + * Copyright (c) 2015, 2016 Linaro Ltd.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + */
+> +
+> +#define pr_fmt(fmt) "ACPI: SPCR: " fmt
+> +
+> +#include <linux/acpi.h>
+> +#include <linux/console.h>
+> +#include <linux/kernel.h>
+> +#include <linux/serial_core.h>
+> +
+> +static int acpi_table_parse_spcr(int (*handler)(struct acpi_table_spcr *table,
+> +						void *data), void *data)
+> +{
+> +	struct acpi_table_spcr *table = NULL;
+> +	acpi_size table_size;
+> +	acpi_status status;
+> +	int err;
+> +
+> +	status = acpi_get_table_with_size(ACPI_SIG_SPCR, 0,
+> +					  (struct acpi_table_header **)&table,
+> +					  &table_size);
+> +
+> +	if (ACPI_FAILURE(status))
+> +		return -ENODEV;
+> +
+> +	err = handler(table, data);
+> +
+> +	early_acpi_os_unmap_memory(table, table_size);
+> +
+> +	return err;
+> +}
+> +
+> +static int spcr_table_handler_check(struct acpi_table_spcr *table, void *data)
+> +{
+> +	struct uart_port *uport = data;
+> +	char *options;
+> +
+> +	if (table->header.revision < 2)
+> +		return -EOPNOTSUPP;
+> +
+> +	switch (table->baud_rate) {
+> +	case 3:
+> +		options = "9600";
+> +		break;
+> +	case 4:
+> +		options = "19200";
+> +		break;
+> +	case 6:
+> +		options = "57600";
+> +		break;
+> +	case 7:
+> +		options = "115200";
+> +		break;
+> +	default:
+> +		options = "";
+> +		break;
+> +	}
+> +
+> +	if ((table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY &&
+> +	     table->serial_port.address == (u64)uport->mapbase) ||
+> +	    (table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_IO &&
+> +	     table->serial_port.address == (u64)uport->iobase)) {
+> +		pr_info("adding preferred console [%s%d]\n", uport->cons->name,
+> +			uport->line);
+> +		add_preferred_console(uport->cons->name, uport->line, options);
+> +		return 1;
+> +
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * acpi_console_check - Check if uart matches the console specified by SPCR.
+> + *
+> + * @uport:	uart port to check
+> + *
+> + * This function checks if the ACPI SPCR table specifies @uport to be a console
+> + * and if so calls add_preferred_console()
+> + *
+> + * Return: a non-error value if the console matches.
+> + */
+> +bool acpi_console_check(struct uart_port *uport)
+> +{
+> +	if (acpi_disabled || console_set_on_cmdline)
+> +		return false;
+> +
+> +	return acpi_table_parse_spcr(spcr_table_handler_check, uport) > 0;
+> +}
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index a126a60..459ab54 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -34,6 +34,7 @@
+>  #include <linux/serial_core.h>
+>  #include <linux/delay.h>
+>  #include <linux/mutex.h>
+> +#include <linux/acpi.h>
+>  
+>  #include <asm/irq.h>
+>  #include <asm/uaccess.h>
+> @@ -2654,8 +2655,17 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+>  		spin_lock_init(&uport->lock);
+>  		lockdep_set_class(&uport->lock, &port_lock_key);
+>  	}
+> -	if (uport->cons && uport->dev)
+> -		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
+> +
+> +	/*
+> +	 * Support both open FW and ACPI access to console definitions.
+> +	 * Both of_console_check() and acpi_console_check() will call
+> +	 * add_preferred_console() if a console definition is found.
+> +	 */
+> +	if (uport->cons && uport->dev) {
+> +		if (!acpi_console_check(uport))
+> +			of_console_check(uport->dev->of_node, uport->cons->name,
+> +					 uport->line);
 
-Exactly.
+of_console_check() is not a good model for enabling a console.
+It's a hack with several shortcomings (and bugs) that is tolerated here
+because of its broad applicability to a wide range of platforms and drivers.
 
-The central problem here is the way Aleksey is trying to hookup a console.
-
-What should be happening in this series is:
-1. early map SPCR
-2. parse the SPCR table
-3. call add_preferred_console() to add the SPCR console to the console table
-4. unmap SPCR
-
-This trivial and unobtrusive method would already have a 8250 console
-running via SPCR. I've already pointed this out in previous reviews.
-
-Further, the above method *will be required anyway* for the DBG2 table to
-start an earlycon, which I've already pointed out in previous reviews.
-
-Then to enable amba-pl011 console via ACPI, add a console match() method
-similar to the 8250 console match() method, univ8250_console_match().
-
-FWIW, PCI earlycon + console support was already submitted once before but
-never picked up by GregKH. I think I'll just grab that and re-submit so
-you would know what to emit for console options in the add_preferred_console().
-
+I specifically added console matching to enable exactly this kind of
+console-selection-via-firmware. Please use that facility.
 
 Regards,
 Peter Hurley
 
 
->>> There is an early bootup requirement in Linux.
->>> Maps acquired during the early stage should be freed by the driver during the
->> early stage.
->>> And the driver should re-acquire the memory map after booting.
->>
->> Exactly.  That's why I use early_acpi_os_unmap_memory().  The point is that
->> that code can be
->> called *before* acpi_gbl_permanent_mmap is set (at early initialization of for
->> example 8250 console)
->> or *after* acpi_gbl_permanent_mmap is set (at insertion of a module that
->> registers a console),
->> We just can not tell if the received table pointer should or sould not be freed
->> with early_memunmap()
->> (actually __acpi_unmap_table() or whatever) without checking
->> acpi_gbl_permanent_mmap,
->> but that's all too low level.
-> [Lv Zheng] 
-> The driver should make sure that:
-> Map/unmap is paired during early stage.
-> For late stage, it should be another pair of map/unmap.
+> +	}
+>  
+>  	uart_configure_port(drv, state, uport);
+>  
+> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+> index 06ed7e5..ea0c297 100644
+> --- a/include/linux/acpi.h
+> +++ b/include/linux/acpi.h
+> @@ -1004,4 +1004,14 @@ static inline struct fwnode_handle *acpi_get_next_subnode(struct device *dev,
+>  #define acpi_probe_device_table(t)	({ int __r = 0; __r;})
+>  #endif
+>  
+> +struct uart_port;
+> +#ifdef CONFIG_ACPI_SPCR_TABLE
+> +bool acpi_console_check(struct uart_port *uport);
+> +#else
+> +static inline bool acpi_console_check(struct uart_port *uport)
+> +{
+> +	return FALSE;
+> +}
+> +#endif
+> +
+>  #endif	/*_LINUX_ACPI_H*/
 > 
->>
->> Another option, as you describe, is to get this pointer early, don't free it
-> [Lv Zheng] 
-> I mean you should free it early.
-> 
->> untill acpi_gbl_permanent_mmap is set, then free it (with
->> early_acpi_os_unmap_memory(), that's
->> ok because acpi_gbl_permanent_mmap is set in an init code), then get the
->> persistent
->> pointer to the table.  The problem with it is that we can not just watch
->> acpi_gbl_permanent_mmap
->> to catch this exact moment.  And also accessing acpi_gbl_permanent_mmap is
->> not good as it probably is
->> an implementation detail (i. e. too lowlevel) of the ACPI code.
->> Or I probably miss what you are suggesting.
->>
-> [Lv Zheng] 
-> I mean, you should:
-> During early stage:
-> acpi_os_map_memory()
-> Parse the table.
-> acpi_os_unmap_memory().
-> 
->>> This is because, during early bootup stage, there are only limited slots
->> available for drivers to map memory.
->>> So by changing __init to __ref here, you probably will hide many such defects.
->>
->> What defects?  This funcions checks acpi_gbl_permanent_mmap.
->> BTW, exactly the same thing is done in the beginning of
->> acpi_os_unmap_memory() and than's ok,
->> that function is __ref.
->>
->>> And solving issues in this way doesn't seem to be an improvement.
->>
->> Could you please tell me where I am wrong?  I still don't understand your point.
-> [Lv Zheng] 
-> But anyway, the defect should be in ACPI subsystem core.
-> The cause should be the API itself - acpi_get_table().
-> 
-> So I agree you can use early_acpi_os_unmap_memory() during the period the root causes are not cleaned up.
-> But the bottom line is: the driver need to ensure that early_acpi_os_unmap_memory() is always invoked.
-> As long as you can ensure this, I don't have objections for deploying early_acpi_os_unmap_memory()  for now.
-> 
-> Thanks and best regards
-> -Lv
-> 
->>
->> Thank you
->> Aleksey Makarov
->>
->>>
->>> Thanks and best regards
->>> -Lv
->>>
->>>>
->>>> Thanks and best regards
->>>> -Lv
->>>>
->>>>>
->>>>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
->>>>> ---
->>>>>  drivers/acpi/osl.c | 6 +++++-
->>>>>  1 file changed, 5 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
->>>>> index 67da6fb..8a552cd 100644
->>>>> --- a/drivers/acpi/osl.c
->>>>> +++ b/drivers/acpi/osl.c
->>>>> @@ -497,7 +497,11 @@ void __ref acpi_os_unmap_memory(void *virt,
->>>>> acpi_size size)
->>>>>  }
->>>>>  EXPORT_SYMBOL_GPL(acpi_os_unmap_memory);
->>>>>
->>>>> -void __init early_acpi_os_unmap_memory(void __iomem *virt, acpi_size
->>>> size)
->>>>> +/*
->>>>> + * acpi_gbl_permanent_mmap is set in __init acpi_early_init()
->>>>> + * so it is safe to call early_acpi_os_unmap_memory() from anywhere
->>>>> + */
->>>>> +void __ref early_acpi_os_unmap_memory(void __iomem *virt, acpi_size
->>>> size)
->>>>>  {
->>>>>  	if (!acpi_gbl_permanent_mmap)
->>>>>  		__acpi_unmap_table(virt, size);
->>>>> --
->>>>> 2.7.1
->>>>>
->>>>> --
->>>>> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
->>>>> the body of a message to majordomo@vger.kernel.org
->>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
