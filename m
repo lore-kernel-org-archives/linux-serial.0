@@ -1,42 +1,40 @@
-From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: Re: [PATCH v1] tty: serial: Use GFP_ATOMIC instead of GFP_KERNEL in serial8250_em485_init()
-Date: Thu, 18 Feb 2016 23:29:07 +0300
-Message-ID: <CAJs94EbEOnQg0bQ8s-YD-AQfpKatovwyv81hJSbPpxy1RGhBBQ@mail.gmail.com>
-References: <1455821240-5842-1-git-send-email-matwey@sai.msu.ru> <CAHp75VdLfOpsA-owMzOTJoo_iFmWiJjzC1p-NaqRO9LHcWu1Pg@mail.gmail.com>
+From: Jeremy Linton <jeremy.linton@arm.com>
+Subject: Re: [PATCH v3 0/5] ACPI: parse the SPCR table
+Date: Thu, 18 Feb 2016 15:15:44 -0600
+Message-ID: <56C63480.5020605@arm.com>
+References: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VdLfOpsA-owMzOTJoo_iFmWiJjzC1p-NaqRO9LHcWu1Pg@mail.gmail.com>
+In-Reply-To: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?UTF-8?B?0JjQu9GM0Y/RgSDQk9Cw0YHQsNC90L7Qsg==?= <torso.nafi@gmail.com>
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-2016-02-18 23:21 GMT+03:00 Andy Shevchenko <andy.shevchenko@gmail.com>:
-> On Thu, Feb 18, 2016 at 8:47 PM, Matwey V. Kornilov <matwey@sai.msu.ru> wrote:
->> serial8250_em485_init() is supposed to be protected with
->> p->port.lock spinlock.
->> This may lead to issues when kmalloc sleeps, so it is better to use
->> GFP_ATOMIC in this spinlocked context.
->>
->> Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
->> Reported-by: <torso.nafi@gmail.com>
+On 02/15/2016 12:05 PM, Aleksey Makarov wrote:
+> This patchset is based on the patchset by Leif Lindholm [1]
 >
-> Hmm... Can't we put Cyrillic characters to tags as name of a person?
-
-I am afraid non-ASCII will break something eventually. I think it
-would be better to ask Ilias to put his name in proper latin
-transcription here.
-
-> --
-> With Best Regards,
-> Andy Shevchenko
+> 'ARM Server Base Boot Requirements' [2] mentions SPCR (Serial Port
+> Console Redirection Table) [3] as a mandatory ACPI table that
+> specifies the configuration of serial console.
 >
+> SPCR support is included in QEMU's ARM mach-virt since 2.4 release.
+>
+> Introduce a new function acpi_console_check().  At the uart port
+> registration, this function checks if the ACPI SPCR table specifies
+> its argument of type struct uart_port to be a console
+> and if so calls add_preferred_console().
+>
+> Use SPCR to tell if SBSA serial driver should use 32-bit access to registers.
+>
+> To be able to access SPCR table each time any console is registered
+> change __init to __ref for early_acpi_os_unmap_memory().
+>
+> The patchset should be applied to tty-next.
+(trimming)
 
+This works on the JunoR2 with a new enough firmware to have the SPCR table.
 
-
--- 
-With best regards,
-Matwey V. Kornilov.
-Sternberg Astronomical Institute, Lomonosov Moscow State University, Russia
-119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
+Tested-by: Jeremy Linton <jeremy.linton@arm.com>
