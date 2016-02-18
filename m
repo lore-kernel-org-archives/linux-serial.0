@@ -1,61 +1,857 @@
-From: Josh Cartwright <joshc@ni.com>
-Subject: [PATCH] sc16is7xx: drop bogus use of IRQF_ONESHOT
-Date: Thu, 18 Feb 2016 11:26:12 -0600
-Message-ID: <1455816372-13989-1-git-send-email-joshc@ni.com>
-References: <20160218084634.017c3ab4@laptop>
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20160218084634.017c3ab4@laptop>
-Sender: stable-owner@vger.kernel.org
-To: Jakub Kicinski <moorray3@wp.pl>
-Cc: linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+From: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Subject: Re: [PATCH v4 03/12] serial: mvebu-uart: initial support for Armada-3700 serial port
+Date: Thu, 18 Feb 2016 18:37:51 +0100
+Message-ID: <8737sprkb4.fsf@free-electrons.com>
+References: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
+	<1455646502-23834-4-git-send-email-gregory.clement@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1455646502-23834-4-git-send-email-gregory.clement@free-electrons.com>
+	(Gregory CLEMENT's message of "Tue, 16 Feb 2016 19:14:53 +0100")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Jason Cooper <jason@lakedaemon.net>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>, Wilson Ding <dingwei@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
-The use of IRQF_ONESHOT when registering an interrupt handler with
-request_irq() is non-sensical.
+Hi Greg and Jiri
+=20
+ On mar., f=C3=A9vr. 16 2016, Gregory CLEMENT <gregory.clement@free-ele=
+ctrons.com> wrote:
 
-Not only that, it also prevents the handler from being threaded when it
-otherwise should be w/ IRQ_FORCED_THREADING is enabled.  This causes the
-following deadlock observed by Sean Nyekjaer on -rt:
+> From: Wilson Ding <dingwei@marvell.com>
+>
+> Armada-3700's uart is a simple serial port, which doesn't
+> support. Configuring the modem control lines. The uart port has a 32
+> bytes Tx FIFO and a 64 bytes Rx FIFO
+>
+> The uart driver implements the uart core operations. It also support =
+the
+> system (early) console based on Armada-3700's serial port.
+>
+> Known Issue:
+>
+> The uart driver currently doesn't support clock programming, which me=
+ans
+> the baud-rate stays with the default value configured by the bootload=
+er
+> at boot time
+>
+> [gregory.clement@free-electrons.com: Rewrite many part which are too =
+long
+> to enumerate]
+>
+> Signed-off-by: Wilson Ding <dingwei@marvell.com>
+> Signed-off-by: Nadav Haklai <nadavh@marvell.com>
+> Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
-[..]
-   rt_spin_lock_slowlock from (queue_kthread_work+0x18/0x74)
-   queue_kthread_work) from (sc16is7xx_irq+0x10/0x18 [sc16is7xx])
-   sc16is7xx_irq [sc16is7xx]) from (handle_irq_event_percpu+0x70/0x158)
-   handle_irq_event_percpu) from (handle_irq_event+0x68/0xa8)
-   handle_irq_event) from (handle_level_irq+0x10c/0x184)
-   handle_level_irq) from (generic_handle_irq+0x2c/0x3c)
-   generic_handle_irq) from (mxc_gpio_irq_handler+0x3c/0x108)
-   mxc_gpio_irq_handler) from (mx3_gpio_irq_handler+0x80/0xcc)
-   mx3_gpio_irq_handler) from (generic_handle_irq+0x2c/0x3c)
-   generic_handle_irq) from (__handle_domain_irq+0x7c/0xe8)
-   __handle_domain_irq) from (gic_handle_irq+0x24/0x5c)
-   gic_handle_irq) from (__irq_svc+0x40/0x88)
-   (__irq_svc) from (rt_spin_unlock+0x1c/0x68)
-   (rt_spin_unlock) from (kthread_worker_fn+0x104/0x17c)
-   (kthread_worker_fn) from (kthread+0xd0/0xe8)
-   (kthread) from (ret_from_fork+0x14/0x2c)
+I took care of the arm related part of the series, but I will let you
+apply this patch in the serial subsystem once you have reviewed it. But
+if for any reason you preferred that I took it through mvebu just tell
+me.
 
-Reported-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Fixes: 9e6f4ca3e567 ("sc16is7xx: use kthread_worker for tx_work and irq")
-Cc: stable@vger.kernel.org # v4.1+
-Signed-off-by: Josh Cartwright <joshc@ni.com>
----
- drivers/tty/serial/sc16is7xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks,
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index e78fa99..1bb5c0e 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1257,7 +1257,7 @@ static int sc16is7xx_probe(struct device *dev,
- 
- 	/* Setup interrupt */
- 	ret = devm_request_irq(dev, irq, sc16is7xx_irq,
--			       IRQF_ONESHOT | flags, dev_name(dev), s);
-+			       flags, dev_name(dev), s);
- 	if (!ret)
- 		return 0;
- 
--- 
-2.7.0
+Gregory
+
+> ---
+>  .../devicetree/bindings/tty/serial/mvebu-uart.txt  |  13 +
+>  Documentation/kernel-parameters.txt                |   6 +
+>  drivers/tty/serial/Kconfig                         |  22 +
+>  drivers/tty/serial/Makefile                        |   1 +
+>  drivers/tty/serial/mvebu-uart.c                    | 650 +++++++++++=
+++++++++++
+>  include/uapi/linux/serial_core.h                   |   3 +
+>  6 files changed, 695 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/tty/serial/mveb=
+u-uart.txt
+>  create mode 100644 drivers/tty/serial/mvebu-uart.c
+>
+> diff --git a/Documentation/devicetree/bindings/tty/serial/mvebu-uart.=
+txt b/Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+> new file mode 100644
+> index 000000000000..6087defd9f93
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/tty/serial/mvebu-uart.txt
+> @@ -0,0 +1,13 @@
+> +* Marvell UART : Non standard UART used in some of Marvell EBU SoCs =
+(e.g., Armada-3700)
+> +
+> +Required properties:
+> +- compatible: "marvell,armada-3700-uart"
+> +- reg: offset and length of the register set for the device.
+> +- interrupts: device interrupt
+> +
+> +Example:
+> +	serial@12000 {
+> +		compatible =3D "marvell,armada-3700-uart";
+> +		reg =3D <0x12000 0x400>;
+> +		interrupts =3D <43>;
+> +	};
+> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kern=
+el-parameters.txt
+> index 87d40a72f6a1..ea0aba48d616 100644
+> --- a/Documentation/kernel-parameters.txt
+> +++ b/Documentation/kernel-parameters.txt
+> @@ -1058,6 +1058,12 @@ bytes respectively. Such letter suffixes can a=
+lso be entirely omitted.
+>  			A valid base address must be provided, and the serial
+>  			port must already be setup and configured.
+> =20
+> +		armada3700_uart,<addr>
+> +			Start an early, polled-mode console on the
+> +			Armada 3700 serial port at the specified
+> +			address. The serial port must already be setup
+> +			and configured. Options are not yet supported.
+> +
+>  	earlyprintk=3D	[X86,SH,BLACKFIN,ARM,M68k]
+>  			earlyprintk=3Dvga
+>  			earlyprintk=3Defi
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 39721ec4f415..b291f934d51b 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1606,6 +1606,28 @@ config SERIAL_STM32_CONSOLE
+>  	depends on SERIAL_STM32=3Dy
+>  	select SERIAL_CORE_CONSOLE
+> =20
+> +config SERIAL_MVEBU_UART
+> +	bool "Marvell EBU serial port support"
+> +	select SERIAL_CORE
+> +	help
+> +	  This driver is for Marvell EBU SoC's UART. If you have a machine
+> +	  based on the Armada-3700 SoC and wish to use the on-board serial
+> +	  port,
+> +	  say 'Y' here.
+> +	  Otherwise, say 'N'.
+> +
+> +config SERIAL_MVEBU_CONSOLE
+> +	bool "Console on Marvell EBU serial port"
+> +	depends on SERIAL_MVEBU_UART
+> +	select SERIAL_CORE_CONSOLE
+> +	select SERIAL_EARLYCON
+> +	default y
+> +	help
+> +	  Say 'Y' here if you wish to use Armada-3700 UART as the system co=
+nsole.
+> +	  (the system console is the device which receives all kernel messa=
+ges
+> +	  and warnings and which allows logins in single user mode)
+> +	  Otherwise, say 'N'.
+> +
+>  endmenu
+> =20
+>  config SERIAL_MCTRL_GPIO
+> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefil=
+e
+> index b391c9b31960..988167595330 100644
+> --- a/drivers/tty/serial/Makefile
+> +++ b/drivers/tty/serial/Makefile
+> @@ -91,6 +91,7 @@ obj-$(CONFIG_SERIAL_CONEXANT_DIGICOLOR)	+=3D digico=
+lor-usart.o
+>  obj-$(CONFIG_SERIAL_MEN_Z135)	+=3D men_z135_uart.o
+>  obj-$(CONFIG_SERIAL_SPRD) +=3D sprd_serial.o
+>  obj-$(CONFIG_SERIAL_STM32)	+=3D stm32-usart.o
+> +obj-$(CONFIG_SERIAL_MVEBU_UART)	+=3D mvebu-uart.o
+> =20
+>  # GPIOLIB helpers for modem control lines
+>  obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+=3D serial_mctrl_gpio.o
+> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mve=
+bu-uart.c
+> new file mode 100644
+> index 000000000000..0ff27818bb87
+> --- /dev/null
+> +++ b/drivers/tty/serial/mvebu-uart.c
+> @@ -0,0 +1,650 @@
+> +/*
+> +* ******************************************************************=
+*********
+> +* Copyright (C) 2015 Marvell International Ltd.
+> +* ******************************************************************=
+*********
+> +* This program is free software: you can redistribute it and/or modi=
+fy it
+> +* under the terms of the GNU General Public License as published by =
+the Free
+> +* Software Foundation, either version 2 of the License, or any later=
+ version.
+> +*
+> +* This program is distributed in the hope that it will be useful,
+> +* but WITHOUT ANY WARRANTY; without even the implied warranty of
+> +* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> +* GNU General Public License for more details.
+> +*
+> +* You should have received a copy of the GNU General Public License
+> +* along with this program.  If not, see <http://www.gnu.org/licenses=
+/>.
+> +* ******************************************************************=
+*********
+> +*/
+> +
+> +#include <linux/clk.h>
+> +#include <linux/console.h>
+> +#include <linux/delay.h>
+> +#include <linux/device.h>
+> +#include <linux/init.h>
+> +#include <linux/io.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of_device.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/serial.h>
+> +#include <linux/serial_core.h>
+> +#include <linux/slab.h>
+> +#include <linux/tty.h>
+> +#include <linux/tty_flip.h>
+> +
+> +/* Register Map */
+> +#define UART_RBR		0x00
+> +#define  RBR_BRK_DET		BIT(15)
+> +#define  RBR_FRM_ERR_DET	BIT(14)
+> +#define  RBR_PAR_ERR_DET	BIT(13)
+> +#define  RBR_OVR_ERR_DET	BIT(12)
+> +
+> +#define UART_TSH		0x04
+> +
+> +#define UART_CTRL		0x08
+> +#define  CTRL_SOFT_RST		BIT(31)
+> +#define  CTRL_TXFIFO_RST	BIT(15)
+> +#define  CTRL_RXFIFO_RST	BIT(14)
+> +#define  CTRL_ST_MIRR_EN	BIT(13)
+> +#define  CTRL_LPBK_EN		BIT(12)
+> +#define  CTRL_SND_BRK_SEQ	BIT(11)
+> +#define  CTRL_PAR_EN		BIT(10)
+> +#define  CTRL_TWO_STOP		BIT(9)
+> +#define  CTRL_TX_HFL_INT	BIT(8)
+> +#define  CTRL_RX_HFL_INT	BIT(7)
+> +#define  CTRL_TX_EMP_INT	BIT(6)
+> +#define  CTRL_TX_RDY_INT	BIT(5)
+> +#define  CTRL_RX_RDY_INT	BIT(4)
+> +#define  CTRL_BRK_DET_INT	BIT(3)
+> +#define  CTRL_FRM_ERR_INT	BIT(2)
+> +#define  CTRL_PAR_ERR_INT	BIT(1)
+> +#define  CTRL_OVR_ERR_INT	BIT(0)
+> +#define  CTRL_RX_INT			(CTRL_RX_RDY_INT | CTRL_BRK_DET_INT |\
+> +	CTRL_FRM_ERR_INT | CTRL_PAR_ERR_INT | CTRL_OVR_ERR_INT)
+> +
+> +#define UART_STAT		0x0c
+> +#define  STAT_TX_FIFO_EMP	BIT(13)
+> +#define  STAT_RX_FIFO_EMP	BIT(12)
+> +#define  STAT_TX_FIFO_FUL	BIT(11)
+> +#define  STAT_TX_FIFO_HFL	BIT(10)
+> +#define  STAT_RX_TOGL		BIT(9)
+> +#define  STAT_RX_FIFO_FUL	BIT(8)
+> +#define  STAT_RX_FIFO_HFL	BIT(7)
+> +#define  STAT_TX_EMP		BIT(6)
+> +#define  STAT_TX_RDY		BIT(5)
+> +#define  STAT_RX_RDY		BIT(4)
+> +#define  STAT_BRK_DET		BIT(3)
+> +#define  STAT_FRM_ERR		BIT(2)
+> +#define  STAT_PAR_ERR		BIT(1)
+> +#define  STAT_OVR_ERR		BIT(0)
+> +#define  STAT_BRK_ERR		(STAT_BRK_DET | STAT_FRM_ERR | STAT_FRM_ERR\
+> +				 | STAT_PAR_ERR | STAT_OVR_ERR)
+> +
+> +#define UART_BRDV		0x10
+> +
+> +#define MVEBU_NR_UARTS		1
+> +
+> +#define MVEBU_UART_TYPE		"mvebu-uart"
+> +
+> +static struct uart_port mvebu_uart_ports[MVEBU_NR_UARTS];
+> +
+> +struct mvebu_uart_data {
+> +	struct uart_port *port;
+> +	struct clk       *clk;
+> +};
+> +
+> +/* Core UART Driver Operations */
+> +static unsigned int mvebu_uart_tx_empty(struct uart_port *port)
+> +{
+> +	unsigned long flags;
+> +	unsigned int st;
+> +
+> +	spin_lock_irqsave(&port->lock, flags);
+> +	st =3D readl(port->membase + UART_STAT);
+> +	spin_unlock_irqrestore(&port->lock, flags);
+> +
+> +	return (st & STAT_TX_FIFO_EMP) ? TIOCSER_TEMT : 0;
+> +}
+> +
+> +static unsigned int mvebu_uart_get_mctrl(struct uart_port *port)
+> +{
+> +	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
+> +}
+> +
+> +static void mvebu_uart_set_mctrl(struct uart_port *port,
+> +				 unsigned int mctrl)
+> +{
+> +/*
+> + * Even if we do not support configuring the modem control lines, th=
+is
+> + * function must be proided to the serial core
+> + */
+> +}
+> +
+> +static void mvebu_uart_stop_tx(struct uart_port *port)
+> +{
+> +	unsigned int ctl =3D readl(port->membase + UART_CTRL);
+> +
+> +	ctl &=3D ~CTRL_TX_RDY_INT;
+> +	writel(ctl, port->membase + UART_CTRL);
+> +}
+> +
+> +static void mvebu_uart_start_tx(struct uart_port *port)
+> +{
+> +	unsigned int ctl =3D readl(port->membase + UART_CTRL);
+> +
+> +	ctl |=3D CTRL_TX_RDY_INT;
+> +	writel(ctl, port->membase + UART_CTRL);
+> +}
+> +
+> +static void mvebu_uart_stop_rx(struct uart_port *port)
+> +{
+> +	unsigned int ctl =3D readl(port->membase + UART_CTRL);
+> +
+> +	ctl &=3D ~CTRL_RX_INT;
+> +	writel(ctl, port->membase + UART_CTRL);
+> +}
+> +
+> +static void mvebu_uart_break_ctl(struct uart_port *port, int brk)
+> +{
+> +	unsigned int ctl;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&port->lock, flags);
+> +	ctl =3D readl(port->membase + UART_CTRL);
+> +	if (brk =3D=3D -1)
+> +		ctl |=3D CTRL_SND_BRK_SEQ;
+> +	else
+> +		ctl &=3D ~CTRL_SND_BRK_SEQ;
+> +	writel(ctl, port->membase + UART_CTRL);
+> +	spin_unlock_irqrestore(&port->lock, flags);
+> +}
+> +
+> +static void mvebu_uart_rx_chars(struct uart_port *port, unsigned int=
+ status)
+> +{
+> +	struct tty_port *tport =3D &port->state->port;
+> +	unsigned char ch =3D 0;
+> +	char flag =3D 0;
+> +
+> +	do {
+> +		if (status & STAT_RX_RDY) {
+> +			ch =3D readl(port->membase + UART_RBR);
+> +			ch &=3D 0xff;
+> +			flag =3D TTY_NORMAL;
+> +			port->icount.rx++;
+> +
+> +			if (status & STAT_PAR_ERR)
+> +				port->icount.parity++;
+> +		}
+> +
+> +		if (status & STAT_BRK_DET) {
+> +			port->icount.brk++;
+> +			status &=3D ~(STAT_FRM_ERR | STAT_PAR_ERR);
+> +			if (uart_handle_break(port))
+> +				goto ignore_char;
+> +		}
+> +
+> +		if (status & STAT_OVR_ERR)
+> +			port->icount.overrun++;
+> +
+> +		if (status & STAT_FRM_ERR)
+> +			port->icount.frame++;
+> +
+> +		if (uart_handle_sysrq_char(port, ch))
+> +			goto ignore_char;
+> +
+> +		if (status & port->ignore_status_mask & STAT_PAR_ERR)
+> +			status &=3D ~STAT_RX_RDY;
+> +
+> +		status &=3D port->read_status_mask;
+> +
+> +		if (status & STAT_PAR_ERR)
+> +			flag =3D TTY_PARITY;
+> +
+> +		status &=3D ~port->ignore_status_mask;
+> +
+> +		if (status & STAT_RX_RDY)
+> +			tty_insert_flip_char(tport, ch, flag);
+> +
+> +		if (status & STAT_BRK_DET)
+> +			tty_insert_flip_char(tport, 0, TTY_BREAK);
+> +
+> +		if (status & STAT_FRM_ERR)
+> +			tty_insert_flip_char(tport, 0, TTY_FRAME);
+> +
+> +		if (status & STAT_OVR_ERR)
+> +			tty_insert_flip_char(tport, 0, TTY_OVERRUN);
+> +
+> +ignore_char:
+> +		status =3D readl(port->membase + UART_STAT);
+> +	} while (status & (STAT_RX_RDY | STAT_BRK_DET));
+> +
+> +	tty_flip_buffer_push(tport);
+> +}
+> +
+> +static void mvebu_uart_tx_chars(struct uart_port *port, unsigned int=
+ status)
+> +{
+> +	struct circ_buf *xmit =3D &port->state->xmit;
+> +	unsigned int count;
+> +	unsigned int st;
+> +
+> +	if (port->x_char) {
+> +		writel(port->x_char, port->membase + UART_TSH);
+> +		port->icount.tx++;
+> +		port->x_char =3D 0;
+> +		return;
+> +	}
+> +
+> +	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+> +		mvebu_uart_stop_tx(port);
+> +		return;
+> +	}
+> +
+> +	for (count =3D 0; count < port->fifosize; count++) {
+> +		writel(xmit->buf[xmit->tail], port->membase + UART_TSH);
+> +		xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> +		port->icount.tx++;
+> +
+> +		if (uart_circ_empty(xmit))
+> +			break;
+> +
+> +		st =3D readl(port->membase + UART_STAT);
+> +		if (st & STAT_TX_FIFO_FUL)
+> +			break;
+> +	}
+> +
+> +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> +		uart_write_wakeup(port);
+> +
+> +	if (uart_circ_empty(xmit))
+> +		mvebu_uart_stop_tx(port);
+> +}
+> +
+> +static irqreturn_t mvebu_uart_isr(int irq, void *dev_id)
+> +{
+> +	struct uart_port *port =3D (struct uart_port *)dev_id;
+> +	unsigned int st =3D readl(port->membase + UART_STAT);
+> +
+> +	if (st & (STAT_RX_RDY | STAT_OVR_ERR | STAT_FRM_ERR | STAT_BRK_DET)=
+)
+> +		mvebu_uart_rx_chars(port, st);
+> +
+> +	if (st & STAT_TX_RDY)
+> +		mvebu_uart_tx_chars(port, st);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int mvebu_uart_startup(struct uart_port *port)
+> +{
+> +	int ret;
+> +
+> +	writel(CTRL_TXFIFO_RST | CTRL_RXFIFO_RST,
+> +	       port->membase + UART_CTRL);
+> +	udelay(1);
+> +	writel(CTRL_RX_INT, port->membase + UART_CTRL);
+> +
+> +	ret =3D request_irq(port->irq, mvebu_uart_isr, port->irqflags, "ser=
+ial",
+> +			  port);
+> +	if (ret) {
+> +		dev_err(port->dev, "failed to request irq\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void mvebu_uart_shutdown(struct uart_port *port)
+> +{
+> +	writel(0, port->membase + UART_CTRL);
+> +}
+> +
+> +static void mvebu_uart_set_termios(struct uart_port *port,
+> +				   struct ktermios *termios,
+> +				   struct ktermios *old)
+> +{
+> +	unsigned long flags;
+> +	unsigned int baud;
+> +
+> +	spin_lock_irqsave(&port->lock, flags);
+> +
+> +	port->read_status_mask =3D STAT_RX_RDY | STAT_OVR_ERR |
+> +		STAT_TX_RDY | STAT_TX_FIFO_FUL;
+> +
+> +	if (termios->c_iflag & INPCK)
+> +		port->read_status_mask |=3D STAT_FRM_ERR | STAT_PAR_ERR;
+> +
+> +	port->ignore_status_mask =3D 0;
+> +	if (termios->c_iflag & IGNPAR)
+> +		port->ignore_status_mask |=3D
+> +			STAT_FRM_ERR | STAT_PAR_ERR | STAT_OVR_ERR;
+> +
+> +	if ((termios->c_cflag & CREAD) =3D=3D 0)
+> +		port->ignore_status_mask |=3D STAT_RX_RDY | STAT_BRK_ERR;
+> +
+> +	if (old)
+> +		tty_termios_copy_hw(termios, old);
+> +
+> +	baud =3D uart_get_baud_rate(port, termios, old, 0, 460800);
+> +	uart_update_timeout(port, termios->c_cflag, baud);
+> +
+> +	spin_unlock_irqrestore(&port->lock, flags);
+> +}
+> +
+> +static const char *mvebu_uart_type(struct uart_port *port)
+> +{
+> +	return MVEBU_UART_TYPE;
+> +}
+> +
+> +static void mvebu_uart_release_port(struct uart_port *port)
+> +{
+> +	/* Nothing to do here */
+> +}
+> +
+> +static int mvebu_uart_request_port(struct uart_port *port)
+> +{
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_CONSOLE_POLL
+> +static int mvebu_uart_get_poll_char(struct uart_port *port)
+> +{
+> +	unsigned int st =3D readl(port->membase + UART_STAT);
+> +
+> +	if (!(st & STAT_RX_RDY))
+> +		return NO_POLL_CHAR;
+> +
+> +	return readl(port->membase + UART_RBR);
+> +}
+> +
+> +static void mvebu_uart_put_poll_char(struct uart_port *port, unsigne=
+d char c)
+> +{
+> +	unsigned int st;
+> +
+> +	for (;;) {
+> +		st =3D readl(port->membase + UART_STAT);
+> +
+> +		if (!(st & STAT_TX_FIFO_FUL))
+> +			break;
+> +
+> +		udelay(1);
+> +	}
+> +
+> +	writel(c, port->membase + UART_TSH);
+> +}
+> +#endif
+> +
+> +static const struct uart_ops mvebu_uart_ops =3D {
+> +	.tx_empty	=3D mvebu_uart_tx_empty,
+> +	.set_mctrl	=3D mvebu_uart_set_mctrl,
+> +	.get_mctrl	=3D mvebu_uart_get_mctrl,
+> +	.stop_tx	=3D mvebu_uart_stop_tx,
+> +	.start_tx	=3D mvebu_uart_start_tx,
+> +	.stop_rx	=3D mvebu_uart_stop_rx,
+> +	.break_ctl	=3D mvebu_uart_break_ctl,
+> +	.startup	=3D mvebu_uart_startup,
+> +	.shutdown	=3D mvebu_uart_shutdown,
+> +	.set_termios	=3D mvebu_uart_set_termios,
+> +	.type		=3D mvebu_uart_type,
+> +	.release_port	=3D mvebu_uart_release_port,
+> +	.request_port	=3D mvebu_uart_request_port,
+> +#ifdef CONFIG_CONSOLE_POLL
+> +	.poll_get_char	=3D mvebu_uart_get_poll_char,
+> +	.poll_put_char	=3D mvebu_uart_put_poll_char,
+> +#endif
+> +};
+> +
+> +/* Console Driver Operations  */
+> +
+> +#ifdef CONFIG_SERIAL_MVEBU_CONSOLE
+> +/* Early Console */
+> +static void mvebu_uart_putc(struct uart_port *port, int c)
+> +{
+> +	unsigned int st;
+> +
+> +	for (;;) {
+> +		st =3D readl(port->membase + UART_STAT);
+> +		if (!(st & STAT_TX_FIFO_FUL))
+> +			break;
+> +	}
+> +
+> +	writel(c, port->membase + UART_TSH);
+> +
+> +	for (;;) {
+> +		st =3D readl(port->membase + UART_STAT);
+> +		if (st & STAT_TX_FIFO_EMP)
+> +			break;
+> +	}
+> +}
+> +
+> +static void mvebu_uart_putc_early_write(struct console *con,
+> +					const char *s,
+> +					unsigned n)
+> +{
+> +	struct earlycon_device *dev =3D con->data;
+> +
+> +	uart_console_write(&dev->port, s, n, mvebu_uart_putc);
+> +}
+> +
+> +static int __init
+> +mvebu_uart_early_console_setup(struct earlycon_device *device,
+> +			       const char *opt)
+> +{
+> +	if (!device->port.membase)
+> +		return -ENODEV;
+> +
+> +	device->con->write =3D mvebu_uart_putc_early_write;
+> +
+> +	return 0;
+> +}
+> +
+> +EARLYCON_DECLARE(ar3700_uart, mvebu_uart_early_console_setup);
+> +OF_EARLYCON_DECLARE(ar3700_uart, "marvell,armada-3700-uart",
+> +		    mvebu_uart_early_console_setup);
+> +
+> +static void wait_for_xmitr(struct uart_port *port)
+> +{
+> +	u32 val;
+> +
+> +	readl_poll_timeout_atomic(port->membase + UART_STAT, val,
+> +				  (val & STAT_TX_EMP), 1, 10000);
+> +}
+> +
+> +static void mvebu_uart_console_putchar(struct uart_port *port, int c=
+h)
+> +{
+> +	wait_for_xmitr(port);
+> +	writel(ch, port->membase + UART_TSH);
+> +}
+> +
+> +static void mvebu_uart_console_write(struct console *co, const char =
+*s,
+> +				     unsigned int count)
+> +{
+> +	struct uart_port *port =3D &mvebu_uart_ports[co->index];
+> +	unsigned long flags;
+> +	unsigned int ier;
+> +	int locked =3D 1;
+> +
+> +	if (oops_in_progress)
+> +		locked =3D spin_trylock_irqsave(&port->lock, flags);
+> +	else
+> +		spin_lock_irqsave(&port->lock, flags);
+> +
+> +	ier =3D readl(port->membase + UART_CTRL) &
+> +		(CTRL_RX_INT | CTRL_TX_RDY_INT);
+> +	writel(0, port->membase + UART_CTRL);
+> +
+> +	uart_console_write(port, s, count, mvebu_uart_console_putchar);
+> +
+> +	wait_for_xmitr(port);
+> +
+> +	if (ier)
+> +		writel(ier, port->membase + UART_CTRL);
+> +
+> +	if (locked)
+> +		spin_unlock_irqrestore(&port->lock, flags);
+> +}
+> +
+> +static int mvebu_uart_console_setup(struct console *co, char *option=
+s)
+> +{
+> +	struct uart_port *port;
+> +	int baud =3D 9600;
+> +	int bits =3D 8;
+> +	int parity =3D 'n';
+> +	int flow =3D 'n';
+> +
+> +	if (co->index < 0 || co->index >=3D MVEBU_NR_UARTS)
+> +		return -EINVAL;
+> +
+> +	port =3D &mvebu_uart_ports[co->index];
+> +
+> +	if (!port->mapbase || !port->membase) {
+> +		pr_debug("console on ttyMV%i not present\n", co->index);
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (options)
+> +		uart_parse_options(options, &baud, &parity, &bits, &flow);
+> +
+> +	return uart_set_options(port, co, baud, parity, bits, flow);
+> +}
+> +
+> +static struct uart_driver mvebu_uart_driver;
+> +
+> +static struct console mvebu_uart_console =3D {
+> +	.name	=3D "ttyMV",
+> +	.write	=3D mvebu_uart_console_write,
+> +	.device	=3D uart_console_device,
+> +	.setup	=3D mvebu_uart_console_setup,
+> +	.flags	=3D CON_PRINTBUFFER,
+> +	.index	=3D -1,
+> +	.data	=3D &mvebu_uart_driver,
+> +};
+> +
+> +static int __init mvebu_uart_console_init(void)
+> +{
+> +	register_console(&mvebu_uart_console);
+> +	return 0;
+> +}
+> +
+> +console_initcall(mvebu_uart_console_init);
+> +
+> +
+> +#endif /* CONFIG_SERIAL_MVEBU_CONSOLE */
+> +
+> +static struct uart_driver mvebu_uart_driver =3D {
+> +	.owner			=3D THIS_MODULE,
+> +	.driver_name		=3D "mvebu_serial",
+> +	.dev_name		=3D "ttyMV",
+> +	.nr			=3D MVEBU_NR_UARTS,
+> +#ifdef CONFIG_SERIAL_MVEBU_CONSOLE
+> +	.cons			=3D &mvebu_uart_console,
+> +#endif
+> +};
+> +
+> +static int mvebu_uart_probe(struct platform_device *pdev)
+> +{
+> +	struct resource *reg =3D platform_get_resource(pdev, IORESOURCE_MEM=
+, 0);
+> +	struct resource *irq =3D platform_get_resource(pdev, IORESOURCE_IRQ=
+, 0);
+> +	struct uart_port *port;
+> +	struct mvebu_uart_data *data;
+> +	int ret;
+> +
+> +	if (!reg || !irq) {
+> +		dev_err(&pdev->dev, "no registers/irq defined\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	port =3D &mvebu_uart_ports[0];
+> +
+> +	spin_lock_init(&port->lock);
+> +
+> +	port->dev        =3D &pdev->dev;
+> +	port->type       =3D PORT_MVEBU;
+> +	port->ops        =3D &mvebu_uart_ops;
+> +	port->regshift   =3D 0;
+> +
+> +	port->fifosize   =3D 32;
+> +	port->iotype     =3D UPIO_MEM32;
+> +	port->flags      =3D UPF_FIXED_PORT;
+> +	port->line       =3D 0; /* single port: force line number to  0 */
+> +
+> +	port->irq        =3D irq->start;
+> +	port->irqflags   =3D 0;
+> +	port->mapbase    =3D reg->start;
+> +
+> +	port->membase =3D devm_ioremap_resource(&pdev->dev, reg);
+> +	if (IS_ERR(port->membase))
+> +		return -PTR_ERR(port->membase);
+> +
+> +	data =3D devm_kzalloc(&pdev->dev, sizeof(struct mvebu_uart_data),
+> +			    GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	data->port =3D port;
+> +
+> +	port->private_data =3D data;
+> +	platform_set_drvdata(pdev, data);
+> +
+> +	ret =3D uart_add_one_port(&mvebu_uart_driver, port);
+> +	if (ret)
+> +		return ret;
+> +	return 0;
+> +}
+> +
+> +static int mvebu_uart_remove(struct platform_device *pdev)
+> +{
+> +	struct mvebu_uart_data *data =3D platform_get_drvdata(pdev);
+> +
+> +	uart_remove_one_port(&mvebu_uart_driver, data->port);
+> +	data->port->private_data =3D NULL;
+> +	data->port->mapbase      =3D 0;
+> +	return 0;
+> +}
+> +
+> +/* Match table for of_platform binding */
+> +static const struct of_device_id mvebu_uart_of_match[] =3D {
+> +	{ .compatible =3D "marvell,armada-3700-uart", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, mvebu_uart_of_match);
+> +
+> +static struct platform_driver mvebu_uart_platform_driver =3D {
+> +	.probe	=3D mvebu_uart_probe,
+> +	.remove	=3D mvebu_uart_remove,
+> +	.driver	=3D {
+> +		.owner	=3D THIS_MODULE,
+> +		.name  =3D "mvebu-uart",
+> +		.of_match_table =3D of_match_ptr(mvebu_uart_of_match),
+> +	},
+> +};
+> +
+> +static int __init mvebu_uart_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret =3D uart_register_driver(&mvebu_uart_driver);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D platform_driver_register(&mvebu_uart_platform_driver);
+> +	if (ret)
+> +		uart_unregister_driver(&mvebu_uart_driver);
+> +
+> +	return ret;
+> +}
+> +
+> +static void __exit mvebu_uart_exit(void)
+> +{
+> +	platform_driver_unregister(&mvebu_uart_platform_driver);
+> +	uart_unregister_driver(&mvebu_uart_driver);
+> +}
+> +
+> +arch_initcall(mvebu_uart_init);
+> +module_exit(mvebu_uart_exit);
+> +
+> +MODULE_AUTHOR("Wilson Ding <dingwei@marvell.com>");
+> +MODULE_DESCRIPTION("Marvell Armada-3700 Serial Driver");
+> +MODULE_LICENSE("GPL");
+> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/se=
+rial_core.h
+> index 3e5d757407fb..e513a4ee369b 100644
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -261,4 +261,7 @@
+>  /* STM32 USART */
+>  #define PORT_STM32	113
+> =20
+> +/* MVEBU UART */
+> +#define PORT_MVEBU	114
+> +
+>  #endif /* _UAPILINUX_SERIAL_CORE_H */
+> --=20
+> 2.5.0
+>
+
+--=20
+Gregory Clement, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
