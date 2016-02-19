@@ -1,58 +1,112 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v3 05/10] serial: mps2-uart: add support for early console
-Date: Fri, 19 Feb 2016 07:46:57 -0800
-Message-ID: <56C738F1.2070307@hurleysoftware.com>
-References: <1455617295-23736-1-git-send-email-vladimir.murzin@arm.com>
- <1455617295-23736-6-git-send-email-vladimir.murzin@arm.com>
- <CAHp75VdugAq0WnzLHmd9CJHCjBOdBwPqCmC3ARSaVF5XMYGoMw@mail.gmail.com>
- <56C31F9F.10000@arm.com> <56C6E42E.5070601@arm.com>
- <CAHp75VcosaVcz_aYbpfL-nUH0kBf72SshXU5k95s48Z3wnA5nQ@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 2/5] ACPI: parse SPCR and enable matching console
+Date: Fri, 19 Feb 2016 08:13:38 -0800
+Message-ID: <56C73F32.6060701@hurleysoftware.com>
+References: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
+ <1455559532-8305-3-git-send-email-aleksey.makarov@linaro.org>
+ <56C64366.2070702@hurleysoftware.com> <56C6F2DA.3020002@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAHp75VcosaVcz_aYbpfL-nUH0kBf72SshXU5k95s48Z3wnA5nQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, ijc+devicetree <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <56C6F2DA.3020002@linaro.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 02/19/2016 01:57 AM, Andy Shevchenko wrote:
-> On Fri, Feb 19, 2016 at 11:45 AM, Vladimir Murzin
-> <vladimir.murzin-5wv7dgnIgG8@public.gmane.org> wrote:
->> On 16/02/16 13:09, Vladimir Murzin wrote:
->>>>> +EARLYCON_DECLARE(mps2, mps2_early_console_setup);
->>>>>>> +OF_EARLYCON_DECLARE(mps2, "arm,mps2-uart", mps2_early_console_setup);
->>>>>
->>>>> IIRC Peter Hurley mentioned you don't need to put both anymore, OF_
->>>>> one is enough.
->>>>>
->>> I've just tried with OF_ only and seems it works fine. Thanks for
->>> pointing at it!
->>>
->>
->> ..and the reason for that was that I had stdout pointing at uart node.
->> Now, while testing v4 I end-up with configuration:
->>
->> 1) no EARLYCON_DECLARE in mps2-uart.c
->> 2) stdout not set
->> 3) cmdline has "earlycon=mps2,0x40004000 console=/dev/ttyMPS"
->>
->> and I don't see bootconsole, but if I avoid 1) everything works fine.
->> So, I'd leave EARLYCON_DECLARE in this patch.
+On 02/19/2016 02:47 AM, Aleksey Makarov wrote:
+> Hi Peter,
 > 
-> Peter, what is your comment on this?
+> Thank you for review.
+> 
+> On 02/19/2016 01:19 AM, Peter Hurley wrote:
+>> On 02/15/2016 10:05 AM, Aleksey Makarov wrote:
+> 
+> [..]
+> 
+>>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+>>> index a126a60..459ab54 100644
+>>> --- a/drivers/tty/serial/serial_core.c
+>>> +++ b/drivers/tty/serial/serial_core.c
+>>> @@ -34,6 +34,7 @@
+>>>  #include <linux/serial_core.h>
+>>>  #include <linux/delay.h>
+>>>  #include <linux/mutex.h>
+>>> +#include <linux/acpi.h>
+>>>  
+>>>  #include <asm/irq.h>
+>>>  #include <asm/uaccess.h>
+>>> @@ -2654,8 +2655,17 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+>>>  		spin_lock_init(&uport->lock);
+>>>  		lockdep_set_class(&uport->lock, &port_lock_key);
+>>>  	}
+>>> -	if (uport->cons && uport->dev)
+>>> -		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
+>>> +
+>>> +	/*
+>>> +	 * Support both open FW and ACPI access to console definitions.
+>>> +	 * Both of_console_check() and acpi_console_check() will call
+>>> +	 * add_preferred_console() if a console definition is found.
+>>> +	 */
+>>> +	if (uport->cons && uport->dev) {
+>>> +		if (!acpi_console_check(uport))
+>>> +			of_console_check(uport->dev->of_node, uport->cons->name,
+>>> +					 uport->line);
+>>
+>> of_console_check() is not a good model for enabling a console.
+>> It's a hack with several shortcomings (and bugs) that is tolerated here
+>> because of its broad applicability to a wide range of platforms and drivers.
+> 
+> It's definitely not the best code I saw 
 
-That Vladimir is not testing with linux-next.
+> but there is no bugs.
 
-linux-next has common framework for both command line and OF-defined
-earlycons.
+I pointed out just one of the problems with adding a preferred console
+late in the boot cycle (eg, at uart driver load) in the other patch review.
 
-Vladimir, if you pull in Greg's tty-next branch, then just
 
-OF_EARLYCON_DECLARE(mps2, "arm,mps2-uart", mps2_early_console_setup);
+>> I specifically added console matching to enable exactly this kind of
+>> console-selection-via-firmware. Please use that facility.
+> 
+> I described why this does not work (except you insist on having 
+> new made up names for all types of SPCR consoles) in the reply to another your message.
 
-should enable both command-line and OF-defined earlycons.
+They're not "new made up names".
+
+They're the documented names of earlycons, which you'd know if you
+researched how you're going to start an earlycon with the DBG2 table
+like I suggested in previous reviews.
+
+And I explained in the other patch review exactly how it works.
 
 Regards,
 Peter Hurley
+
+
+>>> +	}
+>>>  
+>>>  	uart_configure_port(drv, state, uport);
+>>>  
+>>> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+>>> index 06ed7e5..ea0c297 100644
+>>> --- a/include/linux/acpi.h
+>>> +++ b/include/linux/acpi.h
+>>> @@ -1004,4 +1004,14 @@ static inline struct fwnode_handle *acpi_get_next_subnode(struct device *dev,
+>>>  #define acpi_probe_device_table(t)	({ int __r = 0; __r;})
+>>>  #endif
+>>>  
+>>> +struct uart_port;
+>>> +#ifdef CONFIG_ACPI_SPCR_TABLE
+>>> +bool acpi_console_check(struct uart_port *uport);
+>>> +#else
+>>> +static inline bool acpi_console_check(struct uart_port *uport)
+>>> +{
+>>> +	return FALSE;
+>>> +}
+>>> +#endif
+>>> +
+>>>  #endif	/*_LINUX_ACPI_H*/
+>>>
+>>
+
