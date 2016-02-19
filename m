@@ -1,134 +1,42 @@
-From: Anand Moon <linux.amoon@gmail.com>
-Subject: Re: [PATCH] serial: samsung: fix the inconsistency in spinlock
-Date: Fri, 19 Feb 2016 14:04:23 +0530
-Message-ID: <CANAwSgQSmRnyW5BwMpttFsMzitAzVbK7ww=ySctLmG82K4Wi=A@mail.gmail.com>
-References: <1455817202-3005-1-git-send-email-linux.amoon@gmail.com>
- <56C603E9.9050307@hurleysoftware.com> <CANAwSgQuo_V_6J4C6MgdiDFeTTGaTPzoONSUKXwcanCpCWtZSg@mail.gmail.com>
- <CAJKOXPdE4LB=xfkZb_rnFGVjkh4D9XvrdUhqPAJwfh2mUr_tHQ@mail.gmail.com>
- <CANAwSgQ2GeLaWcW5zRWPcNZ1Pk-Yq-NY4z5yqo6DXyyMRC2y3g@mail.gmail.com>
- <56C6C7E3.4060200@samsung.com> <CANAwSgR0fcD0fd-41fkV3Lzh-aMJovsmKL6YMWfstRvTD55_fw@mail.gmail.com>
- <56C6D1E3.1060202@samsung.com>
+From: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 05/10] serial: mps2-uart: add support for early console
+Date: Fri, 19 Feb 2016 09:45:18 +0000
+Message-ID: <56C6E42E.5070601@arm.com>
+References: <1455617295-23736-1-git-send-email-vladimir.murzin@arm.com>	<1455617295-23736-6-git-send-email-vladimir.murzin@arm.com> <CAHp75VdugAq0WnzLHmd9CJHCjBOdBwPqCmC3ARSaVF5XMYGoMw@mail.gmail.com> <56C31F9F.10000@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <56C6D1E3.1060202@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <56C31F9F.10000-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, ijc+devicetree <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?windows-1252?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jiri Slaby <jslaby-AlSwsSmVLrQ@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Krzysztof,
+On 16/02/16 13:09, Vladimir Murzin wrote:
+>>> +EARLYCON_DECLARE(mps2, mps2_early_console_setup);
+>>> >> +OF_EARLYCON_DECLARE(mps2, "arm,mps2-uart", mps2_early_console_setup);
+>> > 
+>> > IIRC Peter Hurley mentioned you don't need to put both anymore, OF_
+>> > one is enough.
+>> > 
+> I've just tried with OF_ only and seems it works fine. Thanks for
+> pointing at it!
+> 
 
-On 19 February 2016 at 13:57, Krzysztof Kozlowski
-<k.kozlowski@samsung.com> wrote:
-> On 19.02.2016 17:23, Anand Moon wrote:
->> Hi Krzysztof,
->>
->> On 19 February 2016 at 13:14, Krzysztof Kozlowski
->> <k.kozlowski@samsung.com> wrote:
->>> On 19.02.2016 15:51, Anand Moon wrote:
->>>> Hi Krzysztof,
->>>>
->>>> On 19 February 2016 at 11:39, Krzysztof Kozlowski
->>>> <k.kozlowski@samsung.com> wrote:
->>>>> 2016-02-19 4:14 GMT+09:00 Anand Moon <linux.amoon@gmail.com>:
->>>>>> Hi Peter,
->>>>>>
->>>>>> On 18 February 2016 at 23:18, Peter Hurley <peter@hurleysoftware.com> wrote:
->>>>>>> Hi Anand,
->>>>>>>
->>>>>>> On 02/18/2016 09:40 AM, Anand Moon wrote:
->>>>>>>> From: Anand Moon <linux.amoon@gmail.com>
->>>>>>>>
->>>>>>>> changes fix the correct order of the spin_lock_irqrestore/save.
->>>>>>>>
->>>>>>>> Signed-off-by: Anand Moon <linux.amoon@gmail.com>
->>>>>>>> ---
->>>>>>>>  drivers/tty/serial/samsung.c | 4 ++--
->>>>>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>>>>
->>>>>>>> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
->>>>>>>> index d72cd73..96fe14d 100644
->>>>>>>> --- a/drivers/tty/serial/samsung.c
->>>>>>>> +++ b/drivers/tty/serial/samsung.c
->>>>>>>> @@ -759,9 +759,9 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
->>>>>>>>       }
->>>>>>>>
->>>>>>>>       if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
->>>>>>>> -             spin_unlock(&port->lock);
->>>>>>>> +             spin_unlock_irqrestore(&port->lock, flags);
->>>>>>>>               uart_write_wakeup(port);
->>>>>>>> -             spin_lock(&port->lock);
->>>>>>>> +             spin_lock_irqsave(&port->lock, flags);
->>>>>>>
->>>>>>> This driver shouldn't be dropping the spin lock at for write wakeup.
->>>>>>> If this is causing lock-ups in a line discipline, the line discipline
->>>>>>> needs fixed.
->>>>>>>
->>>>>>
->>>>>> Thanks for pointing out.
->>>>>> Their is no lock up, just the inconstancy of the spin_lock.
->>>>>> Then I will resend this patch dropping the spin_unlock/spin_lock
->>>>>> around uart_write_wakeup.
->>>>>> Is that ok with you.
->>>>>
->>>>> Anand, before doing that, can you check Peter's second sentence? I
->>>>> mean the "If this is causing lock-ups in a line discipline, the line
->>>>> discipline needs fixed.".
->>>>> Don't drop the spin-locks "just because". I would be happy to see more
->>>>> detailed explanation in changelog.
->>>>>
->>>>> Best regards,
->>>>> Krzysztof
->>>>
->>>> Yes I understood the meaning of the sentence. Already the
->>>> s3c24xx_serial_tx_chars function.
->>>> holds the lock port->lock for safe IRQ execution.
->>>
->>> I am sorry but I don't get your explanation. I mentioned Peter's
->>> thoughts about lockups after adding locking over uart_write(). However
->>> you are referring to s3c24xx_serial_tx_chars() holding the spin lock...
->>> I am missing the point...
->>>
->>> Best regards,
->>> Krzysztof
->>>
->>
->> I should be sorry I could not explain you in technical terms.
->> Interrupt routine already hold the port->lock
->>
->> s3c24xx_serial_tx_chars
->>      \
->>      spin_lock_irqsave(&port->lock, flags);
->>      \...
->>     spin_unlock(&port->lock);
->>      uart_write_wakeup(port);
->>      spin_lock(&port->lock);
->>      \
->>      spin_unlock_irqrestore(&port->lock, flags);
->>
->
-> This is obvious.
->
->> In my next patch I have tried to remove the spin_unlock/spin_lock over
->> uart_write_wakeup(port);
->
-> Which may create lockups. Previously there was no port locking around
-> uart_write_wakeup. Now there will be. You are effectively adding locking
-> over uart_write_wakeup().
-> Again, we are back at the Peter's message - just check the damned lockups...
->
-> BR,
-> Krzysztof
->
-> BR
->
+..and the reason for that was that I had stdout pointing at uart node.
+Now, while testing v4 I end-up with configuration:
 
-Lets drop this patch. I have send new one earlier.
-https://lkml.org/lkml/2016/2/19/2
+1) no EARLYCON_DECLARE in mps2-uart.c
+2) stdout not set
+3) cmdline has "earlycon=mps2,0x40004000 console=/dev/ttyMPS"
 
-If you have any comment on that.
-Sorry for the confusion.
+and I don't see bootconsole, but if I avoid 1) everything works fine.
+So, I'd leave EARLYCON_DECLARE in this patch.
 
-Best Regards.
--Anand Moon
+Cheers
+Vladimir
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
