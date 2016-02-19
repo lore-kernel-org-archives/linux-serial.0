@@ -1,193 +1,81 @@
-From: Christopher Covington <cov@codeaurora.org>
-Subject: Re: [PATCH v3 1/5] ACPI: change __init to __ref for early_acpi_os_unmap_memory()
-Date: Fri, 19 Feb 2016 12:20:37 -0500
-Message-ID: <79D370BB-B7A3-4540-B7FB-81D5806853D6@codeaurora.org>
-References: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org> <1455559532-8305-2-git-send-email-aleksey.makarov@linaro.org> <1AE640813FDE7649BE1B193DEA596E883BB4BDBB@SHSMSX101.ccr.corp.intel.com> <1AE640813FDE7649BE1B193DEA596E883BB4BDCF@SHSMSX101.ccr.corp.intel.com> <56C470C5.2080203@linaro.org> <1AE640813FDE7649BE1B193DEA596E883BB4D2DA@SHSMSX101.ccr.corp.intel.com> <56C63FB5.2030907@hurleysoftware.com> <56C6F19D.7070206@linaro.org> <56C733FE.8070308@hurleysoftware.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCHv2] serial: samsung: drop the spinlock around
+ uart_write_wakeup
+Date: Fri, 19 Feb 2016 11:30:05 -0800
+Message-ID: <56C76D3D.3010009@hurleysoftware.com>
+References: <1455858937-2380-1-git-send-email-linux.amoon@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56C733FE.8070308@hurleysoftware.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, "Zheng, Lv" <lv.zheng@intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, harba@codeaurora.org
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Len Brown <lenb@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1455858937-2380-1-git-send-email-linux.amoon@gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Anand Moon <linux.amoon@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Krzysztof Kozlowski <k.kozlowski@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
+[ +cc Krzysztof Kozlowski ]
+
+On 02/18/2016 09:15 PM, Anand Moon wrote:
+> From: Anand Moon <linux.amoon@gmail.com>
+> 
+> drop the spin_unlock/lock around uart_write_wakeup to protect
+> write wakeup for uart port.
+
+What Krzysztof was saying wrt v1 of this patch is that the
+changelog should provide as much information as possible to
+the maintainer(s) and driver author(s), and that you should
+test that outcome.
+
+Here's what I would have written for a commit message:
 
 
-On February 19, 2016 10:25:50 AM EST, Peter Hurley <peter@hurleysoftware.com> wrote:
->On 02/19/2016 02:42 AM, Aleksey Makarov wrote:
->> Hi Peter,
->> 
->> Thank you for review.
->> 
->> On 02/19/2016 01:03 AM, Peter Hurley wrote:
->>> On 02/17/2016 07:36 PM, Zheng, Lv wrote:
->>>> Hi,
->>>>
->>>>> From: Aleksey Makarov [mailto:aleksey.makarov@linaro.org]
->>>>> Subject: Re: [PATCH v3 1/5] ACPI: change __init to __ref for
->>>>> early_acpi_os_unmap_memory()
->>>>>
->>>>> Hi Lv,
->>>>>
->>>>> Thank you for review.
->>>>>
->>>>> On 02/17/2016 05:51 AM, Zheng, Lv wrote:
->>>>>
->>>>> [..]
->>>>>
->>>>>>>> early_acpi_os_unmap_memory() is marked as __init because it
->calls
->>>>>>>> __acpi_unmap_table(), but only when acpi_gbl_permanent_mmap is
->not
->>>>> set.
->>>>>>>>
->>>>>>>> acpi_gbl_permanent_mmap is set in __init acpi_early_init()
->>>>>>>> so it is safe to call early_acpi_os_unmap_memory() from
->anywhere
->>>>>>>>
->>>>>>>> We need this function to be non-__init because we need access
->to
->>>>>>>> some tables at unpredictable time--it may be before or after
->>>>>>>> acpi_gbl_permanent_mmap is set.  For example, SPCR (Serial Port
->Console
->>>>>>>> Redirection) table is needed each time a new console is
->registered.
->>>>>>>> It can be quite early (console_initcall) or when a module is
->inserted.
->>>>>>>> When this table accessed before acpi_gbl_permanent_mmap is set,
->>>>>>>> the pointer should be unmapped.  This is exactly what this
->function
->>>>>>>> does.
->>>>>>> [Lv Zheng]
->>>>>>> Why don't you use another API instead of
->early_acpi_os_unmap_memory()
->>>>> in
->>>>>>> case you want to unmap things in any cases.
->>>>>>> acpi_os_unmap_memory() should be the one to match this purpose.
->>>>>>> It checks acpi_gbl_ppermanent_mmap in acpi_os_unmap_iomem().
->>>>>
->>>>> As far as I understand, there exist two steps in ACPI
->initialization:
->>>>>
->>>>> 1. Before acpi_gbl_permanent_mmap is set, tables received with
->>>>> acpi_get_table_with_size()
->>>>>    are mapped by early_memremap().  If a subsystem gets such a
->pointer it
->>>>> should be unmapped.
->>>>>
->>>>> 2  After acpi_gbl_permanent_mmap is set this pointer should not be
->unmapped
->>>>> at all.
->>>>>
->>>> [Lv Zheng] 
->>>> This statement is wrong, this should be:
->>>> As long as there is a __reference__ to the mapped table, the
->pointer should not be unmapped.
->>>> In fact, we have a series to introduce acpi_put_table() to achieve
->this.
->>>> So your argument is wrong from very first point.
->>>>
->>>>> That exactly what early_acpi_os_unmap_memory() does--it checks
->>>>> acpi_gbl_permanent_mmap.
->>>>> If I had used acpi_os_unmap_memory() after acpi_gbl_permanent_mmap
->had
->>>>> been set,
->>>>> it would have tried to free that pointer with an oops (actually, I
->checked that
->>>>> and got that oops).
->>>>>
->>>>> So using acpi_os_unmap_memory() is not an option here, but
->>>>> early_acpi_os_unmap_memory()
->>>>> match perfectly.
->>>> [Lv Zheng] 
->>>> I don't think so.
->>>> For definition block tables, we know for sure there will always be
->references, until "Unload" opcode is invoked by the AML interpreter.
->>>> But for the data tables, OSPMs should use them in this way:
->>>> 1. map the table
->>>> 2. parse the table and convert it to OS specific structures
->>>> 3. unmap the table
->>>> This helps to shrink virtual memory address space usages.
->>>>
->>>> So from this point of view, all data tables should be unmapped
->right after being parsed.
->>>> Why do you need the map to be persistent in the kernel address
->space?
->>>> You can always map a small table, but what if the table size is
->very big?
->>>>
->>>>>
->>>>>>> And in fact early_acpi_os_unmap_memory() should be removed.
->>>>>
->>>>> I don't think so -- I have explained why.  It does different
->thing.
->>>>> Probably it (and/or other functions in that api) should be
->renamed.
->>>>>
->>>> [Lv Zheng] 
->>>> Just let me ask one more question.
->>>> eary_acpi_os_unmap_memory() is not used inside of ACPICA.
->>>> How ACPICA can work with just acpi_os_unmap_memory()?
->>>> You can check drivers/acpi/tbxxx.c.
->>>> Especially: acpi_tb_release_temp_table() and the code invoking it.
->>>>
->>>>>> [Lv Zheng]
->>>>>> One more thing is:
->>>>>> If you can't switch your driver to use acpi_os_unmap_memory()
->instead of
->>>>> early_acpi_os_unmap_memory(),
->>>>>> then it implies that your driver does have a defect.
->>>>>
->>>>> I still don't understand what defect, sorry.
->>>> [Lv Zheng] 
->>>> If you can't ensure this sequence for using the data tables:
->>>> 1. map the table
->>>> 2. parse the table and convert it to OS specific structure
->>>> 3. unmap the table
->>>> It implies there is a bug in the driver or a bug in the ACPI
->subsystem core.
->>>
->>> Exactly.
->>>
->>> The central problem here is the way Aleksey is trying to hookup a
->console.
->>>
->>> What should be happening in this series is:
->>> 1. early map SPCR
->>> 2. parse the SPCR table
->>> 3. call add_preferred_console() to add the SPCR console to the
->console table
->>> 4. unmap SPCR
->> 
->> This does not work.  
->> 
->> SPCR specifies address of the console, but add_preferred_console()
->accepts
->> name of console and its index.  There are no general method to
->translate address
->> to name at such an early stage.
->
->
->	add_preferred_console(uart, 0, "io,0x3f8,115200");
->
->This will start a console with the 8250 driver. I've already pointed
->this out to you in an earlier review. This is what existing firmware
->already does.
->
->This is also the method you will use to start an earlycon from the
->DBG2 table, by additionally calling setup_earlycon().
+  Remove deadlock workaround for line disciplines that invoke
+  the tty driver's write() method directly from their write_wakeup()
+  method. As documented for the write_wakeup() line discipline method
+  in tty_ldisc.h, line disciplines must not attempt i/o directly
+  from write_wakeup() as this will deadlock. Reviews of in-tree line
+  disciplines confirm all defer i/o.
 
-Can the device specified in DBG2 be used for both earlycon and KGDB? If it can only be used for one, let's make sure the choice of earlycon vs KGDB is intentional rather than accidental.
+  NB: This workaround was added in commit c15c3747ee32
+  ("serial: samsung: fix potential soft lockup during uart write")
+  which notes both slip and bluetooth hci attempt i/o directly from
+  write_wakeup(). These issues were fixed in commits 661f7fda21b1
+  ("slip: Fix deadlock in write_wakeup") and da64c27d3c93
+  ("bluetooth: hci_ldisc: fix deadlock condition"), respectively.
 
-Thanks,
-Christopher Covington
 
--- 
-Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Regards,
+Peter Hurley
 
-Sent from my Snapdragon powered Android device with K-9 Mail. Please excuse my brevity.
+
+PS - Minor procedural note: please cc those who have reviewed previous
+     patch versions when you submit new versions, ok?  Not a big deal,
+     lots of submitters don't, but it's still preferred.
+
+
+> Signed-off-by: Anand Moon <linux.amoon@gmail.com>
+> ---
+> changes logs: drop the previous approch of spin_unlock_irqrestore/save
+> ---
+>  drivers/tty/serial/samsung.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index d72cd73..0cb70a9 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -758,11 +758,8 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+>  		goto out;
+>  	}
+>  
+> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
+> -		spin_unlock(&port->lock);
+> +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+>  		uart_write_wakeup(port);
+> -		spin_lock(&port->lock);
+> -	}
+>  
+>  	if (uart_circ_empty(xmit))
+>  		s3c24xx_serial_stop_tx(port);
+> 
