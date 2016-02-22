@@ -1,223 +1,115 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH 5/8] ACPI: parse DBG2 table
-Date: Mon, 22 Feb 2016 16:46:53 +0300
-Message-ID: <1456148818-26257-6-git-send-email-aleksey.makarov@linaro.org>
-References: <1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org>
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-arch-owner@vger.kernel.org
-To: linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Len Brown <lenb@kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
+From: Ludovic Desroches <ludovic.desroches@atmel.com>
+Subject: [PATCH] tty/serial: at91: fix bad offset for UART timeout register
+Date: Mon, 22 Feb 2016 15:18:55 +0100
+Message-ID: <1456150735-11635-1-git-send-email-ludovic.desroches@atmel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org
+Cc: Ludovic Desroches <ludovic.desroches@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, jslaby@suse.com
 List-Id: linux-serial@vger.kernel.org
 
-'ARM Server Base Boot Requiremets' [1] mentions DBG2 (Microsoft Debug
-Port Table 2) [2] as a mandatory ACPI table that specifies debug ports.
+With SAMA5D2, the UART has hw timeout but the offset of the register to
+define this value is not the same as the one for USART.
+When using the new UART, the value of this register was 0 so we never
+get timeout irqs. It involves that when using DMA, we were stuck until
+the execution of the dma callback which happens when a buffer is full
+(so after receiving 2048 bytes).
 
-- Implement macros
-
-	ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)
-
-  that defines a handler for the port of given type and subtype.
-
-- For each declared port that is also described in the ACPI DBG2 table
-  call the provided callback.
-
-[1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
-[2] http://go.microsoft.com/fwlink/p/?LinkId=234837
-
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
 ---
- drivers/acpi/Kconfig              |  3 ++
- drivers/acpi/Makefile             |  1 +
- drivers/acpi/dbg2.c               | 85 +++++++++++++++++++++++++++++++++++++++
- include/asm-generic/vmlinux.lds.h |  1 +
- include/linux/acpi_dbg2.h         | 48 ++++++++++++++++++++++
- 5 files changed, 138 insertions(+)
- create mode 100644 drivers/acpi/dbg2.c
- create mode 100644 include/linux/acpi_dbg2.h
+ drivers/tty/serial/atmel_serial.c | 19 +++++++++++++------
+ include/linux/atmel_serial.h      |  3 ++-
+ 2 files changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-index 65fb483..660666e 100644
---- a/drivers/acpi/Kconfig
-+++ b/drivers/acpi/Kconfig
-@@ -57,6 +57,9 @@ config ACPI_SYSTEM_POWER_STATES_SUPPORT
- config ACPI_CCA_REQUIRED
- 	bool
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index b30c93f..4b6f04a 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -159,6 +159,7 @@ struct atmel_uart_port {
+ 	u32			rts_high;
+ 	u32			rts_low;
+ 	bool			ms_irq_enabled;
++	u32			rtor;	/* address of receiver timeout register if it exists */
+ 	bool			has_hw_timer;
+ 	struct timer_list	uart_timer;
  
-+config ACPI_DBG2_TABLE
-+	bool
-+
- config ACPI_DEBUGGER
- 	bool "AML debugger interface"
- 	select ACPI_DEBUG
-diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-index 346101c..ff5e4f0 100644
---- a/drivers/acpi/Makefile
-+++ b/drivers/acpi/Makefile
-@@ -82,6 +82,7 @@ obj-$(CONFIG_ACPI_CUSTOM_METHOD)+= custom_method.o
- obj-$(CONFIG_ACPI_BGRT)		+= bgrt.o
- obj-$(CONFIG_ACPI_CPPC_LIB)	+= cppc_acpi.o
- obj-$(CONFIG_ACPI_DEBUGGER_USER) += acpi_dbg.o
-+obj-$(CONFIG_ACPI_DBG2_TABLE)	+= dbg2.o
+@@ -1718,12 +1719,16 @@ static void atmel_get_ip_name(struct uart_port *port)
  
- # processor has its own "processor." module_param namespace
- processor-y			:= processor_driver.o
-diff --git a/drivers/acpi/dbg2.c b/drivers/acpi/dbg2.c
-new file mode 100644
-index 0000000..8a79117
---- /dev/null
-+++ b/drivers/acpi/dbg2.c
-@@ -0,0 +1,85 @@
-+/*
-+ * Copyright (c) 2012, Intel Corporation
-+ * Copyright (c) 2015, 2016 Linaro Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ */
-+
-+#define pr_fmt(fmt) "ACPI: DBG2: " fmt
-+
-+#include <linux/acpi_dbg2.h>
-+#include <linux/acpi.h>
-+#include <linux/kernel.h>
-+
-+static const char * __init type2string(u16 type)
-+{
-+	switch (type) {
-+	case ACPI_DBG2_SERIAL_PORT:
-+		return "SERIAL";
-+	case ACPI_DBG2_1394_PORT:
-+		return "1394";
-+	case ACPI_DBG2_USB_PORT:
-+		return "USB";
-+	case ACPI_DBG2_NET_PORT:
-+		return "NET";
-+	default:
-+		return "?";
-+	}
-+}
-+
-+static const char * __init subtype2string(u16 subtype)
-+{
-+	switch (subtype) {
-+	case ACPI_DBG2_16550_COMPATIBLE:
-+		return "16550_COMPATIBLE";
-+	case ACPI_DBG2_16550_SUBSET:
-+		return "16550_SUBSET";
-+	case ACPI_DBG2_ARM_PL011:
-+		return "ARM_PL011";
-+	case ACPI_DBG2_ARM_SBSA_32BIT:
-+		return "ARM_SBSA_32BIT";
-+	case ACPI_DBG2_ARM_SBSA_GENERIC:
-+		return "ARM_SBSA_GENERIC";
-+	case ACPI_DBG2_ARM_DCC:
-+		return "ARM_DCC";
-+	case ACPI_DBG2_BCM2835:
-+		return "BCM2835";
-+	default:
-+		return "?";
-+	}
-+}
-+
-+int __init acpi_dbg2_setup(struct acpi_table_header *table, const void *data)
-+{
-+	struct acpi_table_dbg2 *dbg2 = (struct acpi_table_dbg2 *)table;
-+	struct acpi_dbg2_data *dbg2_data = (struct acpi_dbg2_data *)data;
-+	struct acpi_dbg2_device *dbg2_device, *dbg2_end;
-+	int i;
-+
-+	dbg2_device = ACPI_ADD_PTR(struct acpi_dbg2_device, dbg2,
-+				   dbg2->info_offset);
-+	dbg2_end = ACPI_ADD_PTR(struct acpi_dbg2_device, dbg2, table->length);
-+
-+	for (i = 0; i < dbg2->info_count; i++) {
-+		if (dbg2_device + 1 > dbg2_end) {
-+			pr_err("device pointer overflows, bad table\n");
-+			return 0;
-+		}
-+
-+		if (dbg2_device->port_type == dbg2_data->port_type &&
-+		    dbg2_device->port_subtype == dbg2_data->port_subtype) {
-+			pr_info("debug port type: %s subtype: %s\n",
-+				type2string(dbg2_device->port_type),
-+				subtype2string(dbg2_device->port_subtype));
-+			dbg2_data->setup(dbg2_device, dbg2_data->data);
-+		}
-+
-+		dbg2_device = ACPI_ADD_PTR(struct acpi_dbg2_device, dbg2_device,
-+					   dbg2_device->length);
-+	}
-+
-+	return 0;
-+}
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index c4bd0e2..ad9752c 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -526,6 +526,7 @@
- 	IRQCHIP_OF_MATCH_TABLE()					\
- 	ACPI_PROBE_TABLE(irqchip)					\
- 	ACPI_PROBE_TABLE(clksrc)					\
-+	ACPI_PROBE_TABLE(dbg2)						\
- 	EARLYCON_TABLE()						\
- 	EARLYCON_OF_TABLES()
+ 	atmel_port->has_hw_timer = false;
  
-diff --git a/include/linux/acpi_dbg2.h b/include/linux/acpi_dbg2.h
-new file mode 100644
-index 0000000..465afcb
---- /dev/null
-+++ b/include/linux/acpi_dbg2.h
-@@ -0,0 +1,48 @@
-+#ifndef _ACPI_DBG2_H_
-+#define _ACPI_DBG2_H_
-+
-+#ifdef CONFIG_ACPI_DBG2_TABLE
-+
-+#include <linux/kernel.h>
-+
-+struct acpi_dbg2_device;
-+struct acpi_table_header;
-+
-+struct acpi_dbg2_data {
-+	u16 port_type;
-+	u16 port_subtype;
-+	int (*setup)(struct acpi_dbg2_device *, void *);
-+	void *data;
-+};
-+
-+int acpi_dbg2_setup(struct acpi_table_header *header, const void *data);
-+
-+/*
-+ * ACPI_DBG2_DECLARE() - Define handler for ACPI DBG2 port
-+ * @name:	Identifier to compose name of table data
-+ * @type:	Type of the port
-+ * @subtype:	Subtype of the port
-+ * @setup_fn:	Function to be called to setup the port
-+ *		(of type int (*)(struct acpi_dbg2_device *, void *);)
-+ * @data_ptr:	Sideband data provided back to the driver
-+ */
-+#define ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)	\
-+	static const struct acpi_dbg2_data				\
-+		__acpi_dbg2_data_##name __used = {			\
-+			.port_type = type,				\
-+			.port_subtype = subtype,			\
-+			.setup = setup_fn,				\
-+			.data = data_ptr,				\
-+		   };							\
-+	ACPI_DECLARE_PROBE_ENTRY(dbg2, name, ACPI_SIG_DBG2,		\
-+				 acpi_dbg2_setup, &__acpi_dbg2_data_##name)
-+
-+#else
-+
-+#define ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)	\
-+	static const void *__acpi_dbg_data_##name[]			\
-+		__used __initdata = { (void *)setup_fn,	(void *)data_ptr }
-+
-+#endif
-+
-+#endif
+-	if (name == usart || name == new_uart) {
+-		dev_dbg(port->dev, "Usart or uart with hw timer\n");
++	if (name == new_uart) {
++		dev_dbg(port->dev, "Uart with hw timer");
+ 		atmel_port->has_hw_timer = true;
++		atmel_port->rtor = ATMEL_UA_RTOR;
++	} else if (name == usart) {
++		dev_dbg(port->dev, "Usart\n");
++		atmel_port->has_hw_timer = true;
++		atmel_port->rtor = ATMEL_US_RTOR;
+ 	} else if (name == dbgu_uart) {
+ 		dev_dbg(port->dev, "Dbgu or uart without hw timer\n");
+-		atmel_port->has_hw_timer = false;
+ 	} else {
+ 		/* fallback for older SoCs: use version field */
+ 		version = atmel_uart_readl(port, ATMEL_US_VERSION);
+@@ -1732,11 +1737,11 @@ static void atmel_get_ip_name(struct uart_port *port)
+ 		case 0x10213:
+ 			dev_dbg(port->dev, "This version is usart\n");
+ 			atmel_port->has_hw_timer = true;
++			atmel_port->rtor = ATMEL_US_RTOR;
+ 			break;
+ 		case 0x203:
+ 		case 0x10202:
+ 			dev_dbg(port->dev, "This version is uart\n");
+-			atmel_port->has_hw_timer = false;
+ 			break;
+ 		default:
+ 			dev_err(port->dev, "Not supported ip name nor version, set to uart\n");
+@@ -1841,7 +1846,8 @@ static int atmel_startup(struct uart_port *port)
+ 					jiffies + uart_poll_timeout(port));
+ 		/* set USART timeout */
+ 		} else {
+-			atmel_uart_writel(port, ATMEL_US_RTOR, PDC_RX_TIMEOUT);
++			atmel_uart_writel(port, atmel_port->rtor,
++					  PDC_RX_TIMEOUT);
+ 			atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_STTTO);
+ 
+ 			atmel_uart_writel(port, ATMEL_US_IER,
+@@ -1856,7 +1862,8 @@ static int atmel_startup(struct uart_port *port)
+ 					jiffies + uart_poll_timeout(port));
+ 		/* set USART timeout */
+ 		} else {
+-			atmel_uart_writel(port, ATMEL_US_RTOR, PDC_RX_TIMEOUT);
++			atmel_uart_writel(port, atmel_port->rtor,
++					  PDC_RX_TIMEOUT);
+ 			atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_STTTO);
+ 
+ 			atmel_uart_writel(port, ATMEL_US_IER,
+diff --git a/include/linux/atmel_serial.h b/include/linux/atmel_serial.h
+index ee696d7..5a4d664 100644
+--- a/include/linux/atmel_serial.h
++++ b/include/linux/atmel_serial.h
+@@ -119,7 +119,8 @@
+ #define ATMEL_US_BRGR		0x20	/* Baud Rate Generator Register */
+ #define	ATMEL_US_CD		GENMASK(15, 0)	/* Clock Divider */
+ 
+-#define ATMEL_US_RTOR		0x24	/* Receiver Time-out Register */
++#define ATMEL_US_RTOR		0x24	/* Receiver Time-out Register for USART */
++#define ATMEL_UA_RTOR		0x28	/* Receiver Time-out Register for UART */
+ #define	ATMEL_US_TO		GENMASK(15, 0)	/* Time-out Value */
+ 
+ #define ATMEL_US_TTGR		0x28	/* Transmitter Timeguard Register */
 -- 
-2.7.1
+2.5.0
