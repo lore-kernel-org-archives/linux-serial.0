@@ -1,97 +1,166 @@
 From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH 2/8] of/serial: move earlycon early_param handling to serial
-Date: Mon, 22 Feb 2016 16:46:50 +0300
-Message-ID: <1456148818-26257-3-git-send-email-aleksey.makarov@linaro.org>
+Subject: [PATCH 6/8] ACPI: serial: implement earlycon on ACPI DBG2 port
+Date: Mon, 22 Feb 2016 16:46:54 +0300
+Message-ID: <1456148818-26257-7-git-send-email-aleksey.makarov@linaro.org>
 References: <1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
 In-Reply-To: <1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-doc-owner@vger.kernel.org
 To: linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Leif Lindholm <leif.lindholm@linaro.org>
+Add ACPI_DBG2_EARLYCON_DECLARE() macros that declares
+an earlycon on the serial port specified in the DBG2 ACPI table.
 
-We have multiple "earlycon" early_param handlers - merge the DT one into
-the main earlycon one. This means the earlycon early_param handler does
-not just return success if no options are specified.
+Pass the string "earlycon=acpi_dbg2" to the kernel to activate it.
 
-Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
+Callbacks for EARLYCON_DECLARE() and OF_EARLYCON_DECLARE()
+can also be used for this macros.
+
+Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
 ---
- drivers/of/fdt.c              | 11 +----------
- drivers/tty/serial/earlycon.c |  3 ++-
- include/linux/of_fdt.h        |  2 ++
- 3 files changed, 5 insertions(+), 11 deletions(-)
+ Documentation/kernel-parameters.txt |  3 ++
+ drivers/tty/serial/earlycon.c       | 56 +++++++++++++++++++++++++++++++++++++
+ include/linux/acpi_dbg2.h           | 20 +++++++++++++
+ 3 files changed, 79 insertions(+)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 655f79d..6b4ab4f 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -798,7 +798,7 @@ static inline void early_init_dt_check_for_initrd(unsigned long node)
- #ifdef CONFIG_SERIAL_EARLYCON
- extern struct of_device_id __earlycon_of_table[];
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 9a53c92..4949ebb 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -1058,6 +1058,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			A valid base address must be provided, and the serial
+ 			port must already be setup and configured.
  
--static int __init early_init_dt_scan_chosen_serial(void)
-+int __init early_init_dt_scan_chosen_serial(void)
- {
- 	int offset;
- 	const char *p;
-@@ -843,15 +843,6 @@ static int __init early_init_dt_scan_chosen_serial(void)
- 	}
- 	return -ENODEV;
- }
--
--static int __init setup_of_earlycon(char *buf)
--{
--	if (buf)
--		return 0;
--
--	return early_init_dt_scan_chosen_serial();
--}
--early_param("earlycon", setup_of_earlycon);
- #endif
- 
- /**
++		acpi_dbg2
++			Use serial port specified by the DBG2 ACPI table.
++
+ 	earlyprintk=	[X86,SH,BLACKFIN,ARM,M68k]
+ 			earlyprintk=vga
+ 			earlyprintk=efi
 diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 3f24236..05f9e4b 100644
+index 05f9e4b..3d11248 100644
 --- a/drivers/tty/serial/earlycon.c
 +++ b/drivers/tty/serial/earlycon.c
-@@ -17,6 +17,7 @@
- #include <linux/kernel.h>
- #include <linux/init.h>
- #include <linux/io.h>
-+#include <linux/of_fdt.h>
+@@ -21,6 +21,7 @@
  #include <linux/serial_core.h>
  #include <linux/sizes.h>
  #include <linux/mod_devicetable.h>
-@@ -195,7 +196,7 @@ static int __init param_setup_earlycon(char *buf)
- 	 * don't generate a warning from parse_early_params() in that case
- 	 */
- 	if (!buf || !buf[0])
--		return 0;
-+		return early_init_dt_scan_chosen_serial();
++#include <linux/acpi.h>
  
+ #ifdef CONFIG_FIX_EARLYCON_MEM
+ #include <asm/fixmap.h>
+@@ -186,6 +187,8 @@ int __init setup_earlycon(char *buf)
+ 	return -ENOENT;
+ }
+ 
++static bool setup_dbg2_earlycon;
++
+ /* early_param wrapper for setup_earlycon() */
+ static int __init param_setup_earlycon(char *buf)
+ {
+@@ -198,6 +201,11 @@ static int __init param_setup_earlycon(char *buf)
+ 	if (!buf || !buf[0])
+ 		return early_init_dt_scan_chosen_serial();
+ 
++	if (!strcmp(buf, "acpi_dbg2")) {
++		setup_dbg2_earlycon = true;
++		return 0;
++	}
++
  	err = setup_earlycon(buf);
  	if (err == -ENOENT || err == -EALREADY)
-diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
-index df9ef38..4d783aa8 100644
---- a/include/linux/of_fdt.h
-+++ b/include/linux/of_fdt.h
-@@ -63,6 +63,7 @@ extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
- 				     int depth, void *data);
- extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
- 				     int depth, void *data);
-+extern int early_init_dt_scan_chosen_serial(void);
- extern void early_init_fdt_scan_reserved_mem(void);
- extern void early_init_fdt_reserve_self(void);
- extern void early_init_dt_add_memory_arch(u64 base, u64 size);
-@@ -91,6 +92,7 @@ extern void early_get_first_memblock_info(void *, phys_addr_t *);
- extern u64 fdt_translate_address(const void *blob, int node_offset);
- extern void of_fdt_limit_memory(int limit);
- #else /* CONFIG_OF_FLATTREE */
-+static inline int early_init_dt_scan_chosen_serial(void) { return -ENODEV; }
- static inline void early_init_fdt_scan_reserved_mem(void) {}
- static inline void early_init_fdt_reserve_self(void) {}
- static inline const char *of_flat_dt_get_machine_name(void) { return NULL; }
+ 		return 0;
+@@ -228,3 +236,51 @@ int __init of_setup_earlycon(unsigned long addr,
+ 	register_console(early_console_dev.con);
+ 	return 0;
+ }
++
++int __init acpi_setup_earlycon(struct acpi_dbg2_device *device, void *d)
++{
++	int err;
++	struct uart_port *port = &early_console_dev.port;
++	int (*setup)(struct earlycon_device *, const char *) = d;
++	struct acpi_generic_address *reg;
++
++	if (!setup_dbg2_earlycon)
++		return -ENODEV;
++
++	if (device->register_count < 1)
++		return -ENODEV;
++
++	if (device->base_address_offset >= device->length)
++		return -EINVAL;
++
++	reg = (void *)device + device->base_address_offset;
++
++	if (reg->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY &&
++	    reg->space_id != ACPI_ADR_SPACE_SYSTEM_IO)
++		return -EINVAL;
++
++	spin_lock_init(&port->lock);
++	port->uartclk = BASE_BAUD * 16;
++
++	if (reg->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
++		if (device->port_type == ACPI_DBG2_ARM_SBSA_32BIT)
++			port->iotype = UPIO_MEM32;
++		else
++			port->iotype = UPIO_MEM;
++		port->mapbase = reg->address;
++		port->membase = earlycon_map(reg->address, SZ_4K);
++	} else {
++		port->iotype = UPIO_PORT;
++		port->iobase = reg->address;
++	}
++
++	early_console_dev.con->data = &early_console_dev;
++	err = setup(&early_console_dev, NULL);
++	if (err < 0)
++		return err;
++	if (!early_console_dev.con->write)
++		return -ENODEV;
++
++	register_console(early_console_dev.con);
++	return 0;
++}
+diff --git a/include/linux/acpi_dbg2.h b/include/linux/acpi_dbg2.h
+index 465afcb..9b96de2 100644
+--- a/include/linux/acpi_dbg2.h
++++ b/include/linux/acpi_dbg2.h
+@@ -37,12 +37,32 @@ int acpi_dbg2_setup(struct acpi_table_header *header, const void *data);
+ 	ACPI_DECLARE_PROBE_ENTRY(dbg2, name, ACPI_SIG_DBG2,		\
+ 				 acpi_dbg2_setup, &__acpi_dbg2_data_##name)
+ 
++int __init acpi_setup_earlycon(struct acpi_dbg2_device *device, void *d);
++
++/*
++ * ACPI_DBG2_EARLYCON_DECLARE() - Define handler for ACPI GDB2 serial port
++ * @name:		Identifier to compose name of table data
++ * @subtype:		Subtype of the port
++ * @console_setup:	Function to be called to setup the port
++ *
++ * Type of the console_setup() callback is
++ * int (*setup)(struct earlycon_device *, const char *)
++ * It's the type of callback of of_setup_earlycon().
++ */
++#define ACPI_DBG2_EARLYCON_DECLARE(name, subtype, console_setup)	\
++	ACPI_DBG2_DECLARE(name, ACPI_DBG2_SERIAL_PORT, subtype,		\
++			  acpi_setup_earlycon, console_setup)
++
+ #else
+ 
+ #define ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)	\
+ 	static const void *__acpi_dbg_data_##name[]			\
+ 		__used __initdata = { (void *)setup_fn,	(void *)data_ptr }
+ 
++#define ACPI_DBG2_EARLYCON_DECLARE(name, subtype, console_setup)	\
++	static const void *__acpi_dbg_data_serial_##name[]		\
++		__used __initdata = { (void *)console_setup }
++
+ #endif
+ 
+ #endif
 -- 
 2.7.1
+
