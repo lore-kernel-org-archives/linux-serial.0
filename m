@@ -1,74 +1,92 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [PATCH 0/4] serial: omap: robustify for high speed transfers
-Date: Mon, 22 Feb 2016 16:30:22 +0100
-Message-ID: <874md0yd81.fsf@linutronix.de>
-References: <87lh7hrjsg.fsf@linutronix.de>
-	<56A66FCB.1000507@hurleysoftware.com> <87y4b85onp.fsf@linutronix.de>
-	<56B15603.80807@hurleysoftware.com> <87wpqbihel.fsf@linutronix.de>
-	<20160211210050.GY19432@atomide.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 1/8] arm64: move acpi/dt decision earlier in boot process
+Date: Mon, 22 Feb 2016 16:45:17 +0100
+Message-ID: <56CB2D0D.3090408@gmail.com>
+References: <1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org>
+ <1456148818-26257-2-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, gregkh@linuxfoundation.org, vinod.koul@intel.com, dan.j.williams@intel.com, bigeasy@linutronix.de, nsekhar@ti.com, peter.ujfalusi@ti.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1456148818-26257-2-git-send-email-aleksey.makarov@linaro.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Tony,
 
-On 2016-02-11, Tony Lindgren <tony@atomide.com> wrote:
->> At these speeds, nearly every DMA interrupt is accompanied by a
->> spurious UART interrupt. So, sadly, the interrupts are doubled.
->> 
->> It is on my TODO list to verify if the spurious UART interrupts
->> exactly match the recently added [0] spurious interrupt detection in
->> omap-intc.
+
+On 22/02/16 14:46, Aleksey Makarov wrote:
+> From: Leif Lindholm <leif.lindholm@linaro.org>
 >
-> If you're seeing spurious interrupts you may want try adding
-> a flush of posted write at the end of the 8250_omap interrupt
-> handler. Basically read back some register from the 8250. This
-> has fixed so far pretty much all the spurious IRQ issues for
-> omaps using the drivers/irqchip/irq-omap-intc.c, meaning omap3
-> and am335x and ti81xx variants too most likely.
+> In order to support selecting earlycon via either ACPI or DT, move
+> the decision on whether to attempt ACPI configuration into the
+> early_param handling. Then make acpi_boot_table_init() bail out if
+> acpi_disabled.
+>
+> Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
+> ---
+>   arch/arm64/kernel/acpi.c | 54 ++++++++++++++++++++++++++----------------------
+>   1 file changed, 29 insertions(+), 25 deletions(-)
+>
+> diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
+> index d1ce8e2..7a944f7 100644
+> --- a/arch/arm64/kernel/acpi.c
+> +++ b/arch/arm64/kernel/acpi.c
+> @@ -44,6 +44,19 @@ EXPORT_SYMBOL(acpi_pci_disabled);
+>   static bool param_acpi_off __initdata;
+>   static bool param_acpi_force __initdata;
+>
+> +static int __init dt_scan_depth1_nodes(unsigned long node,
+> +				       const char *uname, int depth,
+> +				       void *data)
+> +{
+> +	/*
+> +	 * Return 1 as soon as we encounter a node at depth 1 that is
+> +	 * not the /chosen node.
+> +	 */
+> +	if (depth == 1 && (strcmp(uname, "chosen") != 0))
+> +		return 1;
+> +	return 0;
+> +}
+> +
+>   static int __init parse_acpi(char *arg)
+>   {
+>   	if (!arg)
+> @@ -57,23 +70,27 @@ static int __init parse_acpi(char *arg)
+>   	else
+>   		return -EINVAL;	/* Core will print when we return error */
+>
+> -	return 0;
+> -}
+> -early_param("acpi", parse_acpi);
+> +	/*
+> +	 * Enable ACPI instead of device tree unless
+> +	 * - ACPI has been disabled explicitly (acpi=off), or
+> +	 * - the device tree is not empty (it has more than just a /chosen node)
+> +	 *   and ACPI has not been force enabled (acpi=force)
+> +	 */
+> +	if (param_acpi_off ||
+> +	    (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
+> +		return 0;
+>
+> -static int __init dt_scan_depth1_nodes(unsigned long node,
+> -				       const char *uname, int depth,
+> -				       void *data)
+> -{
+>   	/*
+> -	 * Return 1 as soon as we encounter a node at depth 1 that is
+> -	 * not the /chosen node.
+> +	 * ACPI is disabled at this point. Enable it in order to parse
+> +	 * the ACPI tables and carry out sanity checks
+>   	 */
+> -	if (depth == 1 && (strcmp(uname, "chosen") != 0))
+> -		return 1;
+> +	enable_acpi();
+> +
 
-I have done significant testing with this using linux-next-20160219. The
-only changes I made were to disable the "rx_dma_broken" feature so that
-DMA would definately be used. I created a simple test where I send 48000
-bytes at 230400bps over UART from one device to another. Several
-different target devices and configurations were used to test the RX-DMA
-feature of the 8250_omap. The expected result is 1000 DMA interrupts and
-0 UART interrupts.
+So we only enable ACPI if we pass acpi=force as kernel parameter?
+I'm not sure if this is what you wanted to do.
 
-With the am335x (Beaglebone Black, eDMA engine) I see 1000 DMA
-interrupts and 1000 spurious UART interrupts. The spurious UART
-interrupts arrive 30-50us _before_ the DMA interrupts. Always.
-
-If I disable UART timeout interrupts (RDI), the same test generates no
-spurious UART interrupts. Only 1000 DMA interrupts.
-
-I ran the same test using a dra7 board (sDMA engine) as the target
-device. RDI was enabled. Here I see no spurious interrupts.
-
-I modified the dra7 device tree to use the eDMA engine with the
-UART. RDI was enabled. Here I also see no spurious interrupts.
-
-The dra7 uses a different interrupt controller (irq-gic instead of
-irq-omap-intc), which probably explains why dra7+edma+rdi works
-correctly.
-
-I tried adding various and multiple register reads at the end of the
-interrupt handlers, but this made no difference. What is interesting is
-the fact that the spurious UART interrupt always _preceeds_ the DMA
-interrupt and by a significant yet relatively consistent amount
-(30-50us). Even the very first DMA interrupt is preceeded by the
-spurious interrupt. It is as if the UART timeout logic is triggering
-because it does not notice that the eDMA is pulling the data from the
-FIFO. But only when the irq-omap-intc in involved.
-
-Tony, if you have any futher ideas, I'd be happy to try them out.
-
-Summary: If DMA is ever going to be re-enabled for am335x/8250_omap,
-then it will be necessary to return IRQ_HANDLED for the spurious UART
-interrupts that will preceed each DMA-RX completion interrupt.
-
-John Ogness
+Regards,
+Matthias
