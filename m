@@ -1,82 +1,55 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: Re: [PATCHv2] serial: samsung: drop the spinlock around
- uart_write_wakeup
-Date: Mon, 22 Feb 2016 09:08:20 +0900
-Message-ID: <56CA5174.3050706@samsung.com>
-References: <1455858937-2380-1-git-send-email-linux.amoon@gmail.com>
- <56C76D3D.3010009@hurleysoftware.com>
- <CAJKOXPfJDwcis0-FkAEKqz4ESAuEV0arDYr7hfa8vb_5_UVirg@mail.gmail.com>
- <CANAwSgSVHPVWBwaO6b4QvUEopCFSKXrFbHkY837+gG62wpc-Jg@mail.gmail.com>
+From: Sergei Ianovich <ynvich@gmail.com>
+Subject: Re: [PATCH v6] serial: rewrite pxa2xx-uart to use 8250_core
+Date: Mon, 22 Feb 2016 04:56:31 +0300
+Message-ID: <1456106191.2386.13.camel@gmail.com>
+References: <1450897204-6839-1-git-send-email-ynvich@gmail.com>
+	 <1450970122-12869-1-git-send-email-ynvich@gmail.com>
+	 <20160207062206.GB16270@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <CANAwSgSVHPVWBwaO6b4QvUEopCFSKXrFbHkY837+gG62wpc-Jg@mail.gmail.com>
+In-Reply-To: <20160207062206.GB16270@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Anand Moon <linux.amoon@gmail.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, =?UTF-8?Q?Robert_Ba=c5=82dyga?= <r.baldyga@samsung.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, Heikki Krogerus <heikki.krogerus@linux.intel.com>, James Cameron <quozl@laptop.org>, Robert Jarzmik <robert.jarzmik@free.fr>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, Joachim Eastwood <manabian@gmail.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Scott Wood <scottwood@freescale.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, Paul Burton <paul.burton@imgtec.com>, Mans Rullgard <mans@mansr.com>, Ralf Baechle <ralf@linux-mips.org>, Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 21.02.2016 11:59, Anand Moon wrote:
-> Hi Krzysztof,
-> 
-> On 21 February 2016 at 07:07, Krzysztof Kozlowski
-> <k.kozlowski@samsung.com> wrote:
->> 2016-02-20 4:30 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
->>> [ +cc Krzysztof Kozlowski ]
->>>
->>> On 02/18/2016 09:15 PM, Anand Moon wrote:
->>>> From: Anand Moon <linux.amoon@gmail.com>
->>>>
->>>> drop the spin_unlock/lock around uart_write_wakeup to protect
->>>> write wakeup for uart port.
->>>
->>> What Krzysztof was saying wrt v1 of this patch is that the
->>> changelog should provide as much information as possible to
->>> the maintainer(s) and driver author(s), and that you should
->>> test that outcome.
->>>
->>> Here's what I would have written for a commit message:
->>>
->>>
->>>   Remove deadlock workaround for line disciplines that invoke
->>>   the tty driver's write() method directly from their write_wakeup()
->>>   method. As documented for the write_wakeup() line discipline method
->>>   in tty_ldisc.h, line disciplines must not attempt i/o directly
->>>   from write_wakeup() as this will deadlock. Reviews of in-tree line
->>>   disciplines confirm all defer i/o.
->>>
->>>   NB: This workaround was added in commit c15c3747ee32
->>>   ("serial: samsung: fix potential soft lockup during uart write")
->>>   which notes both slip and bluetooth hci attempt i/o directly from
->>>   write_wakeup(). These issues were fixed in commits 661f7fda21b1
->>>   ("slip: Fix deadlock in write_wakeup") and da64c27d3c93
->>>   ("bluetooth: hci_ldisc: fix deadlock condition"), respectively.
->>
->> Thanks Peter for thorough analysis. It shouldn't be done by you but by
->> the patch submitter... and I have big worries that Anand did not
->> perform that analysis.
->>
->> Anand, could you at least test that this lockup does not happen
->> anymore? You will need board with Bluetooth for that (and not USB
->> Bluetooth...). If you cannot test it, maybe guys from Polish R&D could
->> help you (Cc-ed), because they were working on DMA for serial used in
->> Bluetooth.
->>
->> Best regards,
->> Krzysztof
-> 
-> I have looked into the history of the changes,
-> commit c15c3747ee32 (serial: samsung: fix potential soft lockup during
-> uart write)
-> was added long time ago, that's why have missed this.
-> 
-> I don't have on-board Bluetooth enable boards with me,
-> so if their is potential lockup you people observer
-> do not consider this patch.
+On Sat, 2016-02-06 at 22:22 -0800, Greg Kroah-Hartman wrote:
+> On Thu, Dec 24, 2015 at 06:15:14PM +0300, Sergei Ianovich wrote:
+> > pxa2xx-uart was a separate uart platform driver. It was declaring
+> > the same device names and numbers as 8250 driver. As a result,
+> > it was impossible to use 8250 driver on PXA SoCs.
+> >=20
+> > Upon closer examination pxa2xx-uart turned out to be a clone of
+> > 8250_core driver.
+> >=20
+> > Workaround for Erratum #19 according to Marvel(R) PXA270M Processor
+> > Specification Update (April 19, 2010) is dropped. 8250_core reads
+> > from FIFO immediately after checking DR bit in LSR.
+> >=20
+> > The patch leaves the original SERIAL_PXA driver around. The
+> > original
+> > driver is just marked DEPRECATED in Kconfig and C source. When
+> > the original driver is considered safe to remove, no changes
+> > to SERIAL_8250 will be necessary.
+>=20
+> But, you just broke existing configurations, right?=C2=A0=C2=A0The se=
+rial port is
+> a different name now, are you willing to handle the angry users?
 
-Which means that you cannot test it... Find someone who can test it with
-Bluetooth (or SLIP) and will provide you a Tested-by tag.
+No, the port name remains /dev/ttyS0. In fact, this conflict (both
+drivers use the same name and char major) is the reason for the patch.
+Noone should notice the change at runtime. There will be a warning at
+compile time which should make the transition to the new driver faster.
 
-Best regards,
-Krzysztof
+> If so, great, get the platform maintainer to sign off on this please =
+and
+> then resend it.
+
+The previous version of the patch has been around for 2 years with half
+a dozen of Acks and Reviews, but it hasn't landed. Could you suggest a
+better approach?
+
+--=20
+Sergei Ianovich <ynvich@gmail.com>
