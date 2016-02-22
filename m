@@ -1,283 +1,82 @@
-From: Yury Norov <ynorov@caviumnetworks.com>
-Subject: Re: [PATCH v3 2/5] ACPI: parse SPCR and enable matching console
-Date: Sun, 21 Feb 2016 12:42:20 +0300
-Message-ID: <20160221094220.GA3181@yury-N73SV>
-References: <1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org>
- <1455559532-8305-3-git-send-email-aleksey.makarov@linaro.org>
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: Re: [PATCHv2] serial: samsung: drop the spinlock around
+ uart_write_wakeup
+Date: Mon, 22 Feb 2016 09:08:20 +0900
+Message-ID: <56CA5174.3050706@samsung.com>
+References: <1455858937-2380-1-git-send-email-linux.amoon@gmail.com>
+ <56C76D3D.3010009@hurleysoftware.com>
+ <CAJKOXPfJDwcis0-FkAEKqz4ESAuEV0arDYr7hfa8vb_5_UVirg@mail.gmail.com>
+ <CANAwSgSVHPVWBwaO6b4QvUEopCFSKXrFbHkY837+gG62wpc-Jg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1455559532-8305-3-git-send-email-aleksey.makarov@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-acpi@vger.kernel.org, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <CANAwSgSVHPVWBwaO6b4QvUEopCFSKXrFbHkY837+gG62wpc-Jg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Anand Moon <linux.amoon@gmail.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, =?UTF-8?Q?Robert_Ba=c5=82dyga?= <r.baldyga@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Feb 15, 2016 at 09:05:26PM +0300, Aleksey Makarov wrote:
-> 'ARM Server Base Boot Requiremets' [1] mentions SPCR (Serial Port
-> Console Redirection Table) [2] as a mandatory ACPI table that
-> specifies the configuration of serial console.
+On 21.02.2016 11:59, Anand Moon wrote:
+> Hi Krzysztof,
 > 
-> Parse this table and check if any registered console match the
-> description.  If it does, enable that console.
+> On 21 February 2016 at 07:07, Krzysztof Kozlowski
+> <k.kozlowski@samsung.com> wrote:
+>> 2016-02-20 4:30 GMT+09:00 Peter Hurley <peter@hurleysoftware.com>:
+>>> [ +cc Krzysztof Kozlowski ]
+>>>
+>>> On 02/18/2016 09:15 PM, Anand Moon wrote:
+>>>> From: Anand Moon <linux.amoon@gmail.com>
+>>>>
+>>>> drop the spin_unlock/lock around uart_write_wakeup to protect
+>>>> write wakeup for uart port.
+>>>
+>>> What Krzysztof was saying wrt v1 of this patch is that the
+>>> changelog should provide as much information as possible to
+>>> the maintainer(s) and driver author(s), and that you should
+>>> test that outcome.
+>>>
+>>> Here's what I would have written for a commit message:
+>>>
+>>>
+>>>   Remove deadlock workaround for line disciplines that invoke
+>>>   the tty driver's write() method directly from their write_wakeup()
+>>>   method. As documented for the write_wakeup() line discipline method
+>>>   in tty_ldisc.h, line disciplines must not attempt i/o directly
+>>>   from write_wakeup() as this will deadlock. Reviews of in-tree line
+>>>   disciplines confirm all defer i/o.
+>>>
+>>>   NB: This workaround was added in commit c15c3747ee32
+>>>   ("serial: samsung: fix potential soft lockup during uart write")
+>>>   which notes both slip and bluetooth hci attempt i/o directly from
+>>>   write_wakeup(). These issues were fixed in commits 661f7fda21b1
+>>>   ("slip: Fix deadlock in write_wakeup") and da64c27d3c93
+>>>   ("bluetooth: hci_ldisc: fix deadlock condition"), respectively.
+>>
+>> Thanks Peter for thorough analysis. It shouldn't be done by you but by
+>> the patch submitter... and I have big worries that Anand did not
+>> perform that analysis.
+>>
+>> Anand, could you at least test that this lockup does not happen
+>> anymore? You will need board with Bluetooth for that (and not USB
+>> Bluetooth...). If you cannot test it, maybe guys from Polish R&D could
+>> help you (Cc-ed), because they were working on DMA for serial used in
+>> Bluetooth.
+>>
+>> Best regards,
+>> Krzysztof
 > 
-> Introduce a new function acpi_console_check().  At the uart port
-> registration, this function checks if the ACPI SPCR table specifies
-> its argument of type struct uart_port to be a console
-> and if so calls add_preferred_console().
+> I have looked into the history of the changes,
+> commit c15c3747ee32 (serial: samsung: fix potential soft lockup during
+> uart write)
+> was added long time ago, that's why have missed this.
 > 
-> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
-> [2] http://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
-> 
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-> ---
->  drivers/acpi/Kconfig             |  3 ++
->  drivers/acpi/Makefile            |  1 +
->  drivers/acpi/spcr.c              | 97 ++++++++++++++++++++++++++++++++++++++++
->  drivers/tty/serial/serial_core.c | 14 +++++-
->  include/linux/acpi.h             | 10 +++++
->  5 files changed, 123 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/acpi/spcr.c
-> 
-> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-> index 65fb483..5611eb6 100644
-> --- a/drivers/acpi/Kconfig
-> +++ b/drivers/acpi/Kconfig
-> @@ -77,6 +77,9 @@ config ACPI_DEBUGGER_USER
->  
->  endif
->  
-> +config ACPI_SPCR_TABLE
-> +	bool
-> +
->  config ACPI_SLEEP
->  	bool
->  	depends on SUSPEND || HIBERNATION
-> diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-> index 346101c..708b143 100644
-> --- a/drivers/acpi/Makefile
-> +++ b/drivers/acpi/Makefile
-> @@ -81,6 +81,7 @@ obj-$(CONFIG_ACPI_EC_DEBUGFS)	+= ec_sys.o
->  obj-$(CONFIG_ACPI_CUSTOM_METHOD)+= custom_method.o
->  obj-$(CONFIG_ACPI_BGRT)		+= bgrt.o
->  obj-$(CONFIG_ACPI_CPPC_LIB)	+= cppc_acpi.o
-> +obj-$(CONFIG_ACPI_SPCR_TABLE)	+= spcr.o
->  obj-$(CONFIG_ACPI_DEBUGGER_USER) += acpi_dbg.o
->  
->  # processor has its own "processor." module_param namespace
-> diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-> new file mode 100644
-> index 0000000..a1eca91
-> --- /dev/null
-> +++ b/drivers/acpi/spcr.c
-> @@ -0,0 +1,97 @@
-> +/*
-> + * Copyright (c) 2012, Intel Corporation
-> + * Copyright (c) 2015, Red Hat, Inc.
-> + * Copyright (c) 2015, 2016 Linaro Ltd.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + */
-> +
-> +#define pr_fmt(fmt) "ACPI: SPCR: " fmt
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/console.h>
-> +#include <linux/kernel.h>
-> +#include <linux/serial_core.h>
-> +
-> +static int acpi_table_parse_spcr(int (*handler)(struct acpi_table_spcr *table,
-> +						void *data), void *data)
-> +{
-> +	struct acpi_table_spcr *table = NULL;
-Hi Alexey,
+> I don't have on-board Bluetooth enable boards with me,
+> so if their is potential lockup you people observer
+> do not consider this patch.
 
-Few minor comments...
+Which means that you cannot test it... Find someone who can test it with
+Bluetooth (or SLIP) and will provide you a Tested-by tag.
 
-Are you sure you need thin initialization?
-
-> +	acpi_size table_size;
-> +	acpi_status status;
-> +	int err;
-> +
-> +	status = acpi_get_table_with_size(ACPI_SIG_SPCR, 0,
-> +					  (struct acpi_table_header **)&table,
-> +					  &table_size);
-> +
-> +	if (ACPI_FAILURE(status))
-> +		return -ENODEV;
-> +
-> +	err = handler(table, data);
-> +
-> +	early_acpi_os_unmap_memory(table, table_size);
-> +
-> +	return err;
-> +}
-> +
-> +static int spcr_table_handler_check(struct acpi_table_spcr *table, void *data)
-
-The name of function is not clear for me.
-You're not only checking here, but also
-adding console. 
-
-> +{
-> +	struct uart_port *uport = data;
-> +	char *options;
-> +
-> +	if (table->header.revision < 2)
-> +		return -EOPNOTSUPP;
-> +
-> +	switch (table->baud_rate) {
-
-You don't need 'options' if your big condition returns false,
-so you can evaluate it inside conditional block.
-
-> +	case 3:
-> +		options = "9600";
-> +		break;
-> +	case 4:
-> +		options = "19200";
-> +		break;
-> +	case 6:
-> +		options = "57600";
-> +		break;
-> +	case 7:
-> +		options = "115200";
-> +		break;
-> +	default:
-> +		options = "";
-> +		break;
-
-'break' isnot needed here
-
-> +	}
-> +
-> +	if ((table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY &&
-
-Nitpick: just for better readability, I'd split it onto a set of
-separated checks:
-
-        foo() {
-                if (!cond1)
-                        return 0;
-
-                if (!cond2)
-                        return 0;
-                ...
-
-                switch () {
-                case 1:
-                        ...
-                case 2:
-                        ...
-                case 3:
-                        ...
-                default:
-                        ...
-                }
-                
-                return 1;
-        }
-
-> +	     table->serial_port.address == (u64)uport->mapbase) ||
-> +	    (table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_IO &&
-> +	     table->serial_port.address == (u64)uport->iobase)) {
-> +		pr_info("adding preferred console [%s%d]\n", uport->cons->name,
-> +			uport->line);
-> +		add_preferred_console(uport->cons->name, uport->line, options);
-> +		return 1;
-> +
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * acpi_console_check - Check if uart matches the console specified by SPCR.
-> + *
-> + * @uport:	uart port to check
-> + *
-> + * This function checks if the ACPI SPCR table specifies @uport to be a console
-> + * and if so calls add_preferred_console()
-> + *
-> + * Return: a non-error value if the console matches.
-> + */
-> +bool acpi_console_check(struct uart_port *uport)
-> +{
-> +	if (acpi_disabled || console_set_on_cmdline)
-> +		return false;
-> +
-> +	return acpi_table_parse_spcr(spcr_table_handler_check, uport) > 0;
-> +}
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index a126a60..459ab54 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -34,6 +34,7 @@
->  #include <linux/serial_core.h>
->  #include <linux/delay.h>
->  #include <linux/mutex.h>
-> +#include <linux/acpi.h>
->  
->  #include <asm/irq.h>
->  #include <asm/uaccess.h>
-> @@ -2654,8 +2655,17 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
->  		spin_lock_init(&uport->lock);
->  		lockdep_set_class(&uport->lock, &port_lock_key);
->  	}
-> -	if (uport->cons && uport->dev)
-> -		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
-> +
-> +	/*
-> +	 * Support both open FW and ACPI access to console definitions.
-> +	 * Both of_console_check() and acpi_console_check() will call
-> +	 * add_preferred_console() if a console definition is found.
-> +	 */
-> +	if (uport->cons && uport->dev) {
-> +		if (!acpi_console_check(uport))
-> +			of_console_check(uport->dev->of_node, uport->cons->name,
-> +					 uport->line);
-> +	}
->  
->  	uart_configure_port(drv, state, uport);
->  
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 06ed7e5..ea0c297 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -1004,4 +1004,14 @@ static inline struct fwnode_handle *acpi_get_next_subnode(struct device *dev,
->  #define acpi_probe_device_table(t)	({ int __r = 0; __r;})
->  #endif
->  
-> +struct uart_port;
-> +#ifdef CONFIG_ACPI_SPCR_TABLE
-> +bool acpi_console_check(struct uart_port *uport);
-> +#else
-> +static inline bool acpi_console_check(struct uart_port *uport)
-> +{
-> +	return FALSE;
-> +}
-> +#endif
-> +
->  #endif	/*_LINUX_ACPI_H*/
-> -- 
-> 2.7.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Best regards,
+Krzysztof
