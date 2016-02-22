@@ -1,92 +1,37 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 1/8] arm64: move acpi/dt decision earlier in boot process
-Date: Mon, 22 Feb 2016 16:45:17 +0100
-Message-ID: <56CB2D0D.3090408@gmail.com>
-References: <1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org>
- <1456148818-26257-2-git-send-email-aleksey.makarov@linaro.org>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 1/7] mmc: omap_hsmmc: Fix PM regression with deferred
+ probe for pm_runtime_reinit
+Date: Mon, 22 Feb 2016 09:54:26 -0800
+Message-ID: <20160222175426.GI13417@atomide.com>
+References: <1455145370-20301-1-git-send-email-tony@atomide.com>
+ <1455145370-20301-2-git-send-email-tony@atomide.com>
+ <CAPDyKFpAcsfLgtu93P45fTEg11MjdGwREcyeGSS7vt6GWbNu_w@mail.gmail.com>
+ <20160211150240.GR19432@atomide.com>
+ <CAPDyKFo4Jyjwyvr3P5VHfDhQ87K9mnR01N-NtKz-yx2ycnfOLg@mail.gmail.com>
+ <20160211172632.GT19432@atomide.com>
+ <CAPDyKFpwGcCW_Vwz07cgh8LxGmxu9=GVch0MVJEpNJ19zoLZ7g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1456148818-26257-2-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
-Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-i2c-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAPDyKFpwGcCW_Vwz07cgh8LxGmxu9=GVch0MVJEpNJ19zoLZ7g@mail.gmail.com>
+Sender: linux-i2c-owner@vger.kernel.org
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: linux-omap <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-mmc <linux-mmc@vger.kernel.org>, Alan Stern <stern@rowland.harvard.edu>, Kevin Hilman <khilman@baylibre.com>, Nishanth Menon <nm@ti.com>, "Rafael J . Wysocki" <rafael@kernel.org>, Tero Kristo <t-kristo@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, linux-serial@vger.kernel.org, "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>, Mark Brown <broonie@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Wolfram Sang <wsa@the-dreams.de>
 List-Id: linux-serial@vger.kernel.org
 
+* Ulf Hansson <ulf.hansson@linaro.org> [160212 05:00]:
+> On 11 February 2016 at 18:26, Tony Lindgren <tony@atomide.com> wrote:
+> > Subject: [PATCH] mmc: omap_hsmmc: Fix PM regression with deferred probe for
+> >  pm_runtime_reinit
+>
+> Thanks, applied for fixes!
 
+Ulf, any news on getting this into the mainline tree?
 
-On 22/02/16 14:46, Aleksey Makarov wrote:
-> From: Leif Lindholm <leif.lindholm@linaro.org>
->
-> In order to support selecting earlycon via either ACPI or DT, move
-> the decision on whether to attempt ACPI configuration into the
-> early_param handling. Then make acpi_boot_table_init() bail out if
-> acpi_disabled.
->
-> Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
-> ---
->   arch/arm64/kernel/acpi.c | 54 ++++++++++++++++++++++++++----------------------
->   1 file changed, 29 insertions(+), 25 deletions(-)
->
-> diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-> index d1ce8e2..7a944f7 100644
-> --- a/arch/arm64/kernel/acpi.c
-> +++ b/arch/arm64/kernel/acpi.c
-> @@ -44,6 +44,19 @@ EXPORT_SYMBOL(acpi_pci_disabled);
->   static bool param_acpi_off __initdata;
->   static bool param_acpi_force __initdata;
->
-> +static int __init dt_scan_depth1_nodes(unsigned long node,
-> +				       const char *uname, int depth,
-> +				       void *data)
-> +{
-> +	/*
-> +	 * Return 1 as soon as we encounter a node at depth 1 that is
-> +	 * not the /chosen node.
-> +	 */
-> +	if (depth == 1 && (strcmp(uname, "chosen") != 0))
-> +		return 1;
-> +	return 0;
-> +}
-> +
->   static int __init parse_acpi(char *arg)
->   {
->   	if (!arg)
-> @@ -57,23 +70,27 @@ static int __init parse_acpi(char *arg)
->   	else
->   		return -EINVAL;	/* Core will print when we return error */
->
-> -	return 0;
-> -}
-> -early_param("acpi", parse_acpi);
-> +	/*
-> +	 * Enable ACPI instead of device tree unless
-> +	 * - ACPI has been disabled explicitly (acpi=off), or
-> +	 * - the device tree is not empty (it has more than just a /chosen node)
-> +	 *   and ACPI has not been force enabled (acpi=force)
-> +	 */
-> +	if (param_acpi_off ||
-> +	    (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
-> +		return 0;
->
-> -static int __init dt_scan_depth1_nodes(unsigned long node,
-> -				       const char *uname, int depth,
-> -				       void *data)
-> -{
->   	/*
-> -	 * Return 1 as soon as we encounter a node at depth 1 that is
-> -	 * not the /chosen node.
-> +	 * ACPI is disabled at this point. Enable it in order to parse
-> +	 * the ACPI tables and carry out sanity checks
->   	 */
-> -	if (depth == 1 && (strcmp(uname, "chosen") != 0))
-> -		return 1;
-> +	enable_acpi();
-> +
-
-So we only enable ACPI if we pass acpi=force as kernel parameter?
-I'm not sure if this is what you wanted to do.
+My PM tests have been now broken for six weeks or something
+because of this!
 
 Regards,
-Matthias
+
+Tony
