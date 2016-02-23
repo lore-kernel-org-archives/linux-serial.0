@@ -1,60 +1,120 @@
-From: Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: [PATCH v4 03/10] dt-bindings: document the MPS2 UART bindings
-Date: Tue, 23 Feb 2016 14:34:21 +0000
-Message-ID: <1456238068-25079-4-git-send-email-vladimir.murzin@arm.com>
-References: <1456238068-25079-1-git-send-email-vladimir.murzin@arm.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 1/8] arm64: move acpi/dt decision earlier in boot process
+Date: Tue, 23 Feb 2016 15:37:26 +0100
+Message-ID: <56CC6EA6.4020909@gmail.com>
+References: <1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org>
+ <1456148818-26257-2-git-send-email-aleksey.makarov@linaro.org>
+ <56CB2D0D.3090408@gmail.com>
+ <20160223135731.GA24781@xora-haswell.xora.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1456238068-25079-1-git-send-email-vladimir.murzin@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: arnd@arndb.de, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, daniel.lezcano@linaro.org, tglx@linutronix.de, u.kleine-koenig@pengutronix.de, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com
-Cc: mark.rutland@arm.com, gnomes@lxorguk.ukuu.org.uk, peter@hurleysoftware.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, galak@codeaurora.org, jslaby@suse.cz, devicetree@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160223135731.GA24781@xora-haswell.xora.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Graeme Gregory <gg@slimlogic.co.uk>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-This adds documentation of device tree bindings for the
-UART found on ARM MPS2 platform
 
-Signed-off-by: Vladimir Murzin <vladimir.murzin@arm.com>
-Acked-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/serial/arm,mps2-uart.txt   |   19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.txt
 
-diff --git a/Documentation/devicetree/bindings/serial/arm,mps2-uart.txt b/Documentation/devicetree/bindings/serial/arm,mps2-uart.txt
-new file mode 100644
-index 0000000..128cc6a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/arm,mps2-uart.txt
-@@ -0,0 +1,19 @@
-+ARM MPS2 UART
-+
-+Required properties:
-+- compatible	: Should be "arm,mps2-uart"
-+- reg		: Address and length of the register set
-+- interrupts	: Reference to the UART RX, TX and overrun interrupts
-+
-+Required clocking property:
-+- clocks	  : The input clock of the UART
-+
-+
-+Examples:
-+
-+uart0: serial@40004000 {
-+	compatible = "arm,mps2-uart";
-+	reg = <0x40004000 0x1000>;
-+	interrupts = <0 1 12>;
-+	clocks = <&sysclk>;
-+};
--- 
-1.7.9.5
+On 23/02/16 14:57, Graeme Gregory wrote:
+> On Mon, Feb 22, 2016 at 04:45:17PM +0100, Matthias Brugger wrote:
+>>
+>>
+>> On 22/02/16 14:46, Aleksey Makarov wrote:
+>>> From: Leif Lindholm <leif.lindholm@linaro.org>
+>>>
+>>> In order to support selecting earlycon via either ACPI or DT, move
+>>> the decision on whether to attempt ACPI configuration into the
+>>> early_param handling. Then make acpi_boot_table_init() bail out if
+>>> acpi_disabled.
+>>>
+>>> Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
+>>> ---
+>>>   arch/arm64/kernel/acpi.c | 54 ++++++++++++++++++++++++++----------------------
+>>>   1 file changed, 29 insertions(+), 25 deletions(-)
+>>>
+>>> diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
+>>> index d1ce8e2..7a944f7 100644
+>>> --- a/arch/arm64/kernel/acpi.c
+>>> +++ b/arch/arm64/kernel/acpi.c
+>>> @@ -44,6 +44,19 @@ EXPORT_SYMBOL(acpi_pci_disabled);
+>>>   static bool param_acpi_off __initdata;
+>>>   static bool param_acpi_force __initdata;
+>>>
+>>> +static int __init dt_scan_depth1_nodes(unsigned long node,
+>>> +				       const char *uname, int depth,
+>>> +				       void *data)
+>>> +{
+>>> +	/*
+>>> +	 * Return 1 as soon as we encounter a node at depth 1 that is
+>>> +	 * not the /chosen node.
+>>> +	 */
+>>> +	if (depth == 1 && (strcmp(uname, "chosen") != 0))
+>>> +		return 1;
+>>> +	return 0;
+>>> +}
+>>> +
+>>>   static int __init parse_acpi(char *arg)
+>>>   {
+>>>   	if (!arg)
+>>> @@ -57,23 +70,27 @@ static int __init parse_acpi(char *arg)
+>>>   	else
+>>>   		return -EINVAL;	/* Core will print when we return error */
+
+If argument of parse_acpi is neither "off" nor "force" we return with 
+-EINVAL here. Actually parse_acpi will be only called if we pass "acpi=" 
+as kernel parameter. Therefor we can get rid of "acpi=off" as this is 
+the _new_ standard. IMHO we should introduce "acpi=on" if we really want 
+to change the standard behavior.
+
+>>>
+>>> -	return 0;
+>>> -}
+>>> -early_param("acpi", parse_acpi);
+>>> +	/*
+>>> +	 * Enable ACPI instead of device tree unless
+>>> +	 * - ACPI has been disabled explicitly (acpi=off), or
+>>> +	 * - the device tree is not empty (it has more than just a /chosen node)
+>>> +	 *   and ACPI has not been force enabled (acpi=force)
+>>> +	 */
+>>> +	if (param_acpi_off ||
+>>> +	    (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
+>>> +		return 0;
+
+Or param_acpi_off is true or param_acpi_force is true, the depth of the 
+DT has no influence.
+
+>>>
+>>> -static int __init dt_scan_depth1_nodes(unsigned long node,
+>>> -				       const char *uname, int depth,
+>>> -				       void *data)
+>>> -{
+>>>   	/*
+>>> -	 * Return 1 as soon as we encounter a node at depth 1 that is
+>>> -	 * not the /chosen node.
+>>> +	 * ACPI is disabled at this point. Enable it in order to parse
+>>> +	 * the ACPI tables and carry out sanity checks
+>>>   	 */
+>>> -	if (depth == 1 && (strcmp(uname, "chosen") != 0))
+>>> -		return 1;
+>>> +	enable_acpi();
+>>> +
+>>
+>> So we only enable ACPI if we pass acpi=force as kernel parameter?
+>> I'm not sure if this is what you wanted to do.
+>>
+>
+> The current preference from ARM64 maintainers was that is both ACPI
+> tables and a DT were presented then DT should take precedence.
+>
+> With no DT provided the code should use ACPI.
+
+ From my understanding in this patch that can never happen.
+
+On which version is this set based on?
+I'm looking on v4.5-rc5 ATM.
+
+Regards,
+Matthias
