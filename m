@@ -1,54 +1,63 @@
-From: Romain Izard <romain.izard.pro@gmail.com>
-Subject: Re: [PATCH v1] serial: mctrl_gpio: Add missing module license
-Date: Tue, 23 Feb 2016 17:05:55 +0100
-Message-ID: <CAGkQfmMRXYZmE=jkfLPiDisjySRUiPdJhanQjh5+ej1=pU_nAQ@mail.gmail.com>
-References: <1456239294-28342-1-git-send-email-romain.izard.pro@gmail.com> <CAOMZO5C1rBmwERkVo051UK8sYH_Pap_DDB_ykB4hSCy522Vi8w@mail.gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 0/4] serial: omap: robustify for high speed transfers
+Date: Tue, 23 Feb 2016 18:56:23 +0200
+Message-ID: <CAHp75VeZiySV1ZzVNORYWUJ1_fiaSk9_sHNBR0w_ACNdwaHcwA@mail.gmail.com>
+References: <87lh7hrjsg.fsf@linutronix.de>
+	<56A66FCB.1000507@hurleysoftware.com>
+	<87y4b85onp.fsf@linutronix.de>
+	<56B15603.80807@hurleysoftware.com>
+	<87wpqbihel.fsf@linutronix.de>
+	<20160211210050.GY19432@atomide.com>
+	<874md0yd81.fsf@linutronix.de>
+	<56CC2D83.3090900@ti.com>
+	<56CC5409.2050609@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5C1rBmwERkVo051UK8sYH_Pap_DDB_ykB4hSCy522Vi8w@mail.gmail.com>
+In-Reply-To: <56CC5409.2050609@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Sekhar Nori <nsekhar@ti.com>, John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Peter Ujfalusi <peter.ujfalusi@ti.com>, dmaengine <dmaengine@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-2016-02-23 16:21 GMT+01:00 Fabio Estevam <festevam@gmail.com>:
-> On Tue, Feb 23, 2016 at 11:54 AM, Romain Izard
-> <romain.izard.pro@gmail.com> wrote:
->> As the mctrl_gpio driver can be built as a module, it needs to have its
->> license specified with MODULE_LICENSE. Otherwise, it cannot access
->> required symbols exported through EXPORT_SYMBOL_GPL.
+On Tue, Feb 23, 2016 at 2:43 PM, Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+> On 02/23/2016 10:59 AM, Sekhar Nori wrote:
+>>> With the am335x (Beaglebone Black, eDMA engine) I see 1000 DMA
+>>> interrupts and 1000 spurious UART interrupts. The spurious UART
+>>> interrupts arrive 30-50us _before_ the DMA interrupts. Always.
+>>>
+>>> If I disable UART timeout interrupts (RDI), the same test generates no
+>>> spurious UART interrupts. Only 1000 DMA interrupts.
 >>
->> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
->> ---
->>  drivers/tty/serial/serial_mctrl_gpio.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
->> index 226ad23b136c..02147361eaa9 100644
->> --- a/drivers/tty/serial/serial_mctrl_gpio.c
->> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
->> @@ -20,6 +20,7 @@
->>  #include <linux/gpio/consumer.h>
->>  #include <linux/termios.h>
->>  #include <linux/serial_core.h>
->> +#include <linux/module.h>
->>
->>  #include "serial_mctrl_gpio.h"
->>
->> @@ -249,3 +250,5 @@ void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios)
->>         }
->>  }
->>  EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms);
->> +
->> +MODULE_LICENSE("GPL");
+>> To be clear, these interrupts are not caught as spurious by the
+>> interrupt controller (INTC). They are detected by INTC as UART
+>> interrupts. Just that you don't expect a timeout interrupt to happen at
+>> the time you see the interrupt, correct?
 >
-> Shouldn't it be "GPL v2" instead to match the licensing text in the
-> top of the file?
+> From what I remember the INTC says it is UART, correct.
+> But UART's status register says "no interrupt" (IIR has UART_IIR_NO_INT
+> set). So the UART driver returns IRQ_NONE which counts as spurious.
+>
+> It is just that once you disable RDI there are no more interrupts coming
+> during DMA transfer.
 
-According to include/linux/module.h, "GPL" means "GNU Public License
-v2 or later",
-which is the license text in the file header.
+Hmm... How I missed this discussion?
+
+I'm trying to resolve few issues I found on 8250_dw using higher baud
+rates and DMA on internal loopback.
+One of the issue I got is the set of spurious interrupts which lead to
+"too much work for irq" message.
+
+Reading deeply Intel's documentation on some UART I found the following:
+
+"Receive Data Available Interrupt
+...
+It is recommended to disable this interrupt when running with DMA mode."
+
+The problem is that we have no separate bit to control timeout
+interrupts from UART.
 
 -- 
-Romain Izard
+With Best Regards,
+Andy Shevchenko
