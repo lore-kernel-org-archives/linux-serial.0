@@ -1,43 +1,99 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 0/4] serial: omap: robustify for high speed transfers
-Date: Tue, 23 Feb 2016 13:43:53 +0100
-Message-ID: <56CC5409.2050609@linutronix.de>
-References: <87lh7hrjsg.fsf@linutronix.de>
- <56A66FCB.1000507@hurleysoftware.com> <87y4b85onp.fsf@linutronix.de>
- <56B15603.80807@hurleysoftware.com> <87wpqbihel.fsf@linutronix.de>
- <20160211210050.GY19432@atomide.com> <874md0yd81.fsf@linutronix.de>
- <56CC2D83.3090900@ti.com>
+From: Graeme Gregory <gg@slimlogic.co.uk>
+Subject: Re: [PATCH 1/8] arm64: move acpi/dt decision earlier in boot process
+Date: Tue, 23 Feb 2016 13:57:31 +0000
+Message-ID: <20160223135731.GA24781@xora-haswell.xora.org.uk>
+References: <1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org>
+ <1456148818-26257-2-git-send-email-aleksey.makarov@linaro.org>
+ <56CB2D0D.3090408@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56CC2D83.3090900@ti.com>
+Content-Disposition: inline
+In-Reply-To: <56CB2D0D.3090408@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sekhar Nori <nsekhar@ti.com>, John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, gregkh@linuxfoundation.org, vinod.koul@intel.com, dan.j.williams@intel.com, peter.ujfalusi@ti.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 02/23/2016 10:59 AM, Sekhar Nori wrote:
->> With the am335x (Beaglebone Black, eDMA engine) I see 1000 DMA
->> interrupts and 1000 spurious UART interrupts. The spurious UART
->> interrupts arrive 30-50us _before_ the DMA interrupts. Always.
->>
->> If I disable UART timeout interrupts (RDI), the same test generates no
->> spurious UART interrupts. Only 1000 DMA interrupts.
+On Mon, Feb 22, 2016 at 04:45:17PM +0100, Matthias Brugger wrote:
 > 
-> To be clear, these interrupts are not caught as spurious by the
-> interrupt controller (INTC). They are detected by INTC as UART
-> interrupts. Just that you don't expect a timeout interrupt to happen at
-> the time you see the interrupt, correct?
-
->From what I remember the INTC says it is UART, correct.
-But UART's status register says "no interrupt" (IIR has UART_IIR_NO_INT
-set). So the UART driver returns IRQ_NONE which counts as spurious.
-
-It is just that once you disable RDI there are no more interrupts coming
-during DMA transfer.
-
-> Thanks,
-> Sekhar
 > 
-Sebastian
+> On 22/02/16 14:46, Aleksey Makarov wrote:
+> >From: Leif Lindholm <leif.lindholm@linaro.org>
+> >
+> >In order to support selecting earlycon via either ACPI or DT, move
+> >the decision on whether to attempt ACPI configuration into the
+> >early_param handling. Then make acpi_boot_table_init() bail out if
+> >acpi_disabled.
+> >
+> >Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
+> >---
+> >  arch/arm64/kernel/acpi.c | 54 ++++++++++++++++++++++++++----------------------
+> >  1 file changed, 29 insertions(+), 25 deletions(-)
+> >
+> >diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
+> >index d1ce8e2..7a944f7 100644
+> >--- a/arch/arm64/kernel/acpi.c
+> >+++ b/arch/arm64/kernel/acpi.c
+> >@@ -44,6 +44,19 @@ EXPORT_SYMBOL(acpi_pci_disabled);
+> >  static bool param_acpi_off __initdata;
+> >  static bool param_acpi_force __initdata;
+> >
+> >+static int __init dt_scan_depth1_nodes(unsigned long node,
+> >+				       const char *uname, int depth,
+> >+				       void *data)
+> >+{
+> >+	/*
+> >+	 * Return 1 as soon as we encounter a node at depth 1 that is
+> >+	 * not the /chosen node.
+> >+	 */
+> >+	if (depth == 1 && (strcmp(uname, "chosen") != 0))
+> >+		return 1;
+> >+	return 0;
+> >+}
+> >+
+> >  static int __init parse_acpi(char *arg)
+> >  {
+> >  	if (!arg)
+> >@@ -57,23 +70,27 @@ static int __init parse_acpi(char *arg)
+> >  	else
+> >  		return -EINVAL;	/* Core will print when we return error */
+> >
+> >-	return 0;
+> >-}
+> >-early_param("acpi", parse_acpi);
+> >+	/*
+> >+	 * Enable ACPI instead of device tree unless
+> >+	 * - ACPI has been disabled explicitly (acpi=off), or
+> >+	 * - the device tree is not empty (it has more than just a /chosen node)
+> >+	 *   and ACPI has not been force enabled (acpi=force)
+> >+	 */
+> >+	if (param_acpi_off ||
+> >+	    (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
+> >+		return 0;
+> >
+> >-static int __init dt_scan_depth1_nodes(unsigned long node,
+> >-				       const char *uname, int depth,
+> >-				       void *data)
+> >-{
+> >  	/*
+> >-	 * Return 1 as soon as we encounter a node at depth 1 that is
+> >-	 * not the /chosen node.
+> >+	 * ACPI is disabled at this point. Enable it in order to parse
+> >+	 * the ACPI tables and carry out sanity checks
+> >  	 */
+> >-	if (depth == 1 && (strcmp(uname, "chosen") != 0))
+> >-		return 1;
+> >+	enable_acpi();
+> >+
+> 
+> So we only enable ACPI if we pass acpi=force as kernel parameter?
+> I'm not sure if this is what you wanted to do.
+> 
+
+The current preference from ARM64 maintainers was that is both ACPI
+tables and a DT were presented then DT should take precedence.
+
+With no DT provided the code should use ACPI.
+
+Graeme
