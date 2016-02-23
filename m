@@ -1,63 +1,82 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 0/4] serial: omap: robustify for high speed transfers
-Date: Tue, 23 Feb 2016 18:56:23 +0200
-Message-ID: <CAHp75VeZiySV1ZzVNORYWUJ1_fiaSk9_sHNBR0w_ACNdwaHcwA@mail.gmail.com>
-References: <87lh7hrjsg.fsf@linutronix.de>
-	<56A66FCB.1000507@hurleysoftware.com>
-	<87y4b85onp.fsf@linutronix.de>
-	<56B15603.80807@hurleysoftware.com>
-	<87wpqbihel.fsf@linutronix.de>
-	<20160211210050.GY19432@atomide.com>
-	<874md0yd81.fsf@linutronix.de>
-	<56CC2D83.3090900@ti.com>
-	<56CC5409.2050609@linutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: [PATCH] tty/serial: at91: restore dynamic driver binding
+Date: Tue, 23 Feb 2016 17:59:41 +0100
+Message-ID: <1456246781-19606-1-git-send-email-romain.izard.pro@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56CC5409.2050609@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Sekhar Nori <nsekhar@ti.com>, John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Peter Ujfalusi <peter.ujfalusi@ti.com>, dmaengine <dmaengine@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: linux-kernel@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.com>, Romain Izard <romain.izard.pro@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Feb 23, 2016 at 2:43 PM, Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
-> On 02/23/2016 10:59 AM, Sekhar Nori wrote:
->>> With the am335x (Beaglebone Black, eDMA engine) I see 1000 DMA
->>> interrupts and 1000 spurious UART interrupts. The spurious UART
->>> interrupts arrive 30-50us _before_ the DMA interrupts. Always.
->>>
->>> If I disable UART timeout interrupts (RDI), the same test generates no
->>> spurious UART interrupts. Only 1000 DMA interrupts.
->>
->> To be clear, these interrupts are not caught as spurious by the
->> interrupt controller (INTC). They are detected by INTC as UART
->> interrupts. Just that you don't expect a timeout interrupt to happen at
->> the time you see the interrupt, correct?
->
-> From what I remember the INTC says it is UART, correct.
-> But UART's status register says "no interrupt" (IIR has UART_IIR_NO_INT
-> set). So the UART driver returns IRQ_NONE which counts as spurious.
->
-> It is just that once you disable RDI there are no more interrupts coming
-> during DMA transfer.
+In commit c39dfebc7798956fd2140ae6321786ff35da30c3, the modular support
+code for atmel_serial was removed, as the driver cannot be built as a
+module. Because no use case was proposed, the dynamic driver binding
+support was removed as well.
 
-Hmm... How I missed this discussion?
+The atmel_serial driver can manage up to 7 serial controllers, which are
+multiplexed with other functions. For example, in the Atmel SAMA5D2, the
+Flexcom controllers can work as USART, SPI or I2C controllers, and on
+all Atmel devices serial lines can be reconfigured as GPIOs.
 
-I'm trying to resolve few issues I found on 8250_dw using higher baud
-rates and DMA on internal loopback.
-One of the issue I got is the set of spurious interrupts which lead to
-"too much work for irq" message.
+My use case uses GPIOs to transfer a firmware update using a custom
+protocol on the lines used as a serial port during the normal life of
+the device. If it is not possible to unbind the atmel_serial driver, the
+GPIO lines remain reserved and prevent this case from working.
 
-Reading deeply Intel's documentation on some UART I found the following:
+This patch reinstates the atmel_serial_remove function, and fixes it as
+it failed to clear the "clk" field on removal, triggering an oops when
+a device was bound again after being unbound.
 
-"Receive Data Available Interrupt
-...
-It is recommended to disable this interrupt when running with DMA mode."
+Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+---
+ drivers/tty/serial/atmel_serial.c | 30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
-The problem is that we have no separate bit to control timeout
-interrupts from UART.
-
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 1c0884d8ef32..59e241723edc 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2759,14 +2759,38 @@ err:
+ 	return ret;
+ }
+ 
++static int atmel_serial_remove(struct platform_device *pdev)
++{
++	struct uart_port *port = platform_get_drvdata(pdev);
++	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	int ret = 0;
++
++	tasklet_kill(&atmel_port->tasklet);
++
++	device_init_wakeup(&pdev->dev, 0);
++
++	ret = uart_remove_one_port(&atmel_uart, port);
++
++	kfree(atmel_port->rx_ring.buf);
++
++	/* "port" is allocated statically, so we shouldn't free it */
++
++	clear_bit(port->line, atmel_ports_in_use);
++
++	clk_put(atmel_port->clk);
++	atmel_port->clk = NULL;
++
++	return ret;
++}
++
+ static struct platform_driver atmel_serial_driver = {
+ 	.probe		= atmel_serial_probe,
++	.remove		= atmel_serial_remove,
+ 	.suspend	= atmel_serial_suspend,
+ 	.resume		= atmel_serial_resume,
+ 	.driver		= {
+-		.name			= "atmel_usart",
+-		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
+-		.suppress_bind_attrs    = true,
++		.name	= "atmel_usart",
++		.of_match_table	= of_match_ptr(atmel_serial_dt_ids),
+ 	},
+ };
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.5.0
