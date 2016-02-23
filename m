@@ -1,99 +1,110 @@
-From: Graeme Gregory <gg@slimlogic.co.uk>
-Subject: Re: [PATCH 1/8] arm64: move acpi/dt decision earlier in boot process
-Date: Tue, 23 Feb 2016 13:57:31 +0000
-Message-ID: <20160223135731.GA24781@xora-haswell.xora.org.uk>
-References: <1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org>
- <1456148818-26257-2-git-send-email-aleksey.makarov@linaro.org>
- <56CB2D0D.3090408@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: [PATCH v4 00/10] Support for Cortex-M Prototyping System
+Date: Tue, 23 Feb 2016 14:34:18 +0000
+Message-ID: <1456238068-25079-1-git-send-email-vladimir.murzin@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <56CB2D0D.3090408@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
+To: arnd@arndb.de, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, daniel.lezcano@linaro.org, tglx@linutronix.de, u.kleine-koenig@pengutronix.de, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com
+Cc: mark.rutland@arm.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, jslaby@suse.cz, robh+dt@kernel.org, andy.shevchenko@gmail.com, gnomes@lxorguk.ukuu.org.uk, peter@hurleysoftware.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-api@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Feb 22, 2016 at 04:45:17PM +0100, Matthias Brugger wrote:
-> 
-> 
-> On 22/02/16 14:46, Aleksey Makarov wrote:
-> >From: Leif Lindholm <leif.lindholm@linaro.org>
-> >
-> >In order to support selecting earlycon via either ACPI or DT, move
-> >the decision on whether to attempt ACPI configuration into the
-> >early_param handling. Then make acpi_boot_table_init() bail out if
-> >acpi_disabled.
-> >
-> >Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
-> >---
-> >  arch/arm64/kernel/acpi.c | 54 ++++++++++++++++++++++++++----------------------
-> >  1 file changed, 29 insertions(+), 25 deletions(-)
-> >
-> >diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-> >index d1ce8e2..7a944f7 100644
-> >--- a/arch/arm64/kernel/acpi.c
-> >+++ b/arch/arm64/kernel/acpi.c
-> >@@ -44,6 +44,19 @@ EXPORT_SYMBOL(acpi_pci_disabled);
-> >  static bool param_acpi_off __initdata;
-> >  static bool param_acpi_force __initdata;
-> >
-> >+static int __init dt_scan_depth1_nodes(unsigned long node,
-> >+				       const char *uname, int depth,
-> >+				       void *data)
-> >+{
-> >+	/*
-> >+	 * Return 1 as soon as we encounter a node at depth 1 that is
-> >+	 * not the /chosen node.
-> >+	 */
-> >+	if (depth == 1 && (strcmp(uname, "chosen") != 0))
-> >+		return 1;
-> >+	return 0;
-> >+}
-> >+
-> >  static int __init parse_acpi(char *arg)
-> >  {
-> >  	if (!arg)
-> >@@ -57,23 +70,27 @@ static int __init parse_acpi(char *arg)
-> >  	else
-> >  		return -EINVAL;	/* Core will print when we return error */
-> >
-> >-	return 0;
-> >-}
-> >-early_param("acpi", parse_acpi);
-> >+	/*
-> >+	 * Enable ACPI instead of device tree unless
-> >+	 * - ACPI has been disabled explicitly (acpi=off), or
-> >+	 * - the device tree is not empty (it has more than just a /chosen node)
-> >+	 *   and ACPI has not been force enabled (acpi=force)
-> >+	 */
-> >+	if (param_acpi_off ||
-> >+	    (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
-> >+		return 0;
-> >
-> >-static int __init dt_scan_depth1_nodes(unsigned long node,
-> >-				       const char *uname, int depth,
-> >-				       void *data)
-> >-{
-> >  	/*
-> >-	 * Return 1 as soon as we encounter a node at depth 1 that is
-> >-	 * not the /chosen node.
-> >+	 * ACPI is disabled at this point. Enable it in order to parse
-> >+	 * the ACPI tables and carry out sanity checks
-> >  	 */
-> >-	if (depth == 1 && (strcmp(uname, "chosen") != 0))
-> >-		return 1;
-> >+	enable_acpi();
-> >+
-> 
-> So we only enable ACPI if we pass acpi=force as kernel parameter?
-> I'm not sure if this is what you wanted to do.
-> 
+Hi,
 
-The current preference from ARM64 maintainers was that is both ACPI
-tables and a DT were presented then DT should take precedence.
+This patch series provide the basic support for running ucLinux on V2M-MPS2
+platform.
 
-With no DT provided the code should use ACPI.
+With these patches applied ucLinux can be run on both HW and FVP models
+with Cortex-M3/M4/M7 configurations.
 
-Graeme
+Board description:
+
+http://infocenter.arm.com/help/topic/com.arm.doc.100112_0100_03_en/arm_versatile_express_cortex_m_prototyping_system_(v2m_mps2)_technical_reference_manual_100112_0100_03_en.pdf
+
+Application notes (cover Cortex-M3/M4/M7):
+
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0385a/DAI0385A_cortex_m3_on_v2m_mps2.pdf
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0386a/DAI0386A_cortex_m4_on_v2m_mps2.pdf
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0399a/DAI0399A_cortex_m7_on_v2m_mps2.pdf
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0400a/DAI0400A_cortex_m7_on_v2m_mps2.pdf
+
+Cortex-M System Design Kit (referenced as CMDK from documents above):
+
+http://infocenter.arm.com/help/topic/com.arm.doc.ddi0479c/DDI0479C_cortex_m_system_design_kit_r1p0_trm.pdf
+
+I'd be happy to hear any feedback/comments on this series!
+
+Changelog:
+
+  v3  -> v4:
+      - rebased on 4.5-rc5
+      - updated mps2-uart per Andy, Alan and Peter
+      - dropped "zombie" EMBEDDED from defconfg per Arnd
+      - moved mps2 under vexpress umbrella per Arnd
+      - updated device-tree sources per Arnd
+      - dropped low-level debug support, seems earlycon works well for that
+
+  v2  -> v3:
+      - rebased on 4.5-rc4
+      - fixes for mps2-timer per Thomas
+      - swicthed back to ttyMPS naming per Greg
+
+  v1  -> v2:
+      - rebased on 4.5-rc2
+      - fixes for mps2-timer per Daniel and Rob (added Ack from Daniel)
+      - fixes for mps2-uart per Greg and Andy
+
+  RFC -> v1:
+      - dropped RFC tag
+      - rebased on 4.4-rc3
+      - added Acks from Rob
+      - updated mps2-timer per Daniel
+      - fixed build failures reported by 0-DAY kernel test infrastructure
+
+Thanks!
+
+Vladimir Murzin (10):
+  dt-bindings: document the MPS2 timer bindings
+  clockevents/drivers: add MPS2 Timer driver
+  dt-bindings: document the MPS2 UART bindings
+  serial: mps2-uart: add MPS2 UART driver
+  serial: mps2-uart: add support for early console
+  ARM: vexpress/mps2: introduce MPS2 platform
+  ARM: configs: add MPS2 defconfig
+  ARM: dts: introduce MPS2 AN385/AN386
+  ARM: dts: introduce MPS2 AN399/AN400
+  MAINTAINERS: Update ARM Versatile Express platform entry
+
+ .../devicetree/bindings/serial/arm,mps2-uart.txt   |   19 +
+ .../devicetree/bindings/timer/arm,mps2-timer.txt   |   28 +
+ MAINTAINERS                                        |    1 +
+ arch/arm/Kconfig                                   |    8 +
+ arch/arm/Makefile                                  |    1 +
+ arch/arm/boot/dts/Makefile                         |    3 +
+ arch/arm/boot/dts/mps2-an385.dts                   |   92 +++
+ arch/arm/boot/dts/mps2-an399.dts                   |   92 +++
+ arch/arm/boot/dts/mps2.dtsi                        |  242 ++++++++
+ arch/arm/configs/mps2_defconfig                    |  109 ++++
+ arch/arm/mach-vexpress/Makefile                    |    4 +-
+ arch/arm/mach-vexpress/Makefile.boot               |    3 +
+ arch/arm/mach-vexpress/v2m-mps2.c                  |   21 +
+ drivers/clocksource/Kconfig                        |    6 +
+ drivers/clocksource/Makefile                       |    1 +
+ drivers/clocksource/mps2-timer.c                   |  275 +++++++++
+ drivers/tty/serial/Kconfig                         |   13 +
+ drivers/tty/serial/Makefile                        |    1 +
+ drivers/tty/serial/mps2-uart.c                     |  614 ++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |    3 +
+ 20 files changed, 1535 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/arm,mps2-timer.txt
+ create mode 100644 arch/arm/boot/dts/mps2-an385.dts
+ create mode 100644 arch/arm/boot/dts/mps2-an399.dts
+ create mode 100644 arch/arm/boot/dts/mps2.dtsi
+ create mode 100644 arch/arm/configs/mps2_defconfig
+ create mode 100644 arch/arm/mach-vexpress/Makefile.boot
+ create mode 100644 arch/arm/mach-vexpress/v2m-mps2.c
+ create mode 100644 drivers/clocksource/mps2-timer.c
+ create mode 100644 drivers/tty/serial/mps2-uart.c
+
+-- 
+1.7.9.5
