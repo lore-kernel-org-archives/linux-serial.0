@@ -1,73 +1,43 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Re: [PATCH v2 3/8] ACPI: add definitions of DBG2 subtypes
-Date: Wed, 24 Feb 2016 20:25:16 +0300
-Message-ID: <56CDE77C.2050301@linaro.org>
-References: <1456333819-13482-1-git-send-email-aleksey.makarov@linaro.org>
- <1456333819-13482-4-git-send-email-aleksey.makarov@linaro.org>
- <94F2FBAB4432B54E8AACC7DFDE6C92E37E44BCB5@ORSMSX110.amr.corp.intel.com>
+From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
+Subject: Re: sc16is7xx: a lot of time is spend in sc16is7xx_port_irq
+Date: Wed, 24 Feb 2016 18:39:46 +0100
+Message-ID: <56CDEAE2.9050102@prevas.dk>
+References: <56CDCCE6.5020801@prevas.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <94F2FBAB4432B54E8AACC7DFDE6C92E37E44BCB5@ORSMSX110.amr.corp.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Moore, Robert" <robert.moore@intel.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Len Brown <lenb@kernel.org>, "Zheng, Lv" <lv.zheng@intel.com>, "devel@acpica.org" <devel@acpica.org>
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <56CDCCE6.5020801@prevas.dk>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-rt-users@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+CC'ing RT
 
+On 2016-02-24 16:31, Sean Nyekj=C3=A6r wrote:
+> Hi
+>
+> I'm using the sc16is750 on an imx6d platform with RT patches applied.
+>
+> I have observed that sometimes the driver locks the whole system as i=
+s=20
+> loops inside the sc16is7xx_port_irq.
+> I have applied some debug and seen we are looping upto 130000 times i=
+n=20
+> the while(1) loop.
+> The SC16IS7XX_IIR_REG does signal the SC16IS7XX_IIR_XOFFI_SRC but the=
+=20
+> SC16IS7XX_IER_XOFFI_BIT is not set.
+>
+> Please ask for more debug info if needed :-)
+>
+> Br
+> Sean
 
-On 02/24/2016 08:17 PM, Moore, Robert wrote:
-> I've got these for the next release of ACPICA
-
-It have not been pulled to linux-next but is required for the patchset.
-So I included it here.
-
-> 
-> 
->> -----Original Message-----
->> From: Aleksey Makarov [mailto:aleksey.makarov@linaro.org]
->> Sent: Wednesday, February 24, 2016 9:10 AM
->> To: linux-acpi@vger.kernel.org
->> Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; linux-arm-
->> kernel@lists.infradead.org; Aleksey Makarov; Russell King; Greg Kroah-
->> Hartman; Rafael J . Wysocki; Leif Lindholm; Graeme Gregory; Al Stone;
->> Christopher Covington; Len Brown; Moore, Robert; Zheng, Lv;
->> devel@acpica.org
->> Subject: [PATCH v2 3/8] ACPI: add definitions of DBG2 subtypes
->>
->> The recent version of Microsoft Debug Port Table 2 (DBG2) [1] specifies
->> additional serial debug port subtypes.  These constants are also referred
->> by Serial Port Console Redirection Table (SPCR) [2]
->>
->> Add these constants.
->>
->> [1] https://msdn.microsoft.com/en-
->> us/library/windows/hardware/dn639131(v=vs.85).aspx
->> [2] https://msdn.microsoft.com/en-
->> us/library/windows/hardware/dn639132(v=vs.85).aspx
->>
->> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
->> ---
->>  include/acpi/actbl2.h | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h index
->> a4ef625..652f747 100644
->> --- a/include/acpi/actbl2.h
->> +++ b/include/acpi/actbl2.h
->> @@ -371,6 +371,11 @@ struct acpi_dbg2_device {
->>
->>  #define ACPI_DBG2_16550_COMPATIBLE  0x0000
->>  #define ACPI_DBG2_16550_SUBSET      0x0001
->> +#define ACPI_DBG2_ARM_PL011         0x0003
->> +#define ACPI_DBG2_ARM_SBSA_32BIT    0x000D
->> +#define ACPI_DBG2_ARM_SBSA_GENERIC  0x000E
->> +#define ACPI_DBG2_ARM_DCC           0x000F
->> +#define ACPI_DBG2_BCM2835           0x0010
->>
->>  #define ACPI_DBG2_1394_STANDARD     0x0000
->>
->> --
->> 2.7.1
-> 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-rt-user=
+s" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
