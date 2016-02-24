@@ -1,126 +1,69 @@
-From: romain izard <romain.izard@mobile-devices.fr>
-Subject: Re: [PATCH] tty/serial: at91: restore dynamic driver binding
-Date: Wed, 24 Feb 2016 16:32:53 +0100
-Message-ID: <CAGkQfmPyqu-XCzphbZ8=VMgdC5NA6whyb2BUFZhQbSb2_RKkeg@mail.gmail.com>
-References: <1456246781-19606-1-git-send-email-romain.izard.pro@gmail.com> <56CDC403.4090505@atmel.com>
+From: Sekhar Nori <nsekhar@ti.com>
+Subject: Re: [PATCH 0/4] serial: omap: robustify for high speed transfers
+Date: Wed, 24 Feb 2016 21:07:14 +0530
+Message-ID: <56CDCE2A.30809@ti.com>
+References: <87lh7hrjsg.fsf@linutronix.de>
+ <56A66FCB.1000507@hurleysoftware.com> <87y4b85onp.fsf@linutronix.de>
+ <56B15603.80807@hurleysoftware.com> <87wpqbihel.fsf@linutronix.de>
+ <20160211210050.GY19432@atomide.com> <874md0yd81.fsf@linutronix.de>
+ <56CC2D83.3090900@ti.com> <56CD2184.40304@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56CDC403.4090505@atmel.com>
+In-Reply-To: <56CD2184.40304@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, LKML <linux-kernel@vger.kernel.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.com>
+To: Peter Hurley <peter@hurleysoftware.com>, John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>
+Cc: gregkh@linuxfoundation.org, vinod.koul@intel.com, dan.j.williams@intel.com, bigeasy@linutronix.de, peter.ujfalusi@ti.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-2016-02-24 15:53 GMT+01:00 Nicolas Ferre <nicolas.ferre@atmel.com>:
-> Le 23/02/2016 17:59, Romain Izard a =C3=A9crit :
->> In commit c39dfebc7798956fd2140ae6321786ff35da30c3, the modular supp=
-ort
->> code for atmel_serial was removed, as the driver cannot be built as =
-a
->> module. Because no use case was proposed, the dynamic driver binding
->> support was removed as well.
->>
->> The atmel_serial driver can manage up to 7 serial controllers, which=
- are
->> multiplexed with other functions. For example, in the Atmel SAMA5D2,=
- the
->> Flexcom controllers can work as USART, SPI or I2C controllers, and o=
-n
->> all Atmel devices serial lines can be reconfigured as GPIOs.
->
-> Well this paragraph somehow puzzled me and made me think that you onl=
-y
-> have to keep the serial port as "disabled" in the DT to achieve what =
-you
-> had had in mind.
->
->> My use case uses GPIOs to transfer a firmware update using a custom
->> protocol on the lines used as a serial port during the normal life o=
-f
->> the device. If it is not possible to unbind the atmel_serial driver,=
- the
->> GPIO lines remain reserved and prevent this case from working.
->
-> Yes, here I understand better. Your use case is somewhat uncommon as
-> your SoC pads can be configured for two different uses with two
-> different drivers in front of your hardware device...
->
->> This patch reinstates the atmel_serial_remove function, and fixes it=
- as
->> it failed to clear the "clk" field on removal, triggering an oops wh=
-en
->> a device was bound again after being unbound.
->
-> Well, okay. As the modification is not that big and that the solution=
- is
-> pretty elegant, I'll take it.
->
->
->> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
->> ---
->>  drivers/tty/serial/atmel_serial.c | 30 +++++++++++++++++++++++++++-=
---
->>  1 file changed, 27 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/=
-atmel_serial.c
->> index 1c0884d8ef32..59e241723edc 100644
->> --- a/drivers/tty/serial/atmel_serial.c
->> +++ b/drivers/tty/serial/atmel_serial.c
->> @@ -2759,14 +2759,38 @@ err:
->>       return ret;
->>  }
->>
->> +static int atmel_serial_remove(struct platform_device *pdev)
->> +{
->> +     struct uart_port *port =3D platform_get_drvdata(pdev);
->> +     struct atmel_uart_port *atmel_port =3D to_atmel_uart_port(port=
-);
->> +     int ret =3D 0;
->> +
->> +     tasklet_kill(&atmel_port->tasklet);
->> +
->> +     device_init_wakeup(&pdev->dev, 0);
->> +
->> +     ret =3D uart_remove_one_port(&atmel_uart, port);
->> +
->> +     kfree(atmel_port->rx_ring.buf);
->> +
->> +     /* "port" is allocated statically, so we shouldn't free it */
->> +
->> +     clear_bit(port->line, atmel_ports_in_use);
->> +
->> +     clk_put(atmel_port->clk);
->> +     atmel_port->clk =3D NULL;
->> +
->> +     return ret;
->> +}
->> +
->>  static struct platform_driver atmel_serial_driver =3D {
->>       .probe          =3D atmel_serial_probe,
->> +     .remove         =3D atmel_serial_remove,
->>       .suspend        =3D atmel_serial_suspend,
->>       .resume         =3D atmel_serial_resume,
->>       .driver         =3D {
->> -             .name                   =3D "atmel_usart",
->> -             .of_match_table         =3D of_match_ptr(atmel_serial_=
-dt_ids),
->> -             .suppress_bind_attrs    =3D true,
->> +             .name   =3D "atmel_usart",
->> +             .of_match_table =3D of_match_ptr(atmel_serial_dt_ids),
->
-> The 2 modifications above are not related to the patch: keep them lik=
-e
-> they were event if it's not as pretty as you would like...
->
+On Wednesday 24 February 2016 08:50 AM, Peter Hurley wrote:
+> Just to follow-up on what Sebastian wrote.
+> 
+> As he pointed out, these spurious interrupts are not timeout interrupts.
+> Since IIR_UART[0] == 1, no uart interrupt is pending.
+> 
+> As he wrote, these count as spurious interrupts and trigger
+> interrupt shutdown at 100000 (unless acked as uart interrupts).
 
-These modifications were introduced by the patch I reversed, so the
-alignment just returned to what it was before Paul's patch. And I need
-to remove "suppress_bind_attrs", otherwise it's not possible to unbind
-the device and the driver.
+Okay, by adding a printk to where the check for UART_IIR_NO_INT is in
+omap_8250_dma_handle_irq(), I do see that UART irq handler is called
+when there is apparently no interrupt.
 
-Best regards,
---=20
-Romain Izard
+I don't see the error interrupt count in /proc/interrupts go up although
+the code is returning IRQ_NONE when this happens. I initially thought
+that must be because of the interrupt being IRQF_SHARED. But getting rid
+of IRQF_SHARED still does not lead to error count going up. I need to
+spend some more time to see what is going on.
+
+> These spurious interrupts very nearly correspond 1:1 (but not quite)
+> with each dma submission. So, for example, one test run had:
+> 
+>     @3Mbaud line rate
+>     195826 submits
+>     195823 completions
+> 
+>     195704 spurious interrupts (ie., interrupts with IIR_UART[0] == 1)
+>          0 RLSI interrupts (no line errors) (IIR_UART == 0xc6)
+>          2 RX timeout interrupts (IIR_UART == 0xcc),
+>            one during i/o test and one at the end of i/o test
+>          6 RDI interrupts (IIR_UART == 0xc4)
+> 
+> The spurious interrupts occur with nearly 1:1 correspondence at _all_
+> line rates.
+> 
+> Presumbably, the 6 RDI interrupts are from too-slow submission of
+> the next DMA and the uart rx fifo has reached rx trigger level already.
+> [NOTE: we should at least be using ping-pong dma buffers for rx so that
+> there is always a next DMA buffer when the current buffer is completed].
+> 
+> There is no documentation in any of the OMAP TRMs regarding RDI
+> interrupts while in DMA mode. Some guidance from TI would be appreciated.
+
+UART interrupts triggering while UART_IIR_NO_INT is set is weird enough.
+I will check around internally with hardware folks here. Getting an
+answer might take time. But this is easily reproducible so I am
+optimistic we will get an answer soon.
+
+Regards,
+Sekhar
