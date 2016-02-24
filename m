@@ -1,169 +1,130 @@
 From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH v2 6/8] ACPI: serial: implement earlycon on ACPI DBG2 port
-Date: Wed, 24 Feb 2016 20:10:15 +0300
-Message-ID: <1456333819-13482-7-git-send-email-aleksey.makarov@linaro.org>
+Subject: [PATCH v2 1/8] arm64: move acpi/dt decision earlier in boot process
+Date: Wed, 24 Feb 2016 20:10:10 +0300
+Message-ID: <1456333819-13482-2-git-send-email-aleksey.makarov@linaro.org>
 References: <1456333819-13482-1-git-send-email-aleksey.makarov@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1456333819-13482-1-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Aleksey Makarov <aleksey.makarov@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Add ACPI_DBG2_EARLYCON_DECLARE() macros that declares
-an earlycon on the serial port specified in the DBG2 ACPI table.
+From: Leif Lindholm <leif.lindholm@linaro.org>
 
-Pass the string "earlycon=acpi_dbg2" to the kernel to activate it.
+In order to support selecting earlycon via either ACPI or DT, move
+the decision on whether to attempt ACPI configuration into the
+early_param handling. Then make acpi_boot_table_init() bail out if
+acpi_disabled.
 
-Callbacks for EARLYCON_DECLARE() and OF_EARLYCON_DECLARE()
-can also be used for this macros.
-
+Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
 Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
 ---
- Documentation/kernel-parameters.txt |  3 ++
- drivers/tty/serial/earlycon.c       | 60 +++++++++++++++++++++++++++++++++++++
- include/linux/acpi_dbg2.h           | 20 +++++++++++++
- 3 files changed, 83 insertions(+)
+ arch/arm64/kernel/acpi.c | 62 +++++++++++++++++++++++-------------------------
+ 1 file changed, 30 insertions(+), 32 deletions(-)
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 1fee970..22600e0 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -1069,6 +1069,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 			A valid base address must be provided, and the serial
- 			port must already be setup and configured.
+diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
+index d1ce8e2..3faa323 100644
+--- a/arch/arm64/kernel/acpi.c
++++ b/arch/arm64/kernel/acpi.c
+@@ -41,26 +41,8 @@ EXPORT_SYMBOL(acpi_disabled);
+ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
+ EXPORT_SYMBOL(acpi_pci_disabled);
  
-+		acpi_dbg2
-+			Use serial port specified by the DBG2 ACPI table.
-+
- 	earlyprintk=	[X86,SH,BLACKFIN,ARM,M68k]
- 			earlyprintk=vga
- 			earlyprintk=efi
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index d217366..9ba3a04 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -22,6 +22,7 @@
- #include <linux/sizes.h>
- #include <linux/of.h>
- #include <linux/of_fdt.h>
-+#include <linux/acpi.h>
+-static bool param_acpi_off __initdata;
+ static bool param_acpi_force __initdata;
  
- #ifdef CONFIG_FIX_EARLYCON_MEM
- #include <asm/fixmap.h>
-@@ -200,6 +201,8 @@ int __init setup_earlycon(char *buf)
- 	return -ENOENT;
+-static int __init parse_acpi(char *arg)
+-{
+-	if (!arg)
+-		return -EINVAL;
+-
+-	/* "acpi=off" disables both ACPI table parsing and interpreter */
+-	if (strcmp(arg, "off") == 0)
+-		param_acpi_off = true;
+-	else if (strcmp(arg, "force") == 0) /* force ACPI to be enabled */
+-		param_acpi_force = true;
+-	else
+-		return -EINVAL;	/* Core will print when we return error */
+-
+-	return 0;
+-}
+-early_param("acpi", parse_acpi);
+-
+ static int __init dt_scan_depth1_nodes(unsigned long node,
+ 				       const char *uname, int depth,
+ 				       void *data)
+@@ -74,6 +56,35 @@ static int __init dt_scan_depth1_nodes(unsigned long node,
+ 	return 0;
  }
  
-+static bool setup_dbg2_earlycon;
-+
- /* early_param wrapper for setup_earlycon() */
- static int __init param_setup_earlycon(char *buf)
- {
-@@ -212,6 +215,11 @@ static int __init param_setup_earlycon(char *buf)
- 	if (!buf || !buf[0])
- 		return early_init_dt_scan_chosen_serial();
- 
-+	if (!strcmp(buf, "acpi_dbg2")) {
-+		setup_dbg2_earlycon = true;
-+		return 0;
-+	}
-+
- 	err = setup_earlycon(buf);
- 	if (err == -ENOENT || err == -EALREADY)
- 		return 0;
-@@ -286,3 +294,55 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
- }
- 
- #endif /* CONFIG_OF_EARLY_FLATTREE */
-+
-+#ifdef CONFIG_ACPI_DBG2_TABLE
-+
-+int __init acpi_setup_earlycon(struct acpi_dbg2_device *device, void *d)
++static int __init parse_acpi(char *arg)
 +{
-+	int err;
-+	struct uart_port *port = &early_console_dev.port;
-+	int (*setup)(struct earlycon_device *, const char *) = d;
-+	struct acpi_generic_address *reg;
-+
-+	if (!setup_dbg2_earlycon)
-+		return -ENODEV;
-+
-+	if (device->register_count < 1)
-+		return -ENODEV;
-+
-+	if (device->base_address_offset >= device->length)
++	if (!arg)
 +		return -EINVAL;
 +
-+	reg = (void *)device + device->base_address_offset;
++	/*
++	 * Enable ACPI instead of device tree unless
++	 * - ACPI has been disabled explicitly (acpi=off), or
++	 * - the device tree is not empty (it has more than just a /chosen node)
++	 *   and ACPI has not been force enabled (acpi=force)
++	 */
++	if (strcmp(arg, "off") == 0)
++		return 0;
++	else if (strcmp(arg, "force") == 0)
++		param_acpi_force = true;
++	else if (of_scan_flat_dt(dt_scan_depth1_nodes, NULL))
++		return 0;
 +
-+	if (reg->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY &&
-+	    reg->space_id != ACPI_ADR_SPACE_SYSTEM_IO)
-+		return -EINVAL;
++	/*
++	 * ACPI is disabled at this point. Enable it in order to parse
++	 * the ACPI tables and carry out sanity checks
++	 */
++	enable_acpi();
 +
-+	spin_lock_init(&port->lock);
-+	port->uartclk = BASE_BAUD * 16;
-+
-+	if (reg->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
-+		if (device->port_type == ACPI_DBG2_ARM_SBSA_32BIT)
-+			port->iotype = UPIO_MEM32;
-+		else
-+			port->iotype = UPIO_MEM;
-+		port->mapbase = reg->address;
-+		port->membase = earlycon_map(reg->address, SZ_4K);
-+	} else {
-+		port->iotype = UPIO_PORT;
-+		port->iobase = reg->address;
-+	}
-+
-+	early_console_dev.con->data = &early_console_dev;
-+	err = setup(&early_console_dev, NULL);
-+	if (err < 0)
-+		return err;
-+	if (!early_console_dev.con->write)
-+		return -ENODEV;
-+
-+	register_console(early_console_dev.con);
 +	return 0;
 +}
 +
-+#endif /* CONFIG_ACPI_DBG2_TABLE */
-diff --git a/include/linux/acpi_dbg2.h b/include/linux/acpi_dbg2.h
-index 125ae7e..b653752 100644
---- a/include/linux/acpi_dbg2.h
-+++ b/include/linux/acpi_dbg2.h
-@@ -37,12 +37,32 @@ int acpi_dbg2_setup(struct acpi_table_header *header, const void *data);
- 	ACPI_DECLARE_PROBE_ENTRY(dbg2, name, ACPI_SIG_DBG2,		\
- 				 acpi_dbg2_setup, &__acpi_dbg2_data_##name)
- 
-+int acpi_setup_earlycon(struct acpi_dbg2_device *device, void *d);
++early_param("acpi", parse_acpi);
 +
-+/**
-+ * ACPI_DBG2_EARLYCON_DECLARE() - Define handler for ACPI GDB2 serial port
-+ * @name:		Identifier to compose name of table data
-+ * @subtype:		Subtype of the port
-+ * @console_setup:	Function to be called to setup the port
-+ *
-+ * Type of the console_setup() callback is
-+ * int (*setup)(struct earlycon_device *, const char *)
-+ * It's the type of callback of of_setup_earlycon().
-+ */
-+#define ACPI_DBG2_EARLYCON_DECLARE(name, subtype, console_setup)	\
-+	ACPI_DBG2_DECLARE(name, ACPI_DBG2_SERIAL_PORT, subtype,		\
-+			  acpi_setup_earlycon, console_setup)
-+
- #else
+ /*
+  * __acpi_map_table() will be called before page_init(), so early_ioremap()
+  * or early_memremap() should be called here to for ACPI table mapping.
+@@ -181,23 +192,10 @@ out:
+  */
+ void __init acpi_boot_table_init(void)
+ {
+-	/*
+-	 * Enable ACPI instead of device tree unless
+-	 * - ACPI has been disabled explicitly (acpi=off), or
+-	 * - the device tree is not empty (it has more than just a /chosen node)
+-	 *   and ACPI has not been force enabled (acpi=force)
+-	 */
+-	if (param_acpi_off ||
+-	    (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
++	if (acpi_disabled)
+ 		return;
  
- #define ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)	\
- 	static const void *__acpi_dbg_data_##name[]			\
- 		__used __initdata = { (void *)setup_fn,	(void *)data_ptr }
- 
-+#define ACPI_DBG2_EARLYCON_DECLARE(name, subtype, console_setup)	\
-+	static const void *__acpi_dbg_data_serial_##name[]		\
-+		__used __initdata = { (void *)console_setup }
-+
- #endif
- 
- #endif
+ 	/*
+-	 * ACPI is disabled at this point. Enable it in order to parse
+-	 * the ACPI tables and carry out sanity checks
+-	 */
+-	enable_acpi();
+-
+-	/*
+ 	 * If ACPI tables are initialized and FADT sanity checks passed,
+ 	 * leave ACPI enabled and carry on booting; otherwise disable ACPI
+ 	 * on initialization error.
 -- 
 2.7.1
