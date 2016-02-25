@@ -1,48 +1,159 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] serial: sa1100: make sa1100_register_uart_fns a function
-Date: Thu, 25 Feb 2016 15:33:46 +0100
-Message-ID: <1456410835-3808962-1-git-send-email-arnd@arndb.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, linux-kernel@vger.kernel.org
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v2 1/8] arm64: move acpi/dt decision earlier in boot
+ process
+Date: Thu, 25 Feb 2016 18:53:35 +0300
+Message-ID: <56CF237F.6090706@linaro.org>
+References: <1456333819-13482-1-git-send-email-aleksey.makarov@linaro.org>
+ <1456333819-13482-2-git-send-email-aleksey.makarov@linaro.org>
+ <56CDF4D4.6000506@suse.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <56CDF4D4.6000506@suse.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Matthias Brugger <mbrugger@suse.com>, linux-acpi@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Calling sa1100_register_uart_fns() leaves the port structure
-unused when CONFIG_SERIAL_SA1100 is disabled, and we get a
-compiler warning about that:
+Hi Matthias,
 
-arch/arm/mach-sa1100/badge4.c:317:31: warning: 'badge4_port_fns' defined but not used [-Wunused-variable]
- static struct sa1100_port_fns badge4_port_fns __initdata = {
+On 02/24/2016 09:22 PM, Matthias Brugger wrote:
+> 
+> 
+> On 24/02/16 18:10, Aleksey Makarov wrote:
+>> From: Leif Lindholm <leif.lindholm@linaro.org>
+>>
+>> In order to support selecting earlycon via either ACPI or DT, move
+>> the decision on whether to attempt ACPI configuration into the
+>> early_param handling. Then make acpi_boot_table_init() bail out if
+>> acpi_disabled.
+>>
+>> Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
+>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+>> ---
+>>   arch/arm64/kernel/acpi.c | 62 +++++++++++++++++++++++-------------------------
+>>   1 file changed, 30 insertions(+), 32 deletions(-)
+>>
+>> diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
+>> index d1ce8e2..3faa323 100644
+>> --- a/arch/arm64/kernel/acpi.c
+>> +++ b/arch/arm64/kernel/acpi.c
+>> @@ -41,26 +41,8 @@ EXPORT_SYMBOL(acpi_disabled);
+>>   int acpi_pci_disabled = 1;    /* skip ACPI PCI scan and IRQ initialization */
+>>   EXPORT_SYMBOL(acpi_pci_disabled);
+>>
+>> -static bool param_acpi_off __initdata;
+>>   static bool param_acpi_force __initdata;
+>>
+>> -static int __init parse_acpi(char *arg)
+>> -{
+>> -    if (!arg)
+>> -        return -EINVAL;
+>> -
+>> -    /* "acpi=off" disables both ACPI table parsing and interpreter */
+>> -    if (strcmp(arg, "off") == 0)
+>> -        param_acpi_off = true;
+>> -    else if (strcmp(arg, "force") == 0) /* force ACPI to be enabled */
+>> -        param_acpi_force = true;
+>> -    else
+>> -        return -EINVAL;    /* Core will print when we return error */
+>> -
+>> -    return 0;
+>> -}
+>> -early_param("acpi", parse_acpi);
+>> -
+>>   static int __init dt_scan_depth1_nodes(unsigned long node,
+>>                          const char *uname, int depth,
+>>                          void *data)
+>> @@ -74,6 +56,35 @@ static int __init dt_scan_depth1_nodes(unsigned long node,
+>>       return 0;
+>>   }
+>>
+>> +static int __init parse_acpi(char *arg)
+>> +{
+>> +    if (!arg)
+>> +        return -EINVAL;
+>> +
+>> +    /*
+>> +     * Enable ACPI instead of device tree unless
+>> +     * - ACPI has been disabled explicitly (acpi=off), or
+>> +     * - the device tree is not empty (it has more than just a /chosen node)
+>> +     *   and ACPI has not been force enabled (acpi=force)
+>> +     */
+>> +    if (strcmp(arg, "off") == 0)
+>> +        return 0;
+>> +    else if (strcmp(arg, "force") == 0)
+>> +        param_acpi_force = true;
+>> +    else if (of_scan_flat_dt(dt_scan_depth1_nodes, NULL))
+> 
+> I think we should strcmp for "on" here and return an error on other values. IMHO an update to Documentation/kernel-parameters.txt would be convenient.
 
-This turns the two empty macros into empty inline functions,
-which has the same effect, but lets the compiler know that the
-variables are intentionally unused.
+Actually this patch is not correct at all.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
----
- include/linux/platform_data/sa11x0-serial.h | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+on x86:
+- if default is off then "acpi=force" enables it.
+- if default is on  then "acpi=off"   disables it.
 
-diff --git a/include/linux/platform_data/sa11x0-serial.h b/include/linux/platform_data/sa11x0-serial.h
-index 4504d5d592f0..009e1d83fe39 100644
---- a/include/linux/platform_data/sa11x0-serial.h
-+++ b/include/linux/platform_data/sa11x0-serial.h
-@@ -26,8 +26,12 @@ struct sa1100_port_fns {
- void sa1100_register_uart_fns(struct sa1100_port_fns *fns);
- void sa1100_register_uart(int idx, int port);
- #else
--#define sa1100_register_uart_fns(fns) do { } while (0)
--#define sa1100_register_uart(idx,port) do { } while (0)
-+static inline void sa1100_register_uart_fns(struct sa1100_port_fns *fns)
-+{
-+}
-+static inline void sa1100_register_uart(int idx, int port)
-+{
-+}
- #endif
- 
- #endif
--- 
-2.7.0
+on ARM64 by default OF is preferred to ACPI, but ACPI is used if OF does not provide any nontrivial data.
+So we need both "force" and "off"
+- "acpi=force" forces ACPI,
+- "acpi=off" disables ACPI
+
+The patch makes incorrect code transformation, it changes the default behaviour.
+
+This patch should just be dropped.  The rest of the patchset does not depend on it.
+
+> I still wonder if we really want to change the default to ACPI disabled.
+> But that's a decision the maintainers have to take.
+
+I did not realize that the patch changes default.
+
+Thank you
+Aleksey Makarov
+
+> Regards,
+> Matthias
+> 
+>> +        return 0;
+>> +
+>> +    /*
+>> +     * ACPI is disabled at this point. Enable it in order to parse
+>> +     * the ACPI tables and carry out sanity checks
+>> +     */
+>> +    enable_acpi();
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +early_param("acpi", parse_acpi);
+>> +
+>>   /*
+>>    * __acpi_map_table() will be called before page_init(), so early_ioremap()
+>>    * or early_memremap() should be called here to for ACPI table mapping.
+>> @@ -181,23 +192,10 @@ out:
+>>    */
+>>   void __init acpi_boot_table_init(void)
+>>   {
+>> -    /*
+>> -     * Enable ACPI instead of device tree unless
+>> -     * - ACPI has been disabled explicitly (acpi=off), or
+>> -     * - the device tree is not empty (it has more than just a /chosen node)
+>> -     *   and ACPI has not been force enabled (acpi=force)
+>> -     */
+>> -    if (param_acpi_off ||
+>> -        (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
+>> +    if (acpi_disabled)
+>>           return;
+>>
+>>       /*
+>> -     * ACPI is disabled at this point. Enable it in order to parse
+>> -     * the ACPI tables and carry out sanity checks
+>> -     */
+>> -    enable_acpi();
+>> -
+>> -    /*
+>>        * If ACPI tables are initialized and FADT sanity checks passed,
+>>        * leave ACPI enabled and carry on booting; otherwise disable ACPI
+>>        * on initialization error.
+>>
