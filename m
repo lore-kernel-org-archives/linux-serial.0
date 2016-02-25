@@ -1,49 +1,95 @@
-From: Olof Johansson <olof@lixom.net>
-Subject: Re: [PATCH v4 12/12] arm64: defconfig: enable Armada 3700 related
- config
-Date: Wed, 24 Feb 2016 16:47:49 -0800
-Message-ID: <20160225004749.GF10126@localhost>
-References: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
- <1455646502-23834-13-git-send-email-gregory.clement@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-ide-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1455646502-23834-13-git-send-email-gregory.clement@free-electrons.com>
-Sender: linux-ide-owner@vger.kernel.org
-To: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: [PATCH v2] tty/serial: at91: restore dynamic driver binding
+Date: Thu, 25 Feb 2016 10:23:41 +0100
+Message-ID: <1456392221-30401-1-git-send-email-romain.izard.pro@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.com>, Romain Izard <romain.izard.pro@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Feb 16, 2016 at 07:15:02PM +0100, Gregory CLEMENT wrote:
-> This patch enables the configuration for the Armada 3700 family and for
-> the related driver it uses.
-> 
-> Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
-> Reviewed-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-> ---
->  arch/arm64/configs/defconfig | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-> index 18ca9fb9e65f..7ca2f0247ec5 100644
-> --- a/arch/arm64/configs/defconfig
-> +++ b/arch/arm64/configs/defconfig
-> @@ -31,6 +31,7 @@ CONFIG_MODULES=y
->  CONFIG_MODULE_UNLOAD=y
->  # CONFIG_BLK_DEV_BSG is not set
->  # CONFIG_IOSCHED_DEADLINE is not set
-> +CONFIG_ARCH_MVEBU=y
->  CONFIG_ARCH_BCM_IPROC=y
->  CONFIG_ARCH_BERLIN=y
->  CONFIG_ARCH_EXYNOS7=y
+In commit c39dfebc7798956fd2140ae6321786ff35da30c3, the modular support
+code for atmel_serial was removed, as the driver cannot be built as a
+module. Because no use case was proposed, the dynamic driver binding
+support was removed as well.
 
-How did this end up here? It's in alphabetical order in the Kconfig, and here
-you're inserting it first. Savedefconfig inserts it at the expected location.
+The atmel_serial driver can manage up to 7 serial controllers, which are
+multiplexed with other functions. For example, in the Atmel SAMA5D2, the
+Flexcom controllers can work as USART, SPI or I2C controllers, and on
+all Atmel devices serial lines can be reconfigured as GPIOs.
+
+My use case uses GPIOs to transfer a firmware update using a custom
+protocol on the lines used as a serial port during the normal life of
+the device. If it is not possible to unbind the atmel_serial driver, the
+GPIO lines remain reserved and prevent this case from working.
+
+This patch reinstates the atmel_serial_remove function, and fixes it as
+it failed to clear the "clk" field on removal, triggering an oops when
+a device was bound again after being unbound.
+
+Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+---
+Changelog:
+v2: Add the rationale for keeping the "remove" function as a comment.
 
 
-I've fixed it up in the merge now, which isn't ideal. Maybe you edited
-the defconfig by hand?
+ drivers/tty/serial/atmel_serial.c | 39 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 3 deletions(-)
 
-
--Olof
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 1c0884d8ef32..b1f3a5b26830 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2759,14 +2759,47 @@ err:
+ 	return ret;
+ }
+ 
++/*
++ * Even if the driver is not modular, it makes sense to be able to
++ * unbind a device: there can be many bound devices, and there are
++ * situations where dynamic binding and unbinding can be useful.
++ *
++ * For example, a connected device can require a specific firmware update
++ * protocol that needs bitbanging on IO lines, but use the regular serial
++ * port in the normal case.
++ */
++static int atmel_serial_remove(struct platform_device *pdev)
++{
++	struct uart_port *port = platform_get_drvdata(pdev);
++	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	int ret = 0;
++
++	tasklet_kill(&atmel_port->tasklet);
++
++	device_init_wakeup(&pdev->dev, 0);
++
++	ret = uart_remove_one_port(&atmel_uart, port);
++
++	kfree(atmel_port->rx_ring.buf);
++
++	/* "port" is allocated statically, so we shouldn't free it */
++
++	clear_bit(port->line, atmel_ports_in_use);
++
++	clk_put(atmel_port->clk);
++	atmel_port->clk = NULL;
++
++	return ret;
++}
++
+ static struct platform_driver atmel_serial_driver = {
+ 	.probe		= atmel_serial_probe,
++	.remove		= atmel_serial_remove,
+ 	.suspend	= atmel_serial_suspend,
+ 	.resume		= atmel_serial_resume,
+ 	.driver		= {
+-		.name			= "atmel_usart",
+-		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
+-		.suppress_bind_attrs    = true,
++		.name	= "atmel_usart",
++		.of_match_table	= of_match_ptr(atmel_serial_dt_ids),
+ 	},
+ };
+ 
+-- 
+2.5.0
