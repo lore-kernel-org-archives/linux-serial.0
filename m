@@ -1,68 +1,49 @@
-From: Josh Cartwright <joshc@ni.com>
-Subject: Re: sc16is7xx: a lot of time is spend in sc16is7xx_port_irq
-Date: Wed, 24 Feb 2016 16:35:47 -0600
-Message-ID: <20160224223547.GF9598@jcartwri.amer.corp.natinst.com>
-References: <56CDCCE6.5020801@prevas.dk>
- <56CDEAE2.9050102@prevas.dk>
+From: Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH v4 12/12] arm64: defconfig: enable Armada 3700 related
+ config
+Date: Wed, 24 Feb 2016 16:47:49 -0800
+Message-ID: <20160225004749.GF10126@localhost>
+References: <1455646502-23834-1-git-send-email-gregory.clement@free-electrons.com>
+ <1455646502-23834-13-git-send-email-gregory.clement@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="wtjvnLv0o8UUzur2"
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-In-Reply-To: <56CDEAE2.9050102@prevas.dk>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-ide-owner@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-rt-users-owner@vger.kernel.org
-To: Sean Nyekj?r <sean.nyekjaer@prevas.dk>
-Cc: linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org
+In-Reply-To: <1455646502-23834-13-git-send-email-gregory.clement@free-electrons.com>
+Sender: linux-ide-owner@vger.kernel.org
+To: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, arm@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Tejun Heo <tj@kernel.org>, Hans de Goede <hdegoede@redhat.com>, linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Lior Amsalem <alior@marvell.com>, Nadav Haklai <nadavh@marvell.com>, Omri Itach <omrii@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, Feb 16, 2016 at 07:15:02PM +0100, Gregory CLEMENT wrote:
+> This patch enables the configuration for the Armada 3700 family and for
+> the related driver it uses.
+> 
+> Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+> Reviewed-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+> ---
+>  arch/arm64/configs/defconfig | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+> index 18ca9fb9e65f..7ca2f0247ec5 100644
+> --- a/arch/arm64/configs/defconfig
+> +++ b/arch/arm64/configs/defconfig
+> @@ -31,6 +31,7 @@ CONFIG_MODULES=y
+>  CONFIG_MODULE_UNLOAD=y
+>  # CONFIG_BLK_DEV_BSG is not set
+>  # CONFIG_IOSCHED_DEADLINE is not set
+> +CONFIG_ARCH_MVEBU=y
+>  CONFIG_ARCH_BCM_IPROC=y
+>  CONFIG_ARCH_BERLIN=y
+>  CONFIG_ARCH_EXYNOS7=y
 
---wtjvnLv0o8UUzur2
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+How did this end up here? It's in alphabetical order in the Kconfig, and here
+you're inserting it first. Savedefconfig inserts it at the expected location.
 
-On Wed, Feb 24, 2016 at 06:39:46PM +0100, Sean Nyekj?r wrote:
-> CC'ing RT
 
-I'm assuming this is with the other patch killing off IRQF_ONESHOT?
+I've fixed it up in the merge now, which isn't ideal. Maybe you edited
+the defconfig by hand?
 
-> On 2016-02-24 16:31, Sean Nyekj=E6r wrote:
-> >Hi
-> >
-> >I'm using the sc16is750 on an imx6d platform with RT patches applied.
-> >
-> >I have observed that sometimes the driver locks the whole system as is
-> >loops inside the sc16is7xx_port_irq.
-> >I have applied some debug and seen we are looping upto 130000 times in t=
-he
-> >while(1) loop.
-> >The SC16IS7XX_IIR_REG does signal the SC16IS7XX_IIR_XOFFI_SRC but the
-> >SC16IS7XX_IER_XOFFI_BIT is not set.
 
-Ouch.
-
-I don't quite understand how the interrupt handling in this driver is
-supposed to work.  sc16is7xx_irq() is invoked to handle the interrupt,
-but it does absolutely nothing to squelch it...  how does this not cause
-an interrupt storm?  The irq core is free to unmask the interrupt when
-the handler return IRQ_HANDLED, and if you're dealing with
-level-sensitive interrupts...
-
-  Josh
-
---wtjvnLv0o8UUzur2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAABCAAGBQJWzjBAAAoJEKp7ZBKwQFArDB0H+wXHXML+sI1nnkkdT8060tQE
-W6/ckJHge1rpNXkBmwPVc83ypzbg3uEcG4tEKl6NupWTssFrMC8z3ySOVeFen568
-xXqHpiIzs4bjb0ZmB3Gvf/FRaYdzRRJICbBWzWH8TpwpWkVQkOpzS32PAUV2SLrp
-EtadsWnLoWbBBat+AnXVkiRmenH0TJGdyBEd6616R2O9yIaza5+lr0iDt8CsvyGX
-XzxQ+A4s4oKyxsnvKDmmysJ9p3tOhsJbM5jFMXVOnmnTOTyF44xXpdaP5u28xkvb
-td64nBkNgTV6I7XIoBQixvi7YvmxQITO+nH/2j8aUY8rpA/i59umQQUP6ZilHp4=
-=o+KE
------END PGP SIGNATURE-----
-
---wtjvnLv0o8UUzur2--
+-Olof
