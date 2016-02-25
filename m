@@ -1,159 +1,54 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Re: [PATCH v2 1/8] arm64: move acpi/dt decision earlier in boot
- process
-Date: Thu, 25 Feb 2016 18:53:35 +0300
-Message-ID: <56CF237F.6090706@linaro.org>
-References: <1456333819-13482-1-git-send-email-aleksey.makarov@linaro.org>
- <1456333819-13482-2-git-send-email-aleksey.makarov@linaro.org>
- <56CDF4D4.6000506@suse.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2] tty/serial: at91: restore dynamic driver binding
+Date: Thu, 25 Feb 2016 16:09:30 +0000
+Message-ID: <20160225160929.GA20373@kroah.com>
+References: <1456392221-30401-1-git-send-email-romain.izard.pro@gmail.com>
+ <56CED0E3.5070308@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56CDF4D4.6000506@suse.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Matthias Brugger <mbrugger@suse.com>, linux-acpi@vger.kernel.org
-Cc: Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <56CED0E3.5070308@atmel.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: linux-kernel@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Romain Izard <romain.izard.pro@gmail.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Matthias,
-
-On 02/24/2016 09:22 PM, Matthias Brugger wrote:
-> 
-> 
-> On 24/02/16 18:10, Aleksey Makarov wrote:
->> From: Leif Lindholm <leif.lindholm@linaro.org>
->>
->> In order to support selecting earlycon via either ACPI or DT, move
->> the decision on whether to attempt ACPI configuration into the
->> early_param handling. Then make acpi_boot_table_init() bail out if
->> acpi_disabled.
->>
->> Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
->> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
->> ---
->>   arch/arm64/kernel/acpi.c | 62 +++++++++++++++++++++++-------------------------
->>   1 file changed, 30 insertions(+), 32 deletions(-)
->>
->> diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
->> index d1ce8e2..3faa323 100644
->> --- a/arch/arm64/kernel/acpi.c
->> +++ b/arch/arm64/kernel/acpi.c
->> @@ -41,26 +41,8 @@ EXPORT_SYMBOL(acpi_disabled);
->>   int acpi_pci_disabled = 1;    /* skip ACPI PCI scan and IRQ initialization */
->>   EXPORT_SYMBOL(acpi_pci_disabled);
->>
->> -static bool param_acpi_off __initdata;
->>   static bool param_acpi_force __initdata;
->>
->> -static int __init parse_acpi(char *arg)
->> -{
->> -    if (!arg)
->> -        return -EINVAL;
->> -
->> -    /* "acpi=off" disables both ACPI table parsing and interpreter */
->> -    if (strcmp(arg, "off") == 0)
->> -        param_acpi_off = true;
->> -    else if (strcmp(arg, "force") == 0) /* force ACPI to be enabled */
->> -        param_acpi_force = true;
->> -    else
->> -        return -EINVAL;    /* Core will print when we return error */
->> -
->> -    return 0;
->> -}
->> -early_param("acpi", parse_acpi);
->> -
->>   static int __init dt_scan_depth1_nodes(unsigned long node,
->>                          const char *uname, int depth,
->>                          void *data)
->> @@ -74,6 +56,35 @@ static int __init dt_scan_depth1_nodes(unsigned long node,
->>       return 0;
->>   }
->>
->> +static int __init parse_acpi(char *arg)
->> +{
->> +    if (!arg)
->> +        return -EINVAL;
->> +
->> +    /*
->> +     * Enable ACPI instead of device tree unless
->> +     * - ACPI has been disabled explicitly (acpi=off), or
->> +     * - the device tree is not empty (it has more than just a /chosen node)
->> +     *   and ACPI has not been force enabled (acpi=force)
->> +     */
->> +    if (strcmp(arg, "off") == 0)
->> +        return 0;
->> +    else if (strcmp(arg, "force") == 0)
->> +        param_acpi_force = true;
->> +    else if (of_scan_flat_dt(dt_scan_depth1_nodes, NULL))
-> 
-> I think we should strcmp for "on" here and return an error on other values. IMHO an update to Documentation/kernel-parameters.txt would be convenient.
-
-Actually this patch is not correct at all.
-
-on x86:
-- if default is off then "acpi=force" enables it.
-- if default is on  then "acpi=off"   disables it.
-
-on ARM64 by default OF is preferred to ACPI, but ACPI is used if OF does not provide any nontrivial data.
-So we need both "force" and "off"
-- "acpi=force" forces ACPI,
-- "acpi=off" disables ACPI
-
-The patch makes incorrect code transformation, it changes the default behaviour.
-
-This patch should just be dropped.  The rest of the patchset does not depend on it.
-
-> I still wonder if we really want to change the default to ACPI disabled.
-> But that's a decision the maintainers have to take.
-
-I did not realize that the patch changes default.
-
-Thank you
-Aleksey Makarov
-
-> Regards,
-> Matthias
-> 
->> +        return 0;
->> +
->> +    /*
->> +     * ACPI is disabled at this point. Enable it in order to parse
->> +     * the ACPI tables and carry out sanity checks
->> +     */
->> +    enable_acpi();
->> +
->> +    return 0;
->> +}
->> +
->> +early_param("acpi", parse_acpi);
->> +
->>   /*
->>    * __acpi_map_table() will be called before page_init(), so early_ioremap()
->>    * or early_memremap() should be called here to for ACPI table mapping.
->> @@ -181,23 +192,10 @@ out:
->>    */
->>   void __init acpi_boot_table_init(void)
->>   {
->> -    /*
->> -     * Enable ACPI instead of device tree unless
->> -     * - ACPI has been disabled explicitly (acpi=off), or
->> -     * - the device tree is not empty (it has more than just a /chosen node)
->> -     *   and ACPI has not been force enabled (acpi=force)
->> -     */
->> -    if (param_acpi_off ||
->> -        (!param_acpi_force && of_scan_flat_dt(dt_scan_depth1_nodes, NULL)))
->> +    if (acpi_disabled)
->>           return;
->>
->>       /*
->> -     * ACPI is disabled at this point. Enable it in order to parse
->> -     * the ACPI tables and carry out sanity checks
->> -     */
->> -    enable_acpi();
->> -
->> -    /*
->>        * If ACPI tables are initialized and FADT sanity checks passed,
->>        * leave ACPI enabled and carry on booting; otherwise disable ACPI
->>        * on initialization error.
->>
+T24gVGh1LCBGZWIgMjUsIDIwMTYgYXQgMTE6MDE6MDdBTSArMDEwMCwgTmljb2xhcyBGZXJyZSB3
+cm90ZToKPiBMZSAyNS8wMi8yMDE2IDEwOjIzLCBSb21haW4gSXphcmQgYSDDqWNyaXQgOgo+ID4g
+SW4gY29tbWl0IGMzOWRmZWJjNzc5ODk1NmZkMjE0MGFlNjMyMTc4NmZmMzVkYTMwYzMsIHRoZSBt
+b2R1bGFyIHN1cHBvcnQKPiA+IGNvZGUgZm9yIGF0bWVsX3NlcmlhbCB3YXMgcmVtb3ZlZCwgYXMg
+dGhlIGRyaXZlciBjYW5ub3QgYmUgYnVpbHQgYXMgYQo+ID4gbW9kdWxlLiBCZWNhdXNlIG5vIHVz
+ZSBjYXNlIHdhcyBwcm9wb3NlZCwgdGhlIGR5bmFtaWMgZHJpdmVyIGJpbmRpbmcKPiA+IHN1cHBv
+cnQgd2FzIHJlbW92ZWQgYXMgd2VsbC4KPiA+IAo+ID4gVGhlIGF0bWVsX3NlcmlhbCBkcml2ZXIg
+Y2FuIG1hbmFnZSB1cCB0byA3IHNlcmlhbCBjb250cm9sbGVycywgd2hpY2ggYXJlCj4gPiBtdWx0
+aXBsZXhlZCB3aXRoIG90aGVyIGZ1bmN0aW9ucy4gRm9yIGV4YW1wbGUsIGluIHRoZSBBdG1lbCBT
+QU1BNUQyLCB0aGUKPiA+IEZsZXhjb20gY29udHJvbGxlcnMgY2FuIHdvcmsgYXMgVVNBUlQsIFNQ
+SSBvciBJMkMgY29udHJvbGxlcnMsIGFuZCBvbgo+ID4gYWxsIEF0bWVsIGRldmljZXMgc2VyaWFs
+IGxpbmVzIGNhbiBiZSByZWNvbmZpZ3VyZWQgYXMgR1BJT3MuCj4gPiAKPiA+IE15IHVzZSBjYXNl
+IHVzZXMgR1BJT3MgdG8gdHJhbnNmZXIgYSBmaXJtd2FyZSB1cGRhdGUgdXNpbmcgYSBjdXN0b20K
+PiA+IHByb3RvY29sIG9uIHRoZSBsaW5lcyB1c2VkIGFzIGEgc2VyaWFsIHBvcnQgZHVyaW5nIHRo
+ZSBub3JtYWwgbGlmZSBvZgo+ID4gdGhlIGRldmljZS4gSWYgaXQgaXMgbm90IHBvc3NpYmxlIHRv
+IHVuYmluZCB0aGUgYXRtZWxfc2VyaWFsIGRyaXZlciwgdGhlCj4gPiBHUElPIGxpbmVzIHJlbWFp
+biByZXNlcnZlZCBhbmQgcHJldmVudCB0aGlzIGNhc2UgZnJvbSB3b3JraW5nLgo+ID4gCj4gPiBU
+aGlzIHBhdGNoIHJlaW5zdGF0ZXMgdGhlIGF0bWVsX3NlcmlhbF9yZW1vdmUgZnVuY3Rpb24sIGFu
+ZCBmaXhlcyBpdCBhcwo+ID4gaXQgZmFpbGVkIHRvIGNsZWFyIHRoZSAiY2xrIiBmaWVsZCBvbiBy
+ZW1vdmFsLCB0cmlnZ2VyaW5nIGFuIG9vcHMgd2hlbgo+ID4gYSBkZXZpY2Ugd2FzIGJvdW5kIGFn
+YWluIGFmdGVyIGJlaW5nIHVuYm91bmQuCj4gPiAKPiA+IFNpZ25lZC1vZmYtYnk6IFJvbWFpbiBJ
+emFyZCA8cm9tYWluLml6YXJkLnByb0BnbWFpbC5jb20+Cj4gCj4gRXZlbiBpZiB5b3UgZGlkbid0
+IGZvbGxvdyBteSBhZHZpY2UgZm9yIG5vdCBpbmNsdWRpbmcgdW5uZWVkZWQgY2hhbmdlcwo+IGlu
+IG9mIHRoZSBsYXN0IHBhdGNoIGNodW5rLCB0aGVyZSdzIG5vIHVzZSBkZWxheWluZyB0aGUgcGF0
+Y2gganVzdCBmb3IKPiB0aGlzLiBTbywgaGVyZSBpcyBteToKClllcyB0aGVyZSBpcywgSSdtIG5v
+dCBnb2luZyB0byB0YWtlIHRoaXMsIFJvbWFpbiBwbGVhc2UgZml4IGl0IHByb3Blcmx5LgoKZ3Jl
+ZyBrLWgKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwps
+aW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJh
+ZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51
+eC1hcm0ta2VybmVsCg==
