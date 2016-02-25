@@ -1,126 +1,84 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH v2] tty/serial: at91: restore dynamic driver binding
-Date: Thu, 25 Feb 2016 11:01:07 +0100
-Message-ID: <56CED0E3.5070308@atmel.com>
-References: <1456392221-30401-1-git-send-email-romain.izard.pro@gmail.com>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: [PATCH v2] serial: xuartps: Enable OF earlycon support
+Date: Thu, 25 Feb 2016 14:04:23 +0100
+Message-ID: <56CEFBD7.40008@monstr.eu>
+References: <09f2c419994281fca7968142e52d969542370d1c.1455782238.git.michal.simek@xilinx.com>
+ <56C5F670.50005@hurleysoftware.com>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="SNMRLUeo1PkB5uCxbDJHawLTKQ76UGaJu"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1456392221-30401-1-git-send-email-romain.izard.pro@gmail.com>
+In-Reply-To: <56C5F670.50005@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+To: Peter Hurley <peter@hurleysoftware.com>, Michal Simek <michal.simek@xilinx.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-kernel@lists.infradead.org, =?UTF-8?Q?S=c3=b6ren_Brinkmann?= <soren.brinkmann@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Le 25/02/2016 10:23, Romain Izard a =E9crit :
-> In commit c39dfebc7798956fd2140ae6321786ff35da30c3, the modular suppo=
-rt
-> code for atmel_serial was removed, as the driver cannot be built as a
-> module. Because no use case was proposed, the dynamic driver binding
-> support was removed as well.
->=20
-> The atmel_serial driver can manage up to 7 serial controllers, which =
-are
-> multiplexed with other functions. For example, in the Atmel SAMA5D2, =
-the
-> Flexcom controllers can work as USART, SPI or I2C controllers, and on
-> all Atmel devices serial lines can be reconfigured as GPIOs.
->=20
-> My use case uses GPIOs to transfer a firmware update using a custom
-> protocol on the lines used as a serial port during the normal life of
-> the device. If it is not possible to unbind the atmel_serial driver, =
-the
-> GPIO lines remain reserved and prevent this case from working.
->=20
-> This patch reinstates the atmel_serial_remove function, and fixes it =
-as
-> it failed to clear the "clk" field on removal, triggering an oops whe=
-n
-> a device was bound again after being unbound.
->=20
-> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--SNMRLUeo1PkB5uCxbDJHawLTKQ76UGaJu
+Content-Type: multipart/mixed; boundary="HCfdR1aCouLhL4Hef6vRuDKR09jNqXMCh"
+From: Michal Simek <monstr@monstr.eu>
+Reply-To: monstr@monstr.eu
+To: Peter Hurley <peter@hurleysoftware.com>,
+ Michal Simek <michal.simek@xilinx.com>, Arnd Bergmann <arnd@arndb.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-kernel@lists.infradead.org,
+ =?UTF-8?Q?S=c3=b6ren_Brinkmann?= <soren.brinkmann@xilinx.com>,
+ Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Message-ID: <56CEFBD7.40008@monstr.eu>
+Subject: Re: [PATCH v2] serial: xuartps: Enable OF earlycon support
+References: <09f2c419994281fca7968142e52d969542370d1c.1455782238.git.michal.simek@xilinx.com>
+ <56C5F670.50005@hurleysoftware.com>
+In-Reply-To: <56C5F670.50005@hurleysoftware.com>
 
-Even if you didn't follow my advice for not including unneeded changes
-in of the last patch chunk, there's no use delaying the patch just for
-this. So, here is my:
+--HCfdR1aCouLhL4Hef6vRuDKR09jNqXMCh
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Hi Greg,
 
-Thanks, bye.
-
-PS: another advice: please include linux-arm-kernel as well in your CC
-list for work on the AT91 platforms: most of the reviewers are there.
-
-> ---
-> Changelog:
-> v2: Add the rationale for keeping the "remove" function as a comment.
+On 18.2.2016 17:50, Peter Hurley wrote:
+> On 02/17/2016 11:57 PM, Michal Simek wrote:
+>> Support early console setup via DT for all listed compatible strings.
+>> Remove EARLYCON_DECLARE which was done by:
+>> "Use common framework for earlycon declarations"
+>> (sha1: 2eaa790989e03900298ad24f77f1086dbbc1aebd)
+>> when OF_EARLYCON_DECLARE is defined.
 >=20
->=20
->  drivers/tty/serial/atmel_serial.c | 39 +++++++++++++++++++++++++++++=
-+++++++---
->  1 file changed, 36 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/a=
-tmel_serial.c
-> index 1c0884d8ef32..b1f3a5b26830 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2759,14 +2759,47 @@ err:
->  	return ret;
->  }
-> =20
-> +/*
-> + * Even if the driver is not modular, it makes sense to be able to
-> + * unbind a device: there can be many bound devices, and there are
-> + * situations where dynamic binding and unbinding can be useful.
-> + *
-> + * For example, a connected device can require a specific firmware u=
-pdate
-> + * protocol that needs bitbanging on IO lines, but use the regular s=
-erial
-> + * port in the normal case.
-> + */
-> +static int atmel_serial_remove(struct platform_device *pdev)
-> +{
-> +	struct uart_port *port =3D platform_get_drvdata(pdev);
-> +	struct atmel_uart_port *atmel_port =3D to_atmel_uart_port(port);
-> +	int ret =3D 0;
-> +
-> +	tasklet_kill(&atmel_port->tasklet);
-> +
-> +	device_init_wakeup(&pdev->dev, 0);
-> +
-> +	ret =3D uart_remove_one_port(&atmel_uart, port);
-> +
-> +	kfree(atmel_port->rx_ring.buf);
-> +
-> +	/* "port" is allocated statically, so we shouldn't free it */
-> +
-> +	clear_bit(port->line, atmel_ports_in_use);
-> +
-> +	clk_put(atmel_port->clk);
-> +	atmel_port->clk =3D NULL;
-> +
-> +	return ret;
-> +}
-> +
->  static struct platform_driver atmel_serial_driver =3D {
->  	.probe		=3D atmel_serial_probe,
-> +	.remove		=3D atmel_serial_remove,
->  	.suspend	=3D atmel_serial_suspend,
->  	.resume		=3D atmel_serial_resume,
->  	.driver		=3D {
-> -		.name			=3D "atmel_usart",
-> -		.of_match_table		=3D of_match_ptr(atmel_serial_dt_ids),
-> -		.suppress_bind_attrs    =3D true,
-> +		.name	=3D "atmel_usart",
-> +		.of_match_table	=3D of_match_ptr(atmel_serial_dt_ids),
->  	},
->  };
-> =20
->=20
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 
+Can you please add it your queue for 4.6?
+Or can we merge it via arm-soc tree as was suggested by Arnd here?
+https://lkml.org/lkml/2016/2/16/315
+
+Thanks,
+Michal
 
 --=20
-Nicolas Ferre
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
+Maintainer of Linux kernel - Xilinx Zynq ARM architecture
+Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+
+
+
+--HCfdR1aCouLhL4Hef6vRuDKR09jNqXMCh--
+
+--SNMRLUeo1PkB5uCxbDJHawLTKQ76UGaJu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iEYEARECAAYFAlbO+9sACgkQykllyylKDCFF5ACfWn7s1pMiLbcd60OXhs/r6wzS
+hGMAnRwBMYLMlm8YA9Z8u1JRF+VUdFRg
+=pTaX
+-----END PGP SIGNATURE-----
+
+--SNMRLUeo1PkB5uCxbDJHawLTKQ76UGaJu--
