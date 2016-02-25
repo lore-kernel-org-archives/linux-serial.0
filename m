@@ -1,54 +1,64 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Romain Izard <romain.izard.pro@gmail.com>
 Subject: Re: [PATCH v2] tty/serial: at91: restore dynamic driver binding
-Date: Thu, 25 Feb 2016 16:09:30 +0000
-Message-ID: <20160225160929.GA20373@kroah.com>
+Date: Thu, 25 Feb 2016 18:08:19 +0100
+Message-ID: <CAGkQfmOYEiXbQbe14iybu_4BFQYtoAj4QWoxdhPvUJOCOm6sbw@mail.gmail.com>
 References: <1456392221-30401-1-git-send-email-romain.izard.pro@gmail.com>
- <56CED0E3.5070308@atmel.com>
+ <56CED0E3.5070308@atmel.com> <20160225160929.GA20373@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <56CED0E3.5070308@atmel.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: linux-kernel@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Romain Izard <romain.izard.pro@gmail.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160225160929.GA20373@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gVGh1LCBGZWIgMjUsIDIwMTYgYXQgMTE6MDE6MDdBTSArMDEwMCwgTmljb2xhcyBGZXJyZSB3
-cm90ZToKPiBMZSAyNS8wMi8yMDE2IDEwOjIzLCBSb21haW4gSXphcmQgYSDDqWNyaXQgOgo+ID4g
-SW4gY29tbWl0IGMzOWRmZWJjNzc5ODk1NmZkMjE0MGFlNjMyMTc4NmZmMzVkYTMwYzMsIHRoZSBt
-b2R1bGFyIHN1cHBvcnQKPiA+IGNvZGUgZm9yIGF0bWVsX3NlcmlhbCB3YXMgcmVtb3ZlZCwgYXMg
-dGhlIGRyaXZlciBjYW5ub3QgYmUgYnVpbHQgYXMgYQo+ID4gbW9kdWxlLiBCZWNhdXNlIG5vIHVz
-ZSBjYXNlIHdhcyBwcm9wb3NlZCwgdGhlIGR5bmFtaWMgZHJpdmVyIGJpbmRpbmcKPiA+IHN1cHBv
-cnQgd2FzIHJlbW92ZWQgYXMgd2VsbC4KPiA+IAo+ID4gVGhlIGF0bWVsX3NlcmlhbCBkcml2ZXIg
-Y2FuIG1hbmFnZSB1cCB0byA3IHNlcmlhbCBjb250cm9sbGVycywgd2hpY2ggYXJlCj4gPiBtdWx0
-aXBsZXhlZCB3aXRoIG90aGVyIGZ1bmN0aW9ucy4gRm9yIGV4YW1wbGUsIGluIHRoZSBBdG1lbCBT
-QU1BNUQyLCB0aGUKPiA+IEZsZXhjb20gY29udHJvbGxlcnMgY2FuIHdvcmsgYXMgVVNBUlQsIFNQ
-SSBvciBJMkMgY29udHJvbGxlcnMsIGFuZCBvbgo+ID4gYWxsIEF0bWVsIGRldmljZXMgc2VyaWFs
-IGxpbmVzIGNhbiBiZSByZWNvbmZpZ3VyZWQgYXMgR1BJT3MuCj4gPiAKPiA+IE15IHVzZSBjYXNl
-IHVzZXMgR1BJT3MgdG8gdHJhbnNmZXIgYSBmaXJtd2FyZSB1cGRhdGUgdXNpbmcgYSBjdXN0b20K
-PiA+IHByb3RvY29sIG9uIHRoZSBsaW5lcyB1c2VkIGFzIGEgc2VyaWFsIHBvcnQgZHVyaW5nIHRo
-ZSBub3JtYWwgbGlmZSBvZgo+ID4gdGhlIGRldmljZS4gSWYgaXQgaXMgbm90IHBvc3NpYmxlIHRv
-IHVuYmluZCB0aGUgYXRtZWxfc2VyaWFsIGRyaXZlciwgdGhlCj4gPiBHUElPIGxpbmVzIHJlbWFp
-biByZXNlcnZlZCBhbmQgcHJldmVudCB0aGlzIGNhc2UgZnJvbSB3b3JraW5nLgo+ID4gCj4gPiBU
-aGlzIHBhdGNoIHJlaW5zdGF0ZXMgdGhlIGF0bWVsX3NlcmlhbF9yZW1vdmUgZnVuY3Rpb24sIGFu
-ZCBmaXhlcyBpdCBhcwo+ID4gaXQgZmFpbGVkIHRvIGNsZWFyIHRoZSAiY2xrIiBmaWVsZCBvbiBy
-ZW1vdmFsLCB0cmlnZ2VyaW5nIGFuIG9vcHMgd2hlbgo+ID4gYSBkZXZpY2Ugd2FzIGJvdW5kIGFn
-YWluIGFmdGVyIGJlaW5nIHVuYm91bmQuCj4gPiAKPiA+IFNpZ25lZC1vZmYtYnk6IFJvbWFpbiBJ
-emFyZCA8cm9tYWluLml6YXJkLnByb0BnbWFpbC5jb20+Cj4gCj4gRXZlbiBpZiB5b3UgZGlkbid0
-IGZvbGxvdyBteSBhZHZpY2UgZm9yIG5vdCBpbmNsdWRpbmcgdW5uZWVkZWQgY2hhbmdlcwo+IGlu
-IG9mIHRoZSBsYXN0IHBhdGNoIGNodW5rLCB0aGVyZSdzIG5vIHVzZSBkZWxheWluZyB0aGUgcGF0
-Y2gganVzdCBmb3IKPiB0aGlzLiBTbywgaGVyZSBpcyBteToKClllcyB0aGVyZSBpcywgSSdtIG5v
-dCBnb2luZyB0byB0YWtlIHRoaXMsIFJvbWFpbiBwbGVhc2UgZml4IGl0IHByb3Blcmx5LgoKZ3Jl
-ZyBrLWgKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwps
-aW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJh
-ZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51
-eC1hcm0ta2VybmVsCg==
+2016-02-25 17:09 GMT+01:00 Greg Kroah-Hartman
+<gregkh@linuxfoundation.org>:
+> On Thu, Feb 25, 2016 at 11:01:07AM +0100, Nicolas Ferre wrote:
+>> Le 25/02/2016 10:23, Romain Izard a =C3=A9crit :
+>> > In commit c39dfebc7798956fd2140ae6321786ff35da30c3, the modular
+>> > support code for atmel_serial was removed, as the driver cannot be
+>> > built as a module. Because no use case was proposed, the dynamic
+>> > driver binding support was removed as well.
+>> >
+>> > The atmel_serial driver can manage up to 7 serial controllers,
+>> > which are multiplexed with other functions. For example, in the
+>> > Atmel SAMA5D2, the Flexcom controllers can work as USART, SPI or
+>> > I2C controllers, and on all Atmel devices serial lines can be
+>> > reconfigured as GPIOs.
+>> >
+>> > My use case uses GPIOs to transfer a firmware update using a custo=
+m
+>> > protocol on the lines used as a serial port during the normal life
+>> > of the device. If it is not possible to unbind the atmel_serial
+>> > driver, the GPIO lines remain reserved and prevent this case from
+>> > working.
+>> >
+>> > This patch reinstates the atmel_serial_remove function, and fixes
+>> > it as it failed to clear the "clk" field on removal, triggering an
+>> > oops when a device was bound again after being unbound.
+>> >
+>> > Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+>>
+>> Even if you didn't follow my advice for not including unneeded
+>> changes in of the last patch chunk, there's no use delaying the patc=
+h
+>> just for this. So, here is my:
+>
+> Yes there is, I'm not going to take this, Romain please fix it
+> properly.
+
+Are we really arguing about the alignement of of_match_table in the
+platform_driver initializer?
+
+Among other things, Paul's patch changed the alignment to match the
+width of the "suppress_bind_attrs" member. As I simply used 'git revert
+-p' to revert the parts of the patch that bothered me, the alignment
+returned to what it was before.
+
+Or am I missing something else ?
+
+--=20
+Romain Izard
