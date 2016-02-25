@@ -1,88 +1,61 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH v2] tty/serial: at91: restore dynamic driver binding
-Date: Thu, 25 Feb 2016 18:24:14 +0100
-Message-ID: <56CF38BE.9030304@atmel.com>
-References: <1456392221-30401-1-git-send-email-romain.izard.pro@gmail.com>
- <56CED0E3.5070308@atmel.com> <20160225160929.GA20373@kroah.com>
- <CAGkQfmOYEiXbQbe14iybu_4BFQYtoAj4QWoxdhPvUJOCOm6sbw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] serial: ifx6x60: avoid uninitialized variable use
+Date: Thu, 25 Feb 2016 21:47:57 +0100
+Message-ID: <1456433283-3761559-1-git-send-email-arnd@arndb.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAGkQfmOYEiXbQbe14iybu_4BFQYtoAj4QWoxdhPvUJOCOm6sbw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-kernel@lists.infradead.org, Russ Gorby <richardx.r.gorby@intel.com>, Alan Cox <alan@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Le 25/02/2016 18:08, Romain Izard a =C3=A9crit :
-> 2016-02-25 17:09 GMT+01:00 Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org>:
->> On Thu, Feb 25, 2016 at 11:01:07AM +0100, Nicolas Ferre wrote:
->>> Le 25/02/2016 10:23, Romain Izard a =C3=A9crit :
->>>> In commit c39dfebc7798956fd2140ae6321786ff35da30c3, the modular
->>>> support code for atmel_serial was removed, as the driver cannot be
->>>> built as a module. Because no use case was proposed, the dynamic
->>>> driver binding support was removed as well.
->>>>
->>>> The atmel_serial driver can manage up to 7 serial controllers,
->>>> which are multiplexed with other functions. For example, in the
->>>> Atmel SAMA5D2, the Flexcom controllers can work as USART, SPI or
->>>> I2C controllers, and on all Atmel devices serial lines can be
->>>> reconfigured as GPIOs.
->>>>
->>>> My use case uses GPIOs to transfer a firmware update using a custo=
-m
->>>> protocol on the lines used as a serial port during the normal life
->>>> of the device. If it is not possible to unbind the atmel_serial
->>>> driver, the GPIO lines remain reserved and prevent this case from
->>>> working.
->>>>
->>>> This patch reinstates the atmel_serial_remove function, and fixes
->>>> it as it failed to clear the "clk" field on removal, triggering an
->>>> oops when a device was bound again after being unbound.
->>>>
->>>> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
->>>
->>> Even if you didn't follow my advice for not including unneeded
->>> changes in of the last patch chunk, there's no use delaying the pat=
-ch
->>> just for this. So, here is my:
->>
->> Yes there is, I'm not going to take this, Romain please fix it
->> properly.
->=20
-> Are we really arguing about the alignement of of_match_table in the
-> platform_driver initializer?
->=20
-> Among other things, Paul's patch changed the alignment to match the
-> width of the "suppress_bind_attrs" member. As I simply used 'git reve=
-rt
-> -p' to revert the parts of the patch that bothered me, the alignment
-> returned to what it was before.
->=20
-> Or am I missing something else ?
+gcc warns about a potential use of an uninitialized variable in this driver:
 
-Romain,
+drivers/tty/serial/ifx6x60.c: In function 'ifx_spi_complete':
+drivers/tty/serial/ifx6x60.c:713:6: warning: 'more' may be used uninitialized in this function [-Wmaybe-uninitialized]
+   if (more || ifx_dev->spi_more || queue_length > 0 ||
 
-We are just saying that a patch with:
+Unlike a lot of other such warnings, this one is correct and describes
+an actual problem in the handling of the "IFX_SPI_HEADER_F" result code.
 
--		.name			=3D "atmel_usart",
--		.of_match_table		=3D of_match_ptr(atmel_serial_dt_ids),
--		.suppress_bind_attrs    =3D true,
-+		.name	=3D "atmel_usart",
-+		.of_match_table	=3D of_match_ptr(atmel_serial_dt_ids),
+This appears to be a result from a restructuring of the driver that
+dates back to before it was merged in the kernel, so it's impossible
+to know where it went wrong. I also don't know what that result code
+means, so I have no idea if setting 'more' to zero is the correct
+solution, but at least it makes the behavior reproducible rather than
+depending on whatever happens to be on the kernel stack.
 
-Is less readable than a patch with only the relevant part, the single l=
-ine:
+This patch initializes the 'more' variable to zero in each of the
+three code paths that could result in undefined behavior before,
+which is more explicit than initializing it at the start of the
+function.
 
--		.suppress_bind_attrs =3D true,
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/tty/serial/ifx6x60.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-So, whichever is the history of the patch, it has to simply modify the =
-needed
-lines so that we don't even ask ourselves what is the purpose of some o=
-f the changes.
-
-Bye,
---=20
-Nicolas Ferre
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 88246f7e435a..2085a6cfa44b 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -395,8 +395,10 @@ static int ifx_spi_decode_spi_header(unsigned char *buffer, int *length,
+ 
+ 	if (h1 == 0 && h2 == 0) {
+ 		*received_cts = 0;
++		*more = 0;
+ 		return IFX_SPI_HEADER_0;
+ 	} else if (h1 == 0xffff && h2 == 0xffff) {
++		*more = 0;
+ 		/* spi_slave_cts remains as it was */
+ 		return IFX_SPI_HEADER_F;
+ 	}
+@@ -688,6 +690,7 @@ static void ifx_spi_complete(void *ctx)
+ 			ifx_dev->rx_buffer + IFX_SPI_HEADER_OVERHEAD,
+ 			(size_t)actual_length);
+ 	} else {
++		more = 0;
+ 		dev_dbg(&ifx_dev->spi_dev->dev, "SPI transfer error %d",
+ 		       ifx_dev->spi_msg.status);
+ 	}
+-- 
+2.7.0
