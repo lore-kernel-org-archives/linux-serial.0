@@ -1,90 +1,47 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH] tty: serial: sc16is7xx: use threaded interrupts instead of
- homegrow
-Date: Fri, 26 Feb 2016 12:48:09 +0100
-Message-ID: <20160226114809.GD8318@linutronix.de>
-References: <56CDCCE6.5020801@prevas.dk>
- <56CDEAE2.9050102@prevas.dk>
- <20160224223547.GF9598@jcartwri.amer.corp.natinst.com>
- <20160226114340.GC8318@linutronix.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] serial: ifx6x60: avoid uninitialized variable use
+Date: Fri, 26 Feb 2016 14:54:49 +0100
+Message-ID: <11867118.gBQtPfGrif@wuerfel>
+References: <1456433283-3761559-1-git-send-email-arnd@arndb.de> <20160226000651.628e28fe@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160226114340.GC8318@linutronix.de>
-Sender: linux-rt-users-owner@vger.kernel.org
-To: Josh Cartwright <joshc@ni.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sean Nyekj?r <sean.nyekjaer@prevas.dk>, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>, Jakub Kicinski <kubakici@wp.pl>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160226000651.628e28fe@lxorguk.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Russ Gorby <richardx.r.gorby@intel.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-This ONESHOT + workqueue combo is something that is not required because
-we have infrastrucure for this kind of things: threaded interrupts.
+On Friday 26 February 2016 00:06:51 One Thousand Gnomes wrote:
+> On Thu, 25 Feb 2016 21:47:57 +0100
+> Arnd Bergmann <arnd@arndb.de> wrote:
+> 
+> > gcc warns about a potential use of an uninitialized variable in this driver:
+> > 
+> > drivers/tty/serial/ifx6x60.c: In function 'ifx_spi_complete':
+> > drivers/tty/serial/ifx6x60.c:713:6: warning: 'more' may be used uninitialized in this function [-Wmaybe-uninitialized]
+> >    if (more || ifx_dev->spi_more || queue_length > 0 ||
+> > 
+> > Unlike a lot of other such warnings, this one is correct and describes
+> > an actual problem in the handling of the "IFX_SPI_HEADER_F" result code.
+> > 
+> > This appears to be a result from a restructuring of the driver that
+> > dates back to before it was merged in the kernel, so it's impossible
+> > to know where it went wrong. I also don't know what that result code
+> > means, so I have no idea if setting 'more' to zero is the correct
+> > solution, but at least it makes the behavior reproducible rather than
+> > depending on whatever happens to be on the kernel stack.
+> 
+> Would it not be far simpler just to set more = 0 at the top of
+> ifx_spi_complete ?
+> 
+> 
 
-This is compile tested only due to -ENODEV.
-Now that we that sc16is7xx_irq() is an actual interrupt handler
-sc16is7xx_port_irq() could be improved so the former can return IRQ_NONE
-if nothing has been done.
+That would be simpler, but I generally don't like to do that, because it
+makes it less obvious where the value is coming from.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
+In this case, it's still not obvious, as I was just guessing what the
+original intention might have been.
 
- drivers/tty/serial/sc16is7xx.c | 17 ++++-------------
- 1 file changed, 4 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index edb5305b9d4d..b53a13be5754 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -331,7 +331,6 @@ struct sc16is7xx_port {
- 	unsigned char			buf[SC16IS7XX_FIFO_SIZE];
- 	struct kthread_worker		kworker;
- 	struct task_struct		*kworker_task;
--	struct kthread_work		irq_work;
- 	struct sc16is7xx_one		p[0];
- };
- 
-@@ -688,20 +687,13 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- 	} while (1);
- }
- 
--static void sc16is7xx_ist(struct kthread_work *ws)
-+static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
- {
--	struct sc16is7xx_port *s = to_sc16is7xx_port(ws, irq_work);
-+	struct sc16is7xx_port *s = (struct sc16is7xx_port *)dev_id;
- 	int i;
- 
- 	for (i = 0; i < s->devtype->nr_uart; ++i)
- 		sc16is7xx_port_irq(s, i);
--}
--
--static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
--{
--	struct sc16is7xx_port *s = (struct sc16is7xx_port *)dev_id;
--
--	queue_kthread_work(&s->kworker, &s->irq_work);
- 
- 	return IRQ_HANDLED;
- }
-@@ -1167,7 +1159,6 @@ static int sc16is7xx_probe(struct device *dev,
- 	dev_set_drvdata(dev, s);
- 
- 	init_kthread_worker(&s->kworker);
--	init_kthread_work(&s->irq_work, sc16is7xx_ist);
- 	s->kworker_task = kthread_run(kthread_worker_fn, &s->kworker,
- 				      "sc16is7xx");
- 	if (IS_ERR(s->kworker_task)) {
-@@ -1229,8 +1220,8 @@ static int sc16is7xx_probe(struct device *dev,
- 	}
- 
- 	/* Setup interrupt */
--	ret = devm_request_irq(dev, irq, sc16is7xx_irq,
--			       IRQF_ONESHOT | flags, dev_name(dev), s);
-+	ret = devm_request_threaded_irq(dev, irq, NULL, sc16is7xx_irq,
-+			       flags, dev_name(dev), s);
- 	if (!ret)
- 		return 0;
- 
--- 
-2.7.0
-
+	Arnd
