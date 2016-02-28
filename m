@@ -1,11 +1,14 @@
-From: Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH] serial: imx: support RS-485 Rx disable on Tx
-Date: Sun, 28 Feb 2016 11:25:51 +0200
-Message-ID: <3b5ba06fdb9c1bdd0b3018bf2f623f52b2856d18.1456651551.git.baruch@tkos.co.il>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial: imx: support RS-485 Rx disable on Tx
+Date: Sun, 28 Feb 2016 10:56:01 +0100
+Message-ID: <20160228095601.GB2613@pengutronix.de>
+References: <3b5ba06fdb9c1bdd0b3018bf2f623f52b2856d18.1456651551.git.baruch@tkos.co.il>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <3b5ba06fdb9c1bdd0b3018bf2f623f52b2856d18.1456651551.git.baruch@tkos.co.il>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -15,42 +18,80 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Baruch Siach <baruch@tkos.co.il>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-U29tZSBSUy0yMzIgdG8gUlMtNDg1IHRyYW5zY2VpdmVycyByZXF1aXJlIFJ4IHRvIGJlIGRpc2Fi
-bGVkIG9uIFR4IHRvCmF2b2lkIGVjaG8gb2YgVHggZGF0YSBpbnRvIHRoZSBSeCBidWZmZXIuIFNw
-ZWNpZmljYWxseSwgdGhlIFhSMzE2MEUKUlMtMjMyL1JTLTQ4NS9SUy00MjIgdHJhbnNjZWl2ZXIg
-YmVoYXZlcyB0aGlzIHdheS4KClRoaXMgY29tbWl0IGRpc2FibGVzIFJ4IG9uIGFjdGl2ZSBUeCB3
-aGVuIFNFUl9SUzQ4NV9FTkFCTEVEIGlzIGFjdGl2ZSBhbmQKU0VSX1JTNDg1X1JYX0RVUklOR19U
-WCBpcyBkaXNhYmxlZC4KCk5vdGUgdGhhdCB0aGlzIGlzIGEgY2hhbmdlIGluIGJlaGF2aW9yIG9m
-IHRoZSBkcml2ZXIuIFVudGlsIG5vdwpTRVJfUlM0ODVfUlhfRFVSSU5HX1RYIHdhcyBlbmFibGVk
-IHVuY29uZGl0aW9uYWxseSBldmVuIHdoZW4gZGlzYWJsZWQgaW4KdGhlIFRJT0NTUlM0ODUgaW9j
-dGwgc2VyaWFsX3JzNDg1IGZsYWdzIGZpZWxkLgoKQ2M6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1Lmts
-ZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+ClNpZ25lZC1vZmYtYnk6IEJhcnVjaCBTaWFjaCA8
-YmFydWNoQHRrb3MuY28uaWw+Ci0tLQogZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIHwgNSArKysr
-LQogMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXgu
-YwppbmRleCA5MzYyZjU0YzgxNmMuLjMzM2QzNGZmMzU4YyAxMDA2NDQKLS0tIGEvZHJpdmVycy90
-dHkvc2VyaWFsL2lteC5jCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwpAQCAtMzYxLDYg
-KzM2MSw4IEBAIHN0YXRpYyB2b2lkIGlteF9zdG9wX3R4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQp
-CiAJCQlpbXhfcG9ydF9ydHNfaW5hY3RpdmUoc3BvcnQsICZ0ZW1wKTsKIAkJZWxzZQogCQkJaW14
-X3BvcnRfcnRzX2FjdGl2ZShzcG9ydCwgJnRlbXApOworCQlpZiAoIShwb3J0LT5yczQ4NS5mbGFn
-cyAmIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFgpKQorCQkJdGVtcCB8PSBVQ1IyX1JYRU47CiAJCXdy
-aXRlbCh0ZW1wLCBwb3J0LT5tZW1iYXNlICsgVUNSMik7CiAKIAkJdGVtcCA9IHJlYWRsKHBvcnQt
-Pm1lbWJhc2UgKyBVQ1I0KTsKQEAgLTU2OCw2ICs1NzAsOCBAQCBzdGF0aWMgdm9pZCBpbXhfc3Rh
-cnRfdHgoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkKIAkJCWlteF9wb3J0X3J0c19pbmFjdGl2ZShz
-cG9ydCwgJnRlbXApOwogCQllbHNlCiAJCQlpbXhfcG9ydF9ydHNfYWN0aXZlKHNwb3J0LCAmdGVt
-cCk7CisJCWlmICghKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X1JYX0RVUklOR19UWCkp
-CisJCQl0ZW1wICY9IH5VQ1IyX1JYRU47CiAJCXdyaXRlbCh0ZW1wLCBwb3J0LT5tZW1iYXNlICsg
-VUNSMik7CiAKIAkJLyogZW5hYmxlIHRyYW5zbWl0dGVyIGFuZCBzaGlmdGVyIGVtcHR5IGlycSAq
-LwpAQCAtMTYxNCw3ICsxNjE4LDYgQEAgc3RhdGljIGludCBpbXhfcnM0ODVfY29uZmlnKHN0cnVj
-dCB1YXJ0X3BvcnQgKnBvcnQsCiAJLyogdW5pbXBsZW1lbnRlZCAqLwogCXJzNDg1Y29uZi0+ZGVs
-YXlfcnRzX2JlZm9yZV9zZW5kID0gMDsKIAlyczQ4NWNvbmYtPmRlbGF5X3J0c19hZnRlcl9zZW5k
-ID0gMDsKLQlyczQ4NWNvbmYtPmZsYWdzIHw9IFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFg7CiAKIAkv
-KiBSVFMgaXMgcmVxdWlyZWQgdG8gY29udHJvbCB0aGUgdHJhbnNtaXR0ZXIgKi8KIAlpZiAoIXNw
-b3J0LT5oYXZlX3J0c2N0cykKLS0gCjIuNy4wCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgt
-YXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3Jn
-L21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+Hello Baruch,
+
+On Sun, Feb 28, 2016 at 11:25:51AM +0200, Baruch Siach wrote:
+> Some RS-232 to RS-485 transceivers require Rx to be disabled on Tx to
+> avoid echo of Tx data into the Rx buffer. Specifically, the XR3160E
+> RS-232/RS-485/RS-422 transceiver behaves this way.
+> =
+
+> This commit disables Rx on active Tx when SER_RS485_ENABLED is active and
+> SER_RS485_RX_DURING_TX is disabled.
+> =
+
+> Note that this is a change in behavior of the driver. Until now
+
+But this change is a good one (assuming it does what it advertises :-).
+Userspace got informed before that SER_RS485_RX_DURING_TX is enabled, so
+this is not an incompatible change.
+
+Best regards
+Uwe
+
+> SER_RS485_RX_DURING_TX was enabled unconditionally even when disabled in
+> the TIOCSRS485 ioctl serial_rs485 flags field.
+> =
+
+> Cc: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
+>  drivers/tty/serial/imx.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> =
+
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 9362f54c816c..333d34ff358c 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -361,6 +361,8 @@ static void imx_stop_tx(struct uart_port *port)
+>  			imx_port_rts_inactive(sport, &temp);
+>  		else
+>  			imx_port_rts_active(sport, &temp);
+> +		if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
+> +			temp |=3D UCR2_RXEN;
+>  		writel(temp, port->membase + UCR2);
+>  =
+
+>  		temp =3D readl(port->membase + UCR4);
+> @@ -568,6 +570,8 @@ static void imx_start_tx(struct uart_port *port)
+>  			imx_port_rts_inactive(sport, &temp);
+>  		else
+>  			imx_port_rts_active(sport, &temp);
+> +		if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
+> +			temp &=3D ~UCR2_RXEN;
+>  		writel(temp, port->membase + UCR2);
+
+Can this happen:
+
+ - SER_RS485_RX_DURING_TX is off
+ - thread A starts sending (and so disables RX)
+ - thread B sets SER_RS485_RX_DURING_TX
+ - thread A finishes sending, and doesn't restore RXEN.
+
+?
+
+Even if this cannot happen it might be more robust to restore RXEN
+unconditionally in imx_stop_tx?!
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
