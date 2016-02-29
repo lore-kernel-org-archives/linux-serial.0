@@ -1,71 +1,92 @@
-From: Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH v2] serial: imx: support RS-485 Rx disable on Tx
-Date: Mon, 29 Feb 2016 14:34:10 +0200
-Message-ID: <fbc7c561dc1a8f5193262ab471b105935c4d7cea.1456749250.git.baruch@tkos.co.il>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: [PATCH v3 0/7] ACPI: parse the DBG2 table
+Date: Mon, 29 Feb 2016 15:41:57 +0300
+Message-ID: <1456749726-30261-1-git-send-email-aleksey.makarov@linaro.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: linux-acpi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Matthias Brugger <mbrugger@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-U29tZSBSUy0yMzIgdG8gUlMtNDg1IHRyYW5zY2VpdmVycyByZXF1aXJlIFJ4IHRvIGJlIGRpc2Fi
-bGVkIG9uIFR4IHRvCmF2b2lkIGVjaG8gb2YgVHggZGF0YSBpbnRvIHRoZSBSeCBidWZmZXIuIFNw
-ZWNpZmljYWxseSwgdGhlIFhSMzE2MEUKUlMtMjMyL1JTLTQ4NS9SUy00MjIgdHJhbnNjZWl2ZXIg
-YmVoYXZlcyB0aGlzIHdheS4KClRoaXMgY29tbWl0IGRpc2FibGVzIFJ4IG9uIGFjdGl2ZSBUeCB3
-aGVuIFNFUl9SUzQ4NV9FTkFCTEVEIGlzIGFjdGl2ZSBhbmQKU0VSX1JTNDg1X1JYX0RVUklOR19U
-WCBpcyBkaXNhYmxlZC4KCk5vdGUgdGhhdCB0aGlzIGlzIGEgY2hhbmdlIGluIGJlaGF2aW9yIG9m
-IHRoZSBkcml2ZXIuIFVudGlsIG5vdwpTRVJfUlM0ODVfUlhfRFVSSU5HX1RYIHdhcyBlbmFibGVk
-IHVuY29uZGl0aW9uYWxseSBldmVuIHdoZW4gZGlzYWJsZWQgaW4KdGhlIFRJT0NTUlM0ODUgaW9j
-dGwgc2VyaWFsX3JzNDg1IGZsYWdzIGZpZWxkLgoKQ2M6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1Lmts
-ZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+ClNpZ25lZC1vZmYtYnk6IEJhcnVjaCBTaWFjaCA8
-YmFydWNoQHRrb3MuY28uaWw+Ci0tLQp2MjoKICAgKiBNYWtlIFJ4IGVuYWJsZSBtb3JlIHJvYnVz
-dCBhcyBVd2UgS2xlaW5lLUvDtm5pZyBzdWdnZXN0ZWQKICAgKiBFeHBhbmQgQ2MgbGlzdAotLS0K
-IGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDE1ICsrKysrKysrKysrKy0tLQogMSBmaWxlIGNo
-YW5nZWQsIDEyIGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJp
-dmVycy90dHkvc2VyaWFsL2lteC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCmluZGV4IDkz
-NjJmNTRjODE2Yy4uODc5NTBjMTExY2JlIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwv
-aW14LmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCkBAIC0zNjEsNiArMzYxLDcgQEAg
-c3RhdGljIHZvaWQgaW14X3N0b3BfdHgoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkKIAkJCWlteF9w
-b3J0X3J0c19pbmFjdGl2ZShzcG9ydCwgJnRlbXApOwogCQllbHNlCiAJCQlpbXhfcG9ydF9ydHNf
-YWN0aXZlKHNwb3J0LCAmdGVtcCk7CisJCXRlbXAgfD0gVUNSMl9SWEVOOwogCQl3cml0ZWwodGVt
-cCwgcG9ydC0+bWVtYmFzZSArIFVDUjIpOwogCiAJCXRlbXAgPSByZWFkbChwb3J0LT5tZW1iYXNl
-ICsgVUNSNCk7CkBAIC01NjgsNiArNTY5LDggQEAgc3RhdGljIHZvaWQgaW14X3N0YXJ0X3R4KHN0
-cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiAJCQlpbXhfcG9ydF9ydHNfaW5hY3RpdmUoc3BvcnQsICZ0
-ZW1wKTsKIAkJZWxzZQogCQkJaW14X3BvcnRfcnRzX2FjdGl2ZShzcG9ydCwgJnRlbXApOworCQlp
-ZiAoIShwb3J0LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFgpKQorCQkJdGVt
-cCAmPSB+VUNSMl9SWEVOOwogCQl3cml0ZWwodGVtcCwgcG9ydC0+bWVtYmFzZSArIFVDUjIpOwog
-CiAJCS8qIGVuYWJsZSB0cmFuc21pdHRlciBhbmQgc2hpZnRlciBlbXB0eSBpcnEgKi8KQEAgLTE2
-MTAsMTkgKzE2MTMsMTcgQEAgc3RhdGljIGludCBpbXhfcnM0ODVfY29uZmlnKHN0cnVjdCB1YXJ0
-X3BvcnQgKnBvcnQsCiAJCQkgICAgc3RydWN0IHNlcmlhbF9yczQ4NSAqcnM0ODVjb25mKQogewog
-CXN0cnVjdCBpbXhfcG9ydCAqc3BvcnQgPSAoc3RydWN0IGlteF9wb3J0ICopcG9ydDsKKwl1bnNp
-Z25lZCBsb25nIHRlbXA7CiAKIAkvKiB1bmltcGxlbWVudGVkICovCiAJcnM0ODVjb25mLT5kZWxh
-eV9ydHNfYmVmb3JlX3NlbmQgPSAwOwogCXJzNDg1Y29uZi0+ZGVsYXlfcnRzX2FmdGVyX3NlbmQg
-PSAwOwotCXJzNDg1Y29uZi0+ZmxhZ3MgfD0gU0VSX1JTNDg1X1JYX0RVUklOR19UWDsKIAogCS8q
-IFJUUyBpcyByZXF1aXJlZCB0byBjb250cm9sIHRoZSB0cmFuc21pdHRlciAqLwogCWlmICghc3Bv
-cnQtPmhhdmVfcnRzY3RzKQogCQlyczQ4NWNvbmYtPmZsYWdzICY9IH5TRVJfUlM0ODVfRU5BQkxF
-RDsKIAogCWlmIChyczQ4NWNvbmYtPmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKLQkJdW5z
-aWduZWQgbG9uZyB0ZW1wOwotCiAJCS8qIGRpc2FibGUgdHJhbnNtaXR0ZXIgKi8KIAkJdGVtcCA9
-IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IyKTsKIAkJaWYgKHJzNDg1Y29uZi0+Zmxh
-Z3MgJiBTRVJfUlM0ODVfUlRTX0FGVEVSX1NFTkQpCkBAIC0xNjMyLDYgKzE2MzMsMTQgQEAgc3Rh
-dGljIGludCBpbXhfcnM0ODVfY29uZmlnKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsCiAJCXdyaXRl
-bCh0ZW1wLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMik7CiAJfQogCisJLyogTWFrZSBzdXJl
-IFJ4IGlzIGVuYWJsZWQgaW4gY2FzZSBUeCBpcyBhY3RpdmUgd2l0aCBSeCBkaXNhYmxlZCAqLwor
-CWlmICghKHJzNDg1Y29uZi0+ZmxhZ3MgJiBTRVJfUlM0ODVfRU5BQkxFRCkgfHwKKwkgICAgcnM0
-ODVjb25mLT5mbGFncyAmIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFgpIHsKKwkJdGVtcCA9IHJlYWRs
-KHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IyKTsKKwkJdGVtcCB8PSBVQ1IyX1JYRU47CisJCXdy
-aXRlbCh0ZW1wLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMik7CisJfQorCiAJcG9ydC0+cnM0
-ODUgPSAqcnM0ODVjb25mOwogCiAJcmV0dXJuIDA7Ci0tIAoyLjcuMAoKCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGlu
-ZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMu
-aW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+"ARM Server Base Boot Requirements" [1] mentions DBG2 (Microsoft Debug
+Port Table 2) [2] as a mandatory ACPI table that specifies debug ports.
+
+- Move earlycon early_param handling to serial to parse earlycon option once
+- Add definition of DBG2 subtypes.  It's the same patch as in the SPCR series [3]
+- Refactor ACPI linker tables code to enable iterating over subtables other than
+  subtables having acpi_subtype header (such as DBG2)
+- Implement macros
+
+	ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)
+
+  that defines a handler for the port of the given type and subtype.
+- For each port defined by that macros that is also described in the ACPI DBG2
+  table call provided callback.
+- Implement a helper macros that can be used to define early serial console
+- Enable DBG2 on ARM64
+- Define early console for pl011 serial
+
+Based on the work by Leif Lindholm <leif.lindholm@linaro.org> [4]
+
+Should be applied to next-20160229.
+
+Tested on last QEMU with patches that introduce DBG2 and fix a QEMU bug:
+
+https://git.linaro.org/people/aleksey.makarov/qemu.git amakarov/gdb2.03
+
+v3:
+- Drop "arm64: move acpi/dt decision earlier in boot process".  It is incorrect.
+  (Matthias Brugger)
+- Fix the message at port discovery.
+
+v2:
+https://lkml.kernel.org/g/1456333819-13482-1-git-send-email-aleksey.makarov@linaro.org
+- Fix parse_acpi() (Matthias Brugger)
+- Add a reference to QEMU DBG2 patches and to original work
+- Rebase to the last linux-next
+
+v1:
+https://lkml.kernel.org/g/1456148818-26257-1-git-send-email-aleksey.makarov@linaro.org
+
+[1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+[2] http://go.microsoft.com/fwlink/p/?LinkId=234837
+[3] https://lkml.kernel.org/g/1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org
+[4] https://lkml.kernel.org/g/1441716217-23786-1-git-send-email-leif.lindholm@linaro.org
+
+Aleksey Makarov (6):
+  ACPI: add definitions of DBG2 subtypes
+  ACPI: genaralize iterating over subtables in ACPI_PROBE_TABLE()
+  ACPI: parse DBG2 table
+  ACPI: serial: implement earlycon on ACPI DBG2 port
+  ACPI: enable ACPI_DBG2_TABLE on ARM64
+  serial: pl011: add ACPI DBG2 serial port
+
+Leif Lindholm (1):
+  of/serial: move earlycon early_param handling to serial
+
+ Documentation/kernel-parameters.txt  |   3 +
+ arch/arm64/Kconfig                   |   1 +
+ arch/arm64/kernel/acpi.c             |   2 +
+ drivers/acpi/Kconfig                 |   3 +
+ drivers/acpi/Makefile                |   1 +
+ drivers/acpi/dbg2.c                  |  88 +++++++++++++++++++++++++++++
+ drivers/acpi/scan.c                  |  44 ++++++++++-----
+ drivers/clocksource/arm_arch_timer.c |   3 +-
+ drivers/irqchip/irq-gic.c            |   4 +-
+ drivers/of/fdt.c                     |  11 +---
+ drivers/tty/serial/amba-pl011.c      |   3 +
+ drivers/tty/serial/earlycon.c        |  61 ++++++++++++++++++++
+ include/acpi/actbl2.h                |   5 ++
+ include/asm-generic/vmlinux.lds.h    |   1 +
+ include/linux/acpi.h                 | 104 ++++++++++++++++++++++++-----------
+ include/linux/acpi_dbg2.h            |  68 +++++++++++++++++++++++
+ include/linux/clocksource.h          |   2 +-
+ include/linux/irqchip.h              |   5 +-
+ include/linux/of_fdt.h               |   2 +
+ 19 files changed, 348 insertions(+), 63 deletions(-)
+ create mode 100644 drivers/acpi/dbg2.c
+ create mode 100644 include/linux/acpi_dbg2.h
+
+-- 
+2.7.1
+
