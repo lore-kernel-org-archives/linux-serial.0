@@ -1,91 +1,94 @@
-From: Sergei Ianovich <ynvich@gmail.com>
-Subject: Re: [PATCH v6] serial: support for 16550A serial ports on LP-8x4x
-Date: Mon, 29 Feb 2016 16:03:15 +0300
-Message-ID: <1456750995.23036.87.camel@gmail.com>
-References: <1450213494-21884-1-git-send-email-ynvich@gmail.com>
-	 <1456589675-25377-1-git-send-email-ynvich@gmail.com>
-	 <1456741786.13244.167.camel@linux.intel.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v4 1/4] ACPI: parse SPCR and enable matching console
+Date: Mon, 29 Feb 2016 15:29:41 +0200
+Message-ID: <CAHp75VdswvD23xqRNUX=fwMt5HReR-wcSo+RYweB6FYqWPar8w@mail.gmail.com>
+References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
+	<1456747355-15692-2-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1456741786.13244.167.camel@linux.intel.com>
+In-Reply-To: <1456747355-15692-2-git-send-email-aleksey.makarov@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-kernel@vger.kernel.org
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Paul Burton <paul.burton@imgtec.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, Mans Rullgard <mans@mansr.com>, Scott Wood <scottwood@freescale.com>, Joachim Eastwood <manabian@gmail.com>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Peter Hurley <peter@hurleysoftware.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+To: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, "Zheng, Lv" <lv.zheng@intel.com>, Len Brown <lenb@kernel.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2016-02-29 at 12:29 +0200, Andy Shevchenko wrote:
-> On Sat, 2016-02-27 at 19:14 +0300, Sergei Ianovich wrote:
-> > +struct lp8841_serial_data {
-> > +	int			line;
-> > +	void			*ios_mem;
->=20
-> __iomem
+On Mon, Feb 29, 2016 at 2:02 PM, Aleksey Makarov
+<aleksey.makarov@linaro.org> wrote:
+> 'ARM Server Base Boot Requiremets' [1] mentions SPCR (Serial Port
+> Console Redirection Table) [2] as a mandatory ACPI table that
+> specifies the configuration of serial console.
+>
+> Parse this table and check if any registered console match the
+> description.  If it does, enable that console.
+>
+> Introduce a new function acpi_console_check().  At the uart port
+> registration, this function checks if the ACPI SPCR table specifies
+> its argument of type struct uart_port to be a console
+> and if so calls add_preferred_console().
 
-OK
+> +       if (ACPI_FAILURE(status)) {
+> +               pr_err("could not get the table\n");
 
-> > +};
->=20
-> > +	if (termios->c_cflag & CSTOPB)
-> > +		len++;
-> > +	if (termios->c_cflag & PARENB)
-> > +		len++;
-> > +	if (!(termios->c_cflag & PARODD))
-> > +		len++;
-> > +#ifdef CMSPAR
-> > +	if (termios->c_cflag & CMSPAR)
-> > +		len++;
-> > +#endif
-> > +
-> > +	len -=3D 9;
->=20
-> If you have 5 bit mode, no parity, 1/1.5 stop bits, you may end up
-> with
-> negative value here. Am I right? If so, is it expected?
->=20
-> > +	len &=3D 3;
-> > +	len <<=3D 3;
+Is it worse to have on error level? Is it possible to have firmware
+without this table? I think it would be a normal case for non-arm
+world.
+I'm also not sure if this message useful even on warn level.
 
-I haven't tested this mode. I am pretty sure it will fail. There is
-also no support for speeds higher than 115200.
+> +               return -ENOENT;
+> +       }
+> +
+> +       if (table->header.revision < 2) {
+> +               err = -EINVAL;
+> +               pr_err("wrong table version\n");
 
-CS7 and CS8 at speeds up to 115200 work well.
+And this one quite good to have, indeed.
 
-However, there is no way to report errors from=C2=A0set_termios(). Shou=
-ld
-anything be done about those limitations?
+> + * acpi_console_check - Check if uart matches the console specified by SPCR.
+> + *
+> + * @uport:     uart port to check
+> + *
 
-> +	mmres =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > +	mires =3D platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> > +	if (!mmres || !mires)
-> > +		return -ENODEV;
->=20
-> No need to check mires here, devm_ioremap_resource() will take care
-> about.
+Since you use sections, you may add:
++ * Description:
 
-OK
+> + * This function checks if the ACPI SPCR table specifies @uport to be a console
+> + * and if so calls add_preferred_console()
+> + *
+> + * Return: a non-error value if the console matches.
 
-> > +	data->ios_mem =3D devm_ioremap_resource(&pdev->dev,
-> > > > mires);
-> > +	if (!data->ios_mem)
-> > +		return -EFAULT;
->=20
-> You have to propagate the actual error code from
-> devm_ioremap_resource().
+> @@ -2654,8 +2655,17 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+>                 spin_lock_init(&uport->lock);
+>                 lockdep_set_class(&uport->lock, &port_lock_key);
+>         }
+> -       if (uport->cons && uport->dev)
+> -               of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
+> +
+> +       /*
+> +        * Support both open FW and ACPI access to console definitions.
+> +        * Both of_console_check() and acpi_console_check() will call
+> +        * add_preferred_console() if a console definition is found.
+> +        */
+> +       if (uport->cons && uport->dev) {
+> +               if (!acpi_console_check(uport))
 
-OK
+if (cond1) {
+ if (cond2) {
+...
+ }
+}
 
-> > +
-> > +	uart.port.iotype =3D UPIO_MEM;
-> >=20
->=20
-> > +	uart.port.mapbase =3D mmres->start;
-> > +	uart.port.iobase =3D mmres->start;
->=20
-> I'm not sure about this. If you ask for UPIO_MEM why do you need to
-> fill iobase?
-> And I suppose iobase can't hold (at the end inb/outb calls) big port
-> numbers anyway (16 bit on x86, for example).
+is equivalent to
+if (cond1 && cond2) {
+...
+}
 
-There is no need for iobase. I'll remove that line.
+> +                       of_console_check(uport->dev->of_node, uport->cons->name,
+> +                                        uport->line);
+> +       }
+
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
