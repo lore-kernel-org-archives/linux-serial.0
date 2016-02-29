@@ -1,173 +1,109 @@
-From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v6] serial: support for 16550A serial ports on LP-8x4x
-Date: Mon, 29 Feb 2016 12:29:46 +0200
-Message-ID: <1456741786.13244.167.camel@linux.intel.com>
-References: <1450213494-21884-1-git-send-email-ynvich@gmail.com>
-	 <1456589675-25377-1-git-send-email-ynvich@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1456589675-25377-1-git-send-email-ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, Mans Rullgard <mans-2StjZFpD7GcAvxtiuMwx3w@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:SERIAL DRIVERS" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: [PATCH v4 0/4] ACPI: parse the SPCR table
+Date: Mon, 29 Feb 2016 15:02:28 +0300
+Message-ID: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: linux-acpi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, "Zheng, Lv" <lv.zheng@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, 2016-02-27 at 19:14 +0300, Sergei Ianovich wrote:
-> The patch adds support for 3 additional LP-8x4x built-in serial
-> ports.
->=20
-> The device can also host up to 8 extension cards with 4 serial ports
-> on each card for a total of 35 ports. However, I don't have
-> the hardware to test extension cards, so they are not supported, yet.
+'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
+Console Redirection Table) [2] as a mandatory ACPI table that
+specifies the configuration of serial console.
 
-My comments below.
-After addressing them:
-Reviewed-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Introduce a new function acpi_console_check().  At the uart port
+registration, this function checks if the ACPI SPCR table specifies
+its argument of type struct uart_port to be a console
+and if so calls add_preferred_console().
 
-> +++ b/drivers/tty/serial/8250/8250_lp8841.c
-> @@ -0,0 +1,166 @@
-> +/*=C2=A0=C2=A0linux/drivers/tty/serial/8250/8250_lp8841.c
-> + *
-> + *=C2=A0=C2=A0Support for 16550A serial ports on ICP DAS LP-8841
-> + *
-> + *=C2=A0=C2=A0Copyright (C) 2013 Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> + *
-> + *=C2=A0=C2=A0This program is free software; you can redistribute it=
- and/or
-> modify
-> + *=C2=A0=C2=A0it under the terms of the GNU General Public License v=
-ersion 2
-> as
-> + *=C2=A0=C2=A0published by the Free Software Foundation.
-> + */
-> +#include <linux/init.h>
-> +#include <linux/io.h>
-> +#include <linux/irq.h>
-> +#include <linux/module.h>
-> +#include <linux/serial_8250.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +
-> +struct lp8841_serial_data {
-> +	int			line;
-> +	void			*ios_mem;
+Use SPCR to tell if SBSA serial driver should use 32-bit access to registers.
 
-__iomem
+Based on the work by Leif Lindholm [3]
 
-> +};
+Should be applied to next-20160229.
 
-> +	if (termios->c_cflag & CSTOPB)
-> +		len++;
-> +	if (termios->c_cflag & PARENB)
-> +		len++;
-> +	if (!(termios->c_cflag & PARODD))
-> +		len++;
-> +#ifdef CMSPAR
-> +	if (termios->c_cflag & CMSPAR)
-> +		len++;
-> +#endif
-> +
-> +	len -=3D 9;
+Tested on QEMU.  SPCR support is included in QEMU's ARM mach-virt
+since 2.4 release.
 
-If you have 5 bit mode, no parity, 1/1.5 stop bits, you may end up with
-negative value here. Am I right? If so, is it expected?
+v4:
+- drop patch "ACPI: change __init to __ref for early_acpi_os_unmap_memory()"
+  ACPI developers work on a new API and asked not to do that.
+  Instead, use acpi_get_table_with_size()/early_acpi_os_unmap_memory() once
+  and cache the result. (Lv Zheng)
+- fix some style issues (Yury Norov)
 
-> +	len &=3D 3;
-> +	len <<=3D 3;
+v3:
+https://lkml.kernel.org/g/1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org
 
-> +	writeb(len, data->ios_mem);
-> +
-> +}
+Greg Kroah-Hartman did not like v2 so I have rewritten this patchset:
 
+- drop acpi_match() member of struct console
+- drop implementations of this member for pl011 and 8250
+- drop the patch that renames some vars in printk.c as it is not needed anymore
+- drop patch that introduces system wide acpi_table_parse2().
+  Instead introduce a custom acpi_table_parse_spcr() in spcr.c
 
-> +static int lp8841_serial_probe(struct platform_device *pdev)
-> +{
-> +	struct uart_8250_port uart =3D {};
-> +	struct lp8841_serial_data *data;
-> +	struct resource *mmres, *mires;
-> +	int ret;
-> +
-> +	mmres =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	mires =3D platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> +	if (!mmres || !mires)
-> +		return -ENODEV;
+Instead of introducing a new match_acpi() member of struct console,
+this patchset introduces a new function acpi_console_check().
+This function is called when a new uart is registered at serial_core.c
+the same way OF code checks for console.  If the registered uart is the
+console specified by SPCR table, this function calls add_preferred_console()
 
-No need to check mires here, devm_ioremap_resource() will take care
-about.
+The restrictions of this approach are:
 
-> +
-> +	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-> +	if (!data)
-> +		return -ENOMEM;
-> +
-> +	data->ios_mem =3D devm_ioremap_resource(&pdev->dev, mires);
-> +	if (!data->ios_mem)
-> +		return -EFAULT;
+- only serial consoles can be set up
+- only consoles specified by the memory/io address can be set up
+  (SPCR can specify devices by PCI id/PCI address)
 
-You have to propagate the actual error code from
-devm_ioremap_resource().
+v2:
+https://lkml.kernel.org/g/1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org
+- don't use SPCR if user specified console in command line
+- fix initialization order of newcon->index = 0
+- rename some variables at printk.c (Joe Perches, Peter Hurley)
+- enable ACPI_SPCR_TABLE in a separate patch (Andy Shevchenko)
+- remove the retry loop for console registering (Peter Hurley).
+  Instead, obtain SPCR with acpi_get_table().  That works after
+  call to acpi_early_init() i. e. in any *_initcall()
+- describe design decision behind introducing acpi_match() (Peter Hurley)
+- fix compilation for x86 + ACPI (Graeme Gregory)
+- introduce DBG2 constants in a separate patch (Andy Shevchenko)
+- fix a typo in DBG2 constants (Andy Shevchenko)
+- add ACPI_DBG2_ARM_SBSA_32BIT constant (Christopher Covington)
+- add support for ACPI_DBG2_ARM_SBSA_* consoles (Christopher Covington)
+- add documentation for functions
+- add a patch that uses SPCR to find if SBSA serial driver should use 32-bit
+  accessor functions (Christopher Covington)
+- change __init to __ref for early_acpi_os_unmap_memory() in a separate patch
+- introduce acpi_table_parse2() in a separate patch
+- fix fetching the SPCR table early (Mark Salter)
+- add a patch from Mark Salter that introduces support for matching 8250-based
+  consoles
 
-> +
-> +	uart.port.iotype =3D UPIO_MEM;
->=20
+v1:
+https://lkml.kernel.org/g/1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org
 
-> +	uart.port.mapbase =3D mmres->start;
-> +	uart.port.iobase =3D mmres->start;
+[1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+[2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
+[3] https://lkml.kernel.org/g/1441716217-23786-1-git-send-email-leif.lindholm@linaro.org
 
-I'm not sure about this. If you ask for UPIO_MEM why do you need to
-fill iobase?
-And I suppose iobase can't hold (at the end inb/outb calls) big port
-numbers anyway (16 bit on x86, for example).
+Aleksey Makarov (4):
+  ACPI: parse SPCR and enable matching console
+  ACPI: enable ACPI_SPCR_TABLE on ARM64
+  ACPI: add definitions of DBG2 subtypes
+  serial: pl011: use ACPI SPCR to setup 32-bit access
 
-> +	uart.port.regshift =3D 1;
-> +	uart.port.irq =3D platform_get_irq(pdev, 0);
-> +	uart.port.flags =3D UPF_IOREMAP;
-> +	uart.port.dev =3D &pdev->dev;
-> +	uart.port.uartclk =3D 14745600;
-> +	uart.port.set_termios =3D lp8841_serial_set_termios;
-> +	uart.port.private_data =3D data;
-> +
-> +	ret =3D serial8250_register_8250_port(&uart);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->line =3D ret;
-> +
-> +	platform_set_drvdata(pdev, data);
-> +
-> +	return 0;
-> +}
-> +
-> +static int lp8841_serial_remove(struct platform_device *pdev)
-> +{
-> +	struct lp8841_serial_data *data =3D
-> platform_get_drvdata(pdev);
-> +
-> +	serial8250_unregister_port(data->line);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver lp8841_serial_driver =3D {
-> +	.probe=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D=
- lp8841_serial_probe,
-> +	.remove=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D lp=
-8841_serial_remove,
-> +
-> +	.driver		=3D {
-> +		.name	=3D "uart-lp8841",
-> +		.of_match_table =3D lp8841_serial_dt_ids,
-> +	},
-> +};
+ arch/arm64/Kconfig               |   1 +
+ drivers/acpi/Kconfig             |   3 +
+ drivers/acpi/Makefile            |   1 +
+ drivers/acpi/spcr.c              | 138 +++++++++++++++++++++++++++++++++++++++
+ drivers/tty/serial/amba-pl011.c  |   2 +
+ drivers/tty/serial/serial_core.c |  14 +++-
+ include/acpi/actbl2.h            |   5 ++
+ include/linux/acpi.h             |  15 +++++
+ 8 files changed, 177 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/acpi/spcr.c
 
---=20
-Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Intel Finland Oy
+-- 
+2.7.1
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
