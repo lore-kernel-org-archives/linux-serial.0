@@ -1,109 +1,40 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Re: [PATCH v4 1/4] ACPI: parse SPCR and enable matching console
-Date: Mon, 29 Feb 2016 16:47:37 +0300
-Message-ID: <56D44BF9.3030007@linaro.org>
-References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
- <1456747355-15692-2-git-send-email-aleksey.makarov@linaro.org>
- <CAHp75VdswvD23xqRNUX=fwMt5HReR-wcSo+RYweB6FYqWPar8w@mail.gmail.com>
+From: One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Subject: Re: [PATCH v6] serial: support for 16550A serial ports on LP-8x4x
+Date: Mon, 29 Feb 2016 14:45:28 +0000
+Message-ID: <20160229144528.0c0b8371@lxorguk.ukuu.org.uk>
+References: <1450213494-21884-1-git-send-email-ynvich@gmail.com>
+	<1456589675-25377-1-git-send-email-ynvich@gmail.com>
+	<1456741786.13244.167.camel@linux.intel.com>
+	<1456750995.23036.87.camel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VdswvD23xqRNUX=fwMt5HReR-wcSo+RYweB6FYqWPar8w@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, "Zheng, Lv" <lv.zheng@intel.com>, Len Brown <lenb@kernel.org>, Jiri Slaby <jslaby@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1456750995.23036.87.camel-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, Mans Rullgard <mans-2StjZFpD7GcAvxtiuMwx3w@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>"open list:SERIAL DRIVERS" <lin>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy, 
+> I haven't tested this mode. I am pretty sure it will fail. There is
+> also no support for speeds higher than 115200.
+>=20
+> CS7 and CS8 at speeds up to 115200 work well.
+>=20
+> However, there is no way to report errors from=C2=A0set_termios(). Sh=
+ould
+> anything be done about those limitations?
 
-Thank you for review.
+You report back by setting the termios fields to the values actually
+selected. Eg if you can't do CS5/CS6 you'd pick CS7 or CS8 and write th=
+at
+back into tty->termios so the caller knows what they actually got. Ditt=
+o
+for speed (see the 16550A core driver for the speed write backs).
 
-On 02/29/2016 04:29 PM, Andy Shevchenko wrote:
-> On Mon, Feb 29, 2016 at 2:02 PM, Aleksey Makarov
-> <aleksey.makarov@linaro.org> wrote:
->> 'ARM Server Base Boot Requiremets' [1] mentions SPCR (Serial Port
->> Console Redirection Table) [2] as a mandatory ACPI table that
->> specifies the configuration of serial console.
->>
->> Parse this table and check if any registered console match the
->> description.  If it does, enable that console.
->>
->> Introduce a new function acpi_console_check().  At the uart port
->> registration, this function checks if the ACPI SPCR table specifies
->> its argument of type struct uart_port to be a console
->> and if so calls add_preferred_console().
-> 
->> +       if (ACPI_FAILURE(status)) {
->> +               pr_err("could not get the table\n");
-> 
-> Is it worse to have on error level? Is it possible to have firmware
-> without this table? I think it would be a normal case for non-arm
-> world.
-> I'm also not sure if this message useful even on warn level.
-
-I will delete the message in the next version, thank you.
-
->> +               return -ENOENT;
->> +       }
->> +
->> +       if (table->header.revision < 2) {
->> +               err = -EINVAL;
->> +               pr_err("wrong table version\n");
-> 
-> And this one quite good to have, indeed.
-> 
->> + * acpi_console_check - Check if uart matches the console specified by SPCR.
->> + *
->> + * @uport:     uart port to check
->> + *
-> 
-> Since you use sections, you may add:
-> + * Description:
-
-According to kernel-doc-nano-HOWTO.txt "Description: " is optional.
-
->> + * This function checks if the ACPI SPCR table specifies @uport to be a console
->> + * and if so calls add_preferred_console()
->> + *
->> + * Return: a non-error value if the console matches.
-> 
->> @@ -2654,8 +2655,17 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
->>                 spin_lock_init(&uport->lock);
->>                 lockdep_set_class(&uport->lock, &port_lock_key);
->>         }
->> -       if (uport->cons && uport->dev)
->> -               of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
->> +
->> +       /*
->> +        * Support both open FW and ACPI access to console definitions.
->> +        * Both of_console_check() and acpi_console_check() will call
->> +        * add_preferred_console() if a console definition is found.
->> +        */
->> +       if (uport->cons && uport->dev) {
->> +               if (!acpi_console_check(uport))
-> 
-> if (cond1) {
->  if (cond2) {
-> ...
->  }
-> }
-> 
-> is equivalent to
-> if (cond1 && cond2) {
-> ...
-> }
-
-It is, but it's a style decision.  I would prefer to leave it as is because it emphasizes that
-after meeting some condition we first call acpi_console_check() and then of_console_check().
-
-Thank you
-Aleksey Makarov
-
-> 
->> +                       of_console_check(uport->dev->of_node, uport->cons->name,
->> +                                        uport->line);
->> +       }
-> 
-> 
-> 
+Alan
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
