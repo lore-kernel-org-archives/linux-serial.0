@@ -1,58 +1,131 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v1] serial: mctrl_gpio: Add missing module license
-Date: Mon, 29 Feb 2016 09:49:40 +0100
-Message-ID: <20160229084940.GF2613@pengutronix.de>
-References: <1456239294-28342-1-git-send-email-romain.izard.pro@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial: imx: support RS-485 Rx disable on Tx
+Date: Mon, 29 Feb 2016 09:51:30 +0100
+Message-ID: <20160229085130.GG2613@pengutronix.de>
+References: <3b5ba06fdb9c1bdd0b3018bf2f623f52b2856d18.1456651551.git.baruch@tkos.co.il>
+ <20160228095601.GB2613@pengutronix.de>
+ <20160228102323.GI2399@tarshish>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1456239294-28342-1-git-send-email-romain.izard.pro@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20160228102323.GI2399@tarshish>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Romain,
+Hello Baruch,
 
-On Tue, Feb 23, 2016 at 03:54:54PM +0100, Romain Izard wrote:
-> As the mctrl_gpio driver can be built as a module, it needs to have i=
-ts
-> license specified with MODULE_LICENSE. Otherwise, it cannot access
-> required symbols exported through EXPORT_SYMBOL_GPL.
->=20
-> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
-> ---
->  drivers/tty/serial/serial_mctrl_gpio.c | 3 +++
->  1 file changed, 3 insertions(+)
->=20
-> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/ser=
-ial/serial_mctrl_gpio.c
-> index 226ad23b136c..02147361eaa9 100644
-> --- a/drivers/tty/serial/serial_mctrl_gpio.c
-> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
-> @@ -20,6 +20,7 @@
->  #include <linux/gpio/consumer.h>
->  #include <linux/termios.h>
->  #include <linux/serial_core.h>
-> +#include <linux/module.h>
-> =20
->  #include "serial_mctrl_gpio.h"
-> =20
-> @@ -249,3 +250,5 @@ void mctrl_gpio_disable_ms(struct mctrl_gpios *gp=
-ios)
->  	}
->  }
->  EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms);
-> +
-> +MODULE_LICENSE("GPL");
+On Sun, Feb 28, 2016 at 12:23:23PM +0200, Baruch Siach wrote:
+> Thanks for your prompt response.
+> =
 
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> On Sun, Feb 28, 2016 at 10:56:01AM +0100, Uwe Kleine-K=F6nig wrote:
+> > On Sun, Feb 28, 2016 at 11:25:51AM +0200, Baruch Siach wrote:
+> > > Some RS-232 to RS-485 transceivers require Rx to be disabled on Tx to
+> > > avoid echo of Tx data into the Rx buffer. Specifically, the XR3160E
+> > > RS-232/RS-485/RS-422 transceiver behaves this way.
+> > > =
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
+> > > This commit disables Rx on active Tx when SER_RS485_ENABLED is active=
+ and
+> > > SER_RS485_RX_DURING_TX is disabled.
+> > > =
+
+> > > Note that this is a change in behavior of the driver. Until now
+> > =
+
+> > But this change is a good one (assuming it does what it advertises :-).
+> > Userspace got informed before that SER_RS485_RX_DURING_TX is enabled, so
+> > this is not an incompatible change.
+> =
+
+> I thought it is a good idea to mention this fact in the commit log anyway=
+. It =
+
+> is not hard to imagine broken userspace being affected by this change.
+> =
+
+> > > SER_RS485_RX_DURING_TX was enabled unconditionally even when disabled=
+ in
+> > > the TIOCSRS485 ioctl serial_rs485 flags field.
+> > > =
+
+> > > Cc: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> > > ---
+> > >  drivers/tty/serial/imx.c | 5 ++++-
+> > >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > > =
+
+> > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > > index 9362f54c816c..333d34ff358c 100644
+> > > --- a/drivers/tty/serial/imx.c
+> > > +++ b/drivers/tty/serial/imx.c
+> > > @@ -361,6 +361,8 @@ static void imx_stop_tx(struct uart_port *port)
+> > >  			imx_port_rts_inactive(sport, &temp);
+> > >  		else
+> > >  			imx_port_rts_active(sport, &temp);
+> > > +		if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
+> > > +			temp |=3D UCR2_RXEN;
+> > >  		writel(temp, port->membase + UCR2);
+> > >  =
+
+> > >  		temp =3D readl(port->membase + UCR4);
+> > > @@ -568,6 +570,8 @@ static void imx_start_tx(struct uart_port *port)
+> > >  			imx_port_rts_inactive(sport, &temp);
+> > >  		else
+> > >  			imx_port_rts_active(sport, &temp);
+> > > +		if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
+> > > +			temp &=3D ~UCR2_RXEN;
+> > >  		writel(temp, port->membase + UCR2);
+> > =
+
+> > Can this happen:
+> > =
+
+> >  - SER_RS485_RX_DURING_TX is off
+> >  - thread A starts sending (and so disables RX)
+> >  - thread B sets SER_RS485_RX_DURING_TX
+> >  - thread A finishes sending, and doesn't restore RXEN.
+> > =
+
+> > ?
+> > =
+
+> > Even if this cannot happen it might be more robust to restore RXEN
+> > unconditionally in imx_stop_tx?!
+> =
+
+> Sounds like a good idea. But if I take your comment to its logical conclu=
+sion, =
+
+> thread B might just disable SER_RS485_ENABLED entirely. Would it make sen=
+se to =
+
+> restore RXEN outside the 'if (port->rs485.flags & SER_RS485_ENABLED)' blo=
+ck?  =
+
+> Or maybe we should just set RXEN in imx_rs485_config() when =
+
+> SER_RS485_RX_DURING_TX is enabled?
+
+The latter sounds like the right thing to do.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
