@@ -1,131 +1,173 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] serial: imx: support RS-485 Rx disable on Tx
-Date: Mon, 29 Feb 2016 09:51:30 +0100
-Message-ID: <20160229085130.GG2613@pengutronix.de>
-References: <3b5ba06fdb9c1bdd0b3018bf2f623f52b2856d18.1456651551.git.baruch@tkos.co.il>
- <20160228095601.GB2613@pengutronix.de>
- <20160228102323.GI2399@tarshish>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v6] serial: support for 16550A serial ports on LP-8x4x
+Date: Mon, 29 Feb 2016 12:29:46 +0200
+Message-ID: <1456741786.13244.167.camel@linux.intel.com>
+References: <1450213494-21884-1-git-send-email-ynvich@gmail.com>
+	 <1456589675-25377-1-git-send-email-ynvich@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20160228102323.GI2399@tarshish>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Baruch Siach <baruch@tkos.co.il>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1456589675-25377-1-git-send-email-ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, Mans Rullgard <mans-2StjZFpD7GcAvxtiuMwx3w@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:SERIAL DRIVERS" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello Baruch,
+On Sat, 2016-02-27 at 19:14 +0300, Sergei Ianovich wrote:
+> The patch adds support for 3 additional LP-8x4x built-in serial
+> ports.
+>=20
+> The device can also host up to 8 extension cards with 4 serial ports
+> on each card for a total of 35 ports. However, I don't have
+> the hardware to test extension cards, so they are not supported, yet.
 
-On Sun, Feb 28, 2016 at 12:23:23PM +0200, Baruch Siach wrote:
-> Thanks for your prompt response.
-> =
+My comments below.
+After addressing them:
+Reviewed-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-> On Sun, Feb 28, 2016 at 10:56:01AM +0100, Uwe Kleine-K=F6nig wrote:
-> > On Sun, Feb 28, 2016 at 11:25:51AM +0200, Baruch Siach wrote:
-> > > Some RS-232 to RS-485 transceivers require Rx to be disabled on Tx to
-> > > avoid echo of Tx data into the Rx buffer. Specifically, the XR3160E
-> > > RS-232/RS-485/RS-422 transceiver behaves this way.
-> > > =
+> +++ b/drivers/tty/serial/8250/8250_lp8841.c
+> @@ -0,0 +1,166 @@
+> +/*=C2=A0=C2=A0linux/drivers/tty/serial/8250/8250_lp8841.c
+> + *
+> + *=C2=A0=C2=A0Support for 16550A serial ports on ICP DAS LP-8841
+> + *
+> + *=C2=A0=C2=A0Copyright (C) 2013 Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> + *
+> + *=C2=A0=C2=A0This program is free software; you can redistribute it=
+ and/or
+> modify
+> + *=C2=A0=C2=A0it under the terms of the GNU General Public License v=
+ersion 2
+> as
+> + *=C2=A0=C2=A0published by the Free Software Foundation.
+> + */
+> +#include <linux/init.h>
+> +#include <linux/io.h>
+> +#include <linux/irq.h>
+> +#include <linux/module.h>
+> +#include <linux/serial_8250.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +
+> +struct lp8841_serial_data {
+> +	int			line;
+> +	void			*ios_mem;
 
-> > > This commit disables Rx on active Tx when SER_RS485_ENABLED is active=
- and
-> > > SER_RS485_RX_DURING_TX is disabled.
-> > > =
+__iomem
 
-> > > Note that this is a change in behavior of the driver. Until now
-> > =
+> +};
 
-> > But this change is a good one (assuming it does what it advertises :-).
-> > Userspace got informed before that SER_RS485_RX_DURING_TX is enabled, so
-> > this is not an incompatible change.
-> =
+> +	if (termios->c_cflag & CSTOPB)
+> +		len++;
+> +	if (termios->c_cflag & PARENB)
+> +		len++;
+> +	if (!(termios->c_cflag & PARODD))
+> +		len++;
+> +#ifdef CMSPAR
+> +	if (termios->c_cflag & CMSPAR)
+> +		len++;
+> +#endif
+> +
+> +	len -=3D 9;
 
-> I thought it is a good idea to mention this fact in the commit log anyway=
-. It =
+If you have 5 bit mode, no parity, 1/1.5 stop bits, you may end up with
+negative value here. Am I right? If so, is it expected?
 
-> is not hard to imagine broken userspace being affected by this change.
-> =
+> +	len &=3D 3;
+> +	len <<=3D 3;
 
-> > > SER_RS485_RX_DURING_TX was enabled unconditionally even when disabled=
- in
-> > > the TIOCSRS485 ioctl serial_rs485 flags field.
-> > > =
+> +	writeb(len, data->ios_mem);
+> +
+> +}
 
-> > > Cc: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> > > ---
-> > >  drivers/tty/serial/imx.c | 5 ++++-
-> > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > > =
 
-> > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > > index 9362f54c816c..333d34ff358c 100644
-> > > --- a/drivers/tty/serial/imx.c
-> > > +++ b/drivers/tty/serial/imx.c
-> > > @@ -361,6 +361,8 @@ static void imx_stop_tx(struct uart_port *port)
-> > >  			imx_port_rts_inactive(sport, &temp);
-> > >  		else
-> > >  			imx_port_rts_active(sport, &temp);
-> > > +		if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
-> > > +			temp |=3D UCR2_RXEN;
-> > >  		writel(temp, port->membase + UCR2);
-> > >  =
+> +static int lp8841_serial_probe(struct platform_device *pdev)
+> +{
+> +	struct uart_8250_port uart =3D {};
+> +	struct lp8841_serial_data *data;
+> +	struct resource *mmres, *mires;
+> +	int ret;
+> +
+> +	mmres =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	mires =3D platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> +	if (!mmres || !mires)
+> +		return -ENODEV;
 
-> > >  		temp =3D readl(port->membase + UCR4);
-> > > @@ -568,6 +570,8 @@ static void imx_start_tx(struct uart_port *port)
-> > >  			imx_port_rts_inactive(sport, &temp);
-> > >  		else
-> > >  			imx_port_rts_active(sport, &temp);
-> > > +		if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
-> > > +			temp &=3D ~UCR2_RXEN;
-> > >  		writel(temp, port->membase + UCR2);
-> > =
+No need to check mires here, devm_ioremap_resource() will take care
+about.
 
-> > Can this happen:
-> > =
+> +
+> +	data =3D devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	data->ios_mem =3D devm_ioremap_resource(&pdev->dev, mires);
+> +	if (!data->ios_mem)
+> +		return -EFAULT;
 
-> >  - SER_RS485_RX_DURING_TX is off
-> >  - thread A starts sending (and so disables RX)
-> >  - thread B sets SER_RS485_RX_DURING_TX
-> >  - thread A finishes sending, and doesn't restore RXEN.
-> > =
+You have to propagate the actual error code from
+devm_ioremap_resource().
 
-> > ?
-> > =
+> +
+> +	uart.port.iotype =3D UPIO_MEM;
+>=20
 
-> > Even if this cannot happen it might be more robust to restore RXEN
-> > unconditionally in imx_stop_tx?!
-> =
+> +	uart.port.mapbase =3D mmres->start;
+> +	uart.port.iobase =3D mmres->start;
 
-> Sounds like a good idea. But if I take your comment to its logical conclu=
-sion, =
+I'm not sure about this. If you ask for UPIO_MEM why do you need to
+fill iobase?
+And I suppose iobase can't hold (at the end inb/outb calls) big port
+numbers anyway (16 bit on x86, for example).
 
-> thread B might just disable SER_RS485_ENABLED entirely. Would it make sen=
-se to =
+> +	uart.port.regshift =3D 1;
+> +	uart.port.irq =3D platform_get_irq(pdev, 0);
+> +	uart.port.flags =3D UPF_IOREMAP;
+> +	uart.port.dev =3D &pdev->dev;
+> +	uart.port.uartclk =3D 14745600;
+> +	uart.port.set_termios =3D lp8841_serial_set_termios;
+> +	uart.port.private_data =3D data;
+> +
+> +	ret =3D serial8250_register_8250_port(&uart);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->line =3D ret;
+> +
+> +	platform_set_drvdata(pdev, data);
+> +
+> +	return 0;
+> +}
+> +
+> +static int lp8841_serial_remove(struct platform_device *pdev)
+> +{
+> +	struct lp8841_serial_data *data =3D
+> platform_get_drvdata(pdev);
+> +
+> +	serial8250_unregister_port(data->line);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver lp8841_serial_driver =3D {
+> +	.probe=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D=
+ lp8841_serial_probe,
+> +	.remove=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D lp=
+8841_serial_remove,
+> +
+> +	.driver		=3D {
+> +		.name	=3D "uart-lp8841",
+> +		.of_match_table =3D lp8841_serial_dt_ids,
+> +	},
+> +};
 
-> restore RXEN outside the 'if (port->rs485.flags & SER_RS485_ENABLED)' blo=
-ck?  =
+--=20
+Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Intel Finland Oy
 
-> Or maybe we should just set RXEN in imx_rs485_config() when =
-
-> SER_RS485_RX_DURING_TX is enabled?
-
-The latter sounds like the right thing to do.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
