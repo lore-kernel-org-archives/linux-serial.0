@@ -1,13 +1,14 @@
-From: Sergei Ianovich <ynvich@gmail.com>
-Subject: [PATCH v8] serial: support for 16550A serial ports on LP-8x4x
-Date: Tue,  1 Mar 2016 22:54:28 +0300
-Message-ID: <1456862078-11795-1-git-send-email-ynvich@gmail.com>
-References: <1456781209-11390-1-git-send-email-ynvich@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1456781209-11390-1-git-send-email-ynvich@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Sergei Ianovich <ynvich@gmail.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, Paul Burton <paul.burton@imgtec.com>, Joachim Eastwood <manabian@gmail.com>, Mans Rullgard <mans@mansr.com>, Scott Wood <scottwood@freescale.com>, Matthias Brugger <matthias.bgg@gmail.com>, Peter Ujfalusi <peter.ujfalusi@ti.com>, open l <devicetree@vger.kernel.org>
+From: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v9] serial: support for 16550A serial ports on LP-8x4x
+Date: Tue,  1 Mar 2016 23:08:14 +0300
+Message-ID: <1456862903-12392-1-git-send-email-ynvich@gmail.com>
+References: <1456862078-11795-1-git-send-email-ynvich@gmail.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1456862078-11795-1-git-send-email-ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Mans Rullgard <mans-2StjZFpD7GcAvxtiuMwx3w@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED
+	DEVICE TREE" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
 The patch adds support for 3 additional LP-8x4x built-in serial
@@ -17,12 +18,16 @@ The device can also host up to 8 extension cards with 4 serial ports
 on each card for a total of 35 ports. However, I don't have
 the hardware to test extension cards, so they are not supported, yet.
 
-Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
-CC: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC: Arnd Bergmann <arnd@arndb.de>
+CC: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+CC: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+
+   v8..v9
+   fix review comments by Alan Cox
+   * further simplify speed check
 
    v7..v8
    * call serial8250_do_set_termios() after speed check, not before.
@@ -73,11 +78,11 @@ CC: Arnd Bergmann <arnd@arndb.de>
    * use device tree
    * use devm helpers where possible
 
- .../bindings/serial/icpdas-lp8841-uart.txt         |  41 +++++
- drivers/tty/serial/8250/8250_lp8841.c              | 173 +++++++++++++++++++++
+ .../bindings/serial/icpdas-lp8841-uart.txt         |  41 ++++++
+ drivers/tty/serial/8250/8250_lp8841.c              | 159 +++++++++++++++++++++
  drivers/tty/serial/8250/Kconfig                    |  14 ++
  drivers/tty/serial/8250/Makefile                   |   2 +
- 4 files changed, 230 insertions(+)
+ 4 files changed, 216 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/serial/icpdas-lp8841-uart.txt
  create mode 100644 drivers/tty/serial/8250/8250_lp8841.c
 
@@ -130,15 +135,15 @@ index 0000000..d6acd22
 +		};
 diff --git a/drivers/tty/serial/8250/8250_lp8841.c b/drivers/tty/serial/8250/8250_lp8841.c
 new file mode 100644
-index 0000000..d80e218
+index 0000000..548f382
 --- /dev/null
 +++ b/drivers/tty/serial/8250/8250_lp8841.c
-@@ -0,0 +1,173 @@
+@@ -0,0 +1,159 @@
 +/*  linux/drivers/tty/serial/8250/8250_lp8841.c
 + *
 + *  Support for 16550A serial ports on ICP DAS LP-8841
 + *
-+ *  Copyright (C) 2013 Sergei Ianovich <ynvich@gmail.com>
++ *  Copyright (C) 2013 Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 + *
 + *  This program is free software; you can redistribute it and/or modify
 + *  it under the terms of the GNU General Public License version 2 as
@@ -163,9 +168,6 @@ index 0000000..d80e218
 +static void lp8841_serial_set_termios(struct uart_port *port,
 +		struct ktermios *termios, struct ktermios *old)
 +{
-+#ifdef BOTHER
-+	unsigned int cbaud;
-+#endif
 +	unsigned int baud;
 +	u8 value;
 +	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
@@ -192,22 +194,6 @@ index 0000000..d80e218
 +
 +	baud = tty_termios_baud_rate(termios);
 +
-+#ifdef BOTHER
-+	/* We only support fixed rates */
-+	cbaud = termios->c_cflag & CBAUD;
-+
-+	if (cbaud == BOTHER)
-+		termios->c_cflag &= ~BOTHER;
-+#endif
-+
-+	/* We only support up to 115200 */
-+	if (baud > 115200)
-+		baud = 115200;
-+
-+	baud = uart_get_baud_rate(port, termios, old, baud, baud);
-+
-+	serial8250_do_set_termios(port, termios, old);
-+
 +	switch (baud) {
 +	case 115200:
 +		value |= 7;
@@ -228,11 +214,16 @@ index 0000000..d80e218
 +		value |= 2;
 +		break;
 +	case 2400:
++		value |= 1;
++		break;
 +	default:
 +		value |= 1;
++		tty_termios_encode_baud_rate(termios, 2400, 2400);
 +		break;
 +	};
 +	writeb(value, data->ios_mem);
++
++	serial8250_do_set_termios(port, termios, old);
 +}
 +
 +static const struct of_device_id lp8841_serial_dt_ids[] = {
@@ -350,3 +341,8 @@ index d1e2f2d..10b4bf0 100644
  CFLAGS_8250_ingenic.o += -I$(srctree)/scripts/dtc/libfdt
 -- 
 2.7.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
