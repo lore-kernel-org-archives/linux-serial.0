@@ -1,103 +1,265 @@
-From: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v7] serial: support for 16550A serial ports on LP-8x4x
-Date: Tue, 01 Mar 2016 20:14:32 +0300
-Message-ID: <1456852472.23036.124.camel@gmail.com>
-References: <1456589675-25377-1-git-send-email-ynvich@gmail.com>
-	 <1456781209-11390-1-git-send-email-ynvich@gmail.com>
-	 <1456830401.13244.189.camel@linux.intel.com>
-	 <1456849504.23036.108.camel@gmail.com>
-	 <1456850782.13244.208.camel@linux.intel.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 4/7] ACPI: parse DBG2 table
+Date: Tue, 1 Mar 2016 09:22:17 -0800
+Message-ID: <56D5CFC9.2010206@hurleysoftware.com>
+References: <1456749726-30261-1-git-send-email-aleksey.makarov@linaro.org>
+ <1456749726-30261-5-git-send-email-aleksey.makarov@linaro.org>
+ <56D5ABE1.7010905@hurleysoftware.com> <56D5C234.70305@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1456850782.13244.208.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Mans Rullgard <mans-2StjZFpD7GcAvxtiuMwx3w@public.gmane.org>, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:SERIAL DRIVERS" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <56D5C234.70305@linaro.org>
+Sender: linux-arch-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Matthias Brugger <mbrugger@suse.com>, Len Brown <lenb@kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2016-03-01 at 18:46 +0200, Andy Shevchenko wrote:
-> On Tue, 2016-03-01 at 19:25 +0300, Sergei Ianovich wrote:
-> > On Tue, 2016-03-01 at 13:06 +0200, Andy Shevchenko wrote:
-> > > On Tue, 2016-03-01 at 00:26 +0300, Sergei Ianovich wrote:
->=20
-> > > > +	len &=3D 3;
->=20
-> Mask as well to be defined.
+On 03/01/2016 08:24 AM, Aleksey Makarov wrote:
+> 
+> 
+> On 03/01/2016 05:49 PM, Peter Hurley wrote:
+>> On 02/29/2016 04:42 AM, Aleksey Makarov wrote:
+>>> 'ARM Server Base Boot Requirements' [1] mentions DBG2 (Microsoft Debug
+>>> Port Table 2) [2] as a mandatory ACPI table that specifies debug ports.
+>>>
+>>> - Implement macros
+>>>
+>>> 	ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)
+>>>
+>>>   that defines a handler for the port of given type and subtype.
+>>>
+>>> - For each declared port that is also described in the ACPI DBG2 table
+>>>   call the provided callback.
+>>
+>> On 02/22/2016 06:43 AM, Aleksey Makarov wrote:
+>>> On 02/19/2016 08:20 PM, Christopher Covington wrote:
+>>>> Can the device specified in DBG2 be used for both earlycon and KGDB? If it can only be used for one, let's make sure the choice of earlycon vs KGDB is intentional rather than accidental.
+>>>
+>>> I just sent the DBG2 series.  It enables an earlycon on DBG2 port with
+>>> an "earlycon=acpi_dbg2" option (we can discuss particular name).
+>>> If you need KGDB on that port just support it for that port in the kernel
+>>> (i. e. add a new instance of ACPI_DBG2_DECLARE() macros for that port, see the patches)
+>>> and change the command line options.
+>>> I hope that is OK.  We could continue this discussion in the DBG2 thread.
+>>
+>> This method will not work for kgdb, since kgdb doesn't actually
+>> implement the i/o but rather runs on top of a console.
+> 
+> I see. Thank you for pointing this out.
+> 
+> I don't have requirements to implement running kgdb over the serial port
+> specified with DBG2.  This feature should be supported separately.
 
-Sure.
+And this takes us back full-circle to my initial point regarding
+supporting earlycon via ACPI: which is that my view is earlycon should
+be opt-in for any ACPI-specified console, rather than console via
+SPCR and earlycon via DBG2.
 
-> So, but if you support only fixed rates, why do you care about BOTHER
-> at all?
 
-If BOTHER is defined,=C2=A0tty_termios_baud_rate()
-and=C2=A0tty_termios_encode_baud_rate() allow non-standard baud rates. =
-I
-should clear it from=C2=A0c_cflag to indicate I don't support it.
 
-> > > > =C2=A0
-> > > I think you can call this unconditionally together with case >
-> > > 115200.
-> >=20
-> > The calls are orthogonal. This one deals with the case when BOTHER
-> > is
-> > defined and set, and we have non-zero rate with BOTHER, but we have
-> > zero rate after BOTHER is cleared. So we set 9600 as a sane default
-> > speed.
-
-> >=20
-> > This one deals with the case when the rate is over 115200. If the
-> > previous case has been triggered, this one won't be.
->=20
-> Yeah, but I meant to unconditionally call it just once here every
-> time.
-
-I see. It saves a few lines.
-
-> > ---
-> > drivers/tty/serial/8250/8250_lp8841.c: In function
-> > 'lp8841_serial_probe':
-> > drivers/tty/serial/8250/8250_lp8841.c:124:32: warning: excess
-> > elements in struct initializer
-> > =C2=A0 struct uart_8250_port uart =3D {0};
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0^
-> > drivers/tty/serial/8250/8250_lp8841.c:124:32: note: (near
-> > initialization for 'uart.port.lock.<anonymous>.rlock.raw_lock')
->=20
-> Do you have any warning verbosity enabled? I see a lot of stuff like
-> this in the code
-
-Plain `make`.
-
-The warning seems to be the result of initializing a spinlock with
-zero. Spinlocks are intentionally obfuscated, but I didn't investigate
-further.
-
-> $ git grep -n 'struct .* =3D {0};' | wc -l
-> 338
->=20
-> $ git grep -n 'struct .* =3D { \?0 \?};' | wc -l
-> 550
->=20
-> ( '=E2=80=A6 =3D { 0 };' included)
-
-The first structure member is most likely not a spinlock in those
-cases.
-
-> > ---
-> >=20
-> > Zero triggers a warning. I'll use memset().
->=20
-> Either will work.
-
-OK
-
-The only remaining open point is BOTHER handling.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Thank you
+> Aleksey Makarov
+> 
+>>> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+>>> [2] http://go.microsoft.com/fwlink/p/?LinkId=234837
+>>>
+>>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+>>> ---
+>>>  drivers/acpi/Kconfig              |  3 ++
+>>>  drivers/acpi/Makefile             |  1 +
+>>>  drivers/acpi/dbg2.c               | 88 +++++++++++++++++++++++++++++++++++++++
+>>>  include/asm-generic/vmlinux.lds.h |  1 +
+>>>  include/linux/acpi_dbg2.h         | 48 +++++++++++++++++++++
+>>>  5 files changed, 141 insertions(+)
+>>>  create mode 100644 drivers/acpi/dbg2.c
+>>>  create mode 100644 include/linux/acpi_dbg2.h
+>>>
+>>> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+>>> index 65fb483..660666e 100644
+>>> --- a/drivers/acpi/Kconfig
+>>> +++ b/drivers/acpi/Kconfig
+>>> @@ -57,6 +57,9 @@ config ACPI_SYSTEM_POWER_STATES_SUPPORT
+>>>  config ACPI_CCA_REQUIRED
+>>>  	bool
+>>>  
+>>> +config ACPI_DBG2_TABLE
+>>> +	bool
+>>> +
+>>>  config ACPI_DEBUGGER
+>>>  	bool "AML debugger interface"
+>>>  	select ACPI_DEBUG
+>>> diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
+>>> index 7395928..3b5f1ea 100644
+>>> --- a/drivers/acpi/Makefile
+>>> +++ b/drivers/acpi/Makefile
+>>> @@ -83,6 +83,7 @@ obj-$(CONFIG_ACPI_CUSTOM_METHOD)+= custom_method.o
+>>>  obj-$(CONFIG_ACPI_BGRT)		+= bgrt.o
+>>>  obj-$(CONFIG_ACPI_CPPC_LIB)	+= cppc_acpi.o
+>>>  obj-$(CONFIG_ACPI_DEBUGGER_USER) += acpi_dbg.o
+>>> +obj-$(CONFIG_ACPI_DBG2_TABLE)	+= dbg2.o
+>>>  
+>>>  # processor has its own "processor." module_param namespace
+>>>  processor-y			:= processor_driver.o
+>>> diff --git a/drivers/acpi/dbg2.c b/drivers/acpi/dbg2.c
+>>> new file mode 100644
+>>> index 0000000..0f0f6ca
+>>> --- /dev/null
+>>> +++ b/drivers/acpi/dbg2.c
+>>> @@ -0,0 +1,88 @@
+>>> +/*
+>>> + * Copyright (c) 2012, Intel Corporation
+>>> + * Copyright (c) 2015, 2016 Linaro Ltd.
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or modify
+>>> + * it under the terms of the GNU General Public License version 2 as
+>>> + * published by the Free Software Foundation.
+>>> + *
+>>> + */
+>>> +
+>>> +#define pr_fmt(fmt) "ACPI: DBG2: " fmt
+>>> +
+>>> +#include <linux/acpi_dbg2.h>
+>>> +#include <linux/acpi.h>
+>>> +#include <linux/kernel.h>
+>>> +
+>>> +static const char * __init type2string(u16 type)
+>>> +{
+>>> +	switch (type) {
+>>> +	case ACPI_DBG2_SERIAL_PORT:
+>>> +		return "SERIAL";
+>>> +	case ACPI_DBG2_1394_PORT:
+>>> +		return "1394";
+>>> +	case ACPI_DBG2_USB_PORT:
+>>> +		return "USB";
+>>> +	case ACPI_DBG2_NET_PORT:
+>>> +		return "NET";
+>>> +	default:
+>>> +		return "?";
+>>> +	}
+>>> +}
+>>> +
+>>> +static const char * __init subtype2string(u16 subtype)
+>>> +{
+>>> +	switch (subtype) {
+>>> +	case ACPI_DBG2_16550_COMPATIBLE:
+>>> +		return "16550_COMPATIBLE";
+>>> +	case ACPI_DBG2_16550_SUBSET:
+>>> +		return "16550_SUBSET";
+>>> +	case ACPI_DBG2_ARM_PL011:
+>>> +		return "ARM_PL011";
+>>> +	case ACPI_DBG2_ARM_SBSA_32BIT:
+>>> +		return "ARM_SBSA_32BIT";
+>>> +	case ACPI_DBG2_ARM_SBSA_GENERIC:
+>>> +		return "ARM_SBSA_GENERIC";
+>>> +	case ACPI_DBG2_ARM_DCC:
+>>> +		return "ARM_DCC";
+>>> +	case ACPI_DBG2_BCM2835:
+>>> +		return "BCM2835";
+>>> +	default:
+>>> +		return "?";
+>>> +	}
+>>> +}
+>>> +
+>>> +int __init acpi_dbg2_setup(struct acpi_table_header *table, const void *data)
+>>> +{
+>>> +	struct acpi_table_dbg2 *dbg2 = (struct acpi_table_dbg2 *)table;
+>>> +	struct acpi_dbg2_data *dbg2_data = (struct acpi_dbg2_data *)data;
+>>> +	struct acpi_dbg2_device *dbg2_device, *dbg2_end;
+>>> +	int i;
+>>> +
+>>> +	dbg2_device = ACPI_ADD_PTR(struct acpi_dbg2_device, dbg2,
+>>> +				   dbg2->info_offset);
+>>> +	dbg2_end = ACPI_ADD_PTR(struct acpi_dbg2_device, dbg2, table->length);
+>>> +
+>>> +	for (i = 0; i < dbg2->info_count; i++) {
+>>> +		if (dbg2_device + 1 > dbg2_end) {
+>>> +			pr_err("device pointer overflows, bad table\n");
+>>> +			return 0;
+>>> +		}
+>>> +
+>>> +		if (dbg2_device->port_type == dbg2_data->port_type &&
+>>> +		    dbg2_device->port_subtype == dbg2_data->port_subtype) {
+>>> +			if (dbg2_device->port_type == ACPI_DBG2_SERIAL_PORT)
+>>> +				pr_info("debug port: SERIAL; subtype: %s\n",
+>>> +				     subtype2string(dbg2_device->port_subtype));
+>>> +			else
+>>> +				pr_info("debug port: %s\n",
+>>> +					type2string(dbg2_device->port_type));
+>>> +			dbg2_data->setup(dbg2_device, dbg2_data->data);
+>>> +		}
+>>> +
+>>> +		dbg2_device = ACPI_ADD_PTR(struct acpi_dbg2_device, dbg2_device,
+>>> +					   dbg2_device->length);
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +}
+>>> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+>>> index 8f5a12a..8cc49ba 100644
+>>> --- a/include/asm-generic/vmlinux.lds.h
+>>> +++ b/include/asm-generic/vmlinux.lds.h
+>>> @@ -526,6 +526,7 @@
+>>>  	IRQCHIP_OF_MATCH_TABLE()					\
+>>>  	ACPI_PROBE_TABLE(irqchip)					\
+>>>  	ACPI_PROBE_TABLE(clksrc)					\
+>>> +	ACPI_PROBE_TABLE(dbg2)						\
+>>>  	EARLYCON_TABLE()
+>>>  
+>>>  #define INIT_TEXT							\
+>>> diff --git a/include/linux/acpi_dbg2.h b/include/linux/acpi_dbg2.h
+>>> new file mode 100644
+>>> index 0000000..125ae7e
+>>> --- /dev/null
+>>> +++ b/include/linux/acpi_dbg2.h
+>>> @@ -0,0 +1,48 @@
+>>> +#ifndef _ACPI_DBG2_H_
+>>> +#define _ACPI_DBG2_H_
+>>> +
+>>> +#ifdef CONFIG_ACPI_DBG2_TABLE
+>>> +
+>>> +#include <linux/kernel.h>
+>>> +
+>>> +struct acpi_dbg2_device;
+>>> +struct acpi_table_header;
+>>> +
+>>> +struct acpi_dbg2_data {
+>>> +	u16 port_type;
+>>> +	u16 port_subtype;
+>>> +	int (*setup)(struct acpi_dbg2_device *, void *);
+>>> +	void *data;
+>>> +};
+>>> +
+>>> +int acpi_dbg2_setup(struct acpi_table_header *header, const void *data);
+>>> +
+>>> +/**
+>>> + * ACPI_DBG2_DECLARE() - Define handler for ACPI DBG2 port
+>>> + * @name:	Identifier to compose name of table data
+>>> + * @type:	Type of the port
+>>> + * @subtype:	Subtype of the port
+>>> + * @setup_fn:	Function to be called to setup the port
+>>> + *		(of type int (*)(struct acpi_dbg2_device *, void *);)
+>>> + * @data_ptr:	Sideband data provided back to the driver
+>>> + */
+>>> +#define ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)	\
+>>> +	static const struct acpi_dbg2_data				\
+>>> +		__acpi_dbg2_data_##name __used = {			\
+>>> +			.port_type = type,				\
+>>> +			.port_subtype = subtype,			\
+>>> +			.setup = setup_fn,				\
+>>> +			.data = data_ptr,				\
+>>> +		   };							\
+>>> +	ACPI_DECLARE_PROBE_ENTRY(dbg2, name, ACPI_SIG_DBG2,		\
+>>> +				 acpi_dbg2_setup, &__acpi_dbg2_data_##name)
+>>> +
+>>> +#else
+>>> +
+>>> +#define ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)	\
+>>> +	static const void *__acpi_dbg_data_##name[]			\
+>>> +		__used __initdata = { (void *)setup_fn,	(void *)data_ptr }
+>>> +
+>>> +#endif
+>>> +
+>>> +#endif
+>>>
+>>
