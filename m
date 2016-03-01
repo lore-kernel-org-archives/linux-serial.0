@@ -1,63 +1,73 @@
-From: Josef Bacik <jbacik@fb.com>
-Subject: Re: [PATCH] serial: flush ldisc after hangup
-Date: Tue, 1 Mar 2016 14:04:12 -0500
-Message-ID: <56D5E7AC.9040405@fb.com>
-References: <1456855375-17175-1-git-send-email-jbacik@fb.com>
- <56D5DCA0.2040201@hurleysoftware.com> <56D5DDA6.5080605@fb.com>
- <56D5E714.7030900@hurleysoftware.com>
+From: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v7] serial: support for 16550A serial ports on LP-8x4x
+Date: Tue, 01 Mar 2016 22:28:13 +0300
+Message-ID: <1456860493.23036.133.camel@gmail.com>
+References: <1456589675-25377-1-git-send-email-ynvich@gmail.com>
+	 <1456781209-11390-1-git-send-email-ynvich@gmail.com>
+	 <1456830401.13244.189.camel@linux.intel.com>
+	 <1456849504.23036.108.camel@gmail.com>
+	 <1456850782.13244.208.camel@linux.intel.com>
+	 <1456852472.23036.124.camel@gmail.com>
+	 <1456854532.13244.215.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56D5E714.7030900@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1456854532.13244.215.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Mans Rullgard <mans-2StjZFpD7GcAvxtiuMwx3w@public.gmane.org>, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:SERIAL DRIVERS" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/01/2016 02:01 PM, Peter Hurley wrote:
-> On 03/01/2016 10:21 AM, Josef Bacik wrote:
->> On 03/01/2016 01:17 PM, Peter Hurley wrote:
->
->>> Yeah, the race is that the ldisc should not be attempting i/o to
->>> the driver at all. This problem is fixed in -next already, but in
->>> the tty core rather than in each individual tty driver.
->>>
->>
->> Great!  Which patch/patches fix this?  I looked at linux-next and
->> there's a lot of refactoring stuff, do I need all the things or is
->> there a specific one that fixes this problem?  Thanks,
->
-> The series that fixes this design problem introduce in 3.10 are these
-> patches:
->
->    staging: digi: Replace open-coded tty_wakeup()
->    serial: 68328: Remove bogus ldisc reset
->    bluetooth: hci_ldisc: Remove dead code
->    NFC: nci: Remove dead code
->    tty: Remove chars_in_buffer() line discipline method
->    tty: Fix unsafe ldisc reference via ioctl(TIOCGETD)
->    n_tty: Fix unsafe reference to "other" ldisc
->    tty: Reset c_line from driver's init_termios
->    staging/speakup: Use tty_ldisc_ref() for paste kworker
->    tty: Fix comments for tty_ldisc_get()
->    tty: Fix comments for tty_ldisc_release()
->    tty: Prepare for destroying line discipline on hangup
->    tty: Handle NULL tty->ldisc
->    tty: Move tty_ldisc_kill()
->    tty: Use 'disc' for line discipline index name
->    tty: Refactor tty_ldisc_reinit() for reuse
->    tty: Destroy ldisc instance on hangup
->
-> 'tty: Fix unsafe ldisc reference via ioctl(TIOCGETD)' and
-> 'tty: Fix unsafe reference to "other" ldisc' have already
-> made their way to most stable trees, afaict.
->
-> I doubt I'll submit any more of this series for stable;
-> it's just too invasive. I'll probably do it per-driver, like
-> your patch. Just an fyi.
->
+On Tue, 2016-03-01 at 19:48 +0200, Andy Shevchenko wrote:
+> On Tue, 2016-03-01 at 20:14 +0300, Sergei Ianovich wrote:
+> > On Tue, 2016-03-01 at 18:46 +0200, Andy Shevchenko wrote:
+> > > On Tue, 2016-03-01 at 19:25 +0300, Sergei Ianovich wrote:
+> > > > On Tue, 2016-03-01 at 13:06 +0200, Andy Shevchenko wrote:
+> > > > > On Tue, 2016-03-01 at 00:26 +0300, Sergei Ianovich wrote:
+>=20
+> > > So, but if you support only fixed rates, why do you care about
+> > > BOTHER
+> > > at all?
+> >=20
+> > If BOTHER is defined,=C2=A0tty_termios_baud_rate()
+> > and=C2=A0tty_termios_encode_baud_rate() allow non-standard baud rat=
+es. I
+> > should clear it from=C2=A0c_cflag to indicate I don't support it.
+> >=20
+> > > > > > =C2=A0
+> > > > > I think you can call this unconditionally together with case
+> > > > > >
+> > > > > 115200.
+> > > >=20
+> > > > The calls are orthogonal. This one deals with the case when
+> > > > BOTHER
+> > > > is
+> > > > defined and set, and we have non-zero rate with BOTHER, but we
+> > > > have
+> > > > zero rate after BOTHER is cleared. So we set 9600 as a sane
+> > > > default
+> > > > speed.
+>=20
+> Maybe you just set a baud rate nearest to the one from the table in
+> case of BOTHER?
+>=20
+> In that case perhaps you have to supply +-1 to the range. That's why
+> I
+> asked about=C2=A0uart_get_baud_rate().=C2=A0
+>=20
+> Maybe this flow will work for you
+>=20
+> if (BOTHER)
+> =C2=A0clear BOTHER
+> =C2=A0call=C2=A0uart_get_baud_rate()
+>=20
+> ?
 
-That's fine, we aren't afraid to pull back lots of stuff to our kernels, 
-as long as they are destined for upstream.  Thanks for the help!
-
-Josef
+It works well for standard rates, let it be so. If there ever is a
+problem, we can fix it.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
