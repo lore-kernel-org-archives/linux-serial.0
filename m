@@ -1,117 +1,182 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v4 0/4] ACPI: parse the SPCR table
-Date: Tue, 1 Mar 2016 07:31:23 -0800
-Message-ID: <56D5B5CB.7010702@hurleysoftware.com>
-References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v3 5/7] ACPI: serial: implement earlycon on ACPI DBG2 port
+Date: Tue, 1 Mar 2016 07:53:35 -0800
+Message-ID: <56D5BAFF.6080008@hurleysoftware.com>
+References: <1456749726-30261-1-git-send-email-aleksey.makarov@linaro.org>
+ <1456749726-30261-6-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
+In-Reply-To: <1456749726-30261-6-git-send-email-aleksey.makarov@linaro.org>
 Sender: linux-acpi-owner@vger.kernel.org
 To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, "Zheng, Lv" <lv.zheng@intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Matthias Brugger <mbrugger@suse.com>, Jonathan Corbet <corbet@lwn.net>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 02/29/2016 04:02 AM, Aleksey Makarov wrote:
-> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
-> Console Redirection Table) [2] as a mandatory ACPI table that
-> specifies the configuration of serial console.
+On 02/29/2016 04:42 AM, Aleksey Makarov wrote:
+> Add ACPI_DBG2_EARLYCON_DECLARE() macros that declares
+> an earlycon on the serial port specified in the DBG2 ACPI table.
 > 
-> Introduce a new function acpi_console_check().  At the uart port
-> registration, this function checks if the ACPI SPCR table specifies
-> its argument of type struct uart_port to be a console
-> and if so calls add_preferred_console().
+> Pass the string "earlycon=acpi_dbg2" to the kernel to activate it.
+> 
+> Callbacks for EARLYCON_DECLARE() and OF_EARLYCON_DECLARE()
+> can also be used for this macros.
+> 
+> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+> ---
+>  Documentation/kernel-parameters.txt |  3 ++
+>  drivers/tty/serial/earlycon.c       | 60 +++++++++++++++++++++++++++++++++++++
+>  include/linux/acpi_dbg2.h           | 20 +++++++++++++
+>  3 files changed, 83 insertions(+)
+> 
+> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+> index e0a21e4..19b947b 100644
+> --- a/Documentation/kernel-parameters.txt
+> +++ b/Documentation/kernel-parameters.txt
+> @@ -1072,6 +1072,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+>  			A valid base address must be provided, and the serial
+>  			port must already be setup and configured.
+>  
+> +		acpi_dbg2
+> +			Use serial port specified by the DBG2 ACPI table.
+> +
+>  	earlyprintk=	[X86,SH,BLACKFIN,ARM,M68k]
+>  			earlyprintk=vga
+>  			earlyprintk=efi
+> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> index d217366..9ba3a04 100644
+> --- a/drivers/tty/serial/earlycon.c
+> +++ b/drivers/tty/serial/earlycon.c
+> @@ -22,6 +22,7 @@
+>  #include <linux/sizes.h>
+>  #include <linux/of.h>
+>  #include <linux/of_fdt.h>
+> +#include <linux/acpi.h>
+>  
+>  #ifdef CONFIG_FIX_EARLYCON_MEM
+>  #include <asm/fixmap.h>
+> @@ -200,6 +201,8 @@ int __init setup_earlycon(char *buf)
+>  	return -ENOENT;
+>  }
+>  
+> +static bool setup_dbg2_earlycon;
+> +
+>  /* early_param wrapper for setup_earlycon() */
+>  static int __init param_setup_earlycon(char *buf)
+>  {
+> @@ -212,6 +215,11 @@ static int __init param_setup_earlycon(char *buf)
+>  	if (!buf || !buf[0])
+>  		return early_init_dt_scan_chosen_serial();
+>  
+> +	if (!strcmp(buf, "acpi_dbg2")) {
+> +		setup_dbg2_earlycon = true;
+> +		return 0;
+> +	}
 
-How will a user enable an earlycon on the same console as the SPCR
-console if there is no DBG2 table?
+So this series doesn't start an ACPI earlycon at early_param time?
+That doesn't seem very useful.
+
+When does the ACPI earlycon actually start?
+And don't say "when the DBG2 table is probed"; that much is obvious.
 
 
-> Use SPCR to tell if SBSA serial driver should use 32-bit access to registers.
-> 
-> Based on the work by Leif Lindholm [3]
-> 
-> Should be applied to next-20160229.
-> 
-> Tested on QEMU.  SPCR support is included in QEMU's ARM mach-virt
-> since 2.4 release.
-> 
-> v4:
-> - drop patch "ACPI: change __init to __ref for early_acpi_os_unmap_memory()"
->   ACPI developers work on a new API and asked not to do that.
->   Instead, use acpi_get_table_with_size()/early_acpi_os_unmap_memory() once
->   and cache the result. (Lv Zheng)
-> - fix some style issues (Yury Norov)
-> 
-> v3:
-> https://lkml.kernel.org/g/1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org
-> 
-> Greg Kroah-Hartman did not like v2 so I have rewritten this patchset:
-> 
-> - drop acpi_match() member of struct console
-> - drop implementations of this member for pl011 and 8250
-> - drop the patch that renames some vars in printk.c as it is not needed anymore
-> - drop patch that introduces system wide acpi_table_parse2().
->   Instead introduce a custom acpi_table_parse_spcr() in spcr.c
-> 
-> Instead of introducing a new match_acpi() member of struct console,
-> this patchset introduces a new function acpi_console_check().
-> This function is called when a new uart is registered at serial_core.c
-> the same way OF code checks for console.  If the registered uart is the
-> console specified by SPCR table, this function calls add_preferred_console()
-> 
-> The restrictions of this approach are:
-> 
-> - only serial consoles can be set up
-> - only consoles specified by the memory/io address can be set up
->   (SPCR can specify devices by PCI id/PCI address)
-> 
-> v2:
-> https://lkml.kernel.org/g/1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org
-> - don't use SPCR if user specified console in command line
-> - fix initialization order of newcon->index = 0
-> - rename some variables at printk.c (Joe Perches, Peter Hurley)
-> - enable ACPI_SPCR_TABLE in a separate patch (Andy Shevchenko)
-> - remove the retry loop for console registering (Peter Hurley).
->   Instead, obtain SPCR with acpi_get_table().  That works after
->   call to acpi_early_init() i. e. in any *_initcall()
-> - describe design decision behind introducing acpi_match() (Peter Hurley)
-> - fix compilation for x86 + ACPI (Graeme Gregory)
-> - introduce DBG2 constants in a separate patch (Andy Shevchenko)
-> - fix a typo in DBG2 constants (Andy Shevchenko)
-> - add ACPI_DBG2_ARM_SBSA_32BIT constant (Christopher Covington)
-> - add support for ACPI_DBG2_ARM_SBSA_* consoles (Christopher Covington)
-> - add documentation for functions
-> - add a patch that uses SPCR to find if SBSA serial driver should use 32-bit
->   accessor functions (Christopher Covington)
-> - change __init to __ref for early_acpi_os_unmap_memory() in a separate patch
-> - introduce acpi_table_parse2() in a separate patch
-> - fix fetching the SPCR table early (Mark Salter)
-> - add a patch from Mark Salter that introduces support for matching 8250-based
->   consoles
-> 
-> v1:
-> https://lkml.kernel.org/g/1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org
-> 
-> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
-> [2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
-> [3] https://lkml.kernel.org/g/1441716217-23786-1-git-send-email-leif.lindholm@linaro.org
-> 
-> Aleksey Makarov (4):
->   ACPI: parse SPCR and enable matching console
->   ACPI: enable ACPI_SPCR_TABLE on ARM64
->   ACPI: add definitions of DBG2 subtypes
->   serial: pl011: use ACPI SPCR to setup 32-bit access
-> 
->  arch/arm64/Kconfig               |   1 +
->  drivers/acpi/Kconfig             |   3 +
->  drivers/acpi/Makefile            |   1 +
->  drivers/acpi/spcr.c              | 138 +++++++++++++++++++++++++++++++++++++++
->  drivers/tty/serial/amba-pl011.c  |   2 +
->  drivers/tty/serial/serial_core.c |  14 +++-
->  include/acpi/actbl2.h            |   5 ++
->  include/linux/acpi.h             |  15 +++++
->  8 files changed, 177 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/acpi/spcr.c
+> +
+>  	err = setup_earlycon(buf);
+>  	if (err == -ENOENT || err == -EALREADY)
+>  		return 0;
+> @@ -286,3 +294,55 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+>  }
+>  
+>  #endif /* CONFIG_OF_EARLY_FLATTREE */
+> +
+> +#ifdef CONFIG_ACPI_DBG2_TABLE
+> +
+> +int __init acpi_setup_earlycon(struct acpi_dbg2_device *device, void *d)
+> +{
+> +	int err;
+> +	struct uart_port *port = &early_console_dev.port;
+> +	int (*setup)(struct earlycon_device *, const char *) = d;
+> +	struct acpi_generic_address *reg;
+> +
+> +	if (!setup_dbg2_earlycon)
+> +		return -ENODEV;
+> +
+> +	if (device->register_count < 1)
+> +		return -ENODEV;
+> +
+> +	if (device->base_address_offset >= device->length)
+> +		return -EINVAL;
+> +
+> +	reg = (void *)device + device->base_address_offset;
+> +
+> +	if (reg->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY &&
+> +	    reg->space_id != ACPI_ADR_SPACE_SYSTEM_IO)
+> +		return -EINVAL;
+> +
+> +	spin_lock_init(&port->lock);
+> +	port->uartclk = BASE_BAUD * 16;
+> +
+> +	if (reg->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
+> +		if (device->port_type == ACPI_DBG2_ARM_SBSA_32BIT)
+> +			port->iotype = UPIO_MEM32;
+> +		else
+> +			port->iotype = UPIO_MEM;
+> +		port->mapbase = reg->address;
+> +		port->membase = earlycon_map(reg->address, SZ_4K);
+> +	} else {
+> +		port->iotype = UPIO_PORT;
+> +		port->iobase = reg->address;
+> +	}
+> +
+> +	early_console_dev.con->data = &early_console_dev;
+> +	err = setup(&early_console_dev, NULL);
+> +	if (err < 0)
+> +		return err;
+> +	if (!early_console_dev.con->write)
+> +		return -ENODEV;
+> +
+> +	register_console(early_console_dev.con);
+> +	return 0;
+> +}
+> +
+> +#endif /* CONFIG_ACPI_DBG2_TABLE */
+> diff --git a/include/linux/acpi_dbg2.h b/include/linux/acpi_dbg2.h
+> index 125ae7e..b653752 100644
+> --- a/include/linux/acpi_dbg2.h
+> +++ b/include/linux/acpi_dbg2.h
+> @@ -37,12 +37,32 @@ int acpi_dbg2_setup(struct acpi_table_header *header, const void *data);
+>  	ACPI_DECLARE_PROBE_ENTRY(dbg2, name, ACPI_SIG_DBG2,		\
+>  				 acpi_dbg2_setup, &__acpi_dbg2_data_##name)
+>  
+> +int acpi_setup_earlycon(struct acpi_dbg2_device *device, void *d);
+> +
+> +/**
+> + * ACPI_DBG2_EARLYCON_DECLARE() - Define handler for ACPI GDB2 serial port
+> + * @name:		Identifier to compose name of table data
+> + * @subtype:		Subtype of the port
+> + * @console_setup:	Function to be called to setup the port
+> + *
+> + * Type of the console_setup() callback is
+> + * int (*setup)(struct earlycon_device *, const char *)
+> + * It's the type of callback of of_setup_earlycon().
+> + */
+> +#define ACPI_DBG2_EARLYCON_DECLARE(name, subtype, console_setup)	\
+> +	ACPI_DBG2_DECLARE(name, ACPI_DBG2_SERIAL_PORT, subtype,		\
+> +			  acpi_setup_earlycon, console_setup)
+> +
+>  #else
+>  
+>  #define ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)	\
+>  	static const void *__acpi_dbg_data_##name[]			\
+>  		__used __initdata = { (void *)setup_fn,	(void *)data_ptr }
+>  
+> +#define ACPI_DBG2_EARLYCON_DECLARE(name, subtype, console_setup)	\
+> +	static const void *__acpi_dbg_data_serial_##name[]		\
+> +		__used __initdata = { (void *)console_setup }
+> +
+>  #endif
+>  
+>  #endif
 > 
 
