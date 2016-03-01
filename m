@@ -1,48 +1,93 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Re: [PATCH v4 2/4] ACPI: enable ACPI_SPCR_TABLE on ARM64
-Date: Tue, 1 Mar 2016 20:35:25 +0300
-Message-ID: <56D5D2DD.30105@linaro.org>
-References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
- <1456747355-15692-3-git-send-email-aleksey.makarov@linaro.org>
- <56D5B4E8.1050309@hurleysoftware.com>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v7] serial: support for 16550A serial ports on LP-8x4x
+Date: Tue, 01 Mar 2016 19:48:52 +0200
+Message-ID: <1456854532.13244.215.camel@linux.intel.com>
+References: <1456589675-25377-1-git-send-email-ynvich@gmail.com>
+	 <1456781209-11390-1-git-send-email-ynvich@gmail.com>
+	 <1456830401.13244.189.camel@linux.intel.com>
+	 <1456849504.23036.108.camel@gmail.com>
+	 <1456850782.13244.208.camel@linux.intel.com>
+	 <1456852472.23036.124.camel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56D5B4E8.1050309@hurleysoftware.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, "Zheng, Lv" <lv.zheng@intel.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1456852472.23036.124.camel-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sergei Ianovich <ynvich-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Mans Rullgard <mans-2StjZFpD7GcAvxtiuMwx3w@public.gmane.org>, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, Peter Ujfalusi <peter.ujfalusi-l0cyMroinI0@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:SERIAL DRIVERS" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, 2016-03-01 at 20:14 +0300, Sergei Ianovich wrote:
+> On Tue, 2016-03-01 at 18:46 +0200, Andy Shevchenko wrote:
+> > On Tue, 2016-03-01 at 19:25 +0300, Sergei Ianovich wrote:
+> > > On Tue, 2016-03-01 at 13:06 +0200, Andy Shevchenko wrote:
+> > > > On Tue, 2016-03-01 at 00:26 +0300, Sergei Ianovich wrote:
 
+> > So, but if you support only fixed rates, why do you care about
+> > BOTHER
+> > at all?
+>=20
+> If BOTHER is defined,=C2=A0tty_termios_baud_rate()
+> and=C2=A0tty_termios_encode_baud_rate() allow non-standard baud rates=
+=2E I
+> should clear it from=C2=A0c_cflag to indicate I don't support it.
+>=20
+> > > > > =C2=A0
+> > > > I think you can call this unconditionally together with case >
+> > > > 115200.
+> > >=20
+> > > The calls are orthogonal. This one deals with the case when
+> > > BOTHER
+> > > is
+> > > defined and set, and we have non-zero rate with BOTHER, but we
+> > > have
+> > > zero rate after BOTHER is cleared. So we set 9600 as a sane
+> > > default
+> > > speed.
 
-On 03/01/2016 06:27 PM, Peter Hurley wrote:
-> On 02/29/2016 04:02 AM, Aleksey Makarov wrote:
->> SBBR mentions SPCR as a mandatory ACPI table.
->> So enable it for ARM64
-> 
-> Why is this opt-in per-arch?
+Maybe you just set a baud rate nearest to the one from the table in
+case of BOTHER?
 
-It could depend only on CONFIG_ACPI.
-I will do that in the next version, thank you
+In that case perhaps you have to supply +-1 to the range. That's why I
+asked about=C2=A0uart_get_baud_rate().=C2=A0
 
->> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
->> ---
->>  arch/arm64/Kconfig | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
->> index 9dc5209..544af2e 100644
->> --- a/arch/arm64/Kconfig
->> +++ b/arch/arm64/Kconfig
->> @@ -3,6 +3,7 @@ config ARM64
->>  	select ACPI_CCA_REQUIRED if ACPI
->>  	select ACPI_GENERIC_GSI if ACPI
->>  	select ACPI_REDUCED_HARDWARE_ONLY if ACPI
->> +	select ACPI_SPCR_TABLE if ACPI
->>  	select ARCH_HAS_DEVMEM_IS_ALLOWED
->>  	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
->>  	select ARCH_HAS_ELF_RANDOMIZE
->>
-> 
+Maybe this flow will work for you
+
+if (BOTHER)
+=C2=A0clear BOTHER
+=C2=A0call=C2=A0uart_get_baud_rate()
+
+?
+
+> The warning seems to be the result of initializing a spinlock with
+> zero. Spinlocks are intentionally obfuscated, but I didn't
+> investigate
+> further.
+>=20
+> > $ git grep -n 'struct .* =3D {0};' | wc -l
+> > 338
+> >=20
+> > $ git grep -n 'struct .* =3D { \?0 \?};' | wc -l
+> > 550
+> >=20
+> > ( '=E2=80=A6 =3D { 0 };' included)
+>=20
+> The first structure member is most likely not a spinlock in those
+> cases.
+
+Hmm... Interesting. On one hand the poison is reasonable, on the other
+we often do a memset() or {0} on structures, i.o.w. assign 0 as initial
+value until spinlock_init().
+
+Arnd, what do you think about this (and similar) case(s)?
+
+--=20
+Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Intel Finland Oy
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
