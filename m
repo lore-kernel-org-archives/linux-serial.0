@@ -1,35 +1,32 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] tty: sh-sci: Use ARCH_RENESAS
-Date: Wed, 2 Mar 2016 09:19:38 +0100
-Message-ID: <CAMuHMdVAVpdvExir-RY4vd8CddFUN300_XRgS4AgzssKrzg-gw@mail.gmail.com>
-References: <1456882527-3859-1-git-send-email-horms+renesas@verge.net.au>
+From: Carlo Caione <carlo@caione.org>
+Subject: Re: [PATCH v3] tty: serial: meson: Implement earlycon support
+Date: Wed, 2 Mar 2016 09:40:01 +0100
+Message-ID: <CAOQ7t2a7-5qRDXZDGDpOCiwczHy-MmQcG0LH9GMKLMaXs98Sig@mail.gmail.com>
+References: <1456886949-26503-1-git-send-email-afaerber@suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1456882527-3859-1-git-send-email-horms+renesas@verge.net.au>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, linux-renesas-soc@vger.kernel.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1456886949-26503-1-git-send-email-afaerber@suse.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
+Cc: linux-meson <linux-meson@googlegroups.com>, Peter Hurley <peter@hurleysoftware.com>, Nicolas Saenz Julienne <nicolassaenzj@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Carlo Caione <carlo@caione.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "moderated list:ARM/Amlogic Meson SoC support" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 2, 2016 at 2:35 AM, Simon Horman <horms+renesas@verge.net.au> wrote:
-> Make use of ARCH_RENESAS in place of ARCH_SHMOBILE.
+On Wed, Mar 2, 2016 at 3:49 AM, Andreas F=C3=A4rber <afaerber@suse.de> =
+wrote:
+> Split off the bulk of the existing meson_serial_console_write()
+> implementation into meson_serial_port_write() for implementing
+> meson_serial_early_console_write().
 >
-> This is part of an ongoing process to migrate from ARCH_SHMOBILE to
-> ARCH_RENESAS the motivation for which being that RENESAS seems to be a more
-> appropriate name than SHMOBILE for the majority of Renesas ARM based SoCs.
+> Use "meson" as the earlycon driver name, courtesy of Nicolas.
 >
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+> Signed-off-by: Nicolas Saenz Julienne <nicolassaenzj@gmail.com>
+> Signed-off-by: Andreas F=C3=A4rber <afaerber@suse.de>
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Carlo Caione <carlo@endlessm.com>
 
-Gr{oetje,eeting}s,
+Thanks,
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--=20
+Carlo Caione
