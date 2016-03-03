@@ -1,167 +1,60 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [PATCH 3/3] serial: 8250: omap: restore registers on shutdown
-Date: Wed, 02 Mar 2016 10:54:03 +0100
-Message-ID: <87egbtdx38.fsf@linutronix.de>
-References: <87egjp2r4a.fsf@linutronix.de>
-	<55BAC67E.1010400@hurleysoftware.com>
-	<20150803160937.GA26497@linutronix.de>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH] tty: msm_serial: remove static clk rate setting in probe
+Date: Wed, 2 Mar 2016 17:41:10 -0800
+Message-ID: <20160303014110.GH24999@codeaurora.org>
+References: <1456831373-14839-1-git-send-email-srinivas.kandagatla@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150803160937.GA26497@linutronix.de> (Sebastian Andrzej
-	Siewior's message of "Mon, 3 Aug 2015 18:09:37 +0200")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org, nsekhar@ti.com, nm@ti.com, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1456831373-14839-1-git-send-email-srinivas.kandagatla@linaro.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sebastian, Peter,
+On 03/01, Srinivas Kandagatla wrote:
+> The issue with setting up a fixed clock rate at probe is that it woul=
+d
+> overwrite the console rate set by the bootloader for its console devi=
+ce.
+> This would result in serial out corruption or missing log when we sys=
+tem
+> is booted with earlycon. This is not a issue if we boot system withou=
+t
+> earlycon.
+>=20
+> This setup is ateast not required with the mainline driver.
 
-On 2015-08-03, Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
-> * Peter Hurley | 2015-07-30 20:51:10 [-0400]:
->> I was never really a fan of the deferred set_termios();
->> I think it's more appropriate to wait for tx dma to
->> complete in omap_8250_set_termios().
->
-> So you want something like this? This was only compile + boot tested
-> (without triggering the corner case) [...] Just checking if this is
-> what you had in mind.
+at least? May be worth mentioning that this code used to be
+required because the clk_enable() call would fail if
+clk_set_rate() wasn't called first.
 
-I tested this against next-20160226 using an AM335x (beaglebone
-black). I made sure the corner case was hit. I also ran tests of
-terminating the sender or termios-setter while in the corner
-case. Everything ran without any problems.
+>=20
+> Originally the issue was noticed on DB410c which is based on APQ8016
+> chipset.
+>=20
+> Without this patch the console log with earlycon would look like:
+> ...
+> [    0.000000] RCU: Adjusting geometry for rcu_fanout_leaf=3D64, nr_c=
+pu_ids=3D1
+> [    0.000000] NR_IRQS:64 nr_irqs:64 0
+> =EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD+HH=EF=BF=BD=EF=BF=BD0.699378] co=
+nsole [ttyMSM0] enabled
+> [    0.699378] console [ttyMSM0] enabled
+> [    0.702003] bootconsole [uart0] disabled
+> [    0.702003] bootconsole [uart0] disabled
+> ...
+>=20
+> with this patch I can see all the skipped lines on the console
+>=20
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index d9a37191a1ae..12249125a218 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -100,9 +100,9 @@ struct omap8250_priv {
->  	u8 wer;
->  	u8 xon;
->  	u8 xoff;
-> -	u8 delayed_restore;
->  	u16 quot;
->  
-> +	wait_queue_head_t termios_wait;
->  	bool is_suspending;
->  	int wakeirq;
->  	int wakeups_enabled;
-> @@ -256,18 +256,6 @@ static void omap8250_update_mdr1(struct uart_8250_port *up,
->  static void omap8250_restore_regs(struct uart_8250_port *up)
->  {
->  	struct omap8250_priv *priv = up->port.private_data;
-> -	struct uart_8250_dma	*dma = up->dma;
-> -
-> -	if (dma && dma->tx_running) {
-> -		/*
-> -		 * TCSANOW requests the change to occur immediately however if
-> -		 * we have a TX-DMA operation in progress then it has been
-> -		 * observed that it might stall and never complete. Therefore we
-> -		 * delay DMA completes to prevent this hang from happen.
-> -		 */
-> -		priv->delayed_restore = 1;
-> -		return;
-> -	}
->  
->  	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
->  	serial_out(up, UART_EFR, UART_EFR_ECB);
-> @@ -309,6 +297,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
->  	up->port.ops->set_mctrl(&up->port, up->port.mctrl);
->  }
->  
-> +static void omap_8250_dma_tx_complete(void *param);
->  /*
->   * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have have
->   * some differences in how we want to handle flow control.
-> @@ -322,6 +311,7 @@ static void omap_8250_set_termios(struct uart_port *port,
->  	struct omap8250_priv *priv = up->port.private_data;
->  	unsigned char cval = 0;
->  	unsigned int baud;
-> +	unsigned int complete_dma = 0;
->  
->  	switch (termios->c_cflag & CSIZE) {
->  	case CS5:
-> @@ -473,6 +463,25 @@ static void omap_8250_set_termios(struct uart_port *port,
->  		if (termios->c_iflag & IXANY)
->  			up->mcr |= UART_MCR_XONANY;
->  	}
-> +
-> +	if (up->dma && up->dma->tx_running) {
-> +		struct uart_8250_dma	*dma = up->dma;
-> +
-> +		/*
-> +		 * TCSANOW requests the change to occur immediately however if
-> +		 * we have a TX-DMA operation in progress then it has been
-> +		 * observed that it might stall and never complete. Therefore we
-> +		 * wait until DMA completes to prevent this hang from happen.
-> +		 */
-> +
-> +		dma->tx_running = 2;
-> +
-> +		spin_unlock_irq(&up->port.lock);
-> +		wait_event(priv->termios_wait,
-> +			   dma->tx_running == 3);
+otherwise
 
-If I comment out the wait_event() call here, I can reproduce the DMA
-stalls reported by the comments.
+Reviewed-by: Stephen Boyd <sboyd@codeaurora.org>
 
-> +		spin_lock_irq(&up->port.lock);
-> +		complete_dma = 1;
-> +	}
->  	omap8250_restore_regs(up);
->  
->  	spin_unlock_irq(&up->port.lock);
-> @@ -488,6 +497,8 @@ static void omap_8250_set_termios(struct uart_port *port,
->  	/* Don't rewrite B0 */
->  	if (tty_termios_baud_rate(termios))
->  		tty_termios_encode_baud_rate(termios, baud, baud);
-> +	if (complete_dma)
-> +		omap_8250_dma_tx_complete(up);
->  }
->  
->  /* same as 8250 except that we may have extra flow bits set in EFR */
-> @@ -869,17 +880,18 @@ static void omap_8250_dma_tx_complete(void *param)
->  
->  	spin_lock_irqsave(&p->port.lock, flags);
->  
-> +	if (dma->tx_running == 2) {
-> +		dma->tx_running = 3;
-> +		wake_up(&priv->termios_wait);
-> +		goto out;
-> +	}
-> +
->  	dma->tx_running = 0;
->  
->  	xmit->tail += dma->tx_size;
->  	xmit->tail &= UART_XMIT_SIZE - 1;
->  	p->port.icount.tx += dma->tx_size;
->  
-> -	if (priv->delayed_restore) {
-> -		priv->delayed_restore = 0;
-> -		omap8250_restore_regs(p);
-> -	}
-> -
->  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
->  		uart_write_wakeup(&p->port);
->  
-> @@ -899,7 +911,7 @@ static void omap_8250_dma_tx_complete(void *param)
->  		p->ier |= UART_IER_THRI;
->  		serial_port_out(&p->port, UART_IER, p->ier);
->  	}
-> -
-> +out:
->  	spin_unlock_irqrestore(&p->port.lock, flags);
->  }
->  
-> @@ -1216,6 +1228,7 @@ static int omap8250_probe(struct platform_device *pdev)
->  			priv->omap8250_dma.rx_size = RX_TRIGGER;
->  			priv->omap8250_dma.rxconf.src_maxburst = RX_TRIGGER;
->  			priv->omap8250_dma.txconf.dst_maxburst = TX_TRIGGER;
-> +			init_waitqueue_head(&priv->termios_wait);
->  
->  			if (of_machine_is_compatible("ti,am33xx"))
->  				priv->habit |= OMAP_DMA_TX_KICK;
->
-
-John Ogness
+--=20
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
