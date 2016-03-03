@@ -1,57 +1,95 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v4 0/4] ACPI: parse the SPCR table
-Date: Thu, 3 Mar 2016 07:35:40 -0800
-Message-ID: <56D859CC.7010901@hurleysoftware.com>
-References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
- <56D5B5CB.7010702@hurleysoftware.com> <56D8272E.20705@gmail.com>
+Subject: Re: [PATCH v3 6/7] ACPI: enable ACPI_DBG2_TABLE on ARM64
+Date: Thu, 3 Mar 2016 07:51:49 -0800
+Message-ID: <56D85D95.5050506@hurleysoftware.com>
+References: <1456749726-30261-1-git-send-email-aleksey.makarov@linaro.org>
+ <1456749726-30261-7-git-send-email-aleksey.makarov@linaro.org>
+ <56D5ACBB.50408@hurleysoftware.com> <56D5CB42.3030806@linaro.org>
+ <56D5D08E.3030902@hurleysoftware.com> <56D822DD.2030400@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56D8272E.20705@gmail.com>
+In-Reply-To: <56D822DD.2030400@gmail.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: Aleksey Makarov <amakarov.linux@gmail.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, "Zheng, Lv" <lv.zheng@intel.com>
+Cc: Matthias Brugger <mbrugger@suse.com>, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 03/03/2016 03:59 AM, Aleksey Makarov wrote:
+On 03/03/2016 03:41 AM, Aleksey Makarov wrote:
 > 
 > 
-> On 03/01/2016 06:31 PM, Peter Hurley wrote:
->> On 02/29/2016 04:02 AM, Aleksey Makarov wrote:
->>> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
->>> Console Redirection Table) [2] as a mandatory ACPI table that
->>> specifies the configuration of serial console.
+> On 03/01/2016 08:25 PM, Peter Hurley wrote:
+>> On 03/01/2016 09:02 AM, Aleksey Makarov wrote:
 >>>
->>> Introduce a new function acpi_console_check().  At the uart port
->>> registration, this function checks if the ACPI SPCR table specifies
->>> its argument of type struct uart_port to be a console
->>> and if so calls add_preferred_console().
+>>>
+>>> On 03/01/2016 05:52 PM, Peter Hurley wrote:
+>>>> On 02/29/2016 04:42 AM, Aleksey Makarov wrote:
+>>>>> SBBR mentions DBG2 as a mandatory ACPI table.
+>>>>> So enable it for ARM64
+>>>>
+>>>> Why does this have to be opted-in per-arch?
+>>>
+>>> DBG2 can specify earlycons.  They should start as soon as possible.
+>>> On ARM64 it is just after boot tables become available (in arch_init()).
+>>> So it has to be per-arch unless we decide not to start earlycons on 
+>>> DBG2 ports.
 >>
->> How will a user enable an earlycon on the same console as the SPCR
->> console if there is no DBG2 table?
+>> OF does all that already but the earlycon opt-in is not per-arch.
 > 
-> ...
-> [    0.000000] earlycon: pl11 at MMIO 0x0000000009000000 (options '')
-> [    0.000000] bootconsole [pl11] enabled
-> ...
-> [    0.000000] Kernel command line:  root=/dev/vda1 rw systemd.show_status=no acpi=force earlycon=pl011,0x9000000
-> ...
-> [    0.318248] ACPI: SPCR: adding preferred console [ttyAMA0]
-> [    0.318736] ARMH0011:00: ttyAMA0 at MMIO 0x9000000 (irq = 5, base_baud = 0) is a SBSA
-> [    0.319502] console [ttyAMA0] enabled
-> [    0.319502] console [ttyAMA0] enabled
-> [    0.319933] bootconsole [pl11] disabled
-> [    0.319933] bootconsole [pl11] disabled
-> ...
-> 
-> Why?
+> In the last next-XXXX kernel support for OF earlycon depends on
+> CONFIG_OF_EARLY_FLATTREE which *is* per-arch.
 
-That's pretty disingenuous; via command line?
+That's true.
 
-By that measure, none of your patches are required because a user
-can already start both console and earlycon without them.
+(of_setup_earlycon() was really always CONFIG_OF_EARLY_FLATTREE because
+its lone caller was CONFIG_OF_EARLY_FLATTREE).
 
-With the console location specified in the SPCR, earlycon should
-be opt-in on the command-line simply with "earlycon" command-line
-parameter.
+
+> Probably we need the same kind of configuration option here,
+> something like CONFIG_ACPI_BOOT_TABLES instead of ACPI_DBG2_TABLE.
+
+I'll let acpi maintainers sort that.
+
+
+>>>>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+>>>>> ---
+>>>>>  arch/arm64/Kconfig       | 1 +
+>>>>>  arch/arm64/kernel/acpi.c | 2 ++
+>>>>>  2 files changed, 3 insertions(+)
+>>>>>
+>>>>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+>>>>> index 9dc5209..0b614d4 100644
+>>>>> --- a/arch/arm64/Kconfig
+>>>>> +++ b/arch/arm64/Kconfig
+>>>>> @@ -3,6 +3,7 @@ config ARM64
+>>>>>  	select ACPI_CCA_REQUIRED if ACPI
+>>>>>  	select ACPI_GENERIC_GSI if ACPI
+>>>>>  	select ACPI_REDUCED_HARDWARE_ONLY if ACPI
+>>>>> +	select ACPI_DBG2_TABLE if ACPI
+>>>>>  	select ARCH_HAS_DEVMEM_IS_ALLOWED
+>>>>>  	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
+>>>>>  	select ARCH_HAS_ELF_RANDOMIZE
+>>>>> diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
+>>>>> index d1ce8e2..3370046 100644
+>>>>> --- a/arch/arm64/kernel/acpi.c
+>>>>> +++ b/arch/arm64/kernel/acpi.c
+>>>>> @@ -208,6 +208,8 @@ void __init acpi_boot_table_init(void)
+>>>>>  		pr_err("Failed to init ACPI tables\n");
+>>>>>  		if (!param_acpi_force)
+>>>>>  			disable_acpi();
+>>>>> +	} else {
+>>>>> +		acpi_probe_device_table(dbg2);
+>>>>>  	}
+>>>>>  }
+>>>>>  
+>>>>>
+>>>>
+>>
+>>
+>> _______________________________________________
+>> linux-arm-kernel mailing list
+>> linux-arm-kernel@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>>
+
