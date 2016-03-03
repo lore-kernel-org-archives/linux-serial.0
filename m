@@ -1,95 +1,47 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 6/7] ACPI: enable ACPI_DBG2_TABLE on ARM64
-Date: Thu, 3 Mar 2016 07:51:49 -0800
-Message-ID: <56D85D95.5050506@hurleysoftware.com>
-References: <1456749726-30261-1-git-send-email-aleksey.makarov@linaro.org>
- <1456749726-30261-7-git-send-email-aleksey.makarov@linaro.org>
- <56D5ACBB.50408@hurleysoftware.com> <56D5CB42.3030806@linaro.org>
- <56D5D08E.3030902@hurleysoftware.com> <56D822DD.2030400@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] tty: amba-pl011: don't dereference NULL platform data
+Date: Thu,  3 Mar 2016 16:35:35 +0000
+Message-ID: <597e09d3324e7d901fb0f77ccf6ccf3c07ce1f31.1457022799.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56D822DD.2030400@gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Aleksey Makarov <amakarov.linux@gmail.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
-Cc: Matthias Brugger <mbrugger@suse.com>, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux@arm.linux.org.uk, gregkh@linuxfoundation.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, jslaby@suse.com
 List-Id: linux-serial@vger.kernel.org
 
-On 03/03/2016 03:41 AM, Aleksey Makarov wrote:
-> 
-> 
-> On 03/01/2016 08:25 PM, Peter Hurley wrote:
->> On 03/01/2016 09:02 AM, Aleksey Makarov wrote:
->>>
->>>
->>> On 03/01/2016 05:52 PM, Peter Hurley wrote:
->>>> On 02/29/2016 04:42 AM, Aleksey Makarov wrote:
->>>>> SBBR mentions DBG2 as a mandatory ACPI table.
->>>>> So enable it for ARM64
->>>>
->>>> Why does this have to be opted-in per-arch?
->>>
->>> DBG2 can specify earlycons.  They should start as soon as possible.
->>> On ARM64 it is just after boot tables become available (in arch_init()).
->>> So it has to be per-arch unless we decide not to start earlycons on 
->>> DBG2 ports.
->>
->> OF does all that already but the earlycon opt-in is not per-arch.
-> 
-> In the last next-XXXX kernel support for OF earlycon depends on
-> CONFIG_OF_EARLY_FLATTREE which *is* per-arch.
+When only a TX DMA channel is specified in DT, pl011_dma_probe() falls
+back to looking for the optional RX channel in platform data. What it
+doesn't do is check whether that platform data actually exists...
 
-That's true.
+Add the missing check to avoid crashing the kernel.
 
-(of_setup_earlycon() was really always CONFIG_OF_EARLY_FLATTREE because
-its lone caller was CONFIG_OF_EARLY_FLATTREE).
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/tty/serial/amba-pl011.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-> Probably we need the same kind of configuration option here,
-> something like CONFIG_ACPI_BOOT_TABLES instead of ACPI_DBG2_TABLE.
-
-I'll let acpi maintainers sort that.
-
-
->>>>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
->>>>> ---
->>>>>  arch/arm64/Kconfig       | 1 +
->>>>>  arch/arm64/kernel/acpi.c | 2 ++
->>>>>  2 files changed, 3 insertions(+)
->>>>>
->>>>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
->>>>> index 9dc5209..0b614d4 100644
->>>>> --- a/arch/arm64/Kconfig
->>>>> +++ b/arch/arm64/Kconfig
->>>>> @@ -3,6 +3,7 @@ config ARM64
->>>>>  	select ACPI_CCA_REQUIRED if ACPI
->>>>>  	select ACPI_GENERIC_GSI if ACPI
->>>>>  	select ACPI_REDUCED_HARDWARE_ONLY if ACPI
->>>>> +	select ACPI_DBG2_TABLE if ACPI
->>>>>  	select ARCH_HAS_DEVMEM_IS_ALLOWED
->>>>>  	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
->>>>>  	select ARCH_HAS_ELF_RANDOMIZE
->>>>> diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
->>>>> index d1ce8e2..3370046 100644
->>>>> --- a/arch/arm64/kernel/acpi.c
->>>>> +++ b/arch/arm64/kernel/acpi.c
->>>>> @@ -208,6 +208,8 @@ void __init acpi_boot_table_init(void)
->>>>>  		pr_err("Failed to init ACPI tables\n");
->>>>>  		if (!param_acpi_force)
->>>>>  			disable_acpi();
->>>>> +	} else {
->>>>> +		acpi_probe_device_table(dbg2);
->>>>>  	}
->>>>>  }
->>>>>  
->>>>>
->>>>
->>
->>
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->>
-
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index c0da0cc..a4dd91a 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -420,7 +420,7 @@ static void pl011_dma_probe(struct uart_amba_port *uap)
+ 	/* Optionally make use of an RX channel as well */
+ 	chan = dma_request_slave_channel(dev, "rx");
+ 
+-	if (!chan && plat->dma_rx_param) {
++	if (!chan && plat && plat->dma_rx_param) {
+ 		chan = dma_request_channel(mask, plat->dma_filter, plat->dma_rx_param);
+ 
+ 		if (!chan) {
+-- 
+2.7.2.333.g70bd996.dirty
