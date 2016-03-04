@@ -1,44 +1,72 @@
-From: Ed Spiridonov <edo.rus@gmail.com>
-Subject: [PATCH] serial: pl011: add mark/space parity support
-Date: Fri,  4 Mar 2016 08:11:53 +0300
-Message-ID: <1457068313-16092-1-git-send-email-edo.rus@gmail.com>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v4 0/4] ACPI: parse the SPCR table
+Date: Fri, 4 Mar 2016 14:53:15 +0300
+Message-ID: <56D9772B.5000402@linaro.org>
+References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
+ <56D5B5CB.7010702@hurleysoftware.com> <56D8272E.20705@gmail.com>
+ <56D859CC.7010901@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux@arm.linux.org.uk
-Cc: Ed Spiridonov <edo.rus@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <56D859CC.7010901@hurleysoftware.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Aleksey Makarov <amakarov.linux@gmail.com>, linux-acpi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, "Zheng, Lv" <lv.zheng@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-PL011 UART has hardware mark/space parity ability, this trivial patch adds support for it.
-Tested on Raspberry Pi v1, v2 (BCM2835 and BCM2836)
 
-Signed-off-by: Ed Spiridonov <edo.rus@gmail.com>
----
- drivers/tty/serial/amba-pl011.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index c0da0cc..9de674a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1947,6 +1947,8 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 		lcr_h |= UART01x_LCRH_PEN;
- 		if (!(termios->c_cflag & PARODD))
- 			lcr_h |= UART01x_LCRH_EPS;
-+		if (termios->c_cflag & CMSPAR)
-+			lcr_h |= UART011_LCRH_SPS;
- 	}
- 	if (uap->fifosize > 1)
- 		lcr_h |= UART01x_LCRH_FEN;
--- 
-2.7.0
+On 03/03/2016 06:35 PM, Peter Hurley wrote:
+> On 03/03/2016 03:59 AM, Aleksey Makarov wrote:
+>>
+>>
+>> On 03/01/2016 06:31 PM, Peter Hurley wrote:
+>>> On 02/29/2016 04:02 AM, Aleksey Makarov wrote:
+>>>> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
+>>>> Console Redirection Table) [2] as a mandatory ACPI table that
+>>>> specifies the configuration of serial console.
+>>>>
+>>>> Introduce a new function acpi_console_check().  At the uart port
+>>>> registration, this function checks if the ACPI SPCR table specifies
+>>>> its argument of type struct uart_port to be a console
+>>>> and if so calls add_preferred_console().
+>>>
+>>> How will a user enable an earlycon on the same console as the SPCR
+>>> console if there is no DBG2 table?
+>>
+>> ...
+>> [    0.000000] earlycon: pl11 at MMIO 0x0000000009000000 (options '')
+>> [    0.000000] bootconsole [pl11] enabled
+>> ...
+>> [    0.000000] Kernel command line:  root=/dev/vda1 rw systemd.show_status=no acpi=force earlycon=pl011,0x9000000
+>> ...
+>> [    0.318248] ACPI: SPCR: adding preferred console [ttyAMA0]
+>> [    0.318736] ARMH0011:00: ttyAMA0 at MMIO 0x9000000 (irq = 5, base_baud = 0) is a SBSA
+>> [    0.319502] console [ttyAMA0] enabled
+>> [    0.319502] console [ttyAMA0] enabled
+>> [    0.319933] bootconsole [pl11] disabled
+>> [    0.319933] bootconsole [pl11] disabled
+>> ...
+>>
+>> Why?
+> 
+> That's pretty disingenuous; via command line?
+> 
+> By that measure, none of your patches are required because a user
+> can already start both console and earlycon without them.
+> 
+> With the console location specified in the SPCR, earlycon should
+> be opt-in on the command-line simply with "earlycon" command-line
+> parameter.
+
+Yes.  That's why we have SPCR *and* DBG2. 
+DBG2 specifies where we should run earlycon.
+
+>>> How will a user enable an earlycon on the same console as the SPCR
+>>> console if there is no DBG2 table?
+
+In no way.  You need DBG2 to run earlycon.
+
+(If you don't want to specify it's address etc explicitly)
+
