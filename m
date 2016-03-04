@@ -1,78 +1,30 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v4 0/4] ACPI: parse the SPCR table
-Date: Fri, 4 Mar 2016 07:47:33 -0800
-Message-ID: <56D9AE15.106@hurleysoftware.com>
-References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
- <56D5B5CB.7010702@hurleysoftware.com> <56D8272E.20705@gmail.com>
- <56D859CC.7010901@hurleysoftware.com> <56D9772B.5000402@linaro.org>
+Subject: Re: [PATCH v3 5/7] ACPI: serial: implement earlycon on ACPI DBG2 port
+Date: Fri, 4 Mar 2016 07:52:00 -0800
+Message-ID: <56D9AF20.1060701@hurleysoftware.com>
+References: <1456749726-30261-1-git-send-email-aleksey.makarov@linaro.org>
+ <1456749726-30261-6-git-send-email-aleksey.makarov@linaro.org>
+ <56D5BAFF.6080008@hurleysoftware.com> <56D5C9F5.5060301@linaro.org>
+ <56D878D4.4000902@hurleysoftware.com> <56D987BC.7070209@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56D9772B.5000402@linaro.org>
+In-Reply-To: <56D987BC.7070209@linaro.org>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, Aleksey Makarov <amakarov.linux@gmail.com>, linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, "Zheng, Lv" <lv.zheng@intel.com>
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Matthias Brugger <mbrugger@suse.com>, Jonathan Corbet <corbet@lwn.net>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 03/04/2016 03:53 AM, Aleksey Makarov wrote:
-> 
-> 
-> On 03/03/2016 06:35 PM, Peter Hurley wrote:
->> On 03/03/2016 03:59 AM, Aleksey Makarov wrote:
->>>
->>>
->>> On 03/01/2016 06:31 PM, Peter Hurley wrote:
->>>> On 02/29/2016 04:02 AM, Aleksey Makarov wrote:
->>>>> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
->>>>> Console Redirection Table) [2] as a mandatory ACPI table that
->>>>> specifies the configuration of serial console.
->>>>>
->>>>> Introduce a new function acpi_console_check().  At the uart port
->>>>> registration, this function checks if the ACPI SPCR table specifies
->>>>> its argument of type struct uart_port to be a console
->>>>> and if so calls add_preferred_console().
->>>>
->>>> How will a user enable an earlycon on the same console as the SPCR
->>>> console if there is no DBG2 table?
->>>
->>> ...
->>> [    0.000000] earlycon: pl11 at MMIO 0x0000000009000000 (options '')
->>> [    0.000000] bootconsole [pl11] enabled
->>> ...
->>> [    0.000000] Kernel command line:  root=/dev/vda1 rw systemd.show_status=no acpi=force earlycon=pl011,0x9000000
->>> ...
->>> [    0.318248] ACPI: SPCR: adding preferred console [ttyAMA0]
->>> [    0.318736] ARMH0011:00: ttyAMA0 at MMIO 0x9000000 (irq = 5, base_baud = 0) is a SBSA
->>> [    0.319502] console [ttyAMA0] enabled
->>> [    0.319502] console [ttyAMA0] enabled
->>> [    0.319933] bootconsole [pl11] disabled
->>> [    0.319933] bootconsole [pl11] disabled
->>> ...
->>>
->>> Why?
->>
->> That's pretty disingenuous; via command line?
->>
->> By that measure, none of your patches are required because a user
->> can already start both console and earlycon without them.
->>
->> With the console location specified in the SPCR, earlycon should
->> be opt-in on the command-line simply with "earlycon" command-line
->> parameter.
-> 
-> Yes.  That's why we have SPCR *and* DBG2. 
-> DBG2 specifies where we should run earlycon.
-> 
->>>> How will a user enable an earlycon on the same console as the SPCR
->>>> console if there is no DBG2 table?
-> 
-> In no way.  You need DBG2 to run earlycon.
+On 03/04/2016 05:03 AM, Aleksey Makarov wrote:
 
-And that's an entirely arbitrary decision being made by you.
-Which I think is unnecessarily limited.
+> Actually it was Mark Salter who asked to introduce such macros.
+> 
+> https://lkml.kernel.org/g/1441730339.5459.8.camel@redhat.com
+
+I wasn't copied on that series, sorry.
 
 
-> (If you don't want to specify it's address etc explicitly)
+> I think reusing the OF functions is a good decision.
 
-
+But you're not reusing the OF functions; you're duplicating them.
