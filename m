@@ -1,359 +1,78 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 5/7] ACPI: serial: implement earlycon on ACPI DBG2 port
-Date: Fri, 4 Mar 2016 07:40:25 -0800
-Message-ID: <56D9AC69.1070906@hurleysoftware.com>
-References: <1456749726-30261-1-git-send-email-aleksey.makarov@linaro.org>
- <1456749726-30261-6-git-send-email-aleksey.makarov@linaro.org>
- <56D5BAFF.6080008@hurleysoftware.com> <56D5C9F5.5060301@linaro.org>
- <56D878D4.4000902@hurleysoftware.com> <56D987BC.7070209@linaro.org>
+Subject: Re: [PATCH v4 0/4] ACPI: parse the SPCR table
+Date: Fri, 4 Mar 2016 07:47:33 -0800
+Message-ID: <56D9AE15.106@hurleysoftware.com>
+References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
+ <56D5B5CB.7010702@hurleysoftware.com> <56D8272E.20705@gmail.com>
+ <56D859CC.7010901@hurleysoftware.com> <56D9772B.5000402@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <56D987BC.7070209@linaro.org>
-Sender: linux-doc-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-acpi@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Matthias Brugger <mbrugger@suse.com>, Jonathan Corbet <corbet@lwn.net>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <56D9772B.5000402@linaro.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, Aleksey Makarov <amakarov.linux@gmail.com>, linux-acpi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, "Zheng, Lv" <lv.zheng@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/04/2016 05:03 AM, Aleksey Makarov wrote:
+On 03/04/2016 03:53 AM, Aleksey Makarov wrote:
 > 
 > 
-> On 03/03/2016 08:48 PM, Peter Hurley wrote:
->> On 03/01/2016 08:57 AM, Aleksey Makarov wrote:
+> On 03/03/2016 06:35 PM, Peter Hurley wrote:
+>> On 03/03/2016 03:59 AM, Aleksey Makarov wrote:
 >>>
 >>>
->>> On 03/01/2016 06:53 PM, Peter Hurley wrote:
->>>> On 02/29/2016 04:42 AM, Aleksey Makarov wrote:
->>>>> Add ACPI_DBG2_EARLYCON_DECLARE() macros that declares
->>>>> an earlycon on the serial port specified in the DBG2 ACPI table.
+>>> On 03/01/2016 06:31 PM, Peter Hurley wrote:
+>>>> On 02/29/2016 04:02 AM, Aleksey Makarov wrote:
+>>>>> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
+>>>>> Console Redirection Table) [2] as a mandatory ACPI table that
+>>>>> specifies the configuration of serial console.
 >>>>>
->>>>> Pass the string "earlycon=acpi_dbg2" to the kernel to activate it.
->>>>>
->>>>> Callbacks for EARLYCON_DECLARE() and OF_EARLYCON_DECLARE()
->>>>> can also be used for this macros.
->>>>>
->>>>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
->>>>> ---
->>>>>  Documentation/kernel-parameters.txt |  3 ++
->>>>>  drivers/tty/serial/earlycon.c       | 60 +++++++++++++++++++++++++++++++++++++
->>>>>  include/linux/acpi_dbg2.h           | 20 +++++++++++++
->>>>>  3 files changed, 83 insertions(+)
->>>>>
->>>>> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
->>>>> index e0a21e4..19b947b 100644
->>>>> --- a/Documentation/kernel-parameters.txt
->>>>> +++ b/Documentation/kernel-parameters.txt
->>>>> @@ -1072,6 +1072,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
->>>>>  			A valid base address must be provided, and the serial
->>>>>  			port must already be setup and configured.
->>>>>  
->>>>> +		acpi_dbg2
->>>>> +			Use serial port specified by the DBG2 ACPI table.
->>>>> +
->>>>>  	earlyprintk=	[X86,SH,BLACKFIN,ARM,M68k]
->>>>>  			earlyprintk=vga
->>>>>  			earlyprintk=efi
->>>>> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
->>>>> index d217366..9ba3a04 100644
->>>>> --- a/drivers/tty/serial/earlycon.c
->>>>> +++ b/drivers/tty/serial/earlycon.c
->>>>> @@ -22,6 +22,7 @@
->>>>>  #include <linux/sizes.h>
->>>>>  #include <linux/of.h>
->>>>>  #include <linux/of_fdt.h>
->>>>> +#include <linux/acpi.h>
->>>>>  
->>>>>  #ifdef CONFIG_FIX_EARLYCON_MEM
->>>>>  #include <asm/fixmap.h>
->>>>> @@ -200,6 +201,8 @@ int __init setup_earlycon(char *buf)
->>>>>  	return -ENOENT;
->>>>>  }
->>>>>  
->>>>> +static bool setup_dbg2_earlycon;
->>>>> +
->>>>>  /* early_param wrapper for setup_earlycon() */
->>>>>  static int __init param_setup_earlycon(char *buf)
->>>>>  {
->>>>> @@ -212,6 +215,11 @@ static int __init param_setup_earlycon(char *buf)
->>>>>  	if (!buf || !buf[0])
->>>>>  		return early_init_dt_scan_chosen_serial();
->>>>>  
->>>>> +	if (!strcmp(buf, "acpi_dbg2")) {
->>>>> +		setup_dbg2_earlycon = true;
->>>>> +		return 0;
->>>>> +	}
+>>>>> Introduce a new function acpi_console_check().  At the uart port
+>>>>> registration, this function checks if the ACPI SPCR table specifies
+>>>>> its argument of type struct uart_port to be a console
+>>>>> and if so calls add_preferred_console().
 >>>>
->>>> So this series doesn't start an ACPI earlycon at early_param time?
->>>> That doesn't seem very useful.
->>>>
->>>> When does the ACPI earlycon actually start?
->>>> And don't say "when the DBG2 table is probed"; that much is obvious.
+>>>> How will a user enable an earlycon on the same console as the SPCR
+>>>> console if there is no DBG2 table?
 >>>
->>> ACPI earlycon starts as soon as ACPI tables become accessible (setup_arch()).
->>> I think that is still quite early.
+>>> ...
+>>> [    0.000000] earlycon: pl11 at MMIO 0x0000000009000000 (options '')
+>>> [    0.000000] bootconsole [pl11] enabled
+>>> ...
+>>> [    0.000000] Kernel command line:  root=/dev/vda1 rw systemd.show_status=no acpi=force earlycon=pl011,0x9000000
+>>> ...
+>>> [    0.318248] ACPI: SPCR: adding preferred console [ttyAMA0]
+>>> [    0.318736] ARMH0011:00: ttyAMA0 at MMIO 0x9000000 (irq = 5, base_baud = 0) is a SBSA
+>>> [    0.319502] console [ttyAMA0] enabled
+>>> [    0.319502] console [ttyAMA0] enabled
+>>> [    0.319933] bootconsole [pl11] disabled
+>>> [    0.319933] bootconsole [pl11] disabled
+>>> ...
+>>>
+>>> Why?
 >>
->> I see now; the probe is in patch 6/7.
+>> That's pretty disingenuous; via command line?
 >>
->> setup_arch()
->>   acpi_boot_table_init()
->>     acpi_probe_device_table()
->>       ...
->>         acpi_dbg2_setup()
->>           ->setup()
->>             acpi_setup_earlycon()
+>> By that measure, none of your patches are required because a user
+>> can already start both console and earlycon without them.
 >>
->>
->>>>> +
->>>>>  	err = setup_earlycon(buf);
->>>>>  	if (err == -ENOENT || err == -EALREADY)
->>>>>  		return 0;
->>>>> @@ -286,3 +294,55 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
->>>>>  }
->>>>>  
->>>>>  #endif /* CONFIG_OF_EARLY_FLATTREE */
->>>>> +
->>>>> +#ifdef CONFIG_ACPI_DBG2_TABLE
->>>>> +
->>>>> +int __init acpi_setup_earlycon(struct acpi_dbg2_device *device, void *d)
->>>>> +{
->>>>> +	int err;
->>>>> +	struct uart_port *port = &early_console_dev.port;
->>>>> +	int (*setup)(struct earlycon_device *, const char *) = d;
->>>>> +	struct acpi_generic_address *reg;
->>>>> +
->>>>> +	if (!setup_dbg2_earlycon)
->>>>> +		return -ENODEV;
->>>>> +
->>>>> +	if (device->register_count < 1)
->>>>> +		return -ENODEV;
->>>>> +
->>>>> +	if (device->base_address_offset >= device->length)
->>>>> +		return -EINVAL;
->>>>> +
->>>>> +	reg = (void *)device + device->base_address_offset;
->>>>> +
->>>>> +	if (reg->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY &&
->>>>> +	    reg->space_id != ACPI_ADR_SPACE_SYSTEM_IO)
->>>>> +		return -EINVAL;
->>>>> +
->>>>> +	spin_lock_init(&port->lock);
->>>>> +	port->uartclk = BASE_BAUD * 16;
->>>>> +
->>>>> +	if (reg->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
->>>>> +		if (device->port_type == ACPI_DBG2_ARM_SBSA_32BIT)
->>>>> +			port->iotype = UPIO_MEM32;
->>>>> +		else
->>>>> +			port->iotype = UPIO_MEM;
->>>>> +		port->mapbase = reg->address;
->>>>> +		port->membase = earlycon_map(reg->address, SZ_4K);
->>>>> +	} else {
->>>>> +		port->iotype = UPIO_PORT;
->>>>> +		port->iobase = reg->address;
->>>>> +	}
->>>>> +
->>>>> +	early_console_dev.con->data = &early_console_dev;
->>>>> +	err = setup(&early_console_dev, NULL);
->>>>> +	if (err < 0)
->>>>> +		return err;
->>>>> +	if (!early_console_dev.con->write)
->>>>> +		return -ENODEV;
->>>>> +
->>>>> +	register_console(early_console_dev.con);
->>>>> +	return 0;
->>>>> +}
->>>>> +
->>>>> +#endif /* CONFIG_ACPI_DBG2_TABLE */
->>>>> diff --git a/include/linux/acpi_dbg2.h b/include/linux/acpi_dbg2.h
->>>>> index 125ae7e..b653752 100644
->>>>> --- a/include/linux/acpi_dbg2.h
->>>>> +++ b/include/linux/acpi_dbg2.h
->>>>> @@ -37,12 +37,32 @@ int acpi_dbg2_setup(struct acpi_table_header *header, const void *data);
->>>>>  	ACPI_DECLARE_PROBE_ENTRY(dbg2, name, ACPI_SIG_DBG2,		\
->>>>>  				 acpi_dbg2_setup, &__acpi_dbg2_data_##name)
->>>>>  
->>>>> +int acpi_setup_earlycon(struct acpi_dbg2_device *device, void *d);
->>>>> +
->>>>> +/**
->>>>> + * ACPI_DBG2_EARLYCON_DECLARE() - Define handler for ACPI GDB2 serial port
->>>>> + * @name:		Identifier to compose name of table data
->>>>> + * @subtype:		Subtype of the port
->>>>> + * @console_setup:	Function to be called to setup the port
->>>>> + *
->>>>> + * Type of the console_setup() callback is
->>>>> + * int (*setup)(struct earlycon_device *, const char *)
->>>>> + * It's the type of callback of of_setup_earlycon().
->>>>> + */
->>>>> +#define ACPI_DBG2_EARLYCON_DECLARE(name, subtype, console_setup)	\
->>>>> +	ACPI_DBG2_DECLARE(name, ACPI_DBG2_SERIAL_PORT, subtype,		\
->>>>> +			  acpi_setup_earlycon, console_setup)
->>>>> +
->>>>>  #else
->>>>>  
->>>>>  #define ACPI_DBG2_DECLARE(name, type, subtype, setup_fn, data_ptr)	\
->>>>>  	static const void *__acpi_dbg_data_##name[]			\
->>>>>  		__used __initdata = { (void *)setup_fn,	(void *)data_ptr }
->>>>>  
->>>>> +#define ACPI_DBG2_EARLYCON_DECLARE(name, subtype, console_setup)	\
->>>>> +	static const void *__acpi_dbg_data_serial_##name[]		\
->>>>> +		__used __initdata = { (void *)console_setup }
->>
->> console_setup is a terrible macro argument name; console_setup() is an
->> actual kernel function (although file-scope).
->> Please change it to something short and generic.
+>> With the console location specified in the SPCR, earlycon should
+>> be opt-in on the command-line simply with "earlycon" command-line
+>> parameter.
 > 
-> Is 'setup_fn' ok?
+> Yes.  That's why we have SPCR *and* DBG2. 
+> DBG2 specifies where we should run earlycon.
 > 
->> Honestly, I'd just prefer you skip all this apparatus that makes
->> ACPI earlycon appear to be like OF earlycon code-wise, but without any of
->> the real underpinning or flexibility.
+>>>> How will a user enable an earlycon on the same console as the SPCR
+>>>> console if there is no DBG2 table?
 > 
-> Actually it was Mark Salter who asked to introduce such macros.
-> 
-> https://lkml.kernel.org/g/1441730339.5459.8.camel@redhat.com
-> 
-> I think reusing the OF functions is a good decision.
-> 
-> Your "but without any of the real underpinning or flexibility" is unfounded.
+> In no way.  You need DBG2 to run earlycon.
 
-1. Lack of real underpinning.
-
-Can't start an earlycon at early_param time to debug arch issues.
-As a result, everyone will continue using command line for earlycon which
-makes this series useless.
+And that's an entirely arbitrary decision being made by you.
+Which I think is unnecessarily limited.
 
 
-2. Lack of flexibility.
+> (If you don't want to specify it's address etc explicitly)
 
-OF earlycon supports any new hardware simply by string matching w/o
-requiring any approvals. I can add earlycon support for anything in
-10 minutes.
-
-ACPI earlycon for any new hardware requires approvals and spec changes.
-2-3 months.
-
-
-
-Founded.
-
-
-
->> This would be trivial to parse the ACPI table and invoke
->> setup_earlycon() with a string specifier instead.
->>
->> For example,
->>
->> int __init acpi_earlycon_setup(struct acpi_dbg2_device *dbg2)
->> {
->>         char opts[64];
->>         struct acpi_generic_addr *addr = (void*)dbg2 + dbg2->base_address_offset;
->> 	int mmio = addr->space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY;
->>
->>         if (dbg2->port_type != ACPI_DBG2_SERIAL_PORT)
->>                 return 0;
->>
->>         switch (dbg2->port_subtype) {
->>         case ACPI_DBG2_ARM_PL011:
->> 	case ACPI_DBG2_ARM_SBSA_GENERIC:
->> 	case ACPI_DBG2_BCM2835:
->>                 sprintf(opts, "pl011,%s,0x%llx", mmio, addr->address);
->>                 break;
->>         case ACPI_DBG2_ARM_SBSA_32BIT:
->>                 sprintf(opts, "pl011,mmio32,0x%llx", addr->address);
->>                 break;
->>         case ACPI_DBG2_16550_COMPATIBLE:
->>         case ACPI_DBG2_16550_SUBSET:
->>                 sprintf(opts, "uart,%s,0x%llx", mmio, addr->address);
->>                 break;
->>         default:
->>                 return 0;
->>         }
->>
->> 	return setup_earlycon(opts);
->> }
-> 
-> - Note that this decision forces setting earlycon on GDB2 debug port.
->   DBG2 does not specify that it should be exactly earlycon.
-
-Obviously my example was simplified to point out how easy it is
-to start an earlycon with a string specifier.
-
-I assumed you would understand that
-
-        if (!setup_dbg2_earlycon)
-                return 0;
-
-was omitted for clarity (or handled at a higher level).
-
-
-> - You missed ACPI_DBG2_ARM_DCC.
-
-What is this?
-
-Your series _only_ adds ACPI_DBG2_ARM_PL011 and none of the others.
-If you add ACPI_DBG2_ARM_DCC support to your series, I'll add it
-to my example.
-
-
->  And actually I think the list of 
->   debug ports is open. You will have to make up names like "uart" "pl011"
->   each time a new port is introduced into the specs.
-
-5 new ports have been added in 1 decade. I think we can keep up with
-that rate of change.
-
-And you keep going on about "make up names". _For the last time_,
-these "make up names" are the documented and defined console names for
-earlycons. They will *never* change, because these same string
-specifiers are used on the command line.
-
-
-> - Most important thing, this way you disclose the internals of serial ports
->   to the generic earlycon.c  Such info as access mode should stay 
->   in the respective drivers.
-
-??
-
-My example function above doesn't go in "generic earlycon.c"
-You leave it in ACPI where it belongs. setup_earlycon() is already global
-scope, because like I've said repeatedly, it's already used by firmware to
-start earlycons.
-
-And I don't know what you mean by "access mode".
-
-If you're referring to ["io","mmio","mmio32"], this is how earlycon is
-specified and has been since the first patch. Besides your own patch decodes
-and sets the iotype (UPIO_IO, UPIO_MEM, UPIO_MEM32) so I don't get what
-you're objecting to here.
-
-And if anything, the DBG2 table is under-specified.
-Such things as endianness, register stride and i/o width are missing.
-
-Not to mention line settings like baud rate, parity, stop bits, and flow
-control.
-
-> - I would not like printing address and then parsing it back.
-
-The "parsing it back" is already implemented: that's how command line
-earlycon works. That will never change.
-
-And this method is already used by firmware other than OF.
-
-
->> This supports every earlycon ACPI DBG2 declares, not just the ARM_PL011
->> subtype of your series.
-> 
-> To support earlycon on other types of debug port just add literally one
-> string of code (as in pl011).
-
-And as I've already shown, so does my way.
-In 1/2 as much code, without macros or all the ACPI linker table changes.
-
->>>>> +
->>>>>  #endif
->>>>>  
->>>>>  #endif
->>>>>
->>>>
->>
 
