@@ -1,64 +1,84 @@
-From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
-Subject: Re: [PATCH] tty: serial: sc16is7xx: use threaded interrupts instead
- of homegrow
-Date: Mon, 7 Mar 2016 18:22:01 +0100
-Message-ID: <56DDB8B9.7050606@prevas.dk>
-References: <56CDCCE6.5020801@prevas.dk> <56CDEAE2.9050102@prevas.dk>
- <20160224223547.GF9598@jcartwri.amer.corp.natinst.com>
- <20160226114340.GC8318@linutronix.de> <20160226114809.GD8318@linutronix.de>
- <C32FB8B0-21F8-4C84-9F77-20F3CD43E3D4@wp.pl>
- <20160226165228.GA17178@jcartwri.amer.corp.natinst.com>
- <835668C1-5DDB-4495-AD00-4EE8DDD0D146@wp.pl>
- <20160226190048.GC12917@jcartwri.amer.corp.natinst.com>
- <56DDAF2A.2000009@linutronix.de>
- <20160307165809.GC28102@jcartwri.amer.corp.natinst.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH 0/4] serial: omap: robustify for high speed transfers
+Date: Mon, 7 Mar 2016 12:23:36 -0800
+Message-ID: <56DDE348.4060801@hurleysoftware.com>
+References: <87lh7hrjsg.fsf@linutronix.de>
+ <56A66FCB.1000507@hurleysoftware.com> <87y4b85onp.fsf@linutronix.de>
+ <56B15603.80807@hurleysoftware.com> <87wpqbihel.fsf@linutronix.de>
+ <20160211210050.GY19432@atomide.com> <874md0yd81.fsf@linutronix.de>
+ <56CC2D83.3090900@ti.com> <56CD2184.40304@hurleysoftware.com>
+ <56CDCE2A.30809@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-In-Reply-To: <20160307165809.GC28102@jcartwri.amer.corp.natinst.com>
-Sender: linux-rt-users-owner@vger.kernel.org
-To: Josh Cartwright <joshc@ni.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Kuba Kicinski <kubakici@wp.pl>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>, Thomas Gleixner <tglx@linutronix.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <56CDCE2A.30809@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sekhar Nori <nsekhar@ti.com>
+Cc: John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>, gregkh@linuxfoundation.org, vinod.koul@intel.com, dan.j.williams@intel.com, bigeasy@linutronix.de, peter.ujfalusi@ti.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On 02/24/2016 07:37 AM, Sekhar Nori wrote:
+> On Wednesday 24 February 2016 08:50 AM, Peter Hurley wrote:
+>> Just to follow-up on what Sebastian wrote.
+>>
+>> As he pointed out, these spurious interrupts are not timeout interrupts.
+>> Since IIR_UART[0] == 1, no uart interrupt is pending.
+>>
+>> As he wrote, these count as spurious interrupts and trigger
+>> interrupt shutdown at 100000 (unless acked as uart interrupts).
+> 
+> Okay, by adding a printk to where the check for UART_IIR_NO_INT is in
+> omap_8250_dma_handle_irq(), I do see that UART irq handler is called
+> when there is apparently no interrupt.
+> 
+> I don't see the error interrupt count in /proc/interrupts go up although
+> the code is returning IRQ_NONE when this happens. I initially thought
+> that must be because of the interrupt being IRQF_SHARED. But getting rid
+> of IRQF_SHARED still does not lead to error count going up. I need to
+> spend some more time to see what is going on.
+> 
+>> These spurious interrupts very nearly correspond 1:1 (but not quite)
+>> with each dma submission. So, for example, one test run had:
+>>
+>>     @3Mbaud line rate
+>>     195826 submits
+>>     195823 completions
+>>
+>>     195704 spurious interrupts (ie., interrupts with IIR_UART[0] == 1)
+>>          0 RLSI interrupts (no line errors) (IIR_UART == 0xc6)
+>>          2 RX timeout interrupts (IIR_UART == 0xcc),
+>>            one during i/o test and one at the end of i/o test
+>>          6 RDI interrupts (IIR_UART == 0xc4)
+>>
+>> The spurious interrupts occur with nearly 1:1 correspondence at _all_
+>> line rates.
+>>
+>> Presumbably, the 6 RDI interrupts are from too-slow submission of
+>> the next DMA and the uart rx fifo has reached rx trigger level already.
+>> [NOTE: we should at least be using ping-pong dma buffers for rx so that
+>> there is always a next DMA buffer when the current buffer is completed].
+>>
+>> There is no documentation in any of the OMAP TRMs regarding RDI
+>> interrupts while in DMA mode. Some guidance from TI would be appreciated.
+> 
+> UART interrupts triggering while UART_IIR_NO_INT is set is weird enough.
+> I will check around internally with hardware folks here. Getting an
+> answer might take time. But this is easily reproducible so I am
+> optimistic we will get an answer soon.
+
+Thanks.
+
+Also, after looking over the latest errata for am335x, I was surprised
+not to see an errata for our TX DMA workaround.
+
+Currently, to get memory-to-device DMA to start *on am335x only* requires
+writing the 1st byte to the UART fifo to trigger DMA, which is pretty odd.
+It's almost as if the TX DMA trigger is edge-triggered rather than
+level-triggered.
+
+Let me know if you need more info.
 
 
-On 2016-03-07 17:58, Josh Cartwright wrote:
-> On Mon, Mar 07, 2016 at 05:41:14PM +0100, Sebastian Andrzej Siewior wrote:
->> On 02/26/2016 08:00 PM, Josh Cartwright wrote:
->>> On Fri, Feb 26, 2016 at 01:26:27PM -0500, Kuba Kicinski wrote:
->>>> On 26 February 2016 11:52:28 GMT-05:00, Josh Cartwright <joshc@ni.com> wrote:
->>> [..]
->>>>> Instead, the driver needs to implement it's own oneshot-like
->>>>> handling at the device-level: in the registered irq handler, capture
->>>>> triggered interrupt state, squelch/mask, and enqueue the
->>>>> kthread_work.  In the tail-end of the kthread_work, re-enable
->>>>> interrupts at the device level.
->>>> The problem there being IIRC that i2c doesn't provide async writes so
->>>> we can't mask from irq callback. The only option would be
->>>> disable_irq/enable_irq, right?
->>> Ah, yes, that is a problem.  If by disable_irq(), you mean
->>> disable_irq_nosync(), then yes, I think that'd work.
->> I got lost here. Where do we stand here now?
-> I understood the comment from Kuba to mean that he would be implementing
-> the disable_irq()/enable_irq() idea above to fix all the problems with
-> this driver.
->
-> Kuba- did I read that right?
->
-> Sean- are you still stuck without this?
-The oneshot fix, fixed it for me :-)
-
-We have encountered another problem regarding flow control in this driver.
-Flowcontrol simply gets deactivated right after it's activated :-(
-My college will submit a patch, hopefully in a couple of days...
-
-And the "sc16is7xx_get_mctrl() is invoked under the uart port spinlock" 
-problem is still there but with RT patches it's hidden.
-
-/Sean
->
-> Thanks for the ping,
->    Josh
-
+Regards,
+Peter Hurley
