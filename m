@@ -1,84 +1,133 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 0/4] serial: omap: robustify for high speed transfers
-Date: Mon, 7 Mar 2016 12:23:36 -0800
-Message-ID: <56DDE348.4060801@hurleysoftware.com>
-References: <87lh7hrjsg.fsf@linutronix.de>
- <56A66FCB.1000507@hurleysoftware.com> <87y4b85onp.fsf@linutronix.de>
- <56B15603.80807@hurleysoftware.com> <87wpqbihel.fsf@linutronix.de>
- <20160211210050.GY19432@atomide.com> <874md0yd81.fsf@linutronix.de>
- <56CC2D83.3090900@ti.com> <56CD2184.40304@hurleysoftware.com>
- <56CDCE2A.30809@ti.com>
+From: Chanho Min <chanho.min@lge.com>
+Subject: [PATCH] tty: amba-pl011: use sg_table instead of scatterlist
+Date: Tue, 8 Mar 2016 11:43:36 +0900
+Message-ID: <1457405016-23562-1-git-send-email-chanho.min@lge.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56CDCE2A.30809@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sekhar Nori <nsekhar@ti.com>
-Cc: John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>, gregkh@linuxfoundation.org, vinod.koul@intel.com, dan.j.williams@intel.com, bigeasy@linutronix.de, peter.ujfalusi@ti.com, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jongsung Kim <neidhard.kim@lge.com>, Gunho Lee <gunho.lee@lge.com>, Chanho Min <chanho.min@lge.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 02/24/2016 07:37 AM, Sekhar Nori wrote:
-> On Wednesday 24 February 2016 08:50 AM, Peter Hurley wrote:
->> Just to follow-up on what Sebastian wrote.
->>
->> As he pointed out, these spurious interrupts are not timeout interrupts.
->> Since IIR_UART[0] == 1, no uart interrupt is pending.
->>
->> As he wrote, these count as spurious interrupts and trigger
->> interrupt shutdown at 100000 (unless acked as uart interrupts).
-> 
-> Okay, by adding a printk to where the check for UART_IIR_NO_INT is in
-> omap_8250_dma_handle_irq(), I do see that UART irq handler is called
-> when there is apparently no interrupt.
-> 
-> I don't see the error interrupt count in /proc/interrupts go up although
-> the code is returning IRQ_NONE when this happens. I initially thought
-> that must be because of the interrupt being IRQF_SHARED. But getting rid
-> of IRQF_SHARED still does not lead to error count going up. I need to
-> spend some more time to see what is going on.
-> 
->> These spurious interrupts very nearly correspond 1:1 (but not quite)
->> with each dma submission. So, for example, one test run had:
->>
->>     @3Mbaud line rate
->>     195826 submits
->>     195823 completions
->>
->>     195704 spurious interrupts (ie., interrupts with IIR_UART[0] == 1)
->>          0 RLSI interrupts (no line errors) (IIR_UART == 0xc6)
->>          2 RX timeout interrupts (IIR_UART == 0xcc),
->>            one during i/o test and one at the end of i/o test
->>          6 RDI interrupts (IIR_UART == 0xc4)
->>
->> The spurious interrupts occur with nearly 1:1 correspondence at _all_
->> line rates.
->>
->> Presumbably, the 6 RDI interrupts are from too-slow submission of
->> the next DMA and the uart rx fifo has reached rx trigger level already.
->> [NOTE: we should at least be using ping-pong dma buffers for rx so that
->> there is always a next DMA buffer when the current buffer is completed].
->>
->> There is no documentation in any of the OMAP TRMs regarding RDI
->> interrupts while in DMA mode. Some guidance from TI would be appreciated.
-> 
-> UART interrupts triggering while UART_IIR_NO_INT is set is weird enough.
-> I will check around internally with hardware folks here. Getting an
-> answer might take time. But this is easily reproducible so I am
-> optimistic we will get an answer soon.
+The use of phys_to_page is wrong in commit cb06ff102e2d ("ARM: PL011:
+Add support for Rx DMA buffer polling."), beacase DMA address is not
+physical address. Also, phys_to_page is not declared in some architecture.
+The use of virt_to_page is wrong as well because dma_alloc_coherent
+implementaion are allowed to returned remapped memory. So I use sg_table
+instead of scatterlist and change to dma_get_sgtable() implementaion.
 
-Thanks.
+Reported-by: Wang, Annie <Annie.Wang@amd.com>
+Signed-off-by: Chanho Min <chanho.min@lge.com>
+---
+ drivers/tty/serial/amba-pl011.c |   33 ++++++++++++++++++++-------------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
 
-Also, after looking over the latest errata for am335x, I was surprised
-not to see an errata for our TX DMA workaround.
-
-Currently, to get memory-to-device DMA to start *on am335x only* requires
-writing the 1st byte to the UART fifo to trigger DMA, which is pretty odd.
-It's almost as if the TX DMA trigger is edge-triggered rather than
-level-triggered.
-
-Let me know if you need more info.
-
-
-Regards,
-Peter Hurley
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index c0da0cc..ce8840f 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -197,7 +197,7 @@ static struct vendor_data vendor_zte = {
+ /* Deals with DMA transactions */
+ 
+ struct pl011_sgbuf {
+-	struct scatterlist sg;
++	struct sg_table sgt;
+ 	char *buf;
+ };
+ 
+@@ -344,17 +344,23 @@ static int pl011_sgbuf_init(struct dma_chan *chan, struct pl011_sgbuf *sg,
+ 	enum dma_data_direction dir)
+ {
+ 	dma_addr_t dma_addr;
++	int ret;
+ 
+ 	sg->buf = dma_alloc_coherent(chan->device->dev,
+ 		PL011_DMA_BUFFER_SIZE, &dma_addr, GFP_KERNEL);
+ 	if (!sg->buf)
+ 		return -ENOMEM;
+ 
+-	sg_init_table(&sg->sg, 1);
+-	sg_set_page(&sg->sg, phys_to_page(dma_addr),
+-		PL011_DMA_BUFFER_SIZE, offset_in_page(dma_addr));
+-	sg_dma_address(&sg->sg) = dma_addr;
+-	sg_dma_len(&sg->sg) = PL011_DMA_BUFFER_SIZE;
++	ret = dma_get_sgtable(chan->device->dev, &sg->sgt, sg->buf, dma_addr,
++		PL011_DMA_BUFFER_SIZE);
++
++	if (ret < 0) {
++		dma_free_coherent(chan->device->dev,
++			PL011_DMA_BUFFER_SIZE, sg->buf, dma_addr);
++		return -ENOMEM;
++	}
++	sg_dma_address(sg->sgt.sgl) = dma_addr;
++	sg_dma_len(sg->sgt.sgl) = PL011_DMA_BUFFER_SIZE;
+ 
+ 	return 0;
+ }
+@@ -365,7 +371,8 @@ static void pl011_sgbuf_free(struct dma_chan *chan, struct pl011_sgbuf *sg,
+ 	if (sg->buf) {
+ 		dma_free_coherent(chan->device->dev,
+ 			PL011_DMA_BUFFER_SIZE, sg->buf,
+-			sg_dma_address(&sg->sg));
++			sg_dma_address(sg->sgt.sgl));
++		sg_free_table(&sg->sgt);
+ 	}
+ }
+ 
+@@ -813,7 +820,7 @@ static int pl011_dma_rx_trigger_dma(struct uart_amba_port *uap)
+ 	/* Start the RX DMA job */
+ 	sgbuf = uap->dmarx.use_buf_b ?
+ 		&uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
+-	desc = dmaengine_prep_slave_sg(rxchan, &sgbuf->sg, 1,
++	desc = dmaengine_prep_slave_sg(rxchan, sgbuf->sgt.sgl, 1,
+ 					DMA_DEV_TO_MEM,
+ 					DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+ 	/*
+@@ -863,7 +870,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
+ 
+ 	if (uap->dmarx.poll_rate) {
+ 		/* The data can be taken by polling */
+-		dmataken = sgbuf->sg.length - dmarx->last_residue;
++		dmataken = sgbuf->sgt.sgl->length - dmarx->last_residue;
+ 		/* Recalculate the pending size */
+ 		if (pending >= dmataken)
+ 			pending -= dmataken;
+@@ -888,7 +895,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
+ 
+ 	/* Reset the last_residue for Rx DMA poll */
+ 	if (uap->dmarx.poll_rate)
+-		dmarx->last_residue = sgbuf->sg.length;
++		dmarx->last_residue = sgbuf->sgt.sgl->length;
+ 
+ 	/*
+ 	 * Only continue with trying to read the FIFO if all DMA chars have
+@@ -948,7 +955,7 @@ static void pl011_dma_rx_irq(struct uart_amba_port *uap)
+ 	pl011_write(uap->dmacr, uap, REG_DMACR);
+ 	uap->dmarx.running = false;
+ 
+-	pending = sgbuf->sg.length - state.residue;
++	pending = sgbuf->sgt.sgl->length - state.residue;
+ 	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
+ 	/* Then we terminate the transfer - we now know our residue */
+ 	dmaengine_terminate_all(rxchan);
+@@ -994,7 +1001,7 @@ static void pl011_dma_rx_callback(void *data)
+ 	 * the DMA irq handler. So we check the residue here.
+ 	 */
+ 	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
+-	pending = sgbuf->sg.length - state.residue;
++	pending = sgbuf->sgt.sgl->length - state.residue;
+ 	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
+ 	/* Then we terminate the transfer - we now know our residue */
+ 	dmaengine_terminate_all(rxchan);
+@@ -1050,7 +1057,7 @@ static void pl011_dma_rx_poll(unsigned long args)
+ 	sgbuf = dmarx->use_buf_b ? &uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
+ 	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
+ 	if (likely(state.residue < dmarx->last_residue)) {
+-		dmataken = sgbuf->sg.length - dmarx->last_residue;
++		dmataken = sgbuf->sgt.sgl->length - dmarx->last_residue;
+ 		size = dmarx->last_residue - state.residue;
+ 		dma_count = tty_insert_flip_string(port, sgbuf->buf + dmataken,
+ 				size);
+-- 
+1.7.9.5
