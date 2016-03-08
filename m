@@ -1,32 +1,40 @@
-From: Mark Langsdorf <mlangsdo@redhat.com>
-Subject: Re: [PATCH] tty: amba-pl011: Use 32-bit accesses for SBSA UART
-Date: Tue, 8 Mar 2016 08:51:53 -0600
-Message-ID: <56DEE709.7060907@redhat.com>
-References: <1457415800-8799-1-git-send-email-cov@codeaurora.org>
+From: Jakub Kicinski <kubakici@wp.pl>
+Subject: Re: [PATCH] tty: serial: sc16is7xx: use threaded interrupts instead
+ of homegrow
+Date: Tue, 8 Mar 2016 21:18:45 +0000
+Message-ID: <20160308211845.57e9796a@laptop>
+References: <56CDCCE6.5020801@prevas.dk>
+	<56CDEAE2.9050102@prevas.dk>
+	<20160224223547.GF9598@jcartwri.amer.corp.natinst.com>
+	<20160226114340.GC8318@linutronix.de>
+	<20160226114809.GD8318@linutronix.de>
+	<C32FB8B0-21F8-4C84-9F77-20F3CD43E3D4@wp.pl>
+	<20160226165228.GA17178@jcartwri.amer.corp.natinst.com>
+	<835668C1-5DDB-4495-AD00-4EE8DDD0D146@wp.pl>
+	<20160226190048.GC12917@jcartwri.amer.corp.natinst.com>
+	<56DDAF2A.2000009@linutronix.de>
+	<20160307165809.GC28102@jcartwri.amer.corp.natinst.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1457415800-8799-1-git-send-email-cov@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Christopher Covington <cov@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: linux-arm-msm@vger.kernel.org, Timur Tabi <timur@codeaurora.org>, Jon Masters <jcm@redhat.com>, Andre Przywara <andre.przywara@arm.com>, Dave Martin <dave.martin@linaro.org>, Aleksey Makarov <aleksey.makarov@linaro.org>, Christopher Covington <christopher.covington@linaro.org>
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <20160307165809.GC28102@jcartwri.amer.corp.natinst.com>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Josh Cartwright <joshc@ni.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Sean Nyekj?r <sean.nyekjaer@prevas.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>, Thomas Gleixner <tglx@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/07/2016 11:43 PM, Christopher Covington wrote:
-> From: Christopher Covington <christopher.covington@linaro.org>
->
-> Version 2 of the Server Base System Architecture (SBSA) describes the
-> Generic UART registers as 32 bits wide. At least one implementation, found
-> of the Qualcomm Technologies QDF2432, only supports 32 bit accesses. While
-> other implementations may also support smaller sized accesses, simply use
-> 32 bit accesses all the time for the SBSA UART for simple, broad,
-> compatibility.
->
-> Signed-off-by: Christopher Covington <cov@codeaurora.org>
-> ---
+On Mon, 7 Mar 2016 10:58:09 -0600, Josh Cartwright wrote:
+> > I got lost here. Where do we stand here now?  
+> 
+> I understood the comment from Kuba to mean that he would be implementing
+> the disable_irq()/enable_irq() idea above to fix all the problems with
+> this driver.
+> 
+> Kuba- did I read that right?
 
-I can boot the v4.5-rc7 on my QDF2432 platform with this patch,
-and could not otherwise.
+I was hoping Sean or someone else would take up this task ;)
 
-Tested-by: Mark Langsdorf <mlangsdo@redhat.com>
+It should be a pretty simple patch.
+
+Kuba
