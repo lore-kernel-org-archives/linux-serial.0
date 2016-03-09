@@ -1,40 +1,61 @@
-From: Jakub Kicinski <kubakici@wp.pl>
-Subject: Re: [PATCH] tty: serial: sc16is7xx: use threaded interrupts instead
- of homegrow
-Date: Tue, 8 Mar 2016 21:18:45 +0000
-Message-ID: <20160308211845.57e9796a@laptop>
-References: <56CDCCE6.5020801@prevas.dk>
-	<56CDEAE2.9050102@prevas.dk>
-	<20160224223547.GF9598@jcartwri.amer.corp.natinst.com>
-	<20160226114340.GC8318@linutronix.de>
-	<20160226114809.GD8318@linutronix.de>
-	<C32FB8B0-21F8-4C84-9F77-20F3CD43E3D4@wp.pl>
-	<20160226165228.GA17178@jcartwri.amer.corp.natinst.com>
-	<835668C1-5DDB-4495-AD00-4EE8DDD0D146@wp.pl>
-	<20160226190048.GC12917@jcartwri.amer.corp.natinst.com>
-	<56DDAF2A.2000009@linutronix.de>
-	<20160307165809.GC28102@jcartwri.amer.corp.natinst.com>
+From: Chanho Min <chanho.min@lge.com>
+Subject: RE: [PATCH] tty: amba-pl011: use sg_table instead of scatterlist
+Date: Wed, 9 Mar 2016 09:15:36 +0900
+Message-ID: <05b701d17998$cdd9adc0$698d0940$@lge.com>
+References: <1457405016-23562-1-git-send-email-chanho.min@lge.com> <20160308095907.GM19428@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-In-Reply-To: <20160307165809.GC28102@jcartwri.amer.corp.natinst.com>
-Sender: linux-rt-users-owner@vger.kernel.org
-To: Josh Cartwright <joshc@ni.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Sean Nyekj?r <sean.nyekjaer@prevas.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>, Thomas Gleixner <tglx@linutronix.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160308095907.GM19428@n2100.arm.linux.org.uk>
+Content-Language: ko
+Sender: linux-kernel-owner@vger.kernel.org
+To: 'Russell King - ARM Linux' <linux@arm.linux.org.uk>
+Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, 'Jiri Slaby' <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 'Jongsung Kim' <neidhard.kim@lge.com>, 'Gunho Lee' <gunho.lee@lge.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 7 Mar 2016 10:58:09 -0600, Josh Cartwright wrote:
-> > I got lost here. Where do we stand here now?  
+> > @@ -344,17 +344,23 @@ static int pl011_sgbuf_init(struct dma_chan *chan,
+> struct pl011_sgbuf *sg,
+> >  	enum dma_data_direction dir)
+> >  {
+> >  	dma_addr_t dma_addr;
+> > +	int ret;
+> >
+> >  	sg->buf = dma_alloc_coherent(chan->device->dev,
+> >  		PL011_DMA_BUFFER_SIZE, &dma_addr, GFP_KERNEL);
+> >  	if (!sg->buf)
+> >  		return -ENOMEM;
 > 
-> I understood the comment from Kuba to mean that he would be implementing
-> the disable_irq()/enable_irq() idea above to fix all the problems with
-> this driver.
+> sg->buf can be a mapped address, which virt_to_page() will return
+> sg->invalid
+> results:
 > 
-> Kuba- did I read that right?
+> int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
+>                  void *cpu_addr, dma_addr_t handle, size_t size) {
+>         struct page *page = virt_to_page(cpu_addr);
+>         int ret;
+> 
+>         ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+>         if (unlikely(ret))
+>                 return ret;
+> 
+>         sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
+>         return 0;
+> }
+> EXPORT_SYMBOL(dma_common_get_sgtable);
+> 
+> I've no idea who is shoveling crap like this into the kernel, but it's
+> _really_ far from good that such broken abstractions are being merged as
+> generic code.
 
-I was hoping Sean or someone else would take up this task ;)
+dma_get_sgtable goes to ops->get_sgtable first, which dma_to_pfn
+will return valid address.
+IMHO, Only If ops->alloc returns direct mapping address,
+dma_common_get_sgtable can be used.
 
-It should be a pretty simple patch.
-
-Kuba
+int arm_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+                 void *cpu_addr, dma_addr_t handle, size_t size,
+                 struct dma_attrs *attrs)
+{
+        struct page *page = pfn_to_page(dma_to_pfn(dev, handle));
+        int ret;
