@@ -1,70 +1,57 @@
-From: "Maarten Brock" <m.brock@vanmierlo.com>
-Subject: Re: [PATCH] serial-uartlite: un-constify uartlite_be/uartlite_le
-Date: Thu, 10 Mar 2016 10:08:01 +0100
-Message-ID: <20160310100801.37d49aba@kerio.vanmierlo.com>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 3/4] serial: imx: let irq handler return IRQ_NONE if no event
+ was handled
+Date: Thu, 10 Mar 2016 11:26:08 +0100
+Message-ID: <1457605569-7828-4-git-send-email-u.kleine-koenig@pengutronix.de>
+References: <1457605569-7828-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1457605569-7828-1-git-send-email-u.kleine-koenig@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Peter Korsgaard <jacmet@sunsite.dk>, Jiri Slaby <jslaby@suse.com>, Rich Felker <dalias@libc.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-I've created a version 2 of this patch immediately which fixes the warning,
-but somehow this stays ignored.
-
-Please apply my second patch!
-Maarten
-
-> The patch to make uartlite_be/uartlite_le const was well-intended but
-> caused a new build warning:
-> 
-> tty/serial/uartlite.c: In function 'ulite_request_port':
-> tty/serial/uartlite.c:348:21: error: assignment discards 'const' qualifier
-> from pointer target type [-Werror=discarded-qualifiers]
-> tty/serial/uartlite.c:354:22: error: assignment discards 'const' qualifier
-> from pointer target type [-Werror=discarded-qualifiers]
-> 
-> It would be nice to allow passing const pointers through
-> port->private_data, but that would be way more work, so this
-> reverts part of the original commit for now.
-> 
-> A possible alternative might be to pass a structure in the private_data
-> that contains a const pointer to the operations, which introduces a little
-> extra overhead, or we could just add a cast to a non-const pointer, I'll
-> leave that to the maintainer.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 2905697a82ea ("serial-uartlite: Constify uartlite_be/uartlite_le")
-> ---
->  drivers/tty/serial/uartlite.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-> index c9fdfc8bf47f..1474c5755140 100644
-> --- a/drivers/tty/serial/uartlite.c
-> +++ b/drivers/tty/serial/uartlite.c
-> @@ -72,7 +72,7 @@ static void uartlite_outbe32(u32 val, void __iomem *addr)
->  	iowrite32be(val, addr);
->  }
->  
-> -static const struct uartlite_reg_ops uartlite_be = {
-> +static struct uartlite_reg_ops uartlite_be = {
->  	.in = uartlite_inbe32,
->  	.out = uartlite_outbe32,
->  };
-> @@ -87,7 +87,7 @@ static void uartlite_outle32(u32 val, void __iomem *addr)
->  	iowrite32(val, addr);
->  }
->  
-> -static const struct uartlite_reg_ops uartlite_le = {
-> +static struct uartlite_reg_ops uartlite_le = {
->  	.in = uartlite_inle32,
->  	.out = uartlite_outle32,
->  };
-> -- 
-> 2.7.0
-> 
-> 
+U2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRy
+b25peC5kZT4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgfCAxNyArKysrKysrKysrKysr
+LS0tLQogMSBmaWxlIGNoYW5nZWQsIDEzIGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCgpk
+aWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIGIvZHJpdmVycy90dHkvc2VyaWFs
+L2lteC5jCmluZGV4IDU1ODYyNjAwNTlhYS4uMmU5MTU5ODI4NWRjIDEwMDY0NAotLS0gYS9kcml2
+ZXJzL3R0eS9zZXJpYWwvaW14LmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCkBAIC03
+ODUsNiArNzg1LDcgQEAgc3RhdGljIGlycXJldHVybl90IGlteF9pbnQoaW50IGlycSwgdm9pZCAq
+ZGV2X2lkKQogCXN0cnVjdCBpbXhfcG9ydCAqc3BvcnQgPSBkZXZfaWQ7CiAJdW5zaWduZWQgaW50
+IHN0czsKIAl1bnNpZ25lZCBpbnQgc3RzMjsKKwlpcnFyZXR1cm5fdCByZXQgPSBJUlFfTk9ORTsK
+IAogCXN0cyA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVU1IxKTsKIAlzdHMyID0gcmVh
+ZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVTUjIpOwpAQCAtNzk5LDggKzgwMCwxMCBAQCBzdGF0
+aWMgaXJxcmV0dXJuX3QgaW14X2ludChpbnQgaXJxLCB2b2lkICpkZXZfaWQpCiAJaWYgKChzdHMg
+JiBVU1IxX1RSRFkgJiYKIAkgICAgIHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IxKSAm
+IFVDUjFfVFhNUFRZRU4pIHx8CiAJICAgIChzdHMyICYgVVNSMl9UWERDICYmCi0JICAgICByZWFk
+bChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSNCkgJiBVQ1I0X1RDRU4pKQorCSAgICAgcmVhZGwo
+c3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjQpICYgVUNSNF9UQ0VOKSkgewogCQlpbXhfdHhpbnQo
+aXJxLCBkZXZfaWQpOworCQlyZXQgPSBJUlFfSEFORExFRDsKKwl9CiAKIAlpZiAoKHN0cyAmIFVT
+UjFfRFRSRCkgfHwgKHN0czIgJiAoVVNSMl9EQ0RERUxUIHwgVVNSMl9SSURFTFQpKSkgewogCQl1
+bnNpZ25lZCBsb25nIGZsYWdzOwpAQCAtODE0LDIwICs4MTcsMjYgQEAgc3RhdGljIGlycXJldHVy
+bl90IGlteF9pbnQoaW50IGlycSwgdm9pZCAqZGV2X2lkKQogCQlpZiAoc3RzMiAmIChVU1IyX0RD
+RERFTFQgfCBVU1IyX1JJREVMVCkpCiAJCQl3cml0ZWwoc3RzMiAmIChVU1IyX0RDRERFTFQgfCBV
+U1IyX1JJREVMVCksCiAJCQkgICAgICAgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVTUjIpOworCQly
+ZXQgPSBJUlFfSEFORExFRDsKIAl9CiAKLQlpZiAoc3RzICYgVVNSMV9SVFNEKQorCWlmIChzdHMg
+JiBVU1IxX1JUU0QpIHsKIAkJaW14X3J0c2ludChpcnEsIGRldl9pZCk7CisJCXJldCA9IElSUV9I
+QU5ETEVEOworCX0KIAotCWlmIChzdHMgJiBVU1IxX0FXQUtFKQorCWlmIChzdHMgJiBVU1IxX0FX
+QUtFKSB7CiAJCXdyaXRlbChVU1IxX0FXQUtFLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVVNSMSk7
+CisJCXJldCA9IElSUV9IQU5ETEVEOworCX0KIAogCWlmIChzdHMyICYgVVNSMl9PUkUpIHsKIAkJ
+c3BvcnQtPnBvcnQuaWNvdW50Lm92ZXJydW4rKzsKIAkJd3JpdGVsKFVTUjJfT1JFLCBzcG9ydC0+
+cG9ydC5tZW1iYXNlICsgVVNSMik7CisJCXJldCA9IElSUV9IQU5ETEVEOwogCX0KIAotCXJldHVy
+biBJUlFfSEFORExFRDsKKwlyZXR1cm4gcmV0OwogfQogCiAvKgotLSAKMi43LjAKCgpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVs
+IG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDov
+L2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
