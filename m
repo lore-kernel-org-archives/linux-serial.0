@@ -1,85 +1,63 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 1/4] serial: imx: reorder functions to simplify next patch
-Date: Thu, 10 Mar 2016 11:26:06 +0100
-Message-ID: <1457605569-7828-2-git-send-email-u.kleine-koenig@pengutronix.de>
-References: <1457605569-7828-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH] serial-uartlite: fix build warning
+Date: Thu, 10 Mar 2016 18:44:48 +0530
+Message-ID: <1457615688-27406-1-git-send-email-sudipm.mukherjee@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1457605569-7828-1-git-send-email-u.kleine-koenig@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Korsgaard <jacmet@sunsite.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-U2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRy
-b25peC5kZT4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgfCA5OCArKysrKysrKysrKysr
-KysrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCA0OSBp
-bnNlcnRpb25zKCspLCA0OSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9z
-ZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKaW5kZXggMjMxZTdkNWNhZjZj
-Li5mZmE4MWU2MjlhNzkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYworKysg
-Yi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKQEAgLTcyOSw2ICs3MjksNTUgQEAgc3RhdGljIHZv
-aWQgaW14X2RtYV9yeGludChzdHJ1Y3QgaW14X3BvcnQgKnNwb3J0KQogCXNwaW5fdW5sb2NrX2ly
-cXJlc3RvcmUoJnNwb3J0LT5wb3J0LmxvY2ssIGZsYWdzKTsKIH0KIAorLyoKKyAqIFdlIGhhdmUg
-YSBtb2RlbSBzaWRlIHVhcnQsIHNvIHRoZSBtZWFuaW5ncyBvZiBSVFMgYW5kIENUUyBhcmUgaW52
-ZXJ0ZWQuCisgKi8KK3N0YXRpYyB1bnNpZ25lZCBpbnQgaW14X2dldF9od21jdHJsKHN0cnVjdCBp
-bXhfcG9ydCAqc3BvcnQpCit7CisJdW5zaWduZWQgaW50IHRtcCA9IFRJT0NNX0RTUjsKKwl1bnNp
-Z25lZCB1c3IxID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVTUjEpOworCisJaWYgKHVz
-cjEgJiBVU1IxX1JUU1MpCisJCXRtcCB8PSBUSU9DTV9DVFM7CisKKwkvKiBpbiBEQ0UgbW9kZSBE
-Q0RJTiBpcyBhbHdheXMgMCAqLworCWlmICghKHVzcjEgJiBVU1IyX0RDRElOKSkKKwkJdG1wIHw9
-IFRJT0NNX0NBUjsKKworCS8qIGluIERDRSBtb2RlIFJJSU4gaXMgYWx3YXlzIDAgKi8KKwlpZiAo
-cmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVTUjIpICYgVVNSMl9SSUlOKQorCQl0bXAgfD0g
-VElPQ01fUkk7CisKKwlyZXR1cm4gdG1wOworfQorCisvKgorICogSGFuZGxlIGFueSBjaGFuZ2Ug
-b2YgbW9kZW0gc3RhdHVzIHNpZ25hbCBzaW5jZSB3ZSB3ZXJlIGxhc3QgY2FsbGVkLgorICovCitz
-dGF0aWMgdm9pZCBpbXhfbWN0cmxfY2hlY2soc3RydWN0IGlteF9wb3J0ICpzcG9ydCkKK3sKKwl1
-bnNpZ25lZCBpbnQgc3RhdHVzLCBjaGFuZ2VkOworCisJc3RhdHVzID0gaW14X2dldF9od21jdHJs
-KHNwb3J0KTsKKwljaGFuZ2VkID0gc3RhdHVzIF4gc3BvcnQtPm9sZF9zdGF0dXM7CisKKwlpZiAo
-Y2hhbmdlZCA9PSAwKQorCQlyZXR1cm47CisKKwlzcG9ydC0+b2xkX3N0YXR1cyA9IHN0YXR1czsK
-KworCWlmIChjaGFuZ2VkICYgVElPQ01fUkkpCisJCXNwb3J0LT5wb3J0Lmljb3VudC5ybmcrKzsK
-KwlpZiAoY2hhbmdlZCAmIFRJT0NNX0RTUikKKwkJc3BvcnQtPnBvcnQuaWNvdW50LmRzcisrOwor
-CWlmIChjaGFuZ2VkICYgVElPQ01fQ0FSKQorCQl1YXJ0X2hhbmRsZV9kY2RfY2hhbmdlKCZzcG9y
-dC0+cG9ydCwgc3RhdHVzICYgVElPQ01fQ0FSKTsKKwlpZiAoY2hhbmdlZCAmIFRJT0NNX0NUUykK
-KwkJdWFydF9oYW5kbGVfY3RzX2NoYW5nZSgmc3BvcnQtPnBvcnQsIHN0YXR1cyAmIFRJT0NNX0NU
-Uyk7CisKKwl3YWtlX3VwX2ludGVycnVwdGlibGUoJnNwb3J0LT5wb3J0LnN0YXRlLT5wb3J0LmRl
-bHRhX21zcl93YWl0KTsKK30KKwogc3RhdGljIGlycXJldHVybl90IGlteF9pbnQoaW50IGlycSwg
-dm9pZCAqZGV2X2lkKQogewogCXN0cnVjdCBpbXhfcG9ydCAqc3BvcnQgPSBkZXZfaWQ7CkBAIC03
-ODIsMjggKzgzMSw2IEBAIHN0YXRpYyB1bnNpZ25lZCBpbnQgaW14X3R4X2VtcHR5KHN0cnVjdCB1
-YXJ0X3BvcnQgKnBvcnQpCiAJcmV0dXJuIHJldDsKIH0KIAotLyoKLSAqIFdlIGhhdmUgYSBtb2Rl
-bSBzaWRlIHVhcnQsIHNvIHRoZSBtZWFuaW5ncyBvZiBSVFMgYW5kIENUUyBhcmUgaW52ZXJ0ZWQu
-Ci0gKi8KLXN0YXRpYyB1bnNpZ25lZCBpbnQgaW14X2dldF9od21jdHJsKHN0cnVjdCBpbXhfcG9y
-dCAqc3BvcnQpCi17Ci0JdW5zaWduZWQgaW50IHRtcCA9IFRJT0NNX0RTUjsKLQl1bnNpZ25lZCB1
-c3IxID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVTUjEpOwotCi0JaWYgKHVzcjEgJiBV
-U1IxX1JUU1MpCi0JCXRtcCB8PSBUSU9DTV9DVFM7Ci0KLQkvKiBpbiBEQ0UgbW9kZSBEQ0RJTiBp
-cyBhbHdheXMgMCAqLwotCWlmICghKHVzcjEgJiBVU1IyX0RDRElOKSkKLQkJdG1wIHw9IFRJT0NN
-X0NBUjsKLQotCS8qIGluIERDRSBtb2RlIFJJSU4gaXMgYWx3YXlzIDAgKi8KLQlpZiAocmVhZGwo
-c3BvcnQtPnBvcnQubWVtYmFzZSArIFVTUjIpICYgVVNSMl9SSUlOKQotCQl0bXAgfD0gVElPQ01f
-Ukk7Ci0KLQlyZXR1cm4gdG1wOwotfQotCiBzdGF0aWMgdW5zaWduZWQgaW50IGlteF9nZXRfbWN0
-cmwoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkKIHsKIAlzdHJ1Y3QgaW14X3BvcnQgKnNwb3J0ID0g
-KHN0cnVjdCBpbXhfcG9ydCAqKXBvcnQ7CkBAIC04NjEsMzMgKzg4OCw2IEBAIHN0YXRpYyB2b2lk
-IGlteF9icmVha19jdGwoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgaW50IGJyZWFrX3N0YXRlKQog
-fQogCiAvKgotICogSGFuZGxlIGFueSBjaGFuZ2Ugb2YgbW9kZW0gc3RhdHVzIHNpZ25hbCBzaW5j
-ZSB3ZSB3ZXJlIGxhc3QgY2FsbGVkLgotICovCi1zdGF0aWMgdm9pZCBpbXhfbWN0cmxfY2hlY2so
-c3RydWN0IGlteF9wb3J0ICpzcG9ydCkKLXsKLQl1bnNpZ25lZCBpbnQgc3RhdHVzLCBjaGFuZ2Vk
-OwotCi0Jc3RhdHVzID0gaW14X2dldF9od21jdHJsKHNwb3J0KTsKLQljaGFuZ2VkID0gc3RhdHVz
-IF4gc3BvcnQtPm9sZF9zdGF0dXM7Ci0KLQlpZiAoY2hhbmdlZCA9PSAwKQotCQlyZXR1cm47Ci0K
-LQlzcG9ydC0+b2xkX3N0YXR1cyA9IHN0YXR1czsKLQotCWlmIChjaGFuZ2VkICYgVElPQ01fUkkp
-Ci0JCXNwb3J0LT5wb3J0Lmljb3VudC5ybmcrKzsKLQlpZiAoY2hhbmdlZCAmIFRJT0NNX0RTUikK
-LQkJc3BvcnQtPnBvcnQuaWNvdW50LmRzcisrOwotCWlmIChjaGFuZ2VkICYgVElPQ01fQ0FSKQot
-CQl1YXJ0X2hhbmRsZV9kY2RfY2hhbmdlKCZzcG9ydC0+cG9ydCwgc3RhdHVzICYgVElPQ01fQ0FS
-KTsKLQlpZiAoY2hhbmdlZCAmIFRJT0NNX0NUUykKLQkJdWFydF9oYW5kbGVfY3RzX2NoYW5nZSgm
-c3BvcnQtPnBvcnQsIHN0YXR1cyAmIFRJT0NNX0NUUyk7Ci0KLQl3YWtlX3VwX2ludGVycnVwdGli
-bGUoJnNwb3J0LT5wb3J0LnN0YXRlLT5wb3J0LmRlbHRhX21zcl93YWl0KTsKLX0KLQotLyoKICAq
-IFRoaXMgaXMgb3VyIHBlci1wb3J0IHRpbWVvdXQgaGFuZGxlciwgZm9yIGNoZWNraW5nIHRoZQog
-ICogbW9kZW0gc3RhdHVzIHNpZ25hbHMuCiAgKi8KLS0gCjIuNy4wCgoKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5n
-IGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5p
-bmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+We were getting build warnings about:
+drivers/tty/serial/uartlite.c: In function =E2=80=98ulite_request_port=E2=
+=80=99:
+drivers/tty/serial/uartlite.c:348:21: warning: assignment discards
+        'const' qualifier from pointer target type
+port->private_data =3D &uartlite_be;
+                     ^
+drivers/tty/serial/uartlite.c:354:22: warning: assignment discards
+        'const' qualifier from pointer target type
+port->private_data =3D &uartlite_le;
+                      ^
+
+=46ixes: 2905697a82ea ("serial-uartlite: Constify uartlite_be/uartlite_=
+le")
+Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+---
+
+next-20160310 build log at:
+https://travis-ci.org/sudipm-mukherjee/parport/jobs/114988022
+
+ drivers/tty/serial/uartlite.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlit=
+e.c
+index c9fdfc8..1474c57 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -72,7 +72,7 @@ static void uartlite_outbe32(u32 val, void __iomem *a=
+ddr)
+ 	iowrite32be(val, addr);
+ }
+=20
+-static const struct uartlite_reg_ops uartlite_be =3D {
++static struct uartlite_reg_ops uartlite_be =3D {
+ 	.in =3D uartlite_inbe32,
+ 	.out =3D uartlite_outbe32,
+ };
+@@ -87,7 +87,7 @@ static void uartlite_outle32(u32 val, void __iomem *a=
+ddr)
+ 	iowrite32(val, addr);
+ }
+=20
+-static const struct uartlite_reg_ops uartlite_le =3D {
++static struct uartlite_reg_ops uartlite_le =3D {
+ 	.in =3D uartlite_inle32,
+ 	.out =3D uartlite_outle32,
+ };
+--=20
+1.9.1
