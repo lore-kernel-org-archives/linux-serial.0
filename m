@@ -1,52 +1,56 @@
-From: "Maarten Brock" <m.brock@vanmierlo.com>
-Subject: Re: [PATCH] tty: serial: sc16is7xx: use threaded interrupts instead
- of homegrow
-Date: Wed, 09 Mar 2016 15:06:44 +0100
-Message-ID: <20160309150644.bd910362@kerio.vanmierlo.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-Sender: linux-rt-users-owner@vger.kernel.org
-To: Jakub Kicinski <kubakici@wp.pl>, =?iso-8859-1?Q?Sean_Nyekj=E6r?= <sean.nyekjaer@prevas.dk>
-Cc: Josh Cartwright <joshc@ni.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>, Thomas Gleixner <tglx@linutronix.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] serial-uartlite: un-constify uartlite_be/uartlite_le
+Date: Thu, 10 Mar 2016 02:34:59 +0100
+Message-ID: <1457573729-2802736-1-git-send-email-arnd@arndb.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Peter Korsgaard <jacmet@sunsite.dk>, Jiri Slaby <jslaby@suse.com>, Maarten Brock <m.brock@vanmierlo.com>, Rich Felker <dalias@libc.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-> On Wed, 9 Mar 2016 08:03:06 +0100, Sean Nyekj=C3=A6r wrote:
-> > On 2016-03-08 22:18, Jakub Kicinski wrote:
-> > > On Mon, 7 Mar 2016 10:58:09 -0600, Josh Cartwright wrote:
-> > >>> I got lost here. Where do we stand here now?
-> > >> I understood the comment from Kuba to mean that he would be
-> > >> implementing the disable_irq()/enable_irq() idea above to
-> > >> fix all the problems with this driver.
-> > >>
-> > >> Kuba- did I read that right?
-> > > I was hoping Sean or someone else would take up this task ;)
-> > Yes i could try :-) At least i have a working setup with the hardwa=
-re.
-> > >
-> > > It should be a pretty simple patch.
-> > >
-> > > Kuba
-> > I not entirely sure what i have to do...
-> > - Reenable the ONE_SHOT
-> > - Disable irq when running in the loop, and enable when returning?
-> > - Implement threaded irq?
-> >=20
-> > /Sean
->=20
-> Do not reenable ONE_SHOT.  Disable interrupt (disable_irq_nosync())
-> in sc16is7xx_irq() and reenable at the end of sc16is7xx_ist().
-> I think reenabling at the end of sc16is7xx_ist() is fine since it's a
-> level triggered IRQ.
+The patch to make uartlite_be/uartlite_le const was well-intended but
+caused a new build warning:
 
-What do you mean, it's level triggered? How do you know? The irq is
-requested with either 0 or IRQF_TRIGGER_FALLING for irqflags. I don't
-see anywhere where it would be configured IRQF_TRIGGER_LOW.
+tty/serial/uartlite.c: In function 'ulite_request_port':
+tty/serial/uartlite.c:348:21: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
+tty/serial/uartlite.c:354:22: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
 
-Maarten
---
-To unsubscribe from this list: send the line "unsubscribe linux-rt-user=
-s" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+It would be nice to allow passing const pointers through
+port->private_data, but that would be way more work, so this
+reverts part of the original commit for now.
+
+A possible alternative might be to pass a structure in the private_data
+that contains a const pointer to the operations, which introduces a little
+extra overhead, or we could just add a cast to a non-const pointer, I'll
+leave that to the maintainer.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 2905697a82ea ("serial-uartlite: Constify uartlite_be/uartlite_le")
+---
+ drivers/tty/serial/uartlite.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index c9fdfc8bf47f..1474c5755140 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -72,7 +72,7 @@ static void uartlite_outbe32(u32 val, void __iomem *addr)
+ 	iowrite32be(val, addr);
+ }
+ 
+-static const struct uartlite_reg_ops uartlite_be = {
++static struct uartlite_reg_ops uartlite_be = {
+ 	.in = uartlite_inbe32,
+ 	.out = uartlite_outbe32,
+ };
+@@ -87,7 +87,7 @@ static void uartlite_outle32(u32 val, void __iomem *addr)
+ 	iowrite32(val, addr);
+ }
+ 
+-static const struct uartlite_reg_ops uartlite_le = {
++static struct uartlite_reg_ops uartlite_le = {
+ 	.in = uartlite_inle32,
+ 	.out = uartlite_outle32,
+ };
+-- 
+2.7.0
