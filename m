@@ -1,111 +1,50 @@
-From: "Lu.Jiang" <lu.jiang@windriver.com>
-Subject: Re: [v2] serial_core:recognize invalid pointer from userspace
-Date: Fri, 11 Mar 2016 10:30:57 +0800
-Message-ID: <56E22DE1.80101@windriver.com>
-References: <1457579843-29676-1-git-send-email-lu.jiang@windriver.com>
- <1457579843-29676-2-git-send-email-lu.jiang@windriver.com>
- <20160310033435.GA28983@kroah.com> <56E0FE77.1020303@windriver.com>
- <20160310134647.7053a520@lxorguk.ukuu.org.uk>
-Reply-To: <lu.jiang@windriver.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Christopher Covington <cov@codeaurora.org>
+Subject: [PATCH] tty: amba-pl011: Use 32-bit accesses for SBSA UART
+Date: Fri, 11 Mar 2016 01:35:53 -0500
+Message-ID: <1457678154-2272-1-git-send-email-cov@codeaurora.org>
+References: <1457415800-8799-1-git-send-email-cov@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160310134647.7053a520@lxorguk.ukuu.org.uk>
+In-Reply-To: <1457415800-8799-1-git-send-email-cov@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Timur Tabi <timur@codeaurora.org>, Jon Masters <jcm@redhat.com>, Mark Langsdorf <mlangsdo@redhat.com>, Andre Przywara <andre.przywara@arm.com>, Dave Martin <dave.martin@linaro.org>, Aleksey Makarov <aleksey.makarov@linaro.org>, Christopher Covington <cov@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 2016=E5=B9=B403=E6=9C=8810=E6=97=A5 21:46, One Thousand Gnomes wrote=
-:
->> When userspace get setting with TIOCGSERIAL,
->>
->> 1.On 64bit kernel + 32bit rootfs, compat ioctl code use 0xffffffff t=
-o
->> mark invalid conversion.
-> Start at the beginning. What is being passed back and forth that caus=
-es
-> the problem. What memory address does your uart have ?
+Version 2 of the Server Base System Architecture (SBSAv2) describes the
+Generic UART registers as 32 bits wide. At least one implementation, found
+on the Qualcomm Technologies QDF2432, only supports 32 bit accesses.
+SBSAv3, which describes supported access sizes in greater detail,
+explicitly requires support for both 16 and 32 bit accesses to all
+registers (and 8 bit accesses to some but not all). Therefore, for broad
+compatibility, simply use 32 bit accessors for the SBSA UART.
 
-In fs/compat_ioctl.c, serial_struct_ioctl() use following code for=20
-convert a 64bit pointer into 32bit userspace pointer
+Tested-by: Mark Langsdorf <mlangsdo@redhat.com>
+Signed-off-by: Christopher Covington <cov@codeaurora.org>
+---
+Changes new in v2:
+* Fixed from address
+* Elaborated on forward (SBSAv3) compatibility in commit message
+* Included Mark Langsdorf's Tested-by, which now covers:
+    QDF2432
+    Seattle
+    X-Gene 1
+---
+ drivers/tty/serial/amba-pl011.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-         if (cmd =3D=3D TIOCGSERIAL && err >=3D 0) {
-                 if (copy_in_user(ss32, ss, offsetof(SS32, iomem_base))=
- ||
-                     get_user(iomem_base, &ss->iomem_base))
-                         return -EFAULT;
-                 base =3D (unsigned long)iomem_base  >> 32 ?
-                         0xffffffff : (unsigned)(unsigned long)iomem_ba=
-se;
-
-If iomem_base exceed 4G, TIOCGSERIAL didn't return right value for=20
-iomem_base.
-
-it  use following code to covert 32bit to 64bit.
-         if (cmd =3D=3D TIOCSSERIAL) {
-                 if (copy_in_user(ss, ss32, offsetof(SS32, iomem_base))=
- ||
-                     get_user(udata, &ss32->iomem_base))
-                         return -EFAULT;
-                 iomem_base =3D compat_ptr(udata);
-
-
-static inline void __user *compat_ptr(compat_uptr_t uptr)
-{
-         return (void __user *)(unsigned long)uptr;
-}
-
-You can see userspace application didn't get valid iomem_base via=20
-TIOCGSERAIL.
-When issuing TIOCSSERIAL, application can not provide a workable value=20
-for kernel. It means TIOCSSERIAL can not work.
-
-Typical serial setting application setserial is depend on those 2 ioctl=
-s.
-
->
->> 2.On 32bit kernel with 64bit physical address, uart_get_info() in
->> serial_core will truncate a 64bit address into 32bit pointer with
->> following code:
->>       retinfo->iomem_base      =3D (void *)(unsigned long)uport->map=
-base;
->>
->> Then when setting with TIOCSSERIAL ioctl, application can not provid=
-e
->> original value for iomem_base, it leads setserial can not work on su=
-ch
->> boards.
-> Yes - it's a legacy feature that isn't really needed on 64bit systems=
-=2E
->
->> I don't know why kernel should expose this value to userspace, and s=
-eems
->> no need for userspace application to update an physical address for =
-driver.
->> Can we consider drop this member in handle for TIOCSSERIAL ioctl. Pl=
-ease
->> see a rough patch in attachment.
-> There are old PC and embedded cases from the time before devicetree a=
-nd
-> ACPI were the default. It's now an API people rely upon.
->
-> It would make sense I think to return 0 for the base address if it
-> exceeds 32bits, and also to ignore a TIOCSSERIAL that passes 0 as the
-> address back. Would that fix your use case ?
-
-If boards relay on this TIOCSSERIAL only working on 32bit, this solutio=
-n=20
-is workable.
-
-
-Thanks
-Jiang Lu
-
-
-
->
-> Alan
->
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index c0da0cc..ffb5eb8 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -121,6 +121,7 @@ static struct vendor_data vendor_arm = {
+ 
+ static struct vendor_data vendor_sbsa = {
+ 	.reg_offset		= pl011_std_offsets,
++	.access_32b		= true,
+ 	.oversampling		= false,
+ 	.dma_threshold		= false,
+ 	.cts_event_workaround	= false,
+-- 
+Qualcomm Innovation Center, Inc.
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
