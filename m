@@ -1,83 +1,58 @@
-From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
-Subject: Re: [PATCH] tty: serial: sc16is7xx: implemented our own oneshot-like
- handling
-Date: Fri, 11 Mar 2016 12:33:57 +0100
-Message-ID: <56E2AD25.3060706@prevas.dk>
-References: <1457692476-19082-1-git-send-email-sean.nyekjaer@prevas.dk>
- <56E29FBA.1060306@prevas.dk>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] tty: amba-pl011: Use 32-bit accesses for SBSA UART
+Date: Fri, 11 Mar 2016 07:02:14 -0800
+Message-ID: <56E2DDF6.2000107@hurleysoftware.com>
+References: <1457415800-8799-1-git-send-email-cov@codeaurora.org>
+ <1457678154-2272-1-git-send-email-cov@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-In-Reply-To: <56E29FBA.1060306@prevas.dk>
-Sender: linux-rt-users-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Josh Cartwright <joshc@ni.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>, Thomas Gleixner <tglx@linutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1457678154-2272-1-git-send-email-cov@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christopher Covington <cov@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Timur Tabi <timur@codeaurora.org>, Jon Masters <jcm@redhat.com>, Mark Langsdorf <mlangsdo@redhat.com>, Andre Przywara <andre.przywara@arm.com>, Dave Martin <dave.martin@linaro.org>, Aleksey Makarov <aleksey.makarov@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
+Hi Christopher,
+
+On 03/10/2016 10:35 PM, Christopher Covington wrote:
+> Version 2 of the Server Base System Architecture (SBSAv2) describes the
+> Generic UART registers as 32 bits wide. At least one implementation, found
+> on the Qualcomm Technologies QDF2432, only supports 32 bit accesses.
+> SBSAv3, which describes supported access sizes in greater detail,
+> explicitly requires support for both 16 and 32 bit accesses to all
+> registers (and 8 bit accesses to some but not all). Therefore, for broad
+> compatibility, simply use 32 bit accessors for the SBSA UART.
+
+So this eliminates the need to configure SBSA port via ACPI, correct?
+Thus, Aleksey can drop his "serial: pl011: use SPCR to setup 32-bit access"?
 
 
-On 2016-03-11 11:36, Sean Nyekj=E6r wrote:
->
->
-> On 2016-03-11 11:34, Sean Nyekjaer wrote:
-Could this work as a description?
-
-The problem here is still the use of IRQF_ONESHOT.  The semantics
-of IRQF_ONESHOT are only defined w.r.t. the irq core's threaded
-interrupt handling.
-
-This implements it's own oneshot-like handling
-at the device-level: in the registered irq handler, capture triggered
-interrupt state, squelch/mask, and enqueue the kthread_work.  In the
-tail-end of the kthread_work, re-enable interrupts at the device level.
-
->> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
->> ---
->> This patch depends on patch "sc16is7xx: drop bogus use of IRQF_ONESH=
-OT"
->>
->>   drivers/tty/serial/sc16is7xx.c | 9 ++++++++-
->>   1 file changed, 8 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/sc16is7xx.c=20
->> b/drivers/tty/serial/sc16is7xx.c
->> index 73d46e2..96d1f3e 100644
->> --- a/drivers/tty/serial/sc16is7xx.c
->> +++ b/drivers/tty/serial/sc16is7xx.c
->> @@ -706,13 +706,20 @@ static void sc16is7xx_ist(struct kthread_work =
-*ws)
->>       struct sc16is7xx_port *s =3D to_sc16is7xx_port(ws, irq_work);
->>       int i;
->>   -    for (i =3D 0; i < s->devtype->nr_uart; ++i)
->> +    for (i =3D 0; i < s->devtype->nr_uart; ++i) {
->>           sc16is7xx_port_irq(s, i);
->> +        enable_irq(s->p[i].port.irq);
->> +    }
->> +
-> Ops one-line break to much :-(
-> Waiting for other comments before fixing :-)
->
-> /Sean
->>   }
->>     static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
->>   {
->>       struct sc16is7xx_port *s =3D (struct sc16is7xx_port *)dev_id;
->> +    int i;
->> +
->> +    for (i =3D 0; i < s->devtype->nr_uart; ++i)
->> +        disable_irq_nosync(s->p[i].port.irq);
->>         queue_kthread_work(&s->kworker, &s->irq_work);
->
-> --=20
-> To unsubscribe from this list: send the line "unsubscribe=20
-> linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-rt-user=
-s" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Tested-by: Mark Langsdorf <mlangsdo@redhat.com>
+> Signed-off-by: Christopher Covington <cov@codeaurora.org>
+> ---
+> Changes new in v2:
+> * Fixed from address
+> * Elaborated on forward (SBSAv3) compatibility in commit message
+> * Included Mark Langsdorf's Tested-by, which now covers:
+>     QDF2432
+>     Seattle
+>     X-Gene 1
+> ---
+>  drivers/tty/serial/amba-pl011.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index c0da0cc..ffb5eb8 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -121,6 +121,7 @@ static struct vendor_data vendor_arm = {
+>  
+>  static struct vendor_data vendor_sbsa = {
+>  	.reg_offset		= pl011_std_offsets,
+> +	.access_32b		= true,
+>  	.oversampling		= false,
+>  	.dma_threshold		= false,
+>  	.cts_event_workaround	= false,
+> 
