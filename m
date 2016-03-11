@@ -1,58 +1,93 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty: amba-pl011: Use 32-bit accesses for SBSA UART
-Date: Fri, 11 Mar 2016 07:02:14 -0800
-Message-ID: <56E2DDF6.2000107@hurleysoftware.com>
-References: <1457415800-8799-1-git-send-email-cov@codeaurora.org>
- <1457678154-2272-1-git-send-email-cov@codeaurora.org>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v4 0/4] ACPI: parse the SPCR table
+Date: Fri, 11 Mar 2016 23:25:13 +0700
+Message-ID: <56E2F169.8030708@linaro.org>
+References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
+ <56D5B5CB.7010702@hurleysoftware.com> <56D8272E.20705@gmail.com>
+ <56D859CC.7010901@hurleysoftware.com> <56D9772B.5000402@linaro.org>
+ <56D9AE15.106@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1457678154-2272-1-git-send-email-cov@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christopher Covington <cov@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Timur Tabi <timur@codeaurora.org>, Jon Masters <jcm@redhat.com>, Mark Langsdorf <mlangsdo@redhat.com>, Andre Przywara <andre.przywara@arm.com>, Dave Martin <dave.martin@linaro.org>, Aleksey Makarov <aleksey.makarov@linaro.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <56D9AE15.106@hurleysoftware.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Aleksey Makarov <amakarov.linux@gmail.com>, linux-acpi@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, "Zheng, Lv" <lv.zheng@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Christopher,
+Hi Peter,
 
-On 03/10/2016 10:35 PM, Christopher Covington wrote:
-> Version 2 of the Server Base System Architecture (SBSAv2) describes the
-> Generic UART registers as 32 bits wide. At least one implementation, found
-> on the Qualcomm Technologies QDF2432, only supports 32 bit accesses.
-> SBSAv3, which describes supported access sizes in greater detail,
-> explicitly requires support for both 16 and 32 bit accesses to all
-> registers (and 8 bit accesses to some but not all). Therefore, for broad
-> compatibility, simply use 32 bit accessors for the SBSA UART.
+You are right, SPCR console should support earlycon.
+I will send next version that will try to follow your recommendations in 
+a week, after I return from vacations.
 
-So this eliminates the need to configure SBSA port via ACPI, correct?
-Thus, Aleksey can drop his "serial: pl011: use SPCR to setup 32-bit access"?
+As we discussed with Christopher, "serial: pl011: use SPCR to setup 
+32-bit access" will be dropped.
 
+Thank you
+Aleksey Makarov
 
-> Tested-by: Mark Langsdorf <mlangsdo@redhat.com>
-> Signed-off-by: Christopher Covington <cov@codeaurora.org>
-> ---
-> Changes new in v2:
-> * Fixed from address
-> * Elaborated on forward (SBSAv3) compatibility in commit message
-> * Included Mark Langsdorf's Tested-by, which now covers:
->     QDF2432
->     Seattle
->     X-Gene 1
-> ---
->  drivers/tty/serial/amba-pl011.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index c0da0cc..ffb5eb8 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -121,6 +121,7 @@ static struct vendor_data vendor_arm = {
->  
->  static struct vendor_data vendor_sbsa = {
->  	.reg_offset		= pl011_std_offsets,
-> +	.access_32b		= true,
->  	.oversampling		= false,
->  	.dma_threshold		= false,
->  	.cts_event_workaround	= false,
-> 
+On 04.03.2016 22:47, Peter Hurley wrote:
+> On 03/04/2016 03:53 AM, Aleksey Makarov wrote:
+>>
+>>
+>> On 03/03/2016 06:35 PM, Peter Hurley wrote:
+>>> On 03/03/2016 03:59 AM, Aleksey Makarov wrote:
+>>>>
+>>>>
+>>>> On 03/01/2016 06:31 PM, Peter Hurley wrote:
+>>>>> On 02/29/2016 04:02 AM, Aleksey Makarov wrote:
+>>>>>> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
+>>>>>> Console Redirection Table) [2] as a mandatory ACPI table that
+>>>>>> specifies the configuration of serial console.
+>>>>>>
+>>>>>> Introduce a new function acpi_console_check().  At the uart port
+>>>>>> registration, this function checks if the ACPI SPCR table specifies
+>>>>>> its argument of type struct uart_port to be a console
+>>>>>> and if so calls add_preferred_console().
+>>>>>
+>>>>> How will a user enable an earlycon on the same console as the SPCR
+>>>>> console if there is no DBG2 table?
+>>>>
+>>>> ...
+>>>> [    0.000000] earlycon: pl11 at MMIO 0x0000000009000000 (options '')
+>>>> [    0.000000] bootconsole [pl11] enabled
+>>>> ...
+>>>> [    0.000000] Kernel command line:  root=/dev/vda1 rw systemd.show_status=no acpi=force earlycon=pl011,0x9000000
+>>>> ...
+>>>> [    0.318248] ACPI: SPCR: adding preferred console [ttyAMA0]
+>>>> [    0.318736] ARMH0011:00: ttyAMA0 at MMIO 0x9000000 (irq = 5, base_baud = 0) is a SBSA
+>>>> [    0.319502] console [ttyAMA0] enabled
+>>>> [    0.319502] console [ttyAMA0] enabled
+>>>> [    0.319933] bootconsole [pl11] disabled
+>>>> [    0.319933] bootconsole [pl11] disabled
+>>>> ...
+>>>>
+>>>> Why?
+>>>
+>>> That's pretty disingenuous; via command line?
+>>>
+>>> By that measure, none of your patches are required because a user
+>>> can already start both console and earlycon without them.
+>>>
+>>> With the console location specified in the SPCR, earlycon should
+>>> be opt-in on the command-line simply with "earlycon" command-line
+>>> parameter.
+>>
+>> Yes.  That's why we have SPCR *and* DBG2.
+>> DBG2 specifies where we should run earlycon.
+>>
+>>>>> How will a user enable an earlycon on the same console as the SPCR
+>>>>> console if there is no DBG2 table?
+>>
+>> In no way.  You need DBG2 to run earlycon.
+>
+> And that's an entirely arbitrary decision being made by you.
+> Which I think is unnecessarily limited.
+>
+>
+>> (If you don't want to specify it's address etc explicitly)
+>
+>
+
