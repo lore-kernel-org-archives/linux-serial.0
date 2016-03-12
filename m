@@ -1,48 +1,50 @@
-From: Christopher Covington <cov@codeaurora.org>
-Subject: Re: [PATCH v2] tty: amba-pl011: Use 32-bit accesses for SBSA UART
-Date: Sat, 12 Mar 2016 06:38:44 +0700
-Message-ID: <34828481-F042-423A-BCE9-824AAFFA1A13@codeaurora.org>
-References: <1457415800-8799-1-git-send-email-cov@codeaurora.org> <1457678154-2272-1-git-send-email-cov@codeaurora.org> <56E2DDF6.2000107@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2] serial: 8250_ingenic: Remove global variable
+Date: Sat, 12 Mar 2016 12:22:13 +0100
+Message-ID: <1457781733-2643-1-git-send-email-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56E2DDF6.2000107@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Timur Tabi <timur@codeaurora.org>, Jon Masters <jcm@redhat.com>, Mark Langsdorf <mlangsdo@redhat.com>, Andre Przywara <andre.przywara@arm.com>, Dave Martin <dave.martin@arm.com>, Aleksey Makarov <aleksey.makarov@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Peter Hurley <peter@hurleysoftware.com>, Paul Cercueil <paul@crapouillou.net>, Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ v2: Added changelog; nothing else changed
+ v1: First version of this patch
+ drivers/tty/serial/8250/8250_ingenic.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-
-On March 11, 2016 10:02:14 PM GMT+07:00, Peter Hurley <peter@hurleysoftware.com> wrote:
->Hi Christopher,
->
->On 03/10/2016 10:35 PM, Christopher Covington wrote:
->> Version 2 of the Server Base System Architecture (SBSAv2) describes
->the
->> Generic UART registers as 32 bits wide. At least one implementation,
->found
->> on the Qualcomm Technologies QDF2432, only supports 32 bit accesses.
->> SBSAv3, which describes supported access sizes in greater detail,
->> explicitly requires support for both 16 and 32 bit accesses to all
->> registers (and 8 bit accesses to some but not all). Therefore, for
->broad
->> compatibility, simply use 32 bit accessors for the SBSA UART.
->
->So this eliminates the need to configure SBSA port via ACPI, correct?
->Thus, Aleksey can drop his "serial: pl011: use SPCR to setup 32-bit
->access"?
-
-Yes.
-
-Thanks,
-Christopher Covington
-
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+index 155b785..aa1f156 100644
+--- a/drivers/tty/serial/8250/8250_ingenic.c
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -49,8 +49,6 @@ static const struct of_device_id of_match[];
+ #define UART_MCR_FCM	BIT(6)
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
+-static struct earlycon_device *early_device;
+-
+ static uint8_t __init early_in(struct uart_port *port, int offset)
+ {
+ 	return readl(port->membase + (offset << 2));
+@@ -75,6 +73,8 @@ static void __init ingenic_early_console_putc(struct uart_port *port, int c)
+ static void __init ingenic_early_console_write(struct console *console,
+ 					      const char *s, unsigned int count)
+ {
++	struct earlycon_device *early_device = console->data;
++
+ 	uart_console_write(&early_device->port, s, count,
+ 			   ingenic_early_console_putc);
+ }
+@@ -124,7 +124,7 @@ static int __init ingenic_early_console_setup(struct earlycon_device *dev,
+ 	early_out(port, UART_DLM, (divisor >> 8) & 0xff);
+ 	early_out(port, UART_LCR, UART_LCR_WLEN8);
+ 
+-	early_device = dev;
++	dev->con->data = dev;
+ 	dev->con->write = ingenic_early_console_write;
+ 
+ 	return 0;
 -- 
-Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
-Sent from my Snapdragon powered Android device with K-9 Mail. Please excuse my brevity.
+2.7.0
