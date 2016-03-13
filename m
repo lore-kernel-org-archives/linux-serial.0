@@ -1,40 +1,30 @@
-From: Thomas Gleixner <tglx@linutronix.de>
+From: "Maarten Brock" <m.brock@vanmierlo.com>
 Subject: Re: [PATCH] tty: serial: sc16is7xx: implemented our own oneshot-like
  handling
-Date: Sun, 13 Mar 2016 11:25:05 +0100 (CET)
-Message-ID: <alpine.DEB.2.11.1603131103020.3657@nanos>
-References: <1457692476-19082-1-git-send-email-sean.nyekjaer@prevas.dk>
+Date: Sun, 13 Mar 2016 20:05:58 +0100
+Message-ID: <20160313200558.06543fce@kerio.vanmierlo.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-rt-users-owner@vger.kernel.org>
-In-Reply-To: <1457692476-19082-1-git-send-email-sean.nyekjaer@prevas.dk>
 Sender: linux-rt-users-owner@vger.kernel.org
-To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Cc: linux-serial@vger.kernel.org, Josh Cartwright <joshc@ni.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>
+To: linux-serial@vger.kernel.org
+Cc: Thomas Gleixner <tglx@linutronix.de>, Sean Nyekjaer <sean.nyekjaer@prevas.dk>, Josh Cartwright <joshc@ni.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 11 Mar 2016, Sean Nyekjaer wrote:
+I also wonder why this driver doesn't use threaded interrupts, just like the
+MAX310x driver it is based upon.
 
->  static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
->  {
->  	struct sc16is7xx_port *s = (struct sc16is7xx_port *)dev_id;
-> +	int i;
-> +
-> +	for (i = 0; i < s->devtype->nr_uart; ++i)
-> +		disable_irq_nosync(s->p[i].port.irq);
+Maarten
 
-Aside of the lack of a changelog. This is completely bogus. You disable the
-same interrupt a gazillion of times. 
 
->  	queue_kthread_work(&s->kworker, &s->irq_work);
-
-This driver should use a threaded interrupt instead of trying to emulate it
-via dis/enable_irq and a worker thread.
-
-Then you simply call c16is7xx_port_irq() right from the interrupt routine and
-the core code deals with the interrupt mask/unmask automatically.
-
-Thanks,
-
-	tglx
-
+> This driver should use a threaded interrupt instead of trying to emulate it
+> via dis/enable_irq and a worker thread.
+> 
+> Then you simply call c16is7xx_port_irq() right from the interrupt routine
+> and the core code deals with the interrupt mask/unmask automatically.
+> 
+> Thanks,
+> 
+> 	tglx
