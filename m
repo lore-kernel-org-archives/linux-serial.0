@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 4/9] serial: doc: Document .unthrottle()
-Date: Mon, 14 Mar 2016 16:16:12 +0100
-Message-ID: <1457968577-22379-5-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 7/9] serial: doc: Spelling s/divsor/divisor/
+Date: Mon, 14 Mar 2016 16:16:15 +0100
+Message-ID: <1457968577-22379-8-git-send-email-geert+renesas@glider.be>
 References: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-doc-owner@vger.kernel.org>
 In-Reply-To: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
@@ -12,27 +12,22 @@ List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- Documentation/serial/driver | 7 +++++++
- 1 file changed, 7 insertions(+)
+ Documentation/serial/driver | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-index 50f3d94ed50b341e..3b2a97d5ecc79491 100644
+index 09e73e061fcf795c..3706a465fe2d7427 100644
 --- a/Documentation/serial/driver
 +++ b/Documentation/serial/driver
-@@ -133,6 +133,13 @@ hardware.
+@@ -380,7 +380,7 @@ uart_get_baud_rate(port,termios,old,min,max)
+ 	Interrupts: n/a
  
- 	Locking: none.
+ uart_get_divisor(port,baud)
+-	Return the divsor (baud_base / baud) for the specified baud
++	Return the divisor (baud_base / baud) for the specified baud
+ 	rate, appropriately rounded.
  
-+  unthrottle(port)
-+	Notify the serial driver that characters can now be sent to the serial
-+	port without fear of overrunning the input buffers of the line
-+	disciplines.
-+
-+	Locking: none.
-+
-   send_xchar(port,ch)
- 	Transmit a high priority character, even if the port is stopped.
- 	This is used to implement XON/XOFF flow control and tcflow().  If
+ 	If 38400 baud and custom divisor is selected, return the
 -- 
 1.9.1
 
