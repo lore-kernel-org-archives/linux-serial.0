@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 8/9] serial: doc: Grammar s/function are/functions are/
-Date: Mon, 14 Mar 2016 16:16:16 +0100
-Message-ID: <1457968577-22379-9-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 3/9] serial: doc: Document .throttle()
+Date: Mon, 14 Mar 2016 16:16:11 +0100
+Message-ID: <1457968577-22379-4-git-send-email-geert+renesas@glider.be>
 References: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-doc-owner@vger.kernel.org>
 In-Reply-To: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
@@ -12,22 +12,27 @@ List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- Documentation/serial/driver | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/serial/driver | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-index 3706a465fe2d7427..ba84d1f38ca1d1e6 100644
+index 61d520dea4c6e13a..50f3d94ed50b341e 100644
 --- a/Documentation/serial/driver
 +++ b/Documentation/serial/driver
-@@ -458,7 +458,7 @@ mctrl_gpio_init(port, idx):
+@@ -126,6 +126,13 @@ hardware.
+ 	Interrupts: locally disabled.
+ 	This call must not sleep
  
- mctrl_gpio_free(dev, gpios):
- 	This will free the requested gpios in mctrl_gpio_init().
--	As devm_* function are used, there's generally no need to call
-+	As devm_* functions are used, there's generally no need to call
- 	this function.
- 
- mctrl_gpio_to_gpiod(gpios, gidx)
++  throttle(port)
++	Notify the serial driver that input buffers for the line discipline are
++	close to full, and it should somehow signal that no more characters
++	should be sent to the serial port.
++
++	Locking: none.
++
+   send_xchar(port,ch)
+ 	Transmit a high priority character, even if the port is stopped.
+ 	This is used to implement XON/XOFF flow control and tcflow().  If
 -- 
 1.9.1
 
