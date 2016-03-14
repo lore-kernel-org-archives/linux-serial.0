@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 5/9] serial: doc: Document .set_ldisc()
-Date: Mon, 14 Mar 2016 16:16:13 +0100
-Message-ID: <1457968577-22379-6-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 9/9] serial: doc: Correct return type of mctrl_gpio_to_gpiod()
+Date: Mon, 14 Mar 2016 16:16:17 +0100
+Message-ID: <1457968577-22379-10-git-send-email-geert+renesas@glider.be>
 References: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-doc-owner@vger.kernel.org>
 In-Reply-To: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
@@ -12,25 +12,23 @@ List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- Documentation/serial/driver | 5 +++++
- 1 file changed, 5 insertions(+)
+ Documentation/serial/driver | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-index 3b2a97d5ecc79491..3b08df5bcc17e944 100644
+index ba84d1f38ca1d1e6..65de49a4b39e5baf 100644
 --- a/Documentation/serial/driver
 +++ b/Documentation/serial/driver
-@@ -259,6 +259,11 @@ hardware.
- 	Interrupts: caller dependent.
- 	This call must not sleep
+@@ -462,7 +462,8 @@ mctrl_gpio_free(dev, gpios):
+ 	this function.
  
-+  set_ldisc(port,termios)
-+	Notifier for discipline change. See Documentation/serial/tty.txt.
-+
-+	Locking: caller holds port->mutex
-+
-   pm(port,state,oldstate)
- 	Perform any power management related activities on the specified
- 	port.  State indicates the new state (defined by
+ mctrl_gpio_to_gpiod(gpios, gidx)
+-	This returns the gpio structure associated to the modem line index.
++	This returns the gpio_desc structure associated to the modem line
++	index.
+ 
+ mctrl_gpio_set(gpios, mctrl):
+ 	This will sets the gpios according to the mctrl state.
 -- 
 1.9.1
 
