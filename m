@@ -1,36 +1,44 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 6/9] serial: doc: .break_ctl() is called with port->mutex() held
-Date: Mon, 14 Mar 2016 16:16:14 +0100
-Message-ID: <1457968577-22379-7-git-send-email-geert+renesas@glider.be>
-References: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-doc-owner@vger.kernel.org
-To: Russell King <rmk@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jonathan Corbet <corbet@lwn.net>
-Cc: linux-serial@vger.kernel.org, linux-doc@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Jakub =?UTF-8?B?S2ljacWEc2tp?= <moorray3@wp.pl>
+Subject: Re: [PATCH] tty: serial: sc16is7xx: implemented our own
+ oneshot-like handling
+Date: Mon, 14 Mar 2016 23:13:29 +0000
+Message-ID: <20160314231329.1c3a2978@laptop>
+References: <1457692476-19082-1-git-send-email-sean.nyekjaer@prevas.dk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <1457692476-19082-1-git-send-email-sean.nyekjaer@prevas.dk>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Cc: linux-serial@vger.kernel.org, Josh Cartwright <joshc@ni.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>, Thomas Gleixner <tglx@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-Note that mutex_lock() should not be called with interrupts disabled.
+On Fri, 11 Mar 2016 11:34:36 +0100, Sean Nyekjaer wrote:
+> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+> ---
+> This patch depends on patch "sc16is7xx: drop bogus use of IRQF_ONESHOT" 
+> 
+>  drivers/tty/serial/sc16is7xx.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 73d46e2..96d1f3e 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -706,13 +706,20 @@ static void sc16is7xx_ist(struct kthread_work *ws)
+>  	struct sc16is7xx_port *s = to_sc16is7xx_port(ws, irq_work);
+>  	int i;
+>  
+> -	for (i = 0; i < s->devtype->nr_uart; ++i)
+> +	for (i = 0; i < s->devtype->nr_uart; ++i) {
+>  		sc16is7xx_port_irq(s, i);
+> +		enable_irq(s->p[i].port.irq);
+> +	}
+> +
+>  }
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- Documentation/serial/driver | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-index 3b08df5bcc17e944..09e73e061fcf795c 100644
---- a/Documentation/serial/driver
-+++ b/Documentation/serial/driver
-@@ -177,8 +177,7 @@ hardware.
- 	should be terminated when another call is made with a zero
- 	ctl.
- 
--	Locking: none.
--	Interrupts: caller dependent.
-+	Locking: caller holds port->mutex
- 	This call must not sleep
- 
-   startup(port)
--- 
-1.9.1
-
+Apart from needless multiple disable/enable (as tglx commented)
+I think you also have to re-read the IRQ status (i.e. call
+sc16is7xx_port_irq()) because IRQs coming between status read and
+enable_irq may get lost for some IRQ controllers.
