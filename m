@@ -1,40 +1,48 @@
 From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
 Subject: Re: [PATCH] tty: serial: sc16is7xx: implemented our own oneshot-like
  handling
-Date: Mon, 14 Mar 2016 07:17:51 +0100
-Message-ID: <56E6578F.6000907@prevas.dk>
-References: <20160313200558.06543fce@kerio.vanmierlo.com>
+Date: Mon, 14 Mar 2016 07:21:14 +0100
+Message-ID: <56E6585A.3060203@prevas.dk>
+References: <1457692476-19082-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <alpine.DEB.2.11.1603131103020.3657@nanos>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-rt-users-owner@vger.kernel.org>
-In-Reply-To: <20160313200558.06543fce@kerio.vanmierlo.com>
+In-Reply-To: <alpine.DEB.2.11.1603131103020.3657@nanos>
 Sender: linux-rt-users-owner@vger.kernel.org
-To: Maarten Brock <m.brock@vanmierlo.com>, linux-serial@vger.kernel.org
-Cc: Thomas Gleixner <tglx@linutronix.de>, Josh Cartwright <joshc@ni.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-serial@vger.kernel.org, Josh Cartwright <joshc@ni.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-rt-users@vger.kernel.org, Jon Ringle <jringle@gridpoint.com>
 List-Id: linux-serial@vger.kernel.org
 
 
 
-On 2016-03-13 20:05, Maarten Brock wrote:
-> I also wonder why this driver doesn't use threaded interrupts, just like the
-> MAX310x driver it is based upon.
+On 2016-03-13 11:25, Thomas Gleixner wrote:
+> On Fri, 11 Mar 2016, Sean Nyekjaer wrote:
 >
-> Maarten
-Me too.. :-) But both I and Sebastian Andrzej Siewior have proposed a 
-PATCH for that but it was turned down.
+>>   static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
+>>   {
+>>   	struct sc16is7xx_port *s = (struct sc16is7xx_port *)dev_id;
+>> +	int i;
+>> +
+>> +	for (i = 0; i < s->devtype->nr_uart; ++i)
+>> +		disable_irq_nosync(s->p[i].port.irq);
+> Aside of the lack of a changelog. This is completely bogus. You disable the
+> same interrupt a gazillion of times.
+I can't see why the interrupt is disabled a gazillion times.
+When the irq is disabled the function will not be called before it's 
+enabled again... Or have i missed something?
+>>   	queue_kthread_work(&s->kworker, &s->irq_work);
+> This driver should use a threaded interrupt instead of trying to emulate it
+> via dis/enable_irq and a worker thread.
+I agree, I and "Sebastian Andrzej Siewior" have proposed this fix, but 
+it was turned down. :-)
 >
+> Then you simply call c16is7xx_port_irq() right from the interrupt routine and
+> the core code deals with the interrupt mask/unmask automatically.
 >
->> This driver should use a threaded interrupt instead of trying to emulate it
->> via dis/enable_irq and a worker thread.
->>
->> Then you simply call c16is7xx_port_irq() right from the interrupt routine
->> and the core code deals with the interrupt mask/unmask automatically.
->>
->> Thanks,
->>
->> 	tglx
-Remember not to top post :-) and use a proper mail client that uses 
-In-Reply-To...
-
+> Thanks,
+>
+> 	tglx
+>
 /Sean
