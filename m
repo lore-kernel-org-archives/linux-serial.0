@@ -1,43 +1,33 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 5/9] serial: doc: Document .set_ldisc()
-Date: Wed, 16 Mar 2016 09:49:46 -0700
-Message-ID: <56E98EAA.8040103@hurleysoftware.com>
-References: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
- <1457968577-22379-6-git-send-email-geert+renesas@glider.be>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1457968577-22379-6-git-send-email-geert+renesas@glider.be>
-Sender: linux-doc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>, Russell King <rmk@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jonathan Corbet <corbet@lwn.net>
-Cc: linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH 0/4] ARM: dts: r8a777[89]: HSCIF support
+Date: Wed, 16 Mar 2016 18:10:06 +0100
+Message-ID: <1458148210-21800-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: horms@verge.net.au
+Cc: linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, magnus.damm@gmail.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/14/2016 08:16 AM, Geert Uytterhoeven wrote:
+Hi!
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+This adds HSCIF nodes to the r8a7778 and r8a7779 device trees.
+(And the relevant clocks on r8a7778, which are already there on r8a7779.)
 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  Documentation/serial/driver | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-> index 3b2a97d5ecc79491..3b08df5bcc17e944 100644
-> --- a/Documentation/serial/driver
-> +++ b/Documentation/serial/driver
-> @@ -259,6 +259,11 @@ hardware.
->  	Interrupts: caller dependent.
->  	This call must not sleep
->  
-> +  set_ldisc(port,termios)
-> +	Notifier for discipline change. See Documentation/serial/tty.txt.
-> +
-> +	Locking: caller holds port->mutex
-> +
->    pm(port,state,oldstate)
->  	Perform any power management related activities on the specified
->  	port.  State indicates the new state (defined by
-> 
+CU
+Uli
 
+
+Ulrich Hecht (4):
+  ARM: dts: r8a7778: Add HSCIF0/1 clocks
+  ARM: dts: r8a7778: Add HSCIF0/1 device nodes
+  ARM: dts: r8a7779: Add HSCIF0/1 device nodes
+  serial: sh-sci: add r8a7778/9 HSCIF DT bindings
+
+ .../bindings/serial/renesas,sci-serial.txt         |  2 ++
+ arch/arm/boot/dts/r8a7778.dtsi                     | 30 ++++++++++++++++++++++
+ arch/arm/boot/dts/r8a7779.dtsi                     | 26 +++++++++++++++++++
+ include/dt-bindings/clock/r8a7778-clock.h          |  2 ++
+ 4 files changed, 60 insertions(+)
+
+-- 
+2.6.4
