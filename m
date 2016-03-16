@@ -1,28 +1,44 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 1/9] serial: doc: Un-document non-existing uart_write_console()
-Date: Wed, 16 Mar 2016 17:17:55 +0100
-Message-ID: <CAMuHMdWR2GweYOO53ywEv-nZpP=rc8C_MQqW2NADQ0OEmdO-VQ@mail.gmail.com>
+Subject: Re: [PATCH 3/9] serial: doc: Document .throttle()
+Date: Wed, 16 Mar 2016 17:19:46 +0100
+Message-ID: <CAMuHMdUhC1rFW+QvWengK61p-CPbHrqafG+PiBg1ORQ2cUTHsg@mail.gmail.com>
 References: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
-	<1457968577-22379-2-git-send-email-geert+renesas@glider.be>
-	<56E9835F.1020604@hurleysoftware.com>
+	<1457968577-22379-4-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <56E9835F.1020604@hurleysoftware.com>
+In-Reply-To: <1457968577-22379-4-git-send-email-geert+renesas@glider.be>
 Sender: linux-doc-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Russell King <rmk@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jonathan Corbet <corbet@lwn.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Russell King <rmk@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jonathan Corbet <corbet@lwn.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 16, 2016 at 5:01 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 03/14/2016 08:16 AM, Geert Uytterhoeven wrote:
->> uart_write_console() never existed, not even when the "new
->> uart_write_console function" was documented.
+On Mon, Mar 14, 2016 at 4:16 PM, Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  Documentation/serial/driver | 7 +++++++
+>  1 file changed, 7 insertions(+)
 >
-> Right. Should be uart_console_write()
+> diff --git a/Documentation/serial/driver b/Documentation/serial/driver
+> index 61d520dea4c6e13a..50f3d94ed50b341e 100644
+> --- a/Documentation/serial/driver
+> +++ b/Documentation/serial/driver
+> @@ -126,6 +126,13 @@ hardware.
+>         Interrupts: locally disabled.
+>         This call must not sleep
+>
+> +  throttle(port)
+> +       Notify the serial driver that input buffers for the line discipline are
+> +       close to full, and it should somehow signal that no more characters
+> +       should be sent to the serial port.
+> +
+> +       Locking: none.
+> +
 
-Thx, I checked a few other possibilities, but couldn't find them.
-Will update.
+In the mean time I discovered this (and .unthrottle()) is used with hardware
+assisted flow control only, and when it was introduced.
+Will update the documentation accordingly.
 
 Gr{oetje,eeting}s,
 
