@@ -1,13 +1,13 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 1/4] ARM: dts: r8a7778: Add HSCIF0/1 clocks
-Date: Thu, 17 Mar 2016 08:54:22 +0100
-Message-ID: <CAMuHMdUrmesWe6nPotGVebKa5Hda61pecm4Bh7Ab_YbPv8DyAA@mail.gmail.com>
+Subject: Re: [PATCH 2/4] ARM: dts: r8a7778: Add HSCIF0/1 device nodes
+Date: Thu, 17 Mar 2016 08:58:12 +0100
+Message-ID: <CAMuHMdWAYFc5tsZGuF1kp=6kQ-v=sV346=voPP5zBQkjgGX=4A@mail.gmail.com>
 References: <1458148210-21800-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-	<1458148210-21800-2-git-send-email-ulrich.hecht+renesas@gmail.com>
+	<1458148210-21800-3-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1458148210-21800-2-git-send-email-ulrich.hecht+renesas@gmail.com>
+In-Reply-To: <1458148210-21800-3-git-send-email-ulrich.hecht+renesas@gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 Cc: Simon Horman <horms@verge.net.au>, linux-renesas-soc@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
