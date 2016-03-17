@@ -1,47 +1,43 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC 3/5] serial: sh-sci: Always set TIOCM_CTS in .get_mctrl() callback
-Date: Thu, 17 Mar 2016 14:47:27 +0100
-Message-ID: <1458222449-12324-4-git-send-email-geert+renesas@glider.be>
-References: <1458222449-12324-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1458222449-12324-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Magnus Damm <magnus.damm@gmail.com>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [PATCH v4 1/4] ACPI: parse SPCR and enable matching console
+Date: Thu, 17 Mar 2016 12:20:05 -0500
+Message-ID: <CAOZdJXVkA8Rbxe-ExL7mYQ=gib-0YPmoizXds3+0SFB9DBx0QA@mail.gmail.com>
+References: <1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org>
+	<1456747355-15692-2-git-send-email-aleksey.makarov@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1456747355-15692-2-git-send-email-aleksey.makarov@linaro.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, "Zheng, Lv" <lv.zheng@intel.com>, Len Brown <lenb@kernel.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Documentation/serial/driver clearly states:
+On Mon, Feb 29, 2016 at 6:02 AM, Aleksey Makarov
+<aleksey.makarov@linaro.org> wrote:
+> 'ARM Server Base Boot Requiremets' [1] mentions SPCR (Serial Port
+> Console Redirection Table) [2] as a mandatory ACPI table that
+> specifies the configuration of serial console.
+>
+> Parse this table and check if any registered console match the
+> description.  If it does, enable that console.
+>
+> Introduce a new function acpi_console_check().  At the uart port
+> registration, this function checks if the ACPI SPCR table specifies
+> its argument of type struct uart_port to be a console
+> and if so calls add_preferred_console().
+>
+> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+> [2] http://msdn.microsoft.com/en-us/library/windows/hardware/dn639131(v=vs.85).aspx
+>
+> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
 
-    If the port does not support CTS, DCD or DSR, the driver should
-    indicate that the signal is permanently active.
+Tested-by: Timur Tabi <timur@codeaurora.org>
 
-Hence always set TIOCM_CTS, as we currently don't look at the CTS
-hardware line state at all.
+I know another version of patch is coming, but I tested this version
+and it works.
 
-FWIW, this fixes the transmit path when hardware-assisted flow control
-is enabled, and userspace enables CRTSCTS.
-The receive path is still broken, as RTS is never asserted.
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/tty/serial/sh-sci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 0130feb069aee02f..135f836642ab1c5a 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1835,9 +1835,9 @@ static unsigned int sci_get_mctrl(struct uart_port *port)
- {
- 	/*
- 	 * CTS/RTS is handled in hardware when supported, while nothing
--	 * else is wired up. Keep it simple and simply assert DSR/CAR.
-+	 * else is wired up. Keep it simple and simply assert CTS/DSR/CAR.
- 	 */
--	return TIOCM_DSR | TIOCM_CAR;
-+	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
- }
- 
- static void sci_break_ctl(struct uart_port *port, int break_state)
 -- 
-1.9.1
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project.
