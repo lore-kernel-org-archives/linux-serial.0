@@ -1,37 +1,59 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 0/4] ARM: dts: r8a777[89]: HSCIF support
-Date: Thu, 17 Mar 2016 09:06:12 +0100
-Message-ID: <CAMuHMdUCD8c3vA5YWaCavr3TMso0BGrxidQHbH-2WP593ZRdiA@mail.gmail.com>
-References: <1458148210-21800-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH/RFC 0/5] serial: sh-sci: Hardware Flow Control Updates
+Date: Thu, 17 Mar 2016 14:47:24 +0100
+Message-ID: <1458222449-12324-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1458148210-21800-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Simon Horman <horms@verge.net.au>, linux-renesas-soc@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Magnus Damm <magnus.damm@gmail.com>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ulrich,
+	Hi all,
 
-On Wed, Mar 16, 2016 at 6:10 PM, Ulrich Hecht
-<ulrich.hecht+renesas@gmail.com> wrote:
-> This adds HSCIF nodes to the r8a7778 and r8a7779 device trees.
-> (And the relevant clocks on r8a7778, which are already there on r8a7779.)
+This RFC patch series contains updates to the Renesas SCI UART driver,
+related to hardware flow control:
+  - Device Tree binding updates for GPIO-controlled modem lines, and for
+    dedicated RTS/CTS modem lines,
+  - Driver support for GPIO-controlled modem lines, using the
+    SERIAL_MCTRL_GPIO helpers,
+  - Some preparations for fixing hardware-assisted flow control using
+    the dedicated RTS/CTS modem lines later.
 
-Just wondering: have you tested this?
+This was tested on r8a7791/koelsch, using UART and GPIO pins on expansion
+connectors (I've pushed a few more DT overlays for testing to the
+topic/renesas-overlays branch of
+https://git.kernel.org/cgit/linux/kernel/git/geert/renesas-drivers.git)
 
-It seems serial0 on Bock-W can be pinmuxed to HSCIF0 instead of SCIF0.
-On Marzen it's less easy, probably you need physical access to expansion
-connectors.
+Testing for regressions on platforms without DT and/or GPIOLIB support
+(SuperH) would be appreciated.
+Compile-tested on ecovec24_defconfig(GPIOLIB=y) and se7780_defconfig
+(GPIOLIB=n).
+
+Thanks for your comments!
+
+Geert Uytterhoeven (5):
+  serial: sh-sci: Update DT binding documentation for GPIO modem lines
+  serial: sh-sci: Update DT binding documentation for dedicated RTS/CTS
+  serial: sh-sci: Always set TIOCM_CTS in .get_mctrl() callback
+  serial: sh-sci: Add support for GPIO-controlled modem lines
+  serial: sh-sci: Replace SCIx_HAVE_RTSCTS by standard UPF_HARD_FLOW
+
+ .../bindings/serial/renesas,sci-serial.txt         |  8 +++++
+ drivers/tty/serial/Kconfig                         |  1 +
+ drivers/tty/serial/sh-sci.c                        | 41 +++++++++++++++++++---
+ include/linux/serial_sci.h                         |  6 ----
+ 4 files changed, 46 insertions(+), 10 deletions(-)
+
+-- 
+1.9.1
 
 Gr{oetje,eeting}s,
 
-                        Geert
+						Geert
 
 --
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
 In personal conversations with technical people, I call myself a hacker. But
 when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+							    -- Linus Torvalds
