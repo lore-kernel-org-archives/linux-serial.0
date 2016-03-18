@@ -1,66 +1,55 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2] serial: 8250_ingenic: Remove global variable
-Date: Fri, 18 Mar 2016 08:30:36 -0700
-Message-ID: <56EC1F1C.2070402@hurleysoftware.com>
-References: <1457781733-2643-1-git-send-email-paul@crapouillou.net>
+From: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Subject: Re: [PATCH] serial: Make SERIAL_MVEBU_UART depend on ARCH_MVEBU
+Date: Fri, 18 Mar 2016 17:26:47 +0100
+Message-ID: <87mvpvoipk.fsf@free-electrons.com>
+References: <1458305151-6140-1-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1457781733-2643-1-git-send-email-paul@crapouillou.net>
+In-Reply-To: <1458305151-6140-1-git-send-email-geert@linux-m68k.org> (Geert
+	Uytterhoeven's message of "Fri, 18 Mar 2016 13:45:51 +0100")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Paul Burton <paul.burton@imgtec.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Wilson Ding <dingwei@marvell.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Paul,
+Hi Geert,
+ 
+ On ven., mars 18 2016, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 
-On 03/12/2016 03:22 AM, Paul Cercueil wrote:
+> Enabling support for the UART on Marvell EBU SoCs only make sense when
+> compiling for Marvell EBU SoCs, unless compile-testing.
+>
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-Changelog?
+Acked-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Thanks,
+
+Gregory
+
 > ---
->  v2: Added changelog; nothing else changed
->  v1: First version of this patch
->  drivers/tty/serial/8250/8250_ingenic.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-> index 155b785..aa1f156 100644
-> --- a/drivers/tty/serial/8250/8250_ingenic.c
-> +++ b/drivers/tty/serial/8250/8250_ingenic.c
-> @@ -49,8 +49,6 @@ static const struct of_device_id of_match[];
->  #define UART_MCR_FCM	BIT(6)
+>  drivers/tty/serial/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 13d4ed6caac4a78b..9ce164db25885009 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1604,6 +1604,7 @@ config SERIAL_STM32_CONSOLE
 >  
->  #ifdef CONFIG_SERIAL_EARLYCON
-> -static struct earlycon_device *early_device;
-> -
->  static uint8_t __init early_in(struct uart_port *port, int offset)
->  {
->  	return readl(port->membase + (offset << 2));
-> @@ -75,6 +73,8 @@ static void __init ingenic_early_console_putc(struct uart_port *port, int c)
->  static void __init ingenic_early_console_write(struct console *console,
->  					      const char *s, unsigned int count)
->  {
-> +	struct earlycon_device *early_device = console->data;
-> +
->  	uart_console_write(&early_device->port, s, count,
->  			   ingenic_early_console_putc);
->  }
-> @@ -124,7 +124,7 @@ static int __init ingenic_early_console_setup(struct earlycon_device *dev,
->  	early_out(port, UART_DLM, (divisor >> 8) & 0xff);
->  	early_out(port, UART_LCR, UART_LCR_WLEN8);
->  
-> -	early_device = dev;
-> +	dev->con->data = dev;
+>  config SERIAL_MVEBU_UART
+>  	bool "Marvell EBU serial port support"
+> +	depends on ARCH_MVEBU || COMPILE_TEST
+>  	select SERIAL_CORE
+>  	help
+>  	  This driver is for Marvell EBU SoC's UART. If you have a machine
+> -- 
+> 1.9.1
+>
 
-dev->con->data is already initialized.
-
-Regards,
-Peter Hurley
-
->  	dev->con->write = ingenic_early_console_write;
->  
->  	return 0;
-> 
+-- 
+Gregory Clement, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
