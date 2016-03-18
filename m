@@ -1,32 +1,38 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] serial: Make SERIAL_MVEBU_UART depend on ARCH_MVEBU
-Date: Fri, 18 Mar 2016 13:45:51 +0100
-Message-ID: <1458305151-6140-1-git-send-email-geert@linux-m68k.org>
+Subject: Re: [PATCH] serial-uartlite: fix build warning
+Date: Fri, 18 Mar 2016 13:48:06 +0100
+Message-ID: <CAMuHMdXcBTVQc-r4uEru1eHrzv80JQ6R+epr_aOZWMM0X0g_-g@mail.gmail.com>
+References: <1457615688-27406-1-git-send-email-sudipm.mukherjee@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1457615688-27406-1-git-send-email-sudipm.mukherjee@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Wilson Ding <dingwei@marvell.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Peter Korsgaard <jacmet@sunsite.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Enabling support for the UART on Marvell EBU SoCs only make sense when
-compiling for Marvell EBU SoCs, unless compile-testing.
+On Thu, Mar 10, 2016 at 2:14 PM, Sudip Mukherjee
+<sudipm.mukherjee@gmail.com> wrote:
+> We were getting build warnings about:
+> drivers/tty/serial/uartlite.c: In function =E2=80=98ulite_request_por=
+t=E2=80=99:
+> drivers/tty/serial/uartlite.c:348:21: warning: assignment discards
+>         'const' qualifier from pointer target type
+> port->private_data =3D &uartlite_be;
+>                      ^
+> drivers/tty/serial/uartlite.c:354:22: warning: assignment discards
+>         'const' qualifier from pointer target type
+> port->private_data =3D &uartlite_le;
+>                       ^
+>
+> Fixes: 2905697a82ea ("serial-uartlite: Constify uartlite_be/uartlite_=
+le")
+> Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
- drivers/tty/serial/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 13d4ed6caac4a78b..9ce164db25885009 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1604,6 +1604,7 @@ config SERIAL_STM32_CONSOLE
- 
- config SERIAL_MVEBU_UART
- 	bool "Marvell EBU serial port support"
-+	depends on ARCH_MVEBU || COMPILE_TEST
- 	select SERIAL_CORE
- 	help
- 	  This driver is for Marvell EBU SoC's UART. If you have a machine
--- 
-1.9.1
+Gr{oetje,eeting}s,
+
+                        Geert
