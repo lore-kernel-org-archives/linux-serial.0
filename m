@@ -1,55 +1,61 @@
-From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH] serial: Make SERIAL_MVEBU_UART depend on ARCH_MVEBU
-Date: Fri, 18 Mar 2016 17:26:47 +0100
-Message-ID: <87mvpvoipk.fsf@free-electrons.com>
-References: <1458305151-6140-1-git-send-email-geert@linux-m68k.org>
+From: "Maarten Brock" <m.brock@vanmierlo.com>
+Subject: Re: [PATCH] serial-uartlite: fix build warning
+Date: Fri, 18 Mar 2016 18:48:56 +0100
+Message-ID: <20160318184856.c289c591@kerio.vanmierlo.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1458305151-6140-1-git-send-email-geert@linux-m68k.org> (Geert
-	Uytterhoeven's message of "Fri, 18 Mar 2016 13:45:51 +0100")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Wilson Ding <dingwei@marvell.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Peter Korsgaard <jacmet@sunsite.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
- 
- On ven., mars 18 2016, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+----- Original Message -----
+=46rom: Geert Uytterhoeven [mailto:geert@linux-m68k.org]
+To: Sudip Mukherjee [mailto:sudipm.mukherjee@gmail.com]
+Cc: Peter Korsgaard [mailto:jacmet@sunsite.dk], Greg Kroah-Hartman [mai=
+lto:gregkh@linuxfoundation.org], Jiri Slaby [mailto:jslaby@suse.com], l=
+inux-kernel@vger.kernel.org [mailto:linux-kernel@vger.kernel.org], linu=
+x-serial@vger.kernel.org [mailto:linux-serial@vger.kernel.org]
+Sent: Fri, 18 Mar 2016 13:48:06 +0100
+Subject: Re: [PATCH] serial-uartlite: fix build warning
 
-> Enabling support for the UART on Marvell EBU SoCs only make sense when
-> compiling for Marvell EBU SoCs, unless compile-testing.
->
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-Acked-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+> On Thu, Mar 10, 2016 at 2:14 PM, Sudip Mukherjee
+> <sudipm.mukherjee@gmail.com> wrote:
+> > We were getting build warnings about:
+> > drivers/tty/serial/uartlite.c: In function =E2=80=98ulite_request_p=
+ort=E2=80=99:
+> > drivers/tty/serial/uartlite.c:348:21: warning: assignment discards
+> >         'const' qualifier from pointer target type
+> > port->private_data =3D &uartlite_be;
+> >                      ^
+> > drivers/tty/serial/uartlite.c:354:22: warning: assignment discards
+> >         'const' qualifier from pointer target type
+> > port->private_data =3D &uartlite_le;
+> >                       ^
+> >
+> > Fixes: 2905697a82ea ("serial-uartlite: Constify uartlite_be/uartlit=
+e_le")
+> > Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+>=20
+> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>=20
+> Gr{oetje,eeting}s,
+>=20
+>                         Geert
 
-Thanks,
+Reverting is not the same as fixing.
 
-Gregory
+Rant:
+It is a stupid warning IMHO, but being a compiler writer myself (SDCC) =
+I
+understand how it can arise. If you assign some const pointer to a void
+pointer without an explicit cast gcc does not complain about the comple=
+te
+loss of type, but it does warn about losing constness. In general I'd s=
+ay:
+make up your mind; either warn about both or don't warn about either.
 
-> ---
->  drivers/tty/serial/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 13d4ed6caac4a78b..9ce164db25885009 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1604,6 +1604,7 @@ config SERIAL_STM32_CONSOLE
->  
->  config SERIAL_MVEBU_UART
->  	bool "Marvell EBU serial port support"
-> +	depends on ARCH_MVEBU || COMPILE_TEST
->  	select SERIAL_CORE
->  	help
->  	  This driver is for Marvell EBU SoC's UART. If you have a machine
-> -- 
-> 1.9.1
->
-
--- 
-Gregory Clement, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+Maarten
