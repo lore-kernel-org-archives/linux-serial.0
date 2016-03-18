@@ -1,49 +1,62 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH/RFC 1/5] serial: sh-sci: Update DT binding documentation
- for GPIO modem lines
-Date: Fri, 18 Mar 2016 07:43:36 +0900
-Message-ID: <20160317224336.GD23806@verge.net.au>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH/RFC 4/5] serial: sh-sci: Add support for GPIO-controlled
+ modem lines
+Date: Fri, 18 Mar 2016 09:23:22 +0100
+Message-ID: <CAMuHMdVqS4CGKzFW1OR0Zn0VXba4b2EuNpO-oMSrx+zJgJhaDg@mail.gmail.com>
 References: <1458222449-12324-1-git-send-email-geert+renesas@glider.be>
- <1458222449-12324-2-git-send-email-geert+renesas@glider.be>
+	<1458222449-12324-5-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1458222449-12324-2-git-send-email-geert+renesas@glider.be>
+In-Reply-To: <1458222449-12324-5-git-send-email-geert+renesas@glider.be>
 Sender: linux-sh-owner@vger.kernel.org
 To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, devicetree@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 17, 2016 at 02:47:25PM +0100, Geert Uytterhoeven wrote:
-> Amend the DT bindings for the Renesas SCI driver to allow describing
-> optional GPIO-controlled modem lines, which can be used where dedicated
-> modem lines are not available.
-> 
-> The property naming is dictated by the SERIAL_MCTRL_GPIO helpers.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Cc: devicetree@vger.kernel.org
-> ---
->  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-> index 528c3b90f23cb04b..f8d7b36742967163 100644
-> --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-> +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-> @@ -76,6 +76,9 @@ Optional properties:
->    - dmas: Must contain a list of two references to DMA specifiers, one for
->  	  transmission, and one for reception.
->    - dma-names: Must contain a list of two DMA names, "tx" and "rx".
-> +  - {cts,dsr,dcd,rng,rts,dtr,out1,out2}-gpios: Must contain a GPIO specifier,
-> +    referring to the GPIO pin to be used as the UART's CTS, DSR, DCD, RNG, RTS,
-> +    DTR, OUT1, or OUT2 line.
->  
->  Example:
->  	aliases {
+On Thu, Mar 17, 2016 at 2:47 PM, Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
 
-Hi Geert,
+> @@ -1829,15 +1831,36 @@ static void sci_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>                                         serial_port_in(port, SCFCR) |
+>                                         SCFCR_LOOP);
+>         }
+> +
+> +       mctrl_gpio_set(to_sci_port(port)->gpios, mctrl);
+>  }
+>
+>  static unsigned int sci_get_mctrl(struct uart_port *port)
+>  {
+> +       unsigned int mctrl = 0;
+> +
+> +       mctrl_gpio_get(to_sci_port(port)->gpios, &mctrl);
+> +
+>         /*
+>          * CTS/RTS is handled in hardware when supported, while nothing
+>          * else is wired up. Keep it simple and simply assert CTS/DSR/CAR.
+>          */
+> -       return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
+> +       if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(to_sci_port(port)->gpios,
+> +                                              UART_GPIO_CTS)))
+> +               mctrl |= TIOCM_CTS;
+> +       if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(to_sci_port(port)->gpios,
+> +                                              UART_GPIO_DSR)))
+> +               mctrl |= TIOCM_DSR;
+> +       if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(to_sci_port(port)->gpios,
+> +                                              UART_GPIO_CAR)))
 
-I do not feel strongly about this but I wonder if it
-would make sense to update the example with the new properties.
+Oops, something went wrong during rebase before sending: that should
+have been "UART_GPIO_DCD".
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
