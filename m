@@ -1,39 +1,52 @@
-From: "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
-Subject: Re: [PATCH v3] tty: serial: 8250: add MOXA Smartio MUE boards support
-Date: Sat, 19 Mar 2016 12:13:39 +0300
-Message-ID: <CAJs94Eah9uXVMuXDb-Upd=v-ZTGkXivBD8c0Zbzg5UWDcU9r_g@mail.gmail.com>
-References: <1456341022-8897-1-git-send-email-m.othacehe@gmail.com>
- <56E68636.8000002@gmail.com> <20160319090723.GA8678@gmail.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH/RFC 1/5] serial: sh-sci: Update DT binding documentation
+ for GPIO modem lines
+Date: Sat, 19 Mar 2016 19:04:59 -0500
+Message-ID: <20160320000459.GA18995@rob-hp-laptop>
+References: <1458222449-12324-1-git-send-email-geert+renesas@glider.be>
+ <1458222449-12324-2-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160319090723.GA8678@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mathieu OTHACEHE <m.othacehe@gmail.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, andriy.shevchenko@linux.intel.com, anton.wuerfel@fau.de, phillip.raffeck@fau.de, heikki.krogerus@linux.intel.com, Peter H <hpeter@gmail.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Wang YanQing <udknight@gmail.com>, Jan Beulich <JBeulich@suse.com>, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1458222449-12324-2-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-2016-03-19 12:07 GMT+03:00 Mathieu OTHACEHE <m.othacehe@gmail.com>:
-> Hi,
->
-> Sorry about late reply.
->
-> No I haven't planned to do it soon. Your board is supported by mxser driver (drivers/tty/mxser.c).
-> I think it would be nice to move everything from mxser.c to 8250_moxa.c.
+On Thu, Mar 17, 2016 at 02:47:25PM +0100, Geert Uytterhoeven wrote:
+> Amend the DT bindings for the Renesas SCI driver to allow describing
+> optional GPIO-controlled modem lines, which can be used where dedicated
+> modem lines are not available.
+> 
+> The property naming is dictated by the SERIAL_MCTRL_GPIO helpers.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> ---
+>  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> index 528c3b90f23cb04b..f8d7b36742967163 100644
+> --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> @@ -76,6 +76,9 @@ Optional properties:
+>    - dmas: Must contain a list of two references to DMA specifiers, one for
+>  	  transmission, and one for reception.
+>    - dma-names: Must contain a list of two DMA names, "tx" and "rx".
+> +  - {cts,dsr,dcd,rng,rts,dtr,out1,out2}-gpios: Must contain a GPIO specifier,
+> +    referring to the GPIO pin to be used as the UART's CTS, DSR, DCD, RNG, RTS,
+> +    DTR, OUT1, or OUT2 line.
 
-Last time when I tried to run my moxa PCI board with 3.1(?) and mxser
-it deadlocked my PC from time to time.
-8250_moxa implementation is much more cleaner.
+It would be good to document these in a common location as at least some 
+are already in use. Otherwise,
 
->
-> The problem is mxser supports ISA and PCI boards and I don't have the hardware to test it.
->
-> Mathieu
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-
-
--- 
-With best regards,
-Matwey V. Kornilov
-http://blog.matwey.name
-xmpp://0x2207@jabber.ru
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
