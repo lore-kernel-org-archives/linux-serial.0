@@ -1,13 +1,14 @@
 From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH 1/2] serial: amba-pl011: make platform driver generic
-Date: Mon, 21 Mar 2016 14:47:17 -0500
-Message-ID: <56F04FC5.7040907@codeaurora.org>
+Subject: Re: [PATCH 2/2] serial: amba-pl011: complete support to ZTE uart
+Date: Mon, 21 Mar 2016 15:39:50 -0500
+Message-ID: <56F05C16.1030805@codeaurora.org>
 References: <1457920282-14823-1-git-send-email-jun.nie@linaro.org>
+ <1457920282-14823-2-git-send-email-jun.nie@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1457920282-14823-1-git-send-email-jun.nie@linaro.org>
+In-Reply-To: <1457920282-14823-2-git-send-email-jun.nie@linaro.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,12 +23,17 @@ Cc: jason.liu@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
 Jun Nie wrote:
+> @@ -2570,9 +2608,17 @@ static int pl011_uart_plat_probe(struct platform_device *pdev)
+>   	if (!uap)
+>   		return -ENOMEM;
+>
+> +	uap->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(uap->clk))
+> +		return PTR_ERR(uap->clk);
+> +
 
-> -	snprintf(uap->type, sizeof(uap->type), "SBSA");
-> +	snprintf(uap->type, sizeof(uap->type), "PL011 plat");
-
-I'm not crazy about this.  I think you need to add a "const char *name" 
-field to 'struct vendor_data'.
+I don't this is supposed to be part of your patch, and it breaks my ACPI 
+platform anyway.  Where did it come from?
 
 -- 
 Qualcomm Innovation Center, Inc.
