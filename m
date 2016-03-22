@@ -1,16 +1,15 @@
 From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH 2/2] serial: amba-pl011: complete support to ZTE uart
-Date: Mon, 21 Mar 2016 20:55:52 -0500
-Message-ID: <56F0A628.2080607@codeaurora.org>
+Subject: Re: [PATCH 1/2] serial: amba-pl011: make platform driver generic
+Date: Mon, 21 Mar 2016 20:56:27 -0500
+Message-ID: <56F0A64B.1060406@codeaurora.org>
 References: <1457920282-14823-1-git-send-email-jun.nie@linaro.org>
- <1457920282-14823-2-git-send-email-jun.nie@linaro.org>
- <56F05C16.1030805@codeaurora.org>
- <CABymUCNKOgdLBLr2fZ4KhwmG+R4Zm-LHnfDppV-yiwUjRH4Nyg@mail.gmail.com>
+ <56F04FC5.7040907@codeaurora.org>
+ <CABymUCPMV+L9sRyVPS4rrimr-PcugvGzgVWOCW63psAWY2hSPg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CABymUCNKOgdLBLr2fZ4KhwmG+R4Zm-LHnfDppV-yiwUjRH4Nyg@mail.gmail.com>
+In-Reply-To: <CABymUCPMV+L9sRyVPS4rrimr-PcugvGzgVWOCW63psAWY2hSPg@mail.gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -25,32 +24,10 @@ Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Peter Hurley <peter@hurle
 List-Id: linux-serial@vger.kernel.org
 
 Jun Nie wrote:
-> 2016-03-22 4:39 GMT+08:00 Timur Tabi <timur@codeaurora.org>:
->> Jun Nie wrote:
->>>
->>> @@ -2570,9 +2608,17 @@ static int pl011_uart_plat_probe(struct
->>> platform_device *pdev)
->>>          if (!uap)
->>>                  return -ENOMEM;
->>>
->>> +       uap->clk = devm_clk_get(&pdev->dev, NULL);
->>> +       if (IS_ERR(uap->clk))
->>> +               return PTR_ERR(uap->clk);
->>> +
->>
->>
->> I don't this is supposed to be part of your patch, and it breaks my ACPI
->> platform anyway.  Where did it come from?
->>
-> Is it OK to move to device tree part, I mean if (pdev->dev.of_node)
-> clause? It is part of my patch, I am not aware ACPI requirement on
-> this.
+> Will address this suggestion in next version patch. How about "PL011
+> SBSA" "PL011 ZTE" "PL011 ARM rev1" "PL011 ST rev1"?
 
-But this is not restricted to the ZTE platform.  Your patch says, 
-"compete support to ZTE uart" (maybe you should reword that to "add 
-support for ZTE UARTs").  However, this change affects ALL platforms. 
-If you move it to the device tree part, it will affect ALL device tree 
-platforms.  That's not "adding ZTE support".
+That's fine.
 
 -- 
 Sent by an employee of the Qualcomm Innovation Center, Inc.
