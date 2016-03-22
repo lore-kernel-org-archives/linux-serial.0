@@ -1,103 +1,138 @@
-From: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v5 1/6] of/serial: move earlycon early_param handling to serial
-Date: Tue, 22 Mar 2016 13:46:28 +0300
-Message-ID: <1458643595-14719-2-git-send-email-aleksey.makarov@linaro.org>
-References: <1458643595-14719-1-git-send-email-aleksey.makarov@linaro.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1458643595-14719-1-git-send-email-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J . Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Len Brown <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Graeme Gregory <graeme.gregory-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Al Stone <ahs3-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Christopher Covington <cov-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Yury Norov <ynorov-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "Zheng, Lv" <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: [PATCH v5 0/6] ACPI: parse the SPCR table
+Date: Tue, 22 Mar 2016 13:46:27 +0300
+Message-ID: <1458643595-14719-1-git-send-email-aleksey.makarov@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, "Zheng, Lv" <lv.zheng@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
+Console Redirection Table) [2] as a mandatory ACPI table that
+specifies the configuration of serial console.
 
-We have multiple "earlycon" early_param handlers - merge the DT one into
-the main earlycon one.  It's a cleanup that also will be useful
-to decide if ACPI SPCR earlycon should be set up.
+Move earlycon early_param handling to serial to parse earlycon option once
 
-Signed-off-by: Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Signed-off-by: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
----
- drivers/of/fdt.c              | 11 +----------
- drivers/tty/serial/earlycon.c |  3 ++-
- include/linux/of_fdt.h        |  2 ++
- 3 files changed, 5 insertions(+), 11 deletions(-)
+Patch "ACPI: add definitions of DBG2 subtypes" required for the next patch.
+ACPI maintainers said that they had got it for the next release of ACPICA,
+but it has not appeared in linux-next yet.
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 3349d2a..0547256 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -805,7 +805,7 @@ static inline void early_init_dt_check_for_initrd(unsigned long node)
- 
- #ifdef CONFIG_SERIAL_EARLYCON
- 
--static int __init early_init_dt_scan_chosen_serial(void)
-+int __init early_init_dt_scan_chosen_serial(void)
- {
- 	int offset;
- 	const char *p, *q, *options = NULL;
-@@ -849,15 +849,6 @@ static int __init early_init_dt_scan_chosen_serial(void)
- 	}
- 	return -ENODEV;
- }
--
--static int __init setup_of_earlycon(char *buf)
--{
--	if (buf)
--		return 0;
--
--	return early_init_dt_scan_chosen_serial();
--}
--early_param("earlycon", setup_of_earlycon);
- #endif
- 
- /**
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 067783f..d217366 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -17,6 +17,7 @@
- #include <linux/kernel.h>
- #include <linux/init.h>
- #include <linux/io.h>
-+#include <linux/of_fdt.h>
- #include <linux/serial_core.h>
- #include <linux/sizes.h>
- #include <linux/of.h>
-@@ -209,7 +210,7 @@ static int __init param_setup_earlycon(char *buf)
- 	 * don't generate a warning from parse_early_params() in that case
- 	 */
- 	if (!buf || !buf[0])
--		return 0;
-+		return early_init_dt_scan_chosen_serial();
- 
- 	err = setup_earlycon(buf);
- 	if (err == -ENOENT || err == -EALREADY)
-diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
-index 2fbe868..56b2a43 100644
---- a/include/linux/of_fdt.h
-+++ b/include/linux/of_fdt.h
-@@ -63,6 +63,7 @@ extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
- 				     int depth, void *data);
- extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
- 				     int depth, void *data);
-+extern int early_init_dt_scan_chosen_serial(void);
- extern void early_init_fdt_scan_reserved_mem(void);
- extern void early_init_fdt_reserve_self(void);
- extern void early_init_dt_add_memory_arch(u64 base, u64 size);
-@@ -91,6 +92,7 @@ extern void early_get_first_memblock_info(void *, phys_addr_t *);
- extern u64 of_flat_dt_translate_address(unsigned long node);
- extern void of_fdt_limit_memory(int limit);
- #else /* CONFIG_OF_FLATTREE */
-+static inline int early_init_dt_scan_chosen_serial(void) { return -ENODEV; }
- static inline void early_init_fdt_scan_reserved_mem(void) {}
- static inline void early_init_fdt_reserve_self(void) {}
- static inline const char *of_flat_dt_get_machine_name(void) { return NULL; }
+Parse SPCR table, setup earlycon and add register specified console.
+
+Enable parsing this table on ARM64.  Earlycon should be set up
+as early as possible.  ACPI boot tables are mapped in
+arch/arm64/kernel/acpi.c:acpi_boot_table_init() called from setup_arch()
+and that's where we parse spcr.  So it has to be opted-in per-arch.
+
+Implement console_match() for pl011.
+
+Add EARLYCON_DECLARE to enable setting up earlycon for console specified in SPCR
+
+Based on the work by Leif Lindholm [3]
+Thanks to Peter Hurley for explaining how this should work.
+
+Should be applied to next-20160322.
+
+Tested on QEMU.  SPCR support is included in QEMU's ARM mach-virt
+since 2.4 release.
+
+v5:
+- drop patch "serial: pl011: use ACPI SPCR to setup 32-bit access" because
+  it is ugly. Also because Christopher Covington came with a better solution [4]
+- remove error message when the table is not provided by ACPI (Andy Shevchenko)
+- rewrite spcr.c following the suggestions by Peter Hurley
+- add console_match() for pl011 in a separate patch
+- add EARLYCON_DECLARE for pl011 in a separate patch
+- patch "of/serial: move earlycon early_param handling to serial" was added from
+  the GDB2 series
+
+v4:
+https://lkml.kernel.org/g/1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org
+- drop patch "ACPI: change __init to __ref for early_acpi_os_unmap_memory()"
+  ACPI developers work on a new API and asked not to do that.
+  Instead, use acpi_get_table_with_size()/early_acpi_os_unmap_memory() once
+  and cache the result. (Lv Zheng)
+- fix some style issues (Yury Norov)
+
+v3:
+https://lkml.kernel.org/g/1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org
+
+Greg Kroah-Hartman did not like v2 so I have rewritten this patchset:
+
+- drop acpi_match() member of struct console
+- drop implementations of this member for pl011 and 8250
+- drop the patch that renames some vars in printk.c as it is not needed anymore
+- drop patch that introduces system wide acpi_table_parse2().
+  Instead introduce a custom acpi_table_parse_spcr() in spcr.c
+
+Instead of introducing a new match_acpi() member of struct console,
+this patchset introduces a new function acpi_console_check().
+This function is called when a new uart is registered at serial_core.c
+the same way OF code checks for console.  If the registered uart is the
+console specified by SPCR table, this function calls add_preferred_console()
+
+The restrictions of this approach are:
+
+- only serial consoles can be set up
+- only consoles specified by the memory/io address can be set up
+  (SPCR can specify devices by PCI id/PCI address)
+
+v2:
+https://lkml.kernel.org/g/1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org
+- don't use SPCR if user specified console in command line
+- fix initialization order of newcon->index = 0
+- rename some variables at printk.c (Joe Perches, Peter Hurley)
+- enable ACPI_SPCR_TABLE in a separate patch (Andy Shevchenko)
+- remove the retry loop for console registering (Peter Hurley).
+  Instead, obtain SPCR with acpi_get_table().  That works after
+  call to acpi_early_init() i. e. in any *_initcall()
+- describe design decision behind introducing acpi_match() (Peter Hurley)
+- fix compilation for x86 + ACPI (Graeme Gregory)
+- introduce DBG2 constants in a separate patch (Andy Shevchenko)
+- fix a typo in DBG2 constants (Andy Shevchenko)
+- add ACPI_DBG2_ARM_SBSA_32BIT constant (Christopher Covington)
+- add support for ACPI_DBG2_ARM_SBSA_* consoles (Christopher Covington)
+- add documentation for functions
+- add a patch that uses SPCR to find if SBSA serial driver should use 32-bit
+  accessor functions (Christopher Covington)
+- change __init to __ref for early_acpi_os_unmap_memory() in a separate patch
+- introduce acpi_table_parse2() in a separate patch
+- fix fetching the SPCR table early (Mark Salter)
+- add a patch from Mark Salter that introduces support for matching 8250-based
+  consoles
+
+v1:
+https://lkml.kernel.org/g/1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org
+
+[1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+[2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
+[3] https://lkml.kernel.org/g/1441716217-23786-1-git-send-email-leif.lindholm@linaro.org
+[4] https://lkml.kernel.org/g/1457415800-8799-1-git-send-email-cov@codeaurora.org
+
+Aleksey Makarov (5):
+  ACPI: add definitions of DBG2 subtypes
+  ACPI: parse SPCR and enable matching console
+  ACPI: enable ACPI_SPCR_TABLE on ARM64
+  serial: pl011: add console matching function
+  serial: pl011: add EARLYCON_DECLARE
+
+Leif Lindholm (1):
+  of/serial: move earlycon early_param handling to serial
+
+ arch/arm64/Kconfig              |   1 +
+ arch/arm64/kernel/acpi.c        |   2 +
+ drivers/acpi/Kconfig            |   3 ++
+ drivers/acpi/Makefile           |   1 +
+ drivers/acpi/spcr.c             | 102 ++++++++++++++++++++++++++++++++++++++++
+ drivers/of/fdt.c                |  11 +----
+ drivers/tty/serial/amba-pl011.c |  57 ++++++++++++++++++++++
+ drivers/tty/serial/earlycon.c   |  12 +++--
+ include/acpi/actbl2.h           |   5 ++
+ include/linux/acpi.h            |   8 ++++
+ include/linux/of_fdt.h          |   2 +
+ 11 files changed, 191 insertions(+), 13 deletions(-)
+ create mode 100644 drivers/acpi/spcr.c
+
 -- 
 2.7.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
