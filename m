@@ -1,70 +1,43 @@
-From: Yury Norov <ynorov@caviumnetworks.com>
-Subject: Re: [PATCH v5 3/6] ACPI: parse SPCR and enable matching console
-Date: Tue, 22 Mar 2016 19:51:22 +0300
-Message-ID: <20160322165122.GB10616@yury-N73SV>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v5 1/6] of/serial: move earlycon early_param handling to
+ serial
+Date: Tue, 22 Mar 2016 19:55:32 +0300
+Message-ID: <56F17904.3070202@linaro.org>
 References: <1458643595-14719-1-git-send-email-aleksey.makarov@linaro.org>
- <1458643595-14719-4-git-send-email-aleksey.makarov@linaro.org>
- <20160322122650.GA10616@yury-N73SV>
- <56F15D40.9020401@hurleysoftware.com>
+ <1458643595-14719-2-git-send-email-aleksey.makarov@linaro.org>
+ <CAL_JsqL+YU7qSze40c+M5AaOvpZDFgvg=SsRGmpT3k_=L6P8JQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <56F15D40.9020401@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, "Zheng, Lv" <lv.zheng@intel.com>, Jiri Slaby <jslaby@suse.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <CAL_JsqL+YU7qSze40c+M5AaOvpZDFgvg=SsRGmpT3k_=L6P8JQ@mail.gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, "Zheng, Lv" <lv.zheng@intel.com>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 22, 2016 at 07:57:04AM -0700, Peter Hurley wrote:
 
-[...]
 
-> >> +static bool init_earlycon;
-> >> +
-> >> +void __init init_spcr_earlycon(void)
-> >> +{
-> >> +	init_earlycon = true;
-> >> +}
-> >> +
-> > 
-> > 1. I see you keep in mind multiple access.
+On 03/22/2016 02:15 PM, Rob Herring wrote:
+> On Tue, Mar 22, 2016 at 5:46 AM, Aleksey Makarov
+> <aleksey.makarov@linaro.org> wrote:
+>> From: Leif Lindholm <leif.lindholm@linaro.org>
+>>
+>> We have multiple "earlycon" early_param handlers - merge the DT one into
+>> the main earlycon one.  It's a cleanup that also will be useful
+>> to decide if ACPI SPCR earlycon should be set up.
 > 
-> Concurrent access is not a concern here: only the boot cpu is running
-> and intrs are off.
-> 
-> The "init_earlycon" flag is used because parsing the "earlycon" early param
-> is earlier than parsing ACPI tables.
-> 
+> How so? Isn't that determined by whether we have ACPI tables or a DT?
 
-OK got it. My concern is that it's generic code, and parse_spcr() is public
-function. I think corresponding comment is needed at least. The other option is
-to make it race-safe and forget. I prefer second one, moreover it's 2 simple
-changes.
+Oops, I missed this.  This patch was not only to do parsing in one place, 
+but also to allow addition of code that decide which of ACPI/DT should be used
+for earlycon initialization based on acpi_disabled.
 
-> 
->  Then you'd worry about race
-> > conditions as well. In this case, I'd consider atomic access to
-> > variable.
-> > 2. It seems you need is_init() helper too.
-> > 
-> >> +int __init parse_spcr(void)
-> >> +{
-> >> +	static char opts[64];
-> >> +	struct acpi_table_spcr *table;
-> >> +	acpi_size table_size;
-> >> +	acpi_status status;
-> >> +	char *uart;
-> >> +	char *iotype;
-> >> +	int baud_rate;
-> >> +	int err = 0;
-> > 
-> > You can do not initialize 'err'.
-> 
-> Why?
-> 
+I will fix this, thank you.
 
-Because there's no path here that doesn't init err with some value.
-So this initialization is useless waste of cycles.
-
-[...]
+> This goes against trying to limit places of FDT parsing and keeping
+> the early scanning all within fdt.c. At least it is not in the arch
+> code. That said, I'm okay with this change if it helps.
+> 
+> Rob
+> 
