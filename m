@@ -1,93 +1,82 @@
 From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: [PATCH v5 3/6] ACPI: parse SPCR and enable matching console
-Date: Tue, 22 Mar 2016 10:21:51 -0700
-Message-ID: <56F17F2F.7050305@hurleysoftware.com>
+Date: Tue, 22 Mar 2016 10:32:22 -0700
+Message-ID: <56F181A6.3070502@hurleysoftware.com>
 References: <1458643595-14719-1-git-send-email-aleksey.makarov@linaro.org>
  <1458643595-14719-4-git-send-email-aleksey.makarov@linaro.org>
- <CAHp75VfsayWWSgkvpgrxcER6c2rZyykbvOtm7wBQROR6SFFfWw@mail.gmail.com>
- <56F16DC2.7030901@hurleysoftware.com> <56F17B0B.306@linaro.org>
+ <20160322122650.GA10616@yury-N73SV> <56F15D40.9020401@hurleysoftware.com>
+ <20160322165122.GB10616@yury-N73SV>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <56F17B0B.306@linaro.org>
+In-Reply-To: <20160322165122.GB10616@yury-N73SV>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, "Zheng, Lv" <lv.zheng@intel.com>, Jiri Slaby <jslaby@suse.com>
+To: Yury Norov <ynorov@caviumnetworks.com>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, "Zheng, Lv" <lv.zheng@intel.com>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/22/2016 10:04 AM, Aleksey Makarov wrote:
+On 03/22/2016 09:51 AM, Yury Norov wrote:
+> On Tue, Mar 22, 2016 at 07:57:04AM -0700, Peter Hurley wrote:
 > 
+> [...]
 > 
-> On 03/22/2016 07:07 PM, Peter Hurley wrote:
->> On 03/22/2016 04:09 AM, Andy Shevchenko wrote:
->>> On Tue, Mar 22, 2016 at 12:46 PM, Aleksey Makarov
->>> <aleksey.makarov@linaro.org> wrote:
-> 
->>>> +       sprintf(opts, "%s,%s,0x%llx,%d", uart, iotype,
->>>> +               table->serial_port.address, baud_rate);
+>>>> +static bool init_earlycon;
+>>>> +
+>>>> +void __init init_spcr_earlycon(void)
+>>>> +{
+>>>> +	init_earlycon = true;
+>>>> +}
+>>>> +
 >>>
->>> You may use snprintf(), though my question here what would happen on
->>> 32-bit kernel when you supply 64-bit address as an option?
+>>> 1. I see you keep in mind multiple access.
 >>
->> Yeah this should probably use %pa for the printf specifier.
+>> Concurrent access is not a concern here: only the boot cpu is running
+>> and intrs are off.
 >>
->> But note this exposes underlying bug in the earlycon support, because
->> that was originally written without 32/64-mixed bitness in mind; ie.,
->> the address is parsed and handled as unsigned long in most places.
+>> The "init_earlycon" flag is used because parsing the "earlycon" early param
+>> is earlier than parsing ACPI tables.
+>>
 > 
-> I don't quite follow this.  table->serial_port.address is explicitly u64,
-> not pointer, so, according to printk-formats.txt %llx is ok here, %pa is wrong.
-> Am I missing something?
+> OK got it. My concern is that it's generic code, and parse_spcr() is public
+> function. I think corresponding comment is needed at least. The other option is
+> to make it race-safe and forget. I prefer second one, moreover it's 2 simple
+> changes.
 
-No, you're right.
-There is still the underlying bug I noted; I'll fix that in this release cycle.
+Earlycon is generic only in the sense of platform independence, not in the
+sense of temporal independence. There is no serialization in earlycon, anywhere.
+Adding serialization will unnecessarily confuse casual observers into
+believing it is necessary.
+
+An argument could be made that earlycon needs some standalone documentation,
+but I don't think this patch needs to be that.
 
 
->>>>         /*
->>>> -        * Just 'earlycon' is a valid param for devicetree earlycons;
->>>> -        * don't generate a warning from parse_early_params() in that case
->>>> +        * Just 'earlycon' is a valid param for devicetree and ACPI SPCR
->>>> +        * earlycons; don't generate a warning from parse_early_params()
->>>> +        * in that case
->>>>          */
->>>> -       if (!buf || !buf[0])
->>>> -               return early_init_dt_scan_chosen_serial();
->>>> +       if (!buf || !buf[0]) {
->>>> +               init_spcr_earlycon();
+>>  Then you'd worry about race
+>>> conditions as well. In this case, I'd consider atomic access to
+>>> variable.
+>>> 2. It seems you need is_init() helper too.
 >>>
->>>> +               early_init_dt_scan_chosen_serial();
->>>> +               return 0;
+>>>> +int __init parse_spcr(void)
+>>>> +{
+>>>> +	static char opts[64];
+>>>> +	struct acpi_table_spcr *table;
+>>>> +	acpi_size table_size;
+>>>> +	acpi_status status;
+>>>> +	char *uart;
+>>>> +	char *iotype;
+>>>> +	int baud_rate;
+>>>> +	int err = 0;
 >>>
->>> And you hide an error?
+>>> You can do not initialize 'err'.
 >>
->> Well, this is a little bit tricky because "earlycon" early parameter with
->> missing /chosen/stdout-path node is no longer an error, since ACPI may be
->> specifying the earlycon instead.
+>> Why?
+>>
 > 
-> Agree, but note the email by Rob Herring.  The code should be like this:
-> 
-> if (!buf || !buf[0]) {
-> 	if (acpi_disabled) {
-> 		return early_init_dt_scan_chosen_serial();
-> 	} else {
-> 		init_spcr_earlycon();
-> 		return 0;
-> 	}
-> }
+> Because there's no path here that doesn't init err with some value.
+> So this initialization is useless waste of cycles.
 
 Ok.
 
-
-> But that requires to have made ACPI/DT decision at this point.
-
-It's an unfortunate command-line option dependency, but I think it's ok
-for the moment.  The same problem would exist if DT could be disabled
-via the command line.
-
-
-> 
-> Thank you
-> Aleksey
-> 
-
+Regards,
+Peter Hurley
