@@ -1,122 +1,103 @@
-From: Matthias Schiffer <mschiffer@universe-factory.net>
-Subject: Re: Nonterministic hang during bootconsole/console handover on ath79
-Date: Tue, 22 Mar 2016 10:50:20 +0100
-Message-ID: <56F1155C.7080506@universe-factory.net>
-References: <56F07DA1.8080404@universe-factory.net>
- <20160322084046.7196890a7c157503cd0ea0d5@gmail.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="PeX5h5CuJHvVMVEJJIDOSGthFIQ8VUUW1"
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20160322084046.7196890a7c157503cd0ea0d5@gmail.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Antony Pavlov <antonynpavlov@gmail.com>
-Cc: Ralf Baechle <ralf@linux-mips.org>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Peter Mamonov <pmamonov@gmail.com>
+From: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v5 1/6] of/serial: move earlycon early_param handling to serial
+Date: Tue, 22 Mar 2016 13:46:28 +0300
+Message-ID: <1458643595-14719-2-git-send-email-aleksey.makarov@linaro.org>
+References: <1458643595-14719-1-git-send-email-aleksey.makarov@linaro.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1458643595-14719-1-git-send-email-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J . Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Len Brown <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Graeme Gregory <graeme.gregory-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Al Stone <ahs3-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Christopher Covington <cov-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Yury Norov <ynorov-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, "Zheng, Lv" <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---PeX5h5CuJHvVMVEJJIDOSGthFIQ8VUUW1
-Content-Type: multipart/mixed; boundary="9d17nTEchecUAE9Pmh2cPXG2R6TpWmOP8"
-From: Matthias Schiffer <mschiffer@universe-factory.net>
-To: Antony Pavlov <antonynpavlov@gmail.com>
-Cc: Ralf Baechle <ralf@linux-mips.org>, gregkh@linuxfoundation.org,
- jslaby@suse.com, linux-mips@linux-mips.org, linux-serial@vger.kernel.org,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Peter Mamonov <pmamonov@gmail.com>
-Message-ID: <56F1155C.7080506@universe-factory.net>
-Subject: Re: Nonterministic hang during bootconsole/console handover on ath79
-References: <56F07DA1.8080404@universe-factory.net>
- <20160322084046.7196890a7c157503cd0ea0d5@gmail.com>
-In-Reply-To: <20160322084046.7196890a7c157503cd0ea0d5@gmail.com>
+From: Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
---9d17nTEchecUAE9Pmh2cPXG2R6TpWmOP8
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
+We have multiple "earlycon" early_param handlers - merge the DT one into
+the main earlycon one.  It's a cleanup that also will be useful
+to decide if ACPI SPCR earlycon should be set up.
 
-On 03/22/2016 06:40 AM, Antony Pavlov wrote:
-> On Tue, 22 Mar 2016 00:02:57 +0100
-> Matthias Schiffer <mschiffer@universe-factory.net> wrote:
->=20
->> Hi,
->> we're experiencing weird nondeterministic hangs during bootconsole/con=
-sole
->> handover on some ath79 systems on OpenWrt. I've seen this issue myself=
- on
->> kernel 3.18.23~3.18.27 on a AR7241-based system, but according to othe=
-r
->> reports ([1], [2]) kernel 4.1.x is affected as well, and other SoCs li=
-ke
->> QCA953x likewise.
->>
->> See the log below for the exact place it hangs; the log was taken in d=
-uring
->> a good boot; a bad boot will just hang forever at the marked location.=
- The
->> issue is extremely hard to debug, as changing the timing in any way (l=
-ike
->> adding additional printk) will usually make it work without problems. =
-(Even
->> recompiling the kernel with the same config, but different uname times=
-tamp
->> will make the occurence more or less likely)
->>
->> My theory is the following:
->>
->> As soon as ttyS0 is detected and installed as the console, there are t=
-wo
->> console drivers active on the serial port at the same time: early0 and=
+Signed-off-by: Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+---
+ drivers/of/fdt.c              | 11 +----------
+ drivers/tty/serial/earlycon.c |  3 ++-
+ include/linux/of_fdt.h        |  2 ++
+ 3 files changed, 5 insertions(+), 11 deletions(-)
 
->> ttyS0. I suspect that the hang occurs when the primitive early0
->> implementation prom_putchar_ar71xx waits indefinitely on THRE,
->=20
-> Can you use EJTAG to prove your theory?
->=20
-> --=20
-> Best regards,
->   Antony Pavlov
->=20
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 3349d2a..0547256 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -805,7 +805,7 @@ static inline void early_init_dt_check_for_initrd(unsigned long node)
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
+ 
+-static int __init early_init_dt_scan_chosen_serial(void)
++int __init early_init_dt_scan_chosen_serial(void)
+ {
+ 	int offset;
+ 	const char *p, *q, *options = NULL;
+@@ -849,15 +849,6 @@ static int __init early_init_dt_scan_chosen_serial(void)
+ 	}
+ 	return -ENODEV;
+ }
+-
+-static int __init setup_of_earlycon(char *buf)
+-{
+-	if (buf)
+-		return 0;
+-
+-	return early_init_dt_scan_chosen_serial();
+-}
+-early_param("earlycon", setup_of_earlycon);
+ #endif
+ 
+ /**
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 067783f..d217366 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -17,6 +17,7 @@
+ #include <linux/kernel.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
++#include <linux/of_fdt.h>
+ #include <linux/serial_core.h>
+ #include <linux/sizes.h>
+ #include <linux/of.h>
+@@ -209,7 +210,7 @@ static int __init param_setup_earlycon(char *buf)
+ 	 * don't generate a warning from parse_early_params() in that case
+ 	 */
+ 	if (!buf || !buf[0])
+-		return 0;
++		return early_init_dt_scan_chosen_serial();
+ 
+ 	err = setup_earlycon(buf);
+ 	if (err == -ENOENT || err == -EALREADY)
+diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
+index 2fbe868..56b2a43 100644
+--- a/include/linux/of_fdt.h
++++ b/include/linux/of_fdt.h
+@@ -63,6 +63,7 @@ extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
+ 				     int depth, void *data);
+ extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
+ 				     int depth, void *data);
++extern int early_init_dt_scan_chosen_serial(void);
+ extern void early_init_fdt_scan_reserved_mem(void);
+ extern void early_init_fdt_reserve_self(void);
+ extern void early_init_dt_add_memory_arch(u64 base, u64 size);
+@@ -91,6 +92,7 @@ extern void early_get_first_memblock_info(void *, phys_addr_t *);
+ extern u64 of_flat_dt_translate_address(unsigned long node);
+ extern void of_fdt_limit_memory(int limit);
+ #else /* CONFIG_OF_FLATTREE */
++static inline int early_init_dt_scan_chosen_serial(void) { return -ENODEV; }
+ static inline void early_init_fdt_scan_reserved_mem(void) {}
+ static inline void early_init_fdt_reserve_self(void) {}
+ static inline const char *of_flat_dt_get_machine_name(void) { return NULL; }
+-- 
+2.7.4
 
-Unfortunately, the board I can reproduce this at the moment does not have=
-
-an accessible JTAG port. I hope I can reproduce it on other hardware whic=
-h
-is more developer-friendly, but no luck so far.
-
-Matthias
-
-
---9d17nTEchecUAE9Pmh2cPXG2R6TpWmOP8--
-
---PeX5h5CuJHvVMVEJJIDOSGthFIQ8VUUW1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBCgAGBQJW8RVcAAoJEBbvP2TLIB2cgEQQAIQfVgeXprFvdsAq/8gUa1Ra
-oQUXPOp6KSMiBIEOqyOYH648TZcrdH7id8oZh16/x/uCLQG/TnwHe6Ks4udseUiJ
-3M319vuuSJwZ0/fR2TpVd3jMP2vhFzmxhOZEBYgJr2KPb/OMTtiVqcOEJmqOzRC3
-LbxxRgo8UvakTG3v3/brQJ1VCHNnvpu5jyKVSY7w8TsGFEkRY71aw9tv//0NQ3/T
-t4nxJ/FTm9Ku6zRCDT7uzB/Gd43fQVMKzfRaIUqoGPxzxeL1JW54itLBaVtqimhS
-3bxP/zOF787xHpa0nH57j6EYZM4jSqyT3zW+JaqEMz/SQi9f/SP2ZJavhAruOWtb
-F5bY5Nmuk+gJi5slEe1IqEnP7uOhj3WH0ygf5qkxGq7tKDQ8p2LqNoBOAzbvd+xV
-drC/o/4pUCK0wpyQqZsTbmtJjG6w9PR1NkcPf43maegQHUtA/DW9Ny7DTJhNzBLG
-OGtjo6Sa0E7q6dCBC0QdUnwS+azPQfCtKZFpUIIjKTH/IxMPLp9bw/DRJ8l8dbvl
-r/CK6CNsF/pw74QXK4aY081VjVvsMytjK2XjbPj2opUlxNqp/VTLlsxxZhTQZEc5
-14to3GpceXGEeC74+Af6KFA9ys8Km3EE916ZLpkwX4MmKADIxgfxRIbF208YWHUb
-XyMeYFOUne+Q+DT/OEGV
-=+Ilz
------END PGP SIGNATURE-----
-
---PeX5h5CuJHvVMVEJJIDOSGthFIQ8VUUW1--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
