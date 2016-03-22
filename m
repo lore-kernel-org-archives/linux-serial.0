@@ -1,58 +1,81 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH] TTY: n_gsm, fix false positive WARN_ON
-Date: Tue, 22 Mar 2016 18:09:51 +0100
-Message-ID: <1458666591-4450-1-git-send-email-jslaby@suse.cz>
-References: <20160301171550.GA29081@kroah.com>
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20160301171550.GA29081@kroah.com>
-Sender: stable-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: Dmitry Vyukov <dvyukov@google.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Alan Cox <alan@linux.intel.com>, stable <stable@vger.kernel.org>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v5 3/6] ACPI: parse SPCR and enable matching console
+Date: Tue, 22 Mar 2016 20:08:03 +0300
+Message-ID: <56F17BF3.7090608@linaro.org>
+References: <1458643595-14719-1-git-send-email-aleksey.makarov@linaro.org>
+ <1458643595-14719-4-git-send-email-aleksey.makarov@linaro.org>
+ <20160322122650.GA10616@yury-N73SV> <56F15D40.9020401@hurleysoftware.com>
+ <20160322165122.GB10616@yury-N73SV>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160322165122.GB10616@yury-N73SV>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, "Zheng, Lv" <lv.zheng@intel.com>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Dmitry reported, that the current cleanup code in n_gsm can trigger a
-warning:
-WARNING: CPU: 2 PID: 24238 at drivers/tty/n_gsm.c:2048 gsm_cleanup_mux+0x166/0x6b0()
-...
-Call Trace:
-...
- [<ffffffff81247ab9>] warn_slowpath_null+0x29/0x30 kernel/panic.c:490
- [<ffffffff828d0456>] gsm_cleanup_mux+0x166/0x6b0 drivers/tty/n_gsm.c:2048
- [<ffffffff828d4d87>] gsmld_open+0x5b7/0x7a0 drivers/tty/n_gsm.c:2386
- [<ffffffff828b9078>] tty_ldisc_open.isra.2+0x78/0xd0 drivers/tty/tty_ldisc.c:447
- [<ffffffff828b973a>] tty_set_ldisc+0x1ca/0xa70 drivers/tty/tty_ldisc.c:567
- [<     inline     >] tiocsetd drivers/tty/tty_io.c:2650
- [<ffffffff828a14ea>] tty_ioctl+0xb2a/0x2140 drivers/tty/tty_io.c:2883
-...
 
-But this is a legal path when open fails to find a space in the
-gsm_mux array and tries to clean up. So make it a standard test
-instead of a warning.
 
-Reported-by: "Dmitry Vyukov" <dvyukov@google.com>
-Cc: Alan Cox <alan@linux.intel.com>
-Link: http://lkml.kernel.org/r/CACT4Y+bHQbAB68VFi7Romcs-Z9ZW3kQRvcq+BvHH1oa5NcAdLA@mail.gmail.com
-Fixes: 5a640967 ("tty/n_gsm.c: fix a memory leak in gsmld_open()")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/n_gsm.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+On 03/22/2016 07:51 PM, Yury Norov wrote:
+> On Tue, Mar 22, 2016 at 07:57:04AM -0700, Peter Hurley wrote:
+> 
+> [...]
+> 
+>>>> +static bool init_earlycon;
+>>>> +
+>>>> +void __init init_spcr_earlycon(void)
+>>>> +{
+>>>> +	init_earlycon = true;
+>>>> +}
+>>>> +
+>>>
+>>> 1. I see you keep in mind multiple access.
+>>
+>> Concurrent access is not a concern here: only the boot cpu is running
+>> and intrs are off.
+>>
+>> The "init_earlycon" flag is used because parsing the "earlycon" early param
+>> is earlier than parsing ACPI tables.
+>>
+> 
+> OK got it. My concern is that it's generic code, and parse_spcr() is public
+> function. I think corresponding comment is needed at least. The other option is
+> to make it race-safe and forget. I prefer second one, moreover it's 2 simple
+> changes.
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index c01620780f5b..365dfd8bc42b 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2045,7 +2045,9 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm)
- 		}
- 	}
- 	spin_unlock(&gsm_mux_lock);
--	WARN_ON(i == MAX_MUX);
-+	/* open failed before registering => nothing to do */
-+	if (i == MAX_MUX)
-+		return;
- 
- 	/* In theory disconnecting DLCI 0 is sufficient but for some
- 	   modems this is apparently not the case. */
--- 
-2.7.4
+I would not call this function public.  It is made non-static only to allow 
+callin it from another compilation unit.  It should be called only once at initializatioin time.
+I will add a comment about this, thank you.
+
+>>  Then you'd worry about race
+>>> conditions as well. In this case, I'd consider atomic access to
+>>> variable.
+>>> 2. It seems you need is_init() helper too.
+>>>
+>>>> +int __init parse_spcr(void)
+>>>> +{
+>>>> +	static char opts[64];
+>>>> +	struct acpi_table_spcr *table;
+>>>> +	acpi_size table_size;
+>>>> +	acpi_status status;
+>>>> +	char *uart;
+>>>> +	char *iotype;
+>>>> +	int baud_rate;
+>>>> +	int err = 0;
+>>>
+>>> You can do not initialize 'err'.
+>>
+>> Why?
+>>
+> 
+> Because there's no path here that doesn't init err with some value.
+> So this initialization is useless waste of cycles.
+> 
+> [...]
+
+I agree, will fix this.
+
+Thank you
+Aleksey
