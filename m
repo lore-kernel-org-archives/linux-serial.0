@@ -1,83 +1,89 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: DCD interrupt for i.MX25 UART
-Date: Wed, 23 Mar 2016 16:36:38 +0100
-Message-ID: <20160323153638.GO6191@pengutronix.de>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH/RFC 5/5] serial: sh-sci: Replace SCIx_HAVE_RTSCTS by
+ standard UPF_HARD_FLOW
+Date: Wed, 23 Mar 2016 10:11:43 -0700
+Message-ID: <56F2CE4F.2010104@hurleysoftware.com>
+References: <1458222449-12324-1-git-send-email-geert+renesas@glider.be>
+ <1458222449-12324-6-git-send-email-geert+renesas@glider.be>
+ <56EC520F.5010101@hurleysoftware.com>
+ <CAMuHMdWFyLAg-=y=6=CBaOUeS-WV0wFXos=jBo-MJQiGB=vXmA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdWFyLAg-=y=6=CBaOUeS-WV0wFXos=jBo-MJQiGB=vXmA@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+Hi Geert,
 
-I have a problem with an UART on an i.MX25 based machine. I implemented
-DCD (and other handshake lines) irq handling[1].
+On 03/23/2016 02:33 AM, Geert Uytterhoeven wrote:
+> On Fri, Mar 18, 2016 at 8:07 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>> On 03/17/2016 06:47 AM, Geert Uytterhoeven wrote:
+>>> Replace the custom SCIx_HAVE_RTSCTS flag in the
+>>> plat_sci_port.capabilities field by the standard UPF_HARD_FLOW flag in
+>>> the uart_port.flags and plat_sci_port.flags fields.
+>>> Remove the now unused plat_sci_port.capabilities field.
+>>> Legacy pllatform data can enable UPF_HARD_FLOW in plat_sci_port.flags.
+>>
+>> UPF_HARD_FLOW is really for indicating the h/w supports automatic
+>> CTS and RTS signalling; ie., RTS is automatically de-asserted when
+>> rx fifo reaches some threshold and CTS will automatically prevent
+>> tx fifo output.
+>>
+>> There is no serial core flag for indicating the h/w supports (or does not)
+>> RTS and/or CTS signalling.
+> 
+> Sorry for not being clearer: Renesas SCIF hardware with dedicated RTS/CTS pins
+> does have support for automatic RTS/CTS signalling. The driver has (unused)
+> support for that (cfr. setting the SCFCR_MCE (Modem Control Enable) flag), but
+> it seems to be busted when enabled.
 
-Now a user of this patch noticed that DCD handling (at least) is broken.
-The problem is that the USR2_DCDDELT bit doesn't clear:
+Ok.
 
-	root@hostname:~ memtool md 0x43f90080+0x34  =
+So looking at the code, IIUC, SCIF does not provide a way to directly
+control RTS output or read CTS input when RTS/CTS is pinned (ie, not gpio).
+Is that correct?
+How to support autoRTS/autoCTS depends on the answer to this question.
 
-	43f90080: 00000000 00004021 0000078c 00004002                ....!@.......=
-@..
-	43f90090: 00000b41 00002040 00005268 0000002b                A...@ ..hR..+=
-...
-	43f900a0: 00000000 000000bf 00002e62 00000008                ........b....=
-...
-	43f900b0: 0000251c                                           .%..
+Is there a datasheet/trm that I can review describing register layout and
+uart behavior?
 
-	root@hostname:~ memtool mw 0x43f90098 0x0x40
 
-	root@hostname:~ memtool md 0x43f90080+0x34  =
+> If I understand it correctly:
+>   1. Automatic RTS/CTS signalling should be enabled only if the user enabled it
+>      through termios->c_cflag & CRTSCTS,
 
-	43f90080: 00000000 00004021 0000078c 00004002                ....!@.......=
-@..
-	43f90090: 00000b41 00002040 00005268 0000002b                A...@ ..hR..+=
-...
-	43f900a0: 00000000 000000bf 00002e62 00000008                ........b....=
-...
-	43f900b0: 0000251c                                           .%..
+yes
 
-In fact even writing 0xffff doesn't change the register, where I would expe=
-ct
-that the DCDDELT bit (0x40) disappears. I'm sure there is nothing toggling =
-this
-line.
+>   2. If the user didn't set CRTSCTS, the RTS output pin should be controlled by
+>      the serial core, through .set_mctrl(),
 
-The net effect is that the irq blocks the machine until it is disabled with
+Not quite.
 
-	[   51.885987] irq 61: nobody cared (try booting with the "irqpoll" option)
+_Regardless of CRTSCTS setting_, the RTS output pin should be controlled
+through .set_mctrl() method. The serial core takes CRTSCTS into account on
+behalf of the driver when necessary.
 
-.
+>   3. Regardless of the user setting CRTSCTS or not, .get_mctrl() should report
+>      the current status of the CTS input pin.
 
-This is on an i.MX25 and I checked the erratas also of the newer i.MX
-cpus, but I didn't find anything.
+yes
 
-Did I miss something? Is this a known bug? Do you have a recommendation
-other than not to set UCR3_DCD? I cannot test the same problem for RI
-because my hardware doesn't use it, but I wouldn't be surprised if that
-had the same problem.
+> Are my assumptions correct?
 
-It would be great to get a statement from you on this topic.
+A couple of things.
 
-Best regards
-Uwe
+gpio-based RTS/CTS is mutually exclusive with autoRTS/autoCTS. But I'm not
+seeing any logic in these patches to prevent that.
 
-[1] Message-Id: 1457605569-7828-3-git-send-email-u.kleine-koenig@pengutroni=
-x.de
+autoCTS without a way to read CTS input level means that although transmission
+stops, the driver has no way to update port->hw_stopped so the write buffer
+will keep filling up until it's full @ 4k.
 
--- =
+autoRTS without a way to override RTS output complicates throttling.
 
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Regards,
+Peter Hurley
