@@ -1,40 +1,83 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4] tty: serial: meson: Implement earlycon support
-Date: Wed, 23 Mar 2016 09:39:19 -0400
-Message-ID: <20160323133919.GA4235@kroah.com>
-References: <1457263284-8819-1-git-send-email-afaerber@suse.de>
- <56F27268.4060902@suse.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: DCD interrupt for i.MX25 UART
+Date: Wed, 23 Mar 2016 16:36:38 +0100
+Message-ID: <20160323153638.GO6191@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <56F27268.4060902@suse.de>
-Sender: linux-doc-owner@vger.kernel.org
-To: Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-serial <linux-serial@vger.kernel.org>, linux-meson@googlegroups.com, Nicolas Saenz Julienne <nicolassaenzj@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Jiri Slaby <jslaby@suse.com>, Carlo Caione <carlo@caione.org>, linux-doc <linux-doc@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, LAKML <linux-arm-kernel@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 23, 2016 at 11:39:36AM +0100, Andreas F=E4rber wrote:
-> Am 06.03.2016 um 12:21 schrieb Andreas F=E4rber:
-> > Split off the bulk of the existing meson_serial_console_write()
-> > implementation into meson_serial_port_write() for implementing
-> > meson_serial_early_console_write().
-> >=20
-> > Use "meson" as the earlycon driver name, courtesy of Nicolas.
-> >=20
-> > Signed-off-by: Nicolas Saenz Julienne <nicolassaenzj@gmail.com>
-> > Acked-by: Carlo Caione <carlo@endlessm.com>
-> > Signed-off-by: Andreas F=E4rber <afaerber@suse.de>
-> > ---
-> >  v3 -> v4:
-> >  * Select SERIAL_EARLYCON (Arnd)
->=20
-> Ping?
+Hello,
 
-It's the middle of the merge window, there's nothing I can do at the
-moment, please wait for after 4.6-rc1 is out before I can start catchin=
-g
-up...
+I have a problem with an UART on an i.MX25 based machine. I implemented
+DCD (and other handshake lines) irq handling[1].
 
-greg k-h
+Now a user of this patch noticed that DCD handling (at least) is broken.
+The problem is that the USR2_DCDDELT bit doesn't clear:
+
+	root@hostname:~ memtool md 0x43f90080+0x34  =
+
+	43f90080: 00000000 00004021 0000078c 00004002                ....!@.......=
+@..
+	43f90090: 00000b41 00002040 00005268 0000002b                A...@ ..hR..+=
+...
+	43f900a0: 00000000 000000bf 00002e62 00000008                ........b....=
+...
+	43f900b0: 0000251c                                           .%..
+
+	root@hostname:~ memtool mw 0x43f90098 0x0x40
+
+	root@hostname:~ memtool md 0x43f90080+0x34  =
+
+	43f90080: 00000000 00004021 0000078c 00004002                ....!@.......=
+@..
+	43f90090: 00000b41 00002040 00005268 0000002b                A...@ ..hR..+=
+...
+	43f900a0: 00000000 000000bf 00002e62 00000008                ........b....=
+...
+	43f900b0: 0000251c                                           .%..
+
+In fact even writing 0xffff doesn't change the register, where I would expe=
+ct
+that the DCDDELT bit (0x40) disappears. I'm sure there is nothing toggling =
+this
+line.
+
+The net effect is that the irq blocks the machine until it is disabled with
+
+	[   51.885987] irq 61: nobody cared (try booting with the "irqpoll" option)
+
+.
+
+This is on an i.MX25 and I checked the erratas also of the newer i.MX
+cpus, but I didn't find anything.
+
+Did I miss something? Is this a known bug? Do you have a recommendation
+other than not to set UCR3_DCD? I cannot test the same problem for RI
+because my hardware doesn't use it, but I wouldn't be surprised if that
+had the same problem.
+
+It would be great to get a statement from you on this topic.
+
+Best regards
+Uwe
+
+[1] Message-Id: 1457605569-7828-3-git-send-email-u.kleine-koenig@pengutroni=
+x.de
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
