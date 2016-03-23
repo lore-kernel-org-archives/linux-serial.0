@@ -1,89 +1,122 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH/RFC 5/5] serial: sh-sci: Replace SCIx_HAVE_RTSCTS by
- standard UPF_HARD_FLOW
-Date: Wed, 23 Mar 2016 10:11:43 -0700
-Message-ID: <56F2CE4F.2010104@hurleysoftware.com>
-References: <1458222449-12324-1-git-send-email-geert+renesas@glider.be>
- <1458222449-12324-6-git-send-email-geert+renesas@glider.be>
- <56EC520F.5010101@hurleysoftware.com>
- <CAMuHMdWFyLAg-=y=6=CBaOUeS-WV0wFXos=jBo-MJQiGB=vXmA@mail.gmail.com>
+From: Matthias Schiffer <mschiffer@universe-factory.net>
+Subject: Re: Nonterministic hang during bootconsole/console handover on ath79
+Date: Wed, 23 Mar 2016 18:40:51 +0100
+Message-ID: <56F2D523.6000405@universe-factory.net>
+References: <56F07DA1.8080404@universe-factory.net>
+ <56F0B189.2080206@hurleysoftware.com> <56F143A8.6020601@universe-factory.net>
+ <56F16708.4020109@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdWFyLAg-=y=6=CBaOUeS-WV0wFXos=jBo-MJQiGB=vXmA@mail.gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="6GnP9oGHJtpEQjK3MvkFs1DbxNJgxmulJ"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <56F16708.4020109@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--6GnP9oGHJtpEQjK3MvkFs1DbxNJgxmulJ
+Content-Type: multipart/mixed; boundary="0PMULBeX4VHQGssvpmuonTxpJW6nHkDtM"
+From: Matthias Schiffer <mschiffer@universe-factory.net>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>, gregkh@linuxfoundation.org,
+ jslaby@suse.com, linux-mips@linux-mips.org, linux-serial@vger.kernel.org,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Message-ID: <56F2D523.6000405@universe-factory.net>
+Subject: Re: Nonterministic hang during bootconsole/console handover on ath79
+References: <56F07DA1.8080404@universe-factory.net>
+ <56F0B189.2080206@hurleysoftware.com> <56F143A8.6020601@universe-factory.net>
+ <56F16708.4020109@hurleysoftware.com>
+In-Reply-To: <56F16708.4020109@hurleysoftware.com>
 
-On 03/23/2016 02:33 AM, Geert Uytterhoeven wrote:
-> On Fri, Mar 18, 2016 at 8:07 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
->> On 03/17/2016 06:47 AM, Geert Uytterhoeven wrote:
->>> Replace the custom SCIx_HAVE_RTSCTS flag in the
->>> plat_sci_port.capabilities field by the standard UPF_HARD_FLOW flag in
->>> the uart_port.flags and plat_sci_port.flags fields.
->>> Remove the now unused plat_sci_port.capabilities field.
->>> Legacy pllatform data can enable UPF_HARD_FLOW in plat_sci_port.flags.
+--0PMULBeX4VHQGssvpmuonTxpJW6nHkDtM
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+On 03/22/2016 04:38 PM, Peter Hurley wrote:
+> On 03/22/2016 06:07 AM, Matthias Schiffer wrote:
+>> I've tried your patch and I can't reproduce the issue anymore with it;=
+ I
+>> have no idea if this actually has to do something with the issue, or t=
+he
+>> change of the code path just hid the bug again.
 >>
->> UPF_HARD_FLOW is really for indicating the h/w supports automatic
->> CTS and RTS signalling; ie., RTS is automatically de-asserted when
->> rx fifo reaches some threshold and CTS will automatically prevent
->> tx fifo output.
->>
->> There is no serial core flag for indicating the h/w supports (or does not)
->> RTS and/or CTS signalling.
-> 
-> Sorry for not being clearer: Renesas SCIF hardware with dedicated RTS/CTS pins
-> does have support for automatic RTS/CTS signalling. The driver has (unused)
-> support for that (cfr. setting the SCFCR_MCE (Modem Control Enable) flag), but
-> it seems to be busted when enabled.
+>> Regarding your other mail: with "small change", I was not talking abou=
+t
+>> adding an additional printk; as mentioned, even changing the numbers i=
+n
+>> UTS_VERSION can hide the issue. I diffed a working and a broken kernel=
 
-Ok.
+>> image, and the UTS_VERSION is really the only difference. I have no id=
+ea
+>> how to explain this.
+>=20
+> If _any_ change may hide the problem, that will make it impossible
+> to determine if any attempted fix actually works, regardless of what
+> debugging method you use.
+>=20
+> FWIW, you could still use the boot console to debug the problem by
+> disabling the regular command-line console.
+>=20
+> Regards,
+> Peter Hurley
 
-So looking at the code, IIUC, SCIF does not provide a way to directly
-control RTS output or read CTS input when RTS/CTS is pinned (ie, not gpio).
-Is that correct?
-How to support autoRTS/autoCTS depends on the answer to this question.
+Hi,
+it seems Peter was on the right track. With some help from Ralf, I was ab=
+le
+to narrow down the issue a bit, and I'm fairly sure the hang happens
+somewhere in autoconfig().
 
-Is there a datasheet/trm that I can review describing register layout and
-uart behavior?
+autoconfig_16550a() is doing all kinds of weird checks to detect differen=
+t
+hardware by writing a lot of register values which are documented as
+reserved in the AR7242 datasheet (there's a leaked version going around
+that can be easily googled...), no idea if any of those are problematic.
+Just setting UPF_FIXED_TYPE as suggested by Peter would avoid that code
+altogether.
 
+That being said, I found another minimal change that seems to fix the
+issue: prom_putchar_ar71xx() in arch/mips/ath79/early_printk.c only waits=
 
-> If I understand it correctly:
->   1. Automatic RTS/CTS signalling should be enabled only if the user enabled it
->      through termios->c_cflag & CRTSCTS,
-
-yes
-
->   2. If the user didn't set CRTSCTS, the RTS output pin should be controlled by
->      the serial core, through .set_mctrl(),
-
-Not quite.
-
-_Regardless of CRTSCTS setting_, the RTS output pin should be controlled
-through .set_mctrl() method. The serial core takes CRTSCTS into account on
-behalf of the driver when necessary.
-
->   3. Regardless of the user setting CRTSCTS or not, .get_mctrl() should report
->      the current status of the CTS input pin.
-
-yes
-
-> Are my assumptions correct?
-
-A couple of things.
-
-gpio-based RTS/CTS is mutually exclusive with autoRTS/autoCTS. But I'm not
-seeing any logic in these patches to prevent that.
-
-autoCTS without a way to read CTS input level means that although transmission
-stops, the driver has no way to update port->hw_stopped so the write buffer
-will keep filling up until it's full @ 4k.
-
-autoRTS without a way to override RTS output complicates throttling.
+for UART_LSR_THRE, while serial_putc() in
+drivers/tty/serial/8250/8250_early.c waits for (UART_LSR_TEMT |
+UART_LSR_THRE). Adjusting arch/mips/ath79/early_printk.c in the same way
+makes the hangs go away. Maybe the AR7242 doesn't like its serial config
+registers being poked while there's still something in the FIFO? Waiting
+for UART_LSR_TEMT seems like a good idea anyways to ensure that all
+characters have been printed before autoconfig() starts taking things
+apart. (Why do these two versions of essentially the same code exist anyw=
+ays?)
 
 Regards,
-Peter Hurley
+Matthias
+
+
+--0PMULBeX4VHQGssvpmuonTxpJW6nHkDtM--
+
+--6GnP9oGHJtpEQjK3MvkFs1DbxNJgxmulJ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBCgAGBQJW8tUkAAoJEBbvP2TLIB2c4kQQAKpwvb+WuT6iWF3cii/Wavp2
+rkVSc/Zu6D5A5e+yYbXaJa4tPOni1R5RAmlRwi9XV6LWXPSq+PElcSL5DwO8b9zs
+Av8vuWOtB0RCav0LBsjzLcXwFTGf0eqFiL+2s3m4RTu5/0B6teFhKyEPLSJM2SHw
+/gsh491vmtpR4hSeoUYjaWruRk5hewyIkwbNln6nVJt2PDXYZe83xv0/L2FMAdnw
+SIi8SFl6oSy3JajgrLjomLVLCcPBqa+W15RyUmN8rYi6SmfOhaM5FrE1+9qGOf8D
+S2wQbt6nOtURraTFaRXot933kEjUzTvkwnq2mL1c809Nd/TvfpmsXb4ES9gzxVkV
+qi4wIbMpawPvHJhJxM2rQCygSbY8J/gZke3AtyJMFVChGs0E2JO6OXvErE4nibF4
+c65Vh+sAyDFUUQVP0B6i+YvDKYQPYCJhjdpPjn+F02O8Y24NRPme5VEp8Cim+ulN
+GIkYUGDCIk5FVj0urabwmfRRIWqw0y3xrOluLuatMu1UeJvTZjkuaZdkKRcpa5jr
+LLGh6XJT6M66gMuzWZOphVpFdUoSlTHJjqCqPxm/9EUtU3U48DzD40v2qHhwtyR2
+tJtPub076DKmrX6BjwvjaY1aTQrb+v+8x5/l1Ru09utKekdrw64pfSXnzek+Q+Rz
+QQLSo6PlLZ37UINIxvo/
+=FjKH
+-----END PGP SIGNATURE-----
+
+--6GnP9oGHJtpEQjK3MvkFs1DbxNJgxmulJ--
