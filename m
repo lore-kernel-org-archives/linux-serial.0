@@ -1,98 +1,55 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH v6 5/5] serial: pl011: add console matching function
-Date: Thu, 24 Mar 2016 15:52:03 +0300
-Message-ID: <1458823925-19560-6-git-send-email-aleksey.makarov@linaro.org>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v6 0/5] ACPI: parse the SPCR table
+Date: Thu, 24 Mar 2016 14:16:16 +0100
+Message-ID: <CAJZ5v0gzjtFzig7nEumr83+J2dGb+OA8GNR2i45ZqznfV_hA-A@mail.gmail.com>
 References: <1458823925-19560-1-git-send-email-aleksey.makarov@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-acpi-owner@vger.kernel.org>
 In-Reply-To: <1458823925-19560-1-git-send-email-aleksey.makarov@linaro.org>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, "Zheng, Lv" <lv.zheng@intel.com>, Jiri Slaby <jslaby@suse.com>
+To: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, "Zheng, Lv" <lv.zheng@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds function pl011_console_match() that implements
-method match of struct console.  It allows to match consoles against
-data specified in a string, for example taken from command line or
-compiled by ACPI SPCR table handler.
+On Thu, Mar 24, 2016 at 1:51 PM, Aleksey Makarov
+<aleksey.makarov@linaro.org> wrote:
+> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
+> Console Redirection Table) [2] as a mandatory ACPI table that
+> specifies the configuration of serial console.
+>
+> Move "earlycon" early_param handling to earlycon.c to parse this option once
+>
+> Patch "ACPI: add definitions of DBG2 subtypes" is required for the next patch.
+> ACPI maintainers said that they had got it for the next release of ACPICA,
+> but it has not appeared in linux-next yet.
 
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
----
- drivers/tty/serial/amba-pl011.c | 56 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
+It will.  Patches containing it have just been posted.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 7c198e0..4139b64 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2287,12 +2287,68 @@ static int __init pl011_console_setup(struct console *co, char *options)
- 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
- }
- 
-+/**
-+ *	pl011_console_match - non-standard console matching
-+ *	@co:	  registering console
-+ *	@name:	  name from console command line
-+ *	@idx:	  index from console command line
-+ *	@options: ptr to option string from console command line
-+ *
-+ *	Only attempts to match console command lines of the form:
-+ *	    console=pl011,mmio|mmio32,<addr>[,<options>]
-+ *	    console=pl011,0x<addr>[,<options>]
-+ *	This form is used to register an initial earlycon boot console and
-+ *	replace it with the amba_console at pl011 driver init.
-+ *
-+ *	Performs console setup for a match (as required by interface)
-+ *	If no <options> are specified, then assume the h/w is already setup.
-+ *
-+ *	Returns 0 if console matches; otherwise non-zero to use default matching
-+ */
-+static int __init pl011_console_match(struct console *co, char *name, int idx,
-+				      char *options)
-+{
-+	char match[] = "pl011";	/* pl011-specific earlycon name */
-+	unsigned char iotype;
-+	unsigned long addr;
-+	int i;
-+
-+	if (strncmp(name, match, 5) != 0)
-+		return -ENODEV;
-+
-+	if (uart_parse_earlycon(options, &iotype, &addr, &options))
-+		return -ENODEV;
-+
-+	/* try to match the port specified on the command line */
-+	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
-+		struct uart_port *port;
-+
-+		if (!amba_ports[i])
-+			continue;
-+
-+		port = &amba_ports[i]->port;
-+
-+		if (port->iotype != iotype)
-+			continue;
-+		if ((iotype == UPIO_MEM || iotype == UPIO_MEM32) &&
-+		    (port->mapbase != addr))
-+			continue;
-+
-+		co->index = i;
-+		port->cons = co;
-+		return pl011_console_setup(co, options);
-+	}
-+
-+	return -ENODEV;
-+}
-+
- static struct uart_driver amba_reg;
- static struct console amba_console = {
- 	.name		= "ttyAMA",
- 	.write		= pl011_console_write,
- 	.device		= uart_console_device,
- 	.setup		= pl011_console_setup,
-+	.match		= pl011_console_match,
- 	.flags		= CON_PRINTBUFFER,
- 	.index		= -1,
- 	.data		= &amba_reg,
--- 
-2.7.4
+> Parse SPCR table, setup earlycon and add register specified console.
+>
+> Enable parsing this table on ARM64.  Earlycon should be set up
+> as early as possible.  ACPI boot tables are mapped in
+> arch/arm64/kernel/acpi.c:acpi_boot_table_init() called from setup_arch()
+> and that's where we parse spcr.  So it has to be opted-in per-arch.
+>
+> Implement console_match() for pl011.
+>
+> Based on the work by Leif Lindholm [3]
+> Thanks to Peter Hurley for explaining how this should work.
+>
+> Should be applied to next-20160324.
+>
+> Tested on QEMU.  SPCR support is included in QEMU's ARM mach-virt
+> since 2.4 release.
 
+Honestly, I'm not sure why I'm regarded as the right maintainer to send this to.
+
+The only patch here touching generic ACPI code is [3/5] (the [2/5] is
+going in through ACPICA) and the rest is all about ARM64 AFAICS.  Why
+don't you send it to the ARM64 maintainers instead?
+
+I'll have some comments on [3/5], I'll send them later today or tomorrow.
+
+Thanks,
+Rafael
