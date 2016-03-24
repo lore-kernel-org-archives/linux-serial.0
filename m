@@ -1,154 +1,106 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH/RFC 5/5] serial: sh-sci: Replace SCIx_HAVE_RTSCTS by
- standard UPF_HARD_FLOW
-Date: Wed, 23 Mar 2016 17:13:39 -0700
-Message-ID: <56F33133.6060606@hurleysoftware.com>
-References: <1458222449-12324-1-git-send-email-geert+renesas@glider.be>
- <1458222449-12324-6-git-send-email-geert+renesas@glider.be>
- <56EC520F.5010101@hurleysoftware.com>
- <CAMuHMdWFyLAg-=y=6=CBaOUeS-WV0wFXos=jBo-MJQiGB=vXmA@mail.gmail.com>
- <56F2CE4F.2010104@hurleysoftware.com>
- <CAMuHMdVG=-5BG9N3wSK-sn7i7V3fNDxb83N8Q_uHxBe_FSr2zg@mail.gmail.com>
+Subject: Re: Nonterministic hang during bootconsole/console handover on ath79
+Date: Wed, 23 Mar 2016 17:44:26 -0700
+Message-ID: <56F3386A.5040100@hurleysoftware.com>
+References: <56F07DA1.8080404@universe-factory.net>
+ <56F0B189.2080206@hurleysoftware.com> <56F143A8.6020601@universe-factory.net>
+ <56F16708.4020109@hurleysoftware.com> <56F2D523.6000405@universe-factory.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdVG=-5BG9N3wSK-sn7i7V3fNDxb83N8Q_uHxBe_FSr2zg@mail.gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <56F2D523.6000405@universe-factory.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Schiffer <mschiffer@universe-factory.net>
+Cc: Ralf Baechle <ralf@linux-mips.org>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/23/2016 01:00 PM, Geert Uytterhoeven wrote:
-> On Wed, Mar 23, 2016 at 6:11 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
->> On 03/23/2016 02:33 AM, Geert Uytterhoeven wrote:
->>> On Fri, Mar 18, 2016 at 8:07 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
->>>> On 03/17/2016 06:47 AM, Geert Uytterhoeven wrote:
->>>>> Replace the custom SCIx_HAVE_RTSCTS flag in the
->>>>> plat_sci_port.capabilities field by the standard UPF_HARD_FLOW flag in
->>>>> the uart_port.flags and plat_sci_port.flags fields.
->>>>> Remove the now unused plat_sci_port.capabilities field.
->>>>> Legacy pllatform data can enable UPF_HARD_FLOW in plat_sci_port.flags.
->>>>
->>>> UPF_HARD_FLOW is really for indicating the h/w supports automatic
->>>> CTS and RTS signalling; ie., RTS is automatically de-asserted when
->>>> rx fifo reaches some threshold and CTS will automatically prevent
->>>> tx fifo output.
->>>>
->>>> There is no serial core flag for indicating the h/w supports (or does not)
->>>> RTS and/or CTS signalling.
+Hi Matthias,
+
+On 03/23/2016 10:40 AM, Matthias Schiffer wrote:
+> On 03/22/2016 04:38 PM, Peter Hurley wrote:
+>> On 03/22/2016 06:07 AM, Matthias Schiffer wrote:
+>>> I've tried your patch and I can't reproduce the issue anymore with it; I
+>>> have no idea if this actually has to do something with the issue, or the
+>>> change of the code path just hid the bug again.
 >>>
->>> Sorry for not being clearer: Renesas SCIF hardware with dedicated RTS/CTS pins
->>> does have support for automatic RTS/CTS signalling. The driver has (unused)
->>> support for that (cfr. setting the SCFCR_MCE (Modem Control Enable) flag), but
->>> it seems to be busted when enabled.
+>>> Regarding your other mail: with "small change", I was not talking about
+>>> adding an additional printk; as mentioned, even changing the numbers in
+>>> UTS_VERSION can hide the issue. I diffed a working and a broken kernel
+>>> image, and the UTS_VERSION is really the only difference. I have no idea
+>>> how to explain this.
 >>
->> Ok.
+>> If _any_ change may hide the problem, that will make it impossible
+>> to determine if any attempted fix actually works, regardless of what
+>> debugging method you use.
 >>
->> So looking at the code, IIUC, SCIF does not provide a way to directly
->> control RTS output or read CTS input when RTS/CTS is pinned (ie, not gpio).
->> Is that correct?
->> How to support autoRTS/autoCTS depends on the answer to this question.
-> 
-> Actually it does have support for controlling RTS output and reading CTS
-> input, but that is not yet implemented.
-> 
-> Magnus posted a series touching this a while ago ("serial: sh-sci: Hardware
-> flow control update", http://www.spinics.net/lists/linux-sh/msg38401.html),
-> which received some comments.
-> 
->> Is there a datasheet/trm that I can review describing register layout and
->> uart behavior?
-> 
-> I found a public one for an older SoC, see pages starting at (physical) page 849
-> http://documentation.renesas.com/doc/products/mpumcu/doc/superh/r01uh0048ej0200_sh7268.pdf
-
-Thanks.
-
-> 
->   - FIFO Control Register, bit MCE for automatic control
->   - Serial Port Register for manual control
-
-Actually the FIFO Control Register doesn't say anything regarding automatic
-control, but 16.4.2 Operation in Asynchronous Mode, Section (3) Transmitting and
-Receiving Data gives examples of operation when "modem control is enabled".
-
-Those examples show autoRTS/autoCTS behavior.
-
-
-[discussion of set_mctrl() and autoRTS moved to EOM]
-
-
- 
->> gpio-based RTS/CTS is mutually exclusive with autoRTS/autoCTS. But I'm not
->> seeing any logic in these patches to prevent that.
-> 
-> Sure. Currently nothing sets SCIx_HAVE_RTSCTS, so this can't happen yet.
-
-Anything that enables the gpios which will be in DT and beyond our control
-needs to exclude autoRTS/autoCTS within the patch that provides the
-DT functionality.
-
-
-> I went for GPIO-based RTS/CTS first, as we now have a framework for that,
-> and I can use it as a known-working base.
-
-Right. And I'm saying that a condition of gpio-based RTS/CTS support needs to
-contain the logic that prevents autoRTS/autoCTS, and not rely on orthogonal knobs.
-
-
->> autoCTS without a way to read CTS input level means that although transmission
->> stops, the driver has no way to update port->hw_stopped so the write buffer
->> will keep filling up until it's full @ 4k.
-> 
-> SCIF allows to read CTS input level, regardless of automatic RTS/CTS is
-> enabled or not.
-
-I see that but crucial support for CRTSCTS is missing, AFAICT; namely,
-a modem status interrupt.
-
-There's no way to determine when the remote re-enables CTS without polling,
-and the serial core provides no mechanism for the driver to poll CTS.
-
-So again, the driver has no way to trigger stopping/restarting tx when CTS
-changes without autoCTS. (A modem status interrupt for dCTS should call
-uart_handle_cts_change() to perform this operation).
-
-
->> autoRTS without a way to override RTS output complicates throttling.
-> 
-> SCIF allows to override RTS output.
-
-Not the way I read the TRM: 16.3.11 Serial Port Register, bit 7 states
-"When the RTS pin is actually used as a port outputting
-the RTSDT bit value, the MCE bit in SCFCR should be
-cleared to 0."
-
-IOW, autoRTS/autoCTS needs to be disabled to get the RTS override value
-outputting at the pin.
-
-
-
->>>   2. If the user didn't set CRTSCTS, the RTS output pin should be controlled by
->>>      the serial core, through .set_mctrl(),
+>> FWIW, you could still use the boot console to debug the problem by
+>> disabling the regular command-line console.
 >>
->> Not quite.
->>
->> _Regardless of CRTSCTS setting_, the RTS output pin should be controlled
->> through .set_mctrl() method. The serial core takes CRTSCTS into account on
->> behalf of the driver when necessary.
+>> Regards,
+>> Peter Hurley
 > 
-> What does this mean exactly?
-> AFAIU, there are three states:
->   - Force RTS asserted,
->   - Force RTS deasserted,
->   - Use hardware-controlled automatic RTS,
-> while .set_mctrl() just provides the boolean TIOCM_RTS flag?
+> Hi,
+> it seems Peter was on the right track. With some help from Ralf, I was able
+> to narrow down the issue a bit, and I'm fairly sure the hang happens
+> somewhere in autoconfig().
+> 
+> autoconfig_16550a() is doing all kinds of weird checks to detect different
+> hardware by writing a lot of register values which are documented as
+> reserved in the AR7242 datasheet (there's a leaked version going around
+> that can be easily googled...), no idea if any of those are problematic.
+> Just setting UPF_FIXED_TYPE as suggested by Peter would avoid that code
+> altogether.
 
-Since there is no userspace knob for autoRTS, drivers that enable autoRTS
-with CRTSCTS should force RTS to inactive for set_mctrl(!TIOCM_RTS) and cause
-RTS to return to normal operation (autoRTS, if enabled, or RTS active otherwise)
-for set_mctrl(TIOCM_RTS).
+That's just a debugging patch and not appropriate for permanent use,
+the reason being that this uart is _not_ 16550 compatible (or even 16450
+compatible).
+
+The three options for 8250 driver support for this part are:
+1. Similar to the debugging patch, set UPF_FIXED_TYPE but set port type
+   to PORT_8250 instead. This will lose FIFO support so 115K won't be
+   possible and likely neither will 38400.
+
+2. Set UPF_FIXED_TYPE but define a new PORT_* value and add support for
+   this PORT_* value to uart_config array, uapi headers, and anywhere
+   the scratch register is used.
+
+3. As with 2. above but don't set UPF_FIXED_TYPE and add a probe function
+   that detects ports of this type to autoconfig(). I don't recommend this
+   method.
+
+This requirement is independent of fixing prom_putchar_ar71xx().
+
+
+> That being said, I found another minimal change that seems to fix the
+> issue: prom_putchar_ar71xx() in arch/mips/ath79/early_printk.c only waits
+> for UART_LSR_THRE, while serial_putc() in
+> drivers/tty/serial/8250/8250_early.c waits for (UART_LSR_TEMT |
+> UART_LSR_THRE). Adjusting arch/mips/ath79/early_printk.c in the same way
+> makes the hangs go away.
+
+Go ahead and do this as well.
+
+
+> Maybe the AR7242 doesn't like its serial config
+> registers being poked while there's still something in the FIFO? Waiting
+> for UART_LSR_TEMT seems like a good idea anyways to ensure that all
+> characters have been printed before autoconfig() starts taking things
+> apart.
+
+I agree.
+
+
+> (Why do these two versions of essentially the same code exist anyways?)
+
+earlyprintk command-line parameter is arch-specific and predates
+the arch-independent earlycon support.
+
+earlycon requires the arch to either supply a fixmap for the uart i/o address
+or ioremap() must work by parse_early_param(); note how the mmio in
+arch/mips/ath79/early_printk.c accesses the mmio space @ KSEG1ADDR(uart base addr)?
+
+Can't do that in arch-independent earlycon code.
 
 Regards,
 Peter Hurley
