@@ -1,56 +1,65 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v2 3/6] serial: imx: make sure unhandled irqs are disabled
-Date: Thu, 24 Mar 2016 14:24:22 +0100
-Message-ID: <1458825865-7434-4-git-send-email-u.kleine-koenig@pengutronix.de>
-References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, linux-serial@vger.kernel.org
+From: Matthias Schiffer <mschiffer@universe-factory.net>
+Subject: [PATCH] MIPS: ath79: make bootconsole wait for both THRE and TEMT
+Date: Thu, 24 Mar 2016 16:02:52 +0100
+Message-ID: <f1ba020af5076172c9d29006a747ccf40027fedc.1458831772.git.mschiffer@universe-factory.net>
+Return-path: <linux-mips-bounce@linux-mips.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: linux-mips@linux-mips.org, ralf@linux-mips.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-TWFrZSBzdXJlIHRoYXQgZXZlbnRzIHRoYXQgYXJlIG5vdCBoYW5kbGVkIGluIHRoZSBpcnEgZnVu
-Y3Rpb24gZG9uJ3QKdHJpZ2dlciBhbiBpbnRlcnJ1cHQuCgpXaGVuIHRoZSBzZXJpYWwgcG9ydCBp
-cyBvcGVyYXRlZCBpbiBEVEUgbW9kZSwgdGhlIGV2ZW50cyBmb3IgRENEIGFuZCBSSQpldmVudHMg
-YXJlIGVuYWJsZWQgYWZ0ZXIgYSBzeXN0ZW0gcmVzZXQgYnkgZGVmYXVsdC4KClNpZ25lZC1vZmYt
-Ynk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+Ci0t
-LQogZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIHwgMjMgKysrKysrKysrKysrKysrKysrKysrKy0K
-IDEgZmlsZSBjaGFuZ2VkLCAyMiBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5j
-CmluZGV4IDVjZWQ2MWUxZGU2YS4uZmNkNDhmZDc4YmY1IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0
-eS9zZXJpYWwvaW14LmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCkBAIC0xMjIxLDEx
-ICsxMjIxLDMyIEBAIHN0YXRpYyBpbnQgaW14X3N0YXJ0dXAoc3RydWN0IHVhcnRfcG9ydCAqcG9y
-dCkKIAl0ZW1wIHw9IChVQ1IyX1JYRU4gfCBVQ1IyX1RYRU4pOwogCWlmICghc3BvcnQtPmhhdmVf
-cnRzY3RzKQogCQl0ZW1wIHw9IFVDUjJfSVJUUzsKKwkvKgorCSAqIG1ha2Ugc3VyZSB0aGUgZWRn
-ZSBzZW5zaXRpdmUgUlRTLWlycSBpcyBkaXNhYmxlZCwKKwkgKiB3ZSdyZSB1c2luZyBSVFNEIGlu
-c3RlYWQuCisJICovCisJaWYgKCFpc19pbXgxX3VhcnQoc3BvcnQpKQorCQl0ZW1wICY9IH5VQ1Iy
-X1JUU0VOOwogCXdyaXRlbCh0ZW1wLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMik7CiAKIAlp
-ZiAoIWlzX2lteDFfdWFydChzcG9ydCkpIHsKIAkJdGVtcCA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1l
-bWJhc2UgKyBVQ1IzKTsKLQkJdGVtcCB8PSBJTVgyMV9VQ1IzX1JYRE1VWFNFTCB8IFVDUjNfQURO
-SU1QOworCisJCS8qCisJCSAqIFRoZSBlZmZlY3Qgb2YgUkkgYW5kIERDRCBkaWZmZXJzIGRlcGVu
-ZGluZyBvbiB0aGUgVUZDUl9EQ0VEVEUKKwkJICogYml0LiBJbiBEQ0UgbW9kZSB0aGV5IGNvbnRy
-b2wgdGhlIG91dHB1dHMsIGluIERURSBtb2RlIHRoZXkKKwkJICogZW5hYmxlIHRoZSByZXNwZWN0
-aXZlIGlycXMuIEF0IGxlYXN0IHRoZSBEQ0QgaXJxIGNhbm5vdCBiZQorCQkgKiBjbGVhcmVkIG9u
-IGkuTVgyNSBhdCBsZWFzdCwgc28gaXQncyBub3QgdXNhYmxlIGFuZCBtdXN0IGJlCisJCSAqIGRp
-c2FibGVkLiBJIGRvbid0IGhhdmUgdGVzdCBoYXJkd2FyZSB0byBjaGVjayBpZiBSSSBoYXMgdGhl
-CisJCSAqIHNhbWUgcHJvYmxlbSBidXQgSSBjb25zaWRlciB0aGlzIGxpa2VseSBzbyBpdCdzIGRp
-c2FibGVkIGZvcgorCQkgKiBub3csIHRvby4KKwkJICovCisJCXRlbXAgfD0gSU1YMjFfVUNSM19S
-WERNVVhTRUwgfCBVQ1IzX0FETklNUCB8CisJCQlVQ1IzX1JJIHwgVUNSM19EQ0Q7CisKKwkJaWYg
-KHNwb3J0LT5kdGVfbW9kZSkKKwkJCXRlbXAgJj0gfihVQ1IzX1JJIHwgVUNSM19EQ0QpOworCiAJ
-CXdyaXRlbCh0ZW1wLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMyk7CiAJfQogCi0tIAoyLjcu
-MAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4
-LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFk
-Lm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFy
-bS1rZXJuZWwK
+This makes the ath79 bootconsole behave the same way as the generic 8250
+bootconsole.
+
+Also waiting for TEMT (transmit buffer is empty) instead of just THRE
+(transmit buffer is not full) ensures that all characters have been
+transmitted before the real serial driver starts reconfiguring the serial
+controller (which would sometimes result in garbage being transmitted.)
+This change does not cause a visible performance loss.
+
+In addition, this seems to fix a hang observed in certain configurations on
+many AR7xxx/AR9xxx SoCs during autoconfig of the real serial driver.
+
+A more complete follow-up patch will disable 8250 autoconfig for ath79
+altogether (the serial controller is detected as a 16550A, which is not
+fully compatible with the ath79 serial, and the autoconfig may lead to
+undefined behavior on ath79.)
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Matthias Schiffer <mschiffer@universe-factory.net>
+---
+ arch/mips/ath79/early_printk.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/mips/ath79/early_printk.c b/arch/mips/ath79/early_printk.c
+index b955faf..d1adc59 100644
+--- a/arch/mips/ath79/early_printk.c
++++ b/arch/mips/ath79/early_printk.c
+@@ -31,13 +31,15 @@ static inline void prom_putchar_wait(void __iomem *reg, u32 mask, u32 val)
+ 	} while (1);
+ }
+ 
++#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
++
+ static void prom_putchar_ar71xx(unsigned char ch)
+ {
+ 	void __iomem *base = (void __iomem *)(KSEG1ADDR(AR71XX_UART_BASE));
+ 
+-	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_THRE, UART_LSR_THRE);
++	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
+ 	__raw_writel(ch, base + UART_TX * 4);
+-	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_THRE, UART_LSR_THRE);
++	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
+ }
+ 
+ static void prom_putchar_ar933x(unsigned char ch)
+-- 
+2.7.4
