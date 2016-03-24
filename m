@@ -1,114 +1,154 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Peter Hurley <peter@hurleysoftware.com>
 Subject: Re: [PATCH/RFC 5/5] serial: sh-sci: Replace SCIx_HAVE_RTSCTS by
  standard UPF_HARD_FLOW
-Date: Wed, 23 Mar 2016 21:00:08 +0100
-Message-ID: <CAMuHMdVG=-5BG9N3wSK-sn7i7V3fNDxb83N8Q_uHxBe_FSr2zg@mail.gmail.com>
+Date: Wed, 23 Mar 2016 17:13:39 -0700
+Message-ID: <56F33133.6060606@hurleysoftware.com>
 References: <1458222449-12324-1-git-send-email-geert+renesas@glider.be>
-	<1458222449-12324-6-git-send-email-geert+renesas@glider.be>
-	<56EC520F.5010101@hurleysoftware.com>
-	<CAMuHMdWFyLAg-=y=6=CBaOUeS-WV0wFXos=jBo-MJQiGB=vXmA@mail.gmail.com>
-	<56F2CE4F.2010104@hurleysoftware.com>
+ <1458222449-12324-6-git-send-email-geert+renesas@glider.be>
+ <56EC520F.5010101@hurleysoftware.com>
+ <CAMuHMdWFyLAg-=y=6=CBaOUeS-WV0wFXos=jBo-MJQiGB=vXmA@mail.gmail.com>
+ <56F2CE4F.2010104@hurleysoftware.com>
+ <CAMuHMdVG=-5BG9N3wSK-sn7i7V3fNDxb83N8Q_uHxBe_FSr2zg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <56F2CE4F.2010104@hurleysoftware.com>
+In-Reply-To: <CAMuHMdVG=-5BG9N3wSK-sn7i7V3fNDxb83N8Q_uHxBe_FSr2zg@mail.gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
-
-On Wed, Mar 23, 2016 at 6:11 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
-> On 03/23/2016 02:33 AM, Geert Uytterhoeven wrote:
->> On Fri, Mar 18, 2016 at 8:07 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
->>> On 03/17/2016 06:47 AM, Geert Uytterhoeven wrote:
->>>> Replace the custom SCIx_HAVE_RTSCTS flag in the
->>>> plat_sci_port.capabilities field by the standard UPF_HARD_FLOW flag in
->>>> the uart_port.flags and plat_sci_port.flags fields.
->>>> Remove the now unused plat_sci_port.capabilities field.
->>>> Legacy pllatform data can enable UPF_HARD_FLOW in plat_sci_port.flags.
+On 03/23/2016 01:00 PM, Geert Uytterhoeven wrote:
+> On Wed, Mar 23, 2016 at 6:11 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>> On 03/23/2016 02:33 AM, Geert Uytterhoeven wrote:
+>>> On Fri, Mar 18, 2016 at 8:07 PM, Peter Hurley <peter@hurleysoftware.com> wrote:
+>>>> On 03/17/2016 06:47 AM, Geert Uytterhoeven wrote:
+>>>>> Replace the custom SCIx_HAVE_RTSCTS flag in the
+>>>>> plat_sci_port.capabilities field by the standard UPF_HARD_FLOW flag in
+>>>>> the uart_port.flags and plat_sci_port.flags fields.
+>>>>> Remove the now unused plat_sci_port.capabilities field.
+>>>>> Legacy pllatform data can enable UPF_HARD_FLOW in plat_sci_port.flags.
+>>>>
+>>>> UPF_HARD_FLOW is really for indicating the h/w supports automatic
+>>>> CTS and RTS signalling; ie., RTS is automatically de-asserted when
+>>>> rx fifo reaches some threshold and CTS will automatically prevent
+>>>> tx fifo output.
+>>>>
+>>>> There is no serial core flag for indicating the h/w supports (or does not)
+>>>> RTS and/or CTS signalling.
 >>>
->>> UPF_HARD_FLOW is really for indicating the h/w supports automatic
->>> CTS and RTS signalling; ie., RTS is automatically de-asserted when
->>> rx fifo reaches some threshold and CTS will automatically prevent
->>> tx fifo output.
->>>
->>> There is no serial core flag for indicating the h/w supports (or does not)
->>> RTS and/or CTS signalling.
+>>> Sorry for not being clearer: Renesas SCIF hardware with dedicated RTS/CTS pins
+>>> does have support for automatic RTS/CTS signalling. The driver has (unused)
+>>> support for that (cfr. setting the SCFCR_MCE (Modem Control Enable) flag), but
+>>> it seems to be busted when enabled.
 >>
->> Sorry for not being clearer: Renesas SCIF hardware with dedicated RTS/CTS pins
->> does have support for automatic RTS/CTS signalling. The driver has (unused)
->> support for that (cfr. setting the SCFCR_MCE (Modem Control Enable) flag), but
->> it seems to be busted when enabled.
->
-> Ok.
->
-> So looking at the code, IIUC, SCIF does not provide a way to directly
-> control RTS output or read CTS input when RTS/CTS is pinned (ie, not gpio).
-> Is that correct?
-> How to support autoRTS/autoCTS depends on the answer to this question.
+>> Ok.
+>>
+>> So looking at the code, IIUC, SCIF does not provide a way to directly
+>> control RTS output or read CTS input when RTS/CTS is pinned (ie, not gpio).
+>> Is that correct?
+>> How to support autoRTS/autoCTS depends on the answer to this question.
+> 
+> Actually it does have support for controlling RTS output and reading CTS
+> input, but that is not yet implemented.
+> 
+> Magnus posted a series touching this a while ago ("serial: sh-sci: Hardware
+> flow control update", http://www.spinics.net/lists/linux-sh/msg38401.html),
+> which received some comments.
+> 
+>> Is there a datasheet/trm that I can review describing register layout and
+>> uart behavior?
+> 
+> I found a public one for an older SoC, see pages starting at (physical) page 849
+> http://documentation.renesas.com/doc/products/mpumcu/doc/superh/r01uh0048ej0200_sh7268.pdf
 
-Actually it does have support for controlling RTS output and reading CTS
-input, but that is not yet implemented.
+Thanks.
 
-Magnus posted a series touching this a while ago ("serial: sh-sci: Hardware
-flow control update", http://www.spinics.net/lists/linux-sh/msg38401.html),
-which received some comments.
+> 
+>   - FIFO Control Register, bit MCE for automatic control
+>   - Serial Port Register for manual control
 
-> Is there a datasheet/trm that I can review describing register layout and
-> uart behavior?
+Actually the FIFO Control Register doesn't say anything regarding automatic
+control, but 16.4.2 Operation in Asynchronous Mode, Section (3) Transmitting and
+Receiving Data gives examples of operation when "modem control is enabled".
 
-I found a public one for an older SoC, see pages starting at (physical) page 849
-http://documentation.renesas.com/doc/products/mpumcu/doc/superh/r01uh0048ej0200_sh7268.pdf
+Those examples show autoRTS/autoCTS behavior.
 
-  - FIFO Control Register, bit MCE for automatic control
-  - Serial Port Register for manual control
 
->>   2. If the user didn't set CRTSCTS, the RTS output pin should be controlled by
->>      the serial core, through .set_mctrl(),
->
-> Not quite.
->
-> _Regardless of CRTSCTS setting_, the RTS output pin should be controlled
-> through .set_mctrl() method. The serial core takes CRTSCTS into account on
-> behalf of the driver when necessary.
+[discussion of set_mctrl() and autoRTS moved to EOM]
 
-What does this mean exactly?
-AFAIU, there are three states:
-  - Force RTS asserted,
-  - Force RTS deasserted,
-  - Use hardware-controlled automatic RTS,
-while .set_mctrl() just provides the boolean TIOCM_RTS flag?
 
-> gpio-based RTS/CTS is mutually exclusive with autoRTS/autoCTS. But I'm not
-> seeing any logic in these patches to prevent that.
+ 
+>> gpio-based RTS/CTS is mutually exclusive with autoRTS/autoCTS. But I'm not
+>> seeing any logic in these patches to prevent that.
+> 
+> Sure. Currently nothing sets SCIx_HAVE_RTSCTS, so this can't happen yet.
 
-Sure. Currently nothing sets SCIx_HAVE_RTSCTS, so this can't happen yet.
+Anything that enables the gpios which will be in DT and beyond our control
+needs to exclude autoRTS/autoCTS within the patch that provides the
+DT functionality.
 
-I went for GPIO-based RTS/CTS first, as we now have a framework for that,
-and I can use it as a known-working base.
 
-> autoCTS without a way to read CTS input level means that although transmission
-> stops, the driver has no way to update port->hw_stopped so the write buffer
-> will keep filling up until it's full @ 4k.
+> I went for GPIO-based RTS/CTS first, as we now have a framework for that,
+> and I can use it as a known-working base.
 
-SCIF allows to read CTS input level, regardless of automatic RTS/CTS is
-enabled or not.
+Right. And I'm saying that a condition of gpio-based RTS/CTS support needs to
+contain the logic that prevents autoRTS/autoCTS, and not rely on orthogonal knobs.
 
-> autoRTS without a way to override RTS output complicates throttling.
 
-SCIF allows to override RTS output.
+>> autoCTS without a way to read CTS input level means that although transmission
+>> stops, the driver has no way to update port->hw_stopped so the write buffer
+>> will keep filling up until it's full @ 4k.
+> 
+> SCIF allows to read CTS input level, regardless of automatic RTS/CTS is
+> enabled or not.
 
-Thanks!
+I see that but crucial support for CRTSCTS is missing, AFAICT; namely,
+a modem status interrupt.
 
-Gr{oetje,eeting}s,
+There's no way to determine when the remote re-enables CTS without polling,
+and the serial core provides no mechanism for the driver to poll CTS.
 
-                        Geert
+So again, the driver has no way to trigger stopping/restarting tx when CTS
+changes without autoCTS. (A modem status interrupt for dCTS should call
+uart_handle_cts_change() to perform this operation).
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>> autoRTS without a way to override RTS output complicates throttling.
+> 
+> SCIF allows to override RTS output.
+
+Not the way I read the TRM: 16.3.11 Serial Port Register, bit 7 states
+"When the RTS pin is actually used as a port outputting
+the RTSDT bit value, the MCE bit in SCFCR should be
+cleared to 0."
+
+IOW, autoRTS/autoCTS needs to be disabled to get the RTS override value
+outputting at the pin.
+
+
+
+>>>   2. If the user didn't set CRTSCTS, the RTS output pin should be controlled by
+>>>      the serial core, through .set_mctrl(),
+>>
+>> Not quite.
+>>
+>> _Regardless of CRTSCTS setting_, the RTS output pin should be controlled
+>> through .set_mctrl() method. The serial core takes CRTSCTS into account on
+>> behalf of the driver when necessary.
+> 
+> What does this mean exactly?
+> AFAIU, there are three states:
+>   - Force RTS asserted,
+>   - Force RTS deasserted,
+>   - Use hardware-controlled automatic RTS,
+> while .set_mctrl() just provides the boolean TIOCM_RTS flag?
+
+Since there is no userspace knob for autoRTS, drivers that enable autoRTS
+with CRTSCTS should force RTS to inactive for set_mctrl(!TIOCM_RTS) and cause
+RTS to return to normal operation (autoRTS, if enabled, or RTS active otherwise)
+for set_mctrl(TIOCM_RTS).
+
+Regards,
+Peter Hurley
