@@ -1,29 +1,60 @@
-From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v6 1/5] of/serial: move earlycon early_param handling to serial
-Date: Thu, 24 Mar 2016 16:07:20 -0500
-Message-ID: <CAL_JsqJje4=U4+i3jfFDkRv2Px3cw5QzGHfq41OjRDNL6c_Q8Q@mail.gmail.com>
-References: <1458823925-19560-1-git-send-email-aleksey.makarov@linaro.org> <1458823925-19560-2-git-send-email-aleksey.makarov@linaro.org>
+From: Chanwoo Choi <cw00.choi@samsung.com>
+Subject: Re: [PATCH] serial: samsung: Reorder the sequence of clock control
+ when call s3c24xx_serial_set_termios()
+Date: Fri, 25 Mar 2016 09:10:16 +0900
+Message-ID: <56F481E8.1000602@samsung.com>
+References: <1457916065-27418-1-git-send-email-cw00.choi@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1458823925-19560-2-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, "Zheng, Lv" <lv.zheng@intel.com>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1457916065-27418-1-git-send-email-cw00.choi@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: k.kozlowski@samsung.com, kgene@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, "Robert Baldyga (SRPOL)" <r.baldyga@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 24, 2016 at 7:51 AM, Aleksey Makarov
-<aleksey.makarov@linaro.org> wrote:
-> From: Leif Lindholm <leif.lindholm@linaro.org>
->
-> We have multiple "earlycon" early_param handlers - merge the DT one into
-> the main earlycon one.  It's a cleanup that also will be useful
-> to defer setting up DT console until ACPI/DT decision is made.
->
-> Rename the exported function to avoid clashing with the function from
-> arch/microblaze/kernel/prom.c
->
-> Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Hi Robert,
 
-Acked-by: Rob Herring <robh@kernel.org>
+I send following patch to fix the broken serial log of Exynos SoC.
+As I knew, you also knew this issue.
+If possible, could you review or test this patch?
+
+Best Regards,
+Chanwoo Choi
+
+On 2016=EB=85=84 03=EC=9B=94 14=EC=9D=BC 09:41, Chanwoo Choi wrote:
+> This patch fixes the broken serial log when changing the clock source
+> of uart device. Before disabling the original clock source, this patc=
+h
+> enables the new clock source to protect the clock off state for a spl=
+it second.
+>=20
+> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+> ---
+>  drivers/tty/serial/samsung.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsun=
+g.c
+> index d72cd736bdc6..80d59dbfebba 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -1265,13 +1265,13 @@ static void s3c24xx_serial_set_termios(struct=
+ uart_port *port,
+>  	if (ourport->baudclk !=3D clk) {
+>  		s3c24xx_serial_setsource(port, clk_sel);
+> =20
+> +		clk_prepare_enable(clk);
+> +
+>  		if (!IS_ERR(ourport->baudclk)) {
+>  			clk_disable_unprepare(ourport->baudclk);
+>  			ourport->baudclk =3D ERR_PTR(-EINVAL);
+>  		}
+> =20
+> -		clk_prepare_enable(clk);
+> -
+>  		ourport->baudclk =3D clk;
+>  		ourport->baudclk_rate =3D clk ? clk_get_rate(clk) : 0;
+>  	}
+>=20
