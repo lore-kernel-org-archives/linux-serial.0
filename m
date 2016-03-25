@@ -1,109 +1,196 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: Nonterministic hang during bootconsole/console handover on ath79
-Date: Fri, 25 Mar 2016 08:24:40 -0700
-Message-ID: <56F55838.40001@hurleysoftware.com>
-References: <56F07DA1.8080404@universe-factory.net>
- <56F0B189.2080206@hurleysoftware.com> <56F143A8.6020601@universe-factory.net>
- <56F16708.4020109@hurleysoftware.com> <56F2D523.6000405@universe-factory.net>
- <56F3386A.5040100@hurleysoftware.com> <56F34C61.50505@universe-factory.net>
- <56F35C33.7030608@hurleysoftware.com> <56F53626.1040507@openwrt.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56F53626.1040507@openwrt.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Gabor Juhos <juhosg@openwrt.org>, Matthias Schiffer <mschiffer@universe-factory.net>
-Cc: Ralf Baechle <ralf@linux-mips.org>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From: Stephen Boyd <stephen.boyd@linaro.org>
+Subject: [PATCH] tty: serial: msm: Support more bauds
+Date: Fri, 25 Mar 2016 14:35:49 -0700
+Message-ID: <1458941749-5705-1-git-send-email-stephen.boyd@linaro.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, "Ivan T. Ivanov" <iivanov.xz@gmail.com>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Andy Gross <andy.gross@linaro.org>, Matthew McClintock <mmcclint@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Gabor,
+The msm_find_best_baud() function is written with the assumption
+that the port->uartclk rate is fixed to a particular rate at boot
+time, but now this driver changes that clk rate at runtime when
+the baud is changed.
 
-On 03/25/2016 05:59 AM, Gabor Juhos wrote:
-> 2016.03.24. 4:17 keltez=C3=A9ssel, Peter Hurley =C3=ADrta:
->> On 03/23/2016 07:09 PM, Matthias Schiffer wrote:
->>>>> autoconfig_16550a() is doing all kinds of weird checks to detect =
-different
->>>>> hardware by writing a lot of register values which are documented=
- as
->>>>> reserved in the AR7242 datasheet (there's a leaked version going =
-around
->>>>> that can be easily googled...), no idea if any of those are probl=
-ematic.
->>>>> Just setting UPF_FIXED_TYPE as suggested by Peter would avoid tha=
-t code
->>>>> altogether.
->>>>
->>>> That's just a debugging patch and not appropriate for permanent us=
-e,
->>>> the reason being that this uart is _not_ 16550 compatible (or even=
- 16450
->>>> compatible).
->>>>
->>>> The three options for 8250 driver support for this part are:
->>>> 1. Similar to the debugging patch, set UPF_FIXED_TYPE but set port=
- type
->>>>    to PORT_8250 instead. This will lose FIFO support so 115K won't=
- be
->>>>    possible and likely neither will 38400.
->>>>
->>>> 2. Set UPF_FIXED_TYPE but define a new PORT_* value and add suppor=
-t for
->>>>    this PORT_* value to uart_config array, uapi headers, and anywh=
-ere
->>>>    the scratch register is used.
->>>>
->>>> 3. As with 2. above but don't set UPF_FIXED_TYPE and add a probe f=
-unction
->>>>    that detects ports of this type to autoconfig(). I don't recomm=
-end this
->>>>    method.
->>>>
->>>> This requirement is independent of fixing prom_putchar_ar71xx().
->>>>
->>>
->>> I can send patches for all of this, and I think that 2. would be th=
-e nicest
->>> solution. I've noticed though that include/uapi/linux/serial_core.h=
- is
->>> experiencing a little "overflow": PORT_MAX_8250 has grown just belo=
-w the
->>> first non-8250 entry.
->>
->> Ugh. Thanks for noting this.
->>
->>> Should I just add the new entry at the bottom (and
->>> thus grow the uart_config array by ~85 unused entries)? What about
->>> PORT_MAX_8250 (used at least in drivers/tty/serial/8250/8250_of.c)?
->>
->> None of the above, unfortunately. Ok, plan B.
->>
->> I need to clean off a dusty series that adds probe steering and
->> bugs pass-thru for 8250 sub-drivers and platform data. Then add a
->> UART_BUG_NOSCR to indicate a uart does not have a scratch register
->> (like this one). Then for this uart, set UPF_FIXED_TYPE and type to
->> PORT_16550A, with UART_BUG_NOSCR flag.
->=20
-> Introducing the UART_BUG_NOSCR flag for this UART is pointless in my =
-opinion,
-> because it does have a scratch register in fact. Even if it is not li=
-sted in the
-> datasheet of the SoCs, it exists.
+The way the hardware works is that an input clk rate comes from
+the clk controller into the uart hw block. That rate is typically
+1843200 or 3686400 Hz. That rate can then be divided by an
+internal divider in the hw block to achieve a particular baud on
+the serial wire. msm_find_best_baud() is looking for that divider
+value.
 
-Ok, then the part(s) should be compatible enough with the 8250 driver a=
-s it is.
-If boot hang problem persists on these parts, then the autoconfig() pro=
-bes may
-still be a problem, and my debugging patch from earlier can be used to =
-skirt
-autoconfig().
+A few things are wrong with the way the code is written. First,
+it assumes that the maximum baud that the uart can support if the
+clk rate is fixed at boot is 460800, which would correspond to an
+input clk rate of 230400 * 16 == 3686400 Hz.  Except some devices
+have a boot rate of 1843200 Hz or max baud of 115200, so
+achieving 230400 on those devices doesn't work at all because we
+don't increase the clk rate unless max baud is 460800.
 
+Second, we can't achieve bauds higher than 460800 that require
+anything besides a divisor of 1, because we always call
+msm_find_best_baud() with a fixed port->uartclk rate that will
+eventually be changed after we calculate the divisor. So if we
+need to get a baud of 500000, we'll just multiply that by 16 and
+hope that the clk can give us 500000 * 16 == 8000000 Hz, which it
+typically can't do. To really achieve 500000 baud, we need to get
+an input clk rate of 24000000 Hz and then divide that by 3 inside
+the uart hardware.
 
-> I have tested that from the bootloader on the Netgear WNDR3700 board =
-which uses
-> the AR7161 SoC:
+Finally, we return success for bauds even when we can't actually
+achieve them. This means that when the user asks for 500000 baud,
+we actually get 921600 right now, but the user doesn't know that.
 
-Thanks for testing.
+Fix all of this by searching through the divisor and clk rate
+space with a combination of clk_round_rate() and baud
+calculations, keeping track of the best clk rate and divisor we
+find if we can't get an exact match. Typically we can get an
+exact match with a divisor of 1, but sometimes we need to keep
+track and try more frequencies. On my msm8916 device, this
+results in all standard bauds in baud_table being supported
+except for 1800, 576000, 1152000, and 4000000.
 
-Regards,
-Peter Hurley
+Fixes: 850b37a71bde ("tty: serial: msm: Remove 115.2 Kbps maximum baud rate limitation")
+Cc: "Ivan T. Ivanov" <iivanov.xz@gmail.com>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: Andy Gross <andy.gross@linaro.org>
+Cc: Matthew McClintock <mmcclint@codeaurora.org>
+Signed-off-by: Stephen Boyd <stephen.boyd@linaro.org>
+---
+ drivers/tty/serial/msm_serial.c | 99 +++++++++++++++++++++++++++--------------
+ 1 file changed, 66 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 96d3ce8dc2dc..3d28be85bd46 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -861,37 +861,72 @@ struct msm_baud_map {
+ };
+ 
+ static const struct msm_baud_map *
+-msm_find_best_baud(struct uart_port *port, unsigned int baud)
++msm_find_best_baud(struct uart_port *port, unsigned int baud,
++		   unsigned long *rate)
+ {
+-	unsigned int i, divisor;
+-	const struct msm_baud_map *entry;
++	struct msm_port *msm_port = UART_TO_MSM(port);
++	unsigned int divisor, result;
++	unsigned long target, old, best_rate = 0, diff, best_diff = ULONG_MAX;
++	const struct msm_baud_map *entry, *end, *best;
+ 	static const struct msm_baud_map table[] = {
+-		{ 1536, 0x00,  1 },
+-		{  768, 0x11,  1 },
+-		{  384, 0x22,  1 },
+-		{  192, 0x33,  1 },
+-		{   96, 0x44,  1 },
+-		{   48, 0x55,  1 },
+-		{   32, 0x66,  1 },
+-		{   24, 0x77,  1 },
+-		{   16, 0x88,  1 },
+-		{   12, 0x99,  6 },
+-		{    8, 0xaa,  6 },
+-		{    6, 0xbb,  6 },
+-		{    4, 0xcc,  6 },
+-		{    3, 0xdd,  8 },
+-		{    2, 0xee, 16 },
+ 		{    1, 0xff, 31 },
+-		{    0, 0xff, 31 },
++		{    2, 0xee, 16 },
++		{    3, 0xdd,  8 },
++		{    4, 0xcc,  6 },
++		{    6, 0xbb,  6 },
++		{    8, 0xaa,  6 },
++		{   12, 0x99,  6 },
++		{   16, 0x88,  1 },
++		{   24, 0x77,  1 },
++		{   32, 0x66,  1 },
++		{   48, 0x55,  1 },
++		{   96, 0x44,  1 },
++		{  192, 0x33,  1 },
++		{  384, 0x22,  1 },
++		{  768, 0x11,  1 },
++		{ 1536, 0x00,  1 },
+ 	};
+ 
+-	divisor = uart_get_divisor(port, baud);
++	best = table; /* Default to smallest divider */
++	target = clk_round_rate(msm_port->clk, 16 * baud);
++	divisor = DIV_ROUND_CLOSEST(target, 16 * baud);
++
++	end = table + ARRAY_SIZE(table);
++	entry = table;
++	while (entry < end) {
++		if (entry->divisor <= divisor) {
++			result = target / entry->divisor / 16;
++			diff = abs(result - baud);
++
++			/* Keep track of best entry */
++			if (diff < best_diff) {
++				best_diff = diff;
++				best = entry;
++				best_rate = target;
++			}
+ 
+-	for (i = 0, entry = table; i < ARRAY_SIZE(table); i++, entry++)
+-		if (entry->divisor <= divisor)
+-			break;
++			if (result == baud)
++				break;
++		} else if (entry->divisor > divisor) {
++			old = target;
++			target = clk_round_rate(msm_port->clk, old + 1);
++			/*
++			 * The rate didn't get any faster so we can't do
++			 * better at dividing it down
++			 */
++			if (target == old)
++				break;
++
++			/* Start the divisor search over at this new rate */
++			entry = table;
++			divisor = DIV_ROUND_CLOSEST(target, 16 * baud);
++			continue;
++		}
++		entry++;
++	}
+ 
+-	return entry; /* Default to smallest divider */
++	*rate = best_rate;
++	return best;
+ }
+ 
+ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
+@@ -900,22 +935,20 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
+ 	unsigned int rxstale, watermark, mask;
+ 	struct msm_port *msm_port = UART_TO_MSM(port);
+ 	const struct msm_baud_map *entry;
+-	unsigned long flags;
+-
+-	entry = msm_find_best_baud(port, baud);
+-
+-	msm_write(port, entry->code, UART_CSR);
+-
+-	if (baud > 460800)
+-		port->uartclk = baud * 16;
++	unsigned long flags, rate;
+ 
+ 	flags = *saved_flags;
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+-	clk_set_rate(msm_port->clk, port->uartclk);
++	entry = msm_find_best_baud(port, baud, &rate);
++	clk_set_rate(msm_port->clk, rate);
++	baud = rate / 16 / entry->divisor;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+ 	*saved_flags = flags;
++	port->uartclk = rate;
++
++	msm_write(port, entry->code, UART_CSR);
+ 
+ 	/* RX stale watermark */
+ 	rxstale = entry->rxstale;
+-- 
+2.8.0.rc4
