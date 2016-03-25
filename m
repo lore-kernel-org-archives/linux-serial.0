@@ -1,91 +1,140 @@
-From: Chanwoo Choi <cw00.choi@samsung.com>
-Subject: Re: [PATCH] serial: samsung: Reorder the sequence of clock control
- when call s3c24xx_serial_set_termios()
-Date: Fri, 25 Mar 2016 17:22:31 +0900
-Message-ID: <56F4F547.4000706@samsung.com>
-References: <1457916065-27418-1-git-send-email-cw00.choi@samsung.com>
- <56F481E8.1000602@samsung.com> <56F4F357.2060407@samsung.com>
+From: Gabor Juhos <juhosg@openwrt.org>
+Subject: Re: Nonterministic hang during bootconsole/console handover on ath79
+Date: Fri, 25 Mar 2016 13:59:18 +0100
+Message-ID: <56F53626.1040507@openwrt.org>
+References: <56F07DA1.8080404@universe-factory.net>
+ <56F0B189.2080206@hurleysoftware.com> <56F143A8.6020601@universe-factory.net>
+ <56F16708.4020109@hurleysoftware.com> <56F2D523.6000405@universe-factory.net>
+ <56F3386A.5040100@hurleysoftware.com> <56F34C61.50505@universe-factory.net>
+ <56F35C33.7030608@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <56F4F357.2060407@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: k.kozlowski@samsung.com, kgene@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, "Robert Baldyga (SRPOL)" <r.baldyga@samsung.com>
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <56F35C33.7030608@hurleysoftware.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Peter Hurley <peter@hurleysoftware.com>, Matthias Schiffer <mschiffer@universe-factory.net>
+Cc: Ralf Baechle <ralf@linux-mips.org>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Dear Marek,
-
-On 2016=EB=85=84 03=EC=9B=94 25=EC=9D=BC 17:14, Marek Szyprowski wrote:
-> Dear Chanwoo,
->=20
-> On 2016-03-25 01:10, Chanwoo Choi wrote:
->> Hi Robert,
->>
->> I send following patch to fix the broken serial log of Exynos SoC.
->> As I knew, you also knew this issue.
->> If possible, could you review or test this patch?
->=20
-> Robert no longer works for Samsung, so I'm afraid that he won't be ab=
-le to test
-> this patch.
-
-Ah. Thanks for your reply.
-
->=20
->> Best Regards,
->> Chanwoo Choi
->>
->> On 2016=EB=85=84 03=EC=9B=94 14=EC=9D=BC 09:41, Chanwoo Choi wrote:
->>> This patch fixes the broken serial log when changing the clock sour=
-ce
->>> of uart device. Before disabling the original clock source, this pa=
-tch
->>> enables the new clock source to protect the clock off state for a s=
-plit second.
+2016.03.24. 4:17 keltez=C3=A9ssel, Peter Hurley =C3=ADrta:
+> On 03/23/2016 07:09 PM, Matthias Schiffer wrote:
+>>>> autoconfig_16550a() is doing all kinds of weird checks to detect d=
+ifferent
+>>>> hardware by writing a lot of register values which are documented =
+as
+>>>> reserved in the AR7242 datasheet (there's a leaked version going a=
+round
+>>>> that can be easily googled...), no idea if any of those are proble=
+matic.
+>>>> Just setting UPF_FIXED_TYPE as suggested by Peter would avoid that=
+ code
+>>>> altogether.
 >>>
->>> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
->>> ---
->>>   drivers/tty/serial/samsung.c | 4 ++--
->>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>> That's just a debugging patch and not appropriate for permanent use=
+,
+>>> the reason being that this uart is _not_ 16550 compatible (or even =
+16450
+>>> compatible).
 >>>
->>> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/sams=
-ung.c
->>> index d72cd736bdc6..80d59dbfebba 100644
->>> --- a/drivers/tty/serial/samsung.c
->>> +++ b/drivers/tty/serial/samsung.c
->>> @@ -1265,13 +1265,13 @@ static void s3c24xx_serial_set_termios(stru=
-ct uart_port *port,
->>>       if (ourport->baudclk !=3D clk) {
->>>           s3c24xx_serial_setsource(port, clk_sel);
->>>   +        clk_prepare_enable(clk);
->>> +
+>>> The three options for 8250 driver support for this part are:
+>>> 1. Similar to the debugging patch, set UPF_FIXED_TYPE but set port =
+type
+>>>    to PORT_8250 instead. This will lose FIFO support so 115K won't =
+be
+>>>    possible and likely neither will 38400.
+>>>
+>>> 2. Set UPF_FIXED_TYPE but define a new PORT_* value and add support=
+ for
+>>>    this PORT_* value to uart_config array, uapi headers, and anywhe=
+re
+>>>    the scratch register is used.
+>>>
+>>> 3. As with 2. above but don't set UPF_FIXED_TYPE and add a probe fu=
+nction
+>>>    that detects ports of this type to autoconfig(). I don't recomme=
+nd this
+>>>    method.
+>>>
+>>> This requirement is independent of fixing prom_putchar_ar71xx().
+>>>
+>>
+>> I can send patches for all of this, and I think that 2. would be the=
+ nicest
+>> solution. I've noticed though that include/uapi/linux/serial_core.h =
+is
+>> experiencing a little "overflow": PORT_MAX_8250 has grown just below=
+ the
+>> first non-8250 entry.
 >=20
-> IMHO clk_prepare_enable() should be moved before s3c24xx_serial_setso=
-urce() to be
-> really sure that there will be no period of hw operating with disable=
-d baud clock.
-> Could you check if it works for you?
-
-Yes. I tested it without any problem.
-But, as you commented, clk_prepare_enable() should be called before s3c=
-24xx_serial_setsource().
-
-I'll modify it.
-
+> Ugh. Thanks for noting this.
 >=20
->>>           if (!IS_ERR(ourport->baudclk)) {
->>>               clk_disable_unprepare(ourport->baudclk);
->>>               ourport->baudclk =3D ERR_PTR(-EINVAL);
->>>           }
->>>   -        clk_prepare_enable(clk);
->>> -
->>>           ourport->baudclk =3D clk;
->>>           ourport->baudclk_rate =3D clk ? clk_get_rate(clk) : 0;
->>>       }
+>> Should I just add the new entry at the bottom (and
+>> thus grow the uart_config array by ~85 unused entries)? What about
+>> PORT_MAX_8250 (used at least in drivers/tty/serial/8250/8250_of.c)?
 >=20
-> Best regards
+> None of the above, unfortunately. Ok, plan B.
+>=20
+> I need to clean off a dusty series that adds probe steering and
+> bugs pass-thru for 8250 sub-drivers and platform data. Then add a
+> UART_BUG_NOSCR to indicate a uart does not have a scratch register
+> (like this one). Then for this uart, set UPF_FIXED_TYPE and type to
+> PORT_16550A, with UART_BUG_NOSCR flag.
 
-Best Regards,
-Chanwoo Choi
+Introducing the UART_BUG_NOSCR flag for this UART is pointless in my op=
+inion,
+because it does have a scratch register in fact. Even if it is not list=
+ed in the
+datasheet of the SoCs, it exists.
+
+I have tested that from the bootloader on the Netgear WNDR3700 board wh=
+ich uses
+the AR7161 SoC:
+
+ar7100> md.l 0xb802001c 1
+b802001c: 00000000    ....
+ar7100> mw.l 0xb802001c a5
+ar7100> md.l 0xb802001c 1
+b802001c: 000000a5    ....
+ar7100> mw.l 0xb802001c 5a
+ar7100> md.l 0xb802001c 1
+b802001c: 0000005a    ...Z
+ar7100>
+
+The same test is on the TL-WR842ND v1 board (AR7241 SoC):
+
+ar7240> md.l b802001c 1
+b802001c: 00000000    ....
+ar7240> mw.l b802001c a5
+ar7240> md.l b802001c 1
+b802001c: 000000a5    ....
+ar7240> mw.l b802001c 5a
+ar7240> md.l b802001c 1
+b802001c: 0000005a    ...Z
+ar7240>
+
+And on the TL-WR841N v8 board (AR9341 Soc):
+
+wasp> md.l b802001c 1
+b802001c: 00000000    ....
+wasp> mw.l b802001c a5
+wasp> md.l b802001c 1
+b802001c: 000000a5    ....
+wasp> mw.l b802001c 5a
+wasp> md.l b802001c 1
+b802001c: 0000005a    ...Z
+wasp>
+
+Although i did not test it on other SoCs, but i assume that the behavio=
+ur is the
+same on those.
+
+-Gabor
