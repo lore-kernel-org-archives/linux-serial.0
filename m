@@ -1,52 +1,210 @@
-From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
-Subject: Re: DCD interrupt for i.MX25 UART
-Date: Tue, 29 Mar 2016 13:14:43 +0200
-Message-ID: <20160329131443.09e46ad6@ipc1.ka-ro>
-References: <20160323153638.GO6191@pengutronix.de>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH] tty: serial: msm: Support more bauds
+Date: Tue, 29 Mar 2016 08:59:29 -0700
+Message-ID: <20160329155929.GQ8929@tuxbot>
+References: <1458941749-5705-1-git-send-email-stephen.boyd@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160323153638.GO6191@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, kernel@pengutronix.de
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1458941749-5705-1-git-send-email-stephen.boyd@linaro.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Stephen Boyd <stephen.boyd@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, "Ivan T. Ivanov" <iivanov.xz@gmail.com>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Andy Gross <andy.gross@linaro.org>, Matthew McClintock <mmcclint@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGksCgpPbiBXZWQsIDIzIE1hciAyMDE2IDE2OjM2OjM4ICswMTAwIFV3ZSBLbGVpbmUtS8O2bmln
-IHdyb3RlOgo+IEhlbGxvLAo+IAo+IEkgaGF2ZSBhIHByb2JsZW0gd2l0aCBhbiBVQVJUIG9uIGFu
-IGkuTVgyNSBiYXNlZCBtYWNoaW5lLiBJIGltcGxlbWVudGVkCj4gRENEIChhbmQgb3RoZXIgaGFu
-ZHNoYWtlIGxpbmVzKSBpcnEgaGFuZGxpbmdbMV0uCj4gCj4gTm93IGEgdXNlciBvZiB0aGlzIHBh
-dGNoIG5vdGljZWQgdGhhdCBEQ0QgaGFuZGxpbmcgKGF0IGxlYXN0KSBpcyBicm9rZW4uCj4gVGhl
-IHByb2JsZW0gaXMgdGhhdCB0aGUgVVNSMl9EQ0RERUxUIGJpdCBkb2Vzbid0IGNsZWFyOgo+IAo+
-IAlyb290QGhvc3RuYW1lOn4gbWVtdG9vbCBtZCAweDQzZjkwMDgwKzB4MzQgIAo+IAk0M2Y5MDA4
-MDogMDAwMDAwMDAgMDAwMDQwMjEgMDAwMDA3OGMgMDAwMDQwMDIgICAgICAgICAgICAgICAgLi4u
-LiFALi4uLi4uLkAuLgo+IAk0M2Y5MDA5MDogMDAwMDBiNDEgMDAwMDIwNDAgMDAwMDUyNjggMDAw
-MDAwMmIgICAgICAgICAgICAgICAgQS4uLkAgLi5oUi4uKy4uLgo+IAk0M2Y5MDBhMDogMDAwMDAw
-MDAgMDAwMDAwYmYgMDAwMDJlNjIgMDAwMDAwMDggICAgICAgICAgICAgICAgLi4uLi4uLi5iLi4u
-Li4uLgo+IAk0M2Y5MDBiMDogMDAwMDI1MWMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgLiUuLgo+IAo+IAlyb290QGhvc3RuYW1lOn4gbWVtdG9vbCBtdyAweDQzZjkw
-MDk4IDB4MHg0MAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-Xl5eXl5eClRoaXMgbG9va3MgcmF0aGVyIGZpc2h5LgoKPiAJcm9vdEBob3N0bmFtZTp+IG1lbXRv
-b2wgbWQgMHg0M2Y5MDA4MCsweDM0ICAKPiAJNDNmOTAwODA6IDAwMDAwMDAwIDAwMDA0MDIxIDAw
-MDAwNzhjIDAwMDA0MDAyICAgICAgICAgICAgICAgIC4uLi4hQC4uLi4uLi5ALi4KPiAJNDNmOTAw
-OTA6IDAwMDAwYjQxIDAwMDAyMDQwIDAwMDA1MjY4IDAwMDAwMDJiICAgICAgICAgICAgICAgIEEu
-Li5AIC4uaFIuLisuLi4KPiAJNDNmOTAwYTA6IDAwMDAwMDAwIDAwMDAwMGJmIDAwMDAyZTYyIDAw
-MDAwMDA4ICAgICAgICAgICAgICAgIC4uLi4uLi4uYi4uLi4uLi4KPiAJNDNmOTAwYjA6IDAwMDAy
-NTFjICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC4lLi4KPiAKPiBJ
-biBmYWN0IGV2ZW4gd3JpdGluZyAweGZmZmYgZG9lc24ndCBjaGFuZ2UgdGhlIHJlZ2lzdGVyLCB3
-aGVyZSBJIHdvdWxkIGV4cGVjdAo+IHRoYXQgdGhlIERDRERFTFQgYml0ICgweDQwKSBkaXNhcHBl
-YXJzLiBJJ20gc3VyZSB0aGVyZSBpcyBub3RoaW5nIHRvZ2dsaW5nIHRoaXMKPiBsaW5lLgo+IApB
-cmUgeW91IHN1cmUgdGhlIGNsb2NrIGlzIGVuYWJsZWQgd2hlbiBkb2luZyB5b3VyIG1hbnVhbCB0
-ZXN0cz8KCgpMb3RoYXIgV2HDn21hbm4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1r
-ZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+On Fri 25 Mar 14:35 PDT 2016, Stephen Boyd wrote:
+
+> The msm_find_best_baud() function is written with the assumption
+> that the port->uartclk rate is fixed to a particular rate at boot
+> time, but now this driver changes that clk rate at runtime when
+> the baud is changed.
+> 
+> The way the hardware works is that an input clk rate comes from
+> the clk controller into the uart hw block. That rate is typically
+> 1843200 or 3686400 Hz. That rate can then be divided by an
+> internal divider in the hw block to achieve a particular baud on
+> the serial wire. msm_find_best_baud() is looking for that divider
+> value.
+> 
+> A few things are wrong with the way the code is written. First,
+> it assumes that the maximum baud that the uart can support if the
+> clk rate is fixed at boot is 460800, which would correspond to an
+> input clk rate of 230400 * 16 == 3686400 Hz.  Except some devices
+> have a boot rate of 1843200 Hz or max baud of 115200, so
+> achieving 230400 on those devices doesn't work at all because we
+> don't increase the clk rate unless max baud is 460800.
+> 
+> Second, we can't achieve bauds higher than 460800 that require
+> anything besides a divisor of 1, because we always call
+> msm_find_best_baud() with a fixed port->uartclk rate that will
+> eventually be changed after we calculate the divisor. So if we
+> need to get a baud of 500000, we'll just multiply that by 16 and
+> hope that the clk can give us 500000 * 16 == 8000000 Hz, which it
+> typically can't do. To really achieve 500000 baud, we need to get
+> an input clk rate of 24000000 Hz and then divide that by 3 inside
+> the uart hardware.
+> 
+> Finally, we return success for bauds even when we can't actually
+> achieve them. This means that when the user asks for 500000 baud,
+> we actually get 921600 right now, but the user doesn't know that.
+> 
+> Fix all of this by searching through the divisor and clk rate
+> space with a combination of clk_round_rate() and baud
+> calculations, keeping track of the best clk rate and divisor we
+> find if we can't get an exact match. Typically we can get an
+> exact match with a divisor of 1, but sometimes we need to keep
+> track and try more frequencies. On my msm8916 device, this
+> results in all standard bauds in baud_table being supported
+> except for 1800, 576000, 1152000, and 4000000.
+> 
+> Fixes: 850b37a71bde ("tty: serial: msm: Remove 115.2 Kbps maximum baud rate limitation")
+> Cc: "Ivan T. Ivanov" <iivanov.xz@gmail.com>
+> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Cc: Andy Gross <andy.gross@linaro.org>
+> Cc: Matthew McClintock <mmcclint@codeaurora.org>
+> Signed-off-by: Stephen Boyd <stephen.boyd@linaro.org>
+
+Acked-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Regards,
+Bjorn
+
+> ---
+>  drivers/tty/serial/msm_serial.c | 99 +++++++++++++++++++++++++++--------------
+>  1 file changed, 66 insertions(+), 33 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+> index 96d3ce8dc2dc..3d28be85bd46 100644
+> --- a/drivers/tty/serial/msm_serial.c
+> +++ b/drivers/tty/serial/msm_serial.c
+> @@ -861,37 +861,72 @@ struct msm_baud_map {
+>  };
+>  
+>  static const struct msm_baud_map *
+> -msm_find_best_baud(struct uart_port *port, unsigned int baud)
+> +msm_find_best_baud(struct uart_port *port, unsigned int baud,
+> +		   unsigned long *rate)
+>  {
+> -	unsigned int i, divisor;
+> -	const struct msm_baud_map *entry;
+> +	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	unsigned int divisor, result;
+> +	unsigned long target, old, best_rate = 0, diff, best_diff = ULONG_MAX;
+> +	const struct msm_baud_map *entry, *end, *best;
+>  	static const struct msm_baud_map table[] = {
+> -		{ 1536, 0x00,  1 },
+> -		{  768, 0x11,  1 },
+> -		{  384, 0x22,  1 },
+> -		{  192, 0x33,  1 },
+> -		{   96, 0x44,  1 },
+> -		{   48, 0x55,  1 },
+> -		{   32, 0x66,  1 },
+> -		{   24, 0x77,  1 },
+> -		{   16, 0x88,  1 },
+> -		{   12, 0x99,  6 },
+> -		{    8, 0xaa,  6 },
+> -		{    6, 0xbb,  6 },
+> -		{    4, 0xcc,  6 },
+> -		{    3, 0xdd,  8 },
+> -		{    2, 0xee, 16 },
+>  		{    1, 0xff, 31 },
+> -		{    0, 0xff, 31 },
+> +		{    2, 0xee, 16 },
+> +		{    3, 0xdd,  8 },
+> +		{    4, 0xcc,  6 },
+> +		{    6, 0xbb,  6 },
+> +		{    8, 0xaa,  6 },
+> +		{   12, 0x99,  6 },
+> +		{   16, 0x88,  1 },
+> +		{   24, 0x77,  1 },
+> +		{   32, 0x66,  1 },
+> +		{   48, 0x55,  1 },
+> +		{   96, 0x44,  1 },
+> +		{  192, 0x33,  1 },
+> +		{  384, 0x22,  1 },
+> +		{  768, 0x11,  1 },
+> +		{ 1536, 0x00,  1 },
+>  	};
+>  
+> -	divisor = uart_get_divisor(port, baud);
+> +	best = table; /* Default to smallest divider */
+> +	target = clk_round_rate(msm_port->clk, 16 * baud);
+> +	divisor = DIV_ROUND_CLOSEST(target, 16 * baud);
+> +
+> +	end = table + ARRAY_SIZE(table);
+> +	entry = table;
+> +	while (entry < end) {
+> +		if (entry->divisor <= divisor) {
+> +			result = target / entry->divisor / 16;
+> +			diff = abs(result - baud);
+> +
+> +			/* Keep track of best entry */
+> +			if (diff < best_diff) {
+> +				best_diff = diff;
+> +				best = entry;
+> +				best_rate = target;
+> +			}
+>  
+> -	for (i = 0, entry = table; i < ARRAY_SIZE(table); i++, entry++)
+> -		if (entry->divisor <= divisor)
+> -			break;
+> +			if (result == baud)
+> +				break;
+> +		} else if (entry->divisor > divisor) {
+> +			old = target;
+> +			target = clk_round_rate(msm_port->clk, old + 1);
+> +			/*
+> +			 * The rate didn't get any faster so we can't do
+> +			 * better at dividing it down
+> +			 */
+> +			if (target == old)
+> +				break;
+> +
+> +			/* Start the divisor search over at this new rate */
+> +			entry = table;
+> +			divisor = DIV_ROUND_CLOSEST(target, 16 * baud);
+> +			continue;
+> +		}
+> +		entry++;
+> +	}
+>  
+> -	return entry; /* Default to smallest divider */
+> +	*rate = best_rate;
+> +	return best;
+>  }
+>  
+>  static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
+> @@ -900,22 +935,20 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
+>  	unsigned int rxstale, watermark, mask;
+>  	struct msm_port *msm_port = UART_TO_MSM(port);
+>  	const struct msm_baud_map *entry;
+> -	unsigned long flags;
+> -
+> -	entry = msm_find_best_baud(port, baud);
+> -
+> -	msm_write(port, entry->code, UART_CSR);
+> -
+> -	if (baud > 460800)
+> -		port->uartclk = baud * 16;
+> +	unsigned long flags, rate;
+>  
+>  	flags = *saved_flags;
+>  	spin_unlock_irqrestore(&port->lock, flags);
+>  
+> -	clk_set_rate(msm_port->clk, port->uartclk);
+> +	entry = msm_find_best_baud(port, baud, &rate);
+> +	clk_set_rate(msm_port->clk, rate);
+> +	baud = rate / 16 / entry->divisor;
+>  
+>  	spin_lock_irqsave(&port->lock, flags);
+>  	*saved_flags = flags;
+> +	port->uartclk = rate;
+> +
+> +	msm_write(port, entry->code, UART_CSR);
+>  
+>  	/* RX stale watermark */
+>  	rxstale = entry->rxstale;
+> -- 
+> 2.8.0.rc4
+> 
