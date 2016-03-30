@@ -1,100 +1,29 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Timur Tabi <timur@codeaurora.org>
 Subject: Re: [PATCH] tty: amba-pl011: Use 32-bit accesses for SBSA UART
-Date: Wed, 30 Mar 2016 09:55:51 -0700
-Message-ID: <20160330165551.GB23817@kroah.com>
+Date: Wed, 30 Mar 2016 12:01:56 -0500
+Message-ID: <56FC0684.1050109@codeaurora.org>
 References: <1457415800-8799-1-git-send-email-cov@codeaurora.org>
  <1457678154-2272-1-git-send-email-cov@codeaurora.org>
- <56E7DF1F.7010006@arm.com>
- <56FBC6EA.6080909@codeaurora.org>
+ <56E7DF1F.7010006@arm.com> <56FBC6EA.6080909@codeaurora.org>
+ <20160330165551.GB23817@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <56FBC6EA.6080909@codeaurora.org>
+In-Reply-To: <20160330165551.GB23817@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christopher Covington <cov@codeaurora.org>
-Cc: Andre Przywara <andre.przywara@arm.com>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Timur Tabi <timur@codeaurora.org>, Jon Masters <jcm@redhat.com>, Mark Langsdorf <mlangsdo@redhat.com>, Dave Martin <dave.martin@linaro.org>, Aleksey Makarov <aleksey.makarov@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Christopher Covington <cov@codeaurora.org>
+Cc: Andre Przywara <andre.przywara@arm.com>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jon Masters <jcm@redhat.com>, Mark Langsdorf <mlangsdo@redhat.com>, Dave Martin <dave.martin@linaro.org>, Aleksey Makarov <aleksey.makarov@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 30, 2016 at 08:30:34AM -0400, Christopher Covington wrote:
-> Hi Greg,
-> 
-> On 03/15/2016 06:08 AM, Andre Przywara wrote:
-> > Hi Christopher,
-> > 
-> > On 11/03/16 06:35, Christopher Covington wrote:
-> >> Version 2 of the Server Base System Architecture (SBSAv2) describes the
-> >> Generic UART registers as 32 bits wide. At least one implementation, found
-> >> on the Qualcomm Technologies QDF2432, only supports 32 bit accesses.
-> >> SBSAv3, which describes supported access sizes in greater detail,
-> >> explicitly requires support for both 16 and 32 bit accesses to all
-> >> registers (and 8 bit accesses to some but not all). Therefore, for broad
-> >> compatibility, simply use 32 bit accessors for the SBSA UART.
-> >>
-> >> Tested-by: Mark Langsdorf <mlangsdo@redhat.com>
-> >> Signed-off-by: Christopher Covington <cov@codeaurora.org>
-> > 
-> > So I gave this a try on a Juno and a Midway. Both have a normal PL011,
-> > but I changed the DT to advertise an SBSA UART instead.
-> > This worked fine with the 32bit accessors.
-> > Also according to some research on the hardware size at least the
-> > current ARM PL011 implementation are totally fine with 32-bit (as well
-> > as 16-bit) accesses.
-> > There is some reluctance about whether this is true for _every_ older
-> > PL011 implementation, but they are out of scope here, as we are talking
-> > about the SBSA only.
-> > So:
-> > 
-> > Tested-by: Andre Przywara <andre.przywara@arm.com>
-> > Acked-by: Andre Przywara <andre.przywara@arm.com>
-> > 
-> > You can add Juno and Midway to the list of tested systems.
-> 
-> >> Changes new in v2:
-> 
-> Apologies for omitting the v2 prefix in the second version of the patch
-> that I sent out.
-> 
-> >> * Fixed from address
-> >> * Elaborated on forward (SBSAv3) compatibility in commit message
-> >> * Included Mark Langsdorf's Tested-by, which now covers:
-> >>     QDF2432
-> >>     Seattle
-> >>     X-Gene 1
-> 
-> >> ---
-> >>  drivers/tty/serial/amba-pl011.c | 1 +
-> >>  1 file changed, 1 insertion(+)
-> >>
-> >> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> >> index c0da0cc..ffb5eb8 100644
-> >> --- a/drivers/tty/serial/amba-pl011.c
-> >> +++ b/drivers/tty/serial/amba-pl011.c
-> >> @@ -121,6 +121,7 @@ static struct vendor_data vendor_arm = {
-> >>  
-> >>  static struct vendor_data vendor_sbsa = {
-> >>  	.reg_offset		= pl011_std_offsets,
-> >> +	.access_32b		= true,
-> >>  	.oversampling		= false,
-> >>  	.dma_threshold		= false,
-> >>  	.cts_event_workaround	= false,
-> >>
-> 
-> Do you consider this patch suitable to be included in a 4.6 release
-> candidate? It fixes an issue running this driver on certain hardware,
-> and with gracious assistance we've performed due diligence to check that
-> it does not adversely affect the driver running on other hardware. Would
-> it be useful to send a v3 collecting the acks and tested-bys?
+Greg Kroah-Hartman wrote:
+> If this isn't a bug fix or regression fix, it's not ok for 4.6-final, it
+> will have to wait for 4.7-rc1.
 
-If this isn't a bug fix or regression fix, it's not ok for 4.6-final, it
-will have to wait for 4.7-rc1.
+It fixes a problem on our platform (QDF2432).  Without this patch, we 
+can't use the PL011 at all.
 
-And yes, collecting the acks and tested-bys would be great, I'm always
-glad to see that, it makes my job easier.  Now that 4.6-rc1 is out, I'll
-start to dig through the list of pending patches here, give me a few
-weeks to get all of them, especially due to the conference travel I'm
-currently doing...
-
-thanks,
-
-greg k-h
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora
+Forum, a Linux Foundation collaborative project.
