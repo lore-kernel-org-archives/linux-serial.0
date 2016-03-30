@@ -1,210 +1,93 @@
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH] tty: serial: msm: Support more bauds
-Date: Tue, 29 Mar 2016 08:59:29 -0700
-Message-ID: <20160329155929.GQ8929@tuxbot>
-References: <1458941749-5705-1-git-send-email-stephen.boyd@linaro.org>
+From: Christopher Covington <cov@codeaurora.org>
+Subject: Re: [PATCH] tty: amba-pl011: Use 32-bit accesses for SBSA UART
+Date: Wed, 30 Mar 2016 08:30:34 -0400
+Message-ID: <56FBC6EA.6080909@codeaurora.org>
+References: <1457415800-8799-1-git-send-email-cov@codeaurora.org>
+ <1457678154-2272-1-git-send-email-cov@codeaurora.org>
+ <56E7DF1F.7010006@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1458941749-5705-1-git-send-email-stephen.boyd@linaro.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Stephen Boyd <stephen.boyd@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, "Ivan T. Ivanov" <iivanov.xz@gmail.com>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Andy Gross <andy.gross@linaro.org>, Matthew McClintock <mmcclint@codeaurora.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <56E7DF1F.7010006@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andre Przywara <andre.przywara@arm.com>, Russell King <linux@arm.linux.org.uk>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Timur Tabi <timur@codeaurora.org>, Jon Masters <jcm@redhat.com>, Mark Langsdorf <mlangsdo@redhat.com>, Dave Martin <dave.martin@linaro.org>, Aleksey Makarov <aleksey.makarov@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri 25 Mar 14:35 PDT 2016, Stephen Boyd wrote:
+Hi Greg,
 
-> The msm_find_best_baud() function is written with the assumption
-> that the port->uartclk rate is fixed to a particular rate at boot
-> time, but now this driver changes that clk rate at runtime when
-> the baud is changed.
+On 03/15/2016 06:08 AM, Andre Przywara wrote:
+> Hi Christopher,
 > 
-> The way the hardware works is that an input clk rate comes from
-> the clk controller into the uart hw block. That rate is typically
-> 1843200 or 3686400 Hz. That rate can then be divided by an
-> internal divider in the hw block to achieve a particular baud on
-> the serial wire. msm_find_best_baud() is looking for that divider
-> value.
+> On 11/03/16 06:35, Christopher Covington wrote:
+>> Version 2 of the Server Base System Architecture (SBSAv2) describes the
+>> Generic UART registers as 32 bits wide. At least one implementation, found
+>> on the Qualcomm Technologies QDF2432, only supports 32 bit accesses.
+>> SBSAv3, which describes supported access sizes in greater detail,
+>> explicitly requires support for both 16 and 32 bit accesses to all
+>> registers (and 8 bit accesses to some but not all). Therefore, for broad
+>> compatibility, simply use 32 bit accessors for the SBSA UART.
+>>
+>> Tested-by: Mark Langsdorf <mlangsdo@redhat.com>
+>> Signed-off-by: Christopher Covington <cov@codeaurora.org>
 > 
-> A few things are wrong with the way the code is written. First,
-> it assumes that the maximum baud that the uart can support if the
-> clk rate is fixed at boot is 460800, which would correspond to an
-> input clk rate of 230400 * 16 == 3686400 Hz.  Except some devices
-> have a boot rate of 1843200 Hz or max baud of 115200, so
-> achieving 230400 on those devices doesn't work at all because we
-> don't increase the clk rate unless max baud is 460800.
+> So I gave this a try on a Juno and a Midway. Both have a normal PL011,
+> but I changed the DT to advertise an SBSA UART instead.
+> This worked fine with the 32bit accessors.
+> Also according to some research on the hardware size at least the
+> current ARM PL011 implementation are totally fine with 32-bit (as well
+> as 16-bit) accesses.
+> There is some reluctance about whether this is true for _every_ older
+> PL011 implementation, but they are out of scope here, as we are talking
+> about the SBSA only.
+> So:
 > 
-> Second, we can't achieve bauds higher than 460800 that require
-> anything besides a divisor of 1, because we always call
-> msm_find_best_baud() with a fixed port->uartclk rate that will
-> eventually be changed after we calculate the divisor. So if we
-> need to get a baud of 500000, we'll just multiply that by 16 and
-> hope that the clk can give us 500000 * 16 == 8000000 Hz, which it
-> typically can't do. To really achieve 500000 baud, we need to get
-> an input clk rate of 24000000 Hz and then divide that by 3 inside
-> the uart hardware.
+> Tested-by: Andre Przywara <andre.przywara@arm.com>
+> Acked-by: Andre Przywara <andre.przywara@arm.com>
 > 
-> Finally, we return success for bauds even when we can't actually
-> achieve them. This means that when the user asks for 500000 baud,
-> we actually get 921600 right now, but the user doesn't know that.
-> 
-> Fix all of this by searching through the divisor and clk rate
-> space with a combination of clk_round_rate() and baud
-> calculations, keeping track of the best clk rate and divisor we
-> find if we can't get an exact match. Typically we can get an
-> exact match with a divisor of 1, but sometimes we need to keep
-> track and try more frequencies. On my msm8916 device, this
-> results in all standard bauds in baud_table being supported
-> except for 1800, 576000, 1152000, and 4000000.
-> 
-> Fixes: 850b37a71bde ("tty: serial: msm: Remove 115.2 Kbps maximum baud rate limitation")
-> Cc: "Ivan T. Ivanov" <iivanov.xz@gmail.com>
-> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> Cc: Andy Gross <andy.gross@linaro.org>
-> Cc: Matthew McClintock <mmcclint@codeaurora.org>
-> Signed-off-by: Stephen Boyd <stephen.boyd@linaro.org>
+> You can add Juno and Midway to the list of tested systems.
 
-Acked-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+>> Changes new in v2:
 
-Regards,
-Bjorn
+Apologies for omitting the v2 prefix in the second version of the patch
+that I sent out.
 
-> ---
->  drivers/tty/serial/msm_serial.c | 99 +++++++++++++++++++++++++++--------------
->  1 file changed, 66 insertions(+), 33 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index 96d3ce8dc2dc..3d28be85bd46 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -861,37 +861,72 @@ struct msm_baud_map {
->  };
->  
->  static const struct msm_baud_map *
-> -msm_find_best_baud(struct uart_port *port, unsigned int baud)
-> +msm_find_best_baud(struct uart_port *port, unsigned int baud,
-> +		   unsigned long *rate)
->  {
-> -	unsigned int i, divisor;
-> -	const struct msm_baud_map *entry;
-> +	struct msm_port *msm_port = UART_TO_MSM(port);
-> +	unsigned int divisor, result;
-> +	unsigned long target, old, best_rate = 0, diff, best_diff = ULONG_MAX;
-> +	const struct msm_baud_map *entry, *end, *best;
->  	static const struct msm_baud_map table[] = {
-> -		{ 1536, 0x00,  1 },
-> -		{  768, 0x11,  1 },
-> -		{  384, 0x22,  1 },
-> -		{  192, 0x33,  1 },
-> -		{   96, 0x44,  1 },
-> -		{   48, 0x55,  1 },
-> -		{   32, 0x66,  1 },
-> -		{   24, 0x77,  1 },
-> -		{   16, 0x88,  1 },
-> -		{   12, 0x99,  6 },
-> -		{    8, 0xaa,  6 },
-> -		{    6, 0xbb,  6 },
-> -		{    4, 0xcc,  6 },
-> -		{    3, 0xdd,  8 },
-> -		{    2, 0xee, 16 },
->  		{    1, 0xff, 31 },
-> -		{    0, 0xff, 31 },
-> +		{    2, 0xee, 16 },
-> +		{    3, 0xdd,  8 },
-> +		{    4, 0xcc,  6 },
-> +		{    6, 0xbb,  6 },
-> +		{    8, 0xaa,  6 },
-> +		{   12, 0x99,  6 },
-> +		{   16, 0x88,  1 },
-> +		{   24, 0x77,  1 },
-> +		{   32, 0x66,  1 },
-> +		{   48, 0x55,  1 },
-> +		{   96, 0x44,  1 },
-> +		{  192, 0x33,  1 },
-> +		{  384, 0x22,  1 },
-> +		{  768, 0x11,  1 },
-> +		{ 1536, 0x00,  1 },
->  	};
->  
-> -	divisor = uart_get_divisor(port, baud);
-> +	best = table; /* Default to smallest divider */
-> +	target = clk_round_rate(msm_port->clk, 16 * baud);
-> +	divisor = DIV_ROUND_CLOSEST(target, 16 * baud);
-> +
-> +	end = table + ARRAY_SIZE(table);
-> +	entry = table;
-> +	while (entry < end) {
-> +		if (entry->divisor <= divisor) {
-> +			result = target / entry->divisor / 16;
-> +			diff = abs(result - baud);
-> +
-> +			/* Keep track of best entry */
-> +			if (diff < best_diff) {
-> +				best_diff = diff;
-> +				best = entry;
-> +				best_rate = target;
-> +			}
->  
-> -	for (i = 0, entry = table; i < ARRAY_SIZE(table); i++, entry++)
-> -		if (entry->divisor <= divisor)
-> -			break;
-> +			if (result == baud)
-> +				break;
-> +		} else if (entry->divisor > divisor) {
-> +			old = target;
-> +			target = clk_round_rate(msm_port->clk, old + 1);
-> +			/*
-> +			 * The rate didn't get any faster so we can't do
-> +			 * better at dividing it down
-> +			 */
-> +			if (target == old)
-> +				break;
-> +
-> +			/* Start the divisor search over at this new rate */
-> +			entry = table;
-> +			divisor = DIV_ROUND_CLOSEST(target, 16 * baud);
-> +			continue;
-> +		}
-> +		entry++;
-> +	}
->  
-> -	return entry; /* Default to smallest divider */
-> +	*rate = best_rate;
-> +	return best;
->  }
->  
->  static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
-> @@ -900,22 +935,20 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
->  	unsigned int rxstale, watermark, mask;
->  	struct msm_port *msm_port = UART_TO_MSM(port);
->  	const struct msm_baud_map *entry;
-> -	unsigned long flags;
-> -
-> -	entry = msm_find_best_baud(port, baud);
-> -
-> -	msm_write(port, entry->code, UART_CSR);
-> -
-> -	if (baud > 460800)
-> -		port->uartclk = baud * 16;
-> +	unsigned long flags, rate;
->  
->  	flags = *saved_flags;
->  	spin_unlock_irqrestore(&port->lock, flags);
->  
-> -	clk_set_rate(msm_port->clk, port->uartclk);
-> +	entry = msm_find_best_baud(port, baud, &rate);
-> +	clk_set_rate(msm_port->clk, rate);
-> +	baud = rate / 16 / entry->divisor;
->  
->  	spin_lock_irqsave(&port->lock, flags);
->  	*saved_flags = flags;
-> +	port->uartclk = rate;
-> +
-> +	msm_write(port, entry->code, UART_CSR);
->  
->  	/* RX stale watermark */
->  	rxstale = entry->rxstale;
-> -- 
-> 2.8.0.rc4
-> 
+>> * Fixed from address
+>> * Elaborated on forward (SBSAv3) compatibility in commit message
+>> * Included Mark Langsdorf's Tested-by, which now covers:
+>>     QDF2432
+>>     Seattle
+>>     X-Gene 1
+
+>> ---
+>>  drivers/tty/serial/amba-pl011.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+>> index c0da0cc..ffb5eb8 100644
+>> --- a/drivers/tty/serial/amba-pl011.c
+>> +++ b/drivers/tty/serial/amba-pl011.c
+>> @@ -121,6 +121,7 @@ static struct vendor_data vendor_arm = {
+>>  
+>>  static struct vendor_data vendor_sbsa = {
+>>  	.reg_offset		= pl011_std_offsets,
+>> +	.access_32b		= true,
+>>  	.oversampling		= false,
+>>  	.dma_threshold		= false,
+>>  	.cts_event_workaround	= false,
+>>
+
+Do you consider this patch suitable to be included in a 4.6 release
+candidate? It fixes an issue running this driver on certain hardware,
+and with gracious assistance we've performed due diligence to check that
+it does not adversely affect the driver running on other hardware. Would
+it be useful to send a v3 collecting the acks and tested-bys?
+
+Thanks,
+Christopher Covington
+
+-- 
+Qualcomm Innovation Center, Inc.
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
