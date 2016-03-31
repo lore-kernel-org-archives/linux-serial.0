@@ -1,69 +1,36 @@
-From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: Re: [PATCH v2] tty/serial/8250: fix RS485 half-duplex RX
-Date: Thu, 31 Mar 2016 11:10:12 +0300
-Message-ID: <CAJs94EYkZkgxvJd=i36DC5tuEmSE4fHKwdCE4HLWwKBvoisE-g@mail.gmail.com>
-References: <1458806625-29300-1-git-send-email-yegorslists@googlemail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 2/2] TTY: serial/ifx6x60, initialize more
+Date: Thu, 31 Mar 2016 10:23:34 +0200
+Message-ID: <1459412614-4549-2-git-send-email-jslaby@suse.cz>
+References: <1459412614-4549-1-git-send-email-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1458806625-29300-1-git-send-email-yegorslists@googlemail.com>
+In-Reply-To: <1459412614-4549-1-git-send-email-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yegor Yefremov <yegorslists@googlemail.com>
-Cc: linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, bigeasy@linutronix.de, linux-kernel <linux-kernel@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-2016-03-24 11:03 GMT+03:00  <yegorslists@googlemail.com>:
-> From: Yegor Yefremov <yegorslists@googlemail.com>
->
-> When in half-duplex mode RX will be disabled before TX, but not
-> enabled after deactivating transmitter. This patch enables
-> UART_IER_RLSI and UART_IER_RDI interrupts after TX is over.
->
-> Cc: Matwey V. Kornilov <matwey@sai.msu.ru>
-> Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
-> Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
+In ifx_spi_complete, 'more' is not initialized. It is set only if the
+status is clear and only if the header is parsed OK. If any of those
+is not true, 'more' can be used uninitialized in that function later.
 
-Acked-by: Matwey V. Kornilov <matwey@sai.msu.ru>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/serial/ifx6x60.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
-> Changes:
->         v2: change subject and add 'Fixes' tag
->
->  drivers/tty/serial/8250/8250_port.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index e213da0..00ad263 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1403,9 +1403,18 @@ static void __do_stop_tx_rs485(struct uart_8250_port *p)
->         /*
->          * Empty the RX FIFO, we are not interested in anything
->          * received during the half-duplex transmission.
-> +        * Enable previously disabled RX interrupts.
->          */
-> -       if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
-> +       if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
->                 serial8250_clear_fifos(p);
-> +
-> +               serial8250_rpm_get(p);
-> +
-> +               p->ier |= UART_IER_RLSI | UART_IER_RDI;
-> +               serial_port_out(&p->port, UART_IER, p->ier);
-> +
-> +               serial8250_rpm_put(p);
-> +       }
->  }
->
->  static void serial8250_em485_handle_stop_tx(unsigned long arg)
-> --
-> 2.1.4
->
-
-
-
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 2085a6cfa44b..d386346248de 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -651,7 +651,7 @@ static void ifx_spi_complete(void *ctx)
+ 	struct ifx_spi_device *ifx_dev = ctx;
+ 	int length;
+ 	int actual_length;
+-	unsigned char more;
++	unsigned char more = 0;
+ 	unsigned char cts;
+ 	int local_write_pending = 0;
+ 	int queue_length;
 -- 
-With best regards,
-Matwey V. Kornilov.
-Sternberg Astronomical Institute, Lomonosov Moscow State University, Russia
-119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
+2.7.4
