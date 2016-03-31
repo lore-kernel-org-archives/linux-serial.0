@@ -1,7 +1,7 @@
 From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [PATCH 1/4] tty: vt, remove reduntant check
-Date: Thu, 31 Mar 2016 15:23:31 +0100
-Message-ID: <20160331152331.4bba3925@lxorguk.ukuu.org.uk>
+Date: Thu, 31 Mar 2016 15:25:27 +0100
+Message-ID: <20160331152527.4beefda9@lxorguk.ukuu.org.uk>
 References: <1459411697-26019-1-git-send-email-jslaby@suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -30,6 +30,7 @@ Jiri Slaby <jslaby@suse.cz> wrote:
 > the second check is pointless. Remove both the check and the macro
 > MAX_NR_USER_CONSOLES.
 
-NAK
+Actually going back over that ignore the NAK - they change both MAX_NR
+and MAX_NR_USER so the assertion is still true.
 
-There are embedded people who do change these values.
+Alan
