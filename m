@@ -1,58 +1,94 @@
 From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH v7 2/5] ACPICA: Headers: Add new constants for the DBG2 ACPI table
-Date: Thu, 31 Mar 2016 16:40:24 +0300
-Message-ID: <1459431629-27934-3-git-send-email-aleksey.makarov@linaro.org>
+Subject: [PATCH v7 1/5] of/serial: move earlycon early_param handling to serial
+Date: Thu, 31 Mar 2016 16:40:23 +0300
+Message-ID: <1459431629-27934-2-git-send-email-aleksey.makarov@linaro.org>
 References: <1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org>
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Bob Moore <robert.moore@intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, devel@acpica.org
+Cc: linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-ACPICA commit 1607b69238df9c1b2940262a17aa94ec49033278
+From: Leif Lindholm <leif.lindholm@linaro.org>
 
-Link: https://github.com/acpica/acpica/commit/1607b692
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>.
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Lv Zheng <lv.zheng@intel.com>
+We have multiple "earlycon" early_param handlers - merge the DT one into
+the main earlycon one.  It's a cleanup that also will be useful
+to defer setting up DT console until ACPI/DT decision is made.
+
+Rename the exported function to avoid clashing with the function from
+arch/microblaze/kernel/prom.c
+
+Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
+Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
+ drivers/of/fdt.c              | 11 +----------
+ drivers/tty/serial/earlycon.c |  2 +-
+ include/linux/of_fdt.h        |  2 ++
+ 3 files changed, 4 insertions(+), 11 deletions(-)
 
-DO NOT MERGE
-
-This patch is from pending ACPICA series [1].  It is needed by the next patch,
-but has not been merged to linux-next yet.
-
-[1] https://lkml.kernel.org/g/cover.1458714002.git.lv.zheng@intel.com
-
- include/acpi/actbl2.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-index a4ef625..7702b27 100644
---- a/include/acpi/actbl2.h
-+++ b/include/acpi/actbl2.h
-@@ -321,7 +321,7 @@ struct acpi_csrt_descriptor {
-  * DBG2 - Debug Port Table 2
-  *        Version 0 (Both main table and subtables)
-  *
-- * Conforms to "Microsoft Debug Port Table 2 (DBG2)", May 22 2012.
-+ * Conforms to "Microsoft Debug Port Table 2 (DBG2)", December 10, 2015
-  *
-  ******************************************************************************/
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 3349d2a..b50f775 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -805,7 +805,7 @@ static inline void early_init_dt_check_for_initrd(unsigned long node)
  
-@@ -371,6 +371,11 @@ struct acpi_dbg2_device {
+ #ifdef CONFIG_SERIAL_EARLYCON
  
- #define ACPI_DBG2_16550_COMPATIBLE  0x0000
- #define ACPI_DBG2_16550_SUBSET      0x0001
-+#define ACPI_DBG2_ARM_PL011         0x0003
-+#define ACPI_DBG2_ARM_SBSA_32BIT    0x000D
-+#define ACPI_DBG2_ARM_SBSA_GENERIC  0x000E
-+#define ACPI_DBG2_ARM_DCC           0x000F
-+#define ACPI_DBG2_BCM2835           0x0010
+-static int __init early_init_dt_scan_chosen_serial(void)
++int __init early_init_dt_scan_chosen_stdout(void)
+ {
+ 	int offset;
+ 	const char *p, *q, *options = NULL;
+@@ -849,15 +849,6 @@ static int __init early_init_dt_scan_chosen_serial(void)
+ 	}
+ 	return -ENODEV;
+ }
+-
+-static int __init setup_of_earlycon(char *buf)
+-{
+-	if (buf)
+-		return 0;
+-
+-	return early_init_dt_scan_chosen_serial();
+-}
+-early_param("earlycon", setup_of_earlycon);
+ #endif
  
- #define ACPI_DBG2_1394_STANDARD     0x0000
+ /**
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 067783f..7aae655 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -209,7 +209,7 @@ static int __init param_setup_earlycon(char *buf)
+ 	 * don't generate a warning from parse_early_params() in that case
+ 	 */
+ 	if (!buf || !buf[0])
+-		return 0;
++		return early_init_dt_scan_chosen_stdout();
  
+ 	err = setup_earlycon(buf);
+ 	if (err == -ENOENT || err == -EALREADY)
+diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
+index 2fbe868..5cfe322 100644
+--- a/include/linux/of_fdt.h
++++ b/include/linux/of_fdt.h
+@@ -63,6 +63,7 @@ extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
+ 				     int depth, void *data);
+ extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
+ 				     int depth, void *data);
++extern int early_init_dt_scan_chosen_stdout(void);
+ extern void early_init_fdt_scan_reserved_mem(void);
+ extern void early_init_fdt_reserve_self(void);
+ extern void early_init_dt_add_memory_arch(u64 base, u64 size);
+@@ -91,6 +92,7 @@ extern void early_get_first_memblock_info(void *, phys_addr_t *);
+ extern u64 of_flat_dt_translate_address(unsigned long node);
+ extern void of_fdt_limit_memory(int limit);
+ #else /* CONFIG_OF_FLATTREE */
++static inline int early_init_dt_scan_chosen_stdout(void) { return -ENODEV; }
+ static inline void early_init_fdt_scan_reserved_mem(void) {}
+ static inline void early_init_fdt_reserve_self(void) {}
+ static inline const char *of_flat_dt_get_machine_name(void) { return NULL; }
 -- 
 2.7.4
-
