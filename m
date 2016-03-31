@@ -1,39 +1,43 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 0/9] serial: doc: Low Level Serial API Documentation Improvements
-Date: Thu, 31 Mar 2016 10:26:06 +0200
-Message-ID: <CAMuHMdXv-JxQyMdpzFCHCLCS5KPdUnQxVFfZd_JFVK=or5MrkA@mail.gmail.com>
-References: <1457968577-22379-1-git-send-email-geert+renesas@glider.be>
-	<20160331005918.11d07572@lwn.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20160331005918.11d07572@lwn.net>
-Sender: linux-doc-owner@vger.kernel.org
-To: Jonathan Corbet <corbet@lwn.net>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Russell King <rmk@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH -repost] kgdb: depends on VT
+Date: Thu, 31 Mar 2016 10:29:15 +0200
+Message-ID: <1459412955-4696-1-git-send-email-jslaby@suse.cz>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: akpm@linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Jon,
+With VT=n, the kernel build fails with:
+drivers/built-in.o: In function `kgdboc_pre_exp_handler':
+kgdboc.c:(.text+0x7b5aa): undefined reference to `fg_console'
+kgdboc.c:(.text+0x7b5ce): undefined reference to `vc_cons'
+kgdboc.c:(.text+0x7b5d5): undefined reference to `vc_cons'
 
-On Thu, Mar 31, 2016 at 8:59 AM, Jonathan Corbet <corbet@lwn.net> wrote:
-> On Mon, 14 Mar 2016 16:16:08 +0100
-> Geert Uytterhoeven <geert+renesas@glider.be> wrote:
->
->> This patch series contains improvements to the low level serial driver
->> API documentation.
->
-> Hearing no objections, I've applied the set to the docs tree, thanks.
+kgdboc.o is built when KGDB_SERIAL_CONSOLE is set. So make
+KGDB_SERIAL_CONSOLE depend on HW_CONSOLE which includes those symbols.
 
-There were a few from Peter Hurley, and I planned to send an updated
-version soon.
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Reported-by: "Jim Davis" <jim.epost@gmail.com>
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Cc: <kgdb-bugreport@lists.sourceforge.net>
+Cc: <linux-serial@vger.kernel.org>
+---
+ lib/Kconfig.kgdb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/lib/Kconfig.kgdb b/lib/Kconfig.kgdb
+index c635a107a7de..533f912638ed 100644
+--- a/lib/Kconfig.kgdb
++++ b/lib/Kconfig.kgdb
+@@ -22,7 +22,7 @@ config KGDB_SERIAL_CONSOLE
+ 	tristate "KGDB: use kgdb over the serial console"
+ 	select CONSOLE_POLL
+ 	select MAGIC_SYSRQ
+-	depends on TTY
++	depends on TTY && HW_CONSOLE
+ 	default y
+ 	help
+ 	  Share a serial console with kgdb. Sysrq-g must be used
+-- 
+2.7.4
