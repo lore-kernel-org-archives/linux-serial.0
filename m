@@ -1,30 +1,50 @@
-From: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 04/10] serial: mps2-uart: add MPS2 UART driver
-Date: Fri, 1 Apr 2016 15:27:20 +0100
-Message-ID: <56FE8548.6090602@arm.com>
-References: <1459519381-34441-1-git-send-email-vladimir.murzin@arm.com>
- <1459519381-34441-5-git-send-email-vladimir.murzin@arm.com>
- <CAHp75VchqMT9NK_JaLp-90ainSov77H93+F6h75bQHuZV0zA=A@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAHp75VchqMT9NK_JaLp-90ainSov77H93+F6h75bQHuZV0zA=A@mail.gmail.com>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, liviu.dudau-5wv7dgnIgG8@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, ijc+devicetree <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Christopher Covington <cov@codeaurora.org>
+Subject: [PATCH v3] tty: amba-pl011: Use 32-bit accesses for SBSA UART
+Date: Fri,  1 Apr 2016 17:23:58 -0400
+Message-ID: <1459545838-17646-1-git-send-email-cov@codeaurora.org>
+References: <20160330165551.GB23817@kroah.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160330165551.GB23817@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: Andre Przywara <andre.przywara@arm.com>, Russell King <linux@arm.linux.org.uk>, Dave Martin <dave.martin@arm.com>, Jim Perrin <jperrin@centos.org>, Jon Masters <jcm@redhat.com>, Mark Langsdorf <mlangsdo@redhat.com>, Mark Salter <msalter@redhat.com>, Timur Tabi <timur@codeaurora.org>, Aleksey Makarov <aleksey.makarov@linaro.org>, Christopher Covington <cov@codeaurora.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 01/04/16 15:19, Andy Shevchenko wrote:
-> On Fri, Apr 1, 2016 at 5:02 PM, Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org> wrote:
->> This driver adds support to the UART controller found on ARM MPS2
->> platform.
->>
->> Signed-off-by: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-> 
-> Reviewed-by: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> 
+Version 2 of the Server Base System Architecture (SBSAv2) describes UART
+hardware registers as 32 bits wide, giving no guidance on access sizes. The
+SBSA UART driver previously assumed partial-length 16 and 8 bit accesses would
+work. But the SBSAv2 UART hardware on the Qualcomm Technologies QDF2432 only
+supports full-length 32 bit register accesses, so use those exclusively. This
+is compatible with SBSAv3, which explicitly requires UART hardware support 32
+(and 16 and sometimes 8) bit accesses.
 
-Thanks, Andy!
+Tested on Juno, Midway, QDF2432, Seattle, and X-Gene 1.
 
-Vladimir
+Tested-by: Mark Langsdorf <mlangsdo@redhat.com>
+Tested-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Andre Przywara <andre.przywara@arm.com>
+Signed-off-by: Christopher Covington <cov@codeaurora.org>
+---
+Changes since v2:
+* Updated commit message
+* Added Andre's Acked-by and Tested-by.
+---
+ drivers/tty/serial/amba-pl011.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 7c198e0..a2aa655 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -121,6 +121,7 @@ static struct vendor_data vendor_arm = {
+ 
+ static struct vendor_data vendor_sbsa = {
+ 	.reg_offset		= pl011_std_offsets,
++	.access_32b		= true,
+ 	.oversampling		= false,
+ 	.dma_threshold		= false,
+ 	.cts_event_workaround	= false,
+-- 
+Qualcomm Innovation Center, Inc.
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
