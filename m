@@ -1,78 +1,115 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH] serial: 8250_dw: fix wrong logic in dw8250_check_lcr()
-Date: Fri, 1 Apr 2016 18:19:26 +0800
-Message-ID: <56FE4B2E.30305@huawei.com>
-References: <1459501618-21021-1-git-send-email-wangkefeng.wang@huawei.com>
- <1459504683.5907.151.camel@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1459504683.5907.151.camel@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Noam Camus <noamc@ezchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, xuwei5@hisilicon.com
+From: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v5 00/10] Support for Cortex-M Prototyping System
+Date: Fri,  1 Apr 2016 15:02:51 +0100
+Message-ID: <1459519381-34441-1-git-send-email-vladimir.murzin@arm.com>
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: arnd-r2nGTMty4D4@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+Hi,
 
+This patch series provides the basic support for running ucLinux on V2M-MPS2
+platform.
 
-On 2016/4/1 17:58, Andy Shevchenko wrote:
-> On Fri, 2016-04-01 at 17:06 +0800, Kefeng Wang wrote:
->> Commit cdcea058e510("serial: 8250_dw: Avoid serial_outx code
->> duplicate
->> with new dw8250_check_lcr()") introduce a wrong logic when write val
->> to
->> LCR reg. When CONFIG_64BIT enabled, __raw_writeq is used
->> unconditionally.
->>
->> But for !PORT_OCTEON, we better to use coincident write func.
->>
->> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->> ---
->>
->> We met following calltrace twice, if the change is not necessary,
->> correct me,
->> and any advice will be appreciated, thanks.
-> 
-> So, does this fix you issue? If it does than perhaps you need to Cc
-> stable@ and put Fixes tag as well.
+With these patches applied ucLinux can be run on both HW and FVP models
+with Cortex-M3/M4/M7 configurations.
 
-We only met this issue twice, for now it is ok, and I will do more
-test with this patch.
+Board description:
 
-> 
->> --- a/drivers/tty/serial/8250/8250_dw.c
->> +++ b/drivers/tty/serial/8250/8250_dw.c
->> @@ -104,15 +104,16 @@ static void dw8250_check_lcr(struct uart_port
->> *p, int value)
->>  		dw8250_force_idle(p);
->>  
->>  #ifdef CONFIG_64BIT
->> -		__raw_writeq(value & 0xff, offset);
->> -#else
->> +		if (p->type == PORT_OCTEON)
->> +			__raw_writeq(value & 0xff, offset);
->> +		else
->> +#endif
-> 
-> You may also get rid of this one, like
-> 
-> if (IS_ENABLED(CONFIG_64BIT) && p->type == PORT_OCTEON)
->  ...
-> else if
-> ...
+http://infocenter.arm.com/help/topic/com.arm.doc.100112_0100_03_en/arm_versatile_express_cortex_m_prototyping_system_(v2m_mps2)_technical_reference_manual_100112_0100_03_en.pdf
 
-Agree.
+Application notes (cover Cortex-M3/M4/M7):
 
-> 
->>  		if (p->iotype == UPIO_MEM32)
->>  			writel(value, offset);
->>  		else if (p->iotype == UPIO_MEM32BE)
->>  			iowrite32be(value, offset);
->>  		else
->>  			writeb(value, offset);
->> -#endif
->>  	}
->>  	/*
->>  	 * FIXME: this deadlocks if port->lock is already held
-> 
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0385a/DAI0385A_cortex_m3_on_v2m_mps2.pdf
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0386a/DAI0386A_cortex_m4_on_v2m_mps2.pdf
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0399a/DAI0399A_cortex_m7_on_v2m_mps2.pdf
+http://infocenter.arm.com/help/topic/com.arm.doc.dai0400a/DAI0400A_cortex_m7_on_v2m_mps2.pdf
+
+Cortex-M System Design Kit (referenced as CMDK from documents above):
+
+http://infocenter.arm.com/help/topic/com.arm.doc.ddi0479c/DDI0479C_cortex_m_system_design_kit_r1p0_trm.pdf
+
+I'd be happy to hear any feedback/comments on this series!
+
+Changelog:
+
+  v4  -> v5:
+      - rebased on 4.6-rc1
+      - updated mps2-uart per Peter
+      - s/COFIG_ARCH_MPS2/CONFIG_ARCH_MPS under arm/mach-vexpress
+
+  v3  -> v4:
+      - rebased on 4.5-rc5
+      - updated mps2-uart per Andy, Alan and Peter
+      - dropped "zombie" EMBEDDED from defconfg per Arnd
+      - moved mps2 under vexpress umbrella per Arnd
+      - updated device-tree sources per Arnd
+      - dropped low-level debug support, seems earlycon works well for that
+
+  v2  -> v3:
+      - rebased on 4.5-rc4
+      - fixes for mps2-timer per Thomas
+      - swicthed back to ttyMPS naming per Greg
+
+  v1  -> v2:
+      - rebased on 4.5-rc2
+      - fixes for mps2-timer per Daniel and Rob (added Ack from Daniel)
+      - fixes for mps2-uart per Greg and Andy
+
+  RFC -> v1:
+      - dropped RFC tag
+      - rebased on 4.4-rc3
+      - added Acks from Rob
+      - updated mps2-timer per Daniel
+      - fixed build failures reported by 0-DAY kernel test infrastructure
+
+Thanks!
+
+Vladimir Murzin (10):
+  dt-bindings: document the MPS2 timer bindings
+  clockevents/drivers: add MPS2 Timer driver
+  dt-bindings: document the MPS2 UART bindings
+  serial: mps2-uart: add MPS2 UART driver
+  serial: mps2-uart: add support for early console
+  ARM: vexpress/mps2: introduce MPS2 platform
+  ARM: configs: add MPS2 defconfig
+  ARM: dts: introduce MPS2 AN385/AN386
+  ARM: dts: introduce MPS2 AN399/AN400
+  MAINTAINERS: Update ARM Versatile Express platform entry
+
+ .../devicetree/bindings/serial/arm,mps2-uart.txt   |   19 +
+ .../devicetree/bindings/timer/arm,mps2-timer.txt   |   28 +
+ MAINTAINERS                                        |    1 +
+ arch/arm/Kconfig                                   |    8 +
+ arch/arm/Makefile                                  |    1 +
+ arch/arm/boot/dts/Makefile                         |    3 +
+ arch/arm/boot/dts/mps2-an385.dts                   |   92 +++
+ arch/arm/boot/dts/mps2-an399.dts                   |   92 +++
+ arch/arm/boot/dts/mps2.dtsi                        |  242 ++++++++
+ arch/arm/configs/mps2_defconfig                    |  109 ++++
+ arch/arm/mach-vexpress/Makefile                    |    4 +-
+ arch/arm/mach-vexpress/Makefile.boot               |    3 +
+ arch/arm/mach-vexpress/v2m-mps2.c                  |   21 +
+ drivers/clocksource/Kconfig                        |    6 +
+ drivers/clocksource/Makefile                       |    1 +
+ drivers/clocksource/mps2-timer.c                   |  275 +++++++++
+ drivers/tty/serial/Kconfig                         |   13 +
+ drivers/tty/serial/Makefile                        |    1 +
+ drivers/tty/serial/mps2-uart.c                     |  626 ++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |    3 +
+ 20 files changed, 1547 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/arm,mps2-timer.txt
+ create mode 100644 arch/arm/boot/dts/mps2-an385.dts
+ create mode 100644 arch/arm/boot/dts/mps2-an399.dts
+ create mode 100644 arch/arm/boot/dts/mps2.dtsi
+ create mode 100644 arch/arm/configs/mps2_defconfig
+ create mode 100644 arch/arm/mach-vexpress/Makefile.boot
+ create mode 100644 arch/arm/mach-vexpress/v2m-mps2.c
+ create mode 100644 drivers/clocksource/mps2-timer.c
+ create mode 100644 drivers/tty/serial/mps2-uart.c
+
+-- 
+1.7.9.5
