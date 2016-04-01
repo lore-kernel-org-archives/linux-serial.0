@@ -1,161 +1,82 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Re: [PATCH v7 1/5] of/serial: move earlycon early_param handling to
- serial
-Date: Thu, 31 Mar 2016 21:21:34 +0300
-Message-ID: <56FD6AAE.3090001@linaro.org>
-References: <1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org>
- <1459431629-27934-2-git-send-email-aleksey.makarov@linaro.org>
- <20160331163203.GC10256@kroah.com> <56FD5894.3060105@linaro.org>
- <20160331173732.GA10567@kroah.com>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH] serial: 8250_dw: fix wrong logic in dw8250_check_lcr()
+Date: Fri, 1 Apr 2016 17:06:58 +0800
+Message-ID: <1459501618-21021-1-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160331173732.GA10567@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org
+To: Noam Camus <noamc@ezchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, xuwei5@hisilicon.com, Kefeng Wang <wangkefeng.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
+Commit cdcea058e510("serial: 8250_dw: Avoid serial_outx code duplicate
+with new dw8250_check_lcr()") introduce a wrong logic when write val to
+LCR reg. When CONFIG_64BIT enabled, __raw_writeq is used unconditionally.
 
+But for !PORT_OCTEON, we better to use coincident write func.
 
-On 03/31/2016 08:37 PM, Greg Kroah-Hartman wrote:
-> On Thu, Mar 31, 2016 at 08:04:20PM +0300, Aleksey Makarov wrote:
->>
->>
->> On 03/31/2016 07:32 PM, Greg Kroah-Hartman wrote:
->>> On Thu, Mar 31, 2016 at 04:40:23PM +0300, Aleksey Makarov wrote:
->>>> From: Leif Lindholm <leif.lindholm@linaro.org>
->>>>
->>>> We have multiple "earlycon" early_param handlers - merge the DT one into
->>>> the main earlycon one.  It's a cleanup that also will be useful
->>>> to defer setting up DT console until ACPI/DT decision is made.
->>>>
->>>> Rename the exported function to avoid clashing with the function from
->>>> arch/microblaze/kernel/prom.c
->>>>
->>>> Signed-off-by: Leif Lindholm <leif.lindholm@linaro.org>
->>>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
->>>> Acked-by: Rob Herring <robh@kernel.org>
->>>> ---
->>>>  drivers/of/fdt.c              | 11 +----------
->>>>  drivers/tty/serial/earlycon.c |  2 +-
->>>>  include/linux/of_fdt.h        |  2 ++
->>>>  3 files changed, 4 insertions(+), 11 deletions(-)
->>>>
->>>> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
->>>> index 3349d2a..b50f775 100644
->>>> --- a/drivers/of/fdt.c
->>>> +++ b/drivers/of/fdt.c
->>>> @@ -805,7 +805,7 @@ static inline void early_init_dt_check_for_initrd(unsigned long node)
->>>>  
->>>>  #ifdef CONFIG_SERIAL_EARLYCON
->>>>  
->>>> -static int __init early_init_dt_scan_chosen_serial(void)
->>>> +int __init early_init_dt_scan_chosen_stdout(void)
->>>>  {
->>>>  	int offset;
->>>>  	const char *p, *q, *options = NULL;
->>>> @@ -849,15 +849,6 @@ static int __init early_init_dt_scan_chosen_serial(void)
->>>>  	}
->>>>  	return -ENODEV;
->>>>  }
->>>> -
->>>> -static int __init setup_of_earlycon(char *buf)
->>>> -{
->>>> -	if (buf)
->>>> -		return 0;
->>>> -
->>>> -	return early_init_dt_scan_chosen_serial();
->>>> -}
->>>> -early_param("earlycon", setup_of_earlycon);
->>>>  #endif
->>>>  
->>>>  /**
->>>> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
->>>> index 067783f..7aae655 100644
->>>> --- a/drivers/tty/serial/earlycon.c
->>>> +++ b/drivers/tty/serial/earlycon.c
->>>> @@ -209,7 +209,7 @@ static int __init param_setup_earlycon(char *buf)
->>>>  	 * don't generate a warning from parse_early_params() in that case
->>>>  	 */
->>>>  	if (!buf || !buf[0])
->>>> -		return 0;
->>>> +		return early_init_dt_scan_chosen_stdout();
->>>>  
->>>>  	err = setup_earlycon(buf);
->>>>  	if (err == -ENOENT || err == -EALREADY)
->>>> diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
->>>> index 2fbe868..5cfe322 100644
->>>> --- a/include/linux/of_fdt.h
->>>> +++ b/include/linux/of_fdt.h
->>>> @@ -63,6 +63,7 @@ extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
->>>>  				     int depth, void *data);
->>>>  extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
->>>>  				     int depth, void *data);
->>>> +extern int early_init_dt_scan_chosen_stdout(void);
->>>>  extern void early_init_fdt_scan_reserved_mem(void);
->>>>  extern void early_init_fdt_reserve_self(void);
->>>>  extern void early_init_dt_add_memory_arch(u64 base, u64 size);
->>>> @@ -91,6 +92,7 @@ extern void early_get_first_memblock_info(void *, phys_addr_t *);
->>>>  extern u64 of_flat_dt_translate_address(unsigned long node);
->>>>  extern void of_fdt_limit_memory(int limit);
->>>>  #else /* CONFIG_OF_FLATTREE */
->>>> +static inline int early_init_dt_scan_chosen_stdout(void) { return -ENODEV; }
->>>
->>> Doesn't this change the default logic?  Today you are returning 0 if you
->>> don't have this config option set,
->>
->> I am not sure I understand this.  Which return value do you mean?
->>
->> 1. early_init_dt_scan_chosen_stdout()
->>
->> Today if CONFIG_OF_FLATTREE is not set then early_init_dt_scan_chosen_stdout() does not exist.
-> 
-> It "exists" in that you return -ENODEV, right?  Look at the place where
-> you called this function,
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
 
-It's param_setup_earlycon() so see below for explanations.
+We met following calltrace twice, if the change is not necessary, correct me,
+and any advice will be appreciated, thanks.
 
-> previously you returned 0, now you return this
-> function call's return value.
-> 
->> 2. param_setup_earlycon()
->>
->> Today we have 2 handlers for "earlycon" option.  One (in fdt.c) is for the option without args,
->> and another (earlycon.c) always expects agrs.  But both return 0 for the opposite cases becasue they
->> can not check what another hander returns.
->>
->> Now we have just one handler and it can return correct value.
-> 
-> I don't understand.
+80300000.uart: ttyS0 at MMIO 0x80300000 (irq = 7, base_baud = 12500000) is a 16550A
+Unable to handle kernel paging request at virtual address ffffff8008e8000c
+pgd = ffffff8008c14000
+[ffffff8008e8000c] *pgd=00000013ffffe003,*pud=00000013ffffe003, *pmd=00000013ee043003, *pte=00e8000080300707
+Internal error: Oops: 96000061 [#1] PREEMPT SMP
+Modules linked in:
+CPU: 13 PID: 1 Comm: swapper/0 Not tainted 4.6.0-rc1+ #51
+Hardware name: Huawei Technologies Co., Ltd. D02/D02, BIOS Bios Version 01/01/1900
+task: ffffffd3ee358000 ti: ffffffd3ee360000 task.ti:ffffffd3ee360000
+PC is at dw8250_check_lcr+0x54/0x98
+LR is at dw8250_check_lcr+0x54/0x98
+pc : [<ffffff800842f2c4>] lr : [<ffffff800842f2c4>]pstate: 800000c5
+sp : ffffffd3ee363740
+x29: ffffffd3ee363740 x28: 0000000000000000
+x27: ffffff800897d668 x26: ffffffd3ed434100
+x25: ffffff80089e89b0 x24: 000000000000006d
+x23: 0000000000000093 x22: 0000000000000093
+x21: ffffff8008e8000c x20: 00000000000003e8
+x19: ffffff8008bfde28 x18: 0000000000000006
+x17: 0000000000000000 x16: 0000000000000001
+x15: 000000000001c200 x14: 0000000000000011
+x13: 0000000000000c80 x12: 0000000000000011
+x11: ffffff800881c050 x10: 000000000001cb00
+x9 : 000000000001cb00 x8 : ffffff800881c050
+x7 : 000000000001b900 x6 : 0000000000000020
+x5 : ffffffd3ec8d9a18 x4 : ffffff8008e80000
+x3 : ffffff8008bfde28 x2 : 000000000000000d
+x1 : 0000000000000000 x0 : 000000000000000d
 
-This patch deletes early_param("earlycon", setup_of_earlycon) from fdt.c and
-keeps early_param("earlycon", param_setup_earlycon) in earlycon.c.
+ drivers/tty/serial/8250/8250_dw.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-Assume "earlycon" kernel command line parameter was passed without arguments.
-
-Before this patch:
-
-early_init_dt_scan_chosen_stdout() is called from setup_of_earlycon()
-where its return value is returned to parse_early_param()
-
-After this patch:
-
-early_init_dt_scan_chosen_stdout() is called from param_setup_earlycon()
-so we should return its return value from param_setup_earlycon() if we want
-to pass it to parse_early_param().
-
->>>  and now you return -ENODEV, did you
->>> test this out?
->>
->> Yes, I tested it.
-> 
-> On what platforms?  With what configurations?
-
-platform: QEMU
-configuration options: with/without acpi, dt
-command line options: with/without "earlycon", "earlycon=..."
-
-Thank you
-Aleksey Makarov
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index a3fb95d..47d1f3e 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -104,15 +104,16 @@ static void dw8250_check_lcr(struct uart_port *p, int value)
+ 		dw8250_force_idle(p);
+ 
+ #ifdef CONFIG_64BIT
+-		__raw_writeq(value & 0xff, offset);
+-#else
++		if (p->type == PORT_OCTEON)
++			__raw_writeq(value & 0xff, offset);
++		else
++#endif
+ 		if (p->iotype == UPIO_MEM32)
+ 			writel(value, offset);
+ 		else if (p->iotype == UPIO_MEM32BE)
+ 			iowrite32be(value, offset);
+ 		else
+ 			writeb(value, offset);
+-#endif
+ 	}
+ 	/*
+ 	 * FIXME: this deadlocks if port->lock is already held
+-- 
+1.7.12.4
