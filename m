@@ -1,57 +1,112 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: Serial ports with non connected RTS/CTS
-Date: Mon, 4 Apr 2016 00:16:33 -0500
-Message-ID: <20160404051633.GP17806@rob-hp-laptop>
-References: <56A89C48.1040604@parkeon.com>
- <57009DD6.2050006@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <57009DD6.2050006-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Martin Fuzzey <mfuzzey-mB3Nsq4MPf1BDgjK7y7TUQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 1/5] serial: 8250_mid: use proper bar for DNV platform
+Date: Mon,  4 Apr 2016 17:35:09 +0300
+Message-ID: <1459780513-140200-2-git-send-email-andriy.shevchenko@linux.intel.com>
+References: <1459780513-140200-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1459780513-140200-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Sender: stable-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Apr 02, 2016 at 09:36:38PM -0700, Peter Hurley wrote:
-> On 01/27/2016 02:30 AM, Martin Fuzzey wrote:
-> > Hi all,
-> > 
-> > currently, at least for 8250 based serial ports using of_serial, there is no way of indicating that the RTS / CTS lines, although supported by the UART, are not actually connected on the board.
-> > 
-> > This means that userspace needs to know about this and not use the CRTSCTS termios flag (otherwise no data is sent).
-> > 
-> > This is currently the case for Debian stattach for example (nettools 1.60) which unconditionally uses CRTSCTS (but the busybox version of slattach has a "-F" option that can be used to disable CRTSCTS).
-> > 
-> > Would it not be better to allow this situation to be described in the device tree?
-> > 
-> > Such an option already exists for the imx UART (""fsl,uart-has-rtscts")
-> > 
-> > of_serial already has the "auto-flow-control" DT property but, as stated in the documentation:
-> >     "The  driver is allowed to detect support for the capability even without this  property."
-> > 
-> > In the past there was a (since reverted) property "has-hw-flow-control"
-> > See
-> >     06aa82e "serial: uart: add hw flow control support configuration"
-> >     a6eec92 " Revert "serial: uart: add hw flow control support configuration"
-> > 
-> > However that just provided another (redundant) way of *activating* hardware flow control and did not allow it to be disactivated.
-> > 
-> > Would a new DT property "no-rtscts" to do this be acceptable?
+Unlike Intel Medfield and Tangier platforms DNV uses PCI BAR0 for IO compatible
+resources and BAR1 for MMIO. We need latter in a way to support DMA. Introduce
+an additional field in the internal structure and pass PCI BAR based on device
+ID.
 
-Yes.
+Reported-by: "Lai, Poey Seng" <poey.seng.lai@intel.com>
+Fixes: 6ede6dcd87aa ("serial: 8250_mid: add support for DMA engine handling from UART MMIO")
+Cc: stable@vger.kernel.org
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_mid.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-It's really a "the h/w designers left CTS tied/floating inactive by 
-mistake" flag. What is done with RTS doesn't really matter. So just 
-"no-cts" perhaps.
-
-> > I think it would have to be a negative property to avoid breaking old device trees.
-
-Agreed. 
-
-Rob
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
+index 88531a3..7aa6ef8 100644
+--- a/drivers/tty/serial/8250/8250_mid.c
++++ b/drivers/tty/serial/8250/8250_mid.c
+@@ -14,6 +14,7 @@
+ #include <linux/pci.h>
+ 
+ #include <linux/dma/hsu.h>
++#include <linux/8250_pci.h>
+ 
+ #include "8250.h"
+ 
+@@ -31,6 +32,7 @@
+ struct mid8250;
+ 
+ struct mid8250_board {
++	unsigned int flags;
+ 	unsigned long freq;
+ 	unsigned int base_baud;
+ 	int (*setup)(struct mid8250 *, struct uart_port *p);
+@@ -106,12 +108,13 @@ static int dnv_setup(struct mid8250 *mid, struct uart_port *p)
+ {
+ 	struct hsu_dma_chip *chip = &mid->dma_chip;
+ 	struct pci_dev *pdev = to_pci_dev(p->dev);
++	unsigned int bar = FL_GET_BASE(mid->board->flags);
+ 	int ret;
+ 
+ 	chip->dev = &pdev->dev;
+ 	chip->irq = pdev->irq;
+ 	chip->regs = p->membase;
+-	chip->length = pci_resource_len(pdev, 0);
++	chip->length = pci_resource_len(pdev, bar);
+ 	chip->offset = DNV_DMA_CHAN_OFFSET;
+ 
+ 	/* Falling back to PIO mode if DMA probing fails */
+@@ -217,6 +220,7 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ {
+ 	struct uart_8250_port uart;
+ 	struct mid8250 *mid;
++	unsigned int bar;
+ 	int ret;
+ 
+ 	ret = pcim_enable_device(pdev);
+@@ -230,6 +234,7 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		return -ENOMEM;
+ 
+ 	mid->board = (struct mid8250_board *)id->driver_data;
++	bar = FL_GET_BASE(mid->board->flags);
+ 
+ 	memset(&uart, 0, sizeof(struct uart_8250_port));
+ 
+@@ -242,8 +247,8 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT | UPF_FIXED_TYPE;
+ 	uart.port.set_termios = mid8250_set_termios;
+ 
+-	uart.port.mapbase = pci_resource_start(pdev, 0);
+-	uart.port.membase = pcim_iomap(pdev, 0, 0);
++	uart.port.mapbase = pci_resource_start(pdev, bar);
++	uart.port.membase = pcim_iomap(pdev, bar, 0);
+ 	if (!uart.port.membase)
+ 		return -ENOMEM;
+ 
+@@ -282,18 +287,21 @@ static void mid8250_remove(struct pci_dev *pdev)
+ }
+ 
+ static const struct mid8250_board pnw_board = {
++	.flags = FL_BASE0,
+ 	.freq = 50000000,
+ 	.base_baud = 115200,
+ 	.setup = pnw_setup,
+ };
+ 
+ static const struct mid8250_board tng_board = {
++	.flags = FL_BASE0,
+ 	.freq = 38400000,
+ 	.base_baud = 1843200,
+ 	.setup = tng_setup,
+ };
+ 
+ static const struct mid8250_board dnv_board = {
++	.flags = FL_BASE1,
+ 	.freq = 133333333,
+ 	.base_baud = 115200,
+ 	.setup = dnv_setup,
+-- 
+2.8.0.rc3
