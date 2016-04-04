@@ -1,67 +1,90 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 2/5] serial: 8250_mid: recognize interrupt source in handler
-Date: Mon,  4 Apr 2016 17:35:10 +0300
-Message-ID: <1459780513-140200-3-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1459780513-140200-1-git-send-email-andriy.shevchenko@linux.intel.com>
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1459780513-140200-1-git-send-email-andriy.shevchenko@linux.intel.com>
-Sender: stable-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, stable@vger.kernel.org
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: DCD interrupt for i.MX25 UART
+Date: Mon, 4 Apr 2016 22:49:11 +0200
+Message-ID: <20160404204911.GA5384@pengutronix.de>
+References: <20160323153638.GO6191@pengutronix.de>
+ <20160329131443.09e46ad6@ipc1.ka-ro>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20160329131443.09e46ad6@ipc1.ka-ro>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-There is a special register that shows interrupt status by source. In
-particular case the source can be a combination of DMA Tx, DMA Rx, and UART.
+Hallo Lothar,
 
-Read the register and call the handlers only for sources that request an
-interrupt.
+On Tue, Mar 29, 2016 at 01:14:43PM +0200, Lothar Wa=DFmann wrote:
+> On Wed, 23 Mar 2016 16:36:38 +0100 Uwe Kleine-K=F6nig wrote:
+> > Hello,
+> > =
 
-Fixes: 6ede6dcd87aa ("serial: 8250_mid: add support for DMA engine handling from UART MMIO")
-Cc: stable@vger.kernel.org
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_mid.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+> > I have a problem with an UART on an i.MX25 based machine. I implemented
+> > DCD (and other handshake lines) irq handling[1].
+> > =
 
-diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-index 7aa6ef8..ed48988 100644
---- a/drivers/tty/serial/8250/8250_mid.c
-+++ b/drivers/tty/serial/8250/8250_mid.c
-@@ -25,6 +25,7 @@
- #define PCI_DEVICE_ID_INTEL_DNV_UART	0x19d8
- 
- /* Intel MID Specific registers */
-+#define INTEL_MID_UART_DNV_FISR		0x08
- #define INTEL_MID_UART_PS		0x30
- #define INTEL_MID_UART_MUL		0x34
- #define INTEL_MID_UART_DIV		0x38
-@@ -90,16 +91,16 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
- static int dnv_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
--	int ret;
--
--	ret = hsu_dma_irq(&mid->dma_chip, 0);
--	ret |= hsu_dma_irq(&mid->dma_chip, 1);
--
--	/* For now, letting the HW generate separate interrupt for the UART */
--	if (ret)
--		return ret;
--
--	return serial8250_handle_irq(p, serial_port_in(p, UART_IIR));
-+	unsigned int fisr = serial_port_in(p, INTEL_MID_UART_DNV_FISR);
-+	int ret = IRQ_NONE;
-+
-+	if (fisr & BIT(2))
-+		ret |= hsu_dma_irq(&mid->dma_chip, 1);
-+	if (fisr & BIT(1))
-+		ret |= hsu_dma_irq(&mid->dma_chip, 0);
-+	if (fisr & BIT(0))
-+		ret |= serial8250_handle_irq(p, serial_port_in(p, UART_IIR));
-+	return ret;
- }
- 
- #define DNV_DMA_CHAN_OFFSET 0x80
--- 
-2.8.0.rc3
+> > Now a user of this patch noticed that DCD handling (at least) is broken.
+> > The problem is that the USR2_DCDDELT bit doesn't clear:
+> > =
+
+> > 	root@hostname:~ memtool md 0x43f90080+0x34  =
+
+> > 	43f90080: 00000000 00004021 0000078c 00004002                ....!@...=
+....@..
+> > 	43f90090: 00000b41 00002040 00005268 0000002b                A...@ ..h=
+R..+...
+> > 	43f900a0: 00000000 000000bf 00002e62 00000008                ........b=
+.......
+> > 	43f900b0: 0000251c                                           .%..
+> > =
+
+> > 	root@hostname:~ memtool mw 0x43f90098 0x0x40
+>                                               ^^^^^^
+> This looks rather fishy.
+
+Probably a cut-and-paste problem. I tried this several times with
+various values, the bit doesn't clear.
+
+> > 	root@hostname:~ memtool md 0x43f90080+0x34  =
+
+> > 	43f90080: 00000000 00004021 0000078c 00004002                ....!@...=
+....@..
+> > 	43f90090: 00000b41 00002040 00005268 0000002b                A...@ ..h=
+R..+...
+> > 	43f900a0: 00000000 000000bf 00002e62 00000008                ........b=
+.......
+> > 	43f900b0: 0000251c                                           .%..
+> > =
+
+> > In fact even writing 0xffff doesn't change the register, where I would =
+expect
+> > that the DCDDELT bit (0x40) disappears. I'm sure there is nothing toggl=
+ing this
+> > line.
+> > =
+
+> Are you sure the clock is enabled when doing your manual tests?
+
+I guess they are. For sure the same thing happens with the driver active
+and the device open. And the symptoms are the same: If the DCDDELTA irq
+is enabled and active the machine is stuck until the irq upper layers
+disable the respective irq.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
