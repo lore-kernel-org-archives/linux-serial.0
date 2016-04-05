@@ -1,203 +1,53 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty: serial: 8250_omap: do not defer termios changes
-Date: Mon, 4 Apr 2016 21:07:04 -0700
-Message-ID: <570339E8.6010808@hurleysoftware.com>
-References: <8737r7ght7.fsf@linutronix.de>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v3] serial: 8250_dw: fix wrong logic in dw8250_check_lcr()
+Date: Tue, 5 Apr 2016 12:55:22 +0800
+Message-ID: <5703453A.8040504@huawei.com>
+References: <1459827166-13861-1-git-send-email-wangkefeng.wang@huawei.com>
+ <20160405040240.GA24639@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <8737r7ght7.fsf@linutronix.de>
+In-Reply-To: <20160405040240.GA24639@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>, nsekhar@ti.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Noam Camus <noamc@ezchip.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, xuwei5@hisilicon.com
 List-Id: linux-serial@vger.kernel.org
 
-On 03/31/2016 01:41 AM, John Ogness wrote:
-> From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+
+
+On 2016/4/5 12:02, Greg Kroah-Hartman wrote:
+> On Tue, Apr 05, 2016 at 11:32:46AM +0800, Kefeng Wang wrote:
+>> Commit cdcea058e510 ("serial: 8250_dw: Avoid serial_outx code duplicate
+>> with new dw8250_check_lcr()") introduce a wrong logic when write val to
+>> LCR reg. When CONFIG_64BIT enabled, __raw_writeq is used unconditionally.
+>>
+>> The __raw_readq/__raw_writeq is introduced by commit bca2092d7897 ("serial:
+>> 8250_dw: Use 64-bit access for OCTEON.") for OCTEON, so for !PORT_OCTEON,
+>> we better to use coincident write func.
+>>
+>> Fixes: cdcea058e510("serial: 8250_dw: Avoid serial_outx code duplicate with new dw8250_check_lcr()")
+>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+>> ---
+>> Keep #ifdef CONFIG_64BIT to ensure it built under arch lacking readq/writeq.
+>>
+>>  drivers/tty/serial/8250/8250_dw.c | 7 ++++---
+>>  1 file changed, 4 insertions(+), 3 deletions(-)
 > 
-> It has been observed that the TX-DMA can stall
+> What changed between all of these versions?  Always document that below
+> the --- line otherwise I think they are all the same and I'll just
+> delete them all :)
 
-Does this happen on any other OMAP part besides am335x?
-I looked back over the LKML history of this and didn't see any other
-design implicated in this problem.
-
-> if termios changes
-> occur while a TX-DMA operation is in progress. Previously this was
-> handled by allowing set_termios to return immediately and deferring
-> the change until the operation is completed. Now set_termios will
-> block until the operation is completed, proceed with the changes,
-> then schedule any pending next operation.
-
-I ask because I wonder if this is related to the tx dma trigger
-problem (worked around by writing a byte to the tx fifo on am335x)?
-
-If so, then
-1) It should use the OMAP_DMA_TX_KICK bug flag
-2) It could pause dma, complete set_termios(), then resume dma which would
-keep everything nice and linear.
-
-Or even just drop DMA for the am335x and only use the normal 8250_dma
-support for newer OMAP designs.
-
-Regards,
-Peter Hurley
-
-
-> Commit message and forward port by John Ogness.
+Thanks for your guidance, will add log if with different versions to show what changes.
 > 
-> Tested-by: John Ogness <john.ogness@linutronix.de>
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  Patch against next-20160331.
+> v4 please.
+
+Ok, thanks again.
+
 > 
->  drivers/tty/serial/8250/8250_omap.c |   57 ++++++++++++++++----------
->  1 file changed, 37 insertions(+), 20 deletions(-)
+> thanks,
 > 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 6f76051..9459b4d 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -100,9 +100,9 @@ struct omap8250_priv {
->  	u8 wer;
->  	u8 xon;
->  	u8 xoff;
-> -	u8 delayed_restore;
->  	u16 quot;
->  
-> +	wait_queue_head_t termios_wait;
->  	bool is_suspending;
->  	int wakeirq;
->  	int wakeups_enabled;
-> @@ -257,18 +257,6 @@ static void omap8250_update_mdr1(struct uart_8250_port *up,
->  static void omap8250_restore_regs(struct uart_8250_port *up)
->  {
->  	struct omap8250_priv *priv = up->port.private_data;
-> -	struct uart_8250_dma	*dma = up->dma;
-> -
-> -	if (dma && dma->tx_running) {
-> -		/*
-> -		 * TCSANOW requests the change to occur immediately however if
-> -		 * we have a TX-DMA operation in progress then it has been
-> -		 * observed that it might stall and never complete. Therefore we
-> -		 * delay DMA completes to prevent this hang from happen.
-> -		 */
-> -		priv->delayed_restore = 1;
-> -		return;
-> -	}
->  
->  	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
->  	serial_out(up, UART_EFR, UART_EFR_ECB);
-> @@ -310,6 +298,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
->  	up->port.ops->set_mctrl(&up->port, up->port.mctrl);
->  }
->  
-> +static void omap_8250_dma_tx_complete(void *param);
->  /*
->   * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have have
->   * some differences in how we want to handle flow control.
-> @@ -320,6 +309,8 @@ static void omap_8250_set_termios(struct uart_port *port,
->  {
->  	struct uart_8250_port *up = up_to_u8250p(port);
->  	struct omap8250_priv *priv = up->port.private_data;
-> +	struct uart_8250_dma *dma = up->dma;
-> +	unsigned int complete_dma = 0;
->  	unsigned char cval = 0;
->  	unsigned int baud;
->  
-> @@ -430,7 +421,7 @@ static void omap_8250_set_termios(struct uart_port *port,
->  	priv->scr = OMAP_UART_SCR_RX_TRIG_GRANU1_MASK | OMAP_UART_SCR_TX_EMPTY |
->  		OMAP_UART_SCR_TX_TRIG_GRANU1_MASK;
->  
-> -	if (up->dma)
-> +	if (dma)
->  		priv->scr |= OMAP_UART_SCR_DMAMODE_1 |
->  			OMAP_UART_SCR_DMAMODE_CTL;
->  
-> @@ -460,6 +451,24 @@ static void omap_8250_set_termios(struct uart_port *port,
->  			priv->efr |= OMAP_UART_SW_TX;
->  		}
->  	}
-> +
-> +	if (dma && dma->tx_running) {
-> +		/*
-> +		 * TCSANOW requests the change to occur immediately, however
-> +		 * if we have a TX-DMA operation in progress then it has been
-> +		 * observed that it might stall and never complete. Therefore
-> +		 * we wait until DMA completes to prevent this hang from
-> +		 * happening.
-> +		 */
-> +
-> +		dma->tx_running = 2;
-> +
-> +		spin_unlock_irq(&up->port.lock);
-> +		wait_event_interruptible(priv->termios_wait,
-> +					 dma->tx_running == 3);
-> +		spin_lock_irq(&up->port.lock);
-> +		complete_dma = 1;
-> +	}
->  	omap8250_restore_regs(up);
->  
->  	spin_unlock_irq(&up->port.lock);
-> @@ -475,6 +484,8 @@ static void omap_8250_set_termios(struct uart_port *port,
->  	/* Don't rewrite B0 */
->  	if (tty_termios_baud_rate(termios))
->  		tty_termios_encode_baud_rate(termios, baud, baud);
-> +	if (complete_dma)
-> +		omap_8250_dma_tx_complete(up);
->  }
->  
->  /* same as 8250 except that we may have extra flow bits set in EFR */
-> @@ -893,17 +904,18 @@ static void omap_8250_dma_tx_complete(void *param)
->  
->  	spin_lock_irqsave(&p->port.lock, flags);
->  
-> +	if (dma->tx_running == 2) {
-> +		dma->tx_running = 3;
-> +		wake_up(&priv->termios_wait);
-> +		goto out;
-> +	}
-> +
->  	dma->tx_running = 0;
->  
->  	xmit->tail += dma->tx_size;
->  	xmit->tail &= UART_XMIT_SIZE - 1;
->  	p->port.icount.tx += dma->tx_size;
->  
-> -	if (priv->delayed_restore) {
-> -		priv->delayed_restore = 0;
-> -		omap8250_restore_regs(p);
-> -	}
-> -
->  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
->  		uart_write_wakeup(&p->port);
->  
-> @@ -923,7 +935,7 @@ static void omap_8250_dma_tx_complete(void *param)
->  		p->ier |= UART_IER_THRI;
->  		serial_port_out(&p->port, UART_IER, p->ier);
->  	}
-> -
-> +out:
->  	spin_unlock_irqrestore(&p->port.lock, flags);
->  }
->  
-> @@ -1088,6 +1100,10 @@ static inline int omap_8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
->  {
->  	return -EINVAL;
->  }
-> +
-> +static void omap_8250_dma_tx_complete(void *param)
-> +{
-> +}
->  #endif
->  
->  static int omap8250_no_handle_irq(struct uart_port *port)
-> @@ -1241,6 +1257,7 @@ static int omap8250_probe(struct platform_device *pdev)
->  			priv->omap8250_dma.rx_size = RX_TRIGGER;
->  			priv->omap8250_dma.rxconf.src_maxburst = RX_TRIGGER;
->  			priv->omap8250_dma.txconf.dst_maxburst = TX_TRIGGER;
-> +			init_waitqueue_head(&priv->termios_wait);
->  
->  			if (of_machine_is_compatible("ti,am33xx"))
->  				priv->habit |= OMAP_DMA_TX_KICK;
+> greg k-h
+> 
+> .
 > 
