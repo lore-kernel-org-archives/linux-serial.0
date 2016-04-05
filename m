@@ -1,277 +1,52 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v7 3/5] ACPI: parse SPCR and enable matching console
-Date: Mon, 4 Apr 2016 14:23:45 -0700
-Message-ID: <5702DB61.4010805@hurleysoftware.com>
-References: <1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org>
- <1459431629-27934-4-git-send-email-aleksey.makarov@linaro.org>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v2] serial: 8250_dw: fix wrong logic in dw8250_check_lcr()
+Date: Tue, 5 Apr 2016 10:49:06 +0800
+Message-ID: <1459824546-9942-1-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1459431629-27934-4-git-send-email-aleksey.makarov@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Jiri Slaby <jslaby@suse.com>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Noam Camus <noamc@ezchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, xuwei5@hisilicon.com, Kefeng Wang <wangkefeng.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/31/2016 06:40 AM, Aleksey Makarov wrote:
-> 'ARM Server Base Boot Requiremets' [1] mentions SPCR (Serial Port
-> Console Redirection Table) [2] as a mandatory ACPI table that
-> specifies the configuration of serial console.
-> 
-> Defer initialization of DT earlycon until ACPI/DT decision is made.
-> 
-> Parse the ACPI SPCR table, setup earlycon if required,
-> enable specified console.
-> 
-> Thanks to Peter Hurley for explaining how this should work.
-> 
-> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
-> [2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
+Commit cdcea058e510("serial: 8250_dw: Avoid serial_outx code duplicate
+with new dw8250_check_lcr()") introduce a wrong logic when write val to
+LCR reg. When CONFIG_64BIT enabled, __raw_writeq is used unconditionally.
 
-So for the code:
+The __raw_readq/__raw_writeq is introduced by commit bca2092d7897("serial:
+8250_dw: Use 64-bit access for OCTEON") for OCTEON, so for !PORT_OCTEON,
+we better to use coincident write func.
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Fixes: cdcea058e510("serial: 8250_dw: Avoid serial_outx code duplicate with new dw8250_check_lcr()")
+Signe:-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ drivers/tty/serial/8250/8250_dw.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-
-
-However, I still have concerns regarding the license of this code
-as GPL, when the Microsoft patent notice in [2] above only provides
-two license options, neither of which are referred to in the
-drivers/acpi/spcr.c file header and neither of which (I believe) are
-GPL compatible.
-
-
-
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-> ---
->  drivers/acpi/Kconfig          |   3 ++
->  drivers/acpi/Makefile         |   1 +
->  drivers/acpi/spcr.c           | 111 ++++++++++++++++++++++++++++++++++++++++++
->  drivers/tty/serial/earlycon.c |  19 +++++++-
->  include/linux/acpi.h          |   6 +++
->  include/linux/serial_core.h   |   6 +++
->  6 files changed, 144 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/acpi/spcr.c
-> 
-> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-> index 65fb483..5611eb6 100644
-> --- a/drivers/acpi/Kconfig
-> +++ b/drivers/acpi/Kconfig
-> @@ -77,6 +77,9 @@ config ACPI_DEBUGGER_USER
->  
->  endif
->  
-> +config ACPI_SPCR_TABLE
-> +	bool
-> +
->  config ACPI_SLEEP
->  	bool
->  	depends on SUSPEND || HIBERNATION
-> diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-> index 7395928..f70ae14 100644
-> --- a/drivers/acpi/Makefile
-> +++ b/drivers/acpi/Makefile
-> @@ -82,6 +82,7 @@ obj-$(CONFIG_ACPI_EC_DEBUGFS)	+= ec_sys.o
->  obj-$(CONFIG_ACPI_CUSTOM_METHOD)+= custom_method.o
->  obj-$(CONFIG_ACPI_BGRT)		+= bgrt.o
->  obj-$(CONFIG_ACPI_CPPC_LIB)	+= cppc_acpi.o
-> +obj-$(CONFIG_ACPI_SPCR_TABLE)	+= spcr.o
->  obj-$(CONFIG_ACPI_DEBUGGER_USER) += acpi_dbg.o
->  
->  # processor has its own "processor." module_param namespace
-> diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-> new file mode 100644
-> index 0000000..68ffc33
-> --- /dev/null
-> +++ b/drivers/acpi/spcr.c
-> @@ -0,0 +1,111 @@
-> +/*
-> + * Copyright (c) 2012, Intel Corporation
-> + * Copyright (c) 2015, Red Hat, Inc.
-> + * Copyright (c) 2015, 2016 Linaro Ltd.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + */
-> +
-> +#define pr_fmt(fmt) "ACPI: SPCR: " fmt
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/console.h>
-> +#include <linux/kernel.h>
-> +#include <linux/serial_core.h>
-> +
-> +/**
-> + * parse_spcr() - parse ACPI SPCR table and add preferred console
-> + *
-> + * @earlycon: set up earlycon for the console specified by the table
-> + *
-> + * For the architectures with support for ACPI, CONFIG_ACPI_SPCR_TABLE may be
-> + * defined to parse ACPI SPCR table.  As a result of the parsing preferred
-> + * console is registered and if @earlycon is true, earlycon is set up.
-> + *
-> + * When CONFIG_ACPI_SPCR_TABLE is defined, this function should should be called
-> + * from arch inintialization code as soon as the DT/ACPI decision is made.
-> + *
-> + */
-> +int __init parse_spcr(bool earlycon)
-> +{
-> +	static char opts[64];
-> +	struct acpi_table_spcr *table;
-> +	acpi_size table_size;
-> +	acpi_status status;
-> +	char *uart;
-> +	char *iotype;
-> +	int baud_rate;
-> +	int err;
-> +
-> +	if (acpi_disabled)
-> +		return -ENODEV;
-> +
-> +	status = acpi_get_table_with_size(ACPI_SIG_SPCR, 0,
-> +					  (struct acpi_table_header **)&table,
-> +					  &table_size);
-> +
-> +	if (ACPI_FAILURE(status))
-> +		return -ENOENT;
-> +
-> +	if (table->header.revision < 2) {
-> +		err = -ENOENT;
-> +		pr_err("wrong table version\n");
-> +		goto done;
-> +	}
-> +
-> +	iotype = table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY ?
-> +			"mmio" : "io";
-> +
-> +	switch (table->interface_type) {
-> +	case ACPI_DBG2_ARM_SBSA_32BIT:
-> +		iotype = "mmio32";
-> +		/* fall through */
-> +	case ACPI_DBG2_ARM_PL011:
-> +	case ACPI_DBG2_ARM_SBSA_GENERIC:
-> +	case ACPI_DBG2_BCM2835:
-> +		uart = "pl011";
-> +		break;
-> +	case ACPI_DBG2_16550_COMPATIBLE:
-> +	case ACPI_DBG2_16550_SUBSET:
-> +		uart = "uart";
-> +		break;
-> +	default:
-> +		err = -ENOENT;
-> +		goto done;
-> +	}
-> +
-> +	switch (table->baud_rate) {
-> +	case 3:
-> +		baud_rate = 9600;
-> +		break;
-> +	case 4:
-> +		baud_rate = 19200;
-> +		break;
-> +	case 6:
-> +		baud_rate = 57600;
-> +		break;
-> +	case 7:
-> +		baud_rate = 115200;
-> +		break;
-> +	default:
-> +		err = -ENOENT;
-> +		goto done;
-> +	}
-> +
-> +	snprintf(opts, sizeof(opts), "%s,%s,0x%llx,%d", uart, iotype,
-> +		 table->serial_port.address, baud_rate);
-> +
-> +	pr_info("console: %s", opts);
-> +
-> +	if (earlycon)
-> +		setup_earlycon(opts);
-> +
-> +	err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
-> +
-> +done:
-> +	early_acpi_os_unmap_memory((void __iomem *)table, table_size);
-> +	return err;
-> +}
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index 7aae655..ea00b9f 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -21,6 +21,7 @@
->  #include <linux/sizes.h>
->  #include <linux/of.h>
->  #include <linux/of_fdt.h>
-> +#include <linux/acpi.h>
->  
->  #ifdef CONFIG_FIX_EARLYCON_MEM
->  #include <asm/fixmap.h>
-> @@ -199,6 +200,14 @@ int __init setup_earlycon(char *buf)
->  	return -ENOENT;
->  }
->  
-> +/*
-> + * When CONFIG_ACPI_SPCR_TABLE is defined, "earlycon" without parameters in
-> + * command line does not start DT earlycon immediately, instead it defers
-> + * starting it until DT/ACPI decision is made.  At that time if ACPI is enabled
-> + * call parse_spcr(), else call early_init_dt_scan_chosen_stdout()
-> + */
-> +bool earlycon_init_is_deferred __initdata;
-> +
->  /* early_param wrapper for setup_earlycon() */
->  static int __init param_setup_earlycon(char *buf)
->  {
-> @@ -208,8 +217,14 @@ static int __init param_setup_earlycon(char *buf)
->  	 * Just 'earlycon' is a valid param for devicetree earlycons;
->  	 * don't generate a warning from parse_early_params() in that case
->  	 */
-> -	if (!buf || !buf[0])
-> -		return early_init_dt_scan_chosen_stdout();
-> +	if (!buf || !buf[0]) {
-> +		if (IS_ENABLED(CONFIG_ACPI_SPCR_TABLE)) {
-> +			earlycon_init_is_deferred = true;
-> +			return 0;
-> +		} else {
-> +			return early_init_dt_scan_chosen_stdout();
-> +		}
-> +	}
->  
->  	err = setup_earlycon(buf);
->  	if (err == -ENOENT || err == -EALREADY)
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 06ed7e5..1095ed6 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -1004,4 +1004,10 @@ static inline struct fwnode_handle *acpi_get_next_subnode(struct device *dev,
->  #define acpi_probe_device_table(t)	({ int __r = 0; __r;})
->  #endif
->  
-> +#ifdef CONFIG_ACPI_SPCR_TABLE
-> +int parse_spcr(bool earlycon);
-> +#else
-> +static inline int parse_spcr(bool earlycon) { return 0; }
-> +#endif
-> +
->  #endif	/*_LINUX_ACPI_H*/
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index cbfcf38..de6750f 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -363,6 +363,12 @@ extern int of_setup_earlycon(const struct earlycon_id *match,
->  			     unsigned long node,
->  			     const char *options);
->  
-> +#ifdef CONFIG_SERIAL_EARLYCON
-> +extern bool earlycon_init_is_deferred __initdata;
-> +#else
-> +static const bool earlycon_init_is_deferred;
-> +#endif
-> +
->  struct uart_port *uart_get_console(struct uart_port *ports, int nr,
->  				   struct console *c);
->  int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
-> 
-
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index a3fb95d..003ce60 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -103,16 +103,14 @@ static void dw8250_check_lcr(struct uart_port *p, int value)
+ 
+ 		dw8250_force_idle(p);
+ 
+-#ifdef CONFIG_64BIT
+-		__raw_writeq(value & 0xff, offset);
+-#else
+-		if (p->iotype == UPIO_MEM32)
++		if (IS_ENABLED(CONFIG_64BIT) && p->type == PORT_OCTEON)
++			__raw_writeq(value & 0xff, offset);
++		else if (p->iotype == UPIO_MEM32)
+ 			writel(value, offset);
+ 		else if (p->iotype == UPIO_MEM32BE)
+ 			iowrite32be(value, offset);
+ 		else
+ 			writeb(value, offset);
+-#endif
+ 	}
+ 	/*
+ 	 * FIXME: this deadlocks if port->lock is already held
+-- 
+2.6.0.GIT
