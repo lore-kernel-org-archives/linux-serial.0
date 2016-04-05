@@ -1,89 +1,227 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v4] serial: 8250_dw: fix wrong logic in
- dw8250_check_lcr()
-Date: Tue, 05 Apr 2016 13:50:07 +0300
-Message-ID: <1459853407.12843.7.camel@linux.intel.com>
-References: <1459827166-13861-1-git-send-email-wangkefeng.wang@huawei.com>
-	 <1459835585-25751-1-git-send-email-wangkefeng.wang@huawei.com>
+From: Mark Salter <msalter@redhat.com>
+Subject: Re: [PATCH v7 0/5] ACPI: parse the SPCR table
+Date: Tue, 05 Apr 2016 12:27:07 -0400
+Message-ID: <1459873627.10130.21.camel@redhat.com>
+References: <1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1459835585-25751-1-git-send-email-wangkefeng.wang@huawei.com>
+In-Reply-To: <1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kefeng Wang <wangkefeng.wang@huawei.com>, Noam Camus <noamc@ezchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, xuwei5@hisilicon.com
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Zheng, Lv" <lv.zheng@intel.com>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-acpi@vger.kernel.org, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2016-04-05 at 13:53 +0800, Kefeng Wang wrote:
-> Commit cdcea058e510 ("serial: 8250_dw: Avoid serial_outx code
-> duplicate
-> with new dw8250_check_lcr()") introduce a wrong logic when write val
-> to
-> LCR reg. When CONFIG_64BIT enabled, __raw_writeq is used
-> unconditionally.
->=20
-> The __raw_readq/__raw_writeq is introduced by commit bca2092d7897
-> ("serial:
-> 8250_dw: Use 64-bit access for OCTEON.") for OCTEON, so for
-> !PORT_OCTEON,
-> we better to use coincident write func.
->=20
-> Fixes: cdcea058e510("serial: 8250_dw: Avoid serial_outx code
-> duplicate with new dw8250_check_lcr()")
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> ---
->=20
-> Changes since v3:
-> - Add patch change log, suggested by Greg Kroah-Hartman.
-> Changes since v2:
-> - Add #ifdef CONFIG_64BIT back, ensure it can be built under=20
+Could you CC me on future postings of this series, please?
 
-Oh, true. Since it's a native IO we can't use writeq() helper from io-
-64-nonatomic-*.=C2=A0
+So v3 fixed a problem where platforms using 8250 didn't work.
+Then in v5, that fix was lost so 8250 no longer works.
 
-> configuration lacking readq/writeq.
-> Changes since v1:
-> - Repace '#ifdef CONFIG_64BIT' with IS_ENABLED(CONFIG_64BIT).
-> - Enrich patch log, and add Fixes tag.
-> =C2=A0=C2=A0
+--Mark
+
+
+On Thu, 2016-03-31 at 16:40 +0300, Aleksey Makarov wrote:
+> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
+> Console Redirection Table) [2] as a mandatory ACPI table that
+> specifies the configuration of serial console.
 >=20
-> =C2=A0drivers/tty/serial/8250/8250_dw.c | 7 ++++---
-> =C2=A01 file changed, 4 insertions(+), 3 deletions(-)
+> Move "earlycon" early_param handling to earlycon.c to parse this opti=
+on once
 >=20
-> diff --git a/drivers/tty/serial/8250/8250_dw.c
-> b/drivers/tty/serial/8250/8250_dw.c
-> index a3fb95d..47d1f3e 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -104,15 +104,16 @@ static void dw8250_check_lcr(struct uart_port
-> *p, int value)
-> =C2=A0		dw8250_force_idle(p);
-> =C2=A0
-> =C2=A0#ifdef CONFIG_64BIT
-> -		__raw_writeq(value & 0xff, offset);
-> -#else
-> +		if (p->type =3D=3D PORT_OCTEON)
-> +			__raw_writeq(value & 0xff, offset);
-> +		else
-> +#endif
-> =C2=A0		if (p->iotype =3D=3D UPIO_MEM32)
-> =C2=A0			writel(value, offset);
-> =C2=A0		else if (p->iotype =3D=3D UPIO_MEM32BE)
-> =C2=A0			iowrite32be(value, offset);
-> =C2=A0		else
-> =C2=A0			writeb(value, offset);
-> -#endif
-
-So, this changes logic to write the value on any 64 platform, using
-different (non-64-bit) accessors, so, the case to fix is
-actually "64BIT && !PORT_OCTEON". Perhaps commit message should be
-amended to point that clearly.
-
-> =C2=A0	}
-> =C2=A0	/*
-> =C2=A0	=C2=A0* FIXME: this deadlocks if port->lock is already held
-
---=20
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+> *** PATCH=C2=A0=C2=A0"ACPICA: Headers: Add new constants for the DBG2=
+ ACPI table"
+> *** IS JUST TO ENABLE BUILDING THE PATCHSET ON linux-next
+>=20
+> Patch "ACPICA: Headers: Add new constants for the DBG2 ACPI table" is=
+ required
+> for the next patch.=C2=A0=C2=A0It is taken from ACPICA series [3], bu=
+t it has not appeared
+> in linux-next yet.
+>=20
+> Parse SPCR table, setup earlycon and add register specified console.
+>=20
+> Enable parsing this table on ARM64.=C2=A0=C2=A0Earlycon should be set=
+ up
+> as early as possible.=C2=A0=C2=A0ACPI boot tables are mapped in
+> arch/arm64/kernel/acpi.c:acpi_boot_table_init() called from setup_arc=
+h()
+> and that's where we parse spcr.=C2=A0=C2=A0So it has to be opted-in p=
+er-arch.
+>=20
+> Implement console_match() for pl011.
+>=20
+> Based on the work by Leif Lindholm [4]
+> Thanks to Peter Hurley for explaining how this should work.
+>=20
+> Should be applied to next-20160331.
+>=20
+> Tested on QEMU.=C2=A0=C2=A0SPCR support is included in QEMU's ARM mac=
+h-virt
+> since 2.4 release.
+>=20
+> v7:
+> - add Acked-by: Rob Herring for "of/serial: move earlycon early_param=
+ handling
+> =C2=A0 to serial"
+> - call DT earlycon initialization from the arch ACPI code, not from p=
+arse_spcr()
+> =C2=A0 (Rafael J. Wysocki)
+> - fix a few minor issues (Rafael J. Wysocki)
+>=20
+> v6:
+> https://lkml.kernel.org/g/1458823925-19560-1-git-send-email-aleksey.m=
+akarov@linaro.org
+> - add documentation for parse_spcr() functioin (Yury Norov)
+> - don't initialize err variable (Yury Norov)
+> - add __initdata for the earlycon_init_is_deferred flag variable
+> - rename the function exported in "of/serial: move earlycon early_par=
+am handling
+> =C2=A0 to serial" to avoid clash with the function from arch/microbla=
+ze/kernel/prom.c
+> - defer initialization of DT earlycon until DT/ACPI decision is made
+> =C2=A0 (Rob Herring, Peter Hurley)
+> - use snprintf instead of sprintf (Andy Shevchenko)
+> - drop patch that adds EARLYCON_DECLARE for pl011 as EARLYCON_DECLARE=
+ is
+> =C2=A0 equivalent to OF_EARLYCON_DECLARE for 4.6+ (Peter Hurley).=C2=A0=
+=C2=A0This means that
+> =C2=A0 SPCR earlycon will not work on the kernels before 4.6
+>=20
+> v5:
+> https://lkml.kernel.org/g/1458643595-14719-1-git-send-email-aleksey.m=
+akarov@linaro.org
+> - drop patch "serial: pl011: use ACPI SPCR to setup 32-bit access" be=
+cause
+> =C2=A0 it is ugly. Also because Christopher Covington came with a bet=
+ter solution [5]
+> - remove error message when the table is not provided by ACPI (Andy S=
+hevchenko)
+> - rewrite spcr.c following the suggestions by Peter Hurley
+> - add console_match() for pl011 in a separate patch
+> - add EARLYCON_DECLARE for pl011 in a separate patch
+> - add patch "of/serial: move earlycon early_param handling to serial"=
+ from
+> =C2=A0 the GDB2 series
+>=20
+> v4:
+> https://lkml.kernel.org/g/1456747355-15692-1-git-send-email-aleksey.m=
+akarov@linaro.org
+> - drop patch "ACPI: change __init to __ref for early_acpi_os_unmap_me=
+mory()"
+> =C2=A0 ACPI developers work on a new API and asked not to do that.
+> =C2=A0 Instead, use acpi_get_table_with_size()/early_acpi_os_unmap_me=
+mory() once
+> =C2=A0 and cache the result. (Lv Zheng)
+> - fix some style issues (Yury Norov)
+>=20
+> v3:
+> https://lkml.kernel.org/g/1455559532-8305-1-git-send-email-aleksey.ma=
+karov@linaro.org
+>=20
+> Greg Kroah-Hartman did not like v2 so I have rewritten this patchset:
+>=20
+> - drop acpi_match() member of struct console
+> - drop implementations of this member for pl011 and 8250
+> - drop the patch that renames some vars in printk.c as it is not need=
+ed anymore
+> - drop patch that introduces system wide acpi_table_parse2().
+> =C2=A0 Instead introduce a custom acpi_table_parse_spcr() in spcr.c
+>=20
+> Instead of introducing a new match_acpi() member of struct console,
+> this patchset introduces a new function acpi_console_check().
+> This function is called when a new uart is registered at serial_core.=
+c
+> the same way OF code checks for console.=C2=A0=C2=A0If the registered=
+ uart is the
+> console specified by SPCR table, this function calls add_preferred_co=
+nsole()
+>=20
+> The restrictions of this approach are:
+>=20
+> - only serial consoles can be set up
+> - only consoles specified by the memory/io address can be set up
+> =C2=A0 (SPCR can specify devices by PCI id/PCI address)
+>=20
+> v2:
+> https://lkml.kernel.org/g/1455299022-11641-1-git-send-email-aleksey.m=
+akarov@linaro.org
+> - don't use SPCR if user specified console in command line
+> - fix initialization order of newcon->index =3D 0
+> - rename some variables at printk.c (Joe Perches, Peter Hurley)
+> - enable ACPI_SPCR_TABLE in a separate patch (Andy Shevchenko)
+> - remove the retry loop for console registering (Peter Hurley).
+> =C2=A0 Instead, obtain SPCR with acpi_get_table().=C2=A0=C2=A0That wo=
+rks after
+> =C2=A0 call to acpi_early_init() i. e. in any *_initcall()
+> - describe design decision behind introducing acpi_match() (Peter Hur=
+ley)
+> - fix compilation for x86 + ACPI (Graeme Gregory)
+> - introduce DBG2 constants in a separate patch (Andy Shevchenko)
+> - fix a typo in DBG2 constants (Andy Shevchenko)
+> - add ACPI_DBG2_ARM_SBSA_32BIT constant (Christopher Covington)
+> - add support for ACPI_DBG2_ARM_SBSA_* consoles (Christopher Covingto=
+n)
+> - add documentation for functions
+> - add a patch that uses SPCR to find if SBSA serial driver should use=
+ 32-bit
+> =C2=A0 accessor functions (Christopher Covington)
+> - change __init to __ref for early_acpi_os_unmap_memory() in a separa=
+te patch
+> - introduce acpi_table_parse2() in a separate patch
+> - fix fetching the SPCR table early (Mark Salter)
+> - add a patch from Mark Salter that introduces support for matching 8=
+250-based
+> =C2=A0 consoles
+>=20
+> v1:
+> https://lkml.kernel.org/g/1453722324-22407-1-git-send-email-aleksey.m=
+akarov@linaro.org
+>=20
+> [1] http://infocenter.arm.com/help/index.jsp?topic=3D/com.arm.doc.den=
+0044a/index.html
+> [2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn63913=
+2(v=3Dvs.85).aspx
+> [3] https://lkml.kernel.org/g/cover.1458714002.git.lv.zheng@intel.com
+> [4] https://lkml.kernel.org/g/1441716217-23786-1-git-send-email-leif.=
+lindholm@linaro.org
+> [5] https://lkml.kernel.org/g/1457415800-8799-1-git-send-email-cov@co=
+deaurora.org
+>=20
+> Aleksey Makarov (4):
+> =C2=A0 ACPICA: Headers: Add new constants for the DBG2 ACPI table
+> =C2=A0 ACPI: parse SPCR and enable matching console
+> =C2=A0 ARM64: ACPI: enable ACPI_SPCR_TABLE
+> =C2=A0 serial: pl011: add console matching function
+>=20
+> Leif Lindholm (1):
+> =C2=A0 of/serial: move earlycon early_param handling to serial
+>=20
+> =C2=A0arch/arm64/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A0=C2=A01 +
+> =C2=A0arch/arm64/kernel/acpi.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0|=C2=A0=C2=A011 +++-
+> =C2=A0drivers/acpi/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A0=C2=A03 ++
+> =C2=A0drivers/acpi/Makefile=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A0=C2=A01 +
+> =C2=A0drivers/acpi/spcr.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 111 ++++++++++++++++++++++++++++++++=
+++++++++
+> =C2=A0drivers/of/fdt.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A011 +---
+> =C2=A0drivers/tty/serial/amba-pl011.c |=C2=A0=C2=A056 +++++++++++++++=
++++++
+> =C2=A0drivers/tty/serial/earlycon.c=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A019 =
+++++++-
+> =C2=A0include/acpi/actbl2.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A0=C2=A07 ++-
+> =C2=A0include/linux/acpi.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A0=C2=A06 +++
+> =C2=A0include/linux/of_fdt.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A0=C2=A02 +
+> =C2=A0include/linux/serial_core.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=
+=C2=A0=C2=A06 +++
+> =C2=A012 files changed, 220 insertions(+), 14 deletions(-)
+> =C2=A0create mode 100644 drivers/acpi/spcr.c
+>=20
