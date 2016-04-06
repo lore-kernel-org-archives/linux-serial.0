@@ -1,34 +1,25 @@
-From: zengzhaoxiu@163.com
-Subject: [PATCH v2 28/30] serial: use parity32 in max3100
-Date: Wed,  6 Apr 2016 18:18:42 +0800
-Message-ID: <1459937922-8531-1-git-send-email-zengzhaoxiu@163.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 28/30] serial: use parity32 in max3100
+Date: Wed, 6 Apr 2016 06:25:49 -0400
+Message-ID: <20160406102549.GA4556@kroah.com>
 References: <57031D9D.801@gmail.com>
+ <1459937922-8531-1-git-send-email-zengzhaoxiu@163.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <57031D9D.801@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1459937922-8531-1-git-send-email-zengzhaoxiu@163.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: lars@metafoo.de, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+To: zengzhaoxiu@163.com
+Cc: lars@metafoo.de, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+On Wed, Apr 06, 2016 at 06:18:42PM +0800, zengzhaoxiu@163.com wrote:
+> From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+> 
+> Signed-off-by: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+> ---
+>  drivers/tty/serial/max3100.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Signed-off-by: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
----
- drivers/tty/serial/max3100.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index 5c4c280..a0cc84a 100644
---- a/drivers/tty/serial/max3100.c
-+++ b/drivers/tty/serial/max3100.c
-@@ -155,7 +155,7 @@ static int max3100_do_parity(struct max3100_port *s, u16 c)
- 	else
- 		c &= 0xff;
- 
--	parity = parity ^ (hweight8(c) & 1);
-+	parity ^= parity8(c);
- 	return parity;
- }
- 
--- 
-2.5.0
+I can't take patches without any changelog text :(
