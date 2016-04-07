@@ -1,57 +1,85 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v1 08/12] serial: 8250: enable AFE on ports where FIFO is
- 16 bytes
-Date: Thu, 7 Apr 2016 16:43:40 -0700
-Message-ID: <5706F0AC.2070901@hurleysoftware.com>
+Subject: Re: [PATCH v1 06/12] serial: 8250_dma: stop ongoing RX DMA on
+ exception
+Date: Thu, 7 Apr 2016 16:54:13 -0700
+Message-ID: <5706F325.6090001@hurleysoftware.com>
 References: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
- <1460061433-63750-9-git-send-email-andriy.shevchenko@linux.intel.com>
+ <1460061433-63750-7-git-send-email-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1460061433-63750-9-git-send-email-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <1460061433-63750-7-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 On 04/07/2016 01:37 PM, Andy Shevchenko wrote:
-> Intel Quark has 16550A compatible UART with autoflow feature enabled. It has
-> only 16 bytes of FIFO. Currently serial8250_do_set_termios() prevents to enable
-> autoflow since the minimum requirement of 32 bytes of FIFO size.
-> 
-> Decrease a FIFO size limitation to 16 bytes to allow autoflow control be
-> enabled on such UARTs.
+> If we get an exeption interrupt. i.e. UART_IIR_RLSI, stop any ongoing RX DMA
+> transfer otherwise it might generates more spurious interrupts and make port
+> unavailable anymore.
+
+Then how to know which rx byte the error is for if dma continues anyway?
+What if there are multiple error bytes?
+
+
+> As has been seen on Intel Broxton system:
+
+This system shouldn't be setup for UART DMA imo.
+
+
+> ...
+> [  168.526281] serial8250: too much work for irq5
+> [  168.535908] serial8250: too much work for irq5
+> [  173.449464] serial8250_interrupt: 4439 callbacks suppressed
+> [  173.455694] serial8250: too much work for irq5
+> ...
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/tty/serial/8250/8250_dma.c | 17 ++++++++++++-----
+>  1 file changed, 12 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index e213da0..3f8121e 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2522,9 +2522,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
->  	 * the trigger, or the MCR RTS bit is cleared.  In the case where
->  	 * the remote UART is not using CTS auto flow control, we must
->  	 * have sufficient FIFO entries for the latency of the remote
-> -	 * UART to respond.  IOW, at least 32 bytes of FIFO.
-> +	 * UART to respond.  IOW, at least 16 bytes of FIFO.
->  	 */
-> -	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-> +	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 16) {
-
-Let's just remove the fifosize test and rely on UART_CAP_AFE to enable
-AFE.  Please remove comment from "In the case where ..."
-
-Also, I think the PORT_A7 port type should have UART_CAP_AFE commented out,
-especially since/if the trigger level is 1 byte.
-
-Regards,
-Peter Hurley
-
->  		up->mcr &= ~UART_MCR_AFE;
->  		if (termios->c_cflag & CRTSCTS)
->  			up->mcr |= UART_MCR_AFE;
+> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+> index 9d80bb1..b134bec 100644
+> --- a/drivers/tty/serial/8250/8250_dma.c
+> +++ b/drivers/tty/serial/8250/8250_dma.c
+> @@ -110,6 +110,16 @@ err:
+>  	return ret;
+>  }
+>  
+> +static void __dma_rx_stop(struct uart_8250_port *p, struct uart_8250_dma *dma)
+> +{
+> +	if (!dma->rx_running)
+> +		return;
+> +
+> +	dmaengine_pause(dma->rxchan);
+> +	__dma_rx_complete(p);
+> +	dmaengine_terminate_async(dma->rxchan);
+> +}
+> +
+>  int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+>  {
+>  	struct uart_8250_dma		*dma = p->dma;
+> @@ -118,17 +128,14 @@ int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+>  	switch (iir & 0x3f) {
+>  	case UART_IIR_RLSI:
+>  		/* 8250_core handles errors and break interrupts */
+> +		__dma_rx_stop(p, dma);
+>  		return -EIO;
+>  	case UART_IIR_RX_TIMEOUT:
+>  		/*
+>  		 * If RCVR FIFO trigger level was not reached, complete the
+>  		 * transfer and let 8250_core copy the remaining data.
+>  		 */
+> -		if (dma->rx_running) {
+> -			dmaengine_pause(dma->rxchan);
+> -			__dma_rx_complete(p);
+> -			dmaengine_terminate_async(dma->rxchan);
+> -		}
+> +		__dma_rx_stop(p, dma);
+>  		return -ETIMEDOUT;
+>  	default:
+>  		break;
 > 
