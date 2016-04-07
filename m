@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 01/12] dmaengine: dw: keep copy of custom slave config in dwc
-Date: Thu,  7 Apr 2016 23:37:02 +0300
-Message-ID: <1460061433-63750-2-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 08/12] serial: 8250: enable AFE on ports where FIFO is 16 bytes
+Date: Thu,  7 Apr 2016 23:37:09 +0300
+Message-ID: <1460061433-63750-9-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,123 +10,33 @@ To: Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@v
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-It seems we need to extend custom slave configuration by one more member to
-support Intel Quart UART. It becomes a burden to manage all members of struct
-dw_dma_slave one-by-one.
+Intel Quark has 16550A compatible UART with autoflow feature enabled. It has
+only 16 bytes of FIFO. Currently serial8250_do_set_termios() prevents to enable
+autoflow since the minimum requirement of 32 bytes of FIFO size.
 
-Replace set of fields by embedding struct dw_dma_slave into struct dw_dma_chan.
+Decrease a FIFO size limitation to 16 bytes to allow autoflow control be
+enabled on such UARTs.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/dma/dw/core.c | 29 ++++++++++-------------------
- drivers/dma/dw/regs.h |  5 +----
- 2 files changed, 11 insertions(+), 23 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index 86e55ab..840f0da 100644
---- a/drivers/dma/dw/core.c
-+++ b/drivers/dma/dw/core.c
-@@ -46,9 +46,9 @@
- 		u8 _dmsize = _is_slave ? _sconfig->dst_maxburst :	\
- 			DW_DMA_MSIZE_16;			\
- 		u8 _dms = (_dwc->direction == DMA_MEM_TO_DEV) ?		\
--			_dwc->p_master : _dwc->m_master;		\
-+			_dwc->dws.p_master : _dwc->dws.m_master;	\
- 		u8 _sms = (_dwc->direction == DMA_DEV_TO_MEM) ?		\
--			_dwc->p_master : _dwc->m_master;		\
-+			_dwc->dws.p_master : _dwc->dws.m_master;	\
- 								\
- 		(DWC_CTLL_DST_MSIZE(_dmsize)			\
- 		 | DWC_CTLL_SRC_MSIZE(_smsize)			\
-@@ -140,8 +140,8 @@ static void dwc_initialize(struct dw_dma_chan *dwc)
- 	if (test_bit(DW_DMA_IS_INITIALIZED, &dwc->flags))
- 		return;
- 
--	cfghi |= DWC_CFGH_DST_PER(dwc->dst_id);
--	cfghi |= DWC_CFGH_SRC_PER(dwc->src_id);
-+	cfghi |= DWC_CFGH_DST_PER(dwc->dws.dst_id);
-+	cfghi |= DWC_CFGH_SRC_PER(dwc->dws.src_id);
- 
- 	channel_writel(dwc, CFG_LO, cfglo);
- 	channel_writel(dwc, CFG_HI, cfghi);
-@@ -202,7 +202,7 @@ static inline void dwc_do_single_block(struct dw_dma_chan *dwc,
- static void dwc_dostart(struct dw_dma_chan *dwc, struct dw_desc *first)
- {
- 	struct dw_dma	*dw = to_dw_dma(dwc->chan.device);
--	u8		lms = DWC_LLP_LMS(dwc->m_master);
-+	u8		lms = DWC_LLP_LMS(dwc->dws.m_master);
- 	unsigned long	was_soft_llp;
- 
- 	/* ASSERT:  channel is idle */
-@@ -686,7 +686,7 @@ dwc_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dest, dma_addr_t src,
- 	unsigned int		src_width;
- 	unsigned int		dst_width;
- 	u32			ctllo;
--	u8			lms = DWC_LLP_LMS(dwc->m_master);
-+	u8			lms = DWC_LLP_LMS(dwc->dws.m_master);
- 
- 	dev_vdbg(chan2dev(chan),
- 			"%s: d%pad s%pad l0x%zx f0x%lx\n", __func__,
-@@ -759,7 +759,7 @@ dwc_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
- 	struct dw_desc		*prev;
- 	struct dw_desc		*first;
- 	u32			ctllo;
--	u8			lms = DWC_LLP_LMS(dwc->m_master);
-+	u8			lms = DWC_LLP_LMS(dwc->dws.m_master);
- 	dma_addr_t		reg;
- 	unsigned int		reg_width;
- 	unsigned int		mem_width;
-@@ -912,12 +912,7 @@ bool dw_dma_filter(struct dma_chan *chan, void *param)
- 		return false;
- 
- 	/* We have to copy data since dws can be temporary storage */
--
--	dwc->src_id = dws->src_id;
--	dwc->dst_id = dws->dst_id;
--
--	dwc->m_master = dws->m_master;
--	dwc->p_master = dws->p_master;
-+	memcpy(&dwc->dws, dws, sizeof(struct dw_dma_slave));
- 
- 	return true;
- }
-@@ -1221,11 +1216,7 @@ static void dwc_free_chan_resources(struct dma_chan *chan)
- 	dwc->descs_allocated = 0;
- 
- 	/* Clear custom channel configuration */
--	dwc->src_id = 0;
--	dwc->dst_id = 0;
--
--	dwc->m_master = 0;
--	dwc->p_master = 0;
-+	memset(&dwc->dws, 0, sizeof(struct dw_dma_slave));
- 
- 	clear_bit(DW_DMA_IS_INITIALIZED, &dwc->flags);
- 
-@@ -1323,7 +1314,7 @@ struct dw_cyclic_desc *dw_dma_cyclic_prep(struct dma_chan *chan,
- 	struct dw_cyclic_desc		*retval = NULL;
- 	struct dw_desc			*desc;
- 	struct dw_desc			*last = NULL;
--	u8				lms = DWC_LLP_LMS(dwc->m_master);
-+	u8				lms = DWC_LLP_LMS(dwc->dws.m_master);
- 	unsigned long			was_cyclic;
- 	unsigned int			reg_width;
- 	unsigned int			periods;
-diff --git a/drivers/dma/dw/regs.h b/drivers/dma/dw/regs.h
-index 5b3ea2d..f9e56f9 100644
---- a/drivers/dma/dw/regs.h
-+++ b/drivers/dma/dw/regs.h
-@@ -246,10 +246,7 @@ struct dw_dma_chan {
- 	bool			nollp;
- 
- 	/* custom slave configuration */
--	u8			src_id;
--	u8			dst_id;
--	u8			m_master;
--	u8			p_master;
-+	struct dw_dma_slave	dws;
- 
- 	/* configuration passed via .device_config */
- 	struct dma_slave_config dma_sconfig;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index e213da0..3f8121e 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2522,9 +2522,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 * the trigger, or the MCR RTS bit is cleared.  In the case where
+ 	 * the remote UART is not using CTS auto flow control, we must
+ 	 * have sufficient FIFO entries for the latency of the remote
+-	 * UART to respond.  IOW, at least 32 bytes of FIFO.
++	 * UART to respond.  IOW, at least 16 bytes of FIFO.
+ 	 */
+-	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
++	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 16) {
+ 		up->mcr &= ~UART_MCR_AFE;
+ 		if (termios->c_cflag & CRTSCTS)
+ 			up->mcr |= UART_MCR_AFE;
 -- 
 2.8.0.rc3
