@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 08/12] serial: 8250: enable AFE on ports where FIFO is 16 bytes
-Date: Thu,  7 Apr 2016 23:37:09 +0300
-Message-ID: <1460061433-63750-9-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 11/12] serial: 8250_lpss: enable MSI for Intel Quark
+Date: Thu,  7 Apr 2016 23:37:12 +0300
+Message-ID: <1460061433-63750-12-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,33 +10,43 @@ To: Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@v
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark has 16550A compatible UART with autoflow feature enabled. It has
-only 16 bytes of FIFO. Currently serial8250_do_set_termios() prevents to enable
-autoflow since the minimum requirement of 32 bytes of FIFO size.
-
-Decrease a FIFO size limitation to 16 bytes to allow autoflow control be
-enabled on such UARTs.
+Intel Quark SoC supports MSI for LPSS, in particular for UART. Enable MSI for
+Intel Quark.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_lpss.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index e213da0..3f8121e 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2522,9 +2522,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 * the trigger, or the MCR RTS bit is cleared.  In the case where
- 	 * the remote UART is not using CTS auto flow control, we must
- 	 * have sufficient FIFO entries for the latency of the remote
--	 * UART to respond.  IOW, at least 32 bytes of FIFO.
-+	 * UART to respond.  IOW, at least 16 bytes of FIFO.
- 	 */
--	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-+	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 16) {
- 		up->mcr &= ~UART_MCR_AFE;
- 		if (termios->c_cflag & CRTSCTS)
- 			up->mcr |= UART_MCR_AFE;
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 1095612..1b36d32 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -141,6 +141,17 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
+ 
++static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
++{
++	struct pci_dev *pdev = to_pci_dev(port->dev);
++
++	pci_enable_msi(pdev);
++
++	port->irq = pdev->irq;
++
++	return 0;
++}
++
+ /*****************************************************************************/
+ 
+ static bool lpss8250_dma_filter(struct dma_chan *chan, void *param)
+@@ -260,6 +271,7 @@ static const struct lpss8250_board byt_board = {
+ static const struct lpss8250_board qrk_board = {
+ 	.freq = 44236800,
+ 	.base_baud = 2764800,
++	.setup = qrk_serial_setup,
+ };
+ 
+ #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
 -- 
 2.8.0.rc3
