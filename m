@@ -1,61 +1,37 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v4] serial: 8250_dw: fix wrong logic in dw8250_check_lcr()
-Date: Thu, 7 Apr 2016 16:33:34 +0800
-Message-ID: <57061B5E.7040707@huawei.com>
-References: <1459827166-13861-1-git-send-email-wangkefeng.wang@huawei.com>
- <1459835585-25751-1-git-send-email-wangkefeng.wang@huawei.com>
- <1459853407.12843.7.camel@linux.intel.com>
+From: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 04/10] serial: mps2-uart: add MPS2 UART driver
+Date: Thu, 7 Apr 2016 14:03:54 +0100
+Message-ID: <57065ABA.4080506@arm.com>
+References: <1459519381-34441-1-git-send-email-vladimir.murzin@arm.com>
+ <1459519381-34441-5-git-send-email-vladimir.murzin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1459853407.12843.7.camel@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Noam Camus <noamc@ezchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, xuwei5@hisilicon.com
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1459519381-34441-5-git-send-email-vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: arnd-r2nGTMty4D4@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 2016/4/5 18:50, Andy Shevchenko wrote:
-> On Tue, 2016-04-05 at 13:53 +0800, Kefeng Wang wrote:
->> Commit cdcea058e510 ("serial: 8250_dw: Avoid serial_outx code
->> duplicate
->> with new dw8250_check_lcr()") introduce a wrong logic when write val
->> to
->> LCR reg. When CONFIG_64BIT enabled, __raw_writeq is used
->> unconditionally.
->>
->> The __raw_readq/__raw_writeq is introduced by commit bca2092d7897
->> ("serial:
->> 8250_dw: Use 64-bit access for OCTEON.") for OCTEON, so for
->> !PORT_OCTEON,
->> we better to use coincident write func.
->>
->> Fixes: cdcea058e510("serial: 8250_dw: Avoid serial_outx code
->> duplicate with new dw8250_check_lcr()")
->> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->> ---
->>
->> Changes since v3:
->> - Add patch change log, suggested by Greg Kroah-Hartman.
->> Changes since v2:
->> - Add #ifdef CONFIG_64BIT back, ensure it can be built under 
+On 01/04/16 15:02, Vladimir Murzin wrote:
+> This driver adds support to the UART controller found on ARM MPS2
+> platform.
 > 
-> Oh, true. Since it's a native IO we can't use writeq() helper from io-
-> 64-nonatomic-*. 
-> 
->> configuration lacking readq/writeq.
->> Changes since v1:
->> - Repace '#ifdef CONFIG_64BIT' with IS_ENABLED(CONFIG_64BIT).
->> - Enrich patch log, and add Fixes tag.
-[...]
-> 
-> So, this changes logic to write the value on any 64 platform, using
-> different (non-64-bit) accessors, so, the case to fix is
-> actually "64BIT && !PORT_OCTEON". Perhaps commit message should be
-> amended to point that clearly.
+> Signed-off-by: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/tty/serial/Kconfig       |   12 +
+>  drivers/tty/serial/Makefile      |    1 +
+>  drivers/tty/serial/mps2-uart.c   |  598 ++++++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/serial_core.h |    3 +
+>  4 files changed, 614 insertions(+)
+>  create mode 100644 drivers/tty/serial/mps2-uart.c
 
-Yes, it's more clear. thanks for review and point it out.
+Greg, any comments from you?
 
-To Greg, should I resend it or can you help me to change the patch log when you merge it. Thanks.
+Cheers
+Vladimir
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
