@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 10/12] serial: 8250_lpss: move Quark code from PCI driver
-Date: Thu,  7 Apr 2016 23:37:11 +0300
-Message-ID: <1460061433-63750-11-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 01/12] dmaengine: dw: keep copy of custom slave config in dwc
+Date: Thu,  7 Apr 2016 23:37:02 +0300
+Message-ID: <1460061433-63750-2-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,110 +10,123 @@ To: Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@v
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark has DesignWare UART. Move the code from 8250_pci to 8250_lpss.
+It seems we need to extend custom slave configuration by one more member to
+support Intel Quart UART. It becomes a burden to manage all members of struct
+dw_dma_slave one-by-one.
+
+Replace set of fields by embedding struct dw_dma_slave into struct dw_dma_chan.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_lpss.c | 11 +++++++++++
- drivers/tty/serial/8250/8250_pci.c  | 15 +--------------
- 2 files changed, 12 insertions(+), 14 deletions(-)
+ drivers/dma/dw/core.c | 29 ++++++++++-------------------
+ drivers/dma/dw/regs.h |  5 +----
+ 2 files changed, 11 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index bca4adb..1095612 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -25,6 +25,8 @@
- #define PCI_DEVICE_ID_INTEL_BSW_UART1	0x228a
- #define PCI_DEVICE_ID_INTEL_BSW_UART2	0x228c
+diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
+index 86e55ab..840f0da 100644
+--- a/drivers/dma/dw/core.c
++++ b/drivers/dma/dw/core.c
+@@ -46,9 +46,9 @@
+ 		u8 _dmsize = _is_slave ? _sconfig->dst_maxburst :	\
+ 			DW_DMA_MSIZE_16;			\
+ 		u8 _dms = (_dwc->direction == DMA_MEM_TO_DEV) ?		\
+-			_dwc->p_master : _dwc->m_master;		\
++			_dwc->dws.p_master : _dwc->dws.m_master;	\
+ 		u8 _sms = (_dwc->direction == DMA_DEV_TO_MEM) ?		\
+-			_dwc->p_master : _dwc->m_master;		\
++			_dwc->dws.p_master : _dwc->dws.m_master;	\
+ 								\
+ 		(DWC_CTLL_DST_MSIZE(_dmsize)			\
+ 		 | DWC_CTLL_SRC_MSIZE(_smsize)			\
+@@ -140,8 +140,8 @@ static void dwc_initialize(struct dw_dma_chan *dwc)
+ 	if (test_bit(DW_DMA_IS_INITIALIZED, &dwc->flags))
+ 		return;
  
-+#define PCI_DEVICE_ID_INTEL_QRK_UARTx	0x0936
-+
- #define PCI_DEVICE_ID_INTEL_BDW_UART1	0x9ce3
- #define PCI_DEVICE_ID_INTEL_BDW_UART2	0x9ce4
+-	cfghi |= DWC_CFGH_DST_PER(dwc->dst_id);
+-	cfghi |= DWC_CFGH_SRC_PER(dwc->src_id);
++	cfghi |= DWC_CFGH_DST_PER(dwc->dws.dst_id);
++	cfghi |= DWC_CFGH_SRC_PER(dwc->dws.src_id);
  
-@@ -159,6 +161,9 @@ static int lpss8250_dma_setup(struct lpss8250 *lpss, struct uart_8250_port *port
- 	struct dw_dma_slave *rx_param, *tx_param;
- 	struct device *dev = port->port.dev;
+ 	channel_writel(dwc, CFG_LO, cfglo);
+ 	channel_writel(dwc, CFG_HI, cfghi);
+@@ -202,7 +202,7 @@ static inline void dwc_do_single_block(struct dw_dma_chan *dwc,
+ static void dwc_dostart(struct dw_dma_chan *dwc, struct dw_desc *first)
+ {
+ 	struct dw_dma	*dw = to_dw_dma(dwc->chan.device);
+-	u8		lms = DWC_LLP_LMS(dwc->m_master);
++	u8		lms = DWC_LLP_LMS(dwc->dws.m_master);
+ 	unsigned long	was_soft_llp;
  
-+	if (!param->dma_dev)
-+		return 0;
-+
- 	rx_param = devm_kzalloc(dev, sizeof(*rx_param), GFP_KERNEL);
- 	if (!rx_param)
- 		return -ENOMEM;
-@@ -252,6 +257,11 @@ static const struct lpss8250_board byt_board = {
- 	.setup = byt_serial_setup,
- };
+ 	/* ASSERT:  channel is idle */
+@@ -686,7 +686,7 @@ dwc_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dest, dma_addr_t src,
+ 	unsigned int		src_width;
+ 	unsigned int		dst_width;
+ 	u32			ctllo;
+-	u8			lms = DWC_LLP_LMS(dwc->m_master);
++	u8			lms = DWC_LLP_LMS(dwc->dws.m_master);
  
-+static const struct lpss8250_board qrk_board = {
-+	.freq = 44236800,
-+	.base_baud = 2764800,
-+};
-+
- #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
+ 	dev_vdbg(chan2dev(chan),
+ 			"%s: d%pad s%pad l0x%zx f0x%lx\n", __func__,
+@@ -759,7 +759,7 @@ dwc_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
+ 	struct dw_desc		*prev;
+ 	struct dw_desc		*first;
+ 	u32			ctllo;
+-	u8			lms = DWC_LLP_LMS(dwc->m_master);
++	u8			lms = DWC_LLP_LMS(dwc->dws.m_master);
+ 	dma_addr_t		reg;
+ 	unsigned int		reg_width;
+ 	unsigned int		mem_width;
+@@ -912,12 +912,7 @@ bool dw_dma_filter(struct dma_chan *chan, void *param)
+ 		return false;
  
- static const struct pci_device_id pci_ids[] = {
-@@ -259,6 +269,7 @@ static const struct pci_device_id pci_ids[] = {
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BYT_UART2, byt_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART1, byt_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART2, byt_board),
-+	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_QRK_UARTx, qrk_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART1, byt_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART2, byt_board),
- 	{ },
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index bb4df5d..b94b1ee 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1765,7 +1765,6 @@ pci_wch_ch38x_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
- #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
- #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
--#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
+ 	/* We have to copy data since dws can be temporary storage */
+-
+-	dwc->src_id = dws->src_id;
+-	dwc->dst_id = dws->dst_id;
+-
+-	dwc->m_master = dws->m_master;
+-	dwc->p_master = dws->p_master;
++	memcpy(&dwc->dws, dws, sizeof(struct dw_dma_slave));
  
- #define PCI_VENDOR_ID_SUNIX		0x1fd4
- #define PCI_DEVICE_ID_SUNIX_1999	0x1999
-@@ -2736,7 +2735,6 @@ enum pci_board_num_t {
- 	pbn_ADDIDATA_PCIe_4_3906250,
- 	pbn_ADDIDATA_PCIe_8_3906250,
- 	pbn_ce4100_1_115200,
--	pbn_qrk,
- 	pbn_omegapci,
- 	pbn_NETMOS9900_2s_115200,
- 	pbn_brcm_trumanage,
-@@ -3512,12 +3510,6 @@ static struct pciserial_board pci_boards[] = {
- 		.base_baud	= 921600,
- 		.reg_shift      = 2,
- 	},
--	[pbn_qrk] = {
--		.flags		= FL_BASE0,
--		.num_ports	= 1,
--		.base_baud	= 2764800,
--		.reg_shift	= 2,
--	},
- 	[pbn_omegapci] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 8,
-@@ -3634,6 +3626,7 @@ static const struct pci_device_id blacklist[] = {
- 	{ PCI_VDEVICE(INTEL, 0x0f0c), },
- 	{ PCI_VDEVICE(INTEL, 0x228a), },
- 	{ PCI_VDEVICE(INTEL, 0x228c), },
-+	{ PCI_VDEVICE(INTEL, 0x0936), },
- 	{ PCI_VDEVICE(INTEL, 0x9ce3), },
- 	{ PCI_VDEVICE(INTEL, 0x9ce4), },
- };
-@@ -5303,12 +5296,6 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		pbn_ce4100_1_115200 },
+ 	return true;
+ }
+@@ -1221,11 +1216,7 @@ static void dwc_free_chan_resources(struct dma_chan *chan)
+ 	dwc->descs_allocated = 0;
  
- 	/*
--	 * Intel Quark x1000
--	 */
--	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_qrk },
--	/*
- 	 * Cronyx Omega PCI
- 	 */
- 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
+ 	/* Clear custom channel configuration */
+-	dwc->src_id = 0;
+-	dwc->dst_id = 0;
+-
+-	dwc->m_master = 0;
+-	dwc->p_master = 0;
++	memset(&dwc->dws, 0, sizeof(struct dw_dma_slave));
+ 
+ 	clear_bit(DW_DMA_IS_INITIALIZED, &dwc->flags);
+ 
+@@ -1323,7 +1314,7 @@ struct dw_cyclic_desc *dw_dma_cyclic_prep(struct dma_chan *chan,
+ 	struct dw_cyclic_desc		*retval = NULL;
+ 	struct dw_desc			*desc;
+ 	struct dw_desc			*last = NULL;
+-	u8				lms = DWC_LLP_LMS(dwc->m_master);
++	u8				lms = DWC_LLP_LMS(dwc->dws.m_master);
+ 	unsigned long			was_cyclic;
+ 	unsigned int			reg_width;
+ 	unsigned int			periods;
+diff --git a/drivers/dma/dw/regs.h b/drivers/dma/dw/regs.h
+index 5b3ea2d..f9e56f9 100644
+--- a/drivers/dma/dw/regs.h
++++ b/drivers/dma/dw/regs.h
+@@ -246,10 +246,7 @@ struct dw_dma_chan {
+ 	bool			nollp;
+ 
+ 	/* custom slave configuration */
+-	u8			src_id;
+-	u8			dst_id;
+-	u8			m_master;
+-	u8			p_master;
++	struct dw_dma_slave	dws;
+ 
+ 	/* configuration passed via .device_config */
+ 	struct dma_slave_config dma_sconfig;
 -- 
 2.8.0.rc3
