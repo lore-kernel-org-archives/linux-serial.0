@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 05/12] serial: 8250_dma: switch to new dmaengine_terminate_* API
-Date: Thu,  7 Apr 2016 23:37:06 +0300
-Message-ID: <1460061433-63750-6-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 02/12] dmaengine: dw: provide probe(), remove() stubs for users
+Date: Thu,  7 Apr 2016 23:37:03 +0300
+Message-ID: <1460061433-63750-3-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,43 +10,32 @@ To: Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@v
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Convert dmaengine_terminate_all() calls to synchronous and asynchronous
-versions where appropriate.
+Some users consider DMA optional, thus when driver is not compiled we shouldn't
+prevent compilation of the users. Add stubs for dw_dma_probe() and
+dw_dma_remove().
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dma.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/linux/dma/dw.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 78259d3c..9d80bb1 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -127,7 +127,7 @@ int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
- 		if (dma->rx_running) {
- 			dmaengine_pause(dma->rxchan);
- 			__dma_rx_complete(p);
--			dmaengine_terminate_all(dma->rxchan);
-+			dmaengine_terminate_async(dma->rxchan);
- 		}
- 		return -ETIMEDOUT;
- 	default:
-@@ -230,14 +230,14 @@ void serial8250_release_dma(struct uart_8250_port *p)
- 		return;
+diff --git a/include/linux/dma/dw.h b/include/linux/dma/dw.h
+index f2e538a..ccfd0c3 100644
+--- a/include/linux/dma/dw.h
++++ b/include/linux/dma/dw.h
+@@ -40,8 +40,13 @@ struct dw_dma_chip {
+ };
  
- 	/* Release RX resources */
--	dmaengine_terminate_all(dma->rxchan);
-+	dmaengine_terminate_sync(dma->rxchan);
- 	dma_free_coherent(dma->rxchan->device->dev, dma->rx_size, dma->rx_buf,
- 			  dma->rx_addr);
- 	dma_release_channel(dma->rxchan);
- 	dma->rxchan = NULL;
+ /* Export to the platform drivers */
++#if IS_ENABLED(CONFIG_DW_DMAC_CORE)
+ int dw_dma_probe(struct dw_dma_chip *chip);
+ int dw_dma_remove(struct dw_dma_chip *chip);
++#else
++static inline int dw_dma_probe(struct dw_dma_chip *chip) { return -ENODEV; }
++static inline int dw_dma_remove(struct dw_dma_chip *chip) { return 0; }
++#endif /* CONFIG_DW_DMAC_CORE */
  
- 	/* Release TX resources */
--	dmaengine_terminate_all(dma->txchan);
-+	dmaengine_terminate_sync(dma->txchan);
- 	dma_unmap_single(dma->txchan->device->dev, dma->tx_addr,
- 			 UART_XMIT_SIZE, DMA_TO_DEVICE);
- 	dma_release_channel(dma->txchan);
+ /* DMA API extensions */
+ struct dw_desc;
 -- 
 2.8.0.rc3
