@@ -1,54 +1,66 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 00/12] serial: 8250: split LPSS to 8250_lpss, enable DMA on Quark
-Date: Thu,  7 Apr 2016 23:37:01 +0300
-Message-ID: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 04/12] dmaengine: dw: override LLP support if asked in platform data
+Date: Thu,  7 Apr 2016 23:37:05 +0300
+Message-ID: <1460061433-63750-5-git-send-email-andriy.shevchenko@linux.intel.com>
+References: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-This is combined series of two things:
- - split out the Intel LPSS specific driver from 8250_pci into 8250_lpss
- - enable DMA support on Intel Quark UART
+There is at least one known device, i.e. UART on Intel Galileo, that works
+unreliably in case of use of multi block transfer support in DMA mode.
 
-The patch has been tested on few Intel SoCs / platforms.
+Override autodetection by user provided data.
 
-This is targeting serial subsystem, thus it would be nice to get and Ack from Vinod first.
-Moreover, the series depends on series [1] that is now under review.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/dma/dw/core.c                | 10 +++++++---
+ include/linux/platform_data/dma-dw.h |  2 ++
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
-That's why I ask Vinod to create immutable tag / branch for the [1] and the
-dependants (at least one more, which is sata_dwc_460ex).
-
-[1] http://www.spinics.net/lists/dmaengine/msg08709.html
-
-Andy Shevchenko (12):
-  dmaengine: dw: keep copy of custom slave config in dwc
-  dmaengine: dw: provide probe(), remove() stubs for users
-  dmaengine: dw: set polarity of handshake interface
-  dmaengine: dw: override LLP support if asked in platform data
-  serial: 8250_dma: switch to new dmaengine_terminate_* API
-  serial: 8250_dma: stop ongoing RX DMA on exception
-  serial: 8250_dma: adjust DMA address of the UART
-  serial: 8250: enable AFE on ports where FIFO is 16 bytes
-  serial: 8250_lpss: split LPSS driver to separate module
-  serial: 8250_lpss: move Quark code from PCI driver
-  serial: 8250_lpss: enable MSI for Intel Quark
-  serial: 8250_lpss: enable DMA on Intel Quark UART
-
- drivers/dma/dw/core.c                |  41 ++--
- drivers/dma/dw/regs.h                |   5 +-
- drivers/tty/serial/8250/8250.h       |   2 +
- drivers/tty/serial/8250/8250_dma.c   |  26 ++-
- drivers/tty/serial/8250/8250_lpss.c  | 356 +++++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_pci.c   | 242 +-----------------------
- drivers/tty/serial/8250/8250_port.c  |   4 +-
- drivers/tty/serial/8250/Kconfig      |  14 +-
- drivers/tty/serial/8250/Makefile     |   1 +
- include/linux/dma/dw.h               |   5 +
- include/linux/platform_data/dma-dw.h |   4 +
- 11 files changed, 429 insertions(+), 271 deletions(-)
- create mode 100644 drivers/tty/serial/8250/8250_lpss.c
-
+diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
+index fc77f4e..0617880 100644
+--- a/drivers/dma/dw/core.c
++++ b/drivers/dma/dw/core.c
+@@ -1631,9 +1631,13 @@ int dw_dma_probe(struct dw_dma_chip *chip)
+ 			dwc->block_size = pdata->block_size;
+ 
+ 			/* Check if channel supports multi block transfer */
+-			channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
+-			dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
+-			channel_writel(dwc, LLP, 0);
++			if (pdata->is_nollp) {
++				dwc->nollp = pdata->is_nollp;
++			} else {
++				channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
++				dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
++				channel_writel(dwc, LLP, 0);
++			}
+ 		}
+ 	}
+ 
+diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
+index 6196139..8a9d132 100644
+--- a/include/linux/platform_data/dma-dw.h
++++ b/include/linux/platform_data/dma-dw.h
+@@ -40,6 +40,7 @@ struct dw_dma_slave {
+  * @is_private: The device channels should be marked as private and not for
+  *	by the general purpose DMA channel allocator.
+  * @is_memcpy: The device channels do support memory-to-memory transfers.
++ * @is_nollp: The device channels does not support multi block transfers.
+  * @chan_allocation_order: Allocate channels starting from 0 or 7
+  * @chan_priority: Set channel priority increasing from 0 to 7 or 7 to 0.
+  * @block_size: Maximum block size supported by the controller
+@@ -50,6 +51,7 @@ struct dw_dma_platform_data {
+ 	unsigned int	nr_channels;
+ 	bool		is_private;
+ 	bool		is_memcpy;
++	bool		is_nollp;
+ #define CHAN_ALLOCATION_ASCENDING	0	/* zero to seven */
+ #define CHAN_ALLOCATION_DESCENDING	1	/* seven to zero */
+ 	unsigned char	chan_allocation_order;
 -- 
 2.8.0.rc3
