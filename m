@@ -1,7 +1,7 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 2/8] tty: Replace ASYNC_CTS_FLOW bit and update atomically
-Date: Sat,  9 Apr 2016 17:53:21 -0700
-Message-ID: <1460249607-8014-3-git-send-email-peter@hurleysoftware.com>
+Subject: [PATCH 5/8] tty: Replace ASYNC_SUSPENDED bit and update atomically
+Date: Sat,  9 Apr 2016 17:53:24 -0700
+Message-ID: <1460249607-8014-6-git-send-email-peter@hurleysoftware.com>
 References: <1460249607-8014-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1460249607-8014-1-git-send-email-peter@hurleysoftware.com>
@@ -10,231 +10,139 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Grant Edwards <grant.b.edwards@gmail.com>, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Replace ASYNC_CTS_FLOW bit in the tty_port::flags field with
-TTY_PORT_CTS_FLOW bit in the tty_port::iflags field. Add
-tty_port_set_cts_flow() helper to abstract the atomic bit ops.
+Replace ASYNC_SUSPENDED bit in the tty_port::flags field with
+TTY_PORT_SUSPENDED bit in the tty_port::iflags field. Introduce helpers
+tty_port_set_suspended() and tty_port_suspended() to abstract
+atomic bit ops.
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
- drivers/char/pcmcia/synclink_cs.c  |  5 +----
- drivers/tty/amiserial.c            |  6 ++----
- drivers/tty/cyclades.c             | 10 ++++------
- drivers/tty/isicom.c               |  6 ++----
- drivers/tty/mxser.c                |  4 +---
- drivers/tty/synclink.c             |  7 ++-----
- drivers/tty/synclink_gt.c          |  5 +----
- drivers/tty/synclinkmp.c           |  5 +----
- include/linux/tty.h                | 12 ++++++++++--
- net/irda/ircomm/ircomm_tty_ioctl.c |  3 +--
- 10 files changed, 25 insertions(+), 38 deletions(-)
+ drivers/s390/char/con3215.c      | 12 ++++++------
+ drivers/tty/serial/serial_core.c |  8 ++++----
+ include/linux/tty.h              | 13 +++++++++++++
+ 3 files changed, 23 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
-index bcae5bb..bdf41ac 100644
---- a/drivers/char/pcmcia/synclink_cs.c
-+++ b/drivers/char/pcmcia/synclink_cs.c
-@@ -1466,10 +1466,7 @@ static void mgslpc_change_params(MGSLPC_INFO *info, struct tty_struct *tty)
- 	}
- 	info->timeout += HZ/50;		/* Add .02 seconds of slop */
+diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
+index e7e078b..114fe28 100644
+--- a/drivers/s390/char/con3215.c
++++ b/drivers/s390/char/con3215.c
+@@ -289,7 +289,7 @@ static void raw3215_timeout(unsigned long __data)
  
--	if (cflag & CRTSCTS)
--		info->port.flags |= ASYNC_CTS_FLOW;
--	else
--		info->port.flags &= ~ASYNC_CTS_FLOW;
-+	tty_port_set_cts_flow(&info->port, cflag & CRTSCTS);
- 
- 	if (cflag & CLOCAL)
- 		info->port.flags &= ~ASYNC_CHECK_CD;
-diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index e68208e..92717b0 100644
---- a/drivers/tty/amiserial.c
-+++ b/drivers/tty/amiserial.c
-@@ -727,11 +727,9 @@ static void change_speed(struct tty_struct *tty, struct serial_state *info,
- 	info->IER &= ~UART_IER_MSI;
- 	if (port->flags & ASYNC_HARDPPS_CD)
- 		info->IER |= UART_IER_MSI;
--	if (cflag & CRTSCTS) {
--		port->flags |= ASYNC_CTS_FLOW;
-+	tty_port_set_cts_flow(port, cflag & CRTSCTS);
-+	if (cflag & CRTSCTS)
- 		info->IER |= UART_IER_MSI;
--	} else
--		port->flags &= ~ASYNC_CTS_FLOW;
- 	if (cflag & CLOCAL)
- 		port->flags &= ~ASYNC_CHECK_CD;
- 	else {
-diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
-index d67e542..1a12776 100644
---- a/drivers/tty/cyclades.c
-+++ b/drivers/tty/cyclades.c
-@@ -2083,13 +2083,11 @@ static void cy_set_line_char(struct cyclades_port *info, struct tty_struct *tty)
- 			info->cor1 |= CyPARITY_NONE;
- 
- 		/* CTS flow control flag */
--		if (cflag & CRTSCTS) {
--			info->port.flags |= ASYNC_CTS_FLOW;
-+		tty_port_set_cts_flow(&info->port, cflag & CRTSCTS);
-+		if (cflag & CRTSCTS)
- 			info->cor2 |= CyCtsAE;
--		} else {
--			info->port.flags &= ~ASYNC_CTS_FLOW;
-+		else
- 			info->cor2 &= ~CyCtsAE;
--		}
- 		if (cflag & CLOCAL)
- 			info->port.flags &= ~ASYNC_CHECK_CD;
- 		else
-@@ -2234,7 +2232,7 @@ static void cy_set_line_char(struct cyclades_port *info, struct tty_struct *tty)
+ 	spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
+ 	raw->flags &= ~RAW3215_TIMER_RUNS;
+-	if (!(raw->port.flags & ASYNC_SUSPENDED)) {
++	if (!tty_port_suspended(&raw->port)) {
+ 		raw3215_mk_write_req(raw);
+ 		raw3215_start_io(raw);
+ 		if ((raw->queued_read || raw->queued_write) &&
+@@ -312,7 +312,7 @@ static void raw3215_timeout(unsigned long __data)
+ static inline void raw3215_try_io(struct raw3215_info *raw)
+ {
+ 	if (!(raw->port.flags & ASYNC_INITIALIZED) ||
+-			(raw->port.flags & ASYNC_SUSPENDED))
++	    tty_port_suspended(&raw->port))
+ 		return;
+ 	if (raw->queued_read != NULL)
+ 		raw3215_start_io(raw);
+@@ -494,7 +494,7 @@ static void raw3215_make_room(struct raw3215_info *raw, unsigned int length)
+ 		/* While console is frozen for suspend we have no other
+ 		 * choice but to drop message from the buffer to make
+ 		 * room for even more messages. */
+-		if (raw->port.flags & ASYNC_SUSPENDED) {
++		if (tty_port_suspended(&raw->port)) {
+ 			raw3215_drop_line(raw);
+ 			continue;
  		}
- 		/* As the HW flow control is done in firmware, the driver
- 		   doesn't need to care about it */
--		info->port.flags &= ~ASYNC_CTS_FLOW;
-+		tty_port_set_cts_flow(&info->port, 0);
+@@ -773,7 +773,7 @@ static int raw3215_pm_stop(struct ccw_device *cdev)
+ 	raw = dev_get_drvdata(&cdev->dev);
+ 	spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
+ 	raw3215_make_room(raw, RAW3215_BUFFER_SIZE);
+-	raw->port.flags |= ASYNC_SUSPENDED;
++	tty_port_set_suspended(&raw->port, 1);
+ 	spin_unlock_irqrestore(get_ccwdev_lock(raw->cdev), flags);
+ 	return 0;
+ }
+@@ -786,7 +786,7 @@ static int raw3215_pm_start(struct ccw_device *cdev)
+ 	/* Allow I/O again and flush output buffer. */
+ 	raw = dev_get_drvdata(&cdev->dev);
+ 	spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
+-	raw->port.flags &= ~ASYNC_SUSPENDED;
++	tty_port_set_suspended(&raw->port, 0);
+ 	raw->flags |= RAW3215_FLUSHING;
+ 	raw3215_try_io(raw);
+ 	raw->flags &= ~RAW3215_FLUSHING;
+@@ -859,7 +859,7 @@ static void con3215_flush(void)
+ 	unsigned long flags;
  
- 		/* XON/XOFF/XANY flow control flags */
- 		sw_flow = 0;
-diff --git a/drivers/tty/isicom.c b/drivers/tty/isicom.c
-index 8bf6763..c5f06b5 100644
---- a/drivers/tty/isicom.c
-+++ b/drivers/tty/isicom.c
-@@ -765,11 +765,9 @@ static void isicom_config_port(struct tty_struct *tty)
+ 	raw = raw3215[0];  /* console 3215 is the first one */
+-	if (raw->port.flags & ASYNC_SUSPENDED)
++	if (tty_port_suspended(&raw->port))
+ 		/* The console is still frozen for suspend. */
+ 		if (ccw_device_force_console(raw->cdev))
+ 			/* Forcing didn't work, no panic message .. */
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 2471380..9336067 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -249,7 +249,7 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+ 	 * a DCD drop (hangup) at just the right time.  Clear suspended bit so
+ 	 * we don't try to resume a port that has been shutdown.
+ 	 */
+-	clear_bit(ASYNCB_SUSPENDED, &port->flags);
++	tty_port_set_suspended(port, 0);
  
- 	/* flow control settings ...*/
- 	flow_ctrl = 0;
--	port->port.flags &= ~ASYNC_CTS_FLOW;
--	if (C_CRTSCTS(tty)) {
--		port->port.flags |= ASYNC_CTS_FLOW;
-+	tty_port_set_cts_flow(&port->port, C_CRTSCTS(tty));
-+	if (C_CRTSCTS(tty))
- 		flow_ctrl |= ISICOM_CTSRTS;
--	}
- 	if (I_IXON(tty))
- 		flow_ctrl |= ISICOM_RESPOND_XONXOFF;
- 	if (I_IXOFF(tty))
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index f23c2a1..8f3fdad 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -711,8 +711,8 @@ static int mxser_change_speed(struct tty_struct *tty,
- 	/* CTS flow control flag and modem status interrupts */
- 	info->IER &= ~UART_IER_MSI;
- 	info->MCR &= ~UART_MCR_AFE;
-+	tty_port_set_cts_flow(&info->port, cflag & CRTSCTS);
- 	if (cflag & CRTSCTS) {
--		info->port.flags |= ASYNC_CTS_FLOW;
- 		info->IER |= UART_IER_MSI;
- 		if ((info->type == PORT_16550A) || (info->board->chip_flag)) {
- 			info->MCR |= UART_MCR_AFE;
-@@ -744,8 +744,6 @@ static int mxser_change_speed(struct tty_struct *tty,
- 				}
+ 	/*
+ 	 * Free the transmit buffer page.
+@@ -2007,7 +2007,7 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 		const struct uart_ops *ops = uport->ops;
+ 		int tries;
+ 
+-		set_bit(ASYNCB_SUSPENDED, &port->flags);
++		tty_port_set_suspended(port, 1);
+ 		clear_bit(ASYNCB_INITIALIZED, &port->flags);
+ 
+ 		spin_lock_irq(&uport->lock);
+@@ -2088,7 +2088,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 			console_start(uport->cons);
+ 	}
+ 
+-	if (port->flags & ASYNC_SUSPENDED) {
++	if (tty_port_suspended(port)) {
+ 		const struct uart_ops *ops = uport->ops;
+ 		int ret;
+ 
+@@ -2118,7 +2118,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
  			}
  		}
--	} else {
--		info->port.flags &= ~ASYNC_CTS_FLOW;
+ 
+-		clear_bit(ASYNCB_SUSPENDED, &port->flags);
++		tty_port_set_suspended(port, 0);
  	}
- 	outb(info->MCR, info->ioaddr + UART_MCR);
- 	if (cflag & CLOCAL) {
-diff --git a/drivers/tty/synclink.c b/drivers/tty/synclink.c
-index 3768e5c..0e42901 100644
---- a/drivers/tty/synclink.c
-+++ b/drivers/tty/synclink.c
-@@ -1966,11 +1966,8 @@ static void mgsl_change_params(struct mgsl_struct *info)
- 	}
- 	info->timeout += HZ/50;		/* Add .02 seconds of slop */
  
--	if (cflag & CRTSCTS)
--		info->port.flags |= ASYNC_CTS_FLOW;
--	else
--		info->port.flags &= ~ASYNC_CTS_FLOW;
--		
-+	tty_port_set_cts_flow(&info->port, cflag & CRTSCTS);
-+
- 	if (cflag & CLOCAL)
- 		info->port.flags &= ~ASYNC_CHECK_CD;
- 	else
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index ceeaeb7..5da69d3 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -2576,10 +2576,7 @@ static void change_params(struct slgt_info *info)
- 	}
- 	info->timeout += HZ/50;		/* Add .02 seconds of slop */
- 
--	if (cflag & CRTSCTS)
--		info->port.flags |= ASYNC_CTS_FLOW;
--	else
--		info->port.flags &= ~ASYNC_CTS_FLOW;
-+	tty_port_set_cts_flow(&info->port, cflag & CRTSCTS);
- 
- 	if (cflag & CLOCAL)
- 		info->port.flags &= ~ASYNC_CHECK_CD;
-diff --git a/drivers/tty/synclinkmp.c b/drivers/tty/synclinkmp.c
-index b0cce4b..7a21491 100644
---- a/drivers/tty/synclinkmp.c
-+++ b/drivers/tty/synclinkmp.c
-@@ -2813,10 +2813,7 @@ static void change_params(SLMP_INFO *info)
- 	}
- 	info->timeout += HZ/50;		/* Add .02 seconds of slop */
- 
--	if (cflag & CRTSCTS)
--		info->port.flags |= ASYNC_CTS_FLOW;
--	else
--		info->port.flags &= ~ASYNC_CTS_FLOW;
-+	tty_port_set_cts_flow(&info->port, cflag & CRTSCTS);
- 
- 	if (cflag & CLOCAL)
- 		info->port.flags &= ~ASYNC_CHECK_CD;
+ 	mutex_unlock(&port->mutex);
 diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 4e0dbda0..989d755b 100644
+index 4254dfb..7ac5add 100644
 --- a/include/linux/tty.h
 +++ b/include/linux/tty.h
-@@ -255,7 +255,6 @@ struct tty_port {
- #define TTY_PORT_CTS_FLOW	3	/* h/w flow control enabled */
- #define TTY_PORT_CHECK_CD	4	/* carrier detect enabled */
- 
--
- /*
-  * Where all of the state associated with a tty is kept while the tty
-  * is open.  Since the termios state should be kept even if the tty
-@@ -561,9 +560,18 @@ static inline struct tty_port *tty_port_get(struct tty_port *port)
- /* If the cts flow control is enabled, return true. */
- static inline bool tty_port_cts_enabled(struct tty_port *port)
- {
--	return port->flags & ASYNC_CTS_FLOW;
-+	return test_bit(TTY_PORT_CTS_FLOW, &port->iflags);
+@@ -597,6 +597,19 @@ static inline void tty_port_set_check_carrier(struct tty_port *port, bool val)
+ 		clear_bit(TTY_PORT_CHECK_CD, &port->iflags);
  }
  
-+static inline void tty_port_set_cts_flow(struct tty_port *port, bool val)
++static inline bool tty_port_suspended(struct tty_port *port)
 +{
-+	if (val)
-+		set_bit(TTY_PORT_CTS_FLOW, &port->iflags);
-+	else
-+		clear_bit(TTY_PORT_CTS_FLOW, &port->iflags);
++	return test_bit(TTY_PORT_SUSPENDED, &port->iflags);
 +}
 +
++static inline void tty_port_set_suspended(struct tty_port *port, bool val)
++{
++	if (val)
++		set_bit(TTY_PORT_SUSPENDED, &port->iflags);
++	else
++		clear_bit(TTY_PORT_SUSPENDED, &port->iflags);
++}
 +
  extern struct tty_struct *tty_port_tty_get(struct tty_port *port);
  extern void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty);
  extern int tty_port_carrier_raised(struct tty_port *port);
-diff --git a/net/irda/ircomm/ircomm_tty_ioctl.c b/net/irda/ircomm/ircomm_tty_ioctl.c
-index 8d8fd28..1220973 100644
---- a/net/irda/ircomm/ircomm_tty_ioctl.c
-+++ b/net/irda/ircomm/ircomm_tty_ioctl.c
-@@ -86,15 +86,14 @@ static void ircomm_tty_change_speed(struct ircomm_tty_cb *self,
- 	ircomm_param_request(self, IRCOMM_DATA_RATE, FALSE);
- 
- 	/* CTS flow control flag and modem status interrupts */
-+	tty_port_set_cts_flow(&self->port, cflag & CRTSCTS);
- 	if (cflag & CRTSCTS) {
--		self->port.flags |= ASYNC_CTS_FLOW;
- 		self->settings.flow_control |= IRCOMM_RTS_CTS_IN;
- 		/* This got me. Bummer. Jean II */
- 		if (self->service_type == IRCOMM_3_WIRE_RAW)
- 			net_warn_ratelimited("%s(), enabling RTS/CTS on link that doesn't support it (3-wire-raw)\n",
- 					     __func__);
- 	} else {
--		self->port.flags &= ~ASYNC_CTS_FLOW;
- 		self->settings.flow_control &= ~IRCOMM_RTS_CTS_IN;
- 	}
- 	if (cflag & CLOCAL)
 -- 
 2.8.1
