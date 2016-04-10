@@ -1,437 +1,334 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH] tty: Replace TTY_IO_ERROR bit tests with tty_io_error()
-Date: Sat,  9 Apr 2016 17:06:48 -0700
-Message-ID: <1460246808-6319-1-git-send-email-peter@hurleysoftware.com>
-References: <20160128222216.GA13513@kroah.com>
+Subject: [PATCH] tty: Replace TTY_THROTTLED bit tests with tty_throttled()
+Date: Sat,  9 Apr 2016 17:11:36 -0700
+Message-ID: <1460247096-6552-1-git-send-email-peter@hurleysoftware.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160128222216.GA13513@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-Abstract TTY_IO_ERROR status test treewide with tty_io_error().
-NB: tty->flags uses atomic bit ops; replace non-atomic bit test
-with test_bit().
+Abstract TTY_THROTTLED bit tests with tty_throttled().
 
 Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
 ---
+ drivers/char/pcmcia/synclink_cs.c      | 2 +-
+ drivers/mmc/card/sdio_uart.c           | 2 +-
+ drivers/net/usb/hso.c                  | 2 +-
+ drivers/staging/fwserial/fwserial.c    | 2 +-
+ drivers/staging/speakup/selection.c    | 2 +-
+ drivers/tty/amiserial.c                | 2 +-
+ drivers/tty/hvc/hvc_console.c          | 2 +-
+ drivers/tty/hvc/hvcs.c                 | 2 +-
+ drivers/tty/hvc/hvsi.c                 | 2 +-
+ drivers/tty/moxa.c                     | 2 +-
+ drivers/tty/nozomi.c                   | 2 +-
+ drivers/tty/serial/serial_core.c       | 2 +-
+ drivers/tty/synclink.c                 | 2 +-
+ drivers/tty/synclink_gt.c              | 2 +-
+ drivers/tty/synclinkmp.c               | 2 +-
+ drivers/tty/tty_ioctl.c                | 4 ++--
+ drivers/tty/vt/selection.c             | 2 +-
+ drivers/usb/gadget/function/u_serial.c | 4 ++--
+ drivers/usb/serial/digi_acceleport.c   | 3 +--
+ include/linux/tty.h                    | 5 +++++
+ net/irda/ircomm/ircomm_tty_ioctl.c     | 2 +-
+ 21 files changed, 27 insertions(+), 23 deletions(-)
 
-v3: redo of an earlier patch titled "tty: Use test_bit() with tty->flags"
-v2: rebase
-
- arch/ia64/hp/sim/simserial.c       | 2 +-
- drivers/char/pcmcia/synclink_cs.c  | 2 +-
- drivers/isdn/i4l/isdn_tty.c        | 6 +++---
- drivers/s390/char/tty3270.c        | 4 ++--
- drivers/staging/dgnc/dgnc_tty.c    | 2 +-
- drivers/tty/amiserial.c            | 6 +++---
- drivers/tty/mxser.c                | 7 +++----
- drivers/tty/pty.c                  | 2 +-
- drivers/tty/serial/crisv10.c       | 5 ++---
- drivers/tty/serial/serial_core.c   | 8 ++++----
- drivers/tty/synclink.c             | 4 ++--
- drivers/tty/synclink_gt.c          | 4 ++--
- drivers/tty/synclinkmp.c           | 4 ++--
- drivers/tty/tty_io.c               | 5 ++---
- drivers/tty/tty_port.c             | 2 +-
- include/linux/tty.h                | 5 +++++
- net/irda/ircomm/ircomm_tty.c       | 2 +-
- net/irda/ircomm/ircomm_tty_ioctl.c | 6 +++---
- 18 files changed, 39 insertions(+), 37 deletions(-)
-
-diff --git a/arch/ia64/hp/sim/simserial.c b/arch/ia64/hp/sim/simserial.c
-index e70cade..21fd50d 100644
---- a/arch/ia64/hp/sim/simserial.c
-+++ b/arch/ia64/hp/sim/simserial.c
-@@ -300,7 +300,7 @@ static int rs_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
- 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
- 	    (cmd != TIOCSERCONFIG) && (cmd != TIOCSERGSTRUCT) &&
- 	    (cmd != TIOCMIWAIT)) {
--		if (tty->flags & (1 << TTY_IO_ERROR))
-+		if (tty_io_error(tty))
- 		    return -EIO;
- 	}
- 
 diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
-index 22c2765..825db42 100644
+index 825db42..bcae5bb 100644
 --- a/drivers/char/pcmcia/synclink_cs.c
 +++ b/drivers/char/pcmcia/synclink_cs.c
-@@ -2246,7 +2246,7 @@ static int mgslpc_ioctl(struct tty_struct *tty,
- 
- 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
- 	    (cmd != TIOCMIWAIT)) {
--		if (tty->flags & (1 << TTY_IO_ERROR))
-+		if (tty_io_error(tty))
- 		    return -EIO;
+@@ -2316,7 +2316,7 @@ static void mgslpc_set_termios(struct tty_struct *tty, struct ktermios *old_term
+ 	/* Handle transition away from B0 status */
+ 	if (!(old_termios->c_cflag & CBAUD) && C_BAUD(tty)) {
+ 		info->serial_signals |= SerialSignal_DTR;
+-		if (!C_CRTSCTS(tty) || !test_bit(TTY_THROTTLED, &tty->flags))
++		if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+ 			info->serial_signals |= SerialSignal_RTS;
+ 		spin_lock_irqsave(&info->lock, flags);
+ 		set_signals(info);
+diff --git a/drivers/mmc/card/sdio_uart.c b/drivers/mmc/card/sdio_uart.c
+index 5415056..5af6fb9 100644
+--- a/drivers/mmc/card/sdio_uart.c
++++ b/drivers/mmc/card/sdio_uart.c
+@@ -895,7 +895,7 @@ static void sdio_uart_set_termios(struct tty_struct *tty,
+ 	/* Handle transition away from B0 status */
+ 	if (!(old_termios->c_cflag & CBAUD) && (cflag & CBAUD)) {
+ 		unsigned int mask = TIOCM_DTR;
+-		if (!(cflag & CRTSCTS) || !test_bit(TTY_THROTTLED, &tty->flags))
++		if (!(cflag & CRTSCTS) || !tty_throttled(tty))
+ 			mask |= TIOCM_RTS;
+ 		sdio_uart_set_mctrl(port, mask);
  	}
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index 111d907..4b44586 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -2029,7 +2029,7 @@ static int put_rxbuf_data(struct urb *urb, struct hso_serial *serial)
  
-diff --git a/drivers/isdn/i4l/isdn_tty.c b/drivers/isdn/i4l/isdn_tty.c
-index 947d5c9..f1edc08 100644
---- a/drivers/isdn/i4l/isdn_tty.c
-+++ b/drivers/isdn/i4l/isdn_tty.c
-@@ -1351,7 +1351,7 @@ isdn_tty_tiocmget(struct tty_struct *tty)
+ 	tty = tty_port_tty_get(&serial->port);
  
- 	if (isdn_tty_paranoia_check(info, tty->name, __func__))
- 		return -ENODEV;
--	if (tty->flags & (1 << TTY_IO_ERROR))
-+	if (tty_io_error(tty))
- 		return -EIO;
- 
- 	mutex_lock(&modem_info_mutex);
-@@ -1378,7 +1378,7 @@ isdn_tty_tiocmset(struct tty_struct *tty,
- 
- 	if (isdn_tty_paranoia_check(info, tty->name, __func__))
- 		return -ENODEV;
--	if (tty->flags & (1 << TTY_IO_ERROR))
-+	if (tty_io_error(tty))
- 		return -EIO;
- 
- #ifdef ISDN_DEBUG_MODEM_IOCTL
-@@ -1419,7 +1419,7 @@ isdn_tty_ioctl(struct tty_struct *tty, uint cmd, ulong arg)
- 
- 	if (isdn_tty_paranoia_check(info, tty->name, "isdn_tty_ioctl"))
- 		return -ENODEV;
--	if (tty->flags & (1 << TTY_IO_ERROR))
-+	if (tty_io_error(tty))
- 		return -EIO;
- 	switch (cmd) {
- 	case TCSBRK:   /* SVID version: non-zero arg --> no break */
-diff --git a/drivers/s390/char/tty3270.c b/drivers/s390/char/tty3270.c
-index e96fc7f..080a987 100644
---- a/drivers/s390/char/tty3270.c
-+++ b/drivers/s390/char/tty3270.c
-@@ -1804,7 +1804,7 @@ static int tty3270_ioctl(struct tty_struct *tty, unsigned int cmd,
- 	tp = tty->driver_data;
- 	if (!tp)
- 		return -ENODEV;
--	if (tty->flags & (1 << TTY_IO_ERROR))
-+	if (tty_io_error(tty))
- 		return -EIO;
- 	return kbd_ioctl(tp->kbd, cmd, arg);
- }
-@@ -1818,7 +1818,7 @@ static long tty3270_compat_ioctl(struct tty_struct *tty,
- 	tp = tty->driver_data;
- 	if (!tp)
- 		return -ENODEV;
--	if (tty->flags & (1 << TTY_IO_ERROR))
-+	if (tty_io_error(tty))
- 		return -EIO;
- 	return kbd_ioctl(tp->kbd, cmd, (unsigned long)compat_ptr(arg));
- }
-diff --git a/drivers/staging/dgnc/dgnc_tty.c b/drivers/staging/dgnc/dgnc_tty.c
-index bcd2bdf..5c22159 100644
---- a/drivers/staging/dgnc/dgnc_tty.c
-+++ b/drivers/staging/dgnc/dgnc_tty.c
-@@ -1255,7 +1255,7 @@ static int dgnc_block_til_ready(struct tty_struct *tty,
- 			if (file->f_flags & O_NONBLOCK)
- 				break;
- 
--			if (tty->flags & (1 << TTY_IO_ERROR)) {
-+			if (tty_io_error(tty)) {
- 				retval = -EIO;
- 				break;
- 			}
+-	if (tty && test_bit(TTY_THROTTLED, &tty->flags)) {
++	if (tty && tty_throttled(tty)) {
+ 		tty_kref_put(tty);
+ 		return -1;
+ 	}
+diff --git a/drivers/staging/fwserial/fwserial.c b/drivers/staging/fwserial/fwserial.c
+index 9b23b5c..1f9389d 100644
+--- a/drivers/staging/fwserial/fwserial.c
++++ b/drivers/staging/fwserial/fwserial.c
+@@ -1305,7 +1305,7 @@ static void fwtty_set_termios(struct tty_struct *tty, struct ktermios *old)
+ 	if ((baud == 0) && (old->c_cflag & CBAUD)) {
+ 		port->mctrl &= ~(TIOCM_DTR | TIOCM_RTS);
+ 	} else if ((baud != 0) && !(old->c_cflag & CBAUD)) {
+-		if (C_CRTSCTS(tty) || !test_bit(TTY_THROTTLED, &tty->flags))
++		if (C_CRTSCTS(tty) || !tty_throttled(tty))
+ 			port->mctrl |= TIOCM_DTR | TIOCM_RTS;
+ 		else
+ 			port->mctrl |= TIOCM_DTR;
+diff --git a/drivers/staging/speakup/selection.c b/drivers/staging/speakup/selection.c
+index 41ef099..0149edc 100644
+--- a/drivers/staging/speakup/selection.c
++++ b/drivers/staging/speakup/selection.c
+@@ -150,7 +150,7 @@ static void __speakup_paste_selection(struct work_struct *work)
+ 	add_wait_queue(&vc->paste_wait, &wait);
+ 	while (sel_buffer && sel_buffer_lth > pasted) {
+ 		set_current_state(TASK_INTERRUPTIBLE);
+-		if (test_bit(TTY_THROTTLED, &tty->flags)) {
++		if (tty_throttled(tty)) {
+ 			schedule();
+ 			continue;
+ 		}
 diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index eacf4c9..183e98e 100644
+index 183e98e..e68208e 100644
 --- a/drivers/tty/amiserial.c
 +++ b/drivers/tty/amiserial.c
-@@ -1143,7 +1143,7 @@ static int rs_tiocmget(struct tty_struct *tty)
+@@ -1342,7 +1342,7 @@ static void rs_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
+ 	/* Handle transition away from B0 status */
+ 	if (!(old_termios->c_cflag & CBAUD) && (cflag & CBAUD)) {
+ 		info->MCR |= SER_DTR;
+-		if (!C_CRTSCTS(tty) || !test_bit(TTY_THROTTLED, &tty->flags))
++		if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+ 			info->MCR |= SER_RTS;
+ 		local_irq_save(flags);
+ 		rtsdtr_ctrl(info->MCR);
+diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
+index e46d628..209dad8 100644
+--- a/drivers/tty/hvc/hvc_console.c
++++ b/drivers/tty/hvc/hvc_console.c
+@@ -632,7 +632,7 @@ int hvc_poll(struct hvc_struct *hp)
+ 		goto bail;
  
- 	if (serial_paranoia_check(info, tty->name, "rs_ioctl"))
- 		return -ENODEV;
--	if (tty->flags & (1 << TTY_IO_ERROR))
-+	if (tty_io_error(tty))
- 		return -EIO;
+ 	/* Now check if we can get data (are we throttled ?) */
+-	if (test_bit(TTY_THROTTLED, &tty->flags))
++	if (tty_throttled(tty))
+ 		goto throttled;
  
- 	control = info->MCR;
-@@ -1165,7 +1165,7 @@ static int rs_tiocmset(struct tty_struct *tty, unsigned int set,
+ 	/* If we aren't notifier driven and aren't throttled, we always
+diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
+index 5997b17..3c4d7c2 100644
+--- a/drivers/tty/hvc/hvcs.c
++++ b/drivers/tty/hvc/hvcs.c
+@@ -600,7 +600,7 @@ static int hvcs_io(struct hvcs_struct *hvcsd)
  
- 	if (serial_paranoia_check(info, tty->name, "rs_ioctl"))
- 		return -ENODEV;
--	if (tty->flags & (1 << TTY_IO_ERROR))
-+	if (tty_io_error(tty))
- 		return -EIO;
+ 	hvcs_try_write(hvcsd);
  
- 	local_irq_save(flags);
-@@ -1250,7 +1250,7 @@ static int rs_ioctl(struct tty_struct *tty,
- 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
- 	    (cmd != TIOCSERCONFIG) && (cmd != TIOCSERGSTRUCT) &&
- 	    (cmd != TIOCMIWAIT) && (cmd != TIOCGICOUNT)) {
--		if (tty->flags & (1 << TTY_IO_ERROR))
-+		if (tty_io_error(tty))
- 		    return -EIO;
+-	if (!tty || test_bit(TTY_THROTTLED, &tty->flags)) {
++	if (!tty || tty_throttled(tty)) {
+ 		hvcsd->todo_mask &= ~(HVCS_READ_MASK);
+ 		goto bail;
+ 	} else if (!(hvcsd->todo_mask & (HVCS_READ_MASK)))
+diff --git a/drivers/tty/hvc/hvsi.c b/drivers/tty/hvc/hvsi.c
+index a75146f..96ce6bd 100644
+--- a/drivers/tty/hvc/hvsi.c
++++ b/drivers/tty/hvc/hvsi.c
+@@ -509,7 +509,7 @@ static irqreturn_t hvsi_interrupt(int irq, void *arg)
  	}
  
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 2f12bb9..f23c2a1 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -1334,7 +1334,7 @@ static int mxser_tiocmget(struct tty_struct *tty)
+ 	spin_lock_irqsave(&hp->lock, flags);
+-	if (tty && hp->n_throttle && !test_bit(TTY_THROTTLED, &tty->flags)) {
++	if (tty && hp->n_throttle && !tty_throttled(tty)) {
+ 		/* we weren't hung up and we weren't throttled, so we can
+ 		 * deliver the rest now */
+ 		hvsi_send_overflow(hp);
+diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+index 92982d7..ce521d3 100644
+--- a/drivers/tty/moxa.c
++++ b/drivers/tty/moxa.c
+@@ -1394,7 +1394,7 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
+ 			tty_wakeup(tty);
+ 		}
  
- 	if (tty->index == MXSER_PORTS)
- 		return -ENOIOCTLCMD;
--	if (test_bit(TTY_IO_ERROR, &tty->flags))
-+	if (tty_io_error(tty))
- 		return -EIO;
+-		if (inited && !test_bit(TTY_THROTTLED, &tty->flags) &&
++		if (inited && !tty_throttled(tty) &&
+ 				MoxaPortRxQueue(p) > 0) { /* RX */
+ 			MoxaPortReadData(p);
+ 			tty_schedule_flip(&p->port);
+diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
+index 5cc80b8..d6fd0e8 100644
+--- a/drivers/tty/nozomi.c
++++ b/drivers/tty/nozomi.c
+@@ -826,7 +826,7 @@ static int receive_data(enum port_type index, struct nozomi *dc)
+ 	size = __le32_to_cpu(readl(addr));
+ 	/*  DBG1( "%d bytes port: %d", size, index); */
  
- 	control = info->MCR;
-@@ -1361,7 +1361,7 @@ static int mxser_tiocmset(struct tty_struct *tty,
+-	if (tty && test_bit(TTY_THROTTLED, &tty->flags)) {
++	if (tty && tty_throttled(tty)) {
+ 		DBG1("No room in tty, don't read data, don't ack interrupt, "
+ 			"disable interrupt");
  
- 	if (tty->index == MXSER_PORTS)
- 		return -ENOIOCTLCMD;
--	if (test_bit(TTY_IO_ERROR, &tty->flags))
-+	if (tty_io_error(tty))
- 		return -EIO;
- 
- 	spin_lock_irqsave(&info->slock, flags);
-@@ -1715,8 +1715,7 @@ static int mxser_ioctl(struct tty_struct *tty,
- 		return 0;
- 	}
- 
--	if (cmd != TIOCGSERIAL && cmd != TIOCMIWAIT &&
--			test_bit(TTY_IO_ERROR, &tty->flags))
-+	if (cmd != TIOCGSERIAL && cmd != TIOCMIWAIT && tty_io_error(tty))
- 		return -EIO;
- 
- 	switch (cmd) {
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index e16a49b..d8afe77 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -44,7 +44,7 @@ static void pty_close(struct tty_struct *tty, struct file *filp)
- 	if (tty->driver->subtype == PTY_TYPE_MASTER)
- 		WARN_ON(tty->count > 1);
- 	else {
--		if (test_bit(TTY_IO_ERROR, &tty->flags))
-+		if (tty_io_error(tty))
- 			return;
- 		if (tty->count > 2)
- 			return;
-diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
-index c0172bf54..5469903 100644
---- a/drivers/tty/serial/crisv10.c
-+++ b/drivers/tty/serial/crisv10.c
-@@ -3445,7 +3445,7 @@ rs_ioctl(struct tty_struct *tty,
- 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
- 	    (cmd != TIOCSERCONFIG) && (cmd != TIOCSERGWILD)  &&
- 	    (cmd != TIOCSERSWILD) && (cmd != TIOCSERGSTRUCT)) {
--		if (tty->flags & (1 << TTY_IO_ERROR))
-+		if (tty_io_error(tty))
- 			return -EIO;
- 	}
- 
-@@ -3755,8 +3755,7 @@ block_til_ready(struct tty_struct *tty, struct file * filp,
- 	 * If non-blocking mode is set, or the port is not enabled,
- 	 * then make the check up front and then exit.
- 	 */
--	if ((filp->f_flags & O_NONBLOCK) ||
--	    (tty->flags & (1 << TTY_IO_ERROR))) {
-+	if ((filp->f_flags & O_NONBLOCK) || tty_io_error(tty)) {
- 		info->port.flags |= ASYNC_NORMAL_ACTIVE;
- 		return 0;
- 	}
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index a126a60..67b3950 100644
+index 67b3950..64a5c00 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -969,7 +969,7 @@ static int uart_tiocmget(struct tty_struct *tty)
- 	int result = -EIO;
- 
- 	mutex_lock(&port->mutex);
--	if (!(tty->flags & (1 << TTY_IO_ERROR))) {
-+	if (!tty_io_error(tty)) {
- 		result = uport->mctrl;
- 		spin_lock_irq(&uport->lock);
- 		result |= uport->ops->get_mctrl(uport);
-@@ -989,7 +989,7 @@ uart_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
- 	int ret = -EIO;
- 
- 	mutex_lock(&port->mutex);
--	if (!(tty->flags & (1 << TTY_IO_ERROR))) {
-+	if (!tty_io_error(tty)) {
- 		uart_update_mctrl(uport, set, clear);
- 		ret = 0;
- 	}
-@@ -1238,7 +1238,7 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
- 	if (ret != -ENOIOCTLCMD)
- 		goto out;
- 
--	if (tty->flags & (1 << TTY_IO_ERROR)) {
-+	if (tty_io_error(tty)) {
- 		ret = -EIO;
- 		goto out;
- 	}
-@@ -1257,7 +1257,7 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd,
- 
- 	mutex_lock(&port->mutex);
- 
--	if (tty->flags & (1 << TTY_IO_ERROR)) {
-+	if (tty_io_error(tty)) {
- 		ret = -EIO;
- 		goto out_up;
+@@ -1350,7 +1350,7 @@ static void uart_set_termios(struct tty_struct *tty,
+ 	/* Handle transition away from B0 status */
+ 	else if (!(old_termios->c_cflag & CBAUD) && (cflag & CBAUD)) {
+ 		unsigned int mask = TIOCM_DTR;
+-		if (!(cflag & CRTSCTS) || !test_bit(TTY_THROTTLED, &tty->flags))
++		if (!(cflag & CRTSCTS) || !tty_throttled(tty))
+ 			mask |= TIOCM_RTS;
+ 		uart_set_mctrl(uport, mask);
  	}
 diff --git a/drivers/tty/synclink.c b/drivers/tty/synclink.c
-index f5476e2..8b22772 100644
+index 8b22772..3768e5c 100644
 --- a/drivers/tty/synclink.c
 +++ b/drivers/tty/synclink.c
-@@ -2972,7 +2972,7 @@ static int mgsl_ioctl(struct tty_struct *tty,
- 
- 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
- 	    (cmd != TIOCMIWAIT)) {
--		if (tty->flags & (1 << TTY_IO_ERROR))
-+		if (tty_io_error(tty))
- 		    return -EIO;
- 	}
- 
-@@ -3270,7 +3270,7 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
- 		printk("%s(%d):block_til_ready on %s\n",
- 			 __FILE__,__LINE__, tty->driver->name );
- 
--	if (filp->f_flags & O_NONBLOCK || tty->flags & (1 << TTY_IO_ERROR)){
-+	if (filp->f_flags & O_NONBLOCK || tty_io_error(tty)) {
- 		/* nonblock mode is set or port is not enabled */
- 		port->flags |= ASYNC_NORMAL_ACTIVE;
- 		return 0;
+@@ -3049,7 +3049,7 @@ static void mgsl_set_termios(struct tty_struct *tty, struct ktermios *old_termio
+ 	/* Handle transition away from B0 status */
+ 	if (!(old_termios->c_cflag & CBAUD) && C_BAUD(tty)) {
+ 		info->serial_signals |= SerialSignal_DTR;
+-		if (!C_CRTSCTS(tty) || !test_bit(TTY_THROTTLED, &tty->flags))
++		if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+ 			info->serial_signals |= SerialSignal_RTS;
+ 		spin_lock_irqsave(&info->irq_spinlock,flags);
+ 	 	usc_set_serial_signals(info);
 diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index c0a2f5a..1f7d6d9 100644
+index 1f7d6d9..ceeaeb7 100644
 --- a/drivers/tty/synclink_gt.c
 +++ b/drivers/tty/synclink_gt.c
-@@ -1032,7 +1032,7 @@ static int ioctl(struct tty_struct *tty,
- 
- 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
- 	    (cmd != TIOCMIWAIT)) {
--		if (tty->flags & (1 << TTY_IO_ERROR))
-+		if (tty_io_error(tty))
- 		    return -EIO;
- 	}
- 
-@@ -3269,7 +3269,7 @@ static int block_til_ready(struct tty_struct *tty, struct file *filp,
- 
- 	DBGINFO(("%s block_til_ready\n", tty->driver->name));
- 
--	if (filp->f_flags & O_NONBLOCK || tty->flags & (1 << TTY_IO_ERROR)){
-+	if (filp->f_flags & O_NONBLOCK || tty_io_error(tty)) {
- 		/* nonblock mode is set or port is not enabled */
- 		port->flags |= ASYNC_NORMAL_ACTIVE;
- 		return 0;
+@@ -784,7 +784,7 @@ static void set_termios(struct tty_struct *tty, struct ktermios *old_termios)
+ 	/* Handle transition away from B0 status */
+ 	if (!(old_termios->c_cflag & CBAUD) && C_BAUD(tty)) {
+ 		info->signals |= SerialSignal_DTR;
+- 		if (!C_CRTSCTS(tty) || !test_bit(TTY_THROTTLED, &tty->flags))
++		if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+ 			info->signals |= SerialSignal_RTS;
+ 		spin_lock_irqsave(&info->lock,flags);
+ 	 	set_signals(info);
 diff --git a/drivers/tty/synclinkmp.c b/drivers/tty/synclinkmp.c
-index 90da0c7..e938799 100644
+index e938799..b0cce4b 100644
 --- a/drivers/tty/synclinkmp.c
 +++ b/drivers/tty/synclinkmp.c
-@@ -1261,7 +1261,7 @@ static int ioctl(struct tty_struct *tty,
+@@ -881,7 +881,7 @@ static void set_termios(struct tty_struct *tty, struct ktermios *old_termios)
+ 	/* Handle transition away from B0 status */
+ 	if (!(old_termios->c_cflag & CBAUD) && C_BAUD(tty)) {
+ 		info->serial_signals |= SerialSignal_DTR;
+- 		if (!C_CRTSCTS(tty) || !test_bit(TTY_THROTTLED, &tty->flags))
++		if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+ 			info->serial_signals |= SerialSignal_RTS;
+ 		spin_lock_irqsave(&info->lock,flags);
+ 	 	set_signals(info);
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 23bf5bb..bf36ac9 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -158,7 +158,7 @@ int tty_throttle_safe(struct tty_struct *tty)
+ 	int ret = 0;
  
- 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
- 	    (cmd != TIOCMIWAIT)) {
--		if (tty->flags & (1 << TTY_IO_ERROR))
-+		if (tty_io_error(tty))
- 		    return -EIO;
- 	}
+ 	mutex_lock(&tty->throttle_mutex);
+-	if (!test_bit(TTY_THROTTLED, &tty->flags)) {
++	if (!tty_throttled(tty)) {
+ 		if (tty->flow_change != TTY_THROTTLE_SAFE)
+ 			ret = 1;
+ 		else {
+@@ -189,7 +189,7 @@ int tty_unthrottle_safe(struct tty_struct *tty)
+ 	int ret = 0;
  
-@@ -3285,7 +3285,7 @@ static int block_til_ready(struct tty_struct *tty, struct file *filp,
- 		printk("%s(%d):%s block_til_ready()\n",
- 			 __FILE__,__LINE__, tty->driver->name );
+ 	mutex_lock(&tty->throttle_mutex);
+-	if (test_bit(TTY_THROTTLED, &tty->flags)) {
++	if (tty_throttled(tty)) {
+ 		if (tty->flow_change != TTY_UNTHROTTLE_SAFE)
+ 			ret = 1;
+ 		else {
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index 4dd9dd2..368ce18 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -354,7 +354,7 @@ int paste_selection(struct tty_struct *tty)
+ 	add_wait_queue(&vc->paste_wait, &wait);
+ 	while (sel_buffer && sel_buffer_lth > pasted) {
+ 		set_current_state(TASK_INTERRUPTIBLE);
+-		if (test_bit(TTY_THROTTLED, &tty->flags)) {
++		if (tty_throttled(tty)) {
+ 			schedule();
+ 			continue;
+ 		}
+diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/function/u_serial.c
+index 6af145f..3580f19 100644
+--- a/drivers/usb/gadget/function/u_serial.c
++++ b/drivers/usb/gadget/function/u_serial.c
+@@ -512,7 +512,7 @@ static void gs_rx_push(unsigned long _port)
+ 		req = list_first_entry(queue, struct usb_request, list);
  
--	if (filp->f_flags & O_NONBLOCK || tty->flags & (1 << TTY_IO_ERROR)){
-+	if (filp->f_flags & O_NONBLOCK || tty_io_error(tty)) {
- 		/* nonblock mode is set or port is not enabled */
- 		/* just verify that callout device is not active */
- 		port->flags |= ASYNC_NORMAL_ACTIVE;
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 9b04d72..320dc4d 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1070,7 +1070,7 @@ static ssize_t tty_read(struct file *file, char __user *buf, size_t count,
+ 		/* leave data queued if tty was rx throttled */
+-		if (tty && test_bit(TTY_THROTTLED, &tty->flags))
++		if (tty && tty_throttled(tty))
+ 			break;
  
- 	if (tty_paranoia_check(tty, inode, "tty_read"))
- 		return -EIO;
--	if (!tty || (test_bit(TTY_IO_ERROR, &tty->flags)))
-+	if (!tty || tty_io_error(tty))
- 		return -EIO;
- 
- 	/* We want to wait for the line discipline to sort out in this
-@@ -1245,8 +1245,7 @@ static ssize_t tty_write(struct file *file, const char __user *buf,
- 
- 	if (tty_paranoia_check(tty, file_inode(file), "tty_write"))
- 		return -EIO;
--	if (!tty || !tty->ops->write ||
--		(test_bit(TTY_IO_ERROR, &tty->flags)))
-+	if (!tty || !tty->ops->write ||	tty_io_error(tty))
- 			return -EIO;
- 	/* Short term debug to catch buggy drivers */
- 	if (tty->ops->write_room == NULL)
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index dbcca30..9127c54 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -364,7 +364,7 @@ int tty_port_block_til_ready(struct tty_port *port,
- 
- 	/* if non-blocking mode is set we can pass directly to open unless
- 	   the port has just hung up or is in another error state */
--	if (tty->flags & (1 << TTY_IO_ERROR)) {
-+	if (tty_io_error(tty)) {
- 		port->flags |= ASYNC_NORMAL_ACTIVE;
- 		return 0;
- 	}
+ 		switch (req->status) {
+@@ -579,7 +579,7 @@ static void gs_rx_push(unsigned long _port)
+ 	 * from starving ... but it's not clear that case ever happens.
+ 	 */
+ 	if (!list_empty(queue) && tty) {
+-		if (!test_bit(TTY_THROTTLED, &tty->flags)) {
++		if (!tty_throttled(tty)) {
+ 			if (do_push)
+ 				tasklet_schedule(&port->push);
+ 			else
+diff --git a/drivers/usb/serial/digi_acceleport.c b/drivers/usb/serial/digi_acceleport.c
+index 010a42a..6138b20 100644
+--- a/drivers/usb/serial/digi_acceleport.c
++++ b/drivers/usb/serial/digi_acceleport.c
+@@ -699,8 +699,7 @@ static void digi_set_termios(struct tty_struct *tty,
+ 			/* don't set RTS if using hardware flow control */
+ 			/* and throttling input */
+ 			modem_signals = TIOCM_DTR;
+-			if (!C_CRTSCTS(tty) ||
+-			    !test_bit(TTY_THROTTLED, &tty->flags))
++			if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+ 				modem_signals |= TIOCM_RTS;
+ 			digi_set_modem_signals(port, modem_signals, 1);
+ 		}
 diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 3b09f23..68d829b 100644
+index 68d829b..89f9c91 100644
 --- a/include/linux/tty.h
 +++ b/include/linux/tty.h
-@@ -360,6 +360,11 @@ static inline void tty_set_flow_change(struct tty_struct *tty, int val)
- 	smp_mb();
+@@ -365,6 +365,11 @@ static inline bool tty_io_error(struct tty_struct *tty)
+ 	return test_bit(TTY_IO_ERROR, &tty->flags);
  }
  
-+static inline bool tty_io_error(struct tty_struct *tty)
++static inline bool tty_throttled(struct tty_struct *tty)
 +{
-+	return test_bit(TTY_IO_ERROR, &tty->flags);
++	return test_bit(TTY_THROTTLED, &tty->flags);
 +}
 +
  #ifdef CONFIG_TTY
  extern void console_init(void);
  extern void tty_kref_put(struct tty_struct *tty);
-diff --git a/net/irda/ircomm/ircomm_tty.c b/net/irda/ircomm/ircomm_tty.c
-index da126ee..840b82f 100644
---- a/net/irda/ircomm/ircomm_tty.c
-+++ b/net/irda/ircomm/ircomm_tty.c
-@@ -280,7 +280,7 @@ static int ircomm_tty_block_til_ready(struct ircomm_tty_cb *self,
- 	 * If non-blocking mode is set, or the port is not enabled,
- 	 * then make the check up front and then exit.
- 	 */
--	if (test_bit(TTY_IO_ERROR, &tty->flags)) {
-+	if (tty_io_error(tty)) {
- 		port->flags |= ASYNC_NORMAL_ACTIVE;
- 		return 0;
- 	}
 diff --git a/net/irda/ircomm/ircomm_tty_ioctl.c b/net/irda/ircomm/ircomm_tty_ioctl.c
-index d3687aa..9beb011 100644
+index 9beb011..8d8fd28 100644
 --- a/net/irda/ircomm/ircomm_tty_ioctl.c
 +++ b/net/irda/ircomm/ircomm_tty_ioctl.c
-@@ -190,7 +190,7 @@ int ircomm_tty_tiocmget(struct tty_struct *tty)
- 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
- 	unsigned int result;
- 
--	if (tty->flags & (1 << TTY_IO_ERROR))
-+	if (tty_io_error(tty))
- 		return -EIO;
- 
- 	result =  ((self->settings.dte & IRCOMM_RTS) ? TIOCM_RTS : 0)
-@@ -213,7 +213,7 @@ int ircomm_tty_tiocmset(struct tty_struct *tty,
- {
- 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
- 
--	if (tty->flags & (1 << TTY_IO_ERROR))
-+	if (tty_io_error(tty))
- 		return -EIO;
- 
- 	IRDA_ASSERT(self != NULL, return -1;);
-@@ -362,7 +362,7 @@ int ircomm_tty_ioctl(struct tty_struct *tty,
- 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
- 	    (cmd != TIOCSERCONFIG) && (cmd != TIOCSERGSTRUCT) &&
- 	    (cmd != TIOCMIWAIT) && (cmd != TIOCGICOUNT)) {
--		if (tty->flags & (1 << TTY_IO_ERROR))
-+		if (tty_io_error(tty))
- 		    return -EIO;
+@@ -166,7 +166,7 @@ void ircomm_tty_set_termios(struct tty_struct *tty,
+ 	/* Handle transition away from B0 status */
+ 	if (!(old_termios->c_cflag & CBAUD) && (cflag & CBAUD)) {
+ 		self->settings.dte |= IRCOMM_DTR;
+-		if (!C_CRTSCTS(tty) || !test_bit(TTY_THROTTLED, &tty->flags))
++		if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+ 			self->settings.dte |= IRCOMM_RTS;
+ 		ircomm_param_request(self, IRCOMM_DTE, TRUE);
  	}
- 
 -- 
 2.8.1
