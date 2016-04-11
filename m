@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 04/11] dmaengine: dw: override LLP support if asked in platform data
-Date: Mon, 11 Apr 2016 15:51:04 +0300
-Message-ID: <1460379071-132591-5-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 05/11] serial: 8250_dma: switch to new dmaengine_terminate_* API
+Date: Mon, 11 Apr 2016 15:51:05 +0300
+Message-ID: <1460379071-132591-6-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1460379071-132591-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1460379071-132591-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,57 +10,44 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-There is at least one known device, i.e. UART on Intel Galileo, that works
-unreliably in case of use of multi block transfer support in DMA mode.
+Convert dmaengine_terminate_all() calls to synchronous and asynchronous
+versions where appropriate.
 
-Override autodetection by user provided data.
-
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/dma/dw/core.c                | 10 +++++++---
- include/linux/platform_data/dma-dw.h |  2 ++
- 2 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/tty/serial/8250/8250_dma.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index 57105ca..193ecde 100644
---- a/drivers/dma/dw/core.c
-+++ b/drivers/dma/dw/core.c
-@@ -1634,9 +1634,13 @@ int dw_dma_probe(struct dw_dma_chip *chip)
- 			dwc->block_size = pdata->block_size;
- 
- 			/* Check if channel supports multi block transfer */
--			channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
--			dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
--			channel_writel(dwc, LLP, 0);
-+			if (pdata->is_nollp) {
-+				dwc->nollp = pdata->is_nollp;
-+			} else {
-+				channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
-+				dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
-+				channel_writel(dwc, LLP, 0);
-+			}
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 78259d3c..9d80bb1 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -127,7 +127,7 @@ int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
+ 		if (dma->rx_running) {
+ 			dmaengine_pause(dma->rxchan);
+ 			__dma_rx_complete(p);
+-			dmaengine_terminate_all(dma->rxchan);
++			dmaengine_terminate_async(dma->rxchan);
  		}
- 	}
+ 		return -ETIMEDOUT;
+ 	default:
+@@ -230,14 +230,14 @@ void serial8250_release_dma(struct uart_8250_port *p)
+ 		return;
  
-diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
-index 6196139..8a9d132 100644
---- a/include/linux/platform_data/dma-dw.h
-+++ b/include/linux/platform_data/dma-dw.h
-@@ -40,6 +40,7 @@ struct dw_dma_slave {
-  * @is_private: The device channels should be marked as private and not for
-  *	by the general purpose DMA channel allocator.
-  * @is_memcpy: The device channels do support memory-to-memory transfers.
-+ * @is_nollp: The device channels does not support multi block transfers.
-  * @chan_allocation_order: Allocate channels starting from 0 or 7
-  * @chan_priority: Set channel priority increasing from 0 to 7 or 7 to 0.
-  * @block_size: Maximum block size supported by the controller
-@@ -50,6 +51,7 @@ struct dw_dma_platform_data {
- 	unsigned int	nr_channels;
- 	bool		is_private;
- 	bool		is_memcpy;
-+	bool		is_nollp;
- #define CHAN_ALLOCATION_ASCENDING	0	/* zero to seven */
- #define CHAN_ALLOCATION_DESCENDING	1	/* seven to zero */
- 	unsigned char	chan_allocation_order;
+ 	/* Release RX resources */
+-	dmaengine_terminate_all(dma->rxchan);
++	dmaengine_terminate_sync(dma->rxchan);
+ 	dma_free_coherent(dma->rxchan->device->dev, dma->rx_size, dma->rx_buf,
+ 			  dma->rx_addr);
+ 	dma_release_channel(dma->rxchan);
+ 	dma->rxchan = NULL;
+ 
+ 	/* Release TX resources */
+-	dmaengine_terminate_all(dma->txchan);
++	dmaengine_terminate_sync(dma->txchan);
+ 	dma_unmap_single(dma->txchan->device->dev, dma->tx_addr,
+ 			 UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 	dma_release_channel(dma->txchan);
 -- 
 2.8.0.rc3
