@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 11/11] serial: 8250_lpss: enable DMA on Intel Quark UART
-Date: Mon, 11 Apr 2016 15:51:11 +0300
-Message-ID: <1460379071-132591-12-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 09/11] serial: 8250_lpss: move Quark code from PCI driver
+Date: Mon, 11 Apr 2016 15:51:09 +0300
+Message-ID: <1460379071-132591-10-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1460379071-132591-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1460379071-132591-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,144 +10,110 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-DMA on Intel Quark SoC is a part of UART IP block. Enable it.
+Intel Quark has DesignWare UART. Move the code from 8250_pci to 8250_lpss.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_lpss.c | 61 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 58 insertions(+), 3 deletions(-)
+ drivers/tty/serial/8250/8250_lpss.c | 11 +++++++++++
+ drivers/tty/serial/8250/8250_pci.c  | 15 +--------------
+ 2 files changed, 12 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 4e4abfc..8848b3a 100644
+index 3112e8b..af34189 100644
 --- a/drivers/tty/serial/8250/8250_lpss.c
 +++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -15,7 +15,7 @@
- #include <linux/rational.h>
+@@ -25,6 +25,8 @@
+ #define PCI_DEVICE_ID_INTEL_BSW_UART1	0x228a
+ #define PCI_DEVICE_ID_INTEL_BSW_UART2	0x228c
  
- #include <linux/dmaengine.h>
--#include <linux/platform_data/dma-dw.h>
-+#include <linux/dma/dw.h>
- 
- #include "8250.h"
- 
-@@ -47,6 +47,7 @@ struct lpss8250_board {
- 	unsigned long freq;
- 	unsigned int base_baud;
- 	int (*setup)(struct lpss8250 *, struct uart_port *p);
-+	void (*exit)(struct lpss8250 *);
- };
- 
- struct lpss8250 {
-@@ -55,6 +56,7 @@ struct lpss8250 {
- 
- 	/* DMA parameters */
- 	struct uart_8250_dma dma;
-+	struct dw_dma_chip dma_chip;
- 	struct dw_dma_slave dma_param;
- 	u8 dma_maxburst;
- };
-@@ -137,17 +139,61 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- 	return 0;
- }
- 
-+static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
-+	.nr_channels = 2,
-+	.is_private = true,
-+	.is_nollp = true,
-+	.chan_allocation_order = CHAN_ALLOCATION_ASCENDING,
-+	.chan_priority = CHAN_PRIORITY_ASCENDING,
-+	.block_size = 4095,
-+	.nr_masters = 1,
-+	.data_width = 4,
-+};
++#define PCI_DEVICE_ID_INTEL_QRK_UARTx	0x0936
 +
- static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- {
-+	struct uart_8250_dma *dma = &lpss->dma;
-+	struct dw_dma_chip *chip = &lpss->dma_chip;
-+	struct dw_dma_slave *param = &lpss->dma_param;
- 	struct pci_dev *pdev = to_pci_dev(port->dev);
-+	int ret;
+ #define PCI_DEVICE_ID_INTEL_BDW_UART1	0x9ce3
+ #define PCI_DEVICE_ID_INTEL_BDW_UART2	0x9ce4
  
- 	pci_enable_msi(pdev);
+@@ -152,6 +154,9 @@ static int lpss8250_dma_setup(struct lpss8250 *lpss, struct uart_8250_port *port
+ 	struct dw_dma_slave *rx_param, *tx_param;
+ 	struct device *dev = port->port.dev;
  
- 	port->irq = pdev->irq;
- 
-+	chip->dev = &pdev->dev;
-+	chip->irq = pdev->irq;
-+	chip->regs = pci_ioremap_bar(pdev, 1);
-+	chip->pdata = &qrk_serial_dma_pdata;
-+
-+	/* Falling back to PIO mode if DMA probing fails */
-+	ret = dw_dma_probe(chip);
-+	if (ret)
++	if (!lpss->dma_param.dma_dev)
 +		return 0;
 +
-+	/* Special DMA address for UART */
-+	dma->rx_dma_addr = 0xfffff000;
-+	dma->tx_dma_addr = 0xfffff000;
-+
-+	param->dma_dev = &pdev->dev;
-+	param->src_id = 0;
-+	param->dst_id = 1;
-+	param->polarity = true;
-+
-+	lpss->dma_maxburst = 8;
- 	return 0;
- }
- 
-+static void qrk_serial_exit(struct lpss8250 *lpss)
-+{
-+	struct dw_dma_slave *param = &lpss->dma_param;
-+
-+	if (!param->dma_dev)
-+		return;
-+	dw_dma_remove(&lpss->dma_chip);
-+}
-+
- static bool lpss8250_dma_filter(struct dma_chan *chan, void *param)
- {
- 	struct dw_dma_slave *dws = param;
-@@ -230,22 +276,30 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	ret = lpss8250_dma_setup(lpss, &uart);
- 	if (ret)
--		return ret;
-+		goto err_exit;
- 
- 	ret = serial8250_register_8250_port(&uart);
- 	if (ret < 0)
--		return ret;
-+		goto err_exit;
- 
- 	lpss->line = ret;
- 
- 	pci_set_drvdata(pdev, lpss);
- 	return 0;
-+
-+err_exit:
-+	if (lpss->board->exit)
-+		lpss->board->exit(lpss);
-+	return ret;
- }
- 
- static void lpss8250_remove(struct pci_dev *pdev)
- {
- 	struct lpss8250 *lpss = pci_get_drvdata(pdev);
- 
-+	if (lpss->board->exit)
-+		lpss->board->exit(lpss);
-+
- 	serial8250_unregister_port(lpss->line);
- }
- 
-@@ -259,6 +313,7 @@ static const struct lpss8250_board qrk_board = {
- 	.freq = 44236800,
- 	.base_baud = 2764800,
- 	.setup = qrk_serial_setup,
-+	.exit = qrk_serial_exit,
+ 	rx_param = devm_kzalloc(dev, sizeof(*rx_param), GFP_KERNEL);
+ 	if (!rx_param)
+ 		return -ENOMEM;
+@@ -239,6 +244,11 @@ static const struct lpss8250_board byt_board = {
+ 	.setup = byt_serial_setup,
  };
  
++static const struct lpss8250_board qrk_board = {
++	.freq = 44236800,
++	.base_baud = 2764800,
++};
++
  #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
+ 
+ static const struct pci_device_id pci_ids[] = {
+@@ -246,6 +256,7 @@ static const struct pci_device_id pci_ids[] = {
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BYT_UART2, byt_board),
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART1, byt_board),
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART2, byt_board),
++	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_QRK_UARTx, qrk_board),
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART1, byt_board),
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART2, byt_board),
+ 	{ },
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index bb4df5d..b94b1ee 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1765,7 +1765,6 @@ pci_wch_ch38x_setup(struct serial_private *priv,
+ #define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
+ #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
+ #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
+-#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
+ 
+ #define PCI_VENDOR_ID_SUNIX		0x1fd4
+ #define PCI_DEVICE_ID_SUNIX_1999	0x1999
+@@ -2736,7 +2735,6 @@ enum pci_board_num_t {
+ 	pbn_ADDIDATA_PCIe_4_3906250,
+ 	pbn_ADDIDATA_PCIe_8_3906250,
+ 	pbn_ce4100_1_115200,
+-	pbn_qrk,
+ 	pbn_omegapci,
+ 	pbn_NETMOS9900_2s_115200,
+ 	pbn_brcm_trumanage,
+@@ -3512,12 +3510,6 @@ static struct pciserial_board pci_boards[] = {
+ 		.base_baud	= 921600,
+ 		.reg_shift      = 2,
+ 	},
+-	[pbn_qrk] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 1,
+-		.base_baud	= 2764800,
+-		.reg_shift	= 2,
+-	},
+ 	[pbn_omegapci] = {
+ 		.flags		= FL_BASE0,
+ 		.num_ports	= 8,
+@@ -3634,6 +3626,7 @@ static const struct pci_device_id blacklist[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x0f0c), },
+ 	{ PCI_VDEVICE(INTEL, 0x228a), },
+ 	{ PCI_VDEVICE(INTEL, 0x228c), },
++	{ PCI_VDEVICE(INTEL, 0x0936), },
+ 	{ PCI_VDEVICE(INTEL, 0x9ce3), },
+ 	{ PCI_VDEVICE(INTEL, 0x9ce4), },
+ };
+@@ -5303,12 +5296,6 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 		pbn_ce4100_1_115200 },
+ 
+ 	/*
+-	 * Intel Quark x1000
+-	 */
+-	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_qrk },
+-	/*
+ 	 * Cronyx Omega PCI
+ 	 */
+ 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
 -- 
 2.8.0.rc3
