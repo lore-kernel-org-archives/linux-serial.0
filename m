@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 07/11] serial: 8250: enable AFE on ports where FIFO is 16 bytes
-Date: Mon, 11 Apr 2016 15:51:07 +0300
-Message-ID: <1460379071-132591-8-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 04/11] dmaengine: dw: override LLP support if asked in platform data
+Date: Mon, 11 Apr 2016 15:51:04 +0300
+Message-ID: <1460379071-132591-5-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1460379071-132591-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1460379071-132591-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,49 +10,57 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark has 16550A compatible UART with autoflow feature enabled. It has
-only 16 bytes of FIFO. Currently serial8250_do_set_termios() prevents to enable
-autoflow since the minimum requirement of 32 bytes of FIFO size.
+There is at least one known device, i.e. UART on Intel Galileo, that works
+unreliably in case of use of multi block transfer support in DMA mode.
 
-Drop a FIFO size limitation to allow autoflow control be enabled on such UARTs.
+Override autodetection by user provided data.
 
-While here, comment out UART_CAP_AFE for PORT_AR7 since it wasn't working and
-it will be not a good idea to use it in conjunction with trigger level of 1
-byte.
-
-Suggested-by: Peter Hurley <peter@hurleysoftware.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/dma/dw/core.c                | 10 +++++++---
+ include/linux/platform_data/dma-dw.h |  2 ++
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index e213da0..2c66fbc 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -178,7 +178,7 @@ static const struct serial8250_config uart_config[] = {
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
--		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-+		.flags		= UART_CAP_FIFO /* | UART_CAP_AFE */,
- 	},
- 	[PORT_U6_16550A] = {
- 		.name		= "U6_16550A",
-@@ -2519,12 +2519,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/*
- 	 * MCR-based auto flow control.  When AFE is enabled, RTS will be
- 	 * deasserted when the receive FIFO contains more characters than
--	 * the trigger, or the MCR RTS bit is cleared.  In the case where
--	 * the remote UART is not using CTS auto flow control, we must
--	 * have sufficient FIFO entries for the latency of the remote
--	 * UART to respond.  IOW, at least 32 bytes of FIFO.
-+	 * the trigger, or the MCR RTS bit is cleared.
- 	 */
--	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-+	if (up->capabilities & UART_CAP_AFE) {
- 		up->mcr &= ~UART_MCR_AFE;
- 		if (termios->c_cflag & CRTSCTS)
- 			up->mcr |= UART_MCR_AFE;
+diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
+index 57105ca..193ecde 100644
+--- a/drivers/dma/dw/core.c
++++ b/drivers/dma/dw/core.c
+@@ -1634,9 +1634,13 @@ int dw_dma_probe(struct dw_dma_chip *chip)
+ 			dwc->block_size = pdata->block_size;
+ 
+ 			/* Check if channel supports multi block transfer */
+-			channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
+-			dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
+-			channel_writel(dwc, LLP, 0);
++			if (pdata->is_nollp) {
++				dwc->nollp = pdata->is_nollp;
++			} else {
++				channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
++				dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
++				channel_writel(dwc, LLP, 0);
++			}
+ 		}
+ 	}
+ 
+diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
+index 6196139..8a9d132 100644
+--- a/include/linux/platform_data/dma-dw.h
++++ b/include/linux/platform_data/dma-dw.h
+@@ -40,6 +40,7 @@ struct dw_dma_slave {
+  * @is_private: The device channels should be marked as private and not for
+  *	by the general purpose DMA channel allocator.
+  * @is_memcpy: The device channels do support memory-to-memory transfers.
++ * @is_nollp: The device channels does not support multi block transfers.
+  * @chan_allocation_order: Allocate channels starting from 0 or 7
+  * @chan_priority: Set channel priority increasing from 0 to 7 or 7 to 0.
+  * @block_size: Maximum block size supported by the controller
+@@ -50,6 +51,7 @@ struct dw_dma_platform_data {
+ 	unsigned int	nr_channels;
+ 	bool		is_private;
+ 	bool		is_memcpy;
++	bool		is_nollp;
+ #define CHAN_ALLOCATION_ASCENDING	0	/* zero to seven */
+ #define CHAN_ALLOCATION_DESCENDING	1	/* seven to zero */
+ 	unsigned char	chan_allocation_order;
 -- 
 2.8.0.rc3
