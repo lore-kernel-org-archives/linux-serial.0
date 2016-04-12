@@ -1,41 +1,58 @@
-From: Petr =?iso-8859-2?Q?=A9tetiar?= <ynezz@true.cz>
-Subject: Re: [PATCH v2 0/6] serial: imx: handshaking fixes and improvments
-Date: Tue, 12 Apr 2016 14:17:59 +0200
-Message-ID: <20160412121759.GG26941@ibawizard.net>
-References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <20160411160128.GD26941@ibawizard.net>
- <20160412074622.GQ10108@pengutronix.de>
- <20160412094846.GF26941@ibawizard.net>
- <20160412105856.GR10108@pengutronix.de>
-Reply-To: Petr =?iso-8859-2?Q?=A9tetiar?= <ynezz@true.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20160412105856.GR10108@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?iso-8859-2?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Petr =?iso-8859-2?Q?=A9tetiar?= <ynezz@true.cz>, linux-arm-kernel@lists.infradead.org
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH] tty/serial: atmel: fix hardware handshake selection
+Date: Tue, 12 Apr 2016 14:51:40 +0200
+Message-ID: <1460465500-25396-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Cyrille Pitchen <cyrille.pitchen@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-serial@vger.kernel.org
 
-Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> [2016-04-12 12:58:56]:
+Commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
+hardware handshake is enabled") actually allowed to enable hardware
+handshaking.
+Before, the CRTSCTS flags was silently ignored.
 
-> ok, so UFCR_DCEDTE is set and UCR3_DSR controls the DTR output as
-> intended. What is connected to the respective pin?
-> MX6QDL_PAD_EIM_D25__UART1_DSR_B I think is the one.
+As the DMA controller can't drive RTS (as explain in the commit message).
+Ensure that hardware flow control stays disabled when DMA is used and FIFOs
+are not available.
 
-It's routed out to Apalis SoM pin 120, which is then connected via 22R
-resistor and through SN65C3243DBR RS-232 line driver to header which I use =
-as
-debug/serial console.
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ drivers/tty/serial/atmel_serial.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
--- ynezz
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index d9439e6ab719..954941dd8124 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -274,6 +274,13 @@ static bool atmel_use_dma_rx(struct uart_port *port)
+ 	return atmel_port->use_dma_rx;
+ }
+ 
++static bool atmel_use_fifo(struct uart_port *port)
++{
++	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++
++	return atmel_port->fifo_size;
++}
++
+ static unsigned int atmel_get_lines_status(struct uart_port *port)
+ {
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+@@ -2090,7 +2097,12 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		mode |= ATMEL_US_USMODE_RS485;
+ 	} else if (termios->c_cflag & CRTSCTS) {
+ 		/* RS232 with hardware handshake (RTS/CTS) */
+-		mode |= ATMEL_US_USMODE_HWHS;
++		if (atmel_use_dma_rx(port) && !atmel_use_fifo(port)) {
++			dev_info(port->dev, "not enabling hardware flow control because DMA is used");
++			termios->c_cflag &= ~CRTSCTS;
++		} else {
++			mode |= ATMEL_US_USMODE_HWHS;
++		}
+ 	} else {
+ 		/* RS232 without hadware handshake */
+ 		mode |= ATMEL_US_USMODE_NORMAL;
+-- 
+2.8.0.rc3
