@@ -1,46 +1,65 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 0/6] serial: imx: handshaking fixes and improvments
-Date: Tue, 12 Apr 2016 19:30:32 +0200
-Message-ID: <20160412173032.GS10108@pengutronix.de>
-References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <20160411160128.GD26941@ibawizard.net>
- <20160412074622.GQ10108@pengutronix.de>
- <20160412094846.GF26941@ibawizard.net>
- <20160412105856.GR10108@pengutronix.de>
- <20160412121759.GG26941@ibawizard.net>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH] tty: serial: 8250_omap: do not defer termios changes
+Date: Tue, 12 Apr 2016 11:42:48 -0700
+Message-ID: <570D41A8.3050706@hurleysoftware.com>
+References: <8737r7ght7.fsf@linutronix.de>
+ <570339E8.6010808@hurleysoftware.com> <87y48kftip.fsf@linutronix.de>
+ <570BE48F.60801@hurleysoftware.com> <570BED7B.9080803@linutronix.de>
+ <570C04C1.40201@hurleysoftware.com> <570D2A46.2050106@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20160412121759.GG26941@ibawizard.net>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <570D2A46.2050106@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>, nsekhar@ti.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gVHVlLCBBcHIgMTIsIDIwMTYgYXQgMDI6MTc6NTlQTSArMDIwMCwgUGV0ciDFoHRldGlhciB3
-cm90ZToKPiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRl
-PiBbMjAxNi0wNC0xMiAxMjo1ODo1Nl06Cj4gCj4gPiBvaywgc28gVUZDUl9EQ0VEVEUgaXMgc2V0
-IGFuZCBVQ1IzX0RTUiBjb250cm9scyB0aGUgRFRSIG91dHB1dCBhcwo+ID4gaW50ZW5kZWQuIFdo
-YXQgaXMgY29ubmVjdGVkIHRvIHRoZSByZXNwZWN0aXZlIHBpbj8KPiA+IE1YNlFETF9QQURfRUlN
-X0QyNV9fVUFSVDFfRFNSX0IgSSB0aGluayBpcyB0aGUgb25lLgo+IAo+IEl0J3Mgcm91dGVkIG91
-dCB0byBBcGFsaXMgU29NIHBpbiAxMjAsIHdoaWNoIGlzIHRoZW4gY29ubmVjdGVkIHZpYSAyMlIK
-PiByZXNpc3RvciBhbmQgdGhyb3VnaCBTTjY1QzMyNDNEQlIgUlMtMjMyIGxpbmUgZHJpdmVyIHRv
-IGhlYWRlciB3aGljaCBJIHVzZSBhcwo+IGRlYnVnL3NlcmlhbCBjb25zb2xlLgoKVGhlbiBJIGd1
-ZXNzIHRoZSBwcm9ibGVtIGlzIHRoYXQgdGhlIHJzMjMyLXBhcnRuZXIgYXNzZXJ0cyB0aGUgaW14
-NidzCkRTUiBpbiByZXBseSB0byB0aGUgaW14NiBhc3NlcnRpbmcgRFRSPwoKQmVzdCByZWdhcmRz
-ClV3ZQoKLS0gClBlbmd1dHJvbml4IGUuSy4gICAgICAgICAgICAgICAgICAgICAgICAgICB8IFV3
-ZSBLbGVpbmUtS8O2bmlnICAgICAgICAgICAgfApJbmR1c3RyaWFsIExpbnV4IFNvbHV0aW9ucyAg
-ICAgICAgICAgICAgICAgfCBodHRwOi8vd3d3LnBlbmd1dHJvbml4LmRlLyAgfAoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBt
-YWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9s
-aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On 04/12/2016 10:03 AM, Sebastian Andrzej Siewior wrote:
+> On 04/11/2016 10:10 PM, Peter Hurley wrote:
+>> On 04/11/2016 11:31 AM, Sebastian Andrzej Siewior wrote:
+>>> On 04/11/2016 07:53 PM, Peter Hurley wrote:
+>>>> On 04/11/2016 01:18 AM, John Ogness wrote:
+>>>>> On 2016-04-05, Peter Hurley <peter@hurleysoftware.com> wrote:
+>>>>>> On 03/31/2016 01:41 AM, John Ogness wrote:
+>>>>>>> It has been observed that the TX-DMA can stall
+>>>>>>
+>>>>>> Does this happen on any other OMAP part besides am335x?
+>>>>>> I looked back over the LKML history of this and didn't see
+>>>>>> any other design implicated in this problem.
+>>>>>
+>>>>> I just ran the tests again using 4.6-rc2. I am able to reproduce the
+>>>>> dma-tx stall with am335x/edma and dra7/sdma.
+>>>>
+>>>> I thought we already established sdma was not to be used since
+>>>> the hardware does not actually support pausing without data loss.
+>>>
+>>> This workaround was not invented for sdma but for edma (with am335x).
+>>
+>> According to John above, dra7/sdma requires this workaround.
+> 
+> It was reported by Frans Klaver against am335x
+>  http://lkml.kernel.org/r/20140908183353.GB4686@ci00147.xsens-tech.local
+> 
+> and I managed to reproduce this with his yocto image on dra7 and am335x:
+>  http://lkml.kernel.org/r/20140921204100.GA10111@linutronix.de
+
+[...]
+
+>> - hangs changing some unknown register if tx dma in progress
+>>   (ie., this termios change workaround)
+> 
+> I think some registers are the baud-rate registers which pause engine.
+
+Let's back up here and focus on just this problem for now.
+
+Since this is observable on dra7/sdma, then it's not related to
+the OMAP_DMA_TX_KICK problem. IOW, dropping tx dma support for am335x
+does not make this go away, which is what I was asking.
+
+Now, if the DLL/DLH/MDR1 register writes are causing dma to stall,
+then skipping those if they're unchanged should fix this, and then
+pause/terminating in-progress DMA if any of these registers are being
+written would be acceptable since some data loss is to be expected
+when changing the baud rate without waiting.
