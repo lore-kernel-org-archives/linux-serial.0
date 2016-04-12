@@ -1,17 +1,17 @@
-From: Petr =?iso-8859-2?Q?=A9tetiar?= <ynezz@true.cz>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH v2 0/6] serial: imx: handshaking fixes and improvments
-Date: Tue, 12 Apr 2016 11:48:46 +0200
-Message-ID: <20160412094846.GF26941@ibawizard.net>
+Date: Tue, 12 Apr 2016 12:58:56 +0200
+Message-ID: <20160412105856.GR10108@pengutronix.de>
 References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
  <20160411160128.GD26941@ibawizard.net>
  <20160412074622.GQ10108@pengutronix.de>
-Reply-To: Petr =?iso-8859-2?Q?=A9tetiar?= <ynezz@true.cz>
+ <20160412094846.GF26941@ibawizard.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20160412074622.GQ10108@pengutronix.de>
+In-Reply-To: <20160412094846.GF26941@ibawizard.net>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,88 +21,62 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?iso-8859-2?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Petr =?iso-8859-2?Q?=A9tetiar?= <ynezz@true.cz>, linux-arm-kernel@lists.infradead.org
+To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> [2016-04-12 09:46:22]:
-
-Hi,
-
-> On Mon, Apr 11, 2016 at 06:01:28PM +0200, Petr =A9tetiar wrote:
-> > Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> [2016-03-24 14:24:1=
-9]:
-> > =
-
-> > > Among others it made my i.MX25 stuck when the other side toggles DCD.
-> > > The first 4 patches are fixes that I'd like to see in 4.6-rcX, the la=
-st two
-> > > patches are merge window material.
-> > =
-
-> > just FYI, my i.MX6 board has stopped booting over NFS on 4.6-rc1 and I'=
-ve just
-> > bisected it down to the commit "serial: imx: repair and complete handsh=
-aking"
-> > 90ebc48386, it's leading to the following CPU stall:
-> =
-
-> hmm, I'm confused (because I don't understand it) and something between
-> happy and sad (because both 90ebc48386 and the series that fixes it are
-> mine).
-
-I don't know what's going on, probably something related to the serial IRQs?
-
-> This is an i.MX6 Solo (i.e. only one cpu)?
-
-This is i.MX6 Quad, Toradex Apalis Ixora (imx6q-apalis-ixora.dts).
-
-> Which patch fixes your problem?
-
-First 3 patches:
-
-  [v2,1/6] serial: imx: fix polarity of RI
-  [v2,2/6] serial: imx: let irq handler return IRQ_NONE if no event was han=
-dled
-  [v2,3/6] serial: imx: make sure unhandled irqs are disabled
-
-> Is it enough to revert just the last hunk of 90ebc48386?
-
-Yes, this fixes it also:
-
-	diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-	index 231e7d5..dab081c 100644
-	--- a/drivers/tty/serial/imx.c
-	+++ b/drivers/tty/serial/imx.c
-	@@ -827,11 +827,6 @@ static void imx_set_mctrl(struct uart_port *port, uns=
-igned int mctrl)
-			writel(temp, sport->port.membase + UCR2);
-		}
-	 =
-
-	-       temp =3D readl(sport->port.membase + UCR3) & ~UCR3_DSR;
-	-       if (!(mctrl & TIOCM_DTR))
-	-               temp |=3D UCR3_DSR;
-	-       writel(temp, sport->port.membase + UCR3);
-	-
-		temp =3D readl(sport->port.membase + uts_reg(sport)) & ~UTS_LOOP;
-		if (mctrl & TIOCM_LOOP)
-			temp |=3D UTS_LOOP;
-
-> Do you use fsl,dte-mode for the uart in question?
-
-Yes, from imx6qdl-apalis.dtsi:
-
-	&uart1 {
-		pinctrl-names =3D "default";
-		pinctrl-0 =3D <&pinctrl_uart1_dte &pinctrl_uart1_ctrl>;
-		fsl,dte-mode;
-		fsl,uart-has-rtscts;
-		status =3D "disabled";
-	};
-
-> IMHO patches 1-4 should get applied before 4.6.
-
-Ok, good, but this leaves 4.5 broken, right? Thanks.
-
--- ynezz
+SGVsbG8gUGV0ciwKCk9uIFR1ZSwgQXByIDEyLCAyMDE2IGF0IDExOjQ4OjQ2QU0gKzAyMDAsIFBl
+dHIgxaB0ZXRpYXIgd3JvdGU6Cj4gVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0Bw
+ZW5ndXRyb25peC5kZT4gWzIwMTYtMDQtMTIgMDk6NDY6MjJdOgo+ID4gT24gTW9uLCBBcHIgMTEs
+IDIwMTYgYXQgMDY6MDE6MjhQTSArMDIwMCwgUGV0ciDFoHRldGlhciB3cm90ZToKPiA+ID4gVXdl
+IEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gWzIwMTYtMDMt
+MjQgMTQ6MjQ6MTldOgo+ID4gPiAKPiA+ID4gPiBBbW9uZyBvdGhlcnMgaXQgbWFkZSBteSBpLk1Y
+MjUgc3R1Y2sgd2hlbiB0aGUgb3RoZXIgc2lkZSB0b2dnbGVzIERDRC4KPiA+ID4gPiBUaGUgZmly
+c3QgNCBwYXRjaGVzIGFyZSBmaXhlcyB0aGF0IEknZCBsaWtlIHRvIHNlZSBpbiA0LjYtcmNYLCB0
+aGUgbGFzdCB0d28KPiA+ID4gPiBwYXRjaGVzIGFyZSBtZXJnZSB3aW5kb3cgbWF0ZXJpYWwuCj4g
+PiA+IAo+ID4gPiBqdXN0IEZZSSwgbXkgaS5NWDYgYm9hcmQgaGFzIHN0b3BwZWQgYm9vdGluZyBv
+dmVyIE5GUyBvbiA0LjYtcmMxIGFuZCBJJ3ZlIGp1c3QKPiA+ID4gYmlzZWN0ZWQgaXQgZG93biB0
+byB0aGUgY29tbWl0ICJzZXJpYWw6IGlteDogcmVwYWlyIGFuZCBjb21wbGV0ZSBoYW5kc2hha2lu
+ZyIKPiA+ID4gOTBlYmM0ODM4NiwgaXQncyBsZWFkaW5nIHRvIHRoZSBmb2xsb3dpbmcgQ1BVIHN0
+YWxsOgo+ID4gCj4gPiBobW0sIEknbSBjb25mdXNlZCAoYmVjYXVzZSBJIGRvbid0IHVuZGVyc3Rh
+bmQgaXQpIGFuZCBzb21ldGhpbmcgYmV0d2Vlbgo+ID4gaGFwcHkgYW5kIHNhZCAoYmVjYXVzZSBi
+b3RoIDkwZWJjNDgzODYgYW5kIHRoZSBzZXJpZXMgdGhhdCBmaXhlcyBpdCBhcmUKPiA+IG1pbmUp
+Lgo+IAo+IEkgZG9uJ3Qga25vdyB3aGF0J3MgZ29pbmcgb24sIHByb2JhYmx5IHNvbWV0aGluZyBy
+ZWxhdGVkIHRvIHRoZSBzZXJpYWwgSVJRcz8KPiAKPiA+IFRoaXMgaXMgYW4gaS5NWDYgU29sbyAo
+aS5lLiBvbmx5IG9uZSBjcHUpPwo+IAo+IFRoaXMgaXMgaS5NWDYgUXVhZCwgVG9yYWRleCBBcGFs
+aXMgSXhvcmEgKGlteDZxLWFwYWxpcy1peG9yYS5kdHMpLgo+IAo+ID4gV2hpY2ggcGF0Y2ggZml4
+ZXMgeW91ciBwcm9ibGVtPwo+IAo+IEZpcnN0IDMgcGF0Y2hlczoKPiAKPiAgIFt2MiwxLzZdIHNl
+cmlhbDogaW14OiBmaXggcG9sYXJpdHkgb2YgUkkKPiAgIFt2MiwyLzZdIHNlcmlhbDogaW14OiBs
+ZXQgaXJxIGhhbmRsZXIgcmV0dXJuIElSUV9OT05FIGlmIG5vIGV2ZW50IHdhcyBoYW5kbGVkCj4g
+ICBbdjIsMy82XSBzZXJpYWw6IGlteDogbWFrZSBzdXJlIHVuaGFuZGxlZCBpcnFzIGFyZSBkaXNh
+YmxlZAo+IAo+ID4gSXMgaXQgZW5vdWdoIHRvIHJldmVydCBqdXN0IHRoZSBsYXN0IGh1bmsgb2Yg
+OTBlYmM0ODM4Nj8KPiAKPiBZZXMsIHRoaXMgZml4ZXMgaXQgYWxzbzoKPiAKPiAJZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+
+IAlpbmRleCAyMzFlN2Q1Li5kYWIwODFjIDEwMDY0NAo+IAktLS0gYS9kcml2ZXJzL3R0eS9zZXJp
+YWwvaW14LmMKPiAJKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCj4gCUBAIC04MjcsMTEg
+KzgyNyw2IEBAIHN0YXRpYyB2b2lkIGlteF9zZXRfbWN0cmwoc3RydWN0IHVhcnRfcG9ydCAqcG9y
+dCwgdW5zaWduZWQgaW50IG1jdHJsKQo+IAkJCXdyaXRlbCh0ZW1wLCBzcG9ydC0+cG9ydC5tZW1i
+YXNlICsgVUNSMik7Cj4gCQl9Cj4gCSAKPiAJLSAgICAgICB0ZW1wID0gcmVhZGwoc3BvcnQtPnBv
+cnQubWVtYmFzZSArIFVDUjMpICYgflVDUjNfRFNSOwo+IAktICAgICAgIGlmICghKG1jdHJsICYg
+VElPQ01fRFRSKSkKPiAJLSAgICAgICAgICAgICAgIHRlbXAgfD0gVUNSM19EU1I7Cj4gCS0gICAg
+ICAgd3JpdGVsKHRlbXAsIHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IzKTsKPiAJLQo+IAkJdGVt
+cCA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyB1dHNfcmVnKHNwb3J0KSkgJiB+VVRTX0xP
+T1A7Cj4gCQlpZiAobWN0cmwgJiBUSU9DTV9MT09QKQo+IAkJCXRlbXAgfD0gVVRTX0xPT1A7Cj4g
+Cj4gPiBEbyB5b3UgdXNlIGZzbCxkdGUtbW9kZSBmb3IgdGhlIHVhcnQgaW4gcXVlc3Rpb24/Cj4g
+Cj4gWWVzLCBmcm9tIGlteDZxZGwtYXBhbGlzLmR0c2k6Cj4gCj4gCSZ1YXJ0MSB7Cj4gCQlwaW5j
+dHJsLW5hbWVzID0gImRlZmF1bHQiOwo+IAkJcGluY3RybC0wID0gPCZwaW5jdHJsX3VhcnQxX2R0
+ZSAmcGluY3RybF91YXJ0MV9jdHJsPjsKPiAJCWZzbCxkdGUtbW9kZTsKPiAJCWZzbCx1YXJ0LWhh
+cy1ydHNjdHM7Cj4gCQlzdGF0dXMgPSAiZGlzYWJsZWQiOwo+IAl9OwoKb2ssIHNvIFVGQ1JfRENF
+RFRFIGlzIHNldCBhbmQgVUNSM19EU1IgY29udHJvbHMgdGhlIERUUiBvdXRwdXQgYXMKaW50ZW5k
+ZWQuIFdoYXQgaXMgY29ubmVjdGVkIHRvIHRoZSByZXNwZWN0aXZlIHBpbj8KTVg2UURMX1BBRF9F
+SU1fRDI1X19VQVJUMV9EU1JfQiBJIHRoaW5rIGlzIHRoZSBvbmUuCgo+ID4gSU1ITyBwYXRjaGVz
+IDEtNCBzaG91bGQgZ2V0IGFwcGxpZWQgYmVmb3JlIDQuNi4KPiAKPiBPaywgZ29vZCwgYnV0IHRo
+aXMgbGVhdmVzIDQuNSBicm9rZW4sIHJpZ2h0PyBUaGFua3MuCgpPbmNlIHRoZXkgbGFuZGVkIGlu
+IDQuNi1yYyB0aGV5IGNhbiBhbmQgcHJvYmFibHkgc2hvdWxkIGJlIGJhY2twb3J0ZWQKZm9yIHN0
+YWJsZSwgeWVzLgoKQmVzdCByZWdhcmRzClV3ZQoKLS0gClBlbmd1dHJvbml4IGUuSy4gICAgICAg
+ICAgICAgICAgICAgICAgICAgICB8IFV3ZSBLbGVpbmUtS8O2bmlnICAgICAgICAgICAgfApJbmR1
+c3RyaWFsIExpbnV4IFNvbHV0aW9ucyAgICAgICAgICAgICAgICAgfCBodHRwOi8vd3d3LnBlbmd1
+dHJvbml4LmRlLyAgfAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0
+cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGlu
+Zm8vbGludXgtYXJtLWtlcm5lbAo=
