@@ -1,8 +1,8 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: 8250 dma issues ( was Re: [PATCH] tty: serial: 8250_omap: do not
+Subject: omap uart + dma issues (Re: [PATCH] tty: serial: 8250_omap: do not
  defer termios changes)
-Date: Tue, 12 Apr 2016 16:20:22 -0700
-Message-ID: <570D82B6.2090506@hurleysoftware.com>
+Date: Tue, 12 Apr 2016 17:00:22 -0700
+Message-ID: <570D8C16.1010702@hurleysoftware.com>
 References: <8737r7ght7.fsf@linutronix.de>
  <570339E8.6010808@hurleysoftware.com> <87y48kftip.fsf@linutronix.de>
  <570BE48F.60801@hurleysoftware.com> <570BED7B.9080803@linutronix.de>
@@ -13,126 +13,149 @@ Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <570D2A46.2050106@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, John Ogness <john.ogness@linutronix.de>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Tony Lindgren <tony@atomide.com>, nsekhar@ti.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>, nsekhar@ti.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
-
-[ +to Heikki, Andy ]
 
 On 04/12/2016 10:03 AM, Sebastian Andrzej Siewior wrote:
 > On 04/11/2016 10:10 PM, Peter Hurley wrote:
 >> On 04/11/2016 11:31 AM, Sebastian Andrzej Siewior wrote:
 >>> On 04/11/2016 07:53 PM, Peter Hurley wrote:
+>>>> On 04/11/2016 01:18 AM, John Ogness wrote:
+>>>>> On 2016-04-05, Peter Hurley <peter@hurleysoftware.com> wrote:
+>>>>>> On 03/31/2016 01:41 AM, John Ogness wrote:
+>>>>>>> It has been observed that the TX-DMA can stall
 
-[ elided parts not relevant to shared 8250 dma discussion ]
+[...]
 
->> 2. The question of a spurious uart interrupt with every dma transaction
->>    on am335x is still unanswered.
+>>>> http://www.spinics.net/lists/linux-serial/msg18503.html
+>>>
+>>> This could be fixed. See
+>>>   http://www.spinics.net/lists/linux-serial/msg18517.html
+>>>   http://www.spinics.net/lists/linux-serial/msg18531.html
+>>>
+>>> rmk was fine with it from what I read. So what is missing is just
+>>> refurbish the patch (update the comment according to rmk replay) and
+>>> then we could re-enable DMA again.
+>>
+>> That's hardly all that is required.
 > 
-> This is correct. If I remember correctly, the Intel people see the same
-> thing and I *think* John told me that the Intel manual says that RDI
-> should be disabled if DMA is used.
+> well it would enable pause of RX transfers.
 
-Not sure we're talking about the same thing here?
+I'm not totally convinced of that.
 
-I mean the 100000 UART_IIR_NO_INTs that trigger irq disable, for which
-John submitted a patch to ack these. I've never seen any discussion
-regarding this problem on intel platforms.
+Does a RX timeout ensure that sdma won't try to complete the transaction
+if more rx data arrives between the raising of the rx timeout interrupt
+and the pausing of rx transaction?
 
-An *extra* 6000+ interrupts/sec. for no purpose is bad.
+My guess is not, which will result in lost data in normal operation.
 
 
->> 3. Handling XON/XOFF transmit is mandatory; I don't see a way to do that
->>    without pause/resume.
+> TX would not work (unless TI's HW people can confirm that it will).
+> 
+>> 1. edma pause returns an error if the descriptor has already been retired
+>>    when a pause is attempted. This makes distinguishing between reporting an
+>>    error for unsupported feature indistinguishable from a transient dma
+>>    error that can simply be logged.
+
+Also, this error is reported during normal operation, which is bogus.
+The h/w descriptor has completed but the completion handler has not yet been
+called, so the "error" is expected.
+
+Which, laughably, is the same error code (-EINVAL) omap-dma uses to "creatively"
+report it doesn't actually support pause/resume, despite what dma_get_slave_caps()
+reports.
+
+[ split spurious uart interrupts, XON/XOFF transmit, rx dma flow, and code
+  code maintenance to separate email discussion ]
+
+
+>> IOW, omap dma has turned into one big tangle of workarounds.
 >
-> Yes, not doing XON/XOFF with DMA is not good. Using hardware flow
-> control is one workaround but the user has no chance of knowing that
-> XON/XOFF has been silently disabled.
+> Most of them are hardware shortcomings.
+
+Totally agree. But at some point, working around h/w becomes prohibitive;
+maybe not for a vendor tree, but for mainline, yes.
+
+
+> I think disabling RX-DMA due to missing pause in omap-dma is the only
+> workaround that could be avoided if the driver would be changed.
 > 
-> You could send the x_char after TX transfer completed. After all you
-> need to ensure that you have some space in the TX-FIFO. However if you
-> send a 4KiB of data you might want to send x_char rather sooner than
-> later. I *think* even with pause the hardware will complete the last
-> burst before stopping but is probably better than waiting for the 4KiB
-> to complete.
-
-Yeah, it doesn't need to be the very next byte but a better effort should
-be made. 4k is lot of scroll-by.
-
-
->> 4. Since virt-dma uses tasklets which since 3.8 are no longer serviced
->>    in a timely manner, rx dma is unreliable, since it's often kicked out
->>    to regular interrupts.
+>> Let's start with making a list of which TI designs need which workarounds.
+>>
+>> *am335x*
 > 
-> Is this only the delay in omap_dma_callback() (which you don't have
-> !cyclic) or something else? omap_dma_issue_pending() seems to program
-> the transfer right away. Oh now I see the same thing in
-> edma_completion_handler(). Okay but this affects now everyone that
-> relies on low latency?
-
-Well, the real problem is that only one rx buffer is being used serially,
-first filled by the dma h/w, then emptied by the driver, then resubmitted.
-This creates a gap of time between the dma h/w completion interrupt and
-the resubmission where data loss is possible (and happens).
-
-In the omap8250 rx dma flow:
-
-1. Submit 1st rx dma transaction
-2. h/w finishes 1st rx dma transaction
-3. * schedule completion handler * which may be delayed significant
-   amount of time ( > 1ms )
-4. data still arriving at uart
-5. completion handler eventually runs but too late, so the
-   2nd rx dma transaction is not submitted in time to prevent data
-   loss.
-
-This rx dma flow creates a hard deadline starting at step 3 and ending at
-step 5 above that Linux won't meet.
-
-The normal 8250 dma flow has a similar gap but it seems to be less
-frequent, probably because of the disparity in rx buffer size
-(4k vs. 48 bytes)
-
-In the 8250 rx dma flow:
-
-1. Receive rx interrupt, submit 1st rx dma transaction
-2. h/w finishes 1st rx dma transaction
-3. * schedule completion handler * which may be delayed significant
-   amount of time ( > 1ms )
-4. data still arriving at uart, more rx interrupts received but
-   rx_running == T so no add'l transaction scheduled
-5. completion handler eventually runs but too late, so the
-   2nd rx dma transaction is not submitted in time to prevent data
-   loss.
-
-Instead, both platforms should use a ping-pong scheme (or more generally
-a ring of buffers): initially submit multiple rx buffers which allows
-the dmaengine driver to start immediately on next buffer instead of
-waiting for resubmission. Not sure if this will work though, haven't
-really experimented with it at all yet.
-
-But that's why I'd like to bring the two implementations closer, so that
-maybe both can be replaced with a single rx dma transaction flow.
-[ And perhaps extending tty buffer to perform direct fill, skipping the
-  buffer copy ]
-
-
-
->> 5. omap dma maintenance is not keeping up with baseline dma.
+> I am not sure if the limitations are based on the DMA engine or the
 > 
-> John switched to cylic mode so he was not effected very much non-pause
-> problem.
-
-But the issue here is mainline, so it's still a problem.
-[ FWIW, my main issue with John's approach was the excessive buffering. ]
-
-
-[ On omap workarounds: ]
->> - requires rx dma already queued before UART data ready interrupt
->>   (ie., necessitates completely different irq handler and rx dma completion
->>   handler)
+>> - requires write to tx fifo to trigger tx dma (ie. OMAP_DMA_TX_KICK
+>>   workaround necessitating completely different tx dma completion handler)
 > 
-> true. But is this something that would work for others, too?
+> This one for instance I don't see on BeagleBoard xM / omap36xx and
+> DRA7x. Both (not affected) use SDMA instead EDMA.
 
-Good point, I don't see why not.
-Let's find out what the Intel guys think?
+Ok.
+A goal here would be to use serial8250_tx_dma() for these designs
+(the delayed restore workaround makes that not possible right now though).
+
+> It would be interesting to see if DRA7x is affected once it uses EDMA.
+
+Agree; because if this problem is limited to the am335x then maybe
+tx dma isn't worth doing for that design.
+
+
+[ cut to "8250 dma issues" ]
+
+[ cut to my 1st reply      ]
+
+
+>> - generates spurious uart interrupt for every rx dma transaction
+>>   (ie., necessitates acking every UART interrupt, even UART_IIR_NO_INT)
+>>   _Even with this workaround_, it still generates spurious interrupt warning
+>>   which shuts off interrupts for several ms while logging the error
+>>   message to the console, virtually guaranteeing lost data.
+> 
+> as I wrote in my other email I think RDI should be disabled with DMA
+
+
+I'll test to see if disabling RDI eliminates the UART_IIR_NO_INT spurious
+interrupts.
+
+> according the Intel manual and I *think* someone here reported that
+> they see the same problem.
+
+Let's confirm with the Intel folks that this is true, which would argue
+for using the omap-style rx dma flow.
+
+
+
+>> Can any TI design use the baseline 8250 tx dma transaction flow without
+>> workarounds?  I know the am335x can't; any others?
+>
+> Am335x. Has edma and so has dm814x. According to the code, dm814x based
+> HW does not need it, can this be confirmed? Sekhar, TOny?
+
+Slight misunderstanding; what I mean is what TI designs can actually use
+serial8250_tx_dma()?
+
+Right now, it seems both am335x and dra7 require omap_8250_tx_dma
+(for the delayed_restore workaround and the direct write to tx fifo to
+kick tx dma).
+
+[ Assume that the UART_CAP_RPM functionality is added to serial8250_tx_dma() ]
+
+
+
+>> Can any TI design use the baseline 8250 rx dma transaction flow without
+>> workarounds?  Again, I know the am335x can't; any others?
+> 
+> Is dra7 out? Because that one needs to enqueue RX transfers asap. And
+> omap36xx (aka BeagleBoard-xm) as well. I don't kown anything about
+> later SoCs (like am437x and so on) but I would assume so.
+
+Same misunderstanding but I get what you're saying; to your knowledge
+all the TI designs require the omap-style rx dma transaction flow
+(ie., submit transaction before data is received, and resubmit with each
+completed transaction).
+
+One thing that I wonder about then is the initial condition when
+the port is first opened; what if data is being received then?
