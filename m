@@ -1,49 +1,55 @@
-From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Subject: Re: [PATCH v1 12/12] serial: 8250_lpss: enable DMA on Intel Quark
- UART
-Date: Wed, 13 Apr 2016 16:24:49 +0100
-Message-ID: <1460561089.19152.165.camel@nexus-software.ie>
-References: <1460061433-63750-1-git-send-email-andriy.shevchenko@linux.intel.com>
-	 <1460061433-63750-13-git-send-email-andriy.shevchenko@linux.intel.com>
-	 <1460388795.19152.38.camel@nexus-software.ie>
-	 <CAHp75Vc3P=D47VtQ2JhbcMfx3xam0Bqp9gUW79jt32ThKzVULw@mail.gmail.com>
-	 <1460478320.19152.92.camel@nexus-software.ie>
-	 <1460479824.6620.121.camel@linux.intel.com>
-	 <1460546565.19152.148.camel@nexus-software.ie>
-	 <1460549027.6620.131.camel@linux.intel.com>
-	 <1460558093.19152.151.camel@nexus-software.ie>
-	 <1460558891.6620.147.camel@linux.intel.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: omap uart + dma issues (Re: [PATCH] tty: serial: 8250_omap: do
+ not defer termios changes)
+Date: Wed, 13 Apr 2016 18:14:24 -0700
+Message-ID: <570EEEF0.2070102@hurleysoftware.com>
+References: <8737r7ght7.fsf@linutronix.de>
+ <570339E8.6010808@hurleysoftware.com> <87y48kftip.fsf@linutronix.de>
+ <570BE48F.60801@hurleysoftware.com> <570BED7B.9080803@linutronix.de>
+ <570C04C1.40201@hurleysoftware.com> <570D2A46.2050106@linutronix.de>
+ <570D8C16.1010702@hurleysoftware.com> <570E295B.2030708@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1460558891.6620.147.camel@linux.intel.com>
+In-Reply-To: <570E295B.2030708@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Sekhar Nori <nsekhar@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, John Ogness <john.ogness@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2016-04-13 at 17:48 +0300, Andy Shevchenko wrote:
-> Wait, you mean flow control between DMA controller and UART FIFO, or
-> I
-> misread you?
+On 04/13/2016 04:11 AM, Sekhar Nori wrote:
+> On Wednesday 13 April 2016 05:30 AM, Peter Hurley wrote:
+> 
+>>>> - generates spurious uart interrupt for every rx dma transaction
+>>>>   (ie., necessitates acking every UART interrupt, even UART_IIR_NO_INT)
+>>>>   _Even with this workaround_, it still generates spurious interrupt warning
+>>>>   which shuts off interrupts for several ms while logging the error
+>>>>   message to the console, virtually guaranteeing lost data.
+>>>
+>>> as I wrote in my other email I think RDI should be disabled with DMA
+>>
+>>
+>> I'll test to see if disabling RDI eliminates the UART_IIR_NO_INT spurious
+>> interrupts.
 
-Yup.
+Ok; disabling UART_IER_RDI eliminates the UART_IIR_NO_INT spurious
+interrupts.
 
-It's a while since I read the spec and talked to the relevant people
-but... I have this memory that the FIFO fill signal and DMA block were
-'wired up' @ the AHB level. That would be how the UART and DMA block
-would flow-control each other for descriptor chaining at any rate and
-so one assumes that its active at the block-to-fifo layer.
+However, disabling RDI disables RX timeout as well, so data just sits in
+the RX fifo with no way to get it out. AFAICT that's a showstopper.
 
-Meh I don't have the UART EAS anymore to comment in detail.. 
 
-I think the right thing to do is to be safe (so I'll ACK your series)
-and then run an experiment to push the burst size upwards. If you have
-the EAS handy though it might be worthwhile working out when the DMA
-block will flow-control w/r to the FIFO fill level - I *think* (but
-can't prove since I don't have the EAS anymore) that it's safe to push
-that value higher.
+>>> according the Intel manual and I *think* someone here reported that
+>>> they see the same problem.
+>>
+>> Let's confirm with the Intel folks that this is true, which would argue
+>> for using the omap-style rx dma flow.
+> 
+> Andy Shevchenko pointed this out here: https://lkml.org/lkml/2016/2/23/588
 
----
-bod
+which Andy noted as well:
+
+On 02/23/2016 08:56 AM, Andy Shevchenko wrote:
+> The problem is that we have no separate bit to control timeout
+> interrupts from UART.
