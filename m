@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 3/4] serial: doc: .(un)throttle() are serialized by the tty layer
-Date: Thu, 14 Apr 2016 11:08:10 +0200
-Message-ID: <1460624891-8389-4-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 1/4] serial: doc: Re-add paragraph documenting uart_console_write()
+Date: Thu, 14 Apr 2016 11:08:08 +0200
+Message-ID: <1460624891-8389-2-git-send-email-geert+renesas@glider.be>
 References: <1460624891-8389-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-doc-owner@vger.kernel.org>
 In-Reply-To: <1460624891-8389-1-git-send-email-geert+renesas@glider.be>
@@ -10,39 +10,35 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-serial@vger.kernel.org, linux-doc@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Document that .(un)throttle() are serialized with each other, and with
-termios modification by the tty layer.
+Commit 834392a7d92677ff ("serial: doc: Un-document non-existing
+uart_write_console()") removed a paragraph about a helper function that
+seemed to never exist.
 
-Reported-by: Peter Hurley <peter@hurleysoftware.com>
+Peter Hurley pointed out that the function does exist, but is called
+differently. Re-add the paragraph, with the function name corrected.
+
+Fixes: 834392a7d92677ff ("serial: doc: Un-document non-existing uart_write_console()")
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- Documentation/serial/driver | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ Documentation/serial/driver | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-index 03b703cf93182216..7fb80682e394eb76 100644
+index 65de49a4b39e5baf..03369d076ca20a98 100644
 --- a/Documentation/serial/driver
 +++ b/Documentation/serial/driver
-@@ -137,7 +137,8 @@ hardware.
- 	should be sent to the serial port.
- 	This will be called only if hardware assisted flow control is enabled.
+@@ -28,6 +28,11 @@ The serial core provides a few helper functions.  This includes identifing
+ the correct port structure (via uart_get_console) and decoding command line
+ arguments (uart_parse_options).
  
--	Locking: none.
-+	Locking: serialized with .unthrottle() and termios modification by the
-+		 tty layer.
++There is also a helper function (uart_console_write) which performs a
++character by character write, translating newlines to CRLF sequences.
++Driver writers are recommended to use this function rather than implementing
++their own version.
++
  
-   unthrottle(port)
- 	Notify the serial driver that characters can now be sent to the serial
-@@ -145,7 +146,8 @@ hardware.
- 	disciplines.
- 	This will be called only if hardware assisted flow control is enabled.
- 
--	Locking: none.
-+	Locking: serialized with .throttle() and termios modification by the
-+		 tty layer.
- 
-   send_xchar(port,ch)
- 	Transmit a high priority character, even if the port is stopped.
+ Locking
+ -------
 -- 
 1.9.1
 
