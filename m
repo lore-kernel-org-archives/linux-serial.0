@@ -1,43 +1,44 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 2/4] serial: doc: .(un)throttle() depends on hardware assisted flow control
-Date: Thu, 14 Apr 2016 11:08:09 +0200
-Message-ID: <1460624891-8389-3-git-send-email-geert+renesas@glider.be>
-References: <1460624891-8389-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1460624891-8389-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-doc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jonathan Corbet <corbet@lwn.net>, Peter Hurley <peter@hurleysoftware.com>, Russell King <rmk@arm.linux.org.uk>
-Cc: linux-serial@vger.kernel.org, linux-doc@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v5 00/10] Support for Cortex-M Prototyping System
+Date: Thu, 14 Apr 2016 11:39:45 +0200
+Message-ID: <20160414093945.GA15250@linaro.org>
+References: <1459519381-34441-1-git-send-email-vladimir.murzin@arm.com>
+ <570F593D.6040809@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <570F593D.6040809@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vladimir Murzin <vladimir.murzin@arm.com>
+Cc: arnd@arndb.de, linux@arm.linux.org.uk, gregkh@linuxfoundation.org, tglx@linutronix.de, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, mark.rutland@arm.com, gnomes@lxorguk.ukuu.org.uk, peter@hurleysoftware.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, devicetree@vger.kernel.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com, robh+dt@kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Document that .throttle() and .unthrottle() are relevant only if
-hardware assisted flow control is enabled.
+On Thu, Apr 14, 2016 at 09:47:57AM +0100, Vladimir Murzin wrote:
+> Hi,
+> 
+> On 01/04/16 15:02, Vladimir Murzin wrote:
+> > Hi,
+> > 
+> > This patch series provides the basic support for running ucLinux on V2M-MPS2
+> > platform.
+> > 
+> > With these patches applied ucLinux can be run on both HW and FVP models
+> > with Cortex-M3/M4/M7 configurations.
+> 
+> Any objection to get it merged?
+> 
+> Sudeep Holla noticed that there is merge conflict against linux-next
+> with PIC32 uart (Makefile and serial_core.h), so should I provide
+> conflict resolution or do rebase on someone's branch?
+> 
+> Anyway, I'd be glad to know how it should be processed further?
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- Documentation/serial/driver | 2 ++
- 1 file changed, 2 insertions(+)
+This patchset should go through the arm-soc tree. Any conflicts resulting
+from a merge *after* your patchset is in the arm-soc tree is no longer your
+problem.
 
-diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-index 03369d076ca20a98..03b703cf93182216 100644
---- a/Documentation/serial/driver
-+++ b/Documentation/serial/driver
-@@ -135,6 +135,7 @@ hardware.
- 	Notify the serial driver that input buffers for the line discipline are
- 	close to full, and it should somehow signal that no more characters
- 	should be sent to the serial port.
-+	This will be called only if hardware assisted flow control is enabled.
- 
- 	Locking: none.
- 
-@@ -142,6 +143,7 @@ hardware.
- 	Notify the serial driver that characters can now be sent to the serial
- 	port without fear of overrunning the input buffers of the line
- 	disciplines.
-+	This will be called only if hardware assisted flow control is enabled.
- 
- 	Locking: none.
- 
--- 
-1.9.1
+So IOW, if your patchset applies to arm-soc and Arnd is ok to pick it, then
+everything is fine.
 
+  -- Daniel
