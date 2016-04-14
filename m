@@ -1,82 +1,38 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH] tty: serial: 8250_omap: do not defer termios changes
-Date: Thu, 14 Apr 2016 09:03:49 -0700
-Message-ID: <570FBF65.4070306@hurleysoftware.com>
-References: <8737r7ght7.fsf@linutronix.de>
- <570339E8.6010808@hurleysoftware.com> <87y48kftip.fsf@linutronix.de>
- <570BE48F.60801@hurleysoftware.com> <570BED7B.9080803@linutronix.de>
- <570C04C1.40201@hurleysoftware.com> <570D2A46.2050106@linutronix.de>
- <570D41A8.3050706@hurleysoftware.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/5] doc: DT: Add Generic Serial Device Tree Bindings
+Date: Thu, 14 Apr 2016 12:21:09 -0500
+Message-ID: <20160414172109.GA15021@rob-hp-laptop>
+References: <1460636003-3011-1-git-send-email-geert+renesas@glider.be>
+ <1460636003-3011-2-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <570D41A8.3050706@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, John Ogness <john.ogness@linutronix.de>, nsekhar@ti.com
-Cc: Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1460636003-3011-2-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Barry Song <baohua-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>, Qipan Li <Qipan.Li-kQvG35nSl+M@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 04/12/2016 11:42 AM, Peter Hurley wrote:
-> On 04/12/2016 10:03 AM, Sebastian Andrzej Siewior wrote:
->> On 04/11/2016 10:10 PM, Peter Hurley wrote:
->>> On 04/11/2016 11:31 AM, Sebastian Andrzej Siewior wrote:
->>>> On 04/11/2016 07:53 PM, Peter Hurley wrote:
->>>>> On 04/11/2016 01:18 AM, John Ogness wrote:
->>>>>> On 2016-04-05, Peter Hurley <peter@hurleysoftware.com> wrote:
->>>>>>> On 03/31/2016 01:41 AM, John Ogness wrote:
->>>>>>>> It has been observed that the TX-DMA can stall
->>>>>>>
->>>>>>> Does this happen on any other OMAP part besides am335x?
->>>>>>> I looked back over the LKML history of this and didn't see
->>>>>>> any other design implicated in this problem.
->>>>>>
->>>>>> I just ran the tests again using 4.6-rc2. I am able to reproduce the
->>>>>> dma-tx stall with am335x/edma and dra7/sdma.
-
-What "test" is reproducing this problem?
-
-
->>>>> I thought we already established sdma was not to be used since
->>>>> the hardware does not actually support pausing without data loss.
->>>>
->>>> This workaround was not invented for sdma but for edma (with am335x).
->>>
->>> According to John above, dra7/sdma requires this workaround.
->>
->> It was reported by Frans Klaver against am335x
->>  http://lkml.kernel.org/r/20140908183353.GB4686@ci00147.xsens-tech.local
->>
->> and I managed to reproduce this with his yocto image on dra7 and am335x:
->>  http://lkml.kernel.org/r/20140921204100.GA10111@linutronix.de
-
-I overlooked Sebastian's statement from that message:
-
-This includes
-changing the baudrate (not by yocto but the driver sets it to 0 and then
-to the requested one) and this seems to be responsible for the "bad
-bytes".
-
-What is changing the baud rate to 0? How about get a stack trace for that?
-
-
-
-> [...]
+On Thu, Apr 14, 2016 at 02:13:19PM +0200, Geert Uytterhoeven wrote:
+> Document a set of generic properties for describing UARTs in a
+> device tree:
+>   1. The GPIO modem control properties are currently duplicated across
+>      hardware-specific binding documentation,
+>   2. The property for dedicated RTS/CTS hardware flow control lines is
+>      already supported by several drivers, albeit with a vendor-specific
+>      prefix, hence make it generic.
 > 
->>> - hangs changing some unknown register if tx dma in progress
->>>   (ie., this termios change workaround)
->>
->> I think some registers are the baud-rate registers which pause engine.
-> 
-> Let's back up here and focus on just this problem for now.
-> 
-> Since this is observable on dra7/sdma, then it's not related to
-> the OMAP_DMA_TX_KICK problem. IOW, dropping tx dma support for am335x
-> does not make this go away, which is what I was asking.
-> 
-> Now, if the DLL/DLH/MDR1 register writes are causing dma to stall,
-> then skipping those if they're unchanged should fix this, and then
-> pause/terminating in-progress DMA if any of these registers are being
-> written would be acceptable since some data loss is to be expected
-> when changing the baud rate without waiting.
-> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> ---
+>  .../devicetree/bindings/serial/serial.txt          | 61 ++++++++++++++++++++++
+>  1 file changed, 61 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/serial.txt
+
+Thanks for doing this.
+
+Acked-by: Rob Herring <rob-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
