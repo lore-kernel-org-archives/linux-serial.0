@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH 2/5] serial: imx: Use generic uart-has-rtscts DT property
-Date: Thu, 14 Apr 2016 14:13:20 +0200
-Message-ID: <1460636003-3011-3-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 5/5] serial: sirf: Use generic uart-has-rtscts DT property
+Date: Thu, 14 Apr 2016 14:13:23 +0200
+Message-ID: <1460636003-3011-6-git-send-email-geert+renesas@glider.be>
 References: <1460636003-3011-1-git-send-email-geert+renesas@glider.be>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1460636003-3011-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
@@ -10,8 +10,8 @@ To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Convert the Freescale IMX UART driver from using the vendor-specific
-"fsl,uart-has-rtscts" to the generic "uart-has-rtscts" DT property, as
+Convert the SiRF UART driver from using the vendor-specific
+"sirf,uart-has-rtscts" to the generic "uart-has-rtscts" DT property, as
 documented by the Generic Serial DT Bindings.
 
 The old vendor-specific property is still recognized by the driver for
@@ -19,45 +19,50 @@ backwards compatibility, but deprecated.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 ---
- Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 4 ++--
- drivers/tty/serial/imx.c                                  | 3 ++-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/serial/sirf-uart.txt | 8 ++++----
+ drivers/tty/serial/sirfsoc_uart.c                      | 3 ++-
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-index ed94c217c98d18a6..1e82802d8e322db5 100644
---- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-@@ -6,7 +6,7 @@ Required properties:
- - interrupts : Should contain uart interrupt
+diff --git a/Documentation/devicetree/bindings/serial/sirf-uart.txt b/Documentation/devicetree/bindings/serial/sirf-uart.txt
+index 67e2a0aeb0429572..1e48bbbeecc6dd27 100644
+--- a/Documentation/devicetree/bindings/serial/sirf-uart.txt
++++ b/Documentation/devicetree/bindings/serial/sirf-uart.txt
+@@ -9,9 +9,9 @@ Required properties:
+ - clocks : Should contain uart clock number
  
  Optional properties:
--- fsl,uart-has-rtscts : Indicate the uart has rts and cts
-+- uart-has-rtscts : Indicate the uart has rts and cts
- - fsl,irda-mode : Indicate the uart supports irda mode
- - fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
-                   in DCE mode by default.
-@@ -24,6 +24,6 @@ uart1: serial@73fbc000 {
- 	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
- 	reg = <0x73fbc000 0x4000>;
- 	interrupts = <31>;
--	fsl,uart-has-rtscts;
+-- sirf,uart-has-rtscts: we have hardware flow controller pins in hardware
+-- rts-gpios: RTS pin for USP-based UART if sirf,uart-has-rtscts is true
+-- cts-gpios: CTS pin for USP-based UART if sirf,uart-has-rtscts is true
++- uart-has-rtscts: we have hardware flow controller pins in hardware
++- rts-gpios: RTS pin for USP-based UART if uart-has-rtscts is true
++- cts-gpios: CTS pin for USP-based UART if uart-has-rtscts is true
+ 
+ Example:
+ 
+@@ -28,7 +28,7 @@ On the board-specific dts, we can put rts-gpios and cts-gpios like
+ 
+ usp@b0090000 {
+ 	compatible = "sirf,prima2-usp-uart";
+-	sirf,uart-has-rtscts;
 +	uart-has-rtscts;
- 	fsl,dte-mode;
+ 	rts-gpios = <&gpio 15 0>;
+ 	cts-gpios = <&gpio 46 0>;
  };
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 231e7d5caf6c1845..9fc09d3de1e2428b 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1927,7 +1927,8 @@ static int serial_imx_probe_dt(struct imx_port *sport,
- 	}
- 	sport->port.line = ret;
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index 1d1c0b9857ff6900..b186c9c4f850cc16 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -1293,7 +1293,8 @@ static int sirfsoc_uart_probe(struct platform_device *pdev)
+ 	sirfport->uart_reg = (struct sirfsoc_uart_register *)match->data;
  
--	if (of_get_property(np, "fsl,uart-has-rtscts", NULL))
-+	if (of_get_property(np, "uart-has-rtscts", NULL) ||
-+	    of_get_property(np, "fsl,uart-has-rtscts", NULL) /* deprecated */)
- 		sport->have_rtscts = 1;
- 
- 	if (of_get_property(np, "fsl,dte-mode", NULL))
+ 	sirfport->hw_flow_ctrl =
+-		of_property_read_bool(np, "sirf,uart-has-rtscts");
++		of_property_read_bool(np, "uart-has-rtscts") ||
++		of_property_read_bool(np, "sirf,uart-has-rtscts") /* deprecated */;
+ 	if (of_device_is_compatible(np, "sirf,prima2-uart") ||
+ 		of_device_is_compatible(np, "sirf,atlas7-uart"))
+ 		sirfport->uart_reg->uart_type = SIRF_REAL_UART;
 -- 
 1.9.1
 
