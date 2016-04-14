@@ -1,171 +1,138 @@
-From: zengzhaoxiu@163.com
-Subject: [PATCH V3 00/29] bitops: add parity functions
-Date: Thu, 14 Apr 2016 12:18:40 +0800
-Message-ID: <1460607523-6560-1-git-send-email-zengzhaoxiu@163.com>
-References: <1460601525-3822-1-git-send-email-zengzhaoxiu@163.com>
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <1460601525-3822-1-git-send-email-zengzhaoxiu@163.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: linux-kernel@vger.kernel.org
-Cc: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-c6x-dev@linux-c6x.org, linux-cris-kernel@axis.com, uclinux-h8-devel@lists.sourceforge.jp, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-metag@vger.kernel.org, linux-mips@linux-mips.org, linux-am33-list@redhat.com, linux@lists.openrisc.net, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, qat-linux@i
+From: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 00/10] Support for Cortex-M Prototyping System
+Date: Thu, 14 Apr 2016 09:47:57 +0100
+Message-ID: <570F593D.6040809@arm.com>
+References: <1459519381-34441-1-git-send-email-vladimir.murzin@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1459519381-34441-1-git-send-email-vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: arnd-r2nGTMty4D4@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+Hi,
 
-When I do "grep parity -r linux", I found many parity calculations
-distributed in many drivers.
+On 01/04/16 15:02, Vladimir Murzin wrote:
+> Hi,
+> 
+> This patch series provides the basic support for running ucLinux on V2M-MPS2
+> platform.
+> 
+> With these patches applied ucLinux can be run on both HW and FVP models
+> with Cortex-M3/M4/M7 configurations.
 
-This patch series does:
-  1. provide generic and architecture-specific parity calculations
-  2. remove drivers' local parity calculations, use bitops' parity
-     functions instead
-  3. replace "hweightN(x) & 1" with "parityN(x)" to improve readability,
-     and improve performance on some CPUs that without popcount support
+Any objection to get it merged?
 
-I did not use GCC's __builtin_parity* functions, based on the following reasons:
-  1. I don't know where to identify which version of GCC from the beginning
-     supported __builtin_parity for the architecture.
-  2. For the architecture that doesn't has popcount instruction, GCC instead use
-     "call __paritysi2" (__paritydi2 for 64-bits). So if use __builtin_parity, we must
-     provide __paritysi2 and __paritydi2 functions for these architectures.
-     Additionally, parity4,8,16 might be "__builtin_parity(x & mask)", but the "& mask"
-     operation is totally unnecessary.
-  3. For the architecture that has popcount instruction, we do the same things.
-  4. For powerpc, sparc, and x86, we do runtime patching to use popcount instruction
-     if the CPU support.
+Sudeep Holla noticed that there is merge conflict against linux-next
+with PIC32 uart (Makefile and serial_core.h), so should I provide
+conflict resolution or do rebase on someone's branch?
 
-I have compiled successfully with x86_64_defconfig, i386_defconfig, pseries_defconfig
-and sparc64_defconfig.
+Anyway, I'd be glad to know how it should be processed further?
 
-Changes to v2:
-- Add constant PARITY_MAGIC (proposals by Sam Ravnborg)
-- Add include/asm-generic/bitops/popc-parity.h (proposals by Chris Metcalf)
-- Tile uses popc-parity.h directly
-- Mips uses popc-parity.h if has usable __builtin_popcount
-- Add few comments in powerpc's and sparc's parity.S
-- X86, remove custom calling convention
+Thanks
+Vladimir
 
-Changes to v1:
-- Add runtime patching for powerpc, sparc, and x86
-- Avr32 use grenric parity too
-- Fix error in ssfdc's patch, and add commit message
-- Don't change the original code composition of drivers/iio/gyro/adxrs450.c
-- Directly assignement to phy_cap.parity in drivers/scsi/isci/phy.c
+> 
+> Board description:
+> 
+> http://infocenter.arm.com/help/topic/com.arm.doc.100112_0100_03_en/arm_versatile_express_cortex_m_prototyping_system_(v2m_mps2)_technical_reference_manual_100112_0100_03_en.pdf
+> 
+> Application notes (cover Cortex-M3/M4/M7):
+> 
+> http://infocenter.arm.com/help/topic/com.arm.doc.dai0385a/DAI0385A_cortex_m3_on_v2m_mps2.pdf
+> http://infocenter.arm.com/help/topic/com.arm.doc.dai0386a/DAI0386A_cortex_m4_on_v2m_mps2.pdf
+> http://infocenter.arm.com/help/topic/com.arm.doc.dai0399a/DAI0399A_cortex_m7_on_v2m_mps2.pdf
+> http://infocenter.arm.com/help/topic/com.arm.doc.dai0400a/DAI0400A_cortex_m7_on_v2m_mps2.pdf
+> 
+> Cortex-M System Design Kit (referenced as CMDK from documents above):
+> 
+> http://infocenter.arm.com/help/topic/com.arm.doc.ddi0479c/DDI0479C_cortex_m_system_design_kit_r1p0_trm.pdf
+> 
+> I'd be happy to hear any feedback/comments on this series!
+> 
+> Changelog:
+> 
+>   v4  -> v5:
+>       - rebased on 4.6-rc1
+>       - updated mps2-uart per Peter
+>       - s/COFIG_ARCH_MPS2/CONFIG_ARCH_MPS under arm/mach-vexpress
+> 
+>   v3  -> v4:
+>       - rebased on 4.5-rc5
+>       - updated mps2-uart per Andy, Alan and Peter
+>       - dropped "zombie" EMBEDDED from defconfg per Arnd
+>       - moved mps2 under vexpress umbrella per Arnd
+>       - updated device-tree sources per Arnd
+>       - dropped low-level debug support, seems earlycon works well for that
+> 
+>   v2  -> v3:
+>       - rebased on 4.5-rc4
+>       - fixes for mps2-timer per Thomas
+>       - swicthed back to ttyMPS naming per Greg
+> 
+>   v1  -> v2:
+>       - rebased on 4.5-rc2
+>       - fixes for mps2-timer per Daniel and Rob (added Ack from Daniel)
+>       - fixes for mps2-uart per Greg and Andy
+> 
+>   RFC -> v1:
+>       - dropped RFC tag
+>       - rebased on 4.4-rc3
+>       - added Acks from Rob
+>       - updated mps2-timer per Daniel
+>       - fixed build failures reported by 0-DAY kernel test infrastructure
+> 
+> Thanks!
+> 
+> Vladimir Murzin (10):
+>   dt-bindings: document the MPS2 timer bindings
+>   clockevents/drivers: add MPS2 Timer driver
+>   dt-bindings: document the MPS2 UART bindings
+>   serial: mps2-uart: add MPS2 UART driver
+>   serial: mps2-uart: add support for early console
+>   ARM: vexpress/mps2: introduce MPS2 platform
+>   ARM: configs: add MPS2 defconfig
+>   ARM: dts: introduce MPS2 AN385/AN386
+>   ARM: dts: introduce MPS2 AN399/AN400
+>   MAINTAINERS: Update ARM Versatile Express platform entry
+> 
+>  .../devicetree/bindings/serial/arm,mps2-uart.txt   |   19 +
+>  .../devicetree/bindings/timer/arm,mps2-timer.txt   |   28 +
+>  MAINTAINERS                                        |    1 +
+>  arch/arm/Kconfig                                   |    8 +
+>  arch/arm/Makefile                                  |    1 +
+>  arch/arm/boot/dts/Makefile                         |    3 +
+>  arch/arm/boot/dts/mps2-an385.dts                   |   92 +++
+>  arch/arm/boot/dts/mps2-an399.dts                   |   92 +++
+>  arch/arm/boot/dts/mps2.dtsi                        |  242 ++++++++
+>  arch/arm/configs/mps2_defconfig                    |  109 ++++
+>  arch/arm/mach-vexpress/Makefile                    |    4 +-
+>  arch/arm/mach-vexpress/Makefile.boot               |    3 +
+>  arch/arm/mach-vexpress/v2m-mps2.c                  |   21 +
+>  drivers/clocksource/Kconfig                        |    6 +
+>  drivers/clocksource/Makefile                       |    1 +
+>  drivers/clocksource/mps2-timer.c                   |  275 +++++++++
+>  drivers/tty/serial/Kconfig                         |   13 +
+>  drivers/tty/serial/Makefile                        |    1 +
+>  drivers/tty/serial/mps2-uart.c                     |  626 ++++++++++++++++++++
+>  include/uapi/linux/serial_core.h                   |    3 +
+>  20 files changed, 1547 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.txt
+>  create mode 100644 Documentation/devicetree/bindings/timer/arm,mps2-timer.txt
+>  create mode 100644 arch/arm/boot/dts/mps2-an385.dts
+>  create mode 100644 arch/arm/boot/dts/mps2-an399.dts
+>  create mode 100644 arch/arm/boot/dts/mps2.dtsi
+>  create mode 100644 arch/arm/configs/mps2_defconfig
+>  create mode 100644 arch/arm/mach-vexpress/Makefile.boot
+>  create mode 100644 arch/arm/mach-vexpress/v2m-mps2.c
+>  create mode 100644 drivers/clocksource/mps2-timer.c
+>  create mode 100644 drivers/tty/serial/mps2-uart.c
+> 
 
-Regards,
-
-=== diffstat ===
-
-Zhaoxiu Zeng (29):
-  bitops: add parity functions
-  Include generic parity.h in some architectures' bitops.h
-  Add alpha-specific parity functions
-  Add blackfin-specific parity functions
-  Add ia64-specific parity functions
-  Tile and MIPS (if has usable __builtin_popcount) use popcount parity
-    functions
-  Add powerpc-specific parity functions
-  Add sparc-specific parity functions
-  Add x86-specific parity functions
-  sunrpc: use parity8
-  mips: use parity functions in cerr-sb1.c
-  bch: use parity32
-  media: use parity8 in vivid-vbi-gen.c
-  media: use parity functions in saa7115
-  input: use parity32 in grip_mp
-  input: use parity64 in sidewinder
-  input: use parity16 in ams_delta_serio
-  scsi: use parity32 in isci's phy
-  mtd: use parity16 in ssfdc
-  mtd: use parity functions in inftlcore
-  crypto: use parity functions in qat_hal
-  mtd: use parity16 in sm_ftl
-  ethernet: use parity8 in sun/niu.c
-  input: use parity8 in pcips2
-  input: use parity8 in sa1111ps2
-  iio: use parity32 in adxrs450
-  serial: use parity32 in max3100
-  input: use parity8 in elantech
-  ethernet: use parity8 in broadcom/tg3.c
-
- arch/alpha/include/asm/bitops.h              |  27 +++++
- arch/arc/include/asm/bitops.h                |   1 +
- arch/arm/include/asm/bitops.h                |   1 +
- arch/arm64/include/asm/bitops.h              |   1 +
- arch/avr32/include/asm/bitops.h              |   1 +
- arch/blackfin/include/asm/bitops.h           |  31 ++++++
- arch/c6x/include/asm/bitops.h                |   1 +
- arch/cris/include/asm/bitops.h               |   1 +
- arch/frv/include/asm/bitops.h                |   1 +
- arch/h8300/include/asm/bitops.h              |   1 +
- arch/hexagon/include/asm/bitops.h            |   1 +
- arch/ia64/include/asm/bitops.h               |  31 ++++++
- arch/m32r/include/asm/bitops.h               |   1 +
- arch/m68k/include/asm/bitops.h               |   1 +
- arch/metag/include/asm/bitops.h              |   1 +
- arch/mips/include/asm/bitops.h               |   7 ++
- arch/mips/mm/cerr-sb1.c                      |  67 ++++---------
- arch/mn10300/include/asm/bitops.h            |   1 +
- arch/openrisc/include/asm/bitops.h           |   1 +
- arch/parisc/include/asm/bitops.h             |   1 +
- arch/powerpc/include/asm/bitops.h            |  11 +++
- arch/powerpc/lib/Makefile                    |   2 +-
- arch/powerpc/lib/parity_64.S                 | 142 +++++++++++++++++++++++++++
- arch/powerpc/lib/ppc_ksyms.c                 |   5 +
- arch/s390/include/asm/bitops.h               |   1 +
- arch/sh/include/asm/bitops.h                 |   1 +
- arch/sparc/include/asm/bitops_32.h           |   1 +
- arch/sparc/include/asm/bitops_64.h           |  18 ++++
- arch/sparc/kernel/sparc_ksyms_64.c           |   6 ++
- arch/sparc/lib/Makefile                      |   2 +-
- arch/sparc/lib/parity.S                      | 128 ++++++++++++++++++++++++
- arch/tile/include/asm/bitops.h               |   2 +
- arch/x86/include/asm/arch_hweight.h          |   5 +
- arch/x86/include/asm/arch_parity.h           | 117 ++++++++++++++++++++++
- arch/x86/include/asm/bitops.h                |   4 +-
- arch/xtensa/include/asm/bitops.h             |   1 +
- drivers/crypto/qat/qat_common/qat_hal.c      |  32 ++----
- drivers/iio/gyro/adxrs450.c                  |   4 +-
- drivers/input/joystick/grip_mp.c             |  16 +--
- drivers/input/joystick/sidewinder.c          |  24 +----
- drivers/input/mouse/elantech.c               |  10 +-
- drivers/input/mouse/elantech.h               |   1 -
- drivers/input/serio/ams_delta_serio.c        |   8 +-
- drivers/input/serio/pcips2.c                 |   2 +-
- drivers/input/serio/sa1111ps2.c              |   2 +-
- drivers/media/i2c/saa7115.c                  |  17 +---
- drivers/media/platform/vivid/vivid-vbi-gen.c |   9 +-
- drivers/mtd/inftlcore.c                      |  17 +---
- drivers/mtd/sm_ftl.c                         |   5 +-
- drivers/mtd/ssfdc.c                          |  31 ++----
- drivers/net/ethernet/broadcom/tg3.c          |   6 +-
- drivers/net/ethernet/sun/niu.c               |  10 +-
- drivers/scsi/isci/phy.c                      |  15 +--
- drivers/tty/serial/max3100.c                 |   2 +-
- include/asm-generic/bitops.h                 |   1 +
- include/asm-generic/bitops/arch_parity.h     |  39 ++++++++
- include/asm-generic/bitops/const_parity.h    |  36 +++++++
- include/asm-generic/bitops/parity.h          |   7 ++
- include/asm-generic/bitops/popc-parity.h     |  32 ++++++
- include/linux/bitops.h                       |  10 ++
- lib/bch.c                                    |  14 +--
- net/sunrpc/auth_gss/gss_krb5_keys.c          |   6 +-
- 62 files changed, 745 insertions(+), 235 deletions(-)
- create mode 100644 arch/powerpc/lib/parity_64.S
- create mode 100644 arch/sparc/lib/parity.S
- create mode 100644 arch/x86/include/asm/arch_parity.h
- create mode 100644 include/asm-generic/bitops/arch_parity.h
- create mode 100644 include/asm-generic/bitops/const_parity.h
- create mode 100644 include/asm-generic/bitops/parity.h
- create mode 100644 include/asm-generic/bitops/popc-parity.h
-
--- 
-2.5.0
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
