@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH 1/5] doc: DT: Add Generic Serial Device Tree Bindings
-Date: Thu, 14 Apr 2016 14:13:19 +0200
-Message-ID: <1460636003-3011-2-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 2/5] serial: imx: Use generic uart-has-rtscts DT property
+Date: Thu, 14 Apr 2016 14:13:20 +0200
+Message-ID: <1460636003-3011-3-git-send-email-geert+renesas@glider.be>
 References: <1460636003-3011-1-git-send-email-geert+renesas@glider.be>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1460636003-3011-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
@@ -10,87 +10,54 @@ To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Document a set of generic properties for describing UARTs in a
-device tree:
-  1. The GPIO modem control properties are currently duplicated across
-     hardware-specific binding documentation,
-  2. The property for dedicated RTS/CTS hardware flow control lines is
-     already supported by several drivers, albeit with a vendor-specific
-     prefix, hence make it generic.
+Convert the Freescale IMX UART driver from using the vendor-specific
+"fsl,uart-has-rtscts" to the generic "uart-has-rtscts" DT property, as
+documented by the Generic Serial DT Bindings.
+
+The old vendor-specific property is still recognized by the driver for
+backwards compatibility, but deprecated.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 ---
- .../devicetree/bindings/serial/serial.txt          | 61 ++++++++++++++++++++++
- 1 file changed, 61 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/serial.txt
+ Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 4 ++--
+ drivers/tty/serial/imx.c                                  | 3 ++-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/serial.txt b/Documentation/devicetree/bindings/serial/serial.txt
-new file mode 100644
-index 0000000000000000..21afdbd973b07a44
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/serial.txt
-@@ -0,0 +1,61 @@
-+Generic Serial DT Bindings
-+
-+This document lists a set of generic properties for describing UARTs in a
-+device tree.  Whether these properties apply to a particular device depends on
-+the DT bindings for the actual device.
-+
-+Optional properties:
-+  - cts-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
-+    used as the UART's CTS line.
-+  - dcd-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
-+    used as the UART's DCD line.
-+  - dsr-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
-+    used as the UART's DSR line.
-+  - dtr-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
-+    used as the UART's DTR line.
-+  - out1-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
-+    used as the UART's OUT1 line.
-+  - out2-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
-+    used as the UART's OUT2 line.
-+  - rng-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
-+    used as the UART's RNG line.
-+  - rts-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
-+    used as the UART's RTS line.
-+
-+  - uart-has-rtscts: The presence of this property indicates that the
-+    UART has dedicated lines for RTS/CTS hardware flow control, and that
-+    they are available for use (wired and enabled by pinmux configuration).
-+    This depends on both the UART hardware and the board wiring.
-+    Note that this property is mutually-exclusive with "cts-gpios" and
-+    "rts-gpios" above.
-+
-+
-+Examples:
-+
-+	uart1: serial@48022000 {
-+		compatible = "ti,am3352-uart", "ti,omap3-uart";
-+		ti,hwmods = "uart2";
-+		clock-frequency = <48000000>;
-+		reg = <0x48022000 0x2000>;
-+		interrupts = <73>;
-+		dmas = <&edma 28 0>, <&edma 29 0>;
-+		dma-names = "tx", "rx";
-+		dtr-gpios = <&gpio2 22 GPIO_ACTIVE_LOW>;
-+		dsr-gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
-+		dcd-gpios = <&gpio2 24 GPIO_ACTIVE_LOW>;
-+		rng-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>;
-+		cts-gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
-+		rts-gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
-+		status = "okay";
-+	};
-+
-+	scifa4: serial@e6c80000 {
-+		compatible = "renesas,scifa-sh73a0", "renesas,scifa";
-+		reg = <0xe6c80000 0x100>;
-+		interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&mstp2_clks SH73A0_CLK_SCIFA4>;
-+		clock-names = "fck";
-+		power-domains = <&pd_a3sp>;
-+		uart-has-rtscts;
-+		status = "okay";
-+	};
+diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+index ed94c217c98d18a6..1e82802d8e322db5 100644
+--- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
++++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+@@ -6,7 +6,7 @@ Required properties:
+ - interrupts : Should contain uart interrupt
+ 
+ Optional properties:
+-- fsl,uart-has-rtscts : Indicate the uart has rts and cts
++- uart-has-rtscts : Indicate the uart has rts and cts
+ - fsl,irda-mode : Indicate the uart supports irda mode
+ - fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
+                   in DCE mode by default.
+@@ -24,6 +24,6 @@ uart1: serial@73fbc000 {
+ 	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
+ 	reg = <0x73fbc000 0x4000>;
+ 	interrupts = <31>;
+-	fsl,uart-has-rtscts;
++	uart-has-rtscts;
+ 	fsl,dte-mode;
+ };
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 231e7d5caf6c1845..9fc09d3de1e2428b 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1927,7 +1927,8 @@ static int serial_imx_probe_dt(struct imx_port *sport,
+ 	}
+ 	sport->port.line = ret;
+ 
+-	if (of_get_property(np, "fsl,uart-has-rtscts", NULL))
++	if (of_get_property(np, "uart-has-rtscts", NULL) ||
++	    of_get_property(np, "fsl,uart-has-rtscts", NULL) /* deprecated */)
+ 		sport->have_rtscts = 1;
+ 
+ 	if (of_get_property(np, "fsl,dte-mode", NULL))
 -- 
 1.9.1
 
