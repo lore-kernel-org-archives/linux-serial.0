@@ -1,52 +1,63 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v5 00/10] Support for Cortex-M Prototyping System
-Date: Fri, 15 Apr 2016 09:23:42 -0700
-Message-ID: <20160415162342.GC25094@kroah.com>
-References: <1459519381-34441-1-git-send-email-vladimir.murzin@arm.com>
- <570F593D.6040809@arm.com>
- <20160414192540.GD20512@kroah.com>
- <5710ABC4.5070505@arm.com>
+From: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 10/14] serial: pic32_uart: Add PIC32 UART driver
+Date: Fri, 15 Apr 2016 18:28:32 +0100
+Message-ID: <CAPKp9uYOnhJhNq8YDVRMpLSmGa7yWsktYnhVsMdWLtH1Jru3bw@mail.gmail.com>
+References: <1452734299-460-1-git-send-email-joshua.henderson@microchip.com>
+	<1452734299-460-11-git-send-email-joshua.henderson@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5710ABC4.5070505@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sudeep Holla <sudeep.holla@arm.com>
-Cc: Vladimir Murzin <vladimir.murzin@arm.com>, arnd@arndb.de, linux@arm.linux.org.uk, daniel.lezcano@linaro.org, tglx@linutronix.de, liviu.dudau@arm.com, lorenzo.pieralisi@arm.com, mark.rutland@arm.com, gnomes@lxorguk.ukuu.org.uk, peter@hurleysoftware.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, devicetree@vger.kernel.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com, robh+dt@kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1452734299-460-11-git-send-email-joshua.henderson-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joshua Henderson <joshua.henderson-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Andrei Pistirica <andrei.pistirica-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Apr 15, 2016 at 09:52:20AM +0100, Sudeep Holla wrote:
-> 
-> 
-> On 14/04/16 20:25, Greg KH wrote:
-> > On Thu, Apr 14, 2016 at 09:47:57AM +0100, Vladimir Murzin wrote:
-> > > Hi,
-> > > 
-> > > On 01/04/16 15:02, Vladimir Murzin wrote:
-> > > > Hi,
-> > > > 
-> > > > This patch series provides the basic support for running ucLinux on V2M-MPS2
-> > > > platform.
-> > > > 
-> > > > With these patches applied ucLinux can be run on both HW and FVP models
-> > > > with Cortex-M3/M4/M7 configurations.
-> > > 
-> > > Any objection to get it merged?
-> > > 
-> > > Sudeep Holla noticed that there is merge conflict against linux-next
-> > > with PIC32 uart (Makefile and serial_core.h), so should I provide
-> > > conflict resolution or do rebase on someone's branch?
-> > > 
-> > > Anyway, I'd be glad to know how it should be processed further?
-> > 
-> > I have no objection to the tty/serial changes, so if this all goes
-> > through the arm-soc tree, that's fine with me.
-> > 
-> 
-> Thanks Greg, can I take this as Ack ? arm-soc guys might expect to see
-> that tag :)
+Hi Greg,
 
-Sorry, yes:
+I just noticed this now. I am having similar issue with MPS2 UART driver
+posted @[1], hence I am asking here to get some clarification myself.
+Sorry for replying on very old thread.
 
-	Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+On Thu, Jan 14, 2016 at 1:15 AM, Joshua Henderson
+<joshua.henderson-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org> wrote:
+> From: Andrei Pistirica <andrei.pistirica-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+>
+> This adds UART and a serial console driver for Microchip PIC32 class
+> devices.
+>
+> Signed-off-by: Andrei Pistirica <andrei.pistirica-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+> Signed-off-by: Joshua Henderson <joshua.henderson-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+> Cc: Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
+
+[...]
+
+> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+> index 93ba148..9df0a98 100644
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -261,4 +261,7 @@
+>  /* STM32 USART */
+>  #define PORT_STM32     113
+>
+> +/* Microchip PIC32 UART */
+> +#define PORT_PIC32     114
+
+This was posted before v4.6-rc1 similar to MPS2 UART and has taken
+port# 114 for it. However MVEBU UART obtained 114 with v4.6-rc1
+And MPS2 UART was assigned 115 when it got revised/reposted.
+
+I also see this patch in linux-next with 114 itself as its port number.
+So the allocation of port number needs to be resolved before it gets
+merged or it's OK to wait for v4.7-rc1 ?
+
+If it's former, can PORT_PIC32 take 116 as the latest post of MPS2 assigned
+it 115 and I have pulled the same to take it via arm-soc.
+
+I am fine with any solution, just want to be notified if I need to
+take any action.
+
+Regards,
+Sudeep
+
+[1] http://www.spinics.net/lists/devicetree/msg120727.html
