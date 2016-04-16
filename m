@@ -1,51 +1,44 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH 1/5] doc: DT: Add Generic Serial Device Tree Bindings
-Date: Sat, 16 Apr 2016 18:30:35 +0200
-Message-ID: <5792073.qsBJ1LK659@wuerfel>
-References: <1460636003-3011-1-git-send-email-geert+renesas@glider.be> <1460636003-3011-2-git-send-email-geert+renesas@glider.be>
+From: Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH 4/4] serial: doc: .break_ctl() may sleep
+Date: Sat, 16 Apr 2016 10:47:49 -0600
+Message-ID: <20160416104749.49c74c20@lwn.net>
+References: <1460624891-8389-1-git-send-email-geert+renesas@glider.be>
+	<1460624891-8389-5-git-send-email-geert+renesas@glider.be>
+	<20160415160104.6aed0770@lwn.net>
+	<57116BC2.5070102@hurleysoftware.com>
+	<20160415164150.1666b58c@lwn.net>
+	<5711743B.3030207@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1460636003-3011-2-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Barry Song <baohua-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>, Qipan Li <Qipan.Li-kQvG35nSl+M@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <5711743B.3030207@hurleysoftware.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Russell King <rmk@arm.linux.org.uk>, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thursday 14 April 2016 14:13:19 Geert Uytterhoeven wrote:
-> Document a set of generic properties for describing UARTs in a
-> device tree:
->   1. The GPIO modem control properties are currently duplicated across
->      hardware-specific binding documentation,
->   2. The property for dedicated RTS/CTS hardware flow control lines is
->      already supported by several drivers, albeit with a vendor-specific
->      prefix, hence make it generic.
+On Fri, 15 Apr 2016 16:07:39 -0700
+Peter Hurley <peter@hurleysoftware.com> wrote:
+
+> > I'm missing something here.  
 > 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> Yes.
+> 
+> The analysis above is required to show that the API contract asserted by
+> the proposed change to the documentation is currently true in the code,
+> which is what I care about.
 
-Originally the ISA 8250 uart binding (from ieee) was used as the
-template for other uart bindings. How about documenting the parts that
-are used in 8250-of today (current-speed, clock-frequency,
-reg-offset, reg-shift, fifo-size, reg-io-width, auto-flow-control)
-in the same file?
+Yes, but the analysis says nothing about what uart_break_ctl() itself
+might do, so by itself, it provides no guarantee for break_ctl().  That
+was my sticking point since somebody clearly put that line in there for a
+reason.
 
->  - out1-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
->    used as the UART's OUT1 line.
->  - out2-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
->    used as the UART's OUT2 line.
+Looking at the code, it's pretty obvious that uart_break_ctl() isn't
+acquiring any spinlocks.  The documentation line in question has been
+there, unchanged, since the beginning of the Git era.  The patch is
+obviously fine, and I've applied it, but I did tweak the changelog some.
 
-I had to look up what OUT1 and OUT2 are, but I still don't see how you'd
-implement them using a GPIO line: From all I can tell, these are usually
-internal registers in a hardware uart but they are not assigned to an
-external line on the standard db9 or even the old db25 connectors. Should
-we drop these instead?
+Thanks,
 
-On a related note, do you think it would be possible to do a bit-banged
-uart if we defined gpio lines for rxd and txd?
-
-	Arnd
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+jon
