@@ -1,45 +1,59 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH, RESEND] serial-uartlite: un-constify
- uartlite_be/uartlite_le
-Date: Sat, 16 Apr 2016 17:39:01 -0700
-Message-ID: <20160417003901.GA29002@kroah.com>
-References: <1460851985-1280235-1-git-send-email-arnd@arndb.de>
+From: Woody Wu <narkewoody@gmail.com>
+Subject: Re: Found a bug in samsung serial tty code
+Date: Sun, 17 Apr 2016 16:14:25 +0800
+Message-ID: <CAAsE_ud2ia-b8xk63GiF-Mh1W2cwZPg0fUF6Mtmh1=nNiGcgQQ@mail.gmail.com>
+References: <CAAsE_ud1FLGt=ufbYu9ppwKfbNVY4j4=Vb9=DMWGdmbpXrokaw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1460851985-1280235-1-git-send-email-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Peter Korsgaard <jacmet@sunsite.dk>, Jiri Slaby <jslaby@suse.com>, Maarten Brock <m.brock@vanmierlo.com>, Rich Felker <dalias@libc.org>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <CAAsE_ud1FLGt=ufbYu9ppwKfbNVY4j4=Vb9=DMWGdmbpXrokaw@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Apr 17, 2016 at 02:12:47AM +0200, Arnd Bergmann wrote:
-> The patch to make uartlite_be/uartlite_le const was well-intended but
-> caused a new build warning:
-> 
-> tty/serial/uartlite.c: In function 'ulite_request_port':
-> tty/serial/uartlite.c:348:21: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
-> tty/serial/uartlite.c:354:22: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
-> 
-> It would be nice to allow passing const pointers through
-> port->private_data, but that would be way more work, so this
-> reverts part of the original commit for now.
-> 
-> A possible alternative might be to pass a structure in the private_data
-> that contains a const pointer to the operations, which introduces a little
-> extra overhead, or we could just add a cast to a non-const pointer, I'll
-> leave that to the maintainer.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 2905697a82ea ("serial-uartlite: Constify uartlite_be/uartlite_le")
-> ---
->  drivers/tty/serial/uartlite.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> I sent this patch on March 10, but it never made it in.
-> 
-> Greg, could you apply the patch as a bugfix for 4.6? The warning is
-> annoying as it shows up in several defconfig builds and allmodconfig.
+forgot to mention: this bug will cause the tcdrain() return earlier.
 
-Ugh, sorry about this, will get to it soon...
+On 17 April 2016 at 15:52, Woody Wu <narkewoody@gmail.com> wrote:
+> Hi,
+>
+> The function s3c24xx_serial_tx_empty() in tty/serial/samsung.c is wrong:
+>
+> static unsigned int s3c24xx_serial_tx_empty(struct uart_port *port)
+> {
+> struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
+> unsigned long ufstat = rd_regl(port, S3C2410_UFSTAT);
+> unsigned long ufcon = rd_regl(port, S3C2410_UFCON);
+>
+> if (ufcon & S3C2410_UFCON_FIFOMODE) {
+> if ((ufstat & info->tx_fifomask) != 0 ||
+>    (ufstat & info->tx_fifofull))
+> return 0;
+>
+> return 1;
+> }
+>
+> return s3c24xx_serial_txempty_nofifo(port);
+> }
+>
+> In FIFO mode, checking only ufcon is not enough to determine that the
+> tx is really done, since there is still bits in shift register.  I
+> found this is true at least in S3C2416 UARTs.  I have to remove the
+> 'return 1' above to fix the bug.   Can anyone give me a confirmation?
+> Thanks!
+>
+>
+> --
+> Life is the only flaw in an otherwise perfect nonexistence
+>     -- Schopenhauer
+>
+> woody
+> public key at http://subkeys.pgp.net:11371 (narkewoody@gmail.com)
+
+
+
+-- 
+Life is the only flaw in an otherwise perfect nonexistence
+    -- Schopenhauer
+
+woody
+public key at http://subkeys.pgp.net:11371 (narkewoody@gmail.com)
