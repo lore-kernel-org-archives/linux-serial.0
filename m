@@ -1,44 +1,61 @@
-From: Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH 4/4] serial: doc: .break_ctl() may sleep
-Date: Sat, 16 Apr 2016 10:47:49 -0600
-Message-ID: <20160416104749.49c74c20@lwn.net>
-References: <1460624891-8389-1-git-send-email-geert+renesas@glider.be>
-	<1460624891-8389-5-git-send-email-geert+renesas@glider.be>
-	<20160415160104.6aed0770@lwn.net>
-	<57116BC2.5070102@hurleysoftware.com>
-	<20160415164150.1666b58c@lwn.net>
-	<5711743B.3030207@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <5711743B.3030207@hurleysoftware.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Russell King <rmk@arm.linux.org.uk>, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH, RESEND] serial-uartlite: un-constify uartlite_be/uartlite_le
+Date: Sun, 17 Apr 2016 02:12:47 +0200
+Message-ID: <1460851985-1280235-1-git-send-email-arnd@arndb.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Korsgaard <jacmet@sunsite.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, Maarten Brock <m.brock@vanmierlo.com>, Rich Felker <dalias@libc.org>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 15 Apr 2016 16:07:39 -0700
-Peter Hurley <peter@hurleysoftware.com> wrote:
+The patch to make uartlite_be/uartlite_le const was well-intended but
+caused a new build warning:
 
-> > I'm missing something here.  
-> 
-> Yes.
-> 
-> The analysis above is required to show that the API contract asserted by
-> the proposed change to the documentation is currently true in the code,
-> which is what I care about.
+tty/serial/uartlite.c: In function 'ulite_request_port':
+tty/serial/uartlite.c:348:21: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
+tty/serial/uartlite.c:354:22: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
 
-Yes, but the analysis says nothing about what uart_break_ctl() itself
-might do, so by itself, it provides no guarantee for break_ctl().  That
-was my sticking point since somebody clearly put that line in there for a
-reason.
+It would be nice to allow passing const pointers through
+port->private_data, but that would be way more work, so this
+reverts part of the original commit for now.
 
-Looking at the code, it's pretty obvious that uart_break_ctl() isn't
-acquiring any spinlocks.  The documentation line in question has been
-there, unchanged, since the beginning of the Git era.  The patch is
-obviously fine, and I've applied it, but I did tweak the changelog some.
+A possible alternative might be to pass a structure in the private_data
+that contains a const pointer to the operations, which introduces a little
+extra overhead, or we could just add a cast to a non-const pointer, I'll
+leave that to the maintainer.
 
-Thanks,
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 2905697a82ea ("serial-uartlite: Constify uartlite_be/uartlite_le")
+---
+ drivers/tty/serial/uartlite.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-jon
+I sent this patch on March 10, but it never made it in.
+
+Greg, could you apply the patch as a bugfix for 4.6? The warning is
+annoying as it shows up in several defconfig builds and allmodconfig.
+
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index c9fdfc8bf47f..1474c5755140 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -72,7 +72,7 @@ static void uartlite_outbe32(u32 val, void __iomem *addr)
+ 	iowrite32be(val, addr);
+ }
+ 
+-static const struct uartlite_reg_ops uartlite_be = {
++static struct uartlite_reg_ops uartlite_be = {
+ 	.in = uartlite_inbe32,
+ 	.out = uartlite_outbe32,
+ };
+@@ -87,7 +87,7 @@ static void uartlite_outle32(u32 val, void __iomem *addr)
+ 	iowrite32(val, addr);
+ }
+ 
+-static const struct uartlite_reg_ops uartlite_le = {
++static struct uartlite_reg_ops uartlite_le = {
+ 	.in = uartlite_inle32,
+ 	.out = uartlite_outle32,
+ };
+-- 
+2.7.0
