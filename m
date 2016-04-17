@@ -1,59 +1,40 @@
-From: Woody Wu <narkewoody@gmail.com>
-Subject: Re: Found a bug in samsung serial tty code
-Date: Sun, 17 Apr 2016 16:14:25 +0800
-Message-ID: <CAAsE_ud2ia-b8xk63GiF-Mh1W2cwZPg0fUF6Mtmh1=nNiGcgQQ@mail.gmail.com>
-References: <CAAsE_ud1FLGt=ufbYu9ppwKfbNVY4j4=Vb9=DMWGdmbpXrokaw@mail.gmail.com>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH V3 00/29] bitops: add parity functions
+Date: Sun, 17 Apr 2016 05:38:57 -0700
+Message-ID: <20160417123857.GD33215@dtor-ws>
+References: <1460601525-3822-1-git-send-email-zengzhaoxiu@163.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAAsE_ud1FLGt=ufbYu9ppwKfbNVY4j4=Vb9=DMWGdmbpXrokaw@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Disposition: inline
+In-Reply-To: <1460601525-3822-1-git-send-email-zengzhaoxiu@163.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: zengzhaoxiu@163.com
+Cc: linux-kernel@vger.kernel.org, Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>, adi-buildroot-devel@lists.sourceforge.net, Andrew Morton <akpm@linux-foundation.org>, Anton Blanchard <anton@samba.org>, Arnd Bergmann <arnd@arndb.de>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Borislav Petkov <bp@suse.de>, Bruce Allan <bruce.w.allan@intel.com>, Christophe Leroy <christophe.leroy@c-s.fr>, David Herrmann <dh.herrmann@gmail.com>, "David S. Miller" <davem@davemloft.net>, Denys Vlasenko <dvlasenk@redhat.com>, Duson Lin <dusonlin@emc.com.tw>, Guenter Roeck <linux@roeck-us.net>, Hans de Goede <hdegoede@redhat.com>, Hans Verkuil <hans.verkuil@cisco.com>, Hartmut Knaack <knaack.h@gmx.de>, Heiko Carstens <heiko.carstens@de.ibm.com>, Hendrik
 List-Id: linux-serial@vger.kernel.org
 
-forgot to mention: this bug will cause the tcdrain() return earlier.
+On Thu, Apr 14, 2016 at 10:36:41AM +0800, zengzhaoxiu@163.com wrote:
+>  drivers/input/joystick/grip_mp.c             |  16 +--
+>  drivers/input/joystick/sidewinder.c          |  24 +----
+>  drivers/input/mouse/elantech.c               |  10 +-
+>  drivers/input/mouse/elantech.h               |   1 -
+>  drivers/input/serio/ams_delta_serio.c        |   8 +-
+>  drivers/input/serio/pcips2.c                 |   2 +-
+>  drivers/input/serio/sa1111ps2.c              |   2 +-
 
-On 17 April 2016 at 15:52, Woody Wu <narkewoody@gmail.com> wrote:
-> Hi,
->
-> The function s3c24xx_serial_tx_empty() in tty/serial/samsung.c is wrong:
->
-> static unsigned int s3c24xx_serial_tx_empty(struct uart_port *port)
-> {
-> struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-> unsigned long ufstat = rd_regl(port, S3C2410_UFSTAT);
-> unsigned long ufcon = rd_regl(port, S3C2410_UFCON);
->
-> if (ufcon & S3C2410_UFCON_FIFOMODE) {
-> if ((ufstat & info->tx_fifomask) != 0 ||
->    (ufstat & info->tx_fifofull))
-> return 0;
->
-> return 1;
-> }
->
-> return s3c24xx_serial_txempty_nofifo(port);
-> }
->
-> In FIFO mode, checking only ufcon is not enough to determine that the
-> tx is really done, since there is still bits in shift register.  I
-> found this is true at least in S3C2416 UARTs.  I have to remove the
-> 'return 1' above to fix the bug.   Can anyone give me a confirmation?
-> Thanks!
->
->
-> --
-> Life is the only flaw in an otherwise perfect nonexistence
->     -- Schopenhauer
->
-> woody
-> public key at http://subkeys.pgp.net:11371 (narkewoody@gmail.com)
+For input bits:
 
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
+Thanks.
 
 -- 
-Life is the only flaw in an otherwise perfect nonexistence
-    -- Schopenhauer
-
-woody
-public key at http://subkeys.pgp.net:11371 (narkewoody@gmail.com)
+Dmitry
