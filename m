@@ -1,40 +1,52 @@
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH V3 00/29] bitops: add parity functions
-Date: Sun, 17 Apr 2016 05:38:57 -0700
-Message-ID: <20160417123857.GD33215@dtor-ws>
-References: <1460601525-3822-1-git-send-email-zengzhaoxiu@163.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH, RESEND] serial-uartlite: un-constify uartlite_be/uartlite_le
+Date: Sun, 17 Apr 2016 22:29:51 +0530
+Message-ID: <5713C107.5070009@gmail.com>
+References: <1460851985-1280235-1-git-send-email-arnd@arndb.de> <20160417003901.GA29002@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <1460601525-3822-1-git-send-email-zengzhaoxiu@163.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: zengzhaoxiu@163.com
-Cc: linux-kernel@vger.kernel.org, Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>, adi-buildroot-devel@lists.sourceforge.net, Andrew Morton <akpm@linux-foundation.org>, Anton Blanchard <anton@samba.org>, Arnd Bergmann <arnd@arndb.de>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Borislav Petkov <bp@suse.de>, Bruce Allan <bruce.w.allan@intel.com>, Christophe Leroy <christophe.leroy@c-s.fr>, David Herrmann <dh.herrmann@gmail.com>, "David S. Miller" <davem@davemloft.net>, Denys Vlasenko <dvlasenk@redhat.com>, Duson Lin <dusonlin@emc.com.tw>, Guenter Roeck <linux@roeck-us.net>, Hans de Goede <hdegoede@redhat.com>, Hans Verkuil <hans.verkuil@cisco.com>, Hartmut Knaack <knaack.h@gmx.de>, Heiko Carstens <heiko.carstens@de.ibm.com>, Hendrik
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160417003901.GA29002@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Peter Korsgaard <jacmet@sunsite.dk>, Jiri Slaby <jslaby@suse.com>, Maarten Brock <m.brock@vanmierlo.com>, Rich Felker <dalias@libc.org>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Apr 14, 2016 at 10:36:41AM +0800, zengzhaoxiu@163.com wrote:
->  drivers/input/joystick/grip_mp.c             |  16 +--
->  drivers/input/joystick/sidewinder.c          |  24 +----
->  drivers/input/mouse/elantech.c               |  10 +-
->  drivers/input/mouse/elantech.h               |   1 -
->  drivers/input/serio/ams_delta_serio.c        |   8 +-
->  drivers/input/serio/pcips2.c                 |   2 +-
->  drivers/input/serio/sa1111ps2.c              |   2 +-
+On Sunday 17 April 2016 06:09 AM, Greg Kroah-Hartman wrote:
+> On Sun, Apr 17, 2016 at 02:12:47AM +0200, Arnd Bergmann wrote:
+>> The patch to make uartlite_be/uartlite_le const was well-intended but
+>> caused a new build warning:
+>>
+>> tty/serial/uartlite.c: In function 'ulite_request_port':
+>> tty/serial/uartlite.c:348:21: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
+>> tty/serial/uartlite.c:354:22: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
+>>
+>> It would be nice to allow passing const pointers through
+>> port->private_data, but that would be way more work, so this
+>> reverts part of the original commit for now.
+>>
+>> A possible alternative might be to pass a structure in the private_data
+>> that contains a const pointer to the operations, which introduces a little
+>> extra overhead, or we could just add a cast to a non-const pointer, I'll
+>> leave that to the maintainer.
+>>
+>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>> Fixes: 2905697a82ea ("serial-uartlite: Constify uartlite_be/uartlite_le")
+>> ---
+>>   drivers/tty/serial/uartlite.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> I sent this patch on March 10, but it never made it in.
+>>
+>> Greg, could you apply the patch as a bugfix for 4.6? The warning is
+>> annoying as it shows up in several defconfig builds and allmodconfig.
+>
+> Ugh, sorry about this, will get to it soon...
+>
 
-For input bits:
+A revert patch with the same effect posted on 11th April is also in 
+waiting. http://www.spinics.net/lists/linux-serial/msg22287.html
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
-Thanks.
-
--- 
-Dmitry
+regards
+sudip
