@@ -1,57 +1,110 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 4/4] serial: doc: .break_ctl() may sleep
-Date: Mon, 18 Apr 2016 10:24:34 +0200
-Message-ID: <CAMuHMdU4Gqk+hLNq+J1p8psKfo358LsMk9Rp6HNXtwjc=vxpOw@mail.gmail.com>
-References: <1460624891-8389-1-git-send-email-geert+renesas@glider.be>
-	<1460624891-8389-5-git-send-email-geert+renesas@glider.be>
-	<20160415160104.6aed0770@lwn.net>
-	<57116BC2.5070102@hurleysoftware.com>
-	<20160415164150.1666b58c@lwn.net>
-	<5711743B.3030207@hurleysoftware.com>
-	<20160416104749.49c74c20@lwn.net>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH 1/5] doc: DT: Add Generic Serial Device Tree Bindings
+Date: Mon, 18 Apr 2016 14:34:12 +0200
+Message-ID: <CAMuHMdWmHUhhwbYDcmNXuxBRC6n+tp=oX03dBaK2VgL4OA72MQ@mail.gmail.com>
+References: <1460636003-3011-1-git-send-email-geert+renesas@glider.be>
+	<1460636003-3011-2-git-send-email-geert+renesas@glider.be>
+	<5792073.qsBJ1LK659@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20160416104749.49c74c20@lwn.net>
-Sender: linux-doc-owner@vger.kernel.org
-To: Jonathan Corbet <corbet@lwn.net>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Russell King <rmk@arm.linux.org.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5792073.qsBJ1LK659@wuerfel>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Barry Song <baohua-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>, Qipan Li <Qipan.Li-kQvG35nSl+M@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Jon,
+Hi Arnd,
 
-On Sat, Apr 16, 2016 at 6:47 PM, Jonathan Corbet <corbet@lwn.net> wrote:
-> On Fri, 15 Apr 2016 16:07:39 -0700
-> Peter Hurley <peter@hurleysoftware.com> wrote:
->
->> > I'm missing something here.
->>
->> Yes.
->>
->> The analysis above is required to show that the API contract asserted by
->> the proposed change to the documentation is currently true in the code,
->> which is what I care about.
->
-> Yes, but the analysis says nothing about what uart_break_ctl() itself
-> might do, so by itself, it provides no guarantee for break_ctl().  That
-> was my sticking point since somebody clearly put that line in there for a
-> reason.
->
-> Looking at the code, it's pretty obvious that uart_break_ctl() isn't
-> acquiring any spinlocks.  The documentation line in question has been
-> there, unchanged, since the beginning of the Git era.  The patch is
-> obviously fine, and I've applied it, but I did tweak the changelog some.
+CC Richard (serial-mctrl-gpio)
+CC Grant (ePAPR successor) and Frank
 
-Sorry, this indeed needed more clarification.
-Thanks for fixing it up!
+On Sat, Apr 16, 2016 at 6:30 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+> On Thursday 14 April 2016 14:13:19 Geert Uytterhoeven wrote:
+>> Document a set of generic properties for describing UARTs in a
+>> device tree:
+>>   1. The GPIO modem control properties are currently duplicated across
+>>      hardware-specific binding documentation,
+>>   2. The property for dedicated RTS/CTS hardware flow control lines is
+>>      already supported by several drivers, albeit with a vendor-specific
+>>      prefix, hence make it generic.
+>>
+>> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+>
+> Originally the ISA 8250 uart binding (from ieee) was used as the
+> template for other uart bindings. How about documenting the parts that
+> are used in 8250-of today (current-speed, clock-frequency,
+> reg-offset, reg-shift, fifo-size, reg-io-width, auto-flow-control)
+> in the same file?
+
+I don't think we have the habit of documenting (duplicating) bindings for ePAPR
+under Documentation/devicetree/bindings/. Perhaps we should?
+
+Apart from that, most of the properties you mention look legacy or overly
+broad too me.
+
+  - current-speed: This is configuration, not a property of the hardware.
+    For the console, this has been deprecated by appending the serial config
+    to chosen/stdout-path (e.g. "serial0:115200n8").
+    For non-consoles, its use is debatable, IMHO.
+    It's users are mostly legacy powerpc and early adaptors of DT on ARM.
+  - clock-frequency: Legacy predating the Common Clock Framework.
+    Any modern SoC uses clock specifiers with clock handles pointing to clock
+    providers.
+  - reg-offset, reg-shift, reg-io-width: These are much broader than serial,
+    and IMHO thus don't belong in
+    Documentation/devicetree/bindings/serial/serial.txt.
+  - auto-flow-control: Looks a bit like a vague version of "uart-has-rtscts".
+    Documentation/devicetree/bindings/serial/8250.txt doesn't make it clear
+    whether this is about hardware capabilities or software configuration.
+    Even the driver doesn't make it clear:
+    #define UART_CAP_AFE    (1 << 11)       /* MCR-based hw flow control */
+    "MCR" could mean RTS/CTS, DSR/DTR, ...
+  - fifo-size: This one could be generic. atmel-usart uses a vendor-specific
+    version "atmel,fifo-size".
+
+I suggest we move forward with my initial set, as I have patches that depend on
+them? We can always add more properties later.
+
+>>  - out1-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
+>>    used as the UART's OUT1 line.
+>>  - out2-gpios: Must contain a GPIO specifier, referring to the GPIO pin to be
+>>    used as the UART's OUT2 line.
+>
+> I had to look up what OUT1 and OUT2 are, but I still don't see how you'd
+> implement them using a GPIO line: From all I can tell, these are usually
+> internal registers in a hardware uart but they are not assigned to an
+> external line on the standard db9 or even the old db25 connectors. Should
+> we drop these instead?
+
+They're indeed fairly exotic, and they're burried deeply in the ns16550
+datasheet. We do have TIOCM_OUT1 and TIOCM_LOOP in asm-generic/termios.h,
+probably for obscure historical reasons.
+
+If we drop them, I guess they should be removed from the helper code in
+drivers/tty/serial/serial_mctrl_gpio.c, too? There don't seem to be any
+current users.
+
+> On a related note, do you think it would be possible to do a bit-banged
+> uart if we defined gpio lines for rxd and txd?
+
+Sure we can. Whether it would work well is another question ;-)
+Regardless of flow control, byte transmission and reception has hard real-time
+requirements due to the implicit clocking.
+Bit-banging i2c and spi (master) is much easier, as clocking is explicit.
+Even i2c slave is easier, as the slave can stretch cycles.
 
 Gr{oetje,eeting}s,
 
                         Geert
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
 
 In personal conversations with technical people, I call myself a hacker. But
 when I'm talking to journalists I just say "programmer" or something like that.
                                 -- Linus Torvalds
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
