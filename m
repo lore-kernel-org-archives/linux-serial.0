@@ -1,13 +1,14 @@
 From: Mason <slash.tmp@free.fr>
 Subject: Re: Problem with 4.6-rc2
-Date: Mon, 18 Apr 2016 20:29:47 +0200
-Message-ID: <5715279B.9060806@free.fr>
+Date: Mon, 18 Apr 2016 20:46:18 +0200
+Message-ID: <57152B7A.1070202@free.fr>
 References: <57150A3D.6020500@free.fr> <57152224.5080003@hurleysoftware.com>
+ <5715279B.9060806@free.fr>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <57152224.5080003@hurleysoftware.com>
+In-Reply-To: <5715279B.9060806@free.fr>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,41 +22,45 @@ To: Peter Hurley <peter@hurleysoftware.com>, linux-serial <linux-serial@vger.ker
 Cc: Sebastian Frias <sf84@laposte.net>, Mans Rullgard <mans@mansr.com>, Jean Delvare <jdelvare@suse.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 18/04/2016 20:06, Peter Hurley wrote:
+On 18/04/2016 20:29, Mason wrote:
 
-> On 04/18/2016 09:24 AM, Mason wrote:
->
->> I'm running into this panic. I will take a closer look tomorrow.
->> Any ideas?
+> On 18/04/2016 20:06, Peter Hurley wrote:
 > 
-> commit 8d2acdb9fc3a544ab0442634531834d6007b5467
-> Author: Jean Delvare <jdelvare@suse.de>
-> Date:   Mon Feb 22 09:00:39 2016 +0100
+>> On 04/18/2016 09:24 AM, Mason wrote:
+>>
+>>> I'm running into this panic. I will take a closer look tomorrow.
+>>> Any ideas?
+>>
+>> commit 8d2acdb9fc3a544ab0442634531834d6007b5467
+>> Author: Jean Delvare <jdelvare@suse.de>
+>> Date:   Mon Feb 22 09:00:39 2016 +0100
+>>
+>>     serial: 8250: Add hardware dependency to RT288X option
+>>     
+>>     Kconfig option SERIAL_8250_RT288X seems to be only relevant on MIPS
+>>     platforms, so do not present it on other architectures, unless
+>>     build-testing.
+>>     
+>>     Signed-off-by: Jean Delvare <jdelvare@suse.de>
+>>     Cc: Mans Rullgard <mans@mansr.com>
+>>     Cc: Jiri Slaby <jslaby@suse.com>
+>>     Acked-by: John Crispin <blogic@openwrt.org>
+>>     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>
+>>
+>> Not sure why Greg picked this up over my objections though
 > 
->     serial: 8250: Add hardware dependency to RT288X option
->     
->     Kconfig option SERIAL_8250_RT288X seems to be only relevant on MIPS
->     platforms, so do not present it on other architectures, unless
->     build-testing.
->     
->     Signed-off-by: Jean Delvare <jdelvare@suse.de>
->     Cc: Mans Rullgard <mans@mansr.com>
->     Cc: Jiri Slaby <jslaby@suse.com>
->     Acked-by: John Crispin <blogic@openwrt.org>
->     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Peter,
 > 
+> Thanks for pointing out the problem.
 > 
-> Not sure why Greg picked this up over my objections though
+> Greg,
+> 
+> My ARM-based SoC uses this hardware (Palmchip BK-3103) and it
+> now panics on boot.
+> 
+> Can we revert 8d2acdb9fc3a in time for v4.7?
 
-Peter,
-
-Thanks for pointing out the problem.
-
-Greg,
-
-My ARM-based SoC uses this hardware (Palmchip BK-3103) and it
-now panics on boot.
-
-Can we revert 8d2acdb9fc3a in time for v4.7?
+Errr... I meant v4.6 final.
 
 Regards.
