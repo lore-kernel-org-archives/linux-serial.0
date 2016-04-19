@@ -1,40 +1,38 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial-uartlite: un-constify uartlite_be/uartlite_le
-Date: Tue, 19 Apr 2016 17:33:22 +0900
-Message-ID: <20160419083322.GA18866@kroah.com>
-References: <20160419095143.a28d59c0@kerio.vanmierlo.com>
+From: Frank Rowand <frowand.list@gmail.com>
+Subject: regression: 3a878c430fd6 ("tty: serial: msm: Add TX DMA support")
+ drops data
+Date: Tue, 19 Apr 2016 16:23:29 -0700
+Message-ID: <5716BDF1.1010407@gmail.com>
+Reply-To: frowand.list@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160419095143.a28d59c0@kerio.vanmierlo.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Maarten Brock <m.brock@vanmierlo.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Peter Korsgaard <jacmet@sunsite.dk>, Jiri Slaby <jslaby@suse.com>, Rich Felker <dalias@libc.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: ivan.ivanov@linaro.org
+Cc: agross@codeaurora.org, David Brown <davidb@codeaurora.org>, srinivas.kandagatla@linaro.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linux Kernel list <linux-kernel@vger.kernel.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Apr 19, 2016 at 09:51:43AM +0200, Maarten Brock wrote:
-> ----- Original Message -----
-> From: Greg Kroah-Hartman [mailto:gregkh@linuxfoundation.org]
-> To: Maarten Brock [mailto:m.brock@vanmierlo.com]
-> Cc: Arnd Bergmann [mailto:arnd@arndb.de], Peter Korsgaard [mailto:jacmet@sunsite.dk], Jiri Slaby [mailto:jslaby@suse.com], Rich Felker [mailto:dalias@libc.org], linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-> Sent: Tue, 19 Apr 2016 08:12:36 +0200
-> Subject: Re: [PATCH] serial-uartlite: un-constify uartlite_be/uartlite_le
-> 
-> 
-> > On Thu, Mar 10, 2016 at 10:08:01AM +0100, Maarten Brock wrote:
-> > > I've created a version 2 of this patch immediately which fixes the
-> > > warning, but somehow this stays ignored.
-> > > 
-> > > Please apply my second patch!
-> > 
-> > Sorry, it was too late, my fault.
-> > 
-> > greg k-h
-> 
-> Hello Greg,
-> 
-> Now that the original patch is reverted, can you apply my second version of the
-> patch which includes extra casts to suppress the warnings?
+Hi Ivan,
 
-Can you please resend it?  I don't see it in my queue :(
+It appears that I have found a regression caused by
+3a878c430fd6 ("tty: serial: msm: Add TX DMA support").
+
+When I cat a file slightly larger than 126000 bytes on
+the console, viewed via minicom connected to the serial
+port, I am losing random chunks of data, almost always
+three bytes in length.  I have also seen a lost chunk
+of two bytes.
+
+I am using the 8074 dragonboard, with the dts of
+arch/arm/boot/dts/qcom-apq8074-dragonboard.dts.
+The dts node is serial@f991e000, which has a
+compatible of "qcom,msm-uartdm-v1.4", so is_uartdm
+should be UARTDM_1P4.
+
+Do you have any thoughts on what might be going
+wrong, or what I can do to debug this?
+
+Thanks,
+
+Frank
