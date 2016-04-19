@@ -1,70 +1,40 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v4] serial: 8250_dw: fix wrong logic in dw8250_check_lcr()
-Date: Tue, 19 Apr 2016 16:29:22 +0800
-Message-ID: <5715EC62.5010204@huawei.com>
-References: <1459827166-13861-1-git-send-email-wangkefeng.wang@huawei.com>
- <1459835585-25751-1-git-send-email-wangkefeng.wang@huawei.com>
- <1459853407.12843.7.camel@linux.intel.com> <57061B5E.7040707@huawei.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial-uartlite: un-constify uartlite_be/uartlite_le
+Date: Tue, 19 Apr 2016 17:33:22 +0900
+Message-ID: <20160419083322.GA18866@kroah.com>
+References: <20160419095143.a28d59c0@kerio.vanmierlo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <57061B5E.7040707@huawei.com>
+Content-Disposition: inline
+In-Reply-To: <20160419095143.a28d59c0@kerio.vanmierlo.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Noam Camus <noamc@ezchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, xuwei5@hisilicon.com
+To: Maarten Brock <m.brock@vanmierlo.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Peter Korsgaard <jacmet@sunsite.dk>, Jiri Slaby <jslaby@suse.com>, Rich Felker <dalias@libc.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg, ping...
+On Tue, Apr 19, 2016 at 09:51:43AM +0200, Maarten Brock wrote:
+> ----- Original Message -----
+> From: Greg Kroah-Hartman [mailto:gregkh@linuxfoundation.org]
+> To: Maarten Brock [mailto:m.brock@vanmierlo.com]
+> Cc: Arnd Bergmann [mailto:arnd@arndb.de], Peter Korsgaard [mailto:jacmet@sunsite.dk], Jiri Slaby [mailto:jslaby@suse.com], Rich Felker [mailto:dalias@libc.org], linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+> Sent: Tue, 19 Apr 2016 08:12:36 +0200
+> Subject: Re: [PATCH] serial-uartlite: un-constify uartlite_be/uartlite_le
+> 
+> 
+> > On Thu, Mar 10, 2016 at 10:08:01AM +0100, Maarten Brock wrote:
+> > > I've created a version 2 of this patch immediately which fixes the
+> > > warning, but somehow this stays ignored.
+> > > 
+> > > Please apply my second patch!
+> > 
+> > Sorry, it was too late, my fault.
+> > 
+> > greg k-h
+> 
+> Hello Greg,
+> 
+> Now that the original patch is reverted, can you apply my second version of the
+> patch which includes extra casts to suppress the warnings?
 
-On 2016/4/7 16:33, Kefeng Wang wrote:
-> 
-> 
-> On 2016/4/5 18:50, Andy Shevchenko wrote:
->> On Tue, 2016-04-05 at 13:53 +0800, Kefeng Wang wrote:
->>> Commit cdcea058e510 ("serial: 8250_dw: Avoid serial_outx code
->>> duplicate
->>> with new dw8250_check_lcr()") introduce a wrong logic when write val
->>> to
->>> LCR reg. When CONFIG_64BIT enabled, __raw_writeq is used
->>> unconditionally.
->>>
->>> The __raw_readq/__raw_writeq is introduced by commit bca2092d7897
->>> ("serial:
->>> 8250_dw: Use 64-bit access for OCTEON.") for OCTEON, so for
->>> !PORT_OCTEON,
->>> we better to use coincident write func.
->>>
->>> Fixes: cdcea058e510("serial: 8250_dw: Avoid serial_outx code
->>> duplicate with new dw8250_check_lcr()")
->>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->>> ---
->>>
->>> Changes since v3:
->>> - Add patch change log, suggested by Greg Kroah-Hartman.
->>> Changes since v2:
->>> - Add #ifdef CONFIG_64BIT back, ensure it can be built under 
->>
->> Oh, true. Since it's a native IO we can't use writeq() helper from io-
->> 64-nonatomic-*. 
->>
->>> configuration lacking readq/writeq.
->>> Changes since v1:
->>> - Repace '#ifdef CONFIG_64BIT' with IS_ENABLED(CONFIG_64BIT).
->>> - Enrich patch log, and add Fixes tag.
-> [...]
->>
->> So, this changes logic to write the value on any 64 platform, using
->> different (non-64-bit) accessors, so, the case to fix is
->> actually "64BIT && !PORT_OCTEON". Perhaps commit message should be
->> amended to point that clearly.
-> 
-> Yes, it's more clear. thanks for review and point it out.
-> 
-> To Greg, should I resend it or can you help me to change the patch log when you merge it. Thanks.
-> 
-> 
-> 
-> 
-> .
-> 
+Can you please resend it?  I don't see it in my queue :(
