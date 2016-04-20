@@ -1,51 +1,70 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 00/11] serial: 8250: split LPSS to 8250_lpss, enable
- DMA on Quark
-Date: Wed, 20 Apr 2016 17:05:33 +0300
-Message-ID: <1461161133.6620.304.camel@linux.intel.com>
-References: <1460379071-132591-1-git-send-email-andriy.shevchenko@linux.intel.com>
-	 <20160420132910.GB2274@localhost>
+From: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: regression: 3a878c430fd6 ("tty: serial: msm: Add TX DMA support")
+ drops data
+Date: Wed, 20 Apr 2016 09:48:10 -0700
+Message-ID: <5717B2CA.3020206@gmail.com>
+References: <5716BDF1.1010407@gmail.com> <EEBBF78A-33BB-4ACD-8CBF-285E1149FB9F@gmail.com>
+Reply-To: frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160420132910.GB2274@localhost>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vinod Koul <vinod.koul@intel.com>
-Cc: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <EEBBF78A-33BB-4ACD-8CBF-285E1149FB9F-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Ivan Ivanov <iivanov.xz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andy Gross <agross-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, jslaby-IBi9RG/b67k@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2016-04-20 at 18:59 +0530, Vinod Koul wrote:
-> On Mon, Apr 11, 2016 at 03:51:00PM +0300, Andy Shevchenko wrote:
-> > 
-> > This is combined series of two things:
-> > - split out the Intel LPSS specific driver from 8250_pci into
-> > 8250_lpss
-> > - enable DMA support on Intel Quark UART
-> > 
-> > The patch has been tested on few Intel SoCs / platforms.
-> > 
-> > This is targeting serial subsystem, thus it would be nice to get and
-> > Ack from Vinod first.
-> > Moreover, the series depends on [1] that is now under review.
-> > 
-> > That's why I asked Vinod to create immutable tag / branch for the
-> > [1] and the
-> > dependants (at least one more, which is sata_dwc_460ex).
-> The dmaengine bits look fine to me but this is dependent on another dw
-> series which is undergoing changes.
+On 4/19/2016 11:07 PM, Ivan Ivanov wrote:
+>=20
+>> On Apr 20, 2016, at 02:23, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wro=
+te:
+>>
+>> Hi Ivan,
+>>
+>> It appears that I have found a regression caused by
+>> 3a878c430fd6 ("tty: serial: msm: Add TX DMA support").
+>>
+>> When I cat a file slightly larger than 126000 bytes on
+>> the console, viewed via minicom connected to the serial
+>> port, I am losing random chunks of data, almost always
+>> three bytes in length.  I have also seen a lost chunk
+>> of two bytes.
+>>
+>> I am using the 8074 dragonboard, with the dts of
+>> arch/arm/boot/dts/qcom-apq8074-dragonboard.dts.
+>> The dts node is serial@f991e000, which has a
+>> compatible of "qcom,msm-uartdm-v1.4", so is_uartdm
+>> should be UARTDM_1P4.
+>=20
+> I don=E2=80=99t remember what was biggest chunk, which DMA
+> could carry, sorry. Are you using DMA or just PIO?=20
+> Is this happening only with cat and terminal or even
+> when you send data in other means. I believe that=20
+> people from Linaro could help you better.
 
-Yes, I have to work on one patch at least (data-width property).
+I assumed you would be the person who would have the
+information and would be able to help maintain the
+code in question since you submitted this not small
+patch.  Do you have a pointer to the hardware
+documentation of the DMA and uart?  Who at Linaro
+are you suggesting?
 
-> 
-> I was thinking that it might be easier to merge the series thru
-> dmaengine
-> tree if Greg is okay with it. If not once all dw patches are merged I
-> will
-> give immutable signed tag
+Thanks for the questions, I'll look into them today.
 
-It would work for me too. Greg?
+One more observation that may provide an insight:
+if I cat a file multiple times, the location of
+the dropped chunks varies.
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+In further testing I also found examples of single
+bytes lost.
+
+Thanks,
+
+=46rank
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
