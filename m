@@ -1,44 +1,53 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH] serial: 8250_uniphier: add "\n" at the end of error log
-Date: Thu, 21 Apr 2016 15:13:19 +0900
-Message-ID: <1461219199-9059-1-git-send-email-yamada.masahiro@socionext.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jiri Slaby <jslaby@suse.com>
+From: Chanwoo Choi <cw00.choi@samsung.com>
+Subject: [PATCH v3] serial: samsung: Reorder the sequence of clock control when
+ call s3c24xx_serial_set_termios()
+Date: Thu, 21 Apr 2016 18:58:31 +0900
+Message-ID: <1461232711-4159-1-git-send-email-cw00.choi@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: k.kozlowski@samsung.com, kgene@kernel.org, m.szyprowski@samsung.com, cw00.choi@samsung.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Just in case.
+This patch fixes the broken serial log when changing the clock source
+of uart device. Before disabling the original clock source, this patch
+enables the new clock source to protect the clock off state for a split second.
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Reviewed-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
+Changes from v2:
+- Add reviewd-by tag from Marek Szyprowski 
+- No changes about operation
 
- drivers/tty/serial/8250/8250_uniphier.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes from v1:
+- Enable the clock before changing the source by s3c24xx_serial_setsource()
+- Rebase it on Linux v4.6-rc1
 
-diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-index 1b7bd26..efd1f9c 100644
---- a/drivers/tty/serial/8250/8250_uniphier.c
-+++ b/drivers/tty/serial/8250/8250_uniphier.c
-@@ -209,7 +209,7 @@ static int uniphier_uart_probe(struct platform_device *pdev)
+ drivers/tty/serial/samsung.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index ac7f8df54406..99bb23161dd6 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1271,6 +1271,8 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+ 	/* check to see if we need  to change clock source */
  
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0) {
--		dev_err(dev, "failed to get IRQ number");
-+		dev_err(dev, "failed to get IRQ number\n");
- 		return irq;
+ 	if (ourport->baudclk != clk) {
++		clk_prepare_enable(clk);
++
+ 		s3c24xx_serial_setsource(port, clk_sel);
+ 
+ 		if (!IS_ERR(ourport->baudclk)) {
+@@ -1278,8 +1280,6 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+ 			ourport->baudclk = ERR_PTR(-EINVAL);
+ 		}
+ 
+-		clk_prepare_enable(clk);
+-
+ 		ourport->baudclk = clk;
+ 		ourport->baudclk_rate = clk ? clk_get_rate(clk) : 0;
  	}
- 
 -- 
 1.9.1
