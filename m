@@ -1,53 +1,93 @@
-From: Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCH v3] serial: samsung: Reorder the sequence of clock control when
- call s3c24xx_serial_set_termios()
-Date: Thu, 21 Apr 2016 18:58:31 +0900
-Message-ID: <1461232711-4159-1-git-send-email-cw00.choi@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: k.kozlowski@samsung.com, kgene@kernel.org, m.szyprowski@samsung.com, cw00.choi@samsung.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: regression: 3a878c430fd6 ("tty: serial: msm: Add TX DMA support")
+ drops data
+Date: Thu, 21 Apr 2016 23:42:32 +0300
+Message-ID: <CAHp75Vdu6+qLHe9tTK5BE3ec5Mvz5Z0e4DvLc8ewjjVbSs-BdQ@mail.gmail.com>
+References: <5716BDF1.1010407@gmail.com>
+	<EEBBF78A-33BB-4ACD-8CBF-285E1149FB9F@gmail.com>
+	<5717B2CA.3020206@gmail.com>
+	<57182635.5070606@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <57182635.5070606@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Frank Rowand <frowand.list@gmail.com>, Peter Hurley <peter@hurleysoftware.com>, "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>
+Cc: Ivan Ivanov <iivanov.xz@gmail.com>, Andy Gross <agross@codeaurora.org>, David Brown <davidb@codeaurora.org>, srinivas.kandagatla@linaro.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Linux Kernel list <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patch fixes the broken serial log when changing the clock source
-of uart device. Before disabling the original clock source, this patch
-enables the new clock source to protect the clock off state for a split second.
+On Thu, Apr 21, 2016 at 4:00 AM, Frank Rowand <frowand.list@gmail.com> =
+wrote:
+> On 4/20/2016 9:48 AM, Frank Rowand wrote:
+>> On 4/19/2016 11:07 PM, Ivan Ivanov wrote:
+>>>
+>>>> On Apr 20, 2016, at 02:23, Frank Rowand <frowand.list@gmail.com> w=
+rote:
+>>>>
+>>>> Hi Ivan,
+>>>>
+>>>> It appears that I have found a regression caused by
+>>>> 3a878c430fd6 ("tty: serial: msm: Add TX DMA support").
+>>>>
+>>>> When I cat a file slightly larger than 126000 bytes on
+>>>> the console, viewed via minicom connected to the serial
+>>>> port, I am losing random chunks of data, almost always
+>>>> three bytes in length.  I have also seen a lost chunk
+>>>> of two bytes.
+>>>>
+>>>> I am using the 8074 dragonboard, with the dts of
+>>>> arch/arm/boot/dts/qcom-apq8074-dragonboard.dts.
+>>>> The dts node is serial@f991e000, which has a
+>>>> compatible of "qcom,msm-uartdm-v1.4", so is_uartdm
+>>>> should be UARTDM_1P4.
+>>>
+>>> I don=E2=80=99t remember what was biggest chunk, which DMA
+>>> could carry, sorry. Are you using DMA or just PIO?
+>>> Is this happening only with cat and terminal or even
+>>> when you send data in other means. I believe that
+>>> people from Linaro could help you better.
+>>
+>> I assumed you would be the person who would have the
+>> information and would be able to help maintain the
+>> code in question since you submitted this not small
+>> patch.  Do you have a pointer to the hardware
+>> documentation of the DMA and uart?  Who at Linaro
+>> are you suggesting?
+>>
+>> Thanks for the questions, I'll look into them today.
+>
+> I switched from cat to several variations of dd and on
+> the host side I tried using programs other than minicom.
+>
+> My symptoms have now changed to something else that I
+> have seen in the past, but I am now suspicious of my
+> environment.  I'll reset and do some more tests.
+>
+> I'm not sure if the driver was in DMA or PIO mode, both
+> before the change and after.  This seems like a rather
+> important question to answer, so I'll try to verify
+> that tonight.
+>
+>>
+>> One more observation that may provide an insight:
+>> if I cat a file multiple times, the location of
+>> the dropped chunks varies.
+>>
+>> In further testing I also found examples of single
+>> bytes lost.
 
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-Reviewed-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
-Changes from v2:
-- Add reviewd-by tag from Marek Szyprowski 
-- No changes about operation
+[Shrink and reshuffle Cc list a bit to leave UART related people mostly=
+=2E]
 
-Changes from v1:
-- Enable the clock before changing the source by s3c24xx_serial_setsource()
-- Rebase it on Linux v4.6-rc1
+There are currently issues with DMA and UART on some platforms.
+Besides that Peter noticed the problem with latency how DMA tasklets
+are handled.
 
- drivers/tty/serial/samsung.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I could add that for testing (and better user experience) we are
+starving for fix to disable / enable DMA support runtime. Heikki or me
+might help with that when we have a bit more time.
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index ac7f8df54406..99bb23161dd6 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1271,6 +1271,8 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- 	/* check to see if we need  to change clock source */
- 
- 	if (ourport->baudclk != clk) {
-+		clk_prepare_enable(clk);
-+
- 		s3c24xx_serial_setsource(port, clk_sel);
- 
- 		if (!IS_ERR(ourport->baudclk)) {
-@@ -1278,8 +1280,6 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- 			ourport->baudclk = ERR_PTR(-EINVAL);
- 		}
- 
--		clk_prepare_enable(clk);
--
- 		ourport->baudclk = clk;
- 		ourport->baudclk_rate = clk ? clk_get_rate(clk) : 0;
- 	}
--- 
-1.9.1
+--=20
+With Best Regards,
+Andy Shevchenko
