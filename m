@@ -1,36 +1,36 @@
 From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 2/5] serial: imx: Use generic uart-has-rtscts DT
+Subject: Re: [PATCH v2 3/5] serial: mxs-auart: Use generic uart-has-rtscts DT
  property
-Date: Mon, 25 Apr 2016 07:50:44 -0500
-Message-ID: <20160425125043.GA3200@rob-hp-laptop>
+Date: Mon, 25 Apr 2016 07:51:13 -0500
+Message-ID: <20160425125113.GA3859@rob-hp-laptop>
 References: <1461338544-29568-1-git-send-email-geert+renesas@glider.be>
- <1461338544-29568-3-git-send-email-geert+renesas@glider.be>
+ <1461338544-29568-4-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1461338544-29568-3-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+In-Reply-To: <1461338544-29568-4-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Barry Song <baohua-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>, Qipan Li <Qipan.Li-kQvG35nSl+M@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Apr 22, 2016 at 05:22:21PM +0200, Geert Uytterhoeven wrote:
-> Convert the Freescale IMX UART driver from using the vendor-specific
+On Fri, Apr 22, 2016 at 05:22:22PM +0200, Geert Uytterhoeven wrote:
+> Convert the Freescale MXS AUART driver from using the vendor-specific
 > "fsl,uart-has-rtscts" to the generic "uart-has-rtscts" DT property, as
 > documented by the Generic Serial DT Bindings.
 > 
 > The old vendor-specific property is still recognized by the driver for
-> backwards compatibility, but deprecated.
+> backwards compatibility, but it is deprecated.
 > 
 > Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 > ---
 > v2:
 >   - No changes.
 > 
->  Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 4 ++--
->  drivers/tty/serial/imx.c                                  | 3 ++-
->  2 files changed, 4 insertions(+), 3 deletions(-)
+>  Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt | 2 +-
+>  drivers/tty/serial/mxs-auart.c                             | 3 ++-
+>  2 files changed, 3 insertions(+), 2 deletions(-)
 
 Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 --
