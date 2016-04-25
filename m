@@ -1,70 +1,39 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: sh-sci regression without scif_clk in 4.6-rc5
-Date: Mon, 25 Apr 2016 14:44:05 +0200
-Message-ID: <CAMuHMdUiMM4c+f2t8ZVAfpN-9+gdQFfffT40fiqsE=+JmRvQ4w@mail.gmail.com>
-References: <1461587081.28870.2.camel@bitron.ch>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 2/5] serial: imx: Use generic uart-has-rtscts DT
+ property
+Date: Mon, 25 Apr 2016 07:50:44 -0500
+Message-ID: <20160425125043.GA3200@rob-hp-laptop>
+References: <1461338544-29568-1-git-send-email-geert+renesas@glider.be>
+ <1461338544-29568-3-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1461587081.28870.2.camel@bitron.ch>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: =?UTF-8?Q?J=C3=BCrg_Billeter?= <j@bitron.ch>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, linux-renesas-soc@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1461338544-29568-3-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Barry Song <baohua-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>, Qipan Li <Qipan.Li-kQvG35nSl+M@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi J=C3=BCrg,
+On Fri, Apr 22, 2016 at 05:22:21PM +0200, Geert Uytterhoeven wrote:
+> Convert the Freescale IMX UART driver from using the vendor-specific
+> "fsl,uart-has-rtscts" to the generic "uart-has-rtscts" DT property, as
+> documented by the Generic Serial DT Bindings.
+> 
+> The old vendor-specific property is still recognized by the driver for
+> backwards compatibility, but deprecated.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> ---
+> v2:
+>   - No changes.
+> 
+>  Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 4 ++--
+>  drivers/tty/serial/imx.c                                  | 3 ++-
+>  2 files changed, 4 insertions(+), 3 deletions(-)
 
-On Mon, Apr 25, 2016 at 2:24 PM, J=C3=BCrg Billeter <j@bitron.ch> wrote=
-:
-> testing 4.6-rc5 on a custom R-Car H3 board, I noticed that the Linux
-> console attached to SCIF2 no longer works (it works on 4.5). earlycon
-> works fine, though. Unlike Salvator-X, this H3 board does not use an
-> external SCIF clock and thus, scif_clk is not enabled in the board
-> device tree.
->
-> The first "bad" commit is
-> commit 3e5dd6f6e690048d0fd1c913397506648724474e
-> Author: Geert Uytterhoeven <geert+renesas@glider.be>
-> Date:   Fri Feb 26 16:54:31 2016 +0100
->
->     clk: Ignore disabled DT clock providers
->
-> As far as I can tell, the issue is that, with the above commit,
-> devm_clk_get() returns -EPROBE_DEFER for disabled clocks and the sh-s=
-ci
-> driver aborts probing with -EPROBE_DEFER even though scif_clk is
-> optional.
->
-> I can work around this issue with the patch below but I'm not sure
-> about the correct fix. Intuitively, I would expect devm_clk_get() to
-> return -ENOENT instead of -EPROBE_DEFER for disabled clocks but I don=
-'t
-> know whether this can be changed in the common clock framework withou=
-t
-> risking issues in other places.
->
-> What do you think is the best solution to this issue?
-
-The real issue is that scif_clk in r8a7795.dtsi should not be marked
-disabled.
-
-Cfr. "ARM: dts: r8a7791: Don't disable referenced optional clocks"
-https://git.kernel.org/cgit/linux/kernel/git/horms/renesas.git/commit/?=
-h=3Dfixes-for-v4.6&id=3Dac6908b3049397b10bcfd8143d79cbdbbd266f02
-
-Will fix and send patches for all other affected SoCs...
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-=
-m68k.org
-
-In personal conversations with technical people, I call myself a hacker=
-=2E But
-when I'm talking to journalists I just say "programmer" or something li=
-ke that.
-                                -- Linus Torvalds
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
