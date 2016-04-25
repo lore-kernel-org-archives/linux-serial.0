@@ -1,218 +1,678 @@
-From: Jun Nie <jun.nie@linaro.org>
-Subject: Re: [PATCH v2] serial: amba-pl011: complete support to ZTE uart
-Date: Mon, 25 Apr 2016 14:53:02 +0800
-Message-ID: <CABymUCPvayLkc5h-3e0671pEEO_SshNJazk7W0B_oAUfL-6r0w@mail.gmail.com>
-References: <1458717126-20814-1-git-send-email-jun.nie@linaro.org>
- <CABymUCN_Os0gxoWjfwB_8V4kEkwBqKcrCCRjH8+-gm-Xt3-tYQ@mail.gmail.com>
- <570CF1B3.8080305@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <570CF1B3.8080305@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: G Gregory <graeme.gregory@linaro.org>, Timur Tabi <timur@codeaurora.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-Cc: Jason Liu <jason.liu@linaro.org>, Andre Przywara <andre.przywara@arm.com>, Shawn Guo <shawn.guo@linaro.org>, Peter Hurley <peter@hurleysoftware.com>
+From: Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: [PATCH 2/3] serial: mps2-uart: add MPS2 UART driver
+Date: Mon, 25 Apr 2016 09:47:47 +0100
+Message-ID: <1461574068-14641-3-git-send-email-vladimir.murzin@arm.com>
+References: <1461574068-14641-1-git-send-email-vladimir.murzin@arm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1461574068-14641-1-git-send-email-vladimir.murzin@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, arnd@arndb.de, sudeep.holla@arm.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-MjAxNi0wNC0xMiAyMTowMSBHTVQrMDg6MDAgSnVuIE5pZSA8anVuLm5pZUBsaW5hcm8ub3JnPjoK
-PiBPbiAyMDE25bm0MDTmnIgwMeaXpSAxNzo1MywgSnVuIE5pZSB3cm90ZToKPj4KPj4gMjAxNi0w
-My0yMyAxNToxMiBHTVQrMDg6MDAgSnVuIE5pZSA8anVuLm5pZUBsaW5hcm8ub3JnPjoKPj4+Cj4+
-PiBDb21wbGV0ZSBzdXBwb3J0IHRvIFpURSB1YXJ0IHdpdGggYWRkaW5nIHNwZWNpZmljIHJlZ2lz
-dGVycwo+Pj4gbWFzay4KPj4+IFdlIHVzZSBhIG1hZ2ljIGFtYmEgcGVyaXBoaWQgdmFsdWUgYXMg
-cGwwMTEgZGV2aWNlIG9uIFpURQo+Pj4gZG9lcyBub3QgaGF2ZSBhIHBlcmlwaGlkIHZhbHVlIGlu
-IHJlZ2lzdGVyLiBUaGUgbWFnaWMgdmFsdWUKPj4+IHNob3VsZCBhbHNvIGJlIGZlZWQgdmlhIGRl
-dmljZSB0cmVlICJhcm0scHJpbWVjZWxsLXBlcmlwaGlkIgo+Pj4gcHJvcGVydHkgdG8gbWF0Y2gg
-cGwwMTEgZHJpdmVyIGFuZCBnZXQgWlRFIHVhcnQgZGF0YS4KPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5
-OiBKdW4gTmllIDxqdW4ubmllQGxpbmFyby5vcmc+Cj4+PiAtLS0KPj4+ICAgZHJpdmVycy90dHkv
-c2VyaWFsL2FtYmEtcGwwMTEuYyB8IDczCj4+PiArKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKystLS0tLS0tLQo+Pj4gICBpbmNsdWRlL2xpbnV4L2FtYmEvc2VyaWFsLmggICAgIHwgIDQg
-KysrCj4+PiAgIDIgZmlsZXMgY2hhbmdlZCwgNjQgaW5zZXJ0aW9ucygrKSwgMTMgZGVsZXRpb25z
-KC0pCj4+Pgo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMK
-Pj4+IGIvZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYwo+Pj4gaW5kZXggN2MxOThlMC4u
-Njk2ZWUwYyAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMK
-Pj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMKPj4+IEBAIC05Myw2ICs5
-MywxMCBAQCBzdGF0aWMgdTE2IHBsMDExX3N0ZF9vZmZzZXRzW1JFR19BUlJBWV9TSVpFXSA9IHsK
-Pj4+ICAgc3RydWN0IHZlbmRvcl9kYXRhIHsKPj4+ICAgICAgICAgIGNvbnN0IHUxNiAgICAgICAg
-ICAgICAgICpyZWdfb2Zmc2V0Owo+Pj4gICAgICAgICAgdW5zaWduZWQgaW50ICAgICAgICAgICAg
-aWZsczsKPj4+ICsgICAgICAgdW5zaWduZWQgaW50ICAgICAgICAgICAgZnJfYnVzeTsKPj4+ICsg
-ICAgICAgdW5zaWduZWQgaW50ICAgICAgICAgICAgZnJfZHNyOwo+Pj4gKyAgICAgICB1bnNpZ25l
-ZCBpbnQgICAgICAgICAgICBmcl9jdHM7Cj4+PiArICAgICAgIHVuc2lnbmVkIGludCAgICAgICAg
-ICAgIGZyX3JpOwo+Pj4gICAgICAgICAgYm9vbCAgICAgICAgICAgICAgICAgICAgYWNjZXNzXzMy
-YjsKPj4+ICAgICAgICAgIGJvb2wgICAgICAgICAgICAgICAgICAgIG92ZXJzYW1wbGluZzsKPj4+
-ICAgICAgICAgIGJvb2wgICAgICAgICAgICAgICAgICAgIGRtYV90aHJlc2hvbGQ7Cj4+PiBAQCAt
-MTExLDYgKzExNSwxMCBAQCBzdGF0aWMgdW5zaWduZWQgaW50IGdldF9maWZvc2l6ZV9hcm0oc3Ry
-dWN0Cj4+PiBhbWJhX2RldmljZSAqZGV2KQo+Pj4gICBzdGF0aWMgc3RydWN0IHZlbmRvcl9kYXRh
-IHZlbmRvcl9hcm0gPSB7Cj4+PiAgICAgICAgICAucmVnX29mZnNldCAgICAgICAgICAgICA9IHBs
-MDExX3N0ZF9vZmZzZXRzLAo+Pj4gICAgICAgICAgLmlmbHMgICAgICAgICAgICAgICAgICAgPSBV
-QVJUMDExX0lGTFNfUlg0Xzh8VUFSVDAxMV9JRkxTX1RYNF84LAo+Pj4gKyAgICAgICAuZnJfYnVz
-eSAgICAgICAgICAgICAgICA9IFVBUlQwMXhfRlJfQlVTWSwKPj4+ICsgICAgICAgLmZyX2RzciAg
-ICAgICAgICAgICAgICAgPSBVQVJUMDF4X0ZSX0RTUiwKPj4+ICsgICAgICAgLmZyX2N0cyAgICAg
-ICAgICAgICAgICAgPSBVQVJUMDF4X0ZSX0NUUywKPj4+ICsgICAgICAgLmZyX3JpICAgICAgICAg
-ICAgICAgICAgPSBVQVJUMDExX0ZSX1JJLAo+Pj4gICAgICAgICAgLm92ZXJzYW1wbGluZyAgICAg
-ICAgICAgPSBmYWxzZSwKPj4+ICAgICAgICAgIC5kbWFfdGhyZXNob2xkICAgICAgICAgID0gZmFs
-c2UsCj4+PiAgICAgICAgICAuY3RzX2V2ZW50X3dvcmthcm91bmQgICA9IGZhbHNlLAo+Pj4gQEAg
-LTEyMSw2ICsxMjksMTAgQEAgc3RhdGljIHN0cnVjdCB2ZW5kb3JfZGF0YSB2ZW5kb3JfYXJtID0g
-ewo+Pj4KPj4+ICAgc3RhdGljIHN0cnVjdCB2ZW5kb3JfZGF0YSB2ZW5kb3Jfc2JzYSA9IHsKPj4+
-ICAgICAgICAgIC5yZWdfb2Zmc2V0ICAgICAgICAgICAgID0gcGwwMTFfc3RkX29mZnNldHMsCj4+
-PiArICAgICAgIC5mcl9idXN5ICAgICAgICAgICAgICAgID0gVUFSVDAxeF9GUl9CVVNZLAo+Pj4g
-KyAgICAgICAuZnJfZHNyICAgICAgICAgICAgICAgICA9IFVBUlQwMXhfRlJfRFNSLAo+Pj4gKyAg
-ICAgICAuZnJfY3RzICAgICAgICAgICAgICAgICA9IFVBUlQwMXhfRlJfQ1RTLAo+Pj4gKyAgICAg
-ICAuZnJfcmkgICAgICAgICAgICAgICAgICA9IFVBUlQwMTFfRlJfUkksCj4+PiAgICAgICAgICAu
-b3ZlcnNhbXBsaW5nICAgICAgICAgICA9IGZhbHNlLAo+Pj4gICAgICAgICAgLmRtYV90aHJlc2hv
-bGQgICAgICAgICAgPSBmYWxzZSwKPj4+ICAgICAgICAgIC5jdHNfZXZlbnRfd29ya2Fyb3VuZCAg
-ID0gZmFsc2UsCj4+PiBAQCAtMTYzLDYgKzE3NSwxMCBAQCBzdGF0aWMgdW5zaWduZWQgaW50IGdl
-dF9maWZvc2l6ZV9zdChzdHJ1Y3QKPj4+IGFtYmFfZGV2aWNlICpkZXYpCj4+PiAgIHN0YXRpYyBz
-dHJ1Y3QgdmVuZG9yX2RhdGEgdmVuZG9yX3N0ID0gewo+Pj4gICAgICAgICAgLnJlZ19vZmZzZXQg
-ICAgICAgICAgICAgPSBwbDAxMV9zdF9vZmZzZXRzLAo+Pj4gICAgICAgICAgLmlmbHMgICAgICAg
-ICAgICAgICAgICAgPQo+Pj4gVUFSVDAxMV9JRkxTX1JYX0hBTEZ8VUFSVDAxMV9JRkxTX1RYX0hB
-TEYsCj4+PiArICAgICAgIC5mcl9idXN5ICAgICAgICAgICAgICAgID0gVUFSVDAxeF9GUl9CVVNZ
-LAo+Pj4gKyAgICAgICAuZnJfZHNyICAgICAgICAgICAgICAgICA9IFVBUlQwMXhfRlJfRFNSLAo+
-Pj4gKyAgICAgICAuZnJfY3RzICAgICAgICAgICAgICAgICA9IFVBUlQwMXhfRlJfQ1RTLAo+Pj4g
-KyAgICAgICAuZnJfcmkgICAgICAgICAgICAgICAgICA9IFVBUlQwMTFfRlJfUkksCj4+PiAgICAg
-ICAgICAub3ZlcnNhbXBsaW5nICAgICAgICAgICA9IHRydWUsCj4+PiAgICAgICAgICAuZG1hX3Ro
-cmVzaG9sZCAgICAgICAgICA9IHRydWUsCj4+PiAgICAgICAgICAuY3RzX2V2ZW50X3dvcmthcm91
-bmQgICA9IHRydWUsCj4+PiBAQCAtMTg3LDExICsyMDMsMjUgQEAgc3RhdGljIGNvbnN0IHUxNiBw
-bDAxMV96dGVfb2Zmc2V0c1tSRUdfQVJSQVlfU0laRV0KPj4+ID0gewo+Pj4gICAgICAgICAgW1JF
-R19ETUFDUl0gPSBaWF9VQVJUMDExX0RNQUNSLAo+Pj4gICB9Owo+Pj4KPj4+ICtzdGF0aWMgdW5z
-aWduZWQgaW50IGdldF9maWZvc2l6ZV96dGUoc3RydWN0IGFtYmFfZGV2aWNlICpkZXYpCj4+PiAr
-ewo+Pj4gKyAgICAgICByZXR1cm4gMTY7Cj4+PiArfQo+Pj4gKwo+Pj4gICBzdGF0aWMgc3RydWN0
-IHZlbmRvcl9kYXRhIHZlbmRvcl96dGUgX19tYXliZV91bnVzZWQgPSB7Cj4+PiAgICAgICAgICAu
-cmVnX29mZnNldCAgICAgICAgICAgICA9IHBsMDExX3p0ZV9vZmZzZXRzLAo+Pj4gICAgICAgICAg
-LmFjY2Vzc18zMmIgICAgICAgICAgICAgPSB0cnVlLAo+Pj4gICAgICAgICAgLmlmbHMgICAgICAg
-ICAgICAgICAgICAgPSBVQVJUMDExX0lGTFNfUlg0Xzh8VUFSVDAxMV9JRkxTX1RYNF84LAo+Pj4g
-LSAgICAgICAuZ2V0X2ZpZm9zaXplICAgICAgICAgICA9IGdldF9maWZvc2l6ZV9hcm0sCj4+PiAr
-ICAgICAgIC5mcl9idXN5ICAgICAgICAgICAgICAgID0gWlhfVUFSVDAxeF9GUl9CVVNZLAo+Pj4g
-KyAgICAgICAuZnJfZHNyICAgICAgICAgICAgICAgICA9IFpYX1VBUlQwMXhfRlJfRFNSLAo+Pj4g
-KyAgICAgICAuZnJfY3RzICAgICAgICAgICAgICAgICA9IFpYX1VBUlQwMXhfRlJfQ1RTLAo+Pj4g
-KyAgICAgICAuZnJfcmkgICAgICAgICAgICAgICAgICA9IFpYX1VBUlQwMTFfRlJfUkksCj4+PiAr
-ICAgICAgIC5vdmVyc2FtcGxpbmcgICAgICAgICAgID0gZmFsc2UsCj4+PiArICAgICAgIC5kbWFf
-dGhyZXNob2xkICAgICAgICAgID0gZmFsc2UsCj4+PiArICAgICAgIC5jdHNfZXZlbnRfd29ya2Fy
-b3VuZCAgID0gZmFsc2UsCj4+PiArICAgICAgIC5hbHdheXNfZW5hYmxlZCAgICAgICAgID0gZmFs
-c2UsCj4+PiArICAgICAgIC5maXhlZF9vcHRpb25zICAgICAgICAgID0gZmFsc2UsCj4+PiArICAg
-ICAgIC5nZXRfZmlmb3NpemUgICAgICAgICAgID0gZ2V0X2ZpZm9zaXplX3p0ZSwKPj4+ICAgfTsK
-Pj4+Cj4+PiAgIC8qIERlYWxzIHdpdGggRE1BIHRyYW5zYWN0aW9ucyAqLwo+Pj4gQEAgLTIzNiw2
-ICsyNjYsMTAgQEAgc3RydWN0IHVhcnRfYW1iYV9wb3J0IHsKPj4+ICAgICAgICAgIHVuc2lnbmVk
-IGludCAgICAgICAgICAgIGltOyAgICAgICAgICAgICAvKiBpbnRlcnJ1cHQgbWFzayAqLwo+Pj4g
-ICAgICAgICAgdW5zaWduZWQgaW50ICAgICAgICAgICAgb2xkX3N0YXR1czsKPj4+ICAgICAgICAg
-IHVuc2lnbmVkIGludCAgICAgICAgICAgIGZpZm9zaXplOyAgICAgICAvKiB2ZW5kb3Itc3BlY2lm
-aWMgKi8KPj4+ICsgICAgICAgdW5zaWduZWQgaW50ICAgICAgICAgICAgZnJfYnVzeTsgICAgICAg
-IC8qIHZlbmRvci1zcGVjaWZpYyAqLwo+Pj4gKyAgICAgICB1bnNpZ25lZCBpbnQgICAgICAgICAg
-ICBmcl9kc3I7ICAgICAgICAgLyogdmVuZG9yLXNwZWNpZmljICovCj4+PiArICAgICAgIHVuc2ln
-bmVkIGludCAgICAgICAgICAgIGZyX2N0czsgICAgICAgICAvKiB2ZW5kb3Itc3BlY2lmaWMgKi8K
-Pj4+ICsgICAgICAgdW5zaWduZWQgaW50ICAgICAgICAgICAgZnJfcmk7ICAgICAgICAgIC8qIHZl
-bmRvci1zcGVjaWZpYyAqLwo+Pj4gICAgICAgICAgdW5zaWduZWQgaW50ICAgICAgICAgICAgb2xk
-X2NyOyAgICAgICAgIC8qIHN0YXRlIGR1cmluZyBzaHV0ZG93bgo+Pj4gKi8KPj4+ICAgICAgICAg
-IGJvb2wgICAgICAgICAgICAgICAgICAgIGF1dG9ydHM7Cj4+PiAgICAgICAgICB1bnNpZ25lZCBp
-bnQgICAgICAgICAgICBmaXhlZF9iYXVkOyAgICAgLyogdmVuZG9yLXNldCBmaXhlZCBiYXVkCj4+
-PiByYXRlICovCj4+PiBAQCAtMTE2Niw3ICsxMjAwLDcgQEAgc3RhdGljIHZvaWQgcGwwMTFfZG1h
-X3NodXRkb3duKHN0cnVjdAo+Pj4gdWFydF9hbWJhX3BvcnQgKnVhcCkKPj4+ICAgICAgICAgICAg
-ICAgICAgcmV0dXJuOwo+Pj4KPj4+ICAgICAgICAgIC8qIERpc2FibGUgUlggYW5kIFRYIERNQSAq
-Lwo+Pj4gLSAgICAgICB3aGlsZSAocGwwMTFfcmVhZCh1YXAsIFJFR19GUikgJiBVQVJUMDF4X0ZS
-X0JVU1kpCj4+PiArICAgICAgIHdoaWxlIChwbDAxMV9yZWFkKHVhcCwgUkVHX0ZSKSAmIHVhcC0+
-ZnJfYnVzeSkKPj4+ICAgICAgICAgICAgICAgICAgY3B1X3JlbGF4KCk7Cj4+Pgo+Pj4gICAgICAg
-ICAgc3Bpbl9sb2NrX2lycSgmdWFwLT5wb3J0LmxvY2spOwo+Pj4gQEAgLTE0MTUsMTEgKzE0NDks
-MTEgQEAgc3RhdGljIHZvaWQgcGwwMTFfbW9kZW1fc3RhdHVzKHN0cnVjdAo+Pj4gdWFydF9hbWJh
-X3BvcnQgKnVhcCkKPj4+ICAgICAgICAgIGlmIChkZWx0YSAmIFVBUlQwMXhfRlJfRENEKQo+Pj4g
-ICAgICAgICAgICAgICAgICB1YXJ0X2hhbmRsZV9kY2RfY2hhbmdlKCZ1YXAtPnBvcnQsIHN0YXR1
-cyAmCj4+PiBVQVJUMDF4X0ZSX0RDRCk7Cj4+Pgo+Pj4gLSAgICAgICBpZiAoZGVsdGEgJiBVQVJU
-MDF4X0ZSX0RTUikKPj4+ICsgICAgICAgaWYgKGRlbHRhICYgdWFwLT5mcl9kc3IpCj4+PiAgICAg
-ICAgICAgICAgICAgIHVhcC0+cG9ydC5pY291bnQuZHNyKys7Cj4+Pgo+Pj4gLSAgICAgICBpZiAo
-ZGVsdGEgJiBVQVJUMDF4X0ZSX0NUUykKPj4+IC0gICAgICAgICAgICAgICB1YXJ0X2hhbmRsZV9j
-dHNfY2hhbmdlKCZ1YXAtPnBvcnQsIHN0YXR1cyAmCj4+PiBVQVJUMDF4X0ZSX0NUUyk7Cj4+PiAr
-ICAgICAgIGlmIChkZWx0YSAmIHVhcC0+ZnJfY3RzKQo+Pj4gKyAgICAgICAgICAgICAgIHVhcnRf
-aGFuZGxlX2N0c19jaGFuZ2UoJnVhcC0+cG9ydCwgc3RhdHVzICYgdWFwLT5mcl9jdHMpOwo+Pj4K
-Pj4+ICAgICAgICAgIHdha2VfdXBfaW50ZXJydXB0aWJsZSgmdWFwLT5wb3J0LnN0YXRlLT5wb3J0
-LmRlbHRhX21zcl93YWl0KTsKPj4+ICAgfQo+Pj4gQEAgLTE0OTIsNyArMTUyNiw3IEBAIHN0YXRp
-YyB1bnNpZ25lZCBpbnQgcGwwMTFfdHhfZW1wdHkoc3RydWN0IHVhcnRfcG9ydAo+Pj4gKnBvcnQp
-Cj4+PiAgICAgICAgICBzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVhcCA9Cj4+PiAgICAgICAgICAg
-ICAgY29udGFpbmVyX29mKHBvcnQsIHN0cnVjdCB1YXJ0X2FtYmFfcG9ydCwgcG9ydCk7Cj4+PiAg
-ICAgICAgICB1bnNpZ25lZCBpbnQgc3RhdHVzID0gcGwwMTFfcmVhZCh1YXAsIFJFR19GUik7Cj4+
-PiAtICAgICAgIHJldHVybiBzdGF0dXMgJiAoVUFSVDAxeF9GUl9CVVNZfFVBUlQwMXhfRlJfVFhG
-RikgPyAwIDoKPj4+IFRJT0NTRVJfVEVNVDsKPj4+ICsgICAgICAgcmV0dXJuIHN0YXR1cyAmICh1
-YXAtPmZyX2J1c3kgfCBVQVJUMDF4X0ZSX1RYRkYpID8gMCA6Cj4+PiBUSU9DU0VSX1RFTVQ7Cj4+
-PiAgIH0KPj4+Cj4+PiAgIHN0YXRpYyB1bnNpZ25lZCBpbnQgcGwwMTFfZ2V0X21jdHJsKHN0cnVj
-dCB1YXJ0X3BvcnQgKnBvcnQpCj4+PiBAQCAtMTUwNyw5ICsxNTQxLDkgQEAgc3RhdGljIHVuc2ln
-bmVkIGludCBwbDAxMV9nZXRfbWN0cmwoc3RydWN0Cj4+PiB1YXJ0X3BvcnQgKnBvcnQpCj4+PiAg
-ICAgICAgICAgICAgICAgIHJlc3VsdCB8PSB0aW9jbWJpdAo+Pj4KPj4+ICAgICAgICAgIFRJT0NN
-QklUKFVBUlQwMXhfRlJfRENELCBUSU9DTV9DQVIpOwo+Pj4gLSAgICAgICBUSU9DTUJJVChVQVJU
-MDF4X0ZSX0RTUiwgVElPQ01fRFNSKTsKPj4+IC0gICAgICAgVElPQ01CSVQoVUFSVDAxeF9GUl9D
-VFMsIFRJT0NNX0NUUyk7Cj4+PiAtICAgICAgIFRJT0NNQklUKFVBUlQwMTFfRlJfUkksIFRJT0NN
-X1JORyk7Cj4+PiArICAgICAgIFRJT0NNQklUKHVhcC0+ZnJfZHNyLCBUSU9DTV9EU1IpOwo+Pj4g
-KyAgICAgICBUSU9DTUJJVCh1YXAtPmZyX2N0cywgVElPQ01fQ1RTKTsKPj4+ICsgICAgICAgVElP
-Q01CSVQodWFwLT5mcl9yaSwgVElPQ01fUk5HKTsKPj4+ICAgI3VuZGVmIFRJT0NNQklUCj4+PiAg
-ICAgICAgICByZXR1cm4gcmVzdWx0Owo+Pj4gICB9Cj4+PiBAQCAtMjA4Niw3ICsyMTIwLDcgQEAg
-c3RhdGljIGludCBwbDAxMV92ZXJpZnlfcG9ydChzdHJ1Y3QgdWFydF9wb3J0Cj4+PiAqcG9ydCwg
-c3RydWN0IHNlcmlhbF9zdHJ1Y3QgKnNlcikKPj4+ICAgICAgICAgIHJldHVybiByZXQ7Cj4+PiAg
-IH0KPj4+Cj4+PiAtc3RhdGljIHN0cnVjdCB1YXJ0X29wcyBhbWJhX3BsMDExX3BvcHMgPSB7Cj4+
-PiArc3RhdGljIGNvbnN0IHN0cnVjdCB1YXJ0X29wcyBhbWJhX3BsMDExX3BvcHMgPSB7Cj4+PiAg
-ICAgICAgICAudHhfZW1wdHkgICAgICAgPSBwbDAxMV90eF9lbXB0eSwKPj4+ICAgICAgICAgIC5z
-ZXRfbWN0cmwgICAgICA9IHBsMDExX3NldF9tY3RybCwKPj4+ICAgICAgICAgIC5nZXRfbWN0cmwg
-ICAgICA9IHBsMDExX2dldF9tY3RybCwKPj4+IEBAIC0yMTkwLDcgKzIyMjQsNyBAQCBwbDAxMV9j
-b25zb2xlX3dyaXRlKHN0cnVjdCBjb25zb2xlICpjbywgY29uc3QgY2hhcgo+Pj4gKnMsIHVuc2ln
-bmVkIGludCBjb3VudCkKPj4+ICAgICAgICAgICAqICAgICAgRmluYWxseSwgd2FpdCBmb3IgdHJh
-bnNtaXR0ZXIgdG8gYmVjb21lIGVtcHR5Cj4+PiAgICAgICAgICAgKiAgICAgIGFuZCByZXN0b3Jl
-IHRoZSBUQ1IKPj4+ICAgICAgICAgICAqLwo+Pj4gLSAgICAgICB3aGlsZSAocGwwMTFfcmVhZCh1
-YXAsIFJFR19GUikgJiBVQVJUMDF4X0ZSX0JVU1kpCj4+PiArICAgICAgIHdoaWxlIChwbDAxMV9y
-ZWFkKHVhcCwgUkVHX0ZSKSAmIHVhcC0+ZnJfYnVzeSkKPj4+ICAgICAgICAgICAgICAgICAgY3B1
-X3JlbGF4KCk7Cj4+PiAgICAgICAgICBpZiAoIXVhcC0+dmVuZG9yLT5hbHdheXNfZW5hYmxlZCkK
-Pj4+ICAgICAgICAgICAgICAgICAgcGwwMTFfd3JpdGUob2xkX2NyLCB1YXAsIFJFR19DUik7Cj4+
-PiBAQCAtMjQ3Miw4ICsyNTA2LDEyIEBAIHN0YXRpYyBpbnQgcGwwMTFfcHJvYmUoc3RydWN0IGFt
-YmFfZGV2aWNlICpkZXYsCj4+PiBjb25zdCBzdHJ1Y3QgYW1iYV9pZCAqaWQpCj4+PiAgICAgICAg
-ICAgICAgICAgIHJldHVybiBQVFJfRVJSKHVhcC0+Y2xrKTsKPj4+Cj4+PiAgICAgICAgICB1YXAt
-PnJlZ19vZmZzZXQgPSB2ZW5kb3ItPnJlZ19vZmZzZXQ7Cj4+PiAtICAgICAgIHVhcC0+dmVuZG9y
-ID0gdmVuZG9yOwo+Pj4gLSAgICAgICB1YXAtPmZpZm9zaXplID0gdmVuZG9yLT5nZXRfZmlmb3Np
-emUoZGV2KTsKPj4+ICsgICAgICAgdWFwLT52ZW5kb3IgICAgID0gdmVuZG9yOwo+Pj4gKyAgICAg
-ICB1YXAtPmZpZm9zaXplICAgPSB2ZW5kb3ItPmdldF9maWZvc2l6ZShkZXYpOwo+Pj4gKyAgICAg
-ICB1YXAtPmZyX2J1c3kgICAgPSB2ZW5kb3ItPmZyX2J1c3k7Cj4+PiArICAgICAgIHVhcC0+ZnJf
-ZHNyICAgICA9IHZlbmRvci0+ZnJfZHNyOwo+Pj4gKyAgICAgICB1YXAtPmZyX2N0cyAgICAgPSB2
-ZW5kb3ItPmZyX2N0czsKPj4+ICsgICAgICAgdWFwLT5mcl9yaSAgICAgID0gdmVuZG9yLT5mcl9y
-aTsKPj4+ICAgICAgICAgIHVhcC0+cG9ydC5pb3R5cGUgPSB2ZW5kb3ItPmFjY2Vzc18zMmIgPyBV
-UElPX01FTTMyIDogVVBJT19NRU07Cj4+PiAgICAgICAgICB1YXAtPnBvcnQuaXJxID0gZGV2LT5p
-cnFbMF07Cj4+PiAgICAgICAgICB1YXAtPnBvcnQub3BzID0gJmFtYmFfcGwwMTFfcG9wczsKPj4+
-IEBAIC0yNTU1LDYgKzI1OTMsMTAgQEAgc3RhdGljIGludCBzYnNhX3VhcnRfcHJvYmUoc3RydWN0
-IHBsYXRmb3JtX2RldmljZQo+Pj4gKnBkZXYpCj4+PiAgICAgICAgICB1YXAtPnJlZ19vZmZzZXQg
-PSB2ZW5kb3Jfc2JzYS5yZWdfb2Zmc2V0Owo+Pj4gICAgICAgICAgdWFwLT52ZW5kb3IgICAgID0g
-JnZlbmRvcl9zYnNhOwo+Pj4gICAgICAgICAgdWFwLT5maWZvc2l6ZSAgID0gMzI7Cj4+PiArICAg
-ICAgIHVhcC0+ZnJfYnVzeSAgICA9IHZlbmRvcl9zYnNhLmZyX2J1c3k7Cj4+PiArICAgICAgIHVh
-cC0+ZnJfZHNyICAgICA9IHZlbmRvcl9zYnNhLmZyX2RzcjsKPj4+ICsgICAgICAgdWFwLT5mcl9j
-dHMgICAgID0gdmVuZG9yX3Nic2EuZnJfY3RzOwo+Pj4gKyAgICAgICB1YXAtPmZyX3JpICAgICAg
-PSB2ZW5kb3Jfc2JzYS5mcl9yaTsKPj4+ICAgICAgICAgIHVhcC0+cG9ydC5pb3R5cGUgPSB2ZW5k
-b3Jfc2JzYS5hY2Nlc3NfMzJiID8gVVBJT19NRU0zMiA6Cj4+PiBVUElPX01FTTsKPj4+ICAgICAg
-ICAgIHVhcC0+cG9ydC5pcnEgICA9IHBsYXRmb3JtX2dldF9pcnEocGRldiwgMCk7Cj4+PiAgICAg
-ICAgICB1YXAtPnBvcnQub3BzICAgPSAmc2JzYV91YXJ0X3BvcHM7Cj4+PiBAQCAtMjYxNSw2ICsy
-NjU3LDExIEBAIHN0YXRpYyBzdHJ1Y3QgYW1iYV9pZCBwbDAxMV9pZHNbXSA9IHsKPj4+ICAgICAg
-ICAgICAgICAgICAgLm1hc2sgICA9IDB4MDBmZmZmZmYsCj4+PiAgICAgICAgICAgICAgICAgIC5k
-YXRhICAgPSAmdmVuZG9yX3N0LAo+Pj4gICAgICAgICAgfSwKPj4+ICsgICAgICAgewo+Pj4gKyAg
-ICAgICAgICAgICAgIC5pZCAgICAgPSAweGZlZmVmZSwKPj4+ICsgICAgICAgICAgICAgICAubWFz
-ayAgID0gMHhmZmZmZmYsCj4+PiArICAgICAgICAgICAgICAgLmRhdGEgICA9ICZ2ZW5kb3JfenRl
-LAo+Pj4gKyAgICAgICB9LAo+Pj4gICAgICAgICAgeyAwLCAwIH0sCj4+PiAgIH07Cj4+Pgo+Pj4g
-ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvYW1iYS9zZXJpYWwuaCBiL2luY2x1ZGUvbGludXgv
-YW1iYS9zZXJpYWwuaAo+Pj4gaW5kZXggZDc2YTE5Yi4uNzUwZjJlZiAxMDA2NDQKPj4+IC0tLSBh
-L2luY2x1ZGUvbGludXgvYW1iYS9zZXJpYWwuaAo+Pj4gKysrIGIvaW5jbHVkZS9saW51eC9hbWJh
-L3NlcmlhbC5oCj4+PiBAQCAtMTAzLDYgKzEwMywxMCBAQAo+Pj4gICAjZGVmaW5lIFVBUlQwMXhf
-RlJfRFNSICAgICAgICAgICAgICAgICAweDAwMgo+Pj4gICAjZGVmaW5lIFVBUlQwMXhfRlJfQ1RT
-ICAgICAgICAgICAgICAgICAweDAwMQo+Pj4gICAjZGVmaW5lIFVBUlQwMXhfRlJfVE1TSyAgICAg
-ICAgICAgICAgICAoVUFSVDAxeF9GUl9UWEZGICsKPj4+IFVBUlQwMXhfRlJfQlVTWSkKPj4+ICsj
-ZGVmaW5lIFpYX1VBUlQwMXhfRlJfQlVTWSAgICAgMHgzMDAKPj4+ICsjZGVmaW5lIFpYX1VBUlQw
-MXhfRlJfRFNSICAgICAgMHgwMDgKPj4+ICsjZGVmaW5lIFpYX1VBUlQwMXhfRlJfQ1RTICAgICAg
-MHgwMDIKPj4+ICsjZGVmaW5lIFpYX1VBUlQwMTFfRlJfUkkgICAgICAgMHgwMDEKPj4+Cj4+PiAg
-ICNkZWZpbmUgVUFSVDAxMV9DUl9DVFNFTiAgICAgICAweDgwMDAgIC8qIENUUyBoYXJkd2FyZSBm
-bG93IGNvbnRyb2wgKi8KPj4+ICAgI2RlZmluZSBVQVJUMDExX0NSX1JUU0VOICAgICAgIDB4NDAw
-MCAgLyogUlRTIGhhcmR3YXJlIGZsb3cgY29udHJvbCAqLwo+Pj4gLS0KPj4+IDEuOS4xCj4+Pgo+
-Cj4gUnVzc2VsbCwKPgo+IERvIHlvdSBoYXZlIGFueSBjb21tZW50cyB0byB0aGVzZSBjaGFuZ2U/
-Cj4KPiBKdW4KCkdyZWcsCgpEbyB5b3UgaGF2ZSBhbnkgaWRlYSBvbiBob3cgdG8gZHJpdmUgcmV2
-aWV3IG9uIHRoaXMgcGF0Y2g/IFNlZW1zCm1haW50YWluZXIgUnVzc2VsbCBpcyB0b28gYnVzeSBh
-bmQgbWlzc2luZyBmb3IgdGhpcyB0aHJlYWQgYW5kIG90aGVycwpkbyBub3QgaGF2ZSBjb21tZW50
-cy4gWW91ciBjb21tZW50cyBhcmUgYXBwcmVjaWF0ZWQhCgpUaGFua3MhCkp1bgoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBt
-YWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9s
-aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+This driver adds support to the UART controller found on ARM MPS2
+platform.
+
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Vladimir Murzin <vladimir.murzin@arm.com>
+---
+ drivers/tty/serial/Kconfig       |   12 +
+ drivers/tty/serial/Makefile      |    1 +
+ drivers/tty/serial/mps2-uart.c   |  597 ++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/serial_core.h |    3 +
+ 4 files changed, 613 insertions(+)
+ create mode 100644 drivers/tty/serial/mps2-uart.c
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 13d4ed6..3673ef0 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1446,6 +1446,18 @@ config SERIAL_EFM32_UART
+ 	  This driver support the USART and UART ports on
+ 	  Energy Micro's efm32 SoCs.
+ 
++config SERIAL_MPS2_UART_CONSOLE
++	bool "MPS2 UART console support"
++	depends on SERIAL_MPS2_UART
++	select SERIAL_CORE_CONSOLE
++
++config SERIAL_MPS2_UART
++	bool "MPS2 UART port"
++	depends on ARM || COMPILE_TEST
++	select SERIAL_CORE
++	help
++	  This driver support the UART ports on ARM MPS2.
++
+ config SERIAL_EFM32_UART_CONSOLE
+ 	bool "EFM32 UART/USART console support"
+ 	depends on SERIAL_EFM32_UART=y
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 8c261ad..81e9057 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -91,6 +91,7 @@ obj-$(CONFIG_SERIAL_MEN_Z135)	+= men_z135_uart.o
+ obj-$(CONFIG_SERIAL_SPRD) += sprd_serial.o
+ obj-$(CONFIG_SERIAL_STM32)	+= stm32-usart.o
+ obj-$(CONFIG_SERIAL_MVEBU_UART)	+= mvebu-uart.o
++obj-$(CONFIG_SERIAL_MPS2_UART)	+= mps2-uart.o
+ 
+ # GPIOLIB helpers for modem control lines
+ obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
+diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
+new file mode 100644
+index 0000000..e571e4c
+--- /dev/null
++++ b/drivers/tty/serial/mps2-uart.c
+@@ -0,0 +1,597 @@
++/*
++ * Copyright (C) 2015 ARM Limited
++ *
++ * Author: Vladimir Murzin <vladimir.murzin@arm.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * TODO: support for SysRq
++ */
++
++#define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
++
++#include <linux/bitops.h>
++#include <linux/clk.h>
++#include <linux/console.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/serial_core.h>
++#include <linux/tty_flip.h>
++#include <linux/types.h>
++
++#define SERIAL_NAME	"ttyMPS"
++#define DRIVER_NAME	"mps2-uart"
++#define MAKE_NAME(x)	(DRIVER_NAME # x)
++
++#define UARTn_DATA				0x00
++
++#define UARTn_STATE				0x04
++#define UARTn_STATE_TX_FULL			BIT(0)
++#define UARTn_STATE_RX_FULL			BIT(1)
++#define UARTn_STATE_TX_OVERRUN			BIT(2)
++#define UARTn_STATE_RX_OVERRUN			BIT(3)
++
++#define UARTn_CTRL				0x08
++#define UARTn_CTRL_TX_ENABLE			BIT(0)
++#define UARTn_CTRL_RX_ENABLE			BIT(1)
++#define UARTn_CTRL_TX_INT_ENABLE		BIT(2)
++#define UARTn_CTRL_RX_INT_ENABLE		BIT(3)
++#define UARTn_CTRL_TX_OVERRUN_INT_ENABLE	BIT(4)
++#define UARTn_CTRL_RX_OVERRUN_INT_ENABLE	BIT(5)
++
++#define UARTn_INT				0x0c
++#define UARTn_INT_TX				BIT(0)
++#define UARTn_INT_RX				BIT(1)
++#define UARTn_INT_TX_OVERRUN			BIT(2)
++#define UARTn_INT_RX_OVERRUN			BIT(3)
++
++#define UARTn_BAUDDIV				0x10
++#define UARTn_BAUDDIV_MASK			GENMASK(20, 0)
++
++/*
++ * Helpers to make typical enable/disable operations more readable.
++ */
++#define UARTn_CTRL_TX_GRP	(UARTn_CTRL_TX_ENABLE		 |\
++				 UARTn_CTRL_TX_INT_ENABLE	 |\
++				 UARTn_CTRL_TX_OVERRUN_INT_ENABLE)
++
++#define UARTn_CTRL_RX_GRP	(UARTn_CTRL_RX_ENABLE		 |\
++				 UARTn_CTRL_RX_INT_ENABLE	 |\
++				 UARTn_CTRL_RX_OVERRUN_INT_ENABLE)
++
++#define MPS2_MAX_PORTS		3
++
++struct mps2_uart_port {
++	struct uart_port port;
++	struct clk *clk;
++	unsigned int tx_irq;
++	unsigned int rx_irq;
++};
++
++static inline struct mps2_uart_port *to_mps2_port(struct uart_port *port)
++{
++	return container_of(port, struct mps2_uart_port, port);
++}
++
++static void mps2_uart_write8(struct uart_port *port, u8 val, unsigned int off)
++{
++	struct mps2_uart_port *mps_port = to_mps2_port(port);
++
++	writeb(val, mps_port->port.membase + off);
++}
++
++static u8 mps2_uart_read8(struct uart_port *port, unsigned int off)
++{
++	struct mps2_uart_port *mps_port = to_mps2_port(port);
++
++	return readb(mps_port->port.membase + off);
++}
++
++static void mps2_uart_write32(struct uart_port *port, u32 val, unsigned int off)
++{
++	struct mps2_uart_port *mps_port = to_mps2_port(port);
++
++	writel_relaxed(val, mps_port->port.membase + off);
++}
++
++static unsigned int mps2_uart_tx_empty(struct uart_port *port)
++{
++	u8 status = mps2_uart_read8(port, UARTn_STATE);
++
++	return (status & UARTn_STATE_TX_FULL) ? 0 : TIOCSER_TEMT;
++}
++
++static void mps2_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
++{
++}
++
++static unsigned int mps2_uart_get_mctrl(struct uart_port *port)
++{
++	return TIOCM_CAR | TIOCM_CTS | TIOCM_DSR;
++}
++
++static void mps2_uart_stop_tx(struct uart_port *port)
++{
++	u8 control = mps2_uart_read8(port, UARTn_CTRL);
++
++	control &= ~UARTn_CTRL_TX_INT_ENABLE;
++
++	mps2_uart_write8(port, control, UARTn_CTRL);
++}
++
++static void mps2_uart_tx_chars(struct uart_port *port)
++{
++	struct circ_buf *xmit = &port->state->xmit;
++
++	while (!(mps2_uart_read8(port, UARTn_STATE) & UARTn_STATE_TX_FULL)) {
++		if (port->x_char) {
++			mps2_uart_write8(port, port->x_char, UARTn_DATA);
++			port->x_char = 0;
++			port->icount.tx++;
++			continue;
++		}
++
++		if (uart_circ_empty(xmit) || uart_tx_stopped(port))
++			break;
++
++		mps2_uart_write8(port, xmit->buf[xmit->tail], UARTn_DATA);
++		xmit->tail = (xmit->tail + 1) % UART_XMIT_SIZE;
++		port->icount.tx++;
++	}
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++
++	if (uart_circ_empty(xmit))
++		mps2_uart_stop_tx(port);
++}
++
++static void mps2_uart_start_tx(struct uart_port *port)
++{
++	u8 control = mps2_uart_read8(port, UARTn_CTRL);
++
++	control |= UARTn_CTRL_TX_INT_ENABLE;
++
++	mps2_uart_write8(port, control, UARTn_CTRL);
++
++	/*
++	 * We've just unmasked the TX IRQ and now slow-starting via
++	 * polling; if there is enough data to fill up the internal
++	 * write buffer in one go, the TX IRQ should assert, at which
++	 * point we switch to fully interrupt-driven TX.
++	 */
++
++	mps2_uart_tx_chars(port);
++}
++
++static void mps2_uart_stop_rx(struct uart_port *port)
++{
++	u8 control = mps2_uart_read8(port, UARTn_CTRL);
++
++	control &= ~UARTn_CTRL_RX_GRP;
++
++	mps2_uart_write8(port, control, UARTn_CTRL);
++}
++
++static void mps2_uart_break_ctl(struct uart_port *port, int ctl)
++{
++}
++
++static void mps2_uart_rx_chars(struct uart_port *port)
++{
++	struct tty_port *tport = &port->state->port;
++
++	while (mps2_uart_read8(port, UARTn_STATE) & UARTn_STATE_RX_FULL) {
++		u8 rxdata = mps2_uart_read8(port, UARTn_DATA);
++
++		port->icount.rx++;
++		tty_insert_flip_char(&port->state->port, rxdata, TTY_NORMAL);
++	}
++
++	tty_flip_buffer_push(tport);
++}
++
++static irqreturn_t mps2_uart_rxirq(int irq, void *data)
++{
++	struct uart_port *port = data;
++	u8 irqflag = mps2_uart_read8(port, UARTn_INT);
++
++	if (unlikely(!(irqflag & UARTn_INT_RX)))
++		return IRQ_NONE;
++
++	spin_lock(&port->lock);
++
++	mps2_uart_write8(port, UARTn_INT_RX, UARTn_INT);
++	mps2_uart_rx_chars(port);
++
++	spin_unlock(&port->lock);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t mps2_uart_txirq(int irq, void *data)
++{
++	struct uart_port *port = data;
++	u8 irqflag = mps2_uart_read8(port, UARTn_INT);
++
++	if (unlikely(!(irqflag & UARTn_INT_TX)))
++		return IRQ_NONE;
++
++	spin_lock(&port->lock);
++
++	mps2_uart_write8(port, UARTn_INT_TX, UARTn_INT);
++	mps2_uart_tx_chars(port);
++
++	spin_unlock(&port->lock);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t mps2_uart_oerrirq(int irq, void *data)
++{
++	irqreturn_t handled = IRQ_NONE;
++	struct uart_port *port = data;
++	u8 irqflag = mps2_uart_read8(port, UARTn_INT);
++
++	spin_lock(&port->lock);
++
++	if (irqflag & UARTn_INT_RX_OVERRUN) {
++		struct tty_port *tport = &port->state->port;
++
++		mps2_uart_write8(port, UARTn_INT_RX_OVERRUN, UARTn_INT);
++		port->icount.overrun++;
++		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
++		tty_flip_buffer_push(tport);
++		handled = IRQ_HANDLED;
++	}
++
++	/*
++	 * It's never been seen in practice and it never *should* happen since
++	 * we check if there is enough room in TX buffer before sending data.
++	 * So we keep this check in case something suspicious has happened.
++	 */
++	if (irqflag & UARTn_INT_TX_OVERRUN) {
++		mps2_uart_write8(port, UARTn_INT_TX_OVERRUN, UARTn_INT);
++		handled = IRQ_HANDLED;
++	}
++
++	spin_unlock(&port->lock);
++
++	return handled;
++}
++
++static int mps2_uart_startup(struct uart_port *port)
++{
++	struct mps2_uart_port *mps_port = to_mps2_port(port);
++	u8 control = mps2_uart_read8(port, UARTn_CTRL);
++	int ret;
++
++	control &= ~(UARTn_CTRL_RX_GRP | UARTn_CTRL_TX_GRP);
++
++	mps2_uart_write8(port, control, UARTn_CTRL);
++
++	ret = request_irq(mps_port->rx_irq, mps2_uart_rxirq, 0,
++			  MAKE_NAME(-rx), mps_port);
++	if (ret) {
++		dev_err(port->dev, "failed to register rxirq (%d)\n", ret);
++		return ret;
++	}
++
++	ret = request_irq(mps_port->tx_irq, mps2_uart_txirq, 0,
++			  MAKE_NAME(-tx), mps_port);
++	if (ret) {
++		dev_err(port->dev, "failed to register txirq (%d)\n", ret);
++		goto err_free_rxirq;
++	}
++
++	ret = request_irq(port->irq, mps2_uart_oerrirq, IRQF_SHARED,
++			  MAKE_NAME(-overrun), mps_port);
++
++	if (ret) {
++		dev_err(port->dev, "failed to register oerrirq (%d)\n", ret);
++		goto err_free_txirq;
++	}
++
++	control |= UARTn_CTRL_RX_GRP | UARTn_CTRL_TX_GRP;
++
++	mps2_uart_write8(port, control, UARTn_CTRL);
++
++	return 0;
++
++err_free_txirq:
++	free_irq(mps_port->tx_irq, mps_port);
++err_free_rxirq:
++	free_irq(mps_port->rx_irq, mps_port);
++
++	return ret;
++}
++
++static void mps2_uart_shutdown(struct uart_port *port)
++{
++	struct mps2_uart_port *mps_port = to_mps2_port(port);
++	u8 control = mps2_uart_read8(port, UARTn_CTRL);
++
++	control &= ~(UARTn_CTRL_RX_GRP | UARTn_CTRL_TX_GRP);
++
++	mps2_uart_write8(port, control, UARTn_CTRL);
++
++	free_irq(mps_port->rx_irq, mps_port);
++	free_irq(mps_port->tx_irq, mps_port);
++	free_irq(port->irq, mps_port);
++}
++
++static void
++mps2_uart_set_termios(struct uart_port *port, struct ktermios *termios,
++		      struct ktermios *old)
++{
++	unsigned long flags;
++	unsigned int baud, bauddiv;
++
++	termios->c_cflag &= ~(CRTSCTS | CMSPAR);
++	termios->c_cflag &= ~CSIZE;
++	termios->c_cflag |= CS8;
++	termios->c_cflag &= ~PARENB;
++	termios->c_cflag &= ~CSTOPB;
++
++	baud = uart_get_baud_rate(port, termios, old,
++			DIV_ROUND_CLOSEST(port->uartclk, UARTn_BAUDDIV_MASK),
++			DIV_ROUND_CLOSEST(port->uartclk, 16));
++
++	bauddiv = DIV_ROUND_CLOSEST(port->uartclk, baud);
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	uart_update_timeout(port, termios->c_cflag, baud);
++	mps2_uart_write32(port, bauddiv, UARTn_BAUDDIV);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	if (tty_termios_baud_rate(termios))
++		tty_termios_encode_baud_rate(termios, baud, baud);
++}
++
++static const char *mps2_uart_type(struct uart_port *port)
++{
++	return (port->type == PORT_MPS2UART) ? DRIVER_NAME : NULL;
++}
++
++static void mps2_uart_release_port(struct uart_port *port)
++{
++}
++
++static int mps2_uart_request_port(struct uart_port *port)
++{
++	return 0;
++}
++
++static void mps2_uart_config_port(struct uart_port *port, int type)
++{
++	if (type & UART_CONFIG_TYPE && !mps2_uart_request_port(port))
++		port->type = PORT_MPS2UART;
++}
++
++static int mps2_uart_verify_port(struct uart_port *port, struct serial_struct *serinfo)
++{
++	return -EINVAL;
++}
++
++static const struct uart_ops mps2_uart_pops = {
++	.tx_empty = mps2_uart_tx_empty,
++	.set_mctrl = mps2_uart_set_mctrl,
++	.get_mctrl = mps2_uart_get_mctrl,
++	.stop_tx = mps2_uart_stop_tx,
++	.start_tx = mps2_uart_start_tx,
++	.stop_rx = mps2_uart_stop_rx,
++	.break_ctl = mps2_uart_break_ctl,
++	.startup = mps2_uart_startup,
++	.shutdown = mps2_uart_shutdown,
++	.set_termios = mps2_uart_set_termios,
++	.type = mps2_uart_type,
++	.release_port = mps2_uart_release_port,
++	.request_port = mps2_uart_request_port,
++	.config_port = mps2_uart_config_port,
++	.verify_port = mps2_uart_verify_port,
++};
++
++static struct mps2_uart_port mps2_uart_ports[MPS2_MAX_PORTS];
++
++#ifdef CONFIG_SERIAL_MPS2_UART_CONSOLE
++static void mps2_uart_console_putchar(struct uart_port *port, int ch)
++{
++	while (mps2_uart_read8(port, UARTn_STATE) & UARTn_STATE_TX_FULL)
++		cpu_relax();
++
++	mps2_uart_write8(port, ch, UARTn_DATA);
++}
++
++static void mps2_uart_console_write(struct console *co, const char *s, unsigned int cnt)
++{
++	struct uart_port *port = &mps2_uart_ports[co->index].port;
++
++	uart_console_write(port, s, cnt, mps2_uart_console_putchar);
++}
++
++static int mps2_uart_console_setup(struct console *co, char *options)
++{
++	struct mps2_uart_port *mps_port;
++	int baud = 9600;
++	int bits = 8;
++	int parity = 'n';
++	int flow = 'n';
++
++	if (co->index < 0 || co->index >= MPS2_MAX_PORTS)
++		return -ENODEV;
++
++	mps_port = &mps2_uart_ports[co->index];
++
++	if (options)
++		uart_parse_options(options, &baud, &parity, &bits, &flow);
++
++	return uart_set_options(&mps_port->port, co, baud, parity, bits, flow);
++}
++
++static struct uart_driver mps2_uart_driver;
++
++static struct console mps2_uart_console = {
++	.name = SERIAL_NAME,
++	.device = uart_console_device,
++	.write = mps2_uart_console_write,
++	.setup = mps2_uart_console_setup,
++	.flags = CON_PRINTBUFFER,
++	.index = -1,
++	.data = &mps2_uart_driver,
++};
++
++#define MPS2_SERIAL_CONSOLE (&mps2_uart_console)
++
++#else
++#define MPS2_SERIAL_CONSOLE NULL
++#endif
++
++static struct uart_driver mps2_uart_driver = {
++	.driver_name = DRIVER_NAME,
++	.dev_name = SERIAL_NAME,
++	.nr = MPS2_MAX_PORTS,
++	.cons = MPS2_SERIAL_CONSOLE,
++};
++
++static struct mps2_uart_port *mps2_of_get_port(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	int id;
++
++	if (!np)
++		return NULL;
++
++	id = of_alias_get_id(np, "serial");
++	if (id < 0)
++		id = 0;
++
++	if (WARN_ON(id >= MPS2_MAX_PORTS))
++		return NULL;
++
++	mps2_uart_ports[id].port.line = id;
++	return &mps2_uart_ports[id];
++}
++
++static int mps2_init_port(struct mps2_uart_port *mps_port,
++			  struct platform_device *pdev)
++{
++	struct resource *res;
++	int ret;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	mps_port->port.membase = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(mps_port->port.membase))
++		return PTR_ERR(mps_port->port.membase);
++
++	mps_port->port.mapbase = res->start;
++	mps_port->port.mapsize = resource_size(res);
++
++	mps_port->rx_irq = platform_get_irq(pdev, 0);
++	mps_port->tx_irq = platform_get_irq(pdev, 1);
++	mps_port->port.irq = platform_get_irq(pdev, 2);
++
++	mps_port->port.iotype = UPIO_MEM;
++	mps_port->port.flags = UPF_BOOT_AUTOCONF;
++	mps_port->port.fifosize = 1;
++	mps_port->port.ops = &mps2_uart_pops;
++	mps_port->port.dev = &pdev->dev;
++
++	mps_port->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(mps_port->clk))
++		return PTR_ERR(mps_port->clk);
++
++	ret = clk_prepare_enable(mps_port->clk);
++	if (ret)
++		return ret;
++
++	mps_port->port.uartclk = clk_get_rate(mps_port->clk);
++
++	clk_disable_unprepare(mps_port->clk);
++
++	return ret;
++}
++
++static int mps2_serial_probe(struct platform_device *pdev)
++{
++	struct mps2_uart_port *mps_port;
++	int ret;
++
++	mps_port = mps2_of_get_port(pdev);
++	if (!mps_port)
++		return -ENODEV;
++
++	ret = mps2_init_port(mps_port, pdev);
++	if (ret)
++		return ret;
++
++	ret = uart_add_one_port(&mps2_uart_driver, &mps_port->port);
++	if (ret)
++		return ret;
++
++	platform_set_drvdata(pdev, mps_port);
++
++	return 0;
++}
++
++static int mps2_serial_remove(struct platform_device *pdev)
++{
++	struct mps2_uart_port *mps_port = platform_get_drvdata(pdev);
++
++	uart_remove_one_port(&mps2_uart_driver, &mps_port->port);
++
++	return 0;
++}
++
++#ifdef CONFIG_OF
++static const struct of_device_id mps2_match[] = {
++	{ .compatible = "arm,mps2-uart", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, mps2_match);
++#endif
++
++static struct platform_driver mps2_serial_driver = {
++	.probe = mps2_serial_probe,
++	.remove = mps2_serial_remove,
++
++	.driver = {
++		.name = DRIVER_NAME,
++		.of_match_table = of_match_ptr(mps2_match),
++	},
++};
++
++static int __init mps2_uart_init(void)
++{
++	int ret;
++
++	ret = uart_register_driver(&mps2_uart_driver);
++	if (ret)
++		return ret;
++
++	ret = platform_driver_register(&mps2_serial_driver);
++	if (ret)
++		uart_unregister_driver(&mps2_uart_driver);
++
++	return ret;
++}
++module_init(mps2_uart_init);
++
++static void __exit mps2_uart_exit(void)
++{
++	platform_driver_unregister(&mps2_serial_driver);
++	uart_unregister_driver(&mps2_uart_driver);
++}
++module_exit(mps2_uart_exit);
++
++MODULE_AUTHOR("Vladimir Murzin <vladimir.murzin@arm.com>");
++MODULE_DESCRIPTION("MPS2 UART driver");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:" DRIVER_NAME);
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index e513a4e..9aef04c 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -264,4 +264,7 @@
+ /* MVEBU UART */
+ #define PORT_MVEBU	114
+ 
++/* MPS2 UART */
++#define PORT_MPS2UART	115
++
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
+-- 
+1.7.9.5
