@@ -1,51 +1,60 @@
-From: =?UTF-8?q?David=20M=C3=BCller?= <d.mueller@elsoft.ch>
-Subject: [PATCH v3] serial: 8250_pci: fix divide error bug if baud rate is 0
-Date: Wed, 27 Apr 2016 11:58:32 +0200
-Message-ID: <1461751112-3194-1-git-send-email-d.mueller@elsoft.ch>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, stable@vger.kernel.org
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 03/11] dmaengine: dw: set polarity of handshake interface
+Date: Wed, 27 Apr 2016 16:48:06 +0300
+Message-ID: <1461764894-14891-4-git-send-email-andriy.shevchenko@linux.intel.com>
+References: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Since commit 21947ba654a6 ("serial: 8250_pci: replace switch-case by
-formula"), the 8250 driver crashes in the byt_set_termios() function
-with a divide error. This is caused by the fact that a baud rate of 0 (=
-B0)
-is not handled properly. Fix it by falling back to B9600 in this case.
+Intel Quark UART uses DesignWare DMA IP. Though the DMA IP is connected in such
+way that handshake interface uses inverted polarity. We have to provide a
+possibility to set this in the DMA driver when configuring a channel.
 
-Signed-off-by: David M=C3=BCller <d.mueller@elsoft.ch>
-=46ixes: 21947ba654a6 ("serial: 8250_pci: replace switch-case by formul=
-a")
-Cc: stable@vger.kernel.org
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Introduce a new member of custom slave configuration called 'polarity' and set
+active low polarity in case this value is 'true'.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
+ drivers/dma/dw/core.c                | 2 ++
+ include/linux/platform_data/dma-dw.h | 2 ++
+ 2 files changed, 4 insertions(+)
 
-v3: minor rewording of commit message and comment, added various tags
-v2: use a more elegant fix as suggested by Andy Shevchenko
-
- drivers/tty/serial/8250/8250_pci.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
-50/8250_pci.c
-index 98862aa..4eedd1d 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1377,6 +1377,9 @@ byt_set_termios(struct uart_port *p, struct kterm=
-ios *termios,
- 	unsigned long m, n;
- 	u32 reg;
-=20
-+	/* Gracefully handle the B0 case: fall back to B9600 */
-+	fuart =3D fuart ? fuart : 9600 * 16;
+diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
+index 81b06df..9c7bc7a 100644
+--- a/drivers/dma/dw/core.c
++++ b/drivers/dma/dw/core.c
+@@ -150,6 +150,8 @@ static void dwc_initialize(struct dw_dma_chan *dwc)
+ 	cfghi |= DWC_CFGH_DST_PER(dwc->dws.dst_id);
+ 	cfghi |= DWC_CFGH_SRC_PER(dwc->dws.src_id);
+ 
++	cfglo |= dwc->dws.polarity ? DWC_CFGL_HS_DST_POL | DWC_CFGL_HS_SRC_POL : 0;
 +
- 	/* Get Fuart closer to Fref */
- 	fuart *=3D rounddown_pow_of_two(fref / fuart);
-=20
---=20
-2.7.4
+ 	channel_writel(dwc, CFG_LO, cfglo);
+ 	channel_writel(dwc, CFG_HI, cfghi);
+ 
+diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
+index d15d8ba..192f3a2 100644
+--- a/include/linux/platform_data/dma-dw.h
++++ b/include/linux/platform_data/dma-dw.h
+@@ -23,6 +23,7 @@
+  * @dst_id:	dst request line
+  * @m_master:	memory master for transfers on allocated channel
+  * @p_master:	peripheral master for transfers on allocated channel
++ * @polarity:	set active low polarity of handshake interface
+  */
+ struct dw_dma_slave {
+ 	struct device		*dma_dev;
+@@ -30,6 +31,7 @@ struct dw_dma_slave {
+ 	u8			dst_id;
+ 	u8			m_master;
+ 	u8			p_master;
++	bool			polarity;
+ };
+ 
+ /**
+-- 
+2.8.0.rc3
