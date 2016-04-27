@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v3 03/11] dmaengine: dw: set polarity of handshake interface
-Date: Wed, 27 Apr 2016 16:48:06 +0300
-Message-ID: <1461764894-14891-4-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 04/11] dmaengine: dw: override LLP support if asked in platform data
+Date: Wed, 27 Apr 2016 16:48:07 +0300
+Message-ID: <1461764894-14891-5-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,51 +10,57 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark UART uses DesignWare DMA IP. Though the DMA IP is connected in such
-way that handshake interface uses inverted polarity. We have to provide a
-possibility to set this in the DMA driver when configuring a channel.
+There is at least one known device, i.e. UART on Intel Galileo, that works
+unreliably in case of use of multi block transfer support in DMA mode.
 
-Introduce a new member of custom slave configuration called 'polarity' and set
-active low polarity in case this value is 'true'.
+Override autodetection by user provided data.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/dma/dw/core.c                | 2 ++
- include/linux/platform_data/dma-dw.h | 2 ++
- 2 files changed, 4 insertions(+)
+ drivers/dma/dw/core.c                | 10 +++++++---
+ include/linux/platform_data/dma-dw.h |  2 ++
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index 81b06df..9c7bc7a 100644
+index 9c7bc7a..f66d104 100644
 --- a/drivers/dma/dw/core.c
 +++ b/drivers/dma/dw/core.c
-@@ -150,6 +150,8 @@ static void dwc_initialize(struct dw_dma_chan *dwc)
- 	cfghi |= DWC_CFGH_DST_PER(dwc->dws.dst_id);
- 	cfghi |= DWC_CFGH_SRC_PER(dwc->dws.src_id);
+@@ -1571,9 +1571,13 @@ int dw_dma_probe(struct dw_dma_chip *chip)
+ 			dwc->block_size = pdata->block_size;
  
-+	cfglo |= dwc->dws.polarity ? DWC_CFGL_HS_DST_POL | DWC_CFGL_HS_SRC_POL : 0;
-+
- 	channel_writel(dwc, CFG_LO, cfglo);
- 	channel_writel(dwc, CFG_HI, cfghi);
+ 			/* Check if channel supports multi block transfer */
+-			channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
+-			dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
+-			channel_writel(dwc, LLP, 0);
++			if (pdata->is_nollp) {
++				dwc->nollp = pdata->is_nollp;
++			} else {
++				channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
++				dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
++				channel_writel(dwc, LLP, 0);
++			}
+ 		}
+ 	}
  
 diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
-index d15d8ba..192f3a2 100644
+index 192f3a2..ec7f7d3 100644
 --- a/include/linux/platform_data/dma-dw.h
 +++ b/include/linux/platform_data/dma-dw.h
-@@ -23,6 +23,7 @@
-  * @dst_id:	dst request line
-  * @m_master:	memory master for transfers on allocated channel
-  * @p_master:	peripheral master for transfers on allocated channel
-+ * @polarity:	set active low polarity of handshake interface
-  */
- struct dw_dma_slave {
- 	struct device		*dma_dev;
-@@ -30,6 +31,7 @@ struct dw_dma_slave {
- 	u8			dst_id;
- 	u8			m_master;
- 	u8			p_master;
-+	bool			polarity;
- };
- 
- /**
+@@ -40,6 +40,7 @@ struct dw_dma_slave {
+  * @is_private: The device channels should be marked as private and not for
+  *	by the general purpose DMA channel allocator.
+  * @is_memcpy: The device channels do support memory-to-memory transfers.
++ * @is_nollp: The device channels does not support multi block transfers.
+  * @chan_allocation_order: Allocate channels starting from 0 or 7
+  * @chan_priority: Set channel priority increasing from 0 to 7 or 7 to 0.
+  * @block_size: Maximum block size supported by the controller
+@@ -51,6 +52,7 @@ struct dw_dma_platform_data {
+ 	unsigned int	nr_channels;
+ 	bool		is_private;
+ 	bool		is_memcpy;
++	bool		is_nollp;
+ #define CHAN_ALLOCATION_ASCENDING	0	/* zero to seven */
+ #define CHAN_ALLOCATION_DESCENDING	1	/* seven to zero */
+ 	unsigned char	chan_allocation_order;
 -- 
 2.8.0.rc3
