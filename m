@@ -1,45 +1,39 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Grant Edwards <grant.b.edwards@gmail.com>
 Subject: Re: [PATCH 0/8] Replace kernel-defined ASYNC_ bits
-Date: Thu, 28 Apr 2016 13:36:43 -0700
-Message-ID: <20160428203643.GA13542@kroah.com>
+Date: Thu, 28 Apr 2016 15:44:15 -0500
+Message-ID: <20160428204415.GA21183@grante>
 References: <1460249607-8014-1-git-send-email-peter@hurleysoftware.com>
+ <20160428203643.GA13542@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1460249607-8014-1-git-send-email-peter@hurleysoftware.com>
+In-Reply-To: <20160428203643.GA13542@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Grant Edwards <grant.b.edwards@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Apr 09, 2016 at 05:53:19PM -0700, Peter Hurley wrote:
-> As outlined in my January email ("RFC: out-of-tree tty driver breakage"),
-> the tty/serial core uses 5 bits in the tty_port.flags field to manage
-> state. They are:
+On Thu, Apr 28, 2016 at 01:36:43PM -0700, Greg Kroah-Hartman wrote:
+> On Sat, Apr 09, 2016 at 05:53:19PM -0700, Peter Hurley wrote:
+> > As outlined in my January email ("RFC: out-of-tree tty driver breakage"),
+> > the tty/serial core uses 5 bits in the tty_port.flags field to manage
+> > state. They are:
+[...]
+> > The last patch of the series purposefully breaks out-of-tree driver
+> > builds to ensure they update state test/change methods to the helpers
+> > instead.
+> > 
+> > REQUIRES: "tty: Replace TTY_IO_ERROR bit tests with tty_io_error()"
+> >           "tty: Replace TTY_THROTTLED bit tests with tty_throttled()"
 > 
-> ASYNCB_INITIALIZED
-> ASYNCB_SUSPENDED
-> ASYNCB_NORMAL_ACTIVE
-> ASYNCB_CTS_FLOW
-> ASYNCB_CHECK_CD
-> 
-> (NB: ASYNC_CLOSING was recently removed)
-> 
-> However, updates to this field (tty_port.flags) can be and often are
-> non-atomic. Additionally, the field is visible to/modifiable by userspace
-> (the state bits above are not modifiable by userspace though).
-> 
-> This series moves these state bits into a different tty_port field
-> (iflags) and abstracts state tests and changes with trivial helpers.
-> 
-> The last patch of the series purposefully breaks out-of-tree driver
-> builds to ensure they update state test/change methods to the helpers
-> instead.
-> 
-> REQUIRES: "tty: Replace TTY_IO_ERROR bit tests with tty_io_error()"
->           "tty: Replace TTY_THROTTLED bit tests with tty_throttled()"
+> Wonderful, thanks for doing this work.
 
-Wonderful, thanks for doing this work.
+And particular thanks from us out-of-tree driver maintainers for
+making the breakage apparent.  It always sucks when a change goes in
+under our radar that causes breakage without even causing a compiler
+warning.  [Yea, I know if the drivers were in-tree, this wouldn't be a
+problem.]
 
-greg k-h
+-- 
+Grant
