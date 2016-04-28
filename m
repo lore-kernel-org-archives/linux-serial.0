@@ -1,48 +1,29 @@
-From: Frank Rowand <frowand.list@gmail.com>
-Subject: Re: [PATCH 2/2] tty: serial: msm_serial add info message
-Date: Thu, 28 Apr 2016 15:15:50 -0700
-Message-ID: <57228B96.6090502@gmail.com>
-References: <571BAC8B.80001@gmail.com> <571BAE11.3020706@gmail.com> <20160428205132.GA22117@kroah.com>
-Reply-To: frowand.list@gmail.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: "Richard W.M. Jones" <rjones@redhat.com>
+Subject: [PATCH] 8250: Hypervisors always export working 16550A UARTs.
+Date: Thu, 28 Apr 2016 23:18:32 +0100
+Message-ID: <1461881913-23967-1-git-send-email-rjones@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160428205132.GA22117@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel list <linux-kernel@vger.kernel.org>, ivan.ivanov@linaro.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, peter@hurleysoftware.com, andriy.shevchenko@linux.intel.com, phillip.raffeck@fau.de, anton.wuerfel@fau.de, yamada.masahiro@socionext.com, matwey@sai.msu.ru, valentinrothberg@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ddutile@redhat.com
 List-Id: linux-serial@vger.kernel.org
 
-On 4/28/2016 1:51 PM, Greg Kroah-Hartman wrote:
-> On Sat, Apr 23, 2016 at 10:17:05AM -0700, Frank Rowand wrote:
->> From: Frank Rowand <frank.rowand@am.sony.com>
->>
->> Failure to enable DMA by the msm_serial driver is silent.
->> Add a message to report the failure.
->>
->> Signed-off-by: Frank Rowand <frank.rowand@am.sony.com>
->> ---
->>  drivers/tty/serial/msm_serial.c |    1 +
->>  1 file changed, 1 insertion(+)
->>
->> Index: b/drivers/tty/serial/msm_serial.c
->> ===================================================================
->> --- a/drivers/tty/serial/msm_serial.c
->> +++ b/drivers/tty/serial/msm_serial.c
->> @@ -170,6 +170,7 @@ rel_tx:
->>  	dma_release_channel(dma->chan);
->>  no_tx:
->>  	memset(dma, 0, sizeof(*dma));
->> +	dev_info(dev, "msm_serial: DMA not enabled\n");
-> 
-> Don't print out messages that a user can't do something with :(
-> 
-> So I agree, this is not needed, sorry.
-> 
-> greg k-h
-> 
+[This is an opinionated patch, mainly for discussion.]
 
-I am ok with dropping patch 2.  No problem.
+I'm trying to reduce the time taken in the kernel in initcalls, with
+my aim being to reduce the current ~700ms spent in initcalls before
+userspace, down to something like 100ms.  All times on my Broadwell-U
+laptop, under virtualization.  The purpose of this is to be able to
+launch VMs around containers with minimal overhead, like Intel Clear
+Containers, but using standard distro kernels and qemu.
 
--Frank
+Currently the kernel spends 25ms inspecting the UART that we passed to
+it from qemu to find out whether it's an 8250/16550/16550A perhaps
+with a non-working FIFO or other quirks.  Well, it isn't -- it's a
+working emulated 16550A, with a FIFO and no quirks, and if it isn't,
+we should fix qemu.
+
+So the patch detects if we're running virtualized (perhaps it should
+only check for qemu/KVM?) and if so, shortcuts the tests.
+
+Rich.
