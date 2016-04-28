@@ -1,68 +1,69 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v3 06/11] serial: 8250_dma: adjust DMA address of the UART
-Date: Wed, 27 Apr 2016 16:48:09 +0300
-Message-ID: <1461764894-14891-7-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] serial: mctrl_gpio: Drop support for out1-gpios and out2-gpios
+Date: Thu, 28 Apr 2016 10:35:42 +0200
+Message-ID: <CAMuHMdXYPZDVMzo0ROS5rqoA77FptRLY1EA88YvdpqOjydYAbw@mail.gmail.com>
+References: <1461337814-29058-1-git-send-email-geert+renesas@glider.be>
+	<CACQ1gAhCM89ZPM1BNwxXDaCffuhMrZkZUvK6nVgXyxhkO2XrLg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <CACQ1gAhCM89ZPM1BNwxXDaCffuhMrZkZUvK6nVgXyxhkO2XrLg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Some UARTs, e.g. one is used in Intel Quark, have a different address base for
-DMA operations. Introduce an additional field (per RX and TX DMA channels) in
-struct uart_8250_dma to cover those cases.
+Hi Richard,
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250.h     | 5 +++++
- drivers/tty/serial/8250/8250_dma.c | 8 ++++++--
- 2 files changed, 11 insertions(+), 2 deletions(-)
+On Wed, Apr 27, 2016 at 10:20 AM, Richard Genoud
+<richard.genoud@gmail.com> wrote:
+> 2016-04-22 17:10 GMT+02:00 Geert Uytterhoeven <geert+renesas@glider.be>:
+>> The OUT1 and OUT2 pins present on some legacy UARTs are basically GPIOs.
+>> It doesn't make much sense to emulate GPIOs using other GPIOs, hence
+>> drop support for that.
+>>
+>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>> ---
+>>  drivers/tty/serial/serial_mctrl_gpio.c | 2 --
+>>  1 file changed, 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+>> index 02147361eaa94747..821ffa637eb630cb 100644
+>> --- a/drivers/tty/serial/serial_mctrl_gpio.c
+>> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
+>> @@ -43,8 +43,6 @@ static const struct {
+>>         { "rng", TIOCM_RNG, false, },
+>>         { "rts", TIOCM_RTS, true, },
+>>         { "dtr", TIOCM_DTR, true, },
+>> -       { "out1", TIOCM_OUT1, true, },
+>> -       { "out2", TIOCM_OUT2, true, },
+>>  };
+>>
+>>  void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
+>> --
+>> 1.9.1
+>>
+> Maybe I missed something, but I think you want to remove
+> UART_GPIO_OUT{1,2} also :
+> diff --git a/drivers/tty/serial/serial_mctrl_gpio.h
+> b/drivers/tty/serial/serial_mctrl_gpio.h
+> index 9716db283290..10632e72b89f 100644
+> --- a/drivers/tty/serial/serial_mctrl_gpio.h
+> +++ b/drivers/tty/serial/serial_mctrl_gpio.h
+> @@ -32,8 +32,6 @@ enum mctrl_gpio_idx {
+>      UART_GPIO_RI = UART_GPIO_RNG,
+>      UART_GPIO_RTS,
+>      UART_GPIO_DTR,
+> -    UART_GPIO_OUT1,
+> -    UART_GPIO_OUT2,
+>      UART_GPIO_MAX,
+>  };
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 047a7ba..526ed3e 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -31,6 +31,11 @@ struct uart_8250_dma {
- 	struct dma_chan		*rxchan;
- 	struct dma_chan		*txchan;
- 
-+	/* Device address base for DMA operations */
-+	phys_addr_t		rx_dma_addr;
-+	phys_addr_t		tx_dma_addr;
-+
-+	/* DMA address of the buffer in memory */
- 	dma_addr_t		rx_addr;
- 	dma_addr_t		tx_addr;
- 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 9d80bb1..1553181 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -157,16 +157,20 @@ int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
- int serial8250_request_dma(struct uart_8250_port *p)
- {
- 	struct uart_8250_dma	*dma = p->dma;
-+	phys_addr_t rx_dma_addr = dma->rx_dma_addr ?
-+				  dma->rx_dma_addr : p->port.mapbase;
-+	phys_addr_t tx_dma_addr = dma->tx_dma_addr ?
-+				  dma->tx_dma_addr : p->port.mapbase;
- 	dma_cap_mask_t		mask;
- 
- 	/* Default slave configuration parameters */
- 	dma->rxconf.direction		= DMA_DEV_TO_MEM;
- 	dma->rxconf.src_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
--	dma->rxconf.src_addr		= p->port.mapbase + UART_RX;
-+	dma->rxconf.src_addr		= rx_dma_addr + UART_RX;
- 
- 	dma->txconf.direction		= DMA_MEM_TO_DEV;
- 	dma->txconf.dst_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
--	dma->txconf.dst_addr		= p->port.mapbase + UART_TX;
-+	dma->txconf.dst_addr		= tx_dma_addr + UART_TX;
- 
- 	dma_cap_zero(mask);
- 	dma_cap_set(DMA_SLAVE, mask);
--- 
-2.8.0.rc3
+Thanks!
+
+Doh, I knew one day these seemingly unused enum values would get out of sync
+wr.t. the code. Will fix in v2...
+
+Gr{oetje,eeting}s,
+
+                        Geert
