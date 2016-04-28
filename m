@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] serial: 8250: of: Make tegra_serial_handle_break() static
-Date: Thu, 28 Apr 2016 14:47:24 +0200
-Message-ID: <1461847644-12199-1-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH] serial: tegra: Remove unused variable
+Date: Thu, 28 Apr 2016 14:48:05 +0200
+Message-ID: <1461847685-12405-1-git-send-email-thierry.reding@gmail.com>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
@@ -10,25 +10,28 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-This function is not used outside the file, so it can be static.
+The local mcr variable is never used in the tegra_uart_set_mctrl()
+function, so it should be removed.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/tty/serial/8250/8250_of.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/serial-tegra.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index c7ed3d2bc8b2..38963d7bcf84 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -29,7 +29,7 @@ struct of_serial_info {
- };
- 
- #ifdef CONFIG_ARCH_TEGRA
--void tegra_serial_handle_break(struct uart_port *p)
-+static void tegra_serial_handle_break(struct uart_port *p)
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 1d6fc60ed013..1dba6719db8d 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -206,10 +206,8 @@ static void set_dtr(struct tegra_uart_port *tup, bool active)
+ static void tegra_uart_set_mctrl(struct uart_port *u, unsigned int mctrl)
  {
- 	unsigned int status, tmout = 10000;
+ 	struct tegra_uart_port *tup = to_tegra_uport(u);
+-	unsigned long mcr;
+ 	int dtr_enable;
+ 
+-	mcr = tup->mcr_shadow;
+ 	tup->rts_active = !!(mctrl & TIOCM_RTS);
+ 	set_rts(tup, tup->rts_active);
  
 -- 
 2.8.0
