@@ -1,79 +1,51 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 08/11] serial: sh-sci: Correct pin initialization on
- (H)SCIF
-Date: Fri, 29 Apr 2016 08:59:37 -0700
-Message-ID: <572384E9.9060707@hurleysoftware.com>
-References: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
- <1461934714-18681-9-git-send-email-geert+renesas@glider.be>
+From: "Richard W.M. Jones" <rjones@redhat.com>
+Subject: Re: [PATCH] 8250: Hypervisors always export working 16550A UARTs.
+Date: Fri, 29 Apr 2016 17:02:57 +0100
+Message-ID: <20160429160256.GE28599@redhat.com>
+References: <1461881913-23967-1-git-send-email-rjones@redhat.com>
+ <1461881913-23967-2-git-send-email-rjones@redhat.com>
+ <20160428225633.GA9134@kroah.com>
+ <20160429081006.GD3826@redhat.com>
+ <20160429151635.GB16895@kroah.com>
+ <20160429153757.GE3826@redhat.com>
+ <20160429155413.GA23477@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1461934714-18681-9-git-send-email-geert+renesas@glider.be>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160429155413.GA23477@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jslaby@suse.com, peter@hurleysoftware.com, andriy.shevchenko@linux.intel.com, phillip.raffeck@fau.de, anton.wuerfel@fau.de, yamada.masahiro@socionext.com, matwey@sai.msu.ru, valentinrothberg@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ddutile@redhat.com
 List-Id: linux-serial@vger.kernel.org
 
-On 04/29/2016 05:58 AM, Geert Uytterhoeven wrote:
-> Correct pin initialization on (H)SCIF:
->   - RTS must be deasserted (it's active low),
->   - SCK must be an input, as it may be used as the optional external
->     clock input.
-> 
-> Initial pin configuration must always be done:
->   - Regardless of the presence of dedicated RTS and CTS pins: if the
->     register exists, the RTS/CTS bits exist, too,
->   - Regardless of hardware flow control being enabled or not: RTS must
->     be deasserted.
+On Fri, Apr 29, 2016 at 08:54:13AM -0700, Greg KH wrote:
+> You are trying to take a generalized kernel and somehow "know" about the
+> hardware ahead of time it is going to run on.  That seems like two
+> conflicting requirements, don't you agree?
 
-This is always setting RTS active; why?
+We would have the 8250 serial port in any kernel.  Even if Fedora
+kernel maintainers allowed us to have specialized kernels for each
+purpose, I would use the simple ISA serial port here because it allows
+us to capture debug messages very early in the boot.  Alternatives
+like virtio-console don't allow that.
 
-Normally you want to program RTS only in response to ->set_mctrl()
-from serial core.  For example, this will set RTS active even though
-baud might be set to B0.
+The kernel does know what hardware it's running on - via the CPUID
+hypervisor leaf.  It's also possible for us to tell the kernel about
+the hardware using the command line, ACPI[*], DT, etc.  I'd really
+like to tell the kernel this is a 16550A, not broken, you don't need
+to spend time testing that.
 
+There is prior art here: no_timer_check & lpj=..
 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> v2:
->   - New.
-> ---
->  drivers/tty/serial/sh-sci.c | 23 ++++++++---------------
->  1 file changed, 8 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index ce7bd165929ea078..c46999f20917964e 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -712,21 +712,14 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
->  		return;
->  	}
->  
-> -	/*
-> -	 * For the generic path SCSPTR is necessary. Bail out if that's
-> -	 * unavailable, too.
-> -	 */
-> -	if (!sci_getreg(port, SCSPTR)->size)
-> -		return;
-> -
-> -	if ((s->cfg->capabilities & SCIx_HAVE_RTSCTS) &&
-> -	    ((!(cflag & CRTSCTS)))) {
-> -		unsigned short status;
-> -
-> -		status = serial_port_in(port, SCSPTR);
-> -		status &= ~SCSPTR_CTSIO;
-> -		status |= SCSPTR_RTSIO;
-> -		serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
-> +	if (sci_getreg(port, SCSPTR)->size) {
-> +		u16 status = serial_port_in(port, SCSPTR);
-> +
-> +		/* RTS# is output, driven 1 */
-> +		status |= SCSPTR_RTSIO | SCSPTR_RTSDT;
-> +		/* CTS# and SCK are inputs */
-> +		status &= ~(SCSPTR_CTSIO | SCSPTR_SCKIO);
-> +		serial_port_out(port, SCSPTR, status);
->  	}
->  }
->  
-> 
+Rich.
+
+[*] Although ACPI is really slow, adding another 190ms, and for this
+reason I have disabled it for now, but not investigated why it's so
+slow.
+
+-- 
+Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/~rjones
+Read my programming and virtualization blog: http://rwmj.wordpress.com
+libguestfs lets you edit virtual machines.  Supports shell scripting,
+bindings from many languages.  http://libguestfs.org
