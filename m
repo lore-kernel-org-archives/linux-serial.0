@@ -1,50 +1,55 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 03/11] serial: sh-sci: Always set TIOCM_CTS in .get_mctrl() callback
-Date: Fri, 29 Apr 2016 14:58:26 +0200
-Message-ID: <1461934714-18681-4-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v2 09/11] serial: sh-sci: Add pin initialization for SCIFA/SCIFB
+Date: Fri, 29 Apr 2016 14:58:32 +0200
+Message-ID: <1461934714-18681-10-git-send-email-geert+renesas@glider.be>
 References: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-renesas-soc-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Documentation/serial/driver clearly states:
+Before, the driver relied on initialization by the boot loader, or by
+implicit reset state.
 
-    If the port does not support CTS, DCD or DSR, the driver should
-    indicate that the signal is permanently active.
-
-Hence always set TIOCM_CTS, as we currently don't look at the CTS
-hardware line state at all.
-
-FWIW, this fixes the transmit path when hardware-assisted flow control
-is enabled, and userspace enables CRTSCTS.
-The receive path is still broken, as RTS is never asserted.
+Note that unlike on (H)SCIF, the RTS/CTS bits exist only if dedicated
+RTS/CTS pins are available, which depends on the SoC and UART instance.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
 v2:
-  - Drop RFC status.
+  - New.
 ---
- drivers/tty/serial/sh-sci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/sh-sci.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 0130feb069aee02f..135f836642ab1c5a 100644
+index c46999f20917964e..b9d027af0f3e71f6 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1835,9 +1835,9 @@ static unsigned int sci_get_mctrl(struct uart_port *port)
- {
- 	/*
- 	 * CTS/RTS is handled in hardware when supported, while nothing
--	 * else is wired up. Keep it simple and simply assert DSR/CAR.
-+	 * else is wired up. Keep it simple and simply assert CTS/DSR/CAR.
- 	 */
--	return TIOCM_DSR | TIOCM_CAR;
-+	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
- }
+@@ -712,7 +712,21 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
+ 		return;
+ 	}
  
- static void sci_break_ctl(struct uart_port *port, int break_state)
+-	if (sci_getreg(port, SCSPTR)->size) {
++	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
++		u16 ctrl = serial_port_in(port, SCPCR);
++
++		/* Enable RXD and TXD pin functions */
++		ctrl &= ~(SCPCR_RXDC | SCPCR_TXDC);
++		if (to_sci_port(port)->cfg->capabilities & SCIx_HAVE_RTSCTS) {
++			/* RTS# is output, driven 1 */
++			ctrl |= SCPCR_RTSC;
++			serial_port_out(port, SCPDR,
++				serial_port_in(port, SCPDR) | SCPDR_RTSD);
++			/* Enable CTS# pin function */
++			ctrl &= ~SCPCR_CTSC;
++		}
++		serial_port_out(port, SCPCR, ctrl);
++	} else if (sci_getreg(port, SCSPTR)->size) {
+ 		u16 status = serial_port_in(port, SCSPTR);
+ 
+ 		/* RTS# is output, driven 1 */
 -- 
 1.9.1
