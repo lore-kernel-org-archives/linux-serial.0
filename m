@@ -1,27 +1,23 @@
 From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v2 04/11] serial: sh-sci: Add support for GPIO-controlled
- modem lines
-Date: Fri, 29 Apr 2016 08:39:07 -0700
-Message-ID: <5723801B.90205@hurleysoftware.com>
+Subject: Re: [PATCH v2 06/11] serial: sh-sci: Add more Serial Port Register
+ documentation
+Date: Fri, 29 Apr 2016 08:41:10 -0700
+Message-ID: <57238096.6000802@hurleysoftware.com>
 References: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
- <1461934714-18681-5-git-send-email-geert+renesas@glider.be>
+ <1461934714-18681-7-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461934714-18681-5-git-send-email-geert+renesas@glider.be>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1461934714-18681-7-git-send-email-geert+renesas@glider.be>
+Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 On 04/29/2016 05:58 AM, Geert Uytterhoeven wrote:
-> Enhance the Renesas SCI UART driver to add support for GPIO-controlled
-> modem lines (CTS, DSR, DCD, RNG, RTS, DTR), using the serial_mctrl_gpio
-> helpers.
-> 
-> GPIO-controlled modem lines can be used when dedicated modem lines are
-> not available. Invalid configurations specifying both GPIO RTS/CTS and
-> dedicated RTS/CTS are rejected.
+> Improve documentation for the (H)SCIF Serial Port Register:
+>   - Make it clear the RTS and CTS lines are active-low,
+>   - Document the bits related to the serial port's clock pin.
 
 Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
