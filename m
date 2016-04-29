@@ -1,177 +1,96 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 10/11] serial: sh-sci: Fix support for hardware-assisted RTS/CTS
-Date: Fri, 29 Apr 2016 14:58:33 +0200
-Message-ID: <1461934714-18681-11-git-send-email-geert+renesas@glider.be>
-References: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v2 00/11] serial: sh-sci: Hardware Flow Control Updates
+Date: Fri, 29 Apr 2016 14:58:23 +0200
+Message-ID: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The existing support for hardware-assisted RTS/CTS is rudimentary and
-doesn't work.
+	Hi all,
 
-Add support for hardware-assisted RTS/CTS hardware flow control for the
-(H)SCIF, SCIFA, and SCIFB variants.
+This patch series contains updates to the Renesas SCI UART driver,
+related to hardware flow control:
+  - Patches 1-2: Device Tree binding updates for GPIO-controlled modem
+    lines, and for dedicated RTS/CTS modem lines,
+  - Patches 3-4: Driver support for GPIO-controlled modem lines, using
+    the serial_mctrl_gpio helpers,
+  - New patches 5-11: Driver support for hardware-assisted (automatic)
+    hardware flow control using the dedicated RTS/CTS modem lines.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-v2:
-  - New.
----
- drivers/tty/serial/sh-sci.c | 90 +++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 83 insertions(+), 7 deletions(-)
+Changes compared to v1 (more details in the individual patches):
+  - Add Acked-by,
+  - Refer to the Generic Serial DT Bindings,
+  - Drop out[12]-gpios,
+  - Reject combining GPIO and dedicated RTS/CTS,
+  - Drop "serial: sh-sci: Replace SCIx_HAVE_RTSCTS by standard
+    UPF_HARD_FLOW",
+  - Add support for hardware-assisted automatic RTS/CTS control on
+    (H)SCIF, SCIFA, and SCIFB.
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index b9d027af0f3e71f6..02b240a02dc6a593 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -141,6 +141,8 @@ struct sci_port {
- 	struct timer_list		rx_timer;
- 	unsigned int			rx_timeout;
- #endif
-+
-+	bool autorts;
- };
- 
- #define SCI_NPORTS CONFIG_SERIAL_SH_SCI_NR_UARTS
-@@ -1811,6 +1813,46 @@ static unsigned int sci_tx_empty(struct uart_port *port)
- 	return (status & SCxSR_TEND(port)) && !in_tx_fifo ? TIOCSER_TEMT : 0;
- }
- 
-+static void sci_set_rts(struct uart_port *port, bool state)
-+{
-+	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
-+		u16 data = serial_port_in(port, SCPDR);
-+
-+		/* Active low */
-+		if (state)
-+			data &= ~SCPDR_RTSD;
-+		else
-+			data |= SCPDR_RTSD;
-+		serial_port_out(port, SCPDR, data);
-+
-+		/* RTS# is output */
-+		serial_port_out(port, SCPCR,
-+				serial_port_in(port, SCPCR) | SCPCR_RTSC);
-+	} else if (sci_getreg(port, SCSPTR)->size) {
-+		u16 ctrl = serial_port_in(port, SCSPTR);
-+
-+		/* Active low */
-+		if (state)
-+			ctrl &= ~SCSPTR_RTSDT;
-+		else
-+			ctrl |= SCSPTR_RTSDT;
-+		serial_port_out(port, SCSPTR, ctrl);
-+	}
-+}
-+
-+static bool sci_get_cts(struct uart_port *port)
-+{
-+	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
-+		/* Active low */
-+		return !(serial_port_in(port, SCPDR) & SCPDR_CTSD);
-+	} else if (sci_getreg(port, SCSPTR)->size) {
-+		/* Active low */
-+		return !(serial_port_in(port, SCSPTR) & SCSPTR_CTSDT);
-+	}
-+
-+	return true;
-+}
-+
- /*
-  * Modem control is a bit of a mixed bag for SCI(F) ports. Generally
-  * CTS/RTS is supported in hardware by at least one port and controlled
-@@ -1841,6 +1883,31 @@ static void sci_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	}
- 
- 	mctrl_gpio_set(s->gpios, mctrl);
-+
-+	if (!(s->cfg->capabilities & SCIx_HAVE_RTSCTS))
-+		return;
-+
-+	if (!(mctrl & TIOCM_RTS)) {
-+		/* Disable Auto RTS */
-+		serial_port_out(port, SCFCR,
-+				serial_port_in(port, SCFCR) & ~SCFCR_MCE);
-+
-+		/* Clear RTS */
-+		sci_set_rts(port, 0);
-+	} else if (s->autorts) {
-+		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
-+			/* Enable RTS# pin function */
-+			serial_port_out(port, SCPCR,
-+				serial_port_in(port, SCPCR) & ~SCPCR_RTSC);
-+		}
-+
-+		/* Enable Auto RTS */
-+		serial_port_out(port, SCFCR,
-+				serial_port_in(port, SCFCR) | SCFCR_MCE);
-+	} else {
-+		/* Set RTS */
-+		sci_set_rts(port, 1);
-+	}
- }
- 
- static unsigned int sci_get_mctrl(struct uart_port *port)
-@@ -1853,10 +1920,14 @@ static unsigned int sci_get_mctrl(struct uart_port *port)
- 
- 	/*
- 	 * CTS/RTS is handled in hardware when supported, while nothing
--	 * else is wired up. Keep it simple and simply assert CTS/DSR/CAR.
-+	 * else is wired up.
- 	 */
--	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS)))
-+	if (s->autorts) {
-+		if (sci_get_cts(port))
-+			mctrl |= TIOCM_CTS;
-+	} else if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS))) {
- 		mctrl |= TIOCM_CTS;
-+	}
- 	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DSR)))
- 		mctrl |= TIOCM_DSR;
- 	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DCD)))
-@@ -1927,6 +1998,7 @@ static void sci_shutdown(struct uart_port *port)
- 
- 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
- 
-+	s->autorts = false;
- 	mctrl_gpio_disable_ms(to_sci_port(port)->gpios);
- 
- 	spin_lock_irqsave(&port->lock, flags);
-@@ -2248,15 +2320,18 @@ done:
- 
- 	sci_init_pins(port, termios->c_cflag);
- 
-+	port->status &= ~UPSTAT_AUTOCTS;
-+	s->autorts = false;
- 	reg = sci_getreg(port, SCFCR);
- 	if (reg->size) {
- 		unsigned short ctrl = serial_port_in(port, SCFCR);
- 
--		if (s->cfg->capabilities & SCIx_HAVE_RTSCTS) {
--			if (termios->c_cflag & CRTSCTS)
--				ctrl |= SCFCR_MCE;
--			else
--				ctrl &= ~SCFCR_MCE;
-+		if ((port->flags & UPF_HARD_FLOW) &&
-+		    (termios->c_cflag & CRTSCTS)) {
-+			/* There is no CTS interrupt to restart the hardware */
-+			port->status |= UPSTAT_AUTOCTS;
-+			/* MCE is enabled when RTS is raised */
-+			s->autorts = true;
- 		}
- 
- 		/*
-@@ -2958,6 +3033,7 @@ static int sci_probe_single(struct platform_device *dev,
- 			dev_err(&dev->dev, "Conflicting RTS/CTS config\n");
- 			return -EINVAL;
- 		}
-+		sciport->port.flags |= UPF_HARD_FLOW;
- 	}
- 
- 	ret = uart_add_one_port(&sci_uart_driver, &sciport->port);
+Dependencies:
+  - The patches apply to next-20160429,
+  - The DT bindings refer to the Generic Serial DT Bindings that were
+    added by "doc: DT: Add Generic Serial Device Tree Bindings", which
+    is in tty-testing.
+
+This was tested on r8a7791/koelsch and r8a7740/armadillo, using UARTs
+and GPIO pins on expansion connectors.
+
+Expected behavior, using GPIO-based RTS/CTS as a reference:
+  - When CRTSCTS is disabled:
+      - Reading from a UART asserts the RTS line,
+      - Writing to a UART asserts the RTS line.
+  - When CRTSCTS is enabled:
+      - Reading from a UART asserts the RTS line,
+      - Writing to a UART asserts the RTS line.
+      - Writing is blocked until CTS is asserted.
+
+Hardware-assisted hardware flow control with HSCIF and SCIFB on
+r8a7791/koelsch behaves as expected when dedicated RTS/CTS modem lines
+are enabled (beware the large transmission FIFOs on SCIFB ;-)
+
+For SCIFA on r8a7740/armadillo, manually overriding (asserting) the RTS
+signal doesn't seem to work. Hence when CRTSCTS is disabled, RTS is
+never asserted. When CRTSCTS is enabled, hardware-assisted RTS/CTS does
+control RTS as expected. As SCIFA on r8a7791 doesn't have dedicated
+RTS/CTS modem lines, I cannot compare.
+
+DT overlays for testing can be found in the topic/renesas-overlays
+branch of
+https://git.kernel.org/cgit/linux/kernel/git/geert/renesas-drivers.git.
+
+Regression testing on platforms without DT and/or GPIOLIB support
+(SuperH) would be appreciated.
+Compile-tested on ecovec24_defconfig(GPIOLIB=y) and se7780_defconfig
+(GPIOLIB=n).
+
+Thanks!
+
+Geert Uytterhoeven (11):
+  serial: sh-sci: Update DT binding documentation for GPIO modem lines
+  serial: sh-sci: Update DT binding documentation for dedicated RTS/CTS
+  serial: sh-sci: Always set TIOCM_CTS in .get_mctrl() callback
+  serial: sh-sci: Add support for GPIO-controlled modem lines
+  serial: sh-sci: Do not open-code sci_getreg()
+  serial: sh-sci: Add more Serial Port Register documentation
+  serial: sh-sci: Add more Serial Port Control/Data Register
+    documentation
+  serial: sh-sci: Correct pin initialization on (H)SCIF
+  serial: sh-sci: Add pin initialization for SCIFA/SCIFB
+  serial: sh-sci: Fix support for hardware-assisted RTS/CTS
+  serial: sh-sci: Add DT support for dedicated RTS/CTS
+
+ .../bindings/serial/renesas,sci-serial.txt         |   4 +
+ drivers/tty/serial/Kconfig                         |   1 +
+ drivers/tty/serial/sh-sci.c                        | 177 ++++++++++++++++++---
+ drivers/tty/serial/sh-sci.h                        |  24 ++-
+ 4 files changed, 173 insertions(+), 33 deletions(-)
+
 -- 
 1.9.1
+
+Gr{oetje,eeting}s,
+
+						Geert
