@@ -1,41 +1,46 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 11/11] serial: sh-sci: Add DT support for dedicated RTS/CTS
-Date: Fri, 29 Apr 2016 14:58:34 +0200
-Message-ID: <1461934714-18681-12-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v2 01/11] serial: sh-sci: Update DT binding documentation for GPIO modem lines
+Date: Fri, 29 Apr 2016 14:58:24 +0200
+Message-ID: <1461934714-18681-2-git-send-email-geert+renesas@glider.be>
 References: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
-Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add support for indicating the availability of dedicated lines for
-RTS/CTS hardware flow control, using the standard "uart-has-rtscts" DT
-property.
+Amend the DT bindings for the Renesas SCI driver to allow describing
+optional GPIO-controlled modem lines, which can be used where dedicated
+modem lines are not available.
+
+The property naming is dictated by the Generic Serial DT Bindings.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Rob Herring <robh@kernel.org>
+Cc: devicetree@vger.kernel.org
 ---
 v2:
-  - New.
+  - Add Acked-by,
+  - Drop RFC status,
+  - Refer to the Generic Serial DT Bindings,
+  - Drop out[12]-gpios.
 ---
- drivers/tty/serial/sh-sci.c | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 02b240a02dc6a593..d9cb0d70fceef07d 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2999,6 +2999,9 @@ sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
- 	p->regtype = SCI_OF_REGTYPE(match->data);
- 	p->scscr = SCSCR_RE | SCSCR_TE;
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index 528c3b90f23cb04b..997baeaa869baa6f 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -76,6 +76,8 @@ Optional properties:
+   - dmas: Must contain a list of two references to DMA specifiers, one for
+ 	  transmission, and one for reception.
+   - dma-names: Must contain a list of two DMA names, "tx" and "rx".
++  - {cts,dsr,dcd,rng,rts,dtr}-gpios: Specify GPIOs for modem lines, cfr. the
++    generic serial DT bindings in serial.txt.
  
-+	if (of_find_property(np, "uart-has-rtscts", NULL))
-+		p->capabilities |= SCIx_HAVE_RTSCTS;
-+
- 	return p;
- }
- 
+ Example:
+ 	aliases {
 -- 
 1.9.1
-
