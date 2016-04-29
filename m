@@ -1,31 +1,46 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] tty: serial, return values platform_get_irq, part II.
-Date: Fri, 29 Apr 2016 11:24:44 +0200
-Message-ID: <5723285C.3080008@suse.cz>
-References: <1461921721-30169-1-git-send-email-jslaby@suse.cz>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH] tty: Replace TTY_THROTTLED bit tests with tty_throttled()
+Date: Fri, 29 Apr 2016 12:33:57 +0200
+Message-ID: <20160429103357.GA22229@localhost>
+References: <1460247096-6552-1-git-send-email-peter@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461921721-30169-1-git-send-email-jslaby@suse.cz>
+Content-Disposition: inline
+In-Reply-To: <1460247096-6552-1-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <kernel@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Peter Korsgaard <jacmet@sunsite.dk>, Michal Simek <michal.simek@xilinx.com>, =?UTF-8?Q?S=c3=b6ren_Brinkmann?= <soren.brinkmann@xilinx.com>, linux-arm-kernel@lists.infradead.org, Russell King - ARM Linux <linux@arm.linux.org.uk>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 04/29/2016, 11:22 AM, Jiri Slaby wrote:
-> When commit "TTY: serial, handle platform_get_irq retval properly" was
-> merged, it was pointed out, that platform_get_irq is more peculiar
-> than it seems.
+On Sat, Apr 09, 2016 at 05:11:36PM -0700, Peter Hurley wrote:
+> Abstract TTY_THROTTLED bit tests with tty_throttled().
 > 
-> platform_get_irq can actually return zero for some platforms. So
-> reverts parts of the aforementioned commits which did the worng thing
-> on those platforms.
+> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/char/pcmcia/synclink_cs.c      | 2 +-
+>  drivers/mmc/card/sdio_uart.c           | 2 +-
+>  drivers/net/usb/hso.c                  | 2 +-
+>  drivers/staging/fwserial/fwserial.c    | 2 +-
+>  drivers/staging/speakup/selection.c    | 2 +-
+>  drivers/tty/amiserial.c                | 2 +-
+>  drivers/tty/hvc/hvc_console.c          | 2 +-
+>  drivers/tty/hvc/hvcs.c                 | 2 +-
+>  drivers/tty/hvc/hvsi.c                 | 2 +-
+>  drivers/tty/moxa.c                     | 2 +-
+>  drivers/tty/nozomi.c                   | 2 +-
+>  drivers/tty/serial/serial_core.c       | 2 +-
+>  drivers/tty/synclink.c                 | 2 +-
+>  drivers/tty/synclink_gt.c              | 2 +-
+>  drivers/tty/synclinkmp.c               | 2 +-
+>  drivers/tty/tty_ioctl.c                | 4 ++--
+>  drivers/tty/vt/selection.c             | 2 +-
+>  drivers/usb/gadget/function/u_serial.c | 4 ++--
+>  drivers/usb/serial/digi_acceleport.c   | 3 +--
 
-Given I double checked the code, I should do so for the commit message
-too. Please scratch this one due to the commit message.
+For usb-serial
 
-thanks,
--- 
-js
-suse labs
+Acked-by: Johan Hovold <johan@kernel.org>
+
+Thanks,
+Johan
