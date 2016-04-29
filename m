@@ -1,53 +1,48 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2] serial: mctrl_gpio: Drop support for out1-gpios and out2-gpios
-Date: Fri, 29 Apr 2016 13:40:26 +0200
-Message-ID: <1461930026-15783-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Richard Genoud <richard.genoud@gmail.com>, Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2 06/11] serial: sh-sci: Add more Serial Port Register documentation
+Date: Fri, 29 Apr 2016 14:58:29 +0200
+Message-ID: <1461934714-18681-7-git-send-email-geert+renesas@glider.be>
+References: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-sh-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
+Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The OUT1 and OUT2 pins present on some legacy UARTs are basically GPIOs.
-It doesn't make much sense to emulate GPIOs using other GPIOs, hence
-drop support for that.
+Improve documentation for the (H)SCIF Serial Port Register:
+  - Make it clear the RTS and CTS lines are active-low,
+  - Document the bits related to the serial port's clock pin.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 ---
 v2:
-  - Add Reviewed-by,
-  - Drop forgotten UART_GPIO_OUT[12] enum values.
+  - New.
 ---
- drivers/tty/serial/serial_mctrl_gpio.c | 2 --
- drivers/tty/serial/serial_mctrl_gpio.h | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/tty/serial/sh-sci.h | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index 02147361eaa94747..821ffa637eb630cb 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -43,8 +43,6 @@ static const struct {
- 	{ "rng", TIOCM_RNG, false, },
- 	{ "rts", TIOCM_RTS, true, },
- 	{ "dtr", TIOCM_DTR, true, },
--	{ "out1", TIOCM_OUT1, true, },
--	{ "out2", TIOCM_OUT2, true, },
- };
+diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
+index 7a4fa185b93ef307..85a2b81ba0a845e5 100644
+--- a/drivers/tty/serial/sh-sci.h
++++ b/drivers/tty/serial/sh-sci.h
+@@ -108,10 +108,12 @@ enum {
+ #define SCLSR_ORER	BIT(0)	/* Overrun Error */
  
- void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
-index bcfad5d1db61decf..332a33ab0647cbe3 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.h
-+++ b/drivers/tty/serial/serial_mctrl_gpio.h
-@@ -32,8 +32,6 @@ enum mctrl_gpio_idx {
- 	UART_GPIO_RI = UART_GPIO_RNG,
- 	UART_GPIO_RTS,
- 	UART_GPIO_DTR,
--	UART_GPIO_OUT1,
--	UART_GPIO_OUT2,
- 	UART_GPIO_MAX,
- };
+ /* SCSPTR (Serial Port Register), optional */
+-#define SCSPTR_RTSIO	BIT(7)	/* Serial Port RTS Pin Input/Output */
+-#define SCSPTR_RTSDT	BIT(6)	/* Serial Port RTS Pin Data */
+-#define SCSPTR_CTSIO	BIT(5)	/* Serial Port CTS Pin Input/Output */
+-#define SCSPTR_CTSDT	BIT(4)	/* Serial Port CTS Pin Data */
++#define SCSPTR_RTSIO	BIT(7)	/* Serial Port RTS# Pin Input/Output */
++#define SCSPTR_RTSDT	BIT(6)	/* Serial Port RTS# Pin Data */
++#define SCSPTR_CTSIO	BIT(5)	/* Serial Port CTS# Pin Input/Output */
++#define SCSPTR_CTSDT	BIT(4)	/* Serial Port CTS# Pin Data */
++#define SCSPTR_SCKIO	BIT(3)	/* Serial Port Clock Pin Input/Output */
++#define SCSPTR_SCKDT	BIT(2)	/* Serial Port Clock Pin Data */
+ #define SCSPTR_SPB2IO	BIT(1)	/* Serial Port Break Input/Output */
+ #define SCSPTR_SPB2DT	BIT(0)	/* Serial Port Break Data */
  
 -- 
 1.9.1
+
