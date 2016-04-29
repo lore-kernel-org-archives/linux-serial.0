@@ -1,60 +1,53 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 6/8] tty: Replace ASYNC_INITIALIZED bit and update
- atomically
-Date: Fri, 29 Apr 2016 12:34:36 +0200
-Message-ID: <20160429103436.GB22229@localhost>
-References: <1460249607-8014-1-git-send-email-peter@hurleysoftware.com>
- <1460249607-8014-7-git-send-email-peter@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2] serial: mctrl_gpio: Drop support for out1-gpios and out2-gpios
+Date: Fri, 29 Apr 2016 13:40:26 +0200
+Message-ID: <1461930026-15783-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1460249607-8014-7-git-send-email-peter@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Grant Edwards <grant.b.edwards@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Richard Genoud <richard.genoud@gmail.com>, Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Apr 09, 2016 at 05:53:25PM -0700, Peter Hurley wrote:
-> Replace ASYNC_INITIALIZED bit in the tty_port::flags field with
-> TTY_PORT_INITIALIZED bit in the tty_port::iflags field. Introduce helpers
-> tty_port_set_initialized() and tty_port_initialized() to abstract
-> atomic bit ops.
-> 
-> Note: the transforms for test_and_set_bit() and test_and_clear_bit()
-> are unnecessary as the state transitions are already mutually exclusive;
-> the tty lock prevents concurrent open/close/hangup.
-> 
-> Signed-off-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/char/pcmcia/synclink_cs.c  | 12 +++++-----
->  drivers/ipack/devices/ipoctal.c    |  5 ++---
->  drivers/isdn/i4l/isdn_tty.c        | 10 ++++-----
->  drivers/s390/char/con3215.c        | 12 +++++-----
->  drivers/tty/amiserial.c            | 14 ++++++------
->  drivers/tty/cyclades.c             | 14 ++++++------
->  drivers/tty/isicom.c               |  6 ++---
->  drivers/tty/moxa.c                 | 10 ++++-----
->  drivers/tty/mxser.c                | 14 +++++-------
->  drivers/tty/n_gsm.c                |  8 +++----
->  drivers/tty/rocket.c               | 10 ++++-----
->  drivers/tty/serial/crisv10.c       | 17 +++++++-------
->  drivers/tty/serial/serial_core.c   | 24 +++++++++++---------
->  drivers/tty/synclink.c             | 46 ++++++++++++++++++--------------------
->  drivers/tty/synclink_gt.c          | 16 ++++++-------
->  drivers/tty/synclinkmp.c           | 16 ++++++-------
->  drivers/tty/tty_port.c             | 13 ++++++-----
->  drivers/usb/class/cdc-acm.c        |  4 ++--
->  drivers/usb/serial/console.c       |  4 ++--
->  drivers/usb/serial/generic.c       |  6 ++---
->  drivers/usb/serial/mxuport.c       |  6 ++---
->  drivers/usb/serial/sierra.c        |  4 ++--
->  drivers/usb/serial/usb-serial.c    |  2 +-
->  drivers/usb/serial/usb_wwan.c      |  4 ++--
+The OUT1 and OUT2 pins present on some legacy UARTs are basically GPIOs.
+It doesn't make much sense to emulate GPIOs using other GPIOs, hence
+drop support for that.
 
-For usb-serial
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+---
+v2:
+  - Add Reviewed-by,
+  - Drop forgotten UART_GPIO_OUT[12] enum values.
+---
+ drivers/tty/serial/serial_mctrl_gpio.c | 2 --
+ drivers/tty/serial/serial_mctrl_gpio.h | 2 --
+ 2 files changed, 4 deletions(-)
 
-Acked-by: Johan Hovold <johan@kernel.org>
-
-Thanks,
-Johan
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+index 02147361eaa94747..821ffa637eb630cb 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.c
++++ b/drivers/tty/serial/serial_mctrl_gpio.c
+@@ -43,8 +43,6 @@ static const struct {
+ 	{ "rng", TIOCM_RNG, false, },
+ 	{ "rts", TIOCM_RTS, true, },
+ 	{ "dtr", TIOCM_DTR, true, },
+-	{ "out1", TIOCM_OUT1, true, },
+-	{ "out2", TIOCM_OUT2, true, },
+ };
+ 
+ void mctrl_gpio_set(struct mctrl_gpios *gpios, unsigned int mctrl)
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
+index bcfad5d1db61decf..332a33ab0647cbe3 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.h
++++ b/drivers/tty/serial/serial_mctrl_gpio.h
+@@ -32,8 +32,6 @@ enum mctrl_gpio_idx {
+ 	UART_GPIO_RI = UART_GPIO_RNG,
+ 	UART_GPIO_RTS,
+ 	UART_GPIO_DTR,
+-	UART_GPIO_OUT1,
+-	UART_GPIO_OUT2,
+ 	UART_GPIO_MAX,
+ };
+ 
+-- 
+1.9.1
