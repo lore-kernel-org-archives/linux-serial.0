@@ -1,47 +1,67 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 02/11] serial: sh-sci: Update DT binding documentation for dedicated RTS/CTS
-Date: Fri, 29 Apr 2016 14:58:25 +0200
-Message-ID: <1461934714-18681-3-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v2 08/11] serial: sh-sci: Correct pin initialization on (H)SCIF
+Date: Fri, 29 Apr 2016 14:58:31 +0200
+Message-ID: <1461934714-18681-9-git-send-email-geert+renesas@glider.be>
 References: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1461934714-18681-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-renesas-soc-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
-Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, devicetree@vger.kernel.org
+Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Some Renesas SCIF UARTs have dedicated lines for RTS/CTS hardware flow
-control.  Whether these lines exist depends on SoC and UART instance
-inside the SoC.  Whether these lines can be used for hardware flow
-control depends on board wiring.
+Correct pin initialization on (H)SCIF:
+  - RTS must be deasserted (it's active low),
+  - SCK must be an input, as it may be used as the optional external
+    clock input.
 
-Amend the DT bindings with an optional property to indicate that RTS/CTS
-hardware flow control lines exist, and can be used as such, according to
-the Generic Serial DT Bindings.
+Initial pin configuration must always be done:
+  - Regardless of the presence of dedicated RTS and CTS pins: if the
+    register exists, the RTS/CTS bits exist, too,
+  - Regardless of hardware flow control being enabled or not: RTS must
+    be deasserted.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: devicetree@vger.kernel.org
 ---
 v2:
-  - Drop RFC status,
-  - Use "uart-has-rtscts" instead of "renesas,uart-has-rtscts",
-  - Refer to the Generic Serial DT Bindings.
+  - New.
 ---
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/sh-sci.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index 997baeaa869baa6f..7a0e15053db97481 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -78,6 +78,8 @@ Optional properties:
-   - dma-names: Must contain a list of two DMA names, "tx" and "rx".
-   - {cts,dsr,dcd,rng,rts,dtr}-gpios: Specify GPIOs for modem lines, cfr. the
-     generic serial DT bindings in serial.txt.
-+  - uart-has-rtscts: Indicates dedicated lines for RTS/CTS hardware flow
-+    control, cfr. the generic serial DT bindings in serial.txt.
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index ce7bd165929ea078..c46999f20917964e 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -712,21 +712,14 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
+ 		return;
+ 	}
  
- Example:
- 	aliases {
+-	/*
+-	 * For the generic path SCSPTR is necessary. Bail out if that's
+-	 * unavailable, too.
+-	 */
+-	if (!sci_getreg(port, SCSPTR)->size)
+-		return;
+-
+-	if ((s->cfg->capabilities & SCIx_HAVE_RTSCTS) &&
+-	    ((!(cflag & CRTSCTS)))) {
+-		unsigned short status;
+-
+-		status = serial_port_in(port, SCSPTR);
+-		status &= ~SCSPTR_CTSIO;
+-		status |= SCSPTR_RTSIO;
+-		serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
++	if (sci_getreg(port, SCSPTR)->size) {
++		u16 status = serial_port_in(port, SCSPTR);
++
++		/* RTS# is output, driven 1 */
++		status |= SCSPTR_RTSIO | SCSPTR_RTSDT;
++		/* CTS# and SCK are inputs */
++		status &= ~(SCSPTR_CTSIO | SCSPTR_SCKIO);
++		serial_port_out(port, SCSPTR, status);
+ 	}
+ }
+ 
 -- 
 1.9.1
