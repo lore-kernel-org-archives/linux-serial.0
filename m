@@ -1,31 +1,53 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: Re: [PATCH stable] serial: samsung: Reorder the sequence of clock
- control when call s3c24xx_serial_set_termios()
-Date: Tue, 3 May 2016 12:06:19 +0200
-Message-ID: <20160503100619.GA3956@kozik-lap>
-References: <1462191907-27403-1-git-send-email-k.kozlowski@samsung.com>
- <20160502182459.GA11129@kroah.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH] tty: serial: 8250_omap: do not defer termios changes
+Date: Tue, 3 May 2016 17:30:33 +0530
+Message-ID: <572892E1.90600@ti.com>
+References: <8737r7ght7.fsf@linutronix.de>
+ <570339E8.6010808@hurleysoftware.com> <87y48kftip.fsf@linutronix.de>
+ <570BE48F.60801@hurleysoftware.com> <570BED7B.9080803@linutronix.de>
+ <570C04C1.40201@hurleysoftware.com> <570D2A46.2050106@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160502182459.GA11129@kroah.com>
+In-Reply-To: <570D2A46.2050106@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, stable@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Peter Hurley <peter@hurleysoftware.com>, John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>, nsekhar@ti.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, May 02, 2016 at 11:24:59AM -0700, Greg Kroah-Hartman wrote:
-> On Mon, May 02, 2016 at 02:25:07PM +0200, Krzysztof Kozlowski wrote:
-> > From: Chanwoo Choi <cw00.choi@samsung.com>
-> > 
-> > commit b8995f527aac143e83d3900ff39357651ea4e0f6 upstream
+Hi,
+
+On 04/12/2016 10:33 PM, Sebastian Andrzej Siewior wrote:
+> On 04/11/2016 10:10 PM, Peter Hurley wrote:
+>> On 04/11/2016 11:31 AM, Sebastian Andrzej Siewior wrote:
+>>> On 04/11/2016 07:53 PM, Peter Hurley wrote:
+>>>> On 04/11/2016 01:18 AM, John Ogness wrote:
+>>>>> On 2016-04-05, Peter Hurley <peter@hurleysoftware.com> wrote:
+>>>>>> On 03/31/2016 01:41 AM, John Ogness wrote:
+
+[...]
+
+>> *am335x*
 > 
-> This isn't in Linus's tree yet, so we can't take this into any -stable
-> trees yet.  Please wait for that to happen, can you resend this when
-> that happens?
+> I am not sure if the limitations are based on the DMA engine or the
+> 
+>> - requires write to tx fifo to trigger tx dma (ie. OMAP_DMA_TX_KICK
+>>   workaround necessitating completely different tx dma completion handler)
+> 
+> This one for instance I don't see on BeagleBoard xM / omap36xx and
+> DRA7x. Both (not affected) use SDMA instead EDMA. It would be
+> interesting to see if DRA7x is affected once it uses EDMA.
+> 
 
-Of course, no problem. I will resend this.
+8250 UART DMA works fine with EDMA as the DMA engine.
+As per my testing, am335x + EDMA, am437x + EDMA, dra7xx + EDMA and
+dra72x + EDMA require OMAP_DMA_TX_KICK quirk. However when using SDMA
+OMAP_DMA_TX_KICK is not needed (I tested on dra7xx platform). So, it can
+be concluded that when using EDMA with 8250 UART tx kick is needed.
 
-Best regards,
-Krzysztof
+
+
+-- 
+Regards
+Vignesh
