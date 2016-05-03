@@ -1,42 +1,39 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: Bunch of serial warnings in next at least with omap-serial
-Date: Tue, 3 May 2016 14:58:21 -0700
-Message-ID: <20160503215821.GR5995@atomide.com>
-References: <20160503203930.GQ5995@atomide.com>
- <572911BF.8000803@hurleysoftware.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 00/11] serial: 8250: split LPSS to 8250_lpss, enable
+ DMA on Quark
+Date: Tue, 3 May 2016 15:55:50 -0700
+Message-ID: <20160503225550.GA6599@kroah.com>
+References: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <572911BF.8000803@hurleysoftware.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+In-Reply-To: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-* Peter Hurley <peter@hurleysoftware.com> [160503 14:03]:
-> Hi Tony,
+On Wed, Apr 27, 2016 at 04:48:03PM +0300, Andy Shevchenko wrote:
+> This is combined series of two things:
+> - split out the Intel LPSS specific driver from 8250_pci into 8250_lpss
+> - enable DMA support on Intel Quark UART
 > 
-> On 05/03/2016 01:39 PM, Tony Lindgren wrote:
-> > Hi Peter,
-> > 
-> > Looks like probably commit 4047b37122d1 ("serial: core: Prevent unsafe
-> > uart port access, part 1") in Linux next causes tons of warnings with at
-> > least omap-serial. It does not revert cleanly I have not tested with that
-> > reverted. Any ideas? Dmesg output of the errors below.
+> The patch has been tested on few Intel SoCs / platforms. In any case I would
+> like to ask Bryan to do independent test.
 > 
-> Thanks for the report.
-> Patch below should fix that.
+> This is targeting serial subsystem, thus it would be nice to get and Ack from
+> Vinod first. Moreover, the series depends on [1] that is now under review. On
+> the other hand Vinod proposed to take it through dma-slave tree. Greg?
 
-Yes thanks that fixes it:
+I think if you don't take them through the tty tree, you might have
+merge issues :(
 
-Tested-by: Tony Lindgren <tony@atomide.com>
+Also, I don't have the full series in my mbox, can you resend the whole
+thing please?  Or did not all patches get sent to me?
+
+I'm dropping this from my queue now,
+
+thanks,
+
+greg k-h
