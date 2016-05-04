@@ -1,62 +1,47 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v3 09/11] serial: 8250_lpss: move Quark code from PCI driver
-Date: Wed, 4 May 2016 12:42:16 +0300
-Message-ID: <CAHp75VcgRi2wuBoZ8iQaKTCrv2p4sY5G9wcXgBtW=6_4pWv6Sg@mail.gmail.com>
+Subject: Re: [PATCH v3 00/11] serial: 8250: split LPSS to 8250_lpss, enable
+ DMA on Quark
+Date: Wed, 4 May 2016 12:48:22 +0300
+Message-ID: <CAHp75VfV5qJgfW92eTqOKg8AOvBXy=KqeRU=ZZ+rfXgQYXwAmA@mail.gmail.com>
 References: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
-	<1461764894-14891-10-git-send-email-andriy.shevchenko@linux.intel.com>
-	<1462354262.27858.153.camel@nexus-software.ie>
+	<20160503225550.GA6599@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462354262.27858.153.camel@nexus-software.ie>
+In-Reply-To: <20160503225550.GA6599@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 4, 2016 at 12:31 PM, Bryan O'Donoghue
-<pure.logic@nexus-software.ie> wrote:
-> On Wed, 2016-04-27 at 16:48 +0300, Andy Shevchenko wrote:
->> Intel Quark has DesignWare UART. Move the code from 8250_pci to
->> 8250_lpss.
+On Wed, May 4, 2016 at 1:55 AM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Wed, Apr 27, 2016 at 04:48:03PM +0300, Andy Shevchenko wrote:
+>> This is combined series of two things:
+>> - split out the Intel LPSS specific driver from 8250_pci into 8250_lpss
+>> - enable DMA support on Intel Quark UART
 >>
->> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->> ---
->>  drivers/tty/serial/8250/8250_lpss.c | 11 +++++++++++
->>  drivers/tty/serial/8250/8250_pci.c  | 15 +--------------
->>  2 files changed, 12 insertions(+), 14 deletions(-)
+>> The patch has been tested on few Intel SoCs / platforms. In any case I would
+>> like to ask Bryan to do independent test.
 >>
->> diff --git a/drivers/tty/serial/8250/8250_lpss.c
->> b/drivers/tty/serial/8250/8250_lpss.c
->> index 3112e8b..af34189 100644
->> --- a/drivers/tty/serial/8250/8250_lpss.c
->> +++ b/drivers/tty/serial/8250/8250_lpss.c
+>> This is targeting serial subsystem, thus it would be nice to get and Ack from
+>> Vinod first. Moreover, the series depends on [1] that is now under review. On
+>> the other hand Vinod proposed to take it through dma-slave tree. Greg?
 >
-> Andy,
->
-> If you are going to start removing working PCI devices from the PCI
-> config table in favour of a shim in SERIAL_8250_LPSS then the very
-> minimum should be some sort of dependency link between SERIAL_8250_LPSS
-> and CONFIG_SERIAL_8250_PCI in kconfig.
->
-> A user could reasonably read the QRK datasheet - switch on
-> CONFIG_SERIAL_8250_PCI and then wonder why no console output happened
-> on boot. S/he shouldn't have to know that devices were moved from the
-> PCI driver to an LPSS shim driver or that the 8250_lpss driver now
-> needs to be selected instead of the intuitively correct 8250_pci
-> driver.
+> I think if you don't take them through the tty tree, you might have
+> merge issues :(
 
-That is taken care of since default is set to SERIAL_8250 (you even
-don't need to have PCI driver enabled!).
-Doesn't work for you?
+I see,
 
->
-> So assuming you agree with that (profound and sublime) logic and will
-> make that dependency linkage then this is fine for me from a QRK POV.
->
-> Reviewed-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+> Also, I don't have the full series in my mbox, can you resend the whole
+> thing please?  Or did not all patches get sent to me?
 
-Thanks!
+I will resend soon an updated version anyway: Bryan reviewed it and we
+have already two patches in your tree that prevents to apply smoothly.
+
+> I'm dropping this from my queue now,
+
+Hope, not for long.
 
 -- 
 With Best Regards,
