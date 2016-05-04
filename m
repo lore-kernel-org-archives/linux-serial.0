@@ -1,72 +1,153 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v4 00/11] serial: 8250: split LPSS to 8250_lpss, enable DMA on Quark
-Date: Wed,  4 May 2016 17:32:22 +0300
-Message-ID: <1462372353-70128-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 11/11] serial: 8250_lpss: enable DMA on Intel Quark UART
+Date: Wed,  4 May 2016 17:32:33 +0300
+Message-ID: <1462372353-70128-12-git-send-email-andriy.shevchenko@linux.intel.com>
+References: <1462372353-70128-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1462372353-70128-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-This is combined series of two things:
-- split out the Intel LPSS specific driver from 8250_pci into 8250_lpss
-- enable DMA support on Intel Quark UART
+DMA on Intel Quark SoC is a part of UART IP block. Enable it.
 
-The patch has been tested on few Intel SoCs / platforms. In any case I would
-like to ask Bryan to do independent test.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_lpss.c | 61 +++++++++++++++++++++++++++++++++++--
+ 1 file changed, 58 insertions(+), 3 deletions(-)
 
-This is targeting serial subsystem, thus it would be nice to get and Ack from
-Vinod first. Moreover, the series depends on [1] that is now in Vinod's
-slave-dma tree.
-
-That's why I asked Vinod to create immutable tag / branch for the [1] and the
-dependants (at least one more, which is sata_dwc_460ex) can use it.
-
-The series can be reached in the branch located at [2].
-
-[1] http://www.spinics.net/lists/kernel/msg2244475.html
-[2] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqrk
-
-Since v3:
-- rebase on top of recent tty-next branch (includes couple of new patches)
-- add Reviewed-by tag from Bryan (hope we got an agreement that current
-  approach would be okay)
-
-Since v2:
-- add tags
-- rebase on top of new version of [1]
-
-Since v1:
-- address most of Peter's comments (mostly changelog to patch 8)
-- add tag to patch 5
-- drop patch 6 from the series to be separately dealt with
-
-Andy Shevchenko (11):
-  dmaengine: dw: keep copy of custom slave config in dwc
-  dmaengine: dw: provide probe(), remove() stubs for users
-  dmaengine: dw: set polarity of handshake interface
-  dmaengine: dw: override LLP support if asked in platform data
-  serial: 8250_dma: switch to new dmaengine_terminate_* API
-  serial: 8250_dma: adjust DMA address of the UART
-  serial: 8250: enable AFE on ports where FIFO is 16 bytes
-  serial: 8250_lpss: split LPSS driver to separate module
-  serial: 8250_lpss: move Quark code from PCI driver
-  serial: 8250_lpss: enable MSI for Intel Quark
-  serial: 8250_lpss: enable DMA on Intel Quark UART
-
- drivers/dma/dw/core.c                |  41 ++--
- drivers/dma/dw/regs.h                |   5 +-
- drivers/tty/serial/8250/8250.h       |   5 +
- drivers/tty/serial/8250/8250_dma.c   |  14 +-
- drivers/tty/serial/8250/8250_lpss.c  | 357 +++++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_pci.c   | 257 +------------------------
- drivers/tty/serial/8250/8250_port.c  |   9 +-
- drivers/tty/serial/8250/Kconfig      |  14 +-
- drivers/tty/serial/8250/Makefile     |   1 +
- include/linux/dma/dw.h               |   5 +
- include/linux/platform_data/dma-dw.h |   4 +
- 11 files changed, 426 insertions(+), 286 deletions(-)
- create mode 100644 drivers/tty/serial/8250/8250_lpss.c
-
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index c83fd51..553aff3 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -15,7 +15,7 @@
+ #include <linux/rational.h>
+ 
+ #include <linux/dmaengine.h>
+-#include <linux/platform_data/dma-dw.h>
++#include <linux/dma/dw.h>
+ 
+ #include "8250.h"
+ 
+@@ -47,6 +47,7 @@ struct lpss8250_board {
+ 	unsigned long freq;
+ 	unsigned int base_baud;
+ 	int (*setup)(struct lpss8250 *, struct uart_port *p);
++	void (*exit)(struct lpss8250 *);
+ };
+ 
+ struct lpss8250 {
+@@ -55,6 +56,7 @@ struct lpss8250 {
+ 
+ 	/* DMA parameters */
+ 	struct uart_8250_dma dma;
++	struct dw_dma_chip dma_chip;
+ 	struct dw_dma_slave dma_param;
+ 	u8 dma_maxburst;
+ };
+@@ -150,17 +152,61 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
+ 
++static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
++	.nr_channels = 2,
++	.is_private = true,
++	.is_nollp = true,
++	.chan_allocation_order = CHAN_ALLOCATION_ASCENDING,
++	.chan_priority = CHAN_PRIORITY_ASCENDING,
++	.block_size = 4095,
++	.nr_masters = 1,
++	.data_width = {4},
++};
++
+ static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ {
++	struct uart_8250_dma *dma = &lpss->dma;
++	struct dw_dma_chip *chip = &lpss->dma_chip;
++	struct dw_dma_slave *param = &lpss->dma_param;
+ 	struct pci_dev *pdev = to_pci_dev(port->dev);
++	int ret;
+ 
+ 	pci_enable_msi(pdev);
+ 
+ 	port->irq = pdev->irq;
+ 
++	chip->dev = &pdev->dev;
++	chip->irq = pdev->irq;
++	chip->regs = pci_ioremap_bar(pdev, 1);
++	chip->pdata = &qrk_serial_dma_pdata;
++
++	/* Falling back to PIO mode if DMA probing fails */
++	ret = dw_dma_probe(chip);
++	if (ret)
++		return 0;
++
++	/* Special DMA address for UART */
++	dma->rx_dma_addr = 0xfffff000;
++	dma->tx_dma_addr = 0xfffff000;
++
++	param->dma_dev = &pdev->dev;
++	param->src_id = 0;
++	param->dst_id = 1;
++	param->polarity = true;
++
++	lpss->dma_maxburst = 8;
+ 	return 0;
+ }
+ 
++static void qrk_serial_exit(struct lpss8250 *lpss)
++{
++	struct dw_dma_slave *param = &lpss->dma_param;
++
++	if (!param->dma_dev)
++		return;
++	dw_dma_remove(&lpss->dma_chip);
++}
++
+ static bool lpss8250_dma_filter(struct dma_chan *chan, void *param)
+ {
+ 	struct dw_dma_slave *dws = param;
+@@ -243,22 +289,30 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	ret = lpss8250_dma_setup(lpss, &uart);
+ 	if (ret)
+-		return ret;
++		goto err_exit;
+ 
+ 	ret = serial8250_register_8250_port(&uart);
+ 	if (ret < 0)
+-		return ret;
++		goto err_exit;
+ 
+ 	lpss->line = ret;
+ 
+ 	pci_set_drvdata(pdev, lpss);
+ 	return 0;
++
++err_exit:
++	if (lpss->board->exit)
++		lpss->board->exit(lpss);
++	return ret;
+ }
+ 
+ static void lpss8250_remove(struct pci_dev *pdev)
+ {
+ 	struct lpss8250 *lpss = pci_get_drvdata(pdev);
+ 
++	if (lpss->board->exit)
++		lpss->board->exit(lpss);
++
+ 	serial8250_unregister_port(lpss->line);
+ }
+ 
+@@ -272,6 +326,7 @@ static const struct lpss8250_board qrk_board = {
+ 	.freq = 44236800,
+ 	.base_baud = 2764800,
+ 	.setup = qrk_serial_setup,
++	.exit = qrk_serial_exit,
+ };
+ 
+ #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
 -- 
 2.8.1
