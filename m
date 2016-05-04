@@ -1,89 +1,42 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 2/2] dmaengine: rename cmd_pause to cmd_suspend
-Date: Wed,  4 May 2016 22:29:40 +0300
-Message-ID: <1462390180-82368-3-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1462390180-82368-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Julio Guerra <julio@farjump.io>
+Subject: Re: [BUG] drivers/tty: read() on a noncanonical blocking tty randomly
+ fails when VMIN > received >= buf
+Date: Thu, 5 May 2016 01:27:28 +0200
+Message-ID: <3319f492-9b1b-d006-e903-7de761a87a53@farjump.io>
+References: <16504442-9e91-aaab-1f2b-9b4aa9c219f5@farjump.io>
+ <572A80C0.4080704@hurleysoftware.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462390180-82368-1-git-send-email-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <572A80C0.4080704@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Rename cmd_pause to cmd_suspend to be clear that latter capability reflects
-pause AND resume.
+>> When a tty (here a slave pty) is set in noncanonical input and block=
+ing read modes, a read() randomly blocks when:
+>> "VMIN > kernel received >=3D user buffer size > 0".
+>>
+>> The standard says that read() should block until VMIN bytes are rece=
+ived [1][2]. Whether this is an implementation defined case not really =
+specified by POSIX or not, it should not behave randomly (otherwise it =
+really should be documented in termios manpage).
+>
+> This is not a bug.
+>
+> From the termios(3) man page:
+>
+>        * MIN > 0; TIME =3D=3D 0: read(2) blocks until the lesser of M=
+IN bytes or the number of bytes requested are avail=E2=80=90
+>          able, and returns the lesser of these two values.
+>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/dma/dmaengine.c               | 4 ++--
- drivers/tty/serial/8250/8250_dma.c    | 2 +-
- include/linux/dmaengine.h             | 4 ++--
- sound/soc/soc-generic-dmaengine-pcm.c | 2 +-
- 4 files changed, 6 insertions(+), 6 deletions(-)
+This does not appear in my man...
 
-diff --git a/drivers/dma/dmaengine.c b/drivers/dma/dmaengine.c
-index 59eb4fa..e9917a4 100644
---- a/drivers/dma/dmaengine.c
-+++ b/drivers/dma/dmaengine.c
-@@ -503,9 +503,9 @@ int dma_get_slave_caps(struct dma_chan *chan, struct dma_slave_caps *caps)
- 
- 	/*
- 	 * Some devices implement only pause (e.g. to get residuum) but no
--	 * resume. However cmd_pause is advertised as pause AND resume.
-+	 * resume. However cmd_suspend is advertised as pause AND resume.
- 	 */
--	caps->cmd_pause = !!(device->device_pause && device->device_resume);
-+	caps->cmd_suspend = !!(device->device_pause && device->device_resume);
- 	caps->cmd_terminate = !!device->device_terminate_all;
- 
- 	return 0;
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 8ccbf53..2db57b0 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -180,7 +180,7 @@ int serial8250_request_dma(struct uart_8250_port *p)
- 	ret = dma_get_slave_caps(dma->rxchan, &caps);
- 	if (ret)
- 		goto release_rx;
--	if (!caps.cmd_pause || !caps.cmd_terminate ||
-+	if (!caps.cmd_suspend || !caps.cmd_terminate ||
- 	    caps.residue_granularity == DMA_RESIDUE_GRANULARITY_DESCRIPTOR) {
- 		ret = -EINVAL;
- 		goto release_rx;
-diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
-index 30de019..af9c97c 100644
---- a/include/linux/dmaengine.h
-+++ b/include/linux/dmaengine.h
-@@ -402,7 +402,7 @@ enum dma_residue_granularity {
-  * 	type of direction, the dma controller should fill (1 << <TYPE>) and same
-  * 	should be checked by controller as well
-  * @max_burst: max burst capability per-transfer
-- * @cmd_pause: true, if pause and thereby resume is supported
-+ * @cmd_suspend: true, if pause and thereby resume is supported
-  * @cmd_terminate: true, if terminate cmd is supported
-  * @residue_granularity: granularity of the reported transfer residue
-  * @descriptor_reuse: if a descriptor can be reused by client and
-@@ -413,7 +413,7 @@ struct dma_slave_caps {
- 	u32 dst_addr_widths;
- 	u32 directions;
- 	u32 max_burst;
--	bool cmd_pause;
-+	bool cmd_suspend;
- 	bool cmd_terminate;
- 	enum dma_residue_granularity residue_granularity;
- 	bool descriptor_reuse;
-diff --git a/sound/soc/soc-generic-dmaengine-pcm.c b/sound/soc/soc-generic-dmaengine-pcm.c
-index 6cef397..73fc20e 100644
---- a/sound/soc/soc-generic-dmaengine-pcm.c
-+++ b/sound/soc/soc-generic-dmaengine-pcm.c
-@@ -151,7 +151,7 @@ static int dmaengine_pcm_set_runtime_hwparams(struct snd_pcm_substream *substrea
- 
- 	ret = dma_get_slave_caps(chan, &dma_caps);
- 	if (ret == 0) {
--		if (dma_caps.cmd_pause)
-+		if (dma_caps.cmd_suspend)
- 			hw.info |= SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_RESUME;
- 		if (dma_caps.residue_granularity <= DMA_RESIDUE_GRANULARITY_SEGMENT)
- 			hw.info |= SNDRV_PCM_INFO_BATCH;
--- 
-2.8.1
+Anyway, how do you explain the random behavior then?
+
+--=20
+Julio Guerra
