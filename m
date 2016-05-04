@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v4 07/11] serial: 8250: enable AFE on ports where FIFO is 16 bytes
-Date: Wed,  4 May 2016 17:32:29 +0300
-Message-ID: <1462372353-70128-8-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 06/11] serial: 8250_dma: adjust DMA address of the UART
+Date: Wed,  4 May 2016 17:32:28 +0300
+Message-ID: <1462372353-70128-7-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1462372353-70128-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1462372353-70128-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,50 +10,61 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark has 16550A compatible UART with autoflow feature enabled. It has
-only 16 bytes of FIFO. Currently serial8250_do_set_termios() prevents to enable
-autoflow since the minimum requirement of 32 bytes of FIFO size.
+Some UARTs, e.g. one is used in Intel Quark, have a different address base for
+DMA operations. Introduce an additional field (per RX and TX DMA channels) in
+struct uart_8250_dma to cover those cases.
 
-Drop a FIFO size limitation to allow autoflow control be enabled on such UARTs.
-
-While here, comment out UART_CAP_AFE for PORT_AR7 since it wasn't working and
-it will be not a good idea to use it in conjunction with trigger level of 1
-byte.
-
-Suggested-by: Peter Hurley <peter@hurleysoftware.com>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/tty/serial/8250/8250.h     | 5 +++++
+ drivers/tty/serial/8250/8250_dma.c | 8 ++++++--
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index d403603..be9cc37 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -178,7 +178,7 @@ static const struct serial8250_config uart_config[] = {
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
--		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-+		.flags		= UART_CAP_FIFO /* | UART_CAP_AFE */,
- 	},
- 	[PORT_U6_16550A] = {
- 		.name		= "U6_16550A",
-@@ -2550,12 +2550,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/*
- 	 * MCR-based auto flow control.  When AFE is enabled, RTS will be
- 	 * deasserted when the receive FIFO contains more characters than
--	 * the trigger, or the MCR RTS bit is cleared.  In the case where
--	 * the remote UART is not using CTS auto flow control, we must
--	 * have sufficient FIFO entries for the latency of the remote
--	 * UART to respond.  IOW, at least 32 bytes of FIFO.
-+	 * the trigger, or the MCR RTS bit is cleared.
- 	 */
--	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-+	if (up->capabilities & UART_CAP_AFE) {
- 		up->mcr &= ~UART_MCR_AFE;
- 		if (termios->c_cflag & CRTSCTS)
- 			up->mcr |= UART_MCR_AFE;
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 215a992..664232b 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -31,6 +31,11 @@ struct uart_8250_dma {
+ 	struct dma_chan		*rxchan;
+ 	struct dma_chan		*txchan;
+ 
++	/* Device address base for DMA operations */
++	phys_addr_t		rx_dma_addr;
++	phys_addr_t		tx_dma_addr;
++
++	/* DMA address of the buffer in memory */
+ 	dma_addr_t		rx_addr;
+ 	dma_addr_t		tx_addr;
+ 
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index c759242..8ccbf53 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -149,6 +149,10 @@ void serial8250_rx_dma_flush(struct uart_8250_port *p)
+ int serial8250_request_dma(struct uart_8250_port *p)
+ {
+ 	struct uart_8250_dma	*dma = p->dma;
++	phys_addr_t rx_dma_addr = dma->rx_dma_addr ?
++				  dma->rx_dma_addr : p->port.mapbase;
++	phys_addr_t tx_dma_addr = dma->tx_dma_addr ?
++				  dma->tx_dma_addr : p->port.mapbase;
+ 	dma_cap_mask_t		mask;
+ 	struct dma_slave_caps	caps;
+ 	int			ret;
+@@ -156,11 +160,11 @@ int serial8250_request_dma(struct uart_8250_port *p)
+ 	/* Default slave configuration parameters */
+ 	dma->rxconf.direction		= DMA_DEV_TO_MEM;
+ 	dma->rxconf.src_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
+-	dma->rxconf.src_addr		= p->port.mapbase + UART_RX;
++	dma->rxconf.src_addr		= rx_dma_addr + UART_RX;
+ 
+ 	dma->txconf.direction		= DMA_MEM_TO_DEV;
+ 	dma->txconf.dst_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
+-	dma->txconf.dst_addr		= p->port.mapbase + UART_TX;
++	dma->txconf.dst_addr		= tx_dma_addr + UART_TX;
+ 
+ 	dma_cap_zero(mask);
+ 	dma_cap_set(DMA_SLAVE, mask);
 -- 
 2.8.1
