@@ -1,52 +1,89 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v4 10/11] serial: 8250_lpss: enable MSI for Intel Quark
-Date: Wed,  4 May 2016 17:32:32 +0300
-Message-ID: <1462372353-70128-11-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1462372353-70128-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+Subject: Re: [PATCH v3 09/11] serial: 8250_lpss: move Quark code from PCI
+ driver
+Date: Wed, 04 May 2016 15:37:20 +0100
+Message-ID: <1462372640.27858.192.camel@nexus-software.ie>
+References: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
+	 <1461764894-14891-10-git-send-email-andriy.shevchenko@linux.intel.com>
+	 <1462354262.27858.153.camel@nexus-software.ie>
+	 <CAHp75VcgRi2wuBoZ8iQaKTCrv2p4sY5G9wcXgBtW=6_4pWv6Sg@mail.gmail.com>
+	 <1462355477.27858.161.camel@nexus-software.ie>
+	 <CAHp75VfW3UVLEvnPoG1AzeYrQ=GRgqZ-pJWbVgSfMs5j2hEwCA@mail.gmail.com>
+	 <1462359696.27858.184.camel@nexus-software.ie>
+	 <1462360835.17131.224.camel@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462372353-70128-1-git-send-email-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <1462360835.17131.224.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark SoC supports MSI for LPSS, in particular for UART. Enable MSI for
-Intel Quark.
+On Wed, 2016-05-04 at 14:20 +0300, Andy Shevchenko wrote:
+> On Wed, 2016-05-04 at 12:01 +0100, Bryan O'Donoghue wrote:
+> > On Wed, 2016-05-04 at 13:03 +0300, Andy Shevchenko wrote:
+> > > 
+> > > On Wed, May 4, 2016 at 12:51 PM, Bryan O'Donoghue
+> > > <pure.logic@nexus-software.ie> wrote:
+> > > > 
+> > > > The default may be set to SERIAL_8250 but, without the QRK
+> > > > specific
+> > > > entry in 8250_pci.c you won't get console output.
+> 
+> That's, by the way, not true.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_lpss.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Since when ? We don't have an I/O bar so mapping the MMIO bar @ the
+right register width is required.
 
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 3beb3aa..c83fd51 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -150,6 +150,17 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- 	return 0;
- }
- 
-+static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
-+{
-+	struct pci_dev *pdev = to_pci_dev(port->dev);
-+
-+	pci_enable_msi(pdev);
-+
-+	port->irq = pdev->irq;
-+
-+	return 0;
-+}
-+
- static bool lpss8250_dma_filter(struct dma_chan *chan, void *param)
- {
- 	struct dw_dma_slave *dws = param;
-@@ -260,6 +271,7 @@ static const struct lpss8250_board byt_board = {
- static const struct lpss8250_board qrk_board = {
- 	.freq = 44236800,
- 	.base_baud = 2764800,
-+	.setup = qrk_serial_setup,
- };
- 
- #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
--- 
-2.8.1
+> 
+> > > > 
+> > > > So if you are going to remove the QRK entry from 8250_pci.c and
+> > > > stuff
+> > > > it into 8250_lpss.c then 8250_lpss needs to be selected by
+> > > > CONFIG_SERIAL_8250_PCI.
+> > > Why?!
+> > > 
+> > > Now it should be enough to have SERIAL_8250 set to non-n to have
+> > > 8250_lpss compiled.
+> > > Can you check it?
+> > I'm sure that's true.
+> > 
+> > My point to you is that - its a highly non-intuitive thing to do on
+> > a
+> > reading of the datasheet for this part.
+> > 
+> > LPSS is, ostensibly at least, for passing processor resources via
+> > APCI.
+> > 
+> > If you look at a QRK datasheet it says "enumerate all this stuff
+> > via
+> > PCI" - there's not a single mention of LPSS. Its reasonable,
+> > correct
+> > and currently required for QRK to set CONFIG_8250_PCI.
+> 
+> User has no such item even visible until enable CONFIG_EXPERT.
+> 
+> Heikki sent an answer to you (and to the list, but by some reason
+> it's
+> not yet there) an hour ago.
+> 
+> > 
+> > To move away from a valid/standard PCI probe routine into a new
+> > special
+> > LPSS/PCI shim (which the hardware doesn't actually mandate) I do
+> > think
+> > you should to setup the dependency CONFIG_8250_PCI =>
+> > CONFIG_8250_LPSS.
+> 
+> No, this is what we try avoiding, thus it will not happen.
+> 
+> If user selects CONFIG_SERIAL_8250_PCI, the CONFIG_SERIAL_8250_LPSS
+> will
+> be selected as well since it has same dependencies.
+
+Hmm. I think what you mean to say is that a user (expert or not)
+*would* select SERIAL_8250_LPSS since (at least in your branch
+ 09c4268121a39eb3973823dd9225b650df726f67) both options may be
+individually selected/deselected.
