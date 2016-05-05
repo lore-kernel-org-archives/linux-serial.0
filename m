@@ -1,30 +1,35 @@
-From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Subject: Re: [PATCH v3 03/11] dmaengine: dw: set polarity of handshake
- interface
-Date: Thu, 05 May 2016 18:54:11 +0100
-Message-ID: <1462470851.2404.6.camel@nexus-software.ie>
-References: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
-	 <1461764894-14891-4-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Andy Gross <andy.gross@linaro.org>
+Subject: Re: [PATCH 1/2] tty: serial: msm_serial regression fix data
+ corruption
+Date: Thu, 5 May 2016 18:52:26 -0500
+Message-ID: <20160505235226.GD6533@hector.attlocal.net>
+References: <571BAC8B.80001@gmail.com>
+ <571BAD78.4020609@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461764894-14891-4-git-send-email-andriy.shevchenko@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <571BAD78.4020609@gmail.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Frank Rowand <frowand.list@gmail.com>
+Cc: David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel list <linux-kernel@vger.kernel.org>, ivan.ivanov@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2016-04-27 at 16:48 +0300, Andy Shevchenko wrote:
-> +       bool                    polarity;
+On Sat, Apr 23, 2016 at 10:14:32AM -0700, Frank Rowand wrote:
+> From: Frank Rowand <frank.rowand@am.sony.com>
+> 
+> Commit 3a878c430fd6 ("tty: serial: msm: Add TX DMA support") regression.
+> The calculation of tx_count was moved from the old msm_handle_tx(),
+> now renamed msm_handle_tx_pio(), to the new msm_handle_tx().  The
+> move left out one size test.
+> 
+> The regression seen on the qcom-apq8074-dragonboard is dropped
+> characters and corrupted characters (values greater than 0x7f)
+> when DMA is not enabled.
+> 
+> Signed-off-by: Frank Rowand <frank.rowand@am.sony.com>
 
-So this variable is not very intuitively named.
+This allowed me to transfer files over the console without any CRC errors.
+Zmodem transfer at 115k worked great.
 
-You end up setting somepointer->polarity = true; in a later patch. 
-
-Since you're respining a V4 I'd suggest a name that describes a little
-bit better than polarity. Setting polarity = true is a little bit liked
-being asked "you you like ice-cream or apple pie" and then saying "yes
-please".
-
----
-bod
+Tested-by: Andy Gross <andy.gross@linaro.org>
