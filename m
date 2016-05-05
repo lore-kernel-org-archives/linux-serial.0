@@ -1,50 +1,44 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [BUG] drivers/tty: read() on a noncanonical blocking tty randomly
- fails when VMIN > received >= buf
-Date: Wed, 4 May 2016 17:50:56 -0700
-Message-ID: <572A98F0.3040306@hurleysoftware.com>
-References: <16504442-9e91-aaab-1f2b-9b4aa9c219f5@farjump.io>
- <572A80C0.4080704@hurleysoftware.com>
- <3319f492-9b1b-d006-e903-7de761a87a53@farjump.io>
+From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+Subject: Re: [PATCH v3 09/11] serial: 8250_lpss: move Quark code from PCI
+ driver
+Date: Thu, 05 May 2016 18:49:15 +0100
+Message-ID: <1462470555.2404.3.camel@nexus-software.ie>
+References: <1461764894-14891-1-git-send-email-andriy.shevchenko@linux.intel.com>
+	 <1461764894-14891-10-git-send-email-andriy.shevchenko@linux.intel.com>
+	 <1462354262.27858.153.camel@nexus-software.ie>
+	 <CAHp75VcgRi2wuBoZ8iQaKTCrv2p4sY5G9wcXgBtW=6_4pWv6Sg@mail.gmail.com>
+	 <1462355477.27858.161.camel@nexus-software.ie>
+	 <CAHp75VfW3UVLEvnPoG1AzeYrQ=GRgqZ-pJWbVgSfMs5j2hEwCA@mail.gmail.com>
+	 <1462359696.27858.184.camel@nexus-software.ie>
+	 <1462360835.17131.224.camel@linux.intel.com>
+	 <1462373469.27858.203.camel@nexus-software.ie>
+	 <1462383792.17131.265.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3319f492-9b1b-d006-e903-7de761a87a53@farjump.io>
+In-Reply-To: <1462383792.17131.265.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Julio Guerra <julio@farjump.io>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/04/2016 04:27 PM, Julio Guerra wrote:
->>> When a tty (here a slave pty) is set in noncanonical input and bloc=
-king read modes, a read() randomly blocks when:
->>> "VMIN > kernel received >=3D user buffer size > 0".
->>>
->>> The standard says that read() should block until VMIN bytes are rec=
-eived [1][2]. Whether this is an implementation defined case not really=
- specified by POSIX or not, it should not behave randomly (otherwise it=
- really should be documented in termios manpage).
->>
->> This is not a bug.
->>
->> From the termios(3) man page:
->>
->>        * MIN > 0; TIME =3D=3D 0: read(2) blocks until the lesser of =
-MIN bytes or the number of bytes requested are avail=E2=80=90
->>          able, and returns the lesser of these two values.
->>
->=20
-> This does not appear in my man...
->=20
-> Anyway, how do you explain the random behavior then?
+On Wed, 2016-05-04 at 20:43 +0300, Andy Shevchenko wrote:
+> > Could you then select CONFIG_SERIAL_8250_LPSS when
+> > CONFIG_X86_INTEL_QUARK is true - since it will be a dependency.
+> 
+> Answered to this in the other email, but can repeat my question. Do
+> you
+> propose a new behaviour? Otherwise how does it work right now?
 
-A long standing bug in this read mode allows the asynchronous input
-processing thread to race with the read() thread and become confused
-about how much data remains.
+I just mean when someone selects CONFIG_X86_INTEL_QUARK that, that
+kconfig option will select CONFIG_SERIAL_8250_LPSS automatically.
 
-I fixed this in 4.6; when I run your test on 4.6, it consistently
-returns the full user buffer.
+Maybe that's a bad idea .. I can't think of another driver that would
+be selected like that - though OTOH now that we're moving our perfectly
+normal PCI device into this LPSS shim my *feeling* is that it should be
+selected automagically.
 
-Regards,
-Peter Hurley
+Feel free not to do that though - so long as you document the change in
+kconfig so that a casual reader understands the entry is moved I think
+it should suffice.
