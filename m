@@ -1,52 +1,58 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 0/2] dmaengine: urgent fix to prevent regression in
- UART
-Date: Fri, 06 May 2016 16:38:46 +0300
-Message-ID: <1462541926.17131.285.camel@linux.intel.com>
-References: <1462390180-82368-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH 0/3] Support MPS2 UART controller
+Date: Fri, 6 May 2016 10:31:49 -0400
+Message-ID: <CAP=VYLopd8erCP9J9cTyZ+YubafKjWi3bHQp-swmyfyn2eZ_Ww@mail.gmail.com>
+References: <1461574068-14641-1-git-send-email-vladimir.murzin@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462390180-82368-1-git-send-email-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <1461574068-14641-1-git-send-email-vladimir.murzin@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To: Vladimir Murzin <vladimir.murzin@arm.com>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, jslaby@suse.com, Arnd Bergmann <arnd@arndb.de>, sudeep.holla@arm.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-+Cc: Heikki
+On Mon, Apr 25, 2016 at 4:47 AM, Vladimir Murzin
+<vladimir.murzin@arm.com> wrote:
+> Hi,
+>
+> These patches allow to use UART controller found on MPS2 platform.
 
-On Wed, 2016-05-04 at 22:29 +0300, Andy Shevchenko wrote:
-> There are two patches, first of which is an urgent fix to prevent a
-> regression
-> when UART driver can't acquire DMA channel due to DMA engine which
-> doesn't
-> support DMA_CYCLIC.
+Did you intend this driver to support being modular?  It has a bool Kconfig
+(not tristate) which makes the module_exit dead code.
 
-Have to add the following.
+If it will always be builtin (with console as primary use case) then you can
+see commit 89ebc27427695bfc1e769f1dd99bd243d332ac7a as a possible
+update suggestion.
 
-The commit ec5a11a91eec ("serial: 8250: Validate dmaengine rx chan meet=
-s
-requirements") brought a check for DMA capabilities and UART will not
-acquire a DMA channel if DMA engine doesn't support both DMA_CYCLIC
-_and_ DMA_SLAVE. The first patch in the series changes the logic from
-_and_ to _or_.
+P.
+--
 
->=20
-> Andy Shevchenko (2):
-> =C2=A0 dmaengine: slave means at least one of DMA_SLAVE, DMA_CYCLIC
-> =C2=A0 dmaengine: rename cmd_pause to cmd_suspend
->=20
-> =C2=A0drivers/dma/dmaengine.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 8 ++++----
-> =C2=A0drivers/tty/serial/8250/8250_dma.c=C2=A0=C2=A0=C2=A0=C2=A0| 2 +=
--
-> =C2=A0include/linux/dmaengine.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 4 ++--
-> =C2=A0sound/soc/soc-generic-dmaengine-pcm.c | 2 +-
-> =C2=A04 files changed, 8 insertions(+), 8 deletions(-)
->=20
-
---=20
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+>
+> Following [1], please, consider to merge them into tty/serial tree.
+>
+> [1] https://lkml.org/lkml/2016/4/23/190
+>
+> Thanks!
+>
+> Vladimir Murzin (3):
+>   dt-bindings: document the MPS2 UART bindings
+>   serial: mps2-uart: add MPS2 UART driver
+>   serial: mps2-uart: add support for early console
+>
+>  .../devicetree/bindings/serial/arm,mps2-uart.txt   |   19 +
+>  drivers/tty/serial/Kconfig                         |   13 +
+>  drivers/tty/serial/Makefile                        |    1 +
+>  drivers/tty/serial/mps2-uart.c                     |  625 ++++++++++++++++++++
+>  include/uapi/linux/serial_core.h                   |    3 +
+>  5 files changed, 661 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.txt
+>  create mode 100644 drivers/tty/serial/mps2-uart.c
+>
+> --
+> 1.7.9.5
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
