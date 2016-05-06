@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v5 07/11] serial: 8250: enable AFE on ports where FIFO is 16 bytes
-Date: Fri,  6 May 2016 18:17:16 +0300
-Message-ID: <1462547840-14091-8-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v5 11/11] serial: 8250_lpss: enable DMA on Intel Quark UART
+Date: Fri,  6 May 2016 18:17:20 +0300
+Message-ID: <1462547840-14091-12-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,50 +10,144 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark has 16550A compatible UART with autoflow feature enabled. It has
-only 16 bytes of FIFO. Currently serial8250_do_set_termios() prevents to enable
-autoflow since the minimum requirement of 32 bytes of FIFO size.
+DMA on Intel Quark SoC is a part of UART IP block. Enable it.
 
-Drop a FIFO size limitation to allow autoflow control be enabled on such UARTs.
-
-While here, comment out UART_CAP_AFE for PORT_AR7 since it wasn't working and
-it will be not a good idea to use it in conjunction with trigger level of 1
-byte.
-
-Suggested-by: Peter Hurley <peter@hurleysoftware.com>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/tty/serial/8250/8250_lpss.c | 61 +++++++++++++++++++++++++++++++++++--
+ 1 file changed, 58 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index d403603..be9cc37 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -178,7 +178,7 @@ static const struct serial8250_config uart_config[] = {
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
--		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-+		.flags		= UART_CAP_FIFO /* | UART_CAP_AFE */,
- 	},
- 	[PORT_U6_16550A] = {
- 		.name		= "U6_16550A",
-@@ -2550,12 +2550,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/*
- 	 * MCR-based auto flow control.  When AFE is enabled, RTS will be
- 	 * deasserted when the receive FIFO contains more characters than
--	 * the trigger, or the MCR RTS bit is cleared.  In the case where
--	 * the remote UART is not using CTS auto flow control, we must
--	 * have sufficient FIFO entries for the latency of the remote
--	 * UART to respond.  IOW, at least 32 bytes of FIFO.
-+	 * the trigger, or the MCR RTS bit is cleared.
- 	 */
--	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-+	if (up->capabilities & UART_CAP_AFE) {
- 		up->mcr &= ~UART_MCR_AFE;
- 		if (termios->c_cflag & CRTSCTS)
- 			up->mcr |= UART_MCR_AFE;
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index c83fd51..0f4134a 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -15,7 +15,7 @@
+ #include <linux/rational.h>
+ 
+ #include <linux/dmaengine.h>
+-#include <linux/platform_data/dma-dw.h>
++#include <linux/dma/dw.h>
+ 
+ #include "8250.h"
+ 
+@@ -47,6 +47,7 @@ struct lpss8250_board {
+ 	unsigned long freq;
+ 	unsigned int base_baud;
+ 	int (*setup)(struct lpss8250 *, struct uart_port *p);
++	void (*exit)(struct lpss8250 *);
+ };
+ 
+ struct lpss8250 {
+@@ -55,6 +56,7 @@ struct lpss8250 {
+ 
+ 	/* DMA parameters */
+ 	struct uart_8250_dma dma;
++	struct dw_dma_chip dma_chip;
+ 	struct dw_dma_slave dma_param;
+ 	u8 dma_maxburst;
+ };
+@@ -150,17 +152,61 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
+ 
++static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
++	.nr_channels = 2,
++	.is_private = true,
++	.is_nollp = true,
++	.chan_allocation_order = CHAN_ALLOCATION_ASCENDING,
++	.chan_priority = CHAN_PRIORITY_ASCENDING,
++	.block_size = 4095,
++	.nr_masters = 1,
++	.data_width = {4},
++};
++
+ static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ {
++	struct uart_8250_dma *dma = &lpss->dma;
++	struct dw_dma_chip *chip = &lpss->dma_chip;
++	struct dw_dma_slave *param = &lpss->dma_param;
+ 	struct pci_dev *pdev = to_pci_dev(port->dev);
++	int ret;
+ 
+ 	pci_enable_msi(pdev);
+ 
+ 	port->irq = pdev->irq;
+ 
++	chip->dev = &pdev->dev;
++	chip->irq = pdev->irq;
++	chip->regs = pci_ioremap_bar(pdev, 1);
++	chip->pdata = &qrk_serial_dma_pdata;
++
++	/* Falling back to PIO mode if DMA probing fails */
++	ret = dw_dma_probe(chip);
++	if (ret)
++		return 0;
++
++	/* Special DMA address for UART */
++	dma->rx_dma_addr = 0xfffff000;
++	dma->tx_dma_addr = 0xfffff000;
++
++	param->dma_dev = &pdev->dev;
++	param->src_id = 0;
++	param->dst_id = 1;
++	param->hs_polarity = true;
++
++	lpss->dma_maxburst = 8;
+ 	return 0;
+ }
+ 
++static void qrk_serial_exit(struct lpss8250 *lpss)
++{
++	struct dw_dma_slave *param = &lpss->dma_param;
++
++	if (!param->dma_dev)
++		return;
++	dw_dma_remove(&lpss->dma_chip);
++}
++
+ static bool lpss8250_dma_filter(struct dma_chan *chan, void *param)
+ {
+ 	struct dw_dma_slave *dws = param;
+@@ -243,22 +289,30 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	ret = lpss8250_dma_setup(lpss, &uart);
+ 	if (ret)
+-		return ret;
++		goto err_exit;
+ 
+ 	ret = serial8250_register_8250_port(&uart);
+ 	if (ret < 0)
+-		return ret;
++		goto err_exit;
+ 
+ 	lpss->line = ret;
+ 
+ 	pci_set_drvdata(pdev, lpss);
+ 	return 0;
++
++err_exit:
++	if (lpss->board->exit)
++		lpss->board->exit(lpss);
++	return ret;
+ }
+ 
+ static void lpss8250_remove(struct pci_dev *pdev)
+ {
+ 	struct lpss8250 *lpss = pci_get_drvdata(pdev);
+ 
++	if (lpss->board->exit)
++		lpss->board->exit(lpss);
++
+ 	serial8250_unregister_port(lpss->line);
+ }
+ 
+@@ -272,6 +326,7 @@ static const struct lpss8250_board qrk_board = {
+ 	.freq = 44236800,
+ 	.base_baud = 2764800,
+ 	.setup = qrk_serial_setup,
++	.exit = qrk_serial_exit,
+ };
+ 
+ #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
 -- 
 2.8.1
