@@ -1,66 +1,56 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v5 04/11] dmaengine: dw: override LLP support if asked in platform data
-Date: Fri,  6 May 2016 18:17:13 +0300
-Message-ID: <1462547840-14091-5-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: "Maarten Brock" <m.brock@vanmierlo.com>
+Subject: Re: [PATCH v3 03/11] dmaengine: dw: set polarity of handshake
+ interface
+Date: Fri, 06 May 2016 17:48:05 +0200
+Message-ID: <20160506174805.61f64dba@kerio.vanmierlo.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-There is at least one known device, i.e. UART on Intel Galileo, that works
-unreliably in case of use of multi block transfer support in DMA mode.
+----- Original Message -----
+From: Andy Shevchenko [mailto:andy.shevchenko@gmail.com]
+To: Maarten Brock [mailto:m.brock@vanmierlo.com]
+Cc: Andy Shevchenko [mailto:andriy.shevchenko@linux.intel.com], Bryan O'Donoghue [mailto:pure.logic@nexus-software.ie], Peter Hurley [mailto:peter@hurleysoftware.com], linux-serial@vger.kernel.org [mailto:linux-serial@vger.kernel.org], Vinod Koul [mailto:vinod.koul@intel.com], linux-kernel@vger.kernel.org [mailto:linux-kernel@vger.kernel.org], dmaengine [mailto:dmaengine@vger.kernel.org], Greg Kroah-Hartman [mailto:gregkh@linuxfoundation.org], Puustinen, Ismo [mailto:ismo.puustinen@intel.com], Heikki Krogerus [mailto:heikki.krogerus@linux.intel.com]
+Sent: Fri, 06 May 2016 13:38:44 +0200
+Subject: Re: [PATCH v3 03/11] dmaengine: dw: set polarity of handshake interface
 
-Override autodetection by user provided data.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/dma/dw/core.c                | 10 +++++++---
- include/linux/platform_data/dma-dw.h |  2 ++
- 2 files changed, 9 insertions(+), 3 deletions(-)
+> On Fri, May 6, 2016 at 2:20 PM, Maarten Brock <m.brock@vanmierlo.com> wrote:
+> >> > >
+> >> > > +       bool                    polarity;
+> >> > So this variable is not very intuitively named.
+> >>
+> >> There is a help above. This is a property of the Synopsys DesignWare DMA
+> >> engine. Anyone familiar with datasheet easily understands this.
+> >>
+> >> >
+> >> > You end up setting somepointer->polarity = true; in a later patch.
+> >> >
+> >> > Since you're respining a V4 I'd suggest a name that describes a little
+> >> > bit better than polarity. Setting polarity = true is a little bit
+> >> > liked being asked "you you like ice-cream or apple pie" and then
+> >> > saying "yes please".
+> >>
+> >> It's about handshake interface polarity, so, what about hs_polarity?
+> >
+> > So it means: handshake has polarity (true) or handshake has no polarity
+> > (omnidirectional?) (false), right?
+> 
+> It means that handshake polarity _signal_ is inverted (true) or
+> default (false) in terms of hardware gates.
 
-diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index 59f571c..d2d1d51 100644
---- a/drivers/dma/dw/core.c
-+++ b/drivers/dma/dw/core.c
-@@ -1573,9 +1573,13 @@ int dw_dma_probe(struct dw_dma_chip *chip)
- 			dwc->block_size = pdata->block_size;
- 
- 			/* Check if channel supports multi block transfer */
--			channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
--			dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
--			channel_writel(dwc, LLP, 0);
-+			if (pdata->is_nollp) {
-+				dwc->nollp = pdata->is_nollp;
-+			} else {
-+				channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
-+				dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
-+				channel_writel(dwc, LLP, 0);
-+			}
- 		}
- 	}
- 
-diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
-index 4636c93..5f0e11e 100644
---- a/include/linux/platform_data/dma-dw.h
-+++ b/include/linux/platform_data/dma-dw.h
-@@ -40,6 +40,7 @@ struct dw_dma_slave {
-  * @is_private: The device channels should be marked as private and not for
-  *	by the general purpose DMA channel allocator.
-  * @is_memcpy: The device channels do support memory-to-memory transfers.
-+ * @is_nollp: The device channels does not support multi block transfers.
-  * @chan_allocation_order: Allocate channels starting from 0 or 7
-  * @chan_priority: Set channel priority increasing from 0 to 7 or 7 to 0.
-  * @block_size: Maximum block size supported by the controller
-@@ -51,6 +52,7 @@ struct dw_dma_platform_data {
- 	unsigned int	nr_channels;
- 	bool		is_private;
- 	bool		is_memcpy;
-+	bool		is_nollp;
- #define CHAN_ALLOCATION_ASCENDING	0	/* zero to seven */
- #define CHAN_ALLOCATION_DESCENDING	1	/* seven to zero */
- 	unsigned char	chan_allocation_order;
--- 
-2.8.1
+Would it not be better then to name it handshake_inverted ? That is
+something you can ask and answer with true or false.
+
+Maarten
+
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
