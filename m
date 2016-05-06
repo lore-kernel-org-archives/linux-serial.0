@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v5 02/11] dmaengine: dw: provide probe(), remove() stubs for users
-Date: Fri,  6 May 2016 18:17:11 +0300
-Message-ID: <1462547840-14091-3-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v5 05/11] serial: 8250_dma: switch to new dmaengine_terminate_* API
+Date: Fri,  6 May 2016 18:17:14 +0300
+Message-ID: <1462547840-14091-6-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,32 +10,45 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Some users consider DMA optional, thus when driver is not compiled we shouldn't
-prevent compilation of the users. Add stubs for dw_dma_probe() and
-dw_dma_remove().
+Convert dmaengine_terminate_all() calls to synchronous and asynchronous
+versions where appropriate.
 
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- include/linux/dma/dw.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/serial/8250/8250_dma.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/dma/dw.h b/include/linux/dma/dw.h
-index f2e538a..ccfd0c3 100644
---- a/include/linux/dma/dw.h
-+++ b/include/linux/dma/dw.h
-@@ -40,8 +40,13 @@ struct dw_dma_chip {
- };
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 445895f..75c4b40 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -142,7 +142,7 @@ void serial8250_rx_dma_flush(struct uart_8250_port *p)
+ 	if (dma->rx_running) {
+ 		dmaengine_pause(dma->rxchan);
+ 		__dma_rx_complete(p);
+-		dmaengine_terminate_all(dma->rxchan);
++		dmaengine_terminate_async(dma->rxchan);
+ 	}
+ }
  
- /* Export to the platform drivers */
-+#if IS_ENABLED(CONFIG_DW_DMAC_CORE)
- int dw_dma_probe(struct dw_dma_chip *chip);
- int dw_dma_remove(struct dw_dma_chip *chip);
-+#else
-+static inline int dw_dma_probe(struct dw_dma_chip *chip) { return -ENODEV; }
-+static inline int dw_dma_remove(struct dw_dma_chip *chip) { return 0; }
-+#endif /* CONFIG_DW_DMAC_CORE */
+@@ -246,14 +246,14 @@ void serial8250_release_dma(struct uart_8250_port *p)
+ 		return;
  
- /* DMA API extensions */
- struct dw_desc;
+ 	/* Release RX resources */
+-	dmaengine_terminate_all(dma->rxchan);
++	dmaengine_terminate_sync(dma->rxchan);
+ 	dma_free_coherent(dma->rxchan->device->dev, dma->rx_size, dma->rx_buf,
+ 			  dma->rx_addr);
+ 	dma_release_channel(dma->rxchan);
+ 	dma->rxchan = NULL;
+ 
+ 	/* Release TX resources */
+-	dmaengine_terminate_all(dma->txchan);
++	dmaengine_terminate_sync(dma->txchan);
+ 	dma_unmap_single(dma->txchan->device->dev, dma->tx_addr,
+ 			 UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 	dma_release_channel(dma->txchan);
 -- 
 2.8.1
