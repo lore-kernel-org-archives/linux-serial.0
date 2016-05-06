@@ -1,35 +1,38 @@
-From: Andy Gross <andy.gross@linaro.org>
-Subject: Re: [PATCH 1/2] tty: serial: msm_serial regression fix data
- corruption
-Date: Thu, 5 May 2016 18:52:26 -0500
-Message-ID: <20160505235226.GD6533@hector.attlocal.net>
-References: <571BAC8B.80001@gmail.com>
- <571BAD78.4020609@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <571BAD78.4020609@gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Frank Rowand <frowand.list@gmail.com>
-Cc: David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel list <linux-kernel@vger.kernel.org>, ivan.ivanov@linaro.org
+From: Pramod Gurav <pramod.gurav@linaro.org>
+Subject: [PATCH] serial_core: Change UART PM state to OFF on failure
+Date: Fri,  6 May 2016 15:16:23 +0530
+Message-ID: <1462527983-32108-1-git-send-email-pramod.gurav@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pramod Gurav <pramod.gurav@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Apr 23, 2016 at 10:14:32AM -0700, Frank Rowand wrote:
-> From: Frank Rowand <frank.rowand@am.sony.com>
-> 
-> Commit 3a878c430fd6 ("tty: serial: msm: Add TX DMA support") regression.
-> The calculation of tx_count was moved from the old msm_handle_tx(),
-> now renamed msm_handle_tx_pio(), to the new msm_handle_tx().  The
-> move left out one size test.
-> 
-> The regression seen on the qcom-apq8074-dragonboard is dropped
-> characters and corrupted characters (values greater than 0x7f)
-> when DMA is not enabled.
-> 
-> Signed-off-by: Frank Rowand <frank.rowand@am.sony.com>
+uart_change_pm is used to turn on the UART controller resources and
+change UART's PM status. On failure to allocate pages the controller
+be left in ON state. This will change the state to OFF on failure.
 
-This allowed me to transfer files over the console without any CRC errors.
-Zmodem transfer at 115k worked great.
+Signed-off-by: Pramod Gurav <pramod.gurav@linaro.org>
+---
+ drivers/tty/serial/serial_core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Tested-by: Andy Gross <andy.gross@linaro.org>
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 62fe368..58af2e9 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -156,9 +156,10 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+ 	if (!state->xmit.buf) {
+ 		/* This is protected by the per port mutex */
+ 		page = get_zeroed_page(GFP_KERNEL);
+-		if (!page)
++		if (!page) {
++			uart_change_pm(state, UART_PM_STATE_OFF);
+ 			return -ENOMEM;
+-
++		}
+ 		state->xmit.buf = (unsigned char *) page;
+ 		uart_circ_clear(&state->xmit);
+ 	}
+-- 
+1.8.2.1
