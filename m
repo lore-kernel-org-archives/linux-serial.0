@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v5 05/11] serial: 8250_dma: switch to new dmaengine_terminate_* API
-Date: Fri,  6 May 2016 18:17:14 +0300
-Message-ID: <1462547840-14091-6-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v5 07/11] serial: 8250: enable AFE on ports where FIFO is 16 bytes
+Date: Fri,  6 May 2016 18:17:16 +0300
+Message-ID: <1462547840-14091-8-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,45 +10,50 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Convert dmaengine_terminate_all() calls to synchronous and asynchronous
-versions where appropriate.
+Intel Quark has 16550A compatible UART with autoflow feature enabled. It has
+only 16 bytes of FIFO. Currently serial8250_do_set_termios() prevents to enable
+autoflow since the minimum requirement of 32 bytes of FIFO size.
 
+Drop a FIFO size limitation to allow autoflow control be enabled on such UARTs.
+
+While here, comment out UART_CAP_AFE for PORT_AR7 since it wasn't working and
+it will be not a good idea to use it in conjunction with trigger level of 1
+byte.
+
+Suggested-by: Peter Hurley <peter@hurleysoftware.com>
 Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dma.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 445895f..75c4b40 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -142,7 +142,7 @@ void serial8250_rx_dma_flush(struct uart_8250_port *p)
- 	if (dma->rx_running) {
- 		dmaengine_pause(dma->rxchan);
- 		__dma_rx_complete(p);
--		dmaengine_terminate_all(dma->rxchan);
-+		dmaengine_terminate_async(dma->rxchan);
- 	}
- }
- 
-@@ -246,14 +246,14 @@ void serial8250_release_dma(struct uart_8250_port *p)
- 		return;
- 
- 	/* Release RX resources */
--	dmaengine_terminate_all(dma->rxchan);
-+	dmaengine_terminate_sync(dma->rxchan);
- 	dma_free_coherent(dma->rxchan->device->dev, dma->rx_size, dma->rx_buf,
- 			  dma->rx_addr);
- 	dma_release_channel(dma->rxchan);
- 	dma->rxchan = NULL;
- 
- 	/* Release TX resources */
--	dmaengine_terminate_all(dma->txchan);
-+	dmaengine_terminate_sync(dma->txchan);
- 	dma_unmap_single(dma->txchan->device->dev, dma->tx_addr,
- 			 UART_XMIT_SIZE, DMA_TO_DEVICE);
- 	dma_release_channel(dma->txchan);
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index d403603..be9cc37 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -178,7 +178,7 @@ static const struct serial8250_config uart_config[] = {
+ 		.fifo_size	= 16,
+ 		.tx_loadsz	= 16,
+ 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
+-		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
++		.flags		= UART_CAP_FIFO /* | UART_CAP_AFE */,
+ 	},
+ 	[PORT_U6_16550A] = {
+ 		.name		= "U6_16550A",
+@@ -2550,12 +2550,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	/*
+ 	 * MCR-based auto flow control.  When AFE is enabled, RTS will be
+ 	 * deasserted when the receive FIFO contains more characters than
+-	 * the trigger, or the MCR RTS bit is cleared.  In the case where
+-	 * the remote UART is not using CTS auto flow control, we must
+-	 * have sufficient FIFO entries for the latency of the remote
+-	 * UART to respond.  IOW, at least 32 bytes of FIFO.
++	 * the trigger, or the MCR RTS bit is cleared.
+ 	 */
+-	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
++	if (up->capabilities & UART_CAP_AFE) {
+ 		up->mcr &= ~UART_MCR_AFE;
+ 		if (termios->c_cflag & CRTSCTS)
+ 			up->mcr |= UART_MCR_AFE;
 -- 
 2.8.1
