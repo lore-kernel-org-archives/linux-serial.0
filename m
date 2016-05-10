@@ -1,42 +1,48 @@
-From: Vinod Koul <vinod.koul@intel.com>
-Subject: Re: [PATCH v1 1/2] dmaengine: slave means at least one of DMA_SLAVE,
- DMA_CYCLIC
-Date: Tue, 10 May 2016 21:43:57 +0530
-Message-ID: <20160510161356.GJ2274@localhost>
-References: <1462390180-82368-1-git-send-email-andriy.shevchenko@linux.intel.com>
- <1462390180-82368-2-git-send-email-andriy.shevchenko@linux.intel.com>
- <20160510155637.GG2274@localhost>
- <1462896063.17131.306.camel@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Abhishek Sahu <absahu@codeaurora.org>
+Subject: [PATCH] tty: serial: msm: Disable restoring Rx interrupts for DMA Mode
+Date: Tue, 10 May 2016 21:39:40 +0530
+Message-ID: <1462896580-11554-1-git-send-email-absahu@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1462896063.17131.306.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org
+To: agross@codeaurora.org, david.brown@linaro.org, andy.gross@linaro.org, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Charanya <charanya@codeaurora.org>, Abhishek Sahu <absahu@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 10, 2016 at 07:01:03PM +0300, Andy Shevchenko wrote:
-> On Tue, 2016-05-10 at 21:26 +0530, Vinod Koul wrote:
-> > On Wed, May 04, 2016 at 10:29:39PM +0300, Andy Shevchenko wrote:
-> > > 
-> > > When check for capabilities recognize slave support by eother
-> > > DMA_SLAVE or
-> > 							^^^^^^^
-> > typo
-> 
-> Indeed, thanks.
-> Do I need to resend this one?
+From: Charanya <charanya@codeaurora.org>
 
-Yes please.
+The Data loss was happening with current QCOM MSM serial driver during
+large file transfer due to simultaneous enabling of both UART and
+DMA interrupt. When UART operates in DMA mode, RXLEV (Rx FIFO over
+watermark) or RXSTALE (stale interrupts) should not be enabled,
+since these conditions will be handled by DMA controller itself.
+If these interrupts are enabled then normal UART ISR will read some
+bytes of data from Rx Buffer and DMA controller will not receive
+these bytes of data, which will cause data loss.
 
-Also instead of OR, AND will do the same, but your approach works too, so
-either way am fine..
+Now this patch removed the code for enabling of RXLEV and RXSTALE
+interrupt in DMA Rx completion routine.
 
-And I do not get correlation with fix on patch 1. This should be independent
-change..
+Signed-off-by: Charanya <charanya@codeaurora.org>
+Signed-off-by: Abhishek Sahu <absahu@codeaurora.org>
+---
+ drivers/tty/serial/msm_serial.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 96d3ce8..6262b18 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -388,10 +388,6 @@ static void msm_complete_rx_dma(void *args)
+ 	val &= ~dma->enable_bit;
+ 	msm_write(port, val, UARTDM_DMEN);
+ 
+-	/* Restore interrupts */
+-	msm_port->imr |= UART_IMR_RXLEV | UART_IMR_RXSTALE;
+-	msm_write(port, msm_port->imr, UART_IMR);
+-
+ 	if (msm_read(port, UART_SR) & UART_SR_OVERRUN) {
+ 		port->icount.overrun++;
+ 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
 -- 
-~Vinod
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
