@@ -1,32 +1,44 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH 2/7] net: ircomm, cleanup TIOCGSERIAL
-Date: Tue, 10 May 2016 14:16:15 -0400 (EDT)
-Message-ID: <20160510.141615.174614051833919078.davem@davemloft.net>
-References: <1462777919-10367-1-git-send-email-jslaby@suse.cz>
-	<1462777919-10367-2-git-send-email-jslaby@suse.cz>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: Make SERIAL_MPS2_UART depend on ARCH_MPS2
+Date: Tue, 10 May 2016 20:56:10 +0200
+Message-ID: <1462906570-27684-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462777919-10367-2-git-send-email-jslaby@suse.cz>
-Sender: linux-kernel-owner@vger.kernel.org
-To: jslaby@suse.cz
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, samuel@sortiz.org, netdev@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vladimir Murzin <vladimir.murzin@arm.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
-Date: Mon,  9 May 2016 09:11:54 +0200
+Enabling support for the UART on the ARM MPS2 platform only make sense
+when compiling for the ARM MPS2 platform, unless compile-testing.
 
-> In ircomm_tty_get_serial_info, struct serial_struct is memset to 0 and
-> then some members set to 0 explicitly.
-> 
-> Remove the latter as it is obviously superfluous.
-> 
-> And remove the retinfo check against NULL. copy_to_user will take care
-> of that.
-> 
-> Part of hub6 cleanup series.
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: David S. Miller <davem@davemloft.net>
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index b84810aa8621d8b1..3def7478ca44f573 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1457,7 +1457,7 @@ config SERIAL_MPS2_UART_CONSOLE
+ 
+ config SERIAL_MPS2_UART
+ 	bool "MPS2 UART port"
+-	depends on ARM || COMPILE_TEST
++	depends on ARCH_MPS2 || COMPILE_TEST
+ 	select SERIAL_CORE
+ 	help
+ 	  This driver support the UART ports on ARM MPS2.
+-- 
+1.9.1
