@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 2/2] serial: doc: Use port->state instead of info
-Date: Wed, 11 May 2016 13:56:05 +0200
-Message-ID: <1462967765-30871-3-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 1/2] serial: doc: Always refer to tty_port->mutex
+Date: Wed, 11 May 2016 13:56:04 +0200
+Message-ID: <1462967765-30871-2-git-send-email-geert+renesas@glider.be>
 References: <1462967765-30871-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-doc-owner@vger.kernel.org>
 In-Reply-To: <1462967765-30871-1-git-send-email-geert+renesas@glider.be>
@@ -10,13 +10,10 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-As of commit ebd2c8f6d2ec4012 ("serial: kill off uart_info"), the
-circular transmission buffer is part of struct uart_state instead of
-struct uart_info. Make it clear this structure is pointed to from struct
-uart_port.
-
-Change 'circ' to 'circ_buf' to match the structure name while we're at
-it.
+Stop referring to the mutex member of the tty_port struct as
+'port->mutex', as 'port' is ambiguous, and usually refers to the
+uart_port struct in this document.  Use 'tty_port->mutex' instead,
+following the single existing use.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
@@ -24,38 +21,44 @@ Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/Documentation/serial/driver b/Documentation/serial/driver
-index 90889c785809cde1..da193e092fc3d531 100644
+index 39701515832b70b0..90889c785809cde1 100644
 --- a/Documentation/serial/driver
 +++ b/Documentation/serial/driver
-@@ -48,8 +48,8 @@ data:
+@@ -57,7 +57,7 @@ locking.
+ The port_sem semaphore is used to protect against ports being added/
+ removed or reconfigured at inappropriate times. Since v2.6.27, this
+ semaphore has been the 'mutex' member of the tty_port struct, and
+-commonly referred to as the port mutex (or port->mutex).
++commonly referred to as the port mutex.
  
- 	port->mctrl
- 	port->icount
--	info->xmit.head (circ->head)
--	info->xmit.tail (circ->tail)
-+	port->state->xmit.head (circ_buf->head)
-+	port->state->xmit.tail (circ_buf->tail)
  
- The low level driver is free to use this lock to provide any additional
- locking.
-@@ -204,7 +204,7 @@ hardware.
- 	RTS nor DTR; this will have already been done via a separate
- 	call to set_mctrl.
+ uart_ops
+@@ -186,7 +186,7 @@ hardware.
+ 	should be terminated when another call is made with a zero
+ 	ctl.
  
--	Drivers must not access port->info once this call has completed.
-+	Drivers must not access port->state once this call has completed.
+-	Locking: caller holds port->mutex
++	Locking: caller holds tty_port->mutex
  
- 	This method will only be called when there are no more users of
- 	this port.
-@@ -216,7 +216,7 @@ hardware.
- 	Flush any write buffers, reset any DMA state and stop any
- 	ongoing DMA transfers.
+   startup(port)
+ 	Grab any interrupt resources and initialise any low level driver
+@@ -262,14 +262,14 @@ hardware.
+ 	Other flags may be used (eg, xon/xoff characters) if your
+ 	hardware supports hardware "soft" flow control.
  
--	This will be called whenever the port->info->xmit circular
-+	This will be called whenever the port->state->xmit circular
- 	buffer is cleared.
+-	Locking: caller holds port->mutex
++	Locking: caller holds tty_port->mutex
+ 	Interrupts: caller dependent.
+ 	This call must not sleep
  
- 	Locking: port->lock taken.
+   set_ldisc(port,termios)
+ 	Notifier for discipline change. See Documentation/serial/tty.txt.
+ 
+-	Locking: caller holds port->mutex
++	Locking: caller holds tty_port->mutex
+ 
+   pm(port,state,oldstate)
+ 	Perform any power management related activities on the specified
 -- 
 1.9.1
 
