@@ -1,44 +1,35 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] serial: Make SERIAL_MPS2_UART depend on ARCH_MPS2
-Date: Tue, 10 May 2016 20:56:10 +0200
-Message-ID: <1462906570-27684-1-git-send-email-geert+renesas@glider.be>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH] serial: 8250_early: Add earlycon support for Synopsys DesignWare ABP UART
+Date: Wed, 11 May 2016 14:06:01 +0800
+Message-ID: <1462946761-11982-1-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vladimir Murzin <vladimir.murzin@arm.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, Wei Xu <xuwei5@hisilicon.com>, Kefeng Wang <wangkefeng.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-Enabling support for the UART on the ARM MPS2 platform only make sense
-when compiling for the ARM MPS2 platform, unless compile-testing.
+Some board like Hisilicon D02 uses Synopsys DesignWare ABP UART, declare an
+OF early console for it, so early console device can be enabled with comand
+line "earlycon"(without option) via the "stdout-path" property in device-tree.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 ---
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_early.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index b84810aa8621d8b1..3def7478ca44f573 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1457,7 +1457,7 @@ config SERIAL_MPS2_UART_CONSOLE
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 8d08ff5..85a12f0 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -150,6 +150,7 @@ EARLYCON_DECLARE(uart, early_serial8250_setup);
+ OF_EARLYCON_DECLARE(ns16550, "ns16550", early_serial8250_setup);
+ OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
+ OF_EARLYCON_DECLARE(uart, "nvidia,tegra20-uart", early_serial8250_setup);
++OF_EARLYCON_DECLARE(uart, "snps,dw-apb-uart", early_serial8250_setup);
  
- config SERIAL_MPS2_UART
- 	bool "MPS2 UART port"
--	depends on ARM || COMPILE_TEST
-+	depends on ARCH_MPS2 || COMPILE_TEST
- 	select SERIAL_CORE
- 	help
- 	  This driver support the UART ports on ARM MPS2.
+ #ifdef CONFIG_SERIAL_8250_OMAP
+ 
 -- 
-1.9.1
+2.6.0.GIT
