@@ -1,35 +1,37 @@
-From: zengzhaoxiu@163.com
-Subject: [patch V4 27/31] serial: use parity32 in max3100
-Date: Wed, 11 May 2016 17:23:07 +0800
-Message-ID: <1462958587-25987-1-git-send-email-zengzhaoxiu@163.com>
-References: <1462955158-28394-1-git-send-email-zengzhaoxiu@163.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462955158-28394-1-git-send-email-zengzhaoxiu@163.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 0/2] serial: doc: More Low Level Serial API Documentation Improvements
+Date: Wed, 11 May 2016 13:56:03 +0200
+Message-ID: <1462967765-30871-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jonathan Corbet <corbet@lwn.net>, Peter Hurley <peter@hurleysoftware.com>, Russell King <rmk@arm.linux.org.uk>
+Cc: linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+	Hi Greg, Jiri, Jon, Peter, Russell,
 
-Signed-off-by: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/max3100.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch series (against next-20160511) contains improvements to the low
+level serial driver API documentation.
 
-diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index 5c4c280..a0cc84a 100644
---- a/drivers/tty/serial/max3100.c
-+++ b/drivers/tty/serial/max3100.c
-@@ -155,7 +155,7 @@ static int max3100_do_parity(struct max3100_port *s, u16 c)
- 	else
- 		c &= 0xff;
- 
--	parity = parity ^ (hweight8(c) & 1);
-+	parity ^= parity8(c);
- 	return parity;
- }
- 
+Thanks for your comments!
+
+Geert Uytterhoeven (2):
+  serial: doc: Always refer to tty_port->mutex
+  serial: doc: Use port->state instead of info
+
+ Documentation/serial/driver | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
 -- 
-2.7.4
+1.9.1
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
