@@ -1,106 +1,113 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v5 00/11] serial: 8250: split LPSS to 8250_lpss, enable
- DMA on Quark
-Date: Thu, 12 May 2016 18:06:41 +0300
-Message-ID: <1463065601.17131.319.camel@linux.intel.com>
-References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Ludovic Desroches <ludovic.desroches@atmel.com>
+Subject: [PATCH 1/3] tty/serial: atmel: re-integrate status check in irq handler
+Date: Thu, 12 May 2016 17:37:34 +0200
+Message-ID: <1463067456-6983-1-git-send-email-ludovic.desroches@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To: nicolas.ferre@atmel.com, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Ludovic Desroches <ludovic.desroches@atmel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2016-05-06 at 18:17 +0300, Andy Shevchenko wrote:
-> This is combined series of two things:
-> - split out the Intel LPSS specific driver from 8250_pci into
-> 8250_lpss
-> - enable DMA support on Intel Quark UART
->=20
-> The patch has been tested on few Intel SoCs / platforms. In any case =
-I
-> would
-> like to ask Bryan to do independent test.
->=20
-> This is targeting serial subsystem, thus it would be nice to get and
-> Ack from
-> Vinod first. Moreover, the series depends on [1] that is now in
-> Vinod's
-> slave-dma tree.
->=20
-> That's why I asked Vinod to create immutable tag / branch for the [1]
-> and the
-> dependants (at least one more, which is sata_dwc_460ex) can use it.
->=20
-> The series can be reached in the branch located at [2].
->=20
-> [1] http://www.spinics.net/lists/kernel/msg2244475.html
-> [2] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqrk
->=20
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-Do we have a chance to get this? Requirement, i.e. topic/dw branch of
-Vinod's slave-dma tree is available and has all prerequisites.
+The IRQ status check and related actions was done in the tasklet without
+benefit. So, move it back to the IRQ context to simplify IRQ handling and
+having the possibility to split the tasklet in two separated ones for
+receive and transmit actions.
 
-> Since v4:
-> - fix an issue what kernel test bot reported (lkp)
-> - add a list of supported SoC to Kconfig (Bryan)
-> - rename polarity -> hs_polarity (Bryan)
->=20
-> Since v3:
-> - rebase on top of recent tty-next branch
-> - add Reviewed-by tag from Bryan
->=20
-> Since v2:
-> - add tags
-> - rebase on top of new version of [1]
->=20
-> Since v1:
-> - address most of Peter's comments (mostly changelog to patch 8)
-> - add tag to patch 5
-> - drop patch 6 from the series to be separately dealt with
->=20
-> Andy Shevchenko (11):
-> =C2=A0 dmaengine: dw: keep copy of custom slave config in dwc
-> =C2=A0 dmaengine: dw: provide probe(), remove() stubs for users
-> =C2=A0 dmaengine: dw: set polarity of handshake interface
-> =C2=A0 dmaengine: dw: override LLP support if asked in platform data
-> =C2=A0 serial: 8250_dma: switch to new dmaengine_terminate_* API
-> =C2=A0 serial: 8250_dma: adjust DMA address of the UART
-> =C2=A0 serial: 8250: enable AFE on ports where FIFO is 16 bytes
-> =C2=A0 serial: 8250_lpss: split LPSS driver to separate module
-> =C2=A0 serial: 8250_lpss: move Quark code from PCI driver
-> =C2=A0 serial: 8250_lpss: enable MSI for Intel Quark
-> =C2=A0 serial: 8250_lpss: enable DMA on Intel Quark UART
->=20
-> =C2=A0drivers/dma/dw/core.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A043 +=
-++--
-> =C2=A0drivers/dma/dw/regs.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A0=C2=A0=
-5 +-
-> =C2=A0drivers/tty/serial/8250/8250.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0|=C2=A0=C2=A0=C2=A05 +
-> =C2=A0drivers/tty/serial/8250/8250_dma.c=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A0=
-14 +-
-> =C2=A0drivers/tty/serial/8250/8250_lpss.c=C2=A0=C2=A0| 357
-> +++++++++++++++++++++++++++++++++++
-> =C2=A0drivers/tty/serial/8250/8250_pci.c=C2=A0=C2=A0=C2=A0| 257 +----=
---------------------
-> =C2=A0drivers/tty/serial/8250/8250_port.c=C2=A0=C2=A0|=C2=A0=C2=A0=C2=
-=A09 +-
-> =C2=A0drivers/tty/serial/8250/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0|=C2=A0=C2=A016 +-
-> =C2=A0drivers/tty/serial/8250/Makefile=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=
-=C2=A0=C2=A0=C2=A01 +
-> =C2=A0include/linux/dma/dw.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A0=C2=A05 +
-> =C2=A0include/linux/platform_data/dma-dw.h |=C2=A0=C2=A0=C2=A04 +
-> =C2=A011 files changed, 430 insertions(+), 286 deletions(-)
-> =C2=A0create mode 100644 drivers/tty/serial/8250/8250_lpss.c
->=20
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+---
+ drivers/tty/serial/atmel_serial.c | 43 ++++++++++++++++-----------------------
+ 1 file changed, 17 insertions(+), 26 deletions(-)
 
---=20
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 954941d..8854ac6 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -146,9 +146,7 @@ struct atmel_uart_port {
+ 	struct scatterlist		sg_tx;
+ 	struct scatterlist		sg_rx;
+ 	struct tasklet_struct	tasklet;
+-	unsigned int		irq_status;
+ 	unsigned int		irq_status_prev;
+-	unsigned int		status_change;
+ 	unsigned int		tx_len;
+ 
+ 	struct circ_buf		rx_ring;
+@@ -1237,14 +1235,27 @@ atmel_handle_status(struct uart_port *port, unsigned int pending,
+ 		    unsigned int status)
+ {
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	unsigned int status_change;
+ 
+ 	if (pending & (ATMEL_US_RIIC | ATMEL_US_DSRIC | ATMEL_US_DCDIC
+ 				| ATMEL_US_CTSIC)) {
+-		atmel_port->irq_status = status;
+-		atmel_port->status_change = atmel_port->irq_status ^
+-					    atmel_port->irq_status_prev;
++		status_change = status ^ atmel_port->irq_status_prev;
+ 		atmel_port->irq_status_prev = status;
+-		tasklet_schedule(&atmel_port->tasklet);
++
++		if (status_change & (ATMEL_US_RI | ATMEL_US_DSR
++					| ATMEL_US_DCD | ATMEL_US_CTS)) {
++			/* TODO: All reads to CSR will clear these interrupts! */
++			if (status_change & ATMEL_US_RI)
++				port->icount.rng++;
++			if (status_change & ATMEL_US_DSR)
++				port->icount.dsr++;
++			if (status_change & ATMEL_US_DCD)
++				uart_handle_dcd_change(port, !(status & ATMEL_US_DCD));
++			if (status_change & ATMEL_US_CTS)
++				uart_handle_cts_change(port, !(status & ATMEL_US_CTS));
++
++			wake_up_interruptible(&port->state->port.delta_msr_wait);
++		}
+ 	}
+ }
+ 
+@@ -1575,31 +1586,12 @@ static void atmel_tasklet_func(unsigned long data)
+ {
+ 	struct uart_port *port = (struct uart_port *)data;
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+-	unsigned int status = atmel_port->irq_status;
+-	unsigned int status_change = atmel_port->status_change;
+ 
+ 	/* The interrupt handler does not take the lock */
+ 	spin_lock(&port->lock);
+ 
+ 	atmel_port->schedule_tx(port);
+ 
+-	if (status_change & (ATMEL_US_RI | ATMEL_US_DSR
+-				| ATMEL_US_DCD | ATMEL_US_CTS)) {
+-		/* TODO: All reads to CSR will clear these interrupts! */
+-		if (status_change & ATMEL_US_RI)
+-			port->icount.rng++;
+-		if (status_change & ATMEL_US_DSR)
+-			port->icount.dsr++;
+-		if (status_change & ATMEL_US_DCD)
+-			uart_handle_dcd_change(port, !(status & ATMEL_US_DCD));
+-		if (status_change & ATMEL_US_CTS)
+-			uart_handle_cts_change(port, !(status & ATMEL_US_CTS));
+-
+-		wake_up_interruptible(&port->state->port.delta_msr_wait);
+-
+-		atmel_port->status_change = 0;
+-	}
+-
+ 	atmel_port->schedule_rx(port);
+ 
+ 	spin_unlock(&port->lock);
+@@ -1833,7 +1825,6 @@ static int atmel_startup(struct uart_port *port)
+ 
+ 	/* Save current CSR for comparison in atmel_tasklet_func() */
+ 	atmel_port->irq_status_prev = atmel_get_lines_status(port);
+-	atmel_port->irq_status = atmel_port->irq_status_prev;
+ 
+ 	/*
+ 	 * Finally, enable the serial port
+-- 
+2.5.0
