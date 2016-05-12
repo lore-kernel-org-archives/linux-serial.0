@@ -1,33 +1,26 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] serial: sh-sci: Document SoC specific bindings for r8a7796
-Date: Thu, 12 May 2016 08:46:35 +0200
-Message-ID: <CAMuHMdXzE-JryJoUORk0zHHrprJMjx-ih2ocnoKX5rs2crTYEA@mail.gmail.com>
-References: <1463034838-13322-1-git-send-email-horms+renesas@verge.net.au>
+From: Jon Masters <jcm@jonmasters.org>
+Subject: Re: [PATCH v7 0/5] ACPI: parse the SPCR table
+Date: Thu, 12 May 2016 04:20:25 -0400
+Message-ID: <1bff98e3-2d94-ed76-1165-ed7d43bbfcf3@jonmasters.org>
+References: <1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1463034838-13322-1-git-send-email-horms+renesas@verge.net.au>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 12, 2016 at 8:33 AM, Simon Horman
-<horms+renesas@verge.net.au> wrote:
-> From: Hiromitsu Yamasaki <hiromitsu.yamasaki.ym@renesas.com>
->
-> Signed-off-by: Hiromitsu Yamasaki <hiromitsu.yamasaki.ym@renesas.com>
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+On 03/31/2016 09:40 AM, Aleksey Makarov wrote:
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port
+> Console Redirection Table) [2] as a mandatory ACPI table that
+> specifies the configuration of serial console.
 
-Gr{oetje,eeting}s,
+Hi Aleksey,
 
-                        Geert
+Can you summarize the status of this patch series?
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Jon.
