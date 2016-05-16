@@ -1,86 +1,78 @@
-From: Pramod Gurav <pramod.gurav@linaro.org>
-Subject: Re: [PATCH] tty: serial: msm: Remove duplicate handling of clocks
-Date: Mon, 16 May 2016 14:01:15 +0530
-Message-ID: <CANYu_0v9JuXjviJBTkC3YyyvmA3SmJxX8g9a7P+sMpu20FtONQ@mail.gmail.com>
-References: <1462957229-17567-1-git-send-email-pramod.gurav@linaro.org>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH 1/1] tty/serial: to support 8250 earlycon can be enabled independently
+Date: Mon, 16 May 2016 19:35:58 +0800
+Message-ID: <1463398558-6636-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1462957229-17567-1-git-send-email-pramod.gurav@linaro.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>, Andy Gross <andy.gross@linaro.org>, gregkh@linuxfoundation.org, David Brown <davidb@codeaurora.org>, jslaby@suse.com
-Cc: linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pramod Gurav <pramod.gurav@linaro.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 11 May 2016 at 14:30, Pramod Gurav <pramod.gurav@linaro.org> wrote:
-> msm_serial driver provides a .pm callback to the serial core to enable
-> and disable clock resource in suspend/resume path. This function is
-> also called before msm_startup. msm_startup also enables the clocks which
-> is not needed. Hence remove the duplcate clock operation from msm_startup
-> and msm_shutdown. Same is done in console setup to get rid of duplicate
-> clock operation.
->
-> Tested on DB410C console.
->
-> Signed-off-by: Pramod Gurav <pramod.gurav@linaro.org>
-> ---
->  drivers/tty/serial/msm_serial.c | 15 ++-------------
->  1 file changed, 2 insertions(+), 13 deletions(-)
->
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index dcde955..73c3217 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -959,15 +959,6 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
->         return baud;
->  }
->
-> -static void msm_init_clock(struct uart_port *port)
-> -{
-> -       struct msm_port *msm_port = UART_TO_MSM(port);
-> -
-> -       clk_prepare_enable(msm_port->clk);
-> -       clk_prepare_enable(msm_port->pclk);
-> -       msm_serial_set_mnd_regs(port);
-> -}
-> -
->  static int msm_startup(struct uart_port *port)
->  {
->         struct msm_port *msm_port = UART_TO_MSM(port);
-> @@ -982,7 +973,7 @@ static int msm_startup(struct uart_port *port)
->         if (unlikely(ret))
->                 return ret;
->
-> -       msm_init_clock(port);
-> +       msm_serial_set_mnd_regs(port);
+Sometimes, we may only use SSH to login, and build 8250 uart driver as a
+ko(insmod if needed). But the earlycon may still be necessary, because
+the kernel boot process may take a long time. It's not good to display
+nothing but ask people to wait patiently.
 
-Further testing with another UART port made me realize that serial
-port does not work after disabling msm_port->clk clock. The RX data
-part will be affected.
-Confirmed from manual that this clock should never be turned of to
-avoid loss of incoming data. Sorry for the noise.
+In addition, the 8250.ko can not be worked if we have not opened any
+other serial drivers, because SERIAL_CORE would not be selected.
 
->
->         if (likely(port->fifosize > 12))
->                 rfr_level = port->fifosize - 12;
-> @@ -1021,8 +1012,6 @@ static void msm_shutdown(struct uart_port *port)
->         if (msm_port->is_uartdm)
->                 msm_release_dma(msm_port);
->
-> -       clk_disable_unprepare(msm_port->clk);
-> -
->         free_irq(port->irq, port);
->  }
->
-> @@ -1451,7 +1440,7 @@ static int __init msm_console_setup(struct console *co, char *options)
->         if (unlikely(!port->membase))
->                 return -ENXIO;
->
-> -       msm_init_clock(port);
-> +       msm_serial_set_mnd_regs(port);
->
->         if (options)
->                 uart_parse_options(options, &baud, &parity, &bits, &flow);
-> --
-> 1.8.2.1
->
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ drivers/tty/serial/8250/Kconfig  | 9 +++++++--
+ drivers/tty/serial/8250/Makefile | 1 -
+ drivers/tty/serial/Makefile      | 1 +
+ 3 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 4d7cb9c..2992f0a 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -3,6 +3,12 @@
+ # you somehow have an implicit or explicit dependency on SERIAL_8250.
+ #
+
++config SERIAL_8250_EARLYCON
++	bool "Early console using 8250"
++	select SERIAL_CORE
++	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
++
+ config SERIAL_8250
+ 	tristate "8250/16550 and compatible serial support"
+ 	select SERIAL_CORE
+@@ -60,8 +66,7 @@ config SERIAL_8250_PNP
+ config SERIAL_8250_CONSOLE
+ 	bool "Console on 8250/16550 and compatible serial port"
+ 	depends on SERIAL_8250=y
+-	select SERIAL_CORE_CONSOLE
+-	select SERIAL_EARLYCON
++	select SERIAL_8250_EARLYCON
+ 	---help---
+ 	  If you say Y here, it will be possible to use a serial port as the
+ 	  system console (the system console is the device which receives all
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index c9a2d6e..1f24c74 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -13,7 +13,6 @@ obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
+ obj-$(CONFIG_SERIAL_8250_CS)		+= serial_cs.o
+ obj-$(CONFIG_SERIAL_8250_ACORN)		+= 8250_acorn.o
+ obj-$(CONFIG_SERIAL_8250_BCM2835AUX)	+= 8250_bcm2835aux.o
+-obj-$(CONFIG_SERIAL_8250_CONSOLE)	+= 8250_early.o
+ obj-$(CONFIG_SERIAL_8250_FOURPORT)	+= 8250_fourport.o
+ obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
+ obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 8c261ad..cd84181 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -19,6 +19,7 @@ obj-$(CONFIG_SERIAL_SUNSAB) += sunsab.o
+
+ # Now bring in any enabled 8250/16450/16550 type drivers.
+ obj-$(CONFIG_SERIAL_8250) += 8250/
++obj-$(CONFIG_SERIAL_8250_EARLYCON) += 8250/8250_early.o
+
+ obj-$(CONFIG_SERIAL_AMBA_PL010) += amba-pl010.o
+ obj-$(CONFIG_SERIAL_AMBA_PL011) += amba-pl011.o
