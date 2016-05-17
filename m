@@ -1,105 +1,39 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 1/1] tty/serial: to support 8250 earlycon can be enabled
- independently
-Date: Mon, 16 May 2016 08:40:12 -0700
-Message-ID: <5739E9DC.3060805@hurleysoftware.com>
-References: <1463398558-6636-1-git-send-email-thunder.leizhen@huawei.com>
+From: Purna Chandra Mandal <purna.mandal@microchip.com>
+Subject: [PATCH 05/11] serial: pic32_uart: Fix double free of 'sport->irq_fault_name'.
+Date: Tue, 17 May 2016 10:35:54 +0530
+Message-ID: <1463461560-9629-5-git-send-email-purna.mandal@microchip.com>
+References: <1463461560-9629-1-git-send-email-purna.mandal@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1463398558-6636-1-git-send-email-thunder.leizhen@huawei.com>
+In-Reply-To: <1463461560-9629-1-git-send-email-purna.mandal@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Zhen Lei <thunder.leizhen@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial <linux-serial@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Kefeng Wang <wangkefeng.wang@huawei.com>
+To: linux-kernel@vger.kernel.org
+Cc: linux-mips@linux-mips.org, Ralf Baechle <ralf@linux-mips.org>, Purna Chandra Mandal <purna.mandal@microchip.com>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>, Andrei Pistirica <andrei.pistirica@microchip.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/16/2016 04:35 AM, Zhen Lei wrote:
-> Sometimes, we may only use SSH to login, and build 8250 uart driver as a
-> ko(insmod if needed). But the earlycon may still be necessary, because
-> the kernel boot process may take a long time. It's not good to display
-> nothing but ask people to wait patiently.
+Allocated memory for 'sport->irq_fault_name' is freed twice, first
+in error check of 'if(!sport->irq_rx_name)' and other in fallback
+handler.
 
-I'm confused; you want the possibility of earlycon but _not_ a normal
-serial console?
+Signed-off-by: Purna Chandra Mandal <purna.mandal@microchip.com>
 
-This configuration is unsafe because nothing prevents the 8250 driver
-and 8250 earlycon from concurrently accessing the hardware.
+---
 
+ drivers/tty/serial/pic32_uart.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-> In addition, the 8250.ko can not be worked if we have not opened any
-> other serial drivers, because SERIAL_CORE would not be selected.
-
-I don't understand what this means.
-
-Regards,
-Peter Hurley
-
-
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  drivers/tty/serial/8250/Kconfig  | 9 +++++++--
->  drivers/tty/serial/8250/Makefile | 1 -
->  drivers/tty/serial/Makefile      | 1 +
->  3 files changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index 4d7cb9c..2992f0a 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -3,6 +3,12 @@
->  # you somehow have an implicit or explicit dependency on SERIAL_8250.
->  #
-> 
-> +config SERIAL_8250_EARLYCON
-> +	bool "Early console using 8250"
-> +	select SERIAL_CORE
-> +	select SERIAL_CORE_CONSOLE
-> +	select SERIAL_EARLYCON
-> +
->  config SERIAL_8250
->  	tristate "8250/16550 and compatible serial support"
->  	select SERIAL_CORE
-> @@ -60,8 +66,7 @@ config SERIAL_8250_PNP
->  config SERIAL_8250_CONSOLE
->  	bool "Console on 8250/16550 and compatible serial port"
->  	depends on SERIAL_8250=y
-> -	select SERIAL_CORE_CONSOLE
-> -	select SERIAL_EARLYCON
-> +	select SERIAL_8250_EARLYCON
->  	---help---
->  	  If you say Y here, it will be possible to use a serial port as the
->  	  system console (the system console is the device which receives all
-> diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-> index c9a2d6e..1f24c74 100644
-> --- a/drivers/tty/serial/8250/Makefile
-> +++ b/drivers/tty/serial/8250/Makefile
-> @@ -13,7 +13,6 @@ obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
->  obj-$(CONFIG_SERIAL_8250_CS)		+= serial_cs.o
->  obj-$(CONFIG_SERIAL_8250_ACORN)		+= 8250_acorn.o
->  obj-$(CONFIG_SERIAL_8250_BCM2835AUX)	+= 8250_bcm2835aux.o
-> -obj-$(CONFIG_SERIAL_8250_CONSOLE)	+= 8250_early.o
->  obj-$(CONFIG_SERIAL_8250_FOURPORT)	+= 8250_fourport.o
->  obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
->  obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
-> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-> index 8c261ad..cd84181 100644
-> --- a/drivers/tty/serial/Makefile
-> +++ b/drivers/tty/serial/Makefile
-> @@ -19,6 +19,7 @@ obj-$(CONFIG_SERIAL_SUNSAB) += sunsab.o
-> 
->  # Now bring in any enabled 8250/16450/16550 type drivers.
->  obj-$(CONFIG_SERIAL_8250) += 8250/
-> +obj-$(CONFIG_SERIAL_8250_EARLYCON) += 8250/8250_early.o
-> 
->  obj-$(CONFIG_SERIAL_AMBA_PL010) += amba-pl010.o
->  obj-$(CONFIG_SERIAL_AMBA_PL011) += amba-pl011.o
-> --
-> 2.5.0
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+index 62a43bf..7f8e99b 100644
+--- a/drivers/tty/serial/pic32_uart.c
++++ b/drivers/tty/serial/pic32_uart.c
+@@ -445,7 +445,6 @@ static int pic32_uart_startup(struct uart_port *port)
+ 				       sport->idx);
+ 	if (!sport->irq_rx_name) {
+ 		dev_err(port->dev, "%s: kasprintf err!", __func__);
+-		kfree(sport->irq_fault_name);
+ 		ret = -ENOMEM;
+ 		goto out_f;
+ 	}
+-- 
+1.8.3.1
