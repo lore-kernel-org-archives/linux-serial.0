@@ -1,121 +1,45 @@
-From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Subject: Re: [PATCH v5 00/11] serial: 8250: split LPSS to 8250_lpss, enable
- DMA on Quark
-Date: Thu, 19 May 2016 02:18:53 +0100
-Message-ID: <1463620733.4224.75.camel@nexus-software.ie>
-References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
-	 <1463065601.17131.319.camel@linux.intel.com>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH] serial: 8250_early: Add earlycon support for Synopsys
+ DesignWare ABP UART
+Date: Thu, 19 May 2016 09:45:33 +0800
+Message-ID: <573D1ABD.5020908@huawei.com>
+References: <1462946761-11982-1-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1463065601.17131.319.camel@linux.intel.com>
+In-Reply-To: <1462946761-11982-1-git-send-email-wangkefeng.wang@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, Wei Xu <xuwei5@hisilicon.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Jon Mason <jon.mason@broadcom.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2016-05-12 at 18:06 +0300, Andy Shevchenko wrote:
-> On Fri, 2016-05-06 at 18:17 +0300, Andy Shevchenko wrote:
-> > This is combined series of two things:
-> > - split out the Intel LPSS specific driver from 8250_pci into
-> > 8250_lpss
-> > - enable DMA support on Intel Quark UART
-> > 
-> > The patch has been tested on few Intel SoCs / platforms. In any
-> > case I
-> > would
-> > like to ask Bryan to do independent test.
++Cc Jon and arm-kernel mailist
 
-Andy.
+Any comments, thanks.
 
-It looks as though there's a performance drop when enabling the DMA
-here (v) stock PIO mode with the 8250 driver.
+Kefeng
 
-Test setup Galileo Gen1 transmitter - Galileo Gen2 receiver. TX/RX
-cross-wired between the Arduino UART headers respectively (pins 0 & 1
-on the "Digital PWM" header), GND pin14 similarly cross-wired.
-
-User-space:
-    Receiver: Stock on-flash yocto-tiny kernel 3.8.7
-    Transmitter: Galileo Debian image :
-                 https://sourceforge.net/projects/galileodebian/
-    3.8.7 kernel: On SPI-flash BSP kernel
-    andy-v4: From your tree
-             d13ffcf ('serial: 8250: attempt to keep Kconfig and
-                       Makefile in order')
-    tip-of-tree : 97f0090 ('Merge tag 'rproc-v4.7' of
-                            git://github.com/andersson/remoteproc')
-
-Results:
-
-### Test0 ###
-
-galileo dma andy-v4 9600 8n1 
-
-root@galileo:~# time echo "abcdefghijklmnopqrstuvwxyz0123456789" >
-/dev/ttyS0
-
-real    0m0.060s
-user    0m0.000s
-sys     0m0.000s
-
-
-galileo non-dma Linux 3.8.7 9600 8n1:
-
-9600 8n1
-root@galileo:~# time echo "abcdefghijklmnopqrstuvwxyz0123456789" >
-/dev/ttyS0
-
-real    0m0.051s
-user    0m0.000s
-sys     0m0.000s
-
-galileo non-dma tip-of-tree 9600 8n1:
-
-root@galileo:~# time echo "abcdefghijklmnopqrstuvwxyz0123456789" >
-/dev/ttyS0
-
-real    0m0.048s
-user    0m0.000s
-sys     0m0.000s
-
-
-### Test1 ###
-
-galileo dma andy-v4 9600 8n1:
-
-root@galileo:~# time echo
-"abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz01234567
-89abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456
-789abcdefghijklmnopqrstuvwxyz0123456789" > /dev/ttyS0
-
-real    0m0.209s
-user    0m0.000s
-sys     0m0.000s
-
-galileo non-dma Linux 3.8.7 9600 8n1:
-
-root@galileo:~# time echo
-"abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz01234567
-89abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456
-789abcdefghijklmnopqrstuvwxyz0123456789" > /dev/ttyS0
-
-real    0m0.206s
-user    0m0.000s
-sys     0m0.000s
-
-
-galileo non-dma tip-of-tree 9600 8n1:
-
-root@galileo:~# time echo
-"abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz01234567
-89abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456
-789abcdefghijklmnopqrstuvwxyz0123456789" > /dev/ttyS0
-
-real    0m0.199s
-user    0m0.010s
-sys     0m0.000s
-
-
----
-bod
+On 2016/5/11 14:06, Kefeng Wang wrote:
+> Some board like Hisilicon D02 uses Synopsys DesignWare ABP UART, declare an
+> OF early console for it, so early console device can be enabled with comand
+> line "earlycon"(without option) via the "stdout-path" property in device-tree.
+> 
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  drivers/tty/serial/8250/8250_early.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+> index 8d08ff5..85a12f0 100644
+> --- a/drivers/tty/serial/8250/8250_early.c
+> +++ b/drivers/tty/serial/8250/8250_early.c
+> @@ -150,6 +150,7 @@ EARLYCON_DECLARE(uart, early_serial8250_setup);
+>  OF_EARLYCON_DECLARE(ns16550, "ns16550", early_serial8250_setup);
+>  OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
+>  OF_EARLYCON_DECLARE(uart, "nvidia,tegra20-uart", early_serial8250_setup);
+> +OF_EARLYCON_DECLARE(uart, "snps,dw-apb-uart", early_serial8250_setup);
+>  
+>  #ifdef CONFIG_SERIAL_8250_OMAP
+>  
+> 
