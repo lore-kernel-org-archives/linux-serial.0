@@ -1,55 +1,72 @@
 From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH] tty: serial: msm: Disable restoring Rx interrupts for
- DMA Mode
-Date: Wed, 25 May 2016 15:46:23 -0700
-Message-ID: <20160525224623.GS3492@codeaurora.org>
-References: <1462896580-11554-1-git-send-email-absahu@codeaurora.org>
- <20160512014126.GK3492@codeaurora.org>
- <20160512050245.GD8453@hector.attlocal.net>
- <5cce36b3c1d62816feffb4048f782b20@codeaurora.org>
+Subject: Re: [PATCH] tty: serial: msm: Remove duplicate handling of clocks
+Date: Wed, 25 May 2016 16:07:55 -0700
+Message-ID: <20160525230755.GA3468@codeaurora.org>
+References: <1462957229-17567-1-git-send-email-pramod.gurav@linaro.org>
+ <CANYu_0v9JuXjviJBTkC3YyyvmA3SmJxX8g9a7P+sMpu20FtONQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5cce36b3c1d62816feffb4048f782b20@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: charanya@codeaurora.org
-Cc: Andy Gross <andy.gross@linaro.org>, Abhishek Sahu <absahu@codeaurora.org>, agross@codeaurora.org, david.brown@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <CANYu_0v9JuXjviJBTkC3YyyvmA3SmJxX8g9a7P+sMpu20FtONQ@mail.gmail.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Pramod Gurav <pramod.gurav@linaro.org>
+Cc: Andy Gross <andy.gross@linaro.org>, gregkh@linuxfoundation.org, David Brown <davidb@codeaurora.org>, jslaby@suse.com, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 05/13, charanya@codeaurora.org wrote:
-> Hi Stephen/Andy,
+On 05/16, Pramod Gurav wrote:
+> On 11 May 2016 at 14:30, Pramod Gurav <pramod.gurav@linaro.org> wrote:
+> > msm_serial driver provides a .pm callback to the serial core to enable
+> > and disable clock resource in suspend/resume path. This function is
+> > also called before msm_startup. msm_startup also enables the clocks which
+> > is not needed. Hence remove the duplcate clock operation from msm_startup
+> > and msm_shutdown. Same is done in console setup to get rid of duplicate
+> > clock operation.
+> >
+> > Tested on DB410C console.
+> >
+> > Signed-off-by: Pramod Gurav <pramod.gurav@linaro.org>
+> > ---
+> >  drivers/tty/serial/msm_serial.c | 15 ++-------------
+> >  1 file changed, 2 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+> > index dcde955..73c3217 100644
+> > --- a/drivers/tty/serial/msm_serial.c
+> > +++ b/drivers/tty/serial/msm_serial.c
+> > @@ -959,15 +959,6 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
+> >         return baud;
+> >  }
+> >
+> > -static void msm_init_clock(struct uart_port *port)
+> > -{
+> > -       struct msm_port *msm_port = UART_TO_MSM(port);
+> > -
+> > -       clk_prepare_enable(msm_port->clk);
+> > -       clk_prepare_enable(msm_port->pclk);
+> > -       msm_serial_set_mnd_regs(port);
+> > -}
+> > -
+> >  static int msm_startup(struct uart_port *port)
+> >  {
+> >         struct msm_port *msm_port = UART_TO_MSM(port);
+> > @@ -982,7 +973,7 @@ static int msm_startup(struct uart_port *port)
+> >         if (unlikely(ret))
+> >                 return ret;
+> >
+> > -       msm_init_clock(port);
+> > +       msm_serial_set_mnd_regs(port);
 > 
-> If both Tx and Rx are used simultaneously, restoring Rx interrupts in
-> msm_complete_rx_dma could lead to RXSTALE interrupt being triggered,
-> when
-> the ISR execution for TXLEV interrupt is completed, since
-> msm_port->imr is
-> rewritten to UART_IMR in msm_uart_irq. Hence, we do not have to restore
-> Rx interrupts since Rx is always in DMA mode once enabled.
+> Further testing with another UART port made me realize that serial
+> port does not work after disabling msm_port->clk clock. The RX data
+> part will be affected.
+> Confirmed from manual that this clock should never be turned of to
+> avoid loss of incoming data. Sorry for the noise.
 > 
 
-Ok, but what's the exact sequence of events that happens? I think
-we unlock the spinlock in the dma completion handler and then the
-txlev interrupt runs? At that point we may have more data to push
-out and then rx stale handling runs and corrupts the fifo state?
-
-I was hoping for some sort of CPU sequence of events like:
-
- CPU0                   CPU1
- ----                   ----
-
- msm_start_rx_dma()
-                       msm_complete_rx_dma()
-		        spin_unlock_irqrestore(&port->lock)
- msm_uart_irq()
-  msm_handle_rx_dm()
-   <Read from FIFO and breaks>
-                        
-This patch seems correct, but the commit text isn't fully
-describing the sequence of events that causes this to happen, so
-it's taking a while to convince myself that this patch fixes
-anything.
+Does that mean this patch shouldn't be applied? I hope that the
+pm callback would do the right thing and be called when we expect
+to be receiving data on the line.
 
 -- 
 Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
