@@ -1,57 +1,56 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] sh-sci: SysRq support on EARLYCON
-Date: Wed, 25 May 2016 15:24:51 +0200
-Message-ID: <CAMuHMdVGimv1zAOqUCA95x2aGVHA=_LEnf-xWUp2jAK+kWHCaQ@mail.gmail.com>
-References: <1461772153-6785-1-git-send-email-ysato@users.sourceforge.jp>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH] tty: serial: msm: Disable restoring Rx interrupts for
+ DMA Mode
+Date: Wed, 25 May 2016 15:46:23 -0700
+Message-ID: <20160525224623.GS3492@codeaurora.org>
+References: <1462896580-11554-1-git-send-email-absahu@codeaurora.org>
+ <20160512014126.GK3492@codeaurora.org>
+ <20160512050245.GD8453@hector.attlocal.net>
+ <5cce36b3c1d62816feffb4048f782b20@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1461772153-6785-1-git-send-email-ysato@users.sourceforge.jp>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-renesas-soc@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5cce36b3c1d62816feffb4048f782b20@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: charanya@codeaurora.org
+Cc: Andy Gross <andy.gross@linaro.org>, Abhishek Sahu <absahu@codeaurora.org>, agross@codeaurora.org, david.brown@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sato-san,
+On 05/13, charanya@codeaurora.org wrote:
+> Hi Stephen/Andy,
+> 
+> If both Tx and Rx are used simultaneously, restoring Rx interrupts in
+> msm_complete_rx_dma could lead to RXSTALE interrupt being triggered,
+> when
+> the ISR execution for TXLEV interrupt is completed, since
+> msm_port->imr is
+> rewritten to UART_IMR in msm_uart_irq. Hence, we do not have to restore
+> Rx interrupts since Rx is always in DMA mode once enabled.
+> 
 
-CC linux-serial
+Ok, but what's the exact sequence of events that happens? I think
+we unlock the spinlock in the dma completion handler and then the
+txlev interrupt runs? At that point we may have more data to push
+out and then rx stale handling runs and corrupts the fifo state?
 
-On Wed, Apr 27, 2016 at 5:49 PM, Yoshinori Sato
-<ysato@users.sourceforge.jp> wrote:
-> Add missing flag condition.
->
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+I was hoping for some sort of CPU sequence of events like:
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+ CPU0                   CPU1
+ ----                   ----
 
-Unfortunately magic SysRq only works if CONFIG_SERIAL_SH_SCI_DMA=n.
+ msm_start_rx_dma()
+                       msm_complete_rx_dma()
+		        spin_unlock_irqrestore(&port->lock)
+ msm_uart_irq()
+  msm_handle_rx_dm()
+   <Read from FIFO and breaks>
+                        
+This patch seems correct, but the commit text isn't fully
+describing the sequence of events that causes this to happen, so
+it's taking a while to convince myself that this patch fixes
+anything.
 
-> ---
->  drivers/tty/serial/sh-sci.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 0130feb..5a73620 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -18,7 +18,9 @@
->   * License.  See the file "COPYING" in the main directory of this archive
->   * for more details.
->   */
-> -#if defined(CONFIG_SERIAL_SH_SCI_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-> +#if (defined(CONFIG_SERIAL_SH_SCI_CONSOLE) || \
-> +     defined(CONFIG_SERIAL_SH_SCI_EARLYCON)) && \
-> +       defined(CONFIG_MAGIC_SYSRQ)
->  #define SUPPORT_SYSRQ
->  #endif
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
