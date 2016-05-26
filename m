@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 1/4] serial: sh-sci: Do not start transfers from sci_startup()
-Date: Thu, 26 May 2016 20:18:35 +0200
-Message-ID: <1464286718-10745-2-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 2/4] serial: sh-sci: Stop transfers in sci_shutdown()
+Date: Thu, 26 May 2016 20:18:36 +0200
+Message-ID: <1464286718-10745-3-git-send-email-geert+renesas@glider.be>
 References: <1464286718-10745-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1464286718-10745-1-git-send-email-geert+renesas@glider.be>
@@ -10,48 +10,45 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-FIFO reset is done in sci_reset(), called from sci_set_termios(), while
-sci_start_tx() and sci_start_rx() are called before, from sci_startup().
-However, starting transfers before the UART's FIFOs have been reset may
-cause reading of stale data.
+Make sure the transmitter and receiver are stopped when shutting down
+the port, and related interrupts are disabled.
 
-Remove the calls to sci_start_tx() and sci_start_rx() from sci_startup()
-to fix this.
+Without this:
+  - New input data may be received into the RX FIFO, possibly
+    triggering a new RX DMA completion,
+  - Transfers will still be enabled on a subsequent startup of the UART,
+    before the UART's FIFOs have been reset, causing reading of stale
+    data.
 
-Transfers are still started when needed:
-  - sci_start_rx() is called from sci_set_termios() after FIFO reset, if
-    the CREAD flag is set,
-  - sci_start_tx() is called from uart_change_speed() immediately
-    thereafter, if transmission is enabled.
+Inspired by a patch in the BSP by Koji Matsuoka
+<koji.matsuoka.xm@renesas.com>.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 6 ------
- 1 file changed, 6 deletions(-)
+Extracted from "[PATCH/RFC v3 0/4] serial: sh-sci: Add DT DMA support".
+The issues with the serial console seen before on r8a7740/armadillo and
+sh73a0/kzm9g seem to be gone.
+
+Changes after resurrection:
+  - Write zero to also disable related interrupts, as suggested by
+    Laurent Pinchart,
+  - Enhanced patch description.
+---
+ drivers/tty/serial/sh-sci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 0130feb069aee02f..d6ba90c572f7475c 100644
+index d6ba90c572f7475c..4d2f916f45277e20 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1873,7 +1873,6 @@ static void sci_break_ctl(struct uart_port *port, int break_state)
- static int sci_startup(struct uart_port *port)
- {
- 	struct sci_port *s = to_sci_port(port);
--	unsigned long flags;
- 	int ret;
+@@ -1896,6 +1896,8 @@ static void sci_shutdown(struct uart_port *port)
+ 	spin_lock_irqsave(&port->lock, flags);
+ 	sci_stop_rx(port);
+ 	sci_stop_tx(port);
++	/* Stop RX and TX, disable related interrupts */
++	serial_port_out(port, SCSCR, 0);
+ 	spin_unlock_irqrestore(&port->lock, flags);
  
- 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
-@@ -1884,11 +1883,6 @@ static int sci_startup(struct uart_port *port)
- 
- 	sci_request_dma(port);
- 
--	spin_lock_irqsave(&port->lock, flags);
--	sci_start_tx(port);
--	sci_start_rx(port);
--	spin_unlock_irqrestore(&port->lock, flags);
--
- 	return 0;
- }
- 
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
 -- 
 1.9.1
