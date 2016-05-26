@@ -1,61 +1,57 @@
-From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Subject: Re: [PATCH v5 00/11] serial: 8250: split LPSS to 8250_lpss, enable
- DMA on Quark
-Date: Thu, 26 May 2016 17:36:29 +0100
-Message-ID: <1464280589.2351.19.camel@nexus-software.ie>
-References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
-	   <1463065601.17131.319.camel@linux.intel.com>
-	  <1463620733.4224.75.camel@nexus-software.ie>
-	 <1464111448.31269.67.camel@linux.intel.com>
-	 <1464113301.31269.79.camel@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1464113301.31269.79.camel@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 1/4] serial: sh-sci: Do not start transfers from sci_startup()
+Date: Thu, 26 May 2016 20:18:35 +0200
+Message-ID: <1464286718-10745-2-git-send-email-geert+renesas@glider.be>
+References: <1464286718-10745-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1464286718-10745-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2016-05-24 at 21:08 +0300, Andy Shevchenko wrote:
-> On Tue, 2016-05-24 at 20:37 +0300, Andy Shevchenko wrote:
-> > On Thu, 2016-05-19 at 02:18 +0100, Bryan O'Donoghue wrote:
-> > > On Thu, 2016-05-12 at 18:06 +0300, Andy Shevchenko wrote:
-> > > > On Fri, 2016-05-06 at 18:17 +0300, Andy Shevchenko wrote:
-> > > > > This is combined series of two things:
-> > > > > - split out the Intel LPSS specific driver from 8250_pci into
-> > > > > 8250_lpss
-> > > > > - enable DMA support on Intel Quark UART
-> > > > > 
-> > > > > The patch has been tested on few Intel SoCs / platforms. In
-> > > > > any
-> > > > > case I
-> > > > > would
-> > > > > like to ask Bryan to do independent test.
-> > > 
-> > > Andy.
-> > > 
-> > > It looks as though there's a performance drop when enabling the
-> > > DMA
-> > > here (v) stock PIO mode with the 8250 driver.
-> 
-> Wait, the time measurement you done is unrelated to DMA/non-DMA mode.
-> It's significantly depend to the speed of the port.
+FIFO reset is done in sci_reset(), called from sci_set_termios(), while
+sci_start_tx() and sci_start_rx() are called before, from sci_startup().
+However, starting transfers before the UART's FIFOs have been reset may
+cause reading of stale data.
 
-Does it ? The size of the FIFO is what - 16 bytes ? Max burst size is 8
-bytes - so for 37 bytes you'd expect to see five DMA transactions {8,
-8, 8, 5}, for the second test 183 bytes you'd expect to see 23 eight
-byte transactions followed by one 7 byte transaction. The flip side to
-add data to the FIFO in PIO mode is a pretty different pattern.
+Remove the calls to sci_start_tx() and sci_start_rx() from sci_startup()
+to fix this.
 
-> I also tried on my Galileo board, I used longer data stream, i.e.
-> output
-> of dmesg (since your data pattern makes 0:s in statistics) and got
-> something quite near to each other:
+Transfers are still started when needed:
+  - sci_start_rx() is called from sci_set_termios() after FIFO reset, if
+    the CREAD flag is set,
+  - sci_start_tx() is called from uart_change_speed() immediately
+    thereafter, if transmission is enabled.
 
-I'll find some time to look at both a short stream and a long stream,
-based on the branch you've indicated and maybe against the latest
-stable kernel.
-
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
-bod
+ drivers/tty/serial/sh-sci.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 0130feb069aee02f..d6ba90c572f7475c 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1873,7 +1873,6 @@ static void sci_break_ctl(struct uart_port *port, int break_state)
+ static int sci_startup(struct uart_port *port)
+ {
+ 	struct sci_port *s = to_sci_port(port);
+-	unsigned long flags;
+ 	int ret;
+ 
+ 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
+@@ -1884,11 +1883,6 @@ static int sci_startup(struct uart_port *port)
+ 
+ 	sci_request_dma(port);
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+-	sci_start_tx(port);
+-	sci_start_rx(port);
+-	spin_unlock_irqrestore(&port->lock, flags);
+-
+ 	return 0;
+ }
+ 
+-- 
+1.9.1
