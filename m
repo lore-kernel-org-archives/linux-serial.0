@@ -1,121 +1,181 @@
-From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Subject: [PATCH] serial: 8250_fintek: fix the mismatched IRQ mode
-Date: Fri, 27 May 2016 10:02:51 +0800
-Message-ID: <1464314571-15429-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v8 0/4] ACPI: parse the SPCR table
+Date: Fri, 27 May 2016 16:41:47 +0300
+Message-ID: <8e18166c-74c0-644c-cbd3-783fc716ab6b@linaro.org>
+References: <1463749405-11640-1-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: ricardo.ribalda@gmail.com, alan@linux.intel.com, peter@hurleysoftware.com, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1463749405-11640-1-git-send-email-aleksey.makarov@linaro.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Russell King <linux@arm.linux.org.uk>
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-Some BIOS only use _OSI("Linux") to distinguish between Linux & Windows=
-=2E
-Apply Level/Low to UART trigger mode if Windows, Edge/High mode otherwi=
-se.
-But since 2.6.23 the mainline kernel no longer returns true for
-_OSI(=E2=80=9CLinux=E2=80=9D).
+On 05/20/2016 04:03 PM, Aleksey Makarov wrote:
+> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port Console
+> Redirection Table) [2] as a mandatory ACPI table that specifies the
+> configuration of serial console.
 
-The default IRQ0~15 trigger mode in Linux is Edge/High mode without
-ACPI MADT override. It mismatches IRQ mode and makes UART malfunctional=
- on
-such motherboard.
+Hi Russell,
 
-This patch will check the current IRQ mode and apply correct mode to UA=
-RT.
+Can you review these patches and consider ACKing the pl011 part [4/4]
+please?  It had an ACK from Greg Kroah-Hartman in v7 but since then I
+changed it a bit.
 
-The following link is F81216AD spec PDF:
-http://html.alldatasheet.com/html-pdf/257956/FINTEK/F81216AD/5569/
-25/F81216AD.html
+Who can I ask to accept the patch set for the upstream tree?
 
-LDN0~3
-	70h: IRQ channel & Mode register
-		Bit 6~5	:
-			00	: Active low level mode
-			01	: Active high edge mode
-		Bit 4	: Sharing Flag (0: not share/1: share)
-		Bit 3~0 : IRQ channel
+Thank you
+Aleksey Makarov
 
-Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
----
- drivers/tty/serial/8250/8250_fintek.c | 36 +++++++++++++++++++++++++++=
-+++++++-
- 1 file changed, 35 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial=
-/8250/8250_fintek.c
-index 870981d..737b4b3 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -13,6 +13,7 @@
- #include <linux/pnp.h>
- #include <linux/kernel.h>
- #include <linux/serial_core.h>
-+#include <linux/irq.h>
- #include  "8250.h"
-=20
- #define ADDR_PORT 0
-@@ -30,6 +31,12 @@
- #define IO_ADDR2 0x60
- #define LDN 0x7
-=20
-+#define IRQ_MODE	0x70
-+#define IRQ_SHARE	BIT(4)
-+#define IRQ_MODE_MASK	(BIT(6) | BIT(5))
-+#define IRQ_LEVEL_LOW	0
-+#define IRQ_EDGE_HIGH	BIT(5)
-+
- #define RS485  0xF0
- #define RTS_INVERT BIT(5)
- #define RS485_URA BIT(4)
-@@ -176,10 +183,37 @@ static int find_base_port(struct fintek_8250 *pda=
-ta, u16 io_address)
- 	return -ENODEV;
- }
-=20
-+static int fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool le=
-vel_mode)
-+{
-+	int status;
-+	u8 tmp;
-+
-+	status =3D fintek_8250_enter_key(pdata->base_port, pdata->key);
-+	if (status)
-+		return status;
-+
-+	outb(LDN, pdata->base_port + ADDR_PORT);
-+	outb(pdata->index, pdata->base_port + DATA_PORT);
-+
-+	outb(IRQ_MODE, pdata->base_port + ADDR_PORT);
-+	tmp =3D inb(pdata->base_port + DATA_PORT);
-+
-+	tmp &=3D ~IRQ_MODE_MASK;
-+	tmp |=3D IRQ_SHARE;
-+	if (!level_mode)
-+		tmp |=3D IRQ_EDGE_HIGH;
-+
-+	outb(tmp, pdata->base_port + DATA_PORT);
-+	fintek_8250_exit_key(pdata->base_port);
-+	return 0;
-+}
-+
- int fintek_8250_probe(struct uart_8250_port *uart)
- {
- 	struct fintek_8250 *pdata;
- 	struct fintek_8250 probe_data;
-+	struct irq_data *irq_data =3D irq_get_irq_data(uart->port.irq);
-+	bool level_mode =3D irqd_is_level_type(irq_data);
-=20
- 	if (find_base_port(&probe_data, uart->port.iobase))
- 		return -ENODEV;
-@@ -192,5 +226,5 @@ int fintek_8250_probe(struct uart_8250_port *uart)
- 	uart->port.rs485_config =3D fintek_8250_rs485_config;
- 	uart->port.private_data =3D pdata;
-=20
--	return 0;
-+	return fintek_8250_set_irq_mode(pdata, level_mode);
- }
---=20
-1.9.1
+> Move "earlycon" early_param handling to earlycon.c to parse this option once
+> 
+> Parse SPCR table, setup earlycon and register specified console.
+> 
+> Enable parsing this table on ARM64.  Earlycon should be set up as early as
+> possible.  ACPI boot tables are mapped in
+> arch/arm64/kernel/acpi.c:acpi_boot_table_init() called from setup_arch() and
+> that's where we parse spcr.  So it has to be opted-in per-arch. When
+> ACPI_SPCR_TABLE is defined initialization of DT earlycon is deferred until the
+> DT/ACPI decision is done.
+> 
+> Implement console_match() for pl011.
+> 
+> Based on the work by Leif Lindholm [3]
+> Thanks to Peter Hurley for explaining how this should work.
+> 
+> Should be applied to next-20160520
+> Tested on QEMU and ThunderX.
+> SPCR support is included in QEMU's ARM64 mach-virt since 2.4 release.
+> 
+> v8:
+> - rebase to next-20160520
+> - remove the patch "ACPICA: Headers: Add new constants for the DBG2 ACPI table"
+>   as it have got to linux-next
+> - add Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Reviewed-by:
+>   Peter Hurley <peter@hurleysoftware.com> (but see below)
+> - fix the patch "serial: pl011: add console matching function".  The patch by
+>   Christopher Covington [4] specifies that SBSA uart does 32-bit access to
+>   registers and this breaks the match function.  In this series the function
+>   was changed to match when SPCR specifies both mmio32 and mmio access.
+>   I removed Acked-by: Greg from this patch because of these changes.
+> 
+> v7:
+> https://lkml.kernel.org/g/1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org
+> - add Acked-by: Rob Herring for "of/serial: move earlycon early_param handling
+>   to serial"
+> - call DT earlycon initialization from the arch ACPI code, not from parse_spcr()
+>   (Rafael J. Wysocki)
+> - fix a few minor issues (Rafael J. Wysocki)
+> 
+> v6:
+> https://lkml.kernel.org/g/1458823925-19560-1-git-send-email-aleksey.makarov@linaro.org
+> - add documentation for parse_spcr() functioin (Yury Norov)
+> - don't initialize err variable (Yury Norov)
+> - add __initdata for the earlycon_init_is_deferred flag variable
+> - rename the function exported in "of/serial: move earlycon early_param handling
+>   to serial" to avoid clash with the function from arch/microblaze/kernel/prom.c
+> - defer initialization of DT earlycon until DT/ACPI decision is made
+>   (Rob Herring, Peter Hurley)
+> - use snprintf instead of sprintf (Andy Shevchenko)
+> - drop patch that adds EARLYCON_DECLARE for pl011 as EARLYCON_DECLARE is
+>   equivalent to OF_EARLYCON_DECLARE for 4.6+ (Peter Hurley).  This means that
+>   SPCR earlycon will not work on the kernels before 4.6
+> 
+> v5:
+> https://lkml.kernel.org/g/1458643595-14719-1-git-send-email-aleksey.makarov@linaro.org
+> - drop patch "serial: pl011: use ACPI SPCR to setup 32-bit access" because
+>   it is ugly. Also because Christopher Covington came with a better solution [4]
+> - remove error message when the table is not provided by ACPI (Andy Shevchenko)
+> - rewrite spcr.c following the suggestions by Peter Hurley
+> - add console_match() for pl011 in a separate patch
+> - add EARLYCON_DECLARE for pl011 in a separate patch
+> - add patch "of/serial: move earlycon early_param handling to serial" from
+>   the GDB2 series
+> 
+> v4:
+> https://lkml.kernel.org/g/1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org
+> - drop patch "ACPI: change __init to __ref for early_acpi_os_unmap_memory()"
+>   ACPI developers work on a new API and asked not to do that.
+>   Instead, use acpi_get_table_with_size()/early_acpi_os_unmap_memory() once
+>   and cache the result. (Lv Zheng)
+> - fix some style issues (Yury Norov)
+> 
+> v3:
+> https://lkml.kernel.org/g/1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org
+> 
+> Greg Kroah-Hartman did not like v2 so I have rewritten this patchset:
+> 
+> - drop acpi_match() member of struct console
+> - drop implementations of this member for pl011 and 8250
+> - drop the patch that renames some vars in printk.c as it is not needed anymore
+> - drop patch that introduces system wide acpi_table_parse2().
+>   Instead introduce a custom acpi_table_parse_spcr() in spcr.c
+> 
+> Instead of introducing a new match_acpi() member of struct console,
+> this patchset introduces a new function acpi_console_check().
+> This function is called when a new uart is registered at serial_core.c
+> the same way OF code checks for console.  If the registered uart is the
+> console specified by SPCR table, this function calls add_preferred_console()
+> 
+> The restrictions of this approach are:
+> 
+> - only serial consoles can be set up
+> - only consoles specified by the memory/io address can be set up
+>   (SPCR can specify devices by PCI id/PCI address)
+> 
+> v2:
+> https://lkml.kernel.org/g/1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org
+> - don't use SPCR if user specified console in command line
+> - fix initialization order of newcon->index = 0
+> - rename some variables at printk.c (Joe Perches, Peter Hurley)
+> - enable ACPI_SPCR_TABLE in a separate patch (Andy Shevchenko)
+> - remove the retry loop for console registering (Peter Hurley).
+>   Instead, obtain SPCR with acpi_get_table().  That works after
+>   call to acpi_early_init() i. e. in any *_initcall()
+> - describe design decision behind introducing acpi_match() (Peter Hurley)
+> - fix compilation for x86 + ACPI (Graeme Gregory)
+> - introduce DBG2 constants in a separate patch (Andy Shevchenko)
+> - fix a typo in DBG2 constants (Andy Shevchenko)
+> - add ACPI_DBG2_ARM_SBSA_32BIT constant (Christopher Covington)
+> - add support for ACPI_DBG2_ARM_SBSA_* consoles (Christopher Covington)
+> - add documentation for functions
+> - add a patch that uses SPCR to find if SBSA serial driver should use 32-bit
+>   accessor functions (Christopher Covington)
+> - change __init to __ref for early_acpi_os_unmap_memory() in a separate patch
+> - introduce acpi_table_parse2() in a separate patch
+> - fix fetching the SPCR table early (Mark Salter)
+> - add a patch from Mark Salter that introduces support for matching 8250-based
+>   consoles
+> 
+> v1:
+> https://lkml.kernel.org/g/1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org
+> 
+> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+> [2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
+> [3] https://lkml.kernel.org/g/1441716217-23786-1-git-send-email-leif.lindholm@linaro.org
+> [4] https://lkml.kernel.org/g/1457415800-8799-1-git-send-email-cov@codeaurora.org
+> 
+> Aleksey Makarov (3):
+>   ACPI: parse SPCR and enable matching console
+>   ARM64: ACPI: enable ACPI_SPCR_TABLE
+>   serial: pl011: add console matching function
+> 
+> Leif Lindholm (1):
+>   of/serial: move earlycon early_param handling to serial
+> 
+>  arch/arm64/Kconfig              |   1 +
+>  arch/arm64/kernel/acpi.c        |  11 +++-
+>  drivers/acpi/Kconfig            |   3 ++
+>  drivers/acpi/Makefile           |   1 +
+>  drivers/acpi/spcr.c             | 111 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/of/fdt.c                |  11 +---
+>  drivers/tty/serial/amba-pl011.c |  56 ++++++++++++++++++++
+>  drivers/tty/serial/earlycon.c   |  19 ++++++-
+>  include/linux/acpi.h            |   6 +++
+>  include/linux/of_fdt.h          |   2 +
+>  include/linux/serial_core.h     |   6 +++
+>  11 files changed, 214 insertions(+), 13 deletions(-)
+>  create mode 100644 drivers/acpi/spcr.c
+> 
