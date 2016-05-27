@@ -1,71 +1,121 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 0/4] serial: sh-sci: FIFO initialization fixes
-Date: Thu, 26 May 2016 20:18:34 +0200
-Message-ID: <1464286718-10745-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Subject: [PATCH] serial: 8250_fintek: fix the mismatched IRQ mode
+Date: Fri, 27 May 2016 10:02:51 +0800
+Message-ID: <1464314571-15429-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: ricardo.ribalda@gmail.com, alan@linux.intel.com, peter@hurleysoftware.com, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-	Hi Greg, Jiri, Magnus,
+Some BIOS only use _OSI("Linux") to distinguish between Linux & Windows=
+=2E
+Apply Level/Low to UART trigger mode if Windows, Edge/High mode otherwi=
+se.
+But since 2.6.23 the mainline kernel no longer returns true for
+_OSI(=E2=80=9CLinux=E2=80=9D).
 
-When opening a Renesas SCIF serial port after it has been used before,
-stale data may be read.  This has been observed on R-Car Gen2 and R-Car
-Gen3, with all SCIF variants present (SCIF, SCIFA, SCIFB, and HSCIF). It
-is much more likely to happen when DMA is enabled, although it has been
-seen with PIO, too.
+The default IRQ0~15 trigger mode in Linux is Edge/High mode without
+ACPI MADT override. It mismatches IRQ mode and makes UART malfunctional=
+ on
+such motherboard.
 
-There are actually two reasons why stale data is received:
-  1. Transfers are started, or are still activated, before the FIFO is
-     reset, causing one or more (up to the RX FIFO size) stale bytes
-     (fixed by patches 1 and 2),
-  2. FIFO reset lacked clearing the RDF flag, causing one byte of stale
-     data (fixed by patch 3).
-While at it, patch 4 adds the missing clearing of two other flags in the
-initialization sequence on (H)SCIF.
+This patch will check the current IRQ mode and apply correct mode to UA=
+RT.
 
-While the issue can be reproduced using subsequent runs of sertest[1],
-I wrote a new test program, fifotest[2], to trigger it more easily.
-More detailed test information can be found on the eLinux wiki[3].
+The following link is F81216AD spec PDF:
+http://html.alldatasheet.com/html-pdf/257956/FINTEK/F81216AD/5569/
+25/F81216AD.html
 
-I have verified that this series fixes the issue on SCIF, SCIFA, SCIFB,
-and HSCIF, on R-Car Gen2 (r8a7791/koelsch) and R-Car Gen3
-(r8a7795/salvator-x).
-Basic regression testing has been done with SCIFA on sh73a0/kzm9g.
-Regression testing on other variants (notably SCI) would be appreciated.
+LDN0~3
+	70h: IRQ channel & Mode register
+		Bit 6~5	:
+			00	: Active low level mode
+			01	: Active high edge mode
+		Bit 4	: Sharing Flag (0: not share/1: share)
+		Bit 3~0 : IRQ channel
 
-This series applies against both v4.6 and next-20160526. It's also
-available in a topic branch at
-https://git.kernel.org/cgit/linux/kernel/git/geert/renesas-drivers.git/log/?h=topic/scif-fifo-v1.
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+---
+ drivers/tty/serial/8250/8250_fintek.c | 36 +++++++++++++++++++++++++++=
++++++++-
+ 1 file changed, 35 insertions(+), 1 deletion(-)
 
-Thanks!
-
-[1] https://github.com/geertu/sertest
-[2] https://github.com/geertu/fifotest
-[3] http://elinux.org/Tests:SCIF-FIFO
-
-
-Geert Uytterhoeven (4):
-  serial: sh-sci: Do not start transfers from sci_startup()
-  serial: sh-sci: Stop transfers in sci_shutdown()
-  serial: sh-sci: Clear RX, error, and break flags during reset
-  serial: sh-sci: Clear (H)SCIF timeout and overrun during reset
-
- drivers/tty/serial/sh-sci.c | 17 +++++++++++------
- drivers/tty/serial/sh-sci.h |  1 +
- 2 files changed, 12 insertions(+), 6 deletions(-)
-
--- 
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial=
+/8250/8250_fintek.c
+index 870981d..737b4b3 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -13,6 +13,7 @@
+ #include <linux/pnp.h>
+ #include <linux/kernel.h>
+ #include <linux/serial_core.h>
++#include <linux/irq.h>
+ #include  "8250.h"
+=20
+ #define ADDR_PORT 0
+@@ -30,6 +31,12 @@
+ #define IO_ADDR2 0x60
+ #define LDN 0x7
+=20
++#define IRQ_MODE	0x70
++#define IRQ_SHARE	BIT(4)
++#define IRQ_MODE_MASK	(BIT(6) | BIT(5))
++#define IRQ_LEVEL_LOW	0
++#define IRQ_EDGE_HIGH	BIT(5)
++
+ #define RS485  0xF0
+ #define RTS_INVERT BIT(5)
+ #define RS485_URA BIT(4)
+@@ -176,10 +183,37 @@ static int find_base_port(struct fintek_8250 *pda=
+ta, u16 io_address)
+ 	return -ENODEV;
+ }
+=20
++static int fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool le=
+vel_mode)
++{
++	int status;
++	u8 tmp;
++
++	status =3D fintek_8250_enter_key(pdata->base_port, pdata->key);
++	if (status)
++		return status;
++
++	outb(LDN, pdata->base_port + ADDR_PORT);
++	outb(pdata->index, pdata->base_port + DATA_PORT);
++
++	outb(IRQ_MODE, pdata->base_port + ADDR_PORT);
++	tmp =3D inb(pdata->base_port + DATA_PORT);
++
++	tmp &=3D ~IRQ_MODE_MASK;
++	tmp |=3D IRQ_SHARE;
++	if (!level_mode)
++		tmp |=3D IRQ_EDGE_HIGH;
++
++	outb(tmp, pdata->base_port + DATA_PORT);
++	fintek_8250_exit_key(pdata->base_port);
++	return 0;
++}
++
+ int fintek_8250_probe(struct uart_8250_port *uart)
+ {
+ 	struct fintek_8250 *pdata;
+ 	struct fintek_8250 probe_data;
++	struct irq_data *irq_data =3D irq_get_irq_data(uart->port.irq);
++	bool level_mode =3D irqd_is_level_type(irq_data);
+=20
+ 	if (find_base_port(&probe_data, uart->port.iobase))
+ 		return -ENODEV;
+@@ -192,5 +226,5 @@ int fintek_8250_probe(struct uart_8250_port *uart)
+ 	uart->port.rs485_config =3D fintek_8250_rs485_config;
+ 	uart->port.private_data =3D pdata;
+=20
+-	return 0;
++	return fintek_8250_set_irq_mode(pdata, level_mode);
+ }
+--=20
 1.9.1
-
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
