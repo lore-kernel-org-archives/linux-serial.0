@@ -1,11 +1,12 @@
 From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: [PATCH] serial: samsung: Fix ERR pointer dereference on deferred probe
-Date: Tue, 31 May 2016 13:35:59 +0200
-Message-ID: <1464694559-29613-1-git-send-email-k.kozlowski@samsung.com>
+Subject: [PATCH v2 1/2] serial: samsung: Fix ERR pointer dereference on
+ deferred probe
+Date: Tue, 31 May 2016 16:00:05 +0200
+Message-ID: <1464703206-1615-1-git-send-email-k.kozlowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
-Cc: Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, stable@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 When the clk_get() of "uart" clock returns EPROBE_DEFER, the next re-probe
@@ -45,14 +46,31 @@ will initialize all of the port settings.
 Fixes: 60e93575476f ("serial: samsung: enable clock before clearing pending interrupts during init")
 Cc: <stable@vger.kernel.org>
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+
 ---
- drivers/tty/serial/samsung.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+
+Changes since v1:
+1. Apply suggestion from Bartlomiej (offline) that early check for
+   port->mapbase in s3c24xx_serial_init_port() should fail if it is
+   already set.  The port->mapbase is now always cleared when probe
+   fails, so re-probing with 'port->mapbase != 0' is unexpected.
+---
+ drivers/tty/serial/samsung.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 99bb23161dd6..a0183fe936f9 100644
+index 99bb23161dd6..f0bd2ec0db59 100644
 --- a/drivers/tty/serial/samsung.c
 +++ b/drivers/tty/serial/samsung.c
+@@ -1684,7 +1684,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 		return -ENODEV;
+ 
+ 	if (port->mapbase != 0)
+-		return 0;
++		return -EINVAL;
+ 
+ 	/* setup info for port */
+ 	port->dev	= &platdev->dev;
 @@ -1738,22 +1738,25 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
  		ourport->dma = devm_kzalloc(port->dev,
  					    sizeof(*ourport->dma),
