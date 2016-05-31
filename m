@@ -1,118 +1,64 @@
 From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: [PATCH v2 1/2] serial: samsung: Fix ERR pointer dereference on
- deferred probe
-Date: Tue, 31 May 2016 16:00:05 +0200
-Message-ID: <1464703206-1615-1-git-send-email-k.kozlowski@samsung.com>
+Subject: [PATCH v2 2/2] serial: samsung: Fix possible out of bounds access on
+ non-DT platform
+Date: Tue, 31 May 2016 16:00:06 +0200
+Message-ID: <1464703206-1615-2-git-send-email-k.kozlowski@samsung.com>
+References: <1464703206-1615-1-git-send-email-k.kozlowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1464703206-1615-1-git-send-email-k.kozlowski@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, stable@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-When the clk_get() of "uart" clock returns EPROBE_DEFER, the next re-probe
-finishes with success but uses invalid (ERR_PTR) values.  This leads to
-dereferencing of ERR_PTR stored under ourport->clk:
+On non-DeviceTree platforms, the index of serial device is a static
+variable incremented on each probe.  It is incremented even if deferred
+probe happens when getting the clock in s3c24xx_serial_init_port().
 
-	12c30000.serial: Controller clock not found
-	(...)
-	12c30000.serial: ttySAC3 at MMIO 0x12c30000 (irq = 61, base_baud = 0) is a S3C6400/10
-	Unable to handle kernel paging request at virtual address fffffdfb
+This index is used for referencing elements of statically allocated
+s3c24xx_serial_ports array.  In case of re-probe, the index will point
+outside of this array leading to memory corruption.
 
-	(clk_prepare) from [<c039f7d0>] (s3c24xx_serial_pm+0x20/0x128)
-	(s3c24xx_serial_pm) from [<c0395414>] (uart_change_pm+0x38/0x40)
-	(uart_change_pm) from [<c039689c>] (uart_add_one_port+0x31c/0x44c)
-	(uart_add_one_port) from [<c03a035c>] (s3c24xx_serial_probe+0x2a8/0x418)
-	(s3c24xx_serial_probe) from [<c03ee110>] (platform_drv_probe+0x50/0xb0)
-	(platform_drv_probe) from [<c03ecb44>] (driver_probe_device+0x1f4/0x2b0)
-	(driver_probe_device) from [<c03eb0c0>] (bus_for_each_drv+0x44/0x8c)
-	(bus_for_each_drv) from [<c03ec8c8>] (__device_attach+0x9c/0x100)
-	(__device_attach) from [<c03ebf54>] (bus_probe_device+0x84/0x8c)
-	(bus_probe_device) from [<c03ec388>] (deferred_probe_work_func+0x60/0x8c)
-	(deferred_probe_work_func) from [<c012fee4>] (process_one_work+0x120/0x328)
-	(process_one_work) from [<c0130150>] (worker_thread+0x2c/0x4ac)
-	(worker_thread) from [<c0135320>] (kthread+0xd8/0xf4)
-	(kthread) from [<c0107978>] (ret_from_fork+0x14/0x3c)
+Increment the index only on successful probe.
 
-The first unsuccessful clk_get() causes s3c24xx_serial_init_port() to
-exit with failure but the s3c24xx_uart_port is left half-configured
-(e.g. port->mapbase is set, clk contains ERR_PTR).  On next re-probe,
-the function s3c24xx_serial_init_port() will exit early with success
-because of configured port->mapbase and driver will use old values,
-including the ERR_PTR as clock.
-
-Fix this by cleaning the port->mapbase on error path so each re-probe
-will initialize all of the port settings.
-
-Fixes: 60e93575476f ("serial: samsung: enable clock before clearing pending interrupts during init")
-Cc: <stable@vger.kernel.org>
+Reported-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Fixes: b497549a035c ("[ARM] S3C24XX: Split serial driver into core and per-cpu drivers")
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 
 ---
 
+Not cc-ing stable because:
+1. It is just a possibility, not really reproduced (I don't have non-DT
+   platform).
+2. I am not sure whether deferred probe may happen on non-DT platform.
+
 Changes since v1:
-1. Apply suggestion from Bartlomiej (offline) that early check for
-   port->mapbase in s3c24xx_serial_init_port() should fail if it is
-   already set.  The port->mapbase is now always cleared when probe
-   fails, so re-probing with 'port->mapbase != 0' is unexpected.
+1. New patch.
 ---
- drivers/tty/serial/samsung.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ drivers/tty/serial/samsung.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 99bb23161dd6..f0bd2ec0db59 100644
+index f0bd2ec0db59..4d2924f61e0b 100644
 --- a/drivers/tty/serial/samsung.c
 +++ b/drivers/tty/serial/samsung.c
-@@ -1684,7 +1684,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 		return -ENODEV;
+@@ -1844,8 +1844,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 	ourport->min_dma_size = max_t(int, ourport->port.fifosize,
+ 				    dma_get_cache_alignment());
  
- 	if (port->mapbase != 0)
--		return 0;
-+		return -EINVAL;
+-	probe_index++;
+-
+ 	dbg("%s: initialising port %p...\n", __func__, ourport);
  
- 	/* setup info for port */
- 	port->dev	= &platdev->dev;
-@@ -1738,22 +1738,25 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 		ourport->dma = devm_kzalloc(port->dev,
- 					    sizeof(*ourport->dma),
- 					    GFP_KERNEL);
--		if (!ourport->dma)
--			return -ENOMEM;
-+		if (!ourport->dma) {
-+			ret = -ENOMEM;
-+			goto err;
-+		}
- 	}
+ 	ret = s3c24xx_serial_init_port(ourport, pdev);
+@@ -1875,6 +1873,8 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 	if (ret < 0)
+ 		dev_err(&pdev->dev, "failed to add cpufreq notifier\n");
  
- 	ourport->clk	= clk_get(&platdev->dev, "uart");
- 	if (IS_ERR(ourport->clk)) {
- 		pr_err("%s: Controller clock not found\n",
- 				dev_name(&platdev->dev));
--		return PTR_ERR(ourport->clk);
-+		ret = PTR_ERR(ourport->clk);
-+		goto err;
- 	}
- 
- 	ret = clk_prepare_enable(ourport->clk);
- 	if (ret) {
- 		pr_err("uart: clock failed to prepare+enable: %d\n", ret);
- 		clk_put(ourport->clk);
--		return ret;
-+		goto err;
- 	}
- 
- 	/* Keep all interrupts masked and cleared */
-@@ -1769,7 +1772,12 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 
- 	/* reset the fifos (and setup the uart) */
- 	s3c24xx_serial_resetport(port, cfg);
++	probe_index++;
 +
  	return 0;
-+
-+err:
-+	port->mapbase = 0;
-+	return ret;
  }
  
- /* Device driver serial port probe */
 -- 
 1.9.1
