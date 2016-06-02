@@ -1,75 +1,63 @@
-From: Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH v2 1/2] serial: samsung: Fix ERR pointer dereference on
- deferred probe
-Date: Wed, 1 Jun 2016 14:27:08 -0700
-Message-ID: <CAOi56cWFkdHRufaJEgYq6+ERUZXEdteeJX3+5RzVPCKmBSWFcg@mail.gmail.com>
-References: <1464703206-1615-1-git-send-email-k.kozlowski@samsung.com>
-	<46dcde4f-2be6-d633-ad0b-23aa8f684ff6@osg.samsung.com>
+From: charanya@codeaurora.org
+Subject: Re: [PATCH] tty: serial: msm: Disable restoring Rx interrupts for DMA
+ Mode
+Date: Thu, 02 Jun 2016 14:37:57 +0530
+Message-ID: <9c627293b1a13f5e71ba1a61c3bc2bfa@codeaurora.org>
+References: <1462896580-11554-1-git-send-email-absahu@codeaurora.org>
+ <20160512014126.GK3492@codeaurora.org>
+ <20160512050245.GD8453@hector.attlocal.net>
+ <5cce36b3c1d62816feffb4048f782b20@codeaurora.org>
+ <20160525224623.GS3492@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <46dcde4f-2be6-d633-ad0b-23aa8f684ff6@osg.samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Javier Martinez Canillas <javier@osg.samsung.com>
-Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial <linux-serial@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>, linux-samsung-soc@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160525224623.GS3492@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Andy Gross <andy.gross@linaro.org>, Abhishek Sahu <absahu@codeaurora.org>, agross@codeaurora.org, david.brown@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Krzysztof,
+On 2016-05-26 04:16, Stephen Boyd wrote:
+> On 05/13, charanya@codeaurora.org wrote:
+>> Hi Stephen/Andy,
+>> 
+>> If both Tx and Rx are used simultaneously, restoring Rx interrupts in
+>> msm_complete_rx_dma could lead to RXSTALE interrupt being triggered,
+>> when
+>> the ISR execution for TXLEV interrupt is completed, since
+>> msm_port->imr is
+>> rewritten to UART_IMR in msm_uart_irq. Hence, we do not have to 
+>> restore
+>> Rx interrupts since Rx is always in DMA mode once enabled.
+>> 
+> 
+> Ok, but what's the exact sequence of events that happens? I think
+> we unlock the spinlock in the dma completion handler and then the
+> txlev interrupt runs? At that point we may have more data to push
+> out and then rx stale handling runs and corrupts the fifo state?
+> 
+> I was hoping for some sort of CPU sequence of events like:
+> 
+>  CPU0                   CPU1
+>  ----                   ----
+> 
+>  msm_start_rx_dma()
+>                        msm_complete_rx_dma()
+> 		        spin_unlock_irqrestore(&port->lock)
+>  msm_uart_irq()
+>   msm_handle_rx_dm()
+>    <Read from FIFO and breaks>
+> 
+> This patch seems correct, but the commit text isn't fully
+> describing the sequence of events that causes this to happen, so
+> it's taking a while to convince myself that this patch fixes
+> anything.
 
-On Wed, Jun 1, 2016 at 1:57 PM, Javier Martinez Canillas
-<javier@osg.samsung.com> wrote:
-> Hello Krzysztof,
->
-> On 05/31/2016 10:00 AM, Krzysztof Kozlowski wrote:
->> When the clk_get() of "uart" clock returns EPROBE_DEFER, the next re-probe
->> finishes with success but uses invalid (ERR_PTR) values.  This leads to
->> dereferencing of ERR_PTR stored under ourport->clk:
->>
->>       12c30000.serial: Controller clock not found
->>       (...)
->>       12c30000.serial: ttySAC3 at MMIO 0x12c30000 (irq = 61, base_baud = 0) is a S3C6400/10
->>       Unable to handle kernel paging request at virtual address fffffdfb
->>
->>       (clk_prepare) from [<c039f7d0>] (s3c24xx_serial_pm+0x20/0x128)
->>       (s3c24xx_serial_pm) from [<c0395414>] (uart_change_pm+0x38/0x40)
->>       (uart_change_pm) from [<c039689c>] (uart_add_one_port+0x31c/0x44c)
->>       (uart_add_one_port) from [<c03a035c>] (s3c24xx_serial_probe+0x2a8/0x418)
->>       (s3c24xx_serial_probe) from [<c03ee110>] (platform_drv_probe+0x50/0xb0)
->>       (platform_drv_probe) from [<c03ecb44>] (driver_probe_device+0x1f4/0x2b0)
->>       (driver_probe_device) from [<c03eb0c0>] (bus_for_each_drv+0x44/0x8c)
->>       (bus_for_each_drv) from [<c03ec8c8>] (__device_attach+0x9c/0x100)
->>       (__device_attach) from [<c03ebf54>] (bus_probe_device+0x84/0x8c)
->>       (bus_probe_device) from [<c03ec388>] (deferred_probe_work_func+0x60/0x8c)
->>       (deferred_probe_work_func) from [<c012fee4>] (process_one_work+0x120/0x328)
->>       (process_one_work) from [<c0130150>] (worker_thread+0x2c/0x4ac)
->>       (worker_thread) from [<c0135320>] (kthread+0xd8/0xf4)
->>       (kthread) from [<c0107978>] (ret_from_fork+0x14/0x3c)
->>
->> The first unsuccessful clk_get() causes s3c24xx_serial_init_port() to
->> exit with failure but the s3c24xx_uart_port is left half-configured
->> (e.g. port->mapbase is set, clk contains ERR_PTR).  On next re-probe,
->> the function s3c24xx_serial_init_port() will exit early with success
->> because of configured port->mapbase and driver will use old values,
->> including the ERR_PTR as clock.
->>
->> Fix this by cleaning the port->mapbase on error path so each re-probe
->> will initialize all of the port settings.
->>
->> Fixes: 60e93575476f ("serial: samsung: enable clock before clearing pending interrupts during init")
->> Cc: <stable@vger.kernel.org>
->> Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
->>
->> ---
->>
->
-> Reviewed-by: Javier Martinez Canillas <javier@osg.samsung.com>
-> Tested-by: Javier Martinez Canillas <javier@osg.samsung.com>
 
-Tested-by: Kevin Hilman <khilman@baylibre.com>
-
-I verified that this patch fixes a the boot regression I found in
-linux-next on the exynos5410-odroidxu.
-
-Thanks,
-
-Kevin
+The sequence of events is as mentioned. When the TXLEV interrupt occurs 
+after the
+spinlock is unlocked, the rx stale handling runs since the interrupts 
+are restored
+and hence it corrupts the fifo state.
