@@ -1,70 +1,104 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 08/11] serial: sh-sci: Correct pin initialization on (H)SCIF
-Date: Fri,  3 Jun 2016 12:00:08 +0200
-Message-ID: <1464948011-377-9-git-send-email-geert+renesas@glider.be>
-References: <1464948011-377-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1464948011-377-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH v3 00/11] serial: sh-sci: Hardware Flow Control Updates
+Date: Fri,  3 Jun 2016 12:00:00 +0200
+Message-ID: <1464948011-377-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
 Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Correct pin initialization on (H)SCIF:
-  - RTS must be deasserted (it's active low),
-  - SCK must be an input, as it may be used as the optional external
-    clock input.
+	Hi Greg, Jiri, Peter,
 
-Initial pin configuration must always be done:
-  - Regardless of the presence of dedicated RTS and CTS pins: if the
-    register exists, the RTS/CTS bits exist, too,
-  - Regardless of hardware flow control being enabled or not: RTS must
-    be deasserted.
+This patch series contains updates to the Renesas SCI UART driver,
+related to hardware flow control:
+  - Patches 1-2: Device Tree binding updates for GPIO-controlled modem
+    lines, and for dedicated RTS/CTS modem lines,
+  - Patches 3-4: Driver support for GPIO-controlled modem lines, using
+    the serial_mctrl_gpio helpers,
+  - New patches 5-11: Driver support for hardware-assisted (automatic)
+    hardware flow control, using the dedicated RTS/CTS modem lines.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-v3:
-  - No changes,
+Changes compared to v2:
+  - No code changes,
+  - Add Acked-by, Reviewed-by.
 
-v2:
-  - New.
----
- drivers/tty/serial/sh-sci.c | 23 ++++++++---------------
- 1 file changed, 8 insertions(+), 15 deletions(-)
+Changes compared to v1 (more details in the individual patches):
+  - Add Acked-by,
+  - Refer to the Generic Serial DT Bindings,
+  - Drop out[12]-gpios,
+  - Reject combining GPIO and dedicated RTS/CTS,
+  - Drop "serial: sh-sci: Replace SCIx_HAVE_RTSCTS by standard
+    UPF_HARD_FLOW",
+  - Add support for hardware-assisted automatic RTS/CTS control on
+    (H)SCIF, SCIFA, and SCIFB.
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index ce7bd165929ea078..c46999f20917964e 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -712,21 +712,14 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
- 		return;
- 	}
- 
--	/*
--	 * For the generic path SCSPTR is necessary. Bail out if that's
--	 * unavailable, too.
--	 */
--	if (!sci_getreg(port, SCSPTR)->size)
--		return;
--
--	if ((s->cfg->capabilities & SCIx_HAVE_RTSCTS) &&
--	    ((!(cflag & CRTSCTS)))) {
--		unsigned short status;
--
--		status = serial_port_in(port, SCSPTR);
--		status &= ~SCSPTR_CTSIO;
--		status |= SCSPTR_RTSIO;
--		serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
-+	if (sci_getreg(port, SCSPTR)->size) {
-+		u16 status = serial_port_in(port, SCSPTR);
-+
-+		/* RTS# is output, driven 1 */
-+		status |= SCSPTR_RTSIO | SCSPTR_RTSDT;
-+		/* CTS# and SCK are inputs */
-+		status &= ~(SCSPTR_CTSIO | SCSPTR_SCKIO);
-+		serial_port_out(port, SCSPTR, status);
- 	}
- }
- 
+Dependencies:
+  - The patches apply to v4.7-rc1 and next-20160603.
+
+This was tested on r8a7791/koelsch and r8a7740/armadillo, using UARTs
+and GPIO pins on expansion connectors.
+
+Expected behavior, using GPIO-based RTS/CTS as a reference:
+  - When CRTSCTS is disabled:
+      - Reading from a UART asserts the RTS line,
+      - Writing to a UART asserts the RTS line.
+  - When CRTSCTS is enabled:
+      - Reading from a UART asserts the RTS line,
+      - Writing to a UART asserts the RTS line.
+      - Writing is blocked until CTS is asserted.
+
+Hardware-assisted hardware flow control with HSCIF and SCIFB on
+r8a7791/koelsch behaves as expected when dedicated RTS/CTS modem lines
+are enabled (beware the large transmission FIFOs on SCIFB ;-)
+
+For SCIFA on r8a7740/armadillo, manually overriding (asserting) the RTS
+signal doesn't seem to work. Hence when CRTSCTS is disabled, RTS is
+never asserted. When CRTSCTS is enabled, hardware-assisted RTS/CTS does
+control RTS as expected. As SCIFA on r8a7791 doesn't have dedicated
+RTS/CTS modem lines, I cannot compare.
+
+DT overlays for testing can be found in the topic/renesas-overlays
+branch of
+https://git.kernel.org/cgit/linux/kernel/git/geert/renesas-drivers.git.
+
+Regression testing on platforms without DT and/or GPIOLIB support
+(SuperH) would be appreciated.
+Compile-tested on ecovec24_defconfig(GPIOLIB=y) and se7780_defconfig
+(GPIOLIB=n).
+
+Please apply, thanks!
+
+Geert Uytterhoeven (11):
+  serial: sh-sci: Update DT binding documentation for GPIO modem lines
+  serial: sh-sci: Update DT binding documentation for dedicated RTS/CTS
+  serial: sh-sci: Always set TIOCM_CTS in .get_mctrl() callback
+  serial: sh-sci: Add support for GPIO-controlled modem lines
+  serial: sh-sci: Do not open-code sci_getreg()
+  serial: sh-sci: Add more Serial Port Register documentation
+  serial: sh-sci: Add more Serial Port Control/Data Register
+    documentation
+  serial: sh-sci: Correct pin initialization on (H)SCIF
+  serial: sh-sci: Add pin initialization for SCIFA/SCIFB
+  serial: sh-sci: Fix support for hardware-assisted RTS/CTS
+  serial: sh-sci: Add DT support for dedicated RTS/CTS
+
+ .../bindings/serial/renesas,sci-serial.txt         |   4 +
+ drivers/tty/serial/Kconfig                         |   1 +
+ drivers/tty/serial/sh-sci.c                        | 177 ++++++++++++++++++---
+ drivers/tty/serial/sh-sci.h                        |  24 ++-
+ 4 files changed, 173 insertions(+), 33 deletions(-)
+
 -- 
 1.9.1
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
