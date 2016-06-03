@@ -1,56 +1,70 @@
-From: Frank Rowand <frowand.list@gmail.com>
-Subject: Re: [PATCH] tty: serial: msm: Don't read off end of tx fifo
-Date: Thu, 2 Jun 2016 20:59:15 -0700
-Message-ID: <57510093.5000702@gmail.com>
-References: <1464914908-19059-1-git-send-email-bjorn.andersson@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1464914908-19059-1-git-send-email-bjorn.andersson@linaro.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Nicolas Dechesne <nicolas.dechesne@linaro.org>, Ivan Ivanov <iivanov.xz@gmail.com>, Stephen Boyd <sboyd@codeaurora.org>, stable@vger.kernel.org
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v3 08/11] serial: sh-sci: Correct pin initialization on (H)SCIF
+Date: Fri,  3 Jun 2016 12:00:08 +0200
+Message-ID: <1464948011-377-9-git-send-email-geert+renesas@glider.be>
+References: <1464948011-377-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1464948011-377-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
+Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-On 06/02/16 17:48, Bjorn Andersson wrote:
-> For dm uarts in pio mode tx data is transferred to the fifo register 4
-> bytes at a time, but care is not taken when these 4 bytes spans the end
-> of the xmit buffer so the loop might read up to 3 bytes past the buffer
-> and then skip the actual data at the beginning of the buffer.
-> 
-> Fix this by, analogous to the DMA case, make sure the chunk doesn't
-> wrap the xmit buffer.
-> 
-> Fixes: 3a878c430fd6 ("tty: serial: msm: Add TX DMA support")
-> Cc: Andy Gross <andy.gross@linaro.org>
-> Cc: Ivan Ivanov <iivanov.xz@gmail.com>
-> Cc: Stephen Boyd <sboyd@codeaurora.org>
-> Cc: stable@vger.kernel.org
-> Reported-by: Frank Rowand <frowand.list@gmail.com>
-> Reported-by: Nicolas Dechesne <nicolas.dechesne@linaro.org>
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  drivers/tty/serial/msm_serial.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index b7d80bd57db9..7d62610d9de5 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -726,7 +726,7 @@ static void msm_handle_tx(struct uart_port *port)
->  		return;
->  	}
->  
-> -	pio_count = CIRC_CNT(xmit->head, xmit->tail, UART_XMIT_SIZE);
-> +	pio_count = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
->  	dma_count = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
->  
->  	dma_min = 1;	/* Always DMA */
-> 
+Correct pin initialization on (H)SCIF:
+  - RTS must be deasserted (it's active low),
+  - SCK must be an input, as it may be used as the optional external
+    clock input.
 
-Thanks Bjorn.  This eliminates my symptoms on 4.6 and 4.7-rc1.
+Initial pin configuration must always be done:
+  - Regardless of the presence of dedicated RTS and CTS pins: if the
+    register exists, the RTS/CTS bits exist, too,
+  - Regardless of hardware flow control being enabled or not: RTS must
+    be deasserted.
 
-Tested-by: Frank Rowand <frank.rowand@am.sony.com>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+v3:
+  - No changes,
 
--Frank
+v2:
+  - New.
+---
+ drivers/tty/serial/sh-sci.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index ce7bd165929ea078..c46999f20917964e 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -712,21 +712,14 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
+ 		return;
+ 	}
+ 
+-	/*
+-	 * For the generic path SCSPTR is necessary. Bail out if that's
+-	 * unavailable, too.
+-	 */
+-	if (!sci_getreg(port, SCSPTR)->size)
+-		return;
+-
+-	if ((s->cfg->capabilities & SCIx_HAVE_RTSCTS) &&
+-	    ((!(cflag & CRTSCTS)))) {
+-		unsigned short status;
+-
+-		status = serial_port_in(port, SCSPTR);
+-		status &= ~SCSPTR_CTSIO;
+-		status |= SCSPTR_RTSIO;
+-		serial_port_out(port, SCSPTR, status); /* Set RTS = 1 */
++	if (sci_getreg(port, SCSPTR)->size) {
++		u16 status = serial_port_in(port, SCSPTR);
++
++		/* RTS# is output, driven 1 */
++		status |= SCSPTR_RTSIO | SCSPTR_RTSDT;
++		/* CTS# and SCK are inputs */
++		status &= ~(SCSPTR_CTSIO | SCSPTR_SCKIO);
++		serial_port_out(port, SCSPTR, status);
+ 	}
+ }
+ 
+-- 
+1.9.1
