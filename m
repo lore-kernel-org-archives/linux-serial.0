@@ -1,60 +1,55 @@
-From: Charanya Venkatraman <charanya@codeaurora.org>
-Subject: [PATCH v2] tty:serial:msm:Do not restore Rx interrupts in DMA
-Date: Fri,  3 Jun 2016 16:40:32 +0530
-Message-ID: <1464952232-5778-1-git-send-email-charanya@codeaurora.org>
-References: <1462896580-11554-1>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: Re: [PATCH v3 11/11] serial: sh-sci: Add DT support for dedicated
+ RTS/CTS
+Date: Fri, 3 Jun 2016 14:25:15 +0300
+Message-ID: <c9fa56b8-da57-a6ed-0dca-c849851ac0f3@cogentembedded.com>
+References: <1464948011-377-1-git-send-email-geert+renesas@glider.be>
+ <1464948011-377-12-git-send-email-geert+renesas@glider.be>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462896580-11554-1>
+In-Reply-To: <1464948011-377-12-git-send-email-geert+renesas@glider.be>
 Sender: linux-kernel-owner@vger.kernel.org
-To: agross@codeaurora.org, david.brown@linaro.org, andy.gross@linaro.org, gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org, absahu@codeaurora.org, njaigane@codeaurora.org, Charanya <charanya@codeaurora.org>
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
+Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Charanya <charanya@codeaurora.org>
+Hello.
 
-Avoid data corruption issues that result in
-CRC erros during file transfers over serial ports
-at higher baud rates.
+On 6/3/2016 1:00 PM, Geert Uytterhoeven wrote:
 
-The current msm_serial driver masks the FIFO Rx
-interrupts in msm_start_rx_dma() since Rx FIFO
-interrupts are not required in DMA mode. However,
-msm_complete_rx_dma() renables the Rx FIFO interrupt
-which could cause RXSTALE event to be processed
-when a TXLEV interrupt occurs.
+> Add support for indicating the availability of dedicated lines for
+> RTS/CTS hardware flow control, using the standard "uart-has-rtscts" DT
+> property.
+>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v3:
+>   - No changes,
+>
+> v2:
+>   - New.
+> ---
+>  drivers/tty/serial/sh-sci.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 02b240a02dc6a593..d9cb0d70fceef07d 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -2999,6 +2999,9 @@ sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
+>  	p->regtype = SCI_OF_REGTYPE(match->data);
+>  	p->scscr = SCSCR_RE | SCSCR_TE;
+>
+> +	if (of_find_property(np, "uart-has-rtscts", NULL))
 
-The following is the sequence of events that
-could occur resulting in data corruption
+    of_property_read_bool() maybe?
 
-msm_start_rx_dma -> msm_complete_rx_dma -->
-spin_unlock_irqrestore(&port->lock) -->  msm_uart_irq()
-(For TXLEV interrupt) -->  msm_handle_rx_dm() (Read
-from FIFO resulting in data corruption)
+> +		p->capabilities |= SCIx_HAVE_RTSCTS;
+> +
+>  	return p;
+>  }
+>
 
-The patch fixes the issue by not restoring the RXLEV
-and RXSTALE interrupts in msm_complete_rx_dma(). These
-interrupts are required only in FIFO mode.
-
-Signed-off-by: Charanya Venkatraman <charanya@codeaurora.org>
----
- drivers/tty/serial/msm_serial.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index b7d80bd..646aa3f 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -388,10 +388,6 @@ static void msm_complete_rx_dma(void *args)
- 	val &= ~dma->enable_bit;
- 	msm_write(port, val, UARTDM_DMEN);
- 
--	/* Restore interrupts */
--	msm_port->imr |= UART_IMR_RXLEV | UART_IMR_RXSTALE;
--	msm_write(port, msm_port->imr, UART_IMR);
--
- 	if (msm_read(port, UART_SR) & UART_SR_OVERRUN) {
- 		port->icount.overrun++;
- 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+MBR, Sergei
