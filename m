@@ -1,58 +1,60 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 09/11] serial: sh-sci: Add pin initialization for SCIFA/SCIFB
-Date: Fri,  3 Jun 2016 12:00:09 +0200
-Message-ID: <1464948011-377-10-git-send-email-geert+renesas@glider.be>
-References: <1464948011-377-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1464948011-377-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>
-Cc: Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Charanya Venkatraman <charanya@codeaurora.org>
+Subject: [PATCH v2] tty:serial:msm:Do not restore Rx interrupts in DMA
+Date: Fri,  3 Jun 2016 16:40:32 +0530
+Message-ID: <1464952232-5778-1-git-send-email-charanya@codeaurora.org>
+References: <1462896580-11554-1>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1462896580-11554-1>
+Sender: linux-kernel-owner@vger.kernel.org
+To: agross@codeaurora.org, david.brown@linaro.org, andy.gross@linaro.org, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org, absahu@codeaurora.org, njaigane@codeaurora.org, Charanya <charanya@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-Before, the driver relied on initialization by the boot loader, or by
-implicit reset state.
+From: Charanya <charanya@codeaurora.org>
 
-Note that unlike on (H)SCIF, the RTS/CTS bits exist only if dedicated
-RTS/CTS pins are available, which depends on the SoC and UART instance.
+Avoid data corruption issues that result in
+CRC erros during file transfers over serial ports
+at higher baud rates.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+The current msm_serial driver masks the FIFO Rx
+interrupts in msm_start_rx_dma() since Rx FIFO
+interrupts are not required in DMA mode. However,
+msm_complete_rx_dma() renables the Rx FIFO interrupt
+which could cause RXSTALE event to be processed
+when a TXLEV interrupt occurs.
+
+The following is the sequence of events that
+could occur resulting in data corruption
+
+msm_start_rx_dma -> msm_complete_rx_dma -->
+spin_unlock_irqrestore(&port->lock) -->  msm_uart_irq()
+(For TXLEV interrupt) -->  msm_handle_rx_dm() (Read
+from FIFO resulting in data corruption)
+
+The patch fixes the issue by not restoring the RXLEV
+and RXSTALE interrupts in msm_complete_rx_dma(). These
+interrupts are required only in FIFO mode.
+
+Signed-off-by: Charanya Venkatraman <charanya@codeaurora.org>
 ---
-v3:
-  - No changes,
+ drivers/tty/serial/msm_serial.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-v2:
-  - New.
----
- drivers/tty/serial/sh-sci.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index c46999f20917964e..b9d027af0f3e71f6 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -712,7 +712,21 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
- 		return;
- 	}
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index b7d80bd..646aa3f 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -388,10 +388,6 @@ static void msm_complete_rx_dma(void *args)
+ 	val &= ~dma->enable_bit;
+ 	msm_write(port, val, UARTDM_DMEN);
  
--	if (sci_getreg(port, SCSPTR)->size) {
-+	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
-+		u16 ctrl = serial_port_in(port, SCPCR);
-+
-+		/* Enable RXD and TXD pin functions */
-+		ctrl &= ~(SCPCR_RXDC | SCPCR_TXDC);
-+		if (to_sci_port(port)->cfg->capabilities & SCIx_HAVE_RTSCTS) {
-+			/* RTS# is output, driven 1 */
-+			ctrl |= SCPCR_RTSC;
-+			serial_port_out(port, SCPDR,
-+				serial_port_in(port, SCPDR) | SCPDR_RTSD);
-+			/* Enable CTS# pin function */
-+			ctrl &= ~SCPCR_CTSC;
-+		}
-+		serial_port_out(port, SCPCR, ctrl);
-+	} else if (sci_getreg(port, SCSPTR)->size) {
- 		u16 status = serial_port_in(port, SCSPTR);
- 
- 		/* RTS# is output, driven 1 */
+-	/* Restore interrupts */
+-	msm_port->imr |= UART_IMR_RXLEV | UART_IMR_RXSTALE;
+-	msm_write(port, msm_port->imr, UART_IMR);
+-
+ 	if (msm_read(port, UART_SR) & UART_SR_OVERRUN) {
+ 		port->icount.overrun++;
+ 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
 -- 
-1.9.1
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
