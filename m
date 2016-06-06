@@ -1,29 +1,48 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 0/4] serial: earlycon: keep earlycon symbols for non-module and driver clean-ups
-Date: Mon, 06 Jun 2016 12:25:36 +0200
-Message-ID: <3280512.PAaBGkzban@wuerfel>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 3/4] serial: 8250_mtk: drop !defined(MODULE) conditional
+Date: Mon, 6 Jun 2016 12:27:50 +0200
+Message-ID: <57555026.8030400@gmail.com>
 References: <1465206063-1018-1-git-send-email-yamada.masahiro@socionext.com>
+ <1465206063-1018-4-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1465206063-1018-1-git-send-email-yamada.masahiro@socionext.com>
+In-Reply-To: <1465206063-1018-4-git-send-email-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, Paul Burton <paul.burton@imgtec.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mathieu OTHACEHE <m.othacehe@gmail.com>, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Anton Wuerfel <anton.wuerfel@fau.de>, Scott Wood <scottwood@freescale.com>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Martin Sperl <kernel@martin.sperl.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Mans Rullgard <mans@mansr.com>
+To: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-serial@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Paul Burton <paul.burton@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Monday, June 6, 2016 6:40:59 PM CEST Masahiro Yamada wrote:
-> 1/4: keep earlycon symbols only when CONFIG_SERIAL_EARLYCON is defined
->      and the driver is built-in.
-> 
-> 2/4 thru 4/4: driver clean-ups.
->               (partially reverts build fixes by Arnd Bergmann)
-> 
-> 
-> 
 
 
-Looks good to me,
+On 06/06/16 11:41, Masahiro Yamada wrote:
+> The !defined(MODULE) conditional has been added to the
+> OF_EARLYCON_DECLARE() define.
+>
+> This commit partially reverts commit 3f5921a60f74 ("serial:
+> 8250/mediatek: fix building with SERIAL_8250=m").
+>
+> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> ---
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
+
+>
+>   drivers/tty/serial/8250/8250_mtk.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index 3489fbc..3611ec9 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -301,7 +301,7 @@ static struct platform_driver mtk8250_platform_driver = {
+>   };
+>   module_platform_driver(mtk8250_platform_driver);
+>
+> -#if defined(CONFIG_SERIAL_8250_CONSOLE) && !defined(MODULE)
+> +#ifdef CONFIG_SERIAL_8250_CONSOLE
+>   static int __init early_mtk8250_setup(struct earlycon_device *device,
+>   					const char *options)
+>   {
+>
