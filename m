@@ -1,50 +1,61 @@
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH 2/4] serial: 8250_uniphier: drop !defined(MODULE) conditional
-Date: Mon,  6 Jun 2016 18:41:01 +0900
-Message-ID: <1465206063-1018-3-git-send-email-yamada.masahiro@socionext.com>
+Subject: [PATCH 4/4] serial: 8250_ingenic: drop #if conditional surrounding earlycon code
+Date: Mon,  6 Jun 2016 18:41:03 +0900
+Message-ID: <1465206063-1018-5-git-send-email-yamada.masahiro@socionext.com>
 References: <1465206063-1018-1-git-send-email-yamada.masahiro@socionext.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1465206063-1018-1-git-send-email-yamada.masahiro@socionext.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Peter Hurley <peter@hurleysoftware.com>, Paul Burton <paul.burton@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Masahiro Yamada <yamada.masahiro@socionext.com>, Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Paul Burton <paul.burton@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Matt Redfearn <matt.redfearn@imgtec.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>, Anton Wuerfel <anton.wuerfel@fau.de>, Scott Wood <scottwood@freescale.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Martin Sperl <kernel@martin.sperl.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Mathieu OTHACEHE <m.othacehe@gmail.com>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Mans Rullgard <mans@mansr.com>
 List-Id: linux-serial@vger.kernel.org
 
-The !defined(MODULE) conditional has been added to the
-OF_EARLYCON_DECLARE() define.
+The #if defined(CONFIG_SERIAL_EARLYCON) && !defined(MODULE)
+conditional has been added to the OF_EARLYCON_DECLARE() define.
 
-Now we can revert commit a2d3ea2f2399 ("serial: 8250/uniphier:
-fix modular build").
+The same conditional can be dropped from 8250_ingenic.c because
+the unused symbols will be marked as __maybe_unsed.
+Also, the Kconfig dependency can become much simpler.
 
 Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 ---
 
- drivers/tty/serial/8250/8250_uniphier.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_ingenic.c | 2 --
+ drivers/tty/serial/8250/Kconfig        | 2 +-
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-index efd1f9c..b8d9c8c 100644
---- a/drivers/tty/serial/8250/8250_uniphier.c
-+++ b/drivers/tty/serial/8250/8250_uniphier.c
-@@ -35,7 +35,7 @@ struct uniphier8250_priv {
- 	spinlock_t atomic_write_lock;
- };
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+index b0677f6..4d9dc10 100644
+--- a/drivers/tty/serial/8250/8250_ingenic.c
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -48,7 +48,6 @@ static const struct of_device_id of_match[];
+ #define UART_MCR_MDCE	BIT(7)
+ #define UART_MCR_FCM	BIT(6)
  
--#if defined(CONFIG_SERIAL_8250_CONSOLE) && !defined(MODULE)
-+#ifdef CONFIG_SERIAL_8250_CONSOLE
- static int __init uniphier_early_console_setup(struct earlycon_device *device,
- 					       const char *options)
+-#if defined(CONFIG_SERIAL_EARLYCON) && !defined(MODULE)
+ static struct earlycon_device *early_device;
+ 
+ static uint8_t __init early_in(struct uart_port *port, int offset)
+@@ -141,7 +140,6 @@ OF_EARLYCON_DECLARE(jz4775_uart, "ingenic,jz4775-uart",
+ EARLYCON_DECLARE(jz4780_uart, ingenic_early_console_setup);
+ OF_EARLYCON_DECLARE(jz4780_uart, "ingenic,jz4780-uart",
+ 		    ingenic_early_console_setup);
+-#endif /* CONFIG_SERIAL_EARLYCON */
+ 
+ static void ingenic_uart_serial_out(struct uart_port *p, int offset, int value)
  {
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index b5a0f2e..7c6f7af 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -396,7 +396,7 @@ config SERIAL_8250_UNIPHIER
+ config SERIAL_8250_INGENIC
+ 	tristate "Support for Ingenic SoC serial ports"
+ 	depends on SERIAL_8250
+-	depends on (OF_FLATTREE && SERIAL_8250_CONSOLE) || !SERIAL_EARLYCON
++	depends on OF_FLATTREE
+ 	depends on MIPS || COMPILE_TEST
+ 	help
+ 	  If you have a system using an Ingenic SoC and wish to make use of
 -- 
 1.9.1
