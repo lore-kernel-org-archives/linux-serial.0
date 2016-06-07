@@ -1,79 +1,61 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v5 00/11] serial: 8250: split LPSS to 8250_lpss, enable
- DMA on Quark
-Date: Tue, 7 Jun 2016 13:04:19 +0300
-Message-ID: <CAHp75VczbhPEvp6gn-5hPFdSGscNeyZMzPQWeeB1Xza1mHD8dw@mail.gmail.com>
-References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
- <1463065601.17131.319.camel@linux.intel.com> <1463620733.4224.75.camel@nexus-software.ie>
- <1464111448.31269.67.camel@linux.intel.com> <1464113301.31269.79.camel@linux.intel.com>
- <1464280589.2351.19.camel@nexus-software.ie>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Charanya Venkatraman <charanya@codeaurora.org>
+Subject: [PATCH v3] tty:serial:msm:Do not restore Rx interrupts in DMA
+Date: Tue,  7 Jun 2016 15:58:41 +0530
+Message-ID: <1465295321-10506-1-git-send-email-charanya@codeaurora.org>
+References: <1462896580-11554-1>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1464280589.2351.19.camel@nexus-software.ie>
+In-Reply-To: <1462896580-11554-1>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To: agross@codeaurora.org, david.brown@linaro.org, andy.gross@linaro.org, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org, absahu@codeaurora.org, njaigane@codeaurora.org, Charanya Venkatraman <charanya@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 26, 2016 at 7:36 PM, Bryan O'Donoghue
-<pure.logic@nexus-software.ie> wrote:
-> On Tue, 2016-05-24 at 21:08 +0300, Andy Shevchenko wrote:
->> On Tue, 2016-05-24 at 20:37 +0300, Andy Shevchenko wrote:
->> > On Thu, 2016-05-19 at 02:18 +0100, Bryan O'Donoghue wrote:
->> > > On Thu, 2016-05-12 at 18:06 +0300, Andy Shevchenko wrote:
->> > > > On Fri, 2016-05-06 at 18:17 +0300, Andy Shevchenko wrote:
->> > > > > This is combined series of two things:
->> > > > > - split out the Intel LPSS specific driver from 8250_pci into
->> > > > > 8250_lpss
->> > > > > - enable DMA support on Intel Quark UART
->> > > > >
->> > > > > The patch has been tested on few Intel SoCs / platforms. In
->> > > > > any
->> > > > > case I
->> > > > > would
->> > > > > like to ask Bryan to do independent test.
->> > >
->> > > Andy.
->> > >
->> > > It looks as though there's a performance drop when enabling the
->> > > DMA
->> > > here (v) stock PIO mode with the 8250 driver.
->>
->> Wait, the time measurement you done is unrelated to DMA/non-DMA mode.
->> It's significantly depend to the speed of the port.
->
-> Does it ? The size of the FIFO is what - 16 bytes ?
+Avoid data corruption issues that result in CRC errors during file
+transfers over serial ports at higher baud rates.
 
-Doesn't matter if you have data longer than FIFO size you will wait
-for data to be sent / received (DMA request line is asserted
-accordingly).
+The current msm_serial driver masks the FIFO Rx interrupts in
+msm_start_rx_dma() since Rx FIFO interrupts are not required in DMA
+mode. However, msm_complete_rx_dma() re-enables the Rx FIFO interrupts
+which could cause RXSTALE event to be processed when a TXLEV interrupt
+occurs.
 
-> Max burst size is 8
-> bytes - so for 37 bytes you'd expect to see five DMA transactions {8,
-> 8, 8, 5}, for the second test 183 bytes you'd expect to see 23 eight
-> byte transactions followed by one 7 byte transaction. The flip side to
-> add data to the FIFO in PIO mode is a pretty different pattern.
+The following is the sequence of events that could occur resulting in
+data corruption.
 
-Yes and it relies on DMA request signal. DMA is not about transfer
-speed it is about offload CPU.
-Basically you run the transfer process in a separate thread in the
-user application which will sleep until transfer is done. Your test
-case is synchronous.
+msm_start_rx_dma -> msm_complete_rx_dma -->
+spin_unlock_irqrestore(&port->lock) -->
+msm_uart_irq()(For TXLEV interrupt) -->  msm_handle_rx_dm() (Read from
+FIFO resulting in data corruption)
 
->
->> I also tried on my Galileo board, I used longer data stream, i.e.
->> output
->> of dmesg (since your data pattern makes 0:s in statistics) and got
->> something quite near to each other:
->
-> I'll find some time to look at both a short stream and a long stream,
-> based on the branch you've indicated and maybe against the latest
-> stable kernel.
+The patch fixes the issue by not restoring the RXLEV and RXSTALE
+interrupts in msm_complete_rx_dma(). These interrupts are required only
+in FIFO mode.
 
-Please, do. I'm planning to resend new version soon (this week or
-lately beginning of the next one).
+Signed-off-by: Charanya Venkatraman <charanya@codeaurora.org>
+---
+Changes in v2:
+	- Make commit message more clearer.
+Changes in v3:
+	- Fix typos in commit message.
 
+ drivers/tty/serial/msm_serial.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index b7d80bd..646aa3f 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -388,10 +388,6 @@ static void msm_complete_rx_dma(void *args)
+ 	val &= ~dma->enable_bit;
+ 	msm_write(port, val, UARTDM_DMEN);
+ 
+-	/* Restore interrupts */
+-	msm_port->imr |= UART_IMR_RXLEV | UART_IMR_RXSTALE;
+-	msm_write(port, msm_port->imr, UART_IMR);
+-
+ 	if (msm_read(port, UART_SR) & UART_SR_OVERRUN) {
+ 		port->icount.overrun++;
+ 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
 -- 
-With Best Regards,
-Andy Shevchenko
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
