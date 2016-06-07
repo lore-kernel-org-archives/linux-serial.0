@@ -1,55 +1,79 @@
-From: Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH] tree-wide: replace config_enabled() with IS_ENABLED()
-Date: Mon, 6 Jun 2016 08:53:29 -0700
-Message-ID: <CAGXu5j+z-QOG+x6ie+BYVTmopCSZrLzzH3A2zLE1nQi+Q+WyKg@mail.gmail.com>
-References: <1465215656-20569-1-git-send-email-yamada.masahiro@socionext.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v5 00/11] serial: 8250: split LPSS to 8250_lpss, enable
+ DMA on Quark
+Date: Tue, 7 Jun 2016 13:04:19 +0300
+Message-ID: <CAHp75VczbhPEvp6gn-5hPFdSGscNeyZMzPQWeeB1Xza1mHD8dw@mail.gmail.com>
+References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
+ <1463065601.17131.319.camel@linux.intel.com> <1463620733.4224.75.camel@nexus-software.ie>
+ <1464111448.31269.67.camel@linux.intel.com> <1464113301.31269.79.camel@linux.intel.com>
+ <1464280589.2351.19.camel@nexus-software.ie>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <1465215656-20569-1-git-send-email-yamada.masahiro@socionext.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Stas Sergeev <stsp@list.ru>, Matt Redfearn <matt.redfearn@imgtec.com>, Joshua Kinard <kumba@gentoo.org>, Jiri Slaby <jslaby@suse.com>, Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Borislav Petkov <bp@suse.de>, Maling list - DRI developers <dri-devel@lists.freedesktop.org>, Markos Chandras <markos.chandras@imgtec.com>, "Dmitry V. Levin" <ldv@altlinux.org>, yu-cheng yu <yu-cheng.yu@intel.com>, James Hogan <james.hogan@imgtec.com>, Brian Gerst <brgerst@gmail.com>, Johannes Berg <johannes@sipsolutions.net>, Peter Zijlstra <peterz@infradead.org>, Al Viro <viro@zeniv.linux.org.uk>, Will Drewry <wad@chromium.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1464280589.2351.19.camel@nexus-software.ie>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 6, 2016 at 5:20 AM, Masahiro Yamada
-<yamada.masahiro@socionext.com> wrote:
-> The use of config_enabled() against config options is ambiguous.
-> In practical terms, config_enabled() is equivalent to IS_BUILTIN(),
-> but the author might have used it for the meaning of IS_ENABLED().
-> Using IS_ENABLED(), IS_BUILTIN(), IS_MODULE() etc. makes the
-> intention clearer.
+On Thu, May 26, 2016 at 7:36 PM, Bryan O'Donoghue
+<pure.logic@nexus-software.ie> wrote:
+> On Tue, 2016-05-24 at 21:08 +0300, Andy Shevchenko wrote:
+>> On Tue, 2016-05-24 at 20:37 +0300, Andy Shevchenko wrote:
+>> > On Thu, 2016-05-19 at 02:18 +0100, Bryan O'Donoghue wrote:
+>> > > On Thu, 2016-05-12 at 18:06 +0300, Andy Shevchenko wrote:
+>> > > > On Fri, 2016-05-06 at 18:17 +0300, Andy Shevchenko wrote:
+>> > > > > This is combined series of two things:
+>> > > > > - split out the Intel LPSS specific driver from 8250_pci into
+>> > > > > 8250_lpss
+>> > > > > - enable DMA support on Intel Quark UART
+>> > > > >
+>> > > > > The patch has been tested on few Intel SoCs / platforms. In
+>> > > > > any
+>> > > > > case I
+>> > > > > would
+>> > > > > like to ask Bryan to do independent test.
+>> > >
+>> > > Andy.
+>> > >
+>> > > It looks as though there's a performance drop when enabling the
+>> > > DMA
+>> > > here (v) stock PIO mode with the 8250 driver.
+>>
+>> Wait, the time measurement you done is unrelated to DMA/non-DMA mode.
+>> It's significantly depend to the speed of the port.
 >
-> This commit replaces config_enabled() with IS_ENABLED() where
-> possible.  This commit is only touching bool config options.
->
-> I noticed two cases where config_enabled() is used against a tristate
-> option:
->
->  - config_enabled(CONFIG_HWMON)
->   [ drivers/net/wireless/ath/ath10k/thermal.c ]
->
->  - config_enabled(CONFIG_BACKLIGHT_CLASS_DEVICE)
->   [ drivers/gpu/drm/gma500/opregion.c ]
->
-> I did not touch them because they should be converted to IS_BUILTIN()
-> in order to keep the logic, but I was not sure it was the authors'
-> intention.
->
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> Does it ? The size of the FIFO is what - 16 bytes ?
 
-Sounds good to me! :)
+Doesn't matter if you have data longer than FIFO size you will wait
+for data to be sent / received (DMA request line is asserted
+accordingly).
 
-Acked-by: Kees Cook <keescook@chromium.org>
+> Max burst size is 8
+> bytes - so for 37 bytes you'd expect to see five DMA transactions {8,
+> 8, 8, 5}, for the second test 183 bytes you'd expect to see 23 eight
+> byte transactions followed by one 7 byte transaction. The flip side to
+> add data to the FIFO in PIO mode is a pretty different pattern.
+
+Yes and it relies on DMA request signal. DMA is not about transfer
+speed it is about offload CPU.
+Basically you run the transfer process in a separate thread in the
+user application which will sleep until transfer is done. Your test
+case is synchronous.
+
+>
+>> I also tried on my Galileo board, I used longer data stream, i.e.
+>> output
+>> of dmesg (since your data pattern makes 0:s in statistics) and got
+>> something quite near to each other:
+>
+> I'll find some time to look at both a short stream and a long stream,
+> based on the branch you've indicated and maybe against the latest
+> stable kernel.
+
+Please, do. I'm planning to resend new version soon (this week or
+lately beginning of the next one).
 
 -- 
-Kees Cook
-Chrome OS & Brillo Security
+With Best Regards,
+Andy Shevchenko
