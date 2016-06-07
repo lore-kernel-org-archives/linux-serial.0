@@ -1,61 +1,63 @@
-From: Charanya Venkatraman <charanya@codeaurora.org>
-Subject: [PATCH v3] tty:serial:msm:Do not restore Rx interrupts in DMA
-Date: Tue,  7 Jun 2016 15:58:41 +0530
-Message-ID: <1465295321-10506-1-git-send-email-charanya@codeaurora.org>
-References: <1462896580-11554-1>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462896580-11554-1>
-Sender: linux-kernel-owner@vger.kernel.org
-To: agross@codeaurora.org, david.brown@linaro.org, andy.gross@linaro.org, gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org, absahu@codeaurora.org, njaigane@codeaurora.org, Charanya Venkatraman <charanya@codeaurora.org>
+From: Ben Dooks <ben.dooks@codethink.co.uk>
+Subject: [PATCH 1/2] serial: sirf: make fifo functions static
+Date: Tue,  7 Jun 2016 19:06:11 +0100
+Message-ID: <1465322772-26125-1-git-send-email-ben.dooks@codethink.co.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-kernel@lists.codethink.co.uk
+Cc: Barry Song <baohua@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ben Dooks <ben.dooks@codethink.co.uk>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Avoid data corruption issues that result in CRC errors during file
-transfers over serial ports at higher baud rates.
+The fifo mask functions should be static as they are not
+used outside of the driver. Fix the following warnings by
+making them static:
 
-The current msm_serial driver masks the FIFO Rx interrupts in
-msm_start_rx_dma() since Rx FIFO interrupts are not required in DMA
-mode. However, msm_complete_rx_dma() re-enables the Rx FIFO interrupts
-which could cause RXSTALE event to be processed when a TXLEV interrupt
-occurs.
+drivers/tty/serial/sirfsoc_uart.h:109:5: warning: symbol 'uart_usp_ff_full_mask' was not declared. Should it be static?
+drivers/tty/serial/sirfsoc_uart.h:117:5: warning: symbol 'uart_usp_ff_empty_mask' was not declared. Should it be static?
 
-The following is the sequence of events that could occur resulting in
-data corruption.
-
-msm_start_rx_dma -> msm_complete_rx_dma -->
-spin_unlock_irqrestore(&port->lock) -->
-msm_uart_irq()(For TXLEV interrupt) -->  msm_handle_rx_dm() (Read from
-FIFO resulting in data corruption)
-
-The patch fixes the issue by not restoring the RXLEV and RXSTALE
-interrupts in msm_complete_rx_dma(). These interrupts are required only
-in FIFO mode.
-
-Signed-off-by: Charanya Venkatraman <charanya@codeaurora.org>
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
 ---
-Changes in v2:
-	- Make commit message more clearer.
-Changes in v3:
-	- Fix typos in commit message.
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Barry Song <baohua@kernel.org>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+---
+ drivers/tty/serial/sirfsoc_uart.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/tty/serial/msm_serial.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index b7d80bd..646aa3f 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -388,10 +388,6 @@ static void msm_complete_rx_dma(void *args)
- 	val &= ~dma->enable_bit;
- 	msm_write(port, val, UARTDM_DMEN);
+diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
+index c3a885b..43756bd 100644
+--- a/drivers/tty/serial/sirfsoc_uart.h
++++ b/drivers/tty/serial/sirfsoc_uart.h
+@@ -106,7 +106,7 @@ struct sirfsoc_uart_register {
+ 	enum sirfsoc_uart_type uart_type;
+ };
  
--	/* Restore interrupts */
--	msm_port->imr |= UART_IMR_RXLEV | UART_IMR_RXSTALE;
--	msm_write(port, msm_port->imr, UART_IMR);
--
- 	if (msm_read(port, UART_SR) & UART_SR_OVERRUN) {
- 		port->icount.overrun++;
- 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
+-u32 uart_usp_ff_full_mask(struct uart_port *port)
++static u32 uart_usp_ff_full_mask(struct uart_port *port)
+ {
+ 	u32 full_bit;
+ 
+@@ -114,7 +114,7 @@ u32 uart_usp_ff_full_mask(struct uart_port *port)
+ 	return (1 << full_bit);
+ }
+ 
+-u32 uart_usp_ff_empty_mask(struct uart_port *port)
++static u32 uart_usp_ff_empty_mask(struct uart_port *port)
+ {
+ 	u32 empty_bit;
+ 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.8.1
