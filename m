@@ -1,46 +1,51 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH v3] tty:serial:msm:Do not restore Rx interrupts in DMA
-Date: Tue, 7 Jun 2016 16:08:44 -0700
-Message-ID: <20160607230844.GA28218@codeaurora.org>
-References: <1462896580-11554-1>
- <1465295321-10506-1-git-send-email-charanya@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1465295321-10506-1-git-send-email-charanya@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Charanya Venkatraman <charanya@codeaurora.org>
-Cc: agross@codeaurora.org, david.brown@linaro.org, andy.gross@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org, absahu@codeaurora.org, njaigane@codeaurora.org
+From: Jonas Gorski <jogo-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>
+Subject: [PATCH] serial/bcm63xx_uart: use correct alias naming
+Date: Wed,  8 Jun 2016 12:08:43 +0200
+Message-ID: <1465380523-7385-1-git-send-email-jogo@openwrt.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= <noltari-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Florian Fainelli <florian-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>, Simon Arlott <simon-A6De1vDTPLDsq35pWSNszA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 06/07, Charanya Venkatraman wrote:
-> Avoid data corruption issues that result in CRC errors during file
-> transfers over serial ports at higher baud rates.
-> 
-> The current msm_serial driver masks the FIFO Rx interrupts in
-> msm_start_rx_dma() since Rx FIFO interrupts are not required in DMA
-> mode. However, msm_complete_rx_dma() re-enables the Rx FIFO interrupts
-> which could cause RXSTALE event to be processed when a TXLEV interrupt
-> occurs.
-> 
-> The following is the sequence of events that could occur resulting in
-> data corruption.
-> 
-> msm_start_rx_dma -> msm_complete_rx_dma -->
-> spin_unlock_irqrestore(&port->lock) -->
-> msm_uart_irq()(For TXLEV interrupt) -->  msm_handle_rx_dm() (Read from
-> FIFO resulting in data corruption)
-> 
-> The patch fixes the issue by not restoring the RXLEV and RXSTALE
-> interrupts in msm_complete_rx_dma(). These interrupts are required only
-> in FIFO mode.
-> 
-> Signed-off-by: Charanya Venkatraman <charanya@codeaurora.org>
-> ---
+The bcm63xx_uart driver uses the of alias for determing its id. Recent
+changes in dts files changed the expected 'uartX' to the recommended
+'serialX', breaking serial output. Fix this by checking for a 'serialX'
+alias as well.
 
-Reviewed-by: Stephen Boyd <sboyd@codeaurora.org>
+Fixes: e3b992d028f8 ("MIPS: BMIPS: Improve BCM6328 device tree")
+Fixes: 2d52ee82b475 ("MIPS: BMIPS: Improve BCM6368 device tree")
+Fixes: 7537d273e2f3 ("MIPS: BMIPS: Add device tree example for BCM6358")
+Signed-off-by: Jonas Gorski <jogo-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>
+---
 
+Based on 4.7-rc2, which is the current head of tty-next.
+
+ drivers/tty/serial/bcm63xx_uart.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index c28e5c24..5108fab 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -813,8 +813,12 @@ static int bcm_uart_probe(struct platform_device *pdev)
+ 	struct clk *clk;
+ 	int ret;
+ 
+-	if (pdev->dev.of_node)
+-		pdev->id = of_alias_get_id(pdev->dev.of_node, "uart");
++	if (pdev->dev.of_node) {
++		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
++
++		if (pdev->id < 0)
++			pdev->id = of_alias_get_id(pdev->dev.of_node, "uart");
++	}
+ 
+ 	if (pdev->id < 0 || pdev->id >= BCM63XX_NR_UARTS)
+ 		return -EINVAL;
 -- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.1.4
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
