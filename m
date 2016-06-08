@@ -1,135 +1,133 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH] serial: earlycon: stop abusing console::index
-Date: Wed, 8 Jun 2016 18:20:52 +0100
-Message-ID: <20160608172051.GF13355@leverpostej>
-References: <1464967173-27744-1-git-send-email-mark.rutland@arm.com>
- <5758508E.4000206@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Matthew Leach <matthew@mattleach.net>
+Subject: [RFC PATCH 06/15] tty: serial: samsung: add byte-order aware bit functions
+Date: Wed,  8 Jun 2016 19:31:01 +0100
+Message-ID: <20160608183110.13851-7-matthew@mattleach.net>
+References: <20160608183110.13851-1-matthew@mattleach.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5758508E.4000206@hurleysoftware.com>
+In-Reply-To: <20160608183110.13851-1-matthew@mattleach.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Leif Lindholm <leif.lindholm@arm.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, linux-serial@vger.kernel.org
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>, Ben Dooks <ben.dooks@codethink.co.uk>
+Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Matthew Leach <matthew@mattleach.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jun 08, 2016 at 10:06:22AM -0700, Peter Hurley wrote:
-> On 06/03/2016 08:19 AM, Mark Rutland wrote:
-> > Commit cda64e6824026575 ("serial: earlycon: Fixup earlycon console name
-> > and index") added code to decompose an earlycon driver name into a
-> > string prefix and numeric suffix, and place this into console::name and
-> > console::index, such that we'd get a pretty name out of the core console
-> > code, which requires a name and index. This is simply to give a
-> > pretty/useful earlycon driver name in the log messages, and other than
-> > logging the name and index hold no significance.
-> 
-> The idea was to keep the console_cmdline[] array consistent with the
-> registered consoles, even though earlycon uses its own matching scheme.
-> Least surprise and all that.
-> 
-> > However, this is broken for drivers such as "pl011", where the "011"
-> > suffix gets stripped off, then subsequently restored, printed as a
-> > decimal, erroneously giving "pl11" in log messages.
-> 
-> Yeah, I saw that.
-> 
-> > Additionally, for
-> > earlycon drivers without a numeric suffix, "0" is added regardless. Thus
-> > the code is broken in some cases, and generally inconsistent.
-> 
-> I would like to continue with some kind of naming scheme that preserves
-> both the command line parameters (uart,uart8250,pl011,etc.) and uniquely
-> identifies which uart driver is the earlycon.
+This driver makes use of the __set_bit() and __clear_bit() functions.
+When running under big-endian, these functions don't convert the bit
+indexes when working with peripheral registers, leading to the
+incorrect bits being set and cleared when running big-endian.
 
-I understand that we wish to know which driver is the earlycon. However,
-I would argue that logging that at earlycon_init time (as this patch
-does) should be sufficient.
+Add two new driver functions for setting and clearing bits that are
+byte-order aware.
 
-> The current scheme could be fixed easily enough (by just using a single digit).
-> Or using a separator, ie. uart/0, pl011/0, etc.
+Signed-off-by: Matthew Leach <matthew@mattleach.net>
+---
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Jiri Slaby <jslaby@suse.com>
+CC: linux-serial@vger.kernel.org
+CC: linux-kernel@vger.kernel.org
+---
+ drivers/tty/serial/samsung.c | 16 +++++++---------
+ drivers/tty/serial/samsung.h | 29 +++++++++++++++++++++++++++++
+ 2 files changed, 36 insertions(+), 9 deletions(-)
 
-That would prevent the mangling issue, certainly.
-
-The only issue I would have with this approach is that as with the
-drivers that simply get a '0' appended, I suspect the index may be
-confused with the usual index for the device (e.g. pl011/0 may be
-assumed to be ttyAMA0, which isn't necessarily the case).
-
-Regardless, it's definitely less confusing than "pl11".
-
-Thanks,
-Mark.
-
-> 
-> Regards,
-> Peter Hurley
-> 
-> 
-> > Instead, this patch changes the earlycon code to consistently register
-> > "earlycon0", but ensures that the earlycon driver name is logged at
-> > earlycon_init time. This is obvious, consistent, and sufficient to
-> > provide the required information to the user.
-> > 
-> > With this in place, amongst the first messages from the kernel, the user
-> > will see something like:
-> > 
-> > [    0.000000] earlycon: earlycon0 (pl011) at MMIO 0x000000007ff80000 (options '')
-> > [    0.000000] bootconsole [earlycon0] enabled
-> > 
-> > Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Jiri Slaby <jslaby@suse.com>
-> > Cc: Leif Lindholm <leif.lindholm@arm.com>
-> > Cc: Peter Hurley <peter@hurleysoftware.com>
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: Will Deacon <will.deacon@arm.com>
-> > Cc: linux-serial@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > ---
-> >  drivers/tty/serial/earlycon.c | 19 ++++---------------
-> >  1 file changed, 4 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> > index 067783f..2b6622a 100644
-> > --- a/drivers/tty/serial/earlycon.c
-> > +++ b/drivers/tty/serial/earlycon.c
-> > @@ -29,7 +29,7 @@
-> >  #include <asm/serial.h>
-> >  
-> >  static struct console early_con = {
-> > -	.name =		"uart",		/* fixed up at earlycon registration */
-> > +	.name =		"earlycon",
-> >  	.flags =	CON_PRINTBUFFER | CON_BOOT,
-> >  	.index =	0,
-> >  };
-> > @@ -60,24 +60,13 @@ static void __init earlycon_init(struct earlycon_device *device,
-> >  {
-> >  	struct console *earlycon = device->con;
-> >  	struct uart_port *port = &device->port;
-> > -	const char *s;
-> > -	size_t len;
-> > -
-> > -	/* scan backwards from end of string for first non-numeral */
-> > -	for (s = name + strlen(name);
-> > -	     s > name && s[-1] >= '0' && s[-1] <= '9';
-> > -	     s--)
-> > -		;
-> > -	if (*s)
-> > -		earlycon->index = simple_strtoul(s, NULL, 10);
-> > -	len = s - name;
-> > -	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
-> > +
-> >  	earlycon->data = &early_console_dev;
-> >  
-> >  	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM16 ||
-> >  	    port->iotype == UPIO_MEM32 || port->iotype == UPIO_MEM32BE)
-> > -		pr_info("%s%d at MMIO%s %pa (options '%s')\n",
-> > -			earlycon->name, earlycon->index,
-> > +		pr_info("%s%d (%s) at MMIO%s %pa (options '%s')\n",
-> > +			earlycon->name, earlycon->index, name,
-> >  			(port->iotype == UPIO_MEM) ? "" :
-> >  			(port->iotype == UPIO_MEM16) ? "16" :
-> >  			(port->iotype == UPIO_MEM32) ? "32" : "32be",
-> > 
-> 
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 99bb231..e4f53d5 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -169,8 +169,7 @@ static void s3c24xx_serial_stop_tx(struct uart_port *port)
+ 		return;
+ 
+ 	if (s3c24xx_serial_has_interrupt_mask(port))
+-		__set_bit(S3C64XX_UINTM_TXD,
+-			portaddrl(port, S3C64XX_UINTM));
++		s3c24xx_set_bit(port, S3C64XX_UINTM_TXD, S3C64XX_UINTM);
+ 	else
+ 		disable_irq_nosync(ourport->tx_irq);
+ 
+@@ -235,8 +234,7 @@ static void enable_tx_dma(struct s3c24xx_uart_port *ourport)
+ 
+ 	/* Mask Tx interrupt */
+ 	if (s3c24xx_serial_has_interrupt_mask(port))
+-		__set_bit(S3C64XX_UINTM_TXD,
+-			  portaddrl(port, S3C64XX_UINTM));
++		s3c24xx_set_bit(port, S3C64XX_UINTM_TXD, S3C64XX_UINTM);
+ 	else
+ 		disable_irq_nosync(ourport->tx_irq);
+ 
+@@ -269,8 +267,8 @@ static void enable_tx_pio(struct s3c24xx_uart_port *ourport)
+ 
+ 	/* Unmask Tx interrupt */
+ 	if (s3c24xx_serial_has_interrupt_mask(port))
+-		__clear_bit(S3C64XX_UINTM_TXD,
+-			    portaddrl(port, S3C64XX_UINTM));
++		s3c24xx_clear_bit(port, S3C64XX_UINTM_TXD,
++				  S3C64XX_UINTM);
+ 	else
+ 		enable_irq(ourport->tx_irq);
+ 
+@@ -397,8 +395,8 @@ static void s3c24xx_serial_stop_rx(struct uart_port *port)
+ 	if (rx_enabled(port)) {
+ 		dbg("s3c24xx_serial_stop_rx: port=%p\n", port);
+ 		if (s3c24xx_serial_has_interrupt_mask(port))
+-			__set_bit(S3C64XX_UINTM_RXD,
+-				portaddrl(port, S3C64XX_UINTM));
++			s3c24xx_set_bit(port, S3C64XX_UINTM_RXD,
++					S3C64XX_UINTM);
+ 		else
+ 			disable_irq_nosync(ourport->rx_irq);
+ 		rx_enabled(port) = 0;
+@@ -1069,7 +1067,7 @@ static int s3c64xx_serial_startup(struct uart_port *port)
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	/* Enable Rx Interrupt */
+-	__clear_bit(S3C64XX_UINTM_RXD, portaddrl(port, S3C64XX_UINTM));
++	s3c24xx_clear_bit(port, S3C64XX_UINTM_RXD, S3C64XX_UINTM);
+ 
+ 	dbg("s3c64xx_serial_startup ok\n");
+ 	return ret;
+diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
+index 8818bdd..e45745a 100644
+--- a/drivers/tty/serial/samsung.h
++++ b/drivers/tty/serial/samsung.h
+@@ -111,6 +111,7 @@ struct s3c24xx_uart_port {
+ 
+ #define s3c24xx_dev_to_port(__dev) dev_get_drvdata(__dev)
+ 
++
+ /* register access controls */
+ 
+ #define portaddr(port, reg) ((port)->membase + (reg))
+@@ -123,4 +124,32 @@ struct s3c24xx_uart_port {
+ #define wr_regb(port, reg, val) __raw_writeb(val, portaddr(port, reg))
+ #define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
+ 
++/* Byte-order aware bit setting/clearing functions. */
++
++static inline void s3c24xx_set_bit(struct uart_port *port, int idx,
++				   unsigned int reg)
++{
++	unsigned long flags;
++	u32 val;
++
++	local_irq_save(flags);
++	val = rd_regl(port, reg);
++	val |= (1 << idx);
++	wr_regl(port, reg, val);
++	local_irq_restore(flags);
++}
++
++static inline void s3c24xx_clear_bit(struct uart_port *port, int idx,
++				     unsigned int reg)
++{
++	unsigned long flags;
++	u32 val;
++
++	local_irq_save(flags);
++	val = rd_regl(port, reg);
++	val &= ~(1 << idx);
++	wr_regl(port, reg, val);
++	local_irq_restore(flags);
++}
++
+ #endif
+-- 
+2.8.3
