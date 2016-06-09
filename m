@@ -1,7 +1,7 @@
 From: Nandor Han <nandor.han@ge.com>
-Subject: [PATCH RFC 4/4] serial: imx-serial - update RX error counters when DMA is used
-Date: Thu,  9 Jun 2016 15:16:33 +0300
-Message-ID: <c306bad562720ca90d33b5b8e47b404f81f7d03b.1465456640.git.nandor.han@ge.com>
+Subject: [PATCH RFC 2/4] dma: imx-sdma - update the residue calculation for cyclic channels
+Date: Thu,  9 Jun 2016 15:16:31 +0300
+Message-ID: <7a0d15ab99ccc0358fa4d7642e1eecadc0371f61.1465456639.git.nandor.han@ge.com>
 References: <cover.1465456639.git.nandor.han@ge.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1465456639.git.nandor.han@ge.com>
@@ -12,78 +12,74 @@ To: =Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>,
 Cc: Nandor Han <nandor.han@ge.com>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Update error couters when DMA is used for receiving data. Do
-this by using DMA transaction error event instead error interrupts
-to reduce interrupt load.
+The calculation of the DMA transaction residue supports only fixed
+size data transfers. This implementation is not covering all
+operations (e.g. data receiving) when we need to know the exact amount
+of bytes transferred.
+
+The loop channels handling was changed to clear the buffer
+descriptor errors and use the bd->mode.count to calculate the
+residue.
 
 Signed-off-by: Nandor Han <nandor.han@ge.com>
 ---
- drivers/tty/serial/imx.c | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ drivers/dma/imx-sdma.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 1912136..08ccfe1 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -704,6 +704,7 @@ out:
- 	return IRQ_HANDLED;
+diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+index e497847..9da258a 100644
+--- a/drivers/dma/imx-sdma.c
++++ b/drivers/dma/imx-sdma.c
+@@ -657,6 +657,8 @@ static void sdma_event_disable(struct sdma_channel *sdmac, unsigned int event)
+ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+ {
+ 	struct sdma_buffer_descriptor *bd;
++	int error = 0;
++	enum dma_status	old_status = sdmac->status;
+ 
+ 	/*
+ 	 * loop mode. Iterate over descriptors, re-setup them and
+@@ -668,10 +670,20 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+ 		if (bd->mode.status & BD_DONE)
+ 			break;
+ 
+-		if (bd->mode.status & BD_RROR)
++		if (bd->mode.status & BD_RROR) {
++			bd->mode.status &= ~BD_RROR;
+ 			sdmac->status = DMA_ERROR;
++			error = -EIO;
++		}
+ 
++	       /*
++		* We use bd->mode.count to calculate the residue, since contains
++		* the number of bytes present in the current buffer descriptor.
++		*/
++
++		sdmac->chn_real_count = bd->mode.count;
+ 		bd->mode.status |= BD_DONE;
++		bd->mode.count = sdmac->period_len;
+ 
+ 		/*
+ 		 * The callback is called from the interrupt context in order
+@@ -685,6 +697,9 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+ 
+ 		sdmac->buf_tail++;
+ 		sdmac->buf_tail %= sdmac->num_bd;
++
++		if (error)
++			sdmac->status = old_status;
+ 	}
  }
  
-+static void clear_rx_errors(struct imx_port *sport);
- static int start_rx_dma(struct imx_port *sport);
- /*
-  * If the RXFIFO is filled with some data, and then we
-@@ -729,6 +730,11 @@ static void imx_dma_rxint(struct imx_port *sport)
- 		temp &= ~(UCR2_ATEN);
- 		writel(temp, sport->port.membase + UCR2);
+@@ -1358,7 +1373,8 @@ static enum dma_status sdma_tx_status(struct dma_chan *chan,
+ 	u32 residue;
  
-+		/* disable the rx errors interrupts */
-+		temp = readl(sport->port.membase + UCR4);
-+		temp &= ~UCR4_OREN;
-+		writel(temp, sport->port.membase + UCR4);
-+
- 		/* tell the DMA to receive the data. */
- 		start_rx_dma(sport);
- 	}
-@@ -961,6 +967,7 @@ static void dma_rx_callback(void *data)
+ 	if (sdmac->flags & IMX_DMA_SG_LOOP)
+-		residue = (sdmac->num_bd - sdmac->buf_tail) * sdmac->period_len;
++		residue = (sdmac->num_bd - sdmac->buf_tail) *
++			   sdmac->period_len - sdmac->chn_real_count;
+ 	else
+ 		residue = sdmac->chn_count - sdmac->chn_real_count;
  
- 	if (status == DMA_ERROR) {
- 		dev_err(sport->port.dev, "DMA transaction error.\n");
-+		clear_rx_errors(sport);
- 		return;
- 	}
- 
-@@ -1057,6 +1064,31 @@ static int start_rx_dma(struct imx_port *sport)
- 	return 0;
- }
- 
-+static void clear_rx_errors(struct imx_port *sport)
-+{
-+	unsigned int status_usr1, status_usr2;
-+
-+	status_usr1 = readl(sport->port.membase + USR1);
-+	status_usr2 = readl(sport->port.membase + USR2);
-+
-+	if (status_usr2 & USR2_BRCD) {
-+		sport->port.icount.brk++;
-+		writel(USR2_BRCD, sport->port.membase + USR2);
-+	} else if (status_usr1 & USR1_FRAMERR) {
-+		sport->port.icount.frame++;
-+		writel(USR1_FRAMERR, sport->port.membase + USR1);
-+	} else if (status_usr1 & USR1_PARITYERR) {
-+		sport->port.icount.parity++;
-+		writel(USR1_PARITYERR, sport->port.membase + USR1);
-+	}
-+
-+	if (status_usr2 & USR2_ORE) {
-+		sport->port.icount.overrun++;
-+		writel(USR2_ORE, sport->port.membase + USR2);
-+	}
-+
-+}
-+
- #define TXTL_DEFAULT 2 /* reset default */
- #define RXTL_DEFAULT 1 /* reset default */
- #define TXTL_DMA 8 /* DMA burst setting */
 -- 
 2.8.3
