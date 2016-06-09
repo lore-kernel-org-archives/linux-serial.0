@@ -1,8 +1,7 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH 7/8] tty: serial: fsl-lpuart: Update suspend/resume for DMA
- mode
-Date: Thu, 9 Jun 2016 20:40:38 +0530
-Message-ID: <20160609151039.20817-8-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH 8/8] tty: serial: fsl_lpuart: Add support for RS-485
+Date: Thu, 9 Jun 2016 20:40:39 +0530
+Message-ID: <20160609151039.20817-9-bhuvanchandra.dv@toradex.com>
 References: <20160609151039.20817-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,78 +21,138 @@ To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 List-Id: linux-serial@vger.kernel.org
 
-When DMA mode is enabled one need to make sure the DMA channels are
-idle before entering suspend mode especially when UART ports which
-are set as wakeup source and console port with no_console_suspend
-is set. This patch takes care of gracefully releasing DMA channels
-for the above two cases and start the DMA at resume.
+Enable Vybrid's build-in support for RS-485 auto RTS for controlling
+line direction of RS-485 transceiver driver.
+
+Enable RS485 feature by either using ioctrl 'TIOCSRS485' or enable it in
+the device tree by setting 'linux,rs485-enabled-at-boot-time' property.
 
 Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 44 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ drivers/tty/serial/fsl_lpuart.c | 78 +++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 72 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 27687d5..134090a 100644
+index 134090a..4d1fca4 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1943,6 +1943,30 @@ static int lpuart_suspend(struct device *dev)
- 	}
+@@ -917,6 +917,52 @@ static void lpuart_dma_rx_free(struct uart_port *port)
+ 	sport->dma_rx_cookie = -EINVAL;
+ }
  
- 	uart_suspend_port(&lpuart_reg, &sport->port);
++static int lpuart_config_rs485(struct uart_port *port,
++			struct serial_rs485 *rs485)
++{
++	struct lpuart_port *sport = container_of(port,
++			struct lpuart_port, port);
 +
-+	if (sport->lpuart_dma_rx_use) {
++	u8 modem = readb(sport->port.membase + UARTMODEM) &
++		~(UARTMODEM_TXRTSPOL | UARTMODEM_TXRTSE);
++	writeb(modem, sport->port.membase + UARTMODEM);
++
++	if (rs485->flags & SER_RS485_ENABLED) {
++		/* Enable auto RS-485 RTS mode */
++		modem |= UARTMODEM_TXRTSE;
++
 +		/*
-+		 * EDMA driver during suspend will forcefully release any
-+		 * non-idle DMA channels. If port wakeup is enabled or if port
-+		 * is console port or 'no_console_suspend' is set the Rx DMA
-+		 * cannot resume as as expected, hence gracefully release the
-+		 * Rx DMA path before suspend and start Rx DMA path on resume.
++		 * RTS needs to be logic HIGH either during transer _or_ after
++		 * transfer, other variants are not supported by the hardware.
 +		 */
-+		if (sport->port.irq_wake) {
-+			del_timer_sync(&sport->lpuart_timer);
-+			lpuart_dma_rx_free(&sport->port);
-+		}
 +
-+		/* Disable Rx DMA to use UART port as wakeup source */
-+		writeb(readb(sport->port.membase + UARTCR5) & ~UARTCR5_RDMAS,
-+					sport->port.membase + UARTCR5);
++		if (!(rs485->flags & (SER_RS485_RTS_ON_SEND |
++				SER_RS485_RTS_AFTER_SEND)))
++			rs485->flags |= SER_RS485_RTS_ON_SEND;
++
++		if (rs485->flags & SER_RS485_RTS_ON_SEND &&
++				rs485->flags & SER_RS485_RTS_AFTER_SEND)
++			rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
++
++		/*
++		 * The hardware defaults to RTS logic HIGH while transfer.
++		 * Switch polarity in case RTS shall be logic HIGH
++		 * after transfer.
++		 * Note: UART is assumed to be active high.
++		 */
++		if (rs485->flags & SER_RS485_RTS_ON_SEND)
++			modem &= ~UARTMODEM_TXRTSPOL;
++		else if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
++			modem |= UARTMODEM_TXRTSPOL;
 +	}
 +
-+	if (sport->lpuart_dma_tx_use) {
-+		sport->dma_tx_in_progress = false;
-+		dmaengine_terminate_all(sport->dma_tx_chan);
-+	}
++	/* Store the new configuration */
++	sport->port.rs485 = *rs485;
 +
- 	if (sport->port.suspended && !sport->port.irq_wake)
- 		clk_disable_unprepare(sport->clk);
++	writeb(modem, sport->port.membase + UARTMODEM);
++	return 0;
++}
++
+ static unsigned int lpuart_get_mctrl(struct uart_port *port)
+ {
+ 	unsigned int temp = 0;
+@@ -950,17 +996,22 @@ static unsigned int lpuart32_get_mctrl(struct uart_port *port)
+ static void lpuart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+ 	unsigned char temp;
++	struct lpuart_port *sport = container_of(port,
++				struct lpuart_port, port);
  
-@@ -1970,6 +1994,26 @@ static int lpuart_resume(struct device *dev)
- 		writeb(temp, sport->port.membase + UARTCR2);
+-	temp = readb(port->membase + UARTMODEM) &
++	/* Make sure RXRTSE bit is not set when RS485 is enabled */
++	if (!(sport->port.rs485.flags & SER_RS485_ENABLED)) {
++		temp = readb(sport->port.membase + UARTMODEM) &
+ 			~(UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
+ 
+-	if (mctrl & TIOCM_RTS)
+-		temp |= UARTMODEM_RXRTSE;
++		if (mctrl & TIOCM_RTS)
++			temp |= UARTMODEM_RXRTSE;
+ 
+-	if (mctrl & TIOCM_CTS)
+-		temp |= UARTMODEM_TXCTSE;
++		if (mctrl & TIOCM_CTS)
++			temp |= UARTMODEM_TXCTSE;
+ 
+-	writeb(temp, port->membase + UARTMODEM);
++		writeb(temp, port->membase + UARTMODEM);
++	}
+ }
+ 
+ static void lpuart32_set_mctrl(struct uart_port *port, unsigned int mctrl)
+@@ -1256,6 +1307,13 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		cr1 |= UARTCR1_M;
  	}
  
-+	if (sport->lpuart_dma_rx_use) {
-+		if (sport->port.irq_wake) {
-+			if (!lpuart_start_rx_dma(sport)) {
-+				sport->lpuart_dma_rx_use = true;
-+				rx_dma_timer_init(sport);
-+			} else {
-+				sport->lpuart_dma_rx_use = false;
-+			}
-+		}
-+	}
++	/*
++	 * When auto RS-485 RTS mode is enabled,
++	 * hardware flow control need to be disabled.
++	 */
++	if (sport->port.rs485.flags & SER_RS485_ENABLED)
++		termios->c_cflag &= ~CRTSCTS;
 +
-+	if (sport->dma_tx_chan && !lpuart_dma_tx_request(&sport->port)) {
-+			init_waitqueue_head(&sport->dma_wait);
-+			sport->lpuart_dma_tx_use = true;
-+			writeb(readb(sport->port.membase + UARTCR5) |
-+				UARTCR5_TDMAS, sport->port.membase + UARTCR5);
-+	} else {
-+		sport->lpuart_dma_tx_use = false;
-+	}
-+
- 	uart_resume_port(&lpuart_reg, &sport->port);
+ 	if (termios->c_cflag & CRTSCTS) {
+ 		modem |= (UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
+ 	} else {
+@@ -1864,6 +1922,8 @@ static int lpuart_probe(struct platform_device *pdev)
+ 		sport->port.ops = &lpuart_pops;
+ 	sport->port.flags = UPF_BOOT_AUTOCONF;
  
++	sport->port.rs485_config = lpuart_config_rs485;
++
+ 	sport->clk = devm_clk_get(&pdev->dev, "ipg");
+ 	if (IS_ERR(sport->clk)) {
+ 		ret = PTR_ERR(sport->clk);
+@@ -1904,6 +1964,12 @@ static int lpuart_probe(struct platform_device *pdev)
+ 		dev_info(sport->port.dev, "DMA rx channel request failed, "
+ 				"operating without rx DMA\n");
+ 
++	if (of_property_read_bool(np, "linux,rs485-enabled-at-boot-time")) {
++		sport->port.rs485.flags |= SER_RS485_ENABLED;
++		sport->port.rs485.flags |= SER_RS485_RTS_ON_SEND;
++		writeb(UARTMODEM_TXRTSE, sport->port.membase + UARTMODEM);
++	}
++
  	return 0;
+ }
+ 
 -- 
 2.8.3
