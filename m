@@ -1,7 +1,7 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH 1/8] tty: serial: fsl_lpuart: consider TX FIFO too in tx_empty
-Date: Thu, 9 Jun 2016 20:40:32 +0530
-Message-ID: <20160609151039.20817-2-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH 4/8] tty: serial: fsl_lpuart: Fix broken 8m/s1 support
+Date: Thu, 9 Jun 2016 20:40:35 +0530
+Message-ID: <20160609151039.20817-5-bhuvanchandra.dv@toradex.com>
 References: <20160609151039.20817-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,52 +18,56 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Stefan Agner <stefan@agner.ch>
+By default the driver always configure the mode as 8s1 even when 8m1
+mode is selected. Fix this by adding support to control the space/mark bit.
 
-Currently the tx_empty callback only considers the Transmit Complete
-Flag (TC). The reference manual is not quite clear if the TC flag
-covers the TX FIFO too. Debug prints on real hardware have shown that
-from time to time the TC flag is asserted (indicating Transmitter
-idle) while there are still data in the TX FIFO. Hence, in this case
-the serial core will call the shutdown callback even though there are
-data remaining in the TX FIFO buffers.
-
-Avoid early shutdowns by considering the TX FIFO empty flag too. Also
-avoid theoretical race conditions between DMA and the driver by
-checking whether the TX DMA is in progress too.
-
-Signed-off-by: Stefan Agner <stefan@agner.ch>
+Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 3d79003..fabfa7e 100644
+index 97c1fda..615f191 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -810,8 +810,18 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
- /* return TIOCSER_TEMT when transmitter is not busy */
- static unsigned int lpuart_tx_empty(struct uart_port *port)
+@@ -1220,13 +1220,14 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
  {
--	return (readb(port->membase + UARTSR1) & UARTSR1_TC) ?
--		TIOCSER_TEMT : 0;
-+	struct lpuart_port *sport = container_of(port,
-+			struct lpuart_port, port);
-+	unsigned char sr1 = readb(port->membase + UARTSR1);
-+	unsigned char sfifo = readb(port->membase + UARTSFIFO);
-+
-+	if (sport->dma_tx_in_progress)
-+		return 0;
-+
-+	if (sr1 & UARTSR1_TC && sfifo & UARTSFIFO_TXEMPT)
-+		return TIOCSER_TEMT;
-+
-+	return 0;
- }
+ 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+ 	unsigned long flags;
+-	unsigned char cr1, old_cr1, old_cr2, cr4, bdh, modem;
++	unsigned char cr1, old_cr1, old_cr2, cr3, cr4, bdh, modem;
+ 	unsigned int  baud;
+ 	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
+ 	unsigned int sbr, brfa;
  
- static unsigned int lpuart32_tx_empty(struct uart_port *port)
+ 	cr1 = old_cr1 = readb(sport->port.membase + UARTCR1);
+ 	old_cr2 = readb(sport->port.membase + UARTCR2);
++	cr3 = readb(sport->port.membase + UARTCR3);
+ 	cr4 = readb(sport->port.membase + UARTCR4);
+ 	bdh = readb(sport->port.membase + UARTBDH);
+ 	modem = readb(sport->port.membase + UARTMODEM);
+@@ -1274,7 +1275,10 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if ((termios->c_cflag & PARENB)) {
+ 		if (termios->c_cflag & CMSPAR) {
+ 			cr1 &= ~UARTCR1_PE;
+-			cr1 |= UARTCR1_M;
++			if (termios->c_cflag & PARODD)
++				cr3 |= UARTCR3_T8;
++			else
++				cr3 &= ~UARTCR3_T8;
+ 		} else {
+ 			cr1 |= UARTCR1_PE;
+ 			if ((termios->c_cflag & CSIZE) == CS8)
+@@ -1342,6 +1346,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	writeb(cr4 | brfa, sport->port.membase + UARTCR4);
+ 	writeb(bdh, sport->port.membase + UARTBDH);
+ 	writeb(sbr & 0xFF, sport->port.membase + UARTBDL);
++	writeb(cr3, sport->port.membase + UARTCR3);
+ 	writeb(cr1, sport->port.membase + UARTCR1);
+ 	writeb(modem, sport->port.membase + UARTMODEM);
+ 
 -- 
 2.8.3
