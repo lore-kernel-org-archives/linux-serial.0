@@ -1,7 +1,7 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH 4/8] tty: serial: fsl_lpuart: Fix broken 8m/s1 support
-Date: Thu, 9 Jun 2016 20:40:35 +0530
-Message-ID: <20160609151039.20817-5-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH 2/8] tty: serial: fsl_lpuart: support suspend/resume
+Date: Thu, 9 Jun 2016 20:40:33 +0530
+Message-ID: <20160609151039.20817-3-bhuvanchandra.dv@toradex.com>
 References: <20160609151039.20817-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,56 +18,97 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-By default the driver always configure the mode as 8s1 even when 8m1
-mode is selected. Fix this by adding support to control the space/mark bit.
+From: Stefan Agner <stefan@agner.ch>
 
-Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+In order to allow wake support in STOP sleep mode, clocks are
+needed. Use imx_clk_gate2_cgr to disable automatic clock gating
+in low power mode STOP. This allows to enable wake by UART using:
+echo enabled > /sys/class/tty/ttyLP0/power/wakeup
+
+However, if wake is not enabled, the driver should disable the
+clocks explicitly to save power.
+
+Signed-off-by: Stefan Agner <stefan@agner.ch>
 ---
- drivers/tty/serial/fsl_lpuart.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/clk/imx/clk-vf610.c     | 12 ++++++------
+ drivers/tty/serial/fsl_lpuart.c | 16 ++++++++++++++--
+ 2 files changed, 20 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/clk/imx/clk-vf610.c b/drivers/clk/imx/clk-vf610.c
+index 3a1f244..0476353 100644
+--- a/drivers/clk/imx/clk-vf610.c
++++ b/drivers/clk/imx/clk-vf610.c
+@@ -315,12 +315,12 @@ static void __init vf610_clocks_init(struct device_node *ccm_node)
+ 
+ 	clk[VF610_CLK_PIT] = imx_clk_gate2("pit", "ipg_bus", CCM_CCGR1, CCM_CCGRx_CGn(7));
+ 
+-	clk[VF610_CLK_UART0] = imx_clk_gate2("uart0", "ipg_bus", CCM_CCGR0, CCM_CCGRx_CGn(7));
+-	clk[VF610_CLK_UART1] = imx_clk_gate2("uart1", "ipg_bus", CCM_CCGR0, CCM_CCGRx_CGn(8));
+-	clk[VF610_CLK_UART2] = imx_clk_gate2("uart2", "ipg_bus", CCM_CCGR0, CCM_CCGRx_CGn(9));
+-	clk[VF610_CLK_UART3] = imx_clk_gate2("uart3", "ipg_bus", CCM_CCGR0, CCM_CCGRx_CGn(10));
+-	clk[VF610_CLK_UART4] = imx_clk_gate2("uart4", "ipg_bus", CCM_CCGR6, CCM_CCGRx_CGn(9));
+-	clk[VF610_CLK_UART5] = imx_clk_gate2("uart5", "ipg_bus", CCM_CCGR6, CCM_CCGRx_CGn(10));
++	clk[VF610_CLK_UART0] = imx_clk_gate2_cgr("uart0", "ipg_bus", CCM_CCGR0, CCM_CCGRx_CGn(7), 0x2);
++	clk[VF610_CLK_UART1] = imx_clk_gate2_cgr("uart1", "ipg_bus", CCM_CCGR0, CCM_CCGRx_CGn(8), 0x2);
++	clk[VF610_CLK_UART2] = imx_clk_gate2_cgr("uart2", "ipg_bus", CCM_CCGR0, CCM_CCGRx_CGn(9), 0x2);
++	clk[VF610_CLK_UART3] = imx_clk_gate2_cgr("uart3", "ipg_bus", CCM_CCGR0, CCM_CCGRx_CGn(10), 0x2);
++	clk[VF610_CLK_UART4] = imx_clk_gate2_cgr("uart4", "ipg_bus", CCM_CCGR6, CCM_CCGRx_CGn(9), 0x2);
++	clk[VF610_CLK_UART5] = imx_clk_gate2_cgr("uart5", "ipg_bus", CCM_CCGR6, CCM_CCGRx_CGn(10), 0x2);
+ 
+ 	clk[VF610_CLK_I2C0] = imx_clk_gate2("i2c0", "ipg_bus", CCM_CCGR4, CCM_CCGRx_CGn(6));
+ 	clk[VF610_CLK_I2C1] = imx_clk_gate2("i2c1", "ipg_bus", CCM_CCGR4, CCM_CCGRx_CGn(7));
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 97c1fda..615f191 100644
+index fabfa7e..75a2098 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1220,13 +1220,14 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -483,9 +483,8 @@ static void lpuart_dma_rx_complete(void *arg)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ }
+ 
+-static void lpuart_timer_func(unsigned long data)
++static void lpuart_dma_rx_terminate(struct lpuart_port *sport)
  {
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+-	struct lpuart_port *sport = (struct lpuart_port *)data;
+ 	struct tty_port *port = &sport->port.state->port;
+ 	struct dma_tx_state state;
  	unsigned long flags;
--	unsigned char cr1, old_cr1, old_cr2, cr4, bdh, modem;
-+	unsigned char cr1, old_cr1, old_cr2, cr3, cr4, bdh, modem;
- 	unsigned int  baud;
- 	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
- 	unsigned int sbr, brfa;
+@@ -510,6 +509,11 @@ static void lpuart_timer_func(unsigned long data)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ }
  
- 	cr1 = old_cr1 = readb(sport->port.membase + UARTCR1);
- 	old_cr2 = readb(sport->port.membase + UARTCR2);
-+	cr3 = readb(sport->port.membase + UARTCR3);
- 	cr4 = readb(sport->port.membase + UARTCR4);
- 	bdh = readb(sport->port.membase + UARTBDH);
- 	modem = readb(sport->port.membase + UARTMODEM);
-@@ -1274,7 +1275,10 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & PARENB)) {
- 		if (termios->c_cflag & CMSPAR) {
- 			cr1 &= ~UARTCR1_PE;
--			cr1 |= UARTCR1_M;
-+			if (termios->c_cflag & PARODD)
-+				cr3 |= UARTCR3_T8;
-+			else
-+				cr3 &= ~UARTCR3_T8;
- 		} else {
- 			cr1 |= UARTCR1_PE;
- 			if ((termios->c_cflag & CSIZE) == CS8)
-@@ -1342,6 +1346,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	writeb(cr4 | brfa, sport->port.membase + UARTCR4);
- 	writeb(bdh, sport->port.membase + UARTBDH);
- 	writeb(sbr & 0xFF, sport->port.membase + UARTBDL);
-+	writeb(cr3, sport->port.membase + UARTCR3);
- 	writeb(cr1, sport->port.membase + UARTCR1);
- 	writeb(modem, sport->port.membase + UARTMODEM);
++static void lpuart_timer_func(unsigned long data)
++{
++	lpuart_dma_rx_terminate((struct lpuart_port *)data);
++}
++
+ static inline void lpuart_prepare_rx(struct lpuart_port *sport)
+ {
+ 	unsigned long flags;
+@@ -1925,7 +1929,12 @@ static int lpuart_suspend(struct device *dev)
+ 		writeb(temp, sport->port.membase + UARTCR2);
+ 	}
  
++	if (sport->dma_rx_in_progress)
++		lpuart_dma_rx_terminate(sport);
++
+ 	uart_suspend_port(&lpuart_reg, &sport->port);
++	if (sport->port.suspended && !sport->port.irq_wake)
++		clk_disable_unprepare(sport->clk);
+ 
+ 	return 0;
+ }
+@@ -1935,6 +1944,9 @@ static int lpuart_resume(struct device *dev)
+ 	struct lpuart_port *sport = dev_get_drvdata(dev);
+ 	unsigned long temp;
+ 
++	if (sport->port.suspended && !sport->port.irq_wake)
++		clk_prepare_enable(sport->clk);
++
+ 	if (sport->lpuart32) {
+ 		lpuart32_setup_watermark(sport);
+ 		temp = lpuart32_read(sport->port.membase + UARTCTRL);
 -- 
 2.8.3
