@@ -1,11 +1,13 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH 0/8] Improve Rx/Tx DMA implementation
-Date: Thu, 9 Jun 2016 20:40:31 +0530
-Message-ID: <20160609151039.20817-1-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH 3/8] tty: serial: fsl_lpuart: fix clearing of receive flag
+Date: Thu, 9 Jun 2016 20:40:34 +0530
+Message-ID: <20160609151039.20817-4-bhuvanchandra.dv@toradex.com>
+References: <20160609151039.20817-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160609151039.20817-1-bhuvanchandra.dv@toradex.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -16,26 +18,49 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Cc: linux-serial@vger.kernel.org, Stefan Agner <stefan.agner@toradex.com>, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Bhuvanchandra DV (5):
-  tty: serial: fsl_lpuart: Fix broken 8m/s1 support
-  tty: serial: fsl-lpuart: Use cyclic DMA for Rx
-  tty: serial: fsl-lpuart: Use scatter/gather DMA for Tx Drop PIO to DMA
-    switching and use scatter/gather DMA for Tx path to improve
-    performance.
-  tty: serial: fsl-lpuart: Update suspend/resume for DMA mode
-  tty: serial: fsl_lpuart: Add support for RS-485
+From: Stefan Agner <stefan.agner@toradex.com>
 
-Stefan Agner (3):
-  tty: serial: fsl_lpuart: consider TX FIFO too in tx_empty
-  tty: serial: fsl_lpuart: support suspend/resume
-  tty: serial: fsl_lpuart: fix clearing of receive flag
+Commit 8e4934c6d6c6 ("tty: serial: fsl_lpuart: clear receive flag
+on FIFO flush") implemented clearing of the receive flag by reading
+the status register only. It turned out that even though we flush
+the FIFO afterwards, a explicit read of the data register is still
+required.
 
- drivers/clk/imx/clk-vf610.c     |  12 +-
- drivers/tty/serial/fsl_lpuart.c | 810 +++++++++++++++++++++++-----------------
- 2 files changed, 482 insertions(+), 340 deletions(-)
+This leads to a FIFO underrun. To avoid this, follow the advice in
+the overrun "Operation section": Unconditionally clear RXUF after
+using RXFLUSH.
 
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+---
+ drivers/tty/serial/fsl_lpuart.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 75a2098..97c1fda 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -935,13 +935,16 @@ static void lpuart_setup_watermark(struct lpuart_port *sport)
+ 	writeb(val | UARTPFIFO_TXFE | UARTPFIFO_RXFE,
+ 			sport->port.membase + UARTPFIFO);
+ 
+-	/* explicitly clear RDRF */
+-	readb(sport->port.membase + UARTSR1);
+-
+ 	/* flush Tx and Rx FIFO */
+ 	writeb(UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH,
+ 			sport->port.membase + UARTCFIFO);
+ 
++	/* explicitly clear RDRF */
++	if (readb(sport->port.membase + UARTSR1) & UARTSR1_RDRF) {
++		readb(sport->port.membase + UARTDR);
++		writeb(UARTSFIFO_RXUF, sport->port.membase + UARTSFIFO);
++	}
++
+ 	writeb(0, sport->port.membase + UARTTWFIFO);
+ 	writeb(1, sport->port.membase + UARTRWFIFO);
+ 
 -- 
 2.8.3
