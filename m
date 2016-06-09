@@ -1,120 +1,41 @@
-From: Nandor Han <nandor.han@ge.com>
-Subject: [PATCH RFC 1/4] dma: imx-sdma - reduce transfer latency for DMA cyclic clients
-Date: Thu,  9 Jun 2016 15:16:30 +0300
-Message-ID: <0ed1e0027f135e9c88d7ac094ca807c7dc8f6713.1465456639.git.nandor.han@ge.com>
-References: <cover.1465456639.git.nandor.han@ge.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1465456639.git.nandor.han@ge.com>
-In-Reply-To: <cover.1465456639.git.nandor.han@ge.com>
-References: <cover.1465456639.git.nandor.han@ge.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Nandor Han <nandor.han@ge.com>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Subject: [PATCH 0/8] Improve Rx/Tx DMA implementation
+Date: Thu, 9 Jun 2016 20:40:31 +0530
+Message-ID: <20160609151039.20817-1-bhuvanchandra.dv@toradex.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 List-Id: linux-serial@vger.kernel.org
 
-Having the SDMA driver use a tasklet for running the clients
-callback introduce some issues:
-  - probability to have desynchronized data because of the
-    race condition created since the DMA transaction status
-    is retrieved only when the callback is executed, leaving
-    plenty of time for transaction status to get altered.
-  - inter-transfer latency which can leave channels idle.
+Bhuvanchandra DV (5):
+  tty: serial: fsl_lpuart: Fix broken 8m/s1 support
+  tty: serial: fsl-lpuart: Use cyclic DMA for Rx
+  tty: serial: fsl-lpuart: Use scatter/gather DMA for Tx Drop PIO to DMA
+    switching and use scatter/gather DMA for Tx path to improve
+    performance.
+  tty: serial: fsl-lpuart: Update suspend/resume for DMA mode
+  tty: serial: fsl_lpuart: Add support for RS-485
 
-Move the callback execution, for cyclic channels, to SDMA
-interrupt (as advised in `Documentation/dmaengine/provider.txt`)
-to (a)reduce the inter-transfer latency and (b) eliminate the
-race condition possibility where DMA transaction status might
-be changed by the time is read.
+Stefan Agner (3):
+  tty: serial: fsl_lpuart: consider TX FIFO too in tx_empty
+  tty: serial: fsl_lpuart: support suspend/resume
+  tty: serial: fsl_lpuart: fix clearing of receive flag
 
-The responsibility of the SDMA interrupt latency
-is moved to the SDMA clients which case by case should defer
-the work to bottom-halves when needed.
+ drivers/clk/imx/clk-vf610.c     |  12 +-
+ drivers/tty/serial/fsl_lpuart.c | 810 +++++++++++++++++++++++-----------------
+ 2 files changed, 482 insertions(+), 340 deletions(-)
 
-Signed-off-by: Nandor Han <nandor.han@ge.com>
----
- drivers/dma/imx-sdma.c | 36 ++++++++++++++++--------------------
- 1 file changed, 16 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index 0f6fd42..e497847 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -654,12 +654,6 @@ static void sdma_event_disable(struct sdma_channel *sdmac, unsigned int event)
- 	writel_relaxed(val, sdma->regs + chnenbl);
- }
- 
--static void sdma_handle_channel_loop(struct sdma_channel *sdmac)
--{
--	if (sdmac->desc.callback)
--		sdmac->desc.callback(sdmac->desc.callback_param);
--}
--
- static void sdma_update_channel_loop(struct sdma_channel *sdmac)
- {
- 	struct sdma_buffer_descriptor *bd;
-@@ -678,13 +672,25 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
- 			sdmac->status = DMA_ERROR;
- 
- 		bd->mode.status |= BD_DONE;
-+
-+		/*
-+		 * The callback is called from the interrupt context in order
-+		 * to reduce latency and to avoid the risk of altering the
-+		 * SDMA transaction status by the time the client tasklet is
-+		 * executed.
-+		 */
-+
-+		if (sdmac->desc.callback)
-+			sdmac->desc.callback(sdmac->desc.callback_param);
-+
- 		sdmac->buf_tail++;
- 		sdmac->buf_tail %= sdmac->num_bd;
- 	}
- }
- 
--static void mxc_sdma_handle_channel_normal(struct sdma_channel *sdmac)
-+static void mxc_sdma_handle_channel_normal(unsigned long data)
- {
-+	struct sdma_channel *sdmac = (struct sdma_channel *) data;
- 	struct sdma_buffer_descriptor *bd;
- 	int i, error = 0;
- 
-@@ -711,16 +717,6 @@ static void mxc_sdma_handle_channel_normal(struct sdma_channel *sdmac)
- 		sdmac->desc.callback(sdmac->desc.callback_param);
- }
- 
--static void sdma_tasklet(unsigned long data)
--{
--	struct sdma_channel *sdmac = (struct sdma_channel *) data;
--
--	if (sdmac->flags & IMX_DMA_SG_LOOP)
--		sdma_handle_channel_loop(sdmac);
--	else
--		mxc_sdma_handle_channel_normal(sdmac);
--}
--
- static irqreturn_t sdma_int_handler(int irq, void *dev_id)
- {
- 	struct sdma_engine *sdma = dev_id;
-@@ -737,8 +733,8 @@ static irqreturn_t sdma_int_handler(int irq, void *dev_id)
- 
- 		if (sdmac->flags & IMX_DMA_SG_LOOP)
- 			sdma_update_channel_loop(sdmac);
--
--		tasklet_schedule(&sdmac->tasklet);
-+		else
-+			tasklet_schedule(&sdmac->tasklet);
- 
- 		__clear_bit(channel, &stat);
- 	}
-@@ -1739,7 +1735,7 @@ static int sdma_probe(struct platform_device *pdev)
- 		dma_cookie_init(&sdmac->chan);
- 		sdmac->channel = i;
- 
--		tasklet_init(&sdmac->tasklet, sdma_tasklet,
-+		tasklet_init(&sdmac->tasklet, mxc_sdma_handle_channel_normal,
- 			     (unsigned long) sdmac);
- 		/*
- 		 * Add the channel to the DMAC list. Do not add channel 0 though
 -- 
 2.8.3
