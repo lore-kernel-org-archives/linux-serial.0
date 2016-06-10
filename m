@@ -1,146 +1,36 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: Re: [RFC PATCH 06/15] tty: serial: samsung: add byte-order aware bit
- functions
-Date: Fri, 10 Jun 2016 14:17:41 +0200
-Message-ID: <575AAFE5.8020207@samsung.com>
-References: <20160608183110.13851-1-matthew@mattleach.net>
- <20160608183110.13851-7-matthew@mattleach.net>
+From: Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] serial/bcm63xx_uart: use correct alias naming
+Date: Fri, 10 Jun 2016 13:48:24 -0700
+Message-ID: <575B2798.9000801@gmail.com>
+References: <1465380523-7385-1-git-send-email-jogo@openwrt.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <20160608183110.13851-7-matthew@mattleach.net>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Matthew Leach <matthew@mattleach.net>, Ben Dooks <ben.dooks@codethink.co.uk>
-Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1465380523-7385-1-git-send-email-jogo-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jonas Gorski <jogo-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Simon Arlott <simon-A6De1vDTPLDsq35pWSNszA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 06/08/2016 08:31 PM, Matthew Leach wrote:
-> This driver makes use of the __set_bit() and __clear_bit() functions.
-> When running under big-endian, these functions don't convert the bit
-> indexes when working with peripheral registers, leading to the
-> incorrect bits being set and cleared when running big-endian.
+On 06/08/2016 03:08 AM, Jonas Gorski wrote:
+> The bcm63xx_uart driver uses the of alias for determing its id. Recent
+> changes in dts files changed the expected 'uartX' to the recommended
+> 'serialX', breaking serial output. Fix this by checking for a 'serialX'
+> alias as well.
 > 
-> Add two new driver functions for setting and clearing bits that are
-> byte-order aware.
-> 
-> Signed-off-by: Matthew Leach <matthew@mattleach.net>
-> ---
-> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CC: Jiri Slaby <jslaby@suse.com>
-> CC: linux-serial@vger.kernel.org
-> CC: linux-kernel@vger.kernel.org
-> ---
->  drivers/tty/serial/samsung.c | 16 +++++++---------
->  drivers/tty/serial/samsung.h | 29 +++++++++++++++++++++++++++++
->  2 files changed, 36 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> index 99bb231..e4f53d5 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -169,8 +169,7 @@ static void s3c24xx_serial_stop_tx(struct uart_port *port)
->  		return;
->  
->  	if (s3c24xx_serial_has_interrupt_mask(port))
-> -		__set_bit(S3C64XX_UINTM_TXD,
-> -			portaddrl(port, S3C64XX_UINTM));
-> +		s3c24xx_set_bit(port, S3C64XX_UINTM_TXD, S3C64XX_UINTM);
->  	else
->  		disable_irq_nosync(ourport->tx_irq);
->  
-> @@ -235,8 +234,7 @@ static void enable_tx_dma(struct s3c24xx_uart_port *ourport)
->  
->  	/* Mask Tx interrupt */
->  	if (s3c24xx_serial_has_interrupt_mask(port))
-> -		__set_bit(S3C64XX_UINTM_TXD,
-> -			  portaddrl(port, S3C64XX_UINTM));
-> +		s3c24xx_set_bit(port, S3C64XX_UINTM_TXD, S3C64XX_UINTM);
->  	else
->  		disable_irq_nosync(ourport->tx_irq);
->  
-> @@ -269,8 +267,8 @@ static void enable_tx_pio(struct s3c24xx_uart_port *ourport)
->  
->  	/* Unmask Tx interrupt */
->  	if (s3c24xx_serial_has_interrupt_mask(port))
-> -		__clear_bit(S3C64XX_UINTM_TXD,
-> -			    portaddrl(port, S3C64XX_UINTM));
-> +		s3c24xx_clear_bit(port, S3C64XX_UINTM_TXD,
-> +				  S3C64XX_UINTM);
->  	else
->  		enable_irq(ourport->tx_irq);
->  
-> @@ -397,8 +395,8 @@ static void s3c24xx_serial_stop_rx(struct uart_port *port)
->  	if (rx_enabled(port)) {
->  		dbg("s3c24xx_serial_stop_rx: port=%p\n", port);
->  		if (s3c24xx_serial_has_interrupt_mask(port))
-> -			__set_bit(S3C64XX_UINTM_RXD,
-> -				portaddrl(port, S3C64XX_UINTM));
-> +			s3c24xx_set_bit(port, S3C64XX_UINTM_RXD,
-> +					S3C64XX_UINTM);
->  		else
->  			disable_irq_nosync(ourport->rx_irq);
->  		rx_enabled(port) = 0;
-> @@ -1069,7 +1067,7 @@ static int s3c64xx_serial_startup(struct uart_port *port)
->  	spin_unlock_irqrestore(&port->lock, flags);
->  
->  	/* Enable Rx Interrupt */
-> -	__clear_bit(S3C64XX_UINTM_RXD, portaddrl(port, S3C64XX_UINTM));
-> +	s3c24xx_clear_bit(port, S3C64XX_UINTM_RXD, S3C64XX_UINTM);
->  
->  	dbg("s3c64xx_serial_startup ok\n");
->  	return ret;
-> diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
-> index 8818bdd..e45745a 100644
-> --- a/drivers/tty/serial/samsung.h
-> +++ b/drivers/tty/serial/samsung.h
-> @@ -111,6 +111,7 @@ struct s3c24xx_uart_port {
->  
->  #define s3c24xx_dev_to_port(__dev) dev_get_drvdata(__dev)
->  
-> +
+> Fixes: e3b992d028f8 ("MIPS: BMIPS: Improve BCM6328 device tree")
+> Fixes: 2d52ee82b475 ("MIPS: BMIPS: Improve BCM6368 device tree")
+> Fixes: 7537d273e2f3 ("MIPS: BMIPS: Add device tree example for BCM6358")
+> Signed-off-by: Jonas Gorski <jogo-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>
 
-This new line looks unnecessary. Beside that it looks okay:
+Acked-by: Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-Reviewed-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-
-Best regards,
-Krzysztof
-
->  /* register access controls */
->  
->  #define portaddr(port, reg) ((port)->membase + (reg))
-> @@ -123,4 +124,32 @@ struct s3c24xx_uart_port {
->  #define wr_regb(port, reg, val) __raw_writeb(val, portaddr(port, reg))
->  #define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
->  
-> +/* Byte-order aware bit setting/clearing functions. */
-> +
-> +static inline void s3c24xx_set_bit(struct uart_port *port, int idx,
-> +				   unsigned int reg)
-> +{
-> +	unsigned long flags;
-> +	u32 val;
-> +
-> +	local_irq_save(flags);
-> +	val = rd_regl(port, reg);
-> +	val |= (1 << idx);
-> +	wr_regl(port, reg, val);
-> +	local_irq_restore(flags);
-> +}
-> +
-> +static inline void s3c24xx_clear_bit(struct uart_port *port, int idx,
-> +				     unsigned int reg)
-> +{
-> +	unsigned long flags;
-> +	u32 val;
-> +
-> +	local_irq_save(flags);
-> +	val = rd_regl(port, reg);
-> +	val &= ~(1 << idx);
-> +	wr_regl(port, reg, val);
-> +	local_irq_restore(flags);
-> +}
-> +
->  #endif
-> 
+A future improvement could be to completely get rid of the id and
+instead just dynamically allocate the ports structure.
+-- 
+Florian
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
