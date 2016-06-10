@@ -1,54 +1,53 @@
-From: Pramod Gurav <pramod.gurav@linaro.org>
-Subject: Re: [PATCH] serial_core: Change UART PM state to OFF on failure
-Date: Fri, 10 Jun 2016 11:24:44 +0530
-Message-ID: <CANYu_0v3qAfne9x_yVCc6wnU4xfmD_o5n-fu+acjydmNi6gPoA@mail.gmail.com>
-References: <1462527983-32108-1-git-send-email-pramod.gurav@linaro.org> <57584C10.5090300@hurleysoftware.com>
+From: Ben Dooks <ben.dooks@codethink.co.uk>
+Subject: Re: [RFC PATCH 05/15] tty: serial: samsung: fixup accessors for
+ endian
+Date: Fri, 10 Jun 2016 11:13:00 +0100
+Message-ID: <71328b3d-dc2f-3eb9-b664-4d621db23131@codethink.co.uk>
+References: <20160608183110.13851-1-matthew@mattleach.net>
+ <20160608183110.13851-6-matthew@mattleach.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <57584C10.5090300@hurleysoftware.com>
+In-Reply-To: <20160608183110.13851-6-matthew@mattleach.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Matthew Leach <matthew@mattleach.net>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter,
+On 08/06/16 19:31, Matthew Leach wrote:
+> Fix the serial access code to deal with kernels built for big endian
+> operation.
+> 
+> Signed-off-by: Matthew Leach <matthew@mattleach.net>
+> ---
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> CC: Jiri Slaby <jslaby@suse.com>
+> CC: linux-serial@vger.kernel.org
+> CC: linux-kernel@vger.kernel.org
+> ---
+>  drivers/tty/serial/samsung.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
+> index fc5deaa..8818bdd 100644
+> --- a/drivers/tty/serial/samsung.h
+> +++ b/drivers/tty/serial/samsung.h
+> @@ -118,9 +118,9 @@ struct s3c24xx_uart_port {
+>  	((unsigned long *)(unsigned long)((port)->membase + (reg)))
+>  
+>  #define rd_regb(port, reg) (__raw_readb(portaddr(port, reg)))
+> -#define rd_regl(port, reg) (__raw_readl(portaddr(port, reg)))
+> +#define rd_regl(port, reg) (readl_relaxed(portaddr(port, reg)))
 
-On 8 June 2016 at 22:17, Peter Hurley <peter@hurleysoftware.com> wrote:
-> Hi Pramod,
->
-> On 05/06/2016 02:46 AM, Pramod Gurav wrote:
->> uart_change_pm is used to turn on the UART controller resources and
->> change UART's PM status. On failure to allocate pages the controller
->> be left in ON state. This will change the state to OFF on failure.
->>
->> Signed-off-by: Pramod Gurav <pramod.gurav@linaro.org>
->> ---
->>  drivers/tty/serial/serial_core.c | 5 +++--
->>  1 file changed, 3 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
->> index 62fe368..58af2e9 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -156,9 +156,10 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
->>       if (!state->xmit.buf) {
->>               /* This is protected by the per port mutex */
->>               page = get_zeroed_page(GFP_KERNEL);
->> -             if (!page)
->> +             if (!page) {
->
->         if (!uart_console(uport))
->
-> Otherwise, you'll be powering off the console.
->
+For completeness we should have changed __raw_readb to readb_relaxed
 
-Agree. Should take care console is not disabled.
-> Just out of curiosity, did you actually hit this error?
-No, I did not. I thought we should not be leaving port power enabled
-in error case.
+>  #define wr_regb(port, reg, val) __raw_writeb(val, portaddr(port, reg))
+> -#define wr_regl(port, reg, val) __raw_writel(val, portaddr(port, reg))
+> +#define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
 
-Thanks for review and comments.
+Acked-by: Ben Dooks <ben.dooks@codethink.co.uk>
 
-Regards,
-Pramod
+-- 
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
