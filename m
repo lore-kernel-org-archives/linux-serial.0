@@ -1,41 +1,54 @@
-From: Andy Gross <andy.gross@linaro.org>
-Subject: Re: [PATCH v3] tty:serial:msm:Do not restore Rx interrupts in DMA
-Date: Thu, 9 Jun 2016 14:27:19 -0500
-Message-ID: <20160609192719.GL13357@hector.attlocal.net>
-References: <1462896580-11554-1>
- <1465295321-10506-1-git-send-email-charanya@codeaurora.org>
+From: Pramod Gurav <pramod.gurav@linaro.org>
+Subject: Re: [PATCH] serial_core: Change UART PM state to OFF on failure
+Date: Fri, 10 Jun 2016 11:24:44 +0530
+Message-ID: <CANYu_0v3qAfne9x_yVCc6wnU4xfmD_o5n-fu+acjydmNi6gPoA@mail.gmail.com>
+References: <1462527983-32108-1-git-send-email-pramod.gurav@linaro.org> <57584C10.5090300@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1465295321-10506-1-git-send-email-charanya@codeaurora.org>
+In-Reply-To: <57584C10.5090300@hurleysoftware.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Charanya Venkatraman <charanya@codeaurora.org>
-Cc: agross@codeaurora.org, david.brown@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sricharan@codeaurora.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, ntelkar@codeaurora.org, galak@codeaurora.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org, absahu@codeaurora.org, njaigane@codeaurora.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 07, 2016 at 03:58:41PM +0530, Charanya Venkatraman wrote:
-> Avoid data corruption issues that result in CRC errors during file
-> transfers over serial ports at higher baud rates.
-> 
-> The current msm_serial driver masks the FIFO Rx interrupts in
-> msm_start_rx_dma() since Rx FIFO interrupts are not required in DMA
-> mode. However, msm_complete_rx_dma() re-enables the Rx FIFO interrupts
-> which could cause RXSTALE event to be processed when a TXLEV interrupt
-> occurs.
-> 
-> The following is the sequence of events that could occur resulting in
-> data corruption.
-> 
-> msm_start_rx_dma -> msm_complete_rx_dma -->
-> spin_unlock_irqrestore(&port->lock) -->
-> msm_uart_irq()(For TXLEV interrupt) -->  msm_handle_rx_dm() (Read from
-> FIFO resulting in data corruption)
-> 
-> The patch fixes the issue by not restoring the RXLEV and RXSTALE
-> interrupts in msm_complete_rx_dma(). These interrupts are required only
-> in FIFO mode.
-> 
-> Signed-off-by: Charanya Venkatraman <charanya@codeaurora.org>
+Hi Peter,
 
-Acked-by: Andy Gross <andy.gross@linaro.org>
+On 8 June 2016 at 22:17, Peter Hurley <peter@hurleysoftware.com> wrote:
+> Hi Pramod,
+>
+> On 05/06/2016 02:46 AM, Pramod Gurav wrote:
+>> uart_change_pm is used to turn on the UART controller resources and
+>> change UART's PM status. On failure to allocate pages the controller
+>> be left in ON state. This will change the state to OFF on failure.
+>>
+>> Signed-off-by: Pramod Gurav <pramod.gurav@linaro.org>
+>> ---
+>>  drivers/tty/serial/serial_core.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+>> index 62fe368..58af2e9 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -156,9 +156,10 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+>>       if (!state->xmit.buf) {
+>>               /* This is protected by the per port mutex */
+>>               page = get_zeroed_page(GFP_KERNEL);
+>> -             if (!page)
+>> +             if (!page) {
+>
+>         if (!uart_console(uport))
+>
+> Otherwise, you'll be powering off the console.
+>
+
+Agree. Should take care console is not disabled.
+> Just out of curiosity, did you actually hit this error?
+No, I did not. I thought we should not be leaving port power enabled
+in error case.
+
+Thanks for review and comments.
+
+Regards,
+Pramod
