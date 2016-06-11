@@ -1,36 +1,37 @@
-From: Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] serial/bcm63xx_uart: use correct alias naming
-Date: Fri, 10 Jun 2016 13:48:24 -0700
-Message-ID: <575B2798.9000801@gmail.com>
-References: <1465380523-7385-1-git-send-email-jogo@openwrt.org>
+From: Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH 2/8] tty: serial: fsl_lpuart: support suspend/resume
+Date: Sat, 11 Jun 2016 22:03:41 +0800
+Message-ID: <20160611140341.GT20243@tiger>
+References: <20160609151039.20817-1-bhuvanchandra.dv@toradex.com>
+ <20160609151039.20817-3-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1465380523-7385-1-git-send-email-jogo-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jonas Gorski <jogo-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Simon Arlott <simon-A6De1vDTPLDsq35pWSNszA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160609151039.20817-3-bhuvanchandra.dv@toradex.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 06/08/2016 03:08 AM, Jonas Gorski wrote:
-> The bcm63xx_uart driver uses the of alias for determing its id. Recent
-> changes in dts files changed the expected 'uartX' to the recommended
-> 'serialX', breaking serial output. Fix this by checking for a 'serialX'
-> alias as well.
+On Thu, Jun 09, 2016 at 08:40:33PM +0530, Bhuvanchandra DV wrote:
+> From: Stefan Agner <stefan@agner.ch>
 > 
-> Fixes: e3b992d028f8 ("MIPS: BMIPS: Improve BCM6328 device tree")
-> Fixes: 2d52ee82b475 ("MIPS: BMIPS: Improve BCM6368 device tree")
-> Fixes: 7537d273e2f3 ("MIPS: BMIPS: Add device tree example for BCM6358")
-> Signed-off-by: Jonas Gorski <jogo-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>
+> In order to allow wake support in STOP sleep mode, clocks are
+> needed. Use imx_clk_gate2_cgr to disable automatic clock gating
+> in low power mode STOP. This allows to enable wake by UART using:
+> echo enabled > /sys/class/tty/ttyLP0/power/wakeup
+> 
+> However, if wake is not enabled, the driver should disable the
+> clocks explicitly to save power.
+> 
+> Signed-off-by: Stefan Agner <stefan@agner.ch>
+> ---
+>  drivers/clk/imx/clk-vf610.c     | 12 ++++++------
 
-Acked-by: Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Please send clock driver changes in a separate patch.
 
-A future improvement could be to completely get rid of the id and
-instead just dynamically allocate the ports structure.
--- 
-Florian
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Shawn
+
+>  drivers/tty/serial/fsl_lpuart.c | 16 ++++++++++++++--
+>  2 files changed, 20 insertions(+), 8 deletions(-)
