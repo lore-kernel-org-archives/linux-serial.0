@@ -1,68 +1,138 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH] serial: 8250_early: Add earlycon support for Synopsys
- DesignWare ABP UART
-Date: Sun, 12 Jun 2016 10:18:46 +0800
-Message-ID: <575CC686.8070407@huawei.com>
-References: <1462946761-11982-1-git-send-email-wangkefeng.wang@huawei.com>
- <573D1ABD.5020908@huawei.com> <20160519213516.GA12456@broadcom.com>
+From: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+Subject: Re: [PATCH v5 00/11] serial: 8250: split LPSS to 8250_lpss, enable
+ DMA on Quark
+Date: Sun, 12 Jun 2016 18:13:07 +0100
+Message-ID: <1465751587.15050.23.camel@nexus-software.ie>
+References: <1462547840-14091-1-git-send-email-andriy.shevchenko@linux.intel.com>
+	 <1463065601.17131.319.camel@linux.intel.com>
+	 <1463620733.4224.75.camel@nexus-software.ie>
+	 <1464111448.31269.67.camel@linux.intel.com>
+	 <1464113301.31269.79.camel@linux.intel.com>
+	 <1464280589.2351.19.camel@nexus-software.ie>
+	 <CAHp75VczbhPEvp6gn-5hPFdSGscNeyZMzPQWeeB1Xza1mHD8dw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160519213516.GA12456@broadcom.com>
+In-Reply-To: <CAHp75VczbhPEvp6gn-5hPFdSGscNeyZMzPQWeeB1Xza1mHD8dw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jon Mason <jon.mason@broadcom.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, guohanjun@huawei.com, Wei Xu <xuwei5@hisilicon.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, 2016-06-07 at 13:04 +0300, Andy Shevchenko wrote:
+> > I'll find some time to look at both a short stream and a long
+> stream,
+> > based on the branch you've indicated and maybe against the latest
+> > stable kernel.
+>=20
+> Please, do. I'm planning to resend new version soon (this week or
+> lately beginning of the next one).
+
+So.
+
+Generally DMA appears to make little-to-no difference here. With small
+data sets, 128 bytes in the test case - there appears to be a slight
+performance gain at lower BAUD rates, however for small data-sets and
+large data sets 32k for the large test case, there appears to be a
+performance penalty at higher BAUD rates.
+
+One thing I have noticed is that the following never completes and
+can't be reset back to mode=3D0 or mode=3D3 to restore functionality -
+definitely worth looking at if you are spinning another patch.
+
+### never completes ####
+root@galileo:~# echo 1 > /sys/class/tty/ttyS0/dma_mode
+root@galileo:~# stty -F /dev/ttyS0 921600
+root@galileo:~# time cat tester.txt > /dev/ttyS0
+### never completes ####
+
+Performance data set
+
+root@galileo:~# dmesg > tester.txt
+root@galileo:~# ls -las tester.txt=C2=A0
+32 -rw-r--r-- 1 root root 32300
+Jan=C2=A0=C2=A01=C2=A0=C2=A02001 tester.txt
 
 
-On 2016/5/20 5:35, Jon Mason wrote:
-> On Thu, May 19, 2016 at 09:45:33AM +0800, Kefeng Wang wrote:
->> +Cc Jon and arm-kernel mailist
->>
->> Any comments, thanks.
-> 
-> It works for me.  Please feel free to add
-> 
-> Tested-by: Jon Mason <jon.mason@broadcom.com>
+#### With DMA on @ 926100 32k file ####
 
-Thanks Jon, hi Greg, ping...
+root@galileo:~# echo 0 > /sys/class/tty/ttyS0/dma_mode
+root@galileo:~# stty -F /dev/ttyS0 921600
+root@galileo:~# time cat tester.txt > /dev/ttyS0
 
-BRs,
-Kefeng
+real=C2=A0=C2=A0=C2=A0=C2=A00m0.421s
+user=C2=A0=C2=A0=C2=A0=C2=A00m0.010s
+sys=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00m0.000s
 
-> 
-> Thanks,
-> Jon
-> 
->>
->> Kefeng
->>
->> On 2016/5/11 14:06, Kefeng Wang wrote:
->>> Some board like Hisilicon D02 uses Synopsys DesignWare ABP UART, declare an
->>> OF early console for it, so early console device can be enabled with comand
->>> line "earlycon"(without option) via the "stdout-path" property in device-tree.
->>>
->>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->>> ---
->>>  drivers/tty/serial/8250/8250_early.c | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
->>> index 8d08ff5..85a12f0 100644
->>> --- a/drivers/tty/serial/8250/8250_early.c
->>> +++ b/drivers/tty/serial/8250/8250_early.c
->>> @@ -150,6 +150,7 @@ EARLYCON_DECLARE(uart, early_serial8250_setup);
->>>  OF_EARLYCON_DECLARE(ns16550, "ns16550", early_serial8250_setup);
->>>  OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
->>>  OF_EARLYCON_DECLARE(uart, "nvidia,tegra20-uart", early_serial8250_setup);
->>> +OF_EARLYCON_DECLARE(uart, "snps,dw-apb-uart", early_serial8250_setup);
->>>  
->>>  #ifdef CONFIG_SERIAL_8250_OMAP
->>>  
->>>
->>
-> 
-> .
-> 
+
+### With NoDMA on @ 926100 32k file ####
+
+root@galileo:~# echo 3 > /sys/class/tty/ttyS0/dma_mode
+root@galileo:~# stty -F /dev/ttyS0 921600
+root@galileo:~# time cat tester.txt > /dev/ttyS0
+
+real=C2=A0=C2=A0=C2=A0=C2=A00m0.421s
+user=C2=A0=C2=A0=C2=A0=C2=A00m0.020s
+sys=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00m0.000s
+
+#### With DMA on @ 9600 32k file ####
+root@galileo:~# echo 0 > /sys/class/tty/ttyS0/dma_mode
+root@galileo:~# stty -F /dev/ttyS0 9600=C2=A0=C2=A0
+root@galileo:~# time cat tester.txt > /dev/ttyS0
+
+real=C2=A0=C2=A0=C2=A0=C2=A00m34.381s
+user=C2=A0=C2=A0=C2=A0=C2=A00m0.000s
+sys=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00m0.010s
+
+#### With NoDMA on @ 9600 32k file #####
+root@galileo:~# echo 3 > /sys/class/tty/ttyS0/dma_mode
+root@galileo:~# stty -F /dev/ttyS0 9600
+root@galileo:~# time cat tester.txt > /dev/ttyS0
+
+real=C2=A0=C2=A0=C2=A0=C2=A00m34.391s
+user=C2=A0=C2=A0=C2=A0=C2=A00m0.010s
+sys=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00m0.000s
+
+
+root@galileo:~# ls -las tester_small.txt=C2=A0
+4 -rw-r--r-- 1 root root 128 Jan=C2=A0=C2=A01 00:06 tester_small.txt
+
+### With DMA on @ 921600 128 byte test file ###
+root@galileo:~# stty -F /dev/ttyS0 921600
+root@galileo:~# echo 0 > /sys/class/tty/ttyS0/dma_mode
+root@galileo:~# time cat tester_small.txt > /dev/ttyS0
+
+real=C2=A0=C2=A0=C2=A0=C2=A00m0.031s
+user=C2=A0=C2=A0=C2=A0=C2=A00m0.010s
+sys=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00m0.000s
+
+### With NoDMA on @ 921600 128 byte test file ###
+root@galileo:~# stty -F /dev/ttyS0 921600
+root@galileo:~# echo 3 > /sys/class/tty/ttyS0/dma_mode
+root@galileo:~# time cat tester_small.txt > /dev/ttyS0
+
+real=C2=A0=C2=A0=C2=A0=C2=A00m0.013s
+user=C2=A0=C2=A0=C2=A0=C2=A00m0.010s
+sys=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00m0.000s
+
+### With DMA on @ 9600 128 byte test file ###
+root@galileo:~# stty -F /dev/ttyS0 9600
+root@galileo:~# echo 0 > /sys/class/tty/ttyS0/dma_mode
+root@galileo:~# time cat tester_small.txt > /dev/ttyS0
+
+real=C2=A0=C2=A0=C2=A0=C2=A00m0.161s
+user=C2=A0=C2=A0=C2=A0=C2=A00m0.000s
+sys=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00m0.010s
+
+### With NoDMA on @ 9600 128 byte test file ###
+root@galileo:~# stty -F /dev/ttyS0 9600
+root@galileo:~# echo 3 > /sys/class/tty/ttyS0/dma_mode
+root@galileo:~# time cat tester_small.txt > /dev/ttyS0
+
+real=C2=A0=C2=A0=C2=A0=C2=A00m0.161s
+user=C2=A0=C2=A0=C2=A0=C2=A00m0.000s
+sys=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00m0.000s
+
+---
+bod
