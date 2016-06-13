@@ -1,63 +1,78 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v6 03/11] dmaengine: dw: set polarity of handshake interface
-Date: Mon, 13 Jun 2016 16:42:32 +0300
-Message-ID: <1465825360-97711-4-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1465825360-97711-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v6 00/11] serial: 8250: split LPSS to 8250_lpss, enable DMA on Quark
+Date: Mon, 13 Jun 2016 16:42:29 +0300
+Message-ID: <1465825360-97711-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1465825360-97711-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark UART uses DesignWare DMA IP. Though the DMA IP is connected in such
-way that handshake interface uses inverted polarity. We have to provide a
-possibility to set this in the DMA driver when configuring a channel.
+This is combined series of two things:
+- split out the Intel LPSS specific driver from 8250_pci into 8250_lpss
+- enable DMA support on Intel Quark UART
 
-Introduce a new member of custom slave configuration called 'hs_polarity' and
-set active low polarity in case this value is 'true'.
+The patch has been tested on few Intel SoCs / platforms. In any case I would
+like to ask Bryan to do independent test.
 
-Acked-by: Vinod Koul <vinod.koul@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/dma/dw/core.c                | 4 ++++
- include/linux/platform_data/dma-dw.h | 2 ++
- 2 files changed, 6 insertions(+)
+This is targeting serial subsystem, and it has necessary Ack from Vinod.
 
-diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index 81b06df..59f571c 100644
---- a/drivers/dma/dw/core.c
-+++ b/drivers/dma/dw/core.c
-@@ -150,6 +150,10 @@ static void dwc_initialize(struct dw_dma_chan *dwc)
- 	cfghi |= DWC_CFGH_DST_PER(dwc->dws.dst_id);
- 	cfghi |= DWC_CFGH_SRC_PER(dwc->dws.src_id);
- 
-+	/* Set polarity of handshake interface */
-+	cfglo |= dwc->dws.hs_polarity ?
-+		 DWC_CFGL_HS_DST_POL | DWC_CFGL_HS_SRC_POL : 0;
-+
- 	channel_writel(dwc, CFG_LO, cfglo);
- 	channel_writel(dwc, CFG_HI, cfghi);
- 
-diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
-index d15d8ba..4636c93 100644
---- a/include/linux/platform_data/dma-dw.h
-+++ b/include/linux/platform_data/dma-dw.h
-@@ -23,6 +23,7 @@
-  * @dst_id:	dst request line
-  * @m_master:	memory master for transfers on allocated channel
-  * @p_master:	peripheral master for transfers on allocated channel
-+ * @hs_polarity:set active low polarity of handshake interface
-  */
- struct dw_dma_slave {
- 	struct device		*dma_dev;
-@@ -30,6 +31,7 @@ struct dw_dma_slave {
- 	u8			dst_id;
- 	u8			m_master;
- 	u8			p_master;
-+	bool			hs_polarity;
- };
- 
- /**
+The series can be reached in the branch located at [2].
+
+[1] http://www.spinics.net/lists/kernel/msg2244475.html
+[2] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqrk
+
+Bryan, since this series doesn't include any DMA management quirks I didn't
+address it. It is a matter of the following series which I would send later.
+
+Since v5:
+- add Vinod's Ack tag
+- rebase on top of latest linux-next
+
+Since v4:
+- fix an issue what kernel test bot reported (lkp)
+- add a list of supported SoC to Kconfig (Bryan)
+- rename polarity -> hs_polarity (Bryan)
+
+Since v3:
+- rebase on top of recent tty-next branch
+- add Reviewed-by tag from Bryan
+
+Since v2:
+- add tags
+- rebase on top of new version of [1]
+
+Since v1:
+- address most of Peter's comments (mostly changelog to patch 8)
+- add tag to patch 5
+- drop patch 6 from the series to be separately dealt with
+
+Andy Shevchenko (11):
+  dmaengine: dw: keep copy of custom slave config in dwc
+  dmaengine: dw: provide probe(), remove() stubs for users
+  dmaengine: dw: set polarity of handshake interface
+  dmaengine: dw: override LLP support if asked in platform data
+  serial: 8250_dma: switch to new dmaengine_terminate_* API
+  serial: 8250_dma: adjust DMA address of the UART
+  serial: 8250: enable AFE on ports where FIFO is 16 bytes
+  serial: 8250_lpss: split LPSS driver to separate module
+  serial: 8250_lpss: move Quark code from PCI driver
+  serial: 8250_lpss: enable MSI for Intel Quark
+  serial: 8250_lpss: enable DMA on Intel Quark UART
+
+ drivers/dma/dw/core.c                |  43 +++--
+ drivers/dma/dw/regs.h                |   5 +-
+ drivers/tty/serial/8250/8250.h       |   5 +
+ drivers/tty/serial/8250/8250_dma.c   |  14 +-
+ drivers/tty/serial/8250/8250_lpss.c  | 357 +++++++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pci.c   | 257 +------------------------
+ drivers/tty/serial/8250/8250_port.c  |   9 +-
+ drivers/tty/serial/8250/Kconfig      |  16 +-
+ drivers/tty/serial/8250/Makefile     |   1 +
+ include/linux/dma/dw.h               |   5 +
+ include/linux/platform_data/dma-dw.h |   4 +
+ 11 files changed, 430 insertions(+), 286 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_lpss.c
+
 -- 
 2.8.1
