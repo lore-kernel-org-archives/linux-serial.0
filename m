@@ -1,78 +1,40 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v6 00/11] serial: 8250: split LPSS to 8250_lpss, enable DMA on Quark
-Date: Mon, 13 Jun 2016 16:42:29 +0300
-Message-ID: <1465825360-97711-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Bhhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Subject: Re: [PATCH 2/8] tty: serial: fsl_lpuart: support suspend/resume
+Date: Tue, 14 Jun 2016 00:18:19 +0000
+Message-ID: <cdeb3e9b-92c5-77d9-78ec-3af3954e8e16@toradex.com>
+References: <20160609151039.20817-1-bhuvanchandra.dv@toradex.com>
+ <20160609151039.20817-3-bhuvanchandra.dv@toradex.com>
+ <20160611140341.GT20243@tiger>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160611140341.GT20243@tiger>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Shawn Guo <shawnguo@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bhuvanchandra.dv@toradex.com
 List-Id: linux-serial@vger.kernel.org
 
-This is combined series of two things:
-- split out the Intel LPSS specific driver from 8250_pci into 8250_lpss
-- enable DMA support on Intel Quark UART
+Hi Shawn,
 
-The patch has been tested on few Intel SoCs / platforms. In any case I would
-like to ask Bryan to do independent test.
+On 06/11/2016 02:03 PM, Shawn Guo wrote:
 
-This is targeting serial subsystem, and it has necessary Ack from Vinod.
+> On Thu, Jun 09, 2016 at 08:40:33PM +0530, Bhuvanchandra DV wrote:
+>> From: Stefan Agner <stefan@agner.ch>
+>>
+>> In order to allow wake support in STOP sleep mode, clocks are
+>> needed. Use imx_clk_gate2_cgr to disable automatic clock gating
+>> in low power mode STOP. This allows to enable wake by UART using:
+>> echo enabled > /sys/class/tty/ttyLP0/power/wakeup
+>>
+>> However, if wake is not enabled, the driver should disable the
+>> clocks explicitly to save power.
+>>
+>> Signed-off-by: Stefan Agner <stefan@agner.ch>
+>> ---
+>>   drivers/clk/imx/clk-vf610.c     | 12 ++++++------
+> Please send clock driver changes in a separate patch.
 
-The series can be reached in the branch located at [2].
-
-[1] http://www.spinics.net/lists/kernel/msg2244475.html
-[2] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqrk
-
-Bryan, since this series doesn't include any DMA management quirks I didn't
-address it. It is a matter of the following series which I would send later.
-
-Since v5:
-- add Vinod's Ack tag
-- rebase on top of latest linux-next
-
-Since v4:
-- fix an issue what kernel test bot reported (lkp)
-- add a list of supported SoC to Kconfig (Bryan)
-- rename polarity -> hs_polarity (Bryan)
-
-Since v3:
-- rebase on top of recent tty-next branch
-- add Reviewed-by tag from Bryan
-
-Since v2:
-- add tags
-- rebase on top of new version of [1]
-
-Since v1:
-- address most of Peter's comments (mostly changelog to patch 8)
-- add tag to patch 5
-- drop patch 6 from the series to be separately dealt with
-
-Andy Shevchenko (11):
-  dmaengine: dw: keep copy of custom slave config in dwc
-  dmaengine: dw: provide probe(), remove() stubs for users
-  dmaengine: dw: set polarity of handshake interface
-  dmaengine: dw: override LLP support if asked in platform data
-  serial: 8250_dma: switch to new dmaengine_terminate_* API
-  serial: 8250_dma: adjust DMA address of the UART
-  serial: 8250: enable AFE on ports where FIFO is 16 bytes
-  serial: 8250_lpss: split LPSS driver to separate module
-  serial: 8250_lpss: move Quark code from PCI driver
-  serial: 8250_lpss: enable MSI for Intel Quark
-  serial: 8250_lpss: enable DMA on Intel Quark UART
-
- drivers/dma/dw/core.c                |  43 +++--
- drivers/dma/dw/regs.h                |   5 +-
- drivers/tty/serial/8250/8250.h       |   5 +
- drivers/tty/serial/8250/8250_dma.c   |  14 +-
- drivers/tty/serial/8250/8250_lpss.c  | 357 +++++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_pci.c   | 257 +------------------------
- drivers/tty/serial/8250/8250_port.c  |   9 +-
- drivers/tty/serial/8250/Kconfig      |  16 +-
- drivers/tty/serial/8250/Makefile     |   1 +
- include/linux/dma/dw.h               |   5 +
- include/linux/platform_data/dma-dw.h |   4 +
- 11 files changed, 430 insertions(+), 286 deletions(-)
- create mode 100644 drivers/tty/serial/8250/8250_lpss.c
-
--- 
-2.8.1
+How about splitting this patchset to two? few patches are having minor
+fixes and the few patches might need some review and discussions.
+May be some thing like DMA fixes and the other minor fixes.
