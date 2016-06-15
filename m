@@ -1,57 +1,40 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 0/3] Fix DNV HSUART RX DMA timeout interrupt issue
-Date: Wed, 15 Jun 2016 15:15:40 +0300
-Message-ID: <1465992940.30123.116.camel@linux.intel.com>
-References: <1465969453-16198-1-git-send-email-kim.tatt.chuah@intel.com>
+From: Pramod Gurav <pramod.gurav@linaro.org>
+Subject: Re: [RFC PATCH] tty: serial: msm_serial: Don't reset uart on set_termios
+Date: Wed, 15 Jun 2016 18:28:16 +0530
+Message-ID: <CANYu_0uH2xPRaLuWsGTsaKko6T2o9irRxmvDedaOt6UH7OwMKQ@mail.gmail.com>
+References: <1465844571-1229-1-git-send-email-bjorn.andersson@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1465969453-16198-1-git-send-email-kim.tatt.chuah@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Chuah Kim Tatt <kim.tatt.chuah@intel.com>, gregkh@linuxfoundation.org, vinod.koul@intel.com
-Cc: heikki.krogerus@linux.intel.com, mika.westerberg@linux.intel.com, linux-kernel@vger.kernel.org, jui.nee.tan@intel.com, peter@hurleysoftware.com, linux-serial@vger.kernel.org
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1465844571-1229-1-git-send-email-bjorn.andersson@linaro.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Andy Gross <andy.gross@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:ARM/QUALCOMM SUPPORT" <linux-arm-msm@vger.kernel.org>, "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2016-06-15 at 13:44 +0800, Chuah Kim Tatt wrote:
-> From: "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>
->=20
-> These patches fix a DNV HSUART DMA issue with timeout interrupts,
-> where
-> RX data is stuck in buffer when RX DMA is used and the number of
-> received
-> bytes is less than 4096.
-> These patches have been tested on Intel Denverton platform.
+On 14 June 2016 at 00:32, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
+> Upon opening the tty, uart_open() ends up calling msm_set_baud_rate()
+> which resets the uart block. If this happens as we're coming out of
+> msm_console_write() a full fifo worth of console output will be
+> discarded.
+>
+> Cc: Stephen Boyd <sboyd@codeaurora.org>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>
+> As reported here:
+> https://bugs.96boards.org/show_bug.cgi?id=378
+>
+>  drivers/tty/serial/msm_serial.c | 18 ------------------
+>  1 file changed, 18 deletions(-)
 
-=46or entire series:
-Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Thanks for the patch.
 
->=20
-> Changes from v1:
-> =C2=A0 - Added patch "serial: 8250_dma: Export serial8250_rx_dma_flus=
-h()"
-> to solve
-> =C2=A0=C2=A0=C2=A0=C2=A0build error when CONFIG_SERIAL_8250_MID is se=
-t to "m".
->=20
-> Chuah, Kim Tatt (3):
-> =C2=A0 dmaengine: hsu: Export hsu_dma_get_status()
-> =C2=A0 serial: 8250_dma: Export serial8250_rx_dma_flush()
-> =C2=A0 serial: 8250_mid: Read RX buffer on RX DMA timeout for DNV
->=20
-> =C2=A0drivers/dma/hsu/hsu.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 90
-> +++++++++++++++++++++++++++++---------
-> =C2=A0drivers/dma/hsu/pci.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 11 ++++-
-> =C2=A0drivers/tty/serial/8250/8250_dma.c |=C2=A0=C2=A01 +
-> =C2=A0drivers/tty/serial/8250/8250_mid.c | 24 +++++++---
-> =C2=A0include/linux/dma/hsu.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 14 ++++--
-> =C2=A05 files changed, 109 insertions(+), 31 deletions(-)
->=20
+I no longer see these corruptions with this patch. This is what I used
+to see on my DB410C with debain FS:
+http://paste.ubuntu.com/17319106/
 
---=20
+Tested-by: Pramod Gurav <pramod.gurav@linaro.org>
 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Regards,
+Pramod
