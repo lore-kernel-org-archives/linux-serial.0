@@ -1,39 +1,64 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [RFC PATCH] tty: serial: msm_serial: Don't reset uart on
- set_termios
-Date: Wed, 15 Jun 2016 18:11:33 -0700
-Message-ID: <5761FCC5.3010709@codeaurora.org>
-References: <1465844571-1229-1-git-send-email-bjorn.andersson@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: [RESEND PATCH v2 2/2] serial: samsung: Fix possible out of bounds
+ access on non-DT platform
+Date: Thu, 16 Jun 2016 08:27:36 +0200
+Message-ID: <1466058456-31449-2-git-send-email-k.kozlowski@samsung.com>
+References: <1466058456-31449-1-git-send-email-k.kozlowski@samsung.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1465844571-1229-1-git-send-email-bjorn.andersson@linaro.org>
+In-reply-to: <1466058456-31449-1-git-send-email-k.kozlowski@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:ARM/QUALCOMM SUPPORT" <linux-arm-msm@vger.kernel.org>, "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Kevin Hilman <khilman@kernel.org>, Javier Martinez Canillas <javier@osg.samsung.com>, arnd@arndb.de, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 06/13/2016 12:02 PM, Bjorn Andersson wrote:
-> Upon opening the tty, uart_open() ends up calling msm_set_baud_rate()
-> which resets the uart block. If this happens as we're coming out of
-> msm_console_write() a full fifo worth of console output will be
-> discarded.
->
-> Cc: Stephen Boyd <sboyd@codeaurora.org>
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->
-> As reported here:
-> https://bugs.96boards.org/show_bug.cgi?id=378
+On non-DeviceTree platforms, the index of serial device is a static
+variable incremented on each probe.  It is incremented even if deferred
+probe happens when getting the clock in s3c24xx_serial_init_port().
 
-Urgh. As mentioned in commit a12f1b406f2d (tty: serial: msm: Reset
-uartdm after baud rate change, 2014-10-29) we actually need to reset the
-hardware sometimes. Perhaps as discussed over IRC we need to take a
-different approach here and only reset the hardware if the baud actually
-changes? One way to test this would be to try running a getty on the
-console and see if input still works.
+This index is used for referencing elements of statically allocated
+s3c24xx_serial_ports array.  In case of re-probe, the index will point
+outside of this array leading to memory corruption.
 
+Increment the index only on successful probe.
+
+Reported-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Fixes: b497549a035c ("[ARM] S3C24XX: Split serial driver into core and per-cpu drivers")
+Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+
+---
+
+Not cc-ing stable because:
+1. It is just a possibility, not really reproduced (I don't have non-DT
+   platform).
+2. I am not sure whether deferred probe may happen on non-DT platform.
+
+Changes since v1:
+1. New patch.
+---
+ drivers/tty/serial/samsung.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index f0bd2ec0db59..4d2924f61e0b 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1844,8 +1844,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 	ourport->min_dma_size = max_t(int, ourport->port.fifosize,
+ 				    dma_get_cache_alignment());
+ 
+-	probe_index++;
+-
+ 	dbg("%s: initialising port %p...\n", __func__, ourport);
+ 
+ 	ret = s3c24xx_serial_init_port(ourport, pdev);
+@@ -1875,6 +1873,8 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 	if (ret < 0)
+ 		dev_err(&pdev->dev, "failed to add cpufreq notifier\n");
+ 
++	probe_index++;
++
+ 	return 0;
+ }
+ 
 -- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+1.9.1
