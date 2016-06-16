@@ -1,71 +1,67 @@
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH v2] tty: serial: msm: Don't reconfigure same baud rate
-Date: Thu, 16 Jun 2016 11:24:35 -0700
-Message-ID: <1466101475-8851-1-git-send-email-bjorn.andersson@linaro.org>
-References: <1465844571-1229-1-git-send-email-bjorn.andersson@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1465844571-1229-1-git-send-email-bjorn.andersson@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Gross <andy.gross@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>, David Brown <david.brown@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: "Luis R. Rodriguez" <mcgrof@kernel.org>
+Subject: Re: [RFC] firmware: annotate thou shalt not request fw on init or
+ probe
+Date: Thu, 16 Jun 2016 22:56:16 +0200
+Message-ID: <20160616205616.GB11948@wotan.suse.de>
+References: <1440811107-861-1-git-send-email-mcgrof@do-not-panic.com>
+ <alpine.DEB.2.02.1508291812350.2057@localhost6.localdomain6>
+ <20150903013533.GO8051@wotan.suse.de>
+ <alpine.DEB.2.02.1509030753140.2037@localhost6.localdomain6>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.02.1509030753140.2037@localhost6.localdomain6>
+Sender: linux-doc-owner@vger.kernel.org
+To: Julia Lawall <julia.lawall@lip6.fr>, Mimi Zohar <zohar@linux.vnet.ibm.com>
+Cc: "Luis R. Rodriguez" <mcgrof@do-not-panic.com>, ming.lei@canonical.com, torvalds@linux-foundation.org, liam.r.girdwood@linux.intel.com, yang.jie@intel.com, tiwai@suse.de, dmitry.torokhov@gmail.com, joonas.lahtinen@linux.intel.com, teg@jklm.no, viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org, kay@vrfy.org, dwmw2@infradead.org, linux-kernel@vger.kernel.org, yalin.wang2010@gmail.com, Jonathan Corbet <corbet@lwn.net>, Gilles Muller <Gilles.Muller@lip6.fr>, Nicolas Palix <nicolas.palix@imag.fr>, Michal Marek <mmarek@suse.com>, linux-doc@vger.kernel.org, cocci@systeme.lip6.fr, Alessandro Rubini <rubini@gnudd.com>, Kevin Cernekee <cernekee@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Arend Van Spriel <arend@broadcom.com>
 List-Id: linux-serial@vger.kernel.org
 
-msm_set_termios() is called whenever the tty is opened. Setting the baud
-rate requires a full reset of the msm serial block, even when the rate
-is unchanged. In the case when the same uart is used as console this
-reset will discard any console output data still being clocked out of
-the TX fifo.
+On Thu, Sep 03, 2015 at 07:56:33AM +0200, Julia Lawall wrote:
+> 
+> 
+> On Thu, 3 Sep 2015, Luis R. Rodriguez wrote:
+> 
+> > On Sat, Aug 29, 2015 at 06:18:20PM +0200, Julia Lawall wrote:
+> > > > +@ defines_module_init exists @
+> > > > +declarer name module_init;
+> > > > +identifier init;
+> > > > +@@
+> > > > +
+> > > > +module_init(init);
+> > > > +
+> > > > +@ has_probe depends on defines_module_init @
+> > > > +identifier drv_calls, drv_probe;
+> > > > +type bus_driver;
+> > > > +identifier probe_op =~ "(probe)";
+> > > > +@@
+> > > > +
+> > > > +bus_driver drv_calls = {
+> > > > +	.probe_op = drv_probe,
+> > > > +};
+> > > 
+> > > I'm not sure that this is enough.  For example, there is the macro
+> > > platform_driver_probe that initializes probe fields.  There is likewise
+> > > module_platform_driver, which is a top-level declaration that encapsulates
+> > > the module_init and the definition of the module_init function, which in
+> > > turn calls platform_driver_probe.  There is also module_platform_driver,
+> > > which encapsulates the module_init, but not the initialization of the probe
+> > > field.  Are you concerned with any of these cases?
+> > 
+> > Yes, and also it would seem this would only capture simple one level of
+> > routine indirection, for instance if probe called bar() and it was within
+> > bar() that the driver code called a fw request call, that would not be picked
+> > up, correct?
+> 
+> By default, Coccinelle is not interprocedural.  You can encode that in the 
+> script, though.
+> 
+> Probably the most convenient approach would be to start with the the call, 
+> and then work backward to the entry point.  I have code to do this, if and 
+> when it turns out to be useful.
 
-By skipping the rate-change in the case where the baud rate is unchanged
-since last request we can avoid the reset and the discarding of the
-data.
+FYI folks, thanks to Coccinelle 1.0.5 this is now easily possible with
+Python integration, a follow up patch will be submitted that uses this
+mechanism to do a proper full search on the kernel.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- drivers/tty/serial/msm_serial.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index b7d80bd57db9..206149f104fa 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -76,6 +76,7 @@ struct msm_port {
- 	bool			break_detected;
- 	struct msm_dma		tx_dma;
- 	struct msm_dma		rx_dma;
-+	unsigned int		last_baud;
- };
- 
- static void msm_handle_tx(struct uart_port *port);
-@@ -1072,11 +1073,16 @@ static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if (dma->chan) /* Terminate if any */
- 		msm_stop_dma(port, dma);
- 
--	/* calculate and set baud rate */
-+	/* calculate and set baud rate, if changed from last request */
- 	baud = uart_get_baud_rate(port, termios, old, 300, 4000000);
--	baud = msm_set_baud_rate(port, baud, &flags);
--	if (tty_termios_baud_rate(termios))
--		tty_termios_encode_baud_rate(termios, baud, baud);
-+	if (baud != msm_port->last_baud) {
-+		msm_port->last_baud = baud;
-+
-+		baud = msm_set_baud_rate(port, baud, &flags);
-+		if (tty_termios_baud_rate(termios))
-+			tty_termios_encode_baud_rate(termios, baud, baud);
-+		uart_update_timeout(port, termios->c_cflag, baud);
-+	}
- 
- 	/* calculate parity */
- 	mr = msm_read(port, UART_MR2);
-@@ -1134,8 +1140,6 @@ static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
- 		port->read_status_mask |= UART_SR_RX_BREAK;
- 
--	uart_update_timeout(port, termios->c_cflag, baud);
--
- 	/* Try to use DMA */
- 	msm_start_rx_dma(msm_port);
- 
--- 
-2.5.0
+  Luis
