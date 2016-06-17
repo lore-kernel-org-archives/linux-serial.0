@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v7 09/11] serial: 8250_lpss: move Quark code from PCI driver
-Date: Fri, 17 Jun 2016 15:41:09 +0300
-Message-ID: <1466167271-11902-10-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v7 04/11] dmaengine: dw: override LLP support if asked in platform data
+Date: Fri, 17 Jun 2016 15:41:04 +0300
+Message-ID: <1466167271-11902-5-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1466167271-11902-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1466167271-11902-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,111 +10,58 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark has DesignWare UART. Move the code from 8250_pci to 8250_lpss.
+There is at least one known device, i.e. UART on Intel Galileo, that works
+unreliably in case multi block transfer support in DMA mode is in use.
 
-Reviewed-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
+Override autodetection by user provided data.
+
+Acked-by: Vinod Koul <vinod.koul@intel.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_lpss.c | 11 +++++++++++
- drivers/tty/serial/8250/8250_pci.c  | 15 +--------------
- 2 files changed, 12 insertions(+), 14 deletions(-)
+ drivers/dma/dw/core.c                | 10 +++++++---
+ include/linux/platform_data/dma-dw.h |  2 ++
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 071f878..cad96ee 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -25,6 +25,8 @@
- #define PCI_DEVICE_ID_INTEL_BSW_UART1	0x228a
- #define PCI_DEVICE_ID_INTEL_BSW_UART2	0x228c
+diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
+index 59f571c..d2d1d51 100644
+--- a/drivers/dma/dw/core.c
++++ b/drivers/dma/dw/core.c
+@@ -1573,9 +1573,13 @@ int dw_dma_probe(struct dw_dma_chip *chip)
+ 			dwc->block_size = pdata->block_size;
  
-+#define PCI_DEVICE_ID_INTEL_QRK_UARTx	0x0936
-+
- #define PCI_DEVICE_ID_INTEL_BDW_UART1	0x9ce3
- #define PCI_DEVICE_ID_INTEL_BDW_UART2	0x9ce4
+ 			/* Check if channel supports multi block transfer */
+-			channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
+-			dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
+-			channel_writel(dwc, LLP, 0);
++			if (pdata->is_nollp) {
++				dwc->nollp = pdata->is_nollp;
++			} else {
++				channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
++				dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
++				channel_writel(dwc, LLP, 0);
++			}
+ 		}
+ 	}
  
-@@ -166,6 +168,9 @@ static int lpss8250_dma_setup(struct lpss8250 *lpss, struct uart_8250_port *port
- 	struct dw_dma_slave *rx_param, *tx_param;
- 	struct device *dev = port->port.dev;
- 
-+	if (!lpss->dma_param.dma_dev)
-+		return 0;
-+
- 	rx_param = devm_kzalloc(dev, sizeof(*rx_param), GFP_KERNEL);
- 	if (!rx_param)
- 		return -ENOMEM;
-@@ -253,6 +258,11 @@ static const struct lpss8250_board byt_board = {
- 	.setup = byt_serial_setup,
- };
- 
-+static const struct lpss8250_board qrk_board = {
-+	.freq = 44236800,
-+	.base_baud = 2764800,
-+};
-+
- #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
- 
- static const struct pci_device_id pci_ids[] = {
-@@ -260,6 +270,7 @@ static const struct pci_device_id pci_ids[] = {
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BYT_UART2, byt_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART1, byt_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART2, byt_board),
-+	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_QRK_UARTx, qrk_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART1, byt_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART2, byt_board),
- 	{ },
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index bb4df5d..b94b1ee 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1765,7 +1765,6 @@ pci_wch_ch38x_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
- #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
- #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
--#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
- 
- #define PCI_VENDOR_ID_SUNIX		0x1fd4
- #define PCI_DEVICE_ID_SUNIX_1999	0x1999
-@@ -2736,7 +2735,6 @@ enum pci_board_num_t {
- 	pbn_ADDIDATA_PCIe_4_3906250,
- 	pbn_ADDIDATA_PCIe_8_3906250,
- 	pbn_ce4100_1_115200,
--	pbn_qrk,
- 	pbn_omegapci,
- 	pbn_NETMOS9900_2s_115200,
- 	pbn_brcm_trumanage,
-@@ -3512,12 +3510,6 @@ static struct pciserial_board pci_boards[] = {
- 		.base_baud	= 921600,
- 		.reg_shift      = 2,
- 	},
--	[pbn_qrk] = {
--		.flags		= FL_BASE0,
--		.num_ports	= 1,
--		.base_baud	= 2764800,
--		.reg_shift	= 2,
--	},
- 	[pbn_omegapci] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 8,
-@@ -3634,6 +3626,7 @@ static const struct pci_device_id blacklist[] = {
- 	{ PCI_VDEVICE(INTEL, 0x0f0c), },
- 	{ PCI_VDEVICE(INTEL, 0x228a), },
- 	{ PCI_VDEVICE(INTEL, 0x228c), },
-+	{ PCI_VDEVICE(INTEL, 0x0936), },
- 	{ PCI_VDEVICE(INTEL, 0x9ce3), },
- 	{ PCI_VDEVICE(INTEL, 0x9ce4), },
- };
-@@ -5303,12 +5296,6 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		pbn_ce4100_1_115200 },
- 
- 	/*
--	 * Intel Quark x1000
--	 */
--	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_qrk },
--	/*
- 	 * Cronyx Omega PCI
- 	 */
- 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
+diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
+index 4636c93..5f0e11e 100644
+--- a/include/linux/platform_data/dma-dw.h
++++ b/include/linux/platform_data/dma-dw.h
+@@ -40,6 +40,7 @@ struct dw_dma_slave {
+  * @is_private: The device channels should be marked as private and not for
+  *	by the general purpose DMA channel allocator.
+  * @is_memcpy: The device channels do support memory-to-memory transfers.
++ * @is_nollp: The device channels does not support multi block transfers.
+  * @chan_allocation_order: Allocate channels starting from 0 or 7
+  * @chan_priority: Set channel priority increasing from 0 to 7 or 7 to 0.
+  * @block_size: Maximum block size supported by the controller
+@@ -51,6 +52,7 @@ struct dw_dma_platform_data {
+ 	unsigned int	nr_channels;
+ 	bool		is_private;
+ 	bool		is_memcpy;
++	bool		is_nollp;
+ #define CHAN_ALLOCATION_ASCENDING	0	/* zero to seven */
+ #define CHAN_ALLOCATION_DESCENDING	1	/* seven to zero */
+ 	unsigned char	chan_allocation_order;
 -- 
 2.8.1
