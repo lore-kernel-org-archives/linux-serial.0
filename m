@@ -1,45 +1,41 @@
-From: Nicolas Dechesne <nicolas.dechesne@linaro.org>
-Subject: Re: [PATCH v2] tty: serial: msm: Don't reconfigure same baud rate
-Date: Fri, 17 Jun 2016 13:02:44 +0300
-Message-ID: <CAP71WjyPiDK+rr6Z6=Cvp_Bjrpd2HSQ_K58ucJqJ5ZWs_4khtw@mail.gmail.com>
-References: <1465844571-1229-1-git-send-email-bjorn.andersson@linaro.org> <1466101475-8851-1-git-send-email-bjorn.andersson@linaro.org>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: [PATCH 0/4] tty/serial: atmel: rework tasklets and shutdown sequence
+Date: Fri, 17 Jun 2016 12:05:45 +0200
+Message-ID: <cover.1466157015.git.nicolas.ferre@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1466101475-8851-1-git-send-email-bjorn.andersson@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Andy Gross <andy.gross@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jun 16, 2016 at 9:24 PM, Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
-> msm_set_termios() is called whenever the tty is opened. Setting the b=
-aud
-> rate requires a full reset of the msm serial block, even when the rat=
-e
-> is unchanged. In the case when the same uart is used as console this
-> reset will discard any console output data still being clocked out of
-> the TX fifo.
->
-> By skipping the rate-change in the case where the baud rate is unchan=
-ged
-> since last request we can avoid the reset and the discarding of the
-> data.
->
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+We experienced some issues with how the atmel_serial driver was dealing with
+tasklets.
+First, a single tasklet was used for both RX and TX paths which was leading to
+calling DMA residue checking routines frequently without reason. So I split the
+RX and TX paths with one tasklet for each.
+Secondly, as we experienced some deadlocks, I reinforced the shutdown function
+of this driver by following the recommended sequence that is described
+here:
+https://lwn.net/Articles/588457/
+
+The first 3 patches have already been posted on May 12th. The 4th patch is
+built on top of them, this is why make a series with them...
+
+Bye,
 
 
-Tested-by: Nicolas Dechesne <nicolas.dechesne@linaro.org>
+Ludovic Desroches (1):
+  tty/serial: atmel: add comment for the ring buffer size macro
 
-I no longer see this type of corruption on serial console
+Nicolas Ferre (3):
+  tty/serial: atmel: re-integrate status check in irq handler
+  tty/serial: atmel: split tx and rx paths
+  tty/serial: atmel: enforce tasklet init and termination sequences
 
-[    6.325118] ALSA device =EF=BF=BD[    6.333338] Freeing unused kerne=
-l
-memory: 572K (ffffffc000c10000 - ffffffc000c9f000)
-[   13.800269]  remoteproc2: remote processor a20400=EF=BF=BD[  OK  ] S=
-tarted
-Start the WCN core.
-[ =EF=BF=BD         Starting Update UTMP about System Runlevel Changes.=
-=2E.
+ drivers/tty/serial/atmel_serial.c | 129 +++++++++++++++++++++++---------------
+ 1 file changed, 78 insertions(+), 51 deletions(-)
+
+-- 
+2.9.0
