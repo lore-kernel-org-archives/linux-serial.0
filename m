@@ -1,96 +1,152 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH] tty: 8250, remove shadow and unused variables
-Date: Mon, 20 Jun 2016 12:57:43 +0200
-Message-ID: <20160620105743.8280-1-jslaby@suse.cz>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v8 4/4] serial: pl011: add console matching function
+Date: Mon, 20 Jun 2016 15:26:39 +0300
+Message-ID: <fd9443e7-67f1-93e7-834b-445f9c29d876@linaro.org>
+References: <1463749405-11640-1-git-send-email-aleksey.makarov@linaro.org>
+ <1463749405-11640-5-git-send-email-aleksey.makarov@linaro.org>
+ <c37d62c7-1e1b-0b10-a083-c5207fbbb820@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Matt Schulte <matts@commtech-fastcom.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <c37d62c7-1e1b-0b10-a083-c5207fbbb820@gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Russell King <linux@arm.linux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-The compiler complains about variables that are set, but never used:
-* intX variables in exar_handle_irq
-  drivers/tty/serial/8250/8250_port.c:1864:34: warning: variable =E2=80=
-=98int3=E2=80=99 set but not used [-Wunused-but-set-variable]
-* val variable in pci_quatech_wqopr
-  drivers/tty/serial/8250/8250_pci.c:1139:10: warning: variable =E2=80=98=
-val=E2=80=99 set but not used [-Wunused-but-set-variable]
 
-And about a shadow variable:
-* tmout in wait_for_xmitr is defined twice with the same type. Both of
-  them are also initialized before use.
+On 06/02/2016 09:02 PM, Aleksey Makarov wrote:
+> 
+> On 05/20/2016 04:03 PM, Aleksey Makarov wrote:
 
-Remove all of them.
+Hi Russell,
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Matt Schulte <matts@commtech-fastcom.com>
----
- drivers/tty/serial/8250/8250_pci.c  |  4 ++--
- drivers/tty/serial/8250/8250_port.c | 11 ++++-------
- 2 files changed, 6 insertions(+), 9 deletions(-)
+Can you review this patch please?
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
-50/8250_pci.c
-index 8dd250fbd367..3d6287a8981e 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1136,11 +1136,11 @@ static int pci_quatech_rqopr(struct uart_8250_p=
-ort *port)
- static void pci_quatech_wqopr(struct uart_8250_port *port, u8 qopr)
- {
- 	unsigned long base =3D port->port.iobase;
--	u8 LCR, val;
-+	u8 LCR;
-=20
- 	LCR =3D inb(base + UART_LCR);
- 	outb(0xBF, base + UART_LCR);
--	val =3D inb(base + UART_SCR);
-+	inb(base + UART_SCR);
- 	outb(qopr, base + UART_SCR);
- 	outb(LCR, base + UART_LCR);
- }
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
-250/8250_port.c
-index b10d05f2004b..c8d8d245350b 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1861,7 +1861,6 @@ static int serial8250_default_handle_irq(struct u=
-art_port *port)
-  */
- static int exar_handle_irq(struct uart_port *port)
- {
--	unsigned char int0, int1, int2, int3;
- 	unsigned int iir =3D serial_port_in(port, UART_IIR);
- 	int ret;
-=20
-@@ -1869,10 +1868,10 @@ static int exar_handle_irq(struct uart_port *po=
-rt)
-=20
- 	if ((port->type =3D=3D PORT_XR17V35X) ||
- 	   (port->type =3D=3D PORT_XR17D15X)) {
--		int0 =3D serial_port_in(port, 0x80);
--		int1 =3D serial_port_in(port, 0x81);
--		int2 =3D serial_port_in(port, 0x82);
--		int3 =3D serial_port_in(port, 0x83);
-+		serial_port_in(port, 0x80);
-+		serial_port_in(port, 0x81);
-+		serial_port_in(port, 0x82);
-+		serial_port_in(port, 0x83);
- 	}
-=20
- 	return ret;
-@@ -1994,8 +1993,6 @@ static void wait_for_xmitr(struct uart_8250_port =
-*up, int bits)
-=20
- 	/* Wait up to 1s for flow control if necessary */
- 	if (up->port.flags & UPF_CONS_FLOW) {
--		unsigned int tmout;
--
- 		for (tmout =3D 1000000; tmout; tmout--) {
- 			unsigned int msr =3D serial_in(up, UART_MSR);
- 			up->msr_saved_flags |=3D msr & MSR_SAVE_FLAGS;
---=20
-2.9.0
+Thank you
+Aleksey Makarov
+
+>> This patch adds function pl011_console_match() that implements
+>> method match of struct console.  It allows to match consoles against
+>> data specified in a string, for example taken from command line or
+>> compiled by ACPI SPCR table handler.
+>>
+>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+>> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> 
+> Hi Greg, Russell,
+> 
+> Can you review this patch and consider ACKing it please?
+> It had an ACK from Greg in v7 but since then I changed it a bit.
+> 
+> The patch by Christopher Covington [1] specifies that SBSA uart 
+> does 32-bit access to registers and this breaks the match function.  
+> In this series the function was changed to match when SPCR specifies
+> both mmio32 and mmio access.  I removed Acked-by: Greg from this
+> patch because of these changes.
+> 
+> The difference between v7 and v8:
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 4139b64..388edc8 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2328,10 +2329,10 @@ static int __init pl011_console_match(struct console *co, char *name, int idx,
+>  
+>                 port = &amba_ports[i]->port;
+>  
+> -               if (port->iotype != iotype)
+> +               if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
+>                         continue;
+> -               if ((iotype == UPIO_MEM || iotype == UPIO_MEM32) &&
+> -                   (port->mapbase != addr))
+> +
+> +               if (port->mapbase != addr)
+>                         continue;
+>  
+>                 co->index = i;
+> 
+> [1] https://lkml.kernel.org/g/1457415800-8799-1-git-send-email-cov@codeaurora.org
+> 
+> Thank you
+> Aleksey Makarov
+> 
+>> ---
+>>  drivers/tty/serial/amba-pl011.c | 56 +++++++++++++++++++++++++++++++++++++++++
+>>  1 file changed, 56 insertions(+)
+>>
+>> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+>> index a2aa655..388edc8 100644
+>> --- a/drivers/tty/serial/amba-pl011.c
+>> +++ b/drivers/tty/serial/amba-pl011.c
+>> @@ -2288,12 +2288,68 @@ static int __init pl011_console_setup(struct console *co, char *options)
+>>  	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
+>>  }
+>>  
+>> +/**
+>> + *	pl011_console_match - non-standard console matching
+>> + *	@co:	  registering console
+>> + *	@name:	  name from console command line
+>> + *	@idx:	  index from console command line
+>> + *	@options: ptr to option string from console command line
+>> + *
+>> + *	Only attempts to match console command lines of the form:
+>> + *	    console=pl011,mmio|mmio32,<addr>[,<options>]
+>> + *	    console=pl011,0x<addr>[,<options>]
+>> + *	This form is used to register an initial earlycon boot console and
+>> + *	replace it with the amba_console at pl011 driver init.
+>> + *
+>> + *	Performs console setup for a match (as required by interface)
+>> + *	If no <options> are specified, then assume the h/w is already setup.
+>> + *
+>> + *	Returns 0 if console matches; otherwise non-zero to use default matching
+>> + */
+>> +static int __init pl011_console_match(struct console *co, char *name, int idx,
+>> +				      char *options)
+>> +{
+>> +	char match[] = "pl011";	/* pl011-specific earlycon name */
+>> +	unsigned char iotype;
+>> +	unsigned long addr;
+>> +	int i;
+>> +
+>> +	if (strncmp(name, match, 5) != 0)
+>> +		return -ENODEV;
+>> +
+>> +	if (uart_parse_earlycon(options, &iotype, &addr, &options))
+>> +		return -ENODEV;
+>> +
+>> +	/* try to match the port specified on the command line */
+>> +	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
+>> +		struct uart_port *port;
+>> +
+>> +		if (!amba_ports[i])
+>> +			continue;
+>> +
+>> +		port = &amba_ports[i]->port;
+>> +
+>> +		if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
+>> +			continue;
+>> +
+>> +		if (port->mapbase != addr)
+>> +			continue;
+>> +
+>> +		co->index = i;
+>> +		port->cons = co;
+>> +		return pl011_console_setup(co, options);
+>> +	}
+>> +
+>> +	return -ENODEV;
+>> +}
+>> +
+>>  static struct uart_driver amba_reg;
+>>  static struct console amba_console = {
+>>  	.name		= "ttyAMA",
+>>  	.write		= pl011_console_write,
+>>  	.device		= uart_console_device,
+>>  	.setup		= pl011_console_setup,
+>> +	.match		= pl011_console_match,
+>>  	.flags		= CON_PRINTBUFFER,
+>>  	.index		= -1,
+>>  	.data		= &amba_reg,
+>>
