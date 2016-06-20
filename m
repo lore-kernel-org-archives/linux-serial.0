@@ -1,198 +1,114 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Re: [PATCH v8 0/4] ACPI: parse the SPCR table
-Date: Mon, 20 Jun 2016 19:04:28 +0300
-Message-ID: <8f19dd0d-c31e-d898-e3fe-577eaf0bbee1@linaro.org>
-References: <1463749405-11640-1-git-send-email-aleksey.makarov@linaro.org>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH 1/3] serial: pxa: make it explicitly non-modular
+Date: Mon, 20 Jun 2016 18:55:03 -0400
+Message-ID: <20160620225505.7320-2-paul.gortmaker@windriver.com>
+References: <20160620225505.7320-1-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1463749405-11640-1-git-send-email-aleksey.makarov@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: "Rafael J . Wysocki" <rjw@rjwysocki.net>
-Cc: "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-acpi@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Mark Salter <msalter@redhat.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160620225505.7320-1-paul.gortmaker@windriver.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+The Kconfig currently controlling compilation of this code is:
 
-On 05/20/2016 04:03 PM, Aleksey Makarov wrote:
+drivers/tty/serial/Kconfig:config SERIAL_PXA
+drivers/tty/serial/Kconfig:     bool "PXA serial port support"
 
-Hi Rafael,
+...meaning that it currently is not being built as a module by anyone.
 
-Can you consider this patch set for queuing up please?
+Lets remove the modular code that is essentially orphaned, so that
+when reading the driver there is no doubt it is builtin-only.
 
-You approved ACPI part. I believe it's 2/4 and 3/4.
+We explicitly disallow a driver unbind, since that doesn't have a
+sensible use case anyway, and it allows us to drop the ".remove"
+code for non-modular drivers.
 
-	https://lkml.kernel.org/g/CAJZ5v0hdoLTfjrD8+WxSoxM48dqbZK2KwY_h+63kHKHKgO=JFA@mail.gmail.com
+Since module_init translates to device_initcall in the non-modular
+case, the init ordering remains unchanged with this commit.
 
-1/4 is ACKed by Rob Herring and Greg Kroah-Hartman
+Also note that MODULE_DEVICE_TABLE and MODULE_ALIAS are both a
+no-op for non-modular builds.
 
-As for 4/4 it had an ACK from Greg but since then I had to make a small
-change.  For details look at
+We also delete the MODULE_LICENSE tag since that information is
+already contained at the top of the file in the comments.
 
-	https://lkml.kernel.org/g/c37d62c7-1e1b-0b10-a083-c5207fbbb820@gmail.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
+ drivers/tty/serial/pxa.c | 31 +++----------------------------
+ 1 file changed, 3 insertions(+), 28 deletions(-)
 
-Thank you
-Aleksey Makarov
-
-> 'ARM Server Base Boot Requirements' [1] mentions SPCR (Serial Port Console
-> Redirection Table) [2] as a mandatory ACPI table that specifies the
-> configuration of serial console.
-> 
-> Move "earlycon" early_param handling to earlycon.c to parse this option once
-> 
-> Parse SPCR table, setup earlycon and register specified console.
-> 
-> Enable parsing this table on ARM64.  Earlycon should be set up as early as
-> possible.  ACPI boot tables are mapped in
-> arch/arm64/kernel/acpi.c:acpi_boot_table_init() called from setup_arch() and
-> that's where we parse spcr.  So it has to be opted-in per-arch. When
-> ACPI_SPCR_TABLE is defined initialization of DT earlycon is deferred until the
-> DT/ACPI decision is done.
-> 
-> Implement console_match() for pl011.
-> 
-> Based on the work by Leif Lindholm [3]
-> Thanks to Peter Hurley for explaining how this should work.
-> 
-> Should be applied to next-20160520
-> Tested on QEMU and ThunderX.
-> SPCR support is included in QEMU's ARM64 mach-virt since 2.4 release.
-> 
-> v8:
-> - rebase to next-20160520
-> - remove the patch "ACPICA: Headers: Add new constants for the DBG2 ACPI table"
->   as it have got to linux-next
-> - add Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Reviewed-by:
->   Peter Hurley <peter@hurleysoftware.com> (but see below)
-> - fix the patch "serial: pl011: add console matching function".  The patch by
->   Christopher Covington [4] specifies that SBSA uart does 32-bit access to
->   registers and this breaks the match function.  In this series the function
->   was changed to match when SPCR specifies both mmio32 and mmio access.
->   I removed Acked-by: Greg from this patch because of these changes.
-> 
-> v7:
-> https://lkml.kernel.org/g/1459431629-27934-1-git-send-email-aleksey.makarov@linaro.org
-> - add Acked-by: Rob Herring for "of/serial: move earlycon early_param handling
->   to serial"
-> - call DT earlycon initialization from the arch ACPI code, not from parse_spcr()
->   (Rafael J. Wysocki)
-> - fix a few minor issues (Rafael J. Wysocki)
-> 
-> v6:
-> https://lkml.kernel.org/g/1458823925-19560-1-git-send-email-aleksey.makarov@linaro.org
-> - add documentation for parse_spcr() functioin (Yury Norov)
-> - don't initialize err variable (Yury Norov)
-> - add __initdata for the earlycon_init_is_deferred flag variable
-> - rename the function exported in "of/serial: move earlycon early_param handling
->   to serial" to avoid clash with the function from arch/microblaze/kernel/prom.c
-> - defer initialization of DT earlycon until DT/ACPI decision is made
->   (Rob Herring, Peter Hurley)
-> - use snprintf instead of sprintf (Andy Shevchenko)
-> - drop patch that adds EARLYCON_DECLARE for pl011 as EARLYCON_DECLARE is
->   equivalent to OF_EARLYCON_DECLARE for 4.6+ (Peter Hurley).  This means that
->   SPCR earlycon will not work on the kernels before 4.6
-> 
-> v5:
-> https://lkml.kernel.org/g/1458643595-14719-1-git-send-email-aleksey.makarov@linaro.org
-> - drop patch "serial: pl011: use ACPI SPCR to setup 32-bit access" because
->   it is ugly. Also because Christopher Covington came with a better solution [4]
-> - remove error message when the table is not provided by ACPI (Andy Shevchenko)
-> - rewrite spcr.c following the suggestions by Peter Hurley
-> - add console_match() for pl011 in a separate patch
-> - add EARLYCON_DECLARE for pl011 in a separate patch
-> - add patch "of/serial: move earlycon early_param handling to serial" from
->   the GDB2 series
-> 
-> v4:
-> https://lkml.kernel.org/g/1456747355-15692-1-git-send-email-aleksey.makarov@linaro.org
-> - drop patch "ACPI: change __init to __ref for early_acpi_os_unmap_memory()"
->   ACPI developers work on a new API and asked not to do that.
->   Instead, use acpi_get_table_with_size()/early_acpi_os_unmap_memory() once
->   and cache the result. (Lv Zheng)
-> - fix some style issues (Yury Norov)
-> 
-> v3:
-> https://lkml.kernel.org/g/1455559532-8305-1-git-send-email-aleksey.makarov@linaro.org
-> 
-> Greg Kroah-Hartman did not like v2 so I have rewritten this patchset:
-> 
-> - drop acpi_match() member of struct console
-> - drop implementations of this member for pl011 and 8250
-> - drop the patch that renames some vars in printk.c as it is not needed anymore
-> - drop patch that introduces system wide acpi_table_parse2().
->   Instead introduce a custom acpi_table_parse_spcr() in spcr.c
-> 
-> Instead of introducing a new match_acpi() member of struct console,
-> this patchset introduces a new function acpi_console_check().
-> This function is called when a new uart is registered at serial_core.c
-> the same way OF code checks for console.  If the registered uart is the
-> console specified by SPCR table, this function calls add_preferred_console()
-> 
-> The restrictions of this approach are:
-> 
-> - only serial consoles can be set up
-> - only consoles specified by the memory/io address can be set up
->   (SPCR can specify devices by PCI id/PCI address)
-> 
-> v2:
-> https://lkml.kernel.org/g/1455299022-11641-1-git-send-email-aleksey.makarov@linaro.org
-> - don't use SPCR if user specified console in command line
-> - fix initialization order of newcon->index = 0
-> - rename some variables at printk.c (Joe Perches, Peter Hurley)
-> - enable ACPI_SPCR_TABLE in a separate patch (Andy Shevchenko)
-> - remove the retry loop for console registering (Peter Hurley).
->   Instead, obtain SPCR with acpi_get_table().  That works after
->   call to acpi_early_init() i. e. in any *_initcall()
-> - describe design decision behind introducing acpi_match() (Peter Hurley)
-> - fix compilation for x86 + ACPI (Graeme Gregory)
-> - introduce DBG2 constants in a separate patch (Andy Shevchenko)
-> - fix a typo in DBG2 constants (Andy Shevchenko)
-> - add ACPI_DBG2_ARM_SBSA_32BIT constant (Christopher Covington)
-> - add support for ACPI_DBG2_ARM_SBSA_* consoles (Christopher Covington)
-> - add documentation for functions
-> - add a patch that uses SPCR to find if SBSA serial driver should use 32-bit
->   accessor functions (Christopher Covington)
-> - change __init to __ref for early_acpi_os_unmap_memory() in a separate patch
-> - introduce acpi_table_parse2() in a separate patch
-> - fix fetching the SPCR table early (Mark Salter)
-> - add a patch from Mark Salter that introduces support for matching 8250-based
->   consoles
-> 
-> v1:
-> https://lkml.kernel.org/g/1453722324-22407-1-git-send-email-aleksey.makarov@linaro.org
-> 
-> [1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
-> [2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
-> [3] https://lkml.kernel.org/g/1441716217-23786-1-git-send-email-leif.lindholm@linaro.org
-> [4] https://lkml.kernel.org/g/1457415800-8799-1-git-send-email-cov@codeaurora.org
-> 
-> Aleksey Makarov (3):
->   ACPI: parse SPCR and enable matching console
->   ARM64: ACPI: enable ACPI_SPCR_TABLE
->   serial: pl011: add console matching function
-> 
-> Leif Lindholm (1):
->   of/serial: move earlycon early_param handling to serial
-> 
->  arch/arm64/Kconfig              |   1 +
->  arch/arm64/kernel/acpi.c        |  11 +++-
->  drivers/acpi/Kconfig            |   3 ++
->  drivers/acpi/Makefile           |   1 +
->  drivers/acpi/spcr.c             | 111 ++++++++++++++++++++++++++++++++++++++++
->  drivers/of/fdt.c                |  11 +---
->  drivers/tty/serial/amba-pl011.c |  56 ++++++++++++++++++++
->  drivers/tty/serial/earlycon.c   |  19 ++++++-
->  include/linux/acpi.h            |   6 +++
->  include/linux/of_fdt.h          |   2 +
->  include/linux/serial_core.h     |   6 +++
->  11 files changed, 214 insertions(+), 13 deletions(-)
->  create mode 100644 drivers/acpi/spcr.c
-> 
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index 41eab75ba2af..29c2309b4b28 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -27,7 +27,6 @@
+ #define SUPPORT_SYSRQ
+ #endif
+ 
+-#include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/init.h>
+ #include <linux/console.h>
+@@ -829,7 +829,6 @@ static const struct of_device_id serial_pxa_dt_ids[] = {
+ 	{ .compatible = "mrvl,mmp-uart", },
+ 	{}
+ };
+-MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
+ 
+ static int serial_pxa_probe_dt(struct platform_device *pdev,
+ 			       struct uart_pxa_port *sport)
+@@ -914,28 +913,15 @@ static int serial_pxa_probe(struct platform_device *dev)
+ 	return ret;
+ }
+ 
+-static int serial_pxa_remove(struct platform_device *dev)
+-{
+-	struct uart_pxa_port *sport = platform_get_drvdata(dev);
+-
+-	uart_remove_one_port(&serial_pxa_reg, &sport->port);
+-
+-	clk_unprepare(sport->clk);
+-	clk_put(sport->clk);
+-	kfree(sport);
+-
+-	return 0;
+-}
+-
+ static struct platform_driver serial_pxa_driver = {
+         .probe          = serial_pxa_probe,
+-        .remove         = serial_pxa_remove,
+ 
+ 	.driver		= {
+ 	        .name	= "pxa2xx-uart",
+ #ifdef CONFIG_PM
+ 		.pm	= &serial_pxa_pm_ops,
+ #endif
++		.suppress_bind_attrs = true,
+ 		.of_match_table = serial_pxa_dt_ids,
+ 	},
+ };
+@@ -954,15 +940,4 @@ static int __init serial_pxa_init(void)
+ 
+ 	return ret;
+ }
+-
+-static void __exit serial_pxa_exit(void)
+-{
+-	platform_driver_unregister(&serial_pxa_driver);
+-	uart_unregister_driver(&serial_pxa_reg);
+-}
+-
+-module_init(serial_pxa_init);
+-module_exit(serial_pxa_exit);
+-
+-MODULE_LICENSE("GPL");
+-MODULE_ALIAS("platform:pxa2xx-uart");
++device_initcall(serial_pxa_init);
+-- 
+2.8.4
