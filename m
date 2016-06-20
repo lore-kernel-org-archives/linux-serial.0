@@ -1,7 +1,7 @@
 From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH 1/3] serial: pxa: make it explicitly non-modular
-Date: Mon, 20 Jun 2016 18:55:03 -0400
-Message-ID: <20160620225505.7320-2-paul.gortmaker@windriver.com>
+Subject: [PATCH 2/3] serial: vt8500_serial: make it explicitly non-modular
+Date: Mon, 20 Jun 2016 18:55:04 -0400
+Message-ID: <20160620225505.7320-3-paul.gortmaker@windriver.com>
 References: <20160620225505.7320-1-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,13 +9,13 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160620225505.7320-1-paul.gortmaker@windriver.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Tony Prisk <linux@prisktech.co.nz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alexey Charkov <alchark@gmail.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 The Kconfig currently controlling compilation of this code is:
 
-drivers/tty/serial/Kconfig:config SERIAL_PXA
-drivers/tty/serial/Kconfig:     bool "PXA serial port support"
+drivers/tty/serial/Kconfig:config SERIAL_VT8500
+drivers/tty/serial/Kconfig:     bool "VIA VT8500 on-chip serial port support"
 
 ...meaning that it currently is not being built as a module by anyone.
 
@@ -29,86 +29,77 @@ code for non-modular drivers.
 Since module_init translates to device_initcall in the non-modular
 case, the init ordering remains unchanged with this commit.
 
-Also note that MODULE_DEVICE_TABLE and MODULE_ALIAS are both a
-no-op for non-modular builds.
+We don't replace module.h with init.h since the file already has that.
 
-We also delete the MODULE_LICENSE tag since that information is
-already contained at the top of the file in the comments.
+We also delete the MODULE_LICENSE tag etc. since all that information
+is already contained at the top of the file in the comments.
 
+Cc: Tony Prisk <linux@prisktech.co.nz>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Alexey Charkov <alchark@gmail.com>
 Cc: linux-serial@vger.kernel.org
 Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
 ---
- drivers/tty/serial/pxa.c | 31 +++----------------------------
- 1 file changed, 3 insertions(+), 28 deletions(-)
+ drivers/tty/serial/vt8500_serial.c | 30 ++----------------------------
+ 1 file changed, 2 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 41eab75ba2af..29c2309b4b28 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -27,7 +27,6 @@
- #define SUPPORT_SYSRQ
- #endif
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index b384060e3b1f..23cfc5e16b45 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -21,7 +21,6 @@
  
+ #include <linux/hrtimer.h>
+ #include <linux/delay.h>
 -#include <linux/module.h>
+ #include <linux/io.h>
  #include <linux/ioport.h>
- #include <linux/init.h>
- #include <linux/console.h>
-@@ -829,7 +829,6 @@ static const struct of_device_id serial_pxa_dt_ids[] = {
- 	{ .compatible = "mrvl,mmp-uart", },
- 	{}
- };
--MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
- 
- static int serial_pxa_probe_dt(struct platform_device *pdev,
- 			       struct uart_pxa_port *sport)
-@@ -914,28 +913,15 @@ static int serial_pxa_probe(struct platform_device *dev)
- 	return ret;
+ #include <linux/irq.h>
+@@ -730,22 +729,12 @@ static int vt8500_serial_probe(struct platform_device *pdev)
+ 	return 0;
  }
  
--static int serial_pxa_remove(struct platform_device *dev)
+-static int vt8500_serial_remove(struct platform_device *pdev)
 -{
--	struct uart_pxa_port *sport = platform_get_drvdata(dev);
+-	struct vt8500_port *vt8500_port = platform_get_drvdata(pdev);
 -
--	uart_remove_one_port(&serial_pxa_reg, &sport->port);
--
--	clk_unprepare(sport->clk);
--	clk_put(sport->clk);
--	kfree(sport);
+-	clk_disable_unprepare(vt8500_port->clk);
+-	uart_remove_one_port(&vt8500_uart_driver, &vt8500_port->uart);
 -
 -	return 0;
 -}
 -
- static struct platform_driver serial_pxa_driver = {
-         .probe          = serial_pxa_probe,
--        .remove         = serial_pxa_remove,
- 
- 	.driver		= {
- 	        .name	= "pxa2xx-uart",
- #ifdef CONFIG_PM
- 		.pm	= &serial_pxa_pm_ops,
- #endif
+ static struct platform_driver vt8500_platform_driver = {
+ 	.probe  = vt8500_serial_probe,
+-	.remove = vt8500_serial_remove,
+ 	.driver = {
+ 		.name = "vt8500_serial",
+ 		.of_match_table = wmt_dt_ids,
 +		.suppress_bind_attrs = true,
- 		.of_match_table = serial_pxa_dt_ids,
  	},
  };
-@@ -954,15 +940,4 @@ static int __init serial_pxa_init(void)
+ 
+@@ -764,19 +753,4 @@ static int __init vt8500_serial_init(void)
  
  	return ret;
  }
 -
--static void __exit serial_pxa_exit(void)
+-static void __exit vt8500_serial_exit(void)
 -{
--	platform_driver_unregister(&serial_pxa_driver);
--	uart_unregister_driver(&serial_pxa_reg);
+-#ifdef CONFIG_SERIAL_VT8500_CONSOLE
+-	unregister_console(&vt8500_console);
+-#endif
+-	platform_driver_unregister(&vt8500_platform_driver);
+-	uart_unregister_driver(&vt8500_uart_driver);
 -}
 -
--module_init(serial_pxa_init);
--module_exit(serial_pxa_exit);
+-module_init(vt8500_serial_init);
+-module_exit(vt8500_serial_exit);
 -
--MODULE_LICENSE("GPL");
--MODULE_ALIAS("platform:pxa2xx-uart");
-+device_initcall(serial_pxa_init);
+-MODULE_AUTHOR("Alexey Charkov <alchark@gmail.com>");
+-MODULE_DESCRIPTION("Driver for vt8500 serial device");
+-MODULE_LICENSE("GPL v2");
++device_initcall(vt8500_serial_init);
 -- 
 2.8.4
