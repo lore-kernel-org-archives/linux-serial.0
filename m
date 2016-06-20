@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v9 07/11] serial: 8250: enable AFE on ports where FIFO is 16 bytes
-Date: Mon, 20 Jun 2016 12:17:58 +0300
-Message-ID: <1466414282-96691-8-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v9 09/11] serial: 8250_lpss: move Quark code from PCI driver
+Date: Mon, 20 Jun 2016 12:18:00 +0300
+Message-ID: <1466414282-96691-10-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1466414282-96691-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1466414282-96691-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,50 +10,111 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark has 16550A compatible UART with autoflow feature enabled. It has
-only 16 bytes of FIFO. Currently serial8250_do_set_termios() prevents to enable
-autoflow since the minimum requirement of 32 bytes of FIFO size.
+Intel Quark has DesignWare UART. Move the code from 8250_pci to 8250_lpss.
 
-Drop a FIFO size limitation to allow autoflow control be enabled on such UARTs.
-
-While here, comment out UART_CAP_AFE for PORT_AR7 since it wasn't working and
-it will be not a good idea to use it in conjunction with trigger level of 1
-byte.
-
-Suggested-by: Peter Hurley <peter@hurleysoftware.com>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Reviewed-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/tty/serial/8250/8250_lpss.c | 11 +++++++++++
+ drivers/tty/serial/8250/8250_pci.c  | 15 +--------------
+ 2 files changed, 12 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index d403603..be9cc37 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -178,7 +178,7 @@ static const struct serial8250_config uart_config[] = {
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
--		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-+		.flags		= UART_CAP_FIFO /* | UART_CAP_AFE */,
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 071f878..cad96ee 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -25,6 +25,8 @@
+ #define PCI_DEVICE_ID_INTEL_BSW_UART1	0x228a
+ #define PCI_DEVICE_ID_INTEL_BSW_UART2	0x228c
+ 
++#define PCI_DEVICE_ID_INTEL_QRK_UARTx	0x0936
++
+ #define PCI_DEVICE_ID_INTEL_BDW_UART1	0x9ce3
+ #define PCI_DEVICE_ID_INTEL_BDW_UART2	0x9ce4
+ 
+@@ -166,6 +168,9 @@ static int lpss8250_dma_setup(struct lpss8250 *lpss, struct uart_8250_port *port
+ 	struct dw_dma_slave *rx_param, *tx_param;
+ 	struct device *dev = port->port.dev;
+ 
++	if (!lpss->dma_param.dma_dev)
++		return 0;
++
+ 	rx_param = devm_kzalloc(dev, sizeof(*rx_param), GFP_KERNEL);
+ 	if (!rx_param)
+ 		return -ENOMEM;
+@@ -253,6 +258,11 @@ static const struct lpss8250_board byt_board = {
+ 	.setup = byt_serial_setup,
+ };
+ 
++static const struct lpss8250_board qrk_board = {
++	.freq = 44236800,
++	.base_baud = 2764800,
++};
++
+ #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
+ 
+ static const struct pci_device_id pci_ids[] = {
+@@ -260,6 +270,7 @@ static const struct pci_device_id pci_ids[] = {
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BYT_UART2, byt_board),
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART1, byt_board),
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART2, byt_board),
++	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_QRK_UARTx, qrk_board),
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART1, byt_board),
+ 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART2, byt_board),
+ 	{ },
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index bb4df5d..b94b1ee 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1765,7 +1765,6 @@ pci_wch_ch38x_setup(struct serial_private *priv,
+ #define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
+ #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
+ #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
+-#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
+ 
+ #define PCI_VENDOR_ID_SUNIX		0x1fd4
+ #define PCI_DEVICE_ID_SUNIX_1999	0x1999
+@@ -2736,7 +2735,6 @@ enum pci_board_num_t {
+ 	pbn_ADDIDATA_PCIe_4_3906250,
+ 	pbn_ADDIDATA_PCIe_8_3906250,
+ 	pbn_ce4100_1_115200,
+-	pbn_qrk,
+ 	pbn_omegapci,
+ 	pbn_NETMOS9900_2s_115200,
+ 	pbn_brcm_trumanage,
+@@ -3512,12 +3510,6 @@ static struct pciserial_board pci_boards[] = {
+ 		.base_baud	= 921600,
+ 		.reg_shift      = 2,
  	},
- 	[PORT_U6_16550A] = {
- 		.name		= "U6_16550A",
-@@ -2550,12 +2550,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+-	[pbn_qrk] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 1,
+-		.base_baud	= 2764800,
+-		.reg_shift	= 2,
+-	},
+ 	[pbn_omegapci] = {
+ 		.flags		= FL_BASE0,
+ 		.num_ports	= 8,
+@@ -3634,6 +3626,7 @@ static const struct pci_device_id blacklist[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x0f0c), },
+ 	{ PCI_VDEVICE(INTEL, 0x228a), },
+ 	{ PCI_VDEVICE(INTEL, 0x228c), },
++	{ PCI_VDEVICE(INTEL, 0x0936), },
+ 	{ PCI_VDEVICE(INTEL, 0x9ce3), },
+ 	{ PCI_VDEVICE(INTEL, 0x9ce4), },
+ };
+@@ -5303,12 +5296,6 @@ static struct pci_device_id serial_pci_tbl[] = {
+ 		pbn_ce4100_1_115200 },
+ 
  	/*
- 	 * MCR-based auto flow control.  When AFE is enabled, RTS will be
- 	 * deasserted when the receive FIFO contains more characters than
--	 * the trigger, or the MCR RTS bit is cleared.  In the case where
--	 * the remote UART is not using CTS auto flow control, we must
--	 * have sufficient FIFO entries for the latency of the remote
--	 * UART to respond.  IOW, at least 32 bytes of FIFO.
-+	 * the trigger, or the MCR RTS bit is cleared.
+-	 * Intel Quark x1000
+-	 */
+-	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_qrk },
+-	/*
+ 	 * Cronyx Omega PCI
  	 */
--	if (up->capabilities & UART_CAP_AFE && port->fifosize >= 32) {
-+	if (up->capabilities & UART_CAP_AFE) {
- 		up->mcr &= ~UART_MCR_AFE;
- 		if (termios->c_cflag & CRTSCTS)
- 			up->mcr |= UART_MCR_AFE;
+ 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
 -- 
 2.8.1
