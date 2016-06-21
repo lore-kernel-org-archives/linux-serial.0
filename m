@@ -1,93 +1,93 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH 0/3] serial: remove modular code from a few more
- non-modular drivers
-Date: Tue, 21 Jun 2016 01:30:12 -0400
-Message-ID: <20160621053012.GM12567@windriver.com>
-References: <20160620225505.7320-1-paul.gortmaker@windriver.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH 2/4] serial: sh-sci: Stop transfers in sci_shutdown()
+Date: Tue, 21 Jun 2016 07:35:57 +0000
+Message-ID: <SG2PR06MB0919E8B97E88EC68B14DF106D82B0@SG2PR06MB0919.apcprd06.prod.outlook.com>
+References: <1464286718-10745-1-git-send-email-geert+renesas@glider.be>
+ <1464286718-10745-3-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160620225505.7320-1-paul.gortmaker@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Alexey Charkov <alchark@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Tony Prisk <linux@prisktech.co.nz>, linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1464286718-10745-3-git-send-email-geert+renesas@glider.be>
+Content-Language: ja-JP
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-[[PATCH 0/3] serial: remove modular code from a few more non-modular drivers] On 20/06/2016 (Mon 18:55) Paul Gortmaker wrote:
+Hi, Geert-san,
 
-> For anyone new to the underlying goal of this cleanup, we are trying to
-> not use module support for code that can never be built as a module since:
+> From: Geert Uytterhoeven
+> Sent: Friday, May 27, 2016 3:19 AM
 > 
->  (1) it is easy to accidentally write unused module_exit and remove code
->  (2) it can be misleading when reading the source, thinking it can be
->      modular when the Makefile and/or Kconfig prohibit it
->  (3) it requires the include of the module.h header file which in turn
->      includes nearly everything else, thus adding to CPP overhead.
->  (4) it gets copied/replicated into other code and spreads like weeds.
+> Make sure the transmitter and receiver are stopped when shutting down
+> the port, and related interrupts are disabled.
 > 
-> We have already fixed a bunch of these in drivers/tty already, so there
-> is really nothing new to see here (at least for the serial maintainers).
-
-Apologies in advance to anyone who is trying to find these patches via
-an archive of linux-kernel or linux-serial ; it seems that we hit a
-window where a glitch at vger.kernel.org was rejecting incoming mails.
-
-P.
---
-
+> Without this:
+>   - New input data may be received into the RX FIFO, possibly
+>     triggering a new RX DMA completion,
+>   - Transfers will still be enabled on a subsequent startup of the UART,
+>     before the UART's FIFOs have been reset, causing reading of stale
+>     data.
 > 
-> Changes seen here cover the following categories:
+> Inspired by a patch in the BSP by Koji Matsuoka
+> <koji.matsuoka.xm@renesas.com>.
 > 
->   -just replacement of modular macros with their non-modular
->    equivalents that CPP would have inserted anyway
-> 
->   -the removal of including module.h ; replaced with init.h
->    as required based on whether the file already had it.
-> 
->   -the removal of any/all unused/orphaned __exit functions
->    that would never be called/exercised.
-> 
->   -the removal of any ".remove" functions that were hooked into
->    the driver struct.   This ".remove" function would of
->    course not be called from the __exit function since that was
->    never run.  However in theory, someone could have triggered it
->    via sysfs unbind, even though there isn't a sensible use case
->    for doing so.  So to cover that possibility, we've also disabled
->    sysfs unbind in the driver.
-> 
-> In doing so we get rid of ~70 lines of dead code across 3 drivers.
-> 
-> There are no initcall level changes here; everything was at the level
-> of device_initcall and remains so, by using the builtin equivalents.
-> 
-> Build tested for arm(2) and m32r(1) on the linux-next tree from today
-> to ensure no silly typos crept in.
-> 
-> If there is a desire for any of these to be modular, we can definitely
-> consider that, but by default the changes here keep the code consistent
-> with existing behaviour.  Thus I do not expand functionality into the
-> modular realm that I can't run time test, or even know if the modular
-> instance has a sensible modular use case.
-> 
-> Paul.
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > ---
+> Extracted from "[PATCH/RFC v3 0/4] serial: sh-sci: Add DT DMA support".
+> The issues with the serial console seen before on r8a7740/armadillo and
+> sh73a0/kzm9g seem to be gone.
 > 
-> Cc: Alexey Charkov <alchark@gmail.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Cc: Tony Prisk <linux@prisktech.co.nz>
-> Cc: linux-serial@vger.kernel.org
-> 
-> Paul Gortmaker (3):
->   serial: pxa: make it explicitly non-modular
->   serial: vt8500_serial: make it explicitly non-modular
->   serial: m32r_sio: make it explicitly non-modular
-> 
->  drivers/tty/serial/m32r_sio.c      | 18 +-----------------
->  drivers/tty/serial/pxa.c           | 31 +++----------------------------
->  drivers/tty/serial/vt8500_serial.c | 30 ++----------------------------
->  3 files changed, 6 insertions(+), 73 deletions(-)
-> 
-> -- 
-> 2.8.4
+> Changes after resurrection:
+>   - Write zero to also disable related interrupts, as suggested by
+>     Laurent Pinchart,
+
+If we write zero to the register, we cannot use the port as a console after it is called.
+In fact, I have an issue while rc scripts are running on my root filesystem.
+When rc scripts is running, "shutdown" is called a lot.
+After the "shutdown", if the kernel will put strings using a console, it cannot put strings
+because the register is zero (TE and CKE are 0). So, we have to consider it.
+
+FYI, I made a patch to fix this issue.
+(Perhaps, both the CKE and TE should be set in the serial_console_write(), but I don't know how to set the CKE for now :) )
+
+Best regards,
+Yoshihiro Shimoda
+---
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index afa25ec..b5b1b38 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1989,6 +1989,7 @@ static void sci_shutdown(struct uart_port *port)
+ {
+ 	struct sci_port *s = to_sci_port(port);
+ 	unsigned long flags;
++	unsigned int ctrl;
+ 
+ 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
+ 
+@@ -1998,8 +1999,12 @@ static void sci_shutdown(struct uart_port *port)
+ 	spin_lock_irqsave(&port->lock, flags);
+ 	sci_stop_rx(port);
+ 	sci_stop_tx(port);
+-	/* Stop RX and TX, disable related interrupts */
+-	serial_port_out(port, SCSCR, 0);
++	/* Stop RX and TX, disable related interrupts, keep clock source */
++	ctrl = serial_port_in(port, SCSCR);
++	ctrl = (s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0)) |
++		    (ctrl & (SCSCR_CKE1 | SCSCR_CKE0));
++	serial_port_out(port, SCSCR, ctrl);
++
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+@@ -2801,6 +2806,8 @@ static void serial_console_write(struct console *co, const char *s,
+ 	ctrl = serial_port_in(port, SCSCR);
+ 	ctrl_temp = (sci_port->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0)) |
+ 		    (ctrl & (SCSCR_CKE1 | SCSCR_CKE0));
++	ctrl_temp |= SCSCR_TE;	/* FIXME: while "break ctl" is on */
++
+ 	serial_port_out(port, SCSCR, ctrl_temp);
+ 
+ 	uart_console_write(port, s, count, serial_console_putchar);
