@@ -1,75 +1,24 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
+From: Yury Norov <ynorov@caviumnetworks.com>
 Subject: Re: [PATCH v8 4/4] serial: pl011: add console matching function
-Date: Wed, 22 Jun 2016 13:35:08 +0300
-Message-ID: <8e74d0d1-7550-acf3-c359-e0916a091fc2@linaro.org>
+Date: Wed, 22 Jun 2016 15:18:13 +0300
+Message-ID: <20160622121813.GA20023@yury-N73SV>
 References: <1463749405-11640-1-git-send-email-aleksey.makarov@linaro.org>
  <1463749405-11640-5-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <1463749405-11640-5-git-send-email-aleksey.makarov@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Jiri Slaby <jslaby@suse.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Russell King <linux@armlinux.org.uk>, linux-acpi@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Mark Salter <msalter@redhat.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-
-On 05/20/2016 04:03 PM, Aleksey Makarov wrote:
+On Fri, May 20, 2016 at 04:03:23PM +0300, Aleksey Makarov wrote:
 > This patch adds function pl011_console_match() that implements
 > method match of struct console.  It allows to match consoles against
 > data specified in a string, for example taken from command line or
 > compiled by ACPI SPCR table handler.
-
-Hi Greg,
-
-Can you review this new version of the patch and consider ACKing it please?
-
-It had your ACK before but I had to make some changes:
-
-The patch by Christopher Covington [1] specifies that SBSA uart
-does 32-bit access to registers and this breaks the match function.
-In this series the function was changed to match with both mmio32 and
-mmio access. I removed Acked-by: Greg from this patch because of these
-changes.
-
-The difference between v7 and v8:
-
-diff --git a/drivers/tty/serial/amba-pl011.c
-b/drivers/tty/serial/amba-pl011.c
-index 4139b64..388edc8 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2328,10 +2329,10 @@ static int __init pl011_console_match(struct
-console *co, char *name, int idx,
-
-                port = &amba_ports[i]->port;
-
--               if (port->iotype != iotype)
-+               if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
-                        continue;
--               if ((iotype == UPIO_MEM || iotype == UPIO_MEM32) &&
--                   (port->mapbase != addr))
-+
-+               if (port->mapbase != addr)
-                        continue;
-
-                co->index = i;
-
-[1]
-https://lkml.kernel.org/g/1457415800-8799-1-git-send-email-cov@codeaurora.org
-
-Thank you
-Aleksey Makarov
-
 > 
 > Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
 > Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
@@ -128,6 +77,11 @@ Aleksey Makarov
 > +
 > +		if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
 > +			continue;
+
+So it looks like iotype is constant inside the loop, and UPIO_MEM
+and UPIO_MEM32 too, of course. It means you can move this check out of
+cycle and avoid ports traversing at all in specific case. Am I wrong?
+
 > +
 > +		if (port->mapbase != addr)
 > +			continue;
@@ -150,4 +104,5 @@ Aleksey Makarov
 >  	.flags		= CON_PRINTBUFFER,
 >  	.index		= -1,
 >  	.data		= &amba_reg,
-> 
+> -- 
+> 2.8.2
