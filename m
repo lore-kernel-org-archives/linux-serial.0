@@ -1,71 +1,153 @@
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH v2] tty: serial: msm: Don't reconfigure same baud rate
-Date: Wed, 22 Jun 2016 10:59:04 +0100
-Message-ID: <576A6168.1000901@linaro.org>
-References: <1465844571-1229-1-git-send-email-bjorn.andersson@linaro.org>
- <1466101475-8851-1-git-send-email-bjorn.andersson@linaro.org>
- <CAP71WjyPiDK+rr6Z6=Cvp_Bjrpd2HSQ_K58ucJqJ5ZWs_4khtw@mail.gmail.com>
- <CAP71WjzCYvwiS6BhjF8V=vi20_6ekcZk73qFF5zSf=tcCV20wQ@mail.gmail.com>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v8 4/4] serial: pl011: add console matching function
+Date: Wed, 22 Jun 2016 13:35:08 +0300
+Message-ID: <8e74d0d1-7550-acf3-c359-e0916a091fc2@linaro.org>
+References: <1463749405-11640-1-git-send-email-aleksey.makarov@linaro.org>
+ <1463749405-11640-5-git-send-email-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAP71WjzCYvwiS6BhjF8V=vi20_6ekcZk73qFF5zSf=tcCV20wQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Dechesne <nicolas.dechesne@linaro.org>, Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Andy Gross <andy.gross@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1463749405-11640-5-git-send-email-aleksey.makarov@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Jiri Slaby <jslaby@suse.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Russell King <linux@armlinux.org.uk>, linux-acpi@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Mark Salter <msalter@redhat.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
 
+On 05/20/2016 04:03 PM, Aleksey Makarov wrote:
+> This patch adds function pl011_console_match() that implements
+> method match of struct console.  It allows to match consoles against
+> data specified in a string, for example taken from command line or
+> compiled by ACPI SPCR table handler.
 
-On 21/06/16 10:43, Nicolas Dechesne wrote:
-> On Fri, Jun 17, 2016 at 1:02 PM, Nicolas Dechesne
-> <nicolas.dechesne@linaro.org> wrote:
->> <bjorn.andersson@linaro.org> wrote:
->>> msm_set_termios() is called whenever the tty is opened. Setting the=
- baud
->>> rate requires a full reset of the msm serial block, even when the r=
-ate
->>> is unchanged. In the case when the same uart is used as console thi=
-s
->>> reset will discard any console output data still being clocked out =
-of
->>> the TX fifo.
->>>
->>> By skipping the rate-change in the case where the baud rate is unch=
-anged
->>> since last request we can avoid the reset and the discarding of the
->>> data.
->>>
->>> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
->>
->>
->> Tested-by: Nicolas Dechesne <nicolas.dechesne@linaro.org>
->>
->> I no longer see this type of corruption on serial console
->>
->> [    6.325118] ALSA device =EF=BF=BD[    6.333338] Freeing unused ke=
-rnel
->> memory: 572K (ffffffc000c10000 - ffffffc000c9f000)
->> [   13.800269]  remoteproc2: remote processor a20400=EF=BF=BD[  OK  =
-] Started
->> Start the WCN core.
->> [ =EF=BF=BD         Starting Update UTMP about System Runlevel Chang=
-es...
->
->
-> oops. today i tried on APQ8064 boards , both IFC6410Plus and SD
-> 600eval, and I can no longer 'type' into the serial console, I can ge=
-t
-> debug messages though. Reverting this change 'fixes' the problem.
+Hi Greg,
 
-Am also hitting the same issue as Nico on IFC6410 with this patch.
+Can you review this new version of the patch and consider ACKing it please?
 
+It had your ACK before but I had to make some changes:
 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-m=
-sm" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+The patch by Christopher Covington [1] specifies that SBSA uart
+does 32-bit access to registers and this breaks the match function.
+In this series the function was changed to match with both mmio32 and
+mmio access. I removed Acked-by: Greg from this patch because of these
+changes.
+
+The difference between v7 and v8:
+
+diff --git a/drivers/tty/serial/amba-pl011.c
+b/drivers/tty/serial/amba-pl011.c
+index 4139b64..388edc8 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2328,10 +2329,10 @@ static int __init pl011_console_match(struct
+console *co, char *name, int idx,
+
+                port = &amba_ports[i]->port;
+
+-               if (port->iotype != iotype)
++               if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
+                        continue;
+-               if ((iotype == UPIO_MEM || iotype == UPIO_MEM32) &&
+-                   (port->mapbase != addr))
++
++               if (port->mapbase != addr)
+                        continue;
+
+                co->index = i;
+
+[1]
+https://lkml.kernel.org/g/1457415800-8799-1-git-send-email-cov@codeaurora.org
+
+Thank you
+Aleksey Makarov
+
+> 
+> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> ---
+>  drivers/tty/serial/amba-pl011.c | 56 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 56 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index a2aa655..388edc8 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2288,12 +2288,68 @@ static int __init pl011_console_setup(struct console *co, char *options)
+>  	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
+>  }
+>  
+> +/**
+> + *	pl011_console_match - non-standard console matching
+> + *	@co:	  registering console
+> + *	@name:	  name from console command line
+> + *	@idx:	  index from console command line
+> + *	@options: ptr to option string from console command line
+> + *
+> + *	Only attempts to match console command lines of the form:
+> + *	    console=pl011,mmio|mmio32,<addr>[,<options>]
+> + *	    console=pl011,0x<addr>[,<options>]
+> + *	This form is used to register an initial earlycon boot console and
+> + *	replace it with the amba_console at pl011 driver init.
+> + *
+> + *	Performs console setup for a match (as required by interface)
+> + *	If no <options> are specified, then assume the h/w is already setup.
+> + *
+> + *	Returns 0 if console matches; otherwise non-zero to use default matching
+> + */
+> +static int __init pl011_console_match(struct console *co, char *name, int idx,
+> +				      char *options)
+> +{
+> +	char match[] = "pl011";	/* pl011-specific earlycon name */
+> +	unsigned char iotype;
+> +	unsigned long addr;
+> +	int i;
+> +
+> +	if (strncmp(name, match, 5) != 0)
+> +		return -ENODEV;
+> +
+> +	if (uart_parse_earlycon(options, &iotype, &addr, &options))
+> +		return -ENODEV;
+> +
+> +	/* try to match the port specified on the command line */
+> +	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
+> +		struct uart_port *port;
+> +
+> +		if (!amba_ports[i])
+> +			continue;
+> +
+> +		port = &amba_ports[i]->port;
+> +
+> +		if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
+> +			continue;
+> +
+> +		if (port->mapbase != addr)
+> +			continue;
+> +
+> +		co->index = i;
+> +		port->cons = co;
+> +		return pl011_console_setup(co, options);
+> +	}
+> +
+> +	return -ENODEV;
+> +}
+> +
+>  static struct uart_driver amba_reg;
+>  static struct console amba_console = {
+>  	.name		= "ttyAMA",
+>  	.write		= pl011_console_write,
+>  	.device		= uart_console_device,
+>  	.setup		= pl011_console_setup,
+> +	.match		= pl011_console_match,
+>  	.flags		= CON_PRINTBUFFER,
+>  	.index		= -1,
+>  	.data		= &amba_reg,
+> 
