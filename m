@@ -1,7 +1,7 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 05/16] tty: vt, consw->con_scrolldelta cleanup
-Date: Thu, 23 Jun 2016 13:34:26 +0200
-Message-ID: <20160623113437.28416-5-jslaby@suse.cz>
+Subject: [PATCH 06/16] tty: vt, consw->con_set_palette cleanup
+Date: Thu, 23 Jun 2016 13:34:27 +0200
+Message-ID: <20160623113437.28416-6-jslaby@suse.cz>
 References: <20160623113437.28416-1-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160623113437.28416-1-jslaby@suse.cz>
@@ -10,12 +10,12 @@ To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Thomas Winischhofer <thomas@winischhofer.net>, linux-usb@vger.kernel.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, linux-fbdev@vger.kernel.org, linux-parisc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-* allow NULL consw->con_scrolldelta (some consoles define an empty
+* allow NULL consw->con_set_palette (some consoles define an empty
   hook)
 * => remove empty hooks now
-* return value of consw->con_scrolldelta is never checked => make the
+* return value of consw->con_set_palette is never checked => make the
   function void
-* document consw->con_scrolldelta a bit
+* document consw->con_set_palette a bit
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 Cc: Thomas Winischhofer <thomas@winischhofer.net>
@@ -28,316 +28,250 @@ Cc: linux-fbdev@vger.kernel.org
 Cc: linux-parisc@vger.kernel.org
 ---
  drivers/tty/vt/vt.c                     |  2 +-
- drivers/usb/misc/sisusbvga/sisusb_con.c | 11 +++--------
+ drivers/usb/misc/sisusbvga/sisusb_con.c | 11 ++++-------
  drivers/video/console/dummycon.c        |  1 -
- drivers/video/console/fbcon.c           | 16 +++++++---------
+ drivers/video/console/fbcon.c           | 10 +++++-----
  drivers/video/console/mdacon.c          |  6 ------
- drivers/video/console/newport_con.c     |  7 -------
+ drivers/video/console/newport_con.c     |  6 ------
  drivers/video/console/sticon.c          |  6 ------
- drivers/video/console/vgacon.c          | 13 +++++--------
- include/linux/console.h                 |  8 +++++++-
- 9 files changed, 23 insertions(+), 47 deletions(-)
+ drivers/video/console/vgacon.c          |  7 ++-----
+ include/linux/console.h                 |  4 +++-
+ 9 files changed, 15 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index abc79ae19079..365a91d01a0e 100644
+index 365a91d01a0e..d5d906051613 100644
 --- a/drivers/tty/vt/vt.c
 +++ b/drivers/tty/vt/vt.c
-@@ -2468,7 +2468,7 @@ static void console_callback(struct work_struct *ignored)
- 	if (scrollback_delta) {
- 		struct vc_data *vc = vc_cons[fg_console].d;
- 		clear_selection();
--		if (vc->vc_mode == KD_TEXT)
-+		if (vc->vc_mode == KD_TEXT && vc->vc_sw->con_scrolldelta)
- 			vc->vc_sw->con_scrolldelta(vc, scrollback_delta);
- 		scrollback_delta = 0;
- 	}
+@@ -3978,7 +3978,7 @@ static void set_palette(struct vc_data *vc)
+ {
+ 	WARN_CONSOLE_UNLOCKED();
+ 
+-	if (vc->vc_mode != KD_GRAPHICS)
++	if (vc->vc_mode != KD_GRAPHICS && vc->vc_sw->con_set_palette)
+ 		vc->vc_sw->con_set_palette(vc, color_table);
+ }
+ 
 diff --git a/drivers/usb/misc/sisusbvga/sisusb_con.c b/drivers/usb/misc/sisusbvga/sisusb_con.c
-index 0ebbf49cd649..a8244ebeb7a7 100644
+index a8244ebeb7a7..4112835f4aed 100644
 --- a/drivers/usb/misc/sisusbvga/sisusb_con.c
 +++ b/drivers/usb/misc/sisusbvga/sisusb_con.c
-@@ -717,24 +717,22 @@ sisusbcon_blank(struct vc_data *c, int blank, int mode_switch)
+@@ -595,7 +595,7 @@ sisusbcon_save_screen(struct vc_data *c)
  }
  
  /* interface routine */
 -static int
 +static void
- sisusbcon_scrolldelta(struct vc_data *c, int lines)
+ sisusbcon_set_palette(struct vc_data *c, const unsigned char *table)
  {
  	struct sisusb_usb_data *sisusb;
- 	int margin = c->vc_size_row * 4;
- 	int ul, we, p, st;
+@@ -604,17 +604,17 @@ sisusbcon_set_palette(struct vc_data *c, const unsigned char *table)
+ 	/* Return value not used by vt */
  
--	/* The return value does not seem to be used */
--
+ 	if (!CON_IS_VISIBLE(c))
+-		return -EINVAL;
++		return;
+ 
  	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
  	if (!sisusb)
--		return 0;
+-		return -EINVAL;
 +		return;
  
  	/* sisusb->lock is down */
  
  	if (sisusb_is_inactive(c, sisusb)) {
  		mutex_unlock(&sisusb->lock);
--		return 0;
+-		return -EINVAL;
 +		return;
  	}
  
- 	if (!lines)		/* Turn scrollback off */
-@@ -774,8 +772,6 @@ sisusbcon_scrolldelta(struct vc_data *c, int lines)
- 	sisusbcon_set_start_address(sisusb, c);
+ 	for (i = j = 0; i < 16; i++) {
+@@ -629,8 +629,6 @@ sisusbcon_set_palette(struct vc_data *c, const unsigned char *table)
+ 	}
  
  	mutex_unlock(&sisusb->lock);
 -
--	return 1;
+-	return 0;
  }
  
- /* Interface routine */
-@@ -1433,7 +1429,6 @@ static const struct consw sisusb_dummy_con = {
+ /* interface routine */
+@@ -1428,7 +1426,6 @@ static const struct consw sisusb_dummy_con = {
+ 	.con_font_get =		SISUSBCONDUMMY,
  	.con_font_default =	SISUSBCONDUMMY,
  	.con_font_copy =	SISUSBCONDUMMY,
- 	.con_set_palette =	SISUSBCONDUMMY,
--	.con_scrolldelta =	SISUSBCONDUMMY,
+-	.con_set_palette =	SISUSBCONDUMMY,
  };
  
  int
 diff --git a/drivers/video/console/dummycon.c b/drivers/video/console/dummycon.c
-index 0efc52f11ad0..9ce03b9aba88 100644
+index 9ce03b9aba88..0ef544ef5634 100644
 --- a/drivers/video/console/dummycon.c
 +++ b/drivers/video/console/dummycon.c
-@@ -72,6 +72,5 @@ const struct consw dummy_con = {
+@@ -71,6 +71,5 @@ const struct consw dummy_con = {
+     .con_font_get =	DUMMY,
      .con_font_default =	DUMMY,
      .con_font_copy =	DUMMY,
-     .con_set_palette =	DUMMY,
--    .con_scrolldelta =	DUMMY,
+-    .con_set_palette =	DUMMY,
  };
  EXPORT_SYMBOL_GPL(dummy_con);
 diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
-index afd3301ac40c..eadc7bf62eb3 100644
+index eadc7bf62eb3..9359b06377cf 100644
 --- a/drivers/video/console/fbcon.c
 +++ b/drivers/video/console/fbcon.c
-@@ -171,7 +171,6 @@ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
+@@ -170,7 +170,7 @@ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
+ 			int height, int width);
  static int fbcon_switch(struct vc_data *vc);
  static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch);
- static int fbcon_set_palette(struct vc_data *vc, const unsigned char *table);
--static int fbcon_scrolldelta(struct vc_data *vc, int lines);
+-static int fbcon_set_palette(struct vc_data *vc, const unsigned char *table);
++static void fbcon_set_palette(struct vc_data *vc, const unsigned char *table);
  
  /*
   *  Internal routines
-@@ -2765,7 +2764,7 @@ static void fbcon_invert_region(struct vc_data *vc, u16 * p, int cnt)
- 	}
- }
+@@ -2651,17 +2651,17 @@ static struct fb_cmap palette_cmap = {
+ 	0, 16, palette_red, palette_green, palette_blue, NULL
+ };
  
--static int fbcon_scrolldelta(struct vc_data *vc, int lines)
-+static void fbcon_scrolldelta(struct vc_data *vc, int lines)
+-static int fbcon_set_palette(struct vc_data *vc, const unsigned char *table)
++static void fbcon_set_palette(struct vc_data *vc, const unsigned char *table)
  {
- 	struct fb_info *info = registered_fb[con2fb_map[fg_console]];
- 	struct fbcon_ops *ops = info->fbcon_par;
-@@ -2774,9 +2773,9 @@ static int fbcon_scrolldelta(struct vc_data *vc, int lines)
- 
- 	if (softback_top) {
- 		if (vc->vc_num != fg_console)
--			return 0;
-+			return;
- 		if (vc->vc_mode != KD_TEXT || !lines)
--			return 0;
-+			return;
- 		if (logo_shown >= 0) {
- 			struct vc_data *conp2 = vc_cons[logo_shown].d;
- 
-@@ -2809,11 +2808,11 @@ static int fbcon_scrolldelta(struct vc_data *vc, int lines)
- 		fbcon_cursor(vc, CM_ERASE | CM_SOFTBACK);
- 		fbcon_redraw_softback(vc, disp, lines);
- 		fbcon_cursor(vc, CM_DRAW | CM_SOFTBACK);
--		return 0;
-+		return;
- 	}
- 
- 	if (!scrollback_phys_max)
--		return -ENOSYS;
-+		return;
- 
- 	scrollback_old = scrollback_current;
- 	scrollback_current -= lines;
-@@ -2822,10 +2821,10 @@ static int fbcon_scrolldelta(struct vc_data *vc, int lines)
- 	else if (scrollback_current > scrollback_max)
- 		scrollback_current = scrollback_max;
- 	if (scrollback_current == scrollback_old)
--		return 0;
-+		return;
+ 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
+ 	int i, j, k, depth;
+ 	u8 val;
  
  	if (fbcon_is_inactive(vc, info))
+-		return -EINVAL;
++		return;
+ 
+ 	if (!CON_IS_VISIBLE(vc))
 -		return 0;
 +		return;
  
- 	fbcon_cursor(vc, CM_ERASE);
+ 	depth = fb_get_color_depth(&info->var, &info->fix);
+ 	if (depth > 3) {
+@@ -2683,7 +2683,7 @@ static int fbcon_set_palette(struct vc_data *vc, const unsigned char *table)
+ 	} else
+ 		fb_copy_cmap(fb_default_cmap(1 << depth), &palette_cmap);
  
-@@ -2852,7 +2851,6 @@ static int fbcon_scrolldelta(struct vc_data *vc, int lines)
- 
- 	if (!scrollback_current)
- 		fbcon_cursor(vc, CM_DRAW);
--	return 0;
+-	return fb_set_cmap(&palette_cmap, info);
++	fb_set_cmap(&palette_cmap, info);
  }
  
- static int fbcon_set_origin(struct vc_data *vc)
+ static u16 *fbcon_screen_pos(struct vc_data *vc, int offset)
 diff --git a/drivers/video/console/mdacon.c b/drivers/video/console/mdacon.c
-index 8edc062536a8..234af26b4829 100644
+index 234af26b4829..1fe5245eb6dd 100644
 --- a/drivers/video/console/mdacon.c
 +++ b/drivers/video/console/mdacon.c
-@@ -505,11 +505,6 @@ static int mdacon_blank(struct vc_data *c, int blank, int mode_switch)
- 	}
+@@ -481,11 +481,6 @@ static int mdacon_switch(struct vc_data *c)
+ 	return 1;	/* redrawing needed */
  }
  
--static int mdacon_scrolldelta(struct vc_data *c, int lines)
+-static int mdacon_set_palette(struct vc_data *c, const unsigned char *table)
 -{
--	return 0;
+-	return -EINVAL;
 -}
 -
- static void mdacon_cursor(struct vc_data *c, int mode)
+ static int mdacon_blank(struct vc_data *c, int blank, int mode_switch)
  {
- 	if (mode == CM_ERASE) {
-@@ -578,7 +573,6 @@ static const struct consw mda_con = {
+ 	if (mda_type == TYPE_MDA) {
+@@ -572,7 +567,6 @@ static const struct consw mda_con = {
+ 	.con_bmove =		mdacon_bmove,
  	.con_switch =		mdacon_switch,
  	.con_blank =		mdacon_blank,
- 	.con_set_palette =	mdacon_set_palette,
--	.con_scrolldelta =	mdacon_scrolldelta,
+-	.con_set_palette =	mdacon_set_palette,
  	.con_build_attr =	mdacon_build_attr,
  	.con_invert_region =	mdacon_invert_region,
  };
 diff --git a/drivers/video/console/newport_con.c b/drivers/video/console/newport_con.c
-index 0553dfe684ef..eb3d4ce12cd5 100644
+index eb3d4ce12cd5..a436930f9e5d 100644
 --- a/drivers/video/console/newport_con.c
 +++ b/drivers/video/console/newport_con.c
-@@ -579,12 +579,6 @@ static int newport_set_palette(struct vc_data *vc, const unsigned char *table)
- 	return -EINVAL;
+@@ -574,11 +574,6 @@ static int newport_font_set(struct vc_data *vc, struct console_font *font, unsig
+ 	return newport_set_font(vc->vc_num, font);
  }
  
--static int newport_scrolldelta(struct vc_data *vc, int lines)
+-static int newport_set_palette(struct vc_data *vc, const unsigned char *table)
 -{
--	/* there is (nearly) no off-screen memory, so we can't scroll back */
--	return 0;
+-	return -EINVAL;
 -}
 -
  static int newport_scroll(struct vc_data *vc, int t, int b, int dir,
  			  int lines)
  {
-@@ -735,7 +729,6 @@ const struct consw newport_con = {
+@@ -728,7 +723,6 @@ const struct consw newport_con = {
+ 	.con_blank	  = newport_blank,
  	.con_font_set	  = newport_font_set,
  	.con_font_default = newport_font_default,
- 	.con_set_palette  = newport_set_palette,
--	.con_scrolldelta  = newport_scrolldelta,
+-	.con_set_palette  = newport_set_palette,
  	.con_set_origin	  = DUMMY,
  	.con_save_screen  = DUMMY
  };
 diff --git a/drivers/video/console/sticon.c b/drivers/video/console/sticon.c
-index e440c2d9fe7c..20f6a2f5d4a7 100644
+index 20f6a2f5d4a7..fe7c4dbb676e 100644
 --- a/drivers/video/console/sticon.c
 +++ b/drivers/video/console/sticon.c
-@@ -256,11 +256,6 @@ static int sticon_blank(struct vc_data *c, int blank, int mode_switch)
-     return 1;
+@@ -79,11 +79,6 @@ static const char *sticon_startup(void)
+     return "STI console";
  }
  
--static int sticon_scrolldelta(struct vc_data *conp, int lines)
+-static int sticon_set_palette(struct vc_data *c, const unsigned char *table)
 -{
--    return 0;
+-    return -EINVAL;
 -}
 -
- static u16 *sticon_screen_pos(struct vc_data *conp, int offset)
+ static void sticon_putc(struct vc_data *conp, int c, int ypos, int xpos)
  {
-     int line;
-@@ -359,7 +354,6 @@ static const struct consw sti_con = {
+     int redraw_cursor = 0;
+@@ -353,7 +348,6 @@ static const struct consw sti_con = {
+ 	.con_bmove		= sticon_bmove,
  	.con_switch		= sticon_switch,
  	.con_blank		= sticon_blank,
- 	.con_set_palette	= sticon_set_palette,
--	.con_scrolldelta	= sticon_scrolldelta,
+-	.con_set_palette	= sticon_set_palette,
  	.con_set_origin		= sticon_set_origin,
  	.con_save_screen	= sticon_save_screen, 
  	.con_build_attr		= sticon_build_attr,
 diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
-index 8bf911002cba..f447d6916991 100644
+index f447d6916991..aaae9bd23900 100644
 --- a/drivers/video/console/vgacon.c
 +++ b/drivers/video/console/vgacon.c
-@@ -80,7 +80,7 @@ static void vgacon_deinit(struct vc_data *c);
- static void vgacon_cursor(struct vc_data *c, int mode);
- static int vgacon_switch(struct vc_data *c);
- static int vgacon_blank(struct vc_data *c, int blank, int mode_switch);
--static int vgacon_scrolldelta(struct vc_data *c, int lines);
-+static void vgacon_scrolldelta(struct vc_data *c, int lines);
- static int vgacon_set_origin(struct vc_data *c);
- static void vgacon_save_screen(struct vc_data *c);
- static int vgacon_scroll(struct vc_data *c, int t, int b, int dir,
-@@ -248,18 +248,18 @@ static void vgacon_restore_screen(struct vc_data *c)
+@@ -856,16 +856,13 @@ static void vga_set_palette(struct vc_data *vc, const unsigned char *table)
  	}
  }
  
--static int vgacon_scrolldelta(struct vc_data *c, int lines)
-+static void vgacon_scrolldelta(struct vc_data *c, int lines)
+-static int vgacon_set_palette(struct vc_data *vc, const unsigned char *table)
++static void vgacon_set_palette(struct vc_data *vc, const unsigned char *table)
  {
- 	int start, end, count, soff;
- 
- 	if (!lines) {
- 		c->vc_visible_origin = c->vc_origin;
- 		vga_set_mem_top(c);
--		return 1;
+ #ifdef CAN_LOAD_PALETTE
+ 	if (vga_video_type != VIDEO_TYPE_VGAC || vga_palette_blanked
+ 	    || !CON_IS_VISIBLE(vc))
+-		return -EINVAL;
 +		return;
- 	}
- 
- 	if (!vgacon_scrollback)
--		return 1;
-+		return;
- 
- 	if (!vgacon_scrollback_save) {
- 		vgacon_cursor(c, CM_ERASE);
-@@ -320,8 +320,6 @@ static int vgacon_scrolldelta(struct vc_data *c, int lines)
- 			scr_memcpyw(d, s, diff * c->vc_size_row);
- 	} else
- 		vgacon_cursor(c, CM_MOVE);
--
--	return 1;
+ 	vga_set_palette(vc, table);
+-	return 0;
+-#else
+-	return -EINVAL;
+ #endif
  }
- #else
- #define vgacon_scrollback_startup(...) do { } while (0)
-@@ -334,7 +332,7 @@ static void vgacon_restore_screen(struct vc_data *c)
- 		vgacon_scrolldelta(c, 0);
- }
- 
--static int vgacon_scrolldelta(struct vc_data *c, int lines)
-+static void vgacon_scrolldelta(struct vc_data *c, int lines)
- {
- 	if (!lines)		/* Turn scrollback off */
- 		c->vc_visible_origin = c->vc_origin;
-@@ -362,7 +360,6 @@ static int vgacon_scrolldelta(struct vc_data *c, int lines)
- 		c->vc_visible_origin = vga_vram_base + (p + ul) % we;
- 	}
- 	vga_set_mem_top(c);
--	return 1;
- }
- #endif /* CONFIG_VGACON_SOFT_SCROLLBACK */
  
 diff --git a/include/linux/console.h b/include/linux/console.h
-index 98c8615dc300..d175de8d7006 100644
+index d175de8d7006..382a527104c4 100644
 --- a/include/linux/console.h
 +++ b/include/linux/console.h
-@@ -28,6 +28,12 @@ struct tty_struct;
- #define VT100ID "\033[?1;2c"
- #define VT102ID "\033[?6c"
- 
-+/**
-+ * struct consw - callbacks for consoles
-+ *
-+ * @con_scrolldelta: the contents of the console should be scrolled by @lines.
-+ *		     Invoked by user. (optional)
-+ */
- struct consw {
- 	struct module *owner;
- 	const char *(*con_startup)(void);
-@@ -48,7 +54,7 @@ struct consw {
+@@ -31,6 +31,7 @@ struct tty_struct;
+ /**
+  * struct consw - callbacks for consoles
+  *
++ * @con_set_palette: sets the palette of the console to @table (optional)
+  * @con_scrolldelta: the contents of the console should be scrolled by @lines.
+  *		     Invoked by user. (optional)
+  */
+@@ -53,7 +54,8 @@ struct consw {
+ 	int	(*con_font_copy)(struct vc_data *, int);
  	int     (*con_resize)(struct vc_data *, unsigned int, unsigned int,
  			       unsigned int);
- 	int	(*con_set_palette)(struct vc_data *, const unsigned char *);
--	int	(*con_scrolldelta)(struct vc_data *, int);
-+	void	(*con_scrolldelta)(struct vc_data *, int lines);
+-	int	(*con_set_palette)(struct vc_data *, const unsigned char *);
++	void	(*con_set_palette)(struct vc_data *,
++			const unsigned char *table);
+ 	void	(*con_scrolldelta)(struct vc_data *, int lines);
  	int	(*con_set_origin)(struct vc_data *);
  	void	(*con_save_screen)(struct vc_data *);
- 	u8	(*con_build_attr)(struct vc_data *, u8, u8, u8, u8, u8, u8);
 -- 
 2.9.0
