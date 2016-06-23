@@ -1,96 +1,124 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 01/16] tty: 8250, remove shadow and unused variables
-Date: Thu, 23 Jun 2016 13:34:22 +0200
-Message-ID: <20160623113437.28416-1-jslaby@suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Subject: [PATCH 15/16] tty: vt, ignore PIO_UNIMAPCLR param
+Date: Thu, 23 Jun 2016 13:34:36 +0200
+Message-ID: <20160623113437.28416-15-jslaby@suse.cz>
+References: <20160623113437.28416-1-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160623113437.28416-1-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Matt Schulte <matts@commtech-fastcom.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-The compiler complains about variables that are set, but never used:
-* intX variables in exar_handle_irq
-  drivers/tty/serial/8250/8250_port.c:1864:34: warning: variable =E2=80=
-=98int3=E2=80=99 set but not used [-Wunused-but-set-variable]
-* val variable in pci_quatech_wqopr
-  drivers/tty/serial/8250/8250_pci.c:1139:10: warning: variable =E2=80=98=
-val=E2=80=99 set but not used [-Wunused-but-set-variable]
-
-And about a shadow variable:
-* tmout in wait_for_xmitr is defined twice with the same type. Both of
-  them are also initialized before use.
-
-Remove all of them.
+We do not do hashtables for unicode fonts since 1995 (1.3.28). So it
+is time to remove the second parameter of con_clear_unimap and ignore
+the advice from userspace completely.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Matt Schulte <matts@commtech-fastcom.com>
 ---
- drivers/tty/serial/8250/8250_pci.c  |  4 ++--
- drivers/tty/serial/8250/8250_port.c | 11 ++++-------
- 2 files changed, 6 insertions(+), 9 deletions(-)
+ drivers/tty/vt/consolemap.c | 13 ++++++-------
+ drivers/tty/vt/vt_ioctl.c   |  8 +-------
+ include/linux/vt_kern.h     |  5 ++---
+ 3 files changed, 9 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
-50/8250_pci.c
-index 8dd250fbd367..3d6287a8981e 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1136,11 +1136,11 @@ static int pci_quatech_rqopr(struct uart_8250_p=
-ort *port)
- static void pci_quatech_wqopr(struct uart_8250_port *port, u8 qopr)
- {
- 	unsigned long base =3D port->port.iobase;
--	u8 LCR, val;
-+	u8 LCR;
-=20
- 	LCR =3D inb(base + UART_LCR);
- 	outb(0xBF, base + UART_LCR);
--	val =3D inb(base + UART_SCR);
-+	inb(base + UART_SCR);
- 	outb(qopr, base + UART_SCR);
- 	outb(LCR, base + UART_LCR);
+diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+index c8c91f0476a2..9d7ab7b66a8a 100644
+--- a/drivers/tty/vt/consolemap.c
++++ b/drivers/tty/vt/consolemap.c
+@@ -499,9 +499,8 @@ con_insert_unipair(struct uni_pagedir *p, u_short unicode, u_short fontpos)
+ 	return 0;
  }
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
-250/8250_port.c
-index b10d05f2004b..c8d8d245350b 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1861,7 +1861,6 @@ static int serial8250_default_handle_irq(struct u=
-art_port *port)
-  */
- static int exar_handle_irq(struct uart_port *port)
+ 
+-/* ui is a leftover from using a hashtable, but might be used again
+-   Caller must hold the lock */
+-static int con_do_clear_unimap(struct vc_data *vc, struct unimapinit *ui)
++/* Caller must hold the lock */
++static int con_do_clear_unimap(struct vc_data *vc)
  {
--	unsigned char int0, int1, int2, int3;
- 	unsigned int iir =3D serial_port_in(port, UART_IIR);
+ 	struct uni_pagedir *p, *q;
+ 
+@@ -524,11 +523,11 @@ static int con_do_clear_unimap(struct vc_data *vc, struct unimapinit *ui)
+ 	return 0;
+ }
+ 
+-int con_clear_unimap(struct vc_data *vc, struct unimapinit *ui)
++int con_clear_unimap(struct vc_data *vc)
+ {
  	int ret;
-=20
-@@ -1869,10 +1868,10 @@ static int exar_handle_irq(struct uart_port *po=
-rt)
-=20
- 	if ((port->type =3D=3D PORT_XR17V35X) ||
- 	   (port->type =3D=3D PORT_XR17D15X)) {
--		int0 =3D serial_port_in(port, 0x80);
--		int1 =3D serial_port_in(port, 0x81);
--		int2 =3D serial_port_in(port, 0x82);
--		int3 =3D serial_port_in(port, 0x83);
-+		serial_port_in(port, 0x80);
-+		serial_port_in(port, 0x81);
-+		serial_port_in(port, 0x82);
-+		serial_port_in(port, 0x83);
- 	}
-=20
+ 	console_lock();
+-	ret = con_do_clear_unimap(vc, ui);
++	ret = con_do_clear_unimap(vc);
+ 	console_unlock();
  	return ret;
-@@ -1994,8 +1993,6 @@ static void wait_for_xmitr(struct uart_8250_port =
-*up, int bits)
-=20
- 	/* Wait up to 1s for flow control if necessary */
- 	if (up->port.flags & UPF_CONS_FLOW) {
--		unsigned int tmout;
--
- 		for (tmout =3D 1000000; tmout; tmout--) {
- 			unsigned int msr =3D serial_in(up, UART_MSR);
- 			up->msr_saved_flags |=3D msr & MSR_SAVE_FLAGS;
---=20
+ }
+@@ -556,7 +555,7 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
+ 		int j, k;
+ 		u16 **p1, *p2, l;
+ 		
+-		err1 = con_do_clear_unimap(vc, NULL);
++		err1 = con_do_clear_unimap(vc);
+ 		if (err1) {
+ 			console_unlock();
+ 			return err1;
+@@ -677,7 +676,7 @@ int con_set_default_unimap(struct vc_data *vc)
+ 	
+ 	/* The default font is always 256 characters */
+ 
+-	err = con_do_clear_unimap(vc, NULL);
++	err = con_do_clear_unimap(vc);
+ 	if (err)
+ 		return err;
+     
+diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+index 97d5a74558a3..f62c598810ff 100644
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -1006,16 +1006,10 @@ int vt_ioctl(struct tty_struct *tty,
+ 		break;
+ 
+ 	case PIO_UNIMAPCLR:
+-	      { struct unimapinit ui;
+ 		if (!perm)
+ 			return -EPERM;
+-		ret = copy_from_user(&ui, up, sizeof(struct unimapinit));
+-		if (ret)
+-			ret = -EFAULT;
+-		else
+-			con_clear_unimap(vc, &ui);
++		con_clear_unimap(vc);
+ 		break;
+-	      }
+ 
+ 	case PIO_UNIMAP:
+ 	case GIO_UNIMAP:
+diff --git a/include/linux/vt_kern.h b/include/linux/vt_kern.h
+index 160f81fe3eb8..6abd24f258bc 100644
+--- a/include/linux/vt_kern.h
++++ b/include/linux/vt_kern.h
+@@ -59,14 +59,13 @@ int tioclinux(struct tty_struct *tty, unsigned long arg);
+ #ifdef CONFIG_CONSOLE_TRANSLATIONS
+ /* consolemap.c */
+ 
+-struct unimapinit;
+ struct unipair;
+ 
+ int con_set_trans_old(unsigned char __user * table);
+ int con_get_trans_old(unsigned char __user * table);
+ int con_set_trans_new(unsigned short __user * table);
+ int con_get_trans_new(unsigned short __user * table);
+-int con_clear_unimap(struct vc_data *vc, struct unimapinit *ui);
++int con_clear_unimap(struct vc_data *vc);
+ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list);
+ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct, struct unipair __user *list);
+ int con_set_default_unimap(struct vc_data *vc);
+@@ -92,7 +91,7 @@ static inline int con_get_trans_new(unsigned short __user *table)
+ {
+ 	return -EINVAL;
+ }
+-static inline int con_clear_unimap(struct vc_data *vc, struct unimapinit *ui)
++static inline int con_clear_unimap(struct vc_data *vc)
+ {
+ 	return 0;
+ }
+-- 
 2.9.0
