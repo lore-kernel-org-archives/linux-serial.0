@@ -1,100 +1,121 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: RE: [PATCH 2/4] serial: sh-sci: Stop transfers in sci_shutdown()
-Date: Thu, 23 Jun 2016 10:42:26 +0000
-Message-ID: <SG2PR06MB09191D7B4AC631B6CB586B33D82D0@SG2PR06MB0919.apcprd06.prod.outlook.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 2/4] serial: sh-sci: Stop transfers in sci_shutdown()
+Date: Thu, 23 Jun 2016 13:20:15 +0200
+Message-ID: <CAMuHMdUS7gjZaH222kuPfb7QN7J=tbHEgGD8LZgbZSdJRTaxsw@mail.gmail.com>
 References: <1464286718-10745-1-git-send-email-geert+renesas@glider.be>
  <1464286718-10745-3-git-send-email-geert+renesas@glider.be>
  <SG2PR06MB0919E8B97E88EC68B14DF106D82B0@SG2PR06MB0919.apcprd06.prod.outlook.com>
- <CAMuHMdUxzQS=pRp9a48LZ0HG52Q5f1Rv6VX9g4QRBfFdDpe5gQ@mail.gmail.com>
+ <CAMuHMdUxzQS=pRp9a48LZ0HG52Q5f1Rv6VX9g4QRBfFdDpe5gQ@mail.gmail.com> <SG2PR06MB09191D7B4AC631B6CB586B33D82D0@SG2PR06MB0919.apcprd06.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdUxzQS=pRp9a48LZ0HG52Q5f1Rv6VX9g4QRBfFdDpe5gQ@mail.gmail.com>
-Content-Language: ja-JP
+In-Reply-To: <SG2PR06MB09191D7B4AC631B6CB586B33D82D0@SG2PR06MB0919.apcprd06.prod.outlook.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 Cc: Geert Uytterhoeven <geert+renesas@glider.be>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Magnus Damm <magnus.damm@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbg0KPiBTZW50OiBUdWVz
-ZGF5LCBKdW5lIDIxLCAyMDE2IDExOjUyIFBNDQo+IA0KPiBIaSBTaGltb2RhLXNhbiwNCj4gDQo+
-IE9uIFR1ZSwgSnVuIDIxLCAyMDE2IGF0IDk6MzUgQU0sIFlvc2hpaGlybyBTaGltb2RhDQo+IDx5
-b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4+IEZyb206IEdlZXJ0
-IFV5dHRlcmhvZXZlbg0KPiA+PiBTZW50OiBGcmlkYXksIE1heSAyNywgMjAxNiAzOjE5IEFNDQo+
-ID4+DQo+ID4+IE1ha2Ugc3VyZSB0aGUgdHJhbnNtaXR0ZXIgYW5kIHJlY2VpdmVyIGFyZSBzdG9w
-cGVkIHdoZW4gc2h1dHRpbmcgZG93bg0KPiA+PiB0aGUgcG9ydCwgYW5kIHJlbGF0ZWQgaW50ZXJy
-dXB0cyBhcmUgZGlzYWJsZWQuDQo+ID4+DQo+ID4+IFdpdGhvdXQgdGhpczoNCj4gPj4gICAtIE5l
-dyBpbnB1dCBkYXRhIG1heSBiZSByZWNlaXZlZCBpbnRvIHRoZSBSWCBGSUZPLCBwb3NzaWJseQ0K
-PiA+PiAgICAgdHJpZ2dlcmluZyBhIG5ldyBSWCBETUEgY29tcGxldGlvbiwNCj4gPj4gICAtIFRy
-YW5zZmVycyB3aWxsIHN0aWxsIGJlIGVuYWJsZWQgb24gYSBzdWJzZXF1ZW50IHN0YXJ0dXAgb2Yg
-dGhlIFVBUlQsDQo+ID4+ICAgICBiZWZvcmUgdGhlIFVBUlQncyBGSUZPcyBoYXZlIGJlZW4gcmVz
-ZXQsIGNhdXNpbmcgcmVhZGluZyBvZiBzdGFsZQ0KPiA+PiAgICAgZGF0YS4NCj4gPj4NCj4gPj4g
-SW5zcGlyZWQgYnkgYSBwYXRjaCBpbiB0aGUgQlNQIGJ5IEtvamkgTWF0c3Vva2ENCj4gPj4gPGtv
-amkubWF0c3Vva2EueG1AcmVuZXNhcy5jb20+Lg0KPiA+Pg0KPiA+PiBTaWduZWQtb2ZmLWJ5OiBH
-ZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPg0KPiA+PiAtLS0NCj4g
-Pj4gRXh0cmFjdGVkIGZyb20gIltQQVRDSC9SRkMgdjMgMC80XSBzZXJpYWw6IHNoLXNjaTogQWRk
-IERUIERNQSBzdXBwb3J0Ii4NCj4gPj4gVGhlIGlzc3VlcyB3aXRoIHRoZSBzZXJpYWwgY29uc29s
-ZSBzZWVuIGJlZm9yZSBvbiByOGE3NzQwL2FybWFkaWxsbyBhbmQNCj4gPj4gc2g3M2EwL2t6bTln
-IHNlZW0gdG8gYmUgZ29uZS4NCj4gPj4NCj4gPj4gQ2hhbmdlcyBhZnRlciByZXN1cnJlY3Rpb246
-DQo+ID4+ICAgLSBXcml0ZSB6ZXJvIHRvIGFsc28gZGlzYWJsZSByZWxhdGVkIGludGVycnVwdHMs
-IGFzIHN1Z2dlc3RlZCBieQ0KPiA+PiAgICAgTGF1cmVudCBQaW5jaGFydCwNCj4gPg0KPiA+IElm
-IHdlIHdyaXRlIHplcm8gdG8gdGhlIHJlZ2lzdGVyLCB3ZSBjYW5ub3QgdXNlIHRoZSBwb3J0IGFz
-IGEgY29uc29sZSBhZnRlciBpdCBpcyBjYWxsZWQuDQo+ID4gSW4gZmFjdCwgSSBoYXZlIGFuIGlz
-c3VlIHdoaWxlIHJjIHNjcmlwdHMgYXJlIHJ1bm5pbmcgb24gbXkgcm9vdCBmaWxlc3lzdGVtLg0K
-PiA+IFdoZW4gcmMgc2NyaXB0cyBpcyBydW5uaW5nLCAic2h1dGRvd24iIGlzIGNhbGxlZCBhIGxv
-dC4NCj4gPiBBZnRlciB0aGUgInNodXRkb3duIiwgaWYgdGhlIGtlcm5lbCB3aWxsIHB1dCBzdHJp
-bmdzIHVzaW5nIGEgY29uc29sZSwgaXQgY2Fubm90IHB1dCBzdHJpbmdzDQo+ID4gYmVjYXVzZSB0
-aGUgcmVnaXN0ZXIgaXMgemVybyAoVEUgYW5kIENLRSBhcmUgMCkuIFNvLCB3ZSBoYXZlIHRvIGNv
-bnNpZGVyIGl0Lg0KPiA+DQo+ID4gRllJLCBJIG1hZGUgYSBwYXRjaCB0byBmaXggdGhpcyBpc3N1
-ZS4NCj4gPiAoUGVyaGFwcywgYm90aCB0aGUgQ0tFIGFuZCBURSBzaG91bGQgYmUgc2V0IGluIHRo
-ZSBzZXJpYWxfY29uc29sZV93cml0ZSgpLCBidXQgSSBkb24ndCBrbm93IGhvdyB0byBzZXQgdGhl
-IENLRSBmb3Igbm93IDopICkNCj4gPg0KPiA+IEJlc3QgcmVnYXJkcywNCj4gPiBZb3NoaWhpcm8g
-U2hpbW9kYQ0KPiA+IC0tLQ0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2gt
-c2NpLmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvc2gtc2NpLmMNCj4gPiBpbmRleCBhZmEyNWVjLi5i
-NWIxYjM4IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zaC1zY2kuYw0KPiA+
-ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zaC1zY2kuYw0KPiA+IEBAIC0xOTg5LDYgKzE5ODks
-NyBAQCBzdGF0aWMgdm9pZCBzY2lfc2h1dGRvd24oc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCj4g
-PiAgew0KPiA+ICAgICAgICAgc3RydWN0IHNjaV9wb3J0ICpzID0gdG9fc2NpX3BvcnQocG9ydCk7
-DQo+ID4gICAgICAgICB1bnNpZ25lZCBsb25nIGZsYWdzOw0KPiA+ICsgICAgICAgdW5zaWduZWQg
-aW50IGN0cmw7DQo+ID4NCj4gPiAgICAgICAgIGRldl9kYmcocG9ydC0+ZGV2LCAiJXMoJWQpXG4i
-LCBfX2Z1bmNfXywgcG9ydC0+bGluZSk7DQo+ID4NCj4gPiBAQCAtMTk5OCw4ICsxOTk5LDEyIEBA
-IHN0YXRpYyB2b2lkIHNjaV9zaHV0ZG93bihzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPiA+ICAg
-ICAgICAgc3Bpbl9sb2NrX2lycXNhdmUoJnBvcnQtPmxvY2ssIGZsYWdzKTsNCj4gPiAgICAgICAg
-IHNjaV9zdG9wX3J4KHBvcnQpOw0KPiA+ICAgICAgICAgc2NpX3N0b3BfdHgocG9ydCk7DQo+ID4g
-LSAgICAgICAvKiBTdG9wIFJYIGFuZCBUWCwgZGlzYWJsZSByZWxhdGVkIGludGVycnVwdHMgKi8N
-Cj4gPiAtICAgICAgIHNlcmlhbF9wb3J0X291dChwb3J0LCBTQ1NDUiwgMCk7DQo+ID4gKyAgICAg
-ICAvKiBTdG9wIFJYIGFuZCBUWCwgZGlzYWJsZSByZWxhdGVkIGludGVycnVwdHMsIGtlZXAgY2xv
-Y2sgc291cmNlICovDQo+ID4gKyAgICAgICBjdHJsID0gc2VyaWFsX3BvcnRfaW4ocG9ydCwgU0NT
-Q1IpOw0KPiA+ICsgICAgICAgY3RybCA9IChzLT5jZmctPnNjc2NyICYgfihTQ1NDUl9DS0UxIHwg
-U0NTQ1JfQ0tFMCkpIHwNCj4gPiArICAgICAgICAgICAgICAgICAgIChjdHJsICYgKFNDU0NSX0NL
-RTEgfCBTQ1NDUl9DS0UwKSk7DQo+IA0KPiBNeSBiYWQuIFdlIHNob3VsZCBpbmRlZWQga2VlcCBD
-S0UsIGFzIHRoZSBzZXJpYWwgY29uc29sZSByZWxpZXMgb24gdGhhdC4NCj4gSSdtIGp1c3Qgd29u
-ZGVyaW5nIHdoeSBJIGRpZG4ndCBub3RpY2UgdGhpcywgYXMgYXQgbGVhc3Qgb24gS29lbHNjaCwg
-dGhlDQo+IGV4dGVybmFsIFNDSUYgY2xvY2sgaXMgdXNlZCwgaW1wbHlpbmcgYSBub24temVybyBD
-S0V4IHNldHRpbmcuDQo+IA0KPiA+ICsgICAgICAgc2VyaWFsX3BvcnRfb3V0KHBvcnQsIFNDU0NS
-LCBjdHJsKTsNCj4gPiArDQo+ID4gICAgICAgICBzcGluX3VubG9ja19pcnFyZXN0b3JlKCZwb3J0
-LT5sb2NrLCBmbGFncyk7DQo+ID4NCj4gPiAgI2lmZGVmIENPTkZJR19TRVJJQUxfU0hfU0NJX0RN
-QQ0KPiA+IEBAIC0yODAxLDYgKzI4MDYsOCBAQCBzdGF0aWMgdm9pZCBzZXJpYWxfY29uc29sZV93
-cml0ZShzdHJ1Y3QgY29uc29sZSAqY28sIGNvbnN0IGNoYXIgKnMsDQo+ID4gICAgICAgICBjdHJs
-ID0gc2VyaWFsX3BvcnRfaW4ocG9ydCwgU0NTQ1IpOw0KPiA+ICAgICAgICAgY3RybF90ZW1wID0g
-KHNjaV9wb3J0LT5jZmctPnNjc2NyICYgfihTQ1NDUl9DS0UxIHwgU0NTQ1JfQ0tFMCkpIHwNCj4g
-PiAgICAgICAgICAgICAgICAgICAgIChjdHJsICYgKFNDU0NSX0NLRTEgfCBTQ1NDUl9DS0UwKSk7
-DQo+ID4gKyAgICAgICBjdHJsX3RlbXAgfD0gU0NTQ1JfVEU7ICAvKiBGSVhNRTogd2hpbGUgImJy
-ZWFrIGN0bCIgaXMgb24gKi8NCj4gDQo+IFRoaXMgc2hvdWxkbid0IGJlIG5lZWRlZCwgYXMgU0NT
-Q1JfVEUgc2hvdWxkIGJlIHNldCBpbiBzY2lfcG9ydC0+Y2ZnLT5zY3Njcg0KPiAobG9vayBpbiBh
-bGwgcGxhY2VzIHdoZXJlIGl0J3MgaW5pdGlhbGl6ZWQpLg0KPiBDYW4geW91IHBsZWFzZSBkb3Vi
-bGUgY2hlY2s/DQoNClNvcnJ5IGZvciB0aGUgY2hlY2sgKGJlY2F1c2UgSSB0b29rIGEgZGF5IG9m
-ZiB5ZXN0ZXJkYXkpLg0KQXMgeW91IG1lbnRpb25lZCBpdCwgdGhpcyBpcyBub3QgbmVlZGVkLg0K
-KEkgc2hvdWxkIGhhdmUgdGVzdGVkIG9uIHN1Y2ggYSBjb2RlIGJlZm9yZSBJIHNlbnQgdGhpcyBy
-ZXBvcnQuLi4pDQoNCkJlc3QgcmVnYXJkcywNCllvc2hpaGlybyBTaGltb2RhDQoNCj4gPiArDQo+
-ID4gICAgICAgICBzZXJpYWxfcG9ydF9vdXQocG9ydCwgU0NTQ1IsIGN0cmxfdGVtcCk7DQo+ID4N
-Cj4gPiAgICAgICAgIHVhcnRfY29uc29sZV93cml0ZShwb3J0LCBzLCBjb3VudCwgc2VyaWFsX2Nv
-bnNvbGVfcHV0Y2hhcik7DQo+IA0KPiBUaGFua3MgZm9yIHlvdXIgcmVwb3J0IQ0KPiANCj4gR3J7
-b2V0amUsZWV0aW5nfXMsDQo+IA0KPiAgICAgICAgICAgICAgICAgICAgICAgICBHZWVydA0KPiAN
-Cj4gLS0NCj4gR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3MgbG90cyBvZiBMaW51eCBiZXlv
-bmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZw0KPiANCj4gSW4gcGVyc29uYWwgY29udmVy
-c2F0aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUsIEkgY2FsbCBteXNlbGYgYSBoYWNrZXIuIEJ1
-dA0KPiB3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3RzIEkganVzdCBzYXkgInByb2dyYW1t
-ZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgLS0gTGludXMgVG9ydmFsZHMNCg==
+Hi Shimoda-san,
+
+On Thu, Jun 23, 2016 at 12:42 PM, Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+>> From: Geert Uytterhoeven
+>> Sent: Tuesday, June 21, 2016 11:52 PM
+>> On Tue, Jun 21, 2016 at 9:35 AM, Yoshihiro Shimoda
+>> <yoshihiro.shimoda.uh@renesas.com> wrote:
+>> >> From: Geert Uytterhoeven
+>> >> Sent: Friday, May 27, 2016 3:19 AM
+>> >>
+>> >> Make sure the transmitter and receiver are stopped when shutting down
+>> >> the port, and related interrupts are disabled.
+>> >>
+>> >> Without this:
+>> >>   - New input data may be received into the RX FIFO, possibly
+>> >>     triggering a new RX DMA completion,
+>> >>   - Transfers will still be enabled on a subsequent startup of the UART,
+>> >>     before the UART's FIFOs have been reset, causing reading of stale
+>> >>     data.
+>> >>
+>> >> Inspired by a patch in the BSP by Koji Matsuoka
+>> >> <koji.matsuoka.xm@renesas.com>.
+>> >>
+>> >> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>> >> ---
+>> >> Extracted from "[PATCH/RFC v3 0/4] serial: sh-sci: Add DT DMA support".
+>> >> The issues with the serial console seen before on r8a7740/armadillo and
+>> >> sh73a0/kzm9g seem to be gone.
+>> >>
+>> >> Changes after resurrection:
+>> >>   - Write zero to also disable related interrupts, as suggested by
+>> >>     Laurent Pinchart,
+>> >
+>> > If we write zero to the register, we cannot use the port as a console after it is called.
+>> > In fact, I have an issue while rc scripts are running on my root filesystem.
+>> > When rc scripts is running, "shutdown" is called a lot.
+>> > After the "shutdown", if the kernel will put strings using a console, it cannot put strings
+>> > because the register is zero (TE and CKE are 0). So, we have to consider it.
+>> >
+>> > FYI, I made a patch to fix this issue.
+>> > (Perhaps, both the CKE and TE should be set in the serial_console_write(), but I don't know how to set the CKE for now :) )
+>> >
+>> > Best regards,
+>> > Yoshihiro Shimoda
+>> > ---
+>> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+>> > index afa25ec..b5b1b38 100644
+>> > --- a/drivers/tty/serial/sh-sci.c
+>> > +++ b/drivers/tty/serial/sh-sci.c
+>> > @@ -1989,6 +1989,7 @@ static void sci_shutdown(struct uart_port *port)
+>> >  {
+>> >         struct sci_port *s = to_sci_port(port);
+>> >         unsigned long flags;
+>> > +       unsigned int ctrl;
+>> >
+>> >         dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
+>> >
+>> > @@ -1998,8 +1999,12 @@ static void sci_shutdown(struct uart_port *port)
+>> >         spin_lock_irqsave(&port->lock, flags);
+>> >         sci_stop_rx(port);
+>> >         sci_stop_tx(port);
+>> > -       /* Stop RX and TX, disable related interrupts */
+>> > -       serial_port_out(port, SCSCR, 0);
+>> > +       /* Stop RX and TX, disable related interrupts, keep clock source */
+>> > +       ctrl = serial_port_in(port, SCSCR);
+>> > +       ctrl = (s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0)) |
+>> > +                   (ctrl & (SCSCR_CKE1 | SCSCR_CKE0));
+>>
+>> My bad. We should indeed keep CKE, as the serial console relies on that.
+>> I'm just wondering why I didn't notice this, as at least on Koelsch, the
+>> external SCIF clock is used, implying a non-zero CKEx setting.
+>>
+>> > +       serial_port_out(port, SCSCR, ctrl);
+>> > +
+>> >         spin_unlock_irqrestore(&port->lock, flags);
+>> >
+>> >  #ifdef CONFIG_SERIAL_SH_SCI_DMA
+>> > @@ -2801,6 +2806,8 @@ static void serial_console_write(struct console *co, const char *s,
+>> >         ctrl = serial_port_in(port, SCSCR);
+>> >         ctrl_temp = (sci_port->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0)) |
+>> >                     (ctrl & (SCSCR_CKE1 | SCSCR_CKE0));
+>> > +       ctrl_temp |= SCSCR_TE;  /* FIXME: while "break ctl" is on */
+>>
+>> This shouldn't be needed, as SCSCR_TE should be set in sci_port->cfg->scscr
+>> (look in all places where it's initialized).
+>> Can you please double check?
+>
+> Sorry for the check (because I took a day off yesterday).
+> As you mentioned it, this is not needed.
+> (I should have tested on such a code before I sent this report...)
+
+Thanks, I will send an updated patch shortly.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
