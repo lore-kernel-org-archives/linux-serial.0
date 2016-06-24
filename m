@@ -1,45 +1,60 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 3/4] serial: sh-sci: Clear RX, error, and break flags during reset
-Date: Fri, 24 Jun 2016 16:59:15 +0200
-Message-ID: <1466780356-12623-4-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v2 1/4] serial: sh-sci: Do not start transfers from sci_startup()
+Date: Fri, 24 Jun 2016 16:59:13 +0200
+Message-ID: <1466780356-12623-2-git-send-email-geert+renesas@glider.be>
 References: <1466780356-12623-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1466780356-12623-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 Cc: Magnus Damm <damm+renesas@opensource.se>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Setting the FIFO reset bits is not sufficient to reset the RX FIFO.
-After this the status register's RDF flag bit may still be set, causing
-the reception of one stale byte of data.
+FIFO reset is done in sci_reset(), called from sci_set_termios(), while
+sci_start_tx() and sci_start_rx() are called before, from sci_startup().
+However, starting transfers before the UART's FIFOs have been reset may
+cause reading of stale data.
 
-To fix this, clear all status flag bits related to reception, error, and
-break handling, cfr. the initialization flowchart in the datasheet.
+Remove the calls to sci_start_tx() and sci_start_rx() from sci_startup()
+to fix this.
+
+Transfers are still started when needed:
+  - sci_start_rx() is called from sci_set_termios() after FIFO reset, if
+    the CREAD flag is set,
+  - sci_start_tx() is called from uart_change_speed() immediately
+    thereafter, if transmission is enabled.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
 v2:
   - No changes.
 ---
- drivers/tty/serial/sh-sci.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/sh-sci.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index eecace576c3b758f..0a2be5d293220e08 100644
+index 0130feb069aee02f..d6ba90c572f7475c 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -2055,6 +2055,10 @@ static void sci_reset(struct uart_port *port)
- 	reg = sci_getreg(port, SCFCR);
- 	if (reg->size)
- 		serial_port_out(port, SCFCR, SCFCR_RFRST | SCFCR_TFRST);
-+
-+	sci_clear_SCxSR(port,
-+			SCxSR_RDxF_CLEAR(port) & SCxSR_ERROR_CLEAR(port) &
-+			SCxSR_BREAK_CLEAR(port));
+@@ -1873,7 +1873,6 @@ static void sci_break_ctl(struct uart_port *port, int break_state)
+ static int sci_startup(struct uart_port *port)
+ {
+ 	struct sci_port *s = to_sci_port(port);
+-	unsigned long flags;
+ 	int ret;
+ 
+ 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
+@@ -1884,11 +1883,6 @@ static int sci_startup(struct uart_port *port)
+ 
+ 	sci_request_dma(port);
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+-	sci_start_tx(port);
+-	sci_start_rx(port);
+-	spin_unlock_irqrestore(&port->lock, flags);
+-
+ 	return 0;
  }
  
- static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
 -- 
 1.9.1
-
