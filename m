@@ -1,42 +1,37 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [patch V4 27/31] serial: use parity32 in max3100
-Date: Sat, 25 Jun 2016 10:25:00 -0700
-Message-ID: <20160625172500.GA18790@kroah.com>
-References: <1462955158-28394-1-git-send-email-zengzhaoxiu@163.com>
- <1462958587-25987-1-git-send-email-zengzhaoxiu@163.com>
+Subject: Re: [PATCH 4/4] tty/serial: atmel: enforce tasklet init and
+ termination sequences
+Date: Sat, 25 Jun 2016 13:39:59 -0700
+Message-ID: <20160625203959.GA22761@kroah.com>
+References: <cover.1466157015.git.nicolas.ferre@atmel.com>
+ <5a52e1fbd8ec126bebfcd00f35bfe5af605ee914.1466157015.git.nicolas.ferre@atmel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1462958587-25987-1-git-send-email-zengzhaoxiu@163.com>
+In-Reply-To: <5a52e1fbd8ec126bebfcd00f35bfe5af605ee914.1466157015.git.nicolas.ferre@atmel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: zengzhaoxiu@163.com
-Cc: linux-kernel@vger.kernel.org, Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: linux-arm-kernel@lists.infradead.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Ludovic Desroches <ludovic.desroches@atmel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 11, 2016 at 05:23:07PM +0800, zengzhaoxiu@163.com wrote:
-> From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+On Fri, Jun 17, 2016 at 12:05:49PM +0200, Nicolas Ferre wrote:
+> As some race conditions are identified in the termination process of tasklets,
+> enforce the atmel_shutdown() sequence. This way we make sure that no new
+> tasklets or software timer are scheduled during shutdown process.
 > 
-> Signed-off-by: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> An atomic flag is positioned to give this information throughout the code.
+> 
+> We also remove tasklet_disable() calls that were leading to deadlocks while
+> stopping the driver. A simpler init/kill sequence is used.
+> 
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 > ---
->  drivers/tty/serial/max3100.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-> index 5c4c280..a0cc84a 100644
-> --- a/drivers/tty/serial/max3100.c
-> +++ b/drivers/tty/serial/max3100.c
-> @@ -155,7 +155,7 @@ static int max3100_do_parity(struct max3100_port *s, u16 c)
->  	else
->  		c &= 0xff;
->  
-> -	parity = parity ^ (hweight8(c) & 1);
-> +	parity ^= parity8(c);
+>  drivers/tty/serial/atmel_serial.c | 61 ++++++++++++++++++++++++---------------
+>  1 file changed, 38 insertions(+), 23 deletions(-)
 
-Your subject does not match the patch, and there is no changelog text so
-I can't take it :(
+You obviously didn't even test build this patch, as it breaks the build :(
 
-Please fix up.
+please be more careful...
 
 greg k-h
