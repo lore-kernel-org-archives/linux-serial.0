@@ -1,59 +1,51 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] 8250/fintek: rename IRQ_MODE macro
-Date: Mon, 27 Jun 2016 11:21:10 +0200
-Message-ID: <20160627092152.1430477-1-arnd@arndb.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Alan Cox <alan@linux.intel.com>, "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Ben Dooks <ben.dooks@codethink.co.uk>
+Subject: Re: [PATCH 2/2] serial: sirf: make uart register info static
+Date: Mon, 27 Jun 2016 10:25:52 +0100
+Message-ID: <770f927c-1439-2313-e638-51cc85930d48@codethink.co.uk>
+References: <1465322772-26125-1-git-send-email-ben.dooks@codethink.co.uk>
+ <1465322772-26125-2-git-send-email-ben.dooks@codethink.co.uk>
+ <20160625210150.GA3305@kroah.com> <8401626.hVVxvI31N9@wuerfel>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <8401626.hVVxvI31N9@wuerfel>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@lists.codethink.co.uk, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Barry Song <baohua@kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-A bugfix for the fintek driver required defining some macros, but
-one of them clashes with a system header on ARM:
+On 25/06/16 22:07, Arnd Bergmann wrote:
+> On Saturday, June 25, 2016 2:01:50 PM CEST Greg Kroah-Hartman wrote:
+>> On Tue, Jun 07, 2016 at 07:06:12PM +0100, Ben Dooks wrote:
+>>> The driver does not export the two structures that
+>>> define the uart register mappings outside of the
+>>> driver, so make them static to avoid the following
+>>> warnings:
+>>>
+>>> drivers/tty/serial/sirfsoc_uart.h:124:30: warning: symbol 'sirfsoc_usp' was not declared. Should it be static?
+>>> drivers/tty/serial/sirfsoc_uart.h:190:30: warning: symbol 'sirfsoc_uart' was not declared. Should it be static?
+>>>
+>>> Note, we don't move these into the driver .c file as this would
+>>> be a larger change. However they really should not belong in the
+>>> header file like this.
+>>
+>> Please do the correct thing here and move them into the .c file.
+> 
+> I guess the entire sirfsoc_uart.h file can just get moved in there,
+> nothing else includes it (obviously, as the symbols above would
+> otherwise clash).
 
-drivers/tty/serial/8250/8250_fintek.c:34:0: error: "IRQ_MODE" redefined [-Werror]
- #define IRQ_MODE 0x70
+If no-one else objects then i'll sort a second revision.
 
-In file included from /git/arm-soc/arch/arm/include/asm/ptrace.h:13:0,
-                 from /git/arm-soc/arch/arm/include/asm/irqflags.h:6,
-                 from /git/arm-soc/include/linux/irqflags.h:15,
-                 from /git/arm-soc/arch/arm/include/asm/bitops.h:27,
-                 from /git/arm-soc/include/linux/bitops.h:36,
-                 from /git/arm-soc/include/linux/kernel.h:10,
-                 from /git/arm-soc/include/linux/list.h:8,
-                 from /git/arm-soc/include/linux/module.h:9,
-                 from /git/arm-soc/drivers/tty/serial/8250/8250_fintek.c:11:
-arch/arm/include/uapi/asm/ptrace.h:55:0: note: this is the location of the previous definition
-
-This renames the newly introduced 'IRQ_MODE' macro to FINTEK_IRQ_MODE.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Fixes: 4da22f1418cb ("serial: 8250_fintek: fix the mismatched IRQ mode")
----
- drivers/tty/serial/8250/8250_fintek.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 737b4b3957b0..0facc789fe7d 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -31,7 +31,7 @@
- #define IO_ADDR2 0x60
- #define LDN 0x7
- 
--#define IRQ_MODE	0x70
-+#define FINTEK_IRQ_MODE	0x70
- #define IRQ_SHARE	BIT(4)
- #define IRQ_MODE_MASK	(BIT(6) | BIT(5))
- #define IRQ_LEVEL_LOW	0
-@@ -195,7 +195,7 @@ static int fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool level_mode)
- 	outb(LDN, pdata->base_port + ADDR_PORT);
- 	outb(pdata->index, pdata->base_port + DATA_PORT);
- 
--	outb(IRQ_MODE, pdata->base_port + ADDR_PORT);
-+	outb(FINTEK_IRQ_MODE, pdata->base_port + ADDR_PORT);
- 	tmp = inb(pdata->base_port + DATA_PORT);
- 
- 	tmp &= ~IRQ_MODE_MASK;
 -- 
-2.9.0
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
