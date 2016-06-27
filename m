@@ -1,51 +1,61 @@
-From: Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: Re: [PATCH 2/2] serial: sirf: make uart register info static
-Date: Mon, 27 Jun 2016 10:25:52 +0100
-Message-ID: <770f927c-1439-2313-e638-51cc85930d48@codethink.co.uk>
-References: <1465322772-26125-1-git-send-email-ben.dooks@codethink.co.uk>
- <1465322772-26125-2-git-send-email-ben.dooks@codethink.co.uk>
- <20160625210150.GA3305@kroah.com> <8401626.hVVxvI31N9@wuerfel>
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH] serial: 8250_fintek: fix the mismatched IRQ mode
+Date: Mon, 27 Jun 2016 12:25:46 +0200
+Message-ID: <CAPybu_2BM-Nm02Y6xv-jg0MMaNGuEgmG6=5S3OO3KuwDUPmHMg@mail.gmail.com>
+References: <1464314571-15429-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <8401626.hVVxvI31N9@wuerfel>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@lists.codethink.co.uk, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Barry Song <baohua@kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1464314571-15429-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, Alan Cox <alan@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, =?UTF-8?B?UEEyMCBUT00gVFNBSSDolKHlrpfkvZE=?= <tom_tsai@fintek.com.tw>, Peter H <peter_hong@fintek.com.tw>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 25/06/16 22:07, Arnd Bergmann wrote:
-> On Saturday, June 25, 2016 2:01:50 PM CEST Greg Kroah-Hartman wrote:
->> On Tue, Jun 07, 2016 at 07:06:12PM +0100, Ben Dooks wrote:
->>> The driver does not export the two structures that
->>> define the uart register mappings outside of the
->>> driver, so make them static to avoid the following
->>> warnings:
->>>
->>> drivers/tty/serial/sirfsoc_uart.h:124:30: warning: symbol 'sirfsoc_usp' was not declared. Should it be static?
->>> drivers/tty/serial/sirfsoc_uart.h:190:30: warning: symbol 'sirfsoc_uart' was not declared. Should it be static?
->>>
->>> Note, we don't move these into the driver .c file as this would
->>> be a larger change. However they really should not belong in the
->>> header file like this.
->>
->> Please do the correct thing here and move them into the .c file.
-> 
-> I guess the entire sirfsoc_uart.h file can just get moved in there,
-> nothing else includes it (obviously, as the symbols above would
-> otherwise clash).
+Hi Peter,. Hi Greg
 
-If no-one else objects then i'll sort a second revision.
+On Fri, May 27, 2016 at 4:02 AM, Ji-Ze Hong (Peter Hong)
+<hpeter@gmail.com> wrote:
+>  {
+>         struct fintek_8250 *pdata;
+>         struct fintek_8250 probe_data;
+> +       struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
+> +       bool level_mode = irqd_is_level_type(irq_data);
+
+I see a potential problem with this patch:
+
+If irq_get_irq_data fails, it will return NULL, resulting on a
+segmentation fault on irqd_is_level_type:
+
+
+
+#define __irqd_to_state(d) ACCESS_PRIVATE((d)->common, state_use_accessors)
+
+
+I believe that we need to add error checks here
+
+>
+>         if (find_base_port(&probe_data, uart->port.iobase))
+>                 return -ENODEV;
+> @@ -192,5 +226,5 @@ int fintek_8250_probe(struct uart_8250_port *uart)
+>         uart->port.rs485_config = fintek_8250_rs485_config;
+>         uart->port.private_data = pdata;
+>
+> -       return 0;
+> +       return fintek_8250_set_irq_mode(pdata, level_mode);
+
+Also why do not call irq_get_irq_data() and  irqd_is_level_type()
+before return? There is no need to do that work if the probe
+determines that it is not a fintek chip.
+
+
+Greg, this is already queued for 4.7.... what shall we do here?
+
+
+Regards!
+
+
+
 
 -- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
+Ricardo Ribalda
