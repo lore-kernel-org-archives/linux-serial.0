@@ -1,7 +1,7 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH v2 3/9] tty: serial: fsl_lpuart: support suspend/resume
-Date: Tue, 28 Jun 2016 11:02:29 +0530
-Message-ID: <20160628053235.5114-4-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH v2 4/9] tty: serial: fsl_lpuart: fix clearing of receive flag
+Date: Tue, 28 Jun 2016 11:02:30 +0530
+Message-ID: <20160628053235.5114-5-bhuvanchandra.dv@toradex.com>
 References: <20160628053235.5114-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,63 +23,43 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Stefan Agner <stefan@agner.ch>
 
-Add suspend/resume support.
+Commit 8e4934c6d6c6 ("tty: serial: fsl_lpuart: clear receive flag on FIFO
+flush") implemented clearing of the receive flag by reading the status register
+only. It turned out that even though we flush the FIFO afterwards, a explicit
+read of the data register is still required.
+
+This leads to a FIFO underrun. To avoid this, follow the advice in the overrun
+"Operation section": Unconditionally clear RXUF after using RXFLUSH.
 
 Signed-off-by: Stefan Agner <stefan@agner.ch>
 Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index fabfa7e..75a2098 100644
+index 75a2098..97c1fda 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -483,9 +483,8 @@ static void lpuart_dma_rx_complete(void *arg)
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- }
+@@ -935,13 +935,16 @@ static void lpuart_setup_watermark(struct lpuart_port *sport)
+ 	writeb(val | UARTPFIFO_TXFE | UARTPFIFO_RXFE,
+ 			sport->port.membase + UARTPFIFO);
  
--static void lpuart_timer_func(unsigned long data)
-+static void lpuart_dma_rx_terminate(struct lpuart_port *sport)
- {
--	struct lpuart_port *sport = (struct lpuart_port *)data;
- 	struct tty_port *port = &sport->port.state->port;
- 	struct dma_tx_state state;
- 	unsigned long flags;
-@@ -510,6 +509,11 @@ static void lpuart_timer_func(unsigned long data)
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- }
+-	/* explicitly clear RDRF */
+-	readb(sport->port.membase + UARTSR1);
+-
+ 	/* flush Tx and Rx FIFO */
+ 	writeb(UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH,
+ 			sport->port.membase + UARTCFIFO);
  
-+static void lpuart_timer_func(unsigned long data)
-+{
-+	lpuart_dma_rx_terminate((struct lpuart_port *)data);
-+}
++	/* explicitly clear RDRF */
++	if (readb(sport->port.membase + UARTSR1) & UARTSR1_RDRF) {
++		readb(sport->port.membase + UARTDR);
++		writeb(UARTSFIFO_RXUF, sport->port.membase + UARTSFIFO);
++	}
 +
- static inline void lpuart_prepare_rx(struct lpuart_port *sport)
- {
- 	unsigned long flags;
-@@ -1925,7 +1929,12 @@ static int lpuart_suspend(struct device *dev)
- 		writeb(temp, sport->port.membase + UARTCR2);
- 	}
+ 	writeb(0, sport->port.membase + UARTTWFIFO);
+ 	writeb(1, sport->port.membase + UARTRWFIFO);
  
-+	if (sport->dma_rx_in_progress)
-+		lpuart_dma_rx_terminate(sport);
-+
- 	uart_suspend_port(&lpuart_reg, &sport->port);
-+	if (sport->port.suspended && !sport->port.irq_wake)
-+		clk_disable_unprepare(sport->clk);
- 
- 	return 0;
- }
-@@ -1935,6 +1944,9 @@ static int lpuart_resume(struct device *dev)
- 	struct lpuart_port *sport = dev_get_drvdata(dev);
- 	unsigned long temp;
- 
-+	if (sport->port.suspended && !sport->port.irq_wake)
-+		clk_prepare_enable(sport->clk);
-+
- 	if (sport->lpuart32) {
- 		lpuart32_setup_watermark(sport);
- 		temp = lpuart32_read(sport->port.membase + UARTCTRL);
 -- 
 2.9.0
