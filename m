@@ -1,73 +1,44 @@
-From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH v2 5/9] tty: serial: fsl_lpuart: Fix broken 8m/s1 support
-Date: Tue, 28 Jun 2016 11:02:31 +0530
-Message-ID: <20160628053235.5114-6-bhuvanchandra.dv@toradex.com>
-References: <20160628053235.5114-1-bhuvanchandra.dv@toradex.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [patch] tty/serial/8250: unlock on error in
+ serial8250_register_8250_port()
+Date: Tue, 28 Jun 2016 12:15:22 +0300
+Message-ID: <20160628091522.GA7720@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160628053235.5114-1-bhuvanchandra.dv@toradex.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yegor Yefremov <yegorslists@googlemail.com>
+Cc: Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Anton Wuerfel <anton.wuerfel@fau.de>, Phillip Raffeck <phillip.raffeck@fau.de>, Peter Hurley <peter@hurleysoftware.com>, Wan Ahmad Zainie <wan.ahmad.zainie.wan.mohamad@intel.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-By default the driver always configure the mode as 8s1 even when 8m1 mode is
-selected. Fix this by adding support to control the space/mark bit.
+We need to unlock before returning here.
 
-Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
----
- drivers/tty/serial/fsl_lpuart.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Fixes: 4ef03d328769 ('tty/serial/8250: use mctrl_gpio helpers')
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 97c1fda..615f191 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1220,13 +1220,14 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- {
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
- 	unsigned long flags;
--	unsigned char cr1, old_cr1, old_cr2, cr4, bdh, modem;
-+	unsigned char cr1, old_cr1, old_cr2, cr3, cr4, bdh, modem;
- 	unsigned int  baud;
- 	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
- 	unsigned int sbr, brfa;
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 13ad5c3..a2b849e 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1015,8 +1015,10 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
  
- 	cr1 = old_cr1 = readb(sport->port.membase + UARTCR1);
- 	old_cr2 = readb(sport->port.membase + UARTCR2);
-+	cr3 = readb(sport->port.membase + UARTCR3);
- 	cr4 = readb(sport->port.membase + UARTCR4);
- 	bdh = readb(sport->port.membase + UARTBDH);
- 	modem = readb(sport->port.membase + UARTMODEM);
-@@ -1274,7 +1275,10 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & PARENB)) {
- 		if (termios->c_cflag & CMSPAR) {
- 			cr1 &= ~UARTCR1_PE;
--			cr1 |= UARTCR1_M;
-+			if (termios->c_cflag & PARODD)
-+				cr3 |= UARTCR3_T8;
-+			else
-+				cr3 &= ~UARTCR3_T8;
- 		} else {
- 			cr1 |= UARTCR1_PE;
- 			if ((termios->c_cflag & CSIZE) == CS8)
-@@ -1342,6 +1346,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	writeb(cr4 | brfa, sport->port.membase + UARTCR4);
- 	writeb(bdh, sport->port.membase + UARTBDH);
- 	writeb(sbr & 0xFF, sport->port.membase + UARTBDL);
-+	writeb(cr3, sport->port.membase + UARTCR3);
- 	writeb(cr1, sport->port.membase + UARTCR1);
- 	writeb(modem, sport->port.membase + UARTMODEM);
+ 		gpios = mctrl_gpio_init(&uart->port, 0);
+ 		if (IS_ERR(gpios)) {
+-			if (PTR_ERR(gpios) != -ENOSYS)
+-				return PTR_ERR(gpios);
++			if (PTR_ERR(gpios) != -ENOSYS) {
++				ret = PTR_ERR(gpios);
++				goto unlock;
++			}
+ 		} else
+ 			uart->gpios = gpios;
  
--- 
-2.9.0
+@@ -1068,6 +1070,7 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 			ret = 0;
+ 		}
+ 	}
++unlock:
+ 	mutex_unlock(&serial_mutex);
+ 
+ 	return ret;
