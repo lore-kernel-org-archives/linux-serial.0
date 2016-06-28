@@ -1,54 +1,62 @@
 From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Subject: Re: [PATCH] serial: 8250_fintek: fix the mismatched IRQ mode
-Date: Tue, 28 Jun 2016 08:51:38 +0800
-Message-ID: <430c447a-bf8f-6268-9d55-e29ada539ea2@gmail.com>
-References: <1464314571-15429-1-git-send-email-hpeter+linux_kernel@gmail.com>
- <CAPybu_2BM-Nm02Y6xv-jg0MMaNGuEgmG6=5S3OO3KuwDUPmHMg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Subject: [PATCH] serial: 8250_fintek: Fix potential NULL pointer dereference
+Date: Tue, 28 Jun 2016 09:46:30 +0800
+Message-ID: <1467078390-2406-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAPybu_2BM-Nm02Y6xv-jg0MMaNGuEgmG6=5S3OO3KuwDUPmHMg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, Alan Cox <alan@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, =?UTF-8?B?UEEyMCBUT00gVFNBSSDolKHlrpfkvZE=?= <tom_tsai@fintek.com.tw>, Peter H <peter_hong@fintek.com.tw>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, ricardo.ribalda@gmail.com
+Cc: alan@linux.intel.com, peter@hurleysoftware.com, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ricardo & Greg,
+Fix potential NULL pointer dereference on
+'commit 4da22f1418cb ("serial: 8250_fintek: fix the mismatched IRQ mode")'
 
-Ricardo Ribalda Delgado =E6=96=BC 2016/6/27 =E4=B8=8B=E5=8D=88 06:25 =E5=
-=AF=AB=E9=81=93:
-> Hi Peter,. Hi Greg
-> On Fri, May 27, 2016 at 4:02 AM, Ji-Ze Hong (Peter Hong)
->> +       struct irq_data *irq_data =3D irq_get_irq_data(uart->port.ir=
-q);
->> +       bool level_mode =3D irqd_is_level_type(irq_data);
->
-> I see a potential problem with this patch:
->
-> If irq_get_irq_data fails, it will return NULL, resulting on a
-> segmentation fault on irqd_is_level_type:
->
-> #define __irqd_to_state(d) ACCESS_PRIVATE((d)->common, state_use_acce=
-ssors)
->
->
-> I believe that we need to add error checks here
+We try to fix IRQ mode mismatch issue and add the following code to
+detect IRQ Level or Edge mode.
 
-I'll try to send a patch to add more checks.
+struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
+bool level_mode = irqd_is_level_type(irq_data);
 
->> -       return 0;
->> +       return fintek_8250_set_irq_mode(pdata, level_mode);
->
-> Also why do not call irq_get_irq_data() and  irqd_is_level_type()
-> before return? There is no need to do that work if the probe
-> determines that it is not a fintek chip.
->
+But *irq_data had not any check and pass to irqd_is_level_type(),
+it may lead to potential NULL pointer dereference.
 
-Also determine the IRQ mode when found a fintek chip.
+Also modify detecting IRQ mode when fintek chip found.
 
-Thanks to point out the potential issue.
---=20
-With Best Regards,
-Peter Hung
+Suggested-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+---
+ drivers/tty/serial/8250/8250_fintek.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 737b4b3..9119d0c 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -212,8 +212,8 @@ int fintek_8250_probe(struct uart_8250_port *uart)
+ {
+ 	struct fintek_8250 *pdata;
+ 	struct fintek_8250 probe_data;
+-	struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
+-	bool level_mode = irqd_is_level_type(irq_data);
++	struct irq_data *irq_data;
++	bool level_mode = false; /* Default to Edge/High */
+ 
+ 	if (find_base_port(&probe_data, uart->port.iobase))
+ 		return -ENODEV;
+@@ -226,5 +226,14 @@ int fintek_8250_probe(struct uart_8250_port *uart)
+ 	uart->port.rs485_config = fintek_8250_rs485_config;
+ 	uart->port.private_data = pdata;
+ 
++	irq_data = irq_get_irq_data(uart->port.irq);
++	if (irq_data) {
++		level_mode = irqd_is_level_type(irq_data);
++	} else {
++		dev_warn(uart->port.dev,
++			 "%s: Can't get irq_data, set this port to Edge/High",
++			 __func__);
++	}
++
+ 	return fintek_8250_set_irq_mode(pdata, level_mode);
+ }
+-- 
+1.9.1
