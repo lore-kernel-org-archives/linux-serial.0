@@ -1,62 +1,52 @@
-From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Subject: [PATCH] serial: 8250_fintek: Fix potential NULL pointer dereference
-Date: Tue, 28 Jun 2016 09:46:30 +0800
-Message-ID: <1467078390-2406-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH 1/2] serial: 8250_dw: make dw8250_set_termios as default set_termios callback
+Date: Tue, 28 Jun 2016 11:17:14 +0800
+Message-ID: <1467083835-37750-2-git-send-email-wangkefeng.wang@huawei.com>
+References: <1467083835-37750-1-git-send-email-wangkefeng.wang@huawei.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1467083835-37750-1-git-send-email-wangkefeng.wang@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, ricardo.ribalda@gmail.com
-Cc: alan@linux.intel.com, peter@hurleysoftware.com, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, z.liuxinliang@hisilicon.com, guohanjun@huawei.com, Kefeng Wang <wangkefeng.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-Fix potential NULL pointer dereference on
-'commit 4da22f1418cb ("serial: 8250_fintek: fix the mismatched IRQ mode")'
+We can safely use dw8250_set_termios() as the default set_termios
+callback instead of serial8250_do_set_termios(), so do it.
 
-We try to fix IRQ mode mismatch issue and add the following code to
-detect IRQ Level or Edge mode.
-
-struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
-bool level_mode = irqd_is_level_type(irq_data);
-
-But *irq_data had not any check and pass to irqd_is_level_type(),
-it may lead to potential NULL pointer dereference.
-
-Also modify detecting IRQ mode when fintek chip found.
-
-Suggested-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 737b4b3..9119d0c 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -212,8 +212,8 @@ int fintek_8250_probe(struct uart_8250_port *uart)
- {
- 	struct fintek_8250 *pdata;
- 	struct fintek_8250 probe_data;
--	struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
--	bool level_mode = irqd_is_level_type(irq_data);
-+	struct irq_data *irq_data;
-+	bool level_mode = false; /* Default to Edge/High */
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index e199696..65f3da7 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -301,7 +301,6 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ 		p->iotype = UPIO_MEM32;
+ 		p->regshift = 2;
+ 		p->serial_in = dw8250_serial_in32;
+-		p->set_termios = dw8250_set_termios;
+ 		/* So far none of there implement the Busy Functionality */
+ 		data->uart_16550_compatible = true;
+ 	}
+@@ -309,7 +308,6 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ 	/* Platforms with iDMA */
+ 	if (platform_get_resource_byname(to_platform_device(p->dev),
+ 					 IORESOURCE_MEM, "lpss_priv")) {
+-		p->set_termios = dw8250_set_termios;
+ 		data->dma.rx_param = p->dev->parent;
+ 		data->dma.tx_param = p->dev->parent;
+ 		data->dma.fn = dw8250_idma_filter;
+@@ -386,6 +384,7 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	p->iotype	= UPIO_MEM;
+ 	p->serial_in	= dw8250_serial_in;
+ 	p->serial_out	= dw8250_serial_out;
++	p->set_termios	= dw8250_set_termios;
  
- 	if (find_base_port(&probe_data, uart->port.iobase))
- 		return -ENODEV;
-@@ -226,5 +226,14 @@ int fintek_8250_probe(struct uart_8250_port *uart)
- 	uart->port.rs485_config = fintek_8250_rs485_config;
- 	uart->port.private_data = pdata;
- 
-+	irq_data = irq_get_irq_data(uart->port.irq);
-+	if (irq_data) {
-+		level_mode = irqd_is_level_type(irq_data);
-+	} else {
-+		dev_warn(uart->port.dev,
-+			 "%s: Can't get irq_data, set this port to Edge/High",
-+			 __func__);
-+	}
-+
- 	return fintek_8250_set_irq_mode(pdata, level_mode);
- }
+ 	p->membase = devm_ioremap(&pdev->dev, regs->start, resource_size(regs));
+ 	if (!p->membase)
 -- 
-1.9.1
+1.7.12.4
