@@ -1,53 +1,35 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 0/2] serial: 8250_dw: Add ACPI support for uart on
- Hisilicon Hip05 soc
-Date: Wed, 29 Jun 2016 15:52:44 +0300
-Message-ID: <1467204764.30123.327.camel@linux.intel.com>
-References: <1467083835-37750-1-git-send-email-wangkefeng.wang@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: zengzhaoxiu@163.com
+Subject: [patch V4 27/31] serial: use parity8 in max3100
+Date: Wed, 29 Jun 2016 22:57:08 +0800
+Message-ID: <1467212228-12044-1-git-send-email-zengzhaoxiu@163.com>
+References: <20160625172500.GA18790@kroah.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1467083835-37750-1-git-send-email-wangkefeng.wang@huawei.com>
+In-Reply-To: <20160625172500.GA18790@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kefeng Wang <wangkefeng.wang@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, z.liuxinliang@hisilicon.com, guohanjun@huawei.com
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2016-06-28 at 11:17 +0800, Kefeng Wang wrote:
-> Make dw8250_set_termios() as the default set_termios callback for 825=
-0
-> dw uart, correct me
-> if I am wrong.
->=20
-> Then add ACPI support for uart on Hisilicon Hip05 soc, be careful tha=
-t
-> it is not 16500
-> compatible.
+From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
 
-You mean it has Busy Functionality implemented?
-Is there any public specification to look at?
+Signed-off-by: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/max3100.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  Note, the build(no ACPI) depends on
-> https://patchwork.kernel.org/patch/9141207/,
-> which was already accepted in net-next.
->=20
-> Meanwhile, set dw8250_serial_out32 to keep consistent between
-> serial_out
-> and serial_in in ACPI.
->=20
-> Kefeng Wang (2):
-> =C2=A0 serial: 8250_dw: make dw8250_set_termios as default set_termio=
-s
-> =C2=A0=C2=A0=C2=A0=C2=A0callback
-> =C2=A0 serial: 8250_dw: add ACPI support for uart on Hisilicon Hip05 =
-soc
->=20
-> =C2=A0drivers/tty/serial/8250/8250_dw.c | 11 +++++++----
-> =C2=A01 file changed, 7 insertions(+), 4 deletions(-)
->=20
-
---=20
-
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index 5c4c280..a0cc84a 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -155,7 +155,7 @@ static int max3100_do_parity(struct max3100_port *s, u16 c)
+ 	else
+ 		c &= 0xff;
+ 
+-	parity = parity ^ (hweight8(c) & 1);
++	parity ^= parity8(c);
+ 	return parity;
+ }
+ 
+-- 
+2.7.4
