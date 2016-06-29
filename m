@@ -1,65 +1,59 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: RFC: out-of-tree tty driver breakage (changing ASYNC_ bits)
-Date: Tue, 28 Jun 2016 16:05:33 +0000 (UTC)
-Message-ID: <nku78d$mru$1@ger.gmane.org>
-References: <5692D054.7050203@hurleysoftware.com>
- <20160111044204.GB12741@kroah.com> <n70j5g$sem$1@ger.gmane.org>
- <5693D72D.6050501@hurleysoftware.com> <nku5nh$1n3$1@ger.gmane.org>
- <nku6k9$1n3$2@ger.gmane.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH 2/2] serial: 8250_dw: add ACPI support for uart on
+ Hisilicon Hip05 soc
+Date: Wed, 29 Jun 2016 16:51:22 +0800
+Message-ID: <0e7153a4-9743-5a26-3212-42004fbf6930@huawei.com>
+References: <1467083835-37750-1-git-send-email-wangkefeng.wang@huawei.com>
+ <1467083835-37750-3-git-send-email-wangkefeng.wang@huawei.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1467083835-37750-3-git-send-email-wangkefeng.wang@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, z.liuxinliang@hisilicon.com, guohanjun@huawei.com, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2016-06-28, Grant Edwards <grant.b.edwards@gmail.com> wrote:
-> On 2016-06-28, Grant Edwards <grant.b.edwards@gmail.com> wrote:
->> On 2016-01-11, Peter Hurley <peter@hurleysoftware.com> wrote:
->>> On 01/11/2016 07:53 AM, Grant Edwards wrote:
->>>> On 2016-01-11, Greg KH <gregkh@linuxfoundation.org> wrote:
->>>>> On Sun, Jan 10, 2016 at 01:42:44PM -0800, Peter Hurley wrote:
->>>>>
->>>>>> This will break out-of-tree drivers but I don't really see a
->>>>>> realistic alternative. Also, I think the new symbol prefix ASY_ isn't
->>>>>> great and I'd like to get some suggestions.
->>>>>
->>>>> Don't worry about breaking out-of-tree drivers, that's fine.
->>>> 
->>>> One request from this maintainer of several out-of-tree drivers: if
->>>> you break something, break it such that it won't compile.  It would be
->>>> nice to avoid changes that break functionality but still compile
->>>> without warning.
->>>
->>> I was in the process of writing how I can't remove
->>> ASYNC_INITIALIZED, et.al from the uapi header, when I realized that
->>> I can just guard them with #ifndef _KERNEL_ which will trigger the
->>> requisite out-of-tree build break.
->
->> You know that _KERNEL_ is defined when when compiling kernel-space
->> code (either in-tree or out-of-tree), right?
->
-> Ignore that.  I missed the 'n' in #ifndef.  My driver build should
-> fail due to ASYNC_INITIALIZED being undefined, but it isn't.  :/
->
-> For some reason _KERNEL_ is not defined when my module is being
-> compiled....
++cc linux-acpi@vger.kernel.org
 
-That's because it's __KERNEL__ not _KERNEL_ that get's defined when
-compiling kernel-space code.  So, in tty_flags.h:
+On 2016/6/28 11:17, Kefeng Wang wrote:
+> Add ACPI identifier for UART on Hisilicon Hip05 soc, be careful
+> that it is not 16550 compatibal.
+> 
+> Meanwhile, set dw8250_serial_out32 to keep consistent between serial_out
+> and serial_in in ACPI.
+> 
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  drivers/tty/serial/8250/8250_dw.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index 65f3da7..7571b0f 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -301,8 +301,11 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+>  		p->iotype = UPIO_MEM32;
+>  		p->regshift = 2;
+>  		p->serial_in = dw8250_serial_in32;
+> -		/* So far none of there implement the Busy Functionality */
+> -		data->uart_16550_compatible = true;
+> +		p->serial_out = dw8250_serial_out32;
+> +
+> +		/* Hisilicon 8250 dw uart is not 16550 compatible */
+> +		if (!acpi_dev_found("HISI0031"))
+> +			data->uart_16550_compatible = true;
+>  	}
+>  
+>  	/* Platforms with iDMA */
+> @@ -618,6 +621,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
+>  	{ "APMC0D08", 0},
+>  	{ "AMD0020", 0 },
+>  	{ "AMDI0020", 0 },
+> +	{ "HISI0031", 0 },
+>  	{ },
+>  };
+>  MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
+> 
 
-    81  #define ASYNC_SPD_MASK          (ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
-    82  
-    83  #ifndef _KERNEL_
-    84  /* These flags are no longer used (and were always masked from userspace) */
-    85  #define ASYNC_INITIALIZED       (1U << ASYNCB_INITIALIZED)
-    86  #define ASYNC_NORMAL_ACTIVE     (1U << ASYNCB_NORMAL_ACTIVE)
-
-Shoulnd't line 83 be 
-
-        #ifndef __KERNEL__
-?
-
--- 
-Grant Edwards               grant.b.edwards        Yow! PARDON me, am I
-                                  at               speaking ENGLISH?
-                              gmail.com            
