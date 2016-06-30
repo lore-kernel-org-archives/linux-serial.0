@@ -1,33 +1,29 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v2 0/2] serial: 8250_dw: Add ACPI support for uart on Hisilicon Hip05 soc
-Date: Thu, 30 Jun 2016 09:27:40 +0800
-Message-ID: <1467250062-61583-1-git-send-email-wangkefeng.wang@huawei.com>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH v2 1/3] dmaengine: hsu: Export hsu_dma_get_status()
+Date: Thu, 30 Jun 2016 10:04:00 +0530
+Message-ID: <20160630043359.GO14945@localhost>
+References: <1465969453-16198-1-git-send-email-kim.tatt.chuah@intel.com>
+ <1465969453-16198-2-git-send-email-kim.tatt.chuah@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1465969453-16198-2-git-send-email-kim.tatt.chuah@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, z.liuxinliang@hisilicon.com, guohanjun@huawei.com, linux-acpi@vger.kernel.org, xuwei5@hisilicon.com, graeme.gregory@linaro.org, Kefeng Wang <wangkefeng.wang@huawei.com>
+To: Chuah Kim Tatt <kim.tatt.chuah@intel.com>
+Cc: gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com, andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com, linux-kernel@vger.kernel.org, jui.nee.tan@intel.com, peter@hurleysoftware.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Make dw8250_set_termios() as the default set_termios callback for 8250 dw uart, correct me
-if I am wrong.
+On Wed, Jun 15, 2016 at 01:44:11PM +0800, Chuah Kim Tatt wrote:
+> From: "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>
+> 
+> To allow other code to safely read DMA Channel Status Register (where
+> the register attribute for Channel Error, Descriptor Time Out &
+> Descriptor Done fields are read-clear), export hsu_dma_get_status().
+> hsu_dma_irq() is renamed to hsu_dma_do_irq() and requires Status
+> Register value to be passed in.
 
-Then add ACPI support for uart on Hisilicon Hip05 soc, be careful that it is not 16500
-compatible. Meanwhile, set dw8250_serial_out32 to keep consistent between serial_out
-and serial_in in ACPI.
-
-Change since v1:
-- Use acpi_match_device() instead of acpi_dev_found(), limit the check to the device
-  being probed and not a global search for whole DSDT (pointed by graeme.gregory@linaro.org)
-
-Kefeng Wang (2):
-  serial: 8250_dw: make dw8250_set_termios as default set_termios
-    callback
-  serial: 8250_dw: add ACPI support for uart on Hisilicon Hip05 soc
-
- drivers/tty/serial/8250/8250_dw.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+Acked-by: Vinod Koul <vinod.koul@intel.com>
 
 -- 
-1.7.12.4
+~Vinod
