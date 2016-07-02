@@ -1,46 +1,47 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY fixes for 4.7-rc6
-Date: Fri, 1 Jul 2016 09:14:46 -0700
-Message-ID: <20160701161446.GA29312@kroah.com>
+From: Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [RFC RESEND] serial: 8250: fix regression in 8250 uart driver
+Date: Sat, 2 Jul 2016 13:53:17 +0200
+Message-ID: <dbaa0abe-06ab-57ee-4ba3-4e4717af4a62@leemhuis.info>
+References: <575F7325.3030907@kernel.org>
+ <1465897220.30123.26.camel@linux.intel.com>
+ <cca9fb6eca58d8a29e3070e3f34fa40f.squirrel@emailmg.ipower.com>
+ <1465920046.30123.83.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <1465920046.30123.83.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, dinh.linux@anniebear.net
+Cc: Dinh Nguyen <dinguyen@kernel.org>, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 33688abb2802ff3a230bd2441f765477b94cc89e:
+On 14.06.2016 18:00, Andy Shevchenko wrote:
+> On Tue, 2016-06-14 at 10:27 -0500, dinh.linux@anniebear.net wrote:
+>>> On Mon, 2016-06-13 at 21:59 -0500, Dinh Nguyen wrote:
+>>> I suppose this one, i.e. commit dd4e91d538b3 ("dmaengine: slave
+>>> means at
+>>> least one of DMA_SLAVE, DMA_CYCLIC"), solves the issue.
+>> Hmm...that commit didn't seem to fix my issue.
+> [=E2=80=A6]
+>> Does this mean that the 8250_dw.c driver can no longer use DMA?
+>=20
+> It means that previously the use of DMA engine whatever was used is n=
+ot
+> correct in your case. There is no issues in UART driver, the issue is=
+ in
+> DMA controller driver.
+>=20
+> I'm working on a quirk that will allow user to enforce PIO mode for
+> Rx/Tx or both. In that case if DMA controller can't be fixed you stil=
+l
+> might use DMA for Tx.
 
-  Linux 4.7-rc4 (2016-06-19 21:30:02 -0700)
+What's the status of this issue? Just wondering, as this issue is liste=
+d
+in my regression reports for 4.7 and it seems nothing much happened for
+more than a week now =E2=80=93 which is a bad sign as the 4.7 release s=
+eems only
+a week or two away.
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.7-rc6
-
-for you to fetch changes up to 5353ed8deedee9e5acb9f896e9032158f5d998de:
-
-  devpts: fix null pointer dereference on failed memory allocation (2016-06-26 11:39:00 -0700)
-
-----------------------------------------------------------------
-tty fixes for 4.7-rc6
-
-Here are two tty fixes for some reported issues.  One resolves a crash
-in devpts, and the other resolves a problem with the fbcon cursor blink
-causing lockups.
-
-Both have been in linux-next with no reported problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Colin Ian King (1):
-      devpts: fix null pointer dereference on failed memory allocation
-
-David Daney (1):
-      tty: vt: Fix soft lockup in fbcon cursor blink timer.
-
- drivers/tty/pty.c   | 7 +++++--
- drivers/tty/vt/vt.c | 1 +
- 2 files changed, 6 insertions(+), 2 deletions(-)
+CU, Thorsten
