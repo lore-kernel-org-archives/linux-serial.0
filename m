@@ -1,72 +1,91 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH] 8250/fintek: rename IRQ_MODE macro
-Date: Mon, 4 Jul 2016 15:52:38 +0200
-Message-ID: <CAPybu_1GzTJqsQURK-PjbF3+Pi9a6rb_sBUgTih8-KKx2sP-0Q@mail.gmail.com>
-References: <20160627092152.1430477-1-arnd@arndb.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] serial: imx: add rx and tx led trigger
+Date: Mon,  4 Jul 2016 17:34:12 +0200
+Message-ID: <1467646452-21243-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160627092152.1430477-1-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>, "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-Acked-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-
-On Mon, Jun 27, 2016 at 11:21 AM, Arnd Bergmann <arnd@arndb.de> wrote:
-> A bugfix for the fintek driver required defining some macros, but
-> one of them clashes with a system header on ARM:
->
-> drivers/tty/serial/8250/8250_fintek.c:34:0: error: "IRQ_MODE" redefined [-Werror]
->  #define IRQ_MODE 0x70
->
-> In file included from /git/arm-soc/arch/arm/include/asm/ptrace.h:13:0,
->                  from /git/arm-soc/arch/arm/include/asm/irqflags.h:6,
->                  from /git/arm-soc/include/linux/irqflags.h:15,
->                  from /git/arm-soc/arch/arm/include/asm/bitops.h:27,
->                  from /git/arm-soc/include/linux/bitops.h:36,
->                  from /git/arm-soc/include/linux/kernel.h:10,
->                  from /git/arm-soc/include/linux/list.h:8,
->                  from /git/arm-soc/include/linux/module.h:9,
->                  from /git/arm-soc/drivers/tty/serial/8250/8250_fintek.c:11:
-> arch/arm/include/uapi/asm/ptrace.h:55:0: note: this is the location of the previous definition
->
-> This renames the newly introduced 'IRQ_MODE' macro to FINTEK_IRQ_MODE.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 4da22f1418cb ("serial: 8250_fintek: fix the mismatched IRQ mode")
-> ---
->  drivers/tty/serial/8250/8250_fintek.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-> index 737b4b3957b0..0facc789fe7d 100644
-> --- a/drivers/tty/serial/8250/8250_fintek.c
-> +++ b/drivers/tty/serial/8250/8250_fintek.c
-> @@ -31,7 +31,7 @@
->  #define IO_ADDR2 0x60
->  #define LDN 0x7
->
-> -#define IRQ_MODE       0x70
-> +#define FINTEK_IRQ_MODE        0x70
->  #define IRQ_SHARE      BIT(4)
->  #define IRQ_MODE_MASK  (BIT(6) | BIT(5))
->  #define IRQ_LEVEL_LOW  0
-> @@ -195,7 +195,7 @@ static int fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool level_mode)
->         outb(LDN, pdata->base_port + ADDR_PORT);
->         outb(pdata->index, pdata->base_port + DATA_PORT);
->
-> -       outb(IRQ_MODE, pdata->base_port + ADDR_PORT);
-> +       outb(FINTEK_IRQ_MODE, pdata->base_port + ADDR_PORT);
->         tmp = inb(pdata->base_port + DATA_PORT);
->
->         tmp &= ~IRQ_MODE_MASK;
-> --
-> 2.9.0
->
-
-
-
--- 
-Ricardo Ribalda
+QWRkIHN1cHBvcnQgZm9yIHR3byBsZWQgdHJpZ2dlcnMgcGVyIFVBUlQgaW5zdGFuY2UgdGhhdCBi
+bGluayBvbgp0cmFuc21pc3Npb24gYW5kIHJlY2VwdGlvbiBvZiBkYXRhIHJlc3BlY3RpdmVseS4K
+ClNpZ25lZC1vZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0
+cm9uaXguZGU+Ci0tLQogZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIHwgNTcgKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCiAxIGZpbGUgY2hhbmdlZCwgNTcg
+aW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBiL2Ry
+aXZlcnMvdHR5L3NlcmlhbC9pbXguYwppbmRleCA2MjFlNDg4Y2JiMTIuLjJiNmJhM2I4YmRkNSAx
+MDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCisrKyBiL2RyaXZlcnMvdHR5L3Nl
+cmlhbC9pbXguYwpAQCAtMzksNiArMzksNyBAQAogI2luY2x1ZGUgPGxpbnV4L29mX2RldmljZS5o
+PgogI2luY2x1ZGUgPGxpbnV4L2lvLmg+CiAjaW5jbHVkZSA8bGludXgvZG1hLW1hcHBpbmcuaD4K
+KyNpbmNsdWRlIDxsaW51eC9sZWRzLmg+CiAKICNpbmNsdWRlIDxhc20vaXJxLmg+CiAjaW5jbHVk
+ZSA8bGludXgvcGxhdGZvcm1fZGF0YS9zZXJpYWwtaW14Lmg+CkBAIC0yMjcsNiArMjI4LDggQEAg
+c3RydWN0IGlteF9wb3J0IHsKIAl3YWl0X3F1ZXVlX2hlYWRfdAlkbWFfd2FpdDsKIAl1bnNpZ25l
+ZCBpbnQgICAgICAgICAgICBzYXZlZF9yZWdbMTBdOwogCWJvb2wJCQljb250ZXh0X3NhdmVkOwor
+CXN0cnVjdCBsZWRfdHJpZ2dlcglsZWRfdHJpZ2dlcl9yeDsKKwlzdHJ1Y3QgbGVkX3RyaWdnZXIJ
+bGVkX3RyaWdnZXJfdHg7CiB9OwogCiBzdHJ1Y3QgaW14X3BvcnRfdWNycyB7CkBAIC0yOTMsNiAr
+Mjk2LDEwIEBAIHN0YXRpYyBpbmxpbmUgaW50IGlzX2lteDZxX3VhcnQoc3RydWN0IGlteF9wb3J0
+ICpzcG9ydCkKIHsKIAlyZXR1cm4gc3BvcnQtPmRldmRhdGEtPmRldnR5cGUgPT0gSU1YNlFfVUFS
+VDsKIH0KKworc3RhdGljIHVuc2lnbmVkIGxvbmcgbGVkX2RlbGF5ID0gNTA7Cittb2R1bGVfcGFy
+YW0obGVkX2RlbGF5LCB1bG9uZywgMDY0NCk7CisKIC8qCiAgKiBTYXZlIGFuZCByZXN0b3JlIGZ1
+bmN0aW9ucyBmb3IgVUNSMSwgVUNSMiBhbmQgVUNSMyByZWdpc3RlcnMKICAqLwpAQCAtNDI2LDYg
+KzQzMyw5IEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBpbXhfdHJhbnNtaXRfYnVmZmVyKHN0cnVjdCBp
+bXhfcG9ydCAqc3BvcnQpCiAJCXJldHVybjsKIAl9CiAKKwlsZWRfdHJpZ2dlcl9ibGlua19vbmVz
+aG90KCZzcG9ydC0+bGVkX3RyaWdnZXJfdHgsCisJCQkJICAmbGVkX2RlbGF5LCAmbGVkX2RlbGF5
+LCAxKTsKKwogCWlmIChzcG9ydC0+ZG1hX2lzX2VuYWJsZWQpIHsKIAkJLyoKIAkJICogV2UndmUg
+anVzdCBzZW50IGEgWC1jaGFyIEVuc3VyZSB0aGUgVFggRE1BIGlzIGVuYWJsZWQKQEAgLTYzNSw2
+ICs2NDUsOSBAQCBzdGF0aWMgaXJxcmV0dXJuX3QgaW14X3J4aW50KGludCBpcnEsIHZvaWQgKmRl
+dl9pZCkKIAlzdHJ1Y3QgdHR5X3BvcnQgKnBvcnQgPSAmc3BvcnQtPnBvcnQuc3RhdGUtPnBvcnQ7
+CiAJdW5zaWduZWQgbG9uZyBmbGFncywgdGVtcDsKIAorCWxlZF90cmlnZ2VyX2JsaW5rX29uZXNo
+b3QoJnNwb3J0LT5sZWRfdHJpZ2dlcl9yeCwKKwkJCQkgICZsZWRfZGVsYXksICZsZWRfZGVsYXks
+IDEpOworCiAJc3Bpbl9sb2NrX2lycXNhdmUoJnNwb3J0LT5wb3J0LmxvY2ssIGZsYWdzKTsKIAog
+CXdoaWxlIChyZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVVNSMikgJiBVU1IyX1JEUikgewpA
+QCAtNzA4LDYgKzcyMSw5IEBAIHN0YXRpYyB2b2lkIGlteF9kbWFfcnhpbnQoc3RydWN0IGlteF9w
+b3J0ICpzcG9ydCkKIAl1bnNpZ25lZCBsb25nIHRlbXA7CiAJdW5zaWduZWQgbG9uZyBmbGFnczsK
+IAorCWxlZF90cmlnZ2VyX2JsaW5rX29uZXNob3QoJnNwb3J0LT5sZWRfdHJpZ2dlcl9yeCwKKwkJ
+CQkgICZsZWRfZGVsYXksICZsZWRfZGVsYXksIDEpOworCiAJc3Bpbl9sb2NrX2lycXNhdmUoJnNw
+b3J0LT5wb3J0LmxvY2ssIGZsYWdzKTsKIAogCXRlbXAgPSByZWFkbChzcG9ydC0+cG9ydC5tZW1i
+YXNlICsgVVNSMik7CkBAIC0yMDAyLDYgKzIwMTgsNDIgQEAgc3RhdGljIHZvaWQgc2VyaWFsX2lt
+eF9wcm9iZV9wZGF0YShzdHJ1Y3QgaW14X3BvcnQgKnNwb3J0LAogCQlzcG9ydC0+aGF2ZV9ydHNj
+dHMgPSAxOwogfQogCitzdGF0aWMgdm9pZCBpbXhfcmVnaXN0ZXJfbGVkX3RyaWdnZXIoc3RydWN0
+IGRldmljZSAqZGV2LCBzdHJ1Y3QgaW14X3BvcnQgKnNwb3J0KQoreworI2lmZGVmIENPTkZJR19M
+RURTX1RSSUdHRVJTCisJaW50IHJldDsKKwljaGFyICpuYW1lOworCisJbmFtZSA9IGRldm1fa2Fz
+cHJpbnRmKGRldiwgR0ZQX0tFUk5FTCwgInR0eW14YyVkLXJ4fHR0eW14YyVkLXR4IiwKKwkJCSAg
+ICAgIHNwb3J0LT5wb3J0LmxpbmUsIHNwb3J0LT5wb3J0LmxpbmUpOworCWlmICghbmFtZSkgewor
+CQlkZXZfd2FybihkZXYsICJmYWlsZWQgdG8gYWxsb2NhdGUgbGVkIHRyaWdnZXIgbmFtZVxuIik7
+CisJCXJldHVybjsKKwl9CisKKwlzcG9ydC0+bGVkX3RyaWdnZXJfcngubmFtZSA9IG5hbWU7CisK
+KwluYW1lID0gc3RyY2hyKG5hbWUsICd8Jyk7CisJKm5hbWUgPSAnXDAnOworCisJc3BvcnQtPmxl
+ZF90cmlnZ2VyX3R4Lm5hbWUgPSBuYW1lICsgMTsKKworCXJldCA9IGxlZF90cmlnZ2VyX3JlZ2lz
+dGVyKCZzcG9ydC0+bGVkX3RyaWdnZXJfcngpOworCWlmIChyZXQpIHsKKwkJZGV2X3dhcm4oZGV2
+LCAiZmFpbGVkIHRvIHJlZ2lzdGVyIHJ4IGxlZCB0cmlnZ2VyXG4iKTsKKwkJZ290byBlcnJfcmVn
+aXN0ZXJfcng7CisJfQorCisJcmV0ID0gbGVkX3RyaWdnZXJfcmVnaXN0ZXIoJnNwb3J0LT5sZWRf
+dHJpZ2dlcl90eCk7CisJaWYgKHJldCkgeworCQlkZXZfd2FybihkZXYsICJmYWlsZWQgdG8gcmVn
+aXN0ZXIgdHggbGVkIHRyaWdnZXJcbiIpOworCQlsZWRfdHJpZ2dlcl91bnJlZ2lzdGVyKCZzcG9y
+dC0+bGVkX3RyaWdnZXJfcngpOworZXJyX3JlZ2lzdGVyX3J4OgorCQlkZXZtX2tmcmVlKGRldiwg
+bmFtZSk7CisJfQorI2VuZGlmCit9CisKIHN0YXRpYyBpbnQgc2VyaWFsX2lteF9wcm9iZShzdHJ1
+Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQogewogCXN0cnVjdCBpbXhfcG9ydCAqc3BvcnQ7CkBA
+IC0yMDY1LDYgKzIxMTcsOCBAQCBzdGF0aWMgaW50IHNlcmlhbF9pbXhfcHJvYmUoc3RydWN0IHBs
+YXRmb3JtX2RldmljZSAqcGRldikKIAogCXNwb3J0LT5wb3J0LnVhcnRjbGsgPSBjbGtfZ2V0X3Jh
+dGUoc3BvcnQtPmNsa19wZXIpOwogCisJaW14X3JlZ2lzdGVyX2xlZF90cmlnZ2VyKCZwZGV2LT5k
+ZXYsIHNwb3J0KTsKKwogCS8qIEZvciByZWdpc3RlciBhY2Nlc3MsIHdlIG9ubHkgbmVlZCB0byBl
+bmFibGUgdGhlIGlwZyBjbG9jay4gKi8KIAlyZXQgPSBjbGtfcHJlcGFyZV9lbmFibGUoc3BvcnQt
+PmNsa19pcGcpOwogCWlmIChyZXQpCkBAIC0yMTEwLDYgKzIxNjQsOSBAQCBzdGF0aWMgaW50IHNl
+cmlhbF9pbXhfcmVtb3ZlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiB7CiAJc3RydWN0
+IGlteF9wb3J0ICpzcG9ydCA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYpOwogCisjaWZkZWYg
+Q09ORklHX0xFRFNfVFJJR0dFUlMKKwlsZWRfdHJpZ2dlcl91bnJlZ2lzdGVyKCZzcG9ydC0+bGVk
+X3RyaWdnZXJfcngpOworI2VuZGlmCiAJcmV0dXJuIHVhcnRfcmVtb3ZlX29uZV9wb3J0KCZpbXhf
+cmVnLCAmc3BvcnQtPnBvcnQpOwogfQogCi0tIAoyLjguMQoKCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0
+CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFk
+ZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
