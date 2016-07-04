@@ -1,56 +1,47 @@
-From: Vinod Koul <vinod.koul@intel.com>
-Subject: Re: EXT: Re: [PATCH RFC 1/4] dma: imx-sdma - reduce transfer latency
- for DMA cyclic clients
-Date: Sat, 2 Jul 2016 22:57:05 +0530
-Message-ID: <20160702172704.GV14945@localhost>
-References: <cover.1465456639.git.nandor.han@ge.com>
- <0ed1e0027f135e9c88d7ac094ca807c7dc8f6713.1465456639.git.nandor.han@ge.com>
- <20160628143426.GB14945@localhost>
- <57768552.6060407@ge.com>
+From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Subject: Re: [PATCH v2 0/9] Improve Rx/Tx DMA implementation
+Date: Mon, 4 Jul 2016 11:54:13 +0530
+Message-ID: <00c09dc2-da73-1415-9f9f-5dc6c56034c0@toradex.com>
+References: <20160628053235.5114-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <57768552.6060407@ge.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nandor Han <nandor.han@ge.com>
-Cc: =Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160628053235.5114-1-bhuvanchandra.dv@toradex.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 01, 2016 at 05:59:30PM +0300, Nandor Han wrote:
-> 
-> 
-> On 28/06/16 17:34, Vinod Koul wrote:
-> >On Thu, Jun 09, 2016 at 03:16:30PM +0300, Nandor Han wrote:
-> >>Having the SDMA driver use a tasklet for running the clients
-> >>callback introduce some issues:
-> >>   - probability to have desynchronized data because of the
-> >>     race condition created since the DMA transaction status
-> >>     is retrieved only when the callback is executed, leaving
-> >>     plenty of time for transaction status to get altered.
-> >>   - inter-transfer latency which can leave channels idle.
-> >>
-> >>Move the callback execution, for cyclic channels, to SDMA
-> >>interrupt (as advised in `Documentation/dmaengine/provider.txt`)
-> >>to (a)reduce the inter-transfer latency and (b) eliminate the
-> >>race condition possibility where DMA transaction status might
-> >>be changed by the time is read.
-> >>
-> >>The responsibility of the SDMA interrupt latency
-> >>is moved to the SDMA clients which case by case should defer
-> >>the work to bottom-halves when needed.
-> >
-> >Both of these look fine. Please change the patch titles to dmaengine: xxxx
-> >
-> >Are these going to be merged thru dmaengine tree or serial one?
-> >
-> 
-> I will send soon a V2 where I will fix the titles. If you are OK
-> with all the patchset it can be merged to dmaengine tree, otherwise
-> probably goes to serial one.
+Ping!
 
-Sure I can merge all.. provided ACKs on other patches.
+On 06/28/16 11:02, Bhuvanchandra DV wrote:
 
-
--- 
-~Vinod
+> Changes since v1:
+> Split suspend/resume patch.
+>
+> Bhuvanchandra DV (5):
+>    tty: serial: fsl_lpuart: Fix broken 8m/s1 support
+>    tty: serial: fsl-lpuart: Use cyclic DMA for Rx
+>    tty: serial: fsl-lpuart: Use scatter/gather DMA for Tx
+>    tty: serial: fsl-lpuart: Update suspend/resume for DMA mode
+>    tty: serial: fsl_lpuart: Add support for RS-485
+>
+> Stefan Agner (4):
+>    tty: serial: fsl_lpuart: consider TX FIFO too in tx_empty
+>    clk: imx: vf610: Disable automatic clock gating for lpuart in LPSTOP mode
+>    tty: serial: fsl_lpuart: support suspend/resume
+>    tty: serial: fsl_lpuart: fix clearing of receive flag
+>
+>   drivers/clk/imx/clk-vf610.c     |  12 +-
+>   drivers/tty/serial/fsl_lpuart.c | 810 +++++++++++++++++++++++-----------------
+>   2 files changed, 482 insertions(+), 340 deletions(-)
+>
