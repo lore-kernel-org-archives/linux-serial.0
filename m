@@ -1,47 +1,72 @@
-From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: Re: [PATCH v2 0/9] Improve Rx/Tx DMA implementation
-Date: Mon, 4 Jul 2016 11:54:13 +0530
-Message-ID: <00c09dc2-da73-1415-9f9f-5dc6c56034c0@toradex.com>
-References: <20160628053235.5114-1-bhuvanchandra.dv@toradex.com>
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH] 8250/fintek: rename IRQ_MODE macro
+Date: Mon, 4 Jul 2016 15:52:38 +0200
+Message-ID: <CAPybu_1GzTJqsQURK-PjbF3+Pi9a6rb_sBUgTih8-KKx2sP-0Q@mail.gmail.com>
+References: <20160627092152.1430477-1-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160628053235.5114-1-bhuvanchandra.dv@toradex.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160627092152.1430477-1-arnd@arndb.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>, "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Ping!
+Acked-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 
-On 06/28/16 11:02, Bhuvanchandra DV wrote:
+On Mon, Jun 27, 2016 at 11:21 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> A bugfix for the fintek driver required defining some macros, but
+> one of them clashes with a system header on ARM:
+>
+> drivers/tty/serial/8250/8250_fintek.c:34:0: error: "IRQ_MODE" redefined [-Werror]
+>  #define IRQ_MODE 0x70
+>
+> In file included from /git/arm-soc/arch/arm/include/asm/ptrace.h:13:0,
+>                  from /git/arm-soc/arch/arm/include/asm/irqflags.h:6,
+>                  from /git/arm-soc/include/linux/irqflags.h:15,
+>                  from /git/arm-soc/arch/arm/include/asm/bitops.h:27,
+>                  from /git/arm-soc/include/linux/bitops.h:36,
+>                  from /git/arm-soc/include/linux/kernel.h:10,
+>                  from /git/arm-soc/include/linux/list.h:8,
+>                  from /git/arm-soc/include/linux/module.h:9,
+>                  from /git/arm-soc/drivers/tty/serial/8250/8250_fintek.c:11:
+> arch/arm/include/uapi/asm/ptrace.h:55:0: note: this is the location of the previous definition
+>
+> This renames the newly introduced 'IRQ_MODE' macro to FINTEK_IRQ_MODE.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: 4da22f1418cb ("serial: 8250_fintek: fix the mismatched IRQ mode")
+> ---
+>  drivers/tty/serial/8250/8250_fintek.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+> index 737b4b3957b0..0facc789fe7d 100644
+> --- a/drivers/tty/serial/8250/8250_fintek.c
+> +++ b/drivers/tty/serial/8250/8250_fintek.c
+> @@ -31,7 +31,7 @@
+>  #define IO_ADDR2 0x60
+>  #define LDN 0x7
+>
+> -#define IRQ_MODE       0x70
+> +#define FINTEK_IRQ_MODE        0x70
+>  #define IRQ_SHARE      BIT(4)
+>  #define IRQ_MODE_MASK  (BIT(6) | BIT(5))
+>  #define IRQ_LEVEL_LOW  0
+> @@ -195,7 +195,7 @@ static int fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool level_mode)
+>         outb(LDN, pdata->base_port + ADDR_PORT);
+>         outb(pdata->index, pdata->base_port + DATA_PORT);
+>
+> -       outb(IRQ_MODE, pdata->base_port + ADDR_PORT);
+> +       outb(FINTEK_IRQ_MODE, pdata->base_port + ADDR_PORT);
+>         tmp = inb(pdata->base_port + DATA_PORT);
+>
+>         tmp &= ~IRQ_MODE_MASK;
+> --
+> 2.9.0
+>
 
-> Changes since v1:
-> Split suspend/resume patch.
->
-> Bhuvanchandra DV (5):
->    tty: serial: fsl_lpuart: Fix broken 8m/s1 support
->    tty: serial: fsl-lpuart: Use cyclic DMA for Rx
->    tty: serial: fsl-lpuart: Use scatter/gather DMA for Tx
->    tty: serial: fsl-lpuart: Update suspend/resume for DMA mode
->    tty: serial: fsl_lpuart: Add support for RS-485
->
-> Stefan Agner (4):
->    tty: serial: fsl_lpuart: consider TX FIFO too in tx_empty
->    clk: imx: vf610: Disable automatic clock gating for lpuart in LPSTOP mode
->    tty: serial: fsl_lpuart: support suspend/resume
->    tty: serial: fsl_lpuart: fix clearing of receive flag
->
->   drivers/clk/imx/clk-vf610.c     |  12 +-
->   drivers/tty/serial/fsl_lpuart.c | 810 +++++++++++++++++++++++-----------------
->   2 files changed, 482 insertions(+), 340 deletions(-)
->
+
+
+-- 
+Ricardo Ribalda
