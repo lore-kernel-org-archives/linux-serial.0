@@ -1,39 +1,95 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v8 4/4] serial: pl011: add console matching function
-Date: Mon, 11 Jul 2016 17:50:16 +0200
-Message-ID: <5783C038.5070504@gmail.com>
-References: <1463749405-11640-1-git-send-email-aleksey.makarov@linaro.org>
- <1463749405-11640-5-git-send-email-aleksey.makarov@linaro.org>
- <20160622121813.GA20023@yury-N73SV>
- <7CC4D455-323E-4B33-A931-2104E2DDDC0D@hurleysoftware.com>
- <20160622204548.GB28766@yury-N73SV> <5783AFDE.1090408@gmail.com>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+	<u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: [PATCH RFC] serial: imx: support an enable-gpio
+Date: Wed, 13 Jul 2016 11:01:35 +0200
+Message-ID: <1468400495-10471-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5783AFDE.1090408@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>
-Cc: "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@arm.linux.org.uk>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Russell King <linux@armlinux.org.uk>, linux-acpi@vger.kernel.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Mark Salter <msalter@redhat.com>, Jiri Slaby <jslaby@suse.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+A part of my machine looks as follows (simplified):
 
+,------------------------.
+| ,---------.            |
+| |  imx25  o--RX----=E2=97=81---o---
+| |         o--GPIO--'   |
+| `---------'            |
+`------------------------'
 
-On 11/07/16 16:40, Matthias Brugger wrote:
+that is, there is a driver on the RX line that must be enabled before
+the UART can be used. (That is necessary because the default mux of the
+RX pad after reset is an output.)
 
->
-> I tried to apply these patches against linux-next. They needed some
-> changes to apply, which is quite normal after such a long time. Apart
-> from that the DBG2 subtype patch didn't end up in mainline, so this
-> patches do not compile.
->
-> I followed up on that on the corresponding thread. Please don't forget
-> to pin-point in the introduction mail to any other series which is
-> needed for your patches to compile/work.
->
+To represent this in the device tree I do:
 
-Ok, I sorted out, that the DBG2 subtypes actually are part of mainline 
-and that I screwed up my branches.
+	pinctrl_uart5: uart5 {
+		fsl,pins =3D <
+			...
+			MX25_PAD_LBA__UART5_RXD		0x00000000
+			MX25_PAD_CS5__GPIO_3_21		0x00002001
+			...
+	};
 
-Sorry for the noise.
-Matthias
+	&uart5 {
+		pinctrl-names =3D "default";
+		pinctrl-0 =3D <&pinctrl_uart5>;
+
+		enable-gpio =3D <&gpio3 21 GPIO_ACTIVE_LOW>;
+		...
+	};
+
+This way it's ensured that the gpio is only enabled when the LBA pad is
+muxed as RX (together with the bootloader that sets the GPIO high).
+
+Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+---
+Hello,
+
+I'm not sure about the naming. Do you have a better suggestion how to h=
+andle
+this situation?
+
+Best regards
+Uwe
+
+ drivers/tty/serial/imx.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 0df2b1c091ae..56eaa18aa5be 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -39,6 +39,7 @@
+ #include <linux/of_device.h>
+ #include <linux/io.h>
+ #include <linux/dma-mapping.h>
++#include <linux/gpio/consumer.h>
+=20
+ #include <asm/irq.h>
+ #include <linux/platform_data/serial-imx.h>
+@@ -1987,7 +1988,9 @@ static int serial_imx_probe_dt(struct imx_port *s=
+port,
+ 	if (of_get_property(np, "fsl,dte-mode", NULL))
+ 		sport->dte_mode =3D 1;
+=20
+-	return 0;
++	ret =3D PTR_ERR_OR_ZERO(devm_gpiod_get_optional(&pdev->dev, "enable",=
+ GPIOD_OUT_HIGH));
++	dev_info(&pdev->dev, "Tralala: ret =3D %d\n", ret);
++	return ret;
+ }
+ #else
+ static inline int serial_imx_probe_dt(struct imx_port *sport,
+--=20
+2.8.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
