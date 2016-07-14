@@ -1,95 +1,129 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: [PATCH RFC] serial: imx: support an enable-gpio
-Date: Wed, 13 Jul 2016 11:01:35 +0200
-Message-ID: <1468400495-10471-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Peter Senna Tschudin <peter.senna@collabora.com>
+Subject: Re: [PATCH RFC 1/4] dma: imx-sdma - reduce transfer latency for DMA
+ cyclic clients
+Date: Thu, 14 Jul 2016 10:32:56 +0200
+Message-ID: <20160714083256.GA8386@collabora.com>
+References: <cover.1465456639.git.nandor.han@ge.com>
+ <0ed1e0027f135e9c88d7ac094ca807c7dc8f6713.1465456639.git.nandor.han@ge.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <0ed1e0027f135e9c88d7ac094ca807c7dc8f6713.1465456639.git.nandor.han@ge.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nandor Han <nandor.han@ge.com>
+Cc: =Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-A part of my machine looks as follows (simplified):
-
-,------------------------.
-| ,---------.            |
-| |  imx25  o--RX----=E2=97=81---o---
-| |         o--GPIO--'   |
-| `---------'            |
-`------------------------'
-
-that is, there is a driver on the RX line that must be enabled before
-the UART can be used. (That is necessary because the default mux of the
-RX pad after reset is an output.)
-
-To represent this in the device tree I do:
-
-	pinctrl_uart5: uart5 {
-		fsl,pins =3D <
-			...
-			MX25_PAD_LBA__UART5_RXD		0x00000000
-			MX25_PAD_CS5__GPIO_3_21		0x00002001
-			...
-	};
-
-	&uart5 {
-		pinctrl-names =3D "default";
-		pinctrl-0 =3D <&pinctrl_uart5>;
-
-		enable-gpio =3D <&gpio3 21 GPIO_ACTIVE_LOW>;
-		...
-	};
-
-This way it's ensured that the gpio is only enabled when the LBA pad is
-muxed as RX (together with the bootloader that sets the GPIO high).
-
-Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
----
-Hello,
-
-I'm not sure about the naming. Do you have a better suggestion how to h=
-andle
-this situation?
-
-Best regards
-Uwe
-
- drivers/tty/serial/imx.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 0df2b1c091ae..56eaa18aa5be 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -39,6 +39,7 @@
- #include <linux/of_device.h>
- #include <linux/io.h>
- #include <linux/dma-mapping.h>
-+#include <linux/gpio/consumer.h>
-=20
- #include <asm/irq.h>
- #include <linux/platform_data/serial-imx.h>
-@@ -1987,7 +1988,9 @@ static int serial_imx_probe_dt(struct imx_port *s=
-port,
- 	if (of_get_property(np, "fsl,dte-mode", NULL))
- 		sport->dte_mode =3D 1;
-=20
--	return 0;
-+	ret =3D PTR_ERR_OR_ZERO(devm_gpiod_get_optional(&pdev->dev, "enable",=
- GPIOD_OUT_HIGH));
-+	dev_info(&pdev->dev, "Tralala: ret =3D %d\n", ret);
-+	return ret;
- }
- #else
- static inline int serial_imx_probe_dt(struct imx_port *sport,
---=20
-2.8.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On Thu, Jun 09, 2016 at 03:16:30PM +0300, Nandor Han wrote:
+> Having the SDMA driver use a tasklet for running the clients
+> callback introduce some issues:
+>   - probability to have desynchronized data because of the
+>     race condition created since the DMA transaction status
+>     is retrieved only when the callback is executed, leaving
+>     plenty of time for transaction status to get altered.
+>   - inter-transfer latency which can leave channels idle.
+> 
+> Move the callback execution, for cyclic channels, to SDMA
+> interrupt (as advised in `Documentation/dmaengine/provider.txt`)
+> to (a)reduce the inter-transfer latency and (b) eliminate the
+> race condition possibility where DMA transaction status might
+> be changed by the time is read.
+> 
+> The responsibility of the SDMA interrupt latency
+> is moved to the SDMA clients which case by case should defer
+> the work to bottom-halves when needed.
+> 
+> Signed-off-by: Nandor Han <nandor.han@ge.com>
+For the whole series:
+Tested-by: Peter Senna Tschudin <peter.senna@collabora.com>
+Acked-by: Peter Senna Tschudin <peter.senna@collabora.com>
+> ---
+>  drivers/dma/imx-sdma.c | 36 ++++++++++++++++--------------------
+>  1 file changed, 16 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+> index 0f6fd42..e497847 100644
+> --- a/drivers/dma/imx-sdma.c
+> +++ b/drivers/dma/imx-sdma.c
+> @@ -654,12 +654,6 @@ static void sdma_event_disable(struct sdma_channel *sdmac, unsigned int event)
+>  	writel_relaxed(val, sdma->regs + chnenbl);
+>  }
+>  
+> -static void sdma_handle_channel_loop(struct sdma_channel *sdmac)
+> -{
+> -	if (sdmac->desc.callback)
+> -		sdmac->desc.callback(sdmac->desc.callback_param);
+> -}
+> -
+>  static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+>  {
+>  	struct sdma_buffer_descriptor *bd;
+> @@ -678,13 +672,25 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+>  			sdmac->status = DMA_ERROR;
+>  
+>  		bd->mode.status |= BD_DONE;
+> +
+> +		/*
+> +		 * The callback is called from the interrupt context in order
+> +		 * to reduce latency and to avoid the risk of altering the
+> +		 * SDMA transaction status by the time the client tasklet is
+> +		 * executed.
+> +		 */
+> +
+> +		if (sdmac->desc.callback)
+> +			sdmac->desc.callback(sdmac->desc.callback_param);
+> +
+>  		sdmac->buf_tail++;
+>  		sdmac->buf_tail %= sdmac->num_bd;
+>  	}
+>  }
+>  
+> -static void mxc_sdma_handle_channel_normal(struct sdma_channel *sdmac)
+> +static void mxc_sdma_handle_channel_normal(unsigned long data)
+>  {
+> +	struct sdma_channel *sdmac = (struct sdma_channel *) data;
+>  	struct sdma_buffer_descriptor *bd;
+>  	int i, error = 0;
+>  
+> @@ -711,16 +717,6 @@ static void mxc_sdma_handle_channel_normal(struct sdma_channel *sdmac)
+>  		sdmac->desc.callback(sdmac->desc.callback_param);
+>  }
+>  
+> -static void sdma_tasklet(unsigned long data)
+> -{
+> -	struct sdma_channel *sdmac = (struct sdma_channel *) data;
+> -
+> -	if (sdmac->flags & IMX_DMA_SG_LOOP)
+> -		sdma_handle_channel_loop(sdmac);
+> -	else
+> -		mxc_sdma_handle_channel_normal(sdmac);
+> -}
+> -
+>  static irqreturn_t sdma_int_handler(int irq, void *dev_id)
+>  {
+>  	struct sdma_engine *sdma = dev_id;
+> @@ -737,8 +733,8 @@ static irqreturn_t sdma_int_handler(int irq, void *dev_id)
+>  
+>  		if (sdmac->flags & IMX_DMA_SG_LOOP)
+>  			sdma_update_channel_loop(sdmac);
+> -
+> -		tasklet_schedule(&sdmac->tasklet);
+> +		else
+> +			tasklet_schedule(&sdmac->tasklet);
+>  
+>  		__clear_bit(channel, &stat);
+>  	}
+> @@ -1739,7 +1735,7 @@ static int sdma_probe(struct platform_device *pdev)
+>  		dma_cookie_init(&sdmac->chan);
+>  		sdmac->channel = i;
+>  
+> -		tasklet_init(&sdmac->tasklet, sdma_tasklet,
+> +		tasklet_init(&sdmac->tasklet, mxc_sdma_handle_channel_normal,
+>  			     (unsigned long) sdmac);
+>  		/*
+>  		 * Add the channel to the DMAC list. Do not add channel 0 though
+> -- 
+> 2.8.3
+> 
+> 
