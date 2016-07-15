@@ -1,84 +1,36 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v3 3/3] serial: 8250_dw: add ACPI support for uart on Hisilicon Hip05 soc
-Date: Fri, 15 Jul 2016 19:01:25 +0800
-Message-ID: <1468580485-28567-4-git-send-email-wangkefeng.wang@huawei.com>
-References: <1468580485-28567-1-git-send-email-wangkefeng.wang@huawei.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [patch -old] sparc: serial: sunhv: fix a double lock bug
+Date: Fri, 15 Jul 2016 14:17:33 +0300
+Message-ID: <20160715111733.GB13153@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1468580485-28567-1-git-send-email-wangkefeng.wang@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, andriy.shevchenko@linux.intel.com
-Cc: linux-acpi@vger.kernel.org, guohanjun@huawei.com, z.liuxinliang@hisilicon.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org, Kefeng Wang <wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <sparclinux-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: sparclinux-owner@vger.kernel.org
+To: "David S. Miller" <davem@davemloft.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Use built-in device properties to set device parameters for the
-existing device probed by acpi.
+We accidentally take the "port->lock" twice in a row.  This old code
+was supposed to be deleted.
 
-Add ACPI identifier for UART on Hisilicon Hip05 soc, be careful
-that it is not 16550 compatibal, so we need set "reg-io-width"
-and "reg-shift" by _DSD method in DSDT.
+Fixes: e58e241c1788 ('sparc: serial: Clean up the locking for -rt')
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- drivers/tty/serial/8250/8250_dw.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index d6934310..5ab9cfe 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -297,12 +297,6 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- 			p->serial_in = dw8250_serial_in32be;
- 			p->serial_out = dw8250_serial_out32be;
- 		}
--	} else if (has_acpi_companion(p->dev)) {
--		p->iotype = UPIO_MEM32;
--		p->regshift = 2;
--		p->serial_in = dw8250_serial_in32;
--		/* So far none of there implement the Busy Functionality */
--		data->uart_16550_compatible = true;
- 	}
+diff --git a/drivers/tty/serial/sunhv.c b/drivers/tty/serial/sunhv.c
+index ca0d380..4e603d0 100644
+--- a/drivers/tty/serial/sunhv.c
++++ b/drivers/tty/serial/sunhv.c
+@@ -490,12 +490,6 @@ static void sunhv_console_write_bychar(struct console *con, const char *s, unsig
+ 		locked = spin_trylock_irqsave(&port->lock, flags);
+ 	else
+ 		spin_lock_irqsave(&port->lock, flags);
+-	if (port->sysrq) {
+-		locked = 0;
+-	} else if (oops_in_progress) {
+-		locked = spin_trylock(&port->lock);
+-	} else
+-		spin_lock(&port->lock);
  
- 	/* Platforms with iDMA */
-@@ -352,6 +346,19 @@ static void dw8250_setup_port(struct uart_port *p)
- 		up->capabilities |= UART_CAP_AFE;
- }
- 
-+static struct property_entry dw8250_properties[] = {
-+	PROPERTY_ENTRY_U32("reg-io-width", 4),
-+	PROPERTY_ENTRY_U32("reg-shift", 2),
-+	PROPERTY_ENTRY_BOOL("snps,uart-16550-compatible"),
-+	{ },
-+};
-+
-+/* non 16550 compatible id list*/
-+static const struct acpi_device_id non_16550_ids[] = {
-+	{ "HISI0031", 0 },
-+	{ },
-+};
-+
- static int dw8250_probe(struct platform_device *pdev)
- {
- 	struct uart_8250_port uart = {};
-@@ -395,6 +402,9 @@ static int dw8250_probe(struct platform_device *pdev)
- 	if (!data)
- 		return -ENOMEM;
- 
-+	if (has_acpi_companion(dev) && !acpi_match_device(non_16550_ids, dev))
-+		platform_device_add_properties(pdev, dw8250_properties);
-+
- 	data->dma.fn = dw8250_fallback_dma_filter;
- 	data->usr_reg = DW_UART_USR;
- 	p->private_data = data;
-@@ -619,6 +629,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
- 	{ "APMC0D08", 0},
- 	{ "AMD0020", 0 },
- 	{ "AMDI0020", 0 },
-+	{ "HISI0031", 0 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
--- 
-1.7.12.4
-
+ 	for (i = 0; i < n; i++) {
+ 		if (*s == '\n')
