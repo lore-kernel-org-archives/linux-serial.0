@@ -1,55 +1,41 @@
-From: Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH v3 0/3] Complete ZTE PL011 device support
-Date: Thu, 14 Jul 2016 21:26:20 +0800
-Message-ID: <20160714132620.GB4382@tiger>
-References: <1467968441-4056-1-git-send-email-shawn.guo@linaro.org>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v3 0/3]
+Date: Fri, 15 Jul 2016 19:01:22 +0800
+Message-ID: <1468580485-28567-1-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1467968441-4056-1-git-send-email-shawn.guo@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King <linux@armlinux.org.uk>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Jason Liu <jason.liu@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@codeaurora.org>, xie.baoyou@zte.com.cn, linux-serial@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, andriy.shevchenko@linux.intel.com
+Cc: linux-acpi@vger.kernel.org, guohanjun@huawei.com, z.liuxinliang@hisilicon.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org, Kefeng Wang <wangkefeng.wang@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 08, 2016 at 05:00:38PM +0800, Shawn Guo wrote:
-> This is a pick-up of Jun's v2 patch which tries to complete ZTE PL011
-> support.
-> 
-> Commit 7ec758718920 ("tty: amba-pl011: add support for ZTE UART
-> (EXPERIMENTAL)") from Russell had already done part of the work that is
-> needed for ZTE PL011 support.  The series adds the missing pieces which
-> includes handling Flag Register bit position oddness and getting ZTE
-> PL011 device probed by amba-pl011 driver.
-> 
-> Thanks to Russell for the "official" pseudo-ID idea.
-> 
-> Changes since v2:
->  - Split changes into 3 separate patches
->  - Take Russell's suggestion using helper macro to create pseudo-ID
->  - Rebase to v4.7-rc6
-> 
-> [1] http://lists.infradead.org/pipermail/linux-arm-kernel/2016-March/417192.html
-> 
-> Shawn Guo (3):
->   tty: amba-pl011: define flag register bits for ZTE device
->   tty: amba-pl011: add .get_fifosize for ZTE device
->   tty: amba-pl011: probe ZTE device from AMBA bus with a pseudo-ID
+Make dw8250_set_termios() as the default set_termios callback for 8250 dw uart, correct me
+if I am wrong.
 
-Hi Russell,
+Then add ACPI support for uart on Hisilicon Hip05 soc, be careful that it is not 16500
+compatible. Meanwhile, set dw8250_serial_out32 to keep consistent between serial_out
+and serial_in in ACPI.
 
-Most of the changes of patch #3 are yours, so presumably you are fine
-with it.  What about #1 and #2?  May I have your ACK on them, so that I
-can ask Greg to pick up the series?  Thanks.
+Change since v2:
+- Add a new patch to use new var dev in probe
+- Use built-in device properties to set device parameters for existing device probed by acpi,
+  suggested by Andy Shevchenko 
 
-Shawn
+
+Change since v1:
+- Use acpi_match_device() instead of acpi_dev_found(), limit the check to the device
+  being probed and not a global search for whole DSDT (pointed by graeme.gregory@linaro.org)
+
+Kefeng Wang (3):
+  serial: 8250_dw: make dw8250_set_termios as default set_termios
+    callback
+  serial: 8250_dw: Use new dev variable in probe
+  serial: 8250_dw: add ACPI support for uart on Hisilicon Hip05 soc
+
+ drivers/tty/serial/8250/8250_dw.c | 71 ++++++++++++++++++++++-----------------
+ 1 file changed, 41 insertions(+), 30 deletions(-)
+
+-- 
+1.7.12.4
+
