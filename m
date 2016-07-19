@@ -1,8 +1,7 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH RESEND v2 1/8] tty: serial: fsl_lpuart: consider TX FIFO too
- in tx_empty
-Date: Tue, 19 Jul 2016 13:13:03 +0530
-Message-ID: <20160719074310.16872-2-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH RESEND v2 2/8] tty: serial: fsl_lpuart: support suspend/resume
+Date: Tue, 19 Jul 2016 13:13:04 +0530
+Message-ID: <20160719074310.16872-3-bhuvanchandra.dv@toradex.com>
 References: <20160719074310.16872-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,47 +23,63 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Stefan Agner <stefan@agner.ch>
 
-Currently the tx_empty callback only considers the Transmit Complete Flag (TC).
-The reference manual is not quite clear if the TC flag covers the TX FIFO too.
-Debug prints on real hardware have shown that from time to time the TC flag is
-asserted (indicating Transmitter idle) while there are still data in the
-TX FIFO. Hence, in this case the serial core will call the shutdown callback
-even though there are data remaining in the TX FIFO buffers.
-
-Avoid early shutdowns by considering the TX FIFO empty flag too. Also avoid
-theoretical race conditions between DMA and the driver by checking whether the
-TX DMA is in progress too.
+Add suspend/resume support.
 
 Signed-off-by: Stefan Agner <stefan@agner.ch>
 Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 3d79003..fabfa7e 100644
+index fabfa7e..75a2098 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -810,8 +810,18 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
- /* return TIOCSER_TEMT when transmitter is not busy */
- static unsigned int lpuart_tx_empty(struct uart_port *port)
- {
--	return (readb(port->membase + UARTSR1) & UARTSR1_TC) ?
--		TIOCSER_TEMT : 0;
-+	struct lpuart_port *sport = container_of(port,
-+			struct lpuart_port, port);
-+	unsigned char sr1 = readb(port->membase + UARTSR1);
-+	unsigned char sfifo = readb(port->membase + UARTSFIFO);
-+
-+	if (sport->dma_tx_in_progress)
-+		return 0;
-+
-+	if (sr1 & UARTSR1_TC && sfifo & UARTSFIFO_TXEMPT)
-+		return TIOCSER_TEMT;
-+
-+	return 0;
+@@ -483,9 +483,8 @@ static void lpuart_dma_rx_complete(void *arg)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
  }
  
- static unsigned int lpuart32_tx_empty(struct uart_port *port)
+-static void lpuart_timer_func(unsigned long data)
++static void lpuart_dma_rx_terminate(struct lpuart_port *sport)
+ {
+-	struct lpuart_port *sport = (struct lpuart_port *)data;
+ 	struct tty_port *port = &sport->port.state->port;
+ 	struct dma_tx_state state;
+ 	unsigned long flags;
+@@ -510,6 +509,11 @@ static void lpuart_timer_func(unsigned long data)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ }
+ 
++static void lpuart_timer_func(unsigned long data)
++{
++	lpuart_dma_rx_terminate((struct lpuart_port *)data);
++}
++
+ static inline void lpuart_prepare_rx(struct lpuart_port *sport)
+ {
+ 	unsigned long flags;
+@@ -1925,7 +1929,12 @@ static int lpuart_suspend(struct device *dev)
+ 		writeb(temp, sport->port.membase + UARTCR2);
+ 	}
+ 
++	if (sport->dma_rx_in_progress)
++		lpuart_dma_rx_terminate(sport);
++
+ 	uart_suspend_port(&lpuart_reg, &sport->port);
++	if (sport->port.suspended && !sport->port.irq_wake)
++		clk_disable_unprepare(sport->clk);
+ 
+ 	return 0;
+ }
+@@ -1935,6 +1944,9 @@ static int lpuart_resume(struct device *dev)
+ 	struct lpuart_port *sport = dev_get_drvdata(dev);
+ 	unsigned long temp;
+ 
++	if (sport->port.suspended && !sport->port.irq_wake)
++		clk_prepare_enable(sport->clk);
++
+ 	if (sport->lpuart32) {
+ 		lpuart32_setup_watermark(sport);
+ 		temp = lpuart32_read(sport->port.membase + UARTCTRL);
 -- 
 2.9.0
