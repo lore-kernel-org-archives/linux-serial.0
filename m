@@ -1,65 +1,60 @@
-From: Florian Vallee <fvallee@eukrea.fr>
-Subject: [PATCH] sc16is7xx: make sure device is in suspend once probed
-Date: Tue, 19 Jul 2016 16:29:36 +0200
-Message-ID: <1468938576-19508-1-git-send-email-fvallee@eukrea.fr>
+From: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
+Subject: [RFC 0/3] misc: pch_phub: Add quirks for MIPS Boston platform
+Date: Wed, 20 Jul 2016 18:21:14 +0100
+Message-ID: <1469035277-40919-1-git-send-email-Zubair.Kakakhel@imgtec.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Florian Vallee <fvallee@eukrea.fr>
+To: gregkh@linuxfoundation.org, arnd@arndb.de
+Cc: jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Zubair.Kakakhel@imgtec.com
 List-Id: linux-serial@vger.kernel.org
 
-  Previously sc16is7xx_power was called in order to set the device to a
-  low power mode.
+Hi,
 
-  However since SC16IS7XX_EFR_ENABLE_BIT was not set beforehand this
-  suspend request had not effect.
+These are a few patches for using the EG20T UART on the Imagination
+Technologies Boston development platform
 
-  Also, soft-reset the device prior to port initialization. It may
-  otherwise be in a state (interrupt pending, fifo not empty) which
-  prevents it from sleeping.
+2 quirks needed
+- Pass a specific value for the prefetch register from DT instead of using
+the hard-coded default.
+- Add a quirk for using the internal 25MHz clock source for the UART block
 
-Signed-off-by: Florian Vallee <fvallee@eukrea.fr>
----
- drivers/tty/serial/sc16is7xx.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+The patches for Boston platform are inflight.
+https://patchwork.kernel.org/patch/8200941/
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index f36e6df..a9d94f7 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1205,6 +1205,10 @@ static int sc16is7xx_probe(struct device *dev,
- 	}
- #endif
- 
-+	/* reset device, purging any pending irq / data */
-+	regmap_write(s->regmap, SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_SHIFT,
-+			SC16IS7XX_IOCONTROL_SRESET_BIT);
+So pasting a DT node snippet here.
+
++                                       eg20t_pch@2,0,0 {
++                                               compatible = "pci8086,8801";
++                                               reg = <0x00020000 0 0 0 0>;
 +
- 	for (i = 0; i < devtype->nr_uart; ++i) {
- 		s->p[i].line		= i;
- 		/* Initialize port data */
-@@ -1234,6 +1238,22 @@ static int sc16is7xx_probe(struct device *dev,
- 		init_kthread_work(&s->p[i].reg_work, sc16is7xx_reg_proc);
- 		/* Register port */
- 		uart_add_one_port(&sc16is7xx_uart, &s->p[i].port);
++                                               intel,eg20t-prefetch = <0>;
++                                       };
++                                       eg20t_uart0@02,10,1 {
++                                               compatible = "pci8086,8811";
++                                               reg = <0x00025100 0 0 0 0>;
 +
-+		/* Enable EFR */
-+		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG,
-+				     SC16IS7XX_LCR_CONF_MODE_B);
-+
-+		regcache_cache_bypass(s->regmap, true);
-+
-+		/* Enable write access to enhanced features */
-+		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_EFR_REG,
-+				     SC16IS7XX_EFR_ENABLE_BIT);
-+
-+		regcache_cache_bypass(s->regmap, false);
-+
-+		/* Restore access to general registers */
-+		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG, 0x00);
-+
- 		/* Go to suspend mode */
- 		sc16is7xx_power(&s->p[i].port, 0);
- 	}
++                                               clock-frequency = <25000000>;
++                                       };
+
+Marked as RFC due to the 2/3 patch for DT + PCI-E + board specific quirk
+Suggestions and feedback welcome.
+
+Based on v4.7-rc7
+
+Regards,
+ZubairLK
+
+Zubair Lutfullah Kakakhel (3):
+  misc: pch_phub: Read prefetch value from device tree if passed
+  misc: pch_phub: Add UART_CLK quirk for Boston platform
+  serial: pch_uart: Add support for reading clock-frequency from DT
+
+ drivers/misc/pch_phub.c       | 19 ++++++++++++++++++-
+ drivers/tty/serial/Kconfig    |  2 +-
+ drivers/tty/serial/pch_uart.c |  4 ++++
+ 3 files changed, 23 insertions(+), 2 deletions(-)
+
 -- 
-2.7.4
+1.9.1
