@@ -1,60 +1,52 @@
 From: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
-Subject: [RFC 0/3] misc: pch_phub: Add quirks for MIPS Boston platform
-Date: Wed, 20 Jul 2016 18:21:14 +0100
-Message-ID: <1469035277-40919-1-git-send-email-Zubair.Kakakhel@imgtec.com>
+Subject: [RFC 1/3] misc: pch_phub: Read prefetch value from device tree if passed
+Date: Wed, 20 Jul 2016 18:21:15 +0100
+Message-ID: <1469035277-40919-2-git-send-email-Zubair.Kakakhel@imgtec.com>
+References: <1469035277-40919-1-git-send-email-Zubair.Kakakhel@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1469035277-40919-1-git-send-email-Zubair.Kakakhel@imgtec.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, arnd@arndb.de
 Cc: jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Zubair.Kakakhel@imgtec.com
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+The default prefetch value for the eg20t device is hard coded to
+0x000affaa.
 
-These are a few patches for using the EG20T UART on the Imagination
-Technologies Boston development platform
+Add support for an alternative to be read from DT if available
 
-2 quirks needed
-- Pass a specific value for the prefetch register from DT instead of using
-the hard-coded default.
-- Add a quirk for using the internal 25MHz clock source for the UART block
+Signed-off-by: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
+---
+ drivers/misc/pch_phub.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-The patches for Boston platform are inflight.
-https://patchwork.kernel.org/patch/8200941/
-
-So pasting a DT node snippet here.
-
-+                                       eg20t_pch@2,0,0 {
-+                                               compatible = "pci8086,8801";
-+                                               reg = <0x00020000 0 0 0 0>;
+diff --git a/drivers/misc/pch_phub.c b/drivers/misc/pch_phub.c
+index 4810e03..9b010a7 100644
+--- a/drivers/misc/pch_phub.c
++++ b/drivers/misc/pch_phub.c
+@@ -711,6 +711,12 @@ static int pch_phub_probe(struct pci_dev *pdev,
+ 
+ 	if (id->driver_data == 1) { /* EG20T PCH */
+ 		const char *board_name;
++		unsigned int prefetch = 0x000affaa;
 +
-+                                               intel,eg20t-prefetch = <0>;
-+                                       };
-+                                       eg20t_uart0@02,10,1 {
-+                                               compatible = "pci8086,8811";
-+                                               reg = <0x00025100 0 0 0 0>;
-+
-+                                               clock-frequency = <25000000>;
-+                                       };
-
-Marked as RFC due to the 2/3 patch for DT + PCI-E + board specific quirk
-Suggestions and feedback welcome.
-
-Based on v4.7-rc7
-
-Regards,
-ZubairLK
-
-Zubair Lutfullah Kakakhel (3):
-  misc: pch_phub: Read prefetch value from device tree if passed
-  misc: pch_phub: Add UART_CLK quirk for Boston platform
-  serial: pch_uart: Add support for reading clock-frequency from DT
-
- drivers/misc/pch_phub.c       | 19 ++++++++++++++++++-
- drivers/tty/serial/Kconfig    |  2 +-
- drivers/tty/serial/pch_uart.c |  4 ++++
- 3 files changed, 23 insertions(+), 2 deletions(-)
-
++		if (pdev->dev.of_node)
++			of_property_read_u32(pdev->dev.of_node,
++						  "intel,eg20t-prefetch",
++						  &prefetch);
+ 
+ 		ret = sysfs_create_file(&pdev->dev.kobj,
+ 					&dev_attr_pch_mac.attr);
+@@ -736,7 +742,7 @@ static int pch_phub_probe(struct pci_dev *pdev,
+ 						CLKCFG_UART_MASK);
+ 
+ 		/* set the prefech value */
+-		iowrite32(0x000affaa, chip->pch_phub_base_address + 0x14);
++		iowrite32(prefetch, chip->pch_phub_base_address + 0x14);
+ 		/* set the interrupt delay value */
+ 		iowrite32(0x25, chip->pch_phub_base_address + 0x44);
+ 		chip->pch_opt_rom_start_address = PCH_PHUB_ROM_START_ADDR_EG20T;
 -- 
 1.9.1
