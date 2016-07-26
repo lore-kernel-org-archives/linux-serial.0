@@ -1,70 +1,83 @@
 From: Max Staudt <mstaudt@suse.de>
-Subject: Re: [PATCH] 8250: option 'force_polling' for buggy IRQs
-Date: Tue, 26 Jul 2016 13:42:13 +0200
-Message-ID: <b7ed014e-c6be-01ab-d601-08830d72f8cb@suse.de>
-References: <1469468175-15704-1-git-send-email-mstaudt@suse.de>
- <20160725174712.GA5752@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Subject: [PATCHv2] 8250: option 'force_polling' for buggy IRQs
+Date: Tue, 26 Jul 2016 13:47:31 +0200
+Message-ID: <1469533651-23384-1-git-send-email-mstaudt@suse.de>
+References: <201607260241.cWzeZvYH%fengguang.wu@intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160725174712.GA5752@kroah.com>
+In-Reply-To: <201607260241.cWzeZvYH%fengguang.wu@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: mstaudt@suse.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 07/25/2016 07:47 PM, Greg KH wrote:
-> On Mon, Jul 25, 2016 at 07:36:15PM +0200, Max Staudt wrote:
->> Some serial ports may not emit IRQs properly, or there may be a defect
->> in their routing on the motherboard.
->>
->> This patch allows these ports to be used anyway (or until a better
->> workaround is known for a specific platform), though with no guarantees.
->>
->> If you have such a buggy UART, boot Linux with 8250.force_polling=1 .
-> 
-> Ick, don't add new module parameters if at all possible.
+Some serial ports may not emit IRQs properly, or there may be a defect
+in their routing on the motherboard.
 
-I agree, I'd rather not add a parameter either, but...
+This patch allows these ports to be used anyway (or until a better
+workaround is known for a specific platform), though with no guarantees.
 
-- It's a hardware issue
-- It needs to be handled at boot time
-- It can't be auto-detected (AFAIK)
+If you have such a buggy UART, boot Linux with 8250.force_polling=1 .
 
+It is essentially the kernel level version of:
 
-The idea is that this parameter allows for a workaround until someone comes
-up with a workaround or autodetection (if ever). And it can be used to
-debug future buggy hardware.
+  setserial /dev/ttySn irq 0
 
+and builds upon the polling code that is already in the kernel.
+---
 
->> It is essentially the kernel level version of:
->>
->>   setserial /dev/ttySn irq 0
-> 
-> Why can't you just do this instead?
+v2:
+- Fixed module_param_cb() line
+---
+ drivers/tty/serial/8250/8250_core.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-Because it's too late by the time we reach userspace.
-
-In case of "console=ttyS0" the decision to use polling needs to happen before
-ttyS0 is opened from userspace, as the system will otherwise hang for up to
-30 seconds at a time. Input is mostly dropped, thus I can't even use BREAK+B
-to force reboot it.
-
-As it stands now, I can't even boot the system with "rdinit=/bin/bash".
-The force_polling option makes the system somewhat usable, albeit the serial
-output is very slow.
-
-
-Curiously, the kernel's printk() is as fast as it should be. It's just
-userspace that is slow. Any idea why that is the case?
-
-
-
-The kbuild test bot spotted a mistake, I'll send a new patch.
-
-
-
-Thanks,
-
-Max
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 13ad5c3..536e226 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -58,6 +58,11 @@ static struct uart_driver serial8250_reg;
+ 
+ static unsigned int skip_txen_test; /* force skip of txen test at init time */
+ 
++/* Force polled mode for all newly detected ports.
++ * This can be used if IRQs don't arrive and similar buggyness.
++ */
++static unsigned int force_polling;
++
+ #define PASS_LIMIT	512
+ 
+ #include <asm/serial.h>
+@@ -335,6 +340,13 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
+ 			  uart_poll_timeout(port) + HZ / 5);
+ 	}
+ 
++	if (force_polling) {
++		pr_debug("ttyS%d - using polled mode instead of interrupt %u\n",
++			 serial_index(port),
++			 port->irq);
++		port->irq = 0;
++	}
++
+ 	/*
+ 	 * If the "interrupt" for this port doesn't correspond with any
+ 	 * hardware interrupt, we use a timer-based system.  The original
+@@ -1206,6 +1218,9 @@ MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STR
+ module_param(skip_txen_test, uint, 0644);
+ MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
+ 
++module_param(force_polling, uint, 0644);
++MODULE_PARM_DESC(force_polling, "Set ports to polling mode at init time");
++
+ #ifdef CONFIG_SERIAL_8250_RSA
+ module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
+ MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
+@@ -1232,6 +1247,7 @@ static void __used s8250_options(void)
+ 	module_param_cb(share_irqs, &param_ops_uint, &share_irqs, 0644);
+ 	module_param_cb(nr_uarts, &param_ops_uint, &nr_uarts, 0644);
+ 	module_param_cb(skip_txen_test, &param_ops_uint, &skip_txen_test, 0644);
++	module_param_cb(force_polling, &param_ops_uint, &force_polling, 0644);
+ #ifdef CONFIG_SERIAL_8250_RSA
+ 	__module_param_call(MODULE_PARAM_PREFIX, probe_rsa,
+ 		&param_array_ops, .arr = &__param_arr_probe_rsa,
+-- 
+2.6.6
