@@ -1,78 +1,112 @@
-From: Max Staudt <mstaudt@suse.de>
-Subject: Re: [PATCH] 8250: option 'force_polling' for buggy IRQs
-Date: Tue, 26 Jul 2016 18:18:09 +0200
-Message-ID: <b383129f-b20b-32e3-41d1-e2c4a68665a2@suse.de>
-References: <1469468175-15704-1-git-send-email-mstaudt@suse.de>
- <20160725174712.GA5752@kroah.com>
- <b7ed014e-c6be-01ab-d601-08830d72f8cb@suse.de>
- <20160726150856.GA15676@kroah.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] serial: 8250_pci: Use symbolic constants for EXAR's MPIO
+ registers
+Date: Tue, 26 Jul 2016 21:50:37 +0200
+Message-ID: <8a6646ac-2ba7-cc1b-b547-776fb263ccdd@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160726150856.GA15676@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 07/26/2016 05:08 PM, Greg KH wrote:
-> On Tue, Jul 26, 2016 at 01:42:13PM +0200, Max Staudt wrote:
->> On 07/25/2016 07:47 PM, Greg KH wrote:
->>> Ick, don't add new module parameters if at all possible.
->>
->> I agree, I'd rather not add a parameter either, but...
->>
->> - It's a hardware issue
->> - It needs to be handled at boot time
-> 
-> Why?
+Less magics that only require comments.
 
-Because even an early shell such as rdinit=/bin/bash locks the console up.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 42 +++++++++++++++++++-------------------
+ include/uapi/linux/serial_reg.h    | 13 ++++++++++++
+ 2 files changed, 34 insertions(+), 21 deletions(-)
 
-
->> - It can't be auto-detected (AFAIK)
-> 
-> Why not?  Can't you have a quirk for this specific, broken, device?
-
-No, I am not aware of a way to detect the bug itself (other than "there are
-no interrupts coming in"). It is not a PCI serial port, either.
-
-Also, it's not worth trying to detect the machine as it is a prototype.
-
-It would rather be useful to have a workaround in place, should a future
-system (whether prototype or production) have a similar problem. That way
-we can get it into some usable state at all, and still use the other,
-working features.
-
-I simply thought this patch may be useful for other people as well, that's
-why I sent it upstream.
-
-
->> The idea is that this parameter allows for a workaround until someone comes
->> up with a workaround or autodetection (if ever). And it can be used to
->> debug future buggy hardware.
-> 
-> module paramters are horrid, they don't scale (which uart is this for?),
-> and no one ever changes them.
-
-This is part of the generic 8250 code, so it should be valid for all 8250ish
-UARTs.
-
-
->> Curiously, the kernel's printk() is as fast as it should be. It's just
->> userspace that is slow. Any idea why that is the case?
-> 
-> Ah, then something else might be wrong here, I suggest you track this
-> down please.
-
-The difference in speed is something I'd like to look into, but it's not
-high on my priority list.
-
-Maybe you have an idea where the speed difference comes from, so I can look
-into it?
-
-
-
-
-Max
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index c1d4a8f..7f77060 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1796,18 +1796,18 @@ pci_xr17v35x_setup(struct serial_private *priv,
+ 	 * Setup Multipurpose Input/Output pins.
+ 	 */
+ 	if (idx == 0) {
+-		writeb(0x00, p + 0x8f); /*MPIOINT[7:0]*/
+-		writeb(0x00, p + 0x90); /*MPIOLVL[7:0]*/
+-		writeb(0x00, p + 0x91); /*MPIO3T[7:0]*/
+-		writeb(0x00, p + 0x92); /*MPIOINV[7:0]*/
+-		writeb(0x00, p + 0x93); /*MPIOSEL[7:0]*/
+-		writeb(0x00, p + 0x94); /*MPIOOD[7:0]*/
+-		writeb(0x00, p + 0x95); /*MPIOINT[15:8]*/
+-		writeb(0x00, p + 0x96); /*MPIOLVL[15:8]*/
+-		writeb(0x00, p + 0x97); /*MPIO3T[15:8]*/
+-		writeb(0x00, p + 0x98); /*MPIOINV[15:8]*/
+-		writeb(0x00, p + 0x99); /*MPIOSEL[15:8]*/
+-		writeb(0x00, p + 0x9a); /*MPIOOD[15:8]*/
++		writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
++		writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
++		writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
++		writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
++		writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
++		writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
++		writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
++		writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
++		writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
++		writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
++		writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
++		writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
+ 	}
+ 	writeb(0x00, p + UART_EXAR_8XMODE);
+ 	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
+@@ -1843,20 +1843,20 @@ pci_fastcom335_setup(struct serial_private *priv,
+ 		switch (priv->dev->device) {
+ 		case PCI_DEVICE_ID_COMMTECH_4222PCI335:
+ 		case PCI_DEVICE_ID_COMMTECH_4224PCI335:
+-			writeb(0x78, p + 0x90); /* MPIOLVL[7:0] */
+-			writeb(0x00, p + 0x92); /* MPIOINV[7:0] */
+-			writeb(0x00, p + 0x93); /* MPIOSEL[7:0] */
++			writeb(0x78, p + UART_EXAR_MPIOLVL_7_0);
++			writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
++			writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
+ 			break;
+ 		case PCI_DEVICE_ID_COMMTECH_2324PCI335:
+ 		case PCI_DEVICE_ID_COMMTECH_2328PCI335:
+-			writeb(0x00, p + 0x90); /* MPIOLVL[7:0] */
+-			writeb(0xc0, p + 0x92); /* MPIOINV[7:0] */
+-			writeb(0xc0, p + 0x93); /* MPIOSEL[7:0] */
++			writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
++			writeb(0xc0, p + UART_EXAR_MPIOINV_7_0);
++			writeb(0xc0, p + UART_EXAR_MPIOSEL_7_0);
+ 			break;
+ 		}
+-		writeb(0x00, p + 0x8f); /* MPIOINT[7:0] */
+-		writeb(0x00, p + 0x91); /* MPIO3T[7:0] */
+-		writeb(0x00, p + 0x94); /* MPIOOD[7:0] */
++		writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
++		writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
++		writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
+ 	}
+ 	writeb(0x00, p + UART_EXAR_8XMODE);
+ 	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index 1e5ac4e7..d176448 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -376,5 +376,18 @@
+ #define UART_EXAR_TXTRG		0x0a	/* Tx FIFO trigger level write-only */
+ #define UART_EXAR_RXTRG		0x0b	/* Rx FIFO trigger level write-only */
+ 
++#define UART_EXAR_MPIOINT_7_0	0x8f	/* MPIOINT[7:0] */
++#define UART_EXAR_MPIOLVL_7_0	0x90	/* MPIOLVL[7:0] */
++#define UART_EXAR_MPIO3T_7_0	0x91	/* MPIO3T[7:0] */
++#define UART_EXAR_MPIOINV_7_0	0x92	/* MPIOINV[7:0] */
++#define UART_EXAR_MPIOSEL_7_0	0x93	/* MPIOSEL[7:0] */
++#define UART_EXAR_MPIOOD_7_0	0x94	/* MPIOOD[7:0] */
++#define UART_EXAR_MPIOINT_15_8	0x95	/* MPIOINT[15:8] */
++#define UART_EXAR_MPIOLVL_15_8	0x96	/* MPIOLVL[15:8] */
++#define UART_EXAR_MPIO3T_15_8	0x97	/* MPIO3T[15:8] */
++#define UART_EXAR_MPIOINV_15_8	0x98	/* MPIOINV[15:8] */
++#define UART_EXAR_MPIOSEL_15_8	0x99	/* MPIOSEL[15:8] */
++#define UART_EXAR_MPIOOD_15_8	0x9a	/* MPIOOD[15:8] */
++
+ #endif /* _LINUX_SERIAL_REG_H */
+ 
+-- 
+2.1.4
