@@ -1,7 +1,7 @@
 From: Max Staudt <mstaudt@suse.de>
-Subject: [PATCHv2] 8250: option 'force_polling' for buggy IRQs
-Date: Tue, 26 Jul 2016 13:47:31 +0200
-Message-ID: <1469533651-23384-1-git-send-email-mstaudt@suse.de>
+Subject: [PATCHv3] 8250: option 'force_polling' for buggy IRQs
+Date: Tue, 26 Jul 2016 13:54:52 +0200
+Message-ID: <1469534092-23575-1-git-send-email-mstaudt@suse.de>
 References: <201607260241.cWzeZvYH%fengguang.wu@intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <201607260241.cWzeZvYH%fengguang.wu@intel.com>
@@ -23,10 +23,15 @@ It is essentially the kernel level version of:
   setserial /dev/ttySn irq 0
 
 and builds upon the polling code that is already in the kernel.
+
+Signed-off-by: Max Staudt <mstaudt@suse.de>
 ---
 
 v2:
 - Fixed module_param_cb() line
+
+v3:
+- Added Signed-off-by:
 ---
  drivers/tty/serial/8250/8250_core.c | 16 ++++++++++++++++
  1 file changed, 16 insertions(+)
