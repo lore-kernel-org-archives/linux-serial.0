@@ -1,32 +1,52 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] 8250: option 'force_polling' for buggy IRQs
-Date: Wed, 27 Jul 2016 21:01:02 +0100
-Message-ID: <20160727210102.01847d77@lxorguk.ukuu.org.uk>
-References: <1469468175-15704-1-git-send-email-mstaudt@suse.de>
-	<20160725174712.GA5752@kroah.com>
-	<b7ed014e-c6be-01ab-d601-08830d72f8cb@suse.de>
-	<20160726150856.GA15676@kroah.com>
-	<b383129f-b20b-32e3-41d1-e2c4a68665a2@suse.de>
-	<20160727130923.4c20524b@lxorguk.ukuu.org.uk>
-	<2b140616-c210-e754-a854-cd6a5675277d@suse.de>
-	<20160727133348.GB20032@thunk.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Pascal JEAN <epsilonrt@gmail.com>
+Subject: [PATCH 2/2] sc16is7xx: add reading CTS
+Date: Wed, 27 Jul 2016 22:58:43 +0200
+Message-ID: <1469653123-21867-3-git-send-email-epsilonrt@gmail.com>
+References: <1469653123-21867-1-git-send-email-epsilonrt@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160727133348.GB20032@thunk.org>
+In-Reply-To: <1469653123-21867-1-git-send-email-epsilonrt@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Theodore Ts'o <tytso@mit.edu>
-Cc: Max Staudt <mstaudt@suse.de>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pascal JEAN <epsilonrt@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-> I wonder if it would just be simpler to make it be a CONFIG option
-> which causes the irq value to zero in arch/x86/include/asm/serial.h?
+Signed-off-by: Pascal JEAN <epsilonrt@gmail.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-That assumes x86 and legacy ports.
-
-For modern boxes its data from elsewhere Devicetree folks can just set
-up their devicetree that way, the ACPI afflicted can't force the IRQ at
-the boot line just the port.
-
-Alan
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 3e65079..8833a18 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -818,10 +818,19 @@ static unsigned int sc16is7xx_tx_empty(struct uart_port *port)
+ 
+ static unsigned int sc16is7xx_get_mctrl(struct uart_port *port)
+ {
+-	/* DCD and DSR are not wired and CTS/RTS is handled automatically
+-	 * so just indicate all inputs asserted
+-	 */
+-	return TIOCM_DSR | TIOCM_CAR | TIOCM_RI | TIOCM_CTS;
++	/* DCD, DSR and RI are not wired so just indicate asserted */
++	unsigned int mctrl = TIOCM_CAR | TIOCM_DSR | TIOCM_RI;
++
++	if (port->status & UPSTAT_CTS_ENABLE)
++		/* CTS handled automatically, indicates that it is always
++		 * asserted, this is required for proper management of
++		 * the upper layer
++		 */
++		mctrl |= TIOCM_CTS;
++	else {
++		/* CTS is not managed automatically, returns its actual state
++		 * the upper layer
++		 */
++		u8 msr = sc16is7xx_port_read(port, SC16IS7XX_MSR_REG);
++
++		mctrl |= (msr & SC16IS7XX_MSR_CTS_BIT) ? TIOCM_CTS : 0;
++	}
++	return mctrl;
+ }
+ 
+ static void sc16is7xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
+-- 
+2.7.4
