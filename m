@@ -1,72 +1,66 @@
-From: Pascal JEAN <epsilonrt@gmail.com>
-Subject: [PATCH 2/2] sc16is7xx: add reading CTS
-Date: Thu, 28 Jul 2016 09:07:36 +0200
-Message-ID: <45493b7e-ce61-8e1f-f0a9-cb5843f99291@gmail.com>
-References: <1469653123-21867-1-git-send-email-epsilonrt@gmail.com>
- <1469653123-21867-2-git-send-email-epsilonrt@gmail.com>
- <20160727212844.GB7821@kroah.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: debug tip after earlycon is closed?
+Date: Thu, 28 Jul 2016 09:44:53 +0200
+Message-ID: <7034241.kLArk8ex69@wuerfel>
+References: <CAK7LNASrqbt+RzD64zcAMjmBjJqa2sc2UG+mnEX8npZ9DBJodQ@mail.gmail.com> <3860396.RT1mlU0LAT@wuerfel> <CAK7LNARtm_2uT3nbga4X0dMYs9jhKa8a2FTGJrYbVRg8P3vHQw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160727212844.GB7821@kroah.com>
+In-Reply-To: <CAK7LNARtm_2uT3nbga4X0dMYs9jhKa8a2FTGJrYbVRg8P3vHQw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+On Thursday, July 28, 2016 11:08:13 AM CEST Masahiro Yamada wrote:
+> Hi Arnd,
+> 
+> 
+> 2016-07-27 16:32 GMT+09:00 Arnd Bergmann <arnd@arndb.de>:
+> > On Wednesday, July 27, 2016 10:23:09 AM CEST Masahiro Yamada wrote:
+> >> [    0.000004] sched_clock: 56 bits at 50MHz, resolution 20ns, wraps
+> >> every 4398046511100ns
+> >> [    0.008254] Console: colour dummy device 80x25
+> >> [    0.012700] console [tty0] enabled
+> >> [    0.016110] bootconsole [uniphier0] disabled
+> >
+> > I assume that the original console is on a uart, while the new console
+> > appears to be on the framebuffer. Maybe you have no screen attached?
+> >
+> 
+> 
+> I use 8250-compat serial console for both.
+> 
+> 
+> The following is the full boot log when success.
+> 
+> 
+> I am not sure about:
+> [    0.000141] Console: colour dummy device 80x25
+> [    0.000550] console [tty0] enabled
+> 
+> 
+> 
+> This is the UART console I am really using.
+> [    0.234743] 54006800.serial: ttyS0 at MMIO 0x54006800 (irq = 6,
+> base_baud = 3676470) is a 16550A
+> [    0.994393] console [ttyS0] enabled
 
-Here are changelog for this patch.
-Best Regards
+I think the problem is that you have three consoles:
 
-Changelog:
+- the boot console that stays active until a real console comes up
+- the framebuffer console that is initialized early and goes on to
+  disable the bootconsole
+- the serial console that you are looking at but which doesn't get
+  initialized until much later
 
-sc16is7xx: add reading CTS
+Clearly something is wrong in this setup and we don't want to
+disable the boot console before the serial console is up.
 
-	This patch adds the possibility to read the actual
-	status of the CTS input when RTS/CTS handshaking is
-	not activated (for general purposes).
+I guess you could work around it by disabling the framebuffer console
+at compile time, or by having the serial console initialized earlier
+than the framebuffer, but I wonder if this is something that could
+use a more general solution.
 
-
-Signed-off-by: Pascal JEAN <epsilonrt@gmail.com>
----
- drivers/tty/serial/sc16is7xx.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 3e65079..8833a18 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -818,10 +818,19 @@ static unsigned int sc16is7xx_tx_empty(struct
-uart_port *port)
-
- static unsigned int sc16is7xx_get_mctrl(struct uart_port *port)
- {
--	/* DCD and DSR are not wired and CTS/RTS is handled automatically
--	 * so just indicate all inputs asserted
--	 */
--	return TIOCM_DSR | TIOCM_CAR | TIOCM_RI | TIOCM_CTS;
-+	/* DCD, DSR and RI are not wired so just indicate asserted */
-+	unsigned int mctrl = TIOCM_CAR | TIOCM_DSR | TIOCM_RI;
-+
-+	if (port->status & UPSTAT_CTS_ENABLE)
-+		/* CTS handled automatically, indicates that it is always
-+		 * asserted, this is required for proper management of
-+		 * the upper layer
-+		 */
-+		mctrl |= TIOCM_CTS;
-+	else {
-+		/* CTS is not managed automatically, returns its actual state
-+		 * the upper layer
-+		 */
-+		u8 msr = sc16is7xx_port_read(port, SC16IS7XX_MSR_REG);
-+
-+		mctrl |= (msr & SC16IS7XX_MSR_CTS_BIT) ? TIOCM_CTS : 0;
-+	}
-+	return mctrl;
- }
-
- static void sc16is7xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
--- 
-2.7.4
+	Arnd
