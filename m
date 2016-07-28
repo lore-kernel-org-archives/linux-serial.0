@@ -1,66 +1,73 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: debug tip after earlycon is closed?
-Date: Thu, 28 Jul 2016 09:44:53 +0200
-Message-ID: <7034241.kLArk8ex69@wuerfel>
-References: <CAK7LNASrqbt+RzD64zcAMjmBjJqa2sc2UG+mnEX8npZ9DBJodQ@mail.gmail.com> <3860396.RT1mlU0LAT@wuerfel> <CAK7LNARtm_2uT3nbga4X0dMYs9jhKa8a2FTGJrYbVRg8P3vHQw@mail.gmail.com>
+From: Max Staudt <mstaudt@suse.de>
+Subject: Re: [PATCH] 8250: option 'force_polling' for buggy IRQs
+Date: Thu, 28 Jul 2016 11:59:20 +0200
+Message-ID: <f02610c6-5607-9fdf-23af-5b05d604f473@suse.de>
+References: <1469468175-15704-1-git-send-email-mstaudt@suse.de>
+ <20160725174712.GA5752@kroah.com>
+ <b7ed014e-c6be-01ab-d601-08830d72f8cb@suse.de>
+ <20160726150856.GA15676@kroah.com>
+ <b383129f-b20b-32e3-41d1-e2c4a68665a2@suse.de>
+ <20160727130923.4c20524b@lxorguk.ukuu.org.uk>
+ <2b140616-c210-e754-a854-cd6a5675277d@suse.de>
+ <20160727133348.GB20032@thunk.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK7LNARtm_2uT3nbga4X0dMYs9jhKa8a2FTGJrYbVRg8P3vHQw@mail.gmail.com>
+In-Reply-To: <20160727133348.GB20032@thunk.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org
+To: Theodore Ts'o <tytso@mit.edu>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thursday, July 28, 2016 11:08:13 AM CEST Masahiro Yamada wrote:
-> Hi Arnd,
+On 07/27/2016 03:33 PM, Theodore Ts'o wrote:
+> On Wed, Jul 27, 2016 at 02:14:24PM +0200, Max Staudt wrote:
+>>> If you set the IRQ to 0 it should poll anyway (0 means 'no IRQ') so I
+>>> don't think the option is needed. At least it seems sufficient to get me
+>>> by when I meet buggy PC BIOSes and the like
+>>
+>> That's exactly what the patch does - but if there is already a way to set the
+>> IRQ to 0, I would of course prefer to use that.
+>>
+>> It seems I haven't found the trick you're using - could you please tell me how
+>> you set the IRQ to 0?  I can't change it in the BIOS, so I have to do it at
+>> the kernel level at the latest.
 > 
-> 
-> 2016-07-27 16:32 GMT+09:00 Arnd Bergmann <arnd@arndb.de>:
-> > On Wednesday, July 27, 2016 10:23:09 AM CEST Masahiro Yamada wrote:
-> >> [    0.000004] sched_clock: 56 bits at 50MHz, resolution 20ns, wraps
-> >> every 4398046511100ns
-> >> [    0.008254] Console: colour dummy device 80x25
-> >> [    0.012700] console [tty0] enabled
-> >> [    0.016110] bootconsole [uniphier0] disabled
-> >
-> > I assume that the original console is on a uart, while the new console
-> > appears to be on the framebuffer. Maybe you have no screen attached?
-> >
-> 
-> 
-> I use 8250-compat serial console for both.
-> 
-> 
-> The following is the full boot log when success.
-> 
-> 
-> I am not sure about:
-> [    0.000141] Console: colour dummy device 80x25
-> [    0.000550] console [tty0] enabled
-> 
-> 
-> 
-> This is the UART console I am really using.
-> [    0.234743] 54006800.serial: ttyS0 at MMIO 0x54006800 (irq = 6,
-> base_baud = 3676470) is a 16550A
-> [    0.994393] console [ttyS0] enabled
+> So the problem is that you can't use setserial because you want to use
+> this port for your console?  And so you don't want to set it in an initscript?
 
-I think the problem is that you have three consoles:
+Exactly. There is no initscript when I use rdinit=/bin/bash, so I have no choice
+but to set it in the kernel. As soon as /bin/bash accesses /dev/ttyS0, the
+console hangs.
 
-- the boot console that stays active until a real console comes up
-- the framebuffer console that is initialized early and goes on to
-  disable the bootconsole
-- the serial console that you are looking at but which doesn't get
-  initialized until much later
 
-Clearly something is wrong in this setup and we don't want to
-disable the boot console before the serial console is up.
+> The one thing which is really unfortunate with this patch is that it's
+> a global, so it forces polling for *all* serial ports.  And it may be
+> that it's only base ports on the motherboard which needs this hack.
 
-I guess you could work around it by disabling the framebuffer console
-at compile time, or by having the serial console initialized earlier
-than the framebuffer, but I wonder if this is something that could
-use a more general solution.
+I agree, and I thought about it, but since this is meant for a very limited
+audience, I think a catch-all is the easiest solution - both in terms of
+implementation as well as ease of use.
 
-	Arnd
+It's not meant for general consumption anyway.
+
+IMHO chances are that if someone actually goes as far as to install further serial
+ports, he'll make sure they are properly working ones. Thus, the workaround will
+no longer be needed, and if the broken port really needs to be used, it can be set
+in userspace (after using one of the properly working ports for the console).
+
+
+> I wonder if it would just be simpler to make it be a CONFIG option
+> which causes the irq value to zero in arch/x86/include/asm/serial.h?
+
+Alan hit the nail on the head in his reply to your email: I can't set the IRQ in
+the system configuration. The other option is to compile a custom kernel for this
+system, but that's exactly what I'd like to avoid.
+
+My motivation for this patch is to have a boot time option that allows *any*
+kernel to boot on this broken hardware. This allows for console boot on a broken
+machine even when the machine has never been used in serial console mode before,
+and thus the hardware bug has not been discovered before either.
+
+
+
+Max
