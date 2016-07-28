@@ -1,95 +1,72 @@
-From: "Maarten Brock" <m.brock@vanmierlo.com>
-Subject: Re: [PATCH 2/2] sc16is7xx: add reading CTS
-Date: Thu, 28 Jul 2016 13:16:33 +0200
-Message-ID: <20160728131633.df854ec6@kerio.vanmierlo.com>
+From: Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: debug tip after earlycon is closed?
+Date: Thu, 28 Jul 2016 13:20:22 +0100
+Message-ID: <20160728122022.GZ1041@n2100.armlinux.org.uk>
+References: <CAK7LNASrqbt+RzD64zcAMjmBjJqa2sc2UG+mnEX8npZ9DBJodQ@mail.gmail.com>
+ <3860396.RT1mlU0LAT@wuerfel>
+ <CAK7LNARtm_2uT3nbga4X0dMYs9jhKa8a2FTGJrYbVRg8P3vHQw@mail.gmail.com>
+ <7034241.kLArk8ex69@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <7034241.kLArk8ex69@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Pascal JEAN <epsilonrt@gmail.com>, Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Masahiro Yamada <yamada.masahiro@socionext.com>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Pascal,
+On Thu, Jul 28, 2016 at 09:44:53AM +0200, Arnd Bergmann wrote:
+> I think the problem is that you have three consoles:
+> 
+> - the boot console that stays active until a real console comes up
+> - the framebuffer console that is initialized early and goes on to
+>   disable the bootconsole
+> - the serial console that you are looking at but which doesn't get
+>   initialized until much later
+> 
+> Clearly something is wrong in this setup and we don't want to
+> disable the boot console before the serial console is up.
+> 
+> I guess you could work around it by disabling the framebuffer console
+> at compile time, or by having the serial console initialized earlier
+> than the framebuffer, but I wonder if this is something that could
+> use a more general solution.
 
-If you look at the history of this driver, you'll see that something similar was
-present in the past, but was removed because it introduced problems. The problem
-is that you can't just call sc16is7xx_port_read() unsynchronized to the worker
-thread. And this is related to the device using indirect access through an I2C
-or SPI driver with separate interrupts from the UART. There is also more info on
-the linux-serial mailing list.
+I think this is down to how the linux,stdout property is handled.
 
-Kind regards,
-Maarten Brock
+Normally, with command line specified consoles, if you don't specify
+anything, you get the framebuffer console (actually, it's the first
+registered console, but practically this is the framebuffer if enabled)
+by default.
 
------ Original Message -----
-From: Pascal JEAN [mailto:epsilonrt@gmail.com]
-To: Greg KH [mailto:gregkh@linuxfoundation.org]
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Sent: Thu, 28 Jul 2016 09:07:36 +0200
-Subject: [PATCH 2/2] sc16is7xx: add reading CTS
+If you specify a console (or consoles) on the command line, you get
+all of those you specified, (iirc) with /dev/console's input connected
+to the first specified console.
 
+This happens because the command line is parsed for consoles, and
+add_preferred_console() is called for each that are found, whether or
+not drivers are discovered for them.  __add_preferred_console()
+prevents the first registered console being automatically initialised
+by setting selected_console to a non-negative number.
 
-> Hi Greg,
-> 
-> Here are changelog for this patch.
-> Best Regards
-> 
-> Changelog:
-> 
-> sc16is7xx: add reading CTS
-> 
-> 	This patch adds the possibility to read the actual
-> 	status of the CTS input when RTS/CTS handshaking is
-> 	not activated (for general purposes).
-> 
-> 
-> Signed-off-by: Pascal JEAN <epsilonrt@gmail.com>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 17 +++++++++++++----
->  1 file changed, 13 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 3e65079..8833a18 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -818,10 +818,19 @@ static unsigned int sc16is7xx_tx_empty(struct
-> uart_port *port)
-> 
->  static unsigned int sc16is7xx_get_mctrl(struct uart_port *port)
->  {
-> -	/* DCD and DSR are not wired and CTS/RTS is handled automatically
-> -	 * so just indicate all inputs asserted
-> -	 */
-> -	return TIOCM_DSR | TIOCM_CAR | TIOCM_RI | TIOCM_CTS;
-> +	/* DCD, DSR and RI are not wired so just indicate asserted */
-> +	unsigned int mctrl = TIOCM_CAR | TIOCM_DSR | TIOCM_RI;
-> +
-> +	if (port->status & UPSTAT_CTS_ENABLE)
-> +		/* CTS handled automatically, indicates that it is always
-> +		 * asserted, this is required for proper management of
-> +		 * the upper layer
-> +		 */
-> +		mctrl |= TIOCM_CTS;
-> +	else {
-> +		/* CTS is not managed automatically, returns its actual state
-> +		 * the upper layer
-> +		 */
-> +		u8 msr = sc16is7xx_port_read(port, SC16IS7XX_MSR_REG);
-> +
-> +		mctrl |= (msr & SC16IS7XX_MSR_CTS_BIT) ? TIOCM_CTS : 0;
-> +	}
-> +	return mctrl;
->  }
-> 
->  static void sc16is7xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> -- 
-> 2.7.4
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+However, the parsing of DT specified consoles occurs at driver
+initialisation time - in uart_add_one_port() via of_console_check().
+Only at this time is add_preferred_console() called, which means that
+the first console registered prior to _any_ selected UART console
+driver mentioned in DT will become active.
+
+When the first console becomes active, the earlycon is disabled, which
+means that in the DT case, if we have a framebuffer enabled which
+registers prior to any selected UART console, the framebuffer will
+stop the earlycon output immediately.
+
+To me, what this means is that the DT parsing of linux,stdout is
+broken - while it may look nice from a design point of view, the
+design is wrong and fails to take account of non-UART consoles in
+the system.
+
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
