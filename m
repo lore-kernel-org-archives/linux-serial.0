@@ -1,99 +1,37 @@
-From: Andrew Jones <drjones@redhat.com>
-Subject: Re: SBSA UART bug report and questions
-Date: Mon, 1 Aug 2016 15:36:20 +0200
-Message-ID: <20160801133620.pbtkkvr2d66ooirv@kamzik.localdomain>
-References: <20160801125047.ofanssbufyjzuhrh@kamzik.localdomain>
- <93e0b28e-631d-b591-553d-097716919dc3@arm.com>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH] 8250: option 'force_polling' for buggy IRQs
+Date: Mon, 1 Aug 2016 16:27:31 +0100
+Message-ID: <20160801162731.2a3e2a8a@lxorguk.ukuu.org.uk>
+References: <1469468175-15704-1-git-send-email-mstaudt@suse.de>
+	<20160725174712.GA5752@kroah.com>
+	<b7ed014e-c6be-01ab-d601-08830d72f8cb@suse.de>
+	<20160726150856.GA15676@kroah.com>
+	<b383129f-b20b-32e3-41d1-e2c4a68665a2@suse.de>
+	<20160727130923.4c20524b@lxorguk.ukuu.org.uk>
+	<2b140616-c210-e754-a854-cd6a5675277d@suse.de>
+	<20160727133348.GB20032@thunk.org>
+	<f02610c6-5607-9fdf-23af-5b05d604f473@suse.de>
+	<87mvl1hahu.fsf@x220.int.ebiederm.org>
+	<20160729102335.2dbe3cad@lxorguk.ukuu.org.uk>
+	<8e37ca98-23a5-9eb7-1317-760bbebcd8bb@suse.de>
+	<871t2cgxa6.fsf@x220.int.ebiederm.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <93e0b28e-631d-b591-553d-097716919dc3@arm.com>
+In-Reply-To: <871t2cgxa6.fsf@x220.int.ebiederm.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: graeme.gregory@linaro.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Dave P Martin <Dave.Martin@arm.com>
+To: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Max Staudt <mstaudt@suse.de>, Theodore Ts'o <tytso@mit.edu>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Aug 01, 2016 at 02:24:53PM +0100, Andre Przywara wrote:
-> Hi Drew,
-> 
-> (CC:ing Dave)
-> 
-> On 01/08/16 13:50, Andrew Jones wrote:
-> > 
-> > Hi Andre,
-> > 
-> > I have a couple questions and a bug report regarding the SBSA UART.
-> > 
-> > When AArch64 Linux is boot with QEMU and UEFI (AAVMF) we can enable
-> > the use of ACPI. When we do that the PL011 model QEMU provides is
-> > exposed via the _HID ARMH0011. The Linux driver (amba-pl011.c)
-> > only associates this _HID with the SBSA UART. Is that _HID supposed
-> > to be specifically the SBSA UART? The '11' in the ID makes me think
-> > a full PL011 would be more appropriate.
-> 
-> The SBSA UART is a subset of the PL011 UART, so any PL011 hardware can
-> be accessed by a SBSA UART driver, given that the UART has been properly
-> initialized before.
-> At least some months ago the ACPI spec wasn't powerful enough to
-> describe the required clock the PL011 needs, so the "clock-less" SBSA
-> was used to have a console on ACPI systems. I don't know if the ACPI ID
-> is meant to describe a fully-features PL011 in the future as well.
-> 
-> > My second question is about the SBSA UART specification. The spec
-> > doesn't provide any registers to reset the FIFOs. Section 6.4 says
-> > the FIFOs should be enabled by hardware-specific software. However,
-> > even if that's done, then, if Linux does a driver-level shutdown of
-> > the UART, and then starts it back up again, it seems a FIFO reset is
-> > in order. Is there any way to reset the SBSA UART FIFOs that I don't
-> > see?
-> 
-> The SBSA spec does (deliberately) not specify the registers needed to
-> initialize the UART, it is expected that this is done by firmware in an
-> implementation defined way (which could be using the respective PL011
-> way of setting things up).
-> So I am afraid there is no way of resetting the FIFOs.
-> 
-> > The bug report is just my second question formulated differently;
-> > 
-> > While Linux is booting the UART is started and stopped a few times.
-> > If the user sends characters to the UART during boot (just types on
-> > the terminal), then when the boot completes, and a login is presented,
-> > the user cannot input any characters and log in (Note, this is with
-> > QEMU's PL011 model. I don't know the status of boots with hardware,
-> > and it doesn't appear kvmtool emulates the PL011.) This is only seen
-> > when booting with ACPI (or a modified QEMU mach-virt DT that claims
-> > the UART is compatible with "arm,sbsa-uart"), as the problem is only
-> > with the SBSA UART implementation, which doesn't toggle the enable bit
-> > of the FIFO (UARTLCR_H.FEN) on startup/shutdown. When that bit is
-> > toggled by the PL011 driver the QEMU PL011 model resets its read FIFO
-> > and has no problem.
-> 
-> As mentioned above the UARTLCR register is not part of the SBSA spec -
-> on purpose. The FIFO is always meant to be turned on.
-> 
-> > Patching the model to reset the read FIFO when UARTIMSC=0 and UARTICR
-> > is being written as 0xffff, appears to resolve this issue, but it's a
-> > hack.
-> 
-> I don't fully get why an always-on FIFO would create a problem. I guess
-> this is due to the Linux PL011 driver way of getting things going, which
-> had issues with initial FIFO triggering the in past. I think Dave tried
-> hard to find a way to make it work with the SBSA - please don't tell us
-> now that this one has issues as well ;-)
-> 
-> Just checking: Is it possible that the QEMU model does not do the full
-> initialization that the SBSA UART requires? I guess it does (since you
-> said that it works initially, but breaks later on), but it could be
-> worth to check.
+> It might make sense to filter non-shared edge triggered interrupts out
+> of irqpoll for that reason.  Anything that supports a level triggered
+> interrupt should be fine.
 
-Just to make sure it does, I added code to the PL011 model's init
+That would also break some platforms that use it today 8(. We'd need
+another irqpoll mode - at which point being able to force the serial port
+IRQ to 0 would be useful for ACPI boxes (devicetree people just mod the
+devicetree!)
 
- LCR_H |= 0x70 // WLEN=3, FEN=1
- CR |= 0x301   // RXE|TXE|UARTEN
-
-and modified mach-virt's DT, added "arm,sbsa-uart", allowing me to
-take AAVMF out of the boot. But the bug persists.
-
-Thanks,
-drew
+Alan
