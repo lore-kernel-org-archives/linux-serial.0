@@ -1,60 +1,56 @@
-From: Pascal JEAN <epsilonrt@gmail.com>
-Subject: [PATCH 1/2] sc16is7xx: fix RTS/CTS implementation
-Date: Wed, 27 Jul 2016 22:58:42 +0200
-Message-ID: <1469653123-21867-2-git-send-email-epsilonrt@gmail.com>
-References: <1469653123-21867-1-git-send-email-epsilonrt@gmail.com>
+From: Andrew Jones <drjones@redhat.com>
+Subject: SBSA UART bug report and questions
+Date: Mon, 1 Aug 2016 14:50:47 +0200
+Message-ID: <20160801125047.ofanssbufyjzuhrh@kamzik.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1469653123-21867-1-git-send-email-epsilonrt@gmail.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Pascal JEAN <epsilonrt@gmail.com>
+To: andre.przywara@arm.com
+Cc: graeme.gregory@linaro.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Signed-off-by: Pascal JEAN <epsilonrt@gmail.com>
----
- drivers/tty/serial/sc16is7xx.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index f36e6df..3e65079 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -511,16 +511,18 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 
- 	/* Enable enhanced features */
- 	regcache_cache_bypass(s->regmap, true);
--	sc16is7xx_port_write(port, SC16IS7XX_EFR_REG,
--			     SC16IS7XX_EFR_ENABLE_BIT);
-+	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
-+			     SC16IS7XX_EFR_ENABLE_BIT,
-+			     SC16IS7XX_EFR_ENABLE_BIT);
-+	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
-+			      SC16IS7XX_MCR_CLKSEL_BIT,
-+			      prescaler);
-+	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
-+			     SC16IS7XX_EFR_ENABLE_BIT, 0);
- 	regcache_cache_bypass(s->regmap, false);
- 
- 	/* Put LCR back to the normal mode */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
- 
--	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
--			      SC16IS7XX_MCR_CLKSEL_BIT,
--			      prescaler);
- 
- 	/* Open the LCR divisors for configuration */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
-@@ -817,9 +819,9 @@ static unsigned int sc16is7xx_tx_empty(struct uart_port *port)
- static unsigned int sc16is7xx_get_mctrl(struct uart_port *port)
- {
- 	/* DCD and DSR are not wired and CTS/RTS is handled automatically
--	 * so just indicate DSR and CAR asserted
-+	 * so just indicate all inputs asserted
- 	 */
--	return TIOCM_DSR | TIOCM_CAR;
-+	return TIOCM_DSR | TIOCM_CAR | TIOCM_RI | TIOCM_CTS;
- }
- 
- static void sc16is7xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
--- 
-2.7.4
+Hi Andre,
+
+I have a couple questions and a bug report regarding the SBSA UART.
+
+When AArch64 Linux is boot with QEMU and UEFI (AAVMF) we can enable
+the use of ACPI. When we do that the PL011 model QEMU provides is
+exposed via the _HID ARMH0011. The Linux driver (amba-pl011.c)
+only associates this _HID with the SBSA UART. Is that _HID supposed
+to be specifically the SBSA UART? The '11' in the ID makes me think
+a full PL011 would be more appropriate.
+
+My second question is about the SBSA UART specification. The spec
+doesn't provide any registers to reset the FIFOs. Section 6.4 says
+the FIFOs should be enabled by hardware-specific software. However,
+even if that's done, then, if Linux does a driver-level shutdown of
+the UART, and then starts it back up again, it seems a FIFO reset is
+in order. Is there any way to reset the SBSA UART FIFOs that I don't
+see?
+
+The bug report is just my second question formulated differently;
+
+While Linux is booting the UART is started and stopped a few times.
+If the user sends characters to the UART during boot (just types on
+the terminal), then when the boot completes, and a login is presented,
+the user cannot input any characters and log in (Note, this is with
+QEMU's PL011 model. I don't know the status of boots with hardware,
+and it doesn't appear kvmtool emulates the PL011.) This is only seen
+when booting with ACPI (or a modified QEMU mach-virt DT that claims
+the UART is compatible with "arm,sbsa-uart"), as the problem is only
+with the SBSA UART implementation, which doesn't toggle the enable bit
+of the FIFO (UARTLCR_H.FEN) on startup/shutdown. When that bit is
+toggled by the PL011 driver the QEMU PL011 model resets its read FIFO
+and has no problem.
+
+Patching the model to reset the read FIFO when UARTIMSC=0 and UARTICR
+is being written as 0xffff, appears to resolve this issue, but it's a
+hack.
+
+Please let me know your thoughts on this.
+
+Thanks,
+drew
