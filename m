@@ -1,46 +1,84 @@
-From: Baole Ni <baolex.ni@intel.com>
-Subject: [PATCH 0969/1285] Replace numeric parameter like 0444 with macro
-Date: Tue,  2 Aug 2016 20:03:44 +0800
-Message-ID: <20160802120344.14661-1-baolex.ni@intel.com>
+From: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Subject: Re: [PATCH 0967/1285] Replace numeric parameter like 0444 with macro
+Date: Tue, 2 Aug 2016 16:34:20 +0300
+Message-ID: <CAJs94EZzq6+d1+ZLBKoEDfvxV=qbW++diQ=eqauOSY1VDkSH4A@mail.gmail.com>
+References: <20160802120332.14527-1-baolex.ni@intel.com> <CAJs94EZmP3tcZAHa3MFypSHCdrv7pSJKY=ENibt9Tj3U33u+CA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAJs94EZmP3tcZAHa3MFypSHCdrv7pSJKY=ENibt9Tj3U33u+CA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, m.chehab@samsung.com, m.szyprowski@samsung.com, kyungmin.park@samsung.com, k.kozlowski@samsung.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, chuansheng.liu@intel.com, baolex.ni@intel.com, andriy.shevchenko@linux.intel.com, wan.ahmad.zainie.wan.mohamad@intel.com, mail@maciej.szmigiero.name, matwey@sai.msu.ru
+To: Baole Ni <baolex.ni@intel.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, m.chehab@samsung.com, m.szyprowski@samsung.com, kyungmin.park@samsung.com, k.kozlowski@samsung.com, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, andriy.shevchenko@linux.intel.com, phillip.raffeck@fau.de, anton.wuerfel@fau.de, Peter Hurley <peter@hurleysoftware.com>, yamada.masahiro@socionext.com, wan.ahmad.zainie.wan.mohamad@intel.com, mail@maciej.szmigiero.name, chuansheng.liu@intel.com
 List-Id: linux-serial@vger.kernel.org
 
-I find that the developers often just specified the numeric value
-when calling a macro which is defined with a parameter for access permission.
-As we know, these numeric value for access permission have had the corresponding macro,
-and that using macro can improve the robustness and readability of the code,
-thus, I suggest replacing the numeric parameter with the macro.
+And actually S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH  can be simplified
+to S_IRUGO | S_IWUSR, not?
+I think we need to have and use dedicated special macros for most
+common magic octal permissions like 0755 or 0644.
 
-Signed-off-by: Chuansheng Liu <chuansheng.liu@intel.com>
-Signed-off-by: Baole Ni <baolex.ni@intel.com>
----
- drivers/tty/serial/kgdb_nmi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+2016-08-02 16:19 GMT+03:00 Matwey V. Kornilov <matwey@sai.msu.ru>:
+> Hello,
+>
+> I believe that 0644 is shorter and easier to read and understand than
+> the long list of macros like S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+> where it is easier to miss something.
+>
+> 2016-08-02 15:03 GMT+03:00 Baole Ni <baolex.ni@intel.com>:
+>> I find that the developers often just specified the numeric value
+>> when calling a macro which is defined with a parameter for access permission.
+>> As we know, these numeric value for access permission have had the corresponding macro,
+>> and that using macro can improve the robustness and readability of the code,
+>> thus, I suggest replacing the numeric parameter with the macro.
+>>
+>> Signed-off-by: Chuansheng Liu <chuansheng.liu@intel.com>
+>> Signed-off-by: Baole Ni <baolex.ni@intel.com>
+>> ---
+>>  drivers/tty/serial/8250/8250_core.c | 8 ++++----
+>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+>> index 0fbd7c0..9309ec1 100644
+>> --- a/drivers/tty/serial/8250/8250_core.c
+>> +++ b/drivers/tty/serial/8250/8250_core.c
+>> @@ -1188,17 +1188,17 @@ module_exit(serial8250_exit);
+>>  MODULE_LICENSE("GPL");
+>>  MODULE_DESCRIPTION("Generic 8250/16x50 serial driver");
+>>
+>> -module_param(share_irqs, uint, 0644);
+>> +module_param(share_irqs, uint, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+>>  MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsafe)");
+>>
+>> -module_param(nr_uarts, uint, 0644);
+>> +module_param(nr_uarts, uint, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+>>  MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
+>>
+>> -module_param(skip_txen_test, uint, 0644);
+>> +module_param(skip_txen_test, uint, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+>>  MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
+>>
+>>  #ifdef CONFIG_SERIAL_8250_RSA
+>> -module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
+>> +module_param_array(probe_rsa, ulong, &probe_rsa_count, S_IRUSR | S_IRGRP | S_IROTH);
+>>  MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
+>>  #endif
+>>  MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
+>> --
+>> 2.9.2
+>>
+>
+>
+>
+> --
+> With best regards,
+> Matwey V. Kornilov.
+> Sternberg Astronomical Institute, Lomonosov Moscow State University, Russia
+> 119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
 
-diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-index 117df15..522c980 100644
---- a/drivers/tty/serial/kgdb_nmi.c
-+++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -31,7 +31,7 @@
- #include <linux/kdb.h>
- 
- static int kgdb_nmi_knock = 1;
--module_param_named(knock, kgdb_nmi_knock, int, 0600);
-+module_param_named(knock, kgdb_nmi_knock, int, S_IRUSR | S_IWUSR);
- MODULE_PARM_DESC(knock, "if set to 1 (default), the special '$3#33' command " \
- 			"must be used to enter the debugger; when set to 0, " \
- 			"hitting return key is enough to enter the debugger; " \
-@@ -39,7 +39,7 @@ MODULE_PARM_DESC(knock, "if set to 1 (default), the special '$3#33' command " \
- 			"upon NMI");
- 
- static char *kgdb_nmi_magic = "$3#33";
--module_param_named(magic, kgdb_nmi_magic, charp, 0600);
-+module_param_named(magic, kgdb_nmi_magic, charp, S_IRUSR | S_IWUSR);
- MODULE_PARM_DESC(magic, "magic sequence to enter NMI debugger (default $3#33)");
- 
- static atomic_t kgdb_nmi_num_readers = ATOMIC_INIT(0);
+
+
 -- 
-2.9.2
+With best regards,
+Matwey V. Kornilov.
+Sternberg Astronomical Institute, Lomonosov Moscow State University, Russia
+119991, Moscow, Universitetsky pr-k 13, +7 (495) 9392382
