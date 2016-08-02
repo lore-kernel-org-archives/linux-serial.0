@@ -1,51 +1,37 @@
-From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: Re: [PATCH RESEND v2 0/8] Improve Rx/Tx DMA implementation
-Date: Tue, 2 Aug 2016 13:23:32 +0530
-Message-ID: <a5d420fa-0837-f0af-dee9-a61562d473c2@toradex.com>
-References: <20160719074310.16872-1-bhuvanchandra.dv@toradex.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160719074310.16872-1-bhuvanchandra.dv@toradex.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Baole Ni <baolex.ni@intel.com>
+Subject: [PATCH 0970/1285] Replace numeric parameter like 0444 with macro
+Date: Tue,  2 Aug 2016 20:03:49 +0800
+Message-ID: <20160802120349.14727-1-baolex.ni@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: jason.wessel@windriver.com, gregkh@linuxfoundation.org, jslaby@suse.com, m.chehab@samsung.com, m.szyprowski@samsung.com, kyungmin.park@samsung.com, k.kozlowski@samsung.com
+Cc: kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, chuansheng.liu@intel.com, baolex.ni@intel.com, wan.ahmad.zainie.wan.mohamad@intel.com, mail@maciej.szmigiero.name, matwey@sai.msu.ru
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+I find that the developers often just specified the numeric value
+when calling a macro which is defined with a parameter for access permission.
+As we know, these numeric value for access permission have had the corresponding macro,
+and that using macro can improve the robustness and readability of the code,
+thus, I suggest replacing the numeric parameter with the macro.
 
-Any comments on this patchset?
+Signed-off-by: Chuansheng Liu <chuansheng.liu@intel.com>
+Signed-off-by: Baole Ni <baolex.ni@intel.com>
+---
+ drivers/tty/serial/kgdboc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 07/19/16 13:13, Bhuvanchandra DV wrote:
-
-> Drop the clock change patch from v2 patchset[1] since it is applied.
->
-> Changes since v1:
-> Split suspend/resume patch.
->
-> [1] https://lkml.org/lkml/2016/6/28/124
->
-> Bhuvanchandra DV (5):
->    tty: serial: fsl_lpuart: Fix broken 8m/s1 support
->    tty: serial: fsl_lpuart: Use cyclic DMA for Rx
->    tty: serial: fsl_lpuart: Use scatter/gather DMA for Tx
->    tty: serial: fsl_lpuart: Update suspend/resume for DMA mode
->    tty: serial: fsl_lpuart: Add support for RS-485
->
-> Stefan Agner (3):
->    tty: serial: fsl_lpuart: consider TX FIFO too in tx_empty
->    tty: serial: fsl_lpuart: support suspend/resume
->    tty: serial: fsl_lpuart: fix clearing of receive flag
->
->   drivers/tty/serial/fsl_lpuart.c | 810 +++++++++++++++++++++++-----------------
->   1 file changed, 476 insertions(+), 334 deletions(-)
->
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index a260cde..192e53c 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -333,7 +333,7 @@ early_param("ekgdboc", kgdboc_early_init);
+ 
+ module_init(init_kgdboc);
+ module_exit(cleanup_kgdboc);
+-module_param_call(kgdboc, param_set_kgdboc_var, param_get_string, &kps, 0644);
++module_param_call(kgdboc, param_set_kgdboc_var, param_get_string, &kps, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+ MODULE_PARM_DESC(kgdboc, "<serial_device>[,baud]");
+ MODULE_DESCRIPTION("KGDB Console TTY Driver");
+ MODULE_LICENSE("GPL");
+-- 
+2.9.2
