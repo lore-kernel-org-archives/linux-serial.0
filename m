@@ -1,37 +1,51 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] 8250: option 'force_polling' for buggy IRQs
-Date: Mon, 1 Aug 2016 16:27:31 +0100
-Message-ID: <20160801162731.2a3e2a8a@lxorguk.ukuu.org.uk>
-References: <1469468175-15704-1-git-send-email-mstaudt@suse.de>
-	<20160725174712.GA5752@kroah.com>
-	<b7ed014e-c6be-01ab-d601-08830d72f8cb@suse.de>
-	<20160726150856.GA15676@kroah.com>
-	<b383129f-b20b-32e3-41d1-e2c4a68665a2@suse.de>
-	<20160727130923.4c20524b@lxorguk.ukuu.org.uk>
-	<2b140616-c210-e754-a854-cd6a5675277d@suse.de>
-	<20160727133348.GB20032@thunk.org>
-	<f02610c6-5607-9fdf-23af-5b05d604f473@suse.de>
-	<87mvl1hahu.fsf@x220.int.ebiederm.org>
-	<20160729102335.2dbe3cad@lxorguk.ukuu.org.uk>
-	<8e37ca98-23a5-9eb7-1317-760bbebcd8bb@suse.de>
-	<871t2cgxa6.fsf@x220.int.ebiederm.org>
+From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Subject: Re: [PATCH RESEND v2 0/8] Improve Rx/Tx DMA implementation
+Date: Tue, 2 Aug 2016 13:23:32 +0530
+Message-ID: <a5d420fa-0837-f0af-dee9-a61562d473c2@toradex.com>
+References: <20160719074310.16872-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <871t2cgxa6.fsf@x220.int.ebiederm.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: Max Staudt <mstaudt@suse.de>, Theodore Ts'o <tytso@mit.edu>, Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160719074310.16872-1-bhuvanchandra.dv@toradex.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, kernel@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-> It might make sense to filter non-shared edge triggered interrupts out
-> of irqpoll for that reason.  Anything that supports a level triggered
-> interrupt should be fine.
+Hello,
 
-That would also break some platforms that use it today 8(. We'd need
-another irqpoll mode - at which point being able to force the serial port
-IRQ to 0 would be useful for ACPI boxes (devicetree people just mod the
-devicetree!)
+Any comments on this patchset?
 
-Alan
+On 07/19/16 13:13, Bhuvanchandra DV wrote:
+
+> Drop the clock change patch from v2 patchset[1] since it is applied.
+>
+> Changes since v1:
+> Split suspend/resume patch.
+>
+> [1] https://lkml.org/lkml/2016/6/28/124
+>
+> Bhuvanchandra DV (5):
+>    tty: serial: fsl_lpuart: Fix broken 8m/s1 support
+>    tty: serial: fsl_lpuart: Use cyclic DMA for Rx
+>    tty: serial: fsl_lpuart: Use scatter/gather DMA for Tx
+>    tty: serial: fsl_lpuart: Update suspend/resume for DMA mode
+>    tty: serial: fsl_lpuart: Add support for RS-485
+>
+> Stefan Agner (3):
+>    tty: serial: fsl_lpuart: consider TX FIFO too in tx_empty
+>    tty: serial: fsl_lpuart: support suspend/resume
+>    tty: serial: fsl_lpuart: fix clearing of receive flag
+>
+>   drivers/tty/serial/fsl_lpuart.c | 810 +++++++++++++++++++++++-----------------
+>   1 file changed, 476 insertions(+), 334 deletions(-)
+>
