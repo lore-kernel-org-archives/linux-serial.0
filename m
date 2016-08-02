@@ -1,11 +1,11 @@
 From: Baole Ni <baolex.ni@intel.com>
-Subject: [PATCH 0967/1285] Replace numeric parameter like 0444 with macro
-Date: Tue,  2 Aug 2016 20:03:32 +0800
-Message-ID: <20160802120332.14527-1-baolex.ni@intel.com>
+Subject: [PATCH 0969/1285] Replace numeric parameter like 0444 with macro
+Date: Tue,  2 Aug 2016 20:03:44 +0800
+Message-ID: <20160802120344.14661-1-baolex.ni@intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.com, m.chehab@samsung.com, m.szyprowski@samsung.com, kyungmin.park@samsung.com, k.kozlowski@samsung.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com, phillip.raffeck@fau.de, anton.wuerfel@fau.de, peter@hurleysoftware.com, yamada.masahiro@socionext.com, wan.ahmad.zainie.wan.mohamad@intel.com, mail@maciej.szmigiero.name, matwey@sai.msu.ru, chuansheng.liu@intel.com, baolex.ni@intel.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, chuansheng.liu@intel.com, baolex.ni@intel.com, andriy.shevchenko@linux.intel.com, wan.ahmad.zainie.wan.mohamad@intel.com, mail@maciej.szmigiero.name, matwey@sai.msu.ru
 List-Id: linux-serial@vger.kernel.org
 
 I find that the developers often just specified the numeric value
@@ -17,34 +17,30 @@ thus, I suggest replacing the numeric parameter with the macro.
 Signed-off-by: Chuansheng Liu <chuansheng.liu@intel.com>
 Signed-off-by: Baole Ni <baolex.ni@intel.com>
 ---
- drivers/tty/serial/8250/8250_core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/kgdb_nmi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 0fbd7c0..9309ec1 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1188,17 +1188,17 @@ module_exit(serial8250_exit);
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Generic 8250/16x50 serial driver");
+diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
+index 117df15..522c980 100644
+--- a/drivers/tty/serial/kgdb_nmi.c
++++ b/drivers/tty/serial/kgdb_nmi.c
+@@ -31,7 +31,7 @@
+ #include <linux/kdb.h>
  
--module_param(share_irqs, uint, 0644);
-+module_param(share_irqs, uint, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
- MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsafe)");
+ static int kgdb_nmi_knock = 1;
+-module_param_named(knock, kgdb_nmi_knock, int, 0600);
++module_param_named(knock, kgdb_nmi_knock, int, S_IRUSR | S_IWUSR);
+ MODULE_PARM_DESC(knock, "if set to 1 (default), the special '$3#33' command " \
+ 			"must be used to enter the debugger; when set to 0, " \
+ 			"hitting return key is enough to enter the debugger; " \
+@@ -39,7 +39,7 @@ MODULE_PARM_DESC(knock, "if set to 1 (default), the special '$3#33' command " \
+ 			"upon NMI");
  
--module_param(nr_uarts, uint, 0644);
-+module_param(nr_uarts, uint, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
- MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
+ static char *kgdb_nmi_magic = "$3#33";
+-module_param_named(magic, kgdb_nmi_magic, charp, 0600);
++module_param_named(magic, kgdb_nmi_magic, charp, S_IRUSR | S_IWUSR);
+ MODULE_PARM_DESC(magic, "magic sequence to enter NMI debugger (default $3#33)");
  
--module_param(skip_txen_test, uint, 0644);
-+module_param(skip_txen_test, uint, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
- MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
- 
- #ifdef CONFIG_SERIAL_8250_RSA
--module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
-+module_param_array(probe_rsa, ulong, &probe_rsa_count, S_IRUSR | S_IRGRP | S_IROTH);
- MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
- #endif
- MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
+ static atomic_t kgdb_nmi_num_readers = ATOMIC_INIT(0);
 -- 
 2.9.2
