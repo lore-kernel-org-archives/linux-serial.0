@@ -1,15 +1,18 @@
-From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: Re: [PATCH RESEND v2 0/8] Improve Rx/Tx DMA implementation
-Date: Wed, 3 Aug 2016 10:09:22 +0530
-Message-ID: <e4084260-be57-8f30-a016-c75e57237392@toradex.com>
-References: <20160719074310.16872-1-bhuvanchandra.dv@toradex.com>
- <a5d420fa-0837-f0af-dee9-a61562d473c2@toradex.com>
- <20160802152835.GC21602@lunn.ch>
+From: Graeme Gregory <gg@slimlogic.co.uk>
+Subject: Re: [PATCH v8 4/4] serial: pl011: add console matching function
+Date: Wed, 3 Aug 2016 09:33:51 +0100
+Message-ID: <20160803083351.GD18515@xora-haswell.xora.org.uk>
+References: <1463749405-11640-1-git-send-email-aleksey.makarov@linaro.org>
+ <1463749405-11640-5-git-send-email-aleksey.makarov@linaro.org>
+ <c37d62c7-1e1b-0b10-a083-c5207fbbb820@gmail.com>
+ <fd9443e7-67f1-93e7-834b-445f9c29d876@linaro.org>
+ <20160620151913.GR1041@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160802152835.GC21602@lunn.ch>
+Content-Disposition: inline
+In-Reply-To: <20160620151913.GR1041@n2100.armlinux.org.uk>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,57 +22,75 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: kernel@pengutronix.de, gregkh@linuxfoundation.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org, stefan@agner.ch, linux-serial@vger.kernel.org, jslaby@suse.com, shawnguo@kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc: Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Lorenzo.Pieralisi@arm.com, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, Sudeep.Holla@arm.com, linux-acpi@vger.kernel.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Yury Norov <ynorov@caviumnetworks.com>, "Zheng, Lv" <lv.zheng@intel.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Len Brown <lenb@kernel.org>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Christopher Covington <cov@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andrew,
+On Mon, Jun 20, 2016 at 04:19:14PM +0100, Russell King - ARM Linux wrote:
+> On Mon, Jun 20, 2016 at 03:26:39PM +0300, Aleksey Makarov wrote:
+> > 
+> > On 06/02/2016 09:02 PM, Aleksey Makarov wrote:
+> > > 
+> > > On 05/20/2016 04:03 PM, Aleksey Makarov wrote:
+> > 
+> > Hi Russell,
+> > 
+> > Can you review this patch please?
+> > 
+> > Thank you
+> > Aleksey Makarov
+> > 
+> > >> This patch adds function pl011_console_match() that implements
+> > >> method match of struct console.  It allows to match consoles against
+> > >> data specified in a string, for example taken from command line or
+> > >> compiled by ACPI SPCR table handler.
+> > >>
+> > >> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+> > >> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> > > 
+> > > Hi Greg, Russell,
+> > > 
+> > > Can you review this patch and consider ACKing it please?
+> > > It had an ACK from Greg in v7 but since then I changed it a bit.
+> > > 
+> > > The patch by Christopher Covington [1] specifies that SBSA uart 
+> > > does 32-bit access to registers and this breaks the match function.  
+> > > In this series the function was changed to match when SPCR specifies
+> > > both mmio32 and mmio access.  I removed Acked-by: Greg from this
+> > > patch because of these changes.
+> > > 
+> > > The difference between v7 and v8:
+> > > 
+> > > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> > > index 4139b64..388edc8 100644
+> > > --- a/drivers/tty/serial/amba-pl011.c
+> > > +++ b/drivers/tty/serial/amba-pl011.c
+> > > @@ -2328,10 +2329,10 @@ static int __init pl011_console_match(struct console *co, char *name, int idx,
+> > >  
+> > >                 port = &amba_ports[i]->port;
+> > >  
+> > > -               if (port->iotype != iotype)
+> > > +               if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
+> > >                         continue;
+> > > -               if ((iotype == UPIO_MEM || iotype == UPIO_MEM32) &&
+> > > -                   (port->mapbase != addr))
+> > > +
+> > > +               if (port->mapbase != addr)
+> > >                         continue;
+> > >  
+> > >                 co->index = i;
+> 
+> I'm looking at this change, and I don't know what effect it ultimately
+> has.  This is kind of a problem, because I've zero knowledge of ACPI,
+> and so I can't say whether this change is appropriate or not.  I have
+> no ARM server platforms (yet), nor any access to them, so I can't even
+> try it out.
+> 
+> In short, I've no idea.  I guess it's up to those who have come up
+> with SBSA to decide whether this is an appropriate change or not.
+> 
 
-On 08/02/16 20:58, Andrew Lunn wrote:
+Lorenzo, Sudeep, as ARM ACPI maintainers and keepers of SBSA do you have
+any comment on this?
 
-> On Tue, Aug 02, 2016 at 01:23:32PM +0530, Bhuvanchandra DV wrote:
->> Hello,
->>
->> Any comments on this patchset?
-> I tested v1 on my Vybrid board and it fixed the corruption issues i
-> was seeing with the console on a serial port. I will try to test this
-> version.
-
-Thanks! for testing it. As such there is nothing much changed w.r.t
-code, we only split the suspend/resume patch in v2.
-
---
-Bhuvan
-
->
->      Andrew
->
->> On 07/19/16 13:13, Bhuvanchandra DV wrote:
->>
->>> Drop the clock change patch from v2 patchset[1] since it is applied.
->>>
->>> Changes since v1:
->>> Split suspend/resume patch.
->>>
->>> [1] https://lkml.org/lkml/2016/6/28/124
->>>
->>> Bhuvanchandra DV (5):
->>>    tty: serial: fsl_lpuart: Fix broken 8m/s1 support
->>>    tty: serial: fsl_lpuart: Use cyclic DMA for Rx
->>>    tty: serial: fsl_lpuart: Use scatter/gather DMA for Tx
->>>    tty: serial: fsl_lpuart: Update suspend/resume for DMA mode
->>>    tty: serial: fsl_lpuart: Add support for RS-485
->>>
->>> Stefan Agner (3):
->>>    tty: serial: fsl_lpuart: consider TX FIFO too in tx_empty
->>>    tty: serial: fsl_lpuart: support suspend/resume
->>>    tty: serial: fsl_lpuart: fix clearing of receive flag
->>>
->>>   drivers/tty/serial/fsl_lpuart.c | 810 +++++++++++++++++++++++-----------------
->>>   1 file changed, 476 insertions(+), 334 deletions(-)
->>>
->>
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Graeme
