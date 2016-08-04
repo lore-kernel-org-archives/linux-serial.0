@@ -1,95 +1,89 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v9 00/11] serial: 8250: split LPSS to 8250_lpss, enable
- DMA on Quark
-Date: Wed, 3 Aug 2016 19:14:39 +0300
-Message-ID: <CAHp75VfvBoPX3W8TOZZgsJJE1sV=NwiAUXO9xpsf_H-r7KiOvg@mail.gmail.com>
-References: <1466414282-96691-1-git-send-email-andriy.shevchenko@linux.intel.com>
- <1466521805.520.266.camel@nexus-software.ie>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=001a113dfc76617b5805392d21f8
+From: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
+Subject: [PATCH v2 1/2] Allowing UART DMA to be configured on i.MX53
+Date: Thu,  4 Aug 2016 12:22:36 +0200
+Message-ID: <1470306157-11181-1-git-send-email-fabien.lahoudere@collabora.co.uk>
+References: <CAOMZO5BoRsrHv-+5c9bAXO2NCya8sPqmmpy9DOfav6NvQ+VMLQ@mail.gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1466521805.520.266.camel@nexus-software.ie>
+In-Reply-To: <CAOMZO5BoRsrHv-+5c9bAXO2NCya8sPqmmpy9DOfav6NvQ+VMLQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Puustinen, Ismo" <ismo.puustinen@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Martyn Welch <martyn.welch@collabora.co.uk>, Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
---001a113dfc76617b5805392d21f8
-Content-Type: text/plain; charset=UTF-8
+From: Martyn Welch <martyn.welch@collabora.co.uk>
 
-On Tue, Jun 21, 2016 at 6:10 PM, Bryan O'Donoghue
-<pure.logic@nexus-software.ie> wrote:
-> On Mon, 2016-06-20 at 12:17 +0300, Andy Shevchenko wrote:
+The UART DMA was only being configured on i.MX6Q compatible devices. We
+know that the DMA also works for i.MX53 devices, so allow DMA to be
+configured on those devices too.
 
->> Bryan, since this series doesn't include any DMA management quirks I
->> didn't
->> address it. It is a matter of the following series which I would send
->> later.
->
-> OK I'm not 100% happy with that but I trust you to do it.
+Signed-off-by: Martyn Welch <martyn.welch@collabora.co.uk>
+Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
+---
+ drivers/tty/serial/imx.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-I investigated the issue with DMA you pointed me to. Seems Quark UART
-/ DMA requires not only handshake interface IDs, but also Channel #
-can't be arbitrary. So, I attach the one patch here to try. I will fix
-the series to follow the observing.
-
-
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index c190986..11afe58 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -190,6 +190,7 @@
+ enum imx_uart_type {
+ 	IMX1_UART,
+ 	IMX21_UART,
++	IMX53_UART,
+ 	IMX6Q_UART,
+ };
+ 
+@@ -247,6 +248,10 @@ static struct imx_uart_data imx_uart_devdata[] = {
+ 		.uts_reg = IMX21_UTS,
+ 		.devtype = IMX21_UART,
+ 	},
++	[IMX53_UART] = {
++		.uts_reg = IMX21_UTS,
++		.devtype = IMX53_UART,
++	},
+ 	[IMX6Q_UART] = {
+ 		.uts_reg = IMX21_UTS,
+ 		.devtype = IMX6Q_UART,
+@@ -261,6 +266,9 @@ static const struct platform_device_id imx_uart_devtype[] = {
+ 		.name = "imx21-uart",
+ 		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX21_UART],
+ 	}, {
++		.name = "imx53-uart",
++		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX53_UART],
++	}, {
+ 		.name = "imx6q-uart",
+ 		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX6Q_UART],
+ 	}, {
+@@ -271,6 +279,7 @@ MODULE_DEVICE_TABLE(platform, imx_uart_devtype);
+ 
+ static const struct of_device_id imx_uart_dt_ids[] = {
+ 	{ .compatible = "fsl,imx6q-uart", .data = &imx_uart_devdata[IMX6Q_UART], },
++	{ .compatible = "fsl,imx53-uart", .data = &imx_uart_devdata[IMX53_UART], },
+ 	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_devdata[IMX1_UART], },
+ 	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_devdata[IMX21_UART], },
+ 	{ /* sentinel */ }
+@@ -292,6 +301,11 @@ static inline int is_imx21_uart(struct imx_port *sport)
+ 	return sport->devdata->devtype == IMX21_UART;
+ }
+ 
++static inline int is_imx53_uart(struct imx_port *sport)
++{
++	return sport->devdata->devtype == IMX53_UART;
++}
++
+ static inline int is_imx6q_uart(struct imx_port *sport)
+ {
+ 	return sport->devdata->devtype == IMX6Q_UART;
+@@ -1254,8 +1268,8 @@ static int imx_startup(struct uart_port *port)
+ 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+ 
+ 	/* Can we enable the DMA support? */
+-	if (is_imx6q_uart(sport) && !uart_console(port) &&
+-	    !sport->dma_is_inited) {
++	if ((is_imx6q_uart(sport) || is_imx53_uart(sport)) &&
++	    !uart_console(port) && !sport->dma_is_inited) {
+ 		retval = imx_uart_dma_init(sport);
+ 		if (retval) {
+ 			clk_disable_unprepare(sport->clk_per);
 -- 
-With Best Regards,
-Andy Shevchenko
-
---001a113dfc76617b5805392d21f8
-Content-Type: application/octet-stream;
-	name="0001-TBD-serial-8250_dma-acquire-both-DMA-channels.patch"
-Content-Disposition: attachment;
-	filename="0001-TBD-serial-8250_dma-acquire-both-DMA-channels.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_irf3gckj0
-
-RnJvbSBkYTE3MmEyMzQ0ZjYxYjUzYzhkZmYzM2M4MGM2NDk3OGI3MjE3YzMyIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBBbmR5IFNoZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGxp
-bnV4LmludGVsLmNvbT4KRGF0ZTogV2VkLCAzIEF1ZyAyMDE2IDE4OjMxOjA3ICswMzAwClN1Ympl
-Y3Q6IFtQQVRDSCAxLzFdIFRCRDogc2VyaWFsOiA4MjUwX2RtYTogYWNxdWlyZSBib3RoIERNQSBj
-aGFubmVscwoKSW50ZWwgUXVhcmsgc2VlbXMgaGFzIG5vIHJlcXVlc3QgbGluZXMsIGJ1dCByYXRo
-ZXIgY2hhbm5lbCBJRHMgZGVkaWNhdGVkIGZvcgp0cmFuc2Zlci4KCk5lZWRzIHRvIGJlIGludmVz
-dGlnYXRlZCBhbmQgZml4ZWQgcHJvcGVybHkuCgpTaWduZWQtb2ZmLWJ5OiBBbmR5IFNoZXZjaGVu
-a28gPGFuZHJpeS5zaGV2Y2hlbmtvQGxpbnV4LmludGVsLmNvbT4KLS0tCiBkcml2ZXJzL3R0eS9z
-ZXJpYWwvODI1MC84MjUwX2RtYS5jIHwgMTggLS0tLS0tLS0tLS0tLS0tLS0tCiAxIGZpbGUgY2hh
-bmdlZCwgMTggZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsLzgy
-NTAvODI1MF9kbWEuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZG1hLmMKaW5kZXgg
-NGI1OTllMC4uMGQ3ODk1ZiAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1
-MF9kbWEuYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2RtYS5jCkBAIC0xNzks
-OSArMTc5LDYgQEAgaW50IHNlcmlhbDgyNTBfcmVxdWVzdF9kbWEoc3RydWN0IHVhcnRfODI1MF9w
-b3J0ICpwKQogCWRtYV9jYXBfc2V0KERNQV9TTEFWRSwgbWFzayk7CiAKIAkvKiBHZXQgYSBjaGFu
-bmVsIGZvciBSWCAqLwotCWlmIChwLT5wb3J0LnF1aXJrcyAmIFVQUV9OT19ETUFfUlgpCi0JCWdv
-dG8gc2tpcF9yeDsKLQogCWRtYS0+cnhjaGFuID0gZG1hX3JlcXVlc3Rfc2xhdmVfY2hhbm5lbF9j
-b21wYXQobWFzaywKIAkJCQkJCSAgICAgICBkbWEtPmZuLCBkbWEtPnJ4X3BhcmFtLAogCQkJCQkJ
-ICAgICAgIHAtPnBvcnQuZGV2LCAicngiKTsKQEAgLTIxMywxMSArMjEwLDcgQEAgaW50IHNlcmlh
-bDgyNTBfcmVxdWVzdF9kbWEoc3RydWN0IHVhcnRfODI1MF9wb3J0ICpwKQogCQlnb3RvIHJlbGVh
-c2Vfcng7CiAJfQogCi1za2lwX3J4OgogCS8qIEdldCBhIGNoYW5uZWwgZm9yIFRYICovCi0JaWYg
-KHAtPnBvcnQucXVpcmtzICYgVVBRX05PX0RNQV9UWCkKLQkJZ290byBza2lwX3R4OwotCiAJZG1h
-LT50eGNoYW4gPSBkbWFfcmVxdWVzdF9zbGF2ZV9jaGFubmVsX2NvbXBhdChtYXNrLAogCQkJCQkJ
-ICAgICAgIGRtYS0+Zm4sIGRtYS0+dHhfcGFyYW0sCiAJCQkJCQkgICAgICAgcC0+cG9ydC5kZXYs
-ICJ0eCIpOwpAQCAtMjQ3LDcgKzI0MCw2IEBAIHNraXBfcng6CiAJCWdvdG8gZXJyOwogCX0KIAot
-c2tpcF90eDoKIAlkZXZfZGJnX3JhdGVsaW1pdGVkKHAtPnBvcnQuZGV2LCAiZ290IGJvdGggZG1h
-IGNoYW5uZWxzXG4iKTsKIAogCXJldHVybiAwOwpAQCAtMjU1LDggKzI0Nyw2IEBAIGVycjoKIAlk
-bWFfcmVsZWFzZV9jaGFubmVsKGRtYS0+dHhjaGFuKTsKIG5vX3R4Y2hhbjoKIAlwLT5wb3J0LnF1
-aXJrcyB8PSBVUFFfTk9fRE1BX1RYOwotCWlmIChwLT5wb3J0LnF1aXJrcyAmIFVQUV9OT19ETUFf
-UlgpCi0JCWdvdG8gbm9fcnhjaGFuOwogCWRtYV9mcmVlX2NvaGVyZW50KGRtYS0+cnhjaGFuLT5k
-ZXZpY2UtPmRldiwgZG1hLT5yeF9zaXplLCBkbWEtPnJ4X2J1ZiwKIAkJCSAgZG1hLT5yeF9hZGRy
-KTsKIHJlbGVhc2Vfcng6CkBAIC0yNzUsMjAgKzI2NSwxMyBAQCB2b2lkIHNlcmlhbDgyNTBfcmVs
-ZWFzZV9kbWEoc3RydWN0IHVhcnRfODI1MF9wb3J0ICpwKQogCQlyZXR1cm47CiAKIAkvKiBSZWxl
-YXNlIFJYIHJlc291cmNlcyAqLwotCWlmIChwLT5wb3J0LnF1aXJrcyAmIFVQUV9OT19ETUFfUlgp
-Ci0JCWdvdG8gc2tpcF9yeDsKLQogCWRtYWVuZ2luZV90ZXJtaW5hdGVfc3luYyhkbWEtPnJ4Y2hh
-bik7CiAJZG1hX2ZyZWVfY29oZXJlbnQoZG1hLT5yeGNoYW4tPmRldmljZS0+ZGV2LCBkbWEtPnJ4
-X3NpemUsIGRtYS0+cnhfYnVmLAogCQkJICBkbWEtPnJ4X2FkZHIpOwogCWRtYV9yZWxlYXNlX2No
-YW5uZWwoZG1hLT5yeGNoYW4pOwogCWRtYS0+cnhjaGFuID0gTlVMTDsKIAotc2tpcF9yeDoKIAkv
-KiBSZWxlYXNlIFRYIHJlc291cmNlcyAqLwotCWlmIChwLT5wb3J0LnF1aXJrcyAmIFVQUV9OT19E
-TUFfVFgpCi0JCWdvdG8gc2tpcF90eDsKLQogCWRtYWVuZ2luZV90ZXJtaW5hdGVfc3luYyhkbWEt
-PnR4Y2hhbik7CiAJZG1hX3VubWFwX3NpbmdsZShkbWEtPnR4Y2hhbi0+ZGV2aWNlLT5kZXYsIGRt
-YS0+dHhfYWRkciwKIAkJCSBVQVJUX1hNSVRfU0laRSwgRE1BX1RPX0RFVklDRSk7CkBAIC0yOTYs
-NyArMjc5LDYgQEAgc2tpcF9yeDoKIAlkbWEtPnR4Y2hhbiA9IE5VTEw7CiAJZG1hLT50eF9ydW5u
-aW5nID0gMDsKIAotc2tpcF90eDoKIAlkZXZfZGJnX3JhdGVsaW1pdGVkKHAtPnBvcnQuZGV2LCAi
-ZG1hIGNoYW5uZWxzIHJlbGVhc2VkXG4iKTsKIH0KIEVYUE9SVF9TWU1CT0xfR1BMKHNlcmlhbDgy
-NTBfcmVsZWFzZV9kbWEpOwotLSAKMi44LjEKCg==
---001a113dfc76617b5805392d21f8--
+2.7.4
