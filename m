@@ -1,89 +1,82 @@
-From: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
-Subject: [PATCH v2 1/2] Allowing UART DMA to be configured on i.MX53
-Date: Thu,  4 Aug 2016 12:22:36 +0200
-Message-ID: <1470306157-11181-1-git-send-email-fabien.lahoudere@collabora.co.uk>
-References: <CAOMZO5BoRsrHv-+5c9bAXO2NCya8sPqmmpy9DOfav6NvQ+VMLQ@mail.gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5BoRsrHv-+5c9bAXO2NCya8sPqmmpy9DOfav6NvQ+VMLQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-Cc: Martyn Welch <martyn.welch@collabora.co.uk>, Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: serial: imx: regression triggered by newly introduced DSR irq
+ handling
+Date: Fri, 5 Aug 2016 08:58:45 +0200
+Message-ID: <20160805065845.GI17874@pengutronix.de>
+References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1458825865-7434-7-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1470350663.26773.41.camel@googlemail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1470350663.26773.41.camel@googlemail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Fritz <chf.fritz@googlemail.com>
+Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Martyn Welch <martyn.welch@collabora.co.uk>
+Hello Christoph,
 
-The UART DMA was only being configured on i.MX6Q compatible devices. We
-know that the DMA also works for i.MX53 devices, so allow DMA to be
-configured on those devices too.
+Cc +=3D Shawn, Fabio
 
-Signed-off-by: Martyn Welch <martyn.welch@collabora.co.uk>
-Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
----
- drivers/tty/serial/imx.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+On Fri, Aug 05, 2016 at 12:44:23AM +0200, Christoph Fritz wrote:
+> here on a imx6sx board newly introduced DSR-irq-handling breaks serial
+> console and network support.
+> =
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index c190986..11afe58 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -190,6 +190,7 @@
- enum imx_uart_type {
- 	IMX1_UART,
- 	IMX21_UART,
-+	IMX53_UART,
- 	IMX6Q_UART,
- };
- 
-@@ -247,6 +248,10 @@ static struct imx_uart_data imx_uart_devdata[] = {
- 		.uts_reg = IMX21_UTS,
- 		.devtype = IMX21_UART,
- 	},
-+	[IMX53_UART] = {
-+		.uts_reg = IMX21_UTS,
-+		.devtype = IMX53_UART,
-+	},
- 	[IMX6Q_UART] = {
- 		.uts_reg = IMX21_UTS,
- 		.devtype = IMX6Q_UART,
-@@ -261,6 +266,9 @@ static const struct platform_device_id imx_uart_devtype[] = {
- 		.name = "imx21-uart",
- 		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX21_UART],
- 	}, {
-+		.name = "imx53-uart",
-+		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX53_UART],
-+	}, {
- 		.name = "imx6q-uart",
- 		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX6Q_UART],
- 	}, {
-@@ -271,6 +279,7 @@ MODULE_DEVICE_TABLE(platform, imx_uart_devtype);
- 
- static const struct of_device_id imx_uart_dt_ids[] = {
- 	{ .compatible = "fsl,imx6q-uart", .data = &imx_uart_devdata[IMX6Q_UART], },
-+	{ .compatible = "fsl,imx53-uart", .data = &imx_uart_devdata[IMX53_UART], },
- 	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_devdata[IMX1_UART], },
- 	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_devdata[IMX21_UART], },
- 	{ /* sentinel */ }
-@@ -292,6 +301,11 @@ static inline int is_imx21_uart(struct imx_port *sport)
- 	return sport->devdata->devtype == IMX21_UART;
- }
- 
-+static inline int is_imx53_uart(struct imx_port *sport)
-+{
-+	return sport->devdata->devtype == IMX53_UART;
-+}
-+
- static inline int is_imx6q_uart(struct imx_port *sport)
- {
- 	return sport->devdata->devtype == IMX6Q_UART;
-@@ -1254,8 +1268,8 @@ static int imx_startup(struct uart_port *port)
- 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
- 
- 	/* Can we enable the DMA support? */
--	if (is_imx6q_uart(sport) && !uart_console(port) &&
--	    !sport->dma_is_inited) {
-+	if ((is_imx6q_uart(sport) || is_imx53_uart(sport)) &&
-+	    !uart_console(port) && !sport->dma_is_inited) {
- 		retval = imx_uart_dma_init(sport);
- 		if (retval) {
- 			clk_disable_unprepare(sport->clk_per);
--- 
-2.7.4
+> Reverting commit 27e16501052e5341934d3 "serial: imx: implement DSR irq
+> handling for DTE mode" fixes the issue.
+> =
+
+> The underlying cause is the RMII network configuration where register
+> bit SION in IOMUXC_SW_MUX_CTL_PAD_ENET1_TX_CLK is necessary. But this
+> also falsely feeds signal UART1_DTR_B and triggers DSR irq...
+> =
+
+> Can we revert this commit or add a quirk for RMII-SION configs or make
+> this optional by a device tree option?
+
+Hmm, MX6SX_PAD_ENET1_TX_CLK__ENET1_TX_CLK in
+arch/arm/boot/dts/imx6sx-pinfunc.h doesn't have SION set.
+
+I remember there were issues around eth and SION on i.MX6DL, but don't
+know the details. A quick net research found
+https://community.nxp.com/thread/359531 which has: "Set the SION bit.
+Note that this is not required because the funtion setting controls the
+signal path, but it is good practice as it reminds the user that the
+clock needs to fed back into the Ethernet MAC.". Sounds like dangerous
+smattering and a wrong expectation about "users".
+
+https://community.nxp.com/thread/376821 is from someone who has the same
+problem(?) on i.MX6SX, but no solution yet.
+
+Does that mean MX6SX_PAD_ENET1_TX_CLK__ENET1_TX_CLK always needs the
+SION bit set? Even if not, I'd like to have that documented there,
+similar to da4fa6fa8016 ("ARM: imx25-pinfunc: document SION being
+important for MX25_PAD_SD1_CMD__SD1_CMD").
+
+Once this is done (and still an issue) I'd suggest to standardize a dt
+property
+
+	disable-dsr;
+
+(and the same for the other handshaking lines) and support th{is,ese} in
+the imx uart driver. Reverting 27e16501052e IMO isn't a sensible option.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
