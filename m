@@ -1,60 +1,70 @@
-From: Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: [PATCH 05/11] tty/serial: at91: use of_property_read_bool
-Date: Fri,  5 Aug 2016 10:56:45 +0200
-Message-ID: <1470387411-15879-6-git-send-email-Julia.Lawall@lip6.fr>
-References: <1470387411-15879-1-git-send-email-Julia.Lawall@lip6.fr>
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-In-Reply-To: <1470387411-15879-1-git-send-email-Julia.Lawall@lip6.fr>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Christoph Fritz <chf.fritz@googlemail.com>
+Subject: Re: serial: imx: regression triggered by newly introduced DSR irq
+ handling
+Date: Fri, 05 Aug 2016 14:03:35 +0200
+Message-ID: <1470398615.1936.22.camel@googlemail.com>
+References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1458825865-7434-7-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1470350663.26773.41.camel@googlemail.com>
+ <20160805065845.GI17874@pengutronix.de>
+Reply-To: chf.fritz@googlemail.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160805065845.GI17874@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>, Fabio Estevam <fabio.estevam@nxp.com>
+Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Use of_property_read_bool to check for the existence of a property.
-
-The semantic patch that makes this change is as follows:
-(http://coccinelle.lip6.fr/)
-
-// <smpl>
-@@
-expression e1,e2;
-statement S2,S1;
-@@
--       if (of_get_property(e1,e2,NULL))
-+       if (of_property_read_bool(e1,e2))
-        S1 else S2
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-
----
- drivers/tty/serial/atmel_serial.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 2eaa18d..c57a51d 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1634,8 +1634,8 @@ static void atmel_init_property(struct atmel_uart_port *atmel_port,
- 
- 	if (np) {
- 		/* DMA/PDC usage specification */
--		if (of_get_property(np, "atmel,use-dma-rx", NULL)) {
--			if (of_get_property(np, "dmas", NULL)) {
-+		if (of_property_read_bool(np, "atmel,use-dma-rx")) {
-+			if (of_property_read_bool(np, "dmas")) {
- 				atmel_port->use_dma_rx  = true;
- 				atmel_port->use_pdc_rx  = false;
- 			} else {
-@@ -1647,8 +1647,8 @@ static void atmel_init_property(struct atmel_uart_port *atmel_port,
- 			atmel_port->use_pdc_rx  = false;
- 		}
- 
--		if (of_get_property(np, "atmel,use-dma-tx", NULL)) {
--			if (of_get_property(np, "dmas", NULL)) {
-+		if (of_property_read_bool(np, "atmel,use-dma-tx")) {
-+			if (of_property_read_bool(np, "dmas")) {
- 				atmel_port->use_dma_tx  = true;
- 				atmel_port->use_pdc_tx  = false;
- 			} else {
-
+T24gRnJpLCAyMDE2LTA4LTA1IGF0IDA4OjU4ICswMjAwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90
+ZToKPiBPbiBGcmksIEF1ZyAwNSwgMjAxNiBhdCAxMjo0NDoyM0FNICswMjAwLCBDaHJpc3RvcGgg
+RnJpdHogd3JvdGU6Cj4gPiBoZXJlIG9uIGEgaW14NnN4IGJvYXJkIG5ld2x5IGludHJvZHVjZWQg
+RFNSLWlycS1oYW5kbGluZyBicmVha3Mgc2VyaWFsCj4gPiBjb25zb2xlIGFuZCBuZXR3b3JrIHN1
+cHBvcnQuCj4gPiAKPiA+IFJldmVydGluZyBjb21taXQgMjdlMTY1MDEwNTJlNTM0MTkzNGQzICJz
+ZXJpYWw6IGlteDogaW1wbGVtZW50IERTUiBpcnEKPiA+IGhhbmRsaW5nIGZvciBEVEUgbW9kZSIg
+Zml4ZXMgdGhlIGlzc3VlLgo+ID4gCj4gPiBUaGUgdW5kZXJseWluZyBjYXVzZSBpcyB0aGUgUk1J
+SSBuZXR3b3JrIGNvbmZpZ3VyYXRpb24gd2hlcmUgcmVnaXN0ZXIKPiA+IGJpdCBTSU9OIGluIElP
+TVVYQ19TV19NVVhfQ1RMX1BBRF9FTkVUMV9UWF9DTEsgaXMgbmVjZXNzYXJ5LiBCdXQgdGhpcwo+
+ID4gYWxzbyBmYWxzZWx5IGZlZWRzIHNpZ25hbCBVQVJUMV9EVFJfQiBhbmQgdHJpZ2dlcnMgRFNS
+IGlycS4uLgo+ID4gCj4gPiBDYW4gd2UgcmV2ZXJ0IHRoaXMgY29tbWl0IG9yIGFkZCBhIHF1aXJr
+IGZvciBSTUlJLVNJT04gY29uZmlncyBvciBtYWtlCj4gPiB0aGlzIG9wdGlvbmFsIGJ5IGEgZGV2
+aWNlIHRyZWUgb3B0aW9uPwo+IAo+IEhtbSwgTVg2U1hfUEFEX0VORVQxX1RYX0NMS19fRU5FVDFf
+VFhfQ0xLIGluCj4gYXJjaC9hcm0vYm9vdC9kdHMvaW14NnN4LXBpbmZ1bmMuaCBkb2Vzbid0IGhh
+dmUgU0lPTiBzZXQuCj4gCj4gSSByZW1lbWJlciB0aGVyZSB3ZXJlIGlzc3VlcyBhcm91bmQgZXRo
+IGFuZCBTSU9OIG9uIGkuTVg2REwsIGJ1dCBkb24ndAo+IGtub3cgdGhlIGRldGFpbHMuIEEgcXVp
+Y2sgbmV0IHJlc2VhcmNoIGZvdW5kCj4gaHR0cHM6Ly9jb21tdW5pdHkubnhwLmNvbS90aHJlYWQv
+MzU5NTMxIHdoaWNoIGhhczogIlNldCB0aGUgU0lPTiBiaXQuCj4gTm90ZSB0aGF0IHRoaXMgaXMg
+bm90IHJlcXVpcmVkIGJlY2F1c2UgdGhlIGZ1bnRpb24gc2V0dGluZyBjb250cm9scyB0aGUKPiBz
+aWduYWwgcGF0aCwgYnV0IGl0IGlzIGdvb2QgcHJhY3RpY2UgYXMgaXQgcmVtaW5kcyB0aGUgdXNl
+ciB0aGF0IHRoZQo+IGNsb2NrIG5lZWRzIHRvIGZlZCBiYWNrIGludG8gdGhlIEV0aGVybmV0IE1B
+Qy4iLiBTb3VuZHMgbGlrZSBkYW5nZXJvdXMKPiBzbWF0dGVyaW5nIGFuZCBhIHdyb25nIGV4cGVj
+dGF0aW9uIGFib3V0ICJ1c2VycyIuCj4gCj4gaHR0cHM6Ly9jb21tdW5pdHkubnhwLmNvbS90aHJl
+YWQvMzc2ODIxIGlzIGZyb20gc29tZW9uZSB3aG8gaGFzIHRoZSBzYW1lCj4gcHJvYmxlbSg/KSBv
+biBpLk1YNlNYLCBidXQgbm8gc29sdXRpb24geWV0Lgo+IAo+IERvZXMgdGhhdCBtZWFuIE1YNlNY
+X1BBRF9FTkVUMV9UWF9DTEtfX0VORVQxX1RYX0NMSyBhbHdheXMgbmVlZHMgdGhlCj4gU0lPTiBi
+aXQgc2V0PwoKU0lPTiBpcyBuZWNlc3NhcnkgZm9yIHBpbmNvbmZpZyBNWDZTWF9QQURfRU5FVDFf
+VFhfQ0xLX19FTkVUMV9SRUZfQ0xLMQppZiBiaXQgMTcgaW4gSU9NVVhDX0dQUl9HUFIxIGlzIHNl
+dCBhbmQgYml0IDEzIG5vdC4KClNvIHRoYXQgcmVmX2VuZXRwbGwxIHByb3ZpZGVzIGEgY2xvY2sg
+bm90IG9ubHkgZm9yIHRoZSBleHRlcm5hbCBQSFkgYnV0CmFsc28gZm9yIHRoZSBpbnRlcm5hbCBj
+b250cm9sbGVyLgoKVXNpbmcgU0lPTiBpcyBhIHF1aXJrIGhlcmUsIGJlY2F1c2UgdGhlIHNpbGlj
+b24gZG9lc24ndCBmZWVkIHRoZSBjbG9jawpiYWNrIHRvIHRoZSBpbnRlcm5hbCBjb250cm9sbGVy
+IGF1dG9tYXRpY2FsbHkuCgpPbiB0aGUgb3RoZXIgaGFuZCwgTlhQIGNvdWxkIGFyZ3VlOiBZb3Ug
+bmVlZCB0byBhZGQgYSB3aXJlIG9uIHlvdXIgUENCCmJldHdlZW4gRU5FVDFfUkVGX0NMSzEgYW5k
+IEVORVQxX1RYX0NMSyAtLSBidXQgcmVmZXJyaW5nIHRvIHRoZQpkYXRhc2hlZXQgRU5FVDFfVFhf
+Q0xLIGlzbid0IHVzZWQgaW4gUk1JSSBjb25maWcuLi4KClNvIGlmIEZhYmlvIG9yIFNoYXduIGFn
+cmVlcyB3aXRoIG15IGFzc3VtcHRpb24gYWJvdmUsIEknbGwgYWRkIHNvbWV0aGluZwpsaWtlIDI3
+ZTE2NTAxMDUyZTUzNDE5MzRkMyAic2VyaWFsOiBpbXg6IGltcGxlbWVudCBEU1IgaXJxCmhhbmRs
+aW5nIGZvciBEVEUgbW9kZSIuCgpPa2F5PwoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFy
+bS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
