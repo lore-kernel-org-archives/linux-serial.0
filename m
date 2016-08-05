@@ -1,82 +1,52 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: serial: imx: regression triggered by newly introduced DSR irq
- handling
-Date: Fri, 5 Aug 2016 08:58:45 +0200
-Message-ID: <20160805065845.GI17874@pengutronix.de>
-References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <1458825865-7434-7-git-send-email-u.kleine-koenig@pengutronix.de>
- <1470350663.26773.41.camel@googlemail.com>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+Subject: [PATCH 00/11] use of_property_read_bool
+Date: Fri,  5 Aug 2016 10:56:40 +0200
+Message-ID: <1470387411-15879-1-git-send-email-Julia.Lawall@lip6.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1470350663.26773.41.camel@googlemail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Christoph Fritz <chf.fritz@googlemail.com>
-Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: netdev@vger.kernel.org
+Cc: alsa-devel@alsa-project.org, kernel-janitors@vger.kernel.org, linux-usb@vger.kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Christoph,
+Use of_property_read_bool to check for the existence of a property.
 
-Cc +=3D Shawn, Fabio
+The semantic patch that makes this change is as follows:
+(http://coccinelle.lip6.fr/)
 
-On Fri, Aug 05, 2016 at 12:44:23AM +0200, Christoph Fritz wrote:
-> here on a imx6sx board newly introduced DSR-irq-handling breaks serial
-> console and network support.
-> =
+// <smpl>
+@@
+expression e1,e2;
+statement S2,S1;
+@@
+-       if (of_get_property(e1,e2,NULL))
++       if (of_property_read_bool(e1,e2))
+        S1 else S2
+// </smpl>
 
-> Reverting commit 27e16501052e5341934d3 "serial: imx: implement DSR irq
-> handling for DTE mode" fixes the issue.
-> =
+---
 
-> The underlying cause is the RMII network configuration where register
-> bit SION in IOMUXC_SW_MUX_CTL_PAD_ENET1_TX_CLK is necessary. But this
-> also falsely feeds signal UART1_DTR_B and triggers DSR irq...
-> =
-
-> Can we revert this commit or add a quirk for RMII-SION configs or make
-> this optional by a device tree option?
-
-Hmm, MX6SX_PAD_ENET1_TX_CLK__ENET1_TX_CLK in
-arch/arm/boot/dts/imx6sx-pinfunc.h doesn't have SION set.
-
-I remember there were issues around eth and SION on i.MX6DL, but don't
-know the details. A quick net research found
-https://community.nxp.com/thread/359531 which has: "Set the SION bit.
-Note that this is not required because the funtion setting controls the
-signal path, but it is good practice as it reminds the user that the
-clock needs to fed back into the Ethernet MAC.". Sounds like dangerous
-smattering and a wrong expectation about "users".
-
-https://community.nxp.com/thread/376821 is from someone who has the same
-problem(?) on i.MX6SX, but no solution yet.
-
-Does that mean MX6SX_PAD_ENET1_TX_CLK__ENET1_TX_CLK always needs the
-SION bit set? Even if not, I'd like to have that documented there,
-similar to da4fa6fa8016 ("ARM: imx25-pinfunc: document SION being
-important for MX25_PAD_SD1_CMD__SD1_CMD").
-
-Once this is done (and still an issue) I'd suggest to standardize a dt
-property
-
-	disable-dsr;
-
-(and the same for the other handshaking lines) and support th{is,ese} in
-the imx uart driver. Reverting 27e16501052e IMO isn't a sensible option.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+ arch/powerpc/sysdev/mpic.c                  |    2 +-
+ drivers/i2c/busses/i2c-mpc.c                |    2 +-
+ drivers/mmc/host/sdhci-of-esdhc.c           |    2 +-
+ drivers/net/ethernet/freescale/xgmac_mdio.c |    3 +--
+ drivers/phy/phy-qcom-ufs.c                  |    2 +-
+ drivers/pinctrl/nomadik/pinctrl-nomadik.c   |    2 +-
+ drivers/soc/fsl/qe/qe_tdm.c                 |    2 +-
+ drivers/soc/ti/knav_qmss_queue.c            |    2 +-
+ drivers/tty/serial/atmel_serial.c           |    8 ++++----
+ drivers/usb/host/fsl-mph-dr-of.c            |    6 +++---
+ sound/soc/codecs/ab8500-codec.c             |   10 +++++-----
+ sound/soc/sh/rcar/ssi.c                     |    2 +-
+ sound/soc/soc-core.c                        |    2 +-
+ 13 files changed, 22 insertions(+), 23 deletions(-)
