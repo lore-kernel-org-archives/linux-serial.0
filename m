@@ -1,89 +1,303 @@
-From: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
-Subject: [PATCH 1/2] Allowing UART DMA to be configured on i.MX53
-Date: Mon,  8 Aug 2016 11:29:25 +0200
-Message-ID: <1470648566-11698-1-git-send-email-fabien.lahoudere@collabora.co.uk>
-References: <CAOMZO5DAAU0jUpd2xwgTwL9Y1Bhido35fxvhQ9HGZRXbRnB2Gg@mail.gmail.com>
+From: Nandor Han <nandor.han@ge.com>
+Subject: [PATCH 3/4] serial: imx-serial - update UART IMX driver to use cyclic DMA
+Date: Mon,  8 Aug 2016 15:38:27 +0300
+Message-ID: <9c87b46bee8df6df4a30ad0db8dfc4cd8e0fba4e.1470656658.git.nandor.han@ge.com>
+References: <cover.1465456639.git.nandor.han@ge.com>
+ <cover.1470656657.git.nandor.han@ge.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5DAAU0jUpd2xwgTwL9Y1Bhido35fxvhQ9HGZRXbRnB2Gg@mail.gmail.com>
+In-Reply-To: <cover.1470656657.git.nandor.han@ge.com>
+In-Reply-To: <cover.1470656657.git.nandor.han@ge.com>
+References: <cover.1470656657.git.nandor.han@ge.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: festevam@gmail.com
-Cc: Martyn Welch <martyn.welch@collabora.co.uk>, Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+To: =Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Nandor Han <nandor.han@ge.com>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Senna Tschudin <peter.senna@collabora.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Martyn Welch <martyn.welch@collabora.co.uk>
+The IMX UART has a 32 bytes HW buffer which can be filled up in
+2777us at 115200 baud or 80us at 4Mbaud (supported by IMX53).
+Taking this in consideration there is a good probability to lose
+data because of the DMA startup latency.
+Our tests (explained below) indicates a latency up to 4400us when
+creating interrupt load and ~70us without. When creating interrupt
+load I was able to see continuous overrun errors by checking serial
+driver statistics using the command:
+`cat /proc/tty/driver/IMX-uart`.
 
-The UART DMA was only being configured on i.MX6Q compatible devices. We
-know that the DMA also works for i.MX53 devices, so allow DMA to be
-configured on those devices too.
+Replace manual restart of DMA with cyclic DMA to eliminate data loss
+due to DMA engine startup latency (similar approch to atmel_serial.c
+driver). As result the DMA engine will start on the first serial data
+transfer and stops only when serial port is closed.
 
-Signed-off-by: Martyn Welch <martyn.welch@collabora.co.uk>
-Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
+Tests environment:
+ Using the m53evk board I have used a GPIO for profiling the IMX
+ serial driver.
+  - The RX line and GPIO were connected to oscilloscope.
+  - Run a small test program on the m53evk board that will only open
+    and read data from ttymxc2 port.
+  - Connect the ttymxc2 port to my laptop using a USB serial converter
+    where another test program is running, able to send configurable
+    packet lengths and intervals.
+  - Serial ports configured at 115200 8N1.
+  - Interrupts load created by disconnecting/connecting (3s interval)
+    a USB hub, using a digital switch, with 4 USB devices (USB-Serial
+    converter, USB SD card, etc) connected.
+    (around 160 interrupts/second generated)
+  - The GPIO was toggled HI in the `imx_int` when USR1_RRDY or USR1_AGTIM
+    events are received and toggled back, once the DMA configuration
+    is finalized, at the end of `imx_dma_rxint`.
+
+Measurements:
+The measurements were done from the end of the last byte (RX line) until
+the GPIO was toggled back LOW.
+
+Note: The GPIO toggling was done using `gpiod_set_value` method.
+
+Tests performed:
+   1. Sending 9 bytes packets at 8ms interval. Having the 9 bytes packets
+      will activate the RRDY threshold event and IMX serial interrupt
+      called.
+      Results:
+        - DMA start latency (interrupt start latency +
+           DMA configuration) consistently 70us when system not loaded.
+        - DMA start latency up to 4400us when system loaded.
+   2. Sending 40 bytes packet at 8mS interval.
+      Results with load:
+        - Able to observe overruns by running:
+           `watch -n1 cat /proc/tty/driver/IMX-uart`
+
+Tested-by: Peter Senna Tschudin <peter.senna@collabora.com>
+Acked-by: Peter Senna Tschudin <peter.senna@collabora.com>
+Signed-off-by: Nandor Han <nandor.han@ge.com>
 ---
- drivers/tty/serial/imx.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ drivers/tty/serial/imx.c | 141 ++++++++++++++++++++++++++---------------------
+ 1 file changed, 78 insertions(+), 63 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 08ccfe1..1c9315a 100644
+index 0df2b1c..1912136 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -190,6 +190,7 @@
- enum imx_uart_type {
- 	IMX1_UART,
- 	IMX21_UART,
-+	IMX53_UART,
- 	IMX6Q_UART,
- };
- 
-@@ -247,6 +248,10 @@ static struct imx_uart_data imx_uart_devdata[] = {
- 		.uts_reg = IMX21_UTS,
- 		.devtype = IMX21_UART,
- 	},
-+	[IMX53_UART] = {
-+		.uts_reg = IMX21_UTS,
-+		.devtype = IMX53_UART,
-+	},
- 	[IMX6Q_UART] = {
- 		.uts_reg = IMX21_UTS,
- 		.devtype = IMX6Q_UART,
-@@ -261,6 +266,9 @@ static const struct platform_device_id imx_uart_devtype[] = {
- 		.name = "imx21-uart",
- 		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX21_UART],
- 	}, {
-+		.name = "imx53-uart",
-+		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX53_UART],
-+	}, {
- 		.name = "imx6q-uart",
- 		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX6Q_UART],
- 	}, {
-@@ -271,6 +279,7 @@ MODULE_DEVICE_TABLE(platform, imx_uart_devtype);
- 
- static const struct of_device_id imx_uart_dt_ids[] = {
- 	{ .compatible = "fsl,imx6q-uart", .data = &imx_uart_devdata[IMX6Q_UART], },
-+	{ .compatible = "fsl,imx53-uart", .data = &imx_uart_devdata[IMX53_UART], },
- 	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_devdata[IMX1_UART], },
- 	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_devdata[IMX21_UART], },
- 	{ /* sentinel */ }
-@@ -292,6 +301,11 @@ static inline int is_imx21_uart(struct imx_port *sport)
- 	return sport->devdata->devtype == IMX21_UART;
+@@ -222,6 +222,9 @@ struct imx_port {
+ 	struct dma_chan		*dma_chan_rx, *dma_chan_tx;
+ 	struct scatterlist	rx_sgl, tx_sgl[2];
+ 	void			*rx_buf;
++	struct circ_buf		rx_ring;
++	unsigned int		rx_periods;
++	dma_cookie_t		rx_cookie;
+ 	unsigned int		tx_bytes;
+ 	unsigned int		dma_tx_nents;
+ 	wait_queue_head_t	dma_wait;
+@@ -932,30 +935,6 @@ static void imx_timeout(unsigned long data)
  }
  
-+static inline int is_imx53_uart(struct imx_port *sport)
-+{
-+	return sport->devdata->devtype == IMX53_UART;
-+}
+ #define RX_BUF_SIZE	(PAGE_SIZE)
+-static void imx_rx_dma_done(struct imx_port *sport)
+-{
+-	unsigned long temp;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&sport->port.lock, flags);
+-
+-	/* re-enable interrupts to get notified when new symbols are incoming */
+-	temp = readl(sport->port.membase + UCR1);
+-	temp |= UCR1_RRDYEN;
+-	writel(temp, sport->port.membase + UCR1);
+-
+-	temp = readl(sport->port.membase + UCR2);
+-	temp |= UCR2_ATEN;
+-	writel(temp, sport->port.membase + UCR2);
+-
+-	sport->dma_is_rxing = 0;
+-
+-	/* Is the shutdown waiting for us? */
+-	if (waitqueue_active(&sport->dma_wait))
+-		wake_up(&sport->dma_wait);
+-
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
+-}
+ 
+ /*
+  * There are two kinds of RX DMA interrupts(such as in the MX6Q):
+@@ -972,43 +951,75 @@ static void dma_rx_callback(void *data)
+ 	struct scatterlist *sgl = &sport->rx_sgl;
+ 	struct tty_port *port = &sport->port.state->port;
+ 	struct dma_tx_state state;
++	struct circ_buf *rx_ring = &sport->rx_ring;
+ 	enum dma_status status;
+-	unsigned int count;
+-
+-	/* unmap it first */
+-	dma_unmap_sg(sport->port.dev, sgl, 1, DMA_FROM_DEVICE);
++	unsigned int w_bytes = 0;
++	unsigned int r_bytes;
++	unsigned int bd_size;
+ 
+ 	status = dmaengine_tx_status(chan, (dma_cookie_t)0, &state);
+-	count = RX_BUF_SIZE - state.residue;
+ 
+-	dev_dbg(sport->port.dev, "We get %d bytes.\n", count);
++	if (status == DMA_ERROR) {
++		dev_err(sport->port.dev, "DMA transaction error.\n");
++		return;
++	}
 +
- static inline int is_imx6q_uart(struct imx_port *sport)
++	if (!(sport->port.ignore_status_mask & URXD_DUMMY_READ)) {
++
++		/*
++		 * The state-residue variable represents the empty space
++		 * relative to the entire buffer. Taking this in consideration
++		 * the head is always calculated base on the buffer total
++		 * length - DMA transaction residue. The UART script from the
++		 * SDMA firmware will jump to the next buffer descriptor,
++		 * once a DMA transaction if finalized (IMX53 RM - A.4.1.2.4).
++		 * Taking this in consideration the tail is always at the
++		 * beginning of the buffer descriptor that contains the head.
++		 */
++
++		/* Calculate the head */
++		rx_ring->head = sg_dma_len(sgl) - state.residue;
++
++		/* Calculate the tail. */
++		bd_size = sg_dma_len(sgl) / sport->rx_periods;
++		rx_ring->tail = ((rx_ring->head-1) / bd_size) * bd_size;
++
++		if (rx_ring->head <= sg_dma_len(sgl) &&
++		    rx_ring->head > rx_ring->tail) {
++
++			/* Move data from tail to head */
++			r_bytes = rx_ring->head - rx_ring->tail;
++
++			/* CPU claims ownership of RX DMA buffer */
++			dma_sync_sg_for_cpu(sport->port.dev, sgl, 1,
++				DMA_FROM_DEVICE);
+ 
+-	if (count) {
+-		if (!(sport->port.ignore_status_mask & URXD_DUMMY_READ)) {
+-			int bytes = tty_insert_flip_string(port, sport->rx_buf,
+-					count);
++			w_bytes = tty_insert_flip_string(port,
++				sport->rx_buf + rx_ring->tail, r_bytes);
+ 
+-			if (bytes != count)
++			/* UART retrieves ownership of RX DMA buffer */
++			dma_sync_sg_for_device(sport->port.dev, sgl, 1,
++				DMA_FROM_DEVICE);
++
++			if (w_bytes != r_bytes)
+ 				sport->port.icount.buf_overrun++;
++
++			sport->port.icount.rx += w_bytes;
++		} else	{
++			WARN_ON(rx_ring->head > sg_dma_len(sgl));
++			WARN_ON(rx_ring->head <= rx_ring->tail);
+ 		}
+-		tty_flip_buffer_push(port);
+-		sport->port.icount.rx += count;
+ 	}
+ 
+-	/*
+-	 * Restart RX DMA directly if more data is available in order to skip
+-	 * the roundtrip through the IRQ handler. If there is some data already
+-	 * in the FIFO, DMA needs to be restarted soon anyways.
+-	 *
+-	 * Otherwise stop the DMA and reactivate FIFO IRQs to restart DMA once
+-	 * data starts to arrive again.
+-	 */
+-	if (readl(sport->port.membase + USR2) & USR2_RDR)
+-		start_rx_dma(sport);
+-	else
+-		imx_rx_dma_done(sport);
++	if (w_bytes) {
++		tty_flip_buffer_push(port);
++		dev_dbg(sport->port.dev, "We get %d bytes.\n", w_bytes);
++	}
+ }
+ 
++/* RX DMA buffer periods */
++#define RX_DMA_PERIODS 4
++
+ static int start_rx_dma(struct imx_port *sport)
  {
- 	return sport->devdata->devtype == IMX6Q_UART;
-@@ -1254,8 +1268,7 @@ static int imx_startup(struct uart_port *port)
- 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+ 	struct scatterlist *sgl = &sport->rx_sgl;
+@@ -1017,14 +1028,21 @@ static int start_rx_dma(struct imx_port *sport)
+ 	struct dma_async_tx_descriptor *desc;
+ 	int ret;
  
- 	/* Can we enable the DMA support? */
--	if (is_imx6q_uart(sport) && !uart_console(port) &&
--	    !sport->dma_is_inited)
-+	if (!uart_console(port) && !sport->dma_is_inited)
- 		imx_uart_dma_init(sport);
++	sport->rx_ring.head = 0;
++	sport->rx_ring.tail = 0;
++	sport->rx_periods = RX_DMA_PERIODS;
++
+ 	sg_init_one(sgl, sport->rx_buf, RX_BUF_SIZE);
+ 	ret = dma_map_sg(dev, sgl, 1, DMA_FROM_DEVICE);
+ 	if (ret == 0) {
+ 		dev_err(dev, "DMA mapping error for RX.\n");
+ 		return -EINVAL;
+ 	}
+-	desc = dmaengine_prep_slave_sg(chan, sgl, 1, DMA_DEV_TO_MEM,
+-					DMA_PREP_INTERRUPT);
++
++	desc = dmaengine_prep_dma_cyclic(chan, sg_dma_address(sgl),
++		sg_dma_len(sgl), sg_dma_len(sgl) / sport->rx_periods,
++		DMA_DEV_TO_MEM, DMA_PREP_INTERRUPT);
++
+ 	if (!desc) {
+ 		dma_unmap_sg(dev, sgl, 1, DMA_FROM_DEVICE);
+ 		dev_err(dev, "We cannot prepare for the RX slave dma!\n");
+@@ -1034,7 +1052,7 @@ static int start_rx_dma(struct imx_port *sport)
+ 	desc->callback_param = sport;
  
- 	spin_lock_irqsave(&sport->port.lock, flags);
+ 	dev_dbg(dev, "RX: prepare for the DMA.\n");
+-	dmaengine_submit(desc);
++	sport->rx_cookie = dmaengine_submit(desc);
+ 	dma_async_issue_pending(chan);
+ 	return 0;
+ }
+@@ -1058,14 +1076,16 @@ static void imx_setup_ufcr(struct imx_port *sport,
+ static void imx_uart_dma_exit(struct imx_port *sport)
+ {
+ 	if (sport->dma_chan_rx) {
++		dmaengine_terminate_all(sport->dma_chan_rx);
+ 		dma_release_channel(sport->dma_chan_rx);
+ 		sport->dma_chan_rx = NULL;
+-
++		sport->rx_cookie = -EINVAL;
+ 		kfree(sport->rx_buf);
+ 		sport->rx_buf = NULL;
+ 	}
+ 
+ 	if (sport->dma_chan_tx) {
++		dmaengine_terminate_all(sport->dma_chan_tx);
+ 		dma_release_channel(sport->dma_chan_tx);
+ 		sport->dma_chan_tx = NULL;
+ 	}
+@@ -1103,6 +1123,7 @@ static int imx_uart_dma_init(struct imx_port *sport)
+ 		ret = -ENOMEM;
+ 		goto err;
+ 	}
++	sport->rx_ring.buf = sport->rx_buf;
+ 
+ 	/* Prepare for TX : */
+ 	sport->dma_chan_tx = dma_request_slave_channel(dev, "tx");
+@@ -1283,17 +1304,11 @@ static void imx_shutdown(struct uart_port *port)
+ 	unsigned long flags;
+ 
+ 	if (sport->dma_is_enabled) {
+-		int ret;
++		sport->dma_is_rxing = 0;
++		sport->dma_is_txing = 0;
++		dmaengine_terminate_all(sport->dma_chan_tx);
++		dmaengine_terminate_all(sport->dma_chan_rx);
+ 
+-		/* We have to wait for the DMA to finish. */
+-		ret = wait_event_interruptible(sport->dma_wait,
+-			!sport->dma_is_rxing && !sport->dma_is_txing);
+-		if (ret != 0) {
+-			sport->dma_is_rxing = 0;
+-			sport->dma_is_txing = 0;
+-			dmaengine_terminate_all(sport->dma_chan_tx);
+-			dmaengine_terminate_all(sport->dma_chan_rx);
+-		}
+ 		spin_lock_irqsave(&sport->port.lock, flags);
+ 		imx_stop_tx(port);
+ 		imx_stop_rx(port);
 -- 
-2.7.4
+2.8.3
