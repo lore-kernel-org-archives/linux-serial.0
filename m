@@ -1,37 +1,92 @@
-From: Dirk Eibach <dirk.eibach@gdsys.cc>
-Subject: Re: [PATCH 1/2] sc16is7xx: Do not handle irqs in endless loop
-Date: Mon, 8 Aug 2016 16:02:10 +0200
-Message-ID: <CANVMifLptRS1_Qj9SB-a_cmADn+rgfat5FVtMhGXuYuyBJHh5g@mail.gmail.com>
-References: <1470663136-26269-1-git-send-email-dirk.eibach@gdsys.cc> <20160808134315.GA11190@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Nandor Han <nandor.han@ge.com>
+Subject: [PATCH 4/4] serial: imx-serial - update RX error counters when DMA is used
+Date: Mon,  8 Aug 2016 15:38:28 +0300
+Message-ID: <1f338636da75ccdf330e3e1164a023219faa56e0.1470656658.git.nandor.han@ge.com>
+References: <cover.1465456639.git.nandor.han@ge.com>
+ <cover.1470656657.git.nandor.han@ge.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160808134315.GA11190@kroah.com>
+In-Reply-To: <cover.1470656657.git.nandor.han@ge.com>
+In-Reply-To: <cover.1470656657.git.nandor.han@ge.com>
+References: <cover.1470656657.git.nandor.han@ge.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, jringle@gridpoint.com
+To: =Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Nandor Han <nandor.han@ge.com>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Senna Tschudin <peter.senna@collabora.com>
 List-Id: linux-serial@vger.kernel.org
 
-2016-08-08 15:43 GMT+02:00 Greg KH <gregkh@linuxfoundation.org>:
-> On Mon, Aug 08, 2016 at 03:32:15PM +0200, dirk.eibach@gdsys.cc wrote:
->> From: Dirk Eibach <dirk.eibach@gdsys.cc>
->>
->> sc16is7xx_port_irq() is laid out as an endless loop. It will exit only
->> when there is no more interrupt left to service. This not common
->> practice.
->> In our case it lead to some strange hangup situation when there was an
->> unexpected XOFF-interrupt that could not be handled.
->> So let's service interrupts only once and report XOFF-interrupts that
->> should never happen since they are never enabled.
->>
->> Signed-off-by: Dirk Eibach <dirk.eibach@gdsys.cc>
->>
->> Conflicts:
->>       drivers/tty/serial/sc16is7xx.c
->
-> Why are these 2 lines in here?
+Update error counters when DMA is used for receiving data. Do
+this by using DMA transaction error event instead error interrupts
+to reduce interrupt load.
 
-Sorry, my bad. I have no idea how they slipped in. Will remove them in v2.
+Tested-by: Peter Senna Tschudin <peter.senna@collabora.com>
+Acked-by: Peter Senna Tschudin <peter.senna@collabora.com>
+Signed-off-by: Nandor Han <nandor.han@ge.com>
+---
+ drivers/tty/serial/imx.c | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-Cheers
-Dirk
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 1912136..08ccfe1 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -704,6 +704,7 @@ out:
+ 	return IRQ_HANDLED;
+ }
+ 
++static void clear_rx_errors(struct imx_port *sport);
+ static int start_rx_dma(struct imx_port *sport);
+ /*
+  * If the RXFIFO is filled with some data, and then we
+@@ -729,6 +730,11 @@ static void imx_dma_rxint(struct imx_port *sport)
+ 		temp &= ~(UCR2_ATEN);
+ 		writel(temp, sport->port.membase + UCR2);
+ 
++		/* disable the rx errors interrupts */
++		temp = readl(sport->port.membase + UCR4);
++		temp &= ~UCR4_OREN;
++		writel(temp, sport->port.membase + UCR4);
++
+ 		/* tell the DMA to receive the data. */
+ 		start_rx_dma(sport);
+ 	}
+@@ -961,6 +967,7 @@ static void dma_rx_callback(void *data)
+ 
+ 	if (status == DMA_ERROR) {
+ 		dev_err(sport->port.dev, "DMA transaction error.\n");
++		clear_rx_errors(sport);
+ 		return;
+ 	}
+ 
+@@ -1057,6 +1064,31 @@ static int start_rx_dma(struct imx_port *sport)
+ 	return 0;
+ }
+ 
++static void clear_rx_errors(struct imx_port *sport)
++{
++	unsigned int status_usr1, status_usr2;
++
++	status_usr1 = readl(sport->port.membase + USR1);
++	status_usr2 = readl(sport->port.membase + USR2);
++
++	if (status_usr2 & USR2_BRCD) {
++		sport->port.icount.brk++;
++		writel(USR2_BRCD, sport->port.membase + USR2);
++	} else if (status_usr1 & USR1_FRAMERR) {
++		sport->port.icount.frame++;
++		writel(USR1_FRAMERR, sport->port.membase + USR1);
++	} else if (status_usr1 & USR1_PARITYERR) {
++		sport->port.icount.parity++;
++		writel(USR1_PARITYERR, sport->port.membase + USR1);
++	}
++
++	if (status_usr2 & USR2_ORE) {
++		sport->port.icount.overrun++;
++		writel(USR2_ORE, sport->port.membase + USR2);
++	}
++
++}
++
+ #define TXTL_DEFAULT 2 /* reset default */
+ #define RXTL_DEFAULT 1 /* reset default */
+ #define TXTL_DMA 8 /* DMA burst setting */
+-- 
+2.8.3
