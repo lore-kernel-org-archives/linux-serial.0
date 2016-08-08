@@ -1,124 +1,92 @@
-From: Nandor Han <nandor.han@ge.com>
-Subject: [PATCH 1/4] dmaengine: imx-sdma - reduce transfer latency for DMA cyclic clients
-Date: Mon,  8 Aug 2016 15:38:25 +0300
-Message-ID: <2eb776f111b39ffcc4a8f675f123566c1f7e06d6.1470656658.git.nandor.han@ge.com>
-References: <cover.1465456639.git.nandor.han@ge.com>
- <cover.1470656657.git.nandor.han@ge.com>
+From: dirk.eibach@gdsys.cc
+Subject: [PATCH 1/2] sc16is7xx: Do not handle irqs in endless loop
+Date: Mon,  8 Aug 2016 15:32:15 +0200
+Message-ID: <1470663136-26269-1-git-send-email-dirk.eibach@gdsys.cc>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1470656657.git.nandor.han@ge.com>
-In-Reply-To: <cover.1470656657.git.nandor.han@ge.com>
-References: <cover.1470656657.git.nandor.han@ge.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Nandor Han <nandor.han@ge.com>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Senna Tschudin <peter.senna@collabora.com>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, gregkh@linuxfoundation.org, jringle@gridpoint.com
+Cc: Dirk Eibach <dirk.eibach@gdsys.cc>
 List-Id: linux-serial@vger.kernel.org
 
-Having the SDMA driver use a tasklet for running the clients
-callback introduce some issues:
-  - probability to have desynchronized data because of the
-    race condition created since the DMA transaction status
-    is retrieved only when the callback is executed, leaving
-    plenty of time for transaction status to get altered.
-  - inter-transfer latency which can leave channels idle.
+From: Dirk Eibach <dirk.eibach@gdsys.cc>
 
-Move the callback execution, for cyclic channels, to SDMA
-interrupt (as advised in `Documentation/dmaengine/provider.txt`)
-to (a)reduce the inter-transfer latency and (b) eliminate the
-race condition possibility where DMA transaction status might
-be changed by the time is read.
+sc16is7xx_port_irq() is laid out as an endless loop. It will exit only
+when there is no more interrupt left to service. This not common
+practice.
+In our case it lead to some strange hangup situation when there was an
+unexpected XOFF-interrupt that could not be handled.
+So let's service interrupts only once and report XOFF-interrupts that
+should never happen since they are never enabled.
 
-The responsibility of the SDMA interrupt latency
-is moved to the SDMA clients which case by case should defer
-the work to bottom-halves when needed.
+Signed-off-by: Dirk Eibach <dirk.eibach@gdsys.cc>
 
-Tested-by: Peter Senna Tschudin <peter.senna@collabora.com>
-Acked-by: Peter Senna Tschudin <peter.senna@collabora.com>
-Reviewed-by: Vinod Koul <vinod.koul@intel.com>
-Signed-off-by: Nandor Han <nandor.han@ge.com>
+Conflicts:
+	drivers/tty/serial/sc16is7xx.c
 ---
- drivers/dma/imx-sdma.c | 36 ++++++++++++++++--------------------
- 1 file changed, 16 insertions(+), 20 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 48 +++++++++++++++++++-----------------------
+ 1 file changed, 22 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index 03ec76f..aa35a77 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -648,12 +648,6 @@ static void sdma_event_disable(struct sdma_channel *sdmac, unsigned int event)
- 	writel_relaxed(val, sdma->regs + chnenbl);
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index f36e6df..098c6dc 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -664,35 +664,31 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
+ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+ {
+ 	struct uart_port *port = &s->p[portno].port;
++	unsigned int iir, ier, msr, rxlen;
+ 
+-	do {
+-		unsigned int iir, rxlen;
+-
+-		iir = sc16is7xx_port_read(port, SC16IS7XX_IIR_REG);
+-		if (iir & SC16IS7XX_IIR_NO_INT_BIT)
+-			break;
++	iir = sc16is7xx_port_read(port, SC16IS7XX_IIR_REG);
++	if (iir & SC16IS7XX_IIR_NO_INT_BIT)
++		return;
+ 
+-		iir &= SC16IS7XX_IIR_ID_MASK;
++	iir &= SC16IS7XX_IIR_ID_MASK;
+ 
+-		switch (iir) {
+-		case SC16IS7XX_IIR_RDI_SRC:
+-		case SC16IS7XX_IIR_RLSE_SRC:
+-		case SC16IS7XX_IIR_RTOI_SRC:
+-		case SC16IS7XX_IIR_XOFFI_SRC:
+-			rxlen = sc16is7xx_port_read(port, SC16IS7XX_RXLVL_REG);
+-			if (rxlen)
+-				sc16is7xx_handle_rx(port, rxlen, iir);
+-			break;
+-		case SC16IS7XX_IIR_THRI_SRC:
+-			sc16is7xx_handle_tx(port);
+-			break;
+-		default:
+-			dev_err_ratelimited(port->dev,
+-					    "ttySC%i: Unexpected interrupt: %x",
+-					    port->line, iir);
+-			break;
+-		}
+-	} while (1);
++	switch (iir) {
++	case SC16IS7XX_IIR_RDI_SRC:
++	case SC16IS7XX_IIR_RLSE_SRC:
++	case SC16IS7XX_IIR_RTOI_SRC:
++		rxlen = sc16is7xx_port_read(port, SC16IS7XX_RXLVL_REG);
++		if (rxlen)
++			sc16is7xx_handle_rx(port, rxlen, iir);
++		break;
++	case SC16IS7XX_IIR_THRI_SRC:
++		sc16is7xx_handle_tx(port);
++		break;
++	default:
++		dev_err_ratelimited(port->dev,
++				    "Port %i: Unexpected interrupt: iir %02x, ier %02x",
++				    port->line, iir, ier);
++		break;
++	}
  }
  
--static void sdma_handle_channel_loop(struct sdma_channel *sdmac)
--{
--	if (sdmac->desc.callback)
--		sdmac->desc.callback(sdmac->desc.callback_param);
--}
--
- static void sdma_update_channel_loop(struct sdma_channel *sdmac)
- {
- 	struct sdma_buffer_descriptor *bd;
-@@ -672,13 +666,25 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
- 			sdmac->status = DMA_ERROR;
- 
- 		bd->mode.status |= BD_DONE;
-+
-+		/*
-+		 * The callback is called from the interrupt context in order
-+		 * to reduce latency and to avoid the risk of altering the
-+		 * SDMA transaction status by the time the client tasklet is
-+		 * executed.
-+		 */
-+
-+		if (sdmac->desc.callback)
-+			sdmac->desc.callback(sdmac->desc.callback_param);
-+
- 		sdmac->buf_tail++;
- 		sdmac->buf_tail %= sdmac->num_bd;
- 	}
- }
- 
--static void mxc_sdma_handle_channel_normal(struct sdma_channel *sdmac)
-+static void mxc_sdma_handle_channel_normal(unsigned long data)
- {
-+	struct sdma_channel *sdmac = (struct sdma_channel *) data;
- 	struct sdma_buffer_descriptor *bd;
- 	int i, error = 0;
- 
-@@ -705,16 +711,6 @@ static void mxc_sdma_handle_channel_normal(struct sdma_channel *sdmac)
- 		sdmac->desc.callback(sdmac->desc.callback_param);
- }
- 
--static void sdma_tasklet(unsigned long data)
--{
--	struct sdma_channel *sdmac = (struct sdma_channel *) data;
--
--	if (sdmac->flags & IMX_DMA_SG_LOOP)
--		sdma_handle_channel_loop(sdmac);
--	else
--		mxc_sdma_handle_channel_normal(sdmac);
--}
--
- static irqreturn_t sdma_int_handler(int irq, void *dev_id)
- {
- 	struct sdma_engine *sdma = dev_id;
-@@ -731,8 +727,8 @@ static irqreturn_t sdma_int_handler(int irq, void *dev_id)
- 
- 		if (sdmac->flags & IMX_DMA_SG_LOOP)
- 			sdma_update_channel_loop(sdmac);
--
--		tasklet_schedule(&sdmac->tasklet);
-+		else
-+			tasklet_schedule(&sdmac->tasklet);
- 
- 		__clear_bit(channel, &stat);
- 	}
-@@ -1732,7 +1728,7 @@ static int sdma_probe(struct platform_device *pdev)
- 		dma_cookie_init(&sdmac->chan);
- 		sdmac->channel = i;
- 
--		tasklet_init(&sdmac->tasklet, sdma_tasklet,
-+		tasklet_init(&sdmac->tasklet, mxc_sdma_handle_channel_normal,
- 			     (unsigned long) sdmac);
- 		/*
- 		 * Add the channel to the DMAC list. Do not add channel 0 though
+ static void sc16is7xx_ist(struct kthread_work *ws)
 -- 
-2.8.3
+2.1.3
