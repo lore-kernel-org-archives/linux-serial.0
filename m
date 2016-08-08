@@ -1,91 +1,91 @@
-From: Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [PATCH 10/11] soc: ti: knav_qmss_queue: use
- of_property_read_bool
-Date: Fri, 5 Aug 2016 14:59:22 +0200 (CEST)
-Message-ID: <alpine.DEB.2.10.1608051456170.2999@hadrien>
-References: <1470387411-15879-1-git-send-email-Julia.Lawall@lip6.fr> <1470387411-15879-11-git-send-email-Julia.Lawall@lip6.fr> <c010a500-87ce-19ad-0109-f57eba3c6981@arm.com>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v3 3/3] serial: 8250_dw: add ACPI support for uart on
+ Hisilicon Hip05 soc
+Date: Mon, 8 Aug 2016 14:10:47 +0800
+Message-ID: <fdb46b87-d3fb-0a07-4967-bb2d59daa715@huawei.com>
+References: <1468580485-28567-1-git-send-email-wangkefeng.wang@huawei.com>
+ <1468580485-28567-4-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <c010a500-87ce-19ad-0109-f57eba3c6981@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Santosh Shilimkar <ssantosh@kernel.org>, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, linux-mmc@vger.kernel.org, linux-i2c@vger.kernel.org, linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, alsa-devel@alsa-project.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1468580485-28567-4-git-send-email-wangkefeng.wang@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, andriy.shevchenko@linux.intel.com
+Cc: linux-acpi@vger.kernel.org, guohanjun@huawei.com, z.liuxinliang@hisilicon.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
++ kernel malilist
 
+Hi Andriy and all, any comments, thanks.
 
-On Fri, 5 Aug 2016, Robin Murphy wrote:
+On 2016/7/15 19:01, Kefeng Wang wrote:
+> Use built-in device properties to set device parameters for the
+> existing device probed by acpi.
+> 
+> Add ACPI identifier for UART on Hisilicon Hip05 soc, be careful
+> that it is not 16550 compatibal, so we need set "reg-io-width"
+> and "reg-shift" by _DSD method in DSDT.
+> 
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  drivers/tty/serial/8250/8250_dw.c | 23 +++++++++++++++++------
+>  1 file changed, 17 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index d6934310..5ab9cfe 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -297,12 +297,6 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+>  			p->serial_in = dw8250_serial_in32be;
+>  			p->serial_out = dw8250_serial_out32be;
+>  		}
+> -	} else if (has_acpi_companion(p->dev)) {
+> -		p->iotype = UPIO_MEM32;
+> -		p->regshift = 2;
+> -		p->serial_in = dw8250_serial_in32;
+> -		/* So far none of there implement the Busy Functionality */
+> -		data->uart_16550_compatible = true;
+>  	}
+>  
+>  	/* Platforms with iDMA */
+> @@ -352,6 +346,19 @@ static void dw8250_setup_port(struct uart_port *p)
+>  		up->capabilities |= UART_CAP_AFE;
+>  }
+>  
+> +static struct property_entry dw8250_properties[] = {
+> +	PROPERTY_ENTRY_U32("reg-io-width", 4),
+> +	PROPERTY_ENTRY_U32("reg-shift", 2),
+> +	PROPERTY_ENTRY_BOOL("snps,uart-16550-compatible"),
+> +	{ },
+> +};
+> +
+> +/* non 16550 compatible id list*/
+> +static const struct acpi_device_id non_16550_ids[] = {
+> +	{ "HISI0031", 0 },
+> +	{ },
+> +};
+> +
+>  static int dw8250_probe(struct platform_device *pdev)
+>  {
+>  	struct uart_8250_port uart = {};
+> @@ -395,6 +402,9 @@ static int dw8250_probe(struct platform_device *pdev)
+>  	if (!data)
+>  		return -ENOMEM;
+>  
+> +	if (has_acpi_companion(dev) && !acpi_match_device(non_16550_ids, dev))
+> +		platform_device_add_properties(pdev, dw8250_properties);
+> +
+>  	data->dma.fn = dw8250_fallback_dma_filter;
+>  	data->usr_reg = DW_UART_USR;
+>  	p->private_data = data;
+> @@ -619,6 +629,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
+>  	{ "APMC0D08", 0},
+>  	{ "AMD0020", 0 },
+>  	{ "AMDI0020", 0 },
+> +	{ "HISI0031", 0 },
+>  	{ },
+>  };
+>  MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
+> 
 
-> Hi Julia,
->
-> On 05/08/16 09:56, Julia Lawall wrote:
-> > Use of_property_read_bool to check for the existence of a property.
->
-> This caught my eye since Rob told me off for doing the same recently[1].
->
-> > The semantic patch that makes this change is as follows:
-> > (http://coccinelle.lip6.fr/)
-> >
-> > // <smpl>
-> > @@
-> > expression e1,e2;
-> > statement S2,S1;
-> > @@
-> > -       if (of_get_property(e1,e2,NULL))
-> > +       if (of_property_read_bool(e1,e2))
-> >         S1 else S2
-> > // </smpl>
-> >
-> > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-> >
-> > ---
-> >  drivers/soc/ti/knav_qmss_queue.c |    2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/soc/ti/knav_qmss_queue.c b/drivers/soc/ti/knav_qmss_queue.c
-> > index b73e353..56b5d7c 100644
-> > --- a/drivers/soc/ti/knav_qmss_queue.c
-> > +++ b/drivers/soc/ti/knav_qmss_queue.c
-> > @@ -1240,7 +1240,7 @@ static int knav_setup_queue_range(struct knav_device *kdev,
-> >  	if (of_get_property(node, "qalloc-by-id", NULL))
->
-> According to the binding, "qalloc-by-id" _is_ a boolean property, so
-> this one really does deserve to be of_property_read_bool()...
->
-> >  		range->flags |= RANGE_RESERVED;
-> >
-> > -	if (of_get_property(node, "accumulator", NULL)) {
-> > +	if (of_property_read_bool(node, "accumulator")) {
->
-> ...whereas "accumulator" must have a value, so this isn't technically
-> appropriate. In general, most of these "if the property exists, read the
-> property and do stuff" checks are probably a sign of code that could be
-> simplified by refactoring the "do stuff" step to just specifically
-> handle the "read the property" step returning -EINVAL when it's not present.
-
-Thanks for the very helpful feedback.  I will rethink the patch set in
-light of this information.
-
-julia
-
-> Robin.
->
-> [1]:https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg13375.html
->
-> >  		ret = knav_init_acc_range(kdev, node, range);
-> >  		if (ret < 0) {
-> >  			devm_kfree(dev, range);
-> >
-> >
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> >
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
