@@ -1,91 +1,33 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v3 3/3] serial: 8250_dw: add ACPI support for uart on
- Hisilicon Hip05 soc
-Date: Mon, 8 Aug 2016 14:10:47 +0800
-Message-ID: <fdb46b87-d3fb-0a07-4967-bb2d59daa715@huawei.com>
-References: <1468580485-28567-1-git-send-email-wangkefeng.wang@huawei.com>
- <1468580485-28567-4-git-send-email-wangkefeng.wang@huawei.com>
+From: Rabin Vincent <rabin@rab.in>
+Subject: Re: debug tip after earlycon is closed?
+Date: Mon, 8 Aug 2016 11:08:57 +0200
+Message-ID: <20160808090857.GA20832@lnxartpec.se.axis.com>
+References: <CAK7LNASrqbt+RzD64zcAMjmBjJqa2sc2UG+mnEX8npZ9DBJodQ@mail.gmail.com>
+ <3860396.RT1mlU0LAT@wuerfel>
+ <CAK7LNARtm_2uT3nbga4X0dMYs9jhKa8a2FTGJrYbVRg8P3vHQw@mail.gmail.com>
+ <7034241.kLArk8ex69@wuerfel>
+ <20160728122022.GZ1041@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1468580485-28567-4-git-send-email-wangkefeng.wang@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, andriy.shevchenko@linux.intel.com
-Cc: linux-acpi@vger.kernel.org, guohanjun@huawei.com, z.liuxinliang@hisilicon.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160728122022.GZ1041@n2100.armlinux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Masahiro Yamada <yamada.masahiro@socionext.com>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-+ kernel malilist
+On Thu, Jul 28, 2016 at 01:20:22PM +0100, Russell King - ARM Linux wrote:
+> To me, what this means is that the DT parsing of linux,stdout is
+> broken - while it may look nice from a design point of view, the
+> design is wrong and fails to take account of non-UART consoles in
+> the system.
 
-Hi Andriy and all, any comments, thanks.
+Note that the brokeness you describe also leads to stdout-path being
+unable to put the console on any serial port but the first, as reported
+here:
+http://lists.infradead.org/pipermail/linux-arm-kernel/2015-February/323811.html
 
-On 2016/7/15 19:01, Kefeng Wang wrote:
-> Use built-in device properties to set device parameters for the
-> existing device probed by acpi.
-> 
-> Add ACPI identifier for UART on Hisilicon Hip05 soc, be careful
-> that it is not 16550 compatibal, so we need set "reg-io-width"
-> and "reg-shift" by _DSD method in DSDT.
-> 
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> ---
->  drivers/tty/serial/8250/8250_dw.c | 23 +++++++++++++++++------
->  1 file changed, 17 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index d6934310..5ab9cfe 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -297,12 +297,6 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
->  			p->serial_in = dw8250_serial_in32be;
->  			p->serial_out = dw8250_serial_out32be;
->  		}
-> -	} else if (has_acpi_companion(p->dev)) {
-> -		p->iotype = UPIO_MEM32;
-> -		p->regshift = 2;
-> -		p->serial_in = dw8250_serial_in32;
-> -		/* So far none of there implement the Busy Functionality */
-> -		data->uart_16550_compatible = true;
->  	}
->  
->  	/* Platforms with iDMA */
-> @@ -352,6 +346,19 @@ static void dw8250_setup_port(struct uart_port *p)
->  		up->capabilities |= UART_CAP_AFE;
->  }
->  
-> +static struct property_entry dw8250_properties[] = {
-> +	PROPERTY_ENTRY_U32("reg-io-width", 4),
-> +	PROPERTY_ENTRY_U32("reg-shift", 2),
-> +	PROPERTY_ENTRY_BOOL("snps,uart-16550-compatible"),
-> +	{ },
-> +};
-> +
-> +/* non 16550 compatible id list*/
-> +static const struct acpi_device_id non_16550_ids[] = {
-> +	{ "HISI0031", 0 },
-> +	{ },
-> +};
-> +
->  static int dw8250_probe(struct platform_device *pdev)
->  {
->  	struct uart_8250_port uart = {};
-> @@ -395,6 +402,9 @@ static int dw8250_probe(struct platform_device *pdev)
->  	if (!data)
->  		return -ENOMEM;
->  
-> +	if (has_acpi_companion(dev) && !acpi_match_device(non_16550_ids, dev))
-> +		platform_device_add_properties(pdev, dw8250_properties);
-> +
->  	data->dma.fn = dw8250_fallback_dma_filter;
->  	data->usr_reg = DW_UART_USR;
->  	p->private_data = data;
-> @@ -619,6 +629,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
->  	{ "APMC0D08", 0},
->  	{ "AMD0020", 0 },
->  	{ "AMDI0020", 0 },
-> +	{ "HISI0031", 0 },
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
-> 
-
+It always puts the console on the first serial port if CONFIG_VT_CONSOLE
+is not enabled, even if the stdout-path property requests a different
+serial port.
