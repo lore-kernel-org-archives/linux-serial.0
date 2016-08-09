@@ -1,89 +1,43 @@
-From: Nandor Han <nandor.han@ge.com>
-Subject: [PATCH 2/4] dmaengine: imx-sdma - update the residue calculation for cyclic channels
-Date: Mon,  8 Aug 2016 15:38:26 +0300
-Message-ID: <0e47cf5eb88ef63f844f310bfbd836264f65ccdf.1470656658.git.nandor.han@ge.com>
-References: <cover.1465456639.git.nandor.han@ge.com>
- <cover.1470656657.git.nandor.han@ge.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1470656657.git.nandor.han@ge.com>
-In-Reply-To: <cover.1470656657.git.nandor.han@ge.com>
-References: <cover.1470656657.git.nandor.han@ge.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Nandor Han <nandor.han@ge.com>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Senna Tschudin <peter.senna@collabora.com>
+From: Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH v3 0/3] Complete ZTE PL011 device support
+Date: Tue, 9 Aug 2016 11:21:53 +0800
+Message-ID: <20160809032153.GK4678@tiger>
+References: <1467968441-4056-1-git-send-email-shawn.guo@linaro.org>
+ <20160714132620.GB4382@tiger>
+ <20160718133516.GG1041@n2100.armlinux.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20160718133516.GG1041@n2100.armlinux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Jason Liu <jason.liu@linaro.org>, Andre Przywara <andre.przywara@arm.com>, Timur Tabi <timur@codeaurora.org>, xie.baoyou@zte.com.cn, Russell King - ARM Linux <linux@armlinux.org.uk>, linux-serial@vger.kernel.org, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The calculation of the DMA transaction residue supports only fixed
-size data transfers. This implementation is not covering all
-operations (e.g. data receiving) when we need to know the exact amount
-of bytes transferred.
+On Mon, Jul 18, 2016 at 02:35:16PM +0100, Russell King - ARM Linux wrote:
+> On Thu, Jul 14, 2016 at 09:26:20PM +0800, Shawn Guo wrote:
+> > Most of the changes of patch #3 are yours, so presumably you are fine
+> > with it.  What about #1 and #2?  May I have your ACK on them, so that I
+> > can ask Greg to pick up the series?  Thanks.
+> 
+> Yes, the three patches look fine.  For the first two:
+> 
+> Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-The loop channels handling was changed to clear the buffer
-descriptor errors and use the bd->mode.count to calculate the
-residue.
+Hi Greg,
 
-Tested-by: Peter Senna Tschudin <peter.senna@collabora.com>
-Acked-by: Peter Senna Tschudin <peter.senna@collabora.com>
-Reviewed-by: Vinod Koul <vinod.koul@intel.com>
-Signed-off-by: Nandor Han <nandor.han@ge.com>
----
- drivers/dma/imx-sdma.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+The series missed 4.8 merge window.  Since v4.8-rc1 is out there, can
+you please queue the it up for the next?  The series can still apply
+on v4.8-rc1 cleanly.  Thanks.
 
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index aa35a77..3cb4738 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -651,6 +651,8 @@ static void sdma_event_disable(struct sdma_channel *sdmac, unsigned int event)
- static void sdma_update_channel_loop(struct sdma_channel *sdmac)
- {
- 	struct sdma_buffer_descriptor *bd;
-+	int error = 0;
-+	enum dma_status	old_status = sdmac->status;
- 
- 	/*
- 	 * loop mode. Iterate over descriptors, re-setup them and
-@@ -662,10 +664,20 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
- 		if (bd->mode.status & BD_DONE)
- 			break;
- 
--		if (bd->mode.status & BD_RROR)
-+		if (bd->mode.status & BD_RROR) {
-+			bd->mode.status &= ~BD_RROR;
- 			sdmac->status = DMA_ERROR;
-+			error = -EIO;
-+		}
- 
-+	       /*
-+		* We use bd->mode.count to calculate the residue, since contains
-+		* the number of bytes present in the current buffer descriptor.
-+		*/
-+
-+		sdmac->chn_real_count = bd->mode.count;
- 		bd->mode.status |= BD_DONE;
-+		bd->mode.count = sdmac->period_len;
- 
- 		/*
- 		 * The callback is called from the interrupt context in order
-@@ -679,6 +691,9 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
- 
- 		sdmac->buf_tail++;
- 		sdmac->buf_tail %= sdmac->num_bd;
-+
-+		if (error)
-+			sdmac->status = old_status;
- 	}
- }
- 
-@@ -1349,7 +1364,8 @@ static enum dma_status sdma_tx_status(struct dma_chan *chan,
- 	u32 residue;
- 
- 	if (sdmac->flags & IMX_DMA_SG_LOOP)
--		residue = (sdmac->num_bd - sdmac->buf_tail) * sdmac->period_len;
-+		residue = (sdmac->num_bd - sdmac->buf_tail) *
-+			   sdmac->period_len - sdmac->chn_real_count;
- 	else
- 		residue = sdmac->chn_count - sdmac->chn_real_count;
- 
--- 
-2.8.3
+Shawn
