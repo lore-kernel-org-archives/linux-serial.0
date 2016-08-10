@@ -1,59 +1,67 @@
-From: "Mendez Salinas, Fernando" <fernando.mendez.salinas@intel.com>
-Subject: RE: [PATCH v1 1/1] serial: 8250_mid: fix divide error bug if baud
- rate is 0
-Date: Wed, 10 Aug 2016 16:38:17 +0000
-Message-ID: <AEF21428FBDEDA4B9EB58EA55089A4FE30870F17@FMSMSX106.amr.corp.intel.com>
-References: <1467382909-118812-1-git-send-email-andriy.shevchenko@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1467382909-118812-1-git-send-email-andriy.shevchenko@linux.intel.com>
-Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Cc: "stable@vger.kernel.org" <stable@vger.kernel.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 7/9] 8250/fintek: rename IRQ_MODE macro
+Date: Wed, 10 Aug 2016 23:54:13 +0200
+Message-ID: <20160810215424.1926658-8-arnd@arndb.de>
+References: <20160810215424.1926658-1-arnd@arndb.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160810215424.1926658-1-arnd@arndb.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+A bugfix for the fintek driver required defining some macros, but
+one of them clashes with a system header on ARM:
 
-Hi Greg,
+drivers/tty/serial/8250/8250_fintek.c:34:0: error: "IRQ_MODE" redefined [-Werror]
+ #define IRQ_MODE 0x70
 
-Do you know when this patch will be included in the kernel or if there is anything pending to do?
+In file included from /git/arm-soc/arch/arm/include/asm/ptrace.h:13:0,
+                 from /git/arm-soc/arch/arm/include/asm/irqflags.h:6,
+                 from /git/arm-soc/include/linux/irqflags.h:15,
+                 from /git/arm-soc/arch/arm/include/asm/bitops.h:27,
+                 from /git/arm-soc/include/linux/bitops.h:36,
+                 from /git/arm-soc/include/linux/kernel.h:10,
+                 from /git/arm-soc/include/linux/list.h:8,
+                 from /git/arm-soc/include/linux/module.h:9,
+                 from /git/arm-soc/drivers/tty/serial/8250/8250_fintek.c:11:
+arch/arm/include/uapi/asm/ptrace.h:55:0: note: this is the location of the previous definition
 
-Thanks
-Fernando
+This renames the newly introduced 'IRQ_MODE' macro to FINTEK_IRQ_MODE.
 
------Original Message-----
-From: Andy Shevchenko [mailto:andriy.shevchenko@linux.intel.com] 
-Sent: Friday, July 1, 2016 9:22 AM
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Heikki Krogerus <heikki.krogerus@linux.intel.com>; linux-serial@vger.kernel.org; Mendez Salinas, Fernando <fernando.mendez.salinas@intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>; stable@vger.kernel.org
-Subject: [PATCH v1 1/1] serial: 8250_mid: fix divide error bug if baud rate is 0
-
-Since the commit c1a67b48f6a5 ("serial: 8250_pci: replace switch-case by formula for Intel MID"), the 8250 driver crashes in the byt_set_termios() function with a divide error. This is caused by the fact that a baud rate of 0
-(B0) is not handled properly. Fix it by falling back to B9600 in this case.
-
-Reported-by: "Mendez Salinas, Fernando" <fernando.mendez.salinas@intel.com>
-Fixes: c1a67b48f6a5 ("serial: 8250_pci: replace switch-case by formula for Intel MID")
-Cc: stable@vger.kernel.org
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 4da22f1418cb ("serial: 8250_fintek: fix the mismatched IRQ mode")
+Link: https://patchwork.kernel.org/patch/9200119/
+Acked-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+Acked-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serial/8250/8250_mid.c | 3 +++
- 1 file changed, 3 insertions(+)
+Originally sent on June 27 when the warning appeared, but for
+some reason the fix never got picked up.
+---
+ drivers/tty/serial/8250/8250_fintek.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-index ac37f67..44c71f4 100644
---- a/drivers/tty/serial/8250/8250_mid.c
-+++ b/drivers/tty/serial/8250/8250_mid.c
-@@ -173,6 +173,9 @@ static void mid8250_set_termios(struct uart_port *p,
- 	unsigned long w = BIT(24) - 1;
- 	unsigned long mul, div;
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 737b4b3957b0..0facc789fe7d 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -31,7 +31,7 @@
+ #define IO_ADDR2 0x60
+ #define LDN 0x7
  
-+	/* Gracefully handle the B0 case: fall back to B9600 */
-+	fuart = fuart ? fuart : 9600 * 16;
-+
- 	if (mid->board->freq < fuart) {
- 		/* Find prescaler value that satisfies Fuart < Fref */
- 		if (mid->board->freq > baud)
---
-2.8.1
+-#define IRQ_MODE	0x70
++#define FINTEK_IRQ_MODE	0x70
+ #define IRQ_SHARE	BIT(4)
+ #define IRQ_MODE_MASK	(BIT(6) | BIT(5))
+ #define IRQ_LEVEL_LOW	0
+@@ -195,7 +195,7 @@ static int fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool level_mode)
+ 	outb(LDN, pdata->base_port + ADDR_PORT);
+ 	outb(pdata->index, pdata->base_port + DATA_PORT);
+ 
+-	outb(IRQ_MODE, pdata->base_port + ADDR_PORT);
++	outb(FINTEK_IRQ_MODE, pdata->base_port + ADDR_PORT);
+ 	tmp = inb(pdata->base_port + DATA_PORT);
+ 
+ 	tmp &= ~IRQ_MODE_MASK;
+-- 
+2.9.0
