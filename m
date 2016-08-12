@@ -1,87 +1,70 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v10 00/11] serial: 8250: split LPSS to 8250_lpss, enable DMA on Quark
-Date: Fri, 12 Aug 2016 19:01:45 +0300
-Message-ID: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v10 06/11] serial: 8250_dma: adjust DMA address of the UART
+Date: Fri, 12 Aug 2016 19:01:51 +0300
+Message-ID: <1471017716-44893-7-git-send-email-andriy.shevchenko@linux.intel.com>
+References: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-This is combined series of two things:
-- split out the Intel LPSS specific driver from 8250_pci into 8250_lpss
-- enable DMA support on Intel Quark UART
+Some UARTs, e.g. one is used in Intel Quark, have a different address base for
+DMA operations. Introduce an additional field (per RX and TX DMA channels) in
+struct uart_8250_dma to cover those cases.
 
-The patch has been tested on few Intel SoCs / platforms. In any case I would
-like to ask Bryan to do independent test.
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250.h     | 5 +++++
+ drivers/tty/serial/8250/8250_dma.c | 8 ++++++--
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-This is targeting serial subsystem, and it has necessary Ack from Vinod.
-
-The series can be reached in the branch located at [1].
-
-[1] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqrk
-
-Since v9:
-- rebase on top of vanilla (v4.8-rc1)
-- re-make patch 3 (Eugeniy Paltsev reported an issue on ARC AXS101 SDP board)
-
-Since v8:
-- fix an issue with Kconfig which is reported by kernel test bot
-
-Since v7:
-- fix rebase leftover (lkp)
-
-Since v6:
-- protect the code against SERIAL_8250_DMA=n && DW_DMAC_CORE=m
-
-Since v5:
-- add Vinod's Ack tag
-- rebase on top of latest linux-next
-
-Since v4:
-- fix an issue what kernel test bot reported (lkp)
-- add a list of supported SoC to Kconfig (Bryan)
-- rename polarity -> hs_polarity (Bryan)
-
-Since v3:
-- rebase on top of recent tty-next branch
-- add Reviewed-by tag from Bryan
-
-Since v2:
-- add tags
-- rebase on top of new version of [1]
-
-Since v1:
-- address most of Peter's comments (mostly changelog to patch 8)
-- add tag to patch 5
-- drop patch 6 from the series to be separately dealt with
-
-Andy Shevchenko (11):
-  dmaengine: dw: keep copy of custom slave config in dwc
-  dmaengine: dw: set polarity of handshake interface
-  dmaengine: dw: override LLP support if asked in platform data
-  dmaengine: dw: provide probe(), remove() stubs for users
-  serial: 8250_dma: switch to new dmaengine_terminate_* API
-  serial: 8250_dma: adjust DMA address of the UART
-  serial: 8250: enable AFE on ports where FIFO is 16 bytes
-  serial: 8250_lpss: split LPSS driver to separate module
-  serial: 8250_lpss: move Quark code from PCI driver
-  serial: 8250_lpss: enable MSI for Intel Quark
-  serial: 8250_lpss: enable DMA on Intel Quark UART
-
- drivers/dma/dw/core.c                |  39 ++--
- drivers/dma/dw/regs.h                |   5 +-
- drivers/tty/serial/8250/8250.h       |   5 +
- drivers/tty/serial/8250/8250_dma.c   |  14 +-
- drivers/tty/serial/8250/8250_lpss.c  | 378 +++++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_pci.c   | 257 +-----------------------
- drivers/tty/serial/8250/8250_port.c  |   9 +-
- drivers/tty/serial/8250/Kconfig      |  16 +-
- drivers/tty/serial/8250/Makefile     |   1 +
- include/linux/dma/dw.h               |   5 +
- include/linux/platform_data/dma-dw.h |   4 +
- 11 files changed, 445 insertions(+), 288 deletions(-)
- create mode 100644 drivers/tty/serial/8250/8250_lpss.c
-
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 1a16fea..a697a85 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -31,6 +31,11 @@ struct uart_8250_dma {
+ 	struct dma_chan		*rxchan;
+ 	struct dma_chan		*txchan;
+ 
++	/* Device address base for DMA operations */
++	phys_addr_t		rx_dma_addr;
++	phys_addr_t		tx_dma_addr;
++
++	/* DMA address of the buffer in memory */
+ 	dma_addr_t		rx_addr;
+ 	dma_addr_t		tx_addr;
+ 
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 896e8f4..fdbddbc 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -150,6 +150,10 @@ EXPORT_SYMBOL_GPL(serial8250_rx_dma_flush);
+ int serial8250_request_dma(struct uart_8250_port *p)
+ {
+ 	struct uart_8250_dma	*dma = p->dma;
++	phys_addr_t rx_dma_addr = dma->rx_dma_addr ?
++				  dma->rx_dma_addr : p->port.mapbase;
++	phys_addr_t tx_dma_addr = dma->tx_dma_addr ?
++				  dma->tx_dma_addr : p->port.mapbase;
+ 	dma_cap_mask_t		mask;
+ 	struct dma_slave_caps	caps;
+ 	int			ret;
+@@ -157,11 +161,11 @@ int serial8250_request_dma(struct uart_8250_port *p)
+ 	/* Default slave configuration parameters */
+ 	dma->rxconf.direction		= DMA_DEV_TO_MEM;
+ 	dma->rxconf.src_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
+-	dma->rxconf.src_addr		= p->port.mapbase + UART_RX;
++	dma->rxconf.src_addr		= rx_dma_addr + UART_RX;
+ 
+ 	dma->txconf.direction		= DMA_MEM_TO_DEV;
+ 	dma->txconf.dst_addr_width	= DMA_SLAVE_BUSWIDTH_1_BYTE;
+-	dma->txconf.dst_addr		= p->port.mapbase + UART_TX;
++	dma->txconf.dst_addr		= tx_dma_addr + UART_TX;
+ 
+ 	dma_cap_zero(mask);
+ 	dma_cap_set(DMA_SLAVE, mask);
 -- 
 2.8.1
