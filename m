@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v10 02/11] dmaengine: dw: set polarity of handshake interface
-Date: Fri, 12 Aug 2016 19:01:47 +0300
-Message-ID: <1471017716-44893-3-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v10 11/11] serial: 8250_lpss: enable DMA on Intel Quark UART
+Date: Fri, 12 Aug 2016 19:01:56 +0300
+Message-ID: <1471017716-44893-12-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,61 +10,162 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark UART uses DesignWare DMA IP. Though the DMA IP is connected in such
-way that handshake interface uses inverted polarity. We have to provide a
-possibility to set this in the DMA driver when configuring a channel.
+DMA on Intel Quark SoC is a part of UART IP block. Enable it.
 
-Introduce a new member of custom slave configuration called 'hs_polarity' and
-set active low polarity in case this value is 'true'.
-
-Acked-by: Vinod Koul <vinod.koul@intel.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/dma/dw/core.c                | 4 ++++
- include/linux/platform_data/dma-dw.h | 2 ++
- 2 files changed, 6 insertions(+)
+ drivers/tty/serial/8250/8250_lpss.c | 83 +++++++++++++++++++++++++++++++++++--
+ 1 file changed, 79 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index 81b06df..80e7421 100644
---- a/drivers/dma/dw/core.c
-+++ b/drivers/dma/dw/core.c
-@@ -143,6 +143,7 @@ static void dwc_initialize(struct dw_dma_chan *dwc)
- 	struct dw_dma *dw = to_dw_dma(dwc->chan.device);
- 	u32 cfghi = DWC_CFGH_FIFO_MODE;
- 	u32 cfglo = DWC_CFGL_CH_PRIOR(dwc->priority);
-+	bool hs_polarity = dwc->dws.hs_polarity;
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 5ac291c..14f3256 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -15,7 +15,7 @@
+ #include <linux/rational.h>
  
- 	if (test_bit(DW_DMA_IS_INITIALIZED, &dwc->flags))
- 		return;
-@@ -150,6 +151,9 @@ static void dwc_initialize(struct dw_dma_chan *dwc)
- 	cfghi |= DWC_CFGH_DST_PER(dwc->dws.dst_id);
- 	cfghi |= DWC_CFGH_SRC_PER(dwc->dws.src_id);
+ #include <linux/dmaengine.h>
+-#include <linux/platform_data/dma-dw.h>
++#include <linux/dma/dw.h>
  
-+	/* Set polarity of handshake interface */
-+	cfglo |= hs_polarity ? DWC_CFGL_HS_DST_POL | DWC_CFGL_HS_SRC_POL : 0;
-+
- 	channel_writel(dwc, CFG_LO, cfglo);
- 	channel_writel(dwc, CFG_HI, cfghi);
+ #include "8250.h"
  
-diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
-index d15d8ba..4636c93 100644
---- a/include/linux/platform_data/dma-dw.h
-+++ b/include/linux/platform_data/dma-dw.h
-@@ -23,6 +23,7 @@
-  * @dst_id:	dst request line
-  * @m_master:	memory master for transfers on allocated channel
-  * @p_master:	peripheral master for transfers on allocated channel
-+ * @hs_polarity:set active low polarity of handshake interface
-  */
- struct dw_dma_slave {
- 	struct device		*dma_dev;
-@@ -30,6 +31,7 @@ struct dw_dma_slave {
- 	u8			dst_id;
- 	u8			m_master;
- 	u8			p_master;
-+	bool			hs_polarity;
+@@ -47,6 +47,7 @@ struct lpss8250_board {
+ 	unsigned long freq;
+ 	unsigned int base_baud;
+ 	int (*setup)(struct lpss8250 *, struct uart_port *p);
++	void (*exit)(struct lpss8250 *);
  };
  
- /**
+ struct lpss8250 {
+@@ -55,6 +56,7 @@ struct lpss8250 {
+ 
+ 	/* DMA parameters */
+ 	struct uart_8250_dma dma;
++	struct dw_dma_chip dma_chip;
+ 	struct dw_dma_slave dma_param;
+ 	u8 dma_maxburst;
+ };
+@@ -151,6 +153,65 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_SERIAL_8250_DMA
++static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
++	.nr_channels = 2,
++	.is_private = true,
++	.is_nollp = true,
++	.chan_allocation_order = CHAN_ALLOCATION_ASCENDING,
++	.chan_priority = CHAN_PRIORITY_ASCENDING,
++	.block_size = 4095,
++	.nr_masters = 1,
++	.data_width = {4},
++};
++
++static int qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
++{
++	struct uart_8250_dma *dma = &lpss->dma;
++	struct dw_dma_chip *chip = &lpss->dma_chip;
++	struct dw_dma_slave *param = &lpss->dma_param;
++	struct pci_dev *pdev = to_pci_dev(port->dev);
++	int ret;
++
++	chip->dev = &pdev->dev;
++	chip->irq = pdev->irq;
++	chip->regs = pci_ioremap_bar(pdev, 1);
++	chip->pdata = &qrk_serial_dma_pdata;
++
++	/* Falling back to PIO mode if DMA probing fails */
++	ret = dw_dma_probe(chip);
++	if (ret)
++		return 0;
++
++	/* Special DMA address for UART */
++	dma->rx_dma_addr = 0xfffff000;
++	dma->tx_dma_addr = 0xfffff000;
++
++	param->dma_dev = &pdev->dev;
++	param->src_id = 0;
++	param->dst_id = 1;
++	param->hs_polarity = true;
++
++	lpss->dma_maxburst = 8;
++	return 0;
++}
++
++static void qrk_serial_exit_dma(struct lpss8250 *lpss)
++{
++	struct dw_dma_slave *param = &lpss->dma_param;
++
++	if (!param->dma_dev)
++		return;
++	dw_dma_remove(&lpss->dma_chip);
++}
++#else	/* CONFIG_SERIAL_8250_DMA */
++static int qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
++{
++	return 0;
++}
++static void qrk_serial_exit_dma(struct lpss8250 *lpss) {}
++#endif	/* !CONFIG_SERIAL_8250_DMA */
++
+ static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(port->dev);
+@@ -159,7 +220,12 @@ static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 
+ 	port->irq = pdev->irq;
+ 
+-	return 0;
++	return qrk_serial_setup_dma(lpss, port);
++}
++
++static void qrk_serial_exit(struct lpss8250 *lpss)
++{
++	qrk_serial_exit_dma(lpss);
+ }
+ 
+ static bool lpss8250_dma_filter(struct dma_chan *chan, void *param)
+@@ -244,22 +310,30 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	ret = lpss8250_dma_setup(lpss, &uart);
+ 	if (ret)
+-		return ret;
++		goto err_exit;
+ 
+ 	ret = serial8250_register_8250_port(&uart);
+ 	if (ret < 0)
+-		return ret;
++		goto err_exit;
+ 
+ 	lpss->line = ret;
+ 
+ 	pci_set_drvdata(pdev, lpss);
+ 	return 0;
++
++err_exit:
++	if (lpss->board->exit)
++		lpss->board->exit(lpss);
++	return ret;
+ }
+ 
+ static void lpss8250_remove(struct pci_dev *pdev)
+ {
+ 	struct lpss8250 *lpss = pci_get_drvdata(pdev);
+ 
++	if (lpss->board->exit)
++		lpss->board->exit(lpss);
++
+ 	serial8250_unregister_port(lpss->line);
+ }
+ 
+@@ -273,6 +347,7 @@ static const struct lpss8250_board qrk_board = {
+ 	.freq = 44236800,
+ 	.base_baud = 2764800,
+ 	.setup = qrk_serial_setup,
++	.exit = qrk_serial_exit,
+ };
+ 
+ #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
 -- 
 2.8.1
