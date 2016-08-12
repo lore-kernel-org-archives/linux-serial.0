@@ -1,7 +1,7 @@
 From: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
-Subject: [Patch v2 3/3] serial: pch_uart: Add support for reading clock-frequency from DT
-Date: Fri, 12 Aug 2016 12:48:54 +0100
-Message-ID: <1471002534-10673-4-git-send-email-Zubair.Kakakhel@imgtec.com>
+Subject: [Patch v2 2/3] misc: pch_phub: Add UART_CLK quirk for Boston platform
+Date: Fri, 12 Aug 2016 12:48:53 +0100
+Message-ID: <1471002534-10673-3-git-send-email-Zubair.Kakakhel@imgtec.com>
 References: <1471002534-10673-1-git-send-email-Zubair.Kakakhel@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,57 +12,58 @@ To: gregkh@linuxfoundation.org, arnd@arndb.de
 Cc: jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Zubair.Kakakhel@imgtec.com
 List-Id: linux-serial@vger.kernel.org
 
-The MIPS based Boston platform provides a 25MHz clock to the UART.
+The EG20T has 4 UART blocks. The clock source for the UART block is
+configured to receive a clock from an external pin by default.
 
-Enable the driver for MIPS and add support in the driver to read
-the frequency from device tree.
+An internal 25MHz clock in the EG20T can also be used as a clock source
+for the clock.
+
+The MIPS based Boston platform ties the external clock pin down and relies
+on the internal clock source for the UART to function.
+
+Boston is based on device tree.
+
+Add a quirk to allow Boston to be detected via device tree and set the
+correct clock source for UART.
 
 Signed-off-by: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
 
 ---
 V1 -> V2
 
-Added #include <linux/of.h>
+no change
 ---
- drivers/tty/serial/Kconfig    | 2 +-
- drivers/tty/serial/pch_uart.c | 5 +++++
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/misc/pch_phub.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 518db24a..c783140 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1380,7 +1380,7 @@ config SERIAL_IFX6X60
+diff --git a/drivers/misc/pch_phub.c b/drivers/misc/pch_phub.c
+index 1dd18f5..e42bdc9 100644
+--- a/drivers/misc/pch_phub.c
++++ b/drivers/misc/pch_phub.c
+@@ -58,6 +58,7 @@
  
- config SERIAL_PCH_UART
- 	tristate "Intel EG20T PCH/LAPIS Semicon IOH(ML7213/ML7223/ML7831) UART"
--	depends on PCI && (X86_32 || COMPILE_TEST)
-+	depends on PCI && (X86_32 || MIPS ||  COMPILE_TEST)
- 	select SERIAL_CORE
- 	help
- 	  This driver is for PCH(Platform controller Hub) UART of Intel EG20T
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index ea4ffc2..23672f8 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -31,6 +31,7 @@
- #include <linux/dmi.h>
- #include <linux/nmi.h>
- #include <linux/delay.h>
-+#include <linux/of.h>
- 
- #include <linux/debugfs.h>
- #include <linux/dmaengine.h>
-@@ -1826,6 +1827,10 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	priv->trigger_level = 1;
- 	priv->fcr = 0;
- 
-+	if (pdev->dev.of_node)
-+		of_property_read_u32(pdev->dev.of_node, "clock-frequency"
-+					 , &user_uartclk);
+ /* CM-iTC */
+ #define CLKCFG_UART_48MHZ			(1 << 16)
++#define CLKCFG_UART_25MHZ			(2 << 16)
+ #define CLKCFG_BAUDDIV				(2 << 20)
+ #define CLKCFG_PLL2VCO				(8 << 9)
+ #define CLKCFG_UARTCLKSEL			(1 << 18)
+@@ -748,6 +749,16 @@ static int pch_phub_probe(struct pci_dev *pdev,
+ 		iowrite32(0x25, chip->pch_phub_base_address + 0x44);
+ 		chip->pch_opt_rom_start_address = PCH_PHUB_ROM_START_ADDR_EG20T;
+ 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_EG20T;
 +
- #ifdef CONFIG_SERIAL_PCH_UART_CONSOLE
- 	pch_uart_ports[board->line_no] = priv;
- #endif
++		/* quirk for MIPS Boston platform */
++		if (pdev->dev.of_node) {
++			if (of_machine_is_compatible("img,boston")) {
++				pch_phub_read_modify_write_reg(chip,
++					(unsigned int)CLKCFG_REG_OFFSET,
++					CLKCFG_UART_25MHZ,
++					CLKCFG_UART_MASK);
++			}
++		}
+ 	} else if (id->driver_data == 2) { /* ML7213 IOH */
+ 		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
+ 		if (ret)
 -- 
 1.9.1
