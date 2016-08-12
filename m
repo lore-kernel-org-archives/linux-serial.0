@@ -1,69 +1,42 @@
-From: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
-Subject: [Patch v2 2/3] misc: pch_phub: Add UART_CLK quirk for Boston platform
-Date: Fri, 12 Aug 2016 12:48:53 +0100
-Message-ID: <1471002534-10673-3-git-send-email-Zubair.Kakakhel@imgtec.com>
-References: <1471002534-10673-1-git-send-email-Zubair.Kakakhel@imgtec.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v10 04/11] dmaengine: dw: provide probe(), remove() stubs for users
+Date: Fri, 12 Aug 2016 19:01:49 +0300
+Message-ID: <1471017716-44893-5-git-send-email-andriy.shevchenko@linux.intel.com>
+References: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1471002534-10673-1-git-send-email-Zubair.Kakakhel@imgtec.com>
+In-Reply-To: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, arnd@arndb.de
-Cc: jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Zubair.Kakakhel@imgtec.com
+To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-The EG20T has 4 UART blocks. The clock source for the UART block is
-configured to receive a clock from an external pin by default.
+Some users consider DMA optional, thus when driver is not compiled we shouldn't
+prevent compilation of the users. Add stubs for dw_dma_probe() and
+dw_dma_remove().
 
-An internal 25MHz clock in the EG20T can also be used as a clock source
-for the clock.
-
-The MIPS based Boston platform ties the external clock pin down and relies
-on the internal clock source for the UART to function.
-
-Boston is based on device tree.
-
-Add a quirk to allow Boston to be detected via device tree and set the
-correct clock source for UART.
-
-Signed-off-by: Zubair Lutfullah Kakakhel <Zubair.Kakakhel@imgtec.com>
-
+Acked-by: Vinod Koul <vinod.koul@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-V1 -> V2
+ include/linux/dma/dw.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-no change
----
- drivers/misc/pch_phub.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/drivers/misc/pch_phub.c b/drivers/misc/pch_phub.c
-index 1dd18f5..e42bdc9 100644
---- a/drivers/misc/pch_phub.c
-+++ b/drivers/misc/pch_phub.c
-@@ -58,6 +58,7 @@
+diff --git a/include/linux/dma/dw.h b/include/linux/dma/dw.h
+index f2e538a..ccfd0c3 100644
+--- a/include/linux/dma/dw.h
++++ b/include/linux/dma/dw.h
+@@ -40,8 +40,13 @@ struct dw_dma_chip {
+ };
  
- /* CM-iTC */
- #define CLKCFG_UART_48MHZ			(1 << 16)
-+#define CLKCFG_UART_25MHZ			(2 << 16)
- #define CLKCFG_BAUDDIV				(2 << 20)
- #define CLKCFG_PLL2VCO				(8 << 9)
- #define CLKCFG_UARTCLKSEL			(1 << 18)
-@@ -748,6 +749,16 @@ static int pch_phub_probe(struct pci_dev *pdev,
- 		iowrite32(0x25, chip->pch_phub_base_address + 0x44);
- 		chip->pch_opt_rom_start_address = PCH_PHUB_ROM_START_ADDR_EG20T;
- 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_EG20T;
-+
-+		/* quirk for MIPS Boston platform */
-+		if (pdev->dev.of_node) {
-+			if (of_machine_is_compatible("img,boston")) {
-+				pch_phub_read_modify_write_reg(chip,
-+					(unsigned int)CLKCFG_REG_OFFSET,
-+					CLKCFG_UART_25MHZ,
-+					CLKCFG_UART_MASK);
-+			}
-+		}
- 	} else if (id->driver_data == 2) { /* ML7213 IOH */
- 		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
- 		if (ret)
+ /* Export to the platform drivers */
++#if IS_ENABLED(CONFIG_DW_DMAC_CORE)
+ int dw_dma_probe(struct dw_dma_chip *chip);
+ int dw_dma_remove(struct dw_dma_chip *chip);
++#else
++static inline int dw_dma_probe(struct dw_dma_chip *chip) { return -ENODEV; }
++static inline int dw_dma_remove(struct dw_dma_chip *chip) { return 0; }
++#endif /* CONFIG_DW_DMAC_CORE */
+ 
+ /* DMA API extensions */
+ struct dw_desc;
 -- 
-1.9.1
+2.8.1
