@@ -1,42 +1,87 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v10 04/11] dmaengine: dw: provide probe(), remove() stubs for users
-Date: Fri, 12 Aug 2016 19:01:49 +0300
-Message-ID: <1471017716-44893-5-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v10 00/11] serial: 8250: split LPSS to 8250_lpss, enable DMA on Quark
+Date: Fri, 12 Aug 2016 19:01:45 +0300
+Message-ID: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Some users consider DMA optional, thus when driver is not compiled we shouldn't
-prevent compilation of the users. Add stubs for dw_dma_probe() and
-dw_dma_remove().
+This is combined series of two things:
+- split out the Intel LPSS specific driver from 8250_pci into 8250_lpss
+- enable DMA support on Intel Quark UART
 
-Acked-by: Vinod Koul <vinod.koul@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- include/linux/dma/dw.h | 5 +++++
- 1 file changed, 5 insertions(+)
+The patch has been tested on few Intel SoCs / platforms. In any case I would
+like to ask Bryan to do independent test.
 
-diff --git a/include/linux/dma/dw.h b/include/linux/dma/dw.h
-index f2e538a..ccfd0c3 100644
---- a/include/linux/dma/dw.h
-+++ b/include/linux/dma/dw.h
-@@ -40,8 +40,13 @@ struct dw_dma_chip {
- };
- 
- /* Export to the platform drivers */
-+#if IS_ENABLED(CONFIG_DW_DMAC_CORE)
- int dw_dma_probe(struct dw_dma_chip *chip);
- int dw_dma_remove(struct dw_dma_chip *chip);
-+#else
-+static inline int dw_dma_probe(struct dw_dma_chip *chip) { return -ENODEV; }
-+static inline int dw_dma_remove(struct dw_dma_chip *chip) { return 0; }
-+#endif /* CONFIG_DW_DMAC_CORE */
- 
- /* DMA API extensions */
- struct dw_desc;
+This is targeting serial subsystem, and it has necessary Ack from Vinod.
+
+The series can be reached in the branch located at [1].
+
+[1] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqrk
+
+Since v9:
+- rebase on top of vanilla (v4.8-rc1)
+- re-make patch 3 (Eugeniy Paltsev reported an issue on ARC AXS101 SDP board)
+
+Since v8:
+- fix an issue with Kconfig which is reported by kernel test bot
+
+Since v7:
+- fix rebase leftover (lkp)
+
+Since v6:
+- protect the code against SERIAL_8250_DMA=n && DW_DMAC_CORE=m
+
+Since v5:
+- add Vinod's Ack tag
+- rebase on top of latest linux-next
+
+Since v4:
+- fix an issue what kernel test bot reported (lkp)
+- add a list of supported SoC to Kconfig (Bryan)
+- rename polarity -> hs_polarity (Bryan)
+
+Since v3:
+- rebase on top of recent tty-next branch
+- add Reviewed-by tag from Bryan
+
+Since v2:
+- add tags
+- rebase on top of new version of [1]
+
+Since v1:
+- address most of Peter's comments (mostly changelog to patch 8)
+- add tag to patch 5
+- drop patch 6 from the series to be separately dealt with
+
+Andy Shevchenko (11):
+  dmaengine: dw: keep copy of custom slave config in dwc
+  dmaengine: dw: set polarity of handshake interface
+  dmaengine: dw: override LLP support if asked in platform data
+  dmaengine: dw: provide probe(), remove() stubs for users
+  serial: 8250_dma: switch to new dmaengine_terminate_* API
+  serial: 8250_dma: adjust DMA address of the UART
+  serial: 8250: enable AFE on ports where FIFO is 16 bytes
+  serial: 8250_lpss: split LPSS driver to separate module
+  serial: 8250_lpss: move Quark code from PCI driver
+  serial: 8250_lpss: enable MSI for Intel Quark
+  serial: 8250_lpss: enable DMA on Intel Quark UART
+
+ drivers/dma/dw/core.c                |  39 ++--
+ drivers/dma/dw/regs.h                |   5 +-
+ drivers/tty/serial/8250/8250.h       |   5 +
+ drivers/tty/serial/8250/8250_dma.c   |  14 +-
+ drivers/tty/serial/8250/8250_lpss.c  | 378 +++++++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pci.c   | 257 +-----------------------
+ drivers/tty/serial/8250/8250_port.c  |   9 +-
+ drivers/tty/serial/8250/Kconfig      |  16 +-
+ drivers/tty/serial/8250/Makefile     |   1 +
+ include/linux/dma/dw.h               |   5 +
+ include/linux/platform_data/dma-dw.h |   4 +
+ 11 files changed, 445 insertions(+), 288 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_lpss.c
+
 -- 
 2.8.1
