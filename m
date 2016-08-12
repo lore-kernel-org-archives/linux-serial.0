@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v10 05/11] serial: 8250_dma: switch to new dmaengine_terminate_* API
-Date: Fri, 12 Aug 2016 19:01:50 +0300
-Message-ID: <1471017716-44893-6-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v10 03/11] dmaengine: dw: override LLP support if asked in platform data
+Date: Fri, 12 Aug 2016 19:01:48 +0300
+Message-ID: <1471017716-44893-4-git-send-email-andriy.shevchenko@linux.intel.com>
 References: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
@@ -10,45 +10,55 @@ To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleys
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Convert dmaengine_terminate_all() calls to synchronous and asynchronous
-versions where appropriate.
+There are at least two known devices, e.g. DMA controller found on ARC AXS101
+SDP board, that have LLP register and no multi block transfer support at the
+same time.
 
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Override autodetection by user provided data.
+
+Reported-by: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dma.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/dma/dw/core.c                | 6 +-----
+ include/linux/platform_data/dma-dw.h | 2 ++
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 3590d01..896e8f4 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -142,7 +142,7 @@ void serial8250_rx_dma_flush(struct uart_8250_port *p)
- 	if (dma->rx_running) {
- 		dmaengine_pause(dma->rxchan);
- 		__dma_rx_complete(p);
--		dmaengine_terminate_all(dma->rxchan);
-+		dmaengine_terminate_async(dma->rxchan);
+diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
+index 80e7421..da18b18 100644
+--- a/drivers/dma/dw/core.c
++++ b/drivers/dma/dw/core.c
+@@ -1571,11 +1571,7 @@ int dw_dma_probe(struct dw_dma_chip *chip)
+ 				(dwc_params >> DWC_PARAMS_MBLK_EN & 0x1) == 0;
+ 		} else {
+ 			dwc->block_size = pdata->block_size;
+-
+-			/* Check if channel supports multi block transfer */
+-			channel_writel(dwc, LLP, DWC_LLP_LOC(0xffffffff));
+-			dwc->nollp = DWC_LLP_LOC(channel_readl(dwc, LLP)) == 0;
+-			channel_writel(dwc, LLP, 0);
++			dwc->nollp = pdata->is_nollp;
+ 		}
  	}
- }
- EXPORT_SYMBOL_GPL(serial8250_rx_dma_flush);
-@@ -247,14 +247,14 @@ void serial8250_release_dma(struct uart_8250_port *p)
- 		return;
  
- 	/* Release RX resources */
--	dmaengine_terminate_all(dma->rxchan);
-+	dmaengine_terminate_sync(dma->rxchan);
- 	dma_free_coherent(dma->rxchan->device->dev, dma->rx_size, dma->rx_buf,
- 			  dma->rx_addr);
- 	dma_release_channel(dma->rxchan);
- 	dma->rxchan = NULL;
- 
- 	/* Release TX resources */
--	dmaengine_terminate_all(dma->txchan);
-+	dmaengine_terminate_sync(dma->txchan);
- 	dma_unmap_single(dma->txchan->device->dev, dma->tx_addr,
- 			 UART_XMIT_SIZE, DMA_TO_DEVICE);
- 	dma_release_channel(dma->txchan);
+diff --git a/include/linux/platform_data/dma-dw.h b/include/linux/platform_data/dma-dw.h
+index 4636c93..5f0e11e 100644
+--- a/include/linux/platform_data/dma-dw.h
++++ b/include/linux/platform_data/dma-dw.h
+@@ -40,6 +40,7 @@ struct dw_dma_slave {
+  * @is_private: The device channels should be marked as private and not for
+  *	by the general purpose DMA channel allocator.
+  * @is_memcpy: The device channels do support memory-to-memory transfers.
++ * @is_nollp: The device channels does not support multi block transfers.
+  * @chan_allocation_order: Allocate channels starting from 0 or 7
+  * @chan_priority: Set channel priority increasing from 0 to 7 or 7 to 0.
+  * @block_size: Maximum block size supported by the controller
+@@ -51,6 +52,7 @@ struct dw_dma_platform_data {
+ 	unsigned int	nr_channels;
+ 	bool		is_private;
+ 	bool		is_memcpy;
++	bool		is_nollp;
+ #define CHAN_ALLOCATION_ASCENDING	0	/* zero to seven */
+ #define CHAN_ALLOCATION_DESCENDING	1	/* seven to zero */
+ 	unsigned char	chan_allocation_order;
 -- 
 2.8.1
