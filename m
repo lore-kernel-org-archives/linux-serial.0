@@ -1,120 +1,32 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v10 09/11] serial: 8250_lpss: move Quark code from PCI driver
-Date: Fri, 12 Aug 2016 19:01:54 +0300
-Message-ID: <1471017716-44893-10-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Sebastian Reichel <sre@kernel.org>
+Subject: [RFC 1/7] tty: serial: omap: add UPF_BOOT_AUTOCONF flag for DT init
+Date: Sat, 13 Aug 2016 05:14:32 +0200
+Message-ID: <1471058078-5579-2-git-send-email-sre@kernel.org>
+References: <1471058078-5579-1-git-send-email-sre@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <1471058078-5579-1-git-send-email-sre@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bryan O'Donoghue <pure.logic@nexus-software.ie>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, ismo.puustinen@intel.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Marcel Holtmann <marcel@holtmann.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Ville Tervo <ville.tervo@iki.fi>, =?UTF-8?q?Filip=20Matijevi=C4=87?= <filip.matijevic.pz@gmail.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Pavel Machek <pavel@ucw.cz>, =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali.rohar@gmail.com>, ivo.g.dimitrov.75@gmail.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Intel Quark has DesignWare UART. Move the code from 8250_pci to 8250_lpss.
-
-Reviewed-by: Bryan O'Donoghue <pure.logic@nexus-software.ie>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_lpss.c | 11 +++++++++++
- drivers/tty/serial/8250/8250_pci.c  | 15 +--------------
- 2 files changed, 12 insertions(+), 14 deletions(-)
+ drivers/tty/serial/omap-serial.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 071f878..cad96ee 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -25,6 +25,8 @@
- #define PCI_DEVICE_ID_INTEL_BSW_UART1	0x228a
- #define PCI_DEVICE_ID_INTEL_BSW_UART2	0x228c
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index a2a529994ba5..7c2c77789c2c 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1542,6 +1542,9 @@ static struct omap_uart_port_info *of_get_uart_port_info(struct device *dev)
  
-+#define PCI_DEVICE_ID_INTEL_QRK_UARTx	0x0936
+ 	of_property_read_u32(dev->of_node, "clock-frequency",
+ 					 &omap_up_info->uartclk);
 +
- #define PCI_DEVICE_ID_INTEL_BDW_UART1	0x9ce3
- #define PCI_DEVICE_ID_INTEL_BDW_UART2	0x9ce4
- 
-@@ -166,6 +168,9 @@ static int lpss8250_dma_setup(struct lpss8250 *lpss, struct uart_8250_port *port
- 	struct dw_dma_slave *rx_param, *tx_param;
- 	struct device *dev = port->port.dev;
- 
-+	if (!lpss->dma_param.dma_dev)
-+		return 0;
++	omap_up_info->flags = UPF_BOOT_AUTOCONF;
 +
- 	rx_param = devm_kzalloc(dev, sizeof(*rx_param), GFP_KERNEL);
- 	if (!rx_param)
- 		return -ENOMEM;
-@@ -253,6 +258,11 @@ static const struct lpss8250_board byt_board = {
- 	.setup = byt_serial_setup,
- };
+ 	return omap_up_info;
+ }
  
-+static const struct lpss8250_board qrk_board = {
-+	.freq = 44236800,
-+	.base_baud = 2764800,
-+};
-+
- #define LPSS_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
- 
- static const struct pci_device_id pci_ids[] = {
-@@ -260,6 +270,7 @@ static const struct pci_device_id pci_ids[] = {
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BYT_UART2, byt_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART1, byt_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BSW_UART2, byt_board),
-+	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_QRK_UARTx, qrk_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART1, byt_board),
- 	LPSS_DEVICE(PCI_DEVICE_ID_INTEL_BDW_UART2, byt_board),
- 	{ },
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index e968c70..1b5f783 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1776,7 +1776,6 @@ pci_wch_ch38x_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
- #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
- #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
--#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
- 
- #define PCI_VENDOR_ID_SUNIX		0x1fd4
- #define PCI_DEVICE_ID_SUNIX_1999	0x1999
-@@ -2755,7 +2754,6 @@ enum pci_board_num_t {
- 	pbn_ADDIDATA_PCIe_4_3906250,
- 	pbn_ADDIDATA_PCIe_8_3906250,
- 	pbn_ce4100_1_115200,
--	pbn_qrk,
- 	pbn_omegapci,
- 	pbn_NETMOS9900_2s_115200,
- 	pbn_brcm_trumanage,
-@@ -3531,12 +3529,6 @@ static struct pciserial_board pci_boards[] = {
- 		.base_baud	= 921600,
- 		.reg_shift      = 2,
- 	},
--	[pbn_qrk] = {
--		.flags		= FL_BASE0,
--		.num_ports	= 1,
--		.base_baud	= 2764800,
--		.reg_shift	= 2,
--	},
- 	[pbn_omegapci] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 8,
-@@ -3654,6 +3646,7 @@ static const struct pci_device_id blacklist[] = {
- 	{ PCI_VDEVICE(INTEL, 0x0f0c), },
- 	{ PCI_VDEVICE(INTEL, 0x228a), },
- 	{ PCI_VDEVICE(INTEL, 0x228c), },
-+	{ PCI_VDEVICE(INTEL, 0x0936), },
- 	{ PCI_VDEVICE(INTEL, 0x9ce3), },
- 	{ PCI_VDEVICE(INTEL, 0x9ce4), },
- };
-@@ -5323,12 +5316,6 @@ static struct pci_device_id serial_pci_tbl[] = {
- 		pbn_ce4100_1_115200 },
- 
- 	/*
--	 * Intel Quark x1000
--	 */
--	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_QRK_UART,
--		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_qrk },
--	/*
- 	 * Cronyx Omega PCI
- 	 */
- 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_CRONYX_OMEGA,
 -- 
 2.8.1
