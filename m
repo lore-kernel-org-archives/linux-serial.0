@@ -1,93 +1,91 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [RFC 2/7] tty: add support for "tty slave" devices
-Date: Sun, 14 Aug 2016 13:36:12 +0200
-Message-ID: <20160814113612.GC21529@kroah.com>
-References: <1471058078-5579-1-git-send-email-sre@kernel.org>
- <1471058078-5579-3-git-send-email-sre@kernel.org>
- <20160813100345.GA14665@kroah.com>
- <20160813203124.GA647@earth>
+From: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Subject: Re: [RFC 5/7] Bluetooth: hci_nokia: Introduce new driver
+Date: Sun, 14 Aug 2016 19:54:28 -0400
+Message-ID: <CAP=VYLo4ptVzhPjKoiiakbCgBSmpQndNzf0LHWxCZs7LiZ7PYw@mail.gmail.com>
+References: <1471058078-5579-1-git-send-email-sre@kernel.org> <1471058078-5579-6-git-send-email-sre@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160813203124.GA647@earth>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sre@kernel.org>
-Cc: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Ville Tervo <ville.tervo@iki.fi>, Filip =?utf-8?Q?Matijevi=C4=87?= <filip.matijevic.pz@gmail.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Pavel Machek <pavel@ucw.cz>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>, ivo.g.dimitrov.75@gmail.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, NeilBrown <neilb@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1471058078-5579-6-git-send-email-sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Ville Tervo <ville.tervo-X3B1VOXEql0@public.gmane.org>, =?UTF-8?Q?Filip_Matijevi=C4=87?= <filip.matijevic.pz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Aaro Koskinen <aaro.koskinen-X3B1VOXEql0@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali.rohar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Aug 13, 2016 at 10:31:24PM +0200, Sebastian Reichel wrote:
-> Hi,
-> 
-> On Sat, Aug 13, 2016 at 12:03:45PM +0200, Greg Kroah-Hartman wrote:
-> > On Sat, Aug 13, 2016 at 05:14:33AM +0200, Sebastian Reichel wrote:
-> > > From: NeilBrown <neilb@suse.de>
-> > > 
-> > > A "tty slave" is a device connected via UART.  It may need a driver to,
-> > > for example, power the device on when the tty is opened, and power it
-> > > off when the tty is released.
-> > > 
-> > > Signed-off-by: NeilBrown <neilb@suse.de>
-> > > Signed-off-by: Sebastian Reichel <sre@kernel.org>
-> > > ---
-> > >  Documentation/devicetree/bindings/serial/8250.txt | 4 ++++
-> > >  drivers/tty/tty_io.c                              | 6 ++++++
-> > >  2 files changed, 10 insertions(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
-> > > index f5561ac7e17e..ecb74730f71b 100644
-> > > --- a/Documentation/devicetree/bindings/serial/8250.txt
-> > > +++ b/Documentation/devicetree/bindings/serial/8250.txt
-> > > @@ -46,6 +46,10 @@ Optional properties:
-> > >    line respectively. It will use specified GPIO instead of the peripheral
-> > >    function pin for the UART feature. If unsure, don't specify this property.
-> > >  
-> > > +Optional child node:
-> > > +- a device connected to the uart can be specified as child node with
-> > > +  compatible value.
-> > > +
-> > >  Note:
-> > >  * fsl,ns16550:
-> > >    ------------
-> > > diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> > > index 734a635e7363..39ff5dcdfd50 100644
-> > > --- a/drivers/tty/tty_io.c
-> > > +++ b/drivers/tty/tty_io.c
-> > > @@ -95,6 +95,7 @@
-> > >  #include <linux/seq_file.h>
-> > >  #include <linux/serial.h>
-> > >  #include <linux/ratelimit.h>
-> > > +#include <linux/of_platform.h>
-> > >  
-> > >  #include <linux/uaccess.h>
-> > >  
-> > > @@ -3317,6 +3318,11 @@ struct device *tty_register_device_attr(struct tty_driver *driver,
-> > >  	retval = device_register(dev);
-> > >  	if (retval)
-> > >  		goto error;
-> > > +	if (device && device->of_node)
-> > > +		/* Children are platform devices and will be
-> > > +		 * runtime_pm managed by this tty.
-> > > +		 */
-> > > +		of_platform_populate(device->of_node, NULL, NULL, dev);
-> >
-> > Why are these platform devices?
-> > And why only OF?
-> 
-> I just took this patch over from Neil to get bluetooth working
-> on N900/N950. Both of them are DT only (well N900 still has
-> boardcode, but that will be removed shortly), so it was enough
-> for me.
-> 
-> I guess you have something in mind, that's similar to e.g. i2c
-> and spi with a serial_client device and support to instanciate
-> it from DT, ACPI and boardcode?
+On Fri, Aug 12, 2016 at 11:14 PM, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> This driver adds support for Nokia H4+ procotol used
+> for example by Nokia's internet tablets (N770 - N950).
+> ---
+>  drivers/bluetooth/Kconfig     |  10 +
+>  drivers/bluetooth/Makefile    |   1 +
+>  drivers/bluetooth/hci_ldisc.c |   6 +
+>  drivers/bluetooth/hci_nokia.c | 734 ++++++++++++++++++++++++++++++++++++++++++
+>  drivers/bluetooth/hci_nokia.h | 140 ++++++++
+>  drivers/bluetooth/hci_uart.h  |   8 +-
+>  6 files changed, 898 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/bluetooth/hci_nokia.c
+>  create mode 100644 drivers/bluetooth/hci_nokia.h
+>
+> diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
+> index cf50fd2e96df..c32d9d5ad1d2 100644
+> --- a/drivers/bluetooth/Kconfig
+> +++ b/drivers/bluetooth/Kconfig
+> @@ -86,6 +86,16 @@ config BT_HCIUART_H4
+>
+>           Say Y here to compile support for HCI UART (H4) protocol.
+>
+> +config BT_HCIUART_NOKIA
+> +       bool "UART Nokia H4+ protocol support"
 
-I'm not going to accept a OF-only patch to the tty layer like this,
-especially one that abuses platform drivers.
+If the option is a bool, then you don't need module.h or any MODULE
+macros, nor do you need any __exit or unregister related code.
 
-See my response to Pavel for what this "should" look like.
+Alternatively, if there is a use case for it to be modular, then maybe you
+want to change the above to a tristate.
 
-thanks,
+Paul.
+--
 
-greg k-h
+> +       depends on BT_HCIUART
+> +       help
+> +         Nokia H4+ is serial protocol for communication between Bluetooth
+> +         device and host. This protocol is required for Bluetooth devices
+> +         with UART interface in Nokia devices.
+> +
+> +         Say Y here to compile support for Nokia's H4+ protocol.
+> +
+>  config BT_HCIUART_BCSP
+>         bool "BCSP protocol support"
+>         depends on BT_HCIUART
+
+
+[...]
+
+> +       { .compatible = "nokia,ti,wl1271-bluetooth", },
+> +       {},
+> +};
+> +MODULE_DEVICE_TABLE(of, nokia_bluetooth_of_match);
+> +
+> +static struct platform_driver platform_nokia_driver = {
+> +       .driver = {
+> +               .name = "nokia-bluetooth",
+> +               .of_match_table = nokia_bluetooth_of_match,
+> +       },
+> +       .probe = nokia_bluetooth_probe,
+> +};
+> +
+> +int __init nokia_init(void)
+> +{
+> +       platform_driver_register(&platform_nokia_driver);
+> +       return hci_uart_register_proto(&nokia_proto);
+> +}
+> +
+> +int __exit nokia_deinit(void)
+> +{
+> +       platform_driver_unregister(&platform_nokia_driver);
+> +       return hci_uart_unregister_proto(&nokia_proto);
+> +}
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
