@@ -1,86 +1,20 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
+From: Russell King - ARM Linux <linux@armlinux.org.uk>
 Subject: Re: [PATCH v9 4/4] serial: pl011: add console matching function
-Date: Mon, 15 Aug 2016 14:17:25 +0300
-Message-ID: <d1fc02d9-0be6-a5d0-08c9-88b368a7ee05@linaro.org>
+Date: Mon, 15 Aug 2016 13:39:34 +0100
+Message-ID: <20160815123934.GJ1041@n2100.armlinux.org.uk>
 References: <20160811153152.755-1-aleksey.makarov@linaro.org>
  <20160811153152.755-5-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <20160811153152.755-5-aleksey.makarov@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-
-On 08/11/2016 06:31 PM, Aleksey Makarov wrote:
-> This patch adds function pl011_console_match() that implements
-> method match of struct console.  It allows to match consoles against
-> data specified in a string, for example taken from command line or
-> compiled by ACPI SPCR table handler.
-
-Hi Greg,
-
-Can you review this new version of the patch and consider ACKing it please?
-
-It had your ACK for v7 but I had to make some changes:
-
-The patch by Christopher Covington [1] specifies that SBSA uart
-does 32-bit access to registers and this breaks the match function.
-In this series the function was changed to match with both mmio32 and
-mmio access. I removed Acked-by: Greg from this patch because of these
-changes.
-
-The difference between v7 and v9:
-
-@@ -2319,6 +2320,9 @@ static int __init pl011_console_match(struct
-console *co, char *name, int idx,
-        if (uart_parse_earlycon(options, &iotype, &addr, &options))
-                return -ENODEV;
-
-+       if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
-+               return -ENODEV;
-+
-        /* try to match the port specified on the command line */
-        for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
-                struct uart_port *port;
-@@ -2328,10 +2332,7 @@ static int __init pl011_console_match(struct
-console *co, char *name, int idx,
-
-                port = &amba_ports[i]->port;
-
--               if (port->iotype != iotype)
--                       continue;
--               if ((iotype == UPIO_MEM || iotype == UPIO_MEM32) &&
--                   (port->mapbase != addr))
-+               if (port->mapbase != addr)
-                        continue;
-
-                co->index = i;
-
-
-[1]
-https://lkml.kernel.org/g/1457415800-8799-1-git-send-email-cov@codeaurora.org
-
-Thank you
-Aleksey Makarov
-
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-> ---
->  drivers/tty/serial/amba-pl011.c | 56 +++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 56 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 8a9e213..d6a51cb 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -2288,12 +2288,68 @@ static int __init pl011_console_setup(struct console *co, char *options)
->  	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
->  }
->  
+On Thu, Aug 11, 2016 at 06:31:41PM +0300, Aleksey Makarov wrote:
 > +/**
 > + *	pl011_console_match - non-standard console matching
 > + *	@co:	  registering console
@@ -103,47 +37,30 @@ Aleksey Makarov
 > +				      char *options)
 > +{
 > +	char match[] = "pl011";	/* pl011-specific earlycon name */
+
+This is inefficient - the compiler will probably store "pl011" in the
+rodata section, then allocate an array on the stack, and them memcpy()
+it onto the stack.  This is really a false optimisation.
+
 > +	unsigned char iotype;
 > +	unsigned long addr;
 > +	int i;
 > +
 > +	if (strncmp(name, match, 5) != 0)
-> +		return -ENODEV;
-> +
-> +	if (uart_parse_earlycon(options, &iotype, &addr, &options))
-> +		return -ENODEV;
-> +
-> +	if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
-> +		return -ENODEV;
-> +
-> +	/* try to match the port specified on the command line */
-> +	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
-> +		struct uart_port *port;
-> +
-> +		if (!amba_ports[i])
-> +			continue;
-> +
-> +		port = &amba_ports[i]->port;
-> +
-> +		if (port->mapbase != addr)
-> +			continue;
-> +
-> +		co->index = i;
-> +		port->cons = co;
-> +		return pl011_console_setup(co, options);
-> +	}
-> +
-> +	return -ENODEV;
-> +}
-> +
->  static struct uart_driver amba_reg;
->  static struct console amba_console = {
->  	.name		= "ttyAMA",
->  	.write		= pl011_console_write,
->  	.device		= uart_console_device,
->  	.setup		= pl011_console_setup,
-> +	.match		= pl011_console_match,
->  	.flags		= CON_PRINTBUFFER,
->  	.index		= -1,
->  	.data		= &amba_reg,
-> 
+
+Just do:
+
+	if (strncmp(name, "pl011", 5) != 0)
+
+here, and let the compiler work it out - it'll probably place "pl011"
+in the rodata section, and use a pointer to it rather than messing around
+with the stack.
+
+What if "console=pl011x,..." is passed?  Should this be matched too?
+Maybe this should compare with "pl011," to ensure that the name is
+correctly terminated?
+
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
