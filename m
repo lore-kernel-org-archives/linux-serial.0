@@ -1,74 +1,87 @@
-From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC 5/7] Bluetooth: hci_nokia: Introduce new driver
-Date: Mon, 15 Aug 2016 03:12:10 +0200
-Message-ID: <20160815011210.vnqwdpapzx2q6gzg@earth>
-References: <1471058078-5579-1-git-send-email-sre@kernel.org>
- <1471058078-5579-6-git-send-email-sre@kernel.org>
- <CAP=VYLo4ptVzhPjKoiiakbCgBSmpQndNzf0LHWxCZs7LiZ7PYw@mail.gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: serial: imx: regression triggered by newly introduced DSR irq
+ handling
+Date: Mon, 15 Aug 2016 07:22:44 +0200
+Message-ID: <20160815052244.mwygjlo72e46w353@pengutronix.de>
+References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1458825865-7434-7-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1470350663.26773.41.camel@googlemail.com>
+ <20160805065845.GI17874@pengutronix.de>
+ <1470398615.1936.22.camel@googlemail.com>
+ <CAOMZO5BQQemrKFjejUxQpW+d=BGn_b+d_sbr9Untu8iO3dOVvw@mail.gmail.com>
+ <1471120532.1923.4.camel@googlemail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="iwkwabbleb7dt4qo"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <CAP=VYLo4ptVzhPjKoiiakbCgBSmpQndNzf0LHWxCZs7LiZ7PYw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
-Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Ville Tervo <ville.tervo-X3B1VOXEql0@public.gmane.org>, Filip =?utf-8?Q?Matijevi=C4=87?= <filip.matijevic.pz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Aaro Koskinen <aaro.koskinen-X3B1VOXEql0@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1471120532.1923.4.camel@googlemail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Fritz <chf.fritz@googlemail.com>
+Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, kernel@pengutronix.de, Fabio Estevam <festevam@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
+Hello Christoph,
 
---iwkwabbleb7dt4qo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Sat, Aug 13, 2016 at 10:35:32PM +0200, Christoph Fritz wrote:
+> On Wed, 2016-08-10 at 17:54 -0300, Fabio Estevam wrote:
+> > Could you please post your suggestion as a patch or RFC so that we can
+> > understand what your proposal is?
+> =
 
-Hi Paul,
+> Sure, here is my proposal:
 
-On Sun, Aug 14, 2016 at 07:54:28PM -0400, Paul Gortmaker wrote:
-> On Fri, Aug 12, 2016 at 11:14 PM, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrot=
-e:
-> > This driver adds support for Nokia H4+ procotol used
-> > for example by Nokia's internet tablets (N770 - N950).
-> >
-> > [...]
-> >
-> > +config BT_HCIUART_NOKIA
-> > +       bool "UART Nokia H4+ protocol support"
->=20
-> If the option is a bool, then you don't need module.h or any MODULE
-> macros, nor do you need any __exit or unregister related code.
->=20
-> Alternatively, if there is a use case for it to be modular, then maybe you
-> want to change the above to a tristate.
+I like it, just a few minor nits below.
 
-Actually it is bool and modular: It becomes part of the module
-configured by the tristate CONFIG_BT_HCIUART option.
+> +/*
+> + * SION bit is necessary for ENET1_REF_CLK1 (ENET2_REF_CLK2 untested) if=
+ it is
+> + * used as clock output of IMX6SX_CLK_ENET_REF (ENET1_TX_CLK) to e.g. su=
+pply a
+> + * PHY in RMII mode. This configuration is true if:
 
--- Sebastian
+Sounds a bit strage to me. Maybe s/true/necessary/? Or "valid"?
 
---iwkwabbleb7dt4qo
-Content-Type: application/pgp-signature; name="signature.asc"
+> + *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_PAD_DIR_MASK is set
+> + *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_MUX_SEL_MASK unset
+> + * It seems to be a silicon bug that in this configuration ENET1_TX refe=
+rence
+> + * clock isn't provided automatically.  According to i.mx6sx reference m=
+anual
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+s/i.mx6sx/i.MX6SX/
 
-iQIcBAEBCgAGBQJXsRbnAAoJENju1/PIO/qao90P/1T1PQHcpiCCBVTbEOqsV+dU
-DnaWi3DoEz6h4LSvS2CST4wv2BYKdczrdTeuyoakUnQ0676mC4lzS/lwYJzz6Xy1
-hQAhfkZIjp3Erlz0j1ExezZAcgfjQwvoq7Z1jaJSEI1vvVLTrS9TIF/wpX0lIWeB
-U9zwB9bp6gPucP10OCYCAEHHqnKWEV8WmyKgaUd1qqJROuXOhPmLCKc0+joLwCKF
-67/GqWsSkBdYz/2/l0Y+RQx1wOzyOWrBq518mJVW36MIvqGnDA74nx8uF3FqP6sV
-hdoZpfEeUjmIgUbXbJSsHBw8l76WdOsSCsHkwcGV6tpdMucOmMG7Iz8NRm+B5BeR
-FhSYVbiwz8gkF2MQ5F1f4sfnXTaZtRB1NKRcuC7kFPR9Kw54OPJweVYY+aW2yWlf
-VLpKRrvBga1iFC6ZtOcfTcNlEEJNAQbkPf5ak9JQvsy/vnIvVnIs6kr2juskVv87
-2zcBExscF/RYTNJRP7gTwEeTGXdcYxYIrU4lB9nC9LHvdP6uNWVOXaw6TkowEZLI
-xIXtl2rbKy56JCBnZkjPkhGuWkV2FpYV6ZYrBR9sm0R/UI82g095WgKOiSxfY1AJ
-PWsPJiWa//9UAOSVk17ViRWzZLJn9Zw7JMJzAtWVa2oRjO80hBuogYiQIzllpfR9
-f2hwJYn3Fd661eeUMjN0
-=U6z1
------END PGP SIGNATURE-----
+> + * (IOMUXC_GPR_GPR1 field descriptions: ENET1_CLK_SEL, Rev. 0 from 2/201=
+5) it
+> + * should be the case.
+> + * This might have side effects for other hardware units that are connec=
+ted to
+> + * that pin and use the respective function as input (e.g. DSR irq handl=
+ing).
 
---iwkwabbleb7dt4qo--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+s/DSR irq/UART1's DTR/. Then it's more obvious to relate to
+MX6SX_PAD_ENET1_TX_CLK__UART1_DTR_B.
+
+> + */
+>  #define MX6SX_PAD_ENET1_TX_CLK__ENET1_REF_CLK1                    0x0090=
+ 0x03D8 0x0760 0x1 0x1
+>  #define MX6SX_PAD_ENET1_TX_CLK__AUDMUX_AUD4_RXD                   0x0090=
+ 0x03D8 0x0644 0x2 0x1
+>  #define MX6SX_PAD_ENET1_TX_CLK__UART1_DTR_B                       0x0090=
+ 0x03D8 0x0000 0x3 0x0
+
+Thanks
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
