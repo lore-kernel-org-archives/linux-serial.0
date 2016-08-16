@@ -1,70 +1,109 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] sh-sci: fix transition from noflow to HW flow control
-Date: Tue, 16 Aug 2016 09:44:44 +0200
-Message-ID: <CAMuHMdXoLtsknFyJe+FJuW7GJuQaU=3UhZh9kfckPUGxNh6siA@mail.gmail.com>
-References: <HE1PR0601MB268306974695DFE9C0C9D0B0D0120@HE1PR0601MB2683.eurprd06.prod.outlook.com>
+From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC 4/7] Bluetooth: hci_uart: Add support for word alignment
+Date: Tue, 16 Aug 2016 09:51:04 +0200
+Message-ID: <20160816075104.blnfshsv7cgcm7gb@earth>
+References: <1471058078-5579-1-git-send-email-sre@kernel.org>
+ <1471058078-5579-5-git-send-email-sre@kernel.org>
+ <F96C9280-2B85-42A0-A1DB-2C0C231F5C1D@holtmann.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <HE1PR0601MB268306974695DFE9C0C9D0B0D0120@HE1PR0601MB2683.eurprd06.prod.outlook.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: "Baumann, Christoph (C.)" <cbaumann@visteon.com>
-Cc: "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="eo5f46o7vgkagkpi"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <F96C9280-2B85-42A0-A1DB-2C0C231F5C1D-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Ville Tervo <ville.tervo-X3B1VOXEql0@public.gmane.org>, Filip =?utf-8?Q?Matijevi=C4=87?= <filip.matijevic.pz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Aaro Koskinen <aaro.koskinen-X3B1VOXEql0@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Christoph,
 
-On Mon, Aug 15, 2016 at 1:20 PM, Baumann, Christoph (C.)
-<cbaumann@visteon.com> wrote:
-> working on getting RTS/CTS run on r8a7795 I had some annoying issues.
+--eo5f46o7vgkagkpi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Which port are you using? SCIF or HSCIF?
+Hi Marcel,
 
-> Measuring with a scope showed that RTS would become low on opening the tty device (regardless of having CRTSCTS set or not). So far this is expected.
-> But if I used tcsetattr() to set/unset the CRTSCTS flag the RTS pin would become hi and stayed so.
-> I then looked into the sh-sci driver and added some debug output.
-> My analysis was that upon opening the tty device the functions set_termios and set_mctrl are called.
-> In the sh-sci driver the set_mctrl function is the only place where the internal 'autorts' flag is actually written to a register.
-> As obviously the RTSCTS flow control flag can only be set after the device is opened, the flag isn't propagated to the corresponding register.
+On Tue, Aug 16, 2016 at 09:05:19AM +0200, Marcel Holtmann wrote:
+> Hi Sebatian,
+>=20
+> > This will be used by Nokia's H4+ protocol, which
+> > adds padding to packets to reach word alignment.
+> > ---
+> > drivers/bluetooth/hci_h4.c   | 10 ++++++++++
+> > drivers/bluetooth/hci_uart.h |  1 +
+> > 2 files changed, 11 insertions(+)
+> >=20
+> > diff --git a/drivers/bluetooth/hci_h4.c b/drivers/bluetooth/hci_h4.c
+> > index 635597b6e168..a934e4eb692b 100644
+> > --- a/drivers/bluetooth/hci_h4.c
+> > +++ b/drivers/bluetooth/hci_h4.c
+> > @@ -253,11 +253,21 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev,=
+ struct sk_buff *skb,
+> > 			}
+> >=20
+> > 			if (!dlen) {
+> > +				if ((&pkts[i])->wordaligned && !(skb->len % 2)) {
+> > +					buffer++;
+> > +					count--;
+> > +				}
+> > +
+> > 				/* No more data, complete frame */
+> > 				(&pkts[i])->recv(hdev, skb);
+> > 				skb =3D NULL;
+> > 			}
+> > 		} else {
+> > +			if ((&pkts[i])->wordaligned && !(skb->len % 2)) {
+> > +				buffer++;
+> > +				count--;
+> > +			}
+> > +
+> > 			/* Complete frame */
+> > 			(&pkts[i])->recv(hdev, skb);
+> > 			skb =3D NULL;
+> > diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
+> > index 839bad1d8152..a7d67aec3632 100644
+> > --- a/drivers/bluetooth/hci_uart.h
+> > +++ b/drivers/bluetooth/hci_uart.h
+> > @@ -121,6 +121,7 @@ struct h4_recv_pkt {
+> > 	u8  loff;	/* Data length offset in header */
+> > 	u8  lsize;	/* Data length field size */
+> > 	u16 maxlen;	/* Max overall packet length */
+> > +	bool wordaligned;	/* packets are word aligned */
+>=20
+> I wonder if not a u8 align would be a way better choice here. We
+> set it to 1 for all existing packet types. And the Nokia driver
+> can use 2 here.
 
-You mean sci_set_mctrl() isn't called by the serial core after
-sci_set_termios()?
+Sounds less hacky than my approach. Also it made me notice, that my
+code is not safe, since the buffer size is not checked. I will use
+u8 align and fix the buffer size check.
 
-However, uart_set_termios() calls both uart_change_speed() and
-uart_{clear,set}_mctrl(), in that order?
+-- Sebastian
 
-> To make it more confusing the flag is kept in .c_cflag even after closing the device and is then taken care of the next time the device is opened again.
-> To fix this I set the bit in set_termios after the line where it was previously only stored in the bool variable 'autorts' (see attachment).
+--eo5f46o7vgkagkpi
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-[ removed unrelated changes]
+iQIcBAEBCgAGBQJXssXlAAoJENju1/PIO/qa66YP/itYjvxMOTrBHtDb6Ob/5xFg
+emzNE0SxNA4jmC3reWmcgNtebAfnRNXZdGN7zP9DGlX98rX4iqI+08rOOtC05Z90
+T6/QguGy/UP9F4Y6itWPq6eCNkXEphSwgwZUb/nLZcqvpGPi/EahmBDB65/DuHHe
+XUUON9zG9b02J+P020kzBtsTBI6UPYFpCpukmrAUb7n3e4rX+5cglG54+TYY01yY
+gyEiLNoUkkgRtulsQO9Y6J4nAwthP40hc6yw+xdYlDi/MdhVwenc5ZiRfKHxILKQ
+OGxTnkHlUbpwJnn4qMkdTv5aOfM4lc6C3tNrhU/Co5hHpl09GOiSaUfnkg6ByM1U
+DLBSmvE6fz52z4xbmDTsgcY9owQ/JySKVEPkuEcYy8NGXAPCQpyT2EAh4LURTY2j
+1Mh6bPedAEJK3J3zjDz4jGqaIrMRcN9wiD8MF/hgnA4hnL86eNJVvZzGPmgMa/Sm
+5vBC7/a7LFEo2W+yq8nWwU/FVPC2p6Y4hQbRQOTEksPq3D6Ybsx273lCLlLvdX6p
+KMB9xEtAZTpKs6lwdGyo95f/xhCLoCHXiNG+cFic2Iw5srVaUhR8PGSXtS6i6KgA
+o0OnHNGvinvUVL/dBxnl2BZZJgp1DpBFOK1h2XI6D89HA6q5dd1iRJirNy2eiTga
+bbDiWT+t6ceUsT/6V12b
+=K8NM
+-----END PGP SIGNATURE-----
 
-> @@ -2336,6 +2337,8 @@ done:
->                         port->status |= UPSTAT_AUTOCTS;
->                         /* MCE is enabled when RTS is raised */
->                         s->autorts = true;
-> +                       ctrl |= SCFCR_MCE;
-> +                       sci_set_rts(port, 1);
->                 }
->
->                 /*
-
-Have you tried using GPIO RTS/CTS instead of hardware-assisted RTS/CTS?
-Does it show the same behavior?
-When adding support for hardware-assisted RTS/CTS, I used the behavior of
-GPIO RTS/CTS as the expected behavior.
-
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+--eo5f46o7vgkagkpi--
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
