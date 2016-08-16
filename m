@@ -1,257 +1,62 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] Revert "tty/serial/8250: use mctrl_gpio helpers"
-Date: Tue, 16 Aug 2016 15:06:54 +0300
-Message-ID: <1471349214-69793-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Subject: Re: [PATCH v10 03/11] dmaengine: dw: override LLP support if asked
+ in platform data
+Date: Tue, 16 Aug 2016 13:21:06 +0000
+Message-ID: <1471353666.1562.3.camel@synopsys.com>
+References: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
+	 <1471017716-44893-4-git-send-email-andriy.shevchenko@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1471017716-44893-4-git-send-email-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+Content-ID: <B60E8C3CEE39414F85BC43C7579E82C4@internal.synopsys.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Yegor Yefremov <yegorslists@googlemail.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-kernel@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
+To: "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
+Cc: "ismo.puustinen@intel.com" <ismo.puustinen@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "vinod.koul@intel.com" <vinod.koul@intel.com>, "heikki.krogerus@linux.intel.com" <heikki.krogerus@linux.intel.com>, "Eugeniy.Paltsev@synopsys.com" <Eugeniy.Paltsev@synopsys.com>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "pure.logic@nexus-software.ie" <pure.logic@nexus-software.ie>
 List-Id: linux-serial@vger.kernel.org
 
-Serial console is broken in v4.8-rcX. Mika and I independently bisected down to
-commit 4ef03d328769 ("tty/serial/8250: use mctrl_gpio helpers").
-
-Since neither author nor anyone else didn't propose a solution we better revert
-it for now.
-
-This reverts commit 4ef03d328769eddbfeca1f1c958fdb181a69c341.
-
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Link: https://lkml.kernel.org/r/20160809130229.GN1729@lahna.fi.intel.com
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- Documentation/devicetree/bindings/serial/8250.txt | 19 ------------
- drivers/tty/serial/8250/8250.h                    | 35 +----------------------
- drivers/tty/serial/8250/8250_core.c               |  9 ------
- drivers/tty/serial/8250/8250_omap.c               | 31 +++++++++-----------
- drivers/tty/serial/8250/8250_port.c               |  7 +----
- drivers/tty/serial/8250/Kconfig                   |  1 -
- include/linux/serial_8250.h                       |  1 -
- 7 files changed, 15 insertions(+), 88 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
-index f5561ac..936ab5b 100644
---- a/Documentation/devicetree/bindings/serial/8250.txt
-+++ b/Documentation/devicetree/bindings/serial/8250.txt
-@@ -42,9 +42,6 @@ Optional properties:
- - auto-flow-control: one way to enable automatic flow control support. The
-   driver is allowed to detect support for the capability even without this
-   property.
--- {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
--  line respectively. It will use specified GPIO instead of the peripheral
--  function pin for the UART feature. If unsure, don't specify this property.
- 
- Note:
- * fsl,ns16550:
-@@ -66,19 +63,3 @@ Example:
- 		interrupts = <10>;
- 		reg-shift = <2>;
- 	};
--
--Example for OMAP UART using GPIO-based modem control signals:
--
--	uart4: serial@49042000 {
--		compatible = "ti,omap3-uart";
--		reg = <0x49042000 0x400>;
--		interrupts = <80>;
--		ti,hwmods = "uart4";
--		clock-frequency = <48000000>;
--		cts-gpios = <&gpio3 5 GPIO_ACTIVE_LOW>;
--		rts-gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
--		dtr-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
--		dsr-gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
--		dcd-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
--		rng-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
--	};
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 122e0e4..1a16fea 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -15,8 +15,6 @@
- #include <linux/serial_reg.h>
- #include <linux/dmaengine.h>
- 
--#include "../serial_mctrl_gpio.h"
--
- struct uart_8250_dma {
- 	int (*tx_dma)(struct uart_8250_port *p);
- 	int (*rx_dma)(struct uart_8250_port *p);
-@@ -133,43 +131,12 @@ void serial8250_em485_destroy(struct uart_8250_port *p);
- 
- static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
- {
--	int mctrl_gpio = 0;
--
- 	serial_out(up, UART_MCR, value);
--
--	if (value & UART_MCR_RTS)
--		mctrl_gpio |= TIOCM_RTS;
--	if (value & UART_MCR_DTR)
--		mctrl_gpio |= TIOCM_DTR;
--
--	mctrl_gpio_set(up->gpios, mctrl_gpio);
- }
- 
- static inline int serial8250_in_MCR(struct uart_8250_port *up)
- {
--	int mctrl, mctrl_gpio = 0;
--
--	mctrl = serial_in(up, UART_MCR);
--
--	/* save current MCR values */
--	if (mctrl & UART_MCR_RTS)
--		mctrl_gpio |= TIOCM_RTS;
--	if (mctrl & UART_MCR_DTR)
--		mctrl_gpio |= TIOCM_DTR;
--
--	mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
--
--	if (mctrl_gpio & TIOCM_RTS)
--		mctrl |= UART_MCR_RTS;
--	else
--		mctrl &= ~UART_MCR_RTS;
--
--	if (mctrl_gpio & TIOCM_DTR)
--		mctrl |= UART_MCR_DTR;
--	else
--		mctrl &= ~UART_MCR_DTR;
--
--	return mctrl;
-+	return serial_in(up, UART_MCR);
- }
- 
- #if defined(__alpha__) && !defined(CONFIG_PCI)
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 13ad5c3..dcf43f6 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -974,8 +974,6 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
- 
- 	uart = serial8250_find_match_or_unused(&up->port);
- 	if (uart && uart->port.type != PORT_8250_CIR) {
--		struct mctrl_gpios *gpios;
--
- 		if (uart->port.dev)
- 			uart_remove_one_port(&serial8250_reg, &uart->port);
- 
-@@ -1013,13 +1011,6 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
- 		if (up->port.flags & UPF_FIXED_TYPE)
- 			uart->port.type = up->port.type;
- 
--		gpios = mctrl_gpio_init(&uart->port, 0);
--		if (IS_ERR(gpios)) {
--			if (PTR_ERR(gpios) != -ENOSYS)
--				return PTR_ERR(gpios);
--		} else
--			uart->gpios = gpios;
--
- 		serial8250_set_defaults(uart);
- 
- 		/* Possibly override default I/O functions.  */
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index e14982f..61ad6c3 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -134,21 +134,18 @@ static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 
- 	serial8250_do_set_mctrl(port, mctrl);
- 
--	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
--						UART_GPIO_RTS))) {
--		/*
--		 * Turn off autoRTS if RTS is lowered and restore autoRTS
--		 * setting if RTS is raised
--		 */
--		lcr = serial_in(up, UART_LCR);
--		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
--		if ((mctrl & TIOCM_RTS) && (port->status & UPSTAT_AUTORTS))
--			priv->efr |= UART_EFR_RTS;
--		else
--			priv->efr &= ~UART_EFR_RTS;
--		serial_out(up, UART_EFR, priv->efr);
--		serial_out(up, UART_LCR, lcr);
--	}
-+	/*
-+	 * Turn off autoRTS if RTS is lowered and restore autoRTS setting
-+	 * if RTS is raised
-+	 */
-+	lcr = serial_in(up, UART_LCR);
-+	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
-+	if ((mctrl & TIOCM_RTS) && (port->status & UPSTAT_AUTORTS))
-+		priv->efr |= UART_EFR_RTS;
-+	else
-+		priv->efr &= ~UART_EFR_RTS;
-+	serial_out(up, UART_EFR, priv->efr);
-+	serial_out(up, UART_LCR, lcr);
- }
- 
- /*
-@@ -449,9 +446,7 @@ static void omap_8250_set_termios(struct uart_port *port,
- 	priv->efr = 0;
- 	up->port.status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
- 
--	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW
--		&& IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
--							UART_GPIO_RTS))) {
-+	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW) {
- 		/* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
- 		up->port.status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
- 		priv->efr |= UART_EFR_CTS;
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 7481b95..bdfa659 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1618,8 +1618,6 @@ static void serial8250_disable_ms(struct uart_port *port)
- 	if (up->bugs & UART_BUG_NOMSR)
- 		return;
- 
--	mctrl_gpio_disable_ms(up->gpios);
--
- 	up->ier &= ~UART_IER_MSI;
- 	serial_port_out(port, UART_IER, up->ier);
- }
-@@ -1632,8 +1630,6 @@ static void serial8250_enable_ms(struct uart_port *port)
- 	if (up->bugs & UART_BUG_NOMSR)
- 		return;
- 
--	mctrl_gpio_enable_ms(up->gpios);
--
- 	up->ier |= UART_IER_MSI;
- 
- 	serial8250_rpm_get(up);
-@@ -1917,8 +1913,7 @@ unsigned int serial8250_do_get_mctrl(struct uart_port *port)
- 		ret |= TIOCM_DSR;
- 	if (status & UART_MSR_CTS)
- 		ret |= TIOCM_CTS;
--
--	return mctrl_gpio_get(up->gpios, &ret);
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(serial8250_do_get_mctrl);
- 
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index c9ec839..7c6f7af 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -6,7 +6,6 @@
- config SERIAL_8250
- 	tristate "8250/16550 and compatible serial support"
- 	select SERIAL_CORE
--	select SERIAL_MCTRL_GPIO if GPIOLIB
- 	---help---
- 	  This selects whether you want to include the driver for the standard
- 	  serial ports.  The standard answer is Y.  People who might say N
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 923266c..48ec765 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -111,7 +111,6 @@ struct uart_8250_port {
- 						 *   if no_console_suspend
- 						 */
- 	unsigned char		probe;
--	struct mctrl_gpios	*gpios;
- #define UART_PROBE_RSA	(1 << 0)
- 
- 	/*
--- 
-2.8.1
+T24gRnJpLCAyMDE2LTA4LTEyIGF0IDE5OjAxICswMzAwLCBBbmR5IFNoZXZjaGVua28gd3JvdGU6
+DQo+IFRoZXJlIGFyZSBhdCBsZWFzdCB0d28ga25vd24gZGV2aWNlcywgZS5nLiBETUEgY29udHJv
+bGxlciBmb3VuZCBvbg0KPiBBUkMgQVhTMTAxDQo+IFNEUCBib2FyZCwgdGhhdCBoYXZlIExMUCBy
+ZWdpc3RlciBhbmQgbm8gbXVsdGkgYmxvY2sgdHJhbnNmZXIgc3VwcG9ydA0KPiBhdCB0aGUNCj4g
+c2FtZSB0aW1lLg0KPiANCj4gT3ZlcnJpZGUgYXV0b2RldGVjdGlvbiBieSB1c2VyIHByb3ZpZGVk
+IGRhdGEuDQo+IA0KPiBSZXBvcnRlZC1ieTogRXVnZW5peSBQYWx0c2V2IDxFdWdlbml5LlBhbHRz
+ZXZAc3lub3BzeXMuY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHJp
+eS5zaGV2Y2hlbmtvQGxpbnV4LmludGVsLmNvbT4NCj4gLS0tDQo+IMKgZHJpdmVycy9kbWEvZHcv
+Y29yZS5jwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB8IDYgKy0tLS0tDQo+IMKgaW5j
+bHVkZS9saW51eC9wbGF0Zm9ybV9kYXRhL2RtYS1kdy5oIHwgMiArKw0KPiDCoDIgZmlsZXMgY2hh
+bmdlZCwgMyBpbnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBh
+L2RyaXZlcnMvZG1hL2R3L2NvcmUuYyBiL2RyaXZlcnMvZG1hL2R3L2NvcmUuYw0KPiBpbmRleCA4
+MGU3NDIxLi5kYTE4YjE4IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2RtYS9kdy9jb3JlLmMNCj4g
+KysrIGIvZHJpdmVycy9kbWEvZHcvY29yZS5jDQo+IEBAIC0xNTcxLDExICsxNTcxLDcgQEAgaW50
+IGR3X2RtYV9wcm9iZShzdHJ1Y3QgZHdfZG1hX2NoaXAgKmNoaXApDQo+IMKgCQkJCShkd2NfcGFy
+YW1zID4+IERXQ19QQVJBTVNfTUJMS19FTiAmDQo+IDB4MSkgPT0gMDsNCj4gwqAJCX0gZWxzZSB7
+DQo+IMKgCQkJZHdjLT5ibG9ja19zaXplID0gcGRhdGEtPmJsb2NrX3NpemU7DQo+IC0NCj4gLQkJ
+CS8qIENoZWNrIGlmIGNoYW5uZWwgc3VwcG9ydHMgbXVsdGkgYmxvY2sNCj4gdHJhbnNmZXIgKi8N
+Cj4gLQkJCWNoYW5uZWxfd3JpdGVsKGR3YywgTExQLA0KPiBEV0NfTExQX0xPQygweGZmZmZmZmZm
+KSk7DQo+IC0JCQlkd2MtPm5vbGxwID0gRFdDX0xMUF9MT0MoY2hhbm5lbF9yZWFkbChkd2MsDQo+
+IExMUCkpID09IDA7DQo+IC0JCQljaGFubmVsX3dyaXRlbChkd2MsIExMUCwgMCk7DQo+ICsJCQlk
+d2MtPm5vbGxwID0gcGRhdGEtPmlzX25vbGxwOw0KPiDCoAkJfQ0KPiDCoAl9DQo+IMKgDQo+IGRp
+ZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3BsYXRmb3JtX2RhdGEvZG1hLWR3LmgNCj4gYi9pbmNs
+dWRlL2xpbnV4L3BsYXRmb3JtX2RhdGEvZG1hLWR3LmgNCj4gaW5kZXggNDYzNmM5My4uNWYwZTEx
+ZSAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9wbGF0Zm9ybV9kYXRhL2RtYS1kdy5oDQo+
+ICsrKyBiL2luY2x1ZGUvbGludXgvcGxhdGZvcm1fZGF0YS9kbWEtZHcuaA0KPiBAQCAtNDAsNiAr
+NDAsNyBAQCBzdHJ1Y3QgZHdfZG1hX3NsYXZlIHsNCj4gwqAgKiBAaXNfcHJpdmF0ZTogVGhlIGRl
+dmljZSBjaGFubmVscyBzaG91bGQgYmUgbWFya2VkIGFzIHByaXZhdGUgYW5kDQo+IG5vdCBmb3IN
+Cj4gwqAgKglieSB0aGUgZ2VuZXJhbCBwdXJwb3NlIERNQSBjaGFubmVsIGFsbG9jYXRvci4NCj4g
+wqAgKiBAaXNfbWVtY3B5OiBUaGUgZGV2aWNlIGNoYW5uZWxzIGRvIHN1cHBvcnQgbWVtb3J5LXRv
+LW1lbW9yeQ0KPiB0cmFuc2ZlcnMuDQo+ICsgKiBAaXNfbm9sbHA6IFRoZSBkZXZpY2UgY2hhbm5l
+bHMgZG9lcyBub3Qgc3VwcG9ydCBtdWx0aSBibG9jaw0KPiB0cmFuc2ZlcnMuDQo+IMKgICogQGNo
+YW5fYWxsb2NhdGlvbl9vcmRlcjogQWxsb2NhdGUgY2hhbm5lbHMgc3RhcnRpbmcgZnJvbSAwIG9y
+IDcNCj4gwqAgKiBAY2hhbl9wcmlvcml0eTogU2V0IGNoYW5uZWwgcHJpb3JpdHkgaW5jcmVhc2lu
+ZyBmcm9tIDAgdG8gNyBvciA3DQo+IHRvIDAuDQo+IMKgICogQGJsb2NrX3NpemU6IE1heGltdW0g
+YmxvY2sgc2l6ZSBzdXBwb3J0ZWQgYnkgdGhlIGNvbnRyb2xsZXINCj4gQEAgLTUxLDYgKzUyLDcg
+QEAgc3RydWN0IGR3X2RtYV9wbGF0Zm9ybV9kYXRhIHsNCj4gwqAJdW5zaWduZWQgaW50CW5yX2No
+YW5uZWxzOw0KPiDCoAlib29sCQlpc19wcml2YXRlOw0KPiDCoAlib29sCQlpc19tZW1jcHk7DQo+
+ICsJYm9vbAkJaXNfbm9sbHA7DQo+IMKgI2RlZmluZSBDSEFOX0FMTE9DQVRJT05fQVNDRU5ESU5H
+CTAJLyogemVybyB0byBzZXZlbg0KPiAqLw0KPiDCoCNkZWZpbmUgQ0hBTl9BTExPQ0FUSU9OX0RF
+U0NFTkRJTkcJMQkvKiBzZXZlbiB0byB6ZXJvDQo+ICovDQo+IMKgCXVuc2lnbmVkIGNoYXIJY2hh
+bl9hbGxvY2F0aW9uX29yZGVyOw0KDQpMb29rcyBnb29kIHRvIG1lLg0KUmV2aWV3ZWQtYnk6IEV1
+Z2VuaXkgUGxhdHNldiA8RXVnZW5peS5QYWx0c2V2QHN5bm9wc3lzLmNvbT4NCg==
