@@ -1,62 +1,92 @@
-From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-Subject: Re: [PATCH v10 03/11] dmaengine: dw: override LLP support if asked
- in platform data
-Date: Tue, 16 Aug 2016 13:21:06 +0000
-Message-ID: <1471353666.1562.3.camel@synopsys.com>
-References: <1471017716-44893-1-git-send-email-andriy.shevchenko@linux.intel.com>
-	 <1471017716-44893-4-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [RFC 3/7] dt: bindings: Add nokia-bluetooth
+Date: Tue, 16 Aug 2016 08:51:55 -0500
+Message-ID: <20160816135155.GA20948@rob-hp-laptop>
+References: <1471058078-5579-1-git-send-email-sre@kernel.org>
+ <1471058078-5579-4-git-send-email-sre@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1471017716-44893-4-git-send-email-andriy.shevchenko@linux.intel.com>
-Content-Language: en-US
-Content-ID: <B60E8C3CEE39414F85BC43C7579E82C4@internal.synopsys.com>
+Content-Disposition: inline
+In-Reply-To: <1471058078-5579-4-git-send-email-sre@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
-Cc: "ismo.puustinen@intel.com" <ismo.puustinen@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "vinod.koul@intel.com" <vinod.koul@intel.com>, "heikki.krogerus@linux.intel.com" <heikki.krogerus@linux.intel.com>, "Eugeniy.Paltsev@synopsys.com" <Eugeniy.Paltsev@synopsys.com>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "peter@hurleysoftware.com" <peter@hurleysoftware.com>, "pure.logic@nexus-software.ie" <pure.logic@nexus-software.ie>
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Tony Lindgren <tony@atomide.com>, Mark Rutland <mark.rutland@arm.com>, Marcel Holtmann <marcel@holtmann.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Ville Tervo <ville.tervo@iki.fi>, Filip =?utf-8?Q?Matijevi=C4=87?= <filip.matijevic.pz@gmail.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, Pavel Machek <pavel@ucw.cz>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>, ivo.g.dimitrov.75@gmail.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gRnJpLCAyMDE2LTA4LTEyIGF0IDE5OjAxICswMzAwLCBBbmR5IFNoZXZjaGVua28gd3JvdGU6
-DQo+IFRoZXJlIGFyZSBhdCBsZWFzdCB0d28ga25vd24gZGV2aWNlcywgZS5nLiBETUEgY29udHJv
-bGxlciBmb3VuZCBvbg0KPiBBUkMgQVhTMTAxDQo+IFNEUCBib2FyZCwgdGhhdCBoYXZlIExMUCBy
-ZWdpc3RlciBhbmQgbm8gbXVsdGkgYmxvY2sgdHJhbnNmZXIgc3VwcG9ydA0KPiBhdCB0aGUNCj4g
-c2FtZSB0aW1lLg0KPiANCj4gT3ZlcnJpZGUgYXV0b2RldGVjdGlvbiBieSB1c2VyIHByb3ZpZGVk
-IGRhdGEuDQo+IA0KPiBSZXBvcnRlZC1ieTogRXVnZW5peSBQYWx0c2V2IDxFdWdlbml5LlBhbHRz
-ZXZAc3lub3BzeXMuY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHJp
-eS5zaGV2Y2hlbmtvQGxpbnV4LmludGVsLmNvbT4NCj4gLS0tDQo+IMKgZHJpdmVycy9kbWEvZHcv
-Y29yZS5jwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB8IDYgKy0tLS0tDQo+IMKgaW5j
-bHVkZS9saW51eC9wbGF0Zm9ybV9kYXRhL2RtYS1kdy5oIHwgMiArKw0KPiDCoDIgZmlsZXMgY2hh
-bmdlZCwgMyBpbnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvZG1hL2R3L2NvcmUuYyBiL2RyaXZlcnMvZG1hL2R3L2NvcmUuYw0KPiBpbmRleCA4
-MGU3NDIxLi5kYTE4YjE4IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2RtYS9kdy9jb3JlLmMNCj4g
-KysrIGIvZHJpdmVycy9kbWEvZHcvY29yZS5jDQo+IEBAIC0xNTcxLDExICsxNTcxLDcgQEAgaW50
-IGR3X2RtYV9wcm9iZShzdHJ1Y3QgZHdfZG1hX2NoaXAgKmNoaXApDQo+IMKgCQkJCShkd2NfcGFy
-YW1zID4+IERXQ19QQVJBTVNfTUJMS19FTiAmDQo+IDB4MSkgPT0gMDsNCj4gwqAJCX0gZWxzZSB7
-DQo+IMKgCQkJZHdjLT5ibG9ja19zaXplID0gcGRhdGEtPmJsb2NrX3NpemU7DQo+IC0NCj4gLQkJ
-CS8qIENoZWNrIGlmIGNoYW5uZWwgc3VwcG9ydHMgbXVsdGkgYmxvY2sNCj4gdHJhbnNmZXIgKi8N
-Cj4gLQkJCWNoYW5uZWxfd3JpdGVsKGR3YywgTExQLA0KPiBEV0NfTExQX0xPQygweGZmZmZmZmZm
-KSk7DQo+IC0JCQlkd2MtPm5vbGxwID0gRFdDX0xMUF9MT0MoY2hhbm5lbF9yZWFkbChkd2MsDQo+
-IExMUCkpID09IDA7DQo+IC0JCQljaGFubmVsX3dyaXRlbChkd2MsIExMUCwgMCk7DQo+ICsJCQlk
-d2MtPm5vbGxwID0gcGRhdGEtPmlzX25vbGxwOw0KPiDCoAkJfQ0KPiDCoAl9DQo+IMKgDQo+IGRp
-ZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3BsYXRmb3JtX2RhdGEvZG1hLWR3LmgNCj4gYi9pbmNs
-dWRlL2xpbnV4L3BsYXRmb3JtX2RhdGEvZG1hLWR3LmgNCj4gaW5kZXggNDYzNmM5My4uNWYwZTEx
-ZSAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9wbGF0Zm9ybV9kYXRhL2RtYS1kdy5oDQo+
-ICsrKyBiL2luY2x1ZGUvbGludXgvcGxhdGZvcm1fZGF0YS9kbWEtZHcuaA0KPiBAQCAtNDAsNiAr
-NDAsNyBAQCBzdHJ1Y3QgZHdfZG1hX3NsYXZlIHsNCj4gwqAgKiBAaXNfcHJpdmF0ZTogVGhlIGRl
-dmljZSBjaGFubmVscyBzaG91bGQgYmUgbWFya2VkIGFzIHByaXZhdGUgYW5kDQo+IG5vdCBmb3IN
-Cj4gwqAgKglieSB0aGUgZ2VuZXJhbCBwdXJwb3NlIERNQSBjaGFubmVsIGFsbG9jYXRvci4NCj4g
-wqAgKiBAaXNfbWVtY3B5OiBUaGUgZGV2aWNlIGNoYW5uZWxzIGRvIHN1cHBvcnQgbWVtb3J5LXRv
-LW1lbW9yeQ0KPiB0cmFuc2ZlcnMuDQo+ICsgKiBAaXNfbm9sbHA6IFRoZSBkZXZpY2UgY2hhbm5l
-bHMgZG9lcyBub3Qgc3VwcG9ydCBtdWx0aSBibG9jaw0KPiB0cmFuc2ZlcnMuDQo+IMKgICogQGNo
-YW5fYWxsb2NhdGlvbl9vcmRlcjogQWxsb2NhdGUgY2hhbm5lbHMgc3RhcnRpbmcgZnJvbSAwIG9y
-IDcNCj4gwqAgKiBAY2hhbl9wcmlvcml0eTogU2V0IGNoYW5uZWwgcHJpb3JpdHkgaW5jcmVhc2lu
-ZyBmcm9tIDAgdG8gNyBvciA3DQo+IHRvIDAuDQo+IMKgICogQGJsb2NrX3NpemU6IE1heGltdW0g
-YmxvY2sgc2l6ZSBzdXBwb3J0ZWQgYnkgdGhlIGNvbnRyb2xsZXINCj4gQEAgLTUxLDYgKzUyLDcg
-QEAgc3RydWN0IGR3X2RtYV9wbGF0Zm9ybV9kYXRhIHsNCj4gwqAJdW5zaWduZWQgaW50CW5yX2No
-YW5uZWxzOw0KPiDCoAlib29sCQlpc19wcml2YXRlOw0KPiDCoAlib29sCQlpc19tZW1jcHk7DQo+
-ICsJYm9vbAkJaXNfbm9sbHA7DQo+IMKgI2RlZmluZSBDSEFOX0FMTE9DQVRJT05fQVNDRU5ESU5H
-CTAJLyogemVybyB0byBzZXZlbg0KPiAqLw0KPiDCoCNkZWZpbmUgQ0hBTl9BTExPQ0FUSU9OX0RF
-U0NFTkRJTkcJMQkvKiBzZXZlbiB0byB6ZXJvDQo+ICovDQo+IMKgCXVuc2lnbmVkIGNoYXIJY2hh
-bl9hbGxvY2F0aW9uX29yZGVyOw0KDQpMb29rcyBnb29kIHRvIG1lLg0KUmV2aWV3ZWQtYnk6IEV1
-Z2VuaXkgUGxhdHNldiA8RXVnZW5peS5QYWx0c2V2QHN5bm9wc3lzLmNvbT4NCg==
+On Sat, Aug 13, 2016 at 05:14:34AM +0200, Sebastian Reichel wrote:
+> ---
+>  .../devicetree/bindings/net/nokia-bluetooth.txt    | 43 ++++++++++++++++++++++
+>  1 file changed, 43 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/nokia-bluetooth.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/net/nokia-bluetooth.txt b/Documentation/devicetree/bindings/net/nokia-bluetooth.txt
+> new file mode 100644
+> index 000000000000..a0fceabb4cce
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/nokia-bluetooth.txt
+> @@ -0,0 +1,43 @@
+> +Nokia bluetooth UART devices
+> +------
+> +
+> +Some vendors have custom versions of their chips, that can be found in Nokia
+> +devices. These chips are controlled differently, than the non-Nokia version,
+> +so a different binding is required. All chips listed here implement the Nokia
+> +H4+ protocol.
+> +
+> +Required properties:
+> +
+> +  - compatible: should be one of the following:
+> +	* "nokia,brcm,bcm2048"
+> +	* "nokia,ti,wl1271-bluetooth"
+
+Perhaps these should be 2 separate strings. Something like 
+'"nokia,n900-bt", "brcm,bcm2048"'. However, if they are in no way 
+compatible with the default version from the vendors, then just a single 
+string is fine, but it doesn't need to be aligned to the vendor 
+compatible string. So just "nokia,n900-bcm2048" or similar is fine.
+
+> +  - reset-gpios:		Should specify the gpio for bluetooth reset
+> +  - host-wakeup-gpios:		Should specify the gpio for host wakeup
+
+Should be interrupt instead?
+
+> +  - bluetooth-wakeup-gpios:	Should specify the gpio for bluetooth wakeup
+
+State direction and active state for gpios.
+
+> +  - clock-names:		Should be "sysclk"
+> +  - clocks:			Should contain a clock phandle for system clock
+> +
+> +Example:
+> +
+> +/ {
+> +	/* controlled (enabled/disabled) directly by wl1271 */
+> +	vctcxo: vctcxo {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <38400000>;
+> +	};
+> +};
+> +
+> +&uart2 {
+
+I want to see a common serial device binding doc before accepting any 
+device bindings. It's not going to say much initially other than devices 
+are child nodes of uarts. Perhaps something on baudrate settings.
+
+> +	bluetooth {
+> +		compatible = "nokia,ti,wl1271-bluetooth";
+> +
+> +		reset-gpios = <&gpio1 26 GPIO_ACTIVE_HIGH>; /* 26 */
+> +		host-wakeup-gpios = <&gpio4 5 GPIO_ACTIVE_HIGH>; /* 101 */
+> +		bluetooth-wakeup-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>; /* 37 */
+> +
+> +		clocks = <&vctcxo>;
+> +		clock-names = "sysclk";
+> +	};
+> +
+> +};
+> -- 
+> 2.8.1
+> 
