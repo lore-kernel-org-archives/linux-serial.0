@@ -1,33 +1,55 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: tty driver crash in LInux Kernel 3.8
-Date: Wed, 17 Aug 2016 11:50:16 +0200
-Message-ID: <20160817095016.GB17906@kroah.com>
-References: <CAMNxYswaQ8h8oPHzJWa1VX_QcbSY6++=O92rq-zFSx-7twg13w@mail.gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [RFC RESEND] serial: 8250: fix regression in 8250 uart driver
+Date: Wed, 17 Aug 2016 14:14:26 +0300
+Message-ID: <1471432466.4887.134.camel@linux.intel.com>
+References: <575F7325.3030907@kernel.org>
+	 <1465897220.30123.26.camel@linux.intel.com>
+	 <cca9fb6eca58d8a29e3070e3f34fa40f.squirrel@emailmg.ipower.com>
+	 <1465920046.30123.83.camel@linux.intel.com>
+	 <dbaa0abe-06ab-57ee-4ba3-4e4717af4a62@leemhuis.info>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAMNxYswaQ8h8oPHzJWa1VX_QcbSY6++=O92rq-zFSx-7twg13w@mail.gmail.com>
+In-Reply-To: <dbaa0abe-06ab-57ee-4ba3-4e4717af4a62@leemhuis.info>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Priyaranjan Das <priyaranjan456789@gmail.com>
-Cc: linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Priyaranjan Das <priyaranjan45678@gmail.com>
+To: Thorsten Leemhuis <regressions@leemhuis.info>, dinh.linux@anniebear.net
+Cc: Dinh Nguyen <dinguyen@kernel.org>, heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 17, 2016 at 02:29:39PM +0530, Priyaranjan Das wrote:
-> Hello All,
+On Sat, 2016-07-02 at 13:53 +0200, Thorsten Leemhuis wrote:
+> On 14.06.2016 18:00, Andy Shevchenko wrote:
+> > 
+> > On Tue, 2016-06-14 at 10:27 -0500, dinh.linux@anniebear.net wrote:
+> > > 
+> > > > 
+> > > > On Mon, 2016-06-13 at 21:59 -0500, Dinh Nguyen wrote:
+> > > Does this mean that the 8250_dw.c driver can no longer use DMA?
+> > 
+> > It means that previously the use of DMA engine whatever was used is
+> > not
+> > correct in your case. There is no issues in UART driver, the issue
+> > is in
+> > DMA controller driver.
+> > 
+> > I'm working on a quirk that will allow user to enforce PIO mode for
+> > Rx/Tx or both. In that case if DMA controller can't be fixed you
+> > still
+> > might use DMA for Tx.
 > 
-> I need help in finding a fix of an issue of TTY LDISC for Kernel 3.8.
+> What's the status of this issue? Just wondering, as this issue is
+> listed
+> in my regression reports for 4.7 and it seems nothing much happened
+> for
+> more than a week now – which is a bad sign as the 4.7 release seems
+> only
+> a week or two away.
 
-Ouch that's an old and obsolete and insecure kernel version that is
-hundreds of thousands of fixes and changes old :(
+I sent a v2 of the series for internal review, same you may found on
+[1]. If Heikki is okay to that I'll send it here.
 
-Please ask for support from the vendor that is forcing you to use such a
-beast, you are paying for it, might as well take advantage of it.
-Nothing the kernel community can do, sorry.
+[1] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqrk
 
-Note, if you can reproduce this on 4.8-rc2 or even 4.7.1, we will be
-glad to help out here.
-
-Best of luck,
-
-greg k-h
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
