@@ -1,67 +1,45 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH] ARM: dts: imx6sx: document SION necessity of
- ENET1_REF_CLK1
-Date: Wed, 17 Aug 2016 11:26:42 -0300
-Message-ID: <CAOMZO5CCwreYYgNd6uGnf9A0=KcMefYqHLFNWdMnweSTezxnWQ@mail.gmail.com>
-References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <1458825865-7434-7-git-send-email-u.kleine-koenig@pengutronix.de>
- <1470350663.26773.41.camel@googlemail.com>
- <20160805065845.GI17874@pengutronix.de>
- <1470398615.1936.22.camel@googlemail.com>
- <CAOMZO5BQQemrKFjejUxQpW+d=BGn_b+d_sbr9Untu8iO3dOVvw@mail.gmail.com>
- <1471120532.1923.4.camel@googlemail.com>
- <20160815052244.mwygjlo72e46w353@pengutronix.de>
- <1471425931.1934.18.camel@googlemail.com>
+From: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+Subject: Re: [RFC 3/7] dt: bindings: Add nokia-bluetooth
+Date: Wed, 17 Aug 2016 17:54:52 +0200
+Message-ID: <20160817155452.GA14957@amd>
+References: <1471058078-5579-1-git-send-email-sre@kernel.org>
+ <1471058078-5579-4-git-send-email-sre@kernel.org>
+ <20160816135155.GA20948@rob-hp-laptop>
+ <20160816232855.qgempm64zgp36ufd@earth>
+ <CAL_JsqLcDzTZ++h+e7D-n0xbt7LgryK6jfGJDNEcAaU=Dn4b0w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1471425931.1934.18.camel@googlemail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Christoph Fritz <chf.fritz@googlemail.com>
-Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, Sascha Hauer <kernel@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqLcDzTZ++h+e7D-n0xbt7LgryK6jfGJDNEcAaU=Dn4b0w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Ville Tervo <ville.tervo-X3B1VOXEql0@public.gmane.org>, Filip =?utf-8?Q?Matijevi=C4=87?= <filip.matijevic.pz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Aaro Koskinen <aaro.koskinen-X3B1VOXEql0@public.gmane.org>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-omap <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Christoph,
+Hi!
 
-On Wed, Aug 17, 2016 at 6:25 AM, Christoph Fritz
-<chf.fritz@googlemail.com> wrote:
+> >> > +  - reset-gpios:           Should specify the gpio for bluetooth reset
+> >> > +  - host-wakeup-gpios:             Should specify the gpio for host wakeup
+> >>
+> >> Should be interrupt instead?
+> >
+> > Yes this is mostly an interrupt, but I need to read the current
+> > line state.
+> 
+> When? If the interrupt is level triggered, then you can get the line
+> state based on whether you get an interrupt or not. If this needs to
+> be a wakeup source (see the wakeup source binding), then it needs to
+> be an interrupt.
 
-> +/*
-> + * SION bit is necessary for ENET1_REF_CLK1 (ENET2_REF_CLK2 untested) if it is
-> + * used as clock output of IMX6SX_CLK_ENET_REF (ENET1_TX_CLK) to e.g. supply a
-> + * PHY in RMII mode. This configuration is valid if:
-> + *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_PAD_DIR_MASK is set
-> + *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_MUX_SEL_MASK unset
-
-So in your case the imx6sx_enet_clk_sel() does not do what you need:
-
-static void __init imx6sx_enet_clk_sel(void)
-{
-    struct regmap *gpr;
-
-    gpr = syscon_regmap_lookup_by_compatible("fsl,imx6sx-iomuxc-gpr");
-    if (!IS_ERR(gpr)) {
-        regmap_update_bits(gpr, IOMUXC_GPR1,
-                   IMX6SX_GPR1_FEC_CLOCK_MUX_SEL_MASK, 0);
-        regmap_update_bits(gpr, IOMUXC_GPR1,
-                   IMX6SX_GPR1_FEC_CLOCK_PAD_DIR_MASK, 0);
-    } else {
-        pr_err("failed to find fsl,imx6sx-iomux-gpr regmap\n");
-    }
-}
-
-It seems that it is not a good idea to have imx6sx_enet_clk_sel() in
-common code as the GPR1 setting can change from board to board.
-
-I think we need the fec driver to be in charge of configuring the GPR1 register.
-
-This is unrelated to your patch though :-)
+What is wrong with GPIO? It is simply a piece of wire. Yes, we'll
+configure it to generate an interrupt, or maybe not, but that's
+software detail, the device tree just should not care....
+								Pavel
+-- 
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
