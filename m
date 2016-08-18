@@ -1,78 +1,47 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+From: One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
 Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Thu, 18 Aug 2016 15:25:28 +0100
-Message-ID: <20160818152528.569eb426@lxorguk.ukuu.org.uk>
+Date: Thu, 18 Aug 2016 15:40:19 +0100
+Message-ID: <20160818154019.40f4df45@lxorguk.ukuu.org.uk>
 References: <20160818011445.22726-1-robh@kernel.org>
+	<118926C8-F4D0-41F5-B6A8-690E0312F3FB@goldelico.com>
+	<20160818104749.GB7427@amd>
+	<1ED14975-FC0C-44AB-8F05-782DBC9E98F8@goldelico.com>
+	<20160818105759.GA642@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160818011445.22726-1-robh@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160818105759.GA642-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: "H. Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 17 Aug 2016 20:14:42 -0500
-Rob Herring <robh@kernel.org> wrote:
+On Thu, 18 Aug 2016 12:57:59 +0200
+Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org> wrote:
 
-This was proposed ages ago and the point clearly made that
+> On Thu, Aug 18, 2016 at 12:54:15PM +0200, H. Nikolaus Schaller wrote:
+> > Hi Pavel,
+> >   
+> > > Am 18.08.2016 um 12:47 schrieb Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>:
+> > > 
+> > >   
+> > >> 
+> > >> Thereof 4 files, ~260 changes w/o gps demo and documentation/bindings.  
+> > > 
+> > > So what do you use for the serial devices? platform_device was vetoed
+> > > for that purpose by Greg.  
+> > 
+> > device tree?  
+> 
+> No.
+> 
+> This patchset from Rob is the way I have been saying it should be done
+> for years now.  Yes, a "bus" takes up more boilerplate code (blame me
+> for that), but overall, it makes the drivers simpler, and fits into the
+> rest of the kernel driver/device model much better.
 
-a) the idea doesn't work because uarts are not required to use the uart
-layer and even those that do sometimes only use half of it
-
-b) that you should use the tty_port abstraction
-
-So instead of just waiting some months and recycling the proposals it's
-unfortunate that no listening and reworking was done.
-
-https://lkml.org/lkml/2016/1/18/177
-
-So I'm giving this a large neon flashing NAK, because none of the
-problems have been addressed.
-
-> Currently, devices attached via a UART are not well supported in the
-> kernel. The problem is the device support is done in tty line disciplines,
-> various platform drivers to handle some sideband, and in userspace with
-> utilities such as hciattach.
-
-For most platforms it works very nicely and out of the box. The only
-real issue I have actually seen is the bandwidth issue from early tty
-based 3G modems. That's not hard to fix with some tty buffer changes.
-Basically you need a tty port pointer that is atomic exchangable and
-points either to the usual tty queue logic or to a 'fastpath' handler
-which just gets thrown a block of bytes and told to use them or lose them
-- which is the interface the non n_tty ldiscs want anyway. That's exactly
-what you would need to fix to support in kernel stuff as well. The tty
-queue mechanism for devices that can receive in blocks just becomes a
-fastpath.
-
-There are some disgusting Android turds floating around out of tree where
-people use things like userspace GPIO line control but you won't fix most
-of those anyway because they are generally being used for user
-space modules including dumb GPS where the US government rules won't allow
-them to be open sourced anyway.
-
-> - Split out the controller for uart_ports into separate driver. Do we see
->   a need for controller drivers that are not standard serial drivers?
-
-As I told you over six months ago uart_port is not the correct
-abstraction. You need to be working at the tty_port layer. The original
-design of tty_port was indeed partly to push towards being able to have a
-serial interface that is in use but not open to user space. The rather
-nice rework that the maintainers have done to put the buffers in the
-tty_port takes it closer still.
-
-Plenty of the classic serial port interfaces also don't use the UART
-layer including every USB device (which is most of them these days), SDIO
-and others. USB has to be covered for this to be sensible.
-
-Your changes also don't work because serial uart drivers are not obliged
-to use any of the uart buffering helpers and particularly on the rx side
-many do not do so and the performance hit would be too high.
-
-It's been explained how to make it work with tty_port, every tty is a
-dynamic file handle life time object bound to a tty_port. Every tty has a
-tty_port, every tty driver has a tty_port.
+The basic problem is that the bus should be tty_ports not uart, fix that
+and the rest starts to make sense.
 
 Alan
