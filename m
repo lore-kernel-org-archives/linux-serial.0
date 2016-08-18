@@ -1,79 +1,68 @@
-From: Christoph Fritz <chf.fritz@googlemail.com>
-Subject: Re: [PATCH] ARM: dts: imx6sx: document SION necessity of
- ENET1_REF_CLK1
-Date: Wed, 17 Aug 2016 20:03:01 +0200
-Message-ID: <1471456981.1934.63.camel@googlemail.com>
-References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <1458825865-7434-7-git-send-email-u.kleine-koenig@pengutronix.de>
- <1470350663.26773.41.camel@googlemail.com>
- <20160805065845.GI17874@pengutronix.de>
- <1470398615.1936.22.camel@googlemail.com>
- <CAOMZO5BQQemrKFjejUxQpW+d=BGn_b+d_sbr9Untu8iO3dOVvw@mail.gmail.com>
- <1471120532.1923.4.camel@googlemail.com>
- <20160815052244.mwygjlo72e46w353@pengutronix.de>
- <1471425931.1934.18.camel@googlemail.com>
- <CAOMZO5CCwreYYgNd6uGnf9A0=KcMefYqHLFNWdMnweSTezxnWQ@mail.gmail.com>
-Reply-To: chf.fritz@googlemail.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAOMZO5CCwreYYgNd6uGnf9A0=KcMefYqHLFNWdMnweSTezxnWQ@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, Sascha Hauer <kernel@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+From: Rob Herring <robh@kernel.org>
+Subject: [RFC PATCH 0/3] UART slave device bus
+Date: Wed, 17 Aug 2016 20:14:42 -0500
+Message-ID: <20160818011445.22726-1-robh@kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>
+Cc: Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2016-08-17 at 11:26 -0300, Fabio Estevam wrote:
-> Hi Christoph,
-> 
-> On Wed, Aug 17, 2016 at 6:25 AM, Christoph Fritz
-> <chf.fritz@googlemail.com> wrote:
-> 
-> > +/*
-> > + * SION bit is necessary for ENET1_REF_CLK1 (ENET2_REF_CLK2 untested) if it is
-> > + * used as clock output of IMX6SX_CLK_ENET_REF (ENET1_TX_CLK) to e.g. supply a
-> > + * PHY in RMII mode. This configuration is valid if:
-> > + *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_PAD_DIR_MASK is set
-> > + *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_MUX_SEL_MASK unset
-> 
-> So in your case the imx6sx_enet_clk_sel() does not do what you need:
-> 
-> static void __init imx6sx_enet_clk_sel(void)
-> {
->     struct regmap *gpr;
-> 
->     gpr = syscon_regmap_lookup_by_compatible("fsl,imx6sx-iomuxc-gpr");
->     if (!IS_ERR(gpr)) {
->         regmap_update_bits(gpr, IOMUXC_GPR1,
->                    IMX6SX_GPR1_FEC_CLOCK_MUX_SEL_MASK, 0);
->         regmap_update_bits(gpr, IOMUXC_GPR1,
->                    IMX6SX_GPR1_FEC_CLOCK_PAD_DIR_MASK, 0);
->     } else {
->         pr_err("failed to find fsl,imx6sx-iomux-gpr regmap\n");
->     }
-> }
-> 
-> It seems that it is not a good idea to have imx6sx_enet_clk_sel() in
-> common code as the GPR1 setting can change from board to board.
+Currently, devices attached via a UART are not well supported in the
+kernel. The problem is the device support is done in tty line disciplines,
+various platform drivers to handle some sideband, and in userspace with
+utilities such as hciattach.
 
-Yes, currently I'm adapting/quirking the fec config there and in
-imx6sx_clocks_init() to set the Phy-Clock-Frequency to 50Mhz.
+There have been several attempts to improve support, but they suffer from
+still being tied into the tty layer and/or abusing the platform bus. This
+is a prototype to show creating a proper UART bus for UART devices. It is
+tied into the serial core (really struct uart_port) below the tty layer
+in order to use existing serial drivers.
 
-> I think we need the fec driver to be in charge of configuring the GPR1 register.
+This is functional with minimal testing using the loopback driver and
+pl011 (w/o DMA) UART under QEMU (modified to add a DT node for the slave
+device). It still needs lots of work and polish.
 
-What about making the Phy-Clock-Frequency IMX6SX_CLK_ENET_REF
-adjustable?
+TODOs:
+- Figure out the port locking. mutex plus spinlock plus refcounting? I'm
+  hoping all that complexity is from the tty layer and not needed here.
+- Split out the controller for uart_ports into separate driver. Do we see
+  a need for controller drivers that are not standard serial drivers?
+- Implement/test the removal paths
+- Fix the receive callbacks for more than character at a time (i.e. DMA)
+- Need better receive buffering than just a simple circular buffer or
+  perhaps a different receive interface (e.g. direct to client buffer)?
+- Test with other UART drivers
+- Convert a real driver/line discipline over to UART bus.
 
-> This is unrelated to your patch though :-)
+Before I spend more time on this, I'm looking mainly for feedback on the
+general direction and structure (the interface with the existing serial
+drivers in particular).
 
-Thanks
- -- Christoph
+Rob
+
+
+Rob Herring (3):
+  uart bus: Introduce new bus for UART slave devices
+  tty: serial_core: make tty_struct optional
+  tty: serial_core: add uart controller registration
+
+ drivers/Kconfig                  |   2 +
+ drivers/Makefile                 |   1 +
+ drivers/tty/serial/serial_core.c |  11 +-
+ drivers/tty/tty_buffer.c         |   2 +
+ drivers/uart/Kconfig             |  17 ++
+ drivers/uart/Makefile            |   3 +
+ drivers/uart/core.c              | 458 +++++++++++++++++++++++++++++++++++++++
+ drivers/uart/loopback.c          |  72 ++++++
+ include/linux/serial_core.h      |   3 +-
+ include/linux/uart_device.h      | 163 ++++++++++++++
+ 10 files changed, 730 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/uart/Kconfig
+ create mode 100644 drivers/uart/Makefile
+ create mode 100644 drivers/uart/core.c
+ create mode 100644 drivers/uart/loopback.c
+ create mode 100644 include/linux/uart_device.h
+
+--
+2.9.2
