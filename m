@@ -1,108 +1,78 @@
-From: Rob Herring <robh@kernel.org>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Thu, 18 Aug 2016 08:53:15 -0500
-Message-ID: <CAL_JsqLe1rayz_Az_6GmpORwQJR+uXfRTi2LNc6D9yo8TLrNgw@mail.gmail.com>
-References: <20160818011445.22726-1-robh@kernel.org> <20160818102208.GA20476@kroah.com>
- <FC1D6B2F-E06B-4D8F-90BA-4D6F20F2507A@holtmann.org> <20160818105333.GA7031@kroah.com>
+Date: Thu, 18 Aug 2016 15:25:28 +0100
+Message-ID: <20160818152528.569eb426@lxorguk.ukuu.org.uk>
+References: <20160818011445.22726-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160818105333.GA7031@kroah.com>
+In-Reply-To: <20160818011445.22726-1-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Loic Poulain <loic.poulain@intel.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Aug 18, 2016 at 5:53 AM, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> On Thu, Aug 18, 2016 at 12:30:32PM +0200, Marcel Holtmann wrote:
->> Hi Greg,
->>
->> >> Currently, devices attached via a UART are not well supported in the
->> >> kernel. The problem is the device support is done in tty line disciplines,
->> >> various platform drivers to handle some sideband, and in userspace with
->> >> utilities such as hciattach.
->> >>
->> >> There have been several attempts to improve support, but they suffer from
->> >> still being tied into the tty layer and/or abusing the platform bus. This
->> >> is a prototype to show creating a proper UART bus for UART devices. It is
->> >> tied into the serial core (really struct uart_port) below the tty layer
->> >> in order to use existing serial drivers.
->> >>
->> >> This is functional with minimal testing using the loopback driver and
->> >> pl011 (w/o DMA) UART under QEMU (modified to add a DT node for the slave
->> >> device). It still needs lots of work and polish.
->> >>
->> >> TODOs:
->> >> - Figure out the port locking. mutex plus spinlock plus refcounting? I'm
->> >>  hoping all that complexity is from the tty layer and not needed here.
->> >
->> > It should be.
->> >
->> >> - Split out the controller for uart_ports into separate driver. Do we see
->> >>  a need for controller drivers that are not standard serial drivers?
->> >
->> > What do you mean by "controller" drivers here?  I didn't understand them
->> > in the code.
->> >
->> >> - Implement/test the removal paths
->> >> - Fix the receive callbacks for more than character at a time (i.e. DMA)
->> >> - Need better receive buffering than just a simple circular buffer or
->> >>  perhaps a different receive interface (e.g. direct to client buffer)?
->> >
->> > Why?  Is the code as-is slow?
->> >
->> >> - Test with other UART drivers
->> >> - Convert a real driver/line discipline over to UART bus.
->> >
->> > That's going to be the real test, I recommend trying that as soon as
->> > possible as it will show where the real pain points are :)
->>
->> maybe we can get the Intel LnP driver ported over and see how that one
->> works out. It is one of the more complex ones when it comes to
->> bootloader and firmware loading. Maybe Loic can take a stab at this.
->> We would then also see how we can map the ACPI tables into a driver.
->
-> Yes, I was going to complain about the OF-only bent of this patch, but I
-> figured it would get fixed up once Rob started to use a "real" machine
-> for his testing of this code :)
+On Wed, 17 Aug 2016 20:14:42 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-I fully expected that from you. :)
+This was proposed ages ago and the point clearly made that
 
-It is no different than any other bus we have. Each
-discovery/enumeration method needs hooks for matching and creating
-devices. It just happens that DT is the only one added ATM.
+a) the idea doesn't work because uarts are not required to use the uart
+layer and even those that do sometimes only use half of it
 
->
->> >> Before I spend more time on this, I'm looking mainly for feedback on the
->> >> general direction and structure (the interface with the existing serial
->> >> drivers in particular).
->> >
->> > Yes, I like the idea (minor nit, you still have SPMI in a lot of places
->> > instead of UART), so I recommend keeping going with it.
->> >
->> >> drivers/uart/Kconfig             |  17 ++
->> >> drivers/uart/Makefile            |   3 +
->> >> drivers/uart/core.c              | 458 +++++++++++++++++++++++++++++++++++++++
->> >> drivers/uart/loopback.c          |  72 ++++++
->> >
->> > Why not just put this in drivers/tty/uart/ ?
->>
->> Is it really then a TTY at all. Would be the UART become the basic
->> core for a TTY?
->
-> Hm, interesting idea.  Not for all TTYs of course, but for those that
-> are on UART devices, maybe?  How would a usb-serial device fit into that
-> picture?
+b) that you should use the tty_port abstraction
 
-DT overlay. Just like greybus serial. :)
+So instead of just waiting some months and recycling the proposals it's
+unfortunate that no listening and reworking was done.
 
-That's a good question though as usb-serial doesn't use uart_port.
-Perhaps there needs to be a uart controller/host driver that's a line
-discipline so existing tty drivers can work. That somewhat defeats the
-point of getting line disciplines out of the picture, but would
-provide a solution for h/w hacking (and no worse than what can be
-supported today). Longer term, the drivers would need to be adapted to
-use the uart slave bus directly.
+https://lkml.org/lkml/2016/1/18/177
 
-Rob
+So I'm giving this a large neon flashing NAK, because none of the
+problems have been addressed.
+
+> Currently, devices attached via a UART are not well supported in the
+> kernel. The problem is the device support is done in tty line disciplines,
+> various platform drivers to handle some sideband, and in userspace with
+> utilities such as hciattach.
+
+For most platforms it works very nicely and out of the box. The only
+real issue I have actually seen is the bandwidth issue from early tty
+based 3G modems. That's not hard to fix with some tty buffer changes.
+Basically you need a tty port pointer that is atomic exchangable and
+points either to the usual tty queue logic or to a 'fastpath' handler
+which just gets thrown a block of bytes and told to use them or lose them
+- which is the interface the non n_tty ldiscs want anyway. That's exactly
+what you would need to fix to support in kernel stuff as well. The tty
+queue mechanism for devices that can receive in blocks just becomes a
+fastpath.
+
+There are some disgusting Android turds floating around out of tree where
+people use things like userspace GPIO line control but you won't fix most
+of those anyway because they are generally being used for user
+space modules including dumb GPS where the US government rules won't allow
+them to be open sourced anyway.
+
+> - Split out the controller for uart_ports into separate driver. Do we see
+>   a need for controller drivers that are not standard serial drivers?
+
+As I told you over six months ago uart_port is not the correct
+abstraction. You need to be working at the tty_port layer. The original
+design of tty_port was indeed partly to push towards being able to have a
+serial interface that is in use but not open to user space. The rather
+nice rework that the maintainers have done to put the buffers in the
+tty_port takes it closer still.
+
+Plenty of the classic serial port interfaces also don't use the UART
+layer including every USB device (which is most of them these days), SDIO
+and others. USB has to be covered for this to be sensible.
+
+Your changes also don't work because serial uart drivers are not obliged
+to use any of the uart buffering helpers and particularly on the rx side
+many do not do so and the performance hit would be too high.
+
+It's been explained how to make it work with tty_port, every tty is a
+dynamic file handle life time object bound to a tty_port. Every tty has a
+tty_port, every tty driver has a tty_port.
+
+Alan
