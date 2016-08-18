@@ -1,88 +1,73 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH] serial: 8250_fintek: Fix potential NULL pointer dereference
-Date: Thu, 18 Aug 2016 18:22:38 +0200
-Message-ID: <CAPybu_0yBVLaCHNNGV-xxPq2Ku0e7Q1LqjP=T1PgpHfUdYSjAg@mail.gmail.com>
-References: <1467078390-2406-1-git-send-email-hpeter+linux_kernel@gmail.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [RFC PATCH 0/3] UART slave device bus
+Date: Thu, 18 Aug 2016 18:08:24 -0500
+Message-ID: <CAL_Jsq+OfT1AXaEKOgZ4oVfpVZhu=55dYoHTG7D_prpnTqpeOg@mail.gmail.com>
+References: <20160818011445.22726-1-robh@kernel.org> <20160818202900.hyvm4hfxedifuefn@earth>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1467078390-2406-1-git-send-email-hpeter+linux_kernel@gmail.com>
+In-Reply-To: <20160818202900.hyvm4hfxedifuefn@earth>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, =?UTF-8?B?UEEyMCBUT00gVFNBSSDolKHlrpfkvZE=?= <tom_tsai@fintek.com.tw>, Peter H <peter_hong@fintek.com.tw>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Peter
-
-Somehow this patch entered my mail limbo. Sorry about that.
-
-Could you remove the brackets on the if/else? I think that for one
-liners they are not recommended.
-
-Also, I think it might be a good a idea to remove the __func__ from
-the dev_warn.
-
-Best regards!
-
-
-
-On Tue, Jun 28, 2016 at 3:46 AM, Ji-Ze Hong (Peter Hong)
-<hpeter@gmail.com> wrote:
-> Fix potential NULL pointer dereference on
-> 'commit 4da22f1418cb ("serial: 8250_fintek: fix the mismatched IRQ mode")'
+On Thu, Aug 18, 2016 at 3:29 PM, Sebastian Reichel <sre@kernel.org> wrote:
+> Hi Rob,
 >
-> We try to fix IRQ mode mismatch issue and add the following code to
-> detect IRQ Level or Edge mode.
+> Thanks for going forward and implementing this. I also started,
+> but was far from a functional state.
 >
-> struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
-> bool level_mode = irqd_is_level_type(irq_data);
+> On Wed, Aug 17, 2016 at 08:14:42PM -0500, Rob Herring wrote:
+>> Currently, devices attached via a UART are not well supported in
+>> the kernel. The problem is the device support is done in tty line
+>> disciplines, various platform drivers to handle some sideband, and
+>> in userspace with utilities such as hciattach.
+>>
+>> There have been several attempts to improve support, but they suffer from
+>> still being tied into the tty layer and/or abusing the platform bus. This
+>> is a prototype to show creating a proper UART bus for UART devices. It is
+>> tied into the serial core (really struct uart_port) below the tty layer
+>> in order to use existing serial drivers.
+>>
+>> This is functional with minimal testing using the loopback driver and
+>> pl011 (w/o DMA) UART under QEMU (modified to add a DT node for the slave
+>> device). It still needs lots of work and polish.
+>>
+>> TODOs:
+>> - Figure out the port locking. mutex plus spinlock plus refcounting? I'm
+>>   hoping all that complexity is from the tty layer and not needed here.
+>> - Split out the controller for uart_ports into separate driver. Do we see
+>>   a need for controller drivers that are not standard serial drivers?
+>> - Implement/test the removal paths
+>> - Fix the receive callbacks for more than character at a time (i.e. DMA)
+>> - Need better receive buffering than just a simple circular buffer or
+>>   perhaps a different receive interface (e.g. direct to client buffer)?
+>> - Test with other UART drivers
+>> - Convert a real driver/line discipline over to UART bus.
+>>
+>> Before I spend more time on this, I'm looking mainly for feedback on the
+>> general direction and structure (the interface with the existing serial
+>> drivers in particular).
 >
-> But *irq_data had not any check and pass to irqd_is_level_type(),
-> it may lead to potential NULL pointer dereference.
+> I had a look at the uart_dev API:
 >
-> Also modify detecting IRQ mode when fintek chip found.
+> int uart_dev_config(struct uart_device *udev, int baud, int parity, int bits, int flow);
+> int uart_dev_connect(struct uart_device *udev);
 >
-> Suggested-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-> Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_fintek.c | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-> index 737b4b3..9119d0c 100644
-> --- a/drivers/tty/serial/8250/8250_fintek.c
-> +++ b/drivers/tty/serial/8250/8250_fintek.c
-> @@ -212,8 +212,8 @@ int fintek_8250_probe(struct uart_8250_port *uart)
->  {
->         struct fintek_8250 *pdata;
->         struct fintek_8250 probe_data;
-> -       struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
-> -       bool level_mode = irqd_is_level_type(irq_data);
-> +       struct irq_data *irq_data;
-> +       bool level_mode = false; /* Default to Edge/High */
->
->         if (find_base_port(&probe_data, uart->port.iobase))
->                 return -ENODEV;
-> @@ -226,5 +226,14 @@ int fintek_8250_probe(struct uart_8250_port *uart)
->         uart->port.rs485_config = fintek_8250_rs485_config;
->         uart->port.private_data = pdata;
->
-> +       irq_data = irq_get_irq_data(uart->port.irq);
-> +       if (irq_data) {
-> +               level_mode = irqd_is_level_type(irq_data);
-> +       } else {
-> +               dev_warn(uart->port.dev,
-> +                        "%s: Can't get irq_data, set this port to Edge/High",
-> +                        __func__);
-> +       }
-> +
->         return fintek_8250_set_irq_mode(pdata, level_mode);
->  }
-> --
-> 1.9.1
->
+>   The flow control configuration should be done separately. e.g.:
+>   uart_dev_flow_control(struct uart_device *udev, bool enable);
 
+No objection, but out of curiosity, why?
 
+> int uart_dev_tx(struct uart_device *udev, u8 *buf, size_t count);
+> int uart_dev_rx(struct uart_device *udev, u8 *buf, size_t count);
+>
+>   UART communication does not have to be host-initiated, so this
+>   API requires polling. Either some function similar to poll in
+>   userspace is needed, or it should be implemented as callback.
 
--- 
-Ricardo Ribalda
+What's the userspace need? I'm assuming the only immediate consumers
+are in-kernel.
+
+Rob
