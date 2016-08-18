@@ -1,102 +1,88 @@
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Thu, 18 Aug 2016 17:14:21 +0200
-Message-ID: <227BE734-C9C1-4059-B0B4-EB47819703A8@goldelico.com>
-References: <20160818011445.22726-1-robh@kernel.org> <20160818152528.569eb426@lxorguk.ukuu.org.uk>
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH] serial: 8250_fintek: Fix potential NULL pointer dereference
+Date: Thu, 18 Aug 2016 18:22:38 +0200
+Message-ID: <CAPybu_0yBVLaCHNNGV-xxPq2Ku0e7Q1LqjP=T1PgpHfUdYSjAg@mail.gmail.com>
+References: <1467078390-2406-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160818152528.569eb426@lxorguk.ukuu.org.uk>
+In-Reply-To: <1467078390-2406-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, =?UTF-8?B?UEEyMCBUT00gVFNBSSDolKHlrpfkvZE=?= <tom_tsai@fintek.com.tw>, Peter H <peter_hong@fintek.com.tw>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Alan,
+Hi Peter
 
-> Am 18.08.2016 um 16:25 schrieb One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>:
-> 
-> On Wed, 17 Aug 2016 20:14:42 -0500
-> Rob Herring <robh@kernel.org> wrote:
-> 
-> This was proposed ages ago and the point clearly made that
-> 
-> a) the idea doesn't work because uarts are not required to use the uart
-> layer and even those that do sometimes only use half of it
-> 
-> b) that you should use the tty_port abstraction
-> 
-> So instead of just waiting some months and recycling the proposals it's
-> unfortunate that no listening and reworking was done.
-> 
-> https://lkml.org/lkml/2016/1/18/177
-> 
-> So I'm giving this a large neon flashing NAK, because none of the
-> problems have been addressed.
-> 
->> Currently, devices attached via a UART are not well supported in the
->> kernel. The problem is the device support is done in tty line disciplines,
->> various platform drivers to handle some sideband, and in userspace with
->> utilities such as hciattach.
-> 
-> For most platforms it works very nicely and out of the box. The only
-> real issue I have actually seen is the bandwidth issue from early tty
-> based 3G modems. That's not hard to fix with some tty buffer changes.
-> Basically you need a tty port pointer that is atomic exchangable and
-> points either to the usual tty queue logic or to a 'fastpath' handler
-> which just gets thrown a block of bytes and told to use them or lose them
-> - which is the interface the non n_tty ldiscs want anyway. That's exactly
-> what you would need to fix to support in kernel stuff as well. The tty
-> queue mechanism for devices that can receive in blocks just becomes a
-> fastpath.
-> 
-> There are some disgusting Android turds floating around out of tree where
-> people use things like userspace GPIO line control but you won't fix most
-> of those anyway because they are generally being used for user
-> space modules including dumb GPS where the US government rules won't allow
-> them to be open sourced anyway.
-> 
->> - Split out the controller for uart_ports into separate driver. Do we see
->>  a need for controller drivers that are not standard serial drivers?
-> 
-> As I told you over six months ago uart_port is not the correct
-> abstraction. You need to be working at the tty_port layer. The original
-> design of tty_port was indeed partly to push towards being able to have a
-> serial interface that is in use but not open to user space. The rather
-> nice rework that the maintainers have done to put the buffers in the
-> tty_port takes it closer still.
-> 
-> Plenty of the classic serial port interfaces also don't use the UART
-> layer including every USB device (which is most of them these days), SDIO
-> and others. USB has to be covered for this to be sensible.
+Somehow this patch entered my mail limbo. Sorry about that.
 
-It looks as if you try to solve a different problem than some of us. Maybe this is
-the reason why you get the impression that nobody is listening to your proposal
-(but that seems to be common for this topic - I have the impression that
-nobody is listening to my proposals... so don't mind).
+Could you remove the brackets on the if/else? I think that for one
+liners they are not recommended.
 
-I can only talk for my device where I just want to be able to write a driver that
-gets access to a low level physical UART within a SoC (a little abstracted
-by uart_port) to directly talk to a device connected to such an UART for reasons
-I have explained plenty of times.
+Also, I think it might be a good a idea to remove the __func__ from
+the dev_warn.
 
-Other devices may have orthogonal needs (or suspected needs) and hence
-a single solution may not fit everybody.
- 
-> 
-> Your changes also don't work because serial uart drivers are not obliged
-> to use any of the uart buffering helpers and particularly on the rx side
-> many do not do so and the performance hit would be too high.
+Best regards!
 
-The SoC I have, is using it.
 
-> 
-> It's been explained how to make it work with tty_port, every tty is a
-> dynamic file handle life time object bound to a tty_port. Every tty has a
-> tty_port, every tty driver has a tty_port.
 
-> 
-> Alan
+On Tue, Jun 28, 2016 at 3:46 AM, Ji-Ze Hong (Peter Hong)
+<hpeter@gmail.com> wrote:
+> Fix potential NULL pointer dereference on
+> 'commit 4da22f1418cb ("serial: 8250_fintek: fix the mismatched IRQ mode")'
+>
+> We try to fix IRQ mode mismatch issue and add the following code to
+> detect IRQ Level or Edge mode.
+>
+> struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
+> bool level_mode = irqd_is_level_type(irq_data);
+>
+> But *irq_data had not any check and pass to irqd_is_level_type(),
+> it may lead to potential NULL pointer dereference.
+>
+> Also modify detecting IRQ mode when fintek chip found.
+>
+> Suggested-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+> Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_fintek.c | 13 +++++++++++--
+>  1 file changed, 11 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+> index 737b4b3..9119d0c 100644
+> --- a/drivers/tty/serial/8250/8250_fintek.c
+> +++ b/drivers/tty/serial/8250/8250_fintek.c
+> @@ -212,8 +212,8 @@ int fintek_8250_probe(struct uart_8250_port *uart)
+>  {
+>         struct fintek_8250 *pdata;
+>         struct fintek_8250 probe_data;
+> -       struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
+> -       bool level_mode = irqd_is_level_type(irq_data);
+> +       struct irq_data *irq_data;
+> +       bool level_mode = false; /* Default to Edge/High */
+>
+>         if (find_base_port(&probe_data, uart->port.iobase))
+>                 return -ENODEV;
+> @@ -226,5 +226,14 @@ int fintek_8250_probe(struct uart_8250_port *uart)
+>         uart->port.rs485_config = fintek_8250_rs485_config;
+>         uart->port.private_data = pdata;
+>
+> +       irq_data = irq_get_irq_data(uart->port.irq);
+> +       if (irq_data) {
+> +               level_mode = irqd_is_level_type(irq_data);
+> +       } else {
+> +               dev_warn(uart->port.dev,
+> +                        "%s: Can't get irq_data, set this port to Edge/High",
+> +                        __func__);
+> +       }
+> +
+>         return fintek_8250_set_irq_mode(pdata, level_mode);
+>  }
+> --
+> 1.9.1
+>
 
-BR, Nikolaus
+
+
+-- 
+Ricardo Ribalda
