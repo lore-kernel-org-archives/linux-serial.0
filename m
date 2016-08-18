@@ -1,99 +1,102 @@
-From: Sebastian Reichel <sre@kernel.org>
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
 Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Thu, 18 Aug 2016 22:29:00 +0200
-Message-ID: <20160818202900.hyvm4hfxedifuefn@earth>
-References: <20160818011445.22726-1-robh@kernel.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="l3wrhatavbnsvhsx"
+Date: Thu, 18 Aug 2016 17:14:21 +0200
+Message-ID: <227BE734-C9C1-4059-B0B4-EB47819703A8@goldelico.com>
+References: <20160818011445.22726-1-robh@kernel.org> <20160818152528.569eb426@lxorguk.ukuu.org.uk>
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160818011445.22726-1-robh@kernel.org>
+In-Reply-To: <20160818152528.569eb426@lxorguk.ukuu.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+Hi Alan,
 
---l3wrhatavbnsvhsx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Am 18.08.2016 um 16:25 schrieb One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>:
+> 
+> On Wed, 17 Aug 2016 20:14:42 -0500
+> Rob Herring <robh@kernel.org> wrote:
+> 
+> This was proposed ages ago and the point clearly made that
+> 
+> a) the idea doesn't work because uarts are not required to use the uart
+> layer and even those that do sometimes only use half of it
+> 
+> b) that you should use the tty_port abstraction
+> 
+> So instead of just waiting some months and recycling the proposals it's
+> unfortunate that no listening and reworking was done.
+> 
+> https://lkml.org/lkml/2016/1/18/177
+> 
+> So I'm giving this a large neon flashing NAK, because none of the
+> problems have been addressed.
+> 
+>> Currently, devices attached via a UART are not well supported in the
+>> kernel. The problem is the device support is done in tty line disciplines,
+>> various platform drivers to handle some sideband, and in userspace with
+>> utilities such as hciattach.
+> 
+> For most platforms it works very nicely and out of the box. The only
+> real issue I have actually seen is the bandwidth issue from early tty
+> based 3G modems. That's not hard to fix with some tty buffer changes.
+> Basically you need a tty port pointer that is atomic exchangable and
+> points either to the usual tty queue logic or to a 'fastpath' handler
+> which just gets thrown a block of bytes and told to use them or lose them
+> - which is the interface the non n_tty ldiscs want anyway. That's exactly
+> what you would need to fix to support in kernel stuff as well. The tty
+> queue mechanism for devices that can receive in blocks just becomes a
+> fastpath.
+> 
+> There are some disgusting Android turds floating around out of tree where
+> people use things like userspace GPIO line control but you won't fix most
+> of those anyway because they are generally being used for user
+> space modules including dumb GPS where the US government rules won't allow
+> them to be open sourced anyway.
+> 
+>> - Split out the controller for uart_ports into separate driver. Do we see
+>>  a need for controller drivers that are not standard serial drivers?
+> 
+> As I told you over six months ago uart_port is not the correct
+> abstraction. You need to be working at the tty_port layer. The original
+> design of tty_port was indeed partly to push towards being able to have a
+> serial interface that is in use but not open to user space. The rather
+> nice rework that the maintainers have done to put the buffers in the
+> tty_port takes it closer still.
+> 
+> Plenty of the classic serial port interfaces also don't use the UART
+> layer including every USB device (which is most of them these days), SDIO
+> and others. USB has to be covered for this to be sensible.
 
-Hi Rob,
+It looks as if you try to solve a different problem than some of us. Maybe this is
+the reason why you get the impression that nobody is listening to your proposal
+(but that seems to be common for this topic - I have the impression that
+nobody is listening to my proposals... so don't mind).
 
-Thanks for going forward and implementing this. I also started,
-but was far from a functional state.
+I can only talk for my device where I just want to be able to write a driver that
+gets access to a low level physical UART within a SoC (a little abstracted
+by uart_port) to directly talk to a device connected to such an UART for reasons
+I have explained plenty of times.
 
-On Wed, Aug 17, 2016 at 08:14:42PM -0500, Rob Herring wrote:
-> Currently, devices attached via a UART are not well supported in
-> the kernel. The problem is the device support is done in tty line
-> disciplines, various platform drivers to handle some sideband, and
-> in userspace with utilities such as hciattach.
->
-> There have been several attempts to improve support, but they suffer from
-> still being tied into the tty layer and/or abusing the platform bus. This
-> is a prototype to show creating a proper UART bus for UART devices. It is
-> tied into the serial core (really struct uart_port) below the tty layer
-> in order to use existing serial drivers.
->=20
-> This is functional with minimal testing using the loopback driver and
-> pl011 (w/o DMA) UART under QEMU (modified to add a DT node for the slave
-> device). It still needs lots of work and polish.
->=20
-> TODOs:
-> - Figure out the port locking. mutex plus spinlock plus refcounting? I'm
->   hoping all that complexity is from the tty layer and not needed here.
-> - Split out the controller for uart_ports into separate driver. Do we see
->   a need for controller drivers that are not standard serial drivers?
-> - Implement/test the removal paths
-> - Fix the receive callbacks for more than character at a time (i.e. DMA)
-> - Need better receive buffering than just a simple circular buffer or
->   perhaps a different receive interface (e.g. direct to client buffer)?
-> - Test with other UART drivers
-> - Convert a real driver/line discipline over to UART bus.
->=20
-> Before I spend more time on this, I'm looking mainly for feedback on the
-> general direction and structure (the interface with the existing serial
-> drivers in particular).
+Other devices may have orthogonal needs (or suspected needs) and hence
+a single solution may not fit everybody.
+ 
+> 
+> Your changes also don't work because serial uart drivers are not obliged
+> to use any of the uart buffering helpers and particularly on the rx side
+> many do not do so and the performance hit would be too high.
 
-I had a look at the uart_dev API:
+The SoC I have, is using it.
 
-int uart_dev_config(struct uart_device *udev, int baud, int parity, int bit=
-s, int flow);
-int uart_dev_connect(struct uart_device *udev);
+> 
+> It's been explained how to make it work with tty_port, every tty is a
+> dynamic file handle life time object bound to a tty_port. Every tty has a
+> tty_port, every tty driver has a tty_port.
 
-  The flow control configuration should be done separately. e.g.:
-  uart_dev_flow_control(struct uart_device *udev, bool enable);
+> 
+> Alan
 
-int uart_dev_tx(struct uart_device *udev, u8 *buf, size_t count);
-int uart_dev_rx(struct uart_device *udev, u8 *buf, size_t count);
-
-  UART communication does not have to be host-initiated, so this
-  API requires polling. Either some function similar to poll in
-  userspace is needed, or it should be implemented as callback.
- =20
--- Sebastian
-
---l3wrhatavbnsvhsx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJXthqJAAoJENju1/PIO/qaJroQAI8Iyb5InhWdQk3s1cEQHSKh
-gtEvQV4GOmZ6fRlbTergD31fUuiayMi0WMxauWLRKZIpXxFiNSRwiuC2CIz411TV
-EfN1JoSLxF5wCrjDu9ez6BldC41g/jDo/GwAkryQ7xiqihJ8CryYAIqGLjFZ01sn
-h3iZq/CZghh8qacWdgT1XUtNZ2lcKYISzvNnRysziUyFSICmsHnQr3Vx74Ar0hYv
-5uPfjoI7SSheFWydCIcDs/fScAfJnoRboWrm3TGut0Q6MmJZCS/JZyCZUERIoacy
-Slg2Y2aAVtuwjzKb/GYA0ftgJn3RlefYftneDiGoVh0EPXESMYUi0fccDdBUafIB
-MXOPfUr4rMXpSoDo+hNSoTa5DcLfTIzjjIFJmiV8STgNkXhSo067BZDvziyVx/LY
-2j7VbMQTX4MMM7OXg/MWTF6i4o+Gag0TBfuKngy2tR4csTmtE6N+85njaTYutRLj
-X2hQeodW7Jwx7RV6mKtoscne66CmjaFAkJF8PjPIQkgCuiejpb4PM6bEsEkOcC3h
-uYrfskuGVsmaVzRvizCSV2X3yRBKpE3IQHmITvWeR+CRVmKs8NU5kCOnyy/+ASXO
-veVugvLw4Dr0ZaGcqR13BBW9bmQ8a6uBfznV9UL6KHOGlP4IqySf+1OlMWiYeYNV
-0uJiK8W7yTedoCcVU7uA
-=0Po/
------END PGP SIGNATURE-----
-
---l3wrhatavbnsvhsx--
+BR, Nikolaus
