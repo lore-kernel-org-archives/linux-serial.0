@@ -1,77 +1,88 @@
 From: Sebastian Reichel <sre@kernel.org>
 Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Fri, 19 Aug 2016 16:44:29 +0200
-Message-ID: <20160819144428.akddnwfl5g5qhtq3@earth>
+Date: Fri, 19 Aug 2016 17:36:25 +0200
+Message-ID: <20160819153625.oqwkj7rx23bmqji7@earth>
 References: <20160818011445.22726-1-robh@kernel.org>
- <20160818202900.hyvm4hfxedifuefn@earth>
- <CAL_Jsq+OfT1AXaEKOgZ4oVfpVZhu=55dYoHTG7D_prpnTqpeOg@mail.gmail.com>
- <20160819052125.ze5zilppwoe3f2lx@earth>
- <20160819120305.4a3b1b54@lxorguk.ukuu.org.uk>
+ <20160818152528.569eb426@lxorguk.ukuu.org.uk>
+ <CAL_Jsq+_uyycf+_eGr+864juxM4153ctoUMz9r=+tZG_Or7zUw@mail.gmail.com>
+ <20160819123808.05b9dc3c@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="xrml2jhy6jbpr337"
+        protocol="application/pgp-signature"; boundary="4ce7b3myenlvgczx"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160819120305.4a3b1b54@lxorguk.ukuu.org.uk>
+In-Reply-To: <20160819123808.05b9dc3c@lxorguk.ukuu.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
 To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
 
---xrml2jhy6jbpr337
+--4ce7b3myenlvgczx
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi Alan,
+Hi,
 
-On Fri, Aug 19, 2016 at 12:03:05PM +0100, One Thousand Gnomes wrote:
-> > I meant "Either some function similar to userspace's poll() is
-> > needed, ...". Something like uart_dev_wait_for_rx()
->=20
-> You can't really do that - it might never return and then how do
-> you want to handle timeouts and cleanups
+On Fri, Aug 19, 2016 at 12:38:08PM +0100, One Thousand Gnomes wrote:
+> There are also some other slight complications when you look at
+> real world implementations. Android devices tend to keep the GPS
+> in userspace so most of them can't use some magic extra API but
+> just drive GPIO lines via the sysfs GPIO interface. Most Android
+> doesn't use the kernel BT stack either.
 
-Well there could be some timeout. As I said, I was thinking about
-an API similar to poll(), but I agree, that a callback based API
-is probably the better solution. It's simpler to implement and in
-most cases simpler to use.
+I don't get the reasoning for this one. What has it to do with
+an in-kernel API? People are also using libusb or doing i2c/spi
+=66rom userspace. Nevertheless we have an in-kernel API for those.
 
-> > Alternatively the rx function could be a callback, that
-> > is called when there is new data.
->=20
-> That's what the existing API gives you as an ldisc, it can't be
-> immediate in many cases however but must be buffered.
+> Quite a few Android and other embedded devices also do power
+> management by shutting off the UART, routing the rx line to an
+> edge triggered GPIO and on the interrupt flipping the UART back
+> on and losing the first byte, picking a protocol that can recover
+> from it.
+>
+> Your model doesn't I think cover that, although I am somewhat at a
+> loss as to how to do that nicely!
 
-I know and I think the ldisc API is fine in this regard. Also
-the buffering allows DMA, so that's obviously preferred.
+On OMAP this is supported by the serial driver via runtime PM and
+wakeirq.
 
-> > > I'm assuming the only immediate consumers are in-kernel. =20
-> >=20
-> > Yes, but the driver should be notified about incoming data.
+Actually my usecase for the API (bluetooth on Nokia N900, N950, N9),
+there is an extra GPIO for the power management (high =3D uart
+should be able to receive sth., low =3D uart can sleep). For this
+I can just disable the wakeirq in the UART by not adding it to DT
+and instead runtime manage it from the uart_dev child device.
+
+While we are on that topic: The omap-serial driver does not enable
+runtime PM by default, since it does not know if the remote side is
+ok with loosing the first byte(s). One is expected to enable it
+using the sysfs API.
+But I think it should be safe to enable runtime PM for the serial
+device in uart_dev_connect(). Due to the child device it will still
+be kept disabled, except when the uart_dev also implements runtime_pm.
 
 -- Sebastian
 
---xrml2jhy6jbpr337
+--4ce7b3myenlvgczx
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBCgAGBQJXtxtKAAoJENju1/PIO/qaAUEP/0pZt38WXTfx5lUI9bgBQYaW
-Hv+B23gbd76158vPyuEwuktxCoTXwvV1E3avLtycfnrsCxvzp3DhNI6pw5HP2lcB
-U4harpzxzP8aOwR8psWGs8t1JYJmzb7Y4aTn3Agi8pjPiS5lifvOlWpad07/4Z5k
-tMPi5wdTgDKG6Pt22loNJec86u40+OBgAtppwILqgiUYAzc4X+P0DZ3a4SMzQ7HJ
-P6bqk9OGmflrtWeiEc1kkAt3ElZxC+wRIRjlONpnJb5RichIVKMz6GasKkWNAvIG
-y8fTAf7cC2xaK0G1aHNPc1Yi8osCPEaHe5hLVwQSSoZmCLC0p6Ccs5hQZSCp/wIM
-5R7x8X1V5LqBnNB0h/wiXhKQxo1mKCQIZdsCEc3Cqi5ZCUtBphh1AZu6Tj6b4B3m
-mFNRIAS+pk2hgcmrrGEznZem1cSMQ1iTMAxky8Dxl+ynKeQQeK1nFTG5bT5ppMxD
-73G/b3AtdWkRlUgED5M5ZVVVQRcjdtpjMxUbsF8ePAfcMliOwIdkO6IyElxO/6TS
-pE0Xk0/oFj2puIgsTF3c9wN09BsmNq9pzgbdFBuuXOik6OPufbLLEx5YnzOIMzKv
-3rgnwTLbzApSt7nqq3YtShgTV9P/KmuvewNcHt1M4rHJbPoYGyFSn/jBheu6T+iJ
-ZR/3KfUgGfsaWb31DNJD
-=ZKrp
+iQIcBAEBCgAGBQJXtyd3AAoJENju1/PIO/qaboAP/1onyGUR1ttOiGK5fUYXBo/L
+KNbXwdYt19+HimKlCtMgk73dLOigMuU06bsKfouX/EfGT0Z+NEDMigs6zOdtccW2
+QCdK4F/Eb++V7v+7Nf5BCeGq7PR+N0bDFpR9kMClZocI6/g5sS+ShHumUgXwSvwa
+vzqMEzDF58fyMfydIfns50ot2RaQHgVK6wZhPEVO4atRQzLlEOBagZazEPL5rack
+05+w9UdJslDd8N5n9uUR5JFzf5dKQd4Ms5zYAVWXhBgUItYMbiCEdc+h/25ezK1z
+2fgmN2I0GRINohh9q8oCINujE8QkNJ3GXT5yZ5DKmlxOgI7w7D3DIjCkUd/L3fg3
+FN/ChbXaXV8D48Q/tS8vzQhacCJ4yI/HTxG0ntKCuDC93Bga0ketJ5j0dGFrGthI
+Xz6ZxeQLuVJCl/24gbuFaigA+2iCPdyfvEbnKeEK+0gt/YhUU572umcWltXVSE44
+J7Sec0VdELOVNQ5hU1u6aH2YN0cf8MFDVg6ZtNIPP3tLlw3S2dadeCvpCmBgs2fV
+feb/c0CyqrxKd9xkZ6OHbi802NbSj/8L1tA3QmXDicrXykkq9/w8hixw4pH6J82I
+NVNqTQhpovPMJx8y5QbbGoeReesOhF3DEVCItFGXI1cSA8+Ux9wJqCbem3Qa8Jdu
+omwWV6y/nJ79NRjjRe1W
+=zouI
 -----END PGP SIGNATURE-----
 
---xrml2jhy6jbpr337--
+--4ce7b3myenlvgczx--
