@@ -1,216 +1,77 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+From: Sebastian Reichel <sre@kernel.org>
 Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Fri, 19 Aug 2016 12:38:08 +0100
-Message-ID: <20160819123808.05b9dc3c@lxorguk.ukuu.org.uk>
+Date: Fri, 19 Aug 2016 16:44:29 +0200
+Message-ID: <20160819144428.akddnwfl5g5qhtq3@earth>
 References: <20160818011445.22726-1-robh@kernel.org>
-        <20160818152528.569eb426@lxorguk.ukuu.org.uk>
-        <CAL_Jsq+_uyycf+_eGr+864juxM4153ctoUMz9r=+tZG_Or7zUw@mail.gmail.com>
+ <20160818202900.hyvm4hfxedifuefn@earth>
+ <CAL_Jsq+OfT1AXaEKOgZ4oVfpVZhu=55dYoHTG7D_prpnTqpeOg@mail.gmail.com>
+ <20160819052125.ze5zilppwoe3f2lx@earth>
+ <20160819120305.4a3b1b54@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xrml2jhy6jbpr337"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_Jsq+_uyycf+_eGr+864juxM4153ctoUMz9r=+tZG_Or7zUw@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20160819120305.4a3b1b54@lxorguk.ukuu.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-> Plenty? Really?. Lets break down the tty drivers in the kernel which
-> don't use uart_port.
 
+--xrml2jhy6jbpr337
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-That's the wrong list - those that use uart port but don't always use the
-uart_insert_char helpers will also break. So you can start by adding
+Hi Alan,
 
-8250		
-amba-pl011
-atmel_serial
-bcm63xx_uart
-bfin_sport
-bfin_sport_uart
-crisv10
-efm32-uart
-etraxfs-uart
-fsl_lpuart
-icom
-ifx6060
-imx
-ioc3_serial
-ioc4_serial
-kgdb_nmi
-lantiq
-lpc32xx_hs
-m32r_sio
-men_z135_uart
-meson_uart
-mpc52xx_uart
-mps2-uart
-mpsc
-msm_serial
-mux
-mvebu-uart
-mxs-auart
-pch_uart
-pic32_uart
-pmac_zilog
-samsung
-serial-tegra
-sh-sci
-sirfsoc_uart
-sn_console
-sunhv
-sunsab
-sunsu
-sunzilog
-tilegx
-timbuart
-uartline
-ucc_uart
-vt8500_serial
+On Fri, Aug 19, 2016 at 12:03:05PM +0100, One Thousand Gnomes wrote:
+> > I meant "Either some function similar to userspace's poll() is
+> > needed, ...". Something like uart_dev_wait_for_rx()
+>=20
+> You can't really do that - it might never return and then how do
+> you want to handle timeouts and cleanups
 
-Some of those you could handle reasonably easily as they are byte
-oriented, however if your code takes any longer in clock terms to run on
-the low end devices you'll be a regression. Some of these don't use
-uart_insert_char because the cost of that tips them over the available
-clock times.
+Well there could be some timeout. As I said, I was thinking about
+an API similar to poll(), but I agree, that a callback based API
+is probably the better solution. It's simpler to implement and in
+most cases simpler to use.
 
-Quite a few of them however use tty_insert_flip_string or the other
-buffer handling functions, particularly when doing DMA so you would have
-to do significant work to fit them into some 'byte callback' type model.
+> > Alternatively the rx function could be a callback, that
+> > is called when there is new data.
+>=20
+> That's what the existing API gives you as an ldisc, it can't be
+> immediate in many cases however but must be buffered.
 
-This again is why it needs to be at the tty_port layer. The receive paths
-can be cleanly intercepted at the point you'd push to an ldisc - the
-driver level code on rx doesn't care if you have a tty attached, because
-bytes arrived whether the tty is open or not.
+I know and I think the ldisc API is fine in this regard. Also
+the buffering allows DMA, so that's obviously preferred.
 
-In the case of 8250 all the recent x86 class systems which have things
-like bluetooth attached via the LPSS are using 8250 and with DMA so your
-interface simply won't work.
+> > > I'm assuming the only immediate consumers are in-kernel. =20
+> >=20
+> > Yes, but the driver should be notified about incoming data.
 
-There are also some other slight complications when you look at real
-world implementations. Android devices tend to keep the GPS in userspace
-so most of then can't use some magic extra API but just drive GPIO lines
-via the sysfs GPIO interface. Most Android doesn't use the kernel BT
-stack either.
+-- Sebastian
 
-Quite a few Android and other embedded devices also do power management by
-shutting off the UART, routing the rx line to an edge triggered GPIO and
-on the interrupt flipping the UART back on and losing the first byte,
-picking a protocol that can recover from it.
+--xrml2jhy6jbpr337
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Your model doesn't I think cover that, although I am somewhat at a loss as
-to how to do that nicely!
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-> Consoles/Debug:
-> arch/alpha/kernel/srmcons.c
-> arch/cris/arch-v10/kernel/debugport.c
-> arch/ia64/hp/sim/simserial.c
-> arch/m68k/emu/nfcon.c
-> arch/parisc/kernel/pdc_cons.c
-> arch/xtensa/platforms/iss/console.c
-> drivers/char/ttyprintk.c
-> drivers/tty/bfin_jtag_comm.c
-> drivers/tty/ehv_bytechan.c
-> drivers/tty/hvc/hvc_console.c
-> drivers/tty/hvc/hvcs.c
-> drivers/tty/hvc/hvsi.c
-> drivers/tty/serial/kgdb_nmi.c
-> drivers/tty/mips_ejtag_fdc.c
-> drivers/tty/metag_da.c
-> drivers/misc/pti.c
+iQIcBAEBCgAGBQJXtxtKAAoJENju1/PIO/qaAUEP/0pZt38WXTfx5lUI9bgBQYaW
+Hv+B23gbd76158vPyuEwuktxCoTXwvV1E3avLtycfnrsCxvzp3DhNI6pw5HP2lcB
+U4harpzxzP8aOwR8psWGs8t1JYJmzb7Y4aTn3Agi8pjPiS5lifvOlWpad07/4Z5k
+tMPi5wdTgDKG6Pt22loNJec86u40+OBgAtppwILqgiUYAzc4X+P0DZ3a4SMzQ7HJ
+P6bqk9OGmflrtWeiEc1kkAt3ElZxC+wRIRjlONpnJb5RichIVKMz6GasKkWNAvIG
+y8fTAf7cC2xaK0G1aHNPc1Yi8osCPEaHe5hLVwQSSoZmCLC0p6Ccs5hQZSCp/wIM
+5R7x8X1V5LqBnNB0h/wiXhKQxo1mKCQIZdsCEc3Cqi5ZCUtBphh1AZu6Tj6b4B3m
+mFNRIAS+pk2hgcmrrGEznZem1cSMQ1iTMAxky8Dxl+ynKeQQeK1nFTG5bT5ppMxD
+73G/b3AtdWkRlUgED5M5ZVVVQRcjdtpjMxUbsF8ePAfcMliOwIdkO6IyElxO/6TS
+pE0Xk0/oFj2puIgsTF3c9wN09BsmNq9pzgbdFBuuXOik6OPufbLLEx5YnzOIMzKv
+3rgnwTLbzApSt7nqq3YtShgTV9P/KmuvewNcHt1M4rHJbPoYGyFSn/jBheu6T+iJ
+ZR/3KfUgGfsaWb31DNJD
+=ZKrp
+-----END PGP SIGNATURE-----
 
-You could attach a dongle of some sort to a supposed console/debug port
-and people do that kind of crap on embedded devices to save a few cents.
-The ones above look fine though.
-
-> SDIO UART:
-> drivers/mmc/card/sdio_uart.c
-
-This is an area that definitely needs covering, except that the way the
-power works may be completely opaque to the OS if it's something like an
-ACPI OpRegion controlling it.
-
-> S390 (don't think BT dongle is a use case):
-> drivers/s390/char/con3215.c
-> drivers/s390/char/sclp_tty.c
-> drivers/s390/char/sclp_vt220.c
-> drivers/s390/char/tty3270.c
-
-I would prefer to think of the fact BT on S390 *would* work as a test of
-the API being right.
-
-> Firewire serial:
-> drivers/staging/fwserial/fwserial.c
-> 
-> Amiga serial:
-> drivers/tty/amiserial.c
-> 
-> Android emulator:
-> drivers/tty/goldfish.c
-> 
-> Multi-port serial boards (standard connectors and not embedded with
-> sideband signals):
-> drivers/tty/cyclades.c
-> drivers/tty/isicom.c
-> drivers/tty/moxa.c
-> drivers/tty/mxser.c
-> drivers/tty/rocket.c
-> drivers/tty/synclink.c
-> drivers/tty/synclink_gt.c
-> drivers/tty/synclinkmp.c
-> drivers/char/pcmcia/synclink_cs.c
-> drivers/ipack/devices/ipoctal.c
-> drivers/staging/dgnc/dgnc_tty.c
-> 
-> Modems (already a slave device):
-> drivers/isdn/capi/capi.c
-> drivers/isdn/gigaset/interface.c
-> drivers/isdn/i4l/isdn_tty.c
-> drivers/tty/nozomi.c
-> drivers/tty/ipwireless/tty.c
-> drivers/tty/serial/ifx6x60.c
-> drivers/net/usb/hso.c
-> drivers/staging/gdm724x/gdm_tty.c
-> drivers/usb/class/cdc-acm.c
-> 
-> USB:
-> drivers/usb/gadget/function/u_serial.c
-> drivers/usb/serial/usb-serial.c
-
-Your list for USB is misleading. Just about every USB serial port uses
-usb-serial as a midlayer so you are basically saying "Let's make a giant
-weird special case". Just listing usb-serial would be like just listing
-serial-core and saying you only support one device.
-
-> That leaves usb-serial. If the current support is good enough, then
-> that will continue to work (as you said elsewhere, can't break
-> userspace). If someone really wants to do USB serial and wire in
-> sideband controls, then we could provide a host driver that hooks into
-> usb_serial_port.
-
-Alreay happens when people are doing strange things nailing legacy
-devices to HSIC/SSIC. USB is not just a pile of external cables that
-always have the plug upside down, it has specifications for directly
-routed low voltage on PCB consumers and bridges.
-
-The fact you want two different host drivers and two APIs for the same
-object connected to two identical interfaces but on different busses
-should be raising alarm bells. We don't have different interfaces for
-NE2000 over PCI or NE2000 over ISA !
-
-> > Your changes also don't work because serial uart drivers are not obliged
-> > to use any of the uart buffering helpers and particularly on the rx side
-> > many do not do so and the performance hit would be too high.  
-> 
-> Do you have an example?
-> 
-> The only uart buffering helper is for the receive side with
-> uart_insert_char. Sure, a character at a time is not efficient, but
-> that is easily rectified. Or do you mean something else?
-
-Not all of the uart drivers even use uart_insert_char. It's a convenience
-helper that most of them bypass because it's completely useless if you
-are doing things like DMA. Even the modern x86 PC UARTs don't and can't
-use uart_insert_char and that basically is a killer.
-
-Alan
+--xrml2jhy6jbpr337--
