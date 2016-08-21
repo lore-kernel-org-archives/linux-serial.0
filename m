@@ -1,50 +1,52 @@
-From: Julio Guerra <julio-wf23HAOg02MWenYVfaLwtA@public.gmane.org>
-Subject: Re: cdc_acm bug? read buffer bytes shifted
-Date: Sun, 21 Aug 2016 14:11:35 +0200
-Message-ID: <aac2dc3d-f580-3acd-d7dd-5b415279ac2f@farjump.io>
-References: <2c59e268-9fd6-172b-1803-074aa4e11f27@farjump.io>
- <1471692758.29854.0.camel@suse.com>
- <4bffb2dd-de01-8819-cf44-c4fb1357ecd4@farjump.io>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [RFC PATCH 0/3] UART slave device bus
+Date: Sun, 21 Aug 2016 18:09:10 +0100
+Message-ID: <20160821180910.51cf919d@lxorguk.ukuu.org.uk>
+References: <20160818011445.22726-1-robh@kernel.org>
+        <20160818202900.hyvm4hfxedifuefn@earth>
+        <CAL_Jsq+OfT1AXaEKOgZ4oVfpVZhu=55dYoHTG7D_prpnTqpeOg@mail.gmail.com>
+        <20160819052125.ze5zilppwoe3f2lx@earth>
+        <ACEF800E-8DB3-4345-ADE2-15C99F3659D5@goldelico.com>
+        <20160819120631.5fe2af0d@lxorguk.ukuu.org.uk>
+        <61F43885-BE05-482C-9AD6-B52A2DA166B8@goldelico.com>
+        <20160820142226.6121e76d@lxorguk.ukuu.org.uk>
+        <CC150758-1D16-4BB7-A35B-1A7F4D061C7C@goldelico.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <4bffb2dd-de01-8819-cf44-c4fb1357ecd4-wf23HAOg02MWenYVfaLwtA@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CC150758-1D16-4BB7-A35B-1A7F4D061C7C@goldelico.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Sebastian Reichel <sre@kernel.org>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
->>> Another example:
->>>> 00 00 00 00 00 00 00 01
->>> ...
->>>> 01 00 00 00 00 00 00 00
->>> ...
->>>> 00 01 00 00 00 00 00 00
->>> ...
->>>> 00 00 01 00 00 00 00 00
->>> after a random number of times, while usbmon shows the usb payload
->>> "00 00 00 00 00 00 00 01".
->>
->> Hi, how many bytes does read() return?
->>
+> Let me ask a question about your centralized and pre-cooked buffering approach.
 > 
-> Exactly 8 bytes, always. I set the tty in raw non-canonical mode with
-> vmin = 8 and vtime = 0. I also tried with vmin = 1 and did the copy of
-> exactly 8 bytes by looping in userspace, without any improvement.
-> 
-> I wrote a small workaround for now that detects this problem (because I
-> exactly know what the buffer is supposed to look like) to close() and
-> re-open() the device. The next read buffer is then correct.
-> 
+> As far as I see, even then the kernel API must notify the driver at the right moment
+> that a new block has arrived. Right?
 
-Some more precisions: I just had access to the FTDI version of the
-device instead of the Microchip one and the bug did not appear under the
-ftdi_sio driver, by running the previous script approx. 5 minutes.
+The low level driver queues words (data byte, flag byte)
+The buffer processing workqueue picks those bytes from the queue and
+atomically empties the queue
+The workqueue involves the receive handler.
 
--- 
-Julio Guerra
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> But how does the kernel API know how long such a block is?
+
+It's as long as the data that has arrived in that time.
+
+> Usually there is a start byte/character, sometimes a length indicator, then payload data,
+> some checksum and finally a stop byte/character. For NMEA it is $, no length, * and \r\n.
+> For other serial protocols it might be AT, no length, and \r. Or something different.
+> HCI seems to use 2 byte op-code or 1 byte event code and 1 byte parameter length.
+
+It doesn't look for any kind of protocol block headers. The routine
+invoked by the work queue does any frame recovery.
+
+> So I would even conclude that you usually can't even use DMA based UART receive
+> processing for arbitrary and not well-defined protocols. Or have to assume that the
+
+We do, today for bluetooth and other protocols just fine - it's all about
+data flows not about framing in the protocol sense.
+
+Alan
