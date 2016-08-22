@@ -1,11 +1,14 @@
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] serial: vt8500_serial: Fix a parameter of find_first_zero_bit.
-Date: Sun, 21 Aug 2016 23:20:25 +0200
-Message-ID: <1471814425-18949-1-git-send-email-christophe.jaillet@wanadoo.fr>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] serial: vt8500_serial: Fix a parameter of
+ find_first_zero_bit.
+Date: Mon, 22 Aug 2016 10:42:28 +0200
+Message-ID: <2512469.eM8MYFl15l@wuerfel>
+References: <1471814425-18949-1-git-send-email-christophe.jaillet@wanadoo.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1471814425-18949-1-git-send-email-christophe.jaillet@wanadoo.fr>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -15,37 +18,55 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux@prisktech.co.nz, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>, kernel-janitors@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: gregkh@linuxfoundation.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, linux@prisktech.co.nz, Christophe JAILLET <christophe.jaillet@wanadoo.fr>, linux-serial@vger.kernel.org, jslaby@suse.com
 List-Id: linux-serial@vger.kernel.org
 
-VGhlIDJuZCBwYXJhbWV0ZXIgb2YgJ2ZpbmRfZmlyc3RfemVyb19iaXQnIGlzIHRoZSBudW1iZXIg
-b2YgYml0cyB0byBzZWFyY2guCkluIHRoaXMgY2FzZSwgd2UgYXJlIHBhc3NpbmcgJ3NpemVvZih2
-dDg1MDBfcG9ydHNfaW5fdXNlKScuCid2dDg1MDBfcG9ydHNfaW5fdXNlJyBpcyBhbiAndW5zaWdu
-ZWQgbG9uZycuIFNvIHRoZSBzaXplb2YgaXMgbGlrZWx5IHRvCnJldHVybiA0LgoKQSBmZXcgbGlu
-ZXMgYmVsb3csIHdlIGNoZWNrIGlmIGl0IGlzIGJlbG93IFZUODUwMF9NQVhfUE9SVFMsIHdoaWNo
-IGlzIDYuCgpJdCBpcyBsaWtlbHkgdGhhdCB0aGUgbnVtYmVyIG9mIGJpdHMgaW4gYSBsb25nIHdh
-cyBleHBlY3RlZCBoZXJlLCBzbyB1c2UKQklUU19QRVJfTE9ORyBpbnN0ZWFkLgoKCkl0IGhhcyBi
-ZWVuIHNwb3R0ZWQgYnkgdGhlIGZvbGxvd2luZyBjb2NjaW5lbGxlIHNjcmlwdDoKQEAKZXhwcmVz
-c2lvbiByZXQsIHg7CgpAQAoqICByZXQgPSBcKGZpbmRfZmlyc3RfYml0IFx8IGZpbmRfZmlyc3Rf
-emVyb19iaXRcKSAoeCwgc2l6ZW9mKC4uLikpOwoKU2lnbmVkLW9mZi1ieTogQ2hyaXN0b3BoZSBK
-QUlMTEVUIDxjaHJpc3RvcGhlLmphaWxsZXRAd2FuYWRvby5mcj4KLS0tCk90aGVyIG9wdGlvbnMg
-YXJlIHBvc3NpYmxlOgogIC0gJ3Z0ODUwMF9wb3J0c19pbl91c2UnIGJlaW5nIGEgJ3Vuc2lnbmVk
-IGxvbmcnLCB1c2UgZmZ6IHRvIHJlZHVjZQogICAgY29kZSB2ZXJib3NpdHkKICAtIFZUODUwMF9N
-QVhfUE9SVFMsIGluIG9yZGVyIHRvIGJlIGNvbnNpc3RlbnQgd2l0aCB0aGUgdGVzdCBiZWxvdwot
-LS0KIGRyaXZlcnMvdHR5L3NlcmlhbC92dDg1MDBfc2VyaWFsLmMgfCAyICstCiAxIGZpbGUgY2hh
-bmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJz
-L3R0eS9zZXJpYWwvdnQ4NTAwX3NlcmlhbC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3Z0ODUwMF9z
-ZXJpYWwuYwppbmRleCAyM2NmYzVlMTZiNDUuLjkzNTA3NmM1MGNiMSAxMDA2NDQKLS0tIGEvZHJp
-dmVycy90dHkvc2VyaWFsL3Z0ODUwMF9zZXJpYWwuYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwv
-dnQ4NTAwX3NlcmlhbC5jCkBAIC02NjQsNyArNjY0LDcgQEAgc3RhdGljIGludCB2dDg1MDBfc2Vy
-aWFsX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiAJaWYgKHBvcnQgPCAwKSB7
-CiAJCS8qIGNhbGN1bGF0ZSB0aGUgcG9ydCBpZCAqLwogCQlwb3J0ID0gZmluZF9maXJzdF96ZXJv
-X2JpdCgmdnQ4NTAwX3BvcnRzX2luX3VzZSwKLQkJCQkJc2l6ZW9mKHZ0ODUwMF9wb3J0c19pbl91
-c2UpKTsKKwkJCQkJICAgQklUU19QRVJfTE9ORyk7CiAJfQogCiAJaWYgKHBvcnQgPj0gVlQ4NTAw
-X01BWF9QT1JUUykKLS0gCjIuNy40CgoKLS0tCkwnYWJzZW5jZSBkZSB2aXJ1cyBkYW5zIGNlIGNv
-dXJyaWVyIMOpbGVjdHJvbmlxdWUgYSDDqXTDqSB2w6lyaWZpw6llIHBhciBsZSBsb2dpY2llbCBh
-bnRpdmlydXMgQXZhc3QuCmh0dHBzOi8vd3d3LmF2YXN0LmNvbS9hbnRpdmlydXMKCgpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVs
-IG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDov
-L2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+On Sunday, August 21, 2016 11:20:25 PM CEST Christophe JAILLET wrote:
+> The 2nd parameter of 'find_first_zero_bit' is the number of bits to search.
+> In this case, we are passing 'sizeof(vt8500_ports_in_use)'.
+> 'vt8500_ports_in_use' is an 'unsigned long'. So the sizeof is likely to
+> return 4.
+> 
+> A few lines below, we check if it is below VT8500_MAX_PORTS, which is 6.
+> 
+> It is likely that the number of bits in a long was expected here, so use
+> BITS_PER_LONG instead.
+> 
+> 
+> It has been spotted by the following coccinelle script:
+> @@
+> expression ret, x;
+> 
+> @@
+> *  ret = \(find_first_bit \| find_first_zero_bit\) (x, sizeof(...));
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> Other options are possible:
+>   - 'vt8500_ports_in_use' being a 'unsigned long', use ffz to reduce
+>     code verbosity
+>   - VT8500_MAX_PORTS, in order to be consistent with the test below
+
+Sorry, but I'm not following the logic here.
+
+> ---
+>  drivers/tty/serial/vt8500_serial.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+> index 23cfc5e16b45..935076c50cb1 100644
+> --- a/drivers/tty/serial/vt8500_serial.c
+> +++ b/drivers/tty/serial/vt8500_serial.c
+> @@ -664,7 +664,7 @@ static int vt8500_serial_probe(struct platform_device *pdev)
+>  	if (port < 0) {
+>  		/* calculate the port id */
+>  		port = find_first_zero_bit(&vt8500_ports_in_use,
+> -					sizeof(vt8500_ports_in_use));
+> +					   BITS_PER_LONG);
+>  	}
+
+You argue that the two have the same meaning, which I see, but
+why is it better than the existing code?
+
+	Arnd
