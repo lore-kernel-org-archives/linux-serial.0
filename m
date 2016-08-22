@@ -1,40 +1,59 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+From: Sebastian Reichel <sre@kernel.org>
 Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Mon, 22 Aug 2016 18:38:49 +0100
-Message-ID: <20160822183849.6dfdb9d2@lxorguk.ukuu.org.uk>
+Date: Mon, 22 Aug 2016 22:00:28 +0200
+Message-ID: <20160822200026.4i32vakhzipv7asl@earth>
 References: <20160818011445.22726-1-robh@kernel.org>
-        <12886761.WF058qtZp8@wuerfel>
-        <CAL_JsqL1s9QTc+xVXafcHmyiH+6Yy0Ded+JbeYhTtYNxLtWREg@mail.gmail.com>
-        <2775954.hrE2UdODgU@wuerfel>
-        <CAL_Jsq+tft4zsoOeE0WvMR3W9hAXEKzz35CgFtNJ6+P82uy-3A@mail.gmail.com>
-        <20160822180254.5c95af7c@lxorguk.ukuu.org.uk>
-        <CAL_JsqLe74GYN+j5muoCcnEX=BRu8cCvacRG0Xz7i+AEwxbDZg@mail.gmail.com>
+ <12886761.WF058qtZp8@wuerfel>
+ <CAL_JsqL1s9QTc+xVXafcHmyiH+6Yy0Ded+JbeYhTtYNxLtWREg@mail.gmail.com>
+ <2775954.hrE2UdODgU@wuerfel>
+ <CAL_Jsq+tft4zsoOeE0WvMR3W9hAXEKzz35CgFtNJ6+P82uy-3A@mail.gmail.com>
+ <20160822180254.5c95af7c@lxorguk.ukuu.org.uk>
+ <CAL_JsqLe74GYN+j5muoCcnEX=BRu8cCvacRG0Xz7i+AEwxbDZg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lwgqzkxtdv4gdmn3"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <CAL_JsqLe74GYN+j5muoCcnEX=BRu8cCvacRG0Xz7i+AEwxbDZg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+
+--lwgqzkxtdv4gdmn3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Mon, Aug 22, 2016 at 12:30:27PM -0500, Rob Herring wrote:
+> On Mon, Aug 22, 2016 at 12:02 PM, One Thousand Gnomes
+> <gnomes@lxorguk.ukuu.org.uk> wrote:
+> >> > I think there are two other valuable features provided by serio:
+> >> >
+> >> > - an existing set of drivers written to the API
+> >> > - the implementation of the tty_ldisc
+> >>
+> >> True, though I'd expect little of the data flow part of it to be reuse=
+d.
+> >
+> > Then your design is broken.
+>=20
 > I'm talking about serio, not my design which I already said the
 > receive side at least needs work.
-> 
+>=20
 > The serio API for rx and tx is a single character at a time. I thought
 > we agreed that's not sufficient for things like BT.
-
-Yes.
-
-> 
+>=20
 > >> - a child of the uart node
 > >> - a reg property containing the line number if the parent has multiple
-> >> uarts (I'd expect this to rarely be used).  
+> >> uarts (I'd expect this to rarely be used).
 > >
 > > That surprises me as for current x86 platforms it would be the norm,
-> > except that we use ACPI.  
-> 
+> > except that we use ACPI.
+>=20
 > Exactly, we're talking DT bindings here. Each port will be a separate
 > node otherwise things like serial aliases and stdout-path won't work
 > correctly. Compatible strings for 8250 uarts are for a single port.
@@ -43,76 +62,64 @@ Yes.
 > PPC CPM). But it doesn't matter as reg can handle this case just fine
 > if we need to.
 
-For the tty side by the way here's a first RFC of one approach we could
-take. This should (unless I missed anything) allow the core tty framework
-to be used directly from a kernel created tty object rather than one
-backed by a file.
+I would expect, that your imaginary example h/w also has one node
+per port using a mfd style h/w description:
 
-commit fcd072e755594f9c9c0533d45223f56f76e3d104
-Author: Alan <alan@linux.intel.com>
-Date:   Mon Aug 22 18:05:56 2016 +0100
+multi-uart-device {
+    uart1 {
+        child { };
+    };
+    uart2 {
+        child { };
+    };
+};
 
-    [RFC] tty_port: allow a port to be opened with a tty that has no file handle
-    
-    Let us create tty objects entirely in kernel space. Untested proposal to
-    show why all the ideas around rewriting half the uart stack are not needed.
-    
-    With this a kernel created non file backed tty object could be used to handle
-    data, and set terminal modes. Not all ldiscs can cope with this as N_TTY in
-    particular has to work back to the fs/tty layer.
-    
-    The tty_port code is however otherwise clean of file handles as far as I can
-    tell as is the low level tty port write path used by the ldisc, the
-    configuration low level interfaces and most of the ldiscs.
-    
-    Currently you don't have any exposure to see tty hangups because those are
-    built around the file layer. However a) it's a fixed port so you probably
-    don't care about that b) if you do we can add a callback and c) you almost
-    certainly don't want the userspace tear down/rebuild behaviour anyway.
-    
-    This should however be sufficient if we wanted for example to enumerate all
-    the bluetooth bound fixed ports via ACPI and make them directly available.
-    
-    It doesn't deal with the case of a user opening a port that's also kernel
-    opened and that would need some locking out (so it returned EBUSY if bound
-    to a kernel device of some kind). That needs resolving along with how you
-    "up" or "down" your new bluetooth device, or enumerate it while providing
-    the existing tty API to avoid regressions (and to debug).
-    
-    Alan
+> >> - baudrate and other line configuration (though I would expect the
+> >> slave driver to know all this and set it w/o DT. Also, we already have
+> >> a way to set baudrate in the parent node at least.)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 734a635..6210cff 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -855,7 +855,7 @@ static void tty_vhangup_session(struct tty_struct *tty)
- 
- int tty_hung_up_p(struct file *filp)
- {
--	return (filp->f_op == &hung_up_tty_fops);
-+	return (filp && filp->f_op == &hung_up_tty_fops);
- }
- 
- EXPORT_SYMBOL(tty_hung_up_p);
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index c3f9d93..606d9e5 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -335,7 +335,7 @@ EXPORT_SYMBOL(tty_port_lower_dtr_rts);
-  *	tty_port_block_til_ready	-	Waiting logic for tty open
-  *	@port: the tty port being opened
-  *	@tty: the tty device being bound
-- *	@filp: the file pointer of the opener
-+ *	@filp: the file pointer of the opener or NULL
-  *
-  *	Implement the core POSIX/SuS tty behaviour when opening a tty device.
-  *	Handles:
-@@ -369,7 +369,7 @@ int tty_port_block_til_ready(struct tty_port *port,
- 		tty_port_set_active(port, 1);
- 		return 0;
- 	}
--	if (filp->f_flags & O_NONBLOCK) {
-+	if (filp == NULL || (filp->f_flags & O_NONBLOCK)) {
- 		/* Indicate we are open */
- 		if (C_BAUD(tty))
- 			tty_port_raise_dtr_rts(port);
+I'm not sure if every slave driver knows this. Maybe some generic
+slave drivers will come up, once we have the infrastructure. So
+it could be useful to have the settings as optional properties.
+OTOH it can also be done once it is needed.
+
+> >> - other standard device properties for interrupt, gpios, regulators.
+> >>
+> >> Also to consider is whether muxing of multiple slaves is needed. It's
+> >> not anything I've seen come up, but it's not hard to imagine. I think
+> >> that can be considered later and shouldn't impact the initial binding
+> >> or infrastructure.
+> >
+> > You can describe the child of the serial device as a mux and the childr=
+en
+> > of the mux as whatever so it comes out fine when you get to that point.
+>=20
+> Yes, that's what I had in mind.
+
+I guess it can be discussed, when it becomes relevant. Until then
+let's not open another topic.
+
+-- Sebastian
+
+--lwgqzkxtdv4gdmn3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJXu1nYAAoJENju1/PIO/qaUE4P/2CHIz1XYi8lprjXVC2F02Kh
+WFa1a6nYgJmI6kRv5KP8jYs36t40rLUmh4nv+9UIdDDZhpODr6GvDSaeMWfeFM0j
++/U/q13HRa5ELATwmng4L1IQ7YJy/63clDHI8hgiZ1OLkdzArF3DxuC3qZOh1dqm
+zXmJvb4+KtuSXgLmJtItoLS0FmgbHze3LO8grwO7eS32GfaWmrHwWAC7LHJL8Cmf
+q8LbUnY+6ewcMnzmNKQKDMmpNBxJkfqDgSWX4tXK43LFW2jrEEpljvnxS+wFBKUe
+lnz8G3IX6otzdt2RTSGdFyNYFRn/JP1nlHm13uWM44oFJZvhvd1aKNED1KX5ol1g
+Hw1ws/VN1CWWXWH94D708LMAsdC4D9vP+qwKPl8OUAonIQatDbs642pSqgK5CapC
+s4kne0KGAPaEVx6gO3oxT7zna4kP7mZ5h88F+Ro3xdWglTs0rAJ5QXOU7E4pgcjR
+2n8yp8Y8vtAgDtLPGtlzyhONBS7l91Giqs21V0WI8tzujNZ7DqEI2YVAdwuNGnZB
+x5ywogEY0iECXCyWFt2A0sxeOc2az7BciWZUPpghrtaRscTrpd8i2qrpuHec8AX7
+YAi1jvZkn6w9tFlk1o4k/Dw++OBQDu25wuv/TjbpbF5glu8FopVHazwvVfJER+sV
+0AAKsaL8tBbbRccMOsi7
+=7mgv
+-----END PGP SIGNATURE-----
+
+--lwgqzkxtdv4gdmn3--
