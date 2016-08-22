@@ -1,112 +1,70 @@
-From: Sebastian Reichel <sre@kernel.org>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Tue, 23 Aug 2016 01:02:18 +0200
-Message-ID: <20160822230216.4fdvqmm4aruxmppi@earth>
-References: <12886761.WF058qtZp8@wuerfel>
- <CAL_JsqL1s9QTc+xVXafcHmyiH+6Yy0Ded+JbeYhTtYNxLtWREg@mail.gmail.com>
- <2775954.hrE2UdODgU@wuerfel>
- <CAL_Jsq+tft4zsoOeE0WvMR3W9hAXEKzz35CgFtNJ6+P82uy-3A@mail.gmail.com>
- <20160822180254.5c95af7c@lxorguk.ukuu.org.uk>
- <CAL_JsqLe74GYN+j5muoCcnEX=BRu8cCvacRG0Xz7i+AEwxbDZg@mail.gmail.com>
- <20160822183849.6dfdb9d2@lxorguk.ukuu.org.uk>
- <2D07EA08-1055-4292-96B3-32913EC9BBE1@holtmann.org>
- <20160822223223.398ee72d@lxorguk.ukuu.org.uk>
- <20160822220017.GA10689@amd>
+Date: Mon, 22 Aug 2016 23:46:10 +0100
+Message-ID: <20160822234610.39d33dda@lxorguk.ukuu.org.uk>
+References: <20160818011445.22726-1-robh@kernel.org>
+        <12886761.WF058qtZp8@wuerfel>
+        <CAL_JsqL1s9QTc+xVXafcHmyiH+6Yy0Ded+JbeYhTtYNxLtWREg@mail.gmail.com>
+        <2775954.hrE2UdODgU@wuerfel>
+        <20160822164533.688a6aec@lxorguk.ukuu.org.uk>
+        <FAD4CEF6-93F4-41D1-915E-823867F740F7@holtmann.org>
+        <20160822220313.wc47q7c4vub2cxmt@earth>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6gccjhclxmbojkch"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160822220017.GA10689@amd>
+In-Reply-To: <20160822220313.wc47q7c4vub2cxmt@earth>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Pavel Machek <pavel@ucw.cz>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Marcel Holtmann <marcel@holtmann.org>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+> It's not enough to automatically set a ldisc. There is also need for
+> additional resouces. For example the Nokia bluetooth driver needs
+> some extra GPIOs. The same is true for the in-tree hci_bcm, which
+> misuses the platform_device exactly like Greg doesn't want it.
 
---6gccjhclxmbojkch
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is one of those cases where ACPI gets it right. For the device tree
+case you will also need to describe the GPIO lines as part of your power
+management for that slave device.
 
-Hi,
+> I think the problem with line disciplines is, that they do
+> not follow the Linux device model. UART slaves may have extra
 
-On Tue, Aug 23, 2016 at 12:00:17AM +0200, Pavel Machek wrote:
-> On Mon 2016-08-22 22:32:23, One Thousand Gnomes wrote:
-> > > why would we even have it create a /dev/ttyX for these devices
-> > > in the first place. Lets just not create an uevent for it and
-> > > lets not create a dev_t for it.
-> >=20
-> > Because if you don't it's a regression. It's not permissible to break
-> > existing userspace.
+They follow it exactly.
 
-I guess there are three classes
+You have a tty_port which wraps a device, and has the lifetime of the
+hardware and lives on busses and can support enumeration.
 
-1.) support for uart-slaves on new devices -> tty can be safely
-    disabled, as it was never exposed
-2.) support for uart-slaves on devices, which exported a useless
-    tty (-> port could not be used from userspace without kernel
-    modifications) [this is what N900 falls under]
-3.) support for uart-slaves on devices, which could use hciattach
-    or similar tools previously. I think these devices can't
-    switch to the new API without a regression anyways. If the
-    kernel already registered the bluetooth stuff hciattach will
-    fail due to the -EBUSY (or whatever is returned).
+You have a tty which is a file system object with a lifetime determined
+by the use of the file handle, it's like any other file->private_data but
+quite complex because we must comply with POSIX and historic Unix tty
+behaviour.
 
-So from my point of view there is no real regression when we avoid
-exporting the tty at all.
+You have an ldisc, which is simply a modularisation of the current
+protocol handler and is carefully engineered not to include any device
+specific knowledge. That's how you make it scale and actually work sanely.
 
-> Yes, renumbering people's serials is bad, OTOH for new platforms it
-> would be nice not to expose ttyS15 which can only return -EBUSY.
+> resources like gpios or regulators. 
 
-No need to renumber, there is the serial mapping in DT. We can just
-export ttyS0, ttyS2 and ttyS3 (and skip ttyS1, which is used for
-hardwired serial device).
+Any resources belong to the tty_port or a child of the tty_port because
+only it has the correct lifetime. And yes it's perfectly reasonable for
+us to attach other resources to a tty_port or give it a child that is the
+device the other end of the fixed link. Everything the DT describes
+belongs hanging off the tty_port or a child thereof.
 
-> And we may want to do incompatible change at some point. People should
-> not have to use hciattach on n900 from now
+We don't get this problem in ACPI space in general because as far as ACPI
+is concerned the tty has a child device and the child device describes
+its own power management so you just power the child on or off through
+ACPI and ACPI describes power sanely.
 
-Don't worry, since platform_driver approach has been NAK'd by Greg,
-the N900 bluetooth driver can only proceed once this patchset has
-gone into the kernel. So N900 will never use hciattach.
+Eveything you have that is device specific belongs in the tty_port driver
+for that hardware, or maybe shared library helpers if common.
 
-> on until end of time, just because we exposed USB port as ttyO1 in
-> past.
+Everything you have which involves invoking device defined policy
+according to protocol defined behaviour belongs in the ldisc.
 
-USB port as ttyO1?
+Unix has worked like this for well over 30 years and it works very well
+as a model.
 
-> ...actually. I guess we should disable that ttyO1 in the device tree
-> for now, so nobody can start using it. As we currently have 2-3 people
-> in world who got that bluetooth to work with out-of-tree patches,
-> breakage should be quite acceptable :-).
-
-If you just disable ttyO1 in the N900's DT, you break runtime PM,
-since the kernel does not access disabled devices. We could add
-some kernel quirk, but who should use ttyO1 (which is btw named
-ttyS1 with 8251 based omap driver)? It's basically unusable from
-userspace.
-
--- Sebastian
-
---6gccjhclxmbojkch
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJXu4R1AAoJENju1/PIO/qal1UP/15ZKNC1rkvPARk0wMK2y9ma
-RYJkVcl6GlYi6SBCxb/q4mhUe5ct41eWlkihfy681VUjT9mZdXMqgh2WuxGBg62H
-qs5ZXURCGb2aejcB2QIgNWeWH/UgMF3HakE/dTiwxLg45LBdHdVjUvIBGiaL0bnP
-x5CuGRN1tXc3ugt3Xpjx6EHTOqfMVo5kBPOZCZddoznnzNvbiH9mUrSEGGipmju8
-M3vL/EUVToYp/Q0zYSJ693jlgnS5YXSOtOLMNWGBa2Bg77Q1kiBmxBQNIH7jXh2G
-v6h+CppZu1ejmiB9Qi6wGfRwKcYgGy5coOyObaPNqwse5Gm2cZm2W0hNhmc76pwX
-d+bTLHRiOkx7rRs3yJYym8AKH1cn6r0t2xjz2Rstha1maOLrqRupH1b7YVFRLVs9
-jQpACK/T+THLGU8Gm5XVEoJqrqHtwBB8zOiz4foMEnp35j7GyoHeYWfpOBZ/jrKY
-oWhLpKNiL4t2TqXRdWzfDc/wILWCMM/SGj8k4FgcmRX+660JIDHuN7TXIv8Q0EXj
-rvfPMZotWhr3p8El8r7kVP2LHgsrbgmBjm6FDXlYBytRN+fSVg6k+lY19VNCWun6
-cBcqu94prL3Mh9PG+wwLWL/msRjIlcWBxz8HgeHQeh6h89YsZMoiTiC3U2vS0KF7
-BwcJDgtm0v1Z3WuYIyel
-=k91G
------END PGP SIGNATURE-----
-
---6gccjhclxmbojkch--
+Alan
