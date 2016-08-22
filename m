@@ -1,68 +1,53 @@
 From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH 1/3] ACPI / APD: Provide build-in properties of the UART
-Date: Mon, 22 Aug 2016 17:24:13 +0300
-Message-ID: <1471875855-110782-2-git-send-email-heikki.krogerus@linux.intel.com>
+Subject: [PATCH 3/3] serial: 8250_dw: Add quirk for APM X-Gene SoC
+Date: Mon, 22 Aug 2016 17:24:15 +0300
+Message-ID: <1471875855-110782-4-git-send-email-heikki.krogerus@linux.intel.com>
 References: <1471875855-110782-1-git-send-email-heikki.krogerus@linux.intel.com>
 Return-path: <linux-acpi-owner@vger.kernel.org>
 In-Reply-To: <1471875855-110782-1-git-send-email-heikki.krogerus@linux.intel.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Ken Xue <Ken.Xue@amd.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Feng Kan <fkan@apm.com>
 List-Id: linux-serial@vger.kernel.org
 
-The UART driver, dw8250.c, needs some details regarding the
-Designware UART. For ACPI enumerated devices the values are
-hard-coded, but since the driver also reads the values from
-device properties, providing them with build-in properties.
-This allows us to later remove the hard-coded values from
-the driver.
+The APM X-Gene SoC UART is the only board that still needs
+the hard-coded values, so handle it separately in
+dw8250_quirks(). The other ACPI platforms are able to
+provide the values with device properties.
 
 Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Ken Xue <Ken.Xue@amd.com>
+Cc: Feng Kan <fkan@apm.com>
 ---
- drivers/acpi/acpi_apd.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/tty/serial/8250/8250_dw.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
-index c80c8f8..a51dbef 100644
---- a/drivers/acpi/acpi_apd.c
-+++ b/drivers/acpi/acpi_apd.c
-@@ -42,6 +42,7 @@ struct apd_private_data;
- struct apd_device_desc {
- 	unsigned int flags;
- 	unsigned int fixed_clk_rate;
-+	struct property_entry *properties;
- 	int (*setup)(struct apd_private_data *pdata);
- };
- 
-@@ -67,6 +68,9 @@ static int acpi_apd_setup(struct apd_private_data *pdata)
- 		pdata->clk = clk;
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index e199696..5c0c123 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -298,12 +298,17 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ 			p->serial_out = dw8250_serial_out32be;
+ 		}
+ 	} else if (has_acpi_companion(p->dev)) {
+-		p->iotype = UPIO_MEM32;
+-		p->regshift = 2;
+-		p->serial_in = dw8250_serial_in32;
++		const struct acpi_device_id *id;
++
++		id = acpi_match_device(p->dev->driver->acpi_match_table,
++				       p->dev);
++		if (id && !strcmp(id->id, "APMC0D08")) {
++			p->iotype = UPIO_MEM32;
++			p->regshift = 2;
++			p->serial_in = dw8250_serial_in32;
++			data->uart_16550_compatible = true;
++		}
+ 		p->set_termios = dw8250_set_termios;
+-		/* So far none of there implement the Busy Functionality */
+-		data->uart_16550_compatible = true;
  	}
  
-+	if (pdata->properties)
-+		return device_add_properties(&pdata->adev->dev,
-+					     pdata->properties);
- 	return 0;
- }
- 
-@@ -76,9 +80,17 @@ static struct apd_device_desc cz_i2c_desc = {
- 	.fixed_clk_rate = 133000000,
- };
- 
-+static struct property_entry uart_properties[] = {
-+	PROPERTY_ENTRY_U32("reg-io-width", 4),
-+	PROPERTY_ENTRY_U32("reg-shift", 2),
-+	PROPERTY_ENTRY_BOOL("snps,uart-16550-compatible"),
-+	{ },
-+};
-+
- static struct apd_device_desc cz_uart_desc = {
- 	.setup = acpi_apd_setup,
- 	.fixed_clk_rate = 48000000,
-+	.properties = uart_properties,
- };
- #endif
- 
+ 	/* Platforms with iDMA */
 -- 
 2.8.1
 
