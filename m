@@ -1,49 +1,89 @@
 From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Mon, 22 Aug 2016 18:02:54 +0100
-Message-ID: <20160822180254.5c95af7c@lxorguk.ukuu.org.uk>
+Date: Mon, 22 Aug 2016 16:45:33 +0100
+Message-ID: <20160822164533.688a6aec@lxorguk.ukuu.org.uk>
 References: <20160818011445.22726-1-robh@kernel.org>
         <12886761.WF058qtZp8@wuerfel>
         <CAL_JsqL1s9QTc+xVXafcHmyiH+6Yy0Ded+JbeYhTtYNxLtWREg@mail.gmail.com>
         <2775954.hrE2UdODgU@wuerfel>
-        <CAL_Jsq+tft4zsoOeE0WvMR3W9hAXEKzz35CgFtNJ6+P82uy-3A@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_Jsq+tft4zsoOeE0WvMR3W9hAXEKzz35CgFtNJ6+P82uy-3A@mail.gmail.com>
+In-Reply-To: <2775954.hrE2UdODgU@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-> > I think there are two other valuable features provided by serio:
-> >
-> > - an existing set of drivers written to the API
-> > - the implementation of the tty_ldisc  
+> Would it make sense then to define a DT binding that can cover these
+> four cases independent of the Linux usage:
 > 
-> True, though I'd expect little of the data flow part of it to be reused.
+> a) an existing tty line discipline matched to a tty port
+> b) a serio device using the N_MOUSE line discipline (which
+>    happens to cover non-mouse devices these days)
 
-Then your design is broken.
+These two are the same basic thing
 
-> - a child of the uart node
-> - a reg property containing the line number if the parent has multiple
-> uarts (I'd expect this to rarely be used).
+	port x expects ldisc y {with properties ...}
 
-That surprises me as for current x86 platforms it would be the norm,
-except that we use ACPI.
+> c) a uart_port slave attached directly to the uart (like in your
+>    current code)
 
-> - baudrate and other line configuration (though I would expect the
-> slave driver to know all this and set it w/o DT. Also, we already have
-> a way to set baudrate in the parent node at least.)
-> - other standard device properties for interrupt, gpios, regulators.
-> 
-> Also to consider is whether muxing of multiple slaves is needed. It's
-> not anything I've seen come up, but it's not hard to imagine. I think
-> that can be considered later and shouldn't impact the initial binding
-> or infrastructure.
+c) needs to be a tty_port slave attached directly to a tty_port.
+Important detail, but as uart_port is just a subset of tty_port it's a
+trivial detail to the DT.
 
-You can describe the child of the serial device as a mux and the children
-of the mux as whatever so it comes out fine when you get to that point.
+> d) the same slave drivers using a new tty line discipline
+
+and this is also just a/b again.
+
+
+What use cases and connectivity do you need to describe. Looking at the
+ACPI platforms we have
+
+- the expected serial port configuration
+- the properties of the port (FIFO etc)
+- the power management for the port
+
+- the children of the port
+- the power management of the children (at a very simplistic abstracted
+  level)
+
+So we want to be able to describe something like
+
+  ttyS0 {
+	baud: 1152008N1
+	protocol: bluetooth hci
+	fixed: yes
+	powermanagement: { ... }
+  }
+
+and if I look at the usermode crapfest on a lot of Android systems it
+looks similar but with the notion of things like being able to describe
+
+-	Use GPIO mode sleeping and assume first char is X to save power
+
+-	Power up, wait n ms, write, read, wait n ms, power down (which
+	has to be driven at the ldisc/user level as only the ldisc
+	understands transactions, or via ioctls (right now Android user
+	space tends to do hardcoded writes to /sys.. gpio to drive power
+
+-	And a few variants thereof (power up on write, off on a timer
+  	etc)
+
+So I can imagine wanting to describe something like
+
+-	The bluetooth HCI hardware is managed by gpio 11 (or UART DTR,
+	or PMIC n etc)
+	The uart can switch into GPIO mode and is gpio 15
+
+or
+
+-	Raise gpio 4 when writing, drop it after 50mS with no read/write
+
+Then the ldisc needs to make port->ops. calls for enabling/disabling low
+power mode and expected char, and the uarts that can do it need to
+implement the gpio/uart switching and any timers.
 
 Alan
